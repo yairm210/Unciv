@@ -1,5 +1,8 @@
 package com.unciv.logic.map.mapgenerator.mapregions
 
+import com.unciv.logic.map.MapResources
+import com.unciv.logic.map.TileMap
+import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.tile.TerrainType
@@ -7,8 +10,11 @@ import com.unciv.models.ruleset.tile.TileResource
 import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.components.extensions.randomWeighted
+import kotlin.math.abs
+import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.pow
+import kotlin.random.Random
 
 object LuxuryResourcePlacementLogic {
 
@@ -88,8 +94,7 @@ object LuxuryResourcePlacementLogic {
             100 - min(tileData.size.toFloat().pow(0.2f) * 16, 100f).toInt() // Approximately
         val targetDisabledLuxuries = (ruleset.tileResources.values
             .count { it.resourceType == ResourceType.Luxury } * disabledPercent) / 100
-        val randomLuxuries = remainingLuxuries.drop(targetDisabledLuxuries)
-        return randomLuxuries
+        return remainingLuxuries.drop(targetDisabledLuxuries)
     }
 
     private fun getCandidateLuxuries(
@@ -160,4 +165,260 @@ object LuxuryResourcePlacementLogic {
         }
         return cityStateLuxuries
     }
+
+
+    /** Places all Luxuries onto [tileMap]. Assumes that assignLuxuries and placeMinorCivs have been called. */
+    fun placeLuxuries(
+        regions: ArrayList<Region>,
+        tileMap: TileMap,
+        tileData: TileDataMap,
+        ruleset: Ruleset,
+        cityStateLuxuries: List<String>,
+        randomLuxuries: List<String>
+    ) {
+
+        placeLuxuriesAtMajorCivStartLocations(regions, tileMap, ruleset, tileData, randomLuxuries)
+        placeLuxuriesAtMinorCivStartLocations(tileMap, ruleset, regions, randomLuxuries, cityStateLuxuries, tileData)
+        addRegionalLuxuries(tileData, regions, tileMap, ruleset)
+        addRandomLuxuries(randomLuxuries, tileData, tileMap, regions, ruleset)
+
+
+        val specialLuxuries = ruleset.tileResources.values.filter {
+            it.resourceType == ResourceType.Luxury &&
+                it.hasUnique(UniqueType.LuxurySpecialPlacement)
+        }
+        val placedSpecials = HashMap<String, Int>()
+        specialLuxuries.forEach { placedSpecials[it.name] = 0 } // init map
+
+        addExtraLuxuryToStarts(
+            tileMap,
+            regions,
+            randomLuxuries,
+            specialLuxuries,
+            cityStateLuxuries,
+            tileData,
+            ruleset,
+            placedSpecials
+        )
+
+        fillSpecialLuxuries(specialLuxuries, tileMap, regions, placedSpecials, tileData)
+    }
+
+    /** top up marble-type specials if needed */
+    private fun fillSpecialLuxuries(
+        specialLuxuries: List<TileResource>,
+        tileMap: TileMap,
+        regions: ArrayList<Region>,
+        placedSpecials: HashMap<String, Int>,
+        tileData: TileDataMap
+    ) {
+        for (special in specialLuxuries) {
+            val targetNumber = when (tileMap.mapParameters.mapResources) {
+                MapResources.sparse -> (regions.size * 0.5f).toInt()
+                MapResources.abundant -> (regions.size * 0.9f).toInt()
+                else -> (regions.size * 0.75f).toInt()
+            }
+            val numberToPlace = max(2, targetNumber - placedSpecials[special.name]!!)
+            MapRegionResources.tryAddingResourceToTiles(
+                tileData, special, numberToPlace, tileMap.values.asSequence().shuffled(), 1f,
+                true, 6, 0
+            )
+        }
+    }
+
+    private fun addExtraLuxuryToStarts(
+        tileMap: TileMap,
+        regions: ArrayList<Region>,
+        randomLuxuries: List<String>,
+        specialLuxuries: List<TileResource>,
+        cityStateLuxuries: List<String>,
+        tileData: TileDataMap,
+        ruleset: Ruleset,
+        placedSpecials: HashMap<String, Int>
+    ) {
+        if (tileMap.mapParameters.mapResources == MapResources.sparse) return
+        for (region in regions) {
+            val tilesToCheck = tileMap[region.startPosition!!].getTilesInDistanceRange(1..2)
+            val candidateLuxuries = randomLuxuries.shuffled().toMutableList()
+            if (tileMap.mapParameters.mapResources != MapResources.strategicBalance)
+                candidateLuxuries += specialLuxuries.shuffled()
+                    .map { it.name } // Include marble!
+            candidateLuxuries += cityStateLuxuries.shuffled()
+            candidateLuxuries += regions.mapNotNull { it.luxury }.shuffled()
+            for (luxury in candidateLuxuries) {
+                if (MapRegionResources.tryAddingResourceToTiles(
+                        tileData,
+                        ruleset.tileResources[luxury]!!,
+                        1,
+                        tilesToCheck
+                    ) > 0
+                ) {
+                    if (placedSpecials.containsKey(luxury)) // Keep track of marble-type specials as they may be placed now.
+                        placedSpecials[luxury] = placedSpecials[luxury]!! + 1
+                    break
+                }
+            }
+        }
+    }
+
+    private fun addRandomLuxuries(
+        randomLuxuries: List<String>,
+        tileData: TileDataMap,
+        tileMap: TileMap,
+        regions: ArrayList<Region>,
+        ruleset: Ruleset
+    ) {
+        if (randomLuxuries.isEmpty()) return
+        var targetRandomLuxuries = tileData.size.toFloat().pow(0.45f).toInt() // Approximately
+        targetRandomLuxuries *= when (tileMap.mapParameters.mapResources) {
+            MapResources.sparse -> 80
+            MapResources.abundant -> 133
+            else -> 100
+        }
+        targetRandomLuxuries /= 100
+        targetRandomLuxuries += Random.nextInt(regions.size) // Add random number based on number of civs
+        val minimumRandomLuxuries = tileData.size.toFloat().pow(0.2f).toInt() // Approximately
+        val worldTiles = tileMap.values.asSequence().shuffled()
+        for ((index, luxury) in randomLuxuries.shuffled().withIndex()) {
+            val targetForThisLuxury = if (randomLuxuries.size > 8) targetRandomLuxuries / 10
+            else {
+                val minimum = max(3, minimumRandomLuxuries - index)
+                max(
+                    minimum,
+                    (targetRandomLuxuries * MapRegions.randomLuxuryRatios[randomLuxuries.size]!![index] + 0.5f).toInt()
+                )
+            }
+            MapRegionResources.tryAddingResourceToTiles(
+                tileData,
+                ruleset.tileResources[luxury]!!,
+                targetForThisLuxury,
+                worldTiles,
+                0.25f,
+                true,
+                4,
+                2
+            )
+        }
+    }
+
+    private fun addRegionalLuxuries(
+        tileData: TileDataMap,
+        regions: ArrayList<Region>,
+        tileMap: TileMap,
+        ruleset: Ruleset
+    ) {
+        val idealCivsForMapSize = max(2, tileData.size / 500)
+        var regionTargetNumber =
+            (tileData.size / 600) - (0.3f * abs(regions.size - idealCivsForMapSize)).toInt()
+        regionTargetNumber += when (tileMap.mapParameters.mapResources) {
+            MapResources.abundant -> 1
+            MapResources.sparse -> -1
+            else -> 0
+        }
+        regionTargetNumber = max(1, regionTargetNumber)
+        for (region in regions) {
+            val resource = ruleset.tileResources[region.luxury] ?: continue
+            fun Tile.isShoreOfContinent(continent: Int) =
+                isWater && neighbors.any { it.getContinent() == continent }
+
+            val candidates = if (isWaterOnlyResource(resource, ruleset))
+                tileMap.getTilesInRectangle(region.rect)
+                    .filter { it.isShoreOfContinent(region.continentID) }
+            else region.tiles.asSequence()
+            MapRegionResources.tryAddingResourceToTiles(
+                tileData,
+                resource,
+                regionTargetNumber,
+                candidates.shuffled(),
+                0.4f,
+                true,
+                4,
+                2
+            )
+        }
+    }
+
+    private fun placeLuxuriesAtMinorCivStartLocations(
+        tileMap: TileMap,
+        ruleset: Ruleset,
+        regions: ArrayList<Region>,
+        randomLuxuries: List<String>,
+        cityStateLuxuries: List<String>,
+        tileData: TileDataMap
+    ) {
+        for (startLocation in tileMap.startingLocationsByNation
+            .filterKeys { ruleset.nations[it]!!.isCityState }.map { it.value.first() }) {
+            val region = regions.firstOrNull { startLocation in it.tiles }
+            val tilesToCheck = startLocation.getTilesInDistanceRange(1..2)
+            // 75% probability that we first attempt to place a "city state" luxury, then a random or regional one
+            // 25% probability of going the other way around
+            val globalLuxuries =
+                if (region?.luxury != null) randomLuxuries + listOf(region.luxury) else randomLuxuries
+            val candidateLuxuries = if (Random.nextInt(100) >= 25)
+                cityStateLuxuries.shuffled() + globalLuxuries.shuffled()
+            else
+                globalLuxuries.shuffled() + cityStateLuxuries.shuffled()
+            // Now try adding one until we are successful
+            for (luxury in candidateLuxuries) {
+                if (MapRegionResources.tryAddingResourceToTiles(
+                        tileData,
+                        ruleset.tileResources[luxury]!!,
+                        1,
+                        tilesToCheck
+                    ) > 0
+                ) break
+            }
+        }
+    }
+
+    private fun placeLuxuriesAtMajorCivStartLocations(
+        regions: ArrayList<Region>,
+        tileMap: TileMap,
+        ruleset: Ruleset,
+        tileData: TileDataMap,
+        randomLuxuries: List<String>
+    ) {
+        val averageFertilityDensity =
+            regions.sumOf { it.totalFertility } / regions.sumOf { it.tiles.size }.toFloat()
+        for (region in regions) {
+            var targetLuxuries = 1
+            if (tileMap.mapParameters.mapResources == MapResources.legendaryStart)
+                targetLuxuries++
+            if (region.totalFertility / region.tiles.size.toFloat() < averageFertilityDensity) {
+                targetLuxuries++
+            }
+
+            val luxuryToPlace = ruleset.tileResources[region.luxury] ?: continue
+            // First check 2 inner rings
+            val firstPass = tileMap[region.startPosition!!].getTilesInDistanceRange(1..2)
+                .shuffled().sortedBy { it.getTileFertility(false) } // Check bad tiles first
+            targetLuxuries -= MapRegionResources.tryAddingResourceToTiles(
+                tileData,
+                luxuryToPlace,
+                targetLuxuries,
+                firstPass,
+                0.5f
+            ) // Skip every 2nd tile on first pass
+
+            if (targetLuxuries > 0) {
+                val secondPass = firstPass + tileMap[region.startPosition!!].getTilesAtDistance(3)
+                    .shuffled().sortedBy { it.getTileFertility(false) } // Check bad tiles first
+                targetLuxuries -= MapRegionResources.tryAddingResourceToTiles(
+                    tileData,
+                    luxuryToPlace,
+                    targetLuxuries,
+                    secondPass
+                )
+            }
+            if (targetLuxuries > 0) {
+                // Try adding in 1 luxury from the random rotation as compensation
+                for (luxury in randomLuxuries) {
+                    if (MapRegionResources.tryAddingResourceToTiles(
+                            tileData, ruleset.tileResources[luxury]!!, 1, firstPass) > 0
+                    ) break
+                }
+            }
+        }
+    }
+
 }
