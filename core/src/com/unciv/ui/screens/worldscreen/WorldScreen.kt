@@ -8,9 +8,11 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
+import com.unciv.GUI
 import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
 import com.unciv.logic.UncivShowableException
+import com.unciv.logic.civilization.AlertType
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
@@ -399,7 +401,13 @@ class WorldScreen(
         fogOfWarButton.isEnabled = !selectedCiv.isSpectator()
         fogOfWarButton.setPosition(10f, topBar.y - fogOfWarButton.height - 10f)
 
-        if (!hasOpenPopups() && isPlayersTurn) {
+        // If the game has ended, lets stop AutoPlay
+        if (GUI.getSettings().turnsToAutoPlay > 0 
+            && viewingCiv.popupAlerts.any { it.type == AlertType.Defeated || it.type == AlertType.GameHasBeenWon }) {
+            GUI.getSettings().stopAutoPlay()
+        }
+        
+        if (!hasOpenPopups() && GUI.getSettings().turnsToAutoPlay == 0 && isPlayersTurn) {
             when {
                 viewingCiv.shouldShowDiplomaticVotingResults() ->
                     UncivGame.Current.pushScreen(DiplomaticVoteResultScreen(gameInfo.diplomaticVictoryVotesCast, viewingCiv))
