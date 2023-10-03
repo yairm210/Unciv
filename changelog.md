@@ -1,3 +1,53 @@
+## 4.8.10
+
+chore: More luxury assignment into the new object
+
+chore: Separated luxury resource placement logic into a separate object
+
+chore: Separated minor civ placement into a separate object
+
+chore: Separated start normalization into a separate object
+
+chore: Split normalizeStart into subfunctions for easier parsing
+
+chore: Separated MapRegionResources with more functions related to placing resources in tiles
+
+chore: Started splitting resource functions into separate class from MapRegions
+
+chore: Split MapRegions into class files, first step of refactor
+
+4.8.9-patch2
+
+Fixed unique validation refactor breaks
+
+chore: Split conditional unique validation to separate function
+
+chore: Split RulesetValidator into subfunctions for easier parsing, and separate class for unique validations
+
+Resolved 
+
+4.8.9-patch1
+
+Revert "Apply conditionals for free buildings to the destination city instead of the originating city "
+
+performance: calculate current settler tile rank once, when comparing to other settlers around on first turn
+
+Converted "May enhance a religion" unique to a UnitAction
+
+Converted "May found a religion" unique to a UnitAction
+
+Added UnitAction unique type for modder clarity and ruleset validation
+
+🐛 fix golden age points computation to consider negative happiness  - By Framonti
+
+City-States don't trigger defensive pacts  - By tuvus
+
+By SomeTroglodyte:
+- City overview Fix Hotfix 
+- Fix activating unit art in civilopedia crashes 
+
+Reimplement and fix   - By SeventhM
+
 ## 4.8.9
 
 New online multiplayer no longer stuck when first player is human spectator
