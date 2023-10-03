@@ -13,7 +13,9 @@ import com.badlogic.gdx.graphics.g2d.PixmapPacker
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.badlogic.gdx.graphics.glutils.FrameBuffer
+import com.badlogic.gdx.math.Matrix4
 import com.badlogic.gdx.scenes.scene2d.Actor
+import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.utils.Array
 import com.badlogic.gdx.utils.Disposable
 import com.unciv.Constants
@@ -23,7 +25,37 @@ import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.extensions.setSize
 import com.unciv.ui.images.ImageGetter
+import com.unciv.ui.images.Portrait
+import kotlin.math.ceil
+import kotlin.math.roundToInt
 
+
+// See https://en.wikipedia.org/wiki/Private_Use_Areas
+// char encodings 57344 to 63743 (U+E000-U+F8FF) are not assigned
+private const val UNUSED_CHARACTER_CODES_START = 57344
+private const val UNUSED_CHARACTER_CODES_END = 63743
+
+// Todo readonly pixmap
+
+/** Implementations of FontImplementation will use different FontMetrics - AWT or Android.Paint,
+ *  both have a class of that name, no other common point: thus we create an abstraction.
+ *
+ *  This is used by [Fonts.getPixmapFromActor] for vertical positioning.
+ */
+class FontMetricsCommon(
+    /** (positive) distance from the baseline up to the recommended top of normal text */
+    val ascent: Float,
+    /** (positive) distance from the baseline down to the recommended bottom of normal text */
+    val descent: Float,
+    /** (positive) maximum distance from top to bottom of any text including potentially empty space above ascent or below descent */
+    val height: Float,
+    /** (positive) distance from the bounding box top (as defined by [height]) to the highest possible top of any text */
+    // Note: This is NOT what typographical leading actually is, but redefined as extra empty space on top to make
+    // it easier to sync desktop and android. AWT has some leading but no measures outside ascent+descent+leading,
+    // while Android has its leading always 0 but typically top above ascent and bottom below descent.
+    // I chose to map AWT's spacing to the top as I found the calculations easier to visualize.
+    val leading: Float
+)
 
 interface FontImplementation {
     fun setFontFamily(fontFamilyData: FontFamilyData, size: Int)
@@ -37,6 +69,8 @@ interface FontImplementation {
         font.setOwnsTexture(true)
         return font
     }
+
+    fun getMetrics(): FontMetricsCommon
 }
 
 // If save in `GameSettings` need use invariantFamily.
@@ -116,11 +150,29 @@ class NativeBitmapFontData(
             glyph.height = charPixmap.height
             glyph.xadvance = glyph.width
 
+            // Check alpha of two pixels to guess this is a round icon: transparent in the corner but not near center
+            val assumeRoundIcon = (charPixmap.getPixel(22, 22) and 255) > 0 && (charPixmap.getPixel(5, 5) and 255) == 0
+
             val rect = packer.pack(charPixmap)
             charPixmap.dispose()
             glyph.page = packer.pages.size - 1 // Glyph is always packed into the last page for now.
             glyph.srcX = rect.x.toInt()
             glyph.srcY = rect.y.toInt()
+
+            if (ch.code >= UNUSED_CHARACTER_CODES_START) {
+                // This is a Ruleset object icon - first avoid "glue"'ing them to the next char..
+                glyph.xadvance += (glyph.width / 27f).roundToInt()  // 2px for 55px width
+                if (assumeRoundIcon) {
+                    // Now, if we guessed it's round, do some kerning, only for the most conspicuous combos
+                    // Using a flat value is not perfect, but better than nothing.
+                    // Will look ugly for very unusual Fonts - should we check and do this only for default fonts?
+                    val kern = -(glyph.width / 18f).roundToInt()  // 3px for 55px width
+                    glyph.setKerning('A'.code, kern)
+                    glyph.setKerning('T'.code, kern)
+                    glyph.setKerning('V'.code, kern)
+                    glyph.setKerning('Y'.code, kern)
+                }
+            }
 
             // If a page was added, create a new texture region for the incrementally added glyph.
             if (regions.size <= glyph.page)
@@ -133,12 +185,12 @@ class NativeBitmapFontData(
         return glyph
     }
 
-    private fun getPixmap(fileName:String) = Fonts.extractPixmapFromTextureRegion(ImageGetter.getDrawable(fileName).region)
+    private fun getPixmapForTextureName(regionName: String) =
+        Fonts.extractPixmapFromTextureRegion(ImageGetter.getDrawable(regionName).region)
 
     private fun getPixmapFromChar(ch: Char): Pixmap {
-        // Images must be 50*50px so they're rendered at the same height as the text - see Fonts.ORIGINAL_FONT_SIZE
         return when (ch) {
-            in Fonts.allSymbols -> getPixmap(Fonts.allSymbols[ch]!!)
+            in Fonts.allSymbols -> getPixmapForTextureName(Fonts.allSymbols[ch]!!)
             in Fonts.charToRulesetImageActor ->
                 try {
                     // This sometimes fails with a "Frame buffer couldn't be constructed: incomplete attachment" error, unclear why
@@ -201,39 +253,50 @@ object Fonts {
      */
     // From https://stackoverflow.com/questions/29451787/libgdx-textureregion-to-pixmap
     fun extractPixmapFromTextureRegion(textureRegion: TextureRegion): Pixmap {
+        val metrics = fontImplementation.getMetrics()
+        val boxHeight = ceil(metrics.height).toInt()
+        val boxWidth = ceil(metrics.ascent * textureRegion.regionWidth / textureRegion.regionHeight).toInt()
+        // In case the region's aspect isn't 1:1, scale the rounded-up width back to a height with unrounded aspect ratio
+        val drawHeight = boxWidth * textureRegion.regionHeight / textureRegion.regionWidth
+        // place region from top of bounding box down
+        // Adding half the descent is empiric - should theoretically be leading only
+        val drawY = ceil(metrics.leading + metrics.descent * 0.5f).toInt()
+
         val textureData = textureRegion.texture.textureData
-        if (!textureData.isPrepared) {
-            textureData.prepare()
-        }
-        val pixmap = Pixmap(
-            textureRegion.regionWidth,
-            textureRegion.regionHeight,
-            textureData.format
-        )
+        if (!textureData.isPrepared) textureData.prepare()
         val textureDataPixmap = textureData.consumePixmap()
+
+        val pixmap = Pixmap(boxWidth, boxHeight, textureData.format)
+
+        // We're using the scaling drawPixmap so pixmap.filter is relevant - it defaults to BiLinear
         pixmap.drawPixmap(
-                textureDataPixmap, // The other Pixmap
-                0, // The target x-coordinate (top left corner)
-                0, // The target y-coordinate (top left corner)
-                textureRegion.regionX, // The source x-coordinate (top left corner)
-                textureRegion.regionY, // The source y-coordinate (top left corner)
-                textureRegion.regionWidth, // The width of the area from the other Pixmap in pixels
-                textureRegion.regionHeight // The height of the area from the other Pixmap in pixels
+            textureDataPixmap,              // The source Pixmap
+            textureRegion.regionX,          // The source x-coordinate (top left corner)
+            textureRegion.regionY,          // The source y-coordinate (top left corner)
+            textureRegion.regionWidth,      // The width of the area from the other Pixmap in pixels
+            textureRegion.regionHeight,     // The height of the area from the other Pixmap in pixels
+            0,                         // The target x-coordinate (top left corner)
+            drawY,                          // The target y-coordinate (top left corner)
+            boxWidth,                       // The target width
+            drawHeight,                     // The target height
         )
-        textureDataPixmap.dispose() // Prevent memory leak.
+
+        if (textureData.disposePixmap())
+            textureDataPixmap.dispose() // Prevent memory leak - consumePixmap has transferred ownership
         return pixmap
     }
 
     val rulesetObjectNameToChar =HashMap<String, Char>()
     val charToRulesetImageActor = HashMap<Char, Actor>()
-    // See https://en.wikipedia.org/wiki/Private_Use_Areas - char encodings 57344 63743 are not assigned
-    private var nextUnusedCharacterNumber = 57344
+    private var nextUnusedCharacterNumber = UNUSED_CHARACTER_CODES_START
+
     fun addRulesetImages(ruleset: Ruleset) {
         rulesetObjectNameToChar.clear()
         charToRulesetImageActor.clear()
-        nextUnusedCharacterNumber = 57344
+        nextUnusedCharacterNumber = UNUSED_CHARACTER_CODES_START
 
         fun addChar(objectName: String, objectActor: Actor) {
+            if (nextUnusedCharacterNumber > UNUSED_CHARACTER_CODES_END) return
             val char = Char(nextUnusedCharacterNumber)
             nextUnusedCharacterNumber++
             rulesetObjectNameToChar[objectName] = char
@@ -273,10 +336,55 @@ object Fonts {
         }
     }
 
-    private val frameBuffer by lazy { FrameBuffer(Pixmap.Format.RGBA8888, Gdx.graphics.width, Gdx.graphics.height, false) }
+    private val frameBuffer by lazy {
+        // Size here is way too big, but it's hard to know in advance how big it needs to be.
+        // Gdx world coords, not pixels.
+        FrameBuffer(Pixmap.Format.RGBA8888, Gdx.graphics.width, Gdx.graphics.height, false)
+    }
     private val spriteBatch by lazy { SpriteBatch() }
+    private val transform = Matrix4()  // for repeated reuse without reallocation
 
+    /** Get a Pixmap for a "show ruleset icons as part of text" actor.
+     *
+     *  Draws onto an offscreen frame buffer and copies the pixels.
+     *  Caller becomes owner of the returned Pixmap and is responsible for disposing it.
+     *
+     *  Size is such that the actor's height is mapped to the font's ascent (close to
+     *  ORIGINAL_FONT_SIZE * GameSettings.fontSizeMultiplier), the actor is placed like a letter into
+     *  the total height as given by the font's metrics, and width scaled to maintain aspect ratio.
+     */
     fun getPixmapFromActor(actor: Actor): Pixmap {
+        // We want our - mostly circular - icon to match a typical large uppercase letter in height
+        // The drawing bounding box should have room, however for the font's leading and descent
+        val metrics = fontImplementation.getMetrics()
+        val boxHeight = ceil(metrics.height).toInt()
+        // Empiric slight size reduction - "correctly calculated" they just look a bit too big
+        val actorHeight = metrics.ascent * 0.93f
+        val actorWidth = actorHeight * actor.width / actor.height
+        val boxWidth = ceil(actorWidth).toInt()
+        // Nudge down by the border size if it's a Portrait having one, so the "core" sits on the baseline
+        val border = (actor as? Portrait)?.borderSize ?: 0f
+        // Scale to desired font dimensions - modifying the actor this way is OK as the decisions are
+        // the same each repetition, and size in the Group case or aspect ratio otherwise is preserved
+        if (actor is Group) {
+            // We can't just actor.setSize - a Group won't scale its children that way
+            actor.isTransform = true
+            val scale = actorWidth / actor.width
+            actor.setScale(scale, -scale)
+            // Now the Actor is scaled, we need to position it at the baseline, Y from top of the box
+            actor.setPosition(0f, metrics.leading + metrics.ascent + border * scale + 1)
+        } else {
+            // Assume it's an Image obeying Actor size, but needing explicit Y flipping
+            // place actor from top of bounding box down
+            // (don't think the Gdx (Y is upwards) way - due to the transformMatrix below)
+            actor.setPosition(0f, metrics.leading + border)
+            actor.setSize(boxWidth.toFloat(), actorHeight)
+            transform.idt().scl(1f, -1f, 1f).trn(0f, boxHeight.toFloat(), 0f)
+            spriteBatch.transformMatrix = transform
+            // (copies matrix, not a set by reference, ignored when actor isTransform is on)
+        }
+
+        val pixmap = Pixmap(boxWidth, boxHeight, Pixmap.Format.RGBA8888)
 
         frameBuffer.begin()
 
@@ -286,23 +394,8 @@ object Fonts {
         spriteBatch.begin()
         actor.draw(spriteBatch, 1f)
         spriteBatch.end()
-
-        val w = actor.width.toInt()
-        val h = actor.height.toInt()
-        val pixmap = Pixmap(w, h, Pixmap.Format.RGBA8888)
-        Gdx.gl.glReadPixels(0, 0, w, h, GL20.GL_RGBA, GL20.GL_UNSIGNED_BYTE, pixmap.pixels)
+        Gdx.gl.glReadPixels(0, 0, boxWidth, boxHeight, GL20.GL_RGBA, GL20.GL_UNSIGNED_BYTE, pixmap.pixels)
         frameBuffer.end()
-
-
-        // Pixmap is now *upside down* so we need to flip it around the y axis
-        pixmap.blending = Pixmap.Blending.None
-        for (i in 0..w)
-            for (j in 0..h/2) {
-                val topPixel = pixmap.getPixel(i,j)
-                val bottomPixel = pixmap.getPixel(i, h-j)
-                pixmap.drawPixel(i,j,bottomPixel)
-                pixmap.drawPixel(i,h-j,topPixel)
-            }
 
         return pixmap
     }
