@@ -2,179 +2,17 @@ package com.unciv.logic.map.mapunit.movement
 
 import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
-import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.BFS
 import com.unciv.logic.map.HexMath.getDistance
 import com.unciv.logic.map.mapunit.MapUnit
-import com.unciv.logic.map.mapunit.MapUnitCache
-import com.unciv.logic.map.tile.RoadStatus
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.UnitActionType
-import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.components.UnitMovementMemoryType
 
 class UnitMovement(val unit: MapUnit) {
 
     private val pathfindingCache = PathfindingCache(unit)
-
-    private fun getEnemyMovementPenalty(civInfo:Civilization, enemyUnit: MapUnit): Float {
-        if (civInfo.enemyMovementPenaltyUniques != null && civInfo.enemyMovementPenaltyUniques!!.any()) {
-            return civInfo.enemyMovementPenaltyUniques!!.sumOf {
-                if (it.type!! == UniqueType.EnemyUnitsSpendExtraMovement
-                        && enemyUnit.matchesFilter(it.params[0]))
-                    it.params[1].toInt()
-                else 0
-            }.toFloat()
-        }
-        return 0f // should not reach this point
-    }
-
-    // This function is called ALL THE TIME and should be as time-optimal as possible!
-    private fun getMovementCostBetweenAdjacentTiles(
-        from: Tile,
-        to: Tile,
-        civInfo: Civilization,
-        considerZoneOfControl: Boolean = true
-    ): Float {
-        if (unit.cache.cannotMove) return 100f
-
-        if (from.isLand != to.isLand && unit.baseUnit.isLandUnit() && !unit.cache.canMoveOnWater)
-            return if (from.isWater && to.isLand) unit.cache.costToDisembark ?: 100f
-            else unit.cache.costToEmbark ?: 100f
-
-        // If the movement is affected by a Zone of Control, all movement points are expended
-        if (considerZoneOfControl && isMovementAffectedByZoneOfControl(from, to, civInfo))
-            return 100f
-
-        // land units will still spend all movement points to embark even with this unique
-        if (unit.cache.allTilesCosts1)
-            return 1f
-
-        val toOwner = to.getOwner()
-        val extraCost = if (
-            toOwner != null &&
-            toOwner.hasActiveEnemyMovementPenalty &&
-            civInfo.isAtWarWith(toOwner)
-        ) getEnemyMovementPenalty(toOwner, unit) else 0f
-
-        if (from.getUnpillagedRoad() == RoadStatus.Railroad && to.getUnpillagedRoad() == RoadStatus.Railroad)
-            return RoadStatus.Railroad.movement + extraCost
-
-        // Each of these two function calls `hasUnique(UniqueType.CityStateTerritoryAlwaysFriendly)`
-        // when entering territory of a city state
-        val areConnectedByRoad = from.hasConnection(civInfo) && to.hasConnection(civInfo)
-
-        // You might think "wait doesn't isAdjacentToRiver() call isConnectedByRiver() anyway, why have those checks?"
-        // The answer is that the isAdjacentToRiver values are CACHED per tile, but the isConnectedByRiver are not - this is an efficiency optimization
-        val areConnectedByRiver =
-            from.isAdjacentToRiver() && to.isAdjacentToRiver() && from.isConnectedByRiver(to)
-
-        if (areConnectedByRoad && (!areConnectedByRiver || civInfo.tech.roadsConnectAcrossRivers))
-            return unit.civ.tech.movementSpeedOnRoads + extraCost
-
-        if (unit.cache.ignoresTerrainCost) return 1f + extraCost
-        if (areConnectedByRiver) return 100f  // Rivers take the entire turn to cross
-
-        val terrainCost = to.lastTerrain.movementCost.toFloat()
-
-        if (unit.cache.noTerrainMovementUniques)
-            return terrainCost + extraCost
-
-        val stateForConditionals = StateForConditionals(unit.civ, unit = unit, tile = to)
-        fun matchesTerrainTarget(
-            doubleMovement: MapUnitCache.DoubleMovement,
-            target: MapUnitCache.DoubleMovementTerrainTarget
-        ): Boolean {
-            if (doubleMovement.terrainTarget != target) return false
-            if (doubleMovement.unique.conditionals.isNotEmpty()) {
-                if (!doubleMovement.unique.conditionalsApply(stateForConditionals)) return false
-            }
-
-            return true
-        }
-
-        fun matchesTerrainTarget(
-            terrainName: String,
-            target: MapUnitCache.DoubleMovementTerrainTarget
-        ): Boolean {
-            val doubleMovement = unit.cache.doubleMovementInTerrain[terrainName] ?: return false
-            return matchesTerrainTarget(doubleMovement, target)
-        }
-
-
-        if (to.terrainFeatures.any { matchesTerrainTarget(it, MapUnitCache.DoubleMovementTerrainTarget.Feature) })
-            return terrainCost * 0.5f + extraCost
-
-        if (unit.cache.roughTerrainPenalty && to.isRoughTerrain())
-            return 100f // units that have to spend all movement in rough terrain, have to spend all movement in rough terrain
-        // Placement of this 'if' based on testing, see #4232
-
-        if (civInfo.nation.ignoreHillMovementCost && to.isHill())
-            return 1f + extraCost // usually hills take 2 movements, so here it is 1
-
-        if (unit.cache.noBaseTerrainOrHillDoubleMovementUniques)
-            return terrainCost + extraCost
-
-        if (matchesTerrainTarget(to.baseTerrain, MapUnitCache.DoubleMovementTerrainTarget.Base))
-            return terrainCost * 0.5f + extraCost
-        if (matchesTerrainTarget(Constants.hill, MapUnitCache.DoubleMovementTerrainTarget.Hill)
-            && to.isHill())
-            return terrainCost * 0.5f + extraCost
-
-        if (unit.cache.noFilteredDoubleMovementUniques)
-            return terrainCost + extraCost
-        if (unit.cache.doubleMovementInTerrain.any {
-                matchesTerrainTarget(it.value, MapUnitCache.DoubleMovementTerrainTarget.Filter)
-                    && to.matchesFilter(it.key)
-            })
-            return terrainCost * 0.5f + extraCost
-
-        return terrainCost + extraCost // no road or other movement cost reduction
-    }
-
-    private fun getTilesExertingZoneOfControl(tile: Tile, civInfo: Civilization) = sequence {
-        for (neighbor in tile.neighbors) {
-            if (neighbor.isCityCenter() && civInfo.isAtWarWith(neighbor.getOwner()!!)) {
-                yield(neighbor)
-            }
-            else if (neighbor.militaryUnit != null && civInfo.isAtWarWith(neighbor.militaryUnit!!.civ)) {
-                if (neighbor.militaryUnit!!.type.isWaterUnit() || (unit.type.isLandUnit() && !neighbor.militaryUnit!!.isEmbarked()))
-                    yield(neighbor)
-            }
-        }
-    }
-
-    /** Returns whether the movement between the adjacent tiles [from] and [to] is affected by Zone of Control */
-    private fun isMovementAffectedByZoneOfControl(from: Tile, to: Tile, civInfo: Civilization): Boolean {
-        // Sources:
-        // - https://civilization.fandom.com/wiki/Zone_of_control_(Civ5)
-        // - https://forums.civfanatics.com/resources/understanding-the-zone-of-control-vanilla.25582/
-        //
-        // Enemy military units exert a Zone of Control over the tiles surrounding them. Moving from
-        // one tile in the ZoC of an enemy unit to another tile in the same unit's ZoC expends all
-        // movement points. Land units only exert a ZoC against land units. Sea units exert a ZoC
-        // against both land and sea units. Cities exert a ZoC as well, and it also affects both
-        // land and sea units. Embarked land units do not exert a ZoC. Finally, units that can move
-        // after attacking are not affected by zone of control if the movement is caused by killing
-        // a unit. This last case is handled in the movement-after-attacking code instead of here.
-
-        // We only need to check the two shared neighbors of [from] and [to]: the way of getting
-        // these two tiles can perhaps be optimized. Using a hex-math-based "commonAdjacentTiles"
-        // function is surprisingly less efficient than the current neighbor-intersection approach.
-        // See #4085 for more details.
-        val tilesExertingZoneOfControl = getTilesExertingZoneOfControl(from, civInfo)
-        if (tilesExertingZoneOfControl.none { to.neighbors.contains(it)})
-            return false
-
-        // Even though this is a very fast check, we perform it last. This is because very few units
-        // ignore zone of control, so the previous check has a much higher chance of yielding an
-        // early "false". If this function is going to return "true", the order doesn't matter
-        // anyway.
-        if (unit.cache.ignoresZoneOfControl)
-            return false
-        return true
-    }
 
     class ParentTileAndTotalDistance(val tile:Tile, val parentTile: Tile, val totalDistance: Float)
 
@@ -220,7 +58,7 @@ class UnitMovement(val unit: MapUnit) {
                             val key = Pair(tileToCheck, neighbor)
                             val movementCost =
                                     movementCostCache.getOrPut(key) {
-                                        getMovementCostBetweenAdjacentTiles(tileToCheck, neighbor, unit.civ, considerZoneOfControl)
+                                        MovementCost.getMovementCostBetweenAdjacentTiles(unit, tileToCheck, neighbor, considerZoneOfControl)
                                     }
                             distanceToTiles[tileToCheck]!!.totalDistance + movementCost
                         }
@@ -596,7 +434,7 @@ class UnitMovement(val unit: MapUnit) {
 
             // This fixes a bug where tiles in the fog of war would always only cost 1 mp
             if (!unit.civ.gameInfo.gameParameters.godMode)
-                passingMovementSpent += getMovementCostBetweenAdjacentTiles(previousTile, tile, unit.civ)
+                passingMovementSpent += MovementCost.getMovementCostBetweenAdjacentTiles(unit, previousTile, tile)
 
             // In case something goes wrong, cache the last tile we were able to end on
             // We can assume we can pass through this tile, as we would have broken earlier
