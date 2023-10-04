@@ -164,11 +164,9 @@ object AirUnitAutomation {
             return
         }
 
-        if (unit.baseUnit.isAirUnit()) {
-            val pathsToCities = unit.movement.getAerialPathsToCities()
-            if (pathsToCities.isEmpty()) return // can't actually move anywhere else
-            tryMoveToCitiesToAerialAttackFrom(pathsToCities, unit)
-        } else UnitAutomation.tryHeadTowardsEnemyCity(unit)
+        val pathsToCities = unit.movement.getAerialPathsToCities()
+        if (pathsToCities.isEmpty()) return // can't actually move anywhere else
+        tryMoveToCitiesToAerialAttackFrom(pathsToCities, unit)
     }
 
     private fun tryRelocateToCitiesWithEnemyNearBy(unit: MapUnit): Boolean {
