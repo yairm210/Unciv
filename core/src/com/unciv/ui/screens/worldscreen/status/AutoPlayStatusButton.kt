@@ -24,7 +24,7 @@ class AutoPlayStatusButton(
         add(Stack(autoPlayImage)).pad(5f)
         val settings = GUI.getSettings()
         onClick {
-            if (settings.turnsToAutoPlay > 0)
+            if (settings.isAutoPlaying())
                 settings.stopAutoPlay()
             else if (worldScreen.viewingCiv == worldScreen.gameInfo.currentPlayerCiv)
                 AutoPlayMenu(stage,this, nextTurnButton, worldScreen)
@@ -46,7 +46,7 @@ class AutoPlayStatusButton(
     
     override fun dispose() {
         val settings = GUI.getSettings()
-        if (isPressed && settings.turnsToAutoPlay > 0) {
+        if (isPressed && settings.isAutoPlaying()) {
             settings.stopAutoPlay()
         }
     }

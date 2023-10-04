@@ -27,11 +27,11 @@ enum class NextTurnAction(protected val text: String, val color: Color) {
     },
     Working(Constants.working, Color.GRAY) {
         override fun isChoice(worldScreen: WorldScreen) =
-            worldScreen.isNextTurnUpdateRunning() && GUI.getSettings().turnsToAutoPlay == 0
+            worldScreen.isNextTurnUpdateRunning() && !GUI.getSettings().isAutoPlaying()
     },
     AutoPlay("AutoPlay", Color.WHITE) {
         override fun isChoice(worldScreen: WorldScreen) =
-            worldScreen.isNextTurnUpdateRunning() && GUI.getSettings().turnsToAutoPlay > 0
+            worldScreen.isNextTurnUpdateRunning() && GUI.getSettings().isAutoPlaying()
         override fun action(worldScreen: WorldScreen) =
             GUI.getSettings().stopAutoPlay()
     },

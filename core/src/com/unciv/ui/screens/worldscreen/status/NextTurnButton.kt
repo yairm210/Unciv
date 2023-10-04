@@ -9,10 +9,8 @@ import com.unciv.ui.components.extensions.setSize
 import com.unciv.ui.components.input.KeyboardBinding
 import com.unciv.ui.components.input.keyShortcuts
 import com.unciv.ui.components.input.onActivation
-import com.unciv.ui.components.input.onRightClick
 import com.unciv.ui.images.IconTextButton
 import com.unciv.ui.images.ImageGetter
-import com.unciv.ui.popups.AutoPlayMenu
 import com.unciv.ui.popups.hasOpenPopups
 import com.unciv.ui.screens.worldscreen.WorldScreen
 
@@ -34,14 +32,14 @@ class NextTurnButton(
         nextTurnAction = getNextTurnAction(worldScreen)
         updateButton(nextTurnAction)
         val settings = GUI.getSettings()
-        if (!settings.autoPlayInProgress && settings.turnsToAutoPlay > 0 
+        if (!settings.autoPlayTurnInProgress && settings.isAutoPlaying() 
             && worldScreen.isPlayersTurn && !worldScreen.waitingForAutosave && !worldScreen.isNextTurnUpdateRunning()) {
-            settings.autoPlayInProgress = true
+            settings.autoPlayTurnInProgress = true
             if (!worldScreen.viewingCiv.isSpectator())
                 TurnManager(worldScreen.viewingCiv).automateTurn()
             worldScreen.nextTurn()
             settings.turnsToAutoPlay--
-            settings.autoPlayInProgress = false
+            settings.autoPlayTurnInProgress = false
         }
                 
         isEnabled = nextTurnAction.getText (worldScreen) == "AutoPlay" 
