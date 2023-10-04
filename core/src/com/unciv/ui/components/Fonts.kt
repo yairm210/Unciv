@@ -46,13 +46,19 @@ class FontMetricsCommon(
     val ascent: Float,
     /** (positive) distance from the baseline down to the recommended bottom of normal text */
     val descent: Float,
-    /** (positive) maximum distance from top to bottom of any text including potentially empty space above ascent or below descent */
+    /** (positive) maximum distance from top to bottom of any text,
+     *  including potentially empty space above ascent or below descent */
     val height: Float,
-    /** (positive) distance from the bounding box top (as defined by [height]) to the highest possible top of any text */
-    // Note: This is NOT what typographical leading actually is, but redefined as extra empty space on top to make
-    // it easier to sync desktop and android. AWT has some leading but no measures outside ascent+descent+leading,
-    // while Android has its leading always 0 but typically top above ascent and bottom below descent.
+    /** (positive) distance from the bounding box top (as defined by [height])
+     *  to the highest possible top of any text */
+
+    // Note: This is NOT what typographical leading actually is, but redefined as extra empty space
+    // on top, to make it easier to sync desktop and android. AWT has some leading but no measures
+    // outside ascent+descent+leading, while Android has its leading always 0 but typically top
+    // above ascent and bottom below descent.
     // I chose to map AWT's spacing to the top as I found the calculations easier to visualize.
+    /** Space from the bounding box top to the top of the ascenders - includes line spacing and
+     *  room for unusually high ascenders, as [ascent] is only a recommendation. */
     val leading: Float
 )
 
@@ -207,10 +213,14 @@ class NativeBitmapFontData(
 
         if (!assumeRoundIcon) return
 
-        // Now, if we guessed it's round, do some kerning, only for the most conspicuous combos
-        // Will look ugly for very unusual Fonts - should we check and do this only for default fonts?
+        // Now, if we guessed it's round, do some kerning, only for the most conspicuous combos.
+        // Will look ugly for very unusual Fonts - should we limit this to only default fonts?
 
-        // Ends up 3px for default font scale, 2px for minimum, 4px for max
+        // Kerning is a sparse 2D array of up to 2^16 hints, each stored as byte, so this is
+        // costly: kerningMap.size * Fonts.charToRulesetImageActor.size * 512 bytes
+        // Which is 1.76MB for vanilla G&K rules.
+
+        // Ends up -3px for default font scale, -2px for minimum, -4px for max
         val defaultKerning = (width * relativeKerning)
         for ((char, kerning) in kerningMap)
             setKerning(char.code, (defaultKerning * kerning).roundToInt())
@@ -387,9 +397,9 @@ object Fonts {
         val metrics = fontImplementation.getMetrics()
         val boxHeight = ceil(metrics.height).toInt()
         // Empiric slight size reduction - "correctly calculated" they just look a bit too big
-        val actorHeight = metrics.ascent * 0.93f
-        val actorWidth = actorHeight * actor.width / actor.height
-        val boxWidth = ceil(actorWidth).toInt()
+        val scaledActorHeight = metrics.ascent * 0.93f
+        val scaledActorWidth = scaledActorHeight * actor.width / actor.height
+        val boxWidth = ceil(scaledActorWidth).toInt()
         // Nudge down by the border size if it's a Portrait having one, so the "core" sits on the baseline
         val border = (actor as? Portrait)?.borderSize ?: 0f
         // Scale to desired font dimensions - modifying the actor this way is OK as the decisions are
@@ -397,7 +407,7 @@ object Fonts {
         if (actor is Group) {
             // We can't just actor.setSize - a Group won't scale its children that way
             actor.isTransform = true
-            val scale = actorWidth / actor.width
+            val scale = scaledActorWidth / actor.width
             actor.setScale(scale, -scale)
             // Now the Actor is scaled, we need to position it at the baseline, Y from top of the box
             actor.setPosition(0f, metrics.leading + metrics.ascent + border * scale + 1)
@@ -406,7 +416,7 @@ object Fonts {
             // place actor from top of bounding box down
             // (don't think the Gdx (Y is upwards) way - due to the transformMatrix below)
             actor.setPosition(0f, metrics.leading + border)
-            actor.setSize(boxWidth.toFloat(), actorHeight)
+            actor.setSize(scaledActorWidth, scaledActorHeight)
             transform.idt().scl(1f, -1f, 1f).trn(0f, boxHeight.toFloat(), 0f)
             spriteBatch.transformMatrix = transform
             // (copies matrix, not a set by reference, ignored when actor isTransform is on)
