@@ -16,6 +16,7 @@ import com.unciv.logic.files.UncivFiles
 import com.unciv.logic.multiplayer.throttle
 import com.unciv.ui.components.FontFamilyData
 import com.unciv.ui.components.FontImplementation
+import com.unciv.ui.components.FontMetricsCommon
 import com.unciv.ui.components.Fonts
 import com.unciv.ui.components.extensions.center
 import com.unciv.ui.components.extensions.toLabel
@@ -146,23 +147,23 @@ class FontDesktop : FontImplementation {
         // Empty
     }
 
-    override fun getFontSize(): Int {
-        return Fonts.ORIGINAL_FONT_SIZE.toInt()
-    }
+    override fun getFontSize() = Fonts.ORIGINAL_FONT_SIZE.toInt()
 
     override fun getCharPixmap(char: Char): Pixmap {
         var width = metric.charWidth(char)
-        var height = metric.ascent + metric.descent
+        var height = metric.height
         if (width == 0) {
             height = Fonts.ORIGINAL_FONT_SIZE.toInt()
             width = height
         }
+
         val bi = BufferedImage(width, height, BufferedImage.TYPE_4BYTE_ABGR)
         val g = bi.createGraphics()
         g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON)
         g.font = font
         g.color = java.awt.Color.WHITE
-        g.drawString(char.toString(), 0, metric.ascent)
+        g.drawString(char.toString(), 0, metric.leading + metric.ascent)
+
         val pixmap = Pixmap(bi.width, bi.height, Pixmap.Format.RGBA8888)
         val data = bi.getRGB(0, 0, bi.width, bi.height, null, 0, bi.width)
         for (i in 0 until bi.width) {
@@ -175,7 +176,12 @@ class FontDesktop : FontImplementation {
         return pixmap
     }
 
-    override fun getSystemFonts(): Sequence<FontFamilyData> {
-        return sequenceOf(FontFamilyData(Fonts.DEFAULT_FONT_FAMILY))
-    }
+    override fun getSystemFonts() = sequenceOf(FontFamilyData(Fonts.DEFAULT_FONT_FAMILY))
+
+    override fun getMetrics() = FontMetricsCommon(
+        ascent = metric.ascent.toFloat(),
+        descent = metric.descent.toFloat(),
+        height = metric.height.toFloat(),
+        leading = metric.leading.toFloat()
+    )
 }
