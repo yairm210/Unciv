@@ -380,7 +380,9 @@ class UnitMovement(val unit: MapUnit) {
             unit.currentMovement = 0f
             unit.mostRecentMoveType = UnitMovementMemoryType.UnitTeleported
             return
-        } else if (unit.isPreparingParadrop()) { // paradropping units move differently
+        }
+
+        if (unit.isPreparingParadrop()) { // paradropping units move differently
             unit.action = null
             unit.removeFromTile()
             unit.putInTile(destination)

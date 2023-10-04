@@ -179,16 +179,16 @@ object UnitAutomation {
         }
 
         if (unit.baseUnit.isAirUnit() && unit.canIntercept())
-            return SpecificUnitAutomation.automateFighter(unit)
+            return AirUnitAutomation.automateFighter(unit)
 
         if (unit.baseUnit.isAirUnit() && !unit.baseUnit.isNuclearWeapon())
-            return SpecificUnitAutomation.automateBomber(unit)
+            return AirUnitAutomation.automateBomber(unit)
 
         if (unit.baseUnit.isNuclearWeapon())
-            return SpecificUnitAutomation.automateNukes(unit)
+            return AirUnitAutomation.automateNukes(unit)
 
         if (unit.hasUnique(UniqueType.SelfDestructs))
-            return SpecificUnitAutomation.automateMissile(unit)
+            return AirUnitAutomation.automateMissile(unit)
 
         if (tryGoToRuinAndEncampment(unit) && unit.currentMovement == 0f) return
 
@@ -271,13 +271,13 @@ object UnitAutomation {
                 && unit.civ.religionManager.religionState < ReligionState.Religion
                 && unit.civ.religionManager.mayFoundReligionAtAll()
         )
-            return SpecificUnitAutomation.foundReligion(unit)
+            return ReligiousUnitAutomation.foundReligion(unit)
 
         if (unit.hasUnique(UniqueType.MayEnhanceReligion)
                 && unit.civ.religionManager.religionState < ReligionState.EnhancedReligion
                 && unit.civ.religionManager.mayEnhanceReligionAtAll(unit)
         )
-            return SpecificUnitAutomation.enhanceReligion(unit)
+            return ReligiousUnitAutomation.enhanceReligion(unit)
 
         // We try to add any unit in the capital we can, though that might not always be desirable
         // For now its a simple option to allow AI to win a science victory again
@@ -295,10 +295,10 @@ object UnitAutomation {
             return SpecificUnitAutomation.automateGreatGeneralFallback(unit)
 
         if (unit.civ.religionManager.maySpreadReligionAtAll(unit))
-            return SpecificUnitAutomation.automateMissionary(unit)
+            return ReligiousUnitAutomation.automateMissionary(unit)
 
         if (unit.hasUnique(UniqueType.PreventSpreadingReligion) || unit.canDoLimitedAction(Constants.removeHeresy))
-            return SpecificUnitAutomation.automateInquisitor(unit)
+            return ReligiousUnitAutomation.automateInquisitor(unit)
 
         val isLateGame = isLateGame(unit.civ)
         // Great scientist -> Hurry research if late game
