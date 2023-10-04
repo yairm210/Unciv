@@ -8,6 +8,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.logic.civilization.Civilization
 import com.unciv.models.translations.tr
+import com.unciv.ui.components.Fonts
 import com.unciv.ui.components.extensions.darken
 import com.unciv.ui.components.extensions.setFontSize
 import com.unciv.ui.components.extensions.toLabel
@@ -198,8 +199,12 @@ class WorldScreenTopBar(internal val worldScreen: WorldScreen) : Table() {
         private val menuButton = ImageGetter.getImage("OtherIcons/MenuIcon")
 
         init {
+            // vertically align the Nation name by ascender height without descenders
+            val descenderBalance = Fonts.fontImplementation.getMetrics().run { descent / height } * 25f
+
             left()
             pad(10f)
+            padTop((10f - descenderBalance).coerceAtLeast(0f))
 
             menuButton.color = Color.WHITE
             menuButton.onActivation(binding = KeyboardBinding.Menu) {
@@ -221,7 +226,7 @@ class WorldScreenTopBar(internal val worldScreen: WorldScreen) : Table() {
 
             add(menuButton).size(50f)
             selectedCivIconCell = add(selectedCivIcon).padLeft(10f)
-            add(selectedCivLabel)
+            add(selectedCivLabel).padTop(descenderBalance)
             pack()
         }
 
