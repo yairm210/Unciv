@@ -3,7 +3,6 @@ package com.unciv.logic.automation.unit
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.automation.Automation
-import com.unciv.logic.automation.civilization.NextTurnAutomation
 import com.unciv.logic.battle.Battle
 import com.unciv.logic.battle.BattleDamage
 import com.unciv.logic.battle.CityCombatant
@@ -206,7 +205,7 @@ object UnitAutomation {
         if (tryTakeBackCapturedCity(unit)) return
 
         // Focus all units without a specific target on the enemy city closest to one of our cities
-        if (tryHeadTowardsEnemyCity(unit)) return
+        if (HeadTowardsEnemyCityAutomation.tryHeadTowardsEnemyCity(unit)) return
 
         if (tryGarrisoningRangedLandUnit(unit)) return
 
@@ -418,114 +417,6 @@ object UnitAutomation {
         return unit.currentMovement == 0f
     }
 
-    fun tryHeadTowardsEnemyCity(unit: MapUnit): Boolean {
-        if (unit.civ.cities.isEmpty()) return false
-
-        // only focus on *attacking* 1 enemy at a time otherwise you'll lose on both fronts
-
-        val enemies = unit.civ.getKnownCivs()
-            .filter { unit.civ.isAtWarWith(it) && it.cities.isNotEmpty() }
-
-        val closestEnemyCity = enemies
-            .mapNotNull { NextTurnAutomation.getClosestCities(unit.civ, it) }
-            .minByOrNull { it.aerialDistance }?.city2
-          ?: return false // no attackable cities found
-
-        // Our main attack target is the closest city, but we're fine with deviating from that a bit
-        var enemyCitiesByPriority = closestEnemyCity.civ.cities
-            .associateWith { it.getCenterTile().aerialDistanceTo(closestEnemyCity.getCenterTile()) }
-            .asSequence().filterNot { it.value > 10 } // anything 10 tiles away from the target is irrelevant
-            .sortedBy { it.value }.map { it.key } // sort the list by closeness to target - least is best!
-
-        if (unit.baseUnit.isRanged()) // ranged units don't harm capturable cities, waste of a turn
-            enemyCitiesByPriority = enemyCitiesByPriority.filterNot { it.health == 1 }
-
-        val closestReachableEnemyCity = enemyCitiesByPriority
-                .firstOrNull { unit.movement.canReach(it.getCenterTile()) }
-
-        if (closestReachableEnemyCity != null) {
-            return headTowardsEnemyCity(
-                unit,
-                closestReachableEnemyCity.getCenterTile(),
-                // This should be cached after the `canReach` call above.
-                unit.movement.getShortestPath(closestReachableEnemyCity.getCenterTile())
-            )
-        }
-        return false
-    }
-
-
-    private fun headTowardsEnemyCity(
-        unit: MapUnit,
-        closestReachableEnemyCity: Tile,
-        shortestPath: List<Tile>
-    ): Boolean {
-        val unitDistanceToTiles = unit.movement.getDistanceToTiles()
-        val unitRange = unit.getRange()
-
-        if (unitRange > 2) { // long-ranged unit, should never be in a bombardable position
-            val tilesInBombardRange = closestReachableEnemyCity.getTilesInDistance(2).toSet()
-            val tileToMoveTo =
-                    unitDistanceToTiles.asSequence()
-                            .filter {
-                                it.key.aerialDistanceTo(closestReachableEnemyCity) <=
-                                        unitRange && it.key !in tilesInBombardRange
-                                        && unit.getDamageFromTerrain(it.key) <= 0 // Don't set up on a mountain
-                            }
-                        .minByOrNull { it.value.totalDistance }?.key
-
-            // move into position far away enough that the bombard doesn't hurt
-            if (tileToMoveTo != null) {
-                unit.movement.headTowards(tileToMoveTo)
-                return true
-            }
-            return false
-        }
-
-        // None of the stuff below is relevant if we're still quite far away from the city, so we
-        // short-circuit here for performance reasons.
-        val minDistanceFromCityToConsiderForLandingArea = 3
-        val maxDistanceFromCityToConsiderForLandingArea = 5
-        if (unit.currentTile.aerialDistanceTo(closestReachableEnemyCity) > maxDistanceFromCityToConsiderForLandingArea
-                // Even in the worst case of only being able to move 1 tile per turn, we would still
-                // not overshoot.
-                && shortestPath.size > minDistanceFromCityToConsiderForLandingArea ) {
-            unit.movement.moveToTile(shortestPath[0])
-            return true
-        }
-
-        val ourUnitsAroundEnemyCity = closestReachableEnemyCity.getTilesInDistance(6)
-            .flatMap { it.getUnits() }
-            .filter { it.isMilitary() && it.civ == unit.civ }
-
-        val city = closestReachableEnemyCity.getCity()!!
-        val cityCombatant = CityCombatant(city)
-
-        val expectedDamagePerTurn = ourUnitsAroundEnemyCity
-            .map { BattleDamage.calculateDamageToDefender(MapUnitCombatant(it), cityCombatant) }
-            .sum() // City heals 20 per turn
-
-        if (expectedDamagePerTurn < city.health && // If we can take immediately, go for it
-            (expectedDamagePerTurn <= 20 || city.health / (expectedDamagePerTurn-20) > 5)){ // otherwise check if we can take within a couple of turns
-
-            // We won't be able to take this even with 5 turns of continuous damage!
-            // don't head straight to the city, try to head to landing grounds -
-            // this is against tha AI's brilliant plan of having everyone embarked and attacking via sea when unnecessary.
-            val tileToHeadTo = closestReachableEnemyCity.getTilesInDistanceRange(3..5)
-                    .filter { it.isLand && unit.getDamageFromTerrain(it) <= 0 } // Don't head for hurty terrain
-                    .sortedBy { it.aerialDistanceTo(unit.currentTile) }
-                    .firstOrNull { (unit.movement.canMoveTo(it) || it == unit.currentTile) && unit.movement.canReach(it) }
-
-            if (tileToHeadTo != null) { // no need to worry, keep going as the movement alg. says
-                unit.movement.headTowards(tileToHeadTo)
-            }
-            return true
-        }
-
-        unit.movement.moveToTile(shortestPath[0]) // go for it!
-
-        return true
-    }
 
     fun tryEnterOwnClosestCity(unit: MapUnit): Boolean {
         val closestCity = unit.civ.cities
@@ -590,7 +481,7 @@ object UnitAutomation {
                 .firstOrNull { unit.movement.canReach(it) }
 
         if (closestReachableCapturedCity != null) {
-            return headTowardsEnemyCity(
+            return HeadTowardsEnemyCityAutomation.headTowardsEnemyCity(
                 unit,
                 closestReachableCapturedCity,
                 // This should be cached after the `canReach` call above.
