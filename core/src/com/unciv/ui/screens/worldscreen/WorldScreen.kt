@@ -403,7 +403,7 @@ class WorldScreen(
 
         // If the game has ended, lets stop AutoPlay
         if (GUI.getSettings().turnsToAutoPlay > 0 
-            && viewingCiv.popupAlerts.any { it.type == AlertType.Defeated || it.type == AlertType.GameHasBeenWon }) {
+            && viewingCiv.popupAlerts.any { !gameInfo.oneMoreTurnMode && (viewingCiv.isDefeated() || gameInfo.checkForVictory())}) {
             GUI.getSettings().stopAutoPlay()
         }
         
