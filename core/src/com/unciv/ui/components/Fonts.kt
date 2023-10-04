@@ -112,6 +112,23 @@ class NativeBitmapFontData(
 
     private val filter = Texture.TextureFilter.Linear
 
+    private companion object {
+        /** How to get the alpha channel in a Pixmap.getPixel return value (Int) - it's the LSB */
+        const val alphaChannelMask = 255
+        /** Where to test circle for transparency */
+        // The center of a squared circle's corner wedge would be at (1-PI/4)/2 ≈ 0.1073
+        const val nearCornerRelativeOffset = 0.1f
+        /** Where to test circle for opacity */
+        // arbitrary choice just off-center
+        const val nearCenterRelativeOffset = 0.4f
+        /** Width multiplier to get extra advance after a ruleset icon, empiric */
+        const val relativeAdvanceExtra = 0.039f
+        /** Multiplier to get default kerning between a ruleset icon and 'open' characters */
+        const val relativeKerning = -0.055f
+        /** Which follower characters receive how much kerning relative to [relativeKerning] */
+        val kerningMap = mapOf('A' to 1f, 'T' to 0.6f, 'V' to 1f, 'Y' to 1.2f)
+    }
+
     init {
         // set general font data
         flipped = false
@@ -138,50 +155,65 @@ class NativeBitmapFontData(
         setScale(Constants.defaultFontSize / Fonts.ORIGINAL_FONT_SIZE)
     }
 
-    override fun getGlyph(ch: Char): Glyph {
-        var glyph: Glyph? = super.getGlyph(ch)
-        if (glyph == null) {
-            val charPixmap = getPixmapFromChar(ch)
+    override fun getGlyph(ch: Char): Glyph = super.getGlyph(ch) ?: createAndCacheGlyph(ch)
 
-            glyph = Glyph()
-            glyph.id = ch.code
-            glyph.width = charPixmap.width
-            glyph.height = charPixmap.height
-            glyph.xadvance = glyph.width
+    private fun createAndCacheGlyph(ch: Char): Glyph {
+        val charPixmap = getPixmapFromChar(ch)
 
-            // Check alpha of two pixels to guess this is a round icon: transparent in the corner but not near center
-            val assumeRoundIcon = (charPixmap.getPixel(22, 22) and 255) > 0 && (charPixmap.getPixel(5, 5) and 255) == 0
+        val glyph = Glyph()
+        glyph.id = ch.code
+        glyph.width = charPixmap.width
+        glyph.height = charPixmap.height
+        glyph.xadvance = glyph.width
 
-            val rect = packer.pack(charPixmap)
-            charPixmap.dispose()
-            glyph.page = packer.pages.size - 1 // Glyph is always packed into the last page for now.
-            glyph.srcX = rect.x.toInt()
-            glyph.srcY = rect.y.toInt()
+        // Check alpha to guess whether this is a round icon
+        // Needs to be done before disposing charPixmap, and we want to do that soon
+        val assumeRoundIcon = charPixmap.guessIsRoundSurroundedByTransparency()
 
-            if (ch.code >= UNUSED_CHARACTER_CODES_START) {
-                // This is a Ruleset object icon - first avoid "glue"'ing them to the next char..
-                glyph.xadvance += (glyph.width / 27f).roundToInt()  // 2px for 55px width
-                if (assumeRoundIcon) {
-                    // Now, if we guessed it's round, do some kerning, only for the most conspicuous combos
-                    // Using a flat value is not perfect, but better than nothing.
-                    // Will look ugly for very unusual Fonts - should we check and do this only for default fonts?
-                    val kern = -(glyph.width / 18f).roundToInt()  // 3px for 55px width
-                    glyph.setKerning('A'.code, kern)
-                    glyph.setKerning('T'.code, kern)
-                    glyph.setKerning('V'.code, kern)
-                    glyph.setKerning('Y'.code, kern)
-                }
-            }
+        val rect = packer.pack(charPixmap)
+        charPixmap.dispose()
+        glyph.page = packer.pages.size - 1 // Glyph is always packed into the last page for now.
+        glyph.srcX = rect.x.toInt()
+        glyph.srcY = rect.y.toInt()
 
-            // If a page was added, create a new texture region for the incrementally added glyph.
-            if (regions.size <= glyph.page)
-                packer.updateTextureRegions(regions, filter, filter, false)
+        if (ch.code >= UNUSED_CHARACTER_CODES_START)
+            glyph.setRulesetIconGeometry(assumeRoundIcon)
 
-            setGlyphRegion(glyph, regions.get(glyph.page))
-            setGlyph(ch.code, glyph)
-            dirty = true
-        }
+        // If a page was added, create a new texture region for the incrementally added glyph.
+        if (regions.size <= glyph.page)
+            packer.updateTextureRegions(regions, filter, filter, false)
+
+        setGlyphRegion(glyph, regions.get(glyph.page))
+        setGlyph(ch.code, glyph)
+        dirty = true
+
         return glyph
+    }
+
+    private fun Pixmap.guessIsRoundSurroundedByTransparency(): Boolean {
+        // If a pixel near the center is opaque...
+        val nearCenterOffset = (width * nearCenterRelativeOffset).toInt()
+        if ((getPixel(nearCenterOffset, nearCenterOffset) and alphaChannelMask) == 0) return false
+        // ... and one near a corner is transparent ...
+        val nearCornerOffset = (width * nearCornerRelativeOffset).toInt()
+        return (getPixel(nearCornerOffset, nearCornerOffset) and alphaChannelMask) == 0
+        // ... then assume it's a circular icon surrounded by transparency - for kerning
+    }
+
+    private fun Glyph.setRulesetIconGeometry(assumeRoundIcon: Boolean) {
+        // This is a Ruleset object icon - first avoid "glue"'ing them to the next char..
+        // ends up 2px for default font scale, 1px for min, 3px for max
+        xadvance += (width * relativeAdvanceExtra).roundToInt()
+
+        if (!assumeRoundIcon) return
+
+        // Now, if we guessed it's round, do some kerning, only for the most conspicuous combos
+        // Will look ugly for very unusual Fonts - should we check and do this only for default fonts?
+
+        // Ends up 3px for default font scale, 2px for minimum, 4px for max
+        val defaultKerning = (width * relativeKerning)
+        for ((char, kerning) in kerningMap)
+            setKerning(char.code, (defaultKerning * kerning).roundToInt())
     }
 
     private fun getPixmapForTextureName(regionName: String) =
