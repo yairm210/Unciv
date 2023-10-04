@@ -1,22 +1,24 @@
-package com.unciv.logic.map.mapunit
+package com.unciv.logic.map.mapunit.movement
 
 import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.BFS
 import com.unciv.logic.map.HexMath.getDistance
+import com.unciv.logic.map.mapunit.MapUnit
+import com.unciv.logic.map.mapunit.MapUnitCache
 import com.unciv.logic.map.tile.RoadStatus
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.UnitActionType
-import com.unciv.ui.components.UnitMovementMemoryType
 import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.UniqueType
+import com.unciv.ui.components.UnitMovementMemoryType
 
 class UnitMovement(val unit: MapUnit) {
 
     private val pathfindingCache = PathfindingCache(unit)
 
-    fun getEnemyMovementPenalty(civInfo:Civilization, enemyUnit: MapUnit): Float {
+    private fun getEnemyMovementPenalty(civInfo:Civilization, enemyUnit: MapUnit): Float {
         if (civInfo.enemyMovementPenaltyUniques != null && civInfo.enemyMovementPenaltyUniques!!.any()) {
             return civInfo.enemyMovementPenaltyUniques!!.sumOf {
                 if (it.type!! == UniqueType.EnemyUnitsSpendExtraMovement
@@ -741,7 +743,7 @@ class UnitMovement(val unit: MapUnit) {
     }
 
     // Can a paratrooper land at this tile?
-    fun canParadropOn(destination: Tile): Boolean {
+    private fun canParadropOn(destination: Tile): Boolean {
         if (unit.cache.cannotMove) return false
         // Can only move to land tiles within range that are visible and not impassible
         // Based on some testing done in the base game

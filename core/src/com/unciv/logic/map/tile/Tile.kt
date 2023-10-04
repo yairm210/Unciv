@@ -12,7 +12,7 @@ import com.unciv.logic.map.MapParameters
 import com.unciv.logic.map.MapResources
 import com.unciv.logic.map.TileMap
 import com.unciv.logic.map.mapunit.MapUnit
-import com.unciv.logic.map.mapunit.UnitMovement
+import com.unciv.logic.map.mapunit.movement.UnitMovement
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.tile.Terrain
