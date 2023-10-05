@@ -25,15 +25,15 @@ enum class NextTurnAction(protected val text: String, val color: Color) {
         override val icon get() = null
         override fun isChoice(worldScreen: WorldScreen) = false
     },
-    Working(Constants.working, Color.GRAY) {
-        override fun isChoice(worldScreen: WorldScreen) =
-            worldScreen.isNextTurnUpdateRunning() && !GUI.getSettings().isAutoPlaying()
-    },
     AutoPlay("AutoPlay", Color.WHITE) {
         override fun isChoice(worldScreen: WorldScreen) =
             worldScreen.isNextTurnUpdateRunning() && GUI.getSettings().isAutoPlaying()
         override fun action(worldScreen: WorldScreen) =
             GUI.getSettings().stopAutoPlay()
+    },
+    Working(Constants.working, Color.GRAY) {
+        override fun isChoice(worldScreen: WorldScreen) =
+            worldScreen.isNextTurnUpdateRunning()
     },
     Waiting("Waiting for other players...",Color.GRAY) {
         override fun getText(worldScreen: WorldScreen) =
