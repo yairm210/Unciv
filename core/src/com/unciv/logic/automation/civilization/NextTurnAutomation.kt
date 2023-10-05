@@ -514,6 +514,16 @@ object NextTurnAutomation {
     }
 
     private fun chooseTechToResearch(civInfo: Civilization) {
+        while(civInfo.tech.freeTechs > 0) {
+            val researchableTechs = civInfo.gameInfo.ruleset.technologies.values
+                .filter { civInfo.tech.canBeResearched(it.name) }
+            val techsGroups = researchableTechs.groupBy { it.cost }
+            val costs = techsGroups.keys.sortedDescending()
+
+            if (researchableTechs.isEmpty()) break
+            val mostExpensiveTechs = techsGroups[costs[0]]!!
+            civInfo.tech.getFreeTechnology(mostExpensiveTechs.random().name)
+        }
         if (civInfo.tech.techsToResearch.isEmpty()) {
             val researchableTechs = civInfo.gameInfo.ruleset.technologies.values
                     .filter { civInfo.tech.canBeResearched(it.name) }
