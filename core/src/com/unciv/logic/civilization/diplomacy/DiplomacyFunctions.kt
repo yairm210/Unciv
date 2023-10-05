@@ -131,7 +131,8 @@ class DiplomacyFunctions(val civInfo: Civilization){
     fun canSignDefensivePactWith(otherCiv: Civilization): Boolean {
         val diplomacyManager = civInfo.getDiplomacyManager(otherCiv)
         return canSignDefensivePact() && otherCiv.diplomacyFunctions.canSignDefensivePact()
-            && diplomacyManager.hasFlag(DiplomacyFlags.DeclarationOfFriendship)
+            && (diplomacyManager.hasFlag(DiplomacyFlags.DeclarationOfFriendship) 
+            || diplomacyManager.otherCivDiplomacy().hasFlag(DiplomacyFlags.DeclarationOfFriendship))
             && !diplomacyManager.hasFlag(DiplomacyFlags.DefensivePact)
             && !diplomacyManager.otherCivDiplomacy().hasFlag(DiplomacyFlags.DefensivePact)
             && diplomacyManager.diplomaticStatus != DiplomaticStatus.DefensivePact
