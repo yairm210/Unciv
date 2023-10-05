@@ -344,7 +344,7 @@ class WorldScreen(
     private fun update() {
 
         if (uiEnabled) {
-            displayTutorialsOnUpdate()
+            displayTutorialsForContext(TutorialTrigger.TriggerContext.Update)
 
             bottomUnitTable.update()
 
@@ -429,6 +429,15 @@ class WorldScreen(
         zoomController.setPosition(stage.width - posZoomFromRight - 10f, 10f, Align.bottomRight)
     }
 
+    /** Display Tutorials for the specified [context] as Popups - so far unrelated to the functions following below */
+    private fun displayTutorialsForContext(context: TutorialTrigger.TriggerContext) {
+        // The NextTurn context name is historical - there was a 'showTutorialsOnNextTurn' not related to NextTurn.
+        // The TriggerContext.NextTurn call is in render right after update instead.
+        if (!game.settings.showTutorials) return
+        for (trigger in TutorialTrigger[context])
+            displayTutorial(trigger) { trigger.showIf(viewingCiv) }
+    }
+
     private fun getCurrentTutorialTask(): String {
         val completedTasks = game.settings.tutorialTasksCompleted
         if (!completedTasks.contains("Move unit"))
@@ -473,11 +482,6 @@ class WorldScreen(
                     "\nClick on 'Stats'"
 
         return ""
-    }
-
-    private fun displayTutorialsOnUpdate() {
-        for (trigger in TutorialTrigger[TutorialTrigger.TriggerContext.Update])
-            displayTutorial(trigger) { trigger.showIf(viewingCiv) }
     }
 
     private fun displayTutorialTaskOnUpdate() {
@@ -694,7 +698,7 @@ class WorldScreen(
             // Since updating the worldscreen can take a long time, *especially* the first time, we disable input processing to avoid ANRs
             Gdx.input.inputProcessor = null
             update()
-            showTutorialsOnNextTurn()
+            displayTutorialsForContext(TutorialTrigger.TriggerContext.NextTurn)
             if (Gdx.input.inputProcessor == null) // Update may have replaced the worldscreen with a GreatPersonPickerScreen etc, so the input would already be set
                 Gdx.input.inputProcessor = stage
         }
@@ -702,14 +706,6 @@ class WorldScreen(
 
 
         super.render(delta)
-    }
-
-    private fun showTutorialsOnNextTurn() {
-        // despite the name this is called from render right after update
-        if (!game.settings.showTutorials) return
-
-        for (trigger in TutorialTrigger[TutorialTrigger.TriggerContext.NextTurn])
-            displayTutorial(trigger) { trigger.showIf(viewingCiv) }
     }
 
     private fun backButtonAndESCHandler() {
