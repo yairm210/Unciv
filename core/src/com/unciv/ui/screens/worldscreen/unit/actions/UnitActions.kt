@@ -8,7 +8,6 @@ import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.UnitAction
 import com.unciv.models.UnitActionType
-import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.tr
 import com.unciv.ui.popups.ConfirmPopup
@@ -62,7 +61,10 @@ object UnitActions {
         if (unit.isExploring())
             actionList += UnitAction(UnitActionType.StopExploration) { unit.action = null }
         if (unit.isAutomated())
-            actionList += UnitAction(UnitActionType.StopAutomation) { unit.action = null }
+            actionList += UnitAction(UnitActionType.StopAutomation) {
+                unit.action = null
+                unit.isAutomated = false
+            }
 
         addPromoteAction(unit, actionList)
         UnitActionsUpgrade.addUnitUpgradeAction(unit, actionList)
@@ -293,7 +295,9 @@ object UnitActions {
         actionList += UnitAction(UnitActionType.Automate,
             isCurrentAction = unit.isAutomated(),
             action = {
+                // Temporary, for compatibility - we want games serialized *moving through old versions* to come out the other end with units still automated
                 unit.action = UnitActionType.Automate.value
+                unit.isAutomated = true
                 UnitAutomation.automateUnitMoves(unit)
             }.takeIf { unit.currentMovement > 0 }
         )
