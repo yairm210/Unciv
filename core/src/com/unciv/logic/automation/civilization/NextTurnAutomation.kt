@@ -422,6 +422,7 @@ object NextTurnAutomation {
                     goldSpent += goldCostOfTile
                 } else {
                     ranOutOfMoney = true
+                    break
                 }
             }
             if (ranOutOfMoney) {
