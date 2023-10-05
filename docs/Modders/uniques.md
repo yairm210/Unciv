@@ -1084,7 +1084,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Building, Unit
 
 ??? example  "Hidden when religion is disabled"
-	Applicable to: Building, Unit, Ruins
+	Applicable to: Building, Unit, Ruins, Tutorial
 
 ??? example  "Hidden when [victoryType] Victory is disabled"
 	Example: "Hidden when [Domination] Victory is disabled"
