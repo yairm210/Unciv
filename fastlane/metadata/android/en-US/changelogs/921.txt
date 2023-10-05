@@ -1,36 +1,13 @@
-
-
-Resolved  - Great Prophets spawn again
-
-chore: Split 'head towards enemy city' into subfunctions
-
-chore: Split civilian unit automation into separate file
-
-chore: Split SpecificUnitAutomation into air units and religious units, with the remainder being mostly great person automation but also a few 'others' so I'm not renaming it
-
-chore: clarified double movement in movement cost
-
-chore: Separated movement cost from unit movement file
-
-chore: move UnitMovement to subfolder, for splitting
-
-Updated tech schema to answer modder questions
-
-fix broken links from capture reorg
-
-chore: Separated capturing logic out from Battle
-
-Removed inspection for long lines
-
-Civilian units can get promotions upon being built
+Religion fixes:
+- Great Prophets spawn again
+- Civilian units can get promotions upon being built (Great Mosque of Djenne)
+- Missionaries consumed upon expending all usages
 
 By SomeTroglodyte:
-- Fade in and out for City Ambiance Sounds 
-- Fix Tutorial loader for mods on Android 
-- Notifications remove backward compatibility 
-- Fix ai buy tiles 
-- Some religion stuff 
+- Fade in/out for City Ambiance Sounds
+- Fix Tutorial loader for mods on Android
+- Fix ai tile purchase
 
 By tuvus:
-- Defensive pact button shows on both sides when a DoF is about to end 
-- Defensive pact functionality is now canceled with otherCiv before calling in defensive pact allies 
+- Defensive pact button shows on both sides when a DoF is about to end
+- Defensive pact functionality is now canceled with otherCiv before calling in defensive pact allies
