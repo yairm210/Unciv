@@ -1,7 +1,11 @@
 package com.unciv.logic
 
 import com.unciv.models.TutorialTrigger
+import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.Tutorial
+import com.unciv.models.ruleset.unique.UniqueType
+import com.unciv.models.ruleset.validation.RulesetErrorList
+import com.unciv.models.ruleset.validation.UniqueValidator
 import com.unciv.testing.GdxTestRunner
 import com.unciv.ui.screens.basescreen.TutorialController
 import org.junit.Assert.fail
@@ -9,7 +13,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 
 @RunWith(GdxTestRunner::class)
-class TutorialTranslationTests {
+class TutorialTests {
     private var tutorials: LinkedHashMap<String, Tutorial>? = null
     private var exception: Throwable? = null
 
@@ -36,6 +40,21 @@ class TutorialTranslationTests {
             fail("TutorialTrigger $trigger has no matching entry in Tutorials.json")
         }
     }
+
+    @Test
+    fun tutorialsPassUniqueValidation() {
+        val dummyRuleset = Ruleset()
+        val validator = UniqueValidator(dummyRuleset)
+        val errors = RulesetErrorList()
+
+        for (tutorial in tutorials!!.values)
+            validator.checkUniques(tutorial, errors, UniqueType.UniqueComplianceErrorSeverity.RulesetInvariant, false)
+
+        if (!errors.isNotOK()) return
+        println(errors.getErrorText { true })
+        fail("One or more Tutorials failed Unique validation")
+    }
+
     @Test
     fun tutorialsAllHaveText() {
         if (tutorials == null) return

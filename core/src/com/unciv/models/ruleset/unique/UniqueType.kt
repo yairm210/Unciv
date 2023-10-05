@@ -769,7 +769,8 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     HiddenFromCivilopedia("Will not be displayed in Civilopedia", UniqueTarget.Building,
         UniqueTarget.Unit, UniqueTarget.UnitType, UniqueTarget.Improvement, UniqueTarget.Tech,
         UniqueTarget.Terrain, UniqueTarget.Resource, UniqueTarget.Policy, UniqueTarget.Promotion,
-        UniqueTarget.Nation, UniqueTarget.Ruins, flags = UniqueFlag.setOfHiddenToUsers),
+        UniqueTarget.Nation, UniqueTarget.Ruins, UniqueTarget.Tutorial,
+        flags = UniqueFlag.setOfHiddenToUsers),
 
     // Declarative Mod compatibility (so far rudimentary):
     ModIncompatibleWith("Mod is incompatible with [modFilter]", UniqueTarget.ModOptions),
