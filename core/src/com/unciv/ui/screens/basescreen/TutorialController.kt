@@ -1,6 +1,7 @@
 package com.unciv.ui.screens.basescreen
 
 import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.files.FileHandle
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.json.fromJsonFile
@@ -26,18 +27,21 @@ class TutorialController(screen: BaseScreen) {
         // static to allow use from TutorialTranslationTests
         fun loadTutorialsFromJson(includeMods: Boolean = true): LinkedHashMap<String, Tutorial> {
             val result = linkedMapOf<String, Tutorial>()
-            for (path in tutorialFiles(includeMods)) {
-                json().fromJsonFile(Array<Tutorial>::class.java, path)
+            for (file in tutorialFiles(includeMods)) {
+                json().fromJsonFile(Array<Tutorial>::class.java, file)
                     .associateByTo(result) { it.name }
             }
             return result
         }
-        private fun tutorialFiles(includeMods: Boolean) = sequence<String> {
-            yield("jsons/Tutorials.json")
+
+        private fun tutorialFiles(includeMods: Boolean) = sequence<FileHandle> {
+            yield(Gdx.files.internal("jsons/Tutorials.json"))
             if (!includeMods) return@sequence
-            val mods = UncivGame.Current.gameInfo?.ruleset?.mods ?: return@sequence
-            val names = mods.asSequence().map { "mods/$it/jsons/Tutorials.json" }
-            yieldAll(names.filter { Gdx.files.local(it).exists() })
+            val mods = UncivGame.Current.gameInfo?.ruleset?.mods
+                ?: return@sequence
+            val files = mods.asSequence()
+                .map { Gdx.files.local("mods/$it/jsons/Tutorials.json") }
+            yieldAll(files.filter { it.exists() })
         }
     }
 
