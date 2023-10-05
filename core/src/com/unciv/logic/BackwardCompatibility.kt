@@ -2,6 +2,7 @@ package com.unciv.logic
 
 import com.unciv.Constants
 import com.unciv.logic.city.CityConstructions
+import com.unciv.logic.city.managers.CityExpansionManager
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.civilization.diplomacy.DiplomacyManager
 import com.unciv.logic.civilization.managers.TechManager
@@ -9,6 +10,7 @@ import com.unciv.logic.map.tile.RoadStatus
 import com.unciv.models.ruleset.ModOptions
 import com.unciv.models.ruleset.PerpetualConstruction
 import com.unciv.models.ruleset.Ruleset
+import com.unciv.utils.Log
 
 /**
  * Container for all temporarily used code managing transitions from deprecated elements to their replacements.
@@ -167,9 +169,11 @@ object BackwardCompatibility {
                     unit.promotions.addPromotion(startingPromo, true)
     }
 
-    /** Move max XP from barbarians to new home */
-    @Suppress("DEPRECATION", "EmptyFunctionBlock")
-    fun ModOptions.updateDeprecations() { }
+    /** Place future backward compatibility conversions local to [ModOptions] here */
+    @Suppress("DEPRECATION", "KotlinRedundantDiagnosticSuppress", "EmptyFunctionBlock", "UnusedReceiverParameter")
+    fun ModOptions.updateDeprecations() {
+        // Nothing to do at the moment
+    }
 
     /** Convert from Fortify X to Fortify and save off X */
     fun GameInfo.convertFortify() {
@@ -191,5 +195,25 @@ object BackwardCompatibility {
             tile.history.recordTakeOwnership(tile)
         }
         historyStartTurn = turns
+    }
+
+    /** See [CityExpansionManager][com.unciv.logic.city.managers.CityExpansionManager] */
+    fun GameInfo.initializeCityTileCosts() {
+        fun CityExpansionManager.tilesClaimed(): Int {
+            val tilesAroundCity = (
+                city.getCenterTile().neighbors
+                    .map { it.position }
+                    + city.location
+                ).toSet()
+            return city.tiles.count { it !in tilesAroundCity }
+        }
+
+        for (expansion in getCities().map { it.expansion }) {
+            if (expansion.tilesBought >= 0 && expansion.cultureLevel >= 0) continue
+            val tileCount = expansion.tilesClaimed()
+            if (expansion.tilesBought < 0) expansion.tilesBought = tileCount
+            if (expansion.cultureLevel < 0) expansion.cultureLevel = tileCount
+            Log.debug("Initialized ${expansion.city.name} cultureLevel to $tileCount")
+        }
     }
 }
