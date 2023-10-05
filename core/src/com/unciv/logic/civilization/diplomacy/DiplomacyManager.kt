@@ -770,7 +770,12 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
         for (diploManager in civInfo.diplomacy.values) {
             if (diploManager.diplomaticStatus != DiplomaticStatus.DefensivePact) continue
 
-            // We already removed the trades and we don't want to remove the flags yet.
+            // Cancel the defensive pact functionality
+            diploManager.diplomaticStatus = DiplomaticStatus.Peace
+            diploManager.otherCivDiplomacy().diplomaticStatus = DiplomaticStatus.Peace
+            
+            // We already removed the trades and functionality
+            // But we don't want to remove the flags yet so we can process BetrayedDefensivePact later
             if (diploManager.otherCiv() != civAtWarWith) {
                 // Trades with defensive pact are now invalid
                 val defensivePactOffer = diploManager.trades
@@ -779,10 +784,9 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
                 val theirDefensivePactOffer = diploManager.otherCivDiplomacy().trades
                     .firstOrNull { trade -> trade.ourOffers.any { offer -> offer.name == Constants.defensivePact } }
                 diploManager.otherCivDiplomacy().trades.remove(theirDefensivePactOffer)
+                
                 diploManager.removeFlag(DiplomacyFlags.DefensivePact)
                 diploManager.otherCivDiplomacy().removeFlag(DiplomacyFlags.DefensivePact)
-                diploManager.diplomaticStatus = DiplomaticStatus.Peace
-                diploManager.otherCivDiplomacy().diplomaticStatus = DiplomaticStatus.Peace
             }
             for (civ in getCommonKnownCivs().filter { civ -> civ.isMajorCiv() || civ.isSpectator() }) {
                 civ.addNotification("[${civInfo.civName}] canceled their Defensive Pact with [${diploManager.otherCivName}]!",
