@@ -199,12 +199,17 @@ class WorldScreenTopBar(internal val worldScreen: WorldScreen) : Table() {
         private val menuButton = ImageGetter.getImage("OtherIcons/MenuIcon")
 
         init {
-            // vertically align the Nation name by ascender height without descenders
-            val descenderBalance = Fonts.fontImplementation.getMetrics().run { descent / height } * 25f
+            // vertically align the Nation name by ascender height without descender:
+            //  Normal vertical centering uses the entire font height, but that looks off here because there's
+            //  few descenders in the typical Nation name. So we calculate an estimate of the descender height
+            //  in world coordinates (25 is the Label font size set below), then, since the cells themselves
+            //  have no default padding, we remove that much padding from the top of this entire Table, and
+            //  give the Label that much top padding in return. Approximated since we're ignoring 'leading'.
+            val descenderHeight = Fonts.fontImplementation.getMetrics().run { descent / height } * 25f
 
             left()
             pad(10f)
-            padTop((10f - descenderBalance).coerceAtLeast(0f))
+            padTop((10f - descenderHeight).coerceAtLeast(0f))
 
             menuButton.color = Color.WHITE
             menuButton.onActivation(binding = KeyboardBinding.Menu) {
@@ -226,7 +231,7 @@ class WorldScreenTopBar(internal val worldScreen: WorldScreen) : Table() {
 
             add(menuButton).size(50f)
             selectedCivIconCell = add(selectedCivIcon).padLeft(10f)
-            add(selectedCivLabel).padTop(descenderBalance)
+            add(selectedCivLabel).padTop(descenderHeight)
             pack()
         }
 

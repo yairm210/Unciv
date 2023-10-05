@@ -298,7 +298,7 @@ object Fonts {
         val boxHeight = ceil(metrics.height).toInt()
         val boxWidth = ceil(metrics.ascent * textureRegion.regionWidth / textureRegion.regionHeight).toInt()
         // In case the region's aspect isn't 1:1, scale the rounded-up width back to a height with unrounded aspect ratio
-        val drawHeight = boxWidth * textureRegion.regionHeight / textureRegion.regionWidth
+        val drawHeight = textureRegion.regionHeight * (boxWidth / textureRegion.regionWidth)
         // place region from top of bounding box down
         // Adding half the descent is empiric - should theoretically be leading only
         val drawY = ceil(metrics.leading + metrics.descent * 0.5f).toInt()
@@ -392,35 +392,7 @@ object Fonts {
      *  the total height as given by the font's metrics, and width scaled to maintain aspect ratio.
      */
     fun getPixmapFromActor(actor: Actor): Pixmap {
-        // We want our - mostly circular - icon to match a typical large uppercase letter in height
-        // The drawing bounding box should have room, however for the font's leading and descent
-        val metrics = fontImplementation.getMetrics()
-        val boxHeight = ceil(metrics.height).toInt()
-        // Empiric slight size reduction - "correctly calculated" they just look a bit too big
-        val scaledActorHeight = metrics.ascent * 0.93f
-        val scaledActorWidth = scaledActorHeight * actor.width / actor.height
-        val boxWidth = ceil(scaledActorWidth).toInt()
-        // Nudge down by the border size if it's a Portrait having one, so the "core" sits on the baseline
-        val border = (actor as? Portrait)?.borderSize ?: 0f
-        // Scale to desired font dimensions - modifying the actor this way is OK as the decisions are
-        // the same each repetition, and size in the Group case or aspect ratio otherwise is preserved
-        if (actor is Group) {
-            // We can't just actor.setSize - a Group won't scale its children that way
-            actor.isTransform = true
-            val scale = scaledActorWidth / actor.width
-            actor.setScale(scale, -scale)
-            // Now the Actor is scaled, we need to position it at the baseline, Y from top of the box
-            actor.setPosition(0f, metrics.leading + metrics.ascent + border * scale + 1)
-        } else {
-            // Assume it's an Image obeying Actor size, but needing explicit Y flipping
-            // place actor from top of bounding box down
-            // (don't think the Gdx (Y is upwards) way - due to the transformMatrix below)
-            actor.setPosition(0f, metrics.leading + border)
-            actor.setSize(scaledActorWidth, scaledActorHeight)
-            transform.idt().scl(1f, -1f, 1f).trn(0f, boxHeight.toFloat(), 0f)
-            spriteBatch.transformMatrix = transform
-            // (copies matrix, not a set by reference, ignored when actor isTransform is on)
-        }
+        val (boxWidth, boxHeight) = scaleAndPositionActor(actor)
 
         val pixmap = Pixmap(boxWidth, boxHeight, Pixmap.Format.RGBA8888)
 
@@ -436,6 +408,46 @@ object Fonts {
         frameBuffer.end()
 
         return pixmap
+    }
+
+    /** Does the Actor scaling and positioning using metrics for [getPixmapFromActor]
+     *  @return boxWidth to boxHeight
+     */
+    private fun scaleAndPositionActor(actor: Actor): Pair<Int, Int> {
+        // We want our - mostly circular - icon to match a typical large uppercase letter in height
+        // The drawing bounding box should have room, however for the font's leading and descent
+        val metrics = fontImplementation.getMetrics()
+        // Empiric slight size reduction - "correctly calculated" they just look a bit too big
+        val scaledActorHeight = metrics.ascent * 0.93f
+        val scaledActorWidth = actor.width * (scaledActorHeight / actor.height)
+        val boxHeight = ceil(metrics.height).toInt()
+        val boxWidth = ceil(scaledActorWidth).toInt()
+
+        // Nudge down by the border size if it's a Portrait having one, so the "core" sits on the baseline
+        val border = (actor as? Portrait)?.borderSize ?: 0f
+
+        // Scale to desired font dimensions - modifying the actor this way is OK as the decisions are
+        // the same each repetition, and size in the Group case or aspect ratio otherwise is preserved
+        if (actor is Group) {
+            // We can't just actor.setSize - a Group won't scale its children that way
+            actor.isTransform = true
+            val scale = scaledActorWidth / actor.width
+            actor.setScale(scale, -scale)
+            // Now the Actor is scaled, we need to position it at the baseline, Y from top of the box
+            // The +1f is empirical because the result still looked off.
+            actor.setPosition(0f, metrics.leading + metrics.ascent + border * scale + 1f)
+        } else {
+            // Assume it's an Image obeying Actor size, but needing explicit Y flipping
+            // place actor from top of bounding box down
+            // (don't think the Gdx (Y is upwards) way - due to the transformMatrix below)
+            actor.setPosition(0f, metrics.leading + border)
+            actor.setSize(scaledActorWidth, scaledActorHeight)
+            transform.idt().scl(1f, -1f, 1f).trn(0f, boxHeight.toFloat(), 0f)
+            spriteBatch.transformMatrix = transform
+            // (copies matrix, not a set-by-reference, ignored when actor isTransform is on)
+        }
+
+        return boxWidth to boxHeight
     }
 
     const val turn = '⏳'               // U+23F3 'hourglass'
