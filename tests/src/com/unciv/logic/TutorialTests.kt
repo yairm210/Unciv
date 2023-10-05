@@ -64,6 +64,14 @@ class TutorialTests {
     }
 
     @Test
+    fun noTutorialsForDisabledTriggers() {
+        if (tutorials == null) return
+        val usedUnusedTriggers = triggerCounts.filter { it.value > 1 }.keys
+        if (usedUnusedTriggers.isEmpty()) return
+        fail("One or more TutorialTriggers marked 'Unused' have an entry in Tutorials.json: " + usedUnusedTriggers.joinToString())
+    }
+
+    @Test
     fun allTriggeredTutorialsHavePresentation() {
         if (tutorials == null) return
         val badTutorials = tutorials!!.values.filter { it.hasUnique(UniqueType.TutorialTrigger) }

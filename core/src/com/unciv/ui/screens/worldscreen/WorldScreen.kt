@@ -13,7 +13,6 @@ import com.unciv.logic.GameInfo
 import com.unciv.logic.UncivShowableException
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.PlayerType
-import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.event.EventBus
 import com.unciv.logic.map.MapVisualization
 import com.unciv.logic.multiplayer.MultiplayerGameUpdated
@@ -22,8 +21,6 @@ import com.unciv.logic.multiplayer.storage.MultiplayerAuthException
 import com.unciv.logic.trade.TradeEvaluation
 import com.unciv.models.TutorialTrigger
 import com.unciv.models.metadata.GameSetupInfo
-import com.unciv.models.ruleset.tile.ResourceType
-import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.components.extensions.centerX
 import com.unciv.ui.components.extensions.darken
 import com.unciv.ui.components.extensions.isEnabled
@@ -479,30 +476,8 @@ class WorldScreen(
     }
 
     private fun displayTutorialsOnUpdate() {
-
-        displayTutorial(TutorialTrigger.Introduction)
-
-        displayTutorial(TutorialTrigger.EnemyCityNeedsConqueringWithMeleeUnit) {
-            viewingCiv.diplomacy.values.asSequence()
-                    .filter { it.diplomaticStatus == DiplomaticStatus.War }
-                    .map { it.otherCiv() } // we're now lazily enumerating over CivilizationInfo's we're at war with
-                    .flatMap { it.cities.asSequence() } // ... all *their* cities
-                    .filter { it.health == 1 } // ... those ripe for conquering
-                    .flatMap { it.getCenterTile().getTilesInDistance(2) }
-                    // ... all tiles around those in range of an average melee unit
-                    // -> and now we look for a unit that could do the conquering because it's ours
-                    //    no matter whether civilian, air or ranged, tell user he needs melee
-                    .any { it.getUnits().any { unit -> unit.civ == viewingCiv } }
-        }
-        displayTutorial(TutorialTrigger.AfterConquering) { viewingCiv.cities.any { it.hasJustBeenConquered } }
-
-        displayTutorial(TutorialTrigger.InjuredUnits) { gameInfo.getCurrentPlayerCivilization().units.getCivUnits().any { it.health < 100 } }
-
-        displayTutorial(TutorialTrigger.Workers) {
-            gameInfo.getCurrentPlayerCivilization().units.getCivUnits().any {
-                it.cache.hasUniqueToBuildImprovements && it.isCivilian() && !it.isGreatPerson()
-            }
-        }
+        for (trigger in TutorialTrigger[TutorialTrigger.TriggerContext.Update])
+            displayTutorial(trigger) { trigger.showIf(viewingCiv) }
     }
 
     private fun displayTutorialTaskOnUpdate() {
@@ -730,28 +705,11 @@ class WorldScreen(
     }
 
     private fun showTutorialsOnNextTurn() {
+        // despite the name this is called from render right after update
         if (!game.settings.showTutorials) return
-        displayTutorial(TutorialTrigger.SlowStart)
-        displayTutorial(TutorialTrigger.CityExpansion) { viewingCiv.cities.any { it.expansion.tilesClaimed() > 0 } }
-        displayTutorial(TutorialTrigger.BarbarianEncountered) { viewingCiv.viewableTiles.any { it.getUnits().any { unit -> unit.civ.isBarbarian() } } }
-        displayTutorial(TutorialTrigger.RoadsAndRailroads) { viewingCiv.cities.size > 2 }
-        displayTutorial(TutorialTrigger.Happiness) { viewingCiv.getHappiness() < 5 }
-        displayTutorial(TutorialTrigger.Unhappiness) { viewingCiv.getHappiness() < 0 }
-        displayTutorial(TutorialTrigger.GoldenAge) { viewingCiv.goldenAges.isGoldenAge() }
-        displayTutorial(TutorialTrigger.IdleUnits) { gameInfo.turns >= 50 && game.settings.checkForDueUnits }
-        displayTutorial(TutorialTrigger.ContactMe) { gameInfo.turns >= 100 }
-        val resources = viewingCiv.detailedCivResources.asSequence().filter { it.origin == "All" }  // Avoid full list copy
-        displayTutorial(TutorialTrigger.LuxuryResource) { resources.any { it.resource.resourceType == ResourceType.Luxury } }
-        displayTutorial(TutorialTrigger.StrategicResource) { resources.any { it.resource.resourceType == ResourceType.Strategic } }
-        displayTutorial(TutorialTrigger.EnemyCity) {
-            viewingCiv.getKnownCivs().filter { viewingCiv.isAtWarWith(it) }
-                    .flatMap { it.cities.asSequence() }.any { viewingCiv.hasExplored(it.getCenterTile()) }
-        }
-        displayTutorial(TutorialTrigger.ApolloProgram) { viewingCiv.hasUnique(UniqueType.EnablesConstructionOfSpaceshipParts) }
-        displayTutorial(TutorialTrigger.SiegeUnits) { viewingCiv.units.getCivUnits().any { it.baseUnit.isProbablySiegeUnit() } }
-        displayTutorial(TutorialTrigger.Embarking) { viewingCiv.hasUnique(UniqueType.LandUnitEmbarkation) }
-        displayTutorial(TutorialTrigger.NaturalWonders) { viewingCiv.naturalWonders.size > 0 }
-        displayTutorial(TutorialTrigger.WeLoveTheKingDay) { viewingCiv.cities.any { it.demandedResource != "" } }
+
+        for (trigger in TutorialTrigger[TutorialTrigger.TriggerContext.NextTurn])
+            displayTutorial(trigger) { trigger.showIf(viewingCiv) }
     }
 
     private fun backButtonAndESCHandler() {
