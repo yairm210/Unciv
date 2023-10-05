@@ -63,7 +63,7 @@ object UnitActions {
         if (unit.isAutomated())
             actionList += UnitAction(UnitActionType.StopAutomation) {
                 unit.action = null
-                unit.isAutomated = false
+                unit.automated = false
             }
 
         addPromoteAction(unit, actionList)
@@ -297,7 +297,7 @@ object UnitActions {
             action = {
                 // Temporary, for compatibility - we want games serialized *moving through old versions* to come out the other end with units still automated
                 unit.action = UnitActionType.Automate.value
-                unit.isAutomated = true
+                unit.automated = true
                 UnitAutomation.automateUnitMoves(unit)
             }.takeIf { unit.currentMovement > 0 }
         )
