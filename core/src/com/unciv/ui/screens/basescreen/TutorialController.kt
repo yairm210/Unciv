@@ -8,11 +8,13 @@ import com.unciv.json.fromJsonFile
 import com.unciv.json.json
 import com.unciv.models.TutorialTrigger
 import com.unciv.models.ruleset.Tutorial
+import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.components.input.KeyCharAndCode
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popups.Popup
 import com.unciv.ui.screens.civilopediascreen.ICivilopediaText
 
+//todo - Implement UniqueType.TutorialPresentation here
 
 class TutorialController(screen: BaseScreen) {
 
@@ -24,7 +26,7 @@ class TutorialController(screen: BaseScreen) {
     private val tutorials: LinkedHashMap<String, Tutorial> = loadTutorialsFromJson()
 
     companion object {
-        // static to allow use from TutorialTranslationTests
+        // static to allow use from TutorialTests
         fun loadTutorialsFromJson(includeMods: Boolean = true): LinkedHashMap<String, Tutorial> {
             val result = linkedMapOf<String, Tutorial>()
             for (file in tutorialFiles(includeMods)) {
@@ -76,9 +78,13 @@ class TutorialController(screen: BaseScreen) {
         }
     }
 
-    private fun getTutorial(tutorial: TutorialTrigger): List<String> {
-        val name = tutorial.value.replace('_', ' ').trimStart()
-        return tutorials[name]?.steps ?: emptyList()
+    private fun getTutorial(trigger: TutorialTrigger): List<String> {
+        return tutorials.values
+            .firstOrNull { tutorial ->
+                tutorial.getMatchingUniques(UniqueType.TutorialTrigger).any {
+                    it.params[0] == trigger.name
+                }
+            }?.steps ?: emptyList()
     }
 
     /** Get all Tutorials to be displayed in the Civilopedia */

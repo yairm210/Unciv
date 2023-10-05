@@ -772,6 +772,9 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
         UniqueTarget.Nation, UniqueTarget.Ruins, UniqueTarget.Tutorial,
         flags = UniqueFlag.setOfHiddenToUsers),
 
+    TutorialPresentation("Tutorial presentation: [tutorialPresentation]", UniqueTarget.Tutorial, flags = UniqueFlag.setOfHiddenToUsers),
+    TutorialTrigger("Tutorial trigger: [tutorialTrigger]", UniqueTarget.Tutorial, flags = UniqueFlag.setOfHiddenToUsers),
+
     // Declarative Mod compatibility (so far rudimentary):
     ModIncompatibleWith("Mod is incompatible with [modFilter]", UniqueTarget.ModOptions),
     ModIsAudioVisualOnly("Should only be used as permanent audiovisual mod", UniqueTarget.ModOptions),

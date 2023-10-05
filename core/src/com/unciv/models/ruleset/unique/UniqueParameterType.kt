@@ -522,6 +522,17 @@ enum class UniqueParameterType(
         override fun getTranslationWriterStringsForOutput() = scanExistingValues(this)
     },
 
+    TutorialPresentation("tutorialPresentation", "Stepwise") {
+        private val knownValues = setOf("Stepwise", "Dialog", "Floating")
+        override fun getErrorSeverity(parameterText: String, ruleset: Ruleset) =
+            if (parameterText in knownValues) null else UniqueType.UniqueComplianceErrorSeverity.RulesetInvariant
+    },
+    TutorialTrigger("tutorialTrigger", "OtherCivEncountered") {
+        private val knownValues = com.unciv.models.TutorialTrigger.values().map { it.name }.toSet()
+        override fun getErrorSeverity(parameterText: String, ruleset: Ruleset) =
+            if (parameterText in knownValues) null else UniqueType.UniqueComplianceErrorSeverity.RulesetInvariant
+    },
+
     /** Behaves like [Unknown], but states explicitly the parameter is OK and its contents are ignored */
     Comment("comment", "comment", null, "Unique Specials") {
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):

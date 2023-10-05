@@ -16,10 +16,22 @@ import org.junit.runner.RunWith
 class TutorialTests {
     private var tutorials: LinkedHashMap<String, Tutorial>? = null
     private var exception: Throwable? = null
+    private val triggerCounts = mutableMapOf<TutorialTrigger, Int>()
+
+    private fun String.getTutorialTrigger() =
+        TutorialTrigger.values().firstOrNull { it.name == this }
 
     init {
          try {
              tutorials = TutorialController.loadTutorialsFromJson(includeMods = false)
+
+             for (tutorial in tutorials!!.values) {
+                 for (unique in tutorial.getMatchingUniques(UniqueType.TutorialTrigger)) {
+                     // Bad trigger parameter values will be caught by unique validation instead
+                     val trigger = unique.params[0].getTutorialTrigger() ?: continue
+                     triggerCounts[trigger] = 1 + triggerCounts.getOrPut(trigger) { 0 }
+                 }
+             }
          } catch (ex: Throwable) {
              exception = ex
          }
@@ -34,11 +46,31 @@ class TutorialTests {
     @Test
     fun tutorialsFileCoversAllTriggers() {
         if (tutorials == null) return
-        for (trigger in TutorialTrigger.values()) {
-            val name = trigger.value.replace('_', ' ').trimStart()
-            if (name in tutorials!!) continue
-            fail("TutorialTrigger $trigger has no matching entry in Tutorials.json")
-        }
+        val missingTutorialTriggers = TutorialTrigger.values()
+            .filter {
+                it.context != TutorialTrigger.TriggerContext.Unused
+                    && it !in triggerCounts
+            }
+        if (missingTutorialTriggers.isEmpty()) return
+        fail("One or more TutorialTriggers have no matching entry in Tutorials.json: " + missingTutorialTriggers.joinToString())
+    }
+
+    @Test
+    fun noDuplicateTutorialsPerTrigger() {
+        if (tutorials == null) return
+        val duplicateTriggers = triggerCounts.filter { it.value > 1 }.keys
+        if (duplicateTriggers.isEmpty()) return
+        fail("One or more TutorialTriggers have duplicate entries in Tutorials.json: " + duplicateTriggers.joinToString())
+    }
+
+    @Test
+    fun allTriggeredTutorialsHavePresentation() {
+        if (tutorials == null) return
+        val badTutorials = tutorials!!.values.filter { it.hasUnique(UniqueType.TutorialTrigger) }
+            .filterNot { it.hasUnique(UniqueType.TutorialPresentation) }
+            .map { it.name }
+        if (badTutorials.isEmpty()) return
+        fail("One or more Tutorials have a TutorialTrigger but no TutorialPresentation: " + badTutorials.joinToString())
     }
 
     @Test
