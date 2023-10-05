@@ -4,12 +4,13 @@ import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
 import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.automation.unit.UnitAutomation
-import com.unciv.logic.battle.Battle
+import com.unciv.logic.battle.BattleUnitCapture
 import com.unciv.logic.battle.MapUnitCombatant
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
+import com.unciv.logic.map.mapunit.movement.UnitMovement
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.UnitActionType
 import com.unciv.models.ruleset.Ruleset
@@ -635,7 +636,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
         val unguardedCivilian = tile.getUnguardedCivilian(this)
         // Capture Enemy Civilian Unit if you move on top of it
         if (isMilitary() && unguardedCivilian != null && civ.isAtWarWith(unguardedCivilian.civ)) {
-            Battle.captureCivilianUnit(MapUnitCombatant(this), MapUnitCombatant(tile.civilianUnit!!))
+            BattleUnitCapture.captureCivilianUnit(MapUnitCombatant(this), MapUnitCombatant(tile.civilianUnit!!))
         }
 
         val promotionUniques = tile.neighbors

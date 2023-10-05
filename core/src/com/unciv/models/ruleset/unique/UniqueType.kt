@@ -1,9 +1,8 @@
 package com.unciv.models.ruleset.unique
 
 import com.unciv.Constants
-import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.validation.RulesetErrorSeverity
-import com.unciv.models.ruleset.validation.RulesetValidator  // Kdoc only
+import com.unciv.models.ruleset.validation.RulesetValidator
 import com.unciv.models.translations.getPlaceholderParameters
 import com.unciv.models.translations.getPlaceholderText
 
@@ -761,12 +760,15 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     //endregion
 
     ///////////////////////////////////////////// region 90 META /////////////////////////////////////////////
-    HiddenWithoutReligion("Hidden when religion is disabled", UniqueTarget.Unit, UniqueTarget.Building, UniqueTarget.Ruins, flags = UniqueFlag.setOfHiddenToUsers),
+    HiddenWithoutReligion("Hidden when religion is disabled",
+        UniqueTarget.Unit, UniqueTarget.Building, UniqueTarget.Ruins, UniqueTarget.Tutorial,
+        flags = UniqueFlag.setOfHiddenToUsers),
 
     HiddenAfterGreatProphet("Hidden after generating a Great Prophet", UniqueTarget.Ruins),
     HiddenWithoutVictoryType("Hidden when [victoryType] Victory is disabled", UniqueTarget.Building, UniqueTarget.Unit, flags = UniqueFlag.setOfHiddenToUsers),
-    HiddenFromCivilopedia("Will not be displayed in Civilopedia", UniqueTarget.Building, UniqueTarget.Unit, UniqueTarget.UnitType, UniqueTarget.Improvement,
-        UniqueTarget.Tech, UniqueTarget.Terrain, UniqueTarget.Resource, UniqueTarget.Policy, UniqueTarget.Promotion,
+    HiddenFromCivilopedia("Will not be displayed in Civilopedia", UniqueTarget.Building,
+        UniqueTarget.Unit, UniqueTarget.UnitType, UniqueTarget.Improvement, UniqueTarget.Tech,
+        UniqueTarget.Terrain, UniqueTarget.Resource, UniqueTarget.Policy, UniqueTarget.Promotion,
         UniqueTarget.Nation, UniqueTarget.Ruins, flags = UniqueFlag.setOfHiddenToUsers),
 
     // Declarative Mod compatibility (so far rudimentary):

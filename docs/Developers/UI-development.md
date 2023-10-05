@@ -28,6 +28,10 @@ class DevElement(
 
 You can then simply run the `main` method of `FasterUIDevelopment` to show your UI element.
 
+There's two ways to do so:
+* Open this file in Android Studio under project:docs/Developers. That line above has a little green arrow in the left gutter that can be clicked.
+* Create a Run Configuration similar to [the desktop one described here](./Building-Locally.md#with-android-studio), but with classpath `Unciv.tests.test` and main class `com.unciv.dev.FasterUIDevelopment`.
+  ![image](/Unciv/assets/FasterUIDevelopment.png)
 
 ## The 'Gdx Scene2D debug' option
 
