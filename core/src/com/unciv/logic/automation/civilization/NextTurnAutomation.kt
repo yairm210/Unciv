@@ -540,7 +540,7 @@ object NextTurnAutomation {
                 } else {
                     //Choose randomly between cheapest and second cheapest group
                     val techsAdvanced = costs[1]
-                    techsAdvanced.toCollection(cheapestTechs.toMutableList()).random()
+                    (cheapestTechs + techsAdvanced).random()
                 }
 
             civInfo.tech.techsToResearch.add(techToResearch.name)
