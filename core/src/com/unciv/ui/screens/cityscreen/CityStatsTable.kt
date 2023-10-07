@@ -34,7 +34,7 @@ import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.civilopediascreen.CivilopediaScreen
 import kotlin.math.ceil
 import kotlin.math.round
-import com.unciv.ui.components.AutoScrollPane as ScrollPane
+import com.unciv.ui.components.widgets.AutoScrollPane as ScrollPane
 
 class CityStatsTable(private val cityScreen: CityScreen): Table() {
     private val innerTable = Table() // table within this Table. Slightly smaller creates border

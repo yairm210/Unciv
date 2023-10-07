@@ -9,7 +9,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.utils.Align
 import com.unciv.logic.files.UncivFiles
 import com.unciv.ui.images.ImageGetter
-import com.unciv.ui.components.AutoScrollPane
+import com.unciv.ui.components.widgets.AutoScrollPane
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.components.input.keyShortcuts
 import com.unciv.ui.components.input.onClick

@@ -22,7 +22,7 @@ import com.unciv.models.metadata.GameSetupInfo
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.tilesets.TileSetCache
-import com.unciv.ui.components.AutoScrollPane
+import com.unciv.ui.components.widgets.AutoScrollPane
 import com.unciv.ui.components.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.components.extensions.center
 import com.unciv.ui.components.extensions.surroundWithCircle

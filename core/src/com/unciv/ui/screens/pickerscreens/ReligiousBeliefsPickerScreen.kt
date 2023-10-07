@@ -14,7 +14,7 @@ import com.unciv.models.ruleset.BeliefType
 import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.tr
-import com.unciv.ui.components.AutoScrollPane
+import com.unciv.ui.components.widgets.AutoScrollPane
 import com.unciv.ui.components.extensions.addSeparator
 import com.unciv.ui.components.extensions.addSeparatorVertical
 import com.unciv.ui.components.extensions.disable

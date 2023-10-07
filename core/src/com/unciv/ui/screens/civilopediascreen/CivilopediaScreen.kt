@@ -28,7 +28,7 @@ import com.unciv.ui.images.IconTextButton
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.basescreen.RecreateOnResize
-import com.unciv.ui.components.AutoScrollPane as ScrollPane
+import com.unciv.ui.components.widgets.AutoScrollPane as ScrollPane
 
 /** Screen displaying the Civilopedia
  * @param ruleset [Ruleset] to display items from

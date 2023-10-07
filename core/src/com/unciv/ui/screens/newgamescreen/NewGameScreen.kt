@@ -45,7 +45,7 @@ import kotlinx.coroutines.coroutineScope
 import java.net.URL
 import java.util.UUID
 import kotlin.math.floor
-import com.unciv.ui.components.AutoScrollPane as ScrollPane
+import com.unciv.ui.components.widgets.AutoScrollPane as ScrollPane
 
 class NewGameScreen(
     defaultGameSetupInfo: GameSetupInfo? = null,
@@ -407,4 +407,3 @@ class NewGameScreen(
 
     override fun recreate(): BaseScreen = NewGameScreen(gameSetupInfo)
 }
-

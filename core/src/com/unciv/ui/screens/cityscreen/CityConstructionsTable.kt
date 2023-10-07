@@ -54,7 +54,7 @@ import com.unciv.utils.Concurrency
 import com.unciv.utils.launchOnGLThread
 import kotlin.math.max
 import kotlin.math.min
-import com.unciv.ui.components.AutoScrollPane as ScrollPane
+import com.unciv.ui.components.widgets.AutoScrollPane as ScrollPane
 
 private class ConstructionButtonDTO(
     val construction: IConstruction,

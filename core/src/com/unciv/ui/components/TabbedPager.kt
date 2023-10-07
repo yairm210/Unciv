@@ -25,6 +25,7 @@ import com.unciv.ui.components.extensions.pad
 import com.unciv.ui.components.input.KeyCharAndCode
 import com.unciv.ui.components.input.keyShortcuts
 import com.unciv.ui.components.input.onActivation
+import com.unciv.ui.components.widgets.AutoScrollPane
 import com.unciv.ui.images.IconTextButton
 import com.unciv.ui.popups.Popup
 import com.unciv.ui.screens.basescreen.BaseScreen

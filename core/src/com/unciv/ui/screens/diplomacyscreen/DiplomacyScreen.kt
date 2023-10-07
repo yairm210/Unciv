@@ -49,7 +49,7 @@ import com.unciv.ui.screens.basescreen.RecreateOnResize
 import com.unciv.ui.screens.civilopediascreen.CivilopediaScreen
 import kotlin.math.floor
 import kotlin.math.roundToInt
-import com.unciv.ui.components.AutoScrollPane as ScrollPane
+import com.unciv.ui.components.widgets.AutoScrollPane as ScrollPane
 
 /**
  * Creates the diplomacy screen for [viewingCiv].
@@ -740,7 +740,7 @@ class DiplomacyScreen(
         if (isNotPlayersTurn()) denounceButton.disable()
         return denounceButton
     }
-    
+
     private fun getDeclareFriendshipButton(otherCiv: Civilization): TextButton {
         val declareFriendshipButton =
                 "Offer Declaration of Friendship ([30] turns)".toTextButton()
@@ -883,7 +883,7 @@ class DiplomacyScreen(
         if (isNotPlayersTurn()) declareWarButton.disable()
         return declareWarButton
     }
-    
+
     private fun getDeclareWarButtonText(otherCiv: Civilization): String {
         val messageLines = arrayListOf<String>()
         messageLines += "Declare war on [${otherCiv.civName}]?"

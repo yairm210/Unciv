@@ -35,7 +35,7 @@ import com.unciv.ui.screens.multiplayerscreens.FriendPickerList
 import com.unciv.ui.screens.pickerscreens.PickerPane
 import com.unciv.ui.screens.pickerscreens.PickerScreen
 import java.util.UUID
-import com.unciv.ui.components.AutoScrollPane as ScrollPane
+import com.unciv.ui.components.widgets.AutoScrollPane as ScrollPane
 
 /**
  * This [Table] is used to pick or edit players information for new game creation.

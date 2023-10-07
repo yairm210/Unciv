@@ -17,7 +17,7 @@ import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.tr
 import com.unciv.ui.audio.MusicMood
 import com.unciv.ui.audio.MusicTrackChooserFlags
-import com.unciv.ui.components.AutoScrollPane
+import com.unciv.ui.components.widgets.AutoScrollPane
 import com.unciv.ui.components.ExpanderTab
 import com.unciv.ui.components.TranslatedSelectBox
 import com.unciv.ui.components.UncivSlider

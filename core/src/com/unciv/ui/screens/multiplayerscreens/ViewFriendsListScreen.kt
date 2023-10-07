@@ -9,7 +9,7 @@ import com.unciv.ui.components.extensions.disable
 import com.unciv.ui.components.extensions.enable
 import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.extensions.toTextButton
-import com.unciv.ui.components.AutoScrollPane as ScrollPane
+import com.unciv.ui.components.widgets.AutoScrollPane as ScrollPane
 
 class ViewFriendsListScreen : PickerScreen() {
     private val rightSideTable = Table()
