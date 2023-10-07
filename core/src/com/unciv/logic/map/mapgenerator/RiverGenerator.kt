@@ -119,15 +119,15 @@ class RiverGenerator(
             if (bottomRightOrLeft == BottomRightOrLeft.BottomLeft) {
                 yield(RiverCoordinate(tileMap, position, BottomRightOrLeft.BottomRight)) // same tile, other side
                 if (myTopLeft != null)
-                    yield(RiverCoordinate(tileMap, myTopLeft!!.position, BottomRightOrLeft.BottomRight)) // tile to MY top-left, take its bottom right corner
+                    yield(RiverCoordinate(tileMap, myTopLeft.position, BottomRightOrLeft.BottomRight)) // tile to MY top-left, take its bottom right corner
                 if (myBottomLeft != null)
-                    yield(RiverCoordinate(tileMap, myBottomLeft!!.position, BottomRightOrLeft.BottomRight)) // Tile to MY bottom-left, take its bottom right
+                    yield(RiverCoordinate(tileMap, myBottomLeft.position, BottomRightOrLeft.BottomRight)) // Tile to MY bottom-left, take its bottom right
             } else {
                 yield(RiverCoordinate(tileMap, position, BottomRightOrLeft.BottomLeft)) // same tile, other side
                 if (myTopRight != null)
-                    yield(RiverCoordinate(tileMap, myTopRight!!.position, BottomRightOrLeft.BottomLeft)) // tile to MY top-right, take its bottom left
+                    yield(RiverCoordinate(tileMap, myTopRight.position, BottomRightOrLeft.BottomLeft)) // tile to MY top-right, take its bottom left
                 if (myBottomRight != null)
-                    yield(RiverCoordinate(tileMap, myBottomRight!!.position, BottomRightOrLeft.BottomLeft))  // tile to MY bottom-right, take its bottom left
+                    yield(RiverCoordinate(tileMap, myBottomRight.position, BottomRightOrLeft.BottomLeft))  // tile to MY bottom-right, take its bottom left
             }
         }
 

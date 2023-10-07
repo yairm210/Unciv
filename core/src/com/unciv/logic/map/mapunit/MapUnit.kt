@@ -113,10 +113,9 @@ class MapUnit : IsPartOfGameInfoSerialization {
     var isTransported: Boolean = false
     var turnsFortified = 0
 
-    // Old, to be deprecated
-    @Deprecated("As of 4.5.3")
+    @Deprecated("As of 4.8.9")
     var abilityUsesLeft: HashMap<String, Int> = hashMapOf()
-    @Deprecated("As of 4.5.3")
+    @Deprecated("As of 4.8.9")
     var maxAbilityUses: HashMap<String, Int> = hashMapOf()
 
     // New - track only *how many have been used*, derive max from uniques, left = max - used
