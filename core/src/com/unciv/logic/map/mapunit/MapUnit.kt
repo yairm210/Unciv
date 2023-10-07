@@ -101,6 +101,8 @@ class MapUnit : IsPartOfGameInfoSerialization {
     var health: Int = 100
 
     var action: String? = null // work, automation, fortifying, I dunno what.
+    var automated: Boolean = false
+
     @Transient
     var showAdditionalActions: Boolean = false
 
@@ -175,6 +177,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
         toReturn.currentMovement = currentMovement
         toReturn.health = health
         toReturn.action = action
+        toReturn.automated = automated
         toReturn.attacksThisTurn = attacksThisTurn
         toReturn.turnsFortified = turnsFortified
         toReturn.promotions = promotions.clone()
@@ -335,7 +338,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
 
     fun isMoving() = action?.startsWith("moveTo") == true
 
-    fun isAutomated() = action == UnitActionType.Automate.value
+    fun isAutomated() = automated
     fun isExploring() = action == UnitActionType.Explore.value
     fun isPreparingParadrop() = action == UnitActionType.Paradrop.value
     fun isPreparingAirSweep() = action == UnitActionType.AirSweep.value
@@ -460,6 +463,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
             ?: throw java.lang.Exception("Unit $name is not found!")
 
         updateUniques()
+        if (action == UnitActionType.Automate.value) automated = true
     }
 
     fun getTriggeredUniques(trigger: UniqueType,
