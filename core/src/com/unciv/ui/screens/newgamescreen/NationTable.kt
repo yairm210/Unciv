@@ -1,14 +1,13 @@
 package com.unciv.ui.screens.newgamescreen
 
 import com.badlogic.gdx.graphics.Color
-import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.nation.Nation
-import com.unciv.ui.components.WrappableLabel
+import com.unciv.ui.components.widgets.WrappableLabel
 import com.unciv.ui.components.extensions.pad
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.basescreen.BaseScreen

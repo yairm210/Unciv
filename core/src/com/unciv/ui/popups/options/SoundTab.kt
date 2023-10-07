@@ -10,7 +10,7 @@ import com.unciv.ui.audio.MusicController
 import com.unciv.ui.audio.MusicTrackChooserFlags
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.components.widgets.UncivSlider
-import com.unciv.ui.components.WrappableLabel
+import com.unciv.ui.components.widgets.WrappableLabel
 import com.unciv.ui.components.extensions.disable
 import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.extensions.toLabel
