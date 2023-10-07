@@ -9,11 +9,11 @@ import com.badlogic.gdx.graphics.Pixmap
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.InputEvent
-import com.badlogic.gdx.scenes.scene2d.InputListener
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener
+import com.badlogic.gdx.scenes.scene2d.utils.Layout
 import com.unciv.UncivGame
 import com.unciv.dev.FasterUIDevelopment.DevElement
 import com.unciv.logic.files.UncivFiles
-import com.unciv.logic.multiplayer.throttle
 import com.unciv.ui.components.FontFamilyData
 import com.unciv.ui.components.FontImplementation
 import com.unciv.ui.components.Fonts
@@ -22,22 +22,27 @@ import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.images.ImageWithCustomSize
 import com.unciv.ui.screens.basescreen.BaseScreen
-import com.unciv.utils.Concurrency
+import com.unciv.ui.screens.basescreen.UncivStage
 import java.awt.Font
 import java.awt.RenderingHints
 import java.awt.image.BufferedImage
-import java.time.Duration
-import java.time.Instant
-import java.util.Locale
-import java.util.concurrent.atomic.AtomicReference
 
-/** Creates a basic GDX application that mimics [UncivGame] as closely as possible, starts up fast and shows one UI element, to be returned by [DevElement.createDevElement] */
+/** Creates a basic GDX application that mimics [UncivGame] as closely as possible,
+ *  starts up fast and shows one UI element, to be returned by [DevElement.createDevElement].
+ *
+ *  * The parent will not size your Widget as the Gdx [Layout] contract promises,
+ *    you'll need to do it yourself. E.g, if you're a [WidgetGroup], call [pack()][WidgetGroup.pack].
+ *    If you forget, you'll see an orange dot in the window center.
+ *  * Resizing the window is not supported. You might lose interactivity.
+ *  * The middle mouse button toggles Scene2D debug mode, like the full game offers in the Debug Options.
+ */
 object FasterUIDevelopment {
 
     class DevElement(
-        val screen: UIDevScreen
+        @Suppress("unused") val screen: UIDevScreen
     ) {
         lateinit var actor: Actor
+
         fun createDevElement() {
             actor = "This could be your UI element in development!".toLabel()
         }
@@ -81,36 +86,26 @@ object FasterUIDevelopment {
         override fun render() {
             game.render()
         }
-
     }
 
     class UIDevScreen : BaseScreen() {
-        val devElement = DevElement(this)
+        private val devElement = DevElement(this)
+
         init {
             devElement.createDevElement()
             val actor = devElement.actor
             actor.center(stage)
             addBorder(actor, Color.ORANGE)
-            actor.zIndex = Int.MAX_VALUE
             stage.addActor(actor)
             devElement.afterAdd()
-            stage.addListener(object : InputListener() {
-                val lastPrint = AtomicReference<Instant?>()
-                override fun mouseMoved(event: InputEvent?, x: Float, y: Float): Boolean {
-                    Concurrency.run {
-                        throttle(lastPrint, Duration.ofMillis(500), {}) {
-                            println(String.format(Locale.US,"x: %.1f\ty: %.1f", x, y))
-                        }
-                    }
-                    return false
-                }
-            })
+            stage.addListener(ToggleDebugListener(stage as UncivStage))
         }
-        private var curBorderZ = 0
-        fun addBorder(actor: Actor, color: Color) {
+
+        private fun addBorder(actor: Actor, color: Color) {
+            val stageCoords = actor.localToStageCoordinates(Vector2())
+
+            // Z-Order works because we're called _before_ the DevElement is added
             val border = ImageWithCustomSize(skinStrings.getUiBackground("", tintColor = color))
-            border.zIndex = curBorderZ++
-            val stageCoords = actor.localToStageCoordinates(Vector2.Zero.cpy())
             border.x = stageCoords.x - 1
             border.y = stageCoords.y - 1
             border.width = actor.width + 2
@@ -118,12 +113,21 @@ object FasterUIDevelopment {
             stage.addActor(border)
 
             val background = ImageWithCustomSize(skinStrings.getUiBackground("", tintColor = clearColor))
-            background.zIndex = curBorderZ++
             background.x = stageCoords.x
             background.y = stageCoords.y
             background.width = actor.width
             background.height = actor.height
             stage.addActor(background)
+        }
+
+        private class ToggleDebugListener(private val stage: UncivStage) : ClickListener(2) {
+            override fun clicked(event: InputEvent?, x: Float, y: Float) {
+                enableSceneDebug = !enableSceneDebug
+                stage.setDebugUnderMouse(enableSceneDebug)
+                stage.setDebugTableUnderMouse(enableSceneDebug)
+                stage.setDebugParentUnderMouse(enableSceneDebug)
+                stage.mouseOverDebug = enableSceneDebug
+            }
         }
     }
 }
