@@ -15,11 +15,11 @@ import com.unciv.logic.trade.TradeOffer
 import com.unciv.logic.trade.TradeType
 import com.unciv.models.ruleset.ModOptionsConstants
 import com.unciv.models.translations.tr
-import com.unciv.ui.components.Fonts
 import com.unciv.ui.components.extensions.addSeparator
 import com.unciv.ui.components.extensions.disable
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
+import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.components.input.onClick
 import com.unciv.ui.popups.ConfirmPopup
 import kotlin.math.roundToInt

@@ -8,8 +8,8 @@ import com.unciv.models.ruleset.RulesetObject
 import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueType
-import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.components.extensions.colorFromRGB
+import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.screens.civilopediascreen.FormattedLine
 
 class Era : RulesetObject() {

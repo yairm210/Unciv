@@ -12,11 +12,11 @@ import com.unciv.models.ruleset.unique.LocalUniqueCache
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stats
 import com.unciv.models.translations.tr
-import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.components.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.components.extensions.disable
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
+import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.components.input.keyShortcuts
 import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.input.onDoubleClick

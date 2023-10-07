@@ -24,7 +24,6 @@ import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.nation.Nation
 import com.unciv.models.skins.SkinCache
 import com.unciv.models.tilesets.TileSetCache
-import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.components.extensions.center
 import com.unciv.ui.components.extensions.centerX
 import com.unciv.ui.components.extensions.centerY
@@ -35,6 +34,7 @@ import com.unciv.ui.components.extensions.surroundWithCircle
 import com.unciv.ui.components.extensions.surroundWithThinCircle
 import com.unciv.ui.components.extensions.toGroup
 import com.unciv.ui.components.extensions.toLabel
+import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.utils.debug
 import kotlin.math.atan2
