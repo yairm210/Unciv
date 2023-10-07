@@ -1,4 +1,4 @@
-package com.unciv.ui.components
+package com.unciv.ui.components.widgets
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.g2d.Batch
@@ -19,7 +19,7 @@ import com.unciv.ui.components.extensions.surroundWithCircle
 import com.unciv.ui.components.extensions.surroundWithThinCircle
 import com.unciv.ui.images.ImageGetter
 
-class FlagBackground(drawable: TextureRegionDrawable, size: Float): Image(drawable) {
+private class FlagBackground(drawable: TextureRegionDrawable, size: Float): Image(drawable) {
 
     var drawableInner: TextureRegionDrawable? = null
 

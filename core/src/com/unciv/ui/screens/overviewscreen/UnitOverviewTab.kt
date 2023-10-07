@@ -19,7 +19,7 @@ import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.ui.components.widgets.ExpanderTab
 import com.unciv.ui.components.Fonts
 import com.unciv.ui.components.widgets.TabbedPager
-import com.unciv.ui.components.UnitGroup
+import com.unciv.ui.components.widgets.UnitGroup
 import com.unciv.ui.components.extensions.addSeparator
 import com.unciv.ui.components.extensions.brighten
 import com.unciv.ui.components.extensions.center
