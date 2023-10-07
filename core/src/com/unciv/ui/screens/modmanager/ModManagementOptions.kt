@@ -17,7 +17,7 @@ import com.unciv.ui.components.input.onActivation
 import com.unciv.ui.components.input.onChange
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.basescreen.BaseScreen
-import com.unciv.ui.components.TranslatedSelectBox
+import com.unciv.ui.components.widgets.TranslatedSelectBox
 import kotlin.math.sign
 
 /**

@@ -12,7 +12,7 @@ import com.unciv.ui.components.extensions.packIfNeeded
 import com.unciv.ui.components.input.OnClickListener
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.basescreen.BaseScreen
-import com.unciv.ui.components.TranslatedSelectBox
+import com.unciv.ui.components.widgets.TranslatedSelectBox
 import com.unciv.ui.screens.victoryscreen.VictoryScreenCivGroup.DefeatedPlayerStyle
 import com.unciv.ui.screens.worldscreen.WorldScreen
 

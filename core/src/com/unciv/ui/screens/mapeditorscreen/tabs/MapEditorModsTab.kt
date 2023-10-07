@@ -8,7 +8,7 @@ import com.unciv.Constants
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.ui.components.widgets.TabbedPager
-import com.unciv.ui.components.TranslatedSelectBox
+import com.unciv.ui.components.widgets.TranslatedSelectBox
 import com.unciv.ui.components.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.components.extensions.isEnabled
 import com.unciv.ui.components.extensions.toLabel
