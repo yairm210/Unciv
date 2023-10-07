@@ -6,7 +6,7 @@ import com.unciv.UncivGame
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.widgets.ExpanderTab
-import com.unciv.ui.components.KeyCapturingButton
+import com.unciv.ui.components.widgets.KeyCapturingButton
 import com.unciv.ui.components.TabbedPager
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.input.KeyCharAndCode
