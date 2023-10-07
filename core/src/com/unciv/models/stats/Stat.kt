@@ -3,7 +3,7 @@ package com.unciv.models.stats
 import com.badlogic.gdx.graphics.Color
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.models.UncivSound
-import com.unciv.ui.components.Fonts
+import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.components.extensions.colorFromHex
 
 enum class Stat(

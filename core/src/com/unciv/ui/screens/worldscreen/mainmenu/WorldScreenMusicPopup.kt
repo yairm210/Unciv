@@ -10,7 +10,7 @@ import com.unciv.models.metadata.GameSettings
 import com.unciv.models.metadata.ScreenSize
 import com.unciv.ui.audio.MusicController
 import com.unciv.ui.components.widgets.ExpanderTab
-import com.unciv.ui.components.Fonts
+import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.extensions.setSize
 import com.unciv.ui.images.ImageGetter

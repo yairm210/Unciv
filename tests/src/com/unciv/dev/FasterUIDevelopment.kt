@@ -14,10 +14,10 @@ import com.badlogic.gdx.scenes.scene2d.utils.Layout
 import com.unciv.UncivGame
 import com.unciv.dev.FasterUIDevelopment.DevElement
 import com.unciv.logic.files.UncivFiles
-import com.unciv.ui.components.FontFamilyData
-import com.unciv.ui.components.FontImplementation
-import com.unciv.ui.components.FontMetricsCommon
-import com.unciv.ui.components.Fonts
+import com.unciv.ui.components.fonts.FontFamilyData
+import com.unciv.ui.components.fonts.FontImplementation
+import com.unciv.ui.components.fonts.FontMetricsCommon
+import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.components.extensions.center
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.images.ImageGetter

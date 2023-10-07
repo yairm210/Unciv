@@ -5,7 +5,7 @@ import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.stats.Stat
 import com.unciv.models.translations.tr
 import com.unciv.ui.screens.civilopediascreen.FormattedLine
-import com.unciv.ui.components.Fonts
+import com.unciv.ui.components.fonts.Fonts
 import kotlin.math.abs
 
 class Speed : RulesetObject(), IsPartOfGameInfoSerialization {

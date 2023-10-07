@@ -8,7 +8,7 @@ import com.unciv.logic.civilization.Civilization
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.tile.TileResource
 import com.unciv.models.ruleset.unique.UniqueType
-import com.unciv.ui.components.Fonts
+import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.components.MayaCalendar
 import com.unciv.ui.components.YearTextUtil
 import com.unciv.ui.components.extensions.toLabel

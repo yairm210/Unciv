@@ -1,4 +1,4 @@
-package com.unciv.ui.components
+package com.unciv.ui.components.fonts
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
@@ -23,6 +23,7 @@ import com.unciv.GUI
 import com.unciv.UncivGame
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.translations.tr
+import com.unciv.ui.components.MayaCalendar
 import com.unciv.ui.components.extensions.getReadonlyPixmap
 import com.unciv.ui.components.extensions.setSize
 import com.unciv.ui.images.ImageGetter

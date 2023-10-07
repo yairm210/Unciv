@@ -14,7 +14,7 @@ import com.unciv.models.translations.tr
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.pickerscreens.PickerScreen
 import com.unciv.ui.components.widgets.AutoScrollPane
-import com.unciv.ui.components.Fonts
+import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.components.input.KeyCharAndCode
 import com.unciv.ui.components.extensions.addSeparatorVertical
 import com.unciv.ui.components.input.keyShortcuts

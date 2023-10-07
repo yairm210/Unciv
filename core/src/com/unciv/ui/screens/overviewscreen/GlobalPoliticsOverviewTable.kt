@@ -18,7 +18,7 @@ import com.unciv.models.ruleset.Policy.PolicyBranchType
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.components.widgets.AutoScrollPane
 import com.unciv.ui.components.widgets.ColorMarkupLabel
-import com.unciv.ui.components.Fonts
+import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.components.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.components.extensions.addBorder
 import com.unciv.ui.components.extensions.addSeparator

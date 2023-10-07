@@ -12,7 +12,7 @@ import com.unciv.models.ruleset.unique.UniqueFlag
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.translations.tr
-import com.unciv.ui.components.Fonts
+import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.components.extensions.center
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.images.PortraitUnavailableWonderForTechTree

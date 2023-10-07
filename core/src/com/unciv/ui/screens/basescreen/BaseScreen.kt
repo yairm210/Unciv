@@ -18,7 +18,7 @@ import com.badlogic.gdx.utils.viewport.ExtendViewport
 import com.unciv.UncivGame
 import com.unciv.models.TutorialTrigger
 import com.unciv.models.skins.SkinStrings
-import com.unciv.ui.components.Fonts
+import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.components.extensions.isNarrowerThan4to3
 import com.unciv.ui.components.input.DispatcherVetoer
 import com.unciv.ui.components.input.KeyShortcutDispatcher
