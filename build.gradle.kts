@@ -1,11 +1,14 @@
+
+import com.unciv.build.BuildConfig.coroutinesVersion
 import com.unciv.build.BuildConfig.gdxVersion
+import com.unciv.build.BuildConfig.kotlinVersion
 import com.unciv.build.BuildConfig.ktorVersion
 import com.unciv.build.BuildConfig.roboVMVersion
 
 
 // You'll still get kotlin-reflect-1.3.70.jar in your classpath, but will no longer be used
 configurations.all { resolutionStrategy {
-    force("org.jetbrains.kotlin:kotlin-reflect:${com.unciv.build.BuildConfig.kotlinVersion}")
+    force("org.jetbrains.kotlin:kotlin-reflect:${kotlinVersion}")
 } }
 
 
@@ -22,7 +25,6 @@ buildscript {
     }
     dependencies {
         classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:${com.unciv.build.BuildConfig.kotlinVersion}")
-        classpath("de.richsource.gradle.plugins:gwt-gradle-plugin:0.6")
         classpath("com.android.tools.build:gradle:7.4.2")
         classpath("com.mobidevelop.robovm:robovm-gradle-plugin:2.3.1")
     }
@@ -64,7 +66,7 @@ project(":desktop") {
 
     dependencies {
         "implementation"(project(":core"))
-        "implementation"("com.badlogicgames.gdx:gdx-backend-lwjgl3:${gdxVersion}")
+        "implementation"("com.badlogicgames.gdx:gdx-backend-lwjgl3:$gdxVersion")
         "implementation"("com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop")
 
         "implementation"("com.badlogicgames.gdx:gdx-tools:$gdxVersion") {
@@ -101,7 +103,7 @@ project(":android") {
     dependencies {
         "implementation"(project(":core"))
         "implementation"("com.badlogicgames.gdx:gdx-backend-android:$gdxVersion")
-        "implementation"("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4")
+        "implementation"("org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutinesVersion")
         natives("com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-armeabi-v7a")
         natives("com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-arm64-v8a")
         natives("com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-x86")
@@ -130,18 +132,14 @@ project(":core") {
 
     dependencies {
         "implementation"("com.badlogicgames.gdx:gdx:$gdxVersion")
-        "implementation"("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
-        "implementation"("org.jetbrains.kotlin:kotlin-reflect:${com.unciv.build.BuildConfig.kotlinVersion}")
+        "implementation"("org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion")
+        "implementation"("org.jetbrains.kotlin:kotlin-reflect:$kotlinVersion")
 
-        // Ktor core
         "implementation"("io.ktor:ktor-client-core:$ktorVersion")
-        // CIO engine
         "implementation"("io.ktor:ktor-client-cio:$ktorVersion")
-        // WebSocket support
         "implementation"("io.ktor:ktor-client-websockets:$ktorVersion")
         // Gzip transport encoding
         "implementation"("io.ktor:ktor-client-encoding:$ktorVersion")
-        // Content negotiation
         "implementation"("io.ktor:ktor-client-content-negotiation:$ktorVersion")
         // JSON serialization and de-serialization
         "implementation"("io.ktor:ktor-serialization-kotlinx-json:$ktorVersion")
@@ -156,7 +154,7 @@ project(":core") {
         dependencies {
             "implementation"(project(":core"))
 
-            "implementation"("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
+            "implementation"("org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion")
 
             "implementation"("junit:junit:4.13.2")
             "implementation"("org.mockito:mockito-core:5.1.1")
@@ -165,14 +163,6 @@ project(":core") {
             "implementation"("com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop")
             "implementation"("com.badlogicgames.gdx:gdx-backend-headless:$gdxVersion")
             "implementation"("com.badlogicgames.gdx:gdx:$gdxVersion")
-
-            "testImplementation"("junit:junit:4.13.2")
-            "testImplementation"("org.mockito:mockito-core:5.1.1")
-            "testImplementation"("io.mockk:mockk:1.9.3")
-
-            "testImplementation"("com.badlogicgames.gdx:gdx-backend-headless:$gdxVersion")
-            "testImplementation"("com.badlogicgames.gdx:gdx:$gdxVersion")
-            "testImplementation"("com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop")
         }
     }
 }

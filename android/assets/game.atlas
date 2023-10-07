@@ -188,21 +188,21 @@ OtherIcons/Stop
   index: -1
 ImprovementIcons/Citadel
   rotate: false
-  xy: 4, 261
+  xy: 1492, 1931
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 ImprovementIcons/City center
   rotate: false
-  xy: 1708, 1931
+  xy: 4, 153
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 ImprovementIcons/City ruins
   rotate: false
-  xy: 4, 45
+  xy: 1708, 1931
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
@@ -431,6 +431,27 @@ StatIcons/Faith
   orig: 100, 100
   offset: 0, 0
   index: -1
+NotificationIcons/Loading
+  rotate: false
+  xy: 1507, 1715
+  size: 100, 100
+  orig: 100, 100
+  offset: 0, 0
+  index: -1
+NotificationIcons/Working
+  rotate: false
+  xy: 1507, 1715
+  size: 100, 100
+  orig: 100, 100
+  offset: 0, 0
+  index: -1
+OtherIcons/Loading
+  rotate: false
+  xy: 1507, 1715
+  size: 100, 100
+  orig: 100, 100
+  offset: 0, 0
+  index: -1
 NotificationIcons/PickConstruction
   rotate: false
   xy: 520, 1469
@@ -550,23 +571,16 @@ OtherIcons/Capital
   orig: 107, 101
   offset: 0, 0
   index: -1
-OtherIcons/Charts
+OtherIcons/Checkmark
   rotate: false
   xy: 4, 369
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-OtherIcons/Checkmark
-  rotate: false
-  xy: 1492, 1931
-  size: 100, 100
-  orig: 100, 100
-  offset: 0, 0
-  index: -1
 NotificationIcons/NextTurn
   rotate: false
-  xy: 1492, 1931
+  xy: 4, 369
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
@@ -580,7 +594,7 @@ OtherIcons/Circle
   index: -1
 OtherIcons/Cities
   rotate: false
-  xy: 1600, 1931
+  xy: 4, 261
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
@@ -590,6 +604,13 @@ OtherIcons/CityState
   xy: 436, 316
   size: 50, 50
   orig: 50, 50
+  offset: 0, 0
+  index: -1
+OtherIcons/CityStatus
+  rotate: false
+  xy: 1816, 1931
+  size: 100, 100
+  orig: 100, 100
   offset: 0, 0
   index: -1
 OtherIcons/Close
@@ -686,27 +707,6 @@ OtherIcons/Link
 OtherIcons/Load
   rotate: false
   xy: 1507, 1823
-  size: 100, 100
-  orig: 100, 100
-  offset: 0, 0
-  index: -1
-OtherIcons/Loading
-  rotate: false
-  xy: 1507, 1715
-  size: 100, 100
-  orig: 100, 100
-  offset: 0, 0
-  index: -1
-NotificationIcons/Loading
-  rotate: false
-  xy: 1507, 1715
-  size: 100, 100
-  orig: 100, 100
-  offset: 0, 0
-  index: -1
-NotificationIcons/Working
-  rotate: false
-  xy: 1507, 1715
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
@@ -1028,7 +1028,7 @@ ResourceIcons/Cattle
   index: -1
 ResourceIcons/Citrus
   rotate: false
-  xy: 4, 153
+  xy: 1600, 1931
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
@@ -1378,7 +1378,7 @@ TileIcons/Buy
   index: -1
 TileIcons/CityCenter
   rotate: false
-  xy: 1816, 1931
+  xy: 4, 45
   size: 100, 100
   orig: 100, 100
   offset: 0, 0

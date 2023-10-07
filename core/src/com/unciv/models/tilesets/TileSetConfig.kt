@@ -1,6 +1,7 @@
 package com.unciv.models.tilesets
 
 import com.badlogic.gdx.graphics.Color
+import com.unciv.Constants
 
 class TileSetConfig {
     var useColorAsBaseTerrain = false
@@ -8,7 +9,7 @@ class TileSetConfig {
     var unexploredTileColor: Color = Color.DARK_GRAY
     var fogOfWarColor: Color = Color.BLACK
     /** Name of the tileset to use when this one is missing images. Null to disable. */
-    var fallbackTileSet: String? = "FantasyHex"
+    var fallbackTileSet: String? = Constants.defaultFallbackTileset
     /** Scale factor for hex images, with hex center as origin. */
     var tileScale: Float = 1f
     var tileScales: HashMap<String, Float> = HashMap()

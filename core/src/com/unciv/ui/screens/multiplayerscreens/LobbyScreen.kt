@@ -430,6 +430,11 @@ class LobbyScreen(
         }
     }
 
+    override fun tryUpdateRuleset(): Boolean {
+        updateRuleset()
+        return true
+    }
+
     override fun updateRuleset() {
         Log.error("Not yet implemented")
     }

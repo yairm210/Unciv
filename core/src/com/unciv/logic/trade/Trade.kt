@@ -60,6 +60,11 @@ class TradeRequest : IsPartOfGameInfoSerialization {
             diplomacyManager.setFlag(DiplomacyFlags.DeclinedLuxExchange,20)
         if (trade.ourOffers.any { it.name == Constants.researchAgreement })
             diplomacyManager.setFlag(DiplomacyFlags.DeclinedResearchAgreement,20)
+        if (trade.ourOffers.any { it.name == Constants.defensivePact })
+            diplomacyManager.setFlag(DiplomacyFlags.DeclinedDefensivePact,10)
+        if (trade.ourOffers.any { it.name == Constants.openBorders })
+            diplomacyManager.setFlag(DiplomacyFlags.DeclinedOpenBorders, 10)
+
         if (trade.isPeaceTreaty()) diplomacyManager.setFlag(DiplomacyFlags.DeclinedPeace, 5)
 
         requestingCivInfo.addNotification("[${decliningCiv.civName}] has denied your trade request",

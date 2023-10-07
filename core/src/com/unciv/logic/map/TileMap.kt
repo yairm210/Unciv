@@ -12,8 +12,13 @@ import com.unciv.models.metadata.Player
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.nation.Nation
 import com.unciv.models.ruleset.tile.TerrainType
+import com.unciv.models.ruleset.unique.UniqueMap
 import com.unciv.models.ruleset.unique.UniqueType
+import com.unciv.models.ruleset.unit.BaseUnit
+import com.unciv.ui.components.extensions.addToMapOfSets
+import com.unciv.ui.components.extensions.contains
 import java.lang.Integer.max
+import java.util.concurrent.ConcurrentHashMap
 import kotlin.math.abs
 
 /** An Unciv map with all properties as produced by the [map editor][com.unciv.ui.screens.mapeditorscreen.MapEditorScreen]
@@ -61,6 +66,9 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
     var ruleset: Ruleset? = null
 
     @Transient
+    var tileUniqueMapCache = ConcurrentHashMap<List<String>, UniqueMap>()
+
+    @Transient
     var tileMatrix = ArrayList<ArrayList<Tile?>>() // this works several times faster than a hashmap, the performance difference is really astounding
 
     @Transient
@@ -86,7 +94,7 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
         get() = tileList
 
     @Transient
-    val startingLocationsByNation = HashMap<String,HashSet<Tile>>()
+    val startingLocationsByNation = HashMap<String, HashSet<Tile>>()
 
     @Transient
     /** Continent ID to Continent size */
@@ -95,7 +103,37 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
     //endregion
     //region Constructors
 
-    /** creates a hexagonal map of given radius (filled with grassland) */
+    /**
+     * creates a hexagonal map of given radius (filled with grassland)
+     *
+     * To help you visualize how UnCiv hexagonal cooridinate system works, here's a small example:
+     *
+     *          _____         _____         _____
+     *         /     \       /     \       /     \
+     *   _____/ 2, 0  \_____/  1, 1 \_____/  0,2  \_____
+     *  /     \       /     \       /     \       /     \
+     * / 2,-1  \_____/  1,0  \_____/  0, 1 \_____/  -1,2 \
+     * \       /     \       /     \       /     \       /
+     *  \_____/ 1,-1  \_____/  0,0  \_____/  -1,1 \_____/
+     *  /     \       /     \       /     \       /     \
+     * / 1 ,-2 \_____/ 0,-1  \_____/ -1,0  \_____/ -2,1  \
+     * \       /     \       /     \       /     \       /
+     *  \_____/ 0,-2  \_____/ -1,-1 \_____/ -2,0  \_____/
+     *  /     \       /     \       /     \       /
+     * / 0,-3  \_____/ -1,-2 \_____/ -2,-1 \_____/
+     * \       /     \       /     \       /
+     *  \_____/       \_____/       \_____/
+     *
+     *
+     * The rules are simple if you think about your X and Y axis as diagonal w.r.t. a standard carthesian plane. As such:
+     *
+     * moving "up": increase both X and Y by one
+     * moving "down": decrease both X and Y by one
+     * moving "up-right" and "down-left": moving along Y axis
+     * moving "up-left" and "down-right": moving along X axis
+     *
+     * Tip: you can always use the in-game map editor if you have any doubt
+     * */
     constructor(radius: Int, ruleset: Ruleset, worldWrap: Boolean = false)
             : this (HexMath.getNumberOfTilesInHexagon(radius)) {
         startingLocations.clear()
@@ -140,6 +178,7 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
         toReturn.startingLocations.clear()
         toReturn.startingLocations.ensureCapacity(startingLocations.size)
         toReturn.startingLocations.addAll(startingLocations)
+        toReturn.tileUniqueMapCache = tileUniqueMapCache
 
         return toReturn
     }
@@ -481,11 +520,26 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
      * @return created [MapUnit] or null if no suitable location was found
      * */
     fun placeUnitNearTile(
+        position: Vector2,
+        unitName: String,
+        civInfo: Civilization
+    ): MapUnit? {
+        val unit = gameInfo.ruleset.units[unitName]!!
+        return placeUnitNearTile(position, unit, civInfo)
+    }
+
+    /** Tries to place the [baseUnit] into the [Tile] closest to the given [position]
+     * @param position where to try to place the unit (or close - max 10 tiles distance)
+     * @param baseUnit [BaseUnit][com.unciv.models.ruleset.unit.BaseUnit] to create and place
+     * @param civInfo civilization to assign unit to
+     * @return created [MapUnit] or null if no suitable location was found
+     * */
+    fun placeUnitNearTile(
             position: Vector2,
-            unitName: String,
+            baseUnit: BaseUnit,
             civInfo: Civilization
     ): MapUnit? {
-        val unit = gameInfo.ruleset.units[unitName]!!.getMapUnit(civInfo)
+        val unit = baseUnit.getMapUnit(civInfo)
 
         fun getPassableNeighbours(tile: Tile): Set<Tile> =
                 tile.neighbors.filter { unit.movement.canPassThrough(it) }.toSet()
@@ -507,7 +561,7 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
             var potentialCandidates = getPassableNeighbours(currentTile)
             while (unitToPlaceTile == null && tryCount++ < 10) {
                 unitToPlaceTile = potentialCandidates
-                        .sortedByDescending { if (unit.baseUnit.isLandUnit()) it.isLand else true } // Land units should prefer to go into land tiles
+                        .sortedByDescending { if (unit.baseUnit.isLandUnit() && !unit.cache.canMoveOnWater) it.isLand else true } // Land units should prefer to go into land tiles
                         .firstOrNull { unit.movement.canMoveTo(it) }
                 if (unitToPlaceTile != null) continue
                 // if it's not found yet, let's check their neighbours
@@ -594,8 +648,7 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
             return translateStartingLocationsFromMap()
         startingLocationsByNation.clear()
         for ((position, nationName) in startingLocations) {
-            val nationSet = startingLocationsByNation[nationName] ?: hashSetOf<Tile>().also { startingLocationsByNation[nationName] = it }
-            nationSet.add(get(position))
+            startingLocationsByNation.addToMapOfSets(nationName, get(position))
         }
     }
 
@@ -609,7 +662,7 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
             .map { it to StartingLocation(it.position, it.improvement!!.removePrefix(startingLocationPrefix)) }
             .sortedBy { it.second.nation }  // vanity, or to make diffs between un-gzipped map files easier
             .forEach { (tile, startingLocation) ->
-                tile.changeImprovement(null)
+                tile.removeImprovement()
                 startingLocations.add(startingLocation)
             }
         setStartingLocationsTransients()
@@ -618,16 +671,15 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
     /** Adds a starting position, maintaining the transients
      * @return true if the starting position was not already stored as per [Collection]'s add */
     fun addStartingLocation(nationName: String, tile: Tile): Boolean {
-        if (startingLocationsByNation[nationName]?.contains(tile) == true) return false
+        if (startingLocationsByNation.contains(nationName, tile)) return false
         startingLocations.add(StartingLocation(tile.position, nationName))
-        val nationSet = startingLocationsByNation[nationName] ?: hashSetOf<Tile>().also { startingLocationsByNation[nationName] = it }
-        return nationSet.add(tile)
+        return startingLocationsByNation.addToMapOfSets(nationName, tile)
     }
 
     /** Removes a starting position, maintaining the transients
      * @return true if the starting position was removed as per [Collection]'s remove */
     fun removeStartingLocation(nationName: String, tile: Tile): Boolean {
-        if (startingLocationsByNation[nationName]?.contains(tile) != true) return false
+        if (startingLocationsByNation.contains(nationName, tile)) return false
         startingLocations.remove(StartingLocation(tile.position, nationName))
         return startingLocationsByNation[nationName]!!.remove(tile)
         // we do not clean up an empty startingLocationsByNation[nationName] set - not worth it

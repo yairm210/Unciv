@@ -33,7 +33,7 @@ import static org.mockito.Mockito.*;
 
 public class GdxTestRunner extends BlockJUnit4ClassRunner implements ApplicationListener {
 
-	private final Map<FrameworkMethod, RunNotifier> invokeInRender = new HashMap<FrameworkMethod, RunNotifier>();
+	private final Map<FrameworkMethod, RunNotifier> invokeInRender = new HashMap<>();
 
 	public GdxTestRunner(Class<?> klass) throws InitializationError {
 		super(klass);

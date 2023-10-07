@@ -44,10 +44,10 @@ class TechPolicyDiplomacyButtons(val worldScreen: WorldScreen) : Table(BaseScree
     init {
         defaults().left()
         add(techButtonHolder).colspan(4).row()
-        add(undoButtonHolder).padTop(10f).padRight(10f)
         add(policyButtonHolder).padTop(10f).padRight(10f)
         add(diplomacyButtonHolder).padTop(10f).padRight(10f)
-        add(espionageButtonHolder).padTop(10f)
+        add(espionageButtonHolder).padTop(10f).padRight(10f)
+        add(undoButtonHolder).padTop(10f).padRight(10f)
         add().growX()  // Allows Policy and Diplo buttons to keep to the left
 
         pickTechButton.background = BaseScreen.skinStrings.getUiBackground("WorldScreen/PickTechButton", BaseScreen.skinStrings.roundedEdgeRectangleShape, colorFromRGB(7, 46, 43))
@@ -153,7 +153,7 @@ class TechPolicyDiplomacyButtons(val worldScreen: WorldScreen) : Table(BaseScree
     }
 
     private fun updateEspionageButton() {
-        if (viewingCiv.espionageManager.spyCount == 0) {
+        if (viewingCiv.espionageManager.spyList.isEmpty()) {
             espionageButtonHolder.touchable = Touchable.disabled
             espionageButtonHolder.actor = null
         } else {
@@ -167,6 +167,7 @@ class TechPolicyDiplomacyButtons(val worldScreen: WorldScreen) : Table(BaseScree
         Concurrency.run {
             // Most of the time we won't load this, so we only set transients once we see it's relevant
             worldScreen.preActionGameInfo.setTransients()
+            worldScreen.preActionGameInfo.isUpToDate = worldScreen.gameInfo.isUpToDate
             game.loadGame(worldScreen.preActionGameInfo)
         }
     }

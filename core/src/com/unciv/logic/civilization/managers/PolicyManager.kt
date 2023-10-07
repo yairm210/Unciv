@@ -9,7 +9,6 @@ import com.unciv.models.ruleset.Policy
 import com.unciv.models.ruleset.Policy.PolicyBranchType
 import com.unciv.models.ruleset.PolicyBranch
 import com.unciv.models.ruleset.unique.UniqueMap
-import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.components.extensions.toPercent
@@ -29,12 +28,14 @@ class PolicyManager : IsPartOfGameInfoSerialization {
 
     var freePolicies = 0
     var storedCulture = 0
-    // TODO: 'adoptedPolicies' seems to be an internal API.
-    //  Why is it HashSet<String> instead of HashSet<Policy>?
     internal val adoptedPolicies = HashSet<String>()
     var numberOfAdoptedPolicies = 0
+
+    /** Indicates whether we should *check* if policy is adoptible, and if so open */
     var shouldOpenPolicyPicker = false
-        get() = field && canAdoptPolicy()
+
+    /** Used by NextTurnAction.PickPolicy.isChoice */
+    fun shouldShowPolicyPicker() = (shouldOpenPolicyPicker || freePolicies > 0) && canAdoptPolicy()
 
     /** A [Map] pairing each [PolicyBranch] to its priority ([Int]). */
     val priorityMap: Map<PolicyBranch, Int>
@@ -204,7 +205,7 @@ class PolicyManager : IsPartOfGameInfoSerialization {
 
         val triggerNotificationText = "due to adopting [${policy.name}]"
         for (unique in policy.uniqueObjects)
-            if (unique.conditionals.none { it.type!!.targetTypes.contains(UniqueTarget.TriggerCondition) })
+            if (!unique.hasTriggerConditional())
                 UniqueTriggerActivation.triggerCivwideUnique(unique, civInfo, triggerNotificationText = triggerNotificationText)
 
         for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponAdoptingPolicyOrBelief))
@@ -214,7 +215,10 @@ class PolicyManager : IsPartOfGameInfoSerialization {
         civInfo.cache.updateCivResources()
 
         // This ALSO has the side-effect of updating the CivInfo statForNextTurn so we don't need to call it explicitly
-        for (cityInfo in civInfo.cities) cityInfo.cityStats.update()
+        for (city in civInfo.cities) {
+            city.cityStats.update()
+            city.reassignPopulationDeferred()
+        }
 
         if (!canAdoptPolicy()) shouldOpenPolicyPicker = false
     }

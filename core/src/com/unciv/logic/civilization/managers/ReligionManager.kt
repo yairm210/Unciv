@@ -11,6 +11,7 @@ import com.unciv.models.ruleset.Belief
 import com.unciv.models.ruleset.BeliefType
 import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unique.UniqueType
+import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.ui.components.extensions.toPercent
 import java.lang.Integer.max
 import java.lang.Integer.min
@@ -143,7 +144,7 @@ class ReligionManager : IsPartOfGameInfoSerialization {
     // https://www.reddit.com/r/civ/comments/2m82wu/can_anyone_detail_the_finer_points_of_great/
     // Game files (globaldefines.xml)
     fun faithForNextGreatProphet(): Int {
-        val greatProphetsEarned = civInfo.civConstructions.boughtItemsWithIncreasingPrice[getGreatProphetEquivalent()!!]
+        val greatProphetsEarned = civInfo.civConstructions.boughtItemsWithIncreasingPrice[getGreatProphetEquivalent()!!.name]
 
         var faithCost =
             (200 + 100 * greatProphetsEarned * (greatProphetsEarned + 1) / 2f) *
@@ -166,12 +167,13 @@ class ReligionManager : IsPartOfGameInfoSerialization {
         return true
     }
 
-    fun getGreatProphetEquivalent(): String? {
-        return civInfo.gameInfo.ruleset.units.values.firstOrNull { it.hasUnique(UniqueType.MayFoundReligion) }?.name
+    fun getGreatProphetEquivalent(): BaseUnit? {
+        val baseUnit = civInfo.gameInfo.ruleset.units.values.firstOrNull { it.hasUnique(UniqueType.MayFoundReligion) }
+        return if (baseUnit == null) null else civInfo.getEquivalentUnit(baseUnit)
     }
 
     private fun generateProphet() {
-        val prophetUnitName = getGreatProphetEquivalent() ?: return // No prophet units in this mod
+        val prophetUnit = getGreatProphetEquivalent() ?: return // No prophet units in this mod
 
         val prophetSpawnChange = (5f + storedFaith - faithForNextGreatProphet()) / 100f
 
@@ -179,10 +181,10 @@ class ReligionManager : IsPartOfGameInfoSerialization {
             val birthCity =
                 if (religionState <= ReligionState.Pantheon) civInfo.getCapital()
                 else civInfo.religionManager.getHolyCity()
-            val prophet = civInfo.units.addUnit(prophetUnitName, birthCity) ?: return
+            val prophet = civInfo.units.addUnit(prophetUnit, birthCity) ?: return
             prophet.religion = religion!!.name
             storedFaith -= faithForNextGreatProphet()
-            civInfo.civConstructions.boughtItemsWithIncreasingPrice.add(prophetUnitName, 1)
+            civInfo.civConstructions.boughtItemsWithIncreasingPrice.add(prophetUnit.name, 1)
         }
     }
 
@@ -286,6 +288,37 @@ class ReligionManager : IsPartOfGameInfoSerialization {
             UniqueTriggerActivation.triggerCivwideUnique(unique, civInfo)
     }
 
+    fun mayEnhanceReligionAtAll(prophet: MapUnit): Boolean {
+        if (!civInfo.gameInfo.isReligionEnabled()) return false // No religion, no enhancing
+        if (religion == null) return false // First found a pantheon
+        if (religionState != ReligionState.Religion) return false // First found an actual religion
+        // Already used its power for other things
+        if (prophet.abilityUsesLeft.any { it.value != prophet.maxAbilityUses[it.key] }) return false
+        if (!civInfo.isMajorCiv()) return false // Only major civs
+
+        if (numberOfBeliefsAvailable(BeliefType.Follower) == 0)
+            return false // Mod maker did not provide enough follower beliefs
+
+        if (numberOfBeliefsAvailable(BeliefType.Enhancer) == 0)
+            return false // Mod maker did not provide enough enhancer beliefs
+
+        return true
+    }
+
+    fun mayEnhanceReligionNow(prophet: MapUnit): Boolean {
+        if (!mayEnhanceReligionAtAll(prophet)) return false
+        if (!prophet.getTile().isCityCenter()) return false
+        return true
+    }
+
+    fun useProphetForEnhancingReligion(prophet: MapUnit) {
+        if (!mayEnhanceReligionNow(prophet)) return // How did you do this?
+        religionState = ReligionState.EnhancingReligion
+
+        for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponEnhancingReligion))
+            UniqueTriggerActivation.triggerCivwideUnique(unique, civInfo)
+    }
+
     /**
      * Unifies the selection of what beliefs are available for when a great prophet is expended. Also
      * accounts for the number of remaining beliefs of each type so that the player is not given a
@@ -317,7 +350,8 @@ class ReligionManager : IsPartOfGameInfoSerialization {
 
         if (enhancingReligion) {
             chooseBeliefToAdd(BeliefType.Enhancer, 1)
-        } else {
+        }
+        else {
             chooseBeliefToAdd(BeliefType.Founder, 1)
             if (shouldChoosePantheonBelief)
                 chooseBeliefToAdd(BeliefType.Pantheon, 1)
@@ -334,6 +368,9 @@ class ReligionManager : IsPartOfGameInfoSerialization {
             chooseBeliefToAdd(BeliefType.Any, unique.params[0].toInt())
         }
 
+        for (type in freeBeliefsAsEnums())
+            chooseBeliefToAdd(type.key, type.value)
+
         return beliefsToChoose
     }
 
@@ -341,11 +378,13 @@ class ReligionManager : IsPartOfGameInfoSerialization {
     fun getBeliefsToChooseAtEnhancing(): Counter<BeliefType> = getBeliefsToChooseAtProphetUse(true)
 
     fun chooseBeliefs(beliefs: List<Belief>, useFreeBeliefs: Boolean = false) {
+        // Remove the free beliefs in case we had them
+        // Must be done first in case when gain more later
+        freeBeliefs.clear()
+
         when (religionState) {
             ReligionState.EnhancingReligion -> {
                 religionState = ReligionState.EnhancedReligion
-                for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponEnhancingReligion))
-                    UniqueTriggerActivation.triggerCivwideUnique(unique, civInfo)
             }
             ReligionState.None -> {
                 foundPantheon(beliefs[0].name, useFreeBeliefs)
@@ -371,20 +410,9 @@ class ReligionManager : IsPartOfGameInfoSerialization {
                         triggerNotificationText = "due to adopting [${belief.name}]")
 
         for (belief in beliefs)
-            for (unique in belief.uniqueObjects)
+            for (unique in belief.uniqueObjects.filter { !it.hasTriggerConditional() })
                 UniqueTriggerActivation.triggerCivwideUnique(unique, civInfo)
 
-        // decrement free beliefs if used
-        if (useFreeBeliefs && hasFreeBeliefs()) {
-            for (belief in beliefs) {
-                freeBeliefs[belief.type.name] = max(freeBeliefs[belief.type.name] - 1, 0)
-            }
-        }
-        // limit the number of free beliefs available to number of remaining beliefs even if player
-        // didn't use free beliefs (e.g., used a prophet or pantheon)
-        for (type in freeBeliefs.keys) {
-            freeBeliefs[type] = min(freeBeliefs[type], numberOfBeliefsAvailable(BeliefType.valueOf(type)))
-        }
         civInfo.updateStatsForNextTurn()  // a belief can have an immediate effect on stats
     }
 
@@ -412,34 +440,6 @@ class ReligionManager : IsPartOfGameInfoSerialization {
         for (unit in civInfo.units.getCivUnits())
             if (unit.hasUnique(UniqueType.ReligiousUnit) && unit.hasUnique(UniqueType.TakeReligionOverBirthCity))
                 unit.religion = newReligion.name
-    }
-
-    fun mayEnhanceReligionAtAll(prophet: MapUnit): Boolean {
-        if (!civInfo.gameInfo.isReligionEnabled()) return false // No religion, no enhancing
-        if (religion == null) return false // First found a pantheon
-        if (religionState != ReligionState.Religion) return false // First found an actual religion
-        // Already used its power for other things
-        if (prophet.abilityUsesLeft.any { it.value != prophet.maxAbilityUses[it.key] }) return false
-        if (!civInfo.isMajorCiv()) return false // Only major civs
-
-        if (numberOfBeliefsAvailable(BeliefType.Follower) == 0)
-            return false // Mod maker did not provide enough follower beliefs
-
-        if (numberOfBeliefsAvailable(BeliefType.Enhancer) == 0)
-            return false // Mod maker did not provide enough enhancer beliefs
-
-        return true
-    }
-
-    fun mayEnhanceReligionNow(prophet: MapUnit): Boolean {
-        if (!mayEnhanceReligionAtAll(prophet)) return false
-        if (!prophet.getTile().isCityCenter()) return false
-        return true
-    }
-
-    fun useProphetForEnhancingReligion(prophet: MapUnit) {
-        if (!mayEnhanceReligionNow(prophet)) return // How did you do this?
-        religionState = ReligionState.EnhancingReligion
     }
 
     fun maySpreadReligionAtAll(missionary: MapUnit): Boolean {

@@ -65,7 +65,8 @@ open class AndroidLauncher : AndroidApplication() {
         val internalModsDir = File("${filesDir.path}/mods")
 
         // Mod directory in the shared app data (where the user can see and modify)
-        val externalModsDir = File("${getExternalFilesDir(null)?.path}/mods")
+        val externalPath = getExternalFilesDir(null)?.path ?: return
+        val externalModsDir = File("$externalPath/mods")
 
         // Copy external mod directory (with data user put in it) to internal (where it can be read)
         if (!externalModsDir.exists()) externalModsDir.mkdirs() // this can fail sometimes, which is why we check if it exists again in the next line
@@ -74,7 +75,7 @@ open class AndroidLauncher : AndroidApplication() {
 
     override fun onPause() {
         val game = this.game!!
-        if (game.isInitialized) {
+        if (game.isInitializedProxy()) {
             if (game.onlineMultiplayer.isInitialized() && game.onlineMultiplayer.apiVersion == ApiVersion.APIv2) {
                 try {
                     WorkerV2.start(applicationContext, game.files, game.gameInfo, game.onlineMultiplayer, game.settings.multiplayer)
@@ -92,7 +93,7 @@ open class AndroidLauncher : AndroidApplication() {
     }
 
     override fun onResume() {
-        if (game != null && game?.isInitialized == true && game?.onlineMultiplayer?.isInitialized() == true && game?.onlineMultiplayer?.apiVersion == ApiVersion.APIv2) {
+        if (game != null && game?.isInitializedProxy() == true && game?.onlineMultiplayer?.isInitialized() == true && game?.onlineMultiplayer?.apiVersion == ApiVersion.APIv2) {
             game?.onlineMultiplayer?.api?.enableReconnecting()
         }
         try {

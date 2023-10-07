@@ -10,7 +10,6 @@ import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.worldscreen.WorldScreen
 import com.unciv.utils.Concurrency
-import com.unciv.utils.Log
 
 class NextTurnProgress(
     // nullable so we can free the reference once the ProgressBar is shown

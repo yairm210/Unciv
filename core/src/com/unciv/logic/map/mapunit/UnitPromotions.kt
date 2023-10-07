@@ -2,7 +2,6 @@ package com.unciv.logic.map.mapunit
 
 import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.models.ruleset.unique.StateForConditionals
-import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.Promotion
@@ -51,6 +50,9 @@ class UnitPromotions : IsPartOfGameInfoSerialization {
     /** @return the XP points needed to "buy" the next promotion. 10, 30, 60, 100, 150,... */
     fun xpForNextPromotion() = (numberOfPromotions + 1) * 10
 
+    /** @return the XP points needed to "buy" the next [count] promotions. */
+    fun xpForNextNPromotions(count: Int) = (1..count).sumOf { (numberOfPromotions + it) * 10 }
+
     /** @return Total XP including that already "spent" on promotions */
     fun totalXpProduced() = XP + (numberOfPromotions * (numberOfPromotions + 1)) * 5
 
@@ -61,16 +63,18 @@ class UnitPromotions : IsPartOfGameInfoSerialization {
     }
 
     fun addPromotion(promotionName: String, isFree: Boolean = false){
+        val ruleset = unit.civ.gameInfo.ruleset
+        val promotion = ruleset.unitPromotions[promotionName]!!
+
         if (!isFree) {
-            XP -= xpForNextPromotion()
-            numberOfPromotions++
+            if (!promotion.hasUnique(UniqueType.FreePromotion)) {
+                XP -= xpForNextPromotion()
+                numberOfPromotions++
+            }
 
             for (unique in unit.getTriggeredUniques(UniqueType.TriggerUponPromotion))
                 UniqueTriggerActivation.triggerUnitwideUnique(unique, unit)
         }
-
-        val ruleset = unit.civ.gameInfo.ruleset
-        val promotion = ruleset.unitPromotions[promotionName]!!
 
         if (!promotion.hasUnique(UniqueType.SkipPromotion))
             promotions.add(promotionName)
@@ -90,7 +94,7 @@ class UnitPromotions : IsPartOfGameInfoSerialization {
     private fun doDirectPromotionEffects(promotion: Promotion) {
         for (unique in promotion.uniqueObjects)
             if (unique.conditionalsApply(StateForConditionals(civInfo = unit.civ, unit = unit))
-                    && unique.conditionals.none { it.type?.targetTypes?.contains(UniqueTarget.TriggerCondition) == true })
+                    && !unique.hasTriggerConditional())
                 UniqueTriggerActivation.triggerUnitwideUnique(unique, unit, triggerNotificationText = "due to our [${unit.name}] being promoted")
     }
 

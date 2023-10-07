@@ -25,6 +25,7 @@ import com.unciv.models.stats.Stats
 import com.unciv.ui.components.extensions.filterAndLogic
 import java.text.DecimalFormat
 import kotlin.math.pow
+import kotlin.math.ulp
 
 
 /**
@@ -266,7 +267,22 @@ class MapUnit : IsPartOfGameInfoSerialization {
 
         if (movement < 1) movement = 1
 
+        // Hakkapeliitta movement boost
+        // For every double-stacked tile, check if our cohabitant can boost our speed
+        // (a test `count() > 1` is no optimization - two iterations of a sequence instead of one)
+        for (boostingUnit in currentTile.getUnits()) {
+            if (boostingUnit == this) continue
+            if (boostingUnit.getMatchingUniques(UniqueType.TransferMovement)
+                    .none { matchesFilter(it.params[0]) } ) continue
+            movement = movement.coerceAtLeast(boostingUnit.getMaxMovement())
+        }
+
         return movement
+    }
+
+    fun hasUnitMovedThisTurn(): Boolean {
+        val max = getMaxMovement().toFloat()
+        return currentMovement < max - max.ulp
     }
 
     /**
@@ -280,14 +296,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
 
         val relevantUniques = getMatchingUniques(UniqueType.Sight, conditionalState, checkCivInfoUniques = true) +
                 getTile().getMatchingUniques(UniqueType.Sight, conditionalState)
-        if (isEmbarked() && !hasUnique(UniqueType.NormalVisionWhenEmbarked, conditionalState, checkCivInfoUniques = true)) {
-            visibilityRange += relevantUniques
-                .filter { it.conditionals.any {
-                    (it.type == UniqueType.ConditionalOurUnit || it.type == UniqueType.ConditionalOurUnitOnUnit)
-                            && it.params[0] == Constants.embarked } }
-                .sumOf { it.params[0].toInt() }
-        }
-        else visibilityRange += relevantUniques.sumOf { it.params[0].toInt() }
+        visibilityRange += relevantUniques.sumOf { it.params[0].toInt() }
 
         if (visibilityRange < 1) visibilityRange = 1
 
@@ -378,13 +387,14 @@ class MapUnit : IsPartOfGameInfoSerialization {
 
     fun isEmbarked(): Boolean {
         if (!baseUnit.isLandUnit()) return false
+        if (cache.canMoveOnWater) return false
         return currentTile.isWater
     }
 
     fun isInvisible(to: Civilization): Boolean {
-        if (hasUnique(UniqueType.Invisible))
+        if (hasUnique(UniqueType.Invisible) && !to.isSpectator())
             return true
-        if (hasUnique(UniqueType.InvisibleToNonAdjacent))
+        if (hasUnique(UniqueType.InvisibleToNonAdjacent) && !to.isSpectator())
             return getTile().getTilesInDistance(1).none {
                 it.getUnits().any { unit -> unit.owner == to.civName }
             }
@@ -432,6 +442,14 @@ class MapUnit : IsPartOfGameInfoSerialization {
     fun isGreatPerson() = baseUnit.isGreatPerson()
     fun isGreatPersonOfType(type: String) = baseUnit.isGreatPersonOfType(type)
 
+    fun getDistanceToEnemyUnit(maxDist: Int): Int? {
+        for (i in 1..maxDist) {
+            if (currentTile.getTilesAtDistance(i).any {it.militaryUnit != null
+                && it.militaryUnit!!.civ.isAtWarWith(civ) })
+                return i
+        }
+        return null
+    }
     //endregion
 
     //region state-changing functions
@@ -508,6 +526,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
         var healing = when {
             tile.isCityCenter() -> 25
             tile.isWater && isFriendlyTerritory && (baseUnit.isWaterUnit() || isTransported) -> 20 // Water unit on friendly water
+            tile.isWater && isFriendlyTerritory && cache.canMoveOnWater -> 20 // Treated as a water unit on friendly water
             tile.isWater -> 0 // All other water cases
             isFriendlyTerritory -> 20 // Allied territory
             tile.getOwner() == null -> 10 // Neutral territory
@@ -557,10 +576,9 @@ class MapUnit : IsPartOfGameInfoSerialization {
     fun gift(recipient: Civilization) {
         civ.units.removeUnit(this)
         civ.cache.updateViewableTiles()
-        // all transported units should be destroyed as well
+        // all transported units should be gift as well
         currentTile.getUnits().filter { it.isTransported && isTransportTypeOf(it) }
-            .toList() // because we're changing the list
-            .forEach { unit -> unit.destroy() }
+            .forEach { unit -> unit.gift(recipient) }
         assignOwner(recipient)
         recipient.cache.updateViewableTiles()
     }
@@ -647,7 +665,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
     }
 
     private fun clearEncampment(tile: Tile) {
-        tile.changeImprovement(null)
+        tile.removeImprovement()
 
         // Notify City-States that this unit cleared a Barbarian Encampment, required for quests
         civ.gameInfo.getAliveCityStates()
@@ -698,7 +716,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
     }
 
     private fun getAncientRuinBonus(tile: Tile) {
-        tile.changeImprovement(null)
+        tile.removeImprovement()
         civ.ruinsManager.selectNextRuinsReward(this)
     }
 
@@ -788,6 +806,10 @@ class MapUnit : IsPartOfGameInfoSerialization {
         return true
     }
 
+    /** Gets a Nuke's blast radius from the BlastRadius unique, defaulting to 2. No check whether the unit actually is a Nuke. */
+    fun getNukeBlastRadius() = getMatchingUniques(UniqueType.BlastRadius)
+        // Don't check conditionals as these are not supported
+        .firstOrNull()?.params?.get(0)?.toInt() ?: 2
 
     private fun isAlly(otherCiv: Civilization): Boolean {
         return otherCiv == civ

@@ -93,9 +93,7 @@ object BaseUnitDescriptions {
             stats.clear()
             stats += "${baseUnit.cost}${Fonts.production}"
             if (baseUnit.canBePurchasedWithStat(null, Stat.Gold)) {
-                // We need what INonPerpetualConstruction.getBaseGoldCost calculates but without any game- or civ-specific modifiers
-                val buyCost = (30.0 * baseUnit.cost.toFloat().pow(0.75f) * baseUnit.hurryCostModifier.toPercent()).toInt() / 10 * 10
-                stats += "$buyCost${Fonts.gold}"
+                stats += "${baseUnit.getCivilopediaGoldCost()}${Fonts.gold}"
             }
             textList += FormattedLine(stats.joinToString("/", "{Cost}: "))
         }

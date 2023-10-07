@@ -15,7 +15,7 @@ object TileInfoNormalizer {
                 tile.baseTerrain = tile.getNaturalWonder().turnsInto!!
             tile.setTerrainFeatures(listOf())
             tile.resource = null
-            tile.changeImprovement(null)
+            tile.removeImprovement()
         }
 
         if (!ruleset.terrains.containsKey(tile.baseTerrain))
@@ -47,11 +47,8 @@ object TileInfoNormalizer {
 
     private fun normalizeTileImprovement(tile: Tile, ruleset: Ruleset) {
         val improvementObject = ruleset.tileImprovements[tile.improvement]
-        if (improvementObject == null) {
-            tile.changeImprovement(null)
-            return
-        }
-        tile.changeImprovement(null) // Unset, and check if it can be reset. If so, do it, if not, invalid.
+        tile.removeImprovement() // Unset, and check if it can be reset. If so, do it, if not, invalid.
+        if (improvementObject == null) return
         if (tile.improvementFunctions.canImprovementBeBuiltHere(improvementObject, stateForConditionals = StateForConditionals.IgnoreConditionals))
             tile.changeImprovement(improvementObject.name)
     }

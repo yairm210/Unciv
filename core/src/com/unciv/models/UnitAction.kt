@@ -18,7 +18,7 @@ open class UnitAction(
     val title: String = type.value,
     val isCurrentAction: Boolean = false,
     val uncivSound: UncivSound = type.uncivSound,
-    /** Action is Null is this unit *can* execute the action but *not right now* - it's embarked, out of moves, etc */
+    /** Action is Null if this unit *can* execute the action but *not right now* - it's embarked, out of moves, etc */
     val action: (() -> Unit)? = null
 ) {
     fun getIcon(): Actor {
@@ -103,6 +103,8 @@ enum class UnitActionType(
         { ImageGetter.getUnitActionPortrait("Stop") }, false),
     StopMovement("Stop movement",
         { ImageGetter.getUnitActionPortrait("StopMove") }, false),
+    ShowUnitDestination("Show unit destination",
+        { ImageGetter.getUnitActionPortrait("ShowUnitDestination")}, false),
     Sleep("Sleep",
         { ImageGetter.getUnitActionPortrait("Sleep") }),
     SleepUntilHealed("Sleep until healed",

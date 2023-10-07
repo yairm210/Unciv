@@ -7,6 +7,7 @@ import com.unciv.logic.civilization.Civilization
 import com.unciv.models.ruleset.Victory
 import com.unciv.ui.components.TabbedPager
 import com.unciv.ui.components.extensions.addSeparator
+import com.unciv.ui.components.extensions.equalizeColumns
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.worldscreen.WorldScreen

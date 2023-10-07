@@ -20,6 +20,7 @@ import com.unciv.ui.audio.MusicMood
 import com.unciv.ui.audio.MusicTrackChooserFlags
 import com.unciv.ui.components.AutoScrollPane
 import com.unciv.ui.components.ExpanderTab
+import com.unciv.ui.components.TranslatedSelectBox
 import com.unciv.ui.components.UncivSlider
 import com.unciv.ui.components.extensions.pad
 import com.unciv.ui.components.extensions.toCheckBox
@@ -388,6 +389,7 @@ class GameOptionsTable(
 
             // If so, add it to the current ruleset
             gameParameters.baseRuleset = newBaseRuleset
+            modCheckboxes.setBaseRuleset(newBaseRuleset)  // Treats declared incompatibility
             onChooseMod(newBaseRuleset)
 
             // Check if the ruleset in its entirety is still well-defined
@@ -398,7 +400,6 @@ class GameOptionsTable(
             }
             modLinkErrors.showWarnOrErrorToast(previousScreen as BaseScreen)
 
-            modCheckboxes.setBaseRuleset(newBaseRuleset)
             return null
         }
 

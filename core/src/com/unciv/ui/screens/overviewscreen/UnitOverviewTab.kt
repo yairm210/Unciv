@@ -24,18 +24,21 @@ import com.unciv.ui.components.extensions.addSeparator
 import com.unciv.ui.components.extensions.brighten
 import com.unciv.ui.components.extensions.center
 import com.unciv.ui.components.extensions.darken
-import com.unciv.ui.components.input.onClick
+import com.unciv.ui.components.extensions.equalizeColumns
 import com.unciv.ui.components.extensions.surroundWithCircle
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toPrettyString
+import com.unciv.ui.components.input.onClick
 import com.unciv.ui.images.IconTextButton
 import com.unciv.ui.images.ImageGetter
+import com.unciv.ui.popups.UnitUpgradeMenu
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.pickerscreens.PromotionPickerScreen
 import com.unciv.ui.screens.pickerscreens.UnitRenamePopup
 import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionsUpgrade
 import kotlin.math.abs
 
+//TODO use SortableGrid
 /**
  * Supplies the Unit sub-table for the Empire Overview
  */
@@ -244,31 +247,12 @@ class UnitOverviewTab(
 
             // Promotions column
             val promotionsTable = Table()
-            // getPromotions goes by json order on demand, so this is same sorting as on picker
-            val promotions = unit.promotions.getPromotions(true)
-            if (promotions.any()) {
-                val iconCount = promotions.count() + (if (unit.promotions.canBePromoted()) 1 else 0)
-                val numberOfLines = (iconCount - 1) / 8 + 1
-                val promotionsPerLine = (iconCount - 1) / numberOfLines + 1
-                for (linePromotions in promotions.chunked(promotionsPerLine)) {
-                    for (promotion in linePromotions) {
-                        promotionsTable.add(ImageGetter.getPromotionPortrait(promotion.name))
-                    }
-                    if (linePromotions.size == promotionsPerLine) promotionsTable.row()
-                }
-            }
-
-            if (unit.promotions.canBePromoted())
-                promotionsTable.add(
-                    ImageGetter.getImage("OtherIcons/Star").apply {
-                        color = if (GUI.isAllowedChangeState() && unit.currentMovement > 0f && unit.attacksThisTurn == 0)
-                                Color.GOLDENROD
-                            else Color.GOLDENROD.darken(0.25f)
-                    }
-                ).size(24f).padLeft(8f)
+            updatePromotionsTable(promotionsTable, unit)
             promotionsTable.onClick {
                 if (unit.promotions.canBePromoted() || unit.promotions.promotions.isNotEmpty()) {
-                    game.pushScreen(PromotionPickerScreen(unit))
+                    game.pushScreen(PromotionPickerScreen(unit) {
+                        updatePromotionsTable(promotionsTable, unit)
+                    })
                 }
             }
             add(promotionsTable)
@@ -283,8 +267,7 @@ class UnitOverviewTab(
                 val upgradeIcon = ImageGetter.getUnitIcon(unitToUpgradeTo.name,
                     if (enable) Color.GREEN else Color.GREEN.darken(0.5f))
                 if (enable) upgradeIcon.onClick {
-                    val pos = upgradeIcon.localToStageCoordinates(Vector2(upgradeIcon.width/2, upgradeIcon.height/2))
-                    UnitUpgradeMenu(overviewScreen.stage, pos, unit, unitAction) {
+                    UnitUpgradeMenu(overviewScreen.stage, upgradeIcon, unit, unitAction) {
                         unitListTable.updateUnitListTable()
                         select(selectKey)
                     }
@@ -297,6 +280,35 @@ class UnitOverviewTab(
             row()
         }
         return this
+    }
+
+    private fun updatePromotionsTable(table: Table, unit: MapUnit) {
+        table.clearChildren()
+
+        // getPromotions goes by json order on demand - so this is the same sorting as on UnitTable,
+        // but not same as on PromotionPickerScreen (which e.g. tries to respect prerequisite proximity)
+        val promotions = unit.promotions.getPromotions(true)
+        val showPromoteStar = unit.promotions.canBePromoted()
+        if (promotions.any()) {
+            val iconCount = promotions.count() + (if (showPromoteStar) 1 else 0)
+            val numberOfLines = (iconCount - 1) / 8 + 1  // Int math: -1,/,+1 means divide rounding *up*
+            val promotionsPerLine = (iconCount - 1) / numberOfLines + 1
+            for (linePromotions in promotions.chunked(promotionsPerLine)) {
+                for (promotion in linePromotions) {
+                    table.add(ImageGetter.getPromotionPortrait(promotion.name))
+                }
+                if (linePromotions.size == promotionsPerLine) table.row()
+            }
+        }
+
+        if (!showPromoteStar) return
+        table.add(
+            ImageGetter.getImage("OtherIcons/Star").apply {
+                color = if (GUI.isAllowedChangeState() && unit.currentMovement > 0f && unit.attacksThisTurn == 0)
+                    Color.GOLDENROD
+                else Color.GOLDENROD.darken(0.25f)
+            }
+        ).size(24f).padLeft(8f)
     }
 
     companion object {

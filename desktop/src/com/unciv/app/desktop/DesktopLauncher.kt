@@ -4,15 +4,16 @@ import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration
 import com.badlogic.gdx.files.FileHandle
 import com.badlogic.gdx.graphics.glutils.HdpiMode
+import com.unciv.app.desktop.DesktopScreenMode.Companion.getMaximumWindowBounds
 import com.unciv.json.json
 import com.unciv.logic.files.SETTINGS_FILE_NAME
 import com.unciv.logic.files.UncivFiles
 import com.unciv.models.metadata.ScreenSize
 import com.unciv.models.metadata.WindowState
 import com.unciv.ui.components.Fonts
+import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.utils.Display
 import com.unciv.utils.Log
-import java.awt.GraphicsEnvironment
 import kotlin.math.max
 
 internal object DesktopLauncher {
@@ -58,18 +59,18 @@ internal object DesktopLauncher {
         if (settings.isFreshlyCreated) {
             settings.screenSize = ScreenSize.Large // By default we guess that Desktops have larger screens
             // LibGDX not yet configured, use regular java class
-            val graphicsEnvironment = GraphicsEnvironment.getLocalGraphicsEnvironment()
-            val maximumWindowBounds = graphicsEnvironment.maximumWindowBounds
+            val maximumWindowBounds = getMaximumWindowBounds()
             settings.windowState = WindowState(
                 width = maximumWindowBounds.width,
                 height = maximumWindowBounds.height
             )
-            FileHandle(SETTINGS_FILE_NAME).writeString(json().toJson(settings), false) // so when we later open the game we get fullscreen
+            FileHandle(SETTINGS_FILE_NAME).writeString(json().toJson(settings), false, Charsets.UTF_8.name()) // so when we later open the game we get fullscreen
         }
         // Kludge! This is a workaround - the matching call in DesktopDisplay doesn't "take" quite permanently,
         // the window might revert to the "config" values when the user moves the window - worse if they
         // minimize/restore. And the config default is 640x480 unless we set something here.
         config.setWindowedMode(max(settings.windowState.width, 100), max(settings.windowState.height, 100))
+        config.setInitialBackgroundColor(BaseScreen.clearColor)
 
         if (!isRunFromJAR) {
             UniqueDocsWriter().write()

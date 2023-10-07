@@ -191,7 +191,7 @@ class TurnManager(val civInfo: Civilization) {
         repeat(rebelCount) {
             civInfo.gameInfo.tileMap.placeUnitNearTile(
                 spawnTile.position,
-                unitToSpawn.name,
+                unitToSpawn,
                 barbarians
             )
         }
@@ -307,8 +307,13 @@ class TurnManager(val civInfo: Civilization) {
             civInfo.gameInfo.victoryData =
                     VictoryData(civInfo.civName, victoryType, civInfo.gameInfo.turns)
 
-            for (civInfo in civInfo.gameInfo.civilizations)
-                civInfo.popupAlerts.add(PopupAlert(AlertType.GameHasBeenWon, civInfo.civName))
+            // Notify other human players about this civInfo's victory
+            for (otherCiv in civInfo.gameInfo.civilizations) {
+                // Skip winner, displaying VictoryScreen is handled separately in WorldScreen.update
+                // by checking `viewingCiv.isDefeated() || gameInfo.checkForVictory()`
+                if (otherCiv.playerType != PlayerType.Human || otherCiv == civInfo) continue
+                otherCiv.popupAlerts.add(PopupAlert(AlertType.GameHasBeenWon, ""))
+            }
         }
     }
 

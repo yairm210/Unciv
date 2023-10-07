@@ -11,13 +11,14 @@ import com.unciv.logic.UncivShowableException
 import com.unciv.logic.files.MapSaver
 import com.unciv.logic.map.MapParameters
 import com.unciv.models.ruleset.RulesetCache
-import com.unciv.ui.components.input.onChange
 import com.unciv.ui.components.extensions.pad
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.popups.Popup
+import com.unciv.ui.components.input.onChange
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.victoryscreen.LoadMapPreview
 import com.unciv.utils.Concurrency
+import io.ktor.util.collections.ConcurrentSet
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.isActive
 import com.badlogic.gdx.utils.Array as GdxArray
@@ -34,9 +35,9 @@ class MapFileSelectTable(
     // The SelectBox auto displays the text a object.toString(), which on the FileHandle itself includes the folder path.
     //  So we wrap it in another object with a custom toString()
     private class MapWrapper(val fileHandle: FileHandle, val mapParameters: MapParameters) {
-        override fun toString(): String = mapParameters.baseRuleset + " | "+ fileHandle.name()
+        override fun toString(): String = mapParameters.baseRuleset + " | " + fileHandle.name()
     }
-    private val mapWrappers= ArrayList<MapWrapper>()
+    private val mapWrappers = ConcurrentSet<MapWrapper>()
 
     private val columnWidth = newGameScreen.getColumnWidth()
 
@@ -46,14 +47,19 @@ class MapFileSelectTable(
         add(mapFileLabel).left()
         add(mapFileSelectBox)
             // because SOME people gotta give the hugest names to their maps
-            .width(columnWidth * 2 / 3)
+            .width(columnWidth - 40f - mapFileLabel.prefWidth)
             .right().row()
         add(miniMapWrapper)
             .pad(15f)
+            .maxWidth(columnWidth - 20f)
             .colspan(2).center().row()
 
         mapFileSelectBox.onChange { onSelectBoxChange() }
 
+        addMapWrappersSemiAsync()
+    }
+
+    private fun addMapWrappersSemiAsync(){
         val mapFilesSequence = sequence<FileHandle> {
             yieldAll(MapSaver.getMaps().asSequence())
             for (modFolder in RulesetCache.values.mapNotNull { it.folderLocation }) {
@@ -61,16 +67,24 @@ class MapFileSelectTable(
                 if (mapsFolder.exists())
                     yieldAll(mapsFolder.list().asSequence())
             }
-        }
+        }.sortedByDescending { it.lastModified() }
 
-
-        for (mapFile in mapFilesSequence) {
+        // We only really need ONE map to be loaded to tell us "isNotEmpty" and "recentlySavedMapExists"
+        // The rest we can defer, so that users don't get ANRs when opening the new game screen
+        //   because the game wants to load ALL the maps before first render
+        fun tryAddMapFile(mapFile: FileHandle){
             val mapParameters = try {
                 MapSaver.loadMapParameters(mapFile)
             } catch (_: Exception) {
-                continue
+                return
             }
             mapWrappers.add(MapWrapper(mapFile, mapParameters))
+        }
+
+        for (mapFile in mapFilesSequence) {
+            if (mapWrappers.isEmpty()) tryAddMapFile(mapFile)
+            // Each other map is loaded in another thread, so we can multiplex the IO and CPU capabilities
+            else Concurrency.run { tryAddMapFile(mapFile) }
         }
     }
 
@@ -88,7 +102,6 @@ class MapFileSelectTable(
             .sortedWith(compareBy(UncivGame.Current.settings.getCollatorFromLocale()) { it.toString() })
             .sortedByDescending { it.mapParameters.baseRuleset == newGameScreen.gameSetupInfo.gameParameters.baseRuleset }
             .forEach { mapFiles.add(it) }
-        mapFileSelectBox.items = mapFiles
 
         // Pre-select: a) map saved within last 15min or b) map named in mapParameters or c) alphabetically first
         // This is a kludge - the better way would be to have a "play this map now" menu button in the editor
@@ -99,9 +112,21 @@ class MapFileSelectTable(
                     ?: mapFiles.firstOrNull { it.fileHandle.name() == mapParameters.name }
                     ?: mapFiles.firstOrNull()
                     ?: return
+
+        // since mapFileSelectBox.selection.setProgrammaticChangeEvents() defaults to true, this would
+        // kill the mapParameters.name we would like to look for when determining what to pre-select -
+        // so do it ***after*** getting selectedItem - but control programmaticChangeEvents anyway
+        // to avoid the overhead of doing a full updateRuleset + updateTables + startMapPreview
+        // (all expensive) for something that will be overthrown momentarily
+        mapFileSelectBox.selection.setProgrammaticChangeEvents(false)
+        mapFileSelectBox.items = mapFiles
+
+        // Now, we want this ON because the event removes map selections which are pulling mods
+        // that trip updateRuleset - so that code should still be active for the pre-selection
+        mapFileSelectBox.selection.setProgrammaticChangeEvents(true)
         mapFileSelectBox.selected = selectedItem
-        mapParameters.name = selectedItem.toString()
-        newGameScreen.gameSetupInfo.mapFile = selectedItem.fileHandle
+        // In the event described above, we now have: mapFileSelectBox.selected != selectedItem
+        // Do NOT try to put back the "bad" preselection!
     }
 
     private fun onSelectBoxChange() {
@@ -126,10 +151,20 @@ class MapFileSelectTable(
         newGameScreen.gameSetupInfo.gameParameters.mods = LinkedHashSet(mapMods.second)
         newGameScreen.gameSetupInfo.gameParameters.baseRuleset = mapMods.first.firstOrNull()
             ?: mapFileSelectBox.selected.mapParameters.baseRuleset
-        newGameScreen.updateRuleset()
+        val success = newGameScreen.tryUpdateRuleset()
         newGameScreen.updateTables()
         hideMiniMap()
-        startMapPreview(mapFile)
+        if (success) {
+            startMapPreview(mapFile)
+        } else {
+            // Mod error - the options have been reset by updateRuleset
+            // Note SelectBox doesn't react sensibly to _any_ clear - Group, Selection or items
+            val items = mapFileSelectBox.items
+            items.removeIndex(mapFileSelectBox.selectedIndex)
+            // Changing the array itself is not enough, SelectBox gets out of sync, need to call setItems()
+            mapFileSelectBox.items = items
+            // Note - this will have triggered a nested onSelectBoxChange()!
+        }
     }
 
     private fun startMapPreview(mapFile: FileHandle) {
@@ -139,7 +174,7 @@ class MapFileSelectTable(
                 if (!isActive) return@run
                 map.setTransients(newGameScreen.ruleset, false)
                 if (!isActive) return@run
-                // ReplyMap still paints outside its bounds - so we subtract padding and a little extra
+                // ReplayMap still paints outside its bounds - so we subtract padding and a little extra
                 val size = (columnWidth - 40f).coerceAtMost(500f)
                 val miniMap = LoadMapPreview(map, size, size)
                 if (!isActive) return@run

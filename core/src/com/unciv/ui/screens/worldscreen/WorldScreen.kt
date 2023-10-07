@@ -122,7 +122,7 @@ class WorldScreen(
     internal val minimapWrapper = MinimapHolder(mapHolder)
     private val bottomTileInfoTable = TileInfoTable(viewingCiv)
     internal val notificationsScroll = NotificationsScroll(this)
-    internal val nextTurnButton = NextTurnButton()
+    internal val nextTurnButton = NextTurnButton(this)
     private val statusButtons = StatusButtons(nextTurnButton)
     private val tutorialTaskTable = Table().apply {
         background = skinStrings.getUiBackground("WorldScreen/TutorialTaskTable", tintColor = skinStrings.skinConfig.baseColor.darken(0.5f))
@@ -320,9 +320,7 @@ class WorldScreen(
                 game.pushScreen(CityScreen(capital))
         }
         globalShortcuts.add(KeyboardBinding.Options) { // Game Options
-            this.openOptionsPopup(onClose = {
-                nextTurnButton.update(this)
-            })
+            openOptionsPopup { nextTurnButton.update() }
         }
         globalShortcuts.add(KeyboardBinding.SaveGame) { game.pushScreen(SaveGameScreen(gameInfo)) }    //   Save
         globalShortcuts.add(KeyboardBinding.LoadGame) { game.pushScreen(LoadGameScreen()) }    //   Load
@@ -711,7 +709,8 @@ class WorldScreen(
             debug("Next turn took %sms", System.currentTimeMillis() - startTime)
 
             // Special case: when you are the only alive human player, the game will always be up to date
-            if (gameInfo.gameParameters.isOnlineMultiplayer && gameInfoClone.civilizations.filter { it.isAlive() && it.playerType == PlayerType.Human }.size == 1) {
+            if (gameInfo.gameParameters.isOnlineMultiplayer
+                    && gameInfoClone.civilizations.count { it.isAlive() && it.playerType == PlayerType.Human } == 1) {
                 gameInfoClone.isUpToDate = true
             }
 
@@ -747,7 +746,7 @@ class WorldScreen(
     }
 
     private fun updateGameplayButtons() {
-        nextTurnButton.update(this)
+        nextTurnButton.update()
 
         updateMultiplayerStatusButton()
 

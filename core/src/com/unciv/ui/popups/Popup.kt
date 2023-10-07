@@ -266,8 +266,8 @@ open class Popup(
      * @param text The caption text.
      * @param size The font size for the label.
      */
-    fun addGoodSizedLabel(text: String, size: Int = Constants.defaultFontSize): Cell<Label> {
-        val label = text.toLabel(fontSize = size)
+    fun addGoodSizedLabel(text: String, size: Int = Constants.defaultFontSize, hideIcons:Boolean = false): Cell<Label> {
+        val label = text.toLabel(fontSize = size, hideIcons = hideIcons)
         label.wrap = true
         label.setAlignment(Align.center)
         return add(label).width(stageToShowOn.width / 2)
@@ -292,10 +292,10 @@ open class Popup(
         return bottomTable.add(button)
     }
     fun addButton(text: String, key: Char, style: TextButtonStyle? = null, action: () -> Unit)
-        = addButton(text, KeyCharAndCode(key), style, action).apply { row() }
+        = addButton(text, KeyCharAndCode(key), style, action)
     @Suppress("unused")  // Keep the offer to pass an Input.keys value
     fun addButton(text: String, key: Int, style: TextButtonStyle? = null, action: () -> Unit)
-        = addButton(text, KeyCharAndCode(key), style, action).apply { row() }
+        = addButton(text, KeyCharAndCode(key), style, action)
     fun addButton(text: String, binding: KeyboardBinding, style: TextButtonStyle? = null, action: () -> Unit): Cell<TextButton> {
         val button = text.toTextButton(style)
         button.onActivation(binding = binding) { action() }

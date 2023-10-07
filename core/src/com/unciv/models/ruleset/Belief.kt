@@ -7,7 +7,6 @@ import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.translations.tr
 import com.unciv.ui.screens.civilopediascreen.CivilopediaScreen.Companion.showReligionInCivilopedia
 import com.unciv.ui.screens.civilopediascreen.FormattedLine
-import kotlin.collections.ArrayList
 
 class Belief() : RulesetObject() {
     var type: BeliefType = BeliefType.None
@@ -17,13 +16,12 @@ class Belief() : RulesetObject() {
     }
 
     override fun getUniqueTarget() =
-        if (type == BeliefType.Founder || type == BeliefType.Enhancer)  UniqueTarget.FounderBelief
+        if (type.isFounder)  UniqueTarget.FounderBelief
         else UniqueTarget.FollowerBelief
 
     override fun makeLink() = "Belief/$name"
     override fun getCivilopediaTextHeader() = FormattedLine(name, icon = makeLink(), header = 2, color = if (type == BeliefType.None) "#e34a2b" else "")
     override fun getSortGroup(ruleset: Ruleset) = type.ordinal
-    override fun getIconName() = if (type == BeliefType.None) "Religion" else type.name
 
     override fun getCivilopediaTextLines(ruleset: Ruleset): List<FormattedLine> {
         return getCivilopediaTextLines(false)
@@ -79,11 +77,15 @@ class Belief() : RulesetObject() {
     }
 }
 
-enum class BeliefType(val color: String) {
+/** Subtypes of Beliefs - directly deserialized.
+ *  @param isFollower - Behaves as "follower" belief, Uniques processed per city
+ *  @param isFounder - Behaves as "founder" belief, Uniques processed globally for founding civ only
+ * */
+enum class BeliefType(val color: String, val isFollower: Boolean = false, val isFounder: Boolean = false) {
     None(""),
-    Pantheon("#44c6cc"),
-    Founder("#c00000"),
-    Follower("#ccaa44"),
-    Enhancer("#72cc45"),
+    Pantheon("#44c6cc", isFollower = true),
+    Founder("#c00000", isFounder = true),
+    Follower("#ccaa44", isFollower = true),
+    Enhancer("#72cc45", isFounder = true),
     Any(""),
 }

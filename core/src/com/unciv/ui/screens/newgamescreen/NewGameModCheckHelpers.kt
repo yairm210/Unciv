@@ -1,6 +1,6 @@
 package com.unciv.ui.screens.newgamescreen
 
-import com.unciv.models.ruleset.RulesetErrorList
+import com.unciv.models.ruleset.validation.RulesetErrorList
 import com.unciv.models.translations.tr
 import com.unciv.ui.popups.ToastPopup
 import com.unciv.ui.popups.popups

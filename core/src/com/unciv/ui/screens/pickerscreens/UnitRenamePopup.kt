@@ -24,4 +24,3 @@ class UnitRenamePopup(val screen: BaseScreen, val unit: MapUnit, val actionOnClo
     }
 
 }
-

@@ -68,6 +68,10 @@ class CityExpansionManager : IsPartOfGameInfoSerialization {
     fun buyTile(tile: Tile) {
         val goldCost = getGoldCostOfTile(tile)
 
+        class TriedToBuyNonContiguousTileException:Exception()
+        if (tile.neighbors.none { it.getCity() == city })
+            throw TriedToBuyNonContiguousTileException()
+
         class NotEnoughGoldToBuyTileException : Exception()
         if (city.civ.gold < goldCost && !city.civ.gameInfo.gameParameters.godMode)
             throw NotEnoughGoldToBuyTileException()

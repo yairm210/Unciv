@@ -6,6 +6,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.models.ruleset.Ruleset
+import com.unciv.models.ruleset.unit.Promotion
 import com.unciv.models.stats.Stats
 import com.unciv.ui.components.extensions.center
 import com.unciv.ui.components.extensions.centerX
@@ -272,25 +273,16 @@ class PortraitPromotion(name: String, size: Float) : Portrait(Type.Promotion, na
     }
 
     override fun getDefaultImage(): Image {
+        val (nameWithoutBrackets, level, basePromotionName) = Promotion.getBaseNameAndLevel(imageName)
 
-        val nameWithoutBrackets = imageName.replace("[", "").replace("]", "")
-
-        level = when {
-            nameWithoutBrackets.endsWith(" I") -> 1
-            nameWithoutBrackets.endsWith(" II") -> 2
-            nameWithoutBrackets.endsWith(" III") -> 3
-            else -> 0
-        }
-
-        val basePromotionName = nameWithoutBrackets.dropLast(if (level == 0) 0 else level + 1)
-
+        this.level = level
         val pathWithoutBrackets = "UnitPromotionIcons/$nameWithoutBrackets"
         val pathBase = "UnitPromotionIcons/$basePromotionName"
         val pathUnit = "UnitIcons/${basePromotionName.removeSuffix(" ability")}"
 
         return when {
             ImageGetter.imageExists(pathWithoutBrackets) -> {
-                level = 0
+                this.level = 0
                 ImageGetter.getImage(pathWithoutBrackets)
             }
             ImageGetter.imageExists(pathBase) -> ImageGetter.getImage(pathBase)

@@ -5,6 +5,7 @@ import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.Belief
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetStatsObject
+import com.unciv.models.ruleset.unique.UniqueFlag
 import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stats
@@ -40,6 +41,14 @@ class TileResource : RulesetStatsObject() {
 
         textList += FormattedLine("${resourceType.name} resource", header = 4, color = resourceType.color)
         textList += FormattedLine()
+
+        if (uniques.any()){
+            textList += FormattedLine()
+            for (unique in uniqueObjects.sortedBy { it.text }) {
+                if (unique.hasFlag(UniqueFlag.HiddenToUsers)) continue
+                textList += FormattedLine(unique)
+            }
+        }
 
         textList += FormattedLine(cloneStats().toString())
 

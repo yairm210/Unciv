@@ -4,14 +4,13 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
-import com.unciv.logic.automation.unit.AttackableTile
-import com.unciv.logic.automation.unit.BattleHelper
-import com.unciv.logic.automation.unit.UnitAutomation
+import com.unciv.logic.battle.AttackableTile
 import com.unciv.logic.battle.Battle
 import com.unciv.logic.battle.BattleDamage
 import com.unciv.logic.battle.CityCombatant
 import com.unciv.logic.battle.ICombatant
 import com.unciv.logic.battle.MapUnitCombatant
+import com.unciv.logic.battle.TargetHelper
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.UncivSound
 import com.unciv.models.ruleset.unique.UniqueType
@@ -63,6 +62,7 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
         if (attacker is MapUnitCombatant && attacker.unit.baseUnit.isNuclearWeapon()) {
             val selectedTile = worldScreen.mapHolder.selectedTile
                 ?: return hide() // no selected tile
+            if (selectedTile == attacker.getTile()) return hide() // mayUseNuke would test this again, but not actually seeing the nuke-yourself table just by selecting the nuke is nicer
             simulateNuke(attacker, selectedTile)
         } else if (attacker is MapUnitCombatant && attacker.unit.isPreparingAirSweep()) {
             val selectedTile = worldScreen.mapHolder.selectedTile
@@ -72,7 +72,7 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
             val defender = tryGetDefender() ?: return hide()
             if (attacker is CityCombatant && defender is CityCombatant) return hide()
             val tileToAttackFrom = if (attacker is MapUnitCombatant)
-                BattleHelper.getAttackableEnemies(
+                TargetHelper.getAttackableEnemies(
                     attacker.unit,
                     attacker.unit.movement.getDistanceToTiles()
                 )
@@ -246,11 +246,11 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
 
         if (attacker.canAttack()) {
             if (attacker is MapUnitCombatant) {
-                attackableTile = BattleHelper
+                attackableTile = TargetHelper
                         .getAttackableEnemies(attacker.unit, attacker.unit.movement.getDistanceToTiles())
                         .firstOrNull{ it.tileToAttack == defender.getTile()}
             } else if (attacker is CityCombatant) {
-                val canBombard = UnitAutomation.getBombardableTiles(attacker.city).contains(defender.getTile())
+                val canBombard = TargetHelper.getBombardableTiles(attacker.city).contains(defender.getTile())
                 if (canBombard) {
                     attackableTile = AttackableTile(attacker.getTile(), defender.getTile(), 0f, defender)
                 }
@@ -305,9 +305,7 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
 
         val canNuke = Battle.mayUseNuke(attacker, targetTile)
 
-        val blastRadius =
-            if (!attacker.unit.hasUnique(UniqueType.BlastRadius)) 2
-            else attacker.unit.getMatchingUniques(UniqueType.BlastRadius).first().params[0].toInt()
+        val blastRadius = attacker.unit.getNukeBlastRadius()
 
         val defenderNameWrapper = Table()
         for (tile in targetTile.getTilesInDistance(blastRadius)) {

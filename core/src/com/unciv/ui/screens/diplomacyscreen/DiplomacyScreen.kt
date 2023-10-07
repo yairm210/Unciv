@@ -658,10 +658,6 @@ class DiplomacyScreen(
             if (!diplomacyManager.hasFlag(DiplomacyFlags.DeclarationOfFriendship))
                 diplomacyTable.add(getDeclareFriendshipButton(otherCiv)).row()
 
-
-            if (viewingCiv.diplomacyFunctions.canSignResearchAgreementsWith(otherCiv))
-                diplomacyTable.add(getResearchAgreementButton(otherCiv)).row()
-
             if (!diplomacyManager.hasFlag(DiplomacyFlags.Denunciation)
                     && !diplomacyManager.hasFlag(DiplomacyFlags.DeclarationOfFriendship)
             ) diplomacyTable.add(getDenounceButton(otherCiv, diplomacyManager)).row()
@@ -744,30 +740,7 @@ class DiplomacyScreen(
         if (isNotPlayersTurn()) denounceButton.disable()
         return denounceButton
     }
-
-    private fun getResearchAgreementButton(otherCiv: Civilization): TextButton {
-        val researchAgreementButton = "Research Agreement".toTextButton()
-
-        val requiredGold = viewingCiv.diplomacyFunctions.getResearchAgreementCost()
-        researchAgreementButton.onClick {
-            val tradeTable = setTrade(otherCiv)
-            val researchAgreement =
-                    TradeOffer(Constants.researchAgreement, TradeType.Treaty, requiredGold)
-            val goldCostOfSignResearchAgreement =
-                    TradeOffer("Gold".tr(), TradeType.Gold, -requiredGold)
-            tradeTable.tradeLogic.currentTrade.theirOffers.add(researchAgreement)
-            tradeTable.tradeLogic.ourAvailableOffers.add(researchAgreement)
-            tradeTable.tradeLogic.ourAvailableOffers.add(goldCostOfSignResearchAgreement)
-            tradeTable.tradeLogic.currentTrade.ourOffers.add(researchAgreement)
-            tradeTable.tradeLogic.theirAvailableOffers.add(researchAgreement)
-            tradeTable.tradeLogic.theirAvailableOffers.add(goldCostOfSignResearchAgreement)
-            tradeTable.offerColumnsTable.update()
-            tradeTable.enableOfferButton(true)
-        }
-        if (isNotPlayersTurn()) researchAgreementButton.disable()
-        return researchAgreementButton
-    }
-
+    
     private fun getDeclareFriendshipButton(otherCiv: Civilization): TextButton {
         val declareFriendshipButton =
                 "Offer Declaration of Friendship ([30] turns)".toTextButton()
@@ -791,8 +764,6 @@ class DiplomacyScreen(
         val tradeButton = "Trade".toTextButton()
         tradeButton.onClick {
             setTrade(otherCiv).apply {
-                tradeLogic.ourAvailableOffers.apply { remove(firstOrNull { it.type == TradeType.Treaty }) }
-                tradeLogic.theirAvailableOffers.apply { remove(firstOrNull { it.type == TradeType.Treaty }) }
                 offerColumnsTable.update()
             }
         }
@@ -902,7 +873,7 @@ class DiplomacyScreen(
             declareWarButton.setText(declareWarButton.text.toString() + " ($turnsToPeaceTreaty${Fonts.turn})")
         }
         declareWarButton.onClick {
-            ConfirmPopup(this, "Declare war on [${otherCiv.civName}]?", "Declare war") {
+            ConfirmPopup(this, getDeclareWarButtonText(otherCiv), "Declare war") {
                 diplomacyManager.declareWar()
                 setRightSideFlavorText(otherCiv, otherCiv.nation.attacked, "Very well.")
                 updateLeftSideTable(otherCiv)
@@ -911,6 +882,43 @@ class DiplomacyScreen(
         }
         if (isNotPlayersTurn()) declareWarButton.disable()
         return declareWarButton
+    }
+    
+    private fun getDeclareWarButtonText(otherCiv: Civilization): String {
+        val messageLines = arrayListOf<String>()
+        messageLines += "Declare war on [${otherCiv.civName}]?"
+        // Tell the player who all will join the other side from defensive pacts
+        val otherCivDefensivePactList = otherCiv.diplomacy.values.filter {
+            otherCivDiploManager -> otherCivDiploManager.otherCiv() != viewingCiv
+            && otherCivDiploManager.diplomaticStatus == DiplomaticStatus.DefensivePact
+            && !otherCivDiploManager.otherCiv().isAtWarWith(viewingCiv) }
+            .map { it.otherCiv() }.toMutableList()
+        // Go through and find all of the defensive pact chains and add them to the list
+        var listIndex = 0
+        while (listIndex < otherCivDefensivePactList.size) {
+            messageLines += if (viewingCiv.knows(otherCivDefensivePactList[listIndex]))
+                "[${otherCivDefensivePactList[listIndex].civName}] will also join them in the war"
+            else "An unknown civilization will also join them in the war"
+
+            // Add their defensive pact allies
+            otherCivDefensivePactList.addAll(otherCivDefensivePactList[listIndex].diplomacy.values
+                .filter { diploChain -> diploChain.diplomaticStatus == DiplomaticStatus.DefensivePact
+                    && !otherCivDefensivePactList.contains(diploChain.otherCiv())
+                    && diploChain.otherCiv() != viewingCiv && diploChain.otherCiv() != otherCiv
+                    && !diploChain.otherCiv().isAtWarWith(viewingCiv) }
+                .map { it.otherCiv() })
+            listIndex++
+        }
+
+        // Tell the player that their defensive pacts will be canceled.
+        for (civDiploManager in viewingCiv.diplomacy.values) {
+            if (civDiploManager.otherCiv() != otherCiv
+                && civDiploManager.diplomaticStatus == DiplomaticStatus.DefensivePact
+                && !otherCivDefensivePactList.contains(civDiploManager.otherCiv())) {
+                messageLines += "This will cancel your defensive pact with [${civDiploManager.otherCivName}]"
+            }
+        }
+        return messageLines.joinToString("\n") { "{$it}" }
     }
 
     //endregion

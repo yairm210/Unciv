@@ -2,13 +2,13 @@ package com.unciv.logic.automation
 
 import com.unciv.logic.city.City
 import com.unciv.logic.city.CityFocus
-import com.unciv.models.ruleset.INonPerpetualConstruction
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.BFS
 import com.unciv.logic.map.TileMap
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.Building
+import com.unciv.models.ruleset.INonPerpetualConstruction
 import com.unciv.models.ruleset.Victory
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.tile.TileImprovement
@@ -40,6 +40,8 @@ object Automation {
         return rank
     }
 
+    val zeroFoodFocuses = setOf(CityFocus.CultureFocus, CityFocus.FaithFocus, CityFocus.GoldFocus,
+        CityFocus.HappinessFocus, CityFocus.ProductionFocus, CityFocus.ScienceFocus)
     private fun rankStatsForCityWork(stats: Stats, city: City, cityStats: Stats, specialist: Boolean, localUniqueCache: LocalUniqueCache): Float {
         val cityAIFocus = city.cityAIFocus
         val yieldStats = stats.clone()
@@ -62,23 +64,20 @@ object Automation {
 
         if (surplusFood > 0 && city.avoidGrowth) {
             yieldStats.food = 0f // don't need more food!
-        } else {
-            if (cityAIFocus != CityFocus.NoFocus && cityAIFocus != CityFocus.FoodFocus && cityAIFocus != CityFocus.ProductionGrowthFocus && cityAIFocus != CityFocus.GoldGrowthFocus) {
-                // Focus on non-food/growth
-                if (surplusFood < 0)
-                    yieldStats.food *= 8 // Starving, need Food, get to 0
-                else
-                    yieldStats.food /= 2
-            } else if (!city.avoidGrowth) {
-                // NoFocus or Food/Growth Focus. Target +2 Food Surplus
-                if (surplusFood < 2)
-                    yieldStats.food *= 8
-                else if (cityAIFocus != CityFocus.FoodFocus)
-                    yieldStats.food /= 2
-                if (city.population.population < 5 && cityAIFocus != CityFocus.FoodFocus)
-                // NoFocus or GoldGrow or ProdGrow, not Avoid Growth, pop < 5. FoodFocus already does this up
-                    yieldStats.food *= 3
-            }
+        } else if (cityAIFocus in zeroFoodFocuses) {
+            // Focus on non-food/growth
+            if (surplusFood < 0)
+                yieldStats.food *= 8 // Starving, need Food, get to 0
+            else
+                yieldStats.food /= 2
+        } else if (!city.avoidGrowth) {
+            // NoFocus or Food/Growth Focus. Target +2 Food Surplus
+            if (surplusFood < 2)
+                yieldStats.food *= 8
+            else if (city.population.population < 5)
+                yieldStats.food *= 3
+            else if (cityAIFocus == CityFocus.FoodFocus)
+                yieldStats.food *= 2
         }
 
         if (city.population.population < 5) {
@@ -141,12 +140,23 @@ object Automation {
 
         // if not coastal, removeShips == true so don't even consider ships
         var removeShips = true
+        var isMissingNavalUnitsForCityDefence = false
+
+        fun isNavalMeleeUnit(unit: BaseUnit) = unit.isMelee() && unit.type.isWaterUnit()
         if (city.isCoastal()) {
             // in the future this could be simplified by assigning every distinct non-lake body of
             // water their own ID like a continent ID
             val findWaterConnectedCitiesAndEnemies =
                     BFS(city.getCenterTile()) { it.isWater || it.isCityCenter() }
             findWaterConnectedCitiesAndEnemies.stepToEnd()
+
+            val numberOfOurConnectedCities = findWaterConnectedCitiesAndEnemies.getReachedTiles()
+                .count { it.isCityCenter() && it.getOwner() == city.civ }
+            val numberOfOurNavalMeleeUnits = findWaterConnectedCitiesAndEnemies.getReachedTiles().asSequence()
+                .flatMap { it.getUnits() }
+                .count { isNavalMeleeUnit(it.baseUnit) }
+            isMissingNavalUnitsForCityDefence = numberOfOurConnectedCities > numberOfOurNavalMeleeUnits
+
             removeShips = findWaterConnectedCitiesAndEnemies.getReachedTiles().none {
                         (it.isCityCenter() && it.getOwner() != city.civ)
                                 || (it.militaryUnit != null && it.militaryUnit!!.civ != city.civ)
@@ -174,7 +184,13 @@ object Automation {
             chosenUnit = militaryUnits
                 .filter { it.isRanged() }
                 .maxByOrNull { it.cost }!!
-        } else { // randomize type of unit and take the most expensive of its kind
+        }
+        else if (isMissingNavalUnitsForCityDefence && militaryUnits.any { isNavalMeleeUnit(it) }){
+            chosenUnit = militaryUnits
+                .filter { isNavalMeleeUnit(it) }
+                .maxBy { it.cost }
+        }
+        else { // randomize type of unit and take the most expensive of its kind
             val bestUnitsForType = hashMapOf<String, BaseUnit>()
             for (unit in militaryUnits) {
                 if (bestUnitsForType[unit.unitType] == null || bestUnitsForType[unit.unitType]!!.cost < unit.cost) {
@@ -213,7 +229,7 @@ object Automation {
 
         // If we have vision of our entire starting continent (ish) we are not afraid
         civInfo.gameInfo.tileMap.assignContinents(TileMap.AssignContinentsMode.Ensure)
-        val startingContinent = civInfo.getCapital()!!.getCenterTile().getContinent()
+        val startingContinent = civInfo.getCapital(true)!!.getCenterTile().getContinent()
         val startingContinentSize = civInfo.gameInfo.tileMap.continentSizes[startingContinent]
         if (startingContinentSize != null && startingContinentSize < civInfo.viewableTiles.size * multiplier)
             return false
@@ -329,8 +345,8 @@ object Automation {
         return when {
             powerLevelComparison > 2 -> ThreatLevel.VeryHigh
             powerLevelComparison > 1.5f -> ThreatLevel.High
-            powerLevelComparison < (1 / 1.5f) -> ThreatLevel.Low
             powerLevelComparison < 0.5f -> ThreatLevel.VeryLow
+            powerLevelComparison < (1 / 1.5f) -> ThreatLevel.Low
             else -> ThreatLevel.Medium
         }
     }
@@ -346,11 +362,12 @@ object Automation {
     }
 
     // Ranks a tile for any purpose except the expansion algorithm of cities
-    internal fun rankTile(tile: Tile?, civInfo: Civilization): Float {
+    internal fun rankTile(tile: Tile?, civInfo: Civilization,
+                          localUniqueCache: LocalUniqueCache): Float {
         if (tile == null) return 0f
         val tileOwner = tile.getOwner()
         if (tileOwner != null && tileOwner != civInfo) return 0f // Already belongs to another civilization, useless to us
-        val stats = tile.stats.getTileStats(null, civInfo)
+        val stats = tile.stats.getTileStats(null, civInfo, localUniqueCache)
         var rank = rankStatsValue(stats, civInfo)
         if (tile.improvement == null) rank += 0.5f // improvement potential!
         if (tile.isPillaged()) rank += 0.6f
@@ -387,16 +404,6 @@ object Automation {
             // Can't work it anyways
             if (distance > 3) score += 100
         }
-
-        // Improvements are good: less points
-        if (tile.improvement != null &&
-            tile.stats.getImprovementStats(
-                tile.getTileImprovement()!!,
-                city.civ,
-                city,
-                localUniqueCache
-            ).values.sum() > 0f
-        ) score -= 5
 
         if (tile.naturalWonder != null) score -= 105
 

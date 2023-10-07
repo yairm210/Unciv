@@ -182,11 +182,7 @@ class CivInfoTransientCache(val civInfo: Civilization) {
             }
         }
 
-        for (spy in civInfo.espionageManager.spyList) {
-            val spyCity = spy.getLocation() ?: continue
-            if (!spy.isSetUp()) continue // Can't see cities when you haven't set up yet
-            newViewableTiles.addAll(spyCity.getCenterTile().getTilesInDistance(1))
-        }
+        newViewableTiles.addAll(civInfo.espionageManager.getTilesVisibleViaSpies())
 
         civInfo.viewableTiles = newViewableTiles // to avoid concurrent modification problems
     }
@@ -252,7 +248,7 @@ class CivInfoTransientCache(val civInfo: Civilization) {
     }
 
     fun updateCitiesConnectedToCapital(initialSetup: Boolean = false) {
-        if (civInfo.cities.isEmpty() || civInfo.getCapital() == null) return // eg barbarians
+        if (civInfo.cities.isEmpty()) return // No cities to connect
 
         val oldConnectedCities = if (initialSetup)
             civInfo.cities.filter { it.connectedToCapitalStatus == City.ConnectedToCapitalStatus.`true` }
@@ -261,12 +257,13 @@ class CivInfoTransientCache(val civInfo: Civilization) {
             civInfo.cities.filter { it.connectedToCapitalStatus != City.ConnectedToCapitalStatus.`false` }
         else citiesConnectedToCapitalToMediums.keys
 
-        citiesConnectedToCapitalToMediums = CapitalConnectionsFinder(civInfo).find()
+        citiesConnectedToCapitalToMediums = if(civInfo.getCapital() == null) mapOf()
+        else CapitalConnectionsFinder(civInfo).find()
 
         val newConnectedCities = citiesConnectedToCapitalToMediums.keys
 
         for (city in newConnectedCities)
-            if (city !in oldMaybeConnectedCities && city.civ == civInfo && city != civInfo.getCapital()!!)
+            if (city !in oldMaybeConnectedCities && city.civ == civInfo && city != civInfo.getCapital())
                 civInfo.addNotification("[${city.name}] has been connected to your capital!",
                     city.location, NotificationCategory.Cities, NotificationIcon.Gold
                 )
@@ -287,10 +284,6 @@ class CivInfoTransientCache(val civInfo: Civilization) {
         val newDetailedCivResources = ResourceSupplyList()
         for (city in civInfo.cities) newDetailedCivResources.add(city.getCityResources())
 
-        for (resourceSupply in newDetailedCivResources)
-            if (resourceSupply.amount > 0)
-                resourceSupply.amount = (resourceSupply.amount * civInfo.getResourceModifier(resourceSupply.resource)).toInt()
-
         if (!civInfo.isCityState()) {
             // First we get all these resources of each city state separately
             val cityStateProvidedResources = ResourceSupplyList()
@@ -299,6 +292,7 @@ class CivInfoTransientCache(val civInfo: Civilization) {
                 resourceBonusPercentage += unique.params[0].toFloat() / 100
             for (cityStateAlly in civInfo.getKnownCivs().filter { it.getAllyCiv() == civInfo.civName }) {
                 for (resourceSupply in cityStateAlly.cityStateFunctions.getCityStateResourcesForAlly()) {
+                    if (resourceSupply.resource.hasUnique(UniqueType.CannotBeTraded)) continue
                     val newAmount = (resourceSupply.amount * resourceBonusPercentage).toInt()
                     cityStateProvidedResources.add(resourceSupply.copy(amount = newAmount))
                 }
@@ -309,10 +303,11 @@ class CivInfoTransientCache(val civInfo: Civilization) {
 
         for (unique in civInfo.getMatchingUniques(UniqueType.ProvidesResources)) {
             if (unique.sourceObjectType == UniqueTarget.Building || unique.sourceObjectType == UniqueTarget.Wonder) continue // already calculated in city
+            val resource = civInfo.gameInfo.ruleset.tileResources[unique.params[1]]!!
             newDetailedCivResources.add(
-                civInfo.gameInfo.ruleset.tileResources[unique.params[1]]!!,
+                resource,
                 unique.sourceObjectType?.name ?: "",
-                unique.params[0].toInt()
+                (unique.params[0].toFloat() * civInfo.getResourceModifier(resource)).toInt()
             )
         }
 
@@ -322,6 +317,8 @@ class CivInfoTransientCache(val civInfo: Civilization) {
         for (unit in civInfo.units.getCivUnits())
             newDetailedCivResources.subtractResourceRequirements(
                 unit.baseUnit.getResourceRequirementsPerTurn(), civInfo.gameInfo.ruleset, "Units")
+
+        newDetailedCivResources.removeAll { it.resource.hasUnique(UniqueType.CityResource) }
 
         // Check if anything has actually changed so we don't update stats for no reason - this uses List equality which means it checks the elements
         if (civInfo.detailedCivResources == newDetailedCivResources) return
@@ -383,7 +380,7 @@ class CivInfoTransientCache(val civInfo: Civilization) {
 
         // Check if different continents (unless already max distance, or water map)
         if (connections > 0 && proximity != Proximity.Distant && !civInfo.gameInfo.tileMap.isWaterMap()
-                && civInfo.getCapital()!!.getCenterTile().getContinent() != otherCiv.getCapital()!!.getCenterTile().getContinent()
+                && civInfo.getCapital(true)!!.getCenterTile().getContinent() != otherCiv.getCapital(true)!!.getCenterTile().getContinent()
         ) {
             // Different continents - increase separation by one step
             proximity = when (proximity) {

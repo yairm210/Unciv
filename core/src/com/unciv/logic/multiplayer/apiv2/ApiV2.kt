@@ -184,7 +184,7 @@ class ApiV2(private val baseUrl: String) : ApiV2Wrapper(baseUrl), Disposable {
                 val b: VersionResponse = r.body()
                 b.version == 2
             }
-        } catch (e: IllegalArgumentException) {
+        } catch (_: IllegalArgumentException) {
             false
         } catch (e: Throwable) {
             Log.error("Unexpected exception calling version endpoint for '$baseUrl': $e")
@@ -205,7 +205,7 @@ class ApiV2(private val baseUrl: String) : ApiV2Wrapper(baseUrl), Disposable {
                 val b: ApiErrorResponse = r.body()
                 b.statusCode == ApiStatusCode.Unauthenticated
             }
-        } catch (e: IllegalArgumentException) {
+        } catch (_: IllegalArgumentException) {
             false
         } catch (e: Throwable) {
             Log.error("Unexpected exception calling WebSocket endpoint for '$baseUrl': $e")
@@ -342,9 +342,7 @@ class ApiV2(private val baseUrl: String) : ApiV2Wrapper(baseUrl), Disposable {
      * cancelled channels or other unexpected interruptions.
      */
     suspend fun awaitPing(size: Int = 2, timeout: Long? = null): Double? {
-        if (size < 2) {
-            throw IllegalArgumentException("Size too small to identify ping responses uniquely")
-        }
+        require(size < 2) { "Size too small to identify ping responses uniquely" }
         val body = ByteArray(size)
         Random().nextBytes(body)
 
@@ -376,7 +374,7 @@ class ApiV2(private val baseUrl: String) : ApiV2Wrapper(baseUrl), Disposable {
                     throw exception
                 }
             }.toDouble() / 10e6
-        } catch (c: ClosedReceiveChannelException) {
+        } catch (_: ClosedReceiveChannelException) {
             return null
         } finally {
             synchronized(this) {
@@ -453,7 +451,7 @@ class ApiV2(private val baseUrl: String) : ApiV2Wrapper(baseUrl), Disposable {
                                         Concurrency.run {
                                             try {
                                                 c.send((msg as WebSocketMessageWithContent).content)
-                                            } catch (closed: ClosedSendChannelException) {
+                                            } catch (_: ClosedSendChannelException) {
                                                 delay(10)
                                                 eventChannelList.remove(c)
                                             } catch (t: Throwable) {

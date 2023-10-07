@@ -40,6 +40,7 @@ class Speed : RulesetObject(), IsPartOfGameInfoSerialization {
                 Stat.Gold -> goldCostModifier
                 Stat.Science -> scienceCostModifier
                 Stat.Faith -> faithCostModifier
+                Stat.Culture -> cultureCostModifier
                 else -> 1f
             }
             map[stat] = modifier
@@ -55,7 +56,7 @@ class Speed : RulesetObject(), IsPartOfGameInfoSerialization {
 
     override fun getUniqueTarget(): UniqueTarget = UniqueTarget.Speed
 
-    override fun makeLink(): String = "GameSpeed/$name"
+    override fun makeLink(): String = "Speed/$name"
     override fun getCivilopediaTextHeader() = FormattedLine(name, header = 2)
     override fun getCivilopediaTextLines(ruleset: Ruleset) = sequence {
         yield(FormattedLine("General speed modifier: [${modifier * 100}]%${Fonts.turn}"))

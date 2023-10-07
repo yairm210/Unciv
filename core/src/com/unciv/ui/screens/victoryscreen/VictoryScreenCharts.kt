@@ -2,19 +2,19 @@ package com.unciv.ui.screens.victoryscreen
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Touchable
-import com.badlogic.gdx.scenes.scene2d.ui.Container
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
-import com.unciv.logic.civilization.Civilization
 import com.unciv.ui.components.AutoScrollPane
+import com.unciv.ui.components.DataPoint
 import com.unciv.ui.components.LineChart
 import com.unciv.ui.components.TabbedPager
 import com.unciv.ui.components.input.onChange
 import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.extensions.packIfNeeded
+import com.unciv.ui.components.input.OnClickListener
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.basescreen.BaseScreen
-import com.unciv.ui.screens.newgamescreen.TranslatedSelectBox
+import com.unciv.ui.components.TranslatedSelectBox
 import com.unciv.ui.screens.victoryscreen.VictoryScreenCivGroup.DefeatedPlayerStyle
 import com.unciv.ui.screens.worldscreen.WorldScreen
 
@@ -36,7 +36,9 @@ class VictoryScreenCharts(
         align = Align.center
     }
 
-    private val chartHolder = Container<LineChart?>(null)
+    private var lineChart = LineChart(viewingCiv)
+    // if it is negative - no zoom, if positive - zoom at turn X
+    private var zoomAtX : IntRange? = null
 
     init {
         civButtonsScroll.setScrollingDisabled(true, false)
@@ -46,7 +48,14 @@ class VictoryScreenCharts(
         controlsColumn.add(civButtonsScroll).fillY()
         defaults().fill().pad(20f)
         add(controlsColumn)
-        add(chartHolder).growX().top().padLeft(0f)
+        updateControls()
+        add(lineChart).growX().top().padLeft(0f)
+
+        val onChartClick = OnClickListener(function = { _ , x, _ ->
+            zoomAtX = if (zoomAtX == null) lineChart.getTurnAt(x) else null
+            updateChart()
+        })
+        lineChart.addListener(onChartClick)
 
         rankingTypeSelect.onChange {
             rankingType = RankingType.values()
@@ -85,38 +94,31 @@ class VictoryScreenCharts(
     }
 
     private fun updateChart() {
-        // LineChart does not "cooperate" in Layout - the size we set here is final.
-        // These values seem to fit the cell it'll be in - we subtract padding and some extra manually
+        lineChart.update(getLineChartData(rankingType), selectedCiv)
         packIfNeeded()
-        chartHolder.actor = LineChart(
-            getLineChartData(rankingType),
-            viewingCiv,
-            selectedCiv,
-            parent.width - getColumnWidth(0) - 60f,
-            parent.height - 60f
-        )
-        chartHolder.invalidateHierarchy()
     }
 
-    private fun getLineChartData(
-        rankingType: RankingType
-    ): Map<Int, Map<Civilization, Int>> {
+    private fun getLineChartData(rankingType: RankingType): List<DataPoint<Int>> {
         return gameInfo.civilizations.asSequence()
             .filter { it.isMajorCiv() }
             .flatMap { civ ->
                 civ.statsHistory
+                    .filterKeys { zoomAtX == null || it in zoomAtX!!  }
                     .filterValues { it.containsKey(rankingType) }
                     .map { (turn, data) -> Pair(turn, Pair(civ, data.getValue(rankingType))) }
             }
             .groupBy({ it.first }, { it.second })
             .mapValues { group -> group.value.toMap() }
+            .flatMap { turn ->
+                turn.value.map { (civ, value) -> DataPoint(turn.key, value, civ) }
+            }
     }
 
     override fun activated(index: Int, caption: String, pager: TabbedPager) {
         pager.setScrollDisabled(true)
-        getCell(controlsColumn).height(parent.height)
-        getCell(chartHolder).height(parent.height)
-        if (chartHolder.actor == null) update()
+        controlsColumn.height = parent.height
+        lineChart.height = parent.height
+        update()
         civButtonsTable.invalidateHierarchy()
     }
 

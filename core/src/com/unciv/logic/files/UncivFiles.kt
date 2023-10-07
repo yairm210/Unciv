@@ -3,6 +3,7 @@ package com.unciv.logic.files
 import com.badlogic.gdx.Files
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.files.FileHandle
+import com.badlogic.gdx.utils.GdxRuntimeException
 import com.badlogic.gdx.utils.JsonReader
 import com.badlogic.gdx.utils.JsonWriter
 import com.badlogic.gdx.utils.SerializationException
@@ -85,7 +86,7 @@ class UncivFiles(
         } else {
             files.local(path)
         }
-        return file.writer(append)
+        return file.writer(append, Charsets.UTF_8.name())
     }
 
     fun getMultiplayerSaves(): Sequence<FileHandle> {
@@ -159,7 +160,7 @@ class UncivFiles(
         try {
             debug("Saving GameInfo %s to %s", game.gameId, file.path())
             val string = gameInfoToString(game)
-            file.writeString(string, false)
+            file.writeString(string, false, Charsets.UTF_8.name())
             saveCompletionCallback(null)
         } catch (ex: Exception) {
             saveCompletionCallback(ex)
@@ -227,7 +228,7 @@ class UncivFiles(
             loadGameFromFile(getSave(gameName))
 
     fun loadGameFromFile(gameFile: FileHandle): GameInfo {
-        val gameData = gameFile.readString()
+        val gameData = gameFile.readString(Charsets.UTF_8.name())
         if (gameData.isNullOrBlank()) {
             throw emptyFile(gameFile)
         }
@@ -305,7 +306,7 @@ class UncivFiles(
     }
 
     fun setGeneralSettings(gameSettings: GameSettings) {
-        getGeneralSettingsFile().writeString(json().toJson(gameSettings), false)
+        getGeneralSettingsFile().writeString(json().toJson(gameSettings), false, Charsets.UTF_8.name())
     }
 
     companion object {
@@ -380,7 +381,7 @@ class UncivFiles(
         }
 
         /** Returns gzipped serialization of [game], optionally gzipped ([forceZip] overrides [saveZipped]) */
-        fun gameInfoToString(game: GameInfo, forceZip: Boolean? = null, updateChecksum:Boolean=true): String {
+        fun gameInfoToString(game: GameInfo, forceZip: Boolean? = null, updateChecksum:Boolean=false): String {
             game.version = GameInfo.CURRENT_COMPATIBILITY_VERSION
 
             if (updateChecksum) game.checksum = game.calculateChecksum()

@@ -9,9 +9,9 @@ import com.unciv.logic.battle.Battle
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.AlertType
 import com.unciv.logic.civilization.Civilization
-import com.unciv.logic.civilization.LocationAction
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.PopupAlert
+import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.models.ruleset.unique.UniqueType
@@ -63,6 +63,10 @@ class AlertPopup(
     private fun getCiv(civName: String) = gameInfo.getCivilization(civName)
     private fun getCity(cityId: String) = gameInfo.getCities().first { it.id == cityId }
     //endregion
+
+    // This redirects all addCloseButton uses with only text and no action to accept the space key
+    private fun addCloseButton(text: String = Constants.close) =
+        addCloseButton(text, KeyboardBinding.NextTurnAlternate, null)
 
     init {
         // This makes the buttons fill up available width. See comments in #9559.
@@ -126,8 +130,8 @@ class AlertPopup(
             player.getDiplomacyManager(bullyOrAttacker).sideWithCityState()
         }.row()
         addCloseButton("Very well.", KeyboardBinding.Cancel) {
-            val capitalLocation = LocationAction(cityState.cities.asSequence().map { it.location }) // in practice 0 or 1 entries, that's OK
-            player.addNotification("You have broken your Pledge to Protect [${cityState.civName}]!", capitalLocation, NotificationCategory.Diplomacy, cityState.civName)
+            player.addNotification("You have broken your Pledge to Protect [${cityState.civName}]!",
+                cityState.cityStateFunctions.getNotificationActions(), NotificationCategory.Diplomacy, cityState.civName)
             cityState.cityStateFunctions.removeProtectorCiv(player, forced = true)
         }.row()
     }
@@ -189,7 +193,9 @@ class AlertPopup(
         val playerDiploManager = viewingCiv.getDiplomacyManager(otherciv)
         addLeaderName(otherciv)
         addGoodSizedLabel("My friend, shall we declare our friendship to the world?").row()
-        addCloseButton("We are not interested.", KeyboardBinding.Cancel).row()
+        addCloseButton("We are not interested.", KeyboardBinding.Cancel) {
+            playerDiploManager.otherCivDiplomacy().setFlag(DiplomacyFlags.DeclinedDeclarationOfFriendship, 10)
+        }.row()
         addCloseButton("Declare Friendship ([30] turns)", KeyboardBinding.Confirm) {
             playerDiploManager.signDeclarationOfFriendship()
         }
@@ -381,7 +387,7 @@ class AlertPopup(
 
     private fun addQuestionAboutTheCity(cityName: String) {
         addGoodSizedLabel("What would you like to do with the city of [$cityName]?",
-            Constants.headingFontSize).padBottom(20f).row()
+            Constants.headingFontSize, hideIcons = true).padBottom(20f).row()
     }
 
     private fun addDestroyOption(destroyAction: () -> Unit) {

@@ -38,7 +38,13 @@ object TileSetCache : HashMap<String, TileSet>() {
         }
     }
 
-    fun loadTileSetConfigs(consoleMode: Boolean = false){
+    /** Load the json config files and do an initial [assembleTileSetConfigs] run without explicit mods.
+     *
+     *  Runs from UncivGame.create without exception handling, therefore should not be vulnerable to broken mods.
+     *  (The critical point is json parsing in loadConfigFiles, which is now hardened)
+     *  Also runs from ModManagementScreen after downloading a new mod or deleting one.
+     */
+    fun loadTileSetConfigs(consoleMode: Boolean = false) {
 
         clear()
 
@@ -48,7 +54,7 @@ object TileSetCache : HashMap<String, TileSet>() {
                 FileHandle("jsons/TileSets").list().asSequence()
             else
                 ImageGetter.getAvailableTilesets()
-                .map { Gdx.files.internal("jsons/TileSets/$it.json")}
+                .map { Gdx.files.internal("jsons/TileSets/$it.json") }
                 .filter { it.exists() }
 
         loadConfigFiles(internalFiles, TileSet.DEFAULT)
@@ -73,8 +79,18 @@ object TileSetCache : HashMap<String, TileSet>() {
 
     private fun loadConfigFiles(files: Sequence<FileHandle>, configId: String) {
         for (configFile in files) {
+            // jsons/TileSets shouldn't have subfolders, but if a mad modder has one, don't crash (file.readString would throw):
+            if (configFile.isDirectory) continue
+            // `files` is an unfiltered directory listing - ignore chaff
+            if (configFile.extension() != "json") continue
+
+            val config = try {
+                json().fromJsonFile(TileSetConfig::class.java, configFile)
+            } catch (_: Exception) {
+                continue  // Ignore jsons that don't load
+            }
+
             val name = configFile.nameWithoutExtension().removeSuffix("Config")
-            val config = json().fromJsonFile(TileSetConfig::class.java, configFile)
             val tileset = get(name) ?: TileSet(name)
             tileset.cacheConfigFromMod(configId, config)
             set(name, tileset)

@@ -5,6 +5,7 @@ import com.unciv.logic.automation.Automation
 import com.unciv.logic.battle.Battle
 import com.unciv.logic.battle.GreatGeneralImplementation
 import com.unciv.logic.battle.MapUnitCombatant
+import com.unciv.logic.battle.TargetHelper
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
@@ -13,38 +14,13 @@ import com.unciv.logic.map.tile.Tile
 import com.unciv.models.UnitAction
 import com.unciv.models.UnitActionType
 import com.unciv.models.ruleset.Building
+import com.unciv.models.ruleset.unique.LocalUniqueCache
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
 import com.unciv.ui.screens.worldscreen.unit.actions.UnitActions
 import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionsReligion
 
 object SpecificUnitAutomation {
-
-    private fun hasWorkableSeaResource(tile: Tile, civInfo: Civilization): Boolean =
-            tile.isWater && tile.improvement == null && tile.hasViewableResource(civInfo)
-
-    fun automateWorkBoats(unit: MapUnit) {
-        val closestReachableResource = unit.civ.cities.asSequence()
-                .flatMap { city -> city.getWorkableTiles() }
-                .filter {
-                    hasWorkableSeaResource(it, unit.civ)
-                            && (unit.currentTile == it || unit.movement.canMoveTo(it))
-                }
-                .sortedBy { it.aerialDistanceTo(unit.currentTile) }
-                .firstOrNull { unit.movement.canReach(it) }
-
-        when (closestReachableResource) {
-            null -> UnitAutomation.tryExplore(unit)
-            else -> {
-                unit.movement.headTowards(closestReachableResource)
-
-                // could be either fishing boats or oil well
-                val isImprovable = closestReachableResource.tileResource.getImprovements().any()
-                if (isImprovable && unit.currentTile == closestReachableResource)
-                    UnitActions.getWaterImprovementAction(unit)?.action?.invoke()
-            }
-        }
-    }
 
     fun automateGreatGeneral(unit: MapUnit): Boolean {
         //try to follow nearby units. Do not garrison in city if possible
@@ -59,11 +35,11 @@ object SpecificUnitAutomation {
         // try to revenge and capture their tiles
         val enemyCities = unit.civ.getKnownCivs()
                 .filter { unit.civ.getDiplomacyManager(it).hasModifier(DiplomaticModifiers.StealingTerritory) }
-                .flatMap { it.cities }.asSequence()
+                .flatMap { it.cities }
         // find the suitable tiles (or their neighbours)
         val tileToSteal = enemyCities.flatMap { it.getTiles() } // City tiles
                 .filter { it.neighbors.any { tile -> tile.getOwner() != unit.civ } } // Edge city tiles
-                .flatMap { it.neighbors.asSequence() } // Neighbors of edge city tiles
+                .flatMap { it.neighbors } // Neighbors of edge city tiles
                 .filter {
                     it in unit.civ.viewableTiles // we can see them
                             && it.neighbors.any { tile -> tile.getOwner() == unit.civ }// they are close to our borders
@@ -74,7 +50,7 @@ object SpecificUnitAutomation {
                     // ...also get priorities to steal the most valuable for them
                     val owner = it.getOwner()
                     if (owner != null)
-                        distance - WorkerAutomation.getPriority(it, owner)
+                        distance - owner.getWorkerAutomation().getPriority(it)
                     else distance
                 }
                 .firstOrNull { unit.movement.canReach(it) } // canReach is performance-heavy and always a last resort
@@ -87,7 +63,7 @@ object SpecificUnitAutomation {
         }
 
         // try to build a citadel for defensive purposes
-        if (WorkerAutomation.evaluateFortPlacement(unit.currentTile, unit.civ, true)) {
+        if (unit.civ.getWorkerAutomation().evaluateFortPlacement(unit.currentTile, true)) {
             UnitActions.getImprovementConstructionActions(unit, unit.currentTile).firstOrNull()?.action?.invoke()
             return true
         }
@@ -114,7 +90,7 @@ object SpecificUnitAutomation {
         val tileForCitadel = cityToGarrison.getTilesInDistanceRange(3..4)
             .firstOrNull {
                 reachableTest(it) &&
-                        WorkerAutomation.evaluateFortPlacement(it, unit.civ, true)
+                    unit.civ.getWorkerAutomation().evaluateFortPlacement(it, true)
             }
         if (tileForCitadel == null) {
             unit.movement.headTowards(cityToGarrison)
@@ -224,10 +200,12 @@ object SpecificUnitAutomation {
             }
 
             // if we got here, we're pretty close, start looking!
+            val localUniqueCache = LocalUniqueCache()
             val chosenTile = applicableTiles.sortedByDescending {
                 Automation.rankTile(
                     it,
-                    unit.civ
+                    unit.civ,
+                    localUniqueCache
                 )
             }
                 .firstOrNull { unit.movement.canReach(it) }
@@ -304,11 +282,8 @@ object SpecificUnitAutomation {
         }.mapNotNull { city ->
             val path = unit.movement.getShortestPath(city.getCenterTile())
             if (path.any() && path.size <= 5) city to path.size else null
-        }.minByOrNull { it.second }?.first
-
-        if (nearbyCityWithAvailableWonders == null) {
-            return false
-        }
+        }.minByOrNull { it.second }
+            ?.first ?: return false
 
         if (unit.currentTile == nearbyCityWithAvailableWonders.getCenterTile()) {
             val wonderToHurry =
@@ -317,11 +292,12 @@ object SpecificUnitAutomation {
                 0,
                 wonderToHurry.name
             )
-            UnitActions.getUnitActions(unit)
-                .first {
-                    it.type == UnitActionType.HurryBuilding
-                            || it.type == UnitActionType.HurryWonder }
-                .action!!.invoke()
+            unit.showAdditionalActions = false  // make sure getUnitActions doesn't skip the important ones
+            val unitAction = UnitActions.getUnitActions(unit).firstOrNull {
+                    it.type == UnitActionType.HurryBuilding || it.type == UnitActionType.HurryWonder
+                } ?: return false
+            if (unitAction.action == null) return false
+            unitAction.action.invoke()
             return true
         }
 
@@ -360,14 +336,14 @@ object SpecificUnitAutomation {
         val city =
             if (ourCitiesWithoutReligion.any())
                 ourCitiesWithoutReligion.minByOrNull { it.getCenterTile().aerialDistanceTo(unit.getTile()) }
-            else unit.civ.gameInfo.getCities().asSequence()
+            else unit.civ.gameInfo.getCities()
                 .filter { it.religion.getMajorityReligion() != unit.civ.religionManager.religion }
                 .filter { it.civ.knows(unit.civ) && !it.civ.isAtWarWith(unit.civ) }
                 .filterNot { it.religion.isProtectedByInquisitor(unit.religion) }
                 .minByOrNull { it.getCenterTile().aerialDistanceTo(unit.getTile()) }
 
         if (city == null) return
-        val destination = city.getTiles().asSequence()
+        val destination = city.getTiles()
             .filter { unit.movement.canMoveTo(it) || it == unit.getTile() }
             .sortedBy { it.aerialDistanceTo(unit.getTile()) }
             .firstOrNull { unit.movement.canReach(it) } ?: return
@@ -421,7 +397,7 @@ object SpecificUnitAutomation {
         if (destination == null) return
 
         if (!unit.movement.canReach(destination)) {
-            destination = destination.neighbors.asSequence()
+            destination = destination.neighbors
                 .filter { unit.movement.canMoveTo(it) || it == unit.getTile() }
                 .sortedBy { it.aerialDistanceTo(unit.currentTile) }
                 .firstOrNull { unit.movement.canReach(it) }
@@ -509,7 +485,7 @@ object SpecificUnitAutomation {
             .filter { destinationCity ->
                 destinationCity != airUnit.currentTile
                         && destinationCity.getTilesInDistance(airUnit.getRange())
-                    .any { BattleHelper.containsAttackableEnemy(it, MapUnitCombatant(airUnit)) }
+                    .any { TargetHelper.containsAttackableEnemy(it, MapUnitCombatant(airUnit)) }
             }
         if (citiesThatCanAttackFrom.isEmpty()) return
 
@@ -522,26 +498,76 @@ object SpecificUnitAutomation {
     }
 
     fun automateNukes(unit: MapUnit) {
-        val tilesInRange = unit.currentTile.getTilesInDistance(unit.getRange())
-        for (tile in tilesInRange) {
-            // For now AI will only use nukes against cities because in all honesty that's the best use for them.
-            if (tile.isCityCenter()
-                    && tile.getOwner()!!.isAtWarWith(unit.civ)
-                    && tile.getCity()!!.health > tile.getCity()!!.getMaxHealth() / 2
-                    && Battle.mayUseNuke(MapUnitCombatant(unit), tile)) {
-                val blastRadius = unit.getMatchingUniques(UniqueType.BlastRadius)
-                    .firstOrNull()?.params?.get(0)?.toInt() ?: 2
-                val tilesInBlastRadius = tile.getTilesInDistance(blastRadius)
-                val civsInBlastRadius = tilesInBlastRadius.mapNotNull { it.getOwner() } +
-                        tilesInBlastRadius.mapNotNull { it.getFirstUnit()?.civ }
-                // Don't nuke if it means we will be declaring war on someone!
-                if (civsInBlastRadius.none { it != unit.civ && !it.isAtWarWith(unit.civ) }) {
-                    Battle.NUKE(MapUnitCombatant(unit), tile)
-                    return
-                }
+        if (!unit.civ.isAtWar()) return
+        // We should *Almost* never want to nuke our own city, so don't consider it
+        val tilesInRange = unit.currentTile.getTilesInDistanceRange(2..unit.getRange())
+        var highestTileNukeValue = 0
+        var tileToNuke: Tile? = null
+        tilesInRange.forEach {
+            val value = getNukeLocationValue(unit, it)
+            if (value > highestTileNukeValue) {
+                highestTileNukeValue = value
+                tileToNuke = it
             }
         }
+        if (highestTileNukeValue > 0) {
+            Battle.NUKE(MapUnitCombatant(unit), tileToNuke!!)
+        }
         tryRelocateToNearbyAttackableCities(unit)
+    }
+
+    /**
+     * Ranks the tile to nuke based off of all tiles in it's blast radius
+     * By default the value is -500 to prevent inefficient nuking.
+     */
+    fun getNukeLocationValue(nuke: MapUnit, tile: Tile): Int {
+        val civ = nuke.civ
+        if (!Battle.mayUseNuke(MapUnitCombatant(nuke), tile)) return Int.MIN_VALUE
+        val blastRadius = nuke.getNukeBlastRadius()
+        val tilesInBlastRadius = tile.getTilesInDistance(blastRadius)
+        val civsInBlastRadius = tilesInBlastRadius.mapNotNull { it.getOwner() } +
+            tilesInBlastRadius.mapNotNull { it.getFirstUnit()?.civ }
+
+        // Don't nuke if it means we will be declaring war on someone!
+        if (civsInBlastRadius.any { it != civ && !it.isAtWarWith(civ) }) return -100000
+        // If there are no enemies to hit, don't nuke
+        if (!civsInBlastRadius.any { it.isAtWarWith(civ) }) return -100000
+
+        // Launching a Nuke uses resources, therefore don't launch it by default
+        var explosionValue = -500
+
+        // Returns either ourValue or thierValue depending on if the input Civ matches the Nuke's Civ
+        fun evaluateCivValue(targetCiv: Civilization, ourValue: Int, theirValue: Int): Int {
+            if (targetCiv == civ) // We are nuking something that we own!
+                return ourValue
+            return theirValue // We are nuking an enemy!
+        }
+        for (targetTile in tilesInBlastRadius) {
+            // We can only account for visible units
+            if (tile.isVisible(civ)) {
+                if (targetTile.militaryUnit != null && !targetTile.militaryUnit!!.isInvisible(civ))
+                    explosionValue += evaluateCivValue(targetTile.militaryUnit?.civ!!, -150, 50)
+                if (targetTile.civilianUnit != null && !targetTile.civilianUnit!!.isInvisible(civ))
+                    explosionValue += evaluateCivValue(targetTile.civilianUnit?.civ!!, -100, 25)
+            }
+            // Never nuke our own Civ, don't nuke single enemy civs as well
+            if (targetTile.isCityCenter()
+                && !(targetTile.getCity()!!.health <= 50f
+                    && targetTile.neighbors.any {it.militaryUnit?.civ == civ})) // Prefer not to nuke cities that we are about to take
+                explosionValue += evaluateCivValue(targetTile.getCity()?.civ!!, -100000, 250)
+            else if (targetTile.owningCity != null) {
+                val owningCiv = targetTile.owningCity?.civ!!
+                // If there is a tile to add fallout to there is a 50% chance it will get fallout
+                if (!(tile.isWater || tile.isImpassible() || targetTile.terrainFeatures.any { it == "Fallout" }))
+                    explosionValue += evaluateCivValue(owningCiv, -40, 10)
+                // If there is an improvment to pillage
+                if (targetTile.improvement != null && !targetTile.improvementIsPillaged)
+                    explosionValue += evaluateCivValue(owningCiv, -40, 20)
+            }
+            // If the value is too low end the search early
+            if (explosionValue < -1000) return explosionValue
+        }
+        return explosionValue
     }
 
     // This really needs to be changed, to have better targeting for missiles
@@ -577,7 +603,7 @@ object SpecificUnitAutomation {
             if (city.getTilesInDistance(unit.getRange())
                             .any {
                                 it.isVisible(unit.civ) &&
-                                BattleHelper.containsAttackableEnemy(
+                                TargetHelper.containsAttackableEnemy(
                                     it,
                                     MapUnitCombatant(unit)
                                 )

@@ -41,7 +41,6 @@ interface INonPerpetualConstruction : IConstruction, INamed, IHasUniques {
     fun canBePurchasedWithStat(city: City?, stat: Stat): Boolean {
         if (stat == Stat.Production || stat == Stat.Happiness) return false
         if (hasUnique(UniqueType.CannotBePurchased)) return false
-        if (stat == Stat.Gold) return !hasUnique(UniqueType.Unbuildable)
         // Can be purchased with [Stat] [cityFilter]
         if (city != null && getMatchingUniques(UniqueType.CanBePurchasedWithStat)
             .any { it.params[0] == stat.name && city.matchesFilter(it.params[1]) }
@@ -50,6 +49,7 @@ interface INonPerpetualConstruction : IConstruction, INamed, IHasUniques {
         if (city != null && getMatchingUniques(UniqueType.CanBePurchasedForAmountStat)
             .any { it.params[1] == stat.name && city.matchesFilter(it.params[2]) }
         ) return true
+        if (stat == Stat.Gold) return !hasUnique(UniqueType.Unbuildable)
         return false
     }
 
@@ -63,26 +63,31 @@ interface INonPerpetualConstruction : IConstruction, INamed, IHasUniques {
         return Stat.values().any { canBePurchasedWithStat(city, it) }
     }
 
+    fun getCivilopediaGoldCost(): Int {
+        // Same as getBaseGoldCost, but without game-specific modifiers
+        return ((30.0 * cost.toFloat()).pow(0.75) * hurryCostModifier.toPercent() / 10).toInt() * 10
+    }
+
     fun getBaseGoldCost(civInfo: Civilization): Double {
         // https://forums.civfanatics.com/threads/rush-buying-formula.393892/
         return (30.0 * getProductionCost(civInfo)).pow(0.75) * hurryCostModifier.toPercent()
     }
 
-    fun getBaseBuyCost(city: City, stat: Stat): Int? {
-        if (stat == Stat.Gold) return getBaseGoldCost(city.civ).toInt()
-
+    fun getBaseBuyCost(city: City, stat: Stat): Float? {
         val conditionalState = StateForConditionals(civInfo = city.civ, city = city)
 
         // Can be purchased for [amount] [Stat] [cityFilter]
         val lowestCostUnique = getMatchingUniques(UniqueType.CanBePurchasedForAmountStat, conditionalState)
             .filter { it.params[1] == stat.name && city.matchesFilter(it.params[2]) }
             .minByOrNull { it.params[0].toInt() }
-        if (lowestCostUnique != null) return lowestCostUnique.params[0].toInt()
+        if (lowestCostUnique != null) return lowestCostUnique.params[0].toInt() * city.civ.gameInfo.speed.statCostModifiers[stat]!!
+
+        if (stat == Stat.Gold) return getBaseGoldCost(city.civ).toFloat()
 
         // Can be purchased with [Stat] [cityFilter]
         if (getMatchingUniques(UniqueType.CanBePurchasedWithStat, conditionalState)
             .any { it.params[0] == stat.name && city.matchesFilter(it.params[1]) }
-        ) return city.civ.getEra().baseUnitBuyCost
+        ) return city.civ.getEra().baseUnitBuyCost * city.civ.gameInfo.speed.statCostModifiers[stat]!!
         return null
     }
 
@@ -219,6 +224,9 @@ open class PerpetualConstruction(override var name: String, val description: Str
 
         val perpetualConstructionsMap: Map<String, PerpetualConstruction>
                 = mapOf(science.name to science, gold.name to gold, culture.name to culture, faith.name to faith, idle.name to idle)
+
+        /** @return whether [name] represents a PerpetualConstruction - note "" is translated to Nothing in the queue so `isNamePerpetual("")==true` */
+        fun isNamePerpetual(name: String) = name.isEmpty() || name in perpetualConstructionsMap
     }
 
     override fun isBuildable(cityConstructions: CityConstructions): Boolean =

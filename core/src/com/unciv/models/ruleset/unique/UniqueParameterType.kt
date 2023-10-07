@@ -115,6 +115,7 @@ enum class UniqueParameterType(
                 UniqueType.UniqueComplianceErrorSeverity? {
             if (parameterText in knownValues) return null
             if (ruleset.unitTypes.containsKey(parameterText)) return null
+            if (ruleset.eras.containsKey(parameterText)) return null
             if (ruleset.unitTypes.values.any { it.uniques.contains(parameterText) }) return null
             return UniqueType.UniqueComplianceErrorSeverity.WarningOnly
         }
@@ -190,7 +191,7 @@ enum class UniqueParameterType(
         }
     },
 
-    /** Implemented by [CityInfo.matchesFilter][com.unciv.logic.city.City.matchesFilter] */
+    /** Implemented by [City.matchesFilter][com.unciv.logic.city.City.matchesFilter] */
     CityFilter("cityFilter", "in all cities", null, "City filters") {
         private val cityFilterStrings = setOf(
             "in this city",
@@ -384,7 +385,7 @@ enum class UniqueParameterType(
 
     /** Implemented by [TileImprovement.matchesFilter][com.unciv.models.ruleset.tile.TileImprovement.matchesFilter] */
     ImprovementFilter("improvementFilter", "All Road", null, "Improvement Filters") {
-        private val knownValues = setOf("All", "All Road", "Great Improvement", "Great")
+        private val knownValues = setOf("All", "Improvement", "All Road", "Great Improvement", "Great")
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
                 UniqueType.UniqueComplianceErrorSeverity? {
             if (parameterText in knownValues) return null
@@ -508,6 +509,16 @@ enum class UniqueParameterType(
             else UniqueType.UniqueComplianceErrorSeverity.RulesetInvariant
         }
         override fun getTranslationWriterStringsForOutput() = knownValues
+    },
+
+    /** Mod declarative compatibility: Behaves like [Unknown], but makes for nicer auto-generated documentation. */
+    ModName("modFilter", "DeCiv Redux", """A Mod name, case-sensitive _or_ a simple wildcard filter beginning and ending in an Asterisk, case-insensitive""", "Mod name filter") {
+        override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
+            UniqueType.UniqueComplianceErrorSeverity? =
+            if ('-' !in parameterText && ('*' !in parameterText || parameterText.matches(Regex("""^\*[^*]+\*$""")))) null
+            else UniqueType.UniqueComplianceErrorSeverity.RulesetInvariant
+
+        override fun getTranslationWriterStringsForOutput() = scanExistingValues(this)
     },
 
     /** Behaves like [Unknown], but states explicitly the parameter is OK and its contents are ignored */

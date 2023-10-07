@@ -1,6 +1,5 @@
 ﻿package com.unciv.ui.screens.mainmenuscreen
 
-import com.badlogic.gdx.Input
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.badlogic.gdx.scenes.scene2d.ui.Stack
@@ -25,14 +24,15 @@ import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.tilesets.TileSetCache
 import com.unciv.ui.components.AutoScrollPane
-import com.unciv.ui.components.input.KeyCharAndCode
 import com.unciv.ui.components.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.components.extensions.center
-import com.unciv.ui.components.input.keyShortcuts
-import com.unciv.ui.components.input.onActivation
 import com.unciv.ui.components.extensions.surroundWithCircle
 import com.unciv.ui.components.extensions.toLabel
+import com.unciv.ui.components.input.KeyCharAndCode
 import com.unciv.ui.components.input.KeyShortcutDispatcherVeto
+import com.unciv.ui.components.input.KeyboardBinding
+import com.unciv.ui.components.input.keyShortcuts
+import com.unciv.ui.components.input.onActivation
 import com.unciv.ui.components.tilegroups.TileGroupMap
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popups.Popup
@@ -50,7 +50,7 @@ import com.unciv.ui.screens.mapeditorscreen.MapEditorScreen
 import com.unciv.ui.screens.multiplayerscreens.LobbyBrowserScreen
 import com.unciv.ui.screens.multiplayerscreens.MultiplayerScreen
 import com.unciv.ui.screens.newgamescreen.NewGameScreen
-import com.unciv.ui.screens.pickerscreens.ModManagementScreen
+import com.unciv.ui.screens.modmanager.ModManagementScreen
 import com.unciv.ui.screens.savescreens.LoadGameScreen
 import com.unciv.ui.screens.savescreens.QuickSave
 import com.unciv.ui.screens.worldscreen.BackgroundActor
@@ -82,14 +82,13 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
     /** Create one **Main Menu Button** including onClick/key binding
      *  @param text      The text to display on the button
      *  @param icon      The path of the icon to display on the button
-     *  @param key       Optional key binding (limited to Char subset of [KeyCharAndCode], which is OK for the main menu)
+     *  @param binding   keyboard binding
      *  @param function  Action to invoke when the button is activated
      */
     private fun getMenuButton(
         text: String,
         icon: String,
-        key: Char? = null,
-        keyVisualOnly: Boolean = false,
+        binding: KeyboardBinding,
         function: () -> Unit
     ): Table {
         val table = Table().pad(15f, 30f, 15f, 30f)
@@ -102,15 +101,9 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
         table.add(text.toLabel(fontSize = 30, alignment = Align.left)).expand().left().minWidth(200f)
 
         table.touchable = Touchable.enabled
-        table.onActivation {
+        table.onActivation(binding = binding) {
             stopBackgroundMapGeneration()
             function()
-        }
-
-        if (key != null) {
-            if (!keyVisualOnly)
-                table.keyShortcuts.add(key)
-            table.addTooltip(key, 32f)
         }
 
         table.pack()
@@ -145,24 +138,24 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
         val column2 = if (singleColumn) column1 else Table().apply { defaults().pad(10f).fillX() }
 
         if (game.files.autosaveExists()) {
-            val resumeTable = getMenuButton("Resume","OtherIcons/Resume", 'r')
+            val resumeTable = getMenuButton("Resume","OtherIcons/Resume", KeyboardBinding.Resume)
                 { resumeGame() }
             column1.add(resumeTable).row()
         }
 
-        val quickstartTable = getMenuButton("Quickstart", "OtherIcons/Quickstart", 'q')
+        val quickstartTable = getMenuButton("Quickstart", "OtherIcons/Quickstart", KeyboardBinding.Quickstart)
             { quickstartNewGame() }
         column1.add(quickstartTable).row()
 
-        val newGameButton = getMenuButton("Start new game", "OtherIcons/New", 'n')
+        val newGameButton = getMenuButton("Start new game", "OtherIcons/New", KeyboardBinding.StartNewGame)
             { game.pushScreen(NewGameScreen()) }
         column1.add(newGameButton).row()
 
-        val loadGameTable = getMenuButton("Load game", "OtherIcons/Load", 'l')
+        val loadGameTable = getMenuButton("Load game", "OtherIcons/Load", KeyboardBinding.MainMenuLoad)
             { game.pushScreen(LoadGameScreen()) }
         column1.add(loadGameTable).row()
 
-        val multiplayerTable = getMenuButton("Multiplayer", "OtherIcons/Multiplayer", 'm') {
+        val multiplayerTable = getMenuButton("Multiplayer", "OtherIcons/Multiplayer", KeyboardBinding.Multiplayer) {
             // Awaiting an initialized multiplayer instance here makes later usage in the multiplayer screen easier
             val popup = Popup(stage)
             popup.addGoodSizedLabel("Loading...")
@@ -181,15 +174,15 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
         }
         column2.add(multiplayerTable).row()
 
-        val mapEditorScreenTable = getMenuButton("Map editor", "OtherIcons/MapEditor", 'e')
+        val mapEditorScreenTable = getMenuButton("Map editor", "OtherIcons/MapEditor", KeyboardBinding.MapEditor)
             { game.pushScreen(MapEditorScreen()) }
         column2.add(mapEditorScreenTable).row()
 
-        val modsTable = getMenuButton("Mods", "OtherIcons/Mods", 'd')
+        val modsTable = getMenuButton("Mods", "OtherIcons/Mods", KeyboardBinding.ModManager)
             { game.pushScreen(ModManagementScreen()) }
         column2.add(modsTable).row()
 
-        val optionsTable = getMenuButton("Options", "OtherIcons/Options", 'o')
+        val optionsTable = getMenuButton("Options", "OtherIcons/Options", KeyboardBinding.MainMenuOptions)
             { this.openOptionsPopup() }
         column2.add(optionsTable).row()
 
@@ -218,9 +211,10 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
             .apply { actor.y -= 2.5f } // compensate font baseline (empirical)
             .surroundWithCircle(64f, resizeActor = false)
         helpButton.touchable = Touchable.enabled
+        // Passing the binding directly to onActivation gives you a size 26 tooltip...
         helpButton.onActivation { openCivilopedia() }
-        helpButton.keyShortcuts.add(Input.Keys.F1)
-        helpButton.addTooltip(KeyCharAndCode(Input.Keys.F1), 30f)
+        helpButton.keyShortcuts.add(KeyboardBinding.Civilopedia)
+        helpButton.addTooltip(KeyboardBinding.Civilopedia, 30f)
         helpButton.setPosition(30f, 30f)
         stage.addActor(helpButton)
     }

@@ -3,6 +3,7 @@ package com.unciv.logic.civilization.managers
 import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.civilization.AlertType
 import com.unciv.logic.civilization.Civilization
+import com.unciv.logic.civilization.CivilopediaAction
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.PopupAlert
 import com.unciv.models.ruleset.unique.UniqueTriggerActivation
@@ -44,12 +45,16 @@ class GoldenAgeManager : IsPartOfGameInfoSerialization {
 
     fun enterGoldenAge(unmodifiedNumberOfTurns: Int = 10) {
         turnsLeftForCurrentGoldenAge += calculateGoldenAgeLength(unmodifiedNumberOfTurns)
-        civInfo.addNotification("You have entered a Golden Age!", NotificationCategory.General, "StatIcons/Happiness")
+        civInfo.addNotification("You have entered a Golden Age!",
+            CivilopediaAction("Tutorial/Golden Age"),
+            NotificationCategory.General, "StatIcons/Happiness")
         civInfo.popupAlerts.add(PopupAlert(AlertType.GoldenAge, ""))
 
         for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponEnteringGoldenAge))
             UniqueTriggerActivation.triggerCivwideUnique(unique, civInfo)
-        civInfo.updateStatsForNextTurn()
+        //Golden Age can happen mid turn with Great Artist effects
+        for (city in civInfo.cities)
+            city.cityStats.update()
     }
 
     fun endTurn(happiness: Int) {

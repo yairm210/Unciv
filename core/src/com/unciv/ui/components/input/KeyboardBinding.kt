@@ -2,6 +2,7 @@ package com.unciv.ui.components.input
 
 import com.badlogic.gdx.Input
 import com.unciv.Constants
+import com.unciv.models.stats.Stat
 
 
 private val unCamelCaseRegex = Regex("([A-Z])([A-Z])([a-z])|([a-z])([A-Z])")
@@ -16,6 +17,16 @@ enum class KeyboardBinding(
 
     /** Used by [KeyShortcutDispatcher.KeyShortcut] to mark an old-style shortcut with a hardcoded key */
     None(Category.None, KeyCharAndCode.UNKNOWN),
+
+    // MainMenu
+    Resume(Category.MainMenu),
+    Quickstart(Category.MainMenu),
+    StartNewGame(Category.MainMenu, "Start new game", KeyCharAndCode('N')),  // Not to be confused with NewGame (from World menu, Ctrl-N)
+    MainMenuLoad(Category.MainMenu, "Load game", KeyCharAndCode('L')),
+    Multiplayer(Category.MainMenu),  // Name disambiguation maybe soon, not yet necessary
+    MapEditor(Category.MainMenu, "Map editor", KeyCharAndCode('E')),
+    ModManager(Category.MainMenu, "Mods", KeyCharAndCode('D')),
+    MainMenuOptions(Category.MainMenu, "Options", KeyCharAndCode('O')),  // Separate binding from World where it's Ctrl-O default
 
     // Worldscreen
     Menu(Category.WorldScreen, KeyCharAndCode.TAB),
@@ -79,6 +90,7 @@ enum class KeyboardBinding(
     Automate(Category.UnitActions, 'm'),
     StopAutomation(Category.UnitActions,"Stop automation", 'm'),
     StopMovement(Category.UnitActions,"Stop movement", '.'),
+    ShowUnitDestination(Category.UnitActions, "Show unit destination", 'j'),
     Sleep(Category.UnitActions, 'f'),
     SleepUntilHealed(Category.UnitActions,"Sleep until healed", 'h'),
     Fortify(Category.UnitActions, 'f'),
@@ -113,14 +125,55 @@ enum class KeyboardBinding(
     HideAdditionalActions(Category.UnitActions,"Back", Input.Keys.PAGE_UP),
     AddInCapital(Category.UnitActions, "Add in capital", 'g'),
 
+    // City Screen
+    AddConstruction(Category.CityScreen, "Add to or remove from queue", KeyCharAndCode.RETURN),
+    RaisePriority(Category.CityScreen, "Raise queue priority", Input.Keys.UP),
+    LowerPriority(Category.CityScreen, "Lower queue priority", Input.Keys.DOWN),
+    BuyConstruction(Category.CityScreen, 'b'),
+    BuyTile(Category.CityScreen, 't'),
+    BuildUnits(Category.CityScreen, "Buildable Units", 'u'),
+    BuildBuildings(Category.CityScreen, "Buildable Buildings", 'l'),
+    BuildWonders(Category.CityScreen, "Buildable Wonders", 'w'),
+    BuildNationalWonders(Category.CityScreen, "Buildable National Wonders", 'n'),
+    BuildOther(Category.CityScreen, "Other Constructions", 'o'),
+    BuildDisabled(Category.CityScreen, "Disabled Constructions", KeyCharAndCode.ctrl('h')),
+    NextCity(Category.CityScreen, Input.Keys.RIGHT),
+    PreviousCity(Category.CityScreen, Input.Keys.LEFT),
+    ShowStats(Category.CityScreen, 's'),
+    ShowStatDetails(Category.CityScreen, "Toggle Stat Details", Input.Keys.NUMPAD_ADD),
+    CitizenManagement(Category.CityScreen, 'c'),
+    GreatPeopleDetail(Category.CityScreen, 'g'),
+    SpecialistDetail(Category.CityScreen, 'p'),
+    ReligionDetail(Category.CityScreen, 'r'),
+    BuildingsDetail(Category.CityScreen, 'd'),
+    ResetCitizens(Category.CityScreen, KeyCharAndCode.ctrl('r')),
+    AvoidGrowth(Category.CityScreen, KeyCharAndCode.ctrl('a')),
+    // The following are automatically matched by enum name to CityFocus entries - if necessary override there
+    // Note on label: copied from CityFocus to ensure same translatable is used - without we'd get "Food Focus", not the same as "[Food] Focus"
+    NoFocus(Category.CityScreen, "Default Focus", KeyCharAndCode.ctrl('d')),
+    FoodFocus(Category.CityScreen, "[${Stat.Food.name}] Focus", KeyCharAndCode.ctrl('f')),
+    ProductionFocus(Category.CityScreen, "[${Stat.Production.name}] Focus", KeyCharAndCode.ctrl('p')),
+    GoldFocus(Category.CityScreen, "[${Stat.Gold.name}] Focus", KeyCharAndCode.ctrl('g')),
+    ScienceFocus(Category.CityScreen, "[${Stat.Science.name}] Focus", KeyCharAndCode.ctrl('s')),
+    CultureFocus(Category.CityScreen, "[${Stat.Culture.name}] Focus", KeyCharAndCode.ctrl('c')),
+    FaithFocus(Category.CityScreen, "[${Stat.Faith.name}] Focus", KeyCharAndCode.UNKNOWN),
+
+    // CityScreenConstructionMenu (not quite cleanly) reuses RaisePriority/LowerPriority, plus:
+    AddConstructionTop(Category.CityScreenConstructionMenu, "Add to the top of the queue", 't'),
+    AddConstructionAll(Category.CityScreenConstructionMenu, "Add to the queue in all cities", KeyCharAndCode.ctrl('a')),
+    AddConstructionAllTop(Category.CityScreenConstructionMenu, "Add or move to the top in all cities", KeyCharAndCode.ctrl('t')),
+    RemoveConstructionAll(Category.CityScreenConstructionMenu, "Remove from the queue in all cities", KeyCharAndCode.ctrl('r')),
+
     // Popups
     Confirm(Category.Popups, "Confirm Dialog", 'y'),
     Cancel(Category.Popups, "Cancel Dialog", 'n'),
+    UpgradeAll(Category.Popups, KeyCharAndCode.ctrl('a')),
     ;
     //endregion
 
     enum class Category {
         None,
+        MainMenu,
         WorldScreen {
             // Conflict checking within group plus keys assigned to UnitActions are a problem
             override fun checkConflictsIn() = sequenceOf(this, MapPanning, UnitActions)
@@ -132,6 +185,8 @@ enum class KeyboardBinding(
             // Conflict checking within group disabled, but any key assigned on WorldScreen is a problem
             override fun checkConflictsIn() = sequenceOf(WorldScreen)
         },
+        CityScreen,
+        CityScreenConstructionMenu, // Maybe someday a category hierarchy?
         Popups
         ;
         val label = unCamelCase(name)

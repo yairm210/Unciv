@@ -2,35 +2,28 @@ package com.unciv.ui.components
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.g2d.Batch
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer
-import com.badlogic.gdx.math.Matrix4
-import com.badlogic.gdx.math.Vector2
-import com.badlogic.gdx.scenes.scene2d.ui.Image
+import com.badlogic.gdx.math.MathUtils.lerp
 import com.badlogic.gdx.scenes.scene2d.ui.Label
-import com.badlogic.gdx.scenes.scene2d.ui.Widget
+import com.badlogic.gdx.scenes.scene2d.ui.WidgetGroup
 import com.badlogic.gdx.utils.Align
 import com.unciv.logic.civilization.Civilization
-import com.unciv.ui.components.extensions.surroundWithCircle
+import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.victoryscreen.VictoryScreenCivGroup
 import com.unciv.ui.screens.victoryscreen.VictoryScreenCivGroup.DefeatedPlayerStyle
-import kotlin.math.min
+import kotlin.math.abs
 import kotlin.math.ceil
+import kotlin.math.floor
 import kotlin.math.log10
 import kotlin.math.max
+import kotlin.math.min
 import kotlin.math.pow
 import kotlin.math.sqrt
 
-private data class DataPoint<T>(val x: T, val y: T, val civ: Civilization)
+data class DataPoint<T>(val x: T, val y: T, val civ: Civilization)
 
 class LineChart(
-    data: Map<Int, Map<Civilization, Int>>,
-    private val viewingCiv: Civilization,
-    private val selectedCiv: Civilization,
-    private val chartWidth: Float,
-    private val chartHeight: Float
-) : Widget() {
-
-    private val shapeRenderer = ShapeRenderer()
+    private val viewingCiv: Civilization
+) : WidgetGroup() {
 
     private val axisLineWidth = 2f
     private val axisColor = Color.WHITE
@@ -45,31 +38,76 @@ class LineChart(
      * as `0` is not counted. */
     private val maxLabels = 10
 
-    private val xLabels: List<Int>
-    private val yLabels: List<Int>
+    private var xLabels = emptyList<Int>()
+    private var yLabels = emptyList<Int>()
+    private var xLabelsAsLabels = emptyList<Label>()
+    private var yLabelsAsLabels = emptyList<Label>()
 
-    private val hasNegativeYValues: Boolean
-    private val negativeYLabel: Int
+    private var dataPoints = emptyList<DataPoint<Int>>()
+    private var selectedCiv = Civilization()
 
-    private val dataPoints: List<DataPoint<Int>> = data.flatMap { turn ->
-        turn.value.map { (civ, value) ->
-            DataPoint(turn.key, value, civ)
+
+
+    fun getTurnAt(x: Float): IntRange? {
+        if (xLabels.isEmpty() || xLabelsAsLabels.isEmpty() || yLabelsAsLabels.isEmpty()) return null
+        val widestYLabelWidth = yLabelsAsLabels.maxOf { it.width }
+        val linesMinX = widestYLabelWidth + axisToLabelPadding + axisLineWidth
+        val linesMaxX = width - xLabelsAsLabels.last().width / 2
+        if (linesMinX.compareTo(linesMaxX) == 0) return (xLabels.first()..xLabels.last())
+        val ratio = (x - linesMinX) / (linesMaxX - linesMinX)
+        val turn = max(1, lerp(xLabels.first().toFloat(), xLabels.last().toFloat(), ratio).toInt())
+        return (getPrevNumberDivisibleByPowOfTen(turn-1)..getNextNumberDivisibleByPowOfTen(turn+1))
+    }
+
+    fun update(newData: List<DataPoint<Int>>, newSelectedCiv: Civilization) {
+        selectedCiv = newSelectedCiv
+
+        dataPoints = newData
+        updateLabels(dataPoints)
+        prepareForDraw()
+    }
+
+    private fun updateLabels(newData: List<DataPoint<Int>>) {
+        xLabels = generateLabels(newData, false)
+        yLabels = generateLabels(newData, true)
+
+        xLabelsAsLabels =
+            xLabels.map { Label(it.toString(), Label.LabelStyle(Fonts.font, axisLabelColor)) }
+        yLabelsAsLabels =
+            yLabels.map { Label(it.toString(), Label.LabelStyle(Fonts.font, axisLabelColor)) }
+    }
+
+    fun generateLabels(value: List<DataPoint<Int>>, yAxis: Boolean): List<Int> {
+        if (value.isEmpty()) return listOf(0)
+        val minLabelValue = getPrevNumberDivisibleByPowOfTen(value.minOf { if (yAxis) it.y else it.x })
+        val maxLabelValue = getNextNumberDivisibleByPowOfTen(value.maxOf { if (yAxis) it.y else it.x })
+        var stepSizePositive = ceil(maxLabelValue.toFloat() / maxLabels).toInt()
+
+        return when {
+            minLabelValue < 0 -> {
+                var stepSizeNegative = ceil(-minLabelValue.toFloat() / maxLabels).toInt()
+                val maxStep = max(stepSizePositive, stepSizeNegative)
+                val stepCountNegative = floor(minLabelValue / maxStep.toDouble()).toInt()
+                stepSizeNegative = if (abs(stepCountNegative) < 2) abs(minLabelValue) else maxStep
+                val stepCountPositive = ceil(maxLabelValue / maxStep.toDouble()).toInt()
+                stepSizePositive = if (abs(stepCountPositive) < 2) abs(maxLabelValue) else maxStep
+
+                (stepCountNegative until 0).map { (it * stepSizeNegative) } +
+                    if (maxLabelValue != 0)
+                    (0 until stepCountPositive + 1).map { (it * stepSizePositive) }
+                    else listOf(0)
+            }
+            maxLabelValue != 0 -> {
+                // `maxLabels + 1` because we want to end at `maxLabels * stepSize`.
+                if (minLabelValue < stepSizePositive)
+                    (0 until maxLabels + 1).map { (it * stepSizePositive) }
+                else {
+                    stepSizePositive = ceil((maxLabelValue-minLabelValue).toFloat() / maxLabels).toInt()
+                    (0 until maxLabels + 1).map { minLabelValue + (it * stepSizePositive) }
+                }
+            }
+            else -> listOf(0, 1) // line along 0
         }
-    }
-
-    init {
-        hasNegativeYValues = dataPoints.any { it.y < 0 }
-        xLabels = generateLabels(dataPoints.maxOf { it.x })
-        yLabels = generateLabels(dataPoints.maxOf { it.y })
-        val lowestValue = dataPoints.minOf { it.y }
-        negativeYLabel = if (hasNegativeYValues) -getNextNumberDivisibleByPowOfTen(-lowestValue) else 0
-    }
-
-    private fun generateLabels(maxValue: Int): List<Int> {
-        val maxLabelValue = getNextNumberDivisibleByPowOfTen(maxValue)
-        val stepSize = ceil(maxLabelValue.toFloat() / maxLabels).toInt()
-        // `maxLabels + 1` because we want to end at `maxLabels * stepSize`.
-        return (0 until maxLabels + 1).map { (it * stepSize) }
     }
 
     /**
@@ -78,7 +116,7 @@ class LineChart(
      */
     private fun getNextNumberDivisibleByPowOfTen(value: Int): Int {
         if (value == 0) return 0
-        val numberOfDigits = min(ceil(log10(value.toDouble())).toInt(), 3)
+        val numberOfDigits = max(2, min(ceil(log10(abs(value).toDouble())).toInt(), 3))
         val oneWithZeros = 10.0.pow(numberOfDigits - 1)
         // E.g., 3 => 10^(2-1) = 10 ; ceil(3 / 10) * 10 = 10
         //     567 => 10^(3-1) = 100 ; ceil(567 / 100) * 100 = 600
@@ -86,28 +124,39 @@ class LineChart(
         return (ceil(value / oneWithZeros) * oneWithZeros).toInt()
     }
 
+    /**
+     *  Returns the previous number of power 10, with maximal step <= 100.
+     *  Examples: 0 => 0, -3 => -10, 97 => 90, 567 => 500, 123321 => 123300
+     */
+    private fun getPrevNumberDivisibleByPowOfTen(value: Int): Int {
+        if (value == 0) return 0
+        val numberOfDigits = ceil(log10(abs(value).toDouble())).toInt().coerceIn(2,3)
+        val oneWithZeros = 10.0.pow(numberOfDigits - 1)
+        // E.g., 3 => 10^(2-1) = 10 ; floor(3 / 10) * 10 = 0
+        //     567 => 10^(3-1) = 100 ; floor(567 / 100) * 100 = 500
+        //  123321 => 10^(3-1) = 100 ; floor(123321 / 100) * 100 = 123300
+        return (floor(value / oneWithZeros) * oneWithZeros).toInt()
+    }
+
     override fun draw(batch: Batch, parentAlpha: Float) {
         super.draw(batch, parentAlpha)
+    }
 
-        // Save the current batch transformation matrix
-        val oldTransformMatrix = batch.transformMatrix.cpy()
-        // Set the batch transformation matrix to the local coordinates of the LineChart widget
-        val stageCoords = localToStageCoordinates(Vector2(0f, 0f))
-        batch.transformMatrix = Matrix4().translate(stageCoords.x, stageCoords.y, 0f)
+    private fun prepareForDraw() {
+
+        clearChildren()
+
+        if (xLabels.isEmpty() || yLabels.isEmpty()) return
 
         val lastTurnDataPoints = getLastTurnDataPoints()
 
-        val labelHeight = Label("123", Label.LabelStyle(Fonts.font, axisLabelColor)).height
-        val yLabelsAsLabels =
-                yLabels.map { Label(it.toString(), Label.LabelStyle(Fonts.font, axisLabelColor)) }
-        val negativeYLabelAsLabel =
-                Label(negativeYLabel.toString(), Label.LabelStyle(Fonts.font, axisLabelColor))
-        val widestYLabelWidth = max(yLabelsAsLabels.maxOf { it.width }, negativeYLabelAsLabel.width)
+        val labelHeight = yLabelsAsLabels.first().height
+        val widestYLabelWidth = yLabelsAsLabels.maxOf { it.width }
         // We assume here that all labels have the same height. We need to deduct the height of
         // a label from the available height, because otherwise the label on the top would
         // overrun the height since the (x,y) coordinates define the bottom left corner of the
         // Label.
-        val yAxisLabelMaxY = chartHeight - labelHeight
+        val yAxisLabelMaxY = height - labelHeight
         // This is to account for the x axis and its labels which are below the lowest point
         val xAxisLabelsHeight = labelHeight
         val zeroYAxisLabelHeight = labelHeight
@@ -118,63 +167,60 @@ class LineChart(
         // We draw the y-axis labels first. They will take away some space on the left of the
         // widget which we need to consider when drawing the rest of the graph.
         var yAxisYPosition = 0f
-        val negativeOrientationLineYPosition = yAxisLabelMinY + labelHeight / 2
-        val yLabelsToDraw = if (hasNegativeYValues) listOf(negativeYLabelAsLabel) + yLabelsAsLabels else yLabelsAsLabels
-        yLabelsToDraw.forEachIndexed { index, label ->
-            val yPos = yAxisLabelMinY + index * (yAxisLabelYRange / (yLabelsToDraw.size - 1))
+        yLabels.forEachIndexed { index, value ->
+            val label = yLabelsAsLabels[index] // we assume yLabels.size == yLabelsAsLabels.size
+            val yPos = yAxisLabelMinY + index * (yAxisLabelYRange / (yLabels.size - 1))
             label.setPosition((widestYLabelWidth - label.width) / 2, yPos)
-            label.draw(batch, 1f)
+            addActor(label)
 
             // Draw y-axis orientation lines and x-axis
-            val zeroIndex = if (hasNegativeYValues) 1 else 0
+            val zeroIndex = value == 0
             drawLine(
-                batch,
                 widestYLabelWidth + axisToLabelPadding + axisLineWidth,
                 yPos + labelHeight / 2,
-                chartWidth,
+                width,
                 yPos + labelHeight / 2,
-                if (index != zeroIndex) orientationLineColor else axisColor,
-                if (index != zeroIndex) orientationLineWidth else axisLineWidth
+                if (zeroIndex) axisColor else orientationLineColor,
+                if (zeroIndex) axisLineWidth else orientationLineWidth
             )
-            if (index == zeroIndex) {
+            if (zeroIndex) {
                 yAxisYPosition = yPos + labelHeight / 2
             }
         }
 
         // Draw x-axis labels
-        val xLabelsAsLabels =
-                xLabels.map { Label(it.toString(), Label.LabelStyle(Fonts.font, axisLabelColor)) }
-        val lastXAxisLabelWidth = xLabelsAsLabels[xLabelsAsLabels.size - 1].width
+        val lastXAxisLabelWidth = xLabelsAsLabels.last().width
         val xAxisLabelMinX =
                 widestYLabelWidth + axisToLabelPadding + axisLineWidth / 2
-        val xAxisLabelMaxX = chartWidth - lastXAxisLabelWidth / 2
+        val xAxisLabelMaxX = width - lastXAxisLabelWidth / 2
         val xAxisLabelXRange = xAxisLabelMaxX - xAxisLabelMinX
-        xLabels.forEachIndexed { index, labelAsInt ->
-            val label = Label(labelAsInt.toString(), Label.LabelStyle(Fonts.font, axisLabelColor))
+        xLabelsAsLabels.forEachIndexed { index, label ->
             val xPos = xAxisLabelMinX + index * (xAxisLabelXRange / (xLabels.size - 1))
             label.setPosition(xPos - label.width / 2, 0f)
-            label.draw(batch, 1f)
+            addActor(label)
 
             // Draw x-axis orientation lines and y-axis
             drawLine(
-                batch,
                 xPos,
                 labelHeight + axisToLabelPadding + axisLineWidth,
                 xPos,
-                chartHeight,
+                height,
                 if (index > 0) orientationLineColor else axisColor,
-                if (index >0) orientationLineWidth else axisLineWidth
+                if (index > 0) orientationLineWidth else axisLineWidth
             )
         }
 
         // Draw line charts for each color
         val linesMinX = widestYLabelWidth + axisToLabelPadding + axisLineWidth
-        val linesMaxX = chartWidth - lastXAxisLabelWidth / 2
+        val linesMaxX = width - lastXAxisLabelWidth / 2
         val linesMinY = yAxisYPosition
-        val linesMaxY = chartHeight - labelHeight / 2
-        val scaleX = (linesMaxX - linesMinX) / xLabels.max()
-        val scaleY = (linesMaxY - linesMinY) / yLabels.max()
-        val negativeScaleY = if (hasNegativeYValues) (linesMinY - negativeOrientationLineYPosition) / -negativeYLabel else 0f
+        val linesMaxY = height - labelHeight / 2
+        val scaleX = (linesMaxX - linesMinX) / (xLabels.max() - xLabels.min())
+        val scaleY = (linesMaxY - linesMinY) / (yLabels.max() - yLabels.min())
+        val negativeOrientationLineYPosition = yAxisLabelMinY + labelHeight / 2
+        val minXLabel = xLabels.min()
+        val minYLabel = yLabels.min()
+        val negativeScaleY = (negativeOrientationLineYPosition - linesMinY) / if (minYLabel < 0) minYLabel else 1
         val sortedPoints = dataPoints.sortedBy { it.x }
         val pointsByCiv = sortedPoints.groupBy { it.civ }
         // We want the current player civ to be drawn last, so it is never overlapped by another player.
@@ -191,8 +237,10 @@ class LineChart(
         for (civ in civIterationOrder) {
             val points = pointsByCiv[civ]!!
             val scaledPoints : List<DataPoint<Float>> = points.map {
-                val yScale = if (it.y < 0f) negativeScaleY else scaleY
-                DataPoint(linesMinX + it.x * scaleX, linesMinY + it.y * yScale, it.civ)
+                if (it.y < 0f)
+                    DataPoint(linesMinX + (it.x - minXLabel) * scaleX, linesMinY + it.y * negativeScaleY, it.civ)
+                else
+                    DataPoint(linesMinX + (it.x - minXLabel) * scaleX, linesMinY + (it.y - minYLabel) * scaleY, it.civ)
             }
             // Probably nobody can tell the difference of one pixel, so that seems like a reasonable epsilon.
             val simplifiedScaledPoints = douglasPeucker(scaledPoints, 1f)
@@ -205,7 +253,7 @@ class LineChart(
                     val selectedCivBackgroundColor =
                         if (useActualColor(civ)) civ.nation.getInnerColor() else Color.LIGHT_GRAY
                     drawLine(
-                        batch, a.x, a.y, b.x, b.y,
+                        a.x, a.y, b.x, b.y,
                         selectedCivBackgroundColor, chartLineWidth * 3
                     )
                 }
@@ -214,31 +262,19 @@ class LineChart(
                 val a = simplifiedScaledPoints[i - 1]
                 val b = simplifiedScaledPoints[i]
                 val civLineColor = if (useActualColor(civ)) civ.nation.getOuterColor() else Color.DARK_GRAY
-                drawLine(batch, a.x, a.y, b.x, b.y, civLineColor, chartLineWidth)
+                drawLine(a.x, a.y, b.x, b.y, civLineColor, chartLineWidth)
 
                 // Draw the selected Civ icon on its last datapoint
                 if (i == simplifiedScaledPoints.size - 1 && selectedCiv == civ && selectedCiv in lastTurnDataPoints) {
-                    val selectedCivIcon =
-                            VictoryScreenCivGroup(
-                                selectedCiv,
-                                "",
-                                viewingCiv,
-                                DefeatedPlayerStyle.REGULAR
-                            ).children[0].run {
-                                (this as? Image)?.surroundWithCircle(30f, color = Color.LIGHT_GRAY)
-                                    ?: this
-                            }
-                    selectedCivIcon.run {
+                    val selectedCivIcon = VictoryScreenCivGroup.getCivImageAndColors(selectedCiv, viewingCiv, DefeatedPlayerStyle.REGULAR).first
+                    selectedCivIcon.apply {
                         setPosition(b.x, b.y, Align.center)
                         setSize(33f, 33f) // Dead Civs need this
-                        draw(batch, parentAlpha)
                     }
+                    addActor(selectedCivIcon)
                 }
             }
         }
-
-        // Restore the previous batch transformation matrix
-        batch.transformMatrix = oldTransformMatrix
     }
 
     private fun useActualColor(civ: Civilization) : Boolean {
@@ -260,29 +296,18 @@ class LineChart(
         return lastDataPoints
     }
 
-    private fun drawLine(
-        batch: Batch,
-        x1: Float,
-        y1: Float,
-        x2: Float,
-        y2: Float,
-        color: Color,
-        width: Float
-    ) {
-        shapeRenderer.projectionMatrix = batch.projectionMatrix
-        shapeRenderer.transformMatrix = batch.transformMatrix
-        batch.end()
+    private fun drawLine(x1: Float, y1: Float, x2: Float, y2: Float, lineColor: Color, width: Float) {
 
-        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled)
-        shapeRenderer.color = color
-        shapeRenderer.rectLine(x1, y1, x2, y2, width)
-        // Draw a circle at the beginning and end points of the line to make consecutive lines
-        // (which might point in different directions) connect nicely.
-        shapeRenderer.circle(x1, y1, width / 2)
-        shapeRenderer.circle(x2, y2, width / 2)
-        shapeRenderer.end()
+        val line = ImageGetter.getLine(x1, y1, x2, y2, width)
+        line.color = lineColor
+        addActor(line)
 
-        batch.begin()
+        val edgeRounding = ImageGetter.getCircle().apply {
+            setSize(width, width)
+            color = lineColor
+            setPosition(x1 - width / 2f, y1 - width / 2f)
+        }
+        addActor(edgeRounding)
     }
 
     private fun douglasPeucker(points: List<DataPoint<Float>>, epsilon: Float): List<DataPoint<Float>> {
@@ -352,10 +377,4 @@ class LineChart(
         return sqrt((dx * dx + dy * dy).toDouble()).toFloat()
     }
 
-    override fun getMinWidth() = chartWidth
-    override fun getMinHeight() = chartHeight
-    override fun getPrefWidth() = chartWidth
-    override fun getPrefHeight() = chartHeight
-    override fun getMaxWidth() = chartWidth
-    override fun getMaxHeight() = chartHeight
 }

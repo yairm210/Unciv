@@ -3,11 +3,12 @@ package com.unciv.logic.city
 import com.badlogic.gdx.math.Vector2
 import com.unciv.GUI
 import com.unciv.logic.IsPartOfGameInfoSerialization
+import com.unciv.logic.city.managers.CityConquestFunctions
 import com.unciv.logic.city.managers.CityEspionageManager
 import com.unciv.logic.city.managers.CityExpansionManager
-import com.unciv.logic.city.managers.CityInfoConquestFunctions
 import com.unciv.logic.city.managers.CityPopulationManager
 import com.unciv.logic.city.managers.CityReligionManager
+import com.unciv.logic.city.managers.SpyFleeReason
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.map.TileMap
@@ -15,6 +16,7 @@ import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.RoadStatus
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.Counter
+import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.ModOptionsConstants
 import com.unciv.models.ruleset.tile.ResourceSupplyList
 import com.unciv.models.ruleset.tile.ResourceType
@@ -149,13 +151,13 @@ class City : IsPartOfGameInfoSerialization {
     fun isCapital(): Boolean = cityConstructions.getBuiltBuildings().any { it.hasUnique(UniqueType.IndicatesCapital) }
     fun isCoastal(): Boolean = centerTile.isCoastalTile()
 
-    fun capitalCityIndicator(): String {
+    fun capitalCityIndicator(): Building {
         val indicatorBuildings = getRuleset().buildings.values
             .asSequence()
             .filter { it.hasUnique(UniqueType.IndicatesCapital) }
 
         val civSpecificBuilding = indicatorBuildings.firstOrNull { it.uniqueTo == civ.civName }
-        return civSpecificBuilding?.name ?: indicatorBuildings.first().name
+        return civSpecificBuilding ?: indicatorBuildings.first()
     }
 
     fun isConnectedToCapital(connectionTypePredicate: (Set<String>) -> Boolean = { true }): Boolean {
@@ -201,21 +203,45 @@ class City : IsPartOfGameInfoSerialization {
     fun getCityResources(): ResourceSupplyList {
         val cityResources = ResourceSupplyList()
 
-        for (tileInfo in getTiles().filter { it.resource != null }) {
-            val resource = tileInfo.tileResource
-            val amount = getTileResourceAmount(tileInfo)
-            if (amount > 0) cityResources.add(resource, "Tiles", amount)
+        val resourceModifer = HashMap<String, Float>()
+        for (resource in civ.gameInfo.ruleset.tileResources.values)
+            resourceModifer[resource.name] = civ.getResourceModifier(resource)
+
+        getResourcesFromTiles(resourceModifer, cityResources)
+
+        getResourceFromUniqueImprovedTiles(cityResources, resourceModifer)
+
+        manageCityResourcesRequiredByBuildings(cityResources)
+
+        getCityResourcesFromUniqueBuildings(cityResources, resourceModifer)
+
+        if (civ.isCityState() && isCapital() && civ.cityStateResource != null) {
+            cityResources.add(
+                getRuleset().tileResources[civ.cityStateResource]!!,
+                "Mercantile City-State"
+            )
         }
 
-        for (tileInfo in getTiles()) {
+        return cityResources
+    }
+
+    private fun getResourcesFromTiles(resourceModifer: HashMap<String, Float>, cityResources: ResourceSupplyList) {
+        for (tileInfo in getTiles().filter { it.resource != null }) {
+            val resource = tileInfo.tileResource
+            val amount = getTileResourceAmount(tileInfo) * resourceModifer[resource.name]!!
+            if (amount > 0) cityResources.add(resource, "Tiles", amount.toInt())
+        }
+    }
+
+    private fun getResourceFromUniqueImprovedTiles(cityResources: ResourceSupplyList, resourceModifer: HashMap<String, Float>) {
+        for (tileInfo in getTiles().filter { it.getUnpillagedImprovement() != null }) {
             val stateForConditionals = StateForConditionals(civ, this, tile = tileInfo)
-            if (tileInfo.getUnpillagedImprovement() == null) continue
             val tileImprovement = tileInfo.getUnpillagedTileImprovement()
             for (unique in tileImprovement!!.getMatchingUniques(UniqueType.ProvidesResources, stateForConditionals)) {
                 val resource = getRuleset().tileResources[unique.params[1]] ?: continue
                 cityResources.add(
                     resource, "Improvements",
-                    unique.params[0].toInt()
+                    (unique.params[0].toFloat() * resourceModifer[resource.name]!!).toInt()
                 )
             }
             for (unique in tileImprovement.getMatchingUniques(UniqueType.ConsumesResources, stateForConditionals)) {
@@ -226,31 +252,36 @@ class City : IsPartOfGameInfoSerialization {
                 )
             }
         }
+    }
 
-        val freeBuildings = civ.civConstructions.getFreeBuildings(id)
+    private fun manageCityResourcesRequiredByBuildings(cityResources: ResourceSupplyList) {
+        val freeBuildings = civ.civConstructions.getFreeBuildingNames(this)
         for (building in cityConstructions.getBuiltBuildings()) {
             // Free buildings cost no resources
             if (building.name in freeBuildings) continue
             cityResources.subtractResourceRequirements(building.getResourceRequirementsPerTurn(), getRuleset(), "Buildings")
         }
+    }
 
-        for (unique in getLocalMatchingUniques(UniqueType.ProvidesResources, StateForConditionals(civ, this))) { // E.G "Provides [1] [Iron]"
+    private fun getCityResourcesFromUniqueBuildings(cityResources: ResourceSupplyList, resourceModifer: HashMap<String, Float>) {
+        for (unique in cityConstructions.builtBuildingUniqueMap.getMatchingUniques(UniqueType.ProvidesResources, StateForConditionals(civ, this))) { // E.G "Provides [1] [Iron]"
             val resource = getRuleset().tileResources[unique.params[1]]
                 ?: continue
             cityResources.add(
                 resource, "Buildings",
-                unique.params[0].toInt()
+                (unique.params[0].toFloat() * resourceModifer[resource.name]!!).toInt()
             )
         }
+    }
 
-        if (civ.isCityState() && isCapital() && civ.cityStateResource != null) {
-            cityResources.add(
-                getRuleset().tileResources[civ.cityStateResource]!!,
-                "Mercantile City-State"
-            )
-        }
+    /** Gets the number of resources available to this city
+     * Accommodates both city-wide and civ-wide resources */
+    fun getResourceAmount(resourceName: String): Int {
+        val resource = getRuleset().tileResources[resourceName] ?: return 0
 
-        return cityResources
+        if (resource.hasUnique(UniqueType.CityResource))
+            return getCityResources().asSequence().filter { it.resource == resource }.sumOf { it.amount }
+        return civ.getResourceAmount(resourceName)
     }
 
     private fun getTileResourceAmount(tile: Tile): Int {
@@ -333,6 +364,10 @@ class City : IsPartOfGameInfoSerialization {
         val gppCounter = Counter<String>()
         for (entry in getGreatPersonPointsForNextTurn().values)
             gppCounter.add(entry)
+        // Remove all "gpp" values that are not valid units
+        for (key in gppCounter.keys.toSet())
+            if (key !in getRuleset().units)
+                gppCounter.remove(key)
         return gppCounter
     }
 
@@ -445,7 +480,8 @@ class City : IsPartOfGameInfoSerialization {
         // unless, of course, they are captured by a one-city-challenger.
         if (!canBeDestroyed() && !overrideSafeties) return
 
-        for (airUnit in getCenterTile().airUnits.toList()) airUnit.destroy() //Destroy planes stationed in city
+        // Destroy planes stationed in city
+        for (airUnit in getCenterTile().airUnits.toList()) airUnit.destroy()
 
         // The relinquish ownership MUST come before removing the city,
         // because it updates the city stats which assumes there is a capital, so if you remove the capital it crashes
@@ -455,9 +491,7 @@ class City : IsPartOfGameInfoSerialization {
 
         // Move the capital if destroyed (by a nuke or by razing)
         // Must be before removing existing capital because we may be annexing a puppet which means city stats update - see #8337
-        if (isCapital() && civ.cities.size > 1) {
-            civ.moveCapitalToNextLargest()
-        }
+        if (isCapital()) civ.moveCapitalToNextLargest(null)
 
         civ.cities = civ.cities.toMutableList().apply { remove(this@City) }
         getCenterTile().changeImprovement("City ruins")
@@ -469,6 +503,7 @@ class City : IsPartOfGameInfoSerialization {
                 unit.movement.teleportToClosestMoveableTile()
         }
 
+        espionage.removeAllPresentSpies(SpyFleeReason.CityDestroyed)
 
         // Update proximity rankings for all civs
         for (otherCiv in civ.gameInfo.getAliveMajorCivs()) {
@@ -483,18 +518,18 @@ class City : IsPartOfGameInfoSerialization {
         civ.gameInfo.cityDistances.setDirty()
     }
 
-    fun annexCity() = CityInfoConquestFunctions(this).annexCity()
+    fun annexCity() = CityConquestFunctions(this).annexCity()
 
     /** This happens when we either puppet OR annex, basically whenever we conquer a city and don't liberate it */
     fun puppetCity(conqueringCiv: Civilization) =
-        CityInfoConquestFunctions(this).puppetCity(conqueringCiv)
+        CityConquestFunctions(this).puppetCity(conqueringCiv)
 
     /* Liberating is returning a city to its founder - makes you LOSE warmongering points **/
     fun liberateCity(conqueringCiv: Civilization) =
-        CityInfoConquestFunctions(this).liberateCity(conqueringCiv)
+        CityConquestFunctions(this).liberateCity(conqueringCiv)
 
     fun moveToCiv(newCivInfo: Civilization) =
-        CityInfoConquestFunctions(this).moveToCiv(newCivInfo)
+        CityConquestFunctions(this).moveToCiv(newCivInfo)
 
     internal fun tryUpdateRoadStatus() {
         if (getCenterTile().roadStatus == RoadStatus.None) {
@@ -512,8 +547,12 @@ class City : IsPartOfGameInfoSerialization {
         getRuleset().buildings[buildingName]!!.cost / 10
 
     fun sellBuilding(buildingName: String) {
-        cityConstructions.removeBuilding(buildingName)
-        civ.addGold(getGoldForSellingBuilding(buildingName))
+        sellBuilding(getRuleset().buildings[buildingName]!!)
+    }
+
+    fun sellBuilding(building: Building) {
+        cityConstructions.removeBuilding(building)
+        civ.addGold(getGoldForSellingBuilding(building.name))
         hasSoldBuildingThisTurn = true
 
         population.unassignExtraPopulation() // If the building provided specialists, release them to other work
@@ -536,7 +575,6 @@ class City : IsPartOfGameInfoSerialization {
         return when (filter) {
             "in this city" -> true // Filtered by the way uniques are found
             "in all cities" -> true
-            "in other cities" -> true // Filtered by the way uniques are found
             "in all coastal cities" -> isCoastal()
             "in capital" -> isCapital()
             "in all non-occupied cities" -> !cityStats.hasExtraAnnexUnhappiness() || isPuppet
@@ -579,13 +617,14 @@ class City : IsPartOfGameInfoSerialization {
         uniqueType: UniqueType,
         stateForConditionals: StateForConditionals = StateForConditionals(civ, this)
     ): Sequence<Unique> {
-        return civ.getMatchingUniques(uniqueType, stateForConditionals, this) +
+        return civ.getMatchingUniques(uniqueType, stateForConditionals) +
                 getLocalMatchingUniques(uniqueType, stateForConditionals)
     }
 
+    // Uniques special to this city
     fun getLocalMatchingUniques(uniqueType: UniqueType, stateForConditionals: StateForConditionals = StateForConditionals(civ, this)): Sequence<Unique> {
         return (
-            cityConstructions.builtBuildingUniqueMap.getUniques(uniqueType).filter { !it.isAntiLocalEffect }
+            cityConstructions.builtBuildingUniqueMap.getUniques(uniqueType).filter { it.isLocalEffect }
             + religion.getUniques().filter { it.isOfType(uniqueType) }
         ).filter {
             it.conditionalsApply(stateForConditionals)
@@ -593,6 +632,7 @@ class City : IsPartOfGameInfoSerialization {
     }
 
 
+    // Uniques coming from this city, but that should be provided globally
     fun getMatchingUniquesWithNonLocalEffects(uniqueType: UniqueType, stateForConditionals: StateForConditionals): Sequence<Unique> {
         val uniques = cityConstructions.builtBuildingUniqueMap.getUniques(uniqueType)
         // Memory performance showed that this function was very memory intensive, thus we only create the filter if needed

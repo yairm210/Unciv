@@ -1,7 +1,6 @@
 package com.unciv.ui.screens.worldscreen.unit.actions
 
 import com.badlogic.gdx.graphics.Color
-import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.ui.Button
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.GUI
@@ -10,13 +9,11 @@ import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.models.UnitAction
 import com.unciv.models.UnitActionType
 import com.unciv.models.UpgradeUnitAction
-import com.unciv.ui.components.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.components.extensions.disable
-import com.unciv.ui.components.input.keyShortcuts
 import com.unciv.ui.components.input.onActivation
 import com.unciv.ui.components.input.onRightClick
 import com.unciv.ui.images.IconTextButton
-import com.unciv.ui.screens.overviewscreen.UnitUpgradeMenu
+import com.unciv.ui.popups.UnitUpgradeMenu
 import com.unciv.ui.screens.worldscreen.WorldScreen
 
 class UnitActionsTable(val worldScreen: WorldScreen) : Table() {
@@ -29,8 +26,7 @@ class UnitActionsTable(val worldScreen: WorldScreen) : Table() {
             val button = getUnitActionButton(unit, unitAction)
             if (unitAction is UpgradeUnitAction) {
                 button.onRightClick {
-                    val pos = button.localToStageCoordinates(Vector2(button.width, button.height))
-                    UnitUpgradeMenu(worldScreen.stage, pos, unit, unitAction, callbackAfterAnimation = true) {
+                    UnitUpgradeMenu(worldScreen.stage, button, unit, unitAction, callbackAfterAnimation = true) {
                         worldScreen.shouldUpdate = true
                     }
                 }
@@ -52,13 +48,12 @@ class UnitActionsTable(val worldScreen: WorldScreen) : Table() {
         if (unitAction.type == UnitActionType.Promote && unitAction.action != null)
             actionButton.color = Color.GREEN.cpy().lerp(Color.WHITE, 0.5f)
 
-        actionButton.addTooltip(binding)
         actionButton.pack()
 
         if (unitAction.action == null) {
             actionButton.disable()
         } else {
-            actionButton.onActivation(unitAction.uncivSound) {
+            actionButton.onActivation(unitAction.uncivSound, binding) {
                 unitAction.action.invoke()
                 GUI.setUpdateWorldOnNextRender()
                 // We keep the unit action/selection overlay from the previous unit open even when already selecting another unit
@@ -66,13 +61,12 @@ class UnitActionsTable(val worldScreen: WorldScreen) : Table() {
                 // overlay, since the user definitely wants to interact with the new unit.
                 worldScreen.mapHolder.removeUnitActionOverlay()
                 if (UncivGame.Current.settings.autoUnitCycle
-                        && (unit.isDestroyed || unitAction.type.isSkippingToNextUnit || unit.currentMovement == 0f)) {
+                        && (unit.isDestroyed || (unit.isMoving() && unit.currentMovement == 0f && unitAction.type.isSkippingToNextUnit) || (!unit.isMoving() && unitAction.type.isSkippingToNextUnit))) {
                     worldScreen.switchToNextUnit()
                 }
             }
-            actionButton.keyShortcuts.add(binding)
         }
 
-        return actionButton
+         return actionButton
     }
 }

@@ -5,6 +5,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
 import com.unciv.UncivGame
+import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.trade.TradeOffer
 import com.unciv.logic.trade.TradeOffersList
 import com.unciv.logic.trade.TradeType
@@ -52,7 +53,9 @@ class OffersListScroll(
     fun update(
         offersToDisplay: TradeOffersList,
         otherOffers: TradeOffersList,
-        untradableOffers: ResourceSupplyList = ResourceSupplyList.emptyList
+        untradableOffers: ResourceSupplyList = ResourceSupplyList.emptyList,
+        ourCiv: Civilization,
+        theirCiv: Civilization
     ) {
         table.clear()
         expanderTabs.clear()
@@ -103,11 +106,16 @@ class OffersListScroll(
                 }
 
                 val amountPerClick =
-                        if (offer.type == Gold) 50
-                        else 1
+                    when (offer.type) {
+                        Gold -> 50
+                        Treaty -> Int.MAX_VALUE
+                        else -> 1
+                    }
 
-                if (offer.isTradable() && offer.name != Constants.peaceTreaty && // can't disable peace treaty!
-                        offer.name != Constants.researchAgreement) {
+                if (offer.isTradable() && offer.name != Constants.peaceTreaty // can't disable peace treaty!
+                    && (offer.name != Constants.researchAgreement // If we have a research agreement make sure the total gold of both Civs is higher than the total cost
+                        // If both civs combined can pay for the research agreement, don't disable it. One can offer the other it's gold.
+                        || (ourCiv.gold + theirCiv.gold > ourCiv.diplomacyFunctions.getResearchAgreementCost(theirCiv) * 2))) { 
 
                     // highlight unique suggestions
                     if (offerType in listOf(Luxury_Resource, Strategic_Resource)

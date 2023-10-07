@@ -1,16 +1,10 @@
 package com.unciv.models.ruleset
 
-import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.files.FileHandle
 import com.unciv.json.fromJsonFile
 import com.unciv.json.json
 import com.unciv.logic.BackwardCompatibility.updateDeprecations
-import com.unciv.logic.UncivShowableException
-import com.unciv.logic.map.MapParameters
-import com.unciv.models.Counter
-import com.unciv.models.ModConstants
 import com.unciv.models.metadata.BaseRuleset
-import com.unciv.models.metadata.GameParameters
 import com.unciv.models.ruleset.nation.CityStateType
 import com.unciv.models.ruleset.nation.Difficulty
 import com.unciv.models.ruleset.nation.Nation
@@ -22,61 +16,34 @@ import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.ruleset.tile.TileResource
 import com.unciv.models.ruleset.unique.IHasUniques
 import com.unciv.models.ruleset.unique.Unique
-import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.ruleset.unit.Promotion
 import com.unciv.models.ruleset.unit.UnitType
+import com.unciv.models.ruleset.validation.RulesetValidator
 import com.unciv.models.stats.INamed
-import com.unciv.models.stats.NamedStats
 import com.unciv.models.translations.tr
-import com.unciv.ui.components.extensions.colorFromRGB
 import com.unciv.utils.Log
-import com.unciv.utils.debug
 import kotlin.collections.set
-
-object ModOptionsConstants {
-    const val diplomaticRelationshipsCannotChange = "Diplomatic relationships cannot change"
-    const val convertGoldToScience = "Can convert gold to science with sliders"
-    const val allowCityStatesSpawnUnits = "Allow City States to spawn with additional units"
-    const val tradeCivIntroductions = "Can trade civilization introductions for [] Gold"
-    const val disableReligion = "Disable religion"
-    const val allowRazeCapital = "Allow raze capital"
-    const val allowRazeHolyCity = "Allow raze holy city"
-}
-
-class ModOptions : IHasUniques {
-    var isBaseRuleset = false
-    var techsToRemove = HashSet<String>()
-    var buildingsToRemove = HashSet<String>()
-    var unitsToRemove = HashSet<String>()
-    var nationsToRemove = HashSet<String>()
-
-
-    var lastUpdated = ""
-    var modUrl = ""
-    var defaultBranch = "master"
-    var author = ""
-    var modSize = 0
-    var topics = mutableListOf<String>()
-
-    override var uniques = ArrayList<String>()
-
-    // If these two are delegated with "by lazy", the mod download process crashes and burns
-    // Instead, Ruleset.load sets them, which is preferable in this case anyway
-    override var uniqueObjects: List<Unique> = listOf()
-    override var uniqueMap: Map<String, List<Unique>> = mapOf()
-
-    override fun getUniqueTarget() = UniqueTarget.ModOptions
-
-    val constants = ModConstants()
-}
 
 class Ruleset {
 
-    var folderLocation:FileHandle?=null
+    /** If (and only if) this Ruleset is a mod, this will be the source folder.
+     *  In other words, this is `null` for built-in and combined rulesets.
+     */
+    var folderLocation: FileHandle? = null
 
+    /** A Ruleset instance can represent a built-in ruleset, a mod or a combined ruleset.
+     *
+     *  `name` will be the built-in's fullName, the mod's name as displayed (same as folder name),
+     *  or in the case of combined rulesets it will be empty.
+     *
+     *  @see toString
+     *  @see BaseRuleset.fullName
+     *  @see RulesetCache.getComplexRuleset
+     */
     var name = ""
+
     val beliefs = LinkedHashMap<String, Belief>()
     val buildings = LinkedHashMap<String, Building>()
     val difficulties = LinkedHashMap<String, Difficulty>()
@@ -91,6 +58,7 @@ class Ruleset {
     val quests = LinkedHashMap<String, Quest>()
     val specialists = LinkedHashMap<String, Specialist>()
     val technologies = LinkedHashMap<String, Technology>()
+    val techColumns = ArrayList<TechColumn>()
     val terrains = LinkedHashMap<String, Terrain>()
     val tileImprovements = LinkedHashMap<String, TileImprovement>()
     val tileResources = LinkedHashMap<String, TileResource>()
@@ -111,8 +79,10 @@ class Ruleset {
 
     private fun <T : INamed> createHashmap(items: Array<T>): LinkedHashMap<String, T> {
         val hashMap = LinkedHashMap<String, T>(items.size)
-        for (item in items)
+        for (item in items) {
             hashMap[item.name] = item
+            (item as? IRulesetObject)?.originRuleset = name
+        }
         return hashMap
     }
 
@@ -152,6 +122,7 @@ class Ruleset {
                 technologies.remove(it)
             }
         technologies.putAll(ruleset.technologies)
+        techColumns.addAll(ruleset.techColumns)
         terrains.putAll(ruleset.terrains)
         tileImprovements.putAll(ruleset.tileImprovements)
         tileResources.putAll(ruleset.tileResources)
@@ -160,7 +131,7 @@ class Ruleset {
         cityStateTypes.putAll(ruleset.cityStateTypes)
         ruleset.modOptions.unitsToRemove
             .flatMap { unitToRemove ->
-                units.filter { it.apply { value.ruleset=this@Ruleset }.value.matchesFilter(unitToRemove) }.keys
+                units.filter { it.apply { value.ruleset = this@Ruleset }.value.matchesFilter(unitToRemove) }.keys
             }.toSet().forEach {
                 units.remove(it)
             }
@@ -168,30 +139,7 @@ class Ruleset {
         modOptions.uniques.addAll(ruleset.modOptions.uniques)
         modOptions.constants.merge(ruleset.modOptions.constants)
 
-        // Allow each mod to define their own columns, and if there's a conflict, later mods will be shifted right
-        // We should never be editing the original ruleset objects, only copies
-        val addRulesetUnitPromotionClones = ruleset.unitPromotions.values.map { it.clone() }
-        val existingPromotionLocations =
-                unitPromotions.values.map { "${it.row}/${it.column}" }.toHashSet()
-        val promotionsWithConflictingLocations = addRulesetUnitPromotionClones.filter {
-            existingPromotionLocations.contains("${it.row}/${it.column}")
-        }
-        val columnsWithConflictingLocations =
-                promotionsWithConflictingLocations.map { it.column }.distinct()
-
-        if (columnsWithConflictingLocations.isNotEmpty()) {
-            var highestExistingColumn = unitPromotions.values.maxOf { it.column }
-            for (conflictingColumn in columnsWithConflictingLocations) {
-                highestExistingColumn += 1
-                val newColumn = highestExistingColumn
-                for (promotion in addRulesetUnitPromotionClones)
-                    if (promotion.column == conflictingColumn)
-                        promotion.column = newColumn
-            }
-        }
-        val finalModUnitPromotionsMap = addRulesetUnitPromotionClones.associateBy { it.name }
-
-        unitPromotions.putAll(finalModUnitPromotionsMap)
+        unitPromotions.putAll(ruleset.unitPromotions)
 
         mods += ruleset.mods
     }
@@ -212,6 +160,7 @@ class Ruleset {
         ruinRewards.clear()
         specialists.clear()
         technologies.clear()
+        techColumns.clear()
         terrains.clear()
         tileImprovements.clear()
         tileResources.clear()
@@ -248,6 +197,8 @@ class Ruleset {
             allRulesetObjects() + sequenceOf(modOptions)
 
     fun load(folderHandle: FileHandle) {
+        // Note: Most files are loaded using createHashmap, which sets originRuleset automatically.
+        // For other files containing IRulesetObject's we'll have to remember to do so manually - e.g. Tech.
         val modOptionsFile = folderHandle.child("ModOptions.json")
         if (modOptionsFile.exists()) {
             try {
@@ -256,17 +207,17 @@ class Ruleset {
             } catch (ex: Exception) {
                 Log.error("Failed to get modOptions from json file", ex)
             }
-            modOptions.uniqueObjects = modOptions.uniques.map { Unique(it, UniqueTarget.ModOptions) }
-            modOptions.uniqueMap = modOptions.uniqueObjects.groupBy { it.placeholderText }
         }
 
         val techFile = folderHandle.child("Techs.json")
         if (techFile.exists()) {
             val techColumns = json().fromJsonFile(Array<TechColumn>::class.java, techFile)
             for (techColumn in techColumns) {
+                this.techColumns.add(techColumn)
                 for (tech in techColumn.techs) {
                     if (tech.cost == 0) tech.cost = techColumn.techCost
                     tech.column = techColumn
+                    tech.originRuleset = name
                     technologies[tech.name] = tech
                 }
             }
@@ -278,7 +229,10 @@ class Ruleset {
         val terrainsFile = folderHandle.child("Terrains.json")
         if (terrainsFile.exists()) {
             terrains += createHashmap(json().fromJsonFile(Array<Terrain>::class.java, terrainsFile))
-            for (terrain in terrains.values) terrain.setTransients()
+            for (terrain in terrains.values) {
+                terrain.originRuleset = name
+                terrain.setTransients()
+            }
         }
 
         val resourcesFile = folderHandle.child("TileResources.json")
@@ -308,14 +262,6 @@ class Ruleset {
         val promotionsFile = folderHandle.child("UnitPromotions.json")
         if (promotionsFile.exists()) unitPromotions += createHashmap(json().fromJsonFile(Array<Promotion>::class.java, promotionsFile))
 
-        var topRow = unitPromotions.values.filter { it.column == 0 }.maxOfOrNull { it.row } ?: -1
-        for (promotion in unitPromotions.values)
-            if (promotion.row == -1){
-                promotion.column = 0
-                topRow += 1
-                promotion.row = topRow
-            }
-
         val questsFile = folderHandle.child("Quests.json")
         if (questsFile.exists()) quests += createHashmap(json().fromJsonFile(Array<Quest>::class.java, questsFile))
 
@@ -341,6 +287,7 @@ class Ruleset {
                 // Append child policies of this branch
                 for (policy in branch.policies) {
                     policy.branch = branch
+                    policy.originRuleset = name
                     if (policy.requires == null) {
                         policy.requires = arrayListOf(branch.name)
                     }
@@ -391,6 +338,7 @@ class Ruleset {
         val globalUniquesFile = folderHandle.child("GlobalUniques.json")
         if (globalUniquesFile.exists()) {
             globalUniques = json().fromJsonFile(GlobalUniques::class.java, globalUniquesFile)
+            globalUniques.originRuleset = name
         }
 
         val victoryTypesFile = folderHandle.child("VictoryTypes.json")
@@ -433,7 +381,7 @@ class Ruleset {
                             RulesetValidator(this@Ruleset).checkUnique(
                                 Unique(it),
                                 false,
-                                "",
+                                cityStateType,
                                 UniqueType.UniqueComplianceErrorSeverity.RulesetSpecific
                             ).isEmpty()
                         })
@@ -441,7 +389,7 @@ class Ruleset {
                             RulesetValidator(this@Ruleset).checkUnique(
                                 Unique(it),
                                 false,
-                                "",
+                                cityStateType,
                                 UniqueType.UniqueComplianceErrorSeverity.RulesetSpecific
                             ).isEmpty()
                         })
@@ -458,8 +406,9 @@ class Ruleset {
         for (building in buildings.values) {
             if (building.cost == -1 && building.getMatchingUniques(UniqueType.Unbuildable).none { it.conditionals.isEmpty() }) {
                 val column = technologies[building.requiredTech]?.column
-                        ?: throw UncivShowableException("Building '[${building.name}]' is buildable and therefore must either have an explicit cost or reference an existing tech.")
-                building.cost = if (building.isAnyWonder()) column.wonderCost else column.buildingCost
+                if (column != null) {
+                    building.cost = if (building.isAnyWonder()) column.wonderCost else column.buildingCost
+                }
             }
         }
     }
@@ -486,176 +435,4 @@ class Ruleset {
     }
 
     fun checkModLinks(tryFixUnknownUniques: Boolean = false) = RulesetValidator(this).getErrorList(tryFixUnknownUniques)
-}
-
-/** Loading mods is expensive, so let's only do it once and
- * save all of the loaded rulesets somewhere for later use
- *  */
-object RulesetCache : HashMap<String,Ruleset>() {
-    /** Whether mod checking allows untyped uniques - set to `false` once all vanilla uniques are converted! */
-    var modCheckerAllowUntypedUniques = true
-
-    /** Similarity below which an untyped unique can be considered a potential misspelling.
-     * Roughly corresponds to the fraction of the Unique placeholder text that can be different/misspelled, but with some extra room for [getRelativeTextDistance] idiosyncrasies. */
-    var uniqueMisspellingThreshold = 0.15 // Tweak as needed. Simple misspellings seem to be around 0.025, so would mostly be caught by 0.05. IMO 0.1 would be good, but raising to 0.15 also seemed to catch what may be an outdated Unique.
-
-
-    /** Returns error lines from loading the rulesets, so we can display the errors to users */
-    fun loadRulesets(consoleMode: Boolean = false, noMods: Boolean = false) :List<String> {
-        val newRulesets = HashMap<String, Ruleset>()
-
-        for (ruleset in BaseRuleset.values()) {
-            val fileName = "jsons/${ruleset.fullName}"
-            val fileHandle =
-                if (consoleMode) FileHandle(fileName)
-                else Gdx.files.internal(fileName)
-            newRulesets[ruleset.fullName] = Ruleset().apply {
-                load(fileHandle)
-                name = ruleset.fullName
-            }
-        }
-        this.putAll(newRulesets)
-
-        val errorLines = ArrayList<String>()
-        if (!noMods){
-            val modsHandles = if (consoleMode) FileHandle("mods").list()
-            else Gdx.files.local("mods").list()
-
-            for (modFolder in modsHandles) {
-                if (modFolder.name().startsWith('.')) continue
-                if (!modFolder.isDirectory) continue
-                try {
-                    val modRuleset = Ruleset()
-                    modRuleset.load(modFolder.child("jsons"))
-                    modRuleset.name = modFolder.name()
-                    modRuleset.folderLocation = modFolder
-                    newRulesets[modRuleset.name] = modRuleset
-                    debug("Mod loaded successfully: %s", modRuleset.name)
-                    if (Log.shouldLog()) {
-                        val modLinksErrors = modRuleset.checkModLinks()
-                        // For extension mods which use references to base ruleset objects, the parameter type
-                        // errors are irrelevant - the checker ran without a base ruleset
-                        val logFilter: (RulesetError) -> Boolean =
-                            if (modRuleset.modOptions.isBaseRuleset) { { it.errorSeverityToReport > RulesetErrorSeverity.WarningOptionsOnly } }
-                            else { { it.errorSeverityToReport > RulesetErrorSeverity.WarningOptionsOnly && !it.text.contains("does not fit parameter type") } }
-                        if (modLinksErrors.any(logFilter)) {
-                            debug("checkModLinks errors: %s", modLinksErrors.getErrorText(logFilter))
-                        }
-                    }
-                } catch (ex: Exception) {
-                    errorLines += "Exception loading mod '${modFolder.name()}':"
-                    errorLines += "  ${ex.localizedMessage}"
-                    errorLines += "  ${ex.cause?.localizedMessage}"
-                }
-            }
-            if (Log.shouldLog()) for (line in errorLines) debug(line)
-        }
-
-        // We save the 'old' cache values until we're ready to replace everything, so that the cache isn't empty while we try to load ruleset files
-        // - this previously lead to "can't find Vanilla ruleset" if the user had a lot of mods and downloaded a new one
-        this.clear()
-        this.putAll(newRulesets)
-
-        return errorLines
-    }
-
-
-    fun getVanillaRuleset() = this[BaseRuleset.Civ_V_Vanilla.fullName]!!.clone() // safeguard, so no-one edits the base ruleset by mistake
-
-    fun getSortedBaseRulesets(): List<String> {
-        val baseRulesets = values
-            .filter { it.modOptions.isBaseRuleset }
-            .map { it.name }
-            .distinct()
-        if (baseRulesets.size < 2) return baseRulesets
-
-        // We sort the base rulesets such that the ones unciv provides are on the top,
-        // and the rest is alphabetically ordered.
-        return baseRulesets.sortedWith(
-            compareBy(
-                { ruleset ->
-                    BaseRuleset.values()
-                        .firstOrNull { br -> br.fullName == ruleset }?.ordinal
-                        ?: BaseRuleset.values().size
-                },
-                { it }
-            )
-        )
-    }
-
-    /** Creates a combined [Ruleset] from a list of mods contained in [parameters]. */
-    fun getComplexRuleset(parameters: MapParameters) =
-        getComplexRuleset(parameters.mods, parameters.baseRuleset)
-
-    /** Creates a combined [Ruleset] from a list of mods contained in [parameters]. */
-    fun getComplexRuleset(parameters: GameParameters) =
-        getComplexRuleset(parameters.mods, parameters.baseRuleset)
-
-    /**
-     * Creates a combined [Ruleset] from a list of mods.
-     * If no baseRuleset is passed in [optionalBaseRuleset] (or a non-existing one), then the vanilla Ruleset is included automatically.
-     * Any mods in the [mods] parameter marked as base ruleset (or not loaded in [RulesetCache]) are ignored.
-     */
-    fun getComplexRuleset(mods: LinkedHashSet<String>, optionalBaseRuleset: String? = null): Ruleset {
-        val baseRuleset =
-                if (containsKey(optionalBaseRuleset) && this[optionalBaseRuleset]!!.modOptions.isBaseRuleset)
-                    this[optionalBaseRuleset]!!
-                else getVanillaRuleset()
-
-        val loadedMods = mods.asSequence()
-            .filter { containsKey(it) }
-            .map { this[it]!! }
-            .filter { !it.modOptions.isBaseRuleset }
-
-        return getComplexRuleset(baseRuleset, loadedMods.asIterable())
-    }
-
-    /**
-     * Creates a combined [Ruleset] from [baseRuleset] and [extensionRulesets] which must only contain non-base rulesets.
-     */
-    fun getComplexRuleset(baseRuleset: Ruleset, extensionRulesets: Iterable<Ruleset>): Ruleset {
-        val newRuleset = Ruleset()
-
-        val loadedMods = extensionRulesets.asSequence() + baseRuleset
-
-        for (mod in loadedMods.sortedByDescending { it.modOptions.isBaseRuleset }) {
-            if (mod.modOptions.isBaseRuleset) {
-                // This is so we don't keep using the base ruleset's uniques *by reference* and add to in ad infinitum
-                newRuleset.modOptions.uniques = ArrayList()
-                newRuleset.modOptions.isBaseRuleset = true
-            }
-            newRuleset.add(mod)
-            newRuleset.mods += mod.name
-        }
-        newRuleset.updateBuildingCosts() // only after we've added all the mods can we calculate the building costs
-
-        return newRuleset
-    }
-
-    /**
-     * Runs [Ruleset.checkModLinks] on a temporary [combined Ruleset][getComplexRuleset] for a list of [mods]
-     */
-    fun checkCombinedModLinks(
-        mods: LinkedHashSet<String>,
-        baseRuleset: String? = null,
-        tryFixUnknownUniques: Boolean = false
-    ): RulesetErrorList {
-        return try {
-            val newRuleset = getComplexRuleset(mods, baseRuleset)
-            newRuleset.modOptions.isBaseRuleset = true // This is so the checkModLinks finds all connections
-            newRuleset.checkModLinks(tryFixUnknownUniques)
-        } catch (ex: UncivShowableException) {
-            // This happens if a building is dependent on a tech not in the base ruleset
-            //  because newRuleset.updateBuildingCosts() in getComplexRuleset() throws an error
-            RulesetErrorList()
-                .apply { add(ex.message, RulesetErrorSeverity.Error) }
-        }
-    }
-
-}
-
-class Specialist: NamedStats() {
-    var color = ArrayList<Int>()
-    val colorObject by lazy { colorFromRGB(color) }
-    var greatPersonPoints = Counter<String>()
 }

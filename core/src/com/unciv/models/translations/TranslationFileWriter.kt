@@ -5,7 +5,7 @@ import com.badlogic.gdx.files.FileHandle
 import com.unciv.json.fromJsonFile
 import com.unciv.json.json
 import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
-import com.unciv.logic.civilization.managers.SpyAction
+import com.unciv.models.SpyAction
 import com.unciv.models.metadata.BaseRuleset
 import com.unciv.models.metadata.LocaleCode
 import com.unciv.models.ruleset.Belief
@@ -127,7 +127,7 @@ object TranslationFileWriter {
 
             linesToTranslate += "\n\n#################### Lines from spy actions #######################\n"
             for (spyAction in SpyAction.values()) {
-                linesToTranslate += "$spyAction = "
+                linesToTranslate += "${spyAction.displayString} = "
             }
 
             linesToTranslate += "\n\n#################### Lines from diplomatic modifiers #######################\n"

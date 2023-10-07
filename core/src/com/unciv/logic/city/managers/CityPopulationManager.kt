@@ -243,7 +243,7 @@ class CityPopulationManager : IsPartOfGameInfoSerialization {
                 worstAutoJob != null -> specialistAllocations.add(worstAutoJob, -1)
                 worstWorkedTile != null -> stopWorkingTile(worstWorkedTile.position)
                 else -> {
-                    // It happens when "cityInfo.manualSpecialists == true"
+                    // It happens when "city.manualSpecialists == true"
                     //  and population goes below the number of specialists, e.g. city is razing.
                     // Let's give a chance to do the work automatically at least.
                     val worstJob = specialistAllocations.keys.minByOrNull {

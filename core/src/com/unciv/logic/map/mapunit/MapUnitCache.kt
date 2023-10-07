@@ -20,6 +20,9 @@ class MapUnitCache(private val mapUnit: MapUnit) {
     var allTilesCosts1 = false
         private set
 
+    var canMoveOnWater = false
+        private set
+
     var canPassThroughImpassableTiles = false
         private set
 
@@ -62,6 +65,7 @@ class MapUnitCache(private val mapUnit: MapUnit) {
     var paradropRange = 0
 
     var hasUniqueToBuildImprovements = false    // not canBuildImprovements to avoid confusion
+    var hasUniqueToCreateWaterImprovements = false
 
     var hasStrengthBonusInRadiusUnique = false
 
@@ -75,6 +79,7 @@ class MapUnitCache(private val mapUnit: MapUnit) {
         ignoresZoneOfControl = mapUnit.hasUnique(UniqueType.IgnoresZOC)
         roughTerrainPenalty = mapUnit.hasUnique(UniqueType.RoughTerrainPenalty)
         cannotMove = mapUnit.hasUnique(UniqueType.CannotMove) || mapUnit.baseUnit.movement == 0
+        canMoveOnWater = mapUnit.hasUnique(UniqueType.CanMoveOnWater)
 
         doubleMovementInTerrain.clear()
         for (unique in mapUnit.getMatchingUniques(UniqueType.DoubleMovementOnTerrain, stateForConditionals = StateForConditionals.IgnoreConditionals)) {
@@ -109,6 +114,8 @@ class MapUnitCache(private val mapUnit: MapUnit) {
         )
 
         hasUniqueToBuildImprovements = mapUnit.hasUnique(UniqueType.BuildImprovements)
+        hasUniqueToCreateWaterImprovements = mapUnit.hasUnique(UniqueType.CreateWaterImprovements)
+
         canEnterForeignTerrain = mapUnit.hasUnique(UniqueType.CanEnterForeignTiles)
                 || mapUnit.hasUnique(UniqueType.CanEnterForeignTilesButLosesReligiousStrength)
 

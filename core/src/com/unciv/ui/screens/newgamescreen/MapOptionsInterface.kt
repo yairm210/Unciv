@@ -10,5 +10,6 @@ interface MapOptionsInterface: IPreviousScreen {
     fun unlockTables()
     fun updateTables()
     fun updateRuleset()
+    fun tryUpdateRuleset(): Boolean
     fun getColumnWidth(): Float
 }

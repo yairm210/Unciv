@@ -37,7 +37,7 @@ class UnitMovement(val unit: MapUnit) {
     ): Float {
         if (unit.cache.cannotMove) return 100f
 
-        if (from.isLand != to.isLand && unit.baseUnit.isLandUnit())
+        if (from.isLand != to.isLand && unit.baseUnit.isLandUnit() && !unit.cache.canMoveOnWater)
             return if (from.isWater && to.isLand) unit.cache.costToDisembark ?: 100f
             else unit.cache.costToEmbark ?: 100f
 
@@ -63,6 +63,8 @@ class UnitMovement(val unit: MapUnit) {
         // when entering territory of a city state
         val areConnectedByRoad = from.hasConnection(civInfo) && to.hasConnection(civInfo)
 
+        // You might think "wait doesn't isAdjacentToRiver() call isConnectedByRiver() anyway, why have those checks?"
+        // The answer is that the isAdjacentToRiver values are CACHED per tile, but the isConnectedByRiver are not - this is an efficiency optimization
         val areConnectedByRiver =
             from.isAdjacentToRiver() && to.isAdjacentToRiver() && from.isConnectedByRiver(to)
 
@@ -486,7 +488,9 @@ class UnitMovement(val unit: MapUnit) {
         var distance = 0
         // When we didn't limit the allowed distance the game would sometimes spend a whole minute looking for a suitable tile.
 
-        if (canPassThrough(unit.getTile())) return // This unit can stay here - e.g. it has "May enter foreign tiles without open borders"
+        if (canPassThrough(unit.getTile())
+            && !isCityCenterCannotEnter(unit.getTile()))
+            return // This unit can stay here - e.g. it has "May enter foreign tiles without open borders"
         while (allowedTile == null && distance < 5) {
             distance++
             allowedTile = unit.getTile().getTilesAtDistance(distance)
@@ -696,6 +700,10 @@ class UnitMovement(val unit: MapUnit) {
         unit.mostRecentMoveType = UnitMovementMemoryType.UnitMoved
     }
 
+    private fun isCityCenterCannotEnter(tile: Tile) = tile.isCityCenter()
+        && tile.getOwner() != unit.civ
+        && !tile.getCity()!!.hasJustBeenConquered
+
     /**
      * Designates whether we can enter the tile - without attacking
      * DOES NOT designate whether we can reach that tile in the current turn
@@ -708,7 +716,7 @@ class UnitMovement(val unit: MapUnit) {
             return false
 
         // even if they'll let us pass through, we can't enter their city - unless we just captured it
-        if (tile.isCityCenter() && tile.getOwner() != unit.civ && !tile.getCity()!!.hasJustBeenConquered)
+        if (isCityCenterCannotEnter(tile))
             return false
 
         return if (unit.isCivilian())
@@ -769,7 +777,7 @@ class UnitMovement(val unit: MapUnit) {
                     unit.civ.getMatchingUniques(UniqueType.UnitsMayEnterOcean)
                         .any { unit.matchesFilter(it.params[0]) }
         }
-        if (tile.isWater && unit.baseUnit.isLandUnit()) {
+        if (tile.isWater && unit.baseUnit.isLandUnit() && !unit.cache.canMoveOnWater) {
             if (!unit.civ.tech.unitsCanEmbark) return false
             if (tile.isOcean && !unit.civ.tech.embarkedUnitsCanEnterOcean && !unitSpecificAllowOcean)
                 return false
@@ -791,7 +799,7 @@ class UnitMovement(val unit: MapUnit) {
         if (firstUnit != null && unit.civ != firstUnit.civ) {
             // Allow movement through unguarded, at-war Civilian Unit. Capture on the way
             // But not for Embarked Units capturing on Water
-            if (!(unit.baseUnit.isLandUnit() && tile.isWater)
+            if (!(unit.baseUnit.isLandUnit() && tile.isWater && !unit.cache.canMoveOnWater)
                     && firstUnit.isCivilian() && unit.civ.isAtWarWith(firstUnit.civ))
                 return true
             // Cannot enter hostile tile with any unit in there

@@ -1,21 +1,19 @@
 ﻿//  Taken from https://github.com/TomGrill/gdx-testing
 package com.unciv.logic.map
 
+import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
-import com.unciv.logic.GameInfo
-import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.diplomacy.DiplomacyManager
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
-import com.unciv.models.ruleset.Ruleset
-import com.unciv.models.ruleset.RulesetCache
-import com.unciv.models.ruleset.Speed
-import com.unciv.models.ruleset.nation.Difficulty
 import com.unciv.models.ruleset.nation.Nation
+import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
+import com.unciv.models.ruleset.unit.UnitType
 import com.unciv.testing.GdxTestRunner
+import com.unciv.testing.TestGame
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
@@ -24,90 +22,69 @@ import org.junit.runner.RunWith
 @RunWith(GdxTestRunner::class)
 class UnitMovementTests {
 
-    private var tile = Tile()
-    private var civInfo = Civilization()
-    private var ruleSet = Ruleset()
-    private var unit = MapUnit()
+    private lateinit var tile:Tile
+    private lateinit var civInfo:Civilization
+    private var testGame = TestGame()
 
     @Before
     fun initTheWorld() {
-        RulesetCache.loadRulesets(noMods = true)
-        ruleSet = RulesetCache.getVanillaRuleset()
-        tile.ruleset = ruleSet
-        tile.baseTerrain = Constants.grassland
-        civInfo.tech.techsResearched.addAll(ruleSet.technologies.keys)
+        testGame.makeHexagonalMap(2)
+        tile = testGame.tileMap[0,0]
+        civInfo = testGame.addCiv()
+        civInfo.tech.techsResearched.addAll(testGame.ruleset.technologies.keys)
         civInfo.tech.embarkedUnitsCanEnterOcean = true
         civInfo.tech.unitsCanEmbark = true
-        civInfo.gameInfo = GameInfo()
-        civInfo.gameInfo.ruleset = ruleSet
-        civInfo.gameInfo.difficultyObject = Difficulty()
-        civInfo.gameInfo.speed = ruleSet.speeds[Speed.DEFAULTFORSIMULATION]!!
-        civInfo.nation = Nation().apply { name = "My nation" }
-        civInfo.gameInfo.civilizations.add(civInfo)
-        unit.civ = civInfo
-        unit.owner = civInfo.civName
-
-        // Needed for convertHillToTerrainFeature to not crash
-        val tileMap = TileMap()
-        tileMap.tileMatrix.add(ArrayList<Tile?>().apply { add(tile) })
-        tile.tileMap = tileMap
-        tile.setTransients()
     }
 
     @Test
     fun canPassThroughPassableTerrains() {
-        for (terrain in ruleSet.terrains.values) {
+        val unit = testGame.addUnit("Warrior", civInfo, null)
+        for (terrain in testGame.ruleset.terrains.values) {
             tile.baseTerrain = terrain.name
             tile.setTerrainFeatures(listOf())
             tile.setTransients()
-
-            unit.baseUnit = BaseUnit().apply { unitType = "Sword"; ruleset = ruleSet }
 
             Assert.assertTrue(terrain.name, terrain.impassable != unit.movement.canPassThrough(tile))
         }
     }
 
+    fun addFakeUnit(unitType: UnitType, uniques:List<String> = listOf()): MapUnit {
+        val baseUnit = BaseUnit()
+        baseUnit.unitType = unitType.name
+        baseUnit.ruleset = testGame.ruleset
+        baseUnit.uniques.addAll(uniques)
+
+        val unit = MapUnit()
+        unit.name = baseUnit.name
+        unit.civ = civInfo
+        unit.owner = civInfo.civName
+        unit.baseUnit = baseUnit
+        unit.updateUniques()
+        return unit
+    }
+
     @Test
-    fun unitCanEnterTheCity() {
+    fun allUnitTypesCanEnterCity() {
 
-        val map = TileMap()
-        val cityTile = tile.clone() // reset, so that the isCoastalTile won't be carried over from previous tests
-        cityTile.baseTerrain = Constants.grassland
-        cityTile.tileMap = map
-        cityTile.ruleset = ruleSet
-        cityTile.setTransients()
-        map.tileMatrix.add(arrayListOf(cityTile)) // needed for tile.setTransients()
+        testGame.addCity(civInfo, tile)
 
-        val otherTile = tile.clone()
-        otherTile.baseTerrain = Constants.coast
-        otherTile.position.y = 1f
-        map.tileMatrix[0].add(otherTile)
-
-        val city = City()
-        city.location = cityTile.position
-        city.civ = civInfo
-        cityTile.setOwningCity(city)
-
-        for (type in ruleSet.unitTypes)
+        for (type in testGame.ruleset.unitTypes.values)
         {
-            unit.owner = civInfo.civName
-            unit.baseUnit = BaseUnit().apply { unitType = type.key; ruleset = ruleSet }
-            if(!unit.movement.canPassThrough(cityTile))
-                unit.movement.canPassThrough(cityTile)
-            Assert.assertTrue(type.key, unit.movement.canPassThrough(cityTile))
+            val unit = addFakeUnit(type)
+            Assert.assertTrue(unit.movement.canPassThrough(tile))
         }
     }
 
     @Test
     fun waterUnitCanNOTEnterLand() {
-        for (terrain in ruleSet.terrains.values) {
+        for (terrain in testGame.ruleset.terrains.values) {
             if (terrain.impassable) continue
             tile.baseTerrain = terrain.name
             tile.setTransients()
 
-            for (type in ruleSet.unitTypes) {
-                unit.baseUnit = BaseUnit().apply { unitType = type.key; ruleset = ruleSet }
-                Assert.assertTrue("%s cannot be at %s".format(type.key, terrain.name),
+            for (type in testGame.ruleset.unitTypes.values) {
+                val unit = addFakeUnit(type)
+                Assert.assertTrue("%s cannot be at %s".format(type.name, terrain.name),
                         (unit.baseUnit.isWaterUnit() && tile.isLand) != unit.movement.canPassThrough(tile))
             }
         }
@@ -119,15 +96,15 @@ class UnitMovementTests {
         tile.setTerrainFeatures(listOf(Constants.ice))
         tile.setTransients()
 
-        for (type in ruleSet.unitTypes) {
-            unit.baseUnit = BaseUnit().apply { unitType = type.key; ruleset = ruleSet }
+        for (type in testGame.ruleset.unitTypes.values) {
+            val unit = addFakeUnit(type)
             unit.updateUniques()
 
             Assert.assertTrue(
                 "$type cannot be in Ice",
                 unit.movement.canPassThrough(tile) == (
-                    type.value.uniques.contains("Can enter ice tiles")
-                    || type.value.uniques.contains("Can pass through impassable tiles")
+                    type.uniques.contains("Can enter ice tiles")
+                    || type.uniques.contains("Can pass through impassable tiles")
                 )
             )
         }
@@ -139,23 +116,21 @@ class UnitMovementTests {
         tile.naturalWonder = "Mount Fuji"
         tile.setTransients()
 
-        for (type in ruleSet.unitTypes) {
-            unit.baseUnit = BaseUnit().apply { unitType = type.key; ruleset = ruleSet }
-
-            Assert.assertFalse("$type must not enter Wonder tile", unit.movement.canPassThrough(tile))
+        for (type in testGame.ruleset.unitTypes.values) {
+            val unit = addFakeUnit(type)
+            Assert.assertTrue("$type must not enter Wonder tile",
+                unit.movement.canPassThrough(tile) == type.hasUnique(UniqueType.CanPassImpassable))
         }
     }
 
     @Test
     fun canNOTEnterCoastUntilProperTechIsResearched() {
-
         civInfo.tech.unitsCanEmbark = false
-
         tile.baseTerrain = Constants.coast
         tile.setTransients()
 
-        for (type in ruleSet.unitTypes) {
-            unit.baseUnit = BaseUnit().apply { unitType = type.key; ruleset = ruleSet }
+        for (type in testGame.ruleset.unitTypes.values) {
+            val unit = addFakeUnit(type)
 
             Assert.assertTrue("$type cannot be in Coast",
                     unit.baseUnit.isLandUnit() != unit.movement.canPassThrough(tile))
@@ -164,14 +139,13 @@ class UnitMovementTests {
 
     @Test
     fun canNOTEnterOceanUntilProperTechIsResearched() {
-
         civInfo.tech.embarkedUnitsCanEnterOcean = false
 
         tile.baseTerrain = Constants.ocean
         tile.setTransients()
 
-        for (type in ruleSet.unitTypes) {
-            unit.baseUnit = BaseUnit().apply { unitType = type.key; ruleset = ruleSet }
+        for (type in testGame.ruleset.unitTypes.values) {
+            val unit = addFakeUnit(type)
 
             Assert.assertTrue("$type cannot be in Ocean",
                     unit.baseUnit.isLandUnit() != unit.movement.canPassThrough(tile))
@@ -180,346 +154,152 @@ class UnitMovementTests {
 
     @Test
     fun canNOTEnterOceanWithLimitations() {
-
         tile.baseTerrain = Constants.ocean
         tile.setTransients()
 
-        for (type in ruleSet.unitTypes) {
-            unit.baseUnit = BaseUnit().apply {
-                unitType = type.key
-                ruleset = ruleSet
-                if (this.isMelee())
-                    uniques.add("Cannot enter ocean tiles")
-                if (this.isRanged())
-                    uniques.add("Cannot enter ocean tiles <before researching [Astronomy]>")
-            }
-            unit.updateUniques()
+        val unitType = testGame.ruleset.unitTypes.values.first()
+        val unit = addFakeUnit(unitType, listOf("Cannot enter ocean tiles"))
 
-            Assert.assertTrue("$type cannot be in Ocean",
-                    (unit.baseUnit.isMelee()) != unit.movement.canPassThrough(tile))
+        Assert.assertFalse(unit.movement.canPassThrough(tile))
 
-            civInfo.tech.techsResearched.remove("Astronomy")
+        val unitCanEnterAfterAstronomy = addFakeUnit(unitType, listOf("Cannot enter ocean tiles <before discovering [Astronomy]>"))
+        Assert.assertTrue(unitCanEnterAfterAstronomy.movement.canPassThrough(tile))
 
-            Assert.assertTrue("$type cannot be in Ocean until Astronomy",
-                    (unit.baseUnit.isMelee() || unit.baseUnit.isRanged())
-                                != unit.movement.canPassThrough(tile))
-
-            civInfo.tech.techsResearched.add("Astronomy")
-        }
+        civInfo.tech.techsResearched.remove("Astronomy")
+        unitCanEnterAfterAstronomy.updateUniques()
+        Assert.assertFalse(unitCanEnterAfterAstronomy.movement.canPassThrough(tile))
     }
 
     @Test
     fun canNOTPassThroughTileWithEnemyUnits() {
-        tile.baseTerrain = Constants.grassland
-        tile.setTransients()
+        val barbCiv = Civilization()
+        barbCiv.gameInfo = testGame.gameInfo
+        barbCiv.civName = Constants.barbarians // they are always enemies
+        barbCiv.nation = Nation().apply { name = Constants.barbarians }
 
-        unit.currentTile = tile
+        testGame.gameInfo.civilizations.add(barbCiv)
 
-        val otherCiv = Civilization()
-        otherCiv.civName = Constants.barbarians // they are always enemies
-        otherCiv.nation = Nation().apply { name = Constants.barbarians }
-        val otherUnit = MapUnit()
-        otherUnit.civ = otherCiv
-        otherUnit.baseUnit = BaseUnit()
-        // melee check
-        otherUnit.baseUnit.strength = 1
-        tile.militaryUnit = otherUnit
+        testGame.addUnit("Warrior", barbCiv, tile)
 
-        for (type in ruleSet.unitTypes) {
-            unit.baseUnit = BaseUnit().apply { unitType = type.key; ruleset = ruleSet }
-
-            Assert.assertFalse("$type must not enter occupied tile", unit.movement.canPassThrough(tile))
-        }
-        // ranged check
-        otherUnit.baseUnit.rangedStrength = 1 // make non-Civilian ranged
-        tile.militaryUnit = otherUnit
-
-        for (type in ruleSet.unitTypes) {
-            unit.baseUnit = BaseUnit().apply { unitType = type.key; ruleset = ruleSet }
-
-            Assert.assertFalse("$type must not enter occupied tile", unit.movement.canPassThrough(tile))
+        for (type in testGame.ruleset.unitTypes.values) {
+            val outUnit = addFakeUnit(type)
+            Assert.assertFalse("$type must not enter occupied tile", outUnit.movement.canPassThrough(tile))
         }
     }
 
     @Test
     fun canNOTPassForeignTiles() {
-        tile.baseTerrain = Constants.desert
-        tile.setTransients()
-
-        val otherCiv = Civilization()
-        otherCiv.civName = "Other civ"
-        otherCiv.nation = Nation().apply { name = "Other nation" }
-
-        val city = City()
-        city.location = tile.position.cpy().add(1f,1f)
-        city.civ = otherCiv
+        val otherCiv = testGame.addCiv()
+        val city = testGame.addCity(otherCiv, testGame.tileMap[1,1])
         tile.setOwningCity(city)
 
-        unit.baseUnit = BaseUnit().apply { unitType = ruleSet.unitTypes.keys.first(); ruleset = ruleSet }
-        unit.owner = civInfo.civName
+        val unit = testGame.addUnit("Warrior", civInfo, null)
 
         Assert.assertFalse("Unit must not enter other civ tile", unit.movement.canPassThrough(tile))
 
-        city.location = tile.position
-
-        Assert.assertFalse("Unit must not enter other civ city", unit.movement.canPassThrough(tile))
-
         city.hasJustBeenConquered = true
-        civInfo.diplomacy["Other civ"] = DiplomacyManager(otherCiv, "Other civ")
+        civInfo.diplomacy[otherCiv.civName] = DiplomacyManager(otherCiv, otherCiv.civName)
         civInfo.getDiplomacyManager(otherCiv).diplomaticStatus = DiplomaticStatus.War
 
         Assert.assertTrue("Unit can capture other civ city", unit.movement.canPassThrough(tile))
     }
 
-    /**
-     * Creates an [amount] of tiles connected to each other of the same type and ownership as initial one.
-     * Remember to set the ownership of the initial tile _before_ calling this method.
-     */
-    private fun generateTileCopies(amount: Int): ArrayList<Tile> {
-        val newTiles = arrayListOf<Tile>()
-        for (i in 1..amount) {
-            tile.clone().apply {
-                position.set(0f, i.toFloat())
-                tile.tileMap.tileMatrix.last().add(this)
-                newTiles.add(this)
-                setTerrainTransients()
-            }
-        }
-        // allow this tile to be teleported to
-        newTiles.last().setOwningCity(null)
-        return newTiles
-    }
+    @Test
+    fun canTeleportLandUnit() {
+        val unit = testGame.addUnit("Warrior", civInfo, tile)
 
-    private fun createOpponentCiv(namePrefix: String, relations: DiplomaticStatus): Civilization {
-        val otherCiv = Civilization()
-        otherCiv.civName = "$namePrefix civ"
-        otherCiv.nation = Nation().apply { name = "$namePrefix nation" }
-        otherCiv.gameInfo = civInfo.gameInfo
-        otherCiv.gameInfo.civilizations.add(otherCiv)
-        civInfo.diplomacy[otherCiv.civName] = DiplomacyManager(otherCiv, otherCiv.civName).apply {
-            diplomaticStatus = relations
-            hasOpenBorders = false
-        }
-        return otherCiv
-    }
+        val otherCiv = testGame.addCiv()
+        val city = testGame.addCity(otherCiv, tile)
 
-    // primary purpose of the method to set the ownership of the tile to be evacuated from
-    private fun createOpponentCivAndCity() {
-
-        val otherCiv = createOpponentCiv("Other", DiplomaticStatus.Peace)
-
-        val city = City()
-        city.location = tile.position.cpy().add(5f, 5f) // random shift to avoid of being in city
-        city.civ = otherCiv
-        tile.setOwningCity(city)
-    }
-
-    private fun setupMilitaryUnitInTheCurrentTile(type: String) {
-        // "strength = 1" to indicate it is military unit
-        unit.baseUnit = BaseUnit().apply { unitType = type; strength = 1; ruleset = ruleSet }
-        unit.currentTile = tile
-        tile.militaryUnit = unit
-        unit.name = "Unit"
+        Assert.assertTrue("Unit must be teleported to new location", unit.currentTile != tile)
+        Assert.assertTrue("Unit must be teleported to tile outside of civ's control", unit.currentTile.getOwner() == null)
     }
 
     @Test
-    fun `can teleport land unit`() {
-        // this is needed for unit.putInTile(), unit.moveThroughTile() to avoid using Uncivgame.Current.viewEntireMapForDebug
-        civInfo.nation.name = Constants.spectator
-
-        tile.baseTerrain = Constants.grassland
-        tile.position.set(0f, 0f)
-        tile.setTransients()
-        createOpponentCivAndCity()
-        val newTiles = generateTileCopies(2)
-
-        setupMilitaryUnitInTheCurrentTile("Sword")
-
-        unit.movement.teleportToClosestMoveableTile()
-
-        Assert.assertTrue("Unit must be teleported to new location", unit.currentTile == newTiles.last())
-    }
-
-    @Test
-    fun `can teleport water unit`() {
-        // this is needed for unit.putInTile(), unit.moveThroughTile() to avoid using Uncivgame.Current.viewEntireMapForDebug
-        civInfo.nation.name = Constants.spectator
-
-        tile.baseTerrain = Constants.ocean
-        tile.position.set(0f, 0f)
-        tile.setTransients()
-        createOpponentCivAndCity()
-        val newTiles = generateTileCopies(3)
-
-        setupMilitaryUnitInTheCurrentTile("Melee Water")
-
-        unit.movement.teleportToClosestMoveableTile()
-
-        Assert.assertTrue("Unit must be teleported to new location", unit.currentTile == newTiles.last())
-    }
-
-    @Test
-    fun `can teleport water unit over other unit`() {
-        // this is needed for unit.putInTile(), unit.moveThroughTile() to avoid using Uncivgame.Current.viewEntireMapForDebug
-        civInfo.nation.name = Constants.spectator
-
-        tile.baseTerrain = Constants.ocean
-        tile.position.set(0f, 0f)
-        tile.setTransients()
-        createOpponentCivAndCity()
-        val newTiles = generateTileCopies(3)
-
-        // Other unit on the way
-        val otherUnit = MapUnit()
-        otherUnit.civ = civInfo
-        otherUnit.owner = civInfo.civName
-        otherUnit.baseUnit = BaseUnit().apply { unitType = "Melee Water"; strength = 1; ruleset = ruleSet }
-        otherUnit.currentTile = newTiles[0]
-        newTiles[0].militaryUnit = otherUnit
-        otherUnit.name = "Friend Unit"
-
-        setupMilitaryUnitInTheCurrentTile("Melee Water")
-
-        unit.movement.teleportToClosestMoveableTile()
-
-        Assert.assertTrue("Unit must be teleported to new location", unit.currentTile == newTiles.last())
-    }
-
-    @Test
-    fun `can teleport air unit`() {
-        // this is needed for unit.putInTile(), unit.moveThroughTile() to avoid using Uncivgame.Current.viewEntireMapForDebug
-        civInfo.nation.name = Constants.spectator
-
-        tile.baseTerrain = Constants.grassland
-        tile.position.set(0f, 0f)
-        tile.setTransients()
-        createOpponentCivAndCity()
-        val newTiles = generateTileCopies(2)
-
-        setupMilitaryUnitInTheCurrentTile("Sword")
-
-        unit.movement.teleportToClosestMoveableTile()
-
-        Assert.assertTrue("Unit must be teleported to new location", unit.currentTile == newTiles.last())
-    }
-
-    @Test
-    fun `can teleport land unit to city`() {
-        // this is needed for unit.putInTile(), unit.moveThroughTile() to avoid using Uncivgame.Current.viewEntireMapForDebug
-        civInfo.nation.name = Constants.spectator
-
-        tile.baseTerrain = Constants.grassland
-        tile.position.set(0f, 0f)
-        tile.setTransients()
-        createOpponentCivAndCity()
-        val newTiles = generateTileCopies(7)
-        // create obstacle
-        newTiles[3].baseTerrain = "Grand Mesa"
-        newTiles[3].setTransients()
-        // create our city
-        City().apply {
-            this.civ = this@UnitMovementTests.civInfo
-            location = newTiles.last().position.cpy()
-            tiles.add(location)
-            tiles.add(newTiles[5].position)
-            tileMap = tile.tileMap
-            civ.cities = listOf(this)
-            newTiles[5].setOwningCity(this)
-            newTiles.last().setOwningCity(this)
+    fun canTeleportWaterUnit() {
+        testGame.makeHexagonalMap(5)
+        for (i in 1..3){
+            val waterTile = testGame.tileMap[1,i]
+            waterTile.baseTerrain = Constants.ocean
+            waterTile.setTransients()
         }
 
-        setupMilitaryUnitInTheCurrentTile("Sword")
+        // 1,1 is within the radius of the new city, so it will be teleported away
+        val unit = testGame.addUnit("Frigate", civInfo, testGame.tileMap[1,1])
 
-        unit.movement.teleportToClosestMoveableTile()
+        val otherCiv = testGame.addCiv()
+        val city = testGame.addCity(otherCiv, tile)
 
-        Assert.assertTrue("Unit must be teleported to the city", unit.currentTile == newTiles[5])
+        // Don't move him all the way to 1,3 - since there's a closer tile at 1,2
+        Assert.assertTrue("Unit must be teleported to closest tile outside of civ's control",
+            unit.currentTile.position == Vector2(1f, 2f))
     }
 
     @Test
     fun `can NOT teleport water unit over the land`() {
-        // this is needed for unit.putInTile(), unit.moveThroughTile() to avoid using Uncivgame.Current.viewEntireMapForDebug
-        civInfo.nation.name = Constants.spectator
+        testGame.makeHexagonalMap(5)
+        for (i in listOf(1,3)){ // only water tiles are 1,1 and 1,3, which are non-contiguous
+            val waterTile = testGame.tileMap[1,i]
+            waterTile.baseTerrain = Constants.ocean
+            waterTile.setTransients()
+        }
 
-        tile.baseTerrain = Constants.ocean
-        tile.position.set(0f, 0f)
-        tile.setTransients()
-        createOpponentCivAndCity()
-        val newTiles = generateTileCopies(3)
-        // create obstacle
-        newTiles[1].baseTerrain = Constants.grassland
-        newTiles[1].setTransients()
+        // 1,1 is within the radius of the new city, so it will be teleported away
+        val unit = testGame.addUnit("Frigate", civInfo, testGame.tileMap[1,1])
 
-        setupMilitaryUnitInTheCurrentTile("Melee Water")
+        val otherCiv = testGame.addCiv()
+        val city = testGame.addCity(otherCiv, tile)
 
-        unit.movement.teleportToClosestMoveableTile()
-
-        Assert.assertTrue("Unit must not be teleported but destroyed",
-            unit.currentTile == tile && unit.isDestroyed)
+        // Don't move him all the way to 1,3 - since there's a closer tile at 1,2
+        Assert.assertTrue("Unit must not be teleported but destroyed", unit.isDestroyed)
     }
 
     @Test
     fun `can teleport land unit over civilian and capture it`() {
-        // this is needed for unit.putInTile(), unit.moveThroughTile() to avoid using Uncivgame.Current.viewEntireMapForDebug
-        civInfo.nation.name = Constants.spectator
 
-        tile.baseTerrain = Constants.grassland
-        tile.position.set(0f, 0f)
-        tile.setTransients()
-        createOpponentCivAndCity()
-        val newTiles = generateTileCopies(2)
-
-        setupMilitaryUnitInTheCurrentTile("Sword")
-
-        val thirdCiv = createOpponentCiv("Third", DiplomaticStatus.War)
-        val otherUnit = MapUnit()
-        otherUnit.baseUnit = BaseUnit().apply { unitType = "Civilian"; ruleset = ruleSet }
-        otherUnit.currentTile = newTiles.last()
-        newTiles.last().civilianUnit = otherUnit
-        otherUnit.name = "Worker"
-        otherUnit.civ = thirdCiv
-        otherUnit.owner = thirdCiv.civName
-
-        unit.movement.teleportToClosestMoveableTile()
-
-        Assert.assertTrue("Civilian unit must be captured by teleported unit",
-            unit.currentTile == newTiles.last() && otherUnit.civ == unit.civ)
-    }
-
-    @Test
-    fun `can teleport transport and its transported units to the same tile`() {
-        civInfo.nation.name = Constants.spectator
-
-        tile.baseTerrain = Constants.ocean
-        tile.position.set(0f, 0f)
-        tile.setTransients()
-        createOpponentCivAndCity()
-        val newTiles = generateTileCopies(3)
-
-        setupMilitaryUnitInTheCurrentTile("Aircraft Carrier")
-        unit.owner = civInfo.civName
-        unit.civ = civInfo
-        unit.baseUnit.uniques.add("Can carry [2] [Aircraft] units")
-        unit.updateUniques()
-        civInfo.units.addUnit(unit, false)
-
-        val fighters = ArrayList<MapUnit>()
-        for (i in 0..1) {
-            val newFighter = MapUnit()
-            newFighter.baseUnit = BaseUnit().apply { unitType = "Fighter"; ruleset = ruleSet }
-            newFighter.owner = civInfo.civName
-            newFighter.civ = civInfo
-            newFighter.currentTile = unit.getTile()
-            tile.airUnits += newFighter
-            newFighter.name = "Fighter"
-            newFighter.isTransported = true
-            civInfo.units.addUnit(newFighter, false)
-            fighters += newFighter
+        testGame.makeHexagonalMap(5)
+        val unit = testGame.addUnit("Warrior", civInfo, testGame.tileMap[1,1])
+        // Force the unit to teleport to 1,2 specifically, by blocking all other neighboring tiles with mountains
+        for (neighbor in unit.currentTile.neighbors) {
+            if (neighbor.position == Vector2(1f,2f)) continue
+            neighbor.baseTerrain = Constants.mountain
+            neighbor.setTransients()
         }
 
-        // simulate ejecting all units within foreign territory
-        for (unit in civInfo.units.getCivUnits()) unit.movement.teleportToClosestMoveableTile()
-        Assert.assertTrue("Transport and transported units must be teleported to the same tile",
-            civInfo.units.getCivUnits().toList().size == 3 && civInfo.units.getCivUnits().all { it.getTile() == newTiles.last() })
+        // Place an enemy civilian unit on that tile
+        val atWarCiv = testGame.addCiv()
+        atWarCiv.diplomacyFunctions.makeCivilizationsMeet(civInfo)
+        atWarCiv.getDiplomacyManager(civInfo).declareWar()
+        val enemyWorkerUnit = testGame.addUnit("Worker", atWarCiv, testGame.tileMap[1,2])
+
+        val otherCiv = testGame.addCiv()
+        val city = testGame.addCity(otherCiv, tile)
+
+        Assert.assertTrue("Warrior teleported to 1,2", unit.currentTile.position == Vector2(1f,2f))
+        Assert.assertTrue("Worker must be captured", enemyWorkerUnit.civ == civInfo)
+    }
+
+
+    @Test
+    fun canTeleportTransportWithPayload() {
+        testGame.makeHexagonalMap(5)
+        for (i in 1..3){
+            val waterTile = testGame.tileMap[1,i]
+            waterTile.baseTerrain = Constants.ocean
+            waterTile.setTransients()
+        }
+
+        val unit = testGame.addUnit("Carrier", civInfo, testGame.tileMap[1,1])
+        val payload = testGame.addUnit("Fighter", civInfo, testGame.tileMap[1,1])
+
+        val otherCiv = testGame.addCiv()
+        val city = testGame.addCity(otherCiv, tile)
+
+        // Don't move him all the way to 1,3 - since there's a closer tile at 1,2
+        Assert.assertTrue("Unit must be teleported to closest tile outside of civ's control",
+            unit.currentTile.position == Vector2(1f, 2f))
+        Assert.assertTrue("Payload must be teleported to the same tile",
+            unit.currentTile == payload.currentTile)
     }
 
 }

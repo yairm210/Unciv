@@ -1,11 +1,9 @@
 package com.unciv.logic.map.mapunit
 
-import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.civilization.LocationAction
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
-import com.unciv.logic.map.tile.RoadStatus
 import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unique.UniqueType
 
@@ -17,15 +15,14 @@ class UnitTurnManager(val unit: MapUnit) {
                 && unit.getTile().improvementInProgress != null
                 && unit.canBuildImprovement(unit.getTile().getTileImprovementInProgress()!!)
         ) workOnImprovement()
-        if (unit.currentMovement == unit.getMaxMovement().toFloat() && unit.isFortified() && unit.turnsFortified < 2) {
+        if (!unit.hasUnitMovedThisTurn() && unit.isFortified() && unit.turnsFortified < 2) {
             unit.turnsFortified++
         }
         if (!unit.isFortified())
             unit.turnsFortified = 0
 
-        if (unit.currentMovement == unit.getMaxMovement().toFloat() // didn't move this turn
-                || unit.hasUnique(UniqueType.HealsEvenAfterAction)
-        ) healUnit()
+        if (!unit.hasUnitMovedThisTurn() || unit.hasUnique(UniqueType.HealsEvenAfterAction))
+            healUnit()
 
         if (unit.action != null && unit.health > 99)
             if (unit.isActionUntilHealed()) {
@@ -60,7 +57,7 @@ class UnitTurnManager(val unit: MapUnit) {
 
         for (unique in unit.getTriggeredUniques(UniqueType.TriggerUponEndingTurnInTile))
             if (unique.conditionals.any { it.type == UniqueType.TriggerUponEndingTurnInTile
-                            && unit.getTile().matchesFilter(it.params[0]) })
+                            && unit.getTile().matchesFilter(it.params[0], unit.civ) })
                 UniqueTriggerActivation.triggerUnitwideUnique(unique, unit)
     }
 
@@ -139,17 +136,6 @@ class UnitTurnManager(val unit: MapUnit) {
         unit.attacksThisTurn = 0
         unit.due = true
 
-        // Hakkapeliitta movement boost
-        // For every double-stacked tile, check if our cohabitant can boost our speed
-        // (a test `count() > 1` is no optimization - two iterations of a sequence instead of one)
-        for (boostingUnit in unit.getTile().getUnits()) {
-            if (boostingUnit == unit) continue
-
-            if (boostingUnit.getMatchingUniques(UniqueType.TransferMovement)
-                        .none { unit.matchesFilter(it.params[0]) } ) continue
-            unit.currentMovement = unit.currentMovement.coerceAtLeast(boostingUnit.getMaxMovement().toFloat())
-        }
-
         // Wake sleeping units if there's an enemy in vision range:
         // Military units always but civilians only if not protected.
         if (unit.isSleeping() && (unit.isMilitary() || (unit.currentTile.militaryUnit == null && !unit.currentTile.isCityCenter())) &&
@@ -178,61 +164,13 @@ class UnitTurnManager(val unit: MapUnit) {
         if (unit.civ.isCurrentPlayer())
             UncivGame.Current.settings.addCompletedTutorialTask("Construct an improvement")
 
-        when {
-            tile.improvementInProgress!!.startsWith(Constants.remove) -> {
-                val removedFeatureName = tile.improvementInProgress!!.removePrefix(Constants.remove)
-                val tileImprovement = tile.getTileImprovement()
-                if (tileImprovement != null
-                        && tile.terrainFeatures.any {
-                            tileImprovement.terrainsCanBeBuiltOn.contains(it) && it == removedFeatureName
-                        }
-                        && !tileImprovement.terrainsCanBeBuiltOn.contains(tile.baseTerrain)
-                ) {
-                    // We removed a terrain (e.g. Forest) and the improvement (e.g. Lumber mill) requires it!
-                    tile.changeImprovement(null)
-                    if (tile.resource != null) unit.civ.cache.updateCivResources() // unlikely, but maybe a mod makes a resource improvement dependent on a terrain feature
-                }
-                if (RoadStatus.values().any { tile.improvementInProgress == it.removeAction }) {
-                    tile.removeRoad()
-                } else {
-                    val removedFeatureObject = tile.ruleset.terrains[removedFeatureName]
-                    if (removedFeatureObject != null && removedFeatureObject.hasUnique(UniqueType.ProductionBonusWhenRemoved)) {
-                        tryProvideProductionToClosestCity(removedFeatureName)
-                    }
-                    tile.removeTerrainFeature(removedFeatureName)
-                }
-            }
-            tile.improvementInProgress == RoadStatus.Road.name -> tile.addRoad(RoadStatus.Road, unit.civ)
-            tile.improvementInProgress == RoadStatus.Railroad.name -> tile.addRoad(RoadStatus.Railroad, unit.civ)
-            tile.improvementInProgress == Constants.repair -> tile.setRepaired()
-            else -> {
-                tile.changeImprovement(tile.improvementInProgress)
-                tile.getTileImprovement()!!.handleImprovementCompletion(unit)
-            }
-        }
+        val improvementInProgress = tile.improvementInProgress ?: return
+        tile.changeImprovement(improvementInProgress, unit.civ)
 
         tile.improvementInProgress = null
         tile.getCity()?.updateCitizens = true
     }
 
 
-    private fun tryProvideProductionToClosestCity(removedTerrainFeature: String) {
-        val tile = unit.getTile()
-        val closestCity = unit.civ.cities.minByOrNull { it.getCenterTile().aerialDistanceTo(tile) }
-        @Suppress("FoldInitializerAndIfToElvis")
-        if (closestCity == null) return
-        val distance = closestCity.getCenterTile().aerialDistanceTo(tile)
-        var productionPointsToAdd = if (distance == 1) 20 else 20 - (distance - 2) * 5
-        if (tile.owningCity == null || tile.owningCity!!.civ != unit.civ) productionPointsToAdd =
-                productionPointsToAdd * 2 / 3
-        if (productionPointsToAdd > 0) {
-            closestCity.cityConstructions.addProductionPoints(productionPointsToAdd)
-            val locations = LocationAction(tile.position, closestCity.location)
-            unit.civ.addNotification(
-                "Clearing a [$removedTerrainFeature] has created [$productionPointsToAdd] Production for [${closestCity.name}]",
-                locations, NotificationCategory.Production, NotificationIcon.Construction
-            )
-        }
-    }
 
 }

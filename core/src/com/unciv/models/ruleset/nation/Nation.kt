@@ -9,7 +9,6 @@ import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.squareBraceRegex
 import com.unciv.models.translations.tr
-import com.unciv.ui.components.Fonts
 import com.unciv.ui.components.extensions.colorFromRGB
 import com.unciv.ui.screens.civilopediascreen.CivilopediaScreen.Companion.showReligionInCivilopedia
 import com.unciv.ui.screens.civilopediascreen.FormattedLine
@@ -84,8 +83,8 @@ class Nation : RulesetObject() {
         innerColorObject = if (innerColor == null) Color.BLACK
                            else colorFromRGB(innerColor!!)
 
-        forestsAndJunglesAreRoads = uniques.contains("All units move through Forest and Jungle Tiles in friendly territory as if they have roads. These tiles can be used to establish City Connections upon researching the Wheel.")
-        ignoreHillMovementCost = uniques.contains("Units ignore terrain costs when moving into any tile with Hills")
+        forestsAndJunglesAreRoads = uniqueMap.containsKey(UniqueType.ForestsAndJunglesAreRoads.placeholderText)
+        ignoreHillMovementCost = uniqueMap.containsKey(UniqueType.IgnoreHillMovementCost.placeholderText)
     }
 
 
@@ -288,11 +287,11 @@ fun getRelativeLuminance(color: Color): Double {
             if (channel < 0.03928) channel / 12.92
             else ((channel + 0.055) / 1.055).pow(2.4)
 
-    val R = getRelativeChannelLuminance(color.r)
-    val G = getRelativeChannelLuminance(color.g)
-    val B = getRelativeChannelLuminance(color.b)
+    val r = getRelativeChannelLuminance(color.r)
+    val g = getRelativeChannelLuminance(color.g)
+    val b = getRelativeChannelLuminance(color.b)
 
-    return 0.2126 * R + 0.7152 * G + 0.0722 * B
+    return 0.2126 * r + 0.7152 * g + 0.0722 * b
 }
 
 /** https://www.w3.org/TR/WCAG20/#contrast-ratiodef */
