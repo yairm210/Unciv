@@ -1,3 +1,16 @@
+## 4.8.12
+
+Separate unit automation from other actions 
+
+chore: Separated 'declare war' logic from DiplomacyManager
+
+AI now uses free tech points  - By tuvus
+
+By SomeTroglodyte:
+- Align ruleset icons in text to font metrics 
+- Tweak FasterUIDevelopment to offer normal Scene2D debugging, and some linting 
+- Pure package reorg: Widgets 
+
 ## 4.8.11
 
 Religion fixes:
