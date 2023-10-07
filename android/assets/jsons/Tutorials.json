@@ -292,7 +292,8 @@
         "A pantheon will provide a small bonus for your civilization that will apply to all cities that have it as a majority religion.",
         "Each civilization can only choose a single pantheon belief, and each pantheon can only be chosen once.",
         "Generating more ☮Faith will allow you to found a religion."
-      ]
+      ],
+    "uniques": ["Hidden when religion is disabled"]
   },
   {
     "name": "Religion",
@@ -305,14 +306,16 @@
         "One of these great prophets can then be used to enhance your religion.",
         "This will allow you to choose another follower belief, as well as an enhancer belief, that only applies to you.",
         "Do take care founding a religion soon, only about half the players in the game are able to found a religion!"
-      ]
+      ],
+    "uniques": ["Hidden when religion is disabled"]
   },
   {
     "name": "Beliefs",
     "steps": [
         "There are four types of beliefs: Pantheon, Founder, Follower and Enhancer beliefs.",
         "Pantheon and Follower beliefs apply to each city following your religion, while Founder and Enhancer beliefs only apply to the founder of a religion."
-      ]
+      ],
+    "uniques": ["Hidden when religion is disabled"]
   },
   {
     "name": "Religion inside cities",
@@ -324,7 +327,8 @@
         "In both places, a tap/click on the icon of a religion will show detailed information with its effects.",
         "Based on this, you can get a feel for which religions have a lot of pressure built up in the city, and which have almost none.",
         "The city follows a religion if a majority of its population follows that religion, and will only then receive the effects of Follower and Pantheon beliefs of that religion."
-      ]
+      ],
+    "uniques": ["Hidden when religion is disabled"]
   },
   {
     "name": "Spreading Religion",
@@ -345,7 +349,8 @@
         "Holy cities also provide +30 pressure of the religion founded there to themselves, making it very difficult to effectively convert a holy city.",
         "Lastly, before founding a religion, new cities you settle will start with 200 pressure for your pantheon.",
         "This way, all your cities will starting following your pantheon as long as you haven't founded a religion yet."
-      ]
+      ],
+    "uniques": ["Hidden when religion is disabled"]
   },
   {
     "name": "Inquisitors",
@@ -355,7 +360,8 @@
         "Great prophets also have this ability, and remove all other religions in the city when spreading their religion.",
         "Often this results in the city immediately converting to their religion",
         "Additionally, when an inquisitor is stationed in or directly next to a city center, units of other religions cannot spread their faith there, though natural spread is uneffected."
-      ]
+      ],
+    "uniques": ["Hidden when religion is disabled"]
   },
   {
     "name": "Maya Long Count calendar cycle",

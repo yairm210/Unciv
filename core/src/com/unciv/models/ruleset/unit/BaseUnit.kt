@@ -216,8 +216,6 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         if (boughtWith != null && !civInfo.gameInfo.gameParameters.godMode && !unit.hasUnique(UniqueType.MoveImmediatelyOnceBought))
             unit.currentMovement = 0f
 
-        if (this.isCivilian()) return true // tiny optimization makes save files a few bytes smaller
-
         addConstructionBonuses(unit, cityConstructions)
 
         return true

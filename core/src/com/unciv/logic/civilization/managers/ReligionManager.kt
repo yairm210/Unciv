@@ -13,7 +13,7 @@ import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.ui.components.extensions.toPercent
-import java.lang.Integer.max
+import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionModifiers
 import java.lang.Integer.min
 import kotlin.random.Random
 
@@ -256,11 +256,9 @@ class ReligionManager : IsPartOfGameInfoSerialization {
     }
 
 
-    fun mayFoundReligionAtAll(prophet: MapUnit): Boolean {
+    fun mayFoundReligionAtAll(): Boolean {
         if (!civInfo.gameInfo.isReligionEnabled()) return false // No religion
         if (religionState >= ReligionState.Religion) return false // Already created a major religion
-        // Already used its power for other things
-        if (prophet.abilityUsesLeft.any { it.value != prophet.maxAbilityUses[it.key] }) return false
 
         if (!civInfo.isMajorCiv()) return false // Only major civs may use religion
 
@@ -271,7 +269,7 @@ class ReligionManager : IsPartOfGameInfoSerialization {
     }
 
     fun mayFoundReligionNow(prophet: MapUnit): Boolean {
-        if (!mayFoundReligionAtAll(prophet)) return false
+        if (!mayFoundReligionAtAll()) return false
         if (!prophet.getTile().isCityCenter()) return false
         if (prophet.getTile().getCity()!!.isHolyCity()) return false
         // No double holy cities. Not sure if these were allowed in the base game
@@ -289,11 +287,9 @@ class ReligionManager : IsPartOfGameInfoSerialization {
     }
 
     fun mayEnhanceReligionAtAll(prophet: MapUnit): Boolean {
-        if (!civInfo.gameInfo.isReligionEnabled()) return false // No religion, no enhancing
+        if (!civInfo.gameInfo.isReligionEnabled()) return false
         if (religion == null) return false // First found a pantheon
         if (religionState != ReligionState.Religion) return false // First found an actual religion
-        // Already used its power for other things
-        if (prophet.abilityUsesLeft.any { it.value != prophet.maxAbilityUses[it.key] }) return false
         if (!civInfo.isMajorCiv()) return false // Only major civs
 
         if (numberOfBeliefsAvailable(BeliefType.Follower) == 0)
@@ -445,7 +441,11 @@ class ReligionManager : IsPartOfGameInfoSerialization {
     fun maySpreadReligionAtAll(missionary: MapUnit): Boolean {
         if (!civInfo.isMajorCiv()) return false // Only major civs
         if (!civInfo.gameInfo.isReligionEnabled()) return false // No religion, no spreading
-        if (!missionary.canDoLimitedAction(Constants.spreadReligion)) return false
+
+        val religion = missionary.civ.gameInfo.religions[missionary.religion] ?: return false
+        if (religion.isPantheon()) return false
+        if (!missionary.canDoLimitedAction(Constants.spreadReligion)
+            && UnitActionModifiers.getUsableUnitActionUniques(missionary, UniqueType.CanSpreadReligion).none()) return false
         return true
     }
 

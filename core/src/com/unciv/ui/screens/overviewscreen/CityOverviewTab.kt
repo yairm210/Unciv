@@ -5,6 +5,11 @@ import com.unciv.ui.components.SortableGrid
 import com.unciv.ui.components.extensions.equalizeColumns
 
 
+/**
+ *  Provides the Cities tab for Empire Overview.
+ *
+ *  Uses [SortableGrid], so all actual content implementation is in the [CityOverviewTabColumn] enum.
+ */
 class CityOverviewTab(
     viewingPlayer: Civilization,
     overviewScreen: EmpireOverviewScreen,
@@ -28,15 +33,24 @@ class CityOverviewTab(
         iconSize = 50f,  //if you set this too low, there is a chance that the tables will be misaligned
         paddingVert = 5f,
         paddingHorz = 8f,
-        separateHeader = false
+        separateHeader = true
     ) {
         header, details, totals ->
-        this.name
+        // Notes: header.parent is the LinkedScrollPane of TabbedPager. Its linked twin is details.parent.parent.parent however!
+        // horizontal "slack" if available width > content width is taken up between SortableGrid and CityOverviewTab for the details,
+        // but not so for the header. We must force the LinkedScrollPane somehow (no? how?) to do so - or the header Table itself.
+
         equalizeColumns(details, header, totals)
-        this.layout()
+        // todo Kludge! Positioning and alignment of the header Table within its parent has quirks when content width < stage width
+        //      This code should likely be included in SortableGrid anyway?
+        if (header.width < this.width) header.width = this.width
+        this.validate()
     }
 
+    override fun getFixedContent() = grid.getHeader()
+
     init {
+        top()
         add(grid)
     }
 }

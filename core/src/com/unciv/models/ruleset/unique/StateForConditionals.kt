@@ -4,7 +4,7 @@ import com.unciv.logic.battle.CombatAction
 import com.unciv.logic.battle.ICombatant
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
-import com.unciv.logic.map.mapgenerator.Region
+import com.unciv.logic.map.mapgenerator.mapregions.Region
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
 

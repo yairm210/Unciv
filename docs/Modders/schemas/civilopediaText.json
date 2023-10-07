@@ -1,0 +1,22 @@
+{
+    "type": "array",
+    "items": {
+        "type": "object",
+        "properties": {
+            "text": { "type": "string" },
+            "link": { "type": "string" },
+            "icon": { "type": "string" },
+            "extraImage": { "type": "string" },
+            "imageSize": { "type": "number" },
+            "size": { "type": "number" },
+            "header": { "type": "number" },
+            "indent": { "type": "number" },
+            "padding": { "type": "number" },
+            "color": { "type": "string" },
+            "separator": { "type": "boolean" },
+            "starred": { "type": "boolean" },
+            "centered": { "type": "boolean" },
+            "iconCrossed": { "type": "boolean" }
+        }
+    }
+}

@@ -7,14 +7,15 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
-import com.unciv.models.ruleset.validation.RulesetError
-import com.unciv.models.ruleset.validation.RulesetErrorSeverity
-import com.unciv.models.ruleset.validation.RulesetValidator
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueType
+import com.unciv.models.ruleset.validation.RulesetError
+import com.unciv.models.ruleset.validation.RulesetErrorSeverity
+import com.unciv.models.ruleset.validation.UniqueValidator
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.ExpanderTab
 import com.unciv.ui.components.TabbedPager
+import com.unciv.ui.components.TranslatedSelectBox
 import com.unciv.ui.components.extensions.surroundWithCircle
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
@@ -23,7 +24,6 @@ import com.unciv.ui.components.input.onClick
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popups.ToastPopup
 import com.unciv.ui.screens.basescreen.BaseScreen
-import com.unciv.ui.components.TranslatedSelectBox
 import com.unciv.utils.Concurrency
 import com.unciv.utils.Log
 import com.unciv.utils.debug
@@ -200,7 +200,7 @@ class ModCheckTab(
                 uniqueReplacementText += " <${conditional.text}>"
             val replacementUnique = Unique(uniqueReplacementText)
 
-            val modInvariantErrors = RulesetValidator(mod).checkUnique(
+            val modInvariantErrors = UniqueValidator(mod).checkUnique(
                 replacementUnique,
                 false,
                 null,
@@ -211,7 +211,7 @@ class ModCheckTab(
             if (modInvariantErrors.isNotEmpty()) continue // errors means no autoreplace
 
             if (mod.modOptions.isBaseRuleset) {
-                val modSpecificErrors = RulesetValidator(mod).checkUnique(
+                val modSpecificErrors = UniqueValidator(mod).checkUnique(
                     replacementUnique,
                     false,
                     null,

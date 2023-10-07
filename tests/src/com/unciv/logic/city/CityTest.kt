@@ -37,7 +37,7 @@ class CityTest {
     @Test
     fun `should destroy city when it's not original capital`() {
         // given
-        var nonCapitalCity = testGame.addCity(testCiv, testGame.getTile(Vector2(1f, 1f)))
+        val nonCapitalCity = testGame.addCity(testCiv, testGame.getTile(Vector2(1f, 1f)))
 
         // when
         nonCapitalCity.destroyCity()
@@ -50,7 +50,7 @@ class CityTest {
     @Test
     fun `should move capital when destroyed`() {
         // given
-        var nonCapitalCity = testGame.addCity(testCiv, testGame.getTile(Vector2(1f, 1f)))
+        val nonCapitalCity = testGame.addCity(testCiv, testGame.getTile(Vector2(1f, 1f)))
         nonCapitalCity.name = "Not capital"
 
         // when

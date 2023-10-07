@@ -240,6 +240,12 @@ class TestGame {
         createRulesetObject(ruleset.beliefs, *uniques) { Belief(type) }
     fun createBuilding(vararg uniques: String) =
         createRulesetObject(ruleset.buildings, *uniques) { Building() }
+
+    fun createWonder(vararg uniques: String): Building {
+        val createdBuilding = createBuilding(*uniques)
+        createdBuilding.isWonder = true
+        return createdBuilding
+    }
     fun createPolicy(vararg uniques: String) =
         createRulesetObject(ruleset.policies, *uniques) { Policy() }
     fun createTileImprovement(vararg uniques: String) =

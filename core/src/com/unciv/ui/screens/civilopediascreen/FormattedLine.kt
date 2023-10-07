@@ -2,8 +2,15 @@ package com.unciv.ui.screens.civilopediascreen
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.graphics.Pixmap
+import com.badlogic.gdx.graphics.TextureData
+import com.badlogic.gdx.graphics.g2d.TextureRegion
+import com.badlogic.gdx.graphics.glutils.FileTextureData
+import com.badlogic.gdx.graphics.glutils.PixmapTextureData
 import com.badlogic.gdx.scenes.scene2d.Actor
+import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
 import com.unciv.UncivGame
@@ -238,15 +245,19 @@ class FormattedLine (
             try {
                 val image = when {
                     ImageGetter.imageExists(extraImage) ->
-                        ImageGetter.getImage(extraImage)
+                        if (centered) ImageGetter.getDrawable(extraImage).cropToContent()
+                        else ImageGetter.getImage(extraImage)
                     Gdx.files.internal("ExtraImages/$extraImage.png").exists() ->
                         ImageGetter.getExternalImage("$extraImage.png")
                     Gdx.files.internal("ExtraImages/$extraImage.jpg").exists() ->
                         ImageGetter.getExternalImage("$extraImage.jpg")
                     else -> return table
                 }
-                val width = if (imageSize.isNaN()) labelWidth else imageSize
-                val height = width * image.height / image.width
+                // limit larger cordinate to a given max size
+                val maxSize = if (imageSize.isNaN()) labelWidth else imageSize
+                val (width, height) = if (image.width > image.height)
+                        maxSize to maxSize * image.height / image.width
+                    else maxSize * image.width / image.height to maxSize
                 table.add(image).size(width, height)
             } catch (exception: Exception) {
                 Log.error("Exception while rendering civilopedia text", exception)
@@ -337,4 +348,98 @@ class FormattedLine (
             else -> "'$text'->$link"
         }
     }
+
+    // region Helpers to crop an image to content
+    private fun TextureRegionDrawable.cropToContent(): Image {
+        val rect = getContentSize()
+        val newRegion = TextureRegion(region.texture, rect.x, rect.y, rect.width, rect.height)
+        return Image(TextureRegionDrawable(newRegion))
+    }
+
+    private fun TextureRegionDrawable.getContentSize(): IntRectangle {
+        val pixMap = region.texture.textureData.getReadonlyPixmap()
+        val result = IntRectangle(region.regionX, region.regionY, region.regionWidth, region.regionHeight) // Not Gdx: integers!
+        val original = result.copy()
+
+        while (result.height > 0 && pixMap.isRowEmpty(result, result.height - 1)) {
+            result.height -= 1
+        }
+        while (result.height > 0 && pixMap.isRowEmpty(result, 0)) {
+            result.y += 1
+            result.height -= 1
+        }
+        while (result.width > 0 && pixMap.isColumnEmpty(result, result.width - 1)) {
+            result.width -= 1
+        }
+        while (result.width > 0 && pixMap.isColumnEmpty(result, 0)) {
+            result.x += 1
+            result.width -= 1
+        }
+
+        result.grow((original.width / 40).coerceAtLeast(1), (original.height / 40).coerceAtLeast(1))
+        return result.intersection(original)
+    }
+
+    private fun Pixmap.isRowEmpty(bounds: IntRectangle, relativeY: Int): Boolean {
+        val y = bounds.y + relativeY
+        return (bounds.x until bounds.x + bounds.width).all {
+            getPixel(it, y) and 255 == 0
+        }
+    }
+
+    private fun Pixmap.isColumnEmpty(bounds: IntRectangle, relativeX: Int): Boolean {
+        val x = bounds.x + relativeX
+        return (bounds.y until bounds.y + bounds.height).all {
+            getPixel(x, it) and 255 == 0
+        }
+    }
+
+    /** Retrieve a texture Pixmap without reload or ownership transfer, useable for read operations only.
+     *
+     *  (FileTextureData.consumePixmap forces a reload of the entire file - inefficient if we only want to look at pixel values) */
+    private fun TextureData.getReadonlyPixmap(): Pixmap {
+        if (!isPrepared) prepare()
+        if (this is PixmapTextureData) return consumePixmap()
+        if (this !is FileTextureData) throw TypeCastException("getReadonlyPixmap only works on file or pixmap based textures")
+        val field = FileTextureData::class.java.getDeclaredField("pixmap")
+        field.isAccessible = true
+        return field.get(this) as Pixmap
+    }
+    // endregion
+
+    // region Integer Rectangle class
+    /** Partial rewrite of java.awt.Rectangle which is not available on Android. */
+    private data class IntRectangle(
+        var x: Int,
+        var y: Int,
+        var width: Int,
+        var height: Int
+    ) {
+        // Note: Gdx *has* an Integer equivalent of Vector2: GridPoint2 - but not of Rectangle (all in com.badlogic.gdx.math)
+
+        /** Grow both left and right edges horizontally by [h] and correspondingly top, bottom by [v]
+         *
+         *  Unlike java.awt.Rectangle this will not check for integer overflow or negative size.
+         */
+        fun grow(h: Int, v: Int) {
+            x -= h
+            width += h + h
+            y -= v
+            height += y + y
+        }
+
+        /** Returns a new IntRectangle that represents the intersection of the two rectangles: `this` and [r].
+         *  If the two rectangles do not intersect, the result will be an empty rectangle.
+         *
+         *  Unlike java.awt.Rectangle this will not check for integer overflow or negative size.
+         */
+        fun intersection(r: IntRectangle): IntRectangle {
+            val tx1 = x.coerceAtLeast(r.x)
+            val ty1 = y.coerceAtLeast(r.y)
+            val tx2 = (x + width).coerceAtMost(r.x + r.width)
+            val ty2 = (y + height).coerceAtMost(r.y + r.height)
+            return IntRectangle(tx1, ty1, tx2 - tx1, ty2 - ty1)
+        }
+    }
+    // endregion
 }
