@@ -28,7 +28,7 @@ import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.tr
 import com.unciv.ui.audio.MusicMood
 import com.unciv.ui.audio.MusicTrackChooserFlags
-import com.unciv.ui.components.ColorMarkupLabel
+import com.unciv.ui.components.widgets.ColorMarkupLabel
 import com.unciv.ui.components.Fonts
 import com.unciv.ui.components.input.KeyCharAndCode
 import com.unciv.ui.components.UncivTooltip.Companion.addTooltip

@@ -14,7 +14,7 @@ import com.unciv.GUI
 import com.unciv.logic.civilization.Notification
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.ui.components.widgets.AutoScrollPane as ScrollPane
-import com.unciv.ui.components.ColorMarkupLabel
+import com.unciv.ui.components.widgets.ColorMarkupLabel
 import com.unciv.ui.components.WrappableLabel
 import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.extensions.packIfNeeded

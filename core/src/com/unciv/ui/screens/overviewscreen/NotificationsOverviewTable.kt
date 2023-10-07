@@ -6,7 +6,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.Notification
 import com.unciv.logic.civilization.NotificationCategory
-import com.unciv.ui.components.ColorMarkupLabel
+import com.unciv.ui.components.widgets.ColorMarkupLabel
 import com.unciv.ui.components.TabbedPager
 import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.extensions.toLabel
