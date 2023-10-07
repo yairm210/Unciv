@@ -14,7 +14,7 @@ import com.unciv.logic.map.MapShape
 import com.unciv.logic.map.MapSize
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.widgets.TabbedPager
-import com.unciv.ui.components.UncivSlider
+import com.unciv.ui.components.widgets.UncivSlider
 import com.unciv.ui.components.extensions.addSeparator
 import com.unciv.ui.components.extensions.isEnabled
 import com.unciv.ui.components.extensions.toCheckBox

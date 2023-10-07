@@ -9,7 +9,7 @@ import com.unciv.models.translations.tr
 import com.unciv.ui.audio.MusicController
 import com.unciv.ui.audio.MusicTrackChooserFlags
 import com.unciv.ui.screens.basescreen.BaseScreen
-import com.unciv.ui.components.UncivSlider
+import com.unciv.ui.components.widgets.UncivSlider
 import com.unciv.ui.components.WrappableLabel
 import com.unciv.ui.components.extensions.disable
 import com.unciv.ui.components.input.onClick
