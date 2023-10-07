@@ -15,8 +15,8 @@ import com.unciv.models.metadata.BaseRuleset
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.ruleset.unique.Unique
-import com.unciv.ui.components.ColorMarkupLabel
 import com.unciv.ui.components.extensions.getReadonlyPixmap
+import com.unciv.ui.components.widgets.ColorMarkupLabel
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.basescreen.BaseScreen
