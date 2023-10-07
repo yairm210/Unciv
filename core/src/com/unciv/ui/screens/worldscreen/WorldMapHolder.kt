@@ -33,7 +33,7 @@ import com.unciv.ui.audio.SoundPlayer
 import com.unciv.ui.components.MapArrowType
 import com.unciv.ui.components.MiscArrowTypes
 import com.unciv.ui.components.widgets.UnitGroup
-import com.unciv.ui.components.ZoomableScrollPane
+import com.unciv.ui.components.widgets.ZoomableScrollPane
 import com.unciv.ui.components.extensions.center
 import com.unciv.ui.components.extensions.colorFromRGB
 import com.unciv.ui.components.extensions.darken
