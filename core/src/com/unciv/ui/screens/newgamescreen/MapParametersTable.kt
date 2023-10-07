@@ -14,7 +14,7 @@ import com.unciv.logic.map.MapShape
 import com.unciv.logic.map.MapSize
 import com.unciv.logic.map.MapSizeNew
 import com.unciv.logic.map.MapType
-import com.unciv.ui.components.ExpanderTab
+import com.unciv.ui.components.widgets.ExpanderTab
 import com.unciv.ui.components.TranslatedSelectBox
 import com.unciv.ui.components.UncivSlider
 import com.unciv.ui.components.UncivTextField

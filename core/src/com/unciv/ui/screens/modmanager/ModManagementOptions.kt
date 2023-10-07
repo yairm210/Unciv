@@ -6,7 +6,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.Constants
 import com.unciv.models.metadata.ModCategories
 import com.unciv.models.translations.tr
-import com.unciv.ui.components.ExpanderTab
+import com.unciv.ui.components.widgets.ExpanderTab
 import com.unciv.ui.components.UncivTextField
 import com.unciv.ui.components.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.components.extensions.surroundWithCircle

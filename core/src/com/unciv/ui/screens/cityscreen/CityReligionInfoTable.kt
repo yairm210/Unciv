@@ -14,7 +14,7 @@ import com.unciv.ui.images.Portrait
 import com.unciv.ui.screens.overviewscreen.EmpireOverviewCategories
 import com.unciv.ui.screens.overviewscreen.EmpireOverviewScreen
 import com.unciv.ui.screens.basescreen.BaseScreen
-import com.unciv.ui.components.ExpanderTab
+import com.unciv.ui.components.widgets.ExpanderTab
 import com.unciv.ui.components.extensions.addSeparator
 import com.unciv.ui.components.extensions.addSeparatorVertical
 import com.unciv.ui.components.input.onClick
