@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.badlogic.gdx.scenes.scene2d.actions.TemporalAction
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox
+import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.scenes.scene2d.ui.WidgetGroup
@@ -16,9 +17,9 @@ import com.unciv.ui.components.extensions.center
 import com.unciv.ui.components.extensions.setSize
 import com.unciv.ui.components.input.onChange
 import com.unciv.ui.components.input.onClick
+import com.unciv.ui.components.widgets.LoadingImage.Style
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.basescreen.BaseScreen
-import com.unciv.utils.Log
 import kotlin.math.absoluteValue
 import kotlin.time.ExperimentalTime
 import kotlin.time.TimeMark
@@ -26,121 +27,138 @@ import kotlin.time.TimeSource
 
 /** Animated "double arrow" loading icon.
  *
- *  * By default, shows an empty transparent square, or a circle and/or a "multiplayer" icon.
+ *  * By default, shows an empty transparent square, or a circle and/or an "idle" icon.
  *  * When [show] is called, the double-arrow loading icon is faded in and rotates.
  *  * When [hide] is called, the double-arrow fades out.
- *  * When [minShowTime] is set, [hide] will make sure the "busy status" can be seen even if it was very short.
+ *  * When [Style.minShowTime] is set, [hide] will make sure the "busy status" can be seen even if it was very short.
  *  * When GameSettings.continuousRendering is off, fade and rotation animations are disabled.
  *  * [animated] is public and can be used to override the 'continuousRendering' setting.
  *
  *  @param size Fixed forced size: prefWidth, minWidth, maxWidth and height counterparts will all return this.
- *  @param circleColor If not CLEAR, a Circle with this Color is layered at the bottom and the icons are resized to 0.75 * [size]
- *  @param loadingColor Color for the animated "Loading" icon (drawn on top)
- *  @param multiplayerIconColor If not CLEAR, another icon is layered between circle and loading: used for MultiplayerStatusButton
- *  @param minShowTime Minimum shown time in ms including fades
+ *  @param style Contains the visual and behavioral parameters
  */
 //region fields
 class LoadingImage(
     private val size: Float = 40f,
-    circleColor: Color = Color.CLEAR,
-    loadingColor: Color = Color.WHITE,
-    multiplayerIconColor: Color = Color.CLEAR,
-    private val minShowTime: Int = 0
+    private val style: Style = Style(),
 ) : WidgetGroup(), Disposable {
     // Note: Somewhat similar to IconCircleGroup - different alpha handling
     // Also similar to Stack, but since size is fixed, done much simpler
 
-    private val circle = if (circleColor == Color.CLEAR) null else ImageGetter.getImage(circleImageName)
-    private val multiplayer = if (multiplayerIconColor == Color.CLEAR) null else ImageGetter.getImage(multiplayerImageName)
-    private val loading = ImageGetter.getImage(loadingImageName)
+    private val circle: Image?
+    private val idleIcon: Image?
+    private val loadingIcon: Image
     var animated = GUI.getSettings().continuousRendering
     private var loadingStarted: TimeMark? = null
     //endregion
 
-    companion object {
-        // If you need to customize any of these constants, copnvert them to a private val constructor parameter
-        const val circleImageName = "OtherIcons/Circle"
-        const val multiplayerImageName = "OtherIcons/Multiplayer"
-        const val loadingImageName = "OtherIcons/Loading"
+    data class Style(
+        /** If not CLEAR, a Circle with this Color is layered at the bottom and the icons are resized to [innerSizeFactor] * `size` */
+        val circleColor: Color = Color.CLEAR,
+        /** Color for the animated "Loading" icon (drawn on top) */
+        val loadingColor: Color = Color.WHITE,
+        /** If not CLEAR, another icon is layered between circle and loading, e.g. symbolizing 'idle' or 'done' */
+        val idleIconColor: Color = Color.CLEAR,
+        /** Minimum shown time in ms including fades */
+        val minShowTime: Int = 0,
+
+        /** Texture name for the circle */
+        val circleImageName: String = "OtherIcons/Circle",
+        /** Texture name for the idle icon */
+        val idleImageName: String = "OtherIcons/whiteDot",
+        /** Texture name for the loading icon */
+        val loadingImageName: String = "OtherIcons/Loading",
 
         /** Size scale for icons when a Circle is used */
-        const val innerSizeFactor = 0.75f
+        val innerSizeFactor: Float = 0.75f,
         /** duration of fade-in and fade-out in seconds */
-        const val fadeDuration = 0.2f
+        val fadeDuration: Float = 0.2f,
         /** duration of rotation - seconds per revolution */
-        const val rotationDuration = 4f
-        /** While loading is shown, the multiplayer icon is semitransparent */
-        const val multiplayerHiddenAlpha = 0.4f
-
-        @Suppress("unused")  // Used only temporarily for FasterUIDevelopment.DevElement
-        fun getFasterUIDevelopmentTester() = Factories.getTester()
-    }
+        val rotationDuration: Float = 4f,
+        /** While loading is shown, the idle icon is semitransparent */
+        val idleIconHiddenAlpha: Float = 0.4f
+    )
 
     init {
         isTransform = false
         setSize(size, size)
 
-        val innerSize = if (circle != null) {
-            circle.color = circleColor
+        val innerSize: Float
+        if (style.circleColor == Color.CLEAR) {
+            circle = null
+            innerSize = size
+        } else {
+            circle = ImageGetter.getImage(style.circleImageName)
+            circle.color = style.circleColor
             circle.setSize(size)
             addActor(circle)
-            size * innerSizeFactor
-        } else size
-
-        if (multiplayer != null) {
-            multiplayer.color = multiplayerIconColor
-            multiplayer.setSize(innerSize)
-            multiplayer.center(this)
-            addActor(multiplayer)
+            innerSize = size * style.innerSizeFactor
         }
 
-        loading.color = loadingColor
-        loading.color.a = 0f
-        loading.setSize(innerSize)
-        loading.setOrigin(Align.center)
-        loading.center(this)
-        loading.isVisible = false
-        addActor(loading)
+        if (style.idleIconColor == Color.CLEAR) {
+            idleIcon = null
+        } else {
+            idleIcon = ImageGetter.getImage(style.idleImageName)
+            idleIcon.color = style.idleIconColor
+            idleIcon.setSize(innerSize)
+            idleIcon.center(this)
+            addActor(idleIcon)
+        }
+
+        loadingIcon = ImageGetter.getImage(style.loadingImageName).apply {
+            color = style.loadingColor
+            color.a = 0f
+            setSize(innerSize)
+            setOrigin(Align.center)
+            isVisible = false
+        }
+        loadingIcon.center(this)
+        addActor(loadingIcon)
     }
 
     fun show() {
         loadingStarted = TimeSource.Monotonic.markNow()
-        loading.isVisible = true
+        loadingIcon.isVisible = true
         actions.clear()
         if (animated) {
             actions.add(FadeoverAction(1f, 0f), SpinAction())
         } else {
-            loading.color.a = 1f
-            multiplayer?.color?.a = multiplayerHiddenAlpha
+            loadingIcon.color.a = 1f
+            idleIcon?.color?.a = style.idleIconHiddenAlpha
         }
     }
 
-    fun hide() = if (animated) hideAnimated() else hideDelayed()
+    fun hide(onComplete: (() -> Unit)? = null) =
+        if (animated) hideAnimated(onComplete)
+        else hideDelayed(onComplete)
 
     //region Hiding helpers
-    private fun hideAnimated() {
+    private fun hideAnimated(onComplete: (() -> Unit)?) {
         actions.clear()
-        actions.add(FadeoverAction(0f, getWaitDuration() - 2 * fadeDuration))
+        actions.add(FadeoverAction(0f, getWaitDuration() - 2 * style.fadeDuration, onComplete))
     }
 
-    private fun hideDelayed() {
+    private fun hideDelayed(onComplete: (() -> Unit)?) {
         val waitDuration = getWaitDuration()
         if (waitDuration == 0f) return setHidden()
         actions.clear()
-        actions.add(Actions.delay(waitDuration, Actions.run { setHidden() }))
+        actions.add(Actions.delay(waitDuration, Actions.run {
+            setHidden()
+            onComplete?.invoke()
+        }))
     }
 
     private fun setHidden() {
         actions.clear()
-        loading.isVisible = false
-        loading.color.a = 0f
-        multiplayer?.color?.a = 1f
+        loadingIcon.isVisible = false
+        loadingIcon.color.a = 0f
+        idleIcon?.color?.a = 1f
     }
 
     private fun getWaitDuration(): Float {
         val elapsed = loadingStarted?.elapsedNow()?.inWholeMilliseconds ?: 0
-        if (elapsed >= minShowTime) return 0f
-        return (minShowTime - elapsed) * 0.001f
+        if (elapsed >= style.minShowTime) return 0f
+        return (style.minShowTime - elapsed) * 0.001f
     }
     //endregion
 
@@ -155,7 +173,11 @@ class LoadingImage(
         clearActions()
     }
 
-    private inner class FadeoverAction(private val endAlpha: Float, delay: Float) : TemporalAction(fadeDuration) {
+    private inner class FadeoverAction(
+        private val endAlpha: Float,
+        delay: Float,
+        private val onComplete: (() -> Unit)? = null
+    ) : TemporalAction(style.fadeDuration) {
         private var startAlpha = 0f
         private var totalChange = 1f
 
@@ -166,29 +188,28 @@ class LoadingImage(
         override fun update(percent: Float) {
             if (percent < 0f) return
             val alpha = startAlpha + percent * totalChange
-            loading.color.a = alpha
-            if (multiplayer == null) return
-            multiplayer.color.a = (1f - alpha) * (1f - multiplayerHiddenAlpha) + multiplayerHiddenAlpha
+            loadingIcon.color.a = alpha
+            if (idleIcon == null) return
+            idleIcon.color.a = (1f - alpha) * (1f - style.idleIconHiddenAlpha) + style.idleIconHiddenAlpha
         }
 
         override fun begin() {
-            Log.debug("FadeoverAction.begin (endAlpha=$endAlpha)")
-            startAlpha = loading.color.a
+            startAlpha = loadingIcon.color.a
             totalChange = endAlpha - startAlpha
-            duration = fadeDuration * totalChange.absoluteValue
+            duration = style.fadeDuration * totalChange.absoluteValue
         }
 
         override fun end() {
-            Log.debug("FadeoverAction.end (endAlpha=$endAlpha)")
             if (endAlpha == 0f) setHidden()
+            onComplete?.invoke()
         }
     }
 
-    private inner class SpinAction : TemporalAction(rotationDuration) {
+    private inner class SpinAction : TemporalAction(style.rotationDuration) {
         override fun update(percent: Float) {
             // The arrows point clockwise, but Actor.rotation is counterclockwise: negate.
             // Mapping to the 0..360 range is defensive, Actor itself doesn't care.
-            loading.rotation = 360f * (1f - percent)
+            loadingIcon.rotation = 360f * (1f - percent)
         }
 
         override fun end() {
@@ -196,9 +217,15 @@ class LoadingImage(
         }
     }
 
-    private object Factories {
-        fun getTester() = Table().apply {
-            val testee = LoadingImage(52f, Color.NAVY, Color.SCARLET, Color.CYAN, 1500)
+    @Suppress("unused")  // Used only temporarily for FasterUIDevelopment.DevElement
+    object Testing {
+        fun getFasterUIDevelopmentTester() = Table().apply {
+            val testee = LoadingImage(52f, Style(
+                circleColor = Color.NAVY,
+                loadingColor = Color.SCARLET,
+                idleIconColor = Color.CYAN,
+                idleImageName = "OtherIcons/Multiplayer",
+                minShowTime = 1500))
             defaults().pad(10f).center()
             add(testee)
             add(TextButton("Start", BaseScreen.skin).onClick {

@@ -32,7 +32,11 @@ class MultiplayerStatusButton(
     curGame: OnlineMultiplayerGame?
 ) : Button(BaseScreen.skin), Disposable {
     private var curGameName = curGame?.name
-    private val loadingImage = LoadingImage(multiplayerIconColor = Color.WHITE, minShowTime = 500)
+    private val loadingImage = LoadingImage(style = LoadingImage.Style(
+        idleImageName = "OtherIcons/Multiplayer",
+        idleIconColor = Color.WHITE,
+        minShowTime = 500
+    ))
     private val turnIndicator = TurnIndicator()
     private val turnIndicatorCell: Cell<Actor>
     private val gameNamesWithCurrentTurn = getInitialGamesWithCurrentTurn()
