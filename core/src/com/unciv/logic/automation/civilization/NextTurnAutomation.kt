@@ -515,22 +515,32 @@ object NextTurnAutomation {
     }
 
     private fun chooseTechToResearch(civInfo: Civilization) {
-        if (civInfo.tech.techsToResearch.isEmpty()) {
+        fun getGroupedResearchableTechs(): List<List<Technology>> {
             val researchableTechs = civInfo.gameInfo.ruleset.technologies.values
-                    .filter { civInfo.tech.canBeResearched(it.name) }
-            val techsGroups = researchableTechs.groupBy { it.cost }
-            val costs = techsGroups.keys.sorted()
+                .asSequence()
+                .filter { civInfo.tech.canBeResearched(it.name) }
+                .groupBy { it.cost }
+            return researchableTechs.toSortedMap().values.toList()
+        }
+        while(civInfo.tech.freeTechs > 0) {
+            val costs = getGroupedResearchableTechs()
+            if (costs.isEmpty()) return
 
-            if (researchableTechs.isEmpty()) return
-
-            val cheapestTechs = techsGroups[costs[0]]!!
+            val mostExpensiveTechs = costs[costs.size - 1]
+            civInfo.tech.getFreeTechnology(mostExpensiveTechs.random().name)
+        }
+        if (civInfo.tech.techsToResearch.isEmpty()) {
+            val costs = getGroupedResearchableTechs()
+            if (costs.isEmpty()) return
+            
+            val cheapestTechs = costs[0]
             //Do not consider advanced techs if only one tech left in cheapest group
             val techToResearch: Technology =
                 if (cheapestTechs.size == 1 || costs.size == 1) {
                     cheapestTechs.random()
                 } else {
                     //Choose randomly between cheapest and second cheapest group
-                    val techsAdvanced = techsGroups[costs[1]]!!
+                    val techsAdvanced = costs[1]
                     (cheapestTechs + techsAdvanced).random()
                 }
 
