@@ -7,9 +7,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup
 import com.unciv.Constants
 import com.unciv.GUI
-import com.unciv.UncivGame
 import com.unciv.ui.images.IconTextButton
-import com.unciv.ui.components.AutoScrollPane
+import com.unciv.ui.components.widgets.AutoScrollPane
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.components.extensions.disable
 import com.unciv.ui.components.extensions.enable

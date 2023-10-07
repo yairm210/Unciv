@@ -13,7 +13,7 @@ import com.unciv.logic.city.City
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.translations.tr
-import com.unciv.ui.components.UnitGroup
+import com.unciv.ui.components.widgets.UnitGroup
 import com.unciv.ui.components.extensions.addSeparator
 import com.unciv.ui.components.extensions.center
 import com.unciv.ui.components.extensions.darken

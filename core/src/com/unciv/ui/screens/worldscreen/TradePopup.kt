@@ -16,7 +16,7 @@ import com.unciv.ui.components.extensions.pad
 import com.unciv.ui.components.extensions.toLabel
 import kotlin.math.max
 import kotlin.math.min
-import com.unciv.ui.components.AutoScrollPane as ScrollPane
+import com.unciv.ui.components.widgets.AutoScrollPane as ScrollPane
 
 /* TODO:
     different Notification wording for peace treaties?
