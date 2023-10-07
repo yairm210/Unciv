@@ -10,7 +10,7 @@ import com.unciv.logic.files.MapSaver
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.widgets.AutoScrollPane
-import com.unciv.ui.components.TabbedPager
+import com.unciv.ui.components.widgets.TabbedPager
 import com.unciv.ui.components.extensions.isEnabled
 import com.unciv.ui.components.extensions.toTextButton
 import com.unciv.ui.components.input.KeyCharAndCode

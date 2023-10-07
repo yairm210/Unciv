@@ -12,7 +12,7 @@ import com.unciv.logic.map.mapgenerator.RiverGenerator
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.translations.tr
-import com.unciv.ui.components.TabbedPager
+import com.unciv.ui.components.widgets.TabbedPager
 import com.unciv.ui.components.UncivSlider
 import com.unciv.ui.components.extensions.addSeparator
 import com.unciv.ui.components.extensions.toLabel

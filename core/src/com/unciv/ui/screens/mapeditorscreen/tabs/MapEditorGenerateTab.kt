@@ -13,7 +13,7 @@ import com.unciv.logic.map.mapgenerator.MapGenerator
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.translations.tr
-import com.unciv.ui.components.TabbedPager
+import com.unciv.ui.components.widgets.TabbedPager
 import com.unciv.ui.components.extensions.disable
 import com.unciv.ui.components.extensions.enable
 import com.unciv.ui.components.extensions.isEnabled

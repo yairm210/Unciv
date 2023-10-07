@@ -1,4 +1,4 @@
-package com.unciv.ui.components
+package com.unciv.ui.components.widgets
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Actor
@@ -16,6 +16,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ActorGestureListener
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
 import com.unciv.UncivGame
+import com.unciv.ui.components.UncivTextField
 import com.unciv.ui.components.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.components.extensions.addSeparator
 import com.unciv.ui.components.extensions.darken
@@ -25,7 +26,6 @@ import com.unciv.ui.components.extensions.pad
 import com.unciv.ui.components.input.KeyCharAndCode
 import com.unciv.ui.components.input.keyShortcuts
 import com.unciv.ui.components.input.onActivation
-import com.unciv.ui.components.widgets.AutoScrollPane
 import com.unciv.ui.images.IconTextButton
 import com.unciv.ui.popups.Popup
 import com.unciv.ui.screens.basescreen.BaseScreen

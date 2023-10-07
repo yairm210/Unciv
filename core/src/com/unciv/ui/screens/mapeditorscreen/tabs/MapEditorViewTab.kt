@@ -17,7 +17,7 @@ import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.stats.Stats
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.widgets.ExpanderTab
-import com.unciv.ui.components.TabbedPager
+import com.unciv.ui.components.widgets.TabbedPager
 import com.unciv.ui.components.UncivSlider
 import com.unciv.ui.components.WrappableLabel
 import com.unciv.ui.components.extensions.addSeparator
