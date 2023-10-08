@@ -11,18 +11,18 @@ import com.unciv.logic.civilization.Civilization
 import com.unciv.models.Spy
 import com.unciv.models.SpyAction
 import com.unciv.models.translations.tr
-import com.unciv.ui.images.ImageGetter
-import com.unciv.ui.screens.pickerscreens.PickerScreen
-import com.unciv.ui.components.widgets.AutoScrollPane
-import com.unciv.ui.components.Fonts
-import com.unciv.ui.components.input.KeyCharAndCode
 import com.unciv.ui.components.extensions.addSeparatorVertical
-import com.unciv.ui.components.input.keyShortcuts
-import com.unciv.ui.components.input.onActivation
-import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.extensions.setSize
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
+import com.unciv.ui.components.fonts.Fonts
+import com.unciv.ui.components.input.KeyCharAndCode
+import com.unciv.ui.components.input.keyShortcuts
+import com.unciv.ui.components.input.onActivation
+import com.unciv.ui.components.input.onClick
+import com.unciv.ui.components.widgets.AutoScrollPane
+import com.unciv.ui.images.ImageGetter
+import com.unciv.ui.screens.pickerscreens.PickerScreen
 
 /** Screen used for moving spies between cities */
 class EspionageOverviewScreen(val civInfo: Civilization) : PickerScreen(true) {

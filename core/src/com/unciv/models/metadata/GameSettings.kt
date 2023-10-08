@@ -7,8 +7,8 @@ import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.multiplayer.FriendList
 import com.unciv.models.UncivSound
-import com.unciv.ui.components.FontFamilyData
-import com.unciv.ui.components.Fonts
+import com.unciv.ui.components.fonts.FontFamilyData
+import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.components.input.KeyboardBindings
 import com.unciv.ui.screens.overviewscreen.EmpireOverviewCategories
 import com.unciv.utils.Display

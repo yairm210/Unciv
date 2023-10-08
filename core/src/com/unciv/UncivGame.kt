@@ -25,8 +25,8 @@ import com.unciv.ui.audio.MusicController
 import com.unciv.ui.audio.MusicMood
 import com.unciv.ui.audio.MusicTrackChooserFlags
 import com.unciv.ui.audio.SoundPlayer
-import com.unciv.ui.components.Fonts
 import com.unciv.ui.components.extensions.center
+import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.crashhandling.CrashScreen
 import com.unciv.ui.crashhandling.wrapCrashHandlingUnit
 import com.unciv.ui.images.ImageGetter
@@ -50,10 +50,10 @@ import com.unciv.utils.debug
 import com.unciv.utils.launchOnGLThread
 import com.unciv.utils.withGLContext
 import com.unciv.utils.withThreadPoolContext
-import kotlinx.coroutines.CancellationException
 import java.io.PrintWriter
 import java.util.EnumSet
 import java.util.UUID
+import kotlinx.coroutines.CancellationException
 import kotlin.system.exitProcess
 
 object GUI {
