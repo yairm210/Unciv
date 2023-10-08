@@ -10,17 +10,21 @@ import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Group
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.ui.components.extensions.setSize
+import com.unciv.ui.components.fonts.FontRulesetIcons.getPixmapFromActor
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.images.Portrait
 import kotlin.math.ceil
 
+/** Map all or most Ruleset icons as Actors to unused Char codepoints,
+ *  [NativeBitmapFontData.getGlyph] can then paint them onto a PixMap,
+ *  on demand, by calling [getPixmapFromActor]. */
 object FontRulesetIcons {
     // See https://en.wikipedia.org/wiki/Private_Use_Areas
     // char encodings 57344 to 63743 (U+E000-U+F8FF) are not assigned
     internal const val UNUSED_CHARACTER_CODES_START = 57344
     private const val UNUSED_CHARACTER_CODES_END = 63743
 
-    val rulesetObjectNameToChar =HashMap<String, Char>()
+    val rulesetObjectNameToChar = HashMap<String, Char>()
     val charToRulesetImageActor = HashMap<Char, Actor>()
     private var nextUnusedCharacterNumber = UNUSED_CHARACTER_CODES_START
 

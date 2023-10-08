@@ -7,8 +7,30 @@ import com.unciv.GUI
 import com.unciv.UncivGame
 import com.unciv.ui.components.MayaCalendar
 import com.unciv.ui.components.extensions.getReadonlyPixmap
+import com.unciv.ui.components.fonts.Fonts.extractPixmapFromTextureRegion
+import com.unciv.ui.components.fonts.Fonts.font
+import com.unciv.ui.components.fonts.Fonts.fontImplementation
 import kotlin.math.ceil
 
+/**
+ *  The "Font manager"
+ *
+ *  * We have one global [font], held by this object.
+ *  * Platform-dependent code is linked through [fontImplementation].
+ *  * Most of the work happens in [getGlyph][NativeBitmapFontData.getGlyph]. It dispatches to one of three handlers:
+ *        - Normal text goes to the platform specific implemenation to fetch a glyph as pixels from the system.
+ *        - A set of "symbols" (for strength, movement, death, war, gold and some others)
+ *          comes from the texture atlas and is implemented in `extractPixmapFromTextureRegion`.
+ *          They use Unicode code points which normally hold related symbols.
+ *        - Icons for Ruleset objects are pre-build as Actors then drawn as pixels in `FontRulesetIcons`.
+ *          They use code points from the 'Private use' range - see comments over there.
+ *
+ *  @see NativeBitmapFontData
+ *  @see com.unciv.app.desktop.DesktopFont
+ *  @see com.unciv.app.AndroidFont
+ *  @see extractPixmapFromTextureRegion
+ *  @see FontRulesetIcons
+ */
 object Fonts {
 
     /** All text is originally rendered in 50px (set in AndroidLauncher and DesktopLauncher), and then scaled to fit the size of the text we need now.
@@ -75,7 +97,6 @@ object Fonts {
 
         return pixmap
     }
-
 
     const val turn = '⏳'               // U+23F3 'hourglass'
     const val strength = '†'            // U+2020 'dagger'
