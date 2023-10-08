@@ -87,7 +87,7 @@ class UnitManager(val civInfo:Civilization) {
                 if (unique.conditionals.any { it.isOfType(UniqueType.TriggerUponGainingUnit) &&
                         unit.matchesFilter(unique.params[0]) })
                     UniqueTriggerActivation.triggerCivwideUnique(unique, civInfo, triggerNotificationText = triggerNotificationText)
-            if (unit.baseUnit.getResourceRequirementsPerTurn().isNotEmpty())
+            if (unit.getResourceRequirementsPerTurn().isNotEmpty())
                 civInfo.cache.updateCivResources()
                 
             for (unique in civInfo.getMatchingUniques(UniqueType.LandUnitsCrossTerrainAfterUnitGained)) {
@@ -126,7 +126,7 @@ class UnitManager(val civInfo:Civilization) {
             // Not relevant when updating Tile transients, since some info of the civ itself isn't yet available,
             // and in any case it'll be updated once civ info transients are
             civInfo.updateStatsForNextTurn() // unit upkeep
-            if (mapUnit.baseUnit.getResourceRequirementsPerTurn().isNotEmpty())
+            if (mapUnit.getResourceRequirementsPerTurn().isNotEmpty())
                 civInfo.cache.updateCivResources()
         }
     }
@@ -139,7 +139,7 @@ class UnitManager(val civInfo:Civilization) {
         nextPotentiallyDueAt = 0
 
         civInfo.updateStatsForNextTurn() // unit upkeep
-        if (mapUnit.baseUnit.getResourceRequirementsPerTurn().isNotEmpty())
+        if (mapUnit.getResourceRequirementsPerTurn().isNotEmpty())
             civInfo.cache.updateCivResources()
     }
 

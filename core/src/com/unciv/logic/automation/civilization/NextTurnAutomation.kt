@@ -627,7 +627,7 @@ object NextTurnAutomation {
                 continue
 
             val unitToDisband = civInfo.units.getCivUnits()
-                .filter { it.baseUnit.requiresResource(resource) }
+                .filter { it.requiresResource(resource) }
                 .minByOrNull { it.getForceEvaluation() }
             unitToDisband?.disband()
 
@@ -636,7 +636,7 @@ object NextTurnAutomation {
                     continue
                 val buildingToSell = civInfo.gameInfo.ruleset.buildings.values.filter {
                         city.cityConstructions.isBuilt(it.name)
-                        && it.requiresResource(resource)
+                        && it.requiresResource(resource, StateForConditionals(civInfo, city))
                         && it.isSellable()
                         && !civInfo.civConstructions.hasFreeBuilding(city, it) }
                     .randomOrNull()
