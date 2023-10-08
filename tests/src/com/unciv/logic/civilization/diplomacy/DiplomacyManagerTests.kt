@@ -2,6 +2,7 @@ package com.unciv.logic.civilization.diplomacy
 
 import com.badlogic.gdx.math.Vector2
 import com.unciv.logic.civilization.Civilization
+import com.unciv.logic.civilization.diplomacy.DiplomacyTurnManager.nextTurn
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.BeliefType
 import com.unciv.testing.GdxTestRunner
