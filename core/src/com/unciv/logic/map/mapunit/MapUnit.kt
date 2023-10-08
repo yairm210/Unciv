@@ -637,6 +637,16 @@ class MapUnit : IsPartOfGameInfoSerialization {
 
     fun removeFromTile() = currentTile.removeUnit(this)
 
+
+    /** Return null if military on tile, or no civilian */
+    private fun Tile.getUnguardedCivilian(attacker: MapUnit): MapUnit? {
+        return when {
+            militaryUnit != null && militaryUnit != attacker -> null
+            civilianUnit != null -> civilianUnit!!
+            else -> null
+        }
+    }
+
     fun moveThroughTile(tile: Tile) {
         // addPromotion requires currentTile to be valid because it accesses ruleset through it.
         // getAncientRuinBonus, if it places a new unit, does too

@@ -890,6 +890,22 @@ class MapRegions (val ruleset: Ruleset){
 }
 
 
+// For dividing the map into Regions to determine start locations
+fun Tile.getTileFertility(checkCoasts: Boolean): Int {
+    var fertility = 0
+    for (terrain in allTerrains) {
+        if (terrain.hasUnique(UniqueType.OverrideFertility))
+            return terrain.getMatchingUniques(UniqueType.OverrideFertility).first().params[0].toInt()
+        else
+            fertility += terrain.getMatchingUniques(UniqueType.AddFertility)
+                .sumOf { it.params[0].toInt() }
+    }
+    if (isAdjacentToRiver()) fertility += 1
+    if (isAdjacentTo(Constants.freshWater)) fertility += 1 // meaning total +2 for river
+    if (checkCoasts && isCoastalTile()) fertility += 2
+    return fertility
+}
+
 fun getRegionPriority(terrain: Terrain?): Int? {
     if (terrain == null) // ie "hybrid"
         return 99999 // a big number

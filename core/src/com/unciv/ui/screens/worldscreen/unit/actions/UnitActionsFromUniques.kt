@@ -19,7 +19,7 @@ import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.fillPlaceholders
 import com.unciv.models.translations.removeConditionals
 import com.unciv.models.translations.tr
-import com.unciv.ui.components.Fonts
+import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.popups.ConfirmPopup
 import com.unciv.ui.screens.pickerscreens.ImprovementPickerScreen
 
