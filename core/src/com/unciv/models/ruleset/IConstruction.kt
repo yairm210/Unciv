@@ -10,8 +10,8 @@ import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.INamed
 import com.unciv.models.stats.Stat
+import com.unciv.ui.components.Fonts
 import com.unciv.ui.components.extensions.toPercent
-import com.unciv.ui.components.fonts.Fonts
 import kotlin.math.pow
 import kotlin.math.roundToInt
 
@@ -19,8 +19,8 @@ interface IConstruction : INamed {
     fun isBuildable(cityConstructions: CityConstructions): Boolean
     fun shouldBeDisplayed(cityConstructions: CityConstructions): Boolean
     /** Gets *per turn* resource requirements - does not include immediate costs for stockpiled resources */
-    fun getResourceRequirementsPerTurn(stateForConditionals: StateForConditionals = StateForConditionals()): Counter<String>
-    fun requiresResource(resource: String, stateForConditionals: StateForConditionals = StateForConditionals()): Boolean
+    fun getResourceRequirementsPerTurn(stateForConditionals: StateForConditionals? = null): Counter<String>
+    fun requiresResource(resource: String, stateForConditionals: StateForConditionals? = null): Boolean
     /** We can't call this getMatchingUniques because then it would conflict with IHasUniques */
     fun getMatchingUniquesNotConflicting(uniqueType: UniqueType) = sequenceOf<Unique>()
 }
@@ -205,7 +205,6 @@ enum class RejectionReasonType(val shouldShow: Boolean, val errorMessage: String
         return RejectionReason(this, errorMessage, shouldShow)
     }
 }
-
 
 open class PerpetualConstruction(override var name: String, val description: String) :
     IConstruction {

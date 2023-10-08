@@ -17,10 +17,10 @@ import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
 import com.unciv.models.translations.fillPlaceholders
 import com.unciv.models.translations.tr
+import com.unciv.ui.components.Fonts
 import com.unciv.ui.components.extensions.getConsumesAmountString
 import com.unciv.ui.components.extensions.getNeedMoreAmountString
 import com.unciv.ui.components.extensions.toPercent
-import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.screens.civilopediascreen.FormattedLine
 
 
@@ -621,7 +621,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
 
         for ((resourceName, requiredAmount) in getResourceRequirementsPerTurn(
             StateForConditionals(cityConstructions.city.civ, cityConstructions.city))
-        ) { 
+        ) {
             val availableAmount = cityConstructions.city.getResourceAmount(resourceName)
             if (availableAmount < requiredAmount) {
                 yield(RejectionReasonType.ConsumesResources.toInstance(resourceName.getNeedMoreAmountString(requiredAmount - availableAmount)))
@@ -712,6 +712,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
             resourceRequirements[unique.params[1]] += unique.params[0].toInt()
         return resourceRequirements
     }
+
     override fun requiresResource(resource: String, stateForConditionals: StateForConditionals?): Boolean {
         if (getResourceRequirementsPerTurn(stateForConditionals).contains(resource)) return true
         for (unique in getMatchingUniques(UniqueType.CostsResources, stateForConditionals)) {
