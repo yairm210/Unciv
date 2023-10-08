@@ -12,6 +12,11 @@ It sets up the very basics of Unciv, so that you can then show one single UI com
 
 To use it, you change the `DevElement` class within the `FasterUIDevelopment.kt` file so that the `actor` field is set to the UI element you want to develop. A very basic usage is there by default, just showing a label, but you can put any UI element there instead.
 
+Once it's up and running, your UI element is centered in the window and gets an orange border. You can toggle Scene2D debugging with the middle mouse button (click the wheel).
+
+Note that the parent your UI element will get doesn't set the size (which in reactive nested layouts would be its responsibility), so if your element is a WidgetGroup like Table, just pack() it. Or ignore the orange dot left over from the border. Also please do not resize the window - there's no support for that at the moment and no guarantees can be given for the results.
+
+
 ```kotlin
 class DevElement(
     val screen: UIDevScreen
@@ -32,6 +37,7 @@ There's two ways to do so:
 * Open this file in Android Studio under project:docs/Developers. That line above has a little green arrow in the left gutter that can be clicked.
 * Create a Run Configuration similar to [the desktop one described here](./Building-Locally.md#with-android-studio), but with classpath `Unciv.tests.test` and main class `com.unciv.dev.FasterUIDevelopment`.
   ![image](/Unciv/assets/FasterUIDevelopment.png)
+
 
 ## The 'Gdx Scene2D debug' option
 

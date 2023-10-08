@@ -2,7 +2,7 @@ package com.unciv.ui.popups
 
 import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.utils.Align
-import com.unciv.ui.components.ColorMarkupLabel
+import com.unciv.ui.components.widgets.ColorMarkupLabel
 import com.unciv.ui.components.input.onClick
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.utils.Concurrency

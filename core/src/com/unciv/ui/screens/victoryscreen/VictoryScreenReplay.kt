@@ -6,8 +6,8 @@ import com.badlogic.gdx.utils.Align
 import com.badlogic.gdx.utils.Timer
 import com.unciv.models.UncivSound
 import com.unciv.ui.components.Fonts
-import com.unciv.ui.components.TabbedPager
-import com.unciv.ui.components.UncivSlider
+import com.unciv.ui.components.widgets.TabbedPager
+import com.unciv.ui.components.widgets.UncivSlider
 import com.unciv.ui.components.YearTextUtil
 import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.extensions.setSize

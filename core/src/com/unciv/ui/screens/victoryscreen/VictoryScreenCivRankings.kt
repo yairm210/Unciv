@@ -4,7 +4,7 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
-import com.unciv.ui.components.TabbedPager
+import com.unciv.ui.components.widgets.TabbedPager
 import com.unciv.ui.components.extensions.addSeparator
 import com.unciv.ui.components.extensions.equalizeColumns
 import com.unciv.ui.components.extensions.toLabel

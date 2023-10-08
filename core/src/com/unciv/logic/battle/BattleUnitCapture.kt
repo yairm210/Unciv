@@ -118,6 +118,7 @@ object BattleUnitCapture {
         val capturedUnit = defender.unit
         // Stop current action
         capturedUnit.action = null
+        capturedUnit.automated = false
 
         val capturedUnitTile = capturedUnit.getTile()
         val originalOwner = if (capturedUnit.originalOwner != null)

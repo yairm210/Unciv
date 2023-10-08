@@ -3,10 +3,7 @@ package com.unciv.ui.screens.civilopediascreen
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.Pixmap
-import com.badlogic.gdx.graphics.TextureData
 import com.badlogic.gdx.graphics.g2d.TextureRegion
-import com.badlogic.gdx.graphics.glutils.FileTextureData
-import com.badlogic.gdx.graphics.glutils.PixmapTextureData
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.Table
@@ -18,7 +15,8 @@ import com.unciv.models.metadata.BaseRuleset
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.ruleset.unique.Unique
-import com.unciv.ui.components.ColorMarkupLabel
+import com.unciv.ui.components.extensions.getReadonlyPixmap
+import com.unciv.ui.components.widgets.ColorMarkupLabel
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.basescreen.BaseScreen
@@ -392,18 +390,6 @@ class FormattedLine (
         return (bounds.y until bounds.y + bounds.height).all {
             getPixel(x, it) and 255 == 0
         }
-    }
-
-    /** Retrieve a texture Pixmap without reload or ownership transfer, useable for read operations only.
-     *
-     *  (FileTextureData.consumePixmap forces a reload of the entire file - inefficient if we only want to look at pixel values) */
-    private fun TextureData.getReadonlyPixmap(): Pixmap {
-        if (!isPrepared) prepare()
-        if (this is PixmapTextureData) return consumePixmap()
-        if (this !is FileTextureData) throw TypeCastException("getReadonlyPixmap only works on file or pixmap based textures")
-        val field = FileTextureData::class.java.getDeclaredField("pixmap")
-        field.isAccessible = true
-        return field.get(this) as Pixmap
     }
     // endregion
 

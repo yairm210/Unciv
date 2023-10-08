@@ -25,7 +25,7 @@ import com.unciv.ui.popups.ConfirmPopup
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.components.FontFamilyData
 import com.unciv.ui.components.Fonts
-import com.unciv.ui.components.UncivSlider
+import com.unciv.ui.components.widgets.UncivSlider
 import com.unciv.ui.components.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.components.extensions.disable
 import com.unciv.ui.components.input.keyShortcuts

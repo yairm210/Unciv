@@ -2,11 +2,13 @@ package com.unciv.ui.screens.worldscreen.topbar
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Actor
+import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.ui.Cell
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.logic.civilization.Civilization
 import com.unciv.models.translations.tr
+import com.unciv.ui.components.Fonts
 import com.unciv.ui.components.extensions.darken
 import com.unciv.ui.components.extensions.setFontSize
 import com.unciv.ui.components.extensions.toLabel
@@ -190,20 +192,31 @@ class WorldScreenTopBar(internal val worldScreen: WorldScreen) : Table() {
 
     private class SelectedCivilizationTable(worldScreen: WorldScreen) : Table(BaseScreen.skin) {
         private var selectedCiv = ""
+        // Instead of allowing tr() to insert the nation icon - we don't want it scaled with fontSizeMultiplier
+        private var selectedCivIcon = Group()
+        private val selectedCivIconCell: Cell<Group>
         private val selectedCivLabel = "".toLabel()
         private val menuButton = ImageGetter.getImage("OtherIcons/MenuIcon")
 
         init {
+            // vertically align the Nation name by ascender height without descender:
+            //  Normal vertical centering uses the entire font height, but that looks off here because there's
+            //  few descenders in the typical Nation name. So we calculate an estimate of the descender height
+            //  in world coordinates (25 is the Label font size set below), then, since the cells themselves
+            //  have no default padding, we remove that much padding from the top of this entire Table, and
+            //  give the Label that much top padding in return. Approximated since we're ignoring 'leading'.
+            val descenderHeight = Fonts.fontImplementation.getMetrics().run { descent / height } * 25f
+
             left()
-            defaults().pad(10f)
+            pad(10f)
+            padTop((10f - descenderHeight).coerceAtLeast(0f))
 
             menuButton.color = Color.WHITE
             menuButton.onActivation(binding = KeyboardBinding.Menu) {
                 WorldScreenMenuPopup(worldScreen).open(force = true)
             }
 
-            selectedCivLabel.setFontSize(25)
-            selectedCivLabel.onClick {
+            val onNationClick = {
                 val civilopediaScreen = CivilopediaScreen(
                     worldScreen.selectedCiv.gameInfo.ruleset,
                     CivilopediaCategories.Nation,
@@ -212,8 +225,13 @@ class WorldScreenTopBar(internal val worldScreen: WorldScreen) : Table() {
                 worldScreen.game.pushScreen(civilopediaScreen)
             }
 
-            add(menuButton).size(50f).padRight(0f)
-            add(selectedCivLabel)
+            selectedCivLabel.setFontSize(25)
+            selectedCivLabel.onClick(onNationClick)
+            selectedCivIcon.onClick(onNationClick)
+
+            add(menuButton).size(50f)
+            selectedCivIconCell = add(selectedCivIcon).padLeft(10f)
+            add(selectedCivLabel).padTop(descenderHeight)
             pack()
         }
 
@@ -222,7 +240,9 @@ class WorldScreenTopBar(internal val worldScreen: WorldScreen) : Table() {
             if (this.selectedCiv == newCiv) return
             this.selectedCiv = newCiv
 
-            selectedCivLabel.setText(newCiv.tr())  // Will include nation icon
+            selectedCivIcon = ImageGetter.getNationPortrait(worldScreen.selectedCiv.nation, 25f)
+            selectedCivIconCell.setActor(selectedCivIcon)
+            selectedCivLabel.setText(newCiv.tr(hideIcons = true))
             invalidate()
             pack()
         }

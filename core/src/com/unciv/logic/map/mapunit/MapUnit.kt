@@ -101,6 +101,8 @@ class MapUnit : IsPartOfGameInfoSerialization {
     var health: Int = 100
 
     var action: String? = null // work, automation, fortifying, I dunno what.
+    var automated: Boolean = false
+
     @Transient
     var showAdditionalActions: Boolean = false
 
@@ -111,10 +113,9 @@ class MapUnit : IsPartOfGameInfoSerialization {
     var isTransported: Boolean = false
     var turnsFortified = 0
 
-    // Old, to be deprecated
-    @Deprecated("As of 4.5.3")
+    @Deprecated("As of 4.8.9")
     var abilityUsesLeft: HashMap<String, Int> = hashMapOf()
-    @Deprecated("As of 4.5.3")
+    @Deprecated("As of 4.8.9")
     var maxAbilityUses: HashMap<String, Int> = hashMapOf()
 
     // New - track only *how many have been used*, derive max from uniques, left = max - used
@@ -175,6 +176,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
         toReturn.currentMovement = currentMovement
         toReturn.health = health
         toReturn.action = action
+        toReturn.automated = automated
         toReturn.attacksThisTurn = attacksThisTurn
         toReturn.turnsFortified = turnsFortified
         toReturn.promotions = promotions.clone()
@@ -335,7 +337,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
 
     fun isMoving() = action?.startsWith("moveTo") == true
 
-    fun isAutomated() = action == UnitActionType.Automate.value
+    fun isAutomated() = automated
     fun isExploring() = action == UnitActionType.Explore.value
     fun isPreparingParadrop() = action == UnitActionType.Paradrop.value
     fun isPreparingAirSweep() = action == UnitActionType.AirSweep.value
@@ -460,6 +462,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
             ?: throw java.lang.Exception("Unit $name is not found!")
 
         updateUniques()
+        if (action == UnitActionType.Automate.value) automated = true
     }
 
     fun getTriggeredUniques(trigger: UniqueType,
@@ -616,6 +619,16 @@ class MapUnit : IsPartOfGameInfoSerialization {
     }
 
     fun removeFromTile() = currentTile.removeUnit(this)
+
+
+    /** Return null if military on tile, or no civilian */
+    private fun Tile.getUnguardedCivilian(attacker: MapUnit): MapUnit? {
+        return when {
+            militaryUnit != null && militaryUnit != attacker -> null
+            civilianUnit != null -> civilianUnit!!
+            else -> null
+        }
+    }
 
     fun moveThroughTile(tile: Tile) {
         // addPromotion requires currentTile to be valid because it accesses ruleset through it.

@@ -1,13 +1,16 @@
-package com.unciv.ui.components
+package com.unciv.ui.components.widgets
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.unciv.Constants
 import com.unciv.models.translations.tr
+import com.unciv.ui.components.Fonts
 import com.unciv.ui.screens.basescreen.BaseScreen
 import kotlin.math.floor
 
 /** A [Label] that unlike the original participates correctly in layout
+ *
+ *  Major feature: Distribute wrapping points so the overall width is minimized without triggering additional breaks.
  *  Caveat: You still need to turn wrap on _after_ instantiation, doing it here in init leads to hell.
  *
  *  @param text Automatically translated text

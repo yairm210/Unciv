@@ -1,4 +1,4 @@
-package com.unciv.ui.components
+package com.unciv.ui.components.widgets
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input

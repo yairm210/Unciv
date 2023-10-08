@@ -1,3 +1,12 @@
+## 4.8.12
+
+Automated units can fortify/set up/other actions
+
+AI now uses free tech points  - By tuvus
+
+By SomeTroglodyte:
+- Align ruleset icons in text to font metrics
+
 ## 4.8.11
 
 Religion fixes:
