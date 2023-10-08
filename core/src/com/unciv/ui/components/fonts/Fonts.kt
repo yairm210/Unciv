@@ -31,12 +31,6 @@ import com.unciv.ui.images.Portrait
 import kotlin.math.ceil
 import kotlin.math.roundToInt
 
-
-// See https://en.wikipedia.org/wiki/Private_Use_Areas
-// char encodings 57344 to 63743 (U+E000-U+F8FF) are not assigned
-private const val UNUSED_CHARACTER_CODES_START = 57344
-private const val UNUSED_CHARACTER_CODES_END = 63743
-
 /** Implementations of FontImplementation will use different FontMetrics - AWT or Android.Paint,
  *  both have a class of that name, no other common point: thus we create an abstraction.
  *
@@ -183,7 +177,7 @@ class NativeBitmapFontData(
         glyph.srcX = rect.x.toInt()
         glyph.srcY = rect.y.toInt()
 
-        if (ch.code >= UNUSED_CHARACTER_CODES_START)
+        if (ch.code >= Fonts.UNUSED_CHARACTER_CODES_START)
             glyph.setRulesetIconGeometry(assumeRoundIcon)
 
         // If a page was added, create a new texture region for the incrementally added glyph.
@@ -325,6 +319,11 @@ object Fonts {
 
         return pixmap
     }
+
+    // See https://en.wikipedia.org/wiki/Private_Use_Areas
+    // char encodings 57344 to 63743 (U+E000-U+F8FF) are not assigned
+    internal const val UNUSED_CHARACTER_CODES_START = 57344
+    private const val UNUSED_CHARACTER_CODES_END = 63743
 
     val rulesetObjectNameToChar =HashMap<String, Char>()
     val charToRulesetImageActor = HashMap<Char, Actor>()
