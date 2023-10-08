@@ -437,7 +437,6 @@ open class Tile : IsPartOfGameInfoSerialization {
         val owner = getOwner() ?: return false
         val unit = militaryUnit
 
-        // If tile has unit
         if (unit != null) {
             return when {
                 unit.civ == owner -> false              // Own - unblocks tile;
@@ -446,15 +445,12 @@ open class Tile : IsPartOfGameInfoSerialization {
             }
         }
 
-        // No unit -> land tile is not blocked
-        if (isLand)
+        if (isLand) // Only water tiles are blocked if empty
             return false
 
         // For water tiles need also to check neighbors:
         // enemy military naval units blockade all adjacent water tiles.
         for (neighbor in neighbors) {
-
-            // Check only water neighbors
             if (!neighbor.isWater)
                 continue
 
@@ -778,10 +774,6 @@ open class Tile : IsPartOfGameInfoSerialization {
     fun setOwnerTransients() {
         if (owningCity == null && roadOwner != "")
             getRoadOwner()!!.neutralRoads.add(this.position)
-    }
-
-    fun stripUnits() {
-        for (unit in this.getUnits()) removeUnit(unit)
     }
 
     /**
