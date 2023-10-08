@@ -182,7 +182,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
 
         if (!civ.isBarbarian()) { // Barbarians don't need resources
             val civResources = Counter(civ.getCivResourcesByName()) + additionalResources
-            for ((resource, requiredAmount) in getResourceRequirementsPerTurn(StateForConditionals(civ)))
+            for ((resource, requiredAmount) in getResourceRequirementsPerTurn(StateForConditionals(civ))) {
                 val availableAmount = civResources[resource]
                 if (availableAmount < requiredAmount) {
                     val message = resource.getNeedMoreAmountString(requiredAmount - availableAmount)
@@ -317,7 +317,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
             resourceRequirements[unique.params[1]] += unique.params[0].toInt()
         return resourceRequirements
     }
-    
+
     override fun requiresResource(resource: String, stateForConditionals: StateForConditionals?): Boolean {
         if (getResourceRequirementsPerTurn(stateForConditionals).contains(resource)) return true
         for (unique in getMatchingUniques(UniqueType.CostsResources, stateForConditionals)) {
