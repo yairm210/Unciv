@@ -114,7 +114,7 @@ object UseGoldAutomation {
             }
             if (ranOutOfMoney) {
                 for (tileThatNeedsBuying in tilesThatNeedBuying) {
-                    cityWithLeastCostToBuy.expansion.relinquishOwnership(tileThatNeedsBuying)
+                    cityWithLeastCostToBuy.expansion.undoBuyTile(tileThatNeedsBuying)
                 }
                 civInfo.addGold(goldSpent)
             }
