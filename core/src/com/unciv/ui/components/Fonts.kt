@@ -298,7 +298,8 @@ object Fonts {
         val boxHeight = ceil(metrics.height).toInt()
         val boxWidth = ceil(metrics.ascent * textureRegion.regionWidth / textureRegion.regionHeight).toInt()
         // In case the region's aspect isn't 1:1, scale the rounded-up width back to a height with unrounded aspect ratio
-        val drawHeight = textureRegion.regionHeight * (boxWidth / textureRegion.regionWidth)
+        // (using integer math only, do the equivalent of float math rounded to closest integer)
+        val drawHeight = (2 * textureRegion.regionHeight * boxWidth + 1) / textureRegion.regionWidth / 2
         // place region from top of bounding box down
         // Adding half the descent is empiric - should theoretically be leading only
         val drawY = ceil(metrics.leading + metrics.descent * 0.5f).toInt()
