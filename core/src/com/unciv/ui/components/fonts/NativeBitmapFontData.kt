@@ -89,7 +89,7 @@ class NativeBitmapFontData(
         glyph.srcX = rect.x.toInt()
         glyph.srcY = rect.y.toInt()
 
-        if (ch.code >= Fonts.UNUSED_CHARACTER_CODES_START)
+        if (ch.code >= FontRulesetIcons.UNUSED_CHARACTER_CODES_START)
             glyph.setRulesetIconGeometry(assumeRoundIcon)
 
         // If a page was added, create a new texture region for the incrementally added glyph.
@@ -139,10 +139,10 @@ class NativeBitmapFontData(
     private fun getPixmapFromChar(ch: Char): Pixmap {
         return when (ch) {
             in Fonts.allSymbols -> getPixmapForTextureName(Fonts.allSymbols[ch]!!)
-            in Fonts.charToRulesetImageActor ->
+            in FontRulesetIcons.charToRulesetImageActor ->
                 try {
                     // This sometimes fails with a "Frame buffer couldn't be constructed: incomplete attachment" error, unclear why
-                    Fonts.getPixmapFromActor(Fonts.charToRulesetImageActor[ch]!!)
+                    FontRulesetIcons.getPixmapFromActor(FontRulesetIcons.charToRulesetImageActor[ch]!!)
                 } catch (_: Exception) {
                     Pixmap(0, 0, Pixmap.Format.RGBA8888) // Empty space
                 }

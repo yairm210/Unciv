@@ -34,7 +34,7 @@ import com.unciv.ui.components.extensions.surroundWithCircle
 import com.unciv.ui.components.extensions.surroundWithThinCircle
 import com.unciv.ui.components.extensions.toGroup
 import com.unciv.ui.components.extensions.toLabel
-import com.unciv.ui.components.fonts.Fonts
+import com.unciv.ui.components.fonts.FontRulesetIcons
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.utils.debug
 import kotlin.math.atan2
@@ -87,7 +87,7 @@ object ImageGetter {
         SkinCache.assembleSkinConfigs(ruleset.mods)
 
         BaseScreen.setSkin()
-        Fonts.addRulesetImages(ruleset)
+        FontRulesetIcons.addRulesetImages(ruleset)
     }
 
     /** Loads all atlas/texture files from a folder, as controlled by an Atlases.json */
