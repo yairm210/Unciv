@@ -387,6 +387,7 @@ class CityConstructions : IsPartOfGameInfoSerialization {
             if (construction.isBuildable(this))
                 constructionQueue.add(constructionName)
         }
+        chooseNextConstruction()
     }
 
     private fun validateInProgressConstructions() {
@@ -687,7 +688,6 @@ class CityConstructions : IsPartOfGameInfoSerialization {
     private fun removeCurrentConstruction() = removeFromQueue(0, true)
 
     fun chooseNextConstruction() {
-        validateConstructionQueue()
         if (!isQueueEmptyOrIdle()) {
             // If the USER set a perpetual construction, then keep it!
             if (getConstruction(currentConstructionFromQueue) !is PerpetualConstruction || currentConstructionIsUserSet) return
