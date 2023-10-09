@@ -18,7 +18,8 @@ import kotlin.math.roundToInt
 interface IConstruction : INamed {
     fun isBuildable(cityConstructions: CityConstructions): Boolean
     fun shouldBeDisplayed(cityConstructions: CityConstructions): Boolean
-    /** Gets *per turn* resource requirements - does not include immediate costs for stockpiled resources */
+    /** Gets *per turn* resource requirements - does not include immediate costs for stockpiled resources.
+     * Uses [stateForConditionals] to determine which civ or city this is built for*/
     fun getResourceRequirementsPerTurn(stateForConditionals: StateForConditionals? = null): Counter<String>
     fun requiresResource(resource: String, stateForConditionals: StateForConditionals? = null): Boolean
     /** We can't call this getMatchingUniques because then it would conflict with IHasUniques */

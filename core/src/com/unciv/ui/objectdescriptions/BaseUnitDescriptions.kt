@@ -123,7 +123,7 @@ object BaseUnitDescriptions {
             val resource = ruleset.tileResources[baseUnit.requiredResource]
             textList += FormattedLine(
                 baseUnit.requiredResource!!.getConsumesAmountString(1, resource!!.isStockpiled()),
-                link="Resources/$baseUnit.requiredResource", color="#F42")
+                link="Resources/${baseUnit.requiredResource}", color="#F42")
         }
 
         if (baseUnit.uniqueTo != null) {

@@ -260,7 +260,8 @@ class MapUnit : IsPartOfGameInfoSerialization {
         newUnit.updateVisibleTiles()
     }
 
-
+    /** Gets *per turn* resource requirements - does not include immediate costs for stockpiled resources.
+     * StateForConditionals is assumed to regarding this mapUnit*/
     fun getResourceRequirementsPerTurn(): Counter<String> {
         val resourceRequirements = Counter<String>()
         if (baseUnit.requiredResource != null) resourceRequirements[baseUnit.requiredResource!!] = 1
