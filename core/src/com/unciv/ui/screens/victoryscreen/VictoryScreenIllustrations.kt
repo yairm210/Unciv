@@ -73,7 +73,6 @@ class VictoryScreenIllustrations(
     }
 
     private val game = worldScreen.gameInfo
-    private val maxLabelWidth = parent.stage.run { width * (if (isNarrowerThan4to3()) 0.9f else 0.7f) }
     private val victories = game.getEnabledVictories().values
         .filter { it.hasIllustrations() }
         .sortedBy { it.name.tr(hideIcons = true) }
