@@ -10,8 +10,8 @@ import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.INamed
 import com.unciv.models.stats.Stat
-import com.unciv.ui.components.Fonts
 import com.unciv.ui.components.extensions.toPercent
+import com.unciv.ui.components.fonts.Fonts
 import kotlin.math.pow
 import kotlin.math.roundToInt
 
