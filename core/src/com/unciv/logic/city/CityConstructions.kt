@@ -524,8 +524,6 @@ class CityConstructions : IsPartOfGameInfoSerialization {
 
         updateUniques()
 
-        validateConstructionQueue()
-
         /** Support for [UniqueType.CreatesOneImprovement] */
         applyCreateOneImprovement(building)
 
