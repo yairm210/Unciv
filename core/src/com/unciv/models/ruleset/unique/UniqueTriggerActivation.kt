@@ -647,6 +647,29 @@ object UniqueTriggerActivation {
                 return true // not fully correct
             }
 
+            UniqueType.RemoveBuilding -> {
+                if (!civInfo.isMajorCiv()) {
+                    return false
+                }
+
+                val applicableCities =
+                    if (unique.params[1] == "in this city") {
+                        sequenceOf(city!!)
+                    }
+                    else civInfo.cities.asSequence().filter {
+                        it.matchesFilter(unique.params[1])
+                    }
+
+                for (applicableCity in applicableCities) {
+                    for (buildingToRemove in applicableCity.cityConstructions.getBuiltBuildings()) {
+                        if (buildingToRemove.matchesFilter(unique.params[0])) {
+                            applicableCity.cityConstructions.removeBuilding(buildingToRemove)
+                        }
+                    }
+                }
+                return true
+            }
+
             else -> {}
         }
         return false

@@ -10,6 +10,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Triggerable, Global
 
+??? example  "Remove [buildingFilter] in [cityFilter]"
+	Example: "Remove [Monument] in [in all cities]"
+
+	Applicable to: Triggerable, Global
+
 ??? example  "Free [unit] appears"
 	Example: "Free [Musketman] appears"
 
