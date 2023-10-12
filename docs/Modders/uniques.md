@@ -1889,12 +1889,12 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Conditional
 
 ??? example  "&lt;when above [amount] gold&gt;"
-	Example: "&lt;when above [3] gold&gt;"
+	Example: "&lt;when above [1000] gold&gt;"
 
 	Applicable to: Conditional
 
 ??? example  "&lt;when below [amount] gold&gt;"
-	Example: "&lt;when below [3] gold&gt;"
+	Example: "&lt;when below [100] gold&gt;"
 
 	Applicable to: Conditional
 
