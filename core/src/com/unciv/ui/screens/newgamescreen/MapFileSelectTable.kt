@@ -11,20 +11,25 @@ import com.unciv.logic.files.MapSaver
 import com.unciv.logic.map.MapParameters
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.ui.components.extensions.pad
+import com.unciv.ui.components.extensions.toGdxArray
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.input.onChange
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.victoryscreen.LoadMapPreview
 import com.unciv.utils.Concurrency
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.asFlow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.isActive
-import com.badlogic.gdx.utils.Array as GdxArray
 
 class MapFileSelectTable(
     private val newGameScreen: NewGameScreen,
     private val mapParameters: MapParameters
 ) : Table() {
-
+    private val mapCategorySelectBox = SelectBox<String>(BaseScreen.skin)
     private val mapFileSelectBox = SelectBox<MapWrapper>(BaseScreen.skin)
     private val miniMapWrapper = Container<Group?>()
     private var mapPreviewJob: Job? = null
@@ -32,26 +37,38 @@ class MapFileSelectTable(
     // The SelectBox auto displays the text a object.toString(), which on the FileHandle itself includes the folder path.
     //  So we wrap it in another object with a custom toString()
     private class MapWrapper(val fileHandle: FileHandle, val mapParameters: MapParameters) {
-        override fun toString(): String = mapParameters.baseRuleset + " | " + fileHandle.name()
+        override fun toString(): String = fileHandle.name()
+        fun getCategoryName(): String = fileHandle.parent().parent().name()
+            .ifEmpty { mapParameters.baseRuleset }
     }
     private val mapWrappers = ArrayList<MapWrapper>()
 
     private val columnWidth = newGameScreen.getColumnWidth()
 
+    private val collator = UncivGame.Current.settings.getCollatorFromLocale()
+
     init {
-        defaults().pad(5f, 10f)  // Must stay same as in MapParametersTable
-        val mapFileLabel = "{Map file}:".toLabel()
-        add(mapFileLabel).left()
-        add(mapFileSelectBox)
+        add(Table().apply {
+            defaults().pad(5f, 10f)  // Must stay same as in MapParametersTable
+            val mapCategoryLabel = "{Map Mod}:".toLabel()
+            val mapFileLabel = "{Map file}:".toLabel()
             // because SOME people gotta give the hugest names to their maps
-            .width(columnWidth - 40f - mapFileLabel.prefWidth)
-            .right().row()
+            val selectBoxWidth = columnWidth - 80f -
+                mapFileLabel.prefWidth.coerceAtLeast(mapCategoryLabel.prefWidth)
+            add(mapCategoryLabel).left()
+            add(mapCategorySelectBox).width(selectBoxWidth).right().row()
+            add(mapFileLabel).left()
+            add(mapFileSelectBox).width(selectBoxWidth).right().row()
+        }).growX()
+        row()
+
         add(miniMapWrapper)
             .pad(15f)
             .maxWidth(columnWidth - 20f)
             .colspan(2).center().row()
 
-        mapFileSelectBox.onChange { onSelectBoxChange() }
+        mapCategorySelectBox.onChange { onCategorySelectBoxChange() }
+        mapFileSelectBox.onChange { onFileSelectBoxChange() }
 
         addMapWrappersAsync()
     }
@@ -66,21 +83,50 @@ class MapFileSelectTable(
     }.sortedByDescending { it.lastModified() }
 
     private fun addMapWrappersAsync() {
-        val mapFilesSequence = getMapFilesSequence()
+        val mapFilesFlow = getMapFilesSequence().asFlow().map {
+            MapWrapper(it, MapSaver.loadMapParameters(it))
+        }
 
         Concurrency.run {
-            for (mapFile in mapFilesSequence) {
-                val mapParameters = try {
-                    MapSaver.loadMapParameters(mapFile)
-                } catch (_: Exception) {
-                    continue
+            mapFilesFlow
+                .onEach {
+                    mapWrappers.add(it)
+                    Concurrency.runOnGLThread {
+                        addAsyncEntryToSelectBoxes(it)
+                    }
                 }
-                mapWrappers.add(MapWrapper(mapFile, mapParameters))
+                .catch {}
+                .collect()
+            Concurrency.runOnGLThread {
+                onCategorySelectBoxChange() // re-sort lower SelectBox
             }
-            Concurrency.runOnGLThread { fillMapFileSelectBox() }
         }
     }
 
+    private fun addAsyncEntryToSelectBoxes(mapWrapper: MapWrapper) {
+        // Take the mod name where the map is stored, or if it's not a mod map, the base ruleset it's saved for
+        val categoryName = mapWrapper.getCategoryName()
+
+        if (!mapCategorySelectBox.items.contains(categoryName, false)) {
+            val sortToTop = newGameScreen.gameSetupInfo.gameParameters.baseRuleset
+            val select = if (mapCategorySelectBox.selection.isEmpty) categoryName
+                    else mapCategorySelectBox.selected
+            // keep Ruleset Selectbox sorted while async is running - few entries
+            val newItems = (mapCategorySelectBox.items.asSequence() + categoryName)
+                .sortedWith(
+                    compareBy<String?> { it != sortToTop }
+                        .thenBy(collator) { it }
+                ).toGdxArray()
+            mapCategorySelectBox.items = newItems
+            mapCategorySelectBox.selected = select
+        }
+
+        if (mapCategorySelectBox.selected != categoryName) return
+
+        // .. but add the maps themselves as they come
+        mapFileSelectBox.items.add(mapWrapper)
+        mapFileSelectBox.items = mapFileSelectBox.items  // Call setItems so SelectBox sees the change
+    }
 
     private val firstMap: FileHandle? by lazy {
         getMapFilesSequence().firstOrNull {
@@ -93,27 +139,28 @@ class MapFileSelectTable(
         }
     }
 
+    private fun FileHandle.isRecentlyModified() = lastModified() > System.currentTimeMillis() - 900000
     fun isNotEmpty() = firstMap != null
-    fun recentlySavedMapExists() = firstMap!=null && firstMap!!.lastModified() > System.currentTimeMillis() - 900000
+    fun recentlySavedMapExists() = firstMap != null && firstMap!!.isRecentlyModified()
 
-    private fun fillMapFileSelectBox() {
-        if (!mapFileSelectBox.items.isEmpty) return
-
-        val mapFiles = GdxArray<MapWrapper>()
-        mapWrappers
-            .sortedWith(compareBy(UncivGame.Current.settings.getCollatorFromLocale()) { it.toString() })
-            .sortedByDescending { it.mapParameters.baseRuleset == newGameScreen.gameSetupInfo.gameParameters.baseRuleset }
-            .forEach { mapFiles.add(it) }
-
-        // Pre-select: a) map saved within last 15min or b) map named in mapParameters or c) alphabetically first
-        // This is a kludge - the better way would be to have a "play this map now" menu button in the editor
-        // (which would ideally not even require a save file - which makes implementation non-trivial)
-        val selectedItem =
-                mapFiles.maxByOrNull { it.fileHandle.lastModified() }
-                    ?.takeIf { it.fileHandle.lastModified() > System.currentTimeMillis() - 900000 }
-                    ?: mapFiles.firstOrNull { it.fileHandle.name() == mapParameters.name }
-                    ?: mapFiles.firstOrNull()
-                    ?: return
+    private fun onCategorySelectBoxChange() {
+        val selectedRuleset: String? = mapCategorySelectBox.selected
+        val mapFiles = mapWrappers.asSequence()
+            .filter { it.getCategoryName() == selectedRuleset }
+            .sortedWith(compareBy(collator) { it.toString() })
+            .toGdxArray()
+        fun getPreselect(): MapWrapper? {
+            if (mapFiles.isEmpty) return null
+            if (!mapFileSelectBox.selection.isEmpty) return mapFileSelectBox.selected
+            val recent = mapFiles.asSequence()
+                .filter { it.fileHandle.isRecentlyModified() }
+                .maxByOrNull { it.fileHandle.lastModified() }
+            if (recent != null) return recent
+            val named = mapFiles.firstOrNull { it.fileHandle.name() == mapParameters.name }
+            if (named != null) return named
+            return mapFiles.first()
+        }
+        val selectedItem = getPreselect()
 
         // since mapFileSelectBox.selection.setProgrammaticChangeEvents() defaults to true, this would
         // kill the mapParameters.name we would like to look for when determining what to pre-select -
@@ -122,7 +169,6 @@ class MapFileSelectTable(
         // (all expensive) for something that will be overthrown momentarily
         mapFileSelectBox.selection.setProgrammaticChangeEvents(false)
         mapFileSelectBox.items = mapFiles
-
         // Now, we want this ON because the event removes map selections which are pulling mods
         // that trip updateRuleset - so that code should still be active for the pre-selection
         mapFileSelectBox.selection.setProgrammaticChangeEvents(true)
@@ -134,14 +180,16 @@ class MapFileSelectTable(
     fun onSelectBoxChange() {
         cancelBackgroundJobs()
         if (mapFileSelectBox.selection.isEmpty) return
-        val mapFile = mapFileSelectBox.selected.fileHandle
+        val selection = mapFileSelectBox.selected
+        val mapFile = selection.fileHandle
         mapParameters.name = mapFile.name()
         newGameScreen.gameSetupInfo.mapFile = mapFile
-        val mapMods = mapFileSelectBox.selected.mapParameters.mods.partition { RulesetCache[it]?.modOptions?.isBaseRuleset == true }
+        val mapMods = selection.mapParameters.mods
+            .partition { RulesetCache[it]?.modOptions?.isBaseRuleset == true }
         newGameScreen.gameSetupInfo.gameParameters.mods = LinkedHashSet(mapMods.second)
         newGameScreen.gameSetupInfo.gameParameters.baseRuleset = mapMods.first.firstOrNull()
-            ?: mapFileSelectBox.selected.mapParameters.baseRuleset
-        val success = newGameScreen.tryUpdateRuleset(updateUI = true)
+            ?: selection.mapParameters.baseRuleset
+        val success = newGameScreen.tryUpdateRuleset()
         newGameScreen.updateTables()
         hideMiniMap()
         if (success) {
@@ -153,7 +201,7 @@ class MapFileSelectTable(
             items.removeIndex(mapFileSelectBox.selectedIndex)
             // Changing the array itself is not enough, SelectBox gets out of sync, need to call setItems()
             mapFileSelectBox.items = items
-            // Note - this will have triggered a nested onSelectBoxChange()!
+            // Note - this will have triggered a nested onFileSelectBoxChange()!
         }
     }
 
