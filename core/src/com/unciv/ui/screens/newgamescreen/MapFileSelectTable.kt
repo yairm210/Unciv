@@ -3,17 +3,27 @@ package com.unciv.ui.screens.newgamescreen
 import com.badlogic.gdx.files.FileHandle
 import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
+import com.badlogic.gdx.scenes.scene2d.ui.Cell
 import com.badlogic.gdx.scenes.scene2d.ui.Container
 import com.badlogic.gdx.scenes.scene2d.ui.SelectBox
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.UncivGame
+import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.files.MapSaver
 import com.unciv.logic.map.MapParameters
+import com.unciv.logic.map.TileMap
+import com.unciv.models.metadata.Player
 import com.unciv.models.ruleset.RulesetCache
+import com.unciv.models.translations.tr
+import com.unciv.ui.components.extensions.disable
+import com.unciv.ui.components.extensions.enable
 import com.unciv.ui.components.extensions.pad
 import com.unciv.ui.components.extensions.toGdxArray
 import com.unciv.ui.components.extensions.toLabel
+import com.unciv.ui.components.extensions.toTextButton
+import com.unciv.ui.components.input.onActivation
 import com.unciv.ui.components.input.onChange
+import com.unciv.ui.popups.AnimatedMenuPopup
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.victoryscreen.LoadMapPreview
 import com.unciv.utils.Concurrency
@@ -31,15 +41,18 @@ class MapFileSelectTable(
 ) : Table() {
     private val mapCategorySelectBox = SelectBox<String>(BaseScreen.skin)
     private val mapFileSelectBox = SelectBox<MapWrapper>(BaseScreen.skin)
+    private val useNationsFromMapButton = "Select players from starting locations".toTextButton(AnimatedMenuPopup.SmallButtonStyle())
+    private val useNationsButtonCell: Cell<Actor?>
+    private var mapNations = emptySequence<String>()
     private val miniMapWrapper = Container<Group?>()
     private var mapPreviewJob: Job? = null
 
     // The SelectBox auto displays the text a object.toString(), which on the FileHandle itself includes the folder path.
     //  So we wrap it in another object with a custom toString()
-    private class MapWrapper(val fileHandle: FileHandle, val mapParameters: MapParameters) {
+    private class MapWrapper(val fileHandle: FileHandle, val mapPreview: TileMap.Preview) {
         override fun toString(): String = fileHandle.name()
         fun getCategoryName(): String = fileHandle.parent().parent().name()
-            .ifEmpty { mapParameters.baseRuleset }
+            .ifEmpty { mapPreview.mapParameters.baseRuleset }
     }
     private val mapWrappers = ArrayList<MapWrapper>()
 
@@ -60,6 +73,8 @@ class MapFileSelectTable(
             add(mapFileLabel).left()
             add(mapFileSelectBox).width(selectBoxWidth).right().row()
         }).growX()
+
+        useNationsButtonCell = add().pad(0f)
         row()
 
         add(miniMapWrapper)
@@ -69,6 +84,7 @@ class MapFileSelectTable(
 
         mapCategorySelectBox.onChange { onCategorySelectBoxChange() }
         mapFileSelectBox.onChange { onFileSelectBoxChange() }
+        useNationsFromMapButton.onActivation { onUseNationsFromMap() }
 
         addMapWrappersAsync()
     }
@@ -84,7 +100,7 @@ class MapFileSelectTable(
 
     private fun addMapWrappersAsync() {
         val mapFilesFlow = getMapFilesSequence().asFlow().map {
-            MapWrapper(it, MapSaver.loadMapParameters(it))
+            MapWrapper(it, MapSaver.loadMapPreview(it))
         }
 
         Concurrency.run {
@@ -181,14 +197,25 @@ class MapFileSelectTable(
         cancelBackgroundJobs()
         if (mapFileSelectBox.selection.isEmpty) return
         val selection = mapFileSelectBox.selected
+
+        mapNations = selection.mapPreview.getDeclaredNations()
+        if (mapNations.none()) {
+            useNationsButtonCell.setActor(null)
+            useNationsButtonCell.height(0f).pad(0f)
+        } else {
+            useNationsFromMapButton.enable()
+            useNationsButtonCell.setActor(useNationsFromMapButton)
+            useNationsButtonCell.height(useNationsFromMapButton.prefHeight).padLeft(5f).padTop(10f)
+        }
+
         val mapFile = selection.fileHandle
         mapParameters.name = mapFile.name()
         newGameScreen.gameSetupInfo.mapFile = mapFile
-        val mapMods = selection.mapParameters.mods
+        val mapMods = selection.mapPreview.mapParameters.mods
             .partition { RulesetCache[it]?.modOptions?.isBaseRuleset == true }
         newGameScreen.gameSetupInfo.gameParameters.mods = LinkedHashSet(mapMods.second)
         newGameScreen.gameSetupInfo.gameParameters.baseRuleset = mapMods.first.firstOrNull()
-            ?: selection.mapParameters.baseRuleset
+            ?: selection.mapPreview.mapParameters.baseRuleset
         val success = newGameScreen.tryUpdateRuleset()
         newGameScreen.updateTables()
         hideMiniMap()
@@ -258,5 +285,18 @@ class MapFileSelectTable(
                 }
             )
         )
+    }
+
+    private fun onUseNationsFromMap() {
+        useNationsFromMapButton.disable()
+        val players = newGameScreen.playerPickerTable.gameParameters.players
+        players.clear()
+        mapNations
+            .map { it.tr() }
+            .sortedWith(collator)
+            .withIndex()
+            .map { Player(it.value, if (it.index == 0) PlayerType.Human else PlayerType.AI) }
+            .toCollection(players)
+        newGameScreen.playerPickerTable.update()
     }
 }
