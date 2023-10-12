@@ -1,6 +1,8 @@
 package com.unciv.ui.screens.newgamescreen
 
 import com.badlogic.gdx.files.FileHandle
+import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.badlogic.gdx.scenes.scene2d.ui.Cell
@@ -23,6 +25,7 @@ import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
 import com.unciv.ui.components.input.onActivation
 import com.unciv.ui.components.input.onChange
+import com.unciv.ui.components.widgets.LoadingImage
 import com.unciv.ui.popups.AnimatedMenuPopup
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.victoryscreen.LoadMapPreview
@@ -41,6 +44,7 @@ class MapFileSelectTable(
 ) : Table() {
     private val mapCategorySelectBox = SelectBox<String>(BaseScreen.skin)
     private val mapFileSelectBox = SelectBox<MapWrapper>(BaseScreen.skin)
+    private val loadingIcon = LoadingImage(30f, loadingColor = Color.SCARLET)
     private val useNationsFromMapButton = "Select players from starting locations".toTextButton(AnimatedMenuPopup.SmallButtonStyle())
     private val useNationsButtonCell: Cell<Actor?>
     private var mapNations = emptySequence<String>()
@@ -74,6 +78,8 @@ class MapFileSelectTable(
             add(mapFileSelectBox).width(selectBoxWidth).right().row()
         }).growX()
 
+        add(loadingIcon).padRight(5f).padLeft(0f).row()
+
         useNationsButtonCell = add().pad(0f)
         row()
 
@@ -103,6 +109,7 @@ class MapFileSelectTable(
             MapWrapper(it, MapSaver.loadMapPreview(it))
         }
 
+        loadingIcon.show()
         Concurrency.run {
             mapFilesFlow
                 .onEach {
@@ -114,6 +121,9 @@ class MapFileSelectTable(
                 .catch {}
                 .collect()
             Concurrency.runOnGLThread {
+                loadingIcon.hide {
+                    loadingIcon.remove()
+                }
                 onCategorySelectBoxChange() // re-sort lower SelectBox
             }
         }
