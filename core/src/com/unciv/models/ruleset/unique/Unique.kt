@@ -176,6 +176,8 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
             UniqueType.ConditionalWithoutResource -> getResourceAmount(condition.params[0]) <= 0
             UniqueType.ConditionalWhenAboveAmountResource -> getResourceAmount(condition.params[1]) > condition.params[0].toInt()
             UniqueType.ConditionalWhenBelowAmountResource -> getResourceAmount(condition.params[1]) < condition.params[0].toInt()
+            UniqueType.ConditionalWhenAboveAmountGold -> state.civInfo != null && state.civInfo.gold > condition.params[0].toInt()
+            UniqueType.ConditionalWhenBelowAmountGold -> state.civInfo != null && state.civInfo.gold < condition.params[0].toInt()
             UniqueType.ConditionalHappy ->
                 state.civInfo != null && state.civInfo.stats.happiness >= 0
             UniqueType.ConditionalBetweenHappiness ->
