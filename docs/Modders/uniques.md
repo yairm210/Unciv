@@ -10,8 +10,8 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Triggerable, Global
 
-??? example  "Remove [buildingFilter] in [cityFilter]"
-	Example: "Remove [Culture] in [in all cities]"
+??? example  "Remove [buildingFilter] [cityFilter]"
+	Example: "Remove [Culture] [in all cities]"
 
 	Applicable to: Triggerable, Global
 
