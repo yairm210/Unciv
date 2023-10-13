@@ -27,9 +27,9 @@ enum class NextTurnAction(protected val text: String, val color: Color) {
     },
     AutoPlay("AutoPlay", Color.WHITE) {
         override fun isChoice(worldScreen: WorldScreen) =
-            GUI.getSettings().isAutoPlaying()
+            GUI.getSettings().autoPlay.isAutoPlaying()
         override fun action(worldScreen: WorldScreen) =
-            GUI.getSettings().stopAutoPlay()
+            GUI.getSettings().autoPlay.stopAutoPlay()
     },
     Working(Constants.working, Color.GRAY) {
         override fun isChoice(worldScreen: WorldScreen) =

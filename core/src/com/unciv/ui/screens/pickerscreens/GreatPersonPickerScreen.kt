@@ -15,7 +15,7 @@ class GreatPersonPickerScreen(val civInfo:Civilization) : PickerScreen() {
     private var theChosenOne: BaseUnit? = null
 
     init {
-        GUI.getSettings().stopAutoPlay()
+        GUI.getSettings().autoPlay.stopAutoPlay()
         closeButton.isVisible = false
         rightSideButton.setText("Choose a free great person".tr())
 

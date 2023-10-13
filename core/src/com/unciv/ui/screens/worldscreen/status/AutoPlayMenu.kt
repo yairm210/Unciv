@@ -48,7 +48,7 @@ class AutoPlayMenu(
     }
 
     private fun autoPlay() {
-        settings.turnsToAutoPlay = settings.autoPlayMaxTurns
+        settings.autoPlay.startAutoPlay()
         nextTurnButton.update()
     }
     

@@ -19,50 +19,50 @@ fun autoPlayTab(
         optionsPopup.addCheckbox(
             this,
             "AutoPlay Military",
-            settings.autoPlayMilitary, false
-        ) { settings.autoPlayMilitary = it }
+            settings.autoPlay.autoPlayMilitary, false
+        ) { settings.autoPlay.autoPlayMilitary = it }
         optionsPopup.addCheckbox(
             this,
             "AutoPlay Civilian",
-            settings.autoPlayCivilian, false
-        ) { settings.autoPlayCivilian = it }
+            settings.autoPlay.autoPlayCivilian, false
+        ) { settings.autoPlay.autoPlayCivilian = it }
         optionsPopup.addCheckbox(
             this,
             "AutoPlay Economy",
-            settings.autoPlayEconomy, false
-        ) { settings.autoPlayEconomy = it }
+            settings.autoPlay.autoPlayEconomy, false
+        ) { settings.autoPlay.autoPlayEconomy = it }
         optionsPopup.addCheckbox(
             this,
             "AutoPlay Diplomacy",
-            settings.autoPlayDiplomacy, false
-        ) { settings.autoPlayDiplomacy = it }
+            settings.autoPlay.autoPlayDiplomacy, false
+        ) { settings.autoPlay.autoPlayDiplomacy = it }
         optionsPopup.addCheckbox(
             this,
             "AutoPlay Technology",
-            settings.autoPlayTechnology, false
-        ) { settings.autoPlayTechnology = it }
+            settings.autoPlay.autoPlayTechnology, false
+        ) { settings.autoPlay.autoPlayTechnology = it }
         optionsPopup.addCheckbox(
             this,
             "AutoPlay Policies",
-            settings.autoPlayPolicies, false
-        ) { settings.autoPlayPolicies = it }
+            settings.autoPlay.autoPlayPolicies, false
+        ) { settings.autoPlay.autoPlayPolicies = it }
         optionsPopup.addCheckbox(
             this,
             "AutoPlay Religion",
-            settings.autoPlayReligion, false
-        ) { settings.autoPlayReligion = it }
+            settings.autoPlay.autoPlayReligion, false
+        ) { settings.autoPlay.autoPlayReligion = it }
     }
     
     addAutoPlayMaxTurnsSlider(this, settings, optionsPopup.selectBoxMinWidth)
     optionsPopup.addCheckbox(
         this,
         "Full AutoPlay AI",
-        settings.fullAutoPlayAI, false
-    ) { settings.fullAutoPlayAI = it
+        settings.autoPlay.fullAutoPlayAI, false
+    ) { settings.autoPlay.fullAutoPlayAI = it
         if (!it) addAutoPlaySections() 
         else optionsPopup.tabs.replacePage(optionsPopup.tabs.activePage, autoPlayTab(optionsPopup))
     }
-    if (!settings.fullAutoPlayAI)
+    if (!settings.autoPlay.fullAutoPlayAI)
         addAutoPlaySections()
 }
 
@@ -75,10 +75,10 @@ private fun addAutoPlayMaxTurnsSlider(
 
     val minimapSlider = UncivSlider(
         1f, 200f, 1f,
-        initial = settings.autoPlayMaxTurns.toFloat()
+        initial = settings.autoPlay.autoPlayMaxTurns.toFloat()
     ) {
         val turns = it.toInt()
-        settings.autoPlayMaxTurns = turns
+        settings.autoPlay.autoPlayMaxTurns = turns
     }
     table.add(minimapSlider).minWidth(selectBoxMinWidth).pad(10f).row()
 }

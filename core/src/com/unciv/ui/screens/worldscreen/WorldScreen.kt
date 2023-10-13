@@ -402,12 +402,12 @@ class WorldScreen(
         fogOfWarButton.setPosition(10f, topBar.y - fogOfWarButton.height - 10f)
 
         // If the game has ended, lets stop AutoPlay
-        if (GUI.getSettings().isAutoPlaying()
+        if (GUI.getSettings().autoPlay.isAutoPlaying()
             && !gameInfo.oneMoreTurnMode && (viewingCiv.isDefeated() || gameInfo.checkForVictory())) {
-            GUI.getSettings().stopAutoPlay()
+            GUI.getSettings().autoPlay.stopAutoPlay()
         }
         
-        if (!hasOpenPopups() && !GUI.getSettings().isAutoPlaying() && isPlayersTurn) {
+        if (!hasOpenPopups() && !GUI.getSettings().autoPlay.isAutoPlaying() && isPlayersTurn) {
             when {
                 viewingCiv.shouldShowDiplomaticVotingResults() ->
                     UncivGame.Current.pushScreen(DiplomaticVoteResultScreen(gameInfo.diplomaticVictoryVotesCast, viewingCiv))

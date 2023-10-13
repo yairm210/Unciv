@@ -97,7 +97,7 @@ class NextTurnProgress(
         // On first update the button text is not yet updated. To stabilize geometry, do it now
         if (progress == 0) nextTurnButton?.apply {
             disable()
-            if (GUI.getSettings().isAutoPlaying())
+            if (GUI.getSettings().autoPlay.isAutoPlaying())
                 updateButton(NextTurnAction.AutoPlay)
             else updateButton(NextTurnAction.Working)
             barWidth = width - removeHorizontalPad -

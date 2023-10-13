@@ -86,7 +86,7 @@ class VictoryScreen(
     }
 
     init {
-        GUI.getSettings().stopAutoPlay()
+        GUI.getSettings().autoPlay.stopAutoPlay()
         //**************** Set up the tabs ****************
         splitPane.setFirstWidget(tabs)
         val iconSize = Constants.headingFontSize.toFloat()
@@ -160,7 +160,7 @@ class VictoryScreen(
             displayWonOrLost("[$winningCiv] has won a [$victoryType] Victory!", victory.defeatString)
             music.chooseTrack(playerCiv.civName, MusicMood.Defeat, EnumSet.of(MusicTrackChooserFlags.SuffixMustMatch))
         }
-        GUI.getSettings().stopAutoPlay()
+        GUI.getSettings().autoPlay.stopAutoPlay()
     }
 
     private fun displayWonOrLost(vararg descriptions: String) {
