@@ -18,9 +18,10 @@ import kotlin.math.roundToInt
 interface IConstruction : INamed {
     fun isBuildable(cityConstructions: CityConstructions): Boolean
     fun shouldBeDisplayed(cityConstructions: CityConstructions): Boolean
-    /** Gets *per turn* resource requirements - does not include immediate costs for stockpiled resources */
-    fun getResourceRequirementsPerTurn(): Counter<String>
-    fun requiresResource(resource: String): Boolean
+    /** Gets *per turn* resource requirements - does not include immediate costs for stockpiled resources.
+     * Uses [stateForConditionals] to determine which civ or city this is built for*/
+    fun getResourceRequirementsPerTurn(stateForConditionals: StateForConditionals? = null): Counter<String>
+    fun requiresResource(resource: String, stateForConditionals: StateForConditionals? = null): Boolean
     /** We can't call this getMatchingUniques because then it would conflict with IHasUniques */
     fun getMatchingUniquesNotConflicting(uniqueType: UniqueType) = sequenceOf<Unique>()
 }
@@ -206,7 +207,6 @@ enum class RejectionReasonType(val shouldShow: Boolean, val errorMessage: String
     }
 }
 
-
 open class PerpetualConstruction(override var name: String, val description: String) :
     IConstruction {
 
@@ -232,9 +232,9 @@ open class PerpetualConstruction(override var name: String, val description: Str
     override fun isBuildable(cityConstructions: CityConstructions): Boolean =
             throw Exception("Impossible!")
 
-    override fun getResourceRequirementsPerTurn() = Counter.ZERO
+    override fun getResourceRequirementsPerTurn(stateForConditionals: StateForConditionals?) = Counter.ZERO
 
-    override fun requiresResource(resource: String) = false
+    override fun requiresResource(resource: String, stateForConditionals: StateForConditionals?) = false
 
 }
 

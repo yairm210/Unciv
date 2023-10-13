@@ -120,7 +120,7 @@ object BattleDamage {
     private fun addResourceLackingMalus(combatant: MapUnitCombatant, modifiers: Counter<String>) {
         val civInfo = combatant.getCivInfo()
         val civResources = civInfo.getCivResourcesByName()
-        for (resource in combatant.unit.baseUnit.getResourceRequirementsPerTurn().keys)
+        for (resource in combatant.unit.getResourceRequirementsPerTurn().keys)
             if (civResources[resource]!! < 0 && !civInfo.isBarbarian())
                 modifiers["Missing resource"] = BattleConstants.MISSING_RESOURCES_MALUS
     }

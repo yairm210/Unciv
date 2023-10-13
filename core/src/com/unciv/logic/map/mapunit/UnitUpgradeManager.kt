@@ -62,7 +62,7 @@ class UnitUpgradeManager(val unit:MapUnit) {
     ): Boolean {
         if (unit.name == unitToUpgradeTo.name) return false
 
-        val rejectionReasons = unitToUpgradeTo.getRejectionReasons(unit.civ, additionalResources = unit.baseUnit.getResourceRequirementsPerTurn())
+        val rejectionReasons = unitToUpgradeTo.getRejectionReasons(unit.civ, additionalResources = unit.getResourceRequirementsPerTurn())
 
         var relevantRejectionReasons = rejectionReasons.filterNot { it.type == RejectionReasonType.Unbuildable }
         if (ignoreRequirements)

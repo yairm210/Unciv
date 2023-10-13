@@ -14,6 +14,7 @@ import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
+import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionsPillage
 import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionsUpgrade
@@ -130,7 +131,7 @@ object UnitAutomation {
         val upgradedUnit = unit.upgrade.getUnitToUpgradeTo()
         if (!upgradedUnit.isBuildable(unit.civ)) return false // for resource reasons, usually
 
-        if (upgradedUnit.getResourceRequirementsPerTurn().keys.any { !unit.baseUnit.requiresResource(it) }) {
+        if (upgradedUnit.getResourceRequirementsPerTurn(StateForConditionals(unit.civ, unit = unit)).keys.any { !unit.requiresResource(it) }) {
             // The upgrade requires new resource types, so check if we are willing to invest them
             if (!Automation.allowSpendingResource(unit.civ, upgradedUnit)) return false
         }

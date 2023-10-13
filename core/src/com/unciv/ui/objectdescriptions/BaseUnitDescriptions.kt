@@ -7,6 +7,7 @@ import com.unciv.logic.city.City
 import com.unciv.models.metadata.GameSettings
 import com.unciv.models.ruleset.IRulesetObject
 import com.unciv.models.ruleset.Ruleset
+import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueFlag
 import com.unciv.models.ruleset.unique.UniqueType
@@ -43,7 +44,7 @@ object BaseUnitDescriptions {
     fun getDescription(baseUnit: BaseUnit, city: City): String {
         val lines = mutableListOf<String>()
         val availableResources = city.civ.getCivResourcesByName()
-        for ((resourceName, amount) in baseUnit.getResourceRequirementsPerTurn()) {
+        for ((resourceName, amount) in baseUnit.getResourceRequirementsPerTurn(StateForConditionals(city.civ))) {
             val available = availableResources[resourceName] ?: 0
             val resource = baseUnit.ruleset.tileResources[resourceName] ?: continue
             val consumesString = resourceName.getConsumesAmountString(amount, resource.isStockpiled())
@@ -60,7 +61,6 @@ object BaseUnitDescriptions {
         if (baseUnit.replacementTextForUniques != "") lines += baseUnit.replacementTextForUniques
         else for (unique in baseUnit.uniqueObjects.filterNot {
             it.type == UniqueType.Unbuildable
-                    || it.type == UniqueType.ConsumesResources  // already shown from getResourceRequirements
                     || it.type?.flags?.contains(UniqueFlag.HiddenToUsers) == true
         })
             lines += unique.text.tr()
@@ -110,21 +110,20 @@ object BaseUnitDescriptions {
             textList += FormattedLine()
             for (unique in baseUnit.uniqueObjects.sortedBy { it.text }) {
                 if (unique.hasFlag(UniqueFlag.HiddenToUsers)) continue
-                if (unique.type == UniqueType.ConsumesResources) continue  // already shown from getResourceRequirements
+                if (unique.type == UniqueType.ConsumesResources) {
+                    textList += FormattedLine(unique.text, link = "Resources/${unique.params[1]}", color = "#F42")
+                    continue
+                }
                 textList += FormattedLine(unique)
             }
         }
 
-        val resourceRequirements = baseUnit.getResourceRequirementsPerTurn()
-        if (resourceRequirements.isNotEmpty()) {
+        if (baseUnit.requiredResource != null) {
             textList += FormattedLine()
-            for ((resourceName, amount) in resourceRequirements) {
-                val resource = ruleset.tileResources[resourceName] ?: continue
-                textList += FormattedLine(
-                    resourceName.getConsumesAmountString(amount, resource.isStockpiled()),
-                    link = "Resource/$resource", color = "#F42"
-                )
-            }
+            val resource = ruleset.tileResources[baseUnit.requiredResource]
+            textList += FormattedLine(
+                baseUnit.requiredResource!!.getConsumesAmountString(1, resource!!.isStockpiled()),
+                link="Resources/${baseUnit.requiredResource}", color="#F42")
         }
 
         if (baseUnit.uniqueTo != null) {
@@ -293,8 +292,8 @@ object BaseUnitDescriptions {
         if (betterUnit.movement != originalUnit.movement)
             yield("${Fonts.movement} {[${betterUnit.movement}] vs [${originalUnit.movement}]}" to null)
 
-        for (resource in originalUnit.getResourceRequirementsPerTurn().keys)
-            if (!betterUnit.getResourceRequirementsPerTurn().containsKey(resource)) {
+        for (resource in originalUnit.getResourceRequirementsPerTurn(StateForConditionals.IgnoreConditionals).keys)
+            if (!betterUnit.getResourceRequirementsPerTurn(StateForConditionals.IgnoreConditionals).containsKey(resource)) {
                 yield("[$resource] not required" to "Resource/$resource")
             }
         // We return the unique text directly, so Nation.getUniqueUnitsText will not use the
