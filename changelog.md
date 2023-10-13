@@ -1,3 +1,27 @@
+## 4.8.13
+
+chore: 'use gold' automation from NextTurnAutomation
+
+chore: Extract city resource functions from City file
+
+chore: Removed dead functions
+
+chore: Split 'city state civ diplomacy table' from DiplomacyScreen
+
+chore: Split 'major civ diplomacy table' from DiplomacyScreen
+
+chore: Extracted all 'next turn' logic from DiplomacyManager to DiplomacyTurnManager
+
+By SeventhM:
+- Fix auto assign production not working after a building is built 
+- Fix consuming resources not being affected by conditionals 
+
+By SomeTroglodyte:
+- Allow games with zero researched techs to be 'before' the Ancient Era 
+- Minor Fix: VictoryScreenIllustrations 
+- Split Fonts.kt 
+- Fix font "symbols" not showing 
+
 ## 4.8.12
 
 Automated units can fortify/set up/other actions
