@@ -11,7 +11,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Triggerable, Global
 
 ??? example  "Remove [buildingFilter] in [cityFilter]"
-	Example: "Remove [Monument] in [in all cities]"
+	Example: "Remove [Culture] in [in all cities]"
 
 	Applicable to: Triggerable, Global
 
@@ -1889,12 +1889,12 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Conditional
 
 ??? example  "&lt;when above [amount] gold&gt;"
-	Example: "&lt;when above [1000] gold&gt;"
+	Example: "&lt;when above [3] gold&gt;"
 
 	Applicable to: Conditional
 
 ??? example  "&lt;when below [amount] gold&gt;"
-	Example: "&lt;when below [100] gold&gt;"
+	Example: "&lt;when below [3] gold&gt;"
 
 	Applicable to: Conditional
 
