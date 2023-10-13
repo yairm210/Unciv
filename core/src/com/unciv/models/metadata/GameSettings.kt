@@ -260,15 +260,16 @@ class GameSettingsMultiplayer {
 }
 
 class GameSettingsAutoPlay {
+    var showAutoPlayButton: Boolean = false
     var autoPlayMaxTurns = 10
-    var fullAutoPlayAI: Boolean = false
-    var autoPlayMilitary: Boolean = false
-    var autoPlayCivilian: Boolean = false
-    var autoPlayEconomy: Boolean = false
-    var autoPlayTechnology: Boolean = false
-    var autoPlayPolicies: Boolean = false
-    var autoPlayReligion: Boolean = false
-    var autoPlayDiplomacy: Boolean = false
+    var fullAutoPlayAI: Boolean = true
+    var autoPlayMilitary: Boolean = true
+    var autoPlayCivilian: Boolean = true
+    var autoPlayEconomy: Boolean = true
+    var autoPlayTechnology: Boolean = true
+    var autoPlayPolicies: Boolean = true
+    var autoPlayReligion: Boolean = true
+    var autoPlayDiplomacy: Boolean = true
 
     var turnsToAutoPlay: Int = 0
     var autoPlayTurnInProgress: Boolean = false
