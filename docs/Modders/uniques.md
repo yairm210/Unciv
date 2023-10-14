@@ -1898,6 +1898,16 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Conditional
 
+??? example  "&lt;has more than [amount] [stat] (modified by game speed)&gt;"
+	Example: "&lt;has more than [3] [Culture] (modified by game speed)&gt;"
+
+	Applicable to: Conditional
+
+??? example  "&lt;has less than [amount] [stat] (modified by game speed)&gt;"
+	Example: "&lt;has less than [3] [Culture] (modified by game speed)&gt;"
+
+	Applicable to: Conditional
+
 ??? example  "&lt;in this city&gt;"
 	Applicable to: Conditional
 

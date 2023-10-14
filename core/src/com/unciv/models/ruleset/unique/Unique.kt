@@ -178,8 +178,18 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
             UniqueType.ConditionalWhenAboveAmountResource -> getResourceAmount(condition.params[1]) > condition.params[0].toInt()
             UniqueType.ConditionalWhenBelowAmountResource -> getResourceAmount(condition.params[1]) < condition.params[0].toInt()
 
-            UniqueType.ConditionalWhenAboveAmountStat -> state.civInfo != null && state.civInfo.getStatReserve(Stat.valueOf(condition.params[1])) > condition.params[0].toInt()
-            UniqueType.ConditionalWhenBelowAmountStat -> state.civInfo != null && state.civInfo.getStatReserve(Stat.valueOf(condition.params[1])) < condition.params[0].toInt()
+            UniqueType.ConditionalWhenAboveAmountStat -> state.civInfo != null &&
+                state.civInfo.getStatReserve(Stat.valueOf(condition.params[1])) > condition.params[0].toInt()
+            UniqueType.ConditionalWhenBelowAmountStat -> state.civInfo != null &&
+                state.civInfo.getStatReserve(Stat.valueOf(condition.params[1])) < condition.params[0].toInt()
+
+            UniqueType.ConditionalWhenAboveAmountStatSpeed -> state.civInfo != null &&
+                state.civInfo.getStatReserve(Stat.valueOf(condition.params[1])) > condition.params[0].toInt() *
+                state.civInfo.gameInfo.speed.statCostModifiers[Stat.valueOf(condition.params[1])]!!
+
+            UniqueType.ConditionalWhenBelowAmountStatSpeed -> state.civInfo != null &&
+                state.civInfo.getStatReserve(Stat.valueOf(condition.params[1])) < condition.params[0].toInt() *
+                state.civInfo.gameInfo.speed.statCostModifiers[Stat.valueOf(condition.params[1])]!!
 
             UniqueType.ConditionalHappy ->
                 state.civInfo != null && state.civInfo.stats.happiness >= 0
