@@ -91,9 +91,9 @@ class AndroidFont : FontImplementation {
     }
 
     override fun getCharPixmap(char: Char): Pixmap {
-        val metric = paint.fontMetrics
+        val metric = getMetrics()  // Use our interpretation instead of paint.fontMetrics because it fixes some bad metrics
         var width = paint.measureText(char.toString()).toInt()
-        var height = ceil(metric.bottom - metric.top).toInt()
+        var height = ceil(metric.height).toInt()
         if (width == 0) {
             height = getFontSize()
             width = height
@@ -101,7 +101,7 @@ class AndroidFont : FontImplementation {
 
         val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
         val canvas = Canvas(bitmap)
-        canvas.drawText(char.toString(), 0f, -metric.top, paint)
+        canvas.drawText(char.toString(), 0f, metric.leading + metric.ascent + 1f, paint)
 
         val pixmap = Pixmap(width, height, Pixmap.Format.RGBA8888)
         val data = IntArray(width * height)
@@ -147,10 +147,42 @@ class AndroidFont : FontImplementation {
             .map { FontFamilyData(it, it) }
     }
 
-    override fun getMetrics() = FontMetricsCommon(
-        ascent = -paint.fontMetrics.ascent,
-        descent = paint.fontMetrics.descent,
-        height = paint.fontMetrics.bottom - paint.fontMetrics.top,
-        leading = paint.fontMetrics.ascent - paint.fontMetrics.top
-    )
+    override fun getMetrics(): FontMetricsCommon {
+        val ascent = -paint.fontMetrics.ascent  // invert to get distance
+        val descent = paint.fontMetrics.descent
+        val top = -paint.fontMetrics.top  // invert to get distance
+        val bottom = paint.fontMetrics.bottom
+        val height = top + bottom
+        val leading = top - ascent
+        val ascentDescentHeight = ascent + descent
+
+        // Corrections: Some Android fonts report bullshit
+        // Examples: "ComingSoon" and "NotoSansSymbols" fonts on Android "S"
+        // See https://github.com/yairm210/Unciv/issues/10308
+
+        // Hardcode values for the worst of them - I've seen NotoSansSymbols returning (42.4, 11.1, 68.1, 11.1),
+        // or (53.4, 14.6, 117.7, 28.8): looks off, or (53.4, 14.6, 53.4, -11.1) - top below ascent
+        // By discarding and re-instantiating our Paint instance on every setFontFamily you can get Noto to almost,
+        // but not quite, report exclusively the "off" metrics. Curiously, soft start (Unciv exited through its own dialog,
+        // but not removed from android's "recents list") or hard start (dev-tools kill, reinstall or swipe out of recents)
+        // do seem to have an effect on the metrics reported by Noto (and only by Noto), though I haven't been able to
+        // prove a reliable pattern. These hardcoded values are empiric.
+        if (currentFontFamily == "NotoSansSymbols")
+            return FontMetricsCommon(53.4f, 14.6f, 100f, 33f)
+
+        if (height >= 1.02f * ascentDescentHeight)
+            // maximum dimensions at least 2% larger than recommended ascender top to descender bottom distance:
+            // looks sensible, keep those metrics
+            return FontMetricsCommon(ascent, descent, height, leading)
+
+        // When recommended size equals maximum size...
+        if (height >= 0.98f * ascentDescentHeight)
+            // "ComingSoon" reports top==ascent and bottom==descent: give it some room.
+            // Note: It still looks way off with all virtual leading at the top, but that's unavoidable -
+            // it **really has** those monster descenders (the 'y') and you gotta put them somewhere.
+            return FontMetricsCommon(ascent, descent, ascentDescentHeight * 1.25f, ascentDescentHeight * 0.25f)
+
+        // recommended size bigger than maximum size - O|O - swap inner and outer metrics
+        return FontMetricsCommon(top, bottom, ascentDescentHeight, -leading)
+    }
 }
