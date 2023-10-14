@@ -27,61 +27,47 @@ class AndroidFont : FontImplementation {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) emptySet()
         else SystemFonts.getAvailableFonts()
     }
-    private val paint: Paint = Paint()
+    private val paint: Paint = getPaintInstance()
     private var currentFontFamily: String? = null
 
-    init {
-        paint.isAntiAlias = true
-        paint.strokeWidth = 0f
-        paint.setARGB(255, 255, 255, 255)
-
+    private fun getPaintInstance() = Paint().apply {
+        isAntiAlias = true
+        strokeWidth = 0f
+        setARGB(255, 255, 255, 255)
     }
 
     override fun setFontFamily(fontFamilyData: FontFamilyData, size: Int) {
         paint.textSize = size.toFloat()
 
         // Don't have to reload typeface if font-family didn't change
-        if (currentFontFamily != fontFamilyData.invariantName) {
-            currentFontFamily = fontFamilyData.invariantName
+        if (currentFontFamily == fontFamilyData.invariantName) return
+        currentFontFamily = fontFamilyData.invariantName
 
-            // Mod font
-            if (fontFamilyData.filePath != null)
-            {
-                paint.typeface = createTypefaceCustom(fontFamilyData.filePath!!)
-            }
-            // System font
-            else
-            {
-                paint.typeface = createTypefaceSystem(fontFamilyData.invariantName)
-            }
-
-        }
+        paint.typeface =
+            if (fontFamilyData.filePath != null) // Mod font
+                createTypefaceCustom(fontFamilyData.filePath!!)
+            else // System font
+                createTypefaceSystem(fontFamilyData.invariantName)
     }
 
     private fun createTypefaceSystem(name: String): Typeface {
-        if (name.isNotBlank() && Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)
-        {
+        if (name.isNotBlank() && Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             val font = fontList.mapNotNull {
                 val distanceToRegular = it.matchesFamily(name)
                 if (distanceToRegular == Int.MAX_VALUE) null else it to distanceToRegular
             }.minByOrNull { it.second }?.first
 
             if (font != null)
-            {
                 return Typeface.CustomFallbackBuilder(FontFamily.Builder(font).build())
                     .setSystemFallback(name).build()
-            }
         }
         return Typeface.create(name, Typeface.NORMAL)
     }
 
     private fun createTypefaceCustom(path: String): Typeface {
-        return try
-        {
+        return try {
             Typeface.createFromFile(Gdx.files.local(path).file())
-        }
-        catch (e: Exception)
-        {
+        } catch (e: Exception) {
             Log.error("Failed to create typeface, falling back to default", e)
             // Falling back to default
             Typeface.create(Fonts.DEFAULT_FONT_FAMILY, Typeface.NORMAL)
