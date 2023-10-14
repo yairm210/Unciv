@@ -1,8 +1,6 @@
 package com.unciv.ui.popups.options
 
 import com.badlogic.gdx.scenes.scene2d.ui.Table
-import com.unciv.GUI
-import com.unciv.logic.civilization.PlayerType
 import com.unciv.models.metadata.GameSettings
 import com.unciv.ui.components.UncivSlider
 import com.unciv.ui.components.extensions.toLabel
@@ -15,43 +13,43 @@ fun autoPlayTab(
     defaults().pad(5f)
 
     val settings = optionsPopup.settings
-    fun addAutoPlaySections() {
-        optionsPopup.addCheckbox(
-            this,
-            "AutoPlay Military",
-            settings.autoPlay.autoPlayMilitary, false
-        ) { settings.autoPlay.autoPlayMilitary = it }
-        optionsPopup.addCheckbox(
-            this,
-            "AutoPlay Civilian",
-            settings.autoPlay.autoPlayCivilian, false
-        ) { settings.autoPlay.autoPlayCivilian = it }
-        optionsPopup.addCheckbox(
-            this,
-            "AutoPlay Economy",
-            settings.autoPlay.autoPlayEconomy, false
-        ) { settings.autoPlay.autoPlayEconomy = it }
-        optionsPopup.addCheckbox(
-            this,
-            "AutoPlay Diplomacy",
-            settings.autoPlay.autoPlayDiplomacy, false
-        ) { settings.autoPlay.autoPlayDiplomacy = it }
-        optionsPopup.addCheckbox(
-            this,
-            "AutoPlay Technology",
-            settings.autoPlay.autoPlayTechnology, false
-        ) { settings.autoPlay.autoPlayTechnology = it }
-        optionsPopup.addCheckbox(
-            this,
-            "AutoPlay Policies",
-            settings.autoPlay.autoPlayPolicies, false
-        ) { settings.autoPlay.autoPlayPolicies = it }
-        optionsPopup.addCheckbox(
-            this,
-            "AutoPlay Religion",
-            settings.autoPlay.autoPlayReligion, false
-        ) { settings.autoPlay.autoPlayReligion = it }
-    }
+//    fun addAutoPlaySections() {
+//        optionsPopup.addCheckbox(
+//            this,
+//            "AutoPlay Military",
+//            settings.autoPlay.autoPlayMilitary, false
+//        ) { settings.autoPlay.autoPlayMilitary = it }
+//        optionsPopup.addCheckbox(
+//            this,
+//            "AutoPlay Civilian",
+//            settings.autoPlay.autoPlayCivilian, false
+//        ) { settings.autoPlay.autoPlayCivilian = it }
+//        optionsPopup.addCheckbox(
+//            this,
+//            "AutoPlay Economy",
+//            settings.autoPlay.autoPlayEconomy, false
+//        ) { settings.autoPlay.autoPlayEconomy = it }
+//        optionsPopup.addCheckbox(
+//            this,
+//            "AutoPlay Diplomacy",
+//            settings.autoPlay.autoPlayDiplomacy, false
+//        ) { settings.autoPlay.autoPlayDiplomacy = it }
+//        optionsPopup.addCheckbox(
+//            this,
+//            "AutoPlay Technology",
+//            settings.autoPlay.autoPlayTechnology, false
+//        ) { settings.autoPlay.autoPlayTechnology = it }
+//        optionsPopup.addCheckbox(
+//            this,
+//            "AutoPlay Policies",
+//            settings.autoPlay.autoPlayPolicies, false
+//        ) { settings.autoPlay.autoPlayPolicies = it }
+//        optionsPopup.addCheckbox(
+//            this,
+//            "AutoPlay Religion",
+//            settings.autoPlay.autoPlayReligion, false
+//        ) { settings.autoPlay.autoPlayReligion = it }
+//    }
 
     optionsPopup.addCheckbox(
         this,
