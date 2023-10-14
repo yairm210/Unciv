@@ -519,7 +519,7 @@ class MusicController {
      * @param speedFactor accelerate (>1) or slow down (<1) the fade-out. Clamped to 1/1000..1000.
      */
     fun pause(speedFactor: Float = 1f) {
-        Log.debug("$this.pause, state=$state, current=$current")
+        Log.debug("MusicTrackController.pause called")
 
         if (!state.canPause) return
         state = ControllerState.Pause
