@@ -20,6 +20,7 @@ import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.input.KeyCharAndCode
 import com.unciv.ui.components.input.KeyboardBinding
 import com.unciv.ui.components.input.KeyboardBindings
+import com.unciv.ui.components.widgets.ColorMarkupLabel
 import com.unciv.ui.screens.basescreen.BaseScreen
 
 /**

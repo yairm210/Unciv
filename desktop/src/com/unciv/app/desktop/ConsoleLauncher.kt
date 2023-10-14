@@ -12,7 +12,7 @@ import com.unciv.models.metadata.GameParameters
 import com.unciv.models.metadata.GameSettings
 import com.unciv.models.metadata.Player
 import com.unciv.models.ruleset.RulesetCache
-import com.unciv.models.simulation.Simulation
+import com.unciv.logic.simulation.Simulation
 import com.unciv.models.tilesets.TileSetCache
 import com.unciv.models.metadata.GameSetupInfo
 import com.unciv.models.ruleset.Speed

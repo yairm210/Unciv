@@ -9,7 +9,7 @@ import com.unciv.ui.components.extensions.setSize
 import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.input.onRightClick
 import com.unciv.ui.images.ImageGetter
-import com.unciv.ui.popups.NextTurnMenu
+import com.unciv.ui.popups.AutoPlayMenu
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.worldscreen.WorldScreen
 
@@ -24,15 +24,17 @@ class AutoPlayStatusButton(
         add(Stack(autoPlayImage)).pad(5f)
         val settings = GUI.getSettings()
         onClick {
-
-            if (settings.turnsToAutoPlay > 0)
-                settings.stopAutoPlay()
-            else
-                NextTurnMenu(stage,this, nextTurnButton, worldScreen)
+            if (settings.autoPlay.isAutoPlaying())
+                settings.autoPlay.stopAutoPlay()
+            else if (worldScreen.viewingCiv == worldScreen.gameInfo.currentPlayerCiv)
+                AutoPlayMenu(stage,this, nextTurnButton, worldScreen)
         }
-        onRightClick {         
-            settings.turnsToAutoPlay = settings.autoPlayMaxTurns
-            nextTurnButton.update()
+        onRightClick {
+            if (!worldScreen.gameInfo.gameParameters.isOnlineMultiplayer 
+                && worldScreen.viewingCiv == worldScreen.gameInfo.currentPlayerCiv) {
+                settings.autoPlay.turnsToAutoPlay = settings.autoPlay.autoPlayMaxTurns
+                nextTurnButton.update()
+            }
         }
     }
 
@@ -44,8 +46,9 @@ class AutoPlayStatusButton(
     
     override fun dispose() {
         val settings = GUI.getSettings()
-        if (isPressed && settings.turnsToAutoPlay > 0) {
-            settings.stopAutoPlay()
+        if (isPressed && settings.autoPlay.isAutoPlaying()) {
+            settings.autoPlay.stopAutoPlay()
         }
     }
 }
+

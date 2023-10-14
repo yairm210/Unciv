@@ -16,15 +16,15 @@ import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.models.TutorialTrigger
 import com.unciv.models.ruleset.INonPerpetualConstruction
 import com.unciv.models.ruleset.PerpetualConstruction
-import com.unciv.ui.components.BorderedTable
-import com.unciv.ui.components.Fonts
 import com.unciv.ui.components.extensions.center
 import com.unciv.ui.components.extensions.centerX
 import com.unciv.ui.components.extensions.colorFromRGB
 import com.unciv.ui.components.extensions.darken
 import com.unciv.ui.components.extensions.toGroup
 import com.unciv.ui.components.extensions.toLabel
+import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.components.input.onClick
+import com.unciv.ui.components.widgets.BorderedTable
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popups.Popup
 import com.unciv.ui.screens.basescreen.BaseScreen

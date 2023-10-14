@@ -11,6 +11,7 @@ import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
 import com.unciv.logic.UncivShowableException
+import com.unciv.logic.civilization.AlertType
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
@@ -399,7 +400,13 @@ class WorldScreen(
         fogOfWarButton.isEnabled = !selectedCiv.isSpectator()
         fogOfWarButton.setPosition(10f, topBar.y - fogOfWarButton.height - 10f)
 
-        if (!hasOpenPopups() && isPlayersTurn) {
+        // If the game has ended, lets stop AutoPlay
+        if (game.settings.autoPlay.isAutoPlaying()
+            && !gameInfo.oneMoreTurnMode && (viewingCiv.isDefeated() || gameInfo.checkForVictory())) {
+            game.settings.autoPlay.stopAutoPlay()
+        }
+        
+        if (!hasOpenPopups() && !game.settings.autoPlay.isAutoPlaying() && isPlayersTurn) {
             when {
                 viewingCiv.shouldShowDiplomaticVotingResults() ->
                     UncivGame.Current.pushScreen(DiplomaticVoteResultScreen(gameInfo.diplomaticVictoryVotesCast, viewingCiv))
@@ -696,7 +703,15 @@ class WorldScreen(
     }
 
     private fun updateAutoPlayStatusButton() {
-        statusButtons.autoPlayStatusButton = AutoPlayStatusButton(this, nextTurnButton)
+        if (statusButtons.autoPlayStatusButton == null) {
+            if (game.settings.autoPlay.showAutoPlayButton)
+                statusButtons.autoPlayStatusButton = AutoPlayStatusButton(this, nextTurnButton)
+        } else {
+            if (!game.settings.autoPlay.showAutoPlayButton) {
+                statusButtons.autoPlayStatusButton = null
+                game.settings.autoPlay.stopAutoPlay()
+            }
+        }
     }
 
     private fun updateMultiplayerStatusButton() {

@@ -1,0 +1,11 @@
+performance:
+- Faster ruleset validation
+- Faster ruleset loading
+
+modding: Added json schemas for autocomplete and error detection
+
+By tuvus:
+- AI Open Borders Offer fix
+- Fix Nuke Notification
+
+Fix City construction context menu changing Puppets  - By SomeTroglodyte

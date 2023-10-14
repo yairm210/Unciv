@@ -34,12 +34,20 @@ fun json() = Json(JsonWriter.OutputType.json).apply {
 }
 
 /**
- * @throws SerializationException
+ *  Load a json file by [filePath] from Gdx.files.internal
+ *  (meaning from jar/apk for packaged release code, and not appropriate for mod files)
+ *  @throws SerializationException
  */
 fun <T> Json.fromJsonFile(tClass: Class<T>, filePath: String): T = fromJsonFile(tClass, Gdx.files.internal(filePath))
 
 /**
- * @throws SerializationException
+ *  Load a json [file] - by handle, so internal/external/local is caller's decision.
+ *
+ *  Reminder:
+ *  * `internal` for Unciv-packaged assets, loaded from jar/apk, e.g. Built-in ruleset files.
+ *  * `local` for mods and settings - Android will place that under /data/data/com.unciv.app/files.
+ *  * `external` for saves - Android will place that under /sdcard/Android/data/com.unciv.app/files.
+ *  @throws SerializationException
  */
 fun <T> Json.fromJsonFile(tClass: Class<T>, file: FileHandle): T {
     try {

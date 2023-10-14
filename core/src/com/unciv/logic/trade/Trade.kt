@@ -61,9 +61,9 @@ class TradeRequest : IsPartOfGameInfoSerialization {
         if (trade.ourOffers.any { it.name == Constants.researchAgreement })
             requestingCivDiploManager.setFlag(DiplomacyFlags.DeclinedResearchAgreement,20)
         if (trade.ourOffers.any { it.name == Constants.defensivePact })
-            requestingCivDiploManager.setFlag(DiplomacyFlags.DeclinedDefensivePact,10)
+            requestingCivDiploManager.setFlag(DiplomacyFlags.DeclinedDefensivePact,20)
         if (trade.ourOffers.any { it.name == Constants.openBorders })
-            requestingCivDiploManager.setFlag(DiplomacyFlags.DeclinedOpenBorders, 10)
+            requestingCivDiploManager.setFlag(DiplomacyFlags.DeclinedOpenBorders, if (decliningCiv.isAI()) 10 else 20)
 
         if (trade.isPeaceTreaty()) requestingCivDiploManager.setFlag(DiplomacyFlags.DeclinedPeace, 5)
 

@@ -17,8 +17,8 @@ import com.unciv.models.ruleset.PolicyBranch
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.fillPlaceholders
 import com.unciv.models.translations.tr
-import com.unciv.ui.components.BorderedTable
-import com.unciv.ui.components.ColorMarkupLabel
+import com.unciv.ui.components.widgets.BorderedTable
+import com.unciv.ui.components.widgets.ColorMarkupLabel
 import com.unciv.ui.components.extensions.addSeparator
 import com.unciv.ui.components.extensions.center
 import com.unciv.ui.components.extensions.colorFromRGB

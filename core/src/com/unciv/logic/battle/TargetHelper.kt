@@ -3,7 +3,7 @@ package com.unciv.logic.battle
 import com.unciv.Constants
 import com.unciv.logic.city.City
 import com.unciv.logic.map.mapunit.MapUnit
-import com.unciv.logic.map.mapunit.PathsToTilesWithinTurn
+import com.unciv.logic.map.mapunit.movement.PathsToTilesWithinTurn
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.unique.UniqueType
 

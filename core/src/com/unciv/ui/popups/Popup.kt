@@ -19,7 +19,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
 import com.unciv.logic.event.EventBus
-import com.unciv.ui.components.AutoScrollPane
+import com.unciv.ui.components.widgets.AutoScrollPane
 import com.unciv.ui.components.extensions.addSeparator
 import com.unciv.ui.components.extensions.center
 import com.unciv.ui.components.extensions.darken

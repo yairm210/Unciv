@@ -2,6 +2,7 @@ package com.unciv.logic.multiplayer
 
 import com.badlogic.gdx.files.FileHandle
 import com.unciv.Constants
+import com.unciv.GUI
 import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
 import com.unciv.logic.GameInfoPreview
@@ -244,6 +245,7 @@ class OnlineMultiplayer {
         } else if (onlinePreview != null && hasNewerGameState(preview, onlinePreview)){
             onlineGame.doManualUpdate(preview)
         }
+        GUI.getSettings().autoPlay.stopAutoPlay()
         UncivGame.Current.loadGame(gameInfo)
     }
 

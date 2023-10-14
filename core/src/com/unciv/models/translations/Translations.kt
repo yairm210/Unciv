@@ -7,7 +7,7 @@ import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
-import com.unciv.ui.components.Fonts
+import com.unciv.ui.components.fonts.FontRulesetIcons
 import com.unciv.utils.Log
 import com.unciv.utils.debug
 import java.util.Locale
@@ -427,8 +427,8 @@ fun String.tr(hideIcons: Boolean = false): String {
     val stat = Stat.safeValueOf(this)
     if (stat != null) return stat.character + translation
 
-    if (!hideIcons && Fonts.rulesetObjectNameToChar.containsKey(this))
-        return Fonts.rulesetObjectNameToChar[this]!! + translation
+    if (!hideIcons && FontRulesetIcons.rulesetObjectNameToChar.containsKey(this))
+        return FontRulesetIcons.rulesetObjectNameToChar[this]!! + translation
 
     return translation
 }

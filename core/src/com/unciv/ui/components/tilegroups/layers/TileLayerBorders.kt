@@ -5,8 +5,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.unique.LocalUniqueCache
-import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.components.tilegroups.TileGroup
+import com.unciv.ui.images.ImageGetter
 import kotlin.math.PI
 import kotlin.math.atan
 
@@ -31,6 +31,17 @@ class TileLayerBorders(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup,
                     image.remove()
             borderSegments.clear()
         }
+    }
+
+
+    /** Returns the left shared neighbor of `this` and [neighbor] (relative to the view direction `this`->[neighbor]), or null if there is no such tile. */
+    private fun Tile.getLeftSharedNeighbor(neighbor: Tile): Tile? {
+        return tileMap.getClockPositionNeighborTile(this,(tileMap.getNeighborTileClockPosition(this, neighbor) - 2) % 12)
+    }
+
+    /** Returns the right shared neighbor of `this` and [neighbor] (relative to the view direction `this`->[neighbor]), or null if there is no such tile. */
+    private fun Tile.getRightSharedNeighbor(neighbor: Tile): Tile? {
+        return tileMap.getClockPositionNeighborTile(this,(tileMap.getNeighborTileClockPosition(this, neighbor) + 2) % 12)
     }
 
     private fun updateBorders() {

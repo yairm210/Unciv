@@ -7,8 +7,8 @@ import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.multiplayer.FriendList
 import com.unciv.models.UncivSound
-import com.unciv.ui.components.FontFamilyData
-import com.unciv.ui.components.Fonts
+import com.unciv.ui.components.fonts.FontFamilyData
+import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.components.input.KeyboardBindings
 import com.unciv.ui.screens.overviewscreen.EmpireOverviewCategories
 import com.unciv.utils.Display
@@ -97,29 +97,13 @@ class GameSettings {
 
     var notificationsLogMaxTurns = 5
 
-    var autoPlayMaxTurns = 10
-    var fullAutoPlayAI: Boolean = false
-    var autoPlayMilitary: Boolean = false
-    var autoPlayCivilian: Boolean = false
-    var autoPlayEconomy: Boolean = false
-    var autoPlayTechnology: Boolean = false
-    var autoPlayPolicies: Boolean = false
-    var autoPlayReligion: Boolean = false
-    var autoPlayDiplomacy: Boolean = false
-
-    var turnsToAutoPlay: Int = 0
-    var autoPlayInProgress: Boolean = false
-    
-    fun stopAutoPlay() {
-       turnsToAutoPlay = 0 
-    }
-
-
     var showAutosaves: Boolean = false
 
     var androidCutout: Boolean = false
 
     var multiplayer = GameSettingsMultiplayer()
+    
+    var autoPlay = GameSettingsAutoPlay()
 
     var enableEspionageOption = false
 
@@ -151,6 +135,9 @@ class GameSettings {
     /** Whether the Nation Picker shows icons only or the horizontal "civBlocks" with leader/nation name */
     enum class NationPickerListMode { Icons, List }
     var nationPickerListMode = NationPickerListMode.List
+
+    /** Size of automatic display of UnitSet art in Civilopedia - 0 to disable */
+    var pediaUnitArtSize = 0f
 
     /** used to migrate from older versions of the settings */
     var version: Int? = null
@@ -273,6 +260,33 @@ class GameSettingsMultiplayer {
         val preEncodedAuthValue = "$userId:$serverPassword"
         return "Basic ${Base64Coder.encodeString(preEncodedAuthValue)}"
     }
+}
+
+class GameSettingsAutoPlay {
+    var showAutoPlayButton: Boolean = false
+    var autoPlayMaxTurns = 10
+    var fullAutoPlayAI: Boolean = true
+    var autoPlayMilitary: Boolean = true
+    var autoPlayCivilian: Boolean = true
+    var autoPlayEconomy: Boolean = true
+    var autoPlayTechnology: Boolean = true
+    var autoPlayPolicies: Boolean = true
+    var autoPlayReligion: Boolean = true
+    var autoPlayDiplomacy: Boolean = true
+
+    var turnsToAutoPlay: Int = 0
+    var autoPlayTurnInProgress: Boolean = false
+
+    fun startAutoPlay() {
+        turnsToAutoPlay = autoPlayMaxTurns
+    }
+    
+    fun stopAutoPlay() {
+        turnsToAutoPlay = 0
+        autoPlayTurnInProgress = false
+    }
+
+    fun isAutoPlaying(): Boolean = turnsToAutoPlay > 0
 }
 
 @Suppress("SuspiciousCallableReferenceInLambda")  // By @Azzurite, safe as long as that warning below is followed

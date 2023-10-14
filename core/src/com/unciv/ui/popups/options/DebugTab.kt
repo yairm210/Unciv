@@ -3,17 +3,17 @@ package com.unciv.ui.popups.options
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.GUI
 import com.unciv.UncivGame
-import com.unciv.logic.files.UncivFiles
 import com.unciv.logic.files.MapSaver
+import com.unciv.logic.files.UncivFiles
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.ruleset.tile.ResourceType
-import com.unciv.ui.screens.basescreen.BaseScreen
-import com.unciv.ui.components.UncivSlider
+import com.unciv.ui.components.widgets.UncivSlider
 import com.unciv.ui.components.UncivTextField
-import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.extensions.toCheckBox
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
+import com.unciv.ui.components.input.onClick
+import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.utils.DebugUtils
 
 fun debugTab(
@@ -78,10 +78,6 @@ fun debugTab(
 
     add("Gdx Scene2D debug".toCheckBox(BaseScreen.enableSceneDebug) {
         BaseScreen.enableSceneDebug = it
-    }).colspan(2).row()
-
-    add("Allow untyped Uniques in mod checker".toCheckBox(RulesetCache.modCheckerAllowUntypedUniques) {
-        RulesetCache.modCheckerAllowUntypedUniques = it
     }).colspan(2).row()
 
     add(Table().apply {

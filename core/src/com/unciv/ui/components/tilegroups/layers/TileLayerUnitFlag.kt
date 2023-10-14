@@ -7,7 +7,7 @@ import com.unciv.UncivGame
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.models.ruleset.unique.LocalUniqueCache
-import com.unciv.ui.components.UnitGroup
+import com.unciv.ui.components.widgets.UnitGroup
 import com.unciv.ui.components.extensions.center
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.tilegroups.TileGroup

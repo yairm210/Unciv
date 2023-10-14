@@ -16,9 +16,6 @@ import com.unciv.utils.debug
  * save all of the loaded rulesets somewhere for later use
  *  */
 object RulesetCache : HashMap<String, Ruleset>() {
-    /** Whether mod checking allows untyped uniques - set to `false` once all vanilla uniques are converted! */
-    var modCheckerAllowUntypedUniques = true
-
     /** Similarity below which an untyped unique can be considered a potential misspelling.
      * Roughly corresponds to the fraction of the Unique placeholder text that can be different/misspelled, but with some extra room for [getRelativeTextDistance] idiosyncrasies. */
     var uniqueMisspellingThreshold = 0.15 // Tweak as needed. Simple misspellings seem to be around 0.025, so would mostly be caught by 0.05. IMO 0.1 would be good, but raising to 0.15 also seemed to catch what may be an outdated Unique.

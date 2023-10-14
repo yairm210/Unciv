@@ -32,6 +32,9 @@ class StatusButtons(
         wrapReverse()
         wrapSpace(10f)
         rowRight()
+        if (autoPlayStatusButton != null) {
+            addActor(autoPlayStatusButton)
+        }
         if (multiplayerStatusButton != null) {
             addActor(multiplayerStatusButton)
         }
@@ -39,6 +42,7 @@ class StatusButtons(
     }
 
     override fun dispose() {
+        autoPlayStatusButton?.dispose()
         multiplayerStatusButton?.dispose()
     }
 }

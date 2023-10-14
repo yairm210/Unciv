@@ -15,7 +15,7 @@ import com.unciv.models.ruleset.Victory
 import com.unciv.models.translations.tr
 import com.unciv.ui.audio.MusicMood
 import com.unciv.ui.audio.MusicTrackChooserFlags
-import com.unciv.ui.components.TabbedPager
+import com.unciv.ui.components.widgets.TabbedPager
 import com.unciv.ui.components.extensions.areSecretKeysPressed
 import com.unciv.ui.components.extensions.enable
 import com.unciv.ui.components.extensions.toLabel
@@ -86,6 +86,7 @@ class VictoryScreen(
     }
 
     init {
+        GUI.getSettings().autoPlay.stopAutoPlay()
         //**************** Set up the tabs ****************
         splitPane.setFirstWidget(tabs)
         val iconSize = Constants.headingFontSize.toFloat()
@@ -159,7 +160,7 @@ class VictoryScreen(
             displayWonOrLost("[$winningCiv] has won a [$victoryType] Victory!", victory.defeatString)
             music.chooseTrack(playerCiv.civName, MusicMood.Defeat, EnumSet.of(MusicTrackChooserFlags.SuffixMustMatch))
         }
-        GUI.getSettings().stopAutoPlay()
+        GUI.getSettings().autoPlay.stopAutoPlay()
     }
 
     private fun displayWonOrLost(vararg descriptions: String) {
