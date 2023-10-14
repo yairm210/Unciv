@@ -635,8 +635,9 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     ConditionalWhenAboveAmountResource("when above [amount] [resource]", UniqueTarget.Conditional),
     ConditionalWhenBelowAmountResource("when below [amount] [resource]", UniqueTarget.Conditional),
 
-    ConditionalWhenAboveAmountGold("when above [amount] gold", UniqueTarget.Conditional),
-    ConditionalWhenBelowAmountGold("when below [amount] gold", UniqueTarget.Conditional),
+    // These two functions support only stockpileable resources (Gold, Faith, Culture, Science)
+    ConditionalWhenAboveAmountStat("has more than [amount] [stat]", UniqueTarget.Conditional),
+    ConditionalWhenBelowAmountStat("has less than [amount] [stat]", UniqueTarget.Conditional),
 
     /////// city conditionals
     ConditionalInThisCity("in this city", UniqueTarget.Conditional),

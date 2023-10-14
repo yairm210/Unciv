@@ -9,6 +9,7 @@ import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.managers.ReligionState
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.validation.UniqueValidator
+import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
 import com.unciv.models.translations.getConditionals
 import com.unciv.models.translations.getPlaceholderParameters
@@ -176,8 +177,10 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
             UniqueType.ConditionalWithoutResource -> getResourceAmount(condition.params[0]) <= 0
             UniqueType.ConditionalWhenAboveAmountResource -> getResourceAmount(condition.params[1]) > condition.params[0].toInt()
             UniqueType.ConditionalWhenBelowAmountResource -> getResourceAmount(condition.params[1]) < condition.params[0].toInt()
-            UniqueType.ConditionalWhenAboveAmountGold -> state.civInfo != null && state.civInfo.gold > condition.params[0].toInt()
-            UniqueType.ConditionalWhenBelowAmountGold -> state.civInfo != null && state.civInfo.gold < condition.params[0].toInt()
+
+            UniqueType.ConditionalWhenAboveAmountStat -> state.civInfo != null && state.civInfo.getStatReserve(Stat.valueOf(condition.params[1])) > condition.params[0].toInt()
+            UniqueType.ConditionalWhenBelowAmountStat -> state.civInfo != null && state.civInfo.getStatReserve(Stat.valueOf(condition.params[1])) < condition.params[0].toInt()
+
             UniqueType.ConditionalHappy ->
                 state.civInfo != null && state.civInfo.stats.happiness >= 0
             UniqueType.ConditionalBetweenHappiness ->
