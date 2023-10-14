@@ -133,7 +133,7 @@ class OverviewAction(
 internal class NotificationActionsDeserializer {
     /* This exists as trick to leverage readFields for Json deserialization.
     // The serializer writes each NotificationAction as json object (within the actions array),
-    // containing the class simpleName as subfield name, which carries any (on none) subclass-
+    // containing the class simpleName as subfield name, which carries any (or none) subclass-
     // specific data as its object value. So, reading this from json data will fill just one of the
     // fields, and the listOfNotNull will output that field only.
     // Even though we know there's only one result, no need to first() since it's no advantage to the caller.

@@ -9,6 +9,7 @@ import com.unciv.logic.civilization.PopupAlert
 import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.components.extensions.toPercent
+import kotlin.math.max
 
 class GoldenAgeManager : IsPartOfGameInfoSerialization {
     @Transient
@@ -58,7 +59,8 @@ class GoldenAgeManager : IsPartOfGameInfoSerialization {
     }
 
     fun endTurn(happiness: Int) {
-        if (happiness > 0 && !isGoldenAge()) storedHappiness += happiness
+        if (!isGoldenAge())
+            storedHappiness = (storedHappiness + happiness).coerceAtLeast(0)
 
         if (isGoldenAge())
             turnsLeftForCurrentGoldenAge--

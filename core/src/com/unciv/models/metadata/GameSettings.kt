@@ -7,8 +7,8 @@ import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.multiplayer.FriendList
 import com.unciv.models.UncivSound
-import com.unciv.ui.components.FontFamilyData
-import com.unciv.ui.components.Fonts
+import com.unciv.ui.components.fonts.FontFamilyData
+import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.components.input.KeyboardBindings
 import com.unciv.ui.screens.overviewscreen.EmpireOverviewCategories
 import com.unciv.utils.Display
@@ -135,6 +135,9 @@ class GameSettings {
     /** Whether the Nation Picker shows icons only or the horizontal "civBlocks" with leader/nation name */
     enum class NationPickerListMode { Icons, List }
     var nationPickerListMode = NationPickerListMode.List
+
+    /** Size of automatic display of UnitSet art in Civilopedia - 0 to disable */
+    var pediaUnitArtSize = 0f
 
     /** used to migrate from older versions of the settings */
     var version: Int? = null

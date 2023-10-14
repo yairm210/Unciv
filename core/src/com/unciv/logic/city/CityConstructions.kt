@@ -30,10 +30,9 @@ import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
 import com.unciv.models.translations.tr
-import com.unciv.ui.components.Fonts
-import com.unciv.ui.components.extensions.addToMapOfSets
 import com.unciv.ui.components.extensions.withItem
 import com.unciv.ui.components.extensions.withoutItem
+import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.screens.civilopediascreen.CivilopediaCategories
 import com.unciv.ui.screens.civilopediascreen.FormattedLine
 import kotlin.math.ceil
@@ -245,7 +244,7 @@ class CityConstructions : IsPartOfGameInfoSerialization {
         throw NotBuildingOrUnitException("$constructionName is not a building or a unit!")
     }
 
-    internal fun getBuiltBuildings(): Sequence<Building> = builtBuildingObjects.asSequence()
+    fun getBuiltBuildings(): Sequence<Building> = builtBuildingObjects.asSequence()
 
     fun containsBuildingOrEquivalent(buildingNameOrUnique: String): Boolean =
             isBuilt(buildingNameOrUnique) || getBuiltBuildings().any { it.replaces == buildingNameOrUnique || it.hasUnique(buildingNameOrUnique) }
@@ -298,11 +297,11 @@ class CityConstructions : IsPartOfGameInfoSerialization {
         return ceil((workLeft-productionOverflow) / production.toDouble()).toInt()
     }
 
-    fun hasBuildableStatBuildings(stat: Stat): Boolean {
+    fun cheapestStatBuilding(stat: Stat): Building? {
         return getBasicStatBuildings(stat)
-            .map { city.civ.getEquivalentBuilding(it.name) }
+            .map { city.civ.getEquivalentBuilding(it) }
             .filter { it.isBuildable(this) || isBeingConstructedOrEnqueued(it.name) }
-            .any()
+            .minByOrNull { it.cost }
     }
 
     //endregion
@@ -455,7 +454,7 @@ class CityConstructions : IsPartOfGameInfoSerialization {
     }
 
     /** Returns false if we tried to construct a unit but it has nowhere to go */
-    private fun constructionComplete(construction: INonPerpetualConstruction): Boolean {
+    fun constructionComplete(construction: INonPerpetualConstruction): Boolean {
         val managedToConstruct = construction.postBuildEvent(this)
         if (!managedToConstruct) return false
 
@@ -524,6 +523,8 @@ class CityConstructions : IsPartOfGameInfoSerialization {
 
         updateUniques()
 
+        validateConstructionQueue()
+
         /** Support for [UniqueType.CreatesOneImprovement] */
         applyCreateOneImprovement(building)
 
@@ -544,7 +545,7 @@ class CityConstructions : IsPartOfGameInfoSerialization {
         }
         else city.reassignPopulationDeferred()
 
-        addFreeBuildings()
+        city.civ.civConstructions.tryAddFreeBuildings()
     }
 
     fun triggerNewBuildingUniques(building: Building) {
@@ -589,42 +590,6 @@ class CityConstructions : IsPartOfGameInfoSerialization {
             city.cityStats.update()
             city.civ.cache.updateCivResources()
         }
-    }
-
-    fun addFreeBuildings() {
-        // "Gain a free [buildingName] [cityFilter]"
-        val freeBuildingUniques = city.getMatchingUniques(UniqueType.GainFreeBuildings, StateForConditionals(city.civ, city))
-
-        for (unique in freeBuildingUniques) {
-            val freeBuilding = city.civ.getEquivalentBuilding(unique.params[0])
-            val citiesThatApply =
-                if (unique.isLocalEffect) listOf(city)
-                else city.civ.cities.filter { it.matchesFilter(unique.params[1]) }
-
-            for (city in citiesThatApply) {
-                if (city.cityConstructions.containsBuildingOrEquivalent(freeBuilding.name)) continue
-                city.cityConstructions.addBuilding(freeBuilding)
-                freeBuildingsProvidedFromThisCity.addToMapOfSets(city.id, freeBuilding.name)
-            }
-        }
-
-        // Civ-level uniques - for these only add free buildings from each city to itself to avoid weirdness on city conquest
-        for (unique in city.civ.getMatchingUniques(UniqueType.GainFreeBuildings, stateForConditionals = StateForConditionals(city.civ, city))) {
-            val freeBuilding = city.civ.getEquivalentBuilding(unique.params[0])
-            if (city.matchesFilter(unique.params[1])) {
-                freeBuildingsProvidedFromThisCity.addToMapOfSets(city.id, freeBuilding.name)
-                if (!isBuilt(freeBuilding.name))
-                    addBuilding(freeBuilding)
-            }
-        }
-
-
-        val autoGrantedBuildings = city.getRuleset().buildings.values
-            .filter { it.hasUnique(UniqueType.GainBuildingWhereBuildable) }
-
-        for (building in autoGrantedBuildings)
-            if (building.isBuildable(city.cityConstructions))
-                addBuilding(building)
     }
 
     /**
@@ -717,18 +682,6 @@ class CityConstructions : IsPartOfGameInfoSerialization {
         validateConstructionQueue()
 
         return true
-    }
-
-    fun addCheapestBuildableStatBuilding(stat: Stat): String? {
-        val cheapestBuildableStatBuilding = getBasicStatBuildings(stat)
-            .map { city.civ.getEquivalentBuilding(it) }
-            .filter { it.isBuildable(this) || isBeingConstructedOrEnqueued(it.name) }
-            .minByOrNull { it.cost }
-            ?: return null
-
-        constructionComplete(cheapestBuildableStatBuilding)
-
-        return cheapestBuildableStatBuilding.name
     }
 
     private fun removeCurrentConstruction() = removeFromQueue(0, true)

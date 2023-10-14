@@ -85,7 +85,7 @@ enum class CityOverviewTabColumn : ISortableGridContentProvider<City, EmpireOver
 
     Construction {
         override val align = Align.left
-        override val expandX = true
+        override val expandX = false
         override val equalizeHeight = true
         override val headerTip = "Current construction"
         override val defaultDescending = false

@@ -12,12 +12,14 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Pixmap
-import com.unciv.ui.components.FontFamilyData
-import com.unciv.ui.components.FontImplementation
-import com.unciv.ui.components.Fonts
+import com.unciv.ui.components.fonts.FontFamilyData
+import com.unciv.ui.components.fonts.FontImplementation
+import com.unciv.ui.components.fonts.FontMetricsCommon
+import com.unciv.ui.components.fonts.Fonts
 import com.unciv.utils.Log
 import java.util.Locale
 import kotlin.math.abs
+import kotlin.math.ceil
 
 class AndroidFont : FontImplementation {
 
@@ -105,21 +107,22 @@ class AndroidFont : FontImplementation {
     override fun getCharPixmap(char: Char): Pixmap {
         val metric = paint.fontMetrics
         var width = paint.measureText(char.toString()).toInt()
-        var height = (metric.descent - metric.ascent).toInt()
+        var height = ceil(metric.bottom - metric.top).toInt()
         if (width == 0) {
             height = getFontSize()
             width = height
         }
+
         val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
         val canvas = Canvas(bitmap)
-        canvas.drawText(char.toString(), 0f, -metric.ascent, paint)
+        canvas.drawText(char.toString(), 0f, -metric.top, paint)
+
         val pixmap = Pixmap(width, height, Pixmap.Format.RGBA8888)
         val data = IntArray(width * height)
-        bitmap.getPixels(data, 0, width, 0, 0, width, height)
-        for (i in 0 until width) {
-            for (j in 0 until height) {
-                pixmap.setColor(Integer.rotateLeft(data[i + (j * width)], 8))
-                pixmap.drawPixel(i, j)
+        bitmap.getPixels(data, 0, width, 0, 0, width, height) // faster than bitmap[x, y]
+        for (x in 0 until width) {
+            for (y in 0 until height) {
+                pixmap.drawPixel(x, y, Integer.rotateLeft(data[x + (y * width)], 8))
             }
         }
         bitmap.recycle()
@@ -157,4 +160,11 @@ class AndroidFont : FontImplementation {
             }.distinct()
             .map { FontFamilyData(it, it) }
     }
+
+    override fun getMetrics() = FontMetricsCommon(
+        ascent = -paint.fontMetrics.ascent,
+        descent = paint.fontMetrics.descent,
+        height = paint.fontMetrics.bottom - paint.fontMetrics.top,
+        leading = paint.fontMetrics.ascent - paint.fontMetrics.top
+    )
 }

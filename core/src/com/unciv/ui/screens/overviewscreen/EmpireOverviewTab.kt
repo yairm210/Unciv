@@ -2,7 +2,7 @@ package com.unciv.ui.screens.overviewscreen
 
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.logic.civilization.Civilization
-import com.unciv.ui.components.TabbedPager
+import com.unciv.ui.components.widgets.TabbedPager
 import com.unciv.ui.screens.basescreen.BaseScreen
 
 abstract class EmpireOverviewTab (

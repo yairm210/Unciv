@@ -499,6 +499,7 @@ enum class UniqueParameterType(
     },
 
     /** For untyped "Can [] [] times" unique */
+    @Deprecated("As of 4.8.9")
     Action("action", Constants.spreadReligion, "An action that a unit can perform. Currently, there are only two actions part of this: 'Spread Religion' and 'Remove Foreign religions from your own cities'", "Religious Action Filters") {
         private val knownValues = setOf(Constants.spreadReligion, Constants.removeHeresy)
         override fun getErrorSeverity(

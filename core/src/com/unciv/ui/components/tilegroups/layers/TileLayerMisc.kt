@@ -9,10 +9,10 @@ import com.unciv.UncivGame
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.HexMath
 import com.unciv.logic.map.tile.Tile
-import com.unciv.models.helpers.MapArrowType
-import com.unciv.models.helpers.MiscArrowTypes
-import com.unciv.models.helpers.TintedMapArrow
-import com.unciv.models.helpers.UnitMovementMemoryType
+import com.unciv.ui.components.MapArrowType
+import com.unciv.ui.components.MiscArrowTypes
+import com.unciv.ui.components.TintedMapArrow
+import com.unciv.ui.components.UnitMovementMemoryType
 import com.unciv.models.ruleset.unique.LocalUniqueCache
 import com.unciv.ui.components.extensions.center
 import com.unciv.ui.components.extensions.centerX

@@ -1,4 +1,5 @@
 package com.unciv.logic.civilization
+import com.unciv.logic.civilization.diplomacy.DiplomacyTurnManager.nextTurn
 import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.testing.GdxTestRunner
@@ -24,8 +25,8 @@ class DefensivePactTests {
         a.diplomacyFunctions.makeCivilizationsMeet(c)
         b.diplomacyFunctions.makeCivilizationsMeet(c)
     }
-    
-    @Test 
+
+    @Test
     fun `Civs with Defensive Pacts are called in`() {
         meetAll()
         a.getDiplomacyManager(b).signDefensivePact(100)
@@ -59,7 +60,7 @@ class DefensivePactTests {
         Assert.assertFalse(a.getDiplomacyManager(b).diplomaticStatus == DiplomaticStatus.DefensivePact
             || b.getDiplomacyManager(a).diplomaticStatus == DiplomaticStatus.DefensivePact)
     }
-    
+
     @Test
     fun `Breaking Defensive Pact`() {
         meetAll()
@@ -70,7 +71,7 @@ class DefensivePactTests {
         Assert.assertTrue(abDiploManager.hasModifier(DiplomaticModifiers.DefensivePact)) // Aggressor should still be friendly to the defender, they did nothing wrong
         Assert.assertFalse(abDiploManager.otherCivDiplomacy().hasModifier(DiplomaticModifiers.DefensivePact)) // Defender should not be friendly to the aggressor.
     }
-    
+
     @Test
     fun `Breaking Defensive Pact with friends`() {
         meetAll()

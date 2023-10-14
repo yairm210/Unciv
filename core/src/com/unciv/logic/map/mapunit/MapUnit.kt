@@ -4,15 +4,15 @@ import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
 import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.automation.unit.UnitAutomation
-import com.unciv.logic.battle.Battle
+import com.unciv.logic.battle.BattleUnitCapture
 import com.unciv.logic.battle.MapUnitCombatant
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
+import com.unciv.logic.map.mapunit.movement.UnitMovement
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.UnitActionType
-import com.unciv.models.helpers.UnitMovementMemoryType
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.ruleset.unique.StateForConditionals
@@ -22,6 +22,7 @@ import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.ruleset.unit.UnitType
 import com.unciv.models.stats.Stats
+import com.unciv.ui.components.UnitMovementMemoryType
 import com.unciv.ui.components.extensions.filterAndLogic
 import java.text.DecimalFormat
 import kotlin.math.pow
@@ -100,6 +101,8 @@ class MapUnit : IsPartOfGameInfoSerialization {
     var health: Int = 100
 
     var action: String? = null // work, automation, fortifying, I dunno what.
+    var automated: Boolean = false
+
     @Transient
     var showAdditionalActions: Boolean = false
 
@@ -110,10 +113,9 @@ class MapUnit : IsPartOfGameInfoSerialization {
     var isTransported: Boolean = false
     var turnsFortified = 0
 
-    // Old, to be deprecated
-    @Deprecated("As of 4.5.3")
+    @Deprecated("As of 4.8.9")
     var abilityUsesLeft: HashMap<String, Int> = hashMapOf()
-    @Deprecated("As of 4.5.3")
+    @Deprecated("As of 4.8.9")
     var maxAbilityUses: HashMap<String, Int> = hashMapOf()
 
     // New - track only *how many have been used*, derive max from uniques, left = max - used
@@ -174,6 +176,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
         toReturn.currentMovement = currentMovement
         toReturn.health = health
         toReturn.action = action
+        toReturn.automated = automated
         toReturn.attacksThisTurn = attacksThisTurn
         toReturn.turnsFortified = turnsFortified
         toReturn.promotions = promotions.clone()
@@ -334,7 +337,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
 
     fun isMoving() = action?.startsWith("moveTo") == true
 
-    fun isAutomated() = action == UnitActionType.Automate.value
+    fun isAutomated() = automated
     fun isExploring() = action == UnitActionType.Explore.value
     fun isPreparingParadrop() = action == UnitActionType.Paradrop.value
     fun isPreparingAirSweep() = action == UnitActionType.AirSweep.value
@@ -459,6 +462,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
             ?: throw java.lang.Exception("Unit $name is not found!")
 
         updateUniques()
+        if (action == UnitActionType.Automate.value) automated = true
     }
 
     fun getTriggeredUniques(trigger: UniqueType,
@@ -549,7 +553,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
         }
 
         val maxAdjacentHealingBonus = currentTile.neighbors
-            .flatMap { it.getUnits().asSequence() }.filter { it.civ == civ }
+            .flatMap { it.getUnits() }.filter { it.civ == civ }
             .map { it.adjacentHealingBonus() }.maxOrNull()
         if (maxAdjacentHealingBonus != null)
             healing += maxAdjacentHealingBonus
@@ -616,6 +620,16 @@ class MapUnit : IsPartOfGameInfoSerialization {
 
     fun removeFromTile() = currentTile.removeUnit(this)
 
+
+    /** Return null if military on tile, or no civilian */
+    private fun Tile.getUnguardedCivilian(attacker: MapUnit): MapUnit? {
+        return when {
+            militaryUnit != null && militaryUnit != attacker -> null
+            civilianUnit != null -> civilianUnit!!
+            else -> null
+        }
+    }
+
     fun moveThroughTile(tile: Tile) {
         // addPromotion requires currentTile to be valid because it accesses ruleset through it.
         // getAncientRuinBonus, if it places a new unit, does too
@@ -635,7 +649,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
         val unguardedCivilian = tile.getUnguardedCivilian(this)
         // Capture Enemy Civilian Unit if you move on top of it
         if (isMilitary() && unguardedCivilian != null && civ.isAtWarWith(unguardedCivilian.civ)) {
-            Battle.captureCivilianUnit(MapUnitCombatant(this), MapUnitCombatant(tile.civilianUnit!!))
+            BattleUnitCapture.captureCivilianUnit(MapUnitCombatant(this), MapUnitCombatant(tile.civilianUnit!!))
         }
 
         val promotionUniques = tile.neighbors
