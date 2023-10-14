@@ -2,7 +2,7 @@ package com.unciv.ui.popups.options
 
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.models.metadata.GameSettings
-import com.unciv.ui.components.UncivSlider
+import com.unciv.ui.components.widgets.UncivSlider
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.screens.basescreen.BaseScreen
 
