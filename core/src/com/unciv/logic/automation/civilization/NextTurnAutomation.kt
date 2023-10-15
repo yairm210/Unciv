@@ -806,7 +806,7 @@ object NextTurnAutomation {
         // If they have bad relations with any of thier friends, don't consider it
         for(thirdCiv in commonknownCivs) {
             if (otherCiv.getDiplomacyManager(thirdCiv).isRelationshipLevelGE(RelationshipLevel.Friend)
-                && thirdCiv.getDiplomacyManager(civInfo).isRelationshipLevelLT(RelationshipLevel.Favorable))
+                && thirdCiv.getDiplomacyManager(civInfo).isRelationshipLevelLT(RelationshipLevel.Neutral))
                 return false
         }
 
@@ -912,10 +912,10 @@ object NextTurnAutomation {
         val modifierMap = HashMap<String, Int>()
         val combatStrengthRatio = ourCombatStrength / theirCombatStrength
         val combatStrengthModifier = when {
-            combatStrengthRatio > 3f -> 30
-            combatStrengthRatio > 2.5f -> 25
-            combatStrengthRatio > 2f -> 20
-            combatStrengthRatio > 1.5f -> 10
+            combatStrengthRatio > 3f -> 20
+            combatStrengthRatio > 2.5f -> 15
+            combatStrengthRatio > 2f -> 10
+            combatStrengthRatio > 1.5f -> 5
             else -> 0
         }
         modifierMap["Relative combat strength"] = combatStrengthModifier
@@ -924,9 +924,9 @@ object NextTurnAutomation {
         for(thirdCiv in otherCiv.diplomacy.values.filter { it.hasFlag(DiplomacyFlags.DefensivePact) }) {
             val thirdCivCombatStrengthRatio = otherCiv.getStatForRanking(RankingType.Force).toFloat() + baseForce / ourCombatStrength
             theirAlliesValue += when {
-                thirdCivCombatStrengthRatio > 5 -> 20
-                thirdCivCombatStrengthRatio > 2.5 -> 15
-                thirdCivCombatStrengthRatio > 2 -> 10
+                thirdCivCombatStrengthRatio > 5 -> 15
+                thirdCivCombatStrengthRatio > 2.5 -> 10
+                thirdCivCombatStrengthRatio > 2 -> 8
                 thirdCivCombatStrengthRatio > 1.5 -> 5
                 thirdCivCombatStrengthRatio > .8 -> 2
                 else -> 0
@@ -940,12 +940,12 @@ object NextTurnAutomation {
         // Designed to mitigate AIs declaring war on weaker civs instead of their rivals
         val scoreRatio = civInfo.getStatForRanking(RankingType.Score).toFloat() / otherCiv.getStatForRanking(RankingType.Score).toFloat()
         val scoreRatioModifier = when {
-            scoreRatio > 2f -> 15
-            scoreRatio > 1.5f -> 10
+            scoreRatio > 2f -> 20
+            scoreRatio > 1.5f -> 15
             scoreRatio > 1f -> 5
             scoreRatio > .8f -> 0
-            scoreRatio > .5f -> -10
-            scoreRatio > .25f -> -20
+            scoreRatio > .5f -> -5
+            scoreRatio > .25f -> -10
             else -> 0
         }
         modifierMap["Relative score"] = scoreRatioModifier
@@ -961,7 +961,7 @@ object NextTurnAutomation {
             modifierMap["Declaration of Friendship"] = -10
 
         if (diplomacyManager.hasFlag(DiplomacyFlags.DefensivePact))
-            modifierMap["Defensive Pact"] = -15
+            modifierMap["Defensive Pact"] = -10
 
         val relationshipModifier = when (diplomacyManager.relationshipIgnoreAfraid()) {
             RelationshipLevel.Unforgivable -> 10
@@ -1008,7 +1008,7 @@ object NextTurnAutomation {
         // The more wonders they have, the more beneficial it is to conquer them
         // Civs need an army to protect thier wonders which give the most score
         if (wonderCount > 0)
-            modifierMap["Owned Wonders"] = (wonderCount * 2).coerceAtMost(20)
+            modifierMap["Owned Wonders"] = wonderCount
 
         var motivationSoFar = modifierMap.values.sum()
 
