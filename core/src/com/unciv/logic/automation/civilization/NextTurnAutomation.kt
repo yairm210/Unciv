@@ -685,17 +685,20 @@ object NextTurnAutomation {
             // Goes from 10 to 0 once the civ gets 1/4 of all alive civs as friends
             motivation += (10 - 10 * (numOfFriends / civsToAllyWith)).toInt()
         } else {
-            // Goes form 0 to -240 as the civ gets more friends, offset by civsToAllyWith
-            motivation -= (240f * (numOfFriends - civsToAllyWith) / (knownCivs - civsToAllyWith)).toInt()
+            // Goes form 0 to -120 as the civ gets more friends, offset by civsToAllyWith
+            motivation -= (120f * (numOfFriends - civsToAllyWith) / (knownCivs - civsToAllyWith)).toInt()
         }
         
-        //The more friends they have the less we should like them (To promote teams)
+        // The more friends they have the less we should like them (To promote teams)
         motivation -= otherCivNumberOfFriends * 10
 
         // Goes from 0 to -50 as more civs die
         // this is meant to prevent the game from stalemating when a group of friends
         // conquers all oposition
         motivation -= deadCivs / allCivs * 50
+        
+        // Becomre more desperate as we have more wars
+        motivation += civInfo.diplomacy.values.count { it.otherCiv().isMajorCiv() && it.diplomaticStatus == DiplomaticStatus.War } * 10
 
         // Wait to declare frienships until more civs
         // Goes from -30 to 0 when we know 75% of allCivs
@@ -825,13 +828,16 @@ object NextTurnAutomation {
         motivation += when (Automation.threatAssessment(civInfo,otherCiv)) {
             ThreatLevel.VeryHigh -> 10
             ThreatLevel.High -> 5
-            ThreatLevel.Low -> -15
-            ThreatLevel.VeryLow -> -30
+            ThreatLevel.Low -> -5
+            ThreatLevel.VeryLow -> -10
             else -> 0
         }
 
         // If they have a defensive pact with another civ then we would get drawn into thier battles as well
-        motivation -= 30 * otherCivNonOverlappingDefensivePacts
+        motivation -= 15 * otherCivNonOverlappingDefensivePacts
+
+        // Becomre more desperate as we have more wars
+        motivation += civInfo.diplomacy.values.count { it.otherCiv().isMajorCiv() && it.diplomaticStatus == DiplomaticStatus.War } * 5
 
         // Try to have a defensive pact with 1/5 of all civs
         val civsToAllyWith = 0.20f * allAliveCivs
