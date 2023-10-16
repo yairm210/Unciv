@@ -446,9 +446,11 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
     }
 
     override fun pause() {
+        // Needs to go ASAP - on Android, there's a tiny race condition: The OS will stop our playback forcibly, it likely
+        // already has, but if we do _our_ pause before the MusicController timer notices, it will at least remember the current track.
+        if (::musicController.isInitialized) musicController.pause()
         val curGameInfo = gameInfo
         if (curGameInfo != null) files.requestAutoSave(curGameInfo)
-        if (::musicController.isInitialized) musicController.pause()
         super.pause()
     }
 

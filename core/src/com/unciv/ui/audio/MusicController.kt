@@ -121,17 +121,17 @@ class MusicController {
 
     private var musicTimer: Timer? = null
 
-    private enum class ControllerState {
+    private enum class ControllerState(val canPause: Boolean = false) {
         /** Own timer stopped, if using the HardenedGdxAudio callback just do nothing */
         Idle,
         /** Loop will release everything and go [Idle] if it encounters this state. */
         Cleanup,
         /** Play a track to its end, then silence for a while, then choose another track */
-        Playing,
+        Playing(true),
         /** Play a track to its end, then [Cleanup] */
-        PlaySingle,
+        PlaySingle(true),
         /** Wait for a while in silence to start next track */
-        Silence,
+        Silence(true),
         /** Music fades to pause or is paused. Continue with chooseTrack or resume. */
         Pause,
         /** Fade out then [Cleanup] */
@@ -166,12 +166,10 @@ class MusicController {
         audioExceptionHandler(ex, music)
     }
 
-    /** @return the path of the playing track or null if none playing */
-    private fun currentlyPlaying(): String = when(state) {
-        ControllerState.Playing, ControllerState.PlaySingle, ControllerState.Pause ->
-            musicHistory.lastOrNull() ?: ""
-        else -> ""
-    }
+    /** @return the path of the playing track or empty string if none playing */
+    private fun currentlyPlaying(): String =
+        if (state.canPause) musicHistory.lastOrNull() ?: ""
+        else ""
 
     /** Registers a callback that will be called with the new track every time it changes.
      *
@@ -263,7 +261,7 @@ class MusicController {
                         }
                     } // else wait for the thread of next.load() to finish
                 } else if (!current!!.isPlaying()) {
-                    // normal end of track
+                    // normal end of track - or the OS stopped the playback (Android pause)
                     clearCurrent()
                     // rest handled next tick
                 } else {
@@ -522,13 +520,14 @@ class MusicController {
      */
     fun pause(speedFactor: Float = 1f) {
         Log.debug("MusicTrackController.pause called")
-        val controller = current ?: return
-        if (state != ControllerState.Playing && state != ControllerState.PlaySingle) return
+
+        if (!state.canPause) return
+        state = ControllerState.Pause
+
         val fadingStep = defaultFadingStep * speedFactor.coerceIn(0.001f..1000f)
-        controller.startFade(MusicTrackController.State.FadeOut, fadingStep)
+        current?.startFade(MusicTrackController.State.FadeOut, fadingStep)
         if (next?.state == MusicTrackController.State.FadeIn)
             next!!.startFade(MusicTrackController.State.FadeOut)
-        state = ControllerState.Pause
     }
 
     /**
@@ -546,7 +545,7 @@ class MusicController {
             // currently only the main menu resumes, and then it's perfect:
             state = ControllerState.Playing
             current!!.play()
-        } else if (state == ControllerState.Cleanup) {
+        } else if (state == ControllerState.Cleanup || state == ControllerState.Pause) {
             chooseTrack()
         }
     }
