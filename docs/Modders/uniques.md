@@ -1888,23 +1888,13 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Conditional
 
-??? example  "&lt;has more than [amount] [stat]&gt;"
-	Example: "&lt;has more than [3] [Culture]&gt;"
+??? example  "&lt;when above [amount] [stat] (modified by game speed)&gt;"
+	Example: "&lt;when above [3] [Culture] (modified by game speed)&gt;"
 
 	Applicable to: Conditional
 
-??? example  "&lt;has less than [amount] [stat]&gt;"
-	Example: "&lt;has less than [3] [Culture]&gt;"
-
-	Applicable to: Conditional
-
-??? example  "&lt;has more than [amount] [stat] (modified by game speed)&gt;"
-	Example: "&lt;has more than [3] [Culture] (modified by game speed)&gt;"
-
-	Applicable to: Conditional
-
-??? example  "&lt;has less than [amount] [stat] (modified by game speed)&gt;"
-	Example: "&lt;has less than [3] [Culture] (modified by game speed)&gt;"
+??? example  "&lt;when below [amount] [stat] (modified by game speed)&gt;"
+	Example: "&lt;when below [3] [Culture] (modified by game speed)&gt;"
 
 	Applicable to: Conditional
 

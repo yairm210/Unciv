@@ -633,8 +633,8 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     ConditionalWithoutResource("without [resource]", UniqueTarget.Conditional),
 
     // Supports also stockpileable resources (Gold, Faith, Culture, Science)
-    ConditionalWhenAboveAmountResource("when above [amount] [resource]", UniqueTarget.Conditional),
-    ConditionalWhenBelowAmountResource("when below [amount] [resource]", UniqueTarget.Conditional),
+    ConditionalWhenAboveAmountStatResource("when above [amount] [stat/resource]", UniqueTarget.Conditional),
+    ConditionalWhenBelowAmountStatResource("when below [amount] [stat/resource]", UniqueTarget.Conditional),
 
     // The game speed-adjusted versions of above
     ConditionalWhenAboveAmountStatSpeed("when above [amount] [stat] (modified by game speed)", UniqueTarget.Conditional),
