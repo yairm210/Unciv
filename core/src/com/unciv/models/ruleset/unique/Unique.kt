@@ -175,33 +175,26 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
             UniqueType.ConditionalNotWar -> state.civInfo?.isAtWar() == false
             UniqueType.ConditionalWithResource -> getResourceAmount(condition.params[0]) > 0
             UniqueType.ConditionalWithoutResource -> getResourceAmount(condition.params[0]) <= 0
-            UniqueType.ConditionalWhenAboveAmountStatResource ->
 
+            UniqueType.ConditionalWhenAboveAmountStatResource ->
                 if (ruleset().tileResources.containsKey(condition.params[1])) {
                     return getResourceAmount(condition.params[1]) > condition.params[0].toInt()
-                }
-                else if (Stat.isStat(condition.params[1])) {
+                } else if (Stat.isStat(condition.params[1])) {
                     return state.civInfo != null &&
                         state.civInfo.getStatReserve(Stat.valueOf(condition.params[1])) > condition.params[0].toInt()
-                }
-                else {
+                } else {
                     return false
                 }
-
 
             UniqueType.ConditionalWhenBelowAmountStatResource ->
-
                 if (ruleset().tileResources.containsKey(condition.params[1])) {
                     return getResourceAmount(condition.params[1]) < condition.params[0].toInt()
-                }
-                else if (Stat.isStat(condition.params[1])) {
+                } else if (Stat.isStat(condition.params[1])) {
                     return state.civInfo != null &&
                         state.civInfo.getStatReserve(Stat.valueOf(condition.params[1])) < condition.params[0].toInt()
-                }
-                else {
+                } else {
                     return false
                 }
-
 
             UniqueType.ConditionalWhenAboveAmountStatSpeed -> state.civInfo != null &&
                 state.civInfo.getStatReserve(Stat.valueOf(condition.params[1])) > condition.params[0].toInt() *
