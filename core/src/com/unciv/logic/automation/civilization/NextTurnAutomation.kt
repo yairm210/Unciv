@@ -32,10 +32,8 @@ import com.unciv.models.Counter
 import com.unciv.models.ruleset.Belief
 import com.unciv.models.ruleset.BeliefType
 import com.unciv.models.ruleset.Building
-import com.unciv.models.ruleset.INonPerpetualConstruction
 import com.unciv.models.ruleset.MilestoneType
 import com.unciv.models.ruleset.ModOptionsConstants
-import com.unciv.models.ruleset.PerpetualConstruction
 import com.unciv.models.ruleset.Policy
 import com.unciv.models.ruleset.PolicyBranch
 import com.unciv.models.ruleset.Victory
@@ -47,8 +45,6 @@ import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stat
 import com.unciv.models.translations.tr
 import com.unciv.ui.screens.victoryscreen.RankingType
-import java.util.SortedMap
-import java.util.TreeMap
 import kotlin.math.min
 import kotlin.random.Random
 
@@ -84,7 +80,7 @@ object NextTurnAutomation {
 
         chooseTechToResearch(civInfo)
         automateCityBombardment(civInfo)
-        useGold(civInfo)
+        UseGoldAutomation.useGold(civInfo)
         if (!civInfo.isCityState()) {
             protectCityStates(civInfo)
             bullyCityStates(civInfo)
@@ -276,7 +272,7 @@ object NextTurnAutomation {
             if (popupAlert.type == AlertType.DeclarationOfFriendship) {
                 val requestingCiv = civInfo.gameInfo.getCivilization(popupAlert.value)
                 val diploManager = civInfo.getDiplomacyManager(requestingCiv)
-                if (civInfo.diplomacyFunctions.canSignDeclarationOfFriendshipWith(requestingCiv) 
+                if (civInfo.diplomacyFunctions.canSignDeclarationOfFriendshipWith(requestingCiv)
                     && wantsToSignDeclarationOfFrienship(civInfo,requestingCiv)) {
                     diploManager.signDeclarationOfFriendship()
                     requestingCiv.addNotification("We have signed a Declaration of Friendship with [${civInfo.civName}]!", NotificationCategory.Diplomacy, NotificationIcon.Diplomacy, civInfo.civName)
@@ -284,156 +280,14 @@ object NextTurnAutomation {
                     diploManager.otherCivDiplomacy().setFlag(DiplomacyFlags.DeclinedDeclarationOfFriendship, 10)
                     requestingCiv.addNotification("[${civInfo.civName}] has denied our Declaration of Friendship!", NotificationCategory.Diplomacy, NotificationIcon.Diplomacy, civInfo.civName)
                 }
-                
+
             }
         }
 
         civInfo.popupAlerts.clear() // AIs don't care about popups.
     }
 
-    private fun tryGainInfluence(civInfo: Civilization, cityState: Civilization) {
-        if (civInfo.gold < 250) return // save up
-        if (cityState.getDiplomacyManager(civInfo).getInfluence() < 20) {
-            cityState.cityStateFunctions.receiveGoldGift(civInfo, 250)
-            return
-        }
-        if (civInfo.gold < 500) return // it's not worth it to invest now, wait until you have enough for 2
-        cityState.cityStateFunctions.receiveGoldGift(civInfo, 500)
-        return
-    }
-
-    private fun useGoldForCityStates(civ: Civilization) {
-        // RARE EDGE CASE: If you ally with a city-state, you may reveal more map that includes ANOTHER civ!
-        // So if we don't lock this list, we may later discover that there are more known civs, concurrent modification exception!
-        val knownCityStates = civ.getKnownCivs().filter { it.isCityState() }.toList()
-
-        // canBeMarriedBy checks actual cost, but it can't be below 500*speedmodifier, and the later check is expensive
-        if (civ.gold >= 330 && civ.getHappiness() > 0 && civ.hasUnique(UniqueType.CityStateCanBeBoughtForGold)) {
-            for (cityState in knownCityStates.toList() ) {  // Materialize sequence as diplomaticMarriage may kill a CS
-                if (cityState.cityStateFunctions.canBeMarriedBy(civ))
-                    cityState.cityStateFunctions.diplomaticMarriage(civ)
-                if (civ.getHappiness() <= 0) break // Stop marrying if happiness is getting too low
-            }
-        }
-
-        if (civ.gold < 250) return  // skip checks if tryGainInfluence will bail anyway
-        if (civ.wantsToFocusOn(Victory.Focus.Culture)) {
-            for (cityState in knownCityStates.filter { it.cityStateFunctions.canProvideStat(Stat.Culture) }) {
-                val diploManager = cityState.getDiplomacyManager(civ)
-                if (diploManager.getInfluence() < 40) { // we want to gain influence with them
-                    tryGainInfluence(civ, cityState)
-                }
-            }
-        }
-
-        if (civ.gold < 250 || knownCityStates.none()) return
-        val cityState = knownCityStates
-            .filter { it.getAllyCiv() != civ.civName }
-            .associateWith { valueCityStateAlliance(civ, it) }
-            .maxByOrNull { it.value }?.takeIf { it.value > 0 }?.key
-        if (cityState != null) {
-            tryGainInfluence(civ, cityState)
-        }
-    }
-
-    /** allow AI to spend money to purchase city-state friendship, buildings & unit */
-    private fun useGold(civ: Civilization) {
-        if (civ.isMajorCiv())
-            useGoldForCityStates(civ)
-
-        for (city in civ.cities.sortedByDescending { it.population.population }) {
-            val construction = city.cityConstructions.getCurrentConstruction()
-            if (construction is PerpetualConstruction) continue
-            if ((construction as INonPerpetualConstruction).canBePurchasedWithStat(city, Stat.Gold)
-                    && city.civ.gold / 3 >= construction.getStatBuyCost(city, Stat.Gold)!!) {
-                city.cityConstructions.purchaseConstruction(construction, 0, true)
-            }
-        }
-
-        maybeBuyCityTiles(civ)
-    }
-
-    private fun maybeBuyCityTiles(civInfo: Civilization) {
-        if (civInfo.gold <= 0)
-            return
-        // Don't buy tiles in the very early game. It is unlikely that we already have the required
-        // tech, the necessary worker and that there is a reasonable threat from another player to
-        // grab the tile. We could also check all that, but it would require a lot of cycles each
-        // turn and this is probably a good approximation.
-        if (civInfo.gameInfo.turns < (civInfo.gameInfo.speed.scienceCostModifier * 20).toInt())
-            return
-
-        val highlyDesirableTiles: SortedMap<Tile, MutableSet<City>> = TreeMap(
-            compareByDescending<Tile?> { it?.naturalWonder != null }
-                .thenByDescending { it?.resource != null && it.tileResource.resourceType == ResourceType.Luxury }
-                .thenByDescending { it?.resource != null && it.tileResource.resourceType == ResourceType.Strategic }
-                // This is necessary, so that the map keeps Tiles with the same resource as two
-                // separate entries.
-                .thenBy { it.hashCode() }
-        )
-        for (city in civInfo.cities.filter { !it.isPuppet && !it.isBeingRazed }) {
-            val highlyDesirableTilesInCity = city.tilesInRange.filter {
-                val hasNaturalWonder = it.naturalWonder != null
-                val hasLuxuryCivDoesntOwn =
-                    it.hasViewableResource(civInfo)
-                        && it.tileResource.resourceType == ResourceType.Luxury
-                        && !civInfo.hasResource(it.resource!!)
-                val hasResourceCivHasNoneOrLittle =
-                    it.hasViewableResource(civInfo)
-                        && it.tileResource.resourceType == ResourceType.Strategic
-                        && civInfo.getResourceAmount(it.resource!!) <= 3
-
-                it.isVisible(civInfo) && it.getOwner() == null
-                    && it.neighbors.any { neighbor -> neighbor.getCity() == city }
-                (hasNaturalWonder || hasLuxuryCivDoesntOwn || hasResourceCivHasNoneOrLittle)
-            }
-            for (highlyDesirableTileInCity in highlyDesirableTilesInCity) {
-                highlyDesirableTiles.getOrPut(highlyDesirableTileInCity) { mutableSetOf() }
-                    .add(city)
-            }
-        }
-
-        // Always try to buy highly desirable tiles if it can be afforded.
-        for (highlyDesirableTile in highlyDesirableTiles) {
-            val cityWithLeastCostToBuy = highlyDesirableTile.value.minBy {
-                it.getCenterTile().aerialDistanceTo(highlyDesirableTile.key)
-            }
-            val bfs = BFS(cityWithLeastCostToBuy.getCenterTile())
-            {
-                it.getOwner() == null || it.owningCity == cityWithLeastCostToBuy
-            }
-            bfs.stepUntilDestination(highlyDesirableTile.key)
-            val tilesThatNeedBuying =
-                    bfs.getPathTo(highlyDesirableTile.key).filter { it.getOwner() == null }
-                        .toList().reversed() // getPathTo is from destination to source
-
-            // We're trying to acquire everything and revert if it fails, because of the difficult
-            // way how tile acquisition cost is calculated. Everytime you buy a tile, the next one
-            // gets more expensive and by how much depends on other things such as game speed. To
-            // not introduce hidden dependencies on that and duplicate that logic here to calculate
-            // the price of the whole path, this is probably simpler.
-            var ranOutOfMoney = false
-            var goldSpent = 0
-            for (tileThatNeedsBuying in tilesThatNeedBuying) {
-                val goldCostOfTile =
-                        cityWithLeastCostToBuy.expansion.getGoldCostOfTile(tileThatNeedsBuying)
-                if (civInfo.gold >= goldCostOfTile) {
-                    cityWithLeastCostToBuy.expansion.buyTile(tileThatNeedsBuying)
-                    goldSpent += goldCostOfTile
-                } else {
-                    ranOutOfMoney = true
-                }
-            }
-            if (ranOutOfMoney) {
-                for (tileThatNeedsBuying in tilesThatNeedBuying) {
-                    cityWithLeastCostToBuy.expansion.relinquishOwnership(tileThatNeedsBuying)
-                }
-                civInfo.addGold(goldSpent)
-            }
-        }
-    }
-
-    private fun valueCityStateAlliance(civInfo: Civilization, cityState: Civilization): Int {
+    internal fun valueCityStateAlliance(civInfo: Civilization, cityState: Civilization): Int {
         var value = 0
 
         if (civInfo.wantsToFocusOn(Victory.Focus.Culture) && cityState.cityStateFunctions.canProvideStat(Stat.Culture)) {
@@ -514,22 +368,32 @@ object NextTurnAutomation {
     }
 
     private fun chooseTechToResearch(civInfo: Civilization) {
-        if (civInfo.tech.techsToResearch.isEmpty()) {
+        fun getGroupedResearchableTechs(): List<List<Technology>> {
             val researchableTechs = civInfo.gameInfo.ruleset.technologies.values
-                    .filter { civInfo.tech.canBeResearched(it.name) }
-            val techsGroups = researchableTechs.groupBy { it.cost }
-            val costs = techsGroups.keys.sorted()
+                .asSequence()
+                .filter { civInfo.tech.canBeResearched(it.name) }
+                .groupBy { it.cost }
+            return researchableTechs.toSortedMap().values.toList()
+        }
+        while(civInfo.tech.freeTechs > 0) {
+            val costs = getGroupedResearchableTechs()
+            if (costs.isEmpty()) return
 
-            if (researchableTechs.isEmpty()) return
+            val mostExpensiveTechs = costs[costs.size - 1]
+            civInfo.tech.getFreeTechnology(mostExpensiveTechs.random().name)
+        }
+        if (civInfo.tech.techsToResearch.isEmpty()) {
+            val costs = getGroupedResearchableTechs()
+            if (costs.isEmpty()) return
 
-            val cheapestTechs = techsGroups[costs[0]]!!
+            val cheapestTechs = costs[0]
             //Do not consider advanced techs if only one tech left in cheapest group
             val techToResearch: Technology =
                 if (cheapestTechs.size == 1 || costs.size == 1) {
                     cheapestTechs.random()
                 } else {
                     //Choose randomly between cheapest and second cheapest group
-                    val techsAdvanced = techsGroups[costs[1]]!!
+                    val techsAdvanced = costs[1]
                     (cheapestTechs + techsAdvanced).random()
                 }
 
@@ -616,7 +480,7 @@ object NextTurnAutomation {
                 continue
 
             val unitToDisband = civInfo.units.getCivUnits()
-                .filter { it.baseUnit.requiresResource(resource) }
+                .filter { it.requiresResource(resource) }
                 .minByOrNull { it.getForceEvaluation() }
             unitToDisband?.disband()
 
@@ -625,7 +489,7 @@ object NextTurnAutomation {
                     continue
                 val buildingToSell = civInfo.gameInfo.ruleset.buildings.values.filter {
                         city.cityConstructions.isBuilt(it.name)
-                        && it.requiresResource(resource)
+                        && it.requiresResource(resource, StateForConditionals(civInfo, city))
                         && it.isSellable()
                         && !civInfo.civConstructions.hasFreeBuilding(city, it) }
                     .randomOrNull()
@@ -790,13 +654,13 @@ object NextTurnAutomation {
         val diploManager = civInfo.getDiplomacyManager(otherCiv)
         // Shortcut, if it is below favorable then don't consider it
         if (diploManager.isRelationshipLevelLT(RelationshipLevel.Favorable)) return false
-        
+
         val numOfFriends = civInfo.diplomacy.count { it.value.hasFlag(DiplomacyFlags.DeclarationOfFriendship) }
         val knownCivs = civInfo.getKnownCivs().count { it.isMajorCiv() && it.isAlive() }
         val allCivs = civInfo.gameInfo.civilizations.count { it.isMajorCiv() } - 1 // Don't include us
         val deadCivs = civInfo.gameInfo.civilizations.count { it.isMajorCiv() && !it.isAlive() }
         val allAliveCivs = allCivs - deadCivs
-        
+
         // Motivation should be constant as the number of civs changes
         var motivation = diploManager.opinionOfOtherCiv().toInt() - 40
 
@@ -808,7 +672,7 @@ object NextTurnAutomation {
             ThreatLevel.VeryLow -> -5
             else -> 0
         }
-        
+
         // Try to ally with a fourth of the civs in play
         val civsToAllyWith = 0.25f * allAliveCivs
         if (numOfFriends < civsToAllyWith) {
@@ -828,16 +692,16 @@ object NextTurnAutomation {
         // Goes from -30 to 0 when we know 75% of allCivs
         val civsToKnow = 0.75f * allAliveCivs
         motivation -= ((civsToKnow - knownCivs) / civsToKnow * 30f).toInt().coerceAtLeast(0)
-        
+
         motivation -= hasAtLeastMotivationToAttack(civInfo, otherCiv, motivation / 2) * 2
-        
+
         return motivation > 0
     }
-    
+
     private fun offerOpenBorders(civInfo: Civilization) {
         if (!civInfo.hasUnique(UniqueType.EnablesOpenBorders)) return
         val civsThatWeCanOpenBordersWith = civInfo.getKnownCivs()
-            .filter { it.isMajorCiv() && !civInfo.isAtWarWith(it) 
+            .filter { it.isMajorCiv() && !civInfo.isAtWarWith(it)
                 && it.hasUnique(UniqueType.EnablesOpenBorders)
                 && !civInfo.getDiplomacyManager(it).hasOpenBorders
                 && !civInfo.getDiplomacyManager(it).hasFlag(DiplomacyFlags.DeclinedOpenBorders) }
@@ -853,7 +717,7 @@ object NextTurnAutomation {
             }
         }
     }
-    
+
     fun wantsToOpenBorders(civInfo: Civilization, otherCiv: Civilization): Boolean {
         if (civInfo.getDiplomacyManager(otherCiv).isRelationshipLevelLT(RelationshipLevel.Favorable)) return false
         // Don't accept if they are at war with our friends, they might use our land to attack them
@@ -863,7 +727,7 @@ object NextTurnAutomation {
             return false
         return true
     }
-    
+
     private fun offerResearchAgreement(civInfo: Civilization) {
         if (!civInfo.diplomacyFunctions.canSignResearchAgreement()) return // don't waste your time
 
@@ -903,12 +767,12 @@ object NextTurnAutomation {
                 val tradeLogic = TradeLogic(civInfo, otherCiv)
                 tradeLogic.currentTrade.ourOffers.add(TradeOffer(Constants.defensivePact, TradeType.Treaty))
                 tradeLogic.currentTrade.theirOffers.add(TradeOffer(Constants.defensivePact, TradeType.Treaty))
-    
+
                 otherCiv.tradeRequests.add(TradeRequest(civInfo.civName, tradeLogic.currentTrade.reverse()))
             }
         }
     }
-    
+
     fun wantsToSignDefensivePact(civInfo: Civilization, otherCiv: Civilization): Boolean {
         val diploManager = civInfo.getDiplomacyManager(otherCiv)
         if (diploManager.isRelationshipLevelLT(RelationshipLevel.Ally)) return false
@@ -926,10 +790,10 @@ object NextTurnAutomation {
         val allCivs = civInfo.gameInfo.civilizations.count { it.isMajorCiv() } - 1 // Don't include us
         val deadCivs = civInfo.gameInfo.civilizations.count { it.isMajorCiv() && !it.isAlive() }
         val allAliveCivs = allCivs - deadCivs
-        
+
         // We have to already be at RelationshipLevel.Ally, so we must have 80 oppinion of them
         var motivation = diploManager.opinionOfOtherCiv().toInt() - 80
-        
+
         // If they are stronger than us, then we value it a lot more
         // If they are weaker than us, then we don't value it
         motivation += when (Automation.threatAssessment(civInfo,otherCiv)) {
@@ -939,7 +803,7 @@ object NextTurnAutomation {
             ThreatLevel.VeryLow -> -30
             else -> 0
         }
-        
+
         // If they have a defensive pact with another civ then we would get drawn into thier battles as well
         motivation -= 10 * otherCivNonOverlappingDefensivePacts
 
@@ -1282,31 +1146,6 @@ object NextTurnAutomation {
             }
         }
         diplomacyManager.removeFlag(DiplomacyFlags.SettledCitiesNearUs)
-    }
-
-    /** Handle decision making after city conquest, namely whether the AI should liberate, puppet,
-     * or raze a city */
-    fun onConquerCity(civInfo: Civilization, city: City) {
-        if (!city.hasDiplomaticMarriage()) {
-            val foundingCiv = civInfo.gameInfo.getCivilization(city.foundingCiv)
-            var valueAlliance = valueCityStateAlliance(civInfo, foundingCiv)
-            if (civInfo.getHappiness() < 0)
-                valueAlliance -= civInfo.getHappiness() // put extra weight on liberating if unhappy
-            if (foundingCiv.isCityState() && city.civ != civInfo && foundingCiv != civInfo
-                    && !civInfo.isAtWarWith(foundingCiv)
-                    && valueAlliance > 0) {
-                city.liberateCity(civInfo)
-                return
-            }
-        }
-
-        city.puppetCity(civInfo)
-        if ((city.population.population < 4 || civInfo.isCityState())
-                && city.foundingCiv != civInfo.civName && city.canBeDestroyed(justCaptured = true)) {
-            // raze if attacker is a city state
-            if (!civInfo.hasUnique(UniqueType.MayNotAnnexCities)) { city.annexCity() }
-            city.isBeingRazed = true
-        }
     }
 
     fun getMinDistanceBetweenCities(civ1: Civilization, civ2: Civilization): Int {

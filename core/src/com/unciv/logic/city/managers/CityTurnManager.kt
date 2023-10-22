@@ -21,7 +21,6 @@ class CityTurnManager(val city: City) {
         // Construct units at the beginning of the turn,
         // so they won't be generated out in the open and vulnerable to enemy attacks before you can control them
         city.cityConstructions.constructIfEnough()
-        city.cityConstructions.addFreeBuildings()
 
         city.tryUpdateRoadStatus()
         city.attackedThisTurn = false

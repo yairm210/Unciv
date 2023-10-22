@@ -641,7 +641,8 @@ object UniqueTriggerActivation {
                 return true
             }
 
-            UniqueType.FreeStatBuildings, UniqueType.FreeSpecificBuildings -> {
+            UniqueType.FreeStatBuildings, UniqueType.FreeSpecificBuildings,
+            UniqueType.GainFreeBuildings -> {
                 civInfo.civConstructions.tryAddFreeBuildings()
                 return true // not fully correct
             }

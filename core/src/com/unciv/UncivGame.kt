@@ -25,8 +25,8 @@ import com.unciv.ui.audio.MusicController
 import com.unciv.ui.audio.MusicMood
 import com.unciv.ui.audio.MusicTrackChooserFlags
 import com.unciv.ui.audio.SoundPlayer
-import com.unciv.ui.components.Fonts
 import com.unciv.ui.components.extensions.center
+import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.crashhandling.CrashScreen
 import com.unciv.ui.crashhandling.wrapCrashHandlingUnit
 import com.unciv.ui.images.ImageGetter
@@ -50,10 +50,10 @@ import com.unciv.utils.debug
 import com.unciv.utils.launchOnGLThread
 import com.unciv.utils.withGLContext
 import com.unciv.utils.withThreadPoolContext
-import kotlinx.coroutines.CancellationException
 import java.io.PrintWriter
 import java.util.EnumSet
 import java.util.UUID
+import kotlinx.coroutines.CancellationException
 import kotlin.system.exitProcess
 
 object GUI {
@@ -446,9 +446,11 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
     }
 
     override fun pause() {
+        // Needs to go ASAP - on Android, there's a tiny race condition: The OS will stop our playback forcibly, it likely
+        // already has, but if we do _our_ pause before the MusicController timer notices, it will at least remember the current track.
+        if (::musicController.isInitialized) musicController.pause()
         val curGameInfo = gameInfo
         if (curGameInfo != null) files.requestAutoSave(curGameInfo)
-        if (::musicController.isInitialized) musicController.pause()
         super.pause()
     }
 
@@ -536,7 +538,7 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
 
     companion object {
         //region AUTOMATICALLY GENERATED VERSION DATA - DO NOT CHANGE THIS REGION, INCLUDING THIS COMMENT
-        val VERSION = Version("4.8.8", 916)
+        val VERSION = Version("4.8.13", 923)
         //endregion
 
         lateinit var Current: UncivGame

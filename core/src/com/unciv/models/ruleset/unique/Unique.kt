@@ -8,7 +8,7 @@ import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.managers.ReligionState
 import com.unciv.models.ruleset.Ruleset
-import com.unciv.models.ruleset.validation.RulesetValidator
+import com.unciv.models.ruleset.validation.UniqueValidator
 import com.unciv.models.stats.Stats
 import com.unciv.models.translations.getConditionals
 import com.unciv.models.translations.getPlaceholderParameters
@@ -33,7 +33,7 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
     val isTriggerable = type != null && (
         type.targetTypes.contains(UniqueTarget.Triggerable)
             || type.targetTypes.contains(UniqueTarget.UnitTriggerable)
-            // <for [amount] turns]> in effect makes any unique become a triggerable unique
+            || conditionals.any { it.type == UniqueType.ConditionalTimedUnique }
         )
 
     val allParams = params + conditionals.flatMap { it.params }
@@ -119,7 +119,7 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
         // filter out possible replacements that are obviously wrong
         val uniquesWithNoErrors = finalPossibleUniques.filter {
             val unique = Unique(it)
-            val errors = RulesetValidator(ruleset).checkUnique(
+            val errors = UniqueValidator(ruleset).checkUnique(
                 unique, true, null,
                 UniqueType.UniqueComplianceErrorSeverity.RulesetSpecific
             )
@@ -248,8 +248,11 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
             UniqueType.ConditionalBelowHP ->
                 state.ourCombatant != null && state.ourCombatant.getHealth() < condition.params[0].toInt()
             UniqueType.ConditionalHasNotUsedOtherActions ->
-                state.unit != null &&
+                state.unit == null || // So we get the action as a valid action in BaseUnit.hasUnique()
+                    ( // OLD format
                 state.unit.run { limitedActionsUnitCanDo().all { abilityUsesLeft[it] == maxAbilityUses[it] } }
+                    // NEW format
+                    && state.unit.abilityToTimesUsed.isEmpty())
 
             UniqueType.ConditionalInTiles ->
                 relevantTile?.matchesFilter(condition.params[0], state.civInfo) == true

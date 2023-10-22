@@ -2,8 +2,12 @@ package com.unciv.ui.objectdescriptions
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.unciv.GUI
 import com.unciv.logic.city.City
+import com.unciv.models.metadata.GameSettings
+import com.unciv.models.ruleset.IRulesetObject
 import com.unciv.models.ruleset.Ruleset
+import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueFlag
 import com.unciv.models.ruleset.unique.UniqueType
@@ -12,13 +16,12 @@ import com.unciv.models.ruleset.unit.UnitMovementType
 import com.unciv.models.ruleset.unit.UnitType
 import com.unciv.models.stats.Stat
 import com.unciv.models.translations.tr
-import com.unciv.ui.components.Fonts
 import com.unciv.ui.components.extensions.getConsumesAmountString
-import com.unciv.ui.components.extensions.toPercent
+import com.unciv.ui.components.fonts.Fonts
+import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.civilopediascreen.FormattedLine
 import com.unciv.ui.screens.civilopediascreen.MarkupRenderer
-import kotlin.math.pow
 
 object BaseUnitDescriptions {
 
@@ -41,7 +44,7 @@ object BaseUnitDescriptions {
     fun getDescription(baseUnit: BaseUnit, city: City): String {
         val lines = mutableListOf<String>()
         val availableResources = city.civ.getCivResourcesByName()
-        for ((resourceName, amount) in baseUnit.getResourceRequirementsPerTurn()) {
+        for ((resourceName, amount) in baseUnit.getResourceRequirementsPerTurn(StateForConditionals(city.civ))) {
             val available = availableResources[resourceName] ?: 0
             val resource = baseUnit.ruleset.tileResources[resourceName] ?: continue
             val consumesString = resourceName.getConsumesAmountString(amount, resource.isStockpiled())
@@ -58,7 +61,6 @@ object BaseUnitDescriptions {
         if (baseUnit.replacementTextForUniques != "") lines += baseUnit.replacementTextForUniques
         else for (unique in baseUnit.uniqueObjects.filterNot {
             it.type == UniqueType.Unbuildable
-                    || it.type == UniqueType.ConsumesResources  // already shown from getResourceRequirements
                     || it.type?.flags?.contains(UniqueFlag.HiddenToUsers) == true
         })
             lines += unique.text.tr()
@@ -73,6 +75,9 @@ object BaseUnitDescriptions {
 
     fun getCivilopediaTextLines(baseUnit: BaseUnit, ruleset: Ruleset): List<FormattedLine> {
         val textList = ArrayList<FormattedLine>()
+
+        // Potentially show pixel unit on top (other civilopediaText is handled by the caller)
+        textList.addPixelUnitImage(baseUnit)
 
         // Don't call baseUnit.getType() here - coming from the main menu baseUnit isn't fully initialized
         val unitTypeLink = ruleset.unitTypes[baseUnit.unitType]?.makeLink() ?: ""
@@ -105,21 +110,20 @@ object BaseUnitDescriptions {
             textList += FormattedLine()
             for (unique in baseUnit.uniqueObjects.sortedBy { it.text }) {
                 if (unique.hasFlag(UniqueFlag.HiddenToUsers)) continue
-                if (unique.type == UniqueType.ConsumesResources) continue  // already shown from getResourceRequirements
+                if (unique.type == UniqueType.ConsumesResources) {
+                    textList += FormattedLine(unique.text, link = "Resources/${unique.params[1]}", color = "#F42")
+                    continue
+                }
                 textList += FormattedLine(unique)
             }
         }
 
-        val resourceRequirements = baseUnit.getResourceRequirementsPerTurn()
-        if (resourceRequirements.isNotEmpty()) {
+        if (baseUnit.requiredResource != null) {
             textList += FormattedLine()
-            for ((resourceName, amount) in resourceRequirements) {
-                val resource = ruleset.tileResources[resourceName] ?: continue
-                textList += FormattedLine(
-                    resourceName.getConsumesAmountString(amount, resource.isStockpiled()),
-                    link = "Resource/$resource", color = "#F42"
-                )
-            }
+            val resource = ruleset.tileResources[baseUnit.requiredResource]
+            textList += FormattedLine(
+                baseUnit.requiredResource!!.getConsumesAmountString(1, resource!!.isStockpiled()),
+                link="Resources/${baseUnit.requiredResource}", color="#F42")
         }
 
         if (baseUnit.uniqueTo != null) {
@@ -199,6 +203,22 @@ object BaseUnitDescriptions {
         return textList
     }
 
+    /** Show Pixel Unit Art for the unit.
+     *  * _Unless_ the mod already uses [extraImage][FormattedLine.extraImage] in the unit's [civilopediaText][IRulesetObject.civilopediaText]
+     *  * _Unless_ user has selected no [unitSet][GameSettings.unitSet]
+     *  * For units with era or style variants, only the default is shown (todo: extend FormattedLine with slideshow capability)
+     */
+    // Note: By popular request (this is a simple variant of one of the ideas in #10175)
+    private fun ArrayList<FormattedLine>.addPixelUnitImage(baseUnit: BaseUnit) {
+        if (baseUnit.civilopediaText.any { it.extraImage.isNotEmpty() }) return
+        val settings = GUI.getSettings()
+        if (settings.unitSet.isNullOrEmpty() || settings.pediaUnitArtSize < 1f) return
+        val imageName = "TileSets/${settings.unitSet}/Units/${baseUnit.name}"
+        if (!ImageGetter.imageExists(imageName)) return  // Some units don't have Unit art (e.g. nukes)
+        add(FormattedLine(extraImage = imageName, imageSize = settings.pediaUnitArtSize, centered = true))
+        add(FormattedLine(separator = true, color = "#7f7f7f"))
+    }
+
     @Suppress("RemoveExplicitTypeArguments")  // for faster IDE - inferring sequence types can be slow
     fun UnitType.getUnitTypeCivilopediaTextLines(ruleset: Ruleset): List<FormattedLine> {
         fun getDomainLines() = sequence<FormattedLine> {
@@ -272,8 +292,8 @@ object BaseUnitDescriptions {
         if (betterUnit.movement != originalUnit.movement)
             yield("${Fonts.movement} {[${betterUnit.movement}] vs [${originalUnit.movement}]}" to null)
 
-        for (resource in originalUnit.getResourceRequirementsPerTurn().keys)
-            if (!betterUnit.getResourceRequirementsPerTurn().containsKey(resource)) {
+        for (resource in originalUnit.getResourceRequirementsPerTurn(StateForConditionals.IgnoreConditionals).keys)
+            if (!betterUnit.getResourceRequirementsPerTurn(StateForConditionals.IgnoreConditionals).containsKey(resource)) {
                 yield("[$resource] not required" to "Resource/$resource")
             }
         // We return the unique text directly, so Nation.getUniqueUnitsText will not use the

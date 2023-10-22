@@ -2,7 +2,7 @@ package com.unciv.ui.screens.newgamescreen
 
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.logic.map.MapGeneratedMainType
-import com.unciv.ui.components.TranslatedSelectBox
+import com.unciv.ui.components.widgets.TranslatedSelectBox
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.input.onChange
 import com.unciv.ui.screens.basescreen.BaseScreen
@@ -36,7 +36,6 @@ class MapOptionsTable(private val newGameScreen: NewGameScreen, isReset: Boolean
             mapTypeSpecificTable.clear()
             when (mapTypeSelectBox.selected.value) {
                 MapGeneratedMainType.custom -> {
-                    savedMapOptionsTable.fillMapFileSelectBox()
                     mapParameters.type = MapGeneratedMainType.custom
                     mapTypeSpecificTable.add(savedMapOptionsTable)
                     newGameScreen.unlockTables()

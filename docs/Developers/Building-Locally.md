@@ -18,6 +18,7 @@ By the end of this guide, you will have Unciv running locally from code, so you 
         - Click "SDK Platforms"
         - Click "Android 13 (Tiramisu)"
         ![image](/Unciv/assets/Android_SDK_Platforms.png)
+          (Optionally, you can save some space by selecting 'Show Package Details' and choosing the Platform SDK only, without Sources or system Images)
         - Click "SDK Tools"
         - Select "Show Package Details" in the bottom right
         - Choose version 33.0.2 under "Android SDK Build-Tools"
@@ -28,7 +29,7 @@ By the end of this guide, you will have Unciv running locally from code, so you 
     -   Click "+" to add a new configuration
     -   Choose "Application"
     -   Give the configuration a name, we recommend "Desktop"
-    -   Set the module classpath (the box to the right of the Java selection) to `Unciv.desktop.main` (`Unciv.desktop` for Bumblebee or below), main class to `com.unciv.app.desktop.DesktopLauncher` and `<repo_folder>\android\assets\` as the Working directory, OK to close the window
+    -   Set the module classpath (the box to the right of the Java selection) to `Unciv.desktop.main` (`Unciv.desktop` for Bumblebee or below), main class to `com.unciv.app.desktop.DesktopLauncher` and `$ProjectFileDir$/android/assets` as the Working directory, OK to close the window
         - It _may_ be useful to set some VM options - activate the field in the run config editor with Alt-V or via the Modify Options menu, then add `-Xmx4096m -Xms256m -XX:MaxMetaspaceSize=256m` to allow a debugged game a little more memory. Or, use the `-DnoLog=` or `-DonlyLog=` options to control console logging. See the [Log.kt](https://github.com/yairm210/Unciv/blob/master/core/src/com/unciv/utils/Log.kt) comments for details.
         - If you get a `../../docs/uniques.md (No such file or directory)` error that means you forgot to set the working directory!
         ![image](/Unciv/assets/Desktop_Build.png)

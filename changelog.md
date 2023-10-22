@@ -1,3 +1,74 @@
+## 4.8.13
+
+By SeventhM:
+- Fix auto assign production not working after a building is built
+- Fix consuming resources not being affected by conditionals
+
+By SomeTroglodyte:
+- Allow games with zero researched techs to be 'before' the Ancient Era
+- Minor Fix: VictoryScreenIllustrations
+- Fix font "symbols" not showing
+
+## 4.8.12
+
+Automated units can fortify/set up/other actions
+
+AI now uses free tech points  - By tuvus
+
+By SomeTroglodyte:
+- Align ruleset icons in text to font metrics
+
+## 4.8.11
+
+Religion fixes:
+- Great Prophets spawn again
+- Civilian units can get promotions upon being built (Great Mosque of Djenne)
+- Missionaries consumed upon expending all usages
+
+By SomeTroglodyte:
+- Fade in/out for City Ambiance Sounds
+- Fix Tutorial loader for mods on Android
+- Fix ai tile purchase
+
+By tuvus:
+- Defensive pact button shows on both sides when a DoF is about to end
+- Defensive pact functionality is now canceled with otherCiv before calling in defensive pact allies
+
+## 4.8.10
+
+Performance enhancement for first turn AI settling
+
+Modding:
+- Added UnitAction unique type for modder clarity and ruleset validation
+- Converted "May enhance a religion" , "May found a religion" uniques to UnitAction
+
+Golden age points decrease with negative happiness  - By Framonti
+
+City-States don't trigger defensive pacts  - By tuvus
+
+By SomeTroglodyte:
+- City overview top bar fix
+- Fixed crashes in Android for unit art in civilopedia
+
+Fixed free building errors - By SeventhM
+
+## 4.8.9
+
+New online multiplayer no longer stuck when first player is human spectator
+
+Modding:
+- Replaced old religion style actions! Paves the way for unit action generalization
+- Mod checker displays *all* unknown uniques
+
+By SomeTroglodyte:
+- Pedia pixel units
+- Fix top bar layout
+- City overview restore fixed header
+
+Apply conditionals for free buildings to the destination city instead of the originating city  - By SeventhM
+
+Test city conquest functions  - By Framonti
+
 ## 4.8.8
 
 performance:

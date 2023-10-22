@@ -15,12 +15,12 @@ import com.unciv.models.UncivSound
 import com.unciv.models.ruleset.tech.Technology
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.tr
-import com.unciv.ui.components.Fonts
 import com.unciv.ui.components.extensions.colorFromRGB
 import com.unciv.ui.components.extensions.darken
 import com.unciv.ui.components.extensions.disable
 import com.unciv.ui.components.extensions.surroundWithCircle
 import com.unciv.ui.components.extensions.toLabel
+import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.input.onDoubleClick
 import com.unciv.ui.images.ImageGetter
@@ -182,7 +182,7 @@ class TechPickerScreen(
                 if (rowIndex == 0)
                     table.padTop(7f)
 
-                if (erasNamesToColumns[civTech.era.name]!!.contains(columnIndex))
+                if (erasNamesToColumns[civTech.era.name]?.contains(columnIndex) == true)
                     table.background = skinStrings.getUiBackground("TechPickerScreen/Background", tintColor = queuedTechColor.darken(0.5f))
 
                 if (tech == null) {

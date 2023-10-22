@@ -4,6 +4,7 @@ import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.models.Counter
 import com.unciv.models.UnitAction
 import com.unciv.models.UpgradeUnitAction
+import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.tr
 
@@ -43,9 +44,9 @@ object UnitActionsUpgrade {
         // Check _new_ resource requirements (display only - yes even for free or special upgrades)
         // Using Counter to aggregate is a bit exaggerated, but - respect the mad modder.
         val resourceRequirementsDelta = Counter<String>()
-        for ((resource, amount) in unit.baseUnit().getResourceRequirementsPerTurn())
+        for ((resource, amount) in unit.getResourceRequirementsPerTurn())
             resourceRequirementsDelta.add(resource, -amount)
-        for ((resource, amount) in upgradedUnit.getResourceRequirementsPerTurn())
+        for ((resource, amount) in upgradedUnit.getResourceRequirementsPerTurn(StateForConditionals(unit.civ, unit = unit)))
             resourceRequirementsDelta.add(resource, amount)
         for ((resource, _) in resourceRequirementsDelta.filter { it.value < 0 })  // filter copies, so no CCM
             resourceRequirementsDelta[resource] = 0

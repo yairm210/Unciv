@@ -5,10 +5,10 @@ import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.LocationAction
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
+import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
 import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.UniqueType
-import com.unciv.ui.screens.worldscreen.unit.actions.UnitActions
 
 
 enum class ImprovementBuildingProblem {
@@ -203,7 +203,7 @@ class TileInfoImprovementFunctions(val tile: Tile) {
         if (civToActivateBroaderEffects != null && improvementObject != null
             && improvementObject.hasUnique(UniqueType.TakesOverAdjacentTiles)
         )
-            UnitActions.takeOverTilesAround(civToActivateBroaderEffects, tile)
+            takeOverTilesAround(civToActivateBroaderEffects, tile)
 
         val city = tile.owningCity
         if (city != null) {
@@ -259,6 +259,51 @@ class TileInfoImprovementFunctions(val tile: Tile) {
                 locations, NotificationCategory.Production, NotificationIcon.Construction
             )
         }
+    }
+
+    private fun takeOverTilesAround(civ: Civilization, tile: Tile) {
+        // This method should only be called for a citadel - therefore one of the neighbour tile
+        // must belong to unit's civ, so minByOrNull in the nearestCity formula should be never `null`.
+        // That is, unless a mod does not specify the proper unique - then fallbackNearestCity will take over.
+
+        fun priority(tile: Tile): Int { // helper calculates priority (lower is better): distance plus razing malus
+            val city = tile.getCity()!!       // !! assertion is guaranteed by the outer filter selector.
+            return city.getCenterTile().aerialDistanceTo(tile) +
+                (if (city.isBeingRazed) 5 else 0)
+        }
+        fun fallbackNearestCity(civ: Civilization, tile: Tile) =
+            civ.cities.minByOrNull {
+                it.getCenterTile().aerialDistanceTo(tile) +
+                    (if (it.isBeingRazed) 5 else 0)
+            }!!
+
+        // In the rare case more than one city owns tiles neighboring the citadel
+        // this will prioritize the nearest one not being razed
+        val nearestCity = tile.neighbors
+            .filter { it.getOwner() == civ }
+            .minByOrNull { priority(it) }?.getCity()
+            ?: fallbackNearestCity(civ, tile)
+
+        // capture all tiles which do not belong to unit's civ and are not enemy cities
+        // we use getTilesInDistance here, not neighbours to include the current tile as well
+        val tilesToTakeOver = tile.getTilesInDistance(1)
+            .filter { !it.isCityCenter() && it.getOwner() != civ }
+
+        val civsToNotify = mutableSetOf<Civilization>()
+        for (tileToTakeOver in tilesToTakeOver) {
+            val otherCiv = tileToTakeOver.getOwner()
+            if (otherCiv != null) {
+                // decrease relations for -10 pt/tile
+                if (!otherCiv.knows(civ)) otherCiv.diplomacyFunctions.makeCivilizationsMeet(civ)
+                otherCiv.getDiplomacyManager(civ).addModifier(DiplomaticModifiers.StealingTerritory, -10f)
+                civsToNotify.add(otherCiv)
+            }
+            nearestCity.expansion.takeOwnership(tileToTakeOver)
+        }
+
+        for (otherCiv in civsToNotify)
+            otherCiv.addNotification("Your territory has been stolen by [$civ]!",
+                tile.position, NotificationCategory.Cities, civ.civName, NotificationIcon.War)
     }
 
 

@@ -7,7 +7,7 @@ import com.badlogic.gdx.scenes.scene2d.InputListener
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.badlogic.gdx.scenes.scene2d.actions.RepeatAction
 import com.badlogic.gdx.scenes.scene2d.ui.TextField
-import com.unciv.ui.components.ZoomableScrollPane
+import com.unciv.ui.components.widgets.ZoomableScrollPane
 
 class KeyboardPanningListener(
     private val mapHolder: ZoomableScrollPane,

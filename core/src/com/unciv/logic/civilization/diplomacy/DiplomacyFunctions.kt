@@ -6,7 +6,7 @@ import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.civilization.PopupAlert
-import com.unciv.logic.map.mapunit.UnitMovement
+import com.unciv.logic.map.mapunit.movement.UnitMovement
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
@@ -86,7 +86,7 @@ class DiplomacyFunctions(val civInfo: Civilization){
             }
         }
     }
-    
+
     fun canSignDeclarationOfFriendshipWith(otherCiv: Civilization): Boolean {
         return otherCiv.isMajorCiv() && !otherCiv.isAtWarWith(civInfo)
             && !civInfo.getDiplomacyManager(otherCiv).hasFlag(DiplomacyFlags.Denunciation)
@@ -131,7 +131,8 @@ class DiplomacyFunctions(val civInfo: Civilization){
     fun canSignDefensivePactWith(otherCiv: Civilization): Boolean {
         val diplomacyManager = civInfo.getDiplomacyManager(otherCiv)
         return canSignDefensivePact() && otherCiv.diplomacyFunctions.canSignDefensivePact()
-            && diplomacyManager.hasFlag(DiplomacyFlags.DeclarationOfFriendship)
+            && (diplomacyManager.hasFlag(DiplomacyFlags.DeclarationOfFriendship) 
+            || diplomacyManager.otherCivDiplomacy().hasFlag(DiplomacyFlags.DeclarationOfFriendship))
             && !diplomacyManager.hasFlag(DiplomacyFlags.DefensivePact)
             && !diplomacyManager.otherCivDiplomacy().hasFlag(DiplomacyFlags.DefensivePact)
             && diplomacyManager.diplomaticStatus != DiplomaticStatus.DefensivePact

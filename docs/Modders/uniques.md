@@ -5,6 +5,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
     Uniques that have immediate, one-time effects. These can be added to techs to trigger when researched, to policies to trigger when adopted, to eras to trigger when reached, to buildings to trigger when built. Alternatively, you can add a TriggerCondition to them to make them into Global uniques that activate upon a specific event.They can also be added to units to grant them the ability to trigger this effect as an action, which can be modified with UnitActionModifier and UnitTriggerCondition conditionals.
 
+??? example  "Gain a free [buildingName] [cityFilter]"
+	Example: "Gain a free [Library] [in all cities]"
+
+	Applicable to: Triggerable, Global
+
 ??? example  "Free [unit] appears"
 	Example: "Free [Musketman] appears"
 
@@ -165,7 +170,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "[stats]"
 	Example: "[+1 Gold, +2 Production]"
 
-	Applicable to: Global, Terrain, Improvement
+	Applicable to: Global, Improvement
 
 ??? example  "[stats] [cityFilter]"
 	Example: "[+1 Gold, +2 Production] [in all cities]"
@@ -465,11 +470,6 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Global, Unit
 
-??? example  "Gain a free [buildingName] [cityFilter]"
-	Example: "Gain a free [Library] [in all cities]"
-
-	Applicable to: Global
-
 ??? example  "[relativeAmount]% maintenance cost for buildings [cityFilter]"
 	Example: "[+20]% maintenance cost for buildings [in all cities]"
 
@@ -700,11 +700,6 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Example: "[+20]% Faith cost of generating Great Prophet equivalents"
 
 	Applicable to: Global
-
-??? example  "[baseUnitFilter] units built [cityFilter] can [action] [amount] extra times"
-	Example: "[Melee] units built [in all cities] can [Spread Religion] [3] extra times"
-
-	Applicable to: Global, FollowerBelief
 
 ??? example  "Triggers victory"
 	Applicable to: Global
@@ -1089,25 +1084,42 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Building, Unit
 
 ??? example  "Hidden when religion is disabled"
-	Applicable to: Building, Unit, Ruins
+	Applicable to: Building, Unit, Ruins, Tutorial
 
 ??? example  "Hidden when [victoryType] Victory is disabled"
 	Example: "Hidden when [Domination] Victory is disabled"
 
 	Applicable to: Building, Unit
 
-## Unit uniques
+## UnitAction uniques
 !!! note ""
 
-    Uniques that can be added to units, unit types, or promotions
+    Uniques that affect a unit's actions, and can be modified by UnitActionModifiers
 
 ??? example  "Founds a new city"
-	Applicable to: Unit
+	Applicable to: UnitAction
 
 ??? example  "Can instantly construct a [improvementFilter] improvement"
 	Example: "Can instantly construct a [All Road] improvement"
 
-	Applicable to: Unit
+	Applicable to: UnitAction
+
+??? example  "Can Spread Religion"
+	Applicable to: UnitAction
+
+??? example  "Can remove other religions from cities"
+	Applicable to: UnitAction
+
+??? example  "May found a religion"
+	Applicable to: UnitAction
+
+??? example  "May enhance a religion"
+	Applicable to: UnitAction
+
+## Unit uniques
+!!! note ""
+
+    Uniques that can be added to units, unit types, or promotions
 
 ??? example  "Can build [improvementFilter/terrainFilter] improvements on tiles"
 	Example: "Can build [All Road] improvements on tiles"
@@ -1115,12 +1127,6 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Unit
 
 ??? example  "May create improvements on water resources"
-	Applicable to: Unit
-
-??? example  "May found a religion"
-	Applicable to: Unit
-
-??? example  "May enhance a religion"
 	Applicable to: Unit
 
 ??? example  "Can be added to [comment] in the Capital"
@@ -1140,11 +1146,6 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Unit
 
 ??? example  "Can perform Air Sweep"
-	Applicable to: Unit
-
-??? example  "Can [action] [amount] times"
-	Example: "Can [Spread Religion] [3] times"
-
 	Applicable to: Unit
 
 ??? example  "Can speed up construction of a building"
@@ -2103,7 +2104,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ## UnitActionModifier uniques
 !!! note ""
 
-    Modifiers that can be added to unit action uniques as conditionals
+    Modifiers that can be added to UnitAction uniques as conditionals
 
 ??? example  "&lt;by consuming this unit&gt;"
 	Applicable to: UnitActionModifier
