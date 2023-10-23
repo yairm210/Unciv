@@ -1,3 +1,14 @@
+## 4.8.14
+
+Allow "[stats]" unique on terrains  - By SeventhM
+
+Added five new uniques  - By PLynx01
+
+By SomeTroglodyte:
+- Fix android pause 
+- PolicyPickerScreen description links to Civilopedia 
+- Remove UniqueTarget.Terrain from UniqueType.Stats as there is no implementation 
+
 ## 4.8.13
 
 By SeventhM:
