@@ -10,6 +10,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Triggerable, Global
 
+??? example  "Remove [buildingFilter] [cityFilter]"
+	Example: "Remove [Culture] [in all cities]"
+
+	Applicable to: Triggerable, Global
+
 ??? example  "Free [unit] appears"
 	Example: "Free [Musketman] appears"
 
@@ -1880,6 +1885,16 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 ??? example  "&lt;when below [amount] [resource]&gt;"
 	Example: "&lt;when below [3] [Iron]&gt;"
+
+	Applicable to: Conditional
+
+??? example  "&lt;when above [amount] [stat] (modified by game speed)&gt;"
+	Example: "&lt;when above [3] [Culture] (modified by game speed)&gt;"
+
+	Applicable to: Conditional
+
+??? example  "&lt;when below [amount] [stat] (modified by game speed)&gt;"
+	Example: "&lt;when below [3] [Culture] (modified by game speed)&gt;"
 
 	Applicable to: Conditional
 

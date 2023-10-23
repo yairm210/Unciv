@@ -580,6 +580,14 @@ class CityConstructions : IsPartOfGameInfoSerialization {
         updateUniques()
     }
 
+    fun removeBuildings(buildings: Set<Building>) {
+        val buildingsToRemove = buildings.map { it.name }.toSet()
+        builtBuildings.removeIf {
+            it in buildingsToRemove
+        }
+        setTransients()
+    }
+
     fun updateUniques(onLoadGame:Boolean = false) {
         builtBuildingUniqueMap.clear()
         for (building in getBuiltBuildings())
