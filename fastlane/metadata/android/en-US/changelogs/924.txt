@@ -1,10 +1,10 @@
-
-
 Allow "[stats]" unique on terrains  - By SeventhM
 
-Added five new uniques  - By PLynx01
-
 By SomeTroglodyte:
-- Fix android pause 
-- PolicyPickerScreen description links to Civilopedia 
-- Remove UniqueTarget.Terrain from UniqueType.Stats as there is no implementation 
+- PolicyPickerScreen description links to Civilopedia
+- Fix music errors on android pause-via-homescreen-button
+- Remove UniqueTarget.Terrain from UniqueType.Stats as there is no implementation
+
+By PLynx01:
+- Added new trigger unique "Remove [buildingFilter] [cityFilter]"
+- "when above [amount] [stat]" conditional, with gamespeed-modified version
