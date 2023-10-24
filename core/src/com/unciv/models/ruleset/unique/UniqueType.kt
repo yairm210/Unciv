@@ -777,6 +777,7 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
         UniqueTarget.Unit, UniqueTarget.UnitType, UniqueTarget.Improvement, UniqueTarget.Tech,
         UniqueTarget.Terrain, UniqueTarget.Resource, UniqueTarget.Policy, UniqueTarget.Promotion,
         UniqueTarget.Nation, UniqueTarget.Ruins, flags = UniqueFlag.setOfHiddenToUsers),
+    ConditionalHideUniqueFromUsers("hidden from users", UniqueTarget.Conditional),
 
     // Declarative Mod compatibility (so far rudimentary):
     ModIncompatibleWith("Mod is incompatible with [modFilter]", UniqueTarget.ModOptions),

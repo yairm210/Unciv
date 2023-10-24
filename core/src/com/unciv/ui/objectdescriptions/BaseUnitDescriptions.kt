@@ -9,7 +9,6 @@ import com.unciv.models.ruleset.IRulesetObject
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.Unique
-import com.unciv.models.ruleset.unique.UniqueFlag
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.ruleset.unit.UnitMovementType
@@ -25,6 +24,7 @@ import com.unciv.ui.screens.civilopediascreen.MarkupRenderer
 
 object BaseUnitDescriptions {
 
+    /** Generate short description as comma-separated string for Technology description "Units enabled" and GreatPersonPickerScreen */
     fun getShortDescription(baseUnit: BaseUnit): String {
         val infoList = mutableListOf<String>()
         if (baseUnit.strength != 0) infoList += "${baseUnit.strength}${Fonts.strength}"
@@ -33,8 +33,7 @@ object BaseUnitDescriptions {
         for (promotion in baseUnit.promotions)
             infoList += promotion.tr()
         if (baseUnit.replacementTextForUniques != "") infoList += baseUnit.replacementTextForUniques
-        else for (unique in baseUnit.uniqueObjects) if (!unique.hasFlag(UniqueFlag.HiddenToUsers))
-            infoList += unique.text.tr()
+        else baseUnit.uniquesToDescription(infoList)
         return infoList.joinToString()
     }
 
@@ -59,11 +58,7 @@ object BaseUnitDescriptions {
         lines += "$strengthLine${baseUnit.movement}${Fonts.movement}"
 
         if (baseUnit.replacementTextForUniques != "") lines += baseUnit.replacementTextForUniques
-        else for (unique in baseUnit.uniqueObjects.filterNot {
-            it.type == UniqueType.Unbuildable
-                    || it.type?.flags?.contains(UniqueFlag.HiddenToUsers) == true
-        })
-            lines += unique.text.tr()
+        else baseUnit.uniquesToDescription(lines) { isOfType(UniqueType.Unbuildable) }
 
         if (baseUnit.promotions.isNotEmpty()) {
             val prefix = "Free promotion${if (baseUnit.promotions.size == 1) "" else "s"}:".tr() + " "
@@ -106,16 +101,8 @@ object BaseUnitDescriptions {
         if (baseUnit.replacementTextForUniques.isNotEmpty()) {
             textList += FormattedLine()
             textList += FormattedLine(baseUnit.replacementTextForUniques)
-        } else if (baseUnit.uniques.isNotEmpty()) {
-            textList += FormattedLine()
-            for (unique in baseUnit.uniqueObjects.sortedBy { it.text }) {
-                if (unique.hasFlag(UniqueFlag.HiddenToUsers)) continue
-                if (unique.type == UniqueType.ConsumesResources) {
-                    textList += FormattedLine(unique.text, link = "Resources/${unique.params[1]}", color = "#F42")
-                    continue
-                }
-                textList += FormattedLine(unique)
-            }
+        } else {
+            baseUnit.uniquesToCivilopediaTextLines(textList, sorted = true, colorConsumesResources = true)
         }
 
         if (baseUnit.requiredResource != null) {
@@ -252,13 +239,8 @@ object BaseUnitDescriptions {
                 for (promotion in relevantPromotions)
                     yield(FormattedLine(promotion.name, promotion.makeLink()))
             }
-            if (uniqueObjects.isNotEmpty()) {
-                yield(FormattedLine(separator = true))
-                for (unique in uniqueObjects) {
-                    if (unique.hasFlag(UniqueFlag.HiddenToUsers)) continue
-                    yield(FormattedLine(unique))
-                }
-            }
+
+            yieldAll(uniquesToCivilopediaTextLines(leadingSeparator = true))
         }
         return (if (name.startsWith("Domain: ")) getDomainLines() else getUnitTypeLines()).toList()
     }
@@ -303,12 +285,12 @@ object BaseUnitDescriptions {
         if (betterUnit.replacementTextForUniques.isNotEmpty()) {
             yield(betterUnit.replacementTextForUniques to null)
         } else {
-            val newAbilityPredicate: (Unique)->Boolean = { it.text in originalUnit.uniques || it.hasFlag(UniqueFlag.HiddenToUsers) }
+            val newAbilityPredicate: (Unique)->Boolean = { it.text in originalUnit.uniques || it.isHiddenToUsers() }
             for (unique in betterUnit.uniqueObjects.filterNot(newAbilityPredicate))
                 yield(unique.text to null)
         }
 
-        val lostAbilityPredicate: (Unique)->Boolean = { it.text in betterUnit.uniques || it.hasFlag(UniqueFlag.HiddenToUsers) }
+        val lostAbilityPredicate: (Unique)->Boolean = { it.text in betterUnit.uniques || it.isHiddenToUsers() }
         for (unique in originalUnit.uniqueObjects.filterNot(lostAbilityPredicate)) {
             yield("Lost ability (vs [${originalUnit.name}]): [${unique.text}]" to null)
         }

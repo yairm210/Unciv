@@ -14,6 +14,8 @@ import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.extensions.toPercent
+import com.unciv.ui.objectdescriptions.uniquesToCivilopediaTextLines
+import com.unciv.ui.objectdescriptions.uniquesToDescription
 import com.unciv.ui.screens.civilopediascreen.CivilopediaScreen.Companion.showReligionInCivilopedia
 import com.unciv.ui.screens.civilopediascreen.FormattedLine
 import kotlin.math.roundToInt
@@ -58,8 +60,7 @@ class TileImprovement : RulesetStatsObject() {
         }
         if (techRequired != null) lines += "Required tech: [$techRequired]".tr()
 
-        for (unique in uniques)
-            lines += unique.tr()
+        uniquesToDescription(lines)
 
         return lines.joinToString("\n")
     }
@@ -145,11 +146,7 @@ class TileImprovement : RulesetStatsObject() {
             textList += FormattedLine("Required tech: [$techRequired]", link="Technology/$techRequired")
         }
 
-        if (uniques.isNotEmpty()) {
-            textList += FormattedLine()
-            for (unique in uniqueObjects)
-                textList += FormattedLine(unique)
-        }
+        uniquesToCivilopediaTextLines(textList)
 
         // Be clearer when one needs to chop down a Forest first... A "Can be built on Plains" is clear enough,
         // but a "Can be built on Land" is not - how is the user to know Forest is _not_ Land?
