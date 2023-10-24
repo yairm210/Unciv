@@ -1,6 +1,5 @@
 package com.unciv.ui.screens.pickerscreens
 
-import com.unciv.GUI
 import com.unciv.UncivGame
 import com.unciv.logic.civilization.Civilization
 import com.unciv.models.UncivSound
@@ -15,7 +14,6 @@ class GreatPersonPickerScreen(val civInfo:Civilization) : PickerScreen() {
     private var theChosenOne: BaseUnit? = null
 
     init {
-        GUI.getSettings().stopAutoPlay()
         closeButton.isVisible = false
         rightSideButton.setText("Choose a free great person".tr())
 
