@@ -32,9 +32,8 @@ class AutoPlayMenu(
 
     override fun createContentTable(): Table? {
         val table = super.createContentTable()!!
-        if (!worldScreen.gameInfo.gameParameters.isOnlineMultiplayer)
-            table.add(getButton("Start AutoPlay", KeyboardBinding.RaisePriority, ::autoPlay)).row()
         table.add(getButton("AutoPlay End Turn", KeyboardBinding.RaisePriority, ::autoPlayEndTurn)).row()
+        table.add(getButton("AutoPlay", KeyboardBinding.RaisePriority, ::autoPlay)).row()
         table.add(getButton("AutoPlay Military Once", KeyboardBinding.RaisePriority, ::autoPlayMilitary)).row()
         table.add(getButton("AutoPlay Civilians Once", KeyboardBinding.RaisePriority, ::autoPlayCivilian)).row()
         table.add(getButton("AutoPlay Economy Once", KeyboardBinding.RaisePriority, ::autoPlayEconomy)).row()
