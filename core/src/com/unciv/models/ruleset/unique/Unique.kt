@@ -340,11 +340,14 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
             UniqueType.ConditionalInRegionOfType -> state.region?.type == param0()
             UniqueType.ConditionalInRegionExceptOfType -> state.region?.type != param0()
 
-            UniqueType.ConditionalFirstCivToResearch -> sourceObjectType == UniqueTarget.Tech
-                    && state.civInfo != null
-                    && state.civInfo.gameInfo.civilizations.none {
-                it != state.civInfo && it.isMajorCiv() && (it.tech.isResearched(sourceObjectName!!) || it.policies.isAdopted(sourceObjectName))
-            }
+            UniqueType.ConditionalFirstCivToResearch ->
+                state.civInfo != null && sourceObjectName != null
+                && state.civInfo.gameInfo.civilizations.none {
+                    it != state.civInfo && it.isMajorCiv() && (
+                        sourceObjectType == UniqueTarget.Tech && it.tech.isResearched(sourceObjectName)
+                        || sourceObjectType == UniqueTarget.Policy && it.policies.isAdopted(sourceObjectName)
+                    )
+                }
 
             else -> false
         }
