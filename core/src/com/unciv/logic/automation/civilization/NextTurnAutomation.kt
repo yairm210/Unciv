@@ -1024,6 +1024,11 @@ object NextTurnAutomation {
                 modifierMap["About to win"] = 15
             wonderCount += city.cityConstructions.getBuiltBuildings().count { it.isWonder }
         }
+        
+        // The more wonders they have, the more beneficial it is to conquer them
+        // Civs need an army to protect thier wonders which give the most score
+        if (wonderCount > 0)
+            modifierMap["Owned Wonders"] = wonderCount
 
         // If they are at war with our allies, then we should join in
         var alliedWarMotivation = 0
@@ -1036,10 +1041,6 @@ object NextTurnAutomation {
         }
         modifierMap["War with allies"]
         
-        // The more wonders they have, the more beneficial it is to conquer them
-        // Civs need an army to protect thier wonders which give the most score
-        if (wonderCount > 0)
-            modifierMap["Owned Wonders"] = wonderCount
 
         var motivationSoFar = modifierMap.values.sum()
 
