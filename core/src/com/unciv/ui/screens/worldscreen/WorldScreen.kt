@@ -8,6 +8,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
+import com.unciv.GUI
 import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
 import com.unciv.logic.UncivShowableException
@@ -401,12 +402,12 @@ class WorldScreen(
         fogOfWarButton.setPosition(10f, topBar.y - fogOfWarButton.height - 10f)
 
         // If the game has ended, lets stop AutoPlay
-        if (game.settings.autoPlay.isAutoPlaying()
+        if (GUI.getSettings().autoPlay.isAutoPlaying()
             && !gameInfo.oneMoreTurnMode && (viewingCiv.isDefeated() || gameInfo.checkForVictory())) {
-            game.settings.autoPlay.stopAutoPlay()
+            GUI.getSettings().autoPlay.stopAutoPlay()
         }
         
-        if (!hasOpenPopups() && !game.settings.autoPlay.isAutoPlaying() && isPlayersTurn) {
+        if (!hasOpenPopups() && !GUI.getSettings().autoPlay.isAutoPlaying() && isPlayersTurn) {
             when {
                 viewingCiv.shouldShowDiplomaticVotingResults() ->
                     UncivGame.Current.pushScreen(DiplomaticVoteResultScreen(gameInfo.diplomaticVictoryVotesCast, viewingCiv))
@@ -703,15 +704,8 @@ class WorldScreen(
     }
 
     private fun updateAutoPlayStatusButton() {
-        if (statusButtons.autoPlayStatusButton == null) {
-            if (game.settings.autoPlay.showAutoPlayButton)
-                statusButtons.autoPlayStatusButton = AutoPlayStatusButton(this, nextTurnButton)
-        } else {
-            if (!game.settings.autoPlay.showAutoPlayButton) {
-                statusButtons.autoPlayStatusButton = null
-                game.settings.autoPlay.stopAutoPlay()
-            }
-        }
+        if (statusButtons.autoPlayStatusButton == null)
+            statusButtons.autoPlayStatusButton = AutoPlayStatusButton(this, nextTurnButton)
     }
 
     private fun updateMultiplayerStatusButton() {

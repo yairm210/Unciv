@@ -52,26 +52,18 @@ fun autoPlayTab(
             settings.autoPlay.autoPlayReligion, false
         ) { settings.autoPlay.autoPlayReligion = it }
     }
-
+    
+    addAutoPlayMaxTurnsSlider(this, settings, optionsPopup.selectBoxMinWidth)
     optionsPopup.addCheckbox(
         this,
-        "Show AutoPlay button",
-        settings.autoPlay.showAutoPlayButton, true
-    ) { settings.autoPlay.showAutoPlayButton = it
-        settings.autoPlay.stopAutoPlay() }
-
-
-    addAutoPlayMaxTurnsSlider(this, settings, optionsPopup.selectBoxMinWidth)
-//    optionsPopup.addCheckbox(
-//        this,
-//        "Full AutoPlay AI",
-//        settings.autoPlay.fullAutoPlayAI, false
-//    ) { settings.autoPlay.fullAutoPlayAI = it
-//        if (!it) addAutoPlaySections() 
-//        else optionsPopup.tabs.replacePage(optionsPopup.tabs.activePage, autoPlayTab(optionsPopup))
-//    }
-//    if (!settings.autoPlay.fullAutoPlayAI)
-//        addAutoPlaySections()
+        "Full AutoPlay AI",
+        settings.autoPlay.fullAutoPlayAI, false
+    ) { settings.autoPlay.fullAutoPlayAI = it
+        if (!it) addAutoPlaySections() 
+        else optionsPopup.tabs.replacePage(optionsPopup.tabs.activePage, autoPlayTab(optionsPopup))
+    }
+    if (!settings.autoPlay.fullAutoPlayAI)
+        addAutoPlaySections()
 }
 
 private fun addAutoPlayMaxTurnsSlider(
