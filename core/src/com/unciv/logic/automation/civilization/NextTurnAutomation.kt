@@ -933,15 +933,15 @@ object NextTurnAutomation {
         for(thirdCiv in otherCiv.diplomacy.values.filter { it.hasFlag(DiplomacyFlags.DefensivePact) && it.otherCiv() != civInfo }) {
             val thirdCivCombatStrengthRatio = otherCiv.getStatForRanking(RankingType.Force).toFloat() + baseForce / ourCombatStrength
             theirAlliesValue += when {
-                thirdCivCombatStrengthRatio > 5 -> 15
-                thirdCivCombatStrengthRatio > 2.5 -> 10
-                thirdCivCombatStrengthRatio > 2 -> 8
-                thirdCivCombatStrengthRatio > 1.5 -> 5
-                thirdCivCombatStrengthRatio > .8 -> 2
+                thirdCivCombatStrengthRatio > 5 -> -15
+                thirdCivCombatStrengthRatio > 2.5 -> -10
+                thirdCivCombatStrengthRatio > 2 -> -8
+                thirdCivCombatStrengthRatio > 1.5 -> -5
+                thirdCivCombatStrengthRatio > .8 -> -2
                 else -> 0
             }
         }
-        modifierMap["Their allies"] = -theirAlliesValue
+        modifierMap["Their allies"] = theirAlliesValue
         
         // Civs with more score are more threatening to our victory
         // Bias towards attacking civs with a high score and low military
