@@ -55,6 +55,56 @@ fun gameplayTab(
     optionsPopup.addCheckbox(this, "Ask for confirmation when pressing next turn", settings.confirmNextTurn) { settings.confirmNextTurn = it }
 
     addNotificationLogMaxTurnsSlider(this, settings, optionsPopup.selectBoxMinWidth)
+
+    fun addAutoPlaySections() {
+        optionsPopup.addCheckbox(
+            this,
+            "AutoPlay Military",
+            settings.autoPlayMilitary, false
+        ) { settings.autoPlayMilitary = it }
+        optionsPopup.addCheckbox(
+            this,
+            "AutoPlay Civilian",
+            settings.autoPlayCivilian, false
+        ) { settings.autoPlayCivilian = it }
+        optionsPopup.addCheckbox(
+            this,
+            "AutoPlay Economy",
+            settings.autoPlayEconomy, false
+        ) { settings.autoPlayEconomy = it }
+        optionsPopup.addCheckbox(
+            this,
+            "AutoPlay Diplomacy",
+            settings.autoPlayDiplomacy, false
+        ) { settings.autoPlayDiplomacy = it }
+        optionsPopup.addCheckbox(
+            this,
+            "AutoPlay Technology",
+            settings.autoPlayTechnology, false
+        ) { settings.autoPlayTechnology = it }
+        optionsPopup.addCheckbox(
+            this,
+            "AutoPlay Policies",
+            settings.autoPlayPolicies, false
+        ) { settings.autoPlayPolicies = it }
+        optionsPopup.addCheckbox(
+            this,
+            "AutoPlay Religion",
+            settings.autoPlayReligion, false
+        ) { settings.autoPlayReligion = it }
+    }
+    
+    addAutoPlayMaxTurnsSlider(this, settings, optionsPopup.selectBoxMinWidth)
+    optionsPopup.addCheckbox(
+        this,
+        "Full AutoPlay AI",
+        settings.fullAutoPlayAI, false
+    ) { settings.fullAutoPlayAI = it
+        if (!it) addAutoPlaySections() 
+        else optionsPopup.tabs.replacePage(optionsPopup.tabs.activePage, gameplayTab(optionsPopup))
+    }
+    if (!settings.fullAutoPlayAI)
+        addAutoPlaySections()
 }
 
 private fun addNotificationLogMaxTurnsSlider(
