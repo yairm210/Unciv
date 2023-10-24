@@ -949,15 +949,37 @@ object NextTurnAutomation {
         // Designed to mitigate AIs declaring war on weaker civs instead of their rivals
         val scoreRatio = civInfo.getStatForRanking(RankingType.Score).toFloat() / otherCiv.getStatForRanking(RankingType.Score).toFloat()
         val scoreRatioModifier = when {
-            scoreRatio > 2f -> 20
-            scoreRatio > 1.5f -> 15
-            scoreRatio > 1f -> 5
+            scoreRatio > 2f -> 15
+            scoreRatio > 1.5f -> 10
+            scoreRatio > 1.3f -> 5
             scoreRatio > .8f -> 0
             scoreRatio > .5f -> -5
             scoreRatio > .25f -> -10
             else -> 0
         }
         modifierMap["Relative score"] = scoreRatioModifier
+        
+        val productionRatio = civInfo.getStatForRanking(RankingType.Production).toFloat() / otherCiv.getStatForRanking(RankingType.Production).toFloat()
+        val productionRatioModifier = when {
+            productionRatio > 2f -> 10
+            productionRatio > 1.5f -> 5
+            productionRatio > 1f -> 0
+            productionRatio > .5f -> -5
+            productionRatio > .25f -> -10
+            else -> 0
+        }
+        modifierMap["Relative production"] = productionRatioModifier
+
+        val relativeTech = civInfo.getStatForRanking(RankingType.Technologies) - otherCiv.getStatForRanking(RankingType.Technologies)
+        val relativeTechModifier = when {
+            relativeTech > 6 -> -10
+            relativeTech > 3 -> -5
+            relativeTech > -3 -> 0
+            relativeTech > -6 -> 5
+            relativeTech > -9 -> 10
+            else -> 0
+        }
+        modifierMap["Relative technologies"] = relativeTechModifier
 
         if (closestCities.aerialDistance > 7)
             modifierMap["Far away cities"] = -10
