@@ -972,11 +972,11 @@ object NextTurnAutomation {
 
         val relativeTech = civInfo.getStatForRanking(RankingType.Technologies) - otherCiv.getStatForRanking(RankingType.Technologies)
         val relativeTechModifier = when {
-            relativeTech > 6 -> -5
-            relativeTech > 3 -> -2
+            relativeTech > 6 -> 10
+            relativeTech > 3 -> 5
             relativeTech > -3 -> 0
-            relativeTech > -6 -> 5
-            relativeTech > -9 -> 10
+            relativeTech > -6 -> -2
+            relativeTech > -9 -> -5
             else -> 0
         }
         modifierMap["Relative technologies"] = relativeTechModifier
