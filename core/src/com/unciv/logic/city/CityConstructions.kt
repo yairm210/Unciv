@@ -387,6 +387,7 @@ class CityConstructions : IsPartOfGameInfoSerialization {
             if (construction.isBuildable(this))
                 constructionQueue.add(constructionName)
         }
+        chooseNextConstruction()
     }
 
     private fun validateInProgressConstructions() {
@@ -523,8 +524,6 @@ class CityConstructions : IsPartOfGameInfoSerialization {
 
         updateUniques()
 
-        validateConstructionQueue()
-
         /** Support for [UniqueType.CreatesOneImprovement] */
         applyCreateOneImprovement(building)
 
@@ -579,6 +578,14 @@ class CityConstructions : IsPartOfGameInfoSerialization {
         builtBuildingObjects = builtBuildingObjects.withoutItem(building)
         builtBuildings.remove(building.name)
         updateUniques()
+    }
+
+    fun removeBuildings(buildings: Set<Building>) {
+        val buildingsToRemove = buildings.map { it.name }.toSet()
+        builtBuildings.removeIf {
+            it in buildingsToRemove
+        }
+        setTransients()
     }
 
     fun updateUniques(onLoadGame:Boolean = false) {
@@ -687,7 +694,6 @@ class CityConstructions : IsPartOfGameInfoSerialization {
     private fun removeCurrentConstruction() = removeFromQueue(0, true)
 
     fun chooseNextConstruction() {
-        validateConstructionQueue()
         if (!isQueueEmptyOrIdle()) {
             // If the USER set a perpetual construction, then keep it!
             if (getConstruction(currentConstructionFromQueue) !is PerpetualConstruction || currentConstructionIsUserSet) return

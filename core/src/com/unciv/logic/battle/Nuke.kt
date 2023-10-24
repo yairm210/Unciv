@@ -204,7 +204,7 @@ object Nuke {
 
         var damageModifierFromMissingResource = 1f
         val civResources = attacker.getCivInfo().getCivResourcesByName()
-        for (resource in attacker.unit.baseUnit.getResourceRequirementsPerTurn().keys) {
+        for (resource in attacker.unit.getResourceRequirementsPerTurn().keys) {
             if (civResources[resource]!! < 0 && !attacker.getCivInfo().isBarbarian())
                 damageModifierFromMissingResource *= 0.5f // I could not find a source for this number, but this felt about right
             // - Original Civ5 does *not* reduce damage from missing resource, from source inspection

@@ -433,7 +433,7 @@ class RulesetValidator(val ruleset: Ruleset) {
             for (specialistName in building.specialistSlots.keys)
                 if (!ruleset.specialists.containsKey(specialistName))
                     lines += "${building.name} provides specialist $specialistName which does not exist!"
-            for (resource in building.getResourceRequirementsPerTurn().keys)
+            for (resource in building.getResourceRequirementsPerTurn(StateForConditionals.IgnoreConditionals).keys)
                 if (!ruleset.tileResources.containsKey(resource))
                     lines += "${building.name} requires resource $resource which does not exist!"
             if (building.replaces != null && !ruleset.buildings.containsKey(building.replaces!!))
@@ -649,7 +649,7 @@ class RulesetValidator(val ruleset: Ruleset) {
                 )
         }
 
-        for (resource in unit.getResourceRequirementsPerTurn().keys)
+        for (resource in unit.getResourceRequirementsPerTurn(StateForConditionals.IgnoreConditionals).keys)
             if (!ruleset.tileResources.containsKey(resource))
                 lines += "${unit.name} requires resource $resource which does not exist!"
         if (unit.replaces != null && !ruleset.units.containsKey(unit.replaces!!))

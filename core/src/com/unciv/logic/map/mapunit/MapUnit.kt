@@ -12,6 +12,7 @@ import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.map.mapunit.movement.UnitMovement
 import com.unciv.logic.map.tile.Tile
+import com.unciv.models.Counter
 import com.unciv.models.UnitActionType
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.tile.TileImprovement
@@ -259,6 +260,23 @@ class MapUnit : IsPartOfGameInfoSerialization {
         newUnit.updateVisibleTiles()
     }
 
+    /** Gets *per turn* resource requirements - does not include immediate costs for stockpiled resources.
+     * StateForConditionals is assumed to regarding this mapUnit*/
+    fun getResourceRequirementsPerTurn(): Counter<String> {
+        val resourceRequirements = Counter<String>()
+        if (baseUnit.requiredResource != null) resourceRequirements[baseUnit.requiredResource!!] = 1
+        for (unique in getMatchingUniques(UniqueType.ConsumesResources, StateForConditionals(civ, unit = this)))
+            resourceRequirements[unique.params[1]] += unique.params[0].toInt()
+        return resourceRequirements
+    }
+
+    fun requiresResource(resource: String): Boolean {
+        if (getResourceRequirementsPerTurn().contains(resource)) return true
+        for (unique in getMatchingUniques(UniqueType.CostsResources, StateForConditionals(civ, unit = this))) {
+            if (unique.params[1] == resource) return true
+        }
+        return false
+    }
 
     fun getMaxMovement(): Int {
         var movement =

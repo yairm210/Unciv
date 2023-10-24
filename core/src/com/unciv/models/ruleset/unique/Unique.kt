@@ -9,6 +9,7 @@ import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.managers.ReligionState
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.validation.UniqueValidator
+import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
 import com.unciv.models.translations.getConditionals
 import com.unciv.models.translations.getPlaceholderParameters
@@ -174,8 +175,35 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
             UniqueType.ConditionalNotWar -> state.civInfo?.isAtWar() == false
             UniqueType.ConditionalWithResource -> getResourceAmount(condition.params[0]) > 0
             UniqueType.ConditionalWithoutResource -> getResourceAmount(condition.params[0]) <= 0
-            UniqueType.ConditionalWhenAboveAmountResource -> getResourceAmount(condition.params[1]) > condition.params[0].toInt()
-            UniqueType.ConditionalWhenBelowAmountResource -> getResourceAmount(condition.params[1]) < condition.params[0].toInt()
+
+            UniqueType.ConditionalWhenAboveAmountStatResource ->
+                if (ruleset().tileResources.containsKey(condition.params[1])) {
+                    return getResourceAmount(condition.params[1]) > condition.params[0].toInt()
+                } else if (Stat.isStat(condition.params[1])) {
+                    return state.civInfo != null &&
+                        state.civInfo.getStatReserve(Stat.valueOf(condition.params[1])) > condition.params[0].toInt()
+                } else {
+                    return false
+                }
+
+            UniqueType.ConditionalWhenBelowAmountStatResource ->
+                if (ruleset().tileResources.containsKey(condition.params[1])) {
+                    return getResourceAmount(condition.params[1]) < condition.params[0].toInt()
+                } else if (Stat.isStat(condition.params[1])) {
+                    return state.civInfo != null &&
+                        state.civInfo.getStatReserve(Stat.valueOf(condition.params[1])) < condition.params[0].toInt()
+                } else {
+                    return false
+                }
+
+            UniqueType.ConditionalWhenAboveAmountStatSpeed -> state.civInfo != null &&
+                state.civInfo.getStatReserve(Stat.valueOf(condition.params[1])) > condition.params[0].toInt() *
+                state.civInfo.gameInfo.speed.statCostModifiers[Stat.valueOf(condition.params[1])]!!
+
+            UniqueType.ConditionalWhenBelowAmountStatSpeed -> state.civInfo != null &&
+                state.civInfo.getStatReserve(Stat.valueOf(condition.params[1])) < condition.params[0].toInt() *
+                state.civInfo.gameInfo.speed.statCostModifiers[Stat.valueOf(condition.params[1])]!!
+
             UniqueType.ConditionalHappy ->
                 state.civInfo != null && state.civInfo.stats.happiness >= 0
             UniqueType.ConditionalBetweenHappiness ->

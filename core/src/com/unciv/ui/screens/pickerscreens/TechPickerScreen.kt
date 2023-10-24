@@ -182,7 +182,7 @@ class TechPickerScreen(
                 if (rowIndex == 0)
                     table.padTop(7f)
 
-                if (erasNamesToColumns[civTech.era.name]!!.contains(columnIndex))
+                if (erasNamesToColumns[civTech.era.name]?.contains(columnIndex) == true)
                     table.background = skinStrings.getUiBackground("TechPickerScreen/Background", tintColor = queuedTechColor.darken(0.5f))
 
                 if (tech == null) {
