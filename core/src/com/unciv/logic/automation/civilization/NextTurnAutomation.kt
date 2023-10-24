@@ -964,16 +964,16 @@ object NextTurnAutomation {
             productionRatio > 2f -> 10
             productionRatio > 1.5f -> 5
             productionRatio > 1f -> 0
-            productionRatio > .5f -> -5
-            productionRatio > .25f -> -10
+            productionRatio > .5f -> -2
+            productionRatio > .25f -> -5
             else -> 0
         }
         modifierMap["Relative production"] = productionRatioModifier
 
         val relativeTech = civInfo.getStatForRanking(RankingType.Technologies) - otherCiv.getStatForRanking(RankingType.Technologies)
         val relativeTechModifier = when {
-            relativeTech > 6 -> -10
-            relativeTech > 3 -> -5
+            relativeTech > 6 -> -5
+            relativeTech > 3 -> -2
             relativeTech > -3 -> 0
             relativeTech > -6 -> 5
             relativeTech > -9 -> 10
