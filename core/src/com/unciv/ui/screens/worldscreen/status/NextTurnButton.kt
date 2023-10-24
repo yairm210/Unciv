@@ -38,8 +38,7 @@ class NextTurnButton(
         if (!settings.autoPlayInProgress && settings.turnsToAutoPlay > 0 
             && worldScreen.isPlayersTurn && !worldScreen.waitingForAutosave && !worldScreen.isNextTurnUpdateRunning()) {
             settings.autoPlayInProgress = true
-            if (!worldScreen.viewingCiv.isSpectator())
-                TurnManager(worldScreen.viewingCiv).automateTurn()
+            TurnManager(worldScreen.viewingCiv).automateTurn()
             worldScreen.nextTurn()
             settings.turnsToAutoPlay--
             settings.autoPlayInProgress = false
