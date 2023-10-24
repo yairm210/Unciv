@@ -140,7 +140,8 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
         if (condition.type?.targetTypes?.any { it.modifierType == UniqueTarget.ModifierType.Other } == true)
             return true // not a filtering condition
 
-        fun ruleset() = state.civInfo!!.gameInfo.ruleset
+        fun ruleset() = state.civInfo?.gameInfo?.ruleset
+            ?: throw Exception("Conditional $condition can't check ruleset: state=$state")
 
         val relevantUnit by lazy {
             if (state.ourCombatant != null && state.ourCombatant is MapUnitCombatant) state.ourCombatant.unit
