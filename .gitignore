@@ -142,7 +142,7 @@ deploy/
 android/release/
 
 # Transient Unciv files
-android/assets/GameSettings.json
+GameSettings.json
 android/assets/lasterror.txt
 android/assets/fonts/
 android/assets/maps/
