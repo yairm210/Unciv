@@ -1,6 +1,5 @@
 package com.unciv.ui.screens.savescreens
 
-import com.unciv.GUI
 import com.unciv.ui.screens.mainmenuscreen.MainMenuScreen
 import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
@@ -33,7 +32,6 @@ object QuickSave {
     }
 
     fun load(screen: WorldScreen) {
-        GUI.getSettings().stopAutoPlay()
         val files = UncivGame.Current.files
         val toast = ToastPopup("Quickloading...", screen)
         Concurrency.run("QuickLoadGame") {
@@ -56,7 +54,6 @@ object QuickSave {
     }
 
     fun autoLoadGame(screen: MainMenuScreen) {
-        GUI.getSettings().stopAutoPlay()
         val loadingPopup = LoadingPopup(screen)
         Concurrency.run("autoLoadGame") {
             // Load game from file to class on separate thread to avoid ANR...
