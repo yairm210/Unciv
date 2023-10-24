@@ -869,12 +869,15 @@ object NextTurnAutomation {
         if (enemyCivs.none()) return
 
         val minMotivationToAttack = 20
+        // Attack the highest score enemy that we are willing to fight.
+        // This is to help prevent civs from ganging up on smaller civs
+        // and directs them to fight their competitors instead.
         val civWithBestMotivationToAttack = enemyCivs
-                .map { Pair(it, hasAtLeastMotivationToAttack(civInfo, it, minMotivationToAttack)) }
-                .maxByOrNull { it.second }!!
-
-        if (civWithBestMotivationToAttack.second >= minMotivationToAttack)
-            civInfo.getDiplomacyManager(civWithBestMotivationToAttack.first).declareWar()
+            .filter { hasAtLeastMotivationToAttack(civInfo, it, minMotivationToAttack) >= 20 }
+            .sortedBy { it.getStatForRanking(RankingType.Score) }
+        
+        if (civWithBestMotivationToAttack.count() != 0)
+            civInfo.getDiplomacyManager(civWithBestMotivationToAttack.first()).declareWar()
     }
 
     /** Will return the motivation to attack, but might short circuit if the value is guaranteed to
