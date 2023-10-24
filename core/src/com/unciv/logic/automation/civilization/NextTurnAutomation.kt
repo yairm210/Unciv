@@ -1119,7 +1119,7 @@ object NextTurnAutomation {
         for (unit in sortedUnits) UnitAutomation.automateUnitMoves(unit)
     }
 
-    fun getUnitPriority(unit: MapUnit, isAtWar: Boolean): Int {
+    private fun getUnitPriority(unit: MapUnit, isAtWar: Boolean): Int {
         if (unit.isCivilian() && !unit.isGreatPersonOfType("War")) return 1 // Civilian
         if (unit.baseUnit.isAirUnit()) return 2
         val distance = if (!isAtWar) 0 else unit.getDistanceToEnemyUnit(6)
@@ -1135,7 +1135,7 @@ object NextTurnAutomation {
         for (city in civInfo.cities) UnitAutomation.tryBombardEnemy(city)
     }
 
-    fun automateCities(civInfo: Civilization) {
+    private fun automateCities(civInfo: Civilization) {
         val ownMilitaryStrength = civInfo.getStatForRanking(RankingType.Force)
         val sumOfEnemiesMilitaryStrength =
                 civInfo.gameInfo.civilizations
