@@ -442,9 +442,10 @@ class UniqueMap: HashMap<String, ArrayList<Unique>>() {
     fun getAllUniques() = this.asSequence().flatMap { it.value.asSequence() }
 
     fun getTriggeredUniques(trigger: UniqueType, stateForConditionals: StateForConditionals): Sequence<Unique> {
-        val result = getAllUniques().filter { it.conditionals.any { it.type == trigger } }
-            .filter { it.conditionalsApply(stateForConditionals) }
-        return result
+        return getAllUniques().filter { unique ->
+            unique.conditionals.any { it.type == trigger }
+            && unique.conditionalsApply(stateForConditionals)
+        }
     }
 }
 

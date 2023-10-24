@@ -660,7 +660,8 @@ class RulesetValidator(val ruleset: Ruleset) {
         checkUnitType(unit.unitType) {
             lines += "${unit.name} is of type ${unit.unitType}, which does not exist!"
         }
-        // We must ignore conditionals here otherwise some condition implementation will try to get a ruleset through its state which is empty
+
+        // We should ignore conditionals here - there are condition implementations on this out there that require a game state (and will test false without)
         for (unique in unit.getMatchingUniques(UniqueType.ConstructImprovementInstantly, StateForConditionals.IgnoreConditionals)) {
             val improvementName = unique.params[0]
             if (ruleset.tileImprovements[improvementName] == null) continue // this will be caught in the uniqueValidator.checkUniques
