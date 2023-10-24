@@ -97,9 +97,7 @@ class NextTurnProgress(
         // On first update the button text is not yet updated. To stabilize geometry, do it now
         if (progress == 0) nextTurnButton?.apply {
             disable()
-            if (GUI.getSettings().turnsToAutoPlay > 0)
-                updateButton(NextTurnAction.AutoPlay)
-            else updateButton(NextTurnAction.Working)
+            updateButton(NextTurnAction.Working)
             barWidth = width - removeHorizontalPad -
                 (background.leftWidth + background.rightWidth)  // "cut off" the rounded parts of the button
             this@NextTurnProgress.setPosition((width - barWidth) / 2, barYPos)

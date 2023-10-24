@@ -2,7 +2,6 @@ package com.unciv.ui.screens.worldscreen.status
 
 import com.badlogic.gdx.graphics.Color
 import com.unciv.Constants
-import com.unciv.GUI
 import com.unciv.logic.civilization.managers.ReligionManager
 import com.unciv.logic.civilization.managers.ReligionState
 import com.unciv.models.Counter
@@ -27,13 +26,7 @@ enum class NextTurnAction(protected val text: String, val color: Color) {
     },
     Working(Constants.working, Color.GRAY) {
         override fun isChoice(worldScreen: WorldScreen) =
-            worldScreen.isNextTurnUpdateRunning() && GUI.getSettings().turnsToAutoPlay == 0
-    },
-    AutoPlay("AutoPlay", Color.WHITE) {
-        override fun isChoice(worldScreen: WorldScreen) =
-            worldScreen.isNextTurnUpdateRunning() && GUI.getSettings().turnsToAutoPlay > 0
-        override fun action(worldScreen: WorldScreen) =
-            GUI.getSettings().stopAutoPlay()
+            worldScreen.isNextTurnUpdateRunning()
     },
     Waiting("Waiting for other players...",Color.GRAY) {
         override fun getText(worldScreen: WorldScreen) =
@@ -127,7 +120,7 @@ enum class NextTurnAction(protected val text: String, val color: Color) {
     },
 
     ;
-    open val icon: String? get() = if (text != "AutoPlay") "NotificationIcons/$name" else "NotificationIcons/Working"
+    open val icon: String? get() = "NotificationIcons/$name"
     open fun getText(worldScreen: WorldScreen) = text
     abstract fun isChoice(worldScreen: WorldScreen): Boolean
     open fun action(worldScreen: WorldScreen) {}
