@@ -120,11 +120,19 @@ object AirUnitAutomation {
         }
         for (targetTile in tilesInBlastRadius) {
             // We can only account for visible units
-            if (tile.isVisible(civ)) {
-                if (targetTile.militaryUnit != null && !targetTile.militaryUnit!!.isInvisible(civ))
-                    explosionValue += evaluateCivValue(targetTile.militaryUnit?.civ!!, -150, 50)
-                if (targetTile.civilianUnit != null && !targetTile.civilianUnit!!.isInvisible(civ))
-                    explosionValue += evaluateCivValue(targetTile.civilianUnit?.civ!!, -100, 25)
+            if (targetTile.isVisible(civ)) {
+                for (targetUnit in targetTile.getUnits()) {
+                    if (targetUnit.isInvisible(civ)) continue
+                    // If we are nuking a unit at ground zero, it is more likely to be destroyed
+                    val tileExplosionValue = if (targetTile == tile) 80 else 50
+                    
+                    if (targetUnit.isMilitary()) {
+                        explosionValue += if (targetTile == tile) evaluateCivValue(targetTile.militaryUnit?.civ!!, -200, tileExplosionValue)
+                        else evaluateCivValue(targetTile.militaryUnit?.civ!!, -150, 50)
+                    } else if (targetUnit.isCivilian()) {
+                        explosionValue += evaluateCivValue(targetTile.civilianUnit?.civ!!, -100, tileExplosionValue / 2)
+                    }
+                }
             }
             // Never nuke our own Civ, don't nuke single enemy civs as well
             if (targetTile.isCityCenter()
