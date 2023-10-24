@@ -402,8 +402,8 @@ class WorldScreen(
         fogOfWarButton.setPosition(10f, topBar.y - fogOfWarButton.height - 10f)
 
         // If the game has ended, lets stop AutoPlay
-        if (GUI.getSettings().isAutoPlaying()
-            && !gameInfo.oneMoreTurnMode && (viewingCiv.isDefeated() || gameInfo.checkForVictory())) {
+        if (GUI.getSettings().isAutoPlaying() 
+            && viewingCiv.popupAlerts.any { !gameInfo.oneMoreTurnMode && (viewingCiv.isDefeated() || gameInfo.checkForVictory())}) {
             GUI.getSettings().stopAutoPlay()
         }
         
