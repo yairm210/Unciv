@@ -24,16 +24,15 @@ class AutoPlayStatusButton(
         add(Stack(autoPlayImage)).pad(5f)
         val settings = GUI.getSettings()
         onClick {
+
             if (settings.turnsToAutoPlay > 0)
                 settings.stopAutoPlay()
-            else if (worldScreen.viewingCiv == worldScreen.gameInfo.currentPlayerCiv)
+            else
                 AutoPlayMenu(stage,this, nextTurnButton, worldScreen)
         }
-        onRightClick {
-            if (worldScreen.viewingCiv == worldScreen.gameInfo.currentPlayerCiv) {
-                settings.turnsToAutoPlay = settings.autoPlayMaxTurns
-                nextTurnButton.update()
-            }
+        onRightClick {         
+            settings.turnsToAutoPlay = settings.autoPlayMaxTurns
+            nextTurnButton.update()
         }
     }
 
