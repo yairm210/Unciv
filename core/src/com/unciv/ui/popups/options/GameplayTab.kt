@@ -73,3 +73,20 @@ private fun addNotificationLogMaxTurnsSlider(
     }
     table.add(minimapSlider).minWidth(selectBoxMinWidth).pad(10f).row()
 }
+private fun addAutoPlayMaxTurnsSlider(
+    table: Table,
+    settings: GameSettings,
+    selectBoxMinWidth: Float
+) {
+    table.add("Max turns to AutoPlay".toLabel()).left().fillX()
+
+    val minimapSlider = UncivSlider(
+        1f, 1000f, 5f,
+        initial = settings.autoPlayMaxTurns.toFloat()
+    ) {
+        val turns = it.toInt()
+        settings.autoPlayMaxTurns = turns
+    }
+    table.add(minimapSlider).minWidth(selectBoxMinWidth).pad(10f).row()
+}
+

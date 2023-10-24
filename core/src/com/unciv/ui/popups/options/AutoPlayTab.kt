@@ -74,7 +74,7 @@ private fun addAutoPlayMaxTurnsSlider(
     table.add("Max turns to AutoPlay".toLabel()).left().fillX()
 
     val minimapSlider = UncivSlider(
-        1f, 200f, 1f,
+        1f, 1000f, 5f,
         initial = settings.autoPlayMaxTurns.toFloat()
     ) {
         val turns = it.toInt()
