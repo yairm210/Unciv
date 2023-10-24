@@ -79,7 +79,7 @@ private fun addAutoPlayMaxTurnsSlider(
     settings: GameSettings,
     selectBoxMinWidth: Float
 ) {
-    table.add("Multi-turn AutoPlay amount".toLabel()).left().fillX()
+    table.add("Max turns to AutoPlay".toLabel()).left().fillX()
 
     val minimapSlider = UncivSlider(
         1f, 200f, 1f,
