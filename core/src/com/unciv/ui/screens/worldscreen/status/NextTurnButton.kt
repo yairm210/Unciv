@@ -1,6 +1,7 @@
 package com.unciv.ui.screens.worldscreen.status
 
 import com.unciv.GUI
+import com.unciv.UncivGame
 import com.unciv.logic.civilization.managers.TurnManager
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.UncivTooltip.Companion.addTooltip
@@ -12,6 +13,7 @@ import com.unciv.ui.components.input.onActivation
 import com.unciv.ui.components.input.onRightClick
 import com.unciv.ui.images.IconTextButton
 import com.unciv.ui.images.ImageGetter
+import com.unciv.ui.popups.CityScreenConstructionMenu
 import com.unciv.ui.popups.NextTurnMenu
 import com.unciv.ui.popups.hasOpenPopups
 import com.unciv.ui.screens.worldscreen.WorldScreen
