@@ -9,7 +9,7 @@ import com.unciv.ui.components.extensions.setSize
 import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.input.onRightClick
 import com.unciv.ui.images.ImageGetter
-import com.unciv.ui.popups.AutoPlayMenu
+import com.unciv.ui.popups.NextTurnMenu
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.worldscreen.WorldScreen
 
@@ -28,7 +28,7 @@ class AutoPlayStatusButton(
             if (settings.turnsToAutoPlay > 0)
                 settings.stopAutoPlay()
             else
-                AutoPlayMenu(stage,this, nextTurnButton, worldScreen)
+                NextTurnMenu(stage,this, nextTurnButton, worldScreen)
         }
         onRightClick {         
             settings.turnsToAutoPlay = settings.autoPlayMaxTurns
