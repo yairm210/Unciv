@@ -876,7 +876,7 @@ object NextTurnAutomation {
             .filter { hasAtLeastMotivationToAttack(civInfo, it, minMotivationToAttack) >= 20 }
             .sortedBy { it.getStatForRanking(RankingType.Score) }
         
-        if (civWithBestMotivationToAttack.count() != 0)
+        if (civWithBestMotivationToAttack.count() != 0 && (1..10).random() <= 5)
             civInfo.getDiplomacyManager(civWithBestMotivationToAttack.first()).declareWar()
     }
 
