@@ -949,12 +949,12 @@ object NextTurnAutomation {
         // Designed to mitigate AIs declaring war on weaker civs instead of their rivals
         val scoreRatio = civInfo.getStatForRanking(RankingType.Score).toFloat() / otherCiv.getStatForRanking(RankingType.Score).toFloat()
         val scoreRatioModifier = when {
-            scoreRatio > 2f -> 15
-            scoreRatio > 1.5f -> 10
-            scoreRatio > 1.3f -> 5
-            scoreRatio > .8f -> 0
-            scoreRatio > .5f -> -5
-            scoreRatio > .25f -> -10
+            scoreRatio > 2f -> -5
+            scoreRatio > 1.5f -> -2
+            scoreRatio > 1f -> 0
+            scoreRatio > .7f -> 5
+            scoreRatio > .5f -> 10
+            scoreRatio > .25f -> 15
             else -> 0
         }
         modifierMap["Relative score"] = scoreRatioModifier
