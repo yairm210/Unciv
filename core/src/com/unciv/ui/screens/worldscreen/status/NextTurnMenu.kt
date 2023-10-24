@@ -4,7 +4,6 @@ import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.GUI
-import com.unciv.logic.automation.Automation
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.managers.TurnManager
 import com.unciv.ui.components.input.KeyboardBinding
@@ -34,9 +33,6 @@ class NextTurnMenu(
         val table = super.createContentTable()!!
         table.add(getButton("AutoPlay End Turn", KeyboardBinding.RaisePriority, ::autoPlayEndTurn)).row()
         table.add(getButton("AutoPlay", KeyboardBinding.RaisePriority, ::autoPlay)).row()
-        table.add(getButton("AutoPlay Military Once", KeyboardBinding.RaisePriority, ::autoPlayMilitary)).row()
-        table.add(getButton("AutoPlay Civilians Once", KeyboardBinding.RaisePriority, ::autoPlayCivilian)).row()
-        table.add(getButton("AutoPlay Economy Once", KeyboardBinding.RaisePriority, ::autoPlayEconomy)).row()
 
         return table.takeUnless { it.cells.isEmpty }
     }
@@ -49,16 +45,5 @@ class NextTurnMenu(
     private fun autoPlay() {
         settings.turnsToAutoPlay = settings.autoPlayMaxTurns
         nextTurnButton.update()
-    }
-    
-    private fun autoPlayMilitary() {
-        //TODO: add logic here
-    }
-
-    private fun autoPlayCivilian() {
-        //TODO: add logic here
-    }
-    private fun autoPlayEconomy() {
-        //TODO: add logic here
     }
 }

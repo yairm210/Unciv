@@ -5,17 +5,8 @@ import com.badlogic.gdx.utils.Disposable
 
 class StatusButtons(
     nextTurnButton: NextTurnButton,
-    autoPlayStatusButton: AutoPlayStatusButton? = null,
     multiplayerStatusButton: MultiplayerStatusButton? = null
 ) : HorizontalGroup(), Disposable {
-    var autoPlayStatusButton: AutoPlayStatusButton? = autoPlayStatusButton
-        set(button) {
-            autoPlayStatusButton?.remove()
-            field = button
-            if (button != null) {
-                addActorAt(0, button)
-            }
-        }
     var multiplayerStatusButton: MultiplayerStatusButton? = multiplayerStatusButton
         set(button) {
             multiplayerStatusButton?.remove()
@@ -24,7 +15,6 @@ class StatusButtons(
                 addActorAt(0, button)
             }
         }
-    
 
     init {
         space(10f)

@@ -57,7 +57,6 @@ import com.unciv.ui.screens.worldscreen.bottombar.BattleTable
 import com.unciv.ui.screens.worldscreen.bottombar.TileInfoTable
 import com.unciv.ui.screens.worldscreen.mainmenu.WorldScreenMusicPopup
 import com.unciv.ui.screens.worldscreen.minimap.MinimapHolder
-import com.unciv.ui.screens.worldscreen.status.AutoPlayStatusButton
 import com.unciv.ui.screens.worldscreen.status.MultiplayerStatusButton
 import com.unciv.ui.screens.worldscreen.status.NextTurnButton
 import com.unciv.ui.screens.worldscreen.status.NextTurnProgress
@@ -681,7 +680,6 @@ class WorldScreen(
     private fun updateGameplayButtons() {
         nextTurnButton.update()
 
-        updateAutoPlayStatusButton()
         updateMultiplayerStatusButton()
 
         statusButtons.wrap(false)
@@ -693,10 +691,6 @@ class WorldScreen(
             statusButtons.pack()
         }
         statusButtons.setPosition(stage.width - statusButtons.width - 10f, topBar.y - statusButtons.height - 10f)
-    }
-
-    private fun updateAutoPlayStatusButton() {
-        statusButtons.autoPlayStatusButton = AutoPlayStatusButton(this, nextTurnButton)
     }
 
     private fun updateMultiplayerStatusButton() {
