@@ -11,7 +11,7 @@ import com.unciv.ui.screens.worldscreen.WorldScreen
 
 class WorldScreenMenuPopup(val worldScreen: WorldScreen) : Popup(worldScreen, scrollable = Scrollability.All) {
     init {
-        GUI.getSettings().autoPlay.stopAutoPlay()
+        GUI.getSettings().stopAutoPlay()
         defaults().fillX()
 
         addButton("Main menu") {

@@ -245,7 +245,7 @@ class OnlineMultiplayer {
         } else if (onlinePreview != null && hasNewerGameState(preview, onlinePreview)){
             onlineGame.doManualUpdate(preview)
         }
-        GUI.getSettings().autoPlay.stopAutoPlay()
+        GUI.getSettings().stopAutoPlay()
         UncivGame.Current.loadGame(gameInfo)
     }
 

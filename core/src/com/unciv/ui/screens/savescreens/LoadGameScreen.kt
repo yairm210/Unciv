@@ -121,7 +121,7 @@ class LoadGameScreen : LoadOrSaveScreen() {
     }
 
     private fun onLoadGame() {
-        GUI.getSettings().autoPlay.stopAutoPlay()
+        GUI.getSettings().stopAutoPlay()
         if (selectedSave == null) return
         val loadingPopup = LoadingPopup(this)
         Concurrency.run(loadGame) {

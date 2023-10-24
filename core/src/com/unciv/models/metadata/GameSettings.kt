@@ -97,13 +97,32 @@ class GameSettings {
 
     var notificationsLogMaxTurns = 5
 
+    var autoPlayMaxTurns = 10
+    var fullAutoPlayAI: Boolean = false
+    var autoPlayMilitary: Boolean = false
+    var autoPlayCivilian: Boolean = false
+    var autoPlayEconomy: Boolean = false
+    var autoPlayTechnology: Boolean = false
+    var autoPlayPolicies: Boolean = false
+    var autoPlayReligion: Boolean = false
+    var autoPlayDiplomacy: Boolean = false
+
+    var turnsToAutoPlay: Int = 0
+    var autoPlayTurnInProgress: Boolean = false
+    
+    fun stopAutoPlay() {
+        turnsToAutoPlay = 0
+        autoPlayTurnInProgress = false
+    }
+    
+    fun isAutoPlaying(): Boolean = turnsToAutoPlay > 0
+
+
     var showAutosaves: Boolean = false
 
     var androidCutout: Boolean = false
 
     var multiplayer = GameSettingsMultiplayer()
-    
-    var autoPlay = GameSettingsAutoPlay()
 
     var enableEspionageOption = false
 
@@ -260,32 +279,6 @@ class GameSettingsMultiplayer {
         val preEncodedAuthValue = "$userId:$serverPassword"
         return "Basic ${Base64Coder.encodeString(preEncodedAuthValue)}"
     }
-}
-
-class GameSettingsAutoPlay {
-    var autoPlayMaxTurns = 10
-    var fullAutoPlayAI: Boolean = false
-    var autoPlayMilitary: Boolean = false
-    var autoPlayCivilian: Boolean = false
-    var autoPlayEconomy: Boolean = false
-    var autoPlayTechnology: Boolean = false
-    var autoPlayPolicies: Boolean = false
-    var autoPlayReligion: Boolean = false
-    var autoPlayDiplomacy: Boolean = false
-
-    var turnsToAutoPlay: Int = 0
-    var autoPlayTurnInProgress: Boolean = false
-
-    fun startAutoPlay() {
-        turnsToAutoPlay = autoPlayMaxTurns
-    }
-    
-    fun stopAutoPlay() {
-        turnsToAutoPlay = 0
-        autoPlayTurnInProgress = false
-    }
-
-    fun isAutoPlaying(): Boolean = turnsToAutoPlay > 0
 }
 
 @Suppress("SuspiciousCallableReferenceInLambda")  // By @Azzurite, safe as long as that warning below is followed

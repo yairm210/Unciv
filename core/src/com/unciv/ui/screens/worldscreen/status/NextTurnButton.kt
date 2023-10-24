@@ -32,14 +32,14 @@ class NextTurnButton(
         nextTurnAction = getNextTurnAction(worldScreen)
         updateButton(nextTurnAction)
         val settings = GUI.getSettings()
-        if (!settings.autoPlay.autoPlayTurnInProgress && settings.autoPlay.isAutoPlaying() 
+        if (!settings.autoPlayTurnInProgress && settings.isAutoPlaying() 
             && worldScreen.isPlayersTurn && !worldScreen.waitingForAutosave && !worldScreen.isNextTurnUpdateRunning()) {
-            settings.autoPlay.autoPlayTurnInProgress = true
+            settings.autoPlayTurnInProgress = true
             if (!worldScreen.viewingCiv.isSpectator())
                 TurnManager(worldScreen.viewingCiv).automateTurn()
             worldScreen.nextTurn()
-            settings.autoPlay.turnsToAutoPlay--
-            settings.autoPlay.autoPlayTurnInProgress = false
+            settings.turnsToAutoPlay--
+            settings.autoPlayTurnInProgress = false
         }
                 
         isEnabled = nextTurnAction.getText (worldScreen) == "AutoPlay" 
