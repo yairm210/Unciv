@@ -947,15 +947,15 @@ object NextTurnAutomation {
         // Bias towards attacking civs with a high score and low military
         // Bias against attacking civs with a low score and a high military
         // Designed to mitigate AIs declaring war on weaker civs instead of their rivals
-        val scoreRatio = civInfo.getStatForRanking(RankingType.Score).toFloat() / otherCiv.getStatForRanking(RankingType.Score).toFloat()
+        val scoreRatio = otherCiv.getStatForRanking(RankingType.Score).toFloat() / civInfo.getStatForRanking(RankingType.Score).toFloat()
         val scoreRatioModifier = when {
-            scoreRatio > 2f -> -5
-            scoreRatio > 1.5f -> -2
+            scoreRatio > 2f -> 15
+            scoreRatio > 1.5f -> 10
+            scoreRatio > 1.25f -> 5
             scoreRatio > 1f -> 0
-            scoreRatio > .7f -> 5
-            scoreRatio > .5f -> 10
-            scoreRatio > .25f -> 15
-            else -> 0
+            scoreRatio > .5f -> -2
+            scoreRatio > .25f -> -5
+            else -> -10
         }
         modifierMap["Relative score"] = scoreRatioModifier
         
@@ -963,10 +963,10 @@ object NextTurnAutomation {
         val productionRatioModifier = when {
             productionRatio > 2f -> 10
             productionRatio > 1.5f -> 5
-            productionRatio > 1f -> 0
+            productionRatio > .8f -> 0
             productionRatio > .5f -> -2
             productionRatio > .25f -> -5
-            else -> 0
+            else -> -10
         }
         modifierMap["Relative production"] = productionRatioModifier
 
@@ -977,7 +977,7 @@ object NextTurnAutomation {
             relativeTech > -3 -> 0
             relativeTech > -6 -> -2
             relativeTech > -9 -> -5
-            else -> 0
+            else -> -10
         }
         modifierMap["Relative technologies"] = relativeTechModifier
 
