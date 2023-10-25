@@ -90,8 +90,19 @@ object BattleHelper {
             return if (attacker.baseUnit.isMelee()) 10000 // Capture the city immediatly!
             else 0 // Don't attack the city anymore since we are a ranged unit
         
-        if (attacker.baseUnit.isMelee() && attacker.health - BattleDamage.calculateDamageToAttacker(attackerUnit, cityUnit) * 2 <= 0)
-            return 0 // We'll probably die next turn if we attack the city
+        if (attacker.baseUnit.isMelee()) {
+            val battleDamage = BattleDamage.calculateDamageToAttacker(attackerUnit, cityUnit)
+            if (attacker.health - battleDamage * 2 <= 0) {
+                // The more fiendly units around the city, the more willing we should be to just attack the city
+                val friendlyUnitsAroundCity = city.getCenterTile().getTilesInDistance(3).count { it.militaryUnit?.civ == attacker.civ }
+                // If we have more than 4 other units around the city, go for it
+                if (friendlyUnitsAroundCity < 5) {
+                    val attackerHealthModifier = 1.0 + 1.0 / friendlyUnitsAroundCity
+                    if (attacker.health - battleDamage * attackerHealthModifier <= 0)
+                        return 0 // We'll probably die next turn if we attack the city
+                }
+            }
+        }
 
         var attackValue = 100 
         // Siege units should really only attack the city
@@ -103,7 +114,7 @@ object BattleHelper {
 
         // Add value based on number of units around the city
         val defendingCityCiv = city.civ
-        city.getCenterTile().neighbors.forEach {
+        city.getCenterTile().getTilesInDistance(2).forEach {
             if (it.militaryUnit != null) {
                 if (it.militaryUnit!!.civ.isAtWarWith(attacker.civ))
                     attackValue -= 5
