@@ -19,7 +19,7 @@ import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.fillPlaceholders
 import com.unciv.models.translations.removeConditionals
 import com.unciv.models.translations.tr
-import com.unciv.ui.components.Fonts
+import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.popups.ConfirmPopup
 import com.unciv.ui.screens.pickerscreens.ImprovementPickerScreen
 
@@ -298,9 +298,9 @@ object UnitActionsFromUniques {
             // Check _new_ resource requirements
             // Using Counter to aggregate is a bit exaggerated, but - respect the mad modder.
             val resourceRequirementsDelta = Counter<String>()
-            for ((resource, amount) in unit.baseUnit().getResourceRequirementsPerTurn())
+            for ((resource, amount) in unit.getResourceRequirementsPerTurn())
                 resourceRequirementsDelta.add(resource, -amount)
-            for ((resource, amount) in unitToTransformTo.getResourceRequirementsPerTurn())
+            for ((resource, amount) in unitToTransformTo.getResourceRequirementsPerTurn(StateForConditionals(unit.civ, unit = unit)))
                 resourceRequirementsDelta.add(resource, amount)
             val newResourceRequirementsString = resourceRequirementsDelta.entries
                 .filter { it.value > 0 }

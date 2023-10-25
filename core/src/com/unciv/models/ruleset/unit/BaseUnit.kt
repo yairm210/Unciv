@@ -40,7 +40,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
 
     val type by lazy { ruleset.unitTypes[unitType]!! }
     override var requiredTech: String? = null
-    private var requiredResource: String? = null
+    var requiredResource: String? = null
 
     override fun getUniqueTarget() = UniqueTarget.Unit
 
@@ -182,7 +182,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
 
         if (!civ.isBarbarian()) { // Barbarians don't need resources
             val civResources = Counter(civ.getCivResourcesByName()) + additionalResources
-            for ((resource, requiredAmount) in getResourceRequirementsPerTurn()) {
+            for ((resource, requiredAmount) in getResourceRequirementsPerTurn(StateForConditionals(civ))) {
                 val availableAmount = civResources[resource]
                 if (availableAmount < requiredAmount) {
                     val message = resource.getNeedMoreAmountString(requiredAmount - availableAmount)
@@ -310,17 +310,21 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
     fun movesLikeAirUnits() = type.getMovementType() == UnitMovementType.Air
 
     /** Returns resource requirements from both uniques and requiredResource field */
-    override fun getResourceRequirementsPerTurn(): Counter<String> = resourceRequirementsInternal
-
-    private val resourceRequirementsInternal: Counter<String> by lazy {
+    override fun getResourceRequirementsPerTurn(stateForConditionals: StateForConditionals?): Counter<String> {
         val resourceRequirements = Counter<String>()
         if (requiredResource != null) resourceRequirements[requiredResource!!] = 1
-        for (unique in getMatchingUniques(UniqueType.ConsumesResources))
-            resourceRequirements[unique.params[1]] = unique.params[0].toInt()
-        resourceRequirements
+        for (unique in getMatchingUniques(UniqueType.ConsumesResources, stateForConditionals))
+            resourceRequirements[unique.params[1]] += unique.params[0].toInt()
+        return resourceRequirements
     }
 
-    override fun requiresResource(resource: String) = getResourceRequirementsPerTurn().containsKey(resource)
+    override fun requiresResource(resource: String, stateForConditionals: StateForConditionals?): Boolean {
+        if (getResourceRequirementsPerTurn(stateForConditionals).contains(resource)) return true
+        for (unique in getMatchingUniques(UniqueType.CostsResources, stateForConditionals)) {
+            if (unique.params[1] == resource) return true
+        }
+        return false
+    }
 
     fun isRanged() = rangedStrength > 0
     fun isMelee() = !isRanged() && strength > 0

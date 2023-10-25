@@ -26,10 +26,10 @@ import com.badlogic.gdx.scenes.scene2d.ui.WidgetGroup
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
 import com.unciv.models.translations.tr
-import com.unciv.ui.components.Fonts
 import com.unciv.ui.components.extensions.GdxKeyCodeFixes.DEL
 import com.unciv.ui.components.extensions.GdxKeyCodeFixes.toString
 import com.unciv.ui.components.extensions.GdxKeyCodeFixes.valueOf
+import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.components.input.onChange
 import com.unciv.ui.images.IconCircleGroup
 import com.unciv.ui.images.ImageGetter

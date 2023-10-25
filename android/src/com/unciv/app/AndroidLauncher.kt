@@ -7,7 +7,7 @@ import androidx.work.WorkManager
 import com.badlogic.gdx.backends.android.AndroidApplication
 import com.badlogic.gdx.backends.android.AndroidApplicationConfiguration
 import com.unciv.logic.files.UncivFiles
-import com.unciv.ui.components.Fonts
+import com.unciv.ui.components.fonts.Fonts
 import com.unciv.utils.Display
 import com.unciv.utils.Log
 import java.io.File

@@ -17,23 +17,27 @@ import com.unciv.models.ruleset.PolicyBranch
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.fillPlaceholders
 import com.unciv.models.translations.tr
-import com.unciv.ui.components.widgets.BorderedTable
-import com.unciv.ui.components.widgets.ColorMarkupLabel
 import com.unciv.ui.components.extensions.addSeparator
 import com.unciv.ui.components.extensions.center
 import com.unciv.ui.components.extensions.colorFromRGB
 import com.unciv.ui.components.extensions.darken
 import com.unciv.ui.components.extensions.disable
 import com.unciv.ui.components.extensions.enable
-import com.unciv.ui.components.input.onClick
-import com.unciv.ui.components.input.onDoubleClick
 import com.unciv.ui.components.extensions.pad
 import com.unciv.ui.components.extensions.toGroup
 import com.unciv.ui.components.extensions.toLabel
+import com.unciv.ui.components.input.KeyboardBinding
+import com.unciv.ui.components.input.keyShortcuts
+import com.unciv.ui.components.input.onActivation
+import com.unciv.ui.components.input.onClick
+import com.unciv.ui.components.input.onDoubleClick
+import com.unciv.ui.components.widgets.BorderedTable
+import com.unciv.ui.components.widgets.ColorMarkupLabel
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popups.ConfirmPopup
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.basescreen.RecreateOnResize
+import com.unciv.ui.screens.civilopediascreen.CivilopediaScreen
 import java.lang.Integer.max
 import kotlin.math.abs
 import kotlin.math.min
@@ -236,6 +240,11 @@ class PolicyPickerScreen(val viewingCiv: Civilization, val canChangeState: Boole
         selectedPolicyButton?.isSelected = true
 
         descriptionLabel.setText(policy.getDescription())
+        descriptionLabel.clearListeners()
+        descriptionLabel.onActivation {
+            game.pushScreen(CivilopediaScreen(viewingCiv.gameInfo.ruleset, link = policy.makeLink()))
+        }
+        descriptionLabel.keyShortcuts.add(KeyboardBinding.Civilopedia)
     }
 
     /**

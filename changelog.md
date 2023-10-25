@@ -1,3 +1,27 @@
+## 4.8.14
+
+Allow "[stats]" unique on terrains  - By SeventhM
+
+By SomeTroglodyte:
+- PolicyPickerScreen description links to Civilopedia
+- Fix music errors on android pause-via-homescreen-button
+- Remove UniqueTarget.Terrain from UniqueType.Stats as there is no implementation
+
+By PLynx01:
+- Added new trigger unique "Remove [buildingFilter] [cityFilter]"
+- "when above [amount] [stat]" conditional, with gamespeed-modified version
+
+## 4.8.13
+
+By SeventhM:
+- Fix auto assign production not working after a building is built
+- Fix consuming resources not being affected by conditionals
+
+By SomeTroglodyte:
+- Allow games with zero researched techs to be 'before' the Ancient Era
+- Minor Fix: VictoryScreenIllustrations
+- Fix font "symbols" not showing
+
 ## 4.8.12
 
 Automated units can fortify/set up/other actions
