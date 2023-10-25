@@ -195,7 +195,7 @@ object UnitAutomation {
 
         if (tryHeadTowardsOurSiegedCity(unit)) return
 
-        if (unit.health < 50 && tryHealUnit(unit)) return // do nothing but heal
+        if (unit.health < 50 && (tryRetreat(unit) || tryHealUnit(unit))) return // do nothing but heal
 
         // if a embarked melee unit can land and attack next turn, do not attack from water.
         if (BattleHelper.tryDisembarkUnitToAttackPosition(unit)) return
@@ -252,6 +252,35 @@ object UnitAutomation {
             ?: return false
         unit.movement.headTowards(encampmentToHeadTowards)
         return true
+    }
+    
+    private fun tryRetreat(unit: MapUnit): Boolean {
+        // Precondition: This must be a military unit
+        if (unit.isCivilian()) return false
+        
+        if (unit.baseUnit.isAirUnit()) {
+            return false
+        }
+
+        val unitDistanceToTiles = unit.movement.getDistanceToTiles()
+        val swapableTiles = unitDistanceToTiles.keys.filter { it.militaryUnit != null && it.militaryUnit!!.owner == unit.owner}
+        for (swapTile in swapableTiles) {
+            val otherUnit = swapTile.militaryUnit!!
+            if (otherUnit.health > 80 
+                && otherUnit.getDistanceToEnemyUnit(6, false) < unit.getDistanceToEnemyUnit(6,false)) {
+                if (otherUnit.baseUnit.isRanged()) {
+                    // Don't swap ranged units closer than they have to be
+                    val range = otherUnit.baseUnit.range
+                    if (unit.getDistanceToEnemyUnit(6) < range)
+                        continue
+                }
+                if (unit.movement.canUnitSwapTo(swapTile)) { 
+                    unit.movement.swapMoveToTile(swapTile) 
+                    return true
+                }
+            }
+        }
+        return false
     }
 
     private fun tryHealUnit(unit: MapUnit): Boolean {
