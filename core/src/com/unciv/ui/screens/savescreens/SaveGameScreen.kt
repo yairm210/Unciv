@@ -89,9 +89,6 @@ class SaveGameScreen(val gameInfo: GameInfo) : LoadOrSaveScreen("Current saves")
     }
 
     private fun Table.addSaveToCustomLocation() {
-        // See #10353 - we don't support custom saving an online multiplayer game
-        if (gameInfo.gameParameters.isOnlineMultiplayer) return
-
         val saveToCustomLocation = saveToCustomText.toTextButton()
         val errorLabel = "".toLabel(Color.RED)
         saveToCustomLocation.onClick {
