@@ -24,13 +24,15 @@ class LinuxX11SaverLoader : PlatformSaverLoader {
                 else Gdx.files.local(suggestedLocation)
             FileChooser.createSaveDialog(stage, "Save game", startLocation) {
                 success, file ->
-                if (!success) return@createSaveDialog
-                try {
-                    file.writeString(data, false, Charsets.UTF_8.name())
-                    onSaved(file.path())
-                } catch (ex: Exception) {
-                    onError(ex)
-                }
+                if (!success)
+                    onError(PlatformSaverLoader.Cancelled())
+                else
+                    try {
+                        file.writeString(data, false, Charsets.UTF_8.name())
+                        onSaved(file.path())
+                    } catch (ex: Exception) {
+                        onError(ex)
+                    }
             }.open(true)
         }
     }
@@ -41,13 +43,15 @@ class LinuxX11SaverLoader : PlatformSaverLoader {
     ) {
         Concurrency.runOnGLThread {
             FileChooser.createLoadDialog(stage, "Load game") { success, file ->
-                if (!success) return@createLoadDialog
-                try {
-                    val data = file.readString(Charsets.UTF_8.name())
-                    onLoaded(data, file.path())
-                } catch (ex: Exception) {
-                    onError(ex)
-                }
+                if (!success)
+                    onError(PlatformSaverLoader.Cancelled())
+                else
+                    try {
+                        val data = file.readString(Charsets.UTF_8.name())
+                        onLoaded(data, file.path())
+                    } catch (ex: Exception) {
+                        onError(ex)
+                    }
             }.open(true)
         }
     }

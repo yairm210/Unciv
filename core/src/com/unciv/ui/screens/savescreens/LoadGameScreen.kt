@@ -8,27 +8,28 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.utils.SerializationException
 import com.unciv.Constants
 import com.unciv.logic.MissingModsException
-import com.unciv.logic.files.UncivFiles
 import com.unciv.logic.UncivShowableException
+import com.unciv.logic.files.PlatformSaverLoader
+import com.unciv.logic.files.UncivFiles
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.translations.tr
-import com.unciv.ui.screens.pickerscreens.Github
-import com.unciv.ui.popups.Popup
-import com.unciv.ui.popups.ToastPopup
-import com.unciv.ui.components.input.KeyCharAndCode
 import com.unciv.ui.components.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.components.extensions.disable
 import com.unciv.ui.components.extensions.enable
 import com.unciv.ui.components.extensions.isEnabled
+import com.unciv.ui.components.extensions.toLabel
+import com.unciv.ui.components.extensions.toTextButton
+import com.unciv.ui.components.input.KeyCharAndCode
 import com.unciv.ui.components.input.keyShortcuts
 import com.unciv.ui.components.input.onActivation
 import com.unciv.ui.components.input.onClick
-import com.unciv.ui.components.extensions.toLabel
-import com.unciv.ui.components.extensions.toTextButton
 import com.unciv.ui.popups.LoadingPopup
+import com.unciv.ui.popups.Popup
+import com.unciv.ui.popups.ToastPopup
+import com.unciv.ui.screens.pickerscreens.Github
 import com.unciv.ui.screens.pickerscreens.Github.folderNameToRepoName
-import com.unciv.utils.Log
 import com.unciv.utils.Concurrency
+import com.unciv.utils.Log
 import com.unciv.utils.launchOnGLThread
 import java.io.FileNotFoundException
 
@@ -170,25 +171,26 @@ class LoadGameScreen : LoadOrSaveScreen() {
     }
 
     private fun Table.addLoadFromCustomLocationButton() {
-        val loadFromCustomLocation = loadFromCustomLocation.toTextButton()
-        loadFromCustomLocation.onClick {
+        val loadFromCustomLocationButton = loadFromCustomLocation.toTextButton()
+        loadFromCustomLocationButton.onClick {
             errorLabel.isVisible = false
-            loadFromCustomLocation.setText(Constants.loading.tr())
-            loadFromCustomLocation.disable()
+            loadFromCustomLocationButton.setText(Constants.loading.tr())
+            loadFromCustomLocationButton.disable()
             Concurrency.run(Companion.loadFromCustomLocation) {
                 game.files.loadGameFromCustomLocation(
                     {
                         Concurrency.run { game.loadGame(it, true) }
-                        loadFromCustomLocation.enable()
                     },
                     {
-                        handleLoadGameException(it, "Could not load game from custom location!")
-                        loadFromCustomLocation.enable()
+                        if (it !is PlatformSaverLoader.Cancelled)
+                            handleLoadGameException(it, "Could not load game from custom location!")
+                        loadFromCustomLocationButton.setText(loadFromCustomLocation.tr())
+                        loadFromCustomLocationButton.enable()
                     }
                 )
             }
         }
-        add(loadFromCustomLocation).row()
+        add(loadFromCustomLocationButton).row()
     }
 
     private fun getCopyExistingSaveToClipboardButton(): TextButton {
