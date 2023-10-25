@@ -20,7 +20,9 @@ class LinuxX11SaverLoader : PlatformSaverLoader {
         onError: (ex: Exception) -> Unit
     ) {
         Concurrency.runOnGLThread {
-            val startLocation = if (suggestedLocation.startsWith(File.separator)) Gdx.files.absolute(suggestedLocation)
+            val startLocation =
+                if (suggestedLocation.startsWith(File.separator)) Gdx.files.absolute(suggestedLocation)
+                else if (Gdx.files.external(suggestedLocation).parent().exists()) Gdx.files.external(suggestedLocation)
                 else Gdx.files.local(suggestedLocation)
             FileChooser.createSaveDialog(stage, "Save game", startLocation) {
                 success, file ->
