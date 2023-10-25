@@ -100,7 +100,7 @@ class TileStatFunctions(val tile: Tile) {
         for (terrain in tile.allTerrains) {
             for (unique in terrain.getMatchingUniques(UniqueType.Stats, stateForConditionals)) {
                 if (stats == null) {
-                    stats = unique.stats
+                    stats = unique.stats.cloneStats()
                 }
                 else stats.add(unique.stats)
             }
