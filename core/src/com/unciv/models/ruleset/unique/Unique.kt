@@ -340,6 +340,12 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
                     it != state.civInfo && it.isMajorCiv()
                         && it.tech.isResearched(sourceObjectName!!) // guarded by the sourceObjectType check
                 }
+            UniqueType.ConditionalFirstCivToAdopt ->
+                state.civInfo != null && sourceObjectType == UniqueTarget.Policy
+                && state.civInfo.gameInfo.civilizations.none {
+                    it != state.civInfo && it.isMajorCiv()
+                        && it.policies.isAdopted(sourceObjectName!!) // guarded by the sourceObjectType check
+                }
 
             else -> false
         }
