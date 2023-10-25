@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx
 import com.unciv.UncivGame
 import com.unciv.utils.Concurrency
 import java.awt.GraphicsEnvironment
+import java.io.File
 
 class LinuxX11SaverLoader : PlatformSaverLoader {
     override fun saveGame(
@@ -13,7 +14,9 @@ class LinuxX11SaverLoader : PlatformSaverLoader {
         onError: (ex: Exception) -> Unit
     ) {
         Concurrency.runOnGLThread {
-            FileChooser.createSaveDialog(stage, "Save game", Gdx.files.absolute(suggestedLocation)) {
+            val startLocation = if (suggestedLocation.startsWith(File.separator)) Gdx.files.absolute(suggestedLocation)
+                else Gdx.files.local(suggestedLocation)
+            FileChooser.createSaveDialog(stage, "Save game", startLocation) {
                 success, file ->
                 if (!success) return@createSaveDialog
                 try {

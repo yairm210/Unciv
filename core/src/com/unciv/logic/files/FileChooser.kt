@@ -199,7 +199,10 @@ open class FileChooser(
             startFile == null ->
                 Gdx.files.absolute(absoluteLocalPath)
             startFile.isDirectory -> startFile
-            else -> startFile.parent()
+            else -> {
+                fileNameInput.text = startFile.name()
+                startFile.parent()
+            }
         }))
     }
 
