@@ -124,7 +124,13 @@ open class FileChooser(
         innerTable.top().left()
 
         fileList.selection.setProgrammaticChangeEvents(false)
-        fileNameInput.setTextFieldListener { textField, _ -> result = textField.text }
+        fileNameInput.setTextFieldListener { textField, _ ->
+            result = textField.text
+            enableOKButton()
+        }
+        fileNameInput.setTextFieldFilter { _, char ->
+            char != File.separatorChar
+        }
 
         if (title != null) {
             addGoodSizedLabel(title).colspan(2).center().row()
@@ -201,6 +207,7 @@ open class FileChooser(
             startFile.isDirectory -> startFile
             else -> {
                 fileNameInput.text = startFile.name()
+                result = startFile.name()
                 startFile.parent()
             }
         }))
@@ -255,12 +262,17 @@ open class FileChooser(
     }
 
     private fun enableOKButton() {
-        fun getEnable(): Boolean {
+        fun getLoadEnable(): Boolean {
             val file = fileList.selected?.file ?: return false
             if (!file.exists()) return false
             return (allowFolderSelect || !file.isDirectory)
         }
-        okButton.isEnabled = getEnable()
+        fun getSaveEnable(): Boolean {
+            if (currentDir?.exists() != true) return false
+            if (allowFolderSelect) return true
+            return result?.run { isEmpty() || startsWith(' ') || endsWith(' ') } == false
+        }
+        okButton.isEnabled = if (fileNameEnabled) getSaveEnable() else getLoadEnable()
     }
 
     fun setOkButtonText(text: String) {
