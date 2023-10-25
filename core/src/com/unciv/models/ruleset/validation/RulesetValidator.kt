@@ -342,7 +342,7 @@ class RulesetValidator(val ruleset: Ruleset) {
                 if (baseTerrain == null)
                     lines += "${terrain.name} turns into terrain ${terrain.turnsInto} which does not exist!"
                 else if (!baseTerrain.type.isBaseTerrain)
-                // See https://github.com/hackedpassword/Z2/blob/main/HybridTileTech.md for a clever exploit
+                    // See https://github.com/hackedpassword/Z2/blob/main/HybridTileTech.md for a clever exploit
                     lines.add("${terrain.name} turns into terrain ${terrain.turnsInto} which is not a base terrain!", RulesetErrorSeverity.Warning)
             }
             uniqueValidator.checkUniques(terrain, lines, rulesetSpecific, tryFixUnknownUniques)
