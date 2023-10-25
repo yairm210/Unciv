@@ -16,22 +16,21 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.utils.Align
-import com.badlogic.gdx.utils.Array as GdxArray
 import com.unciv.Constants
 import com.unciv.models.UncivSound
 import com.unciv.models.translations.tr
-import com.unciv.ui.components.widgets.AutoScrollPane
-import com.unciv.ui.components.input.KeyboardBinding
 import com.unciv.ui.components.UncivTextField
 import com.unciv.ui.components.extensions.addSeparator
 import com.unciv.ui.components.extensions.isEnabled
+import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.input.onChange
 import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.input.onDoubleClick
-import com.unciv.ui.components.extensions.toLabel
+import com.unciv.ui.components.widgets.AutoScrollPane
 import com.unciv.ui.popups.Popup
 import java.io.File
 import java.io.FileFilter
+import com.badlogic.gdx.utils.Array as GdxArray
 
 typealias ResultListener = (success: Boolean, file: FileHandle) -> Unit
 
@@ -138,10 +137,10 @@ open class FileChooser(
         fileNameCell = add().colspan(2).growX()
         row()
 
-        addCloseButton("Cancel", KeyboardBinding.Cancel) {
+        addCloseButton("Cancel") {
             reportResult(false)
         }
-        okButton = addOKButton(Constants.OK, KeyboardBinding.Confirm) {
+        okButton = addOKButton(Constants.OK) {
             reportResult(true)
         }.actor
         equalizeLastTwoButtonWidths()
