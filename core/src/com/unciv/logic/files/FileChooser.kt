@@ -27,6 +27,7 @@ import com.unciv.ui.components.input.onChange
 import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.input.onDoubleClick
 import com.unciv.ui.components.widgets.AutoScrollPane
+import com.unciv.ui.popups.ConfirmPopup
 import com.unciv.ui.popups.Popup
 import java.io.File
 import java.io.FileFilter
@@ -180,7 +181,18 @@ open class FileChooser(
     override fun getMaxHeight() = maxHeight
 
     private fun reportResult(success: Boolean) {
-        resultListener?.invoke(success, getResult())
+        val file = getResult()
+        if (!(success && fileNameEnabled && file.exists())) {
+            resultListener?.invoke(success, file)
+            return
+        }
+        ConfirmPopup(stageToShowOn, "Do you want to overwrite ${file.name()}?", "Overwrite",
+            restoreDefault = {
+                resultListener?.invoke(false, file)
+            }, action = {
+                resultListener?.invoke(true, file)
+            }
+        ).open(true)
     }
 
     private fun makeAbsolute(file: FileHandle): FileHandle {
