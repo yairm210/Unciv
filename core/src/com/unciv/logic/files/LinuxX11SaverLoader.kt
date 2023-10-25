@@ -6,6 +6,12 @@ import com.unciv.utils.Concurrency
 import java.awt.GraphicsEnvironment
 import java.io.File
 
+
+/**
+ *  A dedicated PlatformSaverLoader for X11-based Linux boxes, as using the Java AWT/Swing file chooser dialog will kill the App after closing that dialog
+ *
+ *  Tested as required from Mint 20.1 up to Mint 21.2, seems independent of Java runtime (mostly tested with adoptium temurin 11 and 17 versions).
+ */
 class LinuxX11SaverLoader : PlatformSaverLoader {
     override fun saveGame(
         data: String,
