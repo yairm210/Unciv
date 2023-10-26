@@ -1016,9 +1016,10 @@ object NextTurnAutomation {
         if (unit.isCivilian() && !unit.isGreatPersonOfType("War")) return 1 // Civilian
         if (unit.baseUnit.isAirUnit()) return 2
         val distance = if (!isAtWar) 0 else unit.getDistanceToEnemyUnit(6)
-        return (distance ?: 5) + when {
-            unit.baseUnit.isRanged() -> 2
-            unit.baseUnit.isMelee() -> 3
+        // Lower health units should move earlier to swap with higher health units
+        return distance + (unit.health / 10) + when {
+            unit.baseUnit.isRanged() -> 10
+            unit.baseUnit.isMelee() -> 30
             unit.isGreatPersonOfType("War") -> 100 // Generals move after military units
             else -> 1
         }
