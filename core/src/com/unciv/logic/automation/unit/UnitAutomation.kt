@@ -267,7 +267,7 @@ object UnitAutomation {
         for (swapTile in swapableTiles) {
             val otherUnit = swapTile.militaryUnit!!
             if (otherUnit.health > 80 
-                && otherUnit.getDistanceToEnemyUnit(6, false) < unit.getDistanceToEnemyUnit(6,false)) {
+                && unit.getDistanceToEnemyUnit(6, false) < otherUnit.getDistanceToEnemyUnit(6,false)) {
                 if (otherUnit.baseUnit.isRanged()) {
                     // Don't swap ranged units closer than they have to be
                     val range = otherUnit.baseUnit.range
