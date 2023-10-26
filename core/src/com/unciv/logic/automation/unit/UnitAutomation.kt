@@ -263,7 +263,7 @@ object UnitAutomation {
         }
 
         val unitDistanceToTiles = unit.movement.getDistanceToTiles()
-        val swapableTiles = unitDistanceToTiles.keys.filter { it.militaryUnit != null && it.militaryUnit!!.owner == unit.owner}
+        val swapableTiles = unitDistanceToTiles.keys.filter { it.militaryUnit != null && it.militaryUnit!!.owner == unit.owner}.reversed()
         for (swapTile in swapableTiles) {
             val otherUnit = swapTile.militaryUnit!!
             if (otherUnit.health > 80 
