@@ -257,6 +257,8 @@ object UnitAutomation {
     private fun tryRetreat(unit: MapUnit): Boolean {
         // Precondition: This must be a military unit
         if (unit.isCivilian()) return false
+        // Better to do a more healing oriented move then
+        if (unit.getDistanceToEnemyUnit(6, true) > 5) return false
         
         if (unit.baseUnit.isAirUnit()) {
             return false
