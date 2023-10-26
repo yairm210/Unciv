@@ -485,7 +485,8 @@ class MapUnit : IsPartOfGameInfoSerialization {
             && tile.militaryUnit!!.civ.isAtWarWith(civ)
             && !tile.militaryUnit!!.isInvisible(civ)
         
-        cache.distanceToClosestEnemyUnit = Int.MAX_VALUE
+        // Needs to be a high value, but not the max value so we can still add to it
+        cache.distanceToClosestEnemyUnit = 500000
         for (i in 1..maxDist) {
             if (currentTile.getTilesAtDistance(i).any { 
                     tileHasEnemyCity(it) || tileHasEnemyMilitaryUnit(it) }) {
