@@ -300,16 +300,9 @@ class UnitMovement(val unit: MapUnit) {
         if (otherUnit.owner != unit.owner
                 || otherUnit.cache.cannotMove  // redundant, line below would cover it too
                 || !otherUnit.movement.canReachInCurrentTurn(ourPosition)) return false
-        // Check if we could enter their tile if they wouldn't be there
-        otherUnit.removeFromTile()
-        val weCanEnterTheirTile = canMoveTo(reachableTile)
-        otherUnit.putInTile(reachableTile)
-        if (!weCanEnterTheirTile) return false
-        // Check if they could enter our tile if we wouldn't be here
-        unit.removeFromTile()
-        val theyCanEnterOurTile = otherUnit.movement.canMoveTo(ourPosition)
-        unit.putInTile(ourPosition)
-        if (!theyCanEnterOurTile) return false
+        
+        if (!canMoveTo(reachableTile, canSwap = true)) return false
+        if (!otherUnit.movement.canMoveTo(ourPosition, canSwap = true)) return false
         // All clear!
         return true
     }
