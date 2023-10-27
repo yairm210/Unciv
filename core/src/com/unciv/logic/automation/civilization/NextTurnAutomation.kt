@@ -175,7 +175,7 @@ object NextTurnAutomation {
             if (offer.type == TradeType.Treaty)
                 continue // Don't try to counter with a defensive pact or research pact
 
-            val value = evaluation.evaluateBuyCost(offer, civInfo, otherCiv)
+            val value = evaluation.evaluateBuyCostWithInflation(offer, civInfo, otherCiv)
             if (value > 0)
                 potentialAsks[offer] = value
         }
@@ -204,7 +204,7 @@ object NextTurnAutomation {
             // Remove 1 amount as long as doing so does not change the price
             val originalValue = counterofferAsks[ask]!!
             while (ask.amount > 1
-                    && originalValue == evaluation.evaluateBuyCost(
+                    && originalValue == evaluation.evaluateBuyCostWithInflation(
                             TradeOffer(ask.name, ask.type, ask.amount - 1, ask.duration),
                             civInfo, otherCiv) ) {
                 ask.amount--
@@ -216,7 +216,7 @@ object NextTurnAutomation {
         for (goldAsk in counterofferAsks.keys
                 .filter { it.type == TradeType.Gold_Per_Turn || it.type == TradeType.Gold }
                 .sortedByDescending { it.type.ordinal }) { // Do GPT first
-            val valueOfOne = evaluation.evaluateBuyCost(TradeOffer(goldAsk.name, goldAsk.type, 1, goldAsk.duration), civInfo, otherCiv)
+            val valueOfOne = evaluation.evaluateBuyCostWithInflation(TradeOffer(goldAsk.name, goldAsk.type, 1, goldAsk.duration), civInfo, otherCiv)
             val amountCanBeRemoved = deltaInOurFavor / valueOfOne
             if (amountCanBeRemoved >= goldAsk.amount) {
                 deltaInOurFavor -= counterofferAsks[goldAsk]!!
@@ -236,7 +236,7 @@ object NextTurnAutomation {
                     .sortedByDescending { it.type.ordinal }) {
                 if (tradeLogic.currentTrade.theirOffers.none { it.type == ourGold.type } &&
                         counterofferAsks.keys.none { it.type == ourGold.type } ) {
-                    val valueOfOne = evaluation.evaluateSellCost(TradeOffer(ourGold.name, ourGold.type, 1, ourGold.duration), civInfo, otherCiv)
+                    val valueOfOne = evaluation.evaluateSellCostWithInflation(TradeOffer(ourGold.name, ourGold.type, 1, ourGold.duration), civInfo, otherCiv)
                     val amountToGive = min(deltaInOurFavor / valueOfOne, ourGold.amount)
                     deltaInOurFavor -= amountToGive * valueOfOne
                     if (amountToGive > 0) {

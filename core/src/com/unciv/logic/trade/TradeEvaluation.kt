@@ -73,9 +73,9 @@ class TradeEvaluation {
 
         val sumOfTheirOffers = trade.theirOffers.asSequence()
                 .filter { it.type != TradeType.Treaty } // since treaties should only be evaluated once for 2 sides
-                .map { evaluateBuyCost(it, evaluator, tradePartner) }.sum()
+                .map { evaluateBuyCostWithInflation(it, evaluator, tradePartner) }.sum()
 
-        var sumOfOurOffers = trade.ourOffers.sumOf { evaluateSellCost(it, evaluator, tradePartner) }
+        var sumOfOurOffers = trade.ourOffers.sumOf { evaluateSellCostWithInflation(it, evaluator, tradePartner) }
 
         val relationshipLevel = evaluator.getDiplomacyManager(tradePartner).relationshipIgnoreAfraid()
         // If we're making a peace treaty, don't try to up the bargain for people you don't like.
@@ -93,6 +93,12 @@ class TradeEvaluation {
         }
 
         return sumOfTheirOffers - sumOfOurOffers
+    }
+    
+    fun evaluateBuyCostWithInflation(offer: TradeOffer, civInfo: Civilization, tradePartner: Civilization): Int {
+        if (offer.type != TradeType.Gold && offer.type != TradeType.Gold_Per_Turn)
+            return (evaluateBuyCost(offer, civInfo, tradePartner) * getGoldInflation(civInfo)).toInt()
+        return evaluateBuyCost(offer, civInfo, tradePartner)
     }
 
     fun evaluateBuyCost(offer: TradeOffer, civInfo: Civilization, tradePartner: Civilization): Int {
@@ -198,6 +204,12 @@ class TradeEvaluation {
     }
 
 
+    fun evaluateSellCostWithInflation(offer: TradeOffer, civInfo: Civilization, tradePartner: Civilization): Int {
+        if (offer.type != TradeType.Gold && offer.type != TradeType.Gold_Per_Turn)
+            return (evaluateSellCost(offer, civInfo, tradePartner) * getGoldInflation(civInfo)).toInt()
+        return evaluateSellCost(offer, civInfo, tradePartner)
+    }
+
     fun evaluateSellCost(offer: TradeOffer, civInfo: Civilization, tradePartner: Civilization): Int {
         when (offer.type) {
             TradeType.Gold -> return offer.amount
@@ -292,6 +304,19 @@ class TradeEvaluation {
         }
     }
 
+    /**
+     * This returns how much one gold is worth now in comparison to starting out the game
+     * Gold is worth less as the civilization has a higher income
+     */
+    fun getGoldInflation(civInfo: Civilization): Double {
+        val modifier: Double = 500.0
+        val goldPerTurn = civInfo.stats.statsForNextTurn.gold.toDouble()
+        // To visualise the function, plug this into a 2d graphing calculator
+        // \frac{500}{x^{1.2}+500}
+        // Goes from 1 at GPT = 0 to .11 at GPT = 1000 
+        return  modifier / (goldPerTurn.pow(1.2) + modifier)
+    }
+    
     /** This code returns a positive value if the city is significantly far away from the capital
      * and given how this method is used this ends up making such cities more expensive. That's how
      * I found it. I'm not sure it makes sense. One might also find arguments why cities closer to
