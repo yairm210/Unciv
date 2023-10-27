@@ -259,7 +259,7 @@ object UnitAutomation {
         // Precondition: This must be a military unit
         if (unit.isCivilian()) return false
         // Better to do a more healing oriented move then
-        if (unit.getDistanceToEnemyUnit(6, true) > 5) return false
+        if (unit.getDistanceToEnemyUnit(6, true) > 4) return false
         
         if (unit.baseUnit.isAirUnit()) {
             return false
