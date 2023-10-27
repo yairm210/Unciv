@@ -275,7 +275,7 @@ class TradeEvaluation {
                 val stats = city.cityStats.currentCityStats
                 val sumOfStats =
                     stats.culture + stats.gold + stats.science + stats.production + stats.happiness + stats.food + distanceBonus
-                return min(sumOfStats.toInt() * 100, 1000)
+                return (sumOfStats.toInt() * 100).coerceAtLeast(1000)
             }
             TradeType.Agreement -> {
                 if (offer.name == Constants.openBorders) {
