@@ -1,8 +1,9 @@
 package com.unciv.ui.screens.overviewscreen
 
 import com.unciv.logic.civilization.Civilization
-import com.unciv.ui.components.widgets.SortableGrid
 import com.unciv.ui.components.extensions.equalizeColumns
+import com.unciv.ui.components.widgets.SortableGrid
+import com.unciv.ui.components.widgets.TabbedPager
 
 
 /**
@@ -52,5 +53,14 @@ class CityOverviewTab(
     init {
         top()
         add(grid)
+    }
+
+    override fun activated(index: Int, caption: String, pager: TabbedPager) {
+        super.activated(index, caption, pager)
+        // Being here can mean the user closed a CityScreen we opened from the first column - or the overview was just opened.
+        // To differentiate, the EmpireOverviewScreen.resume code lies and passes an empty caption - a kludge, but a clean
+        // callback architecture would mean a lot more work
+        if (caption.isEmpty())
+            grid.updateDetails()
     }
 }
