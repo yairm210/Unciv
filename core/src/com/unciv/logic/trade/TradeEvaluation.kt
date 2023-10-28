@@ -97,7 +97,7 @@ class TradeEvaluation {
     
     fun evaluateBuyCostWithInflation(offer: TradeOffer, civInfo: Civilization, tradePartner: Civilization): Int {
         if (offer.type != TradeType.Gold && offer.type != TradeType.Gold_Per_Turn)
-            return (evaluateBuyCost(offer, civInfo, tradePartner) * getGoldInflation(civInfo)).toInt()
+            return (evaluateBuyCost(offer, civInfo, tradePartner) / getGoldInflation(civInfo)).toInt()
         return evaluateBuyCost(offer, civInfo, tradePartner)
     }
 
@@ -206,7 +206,7 @@ class TradeEvaluation {
 
     fun evaluateSellCostWithInflation(offer: TradeOffer, civInfo: Civilization, tradePartner: Civilization): Int {
         if (offer.type != TradeType.Gold && offer.type != TradeType.Gold_Per_Turn)
-            return (evaluateSellCost(offer, civInfo, tradePartner) * getGoldInflation(civInfo)).toInt()
+            return (evaluateSellCost(offer, civInfo, tradePartner) / getGoldInflation(civInfo)).toInt()
         return evaluateSellCost(offer, civInfo, tradePartner)
     }
 
@@ -314,7 +314,8 @@ class TradeEvaluation {
         // To visualise the function, plug this into a 2d graphing calculator
         // \frac{500}{x^{1.2}+500}
         // Goes from 1 at GPT = 0 to .11 at GPT = 1000 
-        return  modifier / (goldPerTurn.pow(1.2) + modifier)
+        val returnValue = modifier / (goldPerTurn.pow(1.2).coerceAtLeast(0.0) + modifier)
+        return  returnValue
     }
     
     /** This code returns a positive value if the city is significantly far away from the capital
