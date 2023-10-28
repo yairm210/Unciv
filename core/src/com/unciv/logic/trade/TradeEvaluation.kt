@@ -309,7 +309,7 @@ class TradeEvaluation {
      * Gold is worth less as the civilization has a higher income
      */
     fun getGoldInflation(civInfo: Civilization): Double {
-        val modifier: Double = 500.0
+        val modifier: Double = 1500.0
         val goldPerTurn = civInfo.stats.statsForNextTurn.gold.toDouble()
         // To visualise the function, plug this into a 2d graphing calculator
         // \frac{500}{x^{1.2}+500}
