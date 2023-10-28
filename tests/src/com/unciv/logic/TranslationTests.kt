@@ -18,12 +18,12 @@ import com.unciv.models.translations.tr
 import com.unciv.testing.GdxTestRunner
 import com.unciv.utils.Log
 import com.unciv.utils.debug
+import java.io.OutputStream
+import java.io.PrintStream
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
-import java.io.OutputStream
-import java.io.PrintStream
 
 @RunWith(GdxTestRunner::class)
 class TranslationTests {
@@ -114,6 +114,33 @@ class TranslationTests {
         Assert.assertTrue(
                 "This test will only pass when all translations' placeholders match those of the key",
                 allTranslationsHaveCorrectPlaceholders
+        )
+    }
+
+    /** For every translatable string and all translations check if all translated placeholders are present in the key */
+    @Test
+    fun allTranslationsHaveNoExtraPlaceholders() {
+        var allTranslationsHaveNoExtraPlaceholders = true
+        val languages = translations.getLanguages()
+        for ((key, translation) in translations) {
+            val translationEntry = translation.entry
+            val placeholders = squareBraceRegex.findAll(translationEntry)
+                .map { it.value }.toSet()
+            for (language in languages) {
+                val output = translations.getText(key, language)
+                if (output == key) continue // the language doesn't have the required translation, so we got back the key
+                val translatedPlaceholders = squareBraceRegex.findAll(output)
+                    .map { it.value }.toSet()
+                val extras = translatedPlaceholders - placeholders
+                for (placeholder in extras) {
+                    allTranslationsHaveNoExtraPlaceholders = false
+                    println("Extra placeholder `$placeholder` in `$language` for entry `$translationEntry`")
+                }
+            }
+        }
+        Assert.assertTrue(
+            "This test will only pass when all placeholders in all translations are present in the key",
+            allTranslationsHaveNoExtraPlaceholders
         )
     }
 
