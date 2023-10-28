@@ -38,7 +38,18 @@ Each difficulty level can have the following attributes:
 
 [Link to original](https://github.com/yairm210/Unciv/tree/master/android/assets/jsons/Civ%20V%20-%20Gods%20&%20Kings/Eras.json)
 
-This file should contain all the era's you want to use in your mod.
+This file should contain all the eras you want to use in your mod.
+
+**Warning**: The display of City centers is dependent on era names, and the default image shows a great big question mark.
+So if you define era names not present in vanilla, you might see that great big question mark in your cities.
+To avoid that, you should provide City center images specific to these eras, or override the default image.
+That is, the very minimum you could do is copy the
+[City center-Ancient era.png](https://raw.githubusercontent.com/yairm210/Unciv/master/android/Images.Tilesets/TileSets/HexaRealm/Tiles/City%20center-Ancient%20era.png)
+image (or whichever fits best) to `Images/TileSets/FantasyHex/Tiles/City center.png` within your mod.
+Using a HexaRealm resolution image in a FantasyHex path is not optimal, but because the latter is fallback for the former, this covers both TileSets.
+For better results, provide images for all new Eras and all standard TileSets.
+
+See also: [Creating a custom tileset](../Creating-a-custom-tileset.md)
 
 Each era can have the following attributes:
 
