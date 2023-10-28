@@ -2,6 +2,7 @@ package com.unciv.logic.map.mapunit
 
 import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
+import com.unciv.GUI
 import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.automation.unit.UnitAutomation
 import com.unciv.logic.battle.BattleUnitCapture
@@ -750,6 +751,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
     private fun getAncientRuinBonus(tile: Tile) {
         tile.removeImprovement()
         civ.ruinsManager.selectNextRuinsReward(this)
+        GUI.clearUndoCheckpoints()
     }
 
     fun assignOwner(civInfo: Civilization, updateCivInfo: Boolean = true) {
