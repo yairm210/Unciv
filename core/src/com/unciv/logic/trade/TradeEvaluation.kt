@@ -6,7 +6,6 @@ import com.unciv.logic.automation.ThreatLevel
 import com.unciv.logic.automation.civilization.NextTurnAutomation
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
-import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.ModOptionsConstants
@@ -309,15 +308,13 @@ class TradeEvaluation {
      * Gold is worth less as the civilization has a higher income
      */
     fun getGoldInflation(civInfo: Civilization): Double {
-        val modifier: Double = 1000.0
+        val modifier = 1000.0
         val goldPerTurn = civInfo.stats.statsForNextTurn.gold.toDouble()
-        // To visualise the function, plug this into a 2d graphing calculator
-        // \frac{1000}{x^{1.2}+1.11*1000}
+        // To visualise the function, plug this into a 2d graphing calculator \frac{1000}{x^{1.2}+1.11*1000}
         // Goes from 1 at GPT = 0 to .834 at GPT = 100, .296 at GPT = 1000 and 0.116 at GPT = 10000
         // The current value of gold will never go below 10% or the .1f that it is set to
         // So this does not scale off to infinity
-        val returnValue = modifier / (goldPerTurn.pow(1.2).coerceAtLeast(0.0) + (1.11f * modifier)) + .1f
-        return  returnValue
+        return modifier / (goldPerTurn.pow(1.2).coerceAtLeast(0.0) + (1.11f * modifier)) + .1f
     }
     
     /** This code returns a positive value if the city is significantly far away from the capital
