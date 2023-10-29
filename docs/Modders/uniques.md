@@ -10,6 +10,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Triggerable, Global
 
+??? example  "Remove [buildingFilter] [cityFilter]"
+	Example: "Remove [Culture] [in all cities]"
+
+	Applicable to: Triggerable, Global
+
 ??? example  "Free [unit] appears"
 	Example: "Free [Musketman] appears"
 
@@ -1830,6 +1835,9 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Conditional
 
+??? example  "&lt;if no other Civilization has adopted this&gt;"
+	Applicable to: Conditional
+
 ??? example  "&lt;after adopting [policy/belief]&gt;"
 	Example: "&lt;after adopting [Oligarchy]&gt;"
 
@@ -1873,13 +1881,23 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Conditional
 
-??? example  "&lt;when above [amount] [resource]&gt;"
-	Example: "&lt;when above [3] [Iron]&gt;"
+??? example  "&lt;when above [amount] [stat/resource]&gt;"
+	Example: "&lt;when above [3] [Culture]&gt;"
 
 	Applicable to: Conditional
 
-??? example  "&lt;when below [amount] [resource]&gt;"
-	Example: "&lt;when below [3] [Iron]&gt;"
+??? example  "&lt;when below [amount] [stat/resource]&gt;"
+	Example: "&lt;when below [3] [Culture]&gt;"
+
+	Applicable to: Conditional
+
+??? example  "&lt;when above [amount] [stat] (modified by game speed)&gt;"
+	Example: "&lt;when above [3] [Culture] (modified by game speed)&gt;"
+
+	Applicable to: Conditional
+
+??? example  "&lt;when below [amount] [stat] (modified by game speed)&gt;"
+	Example: "&lt;when below [3] [Culture] (modified by game speed)&gt;"
 
 	Applicable to: Conditional
 

@@ -78,7 +78,7 @@ object CityResources {
         for (building in city.cityConstructions.getBuiltBuildings()) {
             // Free buildings cost no resources
             if (building.name in freeBuildings) continue
-            cityResources.subtractResourceRequirements(building.getResourceRequirementsPerTurn(), city.getRuleset(), "Buildings")
+            cityResources.subtractResourceRequirements(building.getResourceRequirementsPerTurn(StateForConditionals(city.civ, city)), city.getRuleset(), "Buildings")
         }
     }
 

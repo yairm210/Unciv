@@ -648,6 +648,23 @@ object UniqueTriggerActivation {
                 return true // not fully correct
             }
 
+            UniqueType.RemoveBuilding -> {
+
+                val applicableCities = civInfo.cities.asSequence().filter {
+                        it.matchesFilter(unique.params[1])
+                    }
+
+                for (applicableCity in applicableCities) {
+                    val buildingsToRemove = applicableCity.cityConstructions.getBuiltBuildings().filter {
+                        it.matchesFilter(unique.params[0])
+                    }.toSet()
+
+                    applicableCity.cityConstructions.removeBuildings(buildingsToRemove)
+                }
+
+                return true
+            }
+
             else -> {}
         }
         return false

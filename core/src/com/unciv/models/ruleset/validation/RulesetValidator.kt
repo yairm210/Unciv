@@ -328,9 +328,23 @@ class RulesetValidator(val ruleset: Ruleset) {
         if (ruleset.terrains.values.none { it.type == TerrainType.Land && !it.impassable })
             lines += "No passable land terrains exist!"
         for (terrain in ruleset.terrains.values) {
-            for (baseTerrain in terrain.occursOn)
-                if (!ruleset.terrains.containsKey(baseTerrain))
-                    lines += "${terrain.name} occurs on terrain $baseTerrain which does not exist!"
+            for (baseTerrainName in terrain.occursOn) {
+                val baseTerrain = ruleset.terrains[baseTerrainName]
+                if (baseTerrain == null)
+                    lines += "${terrain.name} occurs on terrain $baseTerrainName which does not exist!"
+                else if (baseTerrain.type == TerrainType.NaturalWonder)
+                    lines.add("${terrain.name} occurs on natural wonder $baseTerrainName: Unsupported.", RulesetErrorSeverity.WarningOptionsOnly)
+            }
+            if (terrain.type == TerrainType.NaturalWonder) {
+                if (terrain.turnsInto == null)
+                    lines += "Natural Wonder ${terrain.name} is missing the turnsInto attribute!"
+                val baseTerrain = ruleset.terrains[terrain.turnsInto]
+                if (baseTerrain == null)
+                    lines += "${terrain.name} turns into terrain ${terrain.turnsInto} which does not exist!"
+                else if (!baseTerrain.type.isBaseTerrain)
+                    // See https://github.com/hackedpassword/Z2/blob/main/HybridTileTech.md for a clever exploit
+                    lines.add("${terrain.name} turns into terrain ${terrain.turnsInto} which is not a base terrain!", RulesetErrorSeverity.Warning)
+            }
             uniqueValidator.checkUniques(terrain, lines, rulesetSpecific, tryFixUnknownUniques)
         }
     }
@@ -433,7 +447,7 @@ class RulesetValidator(val ruleset: Ruleset) {
             for (specialistName in building.specialistSlots.keys)
                 if (!ruleset.specialists.containsKey(specialistName))
                     lines += "${building.name} provides specialist $specialistName which does not exist!"
-            for (resource in building.getResourceRequirementsPerTurn().keys)
+            for (resource in building.getResourceRequirementsPerTurn(StateForConditionals.IgnoreConditionals).keys)
                 if (!ruleset.tileResources.containsKey(resource))
                     lines += "${building.name} requires resource $resource which does not exist!"
             if (building.replaces != null && !ruleset.buildings.containsKey(building.replaces!!))
@@ -649,7 +663,7 @@ class RulesetValidator(val ruleset: Ruleset) {
                 )
         }
 
-        for (resource in unit.getResourceRequirementsPerTurn().keys)
+        for (resource in unit.getResourceRequirementsPerTurn(StateForConditionals.IgnoreConditionals).keys)
             if (!ruleset.tileResources.containsKey(resource))
                 lines += "${unit.name} requires resource $resource which does not exist!"
         if (unit.replaces != null && !ruleset.units.containsKey(unit.replaces!!))
@@ -660,10 +674,12 @@ class RulesetValidator(val ruleset: Ruleset) {
         checkUnitType(unit.unitType) {
             lines += "${unit.name} is of type ${unit.unitType}, which does not exist!"
         }
-        for (unique in unit.getMatchingUniques(UniqueType.ConstructImprovementInstantly)) {
+
+        // We should ignore conditionals here - there are condition implementations on this out there that require a game state (and will test false without)
+        for (unique in unit.getMatchingUniques(UniqueType.ConstructImprovementInstantly, StateForConditionals.IgnoreConditionals)) {
             val improvementName = unique.params[0]
-            if (ruleset.tileImprovements[improvementName]==null) continue // this will be caught in the uniqueValidator.checkUniques
-            if ((ruleset.tileImprovements[improvementName] as Stats).none() &&
+            if (ruleset.tileImprovements[improvementName] == null) continue // this will be caught in the uniqueValidator.checkUniques
+            if ((ruleset.tileImprovements[improvementName] as Stats).isEmpty() &&
                 unit.isCivilian() &&
                 !unit.isGreatPersonOfType("War")) {
                 lines.add("${unit.name} can place improvement $improvementName which has no stats, preventing unit automation!",

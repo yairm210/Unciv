@@ -19,6 +19,7 @@ import com.unciv.models.ruleset.INonPerpetualConstruction
 import com.unciv.models.ruleset.PerpetualConstruction
 import com.unciv.models.ruleset.RejectionReason
 import com.unciv.models.ruleset.RejectionReasonType
+import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stat
@@ -210,7 +211,9 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
 
             val useStoredProduction = entry is Building || !cityConstructions.isBeingConstructedOrEnqueued(entry.name)
             val buttonText = cityConstructions.getTurnsToConstructionString(entry, useStoredProduction).trim()
-            val resourcesRequired = entry.getResourceRequirementsPerTurn()
+            val resourcesRequired = if (entry is BaseUnit)
+                entry.getResourceRequirementsPerTurn(StateForConditionals(city.civ))
+                else entry.getResourceRequirementsPerTurn(StateForConditionals(city.civ, city))
             val mostImportantRejection =
                     entry.getRejectionReasons(cityConstructions)
                         .filter { it.isImportantRejection() }
@@ -325,7 +328,9 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
                 if (constructionName in PerpetualConstruction.perpetualConstructionsMap) "\n∞"
                 else cityConstructions.getTurnsToConstructionString(construction, isFirstConstructionOfItsKind)
 
-        val constructionResource = construction.getResourceRequirementsPerTurn()
+        val constructionResource = if (construction is BaseUnit)
+                construction.getResourceRequirementsPerTurn(StateForConditionals(city.civ, city))
+            else construction.getResourceRequirementsPerTurn(StateForConditionals(city.civ))
         for ((resourceName, amount) in constructionResource) {
             val resource = cityConstructions.city.getRuleset().tileResources[resourceName] ?: continue
             text += "\n" + resourceName.getConsumesAmountString(amount, resource.isStockpiled()).tr()

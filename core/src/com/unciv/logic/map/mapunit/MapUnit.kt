@@ -12,6 +12,7 @@ import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.map.mapunit.movement.UnitMovement
 import com.unciv.logic.map.tile.Tile
+import com.unciv.models.Counter
 import com.unciv.models.UnitActionType
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.tile.TileImprovement
@@ -254,11 +255,30 @@ class MapUnit : IsPartOfGameInfoSerialization {
                 promotions.addPromotion(promotion, isFree = true)
 
         newUnit.promotions = promotions.clone()
+        newUnit.automated = automated
+        newUnit.action = action // Needed too for Unit Overview action column
 
         newUnit.updateUniques()
         newUnit.updateVisibleTiles()
     }
 
+    /** Gets *per turn* resource requirements - does not include immediate costs for stockpiled resources.
+     * StateForConditionals is assumed to regarding this mapUnit*/
+    fun getResourceRequirementsPerTurn(): Counter<String> {
+        val resourceRequirements = Counter<String>()
+        if (baseUnit.requiredResource != null) resourceRequirements[baseUnit.requiredResource!!] = 1
+        for (unique in getMatchingUniques(UniqueType.ConsumesResources, StateForConditionals(civ, unit = this)))
+            resourceRequirements[unique.params[1]] += unique.params[0].toInt()
+        return resourceRequirements
+    }
+
+    fun requiresResource(resource: String): Boolean {
+        if (getResourceRequirementsPerTurn().contains(resource)) return true
+        for (unique in getMatchingUniques(UniqueType.CostsResources, StateForConditionals(civ, unit = this))) {
+            if (unique.params[1] == resource) return true
+        }
+        return false
+    }
 
     fun getMaxMovement(): Int {
         var movement =
@@ -445,13 +465,38 @@ class MapUnit : IsPartOfGameInfoSerialization {
     fun isGreatPerson() = baseUnit.isGreatPerson()
     fun isGreatPersonOfType(type: String) = baseUnit.isGreatPersonOfType(type)
 
-    fun getDistanceToEnemyUnit(maxDist: Int): Int? {
-        for (i in 1..maxDist) {
-            if (currentTile.getTilesAtDistance(i).any {it.militaryUnit != null
-                && it.militaryUnit!!.civ.isAtWarWith(civ) })
-                return i
+    /**
+     * Gets the distance to the closest visible enemy unit or city.
+     * The result value is cached
+     * Since it is called each turn each subsequent call is essentially free
+     */
+    fun getDistanceToEnemyUnit(maxDist: Int, takeLargerValues: Boolean = true): Int {
+        if (cache.distanceToClosestEnemyUnit != null) {
+            return if ((takeLargerValues || cache.distanceToClosestEnemyUnit!! < maxDist))
+                cache.distanceToClosestEnemyUnit!!
+            // In some cases we might rely on every distance farther than maxDist being the same
+            else Int.MAX_VALUE
         }
-        return null
+        
+        fun tileHasEnemyCity(tile: Tile): Boolean = tile.isExplored(civ) 
+            && tile.isCityCenter() 
+            && tile.getCity()!!.civ.isAtWarWith(civ)
+        
+        fun tileHasEnemyMilitaryUnit(tile: Tile): Boolean = tile.isVisible(civ)
+            && tile.militaryUnit != null
+            && tile.militaryUnit!!.civ.isAtWarWith(civ)
+            && !tile.militaryUnit!!.isInvisible(civ)
+        
+        // Needs to be a high value, but not the max value so we can still add to it
+        cache.distanceToClosestEnemyUnit = 500000
+        for (i in 1..maxDist) {
+            if (currentTile.getTilesAtDistance(i).any { 
+                    tileHasEnemyCity(it) || tileHasEnemyMilitaryUnit(it) }) {
+                cache.distanceToClosestEnemyUnit = i
+                break
+            }
+        }
+        return cache.distanceToClosestEnemyUnit!!
     }
     //endregion
 
@@ -497,6 +542,10 @@ class MapUnit : IsPartOfGameInfoSerialization {
 
         val currentTile = getTile()
         if (isMoving()) {
+            // We have moved so invalidate the previous calculation
+            cache.distanceToClosestEnemyUnit = null
+            cache.distanceToClosestEnemyUnitSearched = null
+            
             val destinationTile = getMovementDestination()
             if (!movement.canReach(destinationTile)) { // That tile that we were moving towards is now unreachable -
                 // for instance we headed towards an unknown tile and it's apparently unreachable

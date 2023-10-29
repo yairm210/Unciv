@@ -1,3 +1,46 @@
+## 4.8.15
+
+By tuvus:
+- AI units swap-retreat
+- Melee units are now more likely to attack cities
+- Nukes AI tweaks
+- AI values traded gold using inflation
+
+By SomeTroglodyte:
+- Tighten Ruleset validation for Terrain
+- Automated units stay automated after upgrade
+- Fix Mod checker crash on RekMod
+- Account for badly-defined Android font
+- City overview refreshes for changes done in city
+
+💚 add tests for city population manager - By Framonti
+
+Fix [stats] unique adding multiple times - By SeventhM
+
+## 4.8.14
+
+Allow "[stats]" unique on terrains  - By SeventhM
+
+By SomeTroglodyte:
+- PolicyPickerScreen description links to Civilopedia
+- Fix music errors on android pause-via-homescreen-button
+- Remove UniqueTarget.Terrain from UniqueType.Stats as there is no implementation
+
+By PLynx01:
+- Added new trigger unique "Remove [buildingFilter] [cityFilter]"
+- "when above [amount] [stat]" conditional, with gamespeed-modified version
+
+## 4.8.13
+
+By SeventhM:
+- Fix auto assign production not working after a building is built
+- Fix consuming resources not being affected by conditionals
+
+By SomeTroglodyte:
+- Allow games with zero researched techs to be 'before' the Ancient Era
+- Minor Fix: VictoryScreenIllustrations
+- Fix font "symbols" not showing
+
 ## 4.8.12
 
 Automated units can fortify/set up/other actions

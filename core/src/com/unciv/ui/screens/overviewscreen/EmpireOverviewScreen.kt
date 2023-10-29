@@ -5,8 +5,8 @@ import com.unciv.Constants
 import com.unciv.GUI
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.Notification
-import com.unciv.ui.components.widgets.TabbedPager
 import com.unciv.ui.components.input.KeyCharAndCode
+import com.unciv.ui.components.widgets.TabbedPager
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.basescreen.RecreateOnResize
@@ -110,5 +110,13 @@ class EmpireOverviewScreen(
         GUI.resetToWorldScreen()
         notification.resetExecuteRoundRobin()
         notification.execute(worldScreen)
+    }
+
+    override fun resume() {
+        // This is called by UncivGame.popScreen - e.g. after City Tab opened a City and the user closes that CityScreen...
+        // Notify the current tab via its IPageExtensions.activated entry point so it can refresh if needed
+        val index = tabbedPager.activePage
+        val category = EmpireOverviewCategories.values()[index - 1]
+        pageObjects[category]?.activated(index, "", tabbedPager) // Fake caption marks this as popScreen-triggered
     }
 }
