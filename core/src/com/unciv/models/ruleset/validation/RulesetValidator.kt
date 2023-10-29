@@ -660,10 +660,12 @@ class RulesetValidator(val ruleset: Ruleset) {
         checkUnitType(unit.unitType) {
             lines += "${unit.name} is of type ${unit.unitType}, which does not exist!"
         }
-        for (unique in unit.getMatchingUniques(UniqueType.ConstructImprovementInstantly)) {
+
+        // We should ignore conditionals here - there are condition implementations on this out there that require a game state (and will test false without)
+        for (unique in unit.getMatchingUniques(UniqueType.ConstructImprovementInstantly, StateForConditionals.IgnoreConditionals)) {
             val improvementName = unique.params[0]
-            if (ruleset.tileImprovements[improvementName]==null) continue // this will be caught in the uniqueValidator.checkUniques
-            if ((ruleset.tileImprovements[improvementName] as Stats).none() &&
+            if (ruleset.tileImprovements[improvementName] == null) continue // this will be caught in the uniqueValidator.checkUniques
+            if ((ruleset.tileImprovements[improvementName] as Stats).isEmpty() &&
                 unit.isCivilian() &&
                 !unit.isGreatPersonOfType("War")) {
                 lines.add("${unit.name} can place improvement $improvementName which has no stats, preventing unit automation!",
