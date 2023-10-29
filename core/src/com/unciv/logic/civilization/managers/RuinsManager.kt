@@ -1,5 +1,4 @@
 package com.unciv.logic.civilization.managers
-// Why is this the only file in its own package?
 
 import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.civilization.Civilization
@@ -10,27 +9,25 @@ import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unique.UniqueType
 import kotlin.random.Random
 
-class RuinsManager : IsPartOfGameInfoSerialization {
-    var lastChosenRewards: MutableList<String> = mutableListOf("", "")
-    private fun rememberReward(reward: String) {
-        lastChosenRewards[0] = lastChosenRewards[1]
-        lastChosenRewards[1] = reward
-    }
+class RuinsManager(
+    private var lastChosenRewards: MutableList<String> = mutableListOf("", "")
+) : IsPartOfGameInfoSerialization {
 
     @Transient
     lateinit var civInfo: Civilization
     @Transient
     lateinit var validRewards: List<RuinReward>
 
-    fun clone(): RuinsManager {
-        val toReturn = RuinsManager()
-        toReturn.lastChosenRewards = lastChosenRewards
-        return toReturn
-    }
+    fun clone() = RuinsManager(ArrayList(lastChosenRewards))  // needs to deep-clone (the List, not the Strings) so undo works
 
     fun setTransients(civInfo: Civilization) {
         this.civInfo = civInfo
         validRewards = civInfo.gameInfo.ruleset.ruinRewards.values.toList()
+    }
+
+    private fun rememberReward(reward: String) {
+        lastChosenRewards[0] = lastChosenRewards[1]
+        lastChosenRewards[1] = reward
     }
 
     private fun getShuffledPossibleRewards(triggeringUnit: MapUnit): Iterable<RuinReward> {
