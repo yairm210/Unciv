@@ -115,7 +115,7 @@ object SpecificUnitAutomation {
         // It's possible that we'll see a tile "over the sea" that's better than the tiles close by, but that's not a reason to abandon the close tiles!
         // Also this lead to some routing problems, see https://github.com/yairm210/Unciv/issues/3653
         val bestCityLocation: Tile? =
-                CityLocationTileRanker.getBestTilesToFoundCity(unit).firstOrNull {
+                CityLocationTileRanker.getBestTilesToFoundCity(unit).take(5).firstOrNull {
                     if (it.first in tilesWhereWeWillBeCaptured) return@firstOrNull false
                     val pathSize = unit.movement.getShortestPath(it.first).size
                     return@firstOrNull pathSize in 1..3
