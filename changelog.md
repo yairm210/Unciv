@@ -1,23 +1,21 @@
 ## 4.8.15
 
 By tuvus:
-- AI units swap-retreat 
-- Melee units are now more likely to attack cities 
-- Nukes now value hitting units directly more and will account for multiple military units on the same tile 
-- AI trading uses gold inflation 
+- AI units swap-retreat
+- Melee units are now more likely to attack cities
+- Nukes AI tweaks
+- AI values traded gold using inflation
 
 By SomeTroglodyte:
-- Custom save/load UI tweaks and blocking saving online MP games locally 
-- Tighten RulesetValidator for Terrain 
-- Automated units stay automated after upgrade 
-- Fix Mod checker crash on RekMod 
-- Hack Android NotoSansSymbols font into submission 
-- City overview refreshes for changes done in a CityScreen called from it 
-- Move Future Tech so Nanotechnology isn't covered by lines in Vanilla (not G&K) 
+- Tighten Ruleset validation for Terrain
+- Automated units stay automated after upgrade
+- Fix Mod checker crash on RekMod
+- Account for badly-defined Android font
+- City overview refreshes for changes done in city
 
-💚 add tests for city population manager  - By Framonti
+💚 add tests for city population manager - By Framonti
 
-Fix [stats] unique adding multiple times  - By SeventhM
+Fix [stats] unique adding multiple times - By SeventhM
 
 ## 4.8.14
 
