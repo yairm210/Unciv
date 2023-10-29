@@ -1,143 +1,102 @@
 package com.unciv.logic.automation.unit
 
 import com.unciv.logic.automation.Automation
+import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
-import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.tile.ResourceType
-import com.unciv.models.ruleset.tile.TileResource
 import com.unciv.models.ruleset.unique.LocalUniqueCache
+import com.unciv.models.ruleset.unique.UniqueType
 
 object CityLocationTileRanker {
     fun getBestTilesToFoundCity(unit: MapUnit): Sequence<Pair<Tile, Float>> {
-        val modConstants = unit.civ.gameInfo.ruleset.modOptions.constants
-        val tilesNearCities = sequence {
-            for (city in unit.civ.gameInfo.getCities()) {
-                val center = city.getCenterTile()
-                if (unit.civ.knows(city.civ) &&
-                    // If the CITY OWNER knows that the UNIT OWNER agreed not to settle near them
-                    city.civ.getDiplomacyManager(unit.civ)
-                        .hasFlag(DiplomacyFlags.AgreedToNotSettleNearUs)
-                ) {
-                    yieldAll(
-                        center.getTilesInDistance(6)
-                            .filter { canUseTileForRanking(it, unit.civ) })
-                    continue
-                }
-                yieldAll(
-                    center.getTilesInDistance(modConstants.minimalCityDistance)
-                        .filter { canUseTileForRanking(it, unit.civ) }
-                        .filter { it.getContinent() == center.getContinent() }
-                )
-                yieldAll(
-                    center.getTilesInDistance(modConstants.minimalCityDistanceOnDifferentContinents)
-                        .filter { canUseTileForRanking(it, unit.civ) }
-                        .filter { it.getContinent() != center.getContinent() }
-                )
-            }
-        }.toSet()
-
-        // This is to improve performance - instead of ranking each tile in the area up to 19 times, do it once.
-        val nearbyTileRankings = getNearbyTileRankings(unit.getTile(), unit.civ)
-
         val distanceFromHome = if (unit.civ.cities.isEmpty()) 0
         else unit.civ.cities.minOf { it.getCenterTile().aerialDistanceTo(unit.getTile()) }
         val range = (8 - distanceFromHome).coerceIn(1, 5) // Restrict vision when far from home to avoid death marches
+        val nearbyCities = unit.civ.gameInfo.getCities()
+            .filter { it.getCenterTile().aerialDistanceTo(unit.getTile()) > 3 + range }
 
         val possibleCityLocations = unit.getTile().getTilesInDistance(range)
-            .filter { canUseTileForRanking(it, unit.civ) }
-            .filter {
-                val tileOwner = it.getOwner()
-                it.isLand && !it.isImpassible() && (tileOwner == null || tileOwner == unit.civ) // don't allow settler to settle inside other civ's territory
-                    && (unit.currentTile == it || unit.movement.canMoveTo(it))
-                    && it !in tilesNearCities
-            }
-
-        val luxuryResourcesInCivArea = getLuxuryResourcesInCivArea(unit.civ)
-
-        return possibleCityLocations
-            .map {
-                it to
-                    rankTileAsCityCenterWithCachedValues(
-                        it,
-                        nearbyTileRankings,
-                        luxuryResourcesInCivArea,
-                        unit.civ
-                    )
-
-            }
-            .sortedByDescending { it.second }
-    }
-
-    fun rankTileAsCityCenter(tile: Tile, civ: Civilization): Float {
-        val nearbyTileRankings = getNearbyTileRankings(tile, civ)
-        val luxuryResourcesInCivArea = getLuxuryResourcesInCivArea(civ)
-        return rankTileAsCityCenterWithCachedValues(
-            tile,
-            nearbyTileRankings,
-            luxuryResourcesInCivArea,
-            civ
-        )
-    }
-
-    private fun canUseTileForRanking(
-        tile: Tile,
-        civ: Civilization
-    ) =
-
-        (tile.isExplored(civ) || civ.isAI()) // The AI is allowed to cheat and act like it knows the whole map.
-            && (tile.getOwner() == null ||
-                tile.getOwner() == civ && tile.getTilesInDistance(3).none { it.isCityCenter() })
-
-    private fun getNearbyTileRankings(
-        tile: Tile,
-        civ: Civilization
-    ): Map<Tile, Float> {
+            .filter { canSettleTile(it, unit.civ, nearbyCities) && unit.movement.canMoveTo(it) }
         val uniqueCache = LocalUniqueCache()
-        return tile.getTilesInDistance(7)
-            .filter { canUseTileForRanking(it, civ) }
-            .associateBy({ it }, { Automation.rankTile(it, civ, uniqueCache) })
+        val baseTileMap = HashMap<Tile, Float>()
+        return possibleCityLocations.map {
+            it to rankTileToSettle(it, unit.civ, nearbyCities, baseTileMap, uniqueCache)}.sortedByDescending { it.second }
     }
 
-    private fun getLuxuryResourcesInCivArea(civ: Civilization): Sequence<TileResource> {
-        return civ.cities.asSequence()
-            .flatMap { it.getTiles() }.filter { it.resource != null }
-            .map { it.tileResource }.filter { it.resourceType == ResourceType.Luxury }
-            .distinct()
+    private fun canSettleTile(tile: Tile, civ: Civilization, nearbyCities: Sequence<City>): Boolean {
+        val modConstants = civ.gameInfo.ruleset.modOptions.constants
+        // The AI is allowed to cheat and act like it knows the whole map.
+        if (!(tile.isExplored(civ) || civ.isAI())) return false
+        if (!tile.isLand) return false
+        if (!(tile.getOwner() == null || tile.getOwner() == civ)) return false
+        if (!nearbyCities.any {
+                it.getCenterTile().aerialDistanceTo(tile) <
+                    if (tile.getContinent() == it.getCenterTile().getContinent()) modConstants.minimalCityDistance
+                    else modConstants.minimalCityDistanceOnDifferentContinents
+            }) return false
+        return true
     }
 
-    private fun rankTileAsCityCenterWithCachedValues(
-        tile: Tile, nearbyTileRankings: Map<Tile, Float>,
-        luxuryResourcesInCivArea: Sequence<TileResource>,
-        civ: Civilization
-    ): Float {
-        val bestTilesFromOuterLayer = tile.getTilesAtDistance(2)
-            .filter { canUseTileForRanking(it, civ) }
-            .sortedByDescending { nearbyTileRankings[it] }.take(2)
-        val top5Tiles =
-                (tile.neighbors.filter {
-                    canUseTileForRanking(
-                        it,
-                        civ
-                    )
-                } + bestTilesFromOuterLayer)
-                    .sortedByDescending { nearbyTileRankings[it] }
-                    .take(5)
-        var rank = top5Tiles.map { nearbyTileRankings.getValue(it) }.sum()
-        if (tile.isCoastalTile()) rank += 5
+    private fun rankTileToSettle(tile: Tile, civ: Civilization, nearbyCities: Sequence<City>, 
+                                 baseTileMap: HashMap<Tile, Float>, uniqueCache: LocalUniqueCache): Float {
+        var tileValue = 0f
+        for (city in nearbyCities) {
+            val distanceToCity = tile.aerialDistanceTo(city.getCenterTile())
+            var distanceToCityModifier = when {
+                distanceToCity == 5 -> 20
+                distanceToCity == 4 -> 30
+                distanceToCity == 3 -> 50
+                distanceToCity < 3 -> 100 // Even if it is a mod that lets us settle closer, lets still not do it
+                else -> 0
+            }
+            // It is worse to settle cities near our own compare to near another civ
+            if (city.civ == civ)
+            // Do not settle near our capital unless really necessary
+                distanceToCityModifier *= if (city.isCapital()) 5 else 2
+            tileValue -= distanceToCityModifier
+        }
 
-        val luxuryResourcesInCityArea =
-                tile.getTilesAtDistance(2).filter { canUseTileForRanking(it, civ) }
-                    .filter { it.resource != null }
-                    .map { it.tileResource }.filter { it.resourceType == ResourceType.Luxury }
-                    .distinct()
-        val luxuryResourcesAlreadyInCivArea =
-                luxuryResourcesInCivArea.map { it.name }.toHashSet()
-        val luxuryResourcesNotYetInCiv = luxuryResourcesInCityArea
-            .count { it.name !in luxuryResourcesAlreadyInCivArea }
-        rank += luxuryResourcesNotYetInCiv * 10
+        val onCoast = tile.isCoastalTile()
 
-        return rank
+        fun rankTile(rankTile: Tile): Float {
+            var locationSpecificTileValue = 0f
+            // Don't settle near by not on the coast
+            if (tile.isWater && !onCoast) locationSpecificTileValue -= 20
+            // Check if everything else has been calculated, if so return it
+            if (baseTileMap.containsKey(rankTile)) return locationSpecificTileValue + baseTileMap[rankTile]!!
+            if (rankTile.getOwner() != null && rankTile.getOwner() != civ) return 0f
+            
+            var rankTileValue = Automation.rankStatsValue(rankTile.stats.getTileStats(null, civ, uniqueCache), civ)
+
+            if (rankTile.resource != null) {
+                if (rankTile.tileResource.resourceType == ResourceType.Strategic) {
+                    rankTileValue += 3 * rankTile.resourceAmount
+                } else if (rankTile.tileResource.resourceType == ResourceType.Luxury) {
+                    rankTileValue += if (civ.hasResource(rankTile.resource!!)) 10 * rankTile.resourceAmount
+                    else 30 + 10 * (rankTile.resourceAmount - 1)
+                }
+            }
+            
+            if (rankTile.isNaturalWonder()) rankTileValue += 15
+
+            baseTileMap[rankTile] = rankTileValue
+
+            return rankTileValue + locationSpecificTileValue
+        }
+
+        if (onCoast) tileValue += 10
+        if (tile.isAdjacentToRiver()) tileValue += 5
+        if (tile.terrainHasUnique(UniqueType.FreshWater)) tileValue += 5
+        // We want to found the city on an oasis because it can't be improved otherwise
+        if (tile.terrainHasUnique(UniqueType.Unbuildable)) tileValue += 5
+
+        for (i in 0..3) {
+            for (nearbyTile in tile.getTilesInDistanceRange(IntRange(i, i))) {
+                tileValue += rankTile(tile)
+            }
+        }
+        return tileValue
     }
 }

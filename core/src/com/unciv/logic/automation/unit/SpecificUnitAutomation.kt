@@ -97,20 +97,20 @@ object SpecificUnitAutomation {
     }
 
     fun automateSettlerActions(unit: MapUnit, tilesWhereWeWillBeCaptured: Set<Tile>) {
-        if (unit.civ.gameInfo.turns == 0) {   // Special case, we want AI to settle in place on turn 1.
-            val foundCityAction = UnitActionsFromUniques.getFoundCityAction(unit, unit.getTile())
-            // Depending on era and difficulty we might start with more than one settler. In that case settle the one with the best location
-            val otherSettlers = unit.civ.units.getCivUnits().filter { it.currentMovement > 0 && it.baseUnit == unit.baseUnit }
-            val unitTileRanking = CityLocationTileRanker.rankTileAsCityCenter(unit.getTile(), unit.civ)
-            if (foundCityAction?.action != null &&
-                    otherSettlers.none {
-                        CityLocationTileRanker.rankTileAsCityCenter(it.getTile(), unit.civ) > unitTileRanking
-                    }
-            ) {
-                foundCityAction.action.invoke()
-                return
-            }
-        }
+//        if (unit.civ.gameInfo.turns == 0) {   // Special case, we want AI to settle in place on turn 1.
+//            val foundCityAction = UnitActionsFromUniques.getFoundCityAction(unit, unit.getTile())
+//            // Depending on era and difficulty we might start with more than one settler. In that case settle the one with the best location
+//            val otherSettlers = unit.civ.units.getCivUnits().filter { it.currentMovement > 0 && it.baseUnit == unit.baseUnit }
+//            val unitTileRanking = CityLocationTileRanker.rankTileAsCityCenter(unit.getTile(), unit.civ)
+//            if (foundCityAction?.action != null &&
+//                    otherSettlers.none {
+//                        CityLocationTileRanker.rankTileAsCityCenter(it.getTile(), unit.civ) > unitTileRanking
+//                    }
+//            ) {
+//                foundCityAction.action.invoke()
+//                return
+//            }
+//        }
 
         // It's possible that we'll see a tile "over the sea" that's better than the tiles close by, but that's not a reason to abandon the close tiles!
         // Also this lead to some routing problems, see https://github.com/yairm210/Unciv/issues/3653
