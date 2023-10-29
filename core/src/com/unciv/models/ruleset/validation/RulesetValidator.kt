@@ -328,9 +328,23 @@ class RulesetValidator(val ruleset: Ruleset) {
         if (ruleset.terrains.values.none { it.type == TerrainType.Land && !it.impassable })
             lines += "No passable land terrains exist!"
         for (terrain in ruleset.terrains.values) {
-            for (baseTerrain in terrain.occursOn)
-                if (!ruleset.terrains.containsKey(baseTerrain))
-                    lines += "${terrain.name} occurs on terrain $baseTerrain which does not exist!"
+            for (baseTerrainName in terrain.occursOn) {
+                val baseTerrain = ruleset.terrains[baseTerrainName]
+                if (baseTerrain == null)
+                    lines += "${terrain.name} occurs on terrain $baseTerrainName which does not exist!"
+                else if (baseTerrain.type == TerrainType.NaturalWonder)
+                    lines.add("${terrain.name} occurs on natural wonder $baseTerrainName: Unsupported.", RulesetErrorSeverity.WarningOptionsOnly)
+            }
+            if (terrain.type == TerrainType.NaturalWonder) {
+                if (terrain.turnsInto == null)
+                    lines += "Natural Wonder ${terrain.name} is missing the turnsInto attribute!"
+                val baseTerrain = ruleset.terrains[terrain.turnsInto]
+                if (baseTerrain == null)
+                    lines += "${terrain.name} turns into terrain ${terrain.turnsInto} which does not exist!"
+                else if (!baseTerrain.type.isBaseTerrain)
+                    // See https://github.com/hackedpassword/Z2/blob/main/HybridTileTech.md for a clever exploit
+                    lines.add("${terrain.name} turns into terrain ${terrain.turnsInto} which is not a base terrain!", RulesetErrorSeverity.Warning)
+            }
             uniqueValidator.checkUniques(terrain, lines, rulesetSpecific, tryFixUnknownUniques)
         }
     }
