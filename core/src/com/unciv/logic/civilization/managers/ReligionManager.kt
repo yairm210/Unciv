@@ -141,10 +141,13 @@ class ReligionManager : IsPartOfGameInfoSerialization {
             UniqueTriggerActivation.triggerCivwideUnique(unique, civInfo)
     }
 
+    fun greatProphetsEarned(): Int = civInfo.civConstructions.boughtItemsWithIncreasingPrice[getGreatProphetEquivalent()?.name ?: ""]
+        // Counter.get never returns null, but it needs the correct key type, which is non-nullable
+
     // https://www.reddit.com/r/civ/comments/2m82wu/can_anyone_detail_the_finer_points_of_great/
     // Game files (globaldefines.xml)
     fun faithForNextGreatProphet(): Int {
-        val greatProphetsEarned = civInfo.civConstructions.boughtItemsWithIncreasingPrice[getGreatProphetEquivalent()!!.name]
+        val greatProphetsEarned = greatProphetsEarned()
 
         var faithCost =
             (200 + 100 * greatProphetsEarned * (greatProphetsEarned + 1) / 2f) *
