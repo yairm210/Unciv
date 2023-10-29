@@ -1,7 +1,6 @@
 package com.unciv.ui.screens.savescreens
 
 import com.unciv.GUI
-import com.unciv.ui.screens.mainmenuscreen.MainMenuScreen
 import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
 import com.unciv.logic.UncivShowableException
