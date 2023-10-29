@@ -195,7 +195,7 @@ object UnitAutomation {
 
         if (tryHeadTowardsOurSiegedCity(unit)) return
 
-        if (unit.health < 50 && (tryRetreat(unit) || tryHealUnit(unit))) return // do nothing but heal
+        if (unit.health < 50 && (trySwapRetreat(unit) || tryHealUnit(unit))) return // do nothing but heal
 
         // if a embarked melee unit can land and attack next turn, do not attack from water.
         if (BattleHelper.tryDisembarkUnitToAttackPosition(unit)) return
@@ -254,7 +254,7 @@ object UnitAutomation {
         return true
     }
     
-    private fun tryRetreat(unit: MapUnit): Boolean {
+    private fun trySwapRetreat(unit: MapUnit): Boolean {
         if (!unit.civ.isAtWar()) return false
         // Precondition: This must be a military unit
         if (unit.isCivilian()) return false
