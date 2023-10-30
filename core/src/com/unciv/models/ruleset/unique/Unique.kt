@@ -205,7 +205,7 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
         return when (condition.type) {
             // These are 'what to do' and not 'when to do' conditionals
             UniqueType.ConditionalTimedUnique -> true
-            UniqueType.HiddenFromCivilopedia -> true  // allowed to be attached to any Unique to hide it from Pedia, no-op otherwise
+            UniqueType.ConditionalHideUniqueFromUsers -> true  // allowed to be attached to any Unique to hide it, no-op otherwise
 
             UniqueType.ConditionalChance -> stateBasedRandom.nextFloat() < condition.params[0].toFloat() / 100f
             UniqueType.ConditionalBeforeTurns -> checkOnCiv { gameInfo.turns < condition.params[0].toInt() }
