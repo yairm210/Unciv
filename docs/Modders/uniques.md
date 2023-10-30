@@ -1538,8 +1538,8 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "Doesn't generate naturally"
 	Applicable to: Terrain, Resource
 
-??? example  "Occurs at temperature between [amount] and [amount] and humidity between [amount] and [amount]"
-	Example: "Occurs at temperature between [3] and [3] and humidity between [3] and [3]"
+??? example  "Occurs at temperature between [fraction] and [fraction] and humidity between [fraction] and [fraction]"
+	Example: "Occurs at temperature between [0.5] and [0.5] and humidity between [0.5] and [0.5]"
 
 	Applicable to: Terrain, Resource
 
@@ -2160,6 +2160,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 *[costOrStrength]: `Cost` or `Strength`.
 *[era]: The name of any era.
 *[foundingOrEnhancing]: `founding` or `enhancing`.
+*[fraction]: Indicates a fractional number, which can be negative.
 *[improvementName]: The name of any improvement.
 *[modFilter]: A Mod name, case-sensitive _or_ a simple wildcard filter beginning and ending in an Asterisk, case-insensitive.
 *[policy]: The name of any policy.
