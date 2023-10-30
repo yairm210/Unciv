@@ -1173,7 +1173,7 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
 
         /** This is a warning, regardless of what ruleset we're in.
          * This is for filters that can also potentially accept free text, like UnitFilter and TileFilter */
-        WarningOnly {
+        PossibleFilteringUnique {
             override fun getRulesetErrorSeverity() = RulesetErrorSeverity.WarningOptionsOnly
         },
 

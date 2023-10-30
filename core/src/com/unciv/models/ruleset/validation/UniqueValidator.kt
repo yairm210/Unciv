@@ -13,6 +13,29 @@ import com.unciv.models.stats.INamed
 
 class UniqueValidator(val ruleset: Ruleset) {
 
+
+    private val allNonTypedUniques = HashSet<String>()
+    private val allUniqueParameters = HashSet<String>()
+
+    private fun addToHashsets(uniqueHolder: IHasUniques) {
+        for (unique in uniqueHolder.uniqueObjects){
+            if (unique.type == null) allNonTypedUniques.add(unique.text)
+            else allUniqueParameters.addAll(unique.allParams)
+        }
+    }
+
+    fun populateFilteringUniqueHashsets(){
+        addToHashsets(ruleset.globalUniques)
+        ruleset.units.values.forEach { addToHashsets(it) }
+        ruleset.buildings.values.forEach { addToHashsets(it) }
+        ruleset.unitPromotions.values.forEach { addToHashsets(it) }
+        ruleset.technologies.values.forEach { addToHashsets(it) }
+        ruleset.nations.values.forEach { addToHashsets(it) }
+        ruleset.tileResources.values.forEach { addToHashsets(it) }
+        ruleset.terrains.values.forEach { addToHashsets(it) }
+        ruleset.tileImprovements.values.forEach { addToHashsets(it) }
+    }
+
     fun checkUniques(
         uniqueContainer: IHasUniques,
         lines: RulesetErrorList,
@@ -150,6 +173,9 @@ class UniqueValidator(val ruleset: Ruleset) {
             val errorTypesForAcceptableParameters =
                 acceptableParamTypes.map { getParamTypeErrorSeverityCached(it, param) }
             if (errorTypesForAcceptableParameters.any { it == null }) continue // This matches one of the types!
+            if (errorTypesForAcceptableParameters.contains(UniqueType.UniqueParameterErrorSeverity.PossibleFilteringUnique)
+                && param in allUniqueParameters)
+                continue // This is a filtering param, and the unique it's filtering for actually exists, no problem here!
             val leastSevereWarning =
                 errorTypesForAcceptableParameters.minByOrNull { it!!.ordinal }!!
             errorList += UniqueComplianceError(param, acceptableParamTypes, leastSevereWarning)
@@ -185,7 +211,7 @@ class UniqueValidator(val ruleset: Ruleset) {
         }
 
         return listOf(RulesetError(
-            "$prefix unique \"${unique.text}\" not found in Unciv's unique types.",
+            "$prefix unique \"${unique.text}\" not found in Unciv's unique types, and is not used as a filtering unique.",
             RulesetErrorSeverity.OK))
     }
 
@@ -193,7 +219,7 @@ class UniqueValidator(val ruleset: Ruleset) {
         // Isolate this decision, to allow easy change of approach
         // This says: Must have no conditionals or parameters, and is contained in GlobalUniques
         if (unique.conditionals.isNotEmpty() || unique.params.isNotEmpty()) return false
-        return unique.text in ruleset.globalUniques.uniqueMap
+        return unique.text in allUniqueParameters // referenced at least once from elsewhere
     }
 
     private fun tryFixUnknownUnique(unique: Unique, prefix: String): List<RulesetError> {

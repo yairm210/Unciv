@@ -124,7 +124,7 @@ enum class UniqueParameterType(
             if (ruleset.unitTypes.containsKey(parameterText)) return null
             if (ruleset.eras.containsKey(parameterText)) return null
             if (ruleset.unitTypes.values.any { it.uniques.contains(parameterText) }) return null
-            return UniqueType.UniqueParameterErrorSeverity.WarningOnly
+            return UniqueType.UniqueParameterErrorSeverity.PossibleFilteringUnique
         }
 
         override fun isTranslationWriterGuess(parameterText: String, ruleset: Ruleset) =
@@ -194,7 +194,7 @@ enum class UniqueParameterType(
             if (parameterText in knownValues) return null
             if (ruleset.nations.containsKey(parameterText)) return null
             if (ruleset.nations.values.any { it.hasUnique(parameterText) }) return null
-            return UniqueType.UniqueParameterErrorSeverity.RulesetSpecific
+            return UniqueType.UniqueParameterErrorSeverity.PossibleFilteringUnique
         }
     },
 
@@ -251,7 +251,7 @@ enum class UniqueParameterType(
             if (parameterText in knownValues) return null
             if (BuildingName.getErrorSeverity(parameterText, ruleset) == null) return null
             if (ruleset.buildings.values.any { it.hasUnique(parameterText) }) return null
-            return UniqueType.UniqueParameterErrorSeverity.RulesetSpecific
+            return UniqueType.UniqueParameterErrorSeverity.PossibleFilteringUnique
         }
 
         override fun isTranslationWriterGuess(parameterText: String, ruleset: Ruleset) =
@@ -285,7 +285,7 @@ enum class UniqueParameterType(
             in ruleset.tileResources -> null
             in ruleset.terrains.values.asSequence().flatMap { it.uniques } -> null
             in ruleset.tileResources.values.asSequence().flatMap { it.uniques } -> null
-            else -> UniqueType.UniqueParameterErrorSeverity.RulesetSpecific
+            else -> UniqueType.UniqueParameterErrorSeverity.PossibleFilteringUnique
         }
         override fun isTranslationWriterGuess(parameterText: String, ruleset: Ruleset) =
             parameterText in ruleset.terrains || parameterText != "All" && parameterText in knownValues
@@ -398,7 +398,7 @@ enum class UniqueParameterType(
             if (parameterText in knownValues) return null
             if (ImprovementName.getErrorSeverity(parameterText, ruleset) == null) return null
             if (ruleset.tileImprovements.values.any { it.hasUnique(parameterText) }) return null
-            return UniqueType.UniqueParameterErrorSeverity.RulesetSpecific
+            return UniqueType.UniqueParameterErrorSeverity.PossibleFilteringUnique
         }
         override fun isTranslationWriterGuess(parameterText: String, ruleset: Ruleset) =
             parameterText != "All" && getErrorSeverity(parameterText, ruleset) == null

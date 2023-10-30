@@ -21,6 +21,7 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
     /** This is so the heavy regex-based parsing is only activated once per unique, instead of every time it's called
      *  - for instance, in the city screen, we call every tile unique for every tile, which can lead to ANRs */
     val placeholderText = text.getPlaceholderText()
+    /** Does not include conditional params */
     val params = text.getPlaceholderParameters()
     val type = UniqueType.uniqueTypeMap[placeholderText]
 
@@ -37,6 +38,7 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
             || conditionals.any { it.type == UniqueType.ConditionalTimedUnique }
         )
 
+    /** Includes conditional params */
     val allParams = params + conditionals.flatMap { it.params }
 
     val isLocalEffect = params.contains("in this city") || conditionals.any { it.type == UniqueType.ConditionalInThisCity }

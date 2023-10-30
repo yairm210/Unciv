@@ -60,8 +60,9 @@ class RulesetValidator(val ruleset: Ruleset) {
 
     private fun getBaseRulesetErrorList(tryFixUnknownUniques: Boolean): RulesetErrorList{
 
-        val lines = RulesetErrorList()
+        uniqueValidator.populateFilteringUniqueHashsets()
 
+        val lines = RulesetErrorList()
         uniqueValidator.checkUniques(ruleset.globalUniques, lines, true, tryFixUnknownUniques)
 
         addUnitErrorsBaseRuleset(lines, tryFixUnknownUniques)
