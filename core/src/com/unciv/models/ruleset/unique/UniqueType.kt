@@ -1169,25 +1169,29 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     val placeholderText = text.getPlaceholderText()
 
     /** Ordinal determines severity - ordered from least to most severe, so we can use Severity >=  */
-    enum class UniqueComplianceErrorSeverity {
+    enum class UniqueErrorScope {
 
-        /** This is for filters that can also potentially accept free text, like UnitFilter and TileFilter */
+        /** This is a warning, regardless of what ruleset we're in.
+         * This is for filters that can also potentially accept free text, like UnitFilter and TileFilter */
         WarningOnly {
-            override fun getRulesetErrorSeverity(severityToReport: UniqueComplianceErrorSeverity) =
+            override fun getRulesetErrorSeverity(severityToReport: UniqueErrorScope) =
                 RulesetErrorSeverity.WarningOptionsOnly
         },
 
-        /** This is a problem like "unit/resource/tech name doesn't exist in ruleset" - definite bug */
+        /** An error, but only because of other information in the current ruleset.
+         * This means that if this is an *add-on* to a different mod, it could be correct.
+         * This is a problem like "unit/resource/tech name doesn't exist in ruleset" - definite bug */
         RulesetSpecific {
             // Report Warning on the first pass of RulesetValidator only, where mods are checked standalone
             // but upgrade to error when the econd pass asks, which runs only for combined or base rulesets.
-            override fun getRulesetErrorSeverity(severityToReport: UniqueComplianceErrorSeverity) =
+            override fun getRulesetErrorSeverity(severityToReport: UniqueErrorScope) =
                 RulesetErrorSeverity.Warning
         },
 
-        /** This is a problem like "numbers don't parse", "stat isn't stat", "city filter not applicable" */
+        /** An error, regardless of the ruleset we're in.
+         * This is a problem like "numbers don't parse", "stat isn't stat", "city filter not applicable" */
         RulesetInvariant {
-            override fun getRulesetErrorSeverity(severityToReport: UniqueComplianceErrorSeverity) =
+            override fun getRulesetErrorSeverity(severityToReport: UniqueErrorScope) =
                 RulesetErrorSeverity.Error
         },
         ;
@@ -1197,7 +1201,7 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
          *  first pass that also runs for extension mods without a base mixed in; the complex check
          *  runs with [severityToReport]==[RulesetSpecific].
          */
-        abstract fun getRulesetErrorSeverity(severityToReport: UniqueComplianceErrorSeverity): RulesetErrorSeverity
+        abstract fun getRulesetErrorSeverity(severityToReport: UniqueErrorScope): RulesetErrorSeverity
     }
 
     fun getDeprecationAnnotation(): Deprecated? = declaringJavaClass.getField(name)
