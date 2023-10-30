@@ -20,7 +20,8 @@ import com.unciv.ui.screens.overviewscreen.EspionageOverviewScreen
 import com.unciv.ui.screens.pickerscreens.PolicyPickerScreen
 import com.unciv.ui.screens.pickerscreens.TechButton
 import com.unciv.ui.screens.pickerscreens.TechPickerScreen
-import com.unciv.utils.Concurrency
+import com.unciv.ui.screens.worldscreen.UndoHandler.Companion.canUndo
+import com.unciv.ui.screens.worldscreen.UndoHandler.Companion.restoreUndoCheckpoint
 
 
 /** A holder for Tech, Policies and Diplomacy buttons going in the top left of the WorldScreen just under WorldScreenTopBar */
@@ -118,7 +119,7 @@ class TechPolicyDiplomacyButtons(val worldScreen: WorldScreen) : Table(BaseScree
 
     private fun updateUndoButton() {
         // Don't show the undo button if there is no action to undo
-        if (worldScreen.gameInfo != worldScreen.preActionGameInfo && worldScreen.canChangeState) {
+        if (worldScreen.canUndo()) {
             undoButtonHolder.touchable = Touchable.enabled
             undoButtonHolder.actor = undoButton
         } else {
@@ -164,11 +165,6 @@ class TechPolicyDiplomacyButtons(val worldScreen: WorldScreen) : Table(BaseScree
 
     private fun handleUndo() {
         undoButton.disable()
-        Concurrency.run {
-            // Most of the time we won't load this, so we only set transients once we see it's relevant
-            worldScreen.preActionGameInfo.setTransients()
-            worldScreen.preActionGameInfo.isUpToDate = worldScreen.gameInfo.isUpToDate
-            game.loadGame(worldScreen.preActionGameInfo)
-        }
+        worldScreen.restoreUndoCheckpoint()
     }
 }

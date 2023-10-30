@@ -28,6 +28,7 @@ import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.widgets.UnitGroup
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.basescreen.BaseScreen
+import com.unciv.ui.screens.worldscreen.UndoHandler.Companion.clearUndoCheckpoints
 import com.unciv.ui.screens.worldscreen.WorldScreen
 import com.unciv.ui.screens.worldscreen.bottombar.BattleTableHelpers.battleAnimation
 import com.unciv.ui.screens.worldscreen.bottombar.BattleTableHelpers.getHealthBar
@@ -285,7 +286,7 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
         // There was a direct worldScreen.update() call here, removing its 'private' but not the comment justifying the modifier.
         // My tests (desktop only) show the red-flash animations look just fine without.
         worldScreen.shouldUpdate = true
-        worldScreen.preActionGameInfo = worldScreen.gameInfo // Reset - can no longer undo
+        worldScreen.clearUndoCheckpoints()
         //Gdx.graphics.requestRendering()  // Use this if immediate rendering is required
 
         if (!canStillAttack) return
