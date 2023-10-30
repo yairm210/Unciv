@@ -102,7 +102,7 @@ class RulesetValidator(val ruleset: Ruleset) {
                 val errors = uniqueValidator.checkUnique(
                     unique,
                     tryFixUnknownUniques,
-                    cityStateType,
+                    null,
                     true
                 )
                 lines.addAll(errors)

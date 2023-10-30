@@ -9,7 +9,6 @@ import com.unciv.models.ruleset.unique.UniqueComplianceError
 import com.unciv.models.ruleset.unique.UniqueParameterType
 import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueType
-import com.unciv.models.stats.INamed
 
 class UniqueValidator(val ruleset: Ruleset) {
 
@@ -46,7 +45,7 @@ class UniqueValidator(val ruleset: Ruleset) {
             val errors = checkUnique(
                 unique,
                 tryFixUnknownUniques,
-                uniqueContainer as? INamed,
+                uniqueContainer,
                 reportRulesetSpecificErrors
             )
             lines.addAll(errors)
@@ -56,16 +55,16 @@ class UniqueValidator(val ruleset: Ruleset) {
     fun checkUnique(
         unique: Unique,
         tryFixUnknownUniques: Boolean,
-        namedObj: INamed?,
+        uniqueContainer: IHasUniques?,
         reportRulesetSpecificErrors: Boolean
     ): List<RulesetError> {
-        val prefix by lazy { (if (namedObj is IRulesetObject) "${namedObj.originRuleset}: " else "") +
-            (if (namedObj == null) "The" else "${namedObj.name}'s") }
+        val prefix by lazy { (if (uniqueContainer is IRulesetObject) "${uniqueContainer.originRuleset}: " else "") +
+            (if (uniqueContainer == null) "The" else "(${uniqueContainer.getUniqueTarget().name}) ${uniqueContainer.name}'s") }
         if (unique.type == null) return checkUntypedUnique(unique, tryFixUnknownUniques, prefix)
 
         val rulesetErrors = RulesetErrorList()
 
-        if (namedObj is IHasUniques && !unique.type.canAcceptUniqueTarget(namedObj.getUniqueTarget()))
+        if (uniqueContainer != null && !unique.type.canAcceptUniqueTarget(uniqueContainer.getUniqueTarget()))
             rulesetErrors.add(RulesetError("$prefix unique \"${unique.text}\" is not allowed on its target type", RulesetErrorSeverity.Warning))
 
         val typeComplianceErrors = getComplianceErrors(unique)

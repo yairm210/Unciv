@@ -382,7 +382,7 @@ class Ruleset {
                             UniqueValidator(this@Ruleset).checkUnique(
                                 Unique(it),
                                 false,
-                                cityStateType,
+                                null,
                                 true
                             ).isEmpty()
                         })
@@ -390,7 +390,7 @@ class Ruleset {
                             UniqueValidator(this@Ruleset).checkUnique(
                                 Unique(it),
                                 false,
-                                cityStateType,
+                                null,
                                 true
                             ).isEmpty()
                         })
