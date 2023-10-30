@@ -131,8 +131,7 @@ class WorldScreen(
 
     private var uiEnabled = true
 
-    var preActionGameInfo = gameInfo
-
+    internal val undoHandler = UndoHandler(this)
 
     init {
         // notifications are right-aligned, they take up only as much space as necessary.

@@ -9,22 +9,44 @@ import com.unciv.models.ruleset.unique.UniqueComplianceError
 import com.unciv.models.ruleset.unique.UniqueParameterType
 import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueType
-import com.unciv.models.stats.INamed
 
 class UniqueValidator(val ruleset: Ruleset) {
+
+
+    private val allNonTypedUniques = HashSet<String>()
+    private val allUniqueParameters = HashSet<String>()
+
+    private fun addToHashsets(uniqueHolder: IHasUniques) {
+        for (unique in uniqueHolder.uniqueObjects){
+            if (unique.type == null) allNonTypedUniques.add(unique.text)
+            else allUniqueParameters.addAll(unique.allParams)
+        }
+    }
+
+    fun populateFilteringUniqueHashsets(){
+        addToHashsets(ruleset.globalUniques)
+        ruleset.units.values.forEach { addToHashsets(it) }
+        ruleset.buildings.values.forEach { addToHashsets(it) }
+        ruleset.unitPromotions.values.forEach { addToHashsets(it) }
+        ruleset.technologies.values.forEach { addToHashsets(it) }
+        ruleset.nations.values.forEach { addToHashsets(it) }
+        ruleset.tileResources.values.forEach { addToHashsets(it) }
+        ruleset.terrains.values.forEach { addToHashsets(it) }
+        ruleset.tileImprovements.values.forEach { addToHashsets(it) }
+    }
 
     fun checkUniques(
         uniqueContainer: IHasUniques,
         lines: RulesetErrorList,
-        severityToReport: UniqueType.UniqueComplianceErrorSeverity,
+        reportRulesetSpecificErrors: Boolean,
         tryFixUnknownUniques: Boolean
     ) {
         for (unique in uniqueContainer.uniqueObjects) {
             val errors = checkUnique(
                 unique,
                 tryFixUnknownUniques,
-                uniqueContainer as? INamed,
-                severityToReport
+                uniqueContainer,
+                reportRulesetSpecificErrors
             )
             lines.addAll(errors)
         }
@@ -33,39 +55,39 @@ class UniqueValidator(val ruleset: Ruleset) {
     fun checkUnique(
         unique: Unique,
         tryFixUnknownUniques: Boolean,
-        namedObj: INamed?,
-        severityToReport: UniqueType.UniqueComplianceErrorSeverity
+        uniqueContainer: IHasUniques?,
+        reportRulesetSpecificErrors: Boolean
     ): List<RulesetError> {
-        val prefix by lazy { (if (namedObj is IRulesetObject) "${namedObj.originRuleset}: " else "") +
-            (if (namedObj == null) "The" else "${namedObj.name}'s") }
+        val prefix by lazy { (if (uniqueContainer is IRulesetObject) "${uniqueContainer.originRuleset}: " else "") +
+            (if (uniqueContainer == null) "The" else "(${uniqueContainer.getUniqueTarget().name}) ${uniqueContainer.name}'s") }
         if (unique.type == null) return checkUntypedUnique(unique, tryFixUnknownUniques, prefix)
 
         val rulesetErrors = RulesetErrorList()
 
-        if (namedObj is IHasUniques && !unique.type.canAcceptUniqueTarget(namedObj.getUniqueTarget()))
+        if (uniqueContainer != null && !unique.type.canAcceptUniqueTarget(uniqueContainer.getUniqueTarget()))
             rulesetErrors.add(RulesetError("$prefix unique \"${unique.text}\" is not allowed on its target type", RulesetErrorSeverity.Warning))
 
         val typeComplianceErrors = getComplianceErrors(unique)
         for (complianceError in typeComplianceErrors) {
-            if (complianceError.errorSeverity <= severityToReport)
-                rulesetErrors.add(RulesetError("$prefix unique \"${unique.text}\" contains parameter ${complianceError.parameterName}," +
-                    " which does not fit parameter type" +
-                    " ${complianceError.acceptableParameterTypes.joinToString(" or ") { it.parameterName }} !",
-                    complianceError.errorSeverity.getRulesetErrorSeverity(severityToReport)
-                ))
+            if (!reportRulesetSpecificErrors && complianceError.errorSeverity == UniqueType.UniqueParameterErrorSeverity.RulesetSpecific)
+                continue
+
+            rulesetErrors.add(RulesetError("$prefix unique \"${unique.text}\" contains parameter ${complianceError.parameterName}," +
+                " which does not fit parameter type" +
+                " ${complianceError.acceptableParameterTypes.joinToString(" or ") { it.parameterName }} !",
+                complianceError.errorSeverity.getRulesetErrorSeverity()
+            ))
         }
 
         for (conditional in unique.conditionals) {
-            addConditionalErrors(conditional, rulesetErrors, prefix, unique, severityToReport)
+            addConditionalErrors(conditional, rulesetErrors, prefix, unique, reportRulesetSpecificErrors)
         }
 
 
-        if (severityToReport != UniqueType.UniqueComplianceErrorSeverity.RulesetSpecific)
+        if (reportRulesetSpecificErrors)
         // If we don't filter these messages will be listed twice as this function is called twice on most objects
         // The tests are RulesetInvariant in nature, but RulesetSpecific is called for _all_ objects, invariant is not.
-            return rulesetErrors
-
-        addDeprecationAnnotationErrors(unique, prefix, rulesetErrors)
+            addDeprecationAnnotationErrors(unique, prefix, rulesetErrors)
 
         return rulesetErrors
     }
@@ -75,7 +97,7 @@ class UniqueValidator(val ruleset: Ruleset) {
         rulesetErrors: RulesetErrorList,
         prefix: String,
         unique: Unique,
-        severityToReport: UniqueType.UniqueComplianceErrorSeverity
+        reportRulesetSpecificErrors: Boolean
     ) {
         if (conditional.type == null) {
             rulesetErrors.add(
@@ -104,16 +126,19 @@ class UniqueValidator(val ruleset: Ruleset) {
 
         val conditionalComplianceErrors =
             getComplianceErrors(conditional)
+
         for (complianceError in conditionalComplianceErrors) {
-            if (complianceError.errorSeverity == severityToReport)
-                rulesetErrors.add(
-                    RulesetError(
-                        "$prefix unique \"${unique.text}\" contains the conditional \"${conditional.text}\"." +
-                            " This contains the parameter ${complianceError.parameterName} which does not fit parameter type" +
-                            " ${complianceError.acceptableParameterTypes.joinToString(" or ") { it.parameterName }} !",
-                        complianceError.errorSeverity.getRulesetErrorSeverity(severityToReport)
-                    )
+            if (!reportRulesetSpecificErrors && complianceError.errorSeverity == UniqueType.UniqueParameterErrorSeverity.RulesetSpecific)
+                continue
+
+            rulesetErrors.add(
+                RulesetError(
+                    "$prefix unique \"${unique.text}\" contains the conditional \"${conditional.text}\"." +
+                        " This contains the parameter ${complianceError.parameterName} which does not fit parameter type" +
+                        " ${complianceError.acceptableParameterTypes.joinToString(" or ") { it.parameterName }} !",
+                    complianceError.errorSeverity.getRulesetErrorSeverity()
                 )
+            )
         }
     }
 
@@ -147,6 +172,9 @@ class UniqueValidator(val ruleset: Ruleset) {
             val errorTypesForAcceptableParameters =
                 acceptableParamTypes.map { getParamTypeErrorSeverityCached(it, param) }
             if (errorTypesForAcceptableParameters.any { it == null }) continue // This matches one of the types!
+            if (errorTypesForAcceptableParameters.contains(UniqueType.UniqueParameterErrorSeverity.PossibleFilteringUnique)
+                && param in allUniqueParameters)
+                continue // This is a filtering param, and the unique it's filtering for actually exists, no problem here!
             val leastSevereWarning =
                 errorTypesForAcceptableParameters.minByOrNull { it!!.ordinal }!!
             errorList += UniqueComplianceError(param, acceptableParamTypes, leastSevereWarning)
@@ -154,8 +182,8 @@ class UniqueValidator(val ruleset: Ruleset) {
         return errorList
     }
 
-    private val paramTypeErrorSeverityCache = HashMap<UniqueParameterType, HashMap<String, UniqueType.UniqueComplianceErrorSeverity?>>()
-    private fun getParamTypeErrorSeverityCached(uniqueParameterType: UniqueParameterType, param:String): UniqueType.UniqueComplianceErrorSeverity? {
+    private val paramTypeErrorSeverityCache = HashMap<UniqueParameterType, HashMap<String, UniqueType.UniqueParameterErrorSeverity?>>()
+    private fun getParamTypeErrorSeverityCached(uniqueParameterType: UniqueParameterType, param:String): UniqueType.UniqueParameterErrorSeverity? {
         if (!paramTypeErrorSeverityCache.containsKey(uniqueParameterType))
             paramTypeErrorSeverityCache[uniqueParameterType] = hashMapOf()
         val uniqueParamCache = paramTypeErrorSeverityCache[uniqueParameterType]!!
@@ -182,7 +210,7 @@ class UniqueValidator(val ruleset: Ruleset) {
         }
 
         return listOf(RulesetError(
-            "$prefix unique \"${unique.text}\" not found in Unciv's unique types.",
+            "$prefix unique \"${unique.text}\" not found in Unciv's unique types, and is not used as a filtering unique.",
             RulesetErrorSeverity.OK))
     }
 
@@ -190,7 +218,7 @@ class UniqueValidator(val ruleset: Ruleset) {
         // Isolate this decision, to allow easy change of approach
         // This says: Must have no conditionals or parameters, and is contained in GlobalUniques
         if (unique.conditionals.isNotEmpty() || unique.params.isNotEmpty()) return false
-        return unique.text in ruleset.globalUniques.uniqueMap
+        return unique.text in allUniqueParameters // referenced at least once from elsewhere
     }
 
     private fun tryFixUnknownUnique(unique: Unique, prefix: String): List<RulesetError> {

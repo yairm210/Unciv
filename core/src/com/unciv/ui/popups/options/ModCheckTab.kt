@@ -8,19 +8,18 @@ import com.badlogic.gdx.utils.Align
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.ruleset.unique.Unique
-import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.validation.RulesetError
 import com.unciv.models.ruleset.validation.RulesetErrorSeverity
 import com.unciv.models.ruleset.validation.UniqueValidator
 import com.unciv.models.translations.tr
-import com.unciv.ui.components.widgets.ExpanderTab
-import com.unciv.ui.components.widgets.TabbedPager
-import com.unciv.ui.components.widgets.TranslatedSelectBox
 import com.unciv.ui.components.extensions.surroundWithCircle
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
 import com.unciv.ui.components.input.onChange
 import com.unciv.ui.components.input.onClick
+import com.unciv.ui.components.widgets.ExpanderTab
+import com.unciv.ui.components.widgets.TabbedPager
+import com.unciv.ui.components.widgets.TranslatedSelectBox
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popups.ToastPopup
 import com.unciv.ui.screens.basescreen.BaseScreen
@@ -75,7 +74,7 @@ class ModCheckTab(
         runAction()
     }
 
-    fun runModChecker(base: String = MOD_CHECK_WITHOUT_BASE) {
+    private fun runModChecker(base: String = MOD_CHECK_WITHOUT_BASE) {
 
         modCheckFirstRun = false
         if (modCheckBaseSelect == null) return
@@ -204,7 +203,7 @@ class ModCheckTab(
                 replacementUnique,
                 false,
                 null,
-                UniqueType.UniqueComplianceErrorSeverity.RulesetInvariant
+                true
             )
             for (error in modInvariantErrors)
                 Log.error("ModInvariantError: %s - %s", error.text, error.errorSeverityToReport)
@@ -215,7 +214,7 @@ class ModCheckTab(
                     replacementUnique,
                     false,
                     null,
-                    UniqueType.UniqueComplianceErrorSeverity.RulesetInvariant
+                    true
                 )
                 for (error in modSpecificErrors)
                     Log.error("ModSpecificError: %s - %s", error.text, error.errorSeverityToReport)

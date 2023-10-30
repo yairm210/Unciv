@@ -32,8 +32,6 @@ import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.audio.SoundPlayer
 import com.unciv.ui.components.MapArrowType
 import com.unciv.ui.components.MiscArrowTypes
-import com.unciv.ui.components.widgets.UnitGroup
-import com.unciv.ui.components.widgets.ZoomableScrollPane
 import com.unciv.ui.components.extensions.center
 import com.unciv.ui.components.extensions.colorFromRGB
 import com.unciv.ui.components.extensions.darken
@@ -48,9 +46,12 @@ import com.unciv.ui.components.tilegroups.TileGroup
 import com.unciv.ui.components.tilegroups.TileGroupMap
 import com.unciv.ui.components.tilegroups.TileSetStrings
 import com.unciv.ui.components.tilegroups.WorldTileGroup
+import com.unciv.ui.components.widgets.UnitGroup
+import com.unciv.ui.components.widgets.ZoomableScrollPane
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.basescreen.UncivStage
+import com.unciv.ui.screens.worldscreen.UndoHandler.Companion.recordUndoCheckpoint
 import com.unciv.ui.screens.worldscreen.bottombar.BattleTableHelpers.battleAnimation
 import com.unciv.utils.Concurrency
 import com.unciv.utils.Log
@@ -278,7 +279,7 @@ class WorldMapHolder(
             }
 
 
-            worldScreen.preActionGameInfo = worldScreen.gameInfo.clone()
+            worldScreen.recordUndoCheckpoint()
 
             launchOnGLThread {
                 try {

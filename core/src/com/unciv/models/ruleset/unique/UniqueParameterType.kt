@@ -41,16 +41,23 @@ enum class UniqueParameterType(
 
     Number("amount", "3", "This indicates a whole number, possibly with a + or - sign, such as `2`, `+13`, or `-3`") {
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
-                UniqueType.UniqueComplianceErrorSeverity? {
-            return if (parameterText.toIntOrNull() == null) UniqueType.UniqueComplianceErrorSeverity.RulesetInvariant
+                UniqueType.UniqueParameterErrorSeverity? {
+            return if (parameterText.toIntOrNull() == null) UniqueType.UniqueParameterErrorSeverity.RulesetInvariant
+            else null
+        }
+    },
+
+    Fraction("fraction", docExample = "0.5", "Indicates a fractional number, which can be negative"){
+        override fun getErrorSeverity(parameterText: String, ruleset: Ruleset): UniqueType.UniqueParameterErrorSeverity? {
+            return if (parameterText.toFloatOrNull () == null) UniqueType.UniqueParameterErrorSeverity.RulesetInvariant
             else null
         }
     },
 
     RelativeNumber("relativeAmount", "+20", "This indicates a number, usually with a + or - sign, such as `+25` (this kind of parameter is often followed by '%' which is nevertheless not part of the value)") {
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
-                UniqueType.UniqueComplianceErrorSeverity? {
-            return if (parameterText.toIntOrNull() == null) UniqueType.UniqueComplianceErrorSeverity.RulesetInvariant
+                UniqueType.UniqueParameterErrorSeverity? {
+            return if (parameterText.toIntOrNull() == null) UniqueType.UniqueParameterErrorSeverity.RulesetInvariant
             else null
         }
     },
@@ -58,13 +65,13 @@ enum class UniqueParameterType(
     // todo potentially remove if OneTimeRevealSpecificMapTiles changes
     KeywordAll("'all'", "All") {
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset) =
-            if (parameterText == "All") null else UniqueType.UniqueComplianceErrorSeverity.RulesetInvariant
+            if (parameterText == "All") null else UniqueType.UniqueParameterErrorSeverity.RulesetInvariant
     },
 
     /** Implemented by [ICombatant.matchesCategory][com.unciv.logic.battle.ICombatant.matchesCategory] */
     CombatantFilter("combatantFilter", "City", "This indicates a combatant, which can either be a unit or a city (when bombarding). Must either be `City` or a `mapUnitFilter`") {
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
-                UniqueType.UniqueComplianceErrorSeverity? {
+                UniqueType.UniqueParameterErrorSeverity? {
             if (parameterText == "City") return null  // City also recognizes "All" but that's covered by UnitTypeFilter too
             return MapUnitFilter.getErrorSeverity(parameterText, ruleset)
         }
@@ -74,7 +81,7 @@ enum class UniqueParameterType(
     MapUnitFilter("mapUnitFilter", Constants.wounded, null, "Map Unit Filters") {
         private val knownValues = setOf(Constants.wounded, Constants.barbarians, "City-State", Constants.embarked, "Non-City")
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
-                UniqueType.UniqueComplianceErrorSeverity? {
+                UniqueType.UniqueParameterErrorSeverity? {
             if (parameterText.startsWith('{')) // "{filter} {filter}" for and logic
                 return parameterText.filterCompositeLogic({ getErrorSeverity(it, ruleset) }) { a, b -> maxOf(a, b) }
             if (parameterText in knownValues) return null
@@ -88,7 +95,7 @@ enum class UniqueParameterType(
     /** Implemented by [BaseUnit.matchesFilter][com.unciv.models.ruleset.unit.BaseUnit.matchesFilter] */
     BaseUnitFilter("baseUnitFilter", "Melee") {
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
-                UniqueType.UniqueComplianceErrorSeverity? {
+                UniqueType.UniqueParameterErrorSeverity? {
             if (parameterText.startsWith('{')) // "{filter} {filter}" for and logic
                 return parameterText.filterCompositeLogic({ getErrorSeverity(it, ruleset) }) { a, b -> maxOf(a, b) }
             if (UnitName.getErrorSeverity(parameterText, ruleset) == null) return null
@@ -112,12 +119,12 @@ enum class UniqueParameterType(
         )
 
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
-                UniqueType.UniqueComplianceErrorSeverity? {
+                UniqueType.UniqueParameterErrorSeverity? {
             if (parameterText in knownValues) return null
             if (ruleset.unitTypes.containsKey(parameterText)) return null
             if (ruleset.eras.containsKey(parameterText)) return null
             if (ruleset.unitTypes.values.any { it.uniques.contains(parameterText) }) return null
-            return UniqueType.UniqueComplianceErrorSeverity.WarningOnly
+            return UniqueType.UniqueParameterErrorSeverity.PossibleFilteringUnique
         }
 
         override fun isTranslationWriterGuess(parameterText: String, ruleset: Ruleset) =
@@ -129,9 +136,9 @@ enum class UniqueParameterType(
     /** Used by [BaseUnitFilter] and e.g. [UniqueType.OneTimeFreeUnit] */
     UnitName("unit", "Musketman") {
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
-                UniqueType.UniqueComplianceErrorSeverity? {
+                UniqueType.UniqueParameterErrorSeverity? {
             if (ruleset.units.containsKey(parameterText)) return null
-            return UniqueType.UniqueComplianceErrorSeverity.RulesetSpecific  // OneTimeFreeUnitRuins crashes with a bad parameter
+            return UniqueType.UniqueParameterErrorSeverity.RulesetSpecific  // OneTimeFreeUnitRuins crashes with a bad parameter
         }
     },
 
@@ -140,27 +147,27 @@ enum class UniqueParameterType(
         override fun getErrorSeverity(
             parameterText: String,
             ruleset: Ruleset
-        ): UniqueType.UniqueComplianceErrorSeverity? {
+        ): UniqueType.UniqueParameterErrorSeverity? {
             if (ruleset.units[parameterText]?.hasUnique(UniqueType.GreatPerson) == true) return null
-            return UniqueType.UniqueComplianceErrorSeverity.RulesetSpecific
+            return UniqueType.UniqueParameterErrorSeverity.RulesetSpecific
         }
     },
 
     /** Implemented in [Unique.stats][com.unciv.models.ruleset.unique.Unique.stats] */
     Stats("stats", "+1 Gold, +2 Production", "For example: `+2 Production, +3 Food`. Note that the stat names need to be capitalized!") {
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
-                UniqueType.UniqueComplianceErrorSeverity? {
+                UniqueType.UniqueParameterErrorSeverity? {
             if (com.unciv.models.stats.Stats.isStats(parameterText)) return null
-            return UniqueType.UniqueComplianceErrorSeverity.RulesetInvariant
+            return UniqueType.UniqueParameterErrorSeverity.RulesetInvariant
         }
     },
 
     /** Many UniqueTypes like [UniqueType.StatPercentBonus] */
     StatName("stat", "Culture", "This is one of the 7 major stats in the game - `Gold`, `Science`, `Production`, `Food`, `Happiness`, `Culture` and `Faith`. Note that the stat names need to be capitalized!") {
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
-                UniqueType.UniqueComplianceErrorSeverity? {
+                UniqueType.UniqueParameterErrorSeverity? {
             if (Stat.isStat(parameterText)) return null
-            return UniqueType.UniqueComplianceErrorSeverity.RulesetInvariant
+            return UniqueType.UniqueParameterErrorSeverity.RulesetInvariant
         }
     },
 
@@ -170,9 +177,9 @@ enum class UniqueParameterType(
         override fun getErrorSeverity(
             parameterText: String,
             ruleset: Ruleset
-        ): UniqueType.UniqueComplianceErrorSeverity? {
+        ): UniqueType.UniqueParameterErrorSeverity? {
             if (parameterText in knownValues) return null
-            return UniqueType.UniqueComplianceErrorSeverity.RulesetInvariant
+            return UniqueType.UniqueParameterErrorSeverity.RulesetInvariant
         }
     },
 
@@ -183,11 +190,11 @@ enum class UniqueParameterType(
         override fun getErrorSeverity(
             parameterText: String,
             ruleset: Ruleset
-        ): UniqueType.UniqueComplianceErrorSeverity? {
+        ): UniqueType.UniqueParameterErrorSeverity? {
             if (parameterText in knownValues) return null
             if (ruleset.nations.containsKey(parameterText)) return null
             if (ruleset.nations.values.any { it.hasUnique(parameterText) }) return null
-            return UniqueType.UniqueComplianceErrorSeverity.RulesetSpecific
+            return UniqueType.UniqueParameterErrorSeverity.PossibleFilteringUnique
         }
     },
 
@@ -214,9 +221,9 @@ enum class UniqueParameterType(
         )
 
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
-                UniqueType.UniqueComplianceErrorSeverity? {
+                UniqueType.UniqueParameterErrorSeverity? {
             if (parameterText in cityFilterStrings) return null
-            return UniqueType.UniqueComplianceErrorSeverity.RulesetInvariant
+            return UniqueType.UniqueParameterErrorSeverity.RulesetInvariant
         }
 
         override fun getTranslationWriterStringsForOutput() = cityFilterStrings
@@ -227,9 +234,9 @@ enum class UniqueParameterType(
         override fun getErrorSeverity(
             parameterText: String,
             ruleset: Ruleset
-        ): UniqueType.UniqueComplianceErrorSeverity? {
+        ): UniqueType.UniqueParameterErrorSeverity? {
             if (parameterText in ruleset.buildings) return null
-            return UniqueType.UniqueComplianceErrorSeverity.RulesetSpecific
+            return UniqueType.UniqueParameterErrorSeverity.RulesetSpecific
         }
     },
 
@@ -240,11 +247,11 @@ enum class UniqueParameterType(
         override fun getErrorSeverity(
             parameterText: String,
             ruleset: Ruleset
-        ): UniqueType.UniqueComplianceErrorSeverity? {
+        ): UniqueType.UniqueParameterErrorSeverity? {
             if (parameterText in knownValues) return null
             if (BuildingName.getErrorSeverity(parameterText, ruleset) == null) return null
             if (ruleset.buildings.values.any { it.hasUnique(parameterText) }) return null
-            return UniqueType.UniqueComplianceErrorSeverity.RulesetSpecific
+            return UniqueType.UniqueParameterErrorSeverity.PossibleFilteringUnique
         }
 
         override fun isTranslationWriterGuess(parameterText: String, ruleset: Ruleset) =
@@ -257,9 +264,9 @@ enum class UniqueParameterType(
         override fun getErrorSeverity(
             parameterText: String,
             ruleset: Ruleset
-        ): UniqueType.UniqueComplianceErrorSeverity? {
+        ): UniqueType.UniqueParameterErrorSeverity? {
             if (parameterText in knownValues) return null
-            return UniqueType.UniqueComplianceErrorSeverity.RulesetSpecific
+            return UniqueType.UniqueParameterErrorSeverity.RulesetSpecific
         }
         override fun getTranslationWriterStringsForOutput() = knownValues
     },
@@ -278,7 +285,7 @@ enum class UniqueParameterType(
             in ruleset.tileResources -> null
             in ruleset.terrains.values.asSequence().flatMap { it.uniques } -> null
             in ruleset.tileResources.values.asSequence().flatMap { it.uniques } -> null
-            else -> UniqueType.UniqueComplianceErrorSeverity.RulesetSpecific
+            else -> UniqueType.UniqueParameterErrorSeverity.PossibleFilteringUnique
         }
         override fun isTranslationWriterGuess(parameterText: String, ruleset: Ruleset) =
             parameterText in ruleset.terrains || parameterText != "All" && parameterText in knownValues
@@ -289,7 +296,7 @@ enum class UniqueParameterType(
     TileFilter("tileFilter", "Farm", "Anything that can be used either in an improvementFilter or in a terrainFilter can be used here, plus 'unimproved'", "Tile Filters") {
         private val knownValues = setOf("unimproved", "All Road", "Great Improvement")
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
-                UniqueType.UniqueComplianceErrorSeverity? {
+                UniqueType.UniqueParameterErrorSeverity? {
             if (parameterText in knownValues) return null
             if (ImprovementFilter.getErrorSeverity(parameterText, ruleset) == null) return null
             return TerrainFilter.getErrorSeverity(parameterText, ruleset)
@@ -301,19 +308,19 @@ enum class UniqueParameterType(
     SimpleTerrain("simpleTerrain", "Elevated") {
         private val knownValues = setOf("Elevated", "Water", "Land")
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
-                UniqueType.UniqueComplianceErrorSeverity? {
+                UniqueType.UniqueParameterErrorSeverity? {
             if (parameterText in knownValues) return null
             if (ruleset.terrains.containsKey(parameterText)) return null
-            return UniqueType.UniqueComplianceErrorSeverity.RulesetSpecific
+            return UniqueType.UniqueParameterErrorSeverity.RulesetSpecific
         }
     },
 
     /** Used by [NaturalWonderGenerator.trySpawnOnSuitableLocation][com.unciv.logic.map.mapgenerator.NaturalWonderGenerator.trySpawnOnSuitableLocation], only tests base terrain */
     BaseTerrain("baseTerrain", Constants.grassland, "The name of any terrain that is a base terrain according to the json file") {
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
-                UniqueType.UniqueComplianceErrorSeverity? {
+                UniqueType.UniqueParameterErrorSeverity? {
             if (ruleset.terrains[parameterText]?.type?.isBaseTerrain == true) return null
-            return UniqueType.UniqueComplianceErrorSeverity.RulesetSpecific
+            return UniqueType.UniqueParameterErrorSeverity.RulesetSpecific
         }
     },
 
@@ -321,9 +328,9 @@ enum class UniqueParameterType(
      *  [UniqueType.ChangesTerrain] (MapGenerator.convertTerrains) */
     TerrainName("terrainName", Constants.forest) {
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
-                UniqueType.UniqueComplianceErrorSeverity? {
+                UniqueType.UniqueParameterErrorSeverity? {
             if (ruleset.terrains.containsKey(parameterText)) return null
-            return UniqueType.UniqueComplianceErrorSeverity.RulesetSpecific
+            return UniqueType.UniqueParameterErrorSeverity.RulesetSpecific
         }
     },
 
@@ -333,12 +340,12 @@ enum class UniqueParameterType(
     RegionType("regionType", "Hybrid", null, "Region Types") {
         private val knownValues = setOf("Hybrid")
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
-                UniqueType.UniqueComplianceErrorSeverity? {
+                UniqueType.UniqueParameterErrorSeverity? {
             if (parameterText in knownValues) return null
             if (ruleset.terrains[parameterText]?.hasUnique(UniqueType.RegionRequirePercentSingleType) == true ||
                     ruleset.terrains[parameterText]?.hasUnique(UniqueType.RegionRequirePercentTwoTypes) == true)
                 return null
-            return UniqueType.UniqueComplianceErrorSeverity.RulesetSpecific
+            return UniqueType.UniqueParameterErrorSeverity.RulesetSpecific
         }
         override fun getTranslationWriterStringsForOutput() = knownValues
     },
@@ -347,9 +354,9 @@ enum class UniqueParameterType(
     TerrainQuality("terrainQuality", "Undesirable", null, "Terrain Quality") {
         private val knownValues = setOf("Undesirable", "Food", "Desirable", "Production")
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
-                UniqueType.UniqueComplianceErrorSeverity? {
+                UniqueType.UniqueParameterErrorSeverity? {
             if (parameterText in knownValues) return null
-            return UniqueType.UniqueComplianceErrorSeverity.RulesetInvariant
+            return UniqueType.UniqueParameterErrorSeverity.RulesetInvariant
         }
         override fun getTranslationWriterStringsForOutput() = knownValues
     },
@@ -357,29 +364,29 @@ enum class UniqueParameterType(
     /** [UniqueType.UnitStartingPromotions], [UniqueType.TerrainGrantsPromotion], [UniqueType.ConditionalUnitWithPromotion] and others */
     Promotion("promotion", "Shock I", "The name of any promotion") {
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
-            UniqueType.UniqueComplianceErrorSeverity? = when (parameterText) {
+            UniqueType.UniqueParameterErrorSeverity? = when (parameterText) {
                 in ruleset.unitPromotions -> null
-                else -> UniqueType.UniqueComplianceErrorSeverity.RulesetSpecific
+                else -> UniqueType.UniqueParameterErrorSeverity.RulesetSpecific
             }
     },
 
     /** [UniqueType.OneTimeFreeTechRuins], [UniqueType.ConditionalDuringEra] and similar */
     Era("era", "Ancient era", "The name of any era") {
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
-            UniqueType.UniqueComplianceErrorSeverity? = when (parameterText) {
+            UniqueType.UniqueParameterErrorSeverity? = when (parameterText) {
                 in ruleset.eras -> null
-                else -> UniqueType.UniqueComplianceErrorSeverity.RulesetSpecific
+                else -> UniqueType.UniqueParameterErrorSeverity.RulesetSpecific
             }
     },
 
     /** For [UniqueType.CreatesOneImprovement] */
     ImprovementName("improvementName", "Trading Post", "The name of any improvement"){
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
-                UniqueType.UniqueComplianceErrorSeverity? {
+                UniqueType.UniqueParameterErrorSeverity? {
             if (parameterText == Constants.cancelImprovementOrder)
-                return UniqueType.UniqueComplianceErrorSeverity.RulesetInvariant
+                return UniqueType.UniqueParameterErrorSeverity.RulesetInvariant
             if (ruleset.tileImprovements.containsKey(parameterText)) return null
-            return UniqueType.UniqueComplianceErrorSeverity.RulesetSpecific
+            return UniqueType.UniqueParameterErrorSeverity.RulesetSpecific
         }
     },
 
@@ -387,11 +394,11 @@ enum class UniqueParameterType(
     ImprovementFilter("improvementFilter", "All Road", null, "Improvement Filters") {
         private val knownValues = setOf("All", "Improvement", "All Road", "Great Improvement", "Great")
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
-                UniqueType.UniqueComplianceErrorSeverity? {
+                UniqueType.UniqueParameterErrorSeverity? {
             if (parameterText in knownValues) return null
             if (ImprovementName.getErrorSeverity(parameterText, ruleset) == null) return null
             if (ruleset.tileImprovements.values.any { it.hasUnique(parameterText) }) return null
-            return UniqueType.UniqueComplianceErrorSeverity.RulesetSpecific
+            return UniqueType.UniqueParameterErrorSeverity.PossibleFilteringUnique
         }
         override fun isTranslationWriterGuess(parameterText: String, ruleset: Ruleset) =
             parameterText != "All" && getErrorSeverity(parameterText, ruleset) == null
@@ -401,34 +408,34 @@ enum class UniqueParameterType(
     /** Used by [UniqueType.ConsumesResources] and others, implementation not centralized */
     Resource("resource", "Iron", "The name of any resource") {
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
-            UniqueType.UniqueComplianceErrorSeverity? = when (parameterText) {
+            UniqueType.UniqueParameterErrorSeverity? = when (parameterText) {
                 in ruleset.tileResources -> null
-                else -> UniqueType.UniqueComplianceErrorSeverity.RulesetSpecific
+                else -> UniqueType.UniqueParameterErrorSeverity.RulesetSpecific
             }
     },
 
     StockpiledResource("stockpiledResource", "StockpiledResource", "The name of any stockpiled") {
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
-                UniqueType.UniqueComplianceErrorSeverity? = if (parameterText in ruleset.tileResources && ruleset.tileResources[parameterText]!!.isStockpiled()) null
-                else UniqueType.UniqueComplianceErrorSeverity.RulesetSpecific
+                UniqueType.UniqueParameterErrorSeverity? = if (parameterText in ruleset.tileResources && ruleset.tileResources[parameterText]!!.isStockpiled()) null
+                else UniqueType.UniqueParameterErrorSeverity.RulesetSpecific
     },
 
 
     /** Used by [UniqueType.FreeExtraBeliefs], see ReligionManager.getBeliefsToChooseAt* functions */
     BeliefTypeName("beliefType", "Follower", "'Pantheon', 'Follower', 'Founder' or 'Enhancer'") {
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
-                UniqueType.UniqueComplianceErrorSeverity? = when (parameterText) {
+                UniqueType.UniqueParameterErrorSeverity? = when (parameterText) {
             in BeliefType.values().map { it.name } -> null
-            else -> UniqueType.UniqueComplianceErrorSeverity.RulesetInvariant
+            else -> UniqueType.UniqueParameterErrorSeverity.RulesetInvariant
         }
     },
 
     /** unused at the moment with vanilla rulesets */
     Belief("belief", "God of War", "The name of any belief") {
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
-                UniqueType.UniqueComplianceErrorSeverity? = when (parameterText) {
+                UniqueType.UniqueParameterErrorSeverity? = when (parameterText) {
             in ruleset.beliefs -> null
-            else -> UniqueType.UniqueComplianceErrorSeverity.RulesetSpecific
+            else -> UniqueType.UniqueParameterErrorSeverity.RulesetSpecific
         }
     },
 
@@ -437,9 +444,9 @@ enum class UniqueParameterType(
         // Used in FreeExtraBeliefs, FreeExtraAnyBeliefs
         private val knownValues = setOf("founding", "enhancing")
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
-                UniqueType.UniqueComplianceErrorSeverity? = when (parameterText) {
+                UniqueType.UniqueParameterErrorSeverity? = when (parameterText) {
             in knownValues -> null
-            else -> UniqueType.UniqueComplianceErrorSeverity.RulesetInvariant
+            else -> UniqueType.UniqueParameterErrorSeverity.RulesetInvariant
         }
         override fun getTranslationWriterStringsForOutput() = knownValues
     },
@@ -447,18 +454,18 @@ enum class UniqueParameterType(
     /** [UniqueType.ConditionalTech] and others, no central implementation */
     Technology("tech", "Agriculture", "The name of any tech") {
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
-                UniqueType.UniqueComplianceErrorSeverity? = when (parameterText) {
+                UniqueType.UniqueParameterErrorSeverity? = when (parameterText) {
             in ruleset.technologies -> null
-            else -> UniqueType.UniqueComplianceErrorSeverity.RulesetSpecific
+            else -> UniqueType.UniqueParameterErrorSeverity.RulesetSpecific
         }
     },
 
     /** unused at the moment with vanilla rulesets */
     Specialist("specialist", "Merchant", "The name of any specialist") {
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
-                UniqueType.UniqueComplianceErrorSeverity? = when (parameterText) {
+                UniqueType.UniqueParameterErrorSeverity? = when (parameterText) {
             in ruleset.specialists -> null
-            else -> UniqueType.UniqueComplianceErrorSeverity.RulesetSpecific
+            else -> UniqueType.UniqueParameterErrorSeverity.RulesetSpecific
         }
     },
 
@@ -467,10 +474,10 @@ enum class UniqueParameterType(
         override fun getErrorSeverity(
             parameterText: String,
             ruleset: Ruleset
-        ): UniqueType.UniqueComplianceErrorSeverity? {
+        ): UniqueType.UniqueParameterErrorSeverity? {
             return when (parameterText) {
                 in ruleset.policies -> null
-                else -> UniqueType.UniqueComplianceErrorSeverity.RulesetSpecific
+                else -> UniqueType.UniqueParameterErrorSeverity.RulesetSpecific
             }
         }
     },
@@ -480,9 +487,9 @@ enum class UniqueParameterType(
         override fun getErrorSeverity(
             parameterText: String,
             ruleset: Ruleset
-        ): UniqueType.UniqueComplianceErrorSeverity? {
+        ): UniqueType.UniqueParameterErrorSeverity? {
             return if (parameterText in ruleset.victories) null
-            else UniqueType.UniqueComplianceErrorSeverity.RulesetInvariant
+            else UniqueType.UniqueParameterErrorSeverity.RulesetInvariant
         }
     },
 
@@ -492,9 +499,9 @@ enum class UniqueParameterType(
         override fun getErrorSeverity(
             parameterText: String,
             ruleset: Ruleset
-        ): UniqueType.UniqueComplianceErrorSeverity? {
+        ): UniqueType.UniqueParameterErrorSeverity? {
             return if (parameterText in knownValues) null
-            else UniqueType.UniqueComplianceErrorSeverity.RulesetInvariant
+            else UniqueType.UniqueParameterErrorSeverity.RulesetInvariant
         }
     },
 
@@ -505,9 +512,9 @@ enum class UniqueParameterType(
         override fun getErrorSeverity(
             parameterText: String,
             ruleset: Ruleset
-        ): UniqueType.UniqueComplianceErrorSeverity? {
+        ): UniqueType.UniqueParameterErrorSeverity? {
             return if (parameterText in knownValues) null
-            else UniqueType.UniqueComplianceErrorSeverity.RulesetInvariant
+            else UniqueType.UniqueParameterErrorSeverity.RulesetInvariant
         }
         override fun getTranslationWriterStringsForOutput() = knownValues
     },
@@ -515,9 +522,9 @@ enum class UniqueParameterType(
     /** Mod declarative compatibility: Behaves like [Unknown], but makes for nicer auto-generated documentation. */
     ModName("modFilter", "DeCiv Redux", """A Mod name, case-sensitive _or_ a simple wildcard filter beginning and ending in an Asterisk, case-insensitive""", "Mod name filter") {
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
-            UniqueType.UniqueComplianceErrorSeverity? =
+            UniqueType.UniqueParameterErrorSeverity? =
             if ('-' !in parameterText && ('*' !in parameterText || parameterText.matches(Regex("""^\*[^*]+\*$""")))) null
-            else UniqueType.UniqueComplianceErrorSeverity.RulesetInvariant
+            else UniqueType.UniqueParameterErrorSeverity.RulesetInvariant
 
         override fun getTranslationWriterStringsForOutput() = scanExistingValues(this)
     },
@@ -525,7 +532,7 @@ enum class UniqueParameterType(
     /** Behaves like [Unknown], but states explicitly the parameter is OK and its contents are ignored */
     Comment("comment", "comment", null, "Unique Specials") {
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
-                UniqueType.UniqueComplianceErrorSeverity? = null
+                UniqueType.UniqueParameterErrorSeverity? = null
 
         override fun getTranslationWriterStringsForOutput() = scanExistingValues(this)
     },
@@ -534,13 +541,13 @@ enum class UniqueParameterType(
      *  [isTranslationWriterGuess]() == `true` for all inputs or TranslationFileWriter will have a problem! */
     Unknown("param", "Unknown") {
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
-                UniqueType.UniqueComplianceErrorSeverity? = null
+                UniqueType.UniqueParameterErrorSeverity? = null
     };
 
     //region _Internals
 
     /** Validate a [Unique] parameter */
-    abstract fun getErrorSeverity(parameterText: String, ruleset: Ruleset): UniqueType.UniqueComplianceErrorSeverity?
+    abstract fun getErrorSeverity(parameterText: String, ruleset: Ruleset): UniqueType.UniqueParameterErrorSeverity?
 
     /** Pick this type when [TranslationFileWriter] tries to guess for an untyped [Unique] */
     open fun isTranslationWriterGuess(parameterText: String, ruleset: Ruleset): Boolean =
@@ -596,5 +603,5 @@ enum class UniqueParameterType(
 class UniqueComplianceError(
     val parameterName: String,
     val acceptableParameterTypes: List<UniqueParameterType>,
-    val errorSeverity: UniqueType.UniqueComplianceErrorSeverity
+    val errorSeverity: UniqueType.UniqueParameterErrorSeverity
 )
