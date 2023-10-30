@@ -16,7 +16,7 @@ class UniqueValidator(val ruleset: Ruleset) {
     fun checkUniques(
         uniqueContainer: IHasUniques,
         lines: RulesetErrorList,
-        severityToReport: UniqueType.UniqueParameterErrorSeverity,
+        reportRulesetSpecificErrors: Boolean,
         tryFixUnknownUniques: Boolean
     ) {
         for (unique in uniqueContainer.uniqueObjects) {
@@ -24,7 +24,7 @@ class UniqueValidator(val ruleset: Ruleset) {
                 unique,
                 tryFixUnknownUniques,
                 uniqueContainer as? INamed,
-                severityToReport
+                reportRulesetSpecificErrors
             )
             lines.addAll(errors)
         }
@@ -34,7 +34,7 @@ class UniqueValidator(val ruleset: Ruleset) {
         unique: Unique,
         tryFixUnknownUniques: Boolean,
         namedObj: INamed?,
-        severityToReport: UniqueType.UniqueParameterErrorSeverity
+        reportRulesetSpecificErrors: Boolean
     ): List<RulesetError> {
         val prefix by lazy { (if (namedObj is IRulesetObject) "${namedObj.originRuleset}: " else "") +
             (if (namedObj == null) "The" else "${namedObj.name}'s") }
@@ -47,25 +47,25 @@ class UniqueValidator(val ruleset: Ruleset) {
 
         val typeComplianceErrors = getComplianceErrors(unique)
         for (complianceError in typeComplianceErrors) {
-            if (complianceError.errorSeverity <= severityToReport)
-                rulesetErrors.add(RulesetError("$prefix unique \"${unique.text}\" contains parameter ${complianceError.parameterName}," +
-                    " which does not fit parameter type" +
-                    " ${complianceError.acceptableParameterTypes.joinToString(" or ") { it.parameterName }} !",
-                    complianceError.errorSeverity.getRulesetErrorSeverity(severityToReport)
-                ))
+            if (!reportRulesetSpecificErrors && complianceError.errorSeverity == UniqueType.UniqueParameterErrorSeverity.RulesetSpecific)
+                continue
+
+            rulesetErrors.add(RulesetError("$prefix unique \"${unique.text}\" contains parameter ${complianceError.parameterName}," +
+                " which does not fit parameter type" +
+                " ${complianceError.acceptableParameterTypes.joinToString(" or ") { it.parameterName }} !",
+                complianceError.errorSeverity.getRulesetErrorSeverity()
+            ))
         }
 
         for (conditional in unique.conditionals) {
-            addConditionalErrors(conditional, rulesetErrors, prefix, unique, severityToReport)
+            addConditionalErrors(conditional, rulesetErrors, prefix, unique, reportRulesetSpecificErrors)
         }
 
 
-        if (severityToReport != UniqueType.UniqueParameterErrorSeverity.RulesetSpecific)
+        if (reportRulesetSpecificErrors)
         // If we don't filter these messages will be listed twice as this function is called twice on most objects
         // The tests are RulesetInvariant in nature, but RulesetSpecific is called for _all_ objects, invariant is not.
-            return rulesetErrors
-
-        addDeprecationAnnotationErrors(unique, prefix, rulesetErrors)
+            addDeprecationAnnotationErrors(unique, prefix, rulesetErrors)
 
         return rulesetErrors
     }
@@ -75,7 +75,7 @@ class UniqueValidator(val ruleset: Ruleset) {
         rulesetErrors: RulesetErrorList,
         prefix: String,
         unique: Unique,
-        severityToReport: UniqueType.UniqueParameterErrorSeverity
+        reportRulesetSpecificErrors: Boolean
     ) {
         if (conditional.type == null) {
             rulesetErrors.add(
@@ -104,16 +104,19 @@ class UniqueValidator(val ruleset: Ruleset) {
 
         val conditionalComplianceErrors =
             getComplianceErrors(conditional)
+
         for (complianceError in conditionalComplianceErrors) {
-            if (complianceError.errorSeverity == severityToReport)
-                rulesetErrors.add(
-                    RulesetError(
-                        "$prefix unique \"${unique.text}\" contains the conditional \"${conditional.text}\"." +
-                            " This contains the parameter ${complianceError.parameterName} which does not fit parameter type" +
-                            " ${complianceError.acceptableParameterTypes.joinToString(" or ") { it.parameterName }} !",
-                        complianceError.errorSeverity.getRulesetErrorSeverity(severityToReport)
-                    )
+            if (!reportRulesetSpecificErrors && complianceError.errorSeverity == UniqueType.UniqueParameterErrorSeverity.RulesetSpecific)
+                continue
+
+            rulesetErrors.add(
+                RulesetError(
+                    "$prefix unique \"${unique.text}\" contains the conditional \"${conditional.text}\"." +
+                        " This contains the parameter ${complianceError.parameterName} which does not fit parameter type" +
+                        " ${complianceError.acceptableParameterTypes.joinToString(" or ") { it.parameterName }} !",
+                    complianceError.errorSeverity.getRulesetErrorSeverity()
                 )
+            )
         }
     }
 

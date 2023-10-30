@@ -122,7 +122,7 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
             val unique = Unique(it)
             val errors = UniqueValidator(ruleset).checkUnique(
                 unique, true, null,
-                UniqueType.UniqueParameterErrorSeverity.RulesetSpecific
+                true
             )
             errors.isEmpty()
         }

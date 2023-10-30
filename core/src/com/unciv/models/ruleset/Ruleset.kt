@@ -383,7 +383,7 @@ class Ruleset {
                                 Unique(it),
                                 false,
                                 cityStateType,
-                                UniqueType.UniqueParameterErrorSeverity.RulesetSpecific
+                                true
                             ).isEmpty()
                         })
                         allyBonusUniques = ArrayList(cityStateType.allyBonusUniques.filter {
@@ -391,7 +391,7 @@ class Ruleset {
                                 Unique(it),
                                 false,
                                 cityStateType,
-                                UniqueType.UniqueParameterErrorSeverity.RulesetSpecific
+                                true
                             ).isEmpty()
                         })
                     }
