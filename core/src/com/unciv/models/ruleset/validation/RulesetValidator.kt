@@ -32,8 +32,8 @@ class RulesetValidator(val ruleset: Ruleset) {
         // Checks for ALL MODS - only those that can succeed without loading a base ruleset
         // When not checking the entire ruleset, we can only really detect ruleset-invariant errors in uniques
 
-        val rulesetInvariant = UniqueType.UniqueErrorScope.RulesetInvariant
-        val rulesetSpecific = UniqueType.UniqueErrorScope.RulesetSpecific
+        val rulesetInvariant = UniqueType.UniqueParameterErrorSeverity.RulesetInvariant
+        val rulesetSpecific = UniqueType.UniqueParameterErrorSeverity.RulesetSpecific
 
         uniqueValidator.checkUniques(ruleset.globalUniques, lines, rulesetInvariant, tryFixUnknownUniques)
         addUnitErrorsRulesetInvariant(lines, rulesetInvariant, tryFixUnknownUniques)
@@ -82,7 +82,7 @@ class RulesetValidator(val ruleset: Ruleset) {
 
     private fun addCityStateTypeErrors(
         tryFixUnknownUniques: Boolean,
-        rulesetSpecific: UniqueType.UniqueErrorScope,
+        rulesetSpecific: UniqueType.UniqueParameterErrorSeverity,
         lines: RulesetErrorList
     ) {
         for (cityStateType in ruleset.cityStateTypes.values) {
@@ -131,7 +131,7 @@ class RulesetValidator(val ruleset: Ruleset) {
 
     private fun addUnitTypeErrors(
         lines: RulesetErrorList,
-        rulesetSpecific: UniqueType.UniqueErrorScope,
+        rulesetSpecific: UniqueType.UniqueParameterErrorSeverity,
         tryFixUnknownUniques: Boolean
     ) {
         for (unitType in ruleset.unitTypes.values) {
@@ -141,7 +141,7 @@ class RulesetValidator(val ruleset: Ruleset) {
 
     private fun addPromotionErrors(
         lines: RulesetErrorList,
-        rulesetSpecific: UniqueType.UniqueErrorScope,
+        rulesetSpecific: UniqueType.UniqueParameterErrorSeverity,
         tryFixUnknownUniques: Boolean
     ) {
         for (promotion in ruleset.unitPromotions.values) {
@@ -165,7 +165,7 @@ class RulesetValidator(val ruleset: Ruleset) {
 
     private fun addRuinsErrors(
         lines: RulesetErrorList,
-        rulesetSpecific: UniqueType.UniqueErrorScope,
+        rulesetSpecific: UniqueType.UniqueParameterErrorSeverity,
         tryFixUnknownUniques: Boolean
     ) {
         for (reward in ruleset.ruinRewards.values) {
@@ -178,7 +178,7 @@ class RulesetValidator(val ruleset: Ruleset) {
 
     private fun addPolicyErrors(
         lines: RulesetErrorList,
-        rulesetSpecific: UniqueType.UniqueErrorScope,
+        rulesetSpecific: UniqueType.UniqueParameterErrorSeverity,
         tryFixUnknownUniques: Boolean
     ) {
         for (policy in ruleset.policies.values) {
@@ -202,7 +202,7 @@ class RulesetValidator(val ruleset: Ruleset) {
 
     private fun addNationErrors(
         lines: RulesetErrorList,
-        rulesetSpecific: UniqueType.UniqueErrorScope,
+        rulesetSpecific: UniqueType.UniqueParameterErrorSeverity,
         tryFixUnknownUniques: Boolean
     ) {
         for (nation in ruleset.nations.values) {
@@ -217,7 +217,7 @@ class RulesetValidator(val ruleset: Ruleset) {
 
     private fun addBeliefErrors(
         lines: RulesetErrorList,
-        rulesetSpecific: UniqueType.UniqueErrorScope,
+        rulesetSpecific: UniqueType.UniqueParameterErrorSeverity,
         tryFixUnknownUniques: Boolean
     ) {
         for (belief in ruleset.beliefs.values) {
@@ -236,7 +236,7 @@ class RulesetValidator(val ruleset: Ruleset) {
 
     private fun addEraErrors(
         lines: RulesetErrorList,
-        rulesetSpecific: UniqueType.UniqueErrorScope,
+        rulesetSpecific: UniqueType.UniqueParameterErrorSeverity,
         tryFixUnknownUniques: Boolean
     ) {
         if (ruleset.eras.isEmpty()) {
@@ -294,7 +294,7 @@ class RulesetValidator(val ruleset: Ruleset) {
 
     private fun addTechErrors(
         lines: RulesetErrorList,
-        rulesetSpecific: UniqueType.UniqueErrorScope,
+        rulesetSpecific: UniqueType.UniqueParameterErrorSeverity,
         tryFixUnknownUniques: Boolean
     ) {
         for (tech in ruleset.technologies.values) {
@@ -322,7 +322,7 @@ class RulesetValidator(val ruleset: Ruleset) {
 
     private fun addTerrainErrors(
         lines: RulesetErrorList,
-        rulesetSpecific: UniqueType.UniqueErrorScope,
+        rulesetSpecific: UniqueType.UniqueParameterErrorSeverity,
         tryFixUnknownUniques: Boolean
     ) {
         if (ruleset.terrains.values.none { it.type == TerrainType.Land && !it.impassable })
@@ -351,7 +351,7 @@ class RulesetValidator(val ruleset: Ruleset) {
 
     private fun addImprovementErrors(
         lines: RulesetErrorList,
-        rulesetSpecific: UniqueType.UniqueErrorScope,
+        rulesetSpecific: UniqueType.UniqueParameterErrorSeverity,
         tryFixUnknownUniques: Boolean
     ) {
         for (improvement in ruleset.tileImprovements.values) {
@@ -406,7 +406,7 @@ class RulesetValidator(val ruleset: Ruleset) {
 
     private fun addResourceErrors(
         lines: RulesetErrorList,
-        rulesetSpecific: UniqueType.UniqueErrorScope,
+        rulesetSpecific: UniqueType.UniqueParameterErrorSeverity,
         tryFixUnknownUniques: Boolean
     ) {
         for (resource in ruleset.tileResources.values) {
@@ -437,7 +437,7 @@ class RulesetValidator(val ruleset: Ruleset) {
 
     private fun addBuildingErrors(
         lines: RulesetErrorList,
-        rulesetSpecific: UniqueType.UniqueErrorScope,
+        rulesetSpecific: UniqueType.UniqueParameterErrorSeverity,
         tryFixUnknownUniques: Boolean
     ) {
         for (building in ruleset.buildings.values) {
@@ -460,7 +460,7 @@ class RulesetValidator(val ruleset: Ruleset) {
 
     private fun addUnitErrors(
         lines: RulesetErrorList,
-        rulesetSpecific: UniqueType.UniqueErrorScope,
+        rulesetSpecific: UniqueType.UniqueParameterErrorSeverity,
         tryFixUnknownUniques: Boolean
     ) {
         if (ruleset.units.values.none { it.isCityFounder() })
@@ -474,7 +474,7 @@ class RulesetValidator(val ruleset: Ruleset) {
 
     private fun addResourceErrorsRulesetInvariant(
         lines: RulesetErrorList,
-        rulesetInvariant: UniqueType.UniqueErrorScope,
+        rulesetInvariant: UniqueType.UniqueParameterErrorSeverity,
         tryFixUnknownUniques: Boolean
     ) {
         for (resource in ruleset.tileResources.values) {
@@ -484,7 +484,7 @@ class RulesetValidator(val ruleset: Ruleset) {
 
     private fun addPromotionErrorsRulesetInvariant(
         lines: RulesetErrorList,
-        rulesetInvariant: UniqueType.UniqueErrorScope,
+        rulesetInvariant: UniqueType.UniqueParameterErrorSeverity,
         tryFixUnknownUniques: Boolean
     ) {
         for (promotion in ruleset.unitPromotions.values) {
@@ -500,7 +500,7 @@ class RulesetValidator(val ruleset: Ruleset) {
 
     private fun addNationErrorsRulesetInvariant(
         lines: RulesetErrorList,
-        rulesetInvariant: UniqueType.UniqueErrorScope,
+        rulesetInvariant: UniqueType.UniqueParameterErrorSeverity,
         tryFixUnknownUniques: Boolean
     ) {
         for (nation in ruleset.nations.values) {
@@ -550,7 +550,7 @@ class RulesetValidator(val ruleset: Ruleset) {
 
     private fun addBuildingErrorsRulesetInvariant(
         lines: RulesetErrorList,
-        rulesetInvariant: UniqueType.UniqueErrorScope,
+        rulesetInvariant: UniqueType.UniqueParameterErrorSeverity,
         tryFixUnknownUniques: Boolean
     ) {
         for (building in ruleset.buildings.values) {
@@ -594,7 +594,7 @@ class RulesetValidator(val ruleset: Ruleset) {
 
     private fun addTechErrorsRulesetInvariant(
         lines: RulesetErrorList,
-        rulesetInvariant: UniqueType.UniqueErrorScope,
+        rulesetInvariant: UniqueType.UniqueParameterErrorSeverity,
         tryFixUnknownUniques: Boolean
     ) {
         for (tech in ruleset.technologies.values) {
@@ -609,7 +609,7 @@ class RulesetValidator(val ruleset: Ruleset) {
 
     private fun addUnitErrorsRulesetInvariant(
         lines: RulesetErrorList,
-        rulesetInvariant: UniqueType.UniqueErrorScope,
+        rulesetInvariant: UniqueType.UniqueParameterErrorSeverity,
         tryFixUnknownUniques: Boolean
     ) {
         for (unit in ruleset.units.values) {

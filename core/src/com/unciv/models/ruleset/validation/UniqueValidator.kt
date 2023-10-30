@@ -16,7 +16,7 @@ class UniqueValidator(val ruleset: Ruleset) {
     fun checkUniques(
         uniqueContainer: IHasUniques,
         lines: RulesetErrorList,
-        severityToReport: UniqueType.UniqueErrorScope,
+        severityToReport: UniqueType.UniqueParameterErrorSeverity,
         tryFixUnknownUniques: Boolean
     ) {
         for (unique in uniqueContainer.uniqueObjects) {
@@ -34,7 +34,7 @@ class UniqueValidator(val ruleset: Ruleset) {
         unique: Unique,
         tryFixUnknownUniques: Boolean,
         namedObj: INamed?,
-        severityToReport: UniqueType.UniqueErrorScope
+        severityToReport: UniqueType.UniqueParameterErrorSeverity
     ): List<RulesetError> {
         val prefix by lazy { (if (namedObj is IRulesetObject) "${namedObj.originRuleset}: " else "") +
             (if (namedObj == null) "The" else "${namedObj.name}'s") }
@@ -60,7 +60,7 @@ class UniqueValidator(val ruleset: Ruleset) {
         }
 
 
-        if (severityToReport != UniqueType.UniqueErrorScope.RulesetSpecific)
+        if (severityToReport != UniqueType.UniqueParameterErrorSeverity.RulesetSpecific)
         // If we don't filter these messages will be listed twice as this function is called twice on most objects
         // The tests are RulesetInvariant in nature, but RulesetSpecific is called for _all_ objects, invariant is not.
             return rulesetErrors
@@ -75,7 +75,7 @@ class UniqueValidator(val ruleset: Ruleset) {
         rulesetErrors: RulesetErrorList,
         prefix: String,
         unique: Unique,
-        severityToReport: UniqueType.UniqueErrorScope
+        severityToReport: UniqueType.UniqueParameterErrorSeverity
     ) {
         if (conditional.type == null) {
             rulesetErrors.add(
@@ -154,8 +154,8 @@ class UniqueValidator(val ruleset: Ruleset) {
         return errorList
     }
 
-    private val paramTypeErrorSeverityCache = HashMap<UniqueParameterType, HashMap<String, UniqueType.UniqueErrorScope?>>()
-    private fun getParamTypeErrorSeverityCached(uniqueParameterType: UniqueParameterType, param:String): UniqueType.UniqueErrorScope? {
+    private val paramTypeErrorSeverityCache = HashMap<UniqueParameterType, HashMap<String, UniqueType.UniqueParameterErrorSeverity?>>()
+    private fun getParamTypeErrorSeverityCached(uniqueParameterType: UniqueParameterType, param:String): UniqueType.UniqueParameterErrorSeverity? {
         if (!paramTypeErrorSeverityCache.containsKey(uniqueParameterType))
             paramTypeErrorSeverityCache[uniqueParameterType] = hashMapOf()
         val uniqueParamCache = paramTypeErrorSeverityCache[uniqueParameterType]!!
