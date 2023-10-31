@@ -22,7 +22,7 @@ import kotlin.math.roundToInt
  *
  * Main methods: [chooseTrack], [pause], [resume], [setModList], [isPlaying], [gracefulShutdown]
  *
- * City ambience feature: [playOverlay], [stopOverlay]
+ * City ambience / Leader voice feature: [playOverlay], [stopOverlay]
  * * This plays entirely independent of all other functionality as linked above.
  * * Can load from internal (jar,apk) - music is always local, nothing is packaged into a release.
  */
@@ -598,19 +598,30 @@ class MusicController {
             }
 
     /** Play [name] from any mod's [folder] or internal assets,
-     *  fading in to [volume] then looping */
-    fun playOverlay(folder: String, name: String, volume: Float) {
+     *  fading in to [volume] then looping if [isLooping] is set.
+     *  does nothing if no such file is found.
+     *  Note that [volume] intentionally defaults to soundEffectsVolume, not musicVolume
+     *  as that fits the "Leader voice" usecase better.
+     */
+    fun playOverlay(
+        name: String,
+        folder: String = "sounds",
+        volume: Float = UncivGame.Current.settings.soundEffectsVolume,
+        isLooping: Boolean = false,
+        fadeIn: Boolean = false
+    ) {
         val file = getMatchingFiles(folder, name).firstOrNull() ?: return
-        playOverlay(file, volume)
+        playOverlay(file, volume, isLooping, fadeIn)
     }
 
-    /** Play [file], fading in to [volume] then looping */
+    /** Play [file], [optionally][fadeIn] fading in to [volume] then looping if [isLooping] is set */
     @Suppress("MemberVisibilityCanBePrivate")  // open to future use
-    fun playOverlay(file: FileHandle, volume: Float) {
+    fun playOverlay(file: FileHandle, volume: Float, isLooping: Boolean, fadeIn: Boolean) {
         clearOverlay()
-        MusicTrackController(volume, initialFadeVolume = 0f).load(file) {
-            it.music?.isLooping = true
+        MusicTrackController(volume, initialFadeVolume = if (fadeIn) 0f else 1f).load(file) {
+            it.music?.isLooping = isLooping
             it.play()
+            //todo Needs to be called even when no fade desired to correctly set state - Think about changing that
             it.startFade(MusicTrackController.State.FadeIn)
             overlay = it
         }
@@ -622,7 +633,7 @@ class MusicController {
     }
 
     private fun MusicTrackController.overlayTick() {
-        if (timerTick() == MusicTrackController.State.Idle)
+        if (timerTick() == MusicTrackController.State.Idle || !isPlaying())
             clearOverlay()  // means FadeOut finished
     }
 
