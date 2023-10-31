@@ -177,11 +177,11 @@ enum class KeyboardBinding(
     PediaPromotions(Category.Civilopedia, "Promotions", 'p'),
     PediaPolicies(Category.Civilopedia, "Policies", 'o'),
     PediaBeliefs(Category.Civilopedia, "Religions and Beliefs", 'f'),
-    PediaTutorials(Category.Civilopedia, "Tutorials", Input.Keys.HOME),
+    PediaTutorials(Category.Civilopedia, "Tutorials", Input.Keys.F1),
     PediaDifficulties(Category.Civilopedia, "Difficulty levels", 'd'),
     PediaEras(Category.Civilopedia, "Eras", 'e'),
     PediaSpeeds(Category.Civilopedia, "Speeds", 's'),
-    PediaSearch(Category.Civilopedia, "Open Search", Input.Keys.F1),
+    PediaSearch(Category.Civilopedia, "Open the Search Dialog", KeyCharAndCode.ctrl('f')),
 
     // Popups
     Confirm(Category.Popups, "Confirm Dialog", 'y'),
