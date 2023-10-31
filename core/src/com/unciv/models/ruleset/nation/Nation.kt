@@ -10,9 +10,9 @@ import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.squareBraceRegex
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.extensions.colorFromRGB
+import com.unciv.ui.objectdescriptions.BaseUnitDescriptions
 import com.unciv.ui.screens.civilopediascreen.CivilopediaScreen.Companion.showReligionInCivilopedia
 import com.unciv.ui.screens.civilopediascreen.FormattedLine
-import com.unciv.ui.objectdescriptions.BaseUnitDescriptions
 import kotlin.math.pow
 
 class Nation : RulesetObject() {
@@ -25,13 +25,22 @@ class Nation : RulesetObject() {
 
     var cityStateType: String? = null
     var preferredVictoryType: String = Constants.neutralVictoryType
-    var declaringWar = ""
-    var attacked = ""
-    var defeated = ""
-    var introduction = ""
-    var tradeRequest = ""
 
+    /// The following all have audio hooks to play corresponding leader
+    /// voice clips - named <civName>.<fieldName>, e.g. "America.defeated.ogg"
+    /** Shown for AlertType.WarDeclaration, when other Civs declare war on a player */
+    var declaringWar = ""
+    /** Shown in DiplomacyScreen when a player declares war */
+    var attacked = ""
+    /** Shown for AlertType.Defeated */
+    var defeated = ""
+    /** Shown for AlertType.FirstContact */
+    var introduction = ""
+    /** Shown in TradePopup when other Civs initiate trade with a player */
+    var tradeRequest = ""
+    /** Shown in DiplomacyScreen when a player contacts another major civ with RelationshipLevel.Afraid or better */
     var neutralHello = ""
+    /** Shown in DiplomacyScreen when a player contacts another major civ with RelationshipLevel.Enemy or worse */
     var hateHello = ""
 
     lateinit var outerColor: List<Int>
