@@ -92,7 +92,7 @@ class MajorCivDiplomacyTable(private val diplomacyScreen: DiplomacyScreen) {
             if (promisesTable != null) diplomacyTable.add(promisesTable).row()
         }
 
-        // Starting playback here assumes the TradePopup class is shown immediately
+        // Starting playback here assumes the MajorCivDiplomacyTable is shown immediately
         UncivGame.Current.musicController.playOverlay(helloVoice)
 
         return diplomacyTable

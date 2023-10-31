@@ -77,7 +77,7 @@ class TradePopup(worldScreen: WorldScreen): Popup(worldScreen){
 
         addSeparator(Color.DARK_GRAY, height = 1f)
 
-        // Starting playback here assumes the TradePopup class is shown immediately
+        // Starting playback here assumes the TradePopup is shown immediately
         UncivGame.Current.musicController.playOverlay("${requestingCiv.civName}.tradeRequest")
         addGoodSizedLabel(nation.tradeRequest).pad(15f).row()
 
