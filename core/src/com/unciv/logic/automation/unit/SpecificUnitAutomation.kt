@@ -128,7 +128,7 @@ object SpecificUnitAutomation {
         }
         
         //Shortcut, if the best tile is nearby than lets just take it
-        if (bestCityLocation == null && unit.movement.getShortestPath(bestTile!!).size <= 3) {
+        if (bestCityLocation == null && bestTile != null && unit.movement.getShortestPath(bestTile).size <= 3) {
             bestCityLocation = bestTile
         }
         
@@ -139,7 +139,6 @@ object SpecificUnitAutomation {
                 val pathSize = unit.movement.getShortestPath(it.key).size
                 return@firstOrNull pathSize in 1..3
             }?.key
-            
         }
 
         if (bestCityLocation == null) { // We got a badass over here, all tiles within 5 are taken?
