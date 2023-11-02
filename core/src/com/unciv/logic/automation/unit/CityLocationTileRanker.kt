@@ -18,7 +18,7 @@ object CityLocationTileRanker {
         else unit.civ.cities.minOf { it.getCenterTile().aerialDistanceTo(unit.getTile()) }
         val range = (8 - distanceFromHome).coerceIn(1, 5) // Restrict vision when far from home to avoid death marches
         val nearbyCities = unit.civ.gameInfo.getCities()
-            .filter { it.getCenterTile().aerialDistanceTo(unit.getTile()) > 3 + range }
+            .filter { it.getCenterTile().aerialDistanceTo(unit.getTile()) <= 4 + range }
 
         val possibleCityLocations = unit.getTile().getTilesInDistance(range)
             .filter { canSettleTile(it, unit.civ, nearbyCities) && (unit.currentTile == it || unit.movement.canMoveTo(it)) }
