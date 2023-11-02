@@ -18,7 +18,7 @@ object CityLocationTileRanker {
         else unit.civ.cities.minOf { it.getCenterTile().aerialDistanceTo(unit.getTile()) }
         val range = (8 - distanceFromHome).coerceIn(1, 5) // Restrict vision when far from home to avoid death marches
         val nearbyCities = unit.civ.gameInfo.getCities()
-            .filter { it.getCenterTile().aerialDistanceTo(unit.getTile()) <= 4 + range }
+            .filter { it.getCenterTile().aerialDistanceTo(unit.getTile()) <= 3 + range }
 
         val possibleCityLocations = unit.getTile().getTilesInDistance(range)
             .filter { canSettleTile(it, unit.civ, nearbyCities) && (unit.currentTile == it || unit.movement.canMoveTo(it)) }
@@ -42,10 +42,10 @@ object CityLocationTileRanker {
         val modConstants = civ.gameInfo.ruleset.modOptions.constants
         // The AI is allowed to cheat and act like it knows the whole map.
         if (!(tile.isExplored(civ) || civ.isAI())) return false
-        if (!tile.isLand) return false
+        if (!tile.isLand || tile.isImpassible()) return false
         if (!(tile.getOwner() == null || tile.getOwner() == civ)) return false
         if (nearbyCities.any {
-                it.getCenterTile().aerialDistanceTo(tile) <
+                it.getCenterTile().aerialDistanceTo(tile) <=
                     if (tile.getContinent() == it.getCenterTile().getContinent()) modConstants.minimalCityDistance
                     else modConstants.minimalCityDistanceOnDifferentContinents
             }) return false
