@@ -10,7 +10,10 @@ import com.unciv.models.ruleset.unique.LocalUniqueCache
 import com.unciv.models.ruleset.unique.UniqueType
 
 object CityLocationTileRanker {
-    fun getBestTilesToFoundCity(unit: MapUnit): Sequence<Pair<Tile, Float>> {
+    /**
+     * Returns a hashmap of tiles to their ranking plus the a the highest value tile and its value
+     */
+    fun getBestTilesToFoundCity(unit: MapUnit): Pair<HashMap<Tile, Float>, Pair<Tile?, Float>> {
         val distanceFromHome = if (unit.civ.cities.isEmpty()) 0
         else unit.civ.cities.minOf { it.getCenterTile().aerialDistanceTo(unit.getTile()) }
         val range = (8 - distanceFromHome).coerceIn(1, 5) // Restrict vision when far from home to avoid death marches
@@ -21,8 +24,18 @@ object CityLocationTileRanker {
             .filter { canSettleTile(it, unit.civ, nearbyCities) && (unit.currentTile == it || unit.movement.canMoveTo(it)) }
         val uniqueCache = LocalUniqueCache()
         val baseTileMap = HashMap<Tile, Float>()
-        return possibleCityLocations.map {
-            it to rankTileToSettle(it, unit.civ, nearbyCities, baseTileMap, uniqueCache)}.sortedByDescending { it.second }
+        val tileRankMap = HashMap<Tile,Float>()
+        var maxValueTile: Tile? = null
+        var maxValueRank: Float = 0f
+        for (tile in possibleCityLocations) {
+            val tileValue = rankTileToSettle(tile, unit.civ, nearbyCities, baseTileMap, uniqueCache)
+            if (tileValue > maxValueRank) {
+                maxValueTile = tile
+                maxValueRank = tileValue
+            }
+            tileRankMap[tile] = tileValue
+        }
+        return Pair(tileRankMap, Pair(maxValueTile, maxValueRank))
     }
 
     private fun canSettleTile(tile: Tile, civ: Civilization, nearbyCities: Sequence<City>): Boolean {

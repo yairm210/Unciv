@@ -97,14 +97,23 @@ object SpecificUnitAutomation {
     }
 
     fun automateSettlerActions(unit: MapUnit, tilesWhereWeWillBeCaptured: Set<Tile>) {
+
+        // It's possible that we'll see a tile "over the sea" that's better than the tiles close by, but that's not a reason to abandon the close tiles!
+        // Also this lead to some routing problems, see https://github.com/yairm210/Unciv/issues/3653
+        val bestTilesToFoundCityReturn = CityLocationTileRanker.getBestTilesToFoundCity(unit)
+        val bestTilesToFoundCity = bestTilesToFoundCityReturn.first
+        val bestTile = bestTilesToFoundCityReturn.second.first
+        val bestTileRank = bestTilesToFoundCityReturn.second.second
+        var bestCityLocation: Tile? = null
+
 //        if (unit.civ.gameInfo.turns == 0) {   // Special case, we want AI to settle in place on turn 1.
 //            val foundCityAction = UnitActionsFromUniques.getFoundCityAction(unit, unit.getTile())
 //            // Depending on era and difficulty we might start with more than one settler. In that case settle the one with the best location
 //            val otherSettlers = unit.civ.units.getCivUnits().filter { it.currentMovement > 0 && it.baseUnit == unit.baseUnit }
-//            val unitTileRanking = CityLocationTileRanker.rankTileAsCityCenter(unit.getTile(), unit.civ)
-//            if (foundCityAction?.action != null &&
-//                    otherSettlers.none {
-//                        CityLocationTileRanker.rankTileAsCityCenter(it.getTile(), unit.civ) > unitTileRanking
+//            val unitTileRanking = bestTilesToFoundCity.first[unit.getTile()]!!
+//            if (foundCityAction?.action != null && otherSettlers.none {
+//                        bestTilesToFoundCity.first.containsKey(it.getTile())
+//                        && bestTilesToFoundCity.first[it.getTile()]!! > unitTileRanking
 //                    }
 //            ) {
 //                foundCityAction.action.invoke()
@@ -112,14 +121,26 @@ object SpecificUnitAutomation {
 //            }
 //        }
 
-        // It's possible that we'll see a tile "over the sea" that's better than the tiles close by, but that's not a reason to abandon the close tiles!
-        // Also this lead to some routing problems, see https://github.com/yairm210/Unciv/issues/3653
-        val bestCityLocation: Tile? =
-                CityLocationTileRanker.getBestTilesToFoundCity(unit).take(5).firstOrNull {
-                    if (it.first in tilesWhereWeWillBeCaptured) return@firstOrNull false
-                    val pathSize = unit.movement.getShortestPath(it.first).size
-                    return@firstOrNull pathSize in 1..3
-                }?.first
+        // If the tile we are currently on is close to the best tile, then lets just settle here instead
+        if (bestTilesToFoundCity.containsKey(unit.currentTile) 
+                && bestTilesToFoundCity[unit.currentTile]!! >= bestTileRank - 5) {
+                bestCityLocation = unit.currentTile
+        }
+        
+        //Shortcut, if the best tile is nearby than lets just take it
+        if (bestCityLocation == null && unit.movement.getShortestPath(bestTile!!).size <= 3) {
+            bestCityLocation = bestTile
+        }
+        
+        if (bestCityLocation == null) {
+            // Find the best tile that is within
+            bestCityLocation = bestTilesToFoundCity.filter { it.value >= bestTileRank - 5 }.asSequence().sortedBy { it.value }.firstOrNull {
+                if (it.key in tilesWhereWeWillBeCaptured) return@firstOrNull false
+                val pathSize = unit.movement.getShortestPath(it.key).size
+                return@firstOrNull pathSize in 1..3
+            }?.key
+            
+        }
 
         if (bestCityLocation == null) { // We got a badass over here, all tiles within 5 are taken?
             // Try to move towards the frontier
