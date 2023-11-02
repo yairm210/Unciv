@@ -1,13 +1,13 @@
-Una reimplementación en código abierto del juego de construcción de civilizaciones más famoso de la historia - ¡Rápido, pequeño, sin anuncios, gratis por siempre!
+Una reimplementación del juego de construcción de civilizaciones más famoso de la historia - ¡Rápido, pequeño, sin anuncios, gratis por siempre!
 
 ¡Construye tu civilización, investiga tecnologías, expande tus ciudades y derrota a tus enemigos!
 
-¿Peticiones o errores?¿Quieres ayudar al desarrollo? La lista de cosas por hacer del juego está en: https://github.com/yairm210/Unciv/issues
+¿Peticiones?¿Errores? La lista de cosas por hacer de la aplicación es https://github.com/yairm210/Unciv/issues, ¡toda pequeña ayuda es bienvenida!
 
-¿Preguntas?¿Errores?¿Aburrido? Únete a la comunidad de Discord en https://discord.gg/bjrB4Xw ;)
+¿Preguntas?¿Errores?¿Aburrido? Únetenos en https://discord.gg/bjrB4Xw.
 
-¿Quieres ayudar a traducir el juego a tu idioma? Vea https://yairm210.github.io/Unciv/Other/Translating/
+¿Quieres ayudar a traducir el juego a tu idioma? Envíame un email a yairm210@hotmail.com.
 
-¡El mundo espera!¿Convertirás tu civilización en un imperio que resistirá el paso del tiempo?
+¿Sabes escribir Java o Kotlin? Únetenos en https://github.com/yairm210/Unciv.¡El mundo espera!¿Convertirás tu civilización en un imperio que resistirá el paso del tiempo?
 
  Se requiere el permiso de "Tener acceso completo a la red" para descargas iniciadas por el usuario y el modo multijugador. Todos los demás permisos listados son incluidos automáticamente por el API usado para implementar las notificaciones de turnos en el modo multijugador. Los permisos de red son usados para contar mods, descargar mods, descargar música y para cargar/descargar partidas multijugador. Unciv no inicia ninguna otra comunicación por Internet.
