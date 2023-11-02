@@ -31,16 +31,8 @@ class ImprovementPickerScreen(
 ) : PickerScreen() {
 
     companion object {
-        /** Set of resolvable improvement building problems that this class knows how to report. */
-        private val reportableProblems = setOf(
-            ImprovementBuildingProblem.MissingTech,
-            ImprovementBuildingProblem.NotJustOutsideBorders,
-            ImprovementBuildingProblem.OutsideBorders,
-            ImprovementBuildingProblem.MissingResources
-        )
-
         /** Return true if we can report improvements associated with the [problems] (or there are no problems for it at all). */
-        fun canReport(problems: Collection<ImprovementBuildingProblem>) = problems.all { it in reportableProblems }
+        fun canReport(problems: Collection<ImprovementBuildingProblem>) = problems.all { it.reportable }
     }
 
     private var selectedImprovement: TileImprovement? = null
