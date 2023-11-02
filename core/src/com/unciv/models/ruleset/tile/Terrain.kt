@@ -5,11 +5,11 @@ import com.unciv.Constants
 import com.unciv.models.ruleset.Belief
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetStatsObject
-import com.unciv.models.ruleset.unique.UniqueFlag
 import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueType
-import com.unciv.ui.screens.civilopediascreen.FormattedLine
 import com.unciv.ui.components.extensions.colorFromRGB
+import com.unciv.ui.objectdescriptions.uniquesToCivilopediaTextLines
+import com.unciv.ui.screens.civilopediascreen.FormattedLine
 
 class Terrain : RulesetStatsObject() {
 
@@ -118,10 +118,7 @@ class Terrain : RulesetStatsObject() {
         // For now, natural wonders show no "open terrain" - may change later
         if (turnsInto == null && displayAs(TerrainType.Land, ruleset) && !isRough())
             textList += FormattedLine("Open terrain")   // Rough is in uniques
-        uniqueObjects.forEach {
-            if (!it.hasFlag(UniqueFlag.HiddenToUsers))
-                textList += FormattedLine(it)
-        }
+        uniquesToCivilopediaTextLines(textList, leadingSeparator = null)
 
         textList += FormattedLine()
         textList += if (impassable) FormattedLine(Constants.impassable, color="#A00")

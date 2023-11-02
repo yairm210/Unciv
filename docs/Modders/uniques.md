@@ -2028,6 +2028,9 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Conditional
 
+??? example  "&lt;hidden from users&gt;"
+	Applicable to: Conditional
+
 ## TriggerCondition uniques
 !!! note ""
 

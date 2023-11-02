@@ -1,11 +1,10 @@
 package com.unciv.models.ruleset
 
 import com.unciv.models.ruleset.unique.StateForConditionals
-import com.unciv.models.ruleset.unique.UniqueFlag
 import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueType
-import com.unciv.models.translations.getPlaceholderText
 import com.unciv.models.translations.tr
+import com.unciv.ui.objectdescriptions.uniquesToCivilopediaTextLines
 import com.unciv.ui.screens.civilopediascreen.FormattedLine
 
 open class Policy : RulesetObject() {
@@ -18,12 +17,14 @@ open class Policy : RulesetObject() {
 
     /** Indicates whether a [Policy] is a [PolicyBranch] starting policy, a normal one, or the branch completion */
     enum class PolicyBranchType {BranchStart, Member, BranchComplete}
+
     /** Indicates whether this [Policy] is a [PolicyBranch] starting policy, a normal one, or the branch completion */
     val policyBranchType: PolicyBranchType by lazy { when {
         this is PolicyBranch -> PolicyBranchType.BranchStart
         isBranchCompleteByName(name) -> PolicyBranchType.BranchComplete
         else -> PolicyBranchType.Member
     } }
+
     companion object {
         const val branchCompleteSuffix = " Complete"
         /** Some tests to count policies by completion or not use only the String collection without instantiating them.
@@ -34,16 +35,13 @@ open class Policy : RulesetObject() {
 
     /** Used in PolicyPickerScreen to display Policy properties */
     fun getDescription(): String {
-        var text = uniques
-            .filter {
-                !it.getPlaceholderText().contains(UniqueType.OnlyAvailableWhen.placeholderText) &&
-                !it.getPlaceholderText().contains(UniqueType.OneTimeGlobalAlert.placeholderText)
+        return (if (policyBranchType == PolicyBranchType.Member) name.tr() + "\n" else "") +
+            uniqueObjects.filterNot {
+                it.isHiddenToUsers()
+                    || it.isOfType(UniqueType.OnlyAvailableWhen)
+                    || it.isOfType(UniqueType.OneTimeGlobalAlert)
             }
-            .joinToString("\n", transform = { "• ${it.tr()}" })
-        if (policyBranchType != PolicyBranchType.BranchStart
-                && policyBranchType != PolicyBranchType.BranchComplete)
-            text = name.tr() + "\n" + text
-        return text
+            .joinToString("\n") { "• ${it.text.tr()}" }
     }
 
     override fun makeLink() = "Policy/$name"
@@ -126,17 +124,9 @@ open class Policy : RulesetObject() {
                 lineList += FormattedLine(unit.name, link = unit.makeLink(), indent = 1)
         }
 
-
-        if (uniques.isNotEmpty()) {
-            lineList += FormattedLine()
-            uniqueObjects.forEach {
-                if (!it.hasFlag(UniqueFlag.HiddenToUsers))
-                    lineList += FormattedLine(it)
-            }
-        }
+        uniquesToCivilopediaTextLines(lineList)
 
         return lineList
     }
 
 }
-
