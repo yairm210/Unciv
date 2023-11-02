@@ -1,0 +1,28 @@
+
+
+Easier location of mod errors, by specifying not only the name of the object with unique problems, but also the type
+
+Added test for both sides of filtering unique, to not raise mod warnings on both the filter and the filtered unique
+
+Tile generation condition parameters converted to fractions, to avoid errors
+
+Fastlane fixes
+
+RulesetValidator reorg - instead of running 2 sets of unique checks for base rulesets and filtering out results from the first to get the second, we now separate and have one function for non-base-rulesets, and one for base rulesets.
+
+I was wrong, this is for *parameter severity*
+
+chore: General rename UniqueComplianceErrorSeverity -> UniqueErrorScope.
+
+@Framonti
+
+Fastlane description update and cleanup
+
+By SomeTroglodyte:
+- Modded Citadel no longer hard-codes name and icon in Notification 
+- Potpourri of RekMod-inspired little updates 
+- Fix mini-player showing last track during inter-track silence, 
+- Allow modders to hide individual Uniques from Civilopedia 
+- No ruins undo 
+
+Fixed null reference error related to nuking  - By tuvus
