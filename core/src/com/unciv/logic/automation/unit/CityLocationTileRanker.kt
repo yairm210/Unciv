@@ -77,7 +77,7 @@ object CityLocationTileRanker {
         fun rankTile(rankTile: Tile): Float {
             var locationSpecificTileValue = 0f
             // Don't settle near but not on the coast
-            if (tile.isCoastalTile() && !onCoast) locationSpecificTileValue -= 20
+            if (rankTile.isCoastalTile() && !onCoast) locationSpecificTileValue -= 20
             // Check if everything else has been calculated, if so return it
             if (baseTileMap.containsKey(rankTile)) return locationSpecificTileValue + baseTileMap[rankTile]!!
             if (rankTile.getOwner() != null && rankTile.getOwner() != civ) return 0f
