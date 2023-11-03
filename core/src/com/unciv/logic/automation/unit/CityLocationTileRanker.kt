@@ -52,11 +52,11 @@ object CityLocationTileRanker {
         return true
     }
 
-    private fun rankTileToSettle(tile: Tile, civ: Civilization, nearbyCities: Sequence<City>,
+    private fun rankTileToSettle(newCityTile: Tile, civ: Civilization, nearbyCities: Sequence<City>,
                                  baseTileMap: HashMap<Tile, Float>, uniqueCache: LocalUniqueCache): Float {
         var tileValue = 0f
         for (city in nearbyCities) {
-            val distanceToCity = tile.aerialDistanceTo(city.getCenterTile())
+            val distanceToCity = newCityTile.aerialDistanceTo(city.getCenterTile())
             var distanceToCityModifier = when {
                 distanceToCity == 5 -> 20
                 distanceToCity == 4 -> 30
@@ -72,12 +72,12 @@ object CityLocationTileRanker {
             tileValue -= distanceToCityModifier
         }
 
-        val onCoast = tile.isCoastalTile()
+        val onCoast = newCityTile.isCoastalTile()
 
         fun rankTile(rankTile: Tile): Float {
             var locationSpecificTileValue = 0f
             // Don't settle near but not on the coast
-            if (rankTile.isCoastalTile() && !onCoast) locationSpecificTileValue -= 20
+            if (rankTile.isCoastalTile() && !onCoast) locationSpecificTileValue -= 10
             // Check if everything else has been calculated, if so return it
             if (baseTileMap.containsKey(rankTile)) return locationSpecificTileValue + baseTileMap[rankTile]!!
             if (rankTile.getOwner() != null && rankTile.getOwner() != civ) return 0f
@@ -86,12 +86,12 @@ object CityLocationTileRanker {
 
             if (rankTile.resource != null) {
                 rankTileValue += when (rankTile.tileResource.resourceType) {
-                    ResourceType.Bonus -> 2
-                    ResourceType.Strategic -> 3 * rankTile.resourceAmount
+                    ResourceType.Bonus -> 2f
+                    ResourceType.Strategic -> 1.2f * rankTile.resourceAmount
                     ResourceType.Luxury ->
                         // For all normal maps, lets just assume resourceAmmount = 1
-                        if (civ.hasResource(rankTile.resource!!)) 5 * rankTile.resourceAmount
-                        else 12 + 5 * (rankTile.resourceAmount - 1)
+                        if (civ.hasResource(rankTile.resource!!)) 3f * rankTile.resourceAmount
+                        else 8f + 3f * (rankTile.resourceAmount - 1)
                 }
             }
 
@@ -103,16 +103,16 @@ object CityLocationTileRanker {
         }
 
         if (onCoast) tileValue += 10
-        if (tile.isAdjacentToRiver()) tileValue += 3
-        if (tile.terrainHasUnique(UniqueType.FreshWater)) tileValue += 5
+        if (newCityTile.isAdjacentToRiver()) tileValue += 3
+        if (newCityTile.terrainHasUnique(UniqueType.FreshWater)) tileValue += 5
         // We want to found the city on an oasis because it can't be improved otherwise
-        if (tile.terrainHasUnique(UniqueType.Unbuildable)) tileValue += 3
+        if (newCityTile.terrainHasUnique(UniqueType.Unbuildable)) tileValue += 3
         // If we build the city on a resource tile, then we can't build any special improvements on it
-        if (tile.resource != null) tileValue -= 2
+        if (newCityTile.resource != null) tileValue -= 4
 
         for (i in 0..3) {
-            for (nearbyTile in tile.getTilesInDistanceRange(IntRange(i, i))) {
-                tileValue += rankTile(tile)
+            for (nearbyTile in newCityTile.getTilesAtDistance(i)) {
+                tileValue += rankTile(nearbyTile)
             }
         }
         return tileValue
