@@ -44,7 +44,7 @@ class MapFileSelectTable(
 ) : Table() {
     private val mapCategorySelectBox = SelectBox<String>(BaseScreen.skin)
     private val mapFileSelectBox = SelectBox<MapWrapper>(BaseScreen.skin)
-    private val loadingIcon = LoadingImage(30f, loadingColor = Color.SCARLET)
+    private val loadingIcon = LoadingImage(30f, LoadingImage.Style(loadingColor = Color.SCARLET))
     private val useNationsFromMapButton = "Select players from starting locations".toTextButton(AnimatedMenuPopup.SmallButtonStyle())
     private val useNationsButtonCell: Cell<Actor?>
     private var mapNations = emptySequence<String>()
@@ -137,7 +137,7 @@ class MapFileSelectTable(
             val sortToTop = newGameScreen.gameSetupInfo.gameParameters.baseRuleset
             val select = if (mapCategorySelectBox.selection.isEmpty) categoryName
                     else mapCategorySelectBox.selected
-            // keep Ruleset Selectbox sorted while async is running - few entries
+            // keep Ruleset SelectBox sorted while async is running - few entries
             val newItems = (mapCategorySelectBox.items.asSequence() + categoryName)
                 .sortedWith(
                     compareBy<String?> { it != sortToTop }
@@ -168,6 +168,11 @@ class MapFileSelectTable(
     private fun FileHandle.isRecentlyModified() = lastModified() > System.currentTimeMillis() - 900000
     fun isNotEmpty() = firstMap != null
     fun recentlySavedMapExists() = firstMap != null && firstMap!!.isRecentlyModified()
+
+    fun activateCustomMaps() {
+        if (loadingIcon.isShowing()) return // Default map selection will be handled when background loading finishes
+        onFileSelectBoxChange()
+    }
 
     private fun onCategorySelectBoxChange() {
         val selectedRuleset: String? = mapCategorySelectBox.selected
@@ -203,7 +208,7 @@ class MapFileSelectTable(
         // Do NOT try to put back the "bad" preselection!
     }
 
-    fun onSelectBoxChange() {
+    private fun onFileSelectBoxChange() {
         cancelBackgroundJobs()
         if (mapFileSelectBox.selection.isEmpty) return
         val selection = mapFileSelectBox.selected
@@ -226,7 +231,7 @@ class MapFileSelectTable(
         newGameScreen.gameSetupInfo.gameParameters.mods = LinkedHashSet(mapMods.second)
         newGameScreen.gameSetupInfo.gameParameters.baseRuleset = mapMods.first.firstOrNull()
             ?: selection.mapPreview.mapParameters.baseRuleset
-        val success = newGameScreen.tryUpdateRuleset()
+        val success = newGameScreen.tryUpdateRuleset(updateUI = true)
         newGameScreen.updateTables()
         hideMiniMap()
         if (success) {
