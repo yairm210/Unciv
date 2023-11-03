@@ -134,7 +134,7 @@ class SpecialistAllocationTable(private val cityScreen: CityScreen) : Table(Base
 
         // Show gpp points first, makes recognizing what the specialist is good for easier
         // greatPersonPoints is a Counter so iteration order is potentially random:
-        // Sort by unit name without collator to ensure consitency in those rare mods where one Specialist gives points to several GP counters
+        // Sort by unit name without collator to ensure consistency in those rare mods where one Specialist gives points to several GP counters
         for ((gpName, gpPoints) in specialist.greatPersonPoints.asSequence().sortedBy { it.key }) {
             addWrapping(gpPoints, Color.GOLD, ImageGetter.getUnitIcon(gpName, Color.GOLD).apply {
                 addTooltip(gpName, 24f)
