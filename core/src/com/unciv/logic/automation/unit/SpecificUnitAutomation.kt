@@ -134,7 +134,7 @@ object SpecificUnitAutomation {
         
         if (bestCityLocation == null) {
             // Find the best tile that is within
-            bestCityLocation = bestTilesToFoundCity.filter { it.value >= bestTileRank - 5 }.asSequence().sortedBy { it.value }.firstOrNull {
+            bestCityLocation = bestTilesToFoundCity.filter { it.value >= bestTileRank - 5 }.asSequence().sortedByDescending { it.value }.firstOrNull {
                 if (it.key in tilesWhereWeWillBeCaptured) return@firstOrNull false
                 val pathSize = unit.movement.getShortestPath(it.key).size
                 return@firstOrNull pathSize in 1..3
