@@ -113,7 +113,13 @@
 		"RGB": [0, 171, 169],
 		"uniques": ["Fresh water",
 					"Considered [Food] when determining start locations",
-					"Considered [Desirable] when determining start locations"]
+					"Considered [Desirable] when determining start locations"],
+        "civilopediaText": [
+            {"text": "Lakes provide fresh water to shore tiles, changing yields depending on technological progress and allowing farming where it would otherwise not be possible (similar to Rivers and Oases)."},
+            {"text": "Rivers", "link":"Terrain/River"},
+            {"text": "Oasis", "link":"Terrain/Oasis"},
+            {"text": "Farm", "link":"Improvement/Farm"},
+        ]
 	},
 	{
 		"name": "Mountain",
@@ -251,7 +257,13 @@
 					"Only [All Road] improvements may be built on this tile",
 					"Always Fertility [4] for Map Generation",
 					"Considered [Food] when determining start locations",
-					"Considered [Desirable] when determining start locations"]
+					"Considered [Desirable] when determining start locations"],
+        "civilopediaText": [
+            {"text": "Oases provide fresh water to adjacent tiles, changing yields depending on technological progress and allowing farming where it would otherwise not be possible (similar to Rivers and Lakes)."},
+            {"text": "Rivers", "link":"Terrain/River"},
+            {"text": "Lakes", "link":"Terrain/Lakes"},
+            {"text": "Farm", "link":"Improvement/Farm"},
+        ]
 	},
 	{
 		"name": "Flood plains",
@@ -295,10 +307,12 @@
         "civilopediaText": [
             {"text": "Rivers exist on tile edges, not as terrain feature per se."},
             {"text": "Nevertheless, the tiles on both sides of a river edge benefit, but these benefits do not stack."},
-            {"text": "One benefit is additional Gold yield, the other is that the tile has access to fresh water, changing yields depending on technological progress and allowing farming where it would otherwise not be possible."},
+            {"text": "One benefit is additional Gold yield, the other is that the tile has access to fresh water, changing yields depending on technological progress and allowing farming where it would otherwise not be possible (similar to Oases and Lakes)."},
             {"text": "Additionally, some buildings can only be built on river tiles, and they might have significance for certain religions."},
             {"text": "Movement across rivers takes all remaining movement points of a unit unless there is a bridge."},
-            {"text": "Combat across rivers has implications as well."},
+            {"text": "When being attacked from across a river, a defender usually gets a significant bonus."},
+            {"text": "Lakes", "link":"Terrain/Lakes"},
+            {"text": "Oasis", "link":"Terrain/Oasis"},
             {"text": "Farm", "link":"Improvement/Farm"},
             {"text": "Road", "link":"Improvement/Road"},
             {"text": "Engineering", "link":"Technology/Engineering"},
