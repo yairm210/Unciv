@@ -2,9 +2,9 @@ package com.unciv.models.ruleset
 
 import com.unciv.Constants
 import com.unciv.UncivGame
-import com.unciv.models.ruleset.unique.UniqueFlag
 import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.translations.tr
+import com.unciv.ui.objectdescriptions.uniquesToCivilopediaTextLines
 import com.unciv.ui.screens.civilopediascreen.CivilopediaScreen.Companion.showReligionInCivilopedia
 import com.unciv.ui.screens.civilopediascreen.FormattedLine
 
@@ -27,6 +27,7 @@ class Belief() : RulesetObject() {
         return getCivilopediaTextLines(false)
     }
 
+    // This special overload is called from Religion overview and Religion picker
     fun getCivilopediaTextLines(withHeader: Boolean): List<FormattedLine> {
         val textList = ArrayList<FormattedLine>()
         if (withHeader) {
@@ -35,10 +36,7 @@ class Belief() : RulesetObject() {
         }
         if (type != BeliefType.None)
             textList += FormattedLine("{Type}: {$type}", color = type.color, centered = withHeader)
-        uniqueObjects.forEach {
-            if (!it.hasFlag(UniqueFlag.HiddenToUsers))
-                textList += FormattedLine(it)
-        }
+        uniquesToCivilopediaTextLines(textList, leadingSeparator = null)
         return textList
     }
 

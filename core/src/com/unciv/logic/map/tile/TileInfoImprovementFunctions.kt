@@ -11,8 +11,23 @@ import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.UniqueType
 
 
-enum class ImprovementBuildingProblem {
-    WrongCiv, MissingTech, Unbuildable, NotJustOutsideBorders, OutsideBorders, UnmetConditional, Obsolete, MissingResources, Other
+/** Reason why an Improvement cannot be built by a given civ */
+enum class ImprovementBuildingProblem(
+    /** `true` if this cannot change on the future of this game */
+    val permanent: Boolean = false,
+    /** `true` if the ImprovementPicker should report this problem */
+    val reportable: Boolean = false
+) {
+    WrongCiv(permanent = true),
+    MissingTech(reportable = true),
+    Unbuildable(permanent = true),
+    ConditionallyUnbuildable,
+    NotJustOutsideBorders(reportable = true),
+    OutsideBorders(reportable = true),
+    UnmetConditional,
+    Obsolete(permanent = true),
+    MissingResources(reportable = true),
+    Other
 }
 
 class TileInfoImprovementFunctions(val tile: Tile) {
@@ -30,8 +45,11 @@ class TileInfoImprovementFunctions(val tile: Tile) {
             yield(ImprovementBuildingProblem.WrongCiv)
         if (improvement.techRequired != null && !civInfo.tech.isResearched(improvement.techRequired!!))
             yield(ImprovementBuildingProblem.MissingTech)
-        if (improvement.hasUnique(UniqueType.Unbuildable, stateForConditionals))
+        if (improvement.getMatchingUniques(UniqueType.Unbuildable, StateForConditionals.IgnoreConditionals)
+                .any { it.conditionals.isEmpty() })
             yield(ImprovementBuildingProblem.Unbuildable)
+        else if (improvement.hasUnique(UniqueType.Unbuildable, stateForConditionals))
+            yield(ImprovementBuildingProblem.ConditionallyUnbuildable)
 
         if (tile.getOwner() != civInfo && !improvement.hasUnique(UniqueType.CanBuildOutsideBorders, stateForConditionals)) {
             if (!improvement.hasUnique(UniqueType.CanBuildJustOutsideBorders, stateForConditionals))

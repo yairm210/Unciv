@@ -523,7 +523,6 @@ class RulesetValidator(val ruleset: Ruleset) {
     ) {
         for (nation in ruleset.nations.values) {
             addNationErrorRulesetInvariant(nation, lines)
-
             uniqueValidator.checkUniques(nation, lines, false, tryFixUnknownUniques)
         }
     }

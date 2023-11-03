@@ -236,6 +236,11 @@ object UnitActionsFromUniques {
             val improvement = tile.ruleset.tileImprovements[improvementName]
                 ?: continue
 
+            // Try to skip Improvements we can never build
+            // (getImprovementBuildingProblems catches those so the button is always disabled, but it nevertheless looks nicer)
+            if (tile.improvementFunctions.getImprovementBuildingProblems(improvement, unit.civ).any { it.permanent })
+                continue
+
             val resourcesAvailable = improvement.uniqueObjects.none {
                     improvementUnique ->
                 improvementUnique.isOfType(UniqueType.ConsumesResources) &&

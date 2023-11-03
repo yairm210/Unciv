@@ -934,15 +934,15 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: FounderBelief
 
+??? example  "[relativeAmount]% [stat] from every follower, up to [relativeAmount]%"
+	Example: "[+20]% [Culture] from every follower, up to [+20]%"
+
+	Applicable to: FounderBelief, FollowerBelief
+
 ## FollowerBelief uniques
 !!! note ""
 
     Uniques for Pantheon and Follower type beliefs, that will apply to each city where the religion is the majority religion
-
-??? example  "[relativeAmount]% [stat] from every follower, up to [relativeAmount]%"
-	Example: "[+20]% [Culture] from every follower, up to [+20]%"
-
-	Applicable to: FollowerBelief
 
 ??? example  "Earn [amount]% of [mapUnitFilter] unit's [costOrStrength] as [civWideStat] when killed within 4 tiles of a city following this religion"
 	Example: "Earn [3]% of [Wounded] unit's [Cost] as [Gold] when killed within 4 tiles of a city following this religion"
@@ -2026,6 +2026,9 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "&lt;in all except [regionType] Regions&gt;"
 	Example: "&lt;in all except [Hybrid] Regions&gt;"
 
+	Applicable to: Conditional
+
+??? example  "&lt;hidden from users&gt;"
 	Applicable to: Conditional
 
 ## TriggerCondition uniques

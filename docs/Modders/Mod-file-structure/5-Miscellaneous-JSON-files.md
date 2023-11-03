@@ -214,9 +214,6 @@ Defines uniques that apply globally. e.g. Vanilla rulesets define the effects of
 Only the `uniques` field is used, but a name must still be set (the Ruleset validator might display it).
 When extension rulesets define GlobalUniques, all uniques are merged. At the moment there is no way to change/remove uniques set by a base mod.
 
-Note: Mods can use "arbitrary" Uniques as purely filtering uniques. They are not "Typed" by Unciv code and thus have no actual effect implementation - except by being filterable elsewhere.
-In the near future, the ruleset validator will show warnings for all these, unless they are also included here, as validation that they are intentional (and - they **must** have **no** placeholders or conditionals).
-
 ## Tutorials.json
 
 [link to original](https://github.com/yairm210/Unciv/tree/master/android/assets/jsons/Tutorials.json)

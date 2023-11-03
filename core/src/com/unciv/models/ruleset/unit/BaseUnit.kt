@@ -61,6 +61,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
     lateinit var ruleset: Ruleset
 
 
+    /** Generate short description as comma-separated string for Technology description "Units enabled" and GreatPersonPickerScreen */
     fun getShortDescription() = BaseUnitDescriptions.getShortDescription(this)
 
     /** Generate description as multi-line string for CityScreen addSelectedConstructionTable

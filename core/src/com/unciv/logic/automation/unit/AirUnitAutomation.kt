@@ -127,10 +127,10 @@ object AirUnitAutomation {
                     val tileExplosionValue = if (targetTile == tile) 80 else 50
                     
                     if (targetUnit.isMilitary()) {
-                        explosionValue += if (targetTile == tile) evaluateCivValue(targetTile.militaryUnit?.civ!!, -200, tileExplosionValue)
-                        else evaluateCivValue(targetTile.militaryUnit?.civ!!, -150, 50)
+                        explosionValue += if (targetTile == tile) evaluateCivValue(targetUnit.civ, -200, tileExplosionValue)
+                        else evaluateCivValue(targetUnit.civ, -150, 50)
                     } else if (targetUnit.isCivilian()) {
-                        explosionValue += evaluateCivValue(targetTile.civilianUnit?.civ!!, -100, tileExplosionValue / 2)
+                        explosionValue += evaluateCivValue(targetUnit.civ, -100, tileExplosionValue / 2)
                     }
                 }
             }
