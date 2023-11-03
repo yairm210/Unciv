@@ -128,7 +128,7 @@ object SpecificUnitAutomation {
         }
         
         //Shortcut, if the best tile is nearby than lets just take it
-        if (bestCityLocation == null && bestTile != null && unit.movement.getShortestPath(bestTile).size <= 3) {
+        if (bestCityLocation == null && bestTile != null && unit.movement.getShortestPath(bestTile).size in 1..3) {
             bestCityLocation = bestTile
         }
         

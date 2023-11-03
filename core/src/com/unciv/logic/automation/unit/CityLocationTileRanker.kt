@@ -45,7 +45,7 @@ object CityLocationTileRanker {
         if (!tile.isLand || tile.isImpassible()) return false
         if (tile.getOwner() != null && tile.getOwner() != civ) return false
         if (nearbyCities.any {
-                it.getCenterTile().aerialDistanceTo(tile) - 1 <=
+                it.getCenterTile().aerialDistanceTo(tile) <=
                     if (tile.getContinent() == it.getCenterTile().getContinent()) modConstants.minimalCityDistance
                     else modConstants.minimalCityDistanceOnDifferentContinents
             }) return false
