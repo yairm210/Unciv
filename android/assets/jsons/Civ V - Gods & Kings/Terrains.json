@@ -303,7 +303,7 @@
         "type": "TerrainFeature",
         "gold": 1,
         "movementCost": 0,  // So Civilopedia won't display a cost of 1
-        "uniques": ["Doesn't generate naturally"],
+        "uniques": ["Doesn't generate naturally", "Excluded from map editor"],
         "civilopediaText": [
             {"text": "Rivers exist on tile edges, not as terrain feature per se."},
             {"text": "Nevertheless, the tiles on both sides of a river edge benefit, but these benefits do not stack."},

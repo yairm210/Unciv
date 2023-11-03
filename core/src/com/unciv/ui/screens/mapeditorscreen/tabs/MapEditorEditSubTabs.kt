@@ -14,16 +14,17 @@ import com.unciv.models.ruleset.tile.Terrain
 import com.unciv.models.ruleset.tile.TerrainType
 import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.ruleset.tile.TileResource
+import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.tr
 import com.unciv.ui.audio.MusicMood
 import com.unciv.ui.audio.MusicTrackChooserFlags
-import com.unciv.ui.components.widgets.TabbedPager
 import com.unciv.ui.components.extensions.center
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.tilegroups.TileGroup
 import com.unciv.ui.components.tilegroups.TileSetStrings
+import com.unciv.ui.components.widgets.TabbedPager
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.civilopediascreen.FormattedLine
@@ -57,6 +58,7 @@ class MapEditorEditTerrainTab(
 
     private fun allTerrains() = ruleset.terrains.values.asSequence()
         .filter { it.type.isBaseTerrain }
+        .filterNot { it.hasUnique(UniqueType.ExcludedFromMapEditor, StateForConditionals.IgnoreConditionals) }
     private fun getTerrains() = allTerrains()
         .map { FormattedLine(it.name, it.name, "Terrain/${it.name}", size = 32) }
         .asIterable()
@@ -98,6 +100,7 @@ class MapEditorEditFeaturesTab(
 
     private fun allowedFeatures() = ruleset.terrains.values.asSequence()
         .filter { it.type == TerrainType.TerrainFeature }
+        .filterNot { it.hasUnique(UniqueType.ExcludedFromMapEditor, StateForConditionals.IgnoreConditionals) }
     private fun getFeatures() = allowedFeatures()
         .map { FormattedLine(it.name, it.name, "Terrain/${it.name}", size = 32) }
         .asIterable()
@@ -131,6 +134,7 @@ class MapEditorEditWondersTab(
 
     private fun allowedWonders() = ruleset.terrains.values.asSequence()
         .filter { it.type == TerrainType.NaturalWonder }
+        .filterNot { it.hasUnique(UniqueType.ExcludedFromMapEditor, StateForConditionals.IgnoreConditionals) }
     private fun getWonders() = allowedWonders()
         .map { FormattedLine(it.name, it.name, "Terrain/${it.name}", size = 32) }
         .asIterable()
@@ -175,7 +179,8 @@ class MapEditorEditResourcesTab(
     }
 
     private fun allowedResources() = ruleset.tileResources.values.asSequence()
-        .filter { !it.hasUnique(UniqueType.CityStateOnlyResource) }
+        .filterNot { it.hasUnique(UniqueType.CityStateOnlyResource) }
+        .filterNot { it.hasUnique(UniqueType.ExcludedFromMapEditor, StateForConditionals.IgnoreConditionals) }
     private fun getResources(): Iterable<FormattedLine> = sequence {
         var lastGroup = ResourceType.Bonus
         for (resource in allowedResources()) {
@@ -230,9 +235,7 @@ class MapEditorEditImprovementsTab(
     }
 
     private fun allowedImprovements() = ruleset.tileImprovements.values.asSequence()
-        .filter { improvement ->
-            disallowImprovements.none { improvement.name.startsWith(it) }
-        }
+        .filterNot { it.hasUnique(UniqueType.ExcludedFromMapEditor, StateForConditionals.IgnoreConditionals) }
     private fun getImprovements(): Iterable<FormattedLine> = sequence {
         var lastGroup = 0
         for (improvement in allowedImprovements()) {
@@ -249,10 +252,6 @@ class MapEditorEditImprovementsTab(
     override fun isDisabled() = allowedImprovements().none()
 
     companion object {
-        //todo This should really be easier, the attributes should allow such a test in one go
-        private val disallowImprovements = listOf(
-            Constants.cityCenter, Constants.repair, Constants.remove, Constants.cancelImprovementOrder
-        )
         private fun TileImprovement.group() = when {
             RoadStatus.values().any { it.name == name } -> 2
             "Great Improvement" in uniques -> 3

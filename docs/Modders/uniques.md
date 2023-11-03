@@ -1568,6 +1568,9 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "Rough terrain"
 	Applicable to: Terrain
 
+??? example  "Excluded from map editor"
+	Applicable to: Terrain, Improvement, Resource
+
 ## Improvement uniques
 ??? example  "Can also be built on tiles adjacent to fresh water"
 	Applicable to: Improvement
