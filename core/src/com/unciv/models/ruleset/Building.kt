@@ -9,7 +9,6 @@ import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.ruleset.unique.LocalUniqueCache
 import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.Unique
-import com.unciv.models.ruleset.unique.UniqueFlag
 import com.unciv.models.ruleset.unique.UniqueParameterType
 import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueType
@@ -17,10 +16,11 @@ import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
 import com.unciv.models.translations.fillPlaceholders
 import com.unciv.models.translations.tr
-import com.unciv.ui.components.Fonts
 import com.unciv.ui.components.extensions.getConsumesAmountString
 import com.unciv.ui.components.extensions.getNeedMoreAmountString
 import com.unciv.ui.components.extensions.toPercent
+import com.unciv.ui.components.fonts.Fonts
+import com.unciv.ui.objectdescriptions.uniquesToCivilopediaTextLines
 import com.unciv.ui.screens.civilopediascreen.FormattedLine
 
 
@@ -86,7 +86,6 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
                 if (!tileBonusHashmap.containsKey(stats)) tileBonusHashmap[stats] = ArrayList()
                 tileBonusHashmap[stats]!!.add(unique.params[1])
             }
-            unique.isOfType(UniqueType.ConsumesResources) -> Unit    // skip these,
             else -> yield(unique.text)
         }
         for ((key, value) in tileBonusHashmap)
@@ -101,7 +100,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
      * @param filterUniques If provided, include only uniques for which this function returns true.
      */
     private fun getUniquesStringsWithoutDisablers(filterUniques: ((Unique) -> Boolean)? = null) = getUniquesStrings {
-            !it.hasFlag(UniqueFlag.HiddenToUsers)
+            !it.isHiddenToUsers()
             && filterUniques?.invoke(it) ?: true
         }
 
@@ -116,7 +115,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
         if (isWonder) translatedLines += "Wonder".tr()
         if (isNationalWonder) translatedLines += "National Wonder".tr()
         if (!isFree) {
-            for ((resourceName, amount) in getResourceRequirementsPerTurn()) {
+            for ((resourceName, amount) in getResourceRequirementsPerTurn(StateForConditionals(city.civ, city))) {
                 val available = city.getResourceAmount(resourceName)
                 val resource = city.getRuleset().tileResources[resourceName] ?: continue
                 val consumesString = resourceName.getConsumesAmountString(amount, resource.isStockpiled())
@@ -247,15 +246,12 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
             textList += FormattedLine("Requires [$requiredBuilding] to be built in the city",
                 link="Building/$requiredBuilding")
 
-        val resourceRequirements = getResourceRequirementsPerTurn()
-        if (resourceRequirements.isNotEmpty()) {
+        if (requiredResource != null) {
             textList += FormattedLine()
-            for ((resourceName, amount) in resourceRequirements) {
-                val resource = ruleset.tileResources[resourceName] ?: continue
-                textList += FormattedLine(
-                    resourceName.getConsumesAmountString(amount, resource.isStockpiled()),
-                    link="Resources/$resourceName", color="#F42" )
-            }
+            val resource = ruleset.tileResources[requiredResource]
+            textList += FormattedLine(
+                requiredResource!!.getConsumesAmountString(1, resource!!.isStockpiled()),
+                link="Resources/$requiredResource", color="#F42" )
         }
 
         val stats = cloneStats()
@@ -266,12 +262,8 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
 
         if (replacementTextForUniques.isNotEmpty()) {
             textList += FormattedLine(replacementTextForUniques)
-        } else if (uniques.isNotEmpty()) {
-            for (unique in uniqueObjects) {
-                if (unique.hasFlag(UniqueFlag.HiddenToUsers)) continue
-                if (unique.type == UniqueType.ConsumesResources) continue  // already shown from getResourceRequirements
-                textList += FormattedLine(unique)
-            }
+        } else {
+            uniquesToCivilopediaTextLines(textList, colorConsumesResources = true)
         }
 
         if (!stats.isEmpty()) {
@@ -620,7 +612,9 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
             yield(RejectionReasonType.RequiresBuildingInThisCity.toInstance("Requires a [${civ.getEquivalentBuilding(requiredBuilding!!)}] in this city"))
         }
 
-        for ((resourceName, requiredAmount) in getResourceRequirementsPerTurn()) {
+        for ((resourceName, requiredAmount) in getResourceRequirementsPerTurn(
+            StateForConditionals(cityConstructions.city.civ, cityConstructions.city))
+        ) {
             val availableAmount = cityConstructions.city.getResourceAmount(resourceName)
             if (availableAmount < requiredAmount) {
                 yield(RejectionReasonType.ConsumesResources.toInstance(resourceName.getNeedMoreAmountString(requiredAmount - availableAmount)))
@@ -704,20 +698,17 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
 
     fun isSellable() = !isAnyWonder() && !hasUnique(UniqueType.Unsellable)
 
-    override fun getResourceRequirementsPerTurn(): Counter<String> = resourceRequirementsInternal
-
-    private val resourceRequirementsInternal: Counter<String> by lazy {
+    override fun getResourceRequirementsPerTurn(stateForConditionals: StateForConditionals?): Counter<String> {
         val resourceRequirements = Counter<String>()
         if (requiredResource != null) resourceRequirements[requiredResource!!] = 1
-        for (unique in uniqueObjects)
-            if (unique.isOfType(UniqueType.ConsumesResources))
-                resourceRequirements[unique.params[1]] = unique.params[0].toInt()
-        resourceRequirements
+        for (unique in getMatchingUniques(UniqueType.ConsumesResources, stateForConditionals))
+            resourceRequirements[unique.params[1]] += unique.params[0].toInt()
+        return resourceRequirements
     }
 
-    override fun requiresResource(resource: String): Boolean {
-        if (resourceRequirementsInternal.contains(resource)) return true
-        for (unique in getMatchingUniques(UniqueType.CostsResources)) {
+    override fun requiresResource(resource: String, stateForConditionals: StateForConditionals?): Boolean {
+        if (getResourceRequirementsPerTurn(stateForConditionals).contains(resource)) return true
+        for (unique in getMatchingUniques(UniqueType.CostsResources, stateForConditionals)) {
             if (unique.params[1] == resource) return true
         }
         return false

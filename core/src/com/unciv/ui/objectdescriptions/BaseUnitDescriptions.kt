@@ -7,16 +7,16 @@ import com.unciv.logic.city.City
 import com.unciv.models.metadata.GameSettings
 import com.unciv.models.ruleset.IRulesetObject
 import com.unciv.models.ruleset.Ruleset
+import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.Unique
-import com.unciv.models.ruleset.unique.UniqueFlag
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.ruleset.unit.UnitMovementType
 import com.unciv.models.ruleset.unit.UnitType
 import com.unciv.models.stats.Stat
 import com.unciv.models.translations.tr
-import com.unciv.ui.components.Fonts
 import com.unciv.ui.components.extensions.getConsumesAmountString
+import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.civilopediascreen.FormattedLine
@@ -24,6 +24,7 @@ import com.unciv.ui.screens.civilopediascreen.MarkupRenderer
 
 object BaseUnitDescriptions {
 
+    /** Generate short description as comma-separated string for Technology description "Units enabled" and GreatPersonPickerScreen */
     fun getShortDescription(baseUnit: BaseUnit): String {
         val infoList = mutableListOf<String>()
         if (baseUnit.strength != 0) infoList += "${baseUnit.strength}${Fonts.strength}"
@@ -32,8 +33,7 @@ object BaseUnitDescriptions {
         for (promotion in baseUnit.promotions)
             infoList += promotion.tr()
         if (baseUnit.replacementTextForUniques != "") infoList += baseUnit.replacementTextForUniques
-        else for (unique in baseUnit.uniqueObjects) if (!unique.hasFlag(UniqueFlag.HiddenToUsers))
-            infoList += unique.text.tr()
+        else baseUnit.uniquesToDescription(infoList)
         return infoList.joinToString()
     }
 
@@ -43,7 +43,7 @@ object BaseUnitDescriptions {
     fun getDescription(baseUnit: BaseUnit, city: City): String {
         val lines = mutableListOf<String>()
         val availableResources = city.civ.getCivResourcesByName()
-        for ((resourceName, amount) in baseUnit.getResourceRequirementsPerTurn()) {
+        for ((resourceName, amount) in baseUnit.getResourceRequirementsPerTurn(StateForConditionals(city.civ))) {
             val available = availableResources[resourceName] ?: 0
             val resource = baseUnit.ruleset.tileResources[resourceName] ?: continue
             val consumesString = resourceName.getConsumesAmountString(amount, resource.isStockpiled())
@@ -58,12 +58,7 @@ object BaseUnitDescriptions {
         lines += "$strengthLine${baseUnit.movement}${Fonts.movement}"
 
         if (baseUnit.replacementTextForUniques != "") lines += baseUnit.replacementTextForUniques
-        else for (unique in baseUnit.uniqueObjects.filterNot {
-            it.type == UniqueType.Unbuildable
-                    || it.type == UniqueType.ConsumesResources  // already shown from getResourceRequirements
-                    || it.type?.flags?.contains(UniqueFlag.HiddenToUsers) == true
-        })
-            lines += unique.text.tr()
+        else baseUnit.uniquesToDescription(lines) { isOfType(UniqueType.Unbuildable) }
 
         if (baseUnit.promotions.isNotEmpty()) {
             val prefix = "Free promotion${if (baseUnit.promotions.size == 1) "" else "s"}:".tr() + " "
@@ -106,25 +101,16 @@ object BaseUnitDescriptions {
         if (baseUnit.replacementTextForUniques.isNotEmpty()) {
             textList += FormattedLine()
             textList += FormattedLine(baseUnit.replacementTextForUniques)
-        } else if (baseUnit.uniques.isNotEmpty()) {
-            textList += FormattedLine()
-            for (unique in baseUnit.uniqueObjects.sortedBy { it.text }) {
-                if (unique.hasFlag(UniqueFlag.HiddenToUsers)) continue
-                if (unique.type == UniqueType.ConsumesResources) continue  // already shown from getResourceRequirements
-                textList += FormattedLine(unique)
-            }
+        } else {
+            baseUnit.uniquesToCivilopediaTextLines(textList, sorted = true, colorConsumesResources = true)
         }
 
-        val resourceRequirements = baseUnit.getResourceRequirementsPerTurn()
-        if (resourceRequirements.isNotEmpty()) {
+        if (baseUnit.requiredResource != null) {
             textList += FormattedLine()
-            for ((resourceName, amount) in resourceRequirements) {
-                val resource = ruleset.tileResources[resourceName] ?: continue
-                textList += FormattedLine(
-                    resourceName.getConsumesAmountString(amount, resource.isStockpiled()),
-                    link = "Resource/$resource", color = "#F42"
-                )
-            }
+            val resource = ruleset.tileResources[baseUnit.requiredResource]
+            textList += FormattedLine(
+                baseUnit.requiredResource!!.getConsumesAmountString(1, resource!!.isStockpiled()),
+                link="Resources/${baseUnit.requiredResource}", color="#F42")
         }
 
         if (baseUnit.uniqueTo != null) {
@@ -253,13 +239,8 @@ object BaseUnitDescriptions {
                 for (promotion in relevantPromotions)
                     yield(FormattedLine(promotion.name, promotion.makeLink()))
             }
-            if (uniqueObjects.isNotEmpty()) {
-                yield(FormattedLine(separator = true))
-                for (unique in uniqueObjects) {
-                    if (unique.hasFlag(UniqueFlag.HiddenToUsers)) continue
-                    yield(FormattedLine(unique))
-                }
-            }
+
+            yieldAll(uniquesToCivilopediaTextLines(leadingSeparator = true))
         }
         return (if (name.startsWith("Domain: ")) getDomainLines() else getUnitTypeLines()).toList()
     }
@@ -293,8 +274,8 @@ object BaseUnitDescriptions {
         if (betterUnit.movement != originalUnit.movement)
             yield("${Fonts.movement} {[${betterUnit.movement}] vs [${originalUnit.movement}]}" to null)
 
-        for (resource in originalUnit.getResourceRequirementsPerTurn().keys)
-            if (!betterUnit.getResourceRequirementsPerTurn().containsKey(resource)) {
+        for (resource in originalUnit.getResourceRequirementsPerTurn(StateForConditionals.IgnoreConditionals).keys)
+            if (!betterUnit.getResourceRequirementsPerTurn(StateForConditionals.IgnoreConditionals).containsKey(resource)) {
                 yield("[$resource] not required" to "Resource/$resource")
             }
         // We return the unique text directly, so Nation.getUniqueUnitsText will not use the
@@ -304,12 +285,12 @@ object BaseUnitDescriptions {
         if (betterUnit.replacementTextForUniques.isNotEmpty()) {
             yield(betterUnit.replacementTextForUniques to null)
         } else {
-            val newAbilityPredicate: (Unique)->Boolean = { it.text in originalUnit.uniques || it.hasFlag(UniqueFlag.HiddenToUsers) }
+            val newAbilityPredicate: (Unique)->Boolean = { it.text in originalUnit.uniques || it.isHiddenToUsers() }
             for (unique in betterUnit.uniqueObjects.filterNot(newAbilityPredicate))
                 yield(unique.text to null)
         }
 
-        val lostAbilityPredicate: (Unique)->Boolean = { it.text in betterUnit.uniques || it.hasFlag(UniqueFlag.HiddenToUsers) }
+        val lostAbilityPredicate: (Unique)->Boolean = { it.text in betterUnit.uniques || it.isHiddenToUsers() }
         for (unique in originalUnit.uniqueObjects.filterNot(lostAbilityPredicate)) {
             yield("Lost ability (vs [${originalUnit.name}]): [${unique.text}]" to null)
         }

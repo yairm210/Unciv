@@ -382,16 +382,16 @@ class Ruleset {
                             UniqueValidator(this@Ruleset).checkUnique(
                                 Unique(it),
                                 false,
-                                cityStateType,
-                                UniqueType.UniqueComplianceErrorSeverity.RulesetSpecific
+                                null,
+                                true
                             ).isEmpty()
                         })
                         allyBonusUniques = ArrayList(cityStateType.allyBonusUniques.filter {
                             UniqueValidator(this@Ruleset).checkUnique(
                                 Unique(it),
                                 false,
-                                cityStateType,
-                                UniqueType.UniqueComplianceErrorSeverity.RulesetSpecific
+                                null,
+                                true
                             ).isEmpty()
                         })
                     }

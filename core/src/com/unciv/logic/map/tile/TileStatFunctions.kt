@@ -21,10 +21,10 @@ class TileStatFunctions(val tile: Tile) {
     fun getTileStats(city: City?, observingCiv: Civilization?,
                      localUniqueCache: LocalUniqueCache = LocalUniqueCache(false)
     ): Stats {
-        val stats = getTerrainStats()
-        var minimumStats = if (tile.isCityCenter()) Stats.DefaultCityCenterMinimum else Stats.ZERO
-
         val stateForConditionals = StateForConditionals(civInfo = observingCiv, city = city, tile = tile)
+
+        val stats = getTerrainStats(stateForConditionals)
+        var minimumStats = if (tile.isCityCenter()) Stats.DefaultCityCenterMinimum else Stats.ZERO
 
         if (city != null) {
             val statsFromTilesUniques =
@@ -93,13 +93,19 @@ class TileStatFunctions(val tile: Tile) {
     }
 
     /** Gets basic stats to start off [getTileStats] or [getTileStartYield], independently mutable result */
-    private fun getTerrainStats(): Stats {
+    private fun getTerrainStats(stateForConditionals: StateForConditionals = StateForConditionals()): Stats {
         var stats: Stats? = null
 
         // allTerrains iterates over base, natural wonder, then features
         for (terrain in tile.allTerrains) {
+            for (unique in terrain.getMatchingUniques(UniqueType.Stats, stateForConditionals)) {
+                if (stats == null) {
+                    stats = unique.stats.clone()
+                }
+                else stats.add(unique.stats)
+            }
             when {
-                terrain.hasUnique(UniqueType.NullifyYields) ->
+                terrain.hasUnique(UniqueType.NullifyYields, stateForConditionals) ->
                     return terrain.cloneStats()
                 terrain.overrideStats || stats == null ->
                     stats = terrain.cloneStats()

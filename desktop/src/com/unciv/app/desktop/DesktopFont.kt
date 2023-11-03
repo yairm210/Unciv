@@ -2,10 +2,10 @@ package com.unciv.app.desktop
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Pixmap
-import com.unciv.ui.components.FontFamilyData
-import com.unciv.ui.components.FontImplementation
-import com.unciv.ui.components.FontMetricsCommon
-import com.unciv.ui.components.Fonts
+import com.unciv.ui.components.fonts.FontFamilyData
+import com.unciv.ui.components.fonts.FontImplementation
+import com.unciv.ui.components.fonts.FontMetricsCommon
+import com.unciv.ui.components.fonts.Fonts
 import java.awt.Color
 import java.awt.Font
 import java.awt.FontMetrics

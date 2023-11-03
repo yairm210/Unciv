@@ -8,7 +8,8 @@ import com.badlogic.gdx.graphics.g2d.GlyphLayout
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.unciv.Constants
 import com.unciv.models.translations.tr
-import com.unciv.ui.components.Fonts
+import com.unciv.ui.components.fonts.FontRulesetIcons
+import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.screens.basescreen.BaseScreen
 
 /** A Label allowing Gdx markup
@@ -41,7 +42,7 @@ class ColorMarkupLabel private constructor(
      *  Use to easily color text without also coloring the icons which translation inserts as
      *  characters for recognized gameplay names.
      *
-     *  @see Fonts.charToRulesetImageActor
+     *  @see FontRulesetIcons.charToRulesetImageActor
      */
     constructor(
         text: String,
@@ -130,7 +131,7 @@ class ColorMarkupLabel private constructor(
             val sb = StringBuilder(translated.length + 42)
             var currentColor = ' '
             for (char in translated) {
-                val newColor = if (char in Fonts.allSymbols || char in Fonts.charToRulesetImageActor) 'S' else 'T'
+                val newColor = if (char in Fonts.allSymbols || char in FontRulesetIcons.charToRulesetImageActor) 'S' else 'T'
                 if (newColor != currentColor) {
                     if (currentColor != ' ') sb.append("[]")
                     sb.append('[')

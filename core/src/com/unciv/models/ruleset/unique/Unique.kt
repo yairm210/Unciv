@@ -9,6 +9,7 @@ import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.managers.ReligionState
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.validation.UniqueValidator
+import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
 import com.unciv.models.translations.getConditionals
 import com.unciv.models.translations.getPlaceholderParameters
@@ -20,6 +21,7 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
     /** This is so the heavy regex-based parsing is only activated once per unique, instead of every time it's called
      *  - for instance, in the city screen, we call every tile unique for every tile, which can lead to ANRs */
     val placeholderText = text.getPlaceholderText()
+    /** Does not include conditional params */
     val params = text.getPlaceholderParameters()
     val type = UniqueType.uniqueTypeMap[placeholderText]
 
@@ -36,11 +38,13 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
             || conditionals.any { it.type == UniqueType.ConditionalTimedUnique }
         )
 
+    /** Includes conditional params */
     val allParams = params + conditionals.flatMap { it.params }
 
     val isLocalEffect = params.contains("in this city") || conditionals.any { it.type == UniqueType.ConditionalInThisCity }
 
     fun hasFlag(flag: UniqueFlag) = type != null && type.flags.contains(flag)
+    fun isHiddenToUsers() = hasFlag(UniqueFlag.HiddenToUsers) || conditionals.any { it.type == UniqueType.ConditionalHideUniqueFromUsers }
 
     fun hasTriggerConditional(): Boolean {
         if (conditionals.none()) return false
@@ -121,7 +125,7 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
             val unique = Unique(it)
             val errors = UniqueValidator(ruleset).checkUnique(
                 unique, true, null,
-                UniqueType.UniqueComplianceErrorSeverity.RulesetSpecific
+                true
             )
             errors.isEmpty()
         }
@@ -138,8 +142,6 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
 
         if (condition.type?.targetTypes?.any { it.modifierType == UniqueTarget.ModifierType.Other } == true)
             return true // not a filtering condition
-
-        fun ruleset() = state.civInfo!!.gameInfo.ruleset
 
         val relevantUnit by lazy {
             if (state.ourCombatant != null && state.ourCombatant is MapUnitCombatant) state.ourCombatant.unit
@@ -160,80 +162,111 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
             return 0
         }
 
+        /** Helper to simplify conditional tests requiring a Civilization */
+        fun checkOnCiv(predicate: (Civilization.() -> Boolean)): Boolean {
+            if (state.civInfo == null) return false
+            return state.civInfo.predicate()
+        }
+
+        /** Helper to simplify conditional tests requiring a City */
+        fun checkOnCity(predicate: (City.() -> Boolean)): Boolean {
+            if (state.city == null) return false
+            return state.city.predicate()
+        }
+
+        /** Helper to simplify the "compare civ's current era with named era" conditions */
+        fun compareEra(eraParam: String, compare: (civEra: Int, paramEra: Int) -> Boolean): Boolean {
+            if (state.civInfo == null) return false
+            val era = state.civInfo.gameInfo.ruleset.eras[eraParam] ?: return false
+            return compare(state.civInfo.getEraNumber(), era.eraNumber)
+        }
+
+        /** Helper for ConditionalWhenAboveAmountStatResource and its below counterpart */
+        fun checkResourceOrStatAmount(compare: (current: Int, limit: Int) -> Boolean): Boolean {
+            if (state.civInfo == null) return false
+            val limit = condition.params[0].toInt()
+            val resourceOrStatName = condition.params[1]
+            if (state.civInfo.gameInfo.ruleset.tileResources.containsKey(resourceOrStatName))
+                return compare(getResourceAmount(resourceOrStatName), limit)
+            val stat = Stat.safeValueOf(resourceOrStatName)
+                ?: return false
+            return compare(state.civInfo.getStatReserve(stat), limit)
+        }
+
+        /** Helper for ConditionalWhenAboveAmountStatSpeed and its below counterpart */
+        fun checkStatAmountWithSpeed(compare: (current: Int, limit: Float) -> Boolean): Boolean {
+            if (state.civInfo == null) return false
+            val stat = Stat.safeValueOf(condition.params[1])
+                ?: return false
+            val limit = condition.params[0].toFloat() * state.civInfo.gameInfo.speed.statCostModifiers[stat]!!
+            return compare(state.civInfo.getStatReserve(stat), limit)
+        }
+
         return when (condition.type) {
             // These are 'what to do' and not 'when to do' conditionals
             UniqueType.ConditionalTimedUnique -> true
+            UniqueType.ConditionalHideUniqueFromUsers -> true  // allowed to be attached to any Unique to hide it, no-op otherwise
 
             UniqueType.ConditionalChance -> stateBasedRandom.nextFloat() < condition.params[0].toFloat() / 100f
-            UniqueType.ConditionalBeforeTurns -> state.civInfo != null && state.civInfo.gameInfo.turns < condition.params[0].toInt()
-            UniqueType.ConditionalAfterTurns -> state.civInfo != null && state.civInfo.gameInfo.turns >= condition.params[0].toInt()
+            UniqueType.ConditionalBeforeTurns -> checkOnCiv { gameInfo.turns < condition.params[0].toInt() }
+            UniqueType.ConditionalAfterTurns -> checkOnCiv { gameInfo.turns >= condition.params[0].toInt() }
 
-
-            UniqueType.ConditionalNationFilter -> state.civInfo?.nation?.matchesFilter(condition.params[0]) == true
-            UniqueType.ConditionalWar -> state.civInfo?.isAtWar() == true
-            UniqueType.ConditionalNotWar -> state.civInfo?.isAtWar() == false
+            UniqueType.ConditionalNationFilter -> checkOnCiv { nation.matchesFilter(condition.params[0]) }
+            UniqueType.ConditionalWar -> checkOnCiv { isAtWar() }
+            UniqueType.ConditionalNotWar -> checkOnCiv { !isAtWar() }
             UniqueType.ConditionalWithResource -> getResourceAmount(condition.params[0]) > 0
             UniqueType.ConditionalWithoutResource -> getResourceAmount(condition.params[0]) <= 0
-            UniqueType.ConditionalWhenAboveAmountResource -> getResourceAmount(condition.params[1]) > condition.params[0].toInt()
-            UniqueType.ConditionalWhenBelowAmountResource -> getResourceAmount(condition.params[1]) < condition.params[0].toInt()
-            UniqueType.ConditionalHappy ->
-                state.civInfo != null && state.civInfo.stats.happiness >= 0
+
+            UniqueType.ConditionalWhenAboveAmountStatResource ->
+                checkResourceOrStatAmount { current, limit -> current > limit }
+            UniqueType.ConditionalWhenBelowAmountStatResource ->
+                checkResourceOrStatAmount { current, limit -> current < limit }
+            UniqueType.ConditionalWhenAboveAmountStatSpeed ->
+                checkStatAmountWithSpeed { current, limit -> current > limit }  // Note: Int.compareTo(Float)!
+            UniqueType.ConditionalWhenBelowAmountStatSpeed ->
+                checkStatAmountWithSpeed { current, limit -> current < limit }  // Note: Int.compareTo(Float)!
+
+            UniqueType.ConditionalHappy -> checkOnCiv { stats.happiness >= 0 }
             UniqueType.ConditionalBetweenHappiness ->
-                state.civInfo != null
-                && condition.params[0].toInt() <= state.civInfo.stats.happiness
-                && state.civInfo.stats.happiness < condition.params[1].toInt()
-            UniqueType.ConditionalBelowHappiness ->
-                state.civInfo != null && state.civInfo.stats.happiness < condition.params[0].toInt()
-            UniqueType.ConditionalGoldenAge ->
-                state.civInfo != null && state.civInfo.goldenAges.isGoldenAge()
-            UniqueType.ConditionalWLTKD ->
-                state.city != null && state.city.isWeLoveTheKingDayActive()
-            UniqueType.ConditionalBeforeEra ->
-                state.civInfo != null && ruleset().eras.containsKey(condition.params[0])
-                    && state.civInfo.getEraNumber() < ruleset().eras[condition.params[0]]!!.eraNumber
-            UniqueType.ConditionalStartingFromEra ->
-                state.civInfo != null && ruleset().eras.containsKey(condition.params[0])
-                    &&  state.civInfo.getEraNumber() >= ruleset().eras[condition.params[0]]!!.eraNumber
-            UniqueType.ConditionalDuringEra ->
-                state.civInfo != null && ruleset().eras.containsKey(condition.params[0])
-                    &&  state.civInfo.getEraNumber() == ruleset().eras[condition.params[0]]!!.eraNumber
-            UniqueType.ConditionalIfStartingInEra ->
-                state.civInfo != null && state.civInfo.gameInfo.gameParameters.startingEra == condition.params[0]
-            UniqueType.ConditionalTech ->
-                state.civInfo != null && state.civInfo.tech.isResearched(condition.params[0])
-            UniqueType.ConditionalNoTech ->
-                state.civInfo != null && !state.civInfo.tech.isResearched(condition.params[0])
+                checkOnCiv { stats.happiness in condition.params[0].toInt() until condition.params[1].toInt() }
+            UniqueType.ConditionalBelowHappiness -> checkOnCiv { stats.happiness < condition.params[0].toInt() }
+            UniqueType.ConditionalGoldenAge -> checkOnCiv { goldenAges.isGoldenAge() }
+            UniqueType.ConditionalBeforeEra -> compareEra(condition.params[0]) { current, param -> current < param }
+            UniqueType.ConditionalStartingFromEra -> compareEra(condition.params[0]) { current, param -> current >= param }
+            UniqueType.ConditionalDuringEra -> compareEra(condition.params[0]) { current, param -> current == param }
+            UniqueType.ConditionalIfStartingInEra -> checkOnCiv { gameInfo.gameParameters.startingEra == condition.params[0] }
+            UniqueType.ConditionalTech -> checkOnCiv { tech.isResearched(condition.params[0]) }
+            UniqueType.ConditionalNoTech -> checkOnCiv { !tech.isResearched(condition.params[0]) }
             UniqueType.ConditionalAfterPolicyOrBelief ->
-                state.civInfo != null && (state.civInfo.policies.isAdopted(condition.params[0])
-                    || state.civInfo.religionManager.religion?.hasBelief(condition.params[0]) == true)
+                checkOnCiv { policies.isAdopted(condition.params[0]) || religionManager.religion?.hasBelief(condition.params[0]) == true }
             UniqueType.ConditionalBeforePolicyOrBelief ->
-                state.civInfo != null && !state.civInfo.policies.isAdopted(condition.params[0])
-                    && state.civInfo.religionManager.religion?.hasBelief(condition.params[0]) != true
+                checkOnCiv { !policies.isAdopted(condition.params[0]) && religionManager.religion?.hasBelief(condition.params[0]) != true }
             UniqueType.ConditionalBeforePantheon ->
-                state.civInfo != null && state.civInfo.religionManager.religionState == ReligionState.None
+                checkOnCiv { religionManager.religionState == ReligionState.None }
             UniqueType.ConditionalAfterPantheon ->
-                state.civInfo != null && state.civInfo.religionManager.religionState != ReligionState.None
+                checkOnCiv { religionManager.religionState != ReligionState.None }
             UniqueType.ConditionalBeforeReligion ->
-                state.civInfo != null && state.civInfo.religionManager.religionState < ReligionState.Religion
+                checkOnCiv { religionManager.religionState < ReligionState.Religion }
             UniqueType.ConditionalAfterReligion ->
-                state.civInfo != null && state.civInfo.religionManager.religionState >= ReligionState.Religion
+                checkOnCiv { religionManager.religionState >= ReligionState.Religion }
             UniqueType.ConditionalBeforeEnhancingReligion ->
-                state.civInfo != null && state.civInfo.religionManager.religionState < ReligionState.EnhancedReligion
+                checkOnCiv { religionManager.religionState < ReligionState.EnhancedReligion }
             UniqueType.ConditionalAfterEnhancingReligion ->
-                state.civInfo != null && state.civInfo.religionManager.religionState >= ReligionState.EnhancedReligion
+                checkOnCiv { religionManager.religionState >= ReligionState.EnhancedReligion }
             UniqueType.ConditionalBuildingBuilt ->
-                state.civInfo != null && state.civInfo.cities.any { it.cityConstructions.containsBuildingOrEquivalent(condition.params[0]) }
+                checkOnCiv { cities.any { it.cityConstructions.containsBuildingOrEquivalent(condition.params[0]) } }
 
             // Filtered via city.getMatchingUniques
             UniqueType.ConditionalInThisCity -> true
+            UniqueType.ConditionalWLTKD -> checkOnCity { isWeLoveTheKingDayActive() }
             UniqueType.ConditionalCityWithBuilding ->
-                state.city != null && state.city.cityConstructions.containsBuildingOrEquivalent(condition.params[0])
+                checkOnCity { cityConstructions.containsBuildingOrEquivalent(condition.params[0]) }
             UniqueType.ConditionalCityWithoutBuilding ->
-                state.city != null && !state.city.cityConstructions.containsBuildingOrEquivalent(condition.params[0])
+                checkOnCity { !cityConstructions.containsBuildingOrEquivalent(condition.params[0]) }
             UniqueType.ConditionalPopulationFilter ->
-                state.city != null && state.city.population.getPopulationFilterAmount(condition.params[1]) >= condition.params[0].toInt()
+                checkOnCity { population.getPopulationFilterAmount(condition.params[1]) >= condition.params[0].toInt() }
             UniqueType.ConditionalWhenGarrisoned ->
-                state.city != null && state.city.getCenterTile().militaryUnit != null && state.city.getCenterTile().militaryUnit!!.canGarrison()
+                checkOnCity { getCenterTile().militaryUnit?.canGarrison() == true }
 
             UniqueType.ConditionalVsCity -> state.theirCombatant?.matchesCategory("City") == true
             UniqueType.ConditionalVsUnits -> state.theirCombatant?.matchesCategory(condition.params[0]) == true
@@ -273,12 +306,12 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
                 val theirCities = state.theirCombatant?.getCivInfo()?.cities?.size ?: 0
                 yourCities < theirCities
             }
-            UniqueType.ConditionalForeignContinent ->
-                state.civInfo != null && relevantTile != null
-                    && (state.civInfo.cities.isEmpty() || state.civInfo.getCapital() == null
-                        || state.civInfo.getCapital()!!.getCenterTile().getContinent()
-                            != relevantTile!!.getContinent()
+            UniqueType.ConditionalForeignContinent -> checkOnCiv {
+                    relevantTile != null && (
+                        cities.isEmpty() || getCapital() == null
+                        || getCapital()!!.getCenterTile().getContinent() != relevantTile!!.getContinent()
                     )
+                }
             UniqueType.ConditionalAdjacentUnit ->
                 state.civInfo != null
                 && relevantUnit != null
@@ -290,26 +323,33 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
                 }
 
             UniqueType.ConditionalNeighborTiles ->
-                relevantTile != null &&
-                        relevantTile!!.neighbors.count {
-                            it.matchesFilter(condition.params[2], state.civInfo)
-                        } in (condition.params[0].toInt())..(condition.params[1].toInt())
+                relevantTile != null
+                && relevantTile!!.neighbors.count {
+                    it.matchesFilter(condition.params[2], state.civInfo)
+                } in condition.params[0].toInt()..condition.params[1].toInt()
             UniqueType.ConditionalNeighborTilesAnd ->
                 relevantTile != null
                 && relevantTile!!.neighbors.count {
                     it.matchesFilter(condition.params[2], state.civInfo)
                     && it.matchesFilter(condition.params[3], state.civInfo)
-                } in (condition.params[0].toInt())..(condition.params[1].toInt())
+                } in condition.params[0].toInt()..condition.params[1].toInt()
 
             UniqueType.ConditionalOnWaterMaps -> state.region?.continentID == -1
             UniqueType.ConditionalInRegionOfType -> state.region?.type == condition.params[0]
             UniqueType.ConditionalInRegionExceptOfType -> state.region?.type != condition.params[0]
 
-            UniqueType.ConditionalFirstCivToResearch -> sourceObjectType == UniqueTarget.Tech
-                    && state.civInfo != null
-                    && state.civInfo.gameInfo.civilizations.none {
-                it != state.civInfo && it.isMajorCiv() && (it.tech.isResearched(sourceObjectName!!) || it.policies.isAdopted(sourceObjectName))
-            }
+            UniqueType.ConditionalFirstCivToResearch ->
+                state.civInfo != null && sourceObjectType == UniqueTarget.Tech
+                && state.civInfo.gameInfo.civilizations.none {
+                    it != state.civInfo && it.isMajorCiv()
+                        && it.tech.isResearched(sourceObjectName!!) // guarded by the sourceObjectType check
+                }
+            UniqueType.ConditionalFirstCivToAdopt ->
+                state.civInfo != null && sourceObjectType == UniqueTarget.Policy
+                && state.civInfo.gameInfo.civilizations.none {
+                    it != state.civInfo && it.isMajorCiv()
+                        && it.policies.isAdopted(sourceObjectName!!) // guarded by the sourceObjectType check
+                }
 
             else -> false
         }
@@ -404,9 +444,10 @@ class UniqueMap: HashMap<String, ArrayList<Unique>>() {
     fun getAllUniques() = this.asSequence().flatMap { it.value.asSequence() }
 
     fun getTriggeredUniques(trigger: UniqueType, stateForConditionals: StateForConditionals): Sequence<Unique> {
-        val result = getAllUniques().filter { it.conditionals.any { it.type == trigger } }
-            .filter { it.conditionalsApply(stateForConditionals) }
-        return result
+        return getAllUniques().filter { unique ->
+            unique.conditionals.any { it.type == trigger }
+            && unique.conditionalsApply(stateForConditionals)
+        }
     }
 }
 

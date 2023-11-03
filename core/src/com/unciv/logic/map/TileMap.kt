@@ -407,13 +407,6 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
         return viewableTiles.filter { it.isVisible }.map { it.tile }
     }
 
-    /** Strips all units from [TileMap]
-     * @return stripped [clone] of [TileMap]
-     */
-    fun stripAllUnits(): TileMap {
-        return clone().apply { tileList.forEach { it.stripUnits() } }
-    }
-
     /** Build a list of incompatibilities of a map with a ruleset for the new game loader
      *
      *  Is run before setTransients, so make do without startingLocationsByNation
@@ -594,7 +587,7 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
         // And update civ stats, since the new unit changes both unit upkeep and resource consumption
         civInfo.updateStatsForNextTurn()
 
-        if (unit.baseUnit.getResourceRequirementsPerTurn().isNotEmpty())
+        if (unit.getResourceRequirementsPerTurn().isNotEmpty())
             civInfo.cache.updateCivResources()
 
         return unit

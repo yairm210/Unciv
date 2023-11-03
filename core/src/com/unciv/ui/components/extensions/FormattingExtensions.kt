@@ -2,7 +2,7 @@ package com.unciv.ui.components.extensions
 
 import com.badlogic.gdx.math.Vector2
 import com.unciv.models.translations.tr
-import com.unciv.ui.components.Fonts
+import com.unciv.ui.components.fonts.Fonts
 import java.text.SimpleDateFormat
 import java.time.Duration
 import java.time.temporal.ChronoUnit

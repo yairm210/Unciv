@@ -205,13 +205,6 @@ open class Tile : IsPartOfGameInfoSerialization {
         return null
     }
 
-    /** Return null if military on tile, or no civilian */
-    fun getUnguardedCivilian(attacker: MapUnit): MapUnit? {
-        if (militaryUnit != null && militaryUnit != attacker) return null
-        if (civilianUnit != null) return civilianUnit!!
-        return null
-    }
-
     fun getCity(): City? = owningCity
 
     @Transient
@@ -246,10 +239,7 @@ open class Tile : IsPartOfGameInfoSerialization {
         if (isExplored) {
             // Disable the undo button if a new tile has been explored
             if (!exploredBy.contains(player.civName)) {
-                if (GUI.isWorldLoaded()) {
-                    val worldScreen = GUI.getWorldScreen()
-                    worldScreen.preActionGameInfo = worldScreen.gameInfo
-                }
+                GUI.clearUndoCheckpoints()
                 exploredBy = exploredBy.withItem(player.civName)
             }
 
@@ -353,16 +343,6 @@ open class Tile : IsPartOfGameInfoSerialization {
     // We have to .toList() so that the values are stored together once for caching,
     // and the toSequence so that aggregations (like neighbors.flatMap{it.units} don't take up their own space
 
-    /** Returns the left shared neighbor of `this` and [neighbor] (relative to the view direction `this`->[neighbor]), or null if there is no such tile. */
-    fun getLeftSharedNeighbor(neighbor: Tile): Tile? {
-        return tileMap.getClockPositionNeighborTile(this,(tileMap.getNeighborTileClockPosition(this, neighbor) - 2) % 12)
-    }
-
-    /** Returns the right shared neighbor of `this` and [neighbor] (relative to the view direction `this`->[neighbor]), or null if there is no such tile. */
-    fun getRightSharedNeighbor(neighbor: Tile): Tile? {
-        return tileMap.getClockPositionNeighborTile(this,(tileMap.getNeighborTileClockPosition(this, neighbor) + 2) % 12)
-    }
-
     fun getRow() = HexMath.getRow(position)
     fun getColumn() = HexMath.getColumn(position)
 
@@ -437,7 +417,6 @@ open class Tile : IsPartOfGameInfoSerialization {
         val owner = getOwner() ?: return false
         val unit = militaryUnit
 
-        // If tile has unit
         if (unit != null) {
             return when {
                 unit.civ == owner -> false              // Own - unblocks tile;
@@ -445,19 +424,12 @@ open class Tile : IsPartOfGameInfoSerialization {
                 else -> false                           // Neutral - unblocks tile;
             }
         }
-
-        // No unit -> land tile is not blocked
-        if (isLand)
+        if (isLand) // Only water tiles are blocked if empty
             return false
 
         // For water tiles need also to check neighbors:
         // enemy military naval units blockade all adjacent water tiles.
-        for (neighbor in neighbors) {
-
-            // Check only water neighbors
-            if (!neighbor.isWater)
-                continue
-
+        for (neighbor in neighbors.filter { it.isWater }) {
             val neighborUnit = neighbor.militaryUnit ?: continue
 
             // Embarked units do not blockade adjacent tiles
@@ -475,22 +447,6 @@ open class Tile : IsPartOfGameInfoSerialization {
     fun isLocked(): Boolean {
         val workingCity = getWorkingCity()
         return workingCity != null && workingCity.lockedTiles.contains(position)
-    }
-
-    // For dividing the map into Regions to determine start locations
-    fun getTileFertility(checkCoasts: Boolean): Int {
-        var fertility = 0
-        for (terrain in allTerrains) {
-            if (terrain.hasUnique(UniqueType.OverrideFertility))
-                return terrain.getMatchingUniques(UniqueType.OverrideFertility).first().params[0].toInt()
-            else
-                fertility += terrain.getMatchingUniques(UniqueType.AddFertility)
-                    .sumOf { it.params[0].toInt() }
-        }
-        if (isAdjacentToRiver()) fertility += 1
-        if (isAdjacentTo(Constants.freshWater)) fertility += 1 // meaning total +2 for river
-        if (checkCoasts && isCoastalTile()) fertility += 2
-        return fertility
     }
 
     fun providesResources(civInfo: Civilization): Boolean {
@@ -580,17 +536,10 @@ open class Tile : IsPartOfGameInfoSerialization {
             resource != null && (tileResource.revealedBy == null || civInfo.tech.isResearched(
                 tileResource.revealedBy!!))
 
-    fun getViewableTilesList(distance: Int): List<Tile> =
-            tileMap.getViewableTiles(position, distance)
-
-    fun getTilesInDistance(distance: Int): Sequence<Tile> =
-            tileMap.getTilesInDistance(position, distance)
-
-    fun getTilesInDistanceRange(range: IntRange): Sequence<Tile> =
-            tileMap.getTilesInDistanceRange(position, range)
-
-    fun getTilesAtDistance(distance: Int): Sequence<Tile> =
-            tileMap.getTilesAtDistance(position, distance)
+    fun getViewableTilesList(distance: Int): List<Tile> = tileMap.getViewableTiles(position, distance)
+    fun getTilesInDistance(distance: Int): Sequence<Tile> = tileMap.getTilesInDistance(position, distance)
+    fun getTilesInDistanceRange(range: IntRange): Sequence<Tile> = tileMap.getTilesInDistanceRange(position, range)
+    fun getTilesAtDistance(distance: Int): Sequence<Tile> =tileMap.getTilesAtDistance(position, distance)
 
     fun getDefensiveBonus(): Float {
         var bonus = baseTerrainObject.defenceBonus
@@ -780,10 +729,6 @@ open class Tile : IsPartOfGameInfoSerialization {
             getRoadOwner()!!.neutralRoads.add(this.position)
     }
 
-    fun stripUnits() {
-        for (unit in this.getUnits()) removeUnit(unit)
-    }
-
     /**
      * Sets this tile's [resource] and, if [newResource] is a Strategic resource, [resourceAmount] fields.
      *
@@ -945,9 +890,7 @@ open class Tile : IsPartOfGameInfoSerialization {
             owningCity!!.civ.cache.updateCivResources()
     }
 
-    fun isPillaged(): Boolean {
-        return improvementIsPillaged || roadIsPillaged
-    }
+    fun isPillaged(): Boolean = improvementIsPillaged || roadIsPillaged
 
     fun setRepaired() {
         improvementInProgress = null

@@ -14,6 +14,7 @@ import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
+import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionsPillage
 import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionsUpgrade
@@ -130,7 +131,7 @@ object UnitAutomation {
         val upgradedUnit = unit.upgrade.getUnitToUpgradeTo()
         if (!upgradedUnit.isBuildable(unit.civ)) return false // for resource reasons, usually
 
-        if (upgradedUnit.getResourceRequirementsPerTurn().keys.any { !unit.baseUnit.requiresResource(it) }) {
+        if (upgradedUnit.getResourceRequirementsPerTurn(StateForConditionals(unit.civ, unit = unit)).keys.any { !unit.requiresResource(it) }) {
             // The upgrade requires new resource types, so check if we are willing to invest them
             if (!Automation.allowSpendingResource(unit.civ, upgradedUnit)) return false
         }
@@ -194,7 +195,7 @@ object UnitAutomation {
 
         if (tryHeadTowardsOurSiegedCity(unit)) return
 
-        if (unit.health < 50 && tryHealUnit(unit)) return // do nothing but heal
+        if (unit.health < 50 && (trySwapRetreat(unit) || tryHealUnit(unit))) return // do nothing but heal
 
         // if a embarked melee unit can land and attack next turn, do not attack from water.
         if (BattleHelper.tryDisembarkUnitToAttackPosition(unit)) return
@@ -251,6 +252,38 @@ object UnitAutomation {
             ?: return false
         unit.movement.headTowards(encampmentToHeadTowards)
         return true
+    }
+    
+    private fun trySwapRetreat(unit: MapUnit): Boolean {
+        if (!unit.civ.isAtWar()) return false
+        // Precondition: This must be a military unit
+        if (unit.isCivilian()) return false
+        // Better to do a more healing oriented move then
+        if (unit.getDistanceToEnemyUnit(6, true) > 4) return false
+        
+        if (unit.baseUnit.isAirUnit()) {
+            return false
+        }
+
+        val unitDistanceToTiles = unit.movement.getDistanceToTiles()
+        val swapableTiles = unitDistanceToTiles.keys.filter { it.militaryUnit != null && it.militaryUnit!!.owner == unit.owner}.reversed()
+        for (swapTile in swapableTiles) {
+            val otherUnit = swapTile.militaryUnit!!
+            if (otherUnit.health > 80 
+                && unit.getDistanceToEnemyUnit(6, false) < otherUnit.getDistanceToEnemyUnit(6,false)) {
+                if (otherUnit.baseUnit.isRanged()) {
+                    // Don't swap ranged units closer than they have to be
+                    val range = otherUnit.baseUnit.range
+                    if (unit.getDistanceToEnemyUnit(6) < range)
+                        continue
+                }
+                if (unit.movement.canUnitSwapTo(swapTile)) { 
+                    unit.movement.swapMoveToTile(swapTile) 
+                    return true
+                }
+            }
+        }
+        return false
     }
 
     private fun tryHealUnit(unit: MapUnit): Boolean {

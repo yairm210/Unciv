@@ -115,7 +115,6 @@ class CivConstructions : IsPartOfGameInfoSerialization {
             freeStatBuildingsProvided.addToMapOfSets(stat.name, city.id)
             addFreeBuilding(city.id, building.name)
             city.cityConstructions.constructionComplete(building)
-            building.postBuildEvent(city.cityConstructions)
         }
     }
 

@@ -6,7 +6,6 @@ import com.badlogic.gdx.math.Interpolation
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.actions.TemporalAction
-import com.badlogic.gdx.scenes.scene2d.ui.Container
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.Stack
 import com.badlogic.gdx.scenes.scene2d.ui.Table
@@ -19,10 +18,10 @@ import com.unciv.logic.civilization.Civilization
 import com.unciv.models.ruleset.MilestoneType
 import com.unciv.models.ruleset.Victory
 import com.unciv.models.translations.tr
-import com.unciv.ui.components.widgets.TabbedPager
 import com.unciv.ui.components.extensions.isNarrowerThan4to3
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.input.KeyCharAndCode
+import com.unciv.ui.components.widgets.TabbedPager
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.images.ImageWithCustomSize  // Kdoc, not used
 import com.unciv.ui.screens.basescreen.BaseScreen
@@ -74,7 +73,6 @@ class VictoryScreenIllustrations(
     }
 
     private val game = worldScreen.gameInfo
-    private val maxLabelWidth = parent.stage.run { width * (if (isNarrowerThan4to3()) 0.9f else 0.7f) }
     private val victories = game.getEnabledVictories().values
         .filter { it.hasIllustrations() }
         .sortedBy { it.name.tr(hideIcons = true) }
@@ -182,17 +180,20 @@ class VictoryScreenIllustrations(
 
             for (actor in actors) {
                 actor.color.a = 0f
-                // actor.width, actor.height are empirically equal to the image's pixel dimensions
-                // at this moment, before actor has a parent, but I don't trust that happenstance.
-                val pixelArea = Rectangle(((actor as Image).drawable as TextureRegionDrawable).region)
                 // Scale max image dimensions into holder space minus padding preserving aspect ratio
                 val imageArea = Rectangle(this.width - 30f, maxHeight - 30f)
-                if (pixelArea.width * imageArea.height > imageArea.width * pixelArea.height)
-                    imageArea.height = imageArea.width * pixelArea.height / pixelArea.width
-                else
-                    imageArea.width = imageArea.height * pixelArea.width / pixelArea.height
+                if (actor is ImageWithFixedPrefSize)  {
+                    val pixelArea = Rectangle((actor.drawable as TextureRegionDrawable).region)
+                    // Determine image aspect ratio, asuming square pixels:
+                    // (Image actor.width, actor.height are empirically equal to the image's pixel dimensions
+                    // at this moment, before actor has a parent, but I don't trust that happenstance.)
+                    if (pixelArea.width * imageArea.height > imageArea.width * pixelArea.height)
+                        imageArea.height = imageArea.width * pixelArea.height / pixelArea.width
+                    else
+                        imageArea.width = imageArea.height * pixelArea.width / pixelArea.height
+                    actor.setPrefSize(imageArea.width, imageArea.height)
+                }
                 actor.setSize(imageArea.width, imageArea.height)
-                if (actor is ImageWithFixedPrefSize) actor.setPrefSize(imageArea.width, imageArea.height)
                 add(actor)
             }
         }
@@ -293,14 +294,8 @@ class VictoryScreenIllustrations(
     }
 
     private fun getWonOrLostStack(image: Image?, text: String?, color: Color): List<Actor> {
-        val container = if (text == null) null
-        else {
-            val label = text.toLabel(color, 50, Align.bottom)
-            label.wrap = true
-            label.width = maxLabelWidth
-            Container(label).apply { bottom() }
-        }
-        return listOfNotNull(image, container)
+        val label = text?.toLabel(color, 24, Align.bottom)?.apply { wrap = true }
+        return listOfNotNull(image, label)
     }
 
     /** Variant of [ImageWithCustomSize] that avoids certain problems.

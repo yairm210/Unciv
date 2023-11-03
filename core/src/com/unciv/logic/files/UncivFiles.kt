@@ -22,9 +22,9 @@ import com.unciv.ui.screens.savescreens.Gzip
 import com.unciv.utils.Concurrency
 import com.unciv.utils.Log
 import com.unciv.utils.debug
-import kotlinx.coroutines.Job
 import java.io.File
 import java.io.Writer
+import kotlinx.coroutines.Job
 
 private const val SAVE_FILES_FOLDER = "SaveFiles"
 private const val MULTIPLAYER_FILES_FOLDER = "MultiplayerGames"
@@ -199,12 +199,13 @@ class UncivFiles(
         game: GameInfo,
         gameName: String,
         onSaved: () -> Unit,
-        onError: (Exception) -> Unit) {
+        onError: (Exception) -> Unit
+    ) {
         val saveLocation = game.customSaveLocation ?: Gdx.files.local(gameName).path()
 
         try {
             val data = gameInfoToString(game)
-            debug("Saving GameInfo %s to custom location %s", game.gameId, saveLocation)
+            debug("Initiating UI to save GameInfo %s to custom location %s", game.gameId, saveLocation)
             saverLoader.saveGame(data, saveLocation,
                 { location ->
                     game.customSaveLocation = location

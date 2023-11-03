@@ -4,15 +4,15 @@ import com.badlogic.gdx.graphics.Color
 import com.unciv.Constants
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetObject
-import com.unciv.models.ruleset.unique.UniqueFlag
 import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.squareBraceRegex
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.extensions.colorFromRGB
+import com.unciv.ui.objectdescriptions.BaseUnitDescriptions
+import com.unciv.ui.objectdescriptions.uniquesToCivilopediaTextLines
 import com.unciv.ui.screens.civilopediascreen.CivilopediaScreen.Companion.showReligionInCivilopedia
 import com.unciv.ui.screens.civilopediascreen.FormattedLine
-import com.unciv.ui.objectdescriptions.BaseUnitDescriptions
 import kotlin.math.pow
 
 class Nation : RulesetObject() {
@@ -111,12 +111,9 @@ class Nation : RulesetObject() {
         if (uniqueText != "") {
             textList += FormattedLine(uniqueText, indent = 1)
         } else {
-            uniqueObjects.forEach {
-                if (!it.hasFlag(UniqueFlag.HiddenToUsers))
-                    textList += FormattedLine(it)
-            }
-            textList += FormattedLine()
+            uniquesToCivilopediaTextLines(textList, leadingSeparator = null)
         }
+        textList += FormattedLine()
 
         if (startBias.isNotEmpty()) {
             startBias.withIndex().forEach {

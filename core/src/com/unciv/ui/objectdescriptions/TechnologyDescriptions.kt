@@ -8,12 +8,11 @@ import com.unciv.models.ruleset.tech.Technology
 import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.ruleset.tile.TileResource
 import com.unciv.models.ruleset.unique.Unique
-import com.unciv.models.ruleset.unique.UniqueFlag
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.translations.tr
-import com.unciv.ui.components.Fonts
 import com.unciv.ui.components.extensions.center
+import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.images.PortraitUnavailableWonderForTechTree
 import com.unciv.ui.screens.civilopediascreen.FormattedLine
@@ -38,7 +37,8 @@ object TechnologyDescriptions {
             if (pediaText.text.isEmpty() || pediaText.header != 0) continue
             lineList += pediaText.text
         }
-        for (unique in uniques) lineList += unique
+
+        uniquesToDescription(lineList)
 
         lineList.addAll(
             getAffectedImprovements(name, ruleset)
@@ -191,13 +191,7 @@ object TechnologyDescriptions {
             }
         }
 
-        if (uniques.isNotEmpty()) {
-            lineList += FormattedLine()
-            uniqueObjects.forEach {
-                if (!it.hasFlag(UniqueFlag.HiddenToUsers))
-                    lineList += FormattedLine(it)
-            }
-        }
+        uniquesToCivilopediaTextLines(lineList)
 
         val affectedImprovements = getAffectedImprovements(name, ruleset)
         if (affectedImprovements.any()) {

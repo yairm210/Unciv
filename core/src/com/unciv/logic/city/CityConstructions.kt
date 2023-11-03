@@ -30,10 +30,9 @@ import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
 import com.unciv.models.translations.tr
-import com.unciv.ui.components.Fonts
-import com.unciv.ui.components.extensions.addToMapOfSets
 import com.unciv.ui.components.extensions.withItem
 import com.unciv.ui.components.extensions.withoutItem
+import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.screens.civilopediascreen.CivilopediaCategories
 import com.unciv.ui.screens.civilopediascreen.FormattedLine
 import kotlin.math.ceil
@@ -388,6 +387,7 @@ class CityConstructions : IsPartOfGameInfoSerialization {
             if (construction.isBuildable(this))
                 constructionQueue.add(constructionName)
         }
+        chooseNextConstruction()
     }
 
     private fun validateInProgressConstructions() {
@@ -524,8 +524,6 @@ class CityConstructions : IsPartOfGameInfoSerialization {
 
         updateUniques()
 
-        validateConstructionQueue()
-
         /** Support for [UniqueType.CreatesOneImprovement] */
         applyCreateOneImprovement(building)
 
@@ -580,6 +578,14 @@ class CityConstructions : IsPartOfGameInfoSerialization {
         builtBuildingObjects = builtBuildingObjects.withoutItem(building)
         builtBuildings.remove(building.name)
         updateUniques()
+    }
+
+    fun removeBuildings(buildings: Set<Building>) {
+        val buildingsToRemove = buildings.map { it.name }.toSet()
+        builtBuildings.removeIf {
+            it in buildingsToRemove
+        }
+        setTransients()
     }
 
     fun updateUniques(onLoadGame:Boolean = false) {
@@ -688,7 +694,6 @@ class CityConstructions : IsPartOfGameInfoSerialization {
     private fun removeCurrentConstruction() = removeFromQueue(0, true)
 
     fun chooseNextConstruction() {
-        validateConstructionQueue()
         if (!isQueueEmptyOrIdle()) {
             // If the USER set a perpetual construction, then keep it!
             if (getConstruction(currentConstructionFromQueue) !is PerpetualConstruction || currentConstructionIsUserSet) return
