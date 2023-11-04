@@ -1,12 +1,14 @@
 package com.unciv.logic.city.managers
 
 import com.badlogic.gdx.math.Vector2
+import com.unciv.Constants
 import com.unciv.logic.city.City
 import com.unciv.logic.city.CityFocus
 import com.unciv.logic.civilization.Civilization
 import com.unciv.testing.GdxTestRunner
 import com.unciv.testing.TestGame
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
@@ -16,7 +18,6 @@ import org.junit.runner.RunWith
 class CityPopulationManagerTest {
 
     private lateinit var civ: Civilization
-
     private lateinit var city: City
 
     private val testGame = TestGame()
@@ -200,55 +201,61 @@ class CityPopulationManagerTest {
         assertEquals(0, city.population.getFreePopulation())
     }
 
-    // Flaky test!
-//     @Test
-//     fun `should automatically assign new pop to best job`() {
-//         // given
-//         city.lockedTiles.add(Vector2(-1f, 0f)) // force the first pop to work on a specific tile to avoid being reassigned
-//         val goodTile = testGame.setTileTerrain(Vector2.X, Constants.grassland)
-//         goodTile.improvement = "Farm"
-//         assertFalse(city.workedTiles.contains(goodTile.position))
-//
-//         city.population.foodStored = 14
-//
-//         // when
-//         city.population.nextTurn(1)
-//
-//         // then
-//         assertEquals(2, city.population.population)
-//         assertTrue(city.workedTiles.contains(goodTile.position))
-//     }
 
-    // Another flaky test!
-//     @Test
-//     fun `should automatically assign new pop to best job according to city focus`() {
-//         // given
-//         city.cityAIFocus = CityFocus.GoldFocus
-//         city.lockedTiles.add(Vector2(-1f, 0f)) // force the first pop to work on a specific tile to avoid being reassigned
-//         val goodFoodTile = testGame.setTileTerrain(Vector2.X, Constants.grassland)
-//         goodFoodTile.improvement = "Farm"
-//         assertFalse(city.workedTiles.contains(goodFoodTile.position))
-//
-//         val goodGoldTile = testGame.setTileTerrain(Vector2.Y, Constants.grassland)
-//         val goldImprovement = testGame.createTileImprovement("[+5 Gold]")
-//         goodGoldTile.improvement = goldImprovement.name
-//         assertFalse(city.workedTiles.contains(goodGoldTile.position))
-//
-//         city.population.foodStored = 14
-//
-//         // when
-//         city.population.nextTurn(1)
-//
-//         // then
-//         assertEquals(2, city.population.population)
-//         assertTrue(city.workedTiles.contains(goodGoldTile.position))
-//         assertFalse(city.workedTiles.contains(goodFoodTile.position))
-//     }
+    @Test
+    fun `should automatically assign new pop to best job`() {
+        // given
+        city.workedTiles.clear()
+        city.workedTiles.add(Vector2(-1f, 0f))
+        city.lockedTiles.add(Vector2(-1f, 0f)) // force the first pop to work on a specific tile to avoid being reassigned
+        val goodTile = testGame.setTileTerrain(Vector2.X, Constants.grassland)
+        goodTile.improvement = "Farm"
+
+        assertFalse(city.workedTiles.contains(goodTile.position))
+
+        city.population.foodStored = 14
+
+        // when
+        city.population.nextTurn(1)
+
+        // then
+        assertEquals(2, city.population.population)
+        assertTrue(city.workedTiles.contains(goodTile.position))
+    }
+
+    @Test
+    fun `should automatically assign new pop to best job according to city focus`() {
+        // given
+        city.cityAIFocus = CityFocus.GoldFocus
+        city.workedTiles.clear()
+        city.workedTiles.add(Vector2(-1f, 0f))
+        city.lockedTiles.add(Vector2(-1f, 0f)) // force the first pop to work on a specific tile to avoid being reassigned
+        val goodFoodTile = testGame.setTileTerrain(Vector2.X, Constants.grassland)
+        goodFoodTile.improvement = "Farm"
+        assertFalse(city.workedTiles.contains(goodFoodTile.position))
+
+        val goodGoldTile = testGame.setTileTerrain(Vector2.Y, Constants.grassland)
+        val goldImprovement = testGame.createTileImprovement("[+5 Gold]")
+        goodGoldTile.improvement = goldImprovement.name
+        assertFalse(city.workedTiles.contains(goodGoldTile.position))
+
+        city.population.foodStored = 14
+
+        // when
+        city.population.nextTurn(1)
+
+        // then
+        assertEquals(2, city.population.population)
+        assertTrue(city.workedTiles.contains(goodGoldTile.position))
+        assertFalse(city.workedTiles.contains(goodFoodTile.position))
+    }
 
     @Test
     fun `should automatically assign new pop to best job with specialists`() {
         // given
         city.cityAIFocus = CityFocus.GoldFocus
+        city.workedTiles.clear()
+        city.workedTiles.add(Vector2(-1f, 0f))
         city.lockedTiles.add(Vector2(-1f, 0f)) // force the first pop to work on a specific tile to avoid being reassigned
         val specialistBuilding = testGame.createBuilding()
         specialistBuilding.specialistSlots.add("Merchant", 1)
