@@ -131,6 +131,7 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     GainFreeBuildings("Gain a free [buildingName] [cityFilter]", UniqueTarget.Global, UniqueTarget.Triggerable),
     BuildingMaintenance("[relativeAmount]% maintenance cost for buildings [cityFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
     RemoveBuilding("Remove [buildingFilter] [cityFilter]", UniqueTarget.Global, UniqueTarget.Triggerable),
+    SellBuilding("Sell [buildingFilter] [cityFilter]", UniqueTarget.Global, UniqueTarget.Triggerable),
 
     /// Border growth
     BorderGrowthPercentage("[relativeAmount]% Culture cost of natural border growth [cityFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
