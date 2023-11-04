@@ -20,7 +20,7 @@ object CityLocationTileRanker {
             (8 - distanceFromHome).coerceIn(1, 5) // Restrict vision when far from home to avoid death marches
         }
         val nearbyCities = unit.civ.gameInfo.getCities()
-            .filter { it.getCenterTile().aerialDistanceTo(unit.getTile()) <= 3 + range }
+            .filter { it.getCenterTile().aerialDistanceTo(unit.getTile()) <= 6 + range }
 
         val possibleCityLocations = unit.getTile().getTilesInDistance(range)
             .filter { canSettleTile(it, unit.civ, nearbyCities) && (unit.getTile() == it || unit.movement.canMoveTo(it)) }
@@ -60,6 +60,11 @@ object CityLocationTileRanker {
         for (city in nearbyCities) {
             val distanceToCity = newCityTile.aerialDistanceTo(city.getCenterTile())
             var distanceToCityModifier = when {
+                // NOTE: the line it.getCenterTile().aerialDistanceTo(unit.getTile()) <= X + range
+                // above MUST have the constant X that is added to the range be higher or equal to the highest distance here
+                // If it is not higher the settler may get stuck when it ranks the same tile differently 
+                // as it moves away from the city and doesn't include it in the calculation 
+                // and values it higher than when it moves closer to the city
                 distanceToCity == 6 -> 2f
                 distanceToCity == 5 -> 5f
                 distanceToCity == 4 -> 10f
