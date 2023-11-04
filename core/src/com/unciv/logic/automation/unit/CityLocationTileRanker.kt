@@ -42,8 +42,6 @@ object CityLocationTileRanker {
 
     private fun canSettleTile(tile: Tile, civ: Civilization, nearbyCities: Sequence<City>): Boolean {
         val modConstants = civ.gameInfo.ruleset.modOptions.constants
-        // The AI is allowed to cheat and act like it knows the whole map.
-        if (!tile.isExplored(civ) && !civ.isAI()) return false
         if (!tile.isLand || tile.isImpassible()) return false
         if (tile.getOwner() != null && tile.getOwner() != civ) return false
         if (nearbyCities.any {
