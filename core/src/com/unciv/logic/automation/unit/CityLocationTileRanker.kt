@@ -60,17 +60,25 @@ object CityLocationTileRanker {
         for (city in nearbyCities) {
             val distanceToCity = newCityTile.aerialDistanceTo(city.getCenterTile())
             var distanceToCityModifier = when {
-                distanceToCity == 5 -> 20
-                distanceToCity == 4 -> 30
-                distanceToCity == 3 -> 50
-                distanceToCity < 3 -> 100 // Even if it is a mod that lets us settle closer, lets still not do it
+                distanceToCity == 5 -> 3
+                distanceToCity == 4 -> 6
+                distanceToCity == 3 -> 9
+                distanceToCity < 3 -> 15 // Even if it is a mod that lets us settle closer, lets still not do it
                 else -> 0
+            }
+            // Bigger cities will expand more so we want to stay away from them
+            // Reduces the chance that we don't settle at the begining
+            distanceToCityModifier *= when {
+                city.population.population >= 12 -> 4
+                city.population.population >= 8 -> 3
+                city.population.population >= 3 -> 2
+                else -> 1
             }
             // It is worse to settle cities near our own compare to near another civ
             // Do not settle near our capital unless really necessary
             // Having a strong capital is esential to constructing wonders
-            if (city.civ == civ)
-                distanceToCityModifier *= if (city.isCapital()) 5 else 2
+            if (city.civ == civ && city.isCapital())
+                distanceToCityModifier *= 2
             tileValue -= distanceToCityModifier
         }
 
