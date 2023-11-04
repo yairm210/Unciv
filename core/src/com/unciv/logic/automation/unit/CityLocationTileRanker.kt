@@ -125,7 +125,7 @@ object CityLocationTileRanker {
             return rankTileValue + locationSpecificTileValue
         }
 
-        if (onCoast) tileValue += 10
+        if (onCoast) tileValue += 15
         if (newCityTile.isAdjacentToRiver()) tileValue += 10
         if (newCityTile.terrainHasUnique(UniqueType.FreshWater)) tileValue += 5
         // We want to found the city on an oasis because it can't be improved otherwise
