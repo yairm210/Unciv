@@ -1,3 +1,34 @@
+## 4.8.16
+
+Ruleset validation refactor - easier location of affected objects, correctly display parameter-type mismatches, ignore uniques used for filtering
+
+By SomeTroglodyte:
+- Correct notifications for modded Citadel
+- Music: Fix mini-player showing last track during inter-track silence
+- Allow modders to hide individual Uniques from Civilopedia
+- Ruins can no longer be save-scummed for better results
+
+Fixed null reference error related to nuking  - By tuvus
+
+## 4.8.15
+
+By tuvus:
+- AI units swap-retreat
+- Melee units are now more likely to attack cities
+- Nukes AI tweaks
+- AI values traded gold using inflation
+
+By SomeTroglodyte:
+- Tighten Ruleset validation for Terrain
+- Automated units stay automated after upgrade
+- Fix Mod checker crash on RekMod
+- Account for badly-defined Android font
+- City overview refreshes for changes done in city
+
+💚 add tests for city population manager - By Framonti
+
+Fix [stats] unique adding multiple times - By SeventhM
+
 ## 4.8.14
 
 Allow "[stats]" unique on terrains  - By SeventhM

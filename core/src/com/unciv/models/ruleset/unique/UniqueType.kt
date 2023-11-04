@@ -40,7 +40,7 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     StatPercentBonusCities("[relativeAmount]% [stat] [cityFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
     StatPercentFromObject("[relativeAmount]% [stat] from every [tileFilter/buildingFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
     AllStatsPercentFromObject("[relativeAmount]% Yield from every [tileFilter/buildingFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
-    StatPercentFromReligionFollowers("[relativeAmount]% [stat] from every follower, up to [relativeAmount]%", UniqueTarget.FollowerBelief),
+    StatPercentFromReligionFollowers("[relativeAmount]% [stat] from every follower, up to [relativeAmount]%", UniqueTarget.FollowerBelief, UniqueTarget.FounderBelief),
     BonusStatsFromCityStates("[relativeAmount]% [stat] from City-States", UniqueTarget.Global),
     StatPercentFromTradeRoutes("[relativeAmount]% [stat] from Trade Routes", UniqueTarget.Global),
 
@@ -529,7 +529,7 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     HasQuality("Considered [terrainQuality] when determining start locations", UniqueTarget.Terrain, flags = UniqueFlag.setOfHiddenToUsers),
 
     NoNaturalGeneration("Doesn't generate naturally", UniqueTarget.Terrain, UniqueTarget.Resource, flags = UniqueFlag.setOfHiddenToUsers),
-    TileGenerationConditions("Occurs at temperature between [amount] and [amount] and humidity between [amount] and [amount]", UniqueTarget.Terrain, UniqueTarget.Resource, flags = UniqueFlag.setOfHiddenToUsers),
+    TileGenerationConditions("Occurs at temperature between [fraction] and [fraction] and humidity between [fraction] and [fraction]", UniqueTarget.Terrain, UniqueTarget.Resource, flags = UniqueFlag.setOfHiddenToUsers),
     OccursInChains("Occurs in chains at high elevations", UniqueTarget.Terrain, flags = UniqueFlag.setOfHiddenToUsers),
     OccursInGroups("Occurs in groups around high elevations", UniqueTarget.Terrain, flags = UniqueFlag.setOfHiddenToUsers),
     MajorStrategicFrequency("Every [amount] tiles with this terrain will receive a major deposit of a strategic resource.", UniqueTarget.Terrain, flags = UniqueFlag.setOfHiddenToUsers),
@@ -617,6 +617,7 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     ConditionalTech("after discovering [tech]", UniqueTarget.Conditional),
     ConditionalNoTech("before discovering [tech]", UniqueTarget.Conditional),
 
+    ConditionalFirstCivToAdopt("if no other Civilization has adopted this", UniqueTarget.Conditional),
     ConditionalAfterPolicyOrBelief("after adopting [policy/belief]", UniqueTarget.Conditional),
     ConditionalBeforePolicyOrBelief("before adopting [policy/belief]", UniqueTarget.Conditional),
 
@@ -776,6 +777,7 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
         UniqueTarget.Unit, UniqueTarget.UnitType, UniqueTarget.Improvement, UniqueTarget.Tech,
         UniqueTarget.Terrain, UniqueTarget.Resource, UniqueTarget.Policy, UniqueTarget.Promotion,
         UniqueTarget.Nation, UniqueTarget.Ruins, flags = UniqueFlag.setOfHiddenToUsers),
+    ConditionalHideUniqueFromUsers("hidden from users", UniqueTarget.Conditional),
 
     // Declarative Mod compatibility (so far rudimentary):
     ModIncompatibleWith("Mod is incompatible with [modFilter]", UniqueTarget.ModOptions),
@@ -1168,26 +1170,27 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     val placeholderText = text.getPlaceholderText()
 
     /** Ordinal determines severity - ordered from least to most severe, so we can use Severity >=  */
-    enum class UniqueComplianceErrorSeverity {
+    enum class UniqueParameterErrorSeverity {
 
-        /** This is for filters that can also potentially accept free text, like UnitFilter and TileFilter */
-        WarningOnly {
-            override fun getRulesetErrorSeverity(severityToReport: UniqueComplianceErrorSeverity) =
-                RulesetErrorSeverity.WarningOptionsOnly
+        /** This is a warning, regardless of what ruleset we're in.
+         * This is for filters that can also potentially accept free text, like UnitFilter and TileFilter */
+        PossibleFilteringUnique {
+            override fun getRulesetErrorSeverity() = RulesetErrorSeverity.WarningOptionsOnly
         },
 
-        /** This is a problem like "unit/resource/tech name doesn't exist in ruleset" - definite bug */
+        /** An error, but only because of other information in the current ruleset.
+         * This means that if this is an *add-on* to a different mod, it could be correct.
+         * This is a problem like "unit/resource/tech name doesn't exist in ruleset" - definite bug */
         RulesetSpecific {
             // Report Warning on the first pass of RulesetValidator only, where mods are checked standalone
             // but upgrade to error when the econd pass asks, which runs only for combined or base rulesets.
-            override fun getRulesetErrorSeverity(severityToReport: UniqueComplianceErrorSeverity) =
-                RulesetErrorSeverity.Warning
+            override fun getRulesetErrorSeverity() = RulesetErrorSeverity.Warning
         },
 
-        /** This is a problem like "numbers don't parse", "stat isn't stat", "city filter not applicable" */
+        /** An error, regardless of the ruleset we're in.
+         * This is a problem like "numbers don't parse", "stat isn't stat", "city filter not applicable" */
         RulesetInvariant {
-            override fun getRulesetErrorSeverity(severityToReport: UniqueComplianceErrorSeverity) =
-                RulesetErrorSeverity.Error
+            override fun getRulesetErrorSeverity() = RulesetErrorSeverity.Error
         },
         ;
 
@@ -1196,7 +1199,7 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
          *  first pass that also runs for extension mods without a base mixed in; the complex check
          *  runs with [severityToReport]==[RulesetSpecific].
          */
-        abstract fun getRulesetErrorSeverity(severityToReport: UniqueComplianceErrorSeverity): RulesetErrorSeverity
+        abstract fun getRulesetErrorSeverity(): RulesetErrorSeverity
     }
 
     fun getDeprecationAnnotation(): Deprecated? = declaringJavaClass.getField(name)

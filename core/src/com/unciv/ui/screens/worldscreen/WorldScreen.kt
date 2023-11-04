@@ -131,8 +131,7 @@ class WorldScreen(
 
     private var uiEnabled = true
 
-    var preActionGameInfo = gameInfo
-
+    internal val undoHandler = UndoHandler(this)
 
     init {
         // notifications are right-aligned, they take up only as much space as necessary.
@@ -233,6 +232,12 @@ class WorldScreen(
         game.pushScreen(newGameScreen)
     }
 
+    fun openSaveGameScreen() {
+        // See #10353 - we don't support locally saving an online multiplayer game
+        if (gameInfo.gameParameters.isOnlineMultiplayer) return
+        game.pushScreen(SaveGameScreen(gameInfo))
+    }
+
     private fun addKeyboardPresses() {
         // Space and N are assigned in NextTurnButton constructor
         // Functions that have a big button are assigned there (WorldScreenTopBar, TechPolicyDiplomacyButtons..)
@@ -254,7 +259,7 @@ class WorldScreen(
         globalShortcuts.add(KeyboardBinding.Options) { // Game Options
             openOptionsPopup { nextTurnButton.update() }
         }
-        globalShortcuts.add(KeyboardBinding.SaveGame) { game.pushScreen(SaveGameScreen(gameInfo)) }    //   Save
+        globalShortcuts.add(KeyboardBinding.SaveGame) { openSaveGameScreen() }    //   Save
         globalShortcuts.add(KeyboardBinding.LoadGame) { game.pushScreen(LoadGameScreen()) }    //   Load
         globalShortcuts.add(KeyboardBinding.QuitGame) { game.popScreen() }    //   WorldScreen is the last screen, so this quits
         globalShortcuts.add(KeyboardBinding.NewGame) { openNewGameScreen() }

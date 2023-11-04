@@ -349,7 +349,7 @@ object TranslationFileWriter {
         }
 
         fun submitString(string: String, unique: Unique) {
-            if (unique.hasFlag(UniqueFlag.HiddenToUsers))
+            if (unique.isHiddenToUsers())
                 return // We don't need to translate this at all, not user-visible
 
             val stringToTranslate = string.removeConditionals()

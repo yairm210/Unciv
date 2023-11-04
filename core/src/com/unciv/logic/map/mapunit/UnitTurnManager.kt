@@ -84,26 +84,28 @@ class UnitTurnManager(val unit: MapUnit) {
             ?: return
         if (damage == 0) return
         unit.health -= damage
+        val improvementName = citadelTile.improvement!!  // guarded by `getUnpillagedImprovement() != null` above
+        val improvementIcon = "ImprovementIcons/$improvementName"
         val locations = LocationAction(citadelTile.position, unit.currentTile.position)
         if (unit.health <= 0) {
             unit.civ.addNotification(
-                "An enemy [Citadel] has destroyed our [${unit.name}]",
+                "An enemy [$improvementName] has destroyed our [${unit.name}]",
                 locations,
                 NotificationCategory.War,
-                NotificationIcon.Citadel, NotificationIcon.Death, unit.name
+                improvementIcon, NotificationIcon.Death, unit.name
             )
             citadelTile.getOwner()?.addNotification(
-                "Your [Citadel] has destroyed an enemy [${unit.name}]",
+                "Your [$improvementName] has destroyed an enemy [${unit.name}]",
                 locations,
                 NotificationCategory.War,
-                NotificationIcon.Citadel, NotificationIcon.Death, unit.name
+                improvementIcon, NotificationIcon.Death, unit.name
             )
             unit.destroy()
         } else unit.civ.addNotification(
-            "An enemy [Citadel] has attacked our [${unit.name}]",
+            "An enemy [$improvementName] has attacked our [${unit.name}]",
             locations,
             NotificationCategory.War,
-            NotificationIcon.Citadel, NotificationIcon.War, unit.name
+            improvementIcon, NotificationIcon.War, unit.name
         )
     }
 

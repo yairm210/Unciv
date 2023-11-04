@@ -300,16 +300,9 @@ class UnitMovement(val unit: MapUnit) {
         if (otherUnit.owner != unit.owner
                 || otherUnit.cache.cannotMove  // redundant, line below would cover it too
                 || !otherUnit.movement.canReachInCurrentTurn(ourPosition)) return false
-        // Check if we could enter their tile if they wouldn't be there
-        otherUnit.removeFromTile()
-        val weCanEnterTheirTile = canMoveTo(reachableTile)
-        otherUnit.putInTile(reachableTile)
-        if (!weCanEnterTheirTile) return false
-        // Check if they could enter our tile if we wouldn't be here
-        unit.removeFromTile()
-        val theyCanEnterOurTile = otherUnit.movement.canMoveTo(ourPosition)
-        unit.putInTile(ourPosition)
-        if (!theyCanEnterOurTile) return false
+        
+        if (!canMoveTo(reachableTile, canSwap = true)) return false
+        if (!otherUnit.movement.canMoveTo(ourPosition, canSwap = true)) return false
         // All clear!
         return true
     }
@@ -370,7 +363,9 @@ class UnitMovement(val unit: MapUnit) {
 
     fun moveToTile(destination: Tile, considerZoneOfControl: Boolean = true) {
         if (destination == unit.getTile() || unit.isDestroyed) return // already here (or dead)!
-
+        // Reset closestEnemy chache
+        unit.cache.distanceToClosestEnemyUnit = null
+        unit.cache.distanceToClosestEnemyUnitSearched = null
 
         if (unit.baseUnit.movesLikeAirUnits()) { // air units move differently from all other units
             if (unit.action != UnitActionType.Automate.value) unit.action = null
@@ -550,7 +545,7 @@ class UnitMovement(val unit: MapUnit) {
      * Designates whether we can enter the tile - without attacking
      * DOES NOT designate whether we can reach that tile in the current turn
      */
-    fun canMoveTo(tile: Tile, assumeCanPassThrough: Boolean = false): Boolean {
+    fun canMoveTo(tile: Tile, assumeCanPassThrough: Boolean = false, canSwap: Boolean = false): Boolean {
         if (unit.baseUnit.movesLikeAirUnits())
             return canAirUnitMoveTo(tile, unit)
 
@@ -562,10 +557,12 @@ class UnitMovement(val unit: MapUnit) {
             return false
 
         return if (unit.isCivilian())
-            tile.civilianUnit == null && (tile.militaryUnit == null || tile.militaryUnit!!.owner == unit.owner)
+            (tile.civilianUnit == null || (canSwap && tile.civilianUnit!!.owner == unit.owner)) 
+                && (tile.militaryUnit == null || tile.militaryUnit!!.owner == unit.owner)
         else
-            // can skip checking for airUnit since not a city
-            tile.militaryUnit == null && (tile.civilianUnit == null || tile.civilianUnit!!.owner == unit.owner || unit.civ.isAtWarWith(tile.civilianUnit!!.civ))
+        // can skip checking for airUnit since not a city
+            (tile.militaryUnit == null || (canSwap && tile.militaryUnit!!.owner == unit.owner)) 
+            && (tile.civilianUnit == null || tile.civilianUnit!!.owner == unit.owner || unit.civ.isAtWarWith(tile.civilianUnit!!.civ))
     }
 
     private fun canAirUnitMoveTo(tile: Tile, unit: MapUnit): Boolean {
