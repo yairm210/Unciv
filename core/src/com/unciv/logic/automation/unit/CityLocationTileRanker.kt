@@ -13,15 +13,17 @@ object CityLocationTileRanker {
     /**
      * Returns a hashmap of tiles to their ranking plus the a the highest value tile and its value
      */
-    fun getBestTilesToFoundCity(unit: MapUnit): Pair<HashMap<Tile, Float>, Pair<Tile?, Float>> {
-        val distanceFromHome = if (unit.civ.cities.isEmpty()) 0
-        else unit.civ.cities.minOf { it.getCenterTile().aerialDistanceTo(unit.getTile()) }
-        val range = (8 - distanceFromHome).coerceIn(1, 5) // Restrict vision when far from home to avoid death marches
+    fun getBestTilesToFoundCity(unit: MapUnit, distanceToSearch: Int? = null): Pair<HashMap<Tile, Float>, Pair<Tile?, Float>> {
+        val range =  if (distanceToSearch != null) distanceToSearch else {
+            val distanceFromHome = if (unit.civ.cities.isEmpty()) 0
+            else unit.civ.cities.minOf { it.getCenterTile().aerialDistanceTo(unit.getTile()) }
+            (8 - distanceFromHome).coerceIn(1, 5) // Restrict vision when far from home to avoid death marches
+        }
         val nearbyCities = unit.civ.gameInfo.getCities()
             .filter { it.getCenterTile().aerialDistanceTo(unit.getTile()) <= 3 + range }
 
         val possibleCityLocations = unit.getTile().getTilesInDistance(range)
-            .filter { canSettleTile(it, unit.civ, nearbyCities) && (unit.currentTile == it || unit.movement.canMoveTo(it)) }
+            .filter { canSettleTile(it, unit.civ, nearbyCities) && (unit.getTile() == it || unit.movement.canMoveTo(it)) }
         val uniqueCache = LocalUniqueCache()
         val baseTileMap = HashMap<Tile, Float>()
         val tileRankMap = HashMap<Tile, Float>()
@@ -103,7 +105,7 @@ object CityLocationTileRanker {
         }
 
         if (onCoast) tileValue += 10
-        if (newCityTile.isAdjacentToRiver()) tileValue += 3
+        if (newCityTile.isAdjacentToRiver()) tileValue += 10
         if (newCityTile.terrainHasUnique(UniqueType.FreshWater)) tileValue += 5
         // We want to found the city on an oasis because it can't be improved otherwise
         if (newCityTile.terrainHasUnique(UniqueType.Unbuildable)) tileValue += 3

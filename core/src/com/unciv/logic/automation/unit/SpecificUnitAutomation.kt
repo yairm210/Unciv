@@ -97,34 +97,48 @@ object SpecificUnitAutomation {
     }
 
     fun automateSettlerActions(unit: MapUnit, tilesWhereWeWillBeCaptured: Set<Tile>) {
-
+        // If we don't have any cities, we are probably at the start of the game with only one settler
+        // If we are at the start of the game lets spend a maximum of 3 turns to settle our first city
+        // As our turns progress lets shrink the area that we look at to make sure that we stay on target
+        // If we have gone more than 3 turns without founding a city lets search a wider area
+        // TODO: Figure out a way to not use turns as it might not be the best metric, what if we are a civ starting in the middle of a game?
+        val rangeToSearch = if (unit.civ.cities.isEmpty() && unit.civ.gameInfo.turns < 4) (3 - unit.civ.gameInfo.turns).coerceAtLeast(1) else null
+        
         // It's possible that we'll see a tile "over the sea" that's better than the tiles close by, but that's not a reason to abandon the close tiles!
         // Also this lead to some routing problems, see https://github.com/yairm210/Unciv/issues/3653
-        val bestTilesToFoundCityReturn = CityLocationTileRanker.getBestTilesToFoundCity(unit)
+        val bestTilesToFoundCityReturn = CityLocationTileRanker.getBestTilesToFoundCity(unit, rangeToSearch)
         val bestTilesToFoundCity = bestTilesToFoundCityReturn.first
         val bestTile = bestTilesToFoundCityReturn.second.first
         val bestTileRank = bestTilesToFoundCityReturn.second.second
         var bestCityLocation: Tile? = null
 
-//        if (unit.civ.gameInfo.turns == 0) {   // Special case, we want AI to settle in place on turn 1.
-//            val foundCityAction = UnitActionsFromUniques.getFoundCityAction(unit, unit.getTile())
-//            // Depending on era and difficulty we might start with more than one settler. In that case settle the one with the best location
-//            val otherSettlers = unit.civ.units.getCivUnits().filter { it.currentMovement > 0 && it.baseUnit == unit.baseUnit }
-//            val unitTileRanking = bestTilesToFoundCity.first[unit.getTile()]!!
-//            if (foundCityAction?.action != null && otherSettlers.none {
-//                        bestTilesToFoundCity.first.containsKey(it.getTile())
-//                        && bestTilesToFoundCity.first[it.getTile()]!! > unitTileRanking
-//                    }
-//            ) {
-//                foundCityAction.action.invoke()
-//                return
-//            }
-//        }
+        if (unit.civ.gameInfo.turns == 0 && unit.civ.cities.isEmpty() && bestTilesToFoundCity.containsKey(unit.getTile())) {   // Special case, we want AI to settle in place on turn 1.
+            val foundCityAction = UnitActionsFromUniques.getFoundCityAction(unit, unit.getTile())
+            // Depending on era and difficulty we might start with more than one settler. In that case settle the one with the best location
+            val allUnsettledSettlers = unit.civ.units.getCivUnits().filter { it.currentMovement > 0 && it.baseUnit == unit.baseUnit }
+
+            // Don't settle immediately if we only have one settler, look for a better location
+            if (allUnsettledSettlers.count() > 1) {
+                val bestSettlerInRange = allUnsettledSettlers.maxByOrNull {
+                    if (bestTilesToFoundCity.containsKey(it.getTile()))
+                        bestTilesToFoundCity[it.getTile()]!!
+                    else -1f
+                }
+                if (bestSettlerInRange == unit && foundCityAction?.action != null) {
+                    foundCityAction.action.invoke()
+                    return
+                }
+                // Since this settler is not in the best location, lets assume the best settler will found their city where they are
+                if (bestSettlerInRange != null)
+                    bestTilesToFoundCity.filter { it.key.aerialDistanceTo(bestSettlerInRange.getTile()) > 4 }
+            }
+        }
+
 
         // If the tile we are currently on is close to the best tile, then lets just settle here instead
-        if (bestTilesToFoundCity.containsKey(unit.currentTile) 
-                && bestTilesToFoundCity[unit.currentTile]!! >= bestTileRank - 5) {
-                bestCityLocation = unit.currentTile
+        if (bestTilesToFoundCity.containsKey(unit.getTile()) 
+                && bestTilesToFoundCity[unit.getTile()]!! >= bestTileRank - 10) {
+                bestCityLocation = unit.getTile()
         }
         
         //Shortcut, if the best tile is nearby than lets just take it
