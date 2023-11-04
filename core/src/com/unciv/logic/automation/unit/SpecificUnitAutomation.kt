@@ -156,7 +156,8 @@ object SpecificUnitAutomation {
         }
 
         // We still haven't found a best city tile within 3 turns so lets just head to the best tile
-        if (bestCityLocation == null && bestTile != null) {
+        // Note that we must check that the shortest path exists or else an error will be thrown
+        if (bestCityLocation == null && bestTile != null && unit.movement.getShortestPath(bestTile).size in 1..8) {
             bestCityLocation = bestTile
         }
 
