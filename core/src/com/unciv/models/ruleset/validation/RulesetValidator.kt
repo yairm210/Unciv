@@ -50,9 +50,7 @@ class RulesetValidator(val ruleset: Ruleset) {
         /**********************  **********************/
         // e.g. json configs complete and parseable
         // Check for mod or Civ_V_GnK to avoid running the same test twice (~200ms for the builtin assets)
-        if (ruleset.folderLocation != null) {
-            checkTilesetSanity(lines)
-        }
+        if (ruleset.folderLocation != null) checkTilesetSanity(lines)
 
         return lines
     }
@@ -331,6 +329,7 @@ class RulesetValidator(val ruleset: Ruleset) {
     ) {
         if (ruleset.terrains.values.none { it.type == TerrainType.Land && !it.impassable })
             lines += "No passable land terrains exist!"
+
         for (terrain in ruleset.terrains.values) {
             for (baseTerrainName in terrain.occursOn) {
                 val baseTerrain = ruleset.terrains[baseTerrainName]
