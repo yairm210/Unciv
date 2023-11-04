@@ -598,6 +598,9 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
 
 
     /////// civ conditionals
+    ConditionalIsHuman("is controlled by human", UniqueTarget.Conditional),
+    ConditionalIsAI("is controlled by AI", UniqueTarget.Conditional),
+
     ConditionalNationFilter("for [nationFilter]", UniqueTarget.Conditional),
     ConditionalWar("when at war", UniqueTarget.Conditional),
     ConditionalNotWar("when not at war", UniqueTarget.Conditional),
