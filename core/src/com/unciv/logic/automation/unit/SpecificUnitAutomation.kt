@@ -155,6 +155,11 @@ object SpecificUnitAutomation {
             }?.key
         }
 
+        // We still haven't found a best city tile within 3 turns so lets just head to the best tile
+        if (bestCityLocation == null && bestTile != null) {
+            bestCityLocation = bestTile
+        }
+
         if (bestCityLocation == null) { // We got a badass over here, all tiles within 5 are taken?
             // Try to move towards the frontier
 
