@@ -1772,6 +1772,12 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Conditional
 
+??? example  "&lt;is controlled by human&gt;"
+	Applicable to: Conditional
+
+??? example  "&lt;is controlled by AI&gt;"
+	Applicable to: Conditional
+
 ??? example  "&lt;for [nationFilter]&gt;"
 	Example: "&lt;for [City-States]&gt;"
 
