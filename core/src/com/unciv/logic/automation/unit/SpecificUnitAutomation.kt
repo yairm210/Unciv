@@ -106,20 +106,18 @@ object SpecificUnitAutomation {
         
         // It's possible that we'll see a tile "over the sea" that's better than the tiles close by, but that's not a reason to abandon the close tiles!
         // Also this lead to some routing problems, see https://github.com/yairm210/Unciv/issues/3653
-        val bestTilesToFoundCityReturn = CityLocationTileRanker.getBestTilesToFoundCity(unit, rangeToSearch)
-        var bestTilesToFoundCity = bestTilesToFoundCityReturn.first
-        val bestTile = bestTilesToFoundCityReturn.second
+        val bestTilesInfo = CityLocationTileRanker.getBestTilesToFoundCity(unit, rangeToSearch)
         var bestCityLocation: Tile? = null
 
-        if (unit.civ.gameInfo.turns == 0 && unit.civ.cities.isEmpty() && bestTilesToFoundCity.containsKey(unit.getTile())) {   // Special case, we want AI to settle in place on turn 1.
+        if (unit.civ.gameInfo.turns == 0 && unit.civ.cities.isEmpty() && bestTilesInfo.tileRankMap.containsKey(unit.getTile())) {   // Special case, we want AI to settle in place on turn 1.
             val foundCityAction = UnitActionsFromUniques.getFoundCityAction(unit, unit.getTile())
             // Depending on era and difficulty we might start with more than one settler. In that case settle the one with the best location
             val allUnsettledSettlers = unit.civ.units.getCivUnits().filter { it.currentMovement > 0 && it.baseUnit == unit.baseUnit }
 
             // Don't settle immediately if we only have one settler, look for a better location
             val bestSettlerInRange = allUnsettledSettlers.maxByOrNull {
-                if (bestTilesToFoundCity.containsKey(it.getTile()))
-                    bestTilesToFoundCity[it.getTile()]!!
+                if (bestTilesInfo.tileRankMap.containsKey(it.getTile()))
+                    bestTilesInfo.tileRankMap[it.getTile()]!!
                 else -1f
             }
             if (bestSettlerInRange == unit && foundCityAction?.action != null) {
@@ -128,24 +126,24 @@ object SpecificUnitAutomation {
             }
             // Since this settler is not in the best location, lets assume the best settler will found their city where they are
             if (bestSettlerInRange != null)
-                bestTilesToFoundCity = HashMap(bestTilesToFoundCity.filter { it.key.aerialDistanceTo(bestSettlerInRange.getTile()) > 4 })
+                bestTilesInfo.tileRankMap = HashMap(bestTilesInfo.tileRankMap.filter { it.key.aerialDistanceTo(bestSettlerInRange.getTile()) > 4 })
         }
 
 
         // If the tile we are currently on is close to the best tile, then lets just settle here instead
-        if (bestTilesToFoundCity.containsKey(unit.getTile()) 
-                && (bestTile == null || bestTilesToFoundCity[unit.getTile()]!! >= bestTilesToFoundCity[bestTile]!! - 10)) {
+        if (bestTilesInfo.tileRankMap.containsKey(unit.getTile()) 
+                && (bestTilesInfo.bestTile == null || bestTilesInfo.tileRankMap[unit.getTile()]!! >= bestTilesInfo.tileRankMap[bestTilesInfo.bestTile]!! - 10)) {
                 bestCityLocation = unit.getTile()
         }
         
         //Shortcut, if the best tile is nearby than lets just take it
-        if (bestCityLocation == null && bestTile != null && unit.movement.getShortestPath(bestTile).size in 1..3) {
-            bestCityLocation = bestTile
+        if (bestCityLocation == null && bestTilesInfo.bestTile != null && unit.movement.getShortestPath(bestTilesInfo.bestTile!!).size in 1..3) {
+            bestCityLocation = bestTilesInfo.bestTile
         }
         
         if (bestCityLocation == null) {
             // Find the best tile that is within
-            bestCityLocation = bestTilesToFoundCity.filter { bestTile == null || it.value >= bestTilesToFoundCity[bestTile]!! - 5 }.asSequence().sortedByDescending { it.value }.firstOrNull {
+            bestCityLocation = bestTilesInfo.tileRankMap.filter { bestTilesInfo.bestTile == null || it.value >= bestTilesInfo.tileRankMap[bestTilesInfo.bestTile]!! - 5 }.asSequence().sortedByDescending { it.value }.firstOrNull {
                 if (it.key in tilesWhereWeWillBeCaptured) return@firstOrNull false
                 val pathSize = unit.movement.getShortestPath(it.key).size
                 return@firstOrNull pathSize in 1..3
@@ -154,8 +152,8 @@ object SpecificUnitAutomation {
 
         // We still haven't found a best city tile within 3 turns so lets just head to the best tile
         // Note that we must check that the shortest path exists or else an error will be thrown
-        if (bestCityLocation == null && bestTile != null && unit.movement.getShortestPath(bestTile).size in 1..8) {
-            bestCityLocation = bestTile
+        if (bestCityLocation == null && bestTilesInfo.bestTile != null && unit.movement.getShortestPath(bestTilesInfo.bestTile!!).size in 1..8) {
+            bestCityLocation = bestTilesInfo.bestTile
         }
 
         if (bestCityLocation == null) { // We got a badass over here, all tiles within 5 are taken?

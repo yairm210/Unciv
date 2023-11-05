@@ -10,10 +10,17 @@ import com.unciv.models.ruleset.unique.LocalUniqueCache
 import com.unciv.models.ruleset.unique.UniqueType
 
 object CityLocationTileRanker {
+
+    class BestTilesToFoundCity {
+        var tileRankMap: HashMap<Tile, Float> = HashMap()
+        var bestTile: Tile? = null
+        var bestTileRank: Float = 0f
+    }
+
     /**
      * Returns a hashmap of tiles to their ranking plus the a the highest value tile and its value
      */
-    fun getBestTilesToFoundCity(unit: MapUnit, distanceToSearch: Int? = null): Pair<HashMap<Tile, Float>, Tile?> {
+    fun getBestTilesToFoundCity(unit: MapUnit, distanceToSearch: Int? = null): BestTilesToFoundCity {
         val range =  if (distanceToSearch != null) distanceToSearch else {
             val distanceFromHome = if (unit.civ.cities.isEmpty()) 0
             else unit.civ.cities.minOf { it.getCenterTile().aerialDistanceTo(unit.getTile()) }
@@ -25,19 +32,17 @@ object CityLocationTileRanker {
         val possibleCityLocations = unit.getTile().getTilesInDistance(range)
             .filter { canSettleTile(it, unit.civ, nearbyCities) && (unit.getTile() == it || unit.movement.canMoveTo(it)) }
         val uniqueCache = LocalUniqueCache()
+        val bestTilesToFoundCity = BestTilesToFoundCity()
         val baseTileMap = HashMap<Tile, Float>()
-        val tileRankMap = HashMap<Tile, Float>()
-        var maxValueTile: Tile? = null
-        var maxValueRank: Float = 0f
         for (tile in possibleCityLocations) {
             val tileValue = rankTileToSettle(tile, unit.civ, nearbyCities, baseTileMap, uniqueCache)
-            if (tileValue > maxValueRank) {
-                maxValueTile = tile
-                maxValueRank = tileValue
+            if (tileValue > bestTilesToFoundCity.bestTileRank) {
+                bestTilesToFoundCity.bestTile = tile
+                bestTilesToFoundCity.bestTileRank = tileValue
             }
-            tileRankMap[tile] = tileValue
+            bestTilesToFoundCity.tileRankMap[tile] = tileValue
         }
-        return Pair(tileRankMap, maxValueTile)
+        return bestTilesToFoundCity
     }
 
     private fun canSettleTile(tile: Tile, civ: Civilization, nearbyCities: Sequence<City>): Boolean {
