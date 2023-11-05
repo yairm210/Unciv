@@ -1,5 +1,8 @@
 # Uniques
+An overview of uniques can be found [here](../Developers/Uniques.md)
+
 Simple unique parameters are explained by mouseover. Complex parameters are explained in [Unique parameter types](../Unique-parameters)
+
 ## Triggerable uniques
 !!! note ""
 
