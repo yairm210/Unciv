@@ -72,11 +72,11 @@ object DiplomacyAutomation {
             // Goes from 10 to 0 once the civ gets 1/4 of all alive civs as friends
             motivation += (10 - 10 * (numOfFriends / civsToAllyWith)).toInt()
         } else {
-            // Goes form 0 to -120 as the civ gets more friends, offset by civsToAllyWith
+            // Goes from 0 to -120 as the civ gets more friends, offset by civsToAllyWith
             motivation -= (120f * (numOfFriends - civsToAllyWith) / (knownCivs - civsToAllyWith)).toInt()
         }
 
-        // The more friends they have the less we should like them (To promote teams)
+        // The more friends they have the less we should want to sign friendship (To promote teams)
         motivation -= otherCivNumberOfFriends * 10
 
         // Goes from 0 to -50 as more civs die
@@ -84,7 +84,7 @@ object DiplomacyAutomation {
         // conquers all oposition
         motivation -= deadCivs / allCivs * 50
 
-        // Becomre more desperate as we have more wars
+        // Become more desperate as we have more wars
         motivation += civInfo.diplomacy.values.count { it.otherCiv().isMajorCiv() && it.diplomaticStatus == DiplomaticStatus.War } * 10
 
         // Wait to declare frienships until more civs
@@ -228,7 +228,7 @@ object DiplomacyAutomation {
 
         // Try to have a defensive pact with 1/5 of all civs
         val civsToAllyWith = 0.20f * allAliveCivs
-        // Goes form 0 to -50 as the civ gets more allies, offset by civsToAllyWith
+        // Goes from 0 to -50 as the civ gets more allies, offset by civsToAllyWith
         motivation -= (50f * (defensivePacts - civsToAllyWith) / (allAliveCivs - civsToAllyWith)).coerceAtMost(0f).toInt()
 
         return motivation > 0
