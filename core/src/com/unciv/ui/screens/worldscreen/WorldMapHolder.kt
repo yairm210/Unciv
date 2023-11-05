@@ -714,7 +714,7 @@ class WorldMapHolder(
         if (unit.hasUnique(UniqueType.FoundCity)
                 && UncivGame.Current.settings.showSettlersSuggestedCityLocations) {
             CityLocationTileRanker.getBestTilesToFoundCity(unit).first.asSequence()
-                .sortedByDescending { it.value }.filter { it.key.isExplored(unit.civ) }.take(3).forEach {
+                .filter { it.key.isExplored(unit.civ) }.sortedByDescending { it.value }.take(3).forEach {
                 tileGroups[it.key]!!.layerOverlay.showGoodCityLocationIndicator()
             }
         }
