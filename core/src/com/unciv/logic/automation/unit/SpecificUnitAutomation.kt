@@ -118,20 +118,18 @@ object SpecificUnitAutomation {
             val allUnsettledSettlers = unit.civ.units.getCivUnits().filter { it.currentMovement > 0 && it.baseUnit == unit.baseUnit }
 
             // Don't settle immediately if we only have one settler, look for a better location
-            if (allUnsettledSettlers.count() > 1) {
-                val bestSettlerInRange = allUnsettledSettlers.maxByOrNull {
-                    if (bestTilesToFoundCity.containsKey(it.getTile()))
-                        bestTilesToFoundCity[it.getTile()]!!
-                    else -1f
-                }
-                if (bestSettlerInRange == unit && foundCityAction?.action != null) {
-                    foundCityAction.action.invoke()
-                    return
-                }
-                // Since this settler is not in the best location, lets assume the best settler will found their city where they are
-                if (bestSettlerInRange != null)
-                    bestTilesToFoundCity = HashMap(bestTilesToFoundCity.filter { it.key.aerialDistanceTo(bestSettlerInRange.getTile()) > 4 })
+            val bestSettlerInRange = allUnsettledSettlers.maxByOrNull {
+                if (bestTilesToFoundCity.containsKey(it.getTile()))
+                    bestTilesToFoundCity[it.getTile()]!!
+                else -1f
             }
+            if (bestSettlerInRange == unit && foundCityAction?.action != null) {
+                foundCityAction.action.invoke()
+                return
+            }
+            // Since this settler is not in the best location, lets assume the best settler will found their city where they are
+            if (bestSettlerInRange != null)
+                bestTilesToFoundCity = HashMap(bestTilesToFoundCity.filter { it.key.aerialDistanceTo(bestSettlerInRange.getTile()) > 4 })
         }
 
 
