@@ -671,13 +671,11 @@ object UniqueTriggerActivation {
                 }
 
                 for (applicableCity in applicableCities) {
-                    var buildingsToSell = applicableCity.cityConstructions.getBuiltBuildings().filter {
+                    val buildingsToSell = applicableCity.cityConstructions.getBuiltBuildings().filter {
                         it.matchesFilter(unique.params[0])
-                    }.toSet()
-
-                    buildingsToSell = buildingsToSell.filter {
+                    }.filter {
                         it.isSellable()
-                    }.toSet()
+                    }
 
                     for (building in buildingsToSell) {
                         applicableCity.sellBuilding(building)
