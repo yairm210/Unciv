@@ -43,10 +43,12 @@ object DiplomacyAutomation {
 
     internal fun wantsToSignDeclarationOfFrienship(civInfo: Civilization, otherCiv: Civilization): Boolean {
         val diploManager = civInfo.getDiplomacyManager(otherCiv)
+        if (diploManager.hasFlag(DiplomacyFlags.DeclinedDeclarationOfFriendship)) return false
         // Shortcut, if it is below favorable then don't consider it
         if (diploManager.isRelationshipLevelLT(RelationshipLevel.Favorable)) return false
 
         val numOfFriends = civInfo.diplomacy.count { it.value.hasFlag(DiplomacyFlags.DeclarationOfFriendship) }
+        val otherCivNumberOfFriends = otherCiv.diplomacy.count { it.value.hasFlag(DiplomacyFlags.DeclarationOfFriendship) }
         val knownCivs = civInfo.getKnownCivs().count { it.isMajorCiv() && it.isAlive() }
         val allCivs = civInfo.gameInfo.civilizations.count { it.isMajorCiv() } - 1 // Don't include us
         val deadCivs = civInfo.gameInfo.civilizations.count { it.isMajorCiv() && !it.isAlive() }
@@ -74,10 +76,16 @@ object DiplomacyAutomation {
             motivation -= (120f * (numOfFriends - civsToAllyWith) / (knownCivs - civsToAllyWith)).toInt()
         }
 
+        // The more friends they have the less we should like them (To promote teams)
+        motivation -= otherCivNumberOfFriends * 10
+
         // Goes from 0 to -50 as more civs die
         // this is meant to prevent the game from stalemating when a group of friends
         // conquers all oposition
         motivation -= deadCivs / allCivs * 50
+
+        // Becomre more desperate as we have more wars
+        motivation += civInfo.diplomacy.values.count { it.otherCiv().isMajorCiv() && it.diplomaticStatus == DiplomaticStatus.War } * 10
 
         // Wait to declare frienships until more civs
         // Goes from -30 to 0 when we know 75% of allCivs
@@ -99,22 +107,28 @@ object DiplomacyAutomation {
             .sortedByDescending { it.getDiplomacyManager(civInfo).relationshipLevel() }.toList()
         for (otherCiv in civsThatWeCanOpenBordersWith) {
             // Default setting is 3, this will be changed according to different civ.
-            if ((1..10).random() <= 3 && wantsToOpenBorders(civInfo, otherCiv)) {
+            if ((1..10).random() < 7) continue
+            if (wantsToOpenBorders(civInfo, otherCiv)) {
                 val tradeLogic = TradeLogic(civInfo, otherCiv)
                 tradeLogic.currentTrade.ourOffers.add(TradeOffer(Constants.openBorders, TradeType.Agreement))
                 tradeLogic.currentTrade.theirOffers.add(TradeOffer(Constants.openBorders, TradeType.Agreement))
 
                 otherCiv.tradeRequests.add(TradeRequest(civInfo.civName, tradeLogic.currentTrade.reverse()))
+            } else {
+                // Remember this for a few turns to save computation power
+                civInfo.getDiplomacyManager(otherCiv).setFlag(DiplomacyFlags.DeclinedOpenBorders, 5)
             }
         }
     }
 
     fun wantsToOpenBorders(civInfo: Civilization, otherCiv: Civilization): Boolean {
-        if (civInfo.getDiplomacyManager(otherCiv).isRelationshipLevelLT(RelationshipLevel.Favorable)) return false
+        val diploManager = civInfo.getDiplomacyManager(otherCiv)
+        if (diploManager.hasFlag(DiplomacyFlags.DeclinedOpenBorders)) return false
+        if (diploManager.isRelationshipLevelLT(RelationshipLevel.Favorable)) return false
         // Don't accept if they are at war with our friends, they might use our land to attack them
         if (civInfo.diplomacy.values.any { it.isRelationshipLevelGE(RelationshipLevel.Friend) && it.otherCiv().isAtWarWith(otherCiv)})
             return false
-        if (hasAtLeastMotivationToAttack(civInfo, otherCiv, (civInfo.getDiplomacyManager(otherCiv).opinionOfOtherCiv()/ 2 - 10).toInt()) >= 0)
+        if (hasAtLeastMotivationToAttack(civInfo, otherCiv, (diploManager.opinionOfOtherCiv()/ 2 - 10).toInt()) >= 0)
             return false
         return true
     }
@@ -131,7 +145,7 @@ object DiplomacyAutomation {
 
         for (otherCiv in canSignResearchAgreementCiv) {
             // Default setting is 5, this will be changed according to different civ.
-            if ((1..10).random() > 5) continue
+            if ((1..10).random() <= 5) continue
             val tradeLogic = TradeLogic(civInfo, otherCiv)
             val cost = civInfo.diplomacyFunctions.getResearchAgreementCost(otherCiv)
             tradeLogic.currentTrade.ourOffers.add(TradeOffer(Constants.researchAgreement, TradeType.Treaty, cost))
@@ -153,25 +167,36 @@ object DiplomacyAutomation {
 
         for (otherCiv in canSignDefensivePactCiv) {
             // Default setting is 3, this will be changed according to different civ.
-            if ((1..10).random() <= 3 && wantsToSignDefensivePact(civInfo, otherCiv)) {
+            if ((1..10).random() <= 7) continue
+            if (wantsToSignDefensivePact(civInfo, otherCiv)) {
                 //todo: Add more in depth evaluation here
                 val tradeLogic = TradeLogic(civInfo, otherCiv)
                 tradeLogic.currentTrade.ourOffers.add(TradeOffer(Constants.defensivePact, TradeType.Treaty))
                 tradeLogic.currentTrade.theirOffers.add(TradeOffer(Constants.defensivePact, TradeType.Treaty))
 
                 otherCiv.tradeRequests.add(TradeRequest(civInfo.civName, tradeLogic.currentTrade.reverse()))
+            } else {
+                // Remember this for a few turns to save computation power
+                civInfo.getDiplomacyManager(otherCiv).setFlag(DiplomacyFlags.DeclinedDefensivePact, 5)
             }
         }
     }
 
     fun wantsToSignDefensivePact(civInfo: Civilization, otherCiv: Civilization): Boolean {
         val diploManager = civInfo.getDiplomacyManager(otherCiv)
+        if (diploManager.hasFlag(DiplomacyFlags.DeclinedDefensivePact)) return false
         if (diploManager.isRelationshipLevelLT(RelationshipLevel.Ally)) return false
         val commonknownCivs = diploManager.getCommonKnownCivs()
         // If they have bad relations with any of our friends, don't consider it
         for(thirdCiv in commonknownCivs) {
             if (civInfo.getDiplomacyManager(thirdCiv).isRelationshipLevelGE(RelationshipLevel.Friend)
                 && thirdCiv.getDiplomacyManager(otherCiv).isRelationshipLevelLT(RelationshipLevel.Favorable))
+                return false
+        }
+        // If they have bad relations with any of thier friends, don't consider it
+        for(thirdCiv in commonknownCivs) {
+            if (otherCiv.getDiplomacyManager(thirdCiv).isRelationshipLevelGE(RelationshipLevel.Friend)
+                && thirdCiv.getDiplomacyManager(civInfo).isRelationshipLevelLT(RelationshipLevel.Neutral))
                 return false
         }
 
@@ -190,13 +215,16 @@ object DiplomacyAutomation {
         motivation += when (Automation.threatAssessment(civInfo,otherCiv)) {
             ThreatLevel.VeryHigh -> 10
             ThreatLevel.High -> 5
-            ThreatLevel.Low -> -15
-            ThreatLevel.VeryLow -> -30
+            ThreatLevel.Low -> -5
+            ThreatLevel.VeryLow -> -10
             else -> 0
         }
 
         // If they have a defensive pact with another civ then we would get drawn into thier battles as well
-        motivation -= 10 * otherCivNonOverlappingDefensivePacts
+        motivation -= 15 * otherCivNonOverlappingDefensivePacts
+
+        // Becomre more desperate as we have more wars
+        motivation += civInfo.diplomacy.values.count { it.otherCiv().isMajorCiv() && it.diplomaticStatus == DiplomaticStatus.War } * 5
 
         // Try to have a defensive pact with 1/5 of all civs
         val civsToAllyWith = 0.20f * allAliveCivs
@@ -228,12 +256,15 @@ object DiplomacyAutomation {
         if (enemyCivs.none()) return
 
         val minMotivationToAttack = 20
+        // Attack the highest score enemy that we are willing to fight.
+        // This is to help prevent civs from ganging up on smaller civs
+        // and directs them to fight their competitors instead.
         val civWithBestMotivationToAttack = enemyCivs
-            .map { Pair(it, hasAtLeastMotivationToAttack(civInfo, it, minMotivationToAttack)) }
-            .maxByOrNull { it.second }!!
+            .filter { hasAtLeastMotivationToAttack(civInfo, it, minMotivationToAttack) >= 20 }
+            .sortedBy { it.getStatForRanking(RankingType.Score) }
 
-        if (civWithBestMotivationToAttack.second >= minMotivationToAttack)
-            civInfo.getDiplomacyManager(civWithBestMotivationToAttack.first).declareWar()
+        if (civWithBestMotivationToAttack.count() != 0)
+            civInfo.getDiplomacyManager(civWithBestMotivationToAttack.first()).declareWar()
     }
 
     /** Will return the motivation to attack, but might short circuit if the value is guaranteed to
@@ -285,6 +316,57 @@ object DiplomacyAutomation {
         }
         modifierMap["Relative combat strength"] = combatStrengthModifier
 
+        var theirAlliesValue = 0
+        for(thirdCiv in otherCiv.diplomacy.values.filter { it.hasFlag(DiplomacyFlags.DefensivePact) && it.otherCiv() != civInfo }) {
+            val thirdCivCombatStrengthRatio = otherCiv.getStatForRanking(RankingType.Force).toFloat() + baseForce / ourCombatStrength
+            theirAlliesValue += when {
+                thirdCivCombatStrengthRatio > 5 -> -15
+                thirdCivCombatStrengthRatio > 2.5 -> -10
+                thirdCivCombatStrengthRatio > 2 -> -8
+                thirdCivCombatStrengthRatio > 1.5 -> -5
+                thirdCivCombatStrengthRatio > .8 -> -2
+                else -> 0
+            }
+        }
+        modifierMap["Their allies"] = theirAlliesValue
+
+        // Civs with more score are more threatening to our victory
+        // Bias towards attacking civs with a high score and low military
+        // Bias against attacking civs with a low score and a high military
+        // Designed to mitigate AIs declaring war on weaker civs instead of their rivals
+        val scoreRatio = otherCiv.getStatForRanking(RankingType.Score).toFloat() / civInfo.getStatForRanking(RankingType.Score).toFloat()
+        val scoreRatioModifier = when {
+            scoreRatio > 2f -> 15
+            scoreRatio > 1.5f -> 10
+            scoreRatio > 1.25f -> 5
+            scoreRatio > 1f -> 0
+            scoreRatio > .5f -> -2
+            scoreRatio > .25f -> -5
+            else -> -10
+        }
+        modifierMap["Relative score"] = scoreRatioModifier
+
+        val productionRatio = civInfo.getStatForRanking(RankingType.Production).toFloat() / otherCiv.getStatForRanking(RankingType.Production).toFloat()
+        val productionRatioModifier = when {
+            productionRatio > 2f -> 10
+            productionRatio > 1.5f -> 5
+            productionRatio > .8f -> 0
+            productionRatio > .5f -> -2
+            productionRatio > .25f -> -5
+            else -> -10
+        }
+        modifierMap["Relative production"] = productionRatioModifier
+
+        val relativeTech = civInfo.getStatForRanking(RankingType.Technologies) - otherCiv.getStatForRanking(RankingType.Technologies)
+        val relativeTechModifier = when {
+            relativeTech > 6 -> 10
+            relativeTech > 3 -> 5
+            relativeTech > -3 -> 0
+            relativeTech > -6 -> -2
+            relativeTech > -9 -> -5
+            else -> -10
+        }
+        modifierMap["Relative technologies"] = relativeTechModifier
 
         if (closestCities.aerialDistance > 7)
             modifierMap["Far away cities"] = -10
@@ -295,6 +377,9 @@ object DiplomacyAutomation {
 
         if (diplomacyManager.hasFlag(DiplomacyFlags.DeclarationOfFriendship))
             modifierMap["Declaration of Friendship"] = -10
+
+        if (diplomacyManager.hasFlag(DiplomacyFlags.DefensivePact))
+            modifierMap["Defensive Pact"] = -10
 
         val relationshipModifier = when (diplomacyManager.relationshipIgnoreAfraid()) {
             RelationshipLevel.Unforgivable -> 10
@@ -317,13 +402,32 @@ object DiplomacyAutomation {
                 modifierMap["Allied City-state"] = -20 // There had better be a DAMN good reason
         }
 
+        var wonderCount = 0
         for (city in otherCiv.cities) {
             val construction = city.cityConstructions.getCurrentConstruction()
             if (construction is Building && construction.hasUnique(UniqueType.TriggersCulturalVictory))
                 modifierMap["About to win"] = 15
             if (construction is BaseUnit && construction.hasUnique(UniqueType.AddInCapital))
                 modifierMap["About to win"] = 15
+            wonderCount += city.cityConstructions.getBuiltBuildings().count { it.isWonder }
         }
+
+        // The more wonders they have, the more beneficial it is to conquer them
+        // Civs need an army to protect thier wonders which give the most score
+        if (wonderCount > 0)
+            modifierMap["Owned Wonders"] = wonderCount
+
+        // If they are at war with our allies, then we should join in
+        var alliedWarMotivation = 0
+        for(thirdCiv in civInfo.getDiplomacyManager(otherCiv).getCommonKnownCivs()) {
+            val thirdCivDiploManager = civInfo.getDiplomacyManager(thirdCiv)
+            if (thirdCivDiploManager.hasFlag(DiplomacyFlags.DeclinedDeclarationOfFriendship)
+                && thirdCiv.isAtWarWith(otherCiv)) {
+                alliedWarMotivation += if (thirdCivDiploManager.hasFlag(DiplomacyFlags.DefensivePact)) 15 else 5
+            }
+        }
+        modifierMap["War with allies"]
+
 
         var motivationSoFar = modifierMap.values.sum()
 
