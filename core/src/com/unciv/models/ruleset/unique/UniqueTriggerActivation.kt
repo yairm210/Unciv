@@ -672,9 +672,7 @@ object UniqueTriggerActivation {
 
                 for (applicableCity in applicableCities) {
                     val buildingsToSell = applicableCity.cityConstructions.getBuiltBuildings().filter {
-                        it.matchesFilter(unique.params[0])
-                    }.filter {
-                        it.isSellable()
+                        it.matchesFilter(unique.params[0]) && it.isSellable()
                     }
 
                     for (building in buildingsToSell) {
