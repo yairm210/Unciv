@@ -92,40 +92,6 @@ object CityLocationTileRanker {
         // Only count a luxary resource that we don't have yet as unique once
         val newUniqueLuxuryResources = HashSet<String>()
 
-        fun rankTile(rankTile: Tile): Float {
-            var locationSpecificTileValue = 0f
-            // Don't settle near but not on the coast
-            if (rankTile.isCoastalTile() && !onCoast) locationSpecificTileValue -= 10
-            // Apply the effect of having a lighthouse, since we can probably assume that we will build it
-            if (onCoast && rankTile.isOcean) locationSpecificTileValue += 1
-            // Check if there are any new unique luxury resources
-            if (rankTile.resource != null && rankTile.tileResource.resourceType == ResourceType.Luxury
-                && !(civ.hasResource(rankTile.resource!!) || newUniqueLuxuryResources.contains(rankTile.resource))) {
-                locationSpecificTileValue += 10
-                newUniqueLuxuryResources.add(rankTile.resource!!)
-            }
-
-            // Check if everything else has been calculated, if so return it
-            if (baseTileMap.containsKey(rankTile)) return locationSpecificTileValue + baseTileMap[rankTile]!!
-            if (rankTile.getOwner() != null && rankTile.getOwner() != civ) return 0f
-
-            var rankTileValue = Automation.rankStatsValue(rankTile.stats.getTileStats(null, civ, uniqueCache), civ)
-
-            if (rankTile.resource != null) {
-                rankTileValue += when (rankTile.tileResource.resourceType) {
-                    ResourceType.Bonus -> 2f
-                    ResourceType.Strategic -> 1.2f * rankTile.resourceAmount
-                    ResourceType.Luxury -> 5f * rankTile.resourceAmount
-                }
-            }
-
-            if (rankTile.isNaturalWonder()) rankTileValue += 10
-
-            baseTileMap[rankTile] = rankTileValue
-
-            return rankTileValue + locationSpecificTileValue
-        }
-
         if (onCoast) tileValue += 15
         if (newCityTile.isAdjacentToRiver()) tileValue += 10
         if (newCityTile.terrainHasUnique(UniqueType.FreshWater)) tileValue += 5
@@ -136,9 +102,45 @@ object CityLocationTileRanker {
 
         for (i in 0..3) {
             for (nearbyTile in newCityTile.getTilesAtDistance(i)) {
-                tileValue += rankTile(nearbyTile)
+                tileValue += rankTile(nearbyTile, civ, onCoast, newUniqueLuxuryResources, baseTileMap, uniqueCache)
             }
         }
         return tileValue
     }
+
+    private fun rankTile(rankTile: Tile, civ:Civilization, onCoast: Boolean, newUniqueLuxuryResources:HashSet<String>, 
+                         baseTileMap: HashMap<Tile, Float>, uniqueCache: LocalUniqueCache): Float {
+        var locationSpecificTileValue = 0f
+        // Don't settle near but not on the coast
+        if (rankTile.isCoastalTile() && !onCoast) locationSpecificTileValue -= 10
+        // Apply the effect of having a lighthouse, since we can probably assume that we will build it
+        if (onCoast && rankTile.isOcean) locationSpecificTileValue += 1
+        // Check if there are any new unique luxury resources
+        if (rankTile.resource != null && rankTile.tileResource.resourceType == ResourceType.Luxury
+            && !(civ.hasResource(rankTile.resource!!) || newUniqueLuxuryResources.contains(rankTile.resource))) {
+            locationSpecificTileValue += 10
+            newUniqueLuxuryResources.add(rankTile.resource!!)
+        }
+
+        // Check if everything else has been calculated, if so return it
+        if (baseTileMap.containsKey(rankTile)) return locationSpecificTileValue + baseTileMap[rankTile]!!
+        if (rankTile.getOwner() != null && rankTile.getOwner() != civ) return 0f
+
+        var rankTileValue = Automation.rankStatsValue(rankTile.stats.getTileStats(null, civ, uniqueCache), civ)
+
+        if (rankTile.resource != null) {
+            rankTileValue += when (rankTile.tileResource.resourceType) {
+                ResourceType.Bonus -> 2f
+                ResourceType.Strategic -> 1.2f * rankTile.resourceAmount
+                ResourceType.Luxury -> 5f * rankTile.resourceAmount
+            }
+        }
+
+        if (rankTile.isNaturalWonder()) rankTileValue += 10
+
+        baseTileMap[rankTile] = rankTileValue
+
+        return rankTileValue + locationSpecificTileValue
+    }
+
 }
