@@ -44,11 +44,14 @@ object CityLocationTileRanker {
         val modConstants = civ.gameInfo.ruleset.modOptions.constants
         if (!tile.isLand || tile.isImpassible()) return false
         if (tile.getOwner() != null && tile.getOwner() != civ) return false
-        if (nearbyCities.any {
-                it.getCenterTile().aerialDistanceTo(tile) <=
-                    if (tile.getContinent() == it.getCenterTile().getContinent()) modConstants.minimalCityDistance
-                    else modConstants.minimalCityDistanceOnDifferentContinents
-            }) return false
+        for (city in nearbyCities) {
+            val distance = city.getCenterTile().aerialDistanceTo(tile)
+            if (tile.getContinent() == city.getCenterTile().getContinent()) {
+                if (distance <= modConstants.minimalCityDistance) return false
+            } else {
+                if (distance <= modConstants.minimalCityDistanceOnDifferentContinents) return false
+            }
+        }
         return true
     }
 
