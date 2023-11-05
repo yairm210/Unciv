@@ -108,8 +108,7 @@ object SpecificUnitAutomation {
         // Also this lead to some routing problems, see https://github.com/yairm210/Unciv/issues/3653
         val bestTilesToFoundCityReturn = CityLocationTileRanker.getBestTilesToFoundCity(unit, rangeToSearch)
         var bestTilesToFoundCity = bestTilesToFoundCityReturn.first
-        val bestTile = bestTilesToFoundCityReturn.second.first
-        val bestTileRank = bestTilesToFoundCityReturn.second.second
+        val bestTile = bestTilesToFoundCityReturn.second
         var bestCityLocation: Tile? = null
 
         if (unit.civ.gameInfo.turns == 0 && unit.civ.cities.isEmpty() && bestTilesToFoundCity.containsKey(unit.getTile())) {   // Special case, we want AI to settle in place on turn 1.
@@ -135,7 +134,7 @@ object SpecificUnitAutomation {
 
         // If the tile we are currently on is close to the best tile, then lets just settle here instead
         if (bestTilesToFoundCity.containsKey(unit.getTile()) 
-                && bestTilesToFoundCity[unit.getTile()]!! >= bestTileRank - 10) {
+                && (bestTile == null || bestTilesToFoundCity[unit.getTile()]!! >= bestTilesToFoundCity[bestTile]!! - 10)) {
                 bestCityLocation = unit.getTile()
         }
         
@@ -146,7 +145,7 @@ object SpecificUnitAutomation {
         
         if (bestCityLocation == null) {
             // Find the best tile that is within
-            bestCityLocation = bestTilesToFoundCity.filter { it.value >= bestTileRank - 5 }.asSequence().sortedByDescending { it.value }.firstOrNull {
+            bestCityLocation = bestTilesToFoundCity.filter { bestTile == null || it.value >= bestTilesToFoundCity[bestTile]!! - 5 }.asSequence().sortedByDescending { it.value }.firstOrNull {
                 if (it.key in tilesWhereWeWillBeCaptured) return@firstOrNull false
                 val pathSize = unit.movement.getShortestPath(it.key).size
                 return@firstOrNull pathSize in 1..3

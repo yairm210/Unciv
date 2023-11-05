@@ -13,7 +13,7 @@ object CityLocationTileRanker {
     /**
      * Returns a hashmap of tiles to their ranking plus the a the highest value tile and its value
      */
-    fun getBestTilesToFoundCity(unit: MapUnit, distanceToSearch: Int? = null): Pair<HashMap<Tile, Float>, Pair<Tile?, Float>> {
+    fun getBestTilesToFoundCity(unit: MapUnit, distanceToSearch: Int? = null): Pair<HashMap<Tile, Float>, Tile?> {
         val range =  if (distanceToSearch != null) distanceToSearch else {
             val distanceFromHome = if (unit.civ.cities.isEmpty()) 0
             else unit.civ.cities.minOf { it.getCenterTile().aerialDistanceTo(unit.getTile()) }
@@ -37,7 +37,7 @@ object CityLocationTileRanker {
             }
             tileRankMap[tile] = tileValue
         }
-        return Pair(tileRankMap, Pair(maxValueTile, maxValueRank))
+        return Pair(tileRankMap, maxValueTile)
     }
 
     private fun canSettleTile(tile: Tile, civ: Civilization, nearbyCities: Sequence<City>): Boolean {
