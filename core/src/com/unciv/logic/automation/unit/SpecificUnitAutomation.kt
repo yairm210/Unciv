@@ -107,7 +107,7 @@ object SpecificUnitAutomation {
         // It's possible that we'll see a tile "over the sea" that's better than the tiles close by, but that's not a reason to abandon the close tiles!
         // Also this lead to some routing problems, see https://github.com/yairm210/Unciv/issues/3653
         val bestTilesToFoundCityReturn = CityLocationTileRanker.getBestTilesToFoundCity(unit, rangeToSearch)
-        val bestTilesToFoundCity = bestTilesToFoundCityReturn.first
+        var bestTilesToFoundCity = bestTilesToFoundCityReturn.first
         val bestTile = bestTilesToFoundCityReturn.second.first
         val bestTileRank = bestTilesToFoundCityReturn.second.second
         var bestCityLocation: Tile? = null
@@ -130,7 +130,7 @@ object SpecificUnitAutomation {
                 }
                 // Since this settler is not in the best location, lets assume the best settler will found their city where they are
                 if (bestSettlerInRange != null)
-                    bestTilesToFoundCity.filter { it.key.aerialDistanceTo(bestSettlerInRange.getTile()) > 4 }
+                    bestTilesToFoundCity = HashMap(bestTilesToFoundCity.filter { it.key.aerialDistanceTo(bestSettlerInRange.getTile()) > 4 })
             }
         }
 
