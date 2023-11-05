@@ -58,6 +58,30 @@ object CityLocationTileRanker {
     private fun rankTileToSettle(newCityTile: Tile, civ: Civilization, nearbyCities: Sequence<City>,
                                  baseTileMap: HashMap<Tile, Float>, uniqueCache: LocalUniqueCache): Float {
         var tileValue = 0f
+        tileValue += getDistanceToCityModifier(newCityTile, nearbyCities, civ)
+
+        val onCoast = newCityTile.isCoastalTile()
+        // Only count a luxary resource that we don't have yet as unique once
+        val newUniqueLuxuryResources = HashSet<String>()
+
+        if (onCoast) tileValue += 15
+        if (newCityTile.isAdjacentToRiver()) tileValue += 10
+        if (newCityTile.terrainHasUnique(UniqueType.FreshWater)) tileValue += 5
+        // We want to found the city on an oasis because it can't be improved otherwise
+        if (newCityTile.terrainHasUnique(UniqueType.Unbuildable)) tileValue += 3
+        // If we build the city on a resource tile, then we can't build any special improvements on it
+        if (newCityTile.resource != null) tileValue -= 4
+
+        for (i in 0..3) {
+            for (nearbyTile in newCityTile.getTilesAtDistance(i)) {
+                tileValue += rankTile(nearbyTile, civ, onCoast, newUniqueLuxuryResources, baseTileMap, uniqueCache)
+            }
+        }
+        return tileValue
+    }
+
+    private fun getDistanceToCityModifier(newCityTile: Tile,nearbyCities: Sequence<City>, civ: Civilization): Float {
+        var modifier = 0f
         for (city in nearbyCities) {
             val distanceToCity = newCityTile.aerialDistanceTo(city.getCenterTile())
             var distanceToCityModifier = when {
@@ -85,29 +109,11 @@ object CityLocationTileRanker {
             // Do not settle near our capital unless really necessary
             // Having a strong capital is esential to constructing wonders
             if (city.civ == civ) distanceToCityModifier *= if (city.isCapital()) 5 else 2
-            tileValue -= distanceToCityModifier
+            modifier -= distanceToCityModifier
         }
-
-        val onCoast = newCityTile.isCoastalTile()
-        // Only count a luxary resource that we don't have yet as unique once
-        val newUniqueLuxuryResources = HashSet<String>()
-
-        if (onCoast) tileValue += 15
-        if (newCityTile.isAdjacentToRiver()) tileValue += 10
-        if (newCityTile.terrainHasUnique(UniqueType.FreshWater)) tileValue += 5
-        // We want to found the city on an oasis because it can't be improved otherwise
-        if (newCityTile.terrainHasUnique(UniqueType.Unbuildable)) tileValue += 3
-        // If we build the city on a resource tile, then we can't build any special improvements on it
-        if (newCityTile.resource != null) tileValue -= 4
-
-        for (i in 0..3) {
-            for (nearbyTile in newCityTile.getTilesAtDistance(i)) {
-                tileValue += rankTile(nearbyTile, civ, onCoast, newUniqueLuxuryResources, baseTileMap, uniqueCache)
-            }
-        }
-        return tileValue
+        return modifier
     }
-
+    
     private fun rankTile(rankTile: Tile, civ:Civilization, onCoast: Boolean, newUniqueLuxuryResources:HashSet<String>, 
                          baseTileMap: HashMap<Tile, Float>, uniqueCache: LocalUniqueCache): Float {
         var locationSpecificTileValue = 0f
