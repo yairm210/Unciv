@@ -2,6 +2,7 @@ package com.unciv.models.ruleset.nation
 
 import com.badlogic.gdx.graphics.Color
 import com.unciv.Constants
+import com.unciv.UncivGame
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetObject
 import com.unciv.models.ruleset.unique.UniqueTarget
@@ -180,6 +181,16 @@ class Nation : RulesetObject() {
         return textList
     }
 
+    private fun isNationControlledByHuman(nationName: String): Boolean {
+        val gameInfo = UncivGame.Current.gameInfo
+
+        if (gameInfo != null) {
+            return gameInfo.getCivilization(nationName).isHuman()
+        }
+
+        return false
+    }
+
     private fun getUniqueBuildingsText(ruleset: Ruleset) = sequence {
         val religionEnabled = showReligionInCivilopedia(ruleset)
         for (building in ruleset.buildings.values) {
@@ -270,6 +281,8 @@ class Nation : RulesetObject() {
             "All" -> true
             name -> true
             "Major" -> isMajorCiv
+            "Human" -> isNationControlledByHuman(name)
+            "AI" -> !isNationControlledByHuman(name)
             // "CityState" to be deprecated, replaced by "City-States"
             "CityState", Constants.cityStates -> isCityState
             else -> uniques.contains(filter)

@@ -210,10 +210,6 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
             UniqueType.ConditionalChance -> stateBasedRandom.nextFloat() < condition.params[0].toFloat() / 100f
             UniqueType.ConditionalBeforeTurns -> checkOnCiv { gameInfo.turns < condition.params[0].toInt() }
             UniqueType.ConditionalAfterTurns -> checkOnCiv { gameInfo.turns >= condition.params[0].toInt() }
-
-            UniqueType.ConditionalIsHuman -> checkOnCiv { isHuman() }
-            UniqueType.ConditionalIsAI -> checkOnCiv { isAI() }
-
             UniqueType.ConditionalNationFilter -> checkOnCiv { nation.matchesFilter(condition.params[0]) }
             UniqueType.ConditionalWar -> checkOnCiv { isAtWar() }
             UniqueType.ConditionalNotWar -> checkOnCiv { !isAtWar() }
