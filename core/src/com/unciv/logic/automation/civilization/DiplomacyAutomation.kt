@@ -188,13 +188,13 @@ object DiplomacyAutomation {
         if (diploManager.isRelationshipLevelLT(RelationshipLevel.Ally)) return false
         val commonknownCivs = diploManager.getCommonKnownCivs()
         // If they have bad relations with any of our friends, don't consider it
-        for(thirdCiv in commonknownCivs) {
+        for (thirdCiv in commonknownCivs) {
             if (civInfo.getDiplomacyManager(thirdCiv).isRelationshipLevelGE(RelationshipLevel.Friend)
                 && thirdCiv.getDiplomacyManager(otherCiv).isRelationshipLevelLT(RelationshipLevel.Favorable))
                 return false
         }
         // If they have bad relations with any of thier friends, don't consider it
-        for(thirdCiv in commonknownCivs) {
+        for (thirdCiv in commonknownCivs) {
             if (otherCiv.getDiplomacyManager(thirdCiv).isRelationshipLevelGE(RelationshipLevel.Friend)
                 && thirdCiv.getDiplomacyManager(civInfo).isRelationshipLevelLT(RelationshipLevel.Neutral))
                 return false
@@ -317,7 +317,7 @@ object DiplomacyAutomation {
         modifierMap["Relative combat strength"] = combatStrengthModifier
 
         var theirAlliesValue = 0
-        for(thirdCiv in otherCiv.diplomacy.values.filter { it.hasFlag(DiplomacyFlags.DefensivePact) && it.otherCiv() != civInfo }) {
+        for (thirdCiv in otherCiv.diplomacy.values.filter { it.hasFlag(DiplomacyFlags.DefensivePact) && it.otherCiv() != civInfo }) {
             val thirdCivCombatStrengthRatio = otherCiv.getStatForRanking(RankingType.Force).toFloat() + baseForce / ourCombatStrength
             theirAlliesValue += when {
                 thirdCivCombatStrengthRatio > 5 -> -15
@@ -419,7 +419,7 @@ object DiplomacyAutomation {
 
         // If they are at war with our allies, then we should join in
         var alliedWarMotivation = 0
-        for(thirdCiv in civInfo.getDiplomacyManager(otherCiv).getCommonKnownCivs()) {
+        for (thirdCiv in civInfo.getDiplomacyManager(otherCiv).getCommonKnownCivs()) {
             val thirdCivDiploManager = civInfo.getDiplomacyManager(thirdCiv)
             if (thirdCivDiploManager.hasFlag(DiplomacyFlags.DeclinedDeclarationOfFriendship)
                 && thirdCiv.isAtWarWith(otherCiv)) {
