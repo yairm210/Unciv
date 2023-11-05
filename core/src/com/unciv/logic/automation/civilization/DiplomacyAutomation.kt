@@ -261,10 +261,10 @@ object DiplomacyAutomation {
         // and directs them to fight their competitors instead.
         val civWithBestMotivationToAttack = enemyCivs
             .filter { hasAtLeastMotivationToAttack(civInfo, it, minMotivationToAttack) >= 20 }
-            .sortedBy { it.getStatForRanking(RankingType.Score) }
+            .maxByOrNull { it.getStatForRanking(RankingType.Score) }
 
-        if (civWithBestMotivationToAttack.count() != 0)
-            civInfo.getDiplomacyManager(civWithBestMotivationToAttack.first()).declareWar()
+        if (civWithBestMotivationToAttack != null)
+            civInfo.getDiplomacyManager(civWithBestMotivationToAttack).declareWar()
     }
 
     /** Will return the motivation to attack, but might short circuit if the value is guaranteed to
