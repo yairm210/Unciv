@@ -103,7 +103,7 @@ object SpecificUnitAutomation {
         // If we have gone more than 3 turns without founding a city lets search a wider area
         // TODO: Figure out a way to not use turns as it might not be the best metric, what if we are a civ starting in the middle of a game?
         val rangeToSearch = if (unit.civ.cities.isEmpty() && unit.civ.gameInfo.turns < 4) (3 - unit.civ.gameInfo.turns).coerceAtLeast(1) else null
-        
+
         // It's possible that we'll see a tile "over the sea" that's better than the tiles close by, but that's not a reason to abandon the close tiles!
         // Also this lead to some routing problems, see https://github.com/yairm210/Unciv/issues/3653
         val bestTilesInfo = CityLocationTileRanker.getBestTilesToFoundCity(unit, rangeToSearch)
@@ -135,12 +135,12 @@ object SpecificUnitAutomation {
                 && (bestTilesInfo.bestTile == null || bestTilesInfo.tileRankMap[unit.getTile()]!! >= bestTilesInfo.tileRankMap[bestTilesInfo.bestTile]!! - 10)) {
                 bestCityLocation = unit.getTile()
         }
-        
+
         //Shortcut, if the best tile is nearby than lets just take it
         if (bestCityLocation == null && bestTilesInfo.bestTile != null && unit.movement.getShortestPath(bestTilesInfo.bestTile!!).size in 1..3) {
             bestCityLocation = bestTilesInfo.bestTile
         }
-        
+
         if (bestCityLocation == null) {
             // Find the best tile that is within
             bestCityLocation = bestTilesInfo.tileRankMap.filter { bestTilesInfo.bestTile == null || it.value >= bestTilesInfo.tileRankMap[bestTilesInfo.bestTile]!! - 5 }.asSequence().sortedByDescending { it.value }.firstOrNull {
