@@ -1775,7 +1775,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Conditional
 
-??? example  "&lt;for [nationFilter]&gt;"
+??? example  "&lt;for [civFilter]&gt;"
 	Example: "&lt;for [City-States]&gt;"
 
 	Applicable to: Conditional

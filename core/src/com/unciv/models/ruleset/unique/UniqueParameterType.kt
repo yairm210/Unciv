@@ -183,6 +183,15 @@ enum class UniqueParameterType(
         }
     },
 
+    CivFilter("civFilter", Constants.cityStates) {
+        private val knownValues = setOf("AI", "Human")
+
+        override fun getErrorSeverity(parameterText: String, ruleset: Ruleset): UniqueType.UniqueParameterErrorSeverity? {
+            if (parameterText in knownValues) return null
+            return NationFilter.getErrorSeverity(parameterText, ruleset)
+        }
+    },
+
     /** Implemented by [Nation.matchesFilter][com.unciv.models.ruleset.Building.matchesFilter] */
     NationFilter("nationFilter", Constants.cityStates) {
         private val knownValues = setOf(Constants.cityStates, "Major", "All")

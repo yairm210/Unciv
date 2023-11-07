@@ -503,7 +503,7 @@ open class Tile : IsPartOfGameInfoSerialization {
             in terrainFeatures -> true
             else -> {
                 if (terrainUniqueMap.getUniques(filter).any()) return true
-                if (getOwner()?.nation?.matchesFilter(filter) == true) return true
+                if (getOwner()?.matchesFilter(filter) == true) return true
 
                 // Resource type check is last - cannot succeed if no resource here
                 if (resource == null) return false

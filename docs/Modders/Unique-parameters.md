@@ -9,13 +9,15 @@ These are split into two categories:
 
 Note that all of these are case-sensitive!
 
-## nationFilter
+## civFilter
 
-Allows filtering for specific nations.
+Allows filtering for specific civs.
 
 - `All`
 - `City-states`
 - `Major`
+- `Human`
+- `AI`
 - Nation name
 - A unique a Nation has (verbatim, no placeholders)
 
