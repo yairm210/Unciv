@@ -59,6 +59,9 @@ class TileStatFunctions(val tile: Tile) {
             if (riverTerrain == null)
                 stats.gold++  // Fallback for legacy mods
             else
+                //TODO this is one approach to get these stats in - supporting only the Stats UniqueType.
+                //     Alternatives: append riverTerrain to allTerrains, or append riverTerrain.uniques to
+                //     the Tile's UniqueObjects/UniqueMap (while copying onl<e> base Stats directly here)
                 stats.add(getSingleTerrainStats(riverTerrain!!, stateForConditionals))
         }
 
