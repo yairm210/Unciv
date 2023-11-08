@@ -517,7 +517,7 @@ class GlobalPoliticsOverviewTable(
             for (level in RelationshipLevel.values()) {
                 legend.addLegendRow(level.name, level.color)
             }
-            legend.addLegendRow("Defensive Pact", Color.CYAN)
+            legend.addLegendRow(Constants.defensivePact, Color.CYAN)
             return super.createContentTable()!!.apply {
                 add(legend).grow()
             }
