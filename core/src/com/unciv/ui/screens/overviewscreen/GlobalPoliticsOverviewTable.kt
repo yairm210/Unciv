@@ -1,8 +1,10 @@
 package com.unciv.ui.screens.overviewscreen
 
 import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Group
+import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
@@ -15,6 +17,7 @@ import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.logic.map.HexMath
 import com.unciv.models.ruleset.Policy.PolicyBranchType
+import com.unciv.models.ruleset.nation.getContrastRatio
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.components.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.components.extensions.addBorder
@@ -29,7 +32,9 @@ import com.unciv.ui.components.input.onActivation
 import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.widgets.AutoScrollPane
 import com.unciv.ui.components.widgets.ColorMarkupLabel
+import com.unciv.ui.components.widgets.ShadowedLabel
 import com.unciv.ui.images.ImageGetter
+import com.unciv.ui.popups.AnimatedMenuPopup
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.diplomacyscreen.DiplomacyScreen
 import kotlin.math.roundToInt
@@ -429,6 +434,16 @@ class GlobalPoliticsOverviewTable(
 
         init {
             setSize(freeSize, freeSize)
+
+            // An Image Actor does not respect alpha for its hit area, it's always square, but we want a clickable _circle_
+            // Radius to show legend should be no larger than freeSize / 2.25f - 15f (see below), let's make it a little smaller
+            val clickableArea = ClickableCircle(freeSize / 1.25f - 25f)
+            clickableArea.onActivation {
+                DiagramLegendPopup(stage, this)
+            }
+            clickableArea.center(this)
+            addActor(clickableArea)
+
             val civGroups = HashMap<String, Actor>()
             val civLines = HashMap<String, MutableSet<Actor>>()
             val civCount = undefeatedCivs.count()
@@ -477,6 +492,58 @@ class GlobalPoliticsOverviewTable(
                 }
             }
 
+        }
+    }
+
+    private class DiagramLegendPopup(stage: Stage, diagram: Actor) : AnimatedMenuPopup(stage, diagram.getCenterInStageCoordinates()) {
+        init {
+            touchable = Touchable.enabled
+            onActivation { close() }
+        }
+
+        companion object {
+            private fun Actor.getCenterInStageCoordinates(): Vector2 = localToStageCoordinates(Vector2(width / 2, height / 2))
+
+            const val lineWidth = 3f  // a little thicker than the actual diagram
+            const val lowContrastWidth = 4f
+            const val lineLength = 120f
+        }
+
+        override fun createContentTable(): Table {
+            val legend = Table()
+            legend.background = ImageGetter.getDrawable("OtherIcons/Politics-diagram-bg").tint(Color.WHITE.cpy().apply { a = 0.5f })
+            legend.add("Diagram line colors".toLabel(fontSize = Constants.headingFontSize)).colspan(2).row()
+            legend.addLegendRow("War", Color.RED)
+            for (level in RelationshipLevel.values()) {
+                legend.addLegendRow(level.name, level.color)
+            }
+            legend.addLegendRow("Defensive Pact", Color.CYAN)
+            return super.createContentTable()!!.apply {
+                add(legend).grow()
+            }
+        }
+
+        fun Table.addLegendRow(text: String, color: Color) {
+            // empiric hack to equalize the "visual impact" a little. Afraid is worst at contrast 1.4, Enemy has 9.8
+            val contrast = getContrastRatio(Color.DARK_GRAY, color).toFloat()
+            val width = lineWidth + (lowContrastWidth - lineWidth) / contrast.coerceAtLeast(1f)
+            val line = ImageGetter.getLine(0f, width / 2, lineLength, width / 2, width)
+            line.color = color
+            add(line).size(lineLength, width).padTop(5f)
+            add(ShadowedLabel(text, labelColor = color)).padLeft(5f).padTop(10f).row()
+        }
+    }
+
+    /** An Image Actor does not respect alpha for its hit area, it's always square, but we want a clickable _circle_ */
+    private class ClickableCircle(size: Float) : Group() {
+        val center = Vector2(size / 2, size / 2)
+        val maxDst2 = size * size / 4 // squared radius
+        init {
+            touchable = Touchable.enabled
+            setSize(size, size)
+        }
+        override fun hit(x: Float, y: Float, touchable: Boolean): Actor? {
+            return if (center.dst2(x, y) < maxDst2) this else null
         }
     }
 
