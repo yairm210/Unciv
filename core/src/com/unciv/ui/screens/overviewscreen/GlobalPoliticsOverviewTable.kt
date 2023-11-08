@@ -5,9 +5,7 @@ import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Table
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.utils.Align
-import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
@@ -24,6 +22,7 @@ import com.unciv.ui.components.extensions.addBorder
 import com.unciv.ui.components.extensions.addSeparator
 import com.unciv.ui.components.extensions.addSeparatorVertical
 import com.unciv.ui.components.extensions.center
+import com.unciv.ui.components.extensions.toCheckBox
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
 import com.unciv.ui.components.input.onClick
@@ -77,48 +76,52 @@ class GlobalPoliticsOverviewTable (
 
         val diagramButton = "Show diagram".toTextButton().onClick(::updateDiagram)
 
-        add()
-        addSeparatorVertical(Color.GRAY)
-        add("Civilization Info".toLabel())
-        addSeparatorVertical(Color.GRAY)
-        add("Social policies".toLabel())
-        addSeparatorVertical(Color.GRAY)
-        add("Wonders".toLabel())
-        addSeparatorVertical(Color.GRAY)
-        add(Table().apply {
-            add("Relations".toLabel()).row()
-            add(diagramButton).pad(10f)
-        })
+        fixedContent.apply {
+            add()
+            addSeparatorVertical(Color.GRAY)
+            add("Civilization Info".toLabel())
+            addSeparatorVertical(Color.GRAY)
+            add("Social policies".toLabel())
+            addSeparatorVertical(Color.GRAY)
+            add("Wonders".toLabel())
+            addSeparatorVertical(Color.GRAY)
+            add(Table().apply {
+                add("Relations".toLabel()).row()
+                add(diagramButton).pad(10f)
+            })
+        }
 
         createGlobalPoliticsTable()
     }
 
     private fun createGlobalPoliticsTable() {
         for (civ in sequenceOf(viewingPlayer) + viewingPlayer.diplomacyFunctions.getKnownCivsSorted(includeCityStates = false)) {
-            addSeparator(Color.GRAY)
+            fixedContent.apply {
+                addSeparator(Color.GRAY)
 
-            // civ image
-            add(ImageGetter.getNationPortrait(civ.nation, 100f)).pad(20f)
+                // civ image
+                add(ImageGetter.getNationPortrait(civ.nation, 100f)).pad(20f)
 
-            addSeparatorVertical(Color.GRAY)
+                addSeparatorVertical(Color.GRAY)
 
-            // info about civ
-            add(getCivInfoTable(civ)).pad(20f)
+                // info about civ
+                add(getCivInfoTable(civ)).pad(20f)
 
-            addSeparatorVertical(Color.GRAY)
+                addSeparatorVertical(Color.GRAY)
 
-            // policies
-            add(getPoliciesTable(civ)).pad(20f)
+                // policies
+                add(getPoliciesTable(civ)).pad(20f)
 
-            addSeparatorVertical(Color.GRAY)
+                addSeparatorVertical(Color.GRAY)
 
-            // wonders
-            add(getWondersOfCivTable(civ)).pad(20f)
+                // wonders
+                add(getWondersOfCivTable(civ)).pad(20f)
 
-            addSeparatorVertical(Color.GRAY)
+                addSeparatorVertical(Color.GRAY)
 
-            //politics
-            add(getPoliticsOfCivTable(civ)).pad(20f)
+                //politics
+                add(getPoliticsOfCivTable(civ)).pad(20f)
+            }
         }
     }
 
@@ -187,7 +190,7 @@ class GlobalPoliticsOverviewTable (
         }
         politicsTable.row()
 
-        // defensive pacts and declaration of friendships 
+        // defensive pacts and declaration of friendships
         for (otherCiv in civ.getKnownCivs()) {
             if (civ.diplomacy[otherCiv.civName]?.hasFlag(DiplomacyFlags.DefensivePact) == true) {
                 val friendText = ColorMarkupLabel("Defensive pact with [${getCivName(otherCiv)}]", Color.CYAN)
@@ -232,18 +235,16 @@ class GlobalPoliticsOverviewTable (
         persistableData.showDiagram = true
         val politicsButton = "Show global politics".toTextButton().onClick(::updatePoliticsTable)
 
-        val toggleCityStatesButton: TextButton = Constants.cityStates.toTextButton().apply {
-            onClick {
-                persistableData.includeCityStates = !persistableData.includeCityStates
-                updateDiagram()
-            }
+        val toggleCityStatesCheckBox = "Show City-States".toCheckBox(persistableData.includeCityStates) {
+            persistableData.includeCityStates = it
+            updateDiagram()
         }
 
         val civTableScroll = AutoScrollPane(civTable).apply {
             setOverscroll(false, false)
         }
         val floatingTable = Table().apply {
-            add(toggleCityStatesButton).pad(10f).row()
+            add(toggleCityStatesCheckBox).pad(10f).row()
             add(politicsButton).row()
             add(civTableScroll.addBorder(2f, Color.WHITE)).pad(10f)
         }
@@ -287,11 +288,6 @@ class GlobalPoliticsOverviewTable (
         }
 
         table.add(floatingTable)
-        toggleCityStatesButton.style = if (persistableData.includeCityStates) {
-            BaseScreen.skin.get("negative", TextButton.TextButtonStyle::class.java)
-        } else {
-            BaseScreen.skin.get("positive", TextButton.TextButtonStyle::class.java)
-        }
         civTableScroll.setScrollingDisabled(portraitMode, portraitMode)
     }
 
