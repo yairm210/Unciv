@@ -19,7 +19,8 @@ import kotlin.math.max
 import kotlin.math.sign
 
 enum class RelationshipLevel(val color: Color) {
-    // War is tested separately for the Diplomacy Screen. Colored RED.
+    // DiplomaticStatus.War is tested separately for the Diplomacy Screen. Colored RED.
+    // DiplomaticStatus.DefensivePact - similar. Colored CYAN.
     Unforgivable(Color.FIREBRICK),
     Enemy(Color.YELLOW),
     Afraid(Color(0x5300ffff)),     // HSV(260,100,100)

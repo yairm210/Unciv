@@ -21,9 +21,11 @@ import com.unciv.ui.components.extensions.addBorder
 import com.unciv.ui.components.extensions.addSeparator
 import com.unciv.ui.components.extensions.addSeparatorVertical
 import com.unciv.ui.components.extensions.center
+import com.unciv.ui.components.extensions.equalizeColumns
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
 import com.unciv.ui.components.fonts.Fonts
+import com.unciv.ui.components.input.onActivation
 import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.widgets.AutoScrollPane
 import com.unciv.ui.components.widgets.ColorMarkupLabel
@@ -32,7 +34,7 @@ import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.diplomacyscreen.DiplomacyScreen
 import kotlin.math.roundToInt
 
-class GlobalPoliticsOverviewTable (
+class GlobalPoliticsOverviewTable(
     viewingPlayer: Civilization,
     overviewScreen: EmpireOverviewScreen,
     persistedData: EmpireOverviewTabPersistableData? = null
@@ -66,17 +68,31 @@ class GlobalPoliticsOverviewTable (
 
 
     init {
+        top()
         if (persistableData.showDiagram) updateDiagram()
         else updatePoliticsTable()
     }
 
+    override fun getFixedContent() = fixedContent
+
+    //region Politics Table View
+
     private fun updatePoliticsTable() {
         persistableData.showDiagram = false
-        clear()
-        fixedContent.clear()
+        createGlobalPoliticsHeader()
+        createGlobalPoliticsTable()
+        equalizeColumns(fixedContent, this)
+    }
 
+    /** Clears fixedContent and adds the header cells.
+     *  Needs to stay matched to [createGlobalPoliticsTable].
+     *
+     *  9 Columns: 5 info, 4 separators. First gets an empty header for contend below = civ image
+     */
+    private fun createGlobalPoliticsHeader() = fixedContent.run {
         val diagramButton = "Show diagram".toTextButton().onClick(::updateDiagram)
 
+        clear()
         add()
         addSeparatorVertical(Color.GRAY)
         add("Civilization Info".toLabel())
@@ -86,16 +102,22 @@ class GlobalPoliticsOverviewTable (
         add("Wonders".toLabel())
         addSeparatorVertical(Color.GRAY)
         add(Table().apply {
-            add("Relations".toLabel()).row()
+            add("Relations".toLabel()).padTop(10f).row()
             add(diagramButton).pad(10f)
         })
-
-        createGlobalPoliticsTable()
+        addSeparator(Color.GRAY)
     }
 
+    /** Clears [EmpireOverviewTab]'s main Table and adds data columns/rows.
+     *  Needs to stay matched to [createGlobalPoliticsHeader].
+     */
     private fun createGlobalPoliticsTable() {
+        clear()
+
         for (civ in sequenceOf(viewingPlayer) + viewingPlayer.diplomacyFunctions.getKnownCivsSorted(includeCityStates = false)) {
-            addSeparator(Color.GRAY)
+            // We already have a separator under the fixed header, we only need them here between rows.
+            // This is also the replacement for calling row() explicitly
+            if (cells.size > 0) addSeparator(Color.GRAY)
 
             // civ image
             add(ImageGetter.getNationPortrait(civ.nation, 100f)).pad(20f)
@@ -225,7 +247,8 @@ class GlobalPoliticsOverviewTable (
         return politicsTable
     }
 
-    override fun getFixedContent() = fixedContent
+    //endregion
+    //region Diagram View ("Ball of Yarn")
 
     // Refresh content and determine landscape/portrait layout
     private fun updateDiagram() {
@@ -426,7 +449,7 @@ class GlobalPoliticsOverviewTable (
                 addActor(civGroup)
             }
 
-            for (civ in undefeatedCivs)
+            for (civ in undefeatedCivs) {
                 for (diplomacy in civ.diplomacy.values) {
                     if (diplomacy.otherCiv() !in undefeatedCivs) continue
                     val civGroup = civGroups[civ.civName]!!
@@ -437,7 +460,8 @@ class GlobalPoliticsOverviewTable (
                         startY = civGroup.y + civGroup.height / 2,
                         endX = otherCivGroup.x + otherCivGroup.width / 2,
                         endY = otherCivGroup.y + otherCivGroup.height / 2,
-                        width = 2f)
+                        width = 2f
+                    )
 
                     statusLine.color = if (diplomacy.diplomaticStatus == DiplomaticStatus.War) Color.RED
                     else if (diplomacy.diplomaticStatus == DiplomaticStatus.DefensivePact
@@ -451,6 +475,10 @@ class GlobalPoliticsOverviewTable (
 
                     addActorAt(0, statusLine)
                 }
+            }
+
         }
     }
+
+    //endregion
 }
