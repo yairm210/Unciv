@@ -5,11 +5,19 @@ import com.unciv.logic.map.tile.Tile
 
 class ThreatManager(val civInfo: Civilization) {
 
-    class ClosestEnemyTileData {
-        var distanceToClosestEnemy: Int? = null
-        var distanceToClosestEnemySearched: Int? = null
+    data class ClosestEnemyTileData (
+        // It is guaranteed that there is no enemy within a radius of D-1
+        // The enemy that we saw might have been killed 
+        // so we have to check the tileWithEnemy to see if we need to search again
+        var distanceToClosestEnemy: Int? = null,
+        // The farthest radius in which we have checked all the tiles for enemies
+        // A value of 2 means there are no enemies in a radius of 2
+        var distanceSearched: Int,
+        // Stores the location of the enemy that we saw
+        // This allows us to quickly check if they are still alive
+        // and if we should search farther
         var tileWithEnemy: Tile? = null
-    }
+    )
 
     @Transient
     val distanceToClosestEnemyTiles = HashMap<Tile, ClosestEnemyTileData>()
@@ -20,26 +28,40 @@ class ThreatManager(val civInfo: Civilization) {
      * Since it is called each turn each subsequent call is essentially free
      */
     fun getDistanceToEnemyUnit(tile: Tile, maxDist: Int, takeLargerValues: Boolean = true): Int {
-        if (distanceToClosestEnemyTiles.containsKey(tile)) {
-            return if ((takeLargerValues || distanceToClosestEnemyTiles[tile]!!.distanceToClosestEnemy!! < maxDist))
-                distanceToClosestEnemyTiles[tile]!!.distanceToClosestEnemy!!
-            // In some cases we might rely on every distance farther than maxDist being the same
-            else 500000
+        val tileData = distanceToClosestEnemyTiles[tile]
+        // Needs to be a high value, but not the max value so we can still add to it. Example: nextTurnAutomation sorting
+        val notFoundDistance = 500000
+        var minDistanceToSearch = 1
+        // Look if we can return the cache or if we can reduce our search
+        if (tileData != null) {
+            if (tileData.distanceToClosestEnemy == null) {
+                if (tileData.distanceSearched >= maxDist)
+                    return notFoundDistance
+                // Else, we need to search more we didn't search as far as we are looking for now
+            } else {
+                if (tileData.distanceToClosestEnemy!! <= maxDist || takeLargerValues) {
+                    if (doesTileHaveEnemy(tileData.tileWithEnemy!!))
+                        return tileData.distanceToClosestEnemy!!
+                    // Else, we need to search more because the enemy found is now gone
+                } else {
+                    return notFoundDistance
+                }
+            }
+            // Only search the tiles that we haven't searched yet
+            minDistanceToSearch = tileData.distanceSearched + 1
         }
 
-        // Needs to be a high value, but not the max value so we can still add to it
-        // For example in nextTurnAutomation sorting 
-        var distToClosesestEnemy = 500000
-
-        for (i in 1..maxDist) {
+        // Search for nearby enemies and store the results
+        for (i in minDistanceToSearch..maxDist) {
             for (searchTile in tile.getTilesAtDistance(i)) {
                 if (doesTileHaveEnemy(searchTile)) {
-                    distToClosesestEnemy = i
-                    break
+                    distanceToClosestEnemyTiles[tile] = ClosestEnemyTileData(i, i-1, searchTile)
+                    return i
                 }
             }
         }
-        return distToClosesestEnemy
+        distanceToClosestEnemyTiles[tile] = ClosestEnemyTileData(null, maxDist, null)
+        return notFoundDistance
     }
 
     /**
