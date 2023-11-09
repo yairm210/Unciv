@@ -39,13 +39,15 @@ import com.unciv.ui.components.widgets.AutoScrollPane as ScrollPane
  * Creates the diplomacy screen for [viewingCiv].
  *
  * When [selectCiv] is given and [selectTrade] is not, that Civilization is selected as if clicked on the left side.
+ * When [selectCiv] is given and [selectTrade] is not but [showTrade] is set, the [TradeTable] for that Civilization is shown.
  * When [selectCiv] and [selectTrade] are supplied, that Trade for that Civilization is selected, used for the counter-offer option from `TradePopup`.
  * Note calling this with [selectCiv] a City State and [selectTrade] supplied is **not allowed**.
  */
 class DiplomacyScreen(
     internal val viewingCiv: Civilization,
     private val selectCiv: Civilization? = null,
-    private val selectTrade: Trade? = null
+    private val selectTrade: Trade? = null,
+    private val showTrade: Boolean = selectTrade != null
 ): BaseScreen(), RecreateOnResize {
     companion object {
         private const val nationIconSize = 100f
@@ -77,9 +79,10 @@ class DiplomacyScreen(
         stage.addActor(closeButton) // This must come after the split pane so it will be above, that the button will be clickable
 
         if (selectCiv != null) {
-            if (selectTrade != null) {
+            if (showTrade) {
                 val tradeTable = setTrade(selectCiv)
-                tradeTable.tradeLogic.currentTrade.set(selectTrade)
+                if (selectTrade != null)
+                    tradeTable.tradeLogic.currentTrade.set(selectTrade)
                 tradeTable.offerColumnsTable.update()
             } else
                 updateRightSide(selectCiv)
@@ -304,5 +307,5 @@ class DiplomacyScreen(
         positionCloseButton()
     }
 
-    override fun recreate(): BaseScreen = DiplomacyScreen(viewingCiv, selectCiv, selectTrade)
+    override fun recreate(): BaseScreen = DiplomacyScreen(viewingCiv, selectCiv, selectTrade, showTrade)
 }
