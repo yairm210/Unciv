@@ -37,25 +37,23 @@ class ThreatManager(val civInfo: Civilization) {
             if (tileData.distanceToClosestEnemy == null) {
                 if (tileData.distanceSearched >= maxDist)
                     return notFoundDistance
-                // Else, we need to search more we didn't search as far as we are looking for now
-            } else {
-                if (tileData.distanceToClosestEnemy!! <= maxDist || takeLargerValues) {
-                    if (doesTileHaveEnemy(tileData.tileWithEnemy!!))
-                        return tileData.distanceToClosestEnemy!!
-                    // Else, we need to search more because the enemy found is now gone
-                } else {
-                    return notFoundDistance
-                }
+                // else: we need to search more we didn't search as far as we are looking for now
+            } else if (doesTileHaveEnemy(tileData.tileWithEnemy!!)) {
+                // The enemy is still there
+                return if (tileData.distanceToClosestEnemy!! <= maxDist || takeLargerValues)
+                    tileData.distanceToClosestEnemy!!
+                else notFoundDistance
             }
             // Only search the tiles that we haven't searched yet
-            minDistanceToSearch = tileData.distanceSearched + 1
+            minDistanceToSearch = (tileData.distanceSearched + 1).coerceAtLeast(1)
         }
 
         // Search for nearby enemies and store the results
         for (i in minDistanceToSearch..maxDist) {
             for (searchTile in tile.getTilesAtDistance(i)) {
                 if (doesTileHaveEnemy(searchTile)) {
-                    distanceToClosestEnemyTiles[tile] = ClosestEnemyTileData(i, i-1, searchTile)
+                    // We have only completely searched a radius of  i - 1 
+                    distanceToClosestEnemyTiles[tile] = ClosestEnemyTileData(i, i - 1, searchTile)
                     return i
                 }
             }
