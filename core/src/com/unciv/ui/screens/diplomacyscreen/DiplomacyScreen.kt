@@ -54,9 +54,20 @@ class DiplomacyScreen(
         private const val nationIconPad = 10f
     }
 
-    private val leftSideTable = Table().apply { defaults().pad(nationIconPad) }
+    private val highlightColor: Color = clearColor.cpy().lerp(skin.getColor("color"), 0.333f)
+
+    private val leftSideTable = Table().apply {
+        background = skinStrings.getUiBackground("DiplomacyScreen/LeftSide", tintColor = clearColor)
+    }
     private val leftSideScroll = ScrollPane(leftSideTable)
-    internal val rightSideTable = Table()
+
+    private var highlightedCivButton: Table? = null
+    private val highlightBackground = skinStrings.getUiBackground("DiplomacyScreen/SelectedCiv", tintColor = highlightColor)
+
+    internal val rightSideTable = Table().apply {
+        background = skinStrings.getUiBackground("DiplomacyScreen/RightSide", tintColor = highlightColor)
+    }
+
     private val closeButton = Constants.close.toTextButton()
 
     internal fun isNotPlayersTurn() = !GUI.isAllowedChangeState()
@@ -95,7 +106,7 @@ class DiplomacyScreen(
 
     internal fun updateLeftSideTable(selectCiv: Civilization?) {
         leftSideTable.clear()
-        leftSideTable.add().padBottom(60f).row()  // room so the close button does not cover the first
+        leftSideTable.add().padBottom(70f).row()  // room so the close button does not cover the first
 
         var selectCivY = 0f
 
@@ -138,11 +149,20 @@ class DiplomacyScreen(
             }
 
             val civNameLabel = civ.civName.toLabel(hideIcons = true)
-            leftSideTable.add(civIndicator).row()
-            leftSideTable.add(civNameLabel).padBottom(20f).row()
 
-            civIndicator.onClick { updateRightSide(civ) }
-            civNameLabel.onClick { updateRightSide(civ) }
+            // The wrapper serves only to highlight the selected civ better
+            val civButton = Table().apply {
+                defaults().pad(nationIconPad)
+                add(civIndicator).row()
+                add(civNameLabel).row()
+                onClick {
+                    updateRightSide(civ)
+                    highlightCiv(this)
+                }
+                if (civ == selectCiv) highlightCiv(this)
+            }
+
+            leftSideTable.add(civButton).padBottom(20f - nationIconPad).growX().row()
         }
 
         if (selectCivY != 0f) {
@@ -150,6 +170,12 @@ class DiplomacyScreen(
             leftSideScroll.scrollY = selectCivY + (nationIconSize + 2 * nationIconPad - stage.height) / 2
             leftSideScroll.updateVisualScroll()
         }
+    }
+
+    private fun highlightCiv(civButton: Table) {
+        highlightedCivButton?.background = null
+        civButton.background = highlightBackground
+        highlightedCivButton = civButton
     }
 
     internal fun updateRightSide(otherCiv: Civilization) {
@@ -162,10 +188,8 @@ class DiplomacyScreen(
         )).height(stage.height)
     }
 
-    //region City State Diplomacy
-
-    //endregion
     //region Major Civ Diplomacy
+
     internal fun setTrade(civ: Civilization): TradeTable {
         rightSideTable.clear()
         val tradeTable = TradeTable(civ, this)

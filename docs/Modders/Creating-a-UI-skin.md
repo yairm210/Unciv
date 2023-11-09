@@ -55,6 +55,9 @@ These shapes are used all over Unciv and can be replaced to make a lot of UI ele
 | CityScreen/ConstructionInfoTable/ | Background | null | |
 | CityScreen/ConstructionInfoTable/ | SelectedConstructionTable | null | |
 | CivilopediaScreen/ | EntryButton | null | |
+| DiplomacyScreen/ | LeftSide | null | |
+| DiplomacyScreen/ | RightSide | null | |
+| DiplomacyScreen/ | SelectedCiv | null | |
 | General/ | AnimatedMenu | roundedEdgeRectangle | |
 | General/ | Border | null | |
 | General/ | ExpanderTab | null | |
