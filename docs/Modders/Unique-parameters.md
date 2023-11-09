@@ -16,8 +16,8 @@ Allows filtering for specific civs.
 - `All`
 - `City-states`
 - `Major`
-- `Human`
-- `AI`
+- `Human player`
+- `AI player`
 - Nation name
 - A unique a Nation has (verbatim, no placeholders)
 

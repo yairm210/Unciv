@@ -492,8 +492,8 @@ class Civilization : IsPartOfGameInfoSerialization {
 
     fun matchesFilter(filter: String): Boolean {
         return when (filter){
-            "Human" -> isHuman()
-            "AI" -> isAI()
+            "Human player" -> isHuman()
+            "AI player" -> isAI()
             else -> nation.matchesFilter(filter)
         }
     }
