@@ -259,7 +259,7 @@ object UnitAutomation {
         // Precondition: This must be a military unit
         if (unit.isCivilian()) return false
         // Better to do a more healing oriented move then
-        if (unit.getDistanceToEnemyUnit(6, true) > 4) return false
+        if (unit.civ.threatManager.getDistanceToEnemyUnit(unit.getTile(),6, true) > 4) return false
         
         if (unit.baseUnit.isAirUnit()) {
             return false
@@ -269,12 +269,13 @@ object UnitAutomation {
         val swapableTiles = unitDistanceToTiles.keys.filter { it.militaryUnit != null && it.militaryUnit!!.owner == unit.owner}.reversed()
         for (swapTile in swapableTiles) {
             val otherUnit = swapTile.militaryUnit!!
+            val ourDistanceToClosestEnemy = unit.civ.threatManager.getDistanceToEnemyUnit(unit.getTile(),6, false)
             if (otherUnit.health > 80 
-                && unit.getDistanceToEnemyUnit(6, false) < otherUnit.getDistanceToEnemyUnit(6,false)) {
+                && ourDistanceToClosestEnemy < otherUnit.civ.threatManager.getDistanceToEnemyUnit(otherUnit.getTile(),6,false)) {
                 if (otherUnit.baseUnit.isRanged()) {
                     // Don't swap ranged units closer than they have to be
                     val range = otherUnit.baseUnit.range
-                    if (unit.getDistanceToEnemyUnit(6) < range)
+                    if (ourDistanceToClosestEnemy < range)
                         continue
                 }
                 if (unit.movement.canUnitSwapTo(swapTile)) { 
