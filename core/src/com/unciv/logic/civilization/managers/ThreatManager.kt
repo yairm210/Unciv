@@ -8,6 +8,7 @@ class ThreatManager(val civInfo: Civilization) {
     class ClosestEnemyTileData {
         var distanceToClosestEnemy: Int? = null
         var distanceToClosestEnemySearched: Int? = null
+        var tileWithEnemy: Tile? = null
     }
 
     @Transient
@@ -26,27 +27,32 @@ class ThreatManager(val civInfo: Civilization) {
             else 500000
         }
 
-        fun tileHasEnemyCity(tile: Tile): Boolean = tile.isExplored(civInfo)
-            && tile.isCityCenter()
-            && tile.getCity()!!.civ.isAtWarWith(civInfo)
-
-        fun tileHasEnemyMilitaryUnit(tile: Tile): Boolean = tile.isVisible(civInfo)
-            && tile.militaryUnit != null
-            && tile.militaryUnit!!.civ.isAtWarWith(civInfo)
-            && !tile.militaryUnit!!.isInvisible(civInfo)
-
         // Needs to be a high value, but not the max value so we can still add to it
         // For example in nextTurnAutomation sorting 
         var distToClosesestEnemy = 500000
 
         for (i in 1..maxDist) {
             for (searchTile in tile.getTilesAtDistance(i)) {
-                if (tileHasEnemyCity(searchTile) || tileHasEnemyMilitaryUnit(searchTile)) {
+                if (doesTileHaveEnemy(searchTile)) {
                     distToClosesestEnemy = i
                     break
                 }
             }
         }
         return distToClosesestEnemy
+    }
+
+    /**
+     * Returns true if the tile has a visible enemy, otherwise returns false
+     */
+    fun doesTileHaveEnemy(tile:Tile): Boolean {
+        if (!tile.isExplored(civInfo)) return false
+        if (tile.isCityCenter() && tile.getCity()!!.civ.isAtWarWith(civInfo)) return true
+        if (!tile.isVisible(civInfo)) return false
+        if (tile.militaryUnit != null 
+            && tile.militaryUnit!!.civ.isAtWarWith(civInfo)
+            && !tile.militaryUnit!!.isInvisible(civInfo))
+            return true
+        return false
     }
 }
