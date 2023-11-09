@@ -511,7 +511,7 @@ class GlobalPoliticsOverviewTable(
 
         override fun createContentTable(): Table {
             val legend = Table()
-            legend.background = ImageGetter.getDrawable("OtherIcons/Politics-diagram-bg").tint(Color.WHITE.cpy().apply { a = 0.5f })
+            legend.background = ImageGetter.getDrawable("OtherIcons/Politics-diagram-bg")
             legend.add("Diagram line colors".toLabel(fontSize = Constants.headingFontSize)).colspan(2).row()
             legend.addLegendRow("War", Color.RED)
             for (level in RelationshipLevel.values()) {
