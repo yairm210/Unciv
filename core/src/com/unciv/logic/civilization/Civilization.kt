@@ -490,6 +490,13 @@ class Civilization : IsPartOfGameInfoSerialization {
         yieldAll(gameInfo.ruleset.globalUniques.uniqueMap.getTriggeredUniques(trigger, stateForConditionals))
     }
 
+    fun matchesFilter(filter: String): Boolean {
+        return when (filter){
+            "Human player" -> isHuman()
+            "AI player" -> isAI()
+            else -> nation.matchesFilter(filter)
+        }
+    }
 
     fun shouldOpenTechPicker(): Boolean {
         if (!tech.canResearchTech()) return false
