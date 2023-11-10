@@ -38,6 +38,7 @@ import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.mainmenuscreen.MainMenuScreen
 import com.unciv.ui.screens.savescreens.LoadGameScreen
 import com.unciv.ui.screens.worldscreen.PlayerReadyScreen
+import com.unciv.ui.screens.worldscreen.UndoHandler.Companion.clearUndoCheckpoints
 import com.unciv.ui.screens.worldscreen.WorldMapHolder
 import com.unciv.ui.screens.worldscreen.WorldScreen
 import com.unciv.ui.screens.worldscreen.unit.UnitTable
@@ -109,6 +110,11 @@ object GUI {
 
     fun getSelectedPlayer(): Civilization {
         return UncivGame.Current.worldScreen!!.selectedCiv
+    }
+
+    /** Disable Undo (as in: forget the way back, but allow future undo checkpoints) */
+    fun clearUndoCheckpoints() {
+        UncivGame.Current.worldScreen?.clearUndoCheckpoints()
     }
 
     private var keyboardAvailableCache: Boolean? = null
@@ -539,7 +545,7 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
 
     companion object {
         //region AUTOMATICALLY GENERATED VERSION DATA - DO NOT CHANGE THIS REGION, INCLUDING THIS COMMENT
-        val VERSION = Version("4.8.15", 925)
+        val VERSION = Version("4.8.17", 927)
         //endregion
 
         lateinit var Current: UncivGame

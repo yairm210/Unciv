@@ -104,10 +104,6 @@ class CityConstructions : IsPartOfGameInfoSerialization {
     fun getConstructableUnits() = city.getRuleset().units.values
         .asSequence().filter { it.isBuildable(this) }
 
-    private fun getBasicStatBuildings(stat: Stat) = city.getRuleset().buildings.values
-        .asSequence()
-        .filter { !it.isAnyWonder() && it.replaces == null && it[stat] > 0f }
-
     /**
      * @return [Stats] provided by all built buildings in city plus the bonus from Library
      */
@@ -298,9 +294,9 @@ class CityConstructions : IsPartOfGameInfoSerialization {
     }
 
     fun cheapestStatBuilding(stat: Stat): Building? {
-        return getBasicStatBuildings(stat)
-            .map { city.civ.getEquivalentBuilding(it) }
-            .filter { it.isBuildable(this) || isBeingConstructedOrEnqueued(it.name) }
+        return city.getRuleset().buildings.values
+            .filter { !it.isAnyWonder() && it.isStatRelated(stat) &&
+                (it.isBuildable(this) || isBeingConstructedOrEnqueued(it.name)) }
             .minByOrNull { it.cost }
     }
 

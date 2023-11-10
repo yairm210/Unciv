@@ -21,6 +21,7 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
     /** This is so the heavy regex-based parsing is only activated once per unique, instead of every time it's called
      *  - for instance, in the city screen, we call every tile unique for every tile, which can lead to ANRs */
     val placeholderText = text.getPlaceholderText()
+    /** Does not include conditional params */
     val params = text.getPlaceholderParameters()
     val type = UniqueType.uniqueTypeMap[placeholderText]
 
@@ -37,11 +38,13 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
             || conditionals.any { it.type == UniqueType.ConditionalTimedUnique }
         )
 
+    /** Includes conditional params */
     val allParams = params + conditionals.flatMap { it.params }
 
     val isLocalEffect = params.contains("in this city") || conditionals.any { it.type == UniqueType.ConditionalInThisCity }
 
     fun hasFlag(flag: UniqueFlag) = type != null && type.flags.contains(flag)
+    fun isHiddenToUsers() = hasFlag(UniqueFlag.HiddenToUsers) || conditionals.any { it.type == UniqueType.ConditionalHideUniqueFromUsers }
 
     fun hasTriggerConditional(): Boolean {
         if (conditionals.none()) return false
@@ -122,7 +125,7 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
             val unique = Unique(it)
             val errors = UniqueValidator(ruleset).checkUnique(
                 unique, true, null,
-                UniqueType.UniqueComplianceErrorSeverity.RulesetSpecific
+                true
             )
             errors.isEmpty()
         }
@@ -202,6 +205,7 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
         return when (condition.type) {
             // These are 'what to do' and not 'when to do' conditionals
             UniqueType.ConditionalTimedUnique -> true
+            UniqueType.ConditionalHideUniqueFromUsers -> true  // allowed to be attached to any Unique to hide it, no-op otherwise
 
             UniqueType.ConditionalChance -> stateBasedRandom.nextFloat() < condition.params[0].toFloat() / 100f
             UniqueType.ConditionalBeforeTurns -> checkOnCiv { gameInfo.turns < condition.params[0].toInt() }

@@ -121,19 +121,19 @@ class MusicController {
 
     private var musicTimer: Timer? = null
 
-    private enum class ControllerState(val canPause: Boolean = false) {
+    private enum class ControllerState(val canPause: Boolean = false, val showTrack: Boolean = false) {
         /** Own timer stopped, if using the HardenedGdxAudio callback just do nothing */
         Idle,
         /** Loop will release everything and go [Idle] if it encounters this state. */
         Cleanup,
         /** Play a track to its end, then silence for a while, then choose another track */
-        Playing(true),
+        Playing(true, true),
         /** Play a track to its end, then [Cleanup] */
-        PlaySingle(true),
+        PlaySingle(true, true),
         /** Wait for a while in silence to start next track */
         Silence(true),
         /** Music fades to pause or is paused. Continue with chooseTrack or resume. */
-        Pause,
+        Pause(showTrack = true),
         /** Fade out then [Cleanup] */
         Shutdown
     }
@@ -168,7 +168,7 @@ class MusicController {
 
     /** @return the path of the playing track or empty string if none playing */
     private fun currentlyPlaying(): String =
-        if (state.canPause) musicHistory.lastOrNull() ?: ""
+        if (state.showTrack) musicHistory.lastOrNull() ?: ""
         else ""
 
     /** Registers a callback that will be called with the new track every time it changes.

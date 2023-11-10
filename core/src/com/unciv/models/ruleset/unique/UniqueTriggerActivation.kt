@@ -343,11 +343,11 @@ object UniqueTriggerActivation {
             }
 
             UniqueType.OneTimeProvideResources -> {
-                val amount = unique.params[0].toInt()
                 val resourceName = unique.params[1]
                 val resource = ruleSet.tileResources[resourceName] ?: return false
                 if (!resource.isStockpiled()) return false
 
+                val amount = unique.params[0].toInt()
                 civInfo.resourceStockpiles.add(resourceName, amount)
 
                 val notificationText = getNotificationText(notification, triggerNotificationText,
@@ -359,11 +359,11 @@ object UniqueTriggerActivation {
             }
 
             UniqueType.OneTimeConsumeResources -> {
-                val amount = unique.params[0].toInt()
                 val resourceName = unique.params[1]
                 val resource = ruleSet.tileResources[resourceName] ?: return false
                 if (!resource.isStockpiled()) return false
 
+                val amount = unique.params[0].toInt()
                 civInfo.resourceStockpiles.add(resourceName, -amount)
 
                 val notificationText = getNotificationText(notification, triggerNotificationText,

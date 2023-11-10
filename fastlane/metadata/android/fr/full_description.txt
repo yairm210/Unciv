@@ -2,13 +2,11 @@ Une réinterprétation open-source du plus célèbre jeu de gestion de civilisat
 
 Bâtissez votre empire, recherchez des technologies, étendez vos villes et éliminez vos adversaires!
 
-Des suggestions? Des bugs? La liste des sujets ouverts se trouve sur <a href="https://github.com/yairm210/Unciv/issues">la page Github - Issues</a>. Toute aide est la bienvenue!
+Des suggestions? Des bugs? Envie de contribuer? La liste des sujets ouverts se trouve sur https://github.com/yairm210/Unciv/issues .
 
-Des questions? Des commentaires? Ou juste du temps libre? Venez discuter avec nous sur <a href="https://discord.gg/bjrB4Xw">le Discord d'Unciv</a>.
+Des questions? Des commentaires? Rejoignez-nous sur le Discord d'Unciv https://discord.gg/bjrB4Xw ;)
 
-Vous souhaitez aider à la traduction du jeu dans votre langue? Suivez les instructions de <a href="https://yairm210.github.io/Unciv/Other/Translating">l'article wiki</a> destiné aux traducteurs.
-
-Le codage Kotlin ou Java n'a aucun secret pour vous? N'hésitez pas à participer au développement sur <a href="https://github.com/yairm210/Unciv">la page Github</a>.
+Vous souhaitez participer à la traduction du jeu dans votre langue? Suivez les instructions sur https://yairm210.github.io/Unciv/Other/Translating/ .
 
 Le monde n'attend plus que vous! Bâtirez-vous une civilisation capable de résister au passage du temps?
 

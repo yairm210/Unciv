@@ -9,7 +9,6 @@ import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.ruleset.unique.LocalUniqueCache
 import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.Unique
-import com.unciv.models.ruleset.unique.UniqueFlag
 import com.unciv.models.ruleset.unique.UniqueParameterType
 import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueType
@@ -21,6 +20,7 @@ import com.unciv.ui.components.extensions.getConsumesAmountString
 import com.unciv.ui.components.extensions.getNeedMoreAmountString
 import com.unciv.ui.components.extensions.toPercent
 import com.unciv.ui.components.fonts.Fonts
+import com.unciv.ui.objectdescriptions.uniquesToCivilopediaTextLines
 import com.unciv.ui.screens.civilopediascreen.FormattedLine
 
 
@@ -100,7 +100,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
      * @param filterUniques If provided, include only uniques for which this function returns true.
      */
     private fun getUniquesStringsWithoutDisablers(filterUniques: ((Unique) -> Boolean)? = null) = getUniquesStrings {
-            !it.hasFlag(UniqueFlag.HiddenToUsers)
+            !it.isHiddenToUsers()
             && filterUniques?.invoke(it) ?: true
         }
 
@@ -262,15 +262,8 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
 
         if (replacementTextForUniques.isNotEmpty()) {
             textList += FormattedLine(replacementTextForUniques)
-        } else if (uniques.isNotEmpty()) {
-            for (unique in uniqueObjects) {
-                if (unique.hasFlag(UniqueFlag.HiddenToUsers)) continue
-                if (unique.type == UniqueType.ConsumesResources) {
-                    textList += FormattedLine(unique.text, link = "Resources/${unique.params[1]}", color = "#F42")
-                    continue
-                }
-                textList += FormattedLine(unique)
-            }
+        } else {
+            uniquesToCivilopediaTextLines(textList, colorConsumesResources = true)
         }
 
         if (!stats.isEmpty()) {

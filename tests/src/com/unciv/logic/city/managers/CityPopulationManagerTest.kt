@@ -18,7 +18,6 @@ import org.junit.runner.RunWith
 class CityPopulationManagerTest {
 
     private lateinit var civ: Civilization
-
     private lateinit var city: City
 
     private val testGame = TestGame()
@@ -190,7 +189,7 @@ class CityPopulationManagerTest {
     }
 
     @Test
-    fun `should automatically assing new pop to job`() {
+    fun `should automatically assign new pop to job`() {
         // given
         city.population.foodStored = 14
 
@@ -202,12 +201,16 @@ class CityPopulationManagerTest {
         assertEquals(0, city.population.getFreePopulation())
     }
 
+
     @Test
-    fun `should automatically assing new pop to best job`() {
+    fun `should automatically assign new pop to best job`() {
         // given
+        city.workedTiles.clear()
+        city.workedTiles.add(Vector2(-1f, 0f))
         city.lockedTiles.add(Vector2(-1f, 0f)) // force the first pop to work on a specific tile to avoid being reassigned
         val goodTile = testGame.setTileTerrain(Vector2.X, Constants.grassland)
         goodTile.improvement = "Farm"
+
         assertFalse(city.workedTiles.contains(goodTile.position))
 
         city.population.foodStored = 14
@@ -221,9 +224,11 @@ class CityPopulationManagerTest {
     }
 
     @Test
-    fun `should automatically assing new pop to best job according to city focus`() {
+    fun `should automatically assign new pop to best job according to city focus`() {
         // given
         city.cityAIFocus = CityFocus.GoldFocus
+        city.workedTiles.clear()
+        city.workedTiles.add(Vector2(-1f, 0f))
         city.lockedTiles.add(Vector2(-1f, 0f)) // force the first pop to work on a specific tile to avoid being reassigned
         val goodFoodTile = testGame.setTileTerrain(Vector2.X, Constants.grassland)
         goodFoodTile.improvement = "Farm"
@@ -246,9 +251,11 @@ class CityPopulationManagerTest {
     }
 
     @Test
-    fun `should automatically assing new pop to best job with specialists`() {
+    fun `should automatically assign new pop to best job with specialists`() {
         // given
         city.cityAIFocus = CityFocus.GoldFocus
+        city.workedTiles.clear()
+        city.workedTiles.add(Vector2(-1f, 0f))
         city.lockedTiles.add(Vector2(-1f, 0f)) // force the first pop to work on a specific tile to avoid being reassigned
         val specialistBuilding = testGame.createBuilding()
         specialistBuilding.specialistSlots.add("Merchant", 1)

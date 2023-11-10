@@ -5,9 +5,11 @@ import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.managers.ReligionState
 import com.unciv.logic.map.tile.Tile
+import com.unciv.models.Counter
 import com.unciv.models.ruleset.Belief
 import com.unciv.models.ruleset.BeliefType
 import com.unciv.models.ruleset.Victory
+import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
 import kotlin.math.min
@@ -397,6 +399,91 @@ object ReligionAutomation {
 
         return score
     }
+
+
+    internal fun chooseReligiousBeliefs(civInfo: Civilization) {
+        choosePantheon(civInfo)
+        foundReligion(civInfo)
+        enhanceReligion(civInfo)
+        chooseFreeBeliefs(civInfo)
+    }
+
+    private fun choosePantheon(civInfo: Civilization) {
+        if (!civInfo.religionManager.canFoundOrExpandPantheon()) return
+        // So looking through the source code of the base game available online,
+        // the functions for choosing beliefs total in at around 400 lines.
+        // https://github.com/Gedemon/Civ5-DLL/blob/aa29e80751f541ae04858b6d2a2c7dcca454201e/CvGameCoreDLL_Expansion1/CvReligionClasses.cpp
+        // line 4426 through 4870.
+        // This is way too much work for now, so I'll just choose a random pantheon instead.
+        // Should probably be changed later, but it works for now.
+        val chosenPantheon = chooseBeliefOfType(civInfo, BeliefType.Pantheon)
+            ?: return // panic!
+        civInfo.religionManager.chooseBeliefs(
+            listOf(chosenPantheon),
+            useFreeBeliefs = civInfo.religionManager.usingFreeBeliefs()
+        )
+    }
+
+    private fun foundReligion(civInfo: Civilization) {
+        if (civInfo.religionManager.religionState != ReligionState.FoundingReligion) return
+        val availableReligionIcons = civInfo.gameInfo.ruleset.religions
+            .filterNot { civInfo.gameInfo.religions.values.map { religion -> religion.name }.contains(it) }
+        val favoredReligion = civInfo.nation.favoredReligion
+        val religionIcon =
+            if (favoredReligion != null && favoredReligion in availableReligionIcons) favoredReligion
+            else availableReligionIcons.randomOrNull()
+                ?: return // Wait what? How did we pass the checking when using a great prophet but not this?
+
+        civInfo.religionManager.foundReligion(religionIcon, religionIcon)
+
+        val chosenBeliefs = chooseBeliefs(civInfo, civInfo.religionManager.getBeliefsToChooseAtFounding()).toList()
+        civInfo.religionManager.chooseBeliefs(chosenBeliefs)
+    }
+
+    private fun enhanceReligion(civInfo: Civilization) {
+        if (civInfo.religionManager.religionState != ReligionState.EnhancingReligion) return
+        civInfo.religionManager.chooseBeliefs(
+            chooseBeliefs(civInfo, civInfo.religionManager.getBeliefsToChooseAtEnhancing()).toList()
+        )
+    }
+
+    private fun chooseFreeBeliefs(civInfo: Civilization) {
+        if (!civInfo.religionManager.hasFreeBeliefs()) return
+        civInfo.religionManager.chooseBeliefs(
+            chooseBeliefs(civInfo, civInfo.religionManager.freeBeliefsAsEnums()).toList(),
+            useFreeBeliefs = true
+        )
+    }
+
+    private fun chooseBeliefs(civInfo: Civilization, beliefsToChoose: Counter<BeliefType>): HashSet<Belief> {
+        val chosenBeliefs = hashSetOf<Belief>()
+        // The `continue`s should never be reached, but just in case I'd rather have the AI have a
+        // belief less than make the game crash. The `continue`s should only be reached whenever
+        // there are not enough beliefs to choose, but there should be, as otherwise we could
+        // not have used a great prophet to found/enhance our religion.
+        for (belief in BeliefType.values()) {
+            if (belief == BeliefType.None) continue
+            repeat(beliefsToChoose[belief]) {
+                chosenBeliefs.add(
+                    chooseBeliefOfType(civInfo, belief, chosenBeliefs) ?: return@repeat
+                )
+            }
+        }
+        return chosenBeliefs
+    }
+
+    private fun chooseBeliefOfType(civInfo: Civilization, beliefType: BeliefType, additionalBeliefsToExclude: HashSet<Belief> = hashSetOf()): Belief? {
+        return civInfo.gameInfo.ruleset.beliefs.values
+            .filter {
+                (it.type == beliefType || beliefType == BeliefType.Any)
+                    && !additionalBeliefsToExclude.contains(it)
+                    && civInfo.religionManager.getReligionWithBelief(it) == null
+                    && it.getMatchingUniques(UniqueType.OnlyAvailableWhen, StateForConditionals.IgnoreConditionals)
+                    .none { unique -> !unique.conditionalsApply(civInfo) }
+            }
+            .maxByOrNull { ReligionAutomation.rateBelief(civInfo, it) }
+    }
+
 
     //endregion
 }

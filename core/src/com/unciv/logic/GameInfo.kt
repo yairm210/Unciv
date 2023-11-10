@@ -280,6 +280,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
         civilizations.add(it)
         it.gameInfo = this
         it.setNationTransient()
+        it.cache.updateViewableTiles()
         it.setTransients()
     }
 
