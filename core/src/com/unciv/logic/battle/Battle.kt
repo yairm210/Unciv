@@ -212,6 +212,38 @@ object Battle {
         val unitStr = max(defeatedUnit.unit.baseUnit.strength, defeatedUnit.unit.baseUnit.rangedStrength)
         val unitCost = defeatedUnit.unit.baseUnit.cost
 
+        val bonusUniques = getKillUnitPlunderUniques(civUnit, defeatedUnit)
+
+        for (unique in bonusUniques) {
+            if (!defeatedUnit.matchesCategory(unique.params[1])) continue
+
+            val yieldPercent = unique.params[0].toFloat() / 100
+            val defeatedUnitYieldSourceType = unique.params[2]
+            val yieldTypeSourceAmount =
+                if (defeatedUnitYieldSourceType == "Cost") unitCost else unitStr
+            val yieldAmount = (yieldTypeSourceAmount * yieldPercent).toInt()
+
+            val stat = Stat.valueOf(unique.params[3])
+            civUnit.getCivInfo().addStat(stat, yieldAmount)
+        }
+
+        // CS friendship from killing barbarians
+        if (defeatedUnit.getCivInfo().isBarbarian() && !defeatedUnit.isCivilian() && civUnit.getCivInfo().isMajorCiv()) {
+            for (cityState in UncivGame.Current.gameInfo!!.getAliveCityStates()) {
+                if (civUnit.getCivInfo().knows(cityState) && defeatedUnit.unit.threatensCiv(cityState)) {
+                    cityState.cityStateFunctions.threateningBarbarianKilledBy(civUnit.getCivInfo())
+                }
+            }
+        }
+
+        // CS war with major pseudo-quest
+        for (cityState in UncivGame.Current.gameInfo!!.getAliveCityStates()) {
+            cityState.questManager.militaryUnitKilledBy(civUnit.getCivInfo(), defeatedUnit.getCivInfo())
+        }
+    }
+
+    /** See [UniqueType.KillUnitPlunder] for params */
+    private fun getKillUnitPlunderUniques(civUnit: ICombatant, defeatedUnit: MapUnitCombatant): ArrayList<Unique> {
         val bonusUniques = ArrayList<Unique>()
 
         val stateForConditionals = StateForConditionals(civInfo = civUnit.getCivInfo(), ourCombatant = civUnit, theirCombatant = defeatedUnit)
@@ -228,33 +260,7 @@ object Battle {
         if (cityWithReligion != null) {
             bonusUniques.addAll(cityWithReligion.getMatchingUniques(UniqueType.KillUnitPlunderNearCity, stateForConditionals))
         }
-
-        for (unique in bonusUniques) {
-            if (!defeatedUnit.matchesCategory(unique.params[1])) continue
-
-            val yieldPercent = unique.params[0].toFloat() / 100
-            val defeatedUnitYieldSourceType = unique.params[2]
-            val yieldTypeSourceAmount =
-                if (defeatedUnitYieldSourceType == "Cost") unitCost else unitStr
-            val yieldAmount = (yieldTypeSourceAmount * yieldPercent).toInt()
-
-            val stat = Stat.valueOf(unique.params[3])
-            civUnit.getCivInfo().addStat(stat, yieldAmount)
-        }
-
-        // CS friendship from killing barbarians
-        if (defeatedUnit.matchesCategory("Barbarian") && defeatedUnit.matchesCategory("Military") && civUnit.getCivInfo().isMajorCiv()) {
-            for (cityState in UncivGame.Current.gameInfo!!.getAliveCityStates()) {
-                if (civUnit.getCivInfo().knows(cityState) && defeatedUnit.unit.threatensCiv(cityState)) {
-                    cityState.cityStateFunctions.threateningBarbarianKilledBy(civUnit.getCivInfo())
-                }
-            }
-        }
-
-        // CS war with major pseudo-quest
-        for (cityState in UncivGame.Current.gameInfo!!.getAliveCityStates()) {
-            cityState.questManager.militaryUnitKilledBy(civUnit.getCivInfo(), defeatedUnit.getCivInfo())
-        }
+        return bonusUniques
     }
 
 

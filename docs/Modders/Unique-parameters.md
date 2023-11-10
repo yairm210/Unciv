@@ -9,13 +9,15 @@ These are split into two categories:
 
 Note that all of these are case-sensitive!
 
-## nationFilter
+## civFilter
 
-Allows filtering for specific nations.
+Allows filtering for specific civs.
 
 - `All`
 - `City-states`
 - `Major`
+- `Human player`
+- `AI player`
 - Nation name
 - A unique a Nation has (verbatim, no placeholders)
 
@@ -98,7 +100,7 @@ cityFilters allow us to choose the range of cities affected by this unique:
 -   `in City-State cities`
 -   `in cities following this religion` - Should only be used in pantheon/follower uniques for religions
 -   `in all cities in which the majority religion is a major religion`
--   `in all cities in which the majority religion is a enhanced religion`
+-   `in all cities in which the majority religion is an enhanced religion`
 
 ## improvementFilter
 

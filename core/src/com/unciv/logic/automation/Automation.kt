@@ -450,7 +450,7 @@ object Automation {
                     stats.gold
                 else
                     stats.gold / 3 // 3 gold is much worse than 2 production
-
+        rank += stats.happiness * 3
         rank += stats.production
         rank += stats.science
         rank += stats.culture

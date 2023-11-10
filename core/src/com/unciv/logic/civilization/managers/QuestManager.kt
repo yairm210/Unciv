@@ -571,7 +571,8 @@ class QuestManager : IsPartOfGameInfoSerialization {
     private fun notifyAskForAssistance(assignee: Civilization, attackerName: String, unitsToKill: Int, location: Vector2?) {
         if (attackerName == assignee.civName) return  // No "Hey Bob help us against Bob"
         val message = "[${civInfo.civName}] is being attacked by [$attackerName]!" +
-            "Kill [$unitsToKill] of the attacker's military units and they will be immensely grateful."
+            // Space relevant in template!
+            " Kill [$unitsToKill] of the attacker's military units and they will be immensely grateful."
         // Note: that LocationAction pseudo-constructor is able to filter out null location(s), no need for `if`
         assignee.addNotification(message, LocationAction(location), NotificationCategory.Diplomacy, civInfo.civName, "OtherIcons/Quest")
     }

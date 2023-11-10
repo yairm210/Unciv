@@ -17,10 +17,7 @@ import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.tilesets.TileSetCache
 import com.unciv.models.translations.tr
-import com.unciv.ui.components.widgets.AutoScrollPane
-import com.unciv.ui.components.widgets.ExpanderTab
 import com.unciv.ui.components.UncivTextField
-import com.unciv.ui.components.widgets.WrappableLabel
 import com.unciv.ui.components.extensions.addSeparator
 import com.unciv.ui.components.extensions.disable
 import com.unciv.ui.components.extensions.enable
@@ -33,6 +30,9 @@ import com.unciv.ui.components.input.clearActivationActions
 import com.unciv.ui.components.input.keyShortcuts
 import com.unciv.ui.components.input.onActivation
 import com.unciv.ui.components.input.onClick
+import com.unciv.ui.components.widgets.AutoScrollPane
+import com.unciv.ui.components.widgets.ExpanderTab
+import com.unciv.ui.components.widgets.WrappableLabel
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popups.ConfirmPopup
 import com.unciv.ui.popups.Popup
@@ -449,9 +449,7 @@ class ModManagementScreen private constructor(
                     ToastPopup("[$repoName] Downloaded!", this@ModManagementScreen)
                     reloadCachesAfterModChange()
                     UncivGame.Current.translations.tryReadTranslationForCurrentLanguage()
-                    RulesetCache[repoName]?.let {
-                        installedModInfo[repoName] = ModUIData(it, false)
-                    }
+                    updateInstalledModUIData(repoName)
                     refreshInstalledModTable()
                     lastSelectedButton?.let { syncOnlineSelected(repoName, it) }
                     showModDescription(repoName)
@@ -466,6 +464,19 @@ class ModManagementScreen private constructor(
                 }
             }
         }
+    }
+
+    /** Our data on the Mod needs refreshing description after download or update */
+    private fun updateInstalledModUIData(modName: String) {
+        val ruleset = RulesetCache[modName]
+            ?: return  // Bail if download was not actually successful?
+        // When someone marks a Mod as 'permanent audiovisual', then deletes it, then redownloads, that
+        // 'permanent audiovisual' will still be valid - re-evaluate here or remove the setting in the delete code.
+        val isVisual = game.settings.visualMods.contains(modName)
+        val newModUIData = ModUIData(ruleset, isVisual)
+        installedModInfo[modName] = newModUIData
+        // The ModUIData in the actual button is now out of sync, but can be indexed using the new instance
+        modButtons[newModUIData]?.updateUIData(newModUIData)
     }
 
     /** Remove the visual indicators for an 'updated' mod after re-downloading it.

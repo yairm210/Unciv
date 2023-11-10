@@ -50,9 +50,7 @@ class RulesetValidator(val ruleset: Ruleset) {
         /**********************  **********************/
         // e.g. json configs complete and parseable
         // Check for mod or Civ_V_GnK to avoid running the same test twice (~200ms for the builtin assets)
-        if (ruleset.folderLocation != null) {
-            checkTilesetSanity(lines)
-        }
+        if (ruleset.folderLocation != null) checkTilesetSanity(lines)
 
         return lines
     }
@@ -276,10 +274,9 @@ class RulesetValidator(val ruleset: Ruleset) {
             )
                 lines += "Nonexistent unit ${era.startingWorkerUnit} marked as starting unit when starting in ${era.name}"
 
-            if ((era.startingMilitaryUnitCount != 0 || allDifficultiesStartingUnits.contains(
-                    Constants.eraSpecificUnit
-                )) && era.startingMilitaryUnit !in ruleset.units
-            )
+            val grantsStartingMilitaryUnit = era.startingMilitaryUnitCount != 0
+                || allDifficultiesStartingUnits.contains(Constants.eraSpecificUnit)
+            if (grantsStartingMilitaryUnit && era.startingMilitaryUnit !in ruleset.units)
                 lines += "Nonexistent unit ${era.startingMilitaryUnit} marked as starting unit when starting in ${era.name}"
             if (era.researchAgreementCost < 0 || era.startingSettlerCount < 0 || era.startingWorkerCount < 0 || era.startingMilitaryUnitCount < 0 || era.startingGold < 0 || era.startingCulture < 0)
                 lines += "Unexpected negative number found while parsing era ${era.name}"
@@ -310,9 +307,7 @@ class RulesetValidator(val ruleset: Ruleset) {
                 if (!ruleset.technologies.containsKey(prereq))
                     lines += "${tech.name} requires tech $prereq which does not exist!"
 
-
-                if (tech.prerequisites.asSequence().filterNot { it == prereq }
-                        .any { getPrereqTree(it).contains(prereq) }) {
+                if (tech.prerequisites.any { it != prereq && getPrereqTree(it).contains(prereq) }) {
                     lines.add(
                         "No need to add $prereq as a prerequisite of ${tech.name} - it is already implicit from the other prerequisites!",
                         RulesetErrorSeverity.Warning
@@ -334,6 +329,7 @@ class RulesetValidator(val ruleset: Ruleset) {
     ) {
         if (ruleset.terrains.values.none { it.type == TerrainType.Land && !it.impassable })
             lines += "No passable land terrains exist!"
+
         for (terrain in ruleset.terrains.values) {
             for (baseTerrainName in terrain.occursOn) {
                 val baseTerrain = ruleset.terrains[baseTerrainName]
@@ -378,29 +374,19 @@ class RulesetValidator(val ruleset: Ruleset) {
                     RulesetErrorSeverity.Warning
                 )
             }
-            for (unique in improvement.uniqueObjects) {
-                if (unique.type == UniqueType.PillageYieldRandom || unique.type == UniqueType.PillageYieldFixed) {
-                    if (!Stats.isStats(unique.params[0])) continue
-                    val params = Stats.parse(unique.params[0])
-                    if (params.values.any { it < 0 }) lines.add(
-                        "${improvement.name} cannot have a negative value for a pillage yield!",
-                        RulesetErrorSeverity.Error
-                    )
-                }
+            for (unique in improvement.uniqueObjects
+                    .filter { it.type == UniqueType.PillageYieldRandom || it.type == UniqueType.PillageYieldFixed }) {
+                if (!Stats.isStats(unique.params[0])) continue
+                val params = Stats.parse(unique.params[0])
+                if (params.values.any { it < 0 }) lines.add(
+                    "${improvement.name} cannot have a negative value for a pillage yield!",
+                    RulesetErrorSeverity.Error
+                )
             }
-            if ((improvement.hasUnique(
-                    UniqueType.PillageYieldRandom,
-                    StateForConditionals.IgnoreConditionals
-                )
-                    || improvement.hasUnique(
-                    UniqueType.PillageYieldFixed,
-                    StateForConditionals.IgnoreConditionals
-                ))
-                && improvement.hasUnique(
-                    UniqueType.Unpillagable,
-                    StateForConditionals.IgnoreConditionals
-                )
-            ) {
+
+            val hasPillageUnique = improvement.hasUnique(UniqueType.PillageYieldRandom, StateForConditionals.IgnoreConditionals)
+                || improvement.hasUnique(UniqueType.PillageYieldFixed, StateForConditionals.IgnoreConditionals)
+            if (hasPillageUnique && improvement.hasUnique(UniqueType.Unpillagable, StateForConditionals.IgnoreConditionals)) {
                 lines.add(
                     "${improvement.name} has both an `Unpillagable` unique type and a `PillageYieldRandom` or `PillageYieldFixed` unique type!",
                     RulesetErrorSeverity.Warning
@@ -535,38 +521,45 @@ class RulesetValidator(val ruleset: Ruleset) {
         // https://www.w3.org/TR/WCAG20/#visual-audio-contrast-contrast
         val constrastRatio = nation.getContrastRatio()
         if (constrastRatio < 3) {
-            val innerColorLuminance = getRelativeLuminance(nation.getInnerColor())
-            val outerColorLuminance = getRelativeLuminance(nation.getOuterColor())
-
-            val innerLerpColor: Color
-            val outerLerpColor: Color
-
-            if (innerColorLuminance > outerColorLuminance) { // inner is brighter
-                innerLerpColor = Color.WHITE
-                outerLerpColor = Color.BLACK
-            } else {
-                innerLerpColor = Color.BLACK
-                outerLerpColor = Color.WHITE
-            }
+            val suggestedColors = getSuggestedColors(nation)
+            val newOuterColor = suggestedColors.outerColor
+            val newInnerColor = suggestedColors.innerColor
 
             var text = "${nation.name}'s colors do not contrast enough - it is unreadable!"
+            text += "\nSuggested colors: "
+            text += "\n\t\t\"outerColor\": [${(newOuterColor.r * 255).toInt()}, ${(newOuterColor.g * 255).toInt()}, ${(newOuterColor.b * 255).toInt()}],"
+            text += "\n\t\t\"innerColor\": [${(newInnerColor.r * 255).toInt()}, ${(newInnerColor.g * 255).toInt()}, ${(newInnerColor.b * 255).toInt()}],"
 
-            for (i in 1..10) {
-                val newInnerColor = nation.getInnerColor().cpy().lerp(innerLerpColor, 0.05f * i)
-                val newOuterColor = nation.getOuterColor().cpy().lerp(outerLerpColor, 0.05f * i)
-
-                if (getContrastRatio(newInnerColor, newOuterColor) > 3) {
-                    text += "\nSuggested colors: "
-                    text += "\n\t\t\"outerColor\": [${(newOuterColor.r * 255).toInt()}, ${(newOuterColor.g * 255).toInt()}, ${(newOuterColor.b * 255).toInt()}],"
-                    text += "\n\t\t\"innerColor\": [${(newInnerColor.r * 255).toInt()}, ${(newInnerColor.g * 255).toInt()}, ${(newInnerColor.b * 255).toInt()}],"
-                    break
-                }
-            }
-
-            lines.add(
-                text, RulesetErrorSeverity.WarningOptionsOnly
-            )
+            lines.add(text, RulesetErrorSeverity.WarningOptionsOnly)
+            lines.add(text, RulesetErrorSeverity.WarningOptionsOnly)
         }
+    }
+
+    data class SuggestedColors(val innerColor: Color, val outerColor:Color)
+
+    private fun getSuggestedColors(nation: Nation): SuggestedColors {
+        val innerColorLuminance = getRelativeLuminance(nation.getInnerColor())
+        val outerColorLuminance = getRelativeLuminance(nation.getOuterColor())
+
+        val innerLerpColor: Color
+        val outerLerpColor: Color
+
+        if (innerColorLuminance > outerColorLuminance) { // inner is brighter
+            innerLerpColor = Color.WHITE
+            outerLerpColor = Color.BLACK
+        } else {
+            innerLerpColor = Color.BLACK
+            outerLerpColor = Color.WHITE
+        }
+
+
+        for (i in 1..10) {
+            val newInnerColor = nation.getInnerColor().cpy().lerp(innerLerpColor, 0.05f * i)
+            val newOuterColor = nation.getOuterColor().cpy().lerp(outerLerpColor, 0.05f * i)
+
+            if (getContrastRatio(newInnerColor, newOuterColor) > 3) return SuggestedColors(newInnerColor, newOuterColor)
+        }
+        throw Exception("Error getting suggested colors for nation "+nation.name)
     }
 
     private fun addBuildingErrorsRulesetInvariant(

@@ -3,7 +3,7 @@ package com.unciv.logic.trade
 import com.unciv.Constants
 import com.unciv.logic.automation.Automation
 import com.unciv.logic.automation.ThreatLevel
-import com.unciv.logic.automation.civilization.NextTurnAutomation
+import com.unciv.logic.automation.civilization.DiplomacyAutomation
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
@@ -93,7 +93,7 @@ class TradeEvaluation {
 
         return sumOfTheirOffers - sumOfOurOffers
     }
-    
+
     fun evaluateBuyCostWithInflation(offer: TradeOffer, civInfo: Civilization, tradePartner: Civilization): Int {
         if (offer.type != TradeType.Gold && offer.type != TradeType.Gold_Per_Turn)
             return (evaluateBuyCost(offer, civInfo, tradePartner) / getGoldInflation(civInfo)).toInt()
@@ -133,10 +133,10 @@ class TradeEvaluation {
                 val amountToBuyInOffer = min(amountWillingToBuy, offer.amount)
 
                 val canUseForBuildings = civInfo.cities
-                        .any { city -> city.cityConstructions.getBuildableBuildings().any { 
+                        .any { city -> city.cityConstructions.getBuildableBuildings().any {
                             it.getResourceRequirementsPerTurn(StateForConditionals(civInfo, city)).containsKey(offer.name) } }
                 val canUseForUnits = civInfo.cities
-                        .any { city -> city.cityConstructions.getConstructableUnits().any { 
+                        .any { city -> city.cityConstructions.getConstructableUnits().any {
                             it.getResourceRequirementsPerTurn(StateForConditionals(civInfo)).containsKey(offer.name) } }
                 if (!canUseForBuildings && !canUseForUnits) return 0
 
@@ -217,7 +217,7 @@ class TradeEvaluation {
                 return when (offer.name) {
                     // Since it will be evaluated twice, once when they evaluate our offer and once when they evaluate theirs
                     Constants.peaceTreaty -> evaluatePeaceCostForThem(civInfo, tradePartner)
-                    Constants.defensivePact -> if (NextTurnAutomation.wantsToSignDefensivePact(civInfo, tradePartner)) 0
+                    Constants.defensivePact -> if (DiplomacyAutomation.wantsToSignDefensivePact(civInfo, tradePartner)) 0
                         else 100000
                     Constants.researchAgreement -> -offer.amount
                     else -> 1000
@@ -316,7 +316,7 @@ class TradeEvaluation {
         // So this does not scale off to infinity
         return modifier / (goldPerTurn.pow(1.2).coerceAtLeast(0.0) + (1.11f * modifier)) + .1f
     }
-    
+
     /** This code returns a positive value if the city is significantly far away from the capital
      * and given how this method is used this ends up making such cities more expensive. That's how
      * I found it. I'm not sure it makes sense. One might also find arguments why cities closer to

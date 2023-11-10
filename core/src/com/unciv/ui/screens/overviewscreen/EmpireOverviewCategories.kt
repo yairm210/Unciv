@@ -3,14 +3,16 @@ package com.unciv.ui.screens.overviewscreen
 import com.badlogic.gdx.utils.Align
 import com.unciv.logic.civilization.Civilization
 import com.unciv.models.ruleset.tile.ResourceType
-import com.unciv.ui.screens.overviewscreen.EmpireOverviewTab.EmpireOverviewTabPersistableData
 import com.unciv.ui.components.input.KeyCharAndCode
+import com.unciv.ui.screens.overviewscreen.EmpireOverviewTab.EmpireOverviewTabPersistableData
 
 
 /** This controls which Tabs for the [EmpireOverviewScreen] exist and their order.
  *
  *  To add a Tab, build a new [EmpireOverviewTab] subclass and fill out a new entry here, that's all.
- *  Note the enum value's name is used as Tab caption, so if you ever need a non-alphanumeric caption please redesign to include a property for the caption.
+ *  Note the enum value's name is used as Tab caption, so if you ever need a non-alphanumeric caption
+ *  please redesign to include a property for the caption - and don't forget GameSettings.lastOverviewPage
+ *  currently looks for name when applied but uses tab caption when saving.
  */
 enum class EmpireOverviewCategories(
     val iconName: String,

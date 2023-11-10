@@ -25,6 +25,7 @@ class MapUnitCombatant(val unit: MapUnit) : ICombatant {
 
     override fun takeDamage(damage: Int) {
         unit.health -= damage
+        if (unit.health > 100) unit.health = 100 // For cheating modders, e.g. negative tile damage
         if (unit.health < 0) unit.health = 0
         if (isDefeated()) unit.destroy()
     }
