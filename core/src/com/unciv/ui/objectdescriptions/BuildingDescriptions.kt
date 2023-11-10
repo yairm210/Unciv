@@ -103,6 +103,45 @@ object BuildingDescriptions {
         return translatedLines.joinToString("\n").trim()
     }
 
+    /**
+     * Lists differences: how a nation-unique Building compares to its replacement.
+     *
+     * Cost is **is** included.
+     * Result as indented, non-linking [FormattedLine]s
+     *
+     * @param originalBuilding The "standard" Building
+     * @param replacementBuilding The "uniqueTo" Building
+     */
+    fun getDifferences(
+        ruleset: Ruleset, originalBuilding: Building, replacementBuilding: Building
+    ): Sequence<FormattedLine> = sequence {
+        for ((key, value) in replacementBuilding)
+            if (value != originalBuilding[key])
+                yield(FormattedLine( key.name.tr() + " " +"[${value.toInt()}] vs [${originalBuilding[key].toInt()}]".tr(), indent=1))
+
+        if (replacementBuilding.maintenance != originalBuilding.maintenance)
+            yield(FormattedLine("{Maintenance} ".tr() + "[${replacementBuilding.maintenance}] vs [${originalBuilding.maintenance}]".tr(), indent=1))
+        if (replacementBuilding.cost != originalBuilding.cost)
+            yield(FormattedLine("{Cost} ".tr() + "[${replacementBuilding.cost}] vs [${originalBuilding.cost}]".tr(), indent=1))
+        if (replacementBuilding.cityStrength != originalBuilding.cityStrength)
+            yield(FormattedLine("{City strength} ".tr() + "[${replacementBuilding.cityStrength}] vs [${originalBuilding.cityStrength}]".tr(), indent=1))
+        if (replacementBuilding.cityHealth != originalBuilding.cityHealth)
+            yield(FormattedLine("{City health} ".tr() + "[${replacementBuilding.cityHealth}] vs [${originalBuilding.cityHealth}]".tr(), indent=1))
+
+        if (replacementBuilding.replacementTextForUniques.isNotEmpty()) {
+            yield(FormattedLine(replacementBuilding.replacementTextForUniques, indent=1))
+        } else {
+            val newAbilityPredicate: (Unique)->Boolean = { it.text in originalBuilding.uniques || it.isHiddenToUsers() }
+            for (unique in replacementBuilding.uniqueObjects.filterNot(newAbilityPredicate))
+                yield(FormattedLine(unique.text, indent=1))  // FormattedLine(unique) would look worse - no indent and autolinking could distract
+        }
+
+        val lostAbilityPredicate: (Unique)->Boolean = { it.text in replacementBuilding.uniques || it.isHiddenToUsers() }
+        for (unique in originalBuilding.uniqueObjects.filterNot(lostAbilityPredicate)) {
+            yield(FormattedLine("Lost ability (vs [${originalBuilding.name}]): [${unique.text}]", indent=1))
+        }
+    }
+
     fun getCivilopediaTextLines(building: Building, ruleset: Ruleset): List<FormattedLine> = building.run {
         fun Float.formatSignedInt() = (if (this > 0f) "+" else "") + this.toInt().toString()
 
