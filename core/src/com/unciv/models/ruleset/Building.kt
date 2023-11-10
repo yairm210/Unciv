@@ -8,20 +8,15 @@ import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.ruleset.unique.LocalUniqueCache
 import com.unciv.models.ruleset.unique.StateForConditionals
-import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueParameterType
 import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
 import com.unciv.models.translations.fillPlaceholders
-import com.unciv.models.translations.tr
-import com.unciv.ui.components.extensions.getConsumesAmountString
 import com.unciv.ui.components.extensions.getNeedMoreAmountString
 import com.unciv.ui.components.extensions.toPercent
-import com.unciv.ui.components.fonts.Fonts
-import com.unciv.ui.objectdescriptions.uniquesToCivilopediaTextLines
-import com.unciv.ui.screens.civilopediascreen.FormattedLine
+import com.unciv.ui.objectdescriptions.BuildingDescriptions
 
 
 class Building : RulesetStatsObject(), INonPerpetualConstruction {
@@ -44,130 +39,24 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
     var requiredBuilding: String? = null
 
     /** A strategic resource that will be consumed by this building */
-    private var requiredResource: String? = null
+    var requiredResource: String? = null
 
-    /** City can only be built if one of these resources is nearby - it must be improved! */
+    /** This Building can only be built if one of these resources is nearby - it must be improved! */
     var requiredNearbyImprovedResources: List<String>? = null
     var cityStrength = 0
     var cityHealth = 0
     var replaces: String? = null
     var uniqueTo: String? = null
     var quote: String = ""
+    var replacementTextForUniques = ""
+
     override fun getUniqueTarget() = if (isAnyWonder()) UniqueTarget.Wonder else UniqueTarget.Building
-    private var replacementTextForUniques = ""
 
-    /** Used for AlertType.WonderBuilt, and as sub-text in Nation and Tech descriptions */
-    fun getShortDescription(multiline:Boolean = false): String {
-        val infoList = mutableListOf<String>()
-        this.clone().toString().also { if (it.isNotEmpty()) infoList += it }
-        for ((key, value) in getStatPercentageBonuses(null))
-            infoList += "+${value.toInt()}% ${key.name.tr()}"
+    override fun makeLink() = if (isAnyWonder()) "Wonder/$name" else "Building/$name"
 
-        if (requiredNearbyImprovedResources != null)
-            infoList += "Requires worked [" + requiredNearbyImprovedResources!!.joinToString("/") { it.tr() } + "] near city"
-        if (uniques.isNotEmpty()) {
-            if (replacementTextForUniques != "") infoList += replacementTextForUniques
-            else infoList += getUniquesStringsWithoutDisablers()
-        }
-        if (cityStrength != 0) infoList += "{City strength} +$cityStrength"
-        if (cityHealth != 0) infoList += "{City health} +$cityHealth"
-        val separator = if (multiline) "\n" else "; "
-        return infoList.joinToString(separator) { it.tr() }
-    }
-
-    /**
-     * @param filterUniques If provided, include only uniques for which this function returns true.
-     */
-    private fun getUniquesStrings(filterUniques: ((Unique) -> Boolean)? = null) = sequence {
-        val tileBonusHashmap = HashMap<String, ArrayList<String>>()
-        for (unique in uniqueObjects) if (filterUniques == null || filterUniques(unique)) when {
-            unique.isOfType(UniqueType.StatsFromTiles) && unique.params[2] == "in this city" -> {
-                val stats = unique.params[0]
-                if (!tileBonusHashmap.containsKey(stats)) tileBonusHashmap[stats] = ArrayList()
-                tileBonusHashmap[stats]!!.add(unique.params[1])
-            }
-            else -> yield(unique.text)
-        }
-        for ((key, value) in tileBonusHashmap)
-            yield( "[stats] from [tileFilter] tiles in this city"
-                .fillPlaceholders( key,
-                    // A single tileFilter will be properly translated later due to being within []
-                    // advantage to not translate prematurely: FormatLine.formatUnique will recognize it
-                    if (value.size == 1) value[0] else value.joinToString { it.tr() }
-                ))
-    }
-    /**
-     * @param filterUniques If provided, include only uniques for which this function returns true.
-     */
-    private fun getUniquesStringsWithoutDisablers(filterUniques: ((Unique) -> Boolean)? = null) = getUniquesStrings {
-            !it.isHiddenToUsers()
-            && filterUniques?.invoke(it) ?: true
-        }
-
-    /** used in CityScreen (ConstructionInfoTable) */
-    fun getDescription(city: City, showAdditionalInfo: Boolean): String {
-        val stats = getStats(city)
-        val translatedLines = ArrayList<String>() // Some translations require special handling
-        val isFree = city.civ.civConstructions.hasFreeBuilding(city, this)
-        if (uniqueTo != null) translatedLines += if (replaces == null) "Unique to [$uniqueTo]".tr()
-            else "Unique to [$uniqueTo], replaces [$replaces]".tr()
-        val missingUnique = getMatchingUniques(UniqueType.RequiresBuildingInAllCities).firstOrNull()
-        if (isWonder) translatedLines += "Wonder".tr()
-        if (isNationalWonder) translatedLines += "National Wonder".tr()
-        if (!isFree) {
-            for ((resourceName, amount) in getResourceRequirementsPerTurn(StateForConditionals(city.civ, city))) {
-                val available = city.getResourceAmount(resourceName)
-                val resource = city.getRuleset().tileResources[resourceName] ?: continue
-                val consumesString = resourceName.getConsumesAmountString(amount, resource.isStockpiled())
-
-                translatedLines += if (showAdditionalInfo) "$consumesString ({[$available] available})".tr()
-                else consumesString.tr()
-            }
-        }
-
-        // Inefficient in theory. In practice, buildings seem to have only a small handful of uniques.
-        val missingCities = if (missingUnique != null)
-        // TODO: Unify with rejection reasons?
-            city.civ.cities.filterNot {
-                it.isPuppet
-                        || it.cityConstructions.containsBuildingOrEquivalent(missingUnique.params[0])
-            }
-        else listOf()
-        if (uniques.isNotEmpty()) {
-            if (replacementTextForUniques != "") translatedLines += replacementTextForUniques.tr()
-            else translatedLines += getUniquesStringsWithoutDisablers(
-                filterUniques = if (missingCities.isEmpty()) null
-                    else { unique -> !unique.isOfType(UniqueType.RequiresBuildingInAllCities) }
-                    // Filter out the "Requires a [] in all cities" unique if any cities are still missing the required building, since in that case the list of cities will be appended at the end.
-            ).map { it.tr() }
-        }
-        if (!stats.isEmpty())
-            translatedLines += stats.toString()
-
-        for ((stat, value) in getStatPercentageBonuses(city))
-            if (value != 0f) translatedLines += "+${value.toInt()}% {${stat.name}}".tr()
-
-        for ((greatPersonName, value) in greatPersonPoints)
-            translatedLines += "+$value " + "[$greatPersonName] points".tr()
-
-        for ((specialistName, amount) in newSpecialists())
-            translatedLines += "+$amount " + "[$specialistName] slots".tr()
-
-        if (requiredNearbyImprovedResources != null)
-            translatedLines += "Requires worked [${requiredNearbyImprovedResources!!.joinToString("/") { it.tr() }}] near city".tr()
-
-        if (cityStrength != 0) translatedLines += "{City strength} +$cityStrength".tr()
-        if (cityHealth != 0) translatedLines += "{City health} +$cityHealth".tr()
-        if (maintenance != 0 && !isFree) translatedLines += "{Maintenance cost}: $maintenance {Gold}".tr()
-        if (showAdditionalInfo && missingCities.isNotEmpty()) {
-            // Could be red. But IMO that should be done by enabling GDX's ColorMarkupLanguage globally instead of adding a separate label.
-            translatedLines += "\n" +
-                "[${city.civ.getEquivalentBuilding(missingUnique!!.params[0])}] required:".tr() +
-                " " + missingCities.joinToString(", ") { it.name.tr(hideIcons = true) }
-            // Can't nest square bracket placeholders inside curlies, and don't see any way to define wildcard placeholders. So run translation explicitly on base text.
-        }
-        return translatedLines.joinToString("\n").trim()
-    }
+    fun getShortDescription(multiline: Boolean = false) = BuildingDescriptions.getShortDescription(this, multiline)
+    fun getDescription(city: City, showAdditionalInfo: Boolean) = BuildingDescriptions.getDescription(this, city, showAdditionalInfo)
+    override fun getCivilopediaTextLines(ruleset: Ruleset) = BuildingDescriptions.getCivilopediaTextLines(this, ruleset)
 
     fun getStats(city: City,
                  /* By default, do not cache - if we're getting stats for only one building this isn't efficient.
@@ -209,113 +98,6 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
         }
 
         return stats
-    }
-
-    override fun makeLink() = if (isAnyWonder()) "Wonder/$name" else "Building/$name"
-
-    override fun getCivilopediaTextLines(ruleset: Ruleset): List<FormattedLine> {
-        fun Float.formatSignedInt() = (if (this > 0f) "+" else "") + this.toInt().toString()
-
-        val textList = ArrayList<FormattedLine>()
-
-        if (isAnyWonder()) {
-            textList += FormattedLine( if (isWonder) "Wonder" else "National Wonder", color="#CA4", header=3 )
-        }
-
-        if (uniqueTo != null) {
-            textList += FormattedLine()
-            textList += FormattedLine("Unique to [$uniqueTo]", link="Nation/$uniqueTo")
-            if (replaces != null) {
-                val replacesBuilding = ruleset.buildings[replaces]
-                textList += FormattedLine("Replaces [$replaces]", link=replacesBuilding?.makeLink() ?: "", indent=1)
-            }
-        }
-
-        if (cost > 0) {
-            val stats = mutableListOf("$cost${Fonts.production}")
-            if (canBePurchasedWithStat(null, Stat.Gold)) {
-                stats += "${getCivilopediaGoldCost()}${Fonts.gold}"
-            }
-            textList += FormattedLine(stats.joinToString("/", "{Cost}: "))
-        }
-
-        if (requiredTech != null)
-            textList += FormattedLine("Required tech: [$requiredTech]",
-                link="Technology/$requiredTech")
-        if (requiredBuilding != null)
-            textList += FormattedLine("Requires [$requiredBuilding] to be built in the city",
-                link="Building/$requiredBuilding")
-
-        if (requiredResource != null) {
-            textList += FormattedLine()
-            val resource = ruleset.tileResources[requiredResource]
-            textList += FormattedLine(
-                requiredResource!!.getConsumesAmountString(1, resource!!.isStockpiled()),
-                link="Resources/$requiredResource", color="#F42" )
-        }
-
-        val stats = cloneStats()
-        val percentStats = getStatPercentageBonuses(null)
-        val specialists = newSpecialists()
-        if (uniques.isNotEmpty() || !stats.isEmpty() || !percentStats.isEmpty() || this.greatPersonPoints.isNotEmpty() || specialists.isNotEmpty())
-            textList += FormattedLine()
-
-        if (replacementTextForUniques.isNotEmpty()) {
-            textList += FormattedLine(replacementTextForUniques)
-        } else {
-            uniquesToCivilopediaTextLines(textList, colorConsumesResources = true)
-        }
-
-        if (!stats.isEmpty()) {
-            textList += FormattedLine(stats.toString())
-        }
-
-        if (!percentStats.isEmpty()) {
-            for ((key, value) in percentStats) {
-                if (value == 0f) continue
-                textList += FormattedLine(value.formatSignedInt() + "% {$key}")
-            }
-        }
-
-        for ((greatPersonName, value) in greatPersonPoints) {
-            textList += FormattedLine(
-                "+$value " + "[$greatPersonName] points".tr(),
-                link = "Unit/$greatPersonName"
-            )
-        }
-
-        if (specialists.isNotEmpty()) {
-            for ((specialistName, amount) in specialists)
-                textList += FormattedLine("+$amount " + "[$specialistName] slots".tr())
-        }
-
-        if (requiredNearbyImprovedResources != null) {
-            textList += FormattedLine()
-            textList += FormattedLine("Requires at least one of the following resources worked near the city:")
-            requiredNearbyImprovedResources!!.forEach {
-                textList += FormattedLine(it, indent = 1, link = "Resource/$it")
-            }
-        }
-
-        if (cityStrength != 0 || cityHealth != 0 || maintenance != 0) textList += FormattedLine()
-        if (cityStrength != 0) textList +=  FormattedLine("{City strength} +$cityStrength")
-        if (cityHealth != 0) textList +=  FormattedLine("{City health} +$cityHealth")
-        if (maintenance != 0) textList +=  FormattedLine("{Maintenance cost}: $maintenance {Gold}")
-
-        val seeAlso = ArrayList<FormattedLine>()
-        for (building in ruleset.buildings.values) {
-            if (building.replaces == name
-                    || building.uniqueObjects.any { unique -> unique.params.any { it == name } })
-                seeAlso += FormattedLine(building.name, link=building.makeLink(), indent=1)
-        }
-        seeAlso += Belief.getCivilopediaTextMatching(name, ruleset, false)
-        if (seeAlso.isNotEmpty()) {
-            textList += FormattedLine()
-            textList += FormattedLine("{See also}:")
-            textList += seeAlso
-        }
-
-        return textList
     }
 
     override fun getProductionCost(civInfo: Civilization): Int {
