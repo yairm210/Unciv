@@ -173,18 +173,21 @@ object UnitAutomation {
             CivilianUnitAutomation.automateCivilianUnit(unit)
             return
         }
-
-        if (unit.baseUnit.isAirUnit() && unit.canIntercept())
-            return AirUnitAutomation.automateFighter(unit)
-
-        if (unit.baseUnit.isAirUnit() && !unit.baseUnit.isNuclearWeapon())
-            return AirUnitAutomation.automateBomber(unit)
-
-        if (unit.baseUnit.isNuclearWeapon())
-            return AirUnitAutomation.automateNukes(unit)
-
-        if (unit.baseUnit.isAirUnit() && unit.hasUnique(UniqueType.SelfDestructs))
-            return AirUnitAutomation.automateMissile(unit)
+        
+        if (unit.baseUnit.isAirUnit()) {
+            if (unit.canIntercept())
+                return AirUnitAutomation.automateFighter(unit)
+    
+            if (!unit.baseUnit.isNuclearWeapon())
+                return AirUnitAutomation.automateBomber(unit)
+    
+            // Note that not all nukes have to be air units
+            if (unit.baseUnit.isNuclearWeapon())
+                return AirUnitAutomation.automateNukes(unit)
+    
+            if (unit.hasUnique(UniqueType.SelfDestructs))
+                return AirUnitAutomation.automateMissile(unit)
+        }
 
         if (tryGoToRuinAndEncampment(unit) && unit.currentMovement == 0f) return
 
