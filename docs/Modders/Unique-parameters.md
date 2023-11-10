@@ -100,7 +100,7 @@ cityFilters allow us to choose the range of cities affected by this unique:
 -   `in City-State cities`
 -   `in cities following this religion` - Should only be used in pantheon/follower uniques for religions
 -   `in all cities in which the majority religion is a major religion`
--   `in all cities in which the majority religion is a enhanced religion`
+-   `in all cities in which the majority religion is an enhanced religion`
 
 ## improvementFilter
 
