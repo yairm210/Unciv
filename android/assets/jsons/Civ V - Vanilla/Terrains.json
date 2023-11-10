@@ -115,10 +115,12 @@
 			"Considered [Food] when determining start locations",
 			"Considered [Desirable] when determining start locations"],
         "civilopediaText": [
-            {"text": "Lakes provide fresh water to adjacent tiles, changing yields depending on technological progress and allowing farming where it would otherwise not be possible (similar to Rivers and Oases)."},
+            {"text": "Lakes provide fresh water to adjacent tiles, allowing farming where it would otherwise not be possible (similar to Rivers and Oases)."},
             {"text": "Rivers", "link":"Terrain/River"},
             {"text": "Oasis", "link":"Terrain/Oasis"},
             {"text": "Farm", "link":"Improvement/Farm"},
+            {"text": "Civil Service", "link":"Technology/Civil Service"},
+            {"text": "Fertilizer", "link":"Technology/Fertilizer"}
         ]
 	},
 	{
@@ -260,10 +262,12 @@
 			"Considered [Food] when determining start locations",
 			"Considered [Desirable] when determining start locations"],
         "civilopediaText": [
-            {"text": "Oases provide fresh water to adjacent tiles, changing yields depending on technological progress and allowing farming where it would otherwise not be possible (similar to Rivers and Lakes)."},
+            {"text": "Oases provide fresh water to adjacent tiles, allowing farming where it would otherwise not be possible (similar to Rivers and Lakes)."},
             {"text": "Rivers", "link":"Terrain/River"},
             {"text": "Lakes", "link":"Terrain/Lakes"},
             {"text": "Farm", "link":"Improvement/Farm"},
+            {"text": "Civil Service", "link":"Technology/Civil Service"},
+            {"text": "Fertilizer", "link":"Technology/Fertilizer"}
         ]
 	},
 	{
@@ -297,8 +301,11 @@
 		"uniques": ["Rare feature"]
 	},
 
-    // Virtual River entry, used for stats, Uniques and Civilopedia, never as actual Terrain
-    // Note the name is hardcoded to apply stats and the Stats Unique when a tile borders an actual river (on an edge)
+    // Virtual River entry, used for stats, Uniques and Civilopedia
+    // Modders take heed:
+    // * This never exists on the map, it's a placeholder to allow you to mod the actual river's stats.
+    // * The name is hardcoded to apply stats and the Stats Unique when a tile has one or more edges with an actual river.
+    // * No other Unique is implemented and will work - for now.
     {
         "name": "River",
         "type": "TerrainFeature",
@@ -308,16 +315,19 @@
         "civilopediaText": [
             {"text": "Rivers exist on tile edges, not as terrain feature per se."},
             {"text": "Tiles on both sides gain its benefits. These benefits do not stack."},
-            {"text": "One benefit is additional Gold yield, the other is that the tile has access to fresh water, changing yields depending on technological progress and allowing farming where it would otherwise not be possible (similar to Oases and Lakes)."},
-            {"text": "Additionally, some buildings can only be built on river tiles."},
+            {"text": "The tile has access to fresh water, allowing farming where it would otherwise not be possible (similar to Oases and Lakes)."},
             {"text": "Movement across rivers takes all remaining movement points of a unit unless there is a bridge."},
-            {"text": "When being attacked from across a river, a defender usually gets a significant bonus."},
+            // See BattleConstants.ATTACKING_ACROSS_RIVER_MALUS:
+            {"text": "When attacking across a river, the attacker gets a -20% strength malus."},
+            // Related Buildings are automatically linked
             {"text": "Lakes", "link":"Terrain/Lakes"},
             {"text": "Oasis", "link":"Terrain/Oasis"},
             {"text": "Farm", "link":"Improvement/Farm"},
             {"text": "Road", "link":"Improvement/Road"},
             {"text": "Engineering", "link":"Technology/Engineering"},
-            {"text": "Amphibious", "link":"Promotion/Amphibious"},
+            {"text": "Civil Service", "link":"Technology/Civil Service"},
+            {"text": "Fertilizer", "link":"Technology/Fertilizer"},
+            {"text": "Amphibious", "link":"Promotion/Amphibious"}
         ]
     },
 
