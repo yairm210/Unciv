@@ -93,6 +93,18 @@ class ThreatManager(val civInfo: Civilization) {
     }
 
     /**
+     * Returns all enemy military units within maxDistance of the tile
+     */
+    fun getEnemyMilitaryUnitsInDistance(tile:Tile, maxDist: Int): ArrayList<MapUnit> {
+        val tilesWithEnemyMilitaryUnits = getTilesWithEnemyUnitsInDistance(tile, maxDist)
+        val enemyUnits = ArrayList<MapUnit>()
+        for (tileWithEnemy in tilesWithEnemyMilitaryUnits) {
+            enemyUnits.addAll(tileWithEnemy.getUnits().filter { it.isMilitary() })
+        }
+        return enemyUnits
+    }
+    
+    /**
      * Returns true if the tile has a visible enemy, otherwise returns false
      */
     fun doesTileHaveMilitaryEnemy(tile: Tile): Boolean {
