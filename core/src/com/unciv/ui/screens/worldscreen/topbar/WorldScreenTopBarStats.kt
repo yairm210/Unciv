@@ -3,6 +3,8 @@ package com.unciv.ui.screens.worldscreen.topbar
 import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.badlogic.gdx.scenes.scene2d.ui.WidgetGroup
+import com.badlogic.gdx.scenes.scene2d.utils.Drawable
 import com.unciv.logic.civilization.Civilization
 import com.unciv.models.stats.Stats
 import com.unciv.models.translations.tr
@@ -20,7 +22,8 @@ import com.unciv.ui.screens.pickerscreens.TechPickerScreen
 import kotlin.math.ceil
 import kotlin.math.roundToInt
 
-internal class WorldScreenTopBarStats(topbar: WorldScreenTopBar) : Table() {
+internal class WorldScreenTopBarStats(topbar: WorldScreenTopBar) : WidgetGroup() {
+    private val innerTable = Table()
     private val goldLabel = "0".toLabel(colorFromRGB(225, 217, 71))
     private val scienceLabel = "0".toLabel(colorFromRGB(78, 140, 151))
     private val happinessLabel = "0".toLabel()
@@ -45,9 +48,11 @@ internal class WorldScreenTopBarStats(topbar: WorldScreenTopBar) : Table() {
         const val defaultBottomPad = 3f
         const val defaultImageBottomPad = 6f
         const val padRightBetweenStats = 20f
+        const val minScale = 0.5f
     }
 
     init {
+        isTransform = false
 
         fun addStat(label: Label, icon: String, isLast: Boolean = false, screenFactory: ()-> BaseScreen) {
             val image = ImageGetter.getStatIcon(icon)
@@ -56,8 +61,8 @@ internal class WorldScreenTopBarStats(topbar: WorldScreenTopBar) : Table() {
             }
             label.onClick(action)
             image.onClick(action)
-            add(label)
-            add(image).padBottom(defaultImageBottomPad).size(defaultImageSize).apply {
+            innerTable.add(label)
+            innerTable.add(image).padBottom(defaultImageBottomPad).size(defaultImageSize).apply {
                 if (!isLast) padRight(padRightBetweenStats)
             }
         }
@@ -65,12 +70,12 @@ internal class WorldScreenTopBarStats(topbar: WorldScreenTopBar) : Table() {
         fun addStat(label: Label, icon: String, overviewPage: EmpireOverviewCategories, isLast: Boolean = false) =
             addStat(label, icon, isLast) { EmpireOverviewScreen(worldScreen.selectedCiv, overviewPage) }
 
-        defaults().pad(defaultTopPad, defaultHorizontalPad, defaultBottomPad, defaultHorizontalPad)
+        innerTable.defaults().pad(defaultTopPad, defaultHorizontalPad, defaultBottomPad, defaultHorizontalPad)
         addStat(goldLabel, "Gold", EmpireOverviewCategories.Stats)
         addStat(scienceLabel, "Science") { TechPickerScreen(worldScreen.selectedCiv) }
 
-        add(happinessContainer).padBottom(defaultImageBottomPad).size(defaultImageSize)
-        add(happinessLabel).padRight(padRightBetweenStats)
+        innerTable.add(happinessContainer).padBottom(defaultImageBottomPad).size(defaultImageSize)
+        innerTable.add(happinessLabel).padRight(padRightBetweenStats)
         val invokeResourcesPage = {
             worldScreen.openEmpireOverview(EmpireOverviewCategories.Resources)
         }
@@ -81,16 +86,37 @@ internal class WorldScreenTopBarStats(topbar: WorldScreenTopBar) : Table() {
         if (worldScreen.gameInfo.isReligionEnabled()) {
             addStat(faithLabel, "Faith", EmpireOverviewCategories.Religion, isLast = true)
         } else {
-            add("Religion: Off".toLabel())
+            innerTable.add("Religion: Off".toLabel())
         }
 
-        //saveDimensions()
+        addActor(innerTable)
     }
+
+    // I'd like to report "we could, if needed, shrink to innerTable.minWidth * minScale"
+    // - but then we get overall a glitch during resizes where the outer Table sets our height
+    // to minHeight despite there being room (as far as WorldScreenTopBar is concened) and scale > minScale...
+    override fun getMinWidth() = innerTable.minWidth * innerTable.scaleX
+
+    override fun getPrefWidth() = innerTable.prefWidth * innerTable.scaleX
+    override fun getMaxWidth() = innerTable.prefWidth
+
+    override fun getMinHeight() = innerTable.minHeight * innerTable.scaleY
+    override fun getPrefHeight() = innerTable.prefHeight * innerTable.scaleY
+    override fun getMaxHeight() = innerTable.prefHeight
+
+    override fun layout() {
+        innerTable.setBounds(0f, 0f, width / innerTable.scaleX, height / innerTable.scaleY)
+    }
+
+    var background: Drawable?
+        get() = innerTable.background
+        set(value) { innerTable.background = value }
 
     private fun rateLabel(value: Float) = value.roundToInt().toStringSigned()
 
     fun update(civInfo: Civilization) {
-        //resetChildrenSizes()
+        innerTable.isTransform = false
+        innerTable.setScale(1f)
 
         val nextTurnStats = civInfo.stats.statsForNextTurn
         val goldPerTurn = " (" + rateLabel(nextTurnStats.gold) + ")"
@@ -113,8 +139,20 @@ internal class WorldScreenTopBarStats(topbar: WorldScreenTopBar) : Table() {
         cultureLabel.setText(getCultureText(civInfo, nextTurnStats))
         faithLabel.setText(civInfo.religionManager.storedFaith.toString() +
             " (" + rateLabel(nextTurnStats.faith) + ")")
-        //scaleToMaxWidth(worldScreen.stage.width)
-        pack()
+
+        innerTable.pack()
+        scaleToMaxWidth()
+    }
+
+    private fun scaleToMaxWidth() {
+        val scale = worldScreen.stage.width / innerTable.prefWidth
+        if (scale >= 1f) return
+        innerTable.isTransform = true
+        innerTable.setScale(scale)
+        if (!innerTable.needsLayout()) {
+            innerTable.invalidate()
+            invalidate()
+        }
     }
 
     private fun getCultureText(civInfo: Civilization, nextTurnStats: Stats): String {

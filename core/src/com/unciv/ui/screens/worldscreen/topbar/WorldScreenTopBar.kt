@@ -104,7 +104,7 @@ class WorldScreenTopBar(internal val worldScreen: WorldScreen) : Table() {
     /** Performs the layout tricks mentioned in the class Kdoc */
     private fun updateLayout() {
         val targetWidth = stage.width
-        val statsWidth = statsTable.minWidth
+        val statsWidth = statsTable.prefWidth // use minWidth if the downscaling ability of WorldScreenTopBarStats should help out leaving the floating buttons "up"
         val resourceWidth = resourceTable.minWidth
         val overviewWidth = overviewButton.minWidth
         val overviewHeight = overviewButton.minHeight
