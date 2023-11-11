@@ -125,3 +125,4 @@ class ThreatManager(val civInfo: Civilization) {
         distanceToClosestEnemyTiles.clear()
     }
 }
+
