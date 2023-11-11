@@ -10,7 +10,7 @@ import com.unciv.logic.map.tile.Tile
 object AirUnitAutomation {
 
     fun automateFighter(unit: MapUnit) {
-        val tilesInRange = unit.currentTile.getTilesInDistance(unit.getRange())
+        val tilesInRange = unit.civ.threatManager.getTilesWithEnemyUnitsInDistance(unit.getTile(), unit.getRange())
         val enemyAirUnitsInRange = tilesInRange
             .flatMap { it.airUnits.asSequence() }.filter { it.civ.isAtWarWith(unit.civ) }
 
