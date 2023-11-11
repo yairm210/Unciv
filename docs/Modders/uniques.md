@@ -921,6 +921,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Nation, Tech, Policy, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed
 
 ??? example  "Comment [comment]"
+	Allows displaying arbitrary text in a Unique listing. Only the text within the '[]' brackets will be displayed, the rest serves to allow Ruleset validation to recognize the intent.
 	Example: "Comment [comment]"
 
 	Applicable to: Nation, Tech, Policy, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed
@@ -1759,11 +1760,6 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: CityState
 
 ## ModOptions uniques
-??? example  "Suppress Warning [validationWarning]"
-	Example: "Suppress Warning [not found in unique types]"
-
-	Applicable to: ModOptions
-
 ??? example  "Mod is incompatible with [modFilter]"
 	Example: "Mod is incompatible with [DeCiv Redux]"
 
@@ -2212,5 +2208,4 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 *[stockpiledResource]: The name of any stockpiled.
 *[tech]: The name of any tech.
 *[tileFilter]: Anything that can be used either in an improvementFilter or in a terrainFilter can be used here, plus 'unimproved'
-*[validationWarning]: Suppresses one specific Ruleset validation warning.
 *[victoryType]: The name of any victory type: 'Neutral', 'Cultural', 'Diplomatic', 'Domination', 'Scientific', 'Time'
