@@ -1,6 +1,7 @@
 package com.unciv.logic.civilization.managers
 
 import com.unciv.logic.civilization.Civilization
+import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
 
 class ThreatManager(val civInfo: Civilization) {

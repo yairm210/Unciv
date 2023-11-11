@@ -343,18 +343,17 @@ object UnitAutomation {
         return true
     }
 
-    private fun getDangerousTiles(unit: MapUnit): HashSet<Tile> {
-        val nearbyRangedEnemyUnits = unit.currentTile.getTilesInDistance(3)
-            .flatMap { tile -> tile.getUnits().filter { unit.civ.isAtWarWith(it.civ) } }
+    private fun getDangerousTiles(unit: MapUnit, distance: Int = 3): HashSet<Tile> {
+        val nearbyRangedEnemyUnits = unit.civ.threatManager.getEnemyMilitaryUnitsInDistance(unit.getTile(), distance)
 
         val tilesInRangeOfAttack = nearbyRangedEnemyUnits
             .flatMap { it.getTile().getTilesInDistance(it.getRange()) }
 
-        val tilesWithinBombardmentRange = unit.currentTile.getTilesInDistance(3)
+        val tilesWithinBombardmentRange = unit.currentTile.getTilesInDistance(distance)
             .filter { it.isCityCenter() && it.getCity()!!.civ.isAtWarWith(unit.civ) }
             .flatMap { it.getTilesInDistance(it.getCity()!!.range) }
 
-        val tilesWithTerrainDamage = unit.currentTile.getTilesInDistance(3)
+        val tilesWithTerrainDamage = unit.currentTile.getTilesInDistance(distance)
             .filter { unit.getDamageFromTerrain(it) > 0 }
 
         return (tilesInRangeOfAttack + tilesWithinBombardmentRange + tilesWithTerrainDamage).toHashSet()
@@ -601,10 +600,6 @@ object UnitAutomation {
         unit.civ.addNotification("${unit.shortDisplayName()} finished exploring.", unit.currentTile.position, NotificationCategory.Units, unit.name, "OtherIcons/Sleep")
         unit.action = null
     }
-
-
-    internal fun containsEnemyMilitaryUnit(unit: MapUnit, tile: Tile) =
-        tile.militaryUnit != null
-        && tile.militaryUnit!!.civ.isAtWarWith(unit.civ)
+    
 
 }
