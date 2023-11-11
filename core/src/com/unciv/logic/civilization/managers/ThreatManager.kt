@@ -72,6 +72,7 @@ class ThreatManager(val civInfo: Civilization) {
         val minDistanceToSearch = tileData?.distanceSearched?.coerceAtLeast(1) ?: 1
         var distanceWithNoEnemies = tileData?.distanceSearched ?: maxDist
         var closestEnemyDistance = tileData?.distanceToClosestEnemy
+        var tileWithEnemy = tileData?.tileWithEnemy
         val tilesWithEnemies = ArrayList<Tile>()
         
         for (i in minDistanceToSearch..maxDist) {
@@ -85,11 +86,12 @@ class ThreatManager(val civInfo: Civilization) {
             }
             if (tilesWithEnemies.isNotEmpty() && (closestEnemyDistance == null || closestEnemyDistance < i)) {
                 closestEnemyDistance = i
+                tileWithEnemy = tilesWithEnemies.first()
             }
         }
         // Cache our results for later
         // tilesWithEnemies must return the enemy at a distance of closestEnemyDistance
-        distanceToClosestEnemyTiles[tile] = ClosestEnemyTileData(distanceWithNoEnemies, closestEnemyDistance, tilesWithEnemies.firstOrNull())
+        distanceToClosestEnemyTiles[tile] = ClosestEnemyTileData(distanceWithNoEnemies, closestEnemyDistance, tileWithEnemy)
         return tilesWithEnemies
     }
 
@@ -117,5 +119,9 @@ class ThreatManager(val civInfo: Civilization) {
             && !tile.militaryUnit!!.isInvisible(civInfo))
             return true
         return false
+    }
+    
+    fun clearThreatData() {
+        distanceToClosestEnemyTiles.clear()
     }
 }
