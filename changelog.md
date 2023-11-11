@@ -1,3 +1,18 @@
+## 4.8.17
+
+modding: Negative tile damage cannot heal more than max health
+
+Mods with atlases that reference non-existent files will no longer cause crashes
+
+By SomeTroglodyte:
+- Reorg SpecialistAllocationTable
+
+Improved settler AI  - By tuvus
+
+By SeventhM:
+- Fix Multiplayer Specatator being unable to move the screen
+- Fix free stat buildings not giving unique stat buildings in certain cases
+
 ## 4.8.16
 
 Ruleset validation refactor - easier location of affected objects, correctly display parameter-type mismatches, ignore uniques used for filtering

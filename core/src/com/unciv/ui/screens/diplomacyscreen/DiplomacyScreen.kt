@@ -39,22 +39,35 @@ import com.unciv.ui.components.widgets.AutoScrollPane as ScrollPane
  * Creates the diplomacy screen for [viewingCiv].
  *
  * When [selectCiv] is given and [selectTrade] is not, that Civilization is selected as if clicked on the left side.
+ * When [selectCiv] is given and [selectTrade] is not but [showTrade] is set, the [TradeTable] for that Civilization is shown.
  * When [selectCiv] and [selectTrade] are supplied, that Trade for that Civilization is selected, used for the counter-offer option from `TradePopup`.
  * Note calling this with [selectCiv] a City State and [selectTrade] supplied is **not allowed**.
  */
 class DiplomacyScreen(
     internal val viewingCiv: Civilization,
     private val selectCiv: Civilization? = null,
-    private val selectTrade: Trade? = null
+    private val selectTrade: Trade? = null,
+    private val showTrade: Boolean = selectTrade != null
 ): BaseScreen(), RecreateOnResize {
     companion object {
         private const val nationIconSize = 100f
         private const val nationIconPad = 10f
     }
 
-    private val leftSideTable = Table().apply { defaults().pad(nationIconPad) }
+    private val highlightColor: Color = clearColor.cpy().lerp(skin.getColor("color"), 0.333f)
+
+    private val leftSideTable = Table().apply {
+        background = skinStrings.getUiBackground("DiplomacyScreen/LeftSide", tintColor = clearColor)
+    }
     private val leftSideScroll = ScrollPane(leftSideTable)
-    internal val rightSideTable = Table()
+
+    private var highlightedCivButton: Table? = null
+    private val highlightBackground = skinStrings.getUiBackground("DiplomacyScreen/SelectedCiv", tintColor = highlightColor)
+
+    internal val rightSideTable = Table().apply {
+        background = skinStrings.getUiBackground("DiplomacyScreen/RightSide", tintColor = highlightColor)
+    }
+
     private val closeButton = Constants.close.toTextButton()
 
     internal fun isNotPlayersTurn() = !GUI.isAllowedChangeState()
@@ -77,9 +90,10 @@ class DiplomacyScreen(
         stage.addActor(closeButton) // This must come after the split pane so it will be above, that the button will be clickable
 
         if (selectCiv != null) {
-            if (selectTrade != null) {
+            if (showTrade) {
                 val tradeTable = setTrade(selectCiv)
-                tradeTable.tradeLogic.currentTrade.set(selectTrade)
+                if (selectTrade != null)
+                    tradeTable.tradeLogic.currentTrade.set(selectTrade)
                 tradeTable.offerColumnsTable.update()
             } else
                 updateRightSide(selectCiv)
@@ -92,7 +106,7 @@ class DiplomacyScreen(
 
     internal fun updateLeftSideTable(selectCiv: Civilization?) {
         leftSideTable.clear()
-        leftSideTable.add().padBottom(60f).row()  // room so the close button does not cover the first
+        leftSideTable.add().padBottom(70f).row()  // room so the close button does not cover the first
 
         var selectCivY = 0f
 
@@ -135,11 +149,20 @@ class DiplomacyScreen(
             }
 
             val civNameLabel = civ.civName.toLabel(hideIcons = true)
-            leftSideTable.add(civIndicator).row()
-            leftSideTable.add(civNameLabel).padBottom(20f).row()
 
-            civIndicator.onClick { updateRightSide(civ) }
-            civNameLabel.onClick { updateRightSide(civ) }
+            // The wrapper serves only to highlight the selected civ better
+            val civButton = Table().apply {
+                defaults().pad(nationIconPad)
+                add(civIndicator).row()
+                add(civNameLabel).row()
+                onClick {
+                    updateRightSide(civ)
+                    highlightCiv(this)
+                }
+                if (civ == selectCiv) highlightCiv(this)
+            }
+
+            leftSideTable.add(civButton).padBottom(20f - nationIconPad).growX().row()
         }
 
         if (selectCivY != 0f) {
@@ -147,6 +170,12 @@ class DiplomacyScreen(
             leftSideScroll.scrollY = selectCivY + (nationIconSize + 2 * nationIconPad - stage.height) / 2
             leftSideScroll.updateVisualScroll()
         }
+    }
+
+    private fun highlightCiv(civButton: Table) {
+        highlightedCivButton?.background = null
+        civButton.background = highlightBackground
+        highlightedCivButton = civButton
     }
 
     internal fun updateRightSide(otherCiv: Civilization) {
@@ -159,10 +188,8 @@ class DiplomacyScreen(
         )).height(stage.height)
     }
 
-    //region City State Diplomacy
-
-    //endregion
     //region Major Civ Diplomacy
+
     internal fun setTrade(civ: Civilization): TradeTable {
         rightSideTable.clear()
         val tradeTable = TradeTable(civ, this)
@@ -304,5 +331,5 @@ class DiplomacyScreen(
         positionCloseButton()
     }
 
-    override fun recreate(): BaseScreen = DiplomacyScreen(viewingCiv, selectCiv, selectTrade)
+    override fun recreate(): BaseScreen = DiplomacyScreen(viewingCiv, selectCiv, selectTrade, showTrade)
 }

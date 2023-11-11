@@ -12,7 +12,7 @@ import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unique.UniqueType
 
 class CityFounder {
-    fun foundCity(civInfo: Civilization, cityLocation: Vector2) :City{
+    fun foundCity(civInfo: Civilization, cityLocation: Vector2): City {
         val city = City()
 
         city.foundingCiv = civInfo.civName

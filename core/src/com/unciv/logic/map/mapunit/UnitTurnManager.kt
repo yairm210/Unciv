@@ -1,6 +1,7 @@
 package com.unciv.logic.map.mapunit
 
 import com.unciv.UncivGame
+import com.unciv.logic.battle.MapUnitCombatant
 import com.unciv.logic.civilization.LocationAction
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
@@ -83,7 +84,7 @@ class UnitTurnManager(val unit: MapUnit) {
             }.maxByOrNull { it.second }
             ?: return
         if (damage == 0) return
-        unit.health -= damage
+        MapUnitCombatant(unit).takeDamage(damage)
         val improvementName = citadelTile.improvement!!  // guarded by `getUnpillagedImprovement() != null` above
         val improvementIcon = "ImprovementIcons/$improvementName"
         val locations = LocationAction(citadelTile.position, unit.currentTile.position)
@@ -112,9 +113,11 @@ class UnitTurnManager(val unit: MapUnit) {
 
     private fun doTerrainDamage() {
         val tileDamage = unit.getDamageFromTerrain()
-        unit.health -= tileDamage
+        if (tileDamage == 0) return
 
-        if (unit.health <= 0) {
+        MapUnitCombatant(unit).takeDamage(tileDamage)
+
+        if (unit.isDestroyed) {
             unit.civ.addNotification(
                 "Our [${unit.name}] took [$tileDamage] tile damage and was destroyed",
                 unit.currentTile.position,
@@ -122,8 +125,7 @@ class UnitTurnManager(val unit: MapUnit) {
                 unit.name,
                 NotificationIcon.Death
             )
-            unit.destroy()
-        } else if (tileDamage > 0) unit.civ.addNotification(
+        } else unit.civ.addNotification(
             "Our [${unit.name}] took [$tileDamage] tile damage",
             unit.currentTile.position,
             NotificationCategory.Units,

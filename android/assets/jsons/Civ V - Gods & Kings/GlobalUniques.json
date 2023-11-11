@@ -9,9 +9,6 @@
         "Rebel units may spawn <when below [-20] Happiness>",
         "[-1] Sight <for [Embarked] units>",
 
-        // Filtering uniques must be listed here to tell RulesetValidator they're OK despite untyped
-        "Aircraft"
-
         // TODO: Implement the uniques below
         // "[+20]% [Culture] [in all cities] <during a golden age>",
         // "[+20]% [Production] [in all cities] <during a golden age>",

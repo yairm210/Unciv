@@ -183,7 +183,18 @@ enum class UniqueParameterType(
         }
     },
 
-    /** Implemented by [Nation.matchesFilter][com.unciv.models.ruleset.Building.matchesFilter] */
+
+    /** Implemented by [Civ.matchesFilter][com.unciv.logic.civilization.Civilization.matchesFilter] */
+    CivFilter("civFilter", Constants.cityStates) {
+        private val knownValues = setOf("AI player", "Human player")
+
+        override fun getErrorSeverity(parameterText: String, ruleset: Ruleset): UniqueType.UniqueParameterErrorSeverity? {
+            if (parameterText in knownValues) return null
+            return NationFilter.getErrorSeverity(parameterText, ruleset)
+        }
+    },
+
+    /** Implemented by [Nation.matchesFilter][com.unciv.models.ruleset.nation.Nation.matchesFilter] */
     NationFilter("nationFilter", Constants.cityStates) {
         private val knownValues = setOf(Constants.cityStates, "Major", "All")
 
