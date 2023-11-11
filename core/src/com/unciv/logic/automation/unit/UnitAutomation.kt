@@ -29,7 +29,7 @@ object UnitAutomation {
                 && tile.neighbors.any { !unit.civ.hasExplored(it) }
                 && (!unit.civ.isCityState() || tile.neighbors.any { it.getOwner() == unit.civ }) // Don't want city-states exploring far outside their borders
                 && unit.getDamageFromTerrain(tile) <= 0    // Don't take unnecessary damage
-                && unit.civ.threatManager.getDistanceToEnemyUnit(tile, 3) <= 3 // don't walk in range of enemy units
+                && unit.civ.threatManager.getDistanceToClosestEnemyUnit(tile, 3) <= 3 // don't walk in range of enemy units
                 && unit.movement.canMoveTo(tile) // expensive, evaluate last
                 && unit.movement.canReach(tile) // expensive, evaluate last
     }
@@ -259,7 +259,7 @@ object UnitAutomation {
         // Precondition: This must be a military unit
         if (unit.isCivilian()) return false
         // Better to do a more healing oriented move then
-        if (unit.civ.threatManager.getDistanceToEnemyUnit(unit.getTile(),6, true) > 4) return false
+        if (unit.civ.threatManager.getDistanceToClosestEnemyUnit(unit.getTile(),6, true) > 4) return false
         
         if (unit.baseUnit.isAirUnit()) {
             return false
@@ -269,9 +269,9 @@ object UnitAutomation {
         val swapableTiles = unitDistanceToTiles.keys.filter { it.militaryUnit != null && it.militaryUnit!!.owner == unit.owner}.reversed()
         for (swapTile in swapableTiles) {
             val otherUnit = swapTile.militaryUnit!!
-            val ourDistanceToClosestEnemy = unit.civ.threatManager.getDistanceToEnemyUnit(unit.getTile(),6, false)
+            val ourDistanceToClosestEnemy = unit.civ.threatManager.getDistanceToClosestEnemyUnit(unit.getTile(),6, false)
             if (otherUnit.health > 80 
-                && ourDistanceToClosestEnemy < otherUnit.civ.threatManager.getDistanceToEnemyUnit(otherUnit.getTile(),6,false)) {
+                && ourDistanceToClosestEnemy < otherUnit.civ.threatManager.getDistanceToClosestEnemyUnit(otherUnit.getTile(),6,false)) {
                 if (otherUnit.baseUnit.isRanged()) {
                     // Don't swap ranged units closer than they have to be
                     val range = otherUnit.baseUnit.range
