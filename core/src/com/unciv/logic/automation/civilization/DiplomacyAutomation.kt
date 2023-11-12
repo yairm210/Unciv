@@ -346,16 +346,27 @@ object DiplomacyAutomation {
         }
         modifierMap["Relative score"] = scoreRatioModifier
 
-        val productionRatio = civInfo.getStatForRanking(RankingType.Production).toFloat() / otherCiv.getStatForRanking(RankingType.Production).toFloat()
-        val productionRatioModifier = when {
-            productionRatio > 2f -> 10
-            productionRatio > 1.5f -> 5
-            productionRatio > .8f -> 0
-            productionRatio > .5f -> -2
-            productionRatio > .25f -> -5
-            else -> -10
+        if (civInfo.stats.getUnitSupplyDeficit() == 0) {
+            // If either of our Civs are suffering from a supply deficit, our army must be too large
+            // There is no easy way to check the raw production if a civ has a supply deficit
+            // We might try to divide the current production by the getUnitSupplyProductionPenalty()
+            // but it only is true for our turn and not the previous turn and might result in odd values
+            if (otherCiv.stats.getUnitSupplyDeficit() == 0) {
+                val productionRatio = civInfo.getStatForRanking(RankingType.Production).toFloat() / otherCiv.getStatForRanking(RankingType.Production).toFloat()
+                val productionRatioModifier = when {
+                    productionRatio > 2f -> 15
+                    productionRatio > 1.5f -> 7
+                    productionRatio > 1.2 -> 3
+                    productionRatio > .8f -> 0
+                    productionRatio > .5f -> -5
+                    productionRatio > .25f -> -10
+                    else -> -10
+                }
+                modifierMap["Relative production"] = productionRatioModifier
+            }
+        } else {
+            modifierMap["Over unit supply"] = (civInfo.stats.getUnitSupplyDeficit() * 2).coerceAtMost(20)
         }
-        modifierMap["Relative production"] = productionRatioModifier
 
         val relativeTech = civInfo.getStatForRanking(RankingType.Technologies) - otherCiv.getStatForRanking(RankingType.Technologies)
         val relativeTechModifier = when {
