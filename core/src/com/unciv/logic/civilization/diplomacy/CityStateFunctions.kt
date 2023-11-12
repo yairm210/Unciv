@@ -117,7 +117,7 @@ class CityStateFunctions(val civInfo: Civilization) {
         }
 
         // Point to the gifted unit, then to the other places mentioned in the message
-        val unitAction = sequenceOf(MapUnitAction(placedUnit.getTile().position))
+        val unitAction = sequenceOf(MapUnitAction(placedUnit))
         val notificationActions = unitAction + LocationAction(cities.city2.location, city.location)
         receivingCiv.addNotification(
             "[${civInfo.civName}] gave us a [${militaryUnit.name}] as gift near [${city.name}]!",

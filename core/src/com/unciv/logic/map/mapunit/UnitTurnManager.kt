@@ -128,7 +128,7 @@ class UnitTurnManager(val unit: MapUnit) {
             )
         } else unit.civ.addNotification(
             "Our [${unit.name}] took [$tileDamage] tile damage",
-            MapUnitAction(unit.currentTile.position),
+            MapUnitAction(unit),
             NotificationCategory.Units,
             unit.name
         )

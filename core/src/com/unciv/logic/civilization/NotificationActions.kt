@@ -5,6 +5,7 @@ import com.badlogic.gdx.utils.Json
 import com.badlogic.gdx.utils.JsonValue
 import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.city.City
+import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.ui.components.MayaCalendar
 import com.unciv.ui.screens.cityscreen.CityScreen
 import com.unciv.ui.screens.civilopediascreen.CivilopediaScreen
@@ -95,6 +96,7 @@ class MayaLongCountAction : NotificationAction {
 
 /** A notification action that shows and selects units on the map. */
 class MapUnitAction(private val location: Vector2 = Vector2.Zero) : NotificationAction {
+    constructor(unit: MapUnit) : this(unit.currentTile.position)
     override fun execute(worldScreen: WorldScreen) {
         worldScreen.mapHolder.setCenterPosition(location, selectUnit = true)
     }
