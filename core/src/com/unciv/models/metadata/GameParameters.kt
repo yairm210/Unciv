@@ -105,7 +105,14 @@ class GameParameters : IsPartOfGameInfoSerialization { // Default values are the
             yield(if (mods.isEmpty()) "no mods" else mods.joinToString(",", "mods=(", ")", 6) )
         }.joinToString(prefix = "(", postfix = ")")
 
-    fun getModsAndBaseRuleset(): HashSet<String> {
-        return mods.toHashSet().apply { add(baseRuleset) }
-    }
+    /** Get all mods including base
+     *
+     *  The returned Set is ordered base first, then in the order they are stored in a save.
+     *  This creates a fresh instance, and the caller is allowed to mutate it.
+     */
+    fun getModsAndBaseRuleset() =
+        LinkedHashSet<String>(mods.size + 1).apply {
+            add(baseRuleset)
+            addAll(mods)
+        }
 }

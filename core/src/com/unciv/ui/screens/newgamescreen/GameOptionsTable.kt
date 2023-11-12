@@ -17,10 +17,6 @@ import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.tr
 import com.unciv.ui.audio.MusicMood
 import com.unciv.ui.audio.MusicTrackChooserFlags
-import com.unciv.ui.components.widgets.AutoScrollPane
-import com.unciv.ui.components.widgets.ExpanderTab
-import com.unciv.ui.components.widgets.TranslatedSelectBox
-import com.unciv.ui.components.widgets.UncivSlider
 import com.unciv.ui.components.extensions.pad
 import com.unciv.ui.components.extensions.toCheckBox
 import com.unciv.ui.components.extensions.toImageButton
@@ -31,6 +27,10 @@ import com.unciv.ui.components.input.keyShortcuts
 import com.unciv.ui.components.input.onActivation
 import com.unciv.ui.components.input.onChange
 import com.unciv.ui.components.input.onClick
+import com.unciv.ui.components.widgets.AutoScrollPane
+import com.unciv.ui.components.widgets.ExpanderTab
+import com.unciv.ui.components.widgets.TranslatedSelectBox
+import com.unciv.ui.components.widgets.UncivSlider
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popups.Popup
 import com.unciv.ui.screens.basescreen.BaseScreen
@@ -458,7 +458,7 @@ class GameOptionsTable(
     }
 
     private fun onChooseMod(mod: String) {
-        val activeMods: LinkedHashSet<String> = LinkedHashSet(gameParameters.getModsAndBaseRuleset())
+        val activeMods = gameParameters.getModsAndBaseRuleset()
         UncivGame.Current.translations.translationActiveMods = activeMods
         reloadRuleset()
         update()
