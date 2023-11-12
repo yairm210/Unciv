@@ -15,6 +15,7 @@ import com.unciv.logic.map.HexMath
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.RoadStatus
 import com.unciv.logic.map.tile.Tile
+import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.tile.Terrain
 import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.ruleset.unique.LocalUniqueCache
@@ -121,7 +122,7 @@ class WorkerAutomation(
         val currentTile = unit.getTile()
         val tileToWork = findTileToWork(unit, dangerousTiles)
 
-        if (getPriority(tileToWork) < 3) { // building roads is more important
+        if (getPriority(tileToWork, unit.getTile()) < 3) { // building roads is more important
             if (tryConnectingCities(unit)) return
         }
 
@@ -280,23 +281,23 @@ class WorkerAutomation(
     private fun findTileToWork(unit: MapUnit, tilesToAvoid: Set<Tile>): Tile {
         val currentTile = unit.getTile()
         val workableTilesCenterFirst = currentTile.getTilesInDistance(4)
-                .filter {
-                    it !in tilesToAvoid
-                    && (it.civilianUnit == null || it == currentTile)
-                    && (it.owningCity == null || it.getOwner() == civInfo)
-                    && getPriority(it) > 1
-                    && it.getTilesInDistance(2)  // don't work in range of enemy cities
-                        .none { tile -> tile.isCityCenter() && tile.getCity()!!.civ.isAtWarWith(civInfo) }
-                    && it.getTilesInDistance(3)  // don't work in range of enemy units
-                        .none { tile -> tile.militaryUnit != null && tile.militaryUnit!!.civ.isAtWarWith(civInfo)}
-                }
+            .filter {
+                it !in tilesToAvoid
+                && (it.civilianUnit == null || it == currentTile)
+                && (it.owningCity == null || it.getOwner() == civInfo)
+                && getPriority(it, unit.getTile()) > 1
+                && it.getTilesInDistance(2)  // don't work in range of enemy cities
+                    .none { tile -> tile.isCityCenter() && tile.getCity()!!.civ.isAtWarWith(civInfo) }
+                && it.getTilesInDistance(3)  // don't work in range of enemy units
+                    .none { tile -> tile.militaryUnit != null && tile.militaryUnit!!.civ.isAtWarWith(civInfo)}
+            }
 
         // Carthage can move through mountains, special case
         // If there are non-damage dealing tiles available, move to the best of those, otherwise move to the best damage dealing tile
         val workableTilesPrioritized = workableTilesCenterFirst
                 .sortedWith(
                     compareBy<Tile> { unit.getDamageFromTerrain(it) > 0 } // Sort on Boolean puts false first
-                        .thenByDescending { getPriority(it) }
+                        .thenByDescending { getPriority(it, unit.getTile()) }
                 )
 
         // These are the expensive calculations (tileCanBeImproved, canReach), so we only apply these filters after everything else it done.
@@ -312,7 +313,7 @@ class WorkerAutomation(
         return if ( currentTile == selectedTile  // No choice
                 || (!tileCanBeImproved(unit, currentTile) && !currentTile.isPillaged()) // current tile is unimprovable
                 || workableTilesCenterFirst.firstOrNull() != currentTile  // current tile is unworkable by city
-                || getPriority(selectedTile) > getPriority(currentTile))  // current tile is less important
+                || getPriority(selectedTile, unit.getTile()) > getPriority(currentTile, unit.getTile()))  // current tile is less important
             selectedTile
         else currentTile
     }
@@ -363,8 +364,9 @@ class WorkerAutomation(
     /**
      * Calculate a priority for improving a tile
      */
-    fun getPriority(tile: Tile): Int {
+    fun getPriority(tile: Tile, unitTile: Tile): Int {
         var priority = 0
+        if (tile == unitTile) priority += 2
         if (tile.getOwner() == civInfo) {
             priority += 2
             if (tile.providesYield()) priority += 3
