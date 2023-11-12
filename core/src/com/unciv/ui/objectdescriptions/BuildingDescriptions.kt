@@ -138,7 +138,8 @@ object BuildingDescriptions {
 
         val lostAbilityPredicate: (Unique)->Boolean = { it.text in replacementBuilding.uniques || it.isHiddenToUsers() }
         for (unique in originalBuilding.uniqueObjects.filterNot(lostAbilityPredicate)) {
-            yield(FormattedLine("Lost ability (vs [${originalBuilding.name}]): [${unique.text}]", indent=1))
+            // Need double translation of the "ability" here - unique texts may contain square brackets
+            yield(FormattedLine("Lost ability (vs [${originalBuilding.name}]): [${unique.text.tr()}]", indent=1))
         }
     }
 
