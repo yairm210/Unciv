@@ -276,10 +276,10 @@ class WorldScreen(
     }
 
     // Handle disabling and re-enabling WASD listener while Options are open
-    override fun openOptionsPopup(startingPage: Int, onClose: () -> Unit) {
+    override fun openOptionsPopup(startingPage: Int, withDebug: Boolean, onClose: () -> Unit) {
         val oldListener = stage.root.listeners.filterIsInstance<KeyboardPanningListener>().firstOrNull()
         if (oldListener != null) stage.removeListener(oldListener)
-        super.openOptionsPopup(startingPage) {
+        super.openOptionsPopup(startingPage, withDebug) {
             addKeyboardListener()
             onClose()
         }
