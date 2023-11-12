@@ -437,7 +437,7 @@ object DiplomacyAutomation {
                 alliedWarMotivation += if (thirdCivDiploManager.hasFlag(DiplomacyFlags.DefensivePact)) 15 else 5
             }
         }
-        modifierMap["War with allies"]
+        modifierMap["War with allies"] = alliedWarMotivation
 
 
         var motivationSoFar = modifierMap.values.sum()
