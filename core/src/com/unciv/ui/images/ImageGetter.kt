@@ -37,6 +37,7 @@ import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.fonts.FontRulesetIcons
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.utils.debug
+import java.io.BufferedReader
 import kotlin.math.atan2
 import kotlin.math.max
 import kotlin.math.min
@@ -102,10 +103,16 @@ object ImageGetter {
             if (!file.exists()) continue
             val extraAtlas = if (mod.isEmpty()) fileName else if (fileName == "game") mod else "$mod/$fileName"
             var tempAtlas = atlases[extraAtlas]  // fetch if cached
-            if (tempAtlas == null) {
+            if (tempAtlas == null) {  // load if not
                 try {
                     debug("Loading %s = %s", extraAtlas, file.path())
-                    tempAtlas = TextureAtlas(file)  // load if not
+                    // See https://github.com/libgdx/libgdx/issues/7155 - this is the official way to
+                    // force the Gdx TextureAtlasData.load method to interpret tha atlas content as UTF-8:
+                    tempAtlas = TextureAtlas(object : FileHandle(file.file(), file.type()) {
+                        override fun reader(bufferSize: Int): BufferedReader? {
+                            return super.reader(bufferSize, "UTF-8")
+                        }
+                    })
                     atlases[extraAtlas] = tempAtlas  // cache the freshly loaded
                 } catch (ex: Exception){
                     debug("Could not load file $file")
