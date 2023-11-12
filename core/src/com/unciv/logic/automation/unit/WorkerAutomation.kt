@@ -117,9 +117,9 @@ class WorkerAutomation(
     /**
      * Automate one Worker - decide what to do and where, move, start or continue work.
      */
-    fun automateWorkerAction(unit: MapUnit, tilesWhereWeWillBeCaptured: Set<Tile>) {
+    fun automateWorkerAction(unit: MapUnit, dangerousTiles: HashSet<Tile>) {
         val currentTile = unit.getTile()
-        val tileToWork = findTileToWork(unit, tilesWhereWeWillBeCaptured)
+        val tileToWork = findTileToWork(unit, dangerousTiles)
 
         if (getPriority(tileToWork) < 3) { // building roads is more important
             if (tryConnectingCities(unit)) return
@@ -199,7 +199,7 @@ class WorkerAutomation(
 
         // Idle CS units should wander so they don't obstruct players so much
         if (unit.civ.isCityState())
-            wander(unit, stayInTerritory = true, tilesToAvoid = tilesWhereWeWillBeCaptured)
+            wander(unit, stayInTerritory = true, tilesToAvoid = dangerousTiles)
     }
 
     /**

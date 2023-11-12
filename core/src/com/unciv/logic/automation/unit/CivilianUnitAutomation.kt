@@ -11,7 +11,7 @@ import com.unciv.ui.screens.worldscreen.unit.actions.UnitActions
 
 object CivilianUnitAutomation {
 
-    fun automateCivilianUnit(unit: MapUnit) {
+    fun automateCivilianUnit(unit: MapUnit, dangerousTiles: HashSet<Tile>) {
         if (tryRunAwayIfNeccessary(unit)) return
 
         if (unit.currentTile.isCityCenter() && unit.currentTile.getCity()!!.isCapital()
@@ -24,18 +24,11 @@ object CivilianUnitAutomation {
                 unit.movement.moveToTile(tilesCanMoveTo.minByOrNull { it.value.totalDistance }!!.key)
         }
 
-        val tilesWhereWeWillBeCaptured = unit.currentTile.getTilesInDistance(5)
-            .mapNotNull { it.militaryUnit }
-            .filter { it.civ.isAtWarWith(unit.civ) }
-            .flatMap { it.movement.getReachableTilesInCurrentTurn() }
-            .filter { it.militaryUnit?.civ != unit.civ }
-            .toSet()
-
         if (unit.hasUnique(UniqueType.FoundCity))
-            return SpecificUnitAutomation.automateSettlerActions(unit, tilesWhereWeWillBeCaptured)
+            return SpecificUnitAutomation.automateSettlerActions(unit, dangerousTiles)
 
         if (unit.cache.hasUniqueToBuildImprovements)
-            return unit.civ.getWorkerAutomation().automateWorkerAction(unit, tilesWhereWeWillBeCaptured)
+            return unit.civ.getWorkerAutomation().automateWorkerAction(unit, dangerousTiles)
 
         if (unit.cache.hasUniqueToCreateWaterImprovements){
             if (!unit.civ.getWorkerAutomation().automateWorkBoats(unit))
