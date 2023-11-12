@@ -109,5 +109,3 @@ open class AndroidLauncher : AndroidApplication() {
         super.onActivityResult(requestCode, resultCode, data)
     }
 }
-
-class AndroidTvLauncher:AndroidLauncher()
