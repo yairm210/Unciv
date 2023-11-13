@@ -98,13 +98,25 @@ class ThreatManager(val civInfo: Civilization) {
     /**
      * Returns all enemy military units within maxDistance of the tile.
      */
-    fun getEnemyMilitaryUnitsInDistance(tile: Tile, maxDist: Int): MutableList<MapUnit> {
-        val tilesWithEnemyMilitaryUnits = getTilesWithEnemyUnitsInDistance(tile, maxDist)
-        val enemyUnits = ArrayList<MapUnit>()
-        for (tileWithEnemy in tilesWithEnemyMilitaryUnits) {
-            enemyUnits.addAll(tileWithEnemy.getUnits().filter { it.isMilitary() })
-        }
-        return enemyUnits
+    fun getEnemyMilitaryUnitsInDistance(tile: Tile, maxDist: Int): List<MapUnit> = 
+        getTilesWithEnemyUnitsInDistance(tile, maxDist)
+            .flatMap { enemyTile -> enemyTile.getUnits().filter { it.isMilitary() && civInfo.isAtWarWith(it.civ) } }
+
+    
+    fun getDangerousTiles(unit: MapUnit, distance: Int = 3): HashSet<Tile> {
+        val nearbyRangedEnemyUnits = unit.civ.threatManager.getEnemyMilitaryUnitsInDistance(unit.getTile(), distance)
+
+        val tilesInRangeOfAttack = nearbyRangedEnemyUnits
+            .flatMap { it.getTile().getTilesInDistance(it.getRange()) }
+
+        val tilesWithinBombardmentRange = unit.currentTile.getTilesInDistance(distance)
+            .filter { it.isCityCenter() && it.getCity()!!.civ.isAtWarWith(unit.civ) }
+            .flatMap { it.getTilesInDistance(it.getCity()!!.range) }
+
+        val tilesWithTerrainDamage = unit.currentTile.getTilesInDistance(distance)
+            .filter { unit.getDamageFromTerrain(it) > 0 }
+
+        return (tilesInRangeOfAttack + tilesWithinBombardmentRange + tilesWithTerrainDamage).toHashSet()
     }
 
     /**

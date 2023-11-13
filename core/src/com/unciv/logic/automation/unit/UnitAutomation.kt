@@ -297,7 +297,7 @@ object UnitAutomation {
 
         val currentUnitTile = unit.getTile()
 
-        val dangerousTiles = getDangerousTiles(unit)
+        val dangerousTiles = unit.civ.threatManager.getDangerousTiles(unit)
 
         val viableTilesForHealing = unitDistanceToTiles.keys
                 .filter { it !in dangerousTiles && unit.movement.canMoveTo(it) }
@@ -341,22 +341,6 @@ object UnitAutomation {
 
         unit.fortifyIfCan()
         return true
-    }
-
-    private fun getDangerousTiles(unit: MapUnit, distance: Int = 3): HashSet<Tile> {
-        val nearbyRangedEnemyUnits = unit.civ.threatManager.getEnemyMilitaryUnitsInDistance(unit.getTile(), distance)
-
-        val tilesInRangeOfAttack = nearbyRangedEnemyUnits
-            .flatMap { it.getTile().getTilesInDistance(it.getRange()) }
-
-        val tilesWithinBombardmentRange = unit.currentTile.getTilesInDistance(distance)
-            .filter { it.isCityCenter() && it.getCity()!!.civ.isAtWarWith(unit.civ) }
-            .flatMap { it.getTilesInDistance(it.getCity()!!.range) }
-
-        val tilesWithTerrainDamage = unit.currentTile.getTilesInDistance(distance)
-            .filter { unit.getDamageFromTerrain(it) > 0 }
-
-        return (tilesInRangeOfAttack + tilesWithinBombardmentRange + tilesWithTerrainDamage).toHashSet()
     }
 
     fun tryPillageImprovement(unit: MapUnit): Boolean {
