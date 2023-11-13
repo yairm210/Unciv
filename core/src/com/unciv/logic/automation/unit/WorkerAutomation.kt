@@ -377,7 +377,13 @@ class WorkerAutomation(
         else if (tile.getOwner() == null && tile.neighbors.any { it.getOwner() == civInfo })
             priority += 1
 
-        if (priority != 0 && tile.hasViewableResource(civInfo)) priority += 1
+        if (priority != 0 && tile.hasViewableResource(civInfo))  {
+            priority += 1
+            // New Resources are great!
+            if (tile.tileResource.resourceType != ResourceType.Bonus 
+                && !civInfo.hasResource(tile.resource!!)) 
+                priority += 2
+        }
         return priority
     }
 
