@@ -28,7 +28,7 @@ object TranslationFileReader {
         val hashmap = HashMap<String,Int>()
         val percentageFile = Gdx.files.internal(percentagesFileLocation)
         if(!percentageFile.exists()) return hashmap
-        for(line in percentageFile.reader().readLines()){
+        for(line in percentageFile.reader().readLines()) {
             val splitLine = line.split(" = ")
             hashmap[splitLine[0]]=splitLine[1].toInt()
         }

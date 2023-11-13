@@ -62,7 +62,7 @@ class UnitPromotions : IsPartOfGameInfoSerialization {
         return true
     }
 
-    fun addPromotion(promotionName: String, isFree: Boolean = false){
+    fun addPromotion(promotionName: String, isFree: Boolean = false) {
         val ruleset = unit.civ.gameInfo.ruleset
         val promotion = ruleset.unitPromotions[promotionName]!!
 

@@ -41,7 +41,7 @@ class UnitUpgradeManager(val unit:MapUnit) {
             return false
         }
 
-        for (baseUnit in upgradePath.reversed()){
+        for (baseUnit in upgradePath.reversed()) {
             if (isInvalidUpgradeDestination(baseUnit)) continue
             return baseUnit
         }

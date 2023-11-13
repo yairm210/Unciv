@@ -63,7 +63,7 @@ class TechAction(private val techName: String = "") : NotificationAction {
 }
 
 /** enter city */
-class CityAction(private val city: Vector2 = Vector2.Zero): NotificationAction {
+class CityAction(private val city: Vector2 = Vector2.Zero) : NotificationAction {
     override fun execute(worldScreen: WorldScreen) {
         val cityObject = worldScreen.mapHolder.tileMap[city].getCity()
             ?: return
@@ -79,7 +79,7 @@ class CityAction(private val city: Vector2 = Vector2.Zero): NotificationAction {
 class DiplomacyAction(
     private val otherCivName: String = "",
     private val showTrade: Boolean = false
-): NotificationAction {
+) : NotificationAction {
     override fun execute(worldScreen: WorldScreen) {
         val otherCiv = worldScreen.gameInfo.getCivilization(otherCivName)
         worldScreen.game.pushScreen(DiplomacyScreen(worldScreen.viewingCiv, otherCiv, showTrade = showTrade))

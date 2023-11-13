@@ -10,7 +10,7 @@ class DurationSerializer : Serializer<Duration> {
         json.writeValue(duration.toString())
     }
 
-    override fun read(json: Json, jsonData: JsonValue, type: Class<*>?): Duration {
+    override fun read(json: Json, jsonData: JsonValue, type: Class<*>?) : Duration {
         return Duration.parse(jsonData.asString())
     }
 }

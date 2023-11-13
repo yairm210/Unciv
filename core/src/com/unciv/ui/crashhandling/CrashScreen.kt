@@ -26,7 +26,7 @@ import java.io.StringWriter
 /** Screen to crash to when an otherwise unhandled exception or error is thrown. */
 //todo We may be in a critical low-memory situation. Using a lot ot String concatenation and trimIndent
 //     could make the display fail when a more efficient StringBuilder approach might still succeed.
-class CrashScreen(val exception: Throwable): BaseScreen() {
+class CrashScreen(val exception: Throwable) : BaseScreen() {
 
     private companion object {
         fun Throwable.stringify(): String {

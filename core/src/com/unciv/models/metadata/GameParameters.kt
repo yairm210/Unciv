@@ -6,7 +6,7 @@ import com.unciv.models.ruleset.Speed
 
 
 @Suppress("EnumEntryName")  // These merit unusual names
-enum class BaseRuleset(val fullName:String){
+enum class BaseRuleset(val fullName:String) {
     Civ_V_Vanilla("Civ V - Vanilla"),
     Civ_V_GnK("Civ V - Gods & Kings"),
 }
