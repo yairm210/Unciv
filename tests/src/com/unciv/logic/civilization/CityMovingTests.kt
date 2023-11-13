@@ -49,7 +49,7 @@ class CityMovingTests {
         val theirCapital = testGame.addCity(enemy, testGame.tileMap[-2,-2])
         val theirOtherCity = testGame.addCity(enemy, testGame.tileMap[-2, 2])
 
-        for (i in listOf(-1,0,1)){
+        for (i in listOf(-1,0,1)) {
             val tile = testGame.tileMap[-2, i]
             tile.roadStatus = RoadStatus.Road
         }
@@ -67,7 +67,7 @@ class CityMovingTests {
         val theirCapital = testGame.addCity(enemy, testGame.tileMap[-2,-2])
         val theirOtherCity = testGame.addCity(enemy, testGame.tileMap[-2, 2])
 
-        for (i in listOf(-1,0,1)){
+        for (i in listOf(-1,0,1)) {
             val tile = testGame.tileMap[-2, i]
             tile.roadStatus = RoadStatus.Road
         }
@@ -86,7 +86,7 @@ class CityMovingTests {
         val theirCapital = testGame.addCity(enemy, testGame.tileMap[-2,-2])
         val theirOtherCity = testGame.addCity(enemy, testGame.tileMap[-2, 2])
 
-        for (i in listOf(-1,0,1)){
+        for (i in listOf(-1,0,1)) {
             val tile = testGame.tileMap[-2, i]
             tile.roadStatus = RoadStatus.Road
         }

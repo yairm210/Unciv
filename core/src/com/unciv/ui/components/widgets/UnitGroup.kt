@@ -19,7 +19,7 @@ import com.unciv.ui.components.extensions.surroundWithCircle
 import com.unciv.ui.components.extensions.surroundWithThinCircle
 import com.unciv.ui.images.ImageGetter
 
-private class FlagBackground(drawable: TextureRegionDrawable, size: Float): Image(drawable) {
+private class FlagBackground(drawable: TextureRegionDrawable, size: Float) : Image(drawable) {
 
     var drawableInner: TextureRegionDrawable? = null
 
@@ -77,7 +77,7 @@ private class FlagBackground(drawable: TextureRegionDrawable, size: Float): Imag
 
 }
 
-class UnitGroup(val unit: MapUnit, val size: Float): Group() {
+class UnitGroup(val unit: MapUnit, val size: Float) : Group() {
     var actionGroup :Group? = null
 
     private val flagIcon = ImageGetter.getUnitIcon(unit.name, unit.civ.nation.getInnerColor())

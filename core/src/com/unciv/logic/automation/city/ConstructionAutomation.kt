@@ -20,7 +20,7 @@ import com.unciv.models.stats.Stat
 import kotlin.math.max
 import kotlin.math.sqrt
 
-class ConstructionAutomation(val cityConstructions: CityConstructions){
+class ConstructionAutomation(val cityConstructions: CityConstructions) {
 
     private val city = cityConstructions.city
     private val civInfo = city.civ

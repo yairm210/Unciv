@@ -339,7 +339,7 @@ class TileLayerMisc(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup, si
         determineVisibility()
     }
 
-    fun hideTerrainOverlay(){
+    fun hideTerrainOverlay() {
         terrainOverlay.isVisible = false
         determineVisibility()
     }

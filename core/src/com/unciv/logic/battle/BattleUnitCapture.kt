@@ -184,7 +184,7 @@ object BattleUnitCapture {
         capturedUnit.updateVisibleTiles()
     }
 
-    fun captureOrConvertToWorker(capturedUnit: MapUnit, capturingCiv: Civilization){
+    fun captureOrConvertToWorker(capturedUnit: MapUnit, capturingCiv: Civilization) {
         // Captured settlers are converted to workers unless captured by barbarians (so they can be returned later).
         if (capturedUnit.hasUnique(UniqueType.FoundCity) && !capturingCiv.isBarbarian()) {
             capturedUnit.destroy()

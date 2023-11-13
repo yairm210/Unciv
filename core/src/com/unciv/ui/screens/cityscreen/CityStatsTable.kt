@@ -36,7 +36,7 @@ import kotlin.math.ceil
 import kotlin.math.round
 import com.unciv.ui.components.widgets.AutoScrollPane as ScrollPane
 
-class CityStatsTable(private val cityScreen: CityScreen): Table() {
+class CityStatsTable(private val cityScreen: CityScreen) : Table() {
     private val innerTable = Table() // table within this Table. Slightly smaller creates border
     private val upperTable = Table() // fixed position table
     private val lowerTable = Table() // table that will be in the ScrollPane
@@ -184,7 +184,7 @@ class CityStatsTable(private val cityScreen: CityScreen): Table() {
         val resourceCounter = Counter<TileResource>()
         for (resourceSupply in city.getCityResources()) resourceCounter.add(resourceSupply.resource, resourceSupply.amount)
         for ((resource, amount) in resourceCounter)
-            if (resource.hasUnique(UniqueType.CityResource)){
+            if (resource.hasUnique(UniqueType.CityResource)) {
                 resourceTable.add(amount.toLabel())
                 resourceTable.add(ImageGetter.getResourcePortrait(resource.name, 20f))
                     .padRight(5f)

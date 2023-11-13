@@ -16,7 +16,7 @@ object CivilianUnitAutomation {
 
         if (unit.currentTile.isCityCenter() && unit.currentTile.getCity()!!.isCapital()
             && !unit.hasUnique(UniqueType.AddInCapital)
-            && unit.civ.units.getCivUnits().any { unit.hasUnique(UniqueType.AddInCapital) }){
+            && unit.civ.units.getCivUnits().any { unit.hasUnique(UniqueType.AddInCapital) }) {
             // First off get out of the way, then decide if you actually want to do something else
             val tilesCanMoveTo = unit.movement.getDistanceToTiles()
                 .filter { unit.movement.canMoveTo(it.key) }
@@ -37,7 +37,7 @@ object CivilianUnitAutomation {
         if (unit.cache.hasUniqueToBuildImprovements)
             return unit.civ.getWorkerAutomation().automateWorkerAction(unit, tilesWhereWeWillBeCaptured)
 
-        if (unit.cache.hasUniqueToCreateWaterImprovements){
+        if (unit.cache.hasUniqueToCreateWaterImprovements) {
             if (!unit.civ.getWorkerAutomation().automateWorkBoats(unit))
                 UnitAutomation.tryExplore(unit)
             return

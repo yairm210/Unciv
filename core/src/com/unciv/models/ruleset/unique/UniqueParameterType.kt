@@ -47,7 +47,7 @@ enum class UniqueParameterType(
         }
     },
 
-    Fraction("fraction", docExample = "0.5", "Indicates a fractional number, which can be negative"){
+    Fraction("fraction", docExample = "0.5", "Indicates a fractional number, which can be negative") {
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset): UniqueType.UniqueParameterErrorSeverity? {
             return if (parameterText.toFloatOrNull () == null) UniqueType.UniqueParameterErrorSeverity.RulesetInvariant
             else null
@@ -391,7 +391,7 @@ enum class UniqueParameterType(
     },
 
     /** For [UniqueType.CreatesOneImprovement] */
-    ImprovementName("improvementName", "Trading Post", "The name of any improvement"){
+    ImprovementName("improvementName", "Trading Post", "The name of any improvement") {
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
                 UniqueType.UniqueParameterErrorSeverity? {
             if (parameterText == Constants.cancelImprovementOrder)

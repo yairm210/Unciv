@@ -487,7 +487,7 @@ class QuestManager : IsPartOfGameInfoSerialization {
         val leadingQuest = assignedQuests.filter { it.questName == questName }.maxByOrNull { getScoreForQuest(it) }
             ?: return ""
 
-        return when (questName){
+        return when (questName) {
             QuestName.ContestCulture.value -> "Current leader is [${leadingQuest.assignee}] with [${getScoreForQuest(leadingQuest)}] [Culture] generated."
             QuestName.ContestFaith.value -> "Current leader is [${leadingQuest.assignee}] with [${getScoreForQuest(leadingQuest)}] [Faith] generated."
             QuestName.ContestTech.value -> "Current leader is [${leadingQuest.assignee}] with [${getScoreForQuest(leadingQuest)}] Technologies discovered."

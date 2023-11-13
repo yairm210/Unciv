@@ -218,7 +218,7 @@ class UnitMovementTests {
     @Test
     fun canTeleportWaterUnit() {
         testGame.makeHexagonalMap(5)
-        for (i in 1..3){
+        for (i in 1..3) {
             val waterTile = testGame.tileMap[1,i]
             waterTile.baseTerrain = Constants.ocean
             waterTile.setTransients()
@@ -238,7 +238,7 @@ class UnitMovementTests {
     @Test
     fun `can NOT teleport water unit over the land`() {
         testGame.makeHexagonalMap(5)
-        for (i in listOf(1,3)){ // only water tiles are 1,1 and 1,3, which are non-contiguous
+        for (i in listOf(1,3)) { // only water tiles are 1,1 and 1,3, which are non-contiguous
             val waterTile = testGame.tileMap[1,i]
             waterTile.baseTerrain = Constants.ocean
             waterTile.setTransients()
@@ -283,7 +283,7 @@ class UnitMovementTests {
     @Test
     fun canTeleportTransportWithPayload() {
         testGame.makeHexagonalMap(5)
-        for (i in 1..3){
+        for (i in 1..3) {
             val waterTile = testGame.tileMap[1,i]
             waterTile.baseTerrain = Constants.ocean
             waterTile.setTransients()

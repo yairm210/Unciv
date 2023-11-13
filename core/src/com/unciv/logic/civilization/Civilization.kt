@@ -491,7 +491,7 @@ class Civilization : IsPartOfGameInfoSerialization {
     }
 
     fun matchesFilter(filter: String): Boolean {
-        return when (filter){
+        return when (filter) {
             "Human player" -> isHuman()
             "AI player" -> isAI()
             else -> nation.matchesFilter(filter)
@@ -746,7 +746,7 @@ class Civilization : IsPartOfGameInfoSerialization {
         }
     }
 
-    fun addStats(stats: Stats){
+    fun addStats(stats: Stats) {
         for ((stat, amount) in stats) addStat(stat, amount.toInt())
     }
 
