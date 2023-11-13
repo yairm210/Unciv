@@ -137,7 +137,7 @@ class ThreatManager(val civInfo: Civilization) {
         return false
     }
 
-    fun clearThreatData() {
+    fun clear() {
         distanceToClosestEnemyTiles.clear()
     }
 }

@@ -32,7 +32,7 @@ class TurnManager(val civInfo: Civilization) {
     fun startTurn(progressBar: NextTurnProgress? = null) {
         if (civInfo.isSpectator()) return
         
-        civInfo.threatManager.clearThreatData()
+        civInfo.threatManager.clear()
         if (civInfo.isMajorCiv() && civInfo.isAlive()) {
             civInfo.statsHistory.recordRankingStats(civInfo)
         }
