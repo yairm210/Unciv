@@ -369,7 +369,7 @@ class WorkerAutomation(
         if (tile == unitTile) priority += 2
         if (tile.getOwner() == civInfo) {
             priority += 2
-            if (tile.providesYield()) priority += 3
+            if (tile.isWorked()) priority += 3
             if (tile.isPillaged()) priority += 1
         }
         // give a minor priority to tiles that we could expand onto
