@@ -24,7 +24,7 @@ open class Stats(
     // This is what facilitates indexed access by [Stat] or add(Stat,Float)
     // without additional memory allocation or expensive conditionals
     private fun statToProperty(stat: Stat):KMutableProperty0<Float>{
-        return when(stat){
+        return when(stat) {
             Stat.Production -> ::production
             Stat.Food -> ::food
             Stat.Gold -> ::gold
@@ -145,7 +145,7 @@ open class Stats(
 
     /** **Mutating function**
      * Apply weighting for Production Ranking */
-    fun applyRankingWeights(){
+    fun applyRankingWeights() {
         food *= 14
         production *= 12
         gold *= 8 // 3 gold worth about 2 production

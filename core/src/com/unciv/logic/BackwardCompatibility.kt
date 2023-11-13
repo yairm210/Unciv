@@ -56,7 +56,7 @@ object BackwardCompatibility {
                     tile.roadStatus = RoadStatus.None
                     tile.roadIsPillaged = false
                 }
-                if (tile.improvementIsPillaged){
+                if (tile.improvementIsPillaged) {
                     tile.improvement = null
                     tile.improvementIsPillaged = false
                 }

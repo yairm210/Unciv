@@ -37,7 +37,7 @@ class CapitalConnectionsFinderTests {
     }
 
     private fun createMedium(from:Int, to: Int, type: RoadStatus) {
-        for (i in from..to){
+        for (i in from..to) {
             val tile = testGame.tileMap[0, i]
             tile.roadStatus = type
         }

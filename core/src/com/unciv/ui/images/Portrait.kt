@@ -203,7 +203,7 @@ class PortraitImprovement(name: String, size: Float, dim: Boolean = false, isPil
             image.color.a = 0.7f
             background.color.a = 0.7f
         }
-        if (isPillaged){
+        if (isPillaged) {
             val pillagedIcon = ImageGetter.getImage("OtherIcons/Fire")
             pillagedIcon.setSize(width/2, height/2)
             pillagedIcon.setPosition(width, 0f, Align.bottomRight)

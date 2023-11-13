@@ -432,7 +432,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
     override fun shouldBeDisplayed(cityConstructions: CityConstructions): Boolean {
         if (cityConstructions.isBeingConstructedOrEnqueued(name))
             return false
-        for (unique in getMatchingUniques(UniqueType.MaxNumberBuildable)){
+        for (unique in getMatchingUniques(UniqueType.MaxNumberBuildable)) {
             if (cityConstructions.city.civ.civConstructions.countConstructedObjects(this) >= unique.params[0].toInt())
                 return false
         }

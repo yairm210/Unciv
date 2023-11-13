@@ -160,7 +160,7 @@ class TileLayerTerrain(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup,
             image.color = if (index == 0) baseTerrainColor else color
     }
 
-    private fun updateRivers(displayBottomRight:Boolean, displayBottom:Boolean, displayBottomLeft:Boolean){
+    private fun updateRivers(displayBottomRight:Boolean, displayBottom:Boolean, displayBottomLeft:Boolean) {
         bottomRightRiverImage = updateRiver(bottomRightRiverImage,displayBottomRight, strings().bottomRightRiver)
         bottomRiverImage = updateRiver(bottomRiverImage, displayBottom, strings().bottomRiver)
         bottomLeftRiverImage = updateRiver(bottomLeftRiverImage, displayBottomLeft, strings().bottomLeftRiver)

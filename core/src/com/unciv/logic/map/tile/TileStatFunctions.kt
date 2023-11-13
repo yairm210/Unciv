@@ -260,7 +260,7 @@ class TileStatFunctions(val tile: Tile) {
     ): Stats {
         val stats = Stats()
 
-        fun statsFromTiles(){
+        fun statsFromTiles() {
             val tileUniques = uniqueCache.forCityGetMatchingUniques(city, UniqueType.StatsFromTiles, conditionalState)
                 .filter { city.matchesFilter(it.params[2]) }
             val improvementUniques =
