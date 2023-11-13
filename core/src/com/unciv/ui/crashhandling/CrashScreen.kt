@@ -24,7 +24,7 @@ import java.io.PrintWriter
 import java.io.StringWriter
 
 /** Screen to crash to when an otherwise unhandled exception or error is thrown. */
-class CrashScreen(val exception: Throwable): BaseScreen() {
+class CrashScreen(val exception: Throwable) : BaseScreen() {
 
     private companion object {
         fun Throwable.stringify(): String {

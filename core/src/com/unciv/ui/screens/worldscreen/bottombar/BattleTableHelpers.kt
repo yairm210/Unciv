@@ -83,7 +83,7 @@ object BattleTableHelpers {
                 val attackAnimationLocation = getAttackAnimationLocation()
                 if (attackAnimationLocation != null) {
                     var i = 1
-                    while (ImageGetter.imageExists(attackAnimationLocation + i)){
+                    while (ImageGetter.imageExists(attackAnimationLocation + i)) {
                         val image = ImageGetter.getImage(attackAnimationLocation + i)
                         addAction(Actions.run {
                             defenderActors.first().parent.addActor(image)

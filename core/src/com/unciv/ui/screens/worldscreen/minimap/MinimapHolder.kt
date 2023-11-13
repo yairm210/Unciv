@@ -54,7 +54,7 @@ class MinimapHolder(val mapHolder: WorldMapHolder) : Table() {
         rebuild(civInfo)
     }
 
-    private fun rebuild(civInfo: Civilization?){
+    private fun rebuild(civInfo: Civilization?) {
         this.clear()
         minimap = Minimap(mapHolder, minimapSize, civInfo)
         add(getToggleIcons()).align(Align.bottom)
