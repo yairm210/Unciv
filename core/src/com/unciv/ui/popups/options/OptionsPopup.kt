@@ -7,10 +7,10 @@ import com.unciv.GUI
 import com.unciv.UncivGame
 import com.unciv.models.metadata.BaseRuleset
 import com.unciv.models.ruleset.RulesetCache
-import com.unciv.ui.components.widgets.TabbedPager
 import com.unciv.ui.components.extensions.areSecretKeysPressed
 import com.unciv.ui.components.extensions.center
 import com.unciv.ui.components.extensions.toCheckBox
+import com.unciv.ui.components.widgets.TabbedPager
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popups.Popup
 import com.unciv.ui.screens.basescreen.BaseScreen
@@ -28,6 +28,7 @@ import kotlin.reflect.KMutableProperty0
 class OptionsPopup(
     screen: BaseScreen,
     private val selectPage: Int = defaultPage,
+    withDebug: Boolean = false,
     private val onClose: () -> Unit = {}
 ) : Popup(screen.stage, /** [TabbedPager] handles scrolling */ scrollable = Scrollability.None) {
 
@@ -110,7 +111,7 @@ class OptionsPopup(
             val content = ModCheckTab(screen)
             tabs.addPage("Locate mod errors", content, ImageGetter.getImage("OtherIcons/Mods"), 24f)
         }
-        if (Gdx.input.areSecretKeysPressed()) {
+        if (withDebug || Gdx.input.areSecretKeysPressed()) {
             tabs.addPage("Debug", debugTab(this), ImageGetter.getImage("OtherIcons/SecretOptions"), 24f, secret = true)
         }
 
