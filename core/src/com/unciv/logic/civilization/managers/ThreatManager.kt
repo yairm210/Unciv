@@ -7,16 +7,16 @@ import com.unciv.logic.map.tile.Tile
 class ThreatManager(val civInfo: Civilization) {
 
     class ClosestEnemyTileData(
-        // The farthest radius in which we have checked all the tiles for enemies
-        // A value of 2 means there are no enemies in a radius of 2
+        /** The farthest radius in which we have checked all the tiles for enemies.
+         * A value of 2 means there are no enemies in a radius of 2. */
         var distanceSearched: Int,
-        // It is guaranteed that there is no enemy within a radius of D-1
-        // The enemy that we saw might have been killed 
-        // so we have to check the tileWithEnemy to see if we need to search again
+        /** It is guaranteed that there is no enemy within a radius of D-1.
+         * The enemy that we saw might have been killed.
+         * so we have to check the tileWithEnemy to see if we need to search again. */
         var distanceToClosestEnemy: Int? = null,
-        // Stores the location of the enemy that we saw
-        // This allows us to quickly check if they are still alive
-        // and if we should search farther
+        /** Stores the location of the enemy that we saw.
+        * This allows us to quickly check if they are still alive.
+        * and if we should search farther. */
         var tileWithEnemy: Tile? = null
     )
 
@@ -24,8 +24,8 @@ class ThreatManager(val civInfo: Civilization) {
 
     /**
      * Gets the distance to the closest visible enemy unit or city.
-     * The result value is cached
-     * Since it is called each turn each subsequent call is essentially free
+     * The result value is cached.
+     * Since it is called each turn each subsequent calls are likely to be free.
      */
     fun getDistanceToClosestEnemyUnit(tile: Tile, maxDist: Int, takeLargerValues: Boolean = true): Int {
         val tileData = distanceToClosestEnemyTiles[tile]
@@ -63,9 +63,9 @@ class ThreatManager(val civInfo: Civilization) {
     }
 
     /**
-     * Returns all tiles with enemy units on them in distance
-     * May be quicker than a manual search because of caching
-     * Also ends up calculating and caching getDistanceToEnemyUnit
+     * Returns all tiles with enemy units on them in distance.
+     * May be quicker than a manual search because of caching.
+     * Also ends up calculating and caching getDistanceToEnemyUnit.
      */
     fun getTilesWithEnemyUnitsInDistance(tile: Tile, maxDist: Int): MutableList<Tile> {
         val tileData = distanceToClosestEnemyTiles[tile]
@@ -74,7 +74,7 @@ class ThreatManager(val civInfo: Civilization) {
         var closestEnemyDistance = tileData?.distanceToClosestEnemy
         var tileWithEnemy = tileData?.tileWithEnemy
         val tilesWithEnemies = ArrayList<Tile>()
-        
+
         for (i in minDistanceToSearch..maxDist) {
             for (searchTile in tile.getTilesAtDistance(i)) {
                 if (doesTileHaveMilitaryEnemy(searchTile)) {
@@ -96,9 +96,9 @@ class ThreatManager(val civInfo: Civilization) {
     }
 
     /**
-     * Returns all enemy military units within maxDistance of the tile
+     * Returns all enemy military units within maxDistance of the tile.
      */
-    fun getEnemyMilitaryUnitsInDistance(tile:Tile, maxDist: Int): MutableList<MapUnit> {
+    fun getEnemyMilitaryUnitsInDistance(tile: Tile, maxDist: Int): MutableList<MapUnit> {
         val tilesWithEnemyMilitaryUnits = getTilesWithEnemyUnitsInDistance(tile, maxDist)
         val enemyUnits = ArrayList<MapUnit>()
         for (tileWithEnemy in tilesWithEnemyMilitaryUnits) {
@@ -106,9 +106,9 @@ class ThreatManager(val civInfo: Civilization) {
         }
         return enemyUnits
     }
-    
+
     /**
-     * Returns true if the tile has a visible enemy, otherwise returns false
+     * Returns true if the tile has a visible enemy, otherwise returns false.
      */
     fun doesTileHaveMilitaryEnemy(tile: Tile): Boolean {
         if (!tile.isExplored(civInfo)) return false
@@ -120,7 +120,7 @@ class ThreatManager(val civInfo: Civilization) {
             return true
         return false
     }
-    
+
     fun clearThreatData() {
         distanceToClosestEnemyTiles.clear()
     }
