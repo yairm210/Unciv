@@ -371,6 +371,7 @@ class WorkerAutomation(
             priority += 2
             if (tile.isWorked()) priority += 3
             if (tile.isPillaged()) priority += 1
+            if (tile.terrainFeatures.contains("Fallout")) priority += 1
         }
         // give a minor priority to tiles that we could expand onto
         else if (tile.getOwner() == null && tile.neighbors.any { it.getOwner() == civInfo })
