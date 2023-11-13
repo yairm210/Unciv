@@ -53,9 +53,10 @@ object CityLocationTileRanker {
         for (city in nearbyCities) {
             val distance = city.getCenterTile().aerialDistanceTo(tile)
             // todo: AgreedToNotSettleNearUs is hardcoded for now but it may be better to softcode it below in getDistanceToCityModifier
-            if (distance <= 6 && civ.knows(city.civ) &&
+            if (distance <= 6 && civ.knows(city.civ) 
+                && !civ.isAtWarWith(city.civ)
                 // If the CITY OWNER knows that the UNIT OWNER agreed not to settle near them
-                city.civ.getDiplomacyManager(civ)
+                && city.civ.getDiplomacyManager(civ)
                     .hasFlag(DiplomacyFlags.AgreedToNotSettleNearUs))
                 return false
             if (tile.getContinent() == city.getCenterTile().getContinent()) {
