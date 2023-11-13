@@ -1,23 +1,17 @@
 ## 4.8.18
 
-typo fix for enhanced religion city filter
-
-Added Human and AI filters, separated civFilter from nationFilter 
+Modding: Added Human and AI filters, separated civFilter from nationFilter
 
 By SomeTroglodyte:
-- Patch for on-screen keyboard hiding pedia search results 
-- CrashScreen info improved, allow easier testing of CrashScreen 
-- Fix "hidden from users" where Nation describes its unique Building (if it replaces an existing one) 
-- Rivers... Moddable Stats and Civilopedia 
-- (UX, QOL) World screen top stats row scales down to squeeze into available width 
-- Allow the "Civ destroyed" Notification to show a location 
-- Whitespace linting for opening curly braces and inheritance colon 
-- Fix Mod download issue - github url and indicator refresh 
-- Mix of issue fixes around diplomacy and trade 
+- Patch for on-screen keyboard hiding pedia search results
+- Rivers... Moddable Stats and Civilopedia
+- World screen top bar scales down to available width
+- "Civ destroyed" Notification includes location
+- Lots of other issue fixes!
 
 By tuvus:
-- Fixed land/sea nukes trying to act like air units 
-- Fixed promise not to settle 
+- Fixed land/sea nukes trying to act like air units
+- Fixed promise not to settle
 
 Fix Multiplayer spectator ids not logging  - By SeventhM
 
