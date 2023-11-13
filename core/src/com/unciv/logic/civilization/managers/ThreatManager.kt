@@ -6,7 +6,7 @@ import com.unciv.logic.map.tile.Tile
 
 class ThreatManager(val civInfo: Civilization) {
 
-    data class ClosestEnemyTileData(
+    class ClosestEnemyTileData(
         // The farthest radius in which we have checked all the tiles for enemies
         // A value of 2 means there are no enemies in a radius of 2
         var distanceSearched: Int,
