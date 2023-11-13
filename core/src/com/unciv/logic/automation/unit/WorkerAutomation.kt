@@ -285,11 +285,8 @@ class WorkerAutomation(
                 it !in tilesToAvoid
                 && (it.civilianUnit == null || it == currentTile)
                 && (it.owningCity == null || it.getOwner() == civInfo)
+                && !tilesToAvoid.contains(unit.getTile())
                 && getPriority(it, unit.getTile()) > 1
-                && it.getTilesInDistance(2)  // don't work in range of enemy cities
-                    .none { tile -> tile.isCityCenter() && tile.getCity()!!.civ.isAtWarWith(civInfo) }
-                && it.getTilesInDistance(3)  // don't work in range of enemy units
-                    .none { tile -> tile.militaryUnit != null && tile.militaryUnit!!.civ.isAtWarWith(civInfo)}
             }
 
         // Carthage can move through mountains, special case
