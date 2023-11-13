@@ -27,7 +27,7 @@ class DiplomacyManagerTests {
     private val d = addCiv()
 
 
-    private fun meet(civilization: Civilization, otherCivilization: Civilization){
+    private fun meet(civilization: Civilization, otherCivilization: Civilization) {
         civilization.diplomacyFunctions.makeCivilizationsMeet(otherCivilization)
     }
 

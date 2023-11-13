@@ -35,10 +35,10 @@ class TileSetConfig {
         fogOfWarColor = other.fogOfWarColor
         fallbackTileSet = other.fallbackTileSet
         tileScale = other.tileScale
-        for ((tileString, scale) in other.tileScales){
+        for ((tileString, scale) in other.tileScales) {
             tileScales[tileString] = scale
         }
-        for ((tileSetString, renderOrder) in other.ruleVariants){
+        for ((tileSetString, renderOrder) in other.ruleVariants) {
             ruleVariants[tileSetString] = renderOrder
         }
     }

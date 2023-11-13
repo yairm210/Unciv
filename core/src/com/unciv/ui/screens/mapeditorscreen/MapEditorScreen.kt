@@ -57,7 +57,7 @@ import kotlinx.coroutines.Job
 //todo See #6694 - allow adding tiles to a map (1 cell all around on hex? world-wrapped hex?? all around on rectangular? top bottom only on world-wrapped??)
 //todo move map copy&paste to save/load??
 
-class MapEditorScreen(map: TileMap? = null): BaseScreen(), RecreateOnResize {
+class MapEditorScreen(map: TileMap? = null) : BaseScreen(), RecreateOnResize {
     /** The map being edited, with mod list for that map */
     var tileMap: TileMap
     /** Flag indicating the map should be saved */

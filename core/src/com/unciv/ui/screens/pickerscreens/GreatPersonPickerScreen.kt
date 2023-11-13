@@ -43,7 +43,7 @@ class GreatPersonPickerScreen(val civInfo:Civilization) : PickerScreen() {
 
     }
 
-    private fun confirmAction(useMayaLongCount: Boolean){
+    private fun confirmAction(useMayaLongCount: Boolean) {
         civInfo.units.addUnit(theChosenOne!!, civInfo.getCapital())
         civInfo.greatPeople.freeGreatPeople--
         if (useMayaLongCount) {

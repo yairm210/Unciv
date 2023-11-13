@@ -50,7 +50,7 @@ open class Tile : IsPartOfGameInfoSerialization {
     var owningCity: City? = null
         private set
 
-    fun setOwningCity(city:City?){
+    fun setOwningCity(city:City?) {
         if (city != null) {
             if (roadStatus != RoadStatus.None && roadOwner != "") {
                 // remove previous neutral tile owner
@@ -397,7 +397,7 @@ open class Tile : IsPartOfGameInfoSerialization {
     /** Get all uniques of this type that any part of this tile has: terrains, improvement, resource */
     fun getMatchingUniques(uniqueType: UniqueType, stateForConditionals: StateForConditionals = StateForConditionals(tile=this)): Sequence<Unique> {
         var uniques = getTerrainMatchingUniques(uniqueType, stateForConditionals)
-        if (getUnpillagedImprovement() != null){
+        if (getUnpillagedImprovement() != null) {
             val tileImprovement = getTileImprovement()
             if (tileImprovement != null) {
                 uniques += tileImprovement.getMatchingUniques(uniqueType, stateForConditionals)

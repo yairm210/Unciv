@@ -217,7 +217,7 @@ class CivInfoStatsForNextTurn(val civInfo: Civilization) {
     fun getHappinessBreakdown(): HashMap<String, Float> {
         val statMap = HashMap<String, Float>()
 
-        fun HashMap<String, Float>.add(key:String, value: Float){
+        fun HashMap<String, Float>.add(key:String, value: Float) {
             if (!containsKey(key)) put(key, value)
             else put(key, value+get(key)!!)
         }

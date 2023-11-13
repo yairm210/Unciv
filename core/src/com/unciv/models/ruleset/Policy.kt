@@ -98,7 +98,7 @@ open class Policy : RulesetObject() {
         val enabledBuildings = ruleset.buildings.values.filter { isEnabledByPolicy(it) }
         val enabledUnits = ruleset.units.values.filter { isEnabledByPolicy(it) }
 
-        if (enabledBuildings.isNotEmpty() || enabledUnits.isNotEmpty()){
+        if (enabledBuildings.isNotEmpty() || enabledUnits.isNotEmpty()) {
             lineList += FormattedLine("Enables:")
             for (building in enabledBuildings)
                 lineList += FormattedLine(building.name, link = building.makeLink(), indent = 1)
@@ -116,7 +116,7 @@ open class Policy : RulesetObject() {
         val disabledBuildings = ruleset.buildings.values.filter { isDisabledByPolicy(it) }
         val disabledUnits = ruleset.units.values.filter { isDisabledByPolicy(it) }
 
-        if (disabledBuildings.isNotEmpty() || disabledUnits.isNotEmpty()){
+        if (disabledBuildings.isNotEmpty() || disabledUnits.isNotEmpty()) {
             lineList += FormattedLine("Disables:")
             for (building in disabledBuildings)
                 lineList += FormattedLine(building.name, link = building.makeLink(), indent = 1)

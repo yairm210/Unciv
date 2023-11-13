@@ -31,7 +31,7 @@ import java.util.Locale
  *
  *  @see    String.tr   for more explanations (below)
  */
-class Translations : LinkedHashMap<String, TranslationEntry>(){
+class Translations : LinkedHashMap<String, TranslationEntry>() {
 
     var percentCompleteOfLanguages = HashMap<String,Int>()
             .apply { put(Constants.english, 100) } // So even if we don't manage to load the percentages, we can still pass the language screen
@@ -132,7 +132,7 @@ class Translations : LinkedHashMap<String, TranslationEntry>(){
         }
     }
 
-    fun tryReadTranslationForCurrentLanguage(){
+    fun tryReadTranslationForCurrentLanguage() {
         tryReadTranslationForLanguage(UncivGame.Current.settings.language)
     }
 
@@ -181,7 +181,7 @@ class Translations : LinkedHashMap<String, TranslationEntry>(){
         debug("Loading translation files - %sms", System.currentTimeMillis() - translationStart)
     }
 
-    fun loadPercentageCompleteOfLanguages(){
+    fun loadPercentageCompleteOfLanguages() {
         val startTime = System.currentTimeMillis()
 
         percentCompleteOfLanguages = TranslationFileReader.readLanguagePercentages()

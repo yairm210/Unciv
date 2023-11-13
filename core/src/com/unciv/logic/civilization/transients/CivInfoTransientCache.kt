@@ -40,7 +40,7 @@ class CivInfoTransientCache(val civInfo: Civilization) {
     @Transient
     var citiesConnectedToCapitalToMediums = mapOf<City, Set<String>>()
 
-    fun setTransients(){
+    fun setTransients() {
         val ruleset = civInfo.gameInfo.ruleset
 
         for (resource in ruleset.tileResources.values.asSequence().filter { it.resourceType == ResourceType.Strategic }.map { it.name }) {

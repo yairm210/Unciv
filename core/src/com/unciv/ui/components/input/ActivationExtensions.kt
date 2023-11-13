@@ -127,7 +127,7 @@ fun Stage.installShortcutDispatcher(additionalShortcuts: KeyShortcutDispatcher? 
     addListener(KeyShortcutListener(actors.asSequence(), additionalShortcuts, dispatcherVetoerCreator))
 }
 
-private class OnChangeListener(val function: (event: ChangeEvent?) -> Unit): ChangeListener() {
+private class OnChangeListener(val function: (event: ChangeEvent?) -> Unit) : ChangeListener() {
     override fun changed(event: ChangeEvent?, actor: Actor?) {
         function(event)
     }

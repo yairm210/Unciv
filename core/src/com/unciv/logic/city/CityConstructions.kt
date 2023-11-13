@@ -335,7 +335,7 @@ class CityConstructions : IsPartOfGameInfoSerialization {
             if (inProgressConstructions.containsKey(currentConstructionFromQueue)
                     && inProgressConstructions[currentConstructionFromQueue]!! >= productionCost) {
                 val potentialOverflow = inProgressConstructions[currentConstructionFromQueue]!! - productionCost
-                if (constructionComplete(construction)){
+                if (constructionComplete(construction)) {
                     // See the URL below for explanation for this cap
                     // https://forums.civfanatics.com/threads/hammer-overflow.419352/
                     val maxOverflow = maxOf(productionCost, city.cityStats.currentCityStats.production.roundToInt())
@@ -426,7 +426,7 @@ class CityConstructions : IsPartOfGameInfoSerialization {
     private fun constructionBegun(construction: IConstruction) {
         val costUniques = construction.getMatchingUniquesNotConflicting(UniqueType.CostsResources)
 
-        for (unique in costUniques){
+        for (unique in costUniques) {
             val amount = unique.params[0].toInt()
             val resourceName = unique.params[1]
             city.civ.resourceStockpiles.add(resourceName, -amount)

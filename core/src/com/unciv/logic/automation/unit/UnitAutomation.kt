@@ -169,7 +169,7 @@ object UnitAutomation {
         //This allows for military units with certain civilian abilities to behave as civilians in peace and soldiers in war
         if ((unit.hasUnique(UniqueType.BuildImprovements) || unit.hasUnique(UniqueType.FoundCity) ||
                 unit.hasUnique(UniqueType.ReligiousUnit) || unit.hasUnique(UniqueType.CreateWaterImprovements))
-                && !unit.civ.isAtWar()){
+                && !unit.civ.isAtWar()) {
             CivilianUnitAutomation.automateCivilianUnit(unit)
             return
         }
@@ -253,14 +253,14 @@ object UnitAutomation {
         unit.movement.headTowards(encampmentToHeadTowards)
         return true
     }
-    
+
     private fun trySwapRetreat(unit: MapUnit): Boolean {
         if (!unit.civ.isAtWar()) return false
         // Precondition: This must be a military unit
         if (unit.isCivilian()) return false
         // Better to do a more healing oriented move then
         if (unit.civ.threatManager.getDistanceToClosestEnemyUnit(unit.getTile(),6, true) > 4) return false
-        
+      
         if (unit.baseUnit.isAirUnit()) {
             return false
         }
@@ -272,14 +272,15 @@ object UnitAutomation {
             val ourDistanceToClosestEnemy = unit.civ.threatManager.getDistanceToClosestEnemyUnit(unit.getTile(),6, false)
             if (otherUnit.health > 80 
                 && ourDistanceToClosestEnemy < otherUnit.civ.threatManager.getDistanceToClosestEnemyUnit(otherUnit.getTile(),6,false)) {
+              
                 if (otherUnit.baseUnit.isRanged()) {
                     // Don't swap ranged units closer than they have to be
                     val range = otherUnit.baseUnit.range
                     if (ourDistanceToClosestEnemy < range)
                         continue
                 }
-                if (unit.movement.canUnitSwapTo(swapTile)) { 
-                    unit.movement.swapMoveToTile(swapTile) 
+                if (unit.movement.canUnitSwapTo(swapTile)) {
+                    unit.movement.swapMoveToTile(swapTile)
                     return true
                 }
             }
