@@ -465,7 +465,7 @@ open class Tile : IsPartOfGameInfoSerialization {
     // This should be the only adjacency function
     fun isAdjacentTo(terrainFilter:String): Boolean {
         // Rivers are odd, as they aren't technically part of any specific tile but still count towards adjacency
-        if (terrainFilter == "River") return isAdjacentToRiver()
+        if (terrainFilter == Constants.river) return isAdjacentToRiver()
         if (terrainFilter == Constants.freshWater && isAdjacentToRiver()) return true
         return (neighbors + this).any { neighbor -> neighbor.matchesFilter(terrainFilter) }
     }
@@ -485,7 +485,7 @@ open class Tile : IsPartOfGameInfoSerialization {
             "Water" -> isWater
             "Land" -> isLand
             Constants.coastal -> isCoastalTile()
-            "River" -> isAdjacentToRiver()
+            Constants.river -> isAdjacentToRiver()
             naturalWonder -> true
             "Open terrain" -> !isRoughTerrain()
             "Rough terrain" -> isRoughTerrain()

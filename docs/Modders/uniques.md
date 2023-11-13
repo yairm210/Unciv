@@ -899,6 +899,9 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "Units ignore terrain costs when moving into any tile with Hills"
 	Applicable to: Nation
 
+??? example  "Excluded from map editor"
+	Applicable to: Nation, Terrain, Improvement, Resource
+
 ??? example  "Will not be displayed in Civilopedia"
 	Applicable to: Nation, Tech, Policy, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins
 
