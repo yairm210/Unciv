@@ -24,8 +24,8 @@ class ThreatManager(val civInfo: Civilization) {
 
     /**
      * Gets the distance to the closest visible enemy unit or city.
-     * The result value is cached.
-     * Since it is called each turn each subsequent calls are likely to be free.
+     * The result value is cached and since it is called each turn in NextTurnAutomation.getUnitPriority 
+     * each subsequent calls are likely to be free.
      */
     fun getDistanceToClosestEnemyUnit(tile: Tile, maxDist: Int, takeLargerValues: Boolean = true): Int {
         val tileData = distanceToClosestEnemyTiles[tile]
@@ -65,7 +65,7 @@ class ThreatManager(val civInfo: Civilization) {
     /**
      * Returns all tiles with enemy units on them in distance.
      * May be quicker than a manual search because of caching.
-     * Also ends up calculating and caching getDistanceToEnemyUnit.
+     * Also ends up calculating and caching [getDistanceToClosestEnemyUnit].
      */
     fun getTilesWithEnemyUnitsInDistance(tile: Tile, maxDist: Int): MutableList<Tile> {
         val tileData = distanceToClosestEnemyTiles[tile]
