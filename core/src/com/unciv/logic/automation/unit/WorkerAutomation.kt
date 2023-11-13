@@ -280,12 +280,16 @@ class WorkerAutomation(
      */
     private fun findTileToWork(unit: MapUnit, tilesToAvoid: Set<Tile>): Tile {
         val currentTile = unit.getTile()
+        if (currentTile != tilesToAvoid && getPriority(currentTile, currentTile) > 4 
+            && (tileCanBeImproved(unit, currentTile) || currentTile.isPillaged() || currentTile.terrainFeatures.contains("Fallout"))) {
+            return currentTile
+        }
         val workableTilesCenterFirst = currentTile.getTilesInDistance(4)
             .filter {
                 it !in tilesToAvoid
                 && (it.civilianUnit == null || it == currentTile)
                 && (it.owningCity == null || it.getOwner() == civInfo)
-                && !tilesToAvoid.contains(unit.getTile())
+                && !tilesToAvoid.contains(currentTile)
                 && getPriority(it, unit.getTile()) > 1
             }
 
@@ -294,7 +298,7 @@ class WorkerAutomation(
         val workableTilesPrioritized = workableTilesCenterFirst
                 .sortedWith(
                     compareBy<Tile> { unit.getDamageFromTerrain(it) > 0 } // Sort on Boolean puts false first
-                        .thenByDescending { getPriority(it, unit.getTile()) }
+                        .thenByDescending { getPriority(it, currentTile) }
                 )
 
         // These are the expensive calculations (tileCanBeImproved, canReach), so we only apply these filters after everything else it done.
@@ -310,7 +314,7 @@ class WorkerAutomation(
         return if ( currentTile == selectedTile  // No choice
                 || (!tileCanBeImproved(unit, currentTile) && !currentTile.isPillaged()) // current tile is unimprovable
                 || workableTilesCenterFirst.firstOrNull() != currentTile  // current tile is unworkable by city
-                || getPriority(selectedTile, unit.getTile()) > getPriority(currentTile, unit.getTile()))  // current tile is less important
+                || getPriority(selectedTile, unit.getTile()) > getPriority(currentTile, currentTile))  // current tile is less important
             selectedTile
         else currentTile
     }
@@ -366,7 +370,8 @@ class WorkerAutomation(
         if (tile == unitTile) priority += 2
         if (tile.getOwner() == civInfo) {
             priority += 2
-            if (tile.isWorked()) priority += 3
+            if (tile.isWorked()) priority += 2
+            if (tile.providesYield()) priority += 2
             if (tile.isPillaged()) priority += 1
             if (tile.terrainFeatures.contains("Fallout")) priority += 1
         }
