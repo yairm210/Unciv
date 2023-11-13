@@ -67,7 +67,7 @@ class ThreatManager(val civInfo: Civilization) {
      * May be quicker than a manual search because of caching
      * Also ends up calculating and caching getDistanceToEnemyUnit
      */
-    fun getTilesWithEnemyUnitsInDistance(tile: Tile, maxDist: Int): ArrayList<Tile> {
+    fun getTilesWithEnemyUnitsInDistance(tile: Tile, maxDist: Int): MutableList<Tile> {
         val tileData = distanceToClosestEnemyTiles[tile]
         val minDistanceToSearch = tileData?.distanceSearched?.coerceAtLeast(1) ?: 1
         var distanceWithNoEnemies = tileData?.distanceSearched ?: maxDist
@@ -98,7 +98,7 @@ class ThreatManager(val civInfo: Civilization) {
     /**
      * Returns all enemy military units within maxDistance of the tile
      */
-    fun getEnemyMilitaryUnitsInDistance(tile:Tile, maxDist: Int): ArrayList<MapUnit> {
+    fun getEnemyMilitaryUnitsInDistance(tile:Tile, maxDist: Int): MutableList<MapUnit> {
         val tilesWithEnemyMilitaryUnits = getTilesWithEnemyUnitsInDistance(tile, maxDist)
         val enemyUnits = ArrayList<MapUnit>()
         for (tileWithEnemy in tilesWithEnemyMilitaryUnits) {
