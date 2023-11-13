@@ -99,17 +99,21 @@ class ThreatManager(val civInfo: Civilization) {
      * Returns all enemy military units within maxDistance of the tile.
      */
     fun getEnemyMilitaryUnitsInDistance(tile: Tile, maxDist: Int): List<MapUnit> = 
-        getTilesWithEnemyUnitsInDistance(tile, maxDist)
-            .flatMap { enemyTile -> enemyTile.getUnits().filter { it.isMilitary() && civInfo.isAtWarWith(it.civ) } }
+        getEnemyUnitsOnTiles(getTilesWithEnemyUnitsInDistance(tile, maxDist))
+    
+    fun getEnemyUnitsOnTiles(tilesWithEnemyUnitsInDistance:List<Tile>): List<MapUnit> =
+        tilesWithEnemyUnitsInDistance.flatMap { enemyTile -> enemyTile.getUnits()
+            .filter { it.isMilitary() && civInfo.isAtWarWith(it.civ) } }
 
     
     fun getDangerousTiles(unit: MapUnit, distance: Int = 3): HashSet<Tile> {
-        val nearbyRangedEnemyUnits = unit.civ.threatManager.getEnemyMilitaryUnitsInDistance(unit.getTile(), distance)
+        val tilesWithEnemyUnits = getTilesWithEnemyUnitsInDistance(unit.getTile(), distance)
+        val nearbyRangedEnemyUnits = getEnemyUnitsOnTiles(tilesWithEnemyUnits)
 
         val tilesInRangeOfAttack = nearbyRangedEnemyUnits
             .flatMap { it.getTile().getTilesInDistance(it.getRange()) }
 
-        val tilesWithinBombardmentRange = unit.currentTile.getTilesInDistance(distance)
+        val tilesWithinBombardmentRange = tilesWithEnemyUnits
             .filter { it.isCityCenter() && it.getCity()!!.civ.isAtWarWith(unit.civ) }
             .flatMap { it.getTilesInDistance(it.getCity()!!.range) }
 
