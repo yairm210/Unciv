@@ -41,7 +41,7 @@ internal class WorkerAutomationTest {
         val mapUnit = testGame.addUnit("Worker", civInfo, currentTile)
 
         // Act
-        workerAutomation.automateWorkerAction(mapUnit, setOf())
+        workerAutomation.automateWorkerAction(mapUnit, hashSetOf())
 
         // Assert
         assertEquals("Worker should have replaced already existing improvement 'Farm' with 'Mine' to enable 'Iron' resource",
