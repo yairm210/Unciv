@@ -580,11 +580,11 @@ object Battle {
         return null
     }
 
-    fun destroyIfDefeated(attackedCiv: Civilization, attacker: Civilization) {
+    fun destroyIfDefeated(attackedCiv: Civilization, attacker: Civilization, notificationLocation: Vector2? = null) {
         if (attackedCiv.isDefeated()) {
             if (attackedCiv.isCityState())
                 attackedCiv.cityStateFunctions.cityStateDestroyed(attacker)
-            attackedCiv.destroy()
+            attackedCiv.destroy(notificationLocation)
             attacker.popupAlerts.add(PopupAlert(AlertType.Defeated, attackedCiv.civName))
         }
     }
