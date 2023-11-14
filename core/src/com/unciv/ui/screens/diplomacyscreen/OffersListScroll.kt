@@ -22,9 +22,9 @@ import com.unciv.logic.trade.TradeType.WarDeclaration
 import com.unciv.logic.trade.TradeType.values
 import com.unciv.models.ruleset.tile.ResourceSupplyList
 import com.unciv.models.translations.tr
-import com.unciv.ui.components.widgets.ExpanderTab
 import com.unciv.ui.components.extensions.disable
 import com.unciv.ui.components.input.onClick
+import com.unciv.ui.components.widgets.ExpanderTab
 import com.unciv.ui.images.IconTextButton
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.basescreen.BaseScreen
@@ -44,6 +44,11 @@ class OffersListScroll(
 
 
     private val expanderTabs = HashMap<TradeType, ExpanderTab>()
+
+    init {
+        fadeScrollBars=false
+        setScrollbarsVisible(true)
+    }
 
     /**
      * @param offersToDisplay The offers which should be displayed as buttons
