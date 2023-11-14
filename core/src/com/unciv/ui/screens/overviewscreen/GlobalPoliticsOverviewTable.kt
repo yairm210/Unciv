@@ -512,10 +512,12 @@ class GlobalPoliticsOverviewTable(
         override fun createContentTable(): Table {
             val legend = Table()
             legend.background = ImageGetter.getDrawable("OtherIcons/Politics-diagram-bg")
-            legend.add("Diagram line colors".toLabel(fontSize = Constants.headingFontSize)).colspan(2).row()
+            legend.add(ShadowedLabel("Diagram line colors", Constants.headingFontSize)).colspan(2).row()
+            //todo Rethink hardcoding together with the statusLine.color one in DiplomacyGroup
             legend.addLegendRow("War", Color.RED)
             for (level in RelationshipLevel.values()) {
-                legend.addLegendRow(level.name, level.color)
+                val lineColor = if (level == RelationshipLevel.Ally) Color.CYAN else level.color
+                legend.addLegendRow(level.name, lineColor)
             }
             legend.addLegendRow(Constants.defensivePact, Color.CYAN)
             return super.createContentTable()!!.apply {
@@ -530,7 +532,7 @@ class GlobalPoliticsOverviewTable(
             val line = ImageGetter.getLine(0f, width / 2, lineLength, width / 2, width)
             line.color = color
             add(line).size(lineLength, width).padTop(5f)
-            add(ShadowedLabel(text, labelColor = color)).padLeft(5f).padTop(10f).row()
+            add(ShadowedLabel(text)).padLeft(5f).padTop(10f).row()
         }
     }
 
