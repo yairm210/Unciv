@@ -69,6 +69,10 @@ class ThreatManager(val civInfo: Civilization) {
      */
     fun getTilesWithEnemyUnitsInDistance(tile: Tile, maxDist: Int): MutableList<Tile> {
         val tileData = distanceToClosestEnemyTiles[tile]
+        
+        if (tileData != null && maxDist <= tileData.distanceSearched)
+            return ArrayList<Tile>()
+        
         val minDistanceToSearch = tileData?.distanceSearched?.coerceAtLeast(1) ?: 1
         var distanceWithNoEnemies = tileData?.distanceSearched ?: maxDist
         var closestEnemyDistance = tileData?.distanceToClosestEnemy
