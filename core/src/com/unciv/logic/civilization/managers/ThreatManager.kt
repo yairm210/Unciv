@@ -30,7 +30,7 @@ class ThreatManager(val civInfo: Civilization) {
     fun getDistanceToClosestEnemyUnit(tile: Tile, maxDist: Int, takeLargerValues: Boolean = true): Int {
         val tileData = distanceToClosestEnemyTiles[tile]
         // Needs to be a high value, but not the max value so we can still add to it. Example: nextTurnAutomation sorting
-        val notFoundDistance = 500000
+        val notFoundDistance = if (takeLargerValues) 500000 else maxDist
         var minDistanceToSearch = 1
         // Look if we can return the cache or if we can reduce our search
         if (tileData != null) {
