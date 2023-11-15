@@ -5,6 +5,7 @@ import com.unciv.testing.GdxTestRunner
 import com.unciv.testing.TestGame
 import com.unciv.utils.DebugUtils
 import junit.framework.TestCase.assertEquals
+import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -21,11 +22,16 @@ class ThreatManangerTests {
 
     @Before
     fun setUp() {
-        DebugUtils.VISIBLE_MAP = true
+        DebugUtils.VISIBLE_MAP = true // Needed to be able to see the enemy units
         testGame.makeHexagonalMap(10)
         civ.diplomacyFunctions.makeCivilizationsMeet(enemyCiv)
         civ.diplomacyFunctions.makeCivilizationsMeet(neutralCiv)
         civ.getDiplomacyManager(enemyCiv).declareWar()
+    }
+    
+    @After
+    fun wrapUp() {
+        DebugUtils.VISIBLE_MAP = false
     }
     
     @Test
