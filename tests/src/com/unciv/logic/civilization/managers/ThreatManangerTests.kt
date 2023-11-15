@@ -69,6 +69,18 @@ class ThreatManangerTests {
     }
 
     @Test
+    fun `Find distance to farther enemy`() {
+        val centerTile = testGame.getTile(Vector2(0f, 0f))
+        assertEquals(2, threatManager.getDistanceToClosestEnemyUnit(centerTile, 2, false))
+        // Cache results should say there is not a unit within a distance of 2
+        // Therefore the warrior at distance 2 should not be checked
+        testGame.addUnit("Warrior", enemyCiv, testGame.getTile(Vector2(2f, 0f)))
+        testGame.addUnit("Warrior", enemyCiv, testGame.getTile(Vector2(4f, 0f)))
+        assertEquals(4, threatManager.getDistanceToClosestEnemyUnit(centerTile, 4, false))
+        assertEquals(4, threatManager.getDistanceToClosestEnemyUnit(centerTile, 5, false))
+    }
+
+    @Test
     fun `Find distance to enemy wrong cache`() {
         val centerTile = testGame.getTile(Vector2(0f, 0f))
         testGame.addUnit("Warrior", enemyCiv, testGame.getTile(Vector2(3f, 0f)))
@@ -123,6 +135,16 @@ class ThreatManangerTests {
     }
 
     @Test
+    fun `Find distance to enemy after find tiles with enemy units`() {
+        val centerTile = testGame.getTile(Vector2(0f, 0f))
+        testGame.addUnit("Warrior", enemyCiv, testGame.getTile(Vector2(3f, 0f)))
+        assertEquals(1, threatManager.getTilesWithEnemyUnitsInDistance(centerTile, 5).count())
+        testGame.addUnit("Warrior", enemyCiv, testGame.getTile(Vector2(2f, 0f)))
+        assertEquals(1, threatManager.getTilesWithEnemyUnitsInDistance(centerTile, 5).count())
+    }
+
+
+    @Test
     fun `Find enemy units on tiles`() {
         val centerTile = testGame.getTile(Vector2(0f, 0f))
         testGame.addUnit("Warrior", enemyCiv, testGame.getTile(Vector2(3f, 0f)))
@@ -135,5 +157,17 @@ class ThreatManangerTests {
         assertEquals(3, threatManager.getEnemyUnitsOnTiles(threatManager.getTilesWithEnemyUnitsInDistance(centerTile, 3)).count())
         assertEquals(0, threatManager.getEnemyUnitsOnTiles(threatManager.getTilesWithEnemyUnitsInDistance(centerTile, 1)).count())
     }
+    
+    @Test
+    fun `Dangerous tiles`() {
+        val centerTile = testGame.getTile(Vector2(0f, 0f))
+        testGame.addUnit("Warrior", civ, centerTile)
+        testGame.addUnit("Warrior", enemyCiv, testGame.getTile(Vector2(3f, 0f)))
+        testGame.addUnit("Archer", enemyCiv, testGame.getTile(Vector2(-3f, 0f)))
+        val dangerousTiles = threatManager.getDangerousTiles(centerTile.militaryUnit!!,3)
+        assertEquals(null, testGame.getTile(Vector2(3f, 0f)).getTilesInDistance(1).firstOrNull {tile -> !dangerousTiles.contains(tile)})
+        assertEquals(null, testGame.getTile(Vector2(-3f, 0f)).getTilesInDistance(2).firstOrNull {tile -> !dangerousTiles.contains(tile)})
+    }
 
 }
+
