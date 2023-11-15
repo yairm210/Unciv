@@ -74,7 +74,7 @@ class ThreatManager(val civInfo: Civilization) {
         if (tileData != null && maxDist <= tileData.distanceSearched)
             return ArrayList<Tile>()
         
-        val minDistanceToSearch = tileData?.distanceSearched?.coerceAtLeast(1) ?: 1
+        val minDistanceToSearch = (tileData?.distanceSearched?.coerceAtLeast(0) ?: 0) + 1
         var distanceWithNoEnemies = tileData?.distanceSearched ?: 0
         var closestEnemyDistance = tileData?.distanceToClosestEnemy
         var tileWithEnemy = tileData?.tileWithEnemy
