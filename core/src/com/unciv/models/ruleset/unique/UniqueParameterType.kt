@@ -455,14 +455,22 @@ enum class UniqueParameterType(
     ImprovementFilter("improvementFilter", "All Road", null, "Improvement Filters") {
         private val knownValues = setOf("All", "Improvement", "All Road", "Great Improvement", "Great")
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
-                UniqueType.UniqueParameterErrorSeverity? {
-            if (parameterText in knownValues) return null
-            if (ImprovementName.getErrorSeverity(parameterText, ruleset) == null) return null
-            if (ruleset.tileImprovements.values.any { it.hasUnique(parameterText) }) return null
+            UniqueType.UniqueParameterErrorSeverity? {
+            val isKnown = MultiFilter.multiFilter(parameterText, {isKnownValue(it, ruleset)}, true)
+            if (isKnown) return null
             return UniqueType.UniqueParameterErrorSeverity.PossibleFilteringUnique
         }
+
+        override fun isKnownValue(parameterText: String, ruleset: Ruleset): Boolean {
+            if (parameterText in knownValues) return true
+            if (ImprovementName.getErrorSeverity(parameterText, ruleset) == null) return true
+            if (ruleset.tileImprovements.values.any { it.hasUnique(parameterText) }) return true
+            return false
+        }
+
         override fun isTranslationWriterGuess(parameterText: String, ruleset: Ruleset) =
             parameterText != "All" && getErrorSeverity(parameterText, ruleset) == null
+
         override fun getTranslationWriterStringsForOutput() = knownValues
     },
 
