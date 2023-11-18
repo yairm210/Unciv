@@ -1,0 +1,33 @@
+
+
+Modding: Added "non-[filter]" and multi-value filtering to Tile filter
+
+Modding: Added "non-[filter]" and multi-value filtering to Improvement filter
+
+Modding: Added "non-[filter]" and multi-value filtering to Terrain filter
+
+Modding: Added "non-[filter]" and multi-value filtering to Building filter
+
+Modding: Added "non-[filter]" and multi-value filtering to Nation and Civ filters
+
+Modding: Added "non-[filter]" filtering for unit filters
+
+Modding: Added "[relativeAmount] Air Interception Range" unique
+
+Resolved  - Add/remove attack images on the tile, even if the attacked unit has meanwhile been killed
+
+Resolved  - *internal* tilesets to load are now determined pre-loading, to minimize concurrent modification exceptions
+
+Resolved  - dim resources on tiles not immediately visible
+
+By SomeTroglodyte:
+- Allow controlling Android fullscreen from options 
+- (UX, minor) Change "took tile damage" notification to **select** the poor victim 
+
+Fix unit triggers not triggering/triggering off the wrong units  - By SeventhM
+
+AI diplomacy balancing  - By tuvus
+
+Add files via upload  - By GeneralWadaling
+
+Test/add tests for cityexpansionmanager  - By Framonti
