@@ -283,16 +283,23 @@ enum class UniqueParameterType(
 
     /** Implemented by [Building.matchesFilter][com.unciv.models.ruleset.Building.matchesFilter] */
     BuildingFilter("buildingFilter", "Culture") {
-        private val knownValues = mutableSetOf("All","Building","Buildings","Wonder","Wonders","National Wonder","World Wonder")
+        private val knownValues = mutableSetOf("All", "Building", "Buildings", "Wonder", "Wonders", "National Wonder", "World Wonder")
             .apply { addAll(Stat.names()) }
+
         override fun getErrorSeverity(
             parameterText: String,
             ruleset: Ruleset
         ): UniqueType.UniqueParameterErrorSeverity? {
-            if (parameterText in knownValues) return null
-            if (BuildingName.getErrorSeverity(parameterText, ruleset) == null) return null
-            if (ruleset.buildings.values.any { it.hasUnique(parameterText) }) return null
+            val isKnown = MultiFilter.multiFilter(parameterText, {isKnownValue(it, ruleset)}, true)
+            if (isKnown) return null
             return UniqueType.UniqueParameterErrorSeverity.PossibleFilteringUnique
+        }
+
+        override fun isKnownValue(parameterText: String, ruleset: Ruleset): Boolean {
+            if (parameterText in knownValues) return true
+            if (BuildingName.getErrorSeverity(parameterText, ruleset) == null) return true
+            if (ruleset.buildings.values.any { it.hasUnique(parameterText) }) return true
+            return false
         }
 
         override fun isTranslationWriterGuess(parameterText: String, ruleset: Ruleset) =

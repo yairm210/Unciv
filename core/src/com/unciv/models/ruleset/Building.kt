@@ -1,5 +1,6 @@
 package com.unciv.models.ruleset
 
+import com.unciv.logic.MultiFilter
 import com.unciv.logic.city.City
 import com.unciv.logic.city.CityConstructions
 import com.unciv.logic.civilization.Civilization
@@ -435,6 +436,10 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
 
     /** Implements [UniqueParameterType.BuildingFilter] */
     fun matchesFilter(filter: String): Boolean {
+        return MultiFilter.multiFilter(filter, ::matchesSingleFilter)
+    }
+
+    fun matchesSingleFilter(filter: String): Boolean {
         return when (filter) {
             "All" -> true
             name -> true
