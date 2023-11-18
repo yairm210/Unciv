@@ -27,7 +27,7 @@ These can be combined by having the values be negative filters
 
 These CANNOT be combined in the other way - e.g. `[non-[{Wounded} {Armor}]] units` is NOT valid and will fail to register any units.
 
-    This is because to the player, the text will be `non-Wounded Armor units`, which parses like `[{non-[Wounded]} {Armor}] units`
+This is because to the player, the text will be `non-Wounded Armor units`, which parses like `[{non-[Wounded]} {Armor}] units`
 
 ## civFilter
 
