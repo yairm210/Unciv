@@ -125,9 +125,9 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     RoadsConnectAcrossRivers("Roads connect tiles across rivers", UniqueTarget.Global),
     RoadMaintenance("[relativeAmount]% maintenance on road & railroads", UniqueTarget.Global),
     NoImprovementMaintenanceInSpecificTiles("No Maintenance costs for improvements in [tileFilter] tiles", UniqueTarget.Global),
-    @Deprecated("As of",ReplaceWith("[relativeAmount]% [All] improvement construction time"))
+    @Deprecated("As of",ReplaceWith("[relativeAmount]% construction time for [All] improvements"))
     TileImprovementTime("[relativeAmount]% tile improvement construction time", UniqueTarget.Global, UniqueTarget.Unit),
-    SpecificImprovementTime("[relativeAmount]% [improvementFilter] improvement construction time", UniqueTarget.Global, UniqueTarget.Unit),
+    SpecificImprovementTime("[relativeAmount]% construction time for [improvementFilter] improvements", UniqueTarget.Global, UniqueTarget.Unit),
 
     /// Building Maintenance
     GainFreeBuildings("Gain a free [buildingName] [cityFilter]", UniqueTarget.Global, UniqueTarget.Triggerable),
