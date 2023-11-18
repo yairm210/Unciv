@@ -74,7 +74,7 @@ object UniqueTriggerActivation {
 
                 civInfo.addNotification(
                     notificationText,
-                    MapUnitAction(placedUnit.getTile().position),
+                    MapUnitAction(placedUnit),
                     NotificationCategory.Units,
                     placedUnit.name
                 )
@@ -142,7 +142,7 @@ object UniqueTriggerActivation {
                     civInfo.addNotification(
                         notificationText,
                         sequence {
-                            yield(MapUnitAction(placedUnit.getTile().position))
+                            yield(MapUnitAction(placedUnit))
                             yieldAll(LocationAction(tile?.position))
                         },
                         NotificationCategory.Units,

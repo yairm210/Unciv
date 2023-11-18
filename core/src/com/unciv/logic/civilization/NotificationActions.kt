@@ -5,6 +5,7 @@ import com.badlogic.gdx.utils.Json
 import com.badlogic.gdx.utils.JsonValue
 import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.city.City
+import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.ui.components.MayaCalendar
 import com.unciv.ui.screens.cityscreen.CityScreen
 import com.unciv.ui.screens.civilopediascreen.CivilopediaScreen
@@ -93,8 +94,17 @@ class MayaLongCountAction : NotificationAction {
     }
 }
 
-/** A notification action that shows and selects units on the map. */
+/** A notification action that shows and selects units on the map.
+ *
+ *  Saves and serializes only the location. Activation will select the tile which will select any unit
+ *  on it or cycle through selections if this NotificationAction is the only one on the Notification.
+ *  When the unit has been moved away, activation still shows the tile and not the unit.
+ *
+ *  As MapUnits do not have any persistent ID differentiating them from other units of same Civ and BaseUnit,
+ *  this cannot be done significantly better. Should someone add a persisted UUID to MapUnit, please change this too.
+ */
 class MapUnitAction(private val location: Vector2 = Vector2.Zero) : NotificationAction {
+    constructor(unit: MapUnit) : this(unit.currentTile.position)
     override fun execute(worldScreen: WorldScreen) {
         worldScreen.mapHolder.setCenterPosition(location, selectUnit = true)
     }
