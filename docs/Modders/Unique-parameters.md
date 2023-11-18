@@ -11,7 +11,7 @@ Note that all of these are case-sensitive!
 
 ## General Filter Rules
 
-- All filters accept multiple values in the format: `{A} {B} {C}` etc, meaning "the object must match ALL of these filters"
+- All filters except for `cityFilter` and `populationFilter` accept multiple values in the format: `{A} {B} {C}` etc, meaning "the object must match ALL of these filters"
   - For example: `[{Military} {Water}] units`, `[{Wounded} {Armor}] units`, etc.
   - No space or other text is allowed between the `[` and the first `{`.
 - All filters accept `non-[filter]` as a possible value

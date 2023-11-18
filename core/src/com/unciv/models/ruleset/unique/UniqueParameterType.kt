@@ -357,11 +357,19 @@ enum class UniqueParameterType(
     TileFilter("tileFilter", "Farm", "Anything that can be used either in an improvementFilter or in a terrainFilter can be used here, plus 'unimproved'", "Tile Filters") {
         private val knownValues = setOf("unimproved", "All Road", "Great Improvement")
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
-                UniqueType.UniqueParameterErrorSeverity? {
-            if (parameterText in knownValues) return null
-            if (ImprovementFilter.getErrorSeverity(parameterText, ruleset) == null) return null
-            return TerrainFilter.getErrorSeverity(parameterText, ruleset)
+            UniqueType.UniqueParameterErrorSeverity? {
+            val isKnown = MultiFilter.multiFilter(parameterText, {isKnownValue(it, ruleset)}, true)
+            if (isKnown) return null
+            return UniqueType.UniqueParameterErrorSeverity.PossibleFilteringUnique
         }
+
+        override fun isKnownValue(parameterText: String, ruleset: Ruleset): Boolean {
+            if (parameterText in knownValues) return true
+            if (ImprovementFilter.isKnownValue(parameterText, ruleset)) return true
+            if (TerrainFilter.isKnownValue(parameterText, ruleset)) return true
+            return false
+        }
+
         override fun getTranslationWriterStringsForOutput() = knownValues
     },
 
