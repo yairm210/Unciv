@@ -803,8 +803,14 @@ class MapUnit : IsPartOfGameInfoSerialization {
 
     fun canIntercept(attackedTile: Tile): Boolean {
         if (!canIntercept()) return false
-        if (currentTile.aerialDistanceTo(attackedTile) > baseUnit.interceptRange) return false
+        if (currentTile.aerialDistanceTo(attackedTile) > getInterceptionRange()) return false
         return true
+    }
+
+    fun getInterceptionRange():Int {
+        val rangeFromUniques = getMatchingUniques(UniqueType.AirInterceptionRange, checkCivInfoUniques = true)
+            .sumOf { it.params[0].toInt() }
+        return baseUnit.interceptRange + rangeFromUniques
     }
 
     fun canIntercept(): Boolean {
