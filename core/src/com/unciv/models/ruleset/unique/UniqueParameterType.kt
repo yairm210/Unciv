@@ -321,22 +321,35 @@ enum class UniqueParameterType(
 
     /** Implemented by [Tile.matchesTerrainFilter][com.unciv.logic.map.tile.Tile.matchesTerrainFilter] */
     TerrainFilter("terrainFilter", Constants.freshWaterFilter, null, "Terrain Filters") {
-        private val knownValues = setOf("All",
-                Constants.coastal, Constants.river, "Open terrain", "Rough terrain", "Water resource",
-                "Foreign Land", "Foreign", "Friendly Land", "Friendly", "Enemy Land", "Enemy",
-                "Featureless", Constants.freshWaterFilter, "non-fresh water", "Natural Wonder",
-                "Impassable", "Land", "Water") +
+        private val knownValues = setOf(
+            "All",
+            Constants.coastal, Constants.river, "Open terrain", "Rough terrain", "Water resource",
+            "Foreign Land", "Foreign", "Friendly Land", "Friendly", "Enemy Land", "Enemy",
+            "Featureless", Constants.freshWaterFilter, "non-fresh water", "Natural Wonder",
+            "Impassable", "Land", "Water"
+        ) +
             ResourceType.values().map { it.name + " resource" }
-        override fun getErrorSeverity(parameterText: String, ruleset: Ruleset) = when(parameterText) {
-            in knownValues -> null
-            in ruleset.terrains -> null
-            in ruleset.tileResources -> null
-            in ruleset.terrains.values.asSequence().flatMap { it.uniques } -> null
-            in ruleset.tileResources.values.asSequence().flatMap { it.uniques } -> null
-            else -> UniqueType.UniqueParameterErrorSeverity.PossibleFilteringUnique
+
+        override fun getErrorSeverity(parameterText: String, ruleset: Ruleset): UniqueType.UniqueParameterErrorSeverity? {
+            val isKnown = MultiFilter.multiFilter(parameterText, {isKnownValue(it, ruleset)}, true)
+            if (isKnown) return null
+            return UniqueType.UniqueParameterErrorSeverity.PossibleFilteringUnique
         }
+
+        override fun isKnownValue(parameterText: String, ruleset: Ruleset): Boolean {
+            return when (parameterText) {
+                in knownValues -> true
+                in ruleset.terrains -> true
+                in ruleset.tileResources -> true
+                in ruleset.terrains.values.asSequence().flatMap { it.uniques } -> true
+                in ruleset.tileResources.values.asSequence().flatMap { it.uniques } -> true
+                else -> false
+            }
+        }
+
         override fun isTranslationWriterGuess(parameterText: String, ruleset: Ruleset) =
             parameterText in ruleset.terrains || parameterText != "All" && parameterText in knownValues
+
         override fun getTranslationWriterStringsForOutput() = knownValues
     },
 

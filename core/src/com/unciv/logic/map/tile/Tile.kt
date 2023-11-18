@@ -4,6 +4,7 @@ import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
 import com.unciv.GUI
 import com.unciv.logic.IsPartOfGameInfoSerialization
+import com.unciv.logic.MultiFilter
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.PlayerType
@@ -477,8 +478,12 @@ open class Tile : IsPartOfGameInfoSerialization {
         return improvement == null && filter == "unimproved"
     }
 
-    /** Implements [UniqueParameterType.TerrainFilter][com.unciv.models.ruleset.unique.UniqueParameterType.TerrainFilter] */
     fun matchesTerrainFilter(filter: String, observingCiv: Civilization? = null): Boolean {
+        return MultiFilter.multiFilter(filter, {matchesSingleTerrainFilter(it, observingCiv)})
+    }
+
+    /** Implements [UniqueParameterType.TerrainFilter][com.unciv.models.ruleset.unique.UniqueParameterType.TerrainFilter] */
+    fun matchesSingleTerrainFilter(filter: String, observingCiv: Civilization? = null): Boolean {
         return when (filter) {
             "All" -> true
             baseTerrain -> true
