@@ -171,7 +171,7 @@ class CityExpansionManager : IsPartOfGameInfoSerialization {
      * @param tile The tile to take over
      */
     fun takeOwnership(tile: Tile) {
-        if (tile.isCityCenter()) throw Exception("What?!")
+        check(!tile.isCityCenter()) { "Trying to found a city in a tile that already has one" }
         if (tile.getCity() != null)
             tile.getCity()!!.expansion.relinquishOwnership(tile)
 
