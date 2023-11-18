@@ -23,7 +23,8 @@ open class AndroidLauncher : AndroidApplication() {
         Log.backend = AndroidLogBackend(this)
 
         // Setup Android display
-        Display.platform = AndroidDisplay(this)
+        val displayImpl = AndroidDisplay(this)
+        Display.platform = displayImpl
 
         // Setup Android fonts
         Fonts.fontImplementation = AndroidFont()
@@ -32,17 +33,18 @@ open class AndroidLauncher : AndroidApplication() {
         UncivFiles.saverLoader = AndroidSaverLoader(this)
         UncivFiles.preferExternalStorage = true
 
+        val config = AndroidApplicationConfiguration().apply { useImmersiveMode = false }
+        val settings = UncivFiles.getSettingsForPlatformLaunchers(filesDir.path)
+
+        // Setup orientation, immersive mode and display cutout
+        displayImpl.setOrientation(settings.displayOrientation)
+        displayImpl.setCutoutFromUiThread(settings.androidCutout)
+        displayImpl.setSystemUiVisibilityFromUiThread(settings.androidHideSystemUi)
+
         // Create notification channels for Multiplayer notificator
         MultiplayerTurnCheckWorker.createNotificationChannels(applicationContext)
 
         copyMods()
-
-        val config = AndroidApplicationConfiguration().apply { useImmersiveMode = true }
-        val settings = UncivFiles.getSettingsForPlatformLaunchers(filesDir.path)
-
-        // Setup orientation and display cutout
-        Display.setOrientation(settings.displayOrientation)
-        Display.setCutout(settings.androidCutout)
 
         game = AndroidGame(this)
         initialize(game, config)
