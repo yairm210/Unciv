@@ -785,6 +785,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Global, Unit
 
+??? example  "[relativeAmount] Air Interception Range"
+	Example: "[+20] Air Interception Range"
+
+	Applicable to: Global, Unit
+
 ??? example  "[amount] HP when healing"
 	Example: "[3] HP when healing"
 

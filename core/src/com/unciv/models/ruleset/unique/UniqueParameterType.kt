@@ -1,6 +1,7 @@
 package com.unciv.models.ruleset.unique
 
 import com.unciv.Constants
+import com.unciv.logic.MultiFilter
 import com.unciv.models.metadata.BaseRuleset
 import com.unciv.models.ruleset.BeliefType
 import com.unciv.models.ruleset.Ruleset
@@ -9,7 +10,6 @@ import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.unique.UniqueParameterType.Companion.guessTypeForTranslationWriter
 import com.unciv.models.stats.Stat
 import com.unciv.models.translations.TranslationFileWriter
-import com.unciv.ui.components.extensions.filterCompositeLogic
 
 // 'region' names beginning with an underscore are used here for a prettier "Structure window" - they go in front ot the rest.
 
@@ -38,6 +38,8 @@ enum class UniqueParameterType(
     val displayName: String = parameterName
 ) {
     //endregion
+
+
 
     Number("amount", "3", "This indicates a whole number, possibly with a + or - sign, such as `2`, `+13`, or `-3`") {
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
@@ -72,59 +74,74 @@ enum class UniqueParameterType(
     CombatantFilter("combatantFilter", "City", "This indicates a combatant, which can either be a unit or a city (when bombarding). Must either be `City` or a `mapUnitFilter`") {
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
                 UniqueType.UniqueParameterErrorSeverity? {
-            if (parameterText == "City") return null  // City also recognizes "All" but that's covered by UnitTypeFilter too
+            if (parameterText == "City") return null  // City also recognizes "All" but that's covered by BaseUnitFilter too
             return MapUnitFilter.getErrorSeverity(parameterText, ruleset)
         }
     },
 
     /** Implemented by [MapUnit.matchesFilter][com.unciv.logic.map.mapunit.MapUnit.matchesFilter] */
     MapUnitFilter("mapUnitFilter", Constants.wounded, null, "Map Unit Filters") {
-        private val knownValues = setOf(Constants.wounded, Constants.barbarians, "City-State", Constants.embarked, "Non-City")
+        private val knownValues = setOf(Constants.wounded, Constants.barbarians, "Barbarian",
+            "City-State", Constants.embarked, "Non-City")
+
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
                 UniqueType.UniqueParameterErrorSeverity? {
-            if (parameterText.startsWith('{')) // "{filter} {filter}" for and logic
-                return parameterText.filterCompositeLogic({ getErrorSeverity(it, ruleset) }) { a, b -> maxOf(a, b) }
-            if (parameterText in knownValues) return null
-            if (ruleset.unitPromotions.values.any { it.hasUnique(parameterText) })
-                return null
-            return BaseUnitFilter.getErrorSeverity(parameterText, ruleset)
+            val isKnown = MultiFilter.multiFilter(parameterText, {isKnownValue(it, ruleset)}, true)
+            if (isKnown) return null
+            return UniqueType.UniqueParameterErrorSeverity.PossibleFilteringUnique
         }
+
+        override fun isKnownValue(parameterText:String, ruleset: Ruleset): Boolean {
+            if (parameterText in knownValues) return true
+            if (ruleset.unitPromotions.values.any { it.hasUnique(parameterText) }) return true
+            if (BaseUnitFilter.isKnownValue(parameterText, ruleset)) return true
+            return false
+        }
+
         override fun getTranslationWriterStringsForOutput() = knownValues
     },
 
     /** Implemented by [BaseUnit.matchesFilter][com.unciv.models.ruleset.unit.BaseUnit.matchesFilter] */
     BaseUnitFilter("baseUnitFilter", "Melee") {
+        private val knownValues = setOf(
+            "All", "Melee", "Ranged", "Civilian", "Military", "non-air",
+            "Nuclear Weapon", "Great Person", "Religious",
+            "relevant", // used for UniqueType.UnitStartingPromotions
+        )
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
                 UniqueType.UniqueParameterErrorSeverity? {
-            if (parameterText.startsWith('{')) // "{filter} {filter}" for and logic
-                return parameterText.filterCompositeLogic({ getErrorSeverity(it, ruleset) }) { a, b -> maxOf(a, b) }
-            if (UnitName.getErrorSeverity(parameterText, ruleset) == null) return null
-            if (ruleset.units.values.any { it.uniques.contains(parameterText) }) return null
-            return UnitTypeFilter.getErrorSeverity(parameterText, ruleset)
+            val isKnown = MultiFilter.multiFilter(parameterText, {isKnownValue(it, ruleset)}, true)
+            if (isKnown) return null
+            return UniqueType.UniqueParameterErrorSeverity.PossibleFilteringUnique
+        }
+        override fun isKnownValue(parameterText:String, ruleset: Ruleset): Boolean {
+            if (parameterText in knownValues) return true
+            if (UnitName.getErrorSeverity(parameterText, ruleset) == null) return true
+            if (ruleset.units.values.any { it.uniques.contains(parameterText) }) return true
+            if (UnitTypeFilter.isKnownValue(parameterText, ruleset)) return true
+            return false
         }
     },
 
     /** Implemented by [UnitType.matchesFilter][com.unciv.models.ruleset.unit.UnitType.matchesFilter] */
-    //todo there is a large discrepancy between this parameter type and the actual filter, most of these are actually implemented by BaseUnitFilter
     UnitTypeFilter("unitType", "Water", null, "Unit Type Filters") {
-        // As you can see there is a difference between these and what's in unitTypeStrings (for translation) -
-        // the goal is to unify, but for now this is the "real" list
-        // Note: this can't handle combinations of parameters (e.g. [{Military} {Water}])
         private val knownValues = setOf(
-            "All", "Melee", "Ranged", "Civilian", "Military", "Land", "Water", "Air",
-            "non-air", "Nuclear Weapon", "Great Person", "Religious", "Barbarian",
-            "relevant", "City",
-            // These are up for debate
-//            "land units", "water units", "air units", "military units", "submarine units",
+            "Land", "Water", "Air",
         )
 
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
                 UniqueType.UniqueParameterErrorSeverity? {
-            if (parameterText in knownValues) return null
-            if (ruleset.unitTypes.containsKey(parameterText)) return null
-            if (ruleset.eras.containsKey(parameterText)) return null
-            if (ruleset.unitTypes.values.any { it.uniques.contains(parameterText) }) return null
+            val isKnown = MultiFilter.multiFilter(parameterText, {isKnownValue(it, ruleset)}, true)
+            if (isKnown) return null
             return UniqueType.UniqueParameterErrorSeverity.PossibleFilteringUnique
+        }
+
+        override fun isKnownValue(parameterText: String, ruleset: Ruleset): Boolean {
+            if (parameterText in knownValues) return true
+            if (ruleset.unitTypes.containsKey(parameterText)) return true
+            if (ruleset.eras.containsKey(parameterText)) return true
+            if (ruleset.unitTypes.values.any { it.uniques.contains(parameterText) }) return true
+            return false
         }
 
         override fun isTranslationWriterGuess(parameterText: String, ruleset: Ruleset) =
@@ -559,6 +576,8 @@ enum class UniqueParameterType(
 
     /** Validate a [Unique] parameter */
     abstract fun getErrorSeverity(parameterText: String, ruleset: Ruleset): UniqueType.UniqueParameterErrorSeverity?
+
+    open fun isKnownValue(parameterText: String, ruleset: Ruleset): Boolean = false
 
     /** Pick this type when [TranslationFileWriter] tries to guess for an untyped [Unique] */
     open fun isTranslationWriterGuess(parameterText: String, ruleset: Ruleset): Boolean =
