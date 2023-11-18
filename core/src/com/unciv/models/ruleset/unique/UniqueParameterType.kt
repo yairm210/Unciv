@@ -206,8 +206,15 @@ enum class UniqueParameterType(
         private val knownValues = setOf("AI player", "Human player")
 
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset): UniqueType.UniqueParameterErrorSeverity? {
-            if (parameterText in knownValues) return null
-            return NationFilter.getErrorSeverity(parameterText, ruleset)
+            val isKnown = MultiFilter.multiFilter(parameterText, {isKnownValue(it, ruleset)}, true)
+            if (isKnown) return null
+            return UniqueType.UniqueParameterErrorSeverity.PossibleFilteringUnique
+        }
+
+        override fun isKnownValue(parameterText: String, ruleset: Ruleset): Boolean {
+            if (parameterText in knownValues) return true
+            if (NationFilter.isKnownValue(parameterText, ruleset)) return true
+            return false
         }
     },
 
@@ -219,10 +226,16 @@ enum class UniqueParameterType(
             parameterText: String,
             ruleset: Ruleset
         ): UniqueType.UniqueParameterErrorSeverity? {
-            if (parameterText in knownValues) return null
-            if (ruleset.nations.containsKey(parameterText)) return null
-            if (ruleset.nations.values.any { it.hasUnique(parameterText) }) return null
+            val isKnown = MultiFilter.multiFilter(parameterText, {isKnownValue(it, ruleset)}, true)
+            if (isKnown) return null
             return UniqueType.UniqueParameterErrorSeverity.PossibleFilteringUnique
+        }
+
+        override fun isKnownValue(parameterText: String, ruleset: Ruleset): Boolean {
+            if (parameterText in knownValues) return true
+            if (ruleset.nations.containsKey(parameterText)) return true
+            if (ruleset.nations.values.any { it.hasUnique(parameterText) }) return true
+            return false
         }
     },
 

@@ -5,6 +5,7 @@ import com.unciv.Constants
 import com.unciv.json.HashMapVector2
 import com.unciv.logic.GameInfo
 import com.unciv.logic.IsPartOfGameInfoSerialization
+import com.unciv.logic.MultiFilter
 import com.unciv.logic.UncivShowableException
 import com.unciv.logic.automation.ai.TacticalAI
 import com.unciv.logic.automation.unit.WorkerAutomation
@@ -491,6 +492,10 @@ class Civilization : IsPartOfGameInfoSerialization {
     }
 
     fun matchesFilter(filter: String): Boolean {
+        return MultiFilter.multiFilter(filter, ::matchesSingleFilter)
+    }
+
+    fun matchesSingleFilter(filter: String): Boolean {
         return when (filter) {
             "Human player" -> isHuman()
             "AI player" -> isAI()

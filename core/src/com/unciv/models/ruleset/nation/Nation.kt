@@ -2,6 +2,7 @@ package com.unciv.models.ruleset.nation
 
 import com.badlogic.gdx.graphics.Color
 import com.unciv.Constants
+import com.unciv.logic.MultiFilter
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetObject
 import com.unciv.models.ruleset.unique.UniqueTarget
@@ -253,6 +254,10 @@ class Nation : RulesetObject() {
     fun getContrastRatio() = getContrastRatio(getInnerColor(), getOuterColor())
 
     fun matchesFilter(filter: String): Boolean {
+        return MultiFilter.multiFilter(filter, ::matchesSingleFilter)
+    }
+
+    fun matchesSingleFilter(filter: String): Boolean {
         return when (filter) {
             "All" -> true
             name -> true
