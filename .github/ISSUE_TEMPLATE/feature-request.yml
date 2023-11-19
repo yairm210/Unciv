@@ -5,8 +5,18 @@ body:
   - type: markdown
     attributes:
       value: |
-        Thanks for filing a feature request! This project has been around for quite a while, so it is quite common for ideas to have come up before. To help save everyone's time, you are required to search for related issues and address any comments and concerns that arose previously.
+        Thanks for filing a feature request! This project has been around for quite a while, so it is quite common for ideas to have come up before.
+        To help save everyone's time, you are required to search for related issues and address any comments and concerns that arose previously.
         Otherwise, your issue will be closed--it is not fair to ask maintainers and collaborators to do background research for *your* feature request.
+  - type: checkboxes
+    attributes:
+      label: Before creating
+      description: Please search to see if an issue already exists for the bug you encountered.
+      options:
+      - label: This is NOT a gameplay feature from Civ VI, BNW, or outside - see Roadmap
+        required: true
+      - label: This is NOT a gameplay feature from Vanilla Civ V or from G&K - If so, it should be a comment in https://github.com/yairm210/Unciv/issues/4697
+        required: true
   - type: textarea
     attributes:
       label: Problem Description
