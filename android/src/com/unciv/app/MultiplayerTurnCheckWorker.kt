@@ -30,8 +30,7 @@ import com.unciv.logic.GameInfo
 import com.unciv.logic.files.UncivFiles
 import com.unciv.logic.multiplayer.storage.FileStorageRateLimitReached
 import com.unciv.logic.multiplayer.storage.OnlineMultiplayerServer
-import com.unciv.models.metadata.GameSettingsMultiplayer
-import kotlinx.coroutines.runBlocking
+import com.unciv.models.metadata.GameSettings.GameSettingsMultiplayer
 import java.io.FileNotFoundException
 import java.io.PrintWriter
 import java.io.StringWriter
@@ -39,6 +38,7 @@ import java.io.Writer
 import java.time.Duration
 import java.util.GregorianCalendar
 import java.util.concurrent.TimeUnit
+import kotlinx.coroutines.runBlocking
 
 
 class MultiplayerTurnCheckWorker(appContext: Context, workerParams: WorkerParameters)

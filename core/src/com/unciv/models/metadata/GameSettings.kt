@@ -19,20 +19,6 @@ import java.util.Locale
 import kotlin.reflect.KClass
 import kotlin.reflect.KMutableProperty0
 
-data class WindowState (val width: Int = 900, val height: Int = 600)
-
-enum class ScreenSize(
-    @Suppress("unused")  // Actual width determined by screen aspect ratio, this as comment only
-    val virtualWidth: Float,
-    val virtualHeight: Float
-) {
-    Tiny(750f,500f),
-    Small(900f,600f),
-    Medium(1050f,700f),
-    Large(1200f,800f),
-    Huge(1500f,1000f)
-}
-
 class GameSettings {
 
     /** Allows panning the map by moving the pointer to the screen edges */
@@ -132,7 +118,6 @@ class GameSettings {
     var enlargeSelectedNotification = true
 
     /** Whether the Nation Picker shows icons only or the horizontal "civBlocks" with leader/nation name */
-    enum class NationPickerListMode { Icons, List }
     var nationPickerListMode = NationPickerListMode.List
 
     /** Size of automatic display of UnitSet art in Civilopedia - 0 to disable */
@@ -148,14 +133,17 @@ class GameSettings {
         }
     }
 
+    //region <Methods>
+
     fun save() {
         refreshWindowSize()
         UncivGame.Current.files.setGeneralSettings(this)
     }
+
     fun refreshWindowSize() {
         if (isFreshlyCreated || Gdx.app.type != ApplicationType.Desktop) return
         if (!Display.hasUserSelectableSize(screenMode)) return
-        windowState = WindowState(Gdx.graphics.width, Gdx.graphics.height)
+        windowState = WindowState.current()
     }
 
     fun addCompletedTutorialTask(tutorialTask: String): Boolean {
@@ -189,99 +177,170 @@ class GameSettings {
     fun getCollatorFromLocale(): Collator {
         return Collator.getInstance(getCurrentLocale())
     }
-}
 
-enum class LocaleCode(var language: String, var country: String) {
-    Arabic("ar", "IQ"),
-    Belarusian("be", "BY"),
-    BrazilianPortuguese("pt", "BR"),
-    Bulgarian("bg", "BG"),
-    Catalan("ca", "ES"),
-    Croatian("hr", "HR"),
-    Czech("cs", "CZ"),
-    Danish("da", "DK"),
-    Dutch("nl", "NL"),
-    English("en", "US"),
-    Estonian("et", "EE"),
-    Finnish("fi", "FI"),
-    French("fr", "FR"),
-    German("de", "DE"),
-    Greek("el", "GR"),
-    Hindi("hi", "IN"),
-    Hungarian("hu", "HU"),
-    Indonesian("in", "ID"),
-    Italian("it", "IT"),
-    Japanese("ja", "JP"),
-    Korean("ko", "KR"),
-    Latvian("lv", "LV"),
-    Lithuanian("lt", "LT"),
-    Malay("ms", "MY"),
-    Norwegian("no", "NO"),
-    NorwegianNynorsk("nn", "NO"),
-    PersianPinglishDIN("fa", "IR"), // These might just fall back to default
-    PersianPinglishUN("fa", "IR"),
-    Polish("pl", "PL"),
-    Portuguese("pt", "PT"),
-    Romanian("ro", "RO"),
-    Russian("ru", "RU"),
-    Serbian("sr", "RS"),
-    SimplifiedChinese("zh", "CN"),
-    Slovak("sk", "SK"),
-    Spanish("es", "ES"),
-    Swedish("sv", "SE"),
-    Thai("th", "TH"),
-    TraditionalChinese("zh", "TW"),
-    Turkish("tr", "TR"),
-    Ukrainian("uk", "UA"),
-    Vietnamese("vi", "VN"),
-    Afrikaans("af", "ZA")
-}
+    //endregion
+    //region <Nested classes>
 
-class GameSettingsMultiplayer {
-    var userId = ""
-    var passwords = mutableMapOf<String, String>()
-    @Suppress("unused")  // @GGuenni knows what he intended with this field
-    var userName: String = ""
-    var server = Constants.uncivXyzServer
-    var friendList: MutableList<FriendList.Friend> = mutableListOf()
-    var turnCheckerEnabled = true
-    var turnCheckerPersistentNotificationEnabled = true
-    var turnCheckerDelay: Duration = Duration.ofMinutes(5)
-    var statusButtonInSinglePlayer = false
-    var currentGameRefreshDelay: Duration = Duration.ofSeconds(10)
-    var allGameRefreshDelay: Duration = Duration.ofMinutes(5)
-    var currentGameTurnNotificationSound: UncivSound = UncivSound.Silent
-    var otherGameTurnNotificationSound: UncivSound = UncivSound.Silent
-    var hideDropboxWarning = false
+    /**
+     *  Knowledge on Window "state", limited.
+     *  - Size: Saved
+     *  - Iconified, Maximized: Not saved
+     *  - Position / Multimonitor display choice: Not saved
+     *
+     *  Note: Useful on desktop only, on Android we do not explicitly support `Activity.isInMultiWindowMode` returning true.
+     *  (On Android Display.hasUserSelectableSize will return false, and AndroidLauncher & co ignore it)
+     *
+     *  Open to future enhancement - but:
+     *  retrieving a valid position from our upstream libraries while the window is maximized or iconified has proven tricky so far.
+     */
+    data class WindowState(val width: Int = 900, val height: Int = 600) {
+        constructor(bounds: java.awt.Rectangle) : this(bounds.width, bounds.height)
 
-    fun getAuthHeader(): String {
-        val serverPassword = passwords[server] ?: ""
-        val preEncodedAuthValue = "$userId:$serverPassword"
-        return "Basic ${Base64Coder.encodeString(preEncodedAuthValue)}"
+        companion object {
+            /** Our choice of minimum window width */
+            const val minimumWidth = 120
+            /** Our choice of minimum window height */
+            const val minimumHeight = 80
+
+            fun current() = WindowState(Gdx.graphics.width, Gdx.graphics.height)
+        }
+
+        /**
+         *  Constrains the dimensions of `this` [WindowState] to be within [minimumWidth] x [minimumHeight] to [maximumWidth] x [maximumHeight].
+         *  @param maximumWidth defaults to unlimited
+         *  @param maximumHeight defaults to unlimited
+         *  @return `this` unchanged if it is within valid limits, otherwise a new WindowState that is.
+         */
+        fun coerceIn(maximumWidth: Int = Int.MAX_VALUE, maximumHeight: Int = Int.MAX_VALUE): WindowState {
+            if (width in minimumWidth..maximumWidth && height in minimumHeight..maximumHeight)
+                return this
+            return WindowState(
+                width.coerceIn(minimumWidth, maximumWidth),
+                height.coerceIn(minimumHeight, maximumHeight)
+            )
+        }
+
+        /**
+         *  Constrains the dimensions of `this` [WindowState] to be within [minimumWidth] x [minimumHeight] to `maximumWidth` x `maximumHeight`.
+         *  @param maximumWindowBounds provides maximum sizes
+         *  @return `this` unchanged if it is within valid limits, otherwise a new WindowState that is.
+         *  @see coerceIn
+         */
+        fun coerceIn(maximumWindowBounds: java.awt.Rectangle) =
+            coerceIn(maximumWindowBounds.width, maximumWindowBounds.height)
     }
-}
 
-@Suppress("SuspiciousCallableReferenceInLambda")  // By @Azzurite, safe as long as that warning below is followed
-enum class GameSetting(
-    val kClass: KClass<*>,
-    private val propertyGetter: (GameSettings) -> KMutableProperty0<*>
-) {
-//     Uncomment these once they are refactored to send events on change
+    enum class ScreenSize(
+        @Suppress("unused")  // Actual width determined by screen aspect ratio, this as comment only
+        val virtualWidth: Float,
+        val virtualHeight: Float
+    ) {
+        Tiny(750f,500f),
+        Small(900f,600f),
+        Medium(1050f,700f),
+        Large(1200f,800f),
+        Huge(1500f,1000f)
+    }
+
+    enum class NationPickerListMode { Icons, List }
+
+    enum class LocaleCode(var language: String, var country: String) {
+        Arabic("ar", "IQ"),
+        Belarusian("be", "BY"),
+        BrazilianPortuguese("pt", "BR"),
+        Bulgarian("bg", "BG"),
+        Catalan("ca", "ES"),
+        Croatian("hr", "HR"),
+        Czech("cs", "CZ"),
+        Danish("da", "DK"),
+        Dutch("nl", "NL"),
+        English("en", "US"),
+        Estonian("et", "EE"),
+        Finnish("fi", "FI"),
+        French("fr", "FR"),
+        German("de", "DE"),
+        Greek("el", "GR"),
+        Hindi("hi", "IN"),
+        Hungarian("hu", "HU"),
+        Indonesian("in", "ID"),
+        Italian("it", "IT"),
+        Japanese("ja", "JP"),
+        Korean("ko", "KR"),
+        Latvian("lv", "LV"),
+        Lithuanian("lt", "LT"),
+        Malay("ms", "MY"),
+        Norwegian("no", "NO"),
+        NorwegianNynorsk("nn", "NO"),
+        PersianPinglishDIN("fa", "IR"), // These might just fall back to default
+        PersianPinglishUN("fa", "IR"),
+        Polish("pl", "PL"),
+        Portuguese("pt", "PT"),
+        Romanian("ro", "RO"),
+        Russian("ru", "RU"),
+        Serbian("sr", "RS"),
+        SimplifiedChinese("zh", "CN"),
+        Slovak("sk", "SK"),
+        Spanish("es", "ES"),
+        Swedish("sv", "SE"),
+        Thai("th", "TH"),
+        TraditionalChinese("zh", "TW"),
+        Turkish("tr", "TR"),
+        Ukrainian("uk", "UA"),
+        Vietnamese("vi", "VN"),
+        Afrikaans("af", "ZA")
+    }
+
+    //endregion
+    //region Multiplayer-specific
+
+    class GameSettingsMultiplayer {
+        var userId = ""
+        var passwords = mutableMapOf<String, String>()
+        @Suppress("unused")  // @GGuenni knows what he intended with this field
+        var userName: String = ""
+        var server = Constants.uncivXyzServer
+        var friendList: MutableList<FriendList.Friend> = mutableListOf()
+        var turnCheckerEnabled = true
+        var turnCheckerPersistentNotificationEnabled = true
+        var turnCheckerDelay: Duration = Duration.ofMinutes(5)
+        var statusButtonInSinglePlayer = false
+        var currentGameRefreshDelay: Duration = Duration.ofSeconds(10)
+        var allGameRefreshDelay: Duration = Duration.ofMinutes(5)
+        var currentGameTurnNotificationSound: UncivSound = UncivSound.Silent
+        var otherGameTurnNotificationSound: UncivSound = UncivSound.Silent
+        var hideDropboxWarning = false
+
+        fun getAuthHeader(): String {
+            val serverPassword = passwords[server] ?: ""
+            val preEncodedAuthValue = "$userId:$serverPassword"
+            return "Basic ${Base64Coder.encodeString(preEncodedAuthValue)}"
+        }
+    }
+
+    @Suppress("SuspiciousCallableReferenceInLambda")  // By @Azzurite, safe as long as that warning below is followed
+    enum class GameSetting(
+        val kClass: KClass<*>,
+        private val propertyGetter: (GameSettings) -> KMutableProperty0<*>
+    ) {
+        //     Uncomment these once they are refactored to send events on change
 //     MULTIPLAYER_USER_ID(String::class, { it.multiplayer::userId }),
 //     MULTIPLAYER_SERVER(String::class, { it.multiplayer::server }),
 //     MULTIPLAYER_STATUSBUTTON_IN_SINGLEPLAYER(Boolean::class, { it.multiplayer::statusButtonInSinglePlayer }),
 //     MULTIPLAYER_TURN_CHECKER_ENABLED(Boolean::class, { it.multiplayer::turnCheckerEnabled }),
 //     MULTIPLAYER_TURN_CHECKER_PERSISTENT_NOTIFICATION_ENABLED(Boolean::class, { it.multiplayer::turnCheckerPersistentNotificationEnabled }),
 //     MULTIPLAYER_HIDE_DROPBOX_WARNING(Boolean::class, { it.multiplayer::hideDropboxWarning }),
-    MULTIPLAYER_TURN_CHECKER_DELAY(Duration::class, { it.multiplayer::turnCheckerDelay }),
-    MULTIPLAYER_CURRENT_GAME_REFRESH_DELAY(Duration::class, { it.multiplayer::currentGameRefreshDelay }),
-    MULTIPLAYER_ALL_GAME_REFRESH_DELAY(Duration::class, { it.multiplayer::allGameRefreshDelay }),
-    MULTIPLAYER_CURRENT_GAME_TURN_NOTIFICATION_SOUND(UncivSound::class, { it.multiplayer::currentGameTurnNotificationSound }),
-    MULTIPLAYER_OTHER_GAME_TURN_NOTIFICATION_SOUND(UncivSound::class, { it.multiplayer::otherGameTurnNotificationSound });
+        MULTIPLAYER_TURN_CHECKER_DELAY(Duration::class, { it.multiplayer::turnCheckerDelay }),
+        MULTIPLAYER_CURRENT_GAME_REFRESH_DELAY(Duration::class, { it.multiplayer::currentGameRefreshDelay }),
+        MULTIPLAYER_ALL_GAME_REFRESH_DELAY(Duration::class, { it.multiplayer::allGameRefreshDelay }),
+        MULTIPLAYER_CURRENT_GAME_TURN_NOTIFICATION_SOUND(UncivSound::class, { it.multiplayer::currentGameTurnNotificationSound }),
+        MULTIPLAYER_OTHER_GAME_TURN_NOTIFICATION_SOUND(UncivSound::class, { it.multiplayer::otherGameTurnNotificationSound });
 
-    /** **Warning:** It is the obligation of the caller to select the same type [T] that the [kClass] of this property has */
-    fun <T> getProperty(settings: GameSettings): KMutableProperty0<T> {
-        @Suppress("UNCHECKED_CAST")
-        return propertyGetter(settings) as KMutableProperty0<T>
+        /** **Warning:** It is the obligation of the caller to select the same type [T] that the [kClass] of this property has */
+        fun <T> getProperty(settings: GameSettings): KMutableProperty0<T> {
+            @Suppress("UNCHECKED_CAST")
+            return propertyGetter(settings) as KMutableProperty0<T>
+        }
     }
+
+    //endregion
 }
