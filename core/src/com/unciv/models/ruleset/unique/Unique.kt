@@ -150,7 +150,8 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
 
         val relevantTile by lazy { state.attackedTile
             ?: state.tile
-            ?: relevantUnit?.getTile()
+            // We need to protect against conditionals checking tiles for units pre-placement - see #10425, #10512
+            ?: relevantUnit?.run { if (hasTile()) getTile() else null }
             ?: state.city?.getCenterTile()
         }
 

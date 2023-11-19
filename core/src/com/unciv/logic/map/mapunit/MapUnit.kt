@@ -43,6 +43,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
 
     @Transient
     lateinit var currentTile: Tile
+    fun hasTile() = ::currentTile.isInitialized
 
     @Transient
     val movement = UnitMovement(this)
