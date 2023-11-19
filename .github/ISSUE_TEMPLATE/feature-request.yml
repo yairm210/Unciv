@@ -1,6 +1,7 @@
-name: Non-gameplay feature request
+name: eature request
 description: UI issue, Quality-of-life improvement, user experience or development issue
 labels: [feature]
+title: Feature request: 
 
 body:
   - type: markdown
