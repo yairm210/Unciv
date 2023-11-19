@@ -7,7 +7,7 @@ class DesktopGame(config: Lwjgl3ApplicationConfiguration) : UncivGame() {
 
     private val audio = HardenGdxAudio()
     private var discordUpdater = DiscordUpdater()
-    private val turnNotifier = MultiplayerTurnNotifierDesktop()
+    private val turnNotifier = UncivWindowListener()
 
     init {
         config.setWindowListener(turnNotifier)

@@ -10,7 +10,7 @@ import com.sun.jna.platform.win32.WinUser
 import com.unciv.utils.Log
 import org.lwjgl.glfw.GLFWNativeWin32
 
-class MultiplayerTurnNotifierDesktop: Lwjgl3WindowAdapter() {
+class UncivWindowListener: Lwjgl3WindowAdapter() {
     companion object {
         val user32: User32? = try {
             if (System.getProperty("os.name")?.contains("Windows") == true) {
