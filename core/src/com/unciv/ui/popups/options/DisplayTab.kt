@@ -8,7 +8,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Array
 import com.unciv.GUI
 import com.unciv.models.metadata.GameSettings
-import com.unciv.models.metadata.ScreenSize
+import com.unciv.models.metadata.GameSettings.ScreenSize
 import com.unciv.models.skins.SkinCache
 import com.unciv.models.tilesets.TileSetCache
 import com.unciv.models.translations.tr

@@ -24,7 +24,7 @@ import com.unciv.ui.screens.civilopediascreen.FormattedLine.IconDisplay
 import com.unciv.ui.screens.civilopediascreen.MarkupRenderer
 import kotlin.math.roundToInt
 
-class CityScreenTileTable(private val cityScreen: CityScreen): Table() {
+class CityScreenTileTable(private val cityScreen: CityScreen) : Table() {
     private val innerTable = Table()
     val city = cityScreen.city
 

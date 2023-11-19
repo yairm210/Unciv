@@ -218,7 +218,7 @@ object Nuke {
             buildingModifier = city.getAggregateModifier(UniqueType.GarrisonDamageFromNukes)
             doNukeExplosionDamageToCity(city, nukeStrength, damageModifierFromMissingResource)
             Battle.postBattleNotifications(attacker, CityCombatant(city), city.getCenterTile())
-            Battle.destroyIfDefeated(city.civ, attacker.getCivInfo())
+            Battle.destroyIfDefeated(city.civ, attacker.getCivInfo(), city.location)
         }
 
         // Damage and/or destroy units on the tile

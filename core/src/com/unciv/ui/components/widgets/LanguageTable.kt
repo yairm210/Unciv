@@ -4,17 +4,16 @@ import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.Constants
 import com.unciv.UncivGame
-import com.unciv.ui.screens.civilopediascreen.FormattedLine
-import com.unciv.ui.screens.civilopediascreen.MarkupRenderer
-import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.components.extensions.darken
 import com.unciv.ui.components.extensions.toLabel
+import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.basescreen.BaseScreen
+import com.unciv.ui.screens.civilopediascreen.FormattedLine
+import com.unciv.ui.screens.civilopediascreen.MarkupRenderer
 import java.util.Locale
-import kotlin.collections.ArrayList
 
 /** Represents a row in the Language picker, used both in OptionsPopup and in LanguagePickerScreen */
-internal class LanguageTable(val language:String, val percentComplete: Int): Table(){
+internal class LanguageTable(val language:String, val percentComplete: Int) : Table() {
     private val baseColor = BaseScreen.skinStrings.skinConfig.baseColor
     private val darkBaseColor = baseColor.darken(0.5f)
 
@@ -33,7 +32,7 @@ internal class LanguageTable(val language:String, val percentComplete: Int): Tab
         pack()
     }
 
-    fun update(chosenLanguage:String){
+    fun update(chosenLanguage:String) {
         background = BaseScreen.skinStrings.getUiBackground(
             "LanguagePickerScreen/LanguageTable",
             tintColor = if (chosenLanguage == language) baseColor else darkBaseColor

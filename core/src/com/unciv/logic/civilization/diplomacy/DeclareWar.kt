@@ -2,6 +2,7 @@ package com.unciv.logic.civilization.diplomacy
 
 import com.unciv.Constants
 import com.unciv.logic.civilization.AlertType
+import com.unciv.logic.civilization.DiplomacyAction
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.civilization.PopupAlert
@@ -120,6 +121,7 @@ object DeclareWar {
         for (trade in diplomacyManager.trades)
             for (offer in trade.theirOffers.filter { it.duration > 0 && it.name != Constants.defensivePact})
                 diplomacyManager.civInfo.addNotification("[${offer.name}] from [${diplomacyManager.otherCivName}] has ended",
+                    DiplomacyAction(diplomacyManager.otherCivName, true),
                     NotificationCategory.Trade, diplomacyManager.otherCivName, NotificationIcon.Trade)
         diplomacyManager.trades.clear()
 

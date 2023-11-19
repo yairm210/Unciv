@@ -4,6 +4,7 @@ import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
 import com.unciv.GUI
 import com.unciv.logic.IsPartOfGameInfoSerialization
+import com.unciv.logic.MultiFilter
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.PlayerType
@@ -50,7 +51,7 @@ open class Tile : IsPartOfGameInfoSerialization {
     var owningCity: City? = null
         private set
 
-    fun setOwningCity(city:City?){
+    fun setOwningCity(city:City?) {
         if (city != null) {
             if (roadStatus != RoadStatus.None && roadOwner != "") {
                 // remove previous neutral tile owner
@@ -397,7 +398,7 @@ open class Tile : IsPartOfGameInfoSerialization {
     /** Get all uniques of this type that any part of this tile has: terrains, improvement, resource */
     fun getMatchingUniques(uniqueType: UniqueType, stateForConditionals: StateForConditionals = StateForConditionals(tile=this)): Sequence<Unique> {
         var uniques = getTerrainMatchingUniques(uniqueType, stateForConditionals)
-        if (getUnpillagedImprovement() != null){
+        if (getUnpillagedImprovement() != null) {
             val tileImprovement = getTileImprovement()
             if (tileImprovement != null) {
                 uniques += tileImprovement.getMatchingUniques(uniqueType, stateForConditionals)
@@ -465,7 +466,7 @@ open class Tile : IsPartOfGameInfoSerialization {
     // This should be the only adjacency function
     fun isAdjacentTo(terrainFilter:String): Boolean {
         // Rivers are odd, as they aren't technically part of any specific tile but still count towards adjacency
-        if (terrainFilter == "River") return isAdjacentToRiver()
+        if (terrainFilter == Constants.river) return isAdjacentToRiver()
         if (terrainFilter == Constants.freshWater && isAdjacentToRiver()) return true
         return (neighbors + this).any { neighbor -> neighbor.matchesFilter(terrainFilter) }
     }
@@ -477,15 +478,19 @@ open class Tile : IsPartOfGameInfoSerialization {
         return improvement == null && filter == "unimproved"
     }
 
-    /** Implements [UniqueParameterType.TerrainFilter][com.unciv.models.ruleset.unique.UniqueParameterType.TerrainFilter] */
     fun matchesTerrainFilter(filter: String, observingCiv: Civilization? = null): Boolean {
+        return MultiFilter.multiFilter(filter, {matchesSingleTerrainFilter(it, observingCiv)})
+    }
+
+    /** Implements [UniqueParameterType.TerrainFilter][com.unciv.models.ruleset.unique.UniqueParameterType.TerrainFilter] */
+    fun matchesSingleTerrainFilter(filter: String, observingCiv: Civilization? = null): Boolean {
         return when (filter) {
             "All" -> true
             baseTerrain -> true
             "Water" -> isWater
             "Land" -> isLand
             Constants.coastal -> isCoastalTile()
-            "River" -> isAdjacentToRiver()
+            Constants.river -> isAdjacentToRiver()
             naturalWonder -> true
             "Open terrain" -> !isRoughTerrain()
             "Rough terrain" -> isRoughTerrain()
@@ -503,7 +508,7 @@ open class Tile : IsPartOfGameInfoSerialization {
             in terrainFeatures -> true
             else -> {
                 if (terrainUniqueMap.getUniques(filter).any()) return true
-                if (getOwner()?.nation?.matchesFilter(filter) == true) return true
+                if (getOwner()?.matchesFilter(filter) == true) return true
 
                 // Resource type check is last - cannot succeed if no resource here
                 if (resource == null) return false

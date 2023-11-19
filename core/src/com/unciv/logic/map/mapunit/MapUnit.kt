@@ -3,6 +3,7 @@ package com.unciv.logic.map.mapunit
 import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
 import com.unciv.logic.IsPartOfGameInfoSerialization
+import com.unciv.logic.MultiFilter
 import com.unciv.logic.automation.unit.UnitAutomation
 import com.unciv.logic.battle.BattleUnitCapture
 import com.unciv.logic.battle.MapUnitCombatant
@@ -24,7 +25,6 @@ import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.ruleset.unit.UnitType
 import com.unciv.models.stats.Stats
 import com.unciv.ui.components.UnitMovementMemoryType
-import com.unciv.ui.components.extensions.filterAndLogic
 import java.text.DecimalFormat
 import kotlin.math.pow
 import kotlin.math.ulp
@@ -43,6 +43,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
 
     @Transient
     lateinit var currentTile: Tile
+    fun hasTile() = ::currentTile.isInitialized
 
     @Transient
     val movement = UnitMovement(this)
@@ -477,20 +478,20 @@ class MapUnit : IsPartOfGameInfoSerialization {
             // In some cases we might rely on every distance farther than maxDist being the same
             else Int.MAX_VALUE
         }
-        
-        fun tileHasEnemyCity(tile: Tile): Boolean = tile.isExplored(civ) 
-            && tile.isCityCenter() 
+
+        fun tileHasEnemyCity(tile: Tile): Boolean = tile.isExplored(civ)
+            && tile.isCityCenter()
             && tile.getCity()!!.civ.isAtWarWith(civ)
-        
+
         fun tileHasEnemyMilitaryUnit(tile: Tile): Boolean = tile.isVisible(civ)
             && tile.militaryUnit != null
             && tile.militaryUnit!!.civ.isAtWarWith(civ)
             && !tile.militaryUnit!!.isInvisible(civ)
-        
+
         // Needs to be a high value, but not the max value so we can still add to it
         cache.distanceToClosestEnemyUnit = 500000
         for (i in 1..maxDist) {
-            if (currentTile.getTilesAtDistance(i).any { 
+            if (currentTile.getTilesAtDistance(i).any {
                     tileHasEnemyCity(it) || tileHasEnemyMilitaryUnit(it) }) {
                 cache.distanceToClosestEnemyUnit = i
                 break
@@ -545,7 +546,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
             // We have moved so invalidate the previous calculation
             cache.distanceToClosestEnemyUnit = null
             cache.distanceToClosestEnemyUnitSearched = null
-            
+
             val destinationTile = getMovementDestination()
             if (!movement.canReach(destinationTile)) { // That tile that we were moving towards is now unreachable -
                 // for instance we headed towards an unknown tile and it's apparently unreachable
@@ -803,8 +804,14 @@ class MapUnit : IsPartOfGameInfoSerialization {
 
     fun canIntercept(attackedTile: Tile): Boolean {
         if (!canIntercept()) return false
-        if (currentTile.aerialDistanceTo(attackedTile) > baseUnit.interceptRange) return false
+        if (currentTile.aerialDistanceTo(attackedTile) > getInterceptionRange()) return false
         return true
+    }
+
+    fun getInterceptionRange():Int {
+        val rangeFromUniques = getMatchingUniques(UniqueType.AirInterceptionRange, checkCivInfoUniques = true)
+            .sumOf { it.params[0].toInt() }
+        return baseUnit.interceptRange + rangeFromUniques
     }
 
     fun canIntercept(): Boolean {
@@ -882,9 +889,11 @@ class MapUnit : IsPartOfGameInfoSerialization {
 
     /** Implements [UniqueParameterType.MapUnitFilter][com.unciv.models.ruleset.unique.UniqueParameterType.MapUnitFilter] */
     fun matchesFilter(filter: String): Boolean {
-        return filter.filterAndLogic { matchesFilter(it) } // multiple types at once - AND logic. Looks like:"{Military} {Land}"
-            ?: when (filter) {
+        return MultiFilter.multiFilter(filter, ::matchesSingleFilter)
+    }
 
+    private fun matchesSingleFilter(filter:String): Boolean {
+        return when (filter) {
             Constants.wounded, "wounded units" -> health < 100
             Constants.barbarians, "Barbarian" -> civ.isBarbarian()
             "City-State" -> civ.isCityState()
@@ -892,7 +901,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
             "Non-City" -> true
             else -> {
                 if (baseUnit.matchesFilter(filter)) return true
-                if (civ.nation.matchesFilter(filter)) return true
+                if (civ.matchesFilter(filter)) return true
                 if (tempUniquesMap.containsKey(filter)) return true
                 return false
             }

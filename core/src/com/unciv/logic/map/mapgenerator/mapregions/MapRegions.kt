@@ -29,7 +29,7 @@ import kotlin.math.min
 import kotlin.math.roundToInt
 import kotlin.random.Random
 
-class TileDataMap:HashMap<Vector2, MapGenTileData>(){
+class TileDataMap:HashMap<Vector2, MapGenTileData>() {
 
     /** Adds numbers to tileData in a similar way to closeStartPenalty, but for different types */
     fun placeImpact(type: MapRegions.ImpactType, tile: Tile, radius: Int) {
@@ -50,7 +50,7 @@ class TileDataMap:HashMap<Vector2, MapGenTileData>(){
     }
 }
 
-class MapRegions (val ruleset: Ruleset){
+class MapRegions (val ruleset: Ruleset) {
     companion object {
         val minimumFoodForRing = mapOf(1 to 1, 2 to 4, 3 to 4)
         val minimumProdForRing = mapOf(1 to 0, 2 to 0, 3 to 2)
@@ -940,4 +940,3 @@ internal fun getTerrainRule(terrain: Terrain, ruleset: Ruleset): Unique {
     } else
         Unique("RULE <in [Featureless] [${terrain.name}] tiles>")
 }
-

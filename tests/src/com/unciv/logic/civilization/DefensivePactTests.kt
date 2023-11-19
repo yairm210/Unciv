@@ -20,7 +20,7 @@ class DefensivePactTests {
 
 
 
-    private fun meetAll(){
+    private fun meetAll() {
         a.diplomacyFunctions.makeCivilizationsMeet(b)
         a.diplomacyFunctions.makeCivilizationsMeet(c)
         b.diplomacyFunctions.makeCivilizationsMeet(c)
@@ -84,5 +84,3 @@ class DefensivePactTests {
         Assert.assertTrue(c.getDiplomacyManager(a).hasModifier(DiplomaticModifiers.BetrayedDefensivePact))
     }
 }
-
-

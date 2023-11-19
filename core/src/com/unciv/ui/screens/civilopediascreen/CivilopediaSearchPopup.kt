@@ -1,5 +1,6 @@
 package com.unciv.ui.screens.civilopediascreen
 
+import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.ui.Cell
 import com.badlogic.gdx.scenes.scene2d.ui.SelectBox
@@ -9,13 +10,13 @@ import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.stats.INamed
 import com.unciv.models.translations.tr
-import com.unciv.ui.components.widgets.ExpanderTab
 import com.unciv.ui.components.UncivTextField
 import com.unciv.ui.components.extensions.disable
 import com.unciv.ui.components.extensions.enable
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.input.KeyCharAndCode
 import com.unciv.ui.components.input.onClick
+import com.unciv.ui.components.widgets.ExpanderTab
 import com.unciv.ui.popups.Popup
 import com.unciv.ui.popups.ToastPopup
 import com.unciv.ui.screens.basescreen.BaseScreen
@@ -69,6 +70,7 @@ class CivilopediaSearchPopup(
 
     private fun startSearch(text: String) {
         searchButton.disable()
+        Gdx.input.setOnscreenKeyboardVisible(false)  // UncivTextField's FocusListener will give it back when needed
 
         @Suppress("LiftReturnOrAssignment")
         if (text.isEmpty()) {

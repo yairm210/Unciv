@@ -150,7 +150,8 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
 
         val relevantTile by lazy { state.attackedTile
             ?: state.tile
-            ?: relevantUnit?.getTile()
+            // We need to protect against conditionals checking tiles for units pre-placement - see #10425, #10512
+            ?: relevantUnit?.run { if (hasTile()) getTile() else null }
             ?: state.city?.getCenterTile()
         }
 
@@ -211,7 +212,7 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
             UniqueType.ConditionalBeforeTurns -> checkOnCiv { gameInfo.turns < condition.params[0].toInt() }
             UniqueType.ConditionalAfterTurns -> checkOnCiv { gameInfo.turns >= condition.params[0].toInt() }
 
-            UniqueType.ConditionalNationFilter -> checkOnCiv { nation.matchesFilter(condition.params[0]) }
+            UniqueType.ConditionalCivFilter -> checkOnCiv { matchesFilter(condition.params[0]) }
             UniqueType.ConditionalWar -> checkOnCiv { isAtWar() }
             UniqueType.ConditionalNotWar -> checkOnCiv { !isAtWar() }
             UniqueType.ConditionalWithResource -> getResourceAmount(condition.params[0]) > 0

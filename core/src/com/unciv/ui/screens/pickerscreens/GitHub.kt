@@ -81,7 +81,10 @@ object Github {
         val defaultBranch = repo.default_branch
         val gitRepoUrl = repo.html_url
         // Initiate download - the helper returns null when it fails
-        val zipUrl = "$gitRepoUrl/archive/$defaultBranch.zip"
+        // URL format see: https://docs.github.com/en/repositories/working-with-files/using-files/downloading-source-code-archives#source-code-archive-urls
+        // Note: https://api.github.com/repos/owner/mod/zipball would be an alternative. Its response is a redirect, but our lib follows that and delivers the zip just fine.
+        // Problems with the latter: Internal zip structure different, finalDestinationName would need a patch. Plus, normal URL escaping for owner/reponame does not work.
+        val zipUrl = "$gitRepoUrl/archive/refs/heads/$defaultBranch.zip"
         val inputStream = download(zipUrl) ?: return null
 
         // Get a mod-specific temp file name

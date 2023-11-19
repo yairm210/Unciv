@@ -9,8 +9,8 @@ import com.unciv.logic.multiplayer.OnlineMultiplayer
 import com.unciv.logic.multiplayer.storage.FileStorageRateLimitReached
 import com.unciv.logic.multiplayer.storage.MultiplayerAuthException
 import com.unciv.models.UncivSound
-import com.unciv.models.metadata.GameSetting
 import com.unciv.models.metadata.GameSettings
+import com.unciv.models.metadata.GameSettings.GameSetting
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.ui.components.UncivTextField
 import com.unciv.ui.components.extensions.addSeparator

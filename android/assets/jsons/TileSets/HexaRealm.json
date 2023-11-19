@@ -3,6 +3,9 @@
     "fallbackTileSet": "FantasyHex",
     "ruleVariants": {
 
+		// River pseudo-tile used in Civilopedia display only
+		"Grassland+River": ["Plains","River-BottomLeft","River-Bottom","River-BottomRight"],
+
         //forest and jungle
         "Grassland+Forest": ["Grassland","ForestG"],
         "Grassland+Jungle": ["Grassland","JungleG"],

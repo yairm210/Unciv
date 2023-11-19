@@ -389,7 +389,7 @@ private class CityTable(city: City, forPopup: Boolean = false) : BorderedTable(
     }
 }
 
-class CityButton(val city: City, private val tileGroup: TileGroup): Table(BaseScreen.skin){
+class CityButton(val city: City, private val tileGroup: TileGroup) : Table(BaseScreen.skin) {
 
     init {
         touchable = Touchable.disabled

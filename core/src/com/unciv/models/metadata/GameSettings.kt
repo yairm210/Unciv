@@ -19,20 +19,6 @@ import java.util.Locale
 import kotlin.reflect.KClass
 import kotlin.reflect.KMutableProperty0
 
-data class WindowState (val width: Int = 900, val height: Int = 600)
-
-enum class ScreenSize(
-    @Suppress("unused")  // Actual width determined by screen aspect ratio, this as comment only
-    val virtualWidth: Float,
-    val virtualHeight: Float
-) {
-    Tiny(750f,500f),
-    Small(900f,600f),
-    Medium(1050f,700f),
-    Large(1200f,800f),
-    Huge(1500f,1000f)
-}
-
 class GameSettings {
 
     /** Allows panning the map by moving the pointer to the screen edges */
@@ -100,6 +86,7 @@ class GameSettings {
     var showAutosaves: Boolean = false
 
     var androidCutout: Boolean = false
+    var androidHideSystemUi = true
 
     var multiplayer = GameSettingsMultiplayer()
     
@@ -301,15 +288,18 @@ enum class GameSetting(
 //     MULTIPLAYER_TURN_CHECKER_ENABLED(Boolean::class, { it.multiplayer::turnCheckerEnabled }),
 //     MULTIPLAYER_TURN_CHECKER_PERSISTENT_NOTIFICATION_ENABLED(Boolean::class, { it.multiplayer::turnCheckerPersistentNotificationEnabled }),
 //     MULTIPLAYER_HIDE_DROPBOX_WARNING(Boolean::class, { it.multiplayer::hideDropboxWarning }),
-    MULTIPLAYER_TURN_CHECKER_DELAY(Duration::class, { it.multiplayer::turnCheckerDelay }),
-    MULTIPLAYER_CURRENT_GAME_REFRESH_DELAY(Duration::class, { it.multiplayer::currentGameRefreshDelay }),
-    MULTIPLAYER_ALL_GAME_REFRESH_DELAY(Duration::class, { it.multiplayer::allGameRefreshDelay }),
-    MULTIPLAYER_CURRENT_GAME_TURN_NOTIFICATION_SOUND(UncivSound::class, { it.multiplayer::currentGameTurnNotificationSound }),
-    MULTIPLAYER_OTHER_GAME_TURN_NOTIFICATION_SOUND(UncivSound::class, { it.multiplayer::otherGameTurnNotificationSound });
+        MULTIPLAYER_TURN_CHECKER_DELAY(Duration::class, { it.multiplayer::turnCheckerDelay }),
+        MULTIPLAYER_CURRENT_GAME_REFRESH_DELAY(Duration::class, { it.multiplayer::currentGameRefreshDelay }),
+        MULTIPLAYER_ALL_GAME_REFRESH_DELAY(Duration::class, { it.multiplayer::allGameRefreshDelay }),
+        MULTIPLAYER_CURRENT_GAME_TURN_NOTIFICATION_SOUND(UncivSound::class, { it.multiplayer::currentGameTurnNotificationSound }),
+        MULTIPLAYER_OTHER_GAME_TURN_NOTIFICATION_SOUND(UncivSound::class, { it.multiplayer::otherGameTurnNotificationSound });
 
-    /** **Warning:** It is the obligation of the caller to select the same type [T] that the [kClass] of this property has */
-    fun <T> getProperty(settings: GameSettings): KMutableProperty0<T> {
-        @Suppress("UNCHECKED_CAST")
-        return propertyGetter(settings) as KMutableProperty0<T>
+        /** **Warning:** It is the obligation of the caller to select the same type [T] that the [kClass] of this property has */
+        fun <T> getProperty(settings: GameSettings): KMutableProperty0<T> {
+            @Suppress("UNCHECKED_CAST")
+            return propertyGetter(settings) as KMutableProperty0<T>
+        }
     }
+
+    //endregion
 }

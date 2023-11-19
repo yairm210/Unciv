@@ -31,7 +31,7 @@ import com.unciv.ui.components.widgets.AutoScrollPane as ScrollPane
  *
  * @param worldScreen The parent screen
  */
-class TradePopup(worldScreen: WorldScreen): Popup(worldScreen){
+class TradePopup(worldScreen: WorldScreen) : Popup(worldScreen) {
     val viewingCiv = worldScreen.viewingCiv
     val tradeRequest = viewingCiv.tradeRequests.first()
 
@@ -106,7 +106,7 @@ class TradePopup(worldScreen: WorldScreen): Popup(worldScreen){
         super.close()
     }
 
-    class TradeThanksPopup(leaderIntroTable: LeaderIntroTable, worldScreen: WorldScreen): Popup(worldScreen) {
+    class TradeThanksPopup(leaderIntroTable: LeaderIntroTable, worldScreen: WorldScreen) : Popup(worldScreen) {
         init {
             add(leaderIntroTable)
             addSeparator().padBottom(15f)

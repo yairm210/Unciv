@@ -300,7 +300,7 @@ class TurnManager(val civInfo: Civilization) {
         updateWinningCiv() // Maybe we did something this turn to win
     }
 
-    fun updateWinningCiv(){
+    fun updateWinningCiv() {
         if (civInfo.gameInfo.victoryData != null) return // Game already won
 
         val victoryType = civInfo.victoryManager.getVictoryTypeAchieved()

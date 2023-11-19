@@ -785,6 +785,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Global, Unit
 
+??? example  "[relativeAmount] Air Interception Range"
+	Example: "[+20] Air Interception Range"
+
+	Applicable to: Global, Unit
+
 ??? example  "[amount] HP when healing"
 	Example: "[3] HP when healing"
 
@@ -898,6 +903,9 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 ??? example  "Units ignore terrain costs when moving into any tile with Hills"
 	Applicable to: Nation
+
+??? example  "Excluded from map editor"
+	Applicable to: Nation, Terrain, Improvement, Resource
 
 ??? example  "Will not be displayed in Civilopedia"
 	Applicable to: Nation, Tech, Policy, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins
@@ -1775,7 +1783,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Conditional
 
-??? example  "&lt;for [nationFilter]&gt;"
+??? example  "&lt;for [civFilter]&gt;"
 	Example: "&lt;for [City-States]&gt;"
 
 	Applicable to: Conditional

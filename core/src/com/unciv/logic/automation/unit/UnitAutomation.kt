@@ -169,22 +169,25 @@ object UnitAutomation {
         //This allows for military units with certain civilian abilities to behave as civilians in peace and soldiers in war
         if ((unit.hasUnique(UniqueType.BuildImprovements) || unit.hasUnique(UniqueType.FoundCity) ||
                 unit.hasUnique(UniqueType.ReligiousUnit) || unit.hasUnique(UniqueType.CreateWaterImprovements))
-                && !unit.civ.isAtWar()){
+                && !unit.civ.isAtWar()) {
             CivilianUnitAutomation.automateCivilianUnit(unit)
             return
         }
-
-        if (unit.baseUnit.isAirUnit() && unit.canIntercept())
-            return AirUnitAutomation.automateFighter(unit)
-
-        if (unit.baseUnit.isAirUnit() && !unit.baseUnit.isNuclearWeapon())
-            return AirUnitAutomation.automateBomber(unit)
-
-        if (unit.baseUnit.isNuclearWeapon())
-            return AirUnitAutomation.automateNukes(unit)
-
-        if (unit.baseUnit.isAirUnit() && unit.hasUnique(UniqueType.SelfDestructs))
-            return AirUnitAutomation.automateMissile(unit)
+        
+        if (unit.baseUnit.isAirUnit()) {
+            if (unit.canIntercept())
+                return AirUnitAutomation.automateFighter(unit)
+    
+            if (!unit.baseUnit.isNuclearWeapon())
+                return AirUnitAutomation.automateBomber(unit)
+    
+            // Note that not all nukes have to be air units
+            if (unit.baseUnit.isNuclearWeapon())
+                return AirUnitAutomation.automateNukes(unit)
+    
+            if (unit.hasUnique(UniqueType.SelfDestructs))
+                return AirUnitAutomation.automateMissile(unit)
+        }
 
         if (tryGoToRuinAndEncampment(unit) && unit.currentMovement == 0f) return
 
@@ -253,14 +256,14 @@ object UnitAutomation {
         unit.movement.headTowards(encampmentToHeadTowards)
         return true
     }
-    
+
     private fun trySwapRetreat(unit: MapUnit): Boolean {
         if (!unit.civ.isAtWar()) return false
         // Precondition: This must be a military unit
         if (unit.isCivilian()) return false
         // Better to do a more healing oriented move then
         if (unit.getDistanceToEnemyUnit(6, true) > 4) return false
-        
+
         if (unit.baseUnit.isAirUnit()) {
             return false
         }
@@ -269,7 +272,7 @@ object UnitAutomation {
         val swapableTiles = unitDistanceToTiles.keys.filter { it.militaryUnit != null && it.militaryUnit!!.owner == unit.owner}.reversed()
         for (swapTile in swapableTiles) {
             val otherUnit = swapTile.militaryUnit!!
-            if (otherUnit.health > 80 
+            if (otherUnit.health > 80
                 && unit.getDistanceToEnemyUnit(6, false) < otherUnit.getDistanceToEnemyUnit(6,false)) {
                 if (otherUnit.baseUnit.isRanged()) {
                     // Don't swap ranged units closer than they have to be
@@ -277,8 +280,8 @@ object UnitAutomation {
                     if (unit.getDistanceToEnemyUnit(6) < range)
                         continue
                 }
-                if (unit.movement.canUnitSwapTo(swapTile)) { 
-                    unit.movement.swapMoveToTile(swapTile) 
+                if (unit.movement.canUnitSwapTo(swapTile)) {
+                    unit.movement.swapMoveToTile(swapTile)
                     return true
                 }
             }
