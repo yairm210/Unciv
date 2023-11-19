@@ -4,13 +4,6 @@ import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.models.ruleset.Speed
 
-
-@Suppress("EnumEntryName")  // These merit unusual names
-enum class BaseRuleset(val fullName:String) {
-    Civ_V_Vanilla("Civ V - Vanilla"),
-    Civ_V_GnK("Civ V - Gods & Kings"),
-}
-
 class GameParameters : IsPartOfGameInfoSerialization { // Default values are the default new game
     var difficulty = "Prince"
     var speed = Speed.DEFAULT
