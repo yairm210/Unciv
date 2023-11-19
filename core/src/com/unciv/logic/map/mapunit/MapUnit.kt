@@ -21,6 +21,7 @@ import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueMap
 import com.unciv.models.ruleset.unique.UniqueType
+import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.ruleset.unit.UnitType
 import com.unciv.models.stats.Stats
@@ -343,8 +344,23 @@ class MapUnit : IsPartOfGameInfoSerialization {
         if (updateCivViewableTiles && oldViewableTiles != viewableTiles
                 // Don't bother updating if all previous and current viewable tiles are within our borders
                 && (oldViewableTiles.any { it !in civ.cache.ourTilesAndNeighboringTiles }
-                        || viewableTiles.any { it !in civ.cache.ourTilesAndNeighboringTiles }))
+                        || viewableTiles.any { it !in civ.cache.ourTilesAndNeighboringTiles })) {
+
+            val newlyExploredTiles = viewableTiles.filter {
+                !it.isExplored(civ)
+            }
+            for (tile in newlyExploredTiles) {
+                // Include tile in the state for correct RNG seeding
+                val state = StateForConditionals(civInfo=civ, unit=this, tile=tile);
+                for (unique in getTriggeredUniques(UniqueType.TriggerUponDiscoveringTile, state)) {
+                    if (unique.conditionals.any { it.type == UniqueType.TriggerUponDiscoveringTile
+                        && tile.matchesFilter(it.params[0], civ) })
+                        UniqueTriggerActivation.triggerUnitwideUnique(unique, this)
+                }
+            }
+            
             civ.cache.updateViewableTiles(explorerPosition)
+        }
     }
 
     fun isActionUntilHealed() = action?.endsWith("until healed") == true
