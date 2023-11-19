@@ -19,20 +19,12 @@ object MotivationToAttackAutomation {
 
     /** Will return the motivation to attack, but might short circuit if the value is guaranteed to
      * be lower than `atLeast`. So any values below `atLeast` should not be used for comparison. */
-    public fun hasAtLeastMotivationToAttack(civInfo: Civilization, otherCiv: Civilization, atLeast: Int): Int {
+    fun hasAtLeastMotivationToAttack(civInfo: Civilization, otherCiv: Civilization, atLeast: Int): Int {
         val closestCities = NextTurnAutomation.getClosestCities(civInfo, otherCiv) ?: return 0
         val baseForce = 30f
 
-        var ourCombatStrength = civInfo.getStatForRanking(RankingType.Force).toFloat() + baseForce
-        if (civInfo.getCapital() != null) ourCombatStrength += CityCombatant(civInfo.getCapital()!!).getCityStrength()
-        var theirCombatStrength = otherCiv.getStatForRanking(RankingType.Force).toFloat() + baseForce
-        if(otherCiv.getCapital() != null) theirCombatStrength += CityCombatant(otherCiv.getCapital()!!).getCityStrength()
-
-        //for city-states, also consider their protectors
-        if (otherCiv.isCityState() and otherCiv.cityStateFunctions.getProtectorCivs().isNotEmpty()) {
-            theirCombatStrength += otherCiv.cityStateFunctions.getProtectorCivs().filterNot { it == civInfo }
-                .sumOf { it.getStatForRanking(RankingType.Force) }
-        }
+        val ourCombatStrength = calculateSelfCombatStrength(civInfo, baseForce)
+        val theirCombatStrength = calculateCombatStrengthWithProtectors(otherCiv, baseForce, civInfo)
 
         if (theirCombatStrength > ourCombatStrength) return 0
 
@@ -98,12 +90,8 @@ object MotivationToAttackAutomation {
 
         var motivationSoFar = modifierMap.values.sum()
 
-        // We don't need to execute the expensive BFSs below if we're below the threshold here
-        // anyways, since it won't get better from those, only worse.
-        if (motivationSoFar < atLeast) {
-            return motivationSoFar
-        }
-
+        // Short-circuit to avoid expensive BFS
+        if (motivationSoFar < atLeast) return motivationSoFar
 
         val landPathBFS = BFS(ourCity.getCenterTile()) {
             it.isLand && isTileCanMoveThrough(it)
@@ -113,11 +101,8 @@ object MotivationToAttackAutomation {
         if (!landPathBFS.hasReachedTile(theirCity.getCenterTile()))
             motivationSoFar -= -10
 
-        // We don't need to execute the expensive BFSs below if we're below the threshold here
-        // anyways, since it won't get better from those, only worse.
-        if (motivationSoFar < atLeast) {
-            return motivationSoFar
-        }
+        // Short-circuit to avoid expensive BFS
+        if (motivationSoFar < atLeast) return motivationSoFar
 
         val reachableEnemyCitiesBfs = BFS(civInfo.getCapital(true)!!.getCenterTile()) { isTileCanMoveThrough(it) }
         reachableEnemyCitiesBfs.stepToEnd()
@@ -125,6 +110,23 @@ object MotivationToAttackAutomation {
         if (reachableEnemyCities.isEmpty()) return 0 // Can't even reach the enemy city, no point in war.
 
         return motivationSoFar
+    }
+
+    private fun calculateCombatStrengthWithProtectors(otherCiv: Civilization, baseForce: Float, civInfo: Civilization): Float {
+        var theirCombatStrength = calculateSelfCombatStrength(otherCiv, baseForce)
+
+        //for city-states, also consider their protectors
+        if (otherCiv.isCityState() and otherCiv.cityStateFunctions.getProtectorCivs().isNotEmpty()) {
+            theirCombatStrength += otherCiv.cityStateFunctions.getProtectorCivs().filterNot { it == civInfo }
+                .sumOf { it.getStatForRanking(RankingType.Force) }
+        }
+        return theirCombatStrength
+    }
+
+    private fun calculateSelfCombatStrength(civInfo: Civilization, baseForce: Float): Float {
+        var ourCombatStrength = civInfo.getStatForRanking(RankingType.Force).toFloat() + baseForce
+        if (civInfo.getCapital() != null) ourCombatStrength += CityCombatant(civInfo.getCapital()!!).getCityStrength()
+        return ourCombatStrength
     }
 
     private fun addWonderBasedMotivations(otherCiv: Civilization, modifierMap: HashMap<String, Int>) {
