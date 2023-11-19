@@ -11,12 +11,14 @@ import com.unciv.ui.screens.worldscreen.unit.actions.UnitActions
 
 object CivilianUnitAutomation {
 
+    fun shouldClearTileForAddInCapitalUnits(unit: MapUnit, tile:Tile) = tile.getCity()?.isCapital() == true
+        && !unit.hasUnique(UniqueType.AddInCapital)
+        && unit.civ.units.getCivUnits().any { unit.hasUnique(UniqueType.AddInCapital) }
+
     fun automateCivilianUnit(unit: MapUnit) {
         if (tryRunAwayIfNeccessary(unit)) return
 
-        if (unit.currentTile.isCityCenter() && unit.currentTile.getCity()!!.isCapital()
-            && !unit.hasUnique(UniqueType.AddInCapital)
-            && unit.civ.units.getCivUnits().any { unit.hasUnique(UniqueType.AddInCapital) }) {
+        if (shouldClearTileForAddInCapitalUnits(unit, unit.currentTile)) {
             // First off get out of the way, then decide if you actually want to do something else
             val tilesCanMoveTo = unit.movement.getDistanceToTiles()
                 .filter { unit.movement.canMoveTo(it.key) }
