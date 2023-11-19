@@ -143,7 +143,7 @@ class GameSettings {
     fun refreshWindowSize() {
         if (isFreshlyCreated || Gdx.app.type != ApplicationType.Desktop) return
         if (!Display.hasUserSelectableSize(screenMode)) return
-        windowState = WindowState(Gdx.graphics.width, Gdx.graphics.height)
+        windowState = WindowState.current()
     }
 
     fun addCompletedTutorialTask(tutorialTask: String): Boolean {
@@ -181,7 +181,54 @@ class GameSettings {
     //endregion
     //region <Nested classes>
 
-    data class WindowState (val width: Int = 900, val height: Int = 600)
+    /**
+     *  Knowledge on Window "state", limited.
+     *  - Size: Saved
+     *  - Iconified, Maximized: Not saved
+     *  - Position / Multimonitor display choice: Not saved
+     *
+     *  Note: Useful on desktop only, on Android we do not explicitly support `Activity.isInMultiWindowMode` returning true.
+     *  (On Android Display.hasUserSelectableSize will return false, and AndroidLauncher & co ignore it)
+     *
+     *  Open to future enhancement - but:
+     *  retrieving a valid position from our upstream libraries while the window is maximized or iconified has proven tricky so far.
+     */
+    data class WindowState(val width: Int = 900, val height: Int = 600) {
+        constructor(bounds: java.awt.Rectangle) : this(bounds.width, bounds.height)
+
+        companion object {
+            /** Our choice of minimum window width */
+            const val minimumWidth = 120
+            /** Our choice of minimum window height */
+            const val minimumHeight = 80
+
+            fun current() = WindowState(Gdx.graphics.width, Gdx.graphics.height)
+        }
+
+        /**
+         *  Constrains the dimensions of `this` [WindowState] to be within [minimumWidth] x [minimumHeight] to [maximumWidth] x [maximumHeight].
+         *  @param maximumWidth defaults to unlimited
+         *  @param maximumHeight defaults to unlimited
+         *  @return `this` unchanged if it is within valid limits, otherwise a new WindowState that is.
+         */
+        fun coerceIn(maximumWidth: Int = Int.MAX_VALUE, maximumHeight: Int = Int.MAX_VALUE): WindowState {
+            if (width in minimumWidth..maximumWidth && height in minimumHeight..maximumHeight)
+                return this
+            return WindowState(
+                width.coerceIn(minimumWidth, maximumWidth),
+                height.coerceIn(minimumHeight, maximumHeight)
+            )
+        }
+
+        /**
+         *  Constrains the dimensions of `this` [WindowState] to be within [minimumWidth] x [minimumHeight] to `maximumWidth` x `maximumHeight`.
+         *  @param maximumWindowBounds provides maximum sizes
+         *  @return `this` unchanged if it is within valid limits, otherwise a new WindowState that is.
+         *  @see coerceIn
+         */
+        fun coerceIn(maximumWindowBounds: java.awt.Rectangle) =
+            coerceIn(maximumWindowBounds.width, maximumWindowBounds.height)
+    }
 
     enum class ScreenSize(
         @Suppress("unused")  // Actual width determined by screen aspect ratio, this as comment only
