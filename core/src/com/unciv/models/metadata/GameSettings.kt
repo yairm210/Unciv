@@ -19,20 +19,6 @@ import java.util.Locale
 import kotlin.reflect.KClass
 import kotlin.reflect.KMutableProperty0
 
-data class WindowState (val width: Int = 900, val height: Int = 600)
-
-enum class ScreenSize(
-    @Suppress("unused")  // Actual width determined by screen aspect ratio, this as comment only
-    val virtualWidth: Float,
-    val virtualHeight: Float
-) {
-    Tiny(750f,500f),
-    Small(900f,600f),
-    Medium(1050f,700f),
-    Large(1200f,800f),
-    Huge(1500f,1000f)
-}
-
 class GameSettings {
 
     /** Allows panning the map by moving the pointer to the screen edges */
@@ -132,7 +118,6 @@ class GameSettings {
     var enlargeSelectedNotification = true
 
     /** Whether the Nation Picker shows icons only or the horizontal "civBlocks" with leader/nation name */
-    enum class NationPickerListMode { Icons, List }
     var nationPickerListMode = NationPickerListMode.List
 
     /** Size of automatic display of UnitSet art in Civilopedia - 0 to disable */
@@ -148,10 +133,13 @@ class GameSettings {
         }
     }
 
+    //region <Methods>
+
     fun save() {
         refreshWindowSize()
         UncivGame.Current.files.setGeneralSettings(this)
     }
+
     fun refreshWindowSize() {
         if (isFreshlyCreated || Gdx.app.type != ApplicationType.Desktop) return
         if (!Display.hasUserSelectableSize(screenMode)) return
@@ -189,52 +177,73 @@ class GameSettings {
     fun getCollatorFromLocale(): Collator {
         return Collator.getInstance(getCurrentLocale())
     }
-}
 
-enum class LocaleCode(var language: String, var country: String) {
-    Arabic("ar", "IQ"),
-    Belarusian("be", "BY"),
-    BrazilianPortuguese("pt", "BR"),
-    Bulgarian("bg", "BG"),
-    Catalan("ca", "ES"),
-    Croatian("hr", "HR"),
-    Czech("cs", "CZ"),
-    Danish("da", "DK"),
-    Dutch("nl", "NL"),
-    English("en", "US"),
-    Estonian("et", "EE"),
-    Finnish("fi", "FI"),
-    French("fr", "FR"),
-    German("de", "DE"),
-    Greek("el", "GR"),
-    Hindi("hi", "IN"),
-    Hungarian("hu", "HU"),
-    Indonesian("in", "ID"),
-    Italian("it", "IT"),
-    Japanese("ja", "JP"),
-    Korean("ko", "KR"),
-    Latvian("lv", "LV"),
-    Lithuanian("lt", "LT"),
-    Malay("ms", "MY"),
-    Norwegian("no", "NO"),
-    NorwegianNynorsk("nn", "NO"),
-    PersianPinglishDIN("fa", "IR"), // These might just fall back to default
-    PersianPinglishUN("fa", "IR"),
-    Polish("pl", "PL"),
-    Portuguese("pt", "PT"),
-    Romanian("ro", "RO"),
-    Russian("ru", "RU"),
-    Serbian("sr", "RS"),
-    SimplifiedChinese("zh", "CN"),
-    Slovak("sk", "SK"),
-    Spanish("es", "ES"),
-    Swedish("sv", "SE"),
-    Thai("th", "TH"),
-    TraditionalChinese("zh", "TW"),
-    Turkish("tr", "TR"),
-    Ukrainian("uk", "UA"),
-    Vietnamese("vi", "VN"),
-    Afrikaans("af", "ZA")
+    //endregion
+    //region <Nested classes>
+
+    data class WindowState (val width: Int = 900, val height: Int = 600)
+
+    enum class ScreenSize(
+        @Suppress("unused")  // Actual width determined by screen aspect ratio, this as comment only
+        val virtualWidth: Float,
+        val virtualHeight: Float
+    ) {
+        Tiny(750f,500f),
+        Small(900f,600f),
+        Medium(1050f,700f),
+        Large(1200f,800f),
+        Huge(1500f,1000f)
+    }
+
+    enum class NationPickerListMode { Icons, List }
+
+    enum class LocaleCode(var language: String, var country: String) {
+        Arabic("ar", "IQ"),
+        Belarusian("be", "BY"),
+        BrazilianPortuguese("pt", "BR"),
+        Bulgarian("bg", "BG"),
+        Catalan("ca", "ES"),
+        Croatian("hr", "HR"),
+        Czech("cs", "CZ"),
+        Danish("da", "DK"),
+        Dutch("nl", "NL"),
+        English("en", "US"),
+        Estonian("et", "EE"),
+        Finnish("fi", "FI"),
+        French("fr", "FR"),
+        German("de", "DE"),
+        Greek("el", "GR"),
+        Hindi("hi", "IN"),
+        Hungarian("hu", "HU"),
+        Indonesian("in", "ID"),
+        Italian("it", "IT"),
+        Japanese("ja", "JP"),
+        Korean("ko", "KR"),
+        Latvian("lv", "LV"),
+        Lithuanian("lt", "LT"),
+        Malay("ms", "MY"),
+        Norwegian("no", "NO"),
+        NorwegianNynorsk("nn", "NO"),
+        PersianPinglishDIN("fa", "IR"), // These might just fall back to default
+        PersianPinglishUN("fa", "IR"),
+        Polish("pl", "PL"),
+        Portuguese("pt", "PT"),
+        Romanian("ro", "RO"),
+        Russian("ru", "RU"),
+        Serbian("sr", "RS"),
+        SimplifiedChinese("zh", "CN"),
+        Slovak("sk", "SK"),
+        Spanish("es", "ES"),
+        Swedish("sv", "SE"),
+        Thai("th", "TH"),
+        TraditionalChinese("zh", "TW"),
+        Turkish("tr", "TR"),
+        Ukrainian("uk", "UA"),
+        Vietnamese("vi", "VN"),
+        Afrikaans("af", "ZA")
+    }
+
+    //endregiuon
 }
 
 class GameSettingsMultiplayer {

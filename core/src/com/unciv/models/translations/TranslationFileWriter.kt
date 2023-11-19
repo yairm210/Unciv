@@ -7,7 +7,7 @@ import com.unciv.json.json
 import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
 import com.unciv.models.SpyAction
 import com.unciv.models.metadata.BaseRuleset
-import com.unciv.models.metadata.LocaleCode
+import com.unciv.models.metadata.GameSettings.LocaleCode
 import com.unciv.models.ruleset.Belief
 import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.GlobalUniques

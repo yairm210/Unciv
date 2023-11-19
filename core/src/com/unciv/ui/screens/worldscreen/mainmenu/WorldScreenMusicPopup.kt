@@ -7,7 +7,7 @@ import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.models.metadata.GameSettings
-import com.unciv.models.metadata.ScreenSize
+import com.unciv.models.metadata.GameSettings.ScreenSize
 import com.unciv.ui.audio.MusicController
 import com.unciv.ui.components.extensions.setSize
 import com.unciv.ui.components.fonts.Fonts

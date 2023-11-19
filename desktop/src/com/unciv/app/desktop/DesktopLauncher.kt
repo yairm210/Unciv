@@ -8,8 +8,8 @@ import com.unciv.app.desktop.DesktopScreenMode.Companion.getMaximumWindowBounds
 import com.unciv.json.json
 import com.unciv.logic.files.SETTINGS_FILE_NAME
 import com.unciv.logic.files.UncivFiles
-import com.unciv.models.metadata.ScreenSize
-import com.unciv.models.metadata.WindowState
+import com.unciv.models.metadata.GameSettings.ScreenSize
+import com.unciv.models.metadata.GameSettings.WindowState
 import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.utils.Display
