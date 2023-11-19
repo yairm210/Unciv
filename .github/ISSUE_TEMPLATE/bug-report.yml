@@ -15,6 +15,13 @@ body:
       options:
       - label: I have searched the existing issues
         required: true
+  - type: input
+    attributes:
+      label: Game Version
+      description: What game version are you running?
+      placeholder: "4.7.5"
+    validations:
+      required: true
   - type: textarea
     id: description
     attributes:
@@ -60,13 +67,6 @@ body:
         - Android
         - Windows
         - Linux
-    validations:
-      required: true
-  - type: input
-    attributes:
-      label: Game Version
-      description: What game version are you running?
-      placeholder: "4.7.5"
     validations:
       required: true
   - type: textarea
