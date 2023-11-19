@@ -1,6 +1,5 @@
 name: Feature Request
-description: Suggest an idea for this project
-about: UI issue, Quality-of-life improvement, user experience or development issue
+description: UI issue, Quality-of-life improvement, user experience or development issue
 labels: [feature]
 
 body:
