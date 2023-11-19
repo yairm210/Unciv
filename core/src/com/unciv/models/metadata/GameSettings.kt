@@ -243,54 +243,57 @@ class GameSettings {
         Afrikaans("af", "ZA")
     }
 
-    //endregiuon
-}
+    //endregion
+    //region Multiplayer-specific
 
-class GameSettingsMultiplayer {
-    var userId = ""
-    var passwords = mutableMapOf<String, String>()
-    @Suppress("unused")  // @GGuenni knows what he intended with this field
-    var userName: String = ""
-    var server = Constants.uncivXyzServer
-    var friendList: MutableList<FriendList.Friend> = mutableListOf()
-    var turnCheckerEnabled = true
-    var turnCheckerPersistentNotificationEnabled = true
-    var turnCheckerDelay: Duration = Duration.ofMinutes(5)
-    var statusButtonInSinglePlayer = false
-    var currentGameRefreshDelay: Duration = Duration.ofSeconds(10)
-    var allGameRefreshDelay: Duration = Duration.ofMinutes(5)
-    var currentGameTurnNotificationSound: UncivSound = UncivSound.Silent
-    var otherGameTurnNotificationSound: UncivSound = UncivSound.Silent
-    var hideDropboxWarning = false
+    class GameSettingsMultiplayer {
+        var userId = ""
+        var passwords = mutableMapOf<String, String>()
+        @Suppress("unused")  // @GGuenni knows what he intended with this field
+        var userName: String = ""
+        var server = Constants.uncivXyzServer
+        var friendList: MutableList<FriendList.Friend> = mutableListOf()
+        var turnCheckerEnabled = true
+        var turnCheckerPersistentNotificationEnabled = true
+        var turnCheckerDelay: Duration = Duration.ofMinutes(5)
+        var statusButtonInSinglePlayer = false
+        var currentGameRefreshDelay: Duration = Duration.ofSeconds(10)
+        var allGameRefreshDelay: Duration = Duration.ofMinutes(5)
+        var currentGameTurnNotificationSound: UncivSound = UncivSound.Silent
+        var otherGameTurnNotificationSound: UncivSound = UncivSound.Silent
+        var hideDropboxWarning = false
 
-    fun getAuthHeader(): String {
-        val serverPassword = passwords[server] ?: ""
-        val preEncodedAuthValue = "$userId:$serverPassword"
-        return "Basic ${Base64Coder.encodeString(preEncodedAuthValue)}"
+        fun getAuthHeader(): String {
+            val serverPassword = passwords[server] ?: ""
+            val preEncodedAuthValue = "$userId:$serverPassword"
+            return "Basic ${Base64Coder.encodeString(preEncodedAuthValue)}"
+        }
     }
-}
 
-@Suppress("SuspiciousCallableReferenceInLambda")  // By @Azzurite, safe as long as that warning below is followed
-enum class GameSetting(
-    val kClass: KClass<*>,
-    private val propertyGetter: (GameSettings) -> KMutableProperty0<*>
-) {
-//     Uncomment these once they are refactored to send events on change
+    @Suppress("SuspiciousCallableReferenceInLambda")  // By @Azzurite, safe as long as that warning below is followed
+    enum class GameSetting(
+        val kClass: KClass<*>,
+        private val propertyGetter: (GameSettings) -> KMutableProperty0<*>
+    ) {
+        //     Uncomment these once they are refactored to send events on change
 //     MULTIPLAYER_USER_ID(String::class, { it.multiplayer::userId }),
 //     MULTIPLAYER_SERVER(String::class, { it.multiplayer::server }),
 //     MULTIPLAYER_STATUSBUTTON_IN_SINGLEPLAYER(Boolean::class, { it.multiplayer::statusButtonInSinglePlayer }),
 //     MULTIPLAYER_TURN_CHECKER_ENABLED(Boolean::class, { it.multiplayer::turnCheckerEnabled }),
 //     MULTIPLAYER_TURN_CHECKER_PERSISTENT_NOTIFICATION_ENABLED(Boolean::class, { it.multiplayer::turnCheckerPersistentNotificationEnabled }),
 //     MULTIPLAYER_HIDE_DROPBOX_WARNING(Boolean::class, { it.multiplayer::hideDropboxWarning }),
-    MULTIPLAYER_TURN_CHECKER_DELAY(Duration::class, { it.multiplayer::turnCheckerDelay }),
-    MULTIPLAYER_CURRENT_GAME_REFRESH_DELAY(Duration::class, { it.multiplayer::currentGameRefreshDelay }),
-    MULTIPLAYER_ALL_GAME_REFRESH_DELAY(Duration::class, { it.multiplayer::allGameRefreshDelay }),
-    MULTIPLAYER_CURRENT_GAME_TURN_NOTIFICATION_SOUND(UncivSound::class, { it.multiplayer::currentGameTurnNotificationSound }),
-    MULTIPLAYER_OTHER_GAME_TURN_NOTIFICATION_SOUND(UncivSound::class, { it.multiplayer::otherGameTurnNotificationSound });
+        MULTIPLAYER_TURN_CHECKER_DELAY(Duration::class, { it.multiplayer::turnCheckerDelay }),
+        MULTIPLAYER_CURRENT_GAME_REFRESH_DELAY(Duration::class, { it.multiplayer::currentGameRefreshDelay }),
+        MULTIPLAYER_ALL_GAME_REFRESH_DELAY(Duration::class, { it.multiplayer::allGameRefreshDelay }),
+        MULTIPLAYER_CURRENT_GAME_TURN_NOTIFICATION_SOUND(UncivSound::class, { it.multiplayer::currentGameTurnNotificationSound }),
+        MULTIPLAYER_OTHER_GAME_TURN_NOTIFICATION_SOUND(UncivSound::class, { it.multiplayer::otherGameTurnNotificationSound });
 
-    /** **Warning:** It is the obligation of the caller to select the same type [T] that the [kClass] of this property has */
-    fun <T> getProperty(settings: GameSettings): KMutableProperty0<T> {
-        @Suppress("UNCHECKED_CAST")
-        return propertyGetter(settings) as KMutableProperty0<T>
+        /** **Warning:** It is the obligation of the caller to select the same type [T] that the [kClass] of this property has */
+        fun <T> getProperty(settings: GameSettings): KMutableProperty0<T> {
+            @Suppress("UNCHECKED_CAST")
+            return propertyGetter(settings) as KMutableProperty0<T>
+        }
     }
+
+    //endregion
 }
