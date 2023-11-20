@@ -242,7 +242,9 @@ class DiplomacyScreen(
                 diplomacyManager.declareWar()
                 setRightSideFlavorText(otherCiv, otherCiv.nation.attacked, "Very well.")
                 updateLeftSideTable(otherCiv)
-                UncivGame.Current.musicController.chooseTrack(otherCiv.civName, MusicMood.War, MusicTrackChooserFlags.setSpecific)
+                val music = UncivGame.Current.musicController
+                music.chooseTrack(otherCiv.civName, MusicMood.War, MusicTrackChooserFlags.setSpecific)
+                music.playVoice("${otherCiv.civName}.attacked")
             }.open()
         }
         if (isNotPlayersTurn()) declareWarButton.disable()

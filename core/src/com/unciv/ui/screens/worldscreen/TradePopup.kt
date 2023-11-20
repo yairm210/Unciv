@@ -2,18 +2,19 @@ package com.unciv.ui.screens.worldscreen
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.unciv.UncivGame
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.trade.TradeLogic
 import com.unciv.logic.trade.TradeOffer
 import com.unciv.logic.trade.TradeType
 import com.unciv.models.translations.tr
+import com.unciv.ui.components.extensions.pad
+import com.unciv.ui.components.extensions.toLabel
+import com.unciv.ui.components.input.KeyCharAndCode
 import com.unciv.ui.popups.Popup
 import com.unciv.ui.screens.diplomacyscreen.DiplomacyScreen
 import com.unciv.ui.screens.diplomacyscreen.LeaderIntroTable
-import com.unciv.ui.components.input.KeyCharAndCode
-import com.unciv.ui.components.extensions.pad
-import com.unciv.ui.components.extensions.toLabel
 import kotlin.math.max
 import kotlin.math.min
 import com.unciv.ui.components.widgets.AutoScrollPane as ScrollPane
@@ -76,6 +77,8 @@ class TradePopup(worldScreen: WorldScreen) : Popup(worldScreen) {
 
         addSeparator(Color.DARK_GRAY, height = 1f)
 
+        // Starting playback here assumes the TradePopup is shown immediately
+        UncivGame.Current.musicController.playVoice("${requestingCiv.civName}.tradeRequest")
         addGoodSizedLabel(nation.tradeRequest).pad(15f).row()
 
         addButton("Sounds good!", 'y') {
