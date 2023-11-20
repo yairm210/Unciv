@@ -22,7 +22,7 @@ import kotlin.math.roundToInt
  *
  * Main methods: [chooseTrack], [pause], [resume], [setModList], [isPlaying], [gracefulShutdown]
  *
- * City ambience / Leader voice feature: [playOverlay], [stopOverlay]
+ * City ambience / Leader voice feature: [playOverlay], [stopOverlay], [playVoice]
  * * This plays entirely independent of all other functionality as linked above.
  * * Can load from internal (jar,apk) - music is always local, nothing is packaged into a release.
  */
@@ -103,7 +103,7 @@ class MusicController {
 
     //region Fields
     /** mirrors [GameSettings.musicVolume] - use [setVolume] to update */
-    private var baseVolume: Float = UncivGame.Current.settings.musicVolume
+    private var baseVolume: Float = settings.musicVolume
 
     /** Pause in seconds between tracks unless [chooseTrack] is called to force a track change */
     var silenceLength: Float
@@ -111,7 +111,7 @@ class MusicController {
         set(value) { silenceLengthInTicks = (ticksPerSecond * value).toInt() }
 
     private var silenceLengthInTicks =
-        (UncivGame.Current.settings.pauseBetweenTracks * ticksPerSecond).roundToInt()
+        (settings.pauseBetweenTracks * ticksPerSecond).roundToInt()
 
     private var mods = HashSet<String>()
 
@@ -205,6 +205,8 @@ class MusicController {
 
     //endregion
     //region Internal helpers
+
+    private val settings get() = UncivGame.Current.settings
 
     private fun clearCurrent() {
         current?.clear()
@@ -333,7 +335,7 @@ class MusicController {
         getDefault: () -> FileHandle = { getFile(folder) }
     ) = sequence<FileHandle> {
         yieldAll(
-            (UncivGame.Current.settings.visualMods + mods).asSequence()
+            (settings.visualMods + mods).asSequence()
                 .map { getFile(modPath).child(it).child(folder) }
         )
         yield(getDefault())
@@ -606,13 +608,15 @@ class MusicController {
     fun playOverlay(
         name: String,
         folder: String = "sounds",
-        volume: Float = UncivGame.Current.settings.soundEffectsVolume,
+        volume: Float = settings.soundEffectsVolume,
         isLooping: Boolean = false,
         fadeIn: Boolean = false
     ) {
         val file = getMatchingFiles(folder, name).firstOrNull() ?: return
         playOverlay(file, volume, isLooping, fadeIn)
     }
+
+    fun playVoice(name: String) = playOverlay(name)
 
     /** Play [file], [optionally][fadeIn] fading in to [volume] then looping if [isLooping] is set */
     @Suppress("MemberVisibilityCanBePrivate")  // open to future use

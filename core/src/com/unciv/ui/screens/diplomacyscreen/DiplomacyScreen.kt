@@ -244,7 +244,7 @@ class DiplomacyScreen(
                 updateLeftSideTable(otherCiv)
                 val music = UncivGame.Current.musicController
                 music.chooseTrack(otherCiv.civName, MusicMood.War, MusicTrackChooserFlags.setSpecific)
-                music.playOverlay("${otherCiv.civName}.attacked")
+                music.playVoice("${otherCiv.civName}.attacked")
             }.open()
         }
         if (isNotPlayersTurn()) declareWarButton.disable()

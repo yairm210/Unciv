@@ -211,7 +211,7 @@ class AlertPopup(
         addGoodSizedLabel(civInfo.nation.defeated).row()
         addCloseButton("Farewell.")
         music.chooseTrack(civInfo.civName, MusicMood.Defeat, EnumSet.of(MusicTrackChooserFlags.SuffixMustMatch))
-        music.playOverlay("${civInfo.civName}.defeated")
+        music.playVoice("${civInfo.civName}.defeated")
     }
 
     private fun addDemandToStopSettlingCitiesNear() {
@@ -254,7 +254,7 @@ class AlertPopup(
         val nation = civInfo.nation
         addLeaderName(civInfo)
         music.chooseTrack(civInfo.civName, MusicMood.themeOrPeace, MusicTrackChooserFlags.setSpecific)
-        music.playOverlay("${civInfo.civName}.introduction")
+        music.playVoice("${civInfo.civName}.introduction")
         if (civInfo.isCityState()) {
             addGoodSizedLabel("We have encountered the City-State of [${nation.name}]!").row()
             addCloseButton("Excellent!")
@@ -359,7 +359,7 @@ class AlertPopup(
         addCloseButton("You'll pay for this!")
         addCloseButton("Very well.")
         music.chooseTrack(civInfo.civName, MusicMood.War, MusicTrackChooserFlags.setSpecific)
-        music.playOverlay("${civInfo.civName}.declaringWar")
+        music.playVoice("${civInfo.civName}.declaringWar")
     }
 
     private fun addWonderBuilt() {

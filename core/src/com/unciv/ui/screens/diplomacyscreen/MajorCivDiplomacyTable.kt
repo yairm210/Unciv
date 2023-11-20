@@ -93,7 +93,7 @@ class MajorCivDiplomacyTable(private val diplomacyScreen: DiplomacyScreen) {
         }
 
         // Starting playback here assumes the MajorCivDiplomacyTable is shown immediately
-        UncivGame.Current.musicController.playOverlay(helloVoice)
+        UncivGame.Current.musicController.playVoice(helloVoice)
 
         return diplomacyTable
     }
