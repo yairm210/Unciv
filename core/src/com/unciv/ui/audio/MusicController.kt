@@ -616,7 +616,10 @@ class MusicController {
         playOverlay(file, volume, isLooping, fadeIn)
     }
 
-    fun playVoice(name: String) = playOverlay(name)
+    /** Called for Leader Voices */
+    fun playVoice(name: String) = playOverlay(name, "voices", settings.voicesVolume)
+    /** Determines if any 'voices' folder exists in any currently active mod */
+    fun isVoicesAvailable() = getMusicFolders("voices").any()
 
     /** Play [file], [optionally][fadeIn] fading in to [volume] then looping if [isLooping] is set */
     @Suppress("MemberVisibilityCanBePrivate")  // open to future use
