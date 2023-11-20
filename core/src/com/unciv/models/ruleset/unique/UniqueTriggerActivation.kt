@@ -688,6 +688,26 @@ object UniqueTriggerActivation {
                 return true
             }
 
+            UniqueType.SellBuilding -> {
+
+                val applicableCities = civInfo.cities.asSequence().filter {
+                    it.matchesFilter(unique.params[1])
+                }
+
+                for (applicableCity in applicableCities) {
+                    val buildingsToSell = applicableCity.cityConstructions.getBuiltBuildings().filter {
+                        it.matchesFilter(unique.params[0]) && it.isSellable()
+                    }
+
+                    for (building in buildingsToSell) {
+                        applicableCity.sellBuilding(building)
+                    }
+
+                }
+
+                return true
+            }
+
             else -> {}
         }
         return false
