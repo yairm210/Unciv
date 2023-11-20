@@ -47,10 +47,10 @@ import com.unciv.utils.debug
 import com.unciv.utils.launchOnGLThread
 import com.unciv.utils.withGLContext
 import com.unciv.utils.withThreadPoolContext
+import kotlinx.coroutines.CancellationException
 import java.io.PrintWriter
 import java.util.EnumSet
 import java.util.UUID
-import kotlinx.coroutines.CancellationException
 import kotlin.system.exitProcess
 
 open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpecific {
@@ -469,7 +469,7 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
 
     companion object {
         //region AUTOMATICALLY GENERATED VERSION DATA - DO NOT CHANGE THIS REGION, INCLUDING THIS COMMENT
-        val VERSION = Version("4.8.20", 930)
+        val VERSION = Version("4.9.0", 930)
         //endregion
 
         lateinit var Current: UncivGame
