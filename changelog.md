@@ -1,3 +1,43 @@
+## 4.8.20
+
+Resolved  - City centers don't provide resources you don't have tech to extract
+
+Settlers no longer stuck in endless loops wanting to found cities on tiles they can't reach @tuvus
+
+Delete .github/ISSUE_TEMPLATE/feature_request.md
+
+Create feature-request.yml
+
+Delete .github/ISSUE_TEMPLATE/bug_report.md
+
+Create bug-report.yml
+
+Resolves  resolves #10425 - Conditional tile checks pre-placement
+
+Resolved  - AI clears inquisitors from city centers to make way for spaceship units
+
+More simplification of motivationToAttack
+
+Separated hasAtLeastMotivationToAttack into separate class, split into subfunctions for main function readability
+
+Unified errorSeverityForFilter checks into single function, we have a LOT of filters!
+
+Added tests for parameters for complex filters, fixed nested complex filter returning 'possible filtering' when it should have been known
+
+Better formatting for general filter rules v2
+
+Better formatting for general filter rules
+
+Add the SellBuilding Unique  - By PLynx01
+
+Add gain stat modified by speed and improvement speed by filter uniques  - By SeventhM
+
+Add a TriggerUponDiscoveringTile unique type  - By karmaBonfire
+
+By SomeTroglodyte:
+- Support for Leader voices 
+- [code quality] Reorg, clean up and comment a few things 
+
 ## 4.8.19
 
 Modding: Added "non-[filter]" filtering for unit filters, and multi-value filtering to all filters
