@@ -35,14 +35,22 @@ object CityLocationTileRanker {
         val uniqueCache = LocalUniqueCache()
         val bestTilesToFoundCity = BestTilesToFoundCity()
         val baseTileMap = HashMap<Tile, Float>()
-        for (tile in possibleCityLocations) {
-            val tileValue = rankTileToSettle(tile, unit.civ, nearbyCities, baseTileMap, uniqueCache)
-            if (tileValue > bestTilesToFoundCity.bestTileRank && unit.movement.canReach(tile)) {
-                bestTilesToFoundCity.bestTile = tile
-                bestTilesToFoundCity.bestTileRank = tileValue
+
+        val possibleTileLocationsWithRank = possibleCityLocations
+            .map {
+                val tileValue = rankTileToSettle(it, unit.civ, nearbyCities, baseTileMap, uniqueCache)
+                bestTilesToFoundCity.tileRankMap[it] = tileValue
+
+                Pair(it, tileValue)
             }
-            bestTilesToFoundCity.tileRankMap[tile] = tileValue
+            .sortedByDescending { it.second }
+
+        val bestReachableTile = possibleTileLocationsWithRank.firstOrNull { unit.movement.canReach(it.first) }
+        if (bestReachableTile != null){
+            bestTilesToFoundCity.bestTile = bestReachableTile.first
+            bestTilesToFoundCity.bestTileRank = bestReachableTile.second
         }
+
         return bestTilesToFoundCity
     }
 
