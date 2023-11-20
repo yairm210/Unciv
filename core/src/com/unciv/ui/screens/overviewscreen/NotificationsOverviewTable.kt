@@ -72,7 +72,7 @@ class NotificationsOverviewTable(
             add(ImageGetter.getWhiteDot()).minHeight(2f).width(stageWidth / 4)
         }).row()
 
-        for (category in NotificationCategory.values()){
+        for (category in NotificationCategory.values()) {
             val categoryNotifications = notifications.filter { it.category == category }
             if (categoryNotifications.isEmpty()) continue
 

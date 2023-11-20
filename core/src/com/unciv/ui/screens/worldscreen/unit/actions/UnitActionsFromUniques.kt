@@ -180,7 +180,7 @@ object UnitActionsFromUniques {
             }
         )
     }
-    fun addTriggerUniqueActions(unit: MapUnit, actionList: ArrayList<UnitAction>){
+    fun addTriggerUniqueActions(unit: MapUnit, actionList: ArrayList<UnitAction>) {
         for (unique in unit.getUniques()) {
             // not a unit action
             if (unique.conditionals.none { it.type?.targetTypes?.contains(UniqueTarget.UnitActionModifier) == true }) continue
@@ -388,7 +388,7 @@ object UnitActionsFromUniques {
         return repairTurns
     }
 
-    fun addRepairAction(unit: MapUnit, actionList: ArrayList<UnitAction>){
+    fun addRepairAction(unit: MapUnit, actionList: ArrayList<UnitAction>) {
         val repairAction = getRepairAction(unit)
         if (repairAction != null) actionList.add(repairAction)
     }

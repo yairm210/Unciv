@@ -65,7 +65,7 @@ class MapFileSelectTable(
         }
     }.sortedByDescending { it.lastModified() }
 
-    private fun addMapWrappersAsync(){
+    private fun addMapWrappersAsync() {
         val mapFilesSequence = getMapFilesSequence()
 
         Concurrency.run {

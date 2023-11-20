@@ -150,7 +150,7 @@ object Battle {
         if (!defender.isDefeated() && defender is MapUnitCombatant && defender.unit.isExploring())
             defender.unit.action = null
 
-        fun triggerVictoryUniques(ourUnit:MapUnitCombatant, enemy:MapUnitCombatant){
+        fun triggerVictoryUniques(ourUnit:MapUnitCombatant, enemy:MapUnitCombatant) {
             val stateForConditionals = StateForConditionals(civInfo = ourUnit.getCivInfo(),
                 ourCombatant = ourUnit, theirCombatant=enemy, tile = attackedTile)
             for (unique in ourUnit.unit.getTriggeredUniques(UniqueType.TriggerUponDefeatingUnit, stateForConditionals))
@@ -192,7 +192,7 @@ object Battle {
 
         if (!isAlreadyDefeatedCity) postBattleAddXp(attacker, defender)
 
-        if (attacker is CityCombatant){
+        if (attacker is CityCombatant) {
             val cityCanBombardNotification = attacker.getCivInfo().notifications
                 .firstOrNull { it.text == "Your city [${attacker.getName()}] can bombard the enemy!" }
             attacker.getCivInfo().notifications.remove(cityCanBombardNotification)
@@ -201,7 +201,7 @@ object Battle {
         return damageDealt + interceptDamage
     }
 
-    internal fun triggerDefeatUniques(ourUnit: MapUnitCombatant, enemy: ICombatant, attackedTile: Tile){
+    internal fun triggerDefeatUniques(ourUnit: MapUnitCombatant, enemy: ICombatant, attackedTile: Tile) {
         val stateForConditionals = StateForConditionals(civInfo = ourUnit.getCivInfo(),
             ourCombatant = ourUnit, theirCombatant=enemy, tile = attackedTile)
         for (unique in ourUnit.unit.getTriggeredUniques(UniqueType.TriggerUponDefeat, stateForConditionals))
@@ -437,7 +437,7 @@ object Battle {
             val unit = attacker.unit
             // If captured this civilian, doesn't count as attack
             // And we've used a movement already
-            if(defender.isCivilian() && attacker.getTile() == defender.getTile()){
+            if(defender.isCivilian() && attacker.getTile() == defender.getTile()) {
                 return
             }
             unit.attacksThisTurn += 1
@@ -580,11 +580,11 @@ object Battle {
         return null
     }
 
-    fun destroyIfDefeated(attackedCiv: Civilization, attacker: Civilization) {
+    fun destroyIfDefeated(attackedCiv: Civilization, attacker: Civilization, notificationLocation: Vector2? = null) {
         if (attackedCiv.isDefeated()) {
             if (attackedCiv.isCityState())
                 attackedCiv.cityStateFunctions.cityStateDestroyed(attacker)
-            attackedCiv.destroy()
+            attackedCiv.destroy(notificationLocation)
             attacker.popupAlerts.add(PopupAlert(AlertType.Defeated, attackedCiv.civName))
         }
     }

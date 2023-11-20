@@ -184,7 +184,7 @@ object NextTurnAutomation {
     }
 
     private fun bullyCityStates(civInfo: Civilization) {
-        for (state in civInfo.getKnownCivs().filter { !it.isDefeated() && it.isCityState() }) {
+        for (state in civInfo.getKnownCivs().filter { !it.isDefeated() && it.isCityState() }.toList()) {
             val diplomacyManager = state.getDiplomacyManager(civInfo.civName)
             if (diplomacyManager.isRelationshipLevelLT(RelationshipLevel.Friend)
                     && diplomacyManager.diplomaticStatus == DiplomaticStatus.Peace

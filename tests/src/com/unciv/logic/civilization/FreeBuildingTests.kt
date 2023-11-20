@@ -14,12 +14,12 @@ class FreeBuildingTests {
     private val testGame = TestGame()
 
     @Before
-    fun setup(){
+    fun setup() {
         testGame.makeHexagonalMap(5)
     }
 
     @Test
-    fun `should only give cheapest stat building in set amount of cities`(){
+    fun `should only give cheapest stat building in set amount of cities`() {
         val civ = testGame.addCiv("Provides the cheapest [Culture] building in your first [4] cities for free")
         for (tech in testGame.ruleset.technologies.keys)
             civ.tech.addTechnology(tech)
@@ -35,7 +35,7 @@ class FreeBuildingTests {
     }
 
     @Test
-    fun `should only give 1 stat building`(){
+    fun `should only give 1 stat building`() {
         val civ = testGame.addCiv("Provides the cheapest [Culture] building in your first [4] cities for free")
         for (tech in testGame.ruleset.technologies.keys)
             civ.tech.addTechnology(tech)
@@ -46,7 +46,7 @@ class FreeBuildingTests {
     }
 
     @Test
-    fun `should only give the specific building in set amount of cities`(){
+    fun `should only give the specific building in set amount of cities`() {
         val civ = testGame.addCiv("Provides a [Monument] in your first [4] cities for free")
         for (tech in testGame.ruleset.technologies.keys)
             civ.tech.addTechnology(tech)
@@ -62,7 +62,7 @@ class FreeBuildingTests {
     }
 
     @Test
-    fun `free specific buildings should ONLY give the specific building`(){
+    fun `free specific buildings should ONLY give the specific building`() {
         val civ = testGame.addCiv("Provides a [Monument] in your first [4] cities for free")
         for (tech in testGame.ruleset.technologies.keys)
             civ.tech.addTechnology(tech)
@@ -75,7 +75,7 @@ class FreeBuildingTests {
     }
 
     @Test
-    fun `can give specific buildings in all cities`(){
+    fun `can give specific buildings in all cities`() {
         val civ = testGame.addCiv("Gain a free [Monument] [in all cities]")
         for (tech in testGame.ruleset.technologies.keys)
             civ.tech.addTechnology(tech)

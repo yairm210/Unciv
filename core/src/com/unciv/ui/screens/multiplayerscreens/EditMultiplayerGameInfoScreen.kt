@@ -77,7 +77,7 @@ class EditMultiplayerGameInfoScreen(val multiplayerGame: OnlineMultiplayerGame) 
         rightSideButton.onClick {
             rightSideButton.setText("Saving...".tr())
             val newName = textField.text.trim()
-            game.onlineMultiplayer.changeGameName(multiplayerGame, newName){
+            game.onlineMultiplayer.changeGameName(multiplayerGame, newName) {
                 val popup = Popup(this)
                 popup.addGoodSizedLabel("Could not save game!")
                 popup.addCloseButton()

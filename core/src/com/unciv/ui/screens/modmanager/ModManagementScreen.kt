@@ -254,7 +254,7 @@ class ModManagementScreen private constructor(
         }
     }
 
-    private fun addModInfoFromRepoSearch(repoSearch: Github.RepoSearch, pageNum: Int){
+    private fun addModInfoFromRepoSearch(repoSearch: Github.RepoSearch, pageNum: Int) {
         // clear and remove last cell if it is the "..." indicator
         val lastCell = onlineModsTable.cells.lastOrNull()
         if (lastCell != null && lastCell.actor is Label && (lastCell.actor as Label).text.toString() == "...") {
@@ -598,7 +598,7 @@ class ModManagementScreen private constructor(
         refreshInstalledModTable()
     }
 
-    private fun reloadCachesAfterModChange(){
+    private fun reloadCachesAfterModChange() {
         RulesetCache.loadRulesets()
         ImageGetter.reloadImages()
         TileSetCache.loadTileSetConfigs()

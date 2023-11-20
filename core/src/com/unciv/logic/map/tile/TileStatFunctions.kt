@@ -3,6 +3,7 @@ package com.unciv.logic.map.tile
 import com.unciv.Constants
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
+import com.unciv.models.ruleset.tile.Terrain
 import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.ruleset.unique.LocalUniqueCache
 import com.unciv.models.ruleset.unique.StateForConditionals
@@ -12,6 +13,7 @@ import com.unciv.models.stats.Stats
 import com.unciv.ui.components.extensions.toPercent
 
 class TileStatFunctions(val tile: Tile) {
+    private val riverTerrain by lazy { tile.ruleset.terrains[Constants.river] }
 
     fun getTileStats(
         observingCiv: Civilization?,
@@ -53,7 +55,15 @@ class TileStatFunctions(val tile: Tile) {
             }
         }
 
-        if (tile.isAdjacentToRiver()) stats.gold++
+        if (tile.isAdjacentToRiver()) {
+            if (riverTerrain == null)
+                stats.gold++  // Fallback for legacy mods
+            else
+                //TODO this is one approach to get these stats in - supporting only the Stats UniqueType.
+                //     Alternatives: append riverTerrain to allTerrains, or append riverTerrain.uniques to
+                //     the Tile's UniqueObjects/UniqueMap (while copying onl<e> base Stats directly here)
+                stats.add(getSingleTerrainStats(riverTerrain!!, stateForConditionals))
+        }
 
         if (observingCiv != null) {
             // resource base
@@ -92,28 +102,37 @@ class TileStatFunctions(val tile: Tile) {
         }
     }
 
+    /** Gets stats of a single Terrain, unifying the Stats class a Terrain inherits and the Stats Unique
+     *  @return A Stats reference, must not be mutated
+     */
+    private fun getSingleTerrainStats(terrain: Terrain, stateForConditionals: StateForConditionals): Stats {
+        var stats: Stats = terrain
+
+        for (unique in terrain.getMatchingUniques(UniqueType.Stats, stateForConditionals)) {
+            if (stats === terrain)
+                stats = stats.clone()
+            stats.add(unique.stats)
+        }
+        return stats
+    }
+
     /** Gets basic stats to start off [getTileStats] or [getTileStartYield], independently mutable result */
     private fun getTerrainStats(stateForConditionals: StateForConditionals = StateForConditionals()): Stats {
-        var stats: Stats? = null
+        var stats = Stats()
 
         // allTerrains iterates over base, natural wonder, then features
         for (terrain in tile.allTerrains) {
-            for (unique in terrain.getMatchingUniques(UniqueType.Stats, stateForConditionals)) {
-                if (stats == null) {
-                    stats = unique.stats.clone()
-                }
-                else stats.add(unique.stats)
-            }
+            val terrainStats = getSingleTerrainStats(terrain, stateForConditionals)
             when {
                 terrain.hasUnique(UniqueType.NullifyYields, stateForConditionals) ->
-                    return terrain.cloneStats()
-                terrain.overrideStats || stats == null ->
-                    stats = terrain.cloneStats()
+                    return terrainStats.clone()
+                terrain.overrideStats ->
+                    stats = terrainStats.clone()
                 else ->
-                    stats.add(terrain)
+                    stats.add(terrainStats)
             }
         }
-        return stats ?: Stats.ZERO // For tests
+        return stats
     }
 
     // Only gets the tile percentage bonus, not the improvement percentage bonus
@@ -260,7 +279,7 @@ class TileStatFunctions(val tile: Tile) {
     ): Stats {
         val stats = Stats()
 
-        fun statsFromTiles(){
+        fun statsFromTiles() {
             val tileUniques = uniqueCache.forCityGetMatchingUniques(city, UniqueType.StatsFromTiles, conditionalState)
                 .filter { city.matchesFilter(it.params[2]) }
             val improvementUniques =

@@ -17,13 +17,13 @@ class UniqueValidator(val ruleset: Ruleset) {
     private val allUniqueParameters = HashSet<String>()
 
     private fun addToHashsets(uniqueHolder: IHasUniques) {
-        for (unique in uniqueHolder.uniqueObjects){
+        for (unique in uniqueHolder.uniqueObjects) {
             if (unique.type == null) allNonTypedUniques.add(unique.text)
             else allUniqueParameters.addAll(unique.allParams)
         }
     }
 
-    fun populateFilteringUniqueHashsets(){
+    fun populateFilteringUniqueHashsets() {
         addToHashsets(ruleset.globalUniques)
         ruleset.units.values.forEach { addToHashsets(it) }
         ruleset.buildings.values.forEach { addToHashsets(it) }

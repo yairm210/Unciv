@@ -70,11 +70,11 @@ class MapUnitCache(private val mapUnit: MapUnit) {
     var hasStrengthBonusInRadiusUnique = false
 
     var hasCitadelPlacementUnique = false
-    
+
     var distanceToClosestEnemyUnit: Int? = null
     var distanceToClosestEnemyUnitSearched: Int? = null
 
-    fun updateUniques(){
+    fun updateUniques() {
 
         allTilesCosts1 = mapUnit.hasUnique(UniqueType.AllTilesCost1Move)
         canPassThroughImpassableTiles = mapUnit.hasUnique(UniqueType.CanPassImpassable)

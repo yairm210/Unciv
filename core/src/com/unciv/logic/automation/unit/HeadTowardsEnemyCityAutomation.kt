@@ -84,7 +84,7 @@ object HeadTowardsEnemyCityAutomation {
 
         val city = closestReachableEnemyCity.getCity()!!
 
-        if (cannotTakeCitySoon(ourUnitsAroundEnemyCity, city)){
+        if (cannotTakeCitySoon(ourUnitsAroundEnemyCity, city)) {
             return headToLandingGrounds(closestReachableEnemyCity, unit)
         }
 

@@ -9,6 +9,26 @@ These are split into two categories:
 
 Note that all of these are case-sensitive!
 
+## General Filter Rules
+
+All filters except for `cityFilter` and `populationFilter` accept multiple values in the format: `{A} {B} {C}` etc, meaning "the object must match ALL of these filters"
+
+> Example: `[{Military} {Water}] units`, `[{Wounded} {Armor}] units`, etc.
+
+No space or other text is allowed between the `[` and the first `{`.
+
+All filters accept `non-[filter]` as a possible value
+
+> Example: `[non-[Wounded]] units`
+
+These can be combined by having the values be negative filters
+
+> Example: `[{non-[Wounded]} {Armor}] units`
+
+These CANNOT be combined in the other way - e.g. `[non-[{Wounded} {Armor}]] units` is NOT valid and will fail to register any units.
+
+This is because to the player, the text will be `non-Wounded Armor units`, which parses like `[{non-[Wounded]} {Armor}] units`
+
 ## civFilter
 
 Allows filtering for specific civs.
@@ -46,7 +66,7 @@ The following are allowed to be used:
 -   Matching [technologyfilter](#technologyfilter) for the tech this unit requires - e.g. `Modern Era`
 -   Any exact unique the unit has
 -   Any exact unique the unit type has
--   Any combination of the above (will match only if all match). The format is `{filter1} {filter2}` and can match any number of filters. For example: `[{Military} {Water}]` units, `[{non-air} {Armor}]` units, etc. No space or other text is allowed between the `[` and the first `{`.
+-   Any combination of the above (will match only if all match). The format is `{filter1} {filter2}` and can match any number of filters. For example: `
 
 ## mapUnitFilter
 

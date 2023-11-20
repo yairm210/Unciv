@@ -100,6 +100,7 @@ class GameSettings {
     var showAutosaves: Boolean = false
 
     var androidCutout: Boolean = false
+    var androidHideSystemUi = true
 
     var multiplayer = GameSettingsMultiplayer()
 

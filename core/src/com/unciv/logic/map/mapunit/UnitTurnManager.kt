@@ -3,6 +3,7 @@ package com.unciv.logic.map.mapunit
 import com.unciv.UncivGame
 import com.unciv.logic.battle.MapUnitCombatant
 import com.unciv.logic.civilization.LocationAction
+import com.unciv.logic.civilization.MapUnitAction
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.models.ruleset.unique.UniqueTriggerActivation
@@ -127,7 +128,7 @@ class UnitTurnManager(val unit: MapUnit) {
             )
         } else unit.civ.addNotification(
             "Our [${unit.name}] took [$tileDamage] tile damage",
-            unit.currentTile.position,
+            MapUnitAction(unit),
             NotificationCategory.Units,
             unit.name
         )

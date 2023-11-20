@@ -8,6 +8,7 @@ import com.unciv.testing.TestGame
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
+import org.junit.Assert.fail
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -176,6 +177,21 @@ class CityFounderTest {
 
         // then
         assertEquals(5, uniqueCiv.gold)
+    }
+
+    @Test
+    fun `should not be able to found city in same tile of another city`() {
+        // given
+        cityFounder.foundCity(civ, Vector2.Zero)
+
+        // when
+        try {
+            cityFounder.foundCity(civ, Vector2.Zero)
+        } catch (e: IllegalStateException) {
+            assertEquals("Trying to found a city in a tile that already has one", e.message)
+            return
+        }
+        fail()
     }
 
 }

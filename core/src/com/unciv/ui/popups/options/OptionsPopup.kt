@@ -7,17 +7,20 @@ import com.unciv.GUI
 import com.unciv.UncivGame
 import com.unciv.models.metadata.BaseRuleset
 import com.unciv.models.ruleset.RulesetCache
-import com.unciv.ui.components.widgets.TabbedPager
 import com.unciv.ui.components.extensions.areSecretKeysPressed
 import com.unciv.ui.components.extensions.center
 import com.unciv.ui.components.extensions.toCheckBox
+import com.unciv.ui.components.widgets.TabbedPager
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popups.Popup
+import com.unciv.ui.popups.hasOpenPopups
 import com.unciv.ui.screens.basescreen.BaseScreen
+import com.unciv.ui.screens.basescreen.RecreateOnResize
 import com.unciv.ui.screens.mainmenuscreen.MainMenuScreen
 import com.unciv.ui.screens.worldscreen.WorldScreen
 import com.unciv.utils.Concurrency
 import com.unciv.utils.withGLContext
+import kotlinx.coroutines.delay
 import kotlin.reflect.KMutableProperty0
 
 /**
@@ -28,6 +31,7 @@ import kotlin.reflect.KMutableProperty0
 class OptionsPopup(
     screen: BaseScreen,
     private val selectPage: Int = defaultPage,
+    withDebug: Boolean = false,
     private val onClose: () -> Unit = {}
 ) : Popup(screen.stage, /** [TabbedPager] handles scrolling */ scrollable = Scrollability.None) {
 
@@ -110,7 +114,7 @@ class OptionsPopup(
             val content = ModCheckTab(screen)
             tabs.addPage("Locate mod errors", content, ImageGetter.getImage("OtherIcons/Mods"), 24f)
         }
-        if (Gdx.input.areSecretKeysPressed()) {
+        if (withDebug || Gdx.input.areSecretKeysPressed()) {
             tabs.addPage("Debug", debugTab(this), ImageGetter.getImage("OtherIcons/SecretOptions"), 24f, secret = true)
         }
 
@@ -155,6 +159,22 @@ class OptionsPopup(
             }
             withGLContext {
                 UncivGame.Current.screen?.openOptionsPopup(tabs.activePage)
+            }
+        }
+    }
+
+    /** Call if an option change might trigger a Screen.resize
+     *
+     *  Does nothing if any Popup (which can only be this one) is still open after a short delay and context yield.
+     *  Reason: A resize might relaunch the parent screen ([MainMenuScreen] is [RecreateOnResize]) and thus close this Popup.
+     */
+    fun reopenAfterDiplayLayoutChange() {
+        Concurrency.run("Reload from options") {
+            delay(100)
+            withGLContext {
+                val screen = UncivGame.Current.screen ?: return@withGLContext
+                if (screen.hasOpenPopups()) return@withGLContext // e.g. Orientation auto to fixed while auto is already the new orientation
+                screen.openOptionsPopup(tabs.activePage)
             }
         }
     }

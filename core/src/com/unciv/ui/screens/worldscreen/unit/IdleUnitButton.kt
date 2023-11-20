@@ -50,12 +50,12 @@ class IdleUnitButton (
         }
     }
 
-    fun enable(){
+    fun enable() {
         image.color= Color.WHITE
         touchable=Touchable.enabled
     }
 
-    fun disable(){
+    fun disable() {
         image.color= Color.GRAY
         touchable=Touchable.disabled
     }
