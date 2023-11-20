@@ -18,8 +18,8 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Triggerable, Global
 
-??? example  "Sell [buildingFilter] [cityFilter]"
-	Example: "Sell [Culture] [in all cities]"
+??? example  "Sell [buildingFilter] buildings [cityFilter]"
+	Example: "Sell [Culture] buildings [in all cities]"
 
 	Applicable to: Triggerable, Global
 
@@ -106,8 +106,13 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Triggerable
 
-??? example  "Gain [amount] [stat/resource]"
+??? example  "Gain [amount] [stat]"
 	Example: "Gain [3] [Culture]"
+
+	Applicable to: Triggerable
+
+??? example  "Gain [amount] [stat] (modified by game speed)"
+	Example: "Gain [3] [Culture] (modified by game speed)"
 
 	Applicable to: Triggerable
 
@@ -478,8 +483,8 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Global
 
-??? example  "[relativeAmount]% tile improvement construction time"
-	Example: "[+20]% tile improvement construction time"
+??? example  "[relativeAmount]% construction time for [improvementFilter] improvements"
+	Example: "[+20]% construction time for [All Road] improvements"
 
 	Applicable to: Global, Unit
 
@@ -2139,7 +2144,6 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: UnitTriggerCondition
 
 ??? example  "&lt;upon discovering a [tileFilter] tile&gt;"
-	Triggers for each tile discovered (unfogged) by the unit.
 	Example: "&lt;upon discovering a [Farm] tile&gt;"
 
 	Applicable to: UnitTriggerCondition
