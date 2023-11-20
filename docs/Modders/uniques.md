@@ -2133,6 +2133,12 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: UnitTriggerCondition
 
+??? example  "&lt;upon discovering a [tileFilter] tile&gt;"
+	Triggers for each tile discovered (unfogged) by the unit.
+	Example: "&lt;upon discovering a [Farm] tile&gt;"
+
+	Applicable to: UnitTriggerCondition
+
 ## UnitActionModifier uniques
 !!! note ""
 
