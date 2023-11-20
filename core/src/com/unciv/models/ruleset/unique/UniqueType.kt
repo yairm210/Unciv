@@ -125,7 +125,9 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     RoadsConnectAcrossRivers("Roads connect tiles across rivers", UniqueTarget.Global),
     RoadMaintenance("[relativeAmount]% maintenance on road & railroads", UniqueTarget.Global),
     NoImprovementMaintenanceInSpecificTiles("No Maintenance costs for improvements in [tileFilter] tiles", UniqueTarget.Global),
+    @Deprecated("As of",ReplaceWith("[relativeAmount]% construction time for [All] improvements"))
     TileImprovementTime("[relativeAmount]% tile improvement construction time", UniqueTarget.Global, UniqueTarget.Unit),
+    SpecificImprovementTime("[relativeAmount]% construction time for [improvementFilter] improvements", UniqueTarget.Global, UniqueTarget.Unit),
 
     /// Building Maintenance
     GainFreeBuildings("Gain a free [buildingName] [cityFilter]", UniqueTarget.Global, UniqueTarget.Triggerable),
@@ -708,7 +710,8 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     OneTimeConsumeResources("Instantly consumes [amount] [stockpiledResource]", UniqueTarget.Triggerable),
     OneTimeProvideResources("Instantly provides [amount] [stockpiledResource]", UniqueTarget.Triggerable),
 
-    OneTimeGainStat("Gain [amount] [stat/resource]", UniqueTarget.Triggerable),
+    OneTimeGainStat("Gain [amount] [stat]", UniqueTarget.Triggerable),
+    OneTimeGainStatSpeed("Gain [amount] [stat] (modified by game speed)", UniqueTarget.Triggerable),
     OneTimeGainStatRange("Gain [amount]-[amount] [stat]", UniqueTarget.Triggerable),
     OneTimeGainPantheon("Gain enough Faith for a Pantheon", UniqueTarget.Triggerable),
     OneTimeGainProphet("Gain enough Faith for [amount]% of a Great Prophet", UniqueTarget.Triggerable),
