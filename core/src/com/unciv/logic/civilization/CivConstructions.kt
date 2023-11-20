@@ -107,7 +107,7 @@ class CivConstructions : IsPartOfGameInfoSerialization {
         }
     }
 
-    private fun addFreeStatBuildings(stat: Stat, amount: Int) {
+    fun addFreeStatBuildings(stat: Stat, amount: Int) {
         for (city in civInfo.cities.take(amount)) {
             if (freeStatBuildingsProvided.contains(stat.name, city.id)) continue
             val building = city.cityConstructions.cheapestStatBuilding(stat)
@@ -131,7 +131,7 @@ class CivConstructions : IsPartOfGameInfoSerialization {
         }
     }
 
-    private fun addFreeBuildings(building: Building, amount: Int) {
+    fun addFreeBuildings(building: Building, amount: Int) {
         for (city in civInfo.cities.take(amount)) {
             if (freeSpecificBuildingsProvided.contains(building.name, city.id)
                 || city.cityConstructions.containsBuildingOrEquivalent(building.name)) continue
