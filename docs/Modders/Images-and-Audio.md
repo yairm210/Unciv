@@ -164,7 +164,7 @@ Legend:
 ## Supply Leader Voices
 
 Sound files named from a Nation name and the corresponding text message's [field name](Mod-file-structure/2-Civilization-related-JSON-files.md#nationsjson),
-placed in a mod's `sounds` folder, will play whenever that message is displayed. Nation name and message name must be joined with a dot '.', for example `sounds/Zulu.defeated.ogg`.
+placed in a mod's `voices` folder, will play whenever that message is displayed. Nation name and message name must be joined with a dot '.', for example `voices/Zulu.defeated.ogg`.
 
 Leader voice audio clips will be streamed, not cached, so they are allowed to be long - however, if another Leader voice or a city ambient sound needs to be played, they will be cut off without fade-out
 Also note that voices for City-State leaders work only for those messages a City-state can actually use: `attacked`, `defeated`, and `introduction`.
