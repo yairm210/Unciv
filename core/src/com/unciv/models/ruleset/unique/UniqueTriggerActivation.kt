@@ -665,11 +665,11 @@ object UniqueTriggerActivation {
             }
 
             UniqueType.GainFreeBuildings -> {
+                val freeBuilding = civInfo.getEquivalentBuilding(unique.params[0])
                 val applicableCities =
                     if (unique.params[1] == "in this city") sequenceOf(city!!)
                     else civInfo.cities.asSequence().filter { it.matchesFilter(unique.params[1]) }
                 for (applicableCity in applicableCities) {
-                    val freeBuilding = applicableCity.civ.getEquivalentBuilding(unique.params[0])
                     applicableCity.cityConstructions.freeBuildingsProvidedFromThisCity.addToMapOfSets(applicableCity.id, freeBuilding.name)
 
                     if (applicableCity.cityConstructions.containsBuildingOrEquivalent(freeBuilding.name)) continue
