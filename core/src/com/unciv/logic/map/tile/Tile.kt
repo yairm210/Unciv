@@ -452,7 +452,16 @@ open class Tile : IsPartOfGameInfoSerialization {
 
     fun providesResources(civInfo: Civilization): Boolean {
         if (!hasViewableResource(civInfo)) return false
-        if (isCityCenter()) return true
+        if (isCityCenter()) {
+            val possibleImprovements = tileResource.getImprovements()
+            if (possibleImprovements.isEmpty()) return true
+            // Per Civ V, resources under city tiles require the *possibility of extraction* -
+            //  that is, there needs to be a tile improvement you have the tech for.
+            // Does NOT take all GetImprovementBuildingProblems into account.
+            return possibleImprovements.any {
+                ruleset.tileImprovements[it]?.let { it.techRequired==null || civInfo.tech.isResearched(it.techRequired!!) } == true
+            }
+        }
         val improvement = getUnpillagedTileImprovement()
         if (improvement != null && improvement.name in tileResource.getImprovements()
                 && (improvement.techRequired == null || civInfo.tech.isResearched(improvement.techRequired!!))
