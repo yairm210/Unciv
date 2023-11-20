@@ -346,19 +346,25 @@ class MapUnit : IsPartOfGameInfoSerialization {
                 && (oldViewableTiles.any { it !in civ.cache.ourTilesAndNeighboringTiles }
                         || viewableTiles.any { it !in civ.cache.ourTilesAndNeighboringTiles })) {
 
-            val newlyExploredTiles = viewableTiles.filter {
-                !it.isExplored(civ)
-            }
-            for (tile in newlyExploredTiles) {
-                // Include tile in the state for correct RNG seeding
-                val state = StateForConditionals(civInfo=civ, unit=this, tile=tile);
-                for (unique in getTriggeredUniques(UniqueType.TriggerUponDiscoveringTile, state)) {
-                    if (unique.conditionals.any { it.type == UniqueType.TriggerUponDiscoveringTile
-                        && tile.matchesFilter(it.params[0], civ) })
-                        UniqueTriggerActivation.triggerUnitwideUnique(unique, this)
+            val unfilteredTriggeredUniques = getTriggeredUniques(UniqueType.TriggerUponDiscoveringTile, StateForConditionals.IgnoreConditionals).toList()
+            if (unfilteredTriggeredUniques.isNotEmpty()) {
+                val newlyExploredTiles = viewableTiles.filter {
+                    !it.isExplored(civ)
+                }
+                for (tile in newlyExploredTiles) {
+                    // Include tile in the state for correct RNG seeding
+                    val state = StateForConditionals(civInfo=civ, unit=this, tile=tile);
+                    for (unique in unfilteredTriggeredUniques) {
+                        if (unique.conditionals.any {
+                                it.type == UniqueType.TriggerUponDiscoveringTile
+                                && tile.matchesFilter(it.params[0], civ)
+                            } && unique.conditionalsApply(state)
+                        )
+                            UniqueTriggerActivation.triggerUnitwideUnique(unique, this)
+                    }
                 }
             }
-            
+
             civ.cache.updateViewableTiles(explorerPosition)
         }
     }
