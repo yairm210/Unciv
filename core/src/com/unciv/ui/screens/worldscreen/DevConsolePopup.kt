@@ -124,6 +124,15 @@ class DevConsolePopup(val screen: WorldScreen): Popup(screen){
                 val promotion = gameInfo.ruleset.unitPromotions.values.firstOrNull{ it.name.toCliInput() == params[2] } ?: return "Unknown promotion"
                 unit.promotions.addPromotion(promotion.name, true)
             }
+            "removepromotion" -> {
+                if (params.size != 3) return "Format: unit removepromotion <promotionName>"
+                val unit = getSelectedUnit() ?: return "Select tile with unit"
+                val promotion = unit.promotions.getPromotions().firstOrNull { it.name.toCliInput() == params[2] } ?: return "Unknown promotion"
+                // No such action in-game so we need to manually update
+                unit.promotions.promotions.remove(promotion.name)
+                unit.updateUniques()
+                unit.updateVisibleTiles()
+            }
             else -> return "Unknown command"
         }
         return null
