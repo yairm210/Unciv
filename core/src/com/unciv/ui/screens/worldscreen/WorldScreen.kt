@@ -189,6 +189,14 @@ class WorldScreen(
 
         globalShortcuts.add(KeyCharAndCode.BACK) { backButtonAndESCHandler() }
 
+
+        globalShortcuts.add('`'){
+            // No cheating unless you're by yourself
+            if (gameInfo.civilizations.count { it.isHuman() } > 1) return@add
+            val consolePopup = DevConsolePopup(this)
+            stage.keyboardFocus = consolePopup.textField
+        }
+
         addKeyboardListener() // for map panning by W,S,A,D
         addKeyboardPresses()  // shortcut keys like F1
 
@@ -818,3 +826,6 @@ private fun startNewScreenJob(gameInfo: GameInfo, autosaveDisabled:Boolean = fal
         }
     }
 }
+
+
+
