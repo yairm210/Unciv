@@ -33,19 +33,21 @@ class DevConsolePopup(val screen: WorldScreen): Popup(screen){
         keyShortcuts.add(KeyCharAndCode.ESC){ close() }
     }
 
-    fun handleCommand(text:String): String?{
+    private fun handleCommand(text:String): String?{
         val params = text.split(" ").filter { it.isNotEmpty() }.map { it.lowercase() }
         if (params.isEmpty()) return "No command"
-        if (params[0] == "city") return handleCityCommand(text)
-        return null
+        return when(params[0]) {
+            "city" -> handleCityCommand(params)
+            "unit" -> handleUnitCommand(params)
+            else -> null
+        }
     }
 
-    fun handleCityCommand(text: String): String? {
-        val params = text.split(" ")
+    private fun handleCityCommand(params: List<String>): String? {
         if (params.size == 1) return "Available commands: setpop, addtile, removetile"
         when (params[1]){
             "setpop" -> {
-                if (params.size != 4) return "Format: city setPop <cityName> <amount>"
+                if (params.size != 4) return "Format: city setpop <cityName> <amount>"
                 val newPop = params[3].toIntOrNull() ?: return "Invalid amount "+params[3]
                 if (newPop < 1) return "Invalid amount $newPop"
                 val city = gameInfo.getCities().firstOrNull { it.name.lowercase() == params[2] } ?: return "Unknown city"
@@ -61,6 +63,32 @@ class DevConsolePopup(val screen: WorldScreen): Popup(screen){
                 val selectedTile = screen.mapHolder.selectedTile ?: return "No tile selected"
                 val city = gameInfo.getCities().firstOrNull { it.name.lowercase() == params[2] } ?: return "Unknown city"
                 if (city.tiles.contains(selectedTile.position)) city.expansion.relinquishOwnership(selectedTile)
+            }
+            else -> return "Unknown command"
+        }
+        return null
+    }
+
+    private fun getCivByName(name:String) = gameInfo.civilizations.firstOrNull { it.civName.lowercase().replace(" ","-") == name }
+
+    private fun handleUnitCommand(params: List<String>): String? {
+        if (params.size == 1) return "Available commands: add"
+        when (params[1]){
+            "add" -> {
+                if (params.size != 4) return "Format: unit add <civName> <unitName>"
+                val selectedTile = screen.mapHolder.selectedTile ?: return "No tile selected"
+                val civ = getCivByName(params[2]) ?: return "Unknown civ"
+                val baseUnit = gameInfo.ruleset.units.values.firstOrNull { it.name.lowercase() == params[3] } ?: return "Unknown unit"
+                civ.units.placeUnitNearTile(selectedTile.position, baseUnit)
+            }
+            "remove" -> {
+                val selectedTile = screen.mapHolder.selectedTile ?: return "No tile selected"
+                if (selectedTile.getFirstUnit() == null) return "No unit in tile"
+                val units = selectedTile.getUnits().toList()
+                val selectedUnit = screen.bottomUnitTable.selectedUnit
+                val unit = if (selectedUnit!=null && selectedUnit.getTile() == selectedTile) selectedUnit
+                    else units.first()
+                unit.destroy()
             }
             else -> return "Unknown command"
         }
