@@ -1,7 +1,6 @@
 package com.unciv.ui.screens.worldscreen.unit
 
 import com.badlogic.gdx.Gdx
-import com.badlogic.gdx.Input
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Touchable
@@ -16,6 +15,7 @@ import com.unciv.models.translations.tr
 import com.unciv.ui.components.extensions.addSeparator
 import com.unciv.ui.components.extensions.center
 import com.unciv.ui.components.extensions.darken
+import com.unciv.ui.components.extensions.isShiftKeyPressed
 import com.unciv.ui.components.extensions.toImageButton
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.input.onClick
@@ -352,7 +352,7 @@ class UnitTable(val worldScreen: WorldScreen) : Table() {
             selectedTile.isCityCenter() &&
                     (selectedTile.getOwner() == worldScreen.viewingCiv || worldScreen.viewingCiv.isSpectator()) ->
                 citySelected(selectedTile.getCity()!!)
-            nextUnit != null -> selectUnit(nextUnit, Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT))
+            nextUnit != null -> selectUnit(nextUnit, Gdx.input.isShiftKeyPressed())
             selectedTile == previouslySelectedUnit?.currentTile -> {
                 selectUnit()
                 isVisible = false

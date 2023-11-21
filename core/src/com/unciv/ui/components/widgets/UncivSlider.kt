@@ -1,7 +1,6 @@
 package com.unciv.ui.components.widgets
 
 import com.badlogic.gdx.Gdx
-import com.badlogic.gdx.Input
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.math.Interpolation
 import com.badlogic.gdx.math.Vector2
@@ -21,10 +20,12 @@ import com.badlogic.gdx.utils.Timer
 import com.unciv.Constants
 import com.unciv.models.UncivSound
 import com.unciv.ui.audio.SoundPlayer
-import com.unciv.ui.images.IconCircleGroup
-import com.unciv.ui.components.input.onClick
+import com.unciv.ui.components.extensions.isShiftKeyPressed
 import com.unciv.ui.components.extensions.surroundWithCircle
 import com.unciv.ui.components.extensions.toLabel
+import com.unciv.ui.components.input.onClick
+import com.unciv.ui.components.widgets.UncivSlider.Companion.formatPercent
+import com.unciv.ui.images.IconCircleGroup
 import com.unciv.ui.screens.basescreen.BaseScreen
 import kotlin.math.abs
 import kotlin.math.sign
@@ -206,10 +207,7 @@ class UncivSlider (
         // un-snapping with Shift is taken from Slider source, and the loop mostly as well
         // with snap active, plus/minus buttons will go to the next snap position regardless of stepSize
         // this could be shorter if Slider.snap(), Slider.snapValues and Slider.threshold weren't protected
-        if (snapToValues?.isEmpty() != false ||
-                Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT) ||
-                Gdx.input.isKeyPressed(Input.Keys.SHIFT_RIGHT)
-        ) {
+        if (snapToValues?.isEmpty() != false || Gdx.input.isShiftKeyPressed()) {
             value += delta
             onChange?.invoke(value)
             return
