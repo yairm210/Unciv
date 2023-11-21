@@ -4,6 +4,7 @@ import com.badlogic.gdx.Input
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.badlogic.gdx.scenes.scene2d.ui.TextField
+import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.input.KeyCharAndCode
 import com.unciv.ui.components.input.keyShortcuts
@@ -90,7 +91,18 @@ class DevConsolePopup(val screen: WorldScreen): Popup(screen){
         return null
     }
 
-    private fun getCivByName(name:String) = gameInfo.civilizations.firstOrNull { it.civName.lowercase().replace(" ","-") == name }
+    private fun String.toCliInput() = this.lowercase().replace(" ","-")
+
+    private fun getCivByName(name:String) = gameInfo.civilizations.firstOrNull { it.civName.toCliInput() == name }
+
+    private fun getSelectedUnit(): MapUnit? {
+        val selectedTile = screen.mapHolder.selectedTile ?: return null
+        if (selectedTile.getFirstUnit() == null) return null
+        val units = selectedTile.getUnits().toList()
+        val selectedUnit = screen.bottomUnitTable.selectedUnit
+        return if (selectedUnit != null && selectedUnit.getTile() == selectedTile) selectedUnit
+        else units.first()
+    }
 
     private fun handleUnitCommand(params: List<String>): String? {
         if (params.size == 1) return "Available commands: add"
@@ -99,17 +111,18 @@ class DevConsolePopup(val screen: WorldScreen): Popup(screen){
                 if (params.size != 4) return "Format: unit add <civName> <unitName>"
                 val selectedTile = screen.mapHolder.selectedTile ?: return "No tile selected"
                 val civ = getCivByName(params[2]) ?: return "Unknown civ"
-                val baseUnit = gameInfo.ruleset.units.values.firstOrNull { it.name.lowercase() == params[3] } ?: return "Unknown unit"
+                val baseUnit = gameInfo.ruleset.units.values.firstOrNull { it.name.toCliInput() == params[3] } ?: return "Unknown unit"
                 civ.units.placeUnitNearTile(selectedTile.position, baseUnit)
             }
             "remove" -> {
-                val selectedTile = screen.mapHolder.selectedTile ?: return "No tile selected"
-                if (selectedTile.getFirstUnit() == null) return "No unit in tile"
-                val units = selectedTile.getUnits().toList()
-                val selectedUnit = screen.bottomUnitTable.selectedUnit
-                val unit = if (selectedUnit!=null && selectedUnit.getTile() == selectedTile) selectedUnit
-                    else units.first()
+                val unit = getSelectedUnit() ?: return "Select tile with unit"
                 unit.destroy()
+            }
+            "addpromotion" -> {
+                if (params.size != 3) return "Format: unit addpromotion <promotionName>"
+                val unit = getSelectedUnit() ?: return "Select tile with unit"
+                val promotion = gameInfo.ruleset.unitPromotions.values.firstOrNull{ it.name.toCliInput() == params[2] } ?: return "Unknown promotion"
+                unit.promotions.addPromotion(promotion.name, true)
             }
             else -> return "Unknown command"
         }
