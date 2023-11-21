@@ -248,6 +248,9 @@ class MapEditorScreen(map: TileMap? = null) : BaseScreen(), RecreateOnResize {
         if (!isDirty) return action()
         ConfirmPopup(screen = this, question, confirmText, isConfirmPositive, action = action).open()
     }
+    fun askIfDirtyForLoad(action: ()->Unit) = askIfDirty(
+        "Do you want to load another map without saving the recent changes?",
+        "Load map", action = action)
 
     fun hideSelection() {
         for (group in highlightedTileGroups)
