@@ -338,7 +338,7 @@ class GameOptionsTable(
         }
         slider.isDisabled = locked
         val snapValues = floatArrayOf(100f,150f,200f,250f,300f,350f,400f,450f,500f,550f,600f,650f,700f,750f,800f,900f,1000f,1250f,1500f)
-        slider.setSnapToValues(snapValues, 125f)
+        slider.setSnapToValues(threshold = 125f, *snapValues)
         return slider
     }
 

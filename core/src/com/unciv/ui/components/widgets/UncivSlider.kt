@@ -133,10 +133,10 @@ class UncivSlider (
         setPlusMinusEnabled()
     }
     /** Will make this slider snap to the specified values, if the knob is within the threshold. */
-    fun setSnapToValues(values: FloatArray?, threshold: Float) {
+    fun setSnapToValues(threshold: Float, vararg values: Float) {
         snapToValues = values       // make a copy so our plus/minus code can snap
         snapThreshold = threshold
-        slider.setSnapToValues(values, threshold)
+        slider.setSnapToValues(threshold, *values)
     }
 
     // java format string for the value tip, set by changing stepSize
