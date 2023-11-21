@@ -40,7 +40,7 @@ class KeyboardPanningListener(
         if (event.target is TextField) return false
         if (keycode !in allowedKeys) return false
         // Without the following Ctrl-S would leave WASD map scrolling stuck
-        // Might be obsolete with keyboard shortcut refactoring
+        // _Not_ obsolete with keyboard shortcut refactoring
         if (Gdx.input.isControlKeyPressed()) return false
         pressedKeys.add(keycode)
         startLoop()
