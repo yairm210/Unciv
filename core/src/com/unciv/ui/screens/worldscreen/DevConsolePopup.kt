@@ -42,16 +42,28 @@ class DevConsolePopup(val screen: WorldScreen): Popup(screen){
 
     fun handleCityCommand(text: String): String? {
         val params = text.split(" ")
-        if (params.size == 1) return "Available commands: setpop"
+        if (params.size == 1) return "Available commands: setpop, addtile, removetile"
         when (params[1]){
             "setpop" -> {
                 if (params.size != 4) return "Format: city setPop <cityName> <amount>"
                 val newPop = params[3].toIntOrNull() ?: return "Invalid amount "+params[3]
+                if (newPop < 1) return "Invalid amount $newPop"
                 val city = gameInfo.getCities().firstOrNull { it.name.lowercase() == params[2] } ?: return "Unknown city"
                 city.population.setPopulation(newPop)
-                return null
+            }
+            "addtile" -> {
+                val selectedTile = screen.mapHolder.selectedTile ?: return "No tile selected"
+                val city = gameInfo.getCities().firstOrNull { it.name.lowercase() == params[2] } ?: return "Unknown city"
+                if (selectedTile.neighbors.none { it.getCity() == city }) return "Tile is not adjacent to city"
+                city.expansion.takeOwnership(selectedTile)
+            }
+            "removetile" -> {
+                val selectedTile = screen.mapHolder.selectedTile ?: return "No tile selected"
+                val city = gameInfo.getCities().firstOrNull { it.name.lowercase() == params[2] } ?: return "Unknown city"
+                if (city.tiles.contains(selectedTile.position)) city.expansion.relinquishOwnership(selectedTile)
             }
             else -> return "Unknown command"
         }
+        return null
     }
 }
