@@ -10,7 +10,12 @@ import com.unciv.ui.components.input.keyShortcuts
 import com.unciv.ui.popups.Popup
 import com.unciv.ui.screens.basescreen.BaseScreen
 
+
+
 class DevConsolePopup(val screen: WorldScreen): Popup(screen){
+    companion object {
+        val history = ArrayList<String>()
+    }
 
     val textField = TextField("", BaseScreen.skin)
     internal val gameInfo = screen.gameInfo
@@ -23,6 +28,7 @@ class DevConsolePopup(val screen: WorldScreen): Popup(screen){
             val handleCommandResponse = handleCommand(textField.text)
             if (handleCommandResponse == null) {
                 screen.shouldUpdate = true
+                history.add(textField.text)
                 close()
             }
             else label.setText(handleCommandResponse)
@@ -31,6 +37,21 @@ class DevConsolePopup(val screen: WorldScreen): Popup(screen){
         textField.addAction(Actions.delay(0.05f, Actions.run { textField.text = "" }))
         open(true)
         keyShortcuts.add(KeyCharAndCode.ESC){ close() }
+
+        if (history.isNotEmpty()) {
+            var currentHistoryEntry = history.size
+            keyShortcuts.add(Input.Keys.UP) {
+                if (currentHistoryEntry > 0) currentHistoryEntry--
+                textField.text = history[currentHistoryEntry]
+                textField.cursorPosition = textField.text.length
+            }
+            keyShortcuts.add(Input.Keys.DOWN) {
+                if (currentHistoryEntry == history.size) currentHistoryEntry--
+                if (currentHistoryEntry < history.lastIndex) currentHistoryEntry++
+                textField.text = history[currentHistoryEntry]
+                textField.cursorPosition = textField.text.length
+            }
+        }
     }
 
     private fun handleCommand(text:String): String?{
