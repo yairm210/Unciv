@@ -114,6 +114,8 @@ enum class UniqueParameterType(
             if (UnitTypeFilter.isKnownValue(parameterText, ruleset)) return true
             return false
         }
+
+        override fun getTranslationWriterStringsForOutput() = knownValues
     },
 
     /** Implemented by [UnitType.matchesFilter][com.unciv.models.ruleset.unit.UnitType.matchesFilter] */
