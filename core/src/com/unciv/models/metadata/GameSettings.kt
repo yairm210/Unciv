@@ -81,6 +81,7 @@ class GameSettings {
     var visualMods = HashSet<String>()
     var useDemographics: Boolean = false
     var showZoomButtons: Boolean = false
+    var forbidPopupClickBehindToClose: Boolean = false
 
     var notificationsLogMaxTurns = 5
 
