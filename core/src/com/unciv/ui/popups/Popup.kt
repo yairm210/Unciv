@@ -18,6 +18,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.WidgetGroup
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
+import com.unciv.GUI
 import com.unciv.logic.event.EventBus
 import com.unciv.ui.components.widgets.AutoScrollPane
 import com.unciv.ui.components.extensions.addSeparator
@@ -227,7 +228,7 @@ open class Popup(
     /** Allow closing a popup by clicking 'outside', Android-style, but only if a Close button exists */
     private fun getBehindClickListener() = object : ClickListener() {
         override fun clicked(event: InputEvent?, x: Float, y: Float) {
-            if (!clickBehindToClose) return
+            if (!clickBehindToClose || GUI.getSettings().forbidPopupClickBehindToClose) return
             // Since Gdx doesn't limit events to the actually `hit` actors...
             if (event?.target != this@Popup) return
             close()
