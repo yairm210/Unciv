@@ -125,21 +125,21 @@ EmojiIcons/Happiness
   index: -1
 EmojiIcons/Production
   rotate: false
-  xy: 552, 215
+  xy: 544, 1087
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 EmojiIcons/Science
   rotate: false
-  xy: 552, 41
+  xy: 544, 913
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 EmojiIcons/Turn
   rotate: false
-  xy: 544, 1029
+  xy: 544, 797
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
@@ -755,7 +755,7 @@ OtherIcons/NationSwap
   index: -1
 OtherIcons/Nations
   rotate: false
-  xy: 552, 331
+  xy: 552, 99
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
@@ -783,7 +783,7 @@ OtherIcons/Options
   index: -1
 OtherIcons/Pause
   rotate: false
-  xy: 552, 273
+  xy: 552, 41
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
@@ -1322,14 +1322,14 @@ TileIcons/Worked
   index: -1
 StatIcons/Range
   rotate: false
-  xy: 552, 157
+  xy: 544, 1029
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 StatIcons/RangedStrength
   rotate: false
-  xy: 552, 99
+  xy: 544, 971
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
@@ -1357,7 +1357,7 @@ StatIcons/Specialist
   index: -1
 StatIcons/Strength
   rotate: false
-  xy: 544, 1087
+  xy: 544, 855
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
@@ -1388,6 +1388,34 @@ TileIcons/Locked
   xy: 1615, 1823
   size: 100, 100
   orig: 100, 100
+  offset: 0, 0
+  index: -1
+TileIcons/MapOverlayToggleMovement
+  rotate: false
+  xy: 552, 331
+  size: 50, 50
+  orig: 50, 50
+  offset: 0, 0
+  index: -1
+TileIcons/MapOverlayToggleResources
+  rotate: false
+  xy: 552, 273
+  size: 50, 50
+  orig: 50, 50
+  offset: 0, 0
+  index: -1
+TileIcons/MapOverlayToggleWorkedTiles
+  rotate: false
+  xy: 552, 215
+  size: 50, 50
+  orig: 50, 50
+  offset: 0, 0
+  index: -1
+TileIcons/MapOverlayToggleYields
+  rotate: false
+  xy: 552, 157
+  size: 50, 50
+  orig: 50, 50
   offset: 0, 0
   index: -1
 TileIcons/NotWorked
