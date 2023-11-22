@@ -24,8 +24,10 @@ import kotlinx.coroutines.DisposableHandle
 import kotlinx.coroutines.Job
 
 // Wesnoth maps come with a non-playable border of one Hex.
-// For odd map heights, W puts the odd corner with only two neighbors on top, while Unciv puts it on the bottom.
-// Thus to keep the code simple, this cheats and omits one playable row on top but includes the bottom unplayable row...
+// Wesnoth puts the odd corner with only two neighbors on top, while Unciv puts it on the bottom.
+// This means that Wesnoth's coord mapping is a little different, so we need to shift every other column vertically one place.
+// To do so, we use half the unplayable hexes Wesnoth's map has on top and alternatingly those on the bottom.
+// This means a map loaded in Unciv has its height increased by 1 compared to what Wesnoth showed (they don't include the unplayable border in dimensions).
 
 //todo Allow different rulesets?
 
@@ -93,7 +95,7 @@ class MapEditorWesnothImporter(private val editorScreen: MapEditorScreen) : Disp
     private fun String.parse(): TileMap {
         // first we need to know the size. Wesnoth maps have a non-playable border - exclude.
         val lines = lineSequence().filter { it.isNotBlank() }.toList()
-        val height = lines.size - 2
+        val height = lines.size - 1
         val width = if (height <= 0) 0 else lines[0].split(',').size - 2
         if (width <= 0) throw UncivShowableException("That map is invalid!")
 
@@ -104,15 +106,12 @@ class MapEditorWesnothImporter(private val editorScreen: MapEditorScreen) : Disp
             mapSize = MapSizeNew(width, height)
         }
 
-        // We start @(1,1) and are never worldwrapped. Test: On (10x8): (1,1)->(6,1); (1,8)->(-1,-6); (5,1)->(4,3)
         val colOffset = 1 + width / 2
-        val rowOffset = (height + 1) / 2
-
+        val rowOffset = height / 2
         for ((row, line) in lines.withIndex()) {
-            if (row == 0 || row > height) continue
             for ((column, cellCode) in line.split(',').withIndex()) {
-                if (column == 0 || column > width) continue
-                val pos = HexMath.getTileCoordsFromColumnRow(column - colOffset, rowOffset - row)
+                val effectiveRow = rowOffset - row + column % 2
+                val pos = HexMath.getTileCoordsFromColumnRow(column - colOffset, effectiveRow)
                 if (!map.contains(pos)) continue
                 map[pos].paintFromWesnothCode(cellCode.trim(), map)
             }
