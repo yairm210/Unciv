@@ -1,11 +1,10 @@
 ## 4.9.1
 
-Initial scenario/dev console, with 1 command :D 
+Initial scenario/dev console!
 
 By SomeTroglodyte:
-- Map overlay toggle buttons rework 
-- Add a map import tool able to read "Battle for Wesnoth" maps 
-- [Linting] Some minor code purity stuff I came across 
+- Map overlay toggle buttons rework
+- Add a map import tool able to read "Battle for Wesnoth" maps
 
 Fix free buildings triggering from conditionals in incorrect places  - By SeventhM
 
