@@ -10,7 +10,6 @@ import com.unciv.ui.components.input.KeyCharAndCode
 import com.unciv.ui.components.input.keyShortcuts
 import com.unciv.ui.popups.Popup
 import com.unciv.ui.screens.basescreen.BaseScreen
-import com.unciv.ui.screens.devconsole.DevConsoleCommand.Companion.toCliInput
 import com.unciv.ui.screens.worldscreen.WorldScreen
 
 
@@ -59,7 +58,7 @@ class DevConsolePopup(val screen: WorldScreen) : Popup(screen) {
     private fun handleCommand(text:String): String? {
         val params = text.split(" ").filter { it.isNotEmpty() }.map { it.lowercase() }
         if (params.isEmpty()) return "No command"
-        return DevConsoleCommand.handle(this, params)
+        return ConsoleCommandRoot().handle(this, params)
     }
 
     internal fun getCivByName(name:String) = gameInfo.civilizations.firstOrNull { it.civName.toCliInput() == name }
