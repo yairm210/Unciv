@@ -256,11 +256,7 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
         throw UnsupportedOperationException("Use pushScreen or replaceCurrentScreen instead")
     }
 
-    override fun getScreen(): BaseScreen? {
-        val curScreen = super.getScreen()
-        return if (curScreen == null) { null } else { curScreen as BaseScreen
-        }
-    }
+    override fun getScreen(): BaseScreen? = super.getScreen() as? BaseScreen
 
     private fun setScreen(newScreen: BaseScreen) {
         debug("Setting new screen: %s, screenStack: %s", newScreen, screenStack)
