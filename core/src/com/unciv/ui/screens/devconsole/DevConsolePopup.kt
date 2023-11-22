@@ -26,7 +26,7 @@ class DevConsolePopup(val screen: WorldScreen) : Popup(screen) {
         val label = "".toLabel(Color.RED)
         add(label)
         textField.keyShortcuts.add(Input.Keys.ENTER) {
-            val handleCommandResponse = handleCommand(textField.text)
+            val handleCommandResponse = handleCommand()
             if (handleCommandResponse == null) {
                 screen.shouldUpdate = true
                 history.add(textField.text)
@@ -38,6 +38,11 @@ class DevConsolePopup(val screen: WorldScreen) : Popup(screen) {
         textField.addAction(Actions.delay(0.05f, Actions.run { textField.text = "" }))
         open(true)
         keyShortcuts.add(KeyCharAndCode.ESC) { close() }
+
+        keyShortcuts.add(KeyCharAndCode.TAB) {
+            val textToAdd = getAutocomplete()
+            textField.appendText(textToAdd)
+        }
 
         if (history.isNotEmpty()) {
             var currentHistoryEntry = history.size
@@ -55,10 +60,17 @@ class DevConsolePopup(val screen: WorldScreen) : Popup(screen) {
         }
     }
 
-    private fun handleCommand(text:String): String? {
-        val params = text.split(" ").filter { it.isNotEmpty() }.map { it.lowercase() }
+    private fun getParams(text:String) = text.split(" ").filter { it.isNotEmpty() }.map { it.lowercase() }
+
+    private fun handleCommand(): String? {
+        val params = getParams(textField.text)
         if (params.isEmpty()) return "No command"
         return ConsoleCommandRoot().handle(this, params)
+    }
+
+    private fun getAutocomplete():String {
+        val params = getParams(textField.text)
+        return ConsoleCommandRoot().autocomplete(params) ?: ""
     }
 
     internal fun getCivByName(name:String) = gameInfo.civilizations.firstOrNull { it.civName.toCliInput() == name }

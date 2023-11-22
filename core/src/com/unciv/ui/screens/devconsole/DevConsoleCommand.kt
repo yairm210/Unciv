@@ -4,6 +4,7 @@ fun String.toCliInput() = this.lowercase().replace(" ","-")
 
 interface ConsoleCommand {
     fun handle(console: DevConsolePopup, params: List<String>): String?
+    fun autocomplete(params: List<String>): String? = ""
 }
 
 class ConsoleAction(val action: (console: DevConsolePopup, params: List<String>)->String?):ConsoleCommand{
@@ -20,6 +21,23 @@ interface ConsoleCommandNode:ConsoleCommand{
             return "Available commands: " + subcommands.keys.joinToString()
         val handler = subcommands[params[0]] ?: return "Invalid command"
         return handler.handle(console, params.drop(1))
+    }
+
+    override fun autocomplete(params: List<String>): String? {
+        if (params.isEmpty()) return null
+        val firstParam = params[0]
+        if (firstParam in subcommands) return subcommands[firstParam]!!.autocomplete(params.drop(1))
+        val possibleSubcommands = subcommands.keys.filter { it.startsWith(firstParam) }
+        if (possibleSubcommands.isEmpty()) return null
+        if (possibleSubcommands.size == 1) return possibleSubcommands.first().removePrefix(firstParam)
+
+        val firstSubcommand = possibleSubcommands.first()
+        for ((index, char) in firstSubcommand.withIndex()){
+            if (possibleSubcommands.any { it.lastIndex < index } ||
+                possibleSubcommands.any { it[index] != char })
+                return firstSubcommand.substring(0,index).removePrefix(firstParam)
+        }
+        return firstSubcommand.removePrefix(firstParam)
     }
 }
 
