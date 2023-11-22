@@ -9,13 +9,13 @@ import com.unciv.logic.UncivShowableException
 import com.unciv.logic.files.MapSaver
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.translations.tr
-import com.unciv.ui.components.widgets.AutoScrollPane
-import com.unciv.ui.components.widgets.TabbedPager
 import com.unciv.ui.components.extensions.isEnabled
 import com.unciv.ui.components.extensions.toTextButton
 import com.unciv.ui.components.input.KeyCharAndCode
 import com.unciv.ui.components.input.keyShortcuts
 import com.unciv.ui.components.input.onActivation
+import com.unciv.ui.components.widgets.AutoScrollPane
+import com.unciv.ui.components.widgets.TabbedPager
 import com.unciv.ui.popups.ConfirmPopup
 import com.unciv.ui.popups.LoadingPopup
 import com.unciv.ui.popups.Popup
@@ -64,10 +64,7 @@ class MapEditorLoadTab(
 
     private fun loadHandler() {
         if (chosenMap == null) return
-        editorScreen.askIfDirty(
-            "Do you want to load another map without saving the recent changes?",
-            "Load map"
-        ) {
+        editorScreen.askIfDirtyForLoad {
             editorScreen.startBackgroundJob("MapLoader") { loaderThread() }
         }
     }
