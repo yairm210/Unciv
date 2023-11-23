@@ -256,11 +256,7 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
         throw UnsupportedOperationException("Use pushScreen or replaceCurrentScreen instead")
     }
 
-    override fun getScreen(): BaseScreen? {
-        val curScreen = super.getScreen()
-        return if (curScreen == null) { null } else { curScreen as BaseScreen
-        }
-    }
+    override fun getScreen(): BaseScreen? = super.getScreen() as? BaseScreen
 
     private fun setScreen(newScreen: BaseScreen) {
         debug("Setting new screen: %s, screenStack: %s", newScreen, screenStack)
@@ -469,7 +465,7 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
 
     companion object {
         //region AUTOMATICALLY GENERATED VERSION DATA - DO NOT CHANGE THIS REGION, INCLUDING THIS COMMENT
-        val VERSION = Version("4.9.0", 930)
+        val VERSION = Version("4.9.1", 931)
         //endregion
 
         lateinit var Current: UncivGame

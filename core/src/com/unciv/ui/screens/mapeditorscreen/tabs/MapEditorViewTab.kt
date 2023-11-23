@@ -16,16 +16,16 @@ import com.unciv.models.ruleset.nation.Nation
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.stats.Stats
 import com.unciv.models.translations.tr
-import com.unciv.ui.components.widgets.ExpanderTab
-import com.unciv.ui.components.widgets.TabbedPager
-import com.unciv.ui.components.widgets.UncivSlider
-import com.unciv.ui.components.widgets.WrappableLabel
 import com.unciv.ui.components.extensions.addSeparator
 import com.unciv.ui.components.extensions.darken
 import com.unciv.ui.components.extensions.pad
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
 import com.unciv.ui.components.input.onClick
+import com.unciv.ui.components.widgets.ExpanderTab
+import com.unciv.ui.components.widgets.TabbedPager
+import com.unciv.ui.components.widgets.UncivSlider
+import com.unciv.ui.components.widgets.WrappableLabel
 import com.unciv.ui.popups.ToastPopup
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.civilopediascreen.CivilopediaScreen
@@ -230,7 +230,7 @@ class MapEditorViewTab(
                     editorScreen.updateTile(tile)
                     editorScreen.isDirty = true
                 }
-                slider.setSnapToValues(floatArrayOf(0f,1f,2f,3f,4f,5f,6f,7f,8f,9f,10f,12f,15f,20f,30f,40f), 5f)
+                slider.setSnapToValues(threshold = 5f, 0f,1f,2f,3f,4f,5f,6f,7f,8f,9f,10f,12f,15f,20f,30f,40f)
                 add(slider).right().minWidth(80f).fillX().padTop(15f)
             }).fillX()
         }
