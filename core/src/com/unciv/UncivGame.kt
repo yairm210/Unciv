@@ -130,31 +130,6 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
 
         Gdx.graphics.isContinuousRendering = settings.continuousRendering
 
-        val translationFileName = "jsons/translations/Bosnian.properties"
-        val templateFileName = "jsons/translations/template.properties"
-        val bosnianLines = Gdx.files.internal(translationFileName)
-            .readString(Charsets.UTF_8.name())
-            .lines()
-        val templateLines = Gdx.files.internal(templateFileName)
-            .readString(Charsets.UTF_8.name())
-            .lines()
-        val outputLines = mutableListOf<String>()
-        val bosnianIter = bosnianLines.iterator()
-        for (template in templateLines) {
-            if (!bosnianIter.hasNext()) break
-            val bosnianLine = bosnianIter.next()
-            val equalsPos = bosnianLine.indexOf(" =")
-            val output = when {
-                equalsPos < 0 || !template.endsWith(" = ") -> template
-                bosnianLine == template || "$bosnianLine " == template -> template
-                !(bosnianLine.endsWith(" = ") || bosnianLine.endsWith(" =")) -> bosnianLine
-                else ->
-                    template + bosnianLine.slice(0 until equalsPos)
-            }
-            outputLines += output
-        }
-        Gdx.files.local("$translationFileName.out").writeString(outputLines.joinToString("\n"), false, Charsets.UTF_8.name())
-
         Concurrency.run("LoadJSON") {
             RulesetCache.loadRulesets()
             translations.tryReadTranslationForCurrentLanguage()
