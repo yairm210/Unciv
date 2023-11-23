@@ -47,10 +47,10 @@ import com.unciv.utils.debug
 import com.unciv.utils.launchOnGLThread
 import com.unciv.utils.withGLContext
 import com.unciv.utils.withThreadPoolContext
-import kotlinx.coroutines.CancellationException
 import java.io.PrintWriter
 import java.util.EnumSet
 import java.util.UUID
+import kotlinx.coroutines.CancellationException
 import kotlin.system.exitProcess
 
 open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpecific {
@@ -129,6 +129,31 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
         }
 
         Gdx.graphics.isContinuousRendering = settings.continuousRendering
+
+        val translationFileName = "jsons/translations/Bosnian.properties"
+        val templateFileName = "jsons/translations/template.properties"
+        val bosnianLines = Gdx.files.internal(translationFileName)
+            .readString(Charsets.UTF_8.name())
+            .lines()
+        val templateLines = Gdx.files.internal(templateFileName)
+            .readString(Charsets.UTF_8.name())
+            .lines()
+        val outputLines = mutableListOf<String>()
+        val bosnianIter = bosnianLines.iterator()
+        for (template in templateLines) {
+            if (!bosnianIter.hasNext()) break
+            val bosnianLine = bosnianIter.next()
+            val equalsPos = bosnianLine.indexOf(" =")
+            val output = when {
+                equalsPos < 0 || !template.endsWith(" = ") -> template
+                bosnianLine == template || "$bosnianLine " == template -> template
+                !(bosnianLine.endsWith(" = ") || bosnianLine.endsWith(" =")) -> bosnianLine
+                else ->
+                    template + bosnianLine.slice(0 until equalsPos)
+            }
+            outputLines += output
+        }
+        Gdx.files.local("$translationFileName.out").writeString(outputLines.joinToString("\n"), false, Charsets.UTF_8.name())
 
         Concurrency.run("LoadJSON") {
             RulesetCache.loadRulesets()
