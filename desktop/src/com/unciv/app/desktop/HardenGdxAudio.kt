@@ -1,17 +1,15 @@
 package com.unciv.app.desktop
 
-import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.audio.Music
+import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application
+import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration
 import com.badlogic.gdx.backends.lwjgl3.audio.OpenALLwjgl3Audio
 import com.badlogic.gdx.backends.lwjgl3.audio.OpenALMusic
-import com.badlogic.gdx.backends.lwjgl3.audio.mock.MockAudio
 import com.badlogic.gdx.utils.Array
-import com.unciv.ui.components.AudioExceptionHelper
 
 /**
  *  Problem: Not all exceptions playing Music can be caught on the desktop platform using a try-catch around the play method.
- *  Unciv 3.17.13 to 4.0.5 all exacerbated the problem due to using Music from various threads - my current interpretation
- *  is that OpenALMusic isn't thread-safe on play, load, dispose or any other methods touching any AL10.al*Buffers* call.
+ *  Unciv 3.17.13 to 4.0.5 all exacerbated the problem due to using Music from various threads - and Gdx documents it isn't threadsafe.
  *  But even with that fixed, music streams can have codec failures _after_ the first buffer's worth of data, so the problem is only mitigated.
  *
  *  Sooner or later some Exception will be thrown from the code under `Lwjgl3Application.loop` -> `OpenALLwjgl3Audio.update` ->
@@ -22,10 +20,7 @@ import com.unciv.ui.components.AudioExceptionHelper
  * #
  *  ### Approach:
  *  - Subclass [OpenALLwjgl3Audio] overriding [update][OpenALLwjgl3Audio.update] with equivalent code catching any Exceptions and Errors
- *  - Replicate original update (a 2-liner) accessing underlying fields through reflection to avoid rewriting the _whole_ thing
- *  - Not super.update so failed music can be immediately stopped, disposed and removed
- *  - Replace the object running inside Gdx - Gdx.app.audio - through reflection
- *  - Replace the object Unciv talks to - overwriting Gdx.audio is surprisingly allowed
+ *  - Get the framework to use the subclassed Audio by overriding Lwjgl3ApplicationBase.createAudio
  *
  *  ### Some exceptions so far seen:
  *  * Cannot store to object array because "this.mode_param" is null
@@ -44,44 +39,25 @@ import com.unciv.ui.components.AudioExceptionHelper
  *  * javazoom.jl.decoder.BitstreamException: Bitstream errorcode 102
  *  * NullPointerException: Cannot invoke "javazoom.jl.decoder.Bitstream.closeFrame()" because "this.bitstream" is null
  */
-class HardenGdxAudio : AudioExceptionHelper {
+class HardenGdxAudio(
+    game: DesktopGame,
+    config: Lwjgl3ApplicationConfiguration
+) : Lwjgl3Application(game, config) {
+    private var updateCallback: (()->Unit)? = null
+    private var exceptionHandler: ((Throwable, Music)->Unit)? = null
 
-    override fun installHooks(
+    fun installHooks(
         updateCallback: (()->Unit)?,
         exceptionHandler: ((Throwable, Music)->Unit)?
     ) {
-        // Get already instantiated Audio implementation for cleanup
-        // (may be OpenALLwjgl3Audio or MockAudio at this point)
-        val badAudio = Gdx.audio
-
-        val noAudio = MockAudio()
-
-        Gdx.audio = noAudio  // It's a miracle this is allowed.
-        // If it breaks in a Gdx update, go reflection instead as done below for Gdx.app.audio:
-
-        // Access the reference stored in Gdx.app.audio via reflection
-        val appClass = Gdx.app::class.java
-        val audioField = appClass.declaredFields.firstOrNull { it.name == "audio" }
-        if (audioField != null) {
-            audioField.isAccessible = true
-            audioField.set(Gdx.app, noAudio)  // kill it for a microsecond safely
-        }
-
-        // Clean up allocated resources
-        (badAudio as? OpenALLwjgl3Audio)?.dispose()
-
-        // Create replacement
-        val newAudio = HardenedGdxAudio(updateCallback, exceptionHandler)
-
-        // Store in Gdx fields used throughout the app (Gdx.app.audio by Gdx internally, Gdx.audio by us)
-        audioField?.set(Gdx.app, newAudio)
-        Gdx.audio = newAudio
+        this.updateCallback = updateCallback
+        this.exceptionHandler = exceptionHandler
     }
 
-    class HardenedGdxAudio(
-        private val updateCallback: (()->Unit)?,
-        private val exceptionHandler: ((Throwable, Music)->Unit)?
-    ) : OpenALLwjgl3Audio() {
+    override fun createAudio(config: Lwjgl3ApplicationConfiguration?) =
+        HardenedGdxAudio()
+
+    inner class HardenedGdxAudio : OpenALLwjgl3Audio() {
         private val noDevice: Boolean
         private val music: Array<OpenALMusic>
 
