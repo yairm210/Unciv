@@ -6,6 +6,7 @@ import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration
 import com.badlogic.gdx.backends.lwjgl3.audio.OpenALLwjgl3Audio
 import com.badlogic.gdx.backends.lwjgl3.audio.OpenALMusic
 import com.badlogic.gdx.utils.Array
+import com.unciv.ui.audio.MusicController
 
 /**
  *  Problem: Not all exceptions playing Music can be caught on the desktop platform using a try-catch around the play method.
@@ -46,6 +47,20 @@ class HardenGdxAudio(
     private var updateCallback: (()->Unit)? = null
     private var exceptionHandler: ((Throwable, Music)->Unit)? = null
 
+    /** Hooks part 1
+     *
+     *  This installs our extended version of OpenALLwjgl3Audio into Gdx from within the Lwjgl3Application constructor
+     *  Afterwards, Music/Sound decoder crashes are handled silently - nothing, not even a console log entry.
+     */
+    override fun createAudio(config: Lwjgl3ApplicationConfiguration?) =
+        HardenedGdxAudio()
+
+    /** Hooks part 2
+     *
+     *  This installs callbacks into [MusicController] that
+     *  - allow handling the exceptions - see [MusicController.getAudioExceptionHandler].
+     *  - and also allow MusicController to use the loop as timing source instead of a [Timer][java.util.Timer] - see [MusicController.getAudioLoopCallback].
+     */
     fun installHooks(
         updateCallback: (()->Unit)?,
         exceptionHandler: ((Throwable, Music)->Unit)?
@@ -54,9 +69,17 @@ class HardenGdxAudio(
         this.exceptionHandler = exceptionHandler
     }
 
-    override fun createAudio(config: Lwjgl3ApplicationConfiguration?) =
-        HardenedGdxAudio()
-
+    /**
+     *  Desktop implementation of the [Audio][com.badlogic.gdx.Audio] interface that
+     *  unlike its superclass catches exceptions and allows passing them into application code for handling.
+     *
+     *  Notes:
+     *  - Uses reflection to avoid reimplementing the entire thing.
+     *  - Accesses the super private field noDevice - once. Yes their constructor runs before ours.
+     *  - Accesses super.music and copies a reference - thus size and element access are "live".
+     *  - An alternative might be to try-catch in an OpenALMusic wrapper, that would be reflection-free
+     *    but quite a few lines more (override OpenALLwjgl3Audio.newMusic).
+     */
     inner class HardenedGdxAudio : OpenALLwjgl3Audio() {
         private val noDevice: Boolean
         private val music: Array<OpenALMusic>
@@ -68,11 +91,27 @@ class HardenGdxAudio(
             noDevice = noDeviceField.getBoolean(this)
             val musicField = myClass.superclass.declaredFields.first { it.name == "music" }
             musicField.isAccessible = true
-            @Suppress("UNCHECKED_CAST")
+            @Suppress("UNCHECKED_CAST") // See OpenALLwjgl3Audio line 86 - it's a Gdx Array of OpenALMusic alright.
             music = musicField.get(this) as Array<OpenALMusic>
         }
 
-        // This is just a kotlin translation of the original `update` with added try-catch and cleanup
+        /**
+         *  This is just a kotlin translation of the original [update][OpenALLwjgl3Audio.update] with added try-catch and cleanup
+         *
+         *  ## Important: This _must_ stay in sync if ever upstream Gdx changes that function.
+         *  This current version corresponds to this upstream source:
+         *  ```java
+         *  	public void update () {
+         * 		    if (noDevice) return;
+         * 		    for (int i = 0; i < music.size; i++)
+         * 			    music.items[i].update();
+         *      }
+         *  ```
+         *  Note you ***cannot*** use Studio's automatic java-to-kotlin translation: In this case, it goes awry.
+         *
+         *  "```for (i in 0 until music.size) music.items[i].update()```" is ***not*** equivalent!
+         *  It tests the end each loop iteration against the size at the moment the loop was entered, not the current size.
+         */
         override fun update() {
             if (noDevice) return
             var i = 0  // No for loop as the array might be changed
