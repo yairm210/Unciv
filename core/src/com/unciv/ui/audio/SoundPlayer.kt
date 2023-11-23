@@ -185,13 +185,42 @@ object SoundPlayer {
         val volume = UncivGame.Current.settings.soundEffectsVolume
         if (sound == UncivSound.Silent || volume < 0.01) return
         val (resource, isFresh) = get(sound) ?: return
-        val initialDelay = if (isFresh && Gdx.app.type == Application.ApplicationType.Android) 40 else 0
+        if (Gdx.app.type == Application.ApplicationType.Android)
+            playAndroid(resource, isFresh, volume)
+        else
+            playDesktop(resource, volume)
+    }
 
-        if (initialDelay > 0 || resource.play(volume) == -1L) {
-            Concurrency.run("DelayedSound") {
-                delay(initialDelay.toLong())
-                while (resource.play(volume) == -1L) delay(20L)
-            }
+    // Android needs time for a newly created sound to become ready, but in turn AndroidSound.play seems thread-safe.
+    private fun playAndroid(resource: Sound, isFresh: Boolean, volume: Float) {
+        /** Tested with a 2022 Android "S" and libGdx 1.12.1 - still required */
+        // See also: https://github.com/libgdx/libgdx/issues/694
+        // Typical logcat (effectively means we tried play before even the codec got loaded):
+/*
+        Unciv SoundPlayer       com.unciv.app                        D  [GLThread 8951] Sound click loaded from mods/Higher quality builtin sounds/sounds/click.ogg
+        SoundPool               com.unciv.app                        W  play soundID 1 not READY
+        MediaCodecList          com.unciv.app                        D  codecHandlesFormat: no format, so no extra checks
+        MediaCodecList          com.unciv.app                        D  codecHandlesFormat: no format, so no extra checks
+        CCodec                  com.unciv.app                        D  allocate(c2.android.vorbis.decoder)
+        Codec2Client            com.unciv.app                        I  Available Codec2 services: "software"
+        CCodec                  com.unciv.app                        I  Created component [c2.android.vorbis.decoder]
+        CCodecConfig            com.unciv.app                        D  read media type: audio/vorbis
+ */
+        if (!isFresh && resource.play(volume) != -1L) return // If it's already cached we should be able to play immediately
+        Concurrency.run("DelayedSound") {
+            delay(40L)
+            var repeatCount = 0
+            while (resource.play(volume) == -1L && ++repeatCount < 12) // quarter second tops
+                delay(20L)
+        }
+    }
+
+    // Let's do just one silent retry on Desktop. In turn, OpenALSound.play is not thread-safe.
+    private fun playDesktop(resource: Sound, volume: Float) {
+        if (resource.play(volume) != -1L) return
+        Concurrency.runOnGLThread("SoundRetry") {
+            delay(20L)
+            resource.play(volume)
         }
     }
 
