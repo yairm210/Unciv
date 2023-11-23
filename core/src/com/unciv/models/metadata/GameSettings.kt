@@ -249,6 +249,7 @@ class GameSettings {
     enum class LocaleCode(var language: String, var country: String) {
         Arabic("ar", "IQ"),
         Belarusian("be", "BY"),
+        Bosnian("bs", "BA"),
         BrazilianPortuguese("pt", "BR"),
         Bulgarian("bg", "BG"),
         Catalan("ca", "ES"),
