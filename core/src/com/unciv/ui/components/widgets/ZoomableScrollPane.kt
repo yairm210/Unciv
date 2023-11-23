@@ -15,8 +15,8 @@ import com.badlogic.gdx.scenes.scene2d.actions.TemporalAction
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
 import com.badlogic.gdx.scenes.scene2d.utils.ActorGestureListener
 import com.badlogic.gdx.scenes.scene2d.utils.Cullable
-import com.unciv.models.metadata.GameSettings
 import com.unciv.UncivGame
+import com.unciv.models.metadata.GameSettings
 import com.unciv.ui.components.ZoomGestureListener
 import com.unciv.ui.components.input.KeyboardPanningListener
 import java.lang.Float.max
@@ -70,6 +70,8 @@ open class ZoomableScrollPane(
         return if (group.hasChildren()) group.children[0] else null
     }
 
+    // This override will be called from ScrollPane's constructor to store the empty Group() we're passing,
+    // therefore super.getActor() _can_ return null.
     override fun setActor(content: Actor?) {
         val group: Group? = super.getActor() as Group?
         if (group != null) {

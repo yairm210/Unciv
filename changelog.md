@@ -1,3 +1,17 @@
+## 4.9.1
+
+Initial scenario/dev console!
+
+By SomeTroglodyte:
+- Map overlay toggle buttons rework
+- Add a map import tool able to read "Battle for Wesnoth" maps
+
+Fix free buildings triggering from conditionals in incorrect places  - By SeventhM
+
+Add a setting to forbid closing popups by clicking behind them  - By karmaBonfire
+
+[Translation] Add back "general" unit types  - By Ouaz
+
 ## 4.9.0
 
 City centers don't provide resources you don't have tech to extract

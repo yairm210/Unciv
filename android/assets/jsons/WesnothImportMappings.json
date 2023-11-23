@@ -1,0 +1,42 @@
+// Definitions how to map Wesnoth map terrain codes to Unciv Terrains and/or TileImprovements.
+// The parts before and after "^" are matched individually, and a search is done for the most
+// specific partial string from the start, e.g. "Wwf" will look for "Wwf", then "Ww", then "W"
+// See https://wiki.wesnoth.org/TerrainCodesWML
+{
+    "Aa":["Snow"],
+    "Ai":["Coast","Ice"],
+    "Br":["Railroad"],
+    "D":["Desert"],
+    // "Dc" to listOf(Constants.mountain, "Barringer Crater"), // "Crater" - Nope can have many
+    "Do":["Desert","Oasis"],
+    "F":["Forest"],
+    "Fda":["Tundra","Forest"], // Snowy Deciduous Forest
+    "Feta":["Tundra","Forest"], // Snowy Great Tree
+    "Fma":["Tundra","Forest"], // Snowy Mixed Forest
+    "Fpa":["Tundra","Forest"], // Snowy Pine Forest
+    "Ft":["Jungle"], // Tropical Forest, Rainforest
+    "G":["Grassland"],
+    "Gd":["Plains"], // Dry Grass
+    "Gll":["Plains"], // Leaf Litter
+    "Gvs":["Grassland","Farm"],
+    "H":["Hill"],
+    "Hhd":["Plains","Hill"], // Dry Hills
+    "Hd":["Desert","Hill"], // Dunes
+    "Ha":["Snow","Hill"], // Snow Hills
+    "M":["Mountain"],
+    "R":["Plains"], // All their "R" actually means roads - but they mean full-tile low-movement and brownish so..
+    "Rd":["Desert"], // Dry Dirt Road
+    "Rra":["Tundra"], // Icy Cobbles
+    "S":["Grassland","Marsh"],
+    "T":["Plains"], // Fungus
+    "U":["Plains"], // Underground
+    "V":["Ancient ruins"], // let's convert all other villages into ancient ruins too
+    "Vdr":["Ancient ruins"], // Ruined Adobe Village
+    "Vhr":["Ancient ruins"], // Ruined Cottage
+    "Vhcr":["City ruins"], // Ruined Human City
+    "Vhhr":["Ancient ruins"], // Ruined Hill Stone Village
+    "Vo":["Barbarian encampment"], // Orcish Village
+    "Wo":["Ocean"],
+    "Ww":["Coast"],
+    "Wwrt":["Coast","Atoll"] // Tropical Coastal Reef, may be too many
+}

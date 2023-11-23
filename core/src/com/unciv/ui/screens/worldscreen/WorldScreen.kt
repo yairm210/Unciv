@@ -43,6 +43,7 @@ import com.unciv.ui.popups.hasOpenPopups
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.cityscreen.CityScreen
 import com.unciv.ui.screens.civilopediascreen.CivilopediaScreen
+import com.unciv.ui.screens.devconsole.DevConsolePopup
 import com.unciv.ui.screens.mainmenuscreen.MainMenuScreen
 import com.unciv.ui.screens.newgamescreen.NewGameScreen
 import com.unciv.ui.screens.overviewscreen.EmpireOverviewCategories
@@ -188,6 +189,14 @@ class WorldScreen(
         tutorialController.allTutorialsShowedCallback = { shouldUpdate = true }
 
         globalShortcuts.add(KeyCharAndCode.BACK) { backButtonAndESCHandler() }
+
+
+        globalShortcuts.add('`'){
+            // No cheating unless you're by yourself
+            if (gameInfo.civilizations.count { it.isHuman() } > 1) return@add
+            val consolePopup = DevConsolePopup(this)
+            stage.keyboardFocus = consolePopup.textField
+        }
 
         addKeyboardListener() // for map panning by W,S,A,D
         addKeyboardPresses()  // shortcut keys like F1

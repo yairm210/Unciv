@@ -20,6 +20,7 @@ import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
 import com.unciv.models.translations.fillPlaceholders
 import com.unciv.models.translations.hasPlaceholderParameters
+import com.unciv.ui.components.extensions.addToMapOfSets
 import com.unciv.ui.components.MayaCalendar
 import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionsUpgrade
 import kotlin.math.roundToInt
@@ -664,10 +665,28 @@ object UniqueTriggerActivation {
                 return true
             }
 
-            UniqueType.FreeStatBuildings, UniqueType.FreeSpecificBuildings,
             UniqueType.GainFreeBuildings -> {
-                civInfo.civConstructions.tryAddFreeBuildings()
-                return true // not fully correct
+                val freeBuilding = civInfo.getEquivalentBuilding(unique.params[0])
+                val applicableCities =
+                    if (unique.params[1] == "in this city") sequenceOf(city!!)
+                    else civInfo.cities.asSequence().filter { it.matchesFilter(unique.params[1]) }
+                for (applicableCity in applicableCities) {
+                    applicableCity.cityConstructions.freeBuildingsProvidedFromThisCity.addToMapOfSets(applicableCity.id, freeBuilding.name)
+
+                    if (applicableCity.cityConstructions.containsBuildingOrEquivalent(freeBuilding.name)) continue
+                    applicableCity.cityConstructions.constructionComplete(freeBuilding)
+                }
+                return true
+            }
+            UniqueType.FreeStatBuildings -> {
+                val stat = Stat.safeValueOf(unique.params[0]) ?: return false
+                civInfo.civConstructions.addFreeStatBuildings(stat, unique.params[1].toInt())
+                return true
+            }
+            UniqueType.FreeSpecificBuildings ->{
+                val building = ruleSet.buildings[unique.params[0]] ?: return false
+                civInfo.civConstructions.addFreeBuildings(building, unique.params[1].toInt())
+                return true
             }
 
             UniqueType.RemoveBuilding -> {
