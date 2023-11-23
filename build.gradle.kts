@@ -8,7 +8,7 @@ import com.unciv.build.BuildConfig.roboVMVersion
 
 // You'll still get kotlin-reflect-1.3.70.jar in your classpath, but will no longer be used
 configurations.all { resolutionStrategy {
-    force("org.jetbrains.kotlin:kotlin-reflect:${kotlinVersion}")
+    force("org.jetbrains.kotlin:kotlin-reflect:$kotlinVersion")
 } }
 
 
@@ -102,6 +102,8 @@ project(":android") {
 
     dependencies {
         "implementation"(project(":core"))
+        // Not sure why I had to add this in for the upgrade to 1.12.1 to work, we can probably remove this later since it's contained in core
+        "implementation"("com.badlogicgames.gdx:gdx:$gdxVersion")
         "implementation"("com.badlogicgames.gdx:gdx-backend-android:$gdxVersion")
         "implementation"("org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutinesVersion")
         natives("com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-armeabi-v7a")
@@ -159,7 +161,7 @@ project(":core") {
             "implementation"("junit:junit:4.13.2")
             "implementation"("org.mockito:mockito-core:5.1.1")
 
-            "implementation"("com.badlogicgames.gdx:gdx-backend-lwjgl3:${gdxVersion}")
+            "implementation"("com.badlogicgames.gdx:gdx-backend-lwjgl3:$gdxVersion")
             "implementation"("com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop")
             "implementation"("com.badlogicgames.gdx:gdx-backend-headless:$gdxVersion")
             "implementation"("com.badlogicgames.gdx:gdx:$gdxVersion")

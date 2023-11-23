@@ -1,5 +1,8 @@
 # Uniques
+An overview of uniques can be found [here](../Developers/Uniques.md)
+
 Simple unique parameters are explained by mouseover. Complex parameters are explained in [Unique parameter types](../Unique-parameters)
+
 ## Triggerable uniques
 !!! note ""
 
@@ -7,6 +10,16 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 ??? example  "Gain a free [buildingName] [cityFilter]"
 	Example: "Gain a free [Library] [in all cities]"
+
+	Applicable to: Triggerable, Global
+
+??? example  "Remove [buildingFilter] [cityFilter]"
+	Example: "Remove [Culture] [in all cities]"
+
+	Applicable to: Triggerable, Global
+
+??? example  "Sell [buildingFilter] buildings [cityFilter]"
+	Example: "Sell [Culture] buildings [in all cities]"
 
 	Applicable to: Triggerable, Global
 
@@ -93,8 +106,13 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Triggerable
 
-??? example  "Gain [amount] [stat/resource]"
+??? example  "Gain [amount] [stat]"
 	Example: "Gain [3] [Culture]"
+
+	Applicable to: Triggerable
+
+??? example  "Gain [amount] [stat] (modified by game speed)"
+	Example: "Gain [3] [Culture] (modified by game speed)"
 
 	Applicable to: Triggerable
 
@@ -170,7 +188,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "[stats]"
 	Example: "[+1 Gold, +2 Production]"
 
-	Applicable to: Global, Improvement
+	Applicable to: Global, Terrain, Improvement
 
 ??? example  "[stats] [cityFilter]"
 	Example: "[+1 Gold, +2 Production] [in all cities]"
@@ -465,8 +483,8 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Global
 
-??? example  "[relativeAmount]% tile improvement construction time"
-	Example: "[+20]% tile improvement construction time"
+??? example  "[relativeAmount]% construction time for [improvementFilter] improvements"
+	Example: "[+20]% construction time for [All Road] improvements"
 
 	Applicable to: Global, Unit
 
@@ -777,6 +795,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Global, Unit
 
+??? example  "[relativeAmount] Air Interception Range"
+	Example: "[+20] Air Interception Range"
+
+	Applicable to: Global, Unit
+
 ??? example  "[amount] HP when healing"
 	Example: "[3] HP when healing"
 
@@ -891,6 +914,9 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "Units ignore terrain costs when moving into any tile with Hills"
 	Applicable to: Nation
 
+??? example  "Excluded from map editor"
+	Applicable to: Nation, Terrain, Improvement, Resource
+
 ??? example  "Will not be displayed in Civilopedia"
 	Applicable to: Nation, Tech, Policy, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins
 
@@ -929,15 +955,15 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: FounderBelief
 
+??? example  "[relativeAmount]% [stat] from every follower, up to [relativeAmount]%"
+	Example: "[+20]% [Culture] from every follower, up to [+20]%"
+
+	Applicable to: FounderBelief, FollowerBelief
+
 ## FollowerBelief uniques
 !!! note ""
 
     Uniques for Pantheon and Follower type beliefs, that will apply to each city where the religion is the majority religion
-
-??? example  "[relativeAmount]% [stat] from every follower, up to [relativeAmount]%"
-	Example: "[+20]% [Culture] from every follower, up to [+20]%"
-
-	Applicable to: FollowerBelief
 
 ??? example  "Earn [amount]% of [mapUnitFilter] unit's [costOrStrength] as [civWideStat] when killed within 4 tiles of a city following this religion"
 	Example: "Earn [3]% of [Wounded] unit's [Cost] as [Gold] when killed within 4 tiles of a city following this religion"
@@ -1533,8 +1559,8 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "Doesn't generate naturally"
 	Applicable to: Terrain, Resource
 
-??? example  "Occurs at temperature between [amount] and [amount] and humidity between [amount] and [amount]"
-	Example: "Occurs at temperature between [3] and [3] and humidity between [3] and [3]"
+??? example  "Occurs at temperature between [fraction] and [fraction] and humidity between [fraction] and [fraction]"
+	Example: "Occurs at temperature between [0.5] and [0.5] and humidity between [0.5] and [0.5]"
 
 	Applicable to: Terrain, Resource
 
@@ -1767,7 +1793,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Conditional
 
-??? example  "&lt;for [nationFilter]&gt;"
+??? example  "&lt;for [civFilter]&gt;"
 	Example: "&lt;for [City-States]&gt;"
 
 	Applicable to: Conditional
@@ -1830,6 +1856,9 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Conditional
 
+??? example  "&lt;if no other Civilization has adopted this&gt;"
+	Applicable to: Conditional
+
 ??? example  "&lt;after adopting [policy/belief]&gt;"
 	Example: "&lt;after adopting [Oligarchy]&gt;"
 
@@ -1873,13 +1902,23 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Conditional
 
-??? example  "&lt;when above [amount] [resource]&gt;"
-	Example: "&lt;when above [3] [Iron]&gt;"
+??? example  "&lt;when above [amount] [stat/resource]&gt;"
+	Example: "&lt;when above [3] [Culture]&gt;"
 
 	Applicable to: Conditional
 
-??? example  "&lt;when below [amount] [resource]&gt;"
-	Example: "&lt;when below [3] [Iron]&gt;"
+??? example  "&lt;when below [amount] [stat/resource]&gt;"
+	Example: "&lt;when below [3] [Culture]&gt;"
+
+	Applicable to: Conditional
+
+??? example  "&lt;when above [amount] [stat] (modified by game speed)&gt;"
+	Example: "&lt;when above [3] [Culture] (modified by game speed)&gt;"
+
+	Applicable to: Conditional
+
+??? example  "&lt;when below [amount] [stat] (modified by game speed)&gt;"
+	Example: "&lt;when below [3] [Culture] (modified by game speed)&gt;"
 
 	Applicable to: Conditional
 
@@ -2010,6 +2049,9 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Conditional
 
+??? example  "&lt;hidden from users&gt;"
+	Applicable to: Conditional
+
 ## TriggerCondition uniques
 !!! note ""
 
@@ -2101,6 +2143,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: UnitTriggerCondition
 
+??? example  "&lt;upon discovering a [tileFilter] tile&gt;"
+	Example: "&lt;upon discovering a [Farm] tile&gt;"
+
+	Applicable to: UnitTriggerCondition
+
 ## UnitActionModifier uniques
 !!! note ""
 
@@ -2142,6 +2189,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 *[costOrStrength]: `Cost` or `Strength`.
 *[era]: The name of any era.
 *[foundingOrEnhancing]: `founding` or `enhancing`.
+*[fraction]: Indicates a fractional number, which can be negative.
 *[improvementName]: The name of any improvement.
 *[modFilter]: A Mod name, case-sensitive _or_ a simple wildcard filter beginning and ending in an Asterisk, case-insensitive.
 *[policy]: The name of any policy.

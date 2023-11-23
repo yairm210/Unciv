@@ -9,11 +9,11 @@ import com.unciv.UncivGame
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.HexMath
 import com.unciv.logic.map.tile.Tile
+import com.unciv.models.ruleset.unique.LocalUniqueCache
 import com.unciv.ui.components.MapArrowType
 import com.unciv.ui.components.MiscArrowTypes
 import com.unciv.ui.components.TintedMapArrow
 import com.unciv.ui.components.UnitMovementMemoryType
-import com.unciv.models.ruleset.unique.LocalUniqueCache
 import com.unciv.ui.components.extensions.center
 import com.unciv.ui.components.extensions.centerX
 import com.unciv.ui.components.extensions.toLabel
@@ -191,6 +191,12 @@ class TileLayerMisc(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup, si
         }
 
         resourceIcon?.isVisible = effectiveVisible
+
+
+        if (resourceIcon!=null){
+            val isViewable = viewingCiv == null || isViewable(viewingCiv)
+            dimResource(!isViewable)
+        }
     }
 
     private fun updateStartingLocationIcon(show: Boolean) {
@@ -339,7 +345,7 @@ class TileLayerMisc(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup, si
         determineVisibility()
     }
 
-    fun hideTerrainOverlay(){
+    fun hideTerrainOverlay() {
         terrainOverlay.isVisible = false
         determineVisibility()
     }

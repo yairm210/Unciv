@@ -1,3 +1,128 @@
+## 4.9.1
+
+Initial scenario/dev console!
+
+By SomeTroglodyte:
+- Map overlay toggle buttons rework
+- Add a map import tool able to read "Battle for Wesnoth" maps
+
+Fix free buildings triggering from conditionals in incorrect places  - By SeventhM
+
+Add a setting to forbid closing popups by clicking behind them  - By karmaBonfire
+
+[Translation] Add back "general" unit types  - By Ouaz
+
+## 4.9.0
+
+City centers don't provide resources you don't have tech to extract
+
+AI: Settlers no longer stuck in endless loops
+
+modding: Fixed certain unit uniques with tile conditionals
+
+AI clears inquisitors from city centers to make way for spaceship units
+
+Add the SellBuilding Unique  - By PLynx01
+
+Add 'gain stat by game speed' and 'improvement speed with filter' uniques  - By SeventhM
+
+Add a TriggerUponDiscoveringTile unique  - By karmaBonfire
+
+Support for Leader voices - By SomeTroglodyte
+
+## 4.8.19
+
+Modding: Added "non-[filter]" filtering for unit filters, and multi-value filtering to all filters
+
+Modding: Added "[relativeAmount] Air Interception Range" unique
+
+Dim resources on tiles not immediately visible
+
+By SomeTroglodyte:
+- Allow controlling Android fullscreen from options
+-
+Fix unit triggers not triggering/triggering off the wrong units  - By SeventhM
+
+AI diplomacy balancing  - By tuvus
+
+Updated FantasyHex missile cruiser - By GeneralWadaling
+
+## 4.8.18
+
+Modding: Added Human and AI filters, separated civFilter from nationFilter
+
+By SomeTroglodyte:
+- Patch for on-screen keyboard hiding pedia search results
+- Rivers... Moddable Stats and Civilopedia
+- World screen top bar scales down to available width
+- "Civ destroyed" Notification includes location
+- Lots of other issue fixes!
+
+By tuvus:
+- Fixed land/sea nukes trying to act like air units
+- Fixed promise not to settle
+
+Fix Multiplayer spectator ids not logging  - By SeventhM
+
+## 4.8.17
+
+modding: Negative tile damage cannot heal more than max health
+
+Mods with atlases that reference non-existent files will no longer cause crashes
+
+By SomeTroglodyte:
+- Reorg SpecialistAllocationTable
+
+Improved settler AI  - By tuvus
+
+By SeventhM:
+- Fix Multiplayer Specatator being unable to move the screen
+- Fix free stat buildings not giving unique stat buildings in certain cases
+
+## 4.8.16
+
+Ruleset validation refactor - easier location of affected objects, correctly display parameter-type mismatches, ignore uniques used for filtering
+
+By SomeTroglodyte:
+- Correct notifications for modded Citadel
+- Music: Fix mini-player showing last track during inter-track silence
+- Allow modders to hide individual Uniques from Civilopedia
+- Ruins can no longer be save-scummed for better results
+
+Fixed null reference error related to nuking  - By tuvus
+
+## 4.8.15
+
+By tuvus:
+- AI units swap-retreat
+- Melee units are now more likely to attack cities
+- Nukes AI tweaks
+- AI values traded gold using inflation
+
+By SomeTroglodyte:
+- Tighten Ruleset validation for Terrain
+- Automated units stay automated after upgrade
+- Fix Mod checker crash on RekMod
+- Account for badly-defined Android font
+- City overview refreshes for changes done in city
+
+💚 add tests for city population manager - By Framonti
+
+Fix [stats] unique adding multiple times - By SeventhM
+
+## 4.8.14
+
+Allow "[stats]" unique on terrains  - By SeventhM
+
+By SomeTroglodyte:
+- PolicyPickerScreen description links to Civilopedia
+- Fix music errors on android pause-via-homescreen-button
+- Remove UniqueTarget.Terrain from UniqueType.Stats as there is no implementation
+
+By PLynx01:
+- Added new trigger unique "Remove [buildingFilter] [cityFilter]"
+- "when above [amount] [stat]" conditional, with gamespeed-modified version
+
 ## 4.8.13
 
 By SeventhM:

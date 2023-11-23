@@ -77,7 +77,7 @@ class BasicTests {
     }
 
     @Test
-    fun statParserWorks(){
+    fun statParserWorks() {
         Assert.assertTrue(Stats.isStats("+1 Production"))
         Assert.assertTrue(Stats.isStats("+1 Gold, +2 Production"))
         Assert.assertFalse(Stats.isStats("+1 Gold from tree"))

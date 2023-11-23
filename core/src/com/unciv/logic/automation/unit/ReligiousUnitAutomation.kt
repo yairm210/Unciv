@@ -89,6 +89,9 @@ object ReligiousUnitAutomation {
                 ?: return
         }
 
+        if (CivilianUnitAutomation.shouldClearTileForAddInCapitalUnits(unit, destination))
+            return // Wait for the addInCapital units to go to the city!
+
         unit.movement.headTowards(destination)
 
         if (cityToConvert != null && unit.getTile().getCity() == destination.getCity()) {

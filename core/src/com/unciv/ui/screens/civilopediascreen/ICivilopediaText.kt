@@ -6,6 +6,7 @@ import com.unciv.models.ruleset.IRulesetObject
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetObject
 import com.unciv.models.stats.INamed
+import com.unciv.ui.objectdescriptions.uniquesToCivilopediaTextLines
 
 /** Addon common to most ruleset game objects managing civilopedia display
  *
@@ -39,6 +40,7 @@ interface ICivilopediaText {
      * (And the info displayed should be about the **ruleset**, not the player situation)
      *
      * Default implementation is empty - no need to call super in overrides.
+     * Note that for inclusion of Uniques, two helpers named [uniquesToCivilopediaTextLines] exist (for Sequence or MutableCollection context).
      *
      * @param ruleset The current ruleset for the Civilopedia viewer
      * @return A list of [FormattedLine]s that will be inserted before

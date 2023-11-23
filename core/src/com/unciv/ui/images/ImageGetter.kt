@@ -103,9 +103,14 @@ object ImageGetter {
             val extraAtlas = if (mod.isEmpty()) fileName else if (fileName == "game") mod else "$mod/$fileName"
             var tempAtlas = atlases[extraAtlas]  // fetch if cached
             if (tempAtlas == null) {
-                debug("Loading %s = %s", extraAtlas, file.path())
-                tempAtlas = TextureAtlas(file)  // load if not
-                atlases[extraAtlas] = tempAtlas  // cache the freshly loaded
+                try {
+                    debug("Loading %s = %s", extraAtlas, file.path())
+                    tempAtlas = TextureAtlas(file)  // load if not
+                    atlases[extraAtlas] = tempAtlas  // cache the freshly loaded
+                } catch (ex: Exception) {
+                    debug("Could not load file $file")
+                    continue
+                }
             }
             for (region in tempAtlas.regions) {
                 if (region.name.startsWith("Skins")) {
@@ -327,7 +332,7 @@ object ImageGetter {
                 .setProgress(progressColor, percentComplete, padding = progressPadding)
     }
 
-    class ProgressBar(width: Float, height: Float, val vertical: Boolean = true):Group() {
+    class ProgressBar(width: Float, height: Float, val vertical: Boolean = true) : Group() {
 
         var primaryPercentage: Float = 0f
         var secondaryPercentage: Float = 0f

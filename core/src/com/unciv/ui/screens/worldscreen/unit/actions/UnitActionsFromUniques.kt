@@ -180,7 +180,7 @@ object UnitActionsFromUniques {
             }
         )
     }
-    fun addTriggerUniqueActions(unit: MapUnit, actionList: ArrayList<UnitAction>){
+    fun addTriggerUniqueActions(unit: MapUnit, actionList: ArrayList<UnitAction>) {
         for (unique in unit.getUniques()) {
             // not a unit action
             if (unique.conditionals.none { it.type?.targetTypes?.contains(UniqueTarget.UnitActionModifier) == true }) continue
@@ -235,6 +235,11 @@ object UnitActionsFromUniques {
             val improvementName = unique.params[0]
             val improvement = tile.ruleset.tileImprovements[improvementName]
                 ?: continue
+
+            // Try to skip Improvements we can never build
+            // (getImprovementBuildingProblems catches those so the button is always disabled, but it nevertheless looks nicer)
+            if (tile.improvementFunctions.getImprovementBuildingProblems(improvement, unit.civ).any { it.permanent })
+                continue
 
             val resourcesAvailable = improvement.uniqueObjects.none {
                     improvementUnique ->
@@ -383,7 +388,7 @@ object UnitActionsFromUniques {
         return repairTurns
     }
 
-    fun addRepairAction(unit: MapUnit, actionList: ArrayList<UnitAction>){
+    fun addRepairAction(unit: MapUnit, actionList: ArrayList<UnitAction>) {
         val repairAction = getRepairAction(unit)
         if (repairAction != null) actionList.add(repairAction)
     }

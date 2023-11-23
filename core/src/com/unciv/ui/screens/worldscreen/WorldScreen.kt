@@ -43,6 +43,7 @@ import com.unciv.ui.popups.hasOpenPopups
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.cityscreen.CityScreen
 import com.unciv.ui.screens.civilopediascreen.CivilopediaScreen
+import com.unciv.ui.screens.devconsole.DevConsolePopup
 import com.unciv.ui.screens.mainmenuscreen.MainMenuScreen
 import com.unciv.ui.screens.newgamescreen.NewGameScreen
 import com.unciv.ui.screens.overviewscreen.EmpireOverviewCategories
@@ -131,8 +132,7 @@ class WorldScreen(
 
     private var uiEnabled = true
 
-    var preActionGameInfo = gameInfo
-
+    internal val undoHandler = UndoHandler(this)
 
     init {
         // notifications are right-aligned, they take up only as much space as necessary.
@@ -190,6 +190,14 @@ class WorldScreen(
 
         globalShortcuts.add(KeyCharAndCode.BACK) { backButtonAndESCHandler() }
 
+
+        globalShortcuts.add('`'){
+            // No cheating unless you're by yourself
+            if (gameInfo.civilizations.count { it.isHuman() } > 1) return@add
+            val consolePopup = DevConsolePopup(this)
+            stage.keyboardFocus = consolePopup.textField
+        }
+
         addKeyboardListener() // for map panning by W,S,A,D
         addKeyboardPresses()  // shortcut keys like F1
 
@@ -233,6 +241,12 @@ class WorldScreen(
         game.pushScreen(newGameScreen)
     }
 
+    fun openSaveGameScreen() {
+        // See #10353 - we don't support locally saving an online multiplayer game
+        if (gameInfo.gameParameters.isOnlineMultiplayer) return
+        game.pushScreen(SaveGameScreen(gameInfo))
+    }
+
     private fun addKeyboardPresses() {
         // Space and N are assigned in NextTurnButton constructor
         // Functions that have a big button are assigned there (WorldScreenTopBar, TechPolicyDiplomacyButtons..)
@@ -254,7 +268,7 @@ class WorldScreen(
         globalShortcuts.add(KeyboardBinding.Options) { // Game Options
             openOptionsPopup { nextTurnButton.update() }
         }
-        globalShortcuts.add(KeyboardBinding.SaveGame) { game.pushScreen(SaveGameScreen(gameInfo)) }    //   Save
+        globalShortcuts.add(KeyboardBinding.SaveGame) { openSaveGameScreen() }    //   Save
         globalShortcuts.add(KeyboardBinding.LoadGame) { game.pushScreen(LoadGameScreen()) }    //   Load
         globalShortcuts.add(KeyboardBinding.QuitGame) { game.popScreen() }    //   WorldScreen is the last screen, so this quits
         globalShortcuts.add(KeyboardBinding.NewGame) { openNewGameScreen() }
@@ -271,10 +285,10 @@ class WorldScreen(
     }
 
     // Handle disabling and re-enabling WASD listener while Options are open
-    override fun openOptionsPopup(startingPage: Int, onClose: () -> Unit) {
+    override fun openOptionsPopup(startingPage: Int, withDebug: Boolean, onClose: () -> Unit) {
         val oldListener = stage.root.listeners.filterIsInstance<KeyboardPanningListener>().firstOrNull()
         if (oldListener != null) stage.removeListener(oldListener)
-        super.openOptionsPopup(startingPage) {
+        super.openOptionsPopup(startingPage, withDebug) {
             addKeyboardListener()
             onClose()
         }

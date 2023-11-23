@@ -53,19 +53,19 @@ class Trade : IsPartOfGameInfoSerialization {
 class TradeRequest : IsPartOfGameInfoSerialization {
     fun decline(decliningCiv:Civilization) {
         val requestingCivInfo = decliningCiv.gameInfo.getCivilization(requestingCiv)
-        val diplomacyManager = requestingCivInfo.getDiplomacyManager(decliningCiv)
+        val requestingCivDiploManager = requestingCivInfo.getDiplomacyManager(decliningCiv)
         // the numbers of the flags (20,5) are the amount of turns to wait until offering again
         if (trade.ourOffers.all { it.type == TradeType.Luxury_Resource }
             && trade.theirOffers.all { it.type==TradeType.Luxury_Resource })
-            diplomacyManager.setFlag(DiplomacyFlags.DeclinedLuxExchange,20)
+            requestingCivDiploManager.setFlag(DiplomacyFlags.DeclinedLuxExchange,20)
         if (trade.ourOffers.any { it.name == Constants.researchAgreement })
-            diplomacyManager.setFlag(DiplomacyFlags.DeclinedResearchAgreement,20)
+            requestingCivDiploManager.setFlag(DiplomacyFlags.DeclinedResearchAgreement,20)
         if (trade.ourOffers.any { it.name == Constants.defensivePact })
-            diplomacyManager.setFlag(DiplomacyFlags.DeclinedDefensivePact,20)
+            requestingCivDiploManager.setFlag(DiplomacyFlags.DeclinedDefensivePact,20)
         if (trade.ourOffers.any { it.name == Constants.openBorders })
-            diplomacyManager.setFlag(DiplomacyFlags.DeclinedOpenBorders, if (decliningCiv.isAI()) 10 else 20)
+            requestingCivDiploManager.setFlag(DiplomacyFlags.DeclinedOpenBorders, if (decliningCiv.isAI()) 10 else 20)
 
-        if (trade.isPeaceTreaty()) diplomacyManager.setFlag(DiplomacyFlags.DeclinedPeace, 5)
+        if (trade.isPeaceTreaty()) requestingCivDiploManager.setFlag(DiplomacyFlags.DeclinedPeace, 5)
 
         requestingCivInfo.addNotification("[${decliningCiv.civName}] has denied your trade request",
             NotificationCategory.Trade, decliningCiv.civName, NotificationIcon.Trade)

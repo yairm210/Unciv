@@ -10,8 +10,7 @@
 [![pi-apps](https://img.shields.io/static/v1?label=pi-apps&message=Unciv&color=607D8B&logo=raspberry-pi)](https://github.com/Botspot/pi-apps)
 [![macport](https://img.shields.io/badge/dynamic/json?logo=apple&label=MacPorts&prefix=v&query=version&url=https%3A%2F%2Fports.macports.org%2Fapi%2Fv1%2Fports%2Funciv%2F)](https://ports.macports.org/port/unciv/)
  
-
-![Build status](https://github.com/yairm210/Unciv/workflows/Build%20and%20test/badge.svg)
+[![Build status](https://github.com/yairm210/Unciv/actions/workflows/buildAndTest.yml/badge.svg)](https://github.com/yairm210/Unciv/actions/workflows/buildAndTest.yml)
 [![Discord](https://img.shields.io/discord/586194543280390151?color=%237289DA&logo=discord&logoColor=%23FFFFFF)](https://discord.gg/bjrB4Xw)
 
 

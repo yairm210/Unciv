@@ -22,5 +22,5 @@ enum class MiscArrowTypes: MapArrowType {
 
 /** Class for arrow types signifying that a generic arrow style should be used and tinted.
  * @property color The colour that the arrow should be tinted. */
-data class TintedMapArrow(val color: Color): MapArrowType
+data class TintedMapArrow(val color: Color) : MapArrowType
 // Not currently used in core code, but allows one-off colour-coded arrows to be drawn without having to add a whole new texture and enum constant. Could be useful for debug— Visualize what your AI is doing, or which tiles are affecting resource placement or whatever. Also thinking of mod scripting.

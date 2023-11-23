@@ -20,6 +20,7 @@ import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
 import com.unciv.models.translations.fillPlaceholders
 import com.unciv.models.translations.hasPlaceholderParameters
+import com.unciv.ui.components.extensions.addToMapOfSets
 import com.unciv.ui.components.MayaCalendar
 import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionsUpgrade
 import kotlin.math.roundToInt
@@ -74,7 +75,7 @@ object UniqueTriggerActivation {
 
                 civInfo.addNotification(
                     notificationText,
-                    MapUnitAction(placedUnit.getTile().position),
+                    MapUnitAction(placedUnit),
                     NotificationCategory.Units,
                     placedUnit.name
                 )
@@ -142,7 +143,7 @@ object UniqueTriggerActivation {
                     civInfo.addNotification(
                         notificationText,
                         sequence {
-                            yield(MapUnitAction(placedUnit.getTile().position))
+                            yield(MapUnitAction(placedUnit))
                             yieldAll(LocationAction(tile?.position))
                         },
                         NotificationCategory.Units,
@@ -342,11 +343,11 @@ object UniqueTriggerActivation {
             }
 
             UniqueType.OneTimeProvideResources -> {
-                val amount = unique.params[0].toInt()
                 val resourceName = unique.params[1]
                 val resource = ruleSet.tileResources[resourceName] ?: return false
                 if (!resource.isStockpiled()) return false
 
+                val amount = unique.params[0].toInt()
                 civInfo.resourceStockpiles.add(resourceName, amount)
 
                 val notificationText = getNotificationText(notification, triggerNotificationText,
@@ -358,11 +359,11 @@ object UniqueTriggerActivation {
             }
 
             UniqueType.OneTimeConsumeResources -> {
-                val amount = unique.params[0].toInt()
                 val resourceName = unique.params[1]
                 val resource = ruleSet.tileResources[resourceName] ?: return false
                 if (!resource.isStockpiled()) return false
 
+                val amount = unique.params[0].toInt()
                 civInfo.resourceStockpiles.add(resourceName, -amount)
 
                 val notificationText = getNotificationText(notification, triggerNotificationText,
@@ -443,6 +444,29 @@ object UniqueTriggerActivation {
                 ) return false
 
                 val statAmount = unique.params[0].toInt()
+                val stats = Stats().add(stat, statAmount.toFloat())
+                civInfo.addStats(stats)
+
+                val filledNotification = if(notification!=null && notification.hasPlaceholderParameters())
+                    notification.fillPlaceholders(statAmount.toString())
+                else notification
+
+                val notificationText = getNotificationText(filledNotification, triggerNotificationText,
+                    "Gained [${stats.toStringForNotifications()}]")
+                    ?: return true
+
+                civInfo.addNotification(notificationText, LocationAction(tile?.position), NotificationCategory.General, stat.notificationIcon)
+                return true
+            }
+
+            UniqueType.OneTimeGainStatSpeed -> {
+                val stat = Stat.safeValueOf(unique.params[1]) ?: return false
+
+                if (stat !in Stat.statsWithCivWideField
+                    || unique.params[0].toIntOrNull() == null
+                ) return false
+
+                val statAmount = (unique.params[0].toInt() * (civInfo.gameInfo.speed.statCostModifiers[stat]!!)).roundToInt()
                 val stats = Stats().add(stat, statAmount.toFloat())
                 civInfo.addStats(stats)
 
@@ -641,10 +665,65 @@ object UniqueTriggerActivation {
                 return true
             }
 
-            UniqueType.FreeStatBuildings, UniqueType.FreeSpecificBuildings,
             UniqueType.GainFreeBuildings -> {
-                civInfo.civConstructions.tryAddFreeBuildings()
-                return true // not fully correct
+                val freeBuilding = civInfo.getEquivalentBuilding(unique.params[0])
+                val applicableCities =
+                    if (unique.params[1] == "in this city") sequenceOf(city!!)
+                    else civInfo.cities.asSequence().filter { it.matchesFilter(unique.params[1]) }
+                for (applicableCity in applicableCities) {
+                    applicableCity.cityConstructions.freeBuildingsProvidedFromThisCity.addToMapOfSets(applicableCity.id, freeBuilding.name)
+
+                    if (applicableCity.cityConstructions.containsBuildingOrEquivalent(freeBuilding.name)) continue
+                    applicableCity.cityConstructions.constructionComplete(freeBuilding)
+                }
+                return true
+            }
+            UniqueType.FreeStatBuildings -> {
+                val stat = Stat.safeValueOf(unique.params[0]) ?: return false
+                civInfo.civConstructions.addFreeStatBuildings(stat, unique.params[1].toInt())
+                return true
+            }
+            UniqueType.FreeSpecificBuildings ->{
+                val building = ruleSet.buildings[unique.params[0]] ?: return false
+                civInfo.civConstructions.addFreeBuildings(building, unique.params[1].toInt())
+                return true
+            }
+
+            UniqueType.RemoveBuilding -> {
+
+                val applicableCities = civInfo.cities.asSequence().filter {
+                        it.matchesFilter(unique.params[1])
+                    }
+
+                for (applicableCity in applicableCities) {
+                    val buildingsToRemove = applicableCity.cityConstructions.getBuiltBuildings().filter {
+                        it.matchesFilter(unique.params[0])
+                    }.toSet()
+
+                    applicableCity.cityConstructions.removeBuildings(buildingsToRemove)
+                }
+
+                return true
+            }
+
+            UniqueType.SellBuilding -> {
+
+                val applicableCities = civInfo.cities.asSequence().filter {
+                    it.matchesFilter(unique.params[1])
+                }
+
+                for (applicableCity in applicableCities) {
+                    val buildingsToSell = applicableCity.cityConstructions.getBuiltBuildings().filter {
+                        it.matchesFilter(unique.params[0]) && it.isSellable()
+                    }
+
+                    for (building in buildingsToSell) {
+                        applicableCity.sellBuilding(building)
+                    }
+
+                }
+
+                return true
             }
 
             else -> {}

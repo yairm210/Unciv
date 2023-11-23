@@ -98,7 +98,6 @@ fun Actor.onRightClick(sound: UncivSound = UncivSound.Click, action: ActivationA
  *  A [sound] will be played (concurrently) on activation unless you specify [UncivSound.Silent].
  *  @return `this` to allow chaining
  */
-@Suppress("unused")  // Just in case - for now, the Longpress in WorldMapHolder is using onActivation directly
 fun Actor.onLongPress(sound: UncivSound = UncivSound.Click, action: ActivationAction): Actor =
     onActivation(ActivationTypes.Longpress, sound, noEquivalence = true, action)
 
@@ -127,7 +126,7 @@ fun Stage.installShortcutDispatcher(additionalShortcuts: KeyShortcutDispatcher? 
     addListener(KeyShortcutListener(actors.asSequence(), additionalShortcuts, dispatcherVetoerCreator))
 }
 
-private class OnChangeListener(val function: (event: ChangeEvent?) -> Unit): ChangeListener() {
+private class OnChangeListener(val function: (event: ChangeEvent?) -> Unit) : ChangeListener() {
     override fun changed(event: ChangeEvent?, actor: Actor?) {
         function(event)
     }

@@ -27,61 +27,47 @@ class AndroidFont : FontImplementation {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) emptySet()
         else SystemFonts.getAvailableFonts()
     }
-    private val paint: Paint = Paint()
+    private val paint: Paint = getPaintInstance()
     private var currentFontFamily: String? = null
 
-    init {
-        paint.isAntiAlias = true
-        paint.strokeWidth = 0f
-        paint.setARGB(255, 255, 255, 255)
-
+    private fun getPaintInstance() = Paint().apply {
+        isAntiAlias = true
+        strokeWidth = 0f
+        setARGB(255, 255, 255, 255)
     }
 
     override fun setFontFamily(fontFamilyData: FontFamilyData, size: Int) {
         paint.textSize = size.toFloat()
 
         // Don't have to reload typeface if font-family didn't change
-        if (currentFontFamily != fontFamilyData.invariantName) {
-            currentFontFamily = fontFamilyData.invariantName
+        if (currentFontFamily == fontFamilyData.invariantName) return
+        currentFontFamily = fontFamilyData.invariantName
 
-            // Mod font
-            if (fontFamilyData.filePath != null)
-            {
-                paint.typeface = createTypefaceCustom(fontFamilyData.filePath!!)
-            }
-            // System font
-            else
-            {
-                paint.typeface = createTypefaceSystem(fontFamilyData.invariantName)
-            }
-
-        }
+        paint.typeface =
+            if (fontFamilyData.filePath != null) // Mod font
+                createTypefaceCustom(fontFamilyData.filePath!!)
+            else // System font
+                createTypefaceSystem(fontFamilyData.invariantName)
     }
 
     private fun createTypefaceSystem(name: String): Typeface {
-        if (name.isNotBlank() && Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)
-        {
+        if (name.isNotBlank() && Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             val font = fontList.mapNotNull {
                 val distanceToRegular = it.matchesFamily(name)
                 if (distanceToRegular == Int.MAX_VALUE) null else it to distanceToRegular
             }.minByOrNull { it.second }?.first
 
             if (font != null)
-            {
                 return Typeface.CustomFallbackBuilder(FontFamily.Builder(font).build())
                     .setSystemFallback(name).build()
-            }
         }
         return Typeface.create(name, Typeface.NORMAL)
     }
 
     private fun createTypefaceCustom(path: String): Typeface {
-        return try
-        {
+        return try {
             Typeface.createFromFile(Gdx.files.local(path).file())
-        }
-        catch (e: Exception)
-        {
+        } catch (e: Exception) {
             Log.error("Failed to create typeface, falling back to default", e)
             // Falling back to default
             Typeface.create(Fonts.DEFAULT_FONT_FAMILY, Typeface.NORMAL)
@@ -105,9 +91,9 @@ class AndroidFont : FontImplementation {
     }
 
     override fun getCharPixmap(char: Char): Pixmap {
-        val metric = paint.fontMetrics
+        val metric = getMetrics()  // Use our interpretation instead of paint.fontMetrics because it fixes some bad metrics
         var width = paint.measureText(char.toString()).toInt()
-        var height = ceil(metric.bottom - metric.top).toInt()
+        var height = ceil(metric.height).toInt()
         if (width == 0) {
             height = getFontSize()
             width = height
@@ -115,7 +101,7 @@ class AndroidFont : FontImplementation {
 
         val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
         val canvas = Canvas(bitmap)
-        canvas.drawText(char.toString(), 0f, -metric.top, paint)
+        canvas.drawText(char.toString(), 0f, metric.leading + metric.ascent + 1f, paint)
 
         val pixmap = Pixmap(width, height, Pixmap.Format.RGBA8888)
         val data = IntArray(width * height)
@@ -161,10 +147,42 @@ class AndroidFont : FontImplementation {
             .map { FontFamilyData(it, it) }
     }
 
-    override fun getMetrics() = FontMetricsCommon(
-        ascent = -paint.fontMetrics.ascent,
-        descent = paint.fontMetrics.descent,
-        height = paint.fontMetrics.bottom - paint.fontMetrics.top,
-        leading = paint.fontMetrics.ascent - paint.fontMetrics.top
-    )
+    override fun getMetrics(): FontMetricsCommon {
+        val ascent = -paint.fontMetrics.ascent  // invert to get distance
+        val descent = paint.fontMetrics.descent
+        val top = -paint.fontMetrics.top  // invert to get distance
+        val bottom = paint.fontMetrics.bottom
+        val height = top + bottom
+        val leading = top - ascent
+        val ascentDescentHeight = ascent + descent
+
+        // Corrections: Some Android fonts report bullshit
+        // Examples: "ComingSoon" and "NotoSansSymbols" fonts on Android "S"
+        // See https://github.com/yairm210/Unciv/issues/10308
+
+        // Hardcode values for the worst of them - I've seen NotoSansSymbols returning (42.4, 11.1, 68.1, 11.1),
+        // or (53.4, 14.6, 117.7, 28.8): looks off, or (53.4, 14.6, 53.4, -11.1) - top below ascent
+        // By discarding and re-instantiating our Paint instance on every setFontFamily you can get Noto to almost,
+        // but not quite, report exclusively the "off" metrics. Curiously, soft start (Unciv exited through its own dialog,
+        // but not removed from android's "recents list") or hard start (dev-tools kill, reinstall or swipe out of recents)
+        // do seem to have an effect on the metrics reported by Noto (and only by Noto), though I haven't been able to
+        // prove a reliable pattern. These hardcoded values are empiric.
+        if (currentFontFamily == "NotoSansSymbols")
+            return FontMetricsCommon(53.4f, 14.6f, 100f, 33f)
+
+        if (height >= 1.02f * ascentDescentHeight)
+            // maximum dimensions at least 2% larger than recommended ascender top to descender bottom distance:
+            // looks sensible, keep those metrics
+            return FontMetricsCommon(ascent, descent, height, leading)
+
+        // When recommended size equals maximum size...
+        if (height >= 0.98f * ascentDescentHeight)
+            // "ComingSoon" reports top==ascent and bottom==descent: give it some room.
+            // Note: It still looks way off with all virtual leading at the top, but that's unavoidable -
+            // it **really has** those monster descenders (the 'y') and you gotta put them somewhere.
+            return FontMetricsCommon(ascent, descent, ascentDescentHeight * 1.25f, ascentDescentHeight * 0.25f)
+
+        // recommended size bigger than maximum size - O|O - swap inner and outer metrics
+        return FontMetricsCommon(top, bottom, ascentDescentHeight, -leading)
+    }
 }

@@ -2,6 +2,7 @@ package com.unciv.models.ruleset.tile
 
 import com.unciv.Constants
 import com.unciv.UncivGame
+import com.unciv.logic.MultiFilter
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.RoadStatus
@@ -14,6 +15,8 @@ import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.extensions.toPercent
+import com.unciv.ui.objectdescriptions.uniquesToCivilopediaTextLines
+import com.unciv.ui.objectdescriptions.uniquesToDescription
 import com.unciv.ui.screens.civilopediascreen.CivilopediaScreen.Companion.showReligionInCivilopedia
 import com.unciv.ui.screens.civilopediascreen.FormattedLine
 import kotlin.math.roundToInt
@@ -31,7 +34,10 @@ class TileImprovement : RulesetStatsObject() {
 
     fun getTurnsToBuild(civInfo: Civilization, unit: MapUnit): Int {
         val state = StateForConditionals(civInfo, unit = unit)
-        return unit.getMatchingUniques(UniqueType.TileImprovementTime, state, checkCivInfoUniques = true)
+        val buildSpeedUniques = unit.getMatchingUniques(UniqueType.TileImprovementTime, state, checkCivInfoUniques = true) +
+            unit.getMatchingUniques(UniqueType.SpecificImprovementTime, state, checkCivInfoUniques = true)
+                .filter { matchesFilter(it.params[1]) }
+        return buildSpeedUniques
             .fold(turnsToBuild.toFloat() * civInfo.gameInfo.speed.improvementBuildLengthModifier) { calculatedTurnsToBuild, unique ->
                 calculatedTurnsToBuild * unique.params[0].toPercent()
             }.roundToInt()
@@ -58,8 +64,7 @@ class TileImprovement : RulesetStatsObject() {
         }
         if (techRequired != null) lines += "Required tech: [$techRequired]".tr()
 
-        for (unique in uniques)
-            lines += unique.tr()
+        uniquesToDescription(lines)
 
         return lines.joinToString("\n")
     }
@@ -86,6 +91,10 @@ class TileImprovement : RulesetStatsObject() {
 
     /** Implements [UniqueParameterType.ImprovementFilter][com.unciv.models.ruleset.unique.UniqueParameterType.ImprovementFilter] */
     fun matchesFilter(filter: String): Boolean {
+        return MultiFilter.multiFilter(filter, ::matchesSingleFilter)
+    }
+
+    fun matchesSingleFilter(filter: String): Boolean {
         return when (filter) {
             name -> true
             "All" -> true
@@ -145,11 +154,7 @@ class TileImprovement : RulesetStatsObject() {
             textList += FormattedLine("Required tech: [$techRequired]", link="Technology/$techRequired")
         }
 
-        if (uniques.isNotEmpty()) {
-            textList += FormattedLine()
-            for (unique in uniqueObjects)
-                textList += FormattedLine(unique)
-        }
+        uniquesToCivilopediaTextLines(textList)
 
         // Be clearer when one needs to chop down a Forest first... A "Can be built on Plains" is clear enough,
         // but a "Can be built on Land" is not - how is the user to know Forest is _not_ Land?

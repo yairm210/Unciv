@@ -189,6 +189,7 @@ internal class ModInfoAndActionPane : Table() {
         }
         if (isSubFolderNotEmpty(folder, "music")) return true
         if (isSubFolderNotEmpty(folder, "sounds")) return true
+        if (isSubFolderNotEmpty(folder, "voices")) return true
         return folder.list("atlas").isNotEmpty()
     }
 }

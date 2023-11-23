@@ -10,11 +10,11 @@ import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.files.UncivFiles
 import com.unciv.models.ruleset.RulesetCache
-import com.unciv.ui.components.widgets.AutoScrollPane
 import com.unciv.ui.components.extensions.addBorder
-import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.extensions.setFontSize
 import com.unciv.ui.components.extensions.toLabel
+import com.unciv.ui.components.input.onClick
+import com.unciv.ui.components.widgets.AutoScrollPane
 import com.unciv.ui.images.IconTextButton
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popups.ToastPopup
@@ -24,7 +24,9 @@ import java.io.PrintWriter
 import java.io.StringWriter
 
 /** Screen to crash to when an otherwise unhandled exception or error is thrown. */
-class CrashScreen(val exception: Throwable): BaseScreen() {
+//todo We may be in a critical low-memory situation. Using a lot ot String concatenation and trimIndent
+//     could make the display fail when a more efficient StringBuilder approach might still succeed.
+class CrashScreen(val exception: Throwable) : BaseScreen() {
 
     private companion object {
         fun Throwable.stringify(): String {
@@ -59,14 +61,23 @@ class CrashScreen(val exception: Throwable): BaseScreen() {
 
     /** @return Mods from the last active save game if any, or an informational note otherwise. */
     private fun tryGetSaveMods(): String {
-        if (!UncivGame.isCurrentInitialized() || UncivGame.Current.gameInfo == null)
-            return ""
-        return "\n**Save Mods:**\n```\n" +
-            try { // Also from old CrashController().buildReport(), also could still error at .toString().
-                LinkedHashSet(UncivGame.Current.gameInfo!!.gameParameters.getModsAndBaseRuleset()).toString()
-            } catch (e: Throwable) {
-                "No mod data: $e"
-            } + "\n```\n"
+        if (!UncivGame.isCurrentInitialized()) return ""
+        val game = UncivGame.Current.gameInfo ?: return ""
+        val sb = StringBuilder(160)  // capacity: Just some guess
+        sb.append("\n**Save Mods:**\n```\n")
+        try { // Also from old CrashController().buildReport(), also could still error at .toString().
+            sb.append(game.gameParameters.getModsAndBaseRuleset().toString())
+        } catch (e: Throwable) {
+            sb.append("No mod data: $e")
+        }
+        sb.append("\n```\n")
+        val visualMods = UncivGame.Current.settings.visualMods
+        if (visualMods.isEmpty())
+            return sb.toString()
+        sb.append("**Permanent audiovisual Mods**:\n```\n")
+        sb.append(visualMods.toString())
+        sb.append("\n```\n")
+        return sb.toString()
     }
 
 

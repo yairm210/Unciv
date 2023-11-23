@@ -54,7 +54,7 @@ class MapGenerationRandomness {
         //  the resources are found, so we save how many have been
         //  found for each base terrain and try to get one from the lowest
         val baseTerrainsToChosenTiles = HashMap<String, Int>()
-        for (tileInfo in suitableTiles){
+        for (tileInfo in suitableTiles) {
             if (tileInfo.baseTerrain !in baseTerrainsToChosenTiles)
                 baseTerrainsToChosenTiles[tileInfo.baseTerrain] = 0
         }

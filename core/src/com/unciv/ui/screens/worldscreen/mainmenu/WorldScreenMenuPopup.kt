@@ -1,10 +1,10 @@
 package com.unciv.ui.screens.worldscreen.mainmenu
 
 import com.unciv.ui.components.input.KeyboardBinding
+import com.unciv.ui.components.input.onLongPress
 import com.unciv.ui.popups.Popup
 import com.unciv.ui.screens.civilopediascreen.CivilopediaScreen
 import com.unciv.ui.screens.savescreens.LoadGameScreen
-import com.unciv.ui.screens.savescreens.SaveGameScreen
 import com.unciv.ui.screens.victoryscreen.VictoryScreen
 import com.unciv.ui.screens.worldscreen.WorldScreen
 
@@ -19,10 +19,11 @@ class WorldScreenMenuPopup(val worldScreen: WorldScreen) : Popup(worldScreen, sc
             close()
             worldScreen.game.pushScreen(CivilopediaScreen(worldScreen.gameInfo.ruleset))
         }.row()
-        addButton("Save game", KeyboardBinding.SaveGame) {
-            close()
-            worldScreen.game.pushScreen(SaveGameScreen(worldScreen.gameInfo))
-        }.row()
+        if (!worldScreen.gameInfo.gameParameters.isOnlineMultiplayer)
+            addButton("Save game", KeyboardBinding.SaveGame) {
+                close()
+                worldScreen.openSaveGameScreen()
+            }.row()
         addButton("Load game", KeyboardBinding.LoadGame) {
             close()
             worldScreen.game.pushScreen(LoadGameScreen())
@@ -35,10 +36,15 @@ class WorldScreenMenuPopup(val worldScreen: WorldScreen) : Popup(worldScreen, sc
             close()
             worldScreen.game.pushScreen(VictoryScreen(worldScreen))
         }.row()
-        addButton("Options", KeyboardBinding.Options) {
+        val optionsCell = addButton("Options", KeyboardBinding.Options) {
             close()
             worldScreen.openOptionsPopup()
-        }.row()
+        }
+        optionsCell.actor.onLongPress {
+            close()
+            worldScreen.openOptionsPopup(withDebug = true)
+        }
+        optionsCell.row()
         addButton("Community") {
             close()
             WorldScreenCommunityPopup(worldScreen).open(force = true)

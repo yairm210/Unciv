@@ -186,7 +186,7 @@ object Automation {
                 .filter { it.isRanged() }
                 .maxByOrNull { it.cost }!!
         }
-        else if (isMissingNavalUnitsForCityDefence && militaryUnits.any { isNavalMeleeUnit(it) }){
+        else if (isMissingNavalUnitsForCityDefence && militaryUnits.any { isNavalMeleeUnit(it) }) {
             chosenUnit = militaryUnits
                 .filter { isNavalMeleeUnit(it) }
                 .maxBy { it.cost }
@@ -450,7 +450,7 @@ object Automation {
                     stats.gold
                 else
                     stats.gold / 3 // 3 gold is much worse than 2 production
-
+        rank += stats.happiness * 3
         rank += stats.production
         rank += stats.science
         rank += stats.culture
