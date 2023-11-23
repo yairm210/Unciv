@@ -255,6 +255,7 @@ object TranslationFileWriter {
 
     private fun writeLanguagePercentages(percentages: HashMap<String, Int>, modFolder: FileHandle? = null) {
         val output = percentages.asSequence()
+            .sortedBy { it.key }
             .joinToString("\n", postfix = "\n") { "${it.key} = ${it.value}" }
         getFileHandle(modFolder, TranslationFileReader.percentagesFileLocation)
             .writeString(output, false)
