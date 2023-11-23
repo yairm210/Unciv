@@ -14,6 +14,7 @@ import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.utils.Display
 import com.unciv.utils.Log
+import kotlin.system.exitProcess
 
 internal object DesktopLauncher {
 
@@ -78,5 +79,6 @@ internal object DesktopLauncher {
 
         val game = DesktopGame(config)
         Lwjgl3Application(game, config)
+        exitProcess(0)
     }
 }
