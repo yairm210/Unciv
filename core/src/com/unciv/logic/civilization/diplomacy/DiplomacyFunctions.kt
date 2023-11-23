@@ -13,7 +13,7 @@ import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
 import kotlin.math.max
 
-class DiplomacyFunctions(val civInfo: Civilization){
+class DiplomacyFunctions(val civInfo: Civilization) {
 
     /** A sorted Sequence of all other civs we know (excluding barbarians and spectators) */
     fun getKnownCivsSorted(includeCityStates: Boolean = true, includeDefeated: Boolean = false) =
@@ -58,7 +58,7 @@ class DiplomacyFunctions(val civInfo: Civilization){
             else
                 otherCiv.addNotification(meetString, NotificationCategory.Diplomacy, NotificationIcon.Gold)
 
-            if (otherCiv.isCityState() && otherCiv.cityStateFunctions.canProvideStat(Stat.Faith)){
+            if (otherCiv.isCityState() && otherCiv.cityStateFunctions.canProvideStat(Stat.Faith)) {
                 otherCiv.addNotification(religionMeetString, NotificationCategory.Diplomacy, NotificationIcon.Faith)
 
                 for ((key, value) in faithAmount)
@@ -131,7 +131,7 @@ class DiplomacyFunctions(val civInfo: Civilization){
     fun canSignDefensivePactWith(otherCiv: Civilization): Boolean {
         val diplomacyManager = civInfo.getDiplomacyManager(otherCiv)
         return canSignDefensivePact() && otherCiv.diplomacyFunctions.canSignDefensivePact()
-            && (diplomacyManager.hasFlag(DiplomacyFlags.DeclarationOfFriendship) 
+            && (diplomacyManager.hasFlag(DiplomacyFlags.DeclarationOfFriendship)
             || diplomacyManager.otherCivDiplomacy().hasFlag(DiplomacyFlags.DeclarationOfFriendship))
             && !diplomacyManager.hasFlag(DiplomacyFlags.DefensivePact)
             && !diplomacyManager.otherCivDiplomacy().hasFlag(DiplomacyFlags.DefensivePact)

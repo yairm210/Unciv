@@ -133,7 +133,7 @@
 		"name": "Remove Forest",
 		"turnsToBuild": 4,
 		"techRequired": "Mining",
-		"uniques": ["Can be built outside your borders"],
+		"uniques": ["Can be built outside your borders", "Excluded from map editor"],
 		"shortcutKey": "X",
         "civilopediaText": [{"text":"Provides a one-time Production bonus depending on distance to the closest city once finished"}]
 	},
@@ -141,21 +141,21 @@
 		"name": "Remove Jungle",
 		"turnsToBuild": 7,
 		"techRequired": "Bronze Working",
-		"uniques": ["Can be built outside your borders"],
+		"uniques": ["Can be built outside your borders", "Excluded from map editor"],
 		"shortcutKey": "X"
 	},
 	{
 		"name": "Remove Fallout",
 		"turnsToBuild": 2,
 		// Has no tech requirements as it can always be built
-		"uniques": ["Can be built outside your borders"],
+		"uniques": ["Can be built outside your borders", "Excluded from map editor"],
 		"shortcutKey": "X"
 	},
 	{
 		"name": "Remove Marsh",
 		"turnsToBuild": 6,
 		"techRequired": "Masonry",
-		"uniques": ["Can be built outside your borders"],
+		"uniques": ["Can be built outside your borders", "Excluded from map editor"],
 		"shortcutKey": "X"
 	},
 
@@ -163,16 +163,16 @@
 	{
 		"name": "Remove Road",
 		"turnsToBuild": 2,
-		"uniques": ["Can be built outside your borders"]
+		"uniques": ["Can be built outside your borders", "Excluded from map editor"]
 	},
 	{
 		"name": "Remove Railroad",
 		"turnsToBuild": 2,
-		"uniques": ["Can be built outside your borders"]
+		"uniques": ["Can be built outside your borders", "Excluded from map editor"]
 	},
 	{
 		"name": "Cancel improvement order",
-		"uniques": ["Can be built outside your borders"],
+		"uniques": ["Can be built outside your borders", "Excluded from map editor"],
 		"shortcutKey": "."
 	},
     // Purely for turnsToBuild and civilopediaText. Unbuildable so it doesn't show in ImprovementPicker
@@ -180,7 +180,7 @@
         "name": "Repair",
         "terrainsCanBeBuiltOn": ["Land"],
         "turnsToBuild": 2,
-        "uniques": ["Unbuildable"],
+        "uniques": ["Unbuildable", "Excluded from map editor"],
         "shortcutKey": "E",
         "civilopediaText": [{"text":"Repairs a pillaged Improvement or Route"}]
     },
@@ -271,7 +271,7 @@
 		"name": "City center",
 		"terrainsCanBeBuiltOn": ["Land"],
 		"uniques": ["Ensures a minimum tile yield of [+2 Food, +1 Production]",
-            "Unpillagable", "Irremovable", "Unbuildable"],
+            "Unpillagable", "Irremovable", "Unbuildable", "Excluded from map editor"],
         "civilopediaText": [
 			{"text":"Marks the center of a city"},
 			{"text":"Appearance changes with the technological era of the owning civilization"}
@@ -280,7 +280,7 @@
 	{
 		"name": "Barbarian encampment",
 		"terrainsCanBeBuiltOn": ["Land"],
-		"uniques": ["Unpillagable", "Unbuildable"],
+		"uniques": ["Unpillagable", "Unbuildable", "Excluded from map editor"],
         "civilopediaText": [{"text":"Home to uncivilized barbarians, will spawn a hostile unit from time to time"}]
 	}
 ]

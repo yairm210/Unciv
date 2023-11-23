@@ -60,8 +60,8 @@
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LEANBACK_LAUNCHER" />
             </intent-filter>
-
         </activity>
+
         <receiver android:name=".CopyToClipboardReceiver"  android:exported="false" />
     </application>
 

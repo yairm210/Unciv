@@ -20,7 +20,7 @@ import kotlin.math.roundToInt
 import kotlin.random.Random
 
 /** Helper class for containing 200 lines of "how to move cities between civs" */
-class CityConquestFunctions(val city: City){
+class CityConquestFunctions(val city: City) {
     private val tileBasedRandom = Random(city.getCenterTile().position.toString().hashCode())
 
     private fun getGoldForCapturingCity(conqueringCiv: Civilization): Int {
@@ -90,7 +90,7 @@ class CityConquestFunctions(val city: City){
 
         city.moveToCiv(receivingCiv)
 
-        Battle.destroyIfDefeated(conqueredCiv, conqueringCiv)
+        Battle.destroyIfDefeated(conqueredCiv, conqueringCiv, city.location)
 
         city.health = city.getMaxHealth() / 2 // I think that cities recover to half health when conquered?
         if (city.population.population > 1)

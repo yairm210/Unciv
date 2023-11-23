@@ -1,18 +1,21 @@
 package com.unciv.ui.popups.options
 
 import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle
 import com.unciv.GUI
 import com.unciv.UncivGame
+import com.unciv.logic.UncivShowableException
 import com.unciv.logic.files.MapSaver
 import com.unciv.logic.files.UncivFiles
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.ruleset.tile.ResourceType
-import com.unciv.ui.components.widgets.UncivSlider
 import com.unciv.ui.components.UncivTextField
+import com.unciv.ui.components.extensions.addSeparator
 import com.unciv.ui.components.extensions.toCheckBox
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
 import com.unciv.ui.components.input.onClick
+import com.unciv.ui.components.widgets.UncivSlider
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.utils.DebugUtils
 
@@ -121,4 +124,10 @@ fun debugTab(
         GUI.setUpdateWorldOnNextRender()
     }
     add(giveResourcesButton).colspan(2).row()
+
+    addSeparator()
+    add("* Crash Unciv! *".toTextButton(skin.get("negative", TextButtonStyle::class.java)).onClick {
+        throw UncivShowableException("Intentional crash")
+    }).colspan(2).row()
+    addSeparator()
 }

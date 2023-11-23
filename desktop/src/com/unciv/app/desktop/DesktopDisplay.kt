@@ -58,8 +58,7 @@ enum class DesktopScreenMode : ScreenMode {
         val maximumWindowBounds = getMaximumWindowBounds()
 
         // Make sure an inappropriate saved size doesn't make the window unusable
-        val width = settings.windowState.width.coerceIn(120, maximumWindowBounds.width)
-        val height = settings.windowState.height.coerceIn(80, maximumWindowBounds.height)
+        val (width, height) = settings.windowState.coerceIn(maximumWindowBounds)
 
         // Kludge - see also DesktopLauncher - without, moving the window might revert to the size stored in config
         (Lwjgl3Application::class.java).getDeclaredField("config").run {

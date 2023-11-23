@@ -18,7 +18,7 @@ import com.unciv.ui.images.ImageGetter
  *  The "installed" version shows indicators for "Selected as permanent visual mod" and "update available",
  *  as read from the [modInfo] fields, but requires a [updateIndicators] call when those change.
  */
-internal class ModDecoratedButton(private val modInfo: ModUIData) : Table() {
+internal class ModDecoratedButton(private var modInfo: ModUIData) : Table() {
     private val stateImages: ModStateImages?
     private val textButton: TextButton
 
@@ -55,6 +55,10 @@ internal class ModDecoratedButton(private val modInfo: ModUIData) : Table() {
     fun setText(text: String) = textButton.setText(text)
     override fun setColor(color: Color) { textButton.color = color }
     override fun getColor(): Color = textButton.color
+
+    fun updateUIData(newModUIData: ModUIData) {
+        modInfo = newModUIData
+    }
 
     /** Helper class keeps references to decoration images of installed mods to enable dynamic visibility
      * (actually we do not use isVisible but refill thiis container selectively which allows the aggregate height to adapt and the set to center vertically)

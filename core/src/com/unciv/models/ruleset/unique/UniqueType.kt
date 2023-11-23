@@ -125,12 +125,15 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     RoadsConnectAcrossRivers("Roads connect tiles across rivers", UniqueTarget.Global),
     RoadMaintenance("[relativeAmount]% maintenance on road & railroads", UniqueTarget.Global),
     NoImprovementMaintenanceInSpecificTiles("No Maintenance costs for improvements in [tileFilter] tiles", UniqueTarget.Global),
+    @Deprecated("As of",ReplaceWith("[relativeAmount]% construction time for [All] improvements"))
     TileImprovementTime("[relativeAmount]% tile improvement construction time", UniqueTarget.Global, UniqueTarget.Unit),
+    SpecificImprovementTime("[relativeAmount]% construction time for [improvementFilter] improvements", UniqueTarget.Global, UniqueTarget.Unit),
 
     /// Building Maintenance
     GainFreeBuildings("Gain a free [buildingName] [cityFilter]", UniqueTarget.Global, UniqueTarget.Triggerable),
     BuildingMaintenance("[relativeAmount]% maintenance cost for buildings [cityFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
     RemoveBuilding("Remove [buildingFilter] [cityFilter]", UniqueTarget.Global, UniqueTarget.Triggerable),
+    SellBuilding("Sell [buildingFilter] buildings [cityFilter]", UniqueTarget.Global, UniqueTarget.Triggerable),
 
     /// Border growth
     BorderGrowthPercentage("[relativeAmount]% Culture cost of natural border growth [cityFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
@@ -355,6 +358,7 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     Movement("[amount] Movement", UniqueTarget.Unit, UniqueTarget.Global),
     Sight("[amount] Sight", UniqueTarget.Unit, UniqueTarget.Global, UniqueTarget.Terrain),
     Range("[amount] Range", UniqueTarget.Unit, UniqueTarget.Global),
+    AirInterceptionRange("[relativeAmount] Air Interception Range", UniqueTarget.Unit, UniqueTarget.Global),
     Heal("[amount] HP when healing", UniqueTarget.Unit, UniqueTarget.Global),
 
     SpreadReligionStrength("[relativeAmount]% Spread Religion Strength", UniqueTarget.Unit, UniqueTarget.Global),
@@ -541,6 +545,8 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     FreshWater(Constants.freshWater, UniqueTarget.Terrain),
     RoughTerrain("Rough terrain", UniqueTarget.Terrain),
 
+    ExcludedFromMapEditor("Excluded from map editor", UniqueTarget.Terrain, UniqueTarget.Improvement, UniqueTarget.Resource, UniqueTarget.Nation, flags = UniqueFlag.setOfHiddenToUsers),
+
     /////// Resource uniques
     ResourceAmountOnTiles("Deposits in [tileFilter] tiles always provide [amount] resources", UniqueTarget.Resource),
     CityStateOnlyResource("Can only be created by Mercantile City-States", UniqueTarget.Resource),
@@ -598,7 +604,7 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
 
 
     /////// civ conditionals
-    ConditionalNationFilter("for [nationFilter]", UniqueTarget.Conditional),
+    ConditionalCivFilter("for [civFilter]", UniqueTarget.Conditional),
     ConditionalWar("when at war", UniqueTarget.Conditional),
     ConditionalNotWar("when not at war", UniqueTarget.Conditional),
     ConditionalGoldenAge("during a Golden Age", UniqueTarget.Conditional),
@@ -705,7 +711,8 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     OneTimeConsumeResources("Instantly consumes [amount] [stockpiledResource]", UniqueTarget.Triggerable),
     OneTimeProvideResources("Instantly provides [amount] [stockpiledResource]", UniqueTarget.Triggerable),
 
-    OneTimeGainStat("Gain [amount] [stat/resource]", UniqueTarget.Triggerable),
+    OneTimeGainStat("Gain [amount] [stat]", UniqueTarget.Triggerable),
+    OneTimeGainStatSpeed("Gain [amount] [stat] (modified by game speed)", UniqueTarget.Triggerable),
     OneTimeGainStatRange("Gain [amount]-[amount] [stat]", UniqueTarget.Triggerable),
     OneTimeGainPantheon("Gain enough Faith for a Pantheon", UniqueTarget.Triggerable),
     OneTimeGainProphet("Gain enough Faith for [amount]% of a Great Prophet", UniqueTarget.Triggerable),
@@ -763,6 +770,7 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     TriggerUponPromotion("upon being promoted", UniqueTarget.UnitTriggerCondition),
     TriggerUponLosingHealth("upon losing at least [amount] HP in a single attack", UniqueTarget.UnitTriggerCondition),
     TriggerUponEndingTurnInTile("upon ending a turn in a [tileFilter] tile", UniqueTarget.UnitTriggerCondition),
+    TriggerUponDiscoveringTile("upon discovering a [tileFilter] tile", UniqueTarget.UnitTriggerCondition),
 
     //endregion
 

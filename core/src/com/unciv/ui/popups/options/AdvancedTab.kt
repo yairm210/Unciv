@@ -18,10 +18,11 @@ import com.unciv.GUI
 import com.unciv.UncivGame
 import com.unciv.models.metadata.GameSettings
 import com.unciv.models.metadata.ModCategories
-import com.unciv.models.metadata.ScreenSize
+import com.unciv.models.metadata.GameSettings.ScreenSize
 import com.unciv.models.translations.TranslationFileWriter
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.UncivTooltip.Companion.addTooltip
+import com.unciv.ui.components.extensions.addSeparator
 import com.unciv.ui.components.extensions.disable
 import com.unciv.ui.components.extensions.setFontColor
 import com.unciv.ui.components.extensions.toCheckBox
@@ -57,34 +58,48 @@ fun advancedTab(
     val settings = optionsPopup.settings
 
     addAutosaveTurnsSelectBox(this, settings)
+    addSeparator(Color.GRAY)
 
-    if (Display.hasOrientation()) {
+    if (Display.hasOrientation())
         addOrientationSelectBox(this, optionsPopup)
-    }
 
-    if (Display.hasCutout()) {
+    if (Display.hasCutout())
         addCutoutCheckbox(this, optionsPopup)
-    }
 
-    addMaxZoomSlider(this, settings)
+    if (Display.hasSystemUiVisibility())
+        addHideSystemUiCheckbox(this, optionsPopup)
 
     addFontFamilySelect(this, settings, optionsPopup.selectBoxMinWidth, onFontChange)
-
     addFontSizeMultiplier(this, settings, onFontChange)
+    addSeparator(Color.GRAY)
 
-    addTranslationGeneration(this, optionsPopup)
-
-    addSetUserId(this, settings)
+    addMaxZoomSlider(this, settings)
 
     addEasterEggsCheckBox(this, settings)
 
     addEnlargeNotificationsCheckBox(this, settings)
+    addSeparator(Color.GRAY)
+
+    addSetUserId(this, settings)
+
+    addTranslationGeneration(this, optionsPopup)
 }
 
 private fun addCutoutCheckbox(table: Table, optionsPopup: OptionsPopup) {
-    optionsPopup.addCheckbox(table, "Enable display cutout (requires restart)", optionsPopup.settings.androidCutout)
+    optionsPopup.addCheckbox(table, "Enable using display cutout areas", optionsPopup.settings.androidCutout)
     {
         optionsPopup.settings.androidCutout = it
+        Display.setCutout(it)
+        optionsPopup.reopenAfterDiplayLayoutChange()
+    }
+}
+
+private fun addHideSystemUiCheckbox(table: Table, optionsPopup: OptionsPopup) {
+    optionsPopup.addCheckbox(table, "Hide system status and navigation bars", optionsPopup.settings.androidHideSystemUi)
+    {
+        optionsPopup.settings.androidHideSystemUi = it
+        Display.setSystemUiVisibility(hide = it)
+        optionsPopup.reopenAfterDiplayLayoutChange()
     }
 }
 
@@ -101,6 +116,7 @@ private fun addOrientationSelectBox(table: Table, optionsPopup: OptionsPopup) {
         val orientation = selectBox.selected
         settings.displayOrientation = orientation
         Display.setOrientation(orientation)
+        optionsPopup.reopenAfterDiplayLayoutChange()
     }
 
     table.add(selectBox).minWidth(optionsPopup.selectBoxMinWidth).pad(10f).row()
@@ -202,7 +218,7 @@ private fun addFontSizeMultiplier(
     settings: GameSettings,
     onFontChange: () -> Unit
 ) {
-    table.add("Font size multiplier".toLabel()).left().fillX()
+    table.add("Font size multiplier".toLabel()).left().fillX().padTop(5f)
 
     val fontSizeSlider = UncivSlider(
         0.7f, 1.5f, 0.05f,
@@ -214,11 +230,11 @@ private fun addFontSizeMultiplier(
         if (!fontSizeSlider.isDragging)
             onFontChange()
     }
-    table.add(fontSizeSlider).pad(5f).row()
+    table.add(fontSizeSlider).pad(5f).padTop(10f).row()
 }
 
 private fun addMaxZoomSlider(table: Table, settings: GameSettings) {
-    table.add("Max zoom out".tr()).left().fillX()
+    table.add("Max zoom out".tr()).left().fillX().padTop(5f)
     val maxZoomSlider = UncivSlider(
         2f, 6f, 1f,
         initial = settings.maxWorldZoomOut
@@ -227,7 +243,7 @@ private fun addMaxZoomSlider(table: Table, settings: GameSettings) {
         if (GUI.isWorldLoaded())
             GUI.getMap().reloadMaxZoom()
     }
-    table.add(maxZoomSlider).pad(5f).row()
+    table.add(maxZoomSlider).pad(5f).padTop(10f).row()
 }
 
 private fun addTranslationGeneration(table: Table, optionsPopup: OptionsPopup) {

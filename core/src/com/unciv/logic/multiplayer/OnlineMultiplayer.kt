@@ -241,7 +241,7 @@ class OnlineMultiplayer {
         val onlinePreview = onlineGame?.preview
         if (onlineGame == null) {
             createGame(gameInfo)
-        } else if (onlinePreview != null && hasNewerGameState(preview, onlinePreview)){
+        } else if (onlinePreview != null && hasNewerGameState(preview, onlinePreview)) {
             onlineGame.doManualUpdate(preview)
         }
         UncivGame.Current.loadGame(gameInfo)

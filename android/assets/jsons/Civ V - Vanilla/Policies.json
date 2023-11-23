@@ -93,7 +93,7 @@
             {
                 "name": "Citizenship",
                 "uniques": [
-                    "[-25]% tile improvement construction time",
+                    "[-25]% construction time for [All] improvements",
                     "Free [Worker] appears"
                 ],
                 "row": 1,

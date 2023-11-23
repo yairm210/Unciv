@@ -30,8 +30,7 @@ import com.unciv.logic.GameInfo
 import com.unciv.logic.files.UncivFiles
 import com.unciv.logic.multiplayer.storage.FileStorageRateLimitReached
 import com.unciv.logic.multiplayer.storage.OnlineMultiplayerServer
-import com.unciv.models.metadata.GameSettingsMultiplayer
-import kotlinx.coroutines.runBlocking
+import com.unciv.models.metadata.GameSettings.GameSettingsMultiplayer
 import java.io.FileNotFoundException
 import java.io.PrintWriter
 import java.io.StringWriter
@@ -39,6 +38,7 @@ import java.io.Writer
 import java.time.Duration
 import java.util.GregorianCalendar
 import java.util.concurrent.TimeUnit
+import kotlinx.coroutines.runBlocking
 
 
 class MultiplayerTurnCheckWorker(appContext: Context, workerParams: WorkerParameters)
@@ -297,7 +297,7 @@ class MultiplayerTurnCheckWorker(appContext: Context, workerParams: WorkerParame
             // to download all games to update the files so we save the first one we find
             var foundGame: Pair<String, String>? = null
 
-            for (idx in gameIds.indices){
+            for (idx in gameIds.indices) {
                 val gameId = gameIds[idx]
                 //gameId could be an empty string if startTurnChecker fails to load all files
                 if (gameId.isEmpty())
@@ -333,7 +333,7 @@ class MultiplayerTurnCheckWorker(appContext: Context, workerParams: WorkerParame
                     Log.i(LOG_TAG, "doWork FileStorageRateLimitReached ${ex.message}")
                     // We just break here as the configured delay is probably enough to wait for the rate limit anyway
                     break
-                } catch (ex: FileNotFoundException){
+                } catch (ex: FileNotFoundException) {
                     Log.i(LOG_TAG, "doWork FileNotFoundException ${ex.message}")
                     // FileNotFoundException is thrown by OnlineMultiplayer().tryDownloadGamePreview(gameId)
                     // and indicates that there is no game preview present for this game
@@ -342,7 +342,7 @@ class MultiplayerTurnCheckWorker(appContext: Context, workerParams: WorkerParame
                 }
             }
 
-            if (foundGame != null){
+            if (foundGame != null) {
                 notifyUserAboutTurn(applicationContext, foundGame)
                 with(NotificationManagerCompat.from(applicationContext)) {
                     cancel(NOTIFICATION_ID_SERVICE)
@@ -372,7 +372,7 @@ class MultiplayerTurnCheckWorker(appContext: Context, workerParams: WorkerParame
                 val inputDataFailIncrease = Data.Builder().putAll(inputData).putInt(FAIL_COUNT, failCount + 1).build()
                 enqueue(applicationContext, Duration.ofMinutes(1), inputDataFailIncrease)
             }
-        } catch (outOfMemory: OutOfMemoryError){ // no point in trying multiple times if this was an oom error
+        } catch (outOfMemory: OutOfMemoryError) { // no point in trying multiple times if this was an oom error
             Log.e(LOG_TAG, "doWork ${outOfMemory::class.simpleName}: ${outOfMemory.message}")
             return@runBlocking Result.failure()
         }

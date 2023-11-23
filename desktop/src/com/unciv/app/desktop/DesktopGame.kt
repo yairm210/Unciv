@@ -7,10 +7,10 @@ class DesktopGame(config: Lwjgl3ApplicationConfiguration) : UncivGame() {
 
     private val audio = HardenGdxAudio()
     private var discordUpdater = DiscordUpdater()
-    private val turnNotifier = MultiplayerTurnNotifierDesktop()
+    private val windowListener = UncivWindowListener()
 
     init {
-        config.setWindowListener(turnNotifier)
+        config.setWindowListener(windowListener)
 
         discordUpdater.setOnUpdate {
 
@@ -41,7 +41,7 @@ class DesktopGame(config: Lwjgl3ApplicationConfiguration) : UncivGame() {
     }
 
     override fun notifyTurnStarted() {
-        turnNotifier.turnStarted()
+        windowListener.turnStarted()
     }
 
     override fun dispose() {

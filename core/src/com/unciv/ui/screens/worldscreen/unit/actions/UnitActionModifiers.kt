@@ -26,12 +26,12 @@ object UnitActionModifiers {
         return 1
     }
 
-    fun activateSideEffects(unit: MapUnit, actionUnique: Unique){
+    fun activateSideEffects(unit: MapUnit, actionUnique: Unique) {
         val movementCost = getMovementPointsToUse(actionUnique)
         unit.useMovementPoints(movementCost.toFloat())
 
-        for (conditional in actionUnique.conditionals){
-            when (conditional.type){
+        for (conditional in actionUnique.conditionals) {
+            when (conditional.type) {
                 UniqueType.UnitActionConsumeUnit -> unit.consume()
                 UniqueType.UnitActionLimitedTimes, UniqueType.UnitActionOnce -> {
                     if (usagesLeft(unit, actionUnique) == 1
