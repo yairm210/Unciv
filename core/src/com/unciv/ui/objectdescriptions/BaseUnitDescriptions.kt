@@ -129,6 +129,11 @@ object BaseUnitDescriptions {
             "Required tech: [${baseUnit.requiredTech}]",
             link = "Technology/${baseUnit.requiredTech}"
         )
+        // temporary hack to check that the UI works the way I think it will
+        if (baseUnit.requiredTech != null) textList += FormattedLine(
+            "Required tech: [${baseUnit.requiredTech}]",
+            link = "Technology/${baseUnit.requiredTech}"
+        )
 
         val canUpgradeFrom = ruleset.units
             .filterValues {
