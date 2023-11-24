@@ -33,7 +33,7 @@ class UnitUpgradeManager(val unit:MapUnit) {
         val upgradePath = getUpgradePath()
 
         fun isInvalidUpgradeDestination(baseUnit: BaseUnit): Boolean{
-            if (baseUnit.requiredTech != null && !unit.civ.tech.isResearched(baseUnit.requiredTech!!))
+            if (!unit.civ.tech.isResearched(baseUnit))
                 return true
             if (baseUnit.getMatchingUniques(UniqueType.OnlyAvailableWhen, StateForConditionals.IgnoreConditionals).any {
                         !it.conditionalsApply(StateForConditionals(unit.civ, unit = unit ))
@@ -102,7 +102,7 @@ class UnitUpgradeManager(val unit:MapUnit) {
             // do clamping and rounding here so upgrading stepwise costs the same as upgrading far down the chain
             var stepCost = constants.base
             stepCost += (constants.perProduction * (baseUnit.cost - currentUnit.cost)).coerceAtLeast(0f)
-            val era = ruleset.eras[ruleset.technologies[baseUnit.requiredTech]?.era()]
+            val era = baseUnit.era(ruleset)
             if (era != null)
                 stepCost *= (1f + era.eraNumber * constants.eraMultiplier)
             stepCost = (stepCost * civModifier).pow(constants.exponent)
