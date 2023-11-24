@@ -246,7 +246,7 @@ class GameSettings {
 
     enum class NationPickerListMode { Icons, List }
 
-    enum class LocaleCode(var language: String, var country: String) {
+    enum class LocaleCode(val language: String, val country: String, val trueLanguage: String? = null) {
         Arabic("ar", "IQ"),
         Belarusian("be", "BY"),
         Bosnian("bs", "BA"),
@@ -280,6 +280,7 @@ class GameSettings {
         Portuguese("pt", "PT"),
         Romanian("ro", "RO"),
         Russian("ru", "RU"),
+        Rusyn("uk", "UA", "rus"), // No specific locale for rus exists, so use closest for collator
         Serbian("sr", "RS"),
         SimplifiedChinese("zh", "CN"),
         Slovak("sk", "SK"),
