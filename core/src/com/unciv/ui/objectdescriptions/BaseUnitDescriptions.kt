@@ -124,16 +124,12 @@ object BaseUnitDescriptions {
                 )
         }
 
-        if (baseUnit.requiredTech != null || baseUnit.upgradesTo != null || baseUnit.obsoleteTech != null) textList += FormattedLine()
-        if (baseUnit.requiredTech != null) textList += FormattedLine(
-            "Required tech: [${baseUnit.requiredTech}]",
-            link = "Technology/${baseUnit.requiredTech}"
-        )
-        // temporary hack to check that the UI works the way I think it will
-        if (baseUnit.requiredTech != null) textList += FormattedLine(
-            "Required tech: [${baseUnit.requiredTech}]",
-            link = "Technology/${baseUnit.requiredTech}"
-        )
+        if (baseUnit.requiredTechs.isNotEmpty() || baseUnit.upgradesTo != null || baseUnit.obsoleteTech != null) textList += FormattedLine()
+        for (requiredTech: String in baseUnit.requiredTechs)
+            textList += FormattedLine(
+                "Required tech: [${requiredTech}]",
+                link = "Technology/${requiredTech}"
+            )
 
         val canUpgradeFrom = ruleset.units
             .filterValues {
