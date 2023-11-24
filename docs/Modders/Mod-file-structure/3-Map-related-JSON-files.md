@@ -62,7 +62,7 @@ Each resource can have the following properties:
 | Attribute | Type | Optional | Notes |
 | --------- | ---- | -------- | ----- |
 | name | String | Required |  |
-| resourceType | String | Default Bonus | Bonus, Luxury or Strategic |
+| resourceType | Enum | Default Bonus | Bonus, Luxury or Strategic |
 | terrainsCanBeFoundOn | List | Default empty | [Terrains](#terrainsjson) that allow this resource |
 | `<stats>` | Float | Optional | Per-turn bonus yield for the tile, see [Stats](#stats), can be repeated |
 | improvement | String | Default empty | The improvement ([TileImprovements.json](#tileimprovementsjson)) for this resource |
