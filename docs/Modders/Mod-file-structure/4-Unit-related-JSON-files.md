@@ -65,5 +65,5 @@ Civilian, Melee, Ranged, Scout, Mounted, Armor, Siege, WaterCivilian, WaterMelee
 | Attribute | Type | Optional | Notes |
 | --------- | ---- | -------- | ----- |
 | name | String | required | The name of the unit type |
-| movementType | String | required | The domain through which the unit moves. Allowed values: "Water", "Land", "Air" |
+| movementType | Enum | required | The domain through which the unit moves. Allowed values: "Water", "Land", "Air" |
 | uniques | List of String | defaults to none | A list of the unique abilities every unit of this type has. A list of almost all uniques can be found [here](../Unique-parameters.md#unit-uniques) |
