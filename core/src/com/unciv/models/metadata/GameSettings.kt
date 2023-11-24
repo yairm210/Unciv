@@ -249,6 +249,7 @@ class GameSettings {
     enum class LocaleCode(val language: String, val country: String, val trueLanguage: String? = null) {
         Arabic("ar", "IQ"),
         Belarusian("be", "BY"),
+        Bosnian("bs", "BA"),
         BrazilianPortuguese("pt", "BR"),
         Bulgarian("bg", "BG"),
         Catalan("ca", "ES"),
