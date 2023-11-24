@@ -1,5 +1,7 @@
 package com.unciv.ui.screens.devconsole
 
+import com.unciv.logic.civilization.Civilization
+
 fun String.toCliInput() = this.lowercase().replace(" ","-")
 
 interface ConsoleCommand {
@@ -43,7 +45,8 @@ interface ConsoleCommandNode:ConsoleCommand{
 class ConsoleCommandRoot:ConsoleCommandNode {
     override val subcommands = hashMapOf<String, ConsoleCommand>(
         "unit" to ConsoleUnitCommands(),
-        "city" to ConsoleCityCommands()
+        "city" to ConsoleCityCommands(),
+        "tile" to ConsoleTileCommands()
     )
 }
 
@@ -144,4 +147,29 @@ class ConsoleCityCommands:ConsoleCommandNode {
             city.expansion.relinquishOwnership(selectedTile)
             return@ConsoleAction null
         })
+}
+
+class ConsoleTileCommands: ConsoleCommandNode {
+    override val subcommands = hashMapOf<String, ConsoleCommand>(
+        "setimprovement" to ConsoleAction { console, params ->
+            if (params.size != 1 && params.size != 2) return@ConsoleAction "Format: tile setimprovement <improvementName> [<civName>]"
+            val selectedTile = console.screen.mapHolder.selectedTile
+                ?: return@ConsoleAction "No tile selected"
+            val improvement = console.gameInfo.ruleset.tileImprovements.values.firstOrNull {
+                it.name.toCliInput() == params[0]
+            } ?: return@ConsoleAction "Unknown improvement"
+            var civ:Civilization? = null
+            if (params.size == 2){
+                civ = console.getCivByName(params[1]) ?: return@ConsoleAction "Unknown civ"
+            }
+            selectedTile.improvementFunctions.changeImprovement(improvement.name, civ)
+            return@ConsoleAction null
+        },
+        "removeimprovement" to ConsoleAction { console, params ->
+            val selectedTile = console.screen.mapHolder.selectedTile
+                ?: return@ConsoleAction "No tile selected"
+            selectedTile.improvementFunctions.changeImprovement(null)
+            return@ConsoleAction null
+        }
+    )
 }
