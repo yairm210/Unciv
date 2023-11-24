@@ -99,6 +99,24 @@ class ConsoleUnitCommands:ConsoleCommandNode {
 
 class ConsoleCityCommands:ConsoleCommandNode {
     override val subcommands = hashMapOf<String, ConsoleCommand>(
+        "add" to ConsoleAction { console, params ->
+            if (params.size != 1) return@ConsoleAction  "Format: city add <civName>"
+            val civ = console.getCivByName(params[0]) ?: return@ConsoleAction "Unknown civ"
+            val selectedTile = console.screen.mapHolder.selectedTile
+                ?: return@ConsoleAction "No tile selected"
+            if (selectedTile.isCityCenter()) return@ConsoleAction "Tile already contains a city center"
+            civ.addCity(selectedTile.position)
+            return@ConsoleAction null
+        },
+
+        "remove" to ConsoleAction { console, params ->
+            val selectedTile = console.screen.mapHolder.selectedTile
+                ?: return@ConsoleAction "No tile selected"
+            val city = selectedTile.getCity() ?: return@ConsoleAction "No city in selected tile"
+            city.destroyCity(overrideSafeties = true)
+            return@ConsoleAction null
+        },
+
         "setpop" to ConsoleAction { console, params ->
             if (params.size != 2) return@ConsoleAction "Format: city setpop <cityName> <amount>"
             val newPop = params[1].toIntOrNull() ?: return@ConsoleAction "Invalid amount " + params[1]
