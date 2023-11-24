@@ -90,7 +90,7 @@ class OptionsPopup(
         )
         tabs.addPage(
             "Language",
-            languageTab(this, ::reloadWorldAndOptions),
+            LanguageTab(this, ::reloadWorldAndOptions),
             ImageGetter.getImage("FlagIcons/${settings.language}"), 24f
         )
         tabs.addPage(
