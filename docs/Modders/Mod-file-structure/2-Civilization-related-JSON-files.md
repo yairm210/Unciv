@@ -11,7 +11,7 @@ Each belief can have the following attributes:
 | Attribute | Type | Optional | Notes |
 | --------- | ---- | -------- | ----- |
 | name | String | Required | Name of the belief |
-| type | String | Required | The type of the belief. Valid values are: "Pantheon", "Follower", "Founder" and "Enhancer". |
+| type | Enum | Required | Pantheon, Follower, Founder or Enhancer. |
 | uniques | List of Strings | defaults to none | The unique abilities this belief adds to cities following it. May be chosen from the list of building uniques [here](../Unique-parameters.md#buildings-only), as well as the general uniques on that page |
 | civilopediaText | List | Default empty | see [civilopediaText chapter](5-Miscellaneous-JSON-files.md#civilopedia-text) |
 
