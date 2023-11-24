@@ -544,7 +544,7 @@ object TranslationFileWriter {
                 else -> translated
             }
             val localeCode = LocaleCode.valueOf(language.replace("_",""))
-            val path = fastlanePath + localeCode.language
+            val path = fastlanePath + (localeCode.trueLanguage ?: localeCode.language)
             File(path).mkdirs()
             File(path + File.separator + fileName).writeText(fileContent)
         }
