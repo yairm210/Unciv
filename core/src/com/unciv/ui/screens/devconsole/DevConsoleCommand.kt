@@ -17,9 +17,8 @@ interface ConsoleCommandNode:ConsoleCommand{
     val subcommands: HashMap<String, ConsoleCommand>
 
     override fun handle(console: DevConsolePopup, params: List<String>): String? {
-        if (params.isEmpty())
-            return "Available commands: " + subcommands.keys.joinToString()
-        val handler = subcommands[params[0]] ?: return "Invalid command"
+        if (params.isEmpty()) return "Available commands: " + subcommands.keys.joinToString()
+        val handler = subcommands[params[0]] ?: return "Invalid command. Available commands: " + subcommands.keys.joinToString()
         return handler.handle(console, params.drop(1))
     }
 
@@ -41,7 +40,7 @@ interface ConsoleCommandNode:ConsoleCommand{
     }
 }
 
-class ConsoleCommandRoot:ConsoleCommandNode{
+class ConsoleCommandRoot:ConsoleCommandNode {
     override val subcommands = hashMapOf<String, ConsoleCommand>(
         "unit" to ConsoleUnitCommands(),
         "city" to ConsoleCityCommands()

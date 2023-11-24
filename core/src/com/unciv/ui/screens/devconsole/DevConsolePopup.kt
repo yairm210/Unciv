@@ -64,7 +64,6 @@ class DevConsolePopup(val screen: WorldScreen) : Popup(screen) {
 
     private fun handleCommand(): String? {
         val params = getParams(textField.text)
-        if (params.isEmpty()) return "No command"
         return ConsoleCommandRoot().handle(this, params)
     }
 
