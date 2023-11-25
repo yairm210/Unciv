@@ -43,13 +43,17 @@ interface IHasUniques : INamed, Json.Serializable {
     fun getMatchingUniques(uniqueType: UniqueType, stateForConditionals: StateForConditionals? = null) =
         getMatchingUniques(uniqueType.placeholderText, stateForConditionals)
 
+    fun dumpUniques(): String = uniqueObjects.map{ it.toString() }.joinToString(" ") +
+            uniqueObjects.map{ it.type.toString() }.joinToString(" ") +
+            uniqueObjects.flatMap{ it.conditionals }.map{ it.toString() }.joinToString(" ")
+
     fun requiredTechs(): Sequence<String> {
         val uniquesForWhenThisIsAvailable: Sequence<Unique> = getMatchingUniques(UniqueType.OnlyAvailableWhen, StateForConditionals.IgnoreConditionals)
         val conditionalsForWhenThisIsAvailable: Sequence<Unique> = uniquesForWhenThisIsAvailable.flatMap{ it.conditionals }
         val techRequiringConditionalsForWhenThisIsAvailable: Sequence<Unique> = conditionalsForWhenThisIsAvailable.filter{ it.isOfType(UniqueType.ConditionalTech) }
         // sanity check that if the string inserted for "requiredTech" by IHasUniques.read() below is in the uniques, then we had better be returning a nonempty Sequence here
         if (techRequiringConditionalsForWhenThisIsAvailable.none() && uniques.any{ it.contains("Only available <after discovering [") })
-            throw Exception("Something has gone catastrophically wrong computing required techs. The following data dump might help a developer: " + uniqueObjects.map{ it.toString() }.joinToString(" ") + uniqueObjects.map{ it.type.toString() }.joinToString(" ") + uniqueObjects.flatMap{ it.conditionals }.map{ it.toString() }.joinToString(" ") + "techRequiringConditionalsForWhenThisIsAvailable" + techRequiringConditionalsForWhenThisIsAvailable.count().toString() + techRequiringConditionalsForWhenThisIsAvailable.map{ it.toString() }.joinToString(" "))
+            throw Exception("Something has gone catastrophically wrong computing required techs. The following data dump might help a developer: " + dumpUniques())
         return techRequiringConditionalsForWhenThisIsAvailable.map{ it.params[0] }
         // Should this be cached? @SeventhM
     }
@@ -59,7 +63,7 @@ interface IHasUniques : INamed, Json.Serializable {
         val conditionalsForWhenThisIsAvailable: Sequence<Unique> = uniquesForWhenThisIsAvailable.flatMap{ it.conditionals }
         val techRequiringConditionalsForWhenThisIsAvailable: Sequence<Unique> = conditionalsForWhenThisIsAvailable.filter{ it.isOfType(UniqueType.ConditionalNoTech) }
         if (techRequiringConditionalsForWhenThisIsAvailable.none() && uniques.any{ it.contains("Only available <before discovering [") })
-            throw Exception("Something has gone catastrophically wrong computing obsoleting techs. The following data dump might help a developer: " + uniqueObjects.map{ it.toString() }.joinToString(" ") + uniqueObjects.map{ it.type.toString() }.joinToString(" ") + uniqueObjects.flatMap{ it.conditionals }.map{ it.toString() }.joinToString(" ") + "techRequiringConditionalsForWhenThisIsAvailable" + techRequiringConditionalsForWhenThisIsAvailable.count().toString() + techRequiringConditionalsForWhenThisIsAvailable.map{ it.toString() }.joinToString(" "))
+            throw Exception("Something has gone catastrophically wrong computing obsoleting techs. The following data dump might help a developer: " + dumpUniques())
         return techRequiringConditionalsForWhenThisIsAvailable.map{ it.params[0] }
         // Should this be cached? @SeventhM
     }
@@ -67,7 +71,7 @@ interface IHasUniques : INamed, Json.Serializable {
     fun requiredResources(): Sequence<String> {
         val resourceUniques: Sequence<Unique> = getMatchingUniques(UniqueType.ConsumesResources, StateForConditionals.IgnoreConditionals)
         if (resourceUniques.none() && uniques.any{ it.contains("Consumes [") })
-            throw Exception("Something has gone catastrophically wrong computing required strategic resources. The following data dump might help a developer: " + uniqueObjects.map{ it.toString() }.joinToString(" ") + uniqueObjects.map{ it.type.toString() }.joinToString(" ") + uniqueObjects.flatMap{ it.conditionals }.map{ it.toString() }.joinToString(" ") + "resourceUniques" + resourceUniques.count().toString() + resourceUniques.map{ it.toString() }.joinToString(" "))
+            throw Exception("Something has gone catastrophically wrong computing required strategic resources. The following data dump might help a developer: " + dumpUniques())
         return resourceUniques.map{ it.params[1] }
         // Should this be cached? @SeventhM
     }
@@ -75,7 +79,7 @@ interface IHasUniques : INamed, Json.Serializable {
     fun upgradesTo(): Sequence<String> {
         val upgradeUniques: Sequence<Unique> = getMatchingUniques(UniqueType.CanUpgrade, StateForConditionals.IgnoreConditionals)
         if (upgradeUniques.none() && uniques.any{ it.contains("Can upgrade to [") })
-            throw Exception("Something has gone catastrophically wrong computing unit upgrade paths. The following data dump might help a developer: " + uniqueObjects.map{ it.toString() }.joinToString(" ") + uniqueObjects.map{ it.type.toString() }.joinToString(" ") + uniqueObjects.flatMap{ it.conditionals }.map{ it.toString() }.joinToString(" ") + "upgradeUniques" + upgradeUniques.count().toString() + upgradeUniques.map{ it.toString() }.joinToString(" "))
+            throw Exception("Something has gone catastrophically wrong computing unit upgrade paths. The following data dump might help a developer: " + dumpUniques())
         return upgradeUniques.map{ it.params[0] }
         // Should this be cached? @SeventhM
     }
