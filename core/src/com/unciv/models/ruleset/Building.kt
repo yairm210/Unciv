@@ -24,8 +24,6 @@ import com.unciv.ui.objectdescriptions.BuildingDescriptions
 
 class Building : RulesetStatsObject(), INonPerpetualConstruction, Json.Serializable {
 
-    // override var requiredTech: String? = null
-    override var requiredTechs = HashSet<String>()
     override var cost: Int = -1
 
     var maintenance = 0
@@ -363,7 +361,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction, Json.Serializa
         if (civ.cache.uniqueBuildings.any { it.replaces == name })
             yield(RejectionReasonType.ReplacedByOurUnique.toInstance())
 
-        for (requiredTech: String in requiredTechs)
+        for (requiredTech: String in requiredTechs())
             if (!civ.tech.isResearched(requiredTech))
                 yield(RejectionReasonType.RequiresTech.toInstance("$requiredTech not researched!"))
 
@@ -503,80 +501,5 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction, Json.Serializa
             if (unique.params[1] == resource) return true
         }
         return false
-    }
-
-    override fun write(json: Json) {
-        json.writeFields(this);
-    }
-    /** Custom Json formatter for a [BaseUnit].
-     *  This is needed for backwards compatibility.
-     *  In the original Civ 5, each unit had at most one required tech.
-     *  All extant JSON files, including vanilla, specify requiredTech as a single string.
-     */
-    override fun read(json: Json, jsonData: JsonValue) {
-        json.readFields(this, jsonData)
-        for (entry in jsonData)
-            // Enumerating every single child is ugly, there might be a better way to do this.
-            when(entry.name) {
-                "name" ->
-                    name = entry.asString()
-                "cost" ->
-                    cost = entry.asInt()
-                "food" ->
-                    food = entry.asFloat()
-                "production" ->
-                    production = entry.asFloat()
-                "gold" ->
-                    gold = entry.asFloat()
-                "happiness" ->
-                    happiness = entry.asFloat()
-                "culture" ->
-                    culture = entry.asFloat()
-                "science" ->
-                    science = entry.asFloat()
-                "faith" ->
-                    faith = entry.asFloat()
-                "maintenance" ->
-                    maintenance = entry.asInt()
-                "isWonder" ->
-                    isWonder = entry.asBoolean()
-                "isNationalWonder" ->
-                    isNationalWonder = entry.asBoolean()
-                "requiredBuilding" ->
-                    requiredBuilding = entry.asString()
-                "requiredTechs" ->
-                    requiredTechs = json.readValue(requiredTechs.javaClass, entry)
-                // For backwards compatibility, accept a single required tech.
-                "requiredTech" ->
-                    requiredTechs.add(entry.asString())
-                "requiredResource" ->
-                    requiredResource = entry.asString()
-                // "requiredNearbyImprovedResources" ->
-                //    requiredNearbyImprovedResources = json.readValue(requiredNearbyImprovedResources.javaClass, entry)
-                "replaces" ->
-                    replaces = entry.asString()
-                "uniqueTo" ->
-                    uniqueTo = entry.asString()
-                "cityStrength" ->
-                    cityStrength = entry.asInt()
-                "cityHealth" ->
-                    cityHealth = entry.asInt()
-                "hurryCostModifier" ->
-                    hurryCostModifier = entry.asInt()
-                "quote" ->
-                    quote = entry.asString()
-                "uniques" ->
-                    uniques = json.readValue(uniques.javaClass, entry)
-                "replacementTextForUniques" ->
-                    replacementTextForUniques = entry.asString()
-                "percentStatBonus" ->
-                    percentStatBonus = json.readValue(Stats::class.java, entry)
-                "greatPersonPoints" ->
-                    greatPersonPoints = json.readValue(greatPersonPoints.javaClass, entry)
-                "specialistSlots" ->
-                    specialistSlots = json.readValue(specialistSlots.javaClass, entry)
-                // "civilopediaText" ->   this causes a crash? is this not supposed to be set directly?
-                //    civilopediaText = json.readValue(civilopediaText.javaClass, entry)
-            }
     }
 }
