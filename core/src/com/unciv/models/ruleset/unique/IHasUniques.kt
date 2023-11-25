@@ -57,6 +57,20 @@ interface IHasUniques : INamed, Json.Serializable {
         // Should this be cached? @SeventhM
     }
 
+    fun obsoletingTechs(): Sequence<String> {
+        val uniquesForWhenThisIsAvailable: Sequence<Unique> = getMatchingUniques(UniqueType.OnlyAvailableWhen, StateForConditionals.IgnoreConditionals)
+        if (uniquesForWhenThisIsAvailable.none() && uniques.any{ it.contains("Only available <before discovering [") })
+            throw Exception(uniqueObjects.map{ it.toString() }.joinToString(" ") + uniqueObjects.map{ it.type.toString() }.joinToString(" ") + uniqueObjects.flatMap{ it.conditionals }.map{ it.toString() }.joinToString(" ") + "uniquesForWhenThisIsAvailable" + uniquesForWhenThisIsAvailable.count().toString() + uniquesForWhenThisIsAvailable.map{ it.toString() }.joinToString(" "))
+        val conditionalsForWhenThisIsAvailable: Sequence<Unique> = uniquesForWhenThisIsAvailable.flatMap{ it.conditionals }
+        if (uniquesForWhenThisIsAvailable.none() && uniques.any{ it.contains("Only available <before discovering [") })
+            throw Exception(uniqueObjects.map{ it.toString() }.joinToString(" ") + uniqueObjects.map{ it.type.toString() }.joinToString(" ") + uniqueObjects.flatMap{ it.conditionals }.map{ it.toString() }.joinToString(" ") + "conditionalsForWhenThisIsAvailable" + conditionalsForWhenThisIsAvailable.count().toString() + conditionalsForWhenThisIsAvailable.map{ it.toString() }.joinToString(" "))
+        val techRequiringConditionalsForWhenThisIsAvailable: Sequence<Unique> = conditionalsForWhenThisIsAvailable.filter{ it.type == UniqueType.ConditionalNoTech }
+        if (uniquesForWhenThisIsAvailable.none() && uniques.any{ it.contains("Only available <before discovering [") })
+            throw Exception(uniqueObjects.map{ it.toString() }.joinToString(" ") + uniqueObjects.map{ it.type.toString() }.joinToString(" ") + uniqueObjects.flatMap{ it.conditionals }.map{ it.toString() }.joinToString(" ") + "techRequiringConditionalsForWhenThisIsAvailable" + techRequiringConditionalsForWhenThisIsAvailable.count().toString() + techRequiringConditionalsForWhenThisIsAvailable.map{ it.toString() }.joinToString(" "))
+        return techRequiringConditionalsForWhenThisIsAvailable.map{ it.params[0] }
+        // Should this be cached? @SeventhM
+    }
+
     fun requiredTechnologies(ruleset: Ruleset): HashSet<Technology> =
         requiredTechs().mapTo(HashSet<Technology>()){ requiredTech -> ruleset.technologies[requiredTech]!! }
 
