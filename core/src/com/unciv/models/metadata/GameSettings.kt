@@ -269,6 +269,7 @@ class GameSettings {
         Italian("it", "IT"),
         Japanese("ja", "JP"),
         Korean("ko", "KR"),
+        Latin("la", "IT"),
         Latvian("lv", "LV"),
         Lithuanian("lt", "LT"),
         Malay("ms", "MY"),
