@@ -5,6 +5,7 @@
 Flag Icons made by [Freepik](https://www.flaticon.com/authors/freepik) from [www.flaticon.com](https://www.flaticon.com) and licensed by Creative Commons 3.0, except for:
 
 -   [Catalan flag] by J0anJosep licensed under Public Domain
+-   [Rusyn flag] gimped from the wikipedia flag [Flag of Pannonian Rusyns](https://en.wikipedia.org/wiki/File:Flag_of_Rusyns_in_Serbia.svg) (CC-BY-SA 4.0)
 
 New Unciv logo made by u-ndefined on Discord
 
