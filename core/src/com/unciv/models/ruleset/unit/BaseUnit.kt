@@ -51,7 +51,6 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
     // Warning: future development should not increase the role of obsoleteTech, and should reduce it when possible.
     // The Unique "Only available before discovering [$obsoleteTech]" accomplishes the same task.
     // https://yairm210.github.io/Unciv/Developers/Translations%2C-mods%2C-and-modding-freedom-in-Open-Source#filters
-    var obsoleteTech: String? = null
     var upgradesTo: String? = null
     var replaces: String? = null
     var uniqueTo: String? = null
@@ -163,8 +162,9 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         for (requiredTech: String in requiredTechs())
             if (!civ.tech.isResearched(requiredTech))
                 yield(RejectionReasonType.RequiresTech.toInstance("$requiredTech not researched"))
-        if (obsoleteTech != null && civ.tech.isResearched(obsoleteTech!!))
-            yield(RejectionReasonType.Obsoleted.toInstance("Obsolete by $obsoleteTech"))
+        for (obsoleteTech: String in obsoletingTechs())
+            if (civ.tech.isResearched(obsoleteTech))
+                yield(RejectionReasonType.Obsoleted.toInstance("Obsolete by $obsoleteTech"))
 
         if (uniqueTo != null && uniqueTo != civ.civName)
             yield(RejectionReasonType.UniqueToOtherNation.toInstance("Unique to $uniqueTo"))
