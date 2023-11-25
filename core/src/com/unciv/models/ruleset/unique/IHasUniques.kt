@@ -45,12 +45,13 @@ interface IHasUniques : INamed, Json.Serializable {
 
     fun requiredTechs(): Sequence<String> {
         val uniquesForWhenThisIsAvailable: Sequence<Unique> = getMatchingUniques(UniqueType.OnlyAvailableWhen, StateForConditionals.IgnoreConditionals)
+        // sanity check that if the thing read() below inserted for "requiredTech" is in the uniques, then we had better be returning a nonempty Sequence here
         if (uniquesForWhenThisIsAvailable.none() && uniques.any{ it.contains("Only available <after discovering [") })
             throw Exception(uniqueObjects.map{ it.toString() }.joinToString(" ") + uniqueObjects.map{ it.type.toString() }.joinToString(" ") + uniqueObjects.flatMap{ it.conditionals }.map{ it.toString() }.joinToString(" ") + "uniquesForWhenThisIsAvailable" + uniquesForWhenThisIsAvailable.count().toString() + uniquesForWhenThisIsAvailable.map{ it.toString() }.joinToString(" "))
         val conditionalsForWhenThisIsAvailable: Sequence<Unique> = uniquesForWhenThisIsAvailable.flatMap{ it.conditionals }
         if (uniquesForWhenThisIsAvailable.none() && uniques.any{ it.contains("Only available <after discovering [") })
             throw Exception(uniqueObjects.map{ it.toString() }.joinToString(" ") + uniqueObjects.map{ it.type.toString() }.joinToString(" ") + uniqueObjects.flatMap{ it.conditionals }.map{ it.toString() }.joinToString(" ") + "conditionalsForWhenThisIsAvailable" + conditionalsForWhenThisIsAvailable.count().toString() + conditionalsForWhenThisIsAvailable.map{ it.toString() }.joinToString(" "))
-        val techRequiringConditionalsForWhenThisIsAvailable: Sequence<Unique> = conditionalsForWhenThisIsAvailable.filter{ it.type == UniqueType.ConditionalTech }
+        val techRequiringConditionalsForWhenThisIsAvailable: Sequence<Unique> = conditionalsForWhenThisIsAvailable.filter{ it.isOfType(UniqueType.ConditionalTech) }
         if (uniquesForWhenThisIsAvailable.none() && uniques.any{ it.contains("Only available <after discovering [") })
             throw Exception(uniqueObjects.map{ it.toString() }.joinToString(" ") + uniqueObjects.map{ it.type.toString() }.joinToString(" ") + uniqueObjects.flatMap{ it.conditionals }.map{ it.toString() }.joinToString(" ") + "techRequiringConditionalsForWhenThisIsAvailable" + techRequiringConditionalsForWhenThisIsAvailable.count().toString() + techRequiringConditionalsForWhenThisIsAvailable.map{ it.toString() }.joinToString(" "))
         return techRequiringConditionalsForWhenThisIsAvailable.map{ it.params[0] }
@@ -64,10 +65,26 @@ interface IHasUniques : INamed, Json.Serializable {
         val conditionalsForWhenThisIsAvailable: Sequence<Unique> = uniquesForWhenThisIsAvailable.flatMap{ it.conditionals }
         if (uniquesForWhenThisIsAvailable.none() && uniques.any{ it.contains("Only available <before discovering [") })
             throw Exception(uniqueObjects.map{ it.toString() }.joinToString(" ") + uniqueObjects.map{ it.type.toString() }.joinToString(" ") + uniqueObjects.flatMap{ it.conditionals }.map{ it.toString() }.joinToString(" ") + "conditionalsForWhenThisIsAvailable" + conditionalsForWhenThisIsAvailable.count().toString() + conditionalsForWhenThisIsAvailable.map{ it.toString() }.joinToString(" "))
-        val techRequiringConditionalsForWhenThisIsAvailable: Sequence<Unique> = conditionalsForWhenThisIsAvailable.filter{ it.type == UniqueType.ConditionalNoTech }
+        val techRequiringConditionalsForWhenThisIsAvailable: Sequence<Unique> = conditionalsForWhenThisIsAvailable.filter{ it.isOfType(UniqueType.ConditionalNoTech) }
         if (uniquesForWhenThisIsAvailable.none() && uniques.any{ it.contains("Only available <before discovering [") })
             throw Exception(uniqueObjects.map{ it.toString() }.joinToString(" ") + uniqueObjects.map{ it.type.toString() }.joinToString(" ") + uniqueObjects.flatMap{ it.conditionals }.map{ it.toString() }.joinToString(" ") + "techRequiringConditionalsForWhenThisIsAvailable" + techRequiringConditionalsForWhenThisIsAvailable.count().toString() + techRequiringConditionalsForWhenThisIsAvailable.map{ it.toString() }.joinToString(" "))
         return techRequiringConditionalsForWhenThisIsAvailable.map{ it.params[0] }
+        // Should this be cached? @SeventhM
+    }
+
+    fun requiredResources(): Sequence<String> {
+        val resourceUniques: Sequence<Unique> = getMatchingUniques(UniqueType.ConsumesResources, StateForConditionals.IgnoreConditionals)
+        if (resourceUniques.none() && uniques.any{ it.contains("Consumes [") })
+            throw Exception(uniqueObjects.map{ it.toString() }.joinToString(" ") + uniqueObjects.map{ it.type.toString() }.joinToString(" ") + uniqueObjects.flatMap{ it.conditionals }.map{ it.toString() }.joinToString(" ") + "resourceUniques" + resourceUniques.count().toString() + resourceUniques.map{ it.toString() }.joinToString(" "))
+        return resourceUniques.map{ it.params[1] }
+        // Should this be cached? @SeventhM
+    }
+
+    fun upgradesTo(): Sequence<String> {
+        val upgradeUniques: Sequence<Unique> = getMatchingUniques(UniqueType.CanUpgrade, StateForConditionals.IgnoreConditionals)
+        if (upgradeUniques.none() && uniques.any{ it.contains("Can upgrade to [") })
+            throw Exception(uniqueObjects.map{ it.toString() }.joinToString(" ") + uniqueObjects.map{ it.type.toString() }.joinToString(" ") + uniqueObjects.flatMap{ it.conditionals }.map{ it.toString() }.joinToString(" ") + "upgradeUniques" + upgradeUniques.count().toString() + upgradeUniques.map{ it.toString() }.joinToString(" "))
+        return upgradeUniques.map{ it.params[0] }
         // Should this be cached? @SeventhM
     }
 
