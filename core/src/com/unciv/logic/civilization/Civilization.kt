@@ -24,6 +24,7 @@ import com.unciv.logic.civilization.managers.QuestManager
 import com.unciv.logic.civilization.managers.ReligionManager
 import com.unciv.logic.civilization.managers.RuinsManager
 import com.unciv.logic.civilization.managers.TechManager
+import com.unciv.logic.civilization.managers.ThreatManager
 import com.unciv.logic.civilization.managers.UnitManager
 import com.unciv.logic.civilization.managers.VictoryManager
 import com.unciv.logic.civilization.transients.CivInfoStatsForNextTurn
@@ -88,6 +89,9 @@ class Civilization : IsPartOfGameInfoSerialization {
 
     @Transient
     val units = UnitManager(this)
+    
+    @Transient
+    var threatManager = ThreatManager(this)
 
     @Transient
     var diplomacyFunctions = DiplomacyFunctions(this)

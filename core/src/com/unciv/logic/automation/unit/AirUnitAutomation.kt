@@ -10,8 +10,8 @@ import com.unciv.logic.map.tile.Tile
 object AirUnitAutomation {
 
     fun automateFighter(unit: MapUnit) {
-        val tilesInRange = unit.currentTile.getTilesInDistance(unit.getRange())
-        val enemyAirUnitsInRange = tilesInRange
+        val tilesWithEnemyUnitsInRange = unit.civ.threatManager.getTilesWithEnemyUnitsInDistance(unit.getTile(), unit.getRange())
+        val enemyAirUnitsInRange = tilesWithEnemyUnitsInRange
             .flatMap { it.airUnits.asSequence() }.filter { it.civ.isAtWarWith(unit.civ) }
 
         if (enemyAirUnitsInRange.any()) return // we need to be on standby in case they attack
