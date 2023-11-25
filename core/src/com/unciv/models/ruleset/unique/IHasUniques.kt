@@ -110,8 +110,8 @@ interface IHasUniques : INamed, Json.Serializable {
             // What requiredResource actually means is the same as the Consumes unique.
         //     uniques.add("Consumes [1] [$requiredResource]")
         // Unfortunately, upgradesTo isn't so easy, it will probably need a new Unique.
-        // val upgradesTo: String = jsonData.getString("upgradesTo", "no upgradesTo")
-        // if (upgradesTo != "no upgradesTo")
-        //     uniques.add("Can transform to [$upgradesTo]")
+        val upgradesTo: String = jsonData.getString("upgradesTo", "no upgradesTo")
+        if (upgradesTo != "no upgradesTo")
+            uniques.add("Can transform to [$upgradesTo]")
     }
 }
