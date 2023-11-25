@@ -4,10 +4,6 @@ import com.unciv.logic.city.City
 import com.unciv.logic.city.CityConstructions
 import com.unciv.logic.civilization.Civilization
 import com.unciv.models.Counter
-import com.unciv.models.ruleset.Ruleset
-import com.unciv.models.ruleset.tech.Era
-import com.unciv.models.ruleset.tech.TechColumn
-import com.unciv.models.ruleset.tech.Technology
 import com.unciv.models.ruleset.unique.IHasUniques
 import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.Unique
@@ -33,7 +29,6 @@ interface IConstruction : INamed {
 interface INonPerpetualConstruction : IConstruction, INamed, IHasUniques {
     var cost: Int
     val hurryCostModifier: Int
-    var requiredTechs: HashSet<String>
 
     fun getProductionCost(civInfo: Civilization): Int
     fun getStatBuyCost(city: City, stat: Stat): Int?
@@ -99,27 +94,6 @@ interface INonPerpetualConstruction : IConstruction, INamed, IHasUniques {
     fun getCostForConstructionsIncreasingInPrice(baseCost: Int, increaseCost: Int, previouslyBought: Int): Int {
         return (baseCost + increaseCost / 2f * ( previouslyBought * previouslyBought + previouslyBought )).toInt()
     }
-
-    fun requiredTechnologies(ruleset: Ruleset): HashSet<Technology> =
-        requiredTechs.mapTo(HashSet<Technology>()){ requiredTech -> ruleset.technologies[requiredTech]!! }
-
-    // This is the guts of the logic that used to live in CityStateFunctions.kt.
-    fun era(ruleset: Ruleset): Era? =
-            requiredTechnologies(ruleset).map{ it.era() }.map{ ruleset.eras[it]!! }.maxByOrNull{ it.eraNumber }
-
-    fun eraNumber(ruleset: Ruleset, startingEra: String): Int {
-        val era: Era? = era(ruleset)
-        if (era != null)
-            return era.eraNumber
-        // This defaults to -1 following the practice in com.unciv.models.ruleset.tech.Era.
-        // If desired, we could instead return ruleset.eras[startingEra]!!.eraNumber
-        if (false)
-            return ruleset.eras[startingEra]!!.eraNumber
-        return -1
-    }
-
-    fun techColumn(ruleset: Ruleset): TechColumn? =
-            requiredTechnologies(ruleset).map{ it.column }.maxByOrNull{ if(it == null) -1 else it.columnNumber }
 
     override fun getMatchingUniquesNotConflicting(uniqueType: UniqueType): Sequence<Unique> =
             getMatchingUniques(uniqueType)
