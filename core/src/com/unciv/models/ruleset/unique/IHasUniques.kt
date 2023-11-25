@@ -112,6 +112,6 @@ interface IHasUniques : INamed, Json.Serializable {
         // Unfortunately, upgradesTo isn't so easy, it will probably need a new Unique.
         val upgradesTo: String = jsonData.getString("upgradesTo", "no upgradesTo")
         if (upgradesTo != "no upgradesTo")
-            uniques.add("Can transform to [$upgradesTo]")
+            uniques.add("Can upgrade to [$upgradesTo]")
     }
 }
