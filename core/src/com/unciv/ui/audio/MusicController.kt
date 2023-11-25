@@ -9,7 +9,6 @@ import com.unciv.logic.multiplayer.storage.DropBox
 import com.unciv.models.metadata.GameSettings
 import com.unciv.utils.Concurrency
 import com.unciv.utils.Log
-import java.io.File
 import java.util.EnumSet
 import java.util.Timer
 import kotlin.concurrent.thread
@@ -601,10 +600,12 @@ class MusicController {
     private fun getMatchingFiles(folder: String, name: String) =
         getMusicFolders(folder) { Gdx.files.internal(folder) }
             .flatMap {
-                it.list { file: File ->
-                    file.nameWithoutExtension == name && file.exists() && !file.isDirectory &&
-                    file.extension in gdxSupportedFileExtensions
-                }.asSequence()
+                // Don't list() here - no work on packaged internal
+                gdxSupportedFileExtensions.asSequence().map { extension ->
+                    it.child("$name.$extension")
+                }.filter { file ->
+                    file.exists() && !file.isDirectory
+                }
             }
 
     /** Play [name] from any mod's [folder] or internal assets,
