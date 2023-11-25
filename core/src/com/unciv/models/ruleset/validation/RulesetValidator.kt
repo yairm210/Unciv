@@ -433,7 +433,7 @@ class RulesetValidator(val ruleset: Ruleset) {
         for (building in ruleset.buildings.values) {
             addBuildingErrorRulesetInvariant(building, lines)
 
-            for (requiredTech: String in building.requiredTechs)
+            for (requiredTech: String in building.requiredTechs())
                 if (!ruleset.technologies.containsKey(requiredTech))
                     lines += "${building.name} requires tech ${requiredTech} which does not exist!"
             for (specialistName in building.specialistSlots.keys)
@@ -576,7 +576,7 @@ class RulesetValidator(val ruleset: Ruleset) {
     }
 
     private fun addBuildingErrorRulesetInvariant(building: Building, lines: RulesetErrorList) {
-        if (building.requiredTechs.isEmpty() && building.cost == -1 && !building.hasUnique(
+        if (building.requiredTechs().any() && building.cost == -1 && !building.hasUnique(
                 UniqueType.Unbuildable
             )
         )
@@ -654,7 +654,7 @@ class RulesetValidator(val ruleset: Ruleset) {
 
     /** Collects all RulesetSpecific checks for a BaseUnit */
     private fun checkUnitRulesetSpecific(unit: BaseUnit, lines: RulesetErrorList) {
-        for (requiredTech: String in unit.requiredTechs)
+        for (requiredTech: String in unit.requiredTechs())
             if (!ruleset.technologies.containsKey(requiredTech))
                 lines += "${unit.name} requires tech ${requiredTech} which does not exist!"
         if (unit.obsoleteTech != null && !ruleset.technologies.containsKey(unit.obsoleteTech!!))
@@ -666,7 +666,7 @@ class RulesetValidator(val ruleset: Ruleset) {
         if (unit.upgradesTo!=null && ruleset.units.containsKey(unit.upgradesTo!!)
             && unit.obsoleteTech!=null && ruleset.technologies.containsKey(unit.obsoleteTech!!)) {
             val upgradedUnit = ruleset.units[unit.upgradesTo!!]!!
-            for (requiredTech: String in upgradedUnit.requiredTechs)
+            for (requiredTech: String in upgradedUnit.requiredTechs())
                 if (requiredTech != unit.obsoleteTech
                     && !getPrereqTree(unit.obsoleteTech!!).contains(requiredTech)
                 )
