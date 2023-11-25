@@ -49,7 +49,7 @@ interface IHasUniques : INamed, Json.Serializable {
         val techRequiringConditionalsForWhenThisIsAvailable: Sequence<Unique> = conditionalsForWhenThisIsAvailable.filter{ it.isOfType(UniqueType.ConditionalTech) }
         // sanity check that if the string inserted for "requiredTech" by IHasUniques.read() below is in the uniques, then we had better be returning a nonempty Sequence here
         if (uniquesForWhenThisIsAvailable.none() && uniques.any{ it.contains("Only available <after discovering [") })
-            throw Exception(uniqueObjects.map{ it.toString() }.joinToString(" ") + uniqueObjects.map{ it.type.toString() }.joinToString(" ") + uniqueObjects.flatMap{ it.conditionals }.map{ it.toString() }.joinToString(" ") + "techRequiringConditionalsForWhenThisIsAvailable" + techRequiringConditionalsForWhenThisIsAvailable.count().toString() + techRequiringConditionalsForWhenThisIsAvailable.map{ it.toString() }.joinToString(" "))
+            throw Exception("Something has gone catastrophically wrong computing required techs. The following data dump might help a developer: " + uniqueObjects.map{ it.toString() }.joinToString(" ") + uniqueObjects.map{ it.type.toString() }.joinToString(" ") + uniqueObjects.flatMap{ it.conditionals }.map{ it.toString() }.joinToString(" ") + "techRequiringConditionalsForWhenThisIsAvailable" + techRequiringConditionalsForWhenThisIsAvailable.count().toString() + techRequiringConditionalsForWhenThisIsAvailable.map{ it.toString() }.joinToString(" "))
         return techRequiringConditionalsForWhenThisIsAvailable.map{ it.params[0] }
         // Should this be cached? @SeventhM
     }
