@@ -45,13 +45,9 @@ interface IHasUniques : INamed, Json.Serializable {
 
     fun requiredTechs(): Sequence<String> {
         val uniquesForWhenThisIsAvailable: Sequence<Unique> = getMatchingUniques(UniqueType.OnlyAvailableWhen, StateForConditionals.IgnoreConditionals)
-        // sanity check that if the thing read() below inserted for "requiredTech" is in the uniques, then we had better be returning a nonempty Sequence here
-        if (uniquesForWhenThisIsAvailable.none() && uniques.any{ it.contains("Only available <after discovering [") })
-            throw Exception(uniqueObjects.map{ it.toString() }.joinToString(" ") + uniqueObjects.map{ it.type.toString() }.joinToString(" ") + uniqueObjects.flatMap{ it.conditionals }.map{ it.toString() }.joinToString(" ") + "uniquesForWhenThisIsAvailable" + uniquesForWhenThisIsAvailable.count().toString() + uniquesForWhenThisIsAvailable.map{ it.toString() }.joinToString(" "))
         val conditionalsForWhenThisIsAvailable: Sequence<Unique> = uniquesForWhenThisIsAvailable.flatMap{ it.conditionals }
-        if (uniquesForWhenThisIsAvailable.none() && uniques.any{ it.contains("Only available <after discovering [") })
-            throw Exception(uniqueObjects.map{ it.toString() }.joinToString(" ") + uniqueObjects.map{ it.type.toString() }.joinToString(" ") + uniqueObjects.flatMap{ it.conditionals }.map{ it.toString() }.joinToString(" ") + "conditionalsForWhenThisIsAvailable" + conditionalsForWhenThisIsAvailable.count().toString() + conditionalsForWhenThisIsAvailable.map{ it.toString() }.joinToString(" "))
         val techRequiringConditionalsForWhenThisIsAvailable: Sequence<Unique> = conditionalsForWhenThisIsAvailable.filter{ it.isOfType(UniqueType.ConditionalTech) }
+        // sanity check that if the thing read() below inserted for "requiredTech" is in the uniques, then we had better be returning a nonempty Sequence here
         if (uniquesForWhenThisIsAvailable.none() && uniques.any{ it.contains("Only available <after discovering [") })
             throw Exception(uniqueObjects.map{ it.toString() }.joinToString(" ") + uniqueObjects.map{ it.type.toString() }.joinToString(" ") + uniqueObjects.flatMap{ it.conditionals }.map{ it.toString() }.joinToString(" ") + "techRequiringConditionalsForWhenThisIsAvailable" + techRequiringConditionalsForWhenThisIsAvailable.count().toString() + techRequiringConditionalsForWhenThisIsAvailable.map{ it.toString() }.joinToString(" "))
         return techRequiringConditionalsForWhenThisIsAvailable.map{ it.params[0] }
@@ -60,11 +56,7 @@ interface IHasUniques : INamed, Json.Serializable {
 
     fun obsoletingTechs(): Sequence<String> {
         val uniquesForWhenThisIsAvailable: Sequence<Unique> = getMatchingUniques(UniqueType.OnlyAvailableWhen, StateForConditionals.IgnoreConditionals)
-        if (uniquesForWhenThisIsAvailable.none() && uniques.any{ it.contains("Only available <before discovering [") })
-            throw Exception(uniqueObjects.map{ it.toString() }.joinToString(" ") + uniqueObjects.map{ it.type.toString() }.joinToString(" ") + uniqueObjects.flatMap{ it.conditionals }.map{ it.toString() }.joinToString(" ") + "uniquesForWhenThisIsAvailable" + uniquesForWhenThisIsAvailable.count().toString() + uniquesForWhenThisIsAvailable.map{ it.toString() }.joinToString(" "))
         val conditionalsForWhenThisIsAvailable: Sequence<Unique> = uniquesForWhenThisIsAvailable.flatMap{ it.conditionals }
-        if (uniquesForWhenThisIsAvailable.none() && uniques.any{ it.contains("Only available <before discovering [") })
-            throw Exception(uniqueObjects.map{ it.toString() }.joinToString(" ") + uniqueObjects.map{ it.type.toString() }.joinToString(" ") + uniqueObjects.flatMap{ it.conditionals }.map{ it.toString() }.joinToString(" ") + "conditionalsForWhenThisIsAvailable" + conditionalsForWhenThisIsAvailable.count().toString() + conditionalsForWhenThisIsAvailable.map{ it.toString() }.joinToString(" "))
         val techRequiringConditionalsForWhenThisIsAvailable: Sequence<Unique> = conditionalsForWhenThisIsAvailable.filter{ it.isOfType(UniqueType.ConditionalNoTech) }
         if (uniquesForWhenThisIsAvailable.none() && uniques.any{ it.contains("Only available <before discovering [") })
             throw Exception(uniqueObjects.map{ it.toString() }.joinToString(" ") + uniqueObjects.map{ it.type.toString() }.joinToString(" ") + uniqueObjects.flatMap{ it.conditionals }.map{ it.toString() }.joinToString(" ") + "techRequiringConditionalsForWhenThisIsAvailable" + techRequiringConditionalsForWhenThisIsAvailable.count().toString() + techRequiringConditionalsForWhenThisIsAvailable.map{ it.toString() }.joinToString(" "))
