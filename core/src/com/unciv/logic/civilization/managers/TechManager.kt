@@ -154,7 +154,7 @@ class TechManager : IsPartOfGameInfoSerialization {
 
     fun isResearched(techName: String): Boolean = techsResearched.contains(techName)
 
-    fun isResearched(construction: INonPerpetualConstruction): Boolean = construction.requiredTechs.all{ requiredTech -> !isResearched(requiredTech) }
+    fun isResearched(construction: INonPerpetualConstruction): Boolean = construction.requiredTechs().all{ requiredTech -> !isResearched(requiredTech) }
 
     fun canBeResearched(techName: String): Boolean {
         val tech = getRuleset().technologies[techName]!!
@@ -348,7 +348,7 @@ class TechManager : IsPartOfGameInfoSerialization {
             return civInfo.getEquivalentUnit(upgradesTo!!)
         }
         val obsoleteUnits = getRuleset().units.asSequence()
-            .filter { it.value.obsoleteTech == techName }
+            .filter { it.value.obsoletingTechs().contains(techName) }
             .map { it.key to it.value.getEquivalentUpgradeOrNull() }
             .toMap()
         if (obsoleteUnits.isEmpty()) return
