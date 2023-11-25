@@ -52,6 +52,7 @@ class ConsoleCommandRoot:ConsoleCommandNode {
 
 class ConsoleUnitCommands:ConsoleCommandNode {
     override val subcommands = hashMapOf<String, ConsoleCommand>(
+
         "add" to ConsoleAction { console, params ->
             if (params.size != 2)
                 return@ConsoleAction "Format: unit add <civName> <unitName>"
@@ -101,6 +102,7 @@ class ConsoleUnitCommands:ConsoleCommandNode {
 
 class ConsoleCityCommands:ConsoleCommandNode {
     override val subcommands = hashMapOf<String, ConsoleCommand>(
+
         "add" to ConsoleAction { console, params ->
             if (params.size != 1) return@ConsoleAction  "Format: city add <civName>"
             val civ = console.getCivByName(params[0]) ?: return@ConsoleAction "Unknown civ"
@@ -151,6 +153,7 @@ class ConsoleCityCommands:ConsoleCommandNode {
 
 class ConsoleTileCommands: ConsoleCommandNode {
     override val subcommands = hashMapOf<String, ConsoleCommand>(
+
         "setimprovement" to ConsoleAction { console, params ->
             if (params.size != 1 && params.size != 2) return@ConsoleAction "Format: tile setimprovement <improvementName> [<civName>]"
             val selectedTile = console.screen.mapHolder.selectedTile
@@ -165,6 +168,7 @@ class ConsoleTileCommands: ConsoleCommandNode {
             selectedTile.improvementFunctions.changeImprovement(improvement.name, civ)
             return@ConsoleAction null
         },
+
         "removeimprovement" to ConsoleAction { console, params ->
             val selectedTile = console.screen.mapHolder.selectedTile
                 ?: return@ConsoleAction "No tile selected"

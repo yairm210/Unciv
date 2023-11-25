@@ -1,30 +1,18 @@
 ## 4.9.2
 
-Console: Added set/remove tile improvement
-
-Console: Show available commands on empty command
-
-Console: Added add/remove for cities
-
-Move city founding effects to the proper function
+Console:
+- Added set/remove tile improvement
+- Show available commands on empty command
+- Added add/remove for cities
 
 By SomeTroglodyte:
-- Tweak Language Pickers to scroll the selected one into view when appropriate, and allow selection with letter keys 
-- Comment unique 
-- Sound cache preloader 
-- Fix OpenAL error Windows Events after application ends 
-- Latin reboot 
-- Fix City ambient sounds 
-- "Fixed" Rusyn language 
-- Fixed Bosnian 
+- Fix OpenAL error Windows Events after application ends
+- Tweak Language Pickers to scroll the selected one into view when appropriate, and allow selection with letter keys
+- Modding: "Comment" unique
+- Snappier sounds
+- Fix City ambient sounds
 
 Get distance to nearest enemy rework  - By tuvus
-
-By Why-not-now:
-- Fixed typo 
-- Standardise using enum instead of string 
-- Fixed typo 
-- Standardise using enum instead of string 
 
 ## 4.9.1
 
