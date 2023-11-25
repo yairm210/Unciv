@@ -124,12 +124,7 @@ object BaseUnitDescriptions {
                 )
         }
 
-        if (baseUnit.requiredTechs.isNotEmpty() || baseUnit.upgradesTo != null || baseUnit.obsoleteTech != null) textList += FormattedLine()
-        for (requiredTech: String in baseUnit.requiredTechs)
-            textList += FormattedLine(
-                "Required tech: [${requiredTech}]",
-                link = "Technology/${requiredTech}"
-            )
+        if (baseUnit.upgradesTo != null || baseUnit.obsoleteTech != null) textList += FormattedLine()
 
         val canUpgradeFrom = ruleset.units
             .filterValues {
