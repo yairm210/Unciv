@@ -196,9 +196,9 @@ class CityStateDiplomacyTable(private val diplomacyScreen: DiplomacyScreen) {
 
         if (otherCiv.cityStateUniqueUnit != null) {
             val unitName = otherCiv.cityStateUniqueUnit
-            val techNames = viewingCiv.gameInfo.ruleset.units[otherCiv.cityStateUniqueUnit]!!.requiredTechs
+            val techNames = viewingCiv.gameInfo.ruleset.units[otherCiv.cityStateUniqueUnit]!!.requiredTechs()
             val techAndTech = techNames.joinToString(" and ")
-            val isOrAre = if (techNames.size == 1) "is" else "are"
+            val isOrAre = if (techNames.count() == 1) "is" else "are"
             diplomacyTable.add("[${otherCiv.civName}] is able to provide [${unitName}] once [${techAndTech}] [${isOrAre}] researched.".toLabel(fontSize = Constants.defaultFontSize)).row()
         }
 
