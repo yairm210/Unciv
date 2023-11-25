@@ -51,7 +51,6 @@ import java.io.PrintWriter
 import java.util.EnumSet
 import java.util.UUID
 import kotlinx.coroutines.CancellationException
-import kotlin.system.exitProcess
 
 open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpecific {
 
@@ -412,7 +411,7 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
         // On desktop this should only be this one and "DestroyJavaVM"
         logRunningThreads()
 
-        exitProcess(0)
+        // DO NOT `exitProcess(0)` - bypasses all Gdx and GLFW cleanup
     }
 
     private fun logRunningThreads() {

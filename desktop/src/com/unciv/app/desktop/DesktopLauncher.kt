@@ -1,6 +1,5 @@
 package com.unciv.app.desktop
 
-import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration
 import com.badlogic.gdx.files.FileHandle
 import com.badlogic.gdx.graphics.glutils.HdpiMode
@@ -14,6 +13,7 @@ import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.utils.Display
 import com.unciv.utils.Log
+import kotlin.system.exitProcess
 
 internal object DesktopLauncher {
 
@@ -50,10 +50,6 @@ internal object DesktopLauncher {
         config.setHdpiMode(HdpiMode.Logical)
         config.setWindowSizeLimits(WindowState.minimumWidth, WindowState.minimumHeight, -1, -1)
 
-        // We don't need the initial Audio created in Lwjgl3Application, HardenGdxAudio will replace it anyway.
-        // Note that means config.setAudioConfig() would be ignored too, those would need to go into the HardenedGdxAudio constructor.
-        config.disableAudio(true)
-
         // LibGDX not yet configured, use regular java class
         val maximumWindowBounds = getMaximumWindowBounds()
 
@@ -76,7 +72,8 @@ internal object DesktopLauncher {
             UiElementDocsWriter().write()
         }
 
-        val game = DesktopGame(config)
-        Lwjgl3Application(game, config)
+        // HardenGdxAudio extends Lwjgl3Application, and the Lwjgl3Application constructor runs as long as the game runs
+        HardenGdxAudio(DesktopGame(config), config)
+        exitProcess(0)
     }
 }
