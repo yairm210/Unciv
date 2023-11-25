@@ -124,8 +124,6 @@ object BaseUnitDescriptions {
                 )
         }
 
-        if (baseUnit.upgradesTo != null || baseUnit.obsoleteTech != null) textList += FormattedLine()
-
         val canUpgradeFrom = ruleset.units
             .filterValues {
                 (it.upgradesTo == baseUnit.name || it.upgradesTo != null && it.upgradesTo == baseUnit.replaces)
@@ -145,15 +143,6 @@ object BaseUnitDescriptions {
                 textList += FormattedLine()
             }
         }
-
-        if (baseUnit.upgradesTo != null) textList += FormattedLine(
-            "Upgrades to [${baseUnit.upgradesTo}]",
-            link = "Unit/${baseUnit.upgradesTo}"
-        )
-        if (baseUnit.obsoleteTech != null) textList += FormattedLine(
-            "Obsolete with [${baseUnit.obsoleteTech}]",
-            link = "Technology/${baseUnit.obsoleteTech}"
-        )
 
         if (baseUnit.promotions.isNotEmpty()) {
             textList += FormattedLine()
