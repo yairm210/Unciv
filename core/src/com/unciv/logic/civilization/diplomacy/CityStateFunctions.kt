@@ -93,8 +93,9 @@ class CityStateFunctions(val civInfo: Civilization) {
                 ?: return null
             if (!receivingCiv.tech.isResearched(uniqueUnit))
                 return null
-            if (uniqueUnit.obsoleteTech != null && receivingCiv.tech.isResearched(uniqueUnit.obsoleteTech!!))
-                return null
+            for (obsoleteTech: String in uniqueUnit.obsoletingTechs())
+                if (receivingCiv.tech.isResearched(obsoleteTech))
+                    return null
             return uniqueUnit
         }
         fun randomGiftableUnit() =
