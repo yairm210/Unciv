@@ -1,7 +1,5 @@
 package com.unciv.models.ruleset.unit
 
-import com.badlogic.gdx.utils.Json
-import com.badlogic.gdx.utils.JsonValue
 import com.unciv.logic.MultiFilter
 import com.unciv.logic.city.City
 import com.unciv.logic.city.CityConstructions
@@ -28,7 +26,7 @@ import kotlin.math.pow
 
 /** This is the basic info of the units, as specified in Units.json,
  in contrast to MapUnit, which is a specific unit of a certain type that appears on the map */
-class BaseUnit : RulesetObject(), INonPerpetualConstruction, Json.Serializable {
+class BaseUnit : RulesetObject(), INonPerpetualConstruction {
 
     override var cost: Int = -1
     override var hurryCostModifier: Int = 0
@@ -41,13 +39,18 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction, Json.Serializable {
     var unitType: String = ""
 
     val type by lazy { ruleset.unitTypes[unitType]!! }
-    override var requiredTechs = HashSet<String>()
+    // Warning: future development should not increase the role of requiredResource, and should reduce it when possible.
+    // The Unique "Consumes [1] [$requiredResource]" accomplishes the same task.
+    // https://yairm210.github.io/Unciv/Developers/Translations%2C-mods%2C-and-modding-freedom-in-Open-Source#filters
     var requiredResource: String? = null
 
     override fun getUniqueTarget() = UniqueTarget.Unit
 
     var replacementTextForUniques = ""
     var promotions = HashSet<String>()
+    // Warning: future development should not increase the role of obsoleteTech, and should reduce it when possible.
+    // The Unique "Only available before discovering [$obsoleteTech]" accomplishes the same task.
+    // https://yairm210.github.io/Unciv/Developers/Translations%2C-mods%2C-and-modding-freedom-in-Open-Source#filters
     var obsoleteTech: String? = null
     var upgradesTo: String? = null
     var replaces: String? = null
@@ -157,7 +160,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction, Json.Serializable {
         city: City? = null,
         additionalResources: Counter<String> = Counter.ZERO
     ): Sequence<RejectionReason> = sequence {
-        for (requiredTech: String in requiredTechs)
+        for (requiredTech: String in requiredTechs())
             if (!civ.tech.isResearched(requiredTech))
                 yield(RejectionReasonType.RequiresTech.toInstance("$requiredTech not researched"))
         if (obsoleteTech != null && civ.tech.isResearched(obsoleteTech!!))
@@ -292,7 +295,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction, Json.Serializable {
 
             else -> {
                 if (type.matchesFilter(filter)) return true
-                for (requiredTech: String in requiredTechs)
+                for (requiredTech: String in requiredTechs())
                     if (ruleset.technologies[requiredTech]?.matchesFilter(filter) == true) return true
                 if (
                 // Uniques using these kinds of filters should be deprecated and replaced with adjective-only parameters
@@ -417,70 +420,5 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction, Json.Serializable {
         }
 
         cachedForceEvaluation = power.toInt()
-    }
-
-    override fun write(json: Json) {
-        json.writeFields(this);
-    }
-    /** Custom Json formatter for a [BaseUnit].
-     *  This is needed for backwards compatibility.
-     *  In the original Civ 5, each unit had at most one required tech.
-     *  All extant JSON files, including vanilla, specify requiredTech as a single string.
-     */
-    override fun read(json: Json, jsonData: JsonValue) {
-        // We have a choice of two ways to do this. Both are a little ugly, so it's kind of pick-your-poison.
-        // We can invoke json.readFields to try to read in the object normally, then fix it up after the fact.
-        json.readFields(this, jsonData)
-        // Faced with a field named "requiredTech" which the BaseUnit class does not have, readFields ignores it.
-        // That's how it currently works. We can also handle all the fields symmetrically, but then that requires explicitly listing every single field in the "when" below.
-        // (Also, a couple of fields remain commented out below because I'm not sure how to correctly handle them; it only currently works because json.readFields() is doing all the heavy lifting.)
-        for (entry in jsonData)
-            // Enumerating every single child is ugly, there might be a better way to do this.
-            when(entry.name) {
-                "name" ->
-                    name = entry.asString()
-                "unitType" ->
-                    unitType = entry.asString()
-                "cost" ->
-                    cost = entry.asInt()
-                "movement" ->
-                    movement = entry.asInt()
-                "strength" ->
-                    strength = entry.asInt()
-                "rangedStrength" ->
-                    rangedStrength = entry.asInt()
-                "range" ->
-                    range = entry.asInt()
-                "interceptRange" ->
-                    interceptRange = entry.asInt()
-                "requiredTechs" ->
-                    requiredTechs = json.readValue(requiredTechs.javaClass, entry)
-                // For backwards compatibility, accept a single required tech.
-                "requiredTech" ->
-                    requiredTechs.add(entry.asString())
-                "obsoleteTech" ->
-                    obsoleteTech = entry.asString()
-                "requiredResource" ->
-                    requiredResource = entry.asString()
-                "upgradesTo" ->
-                    upgradesTo = entry.asString()
-                "replaces" ->
-                    replaces = entry.asString()
-                "uniqueTo" ->
-                    uniqueTo = entry.asString()
-                "hurryCostModifier" ->
-                    hurryCostModifier = entry.asInt()
-                "promotions" ->
-                    promotions = json.readValue(promotions.javaClass, entry)
-                    // Would it be better practice to use json.readFields(promotions, entry)?
-                "uniques" ->
-                    uniques = json.readValue(uniques.javaClass, entry)
-                "replacementTextForUniques" ->
-                    replacementTextForUniques = entry.asString()
-                "attackSound" ->
-                    attackSound = entry.asString()
-                // "civilopediaText" ->   this causes a crash? is this not supposed to be set directly?
-                //    civilopediaText = json.readValue(civilopediaText.javaClass, entry)
-            }
     }
 }
