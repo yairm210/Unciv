@@ -255,6 +255,7 @@ object TranslationFileWriter {
 
     private fun writeLanguagePercentages(percentages: HashMap<String, Int>, modFolder: FileHandle? = null) {
         val output = percentages.asSequence()
+            .sortedBy { it.key }
             .joinToString("\n", postfix = "\n") { "${it.key} = ${it.value}" }
         getFileHandle(modFolder, TranslationFileReader.percentagesFileLocation)
             .writeString(output, false)
@@ -544,7 +545,7 @@ object TranslationFileWriter {
                 else -> translated
             }
             val localeCode = LocaleCode.valueOf(language.replace("_",""))
-            val path = fastlanePath + localeCode.language
+            val path = fastlanePath + (localeCode.trueLanguage ?: localeCode.language)
             File(path).mkdirs()
             File(path + File.separator + fileName).writeText(fileContent)
         }
