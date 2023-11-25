@@ -340,6 +340,7 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     CanHurryResearch("Can hurry technology research", UniqueTarget.Unit),
     CanTradeWithCityStateForGoldAndInfluence("Can undertake a trade mission with City-State, giving a large sum of gold and [amount] Influence", UniqueTarget.Unit),
     CanTransform("Can transform to [unit]", UniqueTarget.Unit),
+    CanUpgrade("Can upgrade to [unit]", UniqueTarget.Unit),
 
     AutomationPrimaryAction("Automation is a primary action", UniqueTarget.Unit, flags = UniqueFlag.setOfHiddenToUsers),
 
