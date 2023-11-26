@@ -14,7 +14,7 @@ class CityAmbiencePlayer(
         val volume = UncivGame.Current.settings.citySoundsVolume
         if (volume > 0f) {
             UncivGame.Current.musicController
-                .playOverlay(city.civ.getEra().citySound, volume = volume, isLooping = true)
+                .playOverlay(city.civ.getEra().citySound, volume = volume, isLooping = true, fadeIn = true)
         }
     }
 
