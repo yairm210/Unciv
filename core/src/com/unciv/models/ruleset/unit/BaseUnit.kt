@@ -39,7 +39,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
     var unitType: String = ""
 
     val type by lazy { ruleset.unitTypes[unitType]!! }
-    @Deprecated
+    @Deprecated("The functionality provided by the requiredTech field is provided by the OnlyAvailableWhen unique.")
     override var requiredTech: String? = null
     var requiredResource: String? = null
 
