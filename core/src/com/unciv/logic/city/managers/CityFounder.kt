@@ -14,8 +14,6 @@ import com.unciv.models.ruleset.unique.UniqueType
 
 class CityFounder {
     fun foundCity(civInfo: Civilization, cityLocation: Vector2): City {
-        if (civInfo.gameInfo.ruleset.tileImprovements.containsKey(Constants.cityCenter))
-            civInfo.gameInfo.tileMap[cityLocation].changeImprovement(Constants.cityCenter)
         val city = City()
 
         city.foundingCiv = civInfo.civName
@@ -56,7 +54,8 @@ class CityFounder {
         })
             tile.removeTerrainFeature(terrainFeature)
 
-        tile.removeImprovement()
+        if (civInfo.gameInfo.ruleset.tileImprovements.containsKey(Constants.cityCenter))
+            tile.changeImprovement(Constants.cityCenter, civInfo)
         tile.improvementInProgress = null
 
         val ruleset = civInfo.gameInfo.ruleset
