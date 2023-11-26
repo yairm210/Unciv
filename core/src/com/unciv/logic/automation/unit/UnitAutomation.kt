@@ -29,7 +29,7 @@ object UnitAutomation {
                 && tile.neighbors.any { !unit.civ.hasExplored(it) }
                 && (!unit.civ.isCityState() || tile.neighbors.any { it.getOwner() == unit.civ }) // Don't want city-states exploring far outside their borders
                 && unit.getDamageFromTerrain(tile) <= 0    // Don't take unnecessary damage
-                && unit.civ.threatManager.getDistanceToClosestEnemyUnit(tile, 3) <= 3 // don't walk in range of enemy units
+                && unit.civ.threatManager.getDistanceToClosestEnemyUnit(tile, 3) > 3 // don't walk in range of enemy units
                 && unit.movement.canMoveTo(tile) // expensive, evaluate last
                 && unit.movement.canReach(tile) // expensive, evaluate last
     }
