@@ -208,6 +208,9 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
             UniqueType.ConditionalTimedUnique -> true
             UniqueType.ConditionalHideUniqueFromUsers -> true  // allowed to be attached to any Unique to hide it, no-op otherwise
 
+            // Recursion is always dangerous, but this will only infinite-loop if we already have a loop in the conditionals.
+            UniqueType.ConditionalDisjunction -> condition.conditionals.any{ conditionalApplies(it, state) }
+
             UniqueType.ConditionalChance -> stateBasedRandom.nextFloat() < condition.params[0].toFloat() / 100f
             UniqueType.ConditionalBeforeTurns -> checkOnCiv { gameInfo.turns < condition.params[0].toInt() }
             UniqueType.ConditionalAfterTurns -> checkOnCiv { gameInfo.turns >= condition.params[0].toInt() }
