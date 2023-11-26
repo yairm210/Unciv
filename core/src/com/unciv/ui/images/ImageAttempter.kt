@@ -38,7 +38,7 @@ class ImageAttempter<out T: Any>(val scope: T) {
      */
     fun tryImage(fileName: T.() -> String?): ImageAttempter<T> {
         if (!imageFound) {
-            val imagePath = scope.run(fileName)
+            val imagePath = fileName.invoke(scope)
             lastTriedFileName = imagePath ?: lastTriedFileName
             if (imagePath != null && ImageGetter.imageExists(imagePath))
                 imageFound = true

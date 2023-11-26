@@ -179,7 +179,7 @@ class TileSetStrings(
         )
         // if in cache return that
         val currentImageMapping = imageParamsToImageLocation[imageKey]
-        if (currentImageMapping!=null) return currentImageMapping
+        if (currentImageMapping != null) return currentImageMapping
 
         val imageLocation = tryGetUnitImageLocation(unit)
             ?: fallback?.tryGetUnitImageLocation(unit)
