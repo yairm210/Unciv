@@ -22,6 +22,7 @@ import com.unciv.ui.objectdescriptions.BuildingDescriptions
 
 class Building : RulesetStatsObject(), INonPerpetualConstruction {
 
+    @Deprecated("The functionality provided by the requiredTech field is provided by the OnlyAvailableWhen unique.")
     override var requiredTech: String? = null
     override var cost: Int = -1
 
@@ -360,8 +361,9 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
         if (civ.cache.uniqueBuildings.any { it.replaces == name })
             yield(RejectionReasonType.ReplacedByOurUnique.toInstance())
 
-        if (requiredTech != null && !civ.tech.isResearched(requiredTech!!))
-            yield(RejectionReasonType.RequiresTech.toInstance("$requiredTech not researched!"))
+        for (requiredTech: String in requiredTechs())
+            if (!civ.tech.isResearched(requiredTech))
+                yield(RejectionReasonType.RequiresTech.toInstance("$requiredTech not researched!"))
 
         // Regular wonders
         if (isWonder) {
