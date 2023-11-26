@@ -39,6 +39,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
     var unitType: String = ""
 
     val type by lazy { ruleset.unitTypes[unitType]!! }
+    @Deprecated
     override var requiredTech: String? = null
     var requiredResource: String? = null
 
