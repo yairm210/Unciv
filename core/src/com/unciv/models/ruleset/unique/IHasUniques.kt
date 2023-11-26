@@ -42,4 +42,11 @@ interface IHasUniques : INamed {
 
     fun hasUnique(uniqueType: UniqueType, stateForConditionals: StateForConditionals? = null) =
         getMatchingUniques(uniqueType.placeholderText, stateForConditionals).any()
+
+    fun requiredTechs(): Sequence<String> {
+        val uniquesForWhenThisIsAvailable: Sequence<Unique> = getMatchingUniques(UniqueType.OnlyAvailableWhen, StateForConditionals.IgnoreConditionals)
+        val conditionalsForWhenThisIsAvailable: Sequence<Unique> = uniquesForWhenThisIsAvailable.flatMap{ it.conditionals }
+        val techRequiringConditionalsForWhenThisIsAvailable: Sequence<Unique> = conditionalsForWhenThisIsAvailable.filter{ it.isOfType(UniqueType.ConditionalTech) }
+        return techRequiringConditionalsForWhenThisIsAvailable.map{ it.params[0] }
+    }
 }
