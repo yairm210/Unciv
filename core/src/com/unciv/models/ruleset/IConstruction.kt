@@ -29,7 +29,7 @@ interface IConstruction : INamed {
 interface INonPerpetualConstruction : IConstruction, INamed, IHasUniques {
     var cost: Int
     val hurryCostModifier: Int
-    @Deprecated
+    @Deprecated("The functionality provided by the requiredTech field is provided by the OnlyAvailableWhen unique.")
     var requiredTech: String?
 
     fun requiredTechs: Sequence<String> = sequenceOf(requiredTech)
