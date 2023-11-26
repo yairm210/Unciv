@@ -1,6 +1,7 @@
 package com.unciv.logic.city.managers
 
 import com.badlogic.gdx.math.Vector2
+import com.unciv.Constants
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.Proximity
@@ -53,7 +54,8 @@ class CityFounder {
         })
             tile.removeTerrainFeature(terrainFeature)
 
-        tile.removeImprovement()
+        if (civInfo.gameInfo.ruleset.tileImprovements.containsKey(Constants.cityCenter))
+            tile.changeImprovement(Constants.cityCenter, civInfo)
         tile.improvementInProgress = null
 
         val ruleset = civInfo.gameInfo.ruleset

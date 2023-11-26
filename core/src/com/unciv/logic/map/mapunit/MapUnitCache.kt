@@ -71,9 +71,6 @@ class MapUnitCache(private val mapUnit: MapUnit) {
 
     var hasCitadelPlacementUnique = false
 
-    var distanceToClosestEnemyUnit: Int? = null
-    var distanceToClosestEnemyUnitSearched: Int? = null
-
     fun updateUniques() {
 
         allTilesCosts1 = mapUnit.hasUnique(UniqueType.AllTilesCost1Move)
