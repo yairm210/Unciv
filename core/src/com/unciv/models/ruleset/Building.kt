@@ -22,6 +22,7 @@ import com.unciv.ui.objectdescriptions.BuildingDescriptions
 
 class Building : RulesetStatsObject(), INonPerpetualConstruction {
 
+    @Deprecated
     override var requiredTech: String? = null
     override var cost: Int = -1
 
