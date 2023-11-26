@@ -361,8 +361,9 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
         if (civ.cache.uniqueBuildings.any { it.replaces == name })
             yield(RejectionReasonType.ReplacedByOurUnique.toInstance())
 
-        if (requiredTech != null && !civ.tech.isResearched(requiredTech!!))
-            yield(RejectionReasonType.RequiresTech.toInstance("$requiredTech not researched!"))
+        for (requiredTech: String in requiredTechs())
+            if (!civ.tech.isResearched(requiredTech))
+                yield(RejectionReasonType.RequiresTech.toInstance("$requiredTech not researched!"))
 
         // Regular wonders
         if (isWonder) {
