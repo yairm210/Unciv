@@ -156,8 +156,9 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         city: City? = null,
         additionalResources: Counter<String> = Counter.ZERO
     ): Sequence<RejectionReason> = sequence {
-        if (requiredTech != null && !civ.tech.isResearched(requiredTech!!))
-            yield(RejectionReasonType.RequiresTech.toInstance("$requiredTech not researched"))
+        for (requiredTech: String in requiredTechs())
+            if (!civ.tech.isResearched(requiredTech))
+                yield(RejectionReasonType.RequiresTech.toInstance("$requiredTech not researched"))
         if (obsoleteTech != null && civ.tech.isResearched(obsoleteTech!!))
             yield(RejectionReasonType.Obsoleted.toInstance("Obsolete by $obsoleteTech"))
 
@@ -290,7 +291,8 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
 
             else -> {
                 if (type.matchesFilter(filter)) return true
-                if (requiredTech != null && ruleset.technologies[requiredTech]?.matchesFilter(filter) == true) return true
+                for (requiredTech: String in requiredTechs())
+                    if (ruleset.technologies[requiredTech]?.matchesFilter(filter) == true) return true
                 if (
                 // Uniques using these kinds of filters should be deprecated and replaced with adjective-only parameters
                     filter.endsWith(" units")
