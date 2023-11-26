@@ -601,7 +601,7 @@ enum class UniqueType(
 
 
     /////// general conditionals
-    ConditionalDisjunction("[conditional] or [conditional]", UniqueTarget.Conditional),
+    ConditionalDisjunction("Either", UniqueTarget.Conditional),
     ConditionalTimedUnique("for [amount] turns", UniqueTarget.Conditional),
     ConditionalChance("with [amount]% chance", UniqueTarget.Conditional),
     ConditionalBeforeTurns("before [amount] turns", UniqueTarget.Conditional),
