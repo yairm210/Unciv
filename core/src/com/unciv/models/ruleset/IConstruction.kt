@@ -29,7 +29,10 @@ interface IConstruction : INamed {
 interface INonPerpetualConstruction : IConstruction, INamed, IHasUniques {
     var cost: Int
     val hurryCostModifier: Int
+    @Deprecated
     var requiredTech: String?
+
+    fun requiredTechs: Sequence<String> = sequenceOf(requiredTech)
 
     fun getProductionCost(civInfo: Civilization): Int
     fun getStatBuyCost(city: City, stat: Stat): Int?
