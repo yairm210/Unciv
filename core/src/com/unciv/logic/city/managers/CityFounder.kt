@@ -55,7 +55,7 @@ class CityFounder {
             tile.removeTerrainFeature(terrainFeature)
 
         if (civInfo.gameInfo.ruleset.tileImprovements.containsKey(Constants.cityCenter))
-            civInfo.gameInfo.tileMap[cityLocation].changeImprovement(Constants.cityCenter, civInfo)
+            tile.changeImprovement(Constants.cityCenter, civInfo)
         tile.improvementInProgress = null
 
         val ruleset = civInfo.gameInfo.ruleset
