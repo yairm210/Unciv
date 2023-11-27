@@ -66,6 +66,6 @@ interface IHasUniques : INamed {
             // This will return null only if requiredTechnologies() is empty.
 
     fun techColumn(ruleset: Ruleset): TechColumn? =
-            requiredTechnologies(ruleset).map{ it.column }.filter{ it != null }.maxByOrNull{ it.columnNumber }
+            requiredTechnologies(ruleset).map{ it.column }.filter{ it != null }.map{ it!! }.maxByOrNull{ it.columnNumber }
             // This will return null only if *all* required techs have null TechColumn.
 }
