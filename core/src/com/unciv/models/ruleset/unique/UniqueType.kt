@@ -9,7 +9,12 @@ import com.unciv.models.translations.getPlaceholderText
 // I didn't put this in a companion object because APPARENTLY doing that means you can't use it in the init function.
 private val numberRegex = Regex("\\d+$") // Any number of trailing digits
 
-enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags: List<UniqueFlag> = emptyList()) {
+enum class UniqueType(
+    val text: String,
+    vararg targets: UniqueTarget,
+    val flags: List<UniqueFlag> = emptyList(),
+    val docDescription: String? = null
+) {
 
     //////////////////////////////////////// region 01 GLOBAL UNIQUES ////////////////////////////////////////
 
@@ -782,11 +787,10 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
 
     HiddenAfterGreatProphet("Hidden after generating a Great Prophet", UniqueTarget.Ruins),
     HiddenWithoutVictoryType("Hidden when [victoryType] Victory is disabled", UniqueTarget.Building, UniqueTarget.Unit, flags = UniqueFlag.setOfHiddenToUsers),
-    HiddenFromCivilopedia("Will not be displayed in Civilopedia", UniqueTarget.Building,
-        UniqueTarget.Unit, UniqueTarget.UnitType, UniqueTarget.Improvement, UniqueTarget.Tech,
-        UniqueTarget.Terrain, UniqueTarget.Resource, UniqueTarget.Policy, UniqueTarget.Promotion,
-        UniqueTarget.Nation, UniqueTarget.Ruins, flags = UniqueFlag.setOfHiddenToUsers),
+    HiddenFromCivilopedia("Will not be displayed in Civilopedia", *UniqueTarget.Displayable, flags = UniqueFlag.setOfHiddenToUsers),
     ConditionalHideUniqueFromUsers("hidden from users", UniqueTarget.Conditional),
+    Comment("Comment [comment]", *UniqueTarget.Displayable,
+        docDescription = "Allows displaying arbitrary text in a Unique listing. Only the text within the '[]' brackets will be displayed, the rest serves to allow Ruleset validation to recognize the intent."),
 
     // Declarative Mod compatibility (so far rudimentary):
     ModIncompatibleWith("Mod is incompatible with [modFilter]", UniqueTarget.ModOptions),

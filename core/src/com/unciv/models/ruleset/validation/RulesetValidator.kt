@@ -576,7 +576,7 @@ class RulesetValidator(val ruleset: Ruleset) {
     }
 
     private fun addBuildingErrorRulesetInvariant(building: Building, lines: RulesetErrorList) {
-        if (building.requiredTechs().any() && building.cost == -1 && !building.hasUnique(
+        if (building.requiredTechs().none() && building.cost == -1 && !building.hasUnique(
                 UniqueType.Unbuildable
             )
         )

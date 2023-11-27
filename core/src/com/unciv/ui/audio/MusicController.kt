@@ -9,7 +9,6 @@ import com.unciv.logic.multiplayer.storage.DropBox
 import com.unciv.models.metadata.GameSettings
 import com.unciv.utils.Concurrency
 import com.unciv.utils.Log
-import java.io.File
 import java.util.EnumSet
 import java.util.Timer
 import kotlin.concurrent.thread
@@ -144,6 +143,9 @@ class MusicController {
 
     /** One entry only for 'overlay' tracks in addition to and independent of normal music */
     private var overlay: MusicTrackController? = null
+    /** `overlay` state needs to be separate - but apart from Idle, which is `overlay==null`,
+     *   it only needs to know whether a fade-out was meant as stop or as pause */
+    private var overlayPausing = false
 
     /** Keeps paths of recently played track to reduce repetition */
     private val musicHistory = ArrayDeque<String>(musicHistorySize)
@@ -530,6 +532,8 @@ class MusicController {
         current?.startFade(MusicTrackController.State.FadeOut, fadingStep)
         if (next?.state == MusicTrackController.State.FadeIn)
             next!!.startFade(MusicTrackController.State.FadeOut)
+
+        pauseOverlay()
     }
 
     /**
@@ -550,15 +554,18 @@ class MusicController {
         } else if (state == ControllerState.Cleanup || state == ControllerState.Pause) {
             chooseTrack()
         }
+
+        resumeOverlay()
     }
 
     /** Fade out then shutdown with a given [duration] in seconds,
      *  defaults to a 'slow' fade (4.5s) */
-    @Suppress("unused")  // might be useful instead of gracefulShutdown
+    @Suppress("MemberVisibilityCanBePrivate")
     fun fadeoutToSilence(duration: Float = defaultFadeDuration * 5) {
         val fadingStep = 1f / ticksPerSecond / duration
         current?.startFade(MusicTrackController.State.FadeOut, fadingStep)
         next?.startFade(MusicTrackController.State.FadeOut, fadingStep)
+        overlay?.startFade(MusicTrackController.State.FadeOut, fadingStep)
         state = ControllerState.Shutdown
     }
 
@@ -572,7 +579,7 @@ class MusicController {
     /** Soft shutdown of music playback, with fadeout */
     fun gracefulShutdown() {
         if (state == ControllerState.Cleanup) shutdown()
-        else state = ControllerState.Shutdown
+        else fadeoutToSilence(defaultFadeDuration)
     }
 
     /** Download Thatched Villagers */
@@ -593,10 +600,12 @@ class MusicController {
     private fun getMatchingFiles(folder: String, name: String) =
         getMusicFolders(folder) { Gdx.files.internal(folder) }
             .flatMap {
-                it.list { file: File ->
-                    file.nameWithoutExtension == name && file.exists() && !file.isDirectory &&
-                    file.extension in gdxSupportedFileExtensions
-                }.asSequence()
+                // Don't list() here - no work on packaged internal
+                gdxSupportedFileExtensions.asSequence().map { extension ->
+                    it.child("$name.$extension")
+                }.filter { file ->
+                    file.exists() && !file.isDirectory
+                }
             }
 
     /** Play [name] from any mod's [folder] or internal assets,
@@ -636,12 +645,27 @@ class MusicController {
 
     /** Fade out any playing overlay then clean up */
     fun stopOverlay() {
+        overlayPausing = false
         overlay?.startFade(MusicTrackController.State.FadeOut)
     }
 
+    private fun pauseOverlay() {
+        overlayPausing = true
+        overlay?.startFade(MusicTrackController.State.FadeOut)
+    }
+
+    private fun resumeOverlay() {
+        overlay?.run {
+            if (!state.canPlay || state == MusicTrackController.State.Playing) return
+            startFade(MusicTrackController.State.FadeIn)
+            play()
+        }
+    }
+
     private fun MusicTrackController.overlayTick() {
-        if (timerTick() == MusicTrackController.State.Idle || !isPlaying())
-            clearOverlay()  // means FadeOut finished
+        if (timerTick() != MusicTrackController.State.Idle) return
+        if (!overlayPausing && !isPlaying())
+            clearOverlay()  // means FadeOut-to-stop finished
     }
 
     private fun clearOverlay() {

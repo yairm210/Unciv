@@ -342,7 +342,7 @@ object NextTurnAutomation {
     private fun getUnitPriority(unit: MapUnit, isAtWar: Boolean): Int {
         if (unit.isCivilian() && !unit.isGreatPersonOfType("War")) return 1 // Civilian
         if (unit.baseUnit.isAirUnit()) return 2
-        val distance = if (!isAtWar) 0 else unit.getDistanceToEnemyUnit(6)
+        val distance = if (!isAtWar) 0 else unit.civ.threatManager.getDistanceToClosestEnemyUnit(unit.getTile(),6)
         // Lower health units should move earlier to swap with higher health units
         return distance + (unit.health / 10) + when {
             unit.baseUnit.isRanged() -> 10
