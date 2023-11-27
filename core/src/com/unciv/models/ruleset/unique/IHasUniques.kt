@@ -2,6 +2,7 @@ package com.unciv.models.ruleset.unique
 
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.tech.Era
+import com.unciv.models.ruleset.tech.TechColumn
 import com.unciv.models.ruleset.tech.Technology
 import com.unciv.models.stats.INamed
 
