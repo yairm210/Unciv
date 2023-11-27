@@ -693,8 +693,8 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
     /** This tests whether the buy button should be _enabled_ */
     private fun isConstructionPurchaseAllowed(construction: INonPerpetualConstruction, stat: Stat, constructionBuyCost: Int): Boolean {
         val city = cityScreen.city
-        return when {            
-            city.isPuppet && !city.civ.hasUnique(UniqueType.MayBuyConstructionsInPupets) -> false /** [UniqueType.MayBuyConstructionsInPupets] support - there may be civs that could buy items in puppets */
+        return when {
+            city.isPuppet && !city.civ.hasUnique(UniqueType.MayBuyConstructionsInPupets) -> false
             !cityScreen.canChangeState -> false
             city.isInResistance() -> false
             !construction.isPurchasable(city.cityConstructions) -> false    // checks via 'rejection reason'
