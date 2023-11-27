@@ -52,7 +52,7 @@ class CityStateFunctions(val civInfo: Civilization) {
         // Unique unit for militaristic city-states
         if (uniqueTypes.contains(UniqueType.CityStateMilitaryUnits)) {
             val possibleUnits = ruleset.units.values.filter { it.requiredTechs().any()
-                && !it.availableInEra(startingEra) // Not from the start era or before
+                && !it.availableInEra(ruleset, startingEra) // Not from the start era or before
                 && it.uniqueTo != null && it.uniqueTo in unusedMajorCivs // Must be from a major civ not in the game
                 && ruleset.unitTypes[it.unitType]!!.isLandUnit() && ( it.strength > 0 || it.rangedStrength > 0 ) } // Must be a land military unit
             if (possibleUnits.isNotEmpty())
