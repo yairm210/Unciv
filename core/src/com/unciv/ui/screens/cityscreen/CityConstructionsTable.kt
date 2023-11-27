@@ -149,7 +149,10 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
 
     private fun updateButtons(construction: IConstruction?) {
         buyButtonsTable.clear()
-        if (!cityScreen.canCityBeChanged()) return
+        if (!cityScreen.canChangeState) return
+        /** [UniqueType.MayBuyConstructionsInPupets] support - we need a buy button for civs that could buy items in puppets */
+        if (cityScreen.city.isPuppet && !cityScreen.city.civ.hasUnique(UniqueType.MayBuyConstructionsInPupets)) return 
+        
         buyButtonsTable.add(getQueueButton(construction)).padRight(5f)
         if (construction != null && construction !is PerpetualConstruction)
             for (button in getBuyButtons(construction as INonPerpetualConstruction))
@@ -554,6 +557,8 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
                 selectedQueueEntry = -1
                 cityScreen.update()
             }
+            if (city.isPuppet)
+                button.disable()
         } else {
             button = "Add to queue".toTextButton()
             if (construction == null
@@ -688,8 +693,8 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
     /** This tests whether the buy button should be _enabled_ */
     private fun isConstructionPurchaseAllowed(construction: INonPerpetualConstruction, stat: Stat, constructionBuyCost: Int): Boolean {
         val city = cityScreen.city
-        return when {
-            city.isPuppet -> false
+        return when {            
+            city.isPuppet && !city.civ.hasUnique(UniqueType.MayBuyConstructionsInPupets) -> false /** [UniqueType.MayBuyConstructionsInPupets] support - there may be civs that could buy items in puppets */
             !cityScreen.canChangeState -> false
             city.isInResistance() -> false
             !construction.isPurchasable(city.cityConstructions) -> false    // checks via 'rejection reason'

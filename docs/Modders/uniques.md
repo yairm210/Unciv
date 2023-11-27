@@ -725,6 +725,9 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "Triggers a Cultural Victory upon completion"
 	Applicable to: Global
 
+??? example  "May buy items in puppet cities"
+	Applicable to: Global
+
 ??? example  "May not annex cities"
 	Applicable to: Global
 
