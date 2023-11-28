@@ -22,6 +22,7 @@ import com.unciv.ui.components.extensions.surroundWithCircle
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.components.input.onClick
+import com.unciv.ui.components.input.onRightClick
 import com.unciv.ui.components.input.onDoubleClick
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popups.ToastPopup
@@ -95,7 +96,7 @@ class TechPickerScreen(
         if (tech != null) {
             // select only if there it doesn't mess up tempTechsToResearch
             if (civInfo.tech.isResearched(tech.name) || civInfo.tech.techsToResearch.size <= 1)
-                selectTechnology(tech, true)
+                selectTechnology(tech, queue = false, center = true)
             else centerOnTechnology(tech)
         } else {
             // center on any possible technology which is ready for the research right now
@@ -191,7 +192,8 @@ class TechPickerScreen(
                     val techButton = TechButton(tech.name, civTech, false)
                     table.add(techButton)
                     techNameToButton[tech.name] = techButton
-                    techButton.onClick { selectTechnology(tech, false) }
+                    techButton.onClick { selectTechnology(tech, queue = false, center = false) }
+                    techButton.onRightClick { selectTechnology(tech, queue = true, center = false) }
                     techButton.onDoubleClick(UncivSound.Paper) { tryExit() }
                     techTable.add(table).fillX()
                 }
@@ -364,7 +366,7 @@ class TechPickerScreen(
         orderIndicators.toFront()
     }
 
-    private fun selectTechnology(tech: Technology?, center: Boolean = false, switchFromWorldScreen: Boolean = true) {
+    private fun selectTechnology(tech: Technology?, queue: Boolean = false, center: Boolean = false, switchFromWorldScreen: Boolean = true) {
 
         val previousSelectedTech = selectedTech
         selectedTech = tech
@@ -412,8 +414,16 @@ class TechPickerScreen(
             }
         }
 
-        tempTechsToResearch.clear()
-        tempTechsToResearch.addAll(pathToTech.map { it.name })
+        if(queue){
+            for (pathTech in pathToTech) {
+                if (pathTech.name !in tempTechsToResearch) {
+                    tempTechsToResearch.add(pathTech.name)
+                }
+            }
+        }else{
+            tempTechsToResearch.clear()
+            tempTechsToResearch.addAll(pathToTech.map { it.name })
+        }
 
         val label = "Research [${tempTechsToResearch[0]}]".tr()
         val techProgression = getTechProgressLabel(tempTechsToResearch)
