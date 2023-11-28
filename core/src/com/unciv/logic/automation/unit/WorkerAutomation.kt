@@ -50,7 +50,8 @@ class WorkerAutomation(
     private val bestRoadAvailable: RoadStatus =
         cloningSource?.bestRoadAvailable ?:
         //Player can choose not to auto-build roads & railroads.
-        if (civInfo.isHuman() && !UncivGame.Current.settings.autoBuildingRoads)
+        if (civInfo.isHuman() && (!UncivGame.Current.settings.autoBuildingRoads 
+                || UncivGame.Current.settings.autoPlay.isAutoPlayingAndFullAI()))
             RoadStatus.None
         else civInfo.tech.getBestRoadAvailable()
 
@@ -340,11 +341,12 @@ class WorkerAutomation(
 
         //If the tile is a junk improvement or a fort placed in a bad location.
         val junkImprovement = tile.getTileImprovement()?.hasUnique(UniqueType.AutomatedWorkersWillReplace) == true
-            || (tile.improvement == Constants.fort && !evaluateFortSuroundings(tile, false) && !civInfo.isHuman())
+            || (tile.improvement == Constants.fort && !evaluateFortSuroundings(tile, false) 
+            && (!civInfo.isHuman() || UncivGame.Current.settings.autoPlay.isAutoPlayingAndFullAI()))
 
         if (tile.improvement != null && !junkImprovement
                 && !UncivGame.Current.settings.automatedWorkersReplaceImprovements
-                && unit.civ.isHuman())
+                && unit.civ.isHuman() && !UncivGame.Current.settings.autoPlay.isAutoPlayingAndFullAI())
             return false
 
         if (tile.improvement == null || junkImprovement) {

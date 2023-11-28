@@ -536,7 +536,7 @@ object Battle {
             city.puppetCity(attackerCiv)
             //Although in Civ5 Venice is unable to re-annex their capital, that seems a bit silly. No check for May not annex cities here.
             city.annexCity()
-        } else if (attackerCiv.isHuman() && !(GUI.getSettings().autoPlay.isAutoPlaying() && GUI.getSettings().autoPlay.fullAutoPlayAI)) {
+        } else if (attackerCiv.isHuman() && !(UncivGame.Current.settings.autoPlay.isAutoPlayingAndFullAI())) {
             // we're not taking our former capital
             attackerCiv.popupAlerts.add(PopupAlert(AlertType.CityConquered, city.id))
         } else  automateCityConquer(attackerCiv, city)

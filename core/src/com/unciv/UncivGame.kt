@@ -292,7 +292,7 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
     fun popScreen(): BaseScreen? {
         if (screenStack.size == 1) {
             musicController.pause()
-            GUI.getSettings().autoPlay.stopAutoPlay()
+            UncivGame.Current.settings.autoPlay.stopAutoPlay()
             ConfirmPopup(
                 screen = screenStack.last(),
                 question = "Do you want to exit the game?",

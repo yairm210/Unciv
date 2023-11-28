@@ -1,6 +1,6 @@
 package com.unciv.ui.screens.worldscreen.mainmenu
 
-import com.unciv.GUI
+import com.unciv.UncivGame
 import com.unciv.ui.components.input.KeyboardBinding
 import com.unciv.ui.components.input.onLongPress
 import com.unciv.ui.popups.Popup
@@ -11,7 +11,7 @@ import com.unciv.ui.screens.worldscreen.WorldScreen
 
 class WorldScreenMenuPopup(val worldScreen: WorldScreen) : Popup(worldScreen, scrollable = Scrollability.All) {
     init {
-        GUI.getSettings().autoPlay.stopAutoPlay()
+        UncivGame.Current.settings.autoPlay.stopAutoPlay()
         defaults().fillX()
 
         addButton("Main menu") {

@@ -2,7 +2,6 @@ package com.unciv.models.ruleset.unique
 
 import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
-import com.unciv.GUI
 import com.unciv.UncivGame
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.CivFlags
@@ -210,7 +209,7 @@ object UniqueTriggerActivation {
                 val greatPeople = civInfo.greatPeople.getGreatPeople()
                 if (unique.type == UniqueType.MayanGainGreatPerson && civInfo.greatPeople.longCountGPPool.isEmpty())
                     civInfo.greatPeople.longCountGPPool = greatPeople.map { it.name }.toHashSet()
-                if (civInfo.isHuman() && !GUI.getSettings().autoPlay.isAutoPlaying()) {
+                if (civInfo.isHuman() && !UncivGame.Current.settings.autoPlay.isAutoPlayingAndFullAI()) {
                     civInfo.greatPeople.freeGreatPeople++
                     // Anyone an idea for a good icon?
                     if (unique.type == UniqueType.MayanGainGreatPerson) {

@@ -2,7 +2,7 @@ package com.unciv.ui.screens.worldscreen.status
 
 import com.badlogic.gdx.graphics.Color
 import com.unciv.Constants
-import com.unciv.GUI
+import com.unciv.UncivGame
 import com.unciv.logic.civilization.managers.ReligionManager
 import com.unciv.logic.civilization.managers.ReligionState
 import com.unciv.models.Counter
@@ -27,9 +27,9 @@ enum class NextTurnAction(protected val text: String, val color: Color) {
     },
     AutoPlay("AutoPlay", Color.WHITE) {
         override fun isChoice(worldScreen: WorldScreen) =
-            GUI.getSettings().autoPlay.isAutoPlaying()
+            UncivGame.Current.settings.autoPlay.isAutoPlaying()
         override fun action(worldScreen: WorldScreen) =
-            GUI.getSettings().autoPlay.stopAutoPlay()
+            UncivGame.Current.settings.autoPlay.stopAutoPlay()
     },
     Working(Constants.working, Color.GRAY) {
         override fun isChoice(worldScreen: WorldScreen) =

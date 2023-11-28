@@ -349,6 +349,8 @@ class GameSettings {
         }
     
         fun isAutoPlaying(): Boolean = turnsToAutoPlay > 0
+        
+        fun isAutoPlayingAndFullAI():Boolean = isAutoPlaying() && fullAutoPlayAI
     }
 
     @Suppress("SuspiciousCallableReferenceInLambda")  // By @Azzurite, safe as long as that warning below is followed
