@@ -41,12 +41,16 @@ jobs:
     steps:
 
       - name: Merge Pull Request
-        uses: juliangruber/merge-pull-request-action@v1
+        uses: "actions/github-script@v5"
         with:
           github-token: ${{ secrets.ACTIONS_ACCESS_TOKEN }}
-          number: ${{ github.event.issue.number }}
-          method: squash
-          repo: juliangruber/octokit-action
+          script: |
+            await github.rest.pulls.merge({
+              merge_method: "squash",
+              owner: repository.owner,
+              pull_number: ${{ github.event.issue.number }},
+              repo: repository.repo,
+            })
 
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v2
