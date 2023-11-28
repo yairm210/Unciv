@@ -40,18 +40,18 @@ jobs:
     runs-on: ubuntu-latest
     steps:
 
-#      - name: Merge Pull Request
-#        uses: "actions/github-script@v5"
-#        with:
-#          github-token: ${{ secrets.ACTIONS_ACCESS_TOKEN }}
-#          script: |
-#            const repository = context.repo
-#            await github.rest.pulls.merge({
-#              merge_method: "squash",
-#              owner: repository.owner,
-#              pull_number: ${{ github.event.issue.number }},
-#              repo: repository.repo,
-#            })
+      - name: Merge Pull Request
+        uses: "actions/github-script@v5"
+        with:
+          github-token: ${{ secrets.ACTIONS_ACCESS_TOKEN }}
+          script: |
+            const repository = context.repo
+            await github.rest.pulls.merge({
+              merge_method: "squash",
+              owner: repository.owner,
+              pull_number: ${{ github.event.issue.number }},
+              repo: repository.repo,
+            })
 
       - uses: actions/checkout@v3
         with: # Required for triggering the deploy on tags added by this automation
@@ -64,13 +64,6 @@ jobs:
         run: |
           export version=$(node .github/workflows/releasePatch.js)
           echo "VERSION=$version" >> "$GITHUB_ENV"
-
-      #          git config user.name "GitHub Actions - autopatch"
-      #          git config user.email "<>"
-      #          git add .
-      #          git commit -m "$version"
-      #          git tag $version
-      #          git push origin --tags
 
       - uses: stefanzweifel/git-auto-commit-action@v5
         with:
