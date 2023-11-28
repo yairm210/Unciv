@@ -53,6 +53,12 @@ jobs:
               repo: repository.repo,
             })
 
+        # Even though the PR was "merged", the head is still not updated - takes Github a while longer
+        # Since there's no simple way to poll for this, we just wait
+      - uses: GuillaumeFalourd/wait-sleep-action@v1
+        with:
+          time: '30' # for 60 seconds
+
       - uses: actions/checkout@v3
         with: # Required for triggering the deploy on tags added by this automation
           # See https://github.com/stefanzweifel/git-auto-commit-action#commits-made-by-this-action-do-not-trigger-new-workflow-runs
