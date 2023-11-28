@@ -58,7 +58,7 @@ jobs:
 
       - name: Increment version and release
         run: |
-          export version=$(node .github/workflows/incrementVersionAndChangelog.js)
+          export version=$(node .github/workflows/releasePatch.js)
           echo "VERSION=$version" >> "$GITHUB_ENV"
 
       #          git config user.name "GitHub Actions - autopatch"
