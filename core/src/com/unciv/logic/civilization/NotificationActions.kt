@@ -59,7 +59,7 @@ class LocationAction(internal val location: Vector2 = Vector2.Zero) : Notificati
 class TechAction(private val techName: String = "") : NotificationAction {
     override fun execute(worldScreen: WorldScreen) {
         val tech = worldScreen.gameInfo.ruleset.technologies[techName]
-        worldScreen.game.pushScreen(TechPickerScreen(worldScreen.viewingCiv, tech))
+        worldScreen.game.pushScreen(TechPickerScreen(worldScreen.selectedCiv, tech))
     }
 }
 
