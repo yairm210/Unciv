@@ -54,12 +54,19 @@ jobs:
       - name: Increment version and release
         run: |
           export version=$(node .github/workflows/incrementVersionAndChangelog.js)
+          echo "VERSION=$version" >> "$GITHUB_ENV"
 
-          git add .
-          git commit -m "$version"
-          git tag $version
-          git push origin --tags
+      #          git config user.name "GitHub Actions - autopatch"
+      #          git config user.email "<>"
+      #          git add .
+      #          git commit -m "$version"
+      #          git tag $version
+      #          git push origin --tags
 
+      - uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: ${{env.VERSION}}
+          tagging_message: ${{env.VERSION}}
 
   merge_translations:
     if: github.event_name == 'workflow_dispatch' || (github.event.comment.body == 'merge translations' && contains(fromJSON('["OWNER", "MEMBER", "COLLABORATOR"]'), github.event.comment.author_association))
