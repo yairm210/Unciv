@@ -57,7 +57,7 @@ jobs:
         # Since there's no simple way to poll for this, we just wait
       - uses: GuillaumeFalourd/wait-sleep-action@v1
         with:
-          time: '30' # for 60 seconds
+          time: '15' # In seconds
 
       - uses: actions/checkout@v3
         with: # Required for triggering the deploy on tags added by this automation
