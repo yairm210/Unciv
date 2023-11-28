@@ -34,7 +34,7 @@ interface INonPerpetualConstruction : IConstruction, INamed, IHasUniques {
     @Deprecated("The functionality provided by the requiredTech field is provided by the OnlyAvailableWhen unique.")
     var requiredTech: String?
 
-    fun requiredTechs(): Sequence<String> = if (requiredTech == null) sequenceOf() else sequenceOf(requiredTech!!)
+    override fun legacyRequiredTechs(): Sequence<String> = if (requiredTech == null) sequenceOf() else sequenceOf(requiredTech!!)
 
     fun getProductionCost(civInfo: Civilization): Int
     fun getStatBuyCost(city: City, stat: Stat): Int?
