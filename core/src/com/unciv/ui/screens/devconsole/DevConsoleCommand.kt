@@ -10,13 +10,13 @@ interface ConsoleCommand {
     fun autocomplete(params: List<String>): String? = ""
 }
 
-class ConsoleAction(val action: (console: DevConsolePopup, params: List<String>)->String?):ConsoleCommand{
+class ConsoleAction(val action: (console: DevConsolePopup, params: List<String>)->String?) : ConsoleCommand {
     override fun handle(console: DevConsolePopup, params: List<String>): String? {
         return action(console, params)
     }
 }
 
-interface ConsoleCommandNode:ConsoleCommand{
+interface ConsoleCommandNode : ConsoleCommand {
     val subcommands: HashMap<String, ConsoleCommand>
 
     override fun handle(console: DevConsolePopup, params: List<String>): String? {
@@ -43,7 +43,7 @@ interface ConsoleCommandNode:ConsoleCommand{
     }
 }
 
-class ConsoleCommandRoot:ConsoleCommandNode {
+class ConsoleCommandRoot : ConsoleCommandNode {
     override val subcommands = hashMapOf<String, ConsoleCommand>(
         "unit" to ConsoleUnitCommands(),
         "city" to ConsoleCityCommands(),
@@ -51,7 +51,7 @@ class ConsoleCommandRoot:ConsoleCommandNode {
     )
 }
 
-class ConsoleUnitCommands:ConsoleCommandNode {
+class ConsoleUnitCommands : ConsoleCommandNode {
     override val subcommands = hashMapOf<String, ConsoleCommand>(
 
         "add" to ConsoleAction { console, params ->
@@ -67,7 +67,7 @@ class ConsoleUnitCommands:ConsoleCommandNode {
             return@ConsoleAction null
         },
 
-        "remove" to ConsoleAction { console, params ->
+        "remove" to ConsoleAction { console, _ ->
             val unit = console.getSelectedUnit()
                 ?: return@ConsoleAction "Select tile with unit"
             unit.destroy()
@@ -101,7 +101,7 @@ class ConsoleUnitCommands:ConsoleCommandNode {
     )
 }
 
-class ConsoleCityCommands:ConsoleCommandNode {
+class ConsoleCityCommands : ConsoleCommandNode {
     override val subcommands = hashMapOf<String, ConsoleCommand>(
 
         "add" to ConsoleAction { console, params ->
@@ -114,7 +114,7 @@ class ConsoleCityCommands:ConsoleCommandNode {
             return@ConsoleAction null
         },
 
-        "remove" to ConsoleAction { console, params ->
+        "remove" to ConsoleAction { console, _ ->
             val selectedTile = console.screen.mapHolder.selectedTile
                 ?: return@ConsoleAction "No tile selected"
             val city = selectedTile.getCity() ?: return@ConsoleAction "No city in selected tile"
@@ -143,7 +143,7 @@ class ConsoleCityCommands:ConsoleCommandNode {
             return@ConsoleAction null
         },
 
-        "removetile" to ConsoleAction { console, params ->
+        "removetile" to ConsoleAction { console, _ ->
             val selectedTile = console.screen.mapHolder.selectedTile
                 ?: return@ConsoleAction "No tile selected"
             val city = selectedTile.getCity() ?: return@ConsoleAction "No city for selected tile"
@@ -152,7 +152,7 @@ class ConsoleCityCommands:ConsoleCommandNode {
         })
 }
 
-class ConsoleTileCommands: ConsoleCommandNode {
+class ConsoleTileCommands : ConsoleCommandNode {
     override val subcommands = hashMapOf<String, ConsoleCommand>(
 
         "setimprovement" to ConsoleAction { console, params ->
@@ -170,7 +170,7 @@ class ConsoleTileCommands: ConsoleCommandNode {
             return@ConsoleAction null
         },
 
-        "removeimprovement" to ConsoleAction { console, params ->
+        "removeimprovement" to ConsoleAction { console, _ ->
             val selectedTile = console.screen.mapHolder.selectedTile
                 ?: return@ConsoleAction "No tile selected"
             selectedTile.improvementFunctions.changeImprovement(null)
