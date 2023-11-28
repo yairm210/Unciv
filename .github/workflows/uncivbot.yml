@@ -43,7 +43,7 @@ jobs:
       - name: Merge Pull Request
         uses: "actions/github-script@v5"
         with:
-          github-token: ${{ secrets.ACTIONS_ACCESS_TOKEN }}
+          github-token: ${{ secrets.ACTIONS_ACCESS_TOKEN }} # Required because default workflow token can't merge PRs
           script: |
             const repository = context.repo
             await github.rest.pulls.merge({
@@ -52,12 +52,6 @@ jobs:
               pull_number: ${{ github.event.issue.number }},
               repo: repository.repo,
             })
-
-        # Even though the PR was "merged", the head is still not updated - takes Github a while longer
-        # Since there's no simple way to poll for this, we just wait
-#      - uses: GuillaumeFalourd/wait-sleep-action@v1
-#        with:
-#          time: '60' # In seconds
 
       - uses: actions/checkout@v3
         with: # Required for triggering the deploy on tags added by this automation
