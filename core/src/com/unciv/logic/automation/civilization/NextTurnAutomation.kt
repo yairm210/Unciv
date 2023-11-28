@@ -352,7 +352,7 @@ object NextTurnAutomation {
         }
     }
 
-    private fun automateCityBombardment(civInfo: Civilization) {
+    fun automateCityBombardment(civInfo: Civilization) {
         for (city in civInfo.cities) UnitAutomation.tryBombardEnemy(city)
     }
 
