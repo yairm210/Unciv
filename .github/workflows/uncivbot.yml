@@ -40,18 +40,18 @@ jobs:
     runs-on: ubuntu-latest
     steps:
 
-      - name: Merge Pull Request
-        uses: "actions/github-script@v5"
-        with:
-          github-token: ${{ secrets.ACTIONS_ACCESS_TOKEN }}
-          script: |
-            const repository = context.repo
-            await github.rest.pulls.merge({
-              merge_method: "squash",
-              owner: repository.owner,
-              pull_number: ${{ github.event.issue.number }},
-              repo: repository.repo,
-            })
+#      - name: Merge Pull Request
+#        uses: "actions/github-script@v5"
+#        with:
+#          github-token: ${{ secrets.ACTIONS_ACCESS_TOKEN }}
+#          script: |
+#            const repository = context.repo
+#            await github.rest.pulls.merge({
+#              merge_method: "squash",
+#              owner: repository.owner,
+#              pull_number: ${{ github.event.issue.number }},
+#              repo: repository.repo,
+#            })
 
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v2
