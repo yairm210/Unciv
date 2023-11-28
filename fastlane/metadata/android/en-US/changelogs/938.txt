@@ -1,0 +1,64 @@
+
+
+Resolves  - Cities you haven't bombarded with will auto-bombard at turn end
+
+Resolves  - Defeated (no units/cities) hotseat multiplayer no longer appears for turns ("player X ready")
+
+cleanup
+
+4.9.2-patch5
+
+I think I found the conflict - checkout ref!
+
+Wait after PR merge, so the versioning can be done simply
+
+Wait after PR merge, so the versioning can be done simply
+
+ALL TOGETHER NOW
+
+4.9.2-patch4
+
+Tag does not trigger rebuild - maybe now it will
+
+4.9.2-patch3
+
+You know what let's just check out the second half
+
+damn wrong filename
+
+whoops
+
+Readymade didn't work, trying my own github script for PR merge
+
+Use manual access token to merge PR
+
+Try using git commit created by other people
+
+Added patch automation step!
+
+Added script to update versions on patch release
+
+Nicer command display
+
+4.9.2-patch2
+
+4.9.2-patch1
+
+By willjallen:
+- Add queuing functionality 
+- Fix typo 
+
+By tuvus:
+- Initial AutoPlay implementation 
+- Fixed isGoodTileToExplore() to check if there is no enemy in range 
+
+By dHannasch:
+- Add IHasUniques.era() 
+- Wrap INonPerpetualConstruction.requiredTech into function 
+
+By SomeTroglodyte:
+- (CQ) Linting and comments on TileSetStrings and ImageAttempter 
+- Wesnoth map import polished up 
+- City sounds again 
+
+Fix founding cities removing city center tile improvement  - By SeventhM
