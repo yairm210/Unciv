@@ -10,6 +10,7 @@ const fs = require("fs");
 (async () => {
     const [newVersion, newAppCodeNumber] = updateBuildConfig();
     updateGameVersion(newVersion, newAppCodeNumber);
+    console.log(newVersion)
 })();
 //endregion
 
@@ -29,7 +30,7 @@ function updateBuildConfig() {
     var buildConfigPath = "buildSrc/src/main/kotlin/BuildConfig.kt";
     var buildConfigString = fs.readFileSync(buildConfigPath).toString();
 
-    console.log("Original: " + buildConfigString);
+//    console.log("Original: " + buildConfigString);
 
     // Javascript string.match returns a regex string array, where array[0] is the entirety of the captured string,
     //  and array[1] is the first group, array[2] is the second group etc.
@@ -37,17 +38,18 @@ function updateBuildConfig() {
     var appVersionMatch = buildConfigString.match(/appVersion = "(.*)"/);
     const curVersion = appVersionMatch[1];
     const newVersion = getNextPatchVersion(curVersion)
+//    console.log("New version: "+newVersion)
 
     buildConfigString = buildConfigString.replace(appVersionMatch[0], appVersionMatch[0].replace(curVersion, newVersion));
     var appCodeNumberMatch = buildConfigString.match(/appCodeNumber = (\d*)/);
     let currentAppCodeNumber = appCodeNumberMatch[1];
-    console.log("Current incremental version: " + currentAppCodeNumber);
+//    console.log("Current incremental version: " + currentAppCodeNumber);
     const nextAppCodeNumber = Number(currentAppCodeNumber) + 1;
-    console.log("Next incremental version: " + nextAppCodeNumber);
+//    console.log("Next incremental version: " + nextAppCodeNumber);
     buildConfigString = buildConfigString.replace(appCodeNumberMatch[0],
         appCodeNumberMatch[0].replace(currentAppCodeNumber, nextAppCodeNumber));
 
-    console.log("Final: " + buildConfigString);
+//    console.log("Final: " + buildConfigString);
     fs.writeFileSync(buildConfigPath, buildConfigString);
     return [newVersion, nextAppCodeNumber];
 }
