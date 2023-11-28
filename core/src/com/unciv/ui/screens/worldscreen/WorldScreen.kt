@@ -11,6 +11,7 @@ import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
 import com.unciv.logic.UncivShowableException
+import com.unciv.logic.civilization.AlertType
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
@@ -58,6 +59,7 @@ import com.unciv.ui.screens.worldscreen.bottombar.BattleTable
 import com.unciv.ui.screens.worldscreen.bottombar.TileInfoTable
 import com.unciv.ui.screens.worldscreen.mainmenu.WorldScreenMusicPopup
 import com.unciv.ui.screens.worldscreen.minimap.MinimapHolder
+import com.unciv.ui.screens.worldscreen.status.AutoPlayStatusButton
 import com.unciv.ui.screens.worldscreen.status.MultiplayerStatusButton
 import com.unciv.ui.screens.worldscreen.status.NextTurnButton
 import com.unciv.ui.screens.worldscreen.status.NextTurnProgress
@@ -92,7 +94,7 @@ class WorldScreen(
     /** Indicates it's the player's ([viewingCiv]) turn */
     var isPlayersTurn = viewingCiv.isCurrentPlayer()
         internal set     // only this class is allowed to make changes
-
+    
     /** Selected civilization, used in spectator and replay mode, equals viewingCiv in ordinary games */
     var selectedCiv = viewingCiv
 
@@ -412,7 +414,13 @@ class WorldScreen(
         fogOfWarButton.isEnabled = !selectedCiv.isSpectator()
         fogOfWarButton.setPosition(10f, topBar.y - fogOfWarButton.height - 10f)
 
-        if (!hasOpenPopups() && isPlayersTurn) {
+        // If the game has ended, lets stop AutoPlay
+        if (game.settings.autoPlay.isAutoPlaying()
+            && !gameInfo.oneMoreTurnMode && (viewingCiv.isDefeated() || gameInfo.checkForVictory())) {
+            game.settings.autoPlay.stopAutoPlay()
+        }
+        
+        if (!hasOpenPopups() && !game.settings.autoPlay.isAutoPlaying() && isPlayersTurn) {
             when {
                 viewingCiv.shouldShowDiplomaticVotingResults() ->
                     UncivGame.Current.pushScreen(DiplomaticVoteResultScreen(gameInfo.diplomaticVictoryVotesCast, viewingCiv))
@@ -694,6 +702,7 @@ class WorldScreen(
     private fun updateGameplayButtons() {
         nextTurnButton.update()
 
+        updateAutoPlayStatusButton()
         updateMultiplayerStatusButton()
 
         statusButtons.wrap(false)
@@ -705,6 +714,18 @@ class WorldScreen(
             statusButtons.pack()
         }
         statusButtons.setPosition(stage.width - statusButtons.width - 10f, topBar.y - statusButtons.height - 10f)
+    }
+
+    private fun updateAutoPlayStatusButton() {
+        if (statusButtons.autoPlayStatusButton == null) {
+            if (game.settings.autoPlay.showAutoPlayButton)
+                statusButtons.autoPlayStatusButton = AutoPlayStatusButton(this, nextTurnButton)
+        } else {
+            if (!game.settings.autoPlay.showAutoPlayButton) {
+                statusButtons.autoPlayStatusButton = null
+                game.settings.autoPlay.stopAutoPlay()
+            }
+        }
     }
 
     private fun updateMultiplayerStatusButton() {
