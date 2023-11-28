@@ -45,6 +45,7 @@ jobs:
         with:
           github-token: ${{ secrets.ACTIONS_ACCESS_TOKEN }}
           script: |
+            const repository = context.repo
             await github.rest.pulls.merge({
               merge_method: "squash",
               owner: repository.owner,
