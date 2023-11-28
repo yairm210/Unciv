@@ -44,7 +44,7 @@ jobs:
         uses: juliangruber/merge-pull-request-action@v1
         with:
           github-token: ${{ secrets.ACTIONS_ACCESS_TOKEN }}
-          number: 1
+          number: ${{ github.event.issue.number }}
           method: squash
           repo: juliangruber/octokit-action
 
