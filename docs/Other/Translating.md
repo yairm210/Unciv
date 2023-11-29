@@ -36,19 +36,16 @@ When you ask to 'edit' a file in yairm210/Unciv, these stages happen _automatica
 
 ## Other notes
 
-Make sure that you make the changes in the 'master' branch in your repo!
-
-Each untranslated phrase will have a "requires translation" line before it, so you can quickly find them. You don't need to remove them yourself if you don't want to - they will be automatically removed the next time we rebuild the file.
-
-Order of lines does not matter, they will be rearranged automatically each release.
+Each untranslated phrase will have a ` # Requires translation!" line before it, so you can quickly find them.
+You don't need to remove them yourself - they will be automatically removed the next time we rebuild the file.
 
 Do as much as you're comfortable with - it's a big game with a lot of named objects, so don't feel pressured into doing everything =)
 
+If you're making changes to your own repo, make sure that you make the branch you're changing is based on Unciv's master branch
+
 Some entries have line breaks expressed as `\n`: Your translation can and in most cases should use them as well, but you do not need to distribute them exactly as in the original. Try to find a translation that reads nicely, then place the line break codes at roughly the same intervals as the original uses (less if your language's glyphs are wider than latin ones). Important: You cannot use normal line breaks, you must use the `\n` codes, normal line breaks are not part of a translation.
 
-A Chinese tutorial for translation was created by our Chinese translators, which can be found here: [(Video On Bilibili)](https://www.bilibili.com/video/BV1pY4y1u7WH/)
-
-如果你是中国人，那么恭喜你运气不错！这里有Unciv中文开发者们专门为中文翻译工作者准备的（十分详尽）教程视频。：[(Video On Bilibili)](https://www.bilibili.com/video/BV1pY4y1u7WH/)
+Chinese tutorial: 如果你是中国人，那么恭喜你运气不错！这里有Unciv中文开发者们专门为中文翻译工作者准备的（十分详尽）教程视频。：[(Video On Bilibili)](https://www.bilibili.com/video/BV1pY4y1u7WH/)
 
 ## Why not use a crowdsourcing translation website like <...>?
 
