@@ -171,7 +171,7 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
 
         /** Helper to simplify conditional tests requiring a City */
         fun checkOnCity(predicate: (City.() -> Boolean)): Boolean {
-            if (state.city == null) return false
+            if (state.city == null) return true
             return state.city.predicate()
         }
 
