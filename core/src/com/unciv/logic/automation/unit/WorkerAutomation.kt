@@ -367,7 +367,7 @@ class WorkerAutomation(
 
         val isResourceTileWithoutResourceProvider = !tile.containsGreatImprovement()
             && tile.hasViewableResource(civInfo)
-            && !tile.tileResource.isImprovedBy(tile.improvement!!)
+            && (tile.improvement == null || !tile.tileResource.isImprovedBy(tile.improvement!!))
 
         if (anyImprovementIsOk || isResourceTileWithoutResourceProvider) {
             val chosenImprovement = chooseImprovement(unit, tile)
