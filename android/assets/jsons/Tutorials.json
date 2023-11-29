@@ -458,5 +458,25 @@
             {"text":"Letters can select categories, and when there are multiple categories matching the same letter, you can press that repeatedly to cycle between these.","starred":true,"color":"#666"},
             {"text":"The arrow keys allow navigation as well - left/right for categories, up/down for entries.","starred":true,"color":"#666"}
         ]
+    },
+    {
+        "name": "UI Tips",
+        "civilopediaText": [
+            {"text":"Toggle notification list display","header":5,"color":"#fa0"},
+            {"text":"On the world screen, swipe the notification list to the right to temporarily hide it. Click the \"Bell\" button to display them again."},
+            {"text":"The default state for the notification list can be set in Options > Display > UI - Notifications on world screen"},
+            {},
+            {"text":"Additional controls for the construction queue","header":5,"color":"#fa0"},
+            {"text":"Right-click or long press the \"arrow\" buttons to open a popup menu with additional controls, allowing to manage unit and building production in all cities from the same City screen. The same applies to the \"Plus\" and \"Remove\" buttons."},
+            {"text":"In the \"Plus\" popup menu, the \"Disable\" option moves an item to the end of the list, in a new \"Disabled\" tab. To move a disabled item back to its initial place, enter again the \"Plus\" popup menu, and choose \"Enable\"."},
+            {},
+            {"text":"Queue multiple technologies in different branches","header":5,"color":"#fa0"},
+            {"text":"In the Tech screen, right-click or long press a technology to automatically queue it, even if this tech is in another branch than the item currently researched."},
+            {"text":"Prerequisite techs to research will also be automatically queued. Right-click or long press multiple techs to append them to the research queue, whatever their branch is."},
+            {},
+            {"text":"Reveal known resources on world screen","header":5,"color":"#fa0"},
+            {"text":"In the Resources overview, click on a resource icon to center the world screen on tiles already discovered and providing this resource."},
+            {"text":"If more than one tile is avalaible, click on the notification to cycle through all of them."}
+        ]
     }
 ]
