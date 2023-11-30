@@ -61,6 +61,6 @@ interface IHasUniques : INamed {
         requiredTechs().map{ ruleset.technologies[it]!! }
 
     fun era(ruleset: Ruleset): Era? =
-            requiredTechnologies(ruleset).map{ it.era() }.map{ ruleset.eras[it]!! }.maxByOrNull{ it.eraNumber }
+            requiredTechnologies(ruleset).map{ ruleset.eras[it.era()]!! }.maxByOrNull{ it.eraNumber }
             // This will return null only if requiredTechnologies() is empty.
 }
