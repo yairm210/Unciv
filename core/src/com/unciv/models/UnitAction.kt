@@ -100,7 +100,7 @@ enum class UnitActionType(
     Automate("Automate",
         { ImageGetter.getUnitActionPortrait("Automate") }),
     ForceAutomateRoadConnection("Connect road",
-        { ImageGetter.getUnitActionPortrait("Automate") }), //TODO: Custom icon for connect road
+        { ImageGetter.getUnitActionPortrait("RoadConnection") }),
     StopAutomation("Stop automation",
         { ImageGetter.getUnitActionPortrait("Stop") }, false),
     StopMovement("Stop movement",

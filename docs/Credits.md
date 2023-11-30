@@ -665,6 +665,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 - [Circle](https://thenounproject.com/term/circle/1841891/) By Aybige
 - [Arrow](https://thenounproject.com/term/arrow/18123/) By Joe Mortell for movement
 - [Swap](https://thenounproject.com/search/?q=swap&i=1259600) By iconomania for swapping units
+- [Road](https://thenounproject.com/icon/road-224428/) By Gábor István Karaba for connect road automation
 - [Connection](https://thenounproject.com/search/?q=connection&i=1521886) By Travis Avery
 - [Skull](https://thenounproject.com/search/?q=Skull&i=1030702) By Vladimir Belochkin for disbanding units
 - [Crosshair](https://thenounproject.com/search/?q=crosshairs&i=916030) By Bakunetsu Kaito for selecting enemies to attack
