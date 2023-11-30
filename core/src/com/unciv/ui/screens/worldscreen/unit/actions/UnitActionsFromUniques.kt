@@ -271,16 +271,9 @@ object UnitActionsFromUniques {
         return finalActions
     }
 
-    fun addTransformActions(
-        unit: MapUnit,
-        actionList: ArrayList<UnitAction>
-    ) {
-        val upgradeAction = getTransformActions(unit)
-        actionList += upgradeAction
-    }
 
-    private fun getTransformActions(
-        unit: MapUnit
+    fun getTransformActions(
+        unit: MapUnit, tile: Tile
     ): ArrayList<UnitAction> {
         val unitTile = unit.getTile()
         val civInfo = unit.civ

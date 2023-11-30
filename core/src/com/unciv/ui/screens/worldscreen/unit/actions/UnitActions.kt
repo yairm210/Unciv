@@ -23,19 +23,26 @@ object UnitActions {
 
     /** Returns whether the action was invoked */
     fun invokeUnitAction(unit: MapUnit, unitActionType: UnitActionType): Boolean {
-        val unitAction = getNormalActions(unit).firstOrNull { it.type == unitActionType }
+        val unitAction = actionTypeToFunctions[unitActionType]?.invoke(unit, unit.getTile())?.firstOrNull()
+            ?: getNormalActions(unit).firstOrNull { it.type == unitActionType }
             ?: getAdditionalActions(unit).firstOrNull { it.type == unitActionType }
         val internalAction = unitAction?.action ?: return false
         internalAction.invoke()
         return true
     }
 
+    private val actionTypeToFunctions = linkedMapOf<UnitActionType, (unit:MapUnit, tile:Tile) -> ArrayList<UnitAction>>(
+        UnitActionType.Transform to UnitActionsFromUniques::getTransformActions
+    )
+
     private fun getNormalActions(unit: MapUnit): List<UnitAction> {
         val tile = unit.getTile()
         val actionList = ArrayList<UnitAction>()
 
         // Determined by unit uniques
-        UnitActionsFromUniques.addTransformActions(unit, actionList)
+        for (getActionsFunction in actionTypeToFunctions.values)
+            actionList += getActionsFunction(unit, tile)
+
         UnitActionsFromUniques.addParadropAction(unit, actionList)
         UnitActionsFromUniques.addAirSweepAction(unit, actionList)
         UnitActionsFromUniques.addSetupAction(unit, actionList)
