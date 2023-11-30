@@ -106,6 +106,10 @@ class MapUnit : IsPartOfGameInfoSerialization {
     var action: String? = null // work, automation, fortifying, I dunno what.
     var automated: Boolean = false
 
+    // Connect roads implies automated is true. It is specified by the action type.
+    var automatedRoadConnectionStart: Tile? = null
+    var automatedRoadConnectionEnd: Tile? = null
+
     @Transient
     var showAdditionalActions: Boolean = false
 
@@ -381,6 +385,8 @@ class MapUnit : IsPartOfGameInfoSerialization {
     fun isMoving() = action?.startsWith("moveTo") == true
 
     fun isAutomated() = automated
+
+    fun isForceAutomatingRoadConnection() = action == UnitActionType.ForceAutomateRoadConnection.value
     fun isExploring() = action == UnitActionType.Explore.value
     fun isPreparingParadrop() = action == UnitActionType.Paradrop.value
     fun isPreparingAirSweep() = action == UnitActionType.AirSweep.value

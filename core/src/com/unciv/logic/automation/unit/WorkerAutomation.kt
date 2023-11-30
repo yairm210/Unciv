@@ -115,6 +115,31 @@ class WorkerAutomation(
 
 
     ///////////////////////////////////////// Methods /////////////////////////////////////////
+
+    /**
+     * Automate the process of connecting a road between two points.
+     * Current thoughts:
+     * Will be a special case of MapUnit.automated property
+     * Unit has new attributes startTile endTile
+     * - Cancel upon risk of capture
+     * - Cancel upon blocked
+     * - End automation upon finish
+     */
+    fun automateConnectRoad(unit: MapUnit, tilesWhereWeWillBeCaptured: Set<Tile>){
+        val currentTile = unit.getTile()
+        val startTile = unit.automatedRoadConnectionStart
+        val endTile = unit.automatedRoadConnectionEnd
+
+        debug("Entered automate connect road %s", "test")
+
+        if (currentTile == endTile && endTile.roadStatus == RoadStatus.Road){
+            // Finished
+            unit.automated = false
+            unit.automatedRoadConnectionStart = null
+            unit.automatedRoadConnectionEnd = null
+        }
+    }
+
     /**
      * Automate one Worker - decide what to do and where, move, start or continue work.
      */

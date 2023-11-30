@@ -291,7 +291,6 @@ object UnitActions {
             return
 
         if (unit.isAutomated()) return
-
         actionList += UnitAction(UnitActionType.Automate,
             isCurrentAction = unit.isAutomated(),
             action = {
@@ -301,6 +300,17 @@ object UnitActions {
                 UnitAutomation.automateUnitMoves(unit)
             }.takeIf { unit.currentMovement > 0 }
         )
+
+        actionList += UnitAction(UnitActionType.ForceAutomateRoadConnection,
+            isCurrentAction = unit.isForceAutomatingRoadConnection(),
+            action = {
+                unit.action = UnitActionType.ForceAutomateRoadConnection.value
+                unit.automated = true
+                UnitAutomation.automateUnitMoves(unit)
+            }
+        )
+
+
     }
 
     private fun addWaitAction(unit: MapUnit, actionList: ArrayList<UnitAction>) {

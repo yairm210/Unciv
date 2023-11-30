@@ -23,7 +23,7 @@ object Log {
      */
     val disableLogsFrom = (
             System.getProperty("noLog")
-            ?: "Battle,Music,Sounds,Translations,WorkerAutomation,assignRegions"
+            ?: "Battle,Music,Sounds,Translations,assignRegions"
         ).split(',').filterNot { it.isEmpty() }.toMutableSet()
 
     /**
@@ -34,7 +34,7 @@ object Log {
      */
     val enableLogsFrom = (
             System.getProperty("onlyLog")
-            ?: ""
+            ?: "WorkerAutomation"
         ).split(',').filterNot { it.isEmpty() }.toMutableSet()
 
     var backend: LogBackend = DefaultLogBackend()
