@@ -171,31 +171,30 @@ class WorldMapHolder(
         if (previousSelectedCity != null && tile != previousSelectedCity.getCenterTile())
             tileGroups[previousSelectedCity.getCenterTile()]!!.layerCityButton.moveUp()
 
-        if (previousSelectedUnits.isNotEmpty() && previousSelectedUnits.any { it.getTile() != tile }
-                && worldScreen.isPlayersTurn
-                && (
-                    if (previousSelectedUnitIsSwapping)
-                        previousSelectedUnits.first().movement.canUnitSwapTo(tile)
-                    else
-                        previousSelectedUnits.any {
-                            it.movement.canMoveTo(tile) ||
-                                    it.movement.isUnknownTileWeShouldAssumeToBePassable(tile) && !it.baseUnit.movesLikeAirUnits()
-                        }
-                ) && previousSelectedUnits.any { !it.isPreparingAirSweep()}) {
-            if (previousSelectedUnitIsSwapping) {
-                addTileOverlaysWithUnitSwapping(previousSelectedUnits.first(), tile)
-            }
-            else {
-                if (previousSelectedUnitIsConnectingRoad) {
-                   addTileOverlaysWithUnitRoadConnecting(previousSelectedUnits.first(), tile)
-                }else{
-                    // this can take a long time, because of the unit-to-tile calculation needed, so we put it in a different thread
-                    addTileOverlaysWithUnitMovement(previousSelectedUnits, tile)
+        if (previousSelectedUnits.isNotEmpty()) {
+            val isTileDifferent = previousSelectedUnits.any { it.getTile() != tile }
+            val isPlayerTurn = worldScreen.isPlayersTurn
+            val existsUnitNotPreparingAirSweep = previousSelectedUnits.any { !it.isPreparingAirSweep() }
+
+            val canPerformActionsOnTile = if (previousSelectedUnitIsSwapping) {
+                previousSelectedUnits.first().movement.canUnitSwapTo(tile)
+            } else {
+                previousSelectedUnits.any {
+                    it.movement.canMoveTo(tile) ||
+                        (it.movement.isUnknownTileWeShouldAssumeToBePassable(tile) && !it.baseUnit.movesLikeAirUnits())
                 }
-
             }
-        } else addTileOverlays(tile) // no unit movement but display the units in the tile etc.
 
+            if (isTileDifferent && isPlayerTurn && canPerformActionsOnTile && existsUnitNotPreparingAirSweep) {
+                when {
+                    previousSelectedUnitIsSwapping -> addTileOverlaysWithUnitSwapping(previousSelectedUnits.first(), tile)
+                    previousSelectedUnitIsConnectingRoad -> addTileOverlaysWithUnitRoadConnecting(previousSelectedUnits.first(), tile)
+                    else -> addTileOverlaysWithUnitMovement(previousSelectedUnits, tile) // Long-running task
+                }
+            }
+        } else {
+            addTileOverlays(tile) // no unit movement but display the units in the tile etc.
+        }
 
         if (newSelectedUnit == null || newSelectedUnit.isCivilian()) {
             val unitsInTile = selectedTile!!.getUnits()
