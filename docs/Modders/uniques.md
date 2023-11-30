@@ -1274,6 +1274,9 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "Unable to capture cities"
 	Applicable to: Unit
 
+??? example  "Unable to pillage tiles"
+	Applicable to: Unit
+
 ??? example  "Can move after attacking"
 	Applicable to: Unit
 

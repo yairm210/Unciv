@@ -1,30 +1,22 @@
 ## 4.9.4
 
-Resolved  - "[relativeAmount]% [stat] from every follower, up to [relativeAmount]%" works off of majority religion, not our religion
+Stats from followers unique fixed
 
-Resolved  - city-state units work with 'get era' function
+City-state units work with 'get era' function
 
-Fixed bug - credit to @SomeTroglodyte
-
-Resolved  - Ruleset validation for negative-weight ruin rewards
-
-Slight cleanup of translation docs
-
-Better order for translation documentation
-
-Mitigate  - remove a !! by splitting 'getImprovementToImprove' and using it as source of truth for the improvement to start working on, INSTEAD of counting on the fact that chooseImprovement returns that improvement.
+Ruleset validation for negative-weight ruin rewards
 
 By SomeTroglodyte:
-- Fix crash for trade notifications as Spectator or during waiting for player 
-- Fix Unit rename popup offering up the icon's virtual codepoint 
+- Fix crash for trade notifications as Spectator / waiting for player
+- Fix Unit rename popup offering up the icon
 
-Mitigate   - By willjallen
+Solved worker automation crash  - By willjallen
 
 By SeventhM:
-- Add "Unable to pillage tiles" unique 
-- Fix objects being purchable with a blocking conditional 
+- Add "Unable to pillage tiles" unique
+- Fix objects being purchable with a blocking conditional
 
-Stats per Stat unique  - By PLynx01
+Stats per Stat unique - By PLynx01
 
 ## 4.9.3
 
