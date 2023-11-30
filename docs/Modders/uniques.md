@@ -210,6 +210,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Global
 
+??? example  "[stats] per every [amount] [civWideStat]"
+	Example: "[+1 Gold, +2 Production] per every [3] [Gold]"
+
+	Applicable to: Global
+
 ??? example  "[stats] in cities on [terrainFilter] tiles"
 	Example: "[+1 Gold, +2 Production] in cities on [Fresh Water] tiles"
 
