@@ -114,8 +114,8 @@ class WorldMapHolder(
     // Contains the data required to draw a "swap with" button
     class SwapWithButtonDto(val unit: MapUnit, val tile: Tile) : ButtonDto
 
-    // Contains the data required to draw a "road to" button
-    class RoadToButtonDto(val unit: MapUnit, val tile: Tile) : ButtonDto
+    // Contains the data required to draw a "connect road" button
+    class ConnectRoadButtonDto(val unit: MapUnit, val tile: Tile) : ButtonDto
 
 
     internal fun addTiles() {
@@ -346,18 +346,14 @@ class WorldMapHolder(
         selectedUnit.automated = true
         UnitAutomation.automateUnitMoves(selectedUnit)
 
-        // Play something like a swish-swoosh
+        // TODO: Change to another sound
         SoundPlayer.play(UncivSound.Swap)
 
         worldScreen.shouldUpdate = true
         removeUnitActionOverlay()
 
-        // TODO: Is there a better way to make the highlighting go away?
-        val unitViewableTiles = selectedUnit.viewableTiles
-        for (tile in unitViewableTiles)  {
-            tileGroups[tile]!!.layerOverlay.reset()
-        }
-
+        // Make highlighting go away
+        worldScreen.bottomUnitTable.selectedUnitIsConnectingRoad = false
 
     }
 
@@ -433,8 +429,25 @@ class WorldMapHolder(
     }
 
     private fun addTileOverlaysWithUnitRoadConnecting(selectedUnit: MapUnit, tile: Tile){
-        //TODO UncivGame.Current.settings.singleTapMove
-        connectRoadToTargetTile(selectedUnit, tile)
+        //TODO: One may be able to select a location that is valid by the conditions below, but is impossible to reach
+        // ^ Like a tile surrounded by mountains on all sides
+       val validTile = tile.isLand &&
+           !tile.isImpassible() &&
+            selectedUnit.civ.hasExplored(tile)
+
+        if (!validTile){
+            addTileOverlays(tile)
+            worldScreen.shouldUpdate = true
+            return
+        }
+        if (UncivGame.Current.settings.singleTapMove) {
+            connectRoadToTargetTile(selectedUnit, tile)
+        }
+        else {
+            // Add "connect road" button
+            val connectRoadButtonDto = ConnectRoadButtonDto(selectedUnit, tile)
+            addTileOverlays(tile, connectRoadButtonDto)
+        }
         worldScreen.shouldUpdate = true
     }
     private fun addTileOverlays(tile: Tile, buttonDto: ButtonDto? = null) {
@@ -444,6 +457,7 @@ class WorldMapHolder(
                 when (buttonDto) {
                     is MoveHereButtonDto -> getMoveHereButton(buttonDto)
                     is SwapWithButtonDto -> getSwapWithButton(buttonDto)
+                    is ConnectRoadButtonDto -> getConnectRoadButton(buttonDto)
                     else -> null
                 }
             )
@@ -535,9 +549,23 @@ class WorldMapHolder(
         return swapWithButton
     }
 
-    // TODO: Road to button
-    private fun getRoadToButton(dto: RoadToButtonDto) {
-        return
+    private fun getConnectRoadButton(dto: ConnectRoadButtonDto): Group {
+        val connectRoadButton = Group().apply { width = buttonSize;height = buttonSize; }
+        connectRoadButton.addActor(ImageGetter.getCircle().apply { width = buttonSize; height = buttonSize })
+        connectRoadButton.addActor(
+            ImageGetter.getImage("OtherIcons/Improvements") //TODO: Need an image for this
+                .apply { color = Color.BLACK; width = buttonSize / 2; height = buttonSize / 2; center(connectRoadButton) })
+
+        val unitIcon = UnitGroup(dto.unit, smallerCircleSizes)
+        unitIcon.y = buttonSize - unitIcon.height
+        connectRoadButton.addActor(unitIcon)
+
+//         connectRoadButton.keyShortcuts.add(KeyCharAndCode.TAB) //TODO: Need a key shortcut for this
+        connectRoadButton.onActivation(UncivSound.Silent) {
+            connectRoadToTargetTile(dto.unit, dto.tile)
+        }
+
+        return connectRoadButton
     }
 
 
@@ -676,9 +704,13 @@ class WorldMapHolder(
 
         // Highlight suitable tiles in road connecting mode
         if (worldScreen.bottomUnitTable.selectedUnitIsConnectingRoad){
-            val unitViewableTiles = unit.viewableTiles
+            // TODO: This needs to be cached?
+            val civExploredNonForeignLandTiles = unit.civ.gameInfo.tileMap.tileList.filter {
+                it.isLand && !it.isImpassible() && unit.civ.hasExplored(it)
+            }
+            unit.civ.gameInfo.civilizations
             val connectRoadTileOverlayColor = Color.RED
-            for (tile in unitViewableTiles)  {
+            for (tile in civExploredNonForeignLandTiles)  {
                 tileGroups[tile]!!.layerOverlay.showHighlight(connectRoadTileOverlayColor,
                     if (UncivGame.Current.settings.singleTapMove) 0.7f else 0.3f)
             }
