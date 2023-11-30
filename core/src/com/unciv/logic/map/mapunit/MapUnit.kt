@@ -107,8 +107,8 @@ class MapUnit : IsPartOfGameInfoSerialization {
     var automated: Boolean = false
 
     // Connect roads implies automated is true. It is specified by the action type.
-    var automatedRoadConnectionStart: Tile? = null
-    var automatedRoadConnectionEnd: Tile? = null
+    var automatedRoadConnectionStart: Vector2? = null
+    var automatedRoadConnectionEnd: Vector2? = null
 
     @Transient
     var showAdditionalActions: Boolean = false

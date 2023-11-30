@@ -128,8 +128,8 @@ class WorkerAutomation(
      */
     fun automateConnectRoad(unit: MapUnit, tilesWhereWeWillBeCaptured: Set<Tile>){
         val currentTile = unit.getTile()
-        val startTile = unit.automatedRoadConnectionStart
-        val endTile = unit.automatedRoadConnectionEnd
+        val startTile = unit.civ.gameInfo.tileMap[unit.automatedRoadConnectionStart!!]
+        val endTile = unit.civ.gameInfo.tileMap[unit.automatedRoadConnectionEnd!!]
 
         debug("Entered automate connect road for unit %s, start %s, end %s", unit, startTile, endTile)
 

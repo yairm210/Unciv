@@ -339,8 +339,8 @@ class WorldMapHolder(
     }
 
     private fun connectRoadToTargetTile(selectedUnit: MapUnit, targetTile: Tile) {
-        selectedUnit.automatedRoadConnectionStart = selectedUnit.getTile()
-        selectedUnit.automatedRoadConnectionEnd = targetTile
+        selectedUnit.automatedRoadConnectionStart = selectedUnit.getTile().position
+        selectedUnit.automatedRoadConnectionEnd = targetTile.position
 
         selectedUnit.action = UnitActionType.ForceAutomateRoadConnection.value
         selectedUnit.automated = true
