@@ -121,8 +121,9 @@ class WorkerAutomation(
      * Current thoughts:
      * Will be a special case of MapUnit.automated property
      * Unit has new attributes startTile endTile
-     * - Cancel upon risk of capture
-     * - Cancel upon blocked
+     * - We will progress towards the end path sequentially, taking absolute least distance w/o regard for movement cost
+         * - Cancel upon risk of capture
+         * - Cancel upon blocked
      * - End automation upon finish
      */
     fun automateConnectRoad(unit: MapUnit, tilesWhereWeWillBeCaptured: Set<Tile>){
@@ -130,7 +131,7 @@ class WorkerAutomation(
         val startTile = unit.automatedRoadConnectionStart
         val endTile = unit.automatedRoadConnectionEnd
 
-        debug("Entered automate connect road %s", "test")
+        debug("Entered automate connect road for unit %s, start %s, end %s", unit, startTile, endTile)
 
         if (currentTile == endTile && endTile.roadStatus == RoadStatus.Road){
             // Finished

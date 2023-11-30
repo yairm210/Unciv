@@ -15,6 +15,7 @@ import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.automation.unit.CityLocationTileRanker
+import com.unciv.logic.automation.unit.UnitAutomation
 import com.unciv.logic.battle.AttackableTile
 import com.unciv.logic.battle.Battle
 import com.unciv.logic.battle.MapUnitCombatant
@@ -26,6 +27,7 @@ import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.mapunit.movement.UnitMovement
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.UncivSound
+import com.unciv.models.UnitActionType
 import com.unciv.models.ruleset.unique.LocalUniqueCache
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.audio.SoundPlayer
@@ -112,6 +114,10 @@ class WorldMapHolder(
     // Contains the data required to draw a "swap with" button
     class SwapWithButtonDto(val unit: MapUnit, val tile: Tile) : ButtonDto
 
+    // Contains the data required to draw a "road to" button
+    class RoadToButtonDto(val unit: MapUnit, val tile: Tile) : ButtonDto
+
+
     internal fun addTiles() {
         val tileSetStrings = TileSetStrings()
         currentTileSetStrings = tileSetStrings
@@ -158,6 +164,7 @@ class WorldMapHolder(
         val previousSelectedUnits = unitTable.selectedUnits.toList() // create copy
         val previousSelectedCity = unitTable.selectedCity
         val previousSelectedUnitIsSwapping = unitTable.selectedUnitIsSwapping
+        val previousSelectedUnitIsConnectingRoad = unitTable.selectedUnitIsConnectingRoad
         unitTable.tileSelected(tile)
         val newSelectedUnit = unitTable.selectedUnit
 
@@ -179,8 +186,12 @@ class WorldMapHolder(
                 addTileOverlaysWithUnitSwapping(previousSelectedUnits.first(), tile)
             }
             else {
-                // this can take a long time, because of the unit-to-tile calculation needed, so we put it in a different thread
-                addTileOverlaysWithUnitMovement(previousSelectedUnits, tile)
+                if (previousSelectedUnitIsConnectingRoad) {
+                   addTileOverlaysWithUnitRoadConnecting(previousSelectedUnits.first(), tile)
+                }else{
+                    // this can take a long time, because of the unit-to-tile calculation needed, so we put it in a different thread
+                    addTileOverlaysWithUnitMovement(previousSelectedUnits, tile)
+                }
 
             }
         } else addTileOverlays(tile) // no unit movement but display the units in the tile etc.
@@ -327,6 +338,30 @@ class WorldMapHolder(
         removeUnitActionOverlay()
     }
 
+    private fun connectRoadToTargetTile(selectedUnit: MapUnit, targetTile: Tile) {
+        selectedUnit.automatedRoadConnectionStart = selectedUnit.getTile()
+        selectedUnit.automatedRoadConnectionEnd = targetTile
+
+        selectedUnit.action = UnitActionType.ForceAutomateRoadConnection.value
+        selectedUnit.automated = true
+        UnitAutomation.automateUnitMoves(selectedUnit)
+
+        // Play something like a swish-swoosh
+        SoundPlayer.play(UncivSound.Swap)
+
+        worldScreen.shouldUpdate = true
+        removeUnitActionOverlay()
+
+        // TODO: Is there a better way to make the highlighting go away?
+        val unitViewableTiles = selectedUnit.viewableTiles
+        for (tile in unitViewableTiles)  {
+            tileGroups[tile]!!.layerOverlay.reset()
+        }
+
+
+    }
+
+
     private fun addTileOverlaysWithUnitMovement(selectedUnits: List<MapUnit>, tile: Tile) {
         Concurrency.run("TurnsToGetThere") {
             /** LibGdx sometimes has these weird errors when you try to edit the UI layout from 2 separate threads.
@@ -397,6 +432,11 @@ class WorldMapHolder(
         worldScreen.shouldUpdate = true
     }
 
+    private fun addTileOverlaysWithUnitRoadConnecting(selectedUnit: MapUnit, tile: Tile){
+        //TODO UncivGame.Current.settings.singleTapMove
+        connectRoadToTargetTile(selectedUnit, tile)
+        worldScreen.shouldUpdate = true
+    }
     private fun addTileOverlays(tile: Tile, buttonDto: ButtonDto? = null) {
         val table = Table().apply { defaults().pad(10f) }
         if (buttonDto != null && worldScreen.canChangeState)
@@ -493,6 +533,11 @@ class WorldMapHolder(
         swapWithButton.keyShortcuts.add(KeyCharAndCode.TAB)
 
         return swapWithButton
+    }
+
+    // TODO: Road to button
+    private fun getRoadToButton(dto: RoadToButtonDto) {
+        return
     }
 
 
@@ -625,7 +670,19 @@ class WorldMapHolder(
                 tileGroups[tile]!!.layerOverlay.showHighlight(swapUnitsTileOverlayColor,
                     if (UncivGame.Current.settings.singleTapMove) 0.7f else 0.3f)
             }
-            // In swapping-mode don't want to show other overlays
+            // In swapping-mode we don't want to show other overlays
+            return
+        }
+
+        // Highlight suitable tiles in road connecting mode
+        if (worldScreen.bottomUnitTable.selectedUnitIsConnectingRoad){
+            val unitViewableTiles = unit.viewableTiles
+            val connectRoadTileOverlayColor = Color.RED
+            for (tile in unitViewableTiles)  {
+                tileGroups[tile]!!.layerOverlay.showHighlight(connectRoadTileOverlayColor,
+                    if (UncivGame.Current.settings.singleTapMove) 0.7f else 0.3f)
+            }
+            // In road connecting mode we don't want to show other overlays
             return
         }
 

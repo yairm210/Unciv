@@ -46,6 +46,9 @@ class UnitTable(val worldScreen: WorldScreen) : Table() {
     // Whether the (first) selected unit is in unit-swapping mode
     var selectedUnitIsSwapping = false
 
+    // Whether the (first) selected unit is in road-connecting mode
+    var selectedUnitIsConnectingRoad = false
+
     /** Sending no unit clears the selected units entirely */
     fun selectUnit(unit: MapUnit?=null, append:Boolean=false) {
         if (!append) selectedUnits.clear()
@@ -55,6 +58,7 @@ class UnitTable(val worldScreen: WorldScreen) : Table() {
             unit.actionsOnDeselect()
         }
         selectedUnitIsSwapping = false
+        selectedUnitIsConnectingRoad = false
     }
 
     var selectedCity : City? = null

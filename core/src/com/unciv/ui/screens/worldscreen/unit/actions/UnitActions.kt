@@ -300,13 +300,15 @@ object UnitActions {
                 UnitAutomation.automateUnitMoves(unit)
             }.takeIf { unit.currentMovement > 0 }
         )
+        val worldScreen = GUI.getWorldScreen()
 
         actionList += UnitAction(UnitActionType.ForceAutomateRoadConnection,
             isCurrentAction = unit.isForceAutomatingRoadConnection(),
             action = {
-                unit.action = UnitActionType.ForceAutomateRoadConnection.value
-                unit.automated = true
-                UnitAutomation.automateUnitMoves(unit)
+                worldScreen.bottomUnitTable.selectedUnitIsConnectingRoad =
+                    !worldScreen.bottomUnitTable.selectedUnitIsConnectingRoad
+                worldScreen.shouldUpdate = true
+
             }
         )
 
