@@ -11,7 +11,6 @@ import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
 import com.unciv.logic.UncivShowableException
-import com.unciv.logic.civilization.AlertType
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
@@ -94,7 +93,7 @@ class WorldScreen(
     /** Indicates it's the player's ([viewingCiv]) turn */
     var isPlayersTurn = viewingCiv.isCurrentPlayer()
         internal set     // only this class is allowed to make changes
-    
+
     /** Selected civilization, used in spectator and replay mode, equals viewingCiv in ordinary games */
     var selectedCiv = viewingCiv
 
@@ -174,8 +173,8 @@ class WorldScreen(
 
         val tileToCenterOn: Vector2 =
                 when {
-                    viewingCiv.cities.isNotEmpty() && viewingCiv.getCapital() != null -> viewingCiv.getCapital()!!.location
                     viewingCiv.units.getCivUnits().any() -> viewingCiv.units.getCivUnits().first().getTile().position
+                    viewingCiv.cities.isNotEmpty() && viewingCiv.getCapital() != null -> viewingCiv.getCapital()!!.location
                     else -> Vector2.Zero
                 }
 
@@ -419,7 +418,7 @@ class WorldScreen(
             && !gameInfo.oneMoreTurnMode && (viewingCiv.isDefeated() || gameInfo.checkForVictory())) {
             game.settings.autoPlay.stopAutoPlay()
         }
-        
+
         if (!hasOpenPopups() && !game.settings.autoPlay.isAutoPlaying() && isPlayersTurn) {
             when {
                 viewingCiv.shouldShowDiplomaticVotingResults() ->

@@ -10,7 +10,7 @@ class CityRenamePopup(val screen: BaseScreen, val city: City, val actionOnClose:
         AskTextPopup(
             screen,
             label = "Please enter a new name for your city",
-            defaultText = city.name.tr(),
+            defaultText = city.name.tr(hideIcons = true),
             validate = { it != "" },
             actionOnOk = { text ->
                 city.name = text
@@ -20,4 +20,3 @@ class CityRenamePopup(val screen: BaseScreen, val city: City, val actionOnClose:
     }
 
 }
-
