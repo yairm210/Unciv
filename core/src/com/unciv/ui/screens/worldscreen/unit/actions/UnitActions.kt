@@ -31,28 +31,29 @@ object UnitActions {
         return true
     }
 
-    private val actionTypeToFunctions = linkedMapOf<UnitActionType, (unit:MapUnit, tile:Tile) -> ArrayList<UnitAction>>(
-        UnitActionType.Transform to UnitActionsFromUniques::getTransformActions
+    private val actionTypeToFunctions = linkedMapOf<UnitActionType, (unit:MapUnit, tile:Tile) -> Iterable<UnitAction>>(
+        // Determined by unit uniques
+        UnitActionType.Transform to UnitActionsFromUniques::getTransformActions,
+        UnitActionType.Paradrop to UnitActionsFromUniques::getParadropActions,
+        UnitActionType.AirSweep to UnitActionsFromUniques::getAirSweepActions,
+        UnitActionType.SetUp to UnitActionsFromUniques::getSetupActions,
+        UnitActionType.FoundCity to UnitActionsFromUniques::getFoundCityActions,
+        UnitActionType.ConstructImprovement to UnitActionsFromUniques::getBuildingImprovementsActions,
+        UnitActionType.Repair to UnitActionsFromUniques::getRepairActions
     )
 
     private fun getNormalActions(unit: MapUnit): List<UnitAction> {
         val tile = unit.getTile()
         val actionList = ArrayList<UnitAction>()
 
-        // Determined by unit uniques
         for (getActionsFunction in actionTypeToFunctions.values)
-            actionList += getActionsFunction(unit, tile)
+            actionList.addAll(getActionsFunction(unit, tile))
 
-        UnitActionsFromUniques.addParadropAction(unit, actionList)
-        UnitActionsFromUniques.addAirSweepAction(unit, actionList)
-        UnitActionsFromUniques.addSetupAction(unit, actionList)
-        UnitActionsFromUniques.addFoundCityAction(unit, actionList, tile)
-        UnitActionsFromUniques.addBuildingImprovementsAction(unit, actionList, tile)
-        UnitActionsFromUniques.addRepairAction(unit, actionList)
-        UnitActionsFromUniques.addCreateWaterImprovements(unit, actionList)
+        // Determined by unit uniques
         UnitActionsGreatPerson.addGreatPersonActions(unit, actionList, tile)
         UnitActionsReligion.addFoundReligionAction(unit, actionList)
         UnitActionsReligion.addEnhanceReligionAction(unit, actionList)
+        UnitActionsFromUniques.addCreateWaterImprovements(unit, actionList)
         actionList += UnitActionsFromUniques.getImprovementConstructionActions(unit, tile)
         UnitActionsReligion.addSpreadReligionActions(unit, actionList)
         UnitActionsReligion.addRemoveHeresyActions(unit, actionList)
