@@ -126,24 +126,99 @@ class WorkerAutomation(
          * - Cancel upon blocked
      * - End automation upon finish
      */
+    // TODO: Caching
+    // TODO: Hide the automate road button if road is not unlocked
     fun automateConnectRoad(unit: MapUnit, tilesWhereWeWillBeCaptured: Set<Tile>){
         val currentTile = unit.getTile()
-        // Temporary until I can ensure the start and end is properly saved
-        unit.automatedRoadConnectionStart ?: return
-        unit.automatedRoadConnectionEnd ?: return
 
-        val startTile = unit.civ.gameInfo.tileMap[unit.automatedRoadConnectionStart!!]
-        val endTile = unit.civ.gameInfo.tileMap[unit.automatedRoadConnectionEnd!!]
-
-        debug("Entered automate connect road for unit %s, start %s, end %s", unit, startTile, endTile)
-
-        if (currentTile == endTile && endTile.roadStatus == RoadStatus.Road){
-            // Finished
+        fun stopAndCleanAutomation(){
             unit.automated = false
-            unit.automatedRoadConnectionStart = null
-            unit.automatedRoadConnectionEnd = null
+            unit.action = null
+            unit.automatedRoadConnectionDestination = null
+            unit.automatedRoadConnectionPath = null
+            currentTile.stopWorkingOnImprovement()
+        }
+        if (bestRoadAvailable == RoadStatus.None) return
+
+        // Temporary until I can ensure the start and end is properly saved
+        unit.automatedRoadConnectionDestination ?: return
+
+
+        val destinationTile = unit.civ.gameInfo.tileMap[unit.automatedRoadConnectionDestination!!]
+
+        debug("Entered automate connect road for unit %s, start %s, end %s", unit, currentTile, destinationTile)
+
+        var pathToDest: List<Vector2>? = unit.automatedRoadConnectionPath
+
+        // The path does not exist, create it
+        if (pathToDest == null){
+            // Find the path
+            val isCandidateTilePredicate: (Tile) -> Boolean = { it.isLand && unit.movement.canPassThrough(it) }
+            val bfs: BFS = BFS(currentTile, isCandidateTilePredicate).apply {
+                maxSize = HexMath.getNumberOfTilesInHexagon(HexMath.getDistance(currentTile.position, destinationTile.position) + 2)
+            }
+
+            while (true) {
+                if (bfs.hasEnded()) {
+                    // We failed to find a path
+                    debug("WorkerAutomation: ${unit.label()} -> connect road failed at BFS size ${bfs.size()}")
+                    stopAndCleanAutomation()
+                    return
+                }
+                if (!bfs.hasReachedTile(destinationTile)) {
+                    bfs.nextStep()
+                    continue
+                }
+                // Found a path. Reverse it and convert it to a list of Vector2
+                pathToDest = bfs.getPathTo(destinationTile)
+                    .toList()
+                    .reversed()
+                    .map {it.position}
+                unit.automatedRoadConnectionPath = pathToDest
+                debug("WorkerAutomation: ${unit.label()} -> found path to destination tile: %s, %s", destinationTile, pathToDest)
+                break
+            }
+        }
+
+        // TODO: We should upgrade road if possible
+        if (unit.currentMovement > 0){
+            // Work on the current tile if it does not have a road, otherwise move to the next tile in the list
+            if (currentTile.improvementInProgress != bestRoadAvailable.name && currentTile.roadStatus != bestRoadAvailable) {
+                val improvement = bestRoadAvailable.improvement(ruleSet)!!
+                currentTile.startWorkingOnImprovement(improvement, civInfo, unit)
+                return
+            }
+
+            // The tile has a road, try to move to the next tile
+            if (currentTile.roadStatus == bestRoadAvailable){
+                val currTileIndex = pathToDest!!.indexOf(currentTile.position)
+                when {
+                    currTileIndex == -1 -> throw Exception("The current tile of worker ${unit.label()} is not in the path to the destination tile")
+                    currTileIndex < pathToDest.size - 1 -> { // Try to move to the next tile in the path
+                        val nextTile = unit.civ.gameInfo.tileMap[pathToDest[currTileIndex + 1]]
+                        if(unit.movement.canMoveTo(nextTile) && unit.movement.canReach(nextTile)){
+                            unit.movement.moveToTile(nextTile)
+                            return
+                        }else{
+                            //TODO: This is a choice to have the automation cancel if the worker cant move to the next tile. We could have it just wait around.
+                            stopAndCleanAutomation()
+                        }
+                    }
+                }
+            }
+        }
+
+        // All of the ways that the automation can end
+        // TODO: there should be more than this but i cant think rn
+        val unitOnDestinationTile = currentTile == destinationTile
+        val destinationTileHasRoad = destinationTile.roadStatus == bestRoadAvailable
+        if (unitOnDestinationTile && destinationTileHasRoad) // We're on the last tile and a road/railroad has been built
+            {
+            stopAndCleanAutomation()
         }
     }
+
+
 
     /**
      * Automate one Worker - decide what to do and where, move, start or continue work.
