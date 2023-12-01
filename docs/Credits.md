@@ -108,7 +108,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 
 -   [Rifle](https://thenounproject.com/search/?q=Rifle&i=604291) By Chameleon Design for Rifleman
 -   [Bayonet](https://thenounproject.com/term/bayonet/3101681/) By food lover for Carolean
--   [soldier](https://thenounproject.com/term/soldier/2096497/) by ProSymbols for Mehal Sefari
+-   [military cap](https://thenounproject.com/icon/military-cap-4112703/) by Robert Bjurshagen for Mehal Sefari
 -   [Horse](https://thenounproject.com/search/?q=Horse&i=1023745) By Bakunetso Kaito for Cavalry
 -   [horse racing](https://thenounproject.com/antimso/uploads/?i=2427932) By Sergio Morozov for Cossack
 -   [Marching Band](https://thenounproject.com/term/marching-band/871426/) by Darrin Loeliger, US for Hussar. The original work has been modified.
@@ -240,6 +240,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 -   [obelisk](https://thenounproject.com/term/obelisk/3520415/) By IconMark for Stele
 -   [Cross swords](https://thenounproject.com/term/cross-swords/965398/) By Creaticca Creative Agency for Barracks
 -   [Fortress](https://thenounproject.com/search/?q=fortress&i=146989) By Creative Stall for Krepost
+-   [WaterMill](https://thenounproject.com/icon/watermill-4255/) by Jakub Ukrop for Water Mill
 -   [Paper](https://thenounproject.com/term/paper/1443472/) By anam
 -   [Circus](https://thenounproject.com/term/circus/743734/) By Ralph Schmitzer
 -   [Stonehenge](https://thenounproject.com/term/stonehenge/543289/) By icon 54
@@ -312,7 +313,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 -   [Mansion](https://www.flaticon.com/free-icon/mansion_509903#term=persian&page=1&position=19) by Freepik for Satrap's Court
 -   [Bullets](https://thenounproject.com/term/bullets/810156/) By Aldric Rodriguez for Arsenal
 -   [St. Petersburg](https://thenounproject.com/search/?q=kremlin&i=1569704) By Carpe Diem for Kremlin
--   [Ceilidh](https://thenounproject.com/term/ceilidh/403422/) By P Thanga Vignesh for Ceilidh Hall
+-   [cottage](https://thenounproject.com/icon/cottage-16478/) by Ole Sturm for Ceilidh Hall
 
 #### Industrial Era
 
@@ -341,7 +342,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 -   [Solar panel](https://thenounproject.com/term/solar-panel/1131/) By Modik for Solar Plant
 -   [Recycle](https://thenounproject.com/search/?q=recycling&i=4397434) By Umer Younas, PK for Recycling Center
 -   [Opera House Sydney](https://thenounproject.com/term/opera-house-sydney/1626283/) By Pham Duy Phuong Hung for Sydney Opera House
--   [Water dam](https://thenounproject.com/term/water-dam/1002726/) By Symbolon for Hydro Plant
+-   [hydro electric plant](https://thenounproject.com/term/water-dam/1002726/) By Juicy Fish for Hydro Plant
 -   [Manhattan Project](https://thenounproject.com/search/?q=Nuclear%20Bomb&i=2041074) By corpus delicti, GR
 -   [Nuclear Plant](https://thenounproject.com/term/nuclear-plant/1132340/) By Andrejs Kirma
 -   [Spaceship](https://thenounproject.com/term/spaceship/1444621/) By Dinosoft Labs for Apollo Program
