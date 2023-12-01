@@ -295,7 +295,7 @@ class CityStats(val city: City) {
         for (unique in city.getMatchingUniques(UniqueType.StatPercentFromReligionFollowers))
             addUniqueStats(unique, Stat.valueOf(unique.params[1]),
                 min(
-                    unique.params[0].toFloat() * city.religion.getFollowersOfMajorityReligion(),
+                    unique.params[0].toFloat() * city.religion.getFollowersOfOurReligion(),
                     unique.params[2].toFloat()
                 ))
 
