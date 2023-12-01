@@ -281,6 +281,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 -   [Angkor Wat](https://thenounproject.com/search/?q=angkor%20wat&i=2412873) By Phạm Thanh Lộc for Angkor Wat
 -   [Alhambra](https://thenounproject.com/search/?q=alhambra&i=2322217) By Phạm Thanh Lộc
 -   [Books](https://thenounproject.com/term/books/1140218/) By Abir Alward for Oxford University
+-   Icon for Heroic Epic made by [SomeTroglodyte](https://github.com/SomeTroglodyte) based on [Iwo Jima Memorial](https://upload.wikimedia.org/wikipedia/commons/5/54/2018-10-31_15_25_21_The_west_side_of_the_Marine_Corps_War_Memorial_in_Arlington_County%2C_Virginia.jpg) photo taken by Famartin
 -   [Forge](https://thenounproject.com/term/forge/1044767/) By Monjin Friends
 -   [Anchor](https://thenounproject.com/term/anchor/1258518/) By Saeful Muslim for Harbor
 -   [Hand saw](https://thenounproject.com/term/hand-saw/990902/) By b farias for Workshop
