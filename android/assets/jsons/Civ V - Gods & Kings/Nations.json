@@ -895,7 +895,7 @@
 		"innerColor": [81, 0, 137],
 		"favoredReligion": "Islam",
 		"uniqueName": "Phoenician Heritage",
-		"uniques": ["Gain a free [Harbor] [in all coastal cities]","Land units may cross [Mountain] tiles after the first [Great General] is earned, but take [50] damage if they end their turn on a [Mountain]."],
+		"uniques": ["Gain a free [Harbor] [in all coastal cities]","Land units may cross [Mountain] tiles after the first [Great General] is earned","Comment [Units ending their turn on [Mountain] tiles take [50] damage]"],
 		"cities": ["Carthage","Utique","Hippo Regius","Gades","Saguntum","Carthago Nova","Panormus","Lilybaeum","Hadrumetum","Zama Regia",
 			"Karalis","Malaca","Leptis Magna","Hippo Diarrhytus","Motya","Sulci","Leptis Parva","Tharros","Soluntum","Lixus",
 			"Oea","Theveste","Ibossim","Thapsus","Aleria","Tingis","Abyla","Sabratha","Rusadir","Baecula",
