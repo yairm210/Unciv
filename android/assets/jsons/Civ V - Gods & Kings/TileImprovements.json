@@ -125,7 +125,7 @@
 		"shortcutKey": "R",
         "civilopediaText": [
             {"text":"Reduces movement cost to ⅒ if the other tile also has a Railroad"},
-            {"text":"Provides a +25% ⚙Production bonus to cities connected to the capital by Railroads"}
+            {"text":"Provides a +25% [Production] bonus to cities connected to the capital by Railroads"}
         ]
 	},
 
