@@ -63,4 +63,16 @@ interface IHasUniques : INamed {
     fun era(ruleset: Ruleset): Era? =
             requiredTechnologies(ruleset).map{ it.era() }.map{ ruleset.eras[it]!! }.maxByOrNull{ it.eraNumber }
             // This will return null only if requiredTechnologies() is empty.
+
+    fun availableInEra(ruleset: Ruleset, requestedEra: String): Boolean {
+        val eraAvailable: Era? = era(ruleset)
+        if (eraAvailable == null)
+            // No technologies are required, so available in the starting era.
+            return true
+        // This is not very efficient, because era() inspects the eraNumbers and then returns the whole object.
+        // We could take a max of the eraNumbers directly.
+        // But it's unlikely to make any significant difference.
+        // Currently this is only used in CityStateFunctions.kt.
+        return eraAvailable.eraNumber <= ruleset.eras[requestedEra]!!.eraNumber
+    }
 }
