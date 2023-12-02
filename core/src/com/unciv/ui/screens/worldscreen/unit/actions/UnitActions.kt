@@ -39,7 +39,11 @@ object UnitActions {
         UnitActionType.SetUp to UnitActionsFromUniques::getSetupActions,
         UnitActionType.FoundCity to UnitActionsFromUniques::getFoundCityActions,
         UnitActionType.ConstructImprovement to UnitActionsFromUniques::getBuildingImprovementsActions,
-        UnitActionType.Repair to UnitActionsFromUniques::getRepairActions
+        UnitActionType.Repair to UnitActionsFromUniques::getRepairActions,
+        UnitActionType.HurryResearch to UnitActionsGreatPerson::getHurryResearchActions,
+        UnitActionType.HurryWonder to UnitActionsGreatPerson::getHurryWonderActions,
+        UnitActionType.HurryBuilding to UnitActionsGreatPerson::getHurryBuildingActions,
+        UnitActionType.ConductTradeMission to UnitActionsGreatPerson::getConductTradeMissionActions
     )
 
     private fun getNormalActions(unit: MapUnit): List<UnitAction> {
@@ -50,7 +54,6 @@ object UnitActions {
             actionList.addAll(getActionsFunction(unit, tile))
 
         // Determined by unit uniques
-        UnitActionsGreatPerson.addGreatPersonActions(unit, actionList, tile)
         UnitActionsReligion.addFoundReligionAction(unit, actionList)
         UnitActionsReligion.addEnhanceReligionAction(unit, actionList)
         UnitActionsFromUniques.addCreateWaterImprovements(unit, actionList)
