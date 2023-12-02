@@ -41,7 +41,7 @@ class AStar(
     val startingPoint: Tile,
     private val predicate : (Tile) -> Boolean,
     private val cost: (Tile, Tile) -> Float,
-    private val heuristic : (Tile) -> Float,
+    private val heuristic : (Tile, Tile) -> Float,
 ) {
     /** Maximum number of tiles to search */
     var maxSize = Int.MAX_VALUE
@@ -130,7 +130,7 @@ class AStar(
                 || newCost < (cumulativeTileCost[neighbor] ?: Float.MAX_VALUE)
             ){
                 cumulativeTileCost[neighbor] = newCost
-                val priority: Float = newCost + heuristic(neighbor)
+                val priority: Float = newCost + heuristic(currentTile, neighbor)
                 tilesToCheck.add(TilePriority(neighbor, priority))
                 tilesReached[neighbor] = currentTile
             }
