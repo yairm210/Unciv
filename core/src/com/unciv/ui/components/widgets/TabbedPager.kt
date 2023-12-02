@@ -13,6 +13,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.WidgetGroup
 import com.badlogic.gdx.scenes.scene2d.utils.ActorGestureListener
+import com.badlogic.gdx.scenes.scene2d.utils.Layout
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
 import com.unciv.UncivGame
@@ -23,6 +24,7 @@ import com.unciv.ui.components.extensions.darken
 import com.unciv.ui.components.extensions.isEnabled
 import com.unciv.ui.components.extensions.packIfNeeded
 import com.unciv.ui.components.extensions.pad
+import com.unciv.ui.components.extensions.scrollTo
 import com.unciv.ui.components.input.KeyCharAndCode
 import com.unciv.ui.components.input.keyShortcuts
 import com.unciv.ui.components.input.onActivation
@@ -457,6 +459,18 @@ open class TabbedPager(
         page.scrollY = scrollY
         if (index != activePage) return
         contentScroll.scrollY = scrollY
+        if (!animation) contentScroll.updateVisualScroll()
+    }
+    /** Change the vertical scroll position af the [active][activePage] page's contents to scroll a given Actor into view
+     *
+     *  Assumes [actor] is a direct child of the content page, and **if** the page does **not** implement [Layout],
+     *  that [actor] has somehow been given valid [bounds][Actor.setBounds] within the page.
+     */
+    fun pageScrollTo(actor: Actor, animation: Boolean = false) {
+        if (activePage < 0) return
+        (contentScroll.actor as? Layout)?.validate()
+        contentScroll.scrollTo(actor)
+        pages[activePage].scrollY = contentScroll.scrollY
         if (!animation) contentScroll.updateVisualScroll()
     }
 

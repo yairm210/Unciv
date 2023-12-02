@@ -9,7 +9,6 @@ import com.unciv.logic.multiplayer.storage.DropBox
 import com.unciv.models.metadata.GameSettings
 import com.unciv.utils.Concurrency
 import com.unciv.utils.Log
-import java.io.File
 import java.util.EnumSet
 import java.util.Timer
 import kotlin.concurrent.thread
@@ -22,7 +21,7 @@ import kotlin.math.roundToInt
  *
  * Main methods: [chooseTrack], [pause], [resume], [setModList], [isPlaying], [gracefulShutdown]
  *
- * City ambience feature: [playOverlay], [stopOverlay]
+ * City ambience / Leader voice feature: [playOverlay], [stopOverlay], [playVoice]
  * * This plays entirely independent of all other functionality as linked above.
  * * Can load from internal (jar,apk) - music is always local, nothing is packaged into a release.
  */
@@ -103,7 +102,7 @@ class MusicController {
 
     //region Fields
     /** mirrors [GameSettings.musicVolume] - use [setVolume] to update */
-    private var baseVolume: Float = UncivGame.Current.settings.musicVolume
+    private var baseVolume: Float = settings.musicVolume
 
     /** Pause in seconds between tracks unless [chooseTrack] is called to force a track change */
     var silenceLength: Float
@@ -111,7 +110,7 @@ class MusicController {
         set(value) { silenceLengthInTicks = (ticksPerSecond * value).toInt() }
 
     private var silenceLengthInTicks =
-        (UncivGame.Current.settings.pauseBetweenTracks * ticksPerSecond).roundToInt()
+        (settings.pauseBetweenTracks * ticksPerSecond).roundToInt()
 
     private var mods = HashSet<String>()
 
@@ -144,6 +143,9 @@ class MusicController {
 
     /** One entry only for 'overlay' tracks in addition to and independent of normal music */
     private var overlay: MusicTrackController? = null
+    /** `overlay` state needs to be separate - but apart from Idle, which is `overlay==null`,
+     *   it only needs to know whether a fade-out was meant as stop or as pause */
+    private var overlayPausing = false
 
     /** Keeps paths of recently played track to reduce repetition */
     private val musicHistory = ArrayDeque<String>(musicHistorySize)
@@ -205,6 +207,8 @@ class MusicController {
 
     //endregion
     //region Internal helpers
+
+    private val settings get() = UncivGame.Current.settings
 
     private fun clearCurrent() {
         current?.clear()
@@ -333,7 +337,7 @@ class MusicController {
         getDefault: () -> FileHandle = { getFile(folder) }
     ) = sequence<FileHandle> {
         yieldAll(
-            (UncivGame.Current.settings.visualMods + mods).asSequence()
+            (settings.visualMods + mods).asSequence()
                 .map { getFile(modPath).child(it).child(folder) }
         )
         yield(getDefault())
@@ -528,6 +532,8 @@ class MusicController {
         current?.startFade(MusicTrackController.State.FadeOut, fadingStep)
         if (next?.state == MusicTrackController.State.FadeIn)
             next!!.startFade(MusicTrackController.State.FadeOut)
+
+        pauseOverlay()
     }
 
     /**
@@ -548,15 +554,18 @@ class MusicController {
         } else if (state == ControllerState.Cleanup || state == ControllerState.Pause) {
             chooseTrack()
         }
+
+        resumeOverlay()
     }
 
     /** Fade out then shutdown with a given [duration] in seconds,
      *  defaults to a 'slow' fade (4.5s) */
-    @Suppress("unused")  // might be useful instead of gracefulShutdown
+    @Suppress("MemberVisibilityCanBePrivate")
     fun fadeoutToSilence(duration: Float = defaultFadeDuration * 5) {
         val fadingStep = 1f / ticksPerSecond / duration
         current?.startFade(MusicTrackController.State.FadeOut, fadingStep)
         next?.startFade(MusicTrackController.State.FadeOut, fadingStep)
+        overlay?.startFade(MusicTrackController.State.FadeOut, fadingStep)
         state = ControllerState.Shutdown
     }
 
@@ -570,7 +579,7 @@ class MusicController {
     /** Soft shutdown of music playback, with fadeout */
     fun gracefulShutdown() {
         if (state == ControllerState.Cleanup) shutdown()
-        else state = ControllerState.Shutdown
+        else fadeoutToSilence(defaultFadeDuration)
     }
 
     /** Download Thatched Villagers */
@@ -591,26 +600,44 @@ class MusicController {
     private fun getMatchingFiles(folder: String, name: String) =
         getMusicFolders(folder) { Gdx.files.internal(folder) }
             .flatMap {
-                it.list { file: File ->
-                    file.nameWithoutExtension == name && file.exists() && !file.isDirectory &&
-                    file.extension in gdxSupportedFileExtensions
-                }.asSequence()
+                // Don't list() here - no work on packaged internal
+                gdxSupportedFileExtensions.asSequence().map { extension ->
+                    it.child("$name.$extension")
+                }.filter { file ->
+                    file.exists() && !file.isDirectory
+                }
             }
 
     /** Play [name] from any mod's [folder] or internal assets,
-     *  fading in to [volume] then looping */
-    fun playOverlay(folder: String, name: String, volume: Float) {
+     *  fading in to [volume] then looping if [isLooping] is set.
+     *  does nothing if no such file is found.
+     *  Note that [volume] intentionally defaults to soundEffectsVolume, not musicVolume
+     *  as that fits the "Leader voice" usecase better.
+     */
+    fun playOverlay(
+        name: String,
+        folder: String = "sounds",
+        volume: Float = settings.soundEffectsVolume,
+        isLooping: Boolean = false,
+        fadeIn: Boolean = false
+    ) {
         val file = getMatchingFiles(folder, name).firstOrNull() ?: return
-        playOverlay(file, volume)
+        playOverlay(file, volume, isLooping, fadeIn)
     }
 
-    /** Play [file], fading in to [volume] then looping */
+    /** Called for Leader Voices */
+    fun playVoice(name: String) = playOverlay(name, "voices", settings.voicesVolume)
+    /** Determines if any 'voices' folder exists in any currently active mod */
+    fun isVoicesAvailable() = getMusicFolders("voices").any()
+
+    /** Play [file], [optionally][fadeIn] fading in to [volume] then looping if [isLooping] is set */
     @Suppress("MemberVisibilityCanBePrivate")  // open to future use
-    fun playOverlay(file: FileHandle, volume: Float) {
+    fun playOverlay(file: FileHandle, volume: Float, isLooping: Boolean, fadeIn: Boolean) {
         clearOverlay()
-        MusicTrackController(volume, initialFadeVolume = 0f).load(file) {
-            it.music?.isLooping = true
+        MusicTrackController(volume, initialFadeVolume = if (fadeIn) 0f else 1f).load(file) {
+            it.music?.isLooping = isLooping
             it.play()
+            //todo Needs to be called even when no fade desired to correctly set state - Think about changing that
             it.startFade(MusicTrackController.State.FadeIn)
             overlay = it
         }
@@ -618,12 +645,27 @@ class MusicController {
 
     /** Fade out any playing overlay then clean up */
     fun stopOverlay() {
+        overlayPausing = false
         overlay?.startFade(MusicTrackController.State.FadeOut)
     }
 
+    private fun pauseOverlay() {
+        overlayPausing = true
+        overlay?.startFade(MusicTrackController.State.FadeOut)
+    }
+
+    private fun resumeOverlay() {
+        overlay?.run {
+            if (!state.canPlay || state == MusicTrackController.State.Playing) return
+            startFade(MusicTrackController.State.FadeIn)
+            play()
+        }
+    }
+
     private fun MusicTrackController.overlayTick() {
-        if (timerTick() == MusicTrackController.State.Idle)
-            clearOverlay()  // means FadeOut finished
+        if (timerTick() != MusicTrackController.State.Idle) return
+        if (!overlayPausing && !isPlaying())
+            clearOverlay()  // means FadeOut-to-stop finished
     }
 
     private fun clearOverlay() {

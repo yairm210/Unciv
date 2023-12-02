@@ -18,6 +18,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Triggerable, Global
 
+??? example  "Sell [buildingFilter] buildings [cityFilter]"
+	Example: "Sell [Culture] buildings [in all cities]"
+
+	Applicable to: Triggerable, Global
+
 ??? example  "Free [unit] appears"
 	Example: "Free [Musketman] appears"
 
@@ -101,8 +106,13 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Triggerable
 
-??? example  "Gain [amount] [stat/resource]"
+??? example  "Gain [amount] [stat]"
 	Example: "Gain [3] [Culture]"
+
+	Applicable to: Triggerable
+
+??? example  "Gain [amount] [stat] (modified by game speed)"
+	Example: "Gain [3] [Culture] (modified by game speed)"
 
 	Applicable to: Triggerable
 
@@ -197,6 +207,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 ??? example  "[stats] per [amount] social policies adopted"
 	Example: "[+1 Gold, +2 Production] per [3] social policies adopted"
+
+	Applicable to: Global
+
+??? example  "[stats] per every [amount] [civWideStat]"
+	Example: "[+1 Gold, +2 Production] per every [3] [Gold]"
 
 	Applicable to: Global
 
@@ -473,8 +488,8 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Global
 
-??? example  "[relativeAmount]% tile improvement construction time"
-	Example: "[+20]% tile improvement construction time"
+??? example  "[relativeAmount]% construction time for [improvementFilter] improvements"
+	Example: "[+20]% construction time for [All Road] improvements"
 
 	Applicable to: Global, Unit
 
@@ -785,6 +800,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Global, Unit
 
+??? example  "[relativeAmount] Air Interception Range"
+	Example: "[+20] Air Interception Range"
+
+	Applicable to: Global, Unit
+
 ??? example  "[amount] HP when healing"
 	Example: "[3] HP when healing"
 
@@ -899,8 +919,17 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "Units ignore terrain costs when moving into any tile with Hills"
 	Applicable to: Nation
 
+??? example  "Excluded from map editor"
+	Applicable to: Nation, Terrain, Improvement, Resource
+
 ??? example  "Will not be displayed in Civilopedia"
-	Applicable to: Nation, Tech, Policy, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins
+	Applicable to: Nation, Tech, Policy, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed
+
+??? example  "Comment [comment]"
+	Allows displaying arbitrary text in a Unique listing. Only the text within the '[]' brackets will be displayed, the rest serves to allow Ruleset validation to recognize the intent.
+	Example: "Comment [comment]"
+
+	Applicable to: Nation, Tech, Policy, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed
 
 ## Era uniques
 ??? example  "Starting in this era disables religion"
@@ -1243,6 +1272,9 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Unit
 
 ??? example  "Unable to capture cities"
+	Applicable to: Unit
+
+??? example  "Unable to pillage tiles"
 	Applicable to: Unit
 
 ??? example  "Can move after attacking"
@@ -2122,6 +2154,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 ??? example  "&lt;upon ending a turn in a [tileFilter] tile&gt;"
 	Example: "&lt;upon ending a turn in a [Farm] tile&gt;"
+
+	Applicable to: UnitTriggerCondition
+
+??? example  "&lt;upon discovering a [tileFilter] tile&gt;"
+	Example: "&lt;upon discovering a [Farm] tile&gt;"
 
 	Applicable to: UnitTriggerCondition
 

@@ -5,6 +5,7 @@ import com.unciv.Constants
 import com.unciv.json.HashMapVector2
 import com.unciv.logic.GameInfo
 import com.unciv.logic.IsPartOfGameInfoSerialization
+import com.unciv.logic.MultiFilter
 import com.unciv.logic.UncivShowableException
 import com.unciv.logic.automation.ai.TacticalAI
 import com.unciv.logic.automation.unit.WorkerAutomation
@@ -23,6 +24,7 @@ import com.unciv.logic.civilization.managers.QuestManager
 import com.unciv.logic.civilization.managers.ReligionManager
 import com.unciv.logic.civilization.managers.RuinsManager
 import com.unciv.logic.civilization.managers.TechManager
+import com.unciv.logic.civilization.managers.ThreatManager
 import com.unciv.logic.civilization.managers.UnitManager
 import com.unciv.logic.civilization.managers.VictoryManager
 import com.unciv.logic.civilization.transients.CivInfoStatsForNextTurn
@@ -87,6 +89,9 @@ class Civilization : IsPartOfGameInfoSerialization {
 
     @Transient
     val units = UnitManager(this)
+    
+    @Transient
+    var threatManager = ThreatManager(this)
 
     @Transient
     var diplomacyFunctions = DiplomacyFunctions(this)
@@ -491,7 +496,11 @@ class Civilization : IsPartOfGameInfoSerialization {
     }
 
     fun matchesFilter(filter: String): Boolean {
-        return when (filter){
+        return MultiFilter.multiFilter(filter, ::matchesSingleFilter)
+    }
+
+    fun matchesSingleFilter(filter: String): Boolean {
+        return when (filter) {
             "Human player" -> isHuman()
             "AI player" -> isAI()
             else -> nation.matchesFilter(filter)
@@ -746,7 +755,7 @@ class Civilization : IsPartOfGameInfoSerialization {
         }
     }
 
-    fun addStats(stats: Stats){
+    fun addStats(stats: Stats) {
         for ((stat, amount) in stats) addStat(stat, amount.toInt())
     }
 
@@ -801,11 +810,24 @@ class Civilization : IsPartOfGameInfoSerialization {
         newCity.cityConstructions.chooseNextConstruction()
     }
 
-    fun destroy() {
+    /** Destroy what's left of a Civilization
+     *
+     * - function expects cities.isEmpty()
+     * - remaining units are destroyed and diplomacy cleaned up
+     * @param notificationLocation if given *and* the civ receiving the notification can see the tile or knows there was a city there, then the notification can show this location on click
+     */
+    // At the moment, the "last unit down" callers do not pass a location, the city ones do - because the former isn't interesting
+    fun destroy(notificationLocation: Vector2? = null) {
         val destructionText = if (isMajorCiv()) "The civilization of [$civName] has been destroyed!"
-        else "The City-State of [$civName] has been destroyed!"
-        for (civ in gameInfo.civilizations)
-            civ.addNotification(destructionText, NotificationCategory.General, civName, NotificationIcon.Death)
+            else "The City-State of [$civName] has been destroyed!"
+        for (civ in gameInfo.civilizations) {
+            if (civ.isDefeated()) continue // addNotification will ignore barbarians and other AI
+            val location = notificationLocation?.takeIf {
+                val tile = gameInfo.tileMap[notificationLocation]
+                tile.isVisible(civ) || tile.isExplored(civ) && tile.getShownImprovement(civ) == Constants.cityCenter
+            }
+            civ.addNotification(destructionText, LocationAction(location), NotificationCategory.General, civName, NotificationIcon.Death)
+        }
         units.getCivUnits().forEach { it.destroy() }
         tradeRequests.clear() // if we don't do this then there could be resources taken by "pending" trades forever
         for (diplomacyManager in diplomacy.values) {

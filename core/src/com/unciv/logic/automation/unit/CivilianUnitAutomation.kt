@@ -11,12 +11,14 @@ import com.unciv.ui.screens.worldscreen.unit.actions.UnitActions
 
 object CivilianUnitAutomation {
 
+    fun shouldClearTileForAddInCapitalUnits(unit: MapUnit, tile:Tile) = tile.getCity()?.isCapital() == true
+        && !unit.hasUnique(UniqueType.AddInCapital)
+        && unit.civ.units.getCivUnits().any { unit.hasUnique(UniqueType.AddInCapital) }
+
     fun automateCivilianUnit(unit: MapUnit, dangerousTiles: HashSet<Tile>) {
         if (tryRunAwayIfNeccessary(unit)) return
 
-        if (unit.currentTile.isCityCenter() && unit.currentTile.getCity()!!.isCapital()
-            && !unit.hasUnique(UniqueType.AddInCapital)
-            && unit.civ.units.getCivUnits().any { unit.hasUnique(UniqueType.AddInCapital) }){
+        if (shouldClearTileForAddInCapitalUnits(unit, unit.currentTile)) {
             // First off get out of the way, then decide if you actually want to do something else
             val tilesCanMoveTo = unit.movement.getDistanceToTiles()
                 .filter { unit.movement.canMoveTo(it.key) }
@@ -30,7 +32,7 @@ object CivilianUnitAutomation {
         if (unit.cache.hasUniqueToBuildImprovements)
             return unit.civ.getWorkerAutomation().automateWorkerAction(unit, dangerousTiles)
 
-        if (unit.cache.hasUniqueToCreateWaterImprovements){
+        if (unit.cache.hasUniqueToCreateWaterImprovements) {
             if (!unit.civ.getWorkerAutomation().automateWorkBoats(unit))
                 UnitAutomation.tryExplore(unit)
             return
@@ -130,7 +132,7 @@ object CivilianUnitAutomation {
         // This is a little 'Bugblatter Beast of Traal': Run if we can attack an enemy
         // Cheaper than determining which enemies could attack us next turn
         val enemyUnitsInWalkingDistance = unit.movement.getDistanceToTiles().keys
-            .filter { UnitAutomation.containsEnemyMilitaryUnit(unit, it) }
+            .filter { unit.civ.threatManager.doesTileHaveMilitaryEnemy(it) }
 
         if (enemyUnitsInWalkingDistance.isNotEmpty() && !unit.baseUnit.isMilitary()
             && unit.getTile().militaryUnit == null && !unit.getTile().isCityCenter()) {
@@ -159,16 +161,9 @@ object CivilianUnitAutomation {
         }
         val tileFurthestFromEnemy = reachableTiles.keys
             .filter { unit.movement.canMoveTo(it) && unit.getDamageFromTerrain(it) < unit.health }
-            .maxByOrNull { countDistanceToClosestEnemy(unit, it) }
+            .maxByOrNull { unit.civ.threatManager.getDistanceToClosestEnemyUnit(unit.getTile(), 4, false) }
             ?: return // can't move anywhere!
         unit.movement.moveToTile(tileFurthestFromEnemy)
     }
-
-
-    private fun countDistanceToClosestEnemy(unit: MapUnit, tile: Tile): Int {
-        for (i in 1..3)
-            if (tile.getTilesAtDistance(i).any { UnitAutomation.containsEnemyMilitaryUnit(unit, it) })
-                return i
-        return 4
-    }
+    
 }

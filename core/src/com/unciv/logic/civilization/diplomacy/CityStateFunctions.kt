@@ -51,10 +51,12 @@ class CityStateFunctions(val civInfo: Civilization) {
 
         // Unique unit for militaristic city-states
         if (uniqueTypes.contains(UniqueType.CityStateMilitaryUnits)) {
-            val possibleUnits = ruleset.units.values.filter { it.requiredTech != null
-                && ruleset.eras[ruleset.technologies[it.requiredTech!!]!!.era()]!!.eraNumber > ruleset.eras[startingEra]!!.eraNumber // Not from the start era or before
-                && it.uniqueTo != null && it.uniqueTo in unusedMajorCivs // Must be from a major civ not in the game
-                && ruleset.unitTypes[it.unitType]!!.isLandUnit() && ( it.strength > 0 || it.rangedStrength > 0 ) } // Must be a land military unit
+            val possibleUnits = ruleset.units.values.filter {
+                val era = it.era(ruleset)
+                return@filter era != null && era.eraNumber > ruleset.eras[startingEra]!!.eraNumber // Not from the start era or before
+                    && it.uniqueTo != null && it.uniqueTo in unusedMajorCivs // Must be from a major civ not in the game
+                    && ruleset.unitTypes[it.unitType]!!.isLandUnit() && (it.strength > 0 || it.rangedStrength > 0) // Must be a land military unit
+            }
             if (possibleUnits.isNotEmpty())
                 civInfo.cityStateUniqueUnit = possibleUnits.random().name
         }
@@ -117,7 +119,7 @@ class CityStateFunctions(val civInfo: Civilization) {
         }
 
         // Point to the gifted unit, then to the other places mentioned in the message
-        val unitAction = sequenceOf(MapUnitAction(placedUnit.getTile().position))
+        val unitAction = sequenceOf(MapUnitAction(placedUnit))
         val notificationActions = unitAction + LocationAction(cities.city2.location, city.location)
         receivingCiv.addNotification(
             "[${civInfo.civName}] gave us a [${militaryUnit.name}] as gift near [${city.name}]!",
@@ -312,13 +314,14 @@ class CityStateFunctions(val civInfo: Civilization) {
             return
 
         otherCiv.addGold(-getDiplomaticMarriageCost())
+        val notificationLocation = civInfo.getCapital()!!.location
         otherCiv.addNotification("We have married into the ruling family of [${civInfo.civName}], bringing them under our control.",
-            civInfo.getCapital()!!.location,
+            notificationLocation,
             NotificationCategory.Diplomacy, civInfo.civName,
             NotificationIcon.Diplomacy, otherCiv.civName)
         for (civ in civInfo.gameInfo.civilizations.filter { it != otherCiv })
             civ.addNotification("[${otherCiv.civName}] has married into the ruling family of [${civInfo.civName}], bringing them under their control.",
-                civInfo.getCapital()!!.location,
+                notificationLocation,
                 NotificationCategory.Diplomacy, civInfo.civName,
                 NotificationIcon.Diplomacy, otherCiv.civName)
         for (unit in civInfo.units.getCivUnits())
@@ -336,7 +339,7 @@ class CityStateFunctions(val civInfo: Civilization) {
             city.moveToCiv(otherCiv)
             city.isPuppet = true // Human players get a popup that allows them to annex instead
         }
-        civInfo.destroy()
+        civInfo.destroy(notificationLocation)
     }
 
     fun getTributeWillingness(demandingCiv: Civilization, demandingWorker: Boolean = false): Int {

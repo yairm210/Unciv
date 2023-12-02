@@ -41,7 +41,7 @@ class UnitUpgradeManager(val unit:MapUnit) {
             return false
         }
 
-        for (baseUnit in upgradePath.reversed()){
+        for (baseUnit in upgradePath.reversed()) {
             if (isInvalidUpgradeDestination(baseUnit)) continue
             return baseUnit
         }
@@ -102,7 +102,7 @@ class UnitUpgradeManager(val unit:MapUnit) {
             // do clamping and rounding here so upgrading stepwise costs the same as upgrading far down the chain
             var stepCost = constants.base
             stepCost += (constants.perProduction * (baseUnit.cost - currentUnit.cost)).coerceAtLeast(0f)
-            val era = ruleset.eras[ruleset.technologies[baseUnit.requiredTech]?.era()]
+            val era = baseUnit.era(ruleset)
             if (era != null)
                 stepCost *= (1f + era.eraNumber * constants.eraMultiplier)
             stepCost = (stepCost * civModifier).pow(constants.exponent)

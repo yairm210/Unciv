@@ -189,7 +189,7 @@ class CityPopulationManager : IsPartOfGameInfoSerialization {
         city.cityStats.update()
     }
 
-    fun stopWorkingTile(position: Vector2){
+    fun stopWorkingTile(position: Vector2) {
         city.workedTiles = city.workedTiles.withoutItem(position)
         city.lockedTiles.remove(position)
     }

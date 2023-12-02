@@ -121,8 +121,8 @@ class Terrain : RulesetStatsObject() {
         uniquesToCivilopediaTextLines(textList, leadingSeparator = null)
 
         textList += FormattedLine()
-        textList += if (impassable) FormattedLine(Constants.impassable, color="#A00")
-                    else FormattedLine("{Movement cost}: $movementCost")
+        if (impassable) textList += FormattedLine(Constants.impassable, color="#A00")
+        else if (movementCost > 0) textList += FormattedLine("{Movement cost}: $movementCost")
 
         if (defenceBonus != 0f)
             textList += FormattedLine("{Defence bonus}: ${(defenceBonus * 100).toInt()}%")

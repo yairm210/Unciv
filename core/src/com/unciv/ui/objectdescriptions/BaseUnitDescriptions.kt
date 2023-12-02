@@ -292,7 +292,8 @@ object BaseUnitDescriptions {
 
         val lostAbilityPredicate: (Unique)->Boolean = { it.text in betterUnit.uniques || it.isHiddenToUsers() }
         for (unique in originalUnit.uniqueObjects.filterNot(lostAbilityPredicate)) {
-            yield("Lost ability (vs [${originalUnit.name}]): [${unique.text}]" to null)
+            // Need double translation of the "ability" here - unique texts may contain nuts - pardon, square brackets
+            yield("Lost ability (vs [${originalUnit.name}]): [${unique.text.tr()}]" to null)
         }
         for (promotion in betterUnit.promotions.filter { it !in originalUnit.promotions }) {
             // Needs tr for **individual** translations (no bracket nesting), default separator would have extra blank

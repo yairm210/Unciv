@@ -25,7 +25,7 @@ import com.unciv.ui.popups.closeAllPopups
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.civilopediascreen.CivilopediaScreen
 
-class ConstructionInfoTable(val cityScreen: CityScreen): Table() {
+class ConstructionInfoTable(val cityScreen: CityScreen) : Table() {
     private val selectedConstructionTable = Table()
 
     init {

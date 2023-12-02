@@ -145,7 +145,7 @@ class TradeLogic(val ourCivilization:Civilization, val otherCivilization: Civili
             }
         }
 
-        if (currentTrade.ourOffers.isEmpty()){ // Must evaluate before moving, or else cities have already moved and we get an exception
+        if (currentTrade.ourOffers.isEmpty()) { // Must evaluate before moving, or else cities have already moved and we get an exception
             val goldValueOfTrade = TradeEvaluation().getTradeAcceptability(currentTrade, ourCivilization, otherCivilization)
             val diplomaticValueOfTrade = CityStateFunctions(ourCivilization).influenceGainedByGift(otherCivilization, goldValueOfTrade) / 10
             ourCivilization.getDiplomacyManager(otherCivilization).addModifier(DiplomaticModifiers.GaveUsGifts, diplomaticValueOfTrade.toFloat())

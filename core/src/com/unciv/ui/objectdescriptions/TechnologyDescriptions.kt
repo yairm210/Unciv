@@ -272,7 +272,7 @@ object TechnologyDescriptions {
      */
     // Used for Civilopedia, Alert and Picker, so if any of these decide to ignore the "Will not be displayed in Civilopedia" unique this needs refactoring
     private fun getEnabledBuildings(techName: String, ruleset: Ruleset, civInfo: Civilization?) =
-            getFilteredBuildings(ruleset, civInfo) { it.requiredTech == techName }
+            getFilteredBuildings(ruleset, civInfo) { it.requiredTechs().contains(techName) }
 
     /**
      * Returns a Sequence of [RulesetStatsObject]s obsoleted by this Technology, filtered for [civInfo]'s uniques,
@@ -334,7 +334,7 @@ object TechnologyDescriptions {
         val (nuclearWeaponsEnabled, religionEnabled) = getNukeAndReligionSwitches(civInfo)
         return ruleset.units.values.asSequence()
             .filter {
-                it.requiredTech == techName
+                it.requiredTechs().contains(techName)
                         && (it.uniqueTo == civInfo?.civName || it.uniqueTo == null && civInfo?.getEquivalentUnit(it) == it)
                         && (nuclearWeaponsEnabled || !it.isNuclearWeapon())
                         && (religionEnabled || !it.hasUnique(UniqueType.HiddenWithoutReligion))

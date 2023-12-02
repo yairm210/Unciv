@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.unciv.Constants
+import com.unciv.UncivGame
 import com.unciv.logic.civilization.AlertType
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.PopupAlert
@@ -33,9 +34,15 @@ class MajorCivDiplomacyTable(private val diplomacyScreen: DiplomacyScreen) {
         val diplomacyTable = Table()
         diplomacyTable.defaults().pad(10f)
 
-        val helloText = if (otherCivDiplomacyManager.isRelationshipLevelLE(RelationshipLevel.Enemy))
-            otherCiv.nation.hateHello
-        else otherCiv.nation.neutralHello
+        val helloText: String
+        val helloVoice: String
+        if (otherCivDiplomacyManager.isRelationshipLevelLE(RelationshipLevel.Enemy)) {
+            helloText = otherCiv.nation.hateHello
+            helloVoice = "${otherCiv.civName}.hateHello"
+        } else {
+            helloText = otherCiv.nation.neutralHello
+            helloVoice = "${otherCiv.civName}.neutralHello"
+        }
         val leaderIntroTable = LeaderIntroTable(otherCiv, helloText)
         diplomacyTable.add(leaderIntroTable).row()
         diplomacyTable.addSeparator()
@@ -84,6 +91,9 @@ class MajorCivDiplomacyTable(private val diplomacyScreen: DiplomacyScreen) {
             val promisesTable = getPromisesTable(diplomacyManager, otherCivDiplomacyManager)
             if (promisesTable != null) diplomacyTable.add(promisesTable).row()
         }
+
+        // Starting playback here assumes the MajorCivDiplomacyTable is shown immediately
+        UncivGame.Current.musicController.playVoice(helloVoice)
 
         return diplomacyTable
     }

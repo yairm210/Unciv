@@ -3,6 +3,7 @@ package com.unciv.logic.automation.unit
 import com.unciv.logic.automation.Automation
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
+import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.tile.ResourceType
@@ -34,14 +35,22 @@ object CityLocationTileRanker {
         val uniqueCache = LocalUniqueCache()
         val bestTilesToFoundCity = BestTilesToFoundCity()
         val baseTileMap = HashMap<Tile, Float>()
-        for (tile in possibleCityLocations) {
-            val tileValue = rankTileToSettle(tile, unit.civ, nearbyCities, baseTileMap, uniqueCache)
-            if (tileValue > bestTilesToFoundCity.bestTileRank) {
-                bestTilesToFoundCity.bestTile = tile
-                bestTilesToFoundCity.bestTileRank = tileValue
+
+        val possibleTileLocationsWithRank = possibleCityLocations
+            .map {
+                val tileValue = rankTileToSettle(it, unit.civ, nearbyCities, baseTileMap, uniqueCache)
+                bestTilesToFoundCity.tileRankMap[it] = tileValue
+
+                Pair(it, tileValue)
             }
-            bestTilesToFoundCity.tileRankMap[tile] = tileValue
+            .sortedByDescending { it.second }
+
+        val bestReachableTile = possibleTileLocationsWithRank.firstOrNull { unit.movement.canReach(it.first) }
+        if (bestReachableTile != null){
+            bestTilesToFoundCity.bestTile = bestReachableTile.first
+            bestTilesToFoundCity.bestTileRank = bestReachableTile.second
         }
+
         return bestTilesToFoundCity
     }
 
@@ -51,6 +60,13 @@ object CityLocationTileRanker {
         if (tile.getOwner() != null && tile.getOwner() != civ) return false
         for (city in nearbyCities) {
             val distance = city.getCenterTile().aerialDistanceTo(tile)
+            // todo: AgreedToNotSettleNearUs is hardcoded for now but it may be better to softcode it below in getDistanceToCityModifier
+            if (distance <= 6 && civ.knows(city.civ)
+                && !civ.isAtWarWith(city.civ)
+                // If the CITY OWNER knows that the UNIT OWNER agreed not to settle near them
+                && city.civ.getDiplomacyManager(civ)
+                    .hasFlag(DiplomacyFlags.AgreedToNotSettleNearUs))
+                return false
             if (tile.getContinent() == city.getCenterTile().getContinent()) {
                 if (distance <= modConstants.minimalCityDistance) return false
             } else {
@@ -92,8 +108,8 @@ object CityLocationTileRanker {
             var distanceToCityModifier = when {
                 // NOTE: the line it.getCenterTile().aerialDistanceTo(unit.getTile()) <= X + range
                 // above MUST have the constant X that is added to the range be higher or equal to the highest distance here + 1
-                // If it is not higher the settler may get stuck when it ranks the same tile differently 
-                // as it moves away from the city and doesn't include it in the calculation 
+                // If it is not higher the settler may get stuck when it ranks the same tile differently
+                // as it moves away from the city and doesn't include it in the calculation
                 // and values it higher than when it moves closer to the city
                 distanceToCity == 6 -> 2f
                 distanceToCity == 5 -> 5f
@@ -118,8 +134,8 @@ object CityLocationTileRanker {
         }
         return modifier
     }
-    
-    private fun rankTile(rankTile: Tile, civ:Civilization, onCoast: Boolean, newUniqueLuxuryResources:HashSet<String>, 
+
+    private fun rankTile(rankTile: Tile, civ:Civilization, onCoast: Boolean, newUniqueLuxuryResources:HashSet<String>,
                          baseTileMap: HashMap<Tile, Float>, uniqueCache: LocalUniqueCache): Float {
         var locationSpecificTileValue = 0f
         // Don't settle near but not on the coast

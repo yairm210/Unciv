@@ -62,7 +62,8 @@ object FasterUIDevelopment {
 
         val settings = UncivFiles.getSettingsForPlatformLaunchers()
         if (!settings.isFreshlyCreated) {
-            config.setWindowedMode(settings.windowState.width.coerceAtLeast(120), settings.windowState.height.coerceAtLeast(80))
+            val (width, height) = settings.windowState.coerceIn()
+            config.setWindowedMode(width, height)
         }
 
         Lwjgl3Application(UIDevGame(), config)

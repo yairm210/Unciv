@@ -15,7 +15,7 @@ import kotlinx.coroutines.delay
  *
  * Note: Supports color markup via [ColorMarkupLabel], using «» instead of Gdx's [].
  */
-class ToastPopup (message: String, stageToShowOn: Stage, val time: Long = 2000) : Popup(stageToShowOn){
+class ToastPopup (message: String, stageToShowOn: Stage, val time: Long = 2000) : Popup(stageToShowOn) {
 
     constructor(message: String, screen: BaseScreen, time: Long = 2000) : this(message, screen.stage, time)
 
@@ -35,7 +35,7 @@ class ToastPopup (message: String, stageToShowOn: Stage, val time: Long = 2000) 
         y = stageToShowOn.height - (height + 20f)
     }
 
-    private fun startTimer(){
+    private fun startTimer() {
         Concurrency.run("ResponsePopup") {
             delay(time)
             launchOnGLThread { this@ToastPopup.close() }

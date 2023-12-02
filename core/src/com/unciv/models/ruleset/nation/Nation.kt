@@ -2,6 +2,7 @@ package com.unciv.models.ruleset.nation
 
 import com.badlogic.gdx.graphics.Color
 import com.unciv.Constants
+import com.unciv.logic.MultiFilter
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetObject
 import com.unciv.models.ruleset.unique.UniqueTarget
@@ -10,6 +11,7 @@ import com.unciv.models.translations.squareBraceRegex
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.extensions.colorFromRGB
 import com.unciv.ui.objectdescriptions.BaseUnitDescriptions
+import com.unciv.ui.objectdescriptions.BuildingDescriptions
 import com.unciv.ui.objectdescriptions.uniquesToCivilopediaTextLines
 import com.unciv.ui.screens.civilopediascreen.CivilopediaScreen.Companion.showReligionInCivilopedia
 import com.unciv.ui.screens.civilopediascreen.FormattedLine
@@ -25,13 +27,22 @@ class Nation : RulesetObject() {
 
     var cityStateType: String? = null
     var preferredVictoryType: String = Constants.neutralVictoryType
-    var declaringWar = ""
-    var attacked = ""
-    var defeated = ""
-    var introduction = ""
-    var tradeRequest = ""
 
+    /// The following all have audio hooks to play corresponding leader
+    /// voice clips - named <civName>.<fieldName>, e.g. "America.defeated.ogg"
+    /** Shown for AlertType.WarDeclaration, when other Civs declare war on a player */
+    var declaringWar = ""
+    /** Shown in DiplomacyScreen when a player declares war */
+    var attacked = ""
+    /** Shown for AlertType.Defeated */
+    var defeated = ""
+    /** Shown for AlertType.FirstContact */
+    var introduction = ""
+    /** Shown in TradePopup when other Civs initiate trade with a player */
+    var tradeRequest = ""
+    /** Shown in DiplomacyScreen when a player contacts another major civ with RelationshipLevel.Afraid or better */
     var neutralHello = ""
+    /** Shown in DiplomacyScreen when a player contacts another major civ with RelationshipLevel.Enemy or worse */
     var hateHello = ""
 
     lateinit var outerColor: List<Int>
@@ -192,22 +203,8 @@ class Nation : RulesetObject() {
             yield(FormattedLine("{${building.name}} -", link=building.makeLink()))
             if (building.replaces != null && ruleset.buildings.containsKey(building.replaces!!)) {
                 val originalBuilding = ruleset.buildings[building.replaces!!]!!
-                yield(FormattedLine("Replaces [${originalBuilding.name}]", link=originalBuilding.makeLink(), indent=1))
-
-                for ((key, value) in building)
-                    if (value != originalBuilding[key])
-                        yield(FormattedLine( key.name.tr() + " " +"[${value.toInt()}] vs [${originalBuilding[key].toInt()}]".tr(), indent=1))
-
-                for (unique in building.uniques.filter { it !in originalBuilding.uniques })
-                    yield(FormattedLine(unique, indent=1))
-                if (building.maintenance != originalBuilding.maintenance)
-                    yield(FormattedLine("{Maintenance} ".tr() + "[${building.maintenance}] vs [${originalBuilding.maintenance}]".tr(), indent=1))
-                if (building.cost != originalBuilding.cost)
-                    yield(FormattedLine("{Cost} ".tr() + "[${building.cost}] vs [${originalBuilding.cost}]".tr(), indent=1))
-                if (building.cityStrength != originalBuilding.cityStrength)
-                    yield(FormattedLine("{City strength} ".tr() + "[${building.cityStrength}] vs [${originalBuilding.cityStrength}]".tr(), indent=1))
-                if (building.cityHealth != originalBuilding.cityHealth)
-                    yield(FormattedLine("{City health} ".tr() + "[${building.cityHealth}] vs [${originalBuilding.cityHealth}]".tr(), indent=1))
+                yield(FormattedLine("Replaces [${originalBuilding.name}]", link = originalBuilding.makeLink(), indent=1))
+                yieldAll(BuildingDescriptions.getDifferences(ruleset, originalBuilding, building))
                 yield(FormattedLine())
             } else if (building.replaces != null) {
                 yield(FormattedLine("Replaces [${building.replaces}], which is not found in the ruleset!", indent=1))
@@ -266,6 +263,10 @@ class Nation : RulesetObject() {
     fun getContrastRatio() = getContrastRatio(getInnerColor(), getOuterColor())
 
     fun matchesFilter(filter: String): Boolean {
+        return MultiFilter.multiFilter(filter, ::matchesSingleFilter)
+    }
+
+    fun matchesSingleFilter(filter: String): Boolean {
         return when (filter) {
             "All" -> true
             name -> true

@@ -56,7 +56,7 @@ class TileImprovementConstructionTests {
             }
             tile.setTransients()
 
-            if (improvement.uniqueTo != null){
+            if (improvement.uniqueTo != null) {
                 civInfo.civName = improvement.uniqueTo!!
             }
 
@@ -176,14 +176,14 @@ class TileImprovementConstructionTests {
     }
 
     @Test
-    fun buildingRoadBuildsARoad(){
+    fun buildingRoadBuildsARoad() {
         val tile = tileMap[1,1]
         tile.improvementFunctions.changeImprovement("Road")
         assert(tile.roadStatus == RoadStatus.Road)
     }
 
     @Test
-    fun removingRoadRemovesRoad(){
+    fun removingRoadRemovesRoad() {
         val tile = tileMap[1,1]
         tile.roadStatus = RoadStatus.Road
         tile.improvementFunctions.changeImprovement("Remove Road")
@@ -191,7 +191,7 @@ class TileImprovementConstructionTests {
     }
 
     @Test
-    fun removingForestRemovesForestAndLumbermill(){
+    fun removingForestRemovesForestAndLumbermill() {
         val tile = tileMap[1,1]
         tile.addTerrainFeature("Forest")
         tile.improvementFunctions.changeImprovement("Lumber mill")
@@ -202,7 +202,7 @@ class TileImprovementConstructionTests {
     }
 
     @Test
-    fun removingForestRemovesForestButNotCamp(){
+    fun removingForestRemovesForestButNotCamp() {
         val tile = tileMap[1,1]
         tile.addTerrainFeature("Forest")
         tile.resource = "Deer"
@@ -215,7 +215,7 @@ class TileImprovementConstructionTests {
     }
 
     @Test
-    fun statsDiffFromRemovingForestTakesRemovedLumberMillIntoAccount(){
+    fun statsDiffFromRemovingForestTakesRemovedLumberMillIntoAccount() {
         val tile = tileMap[1,1]
         tile.baseTerrain = "Grassland"
         tile.addTerrainFeature("Forest")

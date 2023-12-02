@@ -217,7 +217,7 @@ class CivInfoStatsForNextTurn(val civInfo: Civilization) {
     fun getHappinessBreakdown(): HashMap<String, Float> {
         val statMap = HashMap<String, Float>()
 
-        fun HashMap<String, Float>.add(key:String, value: Float){
+        fun HashMap<String, Float>.add(key:String, value: Float) {
             if (!containsKey(key)) put(key, value)
             else put(key, value+get(key)!!)
         }
@@ -310,6 +310,11 @@ class CivInfoStatsForNextTurn(val civInfo: Civilization) {
         for (unique in civInfo.getMatchingUniques(UniqueType.Stats))
             if (unique.sourceObjectType != UniqueTarget.Building && unique.sourceObjectType != UniqueTarget.Wonder)
                 statMap.add(unique.sourceObjectType!!.name, unique.stats)
+
+        for (unique in civInfo.getMatchingUniques(UniqueType.StatsPerStat)) {
+            val amount = civInfo.getStatReserve(Stat.valueOf(unique.params[2])) / unique.params[1].toInt()
+            statMap.add("Stats", unique.stats.times(amount))
+        }
 
         val statsPerNaturalWonder = Stats(happiness = 1f)
 

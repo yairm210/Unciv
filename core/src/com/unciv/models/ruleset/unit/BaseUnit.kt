@@ -1,5 +1,6 @@
 package com.unciv.models.ruleset.unit
 
+import com.unciv.logic.MultiFilter
 import com.unciv.logic.city.City
 import com.unciv.logic.city.CityConstructions
 import com.unciv.logic.civilization.Civilization
@@ -15,7 +16,6 @@ import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
-import com.unciv.ui.components.extensions.filterAndLogic
 import com.unciv.ui.components.extensions.getNeedMoreAmountString
 import com.unciv.ui.components.extensions.toPercent
 import com.unciv.ui.objectdescriptions.BaseUnitDescriptions
@@ -39,6 +39,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
     var unitType: String = ""
 
     val type by lazy { ruleset.unitTypes[unitType]!! }
+    @Deprecated("The functionality provided by the requiredTech field is provided by the OnlyAvailableWhen unique.")
     override var requiredTech: String? = null
     var requiredResource: String? = null
 
@@ -155,8 +156,9 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         city: City? = null,
         additionalResources: Counter<String> = Counter.ZERO
     ): Sequence<RejectionReason> = sequence {
-        if (requiredTech != null && !civ.tech.isResearched(requiredTech!!))
-            yield(RejectionReasonType.RequiresTech.toInstance("$requiredTech not researched"))
+        for (requiredTech: String in requiredTechs())
+            if (!civ.tech.isResearched(requiredTech))
+                yield(RejectionReasonType.RequiresTech.toInstance("$requiredTech not researched"))
         if (obsoleteTech != null && civ.tech.isResearched(obsoleteTech!!))
             yield(RejectionReasonType.Obsoleted.toInstance("Obsolete by $obsoleteTech"))
 
@@ -264,9 +266,11 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
 
     /** Implements [UniqueParameterType.BaseUnitFilter][com.unciv.models.ruleset.unique.UniqueParameterType.BaseUnitFilter] */
     fun matchesFilter(filter: String): Boolean {
-        return filter.filterAndLogic { matchesFilter(it) } // multiple types at once - AND logic. Looks like:"{Military} {Land}"
-            ?: when (filter) {
+        return MultiFilter.multiFilter(filter, ::matchesSingleFilter)
+    }
 
+    fun matchesSingleFilter(filter: String): Boolean {
+        return when (filter) {
             unitType -> true
             name -> true
             replaces -> true
@@ -287,9 +291,10 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
 
             else -> {
                 if (type.matchesFilter(filter)) return true
-                if (requiredTech != null && ruleset.technologies[requiredTech]?.matchesFilter(filter)==true) return true
+                for (requiredTech: String in requiredTechs())
+                    if (ruleset.technologies[requiredTech]?.matchesFilter(filter) == true) return true
                 if (
-                    // Uniques using these kinds of filters should be deprecated and replaced with adjective-only parameters
+                // Uniques using these kinds of filters should be deprecated and replaced with adjective-only parameters
                     filter.endsWith(" units")
                     // "military units" --> "Military", using invariant locale
                     && matchesFilter(filter.removeSuffix(" units").lowercase().replaceFirstChar { it.uppercaseChar() })
