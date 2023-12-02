@@ -138,6 +138,7 @@ class WorkerAutomation(
             unit.automatedRoadConnectionDestination = null
             unit.automatedRoadConnectionPath = null
             currentTile.stopWorkingOnImprovement()
+            return
         }
 
         /**
@@ -214,14 +215,16 @@ class WorkerAutomation(
             if (currentTile.roadStatus == bestRoadAvailable || currentTile.isCityCenter()){
                 val currTileIndex = pathToDest!!.indexOf(currentTile.position)
                 when {
-                    currTileIndex == -1 -> throw Exception("The current tile of worker ${unit.label()} is not in the path to the destination tile")
+                    currTileIndex == -1 -> { // The worker was somehow moved off its path
+                        debug("WorkerAutomation: ${unit.label()} -> was moved off its connect road path. Operation cancelled.")
+                        stopAndCleanAutomation()
+                    }
                     currTileIndex < pathToDest.size - 1 -> { // Try to move to the next tile in the path
                         val nextTile = unit.civ.gameInfo.tileMap[pathToDest[currTileIndex + 1]]
                         if(unit.movement.canMoveTo(nextTile) && unit.movement.canReach(nextTile)){
                             unit.movement.moveToTile(nextTile)
                             return
-                        }else{
-                            // Worker can't move to the next tile.
+                        }else{ // Worker can't move to the next tile.
                             stopAndCleanAutomation()
                         }
                     }
