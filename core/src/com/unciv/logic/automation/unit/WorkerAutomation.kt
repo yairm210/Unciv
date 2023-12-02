@@ -175,9 +175,10 @@ class WorkerAutomation(
             val astar: AStar = AStar(currentTile,
                 isCandidateTilePredicate,
                 {from: Tile, to: Tile -> getMovementCost(from, to)},
-                {tile -> 0f}).apply {
-                maxSize = HexMath.getNumberOfTilesInHexagon(HexMath.getDistance(currentTile.position, destinationTile.position) + 2)
-            }
+                {from: Tile, to: Tile -> HexMath.getDistance(from.position, to.position).toFloat()}) // Euclidean distance is admissable
+//                 .apply {
+//                     maxSize = HexMath.getNumberOfTilesInHexagon(HexMath.getDistance(currentTile.position, destinationTile.position) + 2)
+//                 }
 
             while (true) {
                 if (astar.hasEnded()) {
