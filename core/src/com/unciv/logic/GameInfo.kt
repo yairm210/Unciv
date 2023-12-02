@@ -365,8 +365,8 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
         // We process player automatically if:
         while (isSimulation() ||                    // simulation is active
                 player.isAI() ||                    // or player is AI
-                isOnline && (player.isDefeated() || // or player is online defeated
-                        player.isSpectator()))      // or player is online spectator
+                player.isDefeated() ||
+                isOnline && player.isSpectator())      // or player is online spectator
         {
 
             // Starting preparations

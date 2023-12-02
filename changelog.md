@@ -1,3 +1,44 @@
+## 4.9.4
+
+Stats from followers unique fixed
+
+City-state units work with 'get era' function
+
+Ruleset validation for negative-weight ruin rewards
+
+By SomeTroglodyte:
+- Fix crash for trade notifications as Spectator / waiting for player
+- Fix Unit rename popup offering up the icon
+
+Solved worker automation crash  - By willjallen
+
+By SeventhM:
+- Add "Unable to pillage tiles" unique
+- Fix objects being purchable with a blocking conditional
+
+Stats per Stat unique - By PLynx01
+
+## 4.9.3
+
+Cities you haven't bombarded with will auto-bombard at turn end
+
+Defeated (no units/cities) hotseat multiplayer no longer appears for turns ("player X ready")
+
+Console: Nicer available command display
+
+By willjallen:
+- Add tech queuing on right-click / doubleclick
+
+By tuvus:
+- Initial AutoPlay implementation
+- Fixed exploration for automated units
+
+By SomeTroglodyte:
+- Wesnoth map import polished up
+- City sounds again
+
+Fix founding cities removing city center tile improvement  - By SeventhM
+
 ## 4.9.2
 
 Console:

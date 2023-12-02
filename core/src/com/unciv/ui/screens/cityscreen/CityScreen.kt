@@ -46,7 +46,11 @@ import com.unciv.ui.screens.worldscreen.WorldScreen
 class CityScreen(
     internal val city: City,
     initSelectedConstruction: IConstruction? = null,
-    initSelectedTile: Tile? = null
+    initSelectedTile: Tile? = null,
+    /** City ambience sound player proxies can be passed from one CityScreen instance to the next
+     *  to avoid premature stops or rewinds. Only the fresh CityScreen from WorldScreen or Overview
+     *  will instantiate a new CityAmbiencePlayer and start playing. */
+    ambiencePlayer: CityAmbiencePlayer? = null
 ): BaseScreen(), RecreateOnResize {
     companion object {
         /** Distance from stage edges to floating widgets */
@@ -119,7 +123,7 @@ class CityScreen(
     // val should be OK as buying tiles is what changes this, and that would re-create the whole CityScreen
     private val nextTileToOwn = city.expansion.chooseNewTileToOwn()
 
-    private val cityAmbiencePlayer = CityAmbiencePlayer(city)
+    private var cityAmbiencePlayer: CityAmbiencePlayer?  = ambiencePlayer ?: CityAmbiencePlayer(city)
 
     init {
         if (city.isWeLoveTheKingDayActive() && UncivGame.Current.settings.citySoundsVolume > 0) {
@@ -487,21 +491,32 @@ class CityScreen(
         }
     }
 
+    private fun passOnCityAmbiencePlayer(): CityAmbiencePlayer? {
+        val player = cityAmbiencePlayer
+        cityAmbiencePlayer = null
+        return player
+    }
+
     fun page(delta: Int) {
+        // Normal order is create new, then dispose old. But CityAmbiencePlayer delegates to a single instance of MusicController,
+        // leading to one extra play followed by a stop for the city ambience sounds. To avoid that, we pass our player on and relinquish control.
+
         val civInfo = city.civ
         val numCities = civInfo.cities.size
         if (numCities == 0) return
         val indexOfCity = civInfo.cities.indexOf(city)
         val indexOfNextCity = (indexOfCity + delta + numCities) % numCities
-        val newCityScreen = CityScreen(civInfo.cities[indexOfNextCity])
+        val newCityScreen = CityScreen(civInfo.cities[indexOfNextCity], ambiencePlayer = passOnCityAmbiencePlayer())
         newCityScreen.update()
         game.replaceCurrentScreen(newCityScreen)
     }
 
-    override fun recreate(): BaseScreen = CityScreen(city)
+    // Don't use passOnCityAmbiencePlayer here - continuing play on the replacement screen would be nice,
+    // but the rapid firing of several resize events will get that un-synced, they would no longer stop on leaving.
+    override fun recreate(): BaseScreen = CityScreen(city, selectedConstruction, selectedTile)
 
     override fun dispose() {
-        cityAmbiencePlayer.dispose()
+        cityAmbiencePlayer?.dispose()
         super.dispose()
     }
 }
