@@ -54,7 +54,7 @@ class CityStateFunctions(val civInfo: Civilization) {
             val possibleUnits = ruleset.units.values.filter {
                 return@filter !it.availableInEra(ruleset, startingEra) // Not from the start era or before
                     && it.uniqueTo != null && it.uniqueTo in unusedMajorCivs // Must be from a major civ not in the game
-                    && ruleset.unitTypes[it.unitType]!!.isLandUnit() && ( it.strength > 0 || it.rangedStrength > 0 ) // Must be a land military unit
+                    && ruleset.unitTypes[it.unitType]!!.isLandUnit() && (it.strength > 0 || it.rangedStrength > 0) // Must be a land military unit
             }
             if (possibleUnits.isNotEmpty())
                 civInfo.cityStateUniqueUnit = possibleUnits.random().name
