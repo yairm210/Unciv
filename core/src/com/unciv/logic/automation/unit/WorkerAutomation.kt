@@ -134,8 +134,7 @@ class WorkerAutomation(
         if (getImprovementPriority(unit.getTile(), unit) < 3) { // building roads is more important
             if (tryConnectingCities(unit)) return
         }
-        val tilesToWork = unit.movement.getDistanceToTiles()
-        val tileToWork = tilesToWork.maxBy { it.value.totalDistance }.key
+        val tileToWork = findTileToWork(unit, dangerousTiles)
 
         if (tileToWork != currentTile) {
             debug("WorkerAutomation: %s -> head towards %s", unit.label(), tileToWork)
