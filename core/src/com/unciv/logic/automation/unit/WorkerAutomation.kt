@@ -294,7 +294,7 @@ class WorkerAutomation(
      */
     private fun findTileToWork(unit: MapUnit, tilesToAvoid: Set<Tile>): Tile {
         val currentTile = unit.getTile()
-        if (currentTile != tilesToAvoid && getBasePriority(currentTile, currentTile) > 4 
+        if (currentTile != tilesToAvoid && getBasePriority(currentTile, unit) >= 5 
             && (tileCanBeImproved(unit, currentTile) || currentTile.isPillaged() || currentTile.terrainFeatures.contains("Fallout"))) {
             return currentTile
         }
@@ -304,16 +304,10 @@ class WorkerAutomation(
                 && (it.civilianUnit == null || it == currentTile)
                 && (it.owningCity == null || it.getOwner() == civInfo)
                 && !tilesToAvoid.contains(currentTile)
-                && getBasePriority(it, unit.getTile()) > 1
+                && getBasePriority(it, unit) > 1
             }
 
-        // Carthage can move through mountains, special case
-        // If there are non-damage dealing tiles available, move to the best of those, otherwise move to the best damage dealing tile
-        val workableTilesPrioritized = workableTilesCenterFirst
-                .sortedWith(
-                    compareBy<Tile> { unit.getDamageFromTerrain(it) > 0 } // Sort on Boolean puts false first
-                        .thenByDescending { getBasePriority(it, currentTile) }
-                )
+        val workableTilesPrioritized = workableTilesCenterFirst.sortedByDescending { getBasePriority(it, unit) }
 
         // These are the expensive calculations (tileCanBeImproved, canReach), so we only apply these filters after everything else it done.
         val selectedTile = workableTilesPrioritized
@@ -328,7 +322,7 @@ class WorkerAutomation(
         return if ( currentTile == selectedTile  // No choice
                 || (!currentTile.isPillaged() && !tileCanBeImproved(unit, currentTile)) // current tile is unimprovable
                 || workableTilesCenterFirst.firstOrNull() != currentTile  // current tile is unworkable by city
-                || getBasePriority(selectedTile, unit.getTile()) > getBasePriority(currentTile, currentTile))  // current tile is less important
+                || getBasePriority(selectedTile, unit) > getBasePriority(currentTile, unit))  // current tile is less important
             selectedTile
         else currentTile
     }
@@ -396,16 +390,19 @@ class WorkerAutomation(
 
     /**
      * Calculate a priority for the tile without accounting for the improvement it'self
+     * This is a cheap guess on how helpful it might be to do work on this tile
      */
-    fun getBasePriority(tile: Tile, unitTile: Tile): Int {
-        if (tileRankings.containsKey(tile)) {
-            return if (tile == unitTile) tileRankings[tile]!!.tilePriority + 2
-            else tileRankings[tile]!!.tilePriority
-        }
+    fun getBasePriority(tile: Tile, unit: MapUnit): Int {
+        var unitSpecificPriority = 0
+        if (tile == unit.getTile()) unitSpecificPriority += 2
+        if (tile == unit.getTile()) unitSpecificPriority + 2
+        
+        if (tileRankings.containsKey(tile)) 
+            return tileRankings[tile]!!.tilePriority + unitSpecificPriority
+        
         var priority = 0
         if (tile.getOwner() == civInfo) {
             priority += 2
-            if (tile.isWorked()) priority += 2
             if (tile.providesYield()) priority += 2
             if (tile.isPillaged()) priority += 1
             if (tile.terrainFeatures.contains("Fallout")) priority += 1
@@ -422,15 +419,14 @@ class WorkerAutomation(
                 priority += 2
         }
         tileRankings[tile] = TileImprovementRank(priority)
-        if (tile == unitTile) priority += 2
-        return priority
+        return priority + unitSpecificPriority
     }
 
     /**
      * Calculates the full priority of the tile
      */
     private fun getImprovementPriority(tile: Tile, unit: MapUnit): Float {
-        val priority = getBasePriority(tile, unit.getTile())
+        val priority = getBasePriority(tile, unit)
         if (priority < 0) return priority.toFloat()
         val rank = tileRankings[tile]
         if(rank!!.improvementPriority == null) {
