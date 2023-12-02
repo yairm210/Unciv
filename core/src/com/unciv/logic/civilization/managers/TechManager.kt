@@ -153,7 +153,7 @@ class TechManager : IsPartOfGameInfoSerialization {
 
     fun isResearched(techName: String): Boolean = techsResearched.contains(techName)
 
-    fun isResearched(construction: INonPerpetualConstruction): Boolean = construction.requiredTechs().all{ requiredTech -> !isResearched(requiredTech) }
+    fun isResearched(construction: INonPerpetualConstruction): Boolean = construction.requiredTechs().all{ requiredTech -> isResearched(requiredTech) }
 
     fun canBeResearched(techName: String): Boolean {
         val tech = getRuleset().technologies[techName]!!
