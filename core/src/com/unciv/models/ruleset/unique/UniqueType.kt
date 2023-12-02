@@ -181,6 +181,7 @@ enum class UniqueType(
 
     /// Unit Abilities
     UnitStartingExperience("New [baseUnitFilter] units start with [amount] Experience [cityFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
+    UnitStartingPromotions2("All newly-trained (but not automatically generated) [baseUnitFilter] units [cityFilter] receive the [promotion] promotion", UniqueTarget.Global, UniqueTarget.FollowerBelief),
     UnitStartingPromotions("All newly-trained [baseUnitFilter] units [cityFilter] receive the [promotion] promotion", UniqueTarget.Global, UniqueTarget.FollowerBelief),
     // Todo: Lowercase the 'U' of 'Units' in this unique
     CityHealingUnits("[mapUnitFilter] Units adjacent to this city heal [amount] HP per turn when healing", UniqueTarget.Global, UniqueTarget.FollowerBelief),
