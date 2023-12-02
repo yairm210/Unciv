@@ -139,6 +139,7 @@ class MapParametersTable(
             MapType.archipelago,
             MapType.innerSea,
             MapType.perlin,
+            MapType.fractal,
             if (forMapEditor && mapGeneratedMainType != MapGeneratedMainType.randomGenerated) MapType.empty else null
         )
 
