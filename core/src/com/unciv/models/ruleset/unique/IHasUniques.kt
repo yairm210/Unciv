@@ -84,13 +84,6 @@ interface IHasUniques : INamed, Json.Serializable {
         // Should this be cached? @SeventhM
     }
 
-    fun requiredTechnologies(ruleset: Ruleset): HashSet<Technology> =
-        requiredTechs().mapTo(HashSet<Technology>()){ requiredTech -> ruleset.technologies[requiredTech]!! }
-
-    // This is the guts of the logic that used to live in CityStateFunctions.kt.
-    fun era(ruleset: Ruleset): Era? =
-            requiredTechnologies(ruleset).map{ it.era() }.map{ ruleset.eras[it]!! }.maxByOrNull{ it.eraNumber }
-
     fun eraNumber(ruleset: Ruleset, startingEra: String): Int {
         val era: Era? = era(ruleset)
         if (era != null)
@@ -124,7 +117,7 @@ interface IHasUniques : INamed, Json.Serializable {
 
     fun legacyRequiredTechs(): Sequence<String> = sequenceOf()
 
-    fun requiredTechs(): Sequence<String> = legacyRequiredTechs() + techsRequiredByUniques()
+    // fun requiredTechs(): Sequence<String> = legacyRequiredTechs() + techsRequiredByUniques()
 
     fun requiredTechnologies(ruleset: Ruleset): Sequence<Technology> =
         requiredTechs().map{ ruleset.technologies[it]!! }
