@@ -126,8 +126,8 @@ class AStar(
         for (neighbor in currentTile.neighbors) {
             val newCost: Float = cumulativeTileCost[currentTile]!! + getCost(currentTile, neighbor)
             if (predicate(neighbor) &&
-                !cumulativeTileCost.containsKey(neighbor)
-                || newCost < (cumulativeTileCost[neighbor] ?: Float.MAX_VALUE)
+                (!cumulativeTileCost.containsKey(neighbor)
+                || newCost < (cumulativeTileCost[neighbor] ?: Float.MAX_VALUE))
             ){
                 cumulativeTileCost[neighbor] = newCost
                 val priority: Float = newCost + heuristic(currentTile, neighbor)

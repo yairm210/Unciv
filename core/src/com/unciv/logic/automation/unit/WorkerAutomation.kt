@@ -171,9 +171,8 @@ class WorkerAutomation(
         // The path does not exist, create it
         if (pathToDest == null){
             // Find the path
-            val isCandidateTilePredicate: (Tile) -> Boolean = { it.isLand && unit.movement.canPassThrough(it) }
-            val astar: AStar = AStar(currentTile,
-                isCandidateTilePredicate,
+            val astar = AStar(currentTile,
+                {tile: Tile -> tile.isLand && !tile.isImpassible() && unit.civ.hasExplored(tile)},
                 {from: Tile, to: Tile -> getMovementCost(from, to)},
                 {from: Tile, to: Tile -> HexMath.getDistance(from.position, to.position).toFloat()}) // Euclidean distance is admissable
 //                 .apply {
