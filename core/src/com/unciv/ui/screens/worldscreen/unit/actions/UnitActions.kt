@@ -23,29 +23,40 @@ object UnitActions {
 
     /** Returns whether the action was invoked */
     fun invokeUnitAction(unit: MapUnit, unitActionType: UnitActionType): Boolean {
-        val unitAction = getNormalActions(unit).firstOrNull { it.type == unitActionType }
+        val unitAction = actionTypeToFunctions[unitActionType]?.invoke(unit, unit.getTile())?.firstOrNull()
+            ?: getNormalActions(unit).firstOrNull { it.type == unitActionType }
             ?: getAdditionalActions(unit).firstOrNull { it.type == unitActionType }
         val internalAction = unitAction?.action ?: return false
         internalAction.invoke()
         return true
     }
 
+    private val actionTypeToFunctions = linkedMapOf<UnitActionType, (unit:MapUnit, tile:Tile) -> Iterable<UnitAction>>(
+        // Determined by unit uniques
+        UnitActionType.Transform to UnitActionsFromUniques::getTransformActions,
+        UnitActionType.Paradrop to UnitActionsFromUniques::getParadropActions,
+        UnitActionType.AirSweep to UnitActionsFromUniques::getAirSweepActions,
+        UnitActionType.SetUp to UnitActionsFromUniques::getSetupActions,
+        UnitActionType.FoundCity to UnitActionsFromUniques::getFoundCityActions,
+        UnitActionType.ConstructImprovement to UnitActionsFromUniques::getBuildingImprovementsActions,
+        UnitActionType.Repair to UnitActionsFromUniques::getRepairActions,
+        UnitActionType.HurryResearch to UnitActionsGreatPerson::getHurryResearchActions,
+        UnitActionType.HurryWonder to UnitActionsGreatPerson::getHurryWonderActions,
+        UnitActionType.HurryBuilding to UnitActionsGreatPerson::getHurryBuildingActions,
+        UnitActionType.ConductTradeMission to UnitActionsGreatPerson::getConductTradeMissionActions,
+        UnitActionType.FoundReligion to UnitActionsReligion::getFoundReligionActions,
+        UnitActionType.EnhanceReligion to UnitActionsReligion::getEnhanceReligionActions
+    )
+
     private fun getNormalActions(unit: MapUnit): List<UnitAction> {
         val tile = unit.getTile()
         val actionList = ArrayList<UnitAction>()
 
+        for (getActionsFunction in actionTypeToFunctions.values)
+            actionList.addAll(getActionsFunction(unit, tile))
+
         // Determined by unit uniques
-        UnitActionsFromUniques.addTransformActions(unit, actionList)
-        UnitActionsFromUniques.addParadropAction(unit, actionList)
-        UnitActionsFromUniques.addAirSweepAction(unit, actionList)
-        UnitActionsFromUniques.addSetupAction(unit, actionList)
-        UnitActionsFromUniques.addFoundCityAction(unit, actionList, tile)
-        UnitActionsFromUniques.addBuildingImprovementsAction(unit, actionList, tile)
-        UnitActionsFromUniques.addRepairAction(unit, actionList)
         UnitActionsFromUniques.addCreateWaterImprovements(unit, actionList)
-        UnitActionsGreatPerson.addGreatPersonActions(unit, actionList, tile)
-        UnitActionsReligion.addFoundReligionAction(unit, actionList)
-        UnitActionsReligion.addEnhanceReligionAction(unit, actionList)
         actionList += UnitActionsFromUniques.getImprovementConstructionActions(unit, tile)
         UnitActionsReligion.addSpreadReligionActions(unit, actionList)
         UnitActionsReligion.addRemoveHeresyActions(unit, actionList)

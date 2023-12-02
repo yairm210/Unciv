@@ -51,7 +51,7 @@ object CivilianUnitAutomation {
 
         if (unit.hasUnique(UniqueType.MayEnhanceReligion)
             && unit.civ.religionManager.religionState < ReligionState.EnhancedReligion
-            && unit.civ.religionManager.mayEnhanceReligionAtAll(unit)
+            && unit.civ.religionManager.mayEnhanceReligionAtAll()
         )
             return ReligiousUnitAutomation.enhanceReligion(unit)
 
@@ -170,5 +170,5 @@ object CivilianUnitAutomation {
             ?: return // can't move anywhere!
         unit.movement.moveToTile(tileFurthestFromEnemy)
     }
-    
+
 }

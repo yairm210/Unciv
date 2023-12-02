@@ -2,11 +2,11 @@ package com.unciv.models.ruleset.unique
 
 import com.badlogic.gdx.utils.Json
 import com.badlogic.gdx.utils.JsonValue
-import com.unciv.models.stats.INamed
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.tech.Era
 import com.unciv.models.ruleset.tech.TechColumn
 import com.unciv.models.ruleset.tech.Technology
+import com.unciv.models.stats.INamed
 
 /**
  * Common interface for all 'ruleset objects' that have Uniques, like BaseUnit, Nation, etc.
@@ -110,6 +110,40 @@ interface IHasUniques : INamed, Json.Serializable {
 
     fun hasUnique(uniqueType: UniqueType, stateForConditionals: StateForConditionals? = null) =
         getMatchingUniques(uniqueType.placeholderText, stateForConditionals).any()
+
+    fun availabilityUniques(): Sequence<Unique> = getMatchingUniques(UniqueType.OnlyAvailableWhen, StateForConditionals.IgnoreConditionals)
+
+    fun techsRequiredByUniques(): Sequence<String> {
+        return availabilityUniques()
+                // Currently an OnlyAvailableWhen can have multiple conditionals, implicitly a conjunction.
+                // Therefore, if any of its several conditionals is a ConditionalTech, then that tech is required.
+                .flatMap{ it.conditionals }
+                .filter{ it.isOfType(UniqueType.ConditionalTech) }
+                .map{ it.params[0] }
+    }
+
+    fun legacyRequiredTechs(): Sequence<String> = sequenceOf()
+
+    fun requiredTechs(): Sequence<String> = legacyRequiredTechs() + techsRequiredByUniques()
+
+    fun requiredTechnologies(ruleset: Ruleset): Sequence<Technology> =
+        requiredTechs().map{ ruleset.technologies[it]!! }
+
+    fun era(ruleset: Ruleset): Era? =
+            requiredTechnologies(ruleset).map{ it.era() }.map{ ruleset.eras[it]!! }.maxByOrNull{ it.eraNumber }
+            // This will return null only if requiredTechnologies() is empty.
+
+    fun availableInEra(ruleset: Ruleset, requestedEra: String): Boolean {
+        val eraAvailable: Era? = era(ruleset)
+        if (eraAvailable == null)
+            // No technologies are required, so available in the starting era.
+            return true
+        // This is not very efficient, because era() inspects the eraNumbers and then returns the whole object.
+        // We could take a max of the eraNumbers directly.
+        // But it's unlikely to make any significant difference.
+        // Currently this is only used in CityStateFunctions.kt.
+        return eraAvailable.eraNumber <= ruleset.eras[requestedEra]!!.eraNumber
+    }
 
     override fun write(json: Json) {
         json.writeFields(this);

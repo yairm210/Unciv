@@ -125,8 +125,8 @@ object UnitAutomation {
     }
 
     internal fun tryUpgradeUnit(unit: MapUnit): Boolean {
-        val isHuman = unit.civ.isHuman()
-        if (!UncivGame.Current.settings.automatedUnitsCanUpgrade && isHuman) return false
+        if (unit.civ.isHuman() && (!UncivGame.Current.settings.automatedUnitsCanUpgrade
+                || UncivGame.Current.settings.autoPlay.isAutoPlayingAndFullAI())) return false
         if (unit.baseUnit.upgradesTo == null) return false
         val upgradedUnit = unit.upgrade.getUnitToUpgradeTo()
         if (!upgradedUnit.isBuildable(unit.civ)) return false // for resource reasons, usually
@@ -173,18 +173,18 @@ object UnitAutomation {
             CivilianUnitAutomation.automateCivilianUnit(unit)
             return
         }
-        
+
         if (unit.baseUnit.isAirUnit()) {
             if (unit.canIntercept())
                 return AirUnitAutomation.automateFighter(unit)
-    
+
             if (!unit.baseUnit.isNuclearWeapon())
                 return AirUnitAutomation.automateBomber(unit)
-    
+
             // Note that not all nukes have to be air units
             if (unit.baseUnit.isNuclearWeapon())
                 return AirUnitAutomation.automateNukes(unit)
-    
+
             if (unit.hasUnique(UniqueType.SelfDestructs))
                 return AirUnitAutomation.automateMissile(unit)
         }
@@ -263,7 +263,7 @@ object UnitAutomation {
         if (unit.isCivilian()) return false
         // Better to do a more healing oriented move then
         if (unit.civ.threatManager.getDistanceToClosestEnemyUnit(unit.getTile(),6, true) > 4) return false
-      
+
         if (unit.baseUnit.isAirUnit()) {
             return false
         }
@@ -273,9 +273,8 @@ object UnitAutomation {
         for (swapTile in swapableTiles) {
             val otherUnit = swapTile.militaryUnit!!
             val ourDistanceToClosestEnemy = unit.civ.threatManager.getDistanceToClosestEnemyUnit(unit.getTile(),6, false)
-            if (otherUnit.health > 80 
+            if (otherUnit.health > 80
                 && ourDistanceToClosestEnemy < otherUnit.civ.threatManager.getDistanceToClosestEnemyUnit(otherUnit.getTile(),6,false)) {
-              
                 if (otherUnit.baseUnit.isRanged()) {
                     // Don't swap ranged units closer than they have to be
                     val range = otherUnit.baseUnit.range
@@ -588,6 +587,6 @@ object UnitAutomation {
         unit.civ.addNotification("${unit.shortDisplayName()} finished exploring.", unit.currentTile.position, NotificationCategory.Units, unit.name, "OtherIcons/Sleep")
         unit.action = null
     }
-    
+
 
 }

@@ -178,6 +178,7 @@ class RulesetValidator(val ruleset: Ruleset) {
         tryFixUnknownUniques: Boolean
     ) {
         for (reward in ruleset.ruinRewards.values) {
+            if (reward.weight < 0) lines += "${reward.name} has a negative weight, which is not allowed!"
             for (difficulty in reward.excludedDifficulties)
                 if (!ruleset.difficulties.containsKey(difficulty))
                     lines += "${reward.name} references difficulty ${difficulty}, which does not exist!"
