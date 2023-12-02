@@ -46,11 +46,15 @@ interface IHasUniques : INamed {
     fun hasUnique(uniqueType: UniqueType, stateForConditionals: StateForConditionals? = null) =
         getMatchingUniques(uniqueType.placeholderText, stateForConditionals).any()
 
+    fun availabilityUniques(): Sequence<Unique> = getMatchingUniques(UniqueType.OnlyAvailableWhen, StateForConditionals.IgnoreConditionals)
+
     fun techsRequiredByUniques(): Sequence<String> {
-        val uniquesForWhenThisIsAvailable: Sequence<Unique> = getMatchingUniques(UniqueType.OnlyAvailableWhen, StateForConditionals.IgnoreConditionals)
-        val conditionalsForWhenThisIsAvailable: Sequence<Unique> = uniquesForWhenThisIsAvailable.flatMap{ it.conditionals }
-        val techRequiringConditionalsForWhenThisIsAvailable: Sequence<Unique> = conditionalsForWhenThisIsAvailable.filter{ it.isOfType(UniqueType.ConditionalTech) }
-        return techRequiringConditionalsForWhenThisIsAvailable.map{ it.params[0] }
+        return availabilityUniques()
+                // Currently an OnlyAvailableWhen can have multiple conditionals, implicitly a conjunction.
+                // Therefore, if any of its several conditionals is a ConditionalTech, then that tech is required.
+                .flatMap{ it.conditionals }
+                .filter{ it.isOfType(UniqueType.ConditionalTech) }
+                .map{ it.params[0] }
     }
 
     fun legacyRequiredTechs(): Sequence<String> = sequenceOf()
