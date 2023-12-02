@@ -307,24 +307,26 @@ class WorkerAutomation(
                 && getBasePriority(it, unit) > 1
             }
 
-        val workableTilesPrioritized = workableTilesCenterFirst.sortedByDescending { getBasePriority(it, unit) }
+        val workableTilesPrioritized = workableTilesCenterFirst.groupBy { getBasePriority(it, unit) }
+            .asSequence().sortedByDescending { it.key }
 
-        // These are the expensive calculations (tileCanBeImproved, canReach), so we only apply these filters after everything else it done.
-        val selectedTile = workableTilesPrioritized
-            .firstOrNull { unit.movement.canReach(it) && (it.isPillaged() || tileCanBeImproved(unit, it)) }
-            ?: return currentTile
-
-        // Note: workableTiles is a Sequence, and we oiginally used workableTiles.contains for the second
-        // test, which looks like a second potentially deep iteration of it, after just being iterated
-        // for selectedTile. But TileMap.getTilesInDistanceRange iterates its range forward, meaning
-        // currentTile is always the very first entry of the _unsorted_ Sequence - if it is still
-        // contained at all and not dropped by the filters - which is the point here.
-        return if ( currentTile == selectedTile  // No choice
-                || (!currentTile.isPillaged() && !tileCanBeImproved(unit, currentTile)) // current tile is unimprovable
-                || workableTilesCenterFirst.firstOrNull() != currentTile  // current tile is unworkable by city
-                || getBasePriority(selectedTile, unit) > getBasePriority(currentTile, unit))  // current tile is less important
-            selectedTile
-        else currentTile
+        // Search through each group by priority
+        // If we can find an eligible best tile in the group lets return that
+        // under the assumption that best tile is better than tiles in all lower groups 
+        for (tilePriorityGroup in workableTilesPrioritized) {
+            var bestTile: Tile? = null
+            for (tileInGroup in tilePriorityGroup.value) {
+                // These are the expensive calculations (tileCanBeImproved, canReach), so we only apply these filters after everything else it done.
+                if (!unit.movement.canReach(tileInGroup) || getBestImprovement(tileInGroup, unit) == null) continue
+                if (bestTile == null || getImprovementPriority(tileInGroup, unit) > getImprovementPriority(bestTile, unit)) {
+                    bestTile = tileInGroup
+                }
+            }
+            if (bestTile != null) {
+                return bestTile
+            }
+        }
+        return currentTile
     }
 
     /**
@@ -437,6 +439,15 @@ class WorkerAutomation(
                 rank.improvementPriority = getImprovementRanking(tile, unit, rank.bestImprovement!!.name, LocalUniqueCache())
         }
         return priority + rank.improvementPriority!!
+    }
+
+    /**
+     * Returns the best improvement
+     */
+    private fun getBestImprovement(tile: Tile, unit: MapUnit): TileImprovement? {
+        if (!tileRankings.containsKey(tile) || tileRankings[tile]!!.improvementPriority == null)
+            getImprovementPriority(tile,unit)
+        return tileRankings[tile]!!.bestImprovement
     }
 
     /**
