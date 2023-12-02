@@ -270,13 +270,13 @@ class Milestone(val uniqueDescription: String, private val parentVictory: Victor
         return when (type!!) {
             MilestoneType.BuiltBuilding -> {
                 val building = ruleset.buildings[params[0]]!!
-                if (building.requiredTech != null && !civInfo.tech.isResearched(building.requiredTech!!)) Victory.Focus.Science
+                if (!civInfo.tech.isResearched(building)) Victory.Focus.Science
 //                if (building.hasUnique(UniqueType.Unbuildable)) Stat.Gold // Temporary, should be replaced with whatever is required to buy
                 Victory.Focus.Production
             }
             MilestoneType.BuildingBuiltGlobally -> {
                 val building = ruleset.buildings[params[0]]!!
-                if (building.requiredTech != null && !civInfo.tech.isResearched(building.requiredTech!!)) Victory.Focus.Science
+                if (!civInfo.tech.isResearched(building)) Victory.Focus.Science
 //                if (building.hasUnique(UniqueType.Unbuildable)) Victory.Focus.Gold
                 Victory.Focus.Production
             }
@@ -287,7 +287,7 @@ class Milestone(val uniqueDescription: String, private val parentVictory: Victor
                             ruleset.buildings[it]!!
                         else ruleset.units[it]!!
                     }
-                if (constructions.any { it.requiredTech != null && !civInfo.tech.isResearched(it.requiredTech!!) } ) Victory.Focus.Science
+                if (constructions.any { !civInfo.tech.isResearched(it) } ) Victory.Focus.Science
 //                if (constructions.any { it.hasUnique(UniqueType.Unbuildable) } ) Stat.Gold
                 Victory.Focus.Production
             }
