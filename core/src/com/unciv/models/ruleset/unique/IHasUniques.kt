@@ -47,11 +47,15 @@ interface IHasUniques : INamed {
     fun hasUnique(uniqueType: UniqueType, stateForConditionals: StateForConditionals? = null) =
         getMatchingUniques(uniqueType.placeholderText, stateForConditionals).any()
 
+    fun availabilityUniques(): Sequence<Unique> = getMatchingUniques(UniqueType.OnlyAvailableWhen, StateForConditionals.IgnoreConditionals)
+
     fun techsRequiredByUniques(): Sequence<String> {
-        val uniquesForWhenThisIsAvailable: Sequence<Unique> = getMatchingUniques(UniqueType.OnlyAvailableWhen, StateForConditionals.IgnoreConditionals)
-        val conditionalsForWhenThisIsAvailable: Sequence<Unique> = uniquesForWhenThisIsAvailable.flatMap{ it.conditionals }
-        val techRequiringConditionalsForWhenThisIsAvailable: Sequence<Unique> = conditionalsForWhenThisIsAvailable.filter{ it.isOfType(UniqueType.ConditionalTech) }
-        return techRequiringConditionalsForWhenThisIsAvailable.map{ it.params[0] }
+        return availabilityUniques()
+                // Currently an OnlyAvailableWhen can have multiple conditionals, implicitly a conjunction.
+                // Therefore, if any of its several conditionals is a ConditionalTech, then that tech is required.
+                .flatMap{ it.conditionals }
+                .filter{ it.isOfType(UniqueType.ConditionalTech) }
+                .map{ it.params[0] }
     }
 
     fun legacyRequiredTechs(): Sequence<String> = sequenceOf()
@@ -68,4 +72,16 @@ interface IHasUniques : INamed {
     fun techColumn(ruleset: Ruleset): TechColumn? =
             requiredTechnologies(ruleset).map{ it.column }.filter{ it != null }.map{ it!! }.maxByOrNull{ it.columnNumber }
             // This will return null only if *all* required techs have null TechColumn.
+
+    fun availableInEra(ruleset: Ruleset, requestedEra: String): Boolean {
+        val eraAvailable: Era? = era(ruleset)
+        if (eraAvailable == null)
+            // No technologies are required, so available in the starting era.
+            return true
+        // This is not very efficient, because era() inspects the eraNumbers and then returns the whole object.
+        // We could take a max of the eraNumbers directly.
+        // But it's unlikely to make any significant difference.
+        // Currently this is only used in CityStateFunctions.kt.
+        return eraAvailable.eraNumber <= ruleset.eras[requestedEra]!!.eraNumber
+    }
 }

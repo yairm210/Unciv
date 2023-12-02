@@ -14,6 +14,7 @@ import com.unciv.logic.civilization.PopupAlert
 import com.unciv.logic.civilization.TechAction
 import com.unciv.logic.map.MapSize
 import com.unciv.logic.map.tile.RoadStatus
+import com.unciv.models.ruleset.INonPerpetualConstruction
 import com.unciv.models.ruleset.tech.Era
 import com.unciv.models.ruleset.tech.Technology
 import com.unciv.models.ruleset.unique.UniqueMap
@@ -152,6 +153,8 @@ class TechManager : IsPartOfGameInfoSerialization {
     }
 
     fun isResearched(techName: String): Boolean = techsResearched.contains(techName)
+
+    fun isResearched(construction: INonPerpetualConstruction): Boolean = construction.requiredTechs().all{ requiredTech -> isResearched(requiredTech) }
 
     fun canBeResearched(techName: String): Boolean {
         val tech = getRuleset().technologies[techName]!!
