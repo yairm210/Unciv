@@ -182,7 +182,7 @@ class WorkerAutomation(
             while (true) {
                 if (astar.hasEnded()) {
                     // We failed to find a path
-                    debug("WorkerAutomation: ${unit.label()} -> connect road failed at BFS size ${astar.size()}")
+                    debug("WorkerAutomation: ${unit.label()} -> connect road failed at AStar search size ${astar.size()}")
                     stopAndCleanAutomation()
                     return
                 }
@@ -196,7 +196,7 @@ class WorkerAutomation(
                     .reversed()
                     .map {it.position}
                 unit.automatedRoadConnectionPath = pathToDest
-                debug("WorkerAutomation: ${unit.label()} -> found path to destination tile: %s, %s", destinationTile, pathToDest)
+                debug("WorkerAutomation: ${unit.label()} -> found connect road path to destination tile: %s, %s", destinationTile, pathToDest)
                 break
             }
         }
@@ -210,8 +210,8 @@ class WorkerAutomation(
                 return
             }
 
-            // The tile has a road, try to move to the next tile
-            if (currentTile.roadStatus == bestRoadAvailable){
+            // The tile has a road or the worker is on a city, try to move to the next tile
+            if (currentTile.roadStatus == bestRoadAvailable || currentTile.isCityCenter()){
                 val currTileIndex = pathToDest!!.indexOf(currentTile.position)
                 when {
                     currTileIndex == -1 -> throw Exception("The current tile of worker ${unit.label()} is not in the path to the destination tile")
@@ -221,7 +221,7 @@ class WorkerAutomation(
                             unit.movement.moveToTile(nextTile)
                             return
                         }else{
-                            //TODO: This is a choice to have the automation cancel if the worker cant move to the next tile. We could have it just wait around.
+                            // Worker can't move to the next tile.
                             stopAndCleanAutomation()
                         }
                     }
@@ -229,11 +229,10 @@ class WorkerAutomation(
             }
         }
 
-        // All of the ways that the automation can end
-        // TODO: there should be more than this but i cant think rn
+        // All the ways that the automation can end
         val unitOnDestinationTile = currentTile == destinationTile
         val destinationTileHasRoad = destinationTile.roadStatus == bestRoadAvailable
-        if (unitOnDestinationTile && destinationTileHasRoad) // We're on the last tile and a road/railroad has been built
+        if (unitOnDestinationTile && (destinationTileHasRoad || currentTile.isCityCenter())) // We're on the last tile and a road/railroad has been built
             {
             stopAndCleanAutomation()
         }
