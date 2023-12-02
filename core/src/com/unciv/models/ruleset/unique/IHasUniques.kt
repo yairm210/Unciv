@@ -18,7 +18,7 @@ interface IHasUniques : INamed {
 
     fun uniqueObjectsProvider(): List<Unique> {
         if (uniques.isEmpty()) return emptyList()
-        return uniques.map { Unique(it, getUniqueTarget(), name) }
+        return uniques.map { Unique(it, getUniqueTarget(), name) } + legacyRequiredTechsAsUniques().toList()
     }
     fun uniqueMapProvider(): UniqueMap {
         val newUniqueMap = UniqueMap()
