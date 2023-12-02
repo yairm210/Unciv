@@ -311,6 +311,11 @@ class CivInfoStatsForNextTurn(val civInfo: Civilization) {
             if (unique.sourceObjectType != UniqueTarget.Building && unique.sourceObjectType != UniqueTarget.Wonder)
                 statMap.add(unique.sourceObjectType!!.name, unique.stats)
 
+        for (unique in civInfo.getMatchingUniques(UniqueType.StatsPerStat)) {
+            val amount = civInfo.getStatReserve(Stat.valueOf(unique.params[2])) / unique.params[1].toInt()
+            statMap.add("Stats", unique.stats.times(amount))
+        }
+
         val statsPerNaturalWonder = Stats(happiness = 1f)
 
         for (unique in civInfo.getMatchingUniques(UniqueType.StatsFromNaturalWonders))

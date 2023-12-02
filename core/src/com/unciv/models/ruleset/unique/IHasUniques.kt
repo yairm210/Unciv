@@ -1,5 +1,8 @@
 package com.unciv.models.ruleset.unique
 
+import com.unciv.models.ruleset.Ruleset
+import com.unciv.models.ruleset.tech.Era
+import com.unciv.models.ruleset.tech.Technology
 import com.unciv.models.stats.INamed
 
 /**
@@ -53,4 +56,11 @@ interface IHasUniques : INamed {
     fun legacyRequiredTechs(): Sequence<String> = sequenceOf()
 
     fun requiredTechs(): Sequence<String> = legacyRequiredTechs() + techsRequiredByUniques()
+
+    fun requiredTechnologies(ruleset: Ruleset): Sequence<Technology> =
+        requiredTechs().map{ ruleset.technologies[it]!! }
+
+    fun era(ruleset: Ruleset): Era? =
+            requiredTechnologies(ruleset).map{ it.era() }.map{ ruleset.eras[it]!! }.maxByOrNull{ it.eraNumber }
+            // This will return null only if requiredTechnologies() is empty.
 }

@@ -10,7 +10,7 @@ import com.unciv.ui.screens.basescreen.BaseScreen
 
 fun gameplayTab(
     optionsPopup: OptionsPopup
-) = Table(BaseScreen.skin).apply {
+): Table = Table(BaseScreen.skin).apply {
     pad(10f)
     defaults().pad(5f)
 

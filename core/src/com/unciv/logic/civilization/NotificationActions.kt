@@ -59,7 +59,7 @@ class LocationAction(internal val location: Vector2 = Vector2.Zero) : Notificati
 class TechAction(private val techName: String = "") : NotificationAction {
     override fun execute(worldScreen: WorldScreen) {
         val tech = worldScreen.gameInfo.ruleset.technologies[techName]
-        worldScreen.game.pushScreen(TechPickerScreen(worldScreen.viewingCiv, tech))
+        worldScreen.game.pushScreen(TechPickerScreen(worldScreen.selectedCiv, tech))
     }
 }
 
@@ -83,7 +83,11 @@ class DiplomacyAction(
 ) : NotificationAction {
     override fun execute(worldScreen: WorldScreen) {
         val otherCiv = worldScreen.gameInfo.getCivilization(otherCivName)
-        worldScreen.game.pushScreen(DiplomacyScreen(worldScreen.viewingCiv, otherCiv, showTrade = showTrade))
+        if (showTrade && otherCiv == worldScreen.gameInfo.getCurrentPlayerCivilization())
+            // Because TradeTable will set up otherCiv against that one,
+            // not the one we pass below, and two equal civs will crash - can't look up a DiplomacyManager.
+            return
+        worldScreen.game.pushScreen(DiplomacyScreen(worldScreen.selectedCiv, otherCiv, showTrade = showTrade))
     }
 }
 
