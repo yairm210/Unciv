@@ -273,7 +273,7 @@ object BuildingDescriptions {
     /**
      * @param filterUniques If provided, include only uniques for which this function returns true.
      */
-    private fun Building.getUniquesStringsWithoutDisablers(filterUniques: ((Unique) -> Boolean)? = null) = getUniquesStrings {
+    private fun Building.getUniquesStringsWithoutDisablers(filterUniques: ((Unique) -> Boolean)? = null): Sequence<String> = getUniquesStrings {
         !it.isHiddenToUsers()
             && (filterUniques?.invoke(it) ?: true)
     }
