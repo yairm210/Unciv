@@ -187,7 +187,7 @@ class TileInfoImprovementFunctions(val tile: Tile) {
 
     fun changeImprovement(improvementName: String?,
                           /** For road assignment and taking over tiles - DO NOT pass when simulating improvement effects! */
-                          civToActivateBroaderEffects:Civilization? = null) {
+                          civToActivateBroaderEffects: Civilization? = null, unit: MapUnit? = null) {
         val improvementObject = tile.ruleset.tileImprovements[improvementName]
 
         when {
@@ -222,6 +222,26 @@ class TileInfoImprovementFunctions(val tile: Tile) {
             && improvementObject.hasUnique(UniqueType.TakesOverAdjacentTiles)
         )
             takeOverTilesAround(civToActivateBroaderEffects, tile)
+
+        if (civToActivateBroaderEffects != null && improvementObject != null) {
+            for (unique in improvementObject.uniqueObjects)
+                if (!unique.hasTriggerConditional()) {
+                    if (unit != null) {
+                        UniqueTriggerActivation.triggerUnitwideUnique(unique, unit)
+                    }
+                    else UniqueTriggerActivation.triggerCivwideUnique(unique, civToActivateBroaderEffects)
+                }
+            if (unit != null){
+                for (unique in unit.getTriggeredUniques(UniqueType.TriggerUponBuildingImprovement)
+                    .filter { improvementObject.matchesFilter(it.params[0]) })
+                    UniqueTriggerActivation.triggerUnitwideUnique(unique, unit)
+            }
+            for (unique in civToActivateBroaderEffects.getMatchingUniques(
+                UniqueType.TriggerUponBuildingImprovement, StateForConditionals(civInfo = civToActivateBroaderEffects, unit = unit))
+                .filter { improvementObject.matchesFilter(it.params[0]) })
+                    UniqueTriggerActivation.triggerCivwideUnique(unique, civToActivateBroaderEffects)
+        }
+
 
         val city = tile.owningCity
         if (city != null) {
