@@ -59,6 +59,10 @@ interface IHasUniques : INamed {
 
     fun legacyRequiredTechs(): Sequence<String> = sequenceOf()
 
+    fun legacyRequiredTechsAsUniques(): Sequence<Unique> = legacyRequiredTechs()
+            .map{ "Only available <after discovering [$it]>" }
+            .map{ Unique(it, getUniqueTarget(), name) }
+
     fun requiredTechs(): Sequence<String> = legacyRequiredTechs() + techsRequiredByUniques()
 
     fun requiredTechnologies(ruleset: Ruleset): Sequence<Technology> =
