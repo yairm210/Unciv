@@ -93,7 +93,7 @@ class CityStateFunctions(val civInfo: Civilization) {
         fun giftableUniqueUnit(): BaseUnit? {
             val uniqueUnit = civInfo.gameInfo.ruleset.units[civInfo.cityStateUniqueUnit]
                 ?: return null
-            if (uniqueUnit.requiredTech != null && !receivingCiv.tech.isResearched(uniqueUnit.requiredTech!!))
+            if (!receivingCiv.tech.isResearched(uniqueUnit))
                 return null
             if (uniqueUnit.obsoleteTech != null && receivingCiv.tech.isResearched(uniqueUnit.obsoleteTech!!))
                 return null
