@@ -11,6 +11,7 @@ import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.map.BFS
+import com.unciv.logic.map.AStar
 import com.unciv.logic.map.HexMath
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.RoadStatus
@@ -138,6 +139,23 @@ class WorkerAutomation(
             unit.automatedRoadConnectionPath = null
             currentTile.stopWorkingOnImprovement()
         }
+
+        /**
+         * We prefer the worker to prioritize paths connected by existing roads. Otherwise, we set every tile to have
+         * equal value since building a road on any of them makes the original movement cost irrelevant .
+         */
+        fun getMovementCost(from: Tile, to: Tile): Float{
+            // hasConnection accounts for civs that treat jungle/forest as roads
+            val areConnectedByRoad = from.hasConnection(unit.civ) && to.hasConnection(unit.civ)
+            if (areConnectedByRoad) // TODO: I'm making a choice to ignore road over river penalties here. Is this correct?
+                return unit.civ.tech.movementSpeedOnRoads
+
+            if (from.getUnpillagedRoad() == RoadStatus.Railroad && to.getUnpillagedRoad() == RoadStatus.Railroad)
+                return RoadStatus.Railroad.movement
+
+            return 1f
+        }
+
         if (bestRoadAvailable == RoadStatus.None) return
 
         // Temporary until I can ensure the start and end is properly saved
@@ -154,23 +172,26 @@ class WorkerAutomation(
         if (pathToDest == null){
             // Find the path
             val isCandidateTilePredicate: (Tile) -> Boolean = { it.isLand && unit.movement.canPassThrough(it) }
-            val bfs: BFS = BFS(currentTile, isCandidateTilePredicate).apply {
+            val astar: AStar = AStar(currentTile,
+                isCandidateTilePredicate,
+                {from: Tile, to: Tile -> getMovementCost(from, to)},
+                {tile -> 0f}).apply {
                 maxSize = HexMath.getNumberOfTilesInHexagon(HexMath.getDistance(currentTile.position, destinationTile.position) + 2)
             }
 
             while (true) {
-                if (bfs.hasEnded()) {
+                if (astar.hasEnded()) {
                     // We failed to find a path
-                    debug("WorkerAutomation: ${unit.label()} -> connect road failed at BFS size ${bfs.size()}")
+                    debug("WorkerAutomation: ${unit.label()} -> connect road failed at BFS size ${astar.size()}")
                     stopAndCleanAutomation()
                     return
                 }
-                if (!bfs.hasReachedTile(destinationTile)) {
-                    bfs.nextStep()
+                if (!astar.hasReachedTile(destinationTile)) {
+                    astar.nextStep()
                     continue
                 }
                 // Found a path. Reverse it and convert it to a list of Vector2
-                pathToDest = bfs.getPathTo(destinationTile)
+                pathToDest = astar.getPathTo(destinationTile)
                     .toList()
                     .reversed()
                     .map {it.position}
