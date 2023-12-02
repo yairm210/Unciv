@@ -161,8 +161,9 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         for (requiredTech: String in requiredTechs())
             if (!civ.tech.isResearched(requiredTech))
                 yield(RejectionReasonType.RequiresTech.toInstance("$requiredTech not researched"))
-        if (obsoleteTech != null && civ.tech.isResearched(obsoleteTech!!))
-            yield(RejectionReasonType.Obsoleted.toInstance("Obsolete by $obsoleteTech"))
+        for (obsoleteTech: String in techsThatObsoleteThis())
+            if (civ.tech.isResearched(obsoleteTech))
+                yield(RejectionReasonType.Obsoleted.toInstance("Obsolete by $obsoleteTech"))
 
         if (uniqueTo != null && uniqueTo != civ.civName)
             yield(RejectionReasonType.UniqueToOtherNation.toInstance("Unique to $uniqueTo"))
