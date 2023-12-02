@@ -704,7 +704,7 @@ class WorldMapHolder(
         if (worldScreen.bottomUnitTable.selectedUnitIsConnectingRoad){
             // TODO: This needs to be cached?
             val civExploredNonForeignLandTiles = unit.civ.gameInfo.tileMap.tileList.filter {
-                it.isLand && !it.isImpassible() && unit.civ.hasExplored(it)
+                it.isLand && !it.isImpassible() && unit.civ.hasExplored(it) && (it.getOwner() == unit.civ || it.getOwner() == null)
             }
             unit.civ.gameInfo.civilizations
             val connectRoadTileOverlayColor = Color.RED
