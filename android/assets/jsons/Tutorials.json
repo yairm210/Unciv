@@ -285,6 +285,17 @@
     ]
   },
   {
+    "name": "AutoPlay",
+    "steps": ["When at later stages of the game, you might have a lot of units but only a little to do. To help you we have implemented an AutoPlay feature that lets you use the AI to play part or all of your turn.", 
+      "To enable AutoPlay, go to options and open the AutoPlay tab and press \"Show AutoPlay button\".",
+      "Clicking on the AutoPlay button opens a popup menue for choosing to AutoPlay parts or all of your turn.",
+      "Clicking Start AutoPlay in the pop-up menue or long pressing the AutoPlay button begins the multi-turn AutoPlay. This will play your next turns as if you were an AI.",
+      "To cancel multi-turn AutoPlay you can press the AutoPlay button, next turn button or open the options menue.",
+      "Multi-turn AutoPlay is not advised on harder difficulty levels as your AI will not play better against an AI with modifiers.",
+      "Multi-turn AutoPlay for multiplayer is not yet supported."
+    ]
+  },
+  {
     "name": "Faith",
     "steps": [
         "After building a shrine, your civilization will start generating ☮Faith.",

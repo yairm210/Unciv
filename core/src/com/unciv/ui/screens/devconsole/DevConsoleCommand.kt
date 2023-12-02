@@ -1,6 +1,7 @@
 package com.unciv.ui.screens.devconsole
 
 import com.unciv.logic.civilization.Civilization
+import com.unciv.models.ruleset.tile.TerrainType
 
 fun String.toCliInput() = this.lowercase().replace(" ","-")
 
@@ -20,7 +21,7 @@ interface ConsoleCommandNode:ConsoleCommand{
 
     override fun handle(console: DevConsolePopup, params: List<String>): String? {
         if (params.isEmpty()) return "Available commands: " + subcommands.keys.joinToString()
-        val handler = subcommands[params[0]] ?: return "Invalid command. Available commands: " + subcommands.keys.joinToString()
+        val handler = subcommands[params[0]] ?: return "Invalid command.\nAvailable commands: " + subcommands.keys.joinToString("") { "\n- $it" }
         return handler.handle(console, params.drop(1))
     }
 
@@ -60,7 +61,7 @@ class ConsoleUnitCommands:ConsoleCommandNode {
                 ?: return@ConsoleAction "No tile selected"
             val civ = console.getCivByName(params[0])
                 ?: return@ConsoleAction "Unknown civ"
-            val baseUnit = console.gameInfo.ruleset.units.values.firstOrNull { it.name.toCliInput() == params[3] }
+            val baseUnit = console.gameInfo.ruleset.units.values.firstOrNull { it.name.toCliInput() == params[1] }
                 ?: return@ConsoleAction "Unknown unit"
             civ.units.placeUnitNearTile(selectedTile.position, baseUnit)
             return@ConsoleAction null
@@ -173,6 +174,28 @@ class ConsoleTileCommands: ConsoleCommandNode {
             val selectedTile = console.screen.mapHolder.selectedTile
                 ?: return@ConsoleAction "No tile selected"
             selectedTile.improvementFunctions.changeImprovement(null)
+            return@ConsoleAction null
+        },
+
+        "addfeature" to ConsoleAction { console, params ->
+            val selectedTile = console.screen.mapHolder.selectedTile
+                ?: return@ConsoleAction "No tile selected"
+            if (params.size != 1) return@ConsoleAction "Format: tile addfeature <featureName>"
+            val feature = console.gameInfo.ruleset.terrains.values
+                .firstOrNull { it.type == TerrainType.TerrainFeature && it.name.toCliInput() == params[0] }
+                ?: return@ConsoleAction "Unknown feature"
+            selectedTile.addTerrainFeature(feature.name)
+            return@ConsoleAction null
+        },
+
+        "removefeature" to ConsoleAction { console, params ->
+            val selectedTile = console.screen.mapHolder.selectedTile
+                ?: return@ConsoleAction "No tile selected"
+            if (params.size != 1) return@ConsoleAction "Format: tile addfeature <featureName>"
+            val feature = console.gameInfo.ruleset.terrains.values
+                .firstOrNull { it.type == TerrainType.TerrainFeature && it.name.toCliInput() == params[0] }
+                ?: return@ConsoleAction "Unknown feature"
+            selectedTile.removeTerrainFeature(feature.name)
             return@ConsoleAction null
         }
     )

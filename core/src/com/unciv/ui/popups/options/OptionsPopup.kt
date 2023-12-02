@@ -89,6 +89,11 @@ class OptionsPopup(
             ImageGetter.getImage("OtherIcons/Options"), 24f
         )
         tabs.addPage(
+            "AutoPlay",
+            autoPlayTab(this),
+            ImageGetter.getImage("OtherIcons/NationSwap"), 24f
+        )
+        tabs.addPage(
             "Language",
             LanguageTab(this, ::reloadWorldAndOptions),
             ImageGetter.getImage("FlagIcons/${settings.language}"), 24f
