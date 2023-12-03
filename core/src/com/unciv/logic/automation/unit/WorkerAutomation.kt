@@ -136,7 +136,8 @@ class WorkerAutomation(
         val currentTile = unit.getTile()
         
         // Shortcut, we are working a good tile (like resource) and don't need to check for other tiles to work
-        if (!dangerousTiles.contains(currentTile) && getImprovementPriority(unit.getTile(), unit) >= 10) {
+        if (!dangerousTiles.contains(currentTile) && getImprovementPriority(unit.getTile(), unit) >= 10
+            && currentTile.improvementInProgress != null) {
             return
         }
         val tileToWork = findTileToWork(unit, dangerousTiles)
