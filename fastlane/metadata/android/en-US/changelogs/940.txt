@@ -1,0 +1,27 @@
+
+
+Converted create/enhance religion actions to new format
+
+Converted Great Person actions to new format
+
+RFC: Direction for converting unit actions to map 
+
+Resolved  - start turn with unit selected
+
+Revert "Resolved  - "[relativeAmount]% [stat] from every follower, up to [relativeAmount]%" works off of majority religion, not our religion"
+
+Add trigger from building improvements and trigger conditional for building improvements  - By SeventhM
+
+By dHannasch:
+- Add iHasUniques.techColumn() 
+- Add iHasUniques.requiredTechs 
+- Add iHasUniques.availableInEra() 
+- Add TechManager.isResearched(construction) 
+
+Fixed trading with city-state through notifications  - By tuvus
+
+Mention the Railroad production bonus in the Civilopedia  - By Caballero-Arepa
+
+By SomeTroglodyte:
+- Dev Console: Lint, crash fix, add Stat 
+- Notification for "Policy branch unlocked" clickable 
