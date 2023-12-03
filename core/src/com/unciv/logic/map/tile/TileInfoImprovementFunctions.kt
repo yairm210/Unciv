@@ -247,7 +247,7 @@ class TileInfoImprovementFunctions(val tile: Tile) {
             if (unit != null) {
                 UniqueTriggerActivation.triggerUnitwideUnique(unique, unit)
             }
-            else UniqueTriggerActivation.triggerCivwideUnique(unique, civ)
+            else UniqueTriggerActivation.triggerCivwideUnique(unique, civ, tile = tile)
 
         if (unit != null){
             for (unique in unit.getTriggeredUniques(UniqueType.TriggerUponBuildingImprovement)
@@ -258,7 +258,7 @@ class TileInfoImprovementFunctions(val tile: Tile) {
         for (unique in civ.getMatchingUniques(
             UniqueType.TriggerUponBuildingImprovement, StateForConditionals(civInfo = civ, unit = unit))
             .filter { improvement.matchesFilter(it.params[0]) })
-            UniqueTriggerActivation.triggerCivwideUnique(unique, civ)
+            UniqueTriggerActivation.triggerCivwideUnique(unique, civ, tile = tile)
     }
 
     private fun adtivateRemovalImprovement(
