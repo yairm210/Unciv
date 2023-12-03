@@ -56,6 +56,9 @@ class WorkerAutomation(
             RoadStatus.None
         else civInfo.tech.getBestRoadAvailable()
 
+    /** Same as above, but ignores the option */
+    private val actualBestRoadAvailable: RoadStatus = civInfo.tech.getBestRoadAvailable()
+
     /** Civ-wide list of unconnected Cities, sorted by closest to capital first */
     private val citiesThatNeedConnecting: List<City> by lazy {
         val result = civInfo.cities.asSequence()
@@ -130,7 +133,7 @@ class WorkerAutomation(
     // TODO: Caching
     // TODO: Hide the automate road button if road is not unlocked
     fun automateConnectRoad(unit: MapUnit, tilesWhereWeWillBeCaptured: Set<Tile>){
-        if (bestRoadAvailable == RoadStatus.None) return
+        if (actualBestRoadAvailable == RoadStatus.None) return
 
         var currentTile = unit.getTile()
 
@@ -157,6 +160,15 @@ class WorkerAutomation(
                 return RoadStatus.Railroad.movement
 
             return 1f
+        }
+
+        /** Conditions for whether it is acceptable to build a road on this tile */
+        fun shouldBuildRoadOnTile(tile: Tile): Boolean {
+            return !tile.isCityCenter() // Can't build road on city tiles
+                // Special case for civs that treat forest/jungles as roads (inside their territory). We shouldn't build if railroads aren't unlocked.
+                && !(tile.hasConnection(unit.civ) && actualBestRoadAvailable == RoadStatus.Road)
+                // Don't build if the best road is already built
+                && tile.roadStatus != actualBestRoadAvailable
         }
 
         val destinationTile = unit.civ.gameInfo.tileMap[unit.automatedRoadConnectionDestination!!]
@@ -204,12 +216,12 @@ class WorkerAutomation(
         }
 
         if (unit.currentMovement > 0) {
-            /* The tile has a road or the worker is on a city, try to move to the next tile.
+            /* Can not build a road on this tile, try to move on.
             * The worker should search for the next furthest tile in the path that:
             * - It can move to
             * - Can be improved/upgraded
             * */
-            if (currentTile.roadStatus == bestRoadAvailable || currentTile.isCityCenter()) {
+            if (!shouldBuildRoadOnTile(currentTile)) {
                 when {
                     currTileIndex < pathToDest.size - 1 -> { // Try to move to the next tile in the path
                         val tileMap = unit.civ.gameInfo.tileMap
@@ -225,7 +237,7 @@ class WorkerAutomation(
                        for (futureTile in futureTiles){ // Find the furthest tile we can reach in this turn, move to, and does not have a road
                            if (unit.movement.canReachInCurrentTurn(futureTile) && unit.movement.canMoveTo(futureTile)) { // We can at least move to this tile
                                nextTile = futureTile
-                               if (futureTile.roadStatus != bestRoadAvailable) {
+                               if (futureTile.roadStatus != actualBestRoadAvailable) {
                                    break // Stop on this tile
                                }
                            }
@@ -244,9 +256,8 @@ class WorkerAutomation(
 
         // We need to check current movement again after we've (potentially) moved
         if (unit.currentMovement > 0) {
-            // Work on the current tile if it does not have a road, otherwise move to the next tile in the list
-            if (currentTile.improvementInProgress != bestRoadAvailable.name && currentTile.roadStatus != bestRoadAvailable) {
-                val improvement = bestRoadAvailable.improvement(ruleSet)!!
+            if (shouldBuildRoadOnTile(currentTile) && currentTile.improvementInProgress != actualBestRoadAvailable.name) {
+                val improvement = actualBestRoadAvailable.improvement(ruleSet)!!
                 currentTile.startWorkingOnImprovement(improvement, civInfo, unit)
                 return
             }
