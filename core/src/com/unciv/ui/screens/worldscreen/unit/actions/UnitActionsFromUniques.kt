@@ -273,7 +273,23 @@ object UnitActionsFromUniques {
         }
         return finalActions
     }
+    private fun getConnectRoadAction(unit: MapUnit): UnitAction{
+        val worldScreen = GUI.getWorldScreen()
+        return UnitAction(UnitActionType.AutomateRoadConnection,
+           isCurrentAction = unit.isAutomatingRoadConnection(),
+           action = {
+               worldScreen.bottomUnitTable.selectedUnitIsConnectingRoad =
+                   !worldScreen.bottomUnitTable.selectedUnitIsConnectingRoad
+               worldScreen.shouldUpdate = true
 
+           }
+       )
+    }
+
+    fun addConnectRoadAction(unit: MapUnit, actionList: ArrayList<UnitAction>){
+        if(!unit.hasUnique(UniqueType.BuildImprovements)) return
+        actionList += getConnectRoadAction(unit)
+    }
 
     fun getTransformActions(
         unit: MapUnit, tile: Tile

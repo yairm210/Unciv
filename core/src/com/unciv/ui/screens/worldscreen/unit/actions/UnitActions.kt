@@ -55,6 +55,7 @@ object UnitActions {
         UnitActionsReligion.addEnhanceReligionAction(unit, actionList)
         UnitActionsFromUniques.addCreateWaterImprovements(unit, actionList)
         actionList += UnitActionsFromUniques.getImprovementConstructionActions(unit, tile)
+        UnitActionsFromUniques.addConnectRoadAction(unit, actionList)
         UnitActionsReligion.addSpreadReligionActions(unit, actionList)
         UnitActionsReligion.addRemoveHeresyActions(unit, actionList)
 
@@ -308,19 +309,6 @@ object UnitActions {
                 UnitAutomation.automateUnitMoves(unit)
             }.takeIf { unit.currentMovement > 0 }
         )
-        val worldScreen = GUI.getWorldScreen()
-
-        actionList += UnitAction(UnitActionType.AutomateRoadConnection,
-            isCurrentAction = unit.isAutomatingRoadConnection(),
-            action = {
-                worldScreen.bottomUnitTable.selectedUnitIsConnectingRoad =
-                    !worldScreen.bottomUnitTable.selectedUnitIsConnectingRoad
-                worldScreen.shouldUpdate = true
-
-            }
-        )
-
-
     }
 
     private fun addWaitAction(unit: MapUnit, actionList: ArrayList<UnitAction>) {
