@@ -430,6 +430,7 @@ enum class UniqueType(
 
     UnitMaintenanceDiscount("[relativeAmount]% maintenance costs", UniqueTarget.Unit, UniqueTarget.Global),
     UnitUpgradeCost("[relativeAmount]% Gold cost of upgrading", UniqueTarget.Unit, UniqueTarget.Global),
+    AutomaticallyUpgradesInProduction("In-production automatically upgrades to [unit] for free", UniqueTarget.Unit),
 
     // Gains from battle
     DamageUnitsPlunder("Earn [amount]% of the damage done to [combatantFilter] units as [civWideStat]", UniqueTarget.Unit, UniqueTarget.Global),
