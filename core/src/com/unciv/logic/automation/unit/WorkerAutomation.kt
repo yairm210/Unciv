@@ -144,7 +144,7 @@ class WorkerAutomation(
         
         // If we have < 20 GPT lets not spend time connecting roads
         if (civInfo.stats.statsForNextTurn.gold >= 20 && getImprovementPriority(tileToWork, unit) < 10
-            && tryConnectingCities(unit, 6)) return
+            && tryConnectingCities(unit)) return
 
         if (tileToWork != currentTile) {
             debug("WorkerAutomation: %s -> head towards %s", unit.label(), tileToWork)
@@ -200,7 +200,7 @@ class WorkerAutomation(
         }
         
         //Lets check again if we want to build roads because we don't have a tile nearby to improve
-        if (civInfo.stats.statsForNextTurn.gold > 20 && tryConnectingCities(unit, 20)) return 
+        if (civInfo.stats.statsForNextTurn.gold > 20 && tryConnectingCities(unit)) return 
 
         val citiesToNumberOfUnimprovedTiles = HashMap<String, Int>()
         for (city in unit.civ.cities) {
@@ -221,7 +221,7 @@ class WorkerAutomation(
         }
 
         // Nothing to do, try again to connect cities
-        if (civInfo.stats.statsForNextTurn.gold > 10 && tryConnectingCities(unit, null)) return 
+        if (civInfo.stats.statsForNextTurn.gold > 10 && tryConnectingCities(unit)) return 
 
 
         debug("WorkerAutomation: %s -> nothing to do", unit.label())
@@ -236,7 +236,7 @@ class WorkerAutomation(
      * Looks for work connecting cities
      * @return whether we actually did anything
      */
-    private fun tryConnectingCities(unit: MapUnit, maxDistance: Int?): Boolean {
+    private fun tryConnectingCities(unit: MapUnit): Boolean {
         if (bestRoadAvailable == RoadStatus.None || citiesThatNeedConnecting.isEmpty()) return false
 
         // Since further away cities take longer to get to and - most importantly - the canReach() to them is very long,
@@ -244,7 +244,7 @@ class WorkerAutomation(
         // it can take to an existing connected city.
         val candidateCities = citiesThatNeedConnecting.asSequence().filter {
             // Cities that are too far away make the canReach() calculations devastatingly long
-            it.getCenterTile().aerialDistanceTo(unit.getTile()) < (maxDistance ?: 0)
+            it.getCenterTile().aerialDistanceTo(unit.getTile()) < 20
         }
         if (candidateCities.none()) return false // do nothing.
 
