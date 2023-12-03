@@ -2,6 +2,7 @@ package com.unciv.models.ruleset.unique
 
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.tech.Era
+import com.unciv.models.ruleset.tech.TechColumn
 import com.unciv.models.ruleset.tech.Technology
 import com.unciv.models.stats.INamed
 
@@ -67,6 +68,10 @@ interface IHasUniques : INamed {
     fun era(ruleset: Ruleset): Era? =
             requiredTechnologies(ruleset).map{ it.era() }.map{ ruleset.eras[it]!! }.maxByOrNull{ it.eraNumber }
             // This will return null only if requiredTechnologies() is empty.
+
+    fun techColumn(ruleset: Ruleset): TechColumn? =
+            requiredTechnologies(ruleset).map{ it.column }.filterNotNull().maxByOrNull{ it.columnNumber }
+            // This will return null only if *all* required techs have null TechColumn.
 
     fun availableInEra(ruleset: Ruleset, requestedEra: String): Boolean {
         val eraAvailable: Era? = era(ruleset)
