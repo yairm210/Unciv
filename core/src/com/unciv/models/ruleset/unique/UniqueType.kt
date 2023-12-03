@@ -756,7 +756,7 @@ enum class UniqueType(
     /** Can be placed upon both units and as global */
     TriggerUponConqueringCity("upon conquering a city", UniqueTarget.TriggerCondition, UniqueTarget.UnitTriggerCondition),
     TriggerUponFoundingCity("upon founding a city", UniqueTarget.TriggerCondition),
-    TriggerUponBuildingImprovement("upon building [improvementFilter]", UniqueTarget.TriggerCondition, UniqueTarget.UnitTriggerCondition),
+    TriggerUponBuildingImprovement("upon building a [improvementFilter] improvements", UniqueTarget.TriggerCondition, UniqueTarget.UnitTriggerCondition),
     TriggerUponDiscoveringNaturalWonder("upon discovering a Natural Wonder", UniqueTarget.TriggerCondition),
     TriggerUponConstructingBuilding("upon constructing [buildingFilter]", UniqueTarget.TriggerCondition),
     // We have a separate trigger to include the cityFilter, since '[in all cities]' can be read '*only* if it's in all cities'
