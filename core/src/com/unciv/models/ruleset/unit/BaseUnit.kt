@@ -224,6 +224,14 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         return true
     }
 
+    fun automaticallyUpgradedInProductionByTech(techName: String): BaseUnit? {
+        val autoUpgrades: List<String> = getMatchingUniques(UniqueType.AutomaticallyUpgradesInProduction, StateForConditionals.IgnoreConditionals)
+                .filter{ it.params[1] == techName }
+                .map{ it.params[0] }
+        if (autoUpgrades.size > 1)
+            throw Exception("$this appears to automatically upgrade to more than one unit at $techName.")
+    }
+
     fun addConstructionBonuses(unit: MapUnit, cityConstructions: CityConstructions) {
         val civInfo = cityConstructions.city.civ
 
