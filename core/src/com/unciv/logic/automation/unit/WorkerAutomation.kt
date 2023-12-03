@@ -130,20 +130,22 @@ class WorkerAutomation(
     // TODO: Caching
     // TODO: Hide the automate road button if road is not unlocked
     fun automateConnectRoad(unit: MapUnit, tilesWhereWeWillBeCaptured: Set<Tile>){
+        if (bestRoadAvailable == RoadStatus.None) return
+
         val currentTile = unit.getTile()
 
+        /** Reset side effects from automation, return worker to non-automated state*/
         fun stopAndCleanAutomation(){
             unit.automated = false
             unit.action = null
             unit.automatedRoadConnectionDestination = null
             unit.automatedRoadConnectionPath = null
             currentTile.stopWorkingOnImprovement()
-            return
         }
 
         /**
          * We prefer the worker to prioritize paths connected by existing roads. Otherwise, we set every tile to have
-         * equal value since building a road on any of them makes the original movement cost irrelevant .
+         * equal value since building a road on any of them makes the original movement cost irrelevant.
          */
         fun getMovementCost(from: Tile, to: Tile): Float{
             // hasConnection accounts for civs that treat jungle/forest as roads
@@ -157,12 +159,6 @@ class WorkerAutomation(
             return 1f
         }
 
-        if (bestRoadAvailable == RoadStatus.None) return
-
-        // Temporary until I can ensure the start and end is properly saved
-        unit.automatedRoadConnectionDestination ?: return
-
-
         val destinationTile = unit.civ.gameInfo.tileMap[unit.automatedRoadConnectionDestination!!]
 
         debug("Entered automate connect road for unit %s, start %s, end %s", unit, currentTile, destinationTile)
@@ -175,9 +171,6 @@ class WorkerAutomation(
                 {tile: Tile -> tile.isLand && !tile.isImpassible() && unit.civ.hasExplored(tile) && (tile.getOwner() == unit.civ || tile.getOwner() == null)},
                 {from: Tile, to: Tile -> getMovementCost(from, to)},
                 {from: Tile, to: Tile -> HexMath.getDistance(from.position, to.position).toFloat()}) // Euclidean distance is admissable
-//                 .apply {
-//                     maxSize = HexMath.getNumberOfTilesInHexagon(HexMath.getDistance(currentTile.position, destinationTile.position) + 2)
-//                 }
 
             while (true) {
                 if (astar.hasEnded()) {
@@ -201,6 +194,15 @@ class WorkerAutomation(
             }
         }
 
+        val currTileIndex = pathToDest!!.indexOf(currentTile.position)
+
+        // The worker was somehow moved off its path, cancel the action
+        if (currTileIndex == -1) {
+            debug("WorkerAutomation: ${unit.label()} -> was moved off its connect road path. Operation cancelled.")
+            stopAndCleanAutomation()
+            return
+        }
+
         // TODO: We should upgrade road if possible
         if (unit.currentMovement > 0){
             // Work on the current tile if it does not have a road, otherwise move to the next tile in the list
@@ -212,12 +214,7 @@ class WorkerAutomation(
 
             // The tile has a road or the worker is on a city, try to move to the next tile
             if (currentTile.roadStatus == bestRoadAvailable || currentTile.isCityCenter()){
-                val currTileIndex = pathToDest!!.indexOf(currentTile.position)
-                when {
-                    currTileIndex == -1 -> { // The worker was somehow moved off its path
-                        debug("WorkerAutomation: ${unit.label()} -> was moved off its connect road path. Operation cancelled.")
-                        stopAndCleanAutomation()
-                    }
+                when{
                     currTileIndex < pathToDest.size - 1 -> { // Try to move to the next tile in the path
                         val nextTile = unit.civ.gameInfo.tileMap[pathToDest[currTileIndex + 1]]
                         if(unit.movement.canMoveTo(nextTile) && unit.movement.canReach(nextTile)){
@@ -225,18 +222,15 @@ class WorkerAutomation(
                             return
                         }else{ // Worker can't move to the next tile.
                             stopAndCleanAutomation()
+                            return
                         }
+                    }
+                    currTileIndex == pathToDest.size - 1 -> { // The last tile in the path is unbuildable or has a road. We are finished.
+                        stopAndCleanAutomation()
+                        return
                     }
                 }
             }
-        }
-
-        // All the ways that the automation can end
-        val unitOnDestinationTile = currentTile == destinationTile
-        val destinationTileHasRoad = destinationTile.roadStatus == bestRoadAvailable
-        if (unitOnDestinationTile && (destinationTileHasRoad || currentTile.isCityCenter())) // We're on the last tile and a road/railroad has been built
-            {
-            stopAndCleanAutomation()
         }
     }
 
