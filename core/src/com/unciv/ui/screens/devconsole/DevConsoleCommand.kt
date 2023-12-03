@@ -153,7 +153,7 @@ class ConsoleCityCommands : ConsoleCommandNode {
             val city = console.gameInfo.getCities().firstOrNull { it.name.toCliInput() == params[0] }
                 ?: return@ConsoleAction DevConsoleResponse.error("Unknown city")
             if (selectedTile.neighbors.none { it.getCity() == city })
-                return@ConsoleAction DevConsoleResponse.error("Tile is not adjacent any tile already owned by the city")
+                return@ConsoleAction DevConsoleResponse.error("Tile is not adjacent to any tile already owned by the city")
             city.expansion.takeOwnership(selectedTile)
             return@ConsoleAction DevConsoleResponse.OK
         },
