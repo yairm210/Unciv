@@ -27,15 +27,7 @@ class DevConsolePopup(val screen: WorldScreen) : Popup(screen) {
 
     init {
         add(textField).width(stageToShowOn.width / 2).row()
-        textField.keyShortcuts.add(Input.Keys.ENTER) {
-            val handleCommandResponse = handleCommand()
-            if (handleCommandResponse == null) {
-                screen.shouldUpdate = true
-                history.add(textField.text)
-                close()
-            }
-            else responseLabel.setText(handleCommandResponse)
-        }
+        textField.keyShortcuts.add(Input.Keys.ENTER, ::onEnter)
 
         // Without this, console popup will always contain a `
         textField.addAction(Actions.delay(0.05f, Actions.run { textField.text = "" }))
@@ -68,9 +60,21 @@ class DevConsolePopup(val screen: WorldScreen) : Popup(screen) {
         screen.stage.keyboardFocus = textField
     }
 
+    private fun onEnter() {
+        val handleCommandResponse = handleCommand()
+        if (handleCommandResponse.isOK) {
+            screen.shouldUpdate = true
+            history.add(textField.text)
+            close()
+            return
+        }
+        responseLabel.setText(handleCommandResponse.message)
+        responseLabel.style.fontColor = handleCommandResponse.color
+    }
+
     private fun getParams(text: String) = text.split(" ").filter { it.isNotEmpty() }.map { it.lowercase() }
 
-    private fun handleCommand(): String? {
+    private fun handleCommand(): DevConsoleResponse {
         val params = getParams(textField.text)
         return commandRoot.handle(this, params)
     }
