@@ -80,7 +80,7 @@ class CityAction(private val city: Vector2 = Vector2.Zero) : NotificationAction 
 /** enter diplomacy screen */
 class DiplomacyAction(
     private val otherCivName: String = "",
-    private val showTrade: Boolean = false
+    private var showTrade: Boolean = false
 ) : NotificationAction {
     override fun execute(worldScreen: WorldScreen) {
         val otherCiv = worldScreen.gameInfo.getCivilization(otherCivName)
@@ -88,6 +88,10 @@ class DiplomacyAction(
             // Because TradeTable will set up otherCiv against that one,
             // not the one we pass below, and two equal civs will crash - can't look up a DiplomacyManager.
             return
+        // We should not be able to trade with city-states
+        if (showTrade && (otherCiv.isCityState() || worldScreen.gameInfo.getCurrentPlayerCivilization().isCityState()))
+            showTrade = false
+        
         worldScreen.game.pushScreen(DiplomacyScreen(worldScreen.selectedCiv, otherCiv, showTrade = showTrade))
     }
 }
