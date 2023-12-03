@@ -394,7 +394,11 @@ class WorkerAutomation(
             val bestImprovement = chooseImprovement(unit, tile)
             if (bestImprovement != null) {
                 rank.bestImprovement = bestImprovement
-                rank.improvementPriority = getImprovementRanking(tile, unit, rank.bestImprovement!!.name, LocalUniqueCache())
+                // Increased priority if the improvement has been worked on longer
+                val timeSpentPriority = if (tile.improvementInProgress == bestImprovement.name) 
+                    bestImprovement.getTurnsToBuild(unit.civ,unit) - tile.turnsToImprovement else 0
+                
+                rank.improvementPriority = getImprovementRanking(tile, unit, rank.bestImprovement!!.name, LocalUniqueCache()) + timeSpentPriority
             }
             
             if (tile.improvement != null && tile.isPillaged() && tile.owningCity != null) {
