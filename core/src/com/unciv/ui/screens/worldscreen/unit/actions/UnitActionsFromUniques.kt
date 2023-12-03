@@ -7,6 +7,7 @@ import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.map.mapunit.MapUnit
+import com.unciv.logic.map.tile.RoadStatus
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.Counter
 import com.unciv.models.UncivSound
@@ -287,7 +288,7 @@ object UnitActionsFromUniques {
     }
 
     fun addConnectRoadAction(unit: MapUnit, actionList: ArrayList<UnitAction>){
-        if(!unit.hasUnique(UniqueType.BuildImprovements)) return
+        if(!unit.hasUnique(UniqueType.BuildImprovements) || unit.civ.tech.getBestRoadAvailable() == RoadStatus.None) return
         actionList += getConnectRoadAction(unit)
     }
 
