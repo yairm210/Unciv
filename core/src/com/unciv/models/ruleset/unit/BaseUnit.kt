@@ -233,6 +233,13 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         return autoUpgrades[0]
     }
 
+    fun getEquivalentAutoUpgradeOrNull(civInfo: Civilization, techName: String): BaseUnit? {
+        val upgradeNameOrNull: String? = automaticallyUpgradedInProductionByTech(techName)
+        if (upgradeNameOrNull == null)
+            return null
+        return civInfo.getEquivalentUnit(upgradeNameOrNull!!)
+    }
+
     fun addConstructionBonuses(unit: MapUnit, cityConstructions: CityConstructions) {
         val civInfo = cityConstructions.city.civ
 
