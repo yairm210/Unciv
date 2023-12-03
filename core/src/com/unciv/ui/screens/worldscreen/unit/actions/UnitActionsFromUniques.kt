@@ -276,7 +276,7 @@ object UnitActionsFromUniques {
     }
     private fun getConnectRoadAction(unit: MapUnit): UnitAction{
         val worldScreen = GUI.getWorldScreen()
-        return UnitAction(UnitActionType.AutomateRoadConnection,
+        return UnitAction(UnitActionType.ConnectRoad,
            isCurrentAction = unit.isAutomatingRoadConnection(),
            action = {
                worldScreen.bottomUnitTable.selectedUnitIsConnectingRoad =

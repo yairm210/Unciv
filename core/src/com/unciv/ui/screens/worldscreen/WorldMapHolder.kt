@@ -41,6 +41,7 @@ import com.unciv.ui.components.extensions.surroundWithCircle
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.input.ActivationTypes
 import com.unciv.ui.components.input.KeyCharAndCode
+import com.unciv.ui.components.input.KeyboardBinding
 import com.unciv.ui.components.input.keyShortcuts
 import com.unciv.ui.components.input.onActivation
 import com.unciv.ui.components.input.onClick
@@ -340,7 +341,7 @@ class WorldMapHolder(
     private fun connectRoadToTargetTile(selectedUnit: MapUnit, targetTile: Tile) {
         selectedUnit.automatedRoadConnectionDestination = targetTile.position
         selectedUnit.automatedRoadConnectionPath = null
-        selectedUnit.action = UnitActionType.AutomateRoadConnection.value
+        selectedUnit.action = UnitActionType.ConnectRoad.value
         selectedUnit.automated = true
         UnitAutomation.automateUnitMoves(selectedUnit)
 
@@ -548,19 +549,20 @@ class WorldMapHolder(
 
     private fun getConnectRoadButton(dto: ConnectRoadButtonDto): Group {
         val connectRoadButton = Group().apply { width = buttonSize;height = buttonSize; }
-        connectRoadButton.addActor(ImageGetter.getCircle().apply { width = buttonSize; height = buttonSize })
-        connectRoadButton.addActor(
-            ImageGetter.getImage("OtherIcons/Improvements") //TODO: Need an image for this
-                .apply { color = Color.BLACK; width = buttonSize / 2; height = buttonSize / 2; center(connectRoadButton) })
+        connectRoadButton.addActor(ImageGetter.getUnitActionPortrait("RoadConnection", buttonSize * 0.8f).apply {
+                center(connectRoadButton)
+            }
+        )
 
         val unitIcon = UnitGroup(dto.unit, smallerCircleSizes)
         unitIcon.y = buttonSize - unitIcon.height
         connectRoadButton.addActor(unitIcon)
 
-//         connectRoadButton.keyShortcuts.add(KeyCharAndCode.TAB) //TODO: Need a key shortcut for this
         connectRoadButton.onActivation(UncivSound.Silent) {
             connectRoadToTargetTile(dto.unit, dto.tile)
         }
+
+        connectRoadButton.keyShortcuts.add(KeyboardBinding.ConnectRoad)
 
         return connectRoadButton
     }
