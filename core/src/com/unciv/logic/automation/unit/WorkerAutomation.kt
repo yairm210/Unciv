@@ -351,10 +351,7 @@ class WorkerAutomation(
      * This is a cheap guess on how helpful it might be to do work on this tile
      */
     fun getBasePriority(tile: Tile, unit: MapUnit): Int {
-        var unitSpecificPriority = 0
-        if (tile == unit.getTile()) unitSpecificPriority += 2
-        if (tile == unit.getTile()) unitSpecificPriority + 2
-        
+        var unitSpecificPriority = 2 - tile.aerialDistanceTo(unit.getTile()).coerceAtMost(4)
         if (tileRankings.containsKey(tile)) 
             return tileRankings[tile]!!.tilePriority + unitSpecificPriority
         
