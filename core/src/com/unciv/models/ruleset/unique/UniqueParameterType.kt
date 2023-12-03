@@ -49,6 +49,16 @@ enum class UniqueParameterType(
         }
     },
 
+    PositiveNumber("positiveAmount", "3", "This indicates a positive whole number, larger than zero, a '+' sign is optional") {
+        override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
+                UniqueType.UniqueParameterErrorSeverity? {
+            val amount = parameterText.toIntOrNull()
+                ?: return UniqueType.UniqueParameterErrorSeverity.RulesetInvariant
+            if (amount <= 0) return UniqueType.UniqueParameterErrorSeverity.RulesetInvariant
+            return null
+        }
+    },
+
     Fraction("fraction", docExample = "0.5", "Indicates a fractional number, which can be negative") {
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset): UniqueType.UniqueParameterErrorSeverity? {
             return if (parameterText.toFloatOrNull () == null) UniqueType.UniqueParameterErrorSeverity.RulesetInvariant
