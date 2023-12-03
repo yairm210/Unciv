@@ -227,7 +227,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
     fun automaticallyUpgradedInProductionByTech(techName: String): String? {
         val autoUpgrades: List<String> = getMatchingUniques(UniqueType.AutomaticallyUpgradesInProduction, StateForConditionals.IgnoreConditionals)
                 .filter{ it.params[1] == techName }
-                .map{ it.params[0] }.filterNotNull().toList() + if(obsoleteTech != null && obsoleteTech == techName && upgradesTo != null) listOf(upgradesTo) else listOf()
+                .map{ it.params[0] }.filterNotNull().toList() + if(obsoleteTech != null && obsoleteTech == techName && upgradesTo != null) listOf(upgradesTo!!) else listOf()
         if (autoUpgrades.size > 1)
             throw Exception("$this appears to automatically upgrade to more than one unit at $techName.")
         return autoUpgrades[0]
