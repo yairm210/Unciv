@@ -50,7 +50,6 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
     var obsoleteTech: String? = null
     fun techsThatObsoleteThis(): Sequence<String> = if (obsoleteTech == null) sequenceOf() else sequenceOf(obsoleteTech!!)
     fun techsAtWhichAutoUpgradeInProduction(): Sequence<String> = techsThatObsoleteThis()
-    fun isObsoletedBy(techName: String): Boolean = techsThatObsoleteThis().contains(techName)
     var upgradesTo: String? = null
     var replaces: String? = null
     var uniqueTo: String? = null
