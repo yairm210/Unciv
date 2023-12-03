@@ -325,9 +325,11 @@ class WorkerAutomation(
         // under the assumption that best tile is better than tiles in all lower groups 
         for (tilePriorityGroup in workableTilesPrioritized) {
             var bestTile: Tile? = null
-            for (tileInGroup in tilePriorityGroup.value) {
+            for (tileInGroup in tilePriorityGroup.value.sortedBy { unit.getTile().aerialDistanceTo(it) }) {
                 // These are the expensive calculations (tileCanBeImproved, canReach), so we only apply these filters after everything else it done.
-                if (!unit.movement.canReach(tileInGroup) || getBestImprovement(tileInGroup, unit) == null) continue
+                if (getBestImprovement(tileInGroup, unit) == null) continue
+                if (unit.getTile() == tileInGroup) return unit.getTile()
+                if (!unit.movement.canReach(tileInGroup) || tileInGroup.civilianUnit != null) continue
                 if (bestTile == null || getImprovementPriority(tileInGroup, unit) > getImprovementPriority(bestTile, unit)) {
                     bestTile = tileInGroup
                 }
