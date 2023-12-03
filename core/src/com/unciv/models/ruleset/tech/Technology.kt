@@ -50,4 +50,6 @@ class Technology: RulesetObject() {
             // but uniqueIsRequirementForThisTech() will *not* identify that OnlyAvailableWhen as a requirement for this tech (because it's more complicated than that).
             && unique.conditionals.size == 1
             && unique.conditionals[0].params[0] == name
+
+    fun uniqueIsNotRequirementForThisTech(unique: Unique): Boolean = !uniqueIsRequirementForThisTech(unique)
 }
