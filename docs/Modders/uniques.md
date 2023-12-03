@@ -2104,6 +2104,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "&lt;upon founding a city&gt;"
 	Applicable to: TriggerCondition
 
+??? example  "&lt;upon building a [improvementFilter] improvement&gt;"
+	Example: "&lt;upon building a [All Road] improvement&gt;"
+
+	Applicable to: TriggerCondition, UnitTriggerCondition
+
 ??? example  "&lt;upon discovering a Natural Wonder&gt;"
 	Applicable to: TriggerCondition
 
