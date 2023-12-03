@@ -348,8 +348,8 @@ class TechManager : IsPartOfGameInfoSerialization {
             return civInfo.getEquivalentUnit(upgradesTo!!)
         }
         val obsoleteUnits = getRuleset().units.asSequence()
-            .filter { it.value.obsoleteTech == techName || it.value.getEquivalentAutoUpgradeOrNull() != null }
-            .map { it.key to it.value.getEquivalentAutoUpgradeOrNull() }
+            .filter { it.value.obsoleteTech == techName || it.value.getEquivalentAutoUpgradeOrNull(civInfo, techName) != null }
+            .map { it.key to it.value.getEquivalentAutoUpgradeOrNull(civInfo, techName) }
             .toMap()
         if (obsoleteUnits.isEmpty()) return
 
