@@ -17,26 +17,25 @@ class DevConsolePopup(val screen: WorldScreen) : Popup(screen) {
     companion object {
         val history = ArrayList<String>()
     }
+    private var currentHistoryEntry = history.size
 
-    val textField = TextField("", BaseScreen.skin)
+    private val textField = TextField("", BaseScreen.skin)
+    private val responseLabel = "".toLabel(Color.RED)
+
+    private val commandRoot = ConsoleCommandRoot()
     internal val gameInfo = screen.gameInfo
 
     init {
         add(textField).width(stageToShowOn.width / 2).row()
-        val label = "".toLabel(Color.RED)
-        add(label)
-        textField.keyShortcuts.add(Input.Keys.ENTER) {
-            val handleCommandResponse = handleCommand()
-            if (handleCommandResponse == null) {
-                screen.shouldUpdate = true
-                history.add(textField.text)
-                close()
-            }
-            else label.setText(handleCommandResponse)
-        }
+        textField.keyShortcuts.add(Input.Keys.ENTER, ::onEnter)
+
         // Without this, console popup will always contain a `
         textField.addAction(Actions.delay(0.05f, Actions.run { textField.text = "" }))
+
+        add(responseLabel)
+
         open(true)
+
         keyShortcuts.add(KeyCharAndCode.ESC) { close() }
 
         keyShortcuts.add(KeyCharAndCode.TAB) {
@@ -45,7 +44,6 @@ class DevConsolePopup(val screen: WorldScreen) : Popup(screen) {
         }
 
         if (history.isNotEmpty()) {
-            var currentHistoryEntry = history.size
             keyShortcuts.add(Input.Keys.UP) {
                 if (currentHistoryEntry > 0) currentHistoryEntry--
                 textField.text = history[currentHistoryEntry]
@@ -58,21 +56,35 @@ class DevConsolePopup(val screen: WorldScreen) : Popup(screen) {
                 textField.cursorPosition = textField.text.length
             }
         }
+
+        screen.stage.keyboardFocus = textField
     }
 
-    private fun getParams(text:String) = text.split(" ").filter { it.isNotEmpty() }.map { it.lowercase() }
+    private fun onEnter() {
+        val handleCommandResponse = handleCommand()
+        if (handleCommandResponse.isOK) {
+            screen.shouldUpdate = true
+            history.add(textField.text)
+            close()
+            return
+        }
+        responseLabel.setText(handleCommandResponse.message)
+        responseLabel.style.fontColor = handleCommandResponse.color
+    }
 
-    private fun handleCommand(): String? {
+    private fun getParams(text: String) = text.split(" ").filter { it.isNotEmpty() }.map { it.lowercase() }
+
+    private fun handleCommand(): DevConsoleResponse {
         val params = getParams(textField.text)
-        return ConsoleCommandRoot().handle(this, params)
+        return commandRoot.handle(this, params)
     }
 
-    private fun getAutocomplete():String {
+    private fun getAutocomplete(): String {
         val params = getParams(textField.text)
-        return ConsoleCommandRoot().autocomplete(params) ?: ""
+        return commandRoot.autocomplete(params) ?: ""
     }
 
-    internal fun getCivByName(name:String) = gameInfo.civilizations.firstOrNull { it.civName.toCliInput() == name }
+    internal fun getCivByName(name: String) = gameInfo.civilizations.firstOrNull { it.civName.toCliInput() == name }
 
     internal fun getSelectedUnit(): MapUnit? {
         val selectedTile = screen.mapHolder.selectedTile ?: return null

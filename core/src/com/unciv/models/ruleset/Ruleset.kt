@@ -406,7 +406,7 @@ class Ruleset {
     fun updateBuildingCosts() {
         for (building in buildings.values) {
             if (building.cost == -1 && building.getMatchingUniques(UniqueType.Unbuildable).none { it.conditionals.isEmpty() }) {
-                val column = technologies[building.requiredTech]?.column
+                val column = building.techColumn(this)
                 if (column != null) {
                     building.cost = if (building.isAnyWonder()) column.wonderCost else column.buildingCost
                 }
