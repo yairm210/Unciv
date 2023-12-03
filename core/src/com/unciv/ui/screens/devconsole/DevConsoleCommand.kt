@@ -2,6 +2,7 @@ package com.unciv.ui.screens.devconsole
 
 import com.unciv.logic.civilization.Civilization
 import com.unciv.models.ruleset.tile.TerrainType
+import com.unciv.models.stats.Stat
 
 internal fun String.toCliInput() = this.lowercase().replace(" ","-")
 
@@ -49,7 +50,8 @@ class ConsoleCommandRoot : ConsoleCommandNode {
     override val subcommands = hashMapOf<String, ConsoleCommand>(
         "unit" to ConsoleUnitCommands(),
         "city" to ConsoleCityCommands(),
-        "tile" to ConsoleTileCommands()
+        "tile" to ConsoleTileCommands(),
+        "civ" to ConsoleCivCommands()
     )
 }
 
@@ -83,7 +85,7 @@ class ConsoleUnitCommands : ConsoleCommandNode {
                 return@ConsoleAction DevConsoleResponse.hint("Format: unit addpromotion <promotionName>")
             val unit = console.getSelectedUnit()
                 ?: return@ConsoleAction DevConsoleResponse.error("Select tile with unit")
-            val promotion = console.gameInfo.ruleset.unitPromotions.values.firstOrNull { it.name.toCliInput() == params[2] }
+            val promotion = console.gameInfo.ruleset.unitPromotions.values.firstOrNull { it.name.toCliInput() == params[0] }
                 ?: return@ConsoleAction DevConsoleResponse.error("Unknown promotion")
             unit.promotions.addPromotion(promotion.name, true)
             return@ConsoleAction DevConsoleResponse.OK
@@ -94,7 +96,7 @@ class ConsoleUnitCommands : ConsoleCommandNode {
                 return@ConsoleAction DevConsoleResponse.hint("Format: unit removepromotion <promotionName>")
             val unit = console.getSelectedUnit()
                 ?: return@ConsoleAction DevConsoleResponse.error("Select tile with unit")
-            val promotion = unit.promotions.getPromotions().firstOrNull { it.name.toCliInput() == params[2] }
+            val promotion = unit.promotions.getPromotions().firstOrNull { it.name.toCliInput() == params[0] }
                 ?: return@ConsoleAction DevConsoleResponse.error("Promotion not found on unit")
             // No such action in-game so we need to manually update
             unit.promotions.promotions.remove(promotion.name)
@@ -220,4 +222,36 @@ class ConsoleTileCommands: ConsoleCommandNode {
             return@ConsoleAction DevConsoleResponse.OK
         }
     )
+}
+
+class ConsoleCivCommands : ConsoleCommandNode {
+    override val subcommands = hashMapOf<String, ConsoleCommand>(
+        "add" to ConsoleAction { console, params ->
+            var statPos = 0
+            if (params.size !in 2..3)
+                return@ConsoleAction DevConsoleResponse.hint("Format: civ add [civ] <stat> <amount>")
+            val civ = if (params.size == 2) console.screen.selectedCiv
+                else {
+                    statPos++
+                    console.getCivByName(params[0])
+                        ?: return@ConsoleAction DevConsoleResponse.error("Unknown civ")
+                }
+            val amount = params[statPos+1].toIntOrNull()
+                ?: return@ConsoleAction DevConsoleResponse.error("Whut? \"${params[statPos+1]}\" is not a number!")
+            val stat = Stat.safeValueOf(params[statPos].replaceFirstChar(Char::titlecase))
+                ?: return@ConsoleAction DevConsoleResponse.error("Whut? \"${params[statPos]}\" is not a Stat!")
+            if (stat !in Stat.statsWithCivWideField)
+                return@ConsoleAction DevConsoleResponse.error("$stat is not civ-wide")
+            civ.addStat(stat, amount)
+            DevConsoleResponse.OK
+        }
+    )
+
+    override fun autocomplete(params: List<String>): String? {
+        if (params.size == 2 && params[0] == "add")
+            return Stat.names()
+                .firstOrNull { it.lowercase().startsWith(params[1]) }
+                ?.drop(params[1].length)
+        return super.autocomplete(params)
+    }
 }
