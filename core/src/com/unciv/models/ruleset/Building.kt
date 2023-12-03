@@ -56,7 +56,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
 
     override fun makeLink() = if (isAnyWonder()) "Wonder/$name" else "Building/$name"
 
-    fun getShortDescription(multiline: Boolean = false, , filterUniques: ((Unique) -> Boolean)? = null) = BuildingDescriptions.getShortDescription(this, multiline, filterUniques)
+    fun getShortDescription(multiline: Boolean = false, filterUniques: ((Unique) -> Boolean)? = null) = BuildingDescriptions.getShortDescription(this, multiline, filterUniques)
     fun getDescription(city: City, showAdditionalInfo: Boolean) = BuildingDescriptions.getDescription(this, city, showAdditionalInfo)
     override fun getCivilopediaTextLines(ruleset: Ruleset) = BuildingDescriptions.getCivilopediaTextLines(this, ruleset)
 
