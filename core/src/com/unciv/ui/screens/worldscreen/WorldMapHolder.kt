@@ -344,8 +344,7 @@ class WorldMapHolder(
         selectedUnit.automated = true
         UnitAutomation.automateUnitMoves(selectedUnit)
 
-        // TODO: Change to another sound
-        SoundPlayer.play(UncivSound.Swap)
+        SoundPlayer.play(UncivSound("wagon"))
 
         worldScreen.shouldUpdate = true
         removeUnitActionOverlay()
