@@ -204,20 +204,36 @@ class WorkerAutomation(
         }
 
         if (unit.currentMovement > 0) {
-            // The tile has a road or the worker is on a city, try to move to the next tile
+            /* The tile has a road or the worker is on a city, try to move to the next tile.
+            * The worker should search for the next furthest tile in the path that:
+            * - It can move to
+            * - Can be improved/upgraded
+            * */
             if (currentTile.roadStatus == bestRoadAvailable || currentTile.isCityCenter()) {
                 when {
                     currTileIndex < pathToDest.size - 1 -> { // Try to move to the next tile in the path
-                        val nextTile = unit.civ.gameInfo.tileMap[pathToDest[currTileIndex + 1]]
-                        if (unit.movement.canMoveTo(nextTile) && unit.movement.canReach(nextTile)) {
-                            unit.movement.moveToTile(nextTile)
-                            currentTile = unit.getTile()
-                        } else { // Worker can't move to the next tile.
-                            stopAndCleanAutomation()
-                            return
-                        }
-                    }
+                        val tileMap = unit.civ.gameInfo.tileMap
+                        var nextTile: Tile? = null
 
+                        // Create a new list with tiles where the index is greater than currTileIndex
+                        val futureTiles = pathToDest.filterIndexed { index, _ ->
+                            index > currTileIndex
+                        }.map{tilePos ->
+                            tileMap[tilePos]
+                        }
+
+                       for (futureTile in futureTiles){ // Find the furthest tile we can reach in this turn, move to, and does not have a road
+                           if (unit.movement.canReachInCurrentTurn(futureTile) && unit.movement.canMoveTo(futureTile)) { // We can at least move to this tile
+                               nextTile = futureTile
+                               if (futureTile.roadStatus != bestRoadAvailable) {
+                                   break // Stop on this tile
+                               }
+                           }
+                       }
+
+                        unit.movement.moveToTile(nextTile!!)
+                        currentTile = unit.getTile()
+                    }
                     currTileIndex == pathToDest.size - 1 -> { // The last tile in the path is unbuildable or has a road. We are finished.
                         stopAndCleanAutomation()
                         return
