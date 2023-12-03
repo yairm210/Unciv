@@ -12,6 +12,7 @@ import com.unciv.ui.screens.civilopediascreen.CivilopediaScreen
 import com.unciv.ui.screens.diplomacyscreen.DiplomacyScreen
 import com.unciv.ui.screens.overviewscreen.EmpireOverviewCategories
 import com.unciv.ui.screens.overviewscreen.EmpireOverviewScreen
+import com.unciv.ui.screens.pickerscreens.PolicyPickerScreen
 import com.unciv.ui.screens.pickerscreens.PromotionPickerScreen
 import com.unciv.ui.screens.pickerscreens.TechPickerScreen
 import com.unciv.ui.screens.worldscreen.WorldScreen
@@ -146,6 +147,15 @@ class OverviewAction(
     }
 }
 
+/** Open policy picker, optionally preselecting [select] (how or if at all that works for branches is [PolicyPickerScreen]'s business) */
+class PolicyAction(
+    private val select: String? = null
+) : NotificationAction {
+    override fun execute(worldScreen: WorldScreen) {
+        worldScreen.game.pushScreen(PolicyPickerScreen(worldScreen.selectedCiv, worldScreen.canChangeState, select))
+    }
+}
+
 @Suppress("PrivatePropertyName")  // These names *must* match their class name, see below
 internal class NotificationActionsDeserializer {
     /* This exists as trick to leverage readFields for Json deserialization.
@@ -167,12 +177,13 @@ internal class NotificationActionsDeserializer {
     private val CivilopediaAction: CivilopediaAction? = null
     private val PromoteUnitAction: PromoteUnitAction? = null
     private val OverviewAction: OverviewAction? = null
+    private val PolicyAction: PolicyAction? = null
 
     fun read(json: Json, jsonData: JsonValue): List<NotificationAction> {
         json.readFields(this, jsonData)
         return listOfNotNull(
             LocationAction, TechAction, CityAction, DiplomacyAction, MayaLongCountAction,
-            MapUnitAction, CivilopediaAction, PromoteUnitAction, OverviewAction
+            MapUnitAction, CivilopediaAction, PromoteUnitAction, OverviewAction, PolicyAction
         )
     }
 }
