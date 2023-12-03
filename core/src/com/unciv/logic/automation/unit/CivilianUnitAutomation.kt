@@ -34,7 +34,7 @@ object CivilianUnitAutomation {
         if (unit.hasUnique(UniqueType.FoundCity))
             return SpecificUnitAutomation.automateSettlerActions(unit, tilesWhereWeWillBeCaptured)
 
-        if(unit.isForceAutomatingRoadConnection())
+        if(unit.isAutomatingRoadConnection())
             return unit.civ.getWorkerAutomation().automateConnectRoad(unit, tilesWhereWeWillBeCaptured)
 
         if (unit.cache.hasUniqueToBuildImprovements)

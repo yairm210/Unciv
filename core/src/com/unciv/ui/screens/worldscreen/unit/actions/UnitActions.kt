@@ -310,8 +310,8 @@ object UnitActions {
         )
         val worldScreen = GUI.getWorldScreen()
 
-        actionList += UnitAction(UnitActionType.ForceAutomateRoadConnection,
-            isCurrentAction = unit.isForceAutomatingRoadConnection(),
+        actionList += UnitAction(UnitActionType.AutomateRoadConnection,
+            isCurrentAction = unit.isAutomatingRoadConnection(),
             action = {
                 worldScreen.bottomUnitTable.selectedUnitIsConnectingRoad =
                     !worldScreen.bottomUnitTable.selectedUnitIsConnectingRoad

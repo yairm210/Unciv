@@ -389,7 +389,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
 
     fun isAutomated() = automated
 
-    fun isForceAutomatingRoadConnection() = action == UnitActionType.ForceAutomateRoadConnection.value
+    fun isAutomatingRoadConnection() = action == UnitActionType.AutomateRoadConnection.value
     fun isExploring() = action == UnitActionType.Explore.value
     fun isPreparingParadrop() = action == UnitActionType.Paradrop.value
     fun isPreparingAirSweep() = action == UnitActionType.AirSweep.value

@@ -99,7 +99,7 @@ enum class UnitActionType(
         { ImageGetter.getUnitActionPortrait("Swap") }, false),
     Automate("Automate",
         { ImageGetter.getUnitActionPortrait("Automate") }),
-    ForceAutomateRoadConnection("Connect road",
+    AutomateRoadConnection("Connect road",
         { ImageGetter.getUnitActionPortrait("RoadConnection") }),
     StopAutomation("Stop automation",
         { ImageGetter.getUnitActionPortrait("Stop") }, false),
