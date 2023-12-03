@@ -144,7 +144,7 @@ class WorkerAutomation(
         
         // If we have < 20 GPT lets not spend time connecting roads
         if (civInfo.stats.statsForNextTurn.gold >= 20 && getImprovementPriority(tileToWork, unit) < 10
-            && tryConnectingCities(unit, 8)) return
+            && tryConnectingCities(unit, 6)) return
 
         if (tileToWork != currentTile) {
             debug("WorkerAutomation: %s -> head towards %s", unit.label(), tileToWork)
