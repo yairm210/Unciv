@@ -402,7 +402,11 @@ class WorkerAutomation(
             }
             
             if (tile.improvement != null && tile.isPillaged() && tile.owningCity != null) {
-                val repairPriority = Automation.rankStatsValue(TileStatFunctions(tile).getImprovementStats(tile.getTileImprovement()!!,unit.civ, tile.owningCity), unit.civ)
+                // Value repairing higher when it is quicker and is in progress
+                var repairBonusPriority = tile.getImprovementToRepair()!!.getTurnsToBuild(unit.civ,unit) - UnitActionsFromUniques.getRepairTurns(unit)
+                if (tile.improvementInProgress == Constants.repair) repairBonusPriority += UnitActionsFromUniques.getRepairTurns(unit) - tile.turnsToImprovement
+                
+                val repairPriority = repairBonusPriority + Automation.rankStatsValue(TileStatFunctions(tile).getImprovementStats(tile.getTileImprovement()!!,unit.civ, tile.owningCity), unit.civ)
                 if (repairPriority > rank.improvementPriority!!) {
                     rank.improvementPriority = repairPriority
                     rank.bestImprovement = null

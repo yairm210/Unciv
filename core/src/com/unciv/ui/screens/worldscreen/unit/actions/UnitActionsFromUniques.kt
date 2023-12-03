@@ -367,7 +367,7 @@ object UnitActionsFromUniques {
         ))
     }
 
-    private fun getRepairTurns(unit: MapUnit): Int {
+    fun getRepairTurns(unit: MapUnit): Int {
         val tile = unit.currentTile
         if (!tile.isPillaged()) return 0
         if (tile.improvementInProgress == Constants.repair) return tile.turnsToImprovement
