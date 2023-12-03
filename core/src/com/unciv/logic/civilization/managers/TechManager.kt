@@ -10,6 +10,7 @@ import com.unciv.logic.civilization.MayaLongCountAction
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.civilization.PlayerType
+import com.unciv.logic.civilization.PolicyAction
 import com.unciv.logic.civilization.PopupAlert
 import com.unciv.logic.civilization.TechAction
 import com.unciv.logic.map.MapSize
@@ -348,7 +349,7 @@ class TechManager : IsPartOfGameInfoSerialization {
             return civInfo.getEquivalentUnit(upgradesTo!!)
         }
         val obsoleteUnits = getRuleset().units.asSequence()
-            .filter { it.value.obsoletingTechs().contains(techName) }
+            .filter { it.value.isObsoletedBy(techName) }
             .map { it.key to it.value.getEquivalentUpgradeOrNull() }
             .toMap()
         if (obsoleteUnits.isEmpty()) return
@@ -417,6 +418,7 @@ class TechManager : IsPartOfGameInfoSerialization {
                     if (!civInfo.isSpectator())
                         civInfo.addNotification(
                             "[${policyBranch.name}] policy branch unlocked!",
+                            PolicyAction(policyBranch.name),
                             NotificationCategory.General,
                             NotificationIcon.Culture
                         )
