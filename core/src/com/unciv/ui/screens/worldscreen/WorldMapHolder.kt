@@ -751,6 +751,21 @@ class WorldMapHolder(
 
         }
 
+        // Highlight road path for workers connecting roads
+        if (unit.isAutomatingRoadConnection()) {
+            val currTileIndex = unit.automatedRoadConnectionPath!!.indexOf(unit.currentTile.position)
+            if (currTileIndex != -1) {
+                val futureTiles = unit.automatedRoadConnectionPath!!.filterIndexed { index, _ ->
+                    index > currTileIndex
+                }.map{tilePos ->
+                    tileMap[tilePos]
+                }
+                for (tile in futureTiles){
+                    tileGroups[tile]!!.layerOverlay.showHighlight(Color.ORANGE, if (UncivGame.Current.settings.singleTapMove) 0.7f else 0.3f)
+                }
+            }
+        }
+
         // Add back in the red markers for Air Unit Attack range since they can't move, but can still attack
         if (unit.cache.cannotMove && isAirUnit && !unit.isPreparingAirSweep()) {
             val tilesInAttackRange = unit.getTile().getTilesInDistanceRange(IntRange(1, unit.getRange()))
