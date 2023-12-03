@@ -228,6 +228,14 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         return true
     }
 
+    // This returns the name of the unit this tech upgrades this unit to,
+    // or null if there is no automatic upgrade at that tech.
+    fun automaticallyUpgradedInProductionToUnitByTech(techName: String): String? {
+        if (obsoleteTech != null && obsoleteTech == techName)
+            return upgradesTo
+        return null
+    }
+
     fun addConstructionBonuses(unit: MapUnit, cityConstructions: CityConstructions) {
         val civInfo = cityConstructions.city.civ
 
