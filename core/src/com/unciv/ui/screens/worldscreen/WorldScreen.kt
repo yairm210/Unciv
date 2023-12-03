@@ -196,7 +196,6 @@ class WorldScreen(
             // No cheating unless you're by yourself
             if (gameInfo.civilizations.count { it.isHuman() } > 1) return@add
             val consolePopup = DevConsolePopup(this)
-            stage.keyboardFocus = consolePopup.textField
         }
 
         addKeyboardListener() // for map panning by W,S,A,D
