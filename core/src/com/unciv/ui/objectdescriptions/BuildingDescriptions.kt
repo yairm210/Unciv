@@ -169,9 +169,6 @@ object BuildingDescriptions {
             textList += FormattedLine(stats.joinToString("/", "{Cost}: "))
         }
 
-        if (requiredTech != null)
-            textList += FormattedLine("Required tech: [$requiredTech]",
-                link="Technology/$requiredTech")
         if (requiredBuilding != null)
             textList += FormattedLine("Requires [$requiredBuilding] to be built in the city",
                 link="Building/$requiredBuilding")
