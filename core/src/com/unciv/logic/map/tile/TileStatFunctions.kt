@@ -236,7 +236,7 @@ class TileStatFunctions(val tile: Tile) {
     }
 
     // Also multiplies the stats by the percentage bonus for improvements (but not for tiles)
-    private fun getImprovementStats(
+    fun getImprovementStats(
         improvement: TileImprovement,
         observingCiv: Civilization,
         city: City?,
