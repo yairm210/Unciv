@@ -131,11 +131,16 @@ class WorkerAutomation(
      */
     fun automateWorkerAction(unit: MapUnit, dangerousTiles: HashSet<Tile>) {
         val currentTile = unit.getTile()
-        // If we have < 20 GPT lets not spend time connecting roads
-        if (civInfo.stats.statsForNextTurn.gold > 20 && getImprovementPriority(unit.getTile(), unit) < 10) { // building roads is more important
-            if (tryConnectingCities(unit)) return
+        
+        // Shortcut, we are working a good tile (like resource) and don't need to check for other tiles to work
+        if (!dangerousTiles.contains(currentTile) && getImprovementPriority(unit.getTile(), unit) >= 10) {
+            return
         }
         val tileToWork = findTileToWork(unit, dangerousTiles)
+        
+        // If we have < 20 GPT lets not spend time connecting roads
+        if (civInfo.stats.statsForNextTurn.gold >= 20 && getImprovementPriority(tileToWork, unit) < 10
+            && tryConnectingCities(unit, 8)) return
 
         if (tileToWork != currentTile) {
             debug("WorkerAutomation: %s -> head towards %s", unit.label(), tileToWork)
@@ -188,8 +193,9 @@ class WorkerAutomation(
             // Support Alpha Frontier-Style Workers that _also_ have the "May create improvements on water resources" unique
             if (automateWorkBoats(unit)) return
         }
-
-        if (tryConnectingCities(unit)) return //nothing to do, try again to connect cities
+        
+        //Lets check again if we want to build roads because we don't have a tile nearby to improve
+        if (civInfo.stats.statsForNextTurn.gold > 20 && tryConnectingCities(unit, 20)) return 
 
         val citiesToNumberOfUnimprovedTiles = HashMap<String, Int>()
         for (city in unit.civ.cities) {
@@ -209,6 +215,10 @@ class WorkerAutomation(
             return
         }
 
+        // Nothing to do, try again to connect cities
+        if (civInfo.stats.statsForNextTurn.gold > 10 && tryConnectingCities(unit, null)) return 
+
+
         debug("WorkerAutomation: %s -> nothing to do", unit.label())
         unit.civ.addNotification("${unit.shortDisplayName()} has no work to do.", currentTile.position, NotificationCategory.Units, unit.name, "OtherIcons/Sleep")
 
@@ -221,7 +231,7 @@ class WorkerAutomation(
      * Looks for work connecting cities
      * @return whether we actually did anything
      */
-    private fun tryConnectingCities(unit: MapUnit): Boolean {
+    private fun tryConnectingCities(unit: MapUnit, maxDistance: Int?): Boolean {
         if (bestRoadAvailable == RoadStatus.None || citiesThatNeedConnecting.isEmpty()) return false
 
         // Since further away cities take longer to get to and - most importantly - the canReach() to them is very long,
@@ -229,7 +239,7 @@ class WorkerAutomation(
         // it can take to an existing connected city.
         val candidateCities = citiesThatNeedConnecting.asSequence().filter {
             // Cities that are too far away make the canReach() calculations devastatingly long
-            it.getCenterTile().aerialDistanceTo(unit.getTile()) < 20
+            it.getCenterTile().aerialDistanceTo(unit.getTile()) < (maxDistance ?: 0)
         }
         if (candidateCities.none()) return false // do nothing.
 
