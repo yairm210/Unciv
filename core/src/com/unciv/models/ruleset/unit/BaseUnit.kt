@@ -230,6 +230,8 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
                 .map{ it.params[0] }.filterNotNull().toList() + if(obsoleteTech != null && obsoleteTech == techName && upgradesTo != null) listOf(upgradesTo!!) else listOf()
         if (autoUpgrades.size > 1)
             throw Exception("$this appears to automatically upgrade to more than one unit at $techName.")
+        if (autoUpgrades.size == 0)
+            return null
         return autoUpgrades[0]
     }
 
