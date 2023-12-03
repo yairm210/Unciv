@@ -131,7 +131,8 @@ class WorkerAutomation(
      */
     fun automateWorkerAction(unit: MapUnit, dangerousTiles: HashSet<Tile>) {
         val currentTile = unit.getTile()
-        if (getImprovementPriority(unit.getTile(), unit) < 3) { // building roads is more important
+        // If we have < 20 GPT lets not spend time connecting roads
+        if (civInfo.stats.statsForNextTurn.gold > 20 && getImprovementPriority(unit.getTile(), unit) < 10) { // building roads is more important
             if (tryConnectingCities(unit)) return
         }
         val tileToWork = findTileToWork(unit, dangerousTiles)
