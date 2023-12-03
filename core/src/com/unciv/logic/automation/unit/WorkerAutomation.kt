@@ -132,7 +132,7 @@ class WorkerAutomation(
     fun automateConnectRoad(unit: MapUnit, tilesWhereWeWillBeCaptured: Set<Tile>){
         if (bestRoadAvailable == RoadStatus.None) return
 
-        val currentTile = unit.getTile()
+        var currentTile = unit.getTile()
 
         /** Reset side effects from automation, return worker to non-automated state*/
         fun stopAndCleanAutomation(){
@@ -170,7 +170,7 @@ class WorkerAutomation(
             val astar = AStar(currentTile,
                 {tile: Tile -> tile.isLand && !tile.isImpassible() && unit.civ.hasExplored(tile) && (tile.getOwner() == unit.civ || tile.getOwner() == null)},
                 {from: Tile, to: Tile -> getMovementCost(from, to)},
-                {from: Tile, to: Tile -> HexMath.getDistance(from.position, to.position).toFloat()}) // Euclidean distance is admissable
+                {from: Tile, to: Tile -> 0f}) // TODO: Fix HexMath
 
             while (true) {
                 if (astar.hasEnded()) {
@@ -203,33 +203,36 @@ class WorkerAutomation(
             return
         }
 
-        // TODO: We should upgrade road if possible
-        if (unit.currentMovement > 0){
-            // Work on the current tile if it does not have a road, otherwise move to the next tile in the list
-            if (currentTile.improvementInProgress != bestRoadAvailable.name && currentTile.roadStatus != bestRoadAvailable) {
-                val improvement = bestRoadAvailable.improvement(ruleSet)!!
-                currentTile.startWorkingOnImprovement(improvement, civInfo, unit)
-                return
-            }
-
+        if (unit.currentMovement > 0) {
             // The tile has a road or the worker is on a city, try to move to the next tile
-            if (currentTile.roadStatus == bestRoadAvailable || currentTile.isCityCenter()){
-                when{
+            if (currentTile.roadStatus == bestRoadAvailable || currentTile.isCityCenter()) {
+                when {
                     currTileIndex < pathToDest.size - 1 -> { // Try to move to the next tile in the path
                         val nextTile = unit.civ.gameInfo.tileMap[pathToDest[currTileIndex + 1]]
-                        if(unit.movement.canMoveTo(nextTile) && unit.movement.canReach(nextTile)){
+                        if (unit.movement.canMoveTo(nextTile) && unit.movement.canReach(nextTile)) {
                             unit.movement.moveToTile(nextTile)
-                            return
-                        }else{ // Worker can't move to the next tile.
+                            currentTile = unit.getTile()
+                        } else { // Worker can't move to the next tile.
                             stopAndCleanAutomation()
                             return
                         }
                     }
+
                     currTileIndex == pathToDest.size - 1 -> { // The last tile in the path is unbuildable or has a road. We are finished.
                         stopAndCleanAutomation()
                         return
                     }
                 }
+            }
+        }
+
+        // We need to check current movement again after we've (potentially) moved
+        if (unit.currentMovement > 0) {
+            // Work on the current tile if it does not have a road, otherwise move to the next tile in the list
+            if (currentTile.improvementInProgress != bestRoadAvailable.name && currentTile.roadStatus != bestRoadAvailable) {
+                val improvement = bestRoadAvailable.improvement(ruleSet)!!
+                currentTile.startWorkingOnImprovement(improvement, civInfo, unit)
+                return
             }
         }
     }
