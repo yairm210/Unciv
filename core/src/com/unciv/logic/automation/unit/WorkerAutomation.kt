@@ -228,11 +228,10 @@ class WorkerAutomation(
                         var nextTile: Tile? = null
 
                         // Create a new list with tiles where the index is greater than currTileIndex
-                        val futureTiles = pathToDest.filterIndexed { index, _ ->
-                            index > currTileIndex
-                        }.map{tilePos ->
-                            tileMap[tilePos]
-                        }
+                        val futureTiles = unit.automatedRoadConnectionPath!!.asSequence()
+                            .dropWhile { it != unit.currentTile.position }
+                            .drop(1)
+                            .map { tileMap[it] }
 
                        for (futureTile in futureTiles){ // Find the furthest tile we can reach in this turn, move to, and does not have a road
                            if (unit.movement.canReachInCurrentTurn(futureTile) && unit.movement.canMoveTo(futureTile)) { // We can at least move to this tile
@@ -246,7 +245,7 @@ class WorkerAutomation(
                         unit.movement.moveToTile(nextTile!!)
                         currentTile = unit.getTile()
                     }
-                    currTileIndex == pathToDest.size - 1 -> { // The last tile in the path is unbuildable or has a road. We are finished.
+                    currTileIndex == pathToDest.size - 1 -> { // The last tile in the path is unbuildable or has a road. // TODO: We are finished notification
                         stopAndCleanAutomation()
                         return
                     }

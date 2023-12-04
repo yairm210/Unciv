@@ -39,6 +39,7 @@ object UnitActions {
         UnitActionType.SetUp to UnitActionsFromUniques::getSetupActions,
         UnitActionType.FoundCity to UnitActionsFromUniques::getFoundCityActions,
         UnitActionType.ConstructImprovement to UnitActionsFromUniques::getBuildingImprovementsActions,
+        UnitActionType.ConnectRoad to UnitActionsFromUniques::getConnectRoadActions,
         UnitActionType.Repair to UnitActionsFromUniques::getRepairActions,
         UnitActionType.HurryResearch to UnitActionsGreatPerson::getHurryResearchActions,
         UnitActionType.HurryWonder to UnitActionsGreatPerson::getHurryWonderActions,
@@ -58,7 +59,6 @@ object UnitActions {
         // Determined by unit uniques
         UnitActionsFromUniques.addCreateWaterImprovements(unit, actionList)
         actionList += UnitActionsFromUniques.getImprovementConstructionActions(unit, tile)
-        UnitActionsFromUniques.addConnectRoadAction(unit, actionList)
         UnitActionsReligion.addSpreadReligionActions(unit, actionList)
         UnitActionsReligion.addRemoveHeresyActions(unit, actionList)
 

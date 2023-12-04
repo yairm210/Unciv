@@ -274,23 +274,21 @@ object UnitActionsFromUniques {
         }
         return finalActions
     }
-    private fun getConnectRoadAction(unit: MapUnit): UnitAction{
+
+    fun getConnectRoadActions(unit: MapUnit, tile: Tile) = sequence {
+        if (!unit.hasUnique(UniqueType.BuildImprovements)) return@sequence
+        if (unit.civ.tech.getBestRoadAvailable() == RoadStatus.None) return@sequence
         val worldScreen = GUI.getWorldScreen()
-        return UnitAction(UnitActionType.ConnectRoad,
-           isCurrentAction = unit.isAutomatingRoadConnection(),
-           action = {
-               worldScreen.bottomUnitTable.selectedUnitIsConnectingRoad =
-                   !worldScreen.bottomUnitTable.selectedUnitIsConnectingRoad
-               worldScreen.shouldUpdate = true
-
-           }
-       )
-    }
-
-    fun addConnectRoadAction(unit: MapUnit, actionList: ArrayList<UnitAction>){
-        if(!unit.hasUnique(UniqueType.BuildImprovements) || unit.civ.tech.getBestRoadAvailable() == RoadStatus.None) return
-        actionList += getConnectRoadAction(unit)
-    }
+        yield(UnitAction(UnitActionType.ConnectRoad,
+               isCurrentAction = unit.isAutomatingRoadConnection(),
+               action = {
+                   worldScreen.bottomUnitTable.selectedUnitIsConnectingRoad =
+                       !worldScreen.bottomUnitTable.selectedUnitIsConnectingRoad
+                   worldScreen.shouldUpdate = true
+               }
+           )
+        )
+    }.asIterable()
 
     fun getTransformActions(
         unit: MapUnit, tile: Tile
