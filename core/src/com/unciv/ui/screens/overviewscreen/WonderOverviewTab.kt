@@ -12,8 +12,9 @@ import com.unciv.models.ruleset.QuestName
 import com.unciv.models.ruleset.tech.Era
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.tr
-import com.unciv.ui.components.input.onClick
+import com.unciv.ui.components.extensions.equalizeColumns
 import com.unciv.ui.components.extensions.toLabel
+import com.unciv.ui.components.input.onClick
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.civilopediascreen.CivilopediaCategories
 import com.unciv.ui.screens.civilopediascreen.CivilopediaScreen
@@ -177,7 +178,7 @@ class WonderInfo {
         val wonderEraMap: Map<String, Era?> =
                 ruleSet.buildings.values.asSequence()
                     .filter { it.isWonder }
-                    .associate { it.name to ruleSet.eras[ruleSet.technologies[it.requiredTech]?.era()] }
+                    .associate { it.name to it.era(ruleSet) }
 
         // Maps all World Wonders by their position in sort order to their name
         val allWonderMap: Map<Int, String> =

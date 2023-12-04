@@ -11,7 +11,7 @@ private const val PREVIEW_SUFFIX = "_Preview"
 /**
  * Transition helper that emulates file storage behavior using the API v2
  */
-class ApiV2FileStorageEmulator(private val api: ApiV2): FileStorage {
+class ApiV2FileStorageEmulator(private val api: ApiV2) : FileStorage {
 
     private suspend fun saveGameData(gameId: String, data: String) {
         val uuid = UUID.fromString(gameId.lowercase())

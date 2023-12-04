@@ -40,15 +40,15 @@ class CivInfoTransientCache(val civInfo: Civilization) {
     @Transient
     var citiesConnectedToCapitalToMediums = mapOf<City, Set<String>>()
 
-    fun setTransients(){
+    fun setTransients() {
         val ruleset = civInfo.gameInfo.ruleset
 
         for (resource in ruleset.tileResources.values.asSequence().filter { it.resourceType == ResourceType.Strategic }.map { it.name }) {
-            val applicableBuildings = ruleset.buildings.values.filter { it.requiresResource(resource) && civInfo.getEquivalentBuilding(it) == it }
-            val applicableUnits = ruleset.units.values.filter { it.requiresResource(resource) && civInfo.getEquivalentUnit(it) == it }
+            val applicableBuildings = ruleset.buildings.values.filter { it.requiresResource(resource, StateForConditionals.IgnoreConditionals) && civInfo.getEquivalentBuilding(it) == it }
+            val applicableUnits = ruleset.units.values.filter { it.requiresResource(resource, StateForConditionals.IgnoreConditionals) && civInfo.getEquivalentUnit(it) == it }
 
-            val lastEraForBuilding = applicableBuildings.maxOfOrNull { ruleset.eras[ruleset.technologies[it.requiredTech]?.era()]?.eraNumber ?: 0 }
-            val lastEraForUnit = applicableUnits.maxOfOrNull { ruleset.eras[ruleset.technologies[it.requiredTech]?.era()]?.eraNumber ?: 0 }
+            val lastEraForBuilding = applicableBuildings.maxOfOrNull { it.era(ruleset)?.eraNumber ?: 0 }
+            val lastEraForUnit = applicableUnits.maxOfOrNull { it.era(ruleset)?.eraNumber ?: 0 }
 
             if (lastEraForBuilding != null)
                 lastEraResourceUsedForBuilding[resource] = lastEraForBuilding
@@ -316,7 +316,7 @@ class CivInfoTransientCache(val civInfo: Civilization) {
 
         for (unit in civInfo.units.getCivUnits())
             newDetailedCivResources.subtractResourceRequirements(
-                unit.baseUnit.getResourceRequirementsPerTurn(), civInfo.gameInfo.ruleset, "Units")
+                unit.getResourceRequirementsPerTurn(), civInfo.gameInfo.ruleset, "Units")
 
         newDetailedCivResources.removeAll { it.resource.hasUnique(UniqueType.CityResource) }
 

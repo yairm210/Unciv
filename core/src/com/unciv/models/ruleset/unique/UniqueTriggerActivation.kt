@@ -9,8 +9,11 @@ import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.LocationAction
 import com.unciv.logic.civilization.MapUnitAction
 import com.unciv.logic.civilization.MayaLongCountAction
+import com.unciv.logic.civilization.NotificationAction
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
+import com.unciv.logic.civilization.PolicyAction
+import com.unciv.logic.civilization.TechAction
 import com.unciv.logic.civilization.managers.ReligionState
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
@@ -21,6 +24,7 @@ import com.unciv.models.stats.Stats
 import com.unciv.models.translations.fillPlaceholders
 import com.unciv.models.translations.hasPlaceholderParameters
 import com.unciv.ui.components.MayaCalendar
+import com.unciv.ui.components.extensions.addToMapOfSets
 import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionsUpgrade
 import kotlin.math.roundToInt
 import kotlin.random.Random
@@ -61,7 +65,7 @@ object UniqueTriggerActivation {
 
                 val limit = unit.getMatchingUniques(UniqueType.MaxNumberBuildable)
                     .map { it.params[0].toInt() }.minOrNull()
-                if (limit!=null && limit <= civInfo.units.getCivUnits().count { it.name==unitName })
+                if (limit != null && limit <= civInfo.units.getCivUnits().count { it.name == unitName })
                     return false
 
                 val placedUnit = if (city != null || tile == null)
@@ -74,7 +78,7 @@ object UniqueTriggerActivation {
 
                 civInfo.addNotification(
                     notificationText,
-                    MapUnitAction(placedUnit.getTile().position),
+                    MapUnitAction(placedUnit),
                     NotificationCategory.Units,
                     placedUnit.name
                 )
@@ -88,10 +92,13 @@ object UniqueTriggerActivation {
 
                 val limit = unit.getMatchingUniques(UniqueType.MaxNumberBuildable)
                     .map { it.params[0].toInt() }.minOrNull()
+                val unitCount = civInfo.units.getCivUnits().count { it.name == unitName }
                 val amountFromTriggerable = unique.params[0].toInt()
-                val actualAmount =
-                        if (limit==null) amountFromTriggerable
-                        else civInfo.units.getCivUnits().count { it.name==unitName } - limit
+                val actualAmount = when {
+                    limit == null -> amountFromTriggerable
+                    amountFromTriggerable + unitCount > limit -> limit - unitCount
+                    else -> amountFromTriggerable
+                }
 
                 if (actualAmount <= 0) return false
 
@@ -139,7 +146,7 @@ object UniqueTriggerActivation {
                     civInfo.addNotification(
                         notificationText,
                         sequence {
-                            yield(MapUnitAction(placedUnit.getTile().position))
+                            yield(MapUnitAction(placedUnit))
                             yieldAll(LocationAction(tile?.position))
                         },
                         NotificationCategory.Units,
@@ -185,7 +192,7 @@ object UniqueTriggerActivation {
                     "You gain the [$policyName] Policy")
                     ?: return true
 
-                civInfo.addNotification(notificationText, NotificationCategory.General, NotificationIcon.Culture)
+                civInfo.addNotification(notificationText, PolicyAction(policyName), NotificationCategory.General, NotificationIcon.Culture)
                 return true
             }
             UniqueType.OneTimeEnterGoldenAge, UniqueType.OneTimeEnterGoldenAgeTurns -> {
@@ -205,7 +212,7 @@ object UniqueTriggerActivation {
                 val greatPeople = civInfo.greatPeople.getGreatPeople()
                 if (unique.type == UniqueType.MayanGainGreatPerson && civInfo.greatPeople.longCountGPPool.isEmpty())
                     civInfo.greatPeople.longCountGPPool = greatPeople.map { it.name }.toHashSet()
-                if (civInfo.isHuman()) {
+                if (civInfo.isHuman() && !UncivGame.Current.settings.autoPlay.isAutoPlayingAndFullAI()) {
                     civInfo.greatPeople.freeGreatPeople++
                     // Anyone an idea for a good icon?
                     if (unique.type == UniqueType.MayanGainGreatPerson) {
@@ -307,7 +314,11 @@ object UniqueTriggerActivation {
                             notification.fillPlaceholders(*(techsToResearch.map { it.name }
                                 .toTypedArray()))
                         else notification
-                    civInfo.addNotification(notificationText, LocationAction(tile?.position),
+                    // Notification click for first tech only, supporting multiple adds little value.
+                    // Relies on RulesetValidator catching <= 0!
+                    val notificationActions: Sequence<NotificationAction> =
+                        LocationAction(tile?.position) + TechAction(techsToResearch.first().name)
+                    civInfo.addNotification(notificationText, notificationActions,
                         NotificationCategory.General, NotificationIcon.Science)
                 }
 
@@ -322,7 +333,7 @@ object UniqueTriggerActivation {
                     "You have discovered the secrets of [$techName]")
                     ?: return true
 
-                civInfo.addNotification(notificationText, NotificationCategory.General, NotificationIcon.Science)
+                civInfo.addNotification(notificationText, TechAction(techName), NotificationCategory.General, NotificationIcon.Science)
                 return true
             }
 
@@ -339,11 +350,11 @@ object UniqueTriggerActivation {
             }
 
             UniqueType.OneTimeProvideResources -> {
-                val amount = unique.params[0].toInt()
                 val resourceName = unique.params[1]
                 val resource = ruleSet.tileResources[resourceName] ?: return false
                 if (!resource.isStockpiled()) return false
 
+                val amount = unique.params[0].toInt()
                 civInfo.resourceStockpiles.add(resourceName, amount)
 
                 val notificationText = getNotificationText(notification, triggerNotificationText,
@@ -355,11 +366,11 @@ object UniqueTriggerActivation {
             }
 
             UniqueType.OneTimeConsumeResources -> {
-                val amount = unique.params[0].toInt()
                 val resourceName = unique.params[1]
                 val resource = ruleSet.tileResources[resourceName] ?: return false
                 if (!resource.isStockpiled()) return false
 
+                val amount = unique.params[0].toInt()
                 civInfo.resourceStockpiles.add(resourceName, -amount)
 
                 val notificationText = getNotificationText(notification, triggerNotificationText,
@@ -440,6 +451,29 @@ object UniqueTriggerActivation {
                 ) return false
 
                 val statAmount = unique.params[0].toInt()
+                val stats = Stats().add(stat, statAmount.toFloat())
+                civInfo.addStats(stats)
+
+                val filledNotification = if(notification!=null && notification.hasPlaceholderParameters())
+                    notification.fillPlaceholders(statAmount.toString())
+                else notification
+
+                val notificationText = getNotificationText(filledNotification, triggerNotificationText,
+                    "Gained [${stats.toStringForNotifications()}]")
+                    ?: return true
+
+                civInfo.addNotification(notificationText, LocationAction(tile?.position), NotificationCategory.General, stat.notificationIcon)
+                return true
+            }
+
+            UniqueType.OneTimeGainStatSpeed -> {
+                val stat = Stat.safeValueOf(unique.params[1]) ?: return false
+
+                if (stat !in Stat.statsWithCivWideField
+                    || unique.params[0].toIntOrNull() == null
+                ) return false
+
+                val statAmount = (unique.params[0].toInt() * (civInfo.gameInfo.speed.statCostModifiers[stat]!!)).roundToInt()
                 val stats = Stats().add(stat, statAmount.toFloat())
                 civInfo.addStats(stats)
 
@@ -638,9 +672,65 @@ object UniqueTriggerActivation {
                 return true
             }
 
-            UniqueType.FreeStatBuildings, UniqueType.FreeSpecificBuildings -> {
-                civInfo.civConstructions.tryAddFreeBuildings()
-                return true // not fully correct
+            UniqueType.GainFreeBuildings -> {
+                val freeBuilding = civInfo.getEquivalentBuilding(unique.params[0])
+                val applicableCities =
+                    if (unique.params[1] == "in this city") sequenceOf(city!!)
+                    else civInfo.cities.asSequence().filter { it.matchesFilter(unique.params[1]) }
+                for (applicableCity in applicableCities) {
+                    applicableCity.cityConstructions.freeBuildingsProvidedFromThisCity.addToMapOfSets(applicableCity.id, freeBuilding.name)
+
+                    if (applicableCity.cityConstructions.containsBuildingOrEquivalent(freeBuilding.name)) continue
+                    applicableCity.cityConstructions.constructionComplete(freeBuilding)
+                }
+                return true
+            }
+            UniqueType.FreeStatBuildings -> {
+                val stat = Stat.safeValueOf(unique.params[0]) ?: return false
+                civInfo.civConstructions.addFreeStatBuildings(stat, unique.params[1].toInt())
+                return true
+            }
+            UniqueType.FreeSpecificBuildings ->{
+                val building = ruleSet.buildings[unique.params[0]] ?: return false
+                civInfo.civConstructions.addFreeBuildings(building, unique.params[1].toInt())
+                return true
+            }
+
+            UniqueType.RemoveBuilding -> {
+
+                val applicableCities = civInfo.cities.asSequence().filter {
+                        it.matchesFilter(unique.params[1])
+                    }
+
+                for (applicableCity in applicableCities) {
+                    val buildingsToRemove = applicableCity.cityConstructions.getBuiltBuildings().filter {
+                        it.matchesFilter(unique.params[0])
+                    }.toSet()
+
+                    applicableCity.cityConstructions.removeBuildings(buildingsToRemove)
+                }
+
+                return true
+            }
+
+            UniqueType.SellBuilding -> {
+
+                val applicableCities = civInfo.cities.asSequence().filter {
+                    it.matchesFilter(unique.params[1])
+                }
+
+                for (applicableCity in applicableCities) {
+                    val buildingsToSell = applicableCity.cityConstructions.getBuiltBuildings().filter {
+                        it.matchesFilter(unique.params[0]) && it.isSellable()
+                    }
+
+                    for (building in buildingsToSell) {
+                        applicableCity.sellBuilding(building)
+                    }
+
+                }
+
+                return true
             }
 
             else -> {}

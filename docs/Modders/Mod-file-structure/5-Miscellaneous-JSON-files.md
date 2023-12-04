@@ -45,7 +45,7 @@ Each era can have the following attributes:
 | Attribute | Type | Optional | Notes                                                                                                                                                                                                                                              |
 | --------- | ---- | -------- |----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | name | String | required | Name of the era                                                                                                                                                                                                                                    |
-| researchAgreementCost | Integer (≥0) | defaults to 300 | Cost of research agreements were the most technologically advanced civ is in this era                                                                                                                                                              |
+| researchAgreementCost | Integer (≥0) | defaults to 300 | Cost of research agreements when the most technologically advanced civ is in this era                                                                                                                                                              |
 | iconRGB | List of 3 Integers | defaults to [255, 255, 255] | RGB color that icons for technologies of this era should have in the Tech screen                                                                                                                                                                   |
 | unitBaseBuyCost | Integer (≥0) | defaults to 200 | Base cost of buying units with Faith, Food, Science or Culture when no other cost is provided                                                                                                                                                      |
 | startingSettlerCount | Integer (≥0) | defaults to 1 | Amount of settler units that should be spawned when starting a game in this era (setting this to zero is discouraged [^1])                                                                                                                         |
@@ -214,9 +214,6 @@ Defines uniques that apply globally. e.g. Vanilla rulesets define the effects of
 Only the `uniques` field is used, but a name must still be set (the Ruleset validator might display it).
 When extension rulesets define GlobalUniques, all uniques are merged. At the moment there is no way to change/remove uniques set by a base mod.
 
-Note: Mods can use "arbitrary" Uniques as purely filtering uniques. They are not "Typed" by Unciv code and thus have no actual effect implementation - except by being filterable elsewhere.
-In the near future, the ruleset validator will show warnings for all these, unless they are also included here, as validation that they are intentional (and - they **must** have **no** placeholders or conditionals).
-
 ## Tutorials.json
 
 [link to original](https://github.com/yairm210/Unciv/tree/master/android/assets/jsons/Tutorials.json)
@@ -296,21 +293,21 @@ An example of the format is:
 
 List of attributes - note not all combinations are valid:
 
-| Attribute | Type | Description |
-| --------- | ---- | ----------- |
-|`text`|String|Text to display.|
-|`link`|String|Create link and icon, format: Category/Name or _external_ link ('http://','https://','mailto:').|
-|`icon`|String|Show icon without linking, format: Category/Name.|
-|`extraImage`|String|Display an Image instead of text. Can be a path found in a texture atlas or or the name of a png or jpg in the ExtraImages folder.|
-|`imageSize`|Float|Width in world units of the [extraImage], height is calculated preserving aspect ratio. Defaults to available width.|
-|`header`|Integer|Header level. 1 means double text size and decreases from there.|
-|`size`|Integer|Text size, default is 18. Use `size` or `header` but not both.|
-|`indent`|Integer|Indent level. 0 means text will follow icons, 1 aligns to the right of all icons, each further step is 30 units.|
-|`padding`|Float|Vertical padding between rows, defaults to 5 units.|
-|`color`|String|Sets text color, accepts names or 6/3-digit web colors (e.g. #FFA040).|
-|`separator`|Boolean|Renders a separator line instead of text. Can be combined only with `color` and `size` (line width, default 2).|
-|`starred`|Boolean|Decorates text with a star icon - if set, it receives the `color` instead of the text.|
-|`centered`|Boolean|Centers the line (and turns off automatic wrap).|
+| Attribute    | Type    | Description                                                                                                                         |
+|--------------|---------|-------------------------------------------------------------------------------------------------------------------------------------|
+| `text`       | String  | Text to display.                                                                                                                    |
+| `link`       | String  | Create link and icon, format: Category/Name or _external_ link ('http://','https://','mailto:').                                    |
+| `icon`       | String  | Show icon without linking, format: Category/Name.                                                                                   |
+| `extraImage` | String  | Display an Image instead of text. Can be a path found in a texture atlas or or the name of a png or jpg in the ExtraImages folder.  |
+| `imageSize`  | Float   | Size in world units of the [extraImage], the smaller coordinate is calculated preserving aspect ratio. Defaults to available width. |
+| `header`     | Integer | Header level. 1 means double text size and decreases from there.                                                                    |
+| `size`       | Integer | Text size, default is 18. Use `size` or `header` but not both.                                                                      |
+| `indent`     | Integer | Indent level. 0 means text will follow icons, 1 aligns to the right of all icons, each further step is 30 units.                    |
+| `padding`    | Float   | Vertical padding between rows, defaults to 5 units.                                                                                 |
+| `color`      | String  | Sets text color, accepts names or 6/3-digit web colors (e.g. #FFA040).                                                              |
+| `separator`  | Boolean | Renders a separator line instead of text. Can be combined only with `color` and `size` (line width, default 2).                     |
+| `starred`    | Boolean | Decorates text with a star icon - if set, it receives the `color` instead of the text.                                              |
+| `centered`   | Boolean | Centers the line (and turns off automatic wrap). For an `extraImage`, turns on crop-to-content to equalize transparent borders.     |
 
 The lines from json will 'surround' the automatically generated lines such that the latter are inserted just above the first json line carrying a link, if any. If no json lines have links, they will be inserted between the automatic title and the automatic info. This method may, however, change in the future.
 

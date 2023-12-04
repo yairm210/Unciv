@@ -1,5 +1,6 @@
 package com.unciv.models.ruleset.unit
 
+import com.unciv.logic.MultiFilter
 import com.unciv.logic.city.City
 import com.unciv.logic.city.CityConstructions
 import com.unciv.logic.civilization.Civilization
@@ -15,7 +16,6 @@ import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
-import com.unciv.ui.components.extensions.filterAndLogic
 import com.unciv.ui.components.extensions.getNeedMoreAmountString
 import com.unciv.ui.components.extensions.toPercent
 import com.unciv.ui.objectdescriptions.BaseUnitDescriptions
@@ -39,14 +39,17 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
     var unitType: String = ""
 
     val type by lazy { ruleset.unitTypes[unitType]!! }
+    @Deprecated("The functionality provided by the requiredTech field is provided by the OnlyAvailableWhen unique.")
     override var requiredTech: String? = null
-    private var requiredResource: String? = null
+    var requiredResource: String? = null
 
     override fun getUniqueTarget() = UniqueTarget.Unit
 
     var replacementTextForUniques = ""
     var promotions = HashSet<String>()
     var obsoleteTech: String? = null
+    fun techsThatObsoleteThis(): Sequence<String> = if (obsoleteTech == null) sequenceOf() else sequenceOf(obsoleteTech!!)
+    fun isObsoletedBy(techName: String): Boolean = techsThatObsoleteThis().contains(techName)
     var upgradesTo: String? = null
     var replaces: String? = null
     var uniqueTo: String? = null
@@ -61,6 +64,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
     lateinit var ruleset: Ruleset
 
 
+    /** Generate short description as comma-separated string for Technology description "Units enabled" and GreatPersonPickerScreen */
     fun getShortDescription() = BaseUnitDescriptions.getShortDescription(this)
 
     /** Generate description as multi-line string for CityScreen addSelectedConstructionTable
@@ -154,10 +158,12 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         city: City? = null,
         additionalResources: Counter<String> = Counter.ZERO
     ): Sequence<RejectionReason> = sequence {
-        if (requiredTech != null && !civ.tech.isResearched(requiredTech!!))
-            yield(RejectionReasonType.RequiresTech.toInstance("$requiredTech not researched"))
-        if (obsoleteTech != null && civ.tech.isResearched(obsoleteTech!!))
-            yield(RejectionReasonType.Obsoleted.toInstance("Obsolete by $obsoleteTech"))
+        for (requiredTech: String in requiredTechs())
+            if (!civ.tech.isResearched(requiredTech))
+                yield(RejectionReasonType.RequiresTech.toInstance("$requiredTech not researched"))
+        for (obsoleteTech: String in techsThatObsoleteThis())
+            if (civ.tech.isResearched(obsoleteTech))
+                yield(RejectionReasonType.Obsoleted.toInstance("Obsolete by $obsoleteTech"))
 
         if (uniqueTo != null && uniqueTo != civ.civName)
             yield(RejectionReasonType.UniqueToOtherNation.toInstance("Unique to $uniqueTo"))
@@ -182,7 +188,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
 
         if (!civ.isBarbarian()) { // Barbarians don't need resources
             val civResources = Counter(civ.getCivResourcesByName()) + additionalResources
-            for ((resource, requiredAmount) in getResourceRequirementsPerTurn()) {
+            for ((resource, requiredAmount) in getResourceRequirementsPerTurn(StateForConditionals(civ))) {
                 val availableAmount = civResources[resource]
                 if (availableAmount < requiredAmount) {
                     val message = resource.getNeedMoreAmountString(requiredAmount - availableAmount)
@@ -215,8 +221,6 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         //movement penalty
         if (boughtWith != null && !civInfo.gameInfo.gameParameters.godMode && !unit.hasUnique(UniqueType.MoveImmediatelyOnceBought))
             unit.currentMovement = 0f
-
-        if (this.isCivilian()) return true // tiny optimization makes save files a few bytes smaller
 
         addConstructionBonuses(unit, cityConstructions)
 
@@ -265,9 +269,11 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
 
     /** Implements [UniqueParameterType.BaseUnitFilter][com.unciv.models.ruleset.unique.UniqueParameterType.BaseUnitFilter] */
     fun matchesFilter(filter: String): Boolean {
-        return filter.filterAndLogic { matchesFilter(it) } // multiple types at once - AND logic. Looks like:"{Military} {Land}"
-            ?: when (filter) {
+        return MultiFilter.multiFilter(filter, ::matchesSingleFilter)
+    }
 
+    fun matchesSingleFilter(filter: String): Boolean {
+        return when (filter) {
             unitType -> true
             name -> true
             replaces -> true
@@ -288,9 +294,10 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
 
             else -> {
                 if (type.matchesFilter(filter)) return true
-                if (requiredTech != null && ruleset.technologies[requiredTech]?.matchesFilter(filter)==true) return true
+                for (requiredTech: String in requiredTechs())
+                    if (ruleset.technologies[requiredTech]?.matchesFilter(filter) == true) return true
                 if (
-                    // Uniques using these kinds of filters should be deprecated and replaced with adjective-only parameters
+                // Uniques using these kinds of filters should be deprecated and replaced with adjective-only parameters
                     filter.endsWith(" units")
                     // "military units" --> "Military", using invariant locale
                     && matchesFilter(filter.removeSuffix(" units").lowercase().replaceFirstChar { it.uppercaseChar() })
@@ -312,17 +319,21 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
     fun movesLikeAirUnits() = type.getMovementType() == UnitMovementType.Air
 
     /** Returns resource requirements from both uniques and requiredResource field */
-    override fun getResourceRequirementsPerTurn(): Counter<String> = resourceRequirementsInternal
-
-    private val resourceRequirementsInternal: Counter<String> by lazy {
+    override fun getResourceRequirementsPerTurn(stateForConditionals: StateForConditionals?): Counter<String> {
         val resourceRequirements = Counter<String>()
         if (requiredResource != null) resourceRequirements[requiredResource!!] = 1
-        for (unique in getMatchingUniques(UniqueType.ConsumesResources))
-            resourceRequirements[unique.params[1]] = unique.params[0].toInt()
-        resourceRequirements
+        for (unique in getMatchingUniques(UniqueType.ConsumesResources, stateForConditionals))
+            resourceRequirements[unique.params[1]] += unique.params[0].toInt()
+        return resourceRequirements
     }
 
-    override fun requiresResource(resource: String) = getResourceRequirementsPerTurn().containsKey(resource)
+    override fun requiresResource(resource: String, stateForConditionals: StateForConditionals?): Boolean {
+        if (getResourceRequirementsPerTurn(stateForConditionals).contains(resource)) return true
+        for (unique in getMatchingUniques(UniqueType.CostsResources, stateForConditionals)) {
+            if (unique.params[1] == resource) return true
+        }
+        return false
+    }
 
     fun isRanged() = rangedStrength > 0
     fun isMelee() = !isRanged() && strength > 0

@@ -22,14 +22,14 @@ import com.unciv.logic.trade.TradeType.WarDeclaration
 import com.unciv.logic.trade.TradeType.values
 import com.unciv.models.ruleset.tile.ResourceSupplyList
 import com.unciv.models.translations.tr
-import com.unciv.ui.components.ExpanderTab
 import com.unciv.ui.components.extensions.disable
 import com.unciv.ui.components.input.onClick
+import com.unciv.ui.components.widgets.ExpanderTab
 import com.unciv.ui.images.IconTextButton
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.basescreen.BaseScreen
 import kotlin.math.min
-import com.unciv.ui.components.AutoScrollPane as ScrollPane
+import com.unciv.ui.components.widgets.AutoScrollPane as ScrollPane
 
 /**
  * Widget for one fourth of an [OfferColumnsTable] - instantiated for ours/theirs × available/traded
@@ -44,6 +44,11 @@ class OffersListScroll(
 
 
     private val expanderTabs = HashMap<TradeType, ExpanderTab>()
+
+    init {
+        fadeScrollBars=false
+        setScrollbarsVisible(true)
+    }
 
     /**
      * @param offersToDisplay The offers which should be displayed as buttons
@@ -61,7 +66,7 @@ class OffersListScroll(
         expanderTabs.clear()
 
         for (offerType in values()) {
-            val labelName = when(offerType){
+            val labelName = when(offerType) {
                 Gold, Gold_Per_Turn, Treaty, Agreement, Introduction -> ""
                 Luxury_Resource -> "Luxury resources"
                 Strategic_Resource -> "Strategic resources"
@@ -115,7 +120,7 @@ class OffersListScroll(
                 if (offer.isTradable() && offer.name != Constants.peaceTreaty // can't disable peace treaty!
                     && (offer.name != Constants.researchAgreement // If we have a research agreement make sure the total gold of both Civs is higher than the total cost
                         // If both civs combined can pay for the research agreement, don't disable it. One can offer the other it's gold.
-                        || (ourCiv.gold + theirCiv.gold > ourCiv.diplomacyFunctions.getResearchAgreementCost(theirCiv) * 2))) { 
+                        || (ourCiv.gold + theirCiv.gold > ourCiv.diplomacyFunctions.getResearchAgreementCost(theirCiv) * 2))) {
 
                     // highlight unique suggestions
                     if (offerType in listOf(Luxury_Resource, Strategic_Resource)

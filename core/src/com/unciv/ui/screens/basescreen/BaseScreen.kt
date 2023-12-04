@@ -18,8 +18,8 @@ import com.badlogic.gdx.utils.viewport.ExtendViewport
 import com.unciv.UncivGame
 import com.unciv.models.TutorialTrigger
 import com.unciv.models.skins.SkinStrings
-import com.unciv.ui.components.Fonts
 import com.unciv.ui.components.extensions.isNarrowerThan4to3
+import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.components.input.DispatcherVetoer
 import com.unciv.ui.components.input.KeyShortcutDispatcher
 import com.unciv.ui.components.input.KeyShortcutDispatcherVeto
@@ -174,8 +174,8 @@ abstract class BaseScreen : Screen {
     /** @return `true` if the screen is narrower than 4:3 landscape */
     fun isNarrowerThan4to3() = stage.isNarrowerThan4to3()
 
-    open fun openOptionsPopup(startingPage: Int = OptionsPopup.defaultPage, onClose: () -> Unit = {}) {
-        OptionsPopup(this, startingPage, onClose).open(force = true)
+    open fun openOptionsPopup(startingPage: Int = OptionsPopup.defaultPage, withDebug: Boolean = false, onClose: () -> Unit = {}) {
+        OptionsPopup(this, startingPage, withDebug, onClose).open(force = true)
     }
 }
 

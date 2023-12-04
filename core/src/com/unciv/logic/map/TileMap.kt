@@ -15,6 +15,8 @@ import com.unciv.models.ruleset.tile.TerrainType
 import com.unciv.models.ruleset.unique.UniqueMap
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
+import com.unciv.ui.components.extensions.addToMapOfSets
+import com.unciv.ui.components.extensions.contains
 import java.lang.Integer.max
 import java.util.concurrent.ConcurrentHashMap
 import kotlin.math.abs
@@ -92,7 +94,7 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
         get() = tileList
 
     @Transient
-    val startingLocationsByNation = HashMap<String,HashSet<Tile>>()
+    val startingLocationsByNation = HashMap<String, HashSet<Tile>>()
 
     @Transient
     /** Continent ID to Continent size */
@@ -405,13 +407,6 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
         return viewableTiles.filter { it.isVisible }.map { it.tile }
     }
 
-    /** Strips all units from [TileMap]
-     * @return stripped [clone] of [TileMap]
-     */
-    fun stripAllUnits(): TileMap {
-        return clone().apply { tileList.forEach { it.stripUnits() } }
-    }
-
     /** Build a list of incompatibilities of a map with a ruleset for the new game loader
      *
      *  Is run before setTransients, so make do without startingLocationsByNation
@@ -592,7 +587,7 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
         // And update civ stats, since the new unit changes both unit upkeep and resource consumption
         civInfo.updateStatsForNextTurn()
 
-        if (unit.baseUnit.getResourceRequirementsPerTurn().isNotEmpty())
+        if (unit.getResourceRequirementsPerTurn().isNotEmpty())
             civInfo.cache.updateCivResources()
 
         return unit
@@ -646,8 +641,7 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
             return translateStartingLocationsFromMap()
         startingLocationsByNation.clear()
         for ((position, nationName) in startingLocations) {
-            val nationSet = startingLocationsByNation[nationName] ?: hashSetOf<Tile>().also { startingLocationsByNation[nationName] = it }
-            nationSet.add(get(position))
+            startingLocationsByNation.addToMapOfSets(nationName, get(position))
         }
     }
 
@@ -670,16 +664,15 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
     /** Adds a starting position, maintaining the transients
      * @return true if the starting position was not already stored as per [Collection]'s add */
     fun addStartingLocation(nationName: String, tile: Tile): Boolean {
-        if (startingLocationsByNation[nationName]?.contains(tile) == true) return false
+        if (startingLocationsByNation.contains(nationName, tile)) return false
         startingLocations.add(StartingLocation(tile.position, nationName))
-        val nationSet = startingLocationsByNation[nationName] ?: hashSetOf<Tile>().also { startingLocationsByNation[nationName] = it }
-        return nationSet.add(tile)
+        return startingLocationsByNation.addToMapOfSets(nationName, tile)
     }
 
     /** Removes a starting position, maintaining the transients
      * @return true if the starting position was removed as per [Collection]'s remove */
     fun removeStartingLocation(nationName: String, tile: Tile): Boolean {
-        if (startingLocationsByNation[nationName]?.contains(tile) != true) return false
+        if (startingLocationsByNation.contains(nationName, tile)) return false
         startingLocations.remove(StartingLocation(tile.position, nationName))
         return startingLocationsByNation[nationName]!!.remove(tile)
         // we do not clean up an empty startingLocationsByNation[nationName] set - not worth it

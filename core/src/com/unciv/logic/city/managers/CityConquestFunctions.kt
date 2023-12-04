@@ -14,14 +14,13 @@ import com.unciv.logic.trade.TradeLogic
 import com.unciv.logic.trade.TradeOffer
 import com.unciv.logic.trade.TradeType
 import com.unciv.models.ruleset.unique.UniqueType
-import com.unciv.utils.debug
 import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.roundToInt
 import kotlin.random.Random
 
 /** Helper class for containing 200 lines of "how to move cities between civs" */
-class CityConquestFunctions(val city: City){
+class CityConquestFunctions(val city: City) {
     private val tileBasedRandom = Random(city.getCenterTile().position.toString().hashCode())
 
     private fun getGoldForCapturingCity(conqueringCiv: Civilization): Int {
@@ -50,17 +49,8 @@ class CityConquestFunctions(val city: City){
 
     private fun removeBuildingsOnMoveToCiv(oldCiv: Civilization) {
         // Remove all buildings provided for free to this city
-        for (building in city.civ.civConstructions.getFreeBuildings(city.id)) {
+        for (building in city.civ.civConstructions.getFreeBuildingNames(city)) {
             city.cityConstructions.removeBuilding(building)
-        }
-
-        // Remove all buildings provided for free from here to other cities (e.g. CN Tower)
-        for ((cityId, buildings) in city.cityConstructions.freeBuildingsProvidedFromThisCity) {
-            val city = oldCiv.cities.firstOrNull { it.id == cityId } ?: continue
-            debug("Removing buildings %s from city %s", buildings, city.name)
-            for (building in buildings) {
-                city.cityConstructions.removeBuilding(building)
-            }
         }
         city.cityConstructions.freeBuildingsProvidedFromThisCity.clear()
 
@@ -78,7 +68,7 @@ class CityConquestFunctions(val city: City){
                         } >= unique.params[0].toInt()
                 ) {
                     // For now, just destroy in new city. Even if constructing in own cities
-                    this.city.cityConstructions.removeBuilding(building)
+                    city.cityConstructions.removeBuilding(building)
                 }
             }
         }
@@ -100,7 +90,7 @@ class CityConquestFunctions(val city: City){
 
         city.moveToCiv(receivingCiv)
 
-        Battle.destroyIfDefeated(conqueredCiv, conqueringCiv)
+        Battle.destroyIfDefeated(conqueredCiv, conqueringCiv, city.location)
 
         city.health = city.getMaxHealth() / 2 // I think that cities recover to half health when conquered?
         if (city.population.population > 1)
@@ -234,6 +224,9 @@ class CityConquestFunctions(val city: City){
         if (foundingCiv.isMajorCiv()) {
             foundingCiv.getDiplomacyManager(conqueringCiv)
                     .addModifier(DiplomaticModifiers.CapturedOurCities, respectForLiberatingOurCity)
+            val openBordersTrade = TradeLogic(foundingCiv, conqueringCiv)
+            openBordersTrade.currentTrade.ourOffers.add(TradeOffer(Constants.openBorders, TradeType.Agreement))
+            openBordersTrade.acceptTrade()
         } else {
             //Liberating a city state gives a large amount of influence, and peace
             foundingCiv.getDiplomacyManager(conqueringCiv).setInfluence(90f)

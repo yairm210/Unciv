@@ -29,7 +29,8 @@ jobs:
         run: |
           ## To test this in Windows PS:  cat .\changelog.md | wsl grep -Pzo --color '\\#{2}.3.15.7[^\\#]*?\\#{2}' | wsl head -n -2
           r=$(grep -Pzo '\#{2}.${{ github.ref_name }}[^\#]*\#' changelog.md)  # grep to get only our release
-          r=$(echo "$r" | head -n -2 | tail -n +3)
+          # We replace all quotes in the readme with single quotes, so the whatsnew directory echo doesn't crash us
+          r=$(echo "$r" | tr '"' "'" | head -n -2 | tail -n +3)
 
           ## See https://trstringer.com/github-actions-multiline-strings/
 
@@ -131,7 +132,7 @@ jobs:
           keyPassword: ${{ secrets.BUNDLE_SIGNING_KEY_PASSWORD }}
 
       - name: Upload AAB to google play
-        uses: r0adkll/upload-google-play@v1.0.15
+        uses: r0adkll/upload-google-play@v1.1.2
         continue-on-error: true
         with:
           serviceAccountJsonPlainText: ${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT_JSON  }}
@@ -139,6 +140,7 @@ jobs:
           releaseFiles: android/build/outputs/bundle/release/Unciv-release.aab
           track: production
           userFraction: 0.1
+          status: inProgress
           whatsNewDirectory: whatsNewDirectory
 
 

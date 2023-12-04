@@ -77,6 +77,7 @@ Civilopedia falls back to the icon for the Belief type - as you can see in the b
 You can enable pictures for each of the Victories, illustrating their progress. That could be a Spaceship under construction, showing the parts you've added, or cultural progress as you complete Policy branches. They will be shown on a new tab of the Victory Screen.
 
 For this, you need to create a number of images. In the following, `<>` denote names as they appear in [VictoryTypes.json](../Other/Miscellaneous-JSON-files.md#victorytypes-json), untranslated, and these file names (like any other in Unciv) are case-sensitive. All files are optional, except Background as noted:
+
 * `VictoryIllustrations/<name>/Background.png` - this determines overall dimensions, the others must not exceed its size and should ideally have identical size. Mandatory, if this file is missing, no illustrations will be shown for this Victory Type.
 * `VictoryIllustrations/<name>/Won.png` - shown if _you_ (the viewing player) won this Victory.
 * `VictoryIllustrations/<name>/Lost.png` - shown if a competitor won this Victory - or you have completed this Victory, but have won a different one before.
@@ -159,3 +160,11 @@ Legend:
 -   [^3]: According to your relation to the picked player.
 -   [^4]: Excluding City States.
 -   [^5]: Both in the alert when another player declares War on you and declaring War yourself in Diplomacy screen.
+
+## Supply Leader Voices
+
+Sound files named from a Nation name and the corresponding text message's [field name](Mod-file-structure/2-Civilization-related-JSON-files.md#nationsjson),
+placed in a mod's `voices` folder, will play whenever that message is displayed. Nation name and message name must be joined with a dot '.', for example `voices/Zulu.defeated.ogg`.
+
+Leader voice audio clips will be streamed, not cached, so they are allowed to be long - however, if another Leader voice or a city ambient sound needs to be played, they will be cut off without fade-out
+Also note that voices for City-State leaders work only for those messages a City-state can actually use: `attacked`, `defeated`, and `introduction`.

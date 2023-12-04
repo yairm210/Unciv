@@ -1,0 +1,11 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "type": "array",
+    "minLength": 3,
+    "maxLength": 3,
+    "items": {
+        "type": "integer",
+        "minimum": 0,
+        "maximum": 255
+    }
+}

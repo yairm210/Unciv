@@ -24,7 +24,6 @@ import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.nation.Nation
 import com.unciv.models.skins.SkinCache
 import com.unciv.models.tilesets.TileSetCache
-import com.unciv.ui.components.Fonts
 import com.unciv.ui.components.extensions.center
 import com.unciv.ui.components.extensions.centerX
 import com.unciv.ui.components.extensions.centerY
@@ -35,6 +34,7 @@ import com.unciv.ui.components.extensions.surroundWithCircle
 import com.unciv.ui.components.extensions.surroundWithThinCircle
 import com.unciv.ui.components.extensions.toGroup
 import com.unciv.ui.components.extensions.toLabel
+import com.unciv.ui.components.fonts.FontRulesetIcons
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.utils.debug
 import kotlin.math.atan2
@@ -62,6 +62,8 @@ object ImageGetter {
         atlases["game"] = atlas
     }
 
+    fun reloadImages() = setNewRuleset(ruleset)
+
     /** Required every time the ruleset changes, in order to load mod-specific images */
     fun setNewRuleset(ruleset: Ruleset) {
         ImageGetter.ruleset = ruleset
@@ -85,7 +87,7 @@ object ImageGetter {
         SkinCache.assembleSkinConfigs(ruleset.mods)
 
         BaseScreen.setSkin()
-        Fonts.addRulesetImages(ruleset)
+        FontRulesetIcons.addRulesetImages(ruleset)
     }
 
     /** Loads all atlas/texture files from a folder, as controlled by an Atlases.json */
@@ -101,9 +103,14 @@ object ImageGetter {
             val extraAtlas = if (mod.isEmpty()) fileName else if (fileName == "game") mod else "$mod/$fileName"
             var tempAtlas = atlases[extraAtlas]  // fetch if cached
             if (tempAtlas == null) {
-                debug("Loading %s = %s", extraAtlas, file.path())
-                tempAtlas = TextureAtlas(file)  // load if not
-                atlases[extraAtlas] = tempAtlas  // cache the freshly loaded
+                try {
+                    debug("Loading %s = %s", extraAtlas, file.path())
+                    tempAtlas = TextureAtlas(file)  // load if not
+                    atlases[extraAtlas] = tempAtlas  // cache the freshly loaded
+                } catch (ex: Exception) {
+                    debug("Could not load file $file")
+                    continue
+                }
             }
             for (region in tempAtlas.regions) {
                 if (region.name.startsWith("Skins")) {
@@ -325,7 +332,7 @@ object ImageGetter {
                 .setProgress(progressColor, percentComplete, padding = progressPadding)
     }
 
-    class ProgressBar(width: Float, height: Float, val vertical: Boolean = true):Group() {
+    class ProgressBar(width: Float, height: Float, val vertical: Boolean = true) : Group() {
 
         var primaryPercentage: Float = 0f
         var secondaryPercentage: Float = 0f

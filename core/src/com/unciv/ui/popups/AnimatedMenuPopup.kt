@@ -157,6 +157,7 @@ open class AnimatedMenuPopup(
             }
         }
 
+    //todo Reused in SpecialistAllocationTable - refactor to another package
     class SmallButtonStyle : TextButton.TextButtonStyle(BaseScreen.skin[TextButton.TextButtonStyle::class.java]) {
         /** Modify NinePatch geometry so the roundedEdgeRectangleMidShape button is 38f high instead of 48f,
          *  Otherwise this excercise would be futile - normal roundedEdgeRectangleShape based buttons are 50f high.

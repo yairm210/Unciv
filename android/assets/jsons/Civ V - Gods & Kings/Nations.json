@@ -1,8 +1,9 @@
 [
 	//Spectator
+    //Not "Excluded from map editor" as it serves as placeholder for "Any Civ" starting locations
 	{
 		"name": "Spectator",
-		"outerColor": [255,255,255]
+		"outerColor": [255,255,255],
 //		"innerColor": [255,255,255]
 	},
 
@@ -31,14 +32,14 @@
 		"innerColor": [213,249,255],
 		"favoredReligion": "Islam",
 		"uniqueName": "Ingenuity",
-		"uniques": ["Receive free [Great Scientist] when you discover [Writing]", "[Great Scientist] is earned [50]% faster"],
+		"uniques": ["Free [Great Scientist] appears <upon discovering [Writing]>", "[Great Scientist] is earned [50]% faster"],
 		"cities": ["Babylon","Akkad","Dur-Kurigalzu","Nippur","Borsippa","Sippar","Opis","Mari","Shushan","Eshnunna",
 			"Ellasar","Erech","Kutha","Sirpurla","Neribtum","Ashur","Ninveh","Nimrud","Arbela","Nuzi",
 			"Arrapkha","Tutub","Shaduppum","Rapiqum","Mashkan Shapir","Tuttul","Ramad","Ana","Haradum","Agrab",
 			"Uqair","Gubba","Hafriyat","Nagar","Shubat Enlil","Urhai","Urkesh","Awan","Riblah","Tayma"],
         "spyNames": ["Rim-Sin II", "Smerdis", "Ilum-ma-ili", "Peshgaldaramesh", "Ur-zigurumaš", "Semiramis", "Em", "Ishtar", "Bilit Taauth", "Aruru"]
 	},
-	{
+    {
 		"name": "Greece",
 		"leaderName": "Alexander",
 		"adjective": ["Greek"],
@@ -65,7 +66,7 @@
 		"uniques": ["[-50]% City-State Influence degradation", "City-State Influence recovers at twice the normal rate", "City-State territory always counts as friendly territory"],
 		"cities": ["Athens","Sparta","Corinth","Argos","Knossos","Mycenae","Pharsalos","Ephesus","Halicarnassus","Rhodes",
 			"Eretria","Pergamon","Miletos","Megara","Phocaea","Sicyon","Tiryns","Samos","Mytilene","Chios",
-			"Paros","Elis","Syracuse","Herakleia","Gortyn","Chalkis","Pylos","Pella","Naxos","Sicyon",
+			"Paros","Elis","Syracuse","Herakleia","Gortyn","Chalkis","Pylos","Pella","Naxos",
 			"Larissa","Apollonia","Messene","Orchomenos","Ambracia","Kos","Knidos","Amphipolis",
 			"Patras","Lamia","Nafplion","Apolyton"],
         "spyNames": ["Jason", "Helena", "Alexa", "Cletus", "Kassandra", "Andres", "Desdemona", "Anthea", "Aeneas", "Leander"]
@@ -90,7 +91,7 @@
         "outerColor": [9, 112, 84],
         "innerColor": [255,255,255],
 
-		"favouredReligion": "Taoism",
+		"favoredReligion": "Taoism",
 		"uniqueName": "Art of War",
 		"uniques": ["Great General provides double combat bonus", "[Great General] is earned [50]% faster"],
 		"cities": ["Beijing","Shanghai","Guangzhou","Nanjing","Xian","Chengdu","Hangzhou","Tianjin","Macau","Shandong",
@@ -128,7 +129,7 @@
 		"cities": ["Thebes","Memphis","Heliopolis","Elephantine","Alexandria","Pi-Ramesses","Giza","Byblos","Akhetaten",
 			   "Hieraconpolis","Abydos","Asyut","Avaris","Lisht","Buto","Edfu","Pithom","Busiris","Kahun","Athribis",
 			   "Mendes","Elashmunein","Tanis","Bubastis","Oryx","Sebennytus","Akhmin","Karnak","Luxor","El Kab","Armant",
-			   "Balat","Ellahun","Hawara","Dashur","Damanhur","Ellahun","Abusir","Ellahun","Herakleopolis","Akoris",
+			   "Balat","Ellahun","Hawara","Dashur","Damanhur","Abusir","Herakleopolis","Akoris",
 			   "Benihasan","Badari","Hermopolis","Amrah","Koptos","Ombos","Naqada","Semna","Soleb"],
         "spyNames": ["Refaat", "Heba", "Salah", "Ahmed", "Zakaria", "Bastet", "Ma'at", "Nebhet", "Tefenet", "Neuth"]
     },
@@ -328,7 +329,7 @@
 		"innerColor": [184, 0, 0],
 		"favoredReligion": "Shinto",
 		"uniqueName": "Bushido",
-		"uniques": ["Damage is ignored when determining unit Strength <for [non-air] units>"],
+		"uniques": ["Damage is ignored when determining unit Strength <for [non-[Air]] units>"],
 		"cities": ["Kyoto","Osaka","Tokyo","Satsuma","Kagoshima","Nara","Nagoya","Izumo","Nagasaki","Yokohama",
 			"Shimonoseki","Matsuyama","Sapporo","Hakodate","Ise","Toyama","Fukushima","Suo","Bizen","Echizen",
 			"Izumi","Omi","Echigo","Kozuke","Sado","Kobe","Nagano","Hiroshima","Takayama","Akita","Fukuoka","Aomori",
@@ -452,7 +453,7 @@
 		"cities": ["Seoul","Busan","Jeonju","Daegu","Pyongyang","Kaesong","Suwon","Gwangju","Gangneung","Hamhung","Wonju","Ulsan",
 			"Changwon","Andong","Gongju","Haeju","Cheongju","Mokpo","Dongducheon","Geoje","Suncheon","Jinju","Sangju",
 			"Rason","Gyeongju","Chungju","Sacheon","Gimje","Anju"],
-        "spyNames": ["Kim", "Park", "Han", "Na", "Kong", "Yu", "Ahn", "Na", "Da", "Eun"]
+        "spyNames": ["Kim", "Park", "Han", "Na", "Kong", "Yu", "Ahn", "Da", "Eun"]
     },
 
 	{
@@ -708,16 +709,7 @@
 		"introduction": "How are you? You stand before Pachacuti Inca Yupanqui.",
 
 		"neutralHello": "How are you doing?",
-		"neutralLetsHearIt": ["Go on.","What do you say?","You may begin."],
-		"neutralNo": ["We absolutely refuse.","No!","I refuse."],
-		"neutralYes": ["Very good.","Of course, yes.","That is very good."],
-
 		"hateHello": "What do you want now?",
-		"hateLetsHearIt": ["Speak!","What do you say?","Go on."],
-		"hateNo": ["That is not possible!","We are not agreeing to that!","I beg your pardon?"],
-		"hateYes": ["That is fine.","That is good enough.","Very well..."],
-
-		"afterPeace": "Viracocha has frowned upon our war, and has agreed to our peace agreements.",
 		"tradeRequest": "The Incan people offer this fair trade.",
 
         "outerColor": [255,184,33],
@@ -732,7 +724,7 @@
 			"Andahuaylas","Ica","Arequipa","Nasca","Atico","Juli","Chuito","Chuquiapo","Huanuco Pampa","Tamboccocha",
 			"Huaras","Riobamba","Caxamalca","Sausa","Tambo Colorado","Huaca","Tumbes","Chan Chan","Sipan","Pachacamac",
 			"Llactapata","Pisac","Kuelap","Pajaten","Chucuito","Choquequirao"],
-        "spyNames": ["Amaru", "Apichu", "Pariapichiu", "Puma", "Quenti", "Suyuntu", "Uturuncu", "Uturuncu", "Purutu", "Ozcollo"]
+        "spyNames": ["Amaru", "Apichu", "Pariapichiu", "Puma", "Quenti", "Suyuntu", "Uturuncu", "Purutu", "Ozcollo"]
     },
 	{
 		"name": "Denmark",
@@ -954,18 +946,10 @@
 		"defeated": "Vile ruler, know you have won this war in name alone. Your cities lie buried and your troops defeated. I have my own victory.",
 		"introduction": "I am Boudicca, Queen of the Celts. Let no-one underestimate me!",
 		"tradeRequest": "Let us join our forces together and reap the rewards.",
-		"afterPeace": "Well played, fellow warrior.",
 
 		"neutralHello": "God has given good to you.",
-		"neutralLetsHearIt": ["We are all ears…","We are all ears…","Forward."],
-		"neutralNo": ["We must decline.","No.","We refuse."],
-		"neutralYes": ["Okay.","Sure, it shall be so.","Accepted."],
 
 		"hateHello": "Well?",
-		"hateLetsHearIt": ["Forward! Before I change my mind!","And?","Speak!"],
-		"hateNo": ["That's unacceptable!","A thousand times no!","Never!"],
-		"hateYes": ["Eugh! Fine then…","Disgusting! Okay then…","But if I have to…"],
-
         "outerColor": [12,75,25],
         "innerColor": [157,172,255],
 
@@ -995,17 +979,10 @@
 		"defeated": "God and history will remember your actions this day. I hope you are ready for your impending judgment.",
 		"introduction": "A thousand welcomes to our fair nation. I am Selassie, the Ras Tafari Makonnen and Emperor of Ethiopia, your humble servant.",
 		"tradeRequest": "I request that you consider this offer between our two peoples. I believe it will do us both good.",
-		"afterPeace": "Today is the day on which we defeated our enemy. However, we shall only rejoice in our hearts, and in the spirit of heaven.",
 
 		"neutralHello": "Welcome.",
-		"neutralLetsHearIt": ["Continue.","I am listening.","Yes?"],
-		"neutralNo": ["It is not right.","We oppose because it is not right.","But I feel the agreement is done."],
-		"neutralYes": ["Great.","An agreement has been reached.","Our heart and soul is very much satisfied."],
 
 		"hateHello": "What do you want?",
-		"hateLetsHearIt": ["You said it.","What?","Continue."],
-		"hateNo": ["That is unacceptable.","You are not sure about it.","Please repeat for me."],
-		"hateYes": ["Fine, in my understanding.","It is clear.","It is clear."],
 
         "outerColor": [18, 66, 22],
         "innerColor": [255, 56, 56],
@@ -1036,18 +1013,6 @@
 		"tradeRequest": "Friend, I believe I may have found a way to save us all! Look, look and accept my offering!",
 
 		"neutralHello": "A fine day, it helps you.",
-/* Not used by Unciv, and uncertain
-		"afterPeace": "",
-
-		"neutralLetsHearIt": ["If you must show me."],
-		"neutralNo": ["No no, too much trouble.","No!","Not good enough."],
-		"neutralYes": ["Okay.","Fine.","Accepted."],
-
-		"hateHello": "You.",
-		"hateLetsHearIt": ["Talk.","So?","Speak!"],
-		"hateNo": ["That's unacceptable!","A thousand times no!","Never!"],
-		"hateYes": ["Oh… Fine, okay."],
-*/
 		"outerColor": [198, 141, 99],
 		"innerColor": [24, 63, 66],
 		"favoredReligion": "Christianity",
@@ -1126,7 +1091,6 @@
 	},
 	{
 		"name": "Lhasa",
-		"translatedName": "Lhasa",
 		"adjective": ["tibetano"],
 		"cityStateType": "Cultured",
 
@@ -1250,7 +1214,6 @@
 	},
 	{
 		"name": "Vancouver",
-		"translatedName": "Vancouver",
 		"adjective": ["Vancouverite"],
 		"cityStateType": "Maritime",
 
@@ -1386,7 +1349,7 @@
 		"outerColor": [0, 0, 0],
 		"innerColor": [211,180,113],
 		"cities": ["Dublin"],
-		"uniques": ["Will not be displayed in Civilopedia", "Will not be chosen for new games"]
+		"uniques": ["Will not be displayed in Civilopedia", "Will not be chosen for new games", "Excluded from map editor"]
 	},
 	{
 		"name": "Edinburgh",
@@ -1399,7 +1362,7 @@
 		"outerColor": [0, 0, 0],
 		"innerColor": [0,102,102],
 		"cities": ["Edinburgh"],
-		"uniques": ["Will not be displayed in Civilopedia", "Will not be chosen for new games"]
+		"uniques": ["Will not be displayed in Civilopedia", "Will not be chosen for new games", "Excluded from map editor"]
 	},
 	{
 		"name": "M'Banza-Kongo",
@@ -1482,7 +1445,7 @@
 		"name": "Barbarians",
 		"outerColor": [0,0,0],
         "innerColor": [185,12,12],
-		"uniques": ["Can only heal by pillaging"]
+		"uniques": ["Can only heal by pillaging", "Excluded from map editor"]
 	}
 
 ]

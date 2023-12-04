@@ -11,7 +11,6 @@ import com.badlogic.gdx.utils.Align
 import com.unciv.logic.GameInfo
 import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.UncivShowableException
-import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.files.UncivFiles
 import com.unciv.logic.multiplayer.OnlineMultiplayer
@@ -25,8 +24,8 @@ import com.unciv.ui.audio.MusicController
 import com.unciv.ui.audio.MusicMood
 import com.unciv.ui.audio.MusicTrackChooserFlags
 import com.unciv.ui.audio.SoundPlayer
-import com.unciv.ui.components.Fonts
 import com.unciv.ui.components.extensions.center
+import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.crashhandling.CrashScreen
 import com.unciv.ui.crashhandling.wrapCrashHandlingUnit
 import com.unciv.ui.images.ImageGetter
@@ -38,9 +37,7 @@ import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.mainmenuscreen.MainMenuScreen
 import com.unciv.ui.screens.savescreens.LoadGameScreen
 import com.unciv.ui.screens.worldscreen.PlayerReadyScreen
-import com.unciv.ui.screens.worldscreen.WorldMapHolder
 import com.unciv.ui.screens.worldscreen.WorldScreen
-import com.unciv.ui.screens.worldscreen.unit.UnitTable
 import com.unciv.utils.Concurrency
 import com.unciv.utils.DebugUtils
 import com.unciv.utils.Display
@@ -50,78 +47,10 @@ import com.unciv.utils.debug
 import com.unciv.utils.launchOnGLThread
 import com.unciv.utils.withGLContext
 import com.unciv.utils.withThreadPoolContext
-import kotlinx.coroutines.CancellationException
 import java.io.PrintWriter
 import java.util.EnumSet
 import java.util.UUID
-import kotlin.system.exitProcess
-
-object GUI {
-
-    fun setUpdateWorldOnNextRender() {
-        UncivGame.Current.worldScreen?.shouldUpdate = true
-    }
-
-    fun pushScreen(screen: BaseScreen) {
-        UncivGame.Current.pushScreen(screen)
-    }
-
-    fun resetToWorldScreen() {
-        UncivGame.Current.resetToWorldScreen()
-    }
-
-    fun getSettings(): GameSettings {
-        return UncivGame.Current.settings
-    }
-
-    fun isWorldLoaded(): Boolean {
-        return UncivGame.Current.worldScreen != null
-    }
-
-    fun isMyTurn(): Boolean {
-        if (!UncivGame.isCurrentInitialized() || !isWorldLoaded()) return false
-        return UncivGame.Current.worldScreen!!.isPlayersTurn
-    }
-
-    fun isAllowedChangeState(): Boolean {
-        return UncivGame.Current.worldScreen!!.canChangeState
-    }
-
-    fun getWorldScreen(): WorldScreen {
-        return UncivGame.Current.worldScreen!!
-    }
-
-    fun getWorldScreenIfActive(): WorldScreen? {
-        return UncivGame.Current.getWorldScreenIfActive()
-    }
-
-    fun getMap(): WorldMapHolder {
-        return UncivGame.Current.worldScreen!!.mapHolder
-    }
-
-    fun getUnitTable(): UnitTable {
-        return UncivGame.Current.worldScreen!!.bottomUnitTable
-    }
-
-    fun getViewingPlayer(): Civilization {
-        return UncivGame.Current.worldScreen!!.viewingCiv
-    }
-
-    fun getSelectedPlayer(): Civilization {
-        return UncivGame.Current.worldScreen!!.selectedCiv
-    }
-
-    private var keyboardAvailableCache: Boolean? = null
-    /** Tests availability of a physical keyboard */
-    val keyboardAvailable: Boolean
-        get() {
-            // defer decision if Gdx.input not yet initialized
-            if (keyboardAvailableCache == null && Gdx.input != null)
-                keyboardAvailableCache = Gdx.input.isPeripheralAvailable(Input.Peripheral.HardwareKeyboard)
-            return keyboardAvailableCache ?: false
-        }
-
-}
+import kotlinx.coroutines.CancellationException
 
 open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpecific {
 
@@ -191,7 +120,7 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
         }
 
         ImageGetter.resetAtlases()
-        ImageGetter.setNewRuleset(ImageGetter.ruleset)  // This needs to come after the settings, since we may have default visual mods
+        ImageGetter.reloadImages()  // This needs to come after the settings, since we may have default visual mods
         val imageGetterTilesets = ImageGetter.getAvailableTilesets()
         val availableTileSets = TileSetCache.getAvailableTilesets(imageGetterTilesets)
         if (settings.tileSet !in availableTileSets) { // If the configured tileset is no longer available, default back
@@ -326,11 +255,7 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
         throw UnsupportedOperationException("Use pushScreen or replaceCurrentScreen instead")
     }
 
-    override fun getScreen(): BaseScreen? {
-        val curScreen = super.getScreen()
-        return if (curScreen == null) { null } else { curScreen as BaseScreen
-        }
-    }
+    override fun getScreen(): BaseScreen? = super.getScreen() as? BaseScreen
 
     private fun setScreen(newScreen: BaseScreen) {
         debug("Setting new screen: %s, screenStack: %s", newScreen, screenStack)
@@ -367,6 +292,7 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
     fun popScreen(): BaseScreen? {
         if (screenStack.size == 1) {
             musicController.pause()
+            UncivGame.Current.settings.autoPlay.stopAutoPlay()
             ConfirmPopup(
                 screen = screenStack.last(),
                 question = "Do you want to exit the game?",
@@ -446,9 +372,11 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
     }
 
     override fun pause() {
+        // Needs to go ASAP - on Android, there's a tiny race condition: The OS will stop our playback forcibly, it likely
+        // already has, but if we do _our_ pause before the MusicController timer notices, it will at least remember the current track.
+        if (::musicController.isInitialized) musicController.pause()
         val curGameInfo = gameInfo
         if (curGameInfo != null) files.requestAutoSave(curGameInfo)
-        if (::musicController.isInitialized) musicController.pause()
         super.pause()
     }
 
@@ -484,7 +412,7 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
         // On desktop this should only be this one and "DestroyJavaVM"
         logRunningThreads()
 
-        exitProcess(0)
+        // DO NOT `exitProcess(0)` - bypasses all Gdx and GLFW cleanup
     }
 
     private fun logRunningThreads() {
@@ -536,7 +464,7 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
 
     companion object {
         //region AUTOMATICALLY GENERATED VERSION DATA - DO NOT CHANGE THIS REGION, INCLUDING THIS COMMENT
-        val VERSION = Version("4.8.2", 910)
+        val VERSION = Version("4.9.5", 940)
         //endregion
 
         lateinit var Current: UncivGame

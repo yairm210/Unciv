@@ -39,7 +39,7 @@ object BackwardCompatibility {
 
     private fun GameInfo.removeUnitsAndPromotions() {
         for (tile in tileMap.values) {
-            for (unit in tile.getUnits()) {
+            for (unit in tile.getUnits().toList()) {
                 if (!ruleset.units.containsKey(unit.name)) tile.removeUnit(unit)
 
                 for (promotion in unit.promotions.promotions.toList())
@@ -56,7 +56,7 @@ object BackwardCompatibility {
                     tile.roadStatus = RoadStatus.None
                     tile.roadIsPillaged = false
                 }
-                if (tile.improvementIsPillaged){
+                if (tile.improvementIsPillaged) {
                     tile.improvement = null
                     tile.improvementIsPillaged = false
                 }

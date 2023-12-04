@@ -17,8 +17,6 @@ import com.unciv.models.ruleset.tile.TileResource
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
 import com.unciv.models.translations.tr
-import com.unciv.ui.components.ExpanderTab
-import com.unciv.ui.components.Fonts
 import com.unciv.ui.components.extensions.addSeparator
 import com.unciv.ui.components.extensions.center
 import com.unciv.ui.components.extensions.colorFromRGB
@@ -26,17 +24,19 @@ import com.unciv.ui.components.extensions.surroundWithCircle
 import com.unciv.ui.components.extensions.toGroup
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
+import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.components.input.KeyboardBinding
 import com.unciv.ui.components.input.onActivation
 import com.unciv.ui.components.input.onClick
+import com.unciv.ui.components.widgets.ExpanderTab
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.civilopediascreen.CivilopediaScreen
 import kotlin.math.ceil
 import kotlin.math.round
-import com.unciv.ui.components.AutoScrollPane as ScrollPane
+import com.unciv.ui.components.widgets.AutoScrollPane as ScrollPane
 
-class CityStatsTable(private val cityScreen: CityScreen): Table() {
+class CityStatsTable(private val cityScreen: CityScreen) : Table() {
     private val innerTable = Table() // table within this Table. Slightly smaller creates border
     private val upperTable = Table() // fixed position table
     private val lowerTable = Table() // table that will be in the ScrollPane
@@ -184,7 +184,7 @@ class CityStatsTable(private val cityScreen: CityScreen): Table() {
         val resourceCounter = Counter<TileResource>()
         for (resourceSupply in city.getCityResources()) resourceCounter.add(resourceSupply.resource, resourceSupply.amount)
         for ((resource, amount) in resourceCounter)
-            if (resource.hasUnique(UniqueType.CityResource)){
+            if (resource.hasUnique(UniqueType.CityResource)) {
                 resourceTable.add(amount.toLabel())
                 resourceTable.add(ImageGetter.getResourcePortrait(resource.name, 20f))
                     .padRight(5f)
@@ -285,7 +285,7 @@ class CityStatsTable(private val cityScreen: CityScreen): Table() {
         val statsAndSpecialists = Table()
 
         val icon = ImageGetter.getConstructionPortrait(building.name, 50f)
-        val isFree = building.name in cityScreen.city.civ.civConstructions.getFreeBuildings(cityScreen.city.id)
+        val isFree = cityScreen.hasFreeBuilding(building)
         val displayName = if (isFree) "{${building.name}} ({Free})" else building.name
 
         info.add(displayName.toLabel(fontSize = Constants.defaultFontSize, hideIcons = true)).padBottom(5f).right().row()

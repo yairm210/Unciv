@@ -4,28 +4,31 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.unciv.logic.battle.AirInterception
 import com.unciv.logic.battle.AttackableTile
 import com.unciv.logic.battle.Battle
 import com.unciv.logic.battle.BattleDamage
 import com.unciv.logic.battle.CityCombatant
 import com.unciv.logic.battle.ICombatant
 import com.unciv.logic.battle.MapUnitCombatant
+import com.unciv.logic.battle.Nuke
 import com.unciv.logic.battle.TargetHelper
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.UncivSound
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.tr
 import com.unciv.ui.audio.SoundPlayer
-import com.unciv.ui.components.Fonts
-import com.unciv.ui.components.UnitGroup
 import com.unciv.ui.components.extensions.addBorderAllowOpacity
 import com.unciv.ui.components.extensions.addSeparator
 import com.unciv.ui.components.extensions.disable
-import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
+import com.unciv.ui.components.fonts.Fonts
+import com.unciv.ui.components.input.onClick
+import com.unciv.ui.components.widgets.UnitGroup
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.basescreen.BaseScreen
+import com.unciv.ui.screens.worldscreen.UndoHandler.Companion.clearUndoCheckpoints
 import com.unciv.ui.screens.worldscreen.WorldScreen
 import com.unciv.ui.screens.worldscreen.bottombar.BattleTableHelpers.battleAnimation
 import com.unciv.ui.screens.worldscreen.bottombar.BattleTableHelpers.getHealthBar
@@ -33,7 +36,7 @@ import com.unciv.utils.DebugUtils
 import kotlin.math.max
 import kotlin.math.roundToInt
 
-class BattleTable(val worldScreen: WorldScreen): Table() {
+class BattleTable(val worldScreen: WorldScreen) : Table() {
 
     init {
         isVisible = false
@@ -140,7 +143,7 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
         add(modifierLabel).width(quarterScreen - upOrDownLabel.minWidth)
     }
 
-    private fun simulateBattle(attacker: ICombatant, defender: ICombatant, tileToAttackFrom: Tile){
+    private fun simulateBattle(attacker: ICombatant, defender: ICombatant, tileToAttackFrom: Tile) {
         clear()
 
         val attackerNameWrapper = Table()
@@ -183,7 +186,7 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
             row().pad(2f)
         }
 
-        if (attackerModifiers.any() || defenderModifiers.any()){
+        if (attackerModifiers.any() || defenderModifiers.any()) {
             addSeparator()
             val attackerStrength = BattleDamage.getAttackingStrength(attacker, defender, tileToAttackFrom).roundToInt()
             val defenderStrength = BattleDamage.getDefendingStrength(attacker, defender, tileToAttackFrom).roundToInt()
@@ -194,7 +197,7 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
         // from Battle.addXp(), check for can't gain more XP from Barbarians
         val maxXPFromBarbarians = attacker.getCivInfo().gameInfo.ruleset.modOptions.constants.maxXPfromBarbarians
         if (attacker is MapUnitCombatant && attacker.unit.promotions.totalXpProduced() >= maxXPFromBarbarians
-                && defender.getCivInfo().isBarbarian()){
+                && defender.getCivInfo().isBarbarian()) {
             add("Cannot gain more XP from Barbarians".toLabel(fontSize = 16).apply { wrap = true }).width(quarterScreen)
             row()
         }
@@ -283,7 +286,7 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
         // There was a direct worldScreen.update() call here, removing its 'private' but not the comment justifying the modifier.
         // My tests (desktop only) show the red-flash animations look just fine without.
         worldScreen.shouldUpdate = true
-        worldScreen.preActionGameInfo = worldScreen.gameInfo // Reset - can no longer undo
+        worldScreen.clearUndoCheckpoints()
         //Gdx.graphics.requestRendering()  // Use this if immediate rendering is required
 
         if (!canStillAttack) return
@@ -294,7 +297,7 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
     }
 
 
-    private fun simulateNuke(attacker: MapUnitCombatant, targetTile: Tile){
+    private fun simulateNuke(attacker: MapUnitCombatant, targetTile: Tile) {
         clear()
 
         val attackerNameWrapper = Table()
@@ -303,7 +306,7 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
         attackerNameWrapper.add(attackerLabel)
         add(attackerNameWrapper)
 
-        val canNuke = Battle.mayUseNuke(attacker, targetTile)
+        val canNuke = Nuke.mayUseNuke(attacker, targetTile)
 
         val blastRadius = attacker.unit.getNukeBlastRadius()
 
@@ -330,7 +333,7 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
         }
         else {
             attackButton.onClick(attacker.getAttackSound()) {
-                Battle.NUKE(attacker, targetTile)
+                Nuke.NUKE(attacker, targetTile)
                 worldScreen.mapHolder.removeUnitActionOverlay() // the overlay was one of attacking
                 worldScreen.shouldUpdate = true
             }
@@ -389,7 +392,7 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
         }
         else {
             attackButton.onClick(attacker.getAttackSound()) {
-                Battle.airSweep(attacker, targetTile)
+                AirInterception.airSweep(attacker, targetTile)
                 worldScreen.mapHolder.removeUnitActionOverlay() // the overlay was one of attacking
                 worldScreen.shouldUpdate = true
             }

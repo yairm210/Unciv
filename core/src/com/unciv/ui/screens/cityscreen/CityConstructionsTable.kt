@@ -8,6 +8,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
+import com.unciv.GUI
 import com.unciv.logic.city.City
 import com.unciv.logic.city.CityConstructions
 import com.unciv.logic.map.tile.Tile
@@ -18,13 +19,14 @@ import com.unciv.models.ruleset.INonPerpetualConstruction
 import com.unciv.models.ruleset.PerpetualConstruction
 import com.unciv.models.ruleset.RejectionReason
 import com.unciv.models.ruleset.RejectionReasonType
+import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stat
 import com.unciv.models.translations.tr
 import com.unciv.ui.audio.SoundPlayer
-import com.unciv.ui.components.ColorMarkupLabel
-import com.unciv.ui.components.ExpanderTab
+import com.unciv.ui.components.widgets.ColorMarkupLabel
+import com.unciv.ui.components.widgets.ExpanderTab
 import com.unciv.ui.components.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.components.extensions.addBorder
 import com.unciv.ui.components.extensions.addCell
@@ -53,7 +55,7 @@ import com.unciv.utils.Concurrency
 import com.unciv.utils.launchOnGLThread
 import kotlin.math.max
 import kotlin.math.min
-import com.unciv.ui.components.AutoScrollPane as ScrollPane
+import com.unciv.ui.components.widgets.AutoScrollPane as ScrollPane
 
 private class ConstructionButtonDTO(
     val construction: IConstruction,
@@ -209,7 +211,9 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
 
             val useStoredProduction = entry is Building || !cityConstructions.isBeingConstructedOrEnqueued(entry.name)
             val buttonText = cityConstructions.getTurnsToConstructionString(entry, useStoredProduction).trim()
-            val resourcesRequired = entry.getResourceRequirementsPerTurn()
+            val resourcesRequired = if (entry is BaseUnit)
+                entry.getResourceRequirementsPerTurn(StateForConditionals(city.civ))
+                else entry.getResourceRequirementsPerTurn(StateForConditionals(city.civ, city))
             val mostImportantRejection =
                     entry.getRejectionReasons(cityConstructions)
                         .filter { it.isImportantRejection() }
@@ -255,6 +259,8 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
                 val buildableNationalWonders = ArrayList<Table>()
                 val buildableBuildings = ArrayList<Table>()
                 val specialConstructions = ArrayList<Table>()
+                val blacklisted = ArrayList<Table>()
+                val disabledAutoAssignConstructions: Set<String> = GUI.getSettings().disabledAutoAssignConstructions
 
                 var maxButtonWidth = constructionsQueueTable.width
                 for (dto in constructionButtonDTOList) {
@@ -268,7 +274,9 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
                         continue
 
                     val constructionButton = getConstructionButton(dto)
-                    when (dto.construction) {
+                    if (dto.construction.name in disabledAutoAssignConstructions)
+                        blacklisted.add(constructionButton)
+                    else when (dto.construction) {
                         is BaseUnit -> units.add(constructionButton)
                         is Building -> {
                             when {
@@ -290,6 +298,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
                     addCategory("Wonders", buildableWonders, maxButtonWidth, KeyboardBinding.BuildWonders)
                     addCategory("National Wonders", buildableNationalWonders, maxButtonWidth, KeyboardBinding.BuildNationalWonders)
                     addCategory("Other", specialConstructions, maxButtonWidth, KeyboardBinding.BuildOther)
+                    addCategory("Disabled", blacklisted, maxButtonWidth, KeyboardBinding.BuildDisabled, startsOutOpened = false)
                     pack()
                 }
 
@@ -319,7 +328,9 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
                 if (constructionName in PerpetualConstruction.perpetualConstructionsMap) "\n∞"
                 else cityConstructions.getTurnsToConstructionString(construction, isFirstConstructionOfItsKind)
 
-        val constructionResource = construction.getResourceRequirementsPerTurn()
+        val constructionResource = if (construction is BaseUnit)
+                construction.getResourceRequirementsPerTurn(StateForConditionals(city.civ, city))
+            else construction.getResourceRequirementsPerTurn(StateForConditionals(city.civ))
         for ((resourceName, amount) in constructionResource) {
             val resource = cityConstructions.city.getRuleset().tileResources[resourceName] ?: continue
             text += "\n" + resourceName.getConsumesAmountString(amount, resource.isStockpiled()).tr()
@@ -418,7 +429,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
                 resourceTable.add(ImageGetter.getResourcePortrait(resource, 15f)).padBottom(1f)
             }
         }
-        for (unique in constructionButtonDTO.construction.getMatchingUniquesNotConflicting(UniqueType.CostsResources)){
+        for (unique in constructionButtonDTO.construction.getMatchingUniquesNotConflicting(UniqueType.CostsResources)) {
             val color = if (constructionButtonDTO.rejectionReason?.type == RejectionReasonType.ConsumesResources)
                 Color.RED else Color.WHITE
             resourceTable.add(ColorMarkupLabel(unique.params[0], color)).expandX().left().padLeft(5f)
@@ -799,12 +810,19 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
         lowerTable.pack()
     }
 
-    private fun Table.addCategory(title: String, list: ArrayList<Table>, prefWidth: Float, toggleKey: KeyboardBinding) {
+    private fun Table.addCategory(
+        title: String,
+        list: ArrayList<Table>,
+        prefWidth: Float,
+        toggleKey: KeyboardBinding,
+        startsOutOpened: Boolean = true
+    ) {
         if (list.isEmpty()) return
 
         if (rows > 0) addSeparator()
         val expander = ExpanderTab(
             title,
+            startsOutOpened = startsOutOpened,
             defaultPad = 0f,
             expanderWidth = prefWidth,
             persistenceID = "CityConstruction.$title",

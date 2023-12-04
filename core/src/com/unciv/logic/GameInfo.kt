@@ -280,6 +280,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
         civilizations.add(it)
         it.gameInfo = this
         it.setNationTransient()
+        it.cache.updateViewableTiles()
         it.setTransients()
     }
 
@@ -364,8 +365,8 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
         // We process player automatically if:
         while (isSimulation() ||                    // simulation is active
                 player.isAI() ||                    // or player is AI
-                isOnline && (player.isDefeated() || // or player is online defeated
-                        player.isSpectator()))      // or player is online spectator
+                player.isDefeated() ||
+                isOnline && player.isSpectator())      // or player is online spectator
         {
 
             // Starting preparations
@@ -615,7 +616,9 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
 
         tileMap.setTransients(ruleset)
 
-        if (currentPlayer == "") currentPlayer = civilizations.first { it.isHuman() }.civName
+        if (currentPlayer == "") currentPlayer =
+            if (gameParameters.isOnlineMultiplayer) civilizations.first { it.isHuman() && !it.isSpectator() }.civName // For MP, spectator doesn't get a 'turn'
+            else civilizations.first { it.isHuman()  }.civName // for non-MP games, you can be a spectator of an AI-only match, and you *do* get a turn, sort of
         currentPlayerCiv = getCivilization(currentPlayer)
 
         difficultyObject = ruleset.difficulties[difficulty]!!

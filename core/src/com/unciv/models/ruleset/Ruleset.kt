@@ -21,6 +21,7 @@ import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.ruleset.unit.Promotion
 import com.unciv.models.ruleset.unit.UnitType
 import com.unciv.models.ruleset.validation.RulesetValidator
+import com.unciv.models.ruleset.validation.UniqueValidator
 import com.unciv.models.stats.INamed
 import com.unciv.models.translations.tr
 import com.unciv.utils.Log
@@ -378,19 +379,19 @@ class Ruleset {
                         name = cityStateType.name
                         color = cityStateType.color
                         friendBonusUniques = ArrayList(cityStateType.friendBonusUniques.filter {
-                            RulesetValidator(this@Ruleset).checkUnique(
+                            UniqueValidator(this@Ruleset).checkUnique(
                                 Unique(it),
                                 false,
-                                cityStateType,
-                                UniqueType.UniqueComplianceErrorSeverity.RulesetSpecific
+                                null,
+                                true
                             ).isEmpty()
                         })
                         allyBonusUniques = ArrayList(cityStateType.allyBonusUniques.filter {
-                            RulesetValidator(this@Ruleset).checkUnique(
+                            UniqueValidator(this@Ruleset).checkUnique(
                                 Unique(it),
                                 false,
-                                cityStateType,
-                                UniqueType.UniqueComplianceErrorSeverity.RulesetSpecific
+                                null,
+                                true
                             ).isEmpty()
                         })
                     }
@@ -405,7 +406,7 @@ class Ruleset {
     fun updateBuildingCosts() {
         for (building in buildings.values) {
             if (building.cost == -1 && building.getMatchingUniques(UniqueType.Unbuildable).none { it.conditionals.isEmpty() }) {
-                val column = technologies[building.requiredTech]?.column
+                val column = building.techColumn(this)
                 if (column != null) {
                     building.cost = if (building.isAnyWonder()) column.wonderCost else column.buildingCost
                 }

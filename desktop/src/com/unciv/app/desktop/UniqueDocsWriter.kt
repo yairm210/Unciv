@@ -55,7 +55,9 @@ class UniqueDocsWriter {
         val capacity = 25 + targetTypesToUniques.size + UniqueType.values().size * (if (showUniqueOnOneTarget) 3 else 16)
         val lines = ArrayList<String>(capacity)
         lines += "# Uniques"
-        lines += "Simple unique parameters are explained by mouseover. Complex parameters are explained in [Unique parameter types](../Unique-parameters)"
+        lines += "An overview of uniques can be found [here](../Developers/Uniques.md)"
+        lines += "\nSimple unique parameters are explained by mouseover. Complex parameters are explained in [Unique parameter types](../Unique-parameters)"
+        lines += ""
 
         for ((targetType, uniqueTypes) in targetTypesToUniques) {
             if (uniqueTypes.isEmpty()) continue
@@ -71,6 +73,8 @@ class UniqueDocsWriter {
                     "&lt;${uniqueType.text}&gt;"
                 else uniqueType.text
                 lines += "??? example  \"$uniqueText\"" // collapsable material mkdocs block, see https://squidfunk.github.io/mkdocs-material/reference/admonitions/?h=%3F%3F%3F#collapsible-blocks
+                if (uniqueType.docDescription != null)
+                    lines += "\t${uniqueType.docDescription}"
                 if (uniqueType.parameterTypeMap.isNotEmpty()) {
                     // This one will give examples for _each_ filter in a "tileFilter/specialist/buildingFilter" kind of parameter e.g. "Farm/Merchant/Library":
                     // `val paramExamples = uniqueType.parameterTypeMap.map { it.joinToString("/") { pt -> pt.docExample } }.toTypedArray()`

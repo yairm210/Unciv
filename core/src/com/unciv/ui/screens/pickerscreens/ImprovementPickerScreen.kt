@@ -12,11 +12,11 @@ import com.unciv.models.ruleset.unique.LocalUniqueCache
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stats
 import com.unciv.models.translations.tr
-import com.unciv.ui.components.Fonts
 import com.unciv.ui.components.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.components.extensions.disable
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
+import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.components.input.keyShortcuts
 import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.input.onDoubleClick
@@ -31,16 +31,8 @@ class ImprovementPickerScreen(
 ) : PickerScreen() {
 
     companion object {
-        /** Set of resolvable improvement building problems that this class knows how to report. */
-        private val reportableProblems = setOf(
-            ImprovementBuildingProblem.MissingTech,
-            ImprovementBuildingProblem.NotJustOutsideBorders,
-            ImprovementBuildingProblem.OutsideBorders,
-            ImprovementBuildingProblem.MissingResources
-        )
-
         /** Return true if we can report improvements associated with the [problems] (or there are no problems for it at all). */
-        fun canReport(problems: Collection<ImprovementBuildingProblem>) = problems.all { it in reportableProblems }
+        fun canReport(problems: Collection<ImprovementBuildingProblem>) = problems.all { it.reportable }
     }
 
     private var selectedImprovement: TileImprovement? = null

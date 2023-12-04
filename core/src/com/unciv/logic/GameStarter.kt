@@ -350,9 +350,7 @@ object GameStarter {
         for (player in chosenPlayers) {
             val civ = Civilization(player.chosenCiv)
             when (player.chosenCiv) {
-                Constants.spectator ->
-                    civ.playerType = player.playerType
-                in usedMajorCivs -> {
+                in usedMajorCivs, Constants.spectator -> {
                     civ.playerType = player.playerType
                     civ.playerId = player.playerId
                 }
@@ -430,7 +428,7 @@ object GameStarter {
             //We may need the starting location for some uniques, which is why we're doing it now
             val startingTriggers = (ruleset.globalUniques.uniqueObjects + civ.nation.uniqueObjects)
             for (unique in startingTriggers.filter { !it.hasTriggerConditional() })
-                if(unique.isTriggerable)
+                if (unique.isTriggerable)
                     UniqueTriggerActivation.triggerCivwideUnique(unique, civ, tile = startingLocation)
         }
     }

@@ -16,6 +16,9 @@ object Constants {
     /** The "Coastal" terrain _filter_ */
     const val coastal = "Coastal"
 
+    /** Used as filter and the name of the pseudo-TerrainFeature defining river Stats */
+    const val river = "River"
+
     const val mountain = "Mountain"
     const val hill = "Hill"
     const val plains = "Plains"

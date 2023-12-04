@@ -45,6 +45,7 @@ class TestGame {
         UncivGame.Current = UncivGame()
         // And the settings can be reached for the locale used in .tr()
         UncivGame.Current.settings = GameSettings()
+        UncivGame.Current.gameInfo = gameInfo
 
         // Create a new ruleset we can easily edit, and set the important variables of gameInfo
         RulesetCache.loadRulesets(noMods = true)
@@ -144,6 +145,16 @@ class TestGame {
         return civInfo
     }
 
+    fun addBarbarianCiv() : Civilization {
+        val barbarianCivilization = Civilization(Constants.barbarians)
+        val nation = Nation()
+        nation.name = Constants.barbarians
+        barbarianCivilization.nation = nation
+        barbarianCivilization.gameInfo = gameInfo
+        gameInfo.civilizations.add(barbarianCivilization)
+        return barbarianCivilization
+    }
+
     fun addCity(
         civInfo: Civilization,
         tile: Tile,
@@ -202,6 +213,22 @@ class TestGame {
         return obj
     }
 
+    fun addDefaultMeleeUnitWithUniques(civInfo: Civilization, tile: Tile, vararg uniques: String) : MapUnit {
+        val createBaseUnit = createBaseUnit("Sword", *uniques)
+        createBaseUnit.movement = 2
+        createBaseUnit.strength = 8
+        return this.addUnit(createBaseUnit.name, civInfo, tile)
+    }
+
+    fun addDefaultRangedUnitWithUniques(civInfo: Civilization, tile: Tile, vararg uniques: String) : MapUnit {
+        val createBaseUnit = createBaseUnit("Archery", *uniques)
+        createBaseUnit.movement = 2
+        createBaseUnit.strength = 5
+        createBaseUnit.rangedStrength = 7
+        createBaseUnit.range = 2
+        return this.addUnit(createBaseUnit.name, civInfo, tile)
+    }
+
     fun createBaseUnit(unitType: String = createUnitType().name, vararg uniques: String) =
         createRulesetObject(ruleset.units, *uniques) {
             val baseUnit = BaseUnit()
@@ -213,6 +240,12 @@ class TestGame {
         createRulesetObject(ruleset.beliefs, *uniques) { Belief(type) }
     fun createBuilding(vararg uniques: String) =
         createRulesetObject(ruleset.buildings, *uniques) { Building() }
+
+    fun createWonder(vararg uniques: String): Building {
+        val createdBuilding = createBuilding(*uniques)
+        createdBuilding.isWonder = true
+        return createdBuilding
+    }
     fun createPolicy(vararg uniques: String) =
         createRulesetObject(ruleset.policies, *uniques) { Policy() }
     fun createTileImprovement(vararg uniques: String) =

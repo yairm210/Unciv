@@ -340,14 +340,9 @@ class TargetHelperTest {
     @Test
     fun `should get no attackable tiles when has cannot attack unique`() {
         // given
-        val attackerTile = testGame.setTileTerrain(Vector2.Zero, Constants.ocean)
-        val defenderTile = testGame.setTileTerrain(Vector2(1f, 1f), Constants.ocean)
-
-        val attackerUnit = testGame.addUnit("Carrier", attackerCiv, attackerTile)
+        val attackerUnit = testGame.addDefaultMeleeUnitWithUniques(attackerCiv, testGame.getTile(Vector2.Zero), "Cannot attack")
         attackerUnit.currentMovement = 2f
-        testGame.addUnit("Destroyer", defenderCiv, defenderTile)
-
-
+        testGame.addUnit("Warrior", defenderCiv, testGame.getTile(Vector2.X))
 
         // when
         val attackableEnemies = TargetHelper.getAttackableEnemies(attackerUnit, attackerUnit.movement.getDistanceToTiles())

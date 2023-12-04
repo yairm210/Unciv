@@ -1,0 +1,13 @@
+Console:
+- Added set/remove tile improvement
+- Show available commands on empty command
+- Added add/remove for cities
+
+By SomeTroglodyte:
+- Fix OpenAL error Windows Events after application ends
+- Tweak Language Pickers to scroll the selected one into view when appropriate, and allow selection with letter keys
+- Modding: "Comment" unique
+- Snappier sounds
+- Fix City ambient sounds
+
+Get distance to nearest enemy rework  - By tuvus

@@ -6,8 +6,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.Notification
 import com.unciv.logic.civilization.NotificationCategory
-import com.unciv.ui.components.ColorMarkupLabel
-import com.unciv.ui.components.TabbedPager
+import com.unciv.ui.components.widgets.ColorMarkupLabel
+import com.unciv.ui.components.widgets.TabbedPager
 import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.images.ImageGetter
@@ -72,7 +72,7 @@ class NotificationsOverviewTable(
             add(ImageGetter.getWhiteDot()).minHeight(2f).width(stageWidth / 4)
         }).row()
 
-        for (category in NotificationCategory.values()){
+        for (category in NotificationCategory.values()) {
             val categoryNotifications = notifications.filter { it.category == category }
             if (categoryNotifications.isEmpty()) continue
 
@@ -89,7 +89,7 @@ class NotificationsOverviewTable(
                 notificationTable.background = BaseScreen.skinStrings.getUiBackground("OverviewScreen/NotificationOverviewTable/Notification", BaseScreen.skinStrings.roundedEdgeRectangleShape)
                 notificationTable.touchable = Touchable.enabled
                 if (notification.actions.isNotEmpty())
-                    notificationTable.onClick { showOneTimeNotification(notification) }
+                    notificationTable.onClick { overviewScreen.showOneTimeNotification(notification) }
 
                 notification.addNotificationIconsTo(notificationTable, gameInfo.ruleset, iconSize)
 

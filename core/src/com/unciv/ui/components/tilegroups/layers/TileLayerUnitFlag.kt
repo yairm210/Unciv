@@ -7,13 +7,14 @@ import com.unciv.UncivGame
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.models.ruleset.unique.LocalUniqueCache
-import com.unciv.ui.images.ImageGetter
-import com.unciv.ui.components.tilegroups.TileGroup
-import com.unciv.ui.screens.basescreen.BaseScreen
-import com.unciv.ui.components.UnitGroup
+import com.unciv.ui.components.widgets.UnitGroup
 import com.unciv.ui.components.extensions.center
 import com.unciv.ui.components.extensions.toLabel
+import com.unciv.ui.components.tilegroups.TileGroup
+import com.unciv.ui.images.ImageGetter
+import com.unciv.ui.screens.basescreen.BaseScreen
 
+/** The unit flag is the synbol that appears behind the map unit - circle regularly, shield when defending, etc */
 class TileLayerUnitFlag(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup, size) {
 
     private var slot1Icon: UnitGroup? = null

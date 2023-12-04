@@ -1,5 +1,6 @@
 package com.unciv.logic.automation.city
 
+import com.unciv.GUI
 import com.unciv.logic.automation.Automation
 import com.unciv.logic.automation.civilization.NextTurnAutomation
 import com.unciv.logic.city.CityConstructions
@@ -19,14 +20,19 @@ import com.unciv.models.stats.Stat
 import kotlin.math.max
 import kotlin.math.sqrt
 
-class ConstructionAutomation(val cityConstructions: CityConstructions){
+class ConstructionAutomation(val cityConstructions: CityConstructions) {
 
     private val city = cityConstructions.city
     private val civInfo = city.civ
 
+    private val disabledAutoAssignConstructions: Set<String> =
+        if (civInfo.isHuman()) GUI.getSettings().disabledAutoAssignConstructions
+        else emptySet()
+
     private val buildableBuildings = hashMapOf<String, Boolean>()
     private val buildableUnits = hashMapOf<String, Boolean>()
     private val buildings = city.getRuleset().buildings.values.asSequence()
+        .filterNot { it.name in disabledAutoAssignConstructions }
 
     private val nonWonders = buildings.filterNot { it.isAnyWonder() }
         .filterNot { buildableBuildings[it.name] == false } // if we already know that this building can't be built here then don't even consider it
@@ -35,6 +41,7 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
 
     private val units = city.getRuleset().units.values.asSequence()
         .filterNot { buildableUnits[it.name] == false } // if we already know that this unit can't be built here then don't even consider it
+        .filterNot { it.name in disabledAutoAssignConstructions }
 
     private val civUnits = civInfo.units.getCivUnits()
     private val militaryUnits = civUnits.count { it.baseUnit.isMilitary() }

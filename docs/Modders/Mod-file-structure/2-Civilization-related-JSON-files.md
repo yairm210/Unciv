@@ -11,7 +11,7 @@ Each belief can have the following attributes:
 | Attribute | Type | Optional | Notes |
 | --------- | ---- | -------- | ----- |
 | name | String | Required | Name of the belief |
-| type | String | Required | The type of the belief. Valid values are: "Pantheon", "Follower", "Founder" and "Enhancer". |
+| type | Enum | Required | Pantheon, Follower, Founder or Enhancer. |
 | uniques | List of Strings | defaults to none | The unique abilities this belief adds to cities following it. May be chosen from the list of building uniques [here](../Unique-parameters.md#buildings-only), as well as the general uniques on that page |
 | civilopediaText | List | Default empty | see [civilopediaText chapter](5-Miscellaneous-JSON-files.md#civilopedia-text) |
 
@@ -74,20 +74,20 @@ This file contains all the nations and city states, including Barbarians and Spe
 | preferredVictoryType | Enum       | Default Neutral  | Neutral, Cultural, Diplomatic, Domination or Scientific                                                          |
 | startIntroPart1      | String     | Default empty    | Introductory blurb shown to Player on game start...                                                              |
 | startIntroPart2      | String     | Default empty    | ... second paragraph. ***NO*** "TBD"!!! Leave empty to skip that alert.                                          |
-| declaringWar         | String     | Default empty    | another greeting                                                                                                 |
-| attacked             | String     | Default empty    | another greeting                                                                                                 |
-| defeated             | String     | Default empty    | another greeting                                                                                                 |
-| introduction         | String     | Default empty    | another greeting                                                                                                 |
-| neutralHello         | String     | Default empty    | another greeting                                                                                                 |
-| hateHello            | String     | Default empty    | another greeting                                                                                                 |
-| tradeRequest         | String     | Default empty    | another greeting                                                                                                 |
+| declaringWar         | String     | Default empty    | another greeting, voice hook supported [^V]                                                                      |
+| attacked             | String     | Default empty    | another greeting, voice hook supported [^V]                                                                      |
+| defeated             | String     | Default empty    | another greeting, voice hook supported [^V]                                                                      |
+| introduction         | String     | Default empty    | another greeting, voice hook supported [^V]                                                                      |
+| neutralHello         | String     | Default empty    | another greeting, voice hook supported [^V]                                                                      |
+| hateHello            | String     | Default empty    | another greeting, voice hook supported [^V]                                                                      |
+| tradeRequest         | String     | Default empty    | another greeting, voice hook supported [^V]                                                                      |
 | innerColor           | 3x Integer | Default black    | R, G, B for outer ring of nation icon                                                                            |
 | outerColor           | 3x Integer | Required         | R, G, B for inner circle of nation icon                                                                          |
 | uniqueName           | String     | Default empty    | Decorative name for the special characteristic of this Nation                                                    |
 | uniqueText           | String     | Default empty    | Replacement text for "uniques". If empty, uniques are listed individually.                                       |
-| uniques              | List       | Default empty    | Properties of the civilization - see [here](../Unique-parameters.md#general-uniques)                     |
+| uniques              | List       | Default empty    | Properties of the civilization - see [here](../Unique-parameters.md#general-uniques)                             |
 | cities               | List       | Default empty    | City names used sequentially for newly founded cities.                                                           |
-| civilopediaText      | List       | Default empty    | see [civilopediaText chapter](5-Miscellaneous-JSON-files.md#civilopedia-text)                                      |
+| civilopediaText      | List       | Default empty    | see [civilopediaText chapter](5-Miscellaneous-JSON-files.md#civilopedia-text)                                    |
 
 [^S]: A "Coast" preference (_unless_ combined with "Avoid") is translated to a complex test for coastal land tiles, tiles next to Lakes, river tiles or near-river tiles, and such civs are processed first. Other startBias entries are ignored in that case.
       Other positive (no "Avoid") startBias are processed next. Multiple positive preferences are treated equally, but get no "fallback".
@@ -95,6 +95,7 @@ This file contains all the nations and city states, including Barbarians and Spe
       Multiple "Avoid" entries are treated equally (and reduce chance for success - if no region is left avoiding _all_ specified types that civ gets a random one).
       When combining preferred terrain with "Avoid", the latter takes precedence, and preferred terrain only has minor weight when choosing between regions that are not of a type to avoid.
       These notes are **only** valid when playing on generated maps, loaded maps from map editor get no "regions" and startBias is processed differently (but you can expect single-entry startBias to work best).
+[^V]: See [Supply Leader Voices](../Images-and-Audio.md#supply-leader-voices)
 
 ## Policies.json
 

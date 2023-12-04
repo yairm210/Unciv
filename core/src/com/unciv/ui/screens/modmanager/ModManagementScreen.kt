@@ -17,10 +17,7 @@ import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.tilesets.TileSetCache
 import com.unciv.models.translations.tr
-import com.unciv.ui.components.AutoScrollPane
-import com.unciv.ui.components.ExpanderTab
 import com.unciv.ui.components.UncivTextField
-import com.unciv.ui.components.WrappableLabel
 import com.unciv.ui.components.extensions.addSeparator
 import com.unciv.ui.components.extensions.disable
 import com.unciv.ui.components.extensions.enable
@@ -33,6 +30,9 @@ import com.unciv.ui.components.input.clearActivationActions
 import com.unciv.ui.components.input.keyShortcuts
 import com.unciv.ui.components.input.onActivation
 import com.unciv.ui.components.input.onClick
+import com.unciv.ui.components.widgets.AutoScrollPane
+import com.unciv.ui.components.widgets.ExpanderTab
+import com.unciv.ui.components.widgets.WrappableLabel
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popups.ConfirmPopup
 import com.unciv.ui.popups.Popup
@@ -254,7 +254,7 @@ class ModManagementScreen private constructor(
         }
     }
 
-    private fun addModInfoFromRepoSearch(repoSearch: Github.RepoSearch, pageNum: Int){
+    private fun addModInfoFromRepoSearch(repoSearch: Github.RepoSearch, pageNum: Int) {
         // clear and remove last cell if it is the "..." indicator
         val lastCell = onlineModsTable.cells.lastOrNull()
         if (lastCell != null && lastCell.actor is Label && (lastCell.actor as Label).text.toString() == "...") {
@@ -447,12 +447,9 @@ class ModManagementScreen private constructor(
                 launchOnGLThread {
                     val repoName = modFolder.name()  // repo.name still has the replaced "-"'s
                     ToastPopup("[$repoName] Downloaded!", this@ModManagementScreen)
-                    RulesetCache.loadRulesets()
-                    TileSetCache.loadTileSetConfigs()
+                    reloadCachesAfterModChange()
                     UncivGame.Current.translations.tryReadTranslationForCurrentLanguage()
-                    RulesetCache[repoName]?.let {
-                        installedModInfo[repoName] = ModUIData(it, false)
-                    }
+                    updateInstalledModUIData(repoName)
                     refreshInstalledModTable()
                     lastSelectedButton?.let { syncOnlineSelected(repoName, it) }
                     showModDescription(repoName)
@@ -467,6 +464,19 @@ class ModManagementScreen private constructor(
                 }
             }
         }
+    }
+
+    /** Our data on the Mod needs refreshing description after download or update */
+    private fun updateInstalledModUIData(modName: String) {
+        val ruleset = RulesetCache[modName]
+            ?: return  // Bail if download was not actually successful?
+        // When someone marks a Mod as 'permanent audiovisual', then deletes it, then redownloads, that
+        // 'permanent audiovisual' will still be valid - re-evaluate here or remove the setting in the delete code.
+        val isVisual = game.settings.visualMods.contains(modName)
+        val newModUIData = ModUIData(ruleset, isVisual)
+        installedModInfo[modName] = newModUIData
+        // The ModUIData in the actual button is now out of sync, but can be indexed using the new instance
+        modButtons[newModUIData]?.updateUIData(newModUIData)
     }
 
     /** Remove the visual indicators for an 'updated' mod after re-downloading it.
@@ -513,7 +523,7 @@ class ModManagementScreen private constructor(
             else
                 game.settings.visualMods.remove(mod.name)
             game.settings.save()
-            ImageGetter.setNewRuleset(ImageGetter.ruleset)
+            ImageGetter.reloadImages()
             refreshInstalledModActions(mod)
             if (optionsManager.sortInstalled == SortType.Status)
                 refreshInstalledModTable()
@@ -583,10 +593,15 @@ class ModManagementScreen private constructor(
     /** Delete a Mod, refresh ruleset cache and update installed mod table */
     private fun deleteMod(mod: Ruleset) {
         mod.folderLocation!!.deleteDirectory()
-        RulesetCache.loadRulesets()
-        TileSetCache.loadTileSetConfigs()
+        reloadCachesAfterModChange()
         installedModInfo.remove(mod.name)
         refreshInstalledModTable()
+    }
+
+    private fun reloadCachesAfterModChange() {
+        RulesetCache.loadRulesets()
+        ImageGetter.reloadImages()
+        TileSetCache.loadTileSetConfigs()
     }
 
     internal fun refreshOnlineModTable() {

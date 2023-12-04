@@ -8,15 +8,15 @@ import com.unciv.models.metadata.GameSettings
 import com.unciv.models.translations.tr
 import com.unciv.ui.audio.MusicController
 import com.unciv.ui.audio.MusicTrackChooserFlags
-import com.unciv.ui.screens.basescreen.BaseScreen
-import com.unciv.ui.components.UncivSlider
-import com.unciv.ui.components.WrappableLabel
 import com.unciv.ui.components.extensions.disable
-import com.unciv.ui.components.input.onClick
+import com.unciv.ui.components.extensions.toImageButton
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
-import com.unciv.ui.components.extensions.toImageButton
+import com.unciv.ui.components.input.onClick
+import com.unciv.ui.components.widgets.UncivSlider
+import com.unciv.ui.components.widgets.WrappableLabel
 import com.unciv.ui.popups.Popup
+import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.utils.Concurrency
 import com.unciv.utils.launchOnGLThread
 import kotlin.math.floor
@@ -33,9 +33,11 @@ fun soundTab(
     addSoundEffectsVolumeSlider(this, settings)
     addCitySoundsVolumeSlider(this, settings)
 
-    if (UncivGame.Current.musicController.isMusicAvailable()) {
+    if (UncivGame.Current.musicController.isVoicesAvailable())
+        addVoicesVolumeSlider(this, settings)
+
+    if (UncivGame.Current.musicController.isMusicAvailable())
         addMusicControls(this, settings, music)
-    }
 
     if (!UncivGame.Current.musicController.isDefaultFileAvailable())
         addDownloadMusic(this, optionsPopup)
@@ -70,49 +72,42 @@ private fun addDownloadMusic(table: Table, optionsPopup: OptionsPopup) {
     }
 }
 
-private fun addSoundEffectsVolumeSlider(table: Table, settings: GameSettings) {
-    table.add("Sound effects volume".tr()).left().fillX()
+private fun Table.addVolumeSlider(text: String, initial: Float, silent: Boolean = false, onChange: (Float)->Unit) {
+    add(text.tr()).left().fillX()
 
-    val soundEffectsVolumeSlider = UncivSlider(
+    val volumeSlider = UncivSlider(
         0f, 1.0f, 0.05f,
-        initial = settings.soundEffectsVolume,
-        getTipText = UncivSlider::formatPercent
-    ) {
+        initial = initial,
+        sound = if (silent) UncivSound.Silent else UncivSound.Slider,
+        getTipText = UncivSlider::formatPercent,
+        onChange = onChange
+    )
+    add(volumeSlider).pad(5f).row()
+}
+
+private fun addSoundEffectsVolumeSlider(table: Table, settings: GameSettings) =
+    table.addVolumeSlider("Sound effects volume", settings.soundEffectsVolume) {
         settings.soundEffectsVolume = it
     }
-    table.add(soundEffectsVolumeSlider).pad(5f).row()
-}
 
-private fun addCitySoundsVolumeSlider(table: Table, settings: GameSettings) {
-    table.add("City ambient sound volume".tr()).left().fillX()
-
-    val citySoundVolumeSlider = UncivSlider(
-        0f, 1.0f, 0.05f,
-        initial = settings.citySoundsVolume,
-        getTipText = UncivSlider::formatPercent
-    ) {
+private fun addCitySoundsVolumeSlider(table: Table, settings: GameSettings) =
+    table.addVolumeSlider("City ambient sound volume", settings.citySoundsVolume) {
         settings.citySoundsVolume = it
     }
-    table.add(citySoundVolumeSlider).pad(5f).row()
-}
 
-private fun addMusicVolumeSlider(table: Table, settings: GameSettings, music: MusicController) {
-    table.add("Music volume".tr()).left().fillX()
+private fun addVoicesVolumeSlider(table: Table, settings: GameSettings) =
+    table.addVolumeSlider("Leader voices volume", settings.voicesVolume) {
+        settings.voicesVolume = it
+    }
 
-    val musicVolumeSlider = UncivSlider(
-        0f, 1.0f, 0.05f,
-        initial = settings.musicVolume,
-        sound = UncivSound.Silent,
-        getTipText = UncivSlider::formatPercent
-    ) {
+private fun addMusicVolumeSlider(table: Table, settings: GameSettings, music: MusicController) =
+    table.addVolumeSlider("Music volume".tr(), settings.musicVolume, true) {
         settings.musicVolume = it
 
         music.setVolume(it)
         if (!music.isPlaying())
             music.chooseTrack(flags = MusicTrackChooserFlags.setPlayDefault)
     }
-    table.add(musicVolumeSlider).pad(5f).row()
-}
 
 private fun addMusicPauseSlider(table: Table, settings: GameSettings, music: MusicController) {
     // map to/from 0-1-2..10-12-14..30-35-40..60-75-90-105-120

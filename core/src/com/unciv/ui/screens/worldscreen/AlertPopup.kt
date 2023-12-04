@@ -5,13 +5,17 @@ import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.Constants
 import com.unciv.UncivGame
-import com.unciv.logic.battle.Battle
+import com.unciv.logic.battle.BattleUnitCapture
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.AlertType
 import com.unciv.logic.civilization.Civilization
+import com.unciv.logic.civilization.CivilopediaAction
+import com.unciv.logic.civilization.DiplomacyAction
 import com.unciv.logic.civilization.LocationAction
 import com.unciv.logic.civilization.NotificationCategory
+import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.civilization.PopupAlert
+import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.models.ruleset.unique.UniqueType
@@ -63,6 +67,10 @@ class AlertPopup(
     private fun getCiv(civName: String) = gameInfo.getCivilization(civName)
     private fun getCity(cityId: String) = gameInfo.getCities().first { it.id == cityId }
     //endregion
+
+    // This redirects all addCloseButton uses with only text and no action to accept the space key
+    private fun addCloseButton(text: String = Constants.close) =
+        addCloseButton(text, KeyboardBinding.NextTurnAlternate, null)
 
     init {
         // This makes the buttons fill up available width. See comments in #9559.
@@ -189,7 +197,9 @@ class AlertPopup(
         val playerDiploManager = viewingCiv.getDiplomacyManager(otherciv)
         addLeaderName(otherciv)
         addGoodSizedLabel("My friend, shall we declare our friendship to the world?").row()
-        addCloseButton("We are not interested.", KeyboardBinding.Cancel).row()
+        addCloseButton("We are not interested.", KeyboardBinding.Cancel) {
+            playerDiploManager.otherCivDiplomacy().setFlag(DiplomacyFlags.DeclinedDeclarationOfFriendship, 20)
+        }.row()
         addCloseButton("Declare Friendship ([30] turns)", KeyboardBinding.Confirm) {
             playerDiploManager.signDeclarationOfFriendship()
         }
@@ -201,6 +211,7 @@ class AlertPopup(
         addGoodSizedLabel(civInfo.nation.defeated).row()
         addCloseButton("Farewell.")
         music.chooseTrack(civInfo.civName, MusicMood.Defeat, EnumSet.of(MusicTrackChooserFlags.SuffixMustMatch))
+        music.playVoice("${civInfo.civName}.defeated")
     }
 
     private fun addDemandToStopSettlingCitiesNear() {
@@ -243,6 +254,7 @@ class AlertPopup(
         val nation = civInfo.nation
         addLeaderName(civInfo)
         music.chooseTrack(civInfo.civName, MusicMood.themeOrPeace, MusicTrackChooserFlags.setSpecific)
+        music.playVoice("${civInfo.civName}.introduction")
         if (civInfo.isCityState()) {
             addGoodSizedLabel("We have encountered the City-State of [${nation.name}]!").row()
             addCloseButton("Excellent!")
@@ -302,10 +314,18 @@ class AlertPopup(
                 originalOwner.getDiplomacyManager(captor)
                     .setModifier(DiplomaticModifiers.ReturnedCapturedUnits, 20f)
             }
+            val notificationSequence = sequence {
+                yield(LocationAction(tile.position))
+                if (closestCity != null)
+                    yield(LocationAction(closestCity.location))
+                yield(DiplomacyAction(captor.civName))
+                yield(CivilopediaAction("Tutorial/Barbarians"))
+            }
+            originalOwner.addNotification("Your captured [${unitName}] has been returned by [${captor.civName}]", notificationSequence, NotificationCategory.Diplomacy, NotificationIcon.Trade, unitName, captor.civName)
         }
         addCloseButton(Constants.no, KeyboardBinding.Cancel) {
             // Take it for ourselves
-            Battle.captureOrConvertToWorker(capturedUnit, captor)
+            BattleUnitCapture.captureOrConvertToWorker(capturedUnit, captor)
         }
     }
 
@@ -339,6 +359,7 @@ class AlertPopup(
         addCloseButton("You'll pay for this!")
         addCloseButton("Very well.")
         music.chooseTrack(civInfo.civName, MusicMood.War, MusicTrackChooserFlags.setSpecific)
+        music.playVoice("${civInfo.civName}.declaringWar")
     }
 
     private fun addWonderBuilt() {

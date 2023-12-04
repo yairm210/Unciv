@@ -16,18 +16,19 @@ import com.unciv.logic.map.tile.Tile
 import com.unciv.models.UnitActionType
 import com.unciv.models.UpgradeUnitAction
 import com.unciv.models.ruleset.unit.BaseUnit
-import com.unciv.ui.components.ExpanderTab
-import com.unciv.ui.components.Fonts
-import com.unciv.ui.components.TabbedPager
-import com.unciv.ui.components.UnitGroup
 import com.unciv.ui.components.extensions.addSeparator
 import com.unciv.ui.components.extensions.brighten
 import com.unciv.ui.components.extensions.center
 import com.unciv.ui.components.extensions.darken
+import com.unciv.ui.components.extensions.equalizeColumns
 import com.unciv.ui.components.extensions.surroundWithCircle
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toPrettyString
+import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.components.input.onClick
+import com.unciv.ui.components.widgets.ExpanderTab
+import com.unciv.ui.components.widgets.TabbedPager
+import com.unciv.ui.components.widgets.UnitGroup
 import com.unciv.ui.images.IconTextButton
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popups.UnitUpgradeMenu
@@ -37,6 +38,7 @@ import com.unciv.ui.screens.pickerscreens.UnitRenamePopup
 import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionsUpgrade
 import kotlin.math.abs
 
+//TODO use SortableGrid
 /**
  * Supplies the Unit sub-table for the Empire Overview
  */

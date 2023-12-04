@@ -9,7 +9,6 @@ import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.badlogic.gdx.scenes.scene2d.actions.FloatAction
 import com.badlogic.gdx.scenes.scene2d.actions.RelativeTemporalAction
-import com.badlogic.gdx.scenes.scene2d.actions.RepeatAction
 import com.badlogic.gdx.scenes.scene2d.actions.SequenceAction
 import com.badlogic.gdx.scenes.scene2d.actions.TemporalAction
 import com.badlogic.gdx.scenes.scene2d.ui.Image
@@ -83,10 +82,12 @@ object BattleTableHelpers {
                 val attackAnimationLocation = getAttackAnimationLocation()
                 if (attackAnimationLocation != null) {
                     var i = 1
-                    while (ImageGetter.imageExists(attackAnimationLocation + i)){
+                    while (ImageGetter.imageExists(attackAnimationLocation + i)) {
                         val image = ImageGetter.getImage(attackAnimationLocation + i)
+
+                        val defenderParentGroup = defenderActors.first().parent
                         addAction(Actions.run {
-                            defenderActors.first().parent.addActor(image)
+                            defenderParentGroup.addActor(image)
                         })
                         addAction(Actions.delay(attackAnimationFrameDuration))
                         addAction(Actions.removeActor(image))

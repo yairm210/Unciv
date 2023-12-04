@@ -13,6 +13,7 @@ import com.unciv.models.ruleset.Victory
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.ruleset.unique.LocalUniqueCache
+import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stat
@@ -185,7 +186,7 @@ object Automation {
                 .filter { it.isRanged() }
                 .maxByOrNull { it.cost }!!
         }
-        else if (isMissingNavalUnitsForCityDefence && militaryUnits.any { isNavalMeleeUnit(it) }){
+        else if (isMissingNavalUnitsForCityDefence && militaryUnits.any { isNavalMeleeUnit(it) }) {
             chosenUnit = militaryUnits
                 .filter { isNavalMeleeUnit(it) }
                 .maxBy { it.cost }
@@ -247,7 +248,7 @@ object Automation {
         construction: INonPerpetualConstruction
     ): Boolean {
         return allowCreateImprovementBuildings(civInfo, city, construction)
-                && allowSpendingResource(civInfo, construction)
+                && allowSpendingResource(civInfo, construction, city)
     }
 
     @Suppress("MemberVisibilityCanBePrivate")
@@ -268,7 +269,7 @@ object Automation {
 
     /** Determines whether the AI should be willing to spend strategic resources to build
      *  [construction] for [civInfo], assumes that we are actually able to do so. */
-    fun allowSpendingResource(civInfo: Civilization, construction: INonPerpetualConstruction): Boolean {
+    fun allowSpendingResource(civInfo: Civilization, construction: INonPerpetualConstruction, cityInfo: City? = null): Boolean {
         // City states do whatever they want
         if (civInfo.isCityState())
             return true
@@ -277,7 +278,9 @@ object Automation {
         if (construction.name in civInfo.gameInfo.spaceResources)
             return true
 
-        val requiredResources = construction.getResourceRequirementsPerTurn()
+        val requiredResources = if (construction is BaseUnit)
+            construction.getResourceRequirementsPerTurn(StateForConditionals(civInfo))
+        else construction.getResourceRequirementsPerTurn(StateForConditionals(civInfo, cityInfo))
         // Does it even require any resources?
         if (requiredResources.isEmpty())
             return true
@@ -295,9 +298,11 @@ object Automation {
             for (city in civInfo.cities) {
                 val otherConstruction = city.cityConstructions.getCurrentConstruction()
                 if (otherConstruction is Building)
-                    futureForBuildings += otherConstruction.getResourceRequirementsPerTurn()[resource]
+                    futureForBuildings += otherConstruction.getResourceRequirementsPerTurn(
+                        StateForConditionals(civInfo, city))[resource]
                 else
-                    futureForUnits += otherConstruction.getResourceRequirementsPerTurn()[resource]
+                    futureForUnits += otherConstruction.getResourceRequirementsPerTurn(
+                        StateForConditionals(civInfo))[resource]
             }
 
             // Make sure we have some for space
@@ -445,7 +450,7 @@ object Automation {
                     stats.gold
                 else
                     stats.gold / 3 // 3 gold is much worse than 2 production
-
+        rank += stats.happiness * 3
         rank += stats.production
         rank += stats.science
         rank += stats.culture

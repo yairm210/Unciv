@@ -68,7 +68,7 @@ class BasicTests {
         val units: Collection<BaseUnit> = ruleset.units.values
         var allObsoletingUnitsHaveUpgrades = true
         for (unit in units) {
-            if (unit.obsoleteTech != null && unit.upgradesTo == null && unit.name !="Scout" ) {
+            if (unit.techsThatObsoleteThis().any() && unit.upgradesTo == null && unit.name !="Scout" ) {
                 debug("%s obsoletes but has no upgrade", unit.name)
                 allObsoletingUnitsHaveUpgrades = false
             }
@@ -77,7 +77,7 @@ class BasicTests {
     }
 
     @Test
-    fun statParserWorks(){
+    fun statParserWorks() {
         Assert.assertTrue(Stats.isStats("+1 Production"))
         Assert.assertTrue(Stats.isStats("+1 Gold, +2 Production"))
         Assert.assertFalse(Stats.isStats("+1 Gold from tree"))
@@ -91,7 +91,6 @@ class BasicTests {
 
     @Test
     fun baseRulesetHasNoBugs() {
-        RulesetCache.modCheckerAllowUntypedUniques = false
         for (baseRuleset in BaseRuleset.values()) {
             val ruleset = RulesetCache[baseRuleset.fullName]!!
             val modCheck = ruleset.checkModLinks()

@@ -5,14 +5,31 @@ import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.LocationAction
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
+import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
+import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.ruleset.unique.StateForConditionals
+import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unique.UniqueType
-import com.unciv.ui.screens.worldscreen.unit.actions.UnitActions
 
 
-enum class ImprovementBuildingProblem {
-    WrongCiv, MissingTech, Unbuildable, NotJustOutsideBorders, OutsideBorders, UnmetConditional, Obsolete, MissingResources, Other
+/** Reason why an Improvement cannot be built by a given civ */
+enum class ImprovementBuildingProblem(
+    /** `true` if this cannot change on the future of this game */
+    val permanent: Boolean = false,
+    /** `true` if the ImprovementPicker should report this problem */
+    val reportable: Boolean = false
+) {
+    WrongCiv(permanent = true),
+    MissingTech(reportable = true),
+    Unbuildable(permanent = true),
+    ConditionallyUnbuildable,
+    NotJustOutsideBorders(reportable = true),
+    OutsideBorders(reportable = true),
+    UnmetConditional,
+    Obsolete(permanent = true),
+    MissingResources(reportable = true),
+    Other
 }
 
 class TileInfoImprovementFunctions(val tile: Tile) {
@@ -30,8 +47,11 @@ class TileInfoImprovementFunctions(val tile: Tile) {
             yield(ImprovementBuildingProblem.WrongCiv)
         if (improvement.techRequired != null && !civInfo.tech.isResearched(improvement.techRequired!!))
             yield(ImprovementBuildingProblem.MissingTech)
-        if (improvement.hasUnique(UniqueType.Unbuildable, stateForConditionals))
+        if (improvement.getMatchingUniques(UniqueType.Unbuildable, StateForConditionals.IgnoreConditionals)
+                .any { it.conditionals.isEmpty() })
             yield(ImprovementBuildingProblem.Unbuildable)
+        else if (improvement.hasUnique(UniqueType.Unbuildable, stateForConditionals))
+            yield(ImprovementBuildingProblem.ConditionallyUnbuildable)
 
         if (tile.getOwner() != civInfo && !improvement.hasUnique(UniqueType.CanBuildOutsideBorders, stateForConditionals)) {
             if (!improvement.hasUnique(UniqueType.CanBuildJustOutsideBorders, stateForConditionals))
@@ -169,7 +189,7 @@ class TileInfoImprovementFunctions(val tile: Tile) {
 
     fun changeImprovement(improvementName: String?,
                           /** For road assignment and taking over tiles - DO NOT pass when simulating improvement effects! */
-                          civToActivateBroaderEffects:Civilization? = null) {
+                          civToActivateBroaderEffects: Civilization? = null, unit: MapUnit? = null) {
         val improvementObject = tile.ruleset.tileImprovements[improvementName]
 
         when {
@@ -203,7 +223,10 @@ class TileInfoImprovementFunctions(val tile: Tile) {
         if (civToActivateBroaderEffects != null && improvementObject != null
             && improvementObject.hasUnique(UniqueType.TakesOverAdjacentTiles)
         )
-            UnitActions.takeOverTilesAround(civToActivateBroaderEffects, tile)
+            takeOverTilesAround(civToActivateBroaderEffects, tile)
+
+        if (civToActivateBroaderEffects != null && improvementObject != null)
+            triggerImprovementUniques(improvementObject, civToActivateBroaderEffects, unit)
 
         val city = tile.owningCity
         if (city != null) {
@@ -213,6 +236,29 @@ class TileInfoImprovementFunctions(val tile: Tile) {
                 city.reassignPopulationDeferred()
             }
         }
+    }
+
+    private fun triggerImprovementUniques(
+        improvement: TileImprovement,
+        civ: Civilization,
+        unit: MapUnit? = null
+    ) {
+        for (unique in improvement.uniqueObjects.filter { !it.hasTriggerConditional() })
+            if (unit != null) {
+                UniqueTriggerActivation.triggerUnitwideUnique(unique, unit)
+            }
+            else UniqueTriggerActivation.triggerCivwideUnique(unique, civ, tile = tile)
+
+        if (unit != null){
+            for (unique in unit.getTriggeredUniques(UniqueType.TriggerUponBuildingImprovement)
+                .filter { improvement.matchesFilter(it.params[0]) })
+                UniqueTriggerActivation.triggerUnitwideUnique(unique, unit)
+            }
+
+        for (unique in civ.getMatchingUniques(
+            UniqueType.TriggerUponBuildingImprovement, StateForConditionals(civInfo = civ, unit = unit))
+            .filter { improvement.matchesFilter(it.params[0]) })
+            UniqueTriggerActivation.triggerCivwideUnique(unique, civ, tile = tile)
     }
 
     private fun adtivateRemovalImprovement(
@@ -259,6 +305,51 @@ class TileInfoImprovementFunctions(val tile: Tile) {
                 locations, NotificationCategory.Production, NotificationIcon.Construction
             )
         }
+    }
+
+    private fun takeOverTilesAround(civ: Civilization, tile: Tile) {
+        // This method should only be called for a citadel - therefore one of the neighbour tile
+        // must belong to unit's civ, so minByOrNull in the nearestCity formula should be never `null`.
+        // That is, unless a mod does not specify the proper unique - then fallbackNearestCity will take over.
+
+        fun priority(tile: Tile): Int { // helper calculates priority (lower is better): distance plus razing malus
+            val city = tile.getCity()!!       // !! assertion is guaranteed by the outer filter selector.
+            return city.getCenterTile().aerialDistanceTo(tile) +
+                (if (city.isBeingRazed) 5 else 0)
+        }
+        fun fallbackNearestCity(civ: Civilization, tile: Tile) =
+            civ.cities.minByOrNull {
+                it.getCenterTile().aerialDistanceTo(tile) +
+                    (if (it.isBeingRazed) 5 else 0)
+            }!!
+
+        // In the rare case more than one city owns tiles neighboring the citadel
+        // this will prioritize the nearest one not being razed
+        val nearestCity = tile.neighbors
+            .filter { it.getOwner() == civ }
+            .minByOrNull { priority(it) }?.getCity()
+            ?: fallbackNearestCity(civ, tile)
+
+        // capture all tiles which do not belong to unit's civ and are not enemy cities
+        // we use getTilesInDistance here, not neighbours to include the current tile as well
+        val tilesToTakeOver = tile.getTilesInDistance(1)
+            .filter { !it.isCityCenter() && it.getOwner() != civ }
+
+        val civsToNotify = mutableSetOf<Civilization>()
+        for (tileToTakeOver in tilesToTakeOver) {
+            val otherCiv = tileToTakeOver.getOwner()
+            if (otherCiv != null) {
+                // decrease relations for -10 pt/tile
+                if (!otherCiv.knows(civ)) otherCiv.diplomacyFunctions.makeCivilizationsMeet(civ)
+                otherCiv.getDiplomacyManager(civ).addModifier(DiplomaticModifiers.StealingTerritory, -10f)
+                civsToNotify.add(otherCiv)
+            }
+            nearestCity.expansion.takeOwnership(tileToTakeOver)
+        }
+
+        for (otherCiv in civsToNotify)
+            otherCiv.addNotification("Your territory has been stolen by [$civ]!",
+                tile.position, NotificationCategory.Cities, civ.civName, NotificationIcon.War)
     }
 
 

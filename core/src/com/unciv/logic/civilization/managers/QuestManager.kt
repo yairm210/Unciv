@@ -487,7 +487,7 @@ class QuestManager : IsPartOfGameInfoSerialization {
         val leadingQuest = assignedQuests.filter { it.questName == questName }.maxByOrNull { getScoreForQuest(it) }
             ?: return ""
 
-        return when (questName){
+        return when (questName) {
             QuestName.ContestCulture.value -> "Current leader is [${leadingQuest.assignee}] with [${getScoreForQuest(leadingQuest)}] [Culture] generated."
             QuestName.ContestFaith.value -> "Current leader is [${leadingQuest.assignee}] with [${getScoreForQuest(leadingQuest)}] [Faith] generated."
             QuestName.ContestTech.value -> "Current leader is [${leadingQuest.assignee}] with [${getScoreForQuest(leadingQuest)}] Technologies discovered."
@@ -571,7 +571,8 @@ class QuestManager : IsPartOfGameInfoSerialization {
     private fun notifyAskForAssistance(assignee: Civilization, attackerName: String, unitsToKill: Int, location: Vector2?) {
         if (attackerName == assignee.civName) return  // No "Hey Bob help us against Bob"
         val message = "[${civInfo.civName}] is being attacked by [$attackerName]!" +
-            "Kill [$unitsToKill] of the attacker's military units and they will be immensely grateful."
+            // Space relevant in template!
+            " Kill [$unitsToKill] of the attacker's military units and they will be immensely grateful."
         // Note: that LocationAction pseudo-constructor is able to filter out null location(s), no need for `if`
         assignee.addNotification(message, LocationAction(location), NotificationCategory.Diplomacy, civInfo.civName, "OtherIcons/Quest")
     }
@@ -719,7 +720,7 @@ class QuestManager : IsPartOfGameInfoSerialization {
                 .filter { building ->
                             // Buildable wonder
                             building.isWonder
-                            && (building.requiredTech == null || challenger.tech.isResearched(building.requiredTech!!))
+                            && challenger.tech.isResearched(building)
                             && civInfo.gameInfo.getCities().none { it.cityConstructions.isBuilt(building.name) }
                             // Can't be disabled
                             && building.name !in startingEra.startingObsoleteWonders
