@@ -121,6 +121,22 @@ class WorkerAutomation(
 
     ///////////////////////////////////////// Methods /////////////////////////////////////////
 
+
+    /**
+     * We prefer the worker to prioritize paths connected by existing roads. Otherwise, we set every tile to have
+     * equal value since building a road on any of them makes the original movement cost irrelevant.
+     */
+    private fun getRoadPathMovementCost(unit: MapUnit, from: Tile, to: Tile): Float{
+        // hasConnection accounts for civs that treat jungle/forest as roads
+        val areConnectedByRoad = from.hasConnection(unit.civ) && to.hasConnection(unit.civ)
+        if (areConnectedByRoad) // TODO: I'm making a choice to ignore road over river penalties here. Is this correct?
+            return unit.civ.tech.movementSpeedOnRoads
+
+        if (from.getUnpillagedRoad() == RoadStatus.Railroad && to.getUnpillagedRoad() == RoadStatus.Railroad)
+            return RoadStatus.Railroad.movement
+
+        return 1f
+    }
     /**
      * Automate the process of connecting a road between two points.
      * Current thoughts:
@@ -147,21 +163,7 @@ class WorkerAutomation(
             currentTile.stopWorkingOnImprovement()
         }
 
-        /**
-         * We prefer the worker to prioritize paths connected by existing roads. Otherwise, we set every tile to have
-         * equal value since building a road on any of them makes the original movement cost irrelevant.
-         */
-        fun getMovementCost(from: Tile, to: Tile): Float{
-            // hasConnection accounts for civs that treat jungle/forest as roads
-            val areConnectedByRoad = from.hasConnection(unit.civ) && to.hasConnection(unit.civ)
-            if (areConnectedByRoad) // TODO: I'm making a choice to ignore road over river penalties here. Is this correct?
-                return unit.civ.tech.movementSpeedOnRoads
 
-            if (from.getUnpillagedRoad() == RoadStatus.Railroad && to.getUnpillagedRoad() == RoadStatus.Railroad)
-                return RoadStatus.Railroad.movement
-
-            return 1f
-        }
 
         /** Conditions for whether it is acceptable to build a road on this tile */
         fun shouldBuildRoadOnTile(tile: Tile): Boolean {
@@ -180,7 +182,7 @@ class WorkerAutomation(
         if (pathToDest == null){
             val astar = AStar(currentTile,
                 {tile: Tile -> tile.isLand && !tile.isImpassible() && unit.civ.hasExplored(tile) && (tile.getOwner() == unit.civ || tile.getOwner() == null)},
-                {from: Tile, to: Tile -> getMovementCost(from, to)},
+                {from: Tile, to: Tile -> getRoadPathMovementCost(unit, from, to)},
                 {from: Tile, to: Tile -> 0f}) // Heuristic left empty. If the search ever starts to hang the game, start here -- or add a maxSize.
 
             while (true) {
