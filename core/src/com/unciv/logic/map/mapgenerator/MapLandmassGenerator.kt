@@ -98,39 +98,40 @@ class MapLandmassGenerator(val ruleset: Ruleset, val randomness: MapGenerationRa
     }
 
     private fun createFractal(tileMap: TileMap) {
-        val elevationSeed = randomness.RNG.nextInt().toDouble()
-        for (tile in tileMap.values) {
-            val a = tileMap.maxLongitude
-            val b = tileMap.maxLatitude
-            val x = tile.longitude
-            val y = tile.latitude
+        do {
+            val elevationSeed = randomness.RNG.nextInt().toDouble()
+            for (tile in tileMap.values) {
+                val a = tileMap.maxLongitude
+                val b = tileMap.maxLatitude
+                val x = tile.longitude
+                val y = tile.latitude
 
-            // var elevation = randomness.getPerlinNoise(tile, elevationSeed, persistence=0.8, lacunarity=1.5)
-            var elevation = randomness.getPerlinNoiseScaled(tile, a, b, elevationSeed, persistence=0.8, lacunarity=1.6)
+                // var elevation = randomness.getPerlinNoise(tile, elevationSeed, persistence=0.8, lacunarity=1.5)
+                var elevation = randomness.getPerlinNoiseScaled(tile, a, b, elevationSeed, persistence=0.8, lacunarity=1.5)
 
 
-            val xdistanceratio = abs(x)/a
-            var xoffset = 0.0
+                val xdistanceratio = abs(x)/a
+                var xoffset = 0.0
 
-            val xstartdropoff = 0.75
-            if (xdistanceratio > xstartdropoff) {
-                xoffset = (xdistanceratio - xstartdropoff)*5.0
+                val xstartdropoff = 0.8
+                if (xdistanceratio > xstartdropoff) {
+                    xoffset = (xdistanceratio - xstartdropoff)*(1/(1.0-xstartdropoff))
+                }
+
+                val ydistanceratio = abs(y)/b
+                var yoffset = 0.0
+
+                val ystartdropoff=0.77
+                if (ydistanceratio > ystartdropoff) {
+                    yoffset = (ydistanceratio - ystartdropoff)*(1/(1.0-ystartdropoff))
+                }
+
+                elevation -= xoffset*0.33
+                elevation -= yoffset*0.33
+
+                spawnLandOrWater(tile, elevation)
             }
-
-            val ydistanceratio = abs(y)/a
-            var yoffset = 0.0
-
-            val ystartdropoff=0.9
-            if (ydistanceratio > ystartdropoff) {
-                yoffset = (ydistanceratio - ystartdropoff)*5.0
-            }
-
-            elevation -= xoffset*0.3
-            elevation -= yoffset*0.25
-            println(elevation)
-
-            spawnLandOrWater(tile, elevation)
-        }
+        } while (tileMap.values.count { it.baseTerrain == waterTerrainName } > tileMap.values.size * 0.7f) // Over 70% water)
     }
 
     private fun createArchipelago(tileMap: TileMap) {
