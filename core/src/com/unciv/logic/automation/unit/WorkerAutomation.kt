@@ -10,6 +10,7 @@ import com.unciv.logic.automation.unit.UnitAutomation.wander
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.NotificationCategory
+import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.map.BFS
 import com.unciv.logic.map.AStar
 import com.unciv.logic.map.HexMath
@@ -173,8 +174,6 @@ class WorkerAutomation(
 
         val destinationTile = unit.civ.gameInfo.tileMap[unit.automatedRoadConnectionDestination!!]
 
-        debug("Entered automate connect road for unit %s, start %s, end %s", unit, currentTile, destinationTile)
-
         var pathToDest: List<Vector2>? = unit.automatedRoadConnectionPath
 
         // The path does not exist, create it
@@ -182,13 +181,14 @@ class WorkerAutomation(
             val astar = AStar(currentTile,
                 {tile: Tile -> tile.isLand && !tile.isImpassible() && unit.civ.hasExplored(tile) && (tile.getOwner() == unit.civ || tile.getOwner() == null)},
                 {from: Tile, to: Tile -> getMovementCost(from, to)},
-                {from: Tile, to: Tile -> 0f}) // TODO: Fix HexMath
+                {from: Tile, to: Tile -> 0f}) // Heuristic left empty. If the search ever starts to hang the game, start here -- or add a maxSize.
 
             while (true) {
                 if (astar.hasEnded()) {
                     // We failed to find a path
                     debug("WorkerAutomation: ${unit.label()} -> connect road failed at AStar search size ${astar.size()}")
                     stopAndCleanAutomation()
+                    unit.civ.addNotification("Connect road failed!", currentTile.position, NotificationCategory.Units, NotificationIcon.Construction)
                     return
                 }
                 if (!astar.hasReachedTile(destinationTile)) {
@@ -210,8 +210,9 @@ class WorkerAutomation(
 
         // The worker was somehow moved off its path, cancel the action
         if (currTileIndex == -1) {
-            debug("WorkerAutomation: ${unit.label()} -> was moved off its connect road path. Operation cancelled.")
+            Log.debug("${unit.label()} -> was moved off its connect road path. Operation cancelled.")
             stopAndCleanAutomation()
+            unit.civ.addNotification("Connect road cancelled!", currentTile.position, NotificationCategory.Units, unit.name)
             return
         }
 
@@ -245,8 +246,9 @@ class WorkerAutomation(
                         unit.movement.moveToTile(nextTile!!)
                         currentTile = unit.getTile()
                     }
-                    currTileIndex == pathToDest.size - 1 -> { // The last tile in the path is unbuildable or has a road. // TODO: We are finished notification
+                    currTileIndex == pathToDest.size - 1 -> { // The last tile in the path is unbuildable or has a road.
                         stopAndCleanAutomation()
+                        unit.civ.addNotification("Connect road completed!", currentTile.position, NotificationCategory.Units, unit.name)
                         return
                     }
                 }
