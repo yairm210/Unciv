@@ -157,6 +157,8 @@ class TechManager : IsPartOfGameInfoSerialization {
 
     fun isResearched(construction: INonPerpetualConstruction): Boolean = construction.requiredTechs().all{ requiredTech -> isResearched(requiredTech) }
 
+    fun isObsolete(unit: BaseUnit): Boolean = unit.techsThatObsoleteThis().any{ obsoleteTech -> isResearched(obsoleteTech) }
+
     fun canBeResearched(techName: String): Boolean {
         val tech = getRuleset().technologies[techName]!!
         if (tech.uniqueObjects.any { it.type == UniqueType.OnlyAvailableWhen && !it.conditionalsApply(civInfo) })
