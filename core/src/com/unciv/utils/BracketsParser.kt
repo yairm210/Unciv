@@ -15,10 +15,12 @@ import kotlin.coroutines.cancellation.CancellationException
  *      * [+] Error reporting
  *      * [+] O(n) perf
  *      * [+] No allocations during a parse, minimal on creation or parse start
+ *      * [+] Able to return placeholderText, that is, one level of inner brackets reduced to empty brackets, for every level
  */
 class BracketsParser(
     private val maxDepth: Int,
-    allowedTypes: String = "[{<"
+    allowedTypes: String = "[{<",
+    private val supportPlaceholderText: Boolean = false
 ) : Disposable {
     enum class BracketType(val opening: Char, val closing: Char) {
         Round('(', ')'),
@@ -34,16 +36,57 @@ class BracketsParser(
     enum class ErrorType { Result, InvalidClosing, UnmatchedOpening }
     data class ResultEntry(val level: Int, val position: Int, val type: BracketType, val error: ErrorType, val value: String)
 
-    private class StackEntry(var type: BracketType, var position: Int) {
-        fun set(type: BracketType, position: Int): StackEntry {
+    interface StackEntry {
+        var type: BracketType
+        var position: Int
+        fun set(type: BracketType, position: Int): StackEntry
+        fun addExclusion(from: Int, to: Int) {}
+        fun getPlaceHolderTextFactory(input: String, limit: Int): () -> String = { "" }
+    }
+    private class StackEntryLite(override var type: BracketType, override var position: Int) : StackEntry {
+        override fun set(type: BracketType, position: Int): StackEntry {
             this.type = type
             this.position = position
             return this
         }
     }
+    private class StackEntryFull(override var type: BracketType, override var position: Int) : StackEntry {
+        private val exclusionsFrom = ArrayList<Int>(3)
+        private val exclusionsTo = ArrayList<Int>(3)
+        override fun set(type: BracketType, position: Int): StackEntry {
+            this.type = type
+            this.position = position
+            exclusionsFrom.clear()
+            exclusionsTo.clear()
+            return this
+        }
+        override fun addExclusion(from: Int, to: Int) {
+            exclusionsFrom.add(from)
+            exclusionsTo.add(to)
+        }
+        override fun getPlaceHolderTextFactory(input: String, limit: Int): ()->String {
+            // This is comparable to a lambda as it carries information as closures, but a bit more readable IMHO
+            fun getPlaceholderText(): String {
+                val sb = StringBuilder(limit - position - 1)
+                var pos = position + 1
+                val toIter = exclusionsTo.iterator()
+                for (from in exclusionsFrom) {
+                    if (pos < from)
+                        sb.append(input.substring(pos, from))
+                    pos = toIter.next()
+                }
+                if (pos < limit)
+                    sb.append(input.substring(pos, limit))
+                return sb.toString()
+            }
+            return ::getPlaceholderText
+        }
+    }
+
     private val stack = ArrayDeque<StackEntry>(maxDepth)
     private val pool = object : Pool<StackEntry>() {
-        override fun newObject() = StackEntry(BracketType.Round, -1)
+        override fun newObject() = if (supportPlaceholderText) StackEntryFull(BracketType.Round, -1)
+                else StackEntryLite(BracketType.Round, -1)
         init {
             fill(maxDepth)
         }
@@ -70,7 +113,7 @@ class BracketsParser(
 
     fun parse(
         input: String,
-        emit: (level: Int, position: Int, type: BracketType, error: ErrorType, value: String) -> Unit
+        emit: (level: Int, position: Int, type: BracketType, error: ErrorType, value: String, getPlaceholderText: ()->String) -> Unit
     ) {
         try {
             for ((index, char) in input.withIndex()) {
@@ -81,16 +124,18 @@ class BracketsParser(
                 } else if (stack.lastOrNull()?.type == type) {
                     // Valid closing bracket
                     val top = stack.removeLast()
-                    if (stack.size < maxDepth)
-                        emit(stack.size, top.position, type, ErrorType.Result, input.substring(top.position + 1, index))
+                    if (stack.size < maxDepth) {
+                        emit(stack.size, top.position, type, ErrorType.Result, input.substring(top.position + 1, index), top.getPlaceHolderTextFactory(input, index))
+                    }
+                    stack.lastOrNull()?.addExclusion(top.position + 1, index)
                     pool.free(top)
                 } else {
                     // Invalid closing bracket
-                    emit(stack.size, index, type, ErrorType.InvalidClosing, "")
+                    emit(stack.size, index, type, ErrorType.InvalidClosing, "", emptyStringLambda)
                 }
             }
             for (unmatched in stack) {
-                emit(-1, unmatched.position, unmatched.type, ErrorType.UnmatchedOpening, "")
+                emit(-1, unmatched.position, unmatched.type, ErrorType.UnmatchedOpening, "", emptyStringLambda)
             }
         } catch (_: CancellationException) {}
         if (stack.isEmpty()) return
@@ -100,7 +145,7 @@ class BracketsParser(
 
     fun parse(input: String): List<ResultEntry> = ArrayList<ResultEntry>().apply {
         parse(input) {
-            level, position, type, error, value ->
+            level, position, type, error, value, _ ->
             add(ResultEntry(level, position, type, error, value))
         }
     }
@@ -113,7 +158,7 @@ class BracketsParser(
             if ('[' !in this) return emptyList()
             val result = ArrayList<String>()
             parameterParser.parse(this@getPlaceholderParameters) {
-                _, _, type, error, value ->
+                _, _, type, error, value, _ ->
                 if (type == BracketType.Pointy) throw CancellationException()
                 if (error == ErrorType.Result) result.add(value)
             }
