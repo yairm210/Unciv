@@ -302,7 +302,9 @@ class TranslationTests {
 
     @Test
     fun newBracketParserWorks() {
-        val parser = BracketsParser(10)
+        val parser = BracketsParser(10, supportPlaceholderText = true)
+
+        val conditionalDisjunctionExample = "Only available <either <after founding a religion> or <after discovering [Theology]>>"
         val candidates = listOf(
             "" to 0,
             "Hello" to 0,
@@ -310,7 +312,8 @@ class TranslationTests {
             "My [A] (B) <C> {D}" to 3,  // BracketType Round is not configured
             "gain [[Jaguar] ability]?" to 2,
             "[+1 Food] from [Wheat] tiles [in this city]" to 3,
-            "[+15]% Strength <for [All] units> <vs cities> <when attacking>" to 5
+            "[+15]% Strength <for [All] units> <vs cities> <when attacking>" to 5,
+            conditionalDisjunctionExample to 4
         )
         for ((input, expectedResults) in candidates) {
             val results = parser.parse(input)
@@ -342,6 +345,21 @@ class TranslationTests {
             2 to "Dad"
         )
         Assert.assertEquals(superExpected, superResults)
+
+        val conditionalDisjunctionResults = mutableListOf<Pair<Int, String>>()
+        parser.parse(conditionalDisjunctionExample) {
+                level, _, _, _, _, getPlaceholderText ->
+            conditionalDisjunctionResults += level to getPlaceholderText()
+        }
+        conditionalDisjunctionResults.sortWith(compareBy<Pair<Int, String>> { it.first }.thenBy { it.second })
+        val conditionalDisjunctionExpected = listOf(
+            0 to "either <> or <>",
+            1 to "after discovering []",
+            1 to "after founding a religion",
+            2 to "Theology"
+        )
+        Assert.assertEquals(conditionalDisjunctionExpected, conditionalDisjunctionResults)
+        return
     }
 
 //    @Test
