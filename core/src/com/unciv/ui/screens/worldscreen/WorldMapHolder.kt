@@ -22,6 +22,7 @@ import com.unciv.logic.battle.MapUnitCombatant
 import com.unciv.logic.battle.TargetHelper
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
+import com.unciv.logic.map.MapPathing
 import com.unciv.logic.map.TileMap
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.mapunit.movement.UnitMovement
@@ -72,6 +73,8 @@ class WorldMapHolder(
     private val unitActionOverlays: ArrayList<Actor> = ArrayList()
 
     private val unitMovementPaths: HashMap<MapUnit, ArrayList<Tile>> = HashMap()
+
+    private val unitConnectRoadPaths: HashMap<MapUnit, List<Tile>> = HashMap()
 
     private lateinit var tileGroupMap: TileGroupMap<WorldTileGroup>
 
@@ -160,6 +163,7 @@ class WorldMapHolder(
         removeUnitActionOverlay()
         selectedTile = tile
         unitMovementPaths.clear()
+        unitConnectRoadPaths.clear()
 
         val unitTable = worldScreen.bottomUnitTable
         val previousSelectedUnits = unitTable.selectedUnits.toList() // create copy
@@ -215,6 +219,7 @@ class WorldMapHolder(
         removeUnitActionOverlay()
         selectedTile = tile
         unitMovementPaths.clear()
+        unitConnectRoadPaths.clear()
         if (!worldScreen.canChangeState) return
 
         // Concurrency might open up a race condition window - if worldScreen.shouldUpdate is on too
@@ -427,26 +432,25 @@ class WorldMapHolder(
     }
 
     private fun addTileOverlaysWithUnitRoadConnecting(selectedUnit: MapUnit, tile: Tile){
-        //TODO: One may be able to select a location that is valid by the conditions below, but is impossible to reach
-        // ^ Like a tile surrounded by mountains on all sides
-       val validTile = tile.isLand &&
-           !tile.isImpassible() &&
-            selectedUnit.civ.hasExplored(tile)
-
-        if (!validTile){
-            addTileOverlays(tile)
-            worldScreen.shouldUpdate = true
-            return
+        Concurrency.run("ConnectRoad") {
+           val validTile = tile.isLand &&
+               !tile.isImpassible() &&
+                selectedUnit.civ.hasExplored(tile)
+            if (validTile) {
+                val roadPath: List<Tile>? = MapPathing.getRoadPath(selectedUnit, selectedUnit.currentTile, tile)
+                launchOnGLThread {
+                    if (roadPath == null) { // give the regular tile overlays with no road connection
+                        addTileOverlays(tile)
+                        worldScreen.shouldUpdate = true
+                        return@launchOnGLThread
+                    }
+                    unitConnectRoadPaths[selectedUnit] = roadPath
+                    val connectRoadButtonDto = ConnectRoadButtonDto(selectedUnit, tile)
+                    addTileOverlays(tile, connectRoadButtonDto)
+                    worldScreen.shouldUpdate = true
+                }
+            }
         }
-        if (UncivGame.Current.settings.singleTapMove) {
-            connectRoadToTargetTile(selectedUnit, tile)
-        }
-        else {
-            // Add "connect road" button
-            val connectRoadButtonDto = ConnectRoadButtonDto(selectedUnit, tile)
-            addTileOverlays(tile, connectRoadButtonDto)
-        }
-        worldScreen.shouldUpdate = true
     }
     private fun addTileOverlays(tile: Tile, buttonDto: ButtonDto? = null) {
         val table = Table().apply { defaults().pad(10f) }
@@ -689,6 +693,7 @@ class WorldMapHolder(
             }
         }
 
+        // Z-Layer: 0
         // Highlight suitable tiles in swapping-mode
         if (worldScreen.bottomUnitTable.selectedUnitIsSwapping) {
             val unitSwappableTiles = unit.movement.getUnitSwappableTiles()
@@ -701,6 +706,7 @@ class WorldMapHolder(
             return
         }
 
+        // Z-Layer: 0
         // Highlight suitable tiles in road connecting mode
         if (worldScreen.bottomUnitTable.selectedUnitIsConnectingRoad){
             // TODO: This needs to be cached?
@@ -710,9 +716,15 @@ class WorldMapHolder(
             unit.civ.gameInfo.civilizations
             val connectRoadTileOverlayColor = Color.RED
             for (tile in civExploredNonForeignLandTiles)  {
-                tileGroups[tile]!!.layerOverlay.showHighlight(connectRoadTileOverlayColor,
-                    if (UncivGame.Current.settings.singleTapMove) 0.7f else 0.3f)
+                tileGroups[tile]!!.layerOverlay.showHighlight(connectRoadTileOverlayColor, 0.3f)
             }
+
+            if (unitConnectRoadPaths.containsKey(unit)) {
+                for (tile in unitConnectRoadPaths[unit]!!) {
+                    tileGroups[tile]!!.layerOverlay.showHighlight(Color.ORANGE, 0.8f)
+                }
+            }
+
             // In road connecting mode we don't want to show other overlays
             return
         }
@@ -724,6 +736,7 @@ class WorldMapHolder(
         val nukeBlastRadius = if (unit.baseUnit.isNuclearWeapon() && selectedTile != null && selectedTile != unit.getTile())
             unit.getNukeBlastRadius() else -1
 
+        // Z-Layer: 1
         // Highlight tiles within movement range
         for (tile in tilesInMoveRange) {
             val group = tileGroups[tile]!!
@@ -751,7 +764,26 @@ class WorldMapHolder(
 
         }
 
-        // Highlight road path for workers connecting roads
+        // Z-Layer: 2
+        // Add back in the red markers for Air Unit Attack range since they can't move, but can still attack
+        if (unit.cache.cannotMove && isAirUnit && !unit.isPreparingAirSweep()) {
+            val tilesInAttackRange = unit.getTile().getTilesInDistanceRange(IntRange(1, unit.getRange()))
+            for (tile in tilesInAttackRange) {
+                // The tile is within attack range
+                tileGroups[tile]!!.layerOverlay.showHighlight(Color.RED, 0.3f)
+            }
+        }
+
+        // Z-Layer: 3
+        // Movement paths
+        if (unitMovementPaths.containsKey(unit)) {
+            for (tile in unitMovementPaths[unit]!!) {
+                tileGroups[tile]!!.layerOverlay.showHighlight(Color.SKY, 0.8f)
+            }
+        }
+
+        // Z-Layer: 4
+        // Highlight road path for workers currently connecting roads
         if (unit.isAutomatingRoadConnection()) {
             val currTileIndex = unit.automatedRoadConnectionPath!!.indexOf(unit.currentTile.position)
             if (currTileIndex != -1) {
@@ -766,27 +798,13 @@ class WorldMapHolder(
             }
         }
 
-        // Add back in the red markers for Air Unit Attack range since they can't move, but can still attack
-        if (unit.cache.cannotMove && isAirUnit && !unit.isPreparingAirSweep()) {
-            val tilesInAttackRange = unit.getTile().getTilesInDistanceRange(IntRange(1, unit.getRange()))
-            for (tile in tilesInAttackRange) {
-                // The tile is within attack range
-                tileGroups[tile]!!.layerOverlay.showHighlight(Color.RED, 0.3f)
-            }
-        }
-
-        // Movement paths
-        if (unitMovementPaths.containsKey(unit)) {
-            for (tile in unitMovementPaths[unit]!!) {
-                tileGroups[tile]!!.layerOverlay.showHighlight(Color.SKY, 0.8f)
-            }
-        }
-
+        // Z-Layer: 5
         // Highlight movement destination tile
         if (unit.isMoving()) {
             tileGroups[unit.getMovementDestination()]!!.layerOverlay.showHighlight(Color.WHITE, 0.7f)
         }
 
+        // Z-Layer: 6
         // Highlight attackable tiles
         if (unit.isMilitary()) {
 
@@ -814,6 +832,7 @@ class WorldMapHolder(
             }
         }
 
+        // Z-Layer: 7
         // Highlight best tiles for city founding
         if (unit.hasUnique(UniqueType.FoundCity)
                 && UncivGame.Current.settings.showSettlersSuggestedCityLocations) {
