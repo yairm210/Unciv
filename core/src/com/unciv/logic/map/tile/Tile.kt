@@ -671,7 +671,13 @@ open class Tile : IsPartOfGameInfoSerialization {
     }
 
     fun hasConnection(civInfo: Civilization) =
-            getUnpillagedRoad() != RoadStatus.None || forestOrJungleAreRoads(civInfo)
+        getUnpillagedRoad() != RoadStatus.None || forestOrJungleAreRoads(civInfo)
+
+    fun hasRoadConnection(civInfo: Civilization) =
+        getUnpillagedRoad() == RoadStatus.Road || forestOrJungleAreRoads(civInfo)
+
+    fun hasRailroadConnection() =
+        getUnpillagedRoad() == RoadStatus.Railroad
 
 
     private fun forestOrJungleAreRoads(civInfo: Civilization) =

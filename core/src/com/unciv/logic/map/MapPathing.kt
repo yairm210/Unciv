@@ -1,5 +1,6 @@
 package com.unciv.logic.map
 
+import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.RoadStatus
 import com.unciv.logic.map.tile.Tile
@@ -9,16 +10,25 @@ import com.unciv.utils.Log
 object MapPathing {
 
     /**
-     * We prefer the worker to prioritize paths connected by existing roads. Otherwise, we set every tile to have
-     * equal value since building a road on any of them makes the original movement cost irrelevant.
+     * We prefer the worker to prioritize paths connected by existing roads. If a tile has a road, but the civ has the ability
+     * to upgrade it to a railroad, we consider it to be a railroad for pathing since it will be upgraded.
+     * Otherwise, we set every tile to have equal value since building a road on any of them makes the original movement cost irrelevant.
      */
     private fun roadPreferredMovementCost(unit: MapUnit, from: Tile, to: Tile): Float{
-        // hasConnection accounts for civs that treat jungle/forest as roads
-        val areConnectedByRoad = from.hasConnection(unit.civ) && to.hasConnection(unit.civ)
-        if (areConnectedByRoad) // Ignore road over river penalties.
-            return unit.civ.tech.movementSpeedOnRoads
+        // hasRoadConnection accounts for civs that treat jungle/forest as roads
+        // Ignore road over river penalties.
+        val areConnectedByRoad = from.hasRoadConnection(unit.civ) && to.hasRoadConnection(unit.civ)
+        if (areConnectedByRoad){
+            // If the civ has railroad technology, consider roads as railroads since they will be upgraded
+            if (unit.civ.tech.getBestRoadAvailable() == RoadStatus.Railroad){
+                return RoadStatus.Railroad.movement
+            }else{
+                return unit.civ.tech.movementSpeedOnRoads
+            }
+        }
 
-        if (from.getUnpillagedRoad() == RoadStatus.Railroad && to.getUnpillagedRoad() == RoadStatus.Railroad)
+        val areConnectedByRailroad = from.hasRailroadConnection() && to.hasRailroadConnection()
+        if (areConnectedByRailroad)
             return RoadStatus.Railroad.movement
 
         return 1f
