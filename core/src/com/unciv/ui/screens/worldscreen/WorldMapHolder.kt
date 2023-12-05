@@ -181,8 +181,11 @@ class WorldMapHolder(
             val isPlayerTurn = worldScreen.isPlayersTurn
             val existsUnitNotPreparingAirSweep = previousSelectedUnits.any { !it.isPreparingAirSweep() }
 
+            // Todo: valid tiles for actions should be handled internally, not here.
             val canPerformActionsOnTile = if (previousSelectedUnitIsSwapping) {
                 previousSelectedUnits.first().movement.canUnitSwapTo(tile)
+            } else if(previousSelectedUnitIsConnectingRoad) {
+                true
             } else {
                 previousSelectedUnits.any {
                     it.movement.canMoveTo(tile) ||
@@ -651,6 +654,10 @@ class WorldMapHolder(
             unitTable.selectedCity != null -> {
                 val city = unitTable.selectedCity!!
                 updateBombardableTilesForSelectedCity(city)
+                // We still want to show road paths to the selected city if they are present
+                if (unitTable.selectedUnitIsConnectingRoad){
+                    updateTilesForSelectedUnit(unitTable.selectedUnits[0])
+                }
             }
             unitTable.selectedUnit != null -> {
                 for (unit in unitTable.selectedUnits) {

@@ -296,7 +296,13 @@ class UnitTable(val worldScreen: WorldScreen) : Table() {
     }
 
     fun citySelected(city: City) : Boolean {
-        selectUnit()
+        // If the last selected unit connecting a road, keep it selected. Otherwise, clear.
+        if(selectedUnitIsConnectingRoad){
+            selectUnit(selectedUnits[0])
+            selectedUnitIsConnectingRoad = true // selectUnit resets this
+        }else{
+            selectUnit()
+        }
         if (city == selectedCity) return false
         selectedCity = city
         selectedUnitHasChanged = true
