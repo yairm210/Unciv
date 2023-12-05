@@ -12,8 +12,8 @@ import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.map.BFS
-import com.unciv.logic.map.AStar
 import com.unciv.logic.map.HexMath
+import com.unciv.logic.map.MapPathing
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.RoadStatus
 import com.unciv.logic.map.tile.Tile
@@ -123,21 +123,6 @@ class WorkerAutomation(
 
 
     /**
-     * We prefer the worker to prioritize paths connected by existing roads. Otherwise, we set every tile to have
-     * equal value since building a road on any of them makes the original movement cost irrelevant.
-     */
-    private fun getRoadPathMovementCost(unit: MapUnit, from: Tile, to: Tile): Float{
-        // hasConnection accounts for civs that treat jungle/forest as roads
-        val areConnectedByRoad = from.hasConnection(unit.civ) && to.hasConnection(unit.civ)
-        if (areConnectedByRoad) // TODO: I'm making a choice to ignore road over river penalties here. Is this correct?
-            return unit.civ.tech.movementSpeedOnRoads
-
-        if (from.getUnpillagedRoad() == RoadStatus.Railroad && to.getUnpillagedRoad() == RoadStatus.Railroad)
-            return RoadStatus.Railroad.movement
-
-        return 1f
-    }
-    /**
      * Automate the process of connecting a road between two points.
      * Current thoughts:
      * Will be a special case of MapUnit.automated property
@@ -179,36 +164,23 @@ class WorkerAutomation(
         var pathToDest: List<Vector2>? = unit.automatedRoadConnectionPath
 
         // The path does not exist, create it
-        if (pathToDest == null){
-            val astar = AStar(currentTile,
-                {tile: Tile -> tile.isLand && !tile.isImpassible() && unit.civ.hasExplored(tile) && (tile.getOwner() == unit.civ || tile.getOwner() == null)},
-                {from: Tile, to: Tile -> getRoadPathMovementCost(unit, from, to)},
-                {from: Tile, to: Tile -> 0f}) // Heuristic left empty. If the search ever starts to hang the game, start here -- or add a maxSize.
-
-            while (true) {
-                if (astar.hasEnded()) {
-                    // We failed to find a path
-                    debug("WorkerAutomation: ${unit.label()} -> connect road failed at AStar search size ${astar.size()}")
+        if (pathToDest == null) {
+            val foundPath: List<Tile>? = MapPathing.getRoadPath(unit, currentTile, destinationTile)
+            if (foundPath == null) {
+                    Log.debug("WorkerAutomation: ${unit.label()} -> connect road failed")
                     stopAndCleanAutomation()
                     unit.civ.addNotification("Connect road failed!", currentTile.position, NotificationCategory.Units, NotificationIcon.Construction)
                     return
-                }
-                if (!astar.hasReachedTile(destinationTile)) {
-                    astar.nextStep()
-                    continue
-                }
-                // Found a path. Reverse it and convert it to a list of Vector2
-                pathToDest = astar.getPathTo(destinationTile)
-                    .toList()
-                    .reversed()
-                    .map {it.position}
-                unit.automatedRoadConnectionPath = pathToDest
-                debug("WorkerAutomation: ${unit.label()} -> found connect road path to destination tile: %s, %s", destinationTile, pathToDest)
-                break
+                } else {
+                    pathToDest = foundPath // Convert to a list of positions for serialization
+                    .map { it.position }
+
+                    unit.automatedRoadConnectionPath = pathToDest
+                    debug("WorkerAutomation: ${unit.label()} -> found connect road path to destination tile: %s, %s", destinationTile, pathToDest)
             }
         }
 
-        val currTileIndex = pathToDest!!.indexOf(currentTile.position)
+        val currTileIndex = pathToDest.indexOf(currentTile.position)
 
         // The worker was somehow moved off its path, cancel the action
         if (currTileIndex == -1) {
@@ -228,10 +200,10 @@ class WorkerAutomation(
                 when {
                     currTileIndex < pathToDest.size - 1 -> { // Try to move to the next tile in the path
                         val tileMap = unit.civ.gameInfo.tileMap
-                        var nextTile: Tile? = null
+                        var nextTile: Tile = currentTile
 
                         // Create a new list with tiles where the index is greater than currTileIndex
-                        val futureTiles = unit.automatedRoadConnectionPath!!.asSequence()
+                        val futureTiles = pathToDest.asSequence()
                             .dropWhile { it != unit.currentTile.position }
                             .drop(1)
                             .map { tileMap[it] }
@@ -245,7 +217,7 @@ class WorkerAutomation(
                            }
                        }
 
-                        unit.movement.moveToTile(nextTile!!)
+                        unit.movement.moveToTile(nextTile)
                         currentTile = unit.getTile()
                     }
                     currTileIndex == pathToDest.size - 1 -> { // The last tile in the path is unbuildable or has a road.
