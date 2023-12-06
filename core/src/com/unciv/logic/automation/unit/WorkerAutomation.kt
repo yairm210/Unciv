@@ -148,15 +148,15 @@ class WorkerAutomation(
             currentTile.stopWorkingOnImprovement()
         }
 
-
-
         /** Conditions for whether it is acceptable to build a road on this tile */
         fun shouldBuildRoadOnTile(tile: Tile): Boolean {
             return !tile.isCityCenter() // Can't build road on city tiles
                 // Special case for civs that treat forest/jungles as roads (inside their territory). We shouldn't build if railroads aren't unlocked.
                 && !(tile.hasConnection(unit.civ) && actualBestRoadAvailable == RoadStatus.Road)
-                // Don't build if the best road is already built
+                // Build (upgrade) if possible
                 && tile.roadStatus != actualBestRoadAvailable
+                // Build if the road is pillaged
+                || tile.roadIsPillaged
         }
 
         val destinationTile = unit.civ.gameInfo.tileMap[unit.automatedRoadConnectionDestination!!]
@@ -211,7 +211,7 @@ class WorkerAutomation(
                        for (futureTile in futureTiles){ // Find the furthest tile we can reach in this turn, move to, and does not have a road
                            if (unit.movement.canReachInCurrentTurn(futureTile) && unit.movement.canMoveTo(futureTile)) { // We can at least move to this tile
                                nextTile = futureTile
-                               if (futureTile.roadStatus != actualBestRoadAvailable) {
+                               if (shouldBuildRoadOnTile(futureTile)) {
                                    break // Stop on this tile
                                }
                            }
@@ -231,6 +231,11 @@ class WorkerAutomation(
 
         // We need to check current movement again after we've (potentially) moved
         if (unit.currentMovement > 0) {
+            // Repair pillaged roads first
+            if(currentTile.roadStatus != RoadStatus.None && currentTile.roadIsPillaged){
+                currentTile.setRepaired()
+                return
+            }
             if (shouldBuildRoadOnTile(currentTile) && currentTile.improvementInProgress != actualBestRoadAvailable.name) {
                 val improvement = actualBestRoadAvailable.improvement(ruleSet)!!
                 currentTile.startWorkingOnImprovement(improvement, civInfo, unit)
