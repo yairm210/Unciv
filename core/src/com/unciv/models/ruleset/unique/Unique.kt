@@ -195,7 +195,7 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
         }
 
         /** Helper for ConditionalWhenAboveAmountStatSpeed and its below counterpart */
-        fun checkStatAmountWithSpeed(compare: (current: Int, limit: Float) -> Boolean): Boolean {
+        fun checkResourceOrStatAmountWithSpeed(compare: (current: Int, limit: Float) -> Boolean): Boolean {
             if (state.civInfo == null) return false
             val limit = condition.params[0].toInt()
             val resourceOrStatName = condition.params[1]
@@ -229,10 +229,10 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
                 checkResourceOrStatAmount { current, limit -> current > limit }
             UniqueType.ConditionalWhenBelowAmountStatResource ->
                 checkResourceOrStatAmount { current, limit -> current < limit }
-            UniqueType.ConditionalWhenAboveAmountStatSpeed ->
-                checkStatAmountWithSpeed { current, limit -> current > limit }  // Note: Int.compareTo(Float)!
-            UniqueType.ConditionalWhenBelowAmountStatSpeed ->
-                checkStatAmountWithSpeed { current, limit -> current < limit }  // Note: Int.compareTo(Float)!
+            UniqueType.ConditionalWhenAboveAmountStatResourceSpeed ->
+                checkResourceOrStatAmountWithSpeed { current, limit -> current > limit }  // Note: Int.compareTo(Float)!
+            UniqueType.ConditionalWhenBelowAmountStatResourceSpeed ->
+                checkResourceOrStatAmountWithSpeed { current, limit -> current < limit }  // Note: Int.compareTo(Float)!
 
             UniqueType.ConditionalHappy -> checkOnCiv { stats.happiness >= 0 }
             UniqueType.ConditionalBetweenHappiness ->
