@@ -1,6 +1,5 @@
 package com.unciv.logic.map
 
-import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.RoadStatus
 import com.unciv.logic.map.tile.Tile
@@ -34,11 +33,11 @@ object MapPathing {
         return 1f
     }
 
-    private fun roadPathPredicate(unit: MapUnit, tile: Tile): Boolean {
+    fun isValidRoadPathTile(unit: MapUnit, tile: Tile): Boolean {
         return tile.isLand
             && !tile.isImpassible()
             && unit.civ.hasExplored(tile)
-            && (tile.getOwner() == unit.civ || tile.getOwner() == null)
+            && tile.canCivPassThrough(unit.civ)
     }
 
     /**
@@ -55,7 +54,7 @@ object MapPathing {
         return getPath(unit,
             startTile,
             endTile,
-            ::roadPathPredicate,
+            ::isValidRoadPathTile,
             ::roadPreferredMovementCost,
             {_, _, _ -> 0f}
             )

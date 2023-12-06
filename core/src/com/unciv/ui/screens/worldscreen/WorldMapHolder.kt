@@ -716,13 +716,12 @@ class WorldMapHolder(
         // Z-Layer: 0
         // Highlight suitable tiles in road connecting mode
         if (worldScreen.bottomUnitTable.selectedUnitIsConnectingRoad){
-            // TODO: This needs to be cached?
-            val civExploredNonForeignLandTiles = unit.civ.gameInfo.tileMap.tileList.filter {
-                it.isLand && !it.isImpassible() && unit.civ.hasExplored(it) && (it.getOwner() == unit.civ || it.getOwner() == null)
+            val validTiles = unit.civ.gameInfo.tileMap.tileList.filter {
+                MapPathing.isValidRoadPathTile(unit, it)
             }
             unit.civ.gameInfo.civilizations
             val connectRoadTileOverlayColor = Color.RED
-            for (tile in civExploredNonForeignLandTiles)  {
+            for (tile in validTiles)  {
                 tileGroups[tile]!!.layerOverlay.showHighlight(connectRoadTileOverlayColor, 0.3f)
             }
 
