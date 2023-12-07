@@ -17,10 +17,12 @@ import com.unciv.logic.map.MapPathing
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.RoadStatus
 import com.unciv.logic.map.tile.Tile
+import com.unciv.models.UnitActionType
 import com.unciv.models.ruleset.tile.Terrain
 import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.ruleset.unique.LocalUniqueCache
 import com.unciv.models.ruleset.unique.UniqueType
+import com.unciv.ui.screens.worldscreen.unit.actions.UnitActions
 import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionsFromUniques
 import com.unciv.utils.Log
 import com.unciv.utils.debug
@@ -737,16 +739,6 @@ class WorkerAutomation(
         unit.movement.headTowards(closestReachableResource)
         if (unit.currentTile != closestReachableResource) return true // moving counts as progress
 
-        // We know we have the CreateWaterImprovements, but not whether
-        // all conditionals succeed with a current StateForConditionals(civ, unit)
-        // todo: Not necessarily the optimal flow: Be optimistic and head towards,
-        //       then when arrived and the conditionals say "no" do something else instead?
-        val action = UnitActionsFromUniques.getWaterImprovementAction(unit)
-            ?: return false
-
-        // If action.action is null that means only transient reasons prevent the improvement -
-        // report progress and hope next run it will work.
-        action.action?.invoke()
-        return true
+        return UnitActions.invokeUnitAction(unit, UnitActionType.CreateImprovement)
     }
 }
