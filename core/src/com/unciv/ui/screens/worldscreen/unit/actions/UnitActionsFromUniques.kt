@@ -227,45 +227,43 @@ object UnitActionsFromUniques {
         val civResources = unit.civ.getCivResourcesByName()
 
         for (unique in uniquesToCheck) {
-            // Skip actions with a "[amount] extra times" conditional - these are treated in addTriggerUniqueActions instead
-            val improvementName = unique.params[0]
-            val improvement = tile.ruleset.tileImprovements[improvementName]
-                ?: continue
+            val improvementFilter = unique.params[0]
+            val improvements = tile.ruleset.tileImprovements.values.filter { it.matchesFilter(improvementFilter) }
 
-            // Try to skip Improvements we can never build
-            // (getImprovementBuildingProblems catches those so the button is always disabled, but it nevertheless looks nicer)
-            if (tile.improvementFunctions.getImprovementBuildingProblems(improvement, unit.civ).any { it.permanent })
-                continue
+            for (improvement in improvements) {
+                // Try to skip Improvements we can never build
+                // (getImprovementBuildingProblems catches those so the button is always disabled, but it nevertheless looks nicer)
+                if (tile.improvementFunctions.getImprovementBuildingProblems(improvement, unit.civ).any { it.permanent })
+                    continue
 
-            val resourcesAvailable = improvement.uniqueObjects.none {
-                    improvementUnique ->
-                improvementUnique.isOfType(UniqueType.ConsumesResources) &&
-                    (civResources[improvementUnique.params[1]] ?: 0) < improvementUnique.params[0].toInt()
-            }
+                val resourcesAvailable = improvement.uniqueObjects.none { improvementUnique ->
+                    improvementUnique.isOfType(UniqueType.ConsumesResources) &&
+                        (civResources[improvementUnique.params[1]] ?: 0) < improvementUnique.params[0].toInt()
+                }
 
-            finalActions += UnitAction(UnitActionType.CreateImprovement,
-                title = UnitActionModifiers.actionTextWithSideEffects(
-                    "Create [$improvementName]",
-                    unique,
-                    unit
-                ),
-                action = {
-                    val unitTile = unit.getTile()
-                    unitTile.changeImprovement(improvementName, unit.civ, unit)
+                finalActions += UnitAction(UnitActionType.CreateImprovement,
+                    title = UnitActionModifiers.actionTextWithSideEffects(
+                        "Create [${improvement.name}]",
+                        unique,
+                        unit
+                    ),
+                    action = {
+                        val unitTile = unit.getTile()
+                        unitTile.changeImprovement(improvement.name, unit.civ, unit)
 
-                    // without this the world screen won't show the improvement because it isn't the 'last seen improvement'
-                    unit.civ.cache.updateViewableTiles()
+                        unit.civ.cache.updateViewableTiles() // to update 'last seen improvement'
 
-                    UnitActionModifiers.activateSideEffects(unit, unique)
-                }.takeIf {
-                    resourcesAvailable
+                        UnitActionModifiers.activateSideEffects(unit, unique)
+                    }.takeIf {
+                        resourcesAvailable
                             && unit.currentMovement > 0f
                             && tile.improvementFunctions.canBuildImprovement(improvement, unit.civ)
                             // Next test is to prevent interfering with UniqueType.CreatesOneImprovement -
                             // not pretty, but users *can* remove the building from the city queue an thus clear this:
                             && !tile.isMarkedForCreatesOneImprovement()
                             && !tile.isImpassible() // Not 100% sure that this check is necessary...
-                })
+                    })
+            }
         }
         return finalActions
     }
