@@ -47,7 +47,9 @@ object UnitActions {
         UnitActionType.ConductTradeMission to UnitActionsGreatPerson::getConductTradeMissionActions,
         UnitActionType.FoundReligion to UnitActionsReligion::getFoundReligionActions,
         UnitActionType.EnhanceReligion to UnitActionsReligion::getEnhanceReligionActions,
-        UnitActionType.CreateImprovement to UnitActionsFromUniques::getImprovementCreationActions
+        UnitActionType.CreateImprovement to UnitActionsFromUniques::getImprovementCreationActions,
+        UnitActionType.SpreadReligion to UnitActionsReligion::addSpreadReligionActions,
+        UnitActionType.RemoveHeresy to UnitActionsReligion::getRemoveHeresyActions
     )
 
     private fun getNormalActions(unit: MapUnit): List<UnitAction> {
@@ -58,9 +60,6 @@ object UnitActions {
             actionList.addAll(getActionsFunction(unit, tile))
 
         // Determined by unit uniques
-        UnitActionsReligion.addSpreadReligionActions(unit, actionList)
-        UnitActionsReligion.addRemoveHeresyActions(unit, actionList)
-
         UnitActionsFromUniques.addTriggerUniqueActions(unit, actionList)
         UnitActionsFromUniques.addAddInCapitalAction(unit, actionList, tile)
 

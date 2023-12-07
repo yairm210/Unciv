@@ -85,9 +85,9 @@ object UnitActionsReligion {
         return pressureAdded.toInt()
     }
 
-    fun addSpreadReligionActions(unit: MapUnit, actionList: ArrayList<UnitAction>) {
-        if (!unit.civ.religionManager.maySpreadReligionAtAll(unit)) return
-        val city = unit.currentTile.getCity() ?: return
+    fun addSpreadReligionActions(unit: MapUnit, tile: Tile): List<UnitAction> {
+        if (!unit.civ.religionManager.maySpreadReligionAtAll(unit)) return listOf()
+        val city = unit.currentTile.getCity() ?: return listOf()
 
         val newStyleUnique = UnitActionModifiers.getUsableUnitActionUniques(unit, UniqueType.CanSpreadReligion).firstOrNull()
 
@@ -95,7 +95,7 @@ object UnitActionsReligion {
                 UnitActionModifiers.actionTextWithSideEffects("Spread [${unit.getReligionDisplayName()!!}]", newStyleUnique, unit)
         else "Spread [${unit.getReligionDisplayName()!!}]"
 
-        actionList += UnitAction(
+        return listOf(UnitAction(
             UnitActionType.SpreadReligion,
             title = title,
             action = {
@@ -113,19 +113,19 @@ object UnitActionsReligion {
                     unit.currentMovement = 0f
                 }
             }.takeIf { unit.currentMovement > 0 && unit.civ.religionManager.maySpreadReligionNow(unit) }
-        )
+        ))
     }
 
-    internal fun addRemoveHeresyActions(unit: MapUnit, actionList: ArrayList<UnitAction>) {
-        if (!unit.civ.gameInfo.isReligionEnabled()) return
-        val religion = unit.civ.gameInfo.religions[unit.religion] ?: return
-        if (religion.isPantheon()) return
+    internal fun getRemoveHeresyActions(unit: MapUnit, tile: Tile): List<UnitAction> {
+        if (!unit.civ.gameInfo.isReligionEnabled()) return listOf()
+        val religion = unit.civ.gameInfo.religions[unit.religion] ?: return listOf()
+        if (religion.isPantheon()) return listOf()
 
-        val city = unit.currentTile.getCity() ?: return
-        if (city.civ != unit.civ) return
+        val city = unit.currentTile.getCity() ?: return listOf()
+        if (city.civ != unit.civ) return listOf()
         // Only allow the action if the city actually has any foreign religion
         // This will almost be always due to pressure from cities close-by
-        if (city.religion.getPressures().none { it.key != unit.religion!! }) return
+        if (city.religion.getPressures().none { it.key != unit.religion!! }) return listOf()
 
         val hasOldStyleAbility = unit.abilityUsesLeft.containsKey(Constants.removeHeresy)
             && unit.abilityUsesLeft[Constants.removeHeresy]!! > 0
@@ -133,13 +133,13 @@ object UnitActionsReligion {
         val newStyleUnique = UnitActionModifiers.getUsableUnitActionUniques(unit, UniqueType.CanRemoveHeresy).firstOrNull()
         val hasNewStyleAbility = newStyleUnique != null
 
-        if (!hasOldStyleAbility && !hasNewStyleAbility) return
+        if (!hasOldStyleAbility && !hasNewStyleAbility) return listOf()
 
         val title = if (hasNewStyleAbility)
             UnitActionModifiers.actionTextWithSideEffects("Remove Heresy", newStyleUnique!!, unit)
         else "Remove Heresy"
 
-        actionList += UnitAction(
+        return listOf(UnitAction(
             UnitActionType.RemoveHeresy,
             title = title,
             action = {
@@ -161,6 +161,6 @@ object UnitActionsReligion {
                     unit.currentMovement = 0f
                 }
             }.takeIf { unit.currentMovement > 0f }
-        )
+        ))
     }
 }
