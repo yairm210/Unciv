@@ -205,13 +205,12 @@ object UnitActionsFromUniques {
 
 
     fun getImprovementCreationActions(unit: MapUnit, tile: Tile) = sequence {
-        val waterImprovementAction = getWaterImprovementAction(unit)
+        val waterImprovementAction = getWaterImprovementAction(unit, tile)
         if (waterImprovementAction != null) yield(waterImprovementAction)
         yieldAll(getImprovementConstructionActionsFromGeneralUnique(unit, tile))
     }.asIterable()
 
-    fun getWaterImprovementAction(unit: MapUnit): UnitAction? {
-        val tile = unit.currentTile
+    fun getWaterImprovementAction(unit: MapUnit, tile: Tile): UnitAction? {
         if (!tile.isWater || !unit.hasUnique(UniqueType.CreateWaterImprovements) || tile.resource == null) return null
 
         val improvementName = tile.tileResource.getImprovingImprovement(tile, unit.civ) ?: return null
@@ -372,7 +371,7 @@ object UnitActionsFromUniques {
         }
 
         return listOf(UnitAction(UnitActionType.ConstructImprovement,
-            isCurrentAction = unit.currentTile.hasImprovementInProgress(),
+            isCurrentAction = tile.hasImprovementInProgress(),
             action = {
                 GUI.pushScreen(ImprovementPickerScreen(tile, unit) {
                     if (GUI.getSettings().autoUnitCycle)

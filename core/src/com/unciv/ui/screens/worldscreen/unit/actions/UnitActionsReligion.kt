@@ -87,7 +87,7 @@ object UnitActionsReligion {
 
     fun addSpreadReligionActions(unit: MapUnit, tile: Tile): List<UnitAction> {
         if (!unit.civ.religionManager.maySpreadReligionAtAll(unit)) return listOf()
-        val city = unit.currentTile.getCity() ?: return listOf()
+        val city = tile.getCity() ?: return listOf()
 
         val newStyleUnique = UnitActionModifiers.getUsableUnitActionUniques(unit, UniqueType.CanSpreadReligion).firstOrNull()
 
@@ -121,7 +121,7 @@ object UnitActionsReligion {
         val religion = unit.civ.gameInfo.religions[unit.religion] ?: return listOf()
         if (religion.isPantheon()) return listOf()
 
-        val city = unit.currentTile.getCity() ?: return listOf()
+        val city = tile.getCity() ?: return listOf()
         if (city.civ != unit.civ) return listOf()
         // Only allow the action if the city actually has any foreign religion
         // This will almost be always due to pressure from cities close-by
