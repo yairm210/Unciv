@@ -20,7 +20,7 @@ object BuildingDescriptions {
     // To stay consistent, all take the Building as normal parameter instead.
 
     /** Used for AlertType.WonderBuilt, and as sub-text in Nation and Tech descriptions */
-    fun getShortDescription(building: Building, multiline: Boolean = false): String = building.run {
+    fun getShortDescription(building: Building, multiline: Boolean = false, filterUniques: ((Unique) -> Boolean)? = null): String = building.run {
         val infoList = mutableListOf<String>()
         this.clone().toString().also { if (it.isNotEmpty()) infoList += it }
         for ((key, value) in getStatPercentageBonuses(null))
@@ -30,7 +30,7 @@ object BuildingDescriptions {
             infoList += "Requires worked [" + requiredNearbyImprovedResources!!.joinToString("/") { it.tr() } + "] near city"
         if (uniques.isNotEmpty()) {
             if (replacementTextForUniques.isNotEmpty()) infoList += replacementTextForUniques
-            else infoList += getUniquesStringsWithoutDisablers()
+            else infoList += getUniquesStringsWithoutDisablers(filterUniques)
         }
         if (cityStrength != 0) infoList += "{City strength} +$cityStrength"
         if (cityHealth != 0) infoList += "{City health} +$cityHealth"
@@ -273,7 +273,7 @@ object BuildingDescriptions {
     /**
      * @param filterUniques If provided, include only uniques for which this function returns true.
      */
-    private fun Building.getUniquesStringsWithoutDisablers(filterUniques: ((Unique) -> Boolean)? = null) = getUniquesStrings {
+    private fun Building.getUniquesStringsWithoutDisablers(filterUniques: ((Unique) -> Boolean)? = null): Sequence<String> = getUniquesStrings {
         !it.isHiddenToUsers()
             && (filterUniques?.invoke(it) ?: true)
     }
