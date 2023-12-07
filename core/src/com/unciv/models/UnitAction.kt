@@ -25,7 +25,7 @@ open class UnitAction(
         if (type.imageGetter != null)
             return type.imageGetter.invoke()
         return when (type) {
-            UnitActionType.Create -> {
+            UnitActionType.CreateImprovement -> {
                 ImageGetter.getImprovementPortrait(title.getPlaceholderParameters()[0])
             }
             UnitActionType.SpreadReligion -> {
@@ -139,7 +139,7 @@ enum class UnitActionType(
         { ImageGetter.getUnitActionPortrait("ConstructImprovement") }, false),
     Repair(Constants.repair,
         { ImageGetter.getUnitActionPortrait("Repair") }, UncivSound.Construction),
-    Create("Create",
+    CreateImprovement("Create",
         null, false, UncivSound.Chimes),
     HurryResearch("{Hurry Research} (${Fonts.death})",
         { ImageGetter.getUnitActionPortrait("HurryResearch") }, UncivSound.Chimes),

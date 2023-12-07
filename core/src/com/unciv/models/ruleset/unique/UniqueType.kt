@@ -322,13 +322,12 @@ enum class UniqueType(
 
     FoundCity("Founds a new city", UniqueTarget.UnitAction),
     ConstructImprovementInstantly("Can instantly construct a [improvementFilter] improvement", UniqueTarget.UnitAction),
+    CreateWaterImprovements("May create improvements on water resources", UniqueTarget.Unit),
+    BuildImprovements("Can build [improvementFilter/terrainFilter] improvements on tiles", UniqueTarget.Unit),
     CanSpreadReligion("Can Spread Religion", UniqueTarget.UnitAction),
     CanRemoveHeresy("Can remove other religions from cities", UniqueTarget.UnitAction),
     MayFoundReligion("May found a religion", UniqueTarget.UnitAction),
     MayEnhanceReligion("May enhance a religion", UniqueTarget.UnitAction),
-
-    BuildImprovements("Can build [improvementFilter/terrainFilter] improvements on tiles", UniqueTarget.Unit),
-    CreateWaterImprovements("May create improvements on water resources", UniqueTarget.Unit),
 
     AddInCapital("Can be added to [comment] in the Capital", UniqueTarget.Unit),
     PreventSpreadingReligion("Prevents spreading of religion to the city it is next to", UniqueTarget.Unit),

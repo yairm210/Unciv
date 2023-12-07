@@ -26,28 +26,6 @@ import com.unciv.ui.screens.pickerscreens.ImprovementPickerScreen
 
 object UnitActionsFromUniques {
 
-    fun addCreateWaterImprovements(unit: MapUnit, actionList: ArrayList<UnitAction>) {
-        val waterImprovementAction = getWaterImprovementAction(unit)
-        if (waterImprovementAction != null) actionList += waterImprovementAction
-    }
-
-    fun getWaterImprovementAction(unit: MapUnit): UnitAction? {
-        val tile = unit.currentTile
-        if (!tile.isWater || !unit.hasUnique(UniqueType.CreateWaterImprovements) || tile.resource == null) return null
-
-        val improvementName = tile.tileResource.getImprovingImprovement(tile, unit.civ) ?: return null
-        val improvement = tile.ruleset.tileImprovements[improvementName] ?: return null
-        if (!tile.improvementFunctions.canBuildImprovement(improvement, unit.civ)) return null
-
-        return UnitAction(UnitActionType.Create, "Create [$improvementName]",
-            action = {
-                tile.changeImprovement(improvementName, unit.civ, unit)
-                unit.destroy()  // Modders may wish for a nondestructive way, but that should be another Unique
-            }.takeIf { unit.currentMovement > 0 })
-    }
-
-
-
     fun getFoundCityActions(unit: MapUnit, tile: Tile): List<UnitAction> {
         val getFoundCityAction = getFoundCityAction(unit, tile) ?: return emptyList()
         return listOf(getFoundCityAction)
@@ -225,7 +203,29 @@ object UnitActionsFromUniques {
         actionList += getAddInCapitalAction(unit, tile)
     }
 
-    fun getImprovementConstructionActions(unit: MapUnit, tile: Tile): ArrayList<UnitAction> {
+
+    fun getImprovementCreationActions(unit: MapUnit, tile: Tile) = sequence {
+        val waterImprovementAction = getWaterImprovementAction(unit)
+        if (waterImprovementAction != null) yield(waterImprovementAction)
+        yieldAll(getImprovementConstructionActionsFromGeneralUnique(unit, tile))
+    }.asIterable()
+
+    fun getWaterImprovementAction(unit: MapUnit): UnitAction? {
+        val tile = unit.currentTile
+        if (!tile.isWater || !unit.hasUnique(UniqueType.CreateWaterImprovements) || tile.resource == null) return null
+
+        val improvementName = tile.tileResource.getImprovingImprovement(tile, unit.civ) ?: return null
+        val improvement = tile.ruleset.tileImprovements[improvementName] ?: return null
+        if (!tile.improvementFunctions.canBuildImprovement(improvement, unit.civ)) return null
+
+        return UnitAction(UnitActionType.CreateImprovement, "Create [$improvementName]",
+            action = {
+                tile.changeImprovement(improvementName, unit.civ, unit)
+                unit.destroy()  // Modders may wish for a nondestructive way, but that should be another Unique
+            }.takeIf { unit.currentMovement > 0 })
+    }
+
+    fun getImprovementConstructionActionsFromGeneralUnique(unit: MapUnit, tile: Tile): ArrayList<UnitAction> {
         val finalActions = ArrayList<UnitAction>()
         val uniquesToCheck = UnitActionModifiers.getUsableUnitActionUniques(unit, UniqueType.ConstructImprovementInstantly)
 
@@ -248,7 +248,7 @@ object UnitActionsFromUniques {
                     (civResources[improvementUnique.params[1]] ?: 0) < improvementUnique.params[0].toInt()
             }
 
-            finalActions += UnitAction(UnitActionType.Create,
+            finalActions += UnitAction(UnitActionType.CreateImprovement,
                 title = UnitActionModifiers.actionTextWithSideEffects(
                     "Create [$improvementName]",
                     unique,
