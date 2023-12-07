@@ -336,7 +336,7 @@ object SpecificUnitAutomation {
         if (unit.movement.canReach(capitalTile))
             unit.movement.headTowards(capitalTile)
         if (unit.getTile() == capitalTile) {
-            UnitActionsFromUniques.getAddInCapitalAction(unit, capitalTile).action?.invoke()
+            UnitActions.invokeUnitAction(unit, UnitActionType.AddInCapital)
         }
     }
 

@@ -159,7 +159,7 @@ object UnitActionsFromUniques {
             }
         ))
     }
-    fun addTriggerUniqueActions(unit: MapUnit, actionList: ArrayList<UnitAction>) {
+    fun getTriggerUniqueActions(unit: MapUnit, tile: Tile) = sequence {
         for (unique in unit.getUniques()) {
             // not a unit action
             if (unique.conditionals.none { it.type?.targetTypes?.contains(UniqueTarget.UnitActionModifier) == true }) continue
@@ -175,16 +175,16 @@ object UnitActionsFromUniques {
             else unique.text.removeConditionals()
             val title = UnitActionModifiers.actionTextWithSideEffects(baseTitle, unique, unit)
 
-            val unitAction = UnitAction(type = UnitActionType.TriggerUnique, title) {
+            yield(UnitAction(UnitActionType.TriggerUnique, title) {
                 UniqueTriggerActivation.triggerUnitwideUnique(unique, unit)
                 UnitActionModifiers.activateSideEffects(unit, unique)
-            }
-            actionList += unitAction
+            })
         }
-    }
+    }.asIterable()
 
-    fun getAddInCapitalAction(unit: MapUnit, tile: Tile): UnitAction {
-        return UnitAction(UnitActionType.AddInCapital,
+    fun getAddInCapitalActions(unit: MapUnit, tile: Tile): List<UnitAction> {
+        if (!unit.hasUnique(UniqueType.AddInCapital)) return listOf()
+        return listOf(UnitAction(UnitActionType.AddInCapital,
             title = "Add to [${
                 unit.getMatchingUniques(UniqueType.AddInCapital).first().params[0]
             }]",
@@ -195,14 +195,8 @@ object UnitActionsFromUniques {
                 tile.isCityCenter() && tile.getCity()!!
                     .isCapital() && tile.getCity()!!.civ == unit.civ
             }
-        )
+        ))
     }
-
-    fun addAddInCapitalAction(unit: MapUnit, actionList: ArrayList<UnitAction>, tile: Tile) {
-        if (!unit.hasUnique(UniqueType.AddInCapital)) return
-        actionList += getAddInCapitalAction(unit, tile)
-    }
-
 
     fun getImprovementCreationActions(unit: MapUnit, tile: Tile) = sequence {
         val waterImprovementAction = getWaterImprovementAction(unit, tile)
