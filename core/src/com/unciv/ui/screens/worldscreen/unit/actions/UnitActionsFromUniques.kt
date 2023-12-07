@@ -7,6 +7,7 @@ import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.map.mapunit.MapUnit
+import com.unciv.logic.map.tile.RoadStatus
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.Counter
 import com.unciv.models.UncivSound
@@ -274,6 +275,20 @@ object UnitActionsFromUniques {
         return finalActions
     }
 
+    fun getConnectRoadActions(unit: MapUnit, tile: Tile) = sequence {
+        if (!unit.hasUnique(UniqueType.BuildImprovements)) return@sequence
+        if (unit.civ.tech.getBestRoadAvailable() == RoadStatus.None) return@sequence
+        val worldScreen = GUI.getWorldScreen()
+        yield(UnitAction(UnitActionType.ConnectRoad,
+               isCurrentAction = unit.isAutomatingRoadConnection(),
+               action = {
+                   worldScreen.bottomUnitTable.selectedUnitIsConnectingRoad =
+                       !worldScreen.bottomUnitTable.selectedUnitIsConnectingRoad
+                   worldScreen.shouldUpdate = true
+               }
+           )
+        )
+    }.asIterable()
 
     fun getTransformActions(
         unit: MapUnit, tile: Tile

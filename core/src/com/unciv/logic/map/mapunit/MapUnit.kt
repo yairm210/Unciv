@@ -103,8 +103,13 @@ class MapUnit : IsPartOfGameInfoSerialization {
     var currentMovement: Float = 0f
     var health: Int = 100
 
-    var action: String? = null // work, automation, fortifying, I dunno what.
+    // work, automation, fortifying, ...
+    // Connect roads implies automated is true. It is specified by the action type.
+    var action: String? = null
     var automated: Boolean = false
+
+    var automatedRoadConnectionDestination: Vector2? = null
+    var automatedRoadConnectionPath: List<Vector2>? = null
 
     @Transient
     var showAdditionalActions: Boolean = false
@@ -180,6 +185,8 @@ class MapUnit : IsPartOfGameInfoSerialization {
         toReturn.health = health
         toReturn.action = action
         toReturn.automated = automated
+        toReturn.automatedRoadConnectionDestination = automatedRoadConnectionDestination
+        toReturn.automatedRoadConnectionPath = automatedRoadConnectionPath
         toReturn.attacksThisTurn = attacksThisTurn
         toReturn.turnsFortified = turnsFortified
         toReturn.promotions = promotions.clone()
@@ -381,6 +388,8 @@ class MapUnit : IsPartOfGameInfoSerialization {
     fun isMoving() = action?.startsWith("moveTo") == true
 
     fun isAutomated() = automated
+
+    fun isAutomatingRoadConnection() = action == UnitActionType.ConnectRoad.value
     fun isExploring() = action == UnitActionType.Explore.value
     fun isPreparingParadrop() = action == UnitActionType.Paradrop.value
     fun isPreparingAirSweep() = action == UnitActionType.AirSweep.value
