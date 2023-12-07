@@ -75,9 +75,9 @@ internal class WorkerAutomationTest {
             worker.currentMovement = 2f
             NextTurnAutomation.automateCivMoves(civInfo)
             city.cityConstructions.constructionQueue.clear()
-//            city.cityConstructions.constructionQueue.add(PerpetualConstruction.idle.name)
             TurnManager(civInfo).endTurn()
-//            testGame.gameInfo.nextTurn()
+            // Invalidate WorkerAutomationCache
+            testGame.gameInfo.turns++
         }
 
         var finishedCount = 0      
@@ -86,11 +86,13 @@ internal class WorkerAutomationTest {
             if (tile.improvement != null) finishedCount++
             if (tile.turnsToImprovement != 0) inProgressCount++
         }
-
-        assertTrue("Worker improvements in progress was greater than 1, actual: $inProgressCount", 
-            inProgressCount <= 1)
-        assertTrue("Worker should have built over 6 improvements but only built $finishedCount", 
-            finishedCount >= 6)
+        
+        val maxShouldBeInProgress = 1
+        assertTrue("Worker improvements in progress was greater than $maxShouldBeInProgress, actual: $inProgressCount",
+            inProgressCount <= maxShouldBeInProgress)
+        val minShouldHaveFinished = 6
+        assertTrue("Worker should have built over $minShouldHaveFinished improvements but only built $finishedCount",
+            finishedCount >= minShouldHaveFinished)
     }
 
 }
