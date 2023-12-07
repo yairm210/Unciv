@@ -1,3 +1,21 @@
+## 4.9.6
+
+Standardised and fixed deprecration warning  - By Why-not-now
+
+Fix not getting unique unit from tile based free unit trigger  - By SeventhM
+
+By Ouaz:
+- Fix Carthage civilopedia article 
+- Add "UI tips" civilopedia article 
+
+Connect roads automation  - By willjallen
+
+By dHannasch:
+- Pass-through exclude and filterUniques, respectively 
+- Add TechManager.isObsolete(unit) 
+- Rename BaseUnit.techsAtWhichNoLongerAvailable() 
+- Fix failing tests 
+
 ## 4.9.5
 
 Start turn with unit selected
