@@ -66,24 +66,26 @@ object UnitActionsFromUniques {
         if (unit.civ.playerType == PlayerType.AI)
             return UnitAction(UnitActionType.FoundCity, action = foundAction)
 
-        return UnitAction(
-            type = UnitActionType.FoundCity,
-            title =
+        val title =
             if (hasActionModifiers) UnitActionModifiers.actionTextWithSideEffects(
                 UnitActionType.FoundCity.value,
                 unique,
                 unit
             )
-            else UnitActionType.FoundCity.value,
+            else UnitActionType.FoundCity.value
+
+        return UnitAction(
+            type = UnitActionType.FoundCity,
+            title = title,
             uncivSound = UncivSound.Chimes,
             action = {
                 // check if we would be breaking a promise
-                val leaders = testPromiseNotToSettle(unit.civ, tile)
-                if (leaders == null)
+                val leadersPromisedNotToSettleNear = getLeadersWePromisedNotToSettleNear(unit.civ, tile)
+                if (leadersPromisedNotToSettleNear == null)
                     foundAction()
                 else {
                     // ask if we would be breaking a promise
-                    val text = "Do you want to break your promise to [$leaders]?"
+                    val text = "Do you want to break your promise to [$leadersPromisedNotToSettleNear]?"
                     ConfirmPopup(
                         GUI.getWorldScreen(),
                         text,
@@ -101,18 +103,18 @@ object UnitActionsFromUniques {
      * @param tile The tile where the new city would go
      * @return null if no promises broken, else a String listing the leader(s) we would p* off.
      */
-    private fun testPromiseNotToSettle(civInfo: Civilization, tile: Tile): String? {
-        val brokenPromises = HashSet<String>()
+    private fun getLeadersWePromisedNotToSettleNear(civInfo: Civilization, tile: Tile): String? {
+        val leadersWePromisedNotToSettleNear = HashSet<String>()
         for (otherCiv in civInfo.getKnownCivs().filter { it.isMajorCiv() && !civInfo.isAtWarWith(it) }) {
             val diplomacyManager = otherCiv.getDiplomacyManager(civInfo)
             if (diplomacyManager.hasFlag(DiplomacyFlags.AgreedToNotSettleNearUs)) {
                 val citiesWithin6Tiles = otherCiv.cities
                     .filter { it.getCenterTile().aerialDistanceTo(tile) <= 6 }
                     .filter { otherCiv.hasExplored(it.getCenterTile()) }
-                if (citiesWithin6Tiles.isNotEmpty()) brokenPromises += otherCiv.getLeaderDisplayName()
+                if (citiesWithin6Tiles.isNotEmpty()) leadersWePromisedNotToSettleNear += otherCiv.getLeaderDisplayName()
             }
         }
-        return if(brokenPromises.isEmpty()) null else brokenPromises.joinToString(", ")
+        return if(leadersWePromisedNotToSettleNear.isEmpty()) null else leadersWePromisedNotToSettleNear.joinToString(", ")
     }
 
     fun getSetupActions(unit: MapUnit, tile: Tile): List<UnitAction> {
