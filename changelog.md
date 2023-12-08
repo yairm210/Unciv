@@ -1,3 +1,13 @@
+## 4.9.6
+
+Connect roads automation  - By willjallen
+
+Fix not getting unique unit from tile based free unit trigger  - By SeventhM
+
+By Ouaz:
+- Fix Carthage civilopedia article
+- Add "UI tips" civilopedia article
+
 ## 4.9.5
 
 Start turn with unit selected

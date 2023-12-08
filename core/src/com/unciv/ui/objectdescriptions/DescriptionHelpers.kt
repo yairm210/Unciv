@@ -15,7 +15,7 @@ import com.unciv.ui.screens.civilopediascreen.FormattedLine
 fun IHasUniques.uniquesToDescription(
     lineList: MutableCollection<String>,
     exclude: Unique.() -> Boolean = {false}
-) {
+): Unit {
     for (unique in uniqueObjects) {
         if (unique.isHiddenToUsers()) continue
         if (unique.exclude()) continue

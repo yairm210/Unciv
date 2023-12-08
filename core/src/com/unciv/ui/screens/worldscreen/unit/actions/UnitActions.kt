@@ -39,13 +39,19 @@ object UnitActions {
         UnitActionType.SetUp to UnitActionsFromUniques::getSetupActions,
         UnitActionType.FoundCity to UnitActionsFromUniques::getFoundCityActions,
         UnitActionType.ConstructImprovement to UnitActionsFromUniques::getBuildingImprovementsActions,
+        UnitActionType.ConnectRoad to UnitActionsFromUniques::getConnectRoadActions,
         UnitActionType.Repair to UnitActionsFromUniques::getRepairActions,
         UnitActionType.HurryResearch to UnitActionsGreatPerson::getHurryResearchActions,
         UnitActionType.HurryWonder to UnitActionsGreatPerson::getHurryWonderActions,
         UnitActionType.HurryBuilding to UnitActionsGreatPerson::getHurryBuildingActions,
         UnitActionType.ConductTradeMission to UnitActionsGreatPerson::getConductTradeMissionActions,
         UnitActionType.FoundReligion to UnitActionsReligion::getFoundReligionActions,
-        UnitActionType.EnhanceReligion to UnitActionsReligion::getEnhanceReligionActions
+        UnitActionType.EnhanceReligion to UnitActionsReligion::getEnhanceReligionActions,
+        UnitActionType.CreateImprovement to UnitActionsFromUniques::getImprovementCreationActions,
+        UnitActionType.SpreadReligion to UnitActionsReligion::addSpreadReligionActions,
+        UnitActionType.RemoveHeresy to UnitActionsReligion::getRemoveHeresyActions,
+        UnitActionType.TriggerUnique to UnitActionsFromUniques::getTriggerUniqueActions,
+        UnitActionType.AddInCapital to UnitActionsFromUniques::getAddInCapitalActions
     )
 
     private fun getNormalActions(unit: MapUnit): List<UnitAction> {
@@ -54,15 +60,6 @@ object UnitActions {
 
         for (getActionsFunction in actionTypeToFunctions.values)
             actionList.addAll(getActionsFunction(unit, tile))
-
-        // Determined by unit uniques
-        UnitActionsFromUniques.addCreateWaterImprovements(unit, actionList)
-        actionList += UnitActionsFromUniques.getImprovementConstructionActions(unit, tile)
-        UnitActionsReligion.addSpreadReligionActions(unit, actionList)
-        UnitActionsReligion.addRemoveHeresyActions(unit, actionList)
-
-        UnitActionsFromUniques.addTriggerUniqueActions(unit, actionList)
-        UnitActionsFromUniques.addAddInCapitalAction(unit, actionList, tile)
 
         // General actions
         addAutomateAction(unit, actionList, true)
@@ -294,15 +291,13 @@ object UnitActions {
     private fun addAutomateAction(
         unit: MapUnit,
         actionList: ArrayList<UnitAction>,
-        showingAdditionalActions: Boolean
+        showingPrimaryActions: Boolean
     ) {
-
-        // If either of these are true it goes in primary actions, else in additional actions
-        if ((unit.hasUnique(UniqueType.AutomationPrimaryAction) || unit.cache.hasUniqueToBuildImprovements) != showingAdditionalActions)
+        val shouldAutomationBePrimaryAction = unit.cache.hasUniqueToBuildImprovements || unit.hasUnique(UniqueType.AutomationPrimaryAction)
+        if (shouldAutomationBePrimaryAction != showingPrimaryActions)
             return
 
         if (unit.isAutomated()) return
-
         actionList += UnitAction(UnitActionType.Automate,
             isCurrentAction = unit.isAutomated(),
             action = {

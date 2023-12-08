@@ -665,6 +665,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 - [Circle](https://thenounproject.com/term/circle/1841891/) By Aybige
 - [Arrow](https://thenounproject.com/term/arrow/18123/) By Joe Mortell for movement
 - [Swap](https://thenounproject.com/search/?q=swap&i=1259600) By iconomania for swapping units
+- [Road](https://thenounproject.com/icon/road-224428/) By Gábor István Karaba for connect road automation
 - [Connection](https://thenounproject.com/search/?q=connection&i=1521886) By Travis Avery
 - [Skull](https://thenounproject.com/search/?q=Skull&i=1030702) By Vladimir Belochkin for disbanding units
 - [Crosshair](https://thenounproject.com/search/?q=crosshairs&i=916030) By Bakunetsu Kaito for selecting enemies to attack
@@ -770,6 +771,7 @@ Sounds are from FreeSound.org unless otherwise noted and are either Creative Com
 - [uzzi_full_single](https://freesound.org/people/Deganoth/sounds/348685/) By Deganoth as 'shot' for bullet attacks
 - [Grenade Launcher 2](https://soundbible.com/2140-Grenade-Launcher-2.html) By Daniel Simon as city bombard sound (CC Attribution 3.0 license)
 - [Woosh](https://soundbible.com/2068-Woosh.html) by Mark DiAngelo as 'slider' sound (CC Attribution 3.0 license)
+- [Large wooden wagon](https://freesound.org/people/craigsmith/sounds/675230/) by Craig Smith as 'connect road' sound
 - [Tornado-Siren-II](https://soundbible.com/1937-Tornado-Siren-II.html) by Delilah as part of 'nuke' sound (CC Attribution 3.0 license)
 - [Explosion-Ultra-Bass](https://soundbible.com/1807-Explosion-Ultra-Bass.html) by Mark DiAngelo as part of 'nuke' sound (CC Attribution 3.0 license)
 - [Short Choir](https://freesound.org/people/Breviceps/sounds/444491/) by Breviceps as 'choir' for free great person pick
