@@ -68,9 +68,8 @@ object UnitActions {
 
         if (shouldAutomationBePrimaryAction(unit))
             actionList += getAutomateActions(unit, unit.currentTile)
-        if (unit.isMoving()) {
+        if (unit.isMoving())
             actionList += UnitAction(UnitActionType.StopMovement) { unit.action = null }
-        }
         if (unit.isExploring())
             actionList += UnitAction(UnitActionType.StopExploration) { unit.action = null }
         if (unit.isAutomated())
@@ -79,12 +78,12 @@ object UnitActions {
                 unit.automated = false
             }
 
-        addPromoteAction(unit, actionList)
-        UnitActionsUpgrade.addUnitUpgradeAction(unit, actionList)
-        UnitActionsPillage.addPillageAction(unit, actionList)
-        addSleepActions(actionList, unit, false)
+        actionList += getPromoteActions(unit, unit.currentTile)
+        actionList += UnitActionsUpgrade.getUnitUpgradeActions(unit, unit.currentTile)
+        actionList += UnitActionsPillage.getPillageActions(unit, unit.currentTile)
+        actionList += getSleepActions(unit, tile)
+        actionList += getSleepUntilHealedActions(unit, tile)
         addFortifyActions(actionList, unit, false)
-
 
         if (unit.isMilitary()) addExplorationActions(unit, actionList)
 
@@ -104,7 +103,6 @@ object UnitActions {
                 GUI.getMap().setCenterPosition(unit.getMovementDestination().position, true)
             }
         }
-        addSleepActions(actionList, unit, true)
         addFortifyActions(actionList, unit, true)
         if (!shouldAutomationBePrimaryAction(unit))
             actionList += getAutomateActions(unit, unit.currentTile)
@@ -163,13 +161,14 @@ object UnitActions {
     }
 
 
-    private fun addPromoteAction(unit: MapUnit, actionList: ArrayList<UnitAction>) {
-        if (unit.isCivilian() || !unit.promotions.canBePromoted()) return
+    private fun getPromoteActions(unit: MapUnit, tile: Tile): List<UnitAction> {
+        if (unit.isCivilian() || !unit.promotions.canBePromoted()) return listOf()
         // promotion does not consume movement points, but is not allowed if a unit has exhausted its movement or has attacked
-        actionList += UnitAction(UnitActionType.Promote,
+        return listOf(UnitAction(UnitActionType.Promote,
             action = {
                 UncivGame.Current.pushScreen(PromotionPickerScreen(unit))
-            }.takeIf { unit.currentMovement > 0 && unit.attacksThisTurn == 0 })
+            }.takeIf { unit.currentMovement > 0 && unit.attacksThisTurn == 0 }
+        ))
     }
 
     private fun addExplorationActions(unit: MapUnit, actionList: ArrayList<UnitAction>) {
@@ -212,29 +211,28 @@ object UnitActions {
                 action = { unit.fortify() }.takeIf { !isFortified })
     }
 
-    private fun addSleepActions(
-        actionList: ArrayList<UnitAction>,
-        unit: MapUnit,
-        showingAdditionalActions: Boolean
-    ) {
-        if (unit.isFortified() || unit.canFortify() || unit.currentMovement == 0f) return
-        // If this unit is working on an improvement, it cannot sleep
-        if (unit.currentTile.hasImprovementInProgress()
-            && unit.canBuildImprovement(unit.currentTile.getTileImprovementInProgress()!!)
-        ) return
-        val isSleeping = unit.isSleeping()
-        val isDamaged = unit.health < 100
+    fun shouldHaveSleepAction(unit: MapUnit, tile: Tile): Boolean {
+        if (unit.isFortified() || unit.canFortify() || unit.currentMovement == 0f) return false
+        if (tile.hasImprovementInProgress()
+            && unit.canBuildImprovement(tile.getTileImprovementInProgress()!!)
+        ) return false
+        return true
+    }
+    private fun getSleepActions(unit: MapUnit, tile: Tile): List<UnitAction> {
+        if (!shouldHaveSleepAction(unit, tile)) return listOf()
+        if (unit.health < 100) return listOf()
+        return listOf(UnitAction(UnitActionType.Sleep,
+            action = { unit.action = UnitActionType.Sleep.value }.takeIf { !unit.isSleeping() }
+        ))
+    }
 
-        if (isDamaged && !showingAdditionalActions) {
-            actionList += UnitAction(UnitActionType.SleepUntilHealed,
-                action = { unit.action = UnitActionType.SleepUntilHealed.value }
-                    .takeIf { !unit.isSleepingUntilHealed() && unit.canHealInCurrentTile() }
-            )
-        } else if (isDamaged || !showingAdditionalActions) {
-            actionList += UnitAction(UnitActionType.Sleep,
-                action = { unit.action = UnitActionType.Sleep.value }.takeIf { !isSleeping }
-            )
-        }
+    private fun getSleepUntilHealedActions(unit: MapUnit, tile: Tile): List<UnitAction> {
+        if (!shouldHaveSleepAction(unit, tile)) return listOf()
+        if (unit.health < 100) return listOf()
+        return listOf(UnitAction(UnitActionType.SleepUntilHealed,
+            action = { unit.action = UnitActionType.SleepUntilHealed.value }
+                .takeIf { !unit.isSleepingUntilHealed() && unit.canHealInCurrentTile() }
+        ))
     }
 
     private fun addGiftAction(unit: MapUnit, actionList: ArrayList<UnitAction>, tile: Tile) {
