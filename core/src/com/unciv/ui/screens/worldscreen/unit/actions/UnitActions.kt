@@ -23,9 +23,10 @@ object UnitActions {
 
     /** Returns whether the action was invoked */
     fun invokeUnitAction(unit: MapUnit, unitActionType: UnitActionType): Boolean {
-        val unitAction = actionTypeToFunctions[unitActionType]?.invoke(unit, unit.getTile())?.firstOrNull()
-            ?: getNormalActions(unit).firstOrNull { it.type == unitActionType }
-            ?: getAdditionalActions(unit).firstOrNull { it.type == unitActionType }
+        val unitAction = if (unitActionType in actionTypeToFunctions) actionTypeToFunctions[unitActionType]!!.invoke(unit, unit.getTile())
+            .firstOrNull{ it.action != null }
+            else getNormalActions(unit).firstOrNull { it.type == unitActionType && it.action != null }
+            ?: getAdditionalActions(unit).firstOrNull { it.type == unitActionType && it.action != null }
         val internalAction = unitAction?.action ?: return false
         internalAction.invoke()
         return true

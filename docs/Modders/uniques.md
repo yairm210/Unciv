@@ -1158,12 +1158,12 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
     Uniques that can be added to units, unit types, or promotions
 
+??? example  "May create improvements on water resources"
+	Applicable to: Unit
+
 ??? example  "Can build [improvementFilter/terrainFilter] improvements on tiles"
 	Example: "Can build [All Road] improvements on tiles"
 
-	Applicable to: Unit
-
-??? example  "May create improvements on water resources"
 	Applicable to: Unit
 
 ??? example  "Can be added to [comment] in the Capital"
