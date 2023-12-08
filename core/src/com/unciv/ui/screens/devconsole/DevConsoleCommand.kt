@@ -237,10 +237,10 @@ class ConsoleTileCommands: ConsoleCommandNode {
 
 class ConsoleCivCommands : ConsoleCommandNode {
     override val subcommands = hashMapOf<String, ConsoleCommand>(
-        "addstat" to ConsoleAction { console, params ->
+        "add" to ConsoleAction { console, params ->
             var statPos = 0
             if (params.size !in 2..3)
-                return@ConsoleAction DevConsoleResponse.hint("Format: civ addstat [civ] [stat] <amount>")
+                return@ConsoleAction DevConsoleResponse.hint("Format: civ add [civ] <stat> <amount>")
             val civ = if (params.size == 2) console.screen.selectedCiv
                 else {
                     statPos++

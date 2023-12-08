@@ -11,7 +11,6 @@ import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
 import com.unciv.ui.popups.ConfirmPopup
-import com.unciv.ui.popups.hasOpenPopups
 import kotlin.random.Random
 
 object UnitActionsPillage {
@@ -19,21 +18,19 @@ object UnitActionsPillage {
     fun getPillageActions(unit: MapUnit, tile: Tile): List<UnitAction> {
         val pillageAction = getPillageAction(unit, tile)
             ?: return listOf()
-        if (pillageAction.action == null)
+        if (pillageAction.action == null || unit.civ.isAI())
             return listOf(pillageAction)
         else return listOf(UnitAction(UnitActionType.Pillage, pillageAction.title) {
-            if (!GUI.getWorldScreen().hasOpenPopups()) {
-                val pillageText = "Are you sure you want to pillage this [${tile.getImprovementToPillageName()!!}]?"
-                ConfirmPopup(
-                    GUI.getWorldScreen(),
-                    pillageText,
-                    "Pillage",
-                    true
-                ) {
-                    (pillageAction.action)()
-                    GUI.setUpdateWorldOnNextRender()
-                }.open()
-            }
+            val pillageText = "Are you sure you want to pillage this [${tile.getImprovementToPillageName()!!}]?"
+            ConfirmPopup(
+                GUI.getWorldScreen(),
+                pillageText,
+                "Pillage",
+                true
+            ) {
+                (pillageAction.action)()
+                GUI.setUpdateWorldOnNextRender()
+            }.open()
         })
     }
 

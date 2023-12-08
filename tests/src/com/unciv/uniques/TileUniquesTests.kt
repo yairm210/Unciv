@@ -2,9 +2,10 @@ package com.unciv.uniques
 
 import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
+import com.unciv.models.UnitActionType
 import com.unciv.testing.GdxTestRunner
 import com.unciv.testing.TestGame
-import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionsPillage
+import com.unciv.ui.screens.worldscreen.unit.actions.UnitActions
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
@@ -35,8 +36,7 @@ class TileUniquesTests {
         val unit = game.addUnit("Warrior", civInfo, tile)
         unit.currentMovement = 2f
 
-        val pillageAction = UnitActionsPillage.getPillageAction(unit)
-        pillageAction?.action?.invoke()
+        UnitActions.invokeUnitAction(unit, UnitActionType.Pillage)
         Assert.assertTrue("Pillaging should transfer gold to the civ", civInfo.gold == 20)
         Assert.assertTrue("Pillaging should transfer food to the nearest city", city.population.foodStored == 11)
     }
