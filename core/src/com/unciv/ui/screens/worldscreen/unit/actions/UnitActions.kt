@@ -85,7 +85,7 @@ object UnitActions {
         actionList += getSleepUntilHealedActions(unit, tile)
         addFortifyActions(actionList, unit, false)
 
-        if (unit.isMilitary()) addExplorationActions(unit, actionList)
+        if (unit.isMilitary()) actionList += getExplorationActions(unit, unit.currentTile)
 
         addWaitAction(unit, actionList)
 
@@ -110,8 +110,7 @@ object UnitActions {
         addSwapAction(unit, actionList)
         addDisbandAction(actionList, unit)
         addGiftAction(unit, actionList, tile)
-        if (unit.isCivilian()) addExplorationActions(unit, actionList)
-
+        if (unit.isCivilian()) actionList += getExplorationActions(unit, unit.currentTile)
 
         addToggleActionsAction(unit, actionList)
 
@@ -171,13 +170,13 @@ object UnitActions {
         ))
     }
 
-    private fun addExplorationActions(unit: MapUnit, actionList: ArrayList<UnitAction>) {
-        if (unit.baseUnit.movesLikeAirUnits()) return
-        if (unit.isExploring()) return
-        actionList += UnitAction(UnitActionType.Explore) {
+    private fun getExplorationActions(unit: MapUnit, tile: Tile): List<UnitAction> {
+        if (unit.baseUnit.movesLikeAirUnits()) return listOf()
+        if (unit.isExploring()) return listOf()
+        return listOf(UnitAction(UnitActionType.Explore) {
             unit.action = UnitActionType.Explore.value
             if (unit.currentMovement > 0) UnitAutomation.automatedExplore(unit)
-        }
+        })
     }
 
 
