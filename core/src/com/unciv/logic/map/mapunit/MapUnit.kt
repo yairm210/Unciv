@@ -103,8 +103,13 @@ class MapUnit : IsPartOfGameInfoSerialization {
     var currentMovement: Float = 0f
     var health: Int = 100
 
-    var action: String? = null // work, automation, fortifying, I dunno what.
+    // work, automation, fortifying, ...
+    // Connect roads implies automated is true. It is specified by the action type.
+    var action: String? = null
     var automated: Boolean = false
+
+    var automatedRoadConnectionDestination: Vector2? = null
+    var automatedRoadConnectionPath: List<Vector2>? = null
 
     @Transient
     var showAdditionalActions: Boolean = false
@@ -180,6 +185,8 @@ class MapUnit : IsPartOfGameInfoSerialization {
         toReturn.health = health
         toReturn.action = action
         toReturn.automated = automated
+        toReturn.automatedRoadConnectionDestination = automatedRoadConnectionDestination
+        toReturn.automatedRoadConnectionPath = automatedRoadConnectionPath
         toReturn.attacksThisTurn = attacksThisTurn
         toReturn.turnsFortified = turnsFortified
         toReturn.promotions = promotions.clone()
@@ -381,6 +388,8 @@ class MapUnit : IsPartOfGameInfoSerialization {
     fun isMoving() = action?.startsWith("moveTo") == true
 
     fun isAutomated() = automated
+
+    fun isAutomatingRoadConnection() = action == UnitActionType.ConnectRoad.value
     fun isExploring() = action == UnitActionType.Explore.value
     fun isPreparingParadrop() = action == UnitActionType.Paradrop.value
     fun isPreparingAirSweep() = action == UnitActionType.AirSweep.value
@@ -487,40 +496,6 @@ class MapUnit : IsPartOfGameInfoSerialization {
 
     fun isGreatPerson() = baseUnit.isGreatPerson()
     fun isGreatPersonOfType(type: String) = baseUnit.isGreatPersonOfType(type)
-
-    /**
-     * Gets the distance to the closest visible enemy unit or city.
-     * The result value is cached
-     * Since it is called each turn each subsequent call is essentially free
-     */
-    fun getDistanceToEnemyUnit(maxDist: Int, takeLargerValues: Boolean = true): Int {
-        if (cache.distanceToClosestEnemyUnit != null) {
-            return if ((takeLargerValues || cache.distanceToClosestEnemyUnit!! < maxDist))
-                cache.distanceToClosestEnemyUnit!!
-            // In some cases we might rely on every distance farther than maxDist being the same
-            else Int.MAX_VALUE
-        }
-
-        fun tileHasEnemyCity(tile: Tile): Boolean = tile.isExplored(civ)
-            && tile.isCityCenter()
-            && tile.getCity()!!.civ.isAtWarWith(civ)
-
-        fun tileHasEnemyMilitaryUnit(tile: Tile): Boolean = tile.isVisible(civ)
-            && tile.militaryUnit != null
-            && tile.militaryUnit!!.civ.isAtWarWith(civ)
-            && !tile.militaryUnit!!.isInvisible(civ)
-
-        // Needs to be a high value, but not the max value so we can still add to it
-        cache.distanceToClosestEnemyUnit = 500000
-        for (i in 1..maxDist) {
-            if (currentTile.getTilesAtDistance(i).any {
-                    tileHasEnemyCity(it) || tileHasEnemyMilitaryUnit(it) }) {
-                cache.distanceToClosestEnemyUnit = i
-                break
-            }
-        }
-        return cache.distanceToClosestEnemyUnit!!
-    }
     //endregion
 
     //region state-changing functions
@@ -565,10 +540,6 @@ class MapUnit : IsPartOfGameInfoSerialization {
 
         val currentTile = getTile()
         if (isMoving()) {
-            // We have moved so invalidate the previous calculation
-            cache.distanceToClosestEnemyUnit = null
-            cache.distanceToClosestEnemyUnitSearched = null
-
             val destinationTile = getMovementDestination()
             if (!movement.canReach(destinationTile)) { // That tile that we were moving towards is now unreachable -
                 // for instance we headed towards an unknown tile and it's apparently unreachable
@@ -923,7 +894,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
             "Non-City" -> true
             else -> {
                 if (baseUnit.matchesFilter(filter)) return true
-                if (civ.matchesFilter(filter)) return true
+                if (civ.nation.matchesFilter(filter)) return true
                 if (tempUniquesMap.containsKey(filter)) return true
                 return false
             }

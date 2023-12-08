@@ -23,35 +23,43 @@ object UnitActions {
 
     /** Returns whether the action was invoked */
     fun invokeUnitAction(unit: MapUnit, unitActionType: UnitActionType): Boolean {
-        val unitAction = getNormalActions(unit).firstOrNull { it.type == unitActionType }
+        val unitAction = actionTypeToFunctions[unitActionType]?.invoke(unit, unit.getTile())?.firstOrNull()
+            ?: getNormalActions(unit).firstOrNull { it.type == unitActionType }
             ?: getAdditionalActions(unit).firstOrNull { it.type == unitActionType }
         val internalAction = unitAction?.action ?: return false
         internalAction.invoke()
         return true
     }
 
+    private val actionTypeToFunctions = linkedMapOf<UnitActionType, (unit:MapUnit, tile:Tile) -> Iterable<UnitAction>>(
+        // Determined by unit uniques
+        UnitActionType.Transform to UnitActionsFromUniques::getTransformActions,
+        UnitActionType.Paradrop to UnitActionsFromUniques::getParadropActions,
+        UnitActionType.AirSweep to UnitActionsFromUniques::getAirSweepActions,
+        UnitActionType.SetUp to UnitActionsFromUniques::getSetupActions,
+        UnitActionType.FoundCity to UnitActionsFromUniques::getFoundCityActions,
+        UnitActionType.ConstructImprovement to UnitActionsFromUniques::getBuildingImprovementsActions,
+        UnitActionType.ConnectRoad to UnitActionsFromUniques::getConnectRoadActions,
+        UnitActionType.Repair to UnitActionsFromUniques::getRepairActions,
+        UnitActionType.HurryResearch to UnitActionsGreatPerson::getHurryResearchActions,
+        UnitActionType.HurryWonder to UnitActionsGreatPerson::getHurryWonderActions,
+        UnitActionType.HurryBuilding to UnitActionsGreatPerson::getHurryBuildingActions,
+        UnitActionType.ConductTradeMission to UnitActionsGreatPerson::getConductTradeMissionActions,
+        UnitActionType.FoundReligion to UnitActionsReligion::getFoundReligionActions,
+        UnitActionType.EnhanceReligion to UnitActionsReligion::getEnhanceReligionActions,
+        UnitActionType.CreateImprovement to UnitActionsFromUniques::getImprovementCreationActions,
+        UnitActionType.SpreadReligion to UnitActionsReligion::addSpreadReligionActions,
+        UnitActionType.RemoveHeresy to UnitActionsReligion::getRemoveHeresyActions,
+        UnitActionType.TriggerUnique to UnitActionsFromUniques::getTriggerUniqueActions,
+        UnitActionType.AddInCapital to UnitActionsFromUniques::getAddInCapitalActions
+    )
+
     private fun getNormalActions(unit: MapUnit): List<UnitAction> {
         val tile = unit.getTile()
         val actionList = ArrayList<UnitAction>()
 
-        // Determined by unit uniques
-        UnitActionsFromUniques.addTransformActions(unit, actionList)
-        UnitActionsFromUniques.addParadropAction(unit, actionList)
-        UnitActionsFromUniques.addAirSweepAction(unit, actionList)
-        UnitActionsFromUniques.addSetupAction(unit, actionList)
-        UnitActionsFromUniques.addFoundCityAction(unit, actionList, tile)
-        UnitActionsFromUniques.addBuildingImprovementsAction(unit, actionList, tile)
-        UnitActionsFromUniques.addRepairAction(unit, actionList)
-        UnitActionsFromUniques.addCreateWaterImprovements(unit, actionList)
-        UnitActionsGreatPerson.addGreatPersonActions(unit, actionList, tile)
-        UnitActionsReligion.addFoundReligionAction(unit, actionList)
-        UnitActionsReligion.addEnhanceReligionAction(unit, actionList)
-        actionList += UnitActionsFromUniques.getImprovementConstructionActions(unit, tile)
-        UnitActionsReligion.addSpreadReligionActions(unit, actionList)
-        UnitActionsReligion.addRemoveHeresyActions(unit, actionList)
-
-        UnitActionsFromUniques.addTriggerUniqueActions(unit, actionList)
-        UnitActionsFromUniques.addAddInCapitalAction(unit, actionList, tile)
+        for (getActionsFunction in actionTypeToFunctions.values)
+            actionList.addAll(getActionsFunction(unit, tile))
 
         // General actions
         addAutomateAction(unit, actionList, true)
@@ -283,15 +291,13 @@ object UnitActions {
     private fun addAutomateAction(
         unit: MapUnit,
         actionList: ArrayList<UnitAction>,
-        showingAdditionalActions: Boolean
+        showingPrimaryActions: Boolean
     ) {
-
-        // If either of these are true it goes in primary actions, else in additional actions
-        if ((unit.hasUnique(UniqueType.AutomationPrimaryAction) || unit.cache.hasUniqueToBuildImprovements) != showingAdditionalActions)
+        val shouldAutomationBePrimaryAction = unit.cache.hasUniqueToBuildImprovements || unit.hasUnique(UniqueType.AutomationPrimaryAction)
+        if (shouldAutomationBePrimaryAction != showingPrimaryActions)
             return
 
         if (unit.isAutomated()) return
-
         actionList += UnitAction(UnitActionType.Automate,
             isCurrentAction = unit.isAutomated(),
             action = {

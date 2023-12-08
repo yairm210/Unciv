@@ -51,7 +51,6 @@ import java.io.PrintWriter
 import java.util.EnumSet
 import java.util.UUID
 import kotlinx.coroutines.CancellationException
-import kotlin.system.exitProcess
 
 open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpecific {
 
@@ -293,6 +292,7 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
     fun popScreen(): BaseScreen? {
         if (screenStack.size == 1) {
             musicController.pause()
+            UncivGame.Current.settings.autoPlay.stopAutoPlay()
             ConfirmPopup(
                 screen = screenStack.last(),
                 question = "Do you want to exit the game?",
@@ -412,7 +412,7 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
         // On desktop this should only be this one and "DestroyJavaVM"
         logRunningThreads()
 
-        exitProcess(0)
+        // DO NOT `exitProcess(0)` - bypasses all Gdx and GLFW cleanup
     }
 
     private fun logRunningThreads() {
@@ -464,7 +464,7 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
 
     companion object {
         //region AUTOMATICALLY GENERATED VERSION DATA - DO NOT CHANGE THIS REGION, INCLUDING THIS COMMENT
-        val VERSION = Version("4.9.1", 931)
+        val VERSION = Version("4.9.6", 941)
         //endregion
 
         lateinit var Current: UncivGame

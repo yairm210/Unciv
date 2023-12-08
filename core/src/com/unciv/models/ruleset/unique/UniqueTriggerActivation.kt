@@ -9,8 +9,11 @@ import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.LocationAction
 import com.unciv.logic.civilization.MapUnitAction
 import com.unciv.logic.civilization.MayaLongCountAction
+import com.unciv.logic.civilization.NotificationAction
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
+import com.unciv.logic.civilization.PolicyAction
+import com.unciv.logic.civilization.TechAction
 import com.unciv.logic.civilization.managers.ReligionState
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
@@ -20,8 +23,8 @@ import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
 import com.unciv.models.translations.fillPlaceholders
 import com.unciv.models.translations.hasPlaceholderParameters
-import com.unciv.ui.components.extensions.addToMapOfSets
 import com.unciv.ui.components.MayaCalendar
+import com.unciv.ui.components.extensions.addToMapOfSets
 import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionsUpgrade
 import kotlin.math.roundToInt
 import kotlin.random.Random
@@ -54,10 +57,11 @@ object UniqueTriggerActivation {
         when (unique.type) {
             UniqueType.OneTimeFreeUnit -> {
                 val unitName = unique.params[0]
-                val unit = ruleSet.units[unitName]
-                if ((chosenCity == null && tile == null)
-                        || unit == null
-                        || unit.isCityFounder() && civInfo.isOneCityChallenger())
+                val baseUnit = ruleSet.units[unitName]
+                if ((chosenCity == null && tile == null) || baseUnit == null)
+                    return false
+                val unit = civInfo.getEquivalentUnit(baseUnit)
+                if (unit.isCityFounder() && civInfo.isOneCityChallenger())
                     return false
 
                 val limit = unit.getMatchingUniques(UniqueType.MaxNumberBuildable)
@@ -83,8 +87,11 @@ object UniqueTriggerActivation {
             }
             UniqueType.OneTimeAmountFreeUnits -> {
                 val unitName = unique.params[1]
-                val unit = ruleSet.units[unitName]
-                if ((chosenCity == null && tile == null) || unit == null || (unit.isCityFounder() && civInfo.isOneCityChallenger()))
+                val baseUnit = ruleSet.units[unitName]
+                if ((chosenCity == null && tile == null) || baseUnit == null)
+                    return false
+                val unit = civInfo.getEquivalentUnit(baseUnit)
+                if (unit.isCityFounder() && civInfo.isOneCityChallenger())
                     return false
 
                 val limit = unit.getMatchingUniques(UniqueType.MaxNumberBuildable)
@@ -189,7 +196,7 @@ object UniqueTriggerActivation {
                     "You gain the [$policyName] Policy")
                     ?: return true
 
-                civInfo.addNotification(notificationText, NotificationCategory.General, NotificationIcon.Culture)
+                civInfo.addNotification(notificationText, PolicyAction(policyName), NotificationCategory.General, NotificationIcon.Culture)
                 return true
             }
             UniqueType.OneTimeEnterGoldenAge, UniqueType.OneTimeEnterGoldenAgeTurns -> {
@@ -209,7 +216,7 @@ object UniqueTriggerActivation {
                 val greatPeople = civInfo.greatPeople.getGreatPeople()
                 if (unique.type == UniqueType.MayanGainGreatPerson && civInfo.greatPeople.longCountGPPool.isEmpty())
                     civInfo.greatPeople.longCountGPPool = greatPeople.map { it.name }.toHashSet()
-                if (civInfo.isHuman()) {
+                if (civInfo.isHuman() && !UncivGame.Current.settings.autoPlay.isAutoPlayingAndFullAI()) {
                     civInfo.greatPeople.freeGreatPeople++
                     // Anyone an idea for a good icon?
                     if (unique.type == UniqueType.MayanGainGreatPerson) {
@@ -311,7 +318,11 @@ object UniqueTriggerActivation {
                             notification.fillPlaceholders(*(techsToResearch.map { it.name }
                                 .toTypedArray()))
                         else notification
-                    civInfo.addNotification(notificationText, LocationAction(tile?.position),
+                    // Notification click for first tech only, supporting multiple adds little value.
+                    // Relies on RulesetValidator catching <= 0!
+                    val notificationActions: Sequence<NotificationAction> =
+                        LocationAction(tile?.position) + TechAction(techsToResearch.first().name)
+                    civInfo.addNotification(notificationText, notificationActions,
                         NotificationCategory.General, NotificationIcon.Science)
                 }
 
@@ -326,7 +337,7 @@ object UniqueTriggerActivation {
                     "You have discovered the secrets of [$techName]")
                     ?: return true
 
-                civInfo.addNotification(notificationText, NotificationCategory.General, NotificationIcon.Science)
+                civInfo.addNotification(notificationText, TechAction(techName), NotificationCategory.General, NotificationIcon.Science)
                 return true
             }
 

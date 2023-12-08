@@ -720,7 +720,7 @@ class QuestManager : IsPartOfGameInfoSerialization {
                 .filter { building ->
                             // Buildable wonder
                             building.isWonder
-                            && (building.requiredTech == null || challenger.tech.isResearched(building.requiredTech!!))
+                            && challenger.tech.isResearched(building)
                             && civInfo.gameInfo.getCities().none { it.cityConstructions.isBuilt(building.name) }
                             // Can't be disabled
                             && building.name !in startingEra.startingObsoleteWonders

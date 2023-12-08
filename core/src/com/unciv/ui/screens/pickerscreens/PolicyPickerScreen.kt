@@ -53,7 +53,7 @@ private object PolicyColors {
     val branchAdopted = colorFromRGB(100, 90, 10).darken(0.5f)
 }
 
-fun Policy.isPickable(viewingCiv: Civilization, canChangeState: Boolean) : Boolean {
+private fun Policy.isPickable(viewingCiv: Civilization, canChangeState: Boolean) : Boolean {
     if (!viewingCiv.isCurrentPlayer()
             || !canChangeState
             || viewingCiv.isDefeated()
@@ -66,7 +66,7 @@ fun Policy.isPickable(viewingCiv: Civilization, canChangeState: Boolean) : Boole
     return true
 }
 
-class PolicyButton(viewingCiv: Civilization, canChangeState: Boolean, val policy: Policy, size: Float = 30f) : BorderedTable(
+private class PolicyButton(viewingCiv: Civilization, canChangeState: Boolean, val policy: Policy, size: Float = 30f) : BorderedTable(
     path = "PolicyScreen/PolicyButton",
     defaultBgBorder = BaseScreen.skinStrings.roundedEdgeRectangleSmallShape,
     defaultBgShape = BaseScreen.skinStrings.roundedEdgeRectangleSmallShape,
@@ -131,7 +131,11 @@ class PolicyButton(viewingCiv: Civilization, canChangeState: Boolean, val policy
 }
 
 
-class PolicyPickerScreen(val viewingCiv: Civilization, val canChangeState: Boolean)
+class PolicyPickerScreen(
+    val viewingCiv: Civilization,
+    val canChangeState: Boolean,
+    select: String? = null
+)
     : PickerScreen(), RecreateOnResize {
 
     object Sizes {
@@ -142,10 +146,12 @@ class PolicyPickerScreen(val viewingCiv: Civilization, val canChangeState: Boole
         const val iconSize = 50f
     }
 
-    private var policyNameToButton = HashMap<String, PolicyButton>()
+    private val policyNameToButton = HashMap<String, PolicyButton>()
     private var selectedPolicyButton: PolicyButton? = null
 
     init {
+        val branchToGroup = HashMap<String, BranchGroup>()
+
         val policies = viewingCiv.policies
         displayTutorial(TutorialTrigger.CultureAndPolicies)
 
@@ -204,8 +210,9 @@ class PolicyPickerScreen(val viewingCiv: Civilization, val canChangeState: Boole
                 wrapper.add().expand()
             } else {
                 val branch = branches.values.elementAt(r)
-                val branchGroup = getBranchGroup(branch)
+                val branchGroup = BranchGroup(branch)
                 wrapper.add(branchGroup).growY().growX()
+                branchToGroup[branch.name] = branchGroup
             }
         }
         topTable.add(wrapper).pad(5f,10f)
@@ -222,6 +229,11 @@ class PolicyPickerScreen(val viewingCiv: Civilization, val canChangeState: Boole
             scrollPane.scrollX = hScroll
         }
         scrollPane.updateVisualScroll()
+
+        when(select) {
+            in branches -> branchToGroup[select]?.toggle()
+            in policyNameToButton -> policyNameToButton[select]!!.also { pickPolicy(it) }
+        }
     }
 
     private fun pickPolicy(button: PolicyButton) {
@@ -252,133 +264,136 @@ class PolicyPickerScreen(val viewingCiv: Civilization, val canChangeState: Boole
      * @param branch the policy branch to display
      * @return a [Table], with outer padding _zero_
      */
-    private fun getBranchGroup(branch: PolicyBranch): Group {
+    private inner class BranchGroup(branch: PolicyBranch) : BorderedTable(path = "PolicyScreen/PolicyBranchBackground") {
+        private val header = getBranchHeader(branch)
+        private val group = Group()
+        private val groupCell: Cell<Group>
+        private val topBtn = getTopButton(branch)
+        private val topBtnCell: Cell<Table>
+        private val labelTable = Table()
 
-        // Calculate preferred size
-        val maxCol = max(5, branch.policies.maxOf { it.column })
-        val maxRow = branch.policies.maxOf { it.row }
+        init {
+            // Calculate preferred size
+            val maxCol = max(5, branch.policies.maxOf { it.column })
+            val maxRow = branch.policies.maxOf { it.row }
 
-        val prefWidth = Sizes.paddingHorizontal *2 + Sizes.iconSize *maxCol - (Sizes.iconSize - Sizes.paddingBetweenHor)*(maxCol-1)/2
-        val prefHeight = Sizes.paddingVertical *2 + Sizes.iconSize *maxRow + Sizes.paddingBetweenVer *(maxRow - 1)
+            val prefWidth = Sizes.paddingHorizontal * 2 + Sizes.iconSize * maxCol - (Sizes.iconSize - Sizes.paddingBetweenHor) * (maxCol - 1) / 2
+            val prefHeight = Sizes.paddingVertical * 2 + Sizes.iconSize * maxRow + Sizes.paddingBetweenVer * (maxRow - 1)
 
-        // Main table
-        val colorBg = if (viewingCiv.policies.isAdopted(branch.name)) PolicyColors.branchAdopted else PolicyColors.branchNotAdopted
-        val branchGroup = BorderedTable(path="PolicyScreen/PolicyBranchBackground")
-            .apply { bgColor = colorBg }
+            // Main table
+            bgColor = if (viewingCiv.policies.isAdopted(branch.name)) PolicyColors.branchAdopted else PolicyColors.branchNotAdopted
 
-        // Header
-        val header = getBranchHeader(branch)
-        branchGroup.add(header).growX().row()
+            // Header
+            add(header).growX().row()
 
-        // Description
-        val onAdoption = branch.getDescription()
-        val onCompletion = branch.policies.last().getDescription()
-        var text = ""
-        if (viewingCiv.gameInfo.ruleset.eras[branch.era]!!.eraNumber > viewingCiv.getEraNumber())
-            text += "{Unlocked at} {${branch.era}}" + "\n\n"
-        text += "{On adoption}:" + "\n\n" + onAdoption + "\n\n" +
+            // Description
+            val onAdoption = branch.getDescription()
+            val onCompletion = branch.policies.last().getDescription()
+            var text = ""
+            if (viewingCiv.gameInfo.ruleset.eras[branch.era]!!.eraNumber > viewingCiv.getEraNumber())
+                text += "{Unlocked at} {${branch.era}}" + "\n\n"
+            text += "{On adoption}:" + "\n\n" + onAdoption + "\n\n" +
                 "{On completion}:" + "\n\n" + onCompletion
 
-        val labelTable = Table()
+            val label = text.toLabel(fontSize = 13)
+            label.setFillParent(false)
+            label.setAlignment(Align.topLeft)
+            label.wrap = true
+            labelTable.add(label).pad(7f, 20f, 10f, 20f).grow().row()
 
-        val label = text.toLabel(fontSize = 13)
-        label.setFillParent(false)
-        label.setAlignment(Align.topLeft)
-        label.wrap = true
-        labelTable.add(label).pad(7f,20f, 10f, 20f).grow().row()
+            val conditionals = LinkedHashMap<UniqueType, ArrayList<String>>()
 
-        val conditionals = LinkedHashMap<UniqueType, ArrayList<String>>()
-
-        branch.uniqueMap[UniqueType.OnlyAvailableWhen.text]?.forEach {
-            unique ->
-            unique.conditionals.forEach {
-                if (it.type != null) {
-                    if (conditionals[it.type] == null)
-                        conditionals[it.type] = ArrayList()
-                    conditionals[it.type]!!.add(it.params.toString().tr())
+            branch.uniqueMap[UniqueType.OnlyAvailableWhen.text]?.forEach { unique ->
+                unique.conditionals.forEach {
+                    if (it.type != null) {
+                        if (conditionals[it.type] == null)
+                            conditionals[it.type] = ArrayList()
+                        conditionals[it.type]!!.add(it.params.toString().tr())
+                    }
                 }
             }
-        }
 
-        if (conditionals.isNotEmpty()) {
-            var warning = UniqueType.OnlyAvailableWhen.text.tr() + ":\n"
-            for ((k, v) in conditionals) {
-                warning += "• " + k.text.fillPlaceholders(v.joinToString()).tr() + "\n"
-            }
-            val warningLabel = ColorMarkupLabel(warning, Color.RED, fontSize = 13)
-            warningLabel.setAlignment(Align.topLeft)
-            warningLabel.wrap = true
-            labelTable.add(warningLabel).pad(0f, 20f, 17f, 20f).grow()
-        }
-
-        // Top button
-        val topBtn = getTopButton(branch)
-        val topBtnCell = branchGroup.add(topBtn).growX().pad(10f, 10f, 0f, 10f)
-        topBtnCell.row()
-
-        // Main grid
-
-        val group = Group()
-        group.width = prefWidth
-        group.height = prefHeight
-
-        // Calculate grid points coordinates
-        val startX = Sizes.paddingHorizontal
-        val endX = prefWidth - Sizes.paddingHorizontal - Sizes.iconSize
-        val deltaX = (endX - startX)/(maxCol - 1)
-
-        val startY = prefHeight - Sizes.paddingVertical - Sizes.iconSize
-        val endY = Sizes.paddingVertical
-        val deltaY = (startY - endY)/(maxRow - 1)
-
-        val coords = Array(maxRow+1) { Array(maxCol+1) {Pair(0f,0f)}}
-
-        var row = 1
-        var col: Int
-
-        var posX: Float
-        var posY = startY
-
-        while (row <= maxRow) {
-            col = 1
-            posX = startX
-            while (col <= maxCol) {
-                coords[row][col] = Pair(posX, posY)
-
-                col += 1
-                posX += deltaX
+            if (conditionals.isNotEmpty()) {
+                var warning = UniqueType.OnlyAvailableWhen.text.tr() + ":\n"
+                for ((k, v) in conditionals) {
+                    warning += "• " + k.text.fillPlaceholders(v.joinToString()).tr() + "\n"
+                }
+                val warningLabel = ColorMarkupLabel(warning, Color.RED, fontSize = 13)
+                warningLabel.setAlignment(Align.topLeft)
+                warningLabel.wrap = true
+                labelTable.add(warningLabel).pad(0f, 20f, 17f, 20f).grow()
             }
 
-            row += 1
-            posY -= deltaY
+            // Top button
+            topBtnCell = add(topBtn).growX().pad(10f, 10f, 0f, 10f)
+            row()
+
+            // Main grid
+            group.width = prefWidth
+            group.height = prefHeight
+
+            // Calculate grid points coordinates
+            val startX = Sizes.paddingHorizontal
+            val endX = prefWidth - Sizes.paddingHorizontal - Sizes.iconSize
+            val deltaX = (endX - startX) / (maxCol - 1)
+
+            val startY = prefHeight - Sizes.paddingVertical - Sizes.iconSize
+            val endY = Sizes.paddingVertical
+            val deltaY = (startY - endY) / (maxRow - 1)
+
+            val coords = Array(maxRow + 1) { Array(maxCol + 1) { Pair(0f, 0f) } }
+
+            var row = 1
+            var col: Int
+
+            var posX: Float
+            var posY = startY
+
+            while (row <= maxRow) {
+                col = 1
+                posX = startX
+                while (col <= maxCol) {
+                    coords[row][col] = Pair(posX, posY)
+
+                    col += 1
+                    posX += deltaX
+                }
+
+                row += 1
+                posY -= deltaY
+            }
+
+            // Create policy buttons at calculated coordinates
+            for (policy in branch.policies) {
+                if (policy.policyBranchType == PolicyBranchType.BranchComplete)
+                    continue
+
+                val button = getPolicyButton(policy, size = Sizes.iconSize)
+                group.addActor(button)
+
+                val policyX = coords[policy.row][policy.column].first
+                val policyY = coords[policy.row][policy.column].second
+
+                button.x = policyX
+                button.y = policyY
+
+                policyNameToButton[policy.name] = button
+            }
+
+            // Draw connecting lines
+            drawLines(branch)
+
+            groupCell = add(group).minWidth(prefWidth).expandY().top()
+            row()
+
+            // Setup header clicks
+            header.onClick(::toggle)
+
+            // Ensure dimensions are calculated
+            pack()
         }
 
-        // Create policy buttons at calculated coordinates
-        for (policy in branch.policies) {
-            if (policy.policyBranchType == PolicyBranchType.BranchComplete)
-                continue
-
-            val button = getPolicyButton(policy, size = Sizes.iconSize)
-            group.addActor(button)
-
-            val policyX = coords[policy.row][policy.column].first
-            val policyY = coords[policy.row][policy.column].second
-
-            button.x = policyX
-            button.y = policyY
-
-            policyNameToButton[policy.name] = button
-        }
-
-        // Draw connecting lines
-        drawLines(branch)
-
-        val groupCell = branchGroup.add(group).minWidth(prefWidth).expandY().top()
-        branchGroup.row()
-
-        // Setup header clicks
-        header.onClick {
-
+        fun toggle() {
             val newActor = if (groupCell.actor == group) labelTable else group
             val rotate = if (groupCell.actor == group) -90f else 90f
 
@@ -390,16 +405,14 @@ class PolicyPickerScreen(val viewingCiv: Civilization, val canChangeState: Boole
             groupCell.clearActor()
             groupCell.setActor(newActor)
 
-            ((header.cells[0].actor as Table).cells[0] as Cell<Actor>).clearActor()
-            ((header.cells[0].actor as Table).cells[0] as Cell<Actor>).setActor(ImageGetter.
-            getImage("OtherIcons/BackArrow").apply { rotation = rotate}.toGroup(10f))
+            //todo resolve kludge by making BranchHeader a proper class
+            ((header.cells[0].actor as Table).cells[0] as Cell<Actor>)
+                .clearActor()
+                .setActor(
+                    ImageGetter.getImage("OtherIcons/BackArrow").apply { rotation = rotate }.toGroup(10f)
+                )
         }
-
-        // Ensure dimensions are calculated
-        branchGroup.pack()
-        return branchGroup
     }
-
 
 
     private fun drawLines(branch: PolicyBranch) {
@@ -659,7 +672,7 @@ class PolicyPickerScreen(val viewingCiv: Civilization, val canChangeState: Boole
     }
 
     override fun recreate(): BaseScreen {
-        val newScreen = PolicyPickerScreen(viewingCiv, canChangeState)
+        val newScreen = PolicyPickerScreen(viewingCiv, canChangeState, selectedPolicyButton?.policy?.name)
         newScreen.scrollPane.scrollPercentX = scrollPane.scrollPercentX
         newScreen.scrollPane.scrollPercentY = scrollPane.scrollPercentY
         newScreen.scrollPane.updateVisualScroll()

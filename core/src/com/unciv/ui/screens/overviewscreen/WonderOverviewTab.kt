@@ -178,7 +178,7 @@ class WonderInfo {
         val wonderEraMap: Map<String, Era?> =
                 ruleSet.buildings.values.asSequence()
                     .filter { it.isWonder }
-                    .associate { it.name to ruleSet.eras[ruleSet.technologies[it.requiredTech]?.era()] }
+                    .associate { it.name to it.era(ruleSet) }
 
         // Maps all World Wonders by their position in sort order to their name
         val allWonderMap: Map<Int, String> =

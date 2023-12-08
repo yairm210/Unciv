@@ -246,7 +246,7 @@ class UnitMovement(val unit: MapUnit) {
         return getShortestPath(destination).any()
     }
 
-    private fun canReachInCurrentTurn(destination: Tile): Boolean {
+    fun canReachInCurrentTurn(destination: Tile): Boolean {
         if (unit.cache.cannotMove) return destination == unit.getTile()
         if (unit.baseUnit.movesLikeAirUnits())
             return unit.currentTile.aerialDistanceTo(destination) <= unit.getMaxMovementForAirUnits()
@@ -364,8 +364,6 @@ class UnitMovement(val unit: MapUnit) {
     fun moveToTile(destination: Tile, considerZoneOfControl: Boolean = true) {
         if (destination == unit.getTile() || unit.isDestroyed) return // already here (or dead)!
         // Reset closestEnemy chache
-        unit.cache.distanceToClosestEnemyUnit = null
-        unit.cache.distanceToClosestEnemyUnitSearched = null
 
         if (unit.baseUnit.movesLikeAirUnits()) { // air units move differently from all other units
             if (unit.action != UnitActionType.Automate.value) unit.action = null

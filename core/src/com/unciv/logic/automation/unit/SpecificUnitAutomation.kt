@@ -52,13 +52,13 @@ object SpecificUnitAutomation {
         if (tileToSteal != null) {
             unit.movement.headTowards(tileToSteal)
             if (unit.currentMovement > 0 && unit.currentTile == tileToSteal)
-                UnitActionsFromUniques.getImprovementConstructionActions(unit, unit.currentTile).firstOrNull()?.action?.invoke()
+                UnitActionsFromUniques.getImprovementConstructionActionsFromGeneralUnique(unit, unit.currentTile).firstOrNull()?.action?.invoke()
             return true
         }
 
         // try to build a citadel for defensive purposes
         if (unit.civ.getWorkerAutomation().evaluateFortPlacement(unit.currentTile, true)) {
-            UnitActionsFromUniques.getImprovementConstructionActions(unit, unit.currentTile).firstOrNull()?.action?.invoke()
+            UnitActionsFromUniques.getImprovementConstructionActionsFromGeneralUnique(unit, unit.currentTile).firstOrNull()?.action?.invoke()
             return true
         }
         return false
@@ -92,7 +92,7 @@ object SpecificUnitAutomation {
         }
         unit.movement.headTowards(tileForCitadel)
         if (unit.currentMovement > 0 && unit.currentTile == tileForCitadel)
-            UnitActionsFromUniques.getImprovementConstructionActions(unit, unit.currentTile)
+            UnitActionsFromUniques.getImprovementConstructionActionsFromGeneralUnique(unit, unit.currentTile)
                 .firstOrNull()?.action?.invoke()
     }
 
@@ -131,7 +131,7 @@ object SpecificUnitAutomation {
 
 
         // If the tile we are currently on is close to the best tile, then lets just settle here instead
-        if (bestTilesInfo.tileRankMap.containsKey(unit.getTile()) 
+        if (bestTilesInfo.tileRankMap.containsKey(unit.getTile())
                 && (bestTilesInfo.bestTile == null || bestTilesInfo.tileRankMap[unit.getTile()]!! >= bestTilesInfo.tileRankMap[bestTilesInfo.bestTile]!! - 10)) {
                 bestCityLocation = unit.getTile()
         }
@@ -242,7 +242,7 @@ object SpecificUnitAutomation {
             if (unit.currentTile == chosenTile) {
                 if (unit.currentTile.isPillaged())
                     UnitActions.invokeUnitAction(unit, UnitActionType.Repair)
-                else UnitActions.invokeUnitAction(unit, UnitActionType.Create)
+                else UnitActions.invokeUnitAction(unit, UnitActionType.CreateImprovement)
                 return true
             }
             return unitTileBeforeMovement != unit.currentTile
@@ -336,7 +336,7 @@ object SpecificUnitAutomation {
         if (unit.movement.canReach(capitalTile))
             unit.movement.headTowards(capitalTile)
         if (unit.getTile() == capitalTile) {
-            UnitActionsFromUniques.getAddInCapitalAction(unit, capitalTile).action?.invoke()
+            UnitActions.invokeUnitAction(unit, UnitActionType.AddInCapital)
         }
     }
 
