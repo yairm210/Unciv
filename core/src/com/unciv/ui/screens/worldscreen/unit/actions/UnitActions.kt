@@ -55,6 +55,8 @@ object UnitActions {
         UnitActionType.AddInCapital to UnitActionsFromUniques::getAddInCapitalActions
     )
 
+    fun shouldAutomationBePrimaryAction(unit:MapUnit) = unit.cache.hasUniqueToBuildImprovements || unit.hasUnique(UniqueType.AutomationPrimaryAction)
+
     private fun getNormalActions(unit: MapUnit): List<UnitAction> {
         val tile = unit.getTile()
         val actionList = ArrayList<UnitAction>()
@@ -63,7 +65,9 @@ object UnitActions {
             actionList.addAll(getActionsFunction(unit, tile))
 
         // General actions
-        addAutomateAction(unit, actionList, true)
+
+        if (shouldAutomationBePrimaryAction(unit))
+            actionList += getAutomateActions(unit, unit.currentTile)
         if (unit.isMoving()) {
             actionList += UnitAction(UnitActionType.StopMovement) { unit.action = null }
         }
@@ -102,7 +106,8 @@ object UnitActions {
         }
         addSleepActions(actionList, unit, true)
         addFortifyActions(actionList, unit, true)
-        addAutomateAction(unit, actionList, false)
+        if (!shouldAutomationBePrimaryAction(unit))
+            actionList += getAutomateActions(unit, unit.currentTile)
 
         addSwapAction(unit, actionList)
         addDisbandAction(actionList, unit)
@@ -289,17 +294,13 @@ object UnitActions {
         return UnitAction(UnitActionType.GiftUnit, action = giftAction)
     }
 
-    private fun addAutomateAction(
+    private fun getAutomateActions(
         unit: MapUnit,
-        actionList: ArrayList<UnitAction>,
-        showingPrimaryActions: Boolean
-    ) {
-        val shouldAutomationBePrimaryAction = unit.cache.hasUniqueToBuildImprovements || unit.hasUnique(UniqueType.AutomationPrimaryAction)
-        if (shouldAutomationBePrimaryAction != showingPrimaryActions)
-            return
+        tile: Tile
+    ): List<UnitAction> {
 
-        if (unit.isAutomated()) return
-        actionList += UnitAction(UnitActionType.Automate,
+        if (unit.isAutomated()) return listOf()
+        return listOf(UnitAction(UnitActionType.Automate,
             isCurrentAction = unit.isAutomated(),
             action = {
                 // Temporary, for compatibility - we want games serialized *moving through old versions* to come out the other end with units still automated
@@ -307,7 +308,7 @@ object UnitActions {
                 unit.automated = true
                 UnitAutomation.automateUnitMoves(unit)
             }.takeIf { unit.currentMovement > 0 }
-        )
+        ))
     }
 
     private fun addWaitAction(unit: MapUnit, actionList: ArrayList<UnitAction>) {
