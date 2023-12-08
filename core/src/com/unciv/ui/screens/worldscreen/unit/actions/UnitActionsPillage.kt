@@ -30,7 +30,7 @@ object UnitActionsPillage {
                     "Pillage",
                     true
                 ) {
-                    pillageAction.action()
+                    (pillageAction.action)()
                     GUI.setUpdateWorldOnNextRender()
                 }.open()
             }

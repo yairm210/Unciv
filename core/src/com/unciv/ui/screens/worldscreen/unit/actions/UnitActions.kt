@@ -81,8 +81,10 @@ object UnitActions {
         actionList += getPromoteActions(unit, unit.currentTile)
         actionList += UnitActionsUpgrade.getUnitUpgradeActions(unit, unit.currentTile)
         actionList += UnitActionsPillage.getPillageActions(unit, unit.currentTile)
+
         actionList += getSleepActions(unit, tile)
         actionList += getSleepUntilHealedActions(unit, tile)
+
         addFortifyActions(actionList, unit, false)
 
         if (unit.isMilitary()) actionList += getExplorationActions(unit, unit.currentTile)
