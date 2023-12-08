@@ -65,7 +65,7 @@ class UnitMovement(val unit: MapUnit) {
                     }
 
                     if (!distanceToTiles.containsKey(neighbor) || distanceToTiles[neighbor]!!.totalDistance > totalDistanceToTile) { // this is the new best path
-                        if (totalDistanceToTile < unitMovement- Constants.minimumMovementEpsilon)  // We can still keep moving from here!
+                        if (totalDistanceToTile < unitMovement - Constants.minimumMovementEpsilon)  // We can still keep moving from here!
                             updatedTiles += neighbor
                         else
                             totalDistanceToTile = unitMovement

@@ -183,7 +183,10 @@ class TestGame {
         baseUnit.ruleset = ruleset
         val mapUnit = baseUnit.getMapUnit(civInfo)
         civInfo.units.addUnit(mapUnit)
-        if (tile!=null) mapUnit.putInTile(tile)
+        if (tile!=null) {
+            mapUnit.putInTile(tile)
+            mapUnit.currentMovement = mapUnit.getMaxMovement().toFloat()
+        }
         return mapUnit
     }
 
