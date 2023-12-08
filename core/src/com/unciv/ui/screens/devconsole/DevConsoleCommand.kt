@@ -103,6 +103,17 @@ class ConsoleUnitCommands : ConsoleCommandNode {
             unit.updateUniques()
             unit.updateVisibleTiles()
             return@ConsoleAction DevConsoleResponse.OK
+        },
+
+        "setmovement" to ConsoleAction { console, params ->
+            if (params.size != 1)
+                return@ConsoleAction DevConsoleResponse.hint("Format: unit setmovement <amount>")
+            val movement = params[0].toFloatOrNull()
+            if (movement == null || movement < 0) return@ConsoleAction DevConsoleResponse.error("Invalid number")
+            val unit = console.getSelectedUnit()
+                ?: return@ConsoleAction DevConsoleResponse.error("Select tile with unit")
+            unit.currentMovement = movement
+            return@ConsoleAction DevConsoleResponse.OK
         }
     )
 }
@@ -226,10 +237,10 @@ class ConsoleTileCommands: ConsoleCommandNode {
 
 class ConsoleCivCommands : ConsoleCommandNode {
     override val subcommands = hashMapOf<String, ConsoleCommand>(
-        "add" to ConsoleAction { console, params ->
+        "addstat" to ConsoleAction { console, params ->
             var statPos = 0
             if (params.size !in 2..3)
-                return@ConsoleAction DevConsoleResponse.hint("Format: civ add [civ] <stat> <amount>")
+                return@ConsoleAction DevConsoleResponse.hint("Format: civ addstat [civ] [stat] <amount>")
             val civ = if (params.size == 2) console.screen.selectedCiv
                 else {
                     statPos++
