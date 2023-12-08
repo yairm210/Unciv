@@ -4,6 +4,7 @@ package com.unciv.logic
 import com.badlogic.gdx.Gdx
 import com.unciv.Constants
 import com.unciv.UncivGame
+import com.unciv.models.metadata.BaseRuleset
 import com.unciv.models.metadata.GameSettings
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
@@ -19,12 +20,12 @@ import com.unciv.testing.GdxTestRunner
 import com.unciv.utils.BracketsParser
 import com.unciv.utils.Log
 import com.unciv.utils.debug
+import java.io.OutputStream
+import java.io.PrintStream
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
-import java.io.OutputStream
-import java.io.PrintStream
 
 @RunWith(GdxTestRunner::class)
 class TranslationTests {
@@ -360,6 +361,28 @@ class TranslationTests {
         )
         Assert.assertEquals(conditionalDisjunctionExpected, conditionalDisjunctionResults)
         return
+    }
+
+    //@Test This test would at the moment correctly finger unsupproted nestings for Heroic Epic, Japan and Carthage:
+    fun baseRulesetUniquesHaveMatchedBrackets() {
+        val parser = BracketsParser(10)
+        var allOK = true
+        for (ruleset in BaseRuleset.values().mapNotNull { RulesetCache[it.fullName] }) {
+            for (obj in ruleset.allIHasUniques()) {
+                for (uniqueText in obj.uniques) {
+                    for (result in parser.parse(uniqueText)) {
+                        if (result.error != BracketsParser.ErrorType.Result) {
+                            println("%s, %s, \"%s\": %s at %d".format(ruleset.name, obj.name, uniqueText, result.error, result.position))
+                            allOK = false
+                        } else if (result.type.opening in result.value) {
+                            println("%s, %s, \"%s\" contains nested brackets: \"%s\" within %s".format(ruleset.name, obj.name, uniqueText, result.value, result.type))
+                            allOK = false
+                        }
+                    }
+                }
+            }
+        }
+        Assert.assertTrue("Not all base ruleset Uniques have balanced brackets", allOK)
     }
 
 //    @Test
