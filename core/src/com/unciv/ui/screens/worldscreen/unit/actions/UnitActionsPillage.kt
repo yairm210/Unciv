@@ -11,34 +11,30 @@ import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
 import com.unciv.ui.popups.ConfirmPopup
-import com.unciv.ui.popups.hasOpenPopups
 import kotlin.random.Random
 
 object UnitActionsPillage {
 
-    fun addPillageAction(unit: MapUnit, actionList: ArrayList<UnitAction>) {
-        val pillageAction = getPillageAction(unit)
-            ?: return
-        if (pillageAction.action == null)
-            actionList += pillageAction
-        else actionList += UnitAction(UnitActionType.Pillage, pillageAction.title) {
-            if (!GUI.getWorldScreen().hasOpenPopups()) {
-                val pillageText = "Are you sure you want to pillage this [${unit.currentTile.getImprovementToPillageName()!!}]?"
-                ConfirmPopup(
-                    GUI.getWorldScreen(),
-                    pillageText,
-                    "Pillage",
-                    true
-                ) {
-                    (pillageAction.action)()
-                    GUI.setUpdateWorldOnNextRender()
-                }.open()
-            }
-        }
+    fun getPillageActions(unit: MapUnit, tile: Tile): List<UnitAction> {
+        val pillageAction = getPillageAction(unit, tile)
+            ?: return listOf()
+        if (pillageAction.action == null || unit.civ.isAI())
+            return listOf(pillageAction)
+        else return listOf(UnitAction(UnitActionType.Pillage, pillageAction.title) {
+            val pillageText = "Are you sure you want to pillage this [${tile.getImprovementToPillageName()!!}]?"
+            ConfirmPopup(
+                GUI.getWorldScreen(),
+                pillageText,
+                "Pillage",
+                true
+            ) {
+                (pillageAction.action)()
+                GUI.setUpdateWorldOnNextRender()
+            }.open()
+        })
     }
 
-    fun getPillageAction(unit: MapUnit): UnitAction? {
-        val tile = unit.currentTile
+    fun getPillageAction(unit: MapUnit, tile: Tile): UnitAction? {
         val improvementName = unit.currentTile.getImprovementToPillageName()
         if (unit.isCivilian() || improvementName == null || tile.getOwner() == unit.civ) return null
         return UnitAction(
