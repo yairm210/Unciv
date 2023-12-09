@@ -38,7 +38,6 @@ Each building can have the following attributes:
 | isWonder | Boolean | defaults to false | Whether this building is a global wonder |
 | isNationalWonder | Boolean | defaults to false | Whether this building is a national wonder |
 | requiredBuilding | String | defaults to none | A building that has to be built before this building can be built. Must be in [Buildings.json](https://github.com/yairm210/Unciv/tree/master/android/assets/jsons/Civ%20V%20-%20Gods%20&%20Kings/Buildings.json) |
-| cannotBeBuiltWith | String | defaults to none | The building [cannotBeBuiltWith] and this building cannot exist in the same city together. Should be in [Buildings.json](https://github.com/yairm210/Unciv/tree/master/android/assets/jsons/Civ%20V%20-%20Gods%20&%20Kings/Buildings.json) |
 | providesFreeBuilding | String | defaults to none | When the building is built, [providesFreeBuilding] is also automatically added to the city |
 | requiredTech | String | defaults to none | The tech that should be researched before this building may be built. Must be in [Techs.json](#techsjson) |
 | requiredResource | String | defaults to none | The resource that is consumed when building this building. Must be in [TileResources.json](3-Map-related-JSON-files.md#tileresourcesjson) |
