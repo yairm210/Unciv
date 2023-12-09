@@ -8,9 +8,9 @@ This file defines the difficulty levels a player can choose when starting a new 
 
 Each difficulty level can have the following attributes:
 
-| Attribute | Type | Optional | Notes                                                                                                                                                                                                  |
-| --------- | ---- | -------- |--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| name | String | Required | Name of the difficulty level                                                                                                                                                                           |
+| Attribute | Type | Optional | Notes |
+| --------- | ---- | -------- | ----- |
+| name | String | Required | Name of the difficulty level |
 | baseHappiness | Integer | Default 0 |
 | extraHappinessPerLuxury | Float | Default 0 |
 | researchCostModifier | Float | Default 1 |
@@ -27,10 +27,10 @@ Each difficulty level can have the following attributes:
 | aiBuildingMaintenanceModifier | Float | Default 1 |
 | aiUnitMaintenanceModifier | Float | Default 1 |
 | aiFreeTechs | List of Techs | Default empty |
-| aiMajorCivBonusStartingUnits | List of Units | Default empty | Same rules as playerBonusStartingUnits, See above. Applies only to AI major civs                                                                                                                       |
-| aiCityStateBonusStartingUnits | List of Units | Default empty | Same rules as playerBonusStartingUnits, See above. Applies only to city-state civs                                                                                                                     |
+| aiMajorCivBonusStartingUnits | List of Units | Default empty | Same rules as playerBonusStartingUnits, See above. Applies only to AI major civs |
+| aiCityStateBonusStartingUnits | List of Units | Default empty | Same rules as playerBonusStartingUnits, See above. Applies only to city-state civs |
 | aiUnhappinessModifier | Float | Default 1 |
-| aisExchangeTechs | Boolean | | Unimplemented                                                                                                                                                                                          |
+| aisExchangeTechs | Boolean | | Unimplemented |
 | turnBarbariansCanEnterPlayerTiles | Integer | Default 0 |
 | clearBarbarianCampReward | Integer | Default 25 |
 
@@ -42,23 +42,23 @@ This file should contain all the era's you want to use in your mod.
 
 Each era can have the following attributes:
 
-| Attribute | Type | Optional | Notes                                                                                                                                                                                                                                              |
-| --------- | ---- | -------- |----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| name | String | required | Name of the era                                                                                                                                                                                                                                    |
-| researchAgreementCost | Integer (≥0) | defaults to 300 | Cost of research agreements when the most technologically advanced civ is in this era                                                                                                                                                              |
-| iconRGB | List of 3 Integers | defaults to [255, 255, 255] | RGB color that icons for technologies of this era should have in the Tech screen                                                                                                                                                                   |
-| unitBaseBuyCost | Integer (≥0) | defaults to 200 | Base cost of buying units with Faith, Food, Science or Culture when no other cost is provided                                                                                                                                                      |
-| startingSettlerCount | Integer (≥0) | defaults to 1 | Amount of settler units that should be spawned when starting a game in this era (setting this to zero is discouraged [^1])                                                                                                                         |
-| startingSettlerUnit | String | defaults to "Settler" | Name of the unit that should be used for the previous field. Must be in [Units.json](4-Unit-related-JSON-files.md#unitsjson), or a unit with the "Founds a new city" unique must exist                                                             |
-| startingWorkerCount | Integer (≥0) | defaults to 0 | Amount of worker units that should be spawned when starting a game in this era                                                                                                                                                                     |
+| Attribute | Type | Optional | Notes |
+| --------- | ---- | -------- | ----- |
+| name | String | required | Name of the era |
+| researchAgreementCost | Integer (≥0) | defaults to 300 | Cost of research agreements when the most technologically advanced civ is in this era |
+| iconRGB | List of 3 Integers | defaults to [255, 255, 255] | RGB color that icons for technologies of this era should have in the Tech screen |
+| unitBaseBuyCost | Integer (≥0) | defaults to 200 | Base cost of buying units with Faith, Food, Science or Culture when no other cost is provided |
+| startingSettlerCount | Integer (≥0) | defaults to 1 | Amount of settler units that should be spawned when starting a game in this era (setting this to zero is discouraged [^1]) |
+| startingSettlerUnit | String | defaults to "Settler" | Name of the unit that should be used for the previous field. Must be in [Units.json](4-Unit-related-JSON-files.md#unitsjson), or a unit with the "Founds a new city" unique must exist |
+| startingWorkerCount | Integer (≥0) | defaults to 0 | Amount of worker units that should be spawned when starting a game in this era |
 | startingWorkerUnit | String | defaults to "Worker" | Name of the unit that should be used for the previous field. If startingWorkerCount>0, then it must exist in [Units.json](4-Unit-related-JSON-files.md#unitsjson), or a unit with the "Can build [filter] improvements on tiles" unique must exist |
-| startingMilitaryUnitCount | Integer (≥0) | defaults to 1 | Amount of military units that should be spawned when starting a game in this era                                                                                                                                                                   |
-| startingMilitaryUnit | String | defaults to "Warrior" | Name of the unit that should be used for the previous field. Must be in [Units.json](4-Unit-related-JSON-files.md#unitsjson)                                                                                                                       |
-| startingGold | Integer (≥0) | defaults to 0 | Amount of gold each civ should receive when starting a game in this era                                                                                                                                                                            |
-| startingCulture | Integer (≥0) | defaults to 0 | Amount of culture each civ should receive when starting a game in this era                                                                                                                                                                         |
-| settlerPopulation | Integer (>0) | defaults to 1 | Default amount of population each city should have when settled when starting a game in this era                                                                                                                                                   |
-| settlerBuildings | List of Strings | defaults to none | Buildings that should automatically be built whenever a city is settled when starting a game in this era                                                                                                                                           |
-| startingObsoleteWonders | List of Strings | defaults to none | Wonders (and technically buildings) that should be impossible to built when starting a game in this era. Used in the base game to remove all wonders older than 2 era's                                                                            |
+| startingMilitaryUnitCount | Integer (≥0) | defaults to 1 | Amount of military units that should be spawned when starting a game in this era |
+| startingMilitaryUnit | String | defaults to "Warrior" | Name of the unit that should be used for the previous field. Must be in [Units.json](4-Unit-related-JSON-files.md#unitsjson) |
+| startingGold | Integer (≥0) | defaults to 0 | Amount of gold each civ should receive when starting a game in this era |
+| startingCulture | Integer (≥0) | defaults to 0 | Amount of culture each civ should receive when starting a game in this era |
+| settlerPopulation | Integer (>0) | defaults to 1 | Default amount of population each city should have when settled when starting a game in this era |
+| settlerBuildings | List of Strings | defaults to none | Buildings that should automatically be built whenever a city is settled when starting a game in this era |
+| startingObsoleteWonders | List of Strings | defaults to none | Wonders (and technically buildings) that should be impossible to built when starting a game in this era. Used in the base game to remove all wonders older than 2 era's |
 
 [^1]: Successfully setting startingSettlerCount to zero in a mod (idea: conquer or die) is not easy. Some player-controlled settings require at least one Settler, through any source (see difficulties for other possible settler sources), or you won't be able to start a game: Once City Challenge requires one for all players, and allowing any city-states requires one for those. Would also affect defeat rules.
 
@@ -113,8 +113,8 @@ Incompatibility filtering works so far between extension and base mods, but feel
 
 The file can have the following attributes, including the values Unciv sets (no point in a mod author setting those):
 
-| Attribute           | Type    | Optional | Notes                                                                                                                                                                               |
-|---------------------|---------|----------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Attribute | Type | Optional | Notes |
+| --------- | ---- | -------- | ----- |
 | isBaseRuleset       | Boolean | false    | Differentiates mods that change the vanilla ruleset or replace it                                                                                                                   |
 | maxXPfromBarbarians | Integer | 30       | *Deprecated*, see [constants](#ModConstants)                                                                                                                                        |
 | uniques             | List    | empty    | Mod-wide specials, [see here](../uniques.md#modoptions-uniques)                                                                                                             |
@@ -135,7 +135,7 @@ This is the only structure that is _merged_ field by field from mods, not overwr
 and city distance in another. In case of conflicts, there is no guarantee which mod wins, only that _default_ values are ignored.
 
 | Attribute                                | Type   | Default   | Notes |
-|------------------------------------------|--------|-----------|-------|
+| ---------------------------------------- | ------ | --------- | ----- |
 | maxXPfromBarbarians                      | Int    | 30        | [^A]  |
 | cityStrengthBase                         | Float  | 8.0       | [^B]  |
 | cityStrengthPerPop                       | Float  | 0.4       | [^B]  |
@@ -222,8 +222,8 @@ When extension rulesets define GlobalUniques, all uniques are merged. At the mom
 As an exception to the general rule, this file in a Base Ruleset mod will not _replace_ the default, but add to it like extension mods do.
 Also, place it under `<mod>/jsons/` normally even if the original is found one level above the vanilla jsons.
 
-| Attribute       | Type         | Optional | Notes                                                    |
-|-----------------|--------------| -------- |----------------------------------------------------------|
+| Attribute | Type | Optional | Notes |
+| --------- | ---- | -------- | ----- |
 | name            | String       | Required | Entry name                                               |
 | civilopediaText | List         | Optional | [see here](5-Miscellaneous-JSON-files.md#civilopedia-text) |
 | steps           | List(String) | Optional | Plain text                                               |
