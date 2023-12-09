@@ -2,6 +2,8 @@
 
 ## Terrains.json
 
+[Link to original](https://github.com/yairm210/Unciv/blob/master/android/assets/jsons/Civ%20V%20-%20Vanilla/Terrains.json)
+
 This file lists the base terrains, terrain features and natural wonders that can appear on the map.
 
 Each terrain entry can have the following properties:
@@ -25,6 +27,8 @@ Each terrain entry can have the following properties:
 
 
 ## TileImprovements.json
+
+[Link to original](https://github.com/yairm210/Unciv/blob/master/android/assets/jsons/Civ%20V%20-%20Vanilla/TileImprovements.json)
 
 This file lists the improvements that can be constructed or created on a map tile by a unit (any unit having the appropriate unique).
 
@@ -51,9 +55,11 @@ Each improvement can have the following properties:
 
 ## TileResources.json
 
+[Link to original](https://github.com/yairm210/Unciv/blob/master/android/assets/jsons/Civ%20V%20-%20Vanilla/Ruins.json)
+
 This file lists the resources that a map tile can have.
 
-Note the predefined resource _types_ cannot be altered in json.
+Note the predefined "_resourceType_" enum cannot be altered in a json.
 
 Note also that resources have two visual representations - icon and pixel graphic in the tileset. Omitting the icon results in a horribly ugly user interface, while omitting tileset graphics will miss out on a visualization on the map. If you provide a pixel graphic for FantasyHex, please be aware of the layering system and the ruleVariants in the tileset json. A single graphic may suffice if it has lots of transparency, as it will be drawn on top of terrain and features but below an improvement - if the single improvement graphic exists at all.
 
@@ -115,7 +121,9 @@ A few uniques can be added to ancient ruin effects to modify when they can be ea
 -   "Hidden when religion is disabled"
 -   "Hidden after a great prophet has been earned"
 
-## Tileset-specific json
+## [Tileset-specific json](../Creating-a-custom-tileset.md)
+
+[Link to original FantasyHex](https://github.com/yairm210/Unciv/blob/master/android/assets/jsons/TileSets/FantasyHex.json)
 
 A mod can define new Tilesets or add to existing ones, namely FantasyHex. There is one json file per Tileset, named same as the Tileset, and placed in a subfolder named "TileSets" relative to the other json files. This is called TileSetConfig and has the following structure:
 
@@ -146,6 +154,8 @@ Each line means "if the tile content is this... then combine the following png i
 When TileSetConfig's for the same Tileset are combined, for the first three properties the last mod wins, while ruleVariants are merged, meaning only an entry with the same key overwrites an earlier entry.
 
 ## Stats
+
+[Link to original](https://github.com/yairm210/Unciv/blob/master/android/assets/jsons/Civ%20V%20-%20Vanilla/Ruins.json)
 
 Terrains, features, resources and improvements may list yield statistics. They can be one of the following:
 
