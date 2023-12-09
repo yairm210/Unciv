@@ -2017,6 +2017,9 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Conditional
 
+??? example  "&lt;when stationed&gt;"
+	Applicable to: Conditional
+
 ??? example  "&lt;if it hasn't used other actions yet&gt;"
 	Applicable to: Conditional
 

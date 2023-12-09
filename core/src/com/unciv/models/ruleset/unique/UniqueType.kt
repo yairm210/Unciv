@@ -675,6 +675,7 @@ enum class UniqueType(
     ConditionalAdjacentUnit("when adjacent to a [mapUnitFilter] unit", UniqueTarget.Conditional),
     ConditionalAboveHP("when above [amount] HP", UniqueTarget.Conditional),
     ConditionalBelowHP("when below [amount] HP", UniqueTarget.Conditional),
+    ConditionalStationed("when stationed", UniqueTarget.Conditional),
     ConditionalHasNotUsedOtherActions("if it hasn't used other actions yet", UniqueTarget.Conditional),
 
     /////// tile conditionals
