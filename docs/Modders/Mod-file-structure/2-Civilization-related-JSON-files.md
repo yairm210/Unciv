@@ -45,7 +45,6 @@ Each building can have the following attributes:
 | requiredNearbyImprovedResources | List of Strings | defaults to none | The building can only be built if any of the resources in this list are within the borders of this city and have been improved. Each resource must be in [TileResources.json](3-Map-related-JSON-files.md#tileresourcesjson) |
 | replaces | String | defaults to none | The name of a building that should be replaced by this building. Must be in [Buildings.json](#buildingsjson) |
 | uniqueTo | String | defaults to none | If supplied, only the nation with this name can build this building. Must be in [Nations.json](#nationsjson) |
-| xpForNewUnits | Integer | defaults to 0 | XP granted automatically to units built in this city |
 | cityStrength | Integer | defaults to 0 | Strength bonus the city in which this building is built receives |
 | cityHealth | Integer | defaults to 0 | Health bonus the city in which this building is built receives |
 | hurryCostModifier | Integer | defaults to 0 | When this building is bought using gold or faith, the price is increased by this much percent |
