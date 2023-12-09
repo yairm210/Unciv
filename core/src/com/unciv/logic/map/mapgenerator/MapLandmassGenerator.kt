@@ -52,6 +52,8 @@ class MapLandmassGenerator(val ruleset: Ruleset, val randomness: MapGenerationRa
             MapType.archipelago -> createArchipelago(tileMap)
             MapType.perlin -> createPerlin(tileMap)
             MapType.fractal -> createFractal(tileMap)
+            MapType.lakes -> createLakes(tileMap)
+            MapType.smallContinents -> createSmallContinents(tileMap)
         }
 
         if (tileMap.mapParameters.shape === MapShape.flatEarth) {
@@ -101,37 +103,39 @@ class MapLandmassGenerator(val ruleset: Ruleset, val randomness: MapGenerationRa
         do {
             val elevationSeed = randomness.RNG.nextInt().toDouble()
             for (tile in tileMap.values) {
-                val a = tileMap.maxLongitude
-                val b = tileMap.maxLatitude
-                val x = tile.longitude
-                val y = tile.latitude
-
+                val maxdim = max(tileMap.maxLatitude, tileMap.maxLongitude)
+                val ratio = maxdim/32.0
                 // var elevation = randomness.getPerlinNoise(tile, elevationSeed, persistence=0.8, lacunarity=1.5)
-                var elevation = randomness.getPerlinNoiseScaled(tile, a, b, elevationSeed, persistence=0.8, lacunarity=1.5)
+                var elevation = randomness.getPerlinNoise(tile, elevationSeed, persistence=0.8, lacunarity=1.5, scale=ratio*30.0)
 
-
-                val xdistanceratio = abs(x)/a
-                var xoffset = 0.0
-
-                val xstartdropoff = 0.8
-                if (xdistanceratio > xstartdropoff) {
-                    xoffset = (xdistanceratio - xstartdropoff)*(1/(1.0-xstartdropoff))
-                }
-
-                val ydistanceratio = abs(y)/b
-                var yoffset = 0.0
-
-                val ystartdropoff=0.77
-                if (ydistanceratio > ystartdropoff) {
-                    yoffset = (ydistanceratio - ystartdropoff)*(1/(1.0-ystartdropoff))
-                }
-
-                elevation -= xoffset*0.33
-                elevation -= yoffset*0.33
+                elevation += getOceanEdgesTransform(tile, tileMap)
 
                 spawnLandOrWater(tile, elevation)
             }
-        } while (tileMap.values.count { it.baseTerrain == waterTerrainName } > tileMap.values.size * 0.7f) // Over 70% water)
+            waterThreshold-=0.01
+        } while (tileMap.values.count { it.baseTerrain == waterTerrainName } > tileMap.values.size * 0.7f) // Over 70% water
+    }
+
+    private fun createLakes(tileMap: TileMap) {
+        val elevationSeed = randomness.RNG.nextInt().toDouble()
+        for (tile in tileMap.values) {
+            val elevation = 0.3-getRidgedPerlinNoise(tile, elevationSeed, persistence=0.7, lacunarity=1.5)
+
+            spawnLandOrWater(tile, elevation)
+        }
+    }
+
+    private fun createSmallContinents(tileMap: TileMap) {
+        val elevationSeed = randomness.RNG.nextInt().toDouble()
+        waterThreshold += 0.25
+        do {
+            for (tile in tileMap.values) {
+                var elevation = getRidgedPerlinNoise(tile, elevationSeed, scale = 22.0)
+                elevation += getOceanEdgesTransform(tile, tileMap)
+                spawnLandOrWater(tile, elevation)
+            }
+            waterThreshold-=0.01
+        } while (tileMap.values.count { it.baseTerrain == waterTerrainName } > tileMap.values.size * 0.7f) // Over 70%
     }
 
     private fun createArchipelago(tileMap: TileMap) {
@@ -153,9 +157,9 @@ class MapLandmassGenerator(val ruleset: Ruleset, val randomness: MapGenerationRa
             }
 
             tileMap.assignContinents(TileMap.AssignContinentsMode.Reassign)
+            waterThreshold-=0.01
         } while (tileMap.continentSizes.values.count { it > 25 } != 1 // Multiple large continents
                 || tileMap.values.count { it.baseTerrain == waterTerrainName } > tileMap.values.size * 0.7f) // Over 70% water
-
         tileMap.assignContinents(TileMap.AssignContinentsMode.Clear)
     }
 
@@ -348,6 +352,37 @@ class MapLandmassGenerator(val ruleset: Ruleset, val randomness: MapGenerationRa
         // there's nothing magical about this, it's just what we got from playing around with a lot of different options -
         //   the numbers can be changed if you find that something else creates better looking continents
         return 1.0 - (5.0 * shouldBeWater*shouldBeWater + randomScale) / 3.0
+    }
+
+    private fun getOceanEdgesTransform(tile: Tile, tileMap: TileMap): Double {
+        val a = tileMap.maxLongitude
+        val b = tileMap.maxLatitude
+        val x = tile.longitude
+        val y = tile.latitude
+
+        // var elevation = randomness.getPerlinNoise(tile, elevationSeed, persistence=0.8, lacunarity=1.5)
+        var elevationOffset = 0.0
+
+
+        val xdistanceratio = abs(x)/a
+        var xoffset = 0.0
+
+        val xstartdropoff = 0.8
+        if (xdistanceratio > xstartdropoff) {
+            xoffset = (xdistanceratio - xstartdropoff)*(1/(1.0-xstartdropoff))
+        }
+
+        val ydistanceratio = abs(y)/b
+        var yoffset = 0.0
+
+        val ystartdropoff=0.76
+        if (ydistanceratio > ystartdropoff) {
+            yoffset = (ydistanceratio - ystartdropoff)*(1/(1.0-ystartdropoff))
+        }
+
+        elevationOffset -= xoffset*0.33
+        elevationOffset -= yoffset*0.35
+        return max(elevationOffset, -0.35)
     }
 
     /**

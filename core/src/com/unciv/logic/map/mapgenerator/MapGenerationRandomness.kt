@@ -39,37 +39,6 @@ class MapGenerationRandomness {
         return Perlin.noise3d(worldCoords.x.toDouble(), worldCoords.y.toDouble(), seed, nOctaves, persistence, lacunarity, scale)
     }
 
-    /**
-     * Generates a perlin noise channel combining multiple octaves
-     * Default settings generate mostly within [-0.55, 0.55], but clustered around 0.0
-     * About 28% are < -0.1 and 28% are > 0.1
-     * Also scales depending on maxLongitude and maxLatitude in order to have the
-     * same average number of continents no matter the map size
-     *
-     * @param tile Source for x / x coordinates.
-     * @param seed Misnomer: actually the z value the Perlin cloud is 'cut' on.
-     * @param nOctaves is the number of octaves.
-     * @param persistence is the scaling factor of octave amplitudes.
-     * @param lacunarity is the scaling factor of octave frequencies.
-     * @param scale is the distance the noise is observed from.
-     */
-    fun getPerlinNoiseScaled(
-        tile: Tile,
-        maxlongitude: Float,
-        maxlatitude: Float,
-        seed: Double,
-        nOctaves: Int = 6,
-        persistence: Double = 0.5,
-        lacunarity: Double = 2.0,
-        scale: Double = 30.0
-    ): Double {
-        val worldCoords = HexMath.hex2WorldCoords(tile.position)
-        val x = 32.0*worldCoords.x.toDouble()/maxlongitude
-        val y = 32.0*worldCoords.y.toDouble()/maxlatitude
-        return Perlin.noise3d(x, y, seed, nOctaves, persistence, lacunarity, scale)
-    }
-
-
     fun chooseSpreadOutLocations(number: Int, suitableTiles: List<Tile>, mapRadius: Int): ArrayList<Tile> {
         if (number <= 0) return ArrayList(0)
 
