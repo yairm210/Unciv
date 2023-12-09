@@ -206,7 +206,7 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
             val stat = Stat.safeValueOf(resourceOrStatName)
                 ?: return false
 
-            gameSpeedModifier = condition.params[0].toFloat() * state.civInfo.gameInfo.speed.statCostModifiers[stat]!!
+            gameSpeedModifier = state.civInfo.gameInfo.speed.statCostModifiers[stat]!!
             return compare(state.civInfo.getStatReserve(stat), limit * gameSpeedModifier)
         }
 
