@@ -10,10 +10,12 @@ import com.unciv.logic.civilization.MayaLongCountAction
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.civilization.PlayerType
+import com.unciv.logic.civilization.PolicyAction
 import com.unciv.logic.civilization.PopupAlert
 import com.unciv.logic.civilization.TechAction
 import com.unciv.logic.map.MapSize
 import com.unciv.logic.map.tile.RoadStatus
+import com.unciv.models.ruleset.INonPerpetualConstruction
 import com.unciv.models.ruleset.tech.Era
 import com.unciv.models.ruleset.tech.Technology
 import com.unciv.models.ruleset.unique.UniqueMap
@@ -152,6 +154,10 @@ class TechManager : IsPartOfGameInfoSerialization {
     }
 
     fun isResearched(techName: String): Boolean = techsResearched.contains(techName)
+
+    fun isResearched(construction: INonPerpetualConstruction): Boolean = construction.requiredTechs().all{ requiredTech -> isResearched(requiredTech) }
+
+    fun isObsolete(unit: BaseUnit): Boolean = unit.techsThatObsoleteThis().any{ obsoleteTech -> isResearched(obsoleteTech) }
 
     fun canBeResearched(techName: String): Boolean {
         val tech = getRuleset().technologies[techName]!!
@@ -345,7 +351,7 @@ class TechManager : IsPartOfGameInfoSerialization {
             return civInfo.getEquivalentUnit(upgradesTo!!)
         }
         val obsoleteUnits = getRuleset().units.asSequence()
-            .filter { it.value.obsoleteTech == techName }
+            .filter { it.value.isObsoletedBy(techName) }
             .map { it.key to it.value.getEquivalentUpgradeOrNull() }
             .toMap()
         if (obsoleteUnits.isEmpty()) return
@@ -414,6 +420,7 @@ class TechManager : IsPartOfGameInfoSerialization {
                     if (!civInfo.isSpectator())
                         civInfo.addNotification(
                             "[${policyBranch.name}] policy branch unlocked!",
+                            PolicyAction(policyBranch.name),
                             NotificationCategory.General,
                             NotificationIcon.Culture
                         )
