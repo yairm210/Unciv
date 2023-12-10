@@ -116,7 +116,7 @@ The file can have the following attributes, including the values Unciv sets (no 
 | Attribute | Type | Optional | Notes |
 | --------- | ---- | -------- | ----- |
 | isBaseRuleset       | Boolean | false    | Differentiates mods that change the vanilla ruleset or replace it                                                                                                                   |
-| maxXPfromBarbarians | Integer | 30       | *Deprecated*, see [constants](#ModConstants)                                                                                                                                        |
+| maxXPfromBarbarians | Integer | 30       | *Deprecated*, see [constants](#modconstants)                                                                                                                                        |
 | uniques             | List    | empty    | Mod-wide specials, [see here](../uniques.md#modoptions-uniques)                                                                                                             |
 | techsToRemove       | List    | empty    | List of [Technologies](2-Civilization-related-JSON-files.md#techsjson) or [-filters](../Unique-parameters.md#technologyfilter) to remove (isBaseRuleset=false only)           |
 | buildingsToRemove   | List    | empty    | List of [Buildings or Wonders](2-Civilization-related-JSON-files.md#buildingsjson) or [-filters](../Unique-parameters.md#buildingfilter) to remove (isBaseRuleset=false only) |
@@ -126,7 +126,7 @@ The file can have the following attributes, including the values Unciv sets (no 
 | modUrl              | String  | empty    | Set automatically after download - URL of repository                                                                                                                                |
 | author              | String  | empty    | Set automatically after download - Owner of repository                                                                                                                              |
 | modSize             | Integer | empty    | Set automatically after download - kB in entire repository, not sum of default branch files                                                                                         |
-| constants           | Object  | empty    | see [ModConstants](#ModConstants)                                                                                                                                                   |
+| constants           | Object  | empty    | see [ModConstants](#modconstants)                                                                                                                                                   |
 
 ### ModConstants
 
@@ -184,7 +184,7 @@ Legend:
 - [^F]: MapGenerator.spreadAncientRuins: number of ruins = suitable tile count * this
 - [^H]: MapGenerator.spawnLakesAndCoasts: Water bodies up to this tile count become Lakes
 - [^I]: RiverGenerator: river frequency and length bounds
-- [^J]: A [UnitUpgradeCost](#UnitUpgradeCost) sub-structure.
+- [^J]: A [UnitUpgradeCost](#unitupgradecost) sub-structure.
 - [^K]: Maximum foundable Religions = religionLimitBase + floor(MajorCivCount * religionLimitMultiplier)
 - [^L]: Cost of pantheon = pantheonBase + CivsWithReligion * pantheonGrowth
 
@@ -243,12 +243,12 @@ Each victory can have the following attributes:
 | Attribute | Type | Optional | Notes |
 | --------- | ---- | -------- | ----- |
 | name | String | Required | Name of the victory |
-| victoryScreenHeader | String | Defaults to "" | Shown in the footer of the victory in the `our status` in the victory screen |
-| victoryString | String | Defaults to "" | Shown in the footer of the victory screen when you won the game with this victory |
-| defeatString | String | Defaults to "" | Shown in the footer of the victory screen when someone else won the game with this victory |
+| victoryScreenHeader | String | Default empty | Shown in the footer of the victory in the `our status` in the victory screen |
+| victoryString | String | Default empty | Shown in the footer of the victory screen when you won the game with this victory |
+| defeatString | String | Default empty | Shown in the footer of the victory screen when someone else won the game with this victory |
 | hiddenInVictoryScreen | Boolean | Defaults to false | Whether progress of this victory is hidden in the victory screen |
-| requiredSpaceshipParts | List of Strings | Defaults to "" | What spaceship parts must be added to the capital for the corresponding milestone |
-| Milestones | List of Strings | Required | List of milestones that must be accomplished to win, see [below](#Milestones) |
+| requiredSpaceshipParts | List of Strings | Default empty | What spaceship parts must be added to the capital for the corresponding milestone |
+| Milestones | List of Strings | Required | List of milestones that must be accomplished to win, see [below](#milestones) |
 
 ### Milestones
 

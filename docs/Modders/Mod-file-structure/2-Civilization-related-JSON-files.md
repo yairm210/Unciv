@@ -19,7 +19,7 @@ Each belief can have the following attributes:
 
 [link to original](https://github.com/yairm210/Unciv/blob/master/android/assets/jsons/Civ%20V%20-%20Gods%20%26%20Kings/Buildings.json)
 
-This file should contain all the buildings and wonders you want to use in your mod.
+This file contains all the buildings and wonders you want to use in your mod.
 
 Each building can have the following attributes:
 
@@ -37,7 +37,7 @@ Each building can have the following attributes:
 | maintenance | Integer (≥0) | defaults to 0 | Maintenance cost of the building |
 | isWonder | Boolean | defaults to false | Whether this building is a global wonder |
 | isNationalWonder | Boolean | defaults to false | Whether this building is a national wonder |
-| requiredBuilding | String | defaults to none | A building that has to be built before this building can be built. Must be in [Buildings.json](#buildingsjson)  |
+| requiredBuilding | String | defaults to none | A building that has to be built before this building can be built. Must be in [Buildings.json](#buildingsjson) |
 | providesFreeBuilding | String | defaults to none | When the building is built, [providesFreeBuilding] is also automatically added to the city |
 | requiredTech | String | defaults to none | The tech that should be researched before this building may be built. Must be in [Techs.json](#techsjson) |
 | requiredResource | String | defaults to none | The resource that is consumed when building this building. Must be in [TileResources.json](3-Map-related-JSON-files.md#tileresourcesjson) |
@@ -61,31 +61,31 @@ Each building can have the following attributes:
 
 This file contains all the nations and city states, including Barbarians and Spectator.
 
-| Attribute            | Type       | Optional        | Notes                                                                                                           |
-| -------------------- | ---------- | --------------- | --------------------------------------------------------------------------------------------------------------- |
-| name                 | String     | Required        |                                                                                                                 |
-| leaderName           | String     | Default empty   | Omit only for city states! If you want LeaderPortraits, the image file names must match exactly, including case |
-| style                | String     | Default empty   | Modifier appended to pixel unit image names                                                                     |
-| adjective            | String     | Default empty   | Currently unused                                                                                                |
-| cityStateType        | Enum       | Default absent  | Distinguishes Major Civilizations from City States (Cultured, Maritime, Mercantile, Militaristic)               |
-| startBias            | List       | Default empty   | Zero or more of: terrainFilter or "Avoid [terrainFilter]". [^S]                                                 |
-| preferredVictoryType | Enum       | Default Neutral | Neutral, Cultural, Diplomatic, Domination or Scientific                                                         |
-| startIntroPart1      | String     | Default empty   | Introductory blurb shown to Player on game start...                                                             |
-| startIntroPart2      | String     | Default empty   | ... second paragraph. ***NO*** "TBD"!!! Leave empty to skip that alert.                                         |
-| declaringWar         | String     | Default empty   | another greeting, voice hook supported [^V]                                                                     |
-| attacked             | String     | Default empty   | another greeting, voice hook supported [^V]                                                                     |
-| defeated             | String     | Default empty   | another greeting, voice hook supported [^V]                                                                     |
-| introduction         | String     | Default empty   | another greeting, voice hook supported [^V]                                                                     |
-| neutralHello         | String     | Default empty   | another greeting, voice hook supported [^V]                                                                     |
-| hateHello            | String     | Default empty   | another greeting, voice hook supported [^V]                                                                     |
-| tradeRequest         | String     | Default empty   | another greeting, voice hook supported [^V]                                                                     |
-| innerColor           | 3x Integer | Default black   | R, G, B for outer ring of nation icon                                                                           |
-| outerColor           | 3x Integer | Required        | R, G, B for inner circle of nation icon                                                                         |
-| uniqueName           | String     | Default empty   | Decorative name for the special characteristic of this Nation                                                   |
-| uniqueText           | String     | Default empty   | Replacement text for "uniques". If empty, uniques are listed individually.                                      |
-| uniques              | List       | Default empty   | List of [unique abilities](../uniques) this civilisation has                                                    |
-| cities               | List       | Default empty   | City names used sequentially for newly founded cities.                                                          |
-| civilopediaText      | List       | Default empty   | see [civilopediaText chapter](5-Miscellaneous-JSON-files.md#civilopedia-text)                                   |
+| Attribute | Type | Optional | Notes |
+| --------- | ---- | -------- | ----- |
+| name | String | Required | |
+| leaderName | String | Default empty | Omit only for city states! If you want LeaderPortraits, the image file names must match exactly, including case |
+| style | String | Default empty | Modifier appended to pixel unit image names |
+| adjective | String | Default empty | Currently unused |
+| cityStateType | Enum | Default absent | Distinguishes major civilizations from city states (Cultured, Maritime, Mercantile, Militaristic) |
+| startBias | List | Default empty | Zero or more of: terrainFilter or "Avoid [terrainFilter]". [^S] |
+| preferredVictoryType | Enum | Default Neutral | Neutral, Cultural, Diplomatic, Domination or Scientific |
+| startIntroPart1 | String | Default empty | Introductory blurb shown to Player on game start... |
+| startIntroPart2 | String | Default empty | ... second paragraph. ***NO*** "TBD"!!! Leave empty to skip that alert. |
+| declaringWar | String | Default empty | another greeting, voice hook supported [^V] |
+| attacked | String | Default empty | another greeting, voice hook supported [^V] |
+| defeated | String | Default empty | another greeting, voice hook supported [^V] |
+| introduction | String | Default empty | another greeting, voice hook supported [^V] |
+| neutralHello | String | Default empty | another greeting, voice hook supported [^V] |
+| hateHello | String | Default empty | another greeting, voice hook supported [^V] |
+| tradeRequest | String | Default empty | another greeting, voice hook supported [^V] |
+| innerColor | 3x Integer | Default black | R, G, B for outer ring of nation icon |
+| outerColor | 3x Integer | Required | R, G, B for inner circle of nation icon |
+| uniqueName | String | Default empty | Decorative name for the special characteristic of this Nation |
+| uniqueText | String | Default empty | Replacement text for "uniques". If empty, uniques are listed individually. |
+| uniques | List | Default empty | List of [unique abilities](../uniques) this civilisation has |
+| cities | List | Default empty | City names used sequentially for newly founded cities. |
+| civilopediaText | List | Default empty | see [civilopediaText chapter](5-Miscellaneous-JSON-files.md#civilopedia-text) |
 
 [^S]: A "Coast" preference (_unless_ combined with "Avoid") is translated to a complex test for coastal land tiles, tiles next to Lakes, river tiles or near-river tiles, and such civs are processed first. Other startBias entries are ignored in that case.
       Other positive (no "Avoid") startBias are processed next. Multiple positive preferences are treated equally, but get no "fallback".
@@ -95,19 +95,33 @@ This file contains all the nations and city states, including Barbarians and Spe
       These notes are **only** valid when playing on generated maps, loaded maps from map editor get no "regions" and startBias is processed differently (but you can expect single-entry startBias to work best).
 [^V]: See [Supply Leader Voices](../Images-and-Audio.md#supply-leader-voices)
 
+## CityStateTypes.json
+
+[Link to original](https://github.com/yairm210/Unciv/blob/master/android/assets/jsons/Civ%20V%20-%20Gods%20%26%20Kings/CityStateTypes.json)
+
+This optional file is used for defining new types of city states. These types determine what benefits major civilizations gets when they befriend or ally the city state with influence. If the file is ommitted, the following are automatically added:
+Cultured, Maritime, Mercantile, Militaristic, Religious.
+
+| Attribute | Type | Optional | Notes |
+| --------- | ---- | -------- | ----- |
+| name | String | Required | |
+| color | String | Required | Currently crashes if left empty |
+| friendBonusUniques | List | Default empty | List of [unique abilities](../uniques) granted after befriending this city state |
+| allyBonusUniques | List | Default empty | List of [unique abilities](../uniques) granted after allying this city state |
+
 ## Policies.json
 
 [Link to original](https://github.com/yairm210/Unciv/blob/master/android/assets/jsons/Civ%20V%20-%20Gods%20%26%20Kings/Policies.json)
 
-This file lists the available social policies that can be "bought" with culture.
+This file contains all the available social policies that can be "bought" with culture.
 
-They are organized in 'branches', each branch has an 'opener', one or more 'member' policies, and a 'finisher'. Therefore this file is organized using two levels - branch and member policy. The properties of the 'opener' are defined with the branch level, while the 'finisher' has an entry on the member level which _must_ be named as branch name + " Complete", case sensitive.
+They are organized in 'branches', each branch has an 'opener', one or more 'member' policies, and a 'finisher'. Therefore this file is organized using two levels - branch and member policy. The properties of the 'opener' are defined with the branch level, while the 'finisher' has an entry on the member level which _must_ be named as branch name + "Complete", case sensitive.
 
 Each policy branch can have the following properties:
 
 | Attribute | Type | Optional | Notes |
 | --------- | ---- | -------- | ----- |
-| name | String | Required |  |
+| name | String | Required | |
 | era | String | Required | Unlocking era as defined in [Eras.json](5-Miscellaneous-JSON-files.md#Eras.json) |
 | priorities | Object | Default empty | Priorities for each victory type, [see here](#branch-priorities)
 | uniques | List | Default empty | List of [unique abilities](../uniques) this policy branch has |
@@ -117,13 +131,13 @@ Each member policy can have the following properties:
 
 | Attribute | Type | Optional | Notes |
 | --------- | ---- | -------- | ----- |
-| name | String | Required |  |
+| name | String | Required | |
 | row | Integer | Required | Placement in UI, each unit approximately half the icon size |
 | column | Integer | Required | Placement in UI, each unit approximately half the icon size |
 | requires | List | Default empty | List of prerequisite policy names |
 | uniques | List | Default empty | List of [unique abilities](../uniques) this policy has |
 
-#### Branch priorities
+### Branch priorities
 
 The "priorities" object lists its branch's priorities for each victory type. The AI refers to this when deciding which branch to prioritize, also taking its preferred victory type into consideration. If two or more candidate branches have the same priority, the AI chooses a random branch among the candidates. All values are set to 0 if the object itself is missing or empty.
 
@@ -139,7 +153,7 @@ The "priorities" object lists its branch's priorities for each victory type. The
 
 [Link to original](https://github.com/yairm210/Unciv/blob/master/android/assets/jsons/Civ%20V%20-%20Gods%20%26%20Kings/Quests.json)
 
-This file contains the Quests that may be given to major Civilizations by City States.
+This file contains the quests that may be given to major civilizations by city states.
 
 | Attribute | Type | Optional | Notes |
 | --------- | ---- | -------- | ----- |
@@ -154,8 +168,7 @@ This file contains the Quests that may be given to major Civilizations by City S
 
 [Link to original](https://github.com/yairm210/Unciv/tree/master/android/assets/jsons/Civ%20V%20-%20Gods%20&%20Kings/Religions.json)
 
-This is just a list of Strings specifying all predefined Religion names. Corresponding icons must exist, that's all to it. After all, they're just containers for [Beliefs](#beliefsjson).
-
+This is just a list of Strings specifying all predefined religion names. Corresponding icons must exist, that's all to it. After all, they're just containers for [beliefs](#beliefsjson).
 
 ## Specialists.json
 
@@ -175,15 +188,15 @@ Each specialist can have the following attributes:
 | science | Integer | defaults to 0 | |
 | faith | Integer | defaults to 0 | |
 | color | List of 3 Integers | required | Color of the image for this specialist |
-| greatPersonPoints | Object | defaults to none | Great person points generated by this specialist. Valid keys are the names of the great person(Great Scientist, Great Merachant, etc.), valid values are Integers (≥0) |
+| greatPersonPoints | Object | defaults to none | Great person points generated by this specialist. Valid keys are the names of the great person (Great Scientist, Great Merachant, etc.), valid values are Integers (≥0) |
 
 ## Techs.json
 
 [Link to original](https://github.com/yairm210/Unciv/blob/master/android/assets/jsons/Civ%20V%20-%20Gods%20%26%20Kings/Techs.json)
 
-This file contains all the technologies. It is organized into an outer list of 'columns' which in turn contain one or more tech each.
+This file contains all the technologies. It is organized into an outer list of 'columns', which in turn contains one or more tech each.
 
-#### Column structure
+### Column structure
 
 | Attribute | Type | Optional | Notes |
 | --------- | ---- | -------- | ----- |

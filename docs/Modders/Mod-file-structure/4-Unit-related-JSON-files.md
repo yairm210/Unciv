@@ -10,8 +10,8 @@ Each unit can have the following attributes:
 
 | Attribute | Type | Optional | Notes |
 | --------- | ---- | -------- | ----- |
-| name | String | required | The name of the units (required) |
-| unitType | String | required | The type of the unit. Must be in [UnitTypes.json](https://github.com/yairm210/Unciv/blob/master/android/assets/jsons/Civ%20V%20-%20Gods%20%26%20Kings/UnitTypes.json) |
+| name | String | Required | |
+| unitType | String | Required | The type of the unit. Must be in [UnitTypes.json](#unittypesjson) |
 | cost | Integer (≥0) | defaults to 0 | The amount of production required to build this unit |
 | movement | Integer (≥0) | defaults to 0 | The amount of movement points the unit has by default |
 | strength | Integer (≥0) | defaults to 0 | The melee attack and defensive strength of the unit. If this and rangedStrength are ommited or 0, the unit will be a civilian |
@@ -26,11 +26,10 @@ Each unit can have the following attributes:
 | uniqueTo | String | defaults to none | The nation that this unit is unique to. Must be in [Nations.json](2-Civilization-related-JSON-files.md#nationsjson) |
 | hurryCostModifier | Integer | defaults to 0 | If this unit is bought for gold/faith, it's price is increased by so much percent |
 | promotions | List of Strings | defaults to none | A list of all the promotions the unit automatically receives upon being built. Each promotion must be in [UnitPromotions.json](#unitpromotionsjson) |
-| uniques | List of Strings | defaults to none | A list of the unique abilities this unit has. A list of almost all uniques can be found [here](../Unique-parameters.md#unit-uniques) |
+| uniques | List of Strings | defaults to none | List of [unique abilities](../uniques) this unit has |
 | replacementTextForUniques | String | defaults to none | If provided, this will be displayed instead of the list of uniques. Can be used for better formatting. |
-| attackSound | String | defaults to none | The sound that is to be played when this unit attacks. For possible values, see [Sounds](#../Modders/Images-and-Audio.md#sounds)
-| civilopediaText | List | Default empty | see [civilopediaText chapter](5-Miscellaneous-JSON-files.md#civilopedia-text) |
-
+| attackSound | String | defaults to none | The sound that is to be played when this unit attacks. For possible values, see [Sounds](../Images-and-Audio.md#sounds)
+| civilopediaText | List | Default empty | See [civilopediaText chapter](5-Miscellaneous-JSON-files.md#civilopedia-text) |
 
 ## UnitPromotions.json
 
@@ -44,26 +43,25 @@ Remember, promotions can be "bought" with XP, but also granted by the unit type,
 
 Each promotion can have the following properties:
 
-| Attribute       | Type   | Optional      | Notes                                                                                                                                                                                                                                                                          |
-|-----------------|--------|---------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| name            | String | Required      | See above for "I, II, III" progressions                                                                                                                                                                                                                                        |
-| prerequisites   | List   | Default empty | Prerequisite promotions                                                                                                                                                                                                                                                        |
-| effect          | String | Default empty | Deprecated and ignored, use uniques instead                                                                                                                                                                                                                                    |
-| column          | Int    | Yes           | Determines placement order on the promotion picker screen. Name is historical, these coordinates no longer control placement directly. Promotions without coordinates are ensured to be placed last.  (…)                                                                      |
-| row             | Int    | Yes           | … In base mods without any coordinates, promotions without prerequisites are sorted alphabetically and placed top down, the rest of the screen will structure the dependencies logically. If your mod has a "Heal instantly", it is suggested to use row=0 to place it on top. |
-| unitTypes       | List   | Default empty | The unit types for which this promotion applies as specified in [UnitTypes.json](#unittypesjson)                                                                                                                                                                               |
-| uniques         | List   | Default empty | List of effects, [see here](../uniques.md#unit-uniques)                                                                                                                                                                                                                |
-| civilopediaText | List   | Default empty | see [civilopediaText chapter](5-Miscellaneous-JSON-files.md#civilopedia-text)                                                                                                                                                                                                    |
+| Attribute | Type | Optional | Notes |
+| --------- | ---- | -------- | ----- |
+| name | String | Required | See above for "I, II, III" progressions |
+| prerequisites | List | Default empty | Prerequisite promotions |
+| column | Integer | Optional | Determines placement order on the promotion picker screen. Name is historical, these coordinates no longer control placement directly. Promotions without coordinates are ensured to be placed last.  (…) |
+| row | Integer | Optional | … In base mods without any coordinates, promotions without prerequisites are sorted alphabetically and placed top down, the rest of the screen will structure the dependencies logically. If your mod has a "Heal instantly", it is suggested to use row=0 to place it on top. |
+| unitTypes | List | Default empty | The unit types for which this promotion applies as specified in [UnitTypes.json](#unittypesjson) |
+| uniques | List | Default empty | List of effects, [see here](../uniques.md#unit-uniques) |
+| civilopediaText | List | Default empty | See [civilopediaText chapter](5-Miscellaneous-JSON-files.md#civilopedia-text) |
 
 ## UnitTypes.json
 
 [Link to original](https://github.com/yairm210/Unciv/blob/master/android/assets/jsons/Civ%20V%20-%20Gods%20%26%20Kings/UnitTypes.json)
 
-This optional file is used for defining new types of units. The names of these can be used in unitFilters, and these types determine what domain the unit moves in: over land, over water or through the air. If the file is ommitted, the following are automatically added:
+This optional file is used for defining new types of units. The names of these can be used in unitFilters, and these types determine what domain the unit moves in: over land, over water or through the air. If the file is omitted, the following are automatically added:
 Civilian, Melee, Ranged, Scout, Mounted, Armor, Siege, WaterCivilian, WaterMelee, WaterRanged, WaterSubmarine, WaterAircraftCarrier, Fighter, Bomber, AtomicBomber, and Missile.
 
 | Attribute | Type | Optional | Notes |
 | --------- | ---- | -------- | ----- |
-| name | String | required | The name of the unit type |
-| movementType | Enum | required | The domain through which the unit moves. Allowed values: "Water", "Land", "Air" |
-| uniques | List of String | defaults to none | A list of the unique abilities every unit of this type has. A list of almost all uniques can be found [here](../Unique-parameters.md#unit-uniques) |
+| name | String | Required | The name of the unit type |
+| movementType | Enum | Required | The domain through which the unit moves. Allowed values: "Water", "Land", "Air" |
+| uniques | List of String | Defaults to none | A list of the unique abilities every unit of this type has. A list of almost all uniques can be found [here](../Unique-parameters.md#unit-uniques) |
