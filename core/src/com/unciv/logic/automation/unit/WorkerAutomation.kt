@@ -154,7 +154,7 @@ class WorkerAutomation(
         if (unit.automatedRoadConnectionDestination == null){
             stopAndCleanAutomation()
             return
-        } // #10691
+        }
 
         /** Conditions for whether it is acceptable to build a road on this tile */
         fun shouldBuildRoadOnTile(tile: Tile): Boolean {
