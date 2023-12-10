@@ -791,6 +791,7 @@ class WorldMapHolder(
         // Z-Layer: 4
         // Highlight road path for workers currently connecting roads
         if (unit.isAutomatingRoadConnection()) {
+            if (unit.automatedRoadConnectionPath == null) return // #10691
             val currTileIndex = unit.automatedRoadConnectionPath!!.indexOf(unit.currentTile.position)
             if (currTileIndex != -1) {
                 val futureTiles = unit.automatedRoadConnectionPath!!.filterIndexed { index, _ ->
