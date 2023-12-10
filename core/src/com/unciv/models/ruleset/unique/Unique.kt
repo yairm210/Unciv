@@ -155,10 +155,15 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
             ?: state.city?.getCenterTile()
         }
 
+        val relevantCity by lazy {
+            state.city
+            ?: relevantTile?.getCity()
+        }
+
         val stateBasedRandom by lazy { Random(state.hashCode()) }
 
         fun getResourceAmount(resourceName: String): Int {
-            if (state.city != null) return state.city.getResourceAmount(resourceName)
+            if (relevantCity != null) return relevantCity!!.getResourceAmount(resourceName)
             if (state.civInfo != null) return state.civInfo.getResourceAmount(resourceName)
             return 0
         }
@@ -171,8 +176,8 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
 
         /** Helper to simplify conditional tests requiring a City */
         fun checkOnCity(predicate: (City.() -> Boolean)): Boolean {
-            if (state.city == null) return false
-            return state.city.predicate()
+            if (relevantCity == null) return false
+            return relevantCity!!.predicate()
         }
 
         /** Helper to simplify the "compare civ's current era with named era" conditions */
