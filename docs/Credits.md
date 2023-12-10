@@ -776,7 +776,7 @@ Sounds are from FreeSound.org unless otherwise noted and are either Creative Com
 - [Explosion-Ultra-Bass](https://soundbible.com/1807-Explosion-Ultra-Bass.html) by Mark DiAngelo as part of 'nuke' sound (CC Attribution 3.0 license)
 - [Short Choir](https://freesound.org/people/Breviceps/sounds/444491/) by Breviceps as 'choir' for free great person pick
 - [Death Robot! Robotic scream](https://freesound.org/people/vultraz168/sounds/334660/) by vultraz168 for Giant Death Robot Attack (CC0 1.0 Universal license)
-- [ceremonial cannon fire](https://freesound.org/people/DylanSmithSound/sounds/274826/) by DylanSmithSound for cannon
+- [ceremonial cannon fire](https://freesound.org/people/DylanSmithSound/sounds/274826/) by DylanSmithSound for cannon and shipCannonVolly
 - [artillery fire](https://freesound.org/people/Tomashevsky/sounds/476664/) by Tomashevsky for artillery
 - [20mm cannons](https://freesound.org/people/Piotr123/sounds/551534/) by Piotr123 for ship guns
 - "bombing" is made by the Unciv team using Audacity from
@@ -786,7 +786,7 @@ Sounds are from FreeSound.org unless otherwise noted and are either Creative Com
 - "jetgun" for Jet Fighter attack is made by the Unciv team using Audacity from
     -   [Fighter Jet Aircraft Fly by (synthesised)](https://freesound.org/people/Headphaze/sounds/347795/) by Headphaze
     -   [Machine Gun 001 - triple shot](https://freesound.org/people/pgi/sounds/212600/) by pgi
-- Excerpt from [Tanks Shooting](https://freesound.org/people/qubodup/sounds/189344/) by qubodup for tankshot
+- Excerpt from [Tanks Shooting](https://freesound.org/people/qubodup/sounds/189344/) by qubodup for tankshot and shipCannonVolly
 - "torpedo" is made by the Unciv team using Audacity from
     -   [Torpedo launch underwater](https://freesound.org/people/jobro/sounds/35530/) by jobro
     -   [Artillery Explosion (Close) (Mixed)](https://freesound.org/people/EFlexMusic/sounds/388528/) by EFlexMusic
