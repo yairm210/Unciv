@@ -104,8 +104,11 @@ class MapLandmassGenerator(val ruleset: Ruleset, val randomness: MapGenerationRa
             val elevationSeed = randomness.RNG.nextInt().toDouble()
             for (tile in tileMap.values) {
                 val maxdim = max(tileMap.maxLatitude, tileMap.maxLongitude)
-                val ratio = maxdim/32.0
-                // var elevation = randomness.getPerlinNoise(tile, elevationSeed, persistence=0.8, lacunarity=1.5)
+                var ratio = maxdim/32.0 // change scale depending on map size so that average number of continents stay the same
+                if (tileMap.mapParameters.shape === MapShape.hexagonal || tileMap.mapParameters.shape === MapShape.flatEarth) {
+                    ratio *= 0.5 // In hexagonal type map for some reason it tends to make a single continent like pangaea if we don't diminish the scale
+                }
+
                 var elevation = randomness.getPerlinNoise(tile, elevationSeed, persistence=0.8, lacunarity=1.5, scale=ratio*30.0)
 
                 elevation += getOceanEdgesTransform(tile, tileMap)
@@ -360,28 +363,40 @@ class MapLandmassGenerator(val ruleset: Ruleset, val randomness: MapGenerationRa
         val x = tile.longitude
         val y = tile.latitude
 
-        // var elevation = randomness.getPerlinNoise(tile, elevationSeed, persistence=0.8, lacunarity=1.5)
         var elevationOffset = 0.0
 
-
         val xdistanceratio = abs(x)/a
-        var xoffset = 0.0
-
-        val xstartdropoff = 0.8
-        if (xdistanceratio > xstartdropoff) {
-            xoffset = (xdistanceratio - xstartdropoff)*(1/(1.0-xstartdropoff))
-        }
-
         val ydistanceratio = abs(y)/b
-        var yoffset = 0.0
+        if (tileMap.mapParameters.shape === MapShape.hexagonal || tileMap.mapParameters.shape === MapShape.flatEarth) {
+            val startdropoff = 0.8
+            val xdrsquared = xdistanceratio*xdistanceratio
+            val ydrsquared = ydistanceratio*ydistanceratio
+            val distancefromcenter = sqrt(xdrsquared+ydrsquared)
+            var offset = 0.0
+            if (distancefromcenter > startdropoff) {
+                offset = (distancefromcenter - startdropoff)*(1/(1.0-startdropoff))
+            }
+            elevationOffset -= offset*0.35
+        } else {
 
-        val ystartdropoff=0.76
-        if (ydistanceratio > ystartdropoff) {
-            yoffset = (ydistanceratio - ystartdropoff)*(1/(1.0-ystartdropoff))
+            var xoffset = 0.0
+
+            val xstartdropoff = 0.8
+            if (xdistanceratio > xstartdropoff) {
+                xoffset = (xdistanceratio - xstartdropoff)*(1/(1.0-xstartdropoff))
+            }
+
+            var yoffset = 0.0
+
+            val ystartdropoff=0.76
+            if (ydistanceratio > ystartdropoff) {
+                yoffset = (ydistanceratio - ystartdropoff)*(1/(1.0-ystartdropoff))
+            }
+
+            elevationOffset -= xoffset*0.33
+            elevationOffset -= yoffset*0.35
         }
 
-        elevationOffset -= xoffset*0.33
-        elevationOffset -= yoffset*0.35
         return max(elevationOffset, -0.35)
     }
 
