@@ -1,54 +1,20 @@
 ## 4.9.7
 
-Added 'relevant city' to conditionals, taking the city from the relevant tile where no city provided directly 
+Allow city conditionals on units to upgrade to
 
-Resolved  - Captured military units trigger a notification for the captured unit's civ
+Captured military units trigger a notification for the target civ
 
-Resolved  - Citezenship policy grants worker even without having cities
-
-Resolved  - default white color for city-state types
-
-Resolved  - Fixed city-state type coloring
-
-Added initial pathfinding tests
-
-Fixed pillage tests
-
-Console: Added 'unit setmovement' command
-
-Fixed compilation error
-
-standardized exploration actions
-
-standardized pillage, sleep actions
-
-standardized automate action
-
-invokeUnitAction will take the first *actionable* action, instead of the first one that exists, which may not be actionable
+Fixed city-state type coloring
 
 "Can instantly construct a [improvementFilter] improvement" works with improvementFilter
 
-Fixed work boat automation
+Allow conditionals for trigger-type unit actions  - By SeventhM
 
-chore: city settle action readability
+Fix connect road button when auto unit cycle turned on - By willjallen
 
-Standardized 'add in capital' action
+Add resource support to stat gamespeed conditional - By PLynx01
 
-Standardized 'spread religion' / 'remove heresy' actions
-
-Standardized 'spread religion' / 'remove heresy' actions
-
-Standardized 'create improvement' uniques - need to remember to deprecate the water improvements!
-
-Allow conditionals for unit actions  - By SeventhM
-
-By willjallen:
-- Fix connect road button for when auto unit cycle is turned on 
-- Add null check for connect road cross-version saves 
-
-Add resource support to stat gamespeed conditional  - By PLynx01
-
-Better Frigate and Ship of the Line sound  - By tuvus
+Better Frigate and Ship of the Line sound - By tuvus
 
 ## 4.9.6
 
