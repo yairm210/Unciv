@@ -88,6 +88,7 @@ enum class KeyboardBinding(
     // here as it will not be guaranteed to already be fully initialized.
     SwapUnits(Category.UnitActions,"Swap units", 'y'),
     Automate(Category.UnitActions, 'm'),
+    ConnectRoad(Category.UnitActions, "Connect road", 'c'),
     StopAutomation(Category.UnitActions,"Stop automation", 'm'),
     StopMovement(Category.UnitActions,"Stop movement", '.'),
     ShowUnitDestination(Category.UnitActions, "Show unit destination", 'j'),

@@ -1,6 +1,7 @@
 package com.unciv.ui.screens.worldscreen.unit.actions
 
 import com.unciv.logic.map.mapunit.MapUnit
+import com.unciv.logic.map.tile.Tile
 import com.unciv.models.Counter
 import com.unciv.models.UnitAction
 import com.unciv.models.UpgradeUnitAction
@@ -10,12 +11,13 @@ import com.unciv.models.translations.tr
 
 object UnitActionsUpgrade {
 
-    internal fun addUnitUpgradeAction(
+    internal fun getUnitUpgradeActions(
         unit: MapUnit,
-        actionList: ArrayList<UnitAction>
-    ) {
+        tile: Tile
+    ): List<UnitAction> {
         val upgradeAction = getUpgradeAction(unit)
-        if (upgradeAction != null) actionList += upgradeAction
+        if (upgradeAction != null) return listOf(upgradeAction)
+        return listOf()
     }
 
     /**  Common implementation for [getUpgradeAction], [getFreeUpgradeAction] and [getAncientRuinsUpgradeAction] */
