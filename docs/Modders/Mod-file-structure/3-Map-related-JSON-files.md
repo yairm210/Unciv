@@ -6,24 +6,24 @@
 
 This file contains the base terrains, terrain features and natural wonders that can appear on the map.
 
-Each terrain entry can have the following properties:
+Each terrain entry has the following structure:
 
-| Attribute | Type | Optional | Notes |
-| --------- | ---- | -------- | ----- |
+| Attribute | Type | Default | Notes |
+| --------- | ---- | ------- | ----- |
 | name | String | Required | |
 | type | Enum | Required | Land, Water, TerrainFeature, NaturalWonder |
-| occursOn | List | Default none | Only for terrain features and Natural Wonders: The baseTerrain it can be placed on |
-| turnsInto | String | Default none | Only for NaturalWonder: the base terrain is changed to this after placing the Natural Wonder |
-| weight | Integer | Default 10 | Only for NaturalWonder: _relative_ weight of being picked by the map generator |
-| `<stats>` | Float | Optional | Per-turn yield or bonus yield for the tile, see [Stats](#stats) |
-| overrideStats | Boolean | Default false | If on, a feature's yields replace any yield from underlying terrain instead of adding to it |
-| unbuildable | Boolean | Default false | If true, nothing can be built here - not even resource improvements |
-| impassable | Boolean | Default false | No unit can enter unless it has a special unique |
-| movementCost | Integer | Default 1 | Base movement cost |
-| defenceBonus | Float | Default 0 | Combat bonus for units being attacked here |
-| RGB | List Integer * 3 | Default 'Gold' | RGB color for 'Default' tileset display |
-| uniques | List | Default empty | List of [unique abilities](../uniques) this terrain has |
-| civilopediaText | List | Default empty | See [civilopediaText chapter](5-Miscellaneous-JSON-files.md#civilopedia-text) |
+| occursOn | List | none | Only for terrain features and Natural Wonders: The baseTerrain it can be placed on |
+| turnsInto | String | none | Only for NaturalWonder: the base terrain is changed to this after placing the Natural Wonder |
+| weight | Integer | 10 | Only for NaturalWonder: _relative_ weight of being picked by the map generator |
+| [`<stats>`](3-Map-related-JSON-files.md#stats) | Float | 0 | Per-turn yield or bonus yield for the tile |
+| overrideStats | Boolean | false | If on, a feature's yields replace any yield from underlying terrain instead of adding to it |
+| unbuildable | Boolean | false | If true, nothing can be built here - not even resource improvements |
+| impassable | Boolean | false | No unit can enter unless it has a special unique |
+| movementCost | Integer | 1 | Base movement cost |
+| defenceBonus | Float | 0 | Combat bonus for units being attacked here |
+| RGB | List Integer * 3 | 'Gold' | RGB color for 'Default' tileset display |
+| uniques | List | empty | List of [unique abilities](../uniques) this terrain has |
+| civilopediaText | List | empty | See [civilopediaText chapter](5-Miscellaneous-JSON-files.md#civilopedia-text) |
 
 ## TileImprovements.json
 
@@ -33,19 +33,19 @@ This file lists the improvements that can be constructed or created on a map til
 
 Note that improvements have two visual representations - icon and pixel graphic in the tileset. Omitting the icon results in a horribly ugly user interface, while omitting tileset graphics will just miss out on an _optional_ visualization. If you provide a pixel graphic for FantasyHex, please be aware of the layering system and the ruleVariants in the tileset json. A single graphic may suffice if it has lots of transparency, as it will be drawn on top of all other terrain elements.
 
-Each improvement can have the following properties:
+Each improvement has the following structure:
 
-| Attribute | Type | Optional | Notes |
-| --------- | ---- | -------- | ----- |
+| Attribute | Type | Default | Notes |
+| --------- | ---- | ------- | ----- |
 | name | String | Required | |
-| terrainsCanBeFoundOn | List | Default empty | [Terrains](#terrainsjson) that allow this resource |
-| techRequired | String | Default none | The name of the technology required to build this improvement |
-| uniqueTo | String | Default none | The name of the nation this improvement is unique for |
-| `<stats>` | Integer | Optional | Per-turn bonus yield for the tile, see [Stats](#stats) |
-| turnsToBuild | Integer | Optional | Number of turns a worker spends building this (leaving it empty makes improvement unbuildable) |
-| uniques | List | Default empty | List of [unique abilities](../uniques) this improvement has |
-| shortcutKey | String | Default none | Keyboard binding. Currently, only a single character is allowed (no function keys or Ctrl combinations) |
-| civilopediaText | List | Default empty | see [civilopediaText chapter](5-Miscellaneous-JSON-files.md#civilopedia-text) |
+| terrainsCanBeFoundOn | List | empty | [Terrains](#terrainsjson) that allow this resource |
+| techRequired | String | none | The name of the technology required to build this improvement |
+| uniqueTo | String | none | The name of the nation this improvement is unique for |
+| [`<stats>`](#stats) | Integer | Default | Per-turn bonus yield for the tile |
+| turnsToBuild | Integer | Default | Number of turns a worker spends building this (leaving it empty makes improvement unbuildable) |
+| uniques | List | empty | List of [unique abilities](../uniques) this improvement has |
+| shortcutKey | String | none | Keyboard binding. Currently, only a single character is allowed (no function keys or Ctrl combinations) |
+| civilopediaText | List | empty | see [civilopediaText chapter](5-Miscellaneous-JSON-files.md#civilopedia-text) |
 
 -   Tiles with no terrains, but positive turns to build, can be built only when the tile has a resource that names this improvement or special uniques are used. (TODO: missing something?)
 -   Tiles with no terrains, and no turns to build, are like great improvements - they're placeable. That means a unit could exist with a 'Can create [this]' unique, and that the improvement will not show in a worker's improvement picker dialog.
@@ -62,35 +62,35 @@ Note the predefined "_resourceType_" enum cannot be altered in a json.
 
 Note also that resources have two visual representations - icon and pixel graphic in the tileset. Omitting the icon results in a horribly ugly user interface, while omitting tileset graphics will miss out on a visualization on the map. If you provide a pixel graphic for FantasyHex, please be aware of the layering system and the ruleVariants in the tileset json. A single graphic may suffice if it has lots of transparency, as it will be drawn on top of terrain and features but below an improvement - if the single improvement graphic exists at all.
 
-Each resource can have the following properties:
+Each resource has the following structure:
 
-| Attribute | Type | Optional | Notes |
-| --------- | ---- | -------- | ----- |
+| Attribute | Type | Default | Notes |
+| --------- | ---- | ------- | ----- |
 | name | String | Required | |
-| resourceType | Enum | Default Bonus | Bonus, Luxury or Strategic |
-| terrainsCanBeFoundOn | List | Default empty | [Terrains](#terrainsjson) that allow this resource |
-| `<stats>` | Integer | Optional | Per-turn bonus yield for the tile, see [Stats](#stats), can be repeated |
-| improvement | String | Default empty | The improvement ([TileImprovements.json](#tileimprovementsjson)) for this resource |
-| improvementStats | Object | Default empty | The additional yield when improved as sub-object with one or more [Stats](#stats) |
-| revealedBy | String | Default empty | The technology name required to see, work and improve this resource |
-| unique | String | Default empty | List of [unique abilities](../uniques) this improvement has |
-| civilopediaText | List | Default empty | see [civilopediaText chapter](5-Miscellaneous-JSON-files.md#civilopedia-text) |
+| resourceType | Enum | Bonus | Bonus, Luxury or Strategic |
+| terrainsCanBeFoundOn | List | empty | [Terrains](#terrainsjson) that allow this resource |
+| [`<stats>`](#stats) | Integer | 0 | Per-turn bonus yield for the tile |
+| improvement | String | empty | The improvement ([TileImprovements.json](#tileimprovementsjson)) for this resource |
+| improvementStats | Object | empty | The additional yield when improved as sub-object with one or more [Stats](#stats) |
+| revealedBy | String | empty | The technology name required to see, work and improve this resource |
+| unique | String | empty | List of [unique abilities](../uniques) this improvement has |
+| civilopediaText | List | empty | see [civilopediaText chapter](5-Miscellaneous-JSON-files.md#civilopedia-text) |
 
 ## Ruins.json
 
 [Link to original](https://github.com/yairm210/Unciv/blob/master/android/assets/jsons/Civ%20V%20-%20Vanilla/Ruins.json)
 
-This file contains the possible rewards ancient ruins give. It is not required, if omitted, the default file for the game is used, even in baseRuleSet mods.
+This optional file contains the possible rewards ancient ruins give. If omitted, the default file for the game is used, even in baseRuleSet mods.
 
-Each of the objects in the file represents a single reward you can get from ruins. It has the following properties:
+Each of the objects in the file represents a single reward you can get from ruins. It has the following structure:
 
-| Attribute | Type | Optional | Notes |
-| --------- | ---- | -------- | ----- |
-| name | String | required | Name of the ruins. Never shown to the user, but they have to be distinct |
-| notification | String | required | Notification added to the user when this reward is chosen. If omitted, an empty notification is shown. Some notifications may have parameters, refer to the table below. |
-| weight | Integer (≥0) | defaults to 1 | _Relative_ weight this reward is chosen next [^A] |
-| uniques | List of Strings | defaults to none |  List of [unique abilities](../uniques) that will trigger when entering the ruins. If more than 1 unique is added, the notification will be shown multiple times due to a bug (may be outdated) |
-| excludedDifficulties | List of Strings | defaults to None | A list of all difficulties on which this reward may _not_ be awarded |
+| Attribute | Type | Default | Notes |
+| --------- | ---- | ------- | ----- |
+| name | String | Required | Name of the ruins. Never shown to the user, but they have to be distinct |
+| notification | String | Required | Notification added to the user when this reward is chosen. If omitted, an empty notification is shown. Some notifications may have parameters, refer to the table below. |
+| weight | Integer (≥0) | 1 | _Relative_ weight this reward is chosen next [^A] |
+| uniques | List of Strings | none |  List of [unique abilities](../uniques) that will trigger when entering the ruins. If more than 1 unique is added, the notification will be shown multiple times due to a bug (may be outdated) |
+| excludedDifficulties | List of Strings | None | A list of all difficulties on which this reward may _not_ be awarded |
 
 [^A]: The exact algorithm for choosing a reward is the following:
 
@@ -125,8 +125,8 @@ A few uniques can be added to ancient ruin effects to modify when they can be ea
 
 A mod can define new Tilesets or add to existing ones, namely FantasyHex. There is one json file per Tileset, named same as the Tileset, and placed in a subfolder named "TileSets" relative to the other json files. This is called TileSetConfig and has the following structure:
 
-| Attribute | Type | Default value | Notes |
-| --------- | ---- | -------- | ----- |
+| Attribute | Type | Default | Notes |
+| --------- | ---- | ------- | ----- |
 | [useColorAsBaseTerrain](../Creating-a-custom-tileset.md#useColorAsBaseTerrain) | Boolean | false | |
 | [useSummaryImages](../Creating-a-custom-tileset.md#useSummaryImages) | Boolean | false | |
 | [unexploredTileColor](../Creating-a-custom-tileset.md#unexploredTileColor) | Color | Dark Gray | `{"r":0.25,"g":0.25,"b":0.25,"a":1}` |
@@ -139,15 +139,15 @@ A mod can define new Tilesets or add to existing ones, namely FantasyHex. There 
 ruleVariants control substitutions when layering images for a tile, they are list looking like:
 
 ```json
-    "ruleVariants": {
-        "Grassland+Forest": ["Grassland", "GrasslandForest"],
-        "Plains+Forest": ["Plains", "PlainsForest"],
-        "Plains+Jungle": ["Plains", "PlainsJungle"],
-        // . . .
-    }
+"ruleVariants": {
+    "Grassland+Forest": ["Grassland", "GrasslandForest"],
+    "Plains+Forest": ["Plains", "PlainsForest"],
+    "Plains+Jungle": ["Plains", "PlainsJungle"],
+    // . . .
+}
 ```
 
-Each line means "if the tile content is this... then combine the following png images". The key part follows a specific order and must match in its entirety, meaning "Plains+Forest" is not valid for "Plains+Forest+Deer", and when it matches no other image layering is done except roads and units (I think - *WIP*).
+Each line means "if the tile content is this... then combine the following png images". The key part follows a specific order and must match in its entirety, meaning "Plains+Forest" is not valid for "Plains+Forest+Deer", and when it matches no other image layering is done except roads and units (I think - _WIP_).
 
 When TileSetConfig's for the same Tileset are combined, for the first three properties the last mod wins, while ruleVariants are merged, meaning only an entry with the same key overwrites an earlier entry.
 
@@ -166,9 +166,9 @@ Terrains, features, resources and improvements may list yield statistics. They c
 If an object carries general stats, any combination (or none) of these can be specified. For specialized stats, they might come as sub-object in a named field. Example:
 
 ```json
-		"gold": 2,
-		"improvement": "Quarry",
-		"improvementStats": { "gold": 1, "production": 1 },
+"gold": 2,
+"improvement": "Quarry",
+"improvementStats": { "gold": 1, "production": 1 },
 ```
 
 The values are usually integers, though the underlying code supports floating point. The effects are, however, insufficiently tested and therefore -so far- using fractional stats is unsupported. Go ahead and thoroughly test that in a mod and help out with feedback 😁.

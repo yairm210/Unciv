@@ -6,30 +6,30 @@
 
 This file should contain a list of all the units, both military and civilian, that you want to use in your mod.
 
-Each unit can have the following attributes:
+Each unit has the following structure:
 
-| Attribute | Type | Optional | Notes |
-| --------- | ---- | -------- | ----- |
+| Attribute | Type | Default | Notes |
+| --------- | ---- | ------- | ----- |
 | name | String | Required | |
 | unitType | String | Required | The type of the unit. Must be in [UnitTypes.json](#unittypesjson) |
-| cost | Integer (≥0) | defaults to 0 | The amount of production required to build this unit |
-| movement | Integer (≥0) | defaults to 0 | The amount of movement points the unit has by default |
-| strength | Integer (≥0) | defaults to 0 | The melee attack and defensive strength of the unit. If this and rangedStrength are ommited or 0, the unit will be a civilian |
-| rangedStrength | Integer (≥0) | defaults to 0 | The ranged attack strength of the unit. If omitted, the unit cannot ranged attack |
-| range | Integer (≥0) | defaults to 2 | The default range from which ranged attacks can be preformed |
-| interceptRange | Integer (≥0) | defaults to 0 | Air units attacking within in this range will be intercepted |
-| requiredTech | String | defaults to none | The tech required to build this unit. Must be in [Techs.json](2-Civilization-related-JSON-files.md#techsjson) |
-| obsoleteTech | String | defaults to none | After researching this tech, the unit can no longer be build. Must be in [Techs.json](2-Civilization-related-JSON-files.md#techsjson) |
-| requiredResource | String | defaults to none | Resource that is consumed by building this unit. Must be in [TileResources.json](3-Map-related-JSON-files.md#tileresourcesjson) |
-| upgradesTo | String | defaults to none | Unit that this unit can upgrade to when it is available. Must be in [Units.json](#unitsjson) |
-| replaces | String | defaults to none | If this unit is unique to a nation, this is the unit it replaces. Must be in [Units.json](#unitsjson) |
-| uniqueTo | String | defaults to none | The nation that this unit is unique to. Must be in [Nations.json](2-Civilization-related-JSON-files.md#nationsjson) |
-| hurryCostModifier | Integer | defaults to 0 | If this unit is bought for gold/faith, it's price is increased by so much percent |
-| promotions | List of Strings | defaults to none | A list of all the promotions the unit automatically receives upon being built. Each promotion must be in [UnitPromotions.json](#unitpromotionsjson) |
-| uniques | List of Strings | defaults to none | List of [unique abilities](../uniques) this unit has |
-| replacementTextForUniques | String | defaults to none | If provided, this will be displayed instead of the list of uniques. Can be used for better formatting. |
-| attackSound | String | defaults to none | The sound that is to be played when this unit attacks. For possible values, see [Sounds](../Images-and-Audio.md#sounds)
-| civilopediaText | List | Default empty | See [civilopediaText chapter](5-Miscellaneous-JSON-files.md#civilopedia-text) |
+| cost | Integer (≥0) | 0 | The amount of production required to build this unit |
+| movement | Integer (≥0) | 0 | The amount of movement points the unit has by |
+| strength | Integer (≥0) | 0 | The melee attack and defensive strength of the unit. If this and rangedStrength are ommited or 0, the unit will be a civilian |
+| rangedStrength | Integer (≥0) | 0 | The ranged attack strength of the unit. If omitted, the unit cannot ranged attack |
+| range | Integer (≥0) | 2 | The range from which ranged attacks can be preformed |
+| interceptRange | Integer (≥0) | 0 | Air units attacking within in this range will be intercepted |
+| requiredTech | String | none | The tech required to build this unit. Must be in [Techs.json](2-Civilization-related-JSON-files.md#techsjson) |
+| obsoleteTech | String | none | After researching this tech, the unit can no longer be build. Must be in [Techs.json](2-Civilization-related-JSON-files.md#techsjson) |
+| requiredResource | String | none | Resource that is consumed by building this unit. Must be in [TileResources.json](3-Map-related-JSON-files.md#tileresourcesjson) |
+| upgradesTo | String | none | Unit that this unit can upgrade to when it is available. Must be in [Units.json](#unitsjson) |
+| replaces | String | none | If this unit is unique to a nation, this is the unit it replaces. Must be in [Units.json](#unitsjson) |
+| uniqueTo | String | none | The nation that this unit is unique to. Must be in [Nations.json](2-Civilization-related-JSON-files.md#nationsjson) |
+| hurryCostModifier | Integer | 0 | If this unit is bought for gold/faith, it's price is increased by so much percent |
+| promotions | List of Strings | none | A list of all the promotions the unit automatically receives upon being built. Each promotion must be in [UnitPromotions.json](#unitpromotionsjson) |
+| uniques | List of Strings | none | List of [unique abilities](../uniques) this unit has |
+| replacementTextForUniques | String | none | If provided, this will be displayed instead of the list of uniques. Can be used for better formatting. |
+| attackSound | String | none | The sound that is to be played when this unit attacks. For possible values, see [Sounds](../Images-and-Audio.md#sounds)
+| civilopediaText | List | empty | See [civilopediaText chapter](5-Miscellaneous-JSON-files.md#civilopedia-text) |
 
 ## UnitPromotions.json
 
@@ -41,17 +41,17 @@ Each promotion must have an icon, except progressions ending in " I", " II", " I
 
 Remember, promotions can be "bought" with XP, but also granted by the unit type, buildings, wonders and such. They are preserved when a unit upgrades, therefore special properties of nation unique units that can be inherited when they upgrade should be in a promotion, not uniques/stats in the units json (example: Slinger withdraw).
 
-Each promotion can have the following properties:
+Each promotion has the following structure:
 
-| Attribute | Type | Optional | Notes |
-| --------- | ---- | -------- | ----- |
+| Attribute | Type | Default | Notes |
+| --------- | ---- | ------- | ----- |
 | name | String | Required | See above for "I, II, III" progressions |
-| prerequisites | List | Default empty | Prerequisite promotions |
+| prerequisites | List | empty | Prerequisite promotions |
 | column | Integer | Optional | Determines placement order on the promotion picker screen. Name is historical, these coordinates no longer control placement directly. Promotions without coordinates are ensured to be placed last.  (…) |
 | row | Integer | Optional | … In base mods without any coordinates, promotions without prerequisites are sorted alphabetically and placed top down, the rest of the screen will structure the dependencies logically. If your mod has a "Heal instantly", it is suggested to use row=0 to place it on top. |
-| unitTypes | List | Default empty | The unit types for which this promotion applies as specified in [UnitTypes.json](#unittypesjson) |
-| uniques | List | Default empty | List of effects, [see here](../uniques.md#unit-uniques) |
-| civilopediaText | List | Default empty | See [civilopediaText chapter](5-Miscellaneous-JSON-files.md#civilopedia-text) |
+| unitTypes | List | empty | The unit types for which this promotion applies as specified in [UnitTypes.json](#unittypesjson) |
+| uniques | List | empty | List of effects, [see here](../uniques.md#unit-uniques) |
+| civilopediaText | List | empty | See [civilopediaText chapter](5-Miscellaneous-JSON-files.md#civilopedia-text) |
 
 ## UnitTypes.json
 
@@ -60,8 +60,10 @@ Each promotion can have the following properties:
 This optional file is used for defining new types of units. The names of these can be used in unitFilters, and these types determine what domain the unit moves in: over land, over water or through the air. If the file is omitted, the following are automatically added:
 Civilian, Melee, Ranged, Scout, Mounted, Armor, Siege, WaterCivilian, WaterMelee, WaterRanged, WaterSubmarine, WaterAircraftCarrier, Fighter, Bomber, AtomicBomber, and Missile.
 
-| Attribute | Type | Optional | Notes |
-| --------- | ---- | -------- | ----- |
-| name | String | Required | The name of the unit type |
+Each unit type has the following structure:
+
+| Attribute | Type | Default | Notes |
+| --------- | ---- | ------- | ----- |
+| name | String | Required | |
 | movementType | Enum | Required | The domain through which the unit moves. Allowed values: "Water", "Land", "Air" |
-| uniques | List of String | Defaults to none | A list of the unique abilities every unit of this type has. A list of almost all uniques can be found [here](../Unique-parameters.md#unit-uniques) |
+| uniques | List of String | none | A list of the unique abilities every unit of this type has. A list of almost all uniques can be found [here](../Unique-parameters.md#unit-uniques) |
