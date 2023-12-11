@@ -34,6 +34,9 @@ object NextTurnAutomation {
     fun automateCivMoves(civInfo: Civilization) {
         if (civInfo.isBarbarian()) return BarbarianAutomation(civInfo).automate()
 
+        println("Automating ${civInfo.civName}'s turn")
+        civInfo.nation.personality.forEach { println("${it.key}: ${it.value}") }
+
         respondToPopupAlerts(civInfo)
         TradeAutomation.respondToTradeRequests(civInfo)
 

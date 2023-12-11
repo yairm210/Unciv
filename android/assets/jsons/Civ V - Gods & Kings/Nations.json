@@ -227,6 +227,14 @@
 		"startBias":["Avoid [Tundra]","Avoid [Desert]"],
 		"preferredVictoryType": "Scientific",
 
+        "personality": {
+            "warmonger": 2.0,
+            "allianceMaker": 1.5,
+            "friendly": 1.5,
+            "freeMover": 0.4,
+            "trader": 1.0
+        },
+
 
         "startIntroPart1": "",
         "startIntroPart2": "",
