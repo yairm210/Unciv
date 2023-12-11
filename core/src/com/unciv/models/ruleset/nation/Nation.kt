@@ -150,7 +150,7 @@ class Nation : RulesetObject() {
         val textList = ArrayList<FormattedLine>()
 
         val cityStateType = ruleset.cityStateTypes[cityStateType]!!
-        textList += FormattedLine("{Type}: {${cityStateType.name}}", header = 4, color = cityStateType.getColor().toString())
+        textList += FormattedLine("{Type}: {${cityStateType.name}}", header = 4, color = "#"+cityStateType.getColor().toString())
 
         var showResources = false
 
