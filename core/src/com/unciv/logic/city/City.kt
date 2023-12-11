@@ -34,7 +34,6 @@ enum class CityFlags {
 
 
 class City : IsPartOfGameInfoSerialization {
-    @Suppress("JoinDeclarationAndAssignment")
     @Transient
     lateinit var civ: Civilization
 
@@ -212,7 +211,9 @@ class City : IsPartOfGameInfoSerialization {
 
     fun getGreatPersonPercentageBonus() = getGreatPersonPercentageBonusBreakdown().sumOf { it.second }
 
-    fun getGreatPersonPercentageBonusBreakdown() = sequence<Pair<String, Int>> {
+    @Suppress("RemoveExplicitTypeArguments")  // Clearer readability
+    /** Collects percentage boni applying to all GPP. Each returned entry is a Pair naming the source and the integer percentage. */
+    private fun getGreatPersonPercentageBonusBreakdown() = sequence<Pair<String, Int>> {
         for (unique in getMatchingUniques(UniqueType.GreatPersonPointPercentage)) {
             if (!matchesFilter(unique.params[1])) continue
             yield((unique.sourceObjectName ?: "Bonus") to unique.params[0].toInt())
