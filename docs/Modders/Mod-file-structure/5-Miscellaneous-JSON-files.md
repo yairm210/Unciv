@@ -306,7 +306,7 @@ List of attributes - note not all combinations are valid:
 | `indent` | Integer | Indent level. 0 means text will follow icons, 1 aligns to the right of all icons, each further step is 30 units |
 | `padding` | Float | Vertical padding between rows, 5 units |
 | `color` | String | Sets text color, accepts names or 6/3-digit web colors (e.g. #FFA040) |
-| `separator` | Boolean | Renders a separator line instead of text. Can be combined only with `color` and `size` (line width, 2) |
+| `separator` | Boolean | Renders a separator line instead of text. Can be combined only with `color` and `size` (line width, default 2) |
 | `starred` | Boolean | Decorates text with a star icon - if set, it receives the `color` instead of the text |
 | `centered` | Boolean | Centers the line (and turns off automatic wrap). For an `extraImage`, turns on crop-to-content to equalize transparent borders |
 
