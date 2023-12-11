@@ -20,7 +20,7 @@ class Belief() : RulesetObject() {
         else UniqueTarget.FollowerBelief
 
     override fun makeLink() = "Belief/$name"
-    override fun getCivilopediaTextHeader() = FormattedLine(name, icon = makeLink(), header = 2, color = "")
+    override fun getCivilopediaTextHeader() = FormattedLine(name, icon = makeLink(), header = 2, if (type == BeliefType.None) "#e34a2b" else "")
     override fun getSortGroup(ruleset: Ruleset) = type.ordinal
 
     override fun getCivilopediaTextLines(ruleset: Ruleset): List<FormattedLine> {
