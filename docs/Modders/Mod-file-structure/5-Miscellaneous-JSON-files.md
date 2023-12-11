@@ -56,9 +56,13 @@ Each era can have the following attributes:
 | startingMilitaryUnit | String | "Warrior" | Name of the unit that should be used for the previous field. Must be in [Units.json](4-Unit-related-JSON-files.md#unitsjson) |
 | startingGold | Integer (≥0) | 0 | Amount of gold each civ should receive when starting a game in this era |
 | startingCulture | Integer (≥0) | 0 | Amount of culture each civ should receive when starting a game in this era |
-| settlerPopulation | Integer (>0) | 1 | amount of population each city should have when settled when starting a game in this era |
+| settlerPopulation | Integer (>0) | 1 | Amount of population each city should have when settled when starting a game in this era |
 | settlerBuildings | List of Strings | none | Buildings that should automatically be built whenever a city is settled when starting a game in this era |
 | startingObsoleteWonders | List of Strings | none | Wonders (and technically buildings) that should be impossible to built when starting a game in this era. Used in the base game to remove all wonders older than 2 era's |
+| baseUnitBuyCost | Integer | 200 | Default value used for the unique `Can be purchased with [stat] [cityFilter]` and AI |
+| embarkDefense | Integer | 3 | Default defense for embarked unit in this era |
+| startPercent | Integer | 0 | When starting, percentage (\[0\]%-\[100\]%) of turns skipped in total turns specified in [Speed.json](#speedsjson) |
+| citySound | String | "cityClassical" | Sound used when city is founded in this era |
 
 [^1]: Successfully setting startingSettlerCount to zero in a mod (idea: conquer or die) is not easy. Some player-controlled settings require at least one Settler, through any source (see difficulties for other possible settler sources), or you won't be able to start a game: Once City Challenge requires one for all players, and allowing any city-states requires one for those. Would also affect defeat rules.
 
@@ -134,7 +138,7 @@ Stored in ModOptions.constants, this is a collection of constants used internall
 This is the only structure that is _merged_ field by field from mods, not overwritten, so you can change XP from Barbarians in one mod
 and city distance in another. In case of conflicts, there is no guarantee which mod wins, only that _default_ values are ignored.
 
-| Attribute | Type | | Notes |
+| Attribute | Type | Default | Notes |
 | --------- | ---- | ------- | ----- |
 | maxXPfromBarbarians | Int | 30 | [^A] |
 | cityStrengthBase | Float | 8.0 | [^B] |
@@ -306,7 +310,7 @@ List of attributes - note not all combinations are valid:
 | `indent` | Integer | Indent level. 0 means text will follow icons, 1 aligns to the right of all icons, each further step is 30 units |
 | `padding` | Float | Vertical padding between rows, 5 units |
 | `color` | String | Sets text color, accepts names or 6/3-digit web colors (e.g. #FFA040) |
-| `separator` | Boolean | Renders a separator line instead of text. Can be combined only with `color` and `size` (line width, 2) |
+| `separator` | Boolean | Renders a separator line instead of text. Can be combined only with `color` and `size` (line width, default 2) |
 | `starred` | Boolean | Decorates text with a star icon - if set, it receives the `color` instead of the text |
 | `centered` | Boolean | Centers the line (and turns off automatic wrap). For an `extraImage`, turns on crop-to-content to equalize transparent borders |
 

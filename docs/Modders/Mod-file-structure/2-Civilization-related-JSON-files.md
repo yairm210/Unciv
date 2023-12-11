@@ -10,8 +10,8 @@ Each belief has the following structure:
 
 | Attribute | Type | Default | Notes |
 | --------- | ---- | ------- | ----- |
-| name | String | Required | Name of the belief |
-| type | Enum | Required | Pantheon, Follower, Founder or Enhancer |
+| name | String | Required | |
+| type | Enum | Required | Pantheon, Founder, Follower or Enhancer (note: leaving this attribute empty or None makes the belief impossible to obtain) |
 | uniques | List of Strings | none | List of [unique abilities](../uniques) this belief adds to cities following it |
 | civilopediaText | List | empty | See [civilopediaText chapter](5-Miscellaneous-JSON-files.md#civilopedia-text) |
 
@@ -25,7 +25,7 @@ Each building has the following structure:
 
 | Attribute | Type | Default | Notes |
 | --------- | ---- | ------- | ----- |
-| name | String | Required | Name of the building |
+| name | String | Required | |
 | cost | Integer (≥0) | 0 | Amount of production required to build the building |
 | [`<stats>`](3-Map-related-JSON-files.md#stats) | float | 0 | Per-turn yield produced by the building |
 | maintenance | Integer (≥0) | 0 | Maintenance cost of the building |
@@ -47,7 +47,7 @@ Each building has the following structure:
 | percentStatBonus | Object | none | Percentual bonus for stats provided by the building. Valid keys are the names of stats (production, gold, science, etc.), valid values are Integers (≥0) |
 | greatPersonPoints | Object | none | How many great person points for each type will be generated per turn. Valid keys are the names of great people (Great Scientist, Great Engineer, etc.), valid values are Integers (≥0) |
 | specialistSlots | Object | none | Specialist slots provided by this building. Valid keys are the names of specialists (as defined in [Specialists.json](3-Map-related-JSON-files.md#specialistsjson)), valid values are Integers, the amount of slots provided for this specialist |
-| civilopediaText | List | Default empty | see [civilopediaText chapter](5-Miscellaneous-JSON-files.md#civilopedia-text) |
+| civilopediaText | List | empty | see [civilopediaText chapter](5-Miscellaneous-JSON-files.md#civilopedia-text) |
 
 ## Nations.json
 
@@ -103,8 +103,8 @@ Each city state type has the following structure:
 | Attribute | Type | Default | Notes |
 | --------- | ---- | ------- | ----- |
 | name | String | Required | |
-| friendBonusUniques | List | empty | List of [unique abilities](../uniques) granted when friends with this city state |
-| allyBonusUniques | List | empty | List of [unique abilities](../uniques) granted when allied to city state |
+| friendBonusUniques | List | empty | List of [unique abilities](../uniques) granted to major civilizations when friends with this city state |
+| allyBonusUniques | List | empty | List of [unique abilities](../uniques) granted to  major civilizations when allied to city state |
 | color | List of Integers | [255, 255, 255] | RGB color of text in civilopedia |
 
 ## Policies.json
@@ -113,7 +113,9 @@ Each city state type has the following structure:
 
 This file contains all the available social policies that can be "bought" with culture.
 
-They are organized in 'branches', each branch has an 'opener', one or more 'member' policies, and a 'finisher'. Therefore this file is organized using two levels - branch and member policy. The properties of the 'opener' are defined with the branch level, while the 'finisher' has an entry on the member level which _must_ be named as branch name + "Complete", case sensitive.
+They are organized in 'branches', each branch has an 'opener', one or more 'member' policies, and a 'finisher'. Therefore this file is organized using two levels - branch and member policy.
+
+The properties of the 'opener' are defined with the branch level, while the 'finisher' is an entry on the member level which _must_ be named as `branch name + " Complete"`, case sensitive. For example, the finisher of a policy branch "Tradition" will have the name "Tradition Complete".
 
 ### Branch structure
 
@@ -124,8 +126,8 @@ Each policy branch has the following structure:
 | name | String | Required | |
 | era | String | Required | Unlocking era as defined in [Eras.json](5-Miscellaneous-JSON-files.md#Eras.json) |
 | priorities | Object | empty | Priorities for each victory type, [see here](#branch-priorities)
-| uniques | List | empty | List of [unique abilities](../uniques) this policy branch has |
-| policies | List | empty | List of member policies - pay attention to the nesting of {} and [] |
+| uniques | List | empty | List of [unique abilities](../uniques) this policy branch grants upon adopting it |
+| policies | List | empty | List of [member policies](#member-policy-structure) and [branch 'finisher'](#branch-finisher-structure) - pay attention to the nesting of {} and [] |
 
 #### Member policy structure
 
@@ -135,7 +137,14 @@ Each policy branch has the following structure:
 | row | Integer | Required | Placement in UI, each unit approximately half the icon size |
 | column | Integer | Required | Placement in UI, each unit approximately half the icon size |
 | requires | List | empty | List of prerequisite policy names |
-| uniques | List | empty | List of [unique abilities](../uniques) this policy has |
+| uniques | List | empty | List of [unique abilities](../uniques) this policy member grants upon adopting it |
+
+#### Branch finisher structure
+
+| Attribute | Type | Default | Notes |
+| --------- | ---- | ------- | ----- |
+| name | String | Required | |
+| uniques | List | empty | List of [unique abilities](../uniques) this finisher grants upon adopting all the policy members in the branch |
 
 ### Branch priorities
 
@@ -143,11 +152,11 @@ The "priorities" object lists its branch's priorities for each victory type. The
 
 | Attribute | Type | Default | Notes |
 | --------- | ---- | ------- | ----- |
-| Neutral | Int | 0 | Priority value when the AI's preferred victory type is Neutral |
-| Cultural | Int | 0 | Priority value when the AI's preferred victory type is Cultural |
-| Diplomatic | Int | 0 | Priority value when the AI's preferred victory type is Diplomatic |
-| Domination | Int | 0 | Priority value when the AI's preferred victory type is Domination |
-| Scientific | Int | 0 | Priority value when the AI's preferred victory type is Scientific |
+| Neutral | Integer | 0 | Priority value when the AI's preferred victory type is Neutral |
+| Cultural | Integer | 0 | Priority value when the AI's preferred victory type is Cultural |
+| Diplomatic | Integer | 0 | Priority value when the AI's preferred victory type is Diplomatic |
+| Domination | Integer | 0 | Priority value when the AI's preferred victory type is Domination |
+| Scientific | Integer | 0 | Priority value when the AI's preferred victory type is Scientific |
 
 ## Quests.json
 
@@ -159,7 +168,7 @@ Each quest has the following structure:
 
 | Attribute | Type | Default | Notes |
 | --------- | ---- | ------- | ----- |
-| name | String | Required | Unique identifier name of the quest, it is also shown |
+| name | String | Required | |
 | description | String | Required | Description of the quest shown to players |
 | type | Enum | Individual | Individual or Global |
 | influence | Float | 40 | Influence reward gained on quest completion |
@@ -176,14 +185,14 @@ This is just a list of Strings specifying all predefined religion names. Corresp
 
 [Link to original](https://github.com/yairm210/Unciv/blob/master/android/assets/jsons/Civ%20V%20-%20Gods%20%26%20Kings/Specialists.json)
 
-This file should contain a list of all possible specialists that citizens can be assigned into if available.
+This file should contain a list of all possible specialists that citizens can be assigned to.
 
 Each specialist has the following structure:
 
 | Attribute | Type | Default | Notes |
 | --------- | ---- | ------- | ----- |
-| name | String | Required | Name of the specialist |
-| [`<stats>`](3-Map-related-JSON-files.md#stats) | float | 0| Per-turn yield produced by the specialist |
+| name | String | Required | |
+| [`<stats>`](3-Map-related-JSON-files.md#stats) | Float | 0 | Per-turn yield produced by the specialist |
 | color | List of 3 Integers | Required | Color of the image for this specialist |
 | greatPersonPoints | Object | none | Great person points generated by this specialist. Valid keys are the names of the great person (Great Scientist, Great Merachant, etc.), valid values are Integers (≥0) |
 
@@ -204,13 +213,13 @@ Each tech column has the following structure:
 | techCost | Integer | Required | Default cost of the techs in this column |
 | buildingCost | Integer | Required | Default cost of buildings requiring this tech |
 | wonderCost | Integer | Required | Default cost of wonders requiring this tech |
-| techs | List | Required | List of techs as follows - pay attention to the nesting of {} and [] |
+| techs | List | Required | List of techs - pay attention to the nesting of {} and [] |
 
 #### Tech structure
 
 | Attribute | Type | Default | Notes |
 | --------- | ---- | ------- | ----- |
-| name | String | Required | The name of this Technology |
+| name | String | Required | |
 | row | Integer | 0 | Vertical placement in the Tech Tree, must be unique per column |
 | cost | Integer | [Column techCost](#column-structure) | The amount of science required to research this tech |
 | prerequisites | List | empty | A list of the names of techs that are prerequisites of this tech. Only direct prerequisites are necessary |
