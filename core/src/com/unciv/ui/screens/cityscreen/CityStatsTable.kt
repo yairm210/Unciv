@@ -396,8 +396,7 @@ class CityStatsTable(private val cityScreen: CityScreen) : Table() {
 
     inner class GppBreakDownPopup(gppName: String) : Popup(cityScreen) {
         init {
-            for ((key, counter) in city.getGreatPersonPointsBreakdown()) {
-                val (source, isBonus) = key
+            for ((source, isBonus, counter) in city.getGreatPersonPointsBreakdown()) {
                 val points = counter[gppName]
                 if (points == 0) continue
                 add("{$source}:".toLabel()).left().growX()

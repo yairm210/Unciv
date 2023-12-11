@@ -229,31 +229,54 @@ class City : IsPartOfGameInfoSerialization {
         }
     }
 
-    fun getGreatPersonPointsBreakdown() = LinkedHashMap<Pair<String, Boolean>, Counter<String>>().apply {
-        val specialistsCounter = Counter<String>()
+    data class GreatPersonPointsBreakdownEntry(val source: String, val isBonus: Boolean, val counter: Counter<String> = Counter())
+    fun getGreatPersonPointsBreakdown(): Sequence<GreatPersonPointsBreakdownEntry> {
+        // First part: Base GPP points, materialized since we'll need to scan them twice
+        val basePoints = mutableListOf<GreatPersonPointsBreakdownEntry>()
+
+        // ... from Specialists
+        val specialists = GreatPersonPointsBreakdownEntry("Specialists", false)
         for ((specialistName, amount) in population.getNewSpecialists())
             if (getRuleset().specialists.containsKey(specialistName)) { // To solve problems in total remake mods
                 val specialist = getRuleset().specialists[specialistName]!!
-                specialistsCounter.add(specialist.greatPersonPoints.times(amount))
+                specialists.counter.add(specialist.greatPersonPoints.times(amount))
             }
-        put("Specialists" to false, specialistsCounter)
+        basePoints.add(specialists)
 
-        // This allows for multiple buildings of the same name just in case
-        for (building in cityConstructions.getBuiltBuildings())
-            getOrPut(building.name to false) { Counter() }.add(building.greatPersonPoints)
+        // ... and from buildings, allowing multiples of the same name to be aggregated since builtBuildingObjects is a List
+        basePoints.addAll(
+            cityConstructions.getBuiltBuildings()
+                .groupBy({ it.name }, { it.greatPersonPoints })
+                .map { GreatPersonPointsBreakdownEntry(
+                    it.key,
+                    false,
+                    it.value.fold(null) { a: Counter<String>?, b -> if (a == null) b else a + b }!! // Just a sumOf<Counter>, !! because groupBy doesn't output empty lists
+                ) }
+        )
 
-        for ((source, bonus) in getGreatPersonPercentageBonusBreakdown()) {
-            val bonusCounter = Counter<String>()
-            for (gppName in flatMap { it.value.keys })
-                bonusCounter[gppName] = bonus
-            put(source to true, bonusCounter)
-        }
+        return sequence {
+            // Second part: passing the first part through first, but collecting all names with base points while doing so
+            val allGpp = mutableSetOf<String>()
+            for (element in basePoints) {
+                yield(element)
+                allGpp += element.counter.keys
+            }
 
-        val stateForConditionals = StateForConditionals(civInfo = civ, city = this@City)
-        for (unique in civ.getMatchingUniques(UniqueType.GreatPersonEarnedFaster, stateForConditionals)) {
-            val bonusCounter = Counter<String>()
-            bonusCounter.add(unique.params[0], unique.params[1].toInt())
-            put((unique.sourceObjectName ?: "Bonus") to true, bonusCounter)
+            // Now add boni: GreatPersonPointPercentage and GreatPersonBoostWithFriendship
+            for ((source, bonus) in getGreatPersonPercentageBonusBreakdown()) {
+                val bonusEntry = GreatPersonPointsBreakdownEntry(source, true)
+                for (gppName in allGpp)
+                    bonusEntry.counter[gppName] = bonus
+                yield(bonusEntry)
+            }
+
+            // And last, the GPP-type-specific GreatPersonEarnedFaster Unique
+            val stateForConditionals = StateForConditionals(civInfo = civ, city = this@City)
+            for (unique in civ.getMatchingUniques(UniqueType.GreatPersonEarnedFaster, stateForConditionals)) {
+                val bonusEntry = GreatPersonPointsBreakdownEntry(unique.sourceObjectName ?: "Bonus", true)
+                bonusEntry.counter.add(unique.params[0], unique.params[1].toInt())
+                yield(bonusEntry)
+            }
         }
     }
 
@@ -261,8 +284,7 @@ class City : IsPartOfGameInfoSerialization {
         // Using fixed-point(n.3) math to avoid surprises by rounding while still leveraging the Counter class
         // Also accumulating boni separately - to ensure they operate additively not multiplicatively
         val boni = Counter<String>()
-        for ((key, counter) in getGreatPersonPointsBreakdown()) {
-            val (_, isBonus) = key
+        for ((_, isBonus, counter) in getGreatPersonPointsBreakdown()) {
             if (!isBonus) {
                 add(counter * 1000)
             } else {
