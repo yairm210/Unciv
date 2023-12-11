@@ -168,6 +168,7 @@ object UnitActionsFromUniques {
             // extends an existing unit action
             if (unique.conditionals.any { it.type == UniqueType.UnitActionExtraLimitedTimes }) continue
             if (!unique.isTriggerable) continue
+            if (!unique.conditionalsApply(StateForConditionals(civInfo = unit.civ, unit = unit, tile = unit.currentTile))) continue
             if (!UnitActionModifiers.canUse(unit, unique)) continue
 
             val baseTitle = if (unique.isOfType(UniqueType.OneTimeEnterGoldenAgeTurns))

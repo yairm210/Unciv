@@ -733,7 +733,7 @@
 		"obsoleteTech": "Electronics",
 		"upgradesTo": "Battleship",
 		"hurryCostModifier": 20,
-		"attackSound": "cannon"
+		"attackSound": "shipCannonVolley"
 	},
 	{
 		"name": "Ship of the Line",
@@ -750,7 +750,7 @@
 		"obsoleteTech": "Electronics",
 		"upgradesTo": "Battleship",
 		"hurryCostModifier": 20,
-		"attackSound": "cannon"
+		"attackSound": "shipCannonVolley"
 	},
 	{
 		"name": "Lancer",

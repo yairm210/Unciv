@@ -1,3 +1,21 @@
+## 4.9.7
+
+Allow city conditionals on units to upgrade to
+
+Captured military units trigger a notification for the target civ
+
+Fixed city-state type coloring
+
+"Can instantly construct a [improvementFilter] improvement" works with improvementFilter
+
+Allow conditionals for trigger-type unit actions  - By SeventhM
+
+Fix connect road button when auto unit cycle turned on - By willjallen
+
+Add resource support to stat gamespeed conditional - By PLynx01
+
+Better Frigate and Ship of the Line sound - By tuvus
+
 ## 4.9.6
 
 Connect roads automation  - By willjallen
