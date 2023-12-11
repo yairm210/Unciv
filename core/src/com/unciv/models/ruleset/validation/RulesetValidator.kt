@@ -231,7 +231,7 @@ class RulesetValidator(val ruleset: Ruleset) {
         tryFixUnknownUniques: Boolean
     ) {
         for (belief in ruleset.beliefs.values) {
-            if (belief.type == BeliefType.Any | belief.type == BeliefType.None)
+            if (belief.type == BeliefType.Any || belief.type == BeliefType.None)
                 lines += "${belief.name} type is {belief.type}, which is not allowed!"
             uniqueValidator.checkUniques(belief, lines, true, tryFixUnknownUniques)
         }
