@@ -57,9 +57,7 @@ object UniqueTriggerActivation {
         when (unique.type) {
             UniqueType.OneTimeFreeUnit -> {
                 val unitName = unique.params[0]
-                val baseUnit = ruleSet.units[unitName]
-                if ((chosenCity == null && tile == null) || baseUnit == null)
-                    return false
+                val baseUnit = ruleSet.units[unitName] ?: return false
                 val unit = civInfo.getEquivalentUnit(baseUnit)
                 if (unit.isCityFounder() && civInfo.isOneCityChallenger())
                     return false
@@ -69,10 +67,15 @@ object UniqueTriggerActivation {
                 if (limit != null && limit <= civInfo.units.getCivUnits().count { it.name == unitName })
                     return false
 
-                val placedUnit = if (city != null || tile == null)
-                    civInfo.units.addUnit(unitName, chosenCity) ?: return false
-                    else civInfo.units.placeUnitNearTile(tile.position, unitName) ?: return false
-
+                // 4 situations: If city ->
+                val placedUnit = when {
+                    city != null || (tile == null && civInfo.cities.isNotEmpty()) ->
+                        civInfo.units.addUnit(unitName, chosenCity) ?: return false
+                    tile != null -> civInfo.units.placeUnitNearTile(tile.position, unitName) ?: return false
+                    civInfo.units.getCivUnits().any() ->
+                        civInfo.units.placeUnitNearTile(civInfo.units.getCivUnits().first().currentTile.position, unitName) ?: return false
+                    else -> return false
+                }
                 val notificationText = getNotificationText(notification, triggerNotificationText,
                     "Gained [1] [$unitName] unit(s)")
                     ?: return true
