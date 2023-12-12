@@ -144,7 +144,7 @@ open class FileChooser(
         fileNameCell = add().colspan(2).growX()
         row()
 
-        addCloseButton("Cancel") {
+        addCloseButton(Constants.cancel) {
             reportResult(false)
         }
         okButton = addOKButton(Constants.OK) {
