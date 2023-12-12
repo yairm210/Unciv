@@ -139,6 +139,7 @@ class WorkerAutomation(
     fun automateConnectRoad(unit: MapUnit, tilesWhereWeWillBeCaptured: Set<Tile>){
         if (actualBestRoadAvailable == RoadStatus.None) return
 
+
         var currentTile = unit.getTile()
 
         /** Reset side effects from automation, return worker to non-automated state*/
@@ -148,6 +149,11 @@ class WorkerAutomation(
             unit.automatedRoadConnectionDestination = null
             unit.automatedRoadConnectionPath = null
             currentTile.stopWorkingOnImprovement()
+        }
+
+        if (unit.automatedRoadConnectionDestination == null){
+            stopAndCleanAutomation()
+            return
         }
 
         /** Conditions for whether it is acceptable to build a road on this tile */
