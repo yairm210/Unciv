@@ -109,8 +109,8 @@ The below code is an example of a valid "turns" definition and it specifies that
 
 This file is a little different:
 
--   Does not exist in Vanilla ruleset
--   Is entirely optional but will be created after downloading a mod
+- Does not exist in Vanilla ruleset
+- Is entirely optional but will be created after downloading a mod
 
 Note that this file controls _declarative mod compatibility_ (Work in progress) - e.g. there's [uniques](../uniques.md#modoptions-uniques) to say your Mod should only or never be used as 'Permanent audiovisual mod'.
 Incompatibility filtering works so far between extension and base mods, but feel free to document known extension-to-extension incompatibilities using the same Unique now. Stay tuned!
@@ -270,7 +270,6 @@ Currently the following milestones are supported:
 | Win diplomatic vote | At any point in the game win a diplomatic vote (UN). You may lose afterwards and still retain this milestone |
 | Become the world religion | Have your religion be the majority religion in a majority of cities of all major civs |
 | Have highest score after max turns | Basically time victory. Enables the 'max turn' slider and calculates score when that amount is reached |
-
 
 ## Civilopedia text
 

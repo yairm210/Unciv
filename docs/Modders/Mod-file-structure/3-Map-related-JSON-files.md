@@ -47,10 +47,10 @@ Each improvement has the following structure:
 | shortcutKey | String | none | Keyboard binding. Currently, only a single character is allowed (no function keys or Ctrl combinations) |
 | civilopediaText | List | empty | see [civilopediaText chapter](5-Miscellaneous-JSON-files.md#civilopedia-text) |
 
--   Tiles with no terrains, but positive turns to build, can be built only when the tile has a resource that names this improvement or special uniques are used. (TODO: missing something?)
--   Tiles with no terrains, and no turns to build, are like great improvements - they're placeable. That means a unit could exist with a 'Can create [this]' unique, and that the improvement will not show in a worker's improvement picker dialog.
--   Removable Terrain features will need to be removed before building an improvement - unless the feature is named in terrainsCanBeFoundOn _or_ the unique "Does not need removal of [terrainFeature]" is used (e.g. Camp allowed by resource).
--   Special improvements: Road, Railroad, Remove \*, Cancel improvement order, City ruins, City center, Barbarian encampment - these have special meanings hardcoded to their names.
+- Tiles with no terrains, but positive turns to build, can be built only when the tile has a resource that names this improvement or special uniques are used. (TODO: missing something?)
+- Tiles with no terrains, and no turns to build, are like great improvements - they're placeable. That means a unit could exist with a 'Can create [this]' unique, and that the improvement will not show in a worker's improvement picker dialog.
+- Removable Terrain features will need to be removed before building an improvement - unless the feature is named in terrainsCanBeFoundOn _or_ the unique "Does not need removal of [terrainFeature]" is used (e.g. Camp allowed by resource).
+- Special improvements: Road, Railroad, Remove \*, Cancel improvement order, City ruins, City center, Barbarian encampment - these have special meanings hardcoded to their names.
 
 ## TileResources.json
 
@@ -94,9 +94,9 @@ Each of the objects in the file represents a single reward you can get from ruin
 
 [^A]: The exact algorithm for choosing a reward is the following:
 
--   Create a list of all possible rewards, with rewards with a higher weight appearing multiple times. A reward with weight one will appear once, a reward with weight two will appear twice, etc.
--   Shuffle this list
--   Try give rewards starting from the top of the list. If any of the uniques of the rewards is valid in this context, reward it and stop trying more rewards.
+- Create a list of all possible rewards, with rewards with a higher weight appearing multiple times. A reward with weight one will appear once, a reward with weight two will appear twice, etc.
+- Shuffle this list
+- Try give rewards starting from the top of the list. If any of the uniques of the rewards is valid in this context, reward it and stop trying more rewards.
 
 ### Notifications
 
@@ -115,9 +115,9 @@ Some of the rewards ruins can give will have results that are not deterministic 
 
 A few uniques can be added to ancient ruin effects to modify when they can be earned. These are:
 
--   "Only available after [amount] turns"
--   "Hidden when religion is disabled"
--   "Hidden after a great prophet has been earned"
+- "Only available after [amount] turns"
+- "Hidden when religion is disabled"
+- "Hidden after a great prophet has been earned"
 
 ## [Tileset-specific json](../Creating-a-custom-tileset.md)
 
@@ -155,13 +155,13 @@ When TileSetConfig's for the same Tileset are combined, for the first three prop
 
 Terrains, features, resources and improvements may list yield statistics. They can be one of the following:
 
--   production
--   food
--   gold
--   science
--   culture
--   happiness
--   faith
+- production
+- food
+- gold
+- science
+- culture
+- happiness
+- faith
 
 If an object carries general stats, any combination (or none) of these can be specified. For specialized stats, they might come as sub-object in a named field. Example:
 
