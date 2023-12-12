@@ -729,6 +729,7 @@ enum class UniqueType(
     OneTimeGlobalSpiesWhenEnteringEra("Every major Civilization gains a spy once a civilization enters this era", UniqueTarget.Era),
 
     OneTimeUnitHeal("Heal this unit by [amount] HP", UniqueTarget.UnitTriggerable),
+    OneTimeUnitDamage("This Unit takes [amount] damage", UniqueTarget.UnitTriggerable),
     OneTimeUnitGainXP("This Unit gains [amount] XP", UniqueTarget.UnitTriggerable),
     OneTimeUnitUpgrade("This Unit upgrades for free", UniqueTarget.UnitTriggerable),  // Not used in Vanilla
     OneTimeUnitSpecialUpgrade("This Unit upgrades for free including special upgrades", UniqueTarget.UnitTriggerable),
