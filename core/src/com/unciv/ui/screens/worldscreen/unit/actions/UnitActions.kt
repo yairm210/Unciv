@@ -43,6 +43,7 @@ object UnitActions {
         UnitActionType.ConnectRoad to UnitActionsFromUniques::getConnectRoadActions,
         UnitActionType.Repair to UnitActionsFromUniques::getRepairActions,
         UnitActionType.HurryResearch to UnitActionsGreatPerson::getHurryResearchActions,
+        UnitActionType.HurryPolicy to UnitActionsGreatPerson::getHurryPolicyActions,
         UnitActionType.HurryWonder to UnitActionsGreatPerson::getHurryWonderActions,
         UnitActionType.HurryBuilding to UnitActionsGreatPerson::getHurryBuildingActions,
         UnitActionType.ConductTradeMission to UnitActionsGreatPerson::getConductTradeMissionActions,
