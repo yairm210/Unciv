@@ -5,6 +5,7 @@ import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.mapunit.MapUnit
+import com.unciv.logic.map.tile.Tile
 import com.unciv.models.Counter
 import com.unciv.models.Religion
 import com.unciv.models.ruleset.Belief
@@ -271,16 +272,16 @@ class ReligionManager : IsPartOfGameInfoSerialization {
         return true
     }
 
-    fun mayFoundReligionNow(prophet: MapUnit): Boolean {
+    fun mayFoundReligionHere(tile: Tile): Boolean {
         if (!mayFoundReligionAtAll()) return false
-        if (!prophet.getTile().isCityCenter()) return false
-        if (prophet.getTile().getCity()!!.isHolyCity()) return false
+        if (!tile.isCityCenter()) return false
+        if (tile.getCity()!!.isHolyCity()) return false
         // No double holy cities. Not sure if these were allowed in the base game
         return true
     }
 
     fun foundReligion(prophet: MapUnit) {
-        if (!mayFoundReligionNow(prophet)) return // How did you do this?
+        if (!mayFoundReligionHere(prophet.getTile())) return // How did you do this?
         if (religionState == ReligionState.None) shouldChoosePantheonBelief = true
         religionState = ReligionState.FoundingReligion
         civInfo.religionManager.foundingCityId = prophet.getTile().getCity()!!.id
@@ -289,7 +290,7 @@ class ReligionManager : IsPartOfGameInfoSerialization {
             UniqueTriggerActivation.triggerCivwideUnique(unique, civInfo)
     }
 
-    fun mayEnhanceReligionAtAll(prophet: MapUnit): Boolean {
+    fun mayEnhanceReligionAtAll(): Boolean {
         if (!civInfo.gameInfo.isReligionEnabled()) return false
         if (religion == null) return false // First found a pantheon
         if (religionState != ReligionState.Religion) return false // First found an actual religion
@@ -304,14 +305,14 @@ class ReligionManager : IsPartOfGameInfoSerialization {
         return true
     }
 
-    fun mayEnhanceReligionNow(prophet: MapUnit): Boolean {
-        if (!mayEnhanceReligionAtAll(prophet)) return false
-        if (!prophet.getTile().isCityCenter()) return false
+    fun mayEnhanceReligionHere(tile: Tile): Boolean {
+        if (!mayEnhanceReligionAtAll()) return false
+        if (!tile.isCityCenter()) return false
         return true
     }
 
     fun useProphetForEnhancingReligion(prophet: MapUnit) {
-        if (!mayEnhanceReligionNow(prophet)) return // How did you do this?
+        if (!mayEnhanceReligionHere(prophet.getTile())) return // How did you do this?
         religionState = ReligionState.EnhancingReligion
 
         for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponEnhancingReligion))

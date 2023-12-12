@@ -68,7 +68,7 @@ class BasicTests {
         val units: Collection<BaseUnit> = ruleset.units.values
         var allObsoletingUnitsHaveUpgrades = true
         for (unit in units) {
-            if (unit.obsoleteTech != null && unit.upgradesTo == null && unit.name !="Scout" ) {
+            if (unit.techsThatObsoleteThis().any() && unit.upgradesTo == null && unit.name !="Scout" ) {
                 debug("%s obsoletes but has no upgrade", unit.name)
                 allObsoletingUnitsHaveUpgrades = false
             }

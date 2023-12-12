@@ -58,6 +58,7 @@ import com.unciv.ui.screens.worldscreen.bottombar.BattleTable
 import com.unciv.ui.screens.worldscreen.bottombar.TileInfoTable
 import com.unciv.ui.screens.worldscreen.mainmenu.WorldScreenMusicPopup
 import com.unciv.ui.screens.worldscreen.minimap.MinimapHolder
+import com.unciv.ui.screens.worldscreen.status.AutoPlayStatusButton
 import com.unciv.ui.screens.worldscreen.status.MultiplayerStatusButton
 import com.unciv.ui.screens.worldscreen.status.NextTurnButton
 import com.unciv.ui.screens.worldscreen.status.NextTurnProgress
@@ -172,8 +173,8 @@ class WorldScreen(
 
         val tileToCenterOn: Vector2 =
                 when {
-                    viewingCiv.cities.isNotEmpty() && viewingCiv.getCapital() != null -> viewingCiv.getCapital()!!.location
                     viewingCiv.units.getCivUnits().any() -> viewingCiv.units.getCivUnits().first().getTile().position
+                    viewingCiv.cities.isNotEmpty() && viewingCiv.getCapital() != null -> viewingCiv.getCapital()!!.location
                     else -> Vector2.Zero
                 }
 
@@ -195,7 +196,6 @@ class WorldScreen(
             // No cheating unless you're by yourself
             if (gameInfo.civilizations.count { it.isHuman() } > 1) return@add
             val consolePopup = DevConsolePopup(this)
-            stage.keyboardFocus = consolePopup.textField
         }
 
         addKeyboardListener() // for map panning by W,S,A,D
@@ -412,7 +412,13 @@ class WorldScreen(
         fogOfWarButton.isEnabled = !selectedCiv.isSpectator()
         fogOfWarButton.setPosition(10f, topBar.y - fogOfWarButton.height - 10f)
 
-        if (!hasOpenPopups() && isPlayersTurn) {
+        // If the game has ended, lets stop AutoPlay
+        if (game.settings.autoPlay.isAutoPlaying()
+            && !gameInfo.oneMoreTurnMode && (viewingCiv.isDefeated() || gameInfo.checkForVictory())) {
+            game.settings.autoPlay.stopAutoPlay()
+        }
+
+        if (!hasOpenPopups() && !game.settings.autoPlay.isAutoPlaying() && isPlayersTurn) {
             when {
                 viewingCiv.shouldShowDiplomaticVotingResults() ->
                     UncivGame.Current.pushScreen(DiplomaticVoteResultScreen(gameInfo.diplomaticVictoryVotesCast, viewingCiv))
@@ -694,6 +700,7 @@ class WorldScreen(
     private fun updateGameplayButtons() {
         nextTurnButton.update()
 
+        updateAutoPlayStatusButton()
         updateMultiplayerStatusButton()
 
         statusButtons.wrap(false)
@@ -705,6 +712,18 @@ class WorldScreen(
             statusButtons.pack()
         }
         statusButtons.setPosition(stage.width - statusButtons.width - 10f, topBar.y - statusButtons.height - 10f)
+    }
+
+    private fun updateAutoPlayStatusButton() {
+        if (statusButtons.autoPlayStatusButton == null) {
+            if (game.settings.autoPlay.showAutoPlayButton)
+                statusButtons.autoPlayStatusButton = AutoPlayStatusButton(this, nextTurnButton)
+        } else {
+            if (!game.settings.autoPlay.showAutoPlayButton) {
+                statusButtons.autoPlayStatusButton = null
+                game.settings.autoPlay.stopAutoPlay()
+            }
+        }
     }
 
     private fun updateMultiplayerStatusButton() {

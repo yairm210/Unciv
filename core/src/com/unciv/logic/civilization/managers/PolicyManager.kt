@@ -203,6 +203,7 @@ class PolicyManager : IsPartOfGameInfoSerialization {
             triggerGlobalAlerts(policy, unique.params[0])
         }
 
+        //todo Can this be mapped downstream to a PolicyAction:NotificationAction?
         val triggerNotificationText = "due to adopting [${policy.name}]"
         for (unique in policy.uniqueObjects)
             if (!unique.hasTriggerConditional())

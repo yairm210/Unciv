@@ -34,7 +34,7 @@ interface INonPerpetualConstruction : IConstruction, INamed, IHasUniques {
     @Deprecated("The functionality provided by the requiredTech field is provided by the OnlyAvailableWhen unique.")
     var requiredTech: String?
 
-    fun requiredTechs(): Sequence<String> = if (requiredTech == null) sequenceOf() else sequenceOf(requiredTech!!)
+    override fun legacyRequiredTechs(): Sequence<String> = if (requiredTech == null) sequenceOf() else sequenceOf(requiredTech!!)
 
     fun getProductionCost(civInfo: Civilization): Int
     fun getStatBuyCost(city: City, stat: Stat): Int?
@@ -45,17 +45,18 @@ interface INonPerpetualConstruction : IConstruction, INamed, IHasUniques {
 
     /** Only checks if it has the unique to be bought with this stat, not whether it is purchasable at all */
     fun canBePurchasedWithStat(city: City?, stat: Stat): Boolean {
+        val stateForConditionals = StateForConditionals(city?.civ, city)
         if (stat == Stat.Production || stat == Stat.Happiness) return false
-        if (hasUnique(UniqueType.CannotBePurchased)) return false
+        if (hasUnique(UniqueType.CannotBePurchased, stateForConditionals)) return false
         // Can be purchased with [Stat] [cityFilter]
-        if (city != null && getMatchingUniques(UniqueType.CanBePurchasedWithStat)
+        if (city != null && getMatchingUniques(UniqueType.CanBePurchasedWithStat, stateForConditionals)
             .any { it.params[0] == stat.name && city.matchesFilter(it.params[1]) }
         ) return true
         // Can be purchased for [amount] [Stat] [cityFilter]
-        if (city != null && getMatchingUniques(UniqueType.CanBePurchasedForAmountStat)
+        if (city != null && getMatchingUniques(UniqueType.CanBePurchasedForAmountStat, stateForConditionals)
             .any { it.params[1] == stat.name && city.matchesFilter(it.params[2]) }
         ) return true
-        if (stat == Stat.Gold) return !hasUnique(UniqueType.Unbuildable)
+        if (stat == Stat.Gold) return !hasUnique(UniqueType.Unbuildable, stateForConditionals)
         return false
     }
 
