@@ -259,17 +259,14 @@ class QuestManager : IsPartOfGameInfoSerialization {
     }
 
     private fun handleGlobalQuest(questName: String) {
-        val quests = assignedQuests.filter { it.questName == questName }
-        if (quests.isEmpty())
-            return
+        val winnersAndLosers = getLeadersAndTrailersForGlobalQuest(questName)
 
-        val topScore = quests.maxOf { getScoreForQuest(it) }
-        val winners = quests.filter { getScoreForQuest(it) == topScore }
-        winners.forEach { giveReward(it) }
-        for (loser in quests.filterNot { it in winners })
-            notifyExpired(loser, winners)
+        //winners are first, losers second
+        winnersAndLosers.first.forEach { giveReward(it) }
+        winnersAndLosers.second.forEach { notifyExpired(it, winnersAndLosers.first) }
 
-        assignedQuests.removeAll(quests)
+        assignedQuests.removeAll(winnersAndLosers.first)
+        assignedQuests.removeAll(winnersAndLosers.second)
     }
 
     private fun handleIndividualQuests() {
@@ -474,7 +471,9 @@ class QuestManager : IsPartOfGameInfoSerialization {
     /** Returns the score for the [assignedQuest] */
     private fun getScoreForQuest(assignedQuest: AssignedQuest): Int {
         val assignee = civInfo.gameInfo.getCivilization(assignedQuest.assignee)
+
         return when (assignedQuest.questName) {
+            //quest total = civ total - the value at the time the quest started (which was stored in assignedQuest.data1)
             QuestName.ContestCulture.value -> assignee.totalCultureForContests - assignedQuest.data1.toInt()
             QuestName.ContestFaith.value -> assignee.totalFaithForContests - assignedQuest.data1.toInt()
             QuestName.ContestTech.value -> assignee.tech.getNumberOfTechsResearched() - assignedQuest.data1.toInt()
@@ -482,17 +481,64 @@ class QuestManager : IsPartOfGameInfoSerialization {
         }
     }
 
-    /** Returns a string with the leading civ and their score for [questName] */
-    fun getLeaderStringForQuest(questName: String): String {
-        val leadingQuest = assignedQuests.filter { it.questName == questName }.maxByOrNull { getScoreForQuest(it) }
-            ?: return ""
+    /** Returns a Pair of AssignedQuest lists of <leader(s), trailers> for the given Global quest [questName] */
+    private fun getLeadersAndTrailersForGlobalQuest(questName: String): Pair<List<AssignedQuest>,List<AssignedQuest>> {
+        require(civInfo.gameInfo.ruleset.quests[questName]!!.isGlobal())
 
-        return when (questName) {
-            QuestName.ContestCulture.value -> "Current leader is [${leadingQuest.assignee}] with [${getScoreForQuest(leadingQuest)}] [Culture] generated."
-            QuestName.ContestFaith.value -> "Current leader is [${leadingQuest.assignee}] with [${getScoreForQuest(leadingQuest)}] [Faith] generated."
-            QuestName.ContestTech.value -> "Current leader is [${leadingQuest.assignee}] with [${getScoreForQuest(leadingQuest)}] Technologies discovered."
-            else -> ""
+        var maxScore = -1
+        val leadingCivs = mutableListOf <AssignedQuest>()
+        val trailingCivs = mutableListOf <AssignedQuest>()
+        for(q in assignedQuests.filter { it.questName == questName }){
+            val qScore = getScoreForQuest(q)
+            if(qScore > maxScore && qScore > 0 ){   //no civ is a leader if their score is 0)
+                trailingCivs.addAll(leadingCivs)
+                leadingCivs.clear()
+                leadingCivs.add(q)
+                maxScore = qScore
+            }
+            else if(qScore == maxScore){
+                leadingCivs.add(q)
+            }
+            else{ //if score < leader
+                trailingCivs.add(q)
+            }
         }
+
+        return Pair(leadingCivs, trailingCivs)
+    }
+
+    /** Returns a string with the score of the leading civs and the assignee civ of the given [inquiringAssignedQuest] */
+    fun getScoreStringForGlobalQuest(inquiringAssignedQuest: AssignedQuest): String {
+        require(inquiringAssignedQuest.assigner == civInfo.civName)
+        require(inquiringAssignedQuest.isGlobal())
+
+        val scoreDescriptor = when (inquiringAssignedQuest.questName) {
+            QuestName.ContestCulture.value -> "Culture"
+            QuestName.ContestFaith.value -> "Faith"
+            QuestName.ContestTech.value -> "Technologies"
+            else -> "" //This handles global quests which aren't a competition, like invest
+        }
+
+
+
+        // Get list of leaders with leading score and show inquiring civ's score if they are not the leader
+        // Manually translate because we are compositing multiple strings
+        val leaderList = getLeadersAndTrailersForGlobalQuest(inquiringAssignedQuest.questName).first
+
+        if (leaderList.isEmpty() || scoreDescriptor == "")   //Only show leaders if there are some
+            return ""
+
+        val listOfLeadersAsTranslatedString = getLeadersAndTrailersForGlobalQuest(inquiringAssignedQuest.questName).first.joinToString(separator = ", ") { it.assignee.tr() }
+
+        val preamble = "Current leader(s)".tr()
+        val leadersString = "[${listOfLeadersAsTranslatedString}] with [${getScoreForQuest(leaderList[0])}] [${scoreDescriptor}]".tr()
+        var s = "$preamble: $leadersString."
+
+        //Lastly, show the inquiring civ's score if they are not the leader
+        if(!leaderList.contains(inquiringAssignedQuest))
+            s = s + " " + "[${inquiringAssignedQuest.assignee}] with [${getScoreForQuest(inquiringAssignedQuest)}] [${scoreDescriptor}]".tr() + "."
+
+        return s
     }
 
     /**
