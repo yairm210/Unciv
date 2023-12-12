@@ -1,5 +1,6 @@
-import com.unciv.build.BuildConfig
+
 import com.unciv.build.AndroidImagePacker
+import com.unciv.build.BuildConfig
 import java.util.Properties
 
 plugins {
@@ -8,7 +9,7 @@ plugins {
 }
 
 android {
-    compileSdk = 32
+    compileSdk = 33
     sourceSets {
         getByName("main").apply {
             manifest.srcFile("AndroidManifest.xml")
@@ -28,7 +29,7 @@ android {
     defaultConfig {
         applicationId = "com.unciv.app"
         minSdk = 21
-        targetSdk = 32 // See #5044
+        targetSdk = 33 // See #5044
         versionCode = BuildConfig.appCodeNumber
         versionName = BuildConfig.appVersion
 
@@ -73,7 +74,7 @@ android {
         // Don't add local save files and fonts to release, obviously
         ignoreAssetsPattern = "!SaveFiles:!fonts:!maps:!music:!mods"
     }
-    buildToolsVersion = "32.0.0"
+    buildToolsVersion = "33.0.2"
 }
 
 task("texturePacker") {
@@ -134,11 +135,8 @@ tasks.register<JavaExec>("run") {
 }
 
 dependencies {
-    // Updating to latest version would require upgrading sourceCompatibility and targetCompatibility to 1_8, and targetSdk to 31 -
-    //   run `./gradlew build --scan` to see details
-    // Known Android Lint warning: "GradleDependency"
-    implementation("androidx.core:core-ktx:1.7.0")
-    implementation("androidx.work:work-runtime-ktx:2.7.1")
+    implementation("androidx.core:core-ktx:1.10.1")
+    implementation("androidx.work:work-runtime-ktx:2.8.1")
     // Needed to convert e.g. Android 26 API calls to Android 21
     // If you remove this run `./gradlew :android:lintDebug` to ensure everything's okay.
     // If you want to upgrade this, check it's working by building an apk,

@@ -16,6 +16,9 @@ object Constants {
     /** The "Coastal" terrain _filter_ */
     const val coastal = "Coastal"
 
+    /** Used as filter and the name of the pseudo-TerrainFeature defining river Stats */
+    const val river = "River"
+
     const val mountain = "Mountain"
     const val hill = "Hill"
     const val plains = "Plains"
@@ -43,6 +46,7 @@ object Constants {
     const val peaceTreaty = "Peace Treaty"
     const val researchAgreement = "Research Agreement"
     const val openBorders = "Open Borders"
+    const val defensivePact = "Defensive Pact"
     /** Used as origin in StatMap or ResourceSupplyList, or the toggle button in DiplomacyOverviewTab */
     const val cityStates = "City-States"
     /** Used as origin in ResourceSupplyList */
@@ -70,6 +74,7 @@ object Constants {
     const val yes = "Yes"
     const val no = "No"
     const val loading = "Loading..."
+    const val working = "Working..."
 
     const val barbarians = "Barbarians"
     const val spectator = "Spectator"
@@ -89,6 +94,8 @@ object Constants {
     const val uncivXyzServer = "https://uncivserver.xyz"
 
     const val defaultTileset = "HexaRealm"
+    /** Default for TileSetConfig.fallbackTileSet - Don't change unless you've also moved the crosshatch, borders, and arrows as well */
+    const val defaultFallbackTileset = "FantasyHex"
     const val defaultUnitset = "AbsoluteUnits"
     const val defaultSkin = "Minimal"
 

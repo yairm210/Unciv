@@ -10,8 +10,7 @@
 [![pi-apps](https://img.shields.io/static/v1?label=pi-apps&message=Unciv&color=607D8B&logo=raspberry-pi)](https://github.com/Botspot/pi-apps)
 [![macport](https://img.shields.io/badge/dynamic/json?logo=apple&label=MacPorts&prefix=v&query=version&url=https%3A%2F%2Fports.macports.org%2Fapi%2Fv1%2Fports%2Funciv%2F)](https://ports.macports.org/port/unciv/)
  
-
-![Build status](https://github.com/yairm210/Unciv/workflows/Build%20and%20test/badge.svg)
+[![Build status](https://github.com/yairm210/Unciv/actions/workflows/buildAndTest.yml/badge.svg)](https://github.com/yairm210/Unciv/actions/workflows/buildAndTest.yml)
 [![Discord](https://img.shields.io/discord/586194543280390151?color=%237289DA&logo=discord&logoColor=%23FFFFFF)](https://discord.gg/bjrB4Xw)
 
 
@@ -69,15 +68,13 @@ I'm not planning on it. It means paying money to Apple, yet another release path
  
 ### Steam release?
 
-Steam has decided that they don't want to host Unciv, they probably don't want to risk legal issues with Firaxis (although those should be non-existant, see below)
+Steam has decided that they don't want to host Unciv, they probably don't want to risk legal issues with Firaxis (although those should be non-existent, see below)
  
 ### Will you implement {feature}?
 
 If it's in the original Civ V, then yes!
 
-There's a lot left to implement, so it's hard to give an estimation of when exactly each feature will be added, but we're constantly improving!
-
-If not, then the feature won't be added until we've finished all the features from the original Civ - as mentioned, this will take a while!
+If not, then the feature won't be added to the base game - possibly it will be added as a way to mod the game, which is constantly expanding
 
 #### Why not? This is its own game, why not add features that weren't in Civ V?
 
@@ -116,12 +113,7 @@ From what I understand, intellectual property rights apply to names, characters 
 
 If anyone has any real legal sources, or can shed some light on the limits of what is and is not allowed, I'd be happy to hear!
 
-## Downloads
-
-| [![](https://static.itch.io/images/badge.svg)](https://yairm210.itch.io/unciv)    |    [![](https://play.google.com/intl/en_us/badges/images/generic/en-play-badge.png)](https://play.google.com/store/apps/details?id=com.unciv.app)   |    [![](https://fdroid.gitlab.io/artwork/badge/get-it-on.png)](https://f-droid.org/en/packages/com.unciv.app/)	| [![](https://flathub.org/assets/badges/flathub-badge-en.svg)](https://flathub.org/apps/details/io.github.yairm210.unciv)
-|---	|---	|---	|---	|
-
-## Run with Docker [![Docker](https://github.com/haimlm/Unciv/actions/workflows/docker-publish.yml/badge.svg)](https://github.com/haimlm/Unciv/actions/workflows/docker-publish.yml)
+## Run with Docker [![Docker](https://github.com/haimlm/Unciv/actions/workflows/dockerPublish.yml/badge.svg)](https://github.com/haimlm/Unciv/actions/workflows/dockerPublish.yml)
 
 If you have docker compose installed:
 
@@ -135,7 +127,7 @@ If just docker:
 
 Or just use our already built one:
 
-```$ docker run -d -p 6901:6901 -p 5901:5901 ghcr.io/yairm210/Unciv ```
+```$ docker run -d -p 6901:6901 -p 5901:5901 ghcr.io/yairm210/unciv ```
 
 and then goto http://localhost:6901/vnc.html?password=headless
 ## [Credits and 3rd parties](docs/Credits.md)

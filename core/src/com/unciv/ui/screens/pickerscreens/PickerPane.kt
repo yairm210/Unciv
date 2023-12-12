@@ -7,9 +7,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup
 import com.unciv.Constants
 import com.unciv.GUI
-import com.unciv.UncivGame
 import com.unciv.ui.images.IconTextButton
-import com.unciv.ui.components.AutoScrollPane
+import com.unciv.ui.components.widgets.AutoScrollPane
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.components.extensions.disable
 import com.unciv.ui.components.extensions.enable
@@ -20,7 +19,8 @@ import com.unciv.ui.components.extensions.toTextButton
 class PickerPane(
     disableScroll: Boolean = false,
 ) : Table() {
-    /** The close button on the lower left of [bottomTable], see [setDefaultCloseAction] */
+    /** The close button on the lower left of [bottomTable], see [PickerScreen.setDefaultCloseAction].
+     *  Note if you don't use that helper, you'll need to do both click and keyboard support yourself. */
     val closeButton = Constants.close.toTextButton()
     /** A scrollable wrapped Label you can use to show descriptions in the [bottomTable], starts empty */
     val descriptionLabel = "".toLabel()

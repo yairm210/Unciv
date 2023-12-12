@@ -14,10 +14,11 @@ import com.unciv.logic.map.MapShape
 import com.unciv.logic.map.MapSize
 import com.unciv.logic.map.MapSizeNew
 import com.unciv.logic.map.MapType
-import com.unciv.ui.components.ExpanderTab
-import com.unciv.ui.components.UncivSlider
+import com.unciv.ui.components.widgets.ExpanderTab
+import com.unciv.ui.components.widgets.TranslatedSelectBox
+import com.unciv.ui.components.widgets.UncivSlider
 import com.unciv.ui.components.UncivTextField
-import com.unciv.ui.components.WrappableLabel
+import com.unciv.ui.components.widgets.WrappableLabel
 import com.unciv.ui.components.input.onChange
 import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.extensions.pad

@@ -14,6 +14,7 @@ class GreatPersonPickerScreen(val civInfo:Civilization) : PickerScreen() {
     private var theChosenOne: BaseUnit? = null
 
     init {
+        UncivGame.Current.settings.autoPlay.stopAutoPlay()
         closeButton.isVisible = false
         rightSideButton.setText("Choose a free great person".tr())
 
@@ -43,8 +44,8 @@ class GreatPersonPickerScreen(val civInfo:Civilization) : PickerScreen() {
 
     }
 
-    private fun confirmAction(useMayaLongCount: Boolean){
-        civInfo.units.addUnit(theChosenOne!!.name, civInfo.getCapital())
+    private fun confirmAction(useMayaLongCount: Boolean) {
+        civInfo.units.addUnit(theChosenOne!!, civInfo.getCapital())
         civInfo.greatPeople.freeGreatPeople--
         if (useMayaLongCount) {
             civInfo.greatPeople.mayaLimitedFreeGP--

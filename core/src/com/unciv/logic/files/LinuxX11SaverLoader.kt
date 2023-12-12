@@ -4,7 +4,14 @@ import com.badlogic.gdx.Gdx
 import com.unciv.UncivGame
 import com.unciv.utils.Concurrency
 import java.awt.GraphicsEnvironment
+import java.io.File
 
+
+/**
+ *  A dedicated PlatformSaverLoader for X11-based Linux boxes, as using the Java AWT/Swing file chooser dialog will kill the App after closing that dialog
+ *
+ *  Tested as required from Mint 20.1 up to Mint 21.2, seems independent of Java runtime (mostly tested with adoptium temurin 11 and 17 versions).
+ */
 class LinuxX11SaverLoader : PlatformSaverLoader {
     override fun saveGame(
         data: String,
@@ -13,15 +20,21 @@ class LinuxX11SaverLoader : PlatformSaverLoader {
         onError: (ex: Exception) -> Unit
     ) {
         Concurrency.runOnGLThread {
-            FileChooser.createSaveDialog(stage, "Save game", Gdx.files.absolute(suggestedLocation)) {
+            val startLocation =
+                if (suggestedLocation.startsWith(File.separator)) Gdx.files.absolute(suggestedLocation)
+                else if (Gdx.files.external(suggestedLocation).parent().exists()) Gdx.files.external(suggestedLocation)
+                else Gdx.files.local(suggestedLocation)
+            FileChooser.createSaveDialog(stage, "Save game", startLocation) {
                 success, file ->
-                if (!success) return@createSaveDialog
-                try {
-                    file.writeString(data, false, "UTF-8")
-                    onSaved(file.path())
-                } catch (ex: Exception) {
-                    onError(ex)
-                }
+                if (!success)
+                    onError(PlatformSaverLoader.Cancelled())
+                else
+                    try {
+                        file.writeString(data, false, Charsets.UTF_8.name())
+                        onSaved(file.path())
+                    } catch (ex: Exception) {
+                        onError(ex)
+                    }
             }.open(true)
         }
     }
@@ -32,13 +45,15 @@ class LinuxX11SaverLoader : PlatformSaverLoader {
     ) {
         Concurrency.runOnGLThread {
             FileChooser.createLoadDialog(stage, "Load game") { success, file ->
-                if (!success) return@createLoadDialog
-                try {
-                    val data = file.readString("UTF-8")
-                    onLoaded(data, file.path())
-                } catch (ex: Exception) {
-                    onError(ex)
-                }
+                if (!success)
+                    onError(PlatformSaverLoader.Cancelled())
+                else
+                    try {
+                        val data = file.readString(Charsets.UTF_8.name())
+                        onLoaded(data, file.path())
+                    } catch (ex: Exception) {
+                        onError(ex)
+                    }
             }.open(true)
         }
     }

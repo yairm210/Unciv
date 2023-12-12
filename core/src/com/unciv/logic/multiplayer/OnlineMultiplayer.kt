@@ -19,10 +19,13 @@ import com.unciv.utils.debug
 import com.unciv.utils.launchOnThreadPool
 import com.unciv.utils.withGLContext
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.isActive
 import java.time.Duration
 import java.time.Instant
 import java.util.Collections
@@ -51,12 +54,18 @@ class OnlineMultiplayer {
     private val lastCurGameRefresh: AtomicReference<Instant?> = AtomicReference()
 
     val games: Set<OnlineMultiplayerGame> get() = savedGames.values.toSet()
+    val multiplayerGameUpdater: Job
 
     init {
-        flow<Unit> {
+        /** We have 2 'async processes' that update the multiplayer games:
+         * A. This one, which as part of *this process* runs refreshes for all OS's
+         * B. MultiplayerTurnCheckWorker, which *as an Android worker* runs refreshes *even when the game is closed*.
+         *    Only for Android, obviously
+         */
+        multiplayerGameUpdater = flow<Unit> {
             while (true) {
                 delay(500)
-
+                if (!currentCoroutineContext().isActive) return@flow
                 val currentGame = getCurrentGame()
                 val multiplayerSettings = UncivGame.Current.settings.multiplayer
                 val preview = currentGame?.preview
@@ -134,8 +143,7 @@ class OnlineMultiplayer {
      */
     suspend fun addGame(gameId: String, gameName: String? = null) {
         val saveFileName = if (gameName.isNullOrBlank()) gameId else gameName
-        var gamePreview: GameInfoPreview
-        gamePreview = try {
+        val gamePreview: GameInfoPreview = try {
             multiplayerServer.tryDownloadGamePreview(gameId)
         } catch (_: MultiplayerFileNotFoundException) {
             // Game is so old that a preview could not be found on dropbox lets try the real gameInfo instead
@@ -233,9 +241,10 @@ class OnlineMultiplayer {
         val onlinePreview = onlineGame?.preview
         if (onlineGame == null) {
             createGame(gameInfo)
-        } else if (onlinePreview != null && hasNewerGameState(preview, onlinePreview)){
+        } else if (onlinePreview != null && hasNewerGameState(preview, onlinePreview)) {
             onlineGame.doManualUpdate(preview)
         }
+        UncivGame.Current.settings.autoPlay.stopAutoPlay()
         UncivGame.Current.loadGame(gameInfo)
     }
 
@@ -393,4 +402,4 @@ suspend fun <T> attemptAction(
 
 
 fun GameInfoPreview.isUsersTurn() = getCivilization(currentPlayer).playerId == UncivGame.Current.settings.multiplayer.userId
-fun GameInfo.isUsersTurn() = getCivilization(currentPlayer).playerId == UncivGame.Current.settings.multiplayer.userId
+fun GameInfo.isUsersTurn() = currentPlayer.isNotEmpty() && getCivilization(currentPlayer).playerId == UncivGame.Current.settings.multiplayer.userId

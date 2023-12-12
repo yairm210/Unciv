@@ -10,8 +10,8 @@ import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.StatMap
-import com.unciv.ui.components.TabbedPager
-import com.unciv.ui.components.UncivSlider
+import com.unciv.ui.components.widgets.TabbedPager
+import com.unciv.ui.components.widgets.UncivSlider
 import com.unciv.ui.components.extensions.addSeparator
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.images.ImageGetter
@@ -204,8 +204,8 @@ class StatsOverviewTab(
 
         val greatPersonPoints = viewingPlayer.greatPeople.greatPersonPointsCounter
         val greatPersonPointsPerTurn = viewingPlayer.greatPeople.getGreatPersonPointsForNextTurn()
-        val pointsToGreatPerson = viewingPlayer.greatPeople.getPointsRequiredForGreatPerson()
         for ((greatPerson, points) in greatPersonPoints) {
+            val pointsToGreatPerson = viewingPlayer.greatPeople.getPointsRequiredForGreatPerson(greatPerson)
             add(greatPerson.toLabel()).left()
             add("$points/$pointsToGreatPerson".toLabel())
             add(greatPersonPointsPerTurn[greatPerson].toLabel()).right().row()

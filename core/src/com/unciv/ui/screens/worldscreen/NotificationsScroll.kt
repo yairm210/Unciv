@@ -13,9 +13,9 @@ import com.badlogic.gdx.utils.Align
 import com.unciv.GUI
 import com.unciv.logic.civilization.Notification
 import com.unciv.logic.civilization.NotificationCategory
-import com.unciv.ui.components.AutoScrollPane as ScrollPane
-import com.unciv.ui.components.ColorMarkupLabel
-import com.unciv.ui.components.WrappableLabel
+import com.unciv.ui.components.widgets.AutoScrollPane as ScrollPane
+import com.unciv.ui.components.widgets.ColorMarkupLabel
+import com.unciv.ui.components.widgets.WrappableLabel
 import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.extensions.packIfNeeded
 import com.unciv.ui.components.extensions.surroundWithCircle
@@ -238,7 +238,7 @@ class NotificationsScroll(
         val backgroundDrawable = BaseScreen.skinStrings.getUiBackground("WorldScreen/Notification", BaseScreen.skinStrings.roundedEdgeRectangleShape)
 
         val orderedNotifications = (additionalNotification + notifications.asReversed())
-            .groupBy { NotificationCategory.safeValueOf(it.category) ?: NotificationCategory.General }
+            .groupBy { it.category }
             .toSortedMap()  // This sorts by Category ordinal, so far intentional - the order of the grouped lists are unaffected
         for ((category, categoryNotifications) in orderedNotifications) {
             if (category == NotificationCategory.General)
@@ -351,7 +351,7 @@ class NotificationsScroll(
             add(listItem).pad(topBottomPad, listItemPad, topBottomPad, rightPadToScreenEdge)
             touchable = Touchable.enabled
             onClick {
-                notification.action?.execute(worldScreen)
+                notification.execute(worldScreen)
                 clickedNotification = notification
                 GUI.setUpdateWorldOnNextRender()
             }

@@ -12,7 +12,7 @@ import com.unciv.models.Religion
 import com.unciv.models.ruleset.Belief
 import com.unciv.models.translations.fillPlaceholders
 import com.unciv.models.translations.tr
-import com.unciv.ui.components.ExpanderTab
+import com.unciv.ui.components.widgets.ExpanderTab
 import com.unciv.ui.screens.civilopediascreen.CivilopediaScreen
 import com.unciv.ui.screens.civilopediascreen.MarkupRenderer
 import com.unciv.ui.images.ImageGetter
@@ -91,7 +91,7 @@ class ReligionOverviewTab(
 
         if (manager.canGenerateProphet(ignoreFaithAmount = true)) {
             add("Minimal Faith required for\nthe next [great prophet equivalent]:"
-                .fillPlaceholders(manager.getGreatProphetEquivalent()!!)
+                .fillPlaceholders(manager.getGreatProphetEquivalent()!!.name)
                 .toLabel()
             )
             add(

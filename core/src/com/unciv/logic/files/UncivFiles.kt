@@ -3,6 +3,7 @@ package com.unciv.logic.files
 import com.badlogic.gdx.Files
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.files.FileHandle
+import com.badlogic.gdx.utils.GdxRuntimeException
 import com.badlogic.gdx.utils.JsonReader
 import com.badlogic.gdx.utils.SerializationException
 import com.unciv.UncivGame
@@ -21,9 +22,9 @@ import com.unciv.ui.screens.savescreens.Gzip
 import com.unciv.utils.Concurrency
 import com.unciv.utils.Log
 import com.unciv.utils.debug
-import kotlinx.coroutines.Job
 import java.io.File
 import java.io.Writer
+import kotlinx.coroutines.Job
 
 private const val SAVE_FILES_FOLDER = "SaveFiles"
 private const val MULTIPLAYER_FILES_FOLDER = "MultiplayerGames"
@@ -84,7 +85,7 @@ class UncivFiles(
         } else {
             files.local(path)
         }
-        return file.writer(append)
+        return file.writer(append, Charsets.UTF_8.name())
     }
 
     fun getMultiplayerSaves(): Sequence<FileHandle> {
@@ -158,7 +159,7 @@ class UncivFiles(
         try {
             debug("Saving GameInfo %s to %s", game.gameId, file.path())
             val string = gameInfoToString(game)
-            file.writeString(string, false)
+            file.writeString(string, false, Charsets.UTF_8.name())
             saveCompletionCallback(null)
         } catch (ex: Exception) {
             saveCompletionCallback(ex)
@@ -198,12 +199,13 @@ class UncivFiles(
         game: GameInfo,
         gameName: String,
         onSaved: () -> Unit,
-        onError: (Exception) -> Unit) {
+        onError: (Exception) -> Unit
+    ) {
         val saveLocation = game.customSaveLocation ?: Gdx.files.local(gameName).path()
 
         try {
             val data = gameInfoToString(game)
-            debug("Saving GameInfo %s to custom location %s", game.gameId, saveLocation)
+            debug("Initiating UI to save GameInfo %s to custom location %s", game.gameId, saveLocation)
             saverLoader.saveGame(data, saveLocation,
                 { location ->
                     game.customSaveLocation = location
@@ -226,7 +228,7 @@ class UncivFiles(
             loadGameFromFile(getSave(gameName))
 
     fun loadGameFromFile(gameFile: FileHandle): GameInfo {
-        val gameData = gameFile.readString()
+        val gameData = gameFile.readString(Charsets.UTF_8.name())
         if (gameData.isNullOrBlank()) {
             throw emptyFile(gameFile)
         }
@@ -304,7 +306,7 @@ class UncivFiles(
     }
 
     fun setGeneralSettings(gameSettings: GameSettings) {
-        getGeneralSettingsFile().writeString(json().toJson(gameSettings), false)
+        getGeneralSettingsFile().writeString(json().toJson(gameSettings), false, Charsets.UTF_8.name())
     }
 
     companion object {
@@ -371,7 +373,7 @@ class UncivFiles(
         }
 
         /** Returns gzipped serialization of [game], optionally gzipped ([forceZip] overrides [saveZipped]) */
-        fun gameInfoToString(game: GameInfo, forceZip: Boolean? = null, updateChecksum:Boolean=true): String {
+        fun gameInfoToString(game: GameInfo, forceZip: Boolean? = null, updateChecksum:Boolean=false): String {
             game.version = GameInfo.CURRENT_COMPATIBILITY_VERSION
 
             if (updateChecksum) game.checksum = game.calculateChecksum()

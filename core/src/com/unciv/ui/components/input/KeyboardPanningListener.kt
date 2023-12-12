@@ -1,13 +1,13 @@
 package com.unciv.ui.components.input
 
 import com.badlogic.gdx.Gdx
-import com.badlogic.gdx.Input
 import com.badlogic.gdx.scenes.scene2d.InputEvent
 import com.badlogic.gdx.scenes.scene2d.InputListener
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.badlogic.gdx.scenes.scene2d.actions.RepeatAction
 import com.badlogic.gdx.scenes.scene2d.ui.TextField
-import com.unciv.ui.components.ZoomableScrollPane
+import com.unciv.ui.components.extensions.isControlKeyPressed
+import com.unciv.ui.components.widgets.ZoomableScrollPane
 
 class KeyboardPanningListener(
     private val mapHolder: ZoomableScrollPane,
@@ -20,9 +20,19 @@ class KeyboardPanningListener(
 
     private val pressedKeys = mutableSetOf<Int>()
     private var infiniteAction: RepeatAction? = null
+
+    private val keycodeUp = KeyboardBindings[KeyboardBinding.PanUp].code
+    private val keycodeLeft = KeyboardBindings[KeyboardBinding.PanLeft].code
+    private val keycodeDown = KeyboardBindings[KeyboardBinding.PanDown].code
+    private val keycodeRight = KeyboardBindings[KeyboardBinding.PanRight].code
+    private val keycodeUpAlt = KeyboardBindings[KeyboardBinding.PanUpAlternate].code
+    private val keycodeLeftAlt = KeyboardBindings[KeyboardBinding.PanLeftAlternate].code
+    private val keycodeDownAlt = KeyboardBindings[KeyboardBinding.PanDownAlternate].code
+    private val keycodeRightAlt = KeyboardBindings[KeyboardBinding.PanRightAlternate].code
+
     private val allowedKeys =
-            setOf(Input.Keys.UP, Input.Keys.DOWN, Input.Keys.LEFT, Input.Keys.RIGHT) + (
-                if (allowWASD) setOf(Input.Keys.W, Input.Keys.S, Input.Keys.A, Input.Keys.D)
+            setOf(keycodeUp, keycodeLeft, keycodeDown, keycodeRight) + (
+                if (allowWASD) setOf(keycodeUpAlt, keycodeLeftAlt, keycodeDownAlt, keycodeRightAlt)
                 else setOf()
             )
 
@@ -30,9 +40,8 @@ class KeyboardPanningListener(
         if (event.target is TextField) return false
         if (keycode !in allowedKeys) return false
         // Without the following Ctrl-S would leave WASD map scrolling stuck
-        // Might be obsolete with keyboard shortcut refactoring
-        if (Gdx.input.isKeyPressed(Input.Keys.CONTROL_LEFT)) return false
-        if (Gdx.input.isKeyPressed(Input.Keys.CONTROL_RIGHT)) return false
+        // _Not_ obsolete with keyboard shortcut refactoring
+        if (Gdx.input.isControlKeyPressed()) return false
         pressedKeys.add(keycode)
         startLoop()
         return true
@@ -70,10 +79,10 @@ class KeyboardPanningListener(
         var deltaY = 0f
         for (keycode in pressedKeys) {
             when (keycode) {
-                Input.Keys.W, Input.Keys.UP -> deltaY -= 1f
-                Input.Keys.S, Input.Keys.DOWN -> deltaY += 1f
-                Input.Keys.A, Input.Keys.LEFT -> deltaX += 1f
-                Input.Keys.D, Input.Keys.RIGHT -> deltaX -= 1f
+                keycodeUp, keycodeUpAlt -> deltaY -= 1f
+                keycodeDown, keycodeDownAlt -> deltaY += 1f
+                keycodeLeft, keycodeLeftAlt -> deltaX += 1f
+                keycodeRight, keycodeRightAlt -> deltaX -= 1f
             }
         }
         mapHolder.doKeyOrMousePanning(deltaX, deltaY)

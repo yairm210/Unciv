@@ -12,14 +12,16 @@ import com.unciv.models.ruleset.unique.LocalUniqueCache
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stats
 import com.unciv.models.translations.tr
-import com.unciv.ui.components.Fonts
 import com.unciv.ui.components.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.components.extensions.disable
+import com.unciv.ui.components.extensions.toLabel
+import com.unciv.ui.components.extensions.toTextButton
+import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.components.input.keyShortcuts
 import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.input.onDoubleClick
-import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.images.ImageGetter
+import com.unciv.ui.screens.cityscreen.CityScreen
 import kotlin.math.roundToInt
 
 class ImprovementPickerScreen(
@@ -29,16 +31,8 @@ class ImprovementPickerScreen(
 ) : PickerScreen() {
 
     companion object {
-        /** Set of resolvable improvement building problems that this class knows how to report. */
-        private val reportableProblems = setOf(
-            ImprovementBuildingProblem.MissingTech,
-            ImprovementBuildingProblem.NotJustOutsideBorders,
-            ImprovementBuildingProblem.OutsideBorders,
-            ImprovementBuildingProblem.MissingResources
-        )
-
         /** Return true if we can report improvements associated with the [problems] (or there are no problems for it at all). */
-        fun canReport(problems: Collection<ImprovementBuildingProblem>) = problems.all { it in reportableProblems }
+        fun canReport(problems: Collection<ImprovementBuildingProblem>) = problems.all { it.reportable }
     }
 
     private var selectedImprovement: TileImprovement? = null
@@ -89,7 +83,7 @@ class ImprovementPickerScreen(
         for (improvement in ruleSet.tileImprovements.values) {
             var suggestRemoval = false
             // canBuildImprovement() would allow e.g. great improvements thus we need to exclude them - except cancel
-            if (improvement.turnsToBuild == 0 && improvement.name != Constants.cancelImprovementOrder) continue
+            if (improvement.turnsToBuild == -1 && improvement.name != Constants.cancelImprovementOrder) continue
             if (improvement.name == tile.improvement) continue // also checked by canImprovementBeBuiltHere, but after more expensive tests
             if (!unit.canBuildImprovement(improvement)) continue
 
@@ -143,7 +137,7 @@ class ImprovementPickerScreen(
                 proposedSolutions.add("Have this tile inside your empire")
             if (ImprovementBuildingProblem.MissingResources in unbuildableBecause) {
                 proposedSolutions.addAll(improvement.getMatchingUniques(UniqueType.ConsumesResources).filter {
-                    currentPlayerCiv.getCivResourcesByName()[it.params[1]]!! < it.params[0].toInt()
+                    currentPlayerCiv.getResourceAmount(it.params[1]) < it.params[0].toInt()
                 }.map { "Acquire more [$it]" })
             }
 
@@ -157,23 +151,23 @@ class ImprovementPickerScreen(
             val statIcons = getStatIconsTable(provideResource, removeImprovement)
 
             // get benefits of the new improvement
-            val stats = tile.stats.getImprovementStats(
+            val stats = tile.stats.getStatDiffForImprovement(
                 improvement,
                 currentPlayerCiv,
                 tile.getCity(),
                 cityUniqueCache
             )
-            // subtract the benefits of the replaced improvement, if any
-            val existingImprovement = tile.getTileImprovement()
-            if (existingImprovement != null && removeImprovement) {
-                val existingStats = tile.stats.getImprovementStats(
-                    existingImprovement,
-                    currentPlayerCiv,
-                    tile.getCity(),
-                    cityUniqueCache
-                )
-                stats.add(existingStats.times(-1.0f))
-            }
+
+            //Warn when the current improvement will increase a stat for the tile,
+            // but the tile is outside of the range (> 3 tiles from city center) that can be
+            // worked by a city's population
+            if (tile.owningCity != null
+                && !improvement.isRoad()
+                    && stats.values.any { it > 0f }
+                    && !improvement.name.startsWith(Constants.remove)
+                    && !tile.owningCity!!.getWorkableTiles().contains(tile)
+            )
+                labelText += "\n" + "Not in city work range".tr()
 
             val statsTable = getStatsTable(stats)
             statIcons.add(statsTable).padLeft(13f)
@@ -203,6 +197,22 @@ class ImprovementPickerScreen(
             regularImprovements.row()
         }
 
+        val ownerTable = Table()
+        if (tile.getOwner() == null) {
+            ownerTable.add("Unowned tile".toLabel())
+        } else if (tile.getOwner()!!.isCurrentPlayer()) {
+            val button = tile.getCity()!!.name.toTextButton(hideIcons = true)
+            button.onClick {
+                this.game.pushScreen(CityScreen(tile.getCity()!!,null,tile))
+            }
+            ownerTable.add("Tile owned by [${tile.getOwner()!!.civName}] (You)".toLabel()).padLeft(10f)
+            ownerTable.add(button).padLeft(20f)
+        } else {
+            ownerTable.add("Tile owned by [${tile.getOwner()!!.civName}] - [${tile.getCity()!!.name}]".toLabel()).padLeft(10f)
+        }
+
+        topTable.add(ownerTable)
+        topTable.row()
         topTable.add(regularImprovements)
     }
 

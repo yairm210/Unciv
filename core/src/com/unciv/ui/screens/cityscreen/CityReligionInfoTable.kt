@@ -14,11 +14,12 @@ import com.unciv.ui.images.Portrait
 import com.unciv.ui.screens.overviewscreen.EmpireOverviewCategories
 import com.unciv.ui.screens.overviewscreen.EmpireOverviewScreen
 import com.unciv.ui.screens.basescreen.BaseScreen
-import com.unciv.ui.components.ExpanderTab
+import com.unciv.ui.components.widgets.ExpanderTab
 import com.unciv.ui.components.extensions.addSeparator
 import com.unciv.ui.components.extensions.addSeparatorVertical
 import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.extensions.toLabel
+import com.unciv.ui.components.input.KeyboardBinding
 
 class CityReligionInfoTable(
     private val religionManager: CityReligionManager,
@@ -103,6 +104,7 @@ class CityReligionInfoTable(
                 defaultPad = 0f,
                 persistenceID = "CityStatsTable.Religion",
                 startsOutOpened = false,
+                toggleKey = KeyboardBinding.ReligionDetail,
                 onChange = onChange
             ) {
                 defaults().center().pad(5f)

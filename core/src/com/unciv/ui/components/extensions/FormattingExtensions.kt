@@ -2,7 +2,7 @@ package com.unciv.ui.components.extensions
 
 import com.badlogic.gdx.math.Vector2
 import com.unciv.models.translations.tr
-import com.unciv.ui.components.Fonts
+import com.unciv.ui.components.fonts.Fonts
 import java.text.SimpleDateFormat
 import java.time.Duration
 import java.time.temporal.ChronoUnit
@@ -28,6 +28,7 @@ fun String.getConsumesAmountString(amount: Int, isStockpiled:Boolean): String {
 /** Convert a [resource name][this] into "Need [amount] more $resource" string (untranslated) */
 fun String.getNeedMoreAmountString(amount: Int) = "Need [$amount] more [$this]"
 
+// todo: There's a few other `if (>0) "+" else ""` around, and a DecimalFormat solution in DetailedStatsPopup: unify
 fun Int.toStringSigned() = if (this > 0) "+$this" else this.toString()
 
 /** Formats the [Duration] into a translated string */

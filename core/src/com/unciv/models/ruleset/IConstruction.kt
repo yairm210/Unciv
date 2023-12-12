@@ -10,17 +10,18 @@ import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.INamed
 import com.unciv.models.stats.Stat
-import com.unciv.ui.components.Fonts
 import com.unciv.ui.components.extensions.toPercent
+import com.unciv.ui.components.fonts.Fonts
 import kotlin.math.pow
 import kotlin.math.roundToInt
 
 interface IConstruction : INamed {
     fun isBuildable(cityConstructions: CityConstructions): Boolean
     fun shouldBeDisplayed(cityConstructions: CityConstructions): Boolean
-    /** Gets *per turn* resource requirements - does not include immediate costs for stockpiled resources */
-    fun getResourceRequirementsPerTurn(): Counter<String>
-    fun requiresResource(resource: String): Boolean
+    /** Gets *per turn* resource requirements - does not include immediate costs for stockpiled resources.
+     * Uses [stateForConditionals] to determine which civ or city this is built for*/
+    fun getResourceRequirementsPerTurn(stateForConditionals: StateForConditionals? = null): Counter<String>
+    fun requiresResource(resource: String, stateForConditionals: StateForConditionals? = null): Boolean
     /** We can't call this getMatchingUniques because then it would conflict with IHasUniques */
     fun getMatchingUniquesNotConflicting(uniqueType: UniqueType) = sequenceOf<Unique>()
 }
@@ -28,7 +29,12 @@ interface IConstruction : INamed {
 interface INonPerpetualConstruction : IConstruction, INamed, IHasUniques {
     var cost: Int
     val hurryCostModifier: Int
+    // Future development should not increase the role of requiredTech, and should reduce it when possible.
+    // https://yairm210.github.io/Unciv/Developers/Translations%2C-mods%2C-and-modding-freedom-in-Open-Source#filters
+    @Deprecated("The functionality provided by the requiredTech field is provided by the OnlyAvailableWhen unique.")
     var requiredTech: String?
+
+    override fun legacyRequiredTechs(): Sequence<String> = if (requiredTech == null) sequenceOf() else sequenceOf(requiredTech!!)
 
     fun getProductionCost(civInfo: Civilization): Int
     fun getStatBuyCost(city: City, stat: Stat): Int?
@@ -39,17 +45,18 @@ interface INonPerpetualConstruction : IConstruction, INamed, IHasUniques {
 
     /** Only checks if it has the unique to be bought with this stat, not whether it is purchasable at all */
     fun canBePurchasedWithStat(city: City?, stat: Stat): Boolean {
+        val stateForConditionals = StateForConditionals(city?.civ, city)
         if (stat == Stat.Production || stat == Stat.Happiness) return false
-        if (hasUnique(UniqueType.CannotBePurchased)) return false
-        if (stat == Stat.Gold) return !hasUnique(UniqueType.Unbuildable)
+        if (hasUnique(UniqueType.CannotBePurchased, stateForConditionals)) return false
         // Can be purchased with [Stat] [cityFilter]
-        if (city != null && getMatchingUniques(UniqueType.CanBePurchasedWithStat)
+        if (city != null && getMatchingUniques(UniqueType.CanBePurchasedWithStat, stateForConditionals)
             .any { it.params[0] == stat.name && city.matchesFilter(it.params[1]) }
         ) return true
         // Can be purchased for [amount] [Stat] [cityFilter]
-        if (city != null && getMatchingUniques(UniqueType.CanBePurchasedForAmountStat)
+        if (city != null && getMatchingUniques(UniqueType.CanBePurchasedForAmountStat, stateForConditionals)
             .any { it.params[1] == stat.name && city.matchesFilter(it.params[2]) }
         ) return true
+        if (stat == Stat.Gold) return !hasUnique(UniqueType.Unbuildable, stateForConditionals)
         return false
     }
 
@@ -63,26 +70,31 @@ interface INonPerpetualConstruction : IConstruction, INamed, IHasUniques {
         return Stat.values().any { canBePurchasedWithStat(city, it) }
     }
 
+    fun getCivilopediaGoldCost(): Int {
+        // Same as getBaseGoldCost, but without game-specific modifiers
+        return ((30.0 * cost.toFloat()).pow(0.75) * hurryCostModifier.toPercent() / 10).toInt() * 10
+    }
+
     fun getBaseGoldCost(civInfo: Civilization): Double {
         // https://forums.civfanatics.com/threads/rush-buying-formula.393892/
         return (30.0 * getProductionCost(civInfo)).pow(0.75) * hurryCostModifier.toPercent()
     }
 
-    fun getBaseBuyCost(city: City, stat: Stat): Int? {
-        if (stat == Stat.Gold) return getBaseGoldCost(city.civ).toInt()
-
+    fun getBaseBuyCost(city: City, stat: Stat): Float? {
         val conditionalState = StateForConditionals(civInfo = city.civ, city = city)
 
         // Can be purchased for [amount] [Stat] [cityFilter]
         val lowestCostUnique = getMatchingUniques(UniqueType.CanBePurchasedForAmountStat, conditionalState)
             .filter { it.params[1] == stat.name && city.matchesFilter(it.params[2]) }
             .minByOrNull { it.params[0].toInt() }
-        if (lowestCostUnique != null) return lowestCostUnique.params[0].toInt()
+        if (lowestCostUnique != null) return lowestCostUnique.params[0].toInt() * city.civ.gameInfo.speed.statCostModifiers[stat]!!
+
+        if (stat == Stat.Gold) return getBaseGoldCost(city.civ).toFloat()
 
         // Can be purchased with [Stat] [cityFilter]
         if (getMatchingUniques(UniqueType.CanBePurchasedWithStat, conditionalState)
             .any { it.params[0] == stat.name && city.matchesFilter(it.params[1]) }
-        ) return city.civ.getEra().baseUnitBuyCost
+        ) return city.civ.getEra().baseUnitBuyCost * city.civ.gameInfo.speed.statCostModifiers[stat]!!
         return null
     }
 
@@ -201,7 +213,6 @@ enum class RejectionReasonType(val shouldShow: Boolean, val errorMessage: String
     }
 }
 
-
 open class PerpetualConstruction(override var name: String, val description: String) :
     IConstruction {
 
@@ -219,14 +230,17 @@ open class PerpetualConstruction(override var name: String, val description: Str
 
         val perpetualConstructionsMap: Map<String, PerpetualConstruction>
                 = mapOf(science.name to science, gold.name to gold, culture.name to culture, faith.name to faith, idle.name to idle)
+
+        /** @return whether [name] represents a PerpetualConstruction - note "" is translated to Nothing in the queue so `isNamePerpetual("")==true` */
+        fun isNamePerpetual(name: String) = name.isEmpty() || name in perpetualConstructionsMap
     }
 
     override fun isBuildable(cityConstructions: CityConstructions): Boolean =
             throw Exception("Impossible!")
 
-    override fun getResourceRequirementsPerTurn() = Counter.ZERO
+    override fun getResourceRequirementsPerTurn(stateForConditionals: StateForConditionals?) = Counter.ZERO
 
-    override fun requiresResource(resource: String) = false
+    override fun requiresResource(resource: String, stateForConditionals: StateForConditionals?) = false
 
 }
 

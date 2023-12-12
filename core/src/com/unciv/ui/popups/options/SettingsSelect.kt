@@ -7,8 +7,8 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener
 import com.badlogic.gdx.utils.Array
 import com.unciv.logic.event.EventBus
 import com.unciv.models.UncivSound
-import com.unciv.models.metadata.GameSetting
 import com.unciv.models.metadata.GameSettings
+import com.unciv.models.metadata.GameSettings.GameSetting
 import com.unciv.models.metadata.SettingsPropertyChanged
 import com.unciv.models.metadata.SettingsPropertyUncivSoundChanged
 import com.unciv.models.translations.tr

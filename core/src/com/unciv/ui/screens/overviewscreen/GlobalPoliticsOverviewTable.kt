@@ -16,9 +16,6 @@ import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.logic.map.HexMath
 import com.unciv.models.ruleset.Policy.PolicyBranchType
 import com.unciv.models.ruleset.unique.UniqueType
-import com.unciv.ui.components.AutoScrollPane
-import com.unciv.ui.components.ColorMarkupLabel
-import com.unciv.ui.components.Fonts
 import com.unciv.ui.components.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.components.extensions.addBorder
 import com.unciv.ui.components.extensions.addSeparator
@@ -26,7 +23,10 @@ import com.unciv.ui.components.extensions.addSeparatorVertical
 import com.unciv.ui.components.extensions.center
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
+import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.components.input.onClick
+import com.unciv.ui.components.widgets.AutoScrollPane
+import com.unciv.ui.components.widgets.ColorMarkupLabel
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.diplomacyscreen.DiplomacyScreen
@@ -94,7 +94,7 @@ class GlobalPoliticsOverviewTable (
     }
 
     private fun createGlobalPoliticsTable() {
-        for (civ in viewingPlayer.diplomacyFunctions.getKnownCivsSorted(includeSelf = true, includeCityStates = false)) {
+        for (civ in sequenceOf(viewingPlayer) + viewingPlayer.diplomacyFunctions.getKnownCivsSorted(includeCityStates = false)) {
             addSeparator(Color.GRAY)
 
             // civ image
@@ -187,9 +187,14 @@ class GlobalPoliticsOverviewTable (
         }
         politicsTable.row()
 
-        // declaration of friendships
+        // defensive pacts and declaration of friendships
         for (otherCiv in civ.getKnownCivs()) {
-            if (civ.diplomacy[otherCiv.civName]?.hasFlag(DiplomacyFlags.DeclarationOfFriendship) == true) {
+            if (civ.diplomacy[otherCiv.civName]?.hasFlag(DiplomacyFlags.DefensivePact) == true) {
+                val friendText = ColorMarkupLabel("Defensive pact with [${getCivName(otherCiv)}]", Color.CYAN)
+                val turnsLeftText = " (${civ.diplomacy[otherCiv.civName]?.getFlag(DiplomacyFlags.DefensivePact)} ${Fonts.turn})".toLabel()
+                politicsTable.add(friendText)
+                politicsTable.add(turnsLeftText).row()
+            } else if (civ.diplomacy[otherCiv.civName]?.hasFlag(DiplomacyFlags.DeclarationOfFriendship) == true) {
                 val friendText = ColorMarkupLabel("Friends with [${getCivName(otherCiv)}]", Color.GREEN)
                 val turnsLeftText = " (${civ.diplomacy[otherCiv.civName]?.getFlag(DiplomacyFlags.DeclarationOfFriendship)} ${Fonts.turn})".toLabel()
                 politicsTable.add(friendText)
@@ -212,7 +217,7 @@ class GlobalPoliticsOverviewTable (
         //allied CS
         for (cityState in gameInfo.getAliveCityStates()) {
             if (cityState.diplomacy[civ.civName]?.isRelationshipLevelEQ(RelationshipLevel.Ally) == true) {
-                val alliedText = ColorMarkupLabel("Allied with [${getCivName(cityState)}]", Color.GREEN)
+                val alliedText = ColorMarkupLabel("Allied with [${getCivName(cityState)}]", Color.CYAN)
                 politicsTable.add(alliedText).row()
             }
         }
@@ -249,8 +254,9 @@ class GlobalPoliticsOverviewTable (
             else gameInfo.civilizations.count {
                 !it.isSpectator() && !it.isBarbarian() && (persistableData.includeCityStates || !it.isCityState())
             }.toString()
-        undefeatedCivs = viewingPlayer.diplomacyFunctions.getKnownCivsSorted(includeSelf = true, persistableData.includeCityStates)
-        defeatedCivs = viewingPlayer.diplomacyFunctions.getKnownCivsSorted(includeSelf = true, persistableData.includeCityStates, true)
+        undefeatedCivs = sequenceOf(viewingPlayer) +
+                viewingPlayer.diplomacyFunctions.getKnownCivsSorted(persistableData.includeCityStates)
+        defeatedCivs = viewingPlayer.diplomacyFunctions.getKnownCivsSorted(persistableData.includeCityStates, true)
             .filter { it.isDefeated() }
 
         clear()
@@ -434,6 +440,10 @@ class GlobalPoliticsOverviewTable (
                         width = 2f)
 
                     statusLine.color = if (diplomacy.diplomaticStatus == DiplomaticStatus.War) Color.RED
+                    else if (diplomacy.diplomaticStatus == DiplomaticStatus.DefensivePact
+                        || (diplomacy.civInfo.isCityState() && diplomacy.civInfo.getAllyCiv() == diplomacy.otherCivName)
+                        || (diplomacy.otherCiv().isCityState() && diplomacy.otherCiv().getAllyCiv() == diplomacy.civInfo.civName)
+                    ) Color.CYAN
                     else diplomacy.relationshipLevel().color
 
                     if (!civLines.containsKey(civ.civName)) civLines[civ.civName] = mutableSetOf()

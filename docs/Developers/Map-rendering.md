@@ -4,8 +4,9 @@
 
 Images in LibGDX are displayed on screen by a SpriteBatch, which uses GL to bind textures to load them in-memory, and can then very quickly display them on-screen.
 The actually rendering is then very fast, but the binding process is slow.
-Therefore ideally we'd want as little bindings as possible, so the textures should contain as many images as possible.
+Therefore, ideally we'd want as little bindings as possible, so the textures should contain as many images as possible.
 This is why we compile images (ImagePacker.packImages()) into large PNGs.
+
 However, due to limitations in different chipsets etc, these images are limited to a maximum size of 2048*2048 pixels, and the game contains more images than would fit into a single square of that size.
 What we do, then, is separate them by category, and thus rendering proximity.
 The 'android' folder contains Images, but also various sub-categories - Images.Flags, Images.Tech, etc.
@@ -19,7 +20,7 @@ Each map tile is comprised of several layers, and each layer needs to be rendere
 For example, we don't want one tile's unit sprite to be overlayed by another's improvement.
 This layering is done in TileGroupMap, where we take the individual parts for all tiles, separate them into the layers, and add them all to one big group.
 This also has a performance advantage, since e.g. text and contruction images in the various city buttons are not rendered until the very end, and therefore swap per the number of of cities and not for every single tile.
-This also means that mods which add their own tilesets or unit sprites have better performance than 'render entire tile; would provide, since we first render all terrains, then all improvements, etc, 
+This also means that mods which add their own tilesets or unit sprites have better performance than 'render entire tile; would provide, since we first render all terrains, then all improvements, etc,
 so if my tileset provides all terrains, it won't be swapped out until we're done.
 
 ## Debugging

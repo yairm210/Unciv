@@ -2,23 +2,29 @@ package com.unciv.models.ruleset.unit
 
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetObject
-import com.unciv.models.ruleset.unique.UniqueFlag
 import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.tr
+import com.unciv.ui.objectdescriptions.uniquesToCivilopediaTextLines
+import com.unciv.ui.objectdescriptions.uniquesToDescription
 import com.unciv.ui.screens.civilopediascreen.FormattedLine
-
+import com.unciv.ui.screens.pickerscreens.PromotionPickerScreen
 
 class Promotion : RulesetObject() {
     var prerequisites = listOf<String>()
 
     var unitTypes = listOf<String>() // The json parser wouldn't agree to deserialize this as a list of UnitTypes. =(
 
-    /** Row of -1 determines that the modder has not set a position */
+    /** Used as **column** hint in the current [PromotionPickerScreen]
+     *  This is no longer a direct position, it is used to sort before an automatic distribution.
+     *  -1 determines that the modder has not set a position */
     var row = -1
+    /** Used as **row** hint in the current [PromotionPickerScreen]
+     *  This is no longer a direct position, it is used to sort before an automatic distribution.
+     */
     var column = 0
 
-    fun clone():Promotion {
+    fun clone(): Promotion {
         val newPromotion = Promotion()
 
         // RulesetObject fields
@@ -36,13 +42,11 @@ class Promotion : RulesetObject() {
     override fun getUniqueTarget() = UniqueTarget.Promotion
 
 
-    /** Used to describe a Promotion on the PromotionPickerScreen */
+    /** Used to describe a Promotion on the PromotionPickerScreen - fully translated */
     fun getDescription(promotionsForUnitType: Collection<Promotion>):String {
         val textList = ArrayList<String>()
 
-        for (unique in uniques) {
-            textList += unique.tr()
-        }
+        uniquesToDescription(textList)
 
         if (prerequisites.isNotEmpty()) {
             val prerequisitesString: ArrayList<String> = arrayListOf()
@@ -59,10 +63,7 @@ class Promotion : RulesetObject() {
     override fun getCivilopediaTextLines(ruleset: Ruleset): List<FormattedLine> {
         val textList = ArrayList<FormattedLine>()
 
-        uniqueObjects.forEach {
-            if (!it.hasFlag(UniqueFlag.HiddenToUsers))
-                textList += FormattedLine(it)
-        }
+        uniquesToCivilopediaTextLines(textList, leadingSeparator = null)
 
         val filteredPrerequisites = prerequisites.mapNotNull {
             ruleset.unitPromotions[it]
@@ -88,18 +89,21 @@ class Promotion : RulesetObject() {
             val types = unitTypes.partition { it in ruleset.units }
             if (unitTypes.size == 1) {
                 if (types.first.isNotEmpty())
-                    types.first.first().let {
-                        textList += FormattedLine("Available for [${it.tr()}]", link = "Unit/$it")
+                    unitTypes.first().let {
+                        textList += FormattedLine("Available for [$it]", link = "Unit/$it")
                     }
                 else
-                    textList += FormattedLine("Available for [${types.second.first().tr()}]")
+                    unitTypes.first().let {
+                        textList += FormattedLine("Available for [$it]", link = "UnitType/$it")
+                    }
+
             } else {
                 textList += FormattedLine("Available for:")
                 types.first.forEach {
                     textList += FormattedLine(it, indent = 1, link = "Unit/$it")
                 }
                 types.second.forEach {
-                    textList += FormattedLine(it, indent = 1)
+                    textList += FormattedLine(it, indent = 1, link = "UnitType/$it")
                 }
             }
         }
@@ -142,5 +146,28 @@ class Promotion : RulesetObject() {
         }
 
         return textList
+    }
+
+    companion object {
+        data class PromotionBaseNameAndLevel(
+            val nameWithoutBrackets: String,
+            val level: Int,
+            val basePromotionName: String
+        )
+        /** Split a promotion name into base and level, e.g. "Drill II" -> 2 to "Drill"
+         *
+         *  Used by Portrait (where it only has the string, the Promotion object is forgotten) and
+         *  PromotionPickerScreen. Here to allow clear "Promotion.getBaseNameAndLevel" signature.
+         */
+        fun getBaseNameAndLevel(promotionName: String): PromotionBaseNameAndLevel {
+            val nameWithoutBrackets = promotionName.replace("[", "").replace("]", "")
+            val level = when {
+                nameWithoutBrackets.endsWith(" I") -> 1
+                nameWithoutBrackets.endsWith(" II") -> 2
+                nameWithoutBrackets.endsWith(" III") -> 3
+                else -> 0
+            }
+            return PromotionBaseNameAndLevel(nameWithoutBrackets, level, nameWithoutBrackets.dropLast(if (level == 0) 0 else level + 1))
+        }
     }
 }

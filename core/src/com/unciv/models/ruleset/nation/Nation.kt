@@ -2,18 +2,19 @@ package com.unciv.models.ruleset.nation
 
 import com.badlogic.gdx.graphics.Color
 import com.unciv.Constants
+import com.unciv.logic.MultiFilter
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetObject
-import com.unciv.models.ruleset.unique.UniqueFlag
 import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.squareBraceRegex
 import com.unciv.models.translations.tr
-import com.unciv.ui.components.Fonts
 import com.unciv.ui.components.extensions.colorFromRGB
+import com.unciv.ui.objectdescriptions.BaseUnitDescriptions
+import com.unciv.ui.objectdescriptions.BuildingDescriptions
+import com.unciv.ui.objectdescriptions.uniquesToCivilopediaTextLines
 import com.unciv.ui.screens.civilopediascreen.CivilopediaScreen.Companion.showReligionInCivilopedia
 import com.unciv.ui.screens.civilopediascreen.FormattedLine
-import com.unciv.ui.objectdescriptions.BaseUnitDescriptions
 import kotlin.math.pow
 
 class Nation : RulesetObject() {
@@ -26,13 +27,22 @@ class Nation : RulesetObject() {
 
     var cityStateType: String? = null
     var preferredVictoryType: String = Constants.neutralVictoryType
-    var declaringWar = ""
-    var attacked = ""
-    var defeated = ""
-    var introduction = ""
-    var tradeRequest = ""
 
+    /// The following all have audio hooks to play corresponding leader
+    /// voice clips - named <civName>.<fieldName>, e.g. "America.defeated.ogg"
+    /** Shown for AlertType.WarDeclaration, when other Civs declare war on a player */
+    var declaringWar = ""
+    /** Shown in DiplomacyScreen when a player declares war */
+    var attacked = ""
+    /** Shown for AlertType.Defeated */
+    var defeated = ""
+    /** Shown for AlertType.FirstContact */
+    var introduction = ""
+    /** Shown in TradePopup when other Civs initiate trade with a player */
+    var tradeRequest = ""
+    /** Shown in DiplomacyScreen when a player contacts another major civ with RelationshipLevel.Afraid or better */
     var neutralHello = ""
+    /** Shown in DiplomacyScreen when a player contacts another major civ with RelationshipLevel.Enemy or worse */
     var hateHello = ""
 
     lateinit var outerColor: List<Int>
@@ -84,8 +94,8 @@ class Nation : RulesetObject() {
         innerColorObject = if (innerColor == null) Color.BLACK
                            else colorFromRGB(innerColor!!)
 
-        forestsAndJunglesAreRoads = uniques.contains("All units move through Forest and Jungle Tiles in friendly territory as if they have roads. These tiles can be used to establish City Connections upon researching the Wheel.")
-        ignoreHillMovementCost = uniques.contains("Units ignore terrain costs when moving into any tile with Hills")
+        forestsAndJunglesAreRoads = uniqueMap.containsKey(UniqueType.ForestsAndJunglesAreRoads.placeholderText)
+        ignoreHillMovementCost = uniqueMap.containsKey(UniqueType.IgnoreHillMovementCost.placeholderText)
     }
 
 
@@ -112,12 +122,9 @@ class Nation : RulesetObject() {
         if (uniqueText != "") {
             textList += FormattedLine(uniqueText, indent = 1)
         } else {
-            uniqueObjects.forEach {
-                if (!it.hasFlag(UniqueFlag.HiddenToUsers))
-                    textList += FormattedLine(it)
-            }
-            textList += FormattedLine()
+            uniquesToCivilopediaTextLines(textList, leadingSeparator = null)
         }
+        textList += FormattedLine()
 
         if (startBias.isNotEmpty()) {
             startBias.withIndex().forEach {
@@ -143,7 +150,7 @@ class Nation : RulesetObject() {
         val textList = ArrayList<FormattedLine>()
 
         val cityStateType = ruleset.cityStateTypes[cityStateType]!!
-        textList += FormattedLine("{Type}: {${cityStateType.name}}", header = 4, color = cityStateType.getColor().toString())
+        textList += FormattedLine("{Type}: {${cityStateType.name}}", header = 4, color = "#"+cityStateType.getColor().toString())
 
         var showResources = false
 
@@ -196,22 +203,8 @@ class Nation : RulesetObject() {
             yield(FormattedLine("{${building.name}} -", link=building.makeLink()))
             if (building.replaces != null && ruleset.buildings.containsKey(building.replaces!!)) {
                 val originalBuilding = ruleset.buildings[building.replaces!!]!!
-                yield(FormattedLine("Replaces [${originalBuilding.name}]", link=originalBuilding.makeLink(), indent=1))
-
-                for ((key, value) in building)
-                    if (value != originalBuilding[key])
-                        yield(FormattedLine( key.name.tr() + " " +"[${value.toInt()}] vs [${originalBuilding[key].toInt()}]".tr(), indent=1))
-
-                for (unique in building.uniques.filter { it !in originalBuilding.uniques })
-                    yield(FormattedLine(unique, indent=1))
-                if (building.maintenance != originalBuilding.maintenance)
-                    yield(FormattedLine("{Maintenance} ".tr() + "[${building.maintenance}] vs [${originalBuilding.maintenance}]".tr(), indent=1))
-                if (building.cost != originalBuilding.cost)
-                    yield(FormattedLine("{Cost} ".tr() + "[${building.cost}] vs [${originalBuilding.cost}]".tr(), indent=1))
-                if (building.cityStrength != originalBuilding.cityStrength)
-                    yield(FormattedLine("{City strength} ".tr() + "[${building.cityStrength}] vs [${originalBuilding.cityStrength}]".tr(), indent=1))
-                if (building.cityHealth != originalBuilding.cityHealth)
-                    yield(FormattedLine("{City health} ".tr() + "[${building.cityHealth}] vs [${originalBuilding.cityHealth}]".tr(), indent=1))
+                yield(FormattedLine("Replaces [${originalBuilding.name}]", link = originalBuilding.makeLink(), indent=1))
+                yieldAll(BuildingDescriptions.getDifferences(ruleset, originalBuilding, building))
                 yield(FormattedLine())
             } else if (building.replaces != null) {
                 yield(FormattedLine("Replaces [${building.replaces}], which is not found in the ruleset!", indent=1))
@@ -270,6 +263,10 @@ class Nation : RulesetObject() {
     fun getContrastRatio() = getContrastRatio(getInnerColor(), getOuterColor())
 
     fun matchesFilter(filter: String): Boolean {
+        return MultiFilter.multiFilter(filter, ::matchesSingleFilter)
+    }
+
+    fun matchesSingleFilter(filter: String): Boolean {
         return when (filter) {
             "All" -> true
             name -> true
@@ -288,11 +285,11 @@ fun getRelativeLuminance(color: Color): Double {
             if (channel < 0.03928) channel / 12.92
             else ((channel + 0.055) / 1.055).pow(2.4)
 
-    val R = getRelativeChannelLuminance(color.r)
-    val G = getRelativeChannelLuminance(color.g)
-    val B = getRelativeChannelLuminance(color.b)
+    val r = getRelativeChannelLuminance(color.r)
+    val g = getRelativeChannelLuminance(color.g)
+    val b = getRelativeChannelLuminance(color.b)
 
-    return 0.2126 * R + 0.7152 * G + 0.0722 * B
+    return 0.2126 * r + 0.7152 * g + 0.0722 * b
 }
 
 /** https://www.w3.org/TR/WCAG20/#contrast-ratiodef */

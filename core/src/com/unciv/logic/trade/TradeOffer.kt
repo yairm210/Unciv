@@ -6,7 +6,7 @@ import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.trade.TradeType.TradeTypeNumberType
 import com.unciv.models.ruleset.Speed
 import com.unciv.models.translations.tr
-import com.unciv.ui.components.Fonts
+import com.unciv.ui.components.fonts.Fonts
 
 data class TradeOffer(val name: String, val type: TradeType, var amount: Int = 1, var duration: Int) : IsPartOfGameInfoSerialization {
 
@@ -35,7 +35,7 @@ data class TradeOffer(val name: String, val type: TradeType, var amount: Int = 1
     fun isTradable() = amount > 0
 
     fun getOfferText(untradable: Int = 0): String {
-        var offerText = when(type){
+        var offerText = when(type) {
             TradeType.WarDeclaration -> "Declare war on [$name]"
             TradeType.Introduction -> "Introduction to [$name]"
             TradeType.City -> {

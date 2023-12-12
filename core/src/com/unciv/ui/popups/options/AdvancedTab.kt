@@ -13,37 +13,40 @@ import com.badlogic.gdx.scenes.scene2d.ui.Cell
 import com.badlogic.gdx.scenes.scene2d.ui.SelectBox
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Array
+import com.unciv.Constants
 import com.unciv.GUI
 import com.unciv.UncivGame
 import com.unciv.models.metadata.GameSettings
-import com.unciv.models.metadata.ScreenSize
+import com.unciv.models.metadata.ModCategories
+import com.unciv.models.metadata.GameSettings.ScreenSize
 import com.unciv.models.translations.TranslationFileWriter
 import com.unciv.models.translations.tr
-import com.unciv.ui.popups.ConfirmPopup
-import com.unciv.ui.screens.basescreen.BaseScreen
-import com.unciv.ui.components.FontFamilyData
-import com.unciv.ui.components.Fonts
-import com.unciv.ui.components.UncivSlider
 import com.unciv.ui.components.UncivTooltip.Companion.addTooltip
+import com.unciv.ui.components.extensions.addSeparator
 import com.unciv.ui.components.extensions.disable
-import com.unciv.ui.components.input.keyShortcuts
-import com.unciv.ui.components.input.onActivation
-import com.unciv.ui.components.input.onChange
-import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.extensions.setFontColor
 import com.unciv.ui.components.extensions.toCheckBox
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
 import com.unciv.ui.components.extensions.withoutItem
+import com.unciv.ui.components.fonts.FontFamilyData
+import com.unciv.ui.components.fonts.Fonts
+import com.unciv.ui.components.input.keyShortcuts
+import com.unciv.ui.components.input.onActivation
+import com.unciv.ui.components.input.onChange
+import com.unciv.ui.components.input.onClick
+import com.unciv.ui.components.widgets.UncivSlider
+import com.unciv.ui.popups.ConfirmPopup
+import com.unciv.ui.screens.basescreen.BaseScreen
+import com.unciv.utils.Concurrency
 import com.unciv.utils.Display
 import com.unciv.utils.ScreenOrientation
-import com.unciv.utils.Concurrency
 import com.unciv.utils.launchOnGLThread
+import java.util.UUID
+import java.util.zip.Deflater
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import java.util.UUID
-import java.util.zip.Deflater
 
 fun advancedTab(
     optionsPopup: OptionsPopup,
@@ -55,34 +58,48 @@ fun advancedTab(
     val settings = optionsPopup.settings
 
     addAutosaveTurnsSelectBox(this, settings)
+    addSeparator(Color.GRAY)
 
-    if (Display.hasOrientation()) {
+    if (Display.hasOrientation())
         addOrientationSelectBox(this, optionsPopup)
-    }
 
-    if (Display.hasCutout()) {
+    if (Display.hasCutout())
         addCutoutCheckbox(this, optionsPopup)
-    }
 
-    addMaxZoomSlider(this, settings)
+    if (Display.hasSystemUiVisibility())
+        addHideSystemUiCheckbox(this, optionsPopup)
 
     addFontFamilySelect(this, settings, optionsPopup.selectBoxMinWidth, onFontChange)
-
     addFontSizeMultiplier(this, settings, onFontChange)
+    addSeparator(Color.GRAY)
 
-    addTranslationGeneration(this, optionsPopup)
-
-    addSetUserId(this, settings)
+    addMaxZoomSlider(this, settings)
 
     addEasterEggsCheckBox(this, settings)
 
     addEnlargeNotificationsCheckBox(this, settings)
+    addSeparator(Color.GRAY)
+
+    addSetUserId(this, settings)
+
+    addTranslationGeneration(this, optionsPopup)
 }
 
 private fun addCutoutCheckbox(table: Table, optionsPopup: OptionsPopup) {
-    optionsPopup.addCheckbox(table, "Enable display cutout (requires restart)", optionsPopup.settings.androidCutout)
+    optionsPopup.addCheckbox(table, "Enable using display cutout areas", optionsPopup.settings.androidCutout)
     {
         optionsPopup.settings.androidCutout = it
+        Display.setCutout(it)
+        optionsPopup.reopenAfterDiplayLayoutChange()
+    }
+}
+
+private fun addHideSystemUiCheckbox(table: Table, optionsPopup: OptionsPopup) {
+    optionsPopup.addCheckbox(table, "Hide system status and navigation bars", optionsPopup.settings.androidHideSystemUi)
+    {
+        optionsPopup.settings.androidHideSystemUi = it
+        Display.setSystemUiVisibility(hide = it)
+        optionsPopup.reopenAfterDiplayLayoutChange()
     }
 }
 
@@ -99,6 +116,7 @@ private fun addOrientationSelectBox(table: Table, optionsPopup: OptionsPopup) {
         val orientation = selectBox.selected
         settings.displayOrientation = orientation
         Display.setOrientation(orientation)
+        optionsPopup.reopenAfterDiplayLayoutChange()
     }
 
     table.add(selectBox).minWidth(optionsPopup.selectBoxMinWidth).pad(10f).row()
@@ -200,7 +218,7 @@ private fun addFontSizeMultiplier(
     settings: GameSettings,
     onFontChange: () -> Unit
 ) {
-    table.add("Font size multiplier".toLabel()).left().fillX()
+    table.add("Font size multiplier".toLabel()).left().fillX().padTop(5f)
 
     val fontSizeSlider = UncivSlider(
         0.7f, 1.5f, 0.05f,
@@ -212,11 +230,11 @@ private fun addFontSizeMultiplier(
         if (!fontSizeSlider.isDragging)
             onFontChange()
     }
-    table.add(fontSizeSlider).pad(5f).row()
+    table.add(fontSizeSlider).pad(5f).padTop(10f).row()
 }
 
 private fun addMaxZoomSlider(table: Table, settings: GameSettings) {
-    table.add("Max zoom out".tr()).left().fillX()
+    table.add("Max zoom out".tr()).left().fillX().padTop(5f)
     val maxZoomSlider = UncivSlider(
         2f, 6f, 1f,
         initial = settings.maxWorldZoomOut
@@ -225,7 +243,7 @@ private fun addMaxZoomSlider(table: Table, settings: GameSettings) {
         if (GUI.isWorldLoaded())
             GUI.getMap().reloadMaxZoom()
     }
-    table.add(maxZoomSlider).pad(5f).row()
+    table.add(maxZoomSlider).pad(5f).padTop(10f).row()
 }
 
 private fun addTranslationGeneration(table: Table, optionsPopup: OptionsPopup) {
@@ -234,8 +252,8 @@ private fun addTranslationGeneration(table: Table, optionsPopup: OptionsPopup) {
     val generateTranslationsButton = "Generate translation files".toTextButton()
 
     generateTranslationsButton.onActivation {
-        optionsPopup.tabs.selectPage("Advanced")
-        generateTranslationsButton.setText("Working...".tr())
+        optionsPopup.tabs.selectPage("Advanced")  // only because key F12 works from any page
+        generateTranslationsButton.setText(Constants.working.tr())
         Concurrency.run("WriteTranslations") {
             val result = TranslationFileWriter.writeNewTranslationFiles()
             launchOnGLThread {
@@ -250,12 +268,24 @@ private fun addTranslationGeneration(table: Table, optionsPopup: OptionsPopup) {
     generateTranslationsButton.addTooltip("F12", 18f)
     table.add(generateTranslationsButton).colspan(2).row()
 
+    val updateModCategoriesButton = "Update Mod categories".toTextButton()
+    updateModCategoriesButton.onActivation {
+        updateModCategoriesButton.setText(Constants.working.tr())
+        Concurrency.run("GithubTopicQuery") {
+            val result = ModCategories.mergeOnline()
+            launchOnGLThread {
+                updateModCategoriesButton.setText(result)
+            }
+        }
+    }
+    table.add(updateModCategoriesButton).colspan(2).row()
+
+    if (!UncivGame.Current.files.getSave("ScreenshotGenerationGame").exists()) return
 
     val generateScreenshotsButton = "Generate screenshots".toTextButton()
 
     generateScreenshotsButton.onActivation {
-        optionsPopup.tabs.selectPage("Advanced")
-        generateScreenshotsButton.setText("Working...".tr())
+        generateScreenshotsButton.setText(Constants.working.tr())
         Concurrency.run("GenerateScreenshot") {
             val extraImagesLocation = "../../extraImages"
             // I'm not sure why we need to advance the y by 2 for every screenshot... but that's the only way it remains centered
@@ -267,8 +297,8 @@ private fun addTranslationGeneration(table: Table, optionsPopup: OptionsPopup) {
             ))
         }
     }
-//     table.add(generateScreenshotsButton).colspan(2).row()
 
+    table.add(generateScreenshotsButton).colspan(2).row()
 }
 
 data class ScreenshotConfig(val width: Int, val height: Int, val screenSize: ScreenSize, var fileLocation:String, var centerTile:Vector2, var attackCity:Boolean=true)

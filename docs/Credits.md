@@ -5,6 +5,8 @@
 Flag Icons made by [Freepik](https://www.flaticon.com/authors/freepik) from [www.flaticon.com](https://www.flaticon.com) and licensed by Creative Commons 3.0, except for:
 
 -   [Catalan flag] by J0anJosep licensed under Public Domain
+-   [Rusyn flag] gimped from the wikipedia flag [Flag of Pannonian Rusyns](https://en.wikipedia.org/wiki/File:Flag_of_Rusyns_in_Serbia.svg) (CC-BY-SA 4.0)
+-   [Latin flag] made from [wikipedia entry for SPQR](https://en.wikipedia.org/wiki/SPQR#/media/File:Roman_SPQR_banner.svg), Creative Commons Attribution 3.0 Unported
 
 New Unciv logo made by u-ndefined on Discord
 
@@ -663,6 +665,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 - [Circle](https://thenounproject.com/term/circle/1841891/) By Aybige
 - [Arrow](https://thenounproject.com/term/arrow/18123/) By Joe Mortell for movement
 - [Swap](https://thenounproject.com/search/?q=swap&i=1259600) By iconomania for swapping units
+- [Road](https://thenounproject.com/icon/road-224428/) By Gábor István Karaba for connect road automation
 - [Connection](https://thenounproject.com/search/?q=connection&i=1521886) By Travis Avery
 - [Skull](https://thenounproject.com/search/?q=Skull&i=1030702) By Vladimir Belochkin for disbanding units
 - [Crosshair](https://thenounproject.com/search/?q=crosshairs&i=916030) By Bakunetsu Kaito for selecting enemies to attack
@@ -729,6 +732,8 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 - [Swords](https://thenounproject.com/icon/swords-1580316/) created by Muhajir ila Robbi for Blockaded tile marker
 - [Keyboard](https://thenounproject.com/icon/keyboard-2685534/) by Twenty Foo Studio for Options Keys
 - [charts](https://thenounproject.com/icon/charts-2312023/) by Srinivas Agra (gimped to appear bolder) for the Charts page
+- [framed image](https://thenounproject.com/icon/framed-image-2332187/) by Jose Dean for Victory Illustrations page
+- [down](https://thenounproject.com/icon/down-39378/) by Cengiz SARI for Show unit destination
 
 
 ### Main menu
@@ -766,11 +771,12 @@ Sounds are from FreeSound.org unless otherwise noted and are either Creative Com
 - [uzzi_full_single](https://freesound.org/people/Deganoth/sounds/348685/) By Deganoth as 'shot' for bullet attacks
 - [Grenade Launcher 2](https://soundbible.com/2140-Grenade-Launcher-2.html) By Daniel Simon as city bombard sound (CC Attribution 3.0 license)
 - [Woosh](https://soundbible.com/2068-Woosh.html) by Mark DiAngelo as 'slider' sound (CC Attribution 3.0 license)
+- [Large wooden wagon](https://freesound.org/people/craigsmith/sounds/675230/) by Craig Smith as 'connect road' sound
 - [Tornado-Siren-II](https://soundbible.com/1937-Tornado-Siren-II.html) by Delilah as part of 'nuke' sound (CC Attribution 3.0 license)
 - [Explosion-Ultra-Bass](https://soundbible.com/1807-Explosion-Ultra-Bass.html) by Mark DiAngelo as part of 'nuke' sound (CC Attribution 3.0 license)
 - [Short Choir](https://freesound.org/people/Breviceps/sounds/444491/) by Breviceps as 'choir' for free great person pick
 - [Death Robot! Robotic scream](https://freesound.org/people/vultraz168/sounds/334660/) by vultraz168 for Giant Death Robot Attack (CC0 1.0 Universal license)
-- [ceremonial cannon fire](https://freesound.org/people/DylanSmithSound/sounds/274826/) by DylanSmithSound for cannon
+- [ceremonial cannon fire](https://freesound.org/people/DylanSmithSound/sounds/274826/) by DylanSmithSound for cannon and shipCannonVolley
 - [artillery fire](https://freesound.org/people/Tomashevsky/sounds/476664/) by Tomashevsky for artillery
 - [20mm cannons](https://freesound.org/people/Piotr123/sounds/551534/) by Piotr123 for ship guns
 - "bombing" is made by the Unciv team using Audacity from
@@ -780,7 +786,7 @@ Sounds are from FreeSound.org unless otherwise noted and are either Creative Com
 - "jetgun" for Jet Fighter attack is made by the Unciv team using Audacity from
     -   [Fighter Jet Aircraft Fly by (synthesised)](https://freesound.org/people/Headphaze/sounds/347795/) by Headphaze
     -   [Machine Gun 001 - triple shot](https://freesound.org/people/pgi/sounds/212600/) by pgi
-- Excerpt from [Tanks Shooting](https://freesound.org/people/qubodup/sounds/189344/) by qubodup for tankshot
+- Excerpt from [Tanks Shooting](https://freesound.org/people/qubodup/sounds/189344/) by qubodup for tankshot and shipCannonVolley
 - "torpedo" is made by the Unciv team using Audacity from
     -   [Torpedo launch underwater](https://freesound.org/people/jobro/sounds/35530/) by jobro
     -   [Artillery Explosion (Close) (Mixed)](https://freesound.org/people/EFlexMusic/sounds/388528/) by EFlexMusic

@@ -4,10 +4,11 @@ import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.Constants
 import com.unciv.logic.city.CityFocus
-import com.unciv.ui.screens.basescreen.BaseScreen
-import com.unciv.ui.components.ExpanderTab
-import com.unciv.ui.components.input.onClick
+import com.unciv.ui.components.widgets.ExpanderTab
 import com.unciv.ui.components.extensions.toLabel
+import com.unciv.ui.components.input.KeyboardBinding
+import com.unciv.ui.components.input.onActivation
+import com.unciv.ui.screens.basescreen.BaseScreen
 
 class CitizenManagementTable(val cityScreen: CityScreen) : Table(BaseScreen.skin) {
     val city = cityScreen.city
@@ -24,7 +25,7 @@ class CitizenManagementTable(val cityScreen: CityScreen) : Table(BaseScreen.skin
         resetCell.add(resetLabel).pad(5f)
         if (cityScreen.canCityBeChanged()) {
             resetCell.touchable = Touchable.enabled
-            resetCell.onClick {
+            resetCell.onActivation(binding = KeyboardBinding.ResetCitizens) {
                 city.reassignPopulation(true)
                 cityScreen.update()
             }
@@ -41,7 +42,7 @@ class CitizenManagementTable(val cityScreen: CityScreen) : Table(BaseScreen.skin
         avoidCell.add(avoidLabel).pad(5f)
         if (cityScreen.canCityBeChanged()) {
             avoidCell.touchable = Touchable.enabled
-            avoidCell.onClick {
+            avoidCell.onActivation(binding = KeyboardBinding.AvoidGrowth) {
                 city.avoidGrowth = !city.avoidGrowth
                 city.reassignPopulation()
                 cityScreen.update()
@@ -63,7 +64,10 @@ class CitizenManagementTable(val cityScreen: CityScreen) : Table(BaseScreen.skin
             cell.add(label).pad(5f)
             if (cityScreen.canCityBeChanged()) {
                 cell.touchable = Touchable.enabled
-                cell.onClick {
+                // Note the binding here only works when visible, so the main one is on CityStatsTable.miniStatsTable
+                // If we bind both, both are executed - so only add the one here that re-applies the current focus
+                val binding = if (city.cityAIFocus == focus) focus.binding else KeyboardBinding.None
+                cell.onActivation(binding = binding) {
                     city.cityAIFocus = focus
                     city.reassignPopulation()
                     cityScreen.update()
@@ -88,6 +92,7 @@ class CitizenManagementTable(val cityScreen: CityScreen) : Table(BaseScreen.skin
             fontSize = Constants.defaultFontSize,
             persistenceID = "CityStatsTable.CitizenManagement",
             startsOutOpened = false,
+            toggleKey = KeyboardBinding.CitizenManagement,
             onChange = onChange
         ) {
             it.add(this)

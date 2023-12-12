@@ -1,5 +1,6 @@
 package com.unciv.logic.map.mapunit
 
+import com.unciv.logic.UncivShowableException
 import com.unciv.models.ruleset.RejectionReasonType
 import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.UniqueType
@@ -11,11 +12,13 @@ class UnitUpgradeManager(val unit:MapUnit) {
 
     /** Returns FULL upgrade path, without checking what we can or cannot build currently.
      * Does not contain current baseunit, so will be empty if no upgrades. */
-    private fun getUpgradePath(): List<BaseUnit>{
+    private fun getUpgradePath(): Iterable<BaseUnit> {
         var currentUnit = unit.baseUnit
-        val upgradeList = arrayListOf<BaseUnit>()
-        while (currentUnit.upgradesTo != null){
+        val upgradeList = linkedSetOf<BaseUnit>()
+        while (currentUnit.upgradesTo != null) {
             val nextUpgrade = unit.civ.getEquivalentUnit(currentUnit.upgradesTo!!)
+            if (nextUpgrade in upgradeList)
+                throw(UncivShowableException("Circular or self-referencing upgrade path for ${currentUnit.name}"))
             currentUnit = nextUpgrade
             upgradeList.add(currentUnit)
         }
@@ -30,15 +33,15 @@ class UnitUpgradeManager(val unit:MapUnit) {
         val upgradePath = getUpgradePath()
 
         fun isInvalidUpgradeDestination(baseUnit: BaseUnit): Boolean{
-            if (baseUnit.requiredTech != null && !unit.civ.tech.isResearched(baseUnit.requiredTech!!))
+            if (!unit.civ.tech.isResearched(baseUnit))
                 return true
-            if (baseUnit.getMatchingUniques(UniqueType.OnlyAvailableWhen).any {
+            if (baseUnit.getMatchingUniques(UniqueType.OnlyAvailableWhen, StateForConditionals.IgnoreConditionals).any {
                         !it.conditionalsApply(StateForConditionals(unit.civ, unit = unit ))
                     }) return true
             return false
         }
 
-        for (baseUnit in upgradePath.reversed()){
+        for (baseUnit in upgradePath.reversed()) {
             if (isInvalidUpgradeDestination(baseUnit)) continue
             return baseUnit
         }
@@ -59,7 +62,7 @@ class UnitUpgradeManager(val unit:MapUnit) {
     ): Boolean {
         if (unit.name == unitToUpgradeTo.name) return false
 
-        val rejectionReasons = unitToUpgradeTo.getRejectionReasons(unit.civ, additionalResources = unit.baseUnit.getResourceRequirementsPerTurn())
+        val rejectionReasons = unitToUpgradeTo.getRejectionReasons(unit.civ, additionalResources = unit.getResourceRequirementsPerTurn())
 
         var relevantRejectionReasons = rejectionReasons.filterNot { it.type == RejectionReasonType.Unbuildable }
         if (ignoreRequirements)
@@ -99,7 +102,7 @@ class UnitUpgradeManager(val unit:MapUnit) {
             // do clamping and rounding here so upgrading stepwise costs the same as upgrading far down the chain
             var stepCost = constants.base
             stepCost += (constants.perProduction * (baseUnit.cost - currentUnit.cost)).coerceAtLeast(0f)
-            val era = ruleset.eras[ruleset.technologies[baseUnit.requiredTech]?.era()]
+            val era = baseUnit.era(ruleset)
             if (era != null)
                 stepCost *= (1f + era.eraNumber * constants.eraMultiplier)
             stepCost = (stepCost * civModifier).pow(constants.exponent)

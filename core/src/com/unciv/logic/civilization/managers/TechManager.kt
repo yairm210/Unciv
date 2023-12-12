@@ -10,14 +10,15 @@ import com.unciv.logic.civilization.MayaLongCountAction
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.civilization.PlayerType
+import com.unciv.logic.civilization.PolicyAction
 import com.unciv.logic.civilization.PopupAlert
 import com.unciv.logic.civilization.TechAction
 import com.unciv.logic.map.MapSize
 import com.unciv.logic.map.tile.RoadStatus
+import com.unciv.models.ruleset.INonPerpetualConstruction
 import com.unciv.models.ruleset.tech.Era
 import com.unciv.models.ruleset.tech.Technology
 import com.unciv.models.ruleset.unique.UniqueMap
-import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
@@ -154,6 +155,10 @@ class TechManager : IsPartOfGameInfoSerialization {
 
     fun isResearched(techName: String): Boolean = techsResearched.contains(techName)
 
+    fun isResearched(construction: INonPerpetualConstruction): Boolean = construction.requiredTechs().all{ requiredTech -> isResearched(requiredTech) }
+
+    fun isObsolete(unit: BaseUnit): Boolean = unit.techsThatObsoleteThis().any{ obsoleteTech -> isResearched(obsoleteTech) }
+
     fun canBeResearched(techName: String): Boolean {
         val tech = getRuleset().technologies[techName]!!
         if (tech.uniqueObjects.any { it.type == UniqueType.OnlyAvailableWhen && !it.conditionalsApply(civInfo) })
@@ -276,7 +281,7 @@ class TechManager : IsPartOfGameInfoSerialization {
         addTechnology(techName)
     }
 
-    fun addTechnology(techName: String) {
+    fun addTechnology(techName: String, showNotification: Boolean = true) {
         val isNewTech = techsResearched.add(techName)
 
         // this is to avoid concurrent modification problems
@@ -291,7 +296,7 @@ class TechManager : IsPartOfGameInfoSerialization {
 
         val triggerNotificationText = "due to researching [$techName]"
         for (unique in newTech.uniqueObjects)
-            if (unique.conditionals.none { it.type!!.targetTypes.contains(UniqueTarget.TriggerCondition) })
+            if (!unique.hasTriggerConditional())
                 UniqueTriggerActivation.triggerCivwideUnique(unique, civInfo, triggerNotificationText = triggerNotificationText)
 
         for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponResearch))
@@ -301,11 +306,10 @@ class TechManager : IsPartOfGameInfoSerialization {
 
         updateTransientBooleans()
         for (city in civInfo.cities) {
-            city.cityStats.update()
-            city.updateCitizens = true
+            city.reassignPopulationDeferred()
         }
 
-        if (!civInfo.isSpectator())
+        if (!civInfo.isSpectator() && showNotification)
             civInfo.addNotification("Research of [$techName] has completed!", TechAction(techName),
                 NotificationCategory.General,
                 NotificationIcon.Science)
@@ -313,21 +317,15 @@ class TechManager : IsPartOfGameInfoSerialization {
             civInfo.popupAlerts.add(PopupAlert(AlertType.TechResearched, techName))
 
         val revealedResources = getRuleset().tileResources.values.filter { techName == it.revealedBy }
-        var mayNeedUpdateResources = revealedResources.isNotEmpty()  // default for AI
         if (civInfo.playerType == PlayerType.Human) {
-            mayNeedUpdateResources = false
             for (revealedResource in revealedResources) {
-                // notifyExploredResources scans the player's owned tiles and returns false if none
-                // found with a revealed resource - keep this knowledge to avoid the update call.
-                mayNeedUpdateResources = mayNeedUpdateResources ||
-                    civInfo.gameInfo.notifyExploredResources(civInfo, revealedResource.name, 5)
+                civInfo.gameInfo.notifyExploredResources(civInfo, revealedResource.name, 5)
             }
         }
-        // At least in the case of a human player hurrying research, this civ's resource availability
-        // may now be out of date - e.g. when an owned tile by luck already has an appropriate improvement.
-        // That can be seen on WorldScreenTopBar, so better update unless we know there's no resource change.
-        if (mayNeedUpdateResources)
-            civInfo.cache.updateCivResources()
+        // In the case of a player hurrying research, this civ's resource availability may now be out of date
+        // - e.g. when an owned tile by luck already has an appropriate improvement or when a tech provides a resource.
+        // That can be seen on WorldScreenTopBar, so better update.
+        civInfo.cache.updateCivResources()
 
         obsoleteOldUnits(techName)
 
@@ -341,7 +339,7 @@ class TechManager : IsPartOfGameInfoSerialization {
                 MayaLongCountAction(), NotificationCategory.General, MayaCalendar.notificationIcon)
         }
 
-        moveToNewEra()
+        moveToNewEra(showNotification)
         updateResearchProgress()
     }
 
@@ -353,7 +351,7 @@ class TechManager : IsPartOfGameInfoSerialization {
             return civInfo.getEquivalentUnit(upgradesTo!!)
         }
         val obsoleteUnits = getRuleset().units.asSequence()
-            .filter { it.value.obsoleteTech == techName }
+            .filter { it.value.isObsoletedBy(techName) }
             .map { it.key to it.value.getEquivalentUpgradeOrNull() }
             .toMap()
         if (obsoleteUnits.isEmpty()) return
@@ -382,7 +380,7 @@ class TechManager : IsPartOfGameInfoSerialization {
         // Add notifications for obsolete units/constructions
         for ((unit, cities) in unitUpgrades) {
             if (cities.isEmpty()) continue
-            val locationAction = LocationAction(cities.mapTo(ArrayList(cities.size)) { it.location })
+            val locationAction = LocationAction(cities.asSequence().map { it.location })
             val cityText = if (cities.size == 1) "[${cities.first().name}]"
                 else "[${cities.size}] cities"
             val newUnit = obsoleteUnits[unit]?.name
@@ -396,34 +394,37 @@ class TechManager : IsPartOfGameInfoSerialization {
         }
     }
 
-    private fun moveToNewEra() {
+    private fun moveToNewEra(showNotification: Boolean = true) {
         val previousEra = civInfo.getEra()
         updateEra()
         val currentEra = civInfo.getEra()
         if (previousEra != currentEra) {
-            if(!civInfo.isSpectator())
-                civInfo.addNotification(
-                    "You have entered the [$currentEra]!",
-                    NotificationCategory.General,
-                    NotificationIcon.Science
-                )
-            if (civInfo.isMajorCiv()) {
-                for (knownCiv in civInfo.getKnownCivs()) {
-                    knownCiv.addNotification(
-                        "[${civInfo.civName}] has entered the [$currentEra]!",
-                        NotificationCategory.General, civInfo.civName, NotificationIcon.Science
-                    )
-                }
-            }
-            for (policyBranch in getRuleset().policyBranches.values.filter {
-                it.era == currentEra.name && civInfo.policies.isAdoptable(it)
-            }) {
-                if (!civInfo.isSpectator())
+            if(showNotification) {
+                if(!civInfo.isSpectator())
                     civInfo.addNotification(
-                        "[${policyBranch.name}] policy branch unlocked!",
+                        "You have entered the [$currentEra]!",
                         NotificationCategory.General,
-                        NotificationIcon.Culture
+                        NotificationIcon.Science
                     )
+                if (civInfo.isMajorCiv()) {
+                    for (knownCiv in civInfo.getKnownCivs()) {
+                        knownCiv.addNotification(
+                            "[${civInfo.civName}] has entered the [$currentEra]!",
+                            NotificationCategory.General, civInfo.civName, NotificationIcon.Science
+                        )
+                    }
+                }
+                for (policyBranch in getRuleset().policyBranches.values.filter {
+                    it.era == currentEra.name && civInfo.policies.isAdoptable(it)
+                }) {
+                    if (!civInfo.isSpectator())
+                        civInfo.addNotification(
+                            "[${policyBranch.name}] policy branch unlocked!",
+                            PolicyAction(policyBranch.name),
+                            NotificationCategory.General,
+                            NotificationIcon.Culture
+                        )
+                }
             }
 
             val erasPassed = getRuleset().eras.values
@@ -433,7 +434,7 @@ class TechManager : IsPartOfGameInfoSerialization {
 
             for (era in erasPassed)
                 for (unique in era.uniqueObjects)
-                    if (unique.conditionals.none { it.type!!.targetTypes.contains(UniqueTarget.TriggerCondition) })
+                    if (!unique.hasTriggerConditional())
                         UniqueTriggerActivation.triggerCivwideUnique(
                             unique,
                             civInfo,

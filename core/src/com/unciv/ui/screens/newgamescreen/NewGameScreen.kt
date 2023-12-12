@@ -2,35 +2,35 @@ package com.unciv.ui.screens.newgamescreen
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
-import com.badlogic.gdx.scenes.scene2d.ui.SelectBox
-import com.badlogic.gdx.scenes.scene2d.ui.Skin
 import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup
-import com.badlogic.gdx.utils.Array
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
 import com.unciv.logic.GameStarter
 import com.unciv.logic.IdChecker
+import com.unciv.logic.UncivShowableException
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.files.MapSaver
 import com.unciv.logic.map.MapGeneratedMainType
 import com.unciv.logic.multiplayer.OnlineMultiplayer
 import com.unciv.logic.multiplayer.storage.FileStorageRateLimitReached
+import com.unciv.models.metadata.BaseRuleset
 import com.unciv.models.metadata.GameSetupInfo
+import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.translations.tr
-import com.unciv.ui.components.ExpanderTab
-import com.unciv.ui.components.input.KeyCharAndCode
+import com.unciv.ui.components.widgets.ExpanderTab
 import com.unciv.ui.components.extensions.addSeparator
 import com.unciv.ui.components.extensions.addSeparatorVertical
 import com.unciv.ui.components.extensions.disable
 import com.unciv.ui.components.extensions.enable
-import com.unciv.ui.components.input.keyShortcuts
-import com.unciv.ui.components.input.onActivation
-import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.extensions.pad
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
+import com.unciv.ui.components.input.KeyCharAndCode
+import com.unciv.ui.components.input.keyShortcuts
+import com.unciv.ui.components.input.onActivation
+import com.unciv.ui.components.input.onClick
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popups.ConfirmPopup
 import com.unciv.ui.popups.Popup
@@ -38,20 +38,22 @@ import com.unciv.ui.popups.ToastPopup
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.basescreen.RecreateOnResize
 import com.unciv.ui.screens.pickerscreens.PickerScreen
-import com.unciv.utils.Log
 import com.unciv.utils.Concurrency
+import com.unciv.utils.Log
 import com.unciv.utils.launchOnGLThread
 import kotlinx.coroutines.coroutineScope
 import java.net.URL
 import java.util.UUID
-import com.unciv.ui.components.AutoScrollPane as ScrollPane
+import kotlin.math.floor
+import com.unciv.ui.components.widgets.AutoScrollPane as ScrollPane
 
 class NewGameScreen(
-    _gameSetupInfo: GameSetupInfo? = null
+    defaultGameSetupInfo: GameSetupInfo? = null,
+    isReset: Boolean = false
 ): IPreviousScreen, PickerScreen(), RecreateOnResize {
 
-    override val gameSetupInfo = _gameSetupInfo ?: GameSetupInfo.fromSettings()
-    override var ruleset = RulesetCache.getComplexRuleset(gameSetupInfo.gameParameters) // needs to be set because the GameOptionsTable etc. depend on this
+    override var gameSetupInfo = defaultGameSetupInfo ?: GameSetupInfo.fromSettings()
+    override val ruleset = Ruleset()  // updateRuleset will clear and add
     private val newGameOptionsTable: GameOptionsTable
     private val playerPickerTable: PlayerPickerTable
     private val mapOptionsTable: MapOptionsTable
@@ -59,8 +61,7 @@ class NewGameScreen(
     init {
         val isPortrait = isNarrowerThan4to3()
 
-        updateRuleset()  // must come before playerPickerTable so mod nations from fromSettings
-        // Has to be initialized before the mapOptionsTable, since the mapOptionsTable refers to it on init
+        tryUpdateRuleset()  // must come before playerPickerTable so mod nations from fromSettings
 
         // remove the victory types which are not in the rule set (e.g. were in the recently disabled mod)
         gameSetupInfo.gameParameters.victoryTypes.removeAll { it !in ruleset.victories.keys }
@@ -78,18 +79,18 @@ class NewGameScreen(
             updatePlayerPickerTable = { desiredCiv -> playerPickerTable.update(desiredCiv) },
             updatePlayerPickerRandomLabel = { playerPickerTable.updateRandomNumberLabel() }
         )
-        mapOptionsTable = MapOptionsTable(this)
-        pickerPane.closeButton.onActivation {
+        mapOptionsTable = MapOptionsTable(this, isReset)
+        closeButton.onActivation {
             mapOptionsTable.cancelBackgroundJobs()
             game.popScreen()
         }
-        pickerPane.closeButton.keyShortcuts.add(KeyCharAndCode.BACK)
+        closeButton.keyShortcuts.add(KeyCharAndCode.BACK)
 
         if (isPortrait) initPortrait()
         else initLandscape()
 
-        pickerPane.bottomTable.background = skinStrings.getUiBackground("NewGameScreen/BottomTable", tintColor = skinStrings.skinConfig.clearColor)
-        pickerPane.topTable.background = skinStrings.getUiBackground("NewGameScreen/TopTable", tintColor = skinStrings.skinConfig.clearColor)
+        bottomTable.background = skinStrings.getUiBackground("NewGameScreen/BottomTable", tintColor = skinStrings.skinConfig.clearColor)
+        topTable.background = skinStrings.getUiBackground("NewGameScreen/TopTable", tintColor = skinStrings.skinConfig.clearColor)
 
         if (UncivGame.Current.settings.lastGameSetup != null) {
             rightSideGroup.addActorAt(0, VerticalGroup().padBottom(5f))
@@ -101,7 +102,7 @@ class NewGameScreen(
                     "Are you sure you want to reset all game options to defaults?",
                     "Reset to defaults",
                 ) {
-                    game.replaceCurrentScreen(NewGameScreen(GameSetupInfo()))
+                    game.replaceCurrentScreen(NewGameScreen(GameSetupInfo(), isReset = true))
                 }.open(true)
             }
         }
@@ -166,6 +167,20 @@ class NewGameScreen(
             return
         }
 
+        val modCheckResult = newGameOptionsTable.modCheckboxes.savedModcheckResult
+        newGameOptionsTable.modCheckboxes.savedModcheckResult = null
+        if (modCheckResult != null) {
+            AcceptModErrorsPopup(
+                this, modCheckResult,
+                restoreDefault = { newGameOptionsTable.resetRuleset() },
+                action = {
+                    gameSetupInfo.gameParameters.acceptedModCheckErrors = modCheckResult
+                    onStartGameClicked()
+                }
+            )
+            return
+        }
+
         Gdx.input.inputProcessor = null // remove input processing - nothing will be clicked!
 
         if (mapOptionsTable.mapTypeSelectBox.selected.value == MapGeneratedMainType.custom) {
@@ -206,7 +221,7 @@ class NewGameScreen(
         }
 
         rightSideButton.disable()
-        rightSideButton.setText("Working...".tr())
+        rightSideButton.setText(Constants.working.tr())
 
         setSkin()
         // Creating a new game can take a while and we don't want ANRs
@@ -217,7 +232,7 @@ class NewGameScreen(
 
     /** Subtables may need an upper limit to their width - they can ask this function. */
     // In sync with isPortrait in init, here so UI details need not know about 3-column vs 1-column layout
-    internal fun getColumnWidth() = stage.width / (if (isNarrowerThan4to3()) 1 else 3)
+    internal fun getColumnWidth() = floor(stage.width / (if (isNarrowerThan4to3()) 1 else 3))
 
     private fun initLandscape() {
         scrollPane.setScrollingDisabled(true,true)
@@ -280,7 +295,7 @@ class NewGameScreen(
     private suspend fun startNewGame() = coroutineScope {
         val popup = Popup(this@NewGameScreen)
         launchOnGLThread {
-            popup.addGoodSizedLabel("Working...").row()
+            popup.addGoodSizedLabel(Constants.working).row()
             popup.open()
         }
 
@@ -340,11 +355,37 @@ class NewGameScreen(
         }
     }
 
-    fun updateRuleset() {
+    /** Updates our local [ruleset] from [gameSetupInfo], guarding against exceptions.
+     *
+     *  Note: The options reset on failure is not propagated automatically to the Widgets -
+     *  the caller must ensure that.
+     *
+     *  @return Success - failure means gameSetupInfo was reset to defaults and the Ruleset was reverted to G&K
+     */
+    fun tryUpdateRuleset(): Boolean {
+        var success = true
+        fun handleFailure(message: String): Ruleset {
+            success = false
+            gameSetupInfo = GameSetupInfo()
+            ToastPopup(message, this, 5000)
+            return RulesetCache[BaseRuleset.Civ_V_GnK.fullName]!!
+        }
+
+        val newRuleset = try {
+            // this can throw with non-default gameSetupInfo, e.g. when Mods change or we change the impact of Mod errors
+            RulesetCache.getComplexRuleset(gameSetupInfo.gameParameters)
+        } catch (ex: UncivShowableException) {
+            handleFailure("«YELLOW»{Your previous options needed to be reset to defaults.}«»\n\n${ex.localizedMessage}")
+        } catch (ex: Throwable) {
+            Log.debug("updateRuleset failed", ex)
+            handleFailure("«RED»{Your previous options needed to be reset to defaults.}«»")
+        }
+
         ruleset.clear()
-        ruleset.add(RulesetCache.getComplexRuleset(gameSetupInfo.gameParameters))
+        ruleset.add(newRuleset)
         ImageGetter.setNewRuleset(ruleset)
         game.musicController.setModList(gameSetupInfo.gameParameters.getModsAndBaseRuleset())
+        return success
     }
 
     fun lockTables() {
@@ -365,25 +406,4 @@ class NewGameScreen(
     }
 
     override fun recreate(): BaseScreen = NewGameScreen(gameSetupInfo)
-}
-
-class TranslatedSelectBox(values : Collection<String>, default:String, skin: Skin) : SelectBox<TranslatedSelectBox.TranslatedString>(skin) {
-    class TranslatedString(val value: String) {
-        val translation = value.tr()
-        override fun toString() = translation
-        // Equality contract needs to be implemented else TranslatedSelectBox.setSelected won't work properly
-        override fun equals(other: Any?): Boolean = other is TranslatedString && value == other.value
-        override fun hashCode() = value.hashCode()
-    }
-
-    init {
-        val array = Array<TranslatedString>()
-        values.forEach { array.add(TranslatedString(it)) }
-        items = array
-        selected = array.firstOrNull { it.value == default } ?: array.first()
-    }
-
-    fun setSelected(newValue: String) {
-        selected = items.firstOrNull { it == TranslatedString(newValue) } ?: return
-    }
 }

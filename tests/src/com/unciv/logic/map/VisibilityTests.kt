@@ -2,14 +2,12 @@
 package com.unciv.logic.map
 
 import com.badlogic.gdx.math.Vector2
-import com.unciv.logic.GameInfo
-import com.unciv.logic.civilization.Civilization
-import com.unciv.logic.map.mapunit.MapUnit
+import com.unciv.Constants
 import com.unciv.logic.map.tile.Tile
-import com.unciv.models.ruleset.Ruleset
-import com.unciv.models.ruleset.RulesetCache
-import com.unciv.models.ruleset.nation.Nation
 import com.unciv.testing.GdxTestRunner
+import com.unciv.testing.TestGame
+import org.junit.Assert.assertFalse
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -17,223 +15,211 @@ import org.junit.runner.RunWith
 @RunWith(GdxTestRunner::class)
 class VisibilityTests {
 
-    private var civInfo = Civilization()
-    private var enemyCivInfo = Civilization()
-    private var ruleSet = Ruleset()
-    private var unit = MapUnit()
-    private var enemyUnit = MapUnit()
-    val tileMap = TileMap()
+    val testGame = TestGame()
 
     @Before
     fun initTheWorld() {
-        RulesetCache.loadRulesets(noMods = true)
-        ruleSet = RulesetCache.getVanillaRuleset()
-        civInfo.gameInfo = GameInfo()
-        civInfo.gameInfo.ruleset = ruleSet
-        civInfo.nation = Nation().apply { name = "My nation" }
-        civInfo.gameInfo.civilizations.add(civInfo)
-        civInfo.gameInfo.civilizations.add(enemyCivInfo)
-
-        unit.civ = civInfo
-        unit.owner = civInfo.civName
-
-        enemyUnit.civ = enemyCivInfo
-        enemyUnit.owner = enemyCivInfo.civName
-
-        tileMap.ruleset = ruleSet
+        testGame.makeHexagonalMap(5)
     }
-
-    fun addTile(terrainName: String, position:Vector2) = addTile(listOf(terrainName), position)
-
-    fun addTile(terrainNames: List<String>, position:Vector2): Tile {
-        val tile = Tile()
-        tile.position = position
-        tile.baseTerrain = terrainNames.first()
-        tile.ruleset = ruleSet
-        tile.setTerrainTransients()
-        tile.setTerrainFeatures(terrainNames.subList(1,terrainNames.size))
-        tile.tileMap = tileMap
-        tileMap.tileList.add(tile)
-        tileMap.tileMatrix.clear()
-        tileMap.setTransients()
-        return tile
-    }
+//
 
     @Test
     fun canSeeNearbyForest() {
-        val grassland = addTile("Grassland", Vector2(0f,0f))
-        val forest = addTile(listOf("Grassland", "Forest"), Vector2(1f, 0f))
+        val grassland = testGame.setTileTerrain(Vector2.Zero, Constants.grassland)
+        val forest = testGame.setTileTerrainAndFeatures(Vector2(1f, 0f), Constants.grassland, Constants.forest)
         val viewableTiles = grassland.getViewableTilesList(1)
-        assert(viewableTiles.contains(forest))
+        assertTrue(viewableTiles.contains(forest))
     }
 
     @Test
     fun canSeeForestOverPlains() {
-        val grassland = addTile("Grassland", Vector2(0f,0f))
-        addTile("Plains", Vector2(1f,0f))
-        val forest = addTile(listOf("Grassland", "Forest"), Vector2(2f, 0f))
+        val grassland = testGame.setTileTerrain(Vector2.Zero, Constants.grassland)
+        testGame.setTileTerrain(Vector2(1f,0f), Constants.plains)
+        val forest = testGame.setTileTerrainAndFeatures(Vector2(2f, 0f), Constants.grassland, Constants.forest)
+
         val viewableTiles = grassland.getViewableTilesList(2)
-        assert(viewableTiles.contains(forest))
+
+        assertTrue(viewableTiles.contains(forest))
     }
 
     @Test
     fun cannotSeePlainsOverForest() {
-        val grassland = addTile("Grassland", Vector2(0f,0f))
-        addTile(listOf("Grassland", "Forest"), Vector2(1f, 0f))
-        val plains = addTile("Plains", Vector2(2f,0f))
+        val grassland = testGame.setTileTerrain(Vector2.Zero, Constants.grassland)
+        testGame.setTileTerrainAndFeatures(Vector2(1f, 0f), Constants.grassland, Constants.forest)
+        val plains = testGame.setTileTerrain(Vector2(2f,0f), Constants.plains)
+
         val viewableTiles = grassland.getViewableTilesList(2)
-        assert(!viewableTiles.contains(plains))
+
+        assertFalse(viewableTiles.contains(plains))
     }
 
     @Test
     fun cannotSeeForestOverForest() {
-        val grassland = addTile("Grassland", Vector2(0f,0f))
-        addTile(listOf("Grassland", "Forest"), Vector2(1f, 0f))
-        val plains = addTile(listOf("Plains", "Forest"), Vector2(2f,0f))
+        val grassland = testGame.setTileTerrain(Vector2.Zero, Constants.grassland)
+        testGame.setTileTerrainAndFeatures(Vector2(1f, 0f), Constants.grassland, Constants.forest)
+        val plains = testGame.setTileTerrainAndFeatures(Vector2(2f,0f), Constants.plains, Constants.forest)
         val viewableTiles = grassland.getViewableTilesList(2)
-        assert(!viewableTiles.contains(plains))
+
+        assertFalse(viewableTiles.contains(plains))
     }
 
     @Test
     fun canSeeHillOverPlains() {
-        val grassland = addTile("Grassland", Vector2(0f,0f))
-        addTile("Plains", Vector2(1f,0f))
-        val hill = addTile(listOf("Grassland", "Hill"), Vector2(2f, 0f))
+        val grassland = testGame.setTileTerrain(Vector2.Zero, Constants.grassland)
+        testGame.setTileTerrain(Vector2(1f,0f), Constants.plains)
+        val hill = testGame.setTileTerrainAndFeatures(Vector2(2f, 0f), Constants.grassland, Constants.hill)
         val viewableTiles = grassland.getViewableTilesList(2)
-        assert(viewableTiles.contains(hill))
+
+        assertTrue(viewableTiles.contains(hill))
     }
 
     @Test
     fun cannotSeePlainsOverHill() {
-        val grassland = addTile("Grassland", Vector2(0f,0f))
-        addTile(listOf("Grassland", "Hill"), Vector2(1f, 0f))
-        val plains = addTile("Plains", Vector2(2f,0f))
+        val grassland = testGame.setTileTerrain(Vector2.Zero, Constants.grassland)
+        testGame.setTileTerrainAndFeatures(Vector2(1f, 0f), Constants.grassland, Constants.hill)
+        val plains = testGame.setTileTerrain(Vector2(2f,0f), Constants.plains)
         val viewableTiles = grassland.getViewableTilesList(2)
-        assert(!viewableTiles.contains(plains))
+
+        assertFalse(viewableTiles.contains(plains))
     }
 
     @Test
     fun cannotSeeHillOverHill() {
-        val grassland = addTile("Grassland", Vector2(0f,0f))
-        addTile(listOf("Grassland", "Hill"), Vector2(1f,0f))
-        val hill = addTile(listOf("Grassland", "Hill"), Vector2(2f, 0f))
+        val grassland = testGame.setTileTerrain(Vector2.Zero, Constants.grassland)
+        testGame.setTileTerrainAndFeatures(Vector2(1f, 0f), Constants.grassland, Constants.hill)
+        val hill = testGame.setTileTerrainAndFeatures(Vector2(2f, 0f), Constants.grassland, Constants.hill)
         val viewableTiles = grassland.getViewableTilesList(2)
-        assert(!viewableTiles.contains(hill))
+
+        assertFalse(viewableTiles.contains(hill))
     }
 
 
     @Test
     fun cannotSeeHillOverForest() {
-        val grassland = addTile("Grassland", Vector2(0f,0f))
-        addTile(listOf("Grassland", "Forest"), Vector2(1f,0f))
-        val hill = addTile(listOf("Grassland", "Hill"), Vector2(2f, 0f))
+        val grassland = testGame.setTileTerrain(Vector2.Zero, Constants.grassland)
+        testGame.setTileTerrainAndFeatures(Vector2(1f, 0f), Constants.grassland, Constants.forest)
+        val hill = testGame.setTileTerrainAndFeatures(Vector2(2f, 0f), Constants.grassland, Constants.hill)
         val viewableTiles = grassland.getViewableTilesList(2)
-        assert(!viewableTiles.contains(hill))
+
+        assertFalse(viewableTiles.contains(hill))
     }
 
     @Test
     fun cannotSeeForestOverHill() {
-        val grassland = addTile("Grassland", Vector2(0f,0f))
-        addTile(listOf("Grassland", "Hill"), Vector2(1f,0f))
-        val hill = addTile(listOf("Grassland", "Forest"), Vector2(2f, 0f))
+        val grassland = testGame.setTileTerrain(Vector2.Zero, Constants.grassland)
+        testGame.setTileTerrainAndFeatures(Vector2(1f, 0f), Constants.grassland, Constants.hill)
+        val hill = testGame.setTileTerrainAndFeatures(Vector2(2f, 0f), Constants.grassland, Constants.forest)
         val viewableTiles = grassland.getViewableTilesList(2)
-        assert(!viewableTiles.contains(hill))
+
+        assertFalse(viewableTiles.contains(hill))
     }
 
     @Test
     fun canSeeHillForestOverHill() {
-        val grassland = addTile("Grassland", Vector2(0f,0f))
-        addTile(listOf("Grassland", "Forest"), Vector2(1f,0f))
-        val hill = addTile(listOf("Grassland", "Hill", "Forest"), Vector2(2f, 0f))
+        val grassland = testGame.setTileTerrain(Vector2.Zero, Constants.grassland)
+        testGame.setTileTerrainAndFeatures(Vector2(1f, 0f), Constants.grassland, Constants.forest)
+        val hill = testGame.setTileTerrainAndFeatures(Vector2(2f, 0f), Constants.grassland, Constants.hill, Constants.forest)
         val viewableTiles = grassland.getViewableTilesList(2)
-        assert(viewableTiles.contains(hill))
+
+        assertTrue(viewableTiles.contains(hill))
     }
 
     @Test
     fun canSeeMountainOverHill() {
-        val grassland = addTile("Grassland", Vector2(0f,0f))
-        addTile(listOf("Grassland", "Hill"), Vector2(1f,0f))
-        val hill = addTile(listOf("Mountain"), Vector2(2f, 0f))
+        val grassland = testGame.setTileTerrain(Vector2.Zero, Constants.grassland)
+        testGame.setTileTerrainAndFeatures(Vector2(1f, 0f), Constants.grassland, Constants.hill)
+        val mountain = testGame.setTileTerrain(Vector2(2f, 0f), Constants.mountain)
         val viewableTiles = grassland.getViewableTilesList(2)
-        assert(viewableTiles.contains(hill))
+
+        assertTrue(viewableTiles.contains(mountain))
     }
 
     @Test
     fun cannotSeeMountainOverHillForest() {
-        val grassland = addTile(listOf("Grassland", "Hill"), Vector2(0f,0f))
-        addTile(listOf("Grassland", "Hill"), Vector2(0f,0f))
-        addTile(listOf("Grassland", "Hill", "Forest"), Vector2(1f,0f))
-        val mountain = addTile(listOf("Mountain"), Vector2(2f, 0f))
+        val grassland = testGame.setTileTerrainAndFeatures(Vector2.Zero, Constants.grassland, Constants.hill)
+        testGame.setTileTerrainAndFeatures(Vector2(1f, 0f), Constants.grassland, Constants.hill, Constants.forest)
+        val mountain = testGame.setTileTerrain(Vector2(2f, 0f), Constants.mountain)
         val viewableTiles = grassland.getViewableTilesList(4)
-        assert(!viewableTiles.contains(mountain))
+
+        assertFalse(viewableTiles.contains(mountain))
     }
 
 
     @Test
     fun cannotSee3TilesAwayPlain() {
-        val source = addTile("Grassland", Vector2(0f,0f))
-        addTile("Grassland", Vector2(1f,0f))
-        addTile("Grassland", Vector2(2f,0f))
-        val beyondSight = addTile("Grassland", Vector2(3f,0f))
+        val source = testGame.setTileTerrain(Vector2.Zero, Constants.grassland)
+        testGame.setTileTerrain(Vector2(1f, 0f), Constants.grassland)
+        testGame.setTileTerrain(Vector2(2f, 0f), Constants.grassland)
+        val beyondSight = testGame.setTileTerrain(Vector2(3f, 0f), Constants.grassland)
 
         val viewableTiles = source.getViewableTilesList(2)
-        assert(!viewableTiles.contains(beyondSight))
+
+        assertFalse(viewableTiles.contains(beyondSight))
     }
 
     @Test
     fun canSeeElevation3Tiles() {
-        val source = addTile("Grassland", Vector2(0f,0f))
-        addTile("Grassland", Vector2(1f,0f))
-        addTile("Grassland", Vector2(2f,0f))
-        val beyondSight = addTile(listOf("Grassland", "Hill"), Vector2(3f,0f))
+        val source = testGame.setTileTerrain(Vector2.Zero, Constants.grassland)
+        testGame.setTileTerrain(Vector2(1f, 0f), Constants.grassland)
+        testGame.setTileTerrain(Vector2(2f, 0f), Constants.grassland)
+        val beyondSight = testGame.setTileTerrainAndFeatures(Vector2(3f, 0f), Constants.grassland, Constants.hill)
 
         val viewableTiles = source.getViewableTilesList(2)
-        assert(viewableTiles.contains(beyondSight))
+
+        assertTrue(viewableTiles.contains(beyondSight))
     }
 
     @Test
     fun canSeeElevation3TilesEvenWithInvisibleIntermediate() {
-        val source = addTile("Grassland", Vector2(0f,0f))
-        addTile(listOf("Grassland", "Hill"), Vector2(1f,0f))
-        val intermediate = addTile(listOf("Grassland", "Hill"), Vector2(2f,0f))
-        val beyondSight = addTile(listOf("Grassland", "Hill", "Forest"), Vector2(3f,0f))
+        val source = testGame.setTileTerrain(Vector2.Zero, Constants.grassland)
+        testGame.setTileTerrainAndFeatures(Vector2(1f, 0f), Constants.grassland, Constants.hill)
+        val intermediate = testGame.setTileTerrainAndFeatures(Vector2(2f, 0f), Constants.grassland, Constants.hill)
+        val beyondSight = testGame.setTileTerrainAndFeatures(Vector2(3f, 0f), Constants.grassland, Constants.hill, Constants.forest)
 
         val viewableTiles = source.getViewableTilesList(2)
-        assert(viewableTiles.contains(beyondSight))
-        assert(!viewableTiles.contains(intermediate))
+
+        assertTrue(viewableTiles.contains(beyondSight))
+        assertFalse(viewableTiles.contains(intermediate))
     }
 
     @Test
     fun cannotSeeHiddenElevation3Tiles() {
-        val source = addTile("Grassland", Vector2(0f,0f))
-        addTile("Grassland", Vector2(1f,0f))
-        addTile(listOf("Grassland", "Forest"), Vector2(2f,0f))
-        val beyondSight = addTile(listOf("Grassland", "Hill"), Vector2(3f,0f))
+        val source = testGame.setTileTerrain(Vector2.Zero, Constants.grassland)
+        testGame.setTileTerrain(Vector2(1f, 0f), Constants.grassland)
+        testGame.setTileTerrainAndFeatures(Vector2(2f, 0f), Constants.grassland, Constants.forest)
+        val beyondSight = testGame.setTileTerrainAndFeatures(Vector2(3f, 0f), Constants.grassland, Constants.hill)
 
         val viewableTiles = source.getViewableTilesList(2)
-        assert(!viewableTiles.contains(beyondSight))
+
+        assertFalse(viewableTiles.contains(beyondSight))
     }
 
     @Test
     fun canSeeButNotAttackHillForestOverHill() {
-        val grassland = addTile("Grassland", Vector2(0f,0f))
-        addTile(listOf("Grassland", "Hill"), Vector2(1f,0f))
-        val hillForest = addTile(listOf("Grassland", "Hill", "Forest"), Vector2(2f, 0f))
+        val grassland = testGame.setTileTerrain(Vector2.Zero, Constants.grassland)
+        testGame.setTileTerrainAndFeatures(Vector2(1f, 0f), Constants.grassland, Constants.hill)
+        val hillForest = testGame.setTileTerrainAndFeatures(Vector2(2f, 0f), Constants.grassland, Constants.hill, Constants.forest)
         val viewableTiles = grassland.getViewableTilesList(2)
-        assert(viewableTiles.contains(hillForest))
-        val attackableTiles = tileMap.getViewableTiles(grassland.position, 2, true)
-        assert(!attackableTiles.contains(hillForest))
+
+        assertTrue(viewableTiles.contains(hillForest))
+
+        val attackableTiles = testGame.tileMap.getViewableTiles(grassland.position, 2, true)
+
+        assertFalse(attackableTiles.contains(hillForest))
     }
 
     @Test
     fun canSeeAndAttackMountainOverHill() {
-        val grassland = addTile("Grassland", Vector2(0f,0f))
-        addTile(listOf("Grassland", "Hill"), Vector2(1f,0f))
-        val mountain = addTile(listOf("Mountain"), Vector2(2f, 0f))
+        val grassland = testGame.setTileTerrain(Vector2.Zero, Constants.grassland)
+        testGame.setTileTerrainAndFeatures(Vector2(1f, 0f), Constants.grassland, Constants.hill)
+        val mountain = testGame.setTileTerrain(Vector2(2f, 0f), Constants.mountain)
         val viewableTiles = grassland.getViewableTilesList(2)
-        assert(viewableTiles.contains(mountain))
-        val attackableTiles = tileMap.getViewableTiles(grassland.position, 2, true)
-        assert(attackableTiles.contains(mountain))
+
+        assertTrue(viewableTiles.contains(mountain))
+
+        val attackableTiles = testGame.tileMap.getViewableTiles(grassland.position, 2, true)
+
+        assertTrue(attackableTiles.contains(mountain))
     }
 
 }

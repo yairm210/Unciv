@@ -5,8 +5,9 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.logic.civilization.Civilization
 import com.unciv.models.ruleset.Victory
-import com.unciv.ui.components.TabbedPager
+import com.unciv.ui.components.widgets.TabbedPager
 import com.unciv.ui.components.extensions.addSeparator
+import com.unciv.ui.components.extensions.equalizeColumns
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.worldscreen.WorldScreen
@@ -15,6 +16,7 @@ class VictoryScreenOurVictory(
     worldScreen: WorldScreen
 ) : Table(BaseScreen.skin), TabbedPager.IPageExtensions {
     private val header = Table()
+    private val stageWidth = worldScreen.stage.width
 
     init {
         align(Align.top)
@@ -25,7 +27,7 @@ class VictoryScreenOurVictory(
         defaults().pad(10f)
         for ((victoryName, victory) in victoriesToShow) {
             header.add("[$victoryName] Victory".toLabel()).pad(10f)
-            add(getColumn(victory, worldScreen.viewingCiv))
+            add(getColumn(victory, worldScreen.viewingCiv)).top()
         }
 
         row()

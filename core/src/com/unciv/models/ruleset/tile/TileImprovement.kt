@@ -2,6 +2,7 @@ package com.unciv.models.ruleset.tile
 
 import com.unciv.Constants
 import com.unciv.UncivGame
+import com.unciv.logic.MultiFilter
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.RoadStatus
@@ -14,9 +15,10 @@ import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.extensions.toPercent
+import com.unciv.ui.objectdescriptions.uniquesToCivilopediaTextLines
+import com.unciv.ui.objectdescriptions.uniquesToDescription
 import com.unciv.ui.screens.civilopediascreen.CivilopediaScreen.Companion.showReligionInCivilopedia
 import com.unciv.ui.screens.civilopediascreen.FormattedLine
-import com.unciv.ui.screens.worldscreen.unit.actions.UnitActions
 import kotlin.math.roundToInt
 
 class TileImprovement : RulesetStatsObject() {
@@ -27,12 +29,15 @@ class TileImprovement : RulesetStatsObject() {
     override fun getUniqueTarget() = UniqueTarget.Improvement
     val shortcutKey: Char? = null
     // This is the base cost. A cost of 0 means created instead of buildable.
-    val turnsToBuild: Int = 0
+    var turnsToBuild: Int = -1
 
 
     fun getTurnsToBuild(civInfo: Civilization, unit: MapUnit): Int {
         val state = StateForConditionals(civInfo, unit = unit)
-        return unit.getMatchingUniques(UniqueType.TileImprovementTime, state, checkCivInfoUniques = true)
+        val buildSpeedUniques = unit.getMatchingUniques(UniqueType.TileImprovementTime, state, checkCivInfoUniques = true) +
+            unit.getMatchingUniques(UniqueType.SpecificImprovementTime, state, checkCivInfoUniques = true)
+                .filter { matchesFilter(it.params[1]) }
+        return buildSpeedUniques
             .fold(turnsToBuild.toFloat() * civInfo.gameInfo.speed.improvementBuildLengthModifier) { calculatedTurnsToBuild, unique ->
                 calculatedTurnsToBuild * unique.params[0].toPercent()
             }.roundToInt()
@@ -59,8 +64,7 @@ class TileImprovement : RulesetStatsObject() {
         }
         if (techRequired != null) lines += "Required tech: [$techRequired]".tr()
 
-        for (unique in uniques)
-            lines += unique.tr()
+        uniquesToDescription(lines)
 
         return lines.joinToString("\n")
     }
@@ -71,40 +75,6 @@ class TileImprovement : RulesetStatsObject() {
 
     fun canBeBuiltOn(terrain: String): Boolean {
         return terrain in terrainsCanBeBuiltOn
-    }
-
-    fun handleImprovementCompletion(builder: MapUnit) {
-        val tile = builder.getTile()
-
-        if (hasUnique(UniqueType.TakesOverAdjacentTiles))
-            UnitActions.takeOverTilesAround(builder)
-
-        if (tile.resource != null) {
-            val city = builder.getTile().getCity()
-            if (city != null) {
-                city.updateCitizens = true
-                city.cityStats.update()
-                city.civ.cache.updateCivResources()
-            }
-        }
-
-        if (hasUnique(UniqueType.RemovesFeaturesIfBuilt)) {
-            // Remove terrainFeatures that a Worker can remove
-            // and that aren't explicitly allowed under the improvement
-            val removableTerrainFeatures = tile.terrainFeatures.filter { feature ->
-                val removingAction = "${Constants.remove}$feature"
-
-                removingAction in tile.ruleset.tileImprovements
-                && !isAllowedOnFeature(feature)
-                && tile.ruleset.tileImprovements[removingAction]!!.let {
-                    it.techRequired == null || builder.civ.tech.isResearched(it.techRequired!!)
-                }
-            }
-
-            tile.setTerrainFeatures(tile.terrainFeatures.filterNot { it in removableTerrainFeatures })
-        }
-
-        tile.owningCity?.reassignPopulationDeferred()
     }
 
     /**
@@ -121,12 +91,17 @@ class TileImprovement : RulesetStatsObject() {
 
     /** Implements [UniqueParameterType.ImprovementFilter][com.unciv.models.ruleset.unique.UniqueParameterType.ImprovementFilter] */
     fun matchesFilter(filter: String): Boolean {
+        return MultiFilter.multiFilter(filter, ::matchesSingleFilter)
+    }
+
+    fun matchesSingleFilter(filter: String): Boolean {
         return when (filter) {
             name -> true
             "All" -> true
+            "Improvement" -> true // For situations involing tileFilter
             "All Road" -> isRoad()
             "Great Improvement", "Great" -> isGreatImprovement()
-            in uniques -> true
+            in uniqueMap -> true
             else -> false
         }
     }
@@ -179,11 +154,7 @@ class TileImprovement : RulesetStatsObject() {
             textList += FormattedLine("Required tech: [$techRequired]", link="Technology/$techRequired")
         }
 
-        if (uniques.isNotEmpty()) {
-            textList += FormattedLine()
-            for (unique in uniqueObjects)
-                textList += FormattedLine(unique)
-        }
+        uniquesToCivilopediaTextLines(textList)
 
         // Be clearer when one needs to chop down a Forest first... A "Can be built on Plains" is clear enough,
         // but a "Can be built on Land" is not - how is the user to know Forest is _not_ Land?
@@ -269,7 +240,7 @@ class TileImprovement : RulesetStatsObject() {
 
         return ruleset.units.values.asSequence()
             .filter { unit ->
-                turnsToBuild != 0
+                turnsToBuild != -1
                     && unit.getMatchingUniques(UniqueType.BuildImprovements, StateForConditionals.IgnoreConditionals)
                         .any { matchesBuildImprovementsFilter(it.params[0]) }
                 || unit.hasUnique(UniqueType.CreateWaterImprovements)
@@ -280,8 +251,7 @@ class TileImprovement : RulesetStatsObject() {
     private fun getCreatingUnits(ruleset: Ruleset): List<BaseUnit> {
         return ruleset.units.values.asSequence()
             .filter { unit ->
-                (unit.getMatchingUniques(UniqueType.ConstructImprovementConsumingUnit, StateForConditionals.IgnoreConditionals)
-                        + unit.getMatchingUniques(UniqueType.ConstructImprovementInstantly))
+                unit.getMatchingUniques(UniqueType.ConstructImprovementInstantly, StateForConditionals.IgnoreConditionals)
                     .any { it.params[0] == name }
             }.toList()
     }

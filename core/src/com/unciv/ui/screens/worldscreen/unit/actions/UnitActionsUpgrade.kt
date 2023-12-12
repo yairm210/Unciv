@@ -1,20 +1,23 @@
 package com.unciv.ui.screens.worldscreen.unit.actions
 
 import com.unciv.logic.map.mapunit.MapUnit
+import com.unciv.logic.map.tile.Tile
 import com.unciv.models.Counter
 import com.unciv.models.UnitAction
 import com.unciv.models.UpgradeUnitAction
+import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.tr
 
 object UnitActionsUpgrade {
 
-    internal fun addUnitUpgradeAction(
+    internal fun getUnitUpgradeActions(
         unit: MapUnit,
-        actionList: ArrayList<UnitAction>
-    ) {
+        tile: Tile
+    ): List<UnitAction> {
         val upgradeAction = getUpgradeAction(unit)
-        if (upgradeAction != null) actionList += upgradeAction
+        if (upgradeAction != null) return listOf(upgradeAction)
+        return listOf()
     }
 
     /**  Common implementation for [getUpgradeAction], [getFreeUpgradeAction] and [getAncientRuinsUpgradeAction] */
@@ -43,9 +46,9 @@ object UnitActionsUpgrade {
         // Check _new_ resource requirements (display only - yes even for free or special upgrades)
         // Using Counter to aggregate is a bit exaggerated, but - respect the mad modder.
         val resourceRequirementsDelta = Counter<String>()
-        for ((resource, amount) in unit.baseUnit().getResourceRequirementsPerTurn())
+        for ((resource, amount) in unit.getResourceRequirementsPerTurn())
             resourceRequirementsDelta.add(resource, -amount)
-        for ((resource, amount) in upgradedUnit.getResourceRequirementsPerTurn())
+        for ((resource, amount) in upgradedUnit.getResourceRequirementsPerTurn(StateForConditionals(unit.civ, unit = unit)))
             resourceRequirementsDelta.add(resource, amount)
         for ((resource, _) in resourceRequirementsDelta.filter { it.value < 0 })  // filter copies, so no CCM
             resourceRequirementsDelta[resource] = 0
@@ -67,7 +70,7 @@ object UnitActionsUpgrade {
             newResourceRequirements = resourceRequirementsDelta,
             action = {
                 unit.destroy(destroyTransportedUnit = false)
-                val newUnit = civInfo.units.placeUnitNearTile(unitTile.position, upgradedUnit.name)
+                val newUnit = civInfo.units.placeUnitNearTile(unitTile.position, upgradedUnit)
 
                 /** We were UNABLE to place the new unit, which means that the unit failed to upgrade!
                  * The only known cause of this currently is "land units upgrading to water units" which fail to be placed.
@@ -77,7 +80,7 @@ object UnitActionsUpgrade {
                  * The only known cause of this currently is "land units upgrading to water units" which fail to be placed.
                  */
                 if (newUnit == null) {
-                    val resurrectedUnit = civInfo.units.placeUnitNearTile(unitTile.position, unit.name)!!
+                    val resurrectedUnit = civInfo.units.placeUnitNearTile(unitTile.position, unit.baseUnit)!!
                     unit.copyStatisticsTo(resurrectedUnit)
                 } else { // Managed to upgrade
                     if (!isFree) civInfo.addGold(-goldCostOfUpgrade)

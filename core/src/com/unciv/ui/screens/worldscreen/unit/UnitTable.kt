@@ -1,25 +1,25 @@
 package com.unciv.ui.screens.worldscreen.unit
 
 import com.badlogic.gdx.Gdx
-import com.badlogic.gdx.Input
+import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.Table
-import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup
 import com.unciv.Constants
 import com.unciv.logic.battle.CityCombatant
 import com.unciv.logic.city.City
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
-import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.tr
-import com.unciv.ui.components.UnitGroup
 import com.unciv.ui.components.extensions.addSeparator
 import com.unciv.ui.components.extensions.center
 import com.unciv.ui.components.extensions.darken
-import com.unciv.ui.components.input.onClick
+import com.unciv.ui.components.extensions.isShiftKeyPressed
+import com.unciv.ui.components.extensions.toImageButton
 import com.unciv.ui.components.extensions.toLabel
+import com.unciv.ui.components.input.onClick
+import com.unciv.ui.components.widgets.UnitGroup
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.civilopediascreen.CivilopediaCategories
@@ -46,6 +46,9 @@ class UnitTable(val worldScreen: WorldScreen) : Table() {
     // Whether the (first) selected unit is in unit-swapping mode
     var selectedUnitIsSwapping = false
 
+    // Whether the (first) selected unit is in road-connecting mode
+    var selectedUnitIsConnectingRoad = false
+
     /** Sending no unit clears the selected units entirely */
     fun selectUnit(unit: MapUnit?=null, append:Boolean=false) {
         if (!append) selectedUnits.clear()
@@ -55,10 +58,10 @@ class UnitTable(val worldScreen: WorldScreen) : Table() {
             unit.actionsOnDeselect()
         }
         selectedUnitIsSwapping = false
+        selectedUnitIsConnectingRoad = false
     }
 
     var selectedCity : City? = null
-    private val deselectUnitButton = Table()
 
     // This is so that not on every update(), we will update the unit table.
     // Most of the time it's the same unit with the same stats so why waste precious time?
@@ -81,20 +84,13 @@ class UnitTable(val worldScreen: WorldScreen) : Table() {
 
         promotionsTable.touchable = Touchable.enabled
 
-        add(VerticalGroup().apply {
-            pad(5f)
-            touchable = Touchable.enabled
-            onClick {
-                selectUnit()
-                worldScreen.shouldUpdate = true
-                this@UnitTable.isVisible = false
-            }
-
-            deselectUnitButton.add(ImageGetter.getImage("OtherIcons/Close")).size(20f).pad(10f)
-            deselectUnitButton.pack()
-            deselectUnitButton.touchable = Touchable.enabled
-            addActor(deselectUnitButton)
-        }).left()
+        val deselectUnitButton = "OtherIcons/Close".toImageButton(20f, 50f, Color.CLEAR, Color.RED)
+        deselectUnitButton.onClick {
+            selectUnit()
+            worldScreen.shouldUpdate = true
+            this@UnitTable.isVisible = false
+        }
+        add(deselectUnitButton).left()
 
         add(Table().apply {
             val moveBetweenUnitsTable = Table().apply {
@@ -185,10 +181,10 @@ class UnitTable(val worldScreen: WorldScreen) : Table() {
                     unitDescriptionTable.add(unit.getRange().toString()).padRight(10f)
                 }
 
-                if (unit.baseUnit.interceptRange > 0) {
+                val interceptionRange = unit.getInterceptionRange()
+                if (interceptionRange > 0) {
                     unitDescriptionTable.add(ImageGetter.getStatIcon("InterceptRange")).size(20f)
-                    val range = if (unit.baseUnit.isRanged()) unit.getRange() else unit.baseUnit.interceptRange
-                    unitDescriptionTable.add(range.toString()).padRight(10f)
+                    unitDescriptionTable.add(interceptionRange.toString()).padRight(10f)
                 }
 
                 if (!unit.isCivilian()) {
@@ -300,7 +296,13 @@ class UnitTable(val worldScreen: WorldScreen) : Table() {
     }
 
     fun citySelected(city: City) : Boolean {
-        selectUnit()
+        // If the last selected unit connecting a road, keep it selected. Otherwise, clear.
+        if(selectedUnitIsConnectingRoad){
+            selectUnit(selectedUnits[0])
+            selectedUnitIsConnectingRoad = true // selectUnit resets this
+        }else{
+            selectUnit()
+        }
         if (city == selectedCity) return false
         selectedCity = city
         selectedUnitHasChanged = true
@@ -320,12 +322,18 @@ class UnitTable(val worldScreen: WorldScreen) : Table() {
 
         fun MapUnit.isEligible(): Boolean = (this.civ == worldScreen.viewingCiv
                 || worldScreen.viewingCiv.isSpectator()) && this !in selectedUnits
-        fun MapUnit.isPrioritized(): Boolean = this.isGreatPerson() || this.hasUnique(UniqueType.FoundCity)
 
-        // Civ 5 Order of selection:
+        // This is the Civ 5 Order of selection:
         // 1. City
         // 2. GP + Settlers
         // 3. Military
+        // 4. Other civilian (Workers)
+        // 5. None (Deselect)
+        // However we deviate from it because there was a poll on Discord that clearly showed that
+        // people would prefer the military unit to always be preferred over GP, so we use this:
+        // 1. City
+        // 2. Military
+        // 3. GP + Settlers
         // 4. Other civilian (Workers)
         // 5. None (Deselect)
 
@@ -335,7 +343,6 @@ class UnitTable(val worldScreen: WorldScreen) : Table() {
 
         val nextUnit: MapUnit?
         val priorityUnit = when {
-            civUnit != null && civUnit.isEligible() && civUnit.isPrioritized() -> civUnit
             milUnit != null && milUnit.isEligible() -> milUnit
             civUnit != null && civUnit.isEligible() -> civUnit
             else -> null
@@ -343,8 +350,8 @@ class UnitTable(val worldScreen: WorldScreen) : Table() {
 
         nextUnit = when {
                 curUnit == null -> priorityUnit
-                curUnit == civUnit && milUnit != null && milUnit.isEligible() -> {if (civUnit.isPrioritized()) milUnit else null}
-                curUnit == milUnit && civUnit != null && civUnit.isEligible() -> {if (civUnit.isPrioritized()) null else civUnit}
+                curUnit == civUnit && milUnit != null && milUnit.isEligible() -> null
+                curUnit == milUnit && civUnit != null && civUnit.isEligible() -> civUnit
                 else -> priorityUnit
             }
 
@@ -355,7 +362,7 @@ class UnitTable(val worldScreen: WorldScreen) : Table() {
             selectedTile.isCityCenter() &&
                     (selectedTile.getOwner() == worldScreen.viewingCiv || worldScreen.viewingCiv.isSpectator()) ->
                 citySelected(selectedTile.getCity()!!)
-            nextUnit != null -> selectUnit(nextUnit, Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT))
+            nextUnit != null -> selectUnit(nextUnit, Gdx.input.isShiftKeyPressed())
             selectedTile == previouslySelectedUnit?.currentTile -> {
                 selectUnit()
                 isVisible = false

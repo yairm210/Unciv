@@ -18,15 +18,22 @@ import com.badlogic.gdx.utils.viewport.ExtendViewport
 import com.unciv.UncivGame
 import com.unciv.models.TutorialTrigger
 import com.unciv.models.skins.SkinStrings
-import com.unciv.ui.components.Fonts
-import com.unciv.ui.components.input.KeyShortcutDispatcher
-import com.unciv.ui.components.input.DispatcherVetoResult
-import com.unciv.ui.components.input.DispatcherVetoer
-import com.unciv.ui.components.input.installShortcutDispatcher
 import com.unciv.ui.components.extensions.isNarrowerThan4to3
+import com.unciv.ui.components.fonts.Fonts
+import com.unciv.ui.components.input.DispatcherVetoer
+import com.unciv.ui.components.input.KeyShortcutDispatcher
+import com.unciv.ui.components.input.KeyShortcutDispatcherVeto
+import com.unciv.ui.components.input.installShortcutDispatcher
+import com.unciv.ui.components.input.keyShortcuts
+import com.unciv.ui.crashhandling.CrashScreen
 import com.unciv.ui.images.ImageGetter
+import com.unciv.ui.popups.Popup
 import com.unciv.ui.popups.activePopup
 import com.unciv.ui.popups.options.OptionsPopup
+
+// Both `this is CrashScreen` and `this::createPopupBasedDispatcherVetoer` are flagged.
+// First - not a leak; second - passes out a pure function
+@Suppress("LeakingThis")
 
 abstract class BaseScreen : Screen {
 
@@ -37,7 +44,7 @@ abstract class BaseScreen : Screen {
 
     /**
      * Keyboard shortcuts global to the screen. While this is public and can be modified,
-     * you most likely should use [keyShortcuts][Actor.keyShortcuts] on appropriate [Actor] instead.
+     * you most likely should use [keyShortcuts] on the appropriate [Actor] instead.
      */
     val globalShortcuts = KeyShortcutDispatcher()
 
@@ -48,28 +55,27 @@ abstract class BaseScreen : Screen {
         /** The ExtendViewport sets the _minimum_(!) world size - the actual world size will be larger, fitted to screen/window aspect ratio. */
         stage = UncivStage(ExtendViewport(height, height))
 
-        if (enableSceneDebug) {
+        if (enableSceneDebug && this !is CrashScreen) {
             stage.setDebugUnderMouse(true)
             stage.setDebugTableUnderMouse(true)
             stage.setDebugParentUnderMouse(true)
+            stage.mouseOverDebug = true
         }
 
-        stage.installShortcutDispatcher(globalShortcuts, this::createPopupBasedDispatcherVetoer)
+        @Suppress("LeakingThis")
+        stage.installShortcutDispatcher(globalShortcuts, this::createDispatcherVetoer)
     }
 
-    private fun createPopupBasedDispatcherVetoer(): DispatcherVetoer? {
+    /** Hook allowing derived Screens to supply a key shortcut vetoer that can exclude parts of the
+     *  Stage Actor hierarchy from the search. Only called if no [Popup] is active.
+     *  @see installShortcutDispatcher
+     */
+    open fun getShortcutDispatcherVetoer(): DispatcherVetoer? = null
+
+    private fun createDispatcherVetoer(): DispatcherVetoer? {
         val activePopup = this.activePopup
-        if (activePopup == null)
-            return null
-        else {
-            // When any popup is active, disable all shortcuts on actor outside the popup
-            // and also the global shortcuts on the screen itself.
-            return { associatedActor: Actor?, _: KeyShortcutDispatcher? ->
-                when { associatedActor == null -> DispatcherVetoResult.Skip
-                       associatedActor.isDescendantOf(activePopup) -> DispatcherVetoResult.Accept
-                       else -> DispatcherVetoResult.SkipWithChildren }
-            }
-        }
+            ?: return getShortcutDispatcherVetoer()
+        return KeyShortcutDispatcherVeto.createPopupBasedDispatcherVetoer(activePopup)
     }
 
     override fun show() {}
@@ -168,8 +174,8 @@ abstract class BaseScreen : Screen {
     /** @return `true` if the screen is narrower than 4:3 landscape */
     fun isNarrowerThan4to3() = stage.isNarrowerThan4to3()
 
-    fun openOptionsPopup(startingPage: Int = OptionsPopup.defaultPage, onClose: () -> Unit = {}) {
-        OptionsPopup(this, startingPage, onClose).open(force = true)
+    open fun openOptionsPopup(startingPage: Int = OptionsPopup.defaultPage, withDebug: Boolean = false, onClose: () -> Unit = {}) {
+        OptionsPopup(this, startingPage, withDebug, onClose).open(force = true)
     }
 }
 

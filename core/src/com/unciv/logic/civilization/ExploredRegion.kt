@@ -160,7 +160,7 @@ class ExploredRegion : IsPartOfGameInfoSerialization {
             mapExplored = true
         }
 
-        if(mapExplored){
+        if(mapExplored) {
             shouldRecalculateCoords = true
             shouldUpdateMinimap = true
         }

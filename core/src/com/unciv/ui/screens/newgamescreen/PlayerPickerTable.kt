@@ -16,21 +16,16 @@ import com.unciv.models.metadata.Player
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.nation.Nation
 import com.unciv.models.translations.tr
-import com.unciv.ui.audio.MusicMood
-import com.unciv.ui.audio.MusicTrackChooserFlags
 import com.unciv.ui.components.input.KeyCharAndCode
 import com.unciv.ui.components.UncivTextField
-import com.unciv.ui.components.WrappableLabel
+import com.unciv.ui.components.widgets.WrappableLabel
 import com.unciv.ui.components.extensions.darken
 import com.unciv.ui.components.extensions.isEnabled
-import com.unciv.ui.components.extensions.isNarrowerThan4to3
 import com.unciv.ui.components.input.keyShortcuts
 import com.unciv.ui.components.input.onActivation
 import com.unciv.ui.components.input.onClick
-import com.unciv.ui.components.input.onDoubleClick
 import com.unciv.ui.components.extensions.setFontColor
 import com.unciv.ui.components.extensions.surroundWithCircle
-import com.unciv.ui.components.extensions.toImageButton
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
 import com.unciv.ui.images.ImageGetter
@@ -40,7 +35,7 @@ import com.unciv.ui.screens.multiplayerscreens.FriendPickerList
 import com.unciv.ui.screens.pickerscreens.PickerPane
 import com.unciv.ui.screens.pickerscreens.PickerScreen
 import java.util.UUID
-import com.unciv.ui.components.AutoScrollPane as ScrollPane
+import com.unciv.ui.components.widgets.AutoScrollPane as ScrollPane
 
 /**
  * This [Table] is used to pick or edit players information for new game creation.
@@ -390,116 +385,4 @@ class FriendSelectionPopup(
         pickerPane.rightSideButton.setText("Select [$friendName]".tr())
     }
 
-}
-
-private class NationPickerPopup(
-    private val playerPicker: PlayerPickerTable,
-    private val player: Player,
-    noRandom: Boolean
-) : Popup(playerPicker.previousScreen as BaseScreen) {
-    companion object {
-        // These are used for the Close/OK buttons in the lower left/right corners:
-        const val buttonsCircleSize = 70f
-        const val buttonsIconSize = 50f
-        const val buttonsOffsetFromEdge = 5f
-        val buttonsBackColor: Color = Color.BLACK.cpy().apply { a = 0.67f }
-    }
-
-    private val previousScreen = playerPicker.previousScreen
-    private val ruleset = previousScreen.ruleset
-    // This Popup's body has two halves of same size, either side by side or arranged vertically
-    // depending on screen proportions - determine height for one of those
-    private val partHeight = stageToShowOn.height * (if (stageToShowOn.isNarrowerThan4to3()) 0.45f else 0.8f)
-    private val civBlocksWidth = playerPicker.civBlocksWidth
-    private val nationListTable = Table()
-    private val nationListScroll = ScrollPane(nationListTable)
-    private val nationDetailsTable = Table()
-    private val nationDetailsScroll = ScrollPane(nationDetailsTable)
-    private var selectedNation: Nation? = null
-
-    init {
-        nationListScroll.setOverscroll(false, false)
-        add(nationListScroll).size( civBlocksWidth + 10f, partHeight )
-            // +10, because the nation table has a 5f pad, for a total of +10f
-        if (stageToShowOn.isNarrowerThan4to3()) row()
-        nationDetailsScroll.setOverscroll(false, false)
-        add(nationDetailsScroll).size(civBlocksWidth + 10f, partHeight) // Same here, see above
-
-        val nationSequence = sequence {
-            if (!noRandom) yield(Nation().apply {
-                name = Constants.random
-                innerColor = listOf(255, 255, 255)
-                outerColor = listOf(0, 0, 0)
-                setTransients()
-            })
-            val spectator = previousScreen.ruleset.nations[Constants.spectator]
-            if (spectator != null && player.playerType != PlayerType.AI)  // only humans can spectate, sorry robots
-                yield(spectator)
-        } + playerPicker.getAvailablePlayerCivs(player.chosenCiv)
-            .sortedWith(compareBy(UncivGame.Current.settings.getCollatorFromLocale()) { it.name.tr() })
-        val nations = nationSequence.toCollection(ArrayList(previousScreen.ruleset.nations.size))
-
-        var nationListScrollY = 0f
-        var currentY = 0f
-        for (nation in nations) {
-            if (player.chosenCiv == nation.name)
-                nationListScrollY = currentY
-            val nationTable = NationTable(nation, civBlocksWidth, 0f) // no need for min height
-            val cell = nationListTable.add(nationTable)
-            currentY += cell.padBottom + cell.prefHeight + cell.padTop
-            cell.row()
-            nationTable.onClick {
-                setNationDetails(nation)
-            }
-            nationTable.onDoubleClick {
-                selectedNation = nation
-                returnSelected()
-            }
-            if (player.chosenCiv == nation.name)
-                setNationDetails(nation)
-        }
-
-        nationListScroll.layout()
-        pack()
-        if (nationListScrollY > 0f) {
-            // center the selected nation vertically, getRowHeight safe because nationListScrollY > 0f ensures at least 1 row
-            nationListScrollY -= (nationListScroll.height - nationListTable.getRowHeight(0)) / 2
-            nationListScroll.scrollY = nationListScrollY.coerceIn(0f, nationListScroll.maxY)
-        }
-
-        val closeButton = "OtherIcons/Close".toImageButton(Color.FIREBRICK)
-        closeButton.onActivation { close() }
-        closeButton.keyShortcuts.add(KeyCharAndCode.BACK)
-        closeButton.setPosition(buttonsOffsetFromEdge, buttonsOffsetFromEdge, Align.bottomLeft)
-        innerTable.addActor(closeButton)
-        clickBehindToClose = true
-
-        val okButton = "OtherIcons/Checkmark".toImageButton(Color.LIME)
-        okButton.onClick { returnSelected() }
-        okButton.setPosition(innerTable.width - buttonsOffsetFromEdge, buttonsOffsetFromEdge, Align.bottomRight)
-        innerTable.addActor(okButton)
-
-        nationDetailsTable.touchable = Touchable.enabled
-        nationDetailsTable.onClick { returnSelected() }
-    }
-
-    private fun String.toImageButton(overColor: Color) =
-            toImageButton(buttonsIconSize, buttonsCircleSize, buttonsBackColor, overColor)
-
-    private fun setNationDetails(nation: Nation) {
-        nationDetailsTable.clearChildren()  // .clear() also clears listeners!
-
-        nationDetailsTable.add(NationTable(nation, civBlocksWidth, partHeight, ruleset))
-        selectedNation = nation
-    }
-
-    private fun returnSelected() {
-        if (selectedNation == null) return
-
-        UncivGame.Current.musicController.chooseTrack(selectedNation!!.name, MusicMood.themeOrPeace, MusicTrackChooserFlags.setSelectNation)
-
-        player.chosenCiv = selectedNation!!.name
-        close()
-        playerPicker.update()
-    }
 }

@@ -2,11 +2,12 @@ package com.unciv.ui.screens.newgamescreen
 
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.logic.map.MapGeneratedMainType
-import com.unciv.ui.components.input.onChange
 import com.unciv.ui.components.extensions.toLabel
+import com.unciv.ui.components.input.onChange
+import com.unciv.ui.components.widgets.TranslatedSelectBox
 import com.unciv.ui.screens.basescreen.BaseScreen
 
-class MapOptionsTable(private val newGameScreen: NewGameScreen): Table() {
+class MapOptionsTable(private val newGameScreen: NewGameScreen, isReset: Boolean = true) : Table() {
 
     private val mapParameters = newGameScreen.gameSetupInfo.mapParameters
     private var mapTypeSpecificTable = Table()
@@ -22,13 +23,19 @@ class MapOptionsTable(private val newGameScreen: NewGameScreen): Table() {
 
         val mapTypes = arrayListOf(MapGeneratedMainType.generated, MapGeneratedMainType.randomGenerated)
         if (savedMapOptionsTable.isNotEmpty()) mapTypes.add(MapGeneratedMainType.custom)
-        mapTypeSelectBox = TranslatedSelectBox(mapTypes, "Generated", BaseScreen.skin)
+
+        // Pre-select custom if any map saved within last 15 minutes
+        val chooseCustom = !isReset && (
+                savedMapOptionsTable.recentlySavedMapExists() ||
+                savedMapOptionsTable.isNotEmpty() && mapParameters.type == MapGeneratedMainType.custom && mapParameters.name.isNotEmpty()
+            )
+        val mapTypeDefault = if (chooseCustom) MapGeneratedMainType.custom else MapGeneratedMainType.generated
+        mapTypeSelectBox = TranslatedSelectBox(mapTypes, mapTypeDefault, BaseScreen.skin)
 
         fun updateOnMapTypeChange() {
             mapTypeSpecificTable.clear()
             when (mapTypeSelectBox.selected.value) {
                 MapGeneratedMainType.custom -> {
-                    savedMapOptionsTable.fillMapFileSelectBox()
                     mapParameters.type = MapGeneratedMainType.custom
                     mapTypeSpecificTable.add(savedMapOptionsTable)
                     newGameScreen.unlockTables()
@@ -49,11 +56,6 @@ class MapOptionsTable(private val newGameScreen: NewGameScreen): Table() {
             newGameScreen.gameSetupInfo.gameParameters.godMode = false
             newGameScreen.updateTables()
         }
-
-        // Pre-select custom if any map saved within last 15 minutes
-        if (savedMapOptionsTable.recentlySavedMapExists())
-            mapTypeSelectBox.selected =
-                    TranslatedSelectBox.TranslatedString(MapGeneratedMainType.custom)
 
         // activate once, so when we had a file map before we'll have the right things set for another one
         updateOnMapTypeChange()

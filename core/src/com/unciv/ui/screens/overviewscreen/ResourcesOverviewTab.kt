@@ -15,6 +15,7 @@ import com.unciv.models.translations.tr
 import com.unciv.ui.components.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.components.extensions.addSeparator
 import com.unciv.ui.components.extensions.addSeparatorVertical
+import com.unciv.ui.components.extensions.equalizeColumns
 import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.extensions.pad
 import com.unciv.ui.components.extensions.surroundWithCircle
@@ -79,7 +80,7 @@ class ResourcesOverviewTab(
         val label = if (resource.isStockpiled() && amount > 0) "+$amount".toLabel()
             else amount.toLabel()
         if (origin == ExtraInfoOrigin.Unimproved.name)
-            label.onClick { showOneTimeNotification(
+            label.onClick { overviewScreen.showOneTimeNotification(
                 gameInfo.getExploredResourcesNotification(viewingPlayer, resource.name) {
                     it.getOwner() == viewingPlayer && it.countAsUnimproved()
                 }
@@ -95,11 +96,11 @@ class ResourcesOverviewTab(
 
     private fun getResourceImage(name: String) =
         ImageGetter.getResourcePortrait(name, iconSize).apply {
-            onClick { showOneTimeNotification(
+            onClick { overviewScreen.showOneTimeNotification(
                 gameInfo.getExploredResourcesNotification(viewingPlayer, name)
             ) }
         }
-    private fun TileResource.getLabel() = name.toLabel().apply {
+    private fun TileResource.getLabel() = name.toLabel(hideIcons = true).apply {
         onClick {
             overviewScreen.game.pushScreen(CivilopediaScreen(gameInfo.ruleset, CivilopediaCategories.Resource, this@getLabel.name))
         }

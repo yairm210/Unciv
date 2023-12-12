@@ -3,6 +3,7 @@ package com.unciv.logic.map.tile
 import com.unciv.Constants
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
+import com.unciv.models.ruleset.tile.Terrain
 import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.ruleset.unique.LocalUniqueCache
 import com.unciv.models.ruleset.unique.StateForConditionals
@@ -12,6 +13,7 @@ import com.unciv.models.stats.Stats
 import com.unciv.ui.components.extensions.toPercent
 
 class TileStatFunctions(val tile: Tile) {
+    private val riverTerrain by lazy { tile.ruleset.terrains[Constants.river] }
 
     fun getTileStats(
         observingCiv: Civilization?,
@@ -21,29 +23,30 @@ class TileStatFunctions(val tile: Tile) {
     fun getTileStats(city: City?, observingCiv: Civilization?,
                      localUniqueCache: LocalUniqueCache = LocalUniqueCache(false)
     ): Stats {
-        val stats = getTerrainStats()
-        var minimumStats = if (tile.isCityCenter()) Stats.DefaultCityCenterMinimum else Stats.ZERO
-
         val stateForConditionals = StateForConditionals(civInfo = observingCiv, city = city, tile = tile)
 
+        val stats = getTerrainStats(stateForConditionals)
+        var minimumStats = if (tile.isCityCenter()) Stats.DefaultCityCenterMinimum else Stats.ZERO
+
         if (city != null) {
-            var tileUniques =
+            val statsFromTilesUniques =
                     localUniqueCache.forCityGetMatchingUniques(
-                            city, UniqueType.StatsFromTiles, StateForConditionals.IgnoreConditionals)
+                            city, UniqueType.StatsFromTiles,
+                        stateForConditionals)
                         .filter { city.matchesFilter(it.params[2]) }
-            tileUniques += localUniqueCache.forCityGetMatchingUniques(
-                city, UniqueType.StatsFromObject, StateForConditionals.IgnoreConditionals)
-            for (unique in tileUniques) {
-                if (!unique.conditionalsApply(stateForConditionals)) continue
+
+            val statsFromObjectsUniques = localUniqueCache.forCityGetMatchingUniques(
+                city, UniqueType.StatsFromObject, stateForConditionals)
+
+            for (unique in statsFromTilesUniques + statsFromObjectsUniques) {
                 val tileType = unique.params[1]
                 if (!tile.matchesTerrainFilter(tileType, observingCiv)) continue
                 stats.add(unique.stats)
             }
 
             for (unique in localUniqueCache.forCityGetMatchingUniques(
-                    city, UniqueType.StatsFromTilesWithout, StateForConditionals.IgnoreConditionals)) {
+                    city, UniqueType.StatsFromTilesWithout, stateForConditionals)) {
                 if (
-                        unique.conditionalsApply(stateForConditionals) &&
                         tile.matchesTerrainFilter(unique.params[1]) &&
                         !tile.matchesTerrainFilter(unique.params[2]) &&
                         city.matchesFilter(unique.params[3])
@@ -52,7 +55,15 @@ class TileStatFunctions(val tile: Tile) {
             }
         }
 
-        if (tile.isAdjacentToRiver()) stats.gold++
+        if (tile.isAdjacentToRiver()) {
+            if (riverTerrain == null)
+                stats.gold++  // Fallback for legacy mods
+            else
+                //TODO this is one approach to get these stats in - supporting only the Stats UniqueType.
+                //     Alternatives: append riverTerrain to allTerrains, or append riverTerrain.uniques to
+                //     the Tile's UniqueObjects/UniqueMap (while copying onl<e> base Stats directly here)
+                stats.add(getSingleTerrainStats(riverTerrain!!, stateForConditionals))
+        }
 
         if (observingCiv != null) {
             // resource base
@@ -91,22 +102,37 @@ class TileStatFunctions(val tile: Tile) {
         }
     }
 
+    /** Gets stats of a single Terrain, unifying the Stats class a Terrain inherits and the Stats Unique
+     *  @return A Stats reference, must not be mutated
+     */
+    private fun getSingleTerrainStats(terrain: Terrain, stateForConditionals: StateForConditionals): Stats {
+        var stats: Stats = terrain
+
+        for (unique in terrain.getMatchingUniques(UniqueType.Stats, stateForConditionals)) {
+            if (stats === terrain)
+                stats = stats.clone()
+            stats.add(unique.stats)
+        }
+        return stats
+    }
+
     /** Gets basic stats to start off [getTileStats] or [getTileStartYield], independently mutable result */
-    private fun getTerrainStats(): Stats {
-        var stats: Stats? = null
+    private fun getTerrainStats(stateForConditionals: StateForConditionals = StateForConditionals()): Stats {
+        var stats = Stats()
 
         // allTerrains iterates over base, natural wonder, then features
         for (terrain in tile.allTerrains) {
+            val terrainStats = getSingleTerrainStats(terrain, stateForConditionals)
             when {
-                terrain.hasUnique(UniqueType.NullifyYields) ->
-                    return terrain.cloneStats()
-                terrain.overrideStats || stats == null ->
-                    stats = terrain.cloneStats()
+                terrain.hasUnique(UniqueType.NullifyYields, stateForConditionals) ->
+                    return terrainStats.clone()
+                terrain.overrideStats ->
+                    stats = terrainStats.clone()
                 else ->
-                    stats.add(terrain)
+                    stats.add(terrainStats)
             }
         }
-        return stats ?: Stats.ZERO // For tests
+        return stats
     }
 
     // Only gets the tile percentage bonus, not the improvement percentage bonus
@@ -116,21 +142,18 @@ class TileStatFunctions(val tile: Tile) {
         val stateForConditionals = StateForConditionals(civInfo = observingCiv, city = city, tile = tile)
 
         if (city != null) {
-            // Since the tile changes every time, we cache all uniques, and filter by conditional state only when iterating
             val cachedStatPercentFromObjectCityUniques = uniqueCache.forCityGetMatchingUniques(
-                city, UniqueType.StatPercentFromObject, StateForConditionals.IgnoreConditionals)
+                city, UniqueType.StatPercentFromObject, stateForConditionals)
 
             for (unique in cachedStatPercentFromObjectCityUniques) {
-                if (!unique.conditionalsApply(stateForConditionals)) continue
                 val tileFilter = unique.params[2]
                 if (tile.matchesTerrainFilter(tileFilter, observingCiv))
                     stats[Stat.valueOf(unique.params[1])] += unique.params[0].toFloat()
             }
 
             val cachedAllStatPercentFromObjectCityUniques = uniqueCache.forCityGetMatchingUniques(
-                city, UniqueType.AllStatsPercentFromObject, StateForConditionals.IgnoreConditionals)
+                city, UniqueType.AllStatsPercentFromObject, stateForConditionals)
             for (unique in cachedAllStatPercentFromObjectCityUniques) {
-                if (!unique.conditionalsApply(stateForConditionals)) continue
                 val tileFilter = unique.params[1]
                 if (!tile.matchesTerrainFilter(tileFilter, observingCiv)) continue
                 val statPercentage = unique.params[0].toFloat()
@@ -193,9 +216,27 @@ class TileStatFunctions(val tile: Tile) {
             food + production + gold
         }
 
+    /** Returns the extra stats that we would get if we switched to this improvement
+     * Can be negative if we're switching to a worse improvement */
+    fun getStatDiffForImprovement(
+        improvement: TileImprovement,
+        observingCiv: Civilization,
+        city: City?,
+        cityUniqueCache: LocalUniqueCache = LocalUniqueCache(false)): Stats {
+
+        val currentStats = getTileStats(city, observingCiv, cityUniqueCache)
+
+        val tileClone = tile.clone()
+        tileClone.setTerrainTransients()
+
+        tileClone.changeImprovement(improvement.name)
+        val futureStats = tileClone.stats.getTileStats(city, observingCiv, cityUniqueCache)
+
+        return futureStats.minus(currentStats)
+    }
 
     // Also multiplies the stats by the percentage bonus for improvements (but not for tiles)
-    fun getImprovementStats(
+    private fun getImprovementStats(
         improvement: TileImprovement,
         observingCiv: Civilization,
         city: City?,
@@ -238,14 +279,9 @@ class TileStatFunctions(val tile: Tile) {
     ): Stats {
         val stats = Stats()
 
-        fun statsFromTiles(){
-            // Since the conditionalState contains the current tile, it is different for each tile,
-            //  therefore if we want the cache to be useful it needs to hold the pre-filtered uniques,
-            //  and then for each improvement we'll filter the uniques locally.
-            //  This is still a MASSIVE save of RAM!
-            val tileUniques = uniqueCache.forCityGetMatchingUniques(city, UniqueType.StatsFromTiles, StateForConditionals.IgnoreConditionals)
-                .filter { city.matchesFilter(it.params[2]) } // These are the uniques for all improvements for this city,
-                .filter { it.conditionalsApply(conditionalState) } // ...and this is those with applicable conditions
+        fun statsFromTiles() {
+            val tileUniques = uniqueCache.forCityGetMatchingUniques(city, UniqueType.StatsFromTiles, conditionalState)
+                .filter { city.matchesFilter(it.params[2]) }
             val improvementUniques =
                     improvement.getMatchingUniques(UniqueType.ImprovementStatsOnTile, conditionalState)
 
@@ -260,12 +296,11 @@ class TileStatFunctions(val tile: Tile) {
         statsFromTiles()
 
         fun statsFromObject() {
-            // Same as above - cache holds unfiltered uniques for the city, while we use only the filtered ones
             val uniques = uniqueCache.forCityGetMatchingUniques(
                     city,
                     UniqueType.StatsFromObject,
-                    StateForConditionals.IgnoreConditionals
-                ).filter { it.conditionalsApply(conditionalState) }
+                    conditionalState
+                )
             for (unique in uniques) {
                 if (improvement.matchesFilter(unique.params[1])) {
                     stats.add(unique.stats)
@@ -286,18 +321,12 @@ class TileStatFunctions(val tile: Tile) {
         val stats = Stats()
         val conditionalState = StateForConditionals(civInfo = observingCiv, city = city, tile = tile)
 
-        // I would love to make an interface 'canCallMatchingUniques'
-        // from which both cityInfo and CivilizationInfo derive, so I don't have to duplicate all this code
-        // But something something too much for this PR.
-
         if (city != null) {
-            // As above, since the conditional is tile-dependant,
-            //  we save uniques in the cache without conditional filtering, and use only filtered ones
             val allStatPercentUniques = cityUniqueCache.forCityGetMatchingUniques(
                     city,
                     UniqueType.AllStatsPercentFromObject,
-                    StateForConditionals.IgnoreConditionals
-                ).filter { it.conditionalsApply(conditionalState) }
+                    conditionalState
+                )
             for (unique in allStatPercentUniques) {
                 if (!improvement.matchesFilter(unique.params[1])) continue
                 for (stat in Stat.values()) {
@@ -305,12 +334,11 @@ class TileStatFunctions(val tile: Tile) {
                 }
             }
 
-            // Same trick different unique - not sure if worth generalizing this 'late apply' of conditions?
             val statPercentUniques = cityUniqueCache.forCityGetMatchingUniques(
                     city,
                     UniqueType.StatPercentFromObject,
-                    StateForConditionals.IgnoreConditionals
-                ).filter { it.conditionalsApply(conditionalState) }
+                    conditionalState
+                )
 
             for (unique in statPercentUniques) {
                 if (!improvement.matchesFilter(unique.params[2])) continue

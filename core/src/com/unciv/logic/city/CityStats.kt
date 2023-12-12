@@ -295,14 +295,14 @@ class CityStats(val city: City) {
         for (unique in city.getMatchingUniques(UniqueType.StatPercentFromReligionFollowers))
             addUniqueStats(unique, Stat.valueOf(unique.params[1]),
                 min(
-                    unique.params[0].toFloat() * city.religion.getFollowersOfMajorityReligion(),
+                    unique.params[0].toFloat() * city.religion.getFollowersOfOurReligion(),
                     unique.params[2].toFloat()
                 ))
 
         if (currentConstruction is Building
             && city.civ.cities.isNotEmpty()
             && city.civ.getCapital() != null
-            && city.civ.getCapital()!!.cityConstructions.builtBuildings.contains(currentConstruction.name)
+            && city.civ.getCapital()!!.cityConstructions.isBuilt(currentConstruction.name)
         ) {
             for (unique in city.getMatchingUniques(UniqueType.PercentProductionBuildingsInCapital))
                 addUniqueStats(unique, Stat.Production, unique.params[0].toFloat())
@@ -354,9 +354,8 @@ class CityStats(val city: City) {
     //endregion
     //region State-Changing Methods
 
-    fun updateTileStats() {
+    fun updateTileStats(localUniqueCache:LocalUniqueCache = LocalUniqueCache()) {
         val stats = Stats()
-        val localUniqueCache = LocalUniqueCache()
         val workedTiles = city.tilesInRange.asSequence()
             .filter {
                 city.location == it.position
@@ -384,6 +383,14 @@ class CityStats(val city: City) {
     fun updateCityHappiness(statsFromBuildings: StatTreeNode) {
         val civInfo = city.civ
         val newHappinessList = LinkedHashMap<String, Float>()
+        // This calculation seems weird to me.
+        // Suppose we calculate the modifier for an AI (non-human) player when the game settings has difficulty level 'prince'.
+        // We first get the difficulty modifier for this civilization, which results in the 'chieftain' modifier (0.6) being used,
+        // as this is a non-human player. Then we multiply that by the ai modifier in general, which is 1.0 for prince.
+        // The end result happens to be 0.6, which seems correct. However, if we were playing on chieftain difficulty,
+        // we would get back 0.6 twice and the modifier would be 0.36. Thus, in general there seems to be something wrong here
+        // I don't know enough about the original whether they do something similar or not and can't be bothered to find where
+        // in the source code this calculation takes place, but it would surprise me if they also did this double multiplication thing. ~xlenstra
         var unhappinessModifier = civInfo.getDifficulty().unhappinessModifier
         if (!civInfo.isHuman())
             unhappinessModifier *= civInfo.gameInfo.getDifficulty().aiUnhappinessModifier
@@ -391,10 +398,12 @@ class CityStats(val city: City) {
         var unhappinessFromCity = -3f // -3 happiness per city
         if (hasExtraAnnexUnhappiness())
             unhappinessFromCity -= 2f
-        if (civInfo.hasUnique(UniqueType.UnhappinessFromCitiesDoubled))
-            unhappinessFromCity *= 2f //doubled for the Indian
 
-        newHappinessList["Cities"] = unhappinessFromCity * unhappinessModifier
+        var uniqueUnhappinessModifier = 0f
+        for (unique in civInfo.getMatchingUniques(UniqueType.UnhappinessFromCitiesPercentage))
+            uniqueUnhappinessModifier += unique.params[0].toFloat()
+
+        newHappinessList["Cities"] = unhappinessFromCity * unhappinessModifier * uniqueUnhappinessModifier.toPercent()
 
         var unhappinessFromCitizens = city.population.population.toFloat()
 
@@ -478,12 +487,14 @@ class CityStats(val city: City) {
 
     fun update(currentConstruction: IConstruction = city.cityConstructions.getCurrentConstruction(),
                updateTileStats:Boolean = true,
-               updateCivStats:Boolean = true) {
-        if (updateTileStats) updateTileStats()
+               updateCivStats:Boolean = true,
+               localUniqueCache:LocalUniqueCache = LocalUniqueCache()) {
+
+        if (updateTileStats) updateTileStats(localUniqueCache)
 
         // We need to compute Tile yields before happiness
 
-        val statsFromBuildings = city.cityConstructions.getStats() // this is performance heavy, so calculate once
+        val statsFromBuildings = city.cityConstructions.getStats(localUniqueCache) // this is performance heavy, so calculate once
         updateBaseStatList(statsFromBuildings)
         updateCityHappiness(statsFromBuildings)
         updateStatPercentBonusList(currentConstruction)

@@ -2,6 +2,10 @@ package com.unciv.ui.components.extensions
 
 import com.badlogic.gdx.Input
 import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.graphics.Pixmap
+import com.badlogic.gdx.graphics.TextureData
+import com.badlogic.gdx.graphics.glutils.FileTextureData
+import com.badlogic.gdx.graphics.glutils.PixmapTextureData
 import com.badlogic.gdx.math.Rectangle
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.Actor
@@ -15,6 +19,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.CheckBox
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton
 import com.badlogic.gdx.scenes.scene2d.ui.Label
+import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle
@@ -22,10 +27,10 @@ import com.badlogic.gdx.scenes.scene2d.ui.WidgetGroup
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
 import com.unciv.models.translations.tr
-import com.unciv.ui.components.Fonts
 import com.unciv.ui.components.extensions.GdxKeyCodeFixes.DEL
 import com.unciv.ui.components.extensions.GdxKeyCodeFixes.toString
 import com.unciv.ui.components.extensions.GdxKeyCodeFixes.valueOf
+import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.components.input.onChange
 import com.unciv.ui.images.IconCircleGroup
 import com.unciv.ui.images.ImageGetter
@@ -43,6 +48,7 @@ private class RestorableTextButtonStyle(
 /** Disable a [Button] by setting its [touchable][Button.touchable] and [style][Button.style] properties. */
 fun Button.disable() {
     touchable = Touchable.disabled
+    isDisabled = true
     val oldStyle = style
     if (oldStyle is RestorableTextButtonStyle) return
     val disabledStyle = BaseScreen.skin.get("disabled", TextButtonStyle::class.java)
@@ -54,6 +60,7 @@ fun Button.enable() {
     if (oldStyle is RestorableTextButtonStyle) {
         style = oldStyle.restoreStyle
     }
+    isDisabled = false
     touchable = Touchable.enabled
 }
 /** Enable or disable a [Button] by setting its [touchable][Button.touchable] and [style][Button.style] properties,
@@ -124,9 +131,14 @@ fun Actor.getAscendant(predicate: (Actor) -> Boolean): Actor? {
     return null
 }
 
+/** Gets the nearest parent of this actor that is a [T], or null if none of its parents is of that type. */
+inline fun <reified T> Actor.getAscendant(): T? {
+    return  getAscendant { it is T } as? T
+}
+
 /** The actors bounding box in stage coordinates */
 val Actor.stageBoundingBox: Rectangle get() {
-    val bottomLeft = localToStageCoordinates(Vector2(0f, 0f))
+    val bottomLeft = localToStageCoordinates(Vector2.Zero.cpy())
     val topRight = localToStageCoordinates(Vector2(width, height))
     return Rectangle(
         bottomLeft.x,
@@ -218,6 +230,10 @@ fun <T : Actor> Cell<T>.pad(vertical: Float, horizontal: Float): Cell<T> {
 fun Image.setSize(size: Float) {
     setSize(size, size)
 }
+
+/** Proxy for [ScrollPane.scrollTo] using the [bounds][Actor.setBounds] of a given [actor] for its parameters */
+fun ScrollPane.scrollTo(actor: Actor, center: Boolean = false) =
+    scrollTo(actor.x, actor.y, actor.width, actor.height, center, center)
 
 /** Translate a [String] and make a [TextButton] widget from it */
 fun String.toTextButton(style: TextButtonStyle? = null, hideIcons: Boolean = false): TextButton {
@@ -330,25 +346,87 @@ fun Group.addToCenter(actor: Actor) {
  *  | FORWARD_DEL | 112 | Del | Forward Delete | -1 | 112 |
  *
  *  This acts as proxy, you replace [Input.Keys] by [GdxKeyCodeFixes] and get sensible [DEL], [toString] and [valueOf].
+ *  Differences in behaviour: toString will return an empty string for un-mapped keycodes and UNKNOWN
+ *  instead of `null` or "Unknown" respectively,
+ *  valueOf will return UNKNOWN for un-mapped names or "" instead of -1.
  */
 @Suppress("GDX_KEYS_BUG", "MemberVisibilityCanBePrivate")
 object GdxKeyCodeFixes {
 
     const val DEL = Input.Keys.FORWARD_DEL
     const val BACKSPACE = Input.Keys.BACKSPACE
+    const val UNKNOWN = Input.Keys.UNKNOWN
 
     fun toString(keyCode: Int): String = when(keyCode) {
+        UNKNOWN -> ""
         DEL -> "Del"
         BACKSPACE -> "Backspace"
         else -> Input.Keys.toString(keyCode)
+            ?: ""
     }
 
     fun valueOf(name: String): Int = when (name) {
+        "" -> UNKNOWN
         "Del" -> DEL
         "Backspace" -> BACKSPACE
-        else -> Input.Keys.valueOf(name)
+        else -> {
+            val code = Input.Keys.valueOf(name)
+            if (code == -1) UNKNOWN else code
+        }
     }
 }
 
+fun Input.isShiftKeyPressed() = isKeyPressed(Input.Keys.SHIFT_LEFT) || isKeyPressed(Input.Keys.SHIFT_RIGHT)
+fun Input.isControlKeyPressed() = isKeyPressed(Input.Keys.CONTROL_LEFT) || isKeyPressed(Input.Keys.CONTROL_RIGHT)
 fun Input.areSecretKeysPressed() = isKeyPressed(Input.Keys.SHIFT_RIGHT) &&
         (isKeyPressed(Input.Keys.CONTROL_RIGHT) || isKeyPressed(Input.Keys.ALT_RIGHT))
+
+/** Sets first row cell's minWidth to the max of the widths of that column over all given tables
+ *
+ * Notes:
+ * - This aligns columns only if the tables are arranged vertically with equal X coordinates.
+ * - first table determines columns processed, all others must have at least the same column count.
+ * - Tables are left as needsLayout==true, so while equal width is ensured, you may have to pack if you want to see the value before this is rendered.
+ * - Note: The receiver <Group> isn't actually needed except to make sure the arguments are descendants.
+ */
+fun equalizeColumns(vararg tables: Table) {
+    for (table in tables) {
+        table.packIfNeeded()
+    }
+    val columns = tables.first().columns
+    check(tables.all { it.columns >= columns }) {
+        "IPageExtensions.equalizeColumns needs all tables to have at least the same number of columns as the first one"
+    }
+
+    val widths = (0 until columns)
+        .mapTo(ArrayList(columns)) { column ->
+            tables.maxOf { it.getColumnWidth(column) }
+        }
+    for (table in tables) {
+        for (column in 0 until columns)
+            table.cells[column].run {
+                if (actor == null)
+                // Empty cells ignore minWidth, so just doing Table.add() for an empty cell in the top row will break this. Fix!
+                    setActor<Label>("".toLabel())
+                else if (Align.isCenterHorizontal(align)) (actor as? Label)?.run {
+                    // minWidth acts like fillX, so Labels will fill and then left-align by default. Fix!
+                    if (!Align.isCenterHorizontal(labelAlign))
+                        setAlignment(Align.center)
+                }
+                minWidth(widths[column] - padLeft - padRight)
+            }
+        table.invalidate()
+    }
+}
+
+/** Retrieve a texture Pixmap without reload or ownership transfer, useable for read operations only.
+ *
+ *  (FileTextureData.consumePixmap forces a reload of the entire file - inefficient if we only want to look at pixel values) */
+fun TextureData.getReadonlyPixmap(): Pixmap {
+    if (!isPrepared) prepare()
+    if (this is PixmapTextureData) return consumePixmap()
+    if (this !is FileTextureData) throw TypeCastException("getReadonlyPixmap only works on file or pixmap based textures")
+    val field = FileTextureData::class.java.getDeclaredField("pixmap")
+    field.isAccessible = true
+    return field.get(this) as Pixmap
+}

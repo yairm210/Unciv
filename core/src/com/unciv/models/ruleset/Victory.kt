@@ -82,7 +82,7 @@ class Milestone(val uniqueDescription: String, private val parentVictory: Victor
     fun hasBeenCompletedBy(civInfo: Civilization): Boolean {
         return when (type!!) {
             MilestoneType.BuiltBuilding ->
-                civInfo.cities.any { it.cityConstructions.builtBuildings.contains(params[0])}
+                civInfo.cities.any { it.cityConstructions.isBuilt(params[0])}
             MilestoneType.AddedSSPartsInCapital -> {
                 getIncompleteSpaceshipParts(civInfo).isEmpty()
             }
@@ -93,7 +93,7 @@ class Milestone(val uniqueDescription: String, private val parentVictory: Victor
             MilestoneType.CompletePolicyBranches ->
                 civInfo.policies.completedBranches.size >= params[0].toInt()
             MilestoneType.BuildingBuiltGlobally -> civInfo.gameInfo.getCities().any {
-                it.cityConstructions.builtBuildings.contains(params[0])
+                it.cityConstructions.isBuilt(params[0])
             }
             MilestoneType.WinDiplomaticVote -> civInfo.victoryManager.hasEverWonDiplomaticVote
             MilestoneType.ScoreAfterTimeOut -> {
@@ -246,9 +246,11 @@ class Milestone(val uniqueDescription: String, private val parentVictory: Victor
             }
 
             MilestoneType.WorldReligion -> {
+                val hideCivCount = civInfo.hideCivCount()
                 val majorCivs = civInfo.gameInfo.civilizations.filter { it.isMajorCiv() && it.isAlive() }
                 val civReligion = civInfo.religionManager.religion
                 for (civ in majorCivs) {
+                    if (hideCivCount && !civInfo.knows(civ)) continue
                     val milestoneText =
                         if (civInfo.knows(civ)) "Majority religion of [${civ.civName}]"
                         else "Majority religion of [${Constants.unknownNationName}]"
@@ -257,6 +259,7 @@ class Milestone(val uniqueDescription: String, private val parentVictory: Victor
                             && civ.religionManager.isMajorityReligionForCiv(civReligion)
                     buttons.add(getMilestoneButton(milestoneText, milestoneMet))
                 }
+                if (hideCivCount) buttons.add(getMilestoneButton("Majority religion of ? * [${Constants.unknownCityName}]", false))
             }
         }
         return buttons
@@ -267,13 +270,13 @@ class Milestone(val uniqueDescription: String, private val parentVictory: Victor
         return when (type!!) {
             MilestoneType.BuiltBuilding -> {
                 val building = ruleset.buildings[params[0]]!!
-                if (building.requiredTech != null && !civInfo.tech.isResearched(building.requiredTech!!)) Victory.Focus.Science
+                if (!civInfo.tech.isResearched(building)) Victory.Focus.Science
 //                if (building.hasUnique(UniqueType.Unbuildable)) Stat.Gold // Temporary, should be replaced with whatever is required to buy
                 Victory.Focus.Production
             }
             MilestoneType.BuildingBuiltGlobally -> {
                 val building = ruleset.buildings[params[0]]!!
-                if (building.requiredTech != null && !civInfo.tech.isResearched(building.requiredTech!!)) Victory.Focus.Science
+                if (!civInfo.tech.isResearched(building)) Victory.Focus.Science
 //                if (building.hasUnique(UniqueType.Unbuildable)) Victory.Focus.Gold
                 Victory.Focus.Production
             }
@@ -284,7 +287,7 @@ class Milestone(val uniqueDescription: String, private val parentVictory: Victor
                             ruleset.buildings[it]!!
                         else ruleset.units[it]!!
                     }
-                if (constructions.any { it.requiredTech != null && !civInfo.tech.isResearched(it.requiredTech!!) } ) Victory.Focus.Science
+                if (constructions.any { !civInfo.tech.isResearched(it) } ) Victory.Focus.Science
 //                if (constructions.any { it.hasUnique(UniqueType.Unbuildable) } ) Stat.Gold
                 Victory.Focus.Production
             }

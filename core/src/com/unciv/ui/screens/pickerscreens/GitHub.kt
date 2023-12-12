@@ -46,18 +46,25 @@ object Github {
      * @return The [InputStream] if successful, `null` otherwise.
      */
     fun download(url: String, action: (HttpURLConnection) -> Unit = {}): InputStream? {
-        with(URL(url).openConnection() as HttpURLConnection)
-        {
-            action(this)
-
-            return try {
-                inputStream
-            } catch (ex: Exception) {
-                Log.error("Exception during GitHub download", ex)
-                val reader = BufferedReader(InputStreamReader(errorStream))
-                Log.error("Message from GitHub: %s", reader.readText())
-                null
+        try {
+            // Problem type 1 - opening the URL connection
+            with(URL(url).openConnection() as HttpURLConnection)
+            {
+                action(this)
+                // Problem type 2 - getting the information
+                try {
+                    return inputStream
+                } catch (ex: Exception) {
+                    // No error handling, just log the message.
+                    // NOTE that this 'read error stream' CAN ALSO fail, but will be caught by the big try/catch
+                    val reader = BufferedReader(InputStreamReader(errorStream, Charsets.UTF_8))
+                    Log.error("Message from GitHub: %s", reader.readText())
+                    throw ex
+                }
             }
+        } catch (ex: Exception) {
+            Log.error("Exception during GitHub download", ex)
+            return null
         }
     }
 
@@ -74,7 +81,10 @@ object Github {
         val defaultBranch = repo.default_branch
         val gitRepoUrl = repo.html_url
         // Initiate download - the helper returns null when it fails
-        val zipUrl = "$gitRepoUrl/archive/$defaultBranch.zip"
+        // URL format see: https://docs.github.com/en/repositories/working-with-files/using-files/downloading-source-code-archives#source-code-archive-urls
+        // Note: https://api.github.com/repos/owner/mod/zipball would be an alternative. Its response is a redirect, but our lib follows that and delivers the zip just fine.
+        // Problems with the latter: Internal zip structure different, finalDestinationName would need a patch. Plus, normal URL escaping for owner/reponame does not work.
+        val zipUrl = "$gitRepoUrl/archive/refs/heads/$defaultBranch.zip"
         val inputStream = download(zipUrl) ?: return null
 
         // Get a mod-specific temp file name
@@ -94,7 +104,7 @@ object Github {
 
         val innerFolder = unzipDestination.list().first()
         // innerFolder should now be "$tempName/$repoName-$defaultBranch/" - use this to get mod name
-        val finalDestinationName = innerFolder.name().replace("-$defaultBranch", "").replace('-', ' ')
+        val finalDestinationName = innerFolder.name().replace("-$defaultBranch", "").repoNameToFolderName()
         // finalDestinationName is now the mod name as we display it. Folder name needs to be identical.
         val finalDestination = folderFileHandle.child(finalDestinationName)
 
@@ -252,12 +262,26 @@ object Github {
         return null
     }
 
-    fun tryGetPreviewImage(modUrl:String, defaultBranch: String): Pixmap? {
+    /** Get a Pixmap from a "preview" png or jpg file at the root of the repo, falling back to the
+     *  repo owner's avatar [avatarUrl]. The file content url is constructed from [modUrl] and [defaultBranch]
+     *  by replacing the host with `raw.githubusercontent.com`.
+     */
+    fun tryGetPreviewImage(modUrl: String, defaultBranch: String, avatarUrl: String?): Pixmap? {
+        // Side note: github repos also have a "Social Preview" optionally assignable on the repo's
+        // settings page, but that info is inaccessible using the v3 API anonymously. The easiest way
+        // to get it would be to query the the repo's frontend page (modUrl), and parse out
+        // `head/meta[property=og:image]/@content`, which is one extra spurious roundtrip and a
+        // non-trivial waste of bandwidth.
+        // Thus we ask for a "preview" file as part of the repo contents instead.
         val fileLocation = "$modUrl/$defaultBranch/preview"
             .replace("github.com", "raw.githubusercontent.com")
         try {
             val file = download("$fileLocation.jpg")
                 ?: download("$fileLocation.png")
+                    // Note: avatar urls look like: https://avatars.githubusercontent.com/u/<number>?v=4
+                    // So the image format is only recognizable from the response "Content-Type" header
+                    // or by looking for magic markers in the bits - which the Pixmap constructor below does.
+                ?: avatarUrl?.let { download(it) }
                 ?: return null
             val byteArray = file.readBytes()
             val buffer = ByteBuffer.allocateDirect(byteArray.size).put(byteArray).position(0)
@@ -267,25 +291,38 @@ object Github {
         }
     }
 
-    class Tree {
+    /** Class to receive a github API "Get a tree" response parsed as json */
+    // Parts of the response we ignore are commented out
+    private class Tree {
+        //val sha = ""
+        //val url = ""
 
         class TreeFile {
+            //val path = ""
+            //val mode = 0
+            //val type = "" // blob / tree
+            //val sha = ""
+            //val url = ""
             var size: Long = 0L
         }
 
-        var url: String = ""
         @Suppress("MemberNameEqualsClassName")
         var tree = ArrayList<TreeFile>()
+        var truncated = false
     }
 
-    fun getRepoSize(repo: Repo): Float {
+    /** Queries github for a tree and calculates the sum of the blob sizes.
+     *  @return -1 on failure, else size rounded to kB
+      */
+    fun getRepoSize(repo: Repo): Int {
+        // See https://docs.github.com/en/rest/git/trees#get-a-tree
         val link = "https://api.github.com/repos/${repo.full_name}/git/trees/${repo.default_branch}?recursive=true"
 
         var retries = 2
         while (retries > 0) {
             retries--
             // obey rate limit
-            if (RateLimit.waitForLimit()) return 0f
+            if (RateLimit.waitForLimit()) return -1
             // try download
             val inputStream = download(link) {
                 if (it.responseCode == 403 || it.responseCode == 200 && retries == 1) {
@@ -294,15 +331,18 @@ object Github {
                     retries++   // An extra retry so the 403 is ignored in the retry count
                 }
             } ?: continue
+
             val tree = json().fromJson(Tree::class.java, inputStream.bufferedReader().readText())
+            if (tree.truncated) return -1  // unlikely: >100k blobs or blob > 7MB
 
             var totalSizeBytes = 0L
             for (file in tree.tree)
                 totalSizeBytes += file.size
 
-            return totalSizeBytes / 1024f
+            // overflow unlikely: >2TB
+            return ((totalSizeBytes + 512) / 1024).toInt()
         }
-        return 0f
+        return -1
     }
 
     /**
@@ -324,6 +364,8 @@ object Github {
     @Suppress("PropertyName")
     class Repo {
 
+        /** Unlike the rest of this class, this is not part of the API but added by us locally
+         *  to track whether [getRepoSize] has been run successfully for this repo */
         var hasUpdatedSize = false
 
         var name = ""
@@ -395,6 +437,48 @@ object Github {
         var avatar_url: String? = null
     }
 
+    /**
+     * Query GitHub for topics named "unciv-mod*"
+     * @return              Parsed [TopicSearchResponse] json on success, `null` on failure.
+     */
+    fun tryGetGithubTopics(): TopicSearchResponse? {
+        // `+repositories:>1` means ignore unused or practically unused topics
+        val link = "https://api.github.com/search/topics?q=unciv-mod+repositories:%3E1&sort=name&order=asc"
+        var retries = 2
+        while (retries > 0) {
+            retries--
+            // obey rate limit
+            if (RateLimit.waitForLimit()) return null
+            // try download
+            val inputStream = download(link) {
+                if (it.responseCode == 403 || it.responseCode == 200 && retries == 1) {
+                    // Pass the response headers to the rate limit handler so it can process the rate limit headers
+                    RateLimit.notifyHttpResponse(it)
+                    retries++   // An extra retry so the 403 is ignored in the retry count
+                }
+            } ?: continue
+            return json().fromJson(TopicSearchResponse::class.java, inputStream.bufferedReader().readText())
+        }
+        return null
+    }
+
+    /** Topic search response */
+    @Suppress("PropertyName")
+    class TopicSearchResponse {
+        // Commented out: Github returns them, but we're not interested
+//         var total_count = 0
+//         var incomplete_results = false
+        var items = ArrayList<Topic>()
+        class Topic {
+            var name = ""
+            var display_name: String? = null  // Would need to be curated, which is alottawork
+//             var featured = false
+//             var curated = false
+            var created_at = "" // iso datetime with "Z" timezone
+            var updated_at = "" // iso datetime with "Z" timezone
+        }
+    }
+
     /** Rewrite modOptions file for a mod we just installed to include metadata we got from the GitHub api
      *
      *  (called on background thread)
@@ -410,6 +494,33 @@ object Github {
         modOptions.topics = repo.topics
         modOptions.updateDeprecations()
         json().toJson(modOptions, modOptionsFile)
+    }
+
+    private const val outerBlankReplacement = '='
+    // Github disallows **any** special chars and replaces them with '-' - so use something ascii the
+    // OS accepts but still is recognizable as non-original, to avoid confusion
+
+    /** Convert a [Repo] name to a local name for both display and folder name
+     *
+     *  Replaces '-' with blanks but ensures no leading or trailing blanks.
+     *  As mad modders know no limits, trailing "-" did indeed happen, causing things to break due to trailing blanks on a folder name.
+     *  As "test-" and "test" are different allowed repository names, trimmed blanks are replaced with one equals sign per side.
+     *  @param onlyOuterBlanks If `true` ignores inner dashes - only start and end are treated. Useful when modders have manually created local folder names using dashes.
+     */
+    fun String.repoNameToFolderName(onlyOuterBlanks: Boolean = false): String {
+        var result = if (onlyOuterBlanks) this else replace('-', ' ')
+        if (result.endsWith(' ')) result = result.trimEnd() + outerBlankReplacement
+        if (result.startsWith(' ')) result = outerBlankReplacement + result.trimStart()
+        return result
+    }
+
+    /** Inverse of [repoNameToFolderName] */
+    // As of this writing, only used for loadMissingMods
+    fun String.folderNameToRepoName(): String {
+        var result = replace(' ', '-')
+        if (result.endsWith(outerBlankReplacement)) result = result.trimEnd(outerBlankReplacement) + '-'
+        if (result.startsWith(outerBlankReplacement)) result = '-' + result.trimStart(outerBlankReplacement)
+        return result
     }
 }
 

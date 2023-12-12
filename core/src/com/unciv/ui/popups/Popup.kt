@@ -18,18 +18,23 @@ import com.badlogic.gdx.scenes.scene2d.ui.WidgetGroup
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
+import com.unciv.GUI
 import com.unciv.logic.event.EventBus
-import com.unciv.ui.components.AutoScrollPane
-import com.unciv.ui.components.input.KeyCharAndCode
-import com.unciv.ui.components.input.KeyboardBinding
-import com.unciv.ui.components.input.KeyboardBindings
+import com.unciv.ui.components.widgets.AutoScrollPane
 import com.unciv.ui.components.extensions.addSeparator
 import com.unciv.ui.components.extensions.center
 import com.unciv.ui.components.extensions.darken
-import com.unciv.ui.components.input.keyShortcuts
-import com.unciv.ui.components.input.onActivation
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
+import com.unciv.ui.components.input.KeyCharAndCode
+import com.unciv.ui.components.input.KeyboardBinding
+import com.unciv.ui.components.input.KeyboardBindings
+import com.unciv.ui.components.input.keyShortcuts
+import com.unciv.ui.components.input.onActivation
+import com.unciv.ui.popups.Popup.Scrollability
+import com.unciv.ui.popups.Popup.Scrollability.All
+import com.unciv.ui.popups.Popup.Scrollability.None
+import com.unciv.ui.popups.Popup.Scrollability.WithoutButtons
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.basescreen.UncivStage
 
@@ -223,7 +228,7 @@ open class Popup(
     /** Allow closing a popup by clicking 'outside', Android-style, but only if a Close button exists */
     private fun getBehindClickListener() = object : ClickListener() {
         override fun clicked(event: InputEvent?, x: Float, y: Float) {
-            if (!clickBehindToClose) return
+            if (!clickBehindToClose || GUI.getSettings().forbidPopupClickBehindToClose) return
             // Since Gdx doesn't limit events to the actually `hit` actors...
             if (event?.target != this@Popup) return
             close()
@@ -262,8 +267,8 @@ open class Popup(
      * @param text The caption text.
      * @param size The font size for the label.
      */
-    fun addGoodSizedLabel(text: String, size: Int = Constants.defaultFontSize): Cell<Label> {
-        val label = text.toLabel(fontSize = size)
+    fun addGoodSizedLabel(text: String, size: Int = Constants.defaultFontSize, hideIcons:Boolean = false): Cell<Label> {
+        val label = text.toLabel(fontSize = size, hideIcons = hideIcons)
         label.wrap = true
         label.setAlignment(Align.center)
         return add(label).width(stageToShowOn.width / 2)
@@ -288,10 +293,15 @@ open class Popup(
         return bottomTable.add(button)
     }
     fun addButton(text: String, key: Char, style: TextButtonStyle? = null, action: () -> Unit)
-        = addButton(text, KeyCharAndCode(key), style, action).apply { row() }
+        = addButton(text, KeyCharAndCode(key), style, action)
     @Suppress("unused")  // Keep the offer to pass an Input.keys value
     fun addButton(text: String, key: Int, style: TextButtonStyle? = null, action: () -> Unit)
-        = addButton(text, KeyCharAndCode(key), style, action).apply { row() }
+        = addButton(text, KeyCharAndCode(key), style, action)
+    fun addButton(text: String, binding: KeyboardBinding, style: TextButtonStyle? = null, action: () -> Unit): Cell<TextButton> {
+        val button = text.toTextButton(style)
+        button.onActivation(binding = binding) { action() }
+        return bottomTable.add(button)
+    }
 
     /**
      * Adds a [TextButton] that closes the popup, with [BACK][KeyCharAndCode.BACK] already mapped.
@@ -343,7 +353,7 @@ open class Popup(
     }
 
     /** Overload of [addCloseButton] accepting a bindable key definition as [additionalKey] */
-    fun addCloseButton(text: String, additionalKey: KeyboardBinding, action: () -> Unit) =
+    fun addCloseButton(text: String, additionalKey: KeyboardBinding, action: (() -> Unit)? = null) =
         addCloseButton(text, KeyboardBindings[additionalKey], action = action)
     /** Overload of [addOKButton] accepting a bindable key definition as [additionalKey] */
     fun addOKButton(text: String, additionalKey: KeyboardBinding, style: TextButtonStyle? = null, action: () -> Unit) =

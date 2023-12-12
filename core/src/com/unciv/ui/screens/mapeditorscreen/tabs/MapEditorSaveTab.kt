@@ -4,26 +4,27 @@ import com.badlogic.gdx.files.FileHandle
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextField
+import com.unciv.Constants
 import com.unciv.logic.files.MapSaver
 import com.unciv.logic.map.MapGeneratedMainType
 import com.unciv.logic.map.TileMap
 import com.unciv.models.translations.tr
-import com.unciv.ui.screens.mapeditorscreen.MapEditorFilesTable
-import com.unciv.ui.screens.mapeditorscreen.MapEditorScreen
-import com.unciv.ui.popups.ConfirmPopup
-import com.unciv.ui.popups.Popup
-import com.unciv.ui.popups.ToastPopup
-import com.unciv.ui.components.AutoScrollPane
-import com.unciv.ui.screens.basescreen.BaseScreen
-import com.unciv.ui.components.input.KeyCharAndCode
-import com.unciv.ui.components.TabbedPager
+import com.unciv.ui.components.widgets.AutoScrollPane
+import com.unciv.ui.components.widgets.TabbedPager
 import com.unciv.ui.components.UncivTextField
 import com.unciv.ui.components.extensions.isEnabled
+import com.unciv.ui.components.extensions.toTextButton
+import com.unciv.ui.components.input.KeyCharAndCode
 import com.unciv.ui.components.input.keyShortcuts
 import com.unciv.ui.components.input.onActivation
 import com.unciv.ui.components.input.onChange
 import com.unciv.ui.components.input.onClick
-import com.unciv.ui.components.extensions.toTextButton
+import com.unciv.ui.popups.ConfirmPopup
+import com.unciv.ui.popups.Popup
+import com.unciv.ui.popups.ToastPopup
+import com.unciv.ui.screens.basescreen.BaseScreen
+import com.unciv.ui.screens.mapeditorscreen.MapEditorFilesTable
+import com.unciv.ui.screens.mapeditorscreen.MapEditorScreen
 import com.unciv.utils.Concurrency
 import com.unciv.utils.Log
 import kotlinx.coroutines.CoroutineScope
@@ -81,7 +82,7 @@ class MapEditorSaveTab(
 
     private fun setSaveButton(enabled: Boolean) {
         saveButton.isEnabled = enabled
-        saveButton.setText((if (enabled) "Save map" else "Working...").tr())
+        saveButton.setText((if (enabled) "Save map" else Constants.working).tr())
     }
 
     private fun saveHandler() {

@@ -1,6 +1,7 @@
 package com.unciv.logic.city.managers
 
 import com.badlogic.gdx.math.Vector2
+import com.unciv.Constants
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.Proximity
@@ -12,7 +13,7 @@ import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unique.UniqueType
 
 class CityFounder {
-    fun foundCity(civInfo: Civilization, cityLocation: Vector2) :City{
+    fun foundCity(civInfo: Civilization, cityLocation: Vector2): City {
         val city = City()
 
         city.foundingCiv = civInfo.civName
@@ -29,7 +30,7 @@ class CityFounder {
         city.isOriginalCapital = civInfo.citiesCreated == 0
         if (city.isOriginalCapital) {
             civInfo.hasEverOwnedOriginalCapital = true
-            // if you have some culture before the 1st city is found, you may want to adopt the 1st policy
+            // if you have some culture before the 1st city is founded, you may want to adopt the 1st policy
             civInfo.policies.shouldOpenPolicyPicker = true
         }
         civInfo.citiesCreated++
@@ -53,7 +54,8 @@ class CityFounder {
         })
             tile.removeTerrainFeature(terrainFeature)
 
-        tile.changeImprovement(null)
+        if (civInfo.gameInfo.ruleset.tileImprovements.containsKey(Constants.cityCenter))
+            tile.changeImprovement(Constants.cityCenter, civInfo)
         tile.improvementInProgress = null
 
         val ruleset = civInfo.gameInfo.ruleset
@@ -205,11 +207,10 @@ class CityFounder {
             val building = ruleset.buildings[buildingName] ?: continue
             val uniqueBuilding = civInfo.getEquivalentBuilding(building)
             if (uniqueBuilding.isBuildable(city.cityConstructions))
-                city.cityConstructions.addBuilding(uniqueBuilding.name)
+                city.cityConstructions.addBuilding(uniqueBuilding)
         }
 
         civInfo.civConstructions.tryAddFreeBuildings()
-        city.cityConstructions.addFreeBuildings()
     }
 
 

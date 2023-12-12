@@ -1,14 +1,13 @@
 package com.unciv.ui.screens.newgamescreen
 
 import com.badlogic.gdx.graphics.Color
-import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.nation.Nation
-import com.unciv.ui.components.WrappableLabel
+import com.unciv.ui.components.widgets.WrappableLabel
 import com.unciv.ui.components.extensions.pad
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.basescreen.BaseScreen
@@ -32,9 +31,7 @@ class NationTable(val nation: Nation, width: Float, minHeight: Float, ruleset: R
         titleTable.background = BaseScreen.skinStrings.getUiBackground(
             "NewGameScreen/NationTable/Title", tintColor = outerColor
         )
-        val nationIndicator: Actor =
-            if (nation.name == Constants.random) ImageGetter.getRandomNationPortrait(50f)
-            else ImageGetter.getNationPortrait(nation, 50f)
+        val nationIndicator = ImageGetter.getNationPortrait(nation, 50f)  // Works for Random too
         titleTable.add(nationIndicator).pad(10f).padLeft(0f)  // left 0 for centering _with_ label
 
         val titleText = if (ruleset == null || nation.name == Constants.random || nation.name == Constants.spectator)

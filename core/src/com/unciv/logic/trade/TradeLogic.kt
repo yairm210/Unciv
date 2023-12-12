@@ -7,6 +7,7 @@ import com.unciv.logic.civilization.PopupAlert
 import com.unciv.logic.civilization.diplomacy.CityStateFunctions
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
+import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.models.ruleset.ModOptionsConstants
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.unique.UniqueType
@@ -30,6 +31,12 @@ class TradeLogic(val ourCivilization:Civilization, val otherCivilization: Civili
                 && otherCivilization.hasUnique(UniqueType.EnablesOpenBorders)) {
             offers.add(TradeOffer(Constants.openBorders, TradeType.Agreement))
         }
+
+        if (civInfo.diplomacyFunctions.canSignResearchAgreementNoCostWith(otherCivilization))
+            offers.add(TradeOffer(Constants.researchAgreement, TradeType.Treaty, civInfo.diplomacyFunctions.getResearchAgreementCost(otherCivilization)))
+
+        if (civInfo.diplomacyFunctions.canSignDefensivePactWith(otherCivilization))
+            offers.add(TradeOffer(Constants.defensivePact, TradeType.Treaty))
 
         for (entry in civInfo.getCivResourcesWithOriginsForTrade()
             .filterNot { it.resource.resourceType == ResourceType.Bonus }
@@ -117,12 +124,17 @@ class TradeLogic(val ourCivilization:Civilization, val otherCivilization: Civili
                         to.popupAlerts.add(PopupAlert(AlertType.CityTraded, city.id))
                 }
                 TradeType.Treaty -> {
+                    // Note: Treaties are not transfered from both sides due to notifications and double signing
                     if (offer.name == Constants.peaceTreaty) to.getDiplomacyManager(from).makePeace()
                     if (offer.name == Constants.researchAgreement) {
                         to.addGold(-offer.amount)
+                        from.addGold(-offer.amount)
                         to.getDiplomacyManager(from)
                             .setFlag(DiplomacyFlags.ResearchAgreement, offer.duration)
+                        from.getDiplomacyManager(to)
+                            .setFlag(DiplomacyFlags.ResearchAgreement, offer.duration)
                     }
+                    if (offer.name == Constants.defensivePact) to.getDiplomacyManager(from).signDefensivePact(offer.duration);
                 }
                 TradeType.Introduction -> to.diplomacyFunctions.makeCivilizationsMeet(to.gameInfo.getCivilization(offer.name))
                 TradeType.WarDeclaration -> {
@@ -133,7 +145,7 @@ class TradeLogic(val ourCivilization:Civilization, val otherCivilization: Civili
             }
         }
 
-        if (currentTrade.ourOffers.isEmpty()){ // Must evaluate before moving, or else cities have already moved and we get an exception
+        if (currentTrade.ourOffers.isEmpty()) { // Must evaluate before moving, or else cities have already moved and we get an exception
             val goldValueOfTrade = TradeEvaluation().getTradeAcceptability(currentTrade, ourCivilization, otherCivilization)
             val diplomaticValueOfTrade = CityStateFunctions(ourCivilization).influenceGainedByGift(otherCivilization, goldValueOfTrade) / 10
             ourCivilization.getDiplomacyManager(otherCivilization).addModifier(DiplomaticModifiers.GaveUsGifts, diplomaticValueOfTrade.toFloat())
@@ -145,10 +157,9 @@ class TradeLogic(val ourCivilization:Civilization, val otherCivilization: Civili
         for (offer in currentTrade.ourOffers.filterNot { it.type == TradeType.Treaty })
             transferTrade(ourCivilization, otherCivilization, offer)
 
+        // Transfter of treaties should only be done from one side to avoid double signing and notifying
         for (offer in currentTrade.theirOffers.filter { it.type == TradeType.Treaty })
             transferTrade(otherCivilization, ourCivilization, offer)
-        for (offer in currentTrade.ourOffers.filter { it.type == TradeType.Treaty })
-            transferTrade(ourCivilization, otherCivilization, offer)
 
         ourCivilization.cache.updateCivResources()
         ourCivilization.updateStatsForNextTurn()

@@ -1,11 +1,13 @@
 package com.unciv.ui.screens.victoryscreen
 
 import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
 import com.unciv.logic.civilization.Civilization
 import com.unciv.models.translations.tr
+import com.unciv.ui.components.extensions.setSize
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.basescreen.BaseScreen
@@ -54,39 +56,45 @@ internal class VictoryScreenCivGroup(
             : this(civ, "\n", additionalInfo.tr(), currentPlayer, defeatedPlayerStyle)
 
     init {
-        var labelText = if (additionalInfo.isEmpty()) civ.civName
-            else "{${civ.civName}}$separator{$additionalInfo}"
-        val labelColor: Color
-        val backgroundColor: Color
+        val labelText =
+            if (currentPlayer.knows(civ) || currentPlayer == civ ||
+                    civ.isDefeated() || currentPlayer.isDefeated()) {
+                if (additionalInfo.isEmpty()) civ.civName
+                    else "{${civ.civName}}$separator{$additionalInfo}"
+            } else Constants.unknownNationName
 
-        when {
-            civ.isDefeated() && defeatedPlayerStyle == DefeatedPlayerStyle.GREYED_OUT -> {
-                add(ImageGetter.getImage("OtherIcons/DisbandUnit")).size(30f)
-                backgroundColor = Color.LIGHT_GRAY
-                labelColor = Color.BLACK
-            }
-            currentPlayer.isSpectator()
-                    || civ.isDefeated() && defeatedPlayerStyle == DefeatedPlayerStyle.REGULAR
-                    || currentPlayer == civ // || game.viewEntireMapForDebug
-                    || currentPlayer.knows(civ)
-                    || currentPlayer.isDefeated()
-                    || currentPlayer.victoryManager.hasWon() -> {
-                add(ImageGetter.getNationPortrait(civ.nation, 30f))
-                backgroundColor = civ.nation.getOuterColor()
-                labelColor = civ.nation.getInnerColor()
-            }
-            else -> {
-                add(ImageGetter.getRandomNationPortrait(30f))
-                backgroundColor = Color.DARK_GRAY
-                labelColor = Color.WHITE
-                labelText = Constants.unknownNationName
-            }
-        }
+        val civInfo = getCivImageAndColors(civ, currentPlayer, defeatedPlayerStyle)
+        add(civInfo.first).size(30f)
+        val backgroundColor = civInfo.second
+        val labelColor = civInfo.third
 
         background = BaseScreen.skinStrings.getUiBackground("VictoryScreen/CivGroup", BaseScreen.skinStrings.roundedEdgeRectangleShape, backgroundColor)
         val label = labelText.toLabel(labelColor, hideIcons = true)
         label.setAlignment(Align.center)
 
         add(label).padLeft(10f)
+    }
+
+    companion object {
+        fun getCivImageAndColors(civ: Civilization, currentPlayer: Civilization, defeatedPlayerStyle: DefeatedPlayerStyle): Triple<Actor, Color, Color> {
+            when {
+                civ.isDefeated() && defeatedPlayerStyle == DefeatedPlayerStyle.GREYED_OUT -> {
+                    val icon = (ImageGetter.getImage("OtherIcons/DisbandUnit"))
+                    icon.setSize(30f)
+                    return Triple(icon, Color.LIGHT_GRAY, Color.BLACK)
+                }
+                currentPlayer.isSpectator()
+                    || civ.isDefeated() && defeatedPlayerStyle == DefeatedPlayerStyle.REGULAR
+                    || currentPlayer == civ // || game.viewEntireMapForDebug
+                    || currentPlayer.knows(civ)
+                    || currentPlayer.isDefeated()
+                    || currentPlayer.victoryManager.hasWon() -> {
+                    return Triple(ImageGetter.getNationPortrait(civ.nation, 30f), civ.nation.getOuterColor(), civ.nation.getInnerColor())
+                }
+                else ->
+                    return Triple((ImageGetter.getRandomNationPortrait(30f)), Color.LIGHT_GRAY, Color.BLACK)
+            }
+        }
+
     }
 }

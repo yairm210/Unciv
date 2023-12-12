@@ -40,14 +40,15 @@ class CivInfoTransientCache(val civInfo: Civilization) {
     @Transient
     var citiesConnectedToCapitalToMediums = mapOf<City, Set<String>>()
 
-    fun setTransients(){
+    fun setTransients() {
         val ruleset = civInfo.gameInfo.ruleset
-        for (resource in ruleset.tileResources.values.asSequence().filter { it.resourceType == ResourceType.Strategic }.map { it.name }) {
-            val applicableBuildings = ruleset.buildings.values.filter { it.requiresResource(resource) && civInfo.getEquivalentBuilding(it) == it }
-            val applicableUnits = ruleset.units.values.filter { it.requiresResource(resource) && civInfo.getEquivalentUnit(it) == it }
 
-            val lastEraForBuilding = applicableBuildings.maxOfOrNull { ruleset.eras[ruleset.technologies[it.requiredTech]?.era()]?.eraNumber ?: 0 }
-            val lastEraForUnit = applicableUnits.maxOfOrNull { ruleset.eras[ruleset.technologies[it.requiredTech]?.era()]?.eraNumber ?: 0 }
+        for (resource in ruleset.tileResources.values.asSequence().filter { it.resourceType == ResourceType.Strategic }.map { it.name }) {
+            val applicableBuildings = ruleset.buildings.values.filter { it.requiresResource(resource, StateForConditionals.IgnoreConditionals) && civInfo.getEquivalentBuilding(it) == it }
+            val applicableUnits = ruleset.units.values.filter { it.requiresResource(resource, StateForConditionals.IgnoreConditionals) && civInfo.getEquivalentUnit(it) == it }
+
+            val lastEraForBuilding = applicableBuildings.maxOfOrNull { it.era(ruleset)?.eraNumber ?: 0 }
+            val lastEraForUnit = applicableUnits.maxOfOrNull { it.era(ruleset)?.eraNumber ?: 0 }
 
             if (lastEraForBuilding != null)
                 lastEraResourceUsedForBuilding[resource] = lastEraForBuilding
@@ -181,11 +182,7 @@ class CivInfoTransientCache(val civInfo: Civilization) {
             }
         }
 
-        for (spy in civInfo.espionageManager.spyList) {
-            val spyCity = spy.getLocation() ?: continue
-            if (!spy.isSetUp()) continue // Can't see cities when you haven't set up yet
-            newViewableTiles.addAll(spyCity.getCenterTile().getTilesInDistance(1))
-        }
+        newViewableTiles.addAll(civInfo.espionageManager.getTilesVisibleViaSpies())
 
         civInfo.viewableTiles = newViewableTiles // to avoid concurrent modification problems
     }
@@ -245,41 +242,47 @@ class CivInfoTransientCache(val civInfo: Civilization) {
     }
 
     fun updateHasActiveEnemyMovementPenalty() {
-        civInfo.hasActiveEnemyMovementPenalty = civInfo.hasUnique(UniqueType.EnemyLandUnitsSpendExtraMovement)
+        civInfo.hasActiveEnemyMovementPenalty = civInfo.hasUnique(UniqueType.EnemyUnitsSpendExtraMovement)
         civInfo.enemyMovementPenaltyUniques =
-                civInfo.getMatchingUniques(UniqueType.EnemyLandUnitsSpendExtraMovement)
+                civInfo.getMatchingUniques(UniqueType.EnemyUnitsSpendExtraMovement)
     }
 
     fun updateCitiesConnectedToCapital(initialSetup: Boolean = false) {
-        if (civInfo.cities.isEmpty() || civInfo.getCapital() == null) return // eg barbarians
+        if (civInfo.cities.isEmpty()) return // No cities to connect
 
-        val citiesReachedToMediums = CapitalConnectionsFinder(civInfo).find()
+        val oldConnectedCities = if (initialSetup)
+            civInfo.cities.filter { it.connectedToCapitalStatus == City.ConnectedToCapitalStatus.`true` }
+            else citiesConnectedToCapitalToMediums.keys
+        val oldMaybeConnectedCities = if (initialSetup)
+            civInfo.cities.filter { it.connectedToCapitalStatus != City.ConnectedToCapitalStatus.`false` }
+        else citiesConnectedToCapitalToMediums.keys
 
-        if (!initialSetup) { // In the initial setup we're loading an old game state, so it doesn't really count
-            for (city in citiesReachedToMediums.keys)
-                if (city !in citiesConnectedToCapitalToMediums && city.civ == civInfo && city != civInfo.getCapital()!!)
-                    civInfo.addNotification("[${city.name}] has been connected to your capital!",
-                        city.location, NotificationCategory.Cities, NotificationIcon.Gold
-                    )
+        citiesConnectedToCapitalToMediums = if(civInfo.getCapital() == null) mapOf()
+        else CapitalConnectionsFinder(civInfo).find()
 
-            // This may still contain cities that have just been destroyed by razing - thus the population test
-            for (city in citiesConnectedToCapitalToMediums.keys)
-                if (!citiesReachedToMediums.containsKey(city) && city.civ == civInfo && city.population.population > 0)
-                    civInfo.addNotification("[${city.name}] has been disconnected from your capital!",
-                        city.location, NotificationCategory.Cities, NotificationIcon.Gold
-                    )
-        }
+        val newConnectedCities = citiesConnectedToCapitalToMediums.keys
 
-        citiesConnectedToCapitalToMediums = citiesReachedToMediums
+        for (city in newConnectedCities)
+            if (city !in oldMaybeConnectedCities && city.civ == civInfo && city != civInfo.getCapital())
+                civInfo.addNotification("[${city.name}] has been connected to your capital!",
+                    city.location, NotificationCategory.Cities, NotificationIcon.Gold
+                )
+
+        // This may still contain cities that have just been destroyed by razing - thus the population test
+        for (city in oldConnectedCities)
+            if (city !in newConnectedCities && city.civ == civInfo && city.population.population > 0)
+                civInfo.addNotification("[${city.name}] has been disconnected from your capital!",
+                    city.location, NotificationCategory.Cities, NotificationIcon.Gold
+                )
+
+        for (city in civInfo.cities)
+            city.connectedToCapitalStatus = if (city in newConnectedCities)
+                City.ConnectedToCapitalStatus.`true` else City.ConnectedToCapitalStatus.`false`
     }
 
     fun updateCivResources() {
         val newDetailedCivResources = ResourceSupplyList()
         for (city in civInfo.cities) newDetailedCivResources.add(city.getCityResources())
-
-        for (resourceSupply in newDetailedCivResources)
-            if (resourceSupply.amount > 0)
-                resourceSupply.amount = (resourceSupply.amount * civInfo.getResourceModifier(resourceSupply.resource)).toInt()
 
         if (!civInfo.isCityState()) {
             // First we get all these resources of each city state separately
@@ -289,6 +292,7 @@ class CivInfoTransientCache(val civInfo: Civilization) {
                 resourceBonusPercentage += unique.params[0].toFloat() / 100
             for (cityStateAlly in civInfo.getKnownCivs().filter { it.getAllyCiv() == civInfo.civName }) {
                 for (resourceSupply in cityStateAlly.cityStateFunctions.getCityStateResourcesForAlly()) {
+                    if (resourceSupply.resource.hasUnique(UniqueType.CannotBeTraded)) continue
                     val newAmount = (resourceSupply.amount * resourceBonusPercentage).toInt()
                     cityStateProvidedResources.add(resourceSupply.copy(amount = newAmount))
                 }
@@ -299,10 +303,11 @@ class CivInfoTransientCache(val civInfo: Civilization) {
 
         for (unique in civInfo.getMatchingUniques(UniqueType.ProvidesResources)) {
             if (unique.sourceObjectType == UniqueTarget.Building || unique.sourceObjectType == UniqueTarget.Wonder) continue // already calculated in city
+            val resource = civInfo.gameInfo.ruleset.tileResources[unique.params[1]]!!
             newDetailedCivResources.add(
-                civInfo.gameInfo.ruleset.tileResources[unique.params[1]]!!,
+                resource,
                 unique.sourceObjectType?.name ?: "",
-                unique.params[0].toInt()
+                (unique.params[0].toFloat() * civInfo.getResourceModifier(resource)).toInt()
             )
         }
 
@@ -311,7 +316,9 @@ class CivInfoTransientCache(val civInfo: Civilization) {
 
         for (unit in civInfo.units.getCivUnits())
             newDetailedCivResources.subtractResourceRequirements(
-                unit.baseUnit.getResourceRequirementsPerTurn(), civInfo.gameInfo.ruleset, "Units")
+                unit.getResourceRequirementsPerTurn(), civInfo.gameInfo.ruleset, "Units")
+
+        newDetailedCivResources.removeAll { it.resource.hasUnique(UniqueType.CityResource) }
 
         // Check if anything has actually changed so we don't update stats for no reason - this uses List equality which means it checks the elements
         if (civInfo.detailedCivResources == newDetailedCivResources) return
@@ -373,7 +380,7 @@ class CivInfoTransientCache(val civInfo: Civilization) {
 
         // Check if different continents (unless already max distance, or water map)
         if (connections > 0 && proximity != Proximity.Distant && !civInfo.gameInfo.tileMap.isWaterMap()
-                && civInfo.getCapital()!!.getCenterTile().getContinent() != otherCiv.getCapital()!!.getCenterTile().getContinent()
+                && civInfo.getCapital(true)!!.getCenterTile().getContinent() != otherCiv.getCapital(true)!!.getCenterTile().getContinent()
         ) {
             // Different continents - increase separation by one step
             proximity = when (proximity) {
