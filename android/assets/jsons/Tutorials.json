@@ -286,7 +286,7 @@
   },
   {
     "name": "AutoPlay",
-    "steps": ["When at later stages of the game, you might have a lot of units but only a little to do. To help you we have implemented an AutoPlay feature that lets you use the AI to play part or all of your turn.", 
+    "steps": ["When at later stages of the game, you might have a lot of units but only a little to do. To help you we have implemented an AutoPlay feature that lets you use the AI to play part or all of your turn.",
       "To enable AutoPlay, go to options and open the AutoPlay tab and press \"Show AutoPlay button\".",
       "Clicking on the AutoPlay button opens a popup menue for choosing to AutoPlay parts or all of your turn.",
       "Clicking Start AutoPlay in the pop-up menue or long pressing the AutoPlay button begins the multi-turn AutoPlay. This will play your next turns as if you were an AI.",
@@ -435,7 +435,6 @@
             {},
             {"text":"For discussion about missing entries, see the linked github issue.","link":"https://github.com/yairm210/Unciv/issues/8862"}
         ]
-        // "uniques": ["Will not be displayed in Civilopedia"] // would prevent use for help link
     },
     {
         "name": "Civilopedia",

@@ -43,7 +43,7 @@ class OptionsPopup(
 
     private var keyBindingsTab: KeyBindingsTab? = null
     /** Enable the still experimental Keyboard Bindings page in OptionsPopup */
-    var enableKeyBindingsTab: Boolean = false
+    var enableKeyBindingsTab: Boolean = true
 
     //endregion
 
@@ -209,7 +209,8 @@ class OptionsPopup(
     internal fun showOrHideKeyBindings() {
         // At the moment, the Key bindings Tab exists only on-demand. To refactor it back to permanent,
         // move the `keyBindingsTab =` line and addPage call to before the Advanced Tab creation,
-        // then delete this function, delete the enableKeyBindingsTab flag and clean up what is flagged by the compiler as missing or unused.
+        // then delete this function, delete the enableKeyBindingsTab flag and clean up what is flagged
+        // by the compiler as missing or unused - like the `add("Show keyboard bindings".toCheckBox` option on DebugTab.
         val existingIndex = tabs.getPageIndex(keysTabCaption)
         if (enableKeyBindingsTab && existingIndex < 0) {
             if (keyBindingsTab == null)
