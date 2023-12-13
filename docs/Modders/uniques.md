@@ -28,7 +28,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Triggerable
 
-??? example  "[amount] free [unit] units appear"
+??? example  "[positiveAmount] free [unit] units appear"
 	Example: "[3] free [Musketman] units appear"
 
 	Applicable to: Triggerable
@@ -36,7 +36,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "Free Social Policy"
 	Applicable to: Triggerable
 
-??? example  "[amount] Free Social Policies"
+??? example  "[positiveAmount] Free Social Policies"
 	Example: "[3] Free Social Policies"
 
 	Applicable to: Triggerable
@@ -44,7 +44,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "Empire enters golden age"
 	Applicable to: Triggerable
 
-??? example  "Empire enters a [amount]-turn Golden Age"
+??? example  "Empire enters a [positiveAmount]-turn Golden Age"
 	Example: "Empire enters a [3]-turn Golden Age"
 
 	Applicable to: Triggerable
@@ -75,12 +75,12 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "Free Technology"
 	Applicable to: Triggerable
 
-??? example  "[amount] Free Technologies"
+??? example  "[positiveAmount] Free Technologies"
 	Example: "[3] Free Technologies"
 
 	Applicable to: Triggerable
 
-??? example  "[amount] free random researchable Tech(s) from the [era]"
+??? example  "[positiveAmount] free random researchable Tech(s) from the [era]"
 	Example: "[3] free random researchable Tech(s) from the [Ancient era]"
 
 	Applicable to: Triggerable
@@ -96,12 +96,12 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "Triggers voting for the Diplomatic Victory"
 	Applicable to: Triggerable
 
-??? example  "Instantly consumes [amount] [stockpiledResource]"
+??? example  "Instantly consumes [positiveAmount] [stockpiledResource]"
 	Example: "Instantly consumes [3] [StockpiledResource]"
 
 	Applicable to: Triggerable
 
-??? example  "Instantly provides [amount] [stockpiledResource]"
+??? example  "Instantly provides [positiveAmount] [stockpiledResource]"
 	Example: "Instantly provides [3] [StockpiledResource]"
 
 	Applicable to: Triggerable
@@ -129,7 +129,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Triggerable
 
-??? example  "Reveal up to [amount/'all'] [tileFilter] within a [amount] tile radius"
+??? example  "Reveal up to [positiveAmount/'all'] [tileFilter] within a [amount] tile radius"
 	Example: "Reveal up to [3] [Farm] within a [3] tile radius"
 
 	Applicable to: Triggerable
@@ -144,12 +144,12 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Triggerable
 
-??? example  "Provides the cheapest [stat] building in your first [amount] cities for free"
+??? example  "Provides the cheapest [stat] building in your first [positiveAmount] cities for free"
 	Example: "Provides the cheapest [Culture] building in your first [3] cities for free"
 
 	Applicable to: Triggerable
 
-??? example  "Provides a [buildingName] in your first [amount] cities for free"
+??? example  "Provides a [buildingName] in your first [positiveAmount] cities for free"
 	Example: "Provides a [Library] in your first [3] cities for free"
 
 	Applicable to: Triggerable
@@ -1158,12 +1158,12 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
     Uniques that can be added to units, unit types, or promotions
 
+??? example  "May create improvements on water resources"
+	Applicable to: Unit
+
 ??? example  "Can build [improvementFilter/terrainFilter] improvements on tiles"
 	Example: "Can build [All Road] improvements on tiles"
 
-	Applicable to: Unit
-
-??? example  "May create improvements on water resources"
 	Applicable to: Unit
 
 ??? example  "Can be added to [comment] in the Capital"
@@ -1750,7 +1750,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Ruins
 
-??? example  "From a randomly chosen tile [amount] tiles away from the ruins, reveal tiles up to [amount] tiles away with [amount]% chance"
+??? example  "From a randomly chosen tile [positiveAmount] tiles away from the ruins, reveal tiles up to [positiveAmount] tiles away with [positiveAmount]% chance"
 	Example: "From a randomly chosen tile [3] tiles away from the ruins, reveal tiles up to [3] tiles away with [3]% chance"
 
 	Applicable to: Ruins
@@ -1926,12 +1926,12 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Conditional
 
-??? example  "&lt;when above [amount] [stat] (modified by game speed)&gt;"
+??? example  "&lt;when above [amount] [stat/resource] (modified by game speed)&gt;"
 	Example: "&lt;when above [3] [Culture] (modified by game speed)&gt;"
 
 	Applicable to: Conditional
 
-??? example  "&lt;when below [amount] [stat] (modified by game speed)&gt;"
+??? example  "&lt;when below [amount] [stat/resource] (modified by game speed)&gt;"
 	Example: "&lt;when below [3] [Culture] (modified by game speed)&gt;"
 
 	Applicable to: Conditional
@@ -2104,6 +2104,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "&lt;upon founding a city&gt;"
 	Applicable to: TriggerCondition
 
+??? example  "&lt;upon building a [improvementFilter] improvement&gt;"
+	Example: "&lt;upon building a [All Road] improvement&gt;"
+
+	Applicable to: TriggerCondition, UnitTriggerCondition
+
 ??? example  "&lt;upon discovering a Natural Wonder&gt;"
 	Applicable to: TriggerCondition
 
@@ -2207,6 +2212,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 *[improvementName]: The name of any improvement.
 *[modFilter]: A Mod name, case-sensitive _or_ a simple wildcard filter beginning and ending in an Asterisk, case-insensitive.
 *[policy]: The name of any policy.
+*[positiveAmount]: This indicates a positive whole number, larger than zero, a '+' sign is optional.
 *[promotion]: The name of any promotion.
 *[relativeAmount]: This indicates a number, usually with a + or - sign, such as `+25` (this kind of parameter is often followed by '%' which is nevertheless not part of the value).
 *[resource]: The name of any resource.
