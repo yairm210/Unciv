@@ -9,6 +9,7 @@ import com.badlogic.gdx.scenes.scene2d.InputListener
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
 import com.badlogic.gdx.scenes.scene2d.ui.TextField
 import com.badlogic.gdx.scenes.scene2d.utils.FocusListener
+import com.unciv.Constants
 import com.unciv.logic.event.EventBus
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.extensions.getAscendant
@@ -173,7 +174,7 @@ class TextfieldPopup(
             .colspan(2)
             .row()
 
-        addCloseButton("Cancel")
+        addCloseButton(Constants.cancel)
             .left()
         addOKButton { textField.text = popupTextfield.text }
             .right()
