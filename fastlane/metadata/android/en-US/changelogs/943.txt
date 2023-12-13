@@ -1,0 +1,17 @@
+
+
+Add another confirmation when buying a religious unit in a city that …  - By WhoIsJohannes
+
+Add new map types  - By remdu
+
+Allow arbitrary victory types for the purposes of policies  - By SeventhM
+
+By SomeTroglodyte:
+- Civilopedia key bindings 
+- Great Person Points - Rounding changes, Breakdown UI 
+- (Tool) Tiny helper to load MP saves (from issues for debugging) as hotseat 
+- Fix ended Leader Voice not cleared and resumed on un-pause 
+
+Fix 'Sleep Until Healed' action missing  - By soggerr
+
+Added check for belief.type  - By Why-not-now
