@@ -192,7 +192,7 @@ class WorldScreen(
         globalShortcuts.add(KeyCharAndCode.BACK) { backButtonAndESCHandler() }
 
 
-        globalShortcuts.add('`'){
+        globalShortcuts.add('`') {
             // No cheating unless you're by yourself
             if (gameInfo.civilizations.count { it.isHuman() } > 1) return@add
             val consolePopup = DevConsolePopup(this)

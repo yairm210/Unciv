@@ -120,7 +120,7 @@ class OptionsPopup(
             tabs.addPage("Locate mod errors", content, ImageGetter.getImage("OtherIcons/Mods"), 24f)
         }
         if (withDebug || Gdx.input.areSecretKeysPressed()) {
-            tabs.addPage("Debug", debugTab(this), ImageGetter.getImage("OtherIcons/SecretOptions"), 24f, secret = true)
+            tabs.addPage("Debug", debugTab(this), ImageGetter.getImage("OtherIcons/SecretOptions"), 24f)
         }
 
         addCloseButton {
@@ -142,7 +142,6 @@ class OptionsPopup(
     override fun setVisible(visible: Boolean) {
         super.setVisible(visible)
         if (!visible) return
-        tabs.askForPassword(secretHashCode = 2747985)
         if (tabs.activePage < 0) tabs.selectPage(selectPage)
     }
 
