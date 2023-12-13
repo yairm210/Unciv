@@ -116,7 +116,7 @@ class EmpireOverviewScreen(
         // This is called by UncivGame.popScreen - e.g. after City Tab opened a City and the user closes that CityScreen...
         // Notify the current tab via its IPageExtensions.activated entry point so it can refresh if needed
         val index = tabbedPager.activePage
-        val category = EmpireOverviewCategories.values()[index - 1]
+        val category = EmpireOverviewCategories.values().getOrNull(index - 1) ?: return
         pageObjects[category]?.activated(index, "", tabbedPager) // Fake caption marks this as popScreen-triggered
     }
 }
