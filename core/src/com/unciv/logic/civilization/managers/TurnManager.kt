@@ -3,6 +3,7 @@ package com.unciv.logic.civilization.managers
 import com.unciv.UncivGame
 import com.unciv.logic.VictoryData
 import com.unciv.logic.automation.civilization.NextTurnAutomation
+import com.unciv.logic.city.City
 import com.unciv.logic.city.managers.CityTurnManager
 import com.unciv.logic.civilization.AlertType
 import com.unciv.logic.civilization.CivFlags
@@ -20,6 +21,7 @@ import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unique.endTurn
 import com.unciv.models.stats.Stats
 import com.unciv.ui.components.MayaCalendar
+import com.unciv.ui.components.extensions.randomWeighted
 import com.unciv.ui.screens.worldscreen.status.NextTurnProgress
 import com.unciv.utils.Log
 import kotlin.math.max
@@ -59,7 +61,7 @@ class TurnManager(val civInfo: Civilization) {
         if (civInfo.cities.isNotEmpty()) { //if no city available, addGreatPerson will throw exception
             val greatPerson = civInfo.greatPeople.getNewGreatPerson()
             if (greatPerson != null && civInfo.gameInfo.ruleset.units.containsKey(greatPerson))
-                civInfo.units.addUnit(greatPerson)
+                civInfo.units.addUnit(greatPerson, getRandomWeightedCity(greatPerson))
             civInfo.religionManager.startTurn()
             if (civInfo.isLongCountActive())
                 MayaCalendar.startTurnForMaya(civInfo)
@@ -94,6 +96,19 @@ class TurnManager(val civInfo: Civilization) {
         updateWinningCiv()
     }
 
+    /** Determine which city gets a new Great Person
+     *
+     *  - Choose randomly but chance proportional to the given city's contribution to [greatPerson]
+     *  - returning null will leave the decision to addUnit which will choose an unweighted random one
+     */
+    private fun getRandomWeightedCity(greatPerson: String): City? {
+        val cities = civInfo.cities.asSequence()
+            .map { it to it.getGreatPersonPoints()[greatPerson] }
+            .filter { it.second > 0 }
+            .toList()
+        if (cities.isEmpty()) return null
+        return cities.map { it.first }.randomWeighted(cities.map { it.second.toFloat() })
+    }
 
     private fun startTurnFlags() {
         for (flag in civInfo.flagsCountdown.keys.toList()) {
