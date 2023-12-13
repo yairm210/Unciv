@@ -277,10 +277,20 @@ class MapGenerator(val ruleset: Ruleset, private val coroutineScope: CoroutineSc
 
         //Coasts
         if (ruleset.terrains.containsKey(Constants.coast)) {
-            for (tile in map.values.filter { it.baseTerrain == Constants.ocean }) {
-                val coastLength =
-                    max(1, randomness.RNG.nextInt(max(1, map.mapParameters.maxCoastExtension)))
-                if (tile.getTilesInDistance(coastLength).any { it.isLand }) {
+            for (i in 1..map.mapParameters.maxCoastExtension) {
+                val toCoast = mutableListOf<Tile>()
+                for (tile in map.values.filter { it.baseTerrain == Constants.ocean }) {
+                    if (tile.getTilesInDistance(1).any { it.isLand }) {
+                        toCoast.add(tile)
+                    }
+                    if (tile.getTilesInDistance(1).any { it.baseTerrain == Constants.coast }) {
+                        val randval = randomness.RNG.nextDouble()
+                        if (randval < 0.5) {
+                            toCoast.add(tile)
+                        }
+                    }
+                }
+                for (tile in toCoast) {
                     tile.baseTerrain = Constants.coast
                     tile.setTransients()
                 }
