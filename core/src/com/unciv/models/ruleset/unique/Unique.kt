@@ -295,11 +295,7 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
                 state.ourCombatant != null && state.ourCombatant.getHealth() < condition.params[0].toInt()
             UniqueType.ConditionalHasNotUsedOtherActions ->
                 state.unit == null || // So we get the action as a valid action in BaseUnit.hasUnique()
-                    ( // OLD format
-                state.unit.run { limitedActionsUnitCanDo().all { abilityUsesLeft[it] == maxAbilityUses[it] } }
-                    // NEW format
-                    && state.unit.abilityToTimesUsed.isEmpty())
-
+                    state.unit.abilityToTimesUsed.isEmpty()
             UniqueType.ConditionalInTiles ->
                 relevantTile?.matchesFilter(condition.params[0], state.civInfo) == true
             UniqueType.ConditionalInTilesNot ->
