@@ -104,8 +104,8 @@ class WorldScreenTopBar(internal val worldScreen: WorldScreen) : Table() {
     /** Performs the layout tricks mentioned in the class Kdoc */
     private fun updateLayout() {
         val targetWidth = stage.width
-        val statsWidth = statsTable.minWidth
-        val resourceWidth = resourceTable.minWidth
+        val statsWidth = statsTable.prefWidth
+        val resourceWidth = resourceTable.prefWidth
         val overviewWidth = overviewButton.minWidth
         val overviewHeight = overviewButton.minHeight
         val selectedCivWidth = selectedCivTable.minWidth

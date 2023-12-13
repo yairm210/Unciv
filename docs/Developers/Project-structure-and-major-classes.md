@@ -2,7 +2,7 @@
 
 Since LibGDX, and therefore Unciv, are built for multi-platform support, the project structure is built accordingly.
 
-99% of the code is in the [core](https://github.com/yairm210/Unciv/tree/master/core) project, which contains all the platform-independant code.
+99% of the code is in the [core](https://github.com/yairm210/Unciv/tree/master/core) project, which contains all the platform-independent code.
 
 The [desktop](https://github.com/yairm210/Unciv/tree/master/desktop) and [android](https://github.com/yairm210/Unciv/tree/master/android) folders contain platform-specific things, and the Android folder also contains the game Images and the all-important Assets, which are required for running from Desktop as well, so we bundle them up into the .jar file when releasing.
 
@@ -48,7 +48,7 @@ The UI:
 
 First off, let's clarify: When we say "The Game", we mean the *state* of the game (what turn it is, who the players are, what each one has etc) and not the *UI* of the game.
 
-That is, The Game is the *currently playe*_ game, not *Unciv*.
+That is, The Game is the *currently played* game, not *Unciv*.
 
 The game contains three major parts:
 

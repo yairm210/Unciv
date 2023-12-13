@@ -65,7 +65,7 @@ class UnitMovement(val unit: MapUnit) {
                     }
 
                     if (!distanceToTiles.containsKey(neighbor) || distanceToTiles[neighbor]!!.totalDistance > totalDistanceToTile) { // this is the new best path
-                        if (totalDistanceToTile < unitMovement- Constants.minimumMovementEpsilon)  // We can still keep moving from here!
+                        if (totalDistanceToTile < unitMovement - Constants.minimumMovementEpsilon)  // We can still keep moving from here!
                             updatedTiles += neighbor
                         else
                             totalDistanceToTile = unitMovement
@@ -246,7 +246,7 @@ class UnitMovement(val unit: MapUnit) {
         return getShortestPath(destination).any()
     }
 
-    private fun canReachInCurrentTurn(destination: Tile): Boolean {
+    fun canReachInCurrentTurn(destination: Tile): Boolean {
         if (unit.cache.cannotMove) return destination == unit.getTile()
         if (unit.baseUnit.movesLikeAirUnits())
             return unit.currentTile.aerialDistanceTo(destination) <= unit.getMaxMovementForAirUnits()
@@ -300,7 +300,7 @@ class UnitMovement(val unit: MapUnit) {
         if (otherUnit.owner != unit.owner
                 || otherUnit.cache.cannotMove  // redundant, line below would cover it too
                 || !otherUnit.movement.canReachInCurrentTurn(ourPosition)) return false
-        
+
         if (!canMoveTo(reachableTile, canSwap = true)) return false
         if (!otherUnit.movement.canMoveTo(ourPosition, canSwap = true)) return false
         // All clear!
@@ -364,8 +364,6 @@ class UnitMovement(val unit: MapUnit) {
     fun moveToTile(destination: Tile, considerZoneOfControl: Boolean = true) {
         if (destination == unit.getTile() || unit.isDestroyed) return // already here (or dead)!
         // Reset closestEnemy chache
-        unit.cache.distanceToClosestEnemyUnit = null
-        unit.cache.distanceToClosestEnemyUnitSearched = null
 
         if (unit.baseUnit.movesLikeAirUnits()) { // air units move differently from all other units
             if (unit.action != UnitActionType.Automate.value) unit.action = null
@@ -465,7 +463,7 @@ class UnitMovement(val unit: MapUnit) {
         // bring along the payloads
         for (payload in payloadUnits) {
             payload.removeFromTile()
-            for (tile in pathToLastReachableTile){
+            for (tile in pathToLastReachableTile) {
                 payload.moveThroughTile(tile)
                 if (tile == finalTileReached) break // this is the final tile the transport reached
             }
@@ -557,11 +555,11 @@ class UnitMovement(val unit: MapUnit) {
             return false
 
         return if (unit.isCivilian())
-            (tile.civilianUnit == null || (canSwap && tile.civilianUnit!!.owner == unit.owner)) 
+            (tile.civilianUnit == null || (canSwap && tile.civilianUnit!!.owner == unit.owner))
                 && (tile.militaryUnit == null || tile.militaryUnit!!.owner == unit.owner)
         else
         // can skip checking for airUnit since not a city
-            (tile.militaryUnit == null || (canSwap && tile.militaryUnit!!.owner == unit.owner)) 
+            (tile.militaryUnit == null || (canSwap && tile.militaryUnit!!.owner == unit.owner))
             && (tile.civilianUnit == null || tile.civilianUnit!!.owner == unit.owner || unit.civ.isAtWarWith(tile.civilianUnit!!.civ))
     }
 

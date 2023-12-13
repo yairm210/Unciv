@@ -45,7 +45,7 @@ Each era can have the following attributes:
 | Attribute | Type | Optional | Notes                                                                                                                                                                                                                                              |
 | --------- | ---- | -------- |----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | name | String | required | Name of the era                                                                                                                                                                                                                                    |
-| researchAgreementCost | Integer (≥0) | defaults to 300 | Cost of research agreements were the most technologically advanced civ is in this era                                                                                                                                                              |
+| researchAgreementCost | Integer (≥0) | defaults to 300 | Cost of research agreements when the most technologically advanced civ is in this era                                                                                                                                                              |
 | iconRGB | List of 3 Integers | defaults to [255, 255, 255] | RGB color that icons for technologies of this era should have in the Tech screen                                                                                                                                                                   |
 | unitBaseBuyCost | Integer (≥0) | defaults to 200 | Base cost of buying units with Faith, Food, Science or Culture when no other cost is provided                                                                                                                                                      |
 | startingSettlerCount | Integer (≥0) | defaults to 1 | Amount of settler units that should be spawned when starting a game in this era (setting this to zero is discouraged [^1])                                                                                                                         |
@@ -213,9 +213,6 @@ With `civModifier` being the multiplicative aggregate of ["\[relativeAmount\]% G
 Defines uniques that apply globally. e.g. Vanilla rulesets define the effects of Unhappiness here.
 Only the `uniques` field is used, but a name must still be set (the Ruleset validator might display it).
 When extension rulesets define GlobalUniques, all uniques are merged. At the moment there is no way to change/remove uniques set by a base mod.
-
-Note: Mods can use "arbitrary" Uniques as purely filtering uniques. They are not "Typed" by Unciv code and thus have no actual effect implementation - except by being filterable elsewhere.
-In the near future, the ruleset validator will show warnings for all these, unless they are also included here, as validation that they are intentional (and - they **must** have **no** placeholders or conditionals).
 
 ## Tutorials.json
 

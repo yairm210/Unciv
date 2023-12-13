@@ -19,6 +19,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.CheckBox
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton
 import com.badlogic.gdx.scenes.scene2d.ui.Label
+import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle
@@ -130,6 +131,11 @@ fun Actor.getAscendant(predicate: (Actor) -> Boolean): Actor? {
     return null
 }
 
+/** Gets the nearest parent of this actor that is a [T], or null if none of its parents is of that type. */
+inline fun <reified T> Actor.getAscendant(): T? {
+    return  getAscendant { it is T } as? T
+}
+
 /** The actors bounding box in stage coordinates */
 val Actor.stageBoundingBox: Rectangle get() {
     val bottomLeft = localToStageCoordinates(Vector2.Zero.cpy())
@@ -224,6 +230,10 @@ fun <T : Actor> Cell<T>.pad(vertical: Float, horizontal: Float): Cell<T> {
 fun Image.setSize(size: Float) {
     setSize(size, size)
 }
+
+/** Proxy for [ScrollPane.scrollTo] using the [bounds][Actor.setBounds] of a given [actor] for its parameters */
+fun ScrollPane.scrollTo(actor: Actor, center: Boolean = false) =
+    scrollTo(actor.x, actor.y, actor.width, actor.height, center, center)
 
 /** Translate a [String] and make a [TextButton] widget from it */
 fun String.toTextButton(style: TextButtonStyle? = null, hideIcons: Boolean = false): TextButton {
@@ -366,6 +376,8 @@ object GdxKeyCodeFixes {
     }
 }
 
+fun Input.isShiftKeyPressed() = isKeyPressed(Input.Keys.SHIFT_LEFT) || isKeyPressed(Input.Keys.SHIFT_RIGHT)
+fun Input.isControlKeyPressed() = isKeyPressed(Input.Keys.CONTROL_LEFT) || isKeyPressed(Input.Keys.CONTROL_RIGHT)
 fun Input.areSecretKeysPressed() = isKeyPressed(Input.Keys.SHIFT_RIGHT) &&
         (isKeyPressed(Input.Keys.CONTROL_RIGHT) || isKeyPressed(Input.Keys.ALT_RIGHT))
 

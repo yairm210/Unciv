@@ -1,6 +1,7 @@
 package com.unciv.logic.civilization.diplomacy
 
 import com.unciv.Constants
+import com.unciv.logic.civilization.DiplomacyAction
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.trade.Trade
@@ -45,8 +46,12 @@ object DiplomacyTurnManager {
                         remakePeaceTreaty(trade.theirOffers.first { it.name == Constants.peaceTreaty }.duration)
                     }
 
-                    civInfo.addNotification("One of our trades with [$otherCivName] has been cut short", NotificationCategory.Trade, NotificationIcon.Trade, otherCivName)
-                    otherCiv().addNotification("One of our trades with [${civInfo.civName}] has been cut short", NotificationCategory.Trade, NotificationIcon.Trade, civInfo.civName)
+                    civInfo.addNotification("One of our trades with [$otherCivName] has been cut short",
+                        DiplomacyAction(otherCivName, true),
+                        NotificationCategory.Trade, NotificationIcon.Trade, otherCivName)
+                    otherCiv().addNotification("One of our trades with [${civInfo.civName}] has been cut short",
+                        DiplomacyAction(civInfo.civName, true),
+                        NotificationCategory.Trade, NotificationIcon.Trade, civInfo.civName)
                     civInfo.cache.updateCivResources()
                 }
             }
@@ -224,9 +229,10 @@ object DiplomacyTurnManager {
             if (trade.ourOffers.all { it.duration <= 0 } && trade.theirOffers.all { it.duration <= 0 }) {
                 trades.remove(trade)
                 for (offer in trade.ourOffers.union(trade.theirOffers).filter { it.duration == 0 }) { // this was a timed trade
-                    if (offer in trade.theirOffers)
-                        civInfo.addNotification("[${offer.name}] from [$otherCivName] has ended", NotificationCategory.Trade, otherCivName, NotificationIcon.Trade)
-                    else civInfo.addNotification("[${offer.name}] to [$otherCivName] has ended", NotificationCategory.Trade, otherCivName, NotificationIcon.Trade)
+                    val direction = if (offer in trade.theirOffers) "from" else "to"
+                    civInfo.addNotification("[${offer.name}] $direction [$otherCivName] has ended",
+                        DiplomacyAction(otherCivName, true),
+                        NotificationCategory.Trade, otherCivName, NotificationIcon.Trade)
 
                     civInfo.updateStatsForNextTurn() // if they were bringing us gold per turn
                     if (trade.theirOffers.union(trade.ourOffers) // if resources were involved
@@ -238,9 +244,13 @@ object DiplomacyTurnManager {
             for (offer in trade.theirOffers.filter { it.duration <= 3 })
             {
                 if (offer.duration == 3)
-                    civInfo.addNotification("[${offer.name}] from [$otherCivName] will end in [3] turns", NotificationCategory.Trade, otherCivName, NotificationIcon.Trade)
+                    civInfo.addNotification("[${offer.name}] from [$otherCivName] will end in [3] turns",
+                        DiplomacyAction(otherCivName, true),
+                        NotificationCategory.Trade, otherCivName, NotificationIcon.Trade)
                 else if (offer.duration == 1)
-                    civInfo.addNotification("[${offer.name}] from [$otherCivName] will end next turn", NotificationCategory.Trade, otherCivName, NotificationIcon.Trade)
+                    civInfo.addNotification("[${offer.name}] from [$otherCivName] will end next turn",
+                        DiplomacyAction(otherCivName, true),
+                        NotificationCategory.Trade, otherCivName, NotificationIcon.Trade)
             }
         }
     }

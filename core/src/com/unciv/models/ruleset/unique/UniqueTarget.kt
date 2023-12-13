@@ -48,7 +48,7 @@ enum class UniqueTarget(
 
     // Tile-specific
     Terrain,
-    Improvement,
+    Improvement(inheritsFrom = Triggerable),
     Resource(inheritsFrom = Global),
     Ruins(inheritsFrom = UnitTriggerable),
 
@@ -76,5 +76,13 @@ enum class UniqueTarget(
         if (this == uniqueTarget) return true
         if (inheritsFrom != null) return inheritsFrom.canAcceptUniqueTarget(uniqueTarget)
         return false
+    }
+    companion object {
+        /** All targets that can display their Uniques */
+        // As Array so it can used in a vararg parameter list.
+        val Displayable = arrayOf(
+            Building, Unit, UnitType, Improvement, Tech,
+            Terrain, Resource, Policy, Promotion, Nation, Ruins, Speed
+        )
     }
 }

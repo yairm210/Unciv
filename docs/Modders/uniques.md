@@ -1,5 +1,8 @@
 # Uniques
+An overview of uniques can be found [here](../Developers/Uniques.md)
+
 Simple unique parameters are explained by mouseover. Complex parameters are explained in [Unique parameter types](../Unique-parameters)
+
 ## Triggerable uniques
 !!! note ""
 
@@ -15,12 +18,17 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Triggerable, Global
 
+??? example  "Sell [buildingFilter] buildings [cityFilter]"
+	Example: "Sell [Culture] buildings [in all cities]"
+
+	Applicable to: Triggerable, Global
+
 ??? example  "Free [unit] appears"
 	Example: "Free [Musketman] appears"
 
 	Applicable to: Triggerable
 
-??? example  "[amount] free [unit] units appear"
+??? example  "[positiveAmount] free [unit] units appear"
 	Example: "[3] free [Musketman] units appear"
 
 	Applicable to: Triggerable
@@ -28,7 +36,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "Free Social Policy"
 	Applicable to: Triggerable
 
-??? example  "[amount] Free Social Policies"
+??? example  "[positiveAmount] Free Social Policies"
 	Example: "[3] Free Social Policies"
 
 	Applicable to: Triggerable
@@ -36,7 +44,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "Empire enters golden age"
 	Applicable to: Triggerable
 
-??? example  "Empire enters a [amount]-turn Golden Age"
+??? example  "Empire enters a [positiveAmount]-turn Golden Age"
 	Example: "Empire enters a [3]-turn Golden Age"
 
 	Applicable to: Triggerable
@@ -67,12 +75,12 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "Free Technology"
 	Applicable to: Triggerable
 
-??? example  "[amount] Free Technologies"
+??? example  "[positiveAmount] Free Technologies"
 	Example: "[3] Free Technologies"
 
 	Applicable to: Triggerable
 
-??? example  "[amount] free random researchable Tech(s) from the [era]"
+??? example  "[positiveAmount] free random researchable Tech(s) from the [era]"
 	Example: "[3] free random researchable Tech(s) from the [Ancient era]"
 
 	Applicable to: Triggerable
@@ -88,18 +96,23 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "Triggers voting for the Diplomatic Victory"
 	Applicable to: Triggerable
 
-??? example  "Instantly consumes [amount] [stockpiledResource]"
+??? example  "Instantly consumes [positiveAmount] [stockpiledResource]"
 	Example: "Instantly consumes [3] [StockpiledResource]"
 
 	Applicable to: Triggerable
 
-??? example  "Instantly provides [amount] [stockpiledResource]"
+??? example  "Instantly provides [positiveAmount] [stockpiledResource]"
 	Example: "Instantly provides [3] [StockpiledResource]"
 
 	Applicable to: Triggerable
 
-??? example  "Gain [amount] [stat/resource]"
+??? example  "Gain [amount] [stat]"
 	Example: "Gain [3] [Culture]"
+
+	Applicable to: Triggerable
+
+??? example  "Gain [amount] [stat] (modified by game speed)"
+	Example: "Gain [3] [Culture] (modified by game speed)"
 
 	Applicable to: Triggerable
 
@@ -116,7 +129,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Triggerable
 
-??? example  "Reveal up to [amount/'all'] [tileFilter] within a [amount] tile radius"
+??? example  "Reveal up to [positiveAmount/'all'] [tileFilter] within a [amount] tile radius"
 	Example: "Reveal up to [3] [Farm] within a [3] tile radius"
 
 	Applicable to: Triggerable
@@ -131,12 +144,12 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Triggerable
 
-??? example  "Provides the cheapest [stat] building in your first [amount] cities for free"
+??? example  "Provides the cheapest [stat] building in your first [positiveAmount] cities for free"
 	Example: "Provides the cheapest [Culture] building in your first [3] cities for free"
 
 	Applicable to: Triggerable
 
-??? example  "Provides a [buildingName] in your first [amount] cities for free"
+??? example  "Provides a [buildingName] in your first [positiveAmount] cities for free"
 	Example: "Provides a [Library] in your first [3] cities for free"
 
 	Applicable to: Triggerable
@@ -194,6 +207,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 ??? example  "[stats] per [amount] social policies adopted"
 	Example: "[+1 Gold, +2 Production] per [3] social policies adopted"
+
+	Applicable to: Global
+
+??? example  "[stats] per every [amount] [civWideStat]"
+	Example: "[+1 Gold, +2 Production] per every [3] [Gold]"
 
 	Applicable to: Global
 
@@ -470,8 +488,8 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Global
 
-??? example  "[relativeAmount]% tile improvement construction time"
-	Example: "[+20]% tile improvement construction time"
+??? example  "[relativeAmount]% construction time for [improvementFilter] improvements"
+	Example: "[+20]% construction time for [All Road] improvements"
 
 	Applicable to: Global, Unit
 
@@ -782,6 +800,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Global, Unit
 
+??? example  "[relativeAmount] Air Interception Range"
+	Example: "[+20] Air Interception Range"
+
+	Applicable to: Global, Unit
+
 ??? example  "[amount] HP when healing"
 	Example: "[3] HP when healing"
 
@@ -896,8 +919,17 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "Units ignore terrain costs when moving into any tile with Hills"
 	Applicable to: Nation
 
+??? example  "Excluded from map editor"
+	Applicable to: Nation, Terrain, Improvement, Resource
+
 ??? example  "Will not be displayed in Civilopedia"
-	Applicable to: Nation, Tech, Policy, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins
+	Applicable to: Nation, Tech, Policy, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed
+
+??? example  "Comment [comment]"
+	Allows displaying arbitrary text in a Unique listing. Only the text within the '[]' brackets will be displayed, the rest serves to allow Ruleset validation to recognize the intent.
+	Example: "Comment [comment]"
+
+	Applicable to: Nation, Tech, Policy, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed
 
 ## Era uniques
 ??? example  "Starting in this era disables religion"
@@ -934,15 +966,15 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: FounderBelief
 
+??? example  "[relativeAmount]% [stat] from every follower, up to [relativeAmount]%"
+	Example: "[+20]% [Culture] from every follower, up to [+20]%"
+
+	Applicable to: FounderBelief, FollowerBelief
+
 ## FollowerBelief uniques
 !!! note ""
 
     Uniques for Pantheon and Follower type beliefs, that will apply to each city where the religion is the majority religion
-
-??? example  "[relativeAmount]% [stat] from every follower, up to [relativeAmount]%"
-	Example: "[+20]% [Culture] from every follower, up to [+20]%"
-
-	Applicable to: FollowerBelief
 
 ??? example  "Earn [amount]% of [mapUnitFilter] unit's [costOrStrength] as [civWideStat] when killed within 4 tiles of a city following this religion"
 	Example: "Earn [3]% of [Wounded] unit's [Cost] as [Gold] when killed within 4 tiles of a city following this religion"
@@ -1126,12 +1158,12 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
     Uniques that can be added to units, unit types, or promotions
 
+??? example  "May create improvements on water resources"
+	Applicable to: Unit
+
 ??? example  "Can build [improvementFilter/terrainFilter] improvements on tiles"
 	Example: "Can build [All Road] improvements on tiles"
 
-	Applicable to: Unit
-
-??? example  "May create improvements on water resources"
 	Applicable to: Unit
 
 ??? example  "Can be added to [comment] in the Capital"
@@ -1240,6 +1272,9 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Unit
 
 ??? example  "Unable to capture cities"
+	Applicable to: Unit
+
+??? example  "Unable to pillage tiles"
 	Applicable to: Unit
 
 ??? example  "Can move after attacking"
@@ -1715,7 +1750,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Ruins
 
-??? example  "From a randomly chosen tile [amount] tiles away from the ruins, reveal tiles up to [amount] tiles away with [amount]% chance"
+??? example  "From a randomly chosen tile [positiveAmount] tiles away from the ruins, reveal tiles up to [positiveAmount] tiles away with [positiveAmount]% chance"
 	Example: "From a randomly chosen tile [3] tiles away from the ruins, reveal tiles up to [3] tiles away with [3]% chance"
 
 	Applicable to: Ruins
@@ -1772,7 +1807,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Conditional
 
-??? example  "&lt;for [nationFilter]&gt;"
+??? example  "&lt;for [civFilter]&gt;"
 	Example: "&lt;for [City-States]&gt;"
 
 	Applicable to: Conditional
@@ -1891,12 +1926,12 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Conditional
 
-??? example  "&lt;when above [amount] [stat] (modified by game speed)&gt;"
+??? example  "&lt;when above [amount] [stat/resource] (modified by game speed)&gt;"
 	Example: "&lt;when above [3] [Culture] (modified by game speed)&gt;"
 
 	Applicable to: Conditional
 
-??? example  "&lt;when below [amount] [stat] (modified by game speed)&gt;"
+??? example  "&lt;when below [amount] [stat/resource] (modified by game speed)&gt;"
 	Example: "&lt;when below [3] [Culture] (modified by game speed)&gt;"
 
 	Applicable to: Conditional
@@ -2028,6 +2063,9 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Conditional
 
+??? example  "&lt;hidden from users&gt;"
+	Applicable to: Conditional
+
 ## TriggerCondition uniques
 !!! note ""
 
@@ -2065,6 +2103,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 ??? example  "&lt;upon founding a city&gt;"
 	Applicable to: TriggerCondition
+
+??? example  "&lt;upon building a [improvementFilter] improvement&gt;"
+	Example: "&lt;upon building a [All Road] improvement&gt;"
+
+	Applicable to: TriggerCondition, UnitTriggerCondition
 
 ??? example  "&lt;upon discovering a Natural Wonder&gt;"
 	Applicable to: TriggerCondition
@@ -2119,6 +2162,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: UnitTriggerCondition
 
+??? example  "&lt;upon discovering a [tileFilter] tile&gt;"
+	Example: "&lt;upon discovering a [Farm] tile&gt;"
+
+	Applicable to: UnitTriggerCondition
+
 ## UnitActionModifier uniques
 !!! note ""
 
@@ -2164,6 +2212,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 *[improvementName]: The name of any improvement.
 *[modFilter]: A Mod name, case-sensitive _or_ a simple wildcard filter beginning and ending in an Asterisk, case-insensitive.
 *[policy]: The name of any policy.
+*[positiveAmount]: This indicates a positive whole number, larger than zero, a '+' sign is optional.
 *[promotion]: The name of any promotion.
 *[relativeAmount]: This indicates a number, usually with a + or - sign, such as `+25` (this kind of parameter is often followed by '%' which is nevertheless not part of the value).
 *[resource]: The name of any resource.

@@ -17,13 +17,13 @@ class UniqueValidator(val ruleset: Ruleset) {
     private val allUniqueParameters = HashSet<String>()
 
     private fun addToHashsets(uniqueHolder: IHasUniques) {
-        for (unique in uniqueHolder.uniqueObjects){
+        for (unique in uniqueHolder.uniqueObjects) {
             if (unique.type == null) allNonTypedUniques.add(unique.text)
             else allUniqueParameters.addAll(unique.allParams)
         }
     }
 
-    fun populateFilteringUniqueHashsets(){
+    fun populateFilteringUniqueHashsets() {
         addToHashsets(ruleset.globalUniques)
         ruleset.units.values.forEach { addToHashsets(it) }
         ruleset.buildings.values.forEach { addToHashsets(it) }
@@ -216,7 +216,7 @@ class UniqueValidator(val ruleset: Ruleset) {
 
     private fun isFilteringUniqueAllowed(unique: Unique): Boolean {
         // Isolate this decision, to allow easy change of approach
-        // This says: Must have no conditionals or parameters, and is contained in GlobalUniques
+        // This says: Must have no conditionals or parameters, and is used in any "filtering" parameter of another Unique
         if (unique.conditionals.isNotEmpty() || unique.params.isNotEmpty()) return false
         return unique.text in allUniqueParameters // referenced at least once from elsewhere
     }

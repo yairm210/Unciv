@@ -2,6 +2,7 @@ package com.unciv.logic.battle
 
 import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
+import com.unciv.GUI
 import com.unciv.UncivGame
 import com.unciv.logic.automation.civilization.NextTurnAutomation
 import com.unciv.logic.city.City
@@ -150,7 +151,7 @@ object Battle {
         if (!defender.isDefeated() && defender is MapUnitCombatant && defender.unit.isExploring())
             defender.unit.action = null
 
-        fun triggerVictoryUniques(ourUnit:MapUnitCombatant, enemy:MapUnitCombatant){
+        fun triggerVictoryUniques(ourUnit:MapUnitCombatant, enemy:MapUnitCombatant) {
             val stateForConditionals = StateForConditionals(civInfo = ourUnit.getCivInfo(),
                 ourCombatant = ourUnit, theirCombatant=enemy, tile = attackedTile)
             for (unique in ourUnit.unit.getTriggeredUniques(UniqueType.TriggerUponDefeatingUnit, stateForConditionals))
@@ -192,7 +193,7 @@ object Battle {
 
         if (!isAlreadyDefeatedCity) postBattleAddXp(attacker, defender)
 
-        if (attacker is CityCombatant){
+        if (attacker is CityCombatant) {
             val cityCanBombardNotification = attacker.getCivInfo().notifications
                 .firstOrNull { it.text == "Your city [${attacker.getName()}] can bombard the enemy!" }
             attacker.getCivInfo().notifications.remove(cityCanBombardNotification)
@@ -201,7 +202,7 @@ object Battle {
         return damageDealt + interceptDamage
     }
 
-    internal fun triggerDefeatUniques(ourUnit: MapUnitCombatant, enemy: ICombatant, attackedTile: Tile){
+    internal fun triggerDefeatUniques(ourUnit: MapUnitCombatant, enemy: ICombatant, attackedTile: Tile) {
         val stateForConditionals = StateForConditionals(civInfo = ourUnit.getCivInfo(),
             ourCombatant = ourUnit, theirCombatant=enemy, tile = attackedTile)
         for (unique in ourUnit.unit.getTriggeredUniques(UniqueType.TriggerUponDefeat, stateForConditionals))
@@ -212,6 +213,38 @@ object Battle {
         val unitStr = max(defeatedUnit.unit.baseUnit.strength, defeatedUnit.unit.baseUnit.rangedStrength)
         val unitCost = defeatedUnit.unit.baseUnit.cost
 
+        val bonusUniques = getKillUnitPlunderUniques(civUnit, defeatedUnit)
+
+        for (unique in bonusUniques) {
+            if (!defeatedUnit.matchesCategory(unique.params[1])) continue
+
+            val yieldPercent = unique.params[0].toFloat() / 100
+            val defeatedUnitYieldSourceType = unique.params[2]
+            val yieldTypeSourceAmount =
+                if (defeatedUnitYieldSourceType == "Cost") unitCost else unitStr
+            val yieldAmount = (yieldTypeSourceAmount * yieldPercent).toInt()
+
+            val stat = Stat.valueOf(unique.params[3])
+            civUnit.getCivInfo().addStat(stat, yieldAmount)
+        }
+
+        // CS friendship from killing barbarians
+        if (defeatedUnit.getCivInfo().isBarbarian() && !defeatedUnit.isCivilian() && civUnit.getCivInfo().isMajorCiv()) {
+            for (cityState in UncivGame.Current.gameInfo!!.getAliveCityStates()) {
+                if (civUnit.getCivInfo().knows(cityState) && defeatedUnit.unit.threatensCiv(cityState)) {
+                    cityState.cityStateFunctions.threateningBarbarianKilledBy(civUnit.getCivInfo())
+                }
+            }
+        }
+
+        // CS war with major pseudo-quest
+        for (cityState in UncivGame.Current.gameInfo!!.getAliveCityStates()) {
+            cityState.questManager.militaryUnitKilledBy(civUnit.getCivInfo(), defeatedUnit.getCivInfo())
+        }
+    }
+
+    /** See [UniqueType.KillUnitPlunder] for params */
+    private fun getKillUnitPlunderUniques(civUnit: ICombatant, defeatedUnit: MapUnitCombatant): ArrayList<Unique> {
         val bonusUniques = ArrayList<Unique>()
 
         val stateForConditionals = StateForConditionals(civInfo = civUnit.getCivInfo(), ourCombatant = civUnit, theirCombatant = defeatedUnit)
@@ -228,33 +261,7 @@ object Battle {
         if (cityWithReligion != null) {
             bonusUniques.addAll(cityWithReligion.getMatchingUniques(UniqueType.KillUnitPlunderNearCity, stateForConditionals))
         }
-
-        for (unique in bonusUniques) {
-            if (!defeatedUnit.matchesCategory(unique.params[1])) continue
-
-            val yieldPercent = unique.params[0].toFloat() / 100
-            val defeatedUnitYieldSourceType = unique.params[2]
-            val yieldTypeSourceAmount =
-                if (defeatedUnitYieldSourceType == "Cost") unitCost else unitStr
-            val yieldAmount = (yieldTypeSourceAmount * yieldPercent).toInt()
-
-            val stat = Stat.valueOf(unique.params[3])
-            civUnit.getCivInfo().addStat(stat, yieldAmount)
-        }
-
-        // CS friendship from killing barbarians
-        if (defeatedUnit.matchesCategory("Barbarian") && defeatedUnit.matchesCategory("Military") && civUnit.getCivInfo().isMajorCiv()) {
-            for (cityState in UncivGame.Current.gameInfo!!.getAliveCityStates()) {
-                if (civUnit.getCivInfo().knows(cityState) && defeatedUnit.unit.threatensCiv(cityState)) {
-                    cityState.cityStateFunctions.threateningBarbarianKilledBy(civUnit.getCivInfo())
-                }
-            }
-        }
-
-        // CS war with major pseudo-quest
-        for (cityState in UncivGame.Current.gameInfo!!.getAliveCityStates()) {
-            cityState.questManager.militaryUnitKilledBy(civUnit.getCivInfo(), defeatedUnit.getCivInfo())
-        }
+        return bonusUniques
     }
 
 
@@ -431,7 +438,7 @@ object Battle {
             val unit = attacker.unit
             // If captured this civilian, doesn't count as attack
             // And we've used a movement already
-            if(defender.isCivilian() && attacker.getTile() == defender.getTile()){
+            if(defender.isCivilian() && attacker.getTile() == defender.getTile()) {
                 return
             }
             unit.attacksThisTurn += 1
@@ -529,7 +536,7 @@ object Battle {
             city.puppetCity(attackerCiv)
             //Although in Civ5 Venice is unable to re-annex their capital, that seems a bit silly. No check for May not annex cities here.
             city.annexCity()
-        } else if (attackerCiv.isHuman()) {
+        } else if (attackerCiv.isHuman() && !(UncivGame.Current.settings.autoPlay.isAutoPlayingAndFullAI())) {
             // we're not taking our former capital
             attackerCiv.popupAlerts.add(PopupAlert(AlertType.CityConquered, city.id))
         } else  automateCityConquer(attackerCiv, city)
@@ -574,11 +581,11 @@ object Battle {
         return null
     }
 
-    fun destroyIfDefeated(attackedCiv: Civilization, attacker: Civilization) {
+    fun destroyIfDefeated(attackedCiv: Civilization, attacker: Civilization, notificationLocation: Vector2? = null) {
         if (attackedCiv.isDefeated()) {
             if (attackedCiv.isCityState())
                 attackedCiv.cityStateFunctions.cityStateDestroyed(attacker)
-            attackedCiv.destroy()
+            attackedCiv.destroy(notificationLocation)
             attacker.popupAlerts.add(PopupAlert(AlertType.Defeated, attackedCiv.civName))
         }
     }

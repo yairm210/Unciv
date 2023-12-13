@@ -71,7 +71,7 @@ object DropBox: FileStorage {
     // This is the location in Dropbox only
     private fun getLocalGameLocation(fileName: String) = "/MultiplayerGames/$fileName"
 
-    override fun deleteFile(fileName: String){
+    override fun deleteFile(fileName: String) {
         dropboxApi(
             url="https://api.dropboxapi.com/2/files/delete_v2",
             data="{\"path\":\"${getLocalGameLocation(fileName)}\"}",

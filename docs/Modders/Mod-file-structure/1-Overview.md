@@ -95,7 +95,10 @@ Example: `"uniques":["[+1 Gold] <with a garrison>"]` on a building - does almost
 
 All Unique "types" that have an implementation in Unciv are automatically documented in [uniques](../uniques.md). Note that file is entirely machine-generated from source code structures. Also kindly note the separate sections for [conditionals](../uniques.md#conditional-uniques) and [trigger conditions](../uniques.md#triggercondition-uniques).
 Uniques that do not correspond to any of those entries (verbatim including upper/lower case!) are called "untyped", will have no _direct_ effect, and may result in the "Ruleset Validator" showing warnings (see the Options Tab "Locate mod errors", it also runs when starting new games).
-A legitimate use of "untyped" Uniques is their use as markers that can be recognized elsewhere in filters (example: "Aircraft" in the vanilla rulesets used as [Unit filter](../Unique-parameters.md#baseunitfilter)). To allow "Ruleset Validator" to warn about mistakes leading to untyped uniques, but still allow the "filtering Unique" use, those should be "declared" by including each in [GlobalUniques](5-Miscellaneous-JSON-files.md#globaluniquesjson), too.
+A legitimate use of "untyped" Uniques is their use as markers that can be recognized elsewhere in **filters** (example: "Aircraft" in the vanilla rulesets used as [Unit filter](../Unique-parameters.md#baseunitfilter)).
+This use is recognized by the "Ruleset Validator" and not flagged as invalid - but a filtering Unique must also use _no placeholders or conditionals_ to pass the test.
+If you get the "not found in Unciv's unique types" warning, but are sure you are using a correct filtering Unique, please look for exactly identical spelling in all places, including upper/lower case.
+Note: Currently some mods use untyped Uniques not for filtering purposes, but as purely informational tool. The team will try to think of an approach for that use that won't trigger validation warnings without reducing validation quality, but as of now, those are unavoidable.
 
 ## Information on JSON files used in the game
 

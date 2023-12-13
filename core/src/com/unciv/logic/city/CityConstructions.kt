@@ -104,10 +104,6 @@ class CityConstructions : IsPartOfGameInfoSerialization {
     fun getConstructableUnits() = city.getRuleset().units.values
         .asSequence().filter { it.isBuildable(this) }
 
-    private fun getBasicStatBuildings(stat: Stat) = city.getRuleset().buildings.values
-        .asSequence()
-        .filter { !it.isAnyWonder() && it.replaces == null && it[stat] > 0f }
-
     /**
      * @return [Stats] provided by all built buildings in city plus the bonus from Library
      */
@@ -298,9 +294,9 @@ class CityConstructions : IsPartOfGameInfoSerialization {
     }
 
     fun cheapestStatBuilding(stat: Stat): Building? {
-        return getBasicStatBuildings(stat)
-            .map { city.civ.getEquivalentBuilding(it) }
-            .filter { it.isBuildable(this) || isBeingConstructedOrEnqueued(it.name) }
+        return city.getRuleset().buildings.values
+            .filter { !it.isAnyWonder() && it.isStatRelated(stat) &&
+                (it.isBuildable(this) || isBeingConstructedOrEnqueued(it.name)) }
             .minByOrNull { it.cost }
     }
 
@@ -339,7 +335,7 @@ class CityConstructions : IsPartOfGameInfoSerialization {
             if (inProgressConstructions.containsKey(currentConstructionFromQueue)
                     && inProgressConstructions[currentConstructionFromQueue]!! >= productionCost) {
                 val potentialOverflow = inProgressConstructions[currentConstructionFromQueue]!! - productionCost
-                if (constructionComplete(construction)){
+                if (constructionComplete(construction)) {
                     // See the URL below for explanation for this cap
                     // https://forums.civfanatics.com/threads/hammer-overflow.419352/
                     val maxOverflow = maxOf(productionCost, city.cityStats.currentCityStats.production.roundToInt())
@@ -430,7 +426,7 @@ class CityConstructions : IsPartOfGameInfoSerialization {
     private fun constructionBegun(construction: IConstruction) {
         val costUniques = construction.getMatchingUniquesNotConflicting(UniqueType.CostsResources)
 
-        for (unique in costUniques){
+        for (unique in costUniques) {
             val amount = unique.params[0].toInt()
             val resourceName = unique.params[1]
             city.civ.resourceStockpiles.add(resourceName, -amount)
@@ -701,7 +697,8 @@ class CityConstructions : IsPartOfGameInfoSerialization {
 
         val isCurrentPlayersTurn = city.civ.gameInfo.isUsersTurn()
                 || !city.civ.gameInfo.gameParameters.isOnlineMultiplayer
-        if ((UncivGame.Current.settings.autoAssignCityProduction && isCurrentPlayersTurn) // only automate if the active human player has the setting to automate production
+        if ((isCurrentPlayersTurn && (UncivGame.Current.settings.autoAssignCityProduction
+                || UncivGame.Current.settings.autoPlay.isAutoPlayingAndFullAI())) // only automate if the active human player has the setting to automate production
                 || !city.civ.isHuman() || city.isPuppet) {
             ConstructionAutomation(this).chooseNextConstruction()
         }

@@ -8,7 +8,6 @@ import com.unciv.models.ruleset.tech.Technology
 import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.ruleset.tile.TileResource
 import com.unciv.models.ruleset.unique.Unique
-import com.unciv.models.ruleset.unique.UniqueFlag
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.translations.tr
@@ -38,7 +37,8 @@ object TechnologyDescriptions {
             if (pediaText.text.isEmpty() || pediaText.header != 0) continue
             lineList += pediaText.text
         }
-        for (unique in uniques) lineList += unique
+
+        uniquesToDescription(lineList)
 
         lineList.addAll(
             getAffectedImprovements(name, ruleset)
@@ -191,13 +191,7 @@ object TechnologyDescriptions {
             }
         }
 
-        if (uniques.isNotEmpty()) {
-            lineList += FormattedLine()
-            uniqueObjects.forEach {
-                if (!it.hasFlag(UniqueFlag.HiddenToUsers))
-                    lineList += FormattedLine(it)
-            }
-        }
+        uniquesToCivilopediaTextLines(lineList)
 
         val affectedImprovements = getAffectedImprovements(name, ruleset)
         if (affectedImprovements.any()) {
@@ -278,7 +272,7 @@ object TechnologyDescriptions {
      */
     // Used for Civilopedia, Alert and Picker, so if any of these decide to ignore the "Will not be displayed in Civilopedia" unique this needs refactoring
     private fun getEnabledBuildings(techName: String, ruleset: Ruleset, civInfo: Civilization?) =
-            getFilteredBuildings(ruleset, civInfo) { it.requiredTech == techName }
+            getFilteredBuildings(ruleset, civInfo) { it.requiredTechs().contains(techName) }
 
     /**
      * Returns a Sequence of [RulesetStatsObject]s obsoleted by this Technology, filtered for [civInfo]'s uniques,
@@ -340,7 +334,7 @@ object TechnologyDescriptions {
         val (nuclearWeaponsEnabled, religionEnabled) = getNukeAndReligionSwitches(civInfo)
         return ruleset.units.values.asSequence()
             .filter {
-                it.requiredTech == techName
+                it.requiredTechs().contains(techName)
                         && (it.uniqueTo == civInfo?.civName || it.uniqueTo == null && civInfo?.getEquivalentUnit(it) == it)
                         && (nuclearWeaponsEnabled || !it.isNuclearWeapon())
                         && (religionEnabled || !it.hasUnique(UniqueType.HiddenWithoutReligion))

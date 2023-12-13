@@ -62,7 +62,7 @@ Each resource can have the following properties:
 | Attribute | Type | Optional | Notes |
 | --------- | ---- | -------- | ----- |
 | name | String | Required |  |
-| resourceType | String | Default Bonus | Bonus, Luxury or Strategic |
+| resourceType | Enum | Default Bonus | Bonus, Luxury or Strategic |
 | terrainsCanBeFoundOn | List | Default empty | [Terrains](#terrainsjson) that allow this resource |
 | `<stats>` | Float | Optional | Per-turn bonus yield for the tile, see [Stats](#stats), can be repeated |
 | improvement | String | Default empty | The improvement ([TileImprovements.json](#tileimprovementsjson)) for this resource |
@@ -85,7 +85,7 @@ Each of the objects in the file represents a single reward you can get from ruin
 | name | String | required | Name of the ruins. Never shown to the user, but they have to be distinct |
 | notification | String | required | Notification added to the user when this reward is chosen. If omitted, an empty notification is shown. Some notifications may have parameters, refer to the table below. |
 | weight | Integer (≥0) | defaults to 1 | Weight this reward should have. Higher weights result in a higher chance of it being chosen* |
-| uniques | List of Strings | defaults to none | [uniques]Uniques#one-time-effect) or [uniques](../Unique-parameters.md#one-time-effect-units) that will trigger when entering the ruins. If more than 1 unique is added, the notification will be shown multiple times due to a bug. |
+| uniques | List of Strings | defaults to none | [uniques](../Uniques#one-time-effect) or [uniques](../Unique-parameters.md#one-time-effect-units) that will trigger when entering the ruins. If more than 1 unique is added, the notification will be shown multiple times due to a bug. |
 | excludedDifficulties | List of Strings | defaults to None | A list of all difficulties on which this reward may _not_ be awarded |
 
 The exact algorithm for choosing a reward is the following:

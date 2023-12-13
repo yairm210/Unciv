@@ -6,13 +6,30 @@ import com.unciv.logic.civilization.LocationAction
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
+import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.ruleset.unique.StateForConditionals
+import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unique.UniqueType
 
 
-enum class ImprovementBuildingProblem {
-    WrongCiv, MissingTech, Unbuildable, NotJustOutsideBorders, OutsideBorders, UnmetConditional, Obsolete, MissingResources, Other
+/** Reason why an Improvement cannot be built by a given civ */
+enum class ImprovementBuildingProblem(
+    /** `true` if this cannot change on the future of this game */
+    val permanent: Boolean = false,
+    /** `true` if the ImprovementPicker should report this problem */
+    val reportable: Boolean = false
+) {
+    WrongCiv(permanent = true),
+    MissingTech(reportable = true),
+    Unbuildable(permanent = true),
+    ConditionallyUnbuildable,
+    NotJustOutsideBorders(reportable = true),
+    OutsideBorders(reportable = true),
+    UnmetConditional,
+    Obsolete(permanent = true),
+    MissingResources(reportable = true),
+    Other
 }
 
 class TileInfoImprovementFunctions(val tile: Tile) {
@@ -30,8 +47,11 @@ class TileInfoImprovementFunctions(val tile: Tile) {
             yield(ImprovementBuildingProblem.WrongCiv)
         if (improvement.techRequired != null && !civInfo.tech.isResearched(improvement.techRequired!!))
             yield(ImprovementBuildingProblem.MissingTech)
-        if (improvement.hasUnique(UniqueType.Unbuildable, stateForConditionals))
+        if (improvement.getMatchingUniques(UniqueType.Unbuildable, StateForConditionals.IgnoreConditionals)
+                .any { it.conditionals.isEmpty() })
             yield(ImprovementBuildingProblem.Unbuildable)
+        else if (improvement.hasUnique(UniqueType.Unbuildable, stateForConditionals))
+            yield(ImprovementBuildingProblem.ConditionallyUnbuildable)
 
         if (tile.getOwner() != civInfo && !improvement.hasUnique(UniqueType.CanBuildOutsideBorders, stateForConditionals)) {
             if (!improvement.hasUnique(UniqueType.CanBuildJustOutsideBorders, stateForConditionals))
@@ -169,7 +189,7 @@ class TileInfoImprovementFunctions(val tile: Tile) {
 
     fun changeImprovement(improvementName: String?,
                           /** For road assignment and taking over tiles - DO NOT pass when simulating improvement effects! */
-                          civToActivateBroaderEffects:Civilization? = null) {
+                          civToActivateBroaderEffects: Civilization? = null, unit: MapUnit? = null) {
         val improvementObject = tile.ruleset.tileImprovements[improvementName]
 
         when {
@@ -205,6 +225,9 @@ class TileInfoImprovementFunctions(val tile: Tile) {
         )
             takeOverTilesAround(civToActivateBroaderEffects, tile)
 
+        if (civToActivateBroaderEffects != null && improvementObject != null)
+            triggerImprovementUniques(improvementObject, civToActivateBroaderEffects, unit)
+
         val city = tile.owningCity
         if (city != null) {
             city.cityStats.update()
@@ -213,6 +236,29 @@ class TileInfoImprovementFunctions(val tile: Tile) {
                 city.reassignPopulationDeferred()
             }
         }
+    }
+
+    private fun triggerImprovementUniques(
+        improvement: TileImprovement,
+        civ: Civilization,
+        unit: MapUnit? = null
+    ) {
+        for (unique in improvement.uniqueObjects.filter { !it.hasTriggerConditional() })
+            if (unit != null) {
+                UniqueTriggerActivation.triggerUnitwideUnique(unique, unit)
+            }
+            else UniqueTriggerActivation.triggerCivwideUnique(unique, civ, tile = tile)
+
+        if (unit != null){
+            for (unique in unit.getTriggeredUniques(UniqueType.TriggerUponBuildingImprovement)
+                .filter { improvement.matchesFilter(it.params[0]) })
+                UniqueTriggerActivation.triggerUnitwideUnique(unique, unit)
+            }
+
+        for (unique in civ.getMatchingUniques(
+            UniqueType.TriggerUponBuildingImprovement, StateForConditionals(civInfo = civ, unit = unit))
+            .filter { improvement.matchesFilter(it.params[0]) })
+            UniqueTriggerActivation.triggerCivwideUnique(unique, civ, tile = tile)
     }
 
     private fun adtivateRemovalImprovement(

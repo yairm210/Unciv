@@ -5,12 +5,14 @@ import com.badlogic.gdx.utils.Json
 import com.badlogic.gdx.utils.JsonValue
 import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.city.City
+import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.ui.components.MayaCalendar
 import com.unciv.ui.screens.cityscreen.CityScreen
 import com.unciv.ui.screens.civilopediascreen.CivilopediaScreen
 import com.unciv.ui.screens.diplomacyscreen.DiplomacyScreen
 import com.unciv.ui.screens.overviewscreen.EmpireOverviewCategories
 import com.unciv.ui.screens.overviewscreen.EmpireOverviewScreen
+import com.unciv.ui.screens.pickerscreens.PolicyPickerScreen
 import com.unciv.ui.screens.pickerscreens.PromotionPickerScreen
 import com.unciv.ui.screens.pickerscreens.TechPickerScreen
 import com.unciv.ui.screens.worldscreen.WorldScreen
@@ -58,12 +60,12 @@ class LocationAction(internal val location: Vector2 = Vector2.Zero) : Notificati
 class TechAction(private val techName: String = "") : NotificationAction {
     override fun execute(worldScreen: WorldScreen) {
         val tech = worldScreen.gameInfo.ruleset.technologies[techName]
-        worldScreen.game.pushScreen(TechPickerScreen(worldScreen.viewingCiv, tech))
+        worldScreen.game.pushScreen(TechPickerScreen(worldScreen.selectedCiv, tech))
     }
 }
 
 /** enter city */
-class CityAction(private val city: Vector2 = Vector2.Zero): NotificationAction {
+class CityAction(private val city: Vector2 = Vector2.Zero) : NotificationAction {
     override fun execute(worldScreen: WorldScreen) {
         val cityObject = worldScreen.mapHolder.tileMap[city].getCity()
             ?: return
@@ -76,10 +78,21 @@ class CityAction(private val city: Vector2 = Vector2.Zero): NotificationAction {
 }
 
 /** enter diplomacy screen */
-class DiplomacyAction(private val otherCivName: String = ""): NotificationAction {
+class DiplomacyAction(
+    private val otherCivName: String = "",
+    private var showTrade: Boolean = false
+) : NotificationAction {
     override fun execute(worldScreen: WorldScreen) {
         val otherCiv = worldScreen.gameInfo.getCivilization(otherCivName)
-        worldScreen.game.pushScreen(DiplomacyScreen(worldScreen.viewingCiv, otherCiv))
+        if (showTrade && otherCiv == worldScreen.gameInfo.getCurrentPlayerCivilization())
+            // Because TradeTable will set up otherCiv against that one,
+            // not the one we pass below, and two equal civs will crash - can't look up a DiplomacyManager.
+            return
+        // We should not be able to trade with city-states
+        if (showTrade && (otherCiv.isCityState() || worldScreen.gameInfo.getCurrentPlayerCivilization().isCityState()))
+            showTrade = false
+        
+        worldScreen.game.pushScreen(DiplomacyScreen(worldScreen.selectedCiv, otherCiv, showTrade = showTrade))
     }
 }
 
@@ -90,8 +103,17 @@ class MayaLongCountAction : NotificationAction {
     }
 }
 
-/** A notification action that shows and selects units on the map. */
+/** A notification action that shows and selects units on the map.
+ *
+ *  Saves and serializes only the location. Activation will select the tile which will select any unit
+ *  on it or cycle through selections if this NotificationAction is the only one on the Notification.
+ *  When the unit has been moved away, activation still shows the tile and not the unit.
+ *
+ *  As MapUnits do not have any persistent ID differentiating them from other units of same Civ and BaseUnit,
+ *  this cannot be done significantly better. Should someone add a persisted UUID to MapUnit, please change this too.
+ */
 class MapUnitAction(private val location: Vector2 = Vector2.Zero) : NotificationAction {
+    constructor(unit: MapUnit) : this(unit.currentTile.position)
     override fun execute(worldScreen: WorldScreen) {
         worldScreen.mapHolder.setCenterPosition(location, selectUnit = true)
     }
@@ -129,6 +151,15 @@ class OverviewAction(
     }
 }
 
+/** Open policy picker, optionally preselecting [select] (how or if at all that works for branches is [PolicyPickerScreen]'s business) */
+class PolicyAction(
+    private val select: String? = null
+) : NotificationAction {
+    override fun execute(worldScreen: WorldScreen) {
+        worldScreen.game.pushScreen(PolicyPickerScreen(worldScreen.selectedCiv, worldScreen.canChangeState, select))
+    }
+}
+
 @Suppress("PrivatePropertyName")  // These names *must* match their class name, see below
 internal class NotificationActionsDeserializer {
     /* This exists as trick to leverage readFields for Json deserialization.
@@ -150,12 +181,13 @@ internal class NotificationActionsDeserializer {
     private val CivilopediaAction: CivilopediaAction? = null
     private val PromoteUnitAction: PromoteUnitAction? = null
     private val OverviewAction: OverviewAction? = null
+    private val PolicyAction: PolicyAction? = null
 
     fun read(json: Json, jsonData: JsonValue): List<NotificationAction> {
         json.readFields(this, jsonData)
         return listOfNotNull(
             LocationAction, TechAction, CityAction, DiplomacyAction, MayaLongCountAction,
-            MapUnitAction, CivilopediaAction, PromoteUnitAction, OverviewAction
+            MapUnitAction, CivilopediaAction, PromoteUnitAction, OverviewAction, PolicyAction
         )
     }
 }

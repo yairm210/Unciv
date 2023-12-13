@@ -44,6 +44,7 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
     val isLocalEffect = params.contains("in this city") || conditionals.any { it.type == UniqueType.ConditionalInThisCity }
 
     fun hasFlag(flag: UniqueFlag) = type != null && type.flags.contains(flag)
+    fun isHiddenToUsers() = hasFlag(UniqueFlag.HiddenToUsers) || conditionals.any { it.type == UniqueType.ConditionalHideUniqueFromUsers }
 
     fun hasTriggerConditional(): Boolean {
         if (conditionals.none()) return false
@@ -149,14 +150,20 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
 
         val relevantTile by lazy { state.attackedTile
             ?: state.tile
-            ?: relevantUnit?.getTile()
+            // We need to protect against conditionals checking tiles for units pre-placement - see #10425, #10512
+            ?: relevantUnit?.run { if (hasTile()) getTile() else null }
             ?: state.city?.getCenterTile()
+        }
+
+        val relevantCity by lazy {
+            state.city
+            ?: relevantTile?.getCity()
         }
 
         val stateBasedRandom by lazy { Random(state.hashCode()) }
 
         fun getResourceAmount(resourceName: String): Int {
-            if (state.city != null) return state.city.getResourceAmount(resourceName)
+            if (relevantCity != null) return relevantCity!!.getResourceAmount(resourceName)
             if (state.civInfo != null) return state.civInfo.getResourceAmount(resourceName)
             return 0
         }
@@ -169,8 +176,8 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
 
         /** Helper to simplify conditional tests requiring a City */
         fun checkOnCity(predicate: (City.() -> Boolean)): Boolean {
-            if (state.city == null) return false
-            return state.city.predicate()
+            if (relevantCity == null) return false
+            return relevantCity!!.predicate()
         }
 
         /** Helper to simplify the "compare civ's current era with named era" conditions */
@@ -193,23 +200,31 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
         }
 
         /** Helper for ConditionalWhenAboveAmountStatSpeed and its below counterpart */
-        fun checkStatAmountWithSpeed(compare: (current: Int, limit: Float) -> Boolean): Boolean {
+        fun checkResourceOrStatAmountWithSpeed(compare: (current: Int, limit: Float) -> Boolean): Boolean {
             if (state.civInfo == null) return false
-            val stat = Stat.safeValueOf(condition.params[1])
+            val limit = condition.params[0].toInt()
+            val resourceOrStatName = condition.params[1]
+            var gameSpeedModifier = state.civInfo.gameInfo.speed.modifier
+
+            if (state.civInfo.gameInfo.ruleset.tileResources.containsKey(resourceOrStatName))
+                return compare(getResourceAmount(resourceOrStatName), limit * gameSpeedModifier)
+            val stat = Stat.safeValueOf(resourceOrStatName)
                 ?: return false
-            val limit = condition.params[0].toFloat() * state.civInfo.gameInfo.speed.statCostModifiers[stat]!!
-            return compare(state.civInfo.getStatReserve(stat), limit)
+
+            gameSpeedModifier = state.civInfo.gameInfo.speed.statCostModifiers[stat]!!
+            return compare(state.civInfo.getStatReserve(stat), limit * gameSpeedModifier)
         }
 
         return when (condition.type) {
             // These are 'what to do' and not 'when to do' conditionals
             UniqueType.ConditionalTimedUnique -> true
+            UniqueType.ConditionalHideUniqueFromUsers -> true  // allowed to be attached to any Unique to hide it, no-op otherwise
 
             UniqueType.ConditionalChance -> stateBasedRandom.nextFloat() < condition.params[0].toFloat() / 100f
             UniqueType.ConditionalBeforeTurns -> checkOnCiv { gameInfo.turns < condition.params[0].toInt() }
             UniqueType.ConditionalAfterTurns -> checkOnCiv { gameInfo.turns >= condition.params[0].toInt() }
 
-            UniqueType.ConditionalNationFilter -> checkOnCiv { nation.matchesFilter(condition.params[0]) }
+            UniqueType.ConditionalCivFilter -> checkOnCiv { matchesFilter(condition.params[0]) }
             UniqueType.ConditionalWar -> checkOnCiv { isAtWar() }
             UniqueType.ConditionalNotWar -> checkOnCiv { !isAtWar() }
             UniqueType.ConditionalWithResource -> getResourceAmount(condition.params[0]) > 0
@@ -219,10 +234,10 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
                 checkResourceOrStatAmount { current, limit -> current > limit }
             UniqueType.ConditionalWhenBelowAmountStatResource ->
                 checkResourceOrStatAmount { current, limit -> current < limit }
-            UniqueType.ConditionalWhenAboveAmountStatSpeed ->
-                checkStatAmountWithSpeed { current, limit -> current > limit }  // Note: Int.compareTo(Float)!
-            UniqueType.ConditionalWhenBelowAmountStatSpeed ->
-                checkStatAmountWithSpeed { current, limit -> current < limit }  // Note: Int.compareTo(Float)!
+            UniqueType.ConditionalWhenAboveAmountStatResourceSpeed ->
+                checkResourceOrStatAmountWithSpeed { current, limit -> current > limit }  // Note: Int.compareTo(Float)!
+            UniqueType.ConditionalWhenBelowAmountStatResourceSpeed ->
+                checkResourceOrStatAmountWithSpeed { current, limit -> current < limit }  // Note: Int.compareTo(Float)!
 
             UniqueType.ConditionalHappy -> checkOnCiv { stats.happiness >= 0 }
             UniqueType.ConditionalBetweenHappiness ->

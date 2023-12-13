@@ -10,8 +10,8 @@ import com.unciv.logic.map.tile.Tile
 object AirUnitAutomation {
 
     fun automateFighter(unit: MapUnit) {
-        val tilesInRange = unit.currentTile.getTilesInDistance(unit.getRange())
-        val enemyAirUnitsInRange = tilesInRange
+        val tilesWithEnemyUnitsInRange = unit.civ.threatManager.getTilesWithEnemyUnitsInDistance(unit.getTile(), unit.getRange())
+        val enemyAirUnitsInRange = tilesWithEnemyUnitsInRange
             .flatMap { it.airUnits.asSequence() }.filter { it.civ.isAtWarWith(unit.civ) }
 
         if (enemyAirUnitsInRange.any()) return // we need to be on standby in case they attack
@@ -127,10 +127,10 @@ object AirUnitAutomation {
                     val tileExplosionValue = if (targetTile == tile) 80 else 50
                     
                     if (targetUnit.isMilitary()) {
-                        explosionValue += if (targetTile == tile) evaluateCivValue(targetTile.militaryUnit?.civ!!, -200, tileExplosionValue)
-                        else evaluateCivValue(targetTile.militaryUnit?.civ!!, -150, 50)
+                        explosionValue += if (targetTile == tile) evaluateCivValue(targetUnit.civ, -200, tileExplosionValue)
+                        else evaluateCivValue(targetUnit.civ, -150, 50)
                     } else if (targetUnit.isCivilian()) {
-                        explosionValue += evaluateCivValue(targetTile.civilianUnit?.civ!!, -100, tileExplosionValue / 2)
+                        explosionValue += evaluateCivValue(targetUnit.civ, -100, tileExplosionValue / 2)
                     }
                 }
             }
