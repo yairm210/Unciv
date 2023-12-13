@@ -229,7 +229,7 @@ object UnitActions {
 
     private fun getSleepUntilHealedActions(unit: MapUnit, tile: Tile): List<UnitAction> {
         if (!shouldHaveSleepAction(unit, tile)) return listOf()
-        if (unit.health < 100) return listOf()
+        if (unit.health == 100) return listOf()
         return listOf(UnitAction(UnitActionType.SleepUntilHealed,
             action = { unit.action = UnitActionType.SleepUntilHealed.value }
                 .takeIf { !unit.isSleepingUntilHealed() && unit.canHealInCurrentTile() }
