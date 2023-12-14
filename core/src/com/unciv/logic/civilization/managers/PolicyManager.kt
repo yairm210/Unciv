@@ -262,10 +262,10 @@ class PolicyManager : IsPartOfGameInfoSerialization {
 
     private fun addCurrentCultureToCultureOfLast8Turns() {
         var allCitiesCulture = 0f
-        civInfo.cities.forEach {
-            val totalBaseCulture = it.cityStats.baseStatTree.totalStats.culture
-            val totalBonusPercents = it.cityStats.statPercentBonusTree.children.asSequence()
-                .filter { it2 -> it2.key != "Policies" }.map { it2 ->  it2.value.totalStats.culture }.sum()
+        for (city in civInfo.cities) {
+            val totalBaseCulture = city.cityStats.baseStatTree.totalStats.culture
+            val totalBonusPercents = city.cityStats.statPercentBonusTree.children.asSequence()
+                .filter { it.key != "Policies" }.map { it.value.totalStats.culture }.sum()
             allCitiesCulture += totalBaseCulture * totalBonusPercents.toPercent()
         }
         cultureOfLast8Turns[civInfo.gameInfo.turns % 8] = allCitiesCulture.toInt()

@@ -34,7 +34,7 @@ object UnitActionsGreatPerson {
             yield(UnitAction(
                 UnitActionType.HurryPolicy,
                 action = {
-                    unit.civ.tech.addScience(unit.civ.policies.getCultureFromGreatWriter())
+                    unit.civ.policies.addCulture(unit.civ.policies.getCultureFromGreatWriter())
                     unit.consume()
                 }.takeIf {unit.currentMovement > 0}
             ))
