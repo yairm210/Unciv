@@ -280,19 +280,23 @@ class MapGenerator(val ruleset: Ruleset, private val coroutineScope: CoroutineSc
             for (i in 1..map.mapParameters.maxCoastExtension) {
                 val toCoast = mutableListOf<Tile>()
                 for (tile in map.values.filter { it.baseTerrain == Constants.ocean }) {
-                    if (tile.getTilesInDistance(1).any { it.isLand }) {
-                        toCoast.add(tile)
-                    }
-                    if (tile.getTilesInDistance(1).any { it.baseTerrain == Constants.coast }) {
-                        val randval = randomness.RNG.nextDouble()
-                        if (randval < 0.5) {
+                    val tilesInDistance = tile.getTilesInDistance(1)
+                    for (neighborTile in tilesInDistance) {
+                        if (neighborTile.isLand) {
                             toCoast.add(tile)
+                            break
+                        } else if (neighborTile.baseTerrain == Constants.coast) {
+                            val randval = randomness.RNG.nextInt(2) // 0 or 1
+                            if (randval == 1) {
+                                toCoast.add(tile)
+                            }
+                            break
                         }
                     }
                 }
-                for (tile in toCoast) {
-                    tile.baseTerrain = Constants.coast
-                    tile.setTransients()
+                toCoast.forEach {
+                    it.baseTerrain = Constants.coast
+                    it.setTransients()
                 }
             }
         }
