@@ -124,7 +124,7 @@ class PolicyManager : IsPartOfGameInfoSerialization {
 
     fun endTurn(culture: Int) {
         addCulture(culture)
-        addCurrentCultureToCultureOfLast8Turns()
+        addCurrentCultureToCultureOfLast8Turns(culture)
     }
 
     // from https://forums.civfanatics.com/threads/the-number-crunching-thread.389702/
@@ -260,15 +260,8 @@ class PolicyManager : IsPartOfGameInfoSerialization {
         return (cultureOfLast8Turns.sum() * civInfo.gameInfo.speed.cultureCostModifier).toInt()
     }
 
-    private fun addCurrentCultureToCultureOfLast8Turns() {
-        var allCitiesCulture = 0f
-        for (city in civInfo.cities) {
-            val totalBaseCulture = city.cityStats.baseStatTree.totalStats.culture
-            val totalBonusPercents = city.cityStats.statPercentBonusTree.children.asSequence()
-                .filter { it.key != "Policies" }.map { it.value.totalStats.culture }.sum()
-            allCitiesCulture += totalBaseCulture * totalBonusPercents.toPercent()
-        }
-        cultureOfLast8Turns[civInfo.gameInfo.turns % 8] = allCitiesCulture.toInt()
+    private fun addCurrentCultureToCultureOfLast8Turns(culture: Int) {
+        cultureOfLast8Turns[civInfo.gameInfo.turns % 8] = culture
     }
 
     fun allPoliciesAdopted(checkEra: Boolean) =
