@@ -21,13 +21,14 @@ android {
             jniLibs.srcDirs("libs")
         }
     }
-    packagingOptions {
+    packaging {
         resources.excludes += "META-INF/robovm/ios/robovm.xml"
         // part of kotlinx-coroutines-android, should not go into the apk
         resources.excludes += "DebugProbesKt.bin"
     }
     defaultConfig {
         applicationId = "com.unciv.app"
+        namespace = "com.unciv.app"
         minSdk = 21
         targetSdk = 33 // See #5044
         versionCode = BuildConfig.appCodeNumber
@@ -65,7 +66,6 @@ android {
         disable += "MissingTranslation"   // see res/values/strings.xml
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
 
         isCoreLibraryDesugaringEnabled = true
@@ -75,6 +75,10 @@ android {
         ignoreAssetsPattern = "!SaveFiles:!fonts:!maps:!music:!mods"
     }
     buildToolsVersion = "33.0.2"
+//     buildFeatures {
+//         renderScript = true
+//         aidl = true
+//     }
 }
 
 task("texturePacker") {

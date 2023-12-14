@@ -5,7 +5,7 @@ plugins {
 }
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_1_8
+    //sourceCompatibility = JavaVersion.VERSION_1_8
 }
 
 sourceSets {
@@ -23,7 +23,7 @@ val deployFolder = file("../deploy")
 val jvmArgsForMac = listOf("-XstartOnFirstThread", "-Djava.awt.headless=true")
 tasks.register<JavaExec>("run") {
     jvmArgs = mutableListOf<String>()
-    if ("mac" in System.getProperty("os.name").toLowerCase())
+    if ("mac" in System.getProperty("os.name").lowercase())
         (jvmArgs as MutableList<String>).addAll(jvmArgsForMac)
         // These are non-standard, only available/necessary on Mac.
 
@@ -140,7 +140,7 @@ for (platform in Platform.values()) {
 
             val platformNameForPackrCmd =
                     if (platform == Platform.MacOS) "mac"
-                    else platform.name.toLowerCase()
+                    else platform.name.lowercase()
 
             val command = "java -jar $rootDir/packr-all-4.0.0.jar" +
                     " --platform $platformNameForPackrCmd" +
