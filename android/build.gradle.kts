@@ -75,10 +75,6 @@ android {
         ignoreAssetsPattern = "!SaveFiles:!fonts:!maps:!music:!mods"
     }
     buildToolsVersion = "33.0.2"
-//     buildFeatures {
-//         renderScript = true
-//         aidl = true
-//     }
 }
 
 task("texturePacker") {
