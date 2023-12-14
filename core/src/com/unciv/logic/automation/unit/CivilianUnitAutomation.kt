@@ -30,7 +30,7 @@ object CivilianUnitAutomation {
             return SpecificUnitAutomation.automateSettlerActions(unit, dangerousTiles)
 
         if(unit.isAutomatingRoadConnection())
-            return unit.civ.getWorkerAutomation().automateConnectRoad(unit, tilesWhereWeWillBeCaptured)
+            return unit.civ.getWorkerAutomation().automateConnectRoad(unit, dangerousTiles)
 
         if (unit.cache.hasUniqueToBuildImprovements)
             return unit.civ.getWorkerAutomation().automateWorkerAction(unit, dangerousTiles)
