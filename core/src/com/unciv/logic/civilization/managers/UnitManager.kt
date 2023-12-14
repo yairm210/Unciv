@@ -54,7 +54,6 @@ class UnitManager(val civInfo:Civilization) {
                 || civInfo.religionManager.religion?.isMajorReligion() == false) {
                 placedUnit.religion = cityToAddTo.religion.getMajorityReligionName()
             }
-            placedUnit.setupAbilityUses(cityToAddTo)  // Seting up abilies a second time in case the city or religion has a different ability count
         }
 
         return placedUnit
@@ -89,7 +88,7 @@ class UnitManager(val civInfo:Civilization) {
                     UniqueTriggerActivation.triggerCivwideUnique(unique, civInfo, triggerNotificationText = triggerNotificationText)
             if (unit.getResourceRequirementsPerTurn().isNotEmpty())
                 civInfo.cache.updateCivResources()
-                
+
             for (unique in civInfo.getMatchingUniques(UniqueType.LandUnitsCrossTerrainAfterUnitGained)) {
                 if (unit.matchesFilter(unique.params[1])) {
                     civInfo.passThroughImpassableUnlocked = true    // Update the cached Boolean
@@ -99,7 +98,6 @@ class UnitManager(val civInfo:Civilization) {
 
             if (unit.hasUnique(UniqueType.ReligiousUnit) && civInfo.gameInfo.isReligionEnabled()) {
                 unit.religion = civInfo.religionManager.religion?.name
-                unit.setupAbilityUses()
             }
         }
         return unit

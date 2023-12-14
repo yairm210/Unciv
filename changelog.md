@@ -1,3 +1,20 @@
+## 4.9.8
+
+Add new map types  - By remdu
+
+Avoid ANRs when users select mods that take above 500ms to run checks on
+
+Add warning when buying a religious unit not of your religion  - By WhoIsJohannes
+
+Allow arbitrary victory types for AI policy picking  - By SeventhM
+
+By SomeTroglodyte:
+- Civilopedia key bindings
+- Great Person Points - Rounding changes, Breakdown UI
+- Fix ended Leader Voice not cleared and resumed on un-pause
+
+Fix 'Sleep Until Healed' action missing  - By soggerr
+
 ## 4.9.7
 
 Allow city conditionals on units to upgrade to

@@ -8,6 +8,7 @@ import com.unciv.json.fromJsonFile
 import com.unciv.json.json
 import com.unciv.logic.map.tile.RoadStatus
 import com.unciv.models.metadata.BaseRuleset
+import com.unciv.models.ruleset.BeliefType
 import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
@@ -230,6 +231,8 @@ class RulesetValidator(val ruleset: Ruleset) {
         tryFixUnknownUniques: Boolean
     ) {
         for (belief in ruleset.beliefs.values) {
+            if (belief.type == BeliefType.Any || belief.type == BeliefType.None)
+                lines += "${belief.name} type is {belief.type}, which is not allowed!"
             uniqueValidator.checkUniques(belief, lines, true, tryFixUnknownUniques)
         }
     }
