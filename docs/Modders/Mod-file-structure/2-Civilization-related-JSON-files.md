@@ -65,7 +65,7 @@ Each nation has the following structure:
 | adjective | String | empty | Currently unused |
 | cityStateType | Enum | absent | Distinguishes major civilizations from city states (Cultured, Maritime, Mercantile, Militaristic) |
 | startBias | List | empty | Zero or more of: terrainFilter or "Avoid [terrainFilter]". [^S] |
-| preferredVictoryType | Enum | Neutral | Neutral, Cultural, Diplomatic, Domination or Scientific |
+| preferredVictoryType | String | "Neutral" | The victory type major civilizations will pursue. (Note: need not be in [VictoryTypes.json](5-Miscellaneous-JSON-files.md#victorytypesjson)) |
 | startIntroPart1 | String | empty | Introductory blurb shown to Player on game start... |
 | startIntroPart2 | String | empty | ... second paragraph. ___NO___ "TBD"!!! Leave empty to skip that alert. |
 | declaringWar | String | empty | another greeting, voice hook supported [^V] |
@@ -148,15 +148,21 @@ Each policy branch has the following structure:
 
 ### Branch priorities
 
-The "priorities" object lists its branch's priorities for each victory type. The AI refers to this when deciding which branch to prioritize, also taking its preferred victory type into consideration. If two or more candidate branches have the same priority, the AI chooses a random branch among the candidates. All values are set to 0 if the object itself is missing or empty.
+The "priorities" object defines major civilizations' AI priorities to a policy branch given their preferred victory type. The AI chooses the policy branch(es) with the highest number. If two or more candidate branches have the same priority, the AI chooses a random branch among the candidates.
 
-| Attribute | Type | Default | Notes |
-| --------- | ---- | ------- | ----- |
-| Neutral | Integer | 0 | Priority value when the AI's preferred victory type is Neutral |
-| Cultural | Integer | 0 | Priority value when the AI's preferred victory type is Cultural |
-| Diplomatic | Integer | 0 | Priority value when the AI's preferred victory type is Diplomatic |
-| Domination | Integer | 0 | Priority value when the AI's preferred victory type is Domination |
-| Scientific | Integer | 0 | Priority value when the AI's preferred victory type is Scientific |
+The object maps strings of the listed victory type to an integer representing the priority of the corresponsing major civilization. If a major civilization have a preferred victory type not in the object, the priority for the policy branch is 0.
+
+The code below is an example of a valid "priorities" definition.
+
+```json
+"priorities": {
+    "Neutral": 0,
+    "Cultural": 10,
+    "Diplomatic": 0,
+    "Domination": 0,
+    "Scientific": 10
+}
+```
 
 ## Quests.json
 

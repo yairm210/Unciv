@@ -92,9 +92,18 @@ Each speed can have the following attributes:
 | peaceDealDuration | Integer (≥0) | 10 | The number of turns a peace deal lasts |
 | dealDuration | Integer (≥0) | 30 | The number of turns a non-peace deal (research agreement, open borders, etc.) lasts |
 | startYear | Float | -4000 | The start year of the game (negative is BC/BCE) |
-| turns | List of HashMaps | Required | The amount of time passed between turns ("yearsPerTurn") and the range of turn numbers ("untilTurn") that this duration applies to |
+| turns | List | Required | List of time interval per turn, [see below](#time-interval-per-turn) |
 
-The below code is an example of a valid "turns" definition and it specifies that the first 50 turns of a game last for 60 years each, then the next 30 turns (and any played after the 80th) last for 40 years each.
+### Time interval per turn
+
+The "turns" attribute defines the number of years passed between turns. The attribute consists of a list of hashmaps, each hashmaps in turn having 2 required attributes: "yearsPerTurn" and "untilTurn"
+
+| Attribute | Type | Default | Notes |
+| --------- | ---- | ------- | ----- |
+| yearsPerTurn | Integer | Required | Number of years passed between turns |
+| untilTurn | Integer | Required | Turn that this "speed" is active until (note: this "speed" will still be active until the end of the game if it is the last hashmap) |
+
+The code below is an example of a valid "turns" definition and it specifies that the first 50 turns of a game last for 60 years each, then the next 30 turns (and any played after the 80th) last for 40 years each.
 
 ```json
 "turns": [
