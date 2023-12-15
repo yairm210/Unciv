@@ -28,7 +28,7 @@ class MapLandmassGenerator(val ruleset: Ruleset, val randomness: MapGenerationRa
     companion object {
         // this is called from TileMap constructors as well
         internal fun getInitializationTerrain(ruleset: Ruleset, type: TerrainType) =
-            ruleset.terrains.values.firstOrNull { it.type == type }?.name
+            ruleset.terrains.values.firstOrNull { it.type == type && it.isNaturallyGenerated()}?.name
                 ?: throw Exception("Cannot create map - no $type terrains found!")
     }
 
