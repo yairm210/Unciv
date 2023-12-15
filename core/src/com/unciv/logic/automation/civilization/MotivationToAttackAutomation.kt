@@ -109,40 +109,32 @@ object MotivationToAttackAutomation {
     }
 
     /*
-    This method rarely returns 0<= if the war is viable, and the return proflie for viable wars is more or less:
+    Rarely returns less than 0 if the war is viable, and the return proflie for viable wars is more or less:
     0-20: 3% of the time
     20-40: 8%
     40-60: 18%
     60-80: 26%
     80-100: 21%
-    100-120:13%
+    100-120: 13%
     120+: 10%
      */
     fun motivationToDeclareWar(civInfo: Civilization, otherCiv: Civilization, atLeast:Float):Float{
         val closestCities = NextTurnAutomation.getClosestCities(civInfo, otherCiv) ?: return 0f
 
-        val powerRatio = calculateSelfCombatStrength(civInfo,30f) / calculateCombatStrengthWithProtectors(otherCiv, 30f, civInfo);
-        if (powerRatio < 1)
-            return 0f
         val ourCity = closestCities.city1
         val theirCity = closestCities.city2
         if (hasNoUnitsThatCanAttackCityWithoutDying(civInfo, theirCity))
             return 0f
 
+        var motivation = powerAdvantageScore(civInfo,otherCiv,1f)
+
+        if(motivation == 0f) return  0f
+
         val diplomacyManager = civInfo.getDiplomacyManager(otherCiv)
 
-        var motivation = 0f
-        motivation += max(40f, (powerRatio - 1) * 25)
-        val techDiff = civInfo.getStatForRanking(RankingType.Technologies) - otherCiv.getStatForRanking(RankingType.Technologies)
-        motivation += min(20,max(4 * techDiff, -20))
-        val prodRatio = civInfo.getStatForRanking(RankingType.Production).toFloat() / otherCiv.getStatForRanking(RankingType.Production).toFloat()
-        motivation += min(20 * prodRatio - 20, 20f)
-        val scoreRatio = otherCiv.getStatForRanking(RankingType.Score).toFloat() / civInfo.getStatForRanking(RankingType.Score).toFloat();
-        motivation += min(20 / scoreRatio - 20, 20f) //Divided so that stronger civs have priority
+        motivation -= (closestCities.aerialDistance - 4) * 3;
 
-        motivation += (closestCities.aerialDistance - 4) * 3;
-
-        //Opinion os other civ is generally pretty high, thats why use 80 as a base value
+        //Opinion of other civ is generally pretty high, thats why use 80 as a base value
         motivation += min(20f,max((80 - diplomacyManager.opinionOfOtherCiv())/8,-20f))
 
         if (otherCiv.isCityState()){
@@ -156,26 +148,9 @@ object MotivationToAttackAutomation {
             //Isolated city
             motivation += 15
         }
-        if (diplomacyManager.resourcesFromTrade().any { it.amount > 0 })
-        {
-            //This should be contingent on the amount of resources, but it could make trade OP
-            motivation -= 8
-        }
-        if (diplomacyManager.hasFlag(DiplomacyFlags.ResearchAgreement)) {
-            motivation -= 5
-        }
-        if (diplomacyManager.hasFlag(DiplomacyFlags.DeclarationOfFriendship))
-        {
-            motivation -= 15
-        }
 
-        if(diplomacyManager.hasFlag(DiplomacyFlags.DefensivePact))
-        {
-            //That's a heavy penalty, but the AI should not easily declare war on civs with defensive pact
-            //If too OP, the best approach imo would be to make signing defensive pacts more difficult
-            //because the whole point of an alliance is to protect each other
-            motivation -= 30
-        }
+        motivation -= relationshipBonuses(diplomacyManager)
+
         // Short-circuit to avoid expensive BFS
         if (motivation < atLeast) return motivation
 
@@ -197,10 +172,88 @@ object MotivationToAttackAutomation {
         return motivation
     }
 
+    fun motivationToStayInWar(civInfo: Civilization, otherCiv: Civilization):Float{
+        val closestCities = NextTurnAutomation.getClosestCities(civInfo, otherCiv) ?: return 0f
+
+        val ourCity = closestCities.city1
+        val theirCity = closestCities.city2
+        if (hasNoUnitsThatCanAttackCityWithoutDying(civInfo, theirCity))
+            return 0f
+
+        //Just because they are slightly stronger now does not mean we should sue for peace
+        var motivation = powerAdvantageScore(civInfo,otherCiv,0.9f)
+
+        if (!otherCiv.isCityState() && theirCity.getTiles().none { tile -> tile.neighbors.any { it.getOwner() == theirCity.civ && it.getCity() != theirCity } }){
+            //Isolated city
+            motivation += 15
+        }
+
+        // Short-circuit to avoid expensive BFS
+        // TODO DETERMINE BEST VALUE FOR THIS
+        if (motivation < 30f) return motivation
+
+        val landPathBFS = BFS(ourCity.getCenterTile()) {
+            it.isLand && isTileCanMoveThrough(it, civInfo, otherCiv)
+        }
+
+        landPathBFS.stepUntilDestination(theirCity.getCenterTile())
+        if (!landPathBFS.hasReachedTile(theirCity.getCenterTile()))
+            motivation -= -10
+
+        // Short-circuit to avoid expensive BFS
+        // TODO DETERMINE BEST VALUE FOR THIS
+        if (motivation < 30f) return motivation
+
+        val reachableEnemyCitiesBfs = BFS(civInfo.getCapital(true)!!.getCenterTile()) { isTileCanMoveThrough(it,civInfo,otherCiv) }
+        reachableEnemyCitiesBfs.stepToEnd()
+        val reachableEnemyCities = otherCiv.cities.filter { reachableEnemyCitiesBfs.hasReachedTile(it.getCenterTile()) }
+        if (reachableEnemyCities.isEmpty()) return 0f // Can't even reach the enemy city, no point in war.
+        return motivation
+    }
+
     private fun isTileCanMoveThrough(tile: Tile, civInfo: Civilization, otherCiv: Civilization): Boolean {
         val owner = tile.getOwner()
         return !tile.isImpassible()
             && (owner == otherCiv || owner == null || civInfo.diplomacyFunctions.canPassThroughTiles(owner))
+    }
+
+    /** Returns a value between -45 and 100 indicating how stronger a civ is against another*/
+    private fun powerAdvantageScore(civInfo: Civilization, otherCiv: Civilization, minimunStrengthRatio:Float): Float{
+        var powerDiff = 0f;
+        val powerRatio = calculateSelfCombatStrength(civInfo,30f) / calculateCombatStrengthWithProtectors(otherCiv, 30f, civInfo)
+        if (powerRatio < minimunStrengthRatio) return 0f
+        powerDiff += max(40f, (powerRatio - 1) * 25)
+        val techDiff = civInfo.getStatForRanking(RankingType.Technologies) - otherCiv.getStatForRanking(RankingType.Technologies)
+        powerDiff += min(20,max(4 * techDiff, -20))
+        val prodRatio = civInfo.getStatForRanking(RankingType.Production).toFloat() / otherCiv.getStatForRanking(RankingType.Production).toFloat()
+        powerDiff += min(20 * prodRatio - 20, 20f)
+        val scoreRatio = otherCiv.getStatForRanking(RankingType.Score).toFloat() / civInfo.getStatForRanking(RankingType.Score).toFloat();
+        powerDiff += min(20 / scoreRatio - 20, 20f) //Divided so that stronger civs are more targeted
+        return powerDiff
+    }
+
+    private fun relationshipBonuses(diplomacyManager: DiplomacyManager): Int{
+        var bonuses = 0
+        if (diplomacyManager.resourcesFromTrade().any { it.amount > 0 })
+        {
+            //This should be contingent on the amount of resources, but it could make trade OP
+            bonuses += 8
+        }
+        if (diplomacyManager.hasFlag(DiplomacyFlags.ResearchAgreement)) {
+            bonuses += 5
+        }
+        if (diplomacyManager.hasFlag(DiplomacyFlags.DeclarationOfFriendship))
+        {
+            bonuses += 15
+        }
+        if(diplomacyManager.hasFlag(DiplomacyFlags.DefensivePact))
+        {
+            //That's a heavy bonus, but the AI should not easily attack civs with defensive pact
+            //If too OP, the best approach imo would be to make signing defensive pacts more difficult
+            //because the whole point of an alliance is to protect each other
+            bonuses+= 30
+        }
+        return bonuses
     }
 
     private fun calculateCombatStrengthWithProtectors(otherCiv: Civilization, baseForce: Float, civInfo: Civilization): Float {
