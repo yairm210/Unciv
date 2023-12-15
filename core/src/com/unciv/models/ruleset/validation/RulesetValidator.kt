@@ -39,6 +39,7 @@ class RulesetValidator(val ruleset: Ruleset) {
         val lines = RulesetErrorList()
 
         // When not checking the entire ruleset, we can only really detect ruleset-invariant errors in uniques
+        addModOptionsErrors(lines)
         uniqueValidator.checkUniques(ruleset.globalUniques, lines, false, tryFixUnknownUniques)
         addUnitErrorsRulesetInvariant(lines, tryFixUnknownUniques)
         addTechErrorsRulesetInvariant(lines, tryFixUnknownUniques)
@@ -62,6 +63,7 @@ class RulesetValidator(val ruleset: Ruleset) {
         uniqueValidator.populateFilteringUniqueHashsets()
 
         val lines = RulesetErrorList()
+        addModOptionsErrors(lines)
         uniqueValidator.checkUniques(ruleset.globalUniques, lines, true, tryFixUnknownUniques)
 
         addUnitErrorsBaseRuleset(lines, tryFixUnknownUniques)
@@ -90,6 +92,20 @@ class RulesetValidator(val ruleset: Ruleset) {
         }
 
         return lines
+    }
+
+    private fun addModOptionsErrors(lines: RulesetErrorList) {
+        val audioVisualUniqueTypes = setOf(
+            UniqueType.ModIsAudioVisual,
+            UniqueType.ModIsAudioVisualOnly,
+            UniqueType.ModIsNotAudioVisual
+        )
+        if (ruleset.modOptions.uniqueObjects.count { it.type in audioVisualUniqueTypes } > 1)
+            lines += "A mod should only specify one of the 'can/should/cannot be used as permanent audiovisual mod' options."
+        if (!ruleset.modOptions.isBaseRuleset) return
+        for (unique in ruleset.modOptions.getMatchingUniques(UniqueType.ModRequires)) {
+            lines += "Mod option '${unique.text}' is invalid for a base ruleset."
+        }
     }
 
     private fun addCityStateTypeErrors(
