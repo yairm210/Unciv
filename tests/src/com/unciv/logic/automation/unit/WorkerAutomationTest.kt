@@ -113,6 +113,10 @@ internal class WorkerAutomationTest {
                 tile.baseTerrain = Constants.grassland
             }
         }
+        for (city in listOf(city1, city2)) {
+            // Make sure that the worker know which tiles to work on first
+            city.reassignAllPopulation()
+        }
         val worker = testGame.addUnit("Worker", civInfo, city1.getCenterTile())
         for(i in 0..37) {
             worker.currentMovement = 2f
