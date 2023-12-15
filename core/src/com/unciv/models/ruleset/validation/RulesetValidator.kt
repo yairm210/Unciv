@@ -58,7 +58,7 @@ class RulesetValidator(val ruleset: Ruleset) {
     }
 
 
-    private fun getBaseRulesetErrorList(tryFixUnknownUniques: Boolean): RulesetErrorList{
+    private fun getBaseRulesetErrorList(tryFixUnknownUniques: Boolean): RulesetErrorList {
 
         uniqueValidator.populateFilteringUniqueHashsets()
 
@@ -83,7 +83,7 @@ class RulesetValidator(val ruleset: Ruleset) {
         addPromotionErrors(lines, tryFixUnknownUniques)
         addUnitTypeErrors(lines, tryFixUnknownUniques)
         addVictoryTypeErrors(lines)
-        addDifficutlyErrors(lines)
+        addDifficultyErrors(lines)
         addCityStateTypeErrors(tryFixUnknownUniques, lines)
 
         // Check for mod or Civ_V_GnK to avoid running the same test twice (~200ms for the builtin assets)
@@ -125,7 +125,7 @@ class RulesetValidator(val ruleset: Ruleset) {
         }
     }
 
-    private fun addDifficutlyErrors(lines: RulesetErrorList) {
+    private fun addDifficultyErrors(lines: RulesetErrorList) {
         for (difficulty in ruleset.difficulties.values) {
             for (unitName in difficulty.aiCityStateBonusStartingUnits + difficulty.aiMajorCivBonusStartingUnits + difficulty.playerBonusStartingUnits)
                 if (unitName != Constants.eraSpecificUnit && !ruleset.units.containsKey(unitName))
@@ -195,6 +195,7 @@ class RulesetValidator(val ruleset: Ruleset) {
         tryFixUnknownUniques: Boolean
     ) {
         for (reward in ruleset.ruinRewards.values) {
+            @Suppress("KotlinConstantConditions") // data is read from json, so any assumptions may be wrong
             if (reward.weight < 0) lines += "${reward.name} has a negative weight, which is not allowed!"
             for (difficulty in reward.excludedDifficulties)
                 if (!ruleset.difficulties.containsKey(difficulty))
@@ -455,7 +456,7 @@ class RulesetValidator(val ruleset: Ruleset) {
 
             for (requiredTech: String in building.requiredTechs())
                 if (!ruleset.technologies.containsKey(requiredTech))
-                    lines += "${building.name} requires tech ${requiredTech} which does not exist!"
+                    lines += "${building.name} requires tech $requiredTech which does not exist!"
             for (specialistName in building.specialistSlots.keys)
                 if (!ruleset.specialists.containsKey(specialistName))
                     lines += "${building.name} provides specialist $specialistName which does not exist!"
@@ -676,10 +677,10 @@ class RulesetValidator(val ruleset: Ruleset) {
     private fun checkUnitRulesetSpecific(unit: BaseUnit, lines: RulesetErrorList) {
         for (requiredTech: String in unit.requiredTechs())
             if (!ruleset.technologies.containsKey(requiredTech))
-                lines += "${unit.name} requires tech ${requiredTech} which does not exist!"
+                lines += "${unit.name} requires tech $requiredTech which does not exist!"
         for (obsoleteTech: String in unit.techsAtWhichNoLongerAvailable())
             if (!ruleset.technologies.containsKey(obsoleteTech))
-                lines += "${unit.name} obsoletes at tech ${obsoleteTech} which does not exist!"
+                lines += "${unit.name} obsoletes at tech $obsoleteTech which does not exist!"
         if (unit.upgradesTo != null && !ruleset.units.containsKey(unit.upgradesTo!!))
             lines += "${unit.name} upgrades to unit ${unit.upgradesTo} which does not exist!"
 
@@ -694,7 +695,7 @@ class RulesetValidator(val ruleset: Ruleset) {
                     )
                         lines.add(
                             "${unit.name} obsoletes at tech ${obsoleteTech}," +
-                                " and therefore ${requiredTech} for its upgrade ${upgradedUnit.name} may not yet be researched!",
+                                " and therefore $requiredTech for its upgrade ${upgradedUnit.name} may not yet be researched!",
                             RulesetErrorSeverity.Warning
                         )
             }
