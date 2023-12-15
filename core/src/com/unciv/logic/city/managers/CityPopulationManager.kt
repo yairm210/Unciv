@@ -160,9 +160,12 @@ class CityPopulationManager : IsPartOfGameInfoSerialization {
         repeat(getFreePopulation()) {
             //evaluate tiles
             val bestTileAndRank = tilesToEvaluate
-                    .filterNot { it.providesYield() }
-                    .associateWith { Automation.rankTileForCityWork(it, city, cityStats, localUniqueCache) }
-                    .maxByOrNull { it.value }
+                .filterNot { it.providesYield() }
+                .associateWith { Automation.rankTileForCityWork(it, city, cityStats, localUniqueCache) }
+                // We need to make sure that we work the same tiles as last turn on a tile
+                // so that our workers know to prioritize this tile and don't move to the other tile
+                // This was just the easiest way I could think of.
+                .maxWithOrNull( compareBy({ it.value }, { it.key.longitude }, { it.key.latitude }))
             val bestTile = bestTileAndRank?.key
             val valueBestTile = bestTileAndRank?.value ?: 0f
 
