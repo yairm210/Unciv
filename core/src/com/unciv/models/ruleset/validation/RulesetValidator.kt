@@ -95,6 +95,8 @@ class RulesetValidator(val ruleset: Ruleset) {
     }
 
     private fun addModOptionsErrors(lines: RulesetErrorList) {
+        if (ruleset.name.isBlank()) return // These tests don't make sense for combined rulesets
+
         val audioVisualUniqueTypes = setOf(
             UniqueType.ModIsAudioVisual,
             UniqueType.ModIsAudioVisualOnly,
