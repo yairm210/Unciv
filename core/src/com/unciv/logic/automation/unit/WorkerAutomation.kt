@@ -568,11 +568,8 @@ class WorkerAutomation(
      * Returns the best improvement
      */
     private fun tileHasWorkToDo(tile: Tile, unit: MapUnit): Boolean {
-        if (!tileRankings.containsKey(tile) || tileRankings[tile]!!.improvementPriority == null)
-            getImprovementPriority(tile,unit)
-        val ranking = tileRankings[tile]!!
-        if (ranking.improvementPriority!! <= 0) return false
-        if (!(ranking.bestImprovement != null || ranking.repairImprovment!!)) 
+        if (getImprovementPriority(tile, unit) <= 0) return false
+        if (!(tileRankings[tile]!!.bestImprovement != null || tileRankings[tile]!!.repairImprovment!!)) 
             throw IllegalStateException("There was an improvementPriority > 0 and nothing to do")
         return true
     }
@@ -638,6 +635,7 @@ class WorkerAutomation(
     private fun getImprovementRanking(tile: Tile, unit: MapUnit, improvementName: String, localUniqueCache: LocalUniqueCache): Float {
         val improvement = ruleSet.tileImprovements[improvementName]!!
         val stats = tile.stats.getStatDiffForImprovement(improvement, civInfo, tile.getCity(), localUniqueCache)
+        //TODO: Add extra ranking for resources here
         return Automation.rankStatsValue(stats, unit.civ)
     }
 
