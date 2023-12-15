@@ -89,7 +89,7 @@ class Civilization : IsPartOfGameInfoSerialization {
 
     @Transient
     val units = UnitManager(this)
-    
+
     @Transient
     var threatManager = ThreatManager(this)
 
@@ -885,6 +885,8 @@ class Civilization : IsPartOfGameInfoSerialization {
         // Other ideas? viewableTiles.size == gameInfo.tileMap.tileList.size seems not quite useful...
         return true
     }
+
+
 
     fun asPreview() = CivilizationInfoPreview(this)
 }

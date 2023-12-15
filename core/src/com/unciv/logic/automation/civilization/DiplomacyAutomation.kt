@@ -4,6 +4,7 @@ import com.unciv.Constants
 import com.unciv.logic.automation.Automation
 import com.unciv.logic.automation.ThreatLevel
 import com.unciv.logic.automation.civilization.MotivationToAttackAutomation.hasAtLeastMotivationToAttack
+import com.unciv.logic.automation.civilization.MotivationToAttackAutomation.motivationToDeclareWar
 import com.unciv.logic.civilization.AlertType
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.PopupAlert
@@ -249,12 +250,12 @@ object DiplomacyAutomation {
 
         if (enemyCivs.none()) return
 
-        val minMotivationToAttack = 20
+        val minMotivationToAttack = civInfo.nation.getMinimunMotivationToAttack()
         // Attack the highest score enemy that we are willing to fight.
         // This is to help prevent civs from ganging up on smaller civs
         // and directs them to fight their competitors instead.
         val civWithBestMotivationToAttack = enemyCivs
-            .filter { hasAtLeastMotivationToAttack(civInfo, it, minMotivationToAttack) >= 20 }
+            .filter { motivationToDeclareWar(civInfo, it, minMotivationToAttack) >= minMotivationToAttack }
             .maxByOrNull { it.getStatForRanking(RankingType.Score) }
 
         if (civWithBestMotivationToAttack != null)

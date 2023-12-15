@@ -278,6 +278,18 @@ class Nation : RulesetObject() {
             else -> uniques.contains(filter)
         }
     }
+    fun getMinimunMotivationToAttack():Float{
+        var bias = personality[Constants.warmonger]!! * 100
+        return when {
+            bias >= 100f -> 0f // Thats because the AI before personalities always declares war if it can
+            //The attack function behaves diffently across its image
+            bias >= 80f-> (1.98 * bias - 56.25).toFloat()
+            bias >= 20f-> (0.82 * bias + 35).toFloat()
+            bias >0f -> (2.5 * bias + 6.38).toFloat()
+            bias == 0f -> 500f
+            else -> 0f
+        }
+    }
 }
 
 
