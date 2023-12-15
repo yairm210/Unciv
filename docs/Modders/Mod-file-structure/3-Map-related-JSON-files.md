@@ -15,7 +15,7 @@ Each terrain entry has the following structure:
 | occursOn | List | none | Only for terrain features and Natural Wonders: The baseTerrain it can be placed on |
 | turnsInto | String | none | Only for NaturalWonder: the base terrain is changed to this after placing the Natural Wonder |
 | weight | Integer | 10 | Only for NaturalWonder: _relative_ weight of being picked by the map generator |
-| [`<stats>`](3-Map-related-JSON-files.md#stats) | Float | 0 | Per-turn yield or bonus yield for the tile |
+| [`<stats>`](#general-stat) | Float | 0 | Per-turn yield or bonus yield for the tile |
 | overrideStats | Boolean | false | If on, a feature's yields replace any yield from underlying terrain instead of adding to it |
 | unbuildable | Boolean | false | If true, nothing can be built here - not even resource improvements |
 | impassable | Boolean | false | No unit can enter unless it has a special unique |
@@ -41,11 +41,11 @@ Each improvement has the following structure:
 | terrainsCanBeFoundOn | List | empty | [Terrains](#terrainsjson) that allow this resource |
 | techRequired | String | none | The name of the technology required to build this improvement |
 | uniqueTo | String | none | The name of the nation this improvement is unique for |
-| [`<stats>`](#stats) | Integer | Default | Per-turn bonus yield for the tile |
-| turnsToBuild | Integer | Default | Number of turns a worker spends building this (leaving it empty makes improvement unbuildable) |
+| [`<stats>`](#stats) | Integer | 0 | Per-turn bonus yield for the tile |
+| turnsToBuild | Integer | -1 | Number of turns a worker spends building this (note: if -1, the improvement is unbuildable) |
 | uniques | List | empty | List of [unique abilities](../uniques) this improvement has |
 | shortcutKey | String | none | Keyboard binding. Currently, only a single character is allowed (no function keys or Ctrl combinations) |
-| civilopediaText | List | empty | see [civilopediaText chapter](5-Miscellaneous-JSON-files.md#civilopedia-text) |
+| civilopediaText | List | empty | See [civilopediaText chapter](5-Miscellaneous-JSON-files.md#civilopedia-text) |
 
 - Tiles with no terrains, but positive turns to build, can be built only when the tile has a resource that names this improvement or special uniques are used. (TODO: missing something?)
 - Tiles with no terrains, and no turns to build, are like great improvements - they're placeable. That means a unit could exist with a 'Can create [this]' unique, and that the improvement will not show in a worker's improvement picker dialog.
@@ -68,13 +68,13 @@ Each resource has the following structure:
 | --------- | ---- | ------- | ----- |
 | name | String | Required | |
 | resourceType | Enum | Bonus | Bonus, Luxury or Strategic |
-| terrainsCanBeFoundOn | List | empty | [Terrains](#terrainsjson) that allow this resource |
+| terrainsCanBeFoundOn | List of Strings | empty | [Terrains](#terrainsjson) that allow this resource |
 | [`<stats>`](#stats) | Integer | 0 | Per-turn bonus yield for the tile |
 | improvement | String | empty | The improvement ([TileImprovements.json](#tileimprovementsjson)) for this resource |
 | improvementStats | Object | empty | The additional yield when improved as sub-object with one or more [Stats](#stats) |
 | revealedBy | String | empty | The technology name required to see, work and improve this resource |
 | unique | String | empty | List of [unique abilities](../uniques) this improvement has |
-| civilopediaText | List | empty | see [civilopediaText chapter](5-Miscellaneous-JSON-files.md#civilopedia-text) |
+| civilopediaText | List of Strings | empty | see [civilopediaText chapter](5-Miscellaneous-JSON-files.md#civilopedia-text) |
 
 ## Ruins.json
 
@@ -132,9 +132,11 @@ A mod can define new Tilesets or add to existing ones, namely FantasyHex. There 
 | [unexploredTileColor](../Creating-a-custom-tileset.md#unexploredTileColor) | Color | Dark Gray | `{"r":0.25,"g":0.25,"b":0.25,"a":1}` |
 | [fogOfWarColor](../Creating-a-custom-tileset.md#fogOfWarColor) | Color | Black | `{"r":0,"g":0,"b":0,"a":1}` |
 | [fallbackTileSet](../Creating-a-custom-tileset.md#fallbackTileSet) | String | "FantasyHex" | null to disable |
-| [tileScale](../Creating-a-custom-tileset.md#tileScale) | Float | 1.0 | |
-| [tileScales](../Creating-a-custom-tileset.md#tileScales) | Dictionary | empty | |
-| [ruleVariants](../Creating-a-custom-tileset.md#ruleVariants) | Dictionary | empty | see below |
+| [tileScale](../Creating-a-custom-tileset.md#tileScale) | Float | 1.0 | The scale of all tiles. Can be used to increase or decrease the size of every tile |
+| [tileScales](../Creating-a-custom-tileset.md#tileScales) | Object | empty | Used by the "Minimal" tileset to scale all its tiles except the base terrain down. Overrides `tileScale` value for specified terrain |
+| [ruleVariants](../Creating-a-custom-tileset.md#ruleVariants) | Object | empty | See [below](#layering-images) |
+
+### Layering images
 
 ruleVariants control substitutions when layering images for a tile, they are list looking like:
 
@@ -153,7 +155,7 @@ When TileSetConfig's for the same Tileset are combined, for the first three prop
 
 ## Stats
 
-Terrains, features, resources and improvements may list yield statistics. They can be one of the following:
+Terrains, features, resources and improvements may list yield statistics. The statistics can be one of the following:
 
 - production
 - food
@@ -163,12 +165,22 @@ Terrains, features, resources and improvements may list yield statistics. They c
 - happiness
 - faith
 
-If an object carries general stats, any combination (or none) of these can be specified. For specialized stats, they might come as sub-object in a named field. Example:
+### General stat
+
+If an object carries general stat(s), it contains any combination (or none) of the above stats, each mapping to a corresponding number [^1]. For Example:
 
 ```json
 "gold": 2,
 "improvement": "Quarry",
+```
+
+### Specialized stats
+
+For specialized stats, they might come as sub-object in a named field. The sub-object contains any combination (or none) of the above stats, each mapping to a corresponding number [^1]. For Example:
+
+```json
+"improvement": "Quarry",
 "improvementStats": { "gold": 1, "production": 1 },
 ```
 
-The values are usually integers, though the underlying code supports floating point. The effects are, however, insufficiently tested and therefore -so far- using fractional stats is unsupported. Go ahead and thoroughly test that in a mod and help out with feedback 😁.
+[^1]: The values are usually integers, though the underlying code supports floating point. The effects are, however, insufficiently tested and therefore -so far- using fractional stats is unsupported. Go ahead and thoroughly test that in a mod and help out with feedback 😁.

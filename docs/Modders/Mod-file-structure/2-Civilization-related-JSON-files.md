@@ -11,8 +11,8 @@ Each belief has the following structure:
 | Attribute | Type | Default | Notes |
 | --------- | ---- | ------- | ----- |
 | name | String | Required | |
-| type | Enum | Required | Pantheon, Founder, Follower or Enhancer (note: leaving this attribute empty or None makes the belief impossible to obtain) |
-| uniques | List of Strings | none | List of [unique abilities](../uniques) this belief adds to cities following it |
+| type | Enum | Required | Type of belief. Value must be Pantheon, Founder, Follower or Enhancer |
+| uniques | List of Strings | empty | List of [unique abilities](../uniques) this belief adds to cities following it |
 | civilopediaText | List | empty | See [civilopediaText chapter](5-Miscellaneous-JSON-files.md#civilopedia-text) |
 
 ## Buildings.json
@@ -27,7 +27,7 @@ Each building has the following structure:
 | --------- | ---- | ------- | ----- |
 | name | String | Required | |
 | cost | Integer (≥0) | 0 | Amount of production required to build the building |
-| [`<stats>`](3-Map-related-JSON-files.md#stats) | float | 0 | Per-turn yield produced by the building |
+| [`<stats>`](3-Map-related-JSON-files.md#general-stat) | Float | 0 | Per-turn yield produced by the building |
 | maintenance | Integer (≥0) | 0 | Maintenance cost of the building |
 | isWonder | Boolean | false | Whether this building is a global wonder |
 | isNationalWonder | Boolean | false | Whether this building is a national wonder |
@@ -35,19 +35,19 @@ Each building has the following structure:
 | providesFreeBuilding | String | none | When the building is built, [providesFreeBuilding] is also automatically added to the city |
 | requiredTech | String | none | The tech that should be researched before this building may be built. Must be in [Techs.json](#techsjson) |
 | requiredResource | String | none | The resource that is consumed when building this building. Must be in [TileResources.json](3-Map-related-JSON-files.md#tileresourcesjson) |
-| requiredNearbyImprovedResources | List of Strings | none | The building can only be built if any of the resources in this list are within the borders of this city and have been improved. Each resource must be in [TileResources.json](3-Map-related-JSON-files.md#tileresourcesjson) |
+| requiredNearbyImprovedResources | List of Strings | empty | The building can only be built if any of the resources in this list are within the borders of this city and have been improved. Each resource must be in [TileResources.json](3-Map-related-JSON-files.md#tileresourcesjson) |
 | replaces | String | none | The name of a building that should be replaced by this building. Must be in [Buildings.json](#buildingsjson) |
 | uniqueTo | String | none | If supplied, only the nation with this name can build this building. Must be in [Nations.json](#nationsjson) |
 | cityStrength | Integer | 0 | Strength bonus the city in which this building is built receives |
 | cityHealth | Integer | 0 | Health bonus the city in which this building is built receives |
 | hurryCostModifier | Integer | 0 | When this building is bought using gold or faith, the price is increased by this much percent |
 | quote | String | none | If this building is a (national) wonder, this string will be shown on the completion popup |
-| uniques | List of Strings | none | List of [unique abilities](../uniques) this building has |
+| uniques | List of Strings | empty | List of [unique abilities](../uniques) this building has |
 | replacementTextForUniques | String | none | If provided, this string will be shown instead of all of the uniques |
-| percentStatBonus | Object | none | Percentual bonus for stats provided by the building. Valid keys are the names of stats (production, gold, science, etc.), valid values are Integers (≥0) |
+| percentStatBonus | Object | none | Percentual bonus for stats provided by the building. Same format as [specialized stats](3-Map-related-JSON-files.md#specialized-stats) (note: numbers are in percent. i.e. 30 represents 30% __bonus__ to a stat) |
 | greatPersonPoints | Object | none | How many great person points for each type will be generated per turn. Valid keys are the names of great people (Great Scientist, Great Engineer, etc.), valid values are Integers (≥0) |
 | specialistSlots | Object | none | Specialist slots provided by this building. Valid keys are the names of specialists (as defined in [Specialists.json](3-Map-related-JSON-files.md#specialistsjson)), valid values are Integers, the amount of slots provided for this specialist |
-| civilopediaText | List | empty | see [civilopediaText chapter](5-Miscellaneous-JSON-files.md#civilopedia-text) |
+| civilopediaText | List | empty | See [civilopediaText chapter](5-Miscellaneous-JSON-files.md#civilopedia-text) |
 
 ## Nations.json
 
@@ -68,13 +68,13 @@ Each nation has the following structure:
 | preferredVictoryType | String | "Neutral" | The victory type major civilizations will pursue. (Note: need not be in [VictoryTypes.json](5-Miscellaneous-JSON-files.md#victorytypesjson)) |
 | startIntroPart1 | String | empty | Introductory blurb shown to Player on game start... |
 | startIntroPart2 | String | empty | ... second paragraph. ___NO___ "TBD"!!! Leave empty to skip that alert. |
-| declaringWar | String | empty | another greeting, voice hook supported [^V] |
-| attacked | String | empty | another greeting, voice hook supported [^V] |
-| defeated | String | empty | another greeting, voice hook supported [^V] |
-| introduction | String | empty | another greeting, voice hook supported [^V] |
-| neutralHello | String | empty | another greeting, voice hook supported [^V] |
-| hateHello | String | empty | another greeting, voice hook supported [^V] |
-| tradeRequest | String | empty | another greeting, voice hook supported [^V] |
+| declaringWar | String | empty | Another greeting, voice hook supported [^V] |
+| attacked | String | empty | Another greeting, voice hook supported [^V] |
+| defeated | String | empty | Another greeting, voice hook supported [^V] |
+| introduction | String | empty | Another greeting, voice hook supported [^V] |
+| neutralHello | String | empty | Another greeting, voice hook supported [^V] |
+| hateHello | String | empty | Another greeting, voice hook supported [^V] |
+| tradeRequest | String | empty | Another greeting, voice hook supported [^V] |
 | innerColor | 3x Integer | black | RGB color for outer ring of nation icon |
 | outerColor | 3x Integer | Required | RGB color for inner circle of nation icon |
 | uniqueName | String | empty | Decorative name for the special characteristic of this nation |
@@ -178,7 +178,7 @@ Each quest has the following structure:
 | description | String | Required | Description of the quest shown to players |
 | type | Enum | Individual | Individual or Global |
 | influence | Float | 40 | Influence reward gained on quest completion |
-| duration | Integer | 0 | Maximum number of turns to complete the quest, 0 if there's no turn limit |
+| duration | Integer | 0 | Maximum number of turns to complete the quest. If 0, there is no turn limit |
 | minimumCivs | Integer | 1 | Minimum number of Civs needed to start the quest. It is meaningful only for type = Global |
 
 ## Religions.json
@@ -198,7 +198,7 @@ Each specialist has the following structure:
 | Attribute | Type | Default | Notes |
 | --------- | ---- | ------- | ----- |
 | name | String | Required | |
-| [`<stats>`](3-Map-related-JSON-files.md#stats) | Float | 0 | Per-turn yield produced by the specialist |
+| [`<stats>`](3-Map-related-JSON-files.md#general-stat) | Float | 0 | Per-turn yield produced by the specialist |
 | color | List of 3 Integers | Required | Color of the image for this specialist |
 | greatPersonPoints | Object | none | Great person points generated by this specialist. Valid keys are the names of the great person (Great Scientist, Great Merachant, etc.), valid values are Integers (≥0) |
 
