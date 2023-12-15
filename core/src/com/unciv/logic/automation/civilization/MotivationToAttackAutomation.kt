@@ -192,7 +192,7 @@ object MotivationToAttackAutomation {
 
         // Short-circuit to avoid expensive BFS
         // TODO DETERMINE BEST VALUE FOR THIS
-        if (motivation < 30f) return motivation
+        if (motivation < 49f) return motivation
 
         val landPathBFS = BFS(ourCity.getCenterTile()) {
             it.isLand && isTileCanMoveThrough(it, civInfo, otherCiv)
@@ -204,7 +204,7 @@ object MotivationToAttackAutomation {
 
         // Short-circuit to avoid expensive BFS
         // TODO DETERMINE BEST VALUE FOR THIS
-        if (motivation < 30f) return motivation
+        if (motivation < 49f) return motivation
 
         val reachableEnemyCitiesBfs = BFS(civInfo.getCapital(true)!!.getCenterTile()) { isTileCanMoveThrough(it,civInfo,otherCiv) }
         reachableEnemyCitiesBfs.stepToEnd()
