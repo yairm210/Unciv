@@ -32,13 +32,13 @@ enum class CityFocus(
     GoldFocus("[${Stat.Gold.name}] Focus", true, Stat.Gold),
     ScienceFocus("[${Stat.Science.name}] Focus", true, Stat.Science),
     CultureFocus("[${Stat.Culture.name}] Focus", true, Stat.Culture),
-    GoldGrowthFocus("Gold Growth Focus", false) {
+    GoldGrowthFocus("Gold Growth Focus", true) {
         override fun getStatMultiplier(stat: Stat) = when (stat) {
             Stat.Gold, Stat.Food -> 2f
             else -> 1f
         }
     },
-    ProductionGrowthFocus("Production Growth Focus", false) {
+    ProductionGrowthFocus("Production Growth Focus", true) {
         override fun getStatMultiplier(stat: Stat) = when (stat) {
             Stat.Production, Stat.Food -> 2f
             else -> 1f
@@ -46,6 +46,9 @@ enum class CityFocus(
     },
     FaithFocus("[${Stat.Faith.name}] Focus", true, Stat.Faith),
     HappinessFocus("[${Stat.Happiness.name}] Focus", false, Stat.Happiness),
+    Manual("Manual Focus", true, null) {
+        override fun getStatMultiplier(stat: Stat) = 1f
+    },
     //GreatPersonFocus
 
     ;
