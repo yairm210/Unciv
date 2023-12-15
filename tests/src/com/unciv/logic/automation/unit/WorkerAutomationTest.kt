@@ -5,6 +5,7 @@ import com.unciv.logic.automation.civilization.NextTurnAutomation
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.managers.TurnManager
 import com.unciv.logic.map.tile.RoadStatus
+import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.PerpetualConstruction
 import com.unciv.testing.GdxTestRunner
 import com.unciv.testing.TestGame
@@ -70,14 +71,27 @@ internal class WorkerAutomationTest {
         for (tile in centerTile.getTilesInDistance(3)) {
             tile.baseTerrain = Constants.plains
         }
+        city.reassignAllPopulation()
         val worker = testGame.addUnit("Worker", civInfo, centerTile)
         for(i in 0..37) {
             worker.currentMovement = 2f
+            for (unit in civInfo.units.getCivUnits()) {
+                // Disband any workers that may have been built in this time period
+                if (unit != worker && unit.isCivilian()) {
+                    unit.disband()
+                }
+            }
+            // Prevent any sort of worker spawning
+            civInfo.addGold(-civInfo.gold)
+            civInfo.policies.freePolicies = 0
             NextTurnAutomation.automateCivMoves(civInfo)
-            city.cityConstructions.constructionQueue.clear()
             TurnManager(civInfo).endTurn()
             // Invalidate WorkerAutomationCache
             testGame.gameInfo.turns++
+
+            // Set the population back to 1
+            if (city.population.population != 1)
+                city.population.addPopulation( 1 - city.population.population)
         }
 
         var finishedCount = 0      
@@ -105,41 +119,59 @@ internal class WorkerAutomationTest {
 
         val city1 = testGame.addCity(civInfo, testGame.tileMap[-2,1])
         val city2 = testGame.addCity(civInfo, testGame.tileMap[2,-1])
+        val cities = listOf(city1, city2)
         civInfo.addGold(100000000)
-        for (city in listOf(city1, city2)) {
+        for (city in cities) {
             for (tile in city.getCenterTile().getTilesInDistance(3)) {
                 if (tile.owningCity == null)
                     city.expansion.buyTile(tile)
                 tile.baseTerrain = Constants.grassland
             }
         }
-        for (city in listOf(city1, city2)) {
+        for (city in cities) {
             // Make sure that the worker know which tiles to work on first
             city.reassignAllPopulation()
         }
         val worker = testGame.addUnit("Worker", civInfo, city1.getCenterTile())
         for(i in 0..37) {
             worker.currentMovement = 2f
+            for (unit in civInfo.units.getCivUnits()) {
+                // Disband any workers that may have been built in this time period
+                if (unit != worker && unit.isCivilian()) {
+                    unit.disband()
+                }
+            }
+            // Prevent any sort of worker spawning
+            civInfo.addGold(-civInfo.gold)
+            civInfo.policies.freePolicies = 0
+            
             NextTurnAutomation.automateCivMoves(civInfo)
-            city1.cityConstructions.constructionQueue.clear()
             TurnManager(civInfo).endTurn()
             // Invalidate WorkerAutomationCache
             testGame.gameInfo.turns++
+            for (city in cities) {
+                // Set the population back to 1
+                if (city.population.population != 1)
+                    city.population.addPopulation( 1 - city.population.population)
+            }
         }
 
         var finishedCount = 0
         var inProgressCount = 0
-        for (city in listOf(city1, city2)) {
+        val checkedTiles = HashSet<Tile>()
+        for (city in cities) {
             for (tile in city.getCenterTile().getTilesInDistance(3)) {
+                if (checkedTiles.contains(tile)) continue
                 if (tile.improvement != null) finishedCount++
                 if (tile.turnsToImprovement != 0) inProgressCount++
+                checkedTiles.add(tile)
             }
         }
 
-        val maxShouldBeInProgress = 1
         // This could be wrong for a few reasons, here are a few hints:
         // If workers prioritize tiles that have a polulation working on them and the working population 
         // swiches each turn, the worker will try and build multiple improvements at once.
+        val maxShouldBeInProgress = 1
         assertTrue("Worker improvements in progress was greater than $maxShouldBeInProgress, actual: $inProgressCount",
             inProgressCount <= maxShouldBeInProgress)
         val minShouldHaveFinished = 6
