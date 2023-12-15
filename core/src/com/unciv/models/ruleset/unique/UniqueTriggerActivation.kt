@@ -3,6 +3,7 @@ package com.unciv.models.ruleset.unique
 import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
 import com.unciv.UncivGame
+import com.unciv.logic.battle.MapUnitCombatant
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.CivFlags
 import com.unciv.logic.civilization.Civilization
@@ -766,6 +767,12 @@ object UniqueTriggerActivation {
         when (unique.type) {
             UniqueType.OneTimeUnitHeal -> {
                 unit.healBy(unique.params[0].toInt())
+                if (notification != null)
+                    unit.civ.addNotification(notification, unit.getTile().position, NotificationCategory.Units) // Do we have a heal icon?
+                return true
+            }
+            UniqueType.OneTimeUnitDamage -> {
+                MapUnitCombatant(unit).takeDamage(unique.params[0].toInt())
                 if (notification != null)
                     unit.civ.addNotification(notification, unit.getTile().position, NotificationCategory.Units) // Do we have a heal icon?
                 return true
