@@ -238,6 +238,31 @@ class MapGenerator(val ruleset: Ruleset, private val coroutineScope: CoroutineSc
         }
     }
 
+    private fun spreadCoast(map: TileMap) {
+        for (i in 1..map.mapParameters.maxCoastExtension) {
+            val toCoast = mutableListOf<Tile>()
+            for (tile in map.values.filter { it.baseTerrain == Constants.ocean }) {
+                val tilesInDistance = tile.getTilesInDistance(1)
+                for (neighborTile in tilesInDistance) {
+                    if (neighborTile.isLand) {
+                        toCoast.add(tile)
+                        break
+                    } else if (neighborTile.baseTerrain == Constants.coast) {
+                        val randval = randomness.RNG.nextInt(2) // 0 or 1
+                        if (randval == 1) {
+                            toCoast.add(tile)
+                        }
+                        break
+                    }
+                }
+            }
+            toCoast.forEach {
+                it.baseTerrain = Constants.coast
+                it.setTransients()
+            }
+        }
+    }
+
     private fun spawnLakesAndCoasts(map: TileMap) {
 
         if (ruleset.terrains.containsKey(Constants.lakes)) {
@@ -277,28 +302,7 @@ class MapGenerator(val ruleset: Ruleset, private val coroutineScope: CoroutineSc
 
         //Coasts
         if (ruleset.terrains.containsKey(Constants.coast)) {
-            for (i in 1..map.mapParameters.maxCoastExtension) {
-                val toCoast = mutableListOf<Tile>()
-                for (tile in map.values.filter { it.baseTerrain == Constants.ocean }) {
-                    val tilesInDistance = tile.getTilesInDistance(1)
-                    for (neighborTile in tilesInDistance) {
-                        if (neighborTile.isLand) {
-                            toCoast.add(tile)
-                            break
-                        } else if (neighborTile.baseTerrain == Constants.coast) {
-                            val randval = randomness.RNG.nextInt(2) // 0 or 1
-                            if (randval == 1) {
-                                toCoast.add(tile)
-                            }
-                            break
-                        }
-                    }
-                }
-                toCoast.forEach {
-                    it.baseTerrain = Constants.coast
-                    it.setTransients()
-                }
-            }
+            spreadCoast(map)
         }
     }
 
