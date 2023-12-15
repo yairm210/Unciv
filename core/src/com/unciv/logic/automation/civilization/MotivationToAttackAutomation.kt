@@ -132,7 +132,7 @@ object MotivationToAttackAutomation {
 
         val diplomacyManager = civInfo.getDiplomacyManager(otherCiv)
 
-        motivation -= (closestCities.aerialDistance - 4) * 3;
+        motivation -= (closestCities.aerialDistance - 4) * 3
 
         //Opinion of other civ is generally pretty high, thats why use 80 as a base value
         motivation += min(20f,max((80 - diplomacyManager.opinionOfOtherCiv())/8,-20f))
@@ -187,6 +187,8 @@ object MotivationToAttackAutomation {
             //Isolated city
             motivation += 15
         }
+
+        motivation -= (closestCities.aerialDistance - 4) * 3
 
         // Short-circuit to avoid expensive BFS
         // TODO DETERMINE BEST VALUE FOR THIS
