@@ -1773,6 +1773,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: ModOptions
 
+??? example  "Mod requires [modFilter]"
+	Example: "Mod requires [DeCiv Redux]"
+
+	Applicable to: ModOptions
+
 ??? example  "Should only be used as permanent audiovisual mod"
 	Applicable to: ModOptions
 
