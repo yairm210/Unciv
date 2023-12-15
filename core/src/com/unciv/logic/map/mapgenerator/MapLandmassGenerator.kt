@@ -51,6 +51,9 @@ class MapLandmassGenerator(val ruleset: Ruleset, val randomness: MapGenerationRa
             MapType.fourCorners -> createFourCorners(tileMap)
             MapType.archipelago -> createArchipelago(tileMap)
             MapType.perlin -> createPerlin(tileMap)
+            MapType.fractal -> createFractal(tileMap)
+            MapType.lakes -> createLakes(tileMap)
+            MapType.smallContinents -> createSmallContinents(tileMap)
         }
 
         if (tileMap.mapParameters.shape === MapShape.flatEarth) {
@@ -96,6 +99,48 @@ class MapLandmassGenerator(val ruleset: Ruleset, val randomness: MapGenerationRa
         }
     }
 
+    private fun createFractal(tileMap: TileMap) {
+        do {
+            val elevationSeed = randomness.RNG.nextInt().toDouble()
+            for (tile in tileMap.values) {
+                val maxdim = max(tileMap.maxLatitude, tileMap.maxLongitude)
+                var ratio = maxdim / 32.0 // change scale depending on map size so that average number of continents stay the same
+                if (tileMap.mapParameters.shape === MapShape.hexagonal || tileMap.mapParameters.shape === MapShape.flatEarth) {
+                    ratio *= 0.5 // In hexagonal type map for some reason it tends to make a single continent like pangaea if we don't diminish the scale
+                }
+
+                var elevation = randomness.getPerlinNoise(tile, elevationSeed, persistence=0.8, lacunarity=1.5, scale=ratio*30.0)
+
+                elevation += getOceanEdgesTransform(tile, tileMap)
+
+                spawnLandOrWater(tile, elevation)
+            }
+            waterThreshold -= 0.01
+        } while (tileMap.values.count { it.baseTerrain == waterTerrainName } > tileMap.values.size * 0.7f) // Over 70% water
+    }
+
+    private fun createLakes(tileMap: TileMap) {
+        val elevationSeed = randomness.RNG.nextInt().toDouble()
+        for (tile in tileMap.values) {
+            val elevation = 0.3 - getRidgedPerlinNoise(tile, elevationSeed, persistence=0.7, lacunarity=1.5)
+
+            spawnLandOrWater(tile, elevation)
+        }
+    }
+
+    private fun createSmallContinents(tileMap: TileMap) {
+        val elevationSeed = randomness.RNG.nextInt().toDouble()
+        waterThreshold += 0.25
+        do {
+            for (tile in tileMap.values) {
+                var elevation = getRidgedPerlinNoise(tile, elevationSeed, scale = 22.0)
+                elevation += getOceanEdgesTransform(tile, tileMap)
+                spawnLandOrWater(tile, elevation)
+            }
+            waterThreshold -= 0.01
+        } while (tileMap.values.count { it.baseTerrain == waterTerrainName } > tileMap.values.size * 0.7f) // Over 70%
+    }
+
     private fun createArchipelago(tileMap: TileMap) {
         val elevationSeed = randomness.RNG.nextInt().toDouble()
         waterThreshold += 0.25
@@ -115,9 +160,9 @@ class MapLandmassGenerator(val ruleset: Ruleset, val randomness: MapGenerationRa
             }
 
             tileMap.assignContinents(TileMap.AssignContinentsMode.Reassign)
+            waterThreshold -= 0.01
         } while (tileMap.continentSizes.values.count { it > 25 } != 1 // Multiple large continents
                 || tileMap.values.count { it.baseTerrain == waterTerrainName } > tileMap.values.size * 0.7f) // Over 70% water
-
         tileMap.assignContinents(TileMap.AssignContinentsMode.Clear)
     }
 
@@ -310,6 +355,56 @@ class MapLandmassGenerator(val ruleset: Ruleset, val randomness: MapGenerationRa
         // there's nothing magical about this, it's just what we got from playing around with a lot of different options -
         //   the numbers can be changed if you find that something else creates better looking continents
         return 1.0 - (5.0 * shouldBeWater*shouldBeWater + randomScale) / 3.0
+    }
+
+    private fun getOceanEdgesTransform(tile: Tile, tileMap: TileMap): Double {
+        // The idea is to reduce elevation at the border of the map, so that we have mostly ocean there.
+        val maxX = tileMap.maxLongitude
+        val maxY = tileMap.maxLatitude
+        val x = tile.longitude
+        val y = tile.latitude
+
+        var elevationOffset = 0.0
+
+        val xdistanceratio = abs(x) / maxX
+        val ydistanceratio = abs(y) / maxY
+        if (tileMap.mapParameters.shape === MapShape.hexagonal || tileMap.mapParameters.shape === MapShape.flatEarth) {
+            val startdropoffratio = 0.8 // distance from center at which we start decreasing elevation linearly
+            val xdrsquared = xdistanceratio * xdistanceratio
+            val ydrsquared = ydistanceratio * ydistanceratio
+            val distancefromcenter = sqrt(xdrsquared+ydrsquared)
+            var distanceoffset = 0.0
+            if (distancefromcenter > startdropoffratio) {
+                val dropoffdistance = distancefromcenter - startdropoffratio
+                val normalizationDivisor = 1.0 - startdropoffratio // for normalizing to [0;1] range
+                distanceoffset = dropoffdistance / normalizationDivisor
+            }
+            elevationOffset -= distanceoffset * 0.35
+        } else {
+
+            var xoffset = 0.0
+
+            val xstartdropoffratio = 0.8
+            if (xdistanceratio > xstartdropoffratio) {
+                val xdropoffdistance = xdistanceratio - xstartdropoffratio
+                val xnormalizationdivisor = 1.0 - xstartdropoffratio // for normalizing to [0;1] range
+                xoffset = xdropoffdistance / xnormalizationdivisor
+            }
+
+            var yoffset = 0.0
+
+            val ystartdropoffratio = 0.76 // we want to have enough space at the north and south for circumnavigation
+            if (ydistanceratio > ystartdropoffratio) {
+                val ydropoffdistance = ydistanceratio - ystartdropoffratio
+                val ynormalizationdivisor = 1.0 - ystartdropoffratio // for normalizing to [0;1] range
+                yoffset = ydropoffdistance / ynormalizationdivisor
+            }
+            // these factors were just found by trial and error to be adequate for having enough space while not reducing land too much.
+            elevationOffset -= xoffset * 0.33
+            elevationOffset -= yoffset * 0.35
+        }
+
+        return max(elevationOffset, -0.35)
     }
 
     /**

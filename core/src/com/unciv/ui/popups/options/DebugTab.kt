@@ -1,5 +1,6 @@
 package com.unciv.ui.popups.options
 
+import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle
 import com.unciv.GUI
@@ -16,7 +17,9 @@ import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
 import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.widgets.UncivSlider
+import com.unciv.ui.popups.ToastPopup
 import com.unciv.ui.screens.basescreen.BaseScreen
+import com.unciv.utils.Concurrency
 import com.unciv.utils.DebugUtils
 
 fun debugTab(
@@ -124,6 +127,21 @@ fun debugTab(
         GUI.setUpdateWorldOnNextRender()
     }
     add(giveResourcesButton).colspan(2).row()
+
+    add("Load online multiplayer game as hotseat from clipboard".toTextButton().onClick {
+        // Code duplication : LoadGameScreen.getLoadFromClipboardButton
+        Concurrency.run {
+            try {
+                val clipboardContentsString = Gdx.app.clipboard.contents.trim()
+                val loadedGame = UncivFiles.gameInfoFromString(clipboardContentsString)
+                loadedGame.gameParameters.isOnlineMultiplayer = false
+                optionsPopup.game.loadGame(loadedGame, true)
+                optionsPopup.close()
+            } catch (ex: Exception) {
+                ToastPopup(ex.message ?: ex::class.java.simpleName, optionsPopup.stageToShowOn).open(true)
+            }
+        }
+    }).colspan(2).row()
 
     addSeparator()
     add("* Crash Unciv! *".toTextButton(skin.get("negative", TextButtonStyle::class.java)).onClick {

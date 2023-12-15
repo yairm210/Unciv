@@ -1,6 +1,5 @@
 package com.unciv.ui.screens.worldscreen.unit.actions
 
-import com.unciv.Constants
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
@@ -69,13 +68,6 @@ object UnitActionsReligion {
         ))
     }
 
-    private fun useActionWithLimitedUses(unit: MapUnit, action: String) {
-        unit.abilityUsesLeft[action] = unit.abilityUsesLeft[action]!! - 1
-        if (unit.abilityUsesLeft[action]!! <= 0) {
-            unit.consume()
-        }
-    }
-
     private fun getPressureAddedFromSpread(unit: MapUnit): Int {
         var pressureAdded = unit.baseUnit.religiousStrength.toFloat()
 
@@ -89,11 +81,10 @@ object UnitActionsReligion {
         if (!unit.civ.religionManager.maySpreadReligionAtAll(unit)) return listOf()
         val city = tile.getCity() ?: return listOf()
 
-        val newStyleUnique = UnitActionModifiers.getUsableUnitActionUniques(unit, UniqueType.CanSpreadReligion).firstOrNull()
+        val newStyleUnique = UnitActionModifiers.getUsableUnitActionUniques(unit, UniqueType.CanSpreadReligion).firstOrNull() ?: return emptyList()
 
-        val title = if (newStyleUnique != null)
-                UnitActionModifiers.actionTextWithSideEffects("Spread [${unit.getReligionDisplayName()!!}]", newStyleUnique, unit)
-        else "Spread [${unit.getReligionDisplayName()!!}]"
+        val title = UnitActionModifiers.actionTextWithSideEffects("Spread [${unit.getReligionDisplayName()!!}]",
+            newStyleUnique, unit)
 
         return listOf(UnitAction(
             UnitActionType.SpreadReligion,
@@ -107,11 +98,7 @@ object UnitActionsReligion {
                 if (unit.hasUnique(UniqueType.RemoveOtherReligions))
                     city.religion.removeAllPressuresExceptFor(unit.religion!!)
 
-                if (newStyleUnique != null) UnitActionModifiers.activateSideEffects(unit, newStyleUnique)
-                else {
-                    useActionWithLimitedUses(unit, Constants.spreadReligion)
-                    unit.currentMovement = 0f
-                }
+                UnitActionModifiers.activateSideEffects(unit, newStyleUnique)
             }.takeIf { unit.currentMovement > 0 && unit.civ.religionManager.maySpreadReligionNow(unit) }
         ))
     }
@@ -127,17 +114,13 @@ object UnitActionsReligion {
         // This will almost be always due to pressure from cities close-by
         if (city.religion.getPressures().none { it.key != unit.religion!! }) return listOf()
 
-        val hasOldStyleAbility = unit.abilityUsesLeft.containsKey(Constants.removeHeresy)
-            && unit.abilityUsesLeft[Constants.removeHeresy]!! > 0
-
         val newStyleUnique = UnitActionModifiers.getUsableUnitActionUniques(unit, UniqueType.CanRemoveHeresy).firstOrNull()
         val hasNewStyleAbility = newStyleUnique != null
 
-        if (!hasOldStyleAbility && !hasNewStyleAbility) return listOf()
+        if (!hasNewStyleAbility) return listOf()
 
-        val title = if (hasNewStyleAbility)
+        val title =
             UnitActionModifiers.actionTextWithSideEffects("Remove Heresy", newStyleUnique!!, unit)
-        else "Remove Heresy"
 
         return listOf(UnitAction(
             UnitActionType.RemoveHeresy,
@@ -154,12 +137,7 @@ object UnitActionsReligion {
                         city.religion.isBlockedHolyCity = false
                     }
                 }
-
-                if (hasNewStyleAbility) UnitActionModifiers.activateSideEffects(unit, newStyleUnique!!)
-                else {
-                    useActionWithLimitedUses(unit, Constants.removeHeresy)
-                    unit.currentMovement = 0f
-                }
+                UnitActionModifiers.activateSideEffects(unit, newStyleUnique)
             }.takeIf { unit.currentMovement > 0f }
         ))
     }
