@@ -58,8 +58,6 @@ class BattleTable(val worldScreen: WorldScreen) : Table() {
     }
 
     fun update() {
-        if (!worldScreen.canChangeState) return hide()
-
         val attacker = tryGetAttacker() ?: return hide()
 
         if (attacker is MapUnitCombatant && attacker.unit.baseUnit.isNuclearWeapon()) {
@@ -239,37 +237,46 @@ class BattleTable(val worldScreen: WorldScreen) : Table() {
         }
 
         row().pad(5f)
-        val attackText: String = when (attacker) {
-            is CityCombatant -> "Bombard"
-            else -> "Attack"
-        }
-        val attackButton = attackText.toTextButton().apply { color= Color.RED }
 
-        var attackableTile: AttackableTile? = null
+        if (worldScreen.canChangeState) {
+            val attackText: String = when (attacker) {
+                is CityCombatant -> "Bombard"
+                else -> "Attack"
+            }
+            val attackButton = attackText.toTextButton().apply { color = Color.RED }
 
-        if (attacker.canAttack()) {
-            if (attacker is MapUnitCombatant) {
-                attackableTile = TargetHelper
-                        .getAttackableEnemies(attacker.unit, attacker.unit.movement.getDistanceToTiles())
-                        .firstOrNull{ it.tileToAttack == defender.getTile()}
-            } else if (attacker is CityCombatant) {
-                val canBombard = TargetHelper.getBombardableTiles(attacker.city).contains(defender.getTile())
-                if (canBombard) {
-                    attackableTile = AttackableTile(attacker.getTile(), defender.getTile(), 0f, defender)
+            var attackableTile: AttackableTile? = null
+
+            if (attacker.canAttack()) {
+                if (attacker is MapUnitCombatant) {
+                    attackableTile = TargetHelper
+                        .getAttackableEnemies(
+                            attacker.unit,
+                            attacker.unit.movement.getDistanceToTiles()
+                        )
+                        .firstOrNull { it.tileToAttack == defender.getTile() }
+                } else if (attacker is CityCombatant) {
+                    val canBombard =
+                        TargetHelper.getBombardableTiles(attacker.city).contains(defender.getTile())
+                    if (canBombard) {
+                        attackableTile =
+                            AttackableTile(attacker.getTile(), defender.getTile(), 0f, defender)
+                    }
                 }
             }
-        }
 
-        if (!worldScreen.isPlayersTurn || attackableTile == null) {
-            attackButton.disable()
-            attackButton.label.color = Color.GRAY
-        } else {
-            attackButton.onClick(UncivSound.Silent) {  // onAttackButtonClicked will do the sound
-                onAttackButtonClicked(attacker, defender, attackableTile)
+            if (!worldScreen.isPlayersTurn || attackableTile == null) {
+                attackButton.disable()
+                attackButton.label.color = Color.GRAY
+            } else {
+                attackButton.onClick(UncivSound.Silent) {  // onAttackButtonClicked will do the sound
+                    onAttackButtonClicked(attacker, defender, attackableTile)
+                }
             }
+
+            add(attackButton).colspan(2)
         }
 
-        add(attackButton).colspan(2)
 
         pack()
 
