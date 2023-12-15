@@ -95,4 +95,53 @@ internal class WorkerAutomationTest {
             finishedCount >= minShouldHaveFinished)
     }
 
+    @Test
+    fun `should build improvements in turns instead without roads`() {
+        // Add the needed tech to construct the improvements below
+        for (improvement in listOf("Farm")) {
+            civInfo.tech.techsResearched.add(testGame.ruleset.tileImprovements[improvement]!!.techRequired!!)
+        }
+        civInfo.tech.techsResearched.add(testGame.ruleset.tileResources["Iron"]!!.revealedBy!!)
+
+        val city1 = testGame.addCity(civInfo, testGame.tileMap[-2,1])
+        val city2 = testGame.addCity(civInfo, testGame.tileMap[2,-1])
+        civInfo.addGold(100000000)
+        for (city in listOf(city1, city2)) {
+            for (tile in city.getCenterTile().getTilesInDistance(3)) {
+                if (tile.owningCity == null)
+                    city.expansion.buyTile(tile)
+                tile.baseTerrain = Constants.grassland
+            }
+        }
+        val worker = testGame.addUnit("Worker", civInfo, city1.getCenterTile())
+        for(i in 0..37) {
+            worker.currentMovement = 2f
+            NextTurnAutomation.automateCivMoves(civInfo)
+            city1.cityConstructions.constructionQueue.clear()
+            TurnManager(civInfo).endTurn()
+            // Invalidate WorkerAutomationCache
+            testGame.gameInfo.turns++
+        }
+
+        var finishedCount = 0
+        var inProgressCount = 0
+        for (city in listOf(city1, city2)) {
+            for (tile in city.getCenterTile().getTilesInDistance(3)) {
+                if (tile.improvement != null) finishedCount++
+                if (tile.turnsToImprovement != 0) inProgressCount++
+            }
+        }
+
+        val maxShouldBeInProgress = 1
+        // This could be wrong for a few reasons, here are a few hints:
+        // If workers prioritize tiles that have a polulation working on them and the working population 
+        // swiches each turn, the worker will try and build multiple improvements at once.
+        assertTrue("Worker improvements in progress was greater than $maxShouldBeInProgress, actual: $inProgressCount",
+            inProgressCount <= maxShouldBeInProgress)
+        val minShouldHaveFinished = 6
+        assertTrue("Worker should have built over $minShouldHaveFinished improvements but only built $finishedCount",
+            finishedCount >= minShouldHaveFinished)
+    }
+
+
 }
