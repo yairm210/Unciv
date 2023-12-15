@@ -1,3 +1,19 @@
+## 4.9.9
+
+Deprecate old religion uniques - finally!!! Months in the making!
+
+By SeventhM:
+- Avoid crash in mod checker for mods with undefined tech requirements 
+- Fix stats from tileFilter unique not working on improvements 
+- Add damage dealing unit trigger 
+- Fix not getting unique unit from tile based free unit trigger (For real this time) 
+
+By soggerr:
+- Show average damage in battle calculations 
+- Allow battle calculations when not your turn 
+
+Change Gdx version for android:texturePacker gradle task  - By SomeTroglodyte
+
 ## 4.9.8
 
 Add new map types  - By remdu
