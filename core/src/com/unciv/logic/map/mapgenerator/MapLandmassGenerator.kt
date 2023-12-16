@@ -157,6 +157,7 @@ class MapLandmassGenerator(val ruleset: Ruleset, val randomness: MapGenerationRa
                 var elevation = randomness.getPerlinNoise(tile, elevationSeed)
                 elevation = elevation * (3 / 4f) + getEllipticContinent(tile, tileMap) / 4
                 spawnLandOrWater(tile, elevation)
+                tile.setTerrainTransients() // necessary for assignContinents
             }
 
             tileMap.assignContinents(TileMap.AssignContinentsMode.Reassign)
