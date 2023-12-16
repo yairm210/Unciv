@@ -378,12 +378,6 @@ class WorkerAutomation(
     private fun tryConnectingCities(unit: MapUnit): Boolean {
         if (bestRoadAvailable == RoadStatus.None || citiesThatNeedConnecting.isEmpty()) return false
         var cityDistanceWanted = 20
-        if (unit.currentTile.owningCity != null) {
-            val currentCity = unit.currentTile.owningCity!!
-            if (currentCity.civ == unit.civ) {
-                cityDistanceWanted = cityDistanceWanted.coerceAtMost(currentCity.getCenterTile().aerialDistanceTo(unit.getTile()) + 3)
-            }
-        }
         
         // Since further away cities take longer to get to and - most importantly - the canReach() to them is very long,
         // we order cities by their closeness to the worker first, and then check for each one whether there's a viable path

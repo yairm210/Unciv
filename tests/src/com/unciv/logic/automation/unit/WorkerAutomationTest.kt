@@ -106,7 +106,7 @@ internal class WorkerAutomationTest {
         assertTrue("Worker improvements in progress was greater than $maxShouldBeInProgress, actual: $inProgressCount",
             inProgressCount <= maxShouldBeInProgress)
         val minShouldHaveFinished = 5
-        assertTrue("Worker should have built over $minShouldHaveFinished improvements but only built $finishedCount",
+        assertTrue("Worker should have built at least $minShouldHaveFinished improvements but only built $finishedCount",
             finishedCount >= minShouldHaveFinished)
     }
 
@@ -176,9 +176,74 @@ internal class WorkerAutomationTest {
         assertTrue("Worker improvements in progress was greater than $maxShouldBeInProgress, actual: $inProgressCount",
             inProgressCount <= maxShouldBeInProgress)
         val minShouldHaveFinished = 5
-        assertTrue("Worker should have built over $minShouldHaveFinished improvements but only built $finishedCount",
+        assertTrue("Worker should have built at least $minShouldHaveFinished improvements but only built $finishedCount",
             finishedCount >= minShouldHaveFinished)
     }
 
+    @Test
+    fun `should build roads in turns`() {
+        // Add the needed tech to construct the improvements below
+        for (improvement in listOf(RoadStatus.Road.name)) {
+            civInfo.tech.techsResearched.add(testGame.ruleset.tileImprovements[improvement]!!.techRequired!!)
+        }
+        civInfo.tech.techsResearched.remove(testGame.ruleset.tileImprovements["Farm"]!!.techRequired!!)
+
+        val city1 = testGame.addCity(civInfo, testGame.tileMap[3,3])
+        val city2 = testGame.addCity(civInfo, testGame.tileMap[-3,-3])
+        val cities = listOf(city1, city2)
+        civInfo.addGold(100000000)
+        for (city in cities) {
+            for (tile in city.getCenterTile().getTilesInDistance(3)) {
+                if (tile.owningCity == null)
+                    city.expansion.buyTile(tile)
+            }
+        }
+        for (city in cities) {
+            // Make sure that we want to build a road between the cities
+            city.population.addPopulation( 10)
+            // Need to make sure that we have gold per turn to want to build the roads
+            city.cityConstructions.addBuilding("Stock Exchange")
+            city.cityConstructions.addBuilding("Stock Exchange")
+            city.cityConstructions.addBuilding("Stock Exchange")
+        }
+        val worker = testGame.addUnit("Worker", civInfo, city1.getCenterTile())
+        for(i in 0..24) {
+            worker.currentMovement = 2f
+            for (unit in civInfo.units.getCivUnits()) {
+                // Disband any workers that may have been built in this time period
+                if (unit != worker && unit.isCivilian()) {
+                    unit.disband()
+                }
+            }
+            // Prevent any sort of worker spawning
+            civInfo.addGold(-civInfo.gold)
+            civInfo.policies.freePolicies = 0
+            civInfo.addStat(Stat.Science, - 100000)
+
+            NextTurnAutomation.automateCivMoves(civInfo)
+            TurnManager(civInfo).endTurn()
+            // Invalidate WorkerAutomationCache
+            testGame.gameInfo.turns++
+        }
+
+        var finishedCount = 0
+        var inProgressCount = 0
+        val checkedTiles = HashSet<Tile>()
+        for (city in cities) {
+            for (tile in city.getCenterTile().getTilesInDistance(3)) {
+                if (checkedTiles.contains(tile)) continue
+                if (tile.roadStatus != RoadStatus.None && tile.isCityCenter()) finishedCount++
+                if (tile.turnsToImprovement != 0) inProgressCount++
+                checkedTiles.add(tile)
+            }
+        }
+
+        val maxShouldBeInProgress = 1
+        assertTrue("Worker roads in progress was greater than $maxShouldBeInProgress, actual: $inProgressCount",
+            inProgressCount <= maxShouldBeInProgress)
+        val minShouldHaveFinished = 5
+        assertTrue("Worker should have built $minShouldHaveFinished roads but only built $finishedCount",
+            finishedCount >= minShouldHaveFinished)
+    }
 
 }
