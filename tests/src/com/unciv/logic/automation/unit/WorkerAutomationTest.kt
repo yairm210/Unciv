@@ -98,20 +98,20 @@ internal class WorkerAutomationTest {
         var finishedCount = 0      
         var inProgressCount = 0
         for (tile in centerTile.getTilesInDistance(3)) {
-            if (tile.improvement != null) finishedCount++
+            if (tile.improvement != null && tile.improvement != Constants.cityCenter) finishedCount++
             if (tile.turnsToImprovement != 0) inProgressCount++
         }
         
         val maxShouldBeInProgress = 1
         assertTrue("Worker improvements in progress was greater than $maxShouldBeInProgress, actual: $inProgressCount",
             inProgressCount <= maxShouldBeInProgress)
-        val minShouldHaveFinished = 6
+        val minShouldHaveFinished = 5
         assertTrue("Worker should have built over $minShouldHaveFinished improvements but only built $finishedCount",
             finishedCount >= minShouldHaveFinished)
     }
 
     @Test
-    fun `should build improvements in turns instead without roads`() {
+    fun `should build improvements in turns without roads`() {
         // Add the needed tech to construct the improvements below
         for (improvement in listOf("Farm")) {
             civInfo.tech.techsResearched.add(testGame.ruleset.tileImprovements[improvement]!!.techRequired!!)
@@ -163,7 +163,7 @@ internal class WorkerAutomationTest {
         for (city in cities) {
             for (tile in city.getCenterTile().getTilesInDistance(3)) {
                 if (checkedTiles.contains(tile)) continue
-                if (tile.improvement != null) finishedCount++
+                if (tile.improvement != null && tile.improvement != Constants.cityCenter) finishedCount++
                 if (tile.turnsToImprovement != 0) inProgressCount++
                 checkedTiles.add(tile)
             }
@@ -175,7 +175,7 @@ internal class WorkerAutomationTest {
         val maxShouldBeInProgress = 1
         assertTrue("Worker improvements in progress was greater than $maxShouldBeInProgress, actual: $inProgressCount",
             inProgressCount <= maxShouldBeInProgress)
-        val minShouldHaveFinished = 6
+        val minShouldHaveFinished = 5
         assertTrue("Worker should have built over $minShouldHaveFinished improvements but only built $finishedCount",
             finishedCount >= minShouldHaveFinished)
     }
