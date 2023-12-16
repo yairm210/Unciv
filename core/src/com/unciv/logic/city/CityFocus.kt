@@ -28,11 +28,15 @@ enum class CityFocus(
     NoFocus("Default", true, null) {
         override fun getStatMultiplier(stat: Stat) = 1f  // actually redundant, but that's two steps to see
     },
+    Manual("Manual", true, null) {
+        override fun getStatMultiplier(stat: Stat) = 1f
+    },
     FoodFocus("[${Stat.Food.name}]", true, Stat.Food),
     ProductionFocus("[${Stat.Production.name}]", true, Stat.Production),
     GoldFocus("[${Stat.Gold.name}]", true, Stat.Gold),
     ScienceFocus("[${Stat.Science.name}]", true, Stat.Science),
     CultureFocus("[${Stat.Culture.name}]", true, Stat.Culture),
+    FaithFocus("[${Stat.Faith.name}]", true, Stat.Faith),
     GoldGrowthFocus("[${Stat.Gold.name}] [${Stat.Food.name}]", true) {
         override fun getStatMultiplier(stat: Stat) = when (stat) {
             Stat.Gold, Stat.Food -> 2f
@@ -45,11 +49,7 @@ enum class CityFocus(
             else -> 1f
         }
     },
-    FaithFocus("[${Stat.Faith.name}]", true, Stat.Faith),
     HappinessFocus("[${Stat.Happiness.name}]", false, Stat.Happiness),
-    Manual("Manual", true, null) {
-        override fun getStatMultiplier(stat: Stat) = 1f
-    },
     //GreatPersonFocus
 
     ;
