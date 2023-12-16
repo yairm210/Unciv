@@ -540,8 +540,10 @@ class MapUnit : IsPartOfGameInfoSerialization {
                 return
             }
             val gotTo = movement.headTowards(destinationTile)
-            if (gotTo == currentTile) { // We didn't move at all, pathway blocked
-                action = null
+            if (gotTo == currentTile) { // We didn't move at all
+                // pathway blocked? Are we still at the same spot as start of turn?
+                if(movementMemories.last().position == currentTile.position)
+                    action = null
                 return
             }
             if (gotTo.position == destinationTile.position) action = null
