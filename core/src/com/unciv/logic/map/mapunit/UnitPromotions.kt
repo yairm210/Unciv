@@ -97,10 +97,9 @@ class UnitPromotions : IsPartOfGameInfoSerialization {
 
         if (getPromotions().contains(promotion)) {
             promotions.remove(promotionName)
+            unit.updateUniques()
+            unit.updateVisibleTiles()
         }
-
-        unit.updateUniques()
-        unit.updateVisibleTiles()
     }
 
     private fun doDirectPromotionEffects(promotion: Promotion) {
