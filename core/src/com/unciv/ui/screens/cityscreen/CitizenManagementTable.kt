@@ -12,6 +12,7 @@ import com.unciv.ui.screens.basescreen.BaseScreen
 
 class CitizenManagementTable(val cityScreen: CityScreen) : Table(BaseScreen.skin) {
     val city = cityScreen.city
+    private val numCol = 3
 
     fun update() {
         clear()
@@ -34,7 +35,7 @@ class CitizenManagementTable(val cityScreen: CityScreen) : Table(BaseScreen.skin
             "CityScreen/CitizenManagementTable/ResetCell",
             tintColor = colorButton
         )
-        add(resetCell).colspan(2).growX().pad(3f)
+        add(resetCell).colspan(numCol).growX().pad(3f)
         row()
 
         val avoidLabel = "Avoid Growth".toLabel()
@@ -52,10 +53,16 @@ class CitizenManagementTable(val cityScreen: CityScreen) : Table(BaseScreen.skin
             "CityScreen/CitizenManagementTable/AvoidCell",
             tintColor = if (city.avoidGrowth) colorSelected else colorButton
         )
-        add(avoidCell).colspan(2).growX().pad(3f)
+        add(avoidCell).colspan(numCol).growX().pad(3f)
         row()
 
-        var newRow = false
+        val focusLabel = "Citizen Focus".toLabel()
+        val focusCell = Table()
+        focusCell.add(focusLabel).pad(5f)
+        add(focusCell).colspan(numCol).growX().pad(3f)
+        row()
+
+        var currCol = numCol
         for (focus in CityFocus.values()) {
             if (!focus.tableEnabled) continue
             if (focus == CityFocus.FaithFocus && !city.civ.gameInfo.isReligionEnabled()) continue
@@ -78,9 +85,11 @@ class CitizenManagementTable(val cityScreen: CityScreen) : Table(BaseScreen.skin
                 tintColor = if (city.cityAIFocus == focus) colorSelected else colorButton
             )
             add(cell).growX().pad(3f)
-            if (newRow)  // every 2 make new row
+            --currCol
+            if (currCol==0) {  // make new row
                 row()
-            newRow = !newRow
+                currCol = numCol
+            }
         }
 
         pack()
