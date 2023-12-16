@@ -7,6 +7,7 @@ import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
 import com.unciv.ui.components.input.KeyboardBinding
 import com.unciv.ui.screens.cityscreen.CitizenManagementTable
+import com.unciv.ui.images.ImageGetter
 
 /**
  *  Controls automatic worker-to-tile assignment
@@ -24,28 +25,28 @@ enum class CityFocus(
     binding: KeyboardBinding? = null
 ) : IsPartOfGameInfoSerialization {
     // region Enum values
-    NoFocus("Default Focus", true, null) {
+    NoFocus("Default", true, null) {
         override fun getStatMultiplier(stat: Stat) = 1f  // actually redundant, but that's two steps to see
     },
-    FoodFocus("[${Stat.Food.name}] Focus", true, Stat.Food),
-    ProductionFocus("[${Stat.Production.name}] Focus", true, Stat.Production),
-    GoldFocus("[${Stat.Gold.name}] Focus", true, Stat.Gold),
-    ScienceFocus("[${Stat.Science.name}] Focus", true, Stat.Science),
-    CultureFocus("[${Stat.Culture.name}] Focus", true, Stat.Culture),
-    GoldGrowthFocus("[${Stat.Gold.name}] [${Stat.Food.name}] Focus", true) {
+    FoodFocus("[${Stat.Food.name}]", true, Stat.Food),
+    ProductionFocus("[${Stat.Production.name}]", true, Stat.Production),
+    GoldFocus("[${Stat.Gold.name}]", true, Stat.Gold),
+    ScienceFocus("[${Stat.Science.name}]", true, Stat.Science),
+    CultureFocus("[${Stat.Culture.name}]", true, Stat.Culture),
+    GoldGrowthFocus("[${Stat.Gold.name}] [${Stat.Food.name}]", true) {
         override fun getStatMultiplier(stat: Stat) = when (stat) {
             Stat.Gold, Stat.Food -> 2f
             else -> 1f
         }
     },
-    ProductionGrowthFocus("[${Stat.Production.name}] [${Stat.Food.name}] Focus", true) {
+    ProductionGrowthFocus("[${Stat.Production.name}] [${Stat.Food.name}]", true) {
         override fun getStatMultiplier(stat: Stat) = when (stat) {
             Stat.Production, Stat.Food -> 2f
             else -> 1f
         }
     },
-    FaithFocus("[${Stat.Faith.name}] Focus", true, Stat.Faith),
-    HappinessFocus("[${Stat.Happiness.name}] Focus", false, Stat.Happiness),
+    FaithFocus("[${Stat.Faith.name}]", true, Stat.Faith),
+    HappinessFocus("[${Stat.Happiness.name}]", false, Stat.Happiness),
     Manual("Manual", true, null) {
         override fun getStatMultiplier(stat: Stat) = 1f
     },
