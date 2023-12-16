@@ -124,17 +124,16 @@ object MotivationToAttackAutomation {
 
         var motivation = powerAdvantageScore(civInfo,otherCiv,1f)
 
-        if(motivation == 0f) return  0f
+        if(motivation <= 0f) return  0f
 
         val diplomacyManager = civInfo.getDiplomacyManager(otherCiv)
 
         motivation -= (closestCities.aerialDistance - 4) * 3
 
-        //Opinion of other civ is generally pretty high, thats why use 80 as a base value
-        motivation += min(20f,max((80 - diplomacyManager.opinionOfOtherCiv())/8,-20f))
+        motivation += min(20f,max((40 - diplomacyManager.opinionOfOtherCiv())/4,-20f))
 
         if (otherCiv.isCityState()){
-            motivation -= 15;
+            motivation -= 30;
             if (otherCiv.getAllyCiv() == civInfo.civName)
             {
                 motivation -= 15
