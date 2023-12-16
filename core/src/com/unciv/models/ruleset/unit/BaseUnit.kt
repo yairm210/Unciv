@@ -50,6 +50,8 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
     var obsoleteTech: String? = null
     fun techsThatObsoleteThis(): Sequence<String> = if (obsoleteTech == null) sequenceOf() else sequenceOf(obsoleteTech!!)
     fun techsAtWhichAutoUpgradeInProduction(): Sequence<String> = techsThatObsoleteThis()
+    fun techsAtWhichNoLongerAvailable(): Sequence<String> = techsThatObsoleteThis()
+    fun isObsoletedBy(techName: String): Boolean = techsThatObsoleteThis().contains(techName)
     var upgradesTo: String? = null
     var replaces: String? = null
     var uniqueTo: String? = null
@@ -161,7 +163,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         for (requiredTech: String in requiredTechs())
             if (!civ.tech.isResearched(requiredTech))
                 yield(RejectionReasonType.RequiresTech.toInstance("$requiredTech not researched"))
-        for (obsoleteTech: String in techsThatObsoleteThis())
+        for (obsoleteTech: String in techsAtWhichNoLongerAvailable())
             if (civ.tech.isResearched(obsoleteTech))
                 yield(RejectionReasonType.Obsoleted.toInstance("Obsolete by $obsoleteTech"))
 

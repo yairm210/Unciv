@@ -15,17 +15,20 @@ import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.automation.unit.CityLocationTileRanker
+import com.unciv.logic.automation.unit.UnitAutomation
 import com.unciv.logic.battle.AttackableTile
 import com.unciv.logic.battle.Battle
 import com.unciv.logic.battle.MapUnitCombatant
 import com.unciv.logic.battle.TargetHelper
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
+import com.unciv.logic.map.MapPathing
 import com.unciv.logic.map.TileMap
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.mapunit.movement.UnitMovement
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.UncivSound
+import com.unciv.models.UnitActionType
 import com.unciv.models.ruleset.unique.LocalUniqueCache
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.audio.SoundPlayer
@@ -39,6 +42,7 @@ import com.unciv.ui.components.extensions.surroundWithCircle
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.input.ActivationTypes
 import com.unciv.ui.components.input.KeyCharAndCode
+import com.unciv.ui.components.input.KeyboardBinding
 import com.unciv.ui.components.input.keyShortcuts
 import com.unciv.ui.components.input.onActivation
 import com.unciv.ui.components.input.onClick
@@ -69,6 +73,8 @@ class WorldMapHolder(
     private val unitActionOverlays: ArrayList<Actor> = ArrayList()
 
     private val unitMovementPaths: HashMap<MapUnit, ArrayList<Tile>> = HashMap()
+
+    private val unitConnectRoadPaths: HashMap<MapUnit, List<Tile>> = HashMap()
 
     private lateinit var tileGroupMap: TileGroupMap<WorldTileGroup>
 
@@ -112,6 +118,10 @@ class WorldMapHolder(
     // Contains the data required to draw a "swap with" button
     class SwapWithButtonDto(val unit: MapUnit, val tile: Tile) : ButtonDto
 
+    // Contains the data required to draw a "connect road" button
+    class ConnectRoadButtonDto(val unit: MapUnit, val tile: Tile) : ButtonDto
+
+
     internal fun addTiles() {
         val tileSetStrings = TileSetStrings()
         currentTileSetStrings = tileSetStrings
@@ -153,38 +163,46 @@ class WorldMapHolder(
         removeUnitActionOverlay()
         selectedTile = tile
         unitMovementPaths.clear()
+        unitConnectRoadPaths.clear()
 
         val unitTable = worldScreen.bottomUnitTable
         val previousSelectedUnits = unitTable.selectedUnits.toList() // create copy
         val previousSelectedCity = unitTable.selectedCity
         val previousSelectedUnitIsSwapping = unitTable.selectedUnitIsSwapping
+        val previousSelectedUnitIsConnectingRoad = unitTable.selectedUnitIsConnectingRoad
         unitTable.tileSelected(tile)
         val newSelectedUnit = unitTable.selectedUnit
 
         if (previousSelectedCity != null && tile != previousSelectedCity.getCenterTile())
             tileGroups[previousSelectedCity.getCenterTile()]!!.layerCityButton.moveUp()
 
-        if (previousSelectedUnits.isNotEmpty() && previousSelectedUnits.any { it.getTile() != tile }
-                && worldScreen.isPlayersTurn
-                && (
-                    if (previousSelectedUnitIsSwapping)
-                        previousSelectedUnits.first().movement.canUnitSwapTo(tile)
-                    else
-                        previousSelectedUnits.any {
-                            it.movement.canMoveTo(tile) ||
-                                    it.movement.isUnknownTileWeShouldAssumeToBePassable(tile) && !it.baseUnit.movesLikeAirUnits()
-                        }
-                ) && previousSelectedUnits.any { !it.isPreparingAirSweep()}) {
-            if (previousSelectedUnitIsSwapping) {
-                addTileOverlaysWithUnitSwapping(previousSelectedUnits.first(), tile)
-            }
-            else {
-                // this can take a long time, because of the unit-to-tile calculation needed, so we put it in a different thread
-                addTileOverlaysWithUnitMovement(previousSelectedUnits, tile)
+        if (previousSelectedUnits.isNotEmpty()) {
+            val isTileDifferent = previousSelectedUnits.any { it.getTile() != tile }
+            val isPlayerTurn = worldScreen.isPlayersTurn
+            val existsUnitNotPreparingAirSweep = previousSelectedUnits.any { !it.isPreparingAirSweep() }
 
+            // Todo: valid tiles for actions should be handled internally, not here.
+            val canPerformActionsOnTile = if (previousSelectedUnitIsSwapping) {
+                previousSelectedUnits.first().movement.canUnitSwapTo(tile)
+            } else if(previousSelectedUnitIsConnectingRoad) {
+                true
+            } else {
+                previousSelectedUnits.any {
+                    it.movement.canMoveTo(tile) ||
+                        (it.movement.isUnknownTileWeShouldAssumeToBePassable(tile) && !it.baseUnit.movesLikeAirUnits())
+                }
             }
-        } else addTileOverlays(tile) // no unit movement but display the units in the tile etc.
 
+            if (isTileDifferent && isPlayerTurn && canPerformActionsOnTile && existsUnitNotPreparingAirSweep) {
+                when {
+                    previousSelectedUnitIsSwapping -> addTileOverlaysWithUnitSwapping(previousSelectedUnits.first(), tile)
+                    previousSelectedUnitIsConnectingRoad -> addTileOverlaysWithUnitRoadConnecting(previousSelectedUnits.first(), tile)
+                    else -> addTileOverlaysWithUnitMovement(previousSelectedUnits, tile) // Long-running task
+                }
+            }
+        } else {
+            addTileOverlays(tile) // no unit movement but display the units in the tile etc.
+        }
 
         if (newSelectedUnit == null || newSelectedUnit.isCivilian()) {
             val unitsInTile = selectedTile!!.getUnits()
@@ -204,6 +222,7 @@ class WorldMapHolder(
         removeUnitActionOverlay()
         selectedTile = tile
         unitMovementPaths.clear()
+        unitConnectRoadPaths.clear()
         if (!worldScreen.canChangeState) return
 
         // Concurrency might open up a race condition window - if worldScreen.shouldUpdate is on too
@@ -327,6 +346,24 @@ class WorldMapHolder(
         removeUnitActionOverlay()
     }
 
+    private fun connectRoadToTargetTile(selectedUnit: MapUnit, targetTile: Tile) {
+        selectedUnit.automatedRoadConnectionDestination = targetTile.position
+        selectedUnit.automatedRoadConnectionPath = null
+        selectedUnit.action = UnitActionType.ConnectRoad.value
+        selectedUnit.automated = true
+        UnitAutomation.automateUnitMoves(selectedUnit)
+
+        SoundPlayer.play(UncivSound("wagon"))
+
+        worldScreen.shouldUpdate = true
+        removeUnitActionOverlay()
+
+        // Make highlighting go away
+        worldScreen.bottomUnitTable.selectedUnitIsConnectingRoad = false
+
+    }
+
+
     private fun addTileOverlaysWithUnitMovement(selectedUnits: List<MapUnit>, tile: Tile) {
         Concurrency.run("TurnsToGetThere") {
             /** LibGdx sometimes has these weird errors when you try to edit the UI layout from 2 separate threads.
@@ -397,6 +434,27 @@ class WorldMapHolder(
         worldScreen.shouldUpdate = true
     }
 
+    private fun addTileOverlaysWithUnitRoadConnecting(selectedUnit: MapUnit, tile: Tile){
+        Concurrency.run("ConnectRoad") {
+           val validTile = tile.isLand &&
+               !tile.isImpassible() &&
+                selectedUnit.civ.hasExplored(tile)
+            if (validTile) {
+                val roadPath: List<Tile>? = MapPathing.getRoadPath(selectedUnit, selectedUnit.currentTile, tile)
+                launchOnGLThread {
+                    if (roadPath == null) { // give the regular tile overlays with no road connection
+                        addTileOverlays(tile)
+                        worldScreen.shouldUpdate = true
+                        return@launchOnGLThread
+                    }
+                    unitConnectRoadPaths[selectedUnit] = roadPath
+                    val connectRoadButtonDto = ConnectRoadButtonDto(selectedUnit, tile)
+                    addTileOverlays(tile, connectRoadButtonDto)
+                    worldScreen.shouldUpdate = true
+                }
+            }
+        }
+    }
     private fun addTileOverlays(tile: Tile, buttonDto: ButtonDto? = null) {
         val table = Table().apply { defaults().pad(10f) }
         if (buttonDto != null && worldScreen.canChangeState)
@@ -404,6 +462,7 @@ class WorldMapHolder(
                 when (buttonDto) {
                     is MoveHereButtonDto -> getMoveHereButton(buttonDto)
                     is SwapWithButtonDto -> getSwapWithButton(buttonDto)
+                    is ConnectRoadButtonDto -> getConnectRoadButton(buttonDto)
                     else -> null
                 }
             )
@@ -495,6 +554,26 @@ class WorldMapHolder(
         return swapWithButton
     }
 
+    private fun getConnectRoadButton(dto: ConnectRoadButtonDto): Group {
+        val connectRoadButton = Group().apply { width = buttonSize;height = buttonSize; }
+        connectRoadButton.addActor(ImageGetter.getUnitActionPortrait("RoadConnection", buttonSize * 0.8f).apply {
+                center(connectRoadButton)
+            }
+        )
+
+        val unitIcon = UnitGroup(dto.unit, smallerCircleSizes)
+        unitIcon.y = buttonSize - unitIcon.height
+        connectRoadButton.addActor(unitIcon)
+
+        connectRoadButton.onActivation(UncivSound.Silent) {
+            connectRoadToTargetTile(dto.unit, dto.tile)
+        }
+
+        connectRoadButton.keyShortcuts.add(KeyboardBinding.ConnectRoad)
+
+        return connectRoadButton
+    }
+
 
     fun addOverlayOnTileGroup(group: TileGroup, actor: Actor) {
 
@@ -575,6 +654,10 @@ class WorldMapHolder(
             unitTable.selectedCity != null -> {
                 val city = unitTable.selectedCity!!
                 updateBombardableTilesForSelectedCity(city)
+                // We still want to show road paths to the selected city if they are present
+                if (unitTable.selectedUnitIsConnectingRoad){
+                    updateTilesForSelectedUnit(unitTable.selectedUnits[0])
+                }
             }
             unitTable.selectedUnit != null -> {
                 for (unit in unitTable.selectedUnits) {
@@ -617,6 +700,7 @@ class WorldMapHolder(
             }
         }
 
+        // Z-Layer: 0
         // Highlight suitable tiles in swapping-mode
         if (worldScreen.bottomUnitTable.selectedUnitIsSwapping) {
             val unitSwappableTiles = unit.movement.getUnitSwappableTiles()
@@ -625,7 +709,29 @@ class WorldMapHolder(
                 tileGroups[tile]!!.layerOverlay.showHighlight(swapUnitsTileOverlayColor,
                     if (UncivGame.Current.settings.singleTapMove) 0.7f else 0.3f)
             }
-            // In swapping-mode don't want to show other overlays
+            // In swapping-mode we don't want to show other overlays
+            return
+        }
+
+        // Z-Layer: 0
+        // Highlight suitable tiles in road connecting mode
+        if (worldScreen.bottomUnitTable.selectedUnitIsConnectingRoad){
+            val validTiles = unit.civ.gameInfo.tileMap.tileList.filter {
+                MapPathing.isValidRoadPathTile(unit, it)
+            }
+            unit.civ.gameInfo.civilizations
+            val connectRoadTileOverlayColor = Color.RED
+            for (tile in validTiles)  {
+                tileGroups[tile]!!.layerOverlay.showHighlight(connectRoadTileOverlayColor, 0.3f)
+            }
+
+            if (unitConnectRoadPaths.containsKey(unit)) {
+                for (tile in unitConnectRoadPaths[unit]!!) {
+                    tileGroups[tile]!!.layerOverlay.showHighlight(Color.ORANGE, 0.8f)
+                }
+            }
+
+            // In road connecting mode we don't want to show other overlays
             return
         }
 
@@ -636,6 +742,7 @@ class WorldMapHolder(
         val nukeBlastRadius = if (unit.baseUnit.isNuclearWeapon() && selectedTile != null && selectedTile != unit.getTile())
             unit.getNukeBlastRadius() else -1
 
+        // Z-Layer: 1
         // Highlight tiles within movement range
         for (tile in tilesInMoveRange) {
             val group = tileGroups[tile]!!
@@ -663,6 +770,7 @@ class WorldMapHolder(
 
         }
 
+        // Z-Layer: 2
         // Add back in the red markers for Air Unit Attack range since they can't move, but can still attack
         if (unit.cache.cannotMove && isAirUnit && !unit.isPreparingAirSweep()) {
             val tilesInAttackRange = unit.getTile().getTilesInDistanceRange(IntRange(1, unit.getRange()))
@@ -672,6 +780,7 @@ class WorldMapHolder(
             }
         }
 
+        // Z-Layer: 3
         // Movement paths
         if (unitMovementPaths.containsKey(unit)) {
             for (tile in unitMovementPaths[unit]!!) {
@@ -679,11 +788,30 @@ class WorldMapHolder(
             }
         }
 
+        // Z-Layer: 4
+        // Highlight road path for workers currently connecting roads
+        if (unit.isAutomatingRoadConnection()) {
+            if (unit.automatedRoadConnectionPath == null) return
+            val currTileIndex = unit.automatedRoadConnectionPath!!.indexOf(unit.currentTile.position)
+            if (currTileIndex != -1) {
+                val futureTiles = unit.automatedRoadConnectionPath!!.filterIndexed { index, _ ->
+                    index > currTileIndex
+                }.map{tilePos ->
+                    tileMap[tilePos]
+                }
+                for (tile in futureTiles){
+                    tileGroups[tile]!!.layerOverlay.showHighlight(Color.ORANGE, if (UncivGame.Current.settings.singleTapMove) 0.7f else 0.3f)
+                }
+            }
+        }
+
+        // Z-Layer: 5
         // Highlight movement destination tile
         if (unit.isMoving()) {
             tileGroups[unit.getMovementDestination()]!!.layerOverlay.showHighlight(Color.WHITE, 0.7f)
         }
 
+        // Z-Layer: 6
         // Highlight attackable tiles
         if (unit.isMilitary()) {
 
@@ -711,6 +839,7 @@ class WorldMapHolder(
             }
         }
 
+        // Z-Layer: 7
         // Highlight best tiles for city founding
         if (unit.hasUnique(UniqueType.FoundCity)
                 && UncivGame.Current.settings.showSettlersSuggestedCityLocations) {

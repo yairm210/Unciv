@@ -5,6 +5,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Button
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.utils.Align
+import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
@@ -90,7 +91,7 @@ class EspionageOverviewScreen(val civInfo: Civilization) : PickerScreen(true) {
                 resetSelection()
                 selectedSpyButton = moveSpyButton
                 selectedSpy = spy
-                selectedSpyButton!!.label.setText("Cancel".tr())
+                selectedSpyButton!!.label.setText(Constants.cancel.tr())
                 for ((button, city) in moveSpyHereButtons) {
                     // For now, only allow spies to be sent to cities of other major civs and their hideout
                     // Not own cities as counterintelligence isn't implemented

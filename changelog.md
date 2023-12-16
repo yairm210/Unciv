@@ -1,3 +1,62 @@
+## 4.9.9
+
+Finally deprecated old religion uniques
+
+By SeventhM:
+- Avoid crash in mod checker for mods with undefined tech requirements
+- Fix stats from tileFilter unique not working on improvements
+- Add damage dealing unit trigger
+- Fix not getting unique unit from tile based free unit trigger (For real this time)
+
+By soggerr:
+- Show average damage in battle calculations
+- Allow battle calculations when not your turn
+
+## 4.9.8
+
+Add new map types  - By remdu
+
+Avoid ANRs when users select mods that take above 500ms to run checks on
+
+Add warning when buying a religious unit not of your religion  - By WhoIsJohannes
+
+Allow arbitrary victory types for AI policy picking  - By SeventhM
+
+By SomeTroglodyte:
+- Civilopedia key bindings
+- Great Person Points - Rounding changes, Breakdown UI
+- Fix ended Leader Voice not cleared and resumed on un-pause
+
+Fix 'Sleep Until Healed' action missing  - By soggerr
+
+## 4.9.7
+
+Allow city conditionals on units to upgrade to
+
+Captured military units trigger a notification for the target civ
+
+Fixed city-state type coloring
+
+"Can instantly construct a [improvementFilter] improvement" works with improvementFilter
+
+Allow conditionals for trigger-type unit actions  - By SeventhM
+
+Fix connect road button when auto unit cycle turned on - By willjallen
+
+Add resource support to stat gamespeed conditional - By PLynx01
+
+Better Frigate and Ship of the Line sound - By tuvus
+
+## 4.9.6
+
+Connect roads automation  - By willjallen
+
+Fix not getting unique unit from tile based free unit trigger  - By SeventhM
+
+By Ouaz:
+- Fix Carthage civilopedia article
+- Add "UI tips" civilopedia article
+
 ## 4.9.5
 
 Start turn with unit selected

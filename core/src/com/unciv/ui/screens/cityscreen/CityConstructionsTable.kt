@@ -12,6 +12,7 @@ import com.unciv.GUI
 import com.unciv.logic.city.City
 import com.unciv.logic.city.CityConstructions
 import com.unciv.logic.map.tile.Tile
+import com.unciv.models.Religion
 import com.unciv.models.UncivSound
 import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.IConstruction
@@ -25,8 +26,6 @@ import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stat
 import com.unciv.models.translations.tr
 import com.unciv.ui.audio.SoundPlayer
-import com.unciv.ui.components.widgets.ColorMarkupLabel
-import com.unciv.ui.components.widgets.ExpanderTab
 import com.unciv.ui.components.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.components.extensions.addBorder
 import com.unciv.ui.components.extensions.addCell
@@ -45,9 +44,10 @@ import com.unciv.ui.components.input.keyShortcuts
 import com.unciv.ui.components.input.onActivation
 import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.input.onRightClick
+import com.unciv.ui.components.widgets.ColorMarkupLabel
+import com.unciv.ui.components.widgets.ExpanderTab
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popups.CityScreenConstructionMenu
-import com.unciv.ui.popups.ConfirmPopup
 import com.unciv.ui.popups.Popup
 import com.unciv.ui.popups.closeAllPopups
 import com.unciv.ui.screens.basescreen.BaseScreen
@@ -667,16 +667,44 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
         if (!isConstructionPurchaseAllowed(construction, stat, constructionStatBuyCost)) return
 
         cityScreen.closeAllPopups()
+        ConfirmBuyPopup(construction, stat,constructionStatBuyCost, tile)
+    }
 
-        val purchasePrompt = "Currently you have [${city.getStatReserve(stat)}] [${stat.name}].".tr() + "\n\n" +
-                "Would you like to purchase [${construction.name}] for [$constructionStatBuyCost] [${stat.character}]?".tr()
-        ConfirmPopup(
-            cityScreen,
-            purchasePrompt,
-            "Purchase",
-            true,
-            restoreDefault = { cityScreen.update() }
-        ) { purchaseConstruction(construction, stat, tile) }.open()
+    private inner class ConfirmBuyPopup(
+        construction: INonPerpetualConstruction,
+        stat: Stat,
+        constructionStatBuyCost: Int,
+        tile: Tile?
+    ) : Popup(cityScreen.stage) {
+        init {
+            val city = cityScreen.city
+            val balance = city.getStatReserve(stat)
+            val majorityReligion = city.religion.getMajorityReligion()
+            val yourReligion = city.civ.religionManager.religion
+            val isBuyingWithFaithForForeignReligion = construction.hasUnique(UniqueType.ReligiousUnit) && majorityReligion != yourReligion
+
+            addGoodSizedLabel("Currently you have [$balance] [${stat.name}].").padBottom(10f).row()
+            if (isBuyingWithFaithForForeignReligion) {
+                // Earlier tests should forbid this Popup unless both religions are non-null, but to be safe:
+                fun Religion?.getName() = this?.getReligionDisplayName() ?: Constants.unknownCityName
+                addGoodSizedLabel("You are buying a religious unit in a city that doesn't follow the religion you founded ([${yourReligion.getName()}]). " +
+                    "This means that the unit is tied to that foreign religion ([${majorityReligion.getName()}]) and will be less useful.").row()
+                addGoodSizedLabel("Are you really sure you want to purchase this unit?", Constants.headingFontSize).run {
+                    actor.color = Color.FIREBRICK
+                    padBottom(10f)
+                    row()
+                }
+            }
+            addGoodSizedLabel("Would you like to purchase [${construction.name}] for [$constructionStatBuyCost] [${stat.character}]?").row()
+
+            addCloseButton(Constants.cancel, KeyboardBinding.Cancel) { cityScreen.update() }
+            val confirmStyle = BaseScreen.skin.get("positive", TextButton.TextButtonStyle::class.java)
+            addOKButton("Purchase", KeyboardBinding.Confirm, confirmStyle) {
+                purchaseConstruction(construction, stat, tile)
+            }
+            equalizeLastTwoButtonWidths()
+            open(true)
+        }
     }
 
     /** This tests whether the buy button should be _shown_ */

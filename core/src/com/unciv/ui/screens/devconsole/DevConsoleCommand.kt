@@ -103,6 +103,17 @@ class ConsoleUnitCommands : ConsoleCommandNode {
             unit.updateUniques()
             unit.updateVisibleTiles()
             return@ConsoleAction DevConsoleResponse.OK
+        },
+
+        "setmovement" to ConsoleAction { console, params ->
+            if (params.size != 1)
+                return@ConsoleAction DevConsoleResponse.hint("Format: unit setmovement <amount>")
+            val movement = params[0].toFloatOrNull()
+            if (movement == null || movement < 0) return@ConsoleAction DevConsoleResponse.error("Invalid number")
+            val unit = console.getSelectedUnit()
+                ?: return@ConsoleAction DevConsoleResponse.error("Select tile with unit")
+            unit.currentMovement = movement
+            return@ConsoleAction DevConsoleResponse.OK
         }
     )
 }
@@ -166,7 +177,22 @@ class ConsoleCityCommands : ConsoleCommandNode {
             val city = selectedTile.getCity() ?: return@ConsoleAction DevConsoleResponse.error("No city for selected tile")
             city.expansion.relinquishOwnership(selectedTile)
             return@ConsoleAction DevConsoleResponse.OK
-        })
+        },
+
+        "religion" to ConsoleAction { console, params ->
+            if (params.size != 2)
+                return@ConsoleAction DevConsoleResponse.hint("Format: city religion <name> <±pressure>")
+            val city = console.screen.bottomUnitTable.selectedCity
+                ?: return@ConsoleAction DevConsoleResponse.hint("Select a city first")
+            val religion = city.civ.gameInfo.religions.keys.firstOrNull { it.toCliInput() == params[0] }
+                ?: return@ConsoleAction DevConsoleResponse.error("'${params[0]}' is not a known religion")
+            val pressure = params[1].toIntOrNull()
+                ?: return@ConsoleAction DevConsoleResponse.error("'${params[1]}' is not an integer")
+            city.religion.addPressure(religion, pressure.coerceAtLeast(-city.religion.getPressures()[religion]))
+            city.religion.updatePressureOnPopulationChange(0)
+            return@ConsoleAction DevConsoleResponse.OK
+        },
+    )
 }
 
 class ConsoleTileCommands: ConsoleCommandNode {

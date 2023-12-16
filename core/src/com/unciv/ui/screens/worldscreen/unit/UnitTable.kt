@@ -6,7 +6,6 @@ import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.Table
-import com.unciv.Constants
 import com.unciv.logic.battle.CityCombatant
 import com.unciv.logic.city.City
 import com.unciv.logic.map.mapunit.MapUnit
@@ -46,6 +45,9 @@ class UnitTable(val worldScreen: WorldScreen) : Table() {
     // Whether the (first) selected unit is in unit-swapping mode
     var selectedUnitIsSwapping = false
 
+    // Whether the (first) selected unit is in road-connecting mode
+    var selectedUnitIsConnectingRoad = false
+
     /** Sending no unit clears the selected units entirely */
     fun selectUnit(unit: MapUnit?=null, append:Boolean=false) {
         if (!append) selectedUnits.clear()
@@ -55,6 +57,7 @@ class UnitTable(val worldScreen: WorldScreen) : Table() {
             unit.actionsOnDeselect()
         }
         selectedUnitIsSwapping = false
+        selectedUnitIsConnectingRoad = false
     }
 
     var selectedCity : City? = null
@@ -193,16 +196,6 @@ class UnitTable(val worldScreen: WorldScreen) : Table() {
                     unitDescriptionTable.add(unit.promotions.XP.toString() + "/" + unit.promotions.xpForNextPromotion())
                 }
 
-                if (unit.canDoLimitedAction(Constants.spreadReligion)) {
-                    unitDescriptionTable.add(ImageGetter.getStatIcon("Faith")).size(20f)
-                    unitDescriptionTable.add(unit.getActionString(Constants.spreadReligion))
-                }
-
-                if (unit.canDoLimitedAction(Constants.removeHeresy)) {
-                    unitDescriptionTable.add(ImageGetter.getImage("OtherIcons/Remove Heresy")).size(20f)
-                    unitDescriptionTable.add(unit.getActionString(Constants.removeHeresy))
-                }
-
                 if (unit.baseUnit.religiousStrength > 0) {
                     unitDescriptionTable.add(ImageGetter.getStatIcon("ReligiousStrength")).size(20f)
                     unitDescriptionTable.add((unit.baseUnit.religiousStrength - unit.religiousStrengthLost).toString())
@@ -292,7 +285,13 @@ class UnitTable(val worldScreen: WorldScreen) : Table() {
     }
 
     fun citySelected(city: City) : Boolean {
-        selectUnit()
+        // If the last selected unit connecting a road, keep it selected. Otherwise, clear.
+        if(selectedUnitIsConnectingRoad){
+            selectUnit(selectedUnits[0])
+            selectedUnitIsConnectingRoad = true // selectUnit resets this
+        }else{
+            selectUnit()
+        }
         if (city == selectedCity) return false
         selectedCity = city
         selectedUnitHasChanged = true

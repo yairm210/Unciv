@@ -1,15 +1,16 @@
 package com.unciv.ui.screens.newgamescreen
 
+import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.ruleset.unique.UniqueType
-import com.unciv.ui.components.widgets.ExpanderTab
 import com.unciv.ui.components.extensions.pad
 import com.unciv.ui.components.extensions.toCheckBox
 import com.unciv.ui.components.input.onChange
+import com.unciv.ui.components.widgets.ExpanderTab
 import com.unciv.ui.popups.ToastPopup
 import com.unciv.ui.screens.basescreen.BaseScreen
 
@@ -106,11 +107,20 @@ class ModCheckboxTable(
     }
 
     private fun runComplexModCheck(): Boolean {
+        // Disable user input to avoid ANRs
+        val currentInputProcessor = Gdx.input.inputProcessor
+        Gdx.input.inputProcessor = null
+
         // Check over complete combination of selected mods
         val complexModLinkCheck = RulesetCache.checkCombinedModLinks(mods, baseRulesetName)
-        if (!complexModLinkCheck.isWarnUser()) return false
+        if (!complexModLinkCheck.isWarnUser()){
+            Gdx.input.inputProcessor = currentInputProcessor
+            return false
+        }
         savedModcheckResult = complexModLinkCheck.getErrorText()
         complexModLinkCheck.showWarnOrErrorToast(screen)
+
+        Gdx.input.inputProcessor = currentInputProcessor
         return complexModLinkCheck.isError()
     }
 

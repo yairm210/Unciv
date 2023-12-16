@@ -7,7 +7,6 @@ import com.unciv.logic.MultiFilter
 import com.unciv.logic.automation.unit.UnitAutomation
 import com.unciv.logic.battle.BattleUnitCapture
 import com.unciv.logic.battle.MapUnitCombatant
-import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
@@ -20,8 +19,8 @@ import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueMap
-import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unique.UniqueTriggerActivation
+import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.ruleset.unit.UnitType
 import com.unciv.models.stats.Stats
@@ -103,8 +102,13 @@ class MapUnit : IsPartOfGameInfoSerialization {
     var currentMovement: Float = 0f
     var health: Int = 100
 
-    var action: String? = null // work, automation, fortifying, I dunno what.
+    // work, automation, fortifying, ...
+    // Connect roads implies automated is true. It is specified by the action type.
+    var action: String? = null
     var automated: Boolean = false
+
+    var automatedRoadConnectionDestination: Vector2? = null
+    var automatedRoadConnectionPath: List<Vector2>? = null
 
     @Transient
     var showAdditionalActions: Boolean = false
@@ -116,10 +120,6 @@ class MapUnit : IsPartOfGameInfoSerialization {
     var isTransported: Boolean = false
     var turnsFortified = 0
 
-    @Deprecated("As of 4.8.9")
-    var abilityUsesLeft: HashMap<String, Int> = hashMapOf()
-    @Deprecated("As of 4.8.9")
-    var maxAbilityUses: HashMap<String, Int> = hashMapOf()
 
     // New - track only *how many have been used*, derive max from uniques, left = max - used
     var abilityToTimesUsed: HashMap<String, Int> = hashMapOf()
@@ -180,12 +180,12 @@ class MapUnit : IsPartOfGameInfoSerialization {
         toReturn.health = health
         toReturn.action = action
         toReturn.automated = automated
+        toReturn.automatedRoadConnectionDestination = automatedRoadConnectionDestination
+        toReturn.automatedRoadConnectionPath = automatedRoadConnectionPath
         toReturn.attacksThisTurn = attacksThisTurn
         toReturn.turnsFortified = turnsFortified
         toReturn.promotions = promotions.clone()
         toReturn.isTransported = isTransported
-        toReturn.abilityUsesLeft.putAll(abilityUsesLeft)
-        toReturn.maxAbilityUses.putAll(maxAbilityUses)
         toReturn.abilityToTimesUsed.putAll(abilityToTimesUsed)
         toReturn.religion = religion
         toReturn.religiousStrengthLost = religiousStrengthLost
@@ -381,6 +381,8 @@ class MapUnit : IsPartOfGameInfoSerialization {
     fun isMoving() = action?.startsWith("moveTo") == true
 
     fun isAutomated() = automated
+
+    fun isAutomatingRoadConnection() = action == UnitActionType.ConnectRoad.value
     fun isExploring() = action == UnitActionType.Explore.value
     fun isPreparingParadrop() = action == UnitActionType.Paradrop.value
     fun isPreparingAirSweep() = action == UnitActionType.AirSweep.value
@@ -908,44 +910,6 @@ class MapUnit : IsPartOfGameInfoSerialization {
     fun getReligionDisplayName(): String? {
         if (religion == null) return null
         return civ.gameInfo.religions[religion]!!.getReligionDisplayName()
-    }
-
-    fun limitedActionsUnitCanDo(): Sequence<String> {
-        return getMatchingUniques(UniqueType.CanActionSeveralTimes)
-            .map { it.params[0] }
-    }
-
-    fun canDoLimitedAction(action: String): Boolean {
-        return getMatchingUniques(UniqueType.CanActionSeveralTimes).any { it.params[0] == action }
-    }
-
-    /** For the actual value, check the member variable [maxAbilityUses]
-     */
-    fun getBaseMaxActionUses(action: String): Int {
-        return getMatchingUniques(UniqueType.CanActionSeveralTimes)
-            .filter { it.params[0] == action }
-            .sumOf { it.params[1].toInt() }
-    }
-
-    fun setupAbilityUses(buildCity: City? = null) {
-        for (action in limitedActionsUnitCanDo()) {
-            val baseAmount = getBaseMaxActionUses(action)
-            val additional =
-                if (buildCity == null) 0
-                else buildCity.getMatchingUniques(UniqueType.UnitStartingActions)
-                    .filter { matchesFilter(it.params[0]) && buildCity.matchesFilter(it.params[1]) && it.params[2] == action }
-                    .sumOf { it.params[3].toInt() }
-
-            maxAbilityUses[action] = baseAmount + additional
-            abilityUsesLeft[action] = baseAmount + additional
-        }
-    }
-
-
-    fun getActionString(action: String): String {
-        val maxActionUses = maxAbilityUses[action]
-        if (abilityUsesLeft[action] == null) return "0/0" // Something went wrong
-        return "${abilityUsesLeft[action]!!}/${maxActionUses}"
     }
 
     fun actionsOnDeselect() {

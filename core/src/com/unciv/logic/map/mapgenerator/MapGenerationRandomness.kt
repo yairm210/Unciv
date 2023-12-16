@@ -39,7 +39,6 @@ class MapGenerationRandomness {
         return Perlin.noise3d(worldCoords.x.toDouble(), worldCoords.y.toDouble(), seed, nOctaves, persistence, lacunarity, scale)
     }
 
-
     fun chooseSpreadOutLocations(number: Int, suitableTiles: List<Tile>, mapRadius: Int): ArrayList<Tile> {
         if (number <= 0) return ArrayList(0)
 

@@ -159,8 +159,13 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
     Uniques that have immediate, one-time effects on a unit.They can be added to units (on unit, unit type, or promotion) to grant them the ability to trigger this effect as an action, which can be modified with UnitActionModifier and UnitTriggerCondition conditionals.
 
-??? example  "Heal this unit by [amount] HP"
+??? example  "Heal this unit by [positiveAmount] HP"
 	Example: "Heal this unit by [3] HP"
+
+	Applicable to: UnitTriggerable
+
+??? example  "This Unit takes [positiveAmount] damage"
+	Example: "This Unit takes [3] damage"
 
 	Applicable to: UnitTriggerable
 
@@ -1158,12 +1163,12 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
     Uniques that can be added to units, unit types, or promotions
 
+??? example  "May create improvements on water resources"
+	Applicable to: Unit
+
 ??? example  "Can build [improvementFilter/terrainFilter] improvements on tiles"
 	Example: "Can build [All Road] improvements on tiles"
 
-	Applicable to: Unit
-
-??? example  "May create improvements on water resources"
 	Applicable to: Unit
 
 ??? example  "Can be added to [comment] in the Capital"
@@ -1926,12 +1931,12 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Conditional
 
-??? example  "&lt;when above [amount] [stat] (modified by game speed)&gt;"
+??? example  "&lt;when above [amount] [stat/resource] (modified by game speed)&gt;"
 	Example: "&lt;when above [3] [Culture] (modified by game speed)&gt;"
 
 	Applicable to: Conditional
 
-??? example  "&lt;when below [amount] [stat] (modified by game speed)&gt;"
+??? example  "&lt;when below [amount] [stat/resource] (modified by game speed)&gt;"
 	Example: "&lt;when below [3] [Culture] (modified by game speed)&gt;"
 
 	Applicable to: Conditional

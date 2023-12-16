@@ -94,7 +94,7 @@ class CityStateFunctions(val civInfo: Civilization) {
                 ?: return null
             if (!receivingCiv.tech.isResearched(uniqueUnit))
                 return null
-            if (uniqueUnit.obsoleteTech != null && receivingCiv.tech.isResearched(uniqueUnit.obsoleteTech!!))
+            if (receivingCiv.tech.isObsolete(uniqueUnit))
                 return null
             return uniqueUnit
         }

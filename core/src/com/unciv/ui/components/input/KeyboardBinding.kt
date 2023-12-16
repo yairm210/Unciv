@@ -88,6 +88,7 @@ enum class KeyboardBinding(
     // here as it will not be guaranteed to already be fully initialized.
     SwapUnits(Category.UnitActions,"Swap units", 'y'),
     Automate(Category.UnitActions, 'm'),
+    ConnectRoad(Category.UnitActions, "Connect road", 'c'),
     StopAutomation(Category.UnitActions,"Stop automation", 'm'),
     StopMovement(Category.UnitActions,"Stop movement", '.'),
     ShowUnitDestination(Category.UnitActions, "Show unit destination", 'j'),
@@ -164,10 +165,29 @@ enum class KeyboardBinding(
     AddConstructionAllTop(Category.CityScreenConstructionMenu, "Add or move to the top in all cities", KeyCharAndCode.ctrl('t')),
     RemoveConstructionAll(Category.CityScreenConstructionMenu, "Remove from the queue in all cities", KeyCharAndCode.ctrl('r')),
 
+    // Civilopedia
+    PediaBuildings(Category.Civilopedia, "Buildings", 'b'),
+    PediaWonders(Category.Civilopedia, "Wonders", 'w'),
+    PediaResources(Category.Civilopedia, "Resources", 'r'),
+    PediaTerrains(Category.Civilopedia, "Terrains", 't'),
+    PediaImprovements(Category.Civilopedia, "Tile Improvements", 'i'),
+    PediaUnits(Category.Civilopedia, "Units", 'u'),
+    PediaUnitTypes(Category.Civilopedia, "Unit types", 'y'),
+    PediaNations(Category.Civilopedia, "Nations", 'n'),
+    PediaTechnologies(Category.Civilopedia, "Technologies", KeyCharAndCode.ctrl('t')),
+    PediaPromotions(Category.Civilopedia, "Promotions", 'p'),
+    PediaPolicies(Category.Civilopedia, "Policies", 'o'),
+    PediaBeliefs(Category.Civilopedia, "Religions and Beliefs", 'f'),
+    PediaTutorials(Category.Civilopedia, "Tutorials", Input.Keys.F1),
+    PediaDifficulties(Category.Civilopedia, "Difficulty levels", 'd'),
+    PediaEras(Category.Civilopedia, "Eras", 'e'),
+    PediaSpeeds(Category.Civilopedia, "Speeds", 's'),
+    PediaSearch(Category.Civilopedia, "Open the Search Dialog", KeyCharAndCode.ctrl('f')),
+
     // Popups
     Confirm(Category.Popups, "Confirm Dialog", 'y'),
     Cancel(Category.Popups, "Cancel Dialog", 'n'),
-    UpgradeAll(Category.Popups, KeyCharAndCode.ctrl('a')),
+    UpgradeAll(Category.Popups, KeyCharAndCode.ctrl('a')),  // rethink? No UnitUpgradeMenu category, but CityScreenConstructionMenu gets one?
     ;
     //endregion
 
@@ -187,6 +207,7 @@ enum class KeyboardBinding(
         },
         CityScreen,
         CityScreenConstructionMenu, // Maybe someday a category hierarchy?
+        Civilopedia,
         Popups
         ;
         val label = unCamelCase(name)

@@ -7,6 +7,7 @@ import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.map.mapunit.MapUnit
+import com.unciv.logic.map.tile.RoadStatus
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.Counter
 import com.unciv.models.UncivSound
@@ -24,28 +25,6 @@ import com.unciv.ui.popups.ConfirmPopup
 import com.unciv.ui.screens.pickerscreens.ImprovementPickerScreen
 
 object UnitActionsFromUniques {
-
-    fun addCreateWaterImprovements(unit: MapUnit, actionList: ArrayList<UnitAction>) {
-        val waterImprovementAction = getWaterImprovementAction(unit)
-        if (waterImprovementAction != null) actionList += waterImprovementAction
-    }
-
-    fun getWaterImprovementAction(unit: MapUnit): UnitAction? {
-        val tile = unit.currentTile
-        if (!tile.isWater || !unit.hasUnique(UniqueType.CreateWaterImprovements) || tile.resource == null) return null
-
-        val improvementName = tile.tileResource.getImprovingImprovement(tile, unit.civ) ?: return null
-        val improvement = tile.ruleset.tileImprovements[improvementName] ?: return null
-        if (!tile.improvementFunctions.canBuildImprovement(improvement, unit.civ)) return null
-
-        return UnitAction(UnitActionType.Create, "Create [$improvementName]",
-            action = {
-                tile.changeImprovement(improvementName, unit.civ, unit)
-                unit.destroy()  // Modders may wish for a nondestructive way, but that should be another Unique
-            }.takeIf { unit.currentMovement > 0 })
-    }
-
-
 
     fun getFoundCityActions(unit: MapUnit, tile: Tile): List<UnitAction> {
         val getFoundCityAction = getFoundCityAction(unit, tile) ?: return emptyList()
@@ -87,24 +66,26 @@ object UnitActionsFromUniques {
         if (unit.civ.playerType == PlayerType.AI)
             return UnitAction(UnitActionType.FoundCity, action = foundAction)
 
-        return UnitAction(
-            type = UnitActionType.FoundCity,
-            title =
+        val title =
             if (hasActionModifiers) UnitActionModifiers.actionTextWithSideEffects(
                 UnitActionType.FoundCity.value,
                 unique,
                 unit
             )
-            else UnitActionType.FoundCity.value,
+            else UnitActionType.FoundCity.value
+
+        return UnitAction(
+            type = UnitActionType.FoundCity,
+            title = title,
             uncivSound = UncivSound.Chimes,
             action = {
                 // check if we would be breaking a promise
-                val leaders = testPromiseNotToSettle(unit.civ, tile)
-                if (leaders == null)
+                val leadersPromisedNotToSettleNear = getLeadersWePromisedNotToSettleNear(unit.civ, tile)
+                if (leadersPromisedNotToSettleNear == null)
                     foundAction()
                 else {
                     // ask if we would be breaking a promise
-                    val text = "Do you want to break your promise to [$leaders]?"
+                    val text = "Do you want to break your promise to [$leadersPromisedNotToSettleNear]?"
                     ConfirmPopup(
                         GUI.getWorldScreen(),
                         text,
@@ -122,18 +103,18 @@ object UnitActionsFromUniques {
      * @param tile The tile where the new city would go
      * @return null if no promises broken, else a String listing the leader(s) we would p* off.
      */
-    private fun testPromiseNotToSettle(civInfo: Civilization, tile: Tile): String? {
-        val brokenPromises = HashSet<String>()
+    private fun getLeadersWePromisedNotToSettleNear(civInfo: Civilization, tile: Tile): String? {
+        val leadersWePromisedNotToSettleNear = HashSet<String>()
         for (otherCiv in civInfo.getKnownCivs().filter { it.isMajorCiv() && !civInfo.isAtWarWith(it) }) {
             val diplomacyManager = otherCiv.getDiplomacyManager(civInfo)
             if (diplomacyManager.hasFlag(DiplomacyFlags.AgreedToNotSettleNearUs)) {
                 val citiesWithin6Tiles = otherCiv.cities
                     .filter { it.getCenterTile().aerialDistanceTo(tile) <= 6 }
                     .filter { otherCiv.hasExplored(it.getCenterTile()) }
-                if (citiesWithin6Tiles.isNotEmpty()) brokenPromises += otherCiv.getLeaderDisplayName()
+                if (citiesWithin6Tiles.isNotEmpty()) leadersWePromisedNotToSettleNear += otherCiv.getLeaderDisplayName()
             }
         }
-        return if(brokenPromises.isEmpty()) null else brokenPromises.joinToString(", ")
+        return if(leadersWePromisedNotToSettleNear.isEmpty()) null else leadersWePromisedNotToSettleNear.joinToString(", ")
     }
 
     fun getSetupActions(unit: MapUnit, tile: Tile): List<UnitAction> {
@@ -180,13 +161,14 @@ object UnitActionsFromUniques {
             }
         ))
     }
-    fun addTriggerUniqueActions(unit: MapUnit, actionList: ArrayList<UnitAction>) {
+    fun getTriggerUniqueActions(unit: MapUnit, tile: Tile) = sequence {
         for (unique in unit.getUniques()) {
             // not a unit action
             if (unique.conditionals.none { it.type?.targetTypes?.contains(UniqueTarget.UnitActionModifier) == true }) continue
             // extends an existing unit action
             if (unique.conditionals.any { it.type == UniqueType.UnitActionExtraLimitedTimes }) continue
             if (!unique.isTriggerable) continue
+            if (!unique.conditionalsApply(StateForConditionals(civInfo = unit.civ, unit = unit, tile = unit.currentTile))) continue
             if (!UnitActionModifiers.canUse(unit, unique)) continue
 
             val baseTitle = if (unique.isOfType(UniqueType.OneTimeEnterGoldenAgeTurns))
@@ -196,16 +178,16 @@ object UnitActionsFromUniques {
             else unique.text.removeConditionals()
             val title = UnitActionModifiers.actionTextWithSideEffects(baseTitle, unique, unit)
 
-            val unitAction = UnitAction(type = UnitActionType.TriggerUnique, title) {
+            yield(UnitAction(UnitActionType.TriggerUnique, title) {
                 UniqueTriggerActivation.triggerUnitwideUnique(unique, unit)
                 UnitActionModifiers.activateSideEffects(unit, unique)
-            }
-            actionList += unitAction
+            })
         }
-    }
+    }.asIterable()
 
-    fun getAddInCapitalAction(unit: MapUnit, tile: Tile): UnitAction {
-        return UnitAction(UnitActionType.AddInCapital,
+    fun getAddInCapitalActions(unit: MapUnit, tile: Tile): List<UnitAction> {
+        if (!unit.hasUnique(UniqueType.AddInCapital)) return listOf()
+        return listOf(UnitAction(UnitActionType.AddInCapital,
             title = "Add to [${
                 unit.getMatchingUniques(UniqueType.AddInCapital).first().params[0]
             }]",
@@ -216,64 +198,91 @@ object UnitActionsFromUniques {
                 tile.isCityCenter() && tile.getCity()!!
                     .isCapital() && tile.getCity()!!.civ == unit.civ
             }
-        )
+        ))
     }
 
-    fun addAddInCapitalAction(unit: MapUnit, actionList: ArrayList<UnitAction>, tile: Tile) {
-        if (!unit.hasUnique(UniqueType.AddInCapital)) return
-        actionList += getAddInCapitalAction(unit, tile)
+    fun getImprovementCreationActions(unit: MapUnit, tile: Tile) = sequence {
+        val waterImprovementAction = getWaterImprovementAction(unit, tile)
+        if (waterImprovementAction != null) yield(waterImprovementAction)
+        yieldAll(getImprovementConstructionActionsFromGeneralUnique(unit, tile))
+    }.asIterable()
+
+    fun getWaterImprovementAction(unit: MapUnit, tile: Tile): UnitAction? {
+        if (!tile.isWater || !unit.hasUnique(UniqueType.CreateWaterImprovements) || tile.resource == null) return null
+
+        val improvementName = tile.tileResource.getImprovingImprovement(tile, unit.civ) ?: return null
+        val improvement = tile.ruleset.tileImprovements[improvementName] ?: return null
+        if (!tile.improvementFunctions.canBuildImprovement(improvement, unit.civ)) return null
+
+        return UnitAction(UnitActionType.CreateImprovement, "Create [$improvementName]",
+            action = {
+                tile.changeImprovement(improvementName, unit.civ, unit)
+                unit.destroy()  // Modders may wish for a nondestructive way, but that should be another Unique
+            }.takeIf { unit.currentMovement > 0 })
     }
 
-    fun getImprovementConstructionActions(unit: MapUnit, tile: Tile): ArrayList<UnitAction> {
+    fun getImprovementConstructionActionsFromGeneralUnique(unit: MapUnit, tile: Tile): ArrayList<UnitAction> {
         val finalActions = ArrayList<UnitAction>()
         val uniquesToCheck = UnitActionModifiers.getUsableUnitActionUniques(unit, UniqueType.ConstructImprovementInstantly)
 
         val civResources = unit.civ.getCivResourcesByName()
 
         for (unique in uniquesToCheck) {
-            // Skip actions with a "[amount] extra times" conditional - these are treated in addTriggerUniqueActions instead
-            val improvementName = unique.params[0]
-            val improvement = tile.ruleset.tileImprovements[improvementName]
-                ?: continue
+            val improvementFilter = unique.params[0]
+            val improvements = tile.ruleset.tileImprovements.values.filter { it.matchesFilter(improvementFilter) }
 
-            // Try to skip Improvements we can never build
-            // (getImprovementBuildingProblems catches those so the button is always disabled, but it nevertheless looks nicer)
-            if (tile.improvementFunctions.getImprovementBuildingProblems(improvement, unit.civ).any { it.permanent })
-                continue
+            for (improvement in improvements) {
+                // Try to skip Improvements we can never build
+                // (getImprovementBuildingProblems catches those so the button is always disabled, but it nevertheless looks nicer)
+                if (tile.improvementFunctions.getImprovementBuildingProblems(improvement, unit.civ).any { it.permanent })
+                    continue
 
-            val resourcesAvailable = improvement.uniqueObjects.none {
-                    improvementUnique ->
-                improvementUnique.isOfType(UniqueType.ConsumesResources) &&
-                    (civResources[improvementUnique.params[1]] ?: 0) < improvementUnique.params[0].toInt()
-            }
+                val resourcesAvailable = improvement.uniqueObjects.none { improvementUnique ->
+                    improvementUnique.isOfType(UniqueType.ConsumesResources) &&
+                        (civResources[improvementUnique.params[1]] ?: 0) < improvementUnique.params[0].toInt()
+                }
 
-            finalActions += UnitAction(UnitActionType.Create,
-                title = UnitActionModifiers.actionTextWithSideEffects(
-                    "Create [$improvementName]",
-                    unique,
-                    unit
-                ),
-                action = {
-                    val unitTile = unit.getTile()
-                    unitTile.changeImprovement(improvementName, unit.civ, unit)
+                finalActions += UnitAction(UnitActionType.CreateImprovement,
+                    title = UnitActionModifiers.actionTextWithSideEffects(
+                        "Create [${improvement.name}]",
+                        unique,
+                        unit
+                    ),
+                    action = {
+                        val unitTile = unit.getTile()
+                        unitTile.changeImprovement(improvement.name, unit.civ, unit)
 
-                    // without this the world screen won't show the improvement because it isn't the 'last seen improvement'
-                    unit.civ.cache.updateViewableTiles()
+                        unit.civ.cache.updateViewableTiles() // to update 'last seen improvement'
 
-                    UnitActionModifiers.activateSideEffects(unit, unique)
-                }.takeIf {
-                    resourcesAvailable
+                        UnitActionModifiers.activateSideEffects(unit, unique)
+                    }.takeIf {
+                        resourcesAvailable
                             && unit.currentMovement > 0f
                             && tile.improvementFunctions.canBuildImprovement(improvement, unit.civ)
                             // Next test is to prevent interfering with UniqueType.CreatesOneImprovement -
                             // not pretty, but users *can* remove the building from the city queue an thus clear this:
                             && !tile.isMarkedForCreatesOneImprovement()
                             && !tile.isImpassible() // Not 100% sure that this check is necessary...
-                })
+                    })
+            }
         }
         return finalActions
     }
 
+    fun getConnectRoadActions(unit: MapUnit, tile: Tile) = sequence {
+        if (!unit.hasUnique(UniqueType.BuildImprovements)) return@sequence
+        if (unit.civ.tech.getBestRoadAvailable() == RoadStatus.None) return@sequence
+        val worldScreen = GUI.getWorldScreen()
+        yield(UnitAction(UnitActionType.ConnectRoad,
+               isCurrentAction = unit.isAutomatingRoadConnection(),
+               action = {
+                   worldScreen.bottomUnitTable.selectedUnitIsConnectingRoad =
+                       !worldScreen.bottomUnitTable.selectedUnitIsConnectingRoad
+                   worldScreen.shouldUpdate = true
+               }
+           )
+        )
+    }.asIterable()
 
     fun getTransformActions(
         unit: MapUnit, tile: Tile
@@ -357,7 +366,7 @@ object UnitActionsFromUniques {
         }
 
         return listOf(UnitAction(UnitActionType.ConstructImprovement,
-            isCurrentAction = unit.currentTile.hasImprovementInProgress(),
+            isCurrentAction = tile.hasImprovementInProgress(),
             action = {
                 GUI.pushScreen(ImprovementPickerScreen(tile, unit) {
                     if (GUI.getSettings().autoUnitCycle)

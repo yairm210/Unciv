@@ -58,8 +58,6 @@ class BattleTable(val worldScreen: WorldScreen) : Table() {
     }
 
     fun update() {
-        if (!worldScreen.canChangeState) return hide()
-
         val attacker = tryGetAttacker() ?: return hide()
 
         if (attacker is MapUnitCombatant && attacker.unit.baseUnit.isNuclearWeapon()) {
@@ -204,9 +202,11 @@ class BattleTable(val worldScreen: WorldScreen) : Table() {
 
         val maxDamageToDefender = BattleDamage.calculateDamageToDefender(attacker, defender, tileToAttackFrom, 1f)
         val minDamageToDefender = BattleDamage.calculateDamageToDefender(attacker, defender, tileToAttackFrom, 0f)
+        val avgDamageToDefender = arrayOf(maxDamageToDefender, minDamageToDefender).average().roundToInt()
 
         val maxDamageToAttacker = BattleDamage.calculateDamageToAttacker(attacker, defender, tileToAttackFrom, 1f)
         val minDamageToAttacker = BattleDamage.calculateDamageToAttacker(attacker, defender, tileToAttackFrom, 0f)
+        val avgDamageToAttacker = arrayOf(maxDamageToAttacker, minDamageToAttacker).average().roundToInt()
 
         if (attacker.isMelee() &&
                 (defender.isCivilian() || defender is CityCombatant && defender.isDefeated())) {
@@ -230,46 +230,55 @@ class BattleTable(val worldScreen: WorldScreen) : Table() {
             add(getHealthBar(defender.getMaxHealth(), defender.getHealth(), maxRemainingLifeDefender, minRemainingLifeDefender)).row()
 
             if (minRemainingLifeAttacker == attackerHealth) add(attackerHealth.toLabel())
-            else if (maxRemainingLifeAttacker == minRemainingLifeAttacker) add("$attackerHealth → $maxRemainingLifeAttacker".toLabel())
-            else add("$attackerHealth → $minRemainingLifeAttacker-$maxRemainingLifeAttacker".toLabel())
+            else if (maxRemainingLifeAttacker == minRemainingLifeAttacker) add("$attackerHealth → $maxRemainingLifeAttacker ($avgDamageToAttacker)".toLabel())
+            else add("$attackerHealth → $minRemainingLifeAttacker-$maxRemainingLifeAttacker (~$avgDamageToAttacker)".toLabel())
 
 
-            if (minRemainingLifeDefender == maxRemainingLifeDefender) add("$defenderHealth → $maxRemainingLifeDefender".toLabel())
-            else add("$defenderHealth → $minRemainingLifeDefender-$maxRemainingLifeDefender".toLabel())
+            if (minRemainingLifeDefender == maxRemainingLifeDefender) add("$defenderHealth → $maxRemainingLifeDefender ($avgDamageToDefender)".toLabel())
+            else add("$defenderHealth → $minRemainingLifeDefender-$maxRemainingLifeDefender (~$avgDamageToDefender)".toLabel())
         }
 
         row().pad(5f)
-        val attackText: String = when (attacker) {
-            is CityCombatant -> "Bombard"
-            else -> "Attack"
-        }
-        val attackButton = attackText.toTextButton().apply { color= Color.RED }
 
-        var attackableTile: AttackableTile? = null
+        if (worldScreen.canChangeState) {
+            val attackText: String = when (attacker) {
+                is CityCombatant -> "Bombard"
+                else -> "Attack"
+            }
+            val attackButton = attackText.toTextButton().apply { color = Color.RED }
 
-        if (attacker.canAttack()) {
-            if (attacker is MapUnitCombatant) {
-                attackableTile = TargetHelper
-                        .getAttackableEnemies(attacker.unit, attacker.unit.movement.getDistanceToTiles())
-                        .firstOrNull{ it.tileToAttack == defender.getTile()}
-            } else if (attacker is CityCombatant) {
-                val canBombard = TargetHelper.getBombardableTiles(attacker.city).contains(defender.getTile())
-                if (canBombard) {
-                    attackableTile = AttackableTile(attacker.getTile(), defender.getTile(), 0f, defender)
+            var attackableTile: AttackableTile? = null
+
+            if (attacker.canAttack()) {
+                if (attacker is MapUnitCombatant) {
+                    attackableTile = TargetHelper
+                        .getAttackableEnemies(
+                            attacker.unit,
+                            attacker.unit.movement.getDistanceToTiles()
+                        )
+                        .firstOrNull { it.tileToAttack == defender.getTile() }
+                } else if (attacker is CityCombatant) {
+                    val canBombard =
+                        TargetHelper.getBombardableTiles(attacker.city).contains(defender.getTile())
+                    if (canBombard) {
+                        attackableTile =
+                            AttackableTile(attacker.getTile(), defender.getTile(), 0f, defender)
+                    }
                 }
             }
-        }
 
-        if (!worldScreen.isPlayersTurn || attackableTile == null) {
-            attackButton.disable()
-            attackButton.label.color = Color.GRAY
-        } else {
-            attackButton.onClick(UncivSound.Silent) {  // onAttackButtonClicked will do the sound
-                onAttackButtonClicked(attacker, defender, attackableTile)
+            if (!worldScreen.isPlayersTurn || attackableTile == null) {
+                attackButton.disable()
+                attackButton.label.color = Color.GRAY
+            } else {
+                attackButton.onClick(UncivSound.Silent) {  // onAttackButtonClicked will do the sound
+                    onAttackButtonClicked(attacker, defender, attackableTile)
+                }
             }
+
+            add(attackButton).colspan(2)
         }
 
-        add(attackButton).colspan(2)
 
         pack()
 

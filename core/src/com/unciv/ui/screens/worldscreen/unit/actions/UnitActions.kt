@@ -23,9 +23,10 @@ object UnitActions {
 
     /** Returns whether the action was invoked */
     fun invokeUnitAction(unit: MapUnit, unitActionType: UnitActionType): Boolean {
-        val unitAction = actionTypeToFunctions[unitActionType]?.invoke(unit, unit.getTile())?.firstOrNull()
-            ?: getNormalActions(unit).firstOrNull { it.type == unitActionType }
-            ?: getAdditionalActions(unit).firstOrNull { it.type == unitActionType }
+        val unitAction = if (unitActionType in actionTypeToFunctions) actionTypeToFunctions[unitActionType]!!.invoke(unit, unit.getTile())
+            .firstOrNull { it.action != null }
+            else getNormalActions(unit).firstOrNull { it.type == unitActionType && it.action != null }
+            ?: getAdditionalActions(unit).firstOrNull { it.type == unitActionType && it.action != null }
         val internalAction = unitAction?.action ?: return false
         internalAction.invoke()
         return true
@@ -39,14 +40,22 @@ object UnitActions {
         UnitActionType.SetUp to UnitActionsFromUniques::getSetupActions,
         UnitActionType.FoundCity to UnitActionsFromUniques::getFoundCityActions,
         UnitActionType.ConstructImprovement to UnitActionsFromUniques::getBuildingImprovementsActions,
+        UnitActionType.ConnectRoad to UnitActionsFromUniques::getConnectRoadActions,
         UnitActionType.Repair to UnitActionsFromUniques::getRepairActions,
         UnitActionType.HurryResearch to UnitActionsGreatPerson::getHurryResearchActions,
         UnitActionType.HurryWonder to UnitActionsGreatPerson::getHurryWonderActions,
         UnitActionType.HurryBuilding to UnitActionsGreatPerson::getHurryBuildingActions,
         UnitActionType.ConductTradeMission to UnitActionsGreatPerson::getConductTradeMissionActions,
         UnitActionType.FoundReligion to UnitActionsReligion::getFoundReligionActions,
-        UnitActionType.EnhanceReligion to UnitActionsReligion::getEnhanceReligionActions
+        UnitActionType.EnhanceReligion to UnitActionsReligion::getEnhanceReligionActions,
+        UnitActionType.CreateImprovement to UnitActionsFromUniques::getImprovementCreationActions,
+        UnitActionType.SpreadReligion to UnitActionsReligion::addSpreadReligionActions,
+        UnitActionType.RemoveHeresy to UnitActionsReligion::getRemoveHeresyActions,
+        UnitActionType.TriggerUnique to UnitActionsFromUniques::getTriggerUniqueActions,
+        UnitActionType.AddInCapital to UnitActionsFromUniques::getAddInCapitalActions
     )
+
+    fun shouldAutomationBePrimaryAction(unit:MapUnit) = unit.cache.hasUniqueToBuildImprovements || unit.hasUnique(UniqueType.AutomationPrimaryAction)
 
     private fun getNormalActions(unit: MapUnit): List<UnitAction> {
         val tile = unit.getTile()
@@ -55,20 +64,12 @@ object UnitActions {
         for (getActionsFunction in actionTypeToFunctions.values)
             actionList.addAll(getActionsFunction(unit, tile))
 
-        // Determined by unit uniques
-        UnitActionsFromUniques.addCreateWaterImprovements(unit, actionList)
-        actionList += UnitActionsFromUniques.getImprovementConstructionActions(unit, tile)
-        UnitActionsReligion.addSpreadReligionActions(unit, actionList)
-        UnitActionsReligion.addRemoveHeresyActions(unit, actionList)
-
-        UnitActionsFromUniques.addTriggerUniqueActions(unit, actionList)
-        UnitActionsFromUniques.addAddInCapitalAction(unit, actionList, tile)
-
         // General actions
-        addAutomateAction(unit, actionList, true)
-        if (unit.isMoving()) {
+
+        if (shouldAutomationBePrimaryAction(unit))
+            actionList += getAutomateActions(unit, unit.currentTile)
+        if (unit.isMoving())
             actionList += UnitAction(UnitActionType.StopMovement) { unit.action = null }
-        }
         if (unit.isExploring())
             actionList += UnitAction(UnitActionType.StopExploration) { unit.action = null }
         if (unit.isAutomated())
@@ -77,14 +78,16 @@ object UnitActions {
                 unit.automated = false
             }
 
-        addPromoteAction(unit, actionList)
-        UnitActionsUpgrade.addUnitUpgradeAction(unit, actionList)
-        UnitActionsPillage.addPillageAction(unit, actionList)
-        addSleepActions(actionList, unit, false)
+        actionList += getPromoteActions(unit, unit.currentTile)
+        actionList += UnitActionsUpgrade.getUnitUpgradeActions(unit, unit.currentTile)
+        actionList += UnitActionsPillage.getPillageActions(unit, unit.currentTile)
+
+        actionList += getSleepActions(unit, tile)
+        actionList += getSleepUntilHealedActions(unit, tile)
+
         addFortifyActions(actionList, unit, false)
 
-
-        if (unit.isMilitary()) addExplorationActions(unit, actionList)
+        if (unit.isMilitary()) actionList += getExplorationActions(unit, unit.currentTile)
 
         addWaitAction(unit, actionList)
 
@@ -102,15 +105,14 @@ object UnitActions {
                 GUI.getMap().setCenterPosition(unit.getMovementDestination().position, true)
             }
         }
-        addSleepActions(actionList, unit, true)
         addFortifyActions(actionList, unit, true)
-        addAutomateAction(unit, actionList, false)
+        if (!shouldAutomationBePrimaryAction(unit))
+            actionList += getAutomateActions(unit, unit.currentTile)
 
         addSwapAction(unit, actionList)
         addDisbandAction(actionList, unit)
         addGiftAction(unit, actionList, tile)
-        if (unit.isCivilian()) addExplorationActions(unit, actionList)
-
+        if (unit.isCivilian()) actionList += getExplorationActions(unit, unit.currentTile)
 
         addToggleActionsAction(unit, actionList)
 
@@ -160,22 +162,23 @@ object UnitActions {
     }
 
 
-    private fun addPromoteAction(unit: MapUnit, actionList: ArrayList<UnitAction>) {
-        if (unit.isCivilian() || !unit.promotions.canBePromoted()) return
+    private fun getPromoteActions(unit: MapUnit, tile: Tile): List<UnitAction> {
+        if (unit.isCivilian() || !unit.promotions.canBePromoted()) return listOf()
         // promotion does not consume movement points, but is not allowed if a unit has exhausted its movement or has attacked
-        actionList += UnitAction(UnitActionType.Promote,
+        return listOf(UnitAction(UnitActionType.Promote,
             action = {
                 UncivGame.Current.pushScreen(PromotionPickerScreen(unit))
-            }.takeIf { unit.currentMovement > 0 && unit.attacksThisTurn == 0 })
+            }.takeIf { unit.currentMovement > 0 && unit.attacksThisTurn == 0 }
+        ))
     }
 
-    private fun addExplorationActions(unit: MapUnit, actionList: ArrayList<UnitAction>) {
-        if (unit.baseUnit.movesLikeAirUnits()) return
-        if (unit.isExploring()) return
-        actionList += UnitAction(UnitActionType.Explore) {
+    private fun getExplorationActions(unit: MapUnit, tile: Tile): List<UnitAction> {
+        if (unit.baseUnit.movesLikeAirUnits()) return listOf()
+        if (unit.isExploring()) return listOf()
+        return listOf(UnitAction(UnitActionType.Explore) {
             unit.action = UnitActionType.Explore.value
             if (unit.currentMovement > 0) UnitAutomation.automatedExplore(unit)
-        }
+        })
     }
 
 
@@ -209,29 +212,28 @@ object UnitActions {
                 action = { unit.fortify() }.takeIf { !isFortified })
     }
 
-    private fun addSleepActions(
-        actionList: ArrayList<UnitAction>,
-        unit: MapUnit,
-        showingAdditionalActions: Boolean
-    ) {
-        if (unit.isFortified() || unit.canFortify() || unit.currentMovement == 0f) return
-        // If this unit is working on an improvement, it cannot sleep
-        if (unit.currentTile.hasImprovementInProgress()
-            && unit.canBuildImprovement(unit.currentTile.getTileImprovementInProgress()!!)
-        ) return
-        val isSleeping = unit.isSleeping()
-        val isDamaged = unit.health < 100
+    fun shouldHaveSleepAction(unit: MapUnit, tile: Tile): Boolean {
+        if (unit.isFortified() || unit.canFortify() || unit.currentMovement == 0f) return false
+        if (tile.hasImprovementInProgress()
+            && unit.canBuildImprovement(tile.getTileImprovementInProgress()!!)
+        ) return false
+        return true
+    }
+    private fun getSleepActions(unit: MapUnit, tile: Tile): List<UnitAction> {
+        if (!shouldHaveSleepAction(unit, tile)) return listOf()
+        if (unit.health < 100) return listOf()
+        return listOf(UnitAction(UnitActionType.Sleep,
+            action = { unit.action = UnitActionType.Sleep.value }.takeIf { !unit.isSleeping() }
+        ))
+    }
 
-        if (isDamaged && !showingAdditionalActions) {
-            actionList += UnitAction(UnitActionType.SleepUntilHealed,
-                action = { unit.action = UnitActionType.SleepUntilHealed.value }
-                    .takeIf { !unit.isSleepingUntilHealed() && unit.canHealInCurrentTile() }
-            )
-        } else if (isDamaged || !showingAdditionalActions) {
-            actionList += UnitAction(UnitActionType.Sleep,
-                action = { unit.action = UnitActionType.Sleep.value }.takeIf { !isSleeping }
-            )
-        }
+    private fun getSleepUntilHealedActions(unit: MapUnit, tile: Tile): List<UnitAction> {
+        if (!shouldHaveSleepAction(unit, tile)) return listOf()
+        if (unit.health == 100) return listOf()
+        return listOf(UnitAction(UnitActionType.SleepUntilHealed,
+            action = { unit.action = UnitActionType.SleepUntilHealed.value }
+                .takeIf { !unit.isSleepingUntilHealed() && unit.canHealInCurrentTile() }
+        ))
     }
 
     private fun addGiftAction(unit: MapUnit, actionList: ArrayList<UnitAction>, tile: Tile) {
@@ -291,19 +293,13 @@ object UnitActions {
         return UnitAction(UnitActionType.GiftUnit, action = giftAction)
     }
 
-    private fun addAutomateAction(
+    private fun getAutomateActions(
         unit: MapUnit,
-        actionList: ArrayList<UnitAction>,
-        showingAdditionalActions: Boolean
-    ) {
+        tile: Tile
+    ): List<UnitAction> {
 
-        // If either of these are true it goes in primary actions, else in additional actions
-        if ((unit.hasUnique(UniqueType.AutomationPrimaryAction) || unit.cache.hasUniqueToBuildImprovements) != showingAdditionalActions)
-            return
-
-        if (unit.isAutomated()) return
-
-        actionList += UnitAction(UnitActionType.Automate,
+        if (unit.isAutomated()) return listOf()
+        return listOf(UnitAction(UnitActionType.Automate,
             isCurrentAction = unit.isAutomated(),
             action = {
                 // Temporary, for compatibility - we want games serialized *moving through old versions* to come out the other end with units still automated
@@ -311,7 +307,7 @@ object UnitActions {
                 unit.automated = true
                 UnitAutomation.automateUnitMoves(unit)
             }.takeIf { unit.currentMovement > 0 }
-        )
+        ))
     }
 
     private fun addWaitAction(unit: MapUnit, actionList: ArrayList<UnitAction>) {
