@@ -198,16 +198,8 @@ class TechManager : IsPartOfGameInfoSerialization {
         return (scienceOfLast8Turns.sum() * civInfo.gameInfo.speed.scienceCostModifier).toInt()
     }
 
-    private fun addCurrentScienceToScienceOfLast8Turns() {
-        // The Science the Great Scientist generates does not include Science from Policies, Trade routes and City-States.
-        var allCitiesScience = 0f
-        for (city in civInfo.cities) {
-            val totalBaseScience = city.cityStats.baseStatTree.totalStats.science
-            val totalBonusPercents = city.cityStats.statPercentBonusTree.children.asSequence()
-                .filter { it.key != "Policies" }.map { it.value.totalStats.science }.sum()
-            allCitiesScience += totalBaseScience * totalBonusPercents.toPercent()
-        }
-        scienceOfLast8Turns[civInfo.gameInfo.turns % 8] = allCitiesScience.toInt()
+    private fun addCurrentScienceToScienceOfLast8Turns(science: Int) {
+        scienceOfLast8Turns[civInfo.gameInfo.turns % 8] = science
     }
 
     private fun limitOverflowScience(overflowScience: Int): Int {
@@ -228,7 +220,7 @@ class TechManager : IsPartOfGameInfoSerialization {
     }
 
     fun endTurn(scienceForNewTurn: Int) {
-        addCurrentScienceToScienceOfLast8Turns()
+        addCurrentScienceToScienceOfLast8Turns(scienceForNewTurn)
         if (currentTechnologyName() == null) return
 
         var finalScienceToAdd = scienceForNewTurn
