@@ -6,7 +6,7 @@ import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.managers.TurnManager
 import com.unciv.logic.map.tile.RoadStatus
 import com.unciv.logic.map.tile.Tile
-import com.unciv.models.ruleset.PerpetualConstruction
+import com.unciv.models.stats.Stat
 import com.unciv.testing.GdxTestRunner
 import com.unciv.testing.TestGame
 import org.junit.Assert.assertEquals
@@ -60,7 +60,6 @@ internal class WorkerAutomationTest {
         for (improvement in listOf(RoadStatus.Road.name, "Farm")) {
             civInfo.tech.techsResearched.add(testGame.ruleset.tileImprovements[improvement]!!.techRequired!!)
         }
-        civInfo.tech.techsResearched.add(testGame.ruleset.tileResources["Iron"]!!.revealedBy!!)
 
         val centerTile = testGame.tileMap[0,0] // owned by city
         val city = testGame.addCity(civInfo, centerTile)
@@ -84,6 +83,8 @@ internal class WorkerAutomationTest {
             // Prevent any sort of worker spawning
             civInfo.addGold(-civInfo.gold)
             civInfo.policies.freePolicies = 0
+            civInfo.addStat(Stat.Science, - 100000)
+            
             NextTurnAutomation.automateCivMoves(civInfo)
             TurnManager(civInfo).endTurn()
             // Invalidate WorkerAutomationCache
@@ -115,7 +116,6 @@ internal class WorkerAutomationTest {
         for (improvement in listOf("Farm")) {
             civInfo.tech.techsResearched.add(testGame.ruleset.tileImprovements[improvement]!!.techRequired!!)
         }
-        civInfo.tech.techsResearched.add(testGame.ruleset.tileResources["Iron"]!!.revealedBy!!)
 
         val city1 = testGame.addCity(civInfo, testGame.tileMap[-2,1])
         val city2 = testGame.addCity(civInfo, testGame.tileMap[2,-1])
@@ -144,6 +144,7 @@ internal class WorkerAutomationTest {
             // Prevent any sort of worker spawning
             civInfo.addGold(-civInfo.gold)
             civInfo.policies.freePolicies = 0
+            civInfo.addStat(Stat.Science, - 100000)
             
             NextTurnAutomation.automateCivMoves(civInfo)
             TurnManager(civInfo).endTurn()
