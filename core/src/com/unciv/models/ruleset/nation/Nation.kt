@@ -303,7 +303,3 @@ fun getContrastRatio(color1: Color, color2: Color): Double { // ratio can range 
         (innerColorLuminance + 0.05) / (outerColorLuminance + 0.05)
         else (outerColorLuminance + 0.05) / (innerColorLuminance + 0.05)
 }
-
-private fun basePersonality():HashMap<String,Float>{
-    return hashMapOf(Constants.warmonger to 1f,Constants.trader to 1f, Constants.allianceMaker to 1f,Constants.freeMover to 1f,Constants.friendly to 1f)
-}
