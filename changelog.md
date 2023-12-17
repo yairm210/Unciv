@@ -1,3 +1,25 @@
+## 4.9.10
+
+Add the remove unit promotion unique  - By PLynx01
+
+Fix key bindings all reset to unbound on entering options and leaving without looking at the keys page  - By SomeTroglodyte
+
+By remdu:
+- Coast spread algorithm 
+- avoid initializing with terrain that shouldn't be naturally generated 
+
+Stop on Path Blocked  - By itanasi
+
+Units that can't build roads should not have connect roads automation.  - By willjallen
+
+By SeventhM:
+- Fix Great Scientist science calculation 
+- Show stat percent differences in replacement building differences 
+
+By dHannasch:
+- Add BaseUnit.automaticallyUpgradedInProductionToUnitByTech() 
+- Don't list Unique requiring a tech in the Civilopedia for that tech 
+
 ## 4.9.9
 
 Finally deprecated old religion uniques
