@@ -119,6 +119,11 @@ object BuildingDescriptions {
             if (value != originalBuilding[key])
                 yield(FormattedLine( key.name.tr() + " " +"[${value.toInt()}] vs [${originalBuilding[key].toInt()}]".tr(), indent=1))
 
+        val originalStatBonus = originalBuilding.getStatPercentageBonuses(null)
+        for ((key, value) in replacementBuilding.getStatPercentageBonuses(null))
+            if (value != originalStatBonus[key])
+                yield(FormattedLine("[${value.toInt()}]% ".tr() + key.name.tr() + " vs [${originalStatBonus[key].toInt()}]% ".tr() + key.name.tr(), indent = 1))
+
         if (replacementBuilding.maintenance != originalBuilding.maintenance)
             yield(FormattedLine("{Maintenance} ".tr() + "[${replacementBuilding.maintenance}] vs [${originalBuilding.maintenance}]".tr(), indent=1))
         if (replacementBuilding.cost != originalBuilding.cost)
