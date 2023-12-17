@@ -85,8 +85,10 @@ class UniqueValidator(val ruleset: Ruleset) {
         }
 
         if (unique.conditionals.any() && unique.type in MapUnitCache.UnitMovementUniques)
+            // Not necessarily even a problem, but yes something mod maker should be aware of
             rulesetErrors.add("$prefix unique \"${unique.text}\" contains a conditional on a unit movement unique. " +
-                "Due to performance considerations, this conditional may not always apply.", RulesetErrorSeverity.WarningOptionsOnly)
+                "Due to performance considerations, this unique is cached on the unit," +
+                " and the conditional may not always limit the unique correctly.", RulesetErrorSeverity.OK)
 
         if (reportRulesetSpecificErrors)
         // If we don't filter these messages will be listed twice as this function is called twice on most objects
