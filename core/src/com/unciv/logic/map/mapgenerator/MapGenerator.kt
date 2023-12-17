@@ -248,17 +248,17 @@ class MapGenerator(val ruleset: Ruleset, private val coroutineScope: CoroutineSc
                         toCoast.add(tile)
                         break
                     } else if (neighborTile.baseTerrain == Constants.coast) {
-                        val randval = randomness.RNG.nextInt(2) // 0 or 1
-                        if (randval == 1) {
+                        val randbool = randomness.RNG.nextBoolean()
+                        if (randbool) {
                             toCoast.add(tile)
                         }
                         break
                     }
                 }
             }
-            toCoast.forEach {
-                it.baseTerrain = Constants.coast
-                it.setTransients()
+            for (tile in toCoast) {
+                tile.baseTerrain = Constants.coast
+                tile.setTransients()
             }
         }
     }
