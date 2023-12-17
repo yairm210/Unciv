@@ -1,5 +1,6 @@
 package com.unciv.models.ruleset.validation
 
+import com.unciv.logic.map.mapunit.MapUnitCache
 import com.unciv.models.ruleset.IRulesetObject
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
@@ -83,6 +84,9 @@ class UniqueValidator(val ruleset: Ruleset) {
             addConditionalErrors(conditional, rulesetErrors, prefix, unique, reportRulesetSpecificErrors)
         }
 
+        if (unique.conditionals.any() && unique.type in MapUnitCache.UnitMovementUniques)
+            rulesetErrors.add("$prefix unique \"${unique.text}\" contains a conditional on a unit movement unique. " +
+                "Due to performance considerations, this conditional may not always apply.", RulesetErrorSeverity.WarningOptionsOnly)
 
         if (reportRulesetSpecificErrors)
         // If we don't filter these messages will be listed twice as this function is called twice on most objects

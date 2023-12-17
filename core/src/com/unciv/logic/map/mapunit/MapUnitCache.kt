@@ -124,4 +124,25 @@ class MapUnitCache(private val mapUnit: MapUnit) {
             .mapNotNull { mapUnit.civ.gameInfo.ruleset.tileImprovements[it.params[0]] }
             .any { it.hasUnique(UniqueType.TakesOverAdjacentTiles) }
     }
+
+    companion object {
+        val UnitMovementUniques = setOf(
+            UniqueType.AllTilesCost1Move,
+            UniqueType.CanPassImpassable,
+            UniqueType.IgnoresTerrainCost,
+            UniqueType.IgnoresZOC,
+            UniqueType.RoughTerrainPenalty,
+            UniqueType.CannotMove,
+            UniqueType.CanMoveOnWater,
+            UniqueType.DoubleMovementOnTerrain,
+            UniqueType.ReducedDisembarkCost,
+            UniqueType.ReducedEmbarkCost,
+            UniqueType.CanEnterIceTiles,
+            UniqueType.CanEnterForeignTiles,
+            UniqueType.CanEnterForeignTilesButLosesReligiousStrength,
+            // Special - applied in Nation and not here, wshould be moved to mapunitcache as well
+            UniqueType.ForestsAndJunglesAreRoads,
+            UniqueType.IgnoreHillMovementCost
+            )
+    }
 }
