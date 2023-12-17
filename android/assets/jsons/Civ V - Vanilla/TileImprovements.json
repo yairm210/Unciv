@@ -123,7 +123,10 @@
 		"techRequired": "Railroads",
 		"uniques": ["Can be built outside your borders", "Costs [2] [Gold] per turn when in your territory"],
 		"shortcutKey": "R",
-        "civilopediaText": [{"text":"Reduces movement cost to ⅒ if the other tile also has a Railroad"}]
+        "civilopediaText": [
+            {"text":"Reduces movement cost to ⅒ if the other tile also has a Railroad"},
+            {"text":"Provides a +25% [Production] bonus to cities connected to the capital by Railroads"}
+        ]
 	},
 
 	// Removals

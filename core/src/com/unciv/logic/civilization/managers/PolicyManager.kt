@@ -42,7 +42,7 @@ class PolicyManager : IsPartOfGameInfoSerialization {
         get() {
             val value = HashMap<PolicyBranch, Int>()
             for (branch in branches) {
-                value[branch] = branch.priorities[civInfo.getPreferredVictoryType()] ?: 0
+                value[branch] = branch.priorities[civInfo.nation.preferredVictoryType] ?: 0
             }
             return value
         }
@@ -203,6 +203,7 @@ class PolicyManager : IsPartOfGameInfoSerialization {
             triggerGlobalAlerts(policy, unique.params[0])
         }
 
+        //todo Can this be mapped downstream to a PolicyAction:NotificationAction?
         val triggerNotificationText = "due to adopting [${policy.name}]"
         for (unique in policy.uniqueObjects)
             if (!unique.hasTriggerConditional())

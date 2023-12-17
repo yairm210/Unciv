@@ -155,10 +155,15 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
             ?: state.city?.getCenterTile()
         }
 
+        val relevantCity by lazy {
+            state.city
+            ?: relevantTile?.getCity()
+        }
+
         val stateBasedRandom by lazy { Random(state.hashCode()) }
 
         fun getResourceAmount(resourceName: String): Int {
-            if (state.city != null) return state.city.getResourceAmount(resourceName)
+            if (relevantCity != null) return relevantCity!!.getResourceAmount(resourceName)
             if (state.civInfo != null) return state.civInfo.getResourceAmount(resourceName)
             return 0
         }
@@ -171,8 +176,8 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
 
         /** Helper to simplify conditional tests requiring a City */
         fun checkOnCity(predicate: (City.() -> Boolean)): Boolean {
-            if (state.city == null) return false
-            return state.city.predicate()
+            if (relevantCity == null) return false
+            return relevantCity!!.predicate()
         }
 
         /** Helper to simplify the "compare civ's current era with named era" conditions */
@@ -195,12 +200,19 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
         }
 
         /** Helper for ConditionalWhenAboveAmountStatSpeed and its below counterpart */
-        fun checkStatAmountWithSpeed(compare: (current: Int, limit: Float) -> Boolean): Boolean {
+        fun checkResourceOrStatAmountWithSpeed(compare: (current: Int, limit: Float) -> Boolean): Boolean {
             if (state.civInfo == null) return false
-            val stat = Stat.safeValueOf(condition.params[1])
+            val limit = condition.params[0].toInt()
+            val resourceOrStatName = condition.params[1]
+            var gameSpeedModifier = state.civInfo.gameInfo.speed.modifier
+
+            if (state.civInfo.gameInfo.ruleset.tileResources.containsKey(resourceOrStatName))
+                return compare(getResourceAmount(resourceOrStatName), limit * gameSpeedModifier)
+            val stat = Stat.safeValueOf(resourceOrStatName)
                 ?: return false
-            val limit = condition.params[0].toFloat() * state.civInfo.gameInfo.speed.statCostModifiers[stat]!!
-            return compare(state.civInfo.getStatReserve(stat), limit)
+
+            gameSpeedModifier = state.civInfo.gameInfo.speed.statCostModifiers[stat]!!
+            return compare(state.civInfo.getStatReserve(stat), limit * gameSpeedModifier)
         }
 
         return when (condition.type) {
@@ -222,10 +234,10 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
                 checkResourceOrStatAmount { current, limit -> current > limit }
             UniqueType.ConditionalWhenBelowAmountStatResource ->
                 checkResourceOrStatAmount { current, limit -> current < limit }
-            UniqueType.ConditionalWhenAboveAmountStatSpeed ->
-                checkStatAmountWithSpeed { current, limit -> current > limit }  // Note: Int.compareTo(Float)!
-            UniqueType.ConditionalWhenBelowAmountStatSpeed ->
-                checkStatAmountWithSpeed { current, limit -> current < limit }  // Note: Int.compareTo(Float)!
+            UniqueType.ConditionalWhenAboveAmountStatResourceSpeed ->
+                checkResourceOrStatAmountWithSpeed { current, limit -> current > limit }  // Note: Int.compareTo(Float)!
+            UniqueType.ConditionalWhenBelowAmountStatResourceSpeed ->
+                checkResourceOrStatAmountWithSpeed { current, limit -> current < limit }  // Note: Int.compareTo(Float)!
 
             UniqueType.ConditionalHappy -> checkOnCiv { stats.happiness >= 0 }
             UniqueType.ConditionalBetweenHappiness ->
@@ -283,11 +295,7 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
                 state.ourCombatant != null && state.ourCombatant.getHealth() < condition.params[0].toInt()
             UniqueType.ConditionalHasNotUsedOtherActions ->
                 state.unit == null || // So we get the action as a valid action in BaseUnit.hasUnique()
-                    ( // OLD format
-                state.unit.run { limitedActionsUnitCanDo().all { abilityUsesLeft[it] == maxAbilityUses[it] } }
-                    // NEW format
-                    && state.unit.abilityToTimesUsed.isEmpty())
-
+                    state.unit.abilityToTimesUsed.isEmpty()
             UniqueType.ConditionalInTiles ->
                 relevantTile?.matchesFilter(condition.params[0], state.civInfo) == true
             UniqueType.ConditionalInTilesNot ->

@@ -14,7 +14,6 @@ import com.unciv.models.ruleset.unique.IHasUniques
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.INamed
 import com.unciv.models.translations.tr
-import com.unciv.ui.components.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.components.extensions.colorFromRGB
 import com.unciv.ui.components.extensions.toImageButton
 import com.unciv.ui.components.extensions.toLabel
@@ -236,8 +235,7 @@ class CivilopediaScreen(
             if (entries.isEmpty()) continue
             val icon = if (categoryKey.headerIcon.isNotEmpty()) ImageGetter.getImage(categoryKey.headerIcon) else null
             val button = IconTextButton(categoryKey.label, icon)
-            button.addTooltip(categoryKey.key)
-            button.onClick { selectCategory(categoryKey) }
+            button.onActivation(binding = categoryKey.binding) { selectCategory(categoryKey) }
             val cell = buttonTable.add(button)
             categoryToButtons[categoryKey] = CategoryButtonInfo(button, currentX, cell.prefWidth)
             currentX += cell.prefWidth + 20f
@@ -245,11 +243,10 @@ class CivilopediaScreen(
 
         buttonTable.pack()
         buttonTableScroll = ScrollPane(buttonTable)
-        buttonTableScroll.setScrollingDisabled(false, true)
+        buttonTableScroll.setScrollingDisabled(x = false, y = true)
 
         val searchButton = "OtherIcons/Search".toImageButton(imageSize - 16f, imageSize, skinStrings.skinConfig.baseColor, Color.GOLD)
-        searchButton.onActivation { searchPopup.open(true) }
-        searchButton.keyShortcuts.add(KeyboardBinding.Civilopedia)  // "hit twice to search"
+        searchButton.onActivation(binding = KeyboardBinding.PediaSearch) { searchPopup.open(true) }
 
         val closeButton = "OtherIcons/Close".toImageButton(imageSize - 20f, imageSize, skinStrings.skinConfig.baseColor, Color.RED)
         closeButton.onActivation { game.popScreen() }
@@ -292,26 +289,8 @@ class CivilopediaScreen(
             else
                 selectEntry(link, noScrollAnimation = true)
 
-        for (categoryKey in categoryToEntries.keys) {
-            globalShortcuts.add(categoryKey.key) { navigateCategories(categoryKey.key) }
-        }
-        globalShortcuts.add(Input.Keys.LEFT) {
-            val categoryKey = categoryToEntries.keys
-            val currentIndex = categoryKey.indexOf(currentCategory)
-            val targetCategory = categoryKey.elementAt(
-                (currentIndex + categoryKey.size - 1) % categoryKey.size
-            )
-            selectCategory(targetCategory)
-        }
-        globalShortcuts.add(Input.Keys.RIGHT) {
-            val categoryKey = categoryToEntries.keys
-            val currentIndex = categoryKey.indexOf(currentCategory)
-            val targetCategory = categoryKey.elementAt(
-                (currentIndex + categoryKey.size + 1) % categoryKey.size
-            )
-            selectCategory(targetCategory)
-
-        }
+        globalShortcuts.add(Input.Keys.LEFT) { navigateCategories(-1) }
+        globalShortcuts.add(Input.Keys.RIGHT) { navigateCategories(1) }
         globalShortcuts.add(Input.Keys.UP) { navigateEntries(-1) }
         globalShortcuts.add(Input.Keys.DOWN) { navigateEntries(1) }
         globalShortcuts.add(Input.Keys.PAGE_UP) { navigateEntries(-10) }
@@ -320,8 +299,11 @@ class CivilopediaScreen(
         globalShortcuts.add(Input.Keys.END) { navigateEntries(Int.MAX_VALUE) }
     }
 
-    private fun navigateCategories(key: KeyCharAndCode) {
-        selectCategory(currentCategory.nextForKey(key))
+    private fun navigateCategories(direction: Int) {
+        val categoryKeys = categoryToEntries.keys
+        val currentIndex = categoryKeys.indexOf(currentCategory)
+        val newIndex = (currentIndex + categoryKeys.size + direction) % categoryKeys.size
+        selectCategory(categoryKeys.elementAt(newIndex))
     }
 
     private fun navigateEntries(direction: Int) {

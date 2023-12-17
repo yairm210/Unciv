@@ -1,6 +1,5 @@
 package com.unciv.logic.automation.unit
 
-import com.unciv.Constants
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.managers.ReligionState
 import com.unciv.logic.map.mapunit.MapUnit
@@ -33,6 +32,9 @@ object CivilianUnitAutomation {
 
         if (unit.hasUnique(UniqueType.FoundCity))
             return SpecificUnitAutomation.automateSettlerActions(unit, tilesWhereWeWillBeCaptured)
+
+        if(unit.isAutomatingRoadConnection())
+            return unit.civ.getWorkerAutomation().automateConnectRoad(unit, tilesWhereWeWillBeCaptured)
 
         if (unit.cache.hasUniqueToBuildImprovements)
             return unit.civ.getWorkerAutomation().automateWorkerAction(unit, tilesWhereWeWillBeCaptured)
@@ -73,7 +75,7 @@ object CivilianUnitAutomation {
         if (unit.civ.religionManager.maySpreadReligionAtAll(unit))
             return ReligiousUnitAutomation.automateMissionary(unit)
 
-        if (unit.hasUnique(UniqueType.PreventSpreadingReligion) || unit.canDoLimitedAction(Constants.removeHeresy))
+        if (unit.hasUnique(UniqueType.PreventSpreadingReligion) || unit.hasUnique(UniqueType.CanRemoveHeresy))
             return ReligiousUnitAutomation.automateInquisitor(unit)
 
         val isLateGame = isLateGame(unit.civ)

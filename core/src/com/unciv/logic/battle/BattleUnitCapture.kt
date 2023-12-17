@@ -38,7 +38,7 @@ object BattleUnitCapture {
         // This is called after takeDamage and so the defeated defender is already destroyed and
         // thus removed from the tile - but MapUnit.destroy() will not clear the unit's currentTile.
         // Therefore placeUnitNearTile _will_ place the new unit exactly where the defender was
-        return spawnCapturedUnit(defender.getName(), attacker, defender.getTile())
+        return spawnCapturedUnit(defender, attacker)
     }
 
 
@@ -89,15 +89,22 @@ object BattleUnitCapture {
 
     /** Places a [unitName] unit near [tile] after being attacked by [attacker].
      * Adds a notification to [attacker]'s civInfo and returns whether the captured unit could be placed */
-    private fun spawnCapturedUnit(unitName: String, attacker: ICombatant, tile: Tile): Boolean {
-        val addedUnit = attacker.getCivInfo().units.placeUnitNearTile(tile.position, unitName) ?: return false
+    private fun spawnCapturedUnit(defender: MapUnitCombatant, attacker: MapUnitCombatant): Boolean {
+        val defenderTile = defender.getTile()
+        val addedUnit = attacker.getCivInfo().units.placeUnitNearTile(defenderTile.position, defender.getName()) ?: return false
         addedUnit.currentMovement = 0f
         addedUnit.health = 50
-        attacker.getCivInfo().addNotification("An enemy [${unitName}] has joined us!", addedUnit.getTile().position, NotificationCategory.War, unitName)
+        attacker.getCivInfo().addNotification("An enemy [${defender.getName()}] has joined us!", addedUnit.getTile().position, NotificationCategory.War, defender.getName())
 
-        val civilianUnit = tile.civilianUnit
+        defender.getCivInfo().addNotification(
+            "An enemy [${attacker.getName()}] has captured our [${defender.getName()}]",
+            defender.getTile().position, NotificationCategory.War, attacker.getName(),
+            NotificationIcon.War, defender.getName()
+        )
+
+        val civilianUnit = defenderTile.civilianUnit
         // placeUnitNearTile might not have spawned the unit in exactly this tile, in which case no capture would have happened on this tile. So we need to do that here.
-        if (addedUnit.getTile() != tile && civilianUnit != null) {
+        if (addedUnit.getTile() != defenderTile && civilianUnit != null) {
             captureCivilianUnit(attacker, MapUnitCombatant(civilianUnit))
         }
         return true

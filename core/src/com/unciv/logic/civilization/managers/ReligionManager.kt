@@ -1,6 +1,5 @@
 package com.unciv.logic.civilization.managers
 
-import com.unciv.Constants
 import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
@@ -448,8 +447,7 @@ class ReligionManager : IsPartOfGameInfoSerialization {
 
         val religion = missionary.civ.gameInfo.religions[missionary.religion] ?: return false
         if (religion.isPantheon()) return false
-        if (!missionary.canDoLimitedAction(Constants.spreadReligion)
-            && UnitActionModifiers.getUsableUnitActionUniques(missionary, UniqueType.CanSpreadReligion).none()) return false
+        if (UnitActionModifiers.getUsableUnitActionUniques(missionary, UniqueType.CanSpreadReligion).none()) return false
         return true
     }
 

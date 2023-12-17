@@ -48,7 +48,7 @@ enum class UniqueTarget(
 
     // Tile-specific
     Terrain,
-    Improvement,
+    Improvement(inheritsFrom = Triggerable),
     Resource(inheritsFrom = Global),
     Ruins(inheritsFrom = UnitTriggerable),
 

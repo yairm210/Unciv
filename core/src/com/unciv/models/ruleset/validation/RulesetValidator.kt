@@ -8,6 +8,7 @@ import com.unciv.json.fromJsonFile
 import com.unciv.json.json
 import com.unciv.logic.map.tile.RoadStatus
 import com.unciv.models.metadata.BaseRuleset
+import com.unciv.models.ruleset.BeliefType
 import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
@@ -230,6 +231,8 @@ class RulesetValidator(val ruleset: Ruleset) {
         tryFixUnknownUniques: Boolean
     ) {
         for (belief in ruleset.beliefs.values) {
+            if (belief.type == BeliefType.Any || belief.type == BeliefType.None)
+                lines += "${belief.name} type is {belief.type}, which is not allowed!"
             uniqueValidator.checkUniques(belief, lines, true, tryFixUnknownUniques)
         }
     }
@@ -658,25 +661,27 @@ class RulesetValidator(val ruleset: Ruleset) {
         for (requiredTech: String in unit.requiredTechs())
             if (!ruleset.technologies.containsKey(requiredTech))
                 lines += "${unit.name} requires tech ${requiredTech} which does not exist!"
-        if (unit.obsoleteTech != null && !ruleset.technologies.containsKey(unit.obsoleteTech!!))
-            lines += "${unit.name} obsoletes at tech ${unit.obsoleteTech} which does not exist!"
+        for (obsoleteTech: String in unit.techsAtWhichNoLongerAvailable())
+            if (!ruleset.technologies.containsKey(obsoleteTech))
+                lines += "${unit.name} obsoletes at tech ${obsoleteTech} which does not exist!"
         if (unit.upgradesTo != null && !ruleset.units.containsKey(unit.upgradesTo!!))
             lines += "${unit.name} upgrades to unit ${unit.upgradesTo} which does not exist!"
 
         // Check that we don't obsolete ourselves before we can upgrade
-        if (unit.upgradesTo!=null && ruleset.units.containsKey(unit.upgradesTo!!)
-            && unit.obsoleteTech!=null && ruleset.technologies.containsKey(unit.obsoleteTech!!)) {
-            val upgradedUnit = ruleset.units[unit.upgradesTo!!]!!
-            for (requiredTech: String in upgradedUnit.requiredTechs())
-                if (requiredTech != unit.obsoleteTech
-                    && !getPrereqTree(unit.obsoleteTech!!).contains(requiredTech)
-                )
-                    lines.add(
-                        "${unit.name} obsoletes at tech ${unit.obsoleteTech}," +
-                            " and therefore ${requiredTech} for its upgrade ${upgradedUnit.name} may not yet be researched!",
-                        RulesetErrorSeverity.Warning
+        for (obsoleteTech: String in unit.techsThatObsoleteThis())
+            if (unit.upgradesTo!=null && ruleset.units.containsKey(unit.upgradesTo!!)
+                && ruleset.technologies.containsKey(obsoleteTech)) {
+                val upgradedUnit = ruleset.units[unit.upgradesTo!!]!!
+                for (requiredTech: String in upgradedUnit.requiredTechs())
+                    if (requiredTech != obsoleteTech
+                        && !getPrereqTree(obsoleteTech).contains(requiredTech)
                     )
-        }
+                        lines.add(
+                            "${unit.name} obsoletes at tech ${obsoleteTech}," +
+                                " and therefore ${requiredTech} for its upgrade ${upgradedUnit.name} may not yet be researched!",
+                            RulesetErrorSeverity.Warning
+                        )
+            }
 
         for (resource in unit.getResourceRequirementsPerTurn(StateForConditionals.IgnoreConditionals).keys)
             if (!ruleset.tileResources.containsKey(resource))

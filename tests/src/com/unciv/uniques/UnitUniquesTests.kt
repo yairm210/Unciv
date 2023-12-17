@@ -66,7 +66,7 @@ class UnitUniquesTests {
         val unit = game.addUnit("Great Engineer", civ, unitTile)
         unit.currentMovement = unit.baseUnit.movement.toFloat()  // Required!
         val actionsWithoutIron = try {
-            UnitActionsFromUniques.getImprovementConstructionActions(unit, unitTile)
+            UnitActionsFromUniques.getImprovementConstructionActionsFromGeneralUnique(unit, unitTile)
         } catch (ex: Throwable) {
             // Give that IndexOutOfBoundsException a nicer name
             Assert.fail("getImprovementConstructionActions throws Exception ${ex.javaClass.simpleName}")
@@ -88,7 +88,7 @@ class UnitUniquesTests {
         Assert.assertTrue("Test preparation failed to add Iron to Civ resources", ironAvailable >= 3)
 
         // See if that same Engineer could create a Manufactory NOW
-        val actionsWithIron = UnitActionsFromUniques.getImprovementConstructionActions(unit, unitTile)
+        val actionsWithIron = UnitActionsFromUniques.getImprovementConstructionActionsFromGeneralUnique(unit, unitTile)
             .filter { it.action != null }
         Assert.assertFalse("Great Engineer SHOULD be able to create a Manufactory modded to require Iron once Iron is available",
             actionsWithIron.isEmpty())
