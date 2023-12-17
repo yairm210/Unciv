@@ -12,7 +12,7 @@ import com.unciv.ui.screens.basescreen.BaseScreen
 
 class CitizenManagementTable(val cityScreen: CityScreen) : Table(BaseScreen.skin) {
     val city = cityScreen.city
-    private val numCol = 2
+    private val numCol = 4
 
     fun update() {
         clear()
@@ -95,6 +95,7 @@ class CitizenManagementTable(val cityScreen: CityScreen) : Table(BaseScreen.skin
                 add(defaultTable).colspan(numCol).growX()
                 row()
             } else {
+                cell.padTop(5f)  // Stat symbols need extra padding on top
                 add(cell).growX().pad(3f)
                 --currCol
                 if (currCol == 0) {  // make new row
