@@ -185,6 +185,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: UnitTriggerable
 
+??? example  "This Unit loses the [promotion] promotion"
+	Example: "This Unit loses the [Shock I] promotion"
+
+	Applicable to: UnitTriggerable
+
 ## Global uniques
 !!! note ""
 

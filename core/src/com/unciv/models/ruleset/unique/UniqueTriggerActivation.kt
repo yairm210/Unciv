@@ -809,6 +809,14 @@ object UniqueTriggerActivation {
                     unit.civ.addNotification(notification, unit.getTile().position, NotificationCategory.Units, unit.name)
                 return true
             }
+            UniqueType.OneTimeUnitRemovePromotion -> {
+                val promotion = unit.civ.gameInfo.ruleset.unitPromotions.keys
+                    .firstOrNull { it == unique.params[0]}
+                    ?: return false
+                unit.promotions.removePromotion(promotion)
+                return true
+            }
+
             else -> return triggerCivwideUnique(unique, civInfo = unit.civ, tile=unit.currentTile, triggerNotificationText = triggerNotificationText)
         }
     }
