@@ -108,10 +108,11 @@ object MotivationToAttackAutomation {
         return motivationSoFar
     }
 
-    /* Rarely returns less than 0 if the war is viable, and the return proflie for viable wars is more or less:
-    0-20: 3% of the time; 20-40: 8%; 40-60: 18%; 60-80: 26%; 80-100: 21%; 100-120: 13%; 120+: 10% */
+    /*  return proflie including short-circuits is more or less:
+    -0: 30% of the time; 0-20: 28%; 20-40: 21%; 40-60: 6%; 60-80: 6%; 80-100: 4%; 100+: 5% */
     /** Returns a float indicating the desirability of war with otherCiv. As it stands, considers mostly power
-     * disparity than anything else. Returns 0 if war is unviable, may rarely return negative if viable but hard to win.*/
+     * disparity than anything else. Returns 0 if war is unviable, may return negative if viable but hard to win.
+     * May short-circuit and return a value lower than atLeast*/
     fun motivationToDeclareWar(civInfo: Civilization, otherCiv: Civilization, atLeast:Float):Float{
         //In practice, this method asks "How likely is it to win this war?" rather than "Should i fight this war?"
         //We should eventually make it consider if the war is worth fighting
