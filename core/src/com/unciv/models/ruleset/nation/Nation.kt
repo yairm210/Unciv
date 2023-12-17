@@ -287,7 +287,7 @@ class Nation : RulesetObject() {
             bias > 30f-> (0.45 * bias - 6.31).toFloat()
             bias == 30f-> 25f //Standard
             bias >=14f -> (2.33 * bias - 138.2).toFloat()
-            bias >= 0f -> (5.5 * bias - 417.33).toFloat()
+            bias > 0f -> (5.5 * bias - 417.33).toFloat()
             else -> 500f
         }
     }
