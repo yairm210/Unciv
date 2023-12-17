@@ -110,8 +110,8 @@ object MotivationToAttackAutomation {
 
     /* Rarely returns less than 0 if the war is viable, and the return proflie for viable wars is more or less:
     0-20: 3% of the time; 20-40: 8%; 40-60: 18%; 60-80: 26%; 80-100: 21%; 100-120: 13%; 120+: 10% */
-    /** Returns a float up to 148 indicating the desirability of war with otherCiv. As it stands, considers mostly power
-     * disparity than anything else. Returns 0 if war is unviable, may rarely return negative if viable but undesirable.*/
+    /** Returns a float indicating the desirability of war with otherCiv. As it stands, considers mostly power
+     * disparity than anything else. Returns 0 if war is unviable, may rarely return negative if viable but hard to win.*/
     fun motivationToDeclareWar(civInfo: Civilization, otherCiv: Civilization, atLeast:Float):Float{
         //In practice, this method asks "How likely is it to win this war?" rather than "Should i fight this war?"
         //We should eventually make it consider if the war is worth fighting
@@ -147,6 +147,7 @@ object MotivationToAttackAutomation {
         //This part does take "Should i fight?" into consideration, but it is not significative enough
         //to dissuade the AI except in very particular circumstances
         motivation -= relationshipBonuses(diplomacyManager)
+        motivation += getAlliedWarMotivation(civInfo,otherCiv)
 
         // Short-circuit to avoid expensive BFS
         if (motivation < atLeast) return motivation
@@ -231,6 +232,7 @@ object MotivationToAttackAutomation {
         powerDiff += min(20,max(4 * techDiff, -20))
         val prodRatio = civInfo.getStatForRanking(RankingType.Production).toFloat() / otherCiv.getStatForRanking(RankingType.Production).toFloat()
         powerDiff += min(20 * prodRatio - 20, 20f)
+        //City-states are often having high scores. Why?
         val scoreRatio = otherCiv.getStatForRanking(RankingType.Score).toFloat() / civInfo.getStatForRanking(RankingType.Score).toFloat();
         powerDiff += min(20 / scoreRatio - 20, 20f) //Divided so that stronger civs are more targeted
         return powerDiff
