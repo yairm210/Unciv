@@ -122,7 +122,7 @@ internal class WorkerAutomationTest {
         var finishedCount = 0      
         var inProgressCount = 0
         for (tile in centerTile.getTilesInDistance(3)) {
-            if (tile.improvement != null && tile.improvement != Constants.cityCenter) finishedCount++
+            if (tile.improvement != null && !tile.isCityCenter()) finishedCount++
             if (tile.turnsToImprovement != 0) inProgressCount++
         }
         
@@ -187,7 +187,7 @@ internal class WorkerAutomationTest {
         for (city in cities) {
             for (tile in city.getCenterTile().getTilesInDistance(3)) {
                 if (checkedTiles.contains(tile)) continue
-                if (tile.improvement != null && tile.improvement != Constants.cityCenter) finishedCount++
+                if (tile.improvement != null && !tile.isCityCenter()) finishedCount++
                 if (tile.turnsToImprovement != 0) inProgressCount++
                 checkedTiles.add(tile)
             }
@@ -252,14 +252,9 @@ internal class WorkerAutomationTest {
 
         var finishedCount = 0
         var inProgressCount = 0
-        val checkedTiles = HashSet<Tile>()
-        for (city in cities) {
-            for (tile in city.getCenterTile().getTilesInDistance(3)) {
-                if (checkedTiles.contains(tile)) continue
-                if (tile.roadStatus != RoadStatus.None && tile.isCityCenter()) finishedCount++
-                if (tile.turnsToImprovement != 0) inProgressCount++
-                checkedTiles.add(tile)
-            }
+        for (tile in testGame.tileMap[0,0].getTilesInDistance(5)) {
+            if (tile.roadStatus != RoadStatus.None && !tile.isCityCenter()) finishedCount++
+            if (tile.turnsToImprovement != 0) inProgressCount++
         }
 
         val maxShouldBeInProgress = 1
@@ -268,6 +263,8 @@ internal class WorkerAutomationTest {
         val minShouldHaveFinished = 5
         assertTrue("Worker should have built $minShouldHaveFinished roads but only built $finishedCount",
             finishedCount >= minShouldHaveFinished)
+        civInfo.cache.updateCitiesConnectedToCapital()
+        assertTrue("Worker should have built roads to connect the two cities", city2.isConnectedToCapital())
     }
 
 }
