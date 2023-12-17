@@ -7,6 +7,7 @@ import com.unciv.logic.map.TileMap
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.tile.TerrainType
+import com.unciv.models.ruleset.unique.UniqueType
 import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
@@ -28,7 +29,7 @@ class MapLandmassGenerator(val ruleset: Ruleset, val randomness: MapGenerationRa
     companion object {
         // this is called from TileMap constructors as well
         internal fun getInitializationTerrain(ruleset: Ruleset, type: TerrainType) =
-            ruleset.terrains.values.firstOrNull { it.type == type }?.name
+            ruleset.terrains.values.firstOrNull { it.type == type && !it.hasUnique(UniqueType.NoNaturalGeneration) }?.name
                 ?: throw Exception("Cannot create map - no $type terrains found!")
     }
 
@@ -157,6 +158,7 @@ class MapLandmassGenerator(val ruleset: Ruleset, val randomness: MapGenerationRa
                 var elevation = randomness.getPerlinNoise(tile, elevationSeed)
                 elevation = elevation * (3 / 4f) + getEllipticContinent(tile, tileMap) / 4
                 spawnLandOrWater(tile, elevation)
+                tile.setTerrainTransients() // necessary for assignContinents
             }
 
             tileMap.assignContinents(TileMap.AssignContinentsMode.Reassign)
