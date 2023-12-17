@@ -228,7 +228,7 @@ object MotivationToAttackAutomation {
         var powerDiff = 0f;
         val powerRatio = calculateSelfCombatStrength(civInfo,30f) / calculateCombatStrengthWithProtectors(otherCiv, 30f, civInfo)
         if (powerRatio < minimunStrengthRatio) return 0f
-        powerDiff += max(40f, (powerRatio - 1) * 25)
+        powerDiff += min(40f, (powerRatio - 1) * 25)
         val techDiff = civInfo.getStatForRanking(RankingType.Technologies) - otherCiv.getStatForRanking(RankingType.Technologies)
         powerDiff += min(20,max(4 * techDiff, -20))
         val prodRatio = civInfo.getStatForRanking(RankingType.Production).toFloat() / otherCiv.getStatForRanking(RankingType.Production).toFloat()
