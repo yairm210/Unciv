@@ -64,7 +64,7 @@ class Nation : RulesetObject() {
 
     var cities: ArrayList<String> = arrayListOf()
 
-    var personality:HashMap<String, Float> = basePersonality()
+    var personality = Personality()
 
     override fun getUniqueTarget() = UniqueTarget.Nation
 
@@ -276,19 +276,6 @@ class Nation : RulesetObject() {
             // "CityState" to be deprecated, replaced by "City-States"
             "CityState", Constants.cityStates -> isCityState
             else -> uniques.contains(filter)
-        }
-    }
-    fun getMinimunMotivationToAttack():Float{
-        //The standard minimun is get 30% of the times motivationToDeclareWar is run
-        var bias = personality[Constants.warmonger]!! * 30
-        return when {
-            //The attack function behaves diffently across its image
-            bias >= 75f -> (1.76 * bias - 39.79).toFloat()
-            bias > 30f-> (0.45 * bias - 6.31).toFloat()
-            bias == 30f-> 25f //Standard
-            bias >=14f -> (2.33 * bias - 138.2).toFloat()
-            bias > 0f -> (5.5 * bias - 417.33).toFloat()
-            else -> 500f
         }
     }
 }

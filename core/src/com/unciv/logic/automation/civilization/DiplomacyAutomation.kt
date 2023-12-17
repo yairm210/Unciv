@@ -250,7 +250,7 @@ object DiplomacyAutomation {
 
         if (enemyCivs.none()) return
 
-        val minMotivationToAttack = civInfo.nation.getMinimunMotivationToAttack()
+        val minMotivationToAttack = civInfo.nation.personality.getMinimunMotivationToAttack()
         // Attack the highest score enemy that we are willing to fight.
         // This is to help prevent civs from ganging up on smaller civs
         // and directs them to fight their competitors instead.

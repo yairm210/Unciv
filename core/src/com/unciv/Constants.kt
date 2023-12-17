@@ -110,10 +110,4 @@ object Constants {
     const val defaultFontSize = 18
     const val headingFontSize = 24
 
-    //Personality-related
-    const val warmonger = "Warrior"
-    const val trader = "Trader"
-    const val allianceMaker = "AllianceMaker"
-    const val freeMover = "FreeMover"
-    const val friendly = "Friendly"
 }
