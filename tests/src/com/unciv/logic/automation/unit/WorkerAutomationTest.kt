@@ -55,6 +55,30 @@ internal class WorkerAutomationTest {
     }
 
     @Test
+    fun `should build improvement on unseen resource`() {
+        // Add the needed tech to construct the improvements below
+        for (improvement in listOf(RoadStatus.Road.name, "Farm")) {
+            civInfo.tech.techsResearched.add(testGame.ruleset.tileImprovements[improvement]!!.techRequired!!)
+        }
+
+        testGame.addCity(civInfo, testGame.tileMap[0,0])
+
+        val currentTile = testGame.tileMap[1,1]
+        currentTile.baseTerrain = Constants.grassland
+        currentTile.resource = "Iron"
+
+        val mapUnit = testGame.addUnit("Worker", civInfo, currentTile)
+
+        // Act
+        workerAutomation.automateWorkerAction(mapUnit, hashSetOf())
+
+        // Assert
+        assertEquals("Worker should be buliding a farm under 'Iron' resource because it can't see it and has nothing else to do",
+            "Farm", currentTile.improvementInProgress)
+        assertTrue(currentTile.turnsToImprovement > 0)
+    }
+
+    @Test
     fun `should build improvements in turns`() {
         // Add the needed tech to construct the improvements below
         for (improvement in listOf(RoadStatus.Road.name, "Farm")) {
