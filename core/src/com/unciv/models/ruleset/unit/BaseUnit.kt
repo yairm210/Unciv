@@ -66,7 +66,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
 
 
     /** Generate short description as comma-separated string for Technology description "Units enabled" and GreatPersonPickerScreen */
-    fun getShortDescription() = BaseUnitDescriptions.getShortDescription(this)
+    fun getShortDescription(uniqueExclusionFilter: Unique.() -> Boolean = {false}) = BaseUnitDescriptions.getShortDescription(this, uniqueExclusionFilter)
 
     /** Generate description as multi-line string for CityScreen addSelectedConstructionTable
      * @param city Supplies civInfo to show available resources after resource requirements */

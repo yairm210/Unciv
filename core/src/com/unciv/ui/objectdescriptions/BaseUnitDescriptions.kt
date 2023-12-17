@@ -25,7 +25,7 @@ import com.unciv.ui.screens.civilopediascreen.MarkupRenderer
 object BaseUnitDescriptions {
 
     /** Generate short description as comma-separated string for Technology description "Units enabled" and GreatPersonPickerScreen */
-    fun getShortDescription(baseUnit: BaseUnit, exclude: Unique.() -> Boolean = {false}): String {
+    fun getShortDescription(baseUnit: BaseUnit, uniqueExclusionFilter: Unique.() -> Boolean = {false}): String {
         val infoList = mutableListOf<String>()
         if (baseUnit.strength != 0) infoList += "${baseUnit.strength}${Fonts.strength}"
         if (baseUnit.rangedStrength != 0) infoList += "${baseUnit.rangedStrength}${Fonts.rangedStrength}"
@@ -33,7 +33,7 @@ object BaseUnitDescriptions {
         for (promotion in baseUnit.promotions)
             infoList += promotion.tr()
         if (baseUnit.replacementTextForUniques != "") infoList += baseUnit.replacementTextForUniques
-        else baseUnit.uniquesToDescription(infoList, exclude)
+        else baseUnit.uniquesToDescription(infoList, uniqueExclusionFilter)
         return infoList.joinToString()
     }
 
