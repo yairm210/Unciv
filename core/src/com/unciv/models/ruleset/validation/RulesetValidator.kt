@@ -664,11 +664,14 @@ class RulesetValidator(val ruleset: Ruleset) {
         for (obsoleteTech: String in unit.techsAtWhichNoLongerAvailable())
             if (!ruleset.technologies.containsKey(obsoleteTech))
                 lines += "${unit.name} obsoletes at tech ${obsoleteTech} which does not exist!"
+        for (obsoleteTech: String in unit.techsAtWhichAutoUpgradeInProduction())
+            if (!ruleset.technologies.containsKey(obsoleteTech))
+                lines += "${unit.name} upgrades at tech ${obsoleteTech} which does not exist!"
         if (unit.upgradesTo != null && !ruleset.units.containsKey(unit.upgradesTo!!))
             lines += "${unit.name} upgrades to unit ${unit.upgradesTo} which does not exist!"
 
         // Check that we don't obsolete ourselves before we can upgrade
-        for (obsoleteTech: String in unit.techsThatObsoleteThis())
+        for (obsoleteTech: String in unit.techsAtWhichAutoUpgradeInProduction())
             if (unit.upgradesTo!=null && ruleset.units.containsKey(unit.upgradesTo!!)
                 && ruleset.technologies.containsKey(obsoleteTech)) {
                 val upgradedUnit = ruleset.units[unit.upgradesTo!!]!!
@@ -677,7 +680,7 @@ class RulesetValidator(val ruleset: Ruleset) {
                         && !getPrereqTree(obsoleteTech).contains(requiredTech)
                     )
                         lines.add(
-                            "${unit.name} obsoletes at tech ${obsoleteTech}," +
+                            "${unit.name} is supposed to automatically upgrade at tech ${obsoleteTech}," +
                                 " and therefore ${requiredTech} for its upgrade ${upgradedUnit.name} may not yet be researched!",
                             RulesetErrorSeverity.Warning
                         )
