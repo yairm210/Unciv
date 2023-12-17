@@ -458,6 +458,7 @@ class WorkerAutomation(
                 it !in tilesToAvoid
                 && (it.civilianUnit == null || it == currentTile)
                 && (it.owningCity == null || it.getOwner() == civInfo)
+                && !it.isCityCenter()
                 && !tilesToAvoid.contains(currentTile)
                 && getBasePriority(it, unit) > 1
             }
@@ -607,8 +608,8 @@ class WorkerAutomation(
         // After gathering all the data, we conduct the hierarchy in one place
         val improvementString = when {
             improvementStringForResource != null -> if (improvementStringForResource==tile.improvement) null else improvementStringForResource
-            // if this is a resource that HAS an improvement, but this unit can't build it, don't waste your time
-            tile.resource != null && tile.tileResource.getImprovements().any() -> return null
+            // If this is a resource that HAS an improvement that we can see, but this unit can't build it, don't waste your time
+            tile.resource != null && tile.hasViewableResource(civInfo) && tile.tileResource.getImprovements().any() -> return null
             bestBuildableImprovement == null -> null
 
             tile.improvement != null &&
