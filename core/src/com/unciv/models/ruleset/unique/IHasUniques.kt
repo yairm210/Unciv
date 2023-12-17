@@ -62,15 +62,15 @@ interface IHasUniques : INamed {
 
     fun requiredTechs(): Sequence<String> = legacyRequiredTechs() + techsRequiredByUniques()
 
-    fun requiredTechnologies(ruleset: Ruleset): Sequence<Technology> =
-        requiredTechs().map{ ruleset.technologies[it]!! }
+    fun requiredTechnologies(ruleset: Ruleset): Sequence<Technology?> =
+        requiredTechs().map{ ruleset.technologies[it] }
 
     fun era(ruleset: Ruleset): Era? =
-            requiredTechnologies(ruleset).map{ it.era() }.map{ ruleset.eras[it]!! }.maxByOrNull{ it.eraNumber }
-            // This will return null only if requiredTechnologies() is empty.
+            requiredTechnologies(ruleset).map{ it?.era() }.map{ ruleset.eras[it] }.maxByOrNull{ it?.eraNumber ?: 0 }
+            // This will return null only if requiredTechnologies() is empty or all required techs have no eraNumber
 
     fun techColumn(ruleset: Ruleset): TechColumn? =
-            requiredTechnologies(ruleset).map{ it.column }.filterNotNull().maxByOrNull{ it.columnNumber }
+            requiredTechnologies(ruleset).map{ it?.column }.filterNotNull().maxByOrNull{ it.columnNumber }
             // This will return null only if *all* required techs have null TechColumn.
 
     fun availableInEra(ruleset: Ruleset, requestedEra: String): Boolean {

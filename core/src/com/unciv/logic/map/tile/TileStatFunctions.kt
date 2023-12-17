@@ -286,7 +286,7 @@ class TileStatFunctions(val tile: Tile) {
                     improvement.getMatchingUniques(UniqueType.ImprovementStatsOnTile, conditionalState)
 
             for (unique in tileUniques + improvementUniques) {
-                if (improvement.matchesFilter(unique.params[1])
+                if (tile.matchesFilter(unique.params[1])
                         || unique.params[1] == Constants.freshWater && tile.isAdjacentTo(Constants.freshWater)
                         || unique.params[1] == "non-fresh water" && !tile.isAdjacentTo(Constants.freshWater)
                 )

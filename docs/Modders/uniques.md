@@ -159,8 +159,13 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
     Uniques that have immediate, one-time effects on a unit.They can be added to units (on unit, unit type, or promotion) to grant them the ability to trigger this effect as an action, which can be modified with UnitActionModifier and UnitTriggerCondition conditionals.
 
-??? example  "Heal this unit by [amount] HP"
+??? example  "Heal this unit by [positiveAmount] HP"
 	Example: "Heal this unit by [3] HP"
+
+	Applicable to: UnitTriggerable
+
+??? example  "This Unit takes [positiveAmount] damage"
+	Example: "This Unit takes [3] damage"
 
 	Applicable to: UnitTriggerable
 
@@ -177,6 +182,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 ??? example  "This Unit gains the [promotion] promotion"
 	Example: "This Unit gains the [Shock I] promotion"
+
+	Applicable to: UnitTriggerable
+
+??? example  "This Unit loses the [promotion] promotion"
+	Example: "This Unit loses the [Shock I] promotion"
 
 	Applicable to: UnitTriggerable
 

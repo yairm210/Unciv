@@ -49,6 +49,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
     var promotions = HashSet<String>()
     var obsoleteTech: String? = null
     fun techsThatObsoleteThis(): Sequence<String> = if (obsoleteTech == null) sequenceOf() else sequenceOf(obsoleteTech!!)
+    fun techsAtWhichAutoUpgradeInProduction(): Sequence<String> = techsThatObsoleteThis()
     fun techsAtWhichNoLongerAvailable(): Sequence<String> = techsThatObsoleteThis()
     fun isObsoletedBy(techName: String): Boolean = techsThatObsoleteThis().contains(techName)
     var upgradesTo: String? = null
@@ -66,7 +67,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
 
 
     /** Generate short description as comma-separated string for Technology description "Units enabled" and GreatPersonPickerScreen */
-    fun getShortDescription() = BaseUnitDescriptions.getShortDescription(this)
+    fun getShortDescription(uniqueExclusionFilter: Unique.() -> Boolean = {false}) = BaseUnitDescriptions.getShortDescription(this, uniqueExclusionFilter)
 
     /** Generate description as multi-line string for CityScreen addSelectedConstructionTable
      * @param city Supplies civInfo to show available resources after resource requirements */
@@ -226,6 +227,15 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         addConstructionBonuses(unit, cityConstructions)
 
         return true
+    }
+
+    // This returns the name of the unit this tech upgrades this unit to,
+    // or null if there is no automatic upgrade at that tech.
+    fun automaticallyUpgradedInProductionToUnitByTech(techName: String): String? {
+        for (obsoleteTech: String in  techsAtWhichAutoUpgradeInProduction())
+            if (obsoleteTech != null && obsoleteTech == techName)
+                return upgradesTo
+        return null
     }
 
     fun addConstructionBonuses(unit: MapUnit, cityConstructions: CityConstructions) {

@@ -91,6 +91,17 @@ class UnitPromotions : IsPartOfGameInfoSerialization {
         unit.updateVisibleTiles()  // some promotions/uniques give the unit bonus sight
     }
 
+    fun removePromotion(promotionName: String) {
+        val ruleset = unit.civ.gameInfo.ruleset
+        val promotion = ruleset.unitPromotions[promotionName]!!
+
+        if (getPromotions().contains(promotion)) {
+            promotions.remove(promotionName)
+            unit.updateUniques()
+            unit.updateVisibleTiles()
+        }
+    }
+
     private fun doDirectPromotionEffects(promotion: Promotion) {
         for (unique in promotion.uniqueObjects)
             if (unique.conditionalsApply(StateForConditionals(civInfo = unit.civ, unit = unit))
