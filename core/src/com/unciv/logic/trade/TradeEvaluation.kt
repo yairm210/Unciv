@@ -70,7 +70,7 @@ class TradeEvaluation {
             return Int.MIN_VALUE
         }
 
-        val sumOfTheirOffers = trade.theirOffers.asSequence()
+        var sumOfTheirOffers = trade.theirOffers.asSequence()
                 .filter { it.type != TradeType.Treaty } // since treaties should only be evaluated once for 2 sides
                 .map { evaluateBuyCostWithInflation(it, evaluator, tradePartner) }.sum()
 
@@ -80,6 +80,10 @@ class TradeEvaluation {
         // If we're making a peace treaty, don't try to up the bargain for people you don't like.
         // Leads to spartan behaviour where you demand more, the more you hate the enemy...unhelpful
         if (trade.ourOffers.none { it.name == Constants.peaceTreaty || it.name == Constants.researchAgreement}) {
+            if (trade.ourOffers.none { it.name == Constants.defensivePact}){
+                //Has to be here because the intention of trade bias is not to affect peace and the like, only actual trade
+                sumOfTheirOffers =  (sumOfTheirOffers * evaluator.nation.personality.getTradeModifier()).toInt()
+            }
             if (relationshipLevel == RelationshipLevel.Enemy) sumOfOurOffers = (sumOfOurOffers * 1.5).toInt()
             else if (relationshipLevel == RelationshipLevel.Unforgivable) sumOfOurOffers *= 2
         }

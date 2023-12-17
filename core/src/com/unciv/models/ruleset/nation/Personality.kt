@@ -64,19 +64,31 @@ class Personality {
         }
     }
 
-    fun getTradeMofidier():Float{
-        return  1f
+    fun getTradeModifier():Float{
+        return  diplomacy["trade"]!!
     }
 
-    fun getOpenBordersRoll():Int{
-        return 0;
+    fun getMinimumOpenBordersRoll():Int{
+        return  - (diplomacy["openborders"]!! * 70).toInt() + 100
     }
 
-    fun getMinimunDefensivePactMotivation():Float{
-        return 0f
+    fun getMinimumDefensivePactRoll():Int{
+        return  - (diplomacy["alliance"]!! * 70).toInt() + 100
     }
 
-    fun getMinimunDeclarationOfFriendshipMotivation():Float{
-        return 0f
+    fun getMinimumDeclarationOfFriendshipMotivation():Float{
+        //Standard is DoF will be asked about 18% of possibilities
+        var bias = diplomacy["friendship"]!! * 18
+        return when {
+            //Again, function behaves differently across its image
+            //Looks like a logarithmic function but thats more easily understandable and adjustable
+            //And result is similar
+            bias >= 90f -> (6.24 * bias - 148.93).toFloat()
+            bias >= 78f-> (2.49 * bias - 117).toFloat()
+            bias == 18f-> 0f //Standard
+            bias >= 9f -> (0.77 * bias - 62.74).toFloat()
+            bias > 0f -> (6.18 * bias - 554.74).toFloat()
+            else -> 500f
+        }
     }
 }

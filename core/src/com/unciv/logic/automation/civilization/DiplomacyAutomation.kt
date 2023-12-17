@@ -29,7 +29,7 @@ object DiplomacyAutomation {
                 && !civInfo.getDiplomacyManager(it).hasFlag(DiplomacyFlags.DeclinedDeclarationOfFriendship)}
             .sortedByDescending { it.getDiplomacyManager(civInfo).relationshipLevel() }.toList()
         for (otherCiv in civsThatWeCanDeclareFriendshipWith) {
-            // Default setting is 2, this will be changed according to different civ.
+            //Civ personality could also be regulated here.
             if ((1..10).random() <= 2 && wantsToSignDeclarationOfFrienship(civInfo, otherCiv)) {
                 otherCiv.popupAlerts.add(PopupAlert(AlertType.DeclarationOfFriendship, civInfo.civName))
             }
@@ -89,7 +89,7 @@ object DiplomacyAutomation {
 
         motivation -= hasAtLeastMotivationToAttack(civInfo, otherCiv, motivation / 2) * 2
 
-        return motivation > 0
+        return motivation >= civInfo.nation.personality.getMinimumDeclarationOfFriendshipMotivation() //Default is 0
     }
 
     internal fun offerOpenBorders(civInfo: Civilization) {
@@ -102,7 +102,7 @@ object DiplomacyAutomation {
             .sortedByDescending { it.getDiplomacyManager(civInfo).relationshipLevel() }.toList()
         for (otherCiv in civsThatWeCanOpenBordersWith) {
             // Default setting is 3, this will be changed according to different civ.
-            if ((1..10).random() < 7) continue
+            if ((1..100).random() >= civInfo.nation.personality.getMinimumOpenBordersRoll()) continue
             if (wantsToOpenBorders(civInfo, otherCiv)) {
                 val tradeLogic = TradeLogic(civInfo, otherCiv)
                 tradeLogic.currentTrade.ourOffers.add(TradeOffer(Constants.openBorders, TradeType.Agreement))
@@ -161,8 +161,8 @@ object DiplomacyAutomation {
             }
 
         for (otherCiv in canSignDefensivePactCiv) {
-            // Default setting is 3, this will be changed according to different civ.
-            if ((1..10).random() <= 7) continue
+            // Default minimum is 30.
+            if ((1..100).random() >= civInfo.nation.personality.getMinimumDefensivePactRoll()) continue
             if (wantsToSignDefensivePact(civInfo, otherCiv)) {
                 //todo: Add more in depth evaluation here
                 val tradeLogic = TradeLogic(civInfo, otherCiv)
