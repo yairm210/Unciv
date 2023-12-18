@@ -3,7 +3,6 @@ package com.unciv.logic.automation.civilization
 import com.unciv.Constants
 import com.unciv.logic.automation.Automation
 import com.unciv.logic.automation.ThreatLevel
-import com.unciv.logic.automation.civilization.MotivationToAttackAutomation.hasAtLeastMotivationToAttack
 import com.unciv.logic.automation.civilization.MotivationToAttackAutomation.motivationToDeclareWar
 import com.unciv.logic.automation.civilization.MotivationToAttackAutomation.motivationToStayInWar
 import com.unciv.logic.civilization.AlertType
