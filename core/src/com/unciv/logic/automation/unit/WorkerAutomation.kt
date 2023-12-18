@@ -282,8 +282,8 @@ class WorkerAutomation(
         val tileToWork = findTileToWork(unit, dangerousTiles)
         
         // If we have < 20 GPT lets not spend time connecting roads
-        if (civInfo.stats.statsForNextTurn.gold >= 20 && getImprovementPriority(tileToWork, unit) < 10
-            && tryConnectingCities(unit)) return
+        if (civInfo.stats.statsForNextTurn.gold >= 20
+            && tryConnectingCities(unit, getImprovementPriority(tileToWork, unit))) return
 
         if (tileToWork != currentTile) {
             debug("WorkerAutomation: %s -> head towards %s", unit.label(), tileToWork)
@@ -339,7 +339,7 @@ class WorkerAutomation(
         }
         
         //Lets check again if we want to build roads because we don't have a tile nearby to improve
-        if (civInfo.stats.statsForNextTurn.gold > 20 && tryConnectingCities(unit)) return 
+        if (civInfo.stats.statsForNextTurn.gold > 15 && tryConnectingCities(unit, 0f)) return 
 
         val citiesToNumberOfUnimprovedTiles = HashMap<String, Int>()
         for (city in unit.civ.cities) {
@@ -360,7 +360,7 @@ class WorkerAutomation(
         }
 
         // Nothing to do, try again to connect cities
-        if (civInfo.stats.statsForNextTurn.gold > 10 && tryConnectingCities(unit)) return 
+        if (civInfo.stats.statsForNextTurn.gold > 10 && tryConnectingCities(unit, 0f)) return 
 
 
         debug("WorkerAutomation: %s -> nothing to do", unit.label())
@@ -375,16 +375,26 @@ class WorkerAutomation(
      * Looks for work connecting cities
      * @return whether we actually did anything
      */
-    private fun tryConnectingCities(unit: MapUnit): Boolean {
+    private fun tryConnectingCities(unit: MapUnit, minPriority: Float): Boolean {
         if (bestRoadAvailable == RoadStatus.None || citiesThatNeedConnecting.isEmpty()) return false
-        var cityDistanceWanted = 20
+        val maxDistanceWanted = when {
+            minPriority > 10 -> -1
+            minPriority > 8 -> 1
+            minPriority > 7 -> 2
+            minPriority > 5 -> 3
+            minPriority > 4 -> 4
+            minPriority > 3 -> 5
+            minPriority > 2 -> 8
+            else -> 20
+        }
+        if (maxDistanceWanted < 0) return false
         
         // Since further away cities take longer to get to and - most importantly - the canReach() to them is very long,
         // we order cities by their closeness to the worker first, and then check for each one whether there's a viable path
         // it can take to an existing connected city.
         val candidateCities = citiesThatNeedConnecting.asSequence().filter {
             // Cities that are too far away make the canReach() calculations devastatingly long
-            it.getCenterTile().aerialDistanceTo(unit.getTile()) < cityDistanceWanted
+            it.getCenterTile().aerialDistanceTo(unit.getTile()) < 20
         }
         if (candidateCities.none()) return false // do nothing.
 
@@ -414,6 +424,7 @@ class WorkerAutomation(
                         currentTile
                     else {
                         val reachableTile = roadableTiles
+                            .filter { it.aerialDistanceTo(unit.getTile()) <= maxDistanceWanted }
                             .sortedBy { it.aerialDistanceTo(unit.getTile()) }
                             .firstOrNull {
                                 unit.movement.canMoveTo(it) && unit.movement.canReach(it)
