@@ -48,7 +48,7 @@ class AutoPlayMenu(
     }
 
     private fun autoPlay() {
-        settings.autoPlay.startAutoPlay()
+        settings.autoPlay.startAutoPlay(worldScreen.gameInfo)
         nextTurnButton.update()
     }
     

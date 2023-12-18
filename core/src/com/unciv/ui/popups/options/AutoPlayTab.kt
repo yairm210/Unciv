@@ -70,6 +70,13 @@ fun autoPlayTab(
 //    }
 //    if (!settings.autoPlay.fullAutoPlayAI)
 //        addAutoPlaySections()
+
+    optionsPopup.addCheckbox(
+        this,
+        "Cancel AutoPlay immediately (Experimental)",
+        settings.autoPlay.imediateAutoPlayCancel, true
+    ) { settings.autoPlay.imediateAutoPlayCancel = it
+        settings.autoPlay.stopAutoPlay() }
 }
 
 private fun addAutoPlayMaxTurnsSlider(

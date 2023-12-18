@@ -73,6 +73,7 @@ import com.unciv.utils.launchOnThreadPool
 import com.unciv.utils.withGLContext
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.coroutineScope
+import java.util.concurrent.CancellationException
 
 /**
  * Do not create this screen without seriously thinking about the implications: this is the single most memory-intensive class in the application.
@@ -671,6 +672,16 @@ class WorldScreen(
             startNewScreenJob(gameInfoClone)
         }
     }
+
+    /**
+     * An experimental addition for canceling AutoPlay immediately
+     */
+    fun cancelNextTurn() {
+        if (isNextTurnUpdateRunning()) {
+            nextTurnUpdateJob!!.cancel(CancellationException("Next turn cancel requested"))
+        }
+    }
+
 
     fun switchToNextUnit() {
         // Try to select something new if we already have the next pending unit selected.

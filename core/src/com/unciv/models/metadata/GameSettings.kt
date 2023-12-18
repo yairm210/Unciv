@@ -5,12 +5,16 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.utils.Base64Coder
 import com.unciv.Constants
 import com.unciv.UncivGame
+import com.unciv.logic.GameInfo
+import com.unciv.logic.files.UncivFiles
 import com.unciv.logic.multiplayer.FriendList
 import com.unciv.models.UncivSound
 import com.unciv.ui.components.fonts.FontFamilyData
 import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.components.input.KeyboardBindings
+import com.unciv.ui.screens.mainmenuscreen.MainMenuScreen
 import com.unciv.ui.screens.overviewscreen.EmpireOverviewCategories
+import com.unciv.ui.screens.savescreens.QuickSave
 import com.unciv.utils.Display
 import com.unciv.utils.ScreenOrientation
 import java.text.Collator
@@ -335,15 +339,24 @@ class GameSettings {
         var autoPlayPolicies: Boolean = true
         var autoPlayReligion: Boolean = true
         var autoPlayDiplomacy: Boolean = true
+        var imediateAutoPlayCancel: Boolean = false
     
         var turnsToAutoPlay: Int = 0
         var autoPlayTurnInProgress: Boolean = false
     
-        fun startAutoPlay() {
-            turnsToAutoPlay = autoPlayMaxTurns
+        fun startAutoPlay(gameInfo: GameInfo) {
+            if (!isAutoPlaying()) {
+                UncivFiles(Gdx.files).requestAutoSave(gameInfo)
+                turnsToAutoPlay = autoPlayMaxTurns
+            }
         }
         
-        fun stopAutoPlay() {
+        fun stopAutoPlay(game: UncivGame? = null) {
+            if (imediateAutoPlayCancel && game != null && game.worldScreen!!.isNextTurnUpdateRunning()) {
+                // Cancel and load the last save
+                game.worldScreen!!.cancelNextTurn()
+                QuickSave.autoLoadGame(MainMenuScreen())
+            }
             turnsToAutoPlay = 0
             autoPlayTurnInProgress = false
         }
