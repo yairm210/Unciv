@@ -30,9 +30,9 @@ Each difficulty level has the following structure:
 | aiMajorCivBonusStartingUnits | List of Units | empty | Same rules as playerBonusStartingUnits, See above. Applies only to AI major civs |
 | aiCityStateBonusStartingUnits | List of Units | empty | Same rules as playerBonusStartingUnits, See above. Applies only to city-state civs |
 | aiUnhappinessModifier | Float | 1 |
-| aisExchangeTechs | Boolean | | Unimplemented |
 | turnBarbariansCanEnterPlayerTiles | Integer | 0 |
 | clearBarbarianCampReward | Integer | 25 |
+<!-- | aisExchangeTechs | Boolean | | Unimplemented | -->
 
 ## Eras.json
 
@@ -46,7 +46,7 @@ Each era can have the following attributes:
 | --------- | ---- | ------- | ----- |
 | name | String | Required | Name of the era |
 | researchAgreementCost | Integer (≥0) | 300 | Cost of research agreements when the most technologically advanced civ is in this era |
-| iconRGB | List of 3 Integers | [255, 255, 255] | RGB color that icons for technologies of this era should have in the Tech screen |
+| iconRGB | [List of 3× Integer](#rgb-colors-list) | white | RGB color that icons for technologies of this era should have in the Tech screen |
 | unitBaseBuyCost | Integer (≥0) | 200 | Base cost of buying units with Faith, Food, Science or Culture when no other cost is provided |
 | startingSettlerCount | Integer (≥0) | 1 | Amount of settler units that should be spawned when starting a game in this era (setting this to zero is discouraged [^1]) |
 | startingSettlerUnit | String | "Settler" | Name of the unit that should be used for the previous field. Must be in [Units.json](4-Unit-related-JSON-files.md#unitsjson), or a unit with the "Founds a new city" unique must exist |
@@ -57,8 +57,8 @@ Each era can have the following attributes:
 | startingGold | Integer (≥0) | 0 | Amount of gold each civ should receive when starting a game in this era |
 | startingCulture | Integer (≥0) | 0 | Amount of culture each civ should receive when starting a game in this era |
 | settlerPopulation | Integer (>0) | 1 | Amount of population each city should have when settled when starting a game in this era |
-| settlerBuildings | List of Strings | none | Buildings that should automatically be built whenever a city is settled when starting a game in this era |
-| startingObsoleteWonders | List of Strings | none | Wonders (and technically buildings) that should be impossible to built when starting a game in this era. Used in the base game to remove all wonders older than 2 era's |
+| settlerBuildings | List of Strings | empty | Buildings that should automatically be built whenever a city is settled when starting a game in this era |
+| startingObsoleteWonders | List of Strings | empty | Wonders (and technically buildings) that should be impossible to built when starting a game in this era. Used in the base game to remove all wonders older than 2 era's |
 | baseUnitBuyCost | Integer | 200 | Default value used for the unique `Can be purchased with [stat] [cityFilter]` and AI |
 | embarkDefense | Integer | 3 | Default defense for embarked unit in this era |
 | startPercent | Integer | 0 | When starting, percentage (\[0\]%-\[100\]%) of turns skipped in total turns specified in [Speed.json](#speedsjson) |
@@ -101,7 +101,7 @@ The "turns" attribute defines the number of years passed between turns. The attr
 | Attribute | Type | Default | Notes |
 | --------- | ---- | ------- | ----- |
 | yearsPerTurn | Integer | Required | Number of years passed between turns |
-| untilTurn | Integer | Required | Turn that this "speed" is active until (note: this "speed" will still be active until the end of the game if it is the last hashmap) |
+| untilTurn | Integer | Required | Which turn that this "speed" is active until (if it is the last object, this is ignored) |
 
 The code below is an example of a valid "turns" definition and it specifies that the first 50 turns of a game last for 60 years each, then the next 30 turns (and any played after the 80th) last for 40 years each.
 
@@ -128,18 +128,18 @@ The file can have the following attributes, including the values Unciv sets (no 
 
 | Attribute | Type | | Notes |
 | --------- | ---- | ------- | ----- |
-| isBaseRuleset | Boolean | false | Differentiates mods that change the vanilla ruleset or replace it |
+| isBaseRuleset | Boolean | false | Replaces vanilla ruleset if true |
 | maxXPfromBarbarians | Integer | 30 | _Deprecated_, see [constants](#modconstants) |
 | uniques | List | empty | Mod-wide specials, [see here](../uniques.md#modoptions-uniques) |
-| techsToRemove | List | empty | List of [Technologies](2-Civilization-related-JSON-files.md#techsjson) or [-filters](../Unique-parameters.md#technologyfilter) to remove (isBaseRuleset=false only) |
-| buildingsToRemove | List | empty | List of [Buildings or Wonders](2-Civilization-related-JSON-files.md#buildingsjson) or [-filters](../Unique-parameters.md#buildingfilter) to remove (isBaseRuleset=false only) |
-| unitsToRemove | List | empty | List of [Units](4-Unit-related-JSON-files.md#unitsjson) or [-filters](../Unique-parameters.md#baseunitfilter) to remove (isBaseRuleset=false only) |
-| nationsToRemove | List | empty | List of [Nations](2-Civilization-related-JSON-files.md#nationsjson) or [-filters](../Unique-parameters.md#nationfilter) to remove (isBaseRuleset=false only) |
-| lastUpdated | String | empty | Set automatically after download - Last repository update, not necessarily last content change |
-| modUrl | String | empty | Set automatically after download - URL of repository |
-| author | String | empty | Set automatically after download - Owner of repository |
-| modSize | Integer | empty | Set automatically after download - kB in entire repository, not sum of branch files |
-| constants | Object | empty | see [ModConstants](#modconstants) |
+| techsToRemove | List | empty | List of [Technologies](2-Civilization-related-JSON-files.md#techsjson) or [technologyFilter](../Unique-parameters.md#technologyfilter) to remove (isBaseRuleset=false only) |
+| buildingsToRemove | List | empty | List of [Buildings or Wonders](2-Civilization-related-JSON-files.md#buildingsjson) or [buildingFilter](../Unique-parameters.md#buildingfilter) to remove (isBaseRuleset=false only) |
+| unitsToRemove | List | empty | List of [Units](4-Unit-related-JSON-files.md#unitsjson) or [unitFilter](../Unique-parameters.md#baseunitfilter) to remove (isBaseRuleset=false only) |
+| nationsToRemove | List | empty | List of [Nations](2-Civilization-related-JSON-files.md#nationsjson) or [nationFilter](../Unique-parameters.md#nationfilter) to remove (isBaseRuleset=false only) |
+| lastUpdated | String | Automatic | Set automatically after download - Date of last repository update (__not__ last content change) |
+| modUrl | String | Automatic | Set automatically after download - URL of repository |
+| author | String | Automatic | Set automatically after download - Owner of repository |
+| modSize | Integer | Automatic | Set automatically after download - kB in entire repository, not sum of branch files |
+| constants | Object | empty | See [ModConstants](#modconstants) |
 
 ### ModConstants
 
@@ -241,7 +241,7 @@ Each tutorial has the following structure:
 | --------- | ---- | ------- | ----- |
 | name | String | Required | Entry name |
 | civilopediaText | List | Optional | See [civilopediaText chapter](5-Miscellaneous-JSON-files.md#civilopedia-text) |
-| steps | List(String) | Optional | Plain text |
+| steps | List of Strings | Optional | Plain text |
 
 If an entry contains both `steps` and `civilopediaText` attributes, the `civilopediaText` is shown first.
 
@@ -257,9 +257,9 @@ Each victory have the following structure:
 | Attribute | Type | Default | Notes |
 | --------- | ---- | ------- | ----- |
 | name | String | Required | Name of the victory |
-| victoryScreenHeader | String | empty | Shown in the footer of the victory in the `our status` in the victory screen |
-| victoryString | String | empty | Shown in the footer of the victory screen when you won the game with this victory |
-| defeatString | String | empty | Shown in the footer of the victory screen when someone else won the game with this victory |
+| victoryScreenHeader | String | none | Shown in the footer of the victory in the `our status` in the victory screen |
+| victoryString | String | none | Shown in the footer of the victory screen when you won the game with this victory |
+| defeatString | String | none | Shown in the footer of the victory screen when someone else won the game with this victory |
 | hiddenInVictoryScreen | Boolean | false | Whether progress of this victory is hidden in the victory screen |
 | requiredSpaceshipParts | List of Strings | empty | What spaceship parts must be added to the capital for the corresponding milestone |
 | Milestones | List of Strings | Required | List of milestones that must be accomplished to win, see [below](#milestones) |
@@ -325,4 +325,16 @@ List of attributes - note not all combinations are valid:
 The lines from json will 'surround' the automatically generated lines such that the latter are inserted just above the first json line carrying a link, if any. If no json lines have links, they will be inserted between the automatic title and the automatic info. This method may, however, change in the future.
 
 Note: `text` now also supports inline color markup. Insert `«color»` to start coloring text, `«»` to stop. `color` can be a name or 6/8-digit hex notation like `#ffa040` (different from the `color` attribute notation only by not allowing 3-digit codes, but allowing the alpha channel).
-Effectively, the `«»` markers are replaced with `[]` _after_ translation and then passed to [Gdx markup language](https://libgdx.com/wiki/graphics/2d/fonts/color-markup-language).
+Effectively, the `«»` markers are replaced with `[]` _after_ translation and then passed to [gdx markup language](https://libgdx.com/wiki/graphics/2d/fonts/color-markup-language).
+
+## RGB colors list
+
+Certain objects can be specified to have its own unique color. The colors are defined by a list of 3× Integer in this order: red, green, blue. The range of color is from \[0, 0, 0\] (black) to \[255, 255, 255\] (white).
+
+Note: The default of some objects are [gdx color classes](https://javadoc.io/doc/com.badlogicgames.gdx/gdx/latest/com/badlogic/gdx/graphics/Color.html). The values of the constants are as follows:
+
+``` json
+gold        = [225, 215, 0  ]
+white       = [255, 255, 255]
+black       = [0  , 0  , 0  ]
+```

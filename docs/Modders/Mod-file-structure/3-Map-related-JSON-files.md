@@ -15,13 +15,13 @@ Each terrain entry has the following structure:
 | occursOn | List | none | Only for terrain features and Natural Wonders: The baseTerrain it can be placed on |
 | turnsInto | String | none | Only for NaturalWonder: the base terrain is changed to this after placing the Natural Wonder |
 | weight | Integer | 10 | Only for NaturalWonder: _relative_ weight of being picked by the map generator |
-| [`<stats>`](3-Map-related-JSON-files.md#stats) | Float | 0 | Per-turn yield or bonus yield for the tile |
+| [`<stats>`](#stats) | Float | 0 | Per-turn yield or bonus yield for the tile |
 | overrideStats | Boolean | false | If on, a feature's yields replace any yield from underlying terrain instead of adding to it |
 | unbuildable | Boolean | false | If true, nothing can be built here - not even resource improvements |
 | impassable | Boolean | false | No unit can enter unless it has a special unique |
 | movementCost | Integer | 1 | Base movement cost |
 | defenceBonus | Float | 0 | Combat bonus for units being attacked here |
-| RGB | List Integer * 3 | 'Gold' | RGB color for 'Default' tileset display |
+| RGB | [List of 3× Integer](5-Miscellaneous-JSON-files.md#rgb-colors-list) | Gold | RGB color for 'Default' tileset display |
 | uniques | List | empty | List of [unique abilities](../uniques) this terrain has |
 | civilopediaText | List | empty | See [civilopediaText chapter](5-Miscellaneous-JSON-files.md#civilopedia-text) |
 
@@ -70,10 +70,10 @@ Each resource has the following structure:
 | resourceType | Enum | Bonus | Bonus, Luxury or Strategic |
 | terrainsCanBeFoundOn | List | empty | [Terrains](#terrainsjson) that allow this resource |
 | [`<stats>`](#stats) | Integer | 0 | Per-turn bonus yield for the tile |
-| improvement | String | empty | The improvement ([TileImprovements.json](#tileimprovementsjson)) for this resource |
+| improvement | String | none | The improvement ([TileImprovements.json](#tileimprovementsjson)) for this resource |
 | improvementStats | Object | empty | The additional yield when improved as sub-object with one or more [Stats](#stats) |
-| revealedBy | String | empty | The technology name required to see, work and improve this resource |
-| unique | String | empty | List of [unique abilities](../uniques) this improvement has |
+| revealedBy | String | none | The technology name required to see, work and improve this resource |
+| unique | String | none | List of [unique abilities](../uniques) this improvement has |
 | civilopediaText | List | empty | see [civilopediaText chapter](5-Miscellaneous-JSON-files.md#civilopedia-text) |
 
 ## Ruins.json
@@ -89,8 +89,8 @@ Each of the objects in the file represents a single reward you can get from ruin
 | name | String | Required | Name of the ruins. Never shown to the user, but they have to be distinct |
 | notification | String | Required | Notification added to the user when this reward is chosen. If omitted, an empty notification is shown. Some notifications may have parameters, refer to the table below. |
 | weight | Integer (≥0) | 1 | _Relative_ weight this reward is chosen next [^A] |
-| uniques | List of Strings | none |  List of [unique abilities](../uniques) that will trigger when entering the ruins. If more than 1 unique is added, the notification will be shown multiple times due to a bug (may be outdated) |
-| excludedDifficulties | List of Strings | None | A list of all difficulties on which this reward may _not_ be awarded |
+| uniques | List of Strings | empty |  List of [unique abilities](../uniques) that will trigger when entering the ruins. If more than 1 unique is added, the notification will be shown multiple times due to a bug (may be outdated) |
+| excludedDifficulties | List of Strings | empty | A list of all difficulties on which this reward may _not_ be awarded |
 
 [^A]: The exact algorithm for choosing a reward is the following:
 
@@ -149,7 +149,7 @@ ruleVariants control substitutions when layering images for a tile, they are lis
 
 Each line means "if the tile content is this... then combine the following png images". The key part follows a specific order and must match in its entirety, meaning "Plains+Forest" is not valid for "Plains+Forest+Deer", and when it matches no other image layering is done except roads and units (I think - _WIP_).
 
-When TileSetConfig's for the same Tileset are combined, for the first three properties the last mod wins, while ruleVariants are merged, meaning only an entry with the same key overwrites an earlier entry.
+When TileSetConfig's for the same Tileset are combined, for the first three properties the last mod wins, while ruleVariants are merged, meaning only an entry with the same key overwrites an earlier entry. (TODO)
 
 ## Stats
 

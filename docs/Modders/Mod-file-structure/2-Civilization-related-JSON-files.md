@@ -11,8 +11,8 @@ Each belief has the following structure:
 | Attribute | Type | Default | Notes |
 | --------- | ---- | ------- | ----- |
 | name | String | Required | |
-| type | Enum | Required | Pantheon, Founder, Follower or Enhancer (note: leaving this attribute empty or None makes the belief impossible to obtain) |
-| uniques | List of Strings | none | List of [unique abilities](../uniques) this belief adds to cities following it |
+| type | Enum | Required | Pantheon, Founder, Follower or Enhancer |
+| uniques | List of Strings | empty | List of [unique abilities](../uniques) this belief adds to cities following it |
 | civilopediaText | List | empty | See [civilopediaText chapter](5-Miscellaneous-JSON-files.md#civilopedia-text) |
 
 ## Buildings.json
@@ -26,26 +26,26 @@ Each building has the following structure:
 | Attribute | Type | Default | Notes |
 | --------- | ---- | ------- | ----- |
 | name | String | Required | |
-| cost | Integer (≥0) | 0 | Amount of production required to build the building |
+| cost | Integer | 0 | Amount of production required to build the building |
 | [`<stats>`](3-Map-related-JSON-files.md#stats) | float | 0 | Per-turn yield produced by the building |
-| maintenance | Integer (≥0) | 0 | Maintenance cost of the building |
+| maintenance | Integer | 0 | Maintenance cost of the building |
 | isWonder | Boolean | false | Whether this building is a global wonder |
 | isNationalWonder | Boolean | false | Whether this building is a national wonder |
 | requiredBuilding | String | none | A building that has to be built before this building can be built. Must be in [Buildings.json](#buildingsjson) |
 | providesFreeBuilding | String | none | When the building is built, [providesFreeBuilding] is also automatically added to the city |
 | requiredTech | String | none | The tech that should be researched before this building may be built. Must be in [Techs.json](#techsjson) |
 | requiredResource | String | none | The resource that is consumed when building this building. Must be in [TileResources.json](3-Map-related-JSON-files.md#tileresourcesjson) |
-| requiredNearbyImprovedResources | List of Strings | none | The building can only be built if any of the resources in this list are within the borders of this city and have been improved. Each resource must be in [TileResources.json](3-Map-related-JSON-files.md#tileresourcesjson) |
+| requiredNearbyImprovedResources | List of Strings | empty | The building can only be built if any of the resources in this list are within the borders of this city and have been improved. Each resource must be in [TileResources.json](3-Map-related-JSON-files.md#tileresourcesjson) |
 | replaces | String | none | The name of a building that should be replaced by this building. Must be in [Buildings.json](#buildingsjson) |
 | uniqueTo | String | none | If supplied, only the nation with this name can build this building. Must be in [Nations.json](#nationsjson) |
 | cityStrength | Integer | 0 | Strength bonus the city in which this building is built receives |
 | cityHealth | Integer | 0 | Health bonus the city in which this building is built receives |
 | hurryCostModifier | Integer | 0 | When this building is bought using gold or faith, the price is increased by this much percent |
 | quote | String | none | If this building is a (national) wonder, this string will be shown on the completion popup |
-| uniques | List of Strings | none | List of [unique abilities](../uniques) this building has |
+| uniques | List of Strings | empty | List of [unique abilities](../uniques) this building has |
 | replacementTextForUniques | String | none | If provided, this string will be shown instead of all of the uniques |
-| percentStatBonus | Object | none | Percentual bonus for stats provided by the building. Valid keys are the names of stats (production, gold, science, etc.), valid values are Integers (≥0) |
-| greatPersonPoints | Object | none | How many great person points for each type will be generated per turn. Valid keys are the names of great people (Great Scientist, Great Engineer, etc.), valid values are Integers (≥0) |
+| percentStatBonus | Object | none | Percentual bonus for stats provided by the building. Valid keys are the names of stats (production, gold, science, etc.), valid values are Integers |
+| greatPersonPoints | Object | none | How many great person points for each type will be generated per turn. Valid keys are the names of great people (Great Scientist, Great Engineer, etc.), valid values are Integers |
 | specialistSlots | Object | none | Specialist slots provided by this building. Valid keys are the names of specialists (as defined in [Specialists.json](3-Map-related-JSON-files.md#specialistsjson)), valid values are Integers, the amount of slots provided for this specialist |
 | civilopediaText | List | empty | see [civilopediaText chapter](5-Miscellaneous-JSON-files.md#civilopedia-text) |
 
@@ -60,25 +60,25 @@ Each nation has the following structure:
 | Attribute | Type | Default | Notes |
 | --------- | ---- | ------- | ----- |
 | name | String | Required | |
-| leaderName | String | empty | Omit only for city states! If you want LeaderPortraits, the image file names must match exactly, including case |
-| style | String | empty | Modifier appended to pixel unit image names |
-| adjective | String | empty | Currently unused |
+| leaderName | String | none | Omit only for city states! If you want LeaderPortraits, the image file names must match exactly, including case |
+| style | String | none | Modifier appended to pixel unit image names |
+| adjective | String | none | Currently unused |
 | cityStateType | Enum | absent | Distinguishes major civilizations from city states (Cultured, Maritime, Mercantile, Militaristic) |
 | startBias | List | empty | Zero or more of: terrainFilter or "Avoid [terrainFilter]". [^S] |
-| preferredVictoryType | String | "Neutral" | The victory type major civilizations will pursue. (Note: need not be in [VictoryTypes.json](5-Miscellaneous-JSON-files.md#victorytypesjson)) |
-| startIntroPart1 | String | empty | Introductory blurb shown to Player on game start... |
-| startIntroPart2 | String | empty | ... second paragraph. ___NO___ "TBD"!!! Leave empty to skip that alert. |
-| declaringWar | String | empty | another greeting, voice hook supported [^V] |
-| attacked | String | empty | another greeting, voice hook supported [^V] |
-| defeated | String | empty | another greeting, voice hook supported [^V] |
-| introduction | String | empty | another greeting, voice hook supported [^V] |
-| neutralHello | String | empty | another greeting, voice hook supported [^V] |
-| hateHello | String | empty | another greeting, voice hook supported [^V] |
-| tradeRequest | String | empty | another greeting, voice hook supported [^V] |
-| innerColor | 3x Integer | black | RGB color for outer ring of nation icon |
-| outerColor | 3x Integer | Required | RGB color for inner circle of nation icon |
-| uniqueName | String | empty | Decorative name for the special characteristic of this nation |
-| uniqueText | String | empty | Replacement text for "uniques". If empty, uniques are listed individually |
+| preferredVictoryType | String | Neutral | The victory type major civilizations will pursue (need not be specified in [VictoryTypes.json](5-Miscellaneous-JSON-files.md#victorytypesjson)) |
+| startIntroPart1 | String | none | Introductory blurb shown to Player on game start... |
+| startIntroPart2 | String | none | ... second paragraph. ___NO___ "TBD"!!! Leave empty to skip that alert. |
+| declaringWar | String | none | another greeting, voice hook supported [^V] |
+| attacked | String | none | another greeting, voice hook supported [^V] |
+| defeated | String | none | another greeting, voice hook supported [^V] |
+| introduction | String | none | another greeting, voice hook supported [^V] |
+| neutralHello | String | none | another greeting, voice hook supported [^V] |
+| hateHello | String | none | another greeting, voice hook supported [^V] |
+| tradeRequest | String | none | another greeting, voice hook supported [^V] |
+| innerColor | [List of 3× Integer](5-Miscellaneous-JSON-files.md#rgb-colors-list) | black | RGB color for outer ring of nation icon |
+| outerColor | [List of 3× Integer](5-Miscellaneous-JSON-files.md#rgb-colors-list) | Required | RGB color for inner circle of nation icon |
+| uniqueName | String | none | Decorative name for the special characteristic of this nation |
+| uniqueText | String | none | Replacement text for "uniques". If empty, uniques are listed individually |
 | uniques | List | empty | List of [unique abilities](../uniques) this civilisation has |
 | cities | List | empty | City names used sequentially for newly founded cities. Required for major civilizations and city states |
 | civilopediaText | List | empty | See [civilopediaText chapter](5-Miscellaneous-JSON-files.md#civilopedia-text) |
@@ -105,7 +105,7 @@ Each city state type has the following structure:
 | name | String | Required | |
 | friendBonusUniques | List | empty | List of [unique abilities](../uniques) granted to major civilizations when friends with this city state |
 | allyBonusUniques | List | empty | List of [unique abilities](../uniques) granted to  major civilizations when allied to city state |
-| color | List of Integers | [255, 255, 255] | RGB color of text in civilopedia |
+| color | [List of 3× Integer](5-Miscellaneous-JSON-files.md#rgb-colors-list) | [255, 255, 255] | RGB color of text in civilopedia |
 
 ## Policies.json
 
@@ -199,7 +199,7 @@ Each specialist has the following structure:
 | --------- | ---- | ------- | ----- |
 | name | String | Required | |
 | [`<stats>`](3-Map-related-JSON-files.md#stats) | Float | 0 | Per-turn yield produced by the specialist |
-| color | List of 3 Integers | Required | Color of the image for this specialist |
+| color | [List of 3× Integer](5-Miscellaneous-JSON-files.md#rgb-colors-list) | Required | Color of the image for this specialist |
 | greatPersonPoints | Object | none | Great person points generated by this specialist. Valid keys are the names of the great person (Great Scientist, Great Merachant, etc.), valid values are Integers (≥0) |
 
 ## Techs.json
@@ -229,6 +229,6 @@ Each tech column has the following structure:
 | row | Integer | 0 | Vertical placement in the Tech Tree, must be unique per column |
 | cost | Integer | [Column techCost](#column-structure) | The amount of science required to research this tech |
 | prerequisites | List | empty | A list of the names of techs that are prerequisites of this tech. Only direct prerequisites are necessary |
-| quote | String | empty | A nice story presented to the player when they research this tech |
+| quote | String | none | A nice story presented to the player when they research this tech |
 | uniques | List | empty | List of [unique abilities](../uniques) this technology grants |
 | civilopediaText | List | empty | See [civilopediaText chapter](5-Miscellaneous-JSON-files.md#Civilopedia-text) |
