@@ -223,19 +223,19 @@ object MotivationToAttackAutomation {
             && (owner == otherCiv || owner == null || civInfo.diplomacyFunctions.canPassThroughTiles(owner))
     }
 
-    /** Returns a value between -45 and 100 indicating how stronger a civ is against another*/
+    /** Returns a value between -45 and 130 indicating how stronger a civ is against another*/
     private fun powerAdvantageScore(civInfo: Civilization, otherCiv: Civilization, minimunStrengthRatio:Float): Float{
         var powerDiff = 0f;
         val powerRatio = calculateSelfCombatStrength(civInfo,30f) / calculateCombatStrengthWithProtectors(otherCiv, 30f, civInfo)
         if (powerRatio < minimunStrengthRatio) return 0f
-        powerDiff += min(40f, (powerRatio - 1) * 25)
+        powerDiff += min(50f, (powerRatio - 1) * 25)
         val techDiff = civInfo.getStatForRanking(RankingType.Technologies) - otherCiv.getStatForRanking(RankingType.Technologies)
         powerDiff += min(20,max(4 * techDiff, -20))
         val prodRatio = civInfo.getStatForRanking(RankingType.Production).toFloat() / otherCiv.getStatForRanking(RankingType.Production).toFloat()
         powerDiff += min(20 * prodRatio - 20, 20f)
         //City-states are often having high scores. Why?
         val scoreRatio = otherCiv.getStatForRanking(RankingType.Score).toFloat() / civInfo.getStatForRanking(RankingType.Score).toFloat();
-        powerDiff += min(20 / scoreRatio - 20, 20f) //Divided so that stronger civs are more targeted
+        powerDiff += min(30 / scoreRatio - 20, 20f) //Divided so that stronger civs are more targeted
         return powerDiff
     }
 
