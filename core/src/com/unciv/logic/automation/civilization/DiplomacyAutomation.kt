@@ -5,6 +5,7 @@ import com.unciv.logic.automation.Automation
 import com.unciv.logic.automation.ThreatLevel
 import com.unciv.logic.automation.civilization.MotivationToAttackAutomation.hasAtLeastMotivationToAttack
 import com.unciv.logic.automation.civilization.MotivationToAttackAutomation.motivationToDeclareWar
+import com.unciv.logic.automation.civilization.MotivationToAttackAutomation.motivationToStayInWar
 import com.unciv.logic.civilization.AlertType
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.PopupAlert
@@ -87,7 +88,7 @@ object DiplomacyAutomation {
         val civsToKnow = 0.75f * allAliveCivs
         motivation -= ((civsToKnow - knownCivs) / civsToKnow * 30f).toInt().coerceAtLeast(0)
 
-        motivation -= hasAtLeastMotivationToAttack(civInfo, otherCiv, motivation / 2) * 2
+        motivation -= motivationToDeclareWar(civInfo, otherCiv, 10f).toInt() * 2
 
         return motivation >= civInfo.nation.personality.getMinimumDeclarationOfFriendshipMotivation() //Default is 0
     }
@@ -123,7 +124,7 @@ object DiplomacyAutomation {
         // Don't accept if they are at war with our friends, they might use our land to attack them
         if (civInfo.diplomacy.values.any { it.isRelationshipLevelGE(RelationshipLevel.Friend) && it.otherCiv().isAtWarWith(otherCiv)})
             return false
-        if (hasAtLeastMotivationToAttack(civInfo, otherCiv, (diploManager.opinionOfOtherCiv()/ 2 - 10).toInt()) >= 0)
+        if (motivationToDeclareWar(civInfo, otherCiv, 15f) >= 5f)
             return false
         return true
     }
@@ -276,7 +277,7 @@ object DiplomacyAutomation {
             .filter { it.tradeRequests.none { tradeRequest -> tradeRequest.requestingCiv == civInfo.civName && tradeRequest.trade.isPeaceTreaty() } }
 
         for (enemy in enemiesCiv) {
-            if(hasAtLeastMotivationToAttack(civInfo, enemy, 10) >= 10) {
+            if(motivationToStayInWar(civInfo, enemy) >= 10) {
                 // We can still fight. Refuse peace.
                 continue
             }
