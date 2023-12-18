@@ -348,14 +348,14 @@ class WorkerAutomation(
                 .count { it.isLand && it.civilianUnit == null && (it.isPillaged() || tileHasWorkToDo(it, unit)) }
         }
 
-        val mostUndevelopedCity = unit.civ.cities.asSequence()
+        val closestUndevelopedCity = unit.civ.cities.asSequence()
             .filter { citiesToNumberOfUnimprovedTiles[it.id]!! > 0 }
-            .sortedByDescending { citiesToNumberOfUnimprovedTiles[it.id] }
+            .sortedByDescending { it.getCenterTile().aerialDistanceTo(currentTile) }
             .firstOrNull { unit.movement.canReach(it.getCenterTile()) } //goto most undeveloped city
 
-        if (mostUndevelopedCity != null && mostUndevelopedCity != currentTile.owningCity) {
-            debug("WorkerAutomation: %s -> head towards undeveloped city %s", unit.label(), mostUndevelopedCity.name)
-            val reachedTile = unit.movement.headTowards(mostUndevelopedCity.getCenterTile())
+        if (closestUndevelopedCity != null && closestUndevelopedCity != currentTile.owningCity) {
+            debug("WorkerAutomation: %s -> head towards undeveloped city %s", unit.label(), closestUndevelopedCity.name)
+            val reachedTile = unit.movement.headTowards(closestUndevelopedCity.getCenterTile())
             if (reachedTile != currentTile) unit.doAction() // since we've moved, maybe we can do something here - automate
             return
         }
