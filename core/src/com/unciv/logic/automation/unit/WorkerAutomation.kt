@@ -647,8 +647,19 @@ class WorkerAutomation(
     private fun getImprovementRanking(tile: Tile, unit: MapUnit, improvementName: String, localUniqueCache: LocalUniqueCache): Float {
         val improvement = ruleSet.tileImprovements[improvementName]!!
         val stats = tile.stats.getStatDiffForImprovement(improvement, civInfo, tile.getCity(), localUniqueCache)
-        //TODO: Add extra ranking for resources here
-        return Automation.rankStatsValue(stats, unit.civ)
+        var value = Automation.rankStatsValue(stats, unit.civ)
+        // Calculate the bonus from gaining the resources, this isn't included in the stats above
+        if (tile.resource != null && tile.tileResource.resourceType != ResourceType.Bonus) {
+            // A better resource ranking system might be required, we don't want the improvement
+            // ranking for resources to be too high
+            if (tile.improvement != null && tile.tileResource.isImprovedBy(tile.improvement!!)) {
+                value -= (tile.resourceAmount / 2).coerceIn(1,2)
+            }
+            if (tile.tileResource.isImprovedBy(improvementName)) {
+                value += (tile.resourceAmount / 2).coerceIn(1,2)
+            }
+        }
+        return value
     }
 
     /**
