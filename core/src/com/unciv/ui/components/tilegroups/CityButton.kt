@@ -526,7 +526,7 @@ class CityButton(val city: City, private val tileGroup: TileGroup) : Table(BaseS
         // So you can click anywhere on the button to go to the city
         touchable = Touchable.childrenOnly
 
-        fun onSecondClick() {
+        fun enterCityOrInfoPopup() {
             // second tap on the button will go to the city screen
             // if this city belongs to you and you are not iterating though the air units
             if (DebugUtils.VISIBLE_MAP || viewingPlayer.isSpectator()
@@ -541,14 +541,14 @@ class CityButton(val city: City, private val tileGroup: TileGroup) : Table(BaseS
             // clicking swings the button a little down to allow selection of units there.
             // this also allows to target selected units to move to the city tile from elsewhere.
             if (isButtonMoved) {
-                onSecondClick()
+                enterCityOrInfoPopup()
             } else {
                 moveButtonDown()
                 if ((unitTable.selectedUnit == null || unitTable.selectedUnit!!.currentMovement == 0f) && belongsToViewingCiv())
                     unitTable.citySelected(city)
             }
         }
-        onRightClick(action = ::onSecondClick)
+        onRightClick(action = ::enterCityOrInfoPopup)
 
         // when deselected, move city button to its original position
         if (unitTable.selectedCity != city
