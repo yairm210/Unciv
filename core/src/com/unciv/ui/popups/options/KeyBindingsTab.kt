@@ -5,12 +5,12 @@ import com.unciv.GUI
 import com.unciv.UncivGame
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.translations.tr
-import com.unciv.ui.components.widgets.ExpanderTab
-import com.unciv.ui.components.widgets.KeyCapturingButton
-import com.unciv.ui.components.widgets.TabbedPager
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.input.KeyCharAndCode
 import com.unciv.ui.components.input.KeyboardBinding
+import com.unciv.ui.components.widgets.ExpanderTab
+import com.unciv.ui.components.widgets.KeyCapturingButton
+import com.unciv.ui.components.widgets.TabbedPager
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.civilopediascreen.CivilopediaScreen
 import com.unciv.ui.screens.civilopediascreen.FormattedLine
@@ -110,6 +110,7 @@ class KeyBindingsTab(
     }
 
     fun save() {
+        if (!hasChildren()) return // We never initialized the current values, better not save - all widgets still have current==unbound
         for ((binding, widget) in groupedWidgets.asSequence().flatMap { it.value.entries }) {
             keyBindings[binding] = widget.current
         }
