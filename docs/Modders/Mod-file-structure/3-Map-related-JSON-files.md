@@ -134,7 +134,7 @@ A mod can define new Tilesets or add to existing ones, namely FantasyHex. There 
 | [fallbackTileSet](../Creating-a-custom-tileset.md#fallbackTileSet) | String | "FantasyHex" | null to disable |
 | [tileScale](../Creating-a-custom-tileset.md#tileScale) | Float | 1.0 | The scale of all tiles. Can be used to increase or decrease the size of every tile |
 | [tileScales](../Creating-a-custom-tileset.md#tileScales) | Object | empty | Used by the "Minimal" tileset to scale all its tiles except the base terrain down. Overrides `tileScale` value for specified terrain |
-| [ruleVariants](../Creating-a-custom-tileset.md#ruleVariants) | Object | empty | See [below](#layering-images) |
+| [ruleVariants](../Creating-a-custom-tileset.md#ruleVariants) | Object | empty | [See here](#layering-images) |
 
 ### Layering images
 
