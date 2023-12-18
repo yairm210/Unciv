@@ -45,7 +45,7 @@ object MotivationToAttackAutomation {
         motivation += min(20f,max((40 - diplomacyManager.opinionOfOtherCiv())/4,-20f))
 
         if (otherCiv.isCityState()){
-            motivation -= 30;
+            motivation -= 15
             if (otherCiv.getAllyCiv() == civInfo.civName)
             {
                 motivation -= 15
@@ -58,7 +58,7 @@ object MotivationToAttackAutomation {
 
         //This part does take "Should i fight?" into consideration, but it is not significative enough
         //to dissuade the AI except in very particular circumstances
-        motivation -= relationshipBonuses(diplomacyManager)
+        motivation -= relationshipBonuses(diplomacyManager) * 0.5f
         motivation += getAlliedWarMotivation(civInfo,otherCiv)
 
         // Short-circuit to avoid expensive BFS
@@ -97,6 +97,7 @@ object MotivationToAttackAutomation {
 
         //Just because they are slightly stronger now does not mean we should sue for peace
         var motivation = powerAdvantageScore(civInfo,otherCiv,0.9f)
+        if(motivation <= 0f) return  0f
 
         if (!otherCiv.isCityState() && theirCity.getTiles().none { tile -> tile.neighbors.any { it.getOwner() == theirCity.civ && it.getCity() != theirCity } }){
             //Isolated city
@@ -134,7 +135,7 @@ object MotivationToAttackAutomation {
 
     /** Returns a value between -45 and 130 indicating how stronger a civ is against another*/
     private fun powerAdvantageScore(civInfo: Civilization, otherCiv: Civilization, minimunStrengthRatio:Float): Float{
-        var powerDiff = 0f;
+        var powerDiff = 0f
         val powerRatio = calculateSelfCombatStrength(civInfo,30f) / calculateCombatStrengthWithProtectors(otherCiv, 30f, civInfo)
         if (powerRatio < minimunStrengthRatio) return 0f
         powerDiff += min(50f, (powerRatio - 1) * 25)
