@@ -293,4 +293,31 @@ internal class WorkerAutomationTest {
         assertTrue("Worker should have built roads to connect the two cities", city2.isConnectedToCapital())
     }
 
+    @Test
+    fun `should repair pillaged tile`() {
+        // Add the needed tech to construct the improvements below
+        for (improvement in listOf("Mine")) {
+            civInfo.tech.techsResearched.add(testGame.ruleset.tileImprovements[improvement]!!.techRequired!!)
+        }
+        civInfo.tech.techsResearched.add(testGame.ruleset.tileResources["Iron"]!!.revealedBy!!)
+
+        testGame.addCity(civInfo, testGame.tileMap[0,0])
+
+        val currentTile = testGame.tileMap[1,1] // owned by city
+        currentTile.resource = "Iron" // This tile also has a resource needs to be enabled by a building a Mine
+        currentTile.changeImprovement("Mine")
+        currentTile.setPillaged()
+
+        val mapUnit = testGame.addUnit("Worker", civInfo, currentTile)
+
+        // Act
+        workerAutomation.automateWorkerAction(mapUnit, hashSetOf())
+
+        // Assert
+        assertEquals("Worker should try to repair the mine",
+            "Repair", currentTile.improvementInProgress)
+        assertTrue(currentTile.turnsToImprovement > 0)
+    }
+
+
 }
