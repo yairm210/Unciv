@@ -275,7 +275,7 @@ class WorkerAutomation(
         val currentTile = unit.getTile()
         
         // Shortcut, we are working a good tile (like resource) and don't need to check for other tiles to work
-        if (!dangerousTiles.contains(currentTile) && getImprovementPriority(unit.getTile(), unit) >= 10
+        if (!dangerousTiles.contains(currentTile) && getFullPriority(unit.getTile(), unit) >= 10
             && currentTile.improvementInProgress != null) {
             return
         }
@@ -378,13 +378,11 @@ class WorkerAutomation(
     private fun tryConnectingCities(unit: MapUnit, minPriority: Float): Boolean {
         if (bestRoadAvailable == RoadStatus.None || citiesThatNeedConnecting.isEmpty()) return false
         val maxDistanceWanted = when {
-            minPriority > 10 -> -1
-            minPriority > 8 -> 1
-            minPriority > 7 -> 2
-            minPriority > 5 -> 3
-            minPriority > 4 -> 4
-            minPriority > 3 -> 5
-            minPriority > 2 -> 8
+            minPriority > 6 -> 0
+            minPriority > 3 -> 1
+            minPriority > 2 -> 2
+            minPriority > 1 -> 5
+            minPriority > 0 -> 10
             else -> 20
         }
         if (maxDistanceWanted < 0) return false
@@ -487,7 +485,7 @@ class WorkerAutomation(
                 if (!tileHasWorkToDo(tileInGroup, unit)) continue
                 if (unit.getTile() == tileInGroup) return unit.getTile()
                 if (!unit.movement.canReach(tileInGroup) || tileInGroup.civilianUnit != null) continue
-                if (bestTile == null || getImprovementPriority(tileInGroup, unit) > getImprovementPriority(bestTile, unit)) {
+                if (bestTile == null || getFullPriority(tileInGroup, unit) > getFullPriority(bestTile, unit)) {
                     bestTile = tileInGroup
                 }
             }
@@ -530,34 +528,34 @@ class WorkerAutomation(
         return priority + unitSpecificPriority
     }
 
+
     /**
-     * Calculates the full priority of the tile
+     * Calculates the priority building the improvement on the tile
      */
     private fun getImprovementPriority(tile: Tile, unit: MapUnit): Float {
-        val priority = getBasePriority(tile, unit)
-        if (priority < 0) return priority.toFloat()
+        getBasePriority(tile, unit)
         val rank = tileRankings[tile]
         if(rank!!.improvementPriority == null) {
             // All values of rank have to be initialized
             rank.improvementPriority = -100f
             rank.bestImprovement = null
             rank.repairImprovment = false
-            
+
             val bestImprovement = chooseImprovement(unit, tile)
             if (bestImprovement != null) {
                 rank.bestImprovement = bestImprovement
                 // Increased priority if the improvement has been worked on longer
-                val timeSpentPriority = if (tile.improvementInProgress == bestImprovement.name) 
+                val timeSpentPriority = if (tile.improvementInProgress == bestImprovement.name)
                     bestImprovement.getTurnsToBuild(unit.civ,unit) - tile.turnsToImprovement else 0
-                
+
                 rank.improvementPriority = getImprovementRanking(tile, unit, rank.bestImprovement!!.name, LocalUniqueCache()) + timeSpentPriority
             }
-            
+
             if (tile.improvement != null && tile.isPillaged() && tile.owningCity != null) {
                 // Value repairing higher when it is quicker and is in progress
                 var repairBonusPriority = tile.getImprovementToRepair()!!.getTurnsToBuild(unit.civ,unit) - UnitActionsFromUniques.getRepairTurns(unit)
                 if (tile.improvementInProgress == Constants.repair) repairBonusPriority += UnitActionsFromUniques.getRepairTurns(unit) - tile.turnsToImprovement
-                
+
                 val repairPriority = repairBonusPriority + Automation.rankStatsValue(TileStatFunctions(tile).getImprovementStats(tile.getTileImprovement()!!,unit.civ, tile.owningCity), unit.civ)
                 if (repairPriority > rank.improvementPriority!!) {
                     rank.improvementPriority = repairPriority
@@ -567,7 +565,14 @@ class WorkerAutomation(
             }
         }
 
-        return priority + rank.improvementPriority!!
+        return rank.improvementPriority!!
+    }
+    
+    /**
+     * Calculates the full priority of the tile
+     */
+    private fun getFullPriority(tile: Tile, unit: MapUnit): Float {
+        return getBasePriority(tile, unit) + getImprovementPriority(tile, unit)
     }
 
     /**
