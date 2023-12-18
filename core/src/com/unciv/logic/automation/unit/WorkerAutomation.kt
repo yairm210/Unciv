@@ -29,6 +29,7 @@ import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionsFromUniques
 import com.unciv.utils.Log
 import com.unciv.utils.debug
 import kotlin.IllegalStateException
+import kotlin.math.roundToInt
 
 private object WorkerAutomationConst {
     /** BFS max size is determined by the aerial distance of two cities to connect, padded with this */
@@ -501,13 +502,13 @@ class WorkerAutomation(
      * This is a cheap guess on how helpful it might be to do work on this tile
      */
     fun getBasePriority(tile: Tile, unit: MapUnit): Int {
-        var unitSpecificPriority = 2 - tile.aerialDistanceTo(unit.getTile()).coerceAtMost(4)
+        val unitSpecificPriority = 2 - tile.aerialDistanceTo(unit.getTile()).coerceAtMost(4)
         if (tileRankings.containsKey(tile)) 
             return tileRankings[tile]!!.tilePriority + unitSpecificPriority
         
         var priority = 0
         if (tile.getOwner() == civInfo) {
-            priority += 2
+            priority += Automation.rankStatsValue(tile.stats.getTerrainStats(), civInfo).roundToInt()
             if (tile.providesYield()) priority += 2
             if (tile.isPillaged()) priority += 1
             // TODO: Removing fallout is hardcoded for now, but what if we want to have other bad features on tiles?

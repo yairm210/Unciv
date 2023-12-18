@@ -117,7 +117,7 @@ class TileStatFunctions(val tile: Tile) {
     }
 
     /** Gets basic stats to start off [getTileStats] or [getTileStartYield], independently mutable result */
-    private fun getTerrainStats(stateForConditionals: StateForConditionals = StateForConditionals()): Stats {
+    fun getTerrainStats(stateForConditionals: StateForConditionals = StateForConditionals()): Stats {
         var stats = Stats()
 
         // allTerrains iterates over base, natural wonder, then features
