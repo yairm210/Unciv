@@ -11,7 +11,7 @@ Each belief has the following structure:
 | Attribute | Type | Default | Notes |
 | --------- | ---- | ------- | ----- |
 | name | String | Required | |
-| type | Enum | Required | Pantheon, Founder, Follower or Enhancer |
+| type | Enum | Required | Type of belief. Value must be Pantheon, Founder, Follower or Enhancer |
 | uniques | List of Strings | empty | List of [unique abilities](../uniques) this belief adds to cities following it |
 | civilopediaText | List | empty | See [civilopediaText chapter](5-Miscellaneous-JSON-files.md#civilopedia-text) |
 
@@ -27,7 +27,7 @@ Each building has the following structure:
 | --------- | ---- | ------- | ----- |
 | name | String | Required | |
 | cost | Integer | 0 | Amount of production required to build the building |
-| [`<stats>`](3-Map-related-JSON-files.md#stats) | float | 0 | Per-turn yield produced by the building |
+| [`<stats>`](3-Map-related-JSON-files.md#general-stat) | Float | 0 | Per-turn yield produced by the building |
 | maintenance | Integer | 0 | Maintenance cost of the building |
 | isWonder | Boolean | false | Whether this building is a global wonder |
 | isNationalWonder | Boolean | false | Whether this building is a national wonder |
@@ -44,10 +44,10 @@ Each building has the following structure:
 | quote | String | none | If this building is a (national) wonder, this string will be shown on the completion popup |
 | uniques | List of Strings | empty | List of [unique abilities](../uniques) this building has |
 | replacementTextForUniques | String | none | If provided, this string will be shown instead of all of the uniques |
-| percentStatBonus | Object | none | Percentual bonus for stats provided by the building. Valid keys are the names of stats (production, gold, science, etc.), valid values are Integers |
-| greatPersonPoints | Object | none | How many great person points for each type will be generated per turn. Valid keys are the names of great people (Great Scientist, Great Engineer, etc.), valid values are Integers |
+| percentStatBonus | Object | none | Percentual bonus for stats provided by the building. Same format as [specialized stats](3-Map-related-JSON-files.md#specialized-stats) (note: numbers are in percent. i.e. 30 represents 30% __bonus__ to a stat) |
+| greatPersonPoints | Object | none | How many great person points for each type will be generated per turn. Valid keys are the names of great people (Great Scientist, Great Engineer, etc.), valid values are Integers (≥0) |
 | specialistSlots | Object | none | Specialist slots provided by this building. Valid keys are the names of specialists (as defined in [Specialists.json](3-Map-related-JSON-files.md#specialistsjson)), valid values are Integers, the amount of slots provided for this specialist |
-| civilopediaText | List | empty | see [civilopediaText chapter](5-Miscellaneous-JSON-files.md#civilopedia-text) |
+| civilopediaText | List | empty | See [civilopediaText chapter](5-Miscellaneous-JSON-files.md#civilopedia-text) |
 
 ## Nations.json
 
@@ -68,13 +68,13 @@ Each nation has the following structure:
 | preferredVictoryType | String | Neutral | The victory type major civilizations will pursue (need not be specified in [VictoryTypes.json](5-Miscellaneous-JSON-files.md#victorytypesjson)) |
 | startIntroPart1 | String | none | Introductory blurb shown to Player on game start... |
 | startIntroPart2 | String | none | ... second paragraph. ___NO___ "TBD"!!! Leave empty to skip that alert. |
-| declaringWar | String | none | another greeting, voice hook supported [^V] |
-| attacked | String | none | another greeting, voice hook supported [^V] |
-| defeated | String | none | another greeting, voice hook supported [^V] |
-| introduction | String | none | another greeting, voice hook supported [^V] |
-| neutralHello | String | none | another greeting, voice hook supported [^V] |
-| hateHello | String | none | another greeting, voice hook supported [^V] |
-| tradeRequest | String | none | another greeting, voice hook supported [^V] |
+| declaringWar | String | none | Another greeting, voice hook supported [^V] |
+| attacked | String | none | Another greeting, voice hook supported [^V] |
+| defeated | String | none | Another greeting, voice hook supported [^V] |
+| introduction | String | none | Another greeting, voice hook supported [^V] |
+| neutralHello | String | none | Another greeting, voice hook supported [^V] |
+| hateHello | String | none | Another greeting, voice hook supported [^V] |
+| tradeRequest | String | none | Another greeting, voice hook supported [^V] |
 | innerColor | [List of 3× Integer](5-Miscellaneous-JSON-files.md#rgb-colors-list) | black | RGB color for outer ring of nation icon |
 | outerColor | [List of 3× Integer](5-Miscellaneous-JSON-files.md#rgb-colors-list) | Required | RGB color for inner circle of nation icon |
 | uniqueName | String | none | Decorative name for the special characteristic of this nation |
@@ -178,7 +178,7 @@ Each quest has the following structure:
 | description | String | Required | Description of the quest shown to players |
 | type | Enum | Individual | Individual or Global |
 | influence | Float | 40 | Influence reward gained on quest completion |
-| duration | Integer | 0 | Maximum number of turns to complete the quest, 0 if there's no turn limit |
+| duration | Integer | 0 | Maximum number of turns to complete the quest. If 0, there is no turn limit |
 | minimumCivs | Integer | 1 | Minimum number of Civs needed to start the quest. It is meaningful only for type = Global |
 
 ## Religions.json
@@ -198,7 +198,7 @@ Each specialist has the following structure:
 | Attribute | Type | Default | Notes |
 | --------- | ---- | ------- | ----- |
 | name | String | Required | |
-| [`<stats>`](3-Map-related-JSON-files.md#stats) | Float | 0 | Per-turn yield produced by the specialist |
+| [`<stats>`](3-Map-related-JSON-files.md#general-stat) | Float | 0 | Per-turn yield produced by the specialist |
 | color | [List of 3× Integer](5-Miscellaneous-JSON-files.md#rgb-colors-list) | Required | Color of the image for this specialist |
 | greatPersonPoints | Object | none | Great person points generated by this specialist. Valid keys are the names of the great person (Great Scientist, Great Merachant, etc.), valid values are Integers (≥0) |
 

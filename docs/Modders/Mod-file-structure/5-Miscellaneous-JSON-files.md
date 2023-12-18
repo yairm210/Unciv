@@ -10,7 +10,7 @@ Each difficulty level has the following structure:
 
 | Attribute | Type | Default | Notes |
 | --------- | ---- | ------- | ----- |
-| name | String | Required | Name of the difficulty level |
+| name | String | Required | |
 | baseHappiness | Integer | 0 |
 | extraHappinessPerLuxury | Float | 0 |
 | researchCostModifier | Float | 1 |
@@ -44,7 +44,7 @@ Each era can have the following attributes:
 
 | Attribute | Type | Default | Notes |
 | --------- | ---- | ------- | ----- |
-| name | String | Required | Name of the era |
+| name | String | Required | |
 | researchAgreementCost | Integer (≥0) | 300 | Cost of research agreements when the most technologically advanced civ is in this era |
 | iconRGB | [List of 3× Integer](#rgb-colors-list) | white | RGB color that icons for technologies of this era should have in the Tech screen |
 | unitBaseBuyCost | Integer (≥0) | 200 | Base cost of buying units with Faith, Food, Science or Culture when no other cost is provided |
@@ -159,7 +159,7 @@ and city distance in another. In case of conflicts, there is no guarantee which 
 | unitSupplyPerPopulation | Float | 0.5 | [^C] |
 | minimalCityDistance | Int | 3 | [^D] |
 | minimalCityDistanceOnDifferentContinents | Int | 2 | [^D] |
-| unitUpgradeCost | Object | see below | [^J] |
+| unitUpgradeCost | Object | [See below](#unitupgradecost) | [^J] |
 | naturalWonderCountMultiplier | Float | 0.124 | [^E] |
 | naturalWonderCountAddedConstant | Float | 0.1 | [^E] |
 | ancientRuinCountMultiplier | Float | 0.02 | [^F] |
@@ -223,7 +223,7 @@ With `civModifier` being the multiplicative aggregate of ["\[relativeAmount\]% G
 
 [link to original](https://github.com/yairm210/Unciv/tree/master/android/assets/jsons/GlobalUniques.json)
 
-Defines uniques that apply globally. e.g. Vanilla rulesets define the effects of Unhappiness here.
+GlobalUniques defines uniques that apply globally. e.g. Vanilla rulesets define the effects of Unhappiness here.
 Only the `uniques` field is used, but a name must still be set (the Ruleset validator might display it).
 When extension rulesets define GlobalUniques, all uniques are merged. At the moment there is no way to change/remove uniques set by a base mod.
 
@@ -262,7 +262,7 @@ Each victory have the following structure:
 | defeatString | String | none | Shown in the footer of the victory screen when someone else won the game with this victory |
 | hiddenInVictoryScreen | Boolean | false | Whether progress of this victory is hidden in the victory screen |
 | requiredSpaceshipParts | List of Strings | empty | What spaceship parts must be added to the capital for the corresponding milestone |
-| Milestones | List of Strings | Required | List of milestones that must be accomplished to win, see [below](#milestones) |
+| Milestones | List of Strings | Required | List of milestones that must be accomplished to win, [see below](#milestones) |
 
 ### Milestones
 
