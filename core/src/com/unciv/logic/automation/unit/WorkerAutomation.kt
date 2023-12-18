@@ -379,10 +379,10 @@ class WorkerAutomation(
     private fun tryConnectingCities(unit: MapUnit, minPriority: Float): Boolean {
         if (bestRoadAvailable == RoadStatus.None || citiesThatNeedConnecting.isEmpty()) return false
         val maxDistanceWanted = when {
-            minPriority > 6 -> 0
-            minPriority > 3 -> 1
-            minPriority > 2 -> 2
-            minPriority > 1 -> 5
+            minPriority > 4 -> -1
+            minPriority > 3 -> 0
+            minPriority > 2 -> 1
+            minPriority > 1 -> 2
             minPriority > 0 -> 10
             else -> 20
         }
