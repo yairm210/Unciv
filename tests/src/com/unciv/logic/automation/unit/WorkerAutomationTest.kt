@@ -77,6 +77,32 @@ internal class WorkerAutomationTest {
             "Farm", currentTile.improvementInProgress)
         assertTrue(currentTile.turnsToImprovement > 0)
     }
+    
+    @Test
+    fun `should prioritise better tiles`() {
+        // Add the needed tech to construct the improvements below
+        for (improvement in listOf(RoadStatus.Road.name, "Farm", "Mine")) {
+            civInfo.tech.techsResearched.add(testGame.ruleset.tileImprovements[improvement]!!.techRequired!!)
+        }
+
+        testGame.addCity(civInfo, testGame.tileMap[0,0])
+        for (tile in testGame.tileMap[0,0].getTilesInDistance(3)) {
+            tile.baseTerrain = Constants.grassland
+        }
+
+        val currentTile = testGame.tileMap[1,1]
+        currentTile.baseTerrain = Constants.grassland
+        currentTile.addTerrainFeature(Constants.hill)
+        currentTile.resource = "Gold Ore"
+
+        val mapUnit = testGame.addUnit("Worker", civInfo, currentTile)
+
+        workerAutomation.automateWorkerAction(mapUnit, hashSetOf())
+
+        assertEquals("Worker should be buliding a mine on the Gold Ore luxury resource",
+            "Mine", currentTile.improvementInProgress)
+        assertTrue(currentTile.turnsToImprovement > 0)
+    }
 
     @Test
     fun `should build improvements in turns`() {
