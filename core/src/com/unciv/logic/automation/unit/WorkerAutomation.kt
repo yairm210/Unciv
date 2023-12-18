@@ -29,7 +29,6 @@ import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionsFromUniques
 import com.unciv.utils.Log
 import com.unciv.utils.debug
 import kotlin.IllegalStateException
-import kotlin.math.roundToInt
 
 private object WorkerAutomationConst {
     /** BFS max size is determined by the aerial distance of two cities to connect, padded with this */
@@ -130,7 +129,7 @@ class WorkerAutomation(
      * The improvementPriority and bestImprovement are by default not set.
      * Once improvementPriority is set we have already checked for the best improvement, repairImprovement.
      */
-    data class TileImprovementRank(val tilePriority: Int, var improvementPriority: Float? = null, 
+    data class TileImprovementRank(val tilePriority: Float, var improvementPriority: Float? = null, 
                                    var bestImprovement: TileImprovement? = null, 
                                    var repairImprovment: Boolean? = null)
 
@@ -501,14 +500,14 @@ class WorkerAutomation(
      * Calculate a priority for the tile without accounting for the improvement it'self
      * This is a cheap guess on how helpful it might be to do work on this tile
      */
-    fun getBasePriority(tile: Tile, unit: MapUnit): Int {
+    fun getBasePriority(tile: Tile, unit: MapUnit): Float {
         val unitSpecificPriority = 2 - tile.aerialDistanceTo(unit.getTile()).coerceAtMost(4)
         if (tileRankings.containsKey(tile)) 
             return tileRankings[tile]!!.tilePriority + unitSpecificPriority
         
-        var priority = 0
+        var priority = 0f
         if (tile.getOwner() == civInfo) {
-            priority += Automation.rankStatsValue(tile.stats.getTerrainStats(), civInfo).roundToInt()
+            priority += Automation.rankStatsValue(tile.stats.getTerrainStats(), civInfo)
             if (tile.providesYield()) priority += 2
             if (tile.isPillaged()) priority += 1
             // TODO: Removing fallout is hardcoded for now, but what if we want to have other bad features on tiles?
@@ -518,7 +517,7 @@ class WorkerAutomation(
         else if (tile.getOwner() == null && tile.neighbors.any { it.getOwner() == civInfo })
             priority += 1
 
-        if (priority != 0 && tile.hasViewableResource(civInfo))  {
+        if (priority <= 0 && tile.hasViewableResource(civInfo))  {
             priority += 1
             // New Resources are great!
             if (tile.tileResource.resourceType != ResourceType.Bonus 
