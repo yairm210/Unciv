@@ -32,25 +32,25 @@ enum class CityFocus(
     Manual("Manual", true, null) {
         override fun getStatMultiplier(stat: Stat) = 1f
     },
-    FoodFocus("[${Stat.Food.character}]", true, Stat.Food),
-    ProductionFocus("[${Stat.Production.character}]", true, Stat.Production),
-    GoldFocus("[${Stat.Gold.character}]", true, Stat.Gold),
-    ScienceFocus("[${Stat.Science.character}]", true, Stat.Science),
-    CultureFocus("[${Stat.Culture.character}]", true, Stat.Culture),
-    FaithFocus("[${Stat.Faith.character}]", true, Stat.Faith),
-    GoldGrowthFocus("[${Stat.Gold.character}] [${Stat.Food.character}]", true) {
+    FoodFocus("${Stat.Food.character}", true, Stat.Food),
+    ProductionFocus("${Stat.Production.character}", true, Stat.Production),
+    GoldFocus("${Stat.Gold.character}", true, Stat.Gold),
+    ScienceFocus("${Stat.Science.character}", true, Stat.Science),
+    CultureFocus("${Stat.Culture.character}", true, Stat.Culture),
+    HappinessFocus("${Stat.Happiness.character}", false, Stat.Happiness),
+    FaithFocus("${Stat.Faith.character}", true, Stat.Faith),
+    GoldGrowthFocus("${Stat.Gold.character} ${Stat.Food.character}", true) {
         override fun getStatMultiplier(stat: Stat) = when (stat) {
             Stat.Gold, Stat.Food -> 2f
             else -> 1f
         }
     },
-    ProductionGrowthFocus("[${Stat.Production.character}] [${Stat.Food.character}]", true) {
+    ProductionGrowthFocus("${Stat.Production.character} ${Stat.Food.character}", true) {
         override fun getStatMultiplier(stat: Stat) = when (stat) {
             Stat.Production, Stat.Food -> 2f
             else -> 1f
         }
     },
-    HappinessFocus("[${Stat.Happiness.character}]", false, Stat.Happiness),
     //GreatPersonFocus
 
     ;
