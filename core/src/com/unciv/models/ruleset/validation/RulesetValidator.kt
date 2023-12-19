@@ -650,10 +650,8 @@ class RulesetValidator(val ruleset: Ruleset) {
     private fun checkUnitRulesetInvariant(unit: BaseUnit, lines: RulesetErrorList) {
         if (unit.upgradesTo == unit.name || (unit.upgradesTo != null && unit.upgradesTo == unit.replaces))
             lines += "${unit.name} upgrades to itself!"
-        if (!unit.isCivilian() && unit.strength == 0)
+        if (unit.isMilitary() && unit.strength == 0)  // Should only match ranged units with 0 strength
             lines += "${unit.name} is a military unit but has no assigned strength!"
-        if (unit.isRanged() && unit.rangedStrength == 0 && !unit.hasUnique(UniqueType.CannotAttack))
-            lines += "${unit.name} is a ranged unit but has no assigned rangedStrength!"
     }
 
     /** Collects all RulesetSpecific checks for a BaseUnit */
@@ -664,9 +662,9 @@ class RulesetValidator(val ruleset: Ruleset) {
         for (obsoleteTech: String in unit.techsAtWhichNoLongerAvailable())
             if (!ruleset.technologies.containsKey(obsoleteTech))
                 lines += "${unit.name} obsoletes at tech ${obsoleteTech} which does not exist!"
-        for (obsoleteTech: String in unit.techsAtWhichAutoUpgradeInProduction())
-            if (!ruleset.technologies.containsKey(obsoleteTech))
-                lines += "${unit.name} upgrades at tech ${obsoleteTech} which does not exist!"
+        for (upgradeTech: String in unit.techsAtWhichAutoUpgradeInProduction())
+            if (!ruleset.technologies.containsKey(upgradeTech))
+                lines += "${unit.name} upgrades at tech ${upgradeTech} which does not exist!"
         if (unit.upgradesTo != null && !ruleset.units.containsKey(unit.upgradesTo!!))
             lines += "${unit.name} upgrades to unit ${unit.upgradesTo} which does not exist!"
 
