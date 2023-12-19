@@ -195,6 +195,10 @@ object MotivationToAttackAutomation {
             theirCombatStrength += otherCiv.cityStateFunctions.getProtectorCivs().filterNot { it == civInfo }
                 .sumOf { it.getStatForRanking(RankingType.Force) }
         }
+
+        for (thirdCiv in otherCiv.diplomacy.values.filter { it.hasFlag(DiplomacyFlags.DefensivePact) && it.otherCiv() != civInfo }) {
+            theirCombatStrength += (calculateSelfCombatStrength(thirdCiv.otherCiv()!!, baseForce) * 0.5f)
+        }
         return theirCombatStrength
     }
 
