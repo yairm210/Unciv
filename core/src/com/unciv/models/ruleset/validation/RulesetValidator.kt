@@ -659,12 +659,9 @@ class RulesetValidator(val ruleset: Ruleset) {
         for (requiredTech: String in unit.requiredTechs())
             if (!ruleset.technologies.containsKey(requiredTech))
                 lines += "${unit.name} requires tech ${requiredTech} which does not exist!"
-        for (obsoleteTech: String in unit.techsAtWhichNoLongerAvailable())
+        for (obsoleteTech: String in unit.techsThatObsoleteThis())
             if (!ruleset.technologies.containsKey(obsoleteTech))
                 lines += "${unit.name} obsoletes at tech ${obsoleteTech} which does not exist!"
-        for (obsoleteTech: String in unit.techsAtWhichAutoUpgradeInProduction())
-            if (!ruleset.technologies.containsKey(obsoleteTech))
-                lines += "${unit.name} upgrades at tech ${obsoleteTech} which does not exist!"
         if (unit.upgradesTo != null && !ruleset.units.containsKey(unit.upgradesTo!!))
             lines += "${unit.name} upgrades to unit ${unit.upgradesTo} which does not exist!"
 
