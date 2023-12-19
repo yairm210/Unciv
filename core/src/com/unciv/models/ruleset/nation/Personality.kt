@@ -51,15 +51,16 @@ class Personality {
         )
     }
     fun getMinimunMotivationToAttack():Float{
-        //The standard minimun is get 30% of the times motivationToDeclareWar is run
-        var bias = diplomacy["war"]!! * 30
+        //The standard minimun is about 20% of the times motivationToDeclareWar is run
+        var bias = 100 - diplomacy["war"]!! * 20
         return when {
-            //The attack function behaves diffently across its image
-            bias >= 75f -> (1.76 * bias - 39.79).toFloat()
-            bias > 30f-> (0.45 * bias - 6.31).toFloat()
-            bias == 30f-> 7f //Standard
-            bias >= 14f -> (2.33 * bias - 138.2).toFloat()
-            bias > 0f -> (5.5 * bias - 417.33).toFloat()
+            //The attack function behaves diffently across its domain
+            bias >= 89f ->(7.97 * bias - 686.33).toFloat()
+            bias == 80f-> 20f //Standard
+            bias >=78f->(2.77 * bias - 199.47).toFloat()
+            bias >=22f-> (0.59 * bias - 26.81).toFloat()
+            bias >=11f -> (1.13 * bias - 42.35).toFloat()
+            bias > 0f -> (2.76 * bias - 59.7).toFloat()
             else -> 500f
         }
     }
@@ -78,9 +79,9 @@ class Personality {
 
     fun getMinimumDeclarationOfFriendshipMotivation():Float{
         //Standard is DoF will be asked about 18% of possibilities
-        var bias = diplomacy["friendship"]!! * 18
+        var bias = 100 - diplomacy["friendship"]!! * 18
         return when {
-            //Again, function behaves differently across its image
+            //Again, function behaves differently across its domain
             //Looks like a logarithmic function but thats more easily understandable and adjustable
             //And result is similar
             bias >= 90f -> (6.24 * bias - 148.93).toFloat()
