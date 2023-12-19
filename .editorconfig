@@ -78,3 +78,22 @@ ij_properties_spaces_around_key_value_delimiter = false
 
 [{*.yaml, *.yml}]
 indent_size = 2
+
+[{*.markdown,*.md}]
+ij_continuation_indent_size = 4
+ij_markdown_force_one_space_after_blockquote_symbol = true
+ij_markdown_force_one_space_after_header_symbol = true
+ij_markdown_force_one_space_after_list_bullet = false
+ij_markdown_force_one_space_between_words = true
+ij_markdown_format_tables = false
+ij_markdown_insert_quote_arrows_on_wrap = true
+ij_markdown_keep_indents_on_empty_lines = false
+ij_markdown_keep_line_breaks_inside_text_blocks = true
+ij_markdown_max_lines_around_block_elements = 1
+ij_markdown_max_lines_around_header = 1
+ij_markdown_max_lines_between_paragraphs = 1
+ij_markdown_min_lines_around_block_elements = 1
+ij_markdown_min_lines_around_header = 1
+ij_markdown_min_lines_between_paragraphs = 1
+ij_markdown_wrap_text_if_long = true
+ij_markdown_wrap_text_inside_blockquotes = false
