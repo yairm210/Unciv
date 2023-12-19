@@ -56,7 +56,7 @@ class Personality {
         return when {
             //The attack function behaves diffently across its domain
             bias >= 89f ->(7.97 * bias - 686.33).toFloat()
-            bias == 80f-> 20f //Standard
+            bias == 80f-> 21f //Standard
             bias >=78f->(2.77 * bias - 199.47).toFloat()
             bias >=22f-> (0.59 * bias - 31).toFloat()
             bias >=11f -> (1.13 * bias - 47).toFloat()
