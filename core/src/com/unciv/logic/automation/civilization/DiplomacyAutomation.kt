@@ -89,7 +89,7 @@ object DiplomacyAutomation {
 
         motivation -= motivationToDeclareWar(civInfo, otherCiv).toInt() * 2
 
-        return motivation >= civInfo.nation.personality.getMinimumDeclarationOfFriendshipMotivation() //Default is 0
+        return motivation >= civInfo.nation.personality.diplomacy.minimumFriendshipMotivation //Default is 0
     }
 
     internal fun offerOpenBorders(civInfo: Civilization) {
@@ -102,7 +102,7 @@ object DiplomacyAutomation {
             .sortedByDescending { it.getDiplomacyManager(civInfo).relationshipLevel() }.toList()
         for (otherCiv in civsThatWeCanOpenBordersWith) {
             // Default setting is 3
-            if ((1..100).random() >= civInfo.nation.personality.getMaximumOpenBordersRoll()) continue
+            if ((1..100).random() >= civInfo.nation.personality.diplomacy.openBordersChance) continue
             if (wantsToOpenBorders(civInfo, otherCiv)) {
                 val tradeLogic = TradeLogic(civInfo, otherCiv)
                 tradeLogic.currentTrade.ourOffers.add(TradeOffer(Constants.openBorders, TradeType.Agreement))
@@ -162,7 +162,7 @@ object DiplomacyAutomation {
 
         for (otherCiv in canSignDefensivePactCiv) {
             // Default maximum is 30.
-            if ((1..100).random() >= civInfo.nation.personality.getMaximumDefensivePactRoll()) continue
+            if ((1..100).random() >= civInfo.nation.personality.diplomacy.defensivePactChance) continue
             if (wantsToSignDefensivePact(civInfo, otherCiv)) {
                 //todo: Add more in depth evaluation here
                 val tradeLogic = TradeLogic(civInfo, otherCiv)
@@ -250,7 +250,7 @@ object DiplomacyAutomation {
 
         if (enemyCivs.none()) return
 
-        val minMotivationToAttack = civInfo.nation.personality.getMinimunMotivationToAttack()
+        val minMotivationToAttack = civInfo.nation.personality.diplomacy.minimumWarMotivation
         // Attack the highest score enemy that we are willing to fight.
         // This is to help prevent civs from ganging up on smaller civs
         // and directs them to fight their competitors instead.

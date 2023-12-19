@@ -82,7 +82,7 @@ class TradeEvaluation {
         if (trade.ourOffers.none { it.name == Constants.peaceTreaty || it.name == Constants.researchAgreement}) {
             if (tradePartner.isHuman() && trade.ourOffers.none { it.name == Constants.defensivePact}){
                 //Has to be here because the intention of trade bias is not to affect peace and the like, only actual trade
-                sumOfTheirOffers =  (sumOfTheirOffers * evaluator.nation.personality.getTradeModifier()).toInt()
+                sumOfTheirOffers =  (sumOfTheirOffers * evaluator.nation.personality.diplomacy.tradeModifier).toInt()
             }
             if (relationshipLevel == RelationshipLevel.Enemy) sumOfOurOffers = (sumOfOurOffers * 1.5).toInt()
             else if (relationshipLevel == RelationshipLevel.Unforgivable) sumOfOurOffers *= 2
