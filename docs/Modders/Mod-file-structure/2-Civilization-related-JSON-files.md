@@ -32,7 +32,6 @@ Each building has the following structure:
 | isWonder | Boolean | false | Whether this building is a global wonder |
 | isNationalWonder | Boolean | false | Whether this building is a national wonder |
 | requiredBuilding | String | none | A building that has to be built before this building can be built. Must be in [Buildings.json](#buildingsjson) |
-| providesFreeBuilding | String | none | When the building is built, [providesFreeBuilding] is also automatically added to the city |
 | requiredTech | String | none | The tech that should be researched before this building may be built. Must be in [Techs.json](#techsjson) |
 | requiredResource | String | none | The resource that is consumed when building this building. Must be in [TileResources.json](3-Map-related-JSON-files.md#tileresourcesjson) |
 | requiredNearbyImprovedResources | List of Strings | empty | The building can only be built if any of the resources in this list are within the borders of this city and have been improved. Each resource must be in [TileResources.json](3-Map-related-JSON-files.md#tileresourcesjson) |
@@ -44,8 +43,8 @@ Each building has the following structure:
 | quote | String | none | If this building is a (national) wonder, this string will be shown on the completion popup |
 | uniques | List of Strings | empty | List of [unique abilities](../uniques) this building has |
 | replacementTextForUniques | String | none | If provided, this string will be shown instead of all of the uniques |
-| percentStatBonus | Object | none | Percentual bonus for stats provided by the building. Same format as [specialized stats](3-Map-related-JSON-files.md#specialized-stats) (note: numbers are in percent. i.e. 30 represents 30% __bonus__ to a stat) |
-| greatPersonPoints | Object | none | How many great person points for each type will be generated per turn. Valid keys are the names of great people (Great Scientist, Great Engineer, etc.), valid values are Integers (≥0) |
+| percentStatBonus | Object | none | Percentual bonus for stats provided by the building. Same format as [specialized stats](3-Map-related-JSON-files.md#specialized-stats) (numbers are in percent. i.e. `[30]` represents 30% __bonus__ to a stat) |
+| greatPersonPoints | Object | none | Great person points by this building generated per turn. Valid keys are the names of units (Great Scientist, Warrior, etc.), valid values are Integers |
 | specialistSlots | Object | none | Specialist slots provided by this building. Valid keys are the names of specialists (as defined in [Specialists.json](3-Map-related-JSON-files.md#specialistsjson)), valid values are Integers, the amount of slots provided for this specialist |
 | civilopediaText | List | empty | See [civilopediaText chapter](5-Miscellaneous-JSON-files.md#civilopedia-text) |
 
@@ -62,10 +61,10 @@ Each nation has the following structure:
 | name | String | Required | |
 | leaderName | String | none | Omit only for city states! If you want LeaderPortraits, the image file names must match exactly, including case |
 | style | String | none | Modifier appended to pixel unit image names |
-| adjective | String | none | Currently unused |
-| cityStateType | Enum | absent | Distinguishes major civilizations from city states (Cultured, Maritime, Mercantile, Militaristic) |
-| startBias | List | empty | Zero or more of: terrainFilter or "Avoid [terrainFilter]". [^S] |
+| cityStateType | String | none | Distinguishes major civilizations from city states (must be in [CityStateTypes.json](#citystatetypesjson)) |
+| startBias | List of strings | empty | Zero or more of: [terrainFilter](../Unique-parameters.md/#terrainfilter) or "Avoid [terrainFilter]". [^S] |
 | preferredVictoryType | String | Neutral | The victory type major civilizations will pursue (need not be specified in [VictoryTypes.json](5-Miscellaneous-JSON-files.md#victorytypesjson)) |
+| favoredReligion | String | none | The religion major civilization will choose if available when founding a religion. Must be in [Religions.json](#religionsjson) |
 | startIntroPart1 | String | none | Introductory blurb shown to Player on game start... |
 | startIntroPart2 | String | none | ... second paragraph. ___NO___ "TBD"!!! Leave empty to skip that alert. |
 | declaringWar | String | none | Another greeting, voice hook supported [^V] |
@@ -82,6 +81,7 @@ Each nation has the following structure:
 | uniques | List | empty | List of [unique abilities](../uniques) this civilisation has |
 | cities | List | empty | City names used sequentially for newly founded cities. Required for major civilizations and city states |
 | civilopediaText | List | empty | See [civilopediaText chapter](5-Miscellaneous-JSON-files.md#civilopedia-text) |
+<!-- | adjective | String | none | Currently unused | -->
 
 [^S]: A "Coast" preference (_unless_ combined with "Avoid") is translated to a complex test for coastal land tiles, tiles next to Lakes, river tiles or near-river tiles, and such civs are processed first. Other startBias entries are ignored in that case.
       Other positive (no "Avoid") startBias are processed next. Multiple positive preferences are treated equally, but get no "fallback".
@@ -103,8 +103,8 @@ Each city state type has the following structure:
 | Attribute | Type | Default | Notes |
 | --------- | ---- | ------- | ----- |
 | name | String | Required | |
-| friendBonusUniques | List | empty | List of [unique abilities](../uniques) granted to major civilizations when friends with this city state |
-| allyBonusUniques | List | empty | List of [unique abilities](../uniques) granted to  major civilizations when allied to city state |
+| friendBonusUniques | List of Strings | empty | List of [unique abilities](../uniques) granted to major civilizations when friends with this city state |
+| allyBonusUniques | List of Strings | empty | List of [unique abilities](../uniques) granted to  major civilizations when allied to city state |
 | color | [List of 3× Integer](5-Miscellaneous-JSON-files.md#rgb-colors-list) | [255, 255, 255] | RGB color of text in civilopedia |
 
 ## Policies.json
@@ -125,7 +125,7 @@ Each policy branch has the following structure:
 | --------- | ---- | ------- | ----- |
 | name | String | Required | |
 | era | String | Required | Unlocking era as defined in [Eras.json](5-Miscellaneous-JSON-files.md#Eras.json) |
-| priorities | Object | empty | Priorities for each victory type, [see here](#branch-priorities)
+| priorities | Object | none | Priorities for each victory type, [see here](#branch-priorities)
 | uniques | List | empty | List of [unique abilities](../uniques) this policy branch grants upon adopting it |
 | policies | List | empty | List of [member policies](#member-policy-structure) and [branch 'finisher'](#branch-finisher-structure) - pay attention to the nesting of {} and [] |
 
@@ -148,9 +148,9 @@ Each policy branch has the following structure:
 
 ### Branch priorities
 
-The "priorities" object defines major civilizations' AI priorities to a policy branch given their preferred victory type. The AI chooses the policy branch(es) with the highest number. If two or more candidate branches have the same priority, the AI chooses a random branch among the candidates.
+The "priorities" object defines the priority major civilizations' AI give to a policy branch. The AI chooses the policy branch with the highest number for their preferred victory type. If two or more candidate branches have the same priority, the AI chooses a random branch among the candidates.
 
-The object maps strings of the listed victory type to an integer representing the priority of the corresponsing major civilization. If a major civilization have a preferred victory type not in the object, the priority for the policy branch is 0.
+The object maps victory types to priority values for the major civilization using strings and integers. If the preferred victory type is not specified, the default priority value is set to 0.
 
 The code below is an example of a valid "priorities" definition.
 
@@ -174,12 +174,53 @@ Each quest has the following structure:
 
 | Attribute | Type | Default | Notes |
 | --------- | ---- | ------- | ----- |
-| name | String | Required | |
-| description | String | Required | Description of the quest shown to players |
+| name | String | Required | Defines criteria of quest, [see below](#quest-name) |
+| description | String | Required | Description of the quest shown to players. Can add extra information based on `name`, [see below](#quest-name) |
 | type | Enum | Individual | Individual or Global |
 | influence | Float | 40 | Influence reward gained on quest completion |
 | duration | Integer | 0 | Maximum number of turns to complete the quest. If 0, there is no turn limit |
 | minimumCivs | Integer | 1 | Minimum number of Civs needed to start the quest. It is meaningful only for type = Global |
+| weightForCityStateType | Object | none | Relative weight multiplier to this quest for each [city state type](#citystatetypesjson) or city state personality (Friendly, Neutral, Hostile, Irrational), [see below](#quest-weight) |
+
+### Quest name
+
+The name of the quest defines the criteria for the quest. If they are not defined in the predefined enum, they will have no behavior. In the description, square brackets `[]` in the description of the quest is replaced with extra information (except for `Invest`). The list of predefined quest names are as follows:
+
+| Name | Criteria | Additional info |
+| ---- | -------- | --------------- |
+| Route | Connect the city state to the major civilization's capital using roads or railways | |
+| Clear Barbarian Camp | Destroy the target barbarian camp | |
+| Construct Wonder | Construct the target wonder | target `wonder` |
+| Connect Resource | Connect the target resource to the major civilization's trade network | target `tileResource` |
+| Acquire Great Person | Acquire the target great person | target `greatPerson` |
+| Conquer City State | Defeat the target city state | target `cityState` |
+| Find Player | Meet the target major civilization | target `civName` |
+| Find Natural Wonder | Find the target natural wonder | target  `naturalWonder` |
+| Give Gold | Donate gold to the city state (amount does not matter) | `civName` "bully" for city state |
+| Pledge to Protect | Pledge to protect city state | `civName` "bully" for city state |
+| Contest Culture | Be the major civilization with the highest increase to culture during the duration | major civilization's `cultureGrowth` |
+| Contest Faith | Be the major civilization with the highest increase to faith during the duration | major civilization's `faithGrowth` |
+| Contest Technology | Be the major civilization with the most technologies researched during the duration | major civilization's `techsResearched` |
+| Invest | Donating gold yield extra Influence based on value provided | __IMPORTANT__: value in square brackets is the extra influence in percent. i.e. \[50\] means 50% |
+| Bully City State | Demand tribute from the target city state | target `city state` |
+| Denounce Civilization | Denounce the major civilization which "bullied" the city state | `civName` "bully" for city state |
+| Spread Religion | Spread major civilization's religion to the city state | major civilization's `religionName` |
+
+### Quest weight
+
+The "weightForCityStateType" object determines the quest's weight multiplier. When a city state initiates a quest, the initial weight is 1, and it is multiplied by values based on [city state type](#citystatetypesjson) and personality (Friendly, Neutral, Hostile, Irrational). The AI then randomly selects a quest based on the final weighted values.
+
+The object maps city state type and personality to the weight multipliers for the city state using strings to floats. If the preferred victory type is not found, the default multiplier is 1.
+
+The code below is an example of a valid "weightForCityStateType" definition. In this case, a friendly militaristic city state will be 0.4 (0.2 × 2) times as likely to pick this quest than a quest with weight 1.
+
+```json
+"weightForCityStateType": {
+    "Hostile": 2,
+    "Friendly": 0.2,
+    "Militaristic": 2
+}
+```
 
 ## Religions.json
 
@@ -200,7 +241,7 @@ Each specialist has the following structure:
 | name | String | Required | |
 | [`<stats>`](3-Map-related-JSON-files.md#general-stat) | Float | 0 | Per-turn yield produced by the specialist |
 | color | [List of 3× Integer](5-Miscellaneous-JSON-files.md#rgb-colors-list) | Required | Color of the image for this specialist |
-| greatPersonPoints | Object | none | Great person points generated by this specialist. Valid keys are the names of the great person (Great Scientist, Great Merachant, etc.), valid values are Integers (≥0) |
+| greatPersonPoints | Object | none | Great person points generated by this specialist per turn. Valid keys are the names of units (Great Scientist, Warrior, etc.), valid values are Integers |
 
 ## Techs.json
 
@@ -215,11 +256,11 @@ Each tech column has the following structure:
 | Attribute | Type | Default | Notes |
 | --------- | ---- | ------- | ----- |
 | columnNumber | Integer | Required | Horizontal placement in the Tech Tree |
-| era | String | Required | References [Eras.json](5-Miscellaneous-JSON-files.md#Eras.json) |
-| techCost | Integer | Required | Default cost of the techs in this column |
+| era | String | Required | Determines era reached after researching any technologies in this column. Must be in [Eras.json](5-Miscellaneous-JSON-files.md#Eras.json) |
+| techCost | Integer | 0 | Default cost of the techs in this column |
 | buildingCost | Integer | Required | Default cost of buildings requiring this tech |
 | wonderCost | Integer | Required | Default cost of wonders requiring this tech |
-| techs | List | Required | List of techs - pay attention to the nesting of {} and [] |
+| techs | List | Required | List of [techs](#tech-structure) - pay attention to the nesting of {} and [] |
 
 #### Tech structure
 
@@ -228,7 +269,7 @@ Each tech column has the following structure:
 | name | String | Required | |
 | row | Integer | 0 | Vertical placement in the Tech Tree, must be unique per column |
 | cost | Integer | [Column techCost](#column-structure) | The amount of science required to research this tech |
-| prerequisites | List | empty | A list of the names of techs that are prerequisites of this tech. Only direct prerequisites are necessary |
+| prerequisites | List of Strings | empty | A list of the names of techs that are prerequisites of this tech. Only direct prerequisites are necessary |
 | quote | String | none | A nice story presented to the player when they research this tech |
-| uniques | List | empty | List of [unique abilities](../uniques) this technology grants |
+| uniques | List of Strings | empty | List of [unique abilities](../uniques) this technology grants |
 | civilopediaText | List | empty | See [civilopediaText chapter](5-Miscellaneous-JSON-files.md#Civilopedia-text) |

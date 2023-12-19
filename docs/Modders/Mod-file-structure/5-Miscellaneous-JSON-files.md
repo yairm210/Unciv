@@ -11,27 +11,31 @@ Each difficulty level has the following structure:
 | Attribute | Type | Default | Notes |
 | --------- | ---- | ------- | ----- |
 | name | String | Required | |
-| baseHappiness | Integer | 0 |
-| extraHappinessPerLuxury | Float | 0 |
-| researchCostModifier | Float | 1 |
-| unitCostModifier | Float | 1 |
-| buildingCostModifier | Float | 1 |
-| policyCostModifier | Float | 1 |
-| unhappinessModifier | Float | 1 |
-| barbarianBonus | Float | 0 |
-| playerBonusStartingUnits | List of Units | empty | Can also be 'Era Starting Unit', maps to `startingMilitaryUnit` of the Eras file. All other units must be in [Units.json](4-Unit-related-JSON-files.md#Units.json)]. Applies only to human player civs |
-| aiCityGrowthModifier | Float | 1 |
-| aiUnitCostModifier | Float | 1 |
-| aiBuildingCostModifier | Float | 1 |
-| aiWonderCostModifier | Float | 1 |
-| aiBuildingMaintenanceModifier | Float | 1 |
-| aiUnitMaintenanceModifier | Float | 1 |
-| aiFreeTechs | List of Techs | empty |
-| aiMajorCivBonusStartingUnits | List of Units | empty | Same rules as playerBonusStartingUnits, See above. Applies only to AI major civs |
-| aiCityStateBonusStartingUnits | List of Units | empty | Same rules as playerBonusStartingUnits, See above. Applies only to city-state civs |
-| aiUnhappinessModifier | Float | 1 |
-| turnBarbariansCanEnterPlayerTiles | Integer | 0 |
-| clearBarbarianCampReward | Integer | 25 |
+| baseHappiness | Integer | 0 | |
+| extraHappinessPerLuxury | Float | 0 | |
+| researchCostModifier | Float | 1 | |
+| unitCostModifier | Float | 1 | |
+| unitSupplyBase | Integer | 5 | |
+| unitSupplyPerCity | Integer | 2 | |
+| buildingCostModifier | Float | 1 | |
+| policyCostModifier | Float | 1 | |
+| unhappinessModifier | Float | 1 | |
+| barbarianBonus | Float | 0 | |
+| barbarianSpawnDelay | Integer | 0 | |
+| playerBonusStartingUnits | List of Strings | empty | Can also be 'Era Starting Unit', maps to `startingMilitaryUnit` of the Eras file. All other units must be in [Units.json](4-Unit-related-JSON-files.md#Units.json). Applies only to human player civs |
+| aiCityGrowthModifier | Float | 1 | |
+| aiUnitCostModifier | Float | 1 | |
+| aiBuildingCostModifier | Float | 1 | |
+| aiWonderCostModifier | Float | 1 | |
+| aiBuildingMaintenanceModifier | Float | 1 | |
+| aiUnitMaintenanceModifier | Float | 1 | |
+| aiUnitSupplyModifier | Integer | 5 | |
+| aiFreeTechs | List of Strings | empty | Must be in [Techs.json](2-Civilization-related-JSON-files.md#techsjson) |
+| aiMajorCivBonusStartingUnits | List of Strings | empty | Same rules as playerBonusStartingUnits, See above. Applies only to AI major civs |
+| aiCityStateBonusStartingUnits | List of Strings | empty | Same rules as playerBonusStartingUnits, See above. Applies only to city-state civs |
+| aiUnhappinessModifier | Float | 1 | |
+| turnBarbariansCanEnterPlayerTiles | Integer | 0 | |
+| clearBarbarianCampReward | Integer | 25 | |
 <!-- | aisExchangeTechs | Boolean | | Unimplemented | -->
 
 ## Eras.json
@@ -47,7 +51,6 @@ Each era can have the following attributes:
 | name | String | Required | |
 | researchAgreementCost | Integer (≥0) | 300 | Cost of research agreements when the most technologically advanced civ is in this era |
 | iconRGB | [List of 3× Integer](#rgb-colors-list) | white | RGB color that icons for technologies of this era should have in the Tech screen |
-| unitBaseBuyCost | Integer (≥0) | 200 | Base cost of buying units with Faith, Food, Science or Culture when no other cost is provided |
 | startingSettlerCount | Integer (≥0) | 1 | Amount of settler units that should be spawned when starting a game in this era (setting this to zero is discouraged [^1]) |
 | startingSettlerUnit | String | "Settler" | Name of the unit that should be used for the previous field. Must be in [Units.json](4-Unit-related-JSON-files.md#unitsjson), or a unit with the "Founds a new city" unique must exist |
 | startingWorkerCount | Integer (≥0) | 0 | Amount of worker units that should be spawned when starting a game in this era |
@@ -59,7 +62,7 @@ Each era can have the following attributes:
 | settlerPopulation | Integer (>0) | 1 | Amount of population each city should have when settled when starting a game in this era |
 | settlerBuildings | List of Strings | empty | Buildings that should automatically be built whenever a city is settled when starting a game in this era |
 | startingObsoleteWonders | List of Strings | empty | Wonders (and technically buildings) that should be impossible to built when starting a game in this era. Used in the base game to remove all wonders older than 2 era's |
-| baseUnitBuyCost | Integer | 200 | Default value used for the unique `Can be purchased with [stat] [cityFilter]` and AI |
+| baseUnitBuyCost | Integer | 200 | Default value used for the unique `Can be purchased with [stat] [cityFilter]` |
 | embarkDefense | Integer | 3 | Default defense for embarked unit in this era |
 | startPercent | Integer | 0 | When starting, percentage (\[0\]%-\[100\]%) of turns skipped in total turns specified in [Speed.json](#speedsjson) |
 | citySound | String | "cityClassical" | Sound used when city is founded in this era |
@@ -96,7 +99,7 @@ Each speed can have the following attributes:
 
 ### Time interval per turn
 
-The "turns" attribute defines the number of years passed between turns. The attribute consists of a list of hashmaps, each hashmaps in turn having 2 required attributes: "yearsPerTurn" and "untilTurn"
+The "turns" attribute defines the number of years passed between turns. The attribute consists of a list of hashmaps, each hashmaps in turn having 2 required attributes: "yearsPerTurn" (Float) and "untilTurn" (Integer)
 
 | Attribute | Type | Default | Notes |
 | --------- | ---- | ------- | ----- |
@@ -124,21 +127,16 @@ This file is a little different:
 Note that this file controls _declarative mod compatibility_ (Work in progress) - e.g. there's [uniques](../uniques.md#modoptions-uniques) to say your Mod should only or never be used as 'Permanent audiovisual mod'.
 Incompatibility filtering works so far between extension and base mods, but feel free to document known extension-to-extension incompatibilities using the same Unique now. Stay tuned!
 
-The file can have the following attributes, including the values Unciv sets (no point in a mod author setting those):
+The file can have the following attributes, not including the values Unciv sets (no point in a mod author setting those):
 
 | Attribute | Type | | Notes |
 | --------- | ---- | ------- | ----- |
 | isBaseRuleset | Boolean | false | Replaces vanilla ruleset if true |
-| maxXPfromBarbarians | Integer | 30 | _Deprecated_, see [constants](#modconstants) |
 | uniques | List | empty | Mod-wide specials, [see here](../uniques.md#modoptions-uniques) |
 | techsToRemove | List | empty | List of [Technologies](2-Civilization-related-JSON-files.md#techsjson) or [technologyFilter](../Unique-parameters.md#technologyfilter) to remove (isBaseRuleset=false only) |
 | buildingsToRemove | List | empty | List of [Buildings or Wonders](2-Civilization-related-JSON-files.md#buildingsjson) or [buildingFilter](../Unique-parameters.md#buildingfilter) to remove (isBaseRuleset=false only) |
 | unitsToRemove | List | empty | List of [Units](4-Unit-related-JSON-files.md#unitsjson) or [unitFilter](../Unique-parameters.md#baseunitfilter) to remove (isBaseRuleset=false only) |
 | nationsToRemove | List | empty | List of [Nations](2-Civilization-related-JSON-files.md#nationsjson) or [nationFilter](../Unique-parameters.md#nationfilter) to remove (isBaseRuleset=false only) |
-| lastUpdated | String | Automatic | Set automatically after download - Date of last repository update (__not__ last content change) |
-| modUrl | String | Automatic | Set automatically after download - URL of repository |
-| author | String | Automatic | Set automatically after download - Owner of repository |
-| modSize | Integer | Automatic | Set automatically after download - kB in entire repository, not sum of branch files |
 | constants | Object | empty | See [ModConstants](#modconstants) |
 
 ### ModConstants
@@ -163,6 +161,7 @@ and city distance in another. In case of conflicts, there is no guarantee which 
 | naturalWonderCountMultiplier | Float | 0.124 | [^E] |
 | naturalWonderCountAddedConstant | Float | 0.1 | [^E] |
 | ancientRuinCountMultiplier | Float | 0.02 | [^F] |
+| spawnIceBelowTemperature | Float | -0.8 | [^G] |
 | maxLakeSize | Int | 10 | [^H] |
 | riverCountMultiplier | Float | 0.01 | [^I] |
 | minRiverLength | Int | 5 | [^I] |
@@ -194,6 +193,7 @@ Legend:
     First constant is for cities on the same landmass, the second is for cities on different continents.
 - [^E]: NaturalWonderGenerator uses these to determine the number of Natural Wonders to spawn for a given map size. The number scales linearly with map radius: #wonders = radius * naturalWonderCountMultiplier + naturalWonderCountAddedConstant. The defaults effectively mean Tiny - 1, Small - 2, Medium - 3, Large - 4, Huge - 5, Custom radius >=109 - all G&K wonders.
 - [^F]: MapGenerator.spreadAncientRuins: number of ruins = suitable tile count * this
+- [^G]: MapGenerator.spawnIce: spawn Ice where T < this, with T calculated from temperatureExtremeness, latitude and perlin noise.
 - [^H]: MapGenerator.spawnLakesAndCoasts: Water bodies up to this tile count become Lakes
 - [^I]: RiverGenerator: river frequency and length bounds
 - [^J]: A [UnitUpgradeCost](#unitupgradecost) sub-structure.
@@ -271,7 +271,7 @@ Currently the following milestones are supported:
 | Milestone | Requirement |
 | --------- | ----------- |
 | Build [building] | Build the building [building] in any city |
-| Anyone build [building] | Anyone must build the building [building] for all players to have this milestone |
+| Anyone should build [building] | Anyone must build the building [building] for all players to have this milestone |
 | Add all [comment] in capital | Add all units in the `requiredSpaceshipParts` field of this victory to the capital |
 | Destroy all players | You must be the only major civilization with any cities left |
 | Capture all capitals | Capture all the original capitals of major civilizations in the game |
@@ -333,8 +333,8 @@ Certain objects can be specified to have its own unique color. The colors are de
 
 Note: The default of some objects are [gdx color classes](https://javadoc.io/doc/com.badlogicgames.gdx/gdx/latest/com/badlogic/gdx/graphics/Color.html). The values of the constants are as follows:
 
-``` json
-gold        = [225, 215, 0  ]
-white       = [255, 255, 255]
-black       = [0  , 0  , 0  ]
-```
+| name | value |
+| ---- | ----- |
+| gold | [225, 215, 0] |
+| white | [255, 255, 255] |
+| black | [0, 0, 0] |

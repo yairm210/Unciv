@@ -12,12 +12,13 @@ Each unit has the following structure:
 | --------- | ---- | ------- | ----- |
 | name | String | Required | |
 | unitType | String | Required | The type of the unit. Must be in [UnitTypes.json](#unittypesjson) |
-| cost | Integer (≥0) | 0 | The amount of production required to build this unit |
-| movement | Integer (≥0) | 0 | The amount of movement points the unit has by |
-| strength | Integer (≥0) | 0 | The melee attack and defensive strength of the unit. If this and rangedStrength are ommited or 0, the unit will be a civilian |
-| rangedStrength | Integer (≥0) | 0 | The ranged attack strength of the unit. If omitted, the unit cannot ranged attack |
-| range | Integer (≥0) | 2 | The range from which ranged attacks can be preformed |
-| interceptRange | Integer (≥0) | 0 | Air units attacking within in this range will be intercepted |
+| cost | Integer | -1 | The amount of production required to build this unit. The production needed is always positive |
+| movement | Integer | 0 | The amount of movement points the unit has by |
+| strength | Integer | 0 | The melee attack and defensive strength of the unit. If this and rangedStrength are ommited or 0, the unit will be a civilian |
+| rangedStrength | Integer | 0 | The ranged attack strength of the unit. If omitted, the unit cannot ranged attack. If used, strength must be set too. |
+| religiousStrength | Integer | 0 | The religious attack and defensive strength of the unit |
+| range | Integer | 2 | The range from which ranged attacks can be preformed |
+| interceptRange | Integer | 0 | Air units attacking within in this range will be intercepted |
 | requiredTech | String | none | The tech required to build this unit. Must be in [Techs.json](2-Civilization-related-JSON-files.md#techsjson) |
 | obsoleteTech | String | none | After researching this tech, the unit can no longer be build. Must be in [Techs.json](2-Civilization-related-JSON-files.md#techsjson) |
 | requiredResource | String | none | Resource that is consumed by building this unit. Must be in [TileResources.json](3-Map-related-JSON-files.md#tileresourcesjson) |
@@ -46,11 +47,11 @@ Each promotion has the following structure:
 | Attribute | Type | Default | Notes |
 | --------- | ---- | ------- | ----- |
 | name | String | Required | See above for "I, II, III" progressions |
-| prerequisites | List | empty | Prerequisite promotions |
-| column | Integer | Optional | Determines placement order on the promotion picker screen. Name is historical, these coordinates no longer control placement directly. Promotions without coordinates are ensured to be placed last.  (…) |
-| row | Integer | Optional | … In base mods without any coordinates, promotions without prerequisites are sorted alphabetically and placed top down, the rest of the screen will structure the dependencies logically. If your mod has a "Heal instantly", it is suggested to use row=0 to place it on top. |
-| unitTypes | List | empty | The unit types for which this promotion applies as specified in [UnitTypes.json](#unittypesjson) |
-| uniques | List | empty | List of [unique abilities](../uniques.md) this promotion grants to the units |
+| prerequisites | List of Strings | empty | Prerequisite promotions |
+| column | Integer | Optional | Determines placement order on the promotion picker screen. Name is historical, these coordinates no longer control placement directly. Promotions without coordinates are ensured to be placed last. (…) |
+| row | Integer | Optional | … In base mods without any coordinates, promotions without prerequisites are sorted alphabetically and placed top down, the rest of the screen will structure the dependencies logically. If your mod has a "Heal instantly", it is suggested to use row=0 to place it on top |
+| unitTypes | List of Strings | empty | The unit types for which this promotion applies as specified in [UnitTypes.json](#unittypesjson) |
+| uniques | List of Strings | empty | List of [unique abilities](../uniques.md) this promotion grants to the units |
 | civilopediaText | List | empty | See [civilopediaText chapter](5-Miscellaneous-JSON-files.md#civilopedia-text) |
 
 ## UnitTypes.json
@@ -66,4 +67,4 @@ Each unit type has the following structure:
 | --------- | ---- | ------- | ----- |
 | name | String | Required | |
 | movementType | Enum | Required | The domain through which the unit moves. Allowed values: "Water", "Land", "Air" |
-| uniques | List of String | none | A list of the unique abilities every unit of this type has. A list of almost all uniques can be found [here](../Unique-parameters.md#unit-uniques) |
+| uniques | List of String | none | List of [unique abilities](../uniques.md) this promotion grants to units of this type |

@@ -12,17 +12,17 @@ Each terrain entry has the following structure:
 | --------- | ---- | ------- | ----- |
 | name | String | Required | |
 | type | Enum | Required | Land, Water, TerrainFeature, NaturalWonder |
-| occursOn | List | none | Only for terrain features and Natural Wonders: The baseTerrain it can be placed on |
+| occursOn | List of Strings | none | Only for terrain features and Natural Wonders: The baseTerrain it can be placed on |
 | turnsInto | String | none | Only for NaturalWonder: the base terrain is changed to this after placing the Natural Wonder |
 | weight | Integer | 10 | Only for NaturalWonder: _relative_ weight of being picked by the map generator |
 | [`<stats>`](#general-stat) | Float | 0 | Per-turn yield or bonus yield for the tile |
-| overrideStats | Boolean | false | If on, a feature's yields replace any yield from underlying terrain instead of adding to it |
+| overrideStats | Boolean | false | If true, a feature's yields replace any yield from underlying terrain instead of adding to it |
 | unbuildable | Boolean | false | If true, nothing can be built here - not even resource improvements |
 | impassable | Boolean | false | No unit can enter unless it has a special unique |
 | movementCost | Integer | 1 | Base movement cost |
 | defenceBonus | Float | 0 | Combat bonus for units being attacked here |
 | RGB | [List of 3× Integer](5-Miscellaneous-JSON-files.md#rgb-colors-list) | Gold | RGB color for 'Default' tileset display |
-| uniques | List | empty | List of [unique abilities](../uniques) this terrain has |
+| uniques | List of Strings | empty | List of [unique abilities](../uniques) this terrain has |
 | civilopediaText | List | empty | See [civilopediaText chapter](5-Miscellaneous-JSON-files.md#civilopedia-text) |
 
 ## TileImprovements.json
@@ -38,18 +38,18 @@ Each improvement has the following structure:
 | Attribute | Type | Default | Notes |
 | --------- | ---- | ------- | ----- |
 | name | String | Required | |
-| terrainsCanBeFoundOn | List | empty | [Terrains](#terrainsjson) that allow this resource |
+| terrainsCanBeBuiltOn | List of Strings | empty | Terrains that this improvement can be built on. Must be in [Terrains.json](#terrainsjson) |
 | techRequired | String | none | The name of the technology required to build this improvement |
 | uniqueTo | String | none | The name of the nation this improvement is unique for |
 | [`<stats>`](#stats) | Integer | 0 | Per-turn bonus yield for the tile |
-| turnsToBuild | Integer | -1 | Number of turns a worker spends building this (note: if -1, the improvement is unbuildable) |
-| uniques | List | empty | List of [unique abilities](../uniques) this improvement has |
+| turnsToBuild | Integer | -1 | Number of turns a worker spends building this. If -1, the improvement is unbuildable. If 0, the improvement is always built in one turn |
+| uniques | List of Strings | empty | List of [unique abilities](../uniques) this improvement has |
 | shortcutKey | String | none | Keyboard binding. Currently, only a single character is allowed (no function keys or Ctrl combinations) |
 | civilopediaText | List | empty | See [civilopediaText chapter](5-Miscellaneous-JSON-files.md#civilopedia-text) |
 
-- Tiles with no terrains, but positive turns to build, can be built only when the tile has a resource that names this improvement or special uniques are used. (TODO: missing something?)
-- Tiles with no terrains, and no turns to build, are like great improvements - they're placeable. That means a unit could exist with a 'Can create [this]' unique, and that the improvement will not show in a worker's improvement picker dialog.
-- Removable Terrain features will need to be removed before building an improvement - unless the feature is named in terrainsCanBeFoundOn _or_ the unique "Does not need removal of [terrainFeature]" is used (e.g. Camp allowed by resource).
+- Improvements with an empty `terrainsCanBeBuiltOn` list and positive `turnsToBuild` value can only be built on [resources](#tileresourcesjson) with `improvedBy` or `improvement` that contains the corresponding improvement.
+- Improvements with a `turnsToBuild` value of -1 will not show in a worker's improvement picker dialog. However, they can be created with the UnitAction unique `Can instantly construct a [improvementFilter] improvement`.
+- Removable Terrain features will need to be removed before building an improvement - unless the feature is named in terrainsCanBeBuiltOn _or_ the unique `Does not need removal of [tileFilter]` is used (e.g. Camp allowed by resource).
 - Special improvements: Road, Railroad, Remove \*, Cancel improvement order, City ruins, City center, Barbarian encampment - these have special meanings hardcoded to their names.
 
 ## TileResources.json
@@ -58,7 +58,7 @@ Each improvement has the following structure:
 
 This file lists the resources that a map tile can have.
 
-Note the predefined "_resourceType_" enum cannot be altered in a json.
+Note the predefined `resourceType` enum cannot be altered in a json.
 
 Note also that resources have two visual representations - icon and pixel graphic in the tileset. Omitting the icon results in a horribly ugly user interface, while omitting tileset graphics will miss out on a visualization on the map. If you provide a pixel graphic for FantasyHex, please be aware of the layering system and the ruleVariants in the tileset json. A single graphic may suffice if it has lots of transparency, as it will be drawn on top of terrain and features but below an improvement - if the single improvement graphic exists at all.
 
@@ -68,13 +68,14 @@ Each resource has the following structure:
 | --------- | ---- | ------- | ----- |
 | name | String | Required | |
 | resourceType | Enum | Bonus | Bonus, Luxury or Strategic |
-| terrainsCanBeFoundOn | List of Strings | empty | [Terrains](#terrainsjson) that allow this resource |
+| terrainsCanBeFoundOn | List of Strings | empty | Terrains that this resource can be found on. Must be in [Terrains.json](#terrainsjson) |
 | [`<stats>`](#stats) | Integer | 0 | Per-turn bonus yield for the tile |
-| improvement | String | none | The improvement ([TileImprovements.json](#tileimprovementsjson)) for this resource |
-| improvementStats | Object | empty | The additional yield when improved as sub-object with one or more [Stats](#stats) |
+| improvementStats | Object | none | The additional yield when improved, see [specialized stats](3-Map-related-JSON-files.md#specialized-stats)|
 | revealedBy | String | none | The technology name required to see, work and improve this resource |
-| unique | String | none | List of [unique abilities](../uniques) this improvement has |
-| civilopediaText | List | empty | see [civilopediaText chapter](5-Miscellaneous-JSON-files.md#civilopedia-text) |
+| improvedBy | List of strings | empty | The improvements required for obtaining this resource. Must be in [TileImprovements.json](#tileimprovementsjson) |
+| improvement | String | none | The improvement needed to obtain this resource. Must be in [TileImprovements.json](#tileimprovementsjson) (redundant due to `improvedBy`) |
+| unique | List of Strings | empty | List of [unique abilities](../uniques) this resource has |
+| civilopediaText | List | empty | See [civilopediaText chapter](5-Miscellaneous-JSON-files.md#civilopedia-text) |
 
 ## Ruins.json
 
@@ -94,13 +95,14 @@ Each of the objects in the file represents a single reward you can get from ruin
 
 [^A]: The exact algorithm for choosing a reward is the following:
 
-- Create a list of all possible rewards, with rewards with a higher weight appearing multiple times. A reward with weight one will appear once, a reward with weight two will appear twice, etc.
+- Create a list of all possible rewards. Each reward's frequency in the list corresponds to its weight, a reward with weight one will appear once, a reward with weight two will appear twice, etc.
 - Shuffle this list
 - Try give rewards starting from the top of the list. If any of the uniques of the rewards is valid in this context, reward it and stop trying more rewards.
 
 ### Notifications
 
 Some of the rewards ruins can give will have results that are not deterministic when writing it in the JSON, so creating a good notification for it would be impossible. An example for this would be the "Gain [50]-[100] [Gold]" unique, which will give a random amount of gold. For this reason, we allow some notifications to have parameters, in which values will be filled, such as "You found [goldAmount] gold in the ruins!". All the uniques which have this property can be found below.
+<!-- (need to update) -->
 
 | Unique | Parameters |
 | ------ | ---------- |
