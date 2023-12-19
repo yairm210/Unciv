@@ -61,7 +61,7 @@ class Personality {
             bias >=22f-> (0.59 * bias - 26.81).toFloat()
             bias >=11f -> (1.13 * bias - 42.35).toFloat()
             bias > 0f -> (2.76 * bias - 59.7).toFloat()
-            else -> 500f
+            else -> -500f
         }
     }
 
@@ -78,18 +78,16 @@ class Personality {
     }
 
     fun getMinimumDeclarationOfFriendshipMotivation():Float{
-        //Standard is DoF will be asked about 18% of possibilities
-        var bias = 100 - diplomacy["friendship"]!! * 18
+        //Standard is DoF will be asked about 20% of possibilities
+        var bias = 100 - diplomacy["friendship"]!! * 20
         return when {
             //Again, function behaves differently across its domain
-            //Looks like a logarithmic function but thats more easily understandable and adjustable
-            //And result is similar
-            bias >= 90f -> (6.24 * bias - 148.93).toFloat()
-            bias >= 78f-> (2.49 * bias - 117).toFloat()
-            bias == 18f-> 0f //Standard
-            bias >= 9f -> (0.77 * bias - 62.74).toFloat()
-            bias > 0f -> (6.18 * bias - 554.74).toFloat()
-            else -> 500f
+            bias >= 82f -> (3.77 * bias - 312.16).toFloat()
+            bias == 80f-> 0f //Standard
+            bias >= 50f-> (0.91 * bias - 72.77).toFloat()
+            bias >= 12 -> (3.36 * bias - 194.49).toFloat()
+            bias > 0f -> (6.11 * bias - 229.37).toFloat()
+            else -> -500f
         }
     }
 }
