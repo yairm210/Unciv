@@ -19,24 +19,24 @@ import kotlin.math.min
 
 object MotivationToAttackAutomation {
 
-    /*  return proflie including short-circuits is more or less:
-    -0: 30% of the time; 0-20: 28%; 20-40: 21%; 40-60: 6%; 60-80: 6%; 80-100: 4%; 100+: 5% */
     /** Returns a float indicating the desirability of war with otherCiv. As it stands, considers mostly power
-     * disparity than anything else. Returns 0 if war is unviable, may return negative if viable but hard to win.
-     * May short-circuit and return a value lower than atLeast*/
-    fun motivationToDeclareWar(civInfo: Civilization, otherCiv: Civilization, atLeast:Float):Float{
-        //In practice, this method asks "How likely is it to win this war?" rather than "Should i fight this war?"
+     * disparity than anything else. Returns -999 if war is unviable, may return higher negative values
+     * if viable but hard to win. Use this form if you dont need to know if there is a land path or if the city is reachable
+     * */
+    fun motivationToDeclareWar(civInfo: Civilization, otherCiv: Civilization): Float {
+        //In practice, this method asks "How likely is it to win this war?"
+        //more so than "Should i fight this war?"
         //We should eventually make it consider if the war is worth fighting
         val closestCities = NextTurnAutomation.getClosestCities(civInfo, otherCiv) ?: return 0f
 
         val ourCity = closestCities.city1
         val theirCity = closestCities.city2
         if (hasNoUnitsThatCanAttackCityWithoutDying(civInfo, theirCity))
-            return 0f
+            return -999f
 
         var motivation = powerAdvantageScore(civInfo,otherCiv,1f)
 
-        if(motivation <= 0f) return  0f
+        if(motivation <= 0f) return  -999f
 
         val diplomacyManager = civInfo.getDiplomacyManager(otherCiv)
 
@@ -60,9 +60,24 @@ object MotivationToAttackAutomation {
         //to dissuade the AI except in very particular circumstances
         motivation -= relationshipBonuses(diplomacyManager) * 0.5f
         motivation += getAlliedWarMotivation(civInfo,otherCiv)
+        return  motivation
+    }
+
+    /** Returns a float indicating the desirability of war with otherCiv. Considers mostly power
+     * disparity than anything else. Returns -999 if war is unviable,
+     * may return higher negative values if viable but hard to win.
+     * May short-circuit and return a value lower than atLeast*/
+    fun motivationToDeclareWar(civInfo: Civilization, otherCiv: Civilization, atLeast:Float):Float{
+        var motivation = motivationToDeclareWar(civInfo,otherCiv)
 
         // Short-circuit to avoid expensive BFS
+
         if (motivation < atLeast) return motivation
+
+        val closestCities = NextTurnAutomation.getClosestCities(civInfo, otherCiv)!!
+        val ourCity = closestCities.city1
+        val theirCity = closestCities.city2
+
 
         val landPathBFS = BFS(ourCity.getCenterTile()) {
             it.isLand && isTileCanMoveThrough(it, civInfo, otherCiv)
@@ -78,7 +93,7 @@ object MotivationToAttackAutomation {
         val reachableEnemyCitiesBfs = BFS(civInfo.getCapital(true)!!.getCenterTile()) { isTileCanMoveThrough(it,civInfo,otherCiv) }
         reachableEnemyCitiesBfs.stepToEnd()
         val reachableEnemyCities = otherCiv.cities.filter { reachableEnemyCitiesBfs.hasReachedTile(it.getCenterTile()) }
-        if (reachableEnemyCities.isEmpty()) return 0f // Can't even reach the enemy city, no point in war.
+        if (reachableEnemyCities.isEmpty()) return -999f // Can't even reach the enemy city, no point in war.
         return motivation
     }
 

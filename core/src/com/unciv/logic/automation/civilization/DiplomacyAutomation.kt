@@ -87,7 +87,7 @@ object DiplomacyAutomation {
         val civsToKnow = 0.75f * allAliveCivs
         motivation -= ((civsToKnow - knownCivs) / civsToKnow * 30f).toInt().coerceAtLeast(0)
 
-        motivation -= motivationToDeclareWar(civInfo, otherCiv, 10f).toInt() * 2
+        motivation -= motivationToDeclareWar(civInfo, otherCiv).toInt() * 2
 
         return motivation >= civInfo.nation.personality.getMinimumDeclarationOfFriendshipMotivation() //Default is 0
     }
@@ -123,7 +123,7 @@ object DiplomacyAutomation {
         // Don't accept if they are at war with our friends, they might use our land to attack them
         if (civInfo.diplomacy.values.any { it.isRelationshipLevelGE(RelationshipLevel.Friend) && it.otherCiv().isAtWarWith(otherCiv)})
             return false
-        if (motivationToDeclareWar(civInfo, otherCiv, 15f) >= 5f)
+        if (motivationToDeclareWar(civInfo, otherCiv) >= 5f)
             return false
         return true
     }

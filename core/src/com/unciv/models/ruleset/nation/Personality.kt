@@ -58,9 +58,9 @@ class Personality {
             bias >= 89f ->(7.97 * bias - 686.33).toFloat()
             bias == 80f-> 20f //Standard
             bias >=78f->(2.77 * bias - 199.47).toFloat()
-            bias >=22f-> (0.59 * bias - 26.81).toFloat()
-            bias >=11f -> (1.13 * bias - 42.35).toFloat()
-            bias > 0f -> (2.76 * bias - 59.7).toFloat()
+            bias >=22f-> (0.59 * bias - 31).toFloat()
+            bias >=11f -> (1.13 * bias - 47).toFloat()
+            bias > 0f -> (2.76 * bias - 65).toFloat()
             else -> -500f
         }
     }

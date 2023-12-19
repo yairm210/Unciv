@@ -80,7 +80,7 @@ class TradeEvaluation {
         // If we're making a peace treaty, don't try to up the bargain for people you don't like.
         // Leads to spartan behaviour where you demand more, the more you hate the enemy...unhelpful
         if (trade.ourOffers.none { it.name == Constants.peaceTreaty || it.name == Constants.researchAgreement}) {
-            if (trade.ourOffers.none { it.name == Constants.defensivePact}){
+            if (tradePartner.isHuman() && trade.ourOffers.none { it.name == Constants.defensivePact}){
                 //Has to be here because the intention of trade bias is not to affect peace and the like, only actual trade
                 sumOfTheirOffers =  (sumOfTheirOffers * evaluator.nation.personality.getTradeModifier()).toInt()
             }
