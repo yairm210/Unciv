@@ -23,7 +23,6 @@ import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.ui.components.MayaCalendar
-import com.unciv.ui.components.extensions.toPercent
 import com.unciv.ui.components.extensions.withItem
 import kotlin.math.ceil
 import kotlin.math.max
@@ -335,18 +334,25 @@ class TechManager : IsPartOfGameInfoSerialization {
         updateResearchProgress()
     }
 
+    /** A variant of kotlin's [associateBy] that omits null values */
+    private inline fun <T, K, V> Iterable<T>.associateByNotNull(keySelector: (T) -> K, valueTransform: (T) -> V?): Map<K, V> {
+        val destination = LinkedHashMap<K, V>()
+        for (element in this) {
+            val value = valueTransform(element) ?: continue
+            destination[keySelector(element)] = value
+        }
+        return destination
+    }
+
     private fun obsoleteOldUnits(techName: String) {
         // First build a map with obsoleted units to their (nation-specific) upgrade
-        val ruleset = getRuleset()
         fun BaseUnit.getEquivalentUpgradeOrNull(techName: String): BaseUnit? {
-            val unitUpgradesTo: String? = automaticallyUpgradedInProductionToUnitByTech(techName)
-            if (unitUpgradesTo == null)
-                return null
-            return civInfo.getEquivalentUnit(unitUpgradesTo!!)
+            val unitUpgradesTo = automaticallyUpgradedInProductionToUnitByTech(techName)
+                ?: return null
+            return civInfo.getEquivalentUnit(unitUpgradesTo)
         }
-        val obsoleteUnits = getRuleset().units.asSequence()
-            .map { it.key to it.value.getEquivalentUpgradeOrNull(techName) }
-            .toMap()
+        val obsoleteUnits = getRuleset().units.entries
+            .associateByNotNull({ it.key }, { it.value.getEquivalentUpgradeOrNull(techName) })
         if (obsoleteUnits.isEmpty()) return
 
         // Apply each to all cities - and remember which cities had which obsoleted unit
