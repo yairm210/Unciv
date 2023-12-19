@@ -1,7 +1,5 @@
 package com.unciv.models.ruleset.nation
 
-import com.unciv.Constants
-
 class Personality {
 
     var diplomacy:HashMap<String, Float>
@@ -69,11 +67,11 @@ class Personality {
         return  diplomacy["trade"]!!
     }
 
-    fun getMinimumOpenBordersRoll():Int{
+    fun getMaximumOpenBordersRoll():Int{
         return  - (diplomacy["openborders"]!! * 70).toInt() + 100
     }
 
-    fun getMinimumDefensivePactRoll():Int{
+    fun getMaximumDefensivePactRoll():Int{
         return  - (diplomacy["alliance"]!! * 70).toInt() + 100
     }
 

@@ -101,8 +101,8 @@ object DiplomacyAutomation {
                 && !civInfo.getDiplomacyManager(it).hasFlag(DiplomacyFlags.DeclinedOpenBorders) }
             .sortedByDescending { it.getDiplomacyManager(civInfo).relationshipLevel() }.toList()
         for (otherCiv in civsThatWeCanOpenBordersWith) {
-            // Default setting is 3, this will be changed according to different civ.
-            if ((1..100).random() >= civInfo.nation.personality.getMinimumOpenBordersRoll()) continue
+            // Default setting is 3
+            if ((1..100).random() >= civInfo.nation.personality.getMaximumOpenBordersRoll()) continue
             if (wantsToOpenBorders(civInfo, otherCiv)) {
                 val tradeLogic = TradeLogic(civInfo, otherCiv)
                 tradeLogic.currentTrade.ourOffers.add(TradeOffer(Constants.openBorders, TradeType.Agreement))
@@ -161,8 +161,8 @@ object DiplomacyAutomation {
             }
 
         for (otherCiv in canSignDefensivePactCiv) {
-            // Default minimum is 30.
-            if ((1..100).random() >= civInfo.nation.personality.getMinimumDefensivePactRoll()) continue
+            // Default maximum is 30.
+            if ((1..100).random() >= civInfo.nation.personality.getMaximumDefensivePactRoll()) continue
             if (wantsToSignDefensivePact(civInfo, otherCiv)) {
                 //todo: Add more in depth evaluation here
                 val tradeLogic = TradeLogic(civInfo, otherCiv)
