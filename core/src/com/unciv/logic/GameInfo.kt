@@ -378,8 +378,13 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
             // Do we need to break if player won?
             if (simulateUntilWin && player.victoryManager.hasWon()) {
                 simulateUntilWin = false
+                UncivGame.Current.settings.autoPlay.stopAutoPlay()
                 break
             }
+            
+            // Do we need to stop AutoPlay?
+            if (UncivGame.Current.settings.autoPlay.isAutoPlaying() && player.victoryManager.hasWon())
+                UncivGame.Current.settings.autoPlay.stopAutoPlay()
 
             // Clean up
             TurnManager(player).endTurn(progressBar)
@@ -391,12 +396,12 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
         if (turns == DebugUtils.SIMULATE_UNTIL_TURN)
             DebugUtils.SIMULATE_UNTIL_TURN = 0
 
-        // We found human player, so we are making him current
+        // We found human player, so we are making them current
         currentTurnStartTime = System.currentTimeMillis()
         currentPlayer = player.civName
         currentPlayerCiv = getCivilization(currentPlayer)
 
-        // Starting his turn
+        // Starting them turn
         TurnManager(player).startTurn(progressBar)
 
         // No popups for spectators
