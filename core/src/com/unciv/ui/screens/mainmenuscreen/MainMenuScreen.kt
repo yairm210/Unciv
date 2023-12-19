@@ -137,7 +137,7 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
         val column1 = Table().apply { defaults().pad(10f).fillX() }
         val column2 = if (singleColumn) column1 else Table().apply { defaults().pad(10f).fillX() }
 
-        if (game.files.autosaveExists()) {
+        if (game.files.autosaves.autosaveExists()) {
             val resumeTable = getMenuButton("Resume","OtherIcons/Resume", KeyboardBinding.Resume)
                 { resumeGame() }
             column1.add(resumeTable).row()
