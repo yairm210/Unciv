@@ -45,10 +45,10 @@ object MotivationToAttackAutomation {
         modifierMap["Relationship score"]= min(20f,max((40 - diplomacyManager.opinionOfOtherCiv())/4,-20f))
 
         if (otherCiv.isCityState()){
-            modifierMap["City-state"] = 15f
+            modifierMap["City-state"] = -15f
             if (otherCiv.getAllyCiv() == civInfo.civName)
             {
-                modifierMap["Allied city-state"] = 15f
+                modifierMap["Allied city-state"] = -15f
             }
         } else if (theirCity.getTiles().none { tile -> tile.neighbors.any { it.getOwner() == theirCity.civ && it.getCity() != theirCity } })
         {
@@ -56,9 +56,12 @@ object MotivationToAttackAutomation {
             modifierMap["Isolated city"] = 15f
         }
 
+
+
         //This part does take "Should i fight?" into consideration, but it is not significative enough
         //to dissuade the AI except in very particular circumstances
         relationshipBonuses(diplomacyManager, modifierMap)
+        addWonderBasedMotivations(otherCiv, modifierMap)
         modifierMap["War with allies score"] = getAlliedWarMotivation(civInfo,otherCiv).toFloat()
         return  modifierMap.values.sum()
     }
@@ -151,14 +154,17 @@ object MotivationToAttackAutomation {
     /** Returns a value between -45 and 130 indicating how stronger a civ is against another*/
     private fun powerAdvantageScore(civInfo: Civilization, otherCiv: Civilization, minimunStrengthRatio:Float): HashMap<String, Float>{
         val modifierMap = HashMap<String,Float>()
-        modifierMap["Strength score"] = 0f
+
         val powerRatio = calculateSelfCombatStrength(civInfo,30f) / calculateCombatStrengthWithProtectors(otherCiv, 30f, civInfo)
         if (powerRatio < minimunStrengthRatio) return modifierMap
         modifierMap["Strength score"] = min(50f, (powerRatio - 1) * 25)
+
         val techDiff = civInfo.getStatForRanking(RankingType.Technologies) - otherCiv.getStatForRanking(RankingType.Technologies)
         modifierMap["Tech score"] = min(20f,max(4f * techDiff, -20f))
+
         val productionRatio = civInfo.getStatForRanking(RankingType.Production).toFloat() / otherCiv.getStatForRanking(RankingType.Production).toFloat()
         modifierMap["Production ratio"] = min(20 * productionRatio - 20, 20f)
+
         //City-states are often having high scores. Why?
         val rankingRatio = otherCiv.getStatForRanking(RankingType.Score).toFloat() / civInfo.getStatForRanking(RankingType.Score).toFloat();
         modifierMap["Overall ranking score"] = min(30 / rankingRatio - 20, 20f) //Divided so that stronger civs are more targeted
@@ -208,22 +214,21 @@ object MotivationToAttackAutomation {
         return ourCombatStrength
     }
 
-    //Keeping this one because it may be useful if desirability and winnability of war are separated
-    private fun addWonderBasedMotivations(otherCiv: Civilization, modifierMap: HashMap<String, Int>) {
+    private fun addWonderBasedMotivations(otherCiv: Civilization, modifierMap: HashMap<String, Float>) {
         var wonderCount = 0
         for (city in otherCiv.cities) {
             val construction = city.cityConstructions.getCurrentConstruction()
             if (construction is Building && construction.hasUnique(UniqueType.TriggersCulturalVictory))
-                modifierMap["About to win"] = 15
+                modifierMap["About to win"] = 15f
             if (construction is BaseUnit && construction.hasUnique(UniqueType.AddInCapital))
-                modifierMap["About to win"] = 15
+                modifierMap["About to win"] = 15f
             wonderCount += city.cityConstructions.getBuiltBuildings().count { it.isWonder }
         }
 
         // The more wonders they have, the more beneficial it is to conquer them
         // Civs need an army to protect thier wonders which give the most score
         if (wonderCount > 0)
-            modifierMap["Owned Wonders"] = wonderCount
+            modifierMap["Owned Wonders"] = wonderCount.toFloat()
     }
 
     /** If they are at war with our allies, then we should join in */
