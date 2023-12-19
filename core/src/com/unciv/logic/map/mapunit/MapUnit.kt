@@ -35,6 +35,62 @@ import kotlin.math.ulp
  */
 class MapUnit : IsPartOfGameInfoSerialization {
 
+    //region Persisted fields
+
+    /** civName owning the unit */
+    lateinit var owner: String
+
+    /** civName of original owner - relevant for returning captured workers from barbarians */
+    var originalOwner: String? = null
+
+    /**
+     * Name key of the unit, used for serialization
+     */
+    lateinit var name: String
+
+    /**
+     *  Name of this individual unit, usually resulting from promotion
+     */
+    var instanceName: String? = null
+
+    var currentMovement: Float = 0f
+    var health: Int = 100
+
+    // work, automation, fortifying, ...
+    // Connect roads implies automated is true. It is specified by the action type.
+    var action: String? = null
+    var automated: Boolean = false
+
+    var automatedRoadConnectionDestination: Vector2? = null
+    var automatedRoadConnectionPath: List<Vector2>? = null
+
+    var attacksThisTurn = 0
+    var promotions = UnitPromotions()
+
+    /** Indicates if unit should be located with 'next unit' action */
+    var due: Boolean = true
+
+    var isTransported: Boolean = false
+    var turnsFortified = 0
+
+    // New - track only *how many have been used*, derive max from uniques, left = max - used
+    var abilityToTimesUsed: HashMap<String, Int> = hashMapOf()
+
+    var religion: String? = null
+    var religiousStrengthLost = 0
+
+    /** FIFO list of this unit's past positions. Should never exceed two items in length. New item added once at end of turn and once at start, to allow rare between-turn movements like melee withdrawal to be distinguished. Used in movement arrow overlay. */
+    var movementMemories = ArrayList<UnitMovementMemory>()
+
+    /** The most recent type of position change this unit has experienced. Used in movement arrow overlay.*/
+    var mostRecentMoveType = UnitMovementMemoryType.UnitMoved
+
+    /** Array list of all the tiles that this unit has attacked since the start of its most recent turn. Used in movement arrow overlay. */
+    var attacksSinceTurnStart = ArrayList<Vector2>()
+
+    //endregion
+    //region Transient fields
+
     @Transient
     lateinit var civ: Civilization
 
@@ -63,21 +119,28 @@ class MapUnit : IsPartOfGameInfoSerialization {
     @Transient
     var viewableTiles = HashSet<Tile>()
 
-    /** civName owning the unit */
-    lateinit var owner: String
+    @Transient
+    var showAdditionalActions: Boolean = false
 
-    /** civName of original owner - relevant for returning captured workers from barbarians */
-    var originalOwner: String? = null
-
-    /**
-     * Name key of the unit, used for serialization
-     */
-    lateinit var name: String
+    //endregion
 
     /**
-     *  Name of this individual unit, usually resulting from promotion
-     */
-    var instanceName: String? = null
+     * Container class to represent a single instant in a [MapUnit]'s recent movement history.
+     *
+     * @property position Position on the map at this instant, cloned on instantiation.
+     * @property type Category of the last change in position that brought the unit to this position.
+     * @see [movementMemories]
+     * */
+    class UnitMovementMemory(position: Vector2, val type: UnitMovementMemoryType) : IsPartOfGameInfoSerialization {
+        @Suppress("unused") // needed because this is part of a save and gets deserialized
+        constructor(): this(Vector2.Zero, UnitMovementMemoryType.UnitMoved)
+        val position = Vector2(position)
+
+        fun clone() = UnitMovementMemory(position, type)
+        override fun toString() = "${this::class.simpleName}($position, $type)"
+    }
+
+    //region pure functions
 
     /**
      * Name which should be displayed in UI
@@ -96,78 +159,9 @@ class MapUnit : IsPartOfGameInfoSerialization {
 
     fun shortDisplayName(): String {
         return if (instanceName != null) "[$instanceName]"
-            else "[$name]"
+        else "[$name]"
     }
 
-    var currentMovement: Float = 0f
-    var health: Int = 100
-
-    // work, automation, fortifying, ...
-    // Connect roads implies automated is true. It is specified by the action type.
-    var action: String? = null
-    var automated: Boolean = false
-
-    var automatedRoadConnectionDestination: Vector2? = null
-    var automatedRoadConnectionPath: List<Vector2>? = null
-
-    @Transient
-    var showAdditionalActions: Boolean = false
-
-    var attacksThisTurn = 0
-    var promotions = UnitPromotions()
-    /** Indicates if unit should be located with 'next unit' action */
-    var due: Boolean = true
-    var isTransported: Boolean = false
-    var turnsFortified = 0
-
-
-    // New - track only *how many have been used*, derive max from uniques, left = max - used
-    var abilityToTimesUsed: HashMap<String, Int> = hashMapOf()
-
-    var religion: String? = null
-    var religiousStrengthLost = 0
-
-    /**
-     * Container class to represent a single instant in a [MapUnit]'s recent movement history.
-     *
-     * @property position Position on the map at this instant, cloned on instantiation.
-     * @property type Category of the last change in position that brought the unit to this position.
-     * @see [movementMemories]
-     * */
-    class UnitMovementMemory(position: Vector2, val type: UnitMovementMemoryType) : IsPartOfGameInfoSerialization {
-        @Suppress("unused") // needed because this is part of a save and gets deserialized
-        constructor(): this(Vector2.Zero, UnitMovementMemoryType.UnitMoved)
-        val position = Vector2(position)
-
-        fun clone() = UnitMovementMemory(position, type)
-        override fun toString() = "${this::class.simpleName}($position, $type)"
-    }
-
-    /** Deep clone an ArrayList of [UnitMovementMemory]s. */
-    private fun ArrayList<UnitMovementMemory>.copy() = ArrayList(this.map { it.clone() })
-
-    /** FIFO list of this unit's past positions. Should never exceed two items in length. New item added once at end of turn and once at start, to allow rare between-turn movements like melee withdrawal to be distinguished. Used in movement arrow overlay. */
-    var movementMemories = ArrayList<UnitMovementMemory>()
-
-    /** Add the current position and the most recent movement type to [movementMemories]. Called once at end and once at start of turn, and at unit creation. */
-    fun addMovementMemory() {
-        movementMemories.add(UnitMovementMemory(getTile().position, mostRecentMoveType))
-        while (movementMemories.size > 2) { // O(n) but n == 2.
-            // Keep at most one arrow segment— A lot of the time even that won't be rendered because the two positions will be the same.
-            // When in the unit's turn— I.E. For a player unit— The last two entries will be from .endTurn() followed by from .startTurn(), so the segment from .movementMemories will have zero length. Instead, what gets seen will be the segment from the end of .movementMemories to the unit's current position.
-            // When not in the unit's turn— I.E. For a foreign unit— The segment from the end of .movementMemories to the unit's current position will have zero length, while the last two entries here will be from .startTurn() followed by .endTurn(), so the segment here will be what gets shown.
-            // The exception is when a unit changes position when not in its turn, such as by melee withdrawal or foreign territory expulsion. Then the segment here and the segment from the end of here to the current position can both be shown.
-            movementMemories.removeFirst()
-        }
-    }
-
-    /** The most recent type of position change this unit has experienced. Used in movement arrow overlay.*/
-    var mostRecentMoveType = UnitMovementMemoryType.UnitMoved
-
-    /** Array list of all the tiles that this unit has attacked since the start of its most recent turn. Used in movement arrow overlay. */
-    var attacksSinceTurnStart = ArrayList<Vector2>()
-
-    //region pure functions
     fun clone(): MapUnit {
         val toReturn = MapUnit()
         toReturn.baseUnit = baseUnit
@@ -354,7 +348,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
                 }
                 for (tile in newlyExploredTiles) {
                     // Include tile in the state for correct RNG seeding
-                    val state = StateForConditionals(civInfo=civ, unit=this, tile=tile);
+                    val state = StateForConditionals(civInfo=civ, unit=this, tile=tile)
                     for (unique in unfilteredTriggeredUniques) {
                         if (unique.conditionals.any {
                                 it.type == UniqueType.TriggerUponDiscoveringTile
@@ -489,9 +483,151 @@ class MapUnit : IsPartOfGameInfoSerialization {
 
     fun isGreatPerson() = baseUnit.isGreatPerson()
     fun isGreatPersonOfType(type: String) = baseUnit.isGreatPersonOfType(type)
-    //endregion
 
+    fun canIntercept(attackedTile: Tile): Boolean {
+        if (!canIntercept()) return false
+        if (currentTile.aerialDistanceTo(attackedTile) > getInterceptionRange()) return false
+        return true
+    }
+
+    fun getInterceptionRange():Int {
+        val rangeFromUniques = getMatchingUniques(UniqueType.AirInterceptionRange, checkCivInfoUniques = true)
+            .sumOf { it.params[0].toInt() }
+        return baseUnit.interceptRange + rangeFromUniques
+    }
+
+    fun canIntercept(): Boolean {
+        if (interceptChance() == 0) return false
+        // Air Units can only Intercept if they didn't move this turn
+        if (baseUnit.isAirUnit() && currentMovement == 0f) return false
+        val maxAttacksPerTurn = 1 +
+            getMatchingUniques(UniqueType.ExtraInterceptionsPerTurn)
+                .sumOf { it.params[0].toInt() }
+        if (attacksThisTurn >= maxAttacksPerTurn) return false
+        return true
+    }
+
+    fun interceptChance(): Int {
+        return getMatchingUniques(UniqueType.ChanceInterceptAirAttacks).sumOf { it.params[0].toInt() }
+    }
+
+    fun interceptDamagePercentBonus(): Int {
+        return getMatchingUniques(UniqueType.DamageWhenIntercepting)
+            .sumOf { it.params[0].toInt() }
+    }
+
+    fun receivedInterceptDamageFactor(): Float {
+        var damageFactor = 1f
+        for (unique in getMatchingUniques(UniqueType.DamageFromInterceptionReduced))
+            damageFactor *= 1f - unique.params[0].toFloat() / 100f
+        return damageFactor
+    }
+
+
+    fun getDamageFromTerrain(tile: Tile = currentTile): Int {
+        if (civ.nonStandardTerrainDamage) {
+            for (unique in getMatchingUniques(UniqueType.DamagesContainingUnits)) {
+                if (unique.params[0] in tile.allTerrains.map { it.name }) {
+                    return unique.params[1].toInt() // Use the damage from the unique
+                }
+            }
+        }
+        // Otherwise fall back to the defined standard damage
+        return  tile.allTerrains.sumOf { it.damagePerTurn }
+    }
+
+
+    fun isTransportTypeOf(mapUnit: MapUnit): Boolean {
+        // Currently, only missiles and airplanes can be carried
+        if (!mapUnit.baseUnit.movesLikeAirUnits()) return false
+        return getMatchingUniques(UniqueType.CarryAirUnits).any { mapUnit.matchesFilter(it.params[1]) }
+    }
+
+    private fun carryCapacity(unit: MapUnit): Int {
+        return (getMatchingUniques(UniqueType.CarryAirUnits)
+            + getMatchingUniques(UniqueType.CarryExtraAirUnits))
+            .filter { unit.matchesFilter(it.params[1]) }
+            .sumOf { it.params[0].toInt() }
+    }
+
+    fun canTransport(unit: MapUnit): Boolean {
+        if (owner != unit.owner) return false
+        if (!isTransportTypeOf(unit)) return false
+        if (unit.getMatchingUniques(UniqueType.CannotBeCarriedBy).any { matchesFilter(it.params[0]) }) return false
+        if (currentTile.airUnits.count { it.isTransported } >= carryCapacity(unit)) return false
+        return true
+    }
+
+    /** Gets a Nuke's blast radius from the BlastRadius unique, defaulting to 2. No check whether the unit actually is a Nuke. */
+    fun getNukeBlastRadius() = getMatchingUniques(UniqueType.BlastRadius)
+        // Don't check conditionals as these are not supported
+        .firstOrNull()?.params?.get(0)?.toInt() ?: 2
+
+    private fun isAlly(otherCiv: Civilization): Boolean {
+        return otherCiv == civ
+            || (otherCiv.isCityState() && otherCiv.getAllyCiv() == civ.civName)
+            || (civ.isCityState() && civ.getAllyCiv() == otherCiv.civName)
+    }
+
+    /** Implements [UniqueParameterType.MapUnitFilter][com.unciv.models.ruleset.unique.UniqueParameterType.MapUnitFilter] */
+    fun matchesFilter(filter: String): Boolean {
+        return MultiFilter.multiFilter(filter, ::matchesSingleFilter)
+    }
+
+    private fun matchesSingleFilter(filter:String): Boolean {
+        return when (filter) {
+            Constants.wounded, "wounded units" -> health < 100
+            Constants.barbarians, "Barbarian" -> civ.isBarbarian()
+            "City-State" -> civ.isCityState()
+            Constants.embarked -> isEmbarked()
+            "Non-City" -> true
+            else -> {
+                if (baseUnit.matchesFilter(filter)) return true
+                if (civ.nation.matchesFilter(filter)) return true
+                if (tempUniquesMap.containsKey(filter)) return true
+                return false
+            }
+        }
+    }
+
+    fun canBuildImprovement(improvement: TileImprovement, tile: Tile = currentTile): Boolean {
+        // Workers (and similar) should never be able to (instantly) construct things, only build them
+        // HOWEVER, they should be able to repair such things if they are pillaged
+        if (improvement.turnsToBuild == -1
+            && improvement.name != Constants.cancelImprovementOrder
+            && tile.improvementInProgress != improvement.name
+        ) return false
+        val buildImprovementUniques = getMatchingUniques(UniqueType.BuildImprovements)
+        if (tile.improvementInProgress == Constants.repair && buildImprovementUniques.any()) return true
+        return buildImprovementUniques
+            .any { improvement.matchesFilter(it.params[0]) || tile.matchesTerrainFilter(it.params[0]) }
+    }
+
+    fun getReligionDisplayName(): String? {
+        if (religion == null) return null
+        return civ.gameInfo.religions[religion]!!.getReligionDisplayName()
+    }
+
+    fun getForceEvaluation(): Int {
+        val promotionBonus = (promotions.numberOfPromotions + 1).toFloat().pow(0.3f)
+        var power = (baseUnit.getForceEvaluation() * promotionBonus).toInt()
+        power *= health
+        power /= 100
+        return power
+    }
+
+    fun threatensCiv(civInfo: Civilization): Boolean {
+        if (getTile().getOwner() == civInfo)
+            return true
+        return getTile().neighbors.any { it.getOwner() == civInfo }
+    }
+
+    /** Deep clone an ArrayList of [UnitMovementMemory]s. */
+    private fun ArrayList<UnitMovementMemory>.copy() = ArrayList(this.map { it.clone() })
+
+    //endregion
     //region state-changing functions
+
     fun setTransients(ruleset: Ruleset) {
         promotions.setTransients(this)
         baseUnit = ruleset.units[name]
@@ -501,9 +637,14 @@ class MapUnit : IsPartOfGameInfoSerialization {
         if (action == UnitActionType.Automate.value) automated = true
     }
 
-    fun getTriggeredUniques(trigger: UniqueType,
-                            stateForConditionals: StateForConditionals = StateForConditionals(civInfo = civ, unit = this)): Sequence<Unique> {
-        return getUniques().filter { it.conditionals.any { it.type == trigger } && it.conditionalsApply(stateForConditionals) }
+    fun getTriggeredUniques(
+        trigger: UniqueType,
+        stateForConditionals: StateForConditionals = StateForConditionals(civInfo = civ, unit = this)
+    ): Sequence<Unique> {
+        return getUniques().filter { unique ->
+            unique.conditionals.any { it.type == trigger }
+                && unique.conditionalsApply(stateForConditionals)
+        }
     }
 
     fun useMovementPoints(amount: Float) {
@@ -577,7 +718,9 @@ class MapUnit : IsPartOfGameInfoSerialization {
             else -> 10 // Enemy territory
         }
 
+        @Suppress("KotlinConstantConditions") // Wrong warning. isWater **is** dynamic, set in Tile.setTerrainTransients
         val mayHeal = healing > 0 || (tile.isWater && hasUnique(UniqueType.HealsOutsideFriendlyTerritory, checkCivInfoUniques = true))
+        @Suppress("KotlinConstantConditions") // Warning is right, but `return healing` reads nicer than `return 0`
         if (!mayHeal) return healing
 
         healing += getMatchingUniques(UniqueType.Heal, checkCivInfoUniques = true).sumOf { it.params[0].toInt() }
@@ -791,148 +934,21 @@ class MapUnit : IsPartOfGameInfoSerialization {
         }
     }
 
-
-    fun canIntercept(attackedTile: Tile): Boolean {
-        if (!canIntercept()) return false
-        if (currentTile.aerialDistanceTo(attackedTile) > getInterceptionRange()) return false
-        return true
-    }
-
-    fun getInterceptionRange():Int {
-        val rangeFromUniques = getMatchingUniques(UniqueType.AirInterceptionRange, checkCivInfoUniques = true)
-            .sumOf { it.params[0].toInt() }
-        return baseUnit.interceptRange + rangeFromUniques
-    }
-
-    fun canIntercept(): Boolean {
-        if (interceptChance() == 0) return false
-        // Air Units can only Intercept if they didn't move this turn
-        if (baseUnit.isAirUnit() && currentMovement == 0f) return false
-        val maxAttacksPerTurn = 1 +
-            getMatchingUniques(UniqueType.ExtraInterceptionsPerTurn)
-                .sumOf { it.params[0].toInt() }
-        if (attacksThisTurn >= maxAttacksPerTurn) return false
-        return true
-    }
-
-    fun interceptChance(): Int {
-        return getMatchingUniques(UniqueType.ChanceInterceptAirAttacks).sumOf { it.params[0].toInt() }
-    }
-
-    fun interceptDamagePercentBonus(): Int {
-        return getMatchingUniques(UniqueType.DamageWhenIntercepting)
-            .sumOf { it.params[0].toInt() }
-    }
-
-    fun receivedInterceptDamageFactor(): Float {
-        var damageFactor = 1f
-        for (unique in getMatchingUniques(UniqueType.DamageFromInterceptionReduced))
-            damageFactor *= 1f - unique.params[0].toFloat() / 100f
-        return damageFactor
-    }
-
-
-    fun getDamageFromTerrain(tile: Tile = currentTile): Int {
-        if (civ.nonStandardTerrainDamage) {
-            for (unique in getMatchingUniques(UniqueType.DamagesContainingUnits)) {
-                if (unique.params[0] in tile.allTerrains.map { it.name }) {
-                    return unique.params[1].toInt() // Use the damage from the unique
-                }
-            }
-        }
-        // Otherwise fall back to the defined standard damage
-        return  tile.allTerrains.sumOf { it.damagePerTurn }
-    }
-
-
-    fun isTransportTypeOf(mapUnit: MapUnit): Boolean {
-        // Currently, only missiles and airplanes can be carried
-        if (!mapUnit.baseUnit.movesLikeAirUnits()) return false
-        return getMatchingUniques(UniqueType.CarryAirUnits).any { mapUnit.matchesFilter(it.params[1]) }
-    }
-
-    private fun carryCapacity(unit: MapUnit): Int {
-        return (getMatchingUniques(UniqueType.CarryAirUnits)
-                + getMatchingUniques(UniqueType.CarryExtraAirUnits))
-            .filter { unit.matchesFilter(it.params[1]) }
-            .sumOf { it.params[0].toInt() }
-    }
-
-    fun canTransport(unit: MapUnit): Boolean {
-        if (owner != unit.owner) return false
-        if (!isTransportTypeOf(unit)) return false
-        if (unit.getMatchingUniques(UniqueType.CannotBeCarriedBy).any { matchesFilter(it.params[0]) }) return false
-        if (currentTile.airUnits.count { it.isTransported } >= carryCapacity(unit)) return false
-        return true
-    }
-
-    /** Gets a Nuke's blast radius from the BlastRadius unique, defaulting to 2. No check whether the unit actually is a Nuke. */
-    fun getNukeBlastRadius() = getMatchingUniques(UniqueType.BlastRadius)
-        // Don't check conditionals as these are not supported
-        .firstOrNull()?.params?.get(0)?.toInt() ?: 2
-
-    private fun isAlly(otherCiv: Civilization): Boolean {
-        return otherCiv == civ
-                || (otherCiv.isCityState() && otherCiv.getAllyCiv() == civ.civName)
-                || (civ.isCityState() && civ.getAllyCiv() == otherCiv.civName)
-    }
-
-    /** Implements [UniqueParameterType.MapUnitFilter][com.unciv.models.ruleset.unique.UniqueParameterType.MapUnitFilter] */
-    fun matchesFilter(filter: String): Boolean {
-        return MultiFilter.multiFilter(filter, ::matchesSingleFilter)
-    }
-
-    private fun matchesSingleFilter(filter:String): Boolean {
-        return when (filter) {
-            Constants.wounded, "wounded units" -> health < 100
-            Constants.barbarians, "Barbarian" -> civ.isBarbarian()
-            "City-State" -> civ.isCityState()
-            Constants.embarked -> isEmbarked()
-            "Non-City" -> true
-            else -> {
-                if (baseUnit.matchesFilter(filter)) return true
-                if (civ.nation.matchesFilter(filter)) return true
-                if (tempUniquesMap.containsKey(filter)) return true
-                return false
-            }
-        }
-    }
-
-    fun canBuildImprovement(improvement: TileImprovement, tile: Tile = currentTile): Boolean {
-        // Workers (and similar) should never be able to (instantly) construct things, only build them
-        // HOWEVER, they should be able to repair such things if they are pillaged
-        if (improvement.turnsToBuild == -1
-            && improvement.name != Constants.cancelImprovementOrder
-            && tile.improvementInProgress != improvement.name
-        ) return false
-        val buildImprovementUniques = getMatchingUniques(UniqueType.BuildImprovements)
-        if (tile.improvementInProgress == Constants.repair && buildImprovementUniques.any()) return true
-        return buildImprovementUniques
-            .any { improvement.matchesFilter(it.params[0]) || tile.matchesTerrainFilter(it.params[0]) }
-    }
-
-    fun getReligionDisplayName(): String? {
-        if (religion == null) return null
-        return civ.gameInfo.religions[religion]!!.getReligionDisplayName()
-    }
-
     fun actionsOnDeselect() {
         showAdditionalActions = false
         if (isPreparingParadrop() || isPreparingAirSweep()) action = null
     }
 
-    fun getForceEvaluation(): Int {
-        val promotionBonus = (promotions.numberOfPromotions + 1).toFloat().pow(0.3f)
-        var power = (baseUnit.getForceEvaluation() * promotionBonus).toInt()
-        power *= health
-        power /= 100
-        return power
-    }
-
-    fun threatensCiv(civInfo: Civilization): Boolean {
-        if (getTile().getOwner() == civInfo)
-            return true
-        return getTile().neighbors.any { it.getOwner() == civInfo }
+    /** Add the current position and the most recent movement type to [movementMemories]. Called once at end and once at start of turn, and at unit creation. */
+    fun addMovementMemory() {
+        movementMemories.add(UnitMovementMemory(getTile().position, mostRecentMoveType))
+        while (movementMemories.size > 2) { // O(n) but n == 2.
+            // Keep at most one arrow segment— A lot of the time even that won't be rendered because the two positions will be the same.
+            // When in the unit's turn— I.E. For a player unit— The last two entries will be from .endTurn() followed by from .startTurn(), so the segment from .movementMemories will have zero length. Instead, what gets seen will be the segment from the end of .movementMemories to the unit's current position.
+            // When not in the unit's turn— I.E. For a foreign unit— The segment from the end of .movementMemories to the unit's current position will have zero length, while the last two entries here will be from .startTurn() followed by .endTurn(), so the segment here will be what gets shown.
+            // The exception is when a unit changes position when not in its turn, such as by melee withdrawal or foreign territory expulsion. Then the segment here and the segment from the end of here to the current position can both be shown.
+            movementMemories.removeFirst()
+        }
     }
 
     //endregion
