@@ -398,9 +398,6 @@ class MapParametersTable(
         if (forMapEditor) {
             addCheckBox("Randomize seed", true) {
                 randomizeSeed = it
-                if (randomizeSeed) {
-                    reseed()
-                }
             }
         }
         addSlider("Map Elevation", {mapParameters.elevationExponent}, 0.6f, 0.8f)
