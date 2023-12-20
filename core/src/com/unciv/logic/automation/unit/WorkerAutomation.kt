@@ -125,20 +125,15 @@ class WorkerAutomation(
 
 
     /**
-     * Automate the process of connecting a road between two points.
-     * Current thoughts:
-     * Will be a special case of MapUnit.automated property
-     * Unit has new attributes startTile endTile
-     * - We will progress towards the end path sequentially, taking absolute least distance w/o regard for movement cost
-         * - Cancel upon risk of capture
-         * - Cancel upon blocked
-     * - End automation upon finish
+     * Automates the process of connecting, upgrading and repairing a road between two map tiles. The destination tile
+     * is assumed to be stored within the MapUnit, in automatedRoadConnectionDestination.
+     * @param unit The MapUnit which is automating the road construction.
+     * @param dangerousTiles A Set of Tile objects representing tiles that are considered dangerous
+     *                       and should be avoided during the road construction process.
      */
-    // TODO: Caching
-    // TODO: Hide the automate road button if road is not unlocked
-    fun automateConnectRoad(unit: MapUnit, tilesWhereWeWillBeCaptured: Set<Tile>){
+    // TODO: Consider dangerous tiles
+    fun automateConnectRoad(unit: MapUnit, dangerousTiles: Set<Tile>){
         if (actualBestRoadAvailable == RoadStatus.None) return
-
 
         var currentTile = unit.getTile()
 
@@ -149,11 +144,6 @@ class WorkerAutomation(
             unit.automatedRoadConnectionDestination = null
             unit.automatedRoadConnectionPath = null
             currentTile.stopWorkingOnImprovement()
-        }
-
-        if (unit.automatedRoadConnectionDestination == null){
-            stopAndCleanAutomation()
-            return
         }
 
         /** Conditions for whether it is acceptable to build a road on this tile */
@@ -167,11 +157,19 @@ class WorkerAutomation(
                 || tile.roadIsPillaged
         }
 
-        val destinationTile = unit.civ.gameInfo.tileMap[unit.automatedRoadConnectionDestination!!]
+        /** automatedRoadConnectionDestination should never be null in this context, except for an obscure scenario
+         * in which the game is loaded on version (2), a worker is set to connect road, the game is exited then loaded
+         * and saved on version (1), then exited and reloaded back on version (2), where (2) is the connect roads release version.
+         */
+        if (unit.automatedRoadConnectionDestination == null){
+            stopAndCleanAutomation()
+            return
+        }
 
+        val destinationTile = unit.civ.gameInfo.tileMap[unit.automatedRoadConnectionDestination!!]
         var pathToDest: List<Vector2>? = unit.automatedRoadConnectionPath
 
-        // The path does not exist, create it
+        // Try to create a path if it does not exist
         if (pathToDest == null) {
             val foundPath: List<Tile>? = MapPathing.getRoadPath(unit, currentTile, destinationTile)
             if (foundPath == null) {
@@ -244,6 +242,7 @@ class WorkerAutomation(
                 currentTile.setRepaired()
                 return
             }
+            // Construct road/railroad
             if (shouldBuildRoadOnTile(currentTile) && currentTile.improvementInProgress != actualBestRoadAvailable.name) {
                 val improvement = actualBestRoadAvailable.improvement(ruleSet)!!
                 currentTile.startWorkingOnImprovement(improvement, civInfo, unit)
