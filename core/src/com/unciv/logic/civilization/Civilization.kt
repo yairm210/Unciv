@@ -715,7 +715,7 @@ class Civilization : IsPartOfGameInfoSerialization {
     /*
     Looks for a profile with the name set in nation
     Then for a profile with this civ name
-    Then for a profile called default
+    Then for a profile called Default
     If none is found, returns an empty profile
      */
     private fun findAutomationProfile():AutomationProfile?{
