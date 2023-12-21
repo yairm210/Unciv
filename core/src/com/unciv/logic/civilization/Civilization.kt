@@ -8,6 +8,7 @@ import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.MultiFilter
 import com.unciv.logic.UncivShowableException
 import com.unciv.logic.automation.ai.TacticalAI
+import com.unciv.logic.automation.profile.AutomationProfile
 import com.unciv.logic.automation.unit.WorkerAutomation
 import com.unciv.logic.city.City
 import com.unciv.logic.city.managers.CityFounder
@@ -89,7 +90,7 @@ class Civilization : IsPartOfGameInfoSerialization {
 
     @Transient
     val units = UnitManager(this)
-    
+
     @Transient
     var threatManager = ThreatManager(this)
 
@@ -161,6 +162,7 @@ class Civilization : IsPartOfGameInfoSerialization {
 
     /* AI section */
     val tacticalAI = TacticalAI()
+    var profile = AutomationProfile()
 
     var notifications = ArrayList<Notification>()
 
