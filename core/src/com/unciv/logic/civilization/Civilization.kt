@@ -707,7 +707,7 @@ class Civilization : IsPartOfGameInfoSerialization {
         hasLongCountDisplayUnique = hasUnique(UniqueType.MayanCalendarDisplay)
 
         tacticalAI.init(this)
-        profile = findAutomationProfile()
+        profile = findAutomationProfile()?: AutomationProfile()
 
         cache.setTransients()
     }
@@ -718,16 +718,13 @@ class Civilization : IsPartOfGameInfoSerialization {
     Then for a profile called default
     If none is found, returns an empty profile
      */
-    private fun findAutomationProfile():AutomationProfile{
+    private fun findAutomationProfile():AutomationProfile?{
         //There is propably a less ugly way to do this
         var profile = gameInfo.ruleset.automationProfiles[nation.profileName]
         if(profile == null){
             profile = gameInfo.ruleset.automationProfiles[civName]
-            if (profile == null){
+            if (profile == null && !nation.isBarbarian){
                 profile = gameInfo.ruleset.automationProfiles["Default"]
-                if (profile == null){
-                    profile = AutomationProfile()
-                }
             }
         }
 
