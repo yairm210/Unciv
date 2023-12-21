@@ -42,7 +42,8 @@ class PolicyManager : IsPartOfGameInfoSerialization {
         get() {
             val value = HashMap<PolicyBranch, Int>()
             for (branch in branches) {
-                value[branch] = branch.priorities[civInfo.nation.preferredVictoryType] ?: 0
+                value[branch] = branch.priorities[civInfo.nation.preferredVictoryType] ?: 0 + civInfo.profile.policy.getPriotiyModifier(branch)
+
             }
             return value
         }
