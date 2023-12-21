@@ -707,7 +707,7 @@ class Civilization : IsPartOfGameInfoSerialization {
         hasLongCountDisplayUnique = hasUnique(UniqueType.MayanCalendarDisplay)
 
         tacticalAI.init(this)
-        profile = findAutomationProfile()?: AutomationProfile()
+        //profile = findAutomationProfile()?: AutomationProfile()
 
         cache.setTransients()
     }

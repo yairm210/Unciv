@@ -132,7 +132,7 @@ class Ruleset {
         unitTypes.putAll(ruleset.unitTypes)
         victories.putAll(ruleset.victories)
         cityStateTypes.putAll(ruleset.cityStateTypes)
-        automationProfiles.putAll(ruleset.automationProfiles)
+        //automationProfiles.putAll(ruleset.automationProfiles)
         ruleset.modOptions.unitsToRemove
             .flatMap { unitToRemove ->
                 units.filter { it.apply { value.ruleset = this@Ruleset }.value.matchesFilter(unitToRemove) }.keys
@@ -173,7 +173,7 @@ class Ruleset {
         unitTypes.clear()
         victories.clear()
         cityStateTypes.clear()
-        automationProfiles.clear()
+        //automationProfiles.clear()
     }
 
     fun allRulesetObjects(): Sequence<IRulesetObject> =
@@ -196,8 +196,8 @@ class Ruleset {
             tileResources.values.asSequence() +
             unitPromotions.values.asSequence() +
             units.values.asSequence() +
-            unitTypes.values.asSequence() +
-            automationProfiles.values.asSequence()
+            unitTypes.values.asSequence()
+            //automationProfiles.values.asSequence()
             // Victories is only INamed
     fun allIHasUniques(): Sequence<IHasUniques> =
             allRulesetObjects() + sequenceOf(modOptions)
@@ -357,10 +357,10 @@ class Ruleset {
             cityStateTypes += createHashmap(json().fromJsonFile(Array<CityStateType>::class.java, cityStateTypesFile))
         }
 
-        val automationProfilesFile = folderHandle.child("AutomationProfiles.json")
+        /*val automationProfilesFile = folderHandle.child("AutomationProfiles.json")
         if (automationProfilesFile.exists()) {
             automationProfiles += createHashmap(json().fromJsonFile(Array<AutomationProfile>::class.java, automationProfilesFile))
-        }
+        }*/
 
 
 
