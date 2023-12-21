@@ -8,9 +8,9 @@ class PolicyProfile {
 
     fun getPriotiyModifier(policy: PolicyBranch): Int {
         if (increase.contains(policy.name))
-            return 1
+            return 5
         if (decrease.contains(policy.name))
-            return -1
+            return -5
         return 0
     }
 }
