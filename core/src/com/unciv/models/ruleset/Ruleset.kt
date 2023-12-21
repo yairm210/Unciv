@@ -4,6 +4,7 @@ import com.badlogic.gdx.files.FileHandle
 import com.unciv.json.fromJsonFile
 import com.unciv.json.json
 import com.unciv.logic.BackwardCompatibility.updateDeprecations
+import com.unciv.logic.automation.profile.AutomationProfile
 import com.unciv.models.metadata.BaseRuleset
 import com.unciv.models.ruleset.nation.CityStateType
 import com.unciv.models.ruleset.nation.Difficulty
@@ -68,6 +69,7 @@ class Ruleset {
     val unitTypes = LinkedHashMap<String, UnitType>()
     var victories = LinkedHashMap<String, Victory>()
     var cityStateTypes = LinkedHashMap<String, CityStateType>()
+    val automationProfiles = LinkedHashMap<String, AutomationProfile>()
 
     val mods = LinkedHashSet<String>()
     var modOptions = ModOptions()

@@ -162,6 +162,8 @@ class Civilization : IsPartOfGameInfoSerialization {
 
     /* AI section */
     val tacticalAI = TacticalAI()
+
+    @Transient
     var profile = AutomationProfile()
 
     var notifications = ArrayList<Notification>()
@@ -705,8 +707,31 @@ class Civilization : IsPartOfGameInfoSerialization {
         hasLongCountDisplayUnique = hasUnique(UniqueType.MayanCalendarDisplay)
 
         tacticalAI.init(this)
+        profile = findAutomationProfile()
 
         cache.setTransients()
+    }
+
+    /*
+    Looks for a profile with the name set in nation
+    Then for a profile with this civ name
+    Then for a profile called default
+    If none is found, returns an empty profile
+     */
+    private fun findAutomationProfile():AutomationProfile{
+        //There is propably a less ugly way to do this
+        var profile = gameInfo.ruleset.automationProfiles[nation.profileName]
+        if(profile == null){
+            profile = gameInfo.ruleset.automationProfiles[civName]
+            if (profile == null){
+                profile = gameInfo.ruleset.automationProfiles["Default"]
+                if (profile == null){
+                    profile = AutomationProfile()
+                }
+            }
+        }
+
+        return profile
     }
 
 

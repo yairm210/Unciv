@@ -64,6 +64,8 @@ class Nation : RulesetObject() {
 
     var cities: ArrayList<String> = arrayListOf()
 
+    var profileName = ""
+
     override fun getUniqueTarget() = UniqueTarget.Nation
 
     @Transient
