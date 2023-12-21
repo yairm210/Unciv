@@ -268,6 +268,7 @@ class Civilization : IsPartOfGameInfoSerialization {
         toReturn.ruinsManager = ruinsManager.clone()
         toReturn.espionageManager = espionageManager.clone()
         toReturn.victoryManager = victoryManager.clone()
+        toReturn.profile = profile.clone()
         toReturn.allyCivName = allyCivName
         for (diplomacyManager in diplomacy.values.map { it.clone() })
             toReturn.diplomacy[diplomacyManager.otherCivName] = diplomacyManager
