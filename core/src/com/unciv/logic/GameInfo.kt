@@ -396,12 +396,12 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
         if (turns == DebugUtils.SIMULATE_UNTIL_TURN)
             DebugUtils.SIMULATE_UNTIL_TURN = 0
 
-        // We found human player, so we are making them current
+        // We found human player, so we are making him current
         currentTurnStartTime = System.currentTimeMillis()
         currentPlayer = player.civName
         currentPlayerCiv = getCivilization(currentPlayer)
 
-        // Starting them turn
+        // Starting his turn
         TurnManager(player).startTurn(progressBar)
 
         // No popups for spectators
