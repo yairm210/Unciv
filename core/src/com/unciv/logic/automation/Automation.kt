@@ -44,7 +44,7 @@ object Automation {
     val zeroFoodFocuses = setOf(CityFocus.CultureFocus, CityFocus.FaithFocus, CityFocus.GoldFocus,
         CityFocus.HappinessFocus, CityFocus.ProductionFocus, CityFocus.ScienceFocus)
     private fun rankStatsForCityWork(stats: Stats, city: City, cityStats: Stats, specialist: Boolean, localUniqueCache: LocalUniqueCache): Float {
-        val cityAIFocus = city.cityAIFocus
+        val cityAIFocus = city.getCityFocus()
         val yieldStats = stats.clone()
 
         if (specialist) {

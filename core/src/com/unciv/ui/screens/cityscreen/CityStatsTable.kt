@@ -85,7 +85,7 @@ class CityStatsTable(private val cityScreen: CityScreen) : Table() {
             if (stat == Stat.Faith && !city.civ.gameInfo.isReligionEnabled()) continue
             val icon = Table()
             val focus = CityFocus.safeValueOf(stat)
-            val toggledFocus = if (focus == city.cityAIFocus) {
+            val toggledFocus = if (focus == city.getCityFocus()) {
                 icon.add(ImageGetter.getStatIcon(stat.name).surroundWithCircle(27f, false, color = selected))
                 CityFocus.NoFocus
             } else {
@@ -94,7 +94,7 @@ class CityStatsTable(private val cityScreen: CityScreen) : Table() {
             }
             if (cityScreen.canCityBeChanged()) {
                 icon.onActivation(binding = toggledFocus.binding) {
-                    city.cityAIFocus = toggledFocus
+                    city.setCityFocus(toggledFocus)
                     city.reassignPopulation()
                     cityScreen.update()
                 }
