@@ -392,8 +392,13 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
             // Do we need to break if player won?
             if (simulateUntilWin && player.victoryManager.hasWon()) {
                 simulateUntilWin = false
+                UncivGame.Current.settings.autoPlay.stopAutoPlay()
                 break
             }
+            
+            // Do we need to stop AutoPlay?
+            if (UncivGame.Current.settings.autoPlay.isAutoPlaying() && player.victoryManager.hasWon())
+                UncivGame.Current.settings.autoPlay.stopAutoPlay()
 
             // Clean up
             TurnManager(player).endTurn(progressBar)
