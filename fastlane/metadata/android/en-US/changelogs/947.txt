@@ -1,32 +1,15 @@
-
-
-Save city focus as string, to allow changes in available city focuses without breaking games 
-
-Revert "New Citizen Focus Options " ()
-
-Resolves  - 'unique is requirement for tech' only looks at tech conditional
-
-Separate higher-level autosave functions from lower-level file functions
-
-Revert "Great Person Points - Rounding changes, Breakdown UI "
+Fixed tech dependency related crash
 
 Unit by default not selected on turn start
 
 Added 'upon turn end' trigger
 
-4.9.10-patch1
-
 By SomeTroglodyte:
-- Make City-state boni display respect hidden from users flags 
-- Mod declarative compatibility - a little more 
-- (UI) Politics overview diagram: Add legend popup 
-- Linting of MapUnit class 
-- Fix any tech researched clearing all units from queues 
+- City-state bonuses respect 'hidden from users' modifier
+- (UI) Politics overview diagram: Add legend popup
 
 By tuvus:
-- Added AutoPlay until end setting 
-- One player in each round will be processed even if all players are defeated. 
+- Added AutoPlay until end setting
+- if all players are defeated, one player will be processed
 
-By itanasi:
-- New Citizen Focus Options 
-- Enable Domination to Capture All Capitals 
+Enable Domination to Capture All Capitals - By itanasi
