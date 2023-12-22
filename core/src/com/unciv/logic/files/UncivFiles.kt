@@ -22,9 +22,9 @@ import com.unciv.ui.screens.savescreens.Gzip
 import com.unciv.utils.Concurrency
 import com.unciv.utils.Log
 import com.unciv.utils.debug
+import kotlinx.coroutines.Job
 import java.io.File
 import java.io.Writer
-import kotlinx.coroutines.Job
 
 private const val SAVE_FILES_FOLDER = "SaveFiles"
 private const val MULTIPLAYER_FILES_FOLDER = "MultiplayerGames"
@@ -42,11 +42,9 @@ class UncivFiles(
         debug("Creating UncivFiles, localStoragePath: %s, externalStoragePath: %s",
             files.localStoragePath, files.externalStoragePath)
     }
-    //region Data
 
-    var autoSaveJob: Job? = null
+    val autosaves = Autosaves(this)
 
-    //endregion
     //region Helpers
 
     fun getSave(gameName: String): FileHandle {
@@ -64,8 +62,8 @@ class UncivFiles(
         val externalFile = files.external(location)
 
         val toReturn = if (files.isExternalStorageAvailable && (
-                        preferExternalStorage && (externalFile.exists() || !localFile.exists())
-                        || !preferExternalStorage && (externalFile.exists() && !localFile.exists())
+                externalFile.exists() && !localFile.exists() || // external file is only valid choice
+                preferExternalStorage && (externalFile.exists() || !localFile.exists()) // unless local file is only valid choice, choose external
                 ) ) {
             externalFile
         } else {
@@ -80,13 +78,15 @@ class UncivFiles(
      * @throws GdxRuntimeException if the [path] represents a directory
      */
     fun fileWriter(path: String, append: Boolean = false): Writer {
-        val file = if (preferExternalStorage && files.isExternalStorageAvailable) {
-            files.external(path)
-        } else {
-            files.local(path)
-        }
+        val file = pathToFileHandler(path)
         return file.writer(append, Charsets.UTF_8.name())
     }
+
+    fun pathToFileHandler(path: String): FileHandle {
+        return if (preferExternalStorage && files.isExternalStorageAvailable) files.external(path)
+        else files.local(path)
+    }
+
 
     fun getMultiplayerSaves(): Sequence<FileHandle> {
         return getSaves(MULTIPLAYER_FILES_FOLDER)
@@ -387,9 +387,11 @@ class UncivFiles(
         }
 
     }
+}
 
-    //endregion
-    //region Autosave
+class Autosaves(val files: UncivFiles) {
+
+    var autoSaveJob: Job? = null
 
     /**
      * Auto-saves a snapshot of the [gameInfo] in a new thread.
@@ -414,7 +416,7 @@ class UncivFiles(
 
     fun autoSave(gameInfo: GameInfo, nextTurn: Boolean = false) {
         try {
-            saveGame(gameInfo, AUTOSAVE_FILE_NAME)
+            files.saveGame(gameInfo, AUTOSAVE_FILE_NAME)
         } catch (oom: OutOfMemoryError) {
             Log.error("Ran out of memory during autosave", oom)
             return  // not much we can do here
@@ -424,40 +426,32 @@ class UncivFiles(
         if (nextTurn) {
             val newAutosaveFilename =
                 SAVE_FILES_FOLDER + File.separator + AUTOSAVE_FILE_NAME + "-${gameInfo.currentPlayer}-${gameInfo.turns}"
-            val file =
-                if (preferExternalStorage && files.isExternalStorageAvailable)
-                    files.external(newAutosaveFilename)
-                else
-                    files.local(newAutosaveFilename)
-            getSave(AUTOSAVE_FILE_NAME).copyTo(file)
+            val file = files.pathToFileHandler(newAutosaveFilename)
+            files.getSave(AUTOSAVE_FILE_NAME).copyTo(file)
 
             fun getAutosaves(): Sequence<FileHandle> {
-                return getSaves().filter { it.name().startsWith(AUTOSAVE_FILE_NAME) }
+                return files.getSaves().filter { it.name().startsWith(AUTOSAVE_FILE_NAME) }
             }
             while (getAutosaves().count() > 10) {
                 val saveToDelete = getAutosaves().minByOrNull { it.lastModified() }!!
-                deleteSave(saveToDelete.name())
+                files.deleteSave(saveToDelete.name())
             }
         }
     }
 
     fun loadLatestAutosave(): GameInfo {
         return try {
-            loadGameByName(AUTOSAVE_FILE_NAME)
+            files.loadGameByName(AUTOSAVE_FILE_NAME)
         } catch (_: Exception) {
             // silent fail if we can't read the autosave for any reason - try to load the last autosave by turn number first
-            val autosaves = getSaves().filter { it.name() != AUTOSAVE_FILE_NAME && it.name().startsWith(
+            val autosaves = files.getSaves().filter { it.name() != AUTOSAVE_FILE_NAME && it.name().startsWith(
                 AUTOSAVE_FILE_NAME
             ) }
-            loadGameFromFile(autosaves.maxByOrNull { it.lastModified() }!!)
+            files.loadGameFromFile(autosaves.maxByOrNull { it.lastModified() }!!)
         }
     }
 
-    fun autosaveExists(): Boolean {
-        return getSave(AUTOSAVE_FILE_NAME).exists()
-    }
-
-    // endregion
+    fun autosaveExists(): Boolean = files.getSave(AUTOSAVE_FILE_NAME).exists()
 }
 
 class IncompatibleGameInfoVersionException(

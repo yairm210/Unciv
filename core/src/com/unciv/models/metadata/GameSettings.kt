@@ -326,6 +326,7 @@ class GameSettings {
 
     class GameSettingsAutoPlay {
         var showAutoPlayButton: Boolean = false
+        var autoPlayUntilEnd: Boolean = false
         var autoPlayMaxTurns = 10
         var fullAutoPlayAI: Boolean = true
         var autoPlayMilitary: Boolean = true

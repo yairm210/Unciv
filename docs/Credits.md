@@ -734,6 +734,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 - [charts](https://thenounproject.com/icon/charts-2312023/) by Srinivas Agra (gimped to appear bolder) for the Charts page
 - [framed image](https://thenounproject.com/icon/framed-image-2332187/) by Jose Dean for Victory Illustrations page
 - [down](https://thenounproject.com/icon/down-39378/) by Cengiz SARI for Show unit destination
+- [Cat](https://thenounproject.com/icon/cat-158942/) by Josi for Politics overview diagram legend
 
 
 ### Main menu
