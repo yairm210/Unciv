@@ -12,15 +12,12 @@ import com.unciv.ui.screens.basescreen.BaseScreen
 
 class CitizenManagementTable(val cityScreen: CityScreen) : Table(BaseScreen.skin) {
     val city = cityScreen.city
-    private val numCol = 4
 
     fun update() {
         clear()
 
         val colorSelected = BaseScreen.skin.getColor("selection")
         val colorButton = BaseScreen.skin.getColor("color")
-
-        val topTable = Table() // holds 2 buttons
         // effectively a button, but didn't want to rewrite TextButton style
         // and much more compact and can control backgrounds easily based on settings
         val resetLabel = "Reset Citizens".toLabel()
@@ -37,7 +34,8 @@ class CitizenManagementTable(val cityScreen: CityScreen) : Table(BaseScreen.skin
             "CityScreen/CitizenManagementTable/ResetCell",
             tintColor = colorButton
         )
-        topTable.add(resetCell).pad(3f)
+        add(resetCell).colspan(2).growX().pad(3f)
+        row()
 
         val avoidLabel = "Avoid Growth".toLabel()
         val avoidCell = Table()
@@ -54,18 +52,10 @@ class CitizenManagementTable(val cityScreen: CityScreen) : Table(BaseScreen.skin
             "CityScreen/CitizenManagementTable/AvoidCell",
             tintColor = if (city.avoidGrowth) colorSelected else colorButton
         )
-        topTable.add(avoidCell).pad(3f)
-        add(topTable).colspan(numCol).growX()
+        add(avoidCell).colspan(2).growX().pad(3f)
         row()
 
-        val focusLabel = "Citizen Focus".toLabel()
-        val focusCell = Table()
-        focusCell.add(focusLabel).pad(5f)
-        add(focusCell).colspan(numCol).growX().pad(3f)
-        row()
-
-        var currCol = numCol
-        val defaultTable = Table()
+        var newRow = false
         for (focus in CityFocus.values()) {
             if (!focus.tableEnabled) continue
             if (focus == CityFocus.FaithFocus && !city.civ.gameInfo.isReligionEnabled()) continue
@@ -87,22 +77,10 @@ class CitizenManagementTable(val cityScreen: CityScreen) : Table(BaseScreen.skin
                 "CityScreen/CitizenManagementTable/FocusCell",
                 tintColor = if (city.cityAIFocus == focus) colorSelected else colorButton
             )
-            // make NoFocus and Manual their own special row
-            if(focus == CityFocus.NoFocus) {
-                defaultTable.add(cell).growX().pad(3f)
-            } else if (focus == CityFocus.Manual) {
-                defaultTable.add(cell).growX().pad(3f)
-                add(defaultTable).colspan(numCol).growX()
+            add(cell).growX().pad(3f)
+            if (newRow)  // every 2 make new row
                 row()
-            } else {
-                cell.padTop(5f)  // Stat symbols need extra padding on top
-                add(cell).growX().pad(3f)
-                --currCol
-                if (currCol == 0) {  // make new row
-                    row()
-                    currCol = numCol
-                }
-            }
+            newRow = !newRow
         }
 
         pack()
