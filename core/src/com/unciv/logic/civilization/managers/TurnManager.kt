@@ -232,6 +232,11 @@ class TurnManager(val civInfo: Civilization) {
         for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponTurnEnd, StateForConditionals(civInfo)))
             UniqueTriggerActivation.triggerCivwideUnique(unique, civInfo)
 
+        for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerEveryTurns, StateForConditionals(civInfo)))
+            if (unique.conditionals.any { it.type == UniqueType.TriggerEveryTurns && civInfo.gameInfo.turns % it.params[0].toInt() == 0}) {
+                UniqueTriggerActivation.triggerCivwideUnique(unique, civInfo)
+            }
+
         val notificationsLog = civInfo.notificationsLog
         val notificationsThisTurn = Civilization.NotificationsLog(civInfo.gameInfo.turns)
         notificationsThisTurn.notifications.addAll(civInfo.notifications)

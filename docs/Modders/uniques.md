@@ -2147,6 +2147,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "&lt;upon turn end&gt;"
 	Applicable to: TriggerCondition
 
+??? example  "&lt;every [amount] turns&gt;"
+	Example: "&lt;every [3] turns&gt;"
+
+	Applicable to: TriggerCondition
+
 ??? example  "&lt;upon founding a Pantheon&gt;"
 	Applicable to: TriggerCondition
 
