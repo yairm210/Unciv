@@ -66,16 +66,16 @@ class CitizenManagementTable(val cityScreen: CityScreen) : Table(BaseScreen.skin
                 cell.touchable = Touchable.enabled
                 // Note the binding here only works when visible, so the main one is on CityStatsTable.miniStatsTable
                 // If we bind both, both are executed - so only add the one here that re-applies the current focus
-                val binding = if (city.cityAIFocus == focus) focus.binding else KeyboardBinding.None
+                val binding = if (city.getCityFocus() == focus) focus.binding else KeyboardBinding.None
                 cell.onActivation(binding = binding) {
-                    city.cityAIFocus = focus
+                    city.setCityFocus(focus)
                     city.reassignPopulation()
                     cityScreen.update()
                 }
             }
             cell.background = BaseScreen.skinStrings.getUiBackground(
                 "CityScreen/CitizenManagementTable/FocusCell",
-                tintColor = if (city.cityAIFocus == focus) colorSelected else colorButton
+                tintColor = if (city.getCityFocus() == focus) colorSelected else colorButton
             )
             add(cell).growX().pad(3f)
             if (newRow)  // every 2 make new row
