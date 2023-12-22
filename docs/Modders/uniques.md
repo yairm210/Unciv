@@ -1779,7 +1779,14 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 ## ModOptions uniques
 ??? example  "Mod is incompatible with [modFilter]"
+	Specifies that your Mod is incompatible with another. Always treated symmetrically, and cannot be overridden by the Mod you are declaring as incompatible.
 	Example: "Mod is incompatible with [DeCiv Redux]"
+
+	Applicable to: ModOptions
+
+??? example  "Mod requires [modFilter]"
+	Specifies that your Extension Mod is only available if any other Mod matching the filter is active.
+	Example: "Mod requires [DeCiv Redux]"
 
 	Applicable to: ModOptions
 

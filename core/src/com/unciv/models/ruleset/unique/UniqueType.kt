@@ -795,8 +795,14 @@ enum class UniqueType(
     Comment("Comment [comment]", *UniqueTarget.Displayable,
         docDescription = "Allows displaying arbitrary text in a Unique listing. Only the text within the '[]' brackets will be displayed, the rest serves to allow Ruleset validation to recognize the intent."),
 
-    // Declarative Mod compatibility (so far rudimentary):
-    ModIncompatibleWith("Mod is incompatible with [modFilter]", UniqueTarget.ModOptions),
+    // Declarative Mod compatibility (see [ModCompatibility]):
+    // Note there is currently no display for these, but UniqueFlag.HiddenToUsers is not set.
+    // That means we auto-template and ask our translators for a translation that is currently unused.
+    //todo To think over - leave as is for future use or remove templates and translations by adding the flag?
+    ModIncompatibleWith("Mod is incompatible with [modFilter]", UniqueTarget.ModOptions,
+        docDescription = "Specifies that your Mod is incompatible with another. Always treated symmetrically, and cannot be overridden by the Mod you are declaring as incompatible."),
+    ModRequires("Mod requires [modFilter]", UniqueTarget.ModOptions,
+        docDescription = "Specifies that your Extension Mod is only available if any other Mod matching the filter is active."),
     ModIsAudioVisualOnly("Should only be used as permanent audiovisual mod", UniqueTarget.ModOptions),
     ModIsAudioVisual("Can be used as permanent audiovisual mod", UniqueTarget.ModOptions),
     ModIsNotAudioVisual("Cannot be used as permanent audiovisual mod", UniqueTarget.ModOptions),
