@@ -63,12 +63,13 @@ class BasicTests {
 
     // If there's a unit that obsoletes with no upgrade then when it obsoletes
 // and we try to work on its upgrade, we'll get an exception - see techManager
+    // But...Scout obsoletes at Scientific Theory with no upgrade...?
     @Test
     fun allObsoletingUnitsHaveUpgrades() {
         val units: Collection<BaseUnit> = ruleset.units.values
         var allObsoletingUnitsHaveUpgrades = true
         for (unit in units) {
-            if (unit.techsThatObsoleteThis().any() && unit.upgradesTo == null && unit.name !="Scout" ) {
+            if (unit.techsAtWhichAutoUpgradeInProduction().any() && unit.upgradesTo == null && unit.name !="Scout" ) {
                 debug("%s obsoletes but has no upgrade", unit.name)
                 allObsoletingUnitsHaveUpgrades = false
             }
