@@ -15,9 +15,12 @@ import com.unciv.logic.GameInfoPreview
 import com.unciv.logic.GameInfoSerializationVersion
 import com.unciv.logic.HasGameInfoSerializationVersion
 import com.unciv.logic.UncivShowableException
+import com.unciv.logic.civilization.PlayerType
+import com.unciv.logic.civilization.managers.TurnManager
 import com.unciv.models.metadata.GameSettings
 import com.unciv.models.metadata.doMigrations
 import com.unciv.models.metadata.isMigrationNecessary
+import com.unciv.models.ruleset.RulesetCache
 import com.unciv.ui.screens.savescreens.Gzip
 import com.unciv.utils.Concurrency
 import com.unciv.utils.Log
@@ -307,6 +310,31 @@ class UncivFiles(
 
     fun setGeneralSettings(gameSettings: GameSettings) {
         getGeneralSettingsFile().writeString(json().toJson(gameSettings), false, Charsets.UTF_8.name())
+    }
+
+    val scenarioFolder = "scenarios"
+    fun getScenarioFiles() = sequence {
+
+        for (mod in RulesetCache.values) {
+            val modFolder = mod.folderLocation ?: continue
+            val scenarioFolder = modFolder.child(scenarioFolder)
+            if (scenarioFolder.exists())
+                for (file in scenarioFolder.list())
+                    yield(Pair(file, mod))
+        }
+    }
+
+    fun loadScenario(gameFile: FileHandle): GameInfo {
+        val game = loadGameFromFile(gameFile)
+        game.civilizations.removeAll { it.isSpectator() }
+        if (game.civilizations.none { it.isHuman() })
+            game.civilizations.first { it.isMajorCiv() }.playerType = PlayerType.Human
+
+        game.currentPlayerCiv = game.civilizations.first { it.playerType == PlayerType.Human }
+        game.currentPlayer = game.currentPlayerCiv.civName
+        TurnManager(game.currentPlayerCiv).startTurn()
+
+        return game
     }
 
     companion object {

@@ -167,6 +167,12 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
             { game.pushScreen(ModManagementScreen()) }
         column2.add(modsTable).row()
 
+        if (game.files.getScenarioFiles().any()){
+            val scenarioTable = getMenuButton("Scenarios", "OtherIcons/Mods", KeyboardBinding.Scenarios)
+            { game.pushScreen(ScenarioScreen()) }
+            column2.add(scenarioTable).row()
+        }
+
         val optionsTable = getMenuButton("Options", "OtherIcons/Options", KeyboardBinding.MainMenuOptions)
             { openOptionsPopup() }
         optionsTable.onLongPress { openOptionsPopup(withDebug = true) }
@@ -352,3 +358,5 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
     // We contain a map...
     override fun getShortcutDispatcherVetoer() = KeyShortcutDispatcherVeto.createTileGroupMapDispatcherVetoer()
 }
+
+
