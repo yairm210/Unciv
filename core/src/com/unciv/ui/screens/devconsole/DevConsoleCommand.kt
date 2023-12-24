@@ -1,6 +1,7 @@
 package com.unciv.ui.screens.devconsole
 
 import com.unciv.logic.civilization.Civilization
+import com.unciv.logic.civilization.PlayerType
 import com.unciv.models.ruleset.tile.TerrainType
 import com.unciv.models.stats.Stat
 
@@ -270,14 +271,27 @@ class ConsoleCivCommands : ConsoleCommandNode {
                 return@ConsoleAction DevConsoleResponse.error("$stat is not civ-wide")
             civ.addStat(stat, amount)
             DevConsoleResponse.OK
+        },
+
+        "setplayertype" to ConsoleAction { console, params ->
+            if (params.size != 2) return@ConsoleAction DevConsoleResponse.hint("Format: civ setplayertype <civName> <ai/human>")
+
+            val civ = console.getCivByName(params[0])
+                ?: return@ConsoleAction DevConsoleResponse.error("Unknown civ")
+            val playerType = PlayerType.values().firstOrNull { it.name.lowercase() == params[1].lowercase() }
+                ?: return@ConsoleAction DevConsoleResponse.error("Invalid player type, valid options are 'ai' or 'human'")
+            civ.playerType = playerType
+            DevConsoleResponse.OK
         }
     )
 
     override fun autocomplete(params: List<String>): String? {
-        if (params.size == 2 && params[0] == "add")
-            return Stat.names()
-                .firstOrNull { it.lowercase().startsWith(params[1]) }
-                ?.drop(params[1].length)
+        when (params[0]){
+            "add" -> if (params.size == 2)
+                return Stat.names()
+                    .firstOrNull { it.lowercase().startsWith(params[1]) }
+                    ?.drop(params[1].length)
+        }
         return super.autocomplete(params)
     }
 }
