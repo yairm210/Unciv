@@ -14,7 +14,7 @@
 		"startBias": ["Avoid [Tundra]"],
 		"preferredVictoryType": "Scientific",
 
-		"startIntroPart1": "May the gods bless you, great Nebuchadnezzar, ruler of ancient Babylon! Built 5000 years ago, Babylon emerged as an empire in 1800 BC only, thanks to godlike Hammurabi, The Giver of Law. Fallen under the Kassites assaults then the Assyrian domination, Babylon reborned from its ashes, gaining back its independance, and became the beacon for Arts and Learning in the ancient world. O Nebuchadnezzar, after your death, Babylon sadly didn't last long, conquered by the mighty Persians, and then by the Greeks, until the great city disappeared forever in 141 BC.",
+		"startIntroPart1": "May the gods bless you, great Nebuchadnezzar, ruler of ancient Babylon! Built 5000 years ago, Babylon emerged as an empire in 1800 BC, thanks to godlike Hammurabi, The Giver of Law. Falling under the Kassites assaults then the Assyrian domination, Babylon was reborn from its ashes, gaining back its independance, and became the beacon for Arts and Learning in the ancient world. O Nebuchadnezzar, after your death, Babylon quickly fell, conquered by the mighty Persians, and then by the Greeks, until the great city disappeared forever in 141 BC.",
 		"startIntroPart2": "Great Nebuchadnezzar, Babylon's glory still lives through you and your people. Will you create a spark to enlighten the world again? Can you forge an empire that lasts through the ages of history?",
 
 		"declaringWar": "The demon wants the blood of soldiers!",
@@ -45,7 +45,7 @@
 		"startBias": ["Coast"],
 		"preferredVictoryType":"Diplomatic",
 
-		"startIntroPart1": "Great King Alexander, leader of the mighty Greek nation, you are truly blessed by the gods. By your astonishing conquests, you showed once again that union leads to greatness. In the past, quarrelsome city-states such as Athens, Sparta, Thebes, found a way to join their forces, allowing Greece to defeat the mighty Persia in the 5th century BC, both on land and sea. Democracy, philosophy, tragedy, art and architecture then spread to the world, given therefore birth to the Western Civilisation.",
+		"startIntroPart1": "Great King Alexander, leader of the mighty Greek nation, you are truly blessed by the gods. In 480 BC, quarrelsome city-states such as Athens, Sparta, Thebes, found a way to join their forces, allowing Greece to defeat the mighty Persia in the 5th century BC, both on land and sea. Following their example, you lead a Greek coalition and finally struck down the Persian Empire in 331 BC. You conquered almost all the known world, and from Europe to Africa to India, you built an empire unmatched by any before it.",
 		"startIntroPart2": "Megalexandros, son of Zeus, will you ride Bucephalas again, to gift the world with the greatness of the Greek culture? Can you forge an empire that lasts through the ages of history?",
 
 		"declaringWar": "You are in my way, you must be destroyed.",
@@ -76,7 +76,7 @@
 		"adjective": ["Chinese"],
 		"preferredVictoryType": "Scientific",
 
-        "startIntroPart1": "Heaven itself bends before your beauty, Empress Wu Zetian, ruler of eternal China! You lead one of the oldest and greatest civilization of humanity. In the old ages, chinese people already mastered a level of culture and science that many other civilizations will reach much later in history. China brought so many contributions to human knowledge - the printing press, gunpowder, the works of Confucius -, and this, long before the rest of the world was mature enough to make the same discoveries!",
+        "startIntroPart1": "Heaven itself bends before your beauty, Empress Wu Zetian, ruler of eternal China! You lead one of the oldest and greatest civilization of humanity. In your time, China stood at the forefront of science and technology, bringing the world such contributions as gunpowder, the printing press, and the world of Confucius, and this, long before the rest of the world was mature enough to make the same discoveries!",
         "startIntroPart2": "Great Queen, can you make China shine again, using your divine intelligence and beauty? China stands for greatness, and all its enemies should learn it soon enough! Can you forge an empire that lasts through the ages of history?",
 
         "declaringWar": "You won't ever be able to bother me again. Go meet Yama.",
@@ -105,7 +105,7 @@
 		"startBias": ["Avoid [Jungle]","Avoid [Forest]"],
 		"preferredVictoryType": "Cultural",
 
-        "startIntroPart1": "O great Ramesses, Pharaoh of Egypt, bright as the Sun and mighty as the Nile! Lord of all living things, you lead the greatest of all civilizations, which has gifted the world with writing, advanced mathematics, sculpture, and architecture. The egyptian culture and monuments amaze the world since thousands of years, keeping Egypt to the pinacle of humanity achievement.",
+        "startIntroPart1": "O great Ramesses, Pharaoh of Egypt, bright as the Sun and mighty as the Nile! Lord of all living things, you lead the greatest of all civilizations, which has gifted the world with writing, advanced mathematics, sculpture, and architecture. Egyptian monuments and culture will continue to amaze the world for thousands of years.",
         "startIntroPart2": "Mighty and eternal Ramesses, Egypt lasted for millenia, whereas other civilisations disappeared into dust after a few centuries. The gods bless you again to lead Egypt and its people on the path of eternity. Can you forge an empire that lasts through the ages of history?",
 
 		"declaringWar": "You are but a pest on this Earth, prepare to be eliminated!",
@@ -137,7 +137,7 @@
 		"startBias": ["Coast"],
 		"preferredVictoryType": "Diplomatic",
 
-        "startIntroPart1": "Long live to Your Highness, Queen Elizabeth Gloriana, leader and protector of the glorious England! Through history, enduring many invasions, England strengthened its will, playing smartly with diplomacy, cunning, and military power, to eventually rose as one of the most dominant Empire the world has ever known. Their matchless navy, brilliant scientists and artists, and powerful merchants, have shaped the known world for centuries.",
+        "startIntroPart1": "Long live to Your Highness, Queen Elizabeth Gloriana, leader and protector of the glorious England! Through history, enduring many invasions, England strengthened its will, playing smartly with diplomacy, cunning, and military power, to eventually rose as one of the most dominant Empires the world has ever known. Their matchless navy, brilliant scientists and artists, and powerful merchants, have shaped the known world for centuries.",
         "startIntroPart2": "Queen Elizabeth, will England extend once more its domination upon all lands and seas of the world? Can you forge an empire that lasts through the ages of history?",
 
         "declaringWar": "By the grace of God, your days are numbered.",
@@ -164,7 +164,7 @@
 		"adjective": ["French"],
 		"preferredVictoryType": "Cultural",
 
-        "startIntroPart1": "Vive Napoleon I, First Consul and Emperor of France! After the glorious Revolution which suppressed the centuries-old monarchy, the French nation stood at the heart of Europe as a Republic, and intended to export its ideals to the entire European continent, either by diplomacy or war. The french capital Paris was more than ever the world center of Culture, Arts, and Letters. With its Great Army, reputed as one of the greatest in the History, France fought gloriously all surrounding enemies, but eventually fell against the coalition of other European powers.",
+        "startIntroPart1": "Vive Napoleon I, First Consul and Emperor of France! After the glorious Revolution which suppressed the centuries-old monarchy, the French nation stood at the heart of Europe as a Republic, and intended to export its ideals to the entire European continent, either by diplomacy or war. The French Capital Paris was more than ever the world center of Culture, Arts, and Letters. With its Great Army, reputed as one of the greatest in the History, France fought gloriously all surrounding enemies, but eventually fell against the coalition of other European powers.",
         "startIntroPart2": "Napoleon Bonaparte, ruler of the French people, will you rebuild the empire to take revenge on your foes, and make of France a example to follow once again? Can you forge an empire that lasts through the ages of history?",
 
         "declaringWar": "You're disturbing us, prepare for war.",
@@ -193,8 +193,8 @@
 		"preferredVictoryType": "Scientific",
 
 
-        "startIntroPart1": "Hail to Imperial Majesty Catherine, Empress of all the Russias. Ruling the largest country in the world, from the Pacific Ocean in the east to the Baltic Sea in the west, your people endured wars, droughts, and many disasters, imbuing the Russian society with heroism and tenacity, and producing artists and scientists among the best in the world. Russia is a powerful empire which rightfully claims its place in the world concert of superpowers.",
-        "startIntroPart2": "Empress Catherine, your people are eager of glory for Russia, to reborn the sacred land and enlighten the world once again. Will you achieve greatness for your country again? Can you forge an empire that lasts through the ages of history?",
+        "startIntroPart1": "Hail to Imperial Majesty Catherine, Empress of all Russians. Ruling the largest country in the world, from the Pacific Ocean in the east to the Baltic Sea in the west, your people endured wars, droughts, and many disasters, imbuing the Russian society with heroism and tenacity, and producing artists and scientists among the best in the world. Russia is a powerful empire which rightfully claims its place in the world concert of superpowers.",
+        "startIntroPart2": "Empress Catherine, your people are eager for Russian glory, to revive the sacred land and enlighten the world once again. Will you achieve greatness for your country again? Can you forge an empire that lasts through the ages of history?",
 
         "declaringWar": "You've behaved yourself very badly, you know it. Now it's payback time.",
 		"attacked": "You've mistaken my passion for a weakness, you'll regret about this.",
@@ -223,7 +223,7 @@
 		"preferredVictoryType": "Scientific",
 
 
-        "startIntroPart1": "Ave Caesar Augustus, Emperor of Rome and Dominus of the Roman Empire! Your empire was the most powerful and feared of all in Western civilization. The Roman people crafted so brilliantly its culture, law, art, and warfare, that no one could contest the supremacy of Rome. Force and Honor led to glorious conquests, a domination of all the lands from Spain in the west to Syria in the east, even reaching the remote barbarian lands of England and Germany. Roman art and architecture are praised since two millenia and was even envied by all lesser civilizations who have followed.",
+        "startIntroPart1": "Ave Caesar Augustus, Emperor of Rome and Dominus of the Roman Empire! Your empire was the most powerful and feared of all in Western civilization. The Roman people crafted so brilliantly its culture, law, art, and warfare, that no one could contest the supremacy of Rome. Force and Honor led to glorious conquests, a domination of all the lands from Spain in the west to Syria in the east, even reaching the remote barbarian lands of England and Germany. Roman art and architecture have been praised for millenia and have been envied by all lesser civilizations who have followed.",
         "startIntroPart2": "O glorious Imperator, your people celebrate you and ask for the glory of Rome! Will your empire rise again and spread the Pax Romana to all? Can you forge an empire that lasts through the ages of history?",
 
         "declaringWar": "My treasury contains little and my soldiers are getting impatient... (sigh) ...therefore you must die.",
@@ -251,8 +251,8 @@
 		"startBias": ["Desert"],
 		"preferredVictoryType": "Scientific",
 
-        "startIntroPart1": "Blessings of the Great God be upon you, O great caliph Harun al-Rashid, leader of the mighty Arabian people! The Muslim Empire, the Caliphate, born from chaos after the death of the prophet Muhammad in 632 AD, intended to apply the rule of God to all Earth. By the will of God, the caliphate reached its full power, ruling Spain, North Africa, the Middle East, Anatolia, the Balkans and Persia, to even surpass the Great Roman Empire. The arts and sciences was a gift of Arabia during the Middle Ages, as the infidel lands of Europe dwelved deep into ignorance and chaos. Lasting for six hundred years, the Caliphate finally fell before the Mongols, the plague of the civilized world.",
-        "startIntroPart2": "Great Caliph Harun al Rashid, all arabian people long for greatness! Arabia must be once again the land of arts and knowledge, which with God's help, will fear no enemy! Can you forge an empire that lasts through the ages of history?",
+        "startIntroPart1": "Blessings of the Great God be upon you, O great caliph Harun al-Rashid, leader of the mighty Arabian people! The Muslim Empire, the Caliphate, born from chaos after the death of the prophet Muhammad in 632 AD, intended to apply the rule of God to all Earth. By the will of God, the caliphate reached its full power, ruling Spain, North Africa, the Middle East, Anatolia, the Balkans and Persia, to even surpass the Great Roman Empire. The arts and sciences were a gift of Arabia during the Middle Ages, as the infidel lands of Europe delved deep into ignorance and chaos. Lasting for six hundred years, the Caliphate finally fell before the Mongols, the plague of the civilized world.",
+        "startIntroPart2": "Great Caliph Harun al Rashid, all Arabian people long for greatness! Arabia must be once again the land of arts and knowledge, which with God's help, will fear no enemy! Can you forge an empire that lasts through the ages of history?",
 
         "declaringWar": "The world will be more beautiful without you. Prepare for war.",
 		"attacked": "Fool! You will soon regret dearly! I swear it!",
@@ -308,8 +308,8 @@
 		"startBias": ["Coast"],
 		"preferredVictoryType": "Domination",
 
-        "startIntroPart1": "Lord Oda Nobunaga, ruler of Japan, the land of the Rising Sun is at your command! Through history, japanese people lived and died with honor, proud of their rich culture of arts and letters. Years of bloody civil war, invasions of foreign powers, wealth but also great poverty, have never altered the strong will of the Rising Sun island, as the Bushido spirit has imbued the fields of battle and the japanese society for millenia. At the end of the 19th century, under foreign influence, your people took the path of modernity, and in a few decades, made of Japan a land of technological innovation and powerful industry, that only a few nations can compete.",
-        "startIntroPart2": "O great daimyo, will you take on your hands the Japan destiny? Will honor and glory infuse again on your people like cherry flowers blossom in the wind? Can you forge an empire that lasts through the ages of history?",
+        "startIntroPart1": "Lord Oda Nobunaga, ruler of Japan, the land of the Rising Sun is at your command! Through history, Japanese people lived and died with honor, proud of their rich culture of arts and letters. Years of bloody civil war, invasions of foreign powers, wealth but also great poverty, have never altered the strong will of the Rising Sun island, as the Bushido spirit has imbued the fields of battle and the Japanese society for millenia. At the end of the 19th century, under foreign influence, your people took the path of modernity, and in a few decades, made of Japan a land of technological innovation and powerful industry, with which only few nations can compete.",
+        "startIntroPart2": "O great daimyo, will you take on your hands the Japan destiny? Will honor and glory again infuse your people like cherry flowers blossom in the wind? Can you forge an empire that lasts through the ages of history?",
 
         "declaringWar": "I hereby inform you of our intention to wipe out your civilization from this world.",
 		"attacked": "Pitiful fool! Now we shall destroy you!",
@@ -336,7 +336,7 @@
 		"startBias": ["Grassland"],
 		"preferredVictoryType": "Cultural",
 
-        "startIntroPart1": "Wise Mahatma Gandhi, great leader of India, we honor you! India is one of the oldest countries in the world with 10,000 years of history, built on spirit and religion, as three of the world's great religions - Hinduism, Buddhism and Jainism - appeared on this sacred land. Every aspect of India society reveres art, music and color, showing great wealth but also grinding poverty. For centuries, India was torn between local kingdoms fighting each other but also repelling invaders. In the 12th century AD, Muslim Turks conquered India, then the Mongols took their place. In the early 17th century, India, still fragmented, was colonized by the English and their diplomacy and technological superiority. After two centuries of British dominion, Indian nationalism woke up, and you, Great Mahatma, has lead a peaceful and victorious rebellion never seen anywhere in history!",
+        "startIntroPart1": "Wise Mahatma Gandhi, great leader of India, we honor you! India is one of the oldest countries in the world with 10,000 years of history, built on spirit and religion, as three of the world's great religions - Hinduism, Buddhism and Jainism - appeared on this sacred land. Every aspect of India society reveres art, music and color, showing great wealth but also grinding poverty. For centuries, India was torn between local kingdoms fighting each other but also repelling invaders. In the 12th century AD, Muslim Turks conquered India, then the Mongols took their place. In the early 17th century, India, still fragmented, was colonized by the English and their diplomacy and technological superiority. After two centuries of British dominion, Indian nationalism woke up, and you, Great Mahatma, have led a peaceful and victorious rebellion never seen anywhere in history!",
         "startIntroPart2": "Gandhi, will you show again to your people the path of freedom? Will you accomplish the great potential of your nation for centuries to come? Can you forge an empire that lasts through the ages of history?",
 
         "declaringWar": "I have just received a report that large numbers of my troops have crossed your borders.",
@@ -362,7 +362,7 @@
 		"adjective": ["German"],
 		"preferredVictoryType": "Scientific",
 
-        "startIntroPart1": "All hail to Otto von Bismarck, first chancellor of Germany and its empire! During the ancient era, Germany was a land fragmented in several tribes but already showed great promises as the Roman Empire itself struggled to bend the Germans to its will. Germany, as one nation, was slowly built on the ruins of the Holy Roman Empire, and waited 1871 to be finally unified after the glorious victory on France and Napoleon III. The German people are creative, intelligent, industrious and proven to be talented warriors through history. Despite great catastrophes and failures in the first half of the 20th century, Germany can always rely on its people will and strentgh to be among the greatest and powerful nations in the world.",
+        "startIntroPart1": "All hail to Otto von Bismarck, first chancellor of Germany and its empire! During the ancient era, Germany was a land fragmented in several tribes but already showed great promise as the Roman Empire itself struggled to bend the Germans to its will. Germany, as one nation, was slowly built on the ruins of the Holy Roman Empire, and waited 1871 to be finally unified after the glorious victory on France and Napoleon III. The German people are creative, intelligent, industrious and proven to be talented warriors through history. Despite great catastrophes and failures in the first half of the 20th century, Germany can always rely on its people will and strength to be among the greatest and powerful nations in the world.",
         "startIntroPart2": "Great Prince Bismarck, glory and power are at the heart of the German nation. Your people are strong, and lend you their iron will, to lead Germany once again. Can you forge an empire that lasts through the ages of history?",
 
         "declaringWar": "I cannot wait until ye grow even mightier. Therefore, prepare for war!",
@@ -394,7 +394,7 @@
 		"startBias": ["Coast"],
 		"preferredVictoryType": "Domination",
 
-        "startIntroPart1": "O Great Emperor Suleiman, may the God bless you! You are revered for your power, wealth and generosity, and you truly deserves to be called the 'Magnificent!' The Ottoman Empire was born in Bithynia, starting as a small country in Eastern Anatolia in 12th century, then expanded to west into Anatolia. Over the next century, your people vanquished the empire of Byzantium, annexing Turkey and the Balkans, and smartly assimilating all wonders and knowledges of the Byzantine civilization. In the mid 15th century, the Ottomans added Constantinople to their empire, establishing a strategic link between Europe and the Middle East. The Empire would continue to expand for centuries reaching North Africa, Middle East and Eastern Europe at its height, but brutally disappeared in the chaos of the first world war, in early 20th century.",
+        "startIntroPart1": "O Great Emperor Suleiman, may the God bless you! You are revered for your power, wealth and generosity, and you truly deserves to be called the 'Magnificent!' The Ottoman Empire was born in Bithynia, starting as a small country in Eastern Anatolia in 12th century, then expanded to west into Anatolia. Over the next century, your people vanquished the empire of Byzantium, annexing Turkey and the Balkans, and smartly assimilating all wonders and knowledge of the Byzantine civilization. In the mid 15th century, the Ottomans added Constantinople to their empire, establishing a strategic link between Europe and the Middle East. The Empire would continue to expand for centuries reaching North Africa, Middle East and Eastern Europe at its height, but brutally disappeared in the chaos of the first world war, in early 20th century.",
         "startIntroPart2": "Mighty Sultan, your people ask you to build again the Empire, to the level of power and glory it once achieved, and beyond! Will you revive the Ottoman spirit and greatness? Can you forge an empire that lasts through the ages of history?",
 
         "declaringWar": "Your continued insolence and failure to recognize and preeminence leads us to war.",
@@ -423,8 +423,8 @@
 		"startBias": ["Coast"],
 		"preferredVictoryType": "Scientific",
 
-        "startIntroPart1": "Greetings to you, King Sejong the Great, heir of the Choson Dynasty! Prosperity and benevolence towards the common man are the principles of you reign, and made of you the most beloved korean king. You always aimed to provide a fair and equal society for all your people, and also to favorize knowledge and technological discoveries. Your wisdom and intelligence imbued all the korean society, and the scholars of the Jade Hall developed Korea's first written language, Hangul, sharing further literature and science to the people after centuries of darkness.",
-        "startIntroPart2": "Wise Sejong, will you guide your people once again? Will harmony and knowledge be again the social bases of Korea, to reach new heights of achievement? Can you forge an empire that lasts through the ages of history?",
+        "startIntroPart1": "Greetings to you, King Sejong the Great, heir of the Choson Dynasty! Prosperity and benevolence towards the common man are the principles of your reign, and made of you the most beloved Korean king. You always aimed to provide a fair and equal society for all your people, and also to favor knowledge and technological discoveries. Your wisdom and intelligence imbued all the Korean society, and the scholars of the Jade Hall developed Korea's first written language, Hangul, sharing further literature and science to the people after centuries of darkness.",
+        "startIntroPart2": "Wise Sejong, will you guide your people once again? Will harmony and knowledge be again the social basis of Korea, reaching new heights? Can you forge an empire that lasts through the ages of history?",
 
         "declaringWar": "Jip-hyun-jun (Hall of Worthies) will no longer tolerate your irksome behavior. We will liberate the citizens under your oppression even with force, and enlighten them!",
 		"attacked": "Foolish, miserable wretch! You will be crushed by this country's magnificent scientific power!",
@@ -452,8 +452,8 @@
 		"startBias": ["Forest"],
 		"preferredVictoryType": "Scientific",
 
-        "startIntroPart1": "Greetings, noble Hiawatha, leader of the mighty Iroquois nations! Your people lived near the great and holy lake Ontario since ages, on a land that will be later known as New York city. Long ago, in the antiquity, the five peoples of Seneca, Onondaga, Mohawks, Cayugas and Oneida became one nation, the Haudenosaunee, the Iroquois. Although not having a written language, the wise Iroquois created the Great Law of Peace, which can be considered like one the first established constitution. For decades, your people fought powerful enemies, such as the Huron, and then the French and English colonists. With less warriors and inferior weaponry, the Iroquois still survived and walk on the path of peace and harmony, until their way of living faded away under the crush of the newborn United States nation.",
-        "startIntroPart2": "Proud Hiawatha, do you hear the complaints of you people? They seek a path through peace and war, to rebuild the Iroquois union. Will you help them, great leader? Can you forge an empire that lasts through the ages of history?",
+        "startIntroPart1": "Greetings, noble Hiawatha, leader of the mighty Iroquois nations! Your people lived near the great and holy lake Ontario since ages, on a land that will be later known as New York city. Long ago, in the antiquity, the five peoples of Seneca, Onondaga, Mohawks, Cayugas and Oneida became one nation, the Haudenosaunee, the Iroquois. Although not having a written language, the wise Iroquois created the Great Law of Peace, which can be considered the first established constitution. For decades, your people fought powerful enemies, such as the Huron, and then the French and English colonists. With less warriors and inferior weaponry, the Iroquois still survived and walk on the path of peace and harmony, until their way of living faded away under the crush of the newborn United States nation.",
+        "startIntroPart2": "Proud Hiawatha, do you hear the complaints of your people? They seek a path through peace and war, to rebuild the Iroquois union. Will you help them, great leader? Can you forge an empire that lasts through the ages of history?",
 
         "declaringWar": "You are a plague upon Mother Earth! Prepare for battle!",
 		"attacked": "You evil creature! My braves will slaughter you!",
@@ -479,8 +479,8 @@
 		"adjective": ["Persian"],
 		"preferredVictoryType": "Scientific",
 
-        "startIntroPart1": "Great King Darius of Persia, the heaven casts its light upon you! Persian people are strong and wise, as their leader. In old ages, the great Persian king Cyrus fought back the mighty Median empire and finally destroyed the Medes in 550 BC. Cunning diplomacy and military achievements helped then to conquer the wealthy Lydia and the powerful Babylon, Cyrus' son conquering the eternal Egypt some years later. At the height of its power, Persian Empire reached the shores of Macedonia, at the very door of the upstart Greek city-states. Persia would have prospered for centuries if Alexander of Macedon hadn't destroyed brutally the great empire in one violent strike.",
-        "startIntroPart2": "King Darius, the people of Persia awaits, longing for its past glory and power! The ancient Persia must reborn, to punish its foes and to bring peace and order to the world! Can you forge an empire that lasts through the ages of history?",
+        "startIntroPart1": "Great King Darius of Persia, the heaven casts its light upon you! Persian people are strong and wise, as their leader. In old ages, the great Persian king Cyrus fought back the mighty Median empire and finally destroyed the Medes in 550 BC. Cunning diplomacy and military achievements helped then to conquer the wealthy Lydia and the powerful Babylon, Cyrus' son conquering the eternal Egypt some years later. At the height of its power, the Persian Empire reached the shores of Macedonia, at the very door of the upstart Greek city-states. Persia would have prospered for centuries if Alexander of Macedon hadn't brutally destroyed the great empire in one violent strike.",
+        "startIntroPart2": "King Darius, the people of Persia await, longing for its past glory and power! The ancient Persia must reborn, to punish its foes and to bring peace and order to the world! Can you forge an empire that lasts through the ages of history?",
 
         "declaringWar": "Your continue existence is an embarrassment to all leaders everywhere! You must be destroyed!",
 		"attacked": "Curse you! You are beneath me, son of a donkey driver! I will crush you!",
@@ -510,7 +510,7 @@
 		"startBias": ["Coast"],
 		"preferredVictoryType": "Cultural",
 
-        "startIntroPart1": "Aloha to Kamehameha the Great, who the heavens allowed to unite your people. O great King, under you reign, the Big Island of Hawai'i became one in 1791 AD, and many other islands joined your vision of union in 1810. As the first King of Hawai'i, law and taxation systems were stabilized, and you promoted the Mamalahoe Kawanai, an edict to protect civilian people in times of war. Unification and sovereignty of all the islands continued thanks to your fair laws and deeds, even after you joined back your ancestors in paradise in 1819.",
+        "startIntroPart1": "Aloha to Kamehameha the Great, who the heavens allowed to unite your people. O great King, under your reign, the Big Island of Hawai'i became one in 1791 AD, and many other islands joined your vision of union in 1810. As the first King of Hawai'i, law and taxation systems were stabilized, and you promoted the Mamalahoe Kawanai, an edict to protect civilian people in times of war. Unification and sovereignty of all the islands continued thanks to your fair laws and deeds, even after you joined your ancestors in paradise in 1819.",
         "startIntroPart2": "Wise and benevolent King, will you offer to your people their own kingdom once again? Will you be their leader and wear the mantle of the Lion of the Pacific? Can you forge an empire that lasts through the ages of history?",
 
         "declaringWar": "The ancient fire flashing across the sky is what proclaimed that this day would come, though I had foolishly hoped for a different outcome.",
@@ -538,7 +538,7 @@
 		"startBias": ["Avoid [Forest]"],
 		"preferredVictoryType":"Diplomatic",
 
-        "startIntroPart1": "O Great King Ramkhamhaeng, the Siamese people obeys you with respect and fear! The beautiful and mysterious land of Siam is an ancient country in the heart of Southeast Asia, which was besieged by many foes, plagued by bloody war and great poverty, but eventually the smart and loyal Siamese people have endured and triumphed. Siam was a part of the Khmer Empire until the 13th century AD, before its brave people took arms and led a revolution to form the small Sukhothai kingdom. After many battles and diplomacy prowess, this tiny kingdom became a mighty empire, which would dominate South East Asia for more than a century.",
+        "startIntroPart1": "O Great King Ramkhamhaeng, the Siamese people obey you with respect and fear! The beautiful and mysterious land of Siam is an ancient country in the heart of Southeast Asia, which was besieged by many foes, plagued by bloody war and great poverty, but eventually the smart and loyal Siamese people have endured and triumphed. Siam was a part of the Khmer Empire until the 13th century AD, before its brave people took arms and led a revolution to form the small Sukhothai kingdom. After many battles and diplomacy prowess, this tiny kingdom became a mighty empire, which would dominate South East Asia for more than a century.",
         "startIntroPart2": "Wise and powerful King Ramkhamhaeng, your people want to revive these days of glory! Can you again use your strength and cleverness to defeat your foes? Can you forge an empire that lasts through the ages of history?",
 
         "declaringWar": "You lowly, arrogant fool! I will make you regret of your insolence!",
@@ -566,7 +566,7 @@
 		"startBias": ["Coast"],
 		"preferredVictoryType": "Domination",
 
-        "startIntroPart1": "Holy Isabella, envoy of God, Great Queen of Castille and León, your people celebrates you! Spain is a beautiful and ancient country, a link between Europe and Africa, one shore on the Mediterranean and the other on the mighty Atlantic Ocean. The Spanish culture have taken the best of the Muslim and Christian worlds, and was ready to dominate the world for centuries. Spanish powerful military fleets and brave explorers found and conquered much of the New World. Exploiting a whole new continent and its richness, Spain reached a state of wealth and power that only a few can compete during hundreds of years.",
+        "startIntroPart1": "Holy Isabella, envoy of God, Great Queen of Castille and León, your people celebrate you! Spain is a beautiful and ancient country, a link between Europe and Africa, one shore on the Mediterranean and the other on the mighty Atlantic Ocean. The Spanish culture had taken the best of the Muslim and Christian worlds, and was ready to dominate the world for centuries. Spanish powerful military fleets and brave explorers found and conquered much of the New World. Exploiting a whole new continent and its riches, Spain reached a state of wealth and power that only a few can compete during hundreds of years.",
         "startIntroPart2": "O splendid and virtuous Isabella! Will the Spanish empire reborn and achieve its holy destiny? Will the rightful monarchy show again to the world the will of the heavens? Can you forge an empire that lasts through the ages of history?",
 
         "declaringWar": "God will probably forgive you... but I shall not. Prepare for war.",
