@@ -1,20 +1,12 @@
 ## 4.9.12
 
-@SomeTroglodyte
+Added experimental scenarios!
 
-Console: Simplified input validation, with exception throwing
+Fixed Android status bar not disappearing ("immersion mode")
 
 Console: added 'set player type' command, for scenario setup
 
-Scenario list renders correctly
-
-Added scenario page to wiki
-
-Added experimental scenarios!
-
-Add spaces between 'replaces' unit promotion uniques
-
-Fix ShadowedLabel using Stack's internal default size, so the usage in BattleTableHelpers had a vast distance between label and shadow.  - By SomeTroglodyte
+Fix ShadowedLabel - By SomeTroglodyte
 
 ## 4.9.11
 
