@@ -12,7 +12,9 @@ import com.unciv.ui.components.extensions.toLabel
 /**
  *  A widget containing two [Label]s superimposed with an offset to create a shadow effect.
  *
- *  Reported [prefWidth], [prefHeight], [minWidth] and [minHeight] are always those of the Label plus `shadowOffset`
+ *  Reported [prefWidth], [prefHeight], [minWidth] and [minHeight] are always those of the Label plus `shadowOffset`.
+ *
+ *  If not sized by a parent Layout hierarchy, this starts pre-"pack"ed at its preferred size.
  *
  *  @param text The label text (sic), autotranslated
  *  @param fontSize as the name says
@@ -47,7 +49,9 @@ class ShadowedLabel(
         // Extending our size is enough due to their different Align values.
         widthWithShadow = label.prefWidth + shadowOffset
         heightWithShadow = label.prefHeight + shadowOffset
-        setSize(width + shadowOffset, height + shadowOffset)
+        // Stack has already initialized width and height to bogus 150x150 units - if we will be part of a Layout hierarchy, we'll get
+        // a new size soon enough, but for "floating" use like in BattleTableHelpers.createDamageLabel it's nicer to start with something sensible.
+        setSize(widthWithShadow, heightWithShadow)
     }
 
     override fun getPrefWidth() = widthWithShadow
