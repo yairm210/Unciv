@@ -1,13 +1,12 @@
 package com.unciv.app
 
-import android.app.Activity
 import android.content.pm.ActivityInfo
 import android.os.Build
 import android.view.Display
 import android.view.Display.Mode
-import android.view.View
 import android.view.WindowManager
 import androidx.annotation.RequiresApi
+import com.badlogic.gdx.backends.android.AndroidApplication
 import com.unciv.models.metadata.GameSettings
 import com.unciv.models.translations.tr
 import com.unciv.utils.PlatformDisplay
@@ -15,7 +14,7 @@ import com.unciv.utils.ScreenMode
 import com.unciv.utils.ScreenOrientation
 
 
-class AndroidDisplay(private val activity: Activity) : PlatformDisplay {
+class AndroidDisplay(private val activity: AndroidApplication) : PlatformDisplay {
 
     private var display: Display? = null
     private var displayModes: HashMap<Int, ScreenMode> = hashMapOf()
@@ -60,22 +59,7 @@ class AndroidDisplay(private val activity: Activity) : PlatformDisplay {
 
     override fun hasSystemUiVisibility() = true
 
-    override fun setSystemUiVisibility(hide: Boolean) {
-        activity.runOnUiThread {
-            setSystemUiVisibilityFromUiThread(hide)
-        }
-    }
-    internal fun setSystemUiVisibilityFromUiThread(hide: Boolean) {
-        @Suppress("DEPRECATION") // Avoids @RequiresApi(Build.VERSION_CODES.R)
-        activity.window.decorView.systemUiVisibility =
-            if (hide)
-                View.SYSTEM_UI_FLAG_LAYOUT_STABLE or
-                    View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or
-                    View.SYSTEM_UI_FLAG_HIDE_NAVIGATION or View.SYSTEM_UI_FLAG_FULLSCREEN or
-                    View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
-            else
-                View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-    }
+    override fun setSystemUiVisibility(hide: Boolean) = activity.runOnUiThread { activity.useImmersiveMode(hide) }
 
     override fun hasCutout(): Boolean {
         return when {
