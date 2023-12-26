@@ -280,12 +280,11 @@ class TileStatFunctions(val tile: Tile) {
         val stats = Stats()
 
         fun statsFromTiles() {
-            val tileUniques = uniqueCache.forCityGetMatchingUniques(city, UniqueType.StatsFromTiles, conditionalState)
-                .filter { city.matchesFilter(it.params[2]) }
-            val improvementUniques =
-                    improvement.getMatchingUniques(UniqueType.ImprovementStatsOnTile, conditionalState)
+            for (unique in uniqueCache.forCityGetMatchingUniques(city, UniqueType.StatsFromTiles, conditionalState)
+                .filter { city.matchesFilter(it.params[2]) && improvement.matchesFilter(it.params[1]) })
+                stats.add(unique.stats)
 
-            for (unique in tileUniques + improvementUniques) {
+            for (unique in improvement.getMatchingUniques(UniqueType.ImprovementStatsOnTile, conditionalState)) {
                 if (tile.matchesFilter(unique.params[1])
                         || unique.params[1] == Constants.freshWater && tile.isAdjacentTo(Constants.freshWater)
                         || unique.params[1] == "non-fresh water" && !tile.isAdjacentTo(Constants.freshWater)
