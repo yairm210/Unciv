@@ -302,8 +302,8 @@ class PolicyPickerScreen(
 
             if (branch.uniqueMap.getUniques(UniqueType.OnlyAvailableWhen).any()) {
                 var warning = UniqueType.OnlyAvailableWhen.text.tr() + ":\n"
-                for (k in branch.uniqueMap.getUniques(UniqueType.OnlyAvailableWhen))
-                    for (conditional in k.conditionals) {
+                for (unique in branch.uniqueMap.getUniques(UniqueType.OnlyAvailableWhen))
+                    for (conditional in unique.conditionals) {
                         warning += "• " + conditional.text.tr() + "\n"
                     }
                 val warningLabel = ColorMarkupLabel(warning, Color.RED, fontSize = 13)
