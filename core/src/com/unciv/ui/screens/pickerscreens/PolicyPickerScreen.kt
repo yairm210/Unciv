@@ -303,12 +303,12 @@ class PolicyPickerScreen(
 
             val conditionals = LinkedHashMap<UniqueType, ArrayList<String>>()
 
-            branch.uniqueMap[UniqueType.OnlyAvailableWhen.text]?.forEach { unique ->
-                unique.conditionals.forEach {
-                    if (it.type != null) {
-                        if (conditionals[it.type] == null)
-                            conditionals[it.type] = ArrayList()
-                        conditionals[it.type]!!.add(it.params.toString().tr())
+            for(unique in branch.uniqueMap.getUniques(UniqueType.OnlyAvailableWhen)) {
+                for (conditional in unique.conditionals) {
+                    if (conditional.type != null) {
+                        if (conditionals[conditional.type] == null)
+                            conditionals[conditional.type] = ArrayList()
+                        conditionals[conditional.type]!!.add(conditional.params.toString().tr())
                     }
                 }
             }
