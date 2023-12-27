@@ -128,8 +128,8 @@ class TileInfoImprovementFunctions(val tile: Tile) {
             // Can only remove roads if that road is actually there
             RoadStatus.values().any { it.removeAction == improvement.name } -> tile.roadStatus.removeAction == improvement.name
             // Can only remove features or improvement if that feature/improvement is actually there
-            improvement.name.startsWith(Constants.remove) -> tile.terrainFeatures.any { it == improvement.name.removePrefix(
-                Constants.remove) } || tile.improvement == improvement.name.removePrefix(Constants.remove)
+            improvement.name.startsWith(Constants.remove) -> tile.terrainFeatures.any { Constants.remove + it == improvement.name } 
+                || Constants.remove + tile.improvement == improvement.name
             // Can only build roads if on land and they are better than the current road
             RoadStatus.values().any { it.name == improvement.name } -> !tile.isWater
                     && RoadStatus.valueOf(improvement.name) > tile.roadStatus
