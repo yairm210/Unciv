@@ -85,14 +85,25 @@ class DevConsolePopup(val screen: WorldScreen) : Popup(screen) {
     }
 
     internal fun getCivByName(name: String) = gameInfo.civilizations.firstOrNull { it.civName.toCliInput() == name }
+        ?: throw ConsoleErrorException("Unknown civ: $name")
 
-    internal fun getSelectedUnit(): MapUnit? {
-        val selectedTile = screen.mapHolder.selectedTile ?: return null
-        if (selectedTile.getFirstUnit() == null) return null
+    internal fun getSelectedTile() = screen.mapHolder.selectedTile ?: throw ConsoleErrorException("Select tile")
+
+    /** Gets city by selected tile */
+    internal fun getSelectedCity() = getSelectedTile().getCity() ?: throw ConsoleErrorException("Select tile belonging to city")
+
+    internal fun getCity(cityName:String) = gameInfo.getCities().firstOrNull { it.name.toCliInput() == cityName }
+        ?: throw ConsoleErrorException("Unknown city: $cityName")
+
+    internal fun getSelectedUnit(): MapUnit {
+        val selectedTile = getSelectedTile()
+        if (selectedTile.getFirstUnit() == null) throw ConsoleErrorException("Select tile with units")
         val units = selectedTile.getUnits().toList()
         val selectedUnit = screen.bottomUnitTable.selectedUnit
         return if (selectedUnit != null && selectedUnit.getTile() == selectedTile) selectedUnit
         else units.first()
     }
+
+    internal fun getInt(param: String) = param.toIntOrNull() ?: throw ConsoleErrorException("$param is not a valid number")
 
 }

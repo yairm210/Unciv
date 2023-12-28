@@ -1,11 +1,6 @@
 import com.unciv.build.BuildConfig
 import org.gradle.api.tasks.testing.logging.TestLogEvent
 
-plugins {
-    id("java")
-}
-
-
 tasks {
     test {
         workingDir = file("../android/assets")

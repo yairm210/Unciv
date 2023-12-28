@@ -1,5 +1,6 @@
 package com.unciv.models.ruleset.validation
 
+import com.unciv.logic.map.mapunit.MapUnitCache
 import com.unciv.models.ruleset.IRulesetObject
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
@@ -83,6 +84,11 @@ class UniqueValidator(val ruleset: Ruleset) {
             addConditionalErrors(conditional, rulesetErrors, prefix, unique, reportRulesetSpecificErrors)
         }
 
+        if (unique.conditionals.any() && unique.type in MapUnitCache.UnitMovementUniques)
+            // Not necessarily even a problem, but yes something mod maker should be aware of
+            rulesetErrors.add("$prefix unique \"${unique.text}\" contains a conditional on a unit movement unique. " +
+                "Due to performance considerations, this unique is cached on the unit," +
+                " and the conditional may not always limit the unique correctly.", RulesetErrorSeverity.OK)
 
         if (reportRulesetSpecificErrors)
         // If we don't filter these messages will be listed twice as this function is called twice on most objects

@@ -362,11 +362,25 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
 
         val isOnline = gameParameters.isOnlineMultiplayer
 
+        // Skip the player if we are playing hotseat
+        // If all hotseat players are defeated then skip all but the first one
+        fun shouldAutoProcessHotseatPlayer(): Boolean =
+            !isOnline &&
+            player.isDefeated() && (civilizations.any { it.isHuman() && it.isAlive() }
+                || civilizations.first { it.isHuman() } != player)
+        
+        // Skip all spectators and defeated players
+        // If all players are defeated then let the first player control next turn
+        fun shouldAutoProcessOnlinePlayer(): Boolean = 
+            isOnline && (player.isSpectator() || player.isDefeated() && 
+                (civilizations.any { it.isHuman() && it.isAlive() } 
+                    || civilizations.first { it.isHuman() } != player))
+        
         // We process player automatically if:
         while (isSimulation() ||                    // simulation is active
                 player.isAI() ||                    // or player is AI
-                player.isDefeated() ||
-                isOnline && player.isSpectator())      // or player is online spectator
+            shouldAutoProcessHotseatPlayer() ||     // or a player is defeated in hotseat
+            shouldAutoProcessOnlinePlayer())        // or player is online spectator
         {
 
             // Starting preparations
@@ -378,8 +392,13 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
             // Do we need to break if player won?
             if (simulateUntilWin && player.victoryManager.hasWon()) {
                 simulateUntilWin = false
+                UncivGame.Current.settings.autoPlay.stopAutoPlay()
                 break
             }
+            
+            // Do we need to stop AutoPlay?
+            if (UncivGame.Current.settings.autoPlay.isAutoPlaying() && player.victoryManager.hasWon())
+                UncivGame.Current.settings.autoPlay.stopAutoPlay()
 
             // Clean up
             TurnManager(player).endTurn(progressBar)
@@ -391,12 +410,12 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
         if (turns == DebugUtils.SIMULATE_UNTIL_TURN)
             DebugUtils.SIMULATE_UNTIL_TURN = 0
 
-        // We found human player, so we are making him current
+        // We found a human player, so we are making them current
         currentTurnStartTime = System.currentTimeMillis()
         currentPlayer = player.civName
         currentPlayerCiv = getCivilization(currentPlayer)
 
-        // Starting his turn
+        // Starting their turn
         TurnManager(player).startTurn(progressBar)
 
         // No popups for spectators

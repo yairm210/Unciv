@@ -117,7 +117,7 @@ class TileStatFunctions(val tile: Tile) {
     }
 
     /** Gets basic stats to start off [getTileStats] or [getTileStartYield], independently mutable result */
-    private fun getTerrainStats(stateForConditionals: StateForConditionals = StateForConditionals()): Stats {
+    fun getTerrainStats(stateForConditionals: StateForConditionals = StateForConditionals()): Stats {
         var stats = Stats()
 
         // allTerrains iterates over base, natural wonder, then features
@@ -236,7 +236,7 @@ class TileStatFunctions(val tile: Tile) {
     }
 
     // Also multiplies the stats by the percentage bonus for improvements (but not for tiles)
-    private fun getImprovementStats(
+    fun getImprovementStats(
         improvement: TileImprovement,
         observingCiv: Civilization,
         city: City?,
@@ -280,13 +280,8 @@ class TileStatFunctions(val tile: Tile) {
         val stats = Stats()
 
         fun statsFromTiles() {
-            val tileUniques = uniqueCache.forCityGetMatchingUniques(city, UniqueType.StatsFromTiles, conditionalState)
-                .filter { city.matchesFilter(it.params[2]) }
-            val improvementUniques =
-                    improvement.getMatchingUniques(UniqueType.ImprovementStatsOnTile, conditionalState)
-
-            for (unique in tileUniques + improvementUniques) {
-                if (improvement.matchesFilter(unique.params[1])
+            for (unique in improvement.getMatchingUniques(UniqueType.ImprovementStatsOnTile, conditionalState)) {
+                if (tile.matchesFilter(unique.params[1])
                         || unique.params[1] == Constants.freshWater && tile.isAdjacentTo(Constants.freshWater)
                         || unique.params[1] == "non-fresh water" && !tile.isAdjacentTo(Constants.freshWater)
                 )
@@ -296,11 +291,10 @@ class TileStatFunctions(val tile: Tile) {
         statsFromTiles()
 
         fun statsFromObject() {
-            val uniques = uniqueCache.forCityGetMatchingUniques(
-                    city,
-                    UniqueType.StatsFromObject,
-                    conditionalState
-                )
+            val uniques = uniqueCache.forCityGetMatchingUniques(city, 
+                UniqueType.StatsFromObject, conditionalState) +
+                uniqueCache.forCityGetMatchingUniques(city,
+                    UniqueType.StatsFromTiles, conditionalState).filter { city.matchesFilter(it.params[2]) }
             for (unique in uniques) {
                 if (improvement.matchesFilter(unique.params[1])) {
                     stats.add(unique.stats)

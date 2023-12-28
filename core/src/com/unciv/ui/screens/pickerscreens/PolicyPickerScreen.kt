@@ -15,7 +15,6 @@ import com.unciv.models.ruleset.Policy
 import com.unciv.models.ruleset.Policy.PolicyBranchType
 import com.unciv.models.ruleset.PolicyBranch
 import com.unciv.models.ruleset.unique.UniqueType
-import com.unciv.models.translations.fillPlaceholders
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.extensions.addSeparator
 import com.unciv.ui.components.extensions.center
@@ -301,23 +300,12 @@ class PolicyPickerScreen(
             label.wrap = true
             labelTable.add(label).pad(7f, 20f, 10f, 20f).grow().row()
 
-            val conditionals = LinkedHashMap<UniqueType, ArrayList<String>>()
-
-            branch.uniqueMap[UniqueType.OnlyAvailableWhen.text]?.forEach { unique ->
-                unique.conditionals.forEach {
-                    if (it.type != null) {
-                        if (conditionals[it.type] == null)
-                            conditionals[it.type] = ArrayList()
-                        conditionals[it.type]!!.add(it.params.toString().tr())
-                    }
-                }
-            }
-
-            if (conditionals.isNotEmpty()) {
+            if (branch.uniqueMap.getUniques(UniqueType.OnlyAvailableWhen).any()) {
                 var warning = UniqueType.OnlyAvailableWhen.text.tr() + ":\n"
-                for ((k, v) in conditionals) {
-                    warning += "• " + k.text.fillPlaceholders(v.joinToString()).tr() + "\n"
-                }
+                for (unique in branch.uniqueMap.getUniques(UniqueType.OnlyAvailableWhen))
+                    for (conditional in unique.conditionals) {
+                        warning += "• " + conditional.text.tr() + "\n"
+                    }
                 val warningLabel = ColorMarkupLabel(warning, Color.RED, fontSize = 13)
                 warningLabel.setAlignment(Align.topLeft)
                 warningLabel.wrap = true

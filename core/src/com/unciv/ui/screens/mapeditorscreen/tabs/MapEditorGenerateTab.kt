@@ -66,7 +66,10 @@ class MapEditorGenerateTab(
     }
 
     private fun generate(step: MapGeneratorSteps) {
-        if (step <= MapGeneratorSteps.Landmass && step in seedUsedForStep) {
+        if (step == MapGeneratorSteps.All && newTab.mapParametersTable.randomizeSeed) {
+            newTab.mapParametersTable.reseed()
+        }
+        if (step == MapGeneratorSteps.Landmass && step in seedUsedForStep) {
             // reseed visibly when starting from scratch (new seed shows in advanced settings widget)
             newTab.mapParametersTable.reseed()
             seedUsedForStep -= step
@@ -92,7 +95,7 @@ class MapEditorGenerateTab(
 
         if (step in seedUsedForStep) {
             mapParameters.reseed()
-        } else {
+        } else if (step != MapGeneratorSteps.All){
             seedUsedForStep += step
         }
 

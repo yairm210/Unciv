@@ -1,3 +1,83 @@
+## 4.9.13
+
+Religion button respects unique "hidden from users" modifier
+
+Trigger 'capture city' as a unit trigger
+
+By tuvus:
+- Worker AI Rework
+- AI doesn't counteroffer and request a treaty on the same turn
+- Civs now have a 50% chance of picking their favored religion
+
+By SeventhM:
+- Fix stat on tile uniques doubling on improvement tiles
+- Avoid crash if "Only available" unique in policy branch has 2 or more params
+- Allow for improvement removal "improvements"
+
+Randomize seed checkbox  - By remdu
+
+## 4.9.12
+
+Added experimental scenarios!
+
+Fixed Android status bar not disappearing ("immersion mode")
+
+Console: added 'set player type' command, for scenario setup
+
+Fix ShadowedLabel - By SomeTroglodyte
+
+## 4.9.11
+
+Fixed tech dependency related crash
+
+Unit by default not selected on turn start
+
+Added 'upon turn end' trigger
+
+By SomeTroglodyte:
+- City-state bonuses respect 'hidden from users' modifier
+- (UI) Politics overview diagram: Add legend popup
+
+By tuvus:
+- Added AutoPlay until end setting
+- if all players are defeated, one player will be processed
+
+Enable Domination to Capture All Capitals - By itanasi
+
+## 4.9.10
+
+Add remove unit promotion unique  - By PLynx01
+
+Fix key bindings in edge case - By SomeTroglodyte
+
+By remdu:
+- Coast spread algorithm
+- don'y initialize with non naturally generated terrain
+
+Stop movement on Path Blocked - By itanasi
+
+Only units that build roads have connect roads automation. - By willjallen
+
+By SeventhM:
+- Fix Great Scientist calculation
+- Show stat percent differences in replacement building
+
+Don't list Unique requiring a tech in the Civilopedia for that tech - By dHannasch
+
+## 4.9.9
+
+Finally deprecated old religion uniques
+
+By SeventhM:
+- Avoid crash in mod checker for mods with undefined tech requirements
+- Fix stats from tileFilter unique not working on improvements
+- Add damage dealing unit trigger
+- Fix not getting unique unit from tile based free unit trigger (For real this time)
+
+By soggerr:
+- Show average damage in battle calculations
+- Allow battle calculations when not your turn
+
 ## 4.9.8
 
 Add new map types  - By remdu

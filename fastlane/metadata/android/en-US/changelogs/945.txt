@@ -1,0 +1,17 @@
+Add remove unit promotion unique  - By PLynx01
+
+Fix key bindings in edge case - By SomeTroglodyte
+
+By remdu:
+- Coast spread algorithm
+- don'y initialize with non naturally generated terrain
+
+Stop movement on Path Blocked - By itanasi
+
+Only units that build roads have connect roads automation. - By willjallen
+
+By SeventhM:
+- Fix Great Scientist calculation
+- Show stat percent differences in replacement building
+
+Don't list Unique requiring a tech in the Civilopedia for that tech - By dHannasch

@@ -2,7 +2,6 @@ package com.unciv.logic.battle
 
 import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
-import com.unciv.GUI
 import com.unciv.UncivGame
 import com.unciv.logic.automation.civilization.NextTurnAutomation
 import com.unciv.logic.city.City
@@ -546,7 +545,7 @@ object Battle {
 
         for (unique in attackerCiv.getTriggeredUniques(UniqueType.TriggerUponConqueringCity, stateForConditionals)
                 + attacker.unit.getTriggeredUniques(UniqueType.TriggerUponConqueringCity, stateForConditionals))
-            UniqueTriggerActivation.triggerCivwideUnique(unique, attackerCiv, city)
+            UniqueTriggerActivation.triggerUnitwideUnique(unique, attacker.unit)
     }
 
     /** Handle decision making after city conquest, namely whether the AI should liberate, puppet,

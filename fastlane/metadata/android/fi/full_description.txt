@@ -1,0 +1,13 @@
+Kaikkien aikojen kuuluisimman sivilisaationrakennuspelin avoimen lähdekoodin uudelleentoteutus - nopea, pieni, ei mainoksia, ilmainen ikuisesti!
+
+Rakenna sivilisaatiotasi, tutki teknologioita, laajenna kaupunkejasi ja kukista vihollisesi!
+
+Pyyntöjä? Bugeja? Haluatko auttaa kehityksessä? Tehtävälista sovellukselle on https://github.com/yairm210/Unciv/issues
+
+Kysymyksiä? Kommentteja? Liity meihin discordissa osoitteessa https://discord.gg/bjrB4Xw ;)
+
+Haluatko auttaa pelin kääntämisessä sinun kielellesi? Katso https://yairm210.github.io/Unciv/Other/Translating/
+
+Maailma odottaa! Rakennatko sivilisaatiostasi imperiumin, joka kestää ajan koetuksen?
+
+Täysi verkkoyhteys -oikeus vaaditaan käyttäjän aloittamiin latauksiin ja moninpelitoimintoon. Kaikki muut listatut oikeudet on automaattisesti sisällytetty käytetyn API:n toimesta moninpelin vuoroilmoitusten toteuttamiseksi. Verkko-oikeuksia käytetään listaamaan modit, lataamaan modeja, lataamaan musiikkia ja lähettämään/lataamaan moninpelejä. Mitään muuta internetliikennettä ei käynnistetä Uncivin toimesta.

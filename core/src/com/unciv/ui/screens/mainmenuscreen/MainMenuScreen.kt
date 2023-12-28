@@ -137,7 +137,7 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
         val column1 = Table().apply { defaults().pad(10f).fillX() }
         val column2 = if (singleColumn) column1 else Table().apply { defaults().pad(10f).fillX() }
 
-        if (game.files.autosaveExists()) {
+        if (game.files.autosaves.autosaveExists()) {
             val resumeTable = getMenuButton("Resume","OtherIcons/Resume", KeyboardBinding.Resume)
                 { resumeGame() }
             column1.add(resumeTable).row()
@@ -166,6 +166,12 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
         val modsTable = getMenuButton("Mods", "OtherIcons/Mods", KeyboardBinding.ModManager)
             { game.pushScreen(ModManagementScreen()) }
         column2.add(modsTable).row()
+
+        if (game.files.getScenarioFiles().any()){
+            val scenarioTable = getMenuButton("Scenarios", "OtherIcons/Mods", KeyboardBinding.Scenarios)
+            { game.pushScreen(ScenarioScreen()) }
+            column2.add(scenarioTable).row()
+        }
 
         val optionsTable = getMenuButton("Options", "OtherIcons/Options", KeyboardBinding.MainMenuOptions)
             { openOptionsPopup() }
@@ -352,3 +358,5 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
     // We contain a map...
     override fun getShortcutDispatcherVetoer() = KeyShortcutDispatcherVeto.createTileGroupMapDispatcherVetoer()
 }
+
+

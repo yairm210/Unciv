@@ -173,8 +173,8 @@ class WorldScreen(
 
         val tileToCenterOn: Vector2 =
                 when {
-                    viewingCiv.units.getCivUnits().any() -> viewingCiv.units.getCivUnits().first().getTile().position
                     viewingCiv.cities.isNotEmpty() && viewingCiv.getCapital() != null -> viewingCiv.getCapital()!!.location
+                    viewingCiv.units.getCivUnits().any() -> viewingCiv.units.getCivUnits().first().getTile().position
                     else -> Vector2.Zero
                 }
 
@@ -811,7 +811,7 @@ class WorldScreen(
     fun autoSave() {
         waitingForAutosave = true
         shouldUpdate = true
-        UncivGame.Current.files.requestAutoSave(gameInfo, true).invokeOnCompletion {
+        UncivGame.Current.files.autosaves.requestAutoSave(gameInfo, true).invokeOnCompletion {
             // only enable the user to next turn once we've saved the current one
             waitingForAutosave = false
             shouldUpdate = true

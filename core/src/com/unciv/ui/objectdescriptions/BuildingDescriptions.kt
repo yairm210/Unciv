@@ -20,7 +20,7 @@ object BuildingDescriptions {
     // To stay consistent, all take the Building as normal parameter instead.
 
     /** Used for AlertType.WonderBuilt, and as sub-text in Nation and Tech descriptions */
-    fun getShortDescription(building: Building, multiline: Boolean = false, filterUniques: ((Unique) -> Boolean)? = null): String = building.run {
+    fun getShortDescription(building: Building, multiline: Boolean = false, uniqueInclusionFilter: ((Unique) -> Boolean)? = null): String = building.run {
         val infoList = mutableListOf<String>()
         this.clone().toString().also { if (it.isNotEmpty()) infoList += it }
         for ((key, value) in getStatPercentageBonuses(null))
@@ -30,7 +30,7 @@ object BuildingDescriptions {
             infoList += "Requires worked [" + requiredNearbyImprovedResources!!.joinToString("/") { it.tr() } + "] near city"
         if (uniques.isNotEmpty()) {
             if (replacementTextForUniques.isNotEmpty()) infoList += replacementTextForUniques
-            else infoList += getUniquesStringsWithoutDisablers(filterUniques)
+            else infoList += getUniquesStringsWithoutDisablers(uniqueInclusionFilter)
         }
         if (cityStrength != 0) infoList += "{City strength} +$cityStrength"
         if (cityHealth != 0) infoList += "{City health} +$cityHealth"
@@ -118,6 +118,11 @@ object BuildingDescriptions {
         for ((key, value) in replacementBuilding)
             if (value != originalBuilding[key])
                 yield(FormattedLine( key.name.tr() + " " +"[${value.toInt()}] vs [${originalBuilding[key].toInt()}]".tr(), indent=1))
+
+        val originalStatBonus = originalBuilding.getStatPercentageBonuses(null)
+        for ((key, value) in replacementBuilding.getStatPercentageBonuses(null))
+            if (value != originalStatBonus[key])
+                yield(FormattedLine("[${value.toInt()}]% ".tr() + key.name.tr() + " vs [${originalStatBonus[key].toInt()}]% ".tr() + key.name.tr(), indent = 1))
 
         if (replacementBuilding.maintenance != originalBuilding.maintenance)
             yield(FormattedLine("{Maintenance} ".tr() + "[${replacementBuilding.maintenance}] vs [${originalBuilding.maintenance}]".tr(), indent=1))

@@ -91,7 +91,7 @@ class GameSettings {
     var androidHideSystemUi = true
 
     var multiplayer = GameSettingsMultiplayer()
-    
+
     var autoPlay = GameSettingsAutoPlay()
 
     var enableEspionageOption = false
@@ -326,6 +326,7 @@ class GameSettings {
 
     class GameSettingsAutoPlay {
         var showAutoPlayButton: Boolean = false
+        var autoPlayUntilEnd: Boolean = false
         var autoPlayMaxTurns = 10
         var fullAutoPlayAI: Boolean = true
         var autoPlayMilitary: Boolean = true
@@ -335,21 +336,21 @@ class GameSettings {
         var autoPlayPolicies: Boolean = true
         var autoPlayReligion: Boolean = true
         var autoPlayDiplomacy: Boolean = true
-    
+
         var turnsToAutoPlay: Int = 0
         var autoPlayTurnInProgress: Boolean = false
-    
+
         fun startAutoPlay() {
             turnsToAutoPlay = autoPlayMaxTurns
         }
-        
+
         fun stopAutoPlay() {
             turnsToAutoPlay = 0
             autoPlayTurnInProgress = false
         }
-    
+
         fun isAutoPlaying(): Boolean = turnsToAutoPlay > 0
-        
+
         fun isAutoPlayingAndFullAI():Boolean = isAutoPlaying() && fullAutoPlayAI
     }
 

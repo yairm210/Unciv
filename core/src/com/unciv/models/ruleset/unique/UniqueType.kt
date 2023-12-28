@@ -728,11 +728,13 @@ enum class UniqueType(
     OneTimeGlobalAlert("Triggers the following global alert: [comment]", UniqueTarget.Triggerable), // used in Policy
     OneTimeGlobalSpiesWhenEnteringEra("Every major Civilization gains a spy once a civilization enters this era", UniqueTarget.Era),
 
-    OneTimeUnitHeal("Heal this unit by [amount] HP", UniqueTarget.UnitTriggerable),
+    OneTimeUnitHeal("Heal this unit by [positiveAmount] HP", UniqueTarget.UnitTriggerable),
+    OneTimeUnitDamage("This Unit takes [positiveAmount] damage", UniqueTarget.UnitTriggerable),
     OneTimeUnitGainXP("This Unit gains [amount] XP", UniqueTarget.UnitTriggerable),
     OneTimeUnitUpgrade("This Unit upgrades for free", UniqueTarget.UnitTriggerable),  // Not used in Vanilla
     OneTimeUnitSpecialUpgrade("This Unit upgrades for free including special upgrades", UniqueTarget.UnitTriggerable),
     OneTimeUnitGainPromotion("This Unit gains the [promotion] promotion", UniqueTarget.UnitTriggerable),  // Not used in Vanilla
+    OneTimeUnitRemovePromotion("This Unit loses the [promotion] promotion", UniqueTarget.UnitTriggerable),
     SkipPromotion("Doing so will consume this opportunity to choose a Promotion", UniqueTarget.Promotion),
     FreePromotion("This Promotion is free", UniqueTarget.Promotion),
 
@@ -761,6 +763,7 @@ enum class UniqueType(
     // We have a separate trigger to include the cityFilter, since '[in all cities]' can be read '*only* if it's in all cities'
     TriggerUponConstructingBuildingCityFilter("upon constructing [buildingFilter] [cityFilter]", UniqueTarget.TriggerCondition),
     TriggerUponGainingUnit("upon gaining a [baseUnitFilter] unit", UniqueTarget.TriggerCondition),
+    TriggerUponTurnEnd("upon turn end", UniqueTarget.TriggerCondition),
 
     TriggerUponFoundingPantheon("upon founding a Pantheon", UniqueTarget.TriggerCondition),
     TriggerUponFoundingReligion("upon founding a Religion", UniqueTarget.TriggerCondition),
@@ -788,12 +791,18 @@ enum class UniqueType(
     HiddenAfterGreatProphet("Hidden after generating a Great Prophet", UniqueTarget.Ruins),
     HiddenWithoutVictoryType("Hidden when [victoryType] Victory is disabled", UniqueTarget.Building, UniqueTarget.Unit, flags = UniqueFlag.setOfHiddenToUsers),
     HiddenFromCivilopedia("Will not be displayed in Civilopedia", *UniqueTarget.Displayable, flags = UniqueFlag.setOfHiddenToUsers),
-    ConditionalHideUniqueFromUsers("hidden from users", UniqueTarget.Conditional),
+    ModifierHiddenFromUsers("hidden from users", UniqueTarget.Conditional),
     Comment("Comment [comment]", *UniqueTarget.Displayable,
         docDescription = "Allows displaying arbitrary text in a Unique listing. Only the text within the '[]' brackets will be displayed, the rest serves to allow Ruleset validation to recognize the intent."),
 
-    // Declarative Mod compatibility (so far rudimentary):
-    ModIncompatibleWith("Mod is incompatible with [modFilter]", UniqueTarget.ModOptions),
+    // Declarative Mod compatibility (see [ModCompatibility]):
+    // Note there is currently no display for these, but UniqueFlag.HiddenToUsers is not set.
+    // That means we auto-template and ask our translators for a translation that is currently unused.
+    //todo To think over - leave as is for future use or remove templates and translations by adding the flag?
+    ModIncompatibleWith("Mod is incompatible with [modFilter]", UniqueTarget.ModOptions,
+        docDescription = "Specifies that your Mod is incompatible with another. Always treated symmetrically, and cannot be overridden by the Mod you are declaring as incompatible."),
+    ModRequires("Mod requires [modFilter]", UniqueTarget.ModOptions,
+        docDescription = "Specifies that your Extension Mod is only available if any other Mod matching the filter is active."),
     ModIsAudioVisualOnly("Should only be used as permanent audiovisual mod", UniqueTarget.ModOptions),
     ModIsAudioVisual("Can be used as permanent audiovisual mod", UniqueTarget.ModOptions),
     ModIsNotAudioVisual("Cannot be used as permanent audiovisual mod", UniqueTarget.ModOptions),

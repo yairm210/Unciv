@@ -27,6 +27,7 @@ android {
         resources.excludes += "DebugProbesKt.bin"
     }
     defaultConfig {
+        namespace = "com.unciv.app"
         applicationId = "com.unciv.app"
         namespace = "com.unciv.app"
         minSdk = 21
@@ -67,7 +68,6 @@ android {
     }
     compileOptions {
         targetCompatibility = JavaVersion.VERSION_1_8
-
         isCoreLibraryDesugaringEnabled = true
     }
     androidResources {
