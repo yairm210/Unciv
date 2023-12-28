@@ -97,7 +97,10 @@ object DiplomacyAutomation {
             .filter { it.isMajorCiv() && !civInfo.isAtWarWith(it)
                 && it.hasUnique(UniqueType.EnablesOpenBorders)
                 && !civInfo.getDiplomacyManager(it).hasOpenBorders
-                && !civInfo.getDiplomacyManager(it).hasFlag(DiplomacyFlags.DeclinedOpenBorders) }
+                && !civInfo.getDiplomacyManager(it).hasFlag(DiplomacyFlags.DeclinedOpenBorders)
+                && !isTradeBeingOffered(civInfo, it, Constants.openBorders)
+            }
+            
             .sortedByDescending { it.getDiplomacyManager(civInfo).relationshipLevel() }.toList()
         for (otherCiv in civsThatWeCanOpenBordersWith) {
             // Default setting is 3, this will be changed according to different civ.
@@ -134,6 +137,7 @@ object DiplomacyAutomation {
             .filter {
                 civInfo.diplomacyFunctions.canSignResearchAgreementsWith(it)
                     && !civInfo.getDiplomacyManager(it).hasFlag(DiplomacyFlags.DeclinedResearchAgreement)
+                    && !isTradeBeingOffered(civInfo, it, Constants.researchAgreement)
             }
             .sortedByDescending { it.stats.statsForNextTurn.science }
 
@@ -157,6 +161,7 @@ object DiplomacyAutomation {
                 civInfo.diplomacyFunctions.canSignDefensivePactWith(it)
                     && !civInfo.getDiplomacyManager(it).hasFlag(DiplomacyFlags.DeclinedDefensivePact)
                     && civInfo.getDiplomacyManager(it).relationshipIgnoreAfraid() == RelationshipLevel.Ally
+                    && !isTradeBeingOffered(civInfo, it, Constants.defensivePact)
             }
 
         for (otherCiv in canSignDefensivePactCiv) {
@@ -301,4 +306,10 @@ object DiplomacyAutomation {
         }
     }
 
+    private fun isTradeBeingOffered(civInfo: Civilization, otherCiv: Civilization, offerName:String): Boolean {
+        return civInfo.tradeRequests.filter { request -> request.requestingCiv == otherCiv.civName }
+            .any { trade -> trade.trade.ourOffers.any { offer -> offer.name == offerName }}
+            || civInfo.tradeRequests.filter { request -> request.requestingCiv == otherCiv.civName }
+            .any { trade -> trade.trade.theirOffers.any { offer -> offer.name == offerName }}
+    }
 }
