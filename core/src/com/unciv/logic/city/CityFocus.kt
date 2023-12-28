@@ -76,5 +76,14 @@ enum class CityFocus(
         fun safeValueOf(stat: Stat): CityFocus {
             return values().firstOrNull { it.stat == stat } ?: NoFocus
         }
+
+        // set used in Automation. All non-Food Focuses, so targets 0 Surplus Food
+        fun zeroFoodFocuses(): Set<CityFocus> {
+            return setOf(
+                CultureFocus, FaithFocus, GoldFocus,
+                HappinessFocus, ProductionFocus, ScienceFocus
+            )
+        }
     }
 }
+

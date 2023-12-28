@@ -364,7 +364,7 @@ class City : IsPartOfGameInfoSerialization {
         if (resetLocked) {
             workedTiles = hashSetOf()
             lockedTiles = hashSetOf()
-        } else if(cityAIFocus != CityFocus.Manual){
+        } else if(cityAIFocus != CityFocus.Manual.name){
             workedTiles = lockedTiles
         }
         if (!manualSpecialists)
