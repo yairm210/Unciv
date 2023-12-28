@@ -369,6 +369,16 @@ object NextTurnAutomation {
                     && !city.isInResistance() && !civInfo.hasUnique(UniqueType.MayNotAnnexCities)
             ) {
                 city.annexCity()
+                
+                // Immediately buy a courthouse or equivalent if we can
+                if (city.cityStats.hasExtraAnnexUnhappiness() && civInfo.getHappiness() < 35) {
+                    val courthouseBuilding = city.cityConstructions.getBuildableBuildings()
+                        .filter {it.hasUnique(UniqueType.RemoveAnnexUnhappiness)}
+                        .filter { it.getStatBuyCost(city, Stat.Gold)!! >= civInfo.gold }
+                        .minByOrNull { it.getStatBuyCost(city, Stat.Gold)!! }
+                    if (courthouseBuilding != null)
+                        city.cityConstructions.purchaseConstruction(courthouseBuilding, city.cityConstructions.constructionQueue.indexOf(courthouseBuilding.name), false)
+                }
             }
 
             city.reassignAllPopulation()
