@@ -127,9 +127,9 @@ class TileInfoImprovementFunctions(val tile: Tile) {
             improvement.name == Constants.cancelImprovementOrder -> (tile.improvementInProgress != null)
             // Can only remove roads if that road is actually there
             RoadStatus.values().any { it.removeAction == improvement.name } -> tile.roadStatus.removeAction == improvement.name
-            // Can only remove features if that feature is actually there
-            improvement.name.startsWith(Constants.remove) -> tile.terrainFeatures.any { it == improvement.name.removePrefix(
-                Constants.remove) }
+            // Can only remove features or improvement if that feature/improvement is actually there
+            improvement.name.startsWith(Constants.remove) -> tile.terrainFeatures.any { Constants.remove + it == improvement.name } 
+                || Constants.remove + tile.improvement == improvement.name
             // Can only build roads if on land and they are better than the current road
             RoadStatus.values().any { it.name == improvement.name } -> !tile.isWater
                     && RoadStatus.valueOf(improvement.name) > tile.roadStatus
@@ -194,7 +194,7 @@ class TileInfoImprovementFunctions(val tile: Tile) {
 
         when {
             improvementName?.startsWith(Constants.remove) == true -> {
-                adtivateRemovalImprovement(improvementName, civToActivateBroaderEffects)
+                activateRemovalImprovement(improvementName, civToActivateBroaderEffects)
             }
             improvementName == RoadStatus.Road.name -> tile.addRoad(RoadStatus.Road, civToActivateBroaderEffects)
             improvementName == RoadStatus.Railroad.name -> tile.addRoad(RoadStatus.Railroad, civToActivateBroaderEffects)
@@ -261,7 +261,7 @@ class TileInfoImprovementFunctions(val tile: Tile) {
             UniqueTriggerActivation.triggerCivwideUnique(unique, civ, tile = tile)
     }
 
-    private fun adtivateRemovalImprovement(
+    private fun activateRemovalImprovement(
         improvementName: String,
         civToActivateBroaderEffects: Civilization?
     ) {
@@ -277,7 +277,9 @@ class TileInfoImprovementFunctions(val tile: Tile) {
 
         if (RoadStatus.values().any { improvementName == it.removeAction }) {
             tile.removeRoad()
-        } else {
+        }
+        else if (tile.improvement == removedFeatureName) tile.removeImprovement()
+        else {
             val removedFeatureObject = tile.ruleset.terrains[removedFeatureName]
             if (removedFeatureObject != null
                 && civToActivateBroaderEffects != null
