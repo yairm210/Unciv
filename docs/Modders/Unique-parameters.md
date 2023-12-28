@@ -31,7 +31,7 @@ This is because to the player, the text will be `non-Wounded Armor units`, which
 
 ## civFilter
 
-Allows filtering for specific civs. Contains [nationFilter](#nationfilter).
+Allows filtering for specific civs.
 
 - `All`
 - `City-states`

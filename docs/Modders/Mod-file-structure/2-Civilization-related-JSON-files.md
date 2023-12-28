@@ -26,7 +26,7 @@ Each building has the following structure:
 | Attribute | Type | Default | Notes |
 | --------- | ---- | ------- | ----- |
 | name | String | Required | |
-| cost | Integer | 0 | Amount of production required to build the building |
+| cost | Integer | -1 | Amount of production required to build the building. If -1, the `buildingCost` from `requiredTech` [column](#column-structure) is used |
 | [`<stats>`](3-Map-related-JSON-files.md#general-stat) | Float | 0 | Per-turn yield produced by the building |
 | maintenance | Integer | 0 | Maintenance cost of the building |
 | isWonder | Boolean | false | Whether this building is a global wonder |

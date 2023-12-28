@@ -25,7 +25,7 @@ Each unit has the following structure:
 | upgradesTo | String | none | Unit that this unit can upgrade to when it is available. Must be in [Units.json](#unitsjson) |
 | replaces | String | none | If this unit is unique to a nation, this is the unit it replaces. Must be in [Units.json](#unitsjson) |
 | uniqueTo | String | none | The nation that this unit is unique to. Must be in [Nations.json](2-Civilization-related-JSON-files.md#nationsjson) |
-| hurryCostModifier | Integer | 0 | If this unit is bought for gold/faith, it's price is increased by so much percent |
+| hurryCostModifier | Integer | 0 | If this unit is bought for gold, its price is increased by so much percent |
 | promotions | List of Strings | empty | A list of all the promotions the unit automatically receives upon being built. Each promotion must be in [UnitPromotions.json](#unitpromotionsjson) |
 | uniques | List of Strings | empty | List of [unique abilities](../uniques) this unit has |
 | replacementTextForUniques | String | none | If provided, this will be displayed instead of the list of uniques. Can be used for better formatting. |

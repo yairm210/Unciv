@@ -29,7 +29,7 @@ Each terrain entry has the following structure:
 
 [Link to original](https://github.com/yairm210/Unciv/blob/master/android/assets/jsons/Civ%20V%20-%20Vanilla/TileImprovements.json)
 
-This file lists the improvements that can be constructed or created on a map tile by a unit (any unit having the appropriate unique).
+This file lists the improvements that can be constructed or created on a map tile by a unit having the appropriate unique.
 
 Note that improvements have two visual representations - icon and pixel graphic in the tileset. Omitting the icon results in a horribly ugly user interface, while omitting tileset graphics will just miss out on an _optional_ visualization. If you provide a pixel graphic for FantasyHex, please be aware of the layering system and the ruleVariants in the tileset json. A single graphic may suffice if it has lots of transparency, as it will be drawn on top of all other terrain elements.
 
@@ -37,20 +37,20 @@ Each improvement has the following structure:
 
 | Attribute | Type | Default | Notes |
 | --------- | ---- | ------- | ----- |
-| name | String | Required | |
-| terrainsCanBeBuiltOn | List of Strings | empty | Terrains that this improvement can be built on. Must be in [Terrains.json](#terrainsjson) |
+| name | String | Required | [^A] |
+| terrainsCanBeBuiltOn | List of Strings | empty | Terrains that this improvement can be built on [^B]. Removable terrain features will need to be removed before building an improvement [^C]. Must be in [Terrains.json](#terrainsjson) |
 | techRequired | String | none | The name of the technology required to build this improvement |
 | uniqueTo | String | none | The name of the nation this improvement is unique for |
 | [`<stats>`](#stats) | Integer | 0 | Per-turn bonus yield for the tile |
-| turnsToBuild | Integer | -1 | Number of turns a worker spends building this. If -1, the improvement is unbuildable. If 0, the improvement is always built in one turn |
+| turnsToBuild | Integer | -1 | Number of turns a worker spends building this. If -1, the improvement is unbuildable [^D]. If 0, the improvement is always built in one turn |
 | uniques | List of Strings | empty | List of [unique abilities](../uniques) this improvement has |
 | shortcutKey | String | none | Keyboard binding. Currently, only a single character is allowed (no function keys or Ctrl combinations) |
 | civilopediaText | List | empty | See [civilopediaText chapter](5-Miscellaneous-JSON-files.md#civilopedia-text) |
 
-- Improvements with an empty `terrainsCanBeBuiltOn` list and positive `turnsToBuild` value can only be built on [resources](#tileresourcesjson) with `improvedBy` or `improvement` that contains the corresponding improvement.
-- Improvements with a `turnsToBuild` value of -1 will not show in a worker's improvement picker dialog. However, they can be created with the UnitAction unique `Can instantly construct a [improvementFilter] improvement`.
-- Removable Terrain features will need to be removed before building an improvement - unless the feature is named in terrainsCanBeBuiltOn _or_ the unique `Does not need removal of [tileFilter]` is used (e.g. Camp allowed by resource).
-- Special improvements: Road, Railroad, Remove \*, Cancel improvement order, City ruins, City center, Barbarian encampment - these have special meanings hardcoded to their names.
+[^A]: Special improvements: Road, Railroad, Remove \*, Cancel improvement order, City ruins, City center, Barbarian encampment - these have special meanings hardcoded to their names.
+[^B]: Improvements with an empty `terrainsCanBeBuiltOn` list and positive `turnsToBuild` value can only be built on [resources](#tileresourcesjson) with `improvedBy` or `improvement` that contains the corresponding improvement.
+[^C]: The removal of terrain features is optional if the feature is named in `terrainsCanBeBuiltOn` _or_ the unique `Does not need removal of [tileFilter]` is used (e.g. Camp allowed by resource).
+[^D]: They can still be created with the UnitAction unique `Can instantly construct a [improvementFilter] improvement`.
 
 ## TileResources.json
 
@@ -73,7 +73,7 @@ Each resource has the following structure:
 | improvementStats | Object | none | The additional yield when improved, see [specialized stats](3-Map-related-JSON-files.md#specialized-stats)|
 | revealedBy | String | none | The technology name required to see, work and improve this resource |
 | improvedBy | List of strings | empty | The improvements required for obtaining this resource. Must be in [TileImprovements.json](#tileimprovementsjson) |
-| improvement | String | none | The improvement needed to obtain this resource. Must be in [TileImprovements.json](#tileimprovementsjson) (redundant due to `improvedBy`) |
+| improvement | String | none | The improvement required to obtain this resource. Must be in [TileImprovements.json](#tileimprovementsjson) (redundant due to `improvedBy`) |
 | unique | List of Strings | empty | List of [unique abilities](../uniques) this resource has |
 | civilopediaText | List | empty | See [civilopediaText chapter](5-Miscellaneous-JSON-files.md#civilopedia-text) |
 
@@ -89,11 +89,11 @@ Each of the objects in the file represents a single reward you can get from ruin
 | --------- | ---- | ------- | ----- |
 | name | String | Required | Name of the ruins. Never shown to the user, but they have to be distinct |
 | notification | String | Required | Notification added to the user when this reward is chosen. If omitted, an empty notification is shown. Some notifications may have parameters, refer to the table below. |
-| weight | Integer (≥0) | 1 | _Relative_ weight this reward is chosen next [^A] |
+| weight | Integer (≥0) | 1 | _Relative_ weight this reward is chosen next [^E] |
 | uniques | List of Strings | empty |  List of [unique abilities](../uniques) that will trigger when entering the ruins. If more than 1 unique is added, the notification will be shown multiple times due to a bug (may be outdated) |
 | excludedDifficulties | List of Strings | empty | A list of all difficulties on which this reward may _not_ be awarded |
 
-[^A]: The exact algorithm for choosing a reward is the following:
+[^E]: The exact algorithm for choosing a reward is the following:
 
 - Create a list of all possible rewards. Each reward's frequency in the list corresponds to its weight, a reward with weight one will appear once, a reward with weight two will appear twice, etc.
 - Shuffle this list
