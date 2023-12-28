@@ -13,6 +13,7 @@ import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
 import com.unciv.ui.screens.worldscreen.unit.actions.UnitActions
 import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionsFromUniques
+import kotlin.math.roundToInt
 
 object SpecificUnitAutomation {
 
@@ -44,7 +45,7 @@ object SpecificUnitAutomation {
                     // ...also get priorities to steal the most valuable for them
                     val owner = it.getOwner()
                     if (owner != null)
-                        distance - owner.getWorkerAutomation().getPriority(it)
+                        distance - owner.getWorkerAutomation().getBasePriority(it, unit).roundToInt()
                     else distance
                 }
                 .firstOrNull { unit.movement.canReach(it) } // canReach is performance-heavy and always a last resort
@@ -96,7 +97,7 @@ object SpecificUnitAutomation {
                 .firstOrNull()?.action?.invoke()
     }
 
-    fun automateSettlerActions(unit: MapUnit, tilesWhereWeWillBeCaptured: Set<Tile>) {
+    fun automateSettlerActions(unit: MapUnit, dangerousTiles: HashSet<Tile>) {
         // If we don't have any cities, we are probably at the start of the game with only one settler
         // If we are at the start of the game lets spend a maximum of 3 turns to settle our first city
         // As our turns progress lets shrink the area that we look at to make sure that we stay on target
@@ -144,7 +145,7 @@ object SpecificUnitAutomation {
         if (bestCityLocation == null) {
             // Find the best tile that is within
             bestCityLocation = bestTilesInfo.tileRankMap.filter { bestTilesInfo.bestTile == null || it.value >= bestTilesInfo.tileRankMap[bestTilesInfo.bestTile]!! - 5 }.asSequence().sortedByDescending { it.value }.firstOrNull {
-                if (it.key in tilesWhereWeWillBeCaptured) return@firstOrNull false
+                if (it.key in dangerousTiles && it != unit.getTile()) return@firstOrNull false
                 val pathSize = unit.movement.getShortestPath(it.key).size
                 return@firstOrNull pathSize in 1..3
             }?.key
@@ -168,7 +169,7 @@ object SpecificUnitAutomation {
             if (frontierCity != null && getFrontierScore(frontierCity) > 0  && unit.movement.canReach(frontierCity.getCenterTile()))
                 unit.movement.headTowards(frontierCity.getCenterTile())
             if (UnitAutomation.tryExplore(unit)) return // try to find new areas
-            UnitAutomation.wander(unit, tilesToAvoid = tilesWhereWeWillBeCaptured) // go around aimlessly
+            UnitAutomation.wander(unit, tilesToAvoid = dangerousTiles) // go around aimlessly
             return
         }
 

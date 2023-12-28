@@ -153,7 +153,7 @@ object UnitAutomation {
 
 
         if (unit.isCivilian()) {
-            CivilianUnitAutomation.automateCivilianUnit(unit)
+            CivilianUnitAutomation.automateCivilianUnit(unit, getDangerousTiles(unit))
             return
         }
 
@@ -171,8 +171,8 @@ object UnitAutomation {
         //This allows for military units with certain civilian abilities to behave as civilians in peace and soldiers in war
         if ((unit.hasUnique(UniqueType.BuildImprovements) || unit.hasUnique(UniqueType.FoundCity) ||
                 unit.hasUnique(UniqueType.ReligiousUnit) || unit.hasUnique(UniqueType.CreateWaterImprovements))
-                && !unit.civ.isAtWar()) {
-            CivilianUnitAutomation.automateCivilianUnit(unit)
+                && !unit.civ.isAtWar()){
+            CivilianUnitAutomation.automateCivilianUnit(unit, getDangerousTiles(unit))
             return
         }
 
@@ -346,6 +346,23 @@ object UnitAutomation {
 
         unit.fortifyIfCan()
         return true
+    }
+
+    private fun getDangerousTiles(unit: MapUnit): HashSet<Tile> {
+        val nearbyRangedEnemyUnits = unit.currentTile.getTilesInDistance(3)
+            .flatMap { tile -> tile.getUnits().filter { unit.civ.isAtWarWith(it.civ) } }
+
+        val tilesInRangeOfAttack = nearbyRangedEnemyUnits
+            .flatMap { it.getTile().getTilesInDistance(it.getRange()) }
+
+        val tilesWithinBombardmentRange = unit.currentTile.getTilesInDistance(3)
+            .filter { it.isCityCenter() && it.getCity()!!.civ.isAtWarWith(unit.civ) }
+            .flatMap { it.getTilesInDistance(it.getCity()!!.range) }
+
+        val tilesWithTerrainDamage = unit.currentTile.getTilesInDistance(3)
+            .filter { unit.getDamageFromTerrain(it) > 0 }
+
+        return (tilesInRangeOfAttack + tilesWithinBombardmentRange + tilesWithTerrainDamage).toHashSet()
     }
 
     fun tryPillageImprovement(unit: MapUnit): Boolean {
