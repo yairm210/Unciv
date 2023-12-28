@@ -1,3 +1,23 @@
+## 4.9.13
+
+Religion button respects "hidden from users" modifier on uniques
+
+Returning old function, because LibGDX function is a one-way set
+
+By tuvus:
+- Worker AI Rework 
+- AI doesn't counter offer and request a defesive pact, open borders or research pact at the same time 
+- Civs now have a 50% chance of picking their favored religion 
+
+By SeventhM:
+- Fix stat on tile uniques doubling on improvement tiles 
+- Avoid crash if "Only available" unique in policy branch has 2 or more params 
+- Allow for improvement removal "improvements" 
+
+Randomize seed checkbox  - By remdu
+
+Modders wiki updating  - By Why-not-now
+
 ## 4.9.12
 
 Added experimental scenarios!
