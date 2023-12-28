@@ -37,8 +37,6 @@ In this order:
 
 ## Contributing
 
-### How can I help?
-
 Programmers start [here](https://yairm210.github.io/Unciv/Developers/Building-Locally/)!
 
 Translators start [here](https://yairm210.github.io/Unciv/Other/Translating/)!
