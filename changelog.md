@@ -1,3 +1,31 @@
+## 4.9.12
+
+Added experimental scenarios!
+
+Fixed Android status bar not disappearing ("immersion mode")
+
+Console: added 'set player type' command, for scenario setup
+
+Fix ShadowedLabel - By SomeTroglodyte
+
+## 4.9.11
+
+Fixed tech dependency related crash
+
+Unit by default not selected on turn start
+
+Added 'upon turn end' trigger
+
+By SomeTroglodyte:
+- City-state bonuses respect 'hidden from users' modifier
+- (UI) Politics overview diagram: Add legend popup
+
+By tuvus:
+- Added AutoPlay until end setting
+- if all players are defeated, one player will be processed
+
+Enable Domination to Capture All Capitals - By itanasi
+
 ## 4.9.10
 
 Add remove unit promotion unique  - By PLynx01

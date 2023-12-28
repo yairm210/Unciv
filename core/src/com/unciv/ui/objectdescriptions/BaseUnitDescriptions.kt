@@ -298,7 +298,7 @@ object BaseUnitDescriptions {
         for (promotion in betterUnit.promotions.filter { it !in originalUnit.promotions }) {
             // Needs tr for **individual** translations (no bracket nesting), default separator would have extra blank
             val effects = ruleset.unitPromotions[promotion]!!.uniques
-                .joinToString(",") { it.tr() }
+                .joinToString() { it.tr() }
             yield("{$promotion} ($effects)" to "Promotion/$promotion")
         }
     }
