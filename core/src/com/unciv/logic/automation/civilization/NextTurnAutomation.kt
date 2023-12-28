@@ -369,7 +369,7 @@ object NextTurnAutomation {
                     && !city.isInResistance() && !civInfo.hasUnique(UniqueType.MayNotAnnexCities)
             ) {
                 city.annexCity()
-                
+
                 // Immediately buy a courthouse or equivalent if we can
                 if (city.cityStats.hasExtraAnnexUnhappiness() && civInfo.getHappiness() < 35) {
                     val courthouseBuilding = city.cityConstructions.getBuildableBuildings()
