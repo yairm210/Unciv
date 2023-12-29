@@ -15,6 +15,7 @@ import com.unciv.logic.civilization.PopupAlert
 import com.unciv.logic.civilization.PromoteUnitAction
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.UnitActionType
+import com.unciv.models.ruleset.RejectionReasonType
 import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueTriggerActivation
@@ -482,19 +483,31 @@ object Battle {
         promotions.XP += xpGained
 
         if (!otherIsBarbarian && civ.isMajorCiv()) { // Can't get great generals from Barbarians
-            val greatGeneralPointsBonus = thisCombatant
-                .getMatchingUniques(UniqueType.GreatPersonEarnedFaster, stateForConditionals, true)
-                .filter { unique ->
-                    val unitName = unique.params[0]
-                    // From the unique we know this unit exists
-                    val unit = civ.gameInfo.ruleset.units[unitName]!!
-                    unit.uniques.contains("Great Person - [War]")
-                }
-                .sumOf { it.params[1].toDouble() }
-            val greatGeneralPointsModifier = 1.0 + greatGeneralPointsBonus / 100
+            val greatGeneralUnits = civ.gameInfo.ruleset.units.values
+                    .filter { it.hasUnique(UniqueType.GreatPersonFromCombat, stateForConditionals) }
+                    // Check if the unit is allowed for the Civ, ignoring build constrants
+                    .filter { !it.getRejectionReasons(civ).any { reason ->
+                        reason.type != RejectionReasonType.Unbuildable &&
+                        reason.type != RejectionReasonType.CannotBeBuilt &&
+                        reason.type != RejectionReasonType.CannotBeBuiltUnhappiness &&
+                        // Allow Generals even if not allowed via tech
+                        reason.type != RejectionReasonType.RequiresTech &&
+                        reason.type != RejectionReasonType.Obsoleted }
+                    }.toMutableList()
+            // For compatibility with older rulesets
+            if (greatGeneralUnits.isEmpty() && civ.gameInfo.ruleset.units["Great General"] != null)
+                greatGeneralUnits += civ.gameInfo.ruleset.units["Great General"]!!
 
-            val greatGeneralPointsGained = (xpGained * greatGeneralPointsModifier).toInt()
-            civ.greatPeople.greatGeneralPoints += greatGeneralPointsGained
+            for (unit in greatGeneralUnits) {
+                val greatGeneralPointsBonus = thisCombatant
+                    .getMatchingUniques(UniqueType.GreatPersonEarnedFaster, stateForConditionals, true)
+                    .filter { unit.matchesFilter(it.params[0]) }
+                    .sumOf { it.params[1].toDouble() }
+                val greatGeneralPointsModifier = 1.0 + greatGeneralPointsBonus / 100
+
+                val greatGeneralPointsGained = (xpGained * greatGeneralPointsModifier).toInt()
+                civ.greatPeople.greatGeneralPointsCounter[unit.name] += greatGeneralPointsGained
+            }
         }
 
         if (!thisCombatant.isDefeated() && !unitCouldAlreadyPromote && promotions.canBePromoted()) {
