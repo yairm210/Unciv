@@ -495,7 +495,7 @@ object Battle {
                         reason.type != RejectionReasonType.Obsoleted }
                     }.toMutableList()
             // For compatibility with older rulesets
-            if (greatGeneralUnits.isEmpty() && civ.gameInfo.ruleset.units["Great General"] != null)
+            if (greatGeneralUnits.isEmpty() && civ.gameInfo.ruleset.units["Great General"] != null
                 && civ.gameInfo.ruleset.units.values().none { 
                     it.hasUnique(UniqueType.GreatPersonFromCombat, StateForConditionals.IgnoreConditionals) })
                 greatGeneralUnits += civ.gameInfo.ruleset.units["Great General"]!!
