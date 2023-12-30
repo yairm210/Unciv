@@ -69,6 +69,10 @@ class Ruleset {
     var victories = LinkedHashMap<String, Victory>()
     var cityStateTypes = LinkedHashMap<String, CityStateType>()
 
+    val greatGeneralUnits by lazy { 
+        units.values.filter { it.hasUnique(UniqueType.GreatPersonFromCombat, StateForConditionals.IgnoreConditionals) }
+    }
+
     val mods = LinkedHashSet<String>()
     var modOptions = ModOptions()
 

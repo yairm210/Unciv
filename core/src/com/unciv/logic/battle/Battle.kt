@@ -483,21 +483,20 @@ object Battle {
         promotions.XP += xpGained
 
         if (!otherIsBarbarian && civ.isMajorCiv()) { // Can't get great generals from Barbarians
-            val greatGeneralUnits = civ.gameInfo.ruleset.units.values
-                    .filter { it.hasUnique(UniqueType.GreatPersonFromCombat, stateForConditionals) }
-                    // Check if the unit is allowed for the Civ, ignoring build constrants
-                    .filter { !it.getRejectionReasons(civ).any { reason ->
-                        reason.type != RejectionReasonType.Unbuildable &&
-                        reason.type != RejectionReasonType.CannotBeBuilt &&
-                        reason.type != RejectionReasonType.CannotBeBuiltUnhappiness &&
-                        // Allow Generals even if not allowed via tech
-                        reason.type != RejectionReasonType.RequiresTech &&
-                        reason.type != RejectionReasonType.Obsoleted }
-                    }.toMutableList()
+            var greatGeneralUnits = civ.gameInfo.ruleset.greatGeneralUnits
+                    .filter { it.hasUnique(UniqueType.GreatPersonFromCombat, stateForConditionals) && 
+                        // Check if the unit is allowed for the Civ, ignoring build constrants
+                        !it.getRejectionReasons(civ).any { reason ->
+                            reason.type != RejectionReasonType.Unbuildable &&
+                            reason.type != RejectionReasonType.CannotBeBuilt &&
+                            reason.type != RejectionReasonType.CannotBeBuiltUnhappiness &&
+                            // Allow Generals even if not allowed via tech
+                            reason.type != RejectionReasonType.RequiresTech &&
+                            reason.type != RejectionReasonType.Obsoleted }
+                    }.asSequence()
             // For compatibility with older rulesets
-            if (greatGeneralUnits.isEmpty() && civ.gameInfo.ruleset.units["Great General"] != null
-                && civ.gameInfo.ruleset.units.values.none { 
-                    it.hasUnique(UniqueType.GreatPersonFromCombat, StateForConditionals.IgnoreConditionals) })
+            if (civ.gameInfo.ruleset.greatGeneralUnits.isEmpty() && 
+                civ.gameInfo.ruleset.units["Great General"] != null)
                 greatGeneralUnits += civ.gameInfo.ruleset.units["Great General"]!!
 
             for (unit in greatGeneralUnits) {
