@@ -39,12 +39,12 @@ object BackwardCompatibility {
 
     fun GameInfo.migrateGreatGeneralPools() {
         for (civ in civilizations) civ.greatPeople.run {
-            if (pointsForNextGreatGeneral >= pointsForNextGreatGeneralCounter["Great Genreral"]) {
+            if (pointsForNextGreatGeneral >= pointsForNextGreatGeneralCounter["Great General"]) {
                 pointsForNextGreatGeneralCounter["Great General"] = pointsForNextGreatGeneral
             } else pointsForNextGreatGeneral = pointsForNextGreatGeneralCounter["Great General"]
 
 
-            if (greatGeneralPoints >= greatGeneralPointsCounter["Great Genreral"]) {
+            if (greatGeneralPoints >= greatGeneralPointsCounter["Great General"]) {
                 greatGeneralPointsCounter["Great General"] = greatGeneralPoints
             } else greatGeneralPoints = greatGeneralPointsCounter["Great General"]
         }
