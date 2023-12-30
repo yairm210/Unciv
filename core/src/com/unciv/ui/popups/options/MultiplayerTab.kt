@@ -17,11 +17,11 @@ import com.unciv.ui.components.extensions.addSeparator
 import com.unciv.ui.components.extensions.brighten
 import com.unciv.ui.components.extensions.format
 import com.unciv.ui.components.extensions.isEnabled
-import com.unciv.ui.components.input.onChange
-import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.extensions.toGdxArray
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
+import com.unciv.ui.components.input.onChange
+import com.unciv.ui.components.input.onClick
 import com.unciv.ui.popups.AuthPopup
 import com.unciv.ui.popups.Popup
 import com.unciv.ui.popups.options.SettingsSelect.SelectItem
@@ -151,18 +151,14 @@ private fun addMultiplayerServerOptions(
         multiplayerServerTextField.text = Gdx.app.clipboard.contents
         }).colspan(2).row()
     multiplayerServerTextField.onChange {
+        fixTextFieldUrlOnType(multiplayerServerTextField)
+        // we can't trim on 'fixTextFieldUrlOnType' for reasons
+        settings.multiplayer.server = multiplayerServerTextField.text.trimEnd('/')
+
         val isCustomServer = OnlineMultiplayer.usesCustomServer()
         connectionToServerButton.isEnabled = isCustomServer
 
         for (refreshSelect in toUpdate) refreshSelect.update(isCustomServer)
-
-        if (isCustomServer) {
-            fixTextFieldUrlOnType(multiplayerServerTextField)
-            // we can't trim on 'fixTextFieldUrlOnType' for reasons
-            settings.multiplayer.server = multiplayerServerTextField.text.trimEnd('/')
-        } else {
-            settings.multiplayer.server = multiplayerServerTextField.text
-        }
     }
 
     serverIpTable.add(multiplayerServerTextField)
