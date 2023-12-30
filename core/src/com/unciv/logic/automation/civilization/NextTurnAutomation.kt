@@ -150,8 +150,12 @@ object NextTurnAutomation {
 
         if (!cityState.isAlive() || cityState.cities.isEmpty() || civInfo.cities.isEmpty())
             return value
+        
+        // The more we have invested into the city-state the more the alliance is worth
+        val ourInfluence = cityState.getDiplomacyManager(civInfo).getInfluence().toInt()
+        value += ourInfluence / 10
 
-        if (civInfo.gold < 100) {
+        if (civInfo.gold < 100 && ourInfluence < 30) {
             // Consider bullying for cash
             value -= 5
         }
@@ -159,7 +163,7 @@ object NextTurnAutomation {
         if (cityState.getAllyCiv() != null && cityState.getAllyCiv() != civInfo.civName) {
             // easier not to compete if a third civ has this locked down
             val thirdCivInfluence = cityState.getDiplomacyManager(cityState.getAllyCiv()!!).getInfluence().toInt()
-            value -= (thirdCivInfluence - 60) / 10
+            value -= (thirdCivInfluence - 30) / 10
         }
 
         // Bonus for luxury resources we can get from them
