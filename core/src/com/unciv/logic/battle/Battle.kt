@@ -487,12 +487,9 @@ object Battle {
                     .filter { it.hasUnique(UniqueType.GreatPersonFromCombat, stateForConditionals) && 
                         // Check if the unit is allowed for the Civ, ignoring build constrants
                         !it.getRejectionReasons(civ).any { reason ->
-                            reason.type != RejectionReasonType.Unbuildable &&
-                            reason.type != RejectionReasonType.CannotBeBuilt &&
-                            reason.type != RejectionReasonType.CannotBeBuiltUnhappiness &&
+                            !reason.isConstructionRejection() &&
                             // Allow Generals even if not allowed via tech
-                            reason.type != RejectionReasonType.RequiresTech &&
-                            reason.type != RejectionReasonType.Obsoleted }
+                            !reason.techPolicyEraWonderRequirements() }
                     }.asSequence()
             // For compatibility with older rulesets
             if (civ.gameInfo.ruleset.greatGeneralUnits.isEmpty() && 
