@@ -25,7 +25,7 @@ class ScenarioScreen: PickerScreen() {
                             scenarioToLoad = file
                             rightSideButton.setText(file.name())
                             rightSideButton.enable()
-                        })
+                        }).row()
                     }
                 } catch (ex: Exception) { } // invalid, couldn't even load preview, probably invalid json
             }

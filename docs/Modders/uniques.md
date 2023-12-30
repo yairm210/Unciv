@@ -1204,6 +1204,9 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "Can hurry technology research"
 	Applicable to: Unit
 
+??? example  "Can generate a large amount of culture"
+	Applicable to: Unit
+
 ??? example  "Can undertake a trade mission with City-State, giving a large sum of gold and [amount] Influence"
 	Example: "Can undertake a trade mission with City-State, giving a large sum of gold and [3] Influence"
 

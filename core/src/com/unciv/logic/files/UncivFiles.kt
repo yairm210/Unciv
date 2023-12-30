@@ -6,6 +6,7 @@ import com.badlogic.gdx.files.FileHandle
 import com.badlogic.gdx.utils.GdxRuntimeException
 import com.badlogic.gdx.utils.JsonReader
 import com.badlogic.gdx.utils.SerializationException
+import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.json.fromJsonFile
 import com.unciv.json.json
@@ -327,6 +328,8 @@ class UncivFiles(
     fun loadScenario(gameFile: FileHandle): GameInfo {
         val game = loadGameFromFile(gameFile)
         game.civilizations.removeAll { it.isSpectator() }
+        for (civ in game.civilizations)
+            civ.diplomacy.remove(Constants.spectator)
         if (game.civilizations.none { it.isHuman() })
             game.civilizations.first { it.isMajorCiv() }.playerType = PlayerType.Human
 
