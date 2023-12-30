@@ -468,7 +468,6 @@ class WorkerAutomation(
                 && (it.civilianUnit == null || it == currentTile)
                 && (it.owningCity == null || it.getOwner() == civInfo)
                 && !it.isCityCenter()
-                && !tilesToAvoid.contains(currentTile)
                 && getBasePriority(it, unit) > 1
             }
 
