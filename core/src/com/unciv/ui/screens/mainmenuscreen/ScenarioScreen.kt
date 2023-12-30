@@ -15,6 +15,7 @@ class ScenarioScreen: PickerScreen() {
     init {
         val scenarioFiles = game.files.getScenarioFiles()
         rightSideButton.setText("Choose scenario")
+        topTable.defaults().pad(5f)
         Concurrency.run {
             for ((file, mod) in scenarioFiles) {
                 try {

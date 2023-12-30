@@ -1,16 +1,18 @@
 ## 4.9.14
 
-New Citizen Focus Options - again 
+Fixed Scenario crashes
 
-Resolved  - Updating server URL allows checking connection immediately
+Updating server URL allows checking connection immediately
+
+New Citizen Focus Options - by Itanasi
 
 By tuvus:
-- Worker AI short distance priority fix 
-- AI focuses city-state gold gifting 
+- Worker AI short distance priority fix
+- AI focuses city-state gold gifting
 
 By SeventhM:
-- Spawn multiple great people if eligible 
-- Initial Great Writer functionality 
+- Spawn multiple great people if eligible
+- Initial Great Writer functionality
 
 ## 4.9.13
 
