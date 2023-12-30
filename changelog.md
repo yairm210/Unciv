@@ -1,3 +1,17 @@
+## 4.9.14
+
+New Citizen Focus Options - again 
+
+Resolved  - Updating server URL allows checking connection immediately
+
+By tuvus:
+- Worker AI short distance priority fix 
+- AI focuses city-state gold gifting 
+
+By SeventhM:
+- Spawn multiple great people if eligible 
+- Initial Great Writer functionality 
+
 ## 4.9.13
 
 Religion button respects unique "hidden from users" modifier
