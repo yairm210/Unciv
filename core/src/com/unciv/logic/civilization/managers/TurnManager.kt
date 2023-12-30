@@ -62,7 +62,7 @@ class TurnManager(val civInfo: Civilization) {
             var greatPerson = civInfo.greatPeople.getNewGreatPerson()
             while (greatPerson != null) {
                 if (civInfo.gameInfo.ruleset.units.containsKey(greatPerson))
-                    civInfo.units.addUnit(greatPerson, getRandomWeightedCity(greatPerson))
+                    civInfo.units.addUnit(greatPerson)
                 greatPerson = civInfo.greatPeople.getNewGreatPerson()
             }
             civInfo.religionManager.startTurn()
