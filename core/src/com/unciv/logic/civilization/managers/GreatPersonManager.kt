@@ -37,6 +37,8 @@ class GreatPersonManager : IsPartOfGameInfoSerialization {
         toReturn.pointsForNextGreatPersonCounter = pointsForNextGreatPersonCounter.clone()
         toReturn.pointsForNextGreatGeneralCounter = pointsForNextGreatGeneralCounter.clone()
         toReturn.greatGeneralPointsCounter = greatGeneralPointsCounter.clone()
+        toReturn.pointsForNextGreatGeneral = pointsForNextGreatGeneral
+        toReturn.greatGeneralPoints = greatGeneralPoints
         toReturn.mayaLimitedFreeGP = mayaLimitedFreeGP
         toReturn.longCountGPPool = longCountGPPool.toHashSet()
         return toReturn
