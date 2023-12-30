@@ -15,6 +15,7 @@ import com.unciv.models.ruleset.tile.Terrain
 import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.ruleset.tile.TileResource
 import com.unciv.models.ruleset.unique.IHasUniques
+import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit

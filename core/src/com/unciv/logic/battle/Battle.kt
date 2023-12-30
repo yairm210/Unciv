@@ -15,7 +15,6 @@ import com.unciv.logic.civilization.PopupAlert
 import com.unciv.logic.civilization.PromoteUnitAction
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.UnitActionType
-import com.unciv.models.ruleset.RejectionReasonType
 import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueTriggerActivation
