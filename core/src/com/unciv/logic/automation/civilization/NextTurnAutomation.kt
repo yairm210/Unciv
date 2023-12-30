@@ -171,6 +171,9 @@ object NextTurnAutomation {
             it.resource.resourceType == ResourceType.Luxury
             && it.resource !in civInfo.detailedCivResources.map { supply -> supply.resource }
         }
+        
+        // Better if there is an investment bonus quest active.
+        value += (cityState.questManager.getInvestmentMultiplier(civInfo.civName) * 10).toInt() - 10
 
         return value
     }
