@@ -118,7 +118,7 @@ object NextTurnAutomation {
         civInfo.popupAlerts.clear() // AIs don't care about popups.
     }
 
-    internal fun valueCityStateAlliance(civInfo: Civilization, cityState: Civilization): Int {
+    internal fun valueCityStateAlliance(civInfo: Civilization, cityState: Civilization, includeQuests: Boolean = false): Int {
         var value = 0
 
         if (civInfo.wantsToFocusOn(Victory.Focus.Culture) && cityState.cityStateFunctions.canProvideStat(Stat.Culture)) {
@@ -172,8 +172,10 @@ object NextTurnAutomation {
             && it.resource !in civInfo.detailedCivResources.map { supply -> supply.resource }
         }
         
-        // Better if there is an investment bonus quest active.
-        value += (cityState.questManager.getInvestmentMultiplier(civInfo.civName) * 10).toInt() - 10
+        if (includeQuests) {
+            // Investing is better if there is an investment bonus quest active.
+            value += (cityState.questManager.getInvestmentMultiplier(civInfo.civName) * 10).toInt() - 10
+        }
 
         return value
     }
