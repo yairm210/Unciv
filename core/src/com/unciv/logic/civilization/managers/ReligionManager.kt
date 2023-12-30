@@ -409,7 +409,7 @@ class ReligionManager : IsPartOfGameInfoSerialization {
                         triggerNotificationText = "due to adopting [${belief.name}]")
 
         for (belief in beliefs)
-            for (unique in belief.uniqueObjects.filter { !it.hasTriggerConditional() })
+            for (unique in belief.uniqueObjects.filter { !it.hasTriggerConditional() && it.conditionalsApply(StateForConditionals(civInfo)) })
                 UniqueTriggerActivation.triggerCivwideUnique(unique, civInfo)
 
         civInfo.updateStatsForNextTurn()  // a belief can have an immediate effect on stats

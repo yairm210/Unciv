@@ -80,7 +80,7 @@ class UnitManager(val civInfo:Civilization) {
         if (unit != null) {
             val triggerNotificationText = "due to gaining a [${unit.name}]"
             for (unique in unit.getUniques())
-                if (!unique.hasTriggerConditional())
+                if (!unique.hasTriggerConditional() && unique.conditionalsApply(StateForConditionals(civInfo)))
                     UniqueTriggerActivation.triggerUnitwideUnique(unique, unit, triggerNotificationText = triggerNotificationText)
             for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponGainingUnit))
                 if (unique.conditionals.any { it.isOfType(UniqueType.TriggerUponGainingUnit) &&
