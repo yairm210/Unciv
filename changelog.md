@@ -1,3 +1,19 @@
+## 4.9.14
+
+Fixed Scenario crashes
+
+Updating server URL allows checking connection immediately
+
+New Citizen Focus Options - by Itanasi
+
+By tuvus:
+- Worker AI short distance priority fix
+- AI focuses city-state gold gifting
+
+By SeventhM:
+- Spawn multiple great people if eligible
+- Initial Great Writer functionality
+
 ## 4.9.13
 
 Religion button respects unique "hidden from users" modifier

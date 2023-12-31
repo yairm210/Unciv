@@ -29,6 +29,18 @@ object UnitActionsGreatPerson {
         }
     }.asIterable()
 
+    fun getHurryPolicyActions(unit:MapUnit, tile: Tile) = sequence {
+        for (unique in unit.getMatchingUniques(UniqueType.CanHurryPolicy)){
+            yield(UnitAction(
+                UnitActionType.HurryPolicy,
+                action = {
+                    unit.civ.policies.addCulture(unit.civ.policies.getCultureFromGreatWriter())
+                    unit.consume()
+                }.takeIf {unit.currentMovement > 0}
+            ))
+        }
+    }.asIterable()
+
     fun getHurryWonderActions(unit: MapUnit, tile: Tile) = sequence {
         for (unique in unit.getMatchingUniques(UniqueType.CanSpeedupWonderConstruction)) {
             val canHurryWonder =

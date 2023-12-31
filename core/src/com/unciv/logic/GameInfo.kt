@@ -368,14 +368,14 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
             !isOnline &&
             player.isDefeated() && (civilizations.any { it.isHuman() && it.isAlive() }
                 || civilizations.first { it.isHuman() } != player)
-        
+
         // Skip all spectators and defeated players
         // If all players are defeated then let the first player control next turn
-        fun shouldAutoProcessOnlinePlayer(): Boolean = 
-            isOnline && (player.isSpectator() || player.isDefeated() && 
-                (civilizations.any { it.isHuman() && it.isAlive() } 
+        fun shouldAutoProcessOnlinePlayer(): Boolean =
+            isOnline && (player.isSpectator() || player.isDefeated() &&
+                (civilizations.any { it.isHuman() && it.isAlive() }
                     || civilizations.first { it.isHuman() } != player))
-        
+
         // We process player automatically if:
         while (isSimulation() ||                    // simulation is active
                 player.isAI() ||                    // or player is AI
@@ -395,7 +395,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
                 UncivGame.Current.settings.autoPlay.stopAutoPlay()
                 break
             }
-            
+
             // Do we need to stop AutoPlay?
             if (UncivGame.Current.settings.autoPlay.isAutoPlaying() && player.victoryManager.hasWon())
                 UncivGame.Current.settings.autoPlay.stopAutoPlay()
