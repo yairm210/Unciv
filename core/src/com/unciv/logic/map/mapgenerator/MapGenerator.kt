@@ -407,10 +407,29 @@ class MapGenerator(val ruleset: Ruleset, private val coroutineScope: CoroutineSc
             elevation = abs(elevation).pow(1.0 - tileMap.mapParameters.elevationExponent.toDouble()) * elevation.sign
 
             when {
-                elevation <= 0.5 -> tile.baseTerrain = flat
-                elevation <= 0.7 && hill != null -> tile.addTerrainFeature(hill)
+                elevation <= 0.5 -> {
+                    tile.baseTerrain = flat
+                    if (hill != null && tile.terrainFeatures.contains(hill)) {
+                        tile.removeTerrainFeature(hill)
+                    }
+                }
+                elevation <= 0.7 && hill != null -> {
+                    tile.addTerrainFeature(hill)
+                    tile.baseTerrain = flat
+                }
                 elevation <= 0.7 && hill == null -> tile.baseTerrain = flat // otherwise would be hills become mountains
-                elevation <= 1.0 && mountain != null -> tile.baseTerrain = mountain
+                elevation > 0.7 && mountain != null -> {
+                    tile.baseTerrain = mountain
+                    if (hill != null && tile.terrainFeatures.contains(hill)) {
+                        tile.removeTerrainFeature(hill)
+                    }
+                }
+                else -> {
+                    tile.baseTerrain = flat
+                    if (hill != null && tile.terrainFeatures.contains(hill)) {
+                        tile.removeTerrainFeature(hill)
+                    }
+                }
             }
             tile.setTerrainTransients()
         }
