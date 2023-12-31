@@ -10,7 +10,6 @@ import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
-import com.unciv.models.translations.tr
 import com.unciv.ui.components.extensions.toPercent
 
 fun Iterable<Pair<String, Stats>>.toStats(): Stats {
@@ -59,7 +58,7 @@ class TileStatFunctions(val tile: Tile) {
             for (unique in statsFromTilesUniques + statsFromObjectsUniques) {
                 val tileType = unique.params[1]
                 if (!tile.matchesTerrainFilter(tileType, observingCiv)) continue
-                listOfStats.add("{${unique.sourceObjectName}} ({${unique.text}})".tr() to unique.stats)
+                listOfStats.add("{${unique.sourceObjectName}} ({${unique.text}})" to unique.stats)
             }
 
             for (unique in localUniqueCache.forCityGetMatchingUniques(
@@ -69,7 +68,7 @@ class TileStatFunctions(val tile: Tile) {
                         !tile.matchesTerrainFilter(unique.params[2]) &&
                         city.matchesFilter(unique.params[3])
                 )
-                    listOfStats.add("{${unique.sourceObjectName}} ({${unique.text}})".tr() to unique.stats)
+                    listOfStats.add("{${unique.sourceObjectName}} ({${unique.text}})" to unique.stats)
             }
         }
 

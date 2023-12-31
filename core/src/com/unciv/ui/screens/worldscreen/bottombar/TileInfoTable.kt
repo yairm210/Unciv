@@ -7,6 +7,7 @@ import com.badlogic.gdx.utils.Align
 import com.unciv.UncivGame
 import com.unciv.logic.map.tile.Tile
 import com.unciv.logic.map.tile.TileDescription
+import com.unciv.models.translations.tr
 import com.unciv.ui.components.extensions.addBorderAllowOpacity
 import com.unciv.ui.components.extensions.darken
 import com.unciv.ui.components.extensions.toLabel
@@ -64,7 +65,7 @@ class TileInfoTable(private val worldScreen: WorldScreen) : Table(BaseScreen.ski
         table.onClick {
             Popup(worldScreen).apply {
                 for ((name, stats) in tile.stats.getTileStatsBreakdown(tile.getCity(), viewingCiv))
-                    add("{$name}: {${stats.clone()}}".toLabel()).row()
+                    add("${name.tr()}: {${stats.clone()}}".toLabel()).row()
                 addCloseButton()
             }.open()
         }
