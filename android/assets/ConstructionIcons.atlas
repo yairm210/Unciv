@@ -1,8 +1,8 @@
 
-Construction.png
+ConstructionIcons.png
 size: 2048, 2048
 format: RGBA8888
-filter: MipMapLinearLinear, MipMapLinearLinear
+filter: MipMapLinearLinear, Linear
 repeat: none
 BuildingIcons/Alhambra
   rotate: false
