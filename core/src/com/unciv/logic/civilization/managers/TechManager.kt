@@ -369,12 +369,17 @@ class TechManager : IsPartOfGameInfoSerialization {
                 .toMutableList()
         }
 
-        // As long as TurnManager does cities after tech, we don't need to clean up
-        // inProgressConstructions - CityConstructions.validateInProgressConstructions does it.
-
         // Add notifications for obsolete units/constructions
         for ((unit, cities) in unitUpgrades) {
             if (cities.isEmpty()) continue
+
+            //The validation check happens again while processing start and end of turn,
+            //but for mid-turn free tech picks like Oxford University, it should happen immediately
+            //so the hammers from the obsolete unit are guaranteed to go to the upgraded unit
+            //and players don't think they lost all their production mid turn
+            for(city in cities)
+                city.cityConstructions.validateInProgressConstructions()
+
             val locationAction = LocationAction(cities.asSequence().map { it.location })
             val cityText = if (cities.size == 1) "[${cities.first().name}]"
                 else "[${cities.size}] cities"

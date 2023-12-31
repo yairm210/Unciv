@@ -386,7 +386,7 @@ class CityConstructions : IsPartOfGameInfoSerialization {
         chooseNextConstruction()
     }
 
-    private fun validateInProgressConstructions() {
+    fun validateInProgressConstructions() {
         // remove obsolete stuff from in progress constructions - happens often and leaves clutter in memory and save files
         // should have little visible consequences - any accumulated points that may be reused later should stay (nukes when manhattan project city lost, nat wonder when conquered an empty city...), all other points should be refunded
         // Should at least be called before each turn - if another civ completes a wonder after our previous turn, we should get the refund this turn
