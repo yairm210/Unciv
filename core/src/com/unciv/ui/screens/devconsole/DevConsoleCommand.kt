@@ -271,12 +271,13 @@ class ConsoleCivCommands : ConsoleCommandNode {
     )
 
     override fun autocomplete(params: List<String>): String? {
-        when (params[0]){
-            "addstat" -> if (params.size == 2)
-                return Stat.names()
-                    .firstOrNull { it.lowercase().startsWith(params[1]) }
-                    ?.drop(params[1].length)
-        }
+        if (params.isNotEmpty())
+            when (params[0]){
+                "addstat" -> if (params.size == 2)
+                    return Stat.names()
+                        .firstOrNull { it.lowercase().startsWith(params[1]) }
+                        ?.drop(params[1].length)
+            }
         return super.autocomplete(params)
     }
 }
