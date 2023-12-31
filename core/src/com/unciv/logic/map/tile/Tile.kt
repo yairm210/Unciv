@@ -838,8 +838,10 @@ open class Tile : IsPartOfGameInfoSerialization {
         }
     }
 
-    fun addTerrainFeature(terrainFeature: String) =
-        setTerrainFeatures(ArrayList(terrainFeatures).apply { add(terrainFeature) })
+    fun addTerrainFeature(terrainFeature: String) {
+        if (!terrainFeatures.contains(terrainFeature))
+            setTerrainFeatures(ArrayList(terrainFeatures).apply { add(terrainFeature) })
+    }
 
     fun removeTerrainFeature(terrainFeature: String) =
         setTerrainFeatures(ArrayList(terrainFeatures).apply { remove(terrainFeature) })

@@ -130,11 +130,10 @@ object ReligionAutomation {
         if (validCitiesToBuy.isEmpty()) return
 
         val citiesWithBonusCharges = validCitiesToBuy.filter { city ->
-            city.getMatchingUniques(UniqueType.UnitStartingActions).any { it.params[2] == Constants.spreadReligion }
-                || city.getMatchingUniques(UniqueType.UnitStartingPromotions).any {
-                    val promotionName = it.params[2]
-                    val promotion = city.getRuleset().unitPromotions[promotionName] ?: return@any false
-                    promotion.hasUnique(UniqueType.CanSpreadReligion)
+            city.getMatchingUniques(UniqueType.UnitStartingPromotions).any {
+                val promotionName = it.params[2]
+                val promotion = city.getRuleset().unitPromotions[promotionName] ?: return@any false
+                promotion.hasUnique(UniqueType.CanSpreadReligion)
             }
         }
         val holyCity = validCitiesToBuy.firstOrNull { it.isHolyCityOf(civInfo.religionManager.religion!!.name) }

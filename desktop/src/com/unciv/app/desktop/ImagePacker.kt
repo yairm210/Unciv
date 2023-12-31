@@ -90,9 +90,11 @@ internal object ImagePacker {
         val atlasList = mutableListOf<String>()
         for ((file, packFileName) in imageFolders(input)) {
             atlasList += packFileName
+            defaultSettings.filterMag = if (file.endsWith("Icons"))
+                Texture.TextureFilter.Linear
+            else Texture.TextureFilter.MipMapLinearLinear
             packImagesIfOutdated(defaultSettings, file, output, packFileName)
         }
-        atlasList.remove("game")
         val listFile = File("$output${File.separator}Atlases.json")
         if (atlasList.isEmpty()) listFile.delete()
         else listFile.writeText(atlasList.sorted().joinToString(",","[","]"))

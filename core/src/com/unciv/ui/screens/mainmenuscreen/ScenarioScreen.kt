@@ -15,6 +15,7 @@ class ScenarioScreen: PickerScreen() {
     init {
         val scenarioFiles = game.files.getScenarioFiles()
         rightSideButton.setText("Choose scenario")
+        topTable.defaults().pad(5f)
         Concurrency.run {
             for ((file, mod) in scenarioFiles) {
                 try {
@@ -25,7 +26,7 @@ class ScenarioScreen: PickerScreen() {
                             scenarioToLoad = file
                             rightSideButton.setText(file.name())
                             rightSideButton.enable()
-                        })
+                        }).row()
                     }
                 } catch (ex: Exception) { } // invalid, couldn't even load preview, probably invalid json
             }
