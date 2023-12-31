@@ -59,9 +59,12 @@ class TurnManager(val civInfo: Civilization) {
         // Generate great people at the start of the turn,
         // so they won't be generated out in the open and vulnerable to enemy attacks before you can control them
         if (civInfo.cities.isNotEmpty()) { //if no city available, addGreatPerson will throw exception
-            val greatPerson = civInfo.greatPeople.getNewGreatPerson()
-            if (greatPerson != null && civInfo.gameInfo.ruleset.units.containsKey(greatPerson))
-                civInfo.units.addUnit(greatPerson)
+            var greatPerson = civInfo.greatPeople.getNewGreatPerson()
+            while (greatPerson != null) {
+                if (civInfo.gameInfo.ruleset.units.containsKey(greatPerson))
+                    civInfo.units.addUnit(greatPerson)
+                greatPerson = civInfo.greatPeople.getNewGreatPerson()
+            }
             civInfo.religionManager.startTurn()
             if (civInfo.isLongCountActive())
                 MayaCalendar.startTurnForMaya(civInfo)

@@ -468,7 +468,6 @@ class WorkerAutomation(
                 && (it.civilianUnit == null || it == currentTile)
                 && (it.owningCity == null || it.getOwner() == civInfo)
                 && !it.isCityCenter()
-                && !tilesToAvoid.contains(currentTile)
                 && getBasePriority(it, unit) > 1
             }
 
@@ -501,7 +500,7 @@ class WorkerAutomation(
      * This is a cheap guess on how helpful it might be to do work on this tile
      */
     fun getBasePriority(tile: Tile, unit: MapUnit): Float {
-        val unitSpecificPriority = 2 - tile.aerialDistanceTo(unit.getTile()).coerceAtMost(4)
+        val unitSpecificPriority = 2 - (tile.aerialDistanceTo(unit.getTile()) / 2.0f).coerceIn(0f, 2f)
         if (tileRankings.containsKey(tile)) 
             return tileRankings[tile]!!.tilePriority + unitSpecificPriority
         

@@ -169,8 +169,6 @@ enum class UniqueType(
     UnitSupplyPerCity("[amount] Unit Supply per city", UniqueTarget.Global),
     FreeUnits("[amount] units cost no maintenance", UniqueTarget.Global),
     UnitsInCitiesNoMaintenance("Units in cities cost no Maintenance", UniqueTarget.Global),
-    @Deprecated("as of 4.8.5", ReplaceWith("Free [unit] appears <upon discovering [tech]>"))
-    ReceiveFreeUnitWhenDiscoveringTech("Receive free [unit] when you discover [tech]", UniqueTarget.Global),
 
     // Units entering Tiles
     // ToDo: make per unit and use unit filters? "Enables embarkation <for [land] units>"
@@ -227,8 +225,6 @@ enum class UniqueType(
     ReligionSpreadDistance("Religion naturally spreads to cities [amount] tiles away", UniqueTarget.Global, UniqueTarget.FollowerBelief),
     MayNotGenerateGreatProphet("May not generate great prophet equivalents naturally", UniqueTarget.Global),
     FaithCostOfGreatProphetChange("[relativeAmount]% Faith cost of generating Great Prophet equivalents", UniqueTarget.Global),
-    @Deprecated("as of 4.8.9", ReplaceWith("All newly-trained [baseUnitFilter] units [cityFilter] receive the [Devout] promotion"))
-    UnitStartingActions("[baseUnitFilter] units built [cityFilter] can [action] [amount] extra times", UniqueTarget.Global, UniqueTarget.FollowerBelief),
 
     /// Things you get at the start of the game
     StartingTech("Starting tech", UniqueTarget.Tech),
@@ -342,6 +338,7 @@ enum class UniqueType(
     CanSpeedupConstruction("Can speed up construction of a building", UniqueTarget.Unit),
     CanSpeedupWonderConstruction("Can speed up the construction of a wonder", UniqueTarget.Unit),
     CanHurryResearch("Can hurry technology research", UniqueTarget.Unit),
+    CanHurryPolicy("Can generate a large amount of culture", UniqueTarget.Unit),
     CanTradeWithCityStateForGoldAndInfluence("Can undertake a trade mission with City-State, giving a large sum of gold and [amount] Influence", UniqueTarget.Unit),
     CanTransform("Can transform to [unit]", UniqueTarget.Unit),
 
@@ -811,6 +808,10 @@ enum class UniqueType(
 
     ///////////////////////////////////////////// region 99 DEPRECATED AND REMOVED /////////////////////////////////////////////
 
+    @Deprecated("as of 4.8.9", ReplaceWith("All newly-trained [baseUnitFilter] units [cityFilter] receive the [Devout] promotion"), DeprecationLevel.ERROR)
+    UnitStartingActions("[baseUnitFilter] units built [cityFilter] can [action] [amount] extra times", UniqueTarget.Global, UniqueTarget.FollowerBelief),
+    @Deprecated("as of 4.8.5", ReplaceWith("Free [unit] appears <upon discovering [tech]>"), DeprecationLevel.ERROR)
+    ReceiveFreeUnitWhenDiscoveringTech("Receive free [unit] when you discover [tech]", UniqueTarget.Global),
     @Deprecated("as of 4.7.3", ReplaceWith("[+100]% unhappiness from the number of cities"), DeprecationLevel.ERROR)
     UnhappinessFromCitiesDoubled("Unhappiness from number of Cities doubled", UniqueTarget.Global),
     @Deprecated("as of 4.6.4", ReplaceWith("[+1] Sight <for [Embarked] units>\" OR \"[+1] Sight <when [Embarked]>"), DeprecationLevel.ERROR)

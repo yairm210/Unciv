@@ -31,6 +31,8 @@ class PolicyManager : IsPartOfGameInfoSerialization {
     internal val adoptedPolicies = HashSet<String>()
     var numberOfAdoptedPolicies = 0
 
+    var cultureOfLast8Turns = IntArray(8) { 0 }
+
     /** Indicates whether we should *check* if policy is adoptible, and if so open */
     var shouldOpenPolicyPicker = false
 
@@ -90,6 +92,7 @@ class PolicyManager : IsPartOfGameInfoSerialization {
         toReturn.freePolicies = freePolicies
         toReturn.shouldOpenPolicyPicker = shouldOpenPolicyPicker
         toReturn.storedCulture = storedCulture
+        toReturn.cultureOfLast8Turns = cultureOfLast8Turns.clone()
         return toReturn
     }
 
@@ -121,6 +124,7 @@ class PolicyManager : IsPartOfGameInfoSerialization {
 
     fun endTurn(culture: Int) {
         addCulture(culture)
+        addCurrentCultureToCultureOfLast8Turns(culture)
     }
 
     // from https://forums.civfanatics.com/threads/the-number-crunching-thread.389702/
@@ -249,6 +253,15 @@ class PolicyManager : IsPartOfGameInfoSerialization {
                 NotificationIcon.Culture
             )
         }
+    }
+
+    
+    fun getCultureFromGreatWriter(): Int {
+        return (cultureOfLast8Turns.sum() * civInfo.gameInfo.speed.cultureCostModifier).toInt()
+    }
+
+    private fun addCurrentCultureToCultureOfLast8Turns(culture: Int) {
+        cultureOfLast8Turns[civInfo.gameInfo.turns % 8] = culture
     }
 
     fun allPoliciesAdopted(checkEra: Boolean) =
