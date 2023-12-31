@@ -24,6 +24,7 @@ import com.unciv.models.ruleset.tile.Terrain
 import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.ruleset.unique.LocalUniqueCache
 import com.unciv.models.ruleset.unique.UniqueType
+import com.unciv.models.stats.Stats
 import com.unciv.ui.screens.worldscreen.unit.actions.UnitActions
 import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionsFromUniques
 import com.unciv.utils.Log
@@ -501,7 +502,7 @@ class WorkerAutomation(
      * This is a cheap guess on how helpful it might be to do work on this tile
      */
     fun getBasePriority(tile: Tile, unit: MapUnit): Float {
-        val unitSpecificPriority = 2 - tile.aerialDistanceTo(unit.getTile()).coerceAtMost(4)
+        val unitSpecificPriority = 2 - (tile.aerialDistanceTo(unit.getTile()) / 2.0f).coerceIn(0f, 2f)
         if (tileRankings.containsKey(tile)) 
             return tileRankings[tile]!!.tilePriority + unitSpecificPriority
         
@@ -645,7 +646,14 @@ class WorkerAutomation(
 
     private fun getImprovementRanking(tile: Tile, unit: MapUnit, improvementName: String, localUniqueCache: LocalUniqueCache): Float {
         val improvement = ruleSet.tileImprovements[improvementName]!!
-        val stats = tile.stats.getStatDiffForImprovement(improvement, civInfo, tile.getCity(), localUniqueCache)
+        var stats = Stats()
+        if (tile.getOwner() == unit.civ) 
+            stats = tile.stats.getStatDiffForImprovement(improvement, civInfo, tile.getCity(), localUniqueCache)
+        // We could expand to this tile in the future
+        else if (ruleSet.tileImprovements[improvementName]!!.hasUnique(UniqueType.CanBuildOutsideBorders) &&
+            tile.neighbors.any {it.getOwner() == unit.civ && it.owningCity != null && tile.aerialDistanceTo(it.owningCity!!.getCenterTile()) <= 3}) 
+            stats = tile.stats.getStatDiffForImprovement(improvement, civInfo, tile.getCity(), localUniqueCache).div(3f)
+
         var value = Automation.rankStatsValue(stats, unit.civ)
         // Calculate the bonus from gaining the resources, this isn't included in the stats above
         if (tile.resource != null && tile.tileResource.resourceType != ResourceType.Bonus) {
