@@ -39,11 +39,6 @@ class MapEditorGenerateTab(
     private val newTab = MapEditorNewMapTab(this)
     private val partialTab = MapEditorGenerateStepsTab(this)
 
-    // Since we allow generation components to be run repeatedly, it might surprise the user that
-    // the outcome stays the same when repeated - due to them operating on the same seed.
-    // So we change the seed behind the scenes if already used for a certain step...
-    private val seedUsedForStep = mutableSetOf<MapGeneratorSteps>()
-
     init {
         name = "Generate"
         top()
