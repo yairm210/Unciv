@@ -58,8 +58,6 @@ object ImageGetter {
     fun resetAtlases() {
         atlases.values.forEach { it.dispose() }
         atlases.clear()
-        atlas = TextureAtlas("game.atlas")
-        atlases["game"] = atlas
     }
 
     fun reloadImages() = setNewRuleset(ruleset)
@@ -68,11 +66,6 @@ object ImageGetter {
     fun setNewRuleset(ruleset: Ruleset) {
         ImageGetter.ruleset = ruleset
         textureRegionDrawables.clear()
-        // These are the drawables from the base game
-        for (region in atlas.regions) {
-            val drawable = TextureRegionDrawable(region)
-            textureRegionDrawables[region.name] = drawable
-        }
 
         // Load base (except game.atlas which is already loaded)
         loadModAtlases("", Gdx.files.internal(""))
