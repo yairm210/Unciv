@@ -3,6 +3,8 @@ package com.unciv.ui.screens.devconsole
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.models.ruleset.tile.TerrainType
+import com.unciv.models.ruleset.unique.Unique
+import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.stats.Stat
 
 internal fun String.toCliInput() = this.lowercase().replace(" ","-")
@@ -266,6 +268,17 @@ class ConsoleCivCommands : ConsoleCommandNode {
             val civ = console.getCivByName(params[0])
             civ.gameInfo.tileMap.values.asSequence()
                 .forEach { it.setExplored(civ, true) }
+            DevConsoleResponse.OK
+        },
+
+        "activatetrigger" to ConsoleAction { console, params ->
+            validateFormat("civ activatetrigger <civName> <\"trigger\">", params)
+            val civ = console.getCivByName(params[0])
+            val unique = Unique(params[1])
+            if (unique.type == null) throw ConsoleErrorException("Unrecognized trigger")
+            val tile = console.screen.mapHolder.selectedTile
+            val city = tile?.getCity()
+            UniqueTriggerActivation.triggerCivwideUnique(unique, civ, city, tile)
             DevConsoleResponse.OK
         }
     )
