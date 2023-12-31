@@ -1,24 +1,14 @@
-
-
-Fixed tests
-
 Added Tile Breakdown table, accessible by clicking on the stats in tile info table
 
 Solved rare pillage-related crash
 
-Most images are smoothed
+Added smoothing to vector images
 
-Construction icons are linearly interpolated, aka 'smoothed'
-
-game.png is no longer a special boy
-
-Console: Add "activate trigger" for civ!
-
-Console: Allow "-delimited strings
+Console:
+- Add activatetrigger command for civ!
+- Allow "-delimited strings
 
 'capture all capitals' victory accepts defeat of civs that did not found capitals
-
-Added console command to reveal entire map
 
 Map editor generation steps don't add multiple terrain features of the same type
 
