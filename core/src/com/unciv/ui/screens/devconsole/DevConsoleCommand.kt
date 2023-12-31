@@ -84,14 +84,14 @@ class ConsoleUnitCommands : ConsoleCommandNode {
             val baseUnit = console.gameInfo.ruleset.units.values.firstOrNull { it.name.toCliInput() == params[1] }
                 ?: throw ConsoleErrorException("Unknown unit")
             civ.units.placeUnitNearTile(selectedTile.position, baseUnit)
-            return@ConsoleAction DevConsoleResponse.OK
+            DevConsoleResponse.OK
         },
 
         "remove" to ConsoleAction { console, params ->
             validateFormat("unit remove", params)
             val unit = console.getSelectedUnit()
             unit.destroy()
-            return@ConsoleAction DevConsoleResponse.OK
+            DevConsoleResponse.OK
         },
 
         "addpromotion" to ConsoleAction { console, params ->
@@ -100,7 +100,7 @@ class ConsoleUnitCommands : ConsoleCommandNode {
             val promotion = console.gameInfo.ruleset.unitPromotions.values.firstOrNull { it.name.toCliInput() == params[0] }
                 ?: throw ConsoleErrorException("Unknown promotion")
             unit.promotions.addPromotion(promotion.name, true)
-            return@ConsoleAction DevConsoleResponse.OK
+            DevConsoleResponse.OK
         },
 
         "removepromotion" to ConsoleAction { console, params ->
@@ -112,7 +112,7 @@ class ConsoleUnitCommands : ConsoleCommandNode {
             unit.promotions.promotions.remove(promotion.name)
             unit.updateUniques()
             unit.updateVisibleTiles()
-            return@ConsoleAction DevConsoleResponse.OK
+            DevConsoleResponse.OK
         },
 
         "setmovement" to ConsoleAction { console, params ->
@@ -121,7 +121,7 @@ class ConsoleUnitCommands : ConsoleCommandNode {
             if (movement == null || movement < 0) throw ConsoleErrorException("Invalid number")
             val unit = console.getSelectedUnit()
             unit.currentMovement = movement
-            return@ConsoleAction DevConsoleResponse.OK
+            DevConsoleResponse.OK
         }
     )
 }
@@ -136,14 +136,14 @@ class ConsoleCityCommands : ConsoleCommandNode {
             if (selectedTile.isCityCenter())
                 throw ConsoleErrorException("Tile already contains a city center")
             civ.addCity(selectedTile.position)
-            return@ConsoleAction DevConsoleResponse.OK
+            DevConsoleResponse.OK
         },
 
         "remove" to ConsoleAction { console, params ->
             validateFormat("city remove", params)
             val city = console.getSelectedCity()
             city.destroyCity(overrideSafeties = true)
-            return@ConsoleAction DevConsoleResponse.OK
+            DevConsoleResponse.OK
         },
 
         "setpop" to ConsoleAction { console, params ->
@@ -152,7 +152,7 @@ class ConsoleCityCommands : ConsoleCommandNode {
             val newPop = console.getInt(params[0])
             if (newPop < 1) throw ConsoleErrorException("Population must be at least 1")
             city.population.setPopulation(newPop)
-            return@ConsoleAction DevConsoleResponse.OK
+            DevConsoleResponse.OK
         },
 
         "addtile" to ConsoleAction { console, params ->
@@ -163,7 +163,7 @@ class ConsoleCityCommands : ConsoleCommandNode {
                 throw ConsoleErrorException("Tile is not adjacent to any tile already owned by the city")
             if (selectedTile.isCityCenter()) throw ConsoleErrorException("Cannot tranfer city center")
             city.expansion.takeOwnership(selectedTile)
-            return@ConsoleAction DevConsoleResponse.OK
+            DevConsoleResponse.OK
         },
 
         "removetile" to ConsoleAction { console, params ->
@@ -171,7 +171,7 @@ class ConsoleCityCommands : ConsoleCommandNode {
             val selectedTile = console.getSelectedTile()
             val city = console.getSelectedCity()
             city.expansion.relinquishOwnership(selectedTile)
-            return@ConsoleAction DevConsoleResponse.OK
+            DevConsoleResponse.OK
         },
 
         "religion" to ConsoleAction { console, params ->
@@ -182,7 +182,7 @@ class ConsoleCityCommands : ConsoleCommandNode {
             val pressure = console.getInt(params[1])
             city.religion.addPressure(religion, pressure.coerceAtLeast(-city.religion.getPressures()[religion]))
             city.religion.updatePressureOnPopulationChange(0)
-            return@ConsoleAction DevConsoleResponse.OK
+            DevConsoleResponse.OK
         },
     )
 }
@@ -201,14 +201,14 @@ class ConsoleTileCommands: ConsoleCommandNode {
                 civ = console.getCivByName(params[1])
             }
             selectedTile.improvementFunctions.changeImprovement(improvement.name, civ)
-            return@ConsoleAction DevConsoleResponse.OK
+            DevConsoleResponse.OK
         },
 
         "removeimprovement" to ConsoleAction { console, params ->
             validateFormat("tile removeimprovement", params)
             val selectedTile = console.getSelectedTile()
             selectedTile.improvementFunctions.changeImprovement(null)
-            return@ConsoleAction DevConsoleResponse.OK
+            DevConsoleResponse.OK
         },
 
         "addfeature" to ConsoleAction { console, params ->
@@ -218,7 +218,7 @@ class ConsoleTileCommands: ConsoleCommandNode {
                 .firstOrNull { it.type == TerrainType.TerrainFeature && it.name.toCliInput() == params[0] }
                 ?: throw ConsoleErrorException("Unknown feature")
             selectedTile.addTerrainFeature(feature.name)
-            return@ConsoleAction DevConsoleResponse.OK
+            DevConsoleResponse.OK
         },
 
         "removefeature" to ConsoleAction { console, params ->
@@ -228,7 +228,7 @@ class ConsoleTileCommands: ConsoleCommandNode {
                 .firstOrNull { it.type == TerrainType.TerrainFeature && it.name.toCliInput() == params[0] }
                 ?: throw ConsoleErrorException("Unknown feature")
             selectedTile.removeTerrainFeature(feature.name)
-            return@ConsoleAction DevConsoleResponse.OK
+            DevConsoleResponse.OK
         }
     )
 }
@@ -258,6 +258,14 @@ class ConsoleCivCommands : ConsoleCommandNode {
             val playerType = PlayerType.values().firstOrNull { it.name.lowercase() == params[1].lowercase() }
                 ?: throw ConsoleErrorException("Invalid player type, valid options are 'ai' or 'human'")
             civ.playerType = playerType
+            DevConsoleResponse.OK
+        },
+
+        "revealmap" to ConsoleAction { console, params ->
+            validateFormat("civ revealmap <civName>", params)
+            val civ = console.getCivByName(params[0])
+            civ.gameInfo.tileMap.values.asSequence()
+                .forEach { it.setExplored(civ, true) }
             DevConsoleResponse.OK
         }
     )
