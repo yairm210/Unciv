@@ -14,10 +14,8 @@ import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
-import com.unciv.models.UnitActionType
 import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.UniqueType
-import com.unciv.ui.screens.worldscreen.unit.actions.UnitActions
 import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionsPillage
 import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionsUpgrade
 
@@ -379,7 +377,9 @@ object UnitAutomation {
         if (unit.getTile() != tileToPillage)
             unit.movement.moveToTile(tileToPillage)
 
-        UnitActions.invokeUnitAction(unit, UnitActionType.Pillage)
+        // We CANNOT use invokeUnitAction, since the default unit action contains a popup, which - when automated -
+        //  runs a UI action on a side thread leading to crash!
+        UnitActionsPillage.getPillageAction(unit, unit.currentTile)?.action?.invoke()
         return unit.currentMovement == 0f
     }
 
