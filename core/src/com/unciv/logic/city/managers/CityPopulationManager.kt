@@ -104,6 +104,12 @@ class CityPopulationManager : IsPartOfGameInfoSerialization {
         val foodNeededToGrow = getFoodToNextPopulation()
         if (foodStored < foodNeededToGrow) return
 
+        // Check for Avoid Growth, and set to amount needed as the cap, but don't grow
+        if (city.avoidGrowth) {
+            foodStored = foodNeededToGrow
+            return
+        }
+
         // What if the stores are already over foodNeededToGrow but NullifiesGrowth is in effect?
         // We could simply test food==0 - but this way NullifiesStat(food) will still allow growth:
         if (city.getMatchingUniques(UniqueType.NullifiesGrowth).any())
