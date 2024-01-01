@@ -420,7 +420,7 @@ class MapParametersTable(
         addSlider("Rare features richness", {mapParameters.rareFeaturesRichness}, 0f, 0.5f)
         { mapParameters.rareFeaturesRichness = it }
 
-        addSlider("Max Coast extension", {mapParameters.maxCoastExtension.toFloat()}, 0f, 5f)
+        addSlider("Max Coast extension", {mapParameters.maxCoastExtension.toFloat()}, 1f, 5f)
         { mapParameters.maxCoastExtension = it.toInt() }.apply { stepSize = 1f }
 
         addSlider("Biome areas extension", {mapParameters.tilesPerBiomeArea.toFloat()}, 1f, 15f)
