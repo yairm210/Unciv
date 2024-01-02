@@ -565,6 +565,8 @@ class WorkerAutomation(
             }
         }
 
+        // A better tile than this unit can build might have been stored in the cache
+        if (rank.bestImprovement == null || !unit.canBuildImprovement(rank.bestImprovement!!, tile)) return -100f
         return rank.improvementPriority!!
     }
 
