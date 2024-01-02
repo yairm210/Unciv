@@ -152,7 +152,9 @@ object NextTurnAutomation {
             return value
         
         // The more we have invested into the city-state the more the alliance is worth
-        val ourInfluence = cityState.getDiplomacyManager(civInfo).getInfluence().toInt()
+        val ourInfluence = if (civInfo.knows(cityState)) 
+            cityState.getDiplomacyManager(civInfo).getInfluence().toInt()
+        else 0
         value += ourInfluence / 10
 
         if (civInfo.gold < 100 && ourInfluence < 30) {
