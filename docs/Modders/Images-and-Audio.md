@@ -3,7 +3,8 @@
 ## Images and the texture atlas
 
 Images need to be 'packed' before the game can use them. This preparation step needs to happen only once (as long as the original graphics are not changed).
-The result one ore more a pairs of files - a texture in [png format](https://en.wikipedia.org/wiki/PNG) and a corresponding [atlas](https://en.wikipedia.org/wiki/Texture_atlas) file, the default such pair is named `game.png`/`game.atlas`.
+The result one ore more a pairs of files - a texture in [png format](https://en.wikipedia.org/wiki/PNG) and a corresponding [atlas](https://en.wikipedia.org/wiki/Texture_atlas) file.
+(the default such pair is named `game.png`/`game.atlas` ???)
 For your players, the individual images aren't important - only the combined images actually register to the game, so you need to include them in your repository and keep them up to date.
 We still recommend including the originals in a mod, so other developers running from source can access them.
 With original images included, you can use a development environment using git, have it linked to your repository, while using a symlink to allow Unciv to see the mod - and pack your atlas for you on every launch.
@@ -33,7 +34,7 @@ The texture packers built into Unciv will look for a `TexturePacker.settings` fi
 With this file you can tune the packer - e.g. control pixel interpolation filters.
 It is a json of a [Gdx TexturePacker.Settings](https://libgdx.com/wiki/tools/texture-packer#settings) instance.
 The default settings are as shown in the Gdx documentation linked above if you do supply a settings file, but without such a file, some fields have different defaults:
-- `maxWidth`, `maxWidth`: 2048
+- `maxWidth`, `maxHeight`: 2048
 - `fast`: true
 - `paddingX`, `paddingY`: 8
 - `duplicatePadding`: true
@@ -41,8 +42,8 @@ The default settings are as shown in the Gdx documentation linked above if you d
 
 ### Texture atlas encoding
 
-Due to some circumstances, please make sure names and paths that will be mapped in an atlas use **only ascii**. Not all parts of the loader enforce strict UTF-8 usage, sorry.
-Symptoms: mod works on a Chinese Windows box but not on a western one or vice-versa, or mod works on a Chinese Windows box but not a Chinese Linux box or vice-versa, or mod works on a Chinese Windows box with default settings but not on the same box with "Use unicode UTF-8 for worldwide language support" turned on.
+Due to certain circumstances, please make sure names and paths that will be mapped in an atlas use **only ascii**. Not all parts of the loader enforce strict UTF-8 usage, sorry.
+Symptoms if you fail to heed this: mod works on a Chinese Windows box but not on a western one or vice-versa, or mod works on a Chinese Windows box but not a Chinese Linux box or vice-versa, or mod works on a Chinese Windows box with default settings but not on the same box with "Use unicode UTF-8 for worldwide language support" turned on.
 This does not technically apply to the atlas name itself when multiple atlases are used (the xyz part in "Images.xyz"), but we nevertheless recommend the same rule for consistency.
 
 ## Permanent audiovisual mods
