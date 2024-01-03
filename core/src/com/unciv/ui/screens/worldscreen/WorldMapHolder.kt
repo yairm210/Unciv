@@ -41,6 +41,7 @@ import com.unciv.ui.components.extensions.isShiftKeyPressed
 import com.unciv.ui.components.extensions.surroundWithCircle
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.input.ActivationTypes
+import com.unciv.ui.components.input.ClickableCircle
 import com.unciv.ui.components.input.KeyCharAndCode
 import com.unciv.ui.components.input.KeyboardBinding
 import com.unciv.ui.components.input.keyShortcuts
@@ -480,12 +481,14 @@ class WorldMapHolder(
             val unitGroup = UnitGroup(unit, 48f).surroundWithCircle(68f, resizeActor = false)
             unitGroup.circle.color = Color.GRAY.cpy().apply { a = 0.5f }
             if (unit.currentMovement == 0f) unitGroup.color.a = 0.66f
-            unitGroup.touchable = Touchable.enabled
-            unitGroup.onClick {
+            val clickableCircle = ClickableCircle(68f)
+            clickableCircle.touchable = Touchable.enabled
+            clickableCircle.onClick {
                 worldScreen.bottomUnitTable.selectUnit(unit, Gdx.input.isShiftKeyPressed())
                 worldScreen.shouldUpdate = true
                 removeUnitActionOverlay()
             }
+            unitGroup.addActor(clickableCircle)
             table.add(unitGroup)
         }
 
