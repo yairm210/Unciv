@@ -4,7 +4,7 @@
 
 Images need to be 'packed' before the game can use them. This preparation step needs to happen only once (as long as the original graphics are not changed).
 The result one ore more a pairs of files - a texture in [png format](https://en.wikipedia.org/wiki/PNG) and a corresponding [atlas](https://en.wikipedia.org/wiki/Texture_atlas) file.
-(the default such pair is named `game.png`/`game.atlas` ???)
+If you have a single `Images`folder, the default such pair is named `game.png`/`game.atlas`.
 For your players, the individual images aren't important - only the combined images actually register to the game, so you need to include them in your repository and keep them up to date.
 We still recommend including the originals in a mod, so other developers running from source can access them.
 With original images included, you can use a development environment using git, have it linked to your repository, while using a symlink to allow Unciv to see the mod - and pack your atlas for you on every launch.
@@ -19,13 +19,13 @@ If you're developing your mod on an Android version of Unciv (not recommended!) 
 
 ### Multiple texture atlases
 
-If your mod has lots of images (or large ones), the textures might 'spill' into additional texture files - 2048x2048 is the limit for a single texture pack. You will see a `game2.png`, possibly a `game3.üng` or more appear.
+If your mod has lots of images (or large ones), the textures might 'spill' into additional texture files - 2048x2048 is the limit for a single texture pack. You will see a `game2.png`, possibly a `game3.png` or more appear.
 This is not good for performance, which is why the base game controls which kinds of images go together into one texture(+atlas).
 This works for mods, too: Create not only one Images folder, but several, the additional ones named "Images.xyz", where xyz will become the filename of the additional texture file (So don't use both Images and Images.game - those will clash). Look at the Unciv base game to get a better idea how that works.
 To minimize texture swaps, try to group them by the situation where in the game they are needed. You can distibute by folder, but having the same subfolders under several "Images.xyz" and distributing the images between them will also work.
 
-**Discovery**: Only the `game.atlas` file is read by default, its contents control which texture (`.png`) files are read.
-For additional texture packs, our packer will output a `Atlases.json` (uppercase 'A') listing the additional ones.
+A file `Atlases.json` (uppercase 'A') in the mod root (not in `Images` or in `jsons`) controls which atlases to load, which in turn control which texture (`.png`) files are read.
+This file is automatically created by the built-in packer. Only the `game.atlas` file is read by default for backward compatibility.
 If you use external tools and multiple atlases, you will need to maintain this file yourself - it is a simple json array of strings, each a file name without the `.atlas` extension (saved as UTF-8 without byte order mark).
 
 ### Texture packer settings
@@ -38,7 +38,8 @@ The default settings are as shown in the Gdx documentation linked above if you d
 - `fast`: true
 - `paddingX`, `paddingY`: 8
 - `duplicatePadding`: true
-- `filterMin`, `filterMag`: MipMapLinearLinear
+- `filterMin`: MipMapLinearLinear
+- `filterMag`: MipMapLinearLinear unless the atlas name ends in `Icons`, then Linear.
 
 ### Texture atlas encoding
 
