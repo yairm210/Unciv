@@ -39,6 +39,7 @@ class RulesetValidator(val ruleset: Ruleset) {
         val lines = RulesetErrorList()
 
         // When not checking the entire ruleset, we can only really detect ruleset-invariant errors in uniques
+        addModOptionsErrors(lines)
         uniqueValidator.checkUniques(ruleset.globalUniques, lines, false, tryFixUnknownUniques)
         addUnitErrorsRulesetInvariant(lines, tryFixUnknownUniques)
         addTechErrorsRulesetInvariant(lines, tryFixUnknownUniques)
@@ -57,11 +58,12 @@ class RulesetValidator(val ruleset: Ruleset) {
     }
 
 
-    private fun getBaseRulesetErrorList(tryFixUnknownUniques: Boolean): RulesetErrorList{
+    private fun getBaseRulesetErrorList(tryFixUnknownUniques: Boolean): RulesetErrorList {
 
         uniqueValidator.populateFilteringUniqueHashsets()
 
         val lines = RulesetErrorList()
+        addModOptionsErrors(lines)
         uniqueValidator.checkUniques(ruleset.globalUniques, lines, true, tryFixUnknownUniques)
 
         addUnitErrorsBaseRuleset(lines, tryFixUnknownUniques)
@@ -81,7 +83,7 @@ class RulesetValidator(val ruleset: Ruleset) {
         addPromotionErrors(lines, tryFixUnknownUniques)
         addUnitTypeErrors(lines, tryFixUnknownUniques)
         addVictoryTypeErrors(lines)
-        addDifficutlyErrors(lines)
+        addDifficultyErrors(lines)
         addCityStateTypeErrors(tryFixUnknownUniques, lines)
 
         // Check for mod or Civ_V_GnK to avoid running the same test twice (~200ms for the builtin assets)
@@ -90,6 +92,22 @@ class RulesetValidator(val ruleset: Ruleset) {
         }
 
         return lines
+    }
+
+    private fun addModOptionsErrors(lines: RulesetErrorList) {
+        if (ruleset.name.isBlank()) return // These tests don't make sense for combined rulesets
+
+        val audioVisualUniqueTypes = setOf(
+            UniqueType.ModIsAudioVisual,
+            UniqueType.ModIsAudioVisualOnly,
+            UniqueType.ModIsNotAudioVisual
+        )
+        if (ruleset.modOptions.uniqueObjects.count { it.type in audioVisualUniqueTypes } > 1)
+            lines += "A mod should only specify one of the 'can/should/cannot be used as permanent audiovisual mod' options."
+        if (!ruleset.modOptions.isBaseRuleset) return
+        for (unique in ruleset.modOptions.getMatchingUniques(UniqueType.ModRequires)) {
+            lines += "Mod option '${unique.text}' is invalid for a base ruleset."
+        }
     }
 
     private fun addCityStateTypeErrors(
@@ -109,7 +127,7 @@ class RulesetValidator(val ruleset: Ruleset) {
         }
     }
 
-    private fun addDifficutlyErrors(lines: RulesetErrorList) {
+    private fun addDifficultyErrors(lines: RulesetErrorList) {
         for (difficulty in ruleset.difficulties.values) {
             for (unitName in difficulty.aiCityStateBonusStartingUnits + difficulty.aiMajorCivBonusStartingUnits + difficulty.playerBonusStartingUnits)
                 if (unitName != Constants.eraSpecificUnit && !ruleset.units.containsKey(unitName))
@@ -179,6 +197,7 @@ class RulesetValidator(val ruleset: Ruleset) {
         tryFixUnknownUniques: Boolean
     ) {
         for (reward in ruleset.ruinRewards.values) {
+            @Suppress("KotlinConstantConditions") // data is read from json, so any assumptions may be wrong
             if (reward.weight < 0) lines += "${reward.name} has a negative weight, which is not allowed!"
             for (difficulty in reward.excludedDifficulties)
                 if (!ruleset.difficulties.containsKey(difficulty))
@@ -439,7 +458,7 @@ class RulesetValidator(val ruleset: Ruleset) {
 
             for (requiredTech: String in building.requiredTechs())
                 if (!ruleset.technologies.containsKey(requiredTech))
-                    lines += "${building.name} requires tech ${requiredTech} which does not exist!"
+                    lines += "${building.name} requires tech $requiredTech which does not exist!"
             for (specialistName in building.specialistSlots.keys)
                 if (!ruleset.specialists.containsKey(specialistName))
                     lines += "${building.name} provides specialist $specialistName which does not exist!"
@@ -650,23 +669,18 @@ class RulesetValidator(val ruleset: Ruleset) {
     private fun checkUnitRulesetInvariant(unit: BaseUnit, lines: RulesetErrorList) {
         if (unit.upgradesTo == unit.name || (unit.upgradesTo != null && unit.upgradesTo == unit.replaces))
             lines += "${unit.name} upgrades to itself!"
-        if (!unit.isCivilian() && unit.strength == 0)
+        if (unit.isMilitary() && unit.strength == 0)  // Should only match ranged units with 0 strength
             lines += "${unit.name} is a military unit but has no assigned strength!"
-        if (unit.isRanged() && unit.rangedStrength == 0 && !unit.hasUnique(UniqueType.CannotAttack))
-            lines += "${unit.name} is a ranged unit but has no assigned rangedStrength!"
     }
 
     /** Collects all RulesetSpecific checks for a BaseUnit */
     private fun checkUnitRulesetSpecific(unit: BaseUnit, lines: RulesetErrorList) {
         for (requiredTech: String in unit.requiredTechs())
             if (!ruleset.technologies.containsKey(requiredTech))
-                lines += "${unit.name} requires tech ${requiredTech} which does not exist!"
+                lines += "${unit.name} requires tech $requiredTech which does not exist!"
         for (obsoleteTech: String in unit.techsAtWhichNoLongerAvailable())
             if (!ruleset.technologies.containsKey(obsoleteTech))
                 lines += "${unit.name} obsoletes at tech ${obsoleteTech} which does not exist!"
-        for (obsoleteTech: String in unit.techsAtWhichAutoUpgradeInProduction())
-            if (!ruleset.technologies.containsKey(obsoleteTech))
-                lines += "${unit.name} upgrades at tech ${obsoleteTech} which does not exist!"
         if (unit.upgradesTo != null && !ruleset.units.containsKey(unit.upgradesTo!!))
             lines += "${unit.name} upgrades to unit ${unit.upgradesTo} which does not exist!"
 

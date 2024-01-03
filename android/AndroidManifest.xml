@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    package="com.unciv.app" >
+    xmlns:tools="http://schemas.android.com/tools">
 
     <uses-sdk/>
 
@@ -10,6 +9,7 @@
     <!-- See https://developer.android.com/training/tv/start/start -->
     <uses-feature android:name="android.software.leanback" android:required="false" />
     <uses-feature android:name="android.hardware.touchscreen" android:required="false" />
+    <uses-feature android:glEsVersion="0x00020000" android:required="false" />
 
     <!--
         Known Lint warnings:

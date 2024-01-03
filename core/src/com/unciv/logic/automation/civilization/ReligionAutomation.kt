@@ -130,11 +130,10 @@ object ReligionAutomation {
         if (validCitiesToBuy.isEmpty()) return
 
         val citiesWithBonusCharges = validCitiesToBuy.filter { city ->
-            city.getMatchingUniques(UniqueType.UnitStartingActions).any { it.params[2] == Constants.spreadReligion }
-                || city.getMatchingUniques(UniqueType.UnitStartingPromotions).any {
-                    val promotionName = it.params[2]
-                    val promotion = city.getRuleset().unitPromotions[promotionName] ?: return@any false
-                    promotion.hasUnique(UniqueType.CanSpreadReligion)
+            city.getMatchingUniques(UniqueType.UnitStartingPromotions).any {
+                val promotionName = it.params[2]
+                val promotion = city.getRuleset().unitPromotions[promotionName] ?: return@any false
+                promotion.hasUnique(UniqueType.CanSpreadReligion)
             }
         }
         val holyCity = validCitiesToBuy.firstOrNull { it.isHolyCityOf(civInfo.religionManager.religion!!.name) }
@@ -422,7 +421,8 @@ object ReligionAutomation {
             .filterNot { civInfo.gameInfo.religions.values.map { religion -> religion.name }.contains(it) }
         val favoredReligion = civInfo.nation.favoredReligion
         val religionIcon =
-            if (favoredReligion != null && favoredReligion in availableReligionIcons) favoredReligion
+            if (favoredReligion != null && favoredReligion in availableReligionIcons
+                && (1..10).random() <= 5) favoredReligion
             else availableReligionIcons.randomOrNull()
                 ?: return // Wait what? How did we pass the checking when using a great prophet but not this?
 

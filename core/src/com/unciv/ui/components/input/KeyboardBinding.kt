@@ -26,6 +26,7 @@ enum class KeyboardBinding(
     Multiplayer(Category.MainMenu),  // Name disambiguation maybe soon, not yet necessary
     MapEditor(Category.MainMenu, "Map editor", KeyCharAndCode('E')),
     ModManager(Category.MainMenu, "Mods", KeyCharAndCode('D')),
+    Scenarios(Category.MainMenu, "Scenarios", KeyCharAndCode('S')),
     MainMenuOptions(Category.MainMenu, "Options", KeyCharAndCode('O')),  // Separate binding from World where it's Ctrl-O default
 
     // Worldscreen

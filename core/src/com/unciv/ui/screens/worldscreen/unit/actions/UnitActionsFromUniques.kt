@@ -274,12 +274,11 @@ object UnitActionsFromUniques {
         val unitCivBestRoad = unit.civ.tech.getBestRoadAvailable()
         if (unitCivBestRoad == RoadStatus.None) return@sequence
 
-        var unitCanBuildRoad = false
         val uniquesToCheck = UnitActionModifiers.getUsableUnitActionUniques(unit, UniqueType.BuildImprovements)
 
         // If a unit has terrainFilter "Land" or improvementFilter "All", then we may proceed.
         // If a unit only had improvement filter "Road" or "Railroad", then we need to also check if that tech is unlocked
-        unitCanBuildRoad = uniquesToCheck.any { it.params[0] == "Land" || it.params[0] == "All" }
+        val unitCanBuildRoad = uniquesToCheck.any { it.params[0] == "Land" || it.params[0] == "All" }
             || uniquesToCheck.any {it.params[0] == "Road" } && (unitCivBestRoad == RoadStatus.Road || unitCivBestRoad == RoadStatus.Railroad)
             || uniquesToCheck.any {it.params[0] == "Railroad"} && (unitCivBestRoad == RoadStatus.Railroad)
 
@@ -389,7 +388,7 @@ object UnitActionsFromUniques {
         ))
     }
 
-    private fun getRepairTurns(unit: MapUnit): Int {
+    fun getRepairTurns(unit: MapUnit): Int {
         val tile = unit.currentTile
         if (!tile.isPillaged()) return 0
         if (tile.improvementInProgress == Constants.repair) return tile.turnsToImprovement

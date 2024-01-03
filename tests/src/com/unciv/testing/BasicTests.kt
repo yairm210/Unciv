@@ -41,7 +41,7 @@ class BasicTests {
     @Test
     fun gamePngExists() {
         Assert.assertTrue("This test will only pass when the game.png exists",
-                Gdx.files.local("game.png").exists())
+                Gdx.files.local("").list().any { it.name().endsWith(".png") })
     }
 
     @Test

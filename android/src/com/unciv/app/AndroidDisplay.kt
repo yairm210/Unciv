@@ -1,6 +1,5 @@
 package com.unciv.app
 
-import android.app.Activity
 import android.content.pm.ActivityInfo
 import android.os.Build
 import android.view.Display
@@ -8,6 +7,7 @@ import android.view.Display.Mode
 import android.view.View
 import android.view.WindowManager
 import androidx.annotation.RequiresApi
+import com.badlogic.gdx.backends.android.AndroidApplication
 import com.unciv.models.metadata.GameSettings
 import com.unciv.models.translations.tr
 import com.unciv.utils.PlatformDisplay
@@ -15,7 +15,7 @@ import com.unciv.utils.ScreenMode
 import com.unciv.utils.ScreenOrientation
 
 
-class AndroidDisplay(private val activity: Activity) : PlatformDisplay {
+class AndroidDisplay(private val activity: AndroidApplication) : PlatformDisplay {
 
     private var display: Display? = null
     private var displayModes: HashMap<Int, ScreenMode> = hashMapOf()

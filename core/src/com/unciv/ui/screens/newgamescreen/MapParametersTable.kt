@@ -68,6 +68,9 @@ class MapParametersTable(
     // overrides nor is a Widget a data class. Seems to work anyway.
     private val advancedSliders = HashMap<UncivSlider, ()->Float>()
 
+    // used only in map editor (forMapEditor == true)
+    var randomizeSeed = true
+
     init {
         update()
     }
@@ -386,6 +389,17 @@ class MapParametersTable(
                 table.add(button).colspan(2).padTop(10f).row()
         }
 
+        fun addCheckBox(text: String, initialState: Boolean, action: ((Boolean) -> Unit)) {
+            val checkbox = text.toCheckBox(initialState){
+                action(it)
+            }
+            table.add(checkbox).colspan(2).row()
+        }
+        if (forMapEditor) {
+            addCheckBox("Randomize seed", true) {
+                randomizeSeed = it
+            }
+        }
         addSlider("Map Elevation", {mapParameters.elevationExponent}, 0.6f, 0.8f)
         { mapParameters.elevationExponent = it }
 
@@ -406,7 +420,7 @@ class MapParametersTable(
         addSlider("Rare features richness", {mapParameters.rareFeaturesRichness}, 0f, 0.5f)
         { mapParameters.rareFeaturesRichness = it }
 
-        addSlider("Max Coast extension", {mapParameters.maxCoastExtension.toFloat()}, 0f, 5f)
+        addSlider("Max Coast extension", {mapParameters.maxCoastExtension.toFloat()}, 1f, 5f)
         { mapParameters.maxCoastExtension = it.toInt() }.apply { stepSize = 1f }
 
         addSlider("Biome areas extension", {mapParameters.tilesPerBiomeArea.toFloat()}, 1f, 15f)

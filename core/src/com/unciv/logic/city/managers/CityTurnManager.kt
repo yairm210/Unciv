@@ -32,7 +32,7 @@ class CityTurnManager(val city: City) {
         nextTurnFlags()
 
         if (city.isPuppet) {
-            city.cityAIFocus = CityFocus.GoldFocus
+            city.setCityFocus(CityFocus.GoldFocus)
             city.reassignAllPopulation()
         } else if (city.updateCitizens) {
             city.reassignPopulation()  // includes cityStats.update

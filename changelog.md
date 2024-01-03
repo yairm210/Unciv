@@ -1,3 +1,83 @@
+## 4.9.15
+
+Added Tile Breakdown table, accessible by clicking on the stats in tile info table
+
+Solved rare pillage-related crash
+
+Added smoothing to vector images
+
+Console:
+- Add activatetrigger command for civ!
+- Allow "-delimited strings
+
+'capture all capitals' victory accepts defeat of civs that did not found capitals
+
+Map editor generation steps don't add multiple terrain features of the same type
+
+Worker remove feature far away from cities fix  - By tuvus
+
+## 4.9.14
+
+Fixed Scenario crashes
+
+Updating server URL allows checking connection immediately
+
+New Citizen Focus Options - by Itanasi
+
+By tuvus:
+- Worker AI short distance priority fix
+- AI focuses city-state gold gifting
+
+By SeventhM:
+- Spawn multiple great people if eligible
+- Initial Great Writer functionality
+
+## 4.9.13
+
+Religion button respects unique "hidden from users" modifier
+
+Trigger 'capture city' as a unit trigger
+
+By tuvus:
+- Worker AI Rework
+- AI doesn't counteroffer and request a treaty on the same turn
+- Civs now have a 50% chance of picking their favored religion
+
+By SeventhM:
+- Fix stat on tile uniques doubling on improvement tiles
+- Avoid crash if "Only available" unique in policy branch has 2 or more params
+- Allow for improvement removal "improvements"
+
+Randomize seed checkbox  - By remdu
+
+## 4.9.12
+
+Added experimental scenarios!
+
+Fixed Android status bar not disappearing ("immersion mode")
+
+Console: added 'set player type' command, for scenario setup
+
+Fix ShadowedLabel - By SomeTroglodyte
+
+## 4.9.11
+
+Fixed tech dependency related crash
+
+Unit by default not selected on turn start
+
+Added 'upon turn end' trigger
+
+By SomeTroglodyte:
+- City-state bonuses respect 'hidden from users' modifier
+- (UI) Politics overview diagram: Add legend popup
+
+By tuvus:
+- Added AutoPlay until end setting
+- if all players are defeated, one player will be processed
+
+Enable Domination to Capture All Capitals - By itanasi
+
 ## 4.9.10
 
 Add remove unit promotion unique  - By PLynx01

@@ -320,10 +320,6 @@ class TechManager : IsPartOfGameInfoSerialization {
 
         obsoleteOldUnits(techName)
 
-        for (unique in civInfo.getMatchingUniques(UniqueType.ReceiveFreeUnitWhenDiscoveringTech)) {
-            if (unique.params[1] != techName) continue
-            civInfo.units.addUnit(unique.params[0])
-        }
         for (unique in civInfo.getMatchingUniques(UniqueType.MayanGainGreatPerson)) {
             if (unique.params[1] != techName) continue
             civInfo.addNotification("You have unlocked [The Long Count]!",

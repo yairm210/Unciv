@@ -49,7 +49,10 @@ object UniqueTriggerActivation {
 
         if (!unique.conditionalsApply(civInfo, city)) return false
 
-        val chosenCity = city ?: civInfo.cities.firstOrNull { it.isCapital() }
+        val chosenCity = city ?:
+            tile?.getCity() ?:
+            civInfo.cities.firstOrNull { it.isCapital() }
+
         val tileBasedRandom =
             if (tile != null) Random(tile.position.toString().hashCode())
             else Random(-550) // Very random indeed

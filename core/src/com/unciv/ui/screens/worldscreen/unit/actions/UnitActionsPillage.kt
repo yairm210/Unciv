@@ -1,6 +1,7 @@
 package com.unciv.ui.screens.worldscreen.unit.actions
 
 import com.unciv.GUI
+import com.unciv.UncivGame
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.map.mapunit.MapUnit
@@ -18,7 +19,7 @@ object UnitActionsPillage {
     fun getPillageActions(unit: MapUnit, tile: Tile): List<UnitAction> {
         val pillageAction = getPillageAction(unit, tile)
             ?: return listOf()
-        if (pillageAction.action == null || unit.civ.isAI())
+        if (pillageAction.action == null || unit.civ.isAI() || (unit.civ.isHuman() && UncivGame.Current.settings.autoPlay.isAutoPlaying()))
             return listOf(pillageAction)
         else return listOf(UnitAction(UnitActionType.Pillage, pillageAction.title) {
             val pillageText = "Are you sure you want to pillage this [${tile.getImprovementToPillageName()!!}]?"

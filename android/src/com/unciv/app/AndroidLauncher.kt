@@ -33,13 +33,12 @@ open class AndroidLauncher : AndroidApplication() {
         UncivFiles.saverLoader = AndroidSaverLoader(this)
         UncivFiles.preferExternalStorage = true
 
-        val config = AndroidApplicationConfiguration().apply { useImmersiveMode = false }
         val settings = UncivFiles.getSettingsForPlatformLaunchers(filesDir.path)
+        val config = AndroidApplicationConfiguration().apply { useImmersiveMode = settings.androidHideSystemUi }
 
         // Setup orientation, immersive mode and display cutout
         displayImpl.setOrientation(settings.displayOrientation)
         displayImpl.setCutoutFromUiThread(settings.androidCutout)
-        displayImpl.setSystemUiVisibilityFromUiThread(settings.androidHideSystemUi)
 
         // Create notification channels for Multiplayer notificator
         MultiplayerTurnCheckWorker.createNotificationChannels(applicationContext)
