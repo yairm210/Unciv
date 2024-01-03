@@ -655,7 +655,7 @@ class WorldMapHolder(
                 val city = unitTable.selectedCity!!
                 updateBombardableTilesForSelectedCity(city)
                 // We still want to show road paths to the selected city if they are present
-                if (unitTable.selectedUnitIsConnectingRoad){
+                if (unitTable.selectedUnitIsConnectingRoad) {
                     updateTilesForSelectedUnit(unitTable.selectedUnits[0])
                 }
             }
@@ -715,11 +715,10 @@ class WorldMapHolder(
 
         // Z-Layer: 0
         // Highlight suitable tiles in road connecting mode
-        if (worldScreen.bottomUnitTable.selectedUnitIsConnectingRoad){
+        if (worldScreen.bottomUnitTable.selectedUnitIsConnectingRoad) {
             val validTiles = unit.civ.gameInfo.tileMap.tileList.filter {
                 MapPathing.isValidRoadPathTile(unit, it)
             }
-            unit.civ.gameInfo.civilizations
             val connectRoadTileOverlayColor = Color.RED
             for (tile in validTiles)  {
                 tileGroups[tile]!!.layerOverlay.showHighlight(connectRoadTileOverlayColor, 0.3f)
@@ -796,10 +795,10 @@ class WorldMapHolder(
             if (currTileIndex != -1) {
                 val futureTiles = unit.automatedRoadConnectionPath!!.filterIndexed { index, _ ->
                     index > currTileIndex
-                }.map{tilePos ->
+                }.map { tilePos ->
                     tileMap[tilePos]
                 }
-                for (tile in futureTiles){
+                for (tile in futureTiles) {
                     tileGroups[tile]!!.layerOverlay.showHighlight(Color.ORANGE, if (UncivGame.Current.settings.singleTapMove) 0.7f else 0.3f)
                 }
             }
