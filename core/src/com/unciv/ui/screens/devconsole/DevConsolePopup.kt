@@ -88,7 +88,7 @@ class DevConsolePopup(val screen: WorldScreen) : Popup(screen) {
         return commandRoot.autocomplete(params) ?: ""
     }
 
-    internal fun getCivByName(name: String) = gameInfo.civilizations.firstOrNull { it.civName.toCliInput() == name }
+    internal fun getCivByName(name: String) = gameInfo.civilizations.firstOrNull { it.civName.toCliInput() == name.toCliInput() }
         ?: throw ConsoleErrorException("Unknown civ: $name")
 
     internal fun getSelectedTile() = screen.mapHolder.selectedTile ?: throw ConsoleErrorException("Select tile")
@@ -96,7 +96,7 @@ class DevConsolePopup(val screen: WorldScreen) : Popup(screen) {
     /** Gets city by selected tile */
     internal fun getSelectedCity() = getSelectedTile().getCity() ?: throw ConsoleErrorException("Select tile belonging to city")
 
-    internal fun getCity(cityName:String) = gameInfo.getCities().firstOrNull { it.name.toCliInput() == cityName }
+    internal fun getCity(cityName:String) = gameInfo.getCities().firstOrNull { it.name.toCliInput() == cityName.toCliInput() }
         ?: throw ConsoleErrorException("Unknown city: $cityName")
 
     internal fun getSelectedUnit(): MapUnit {
