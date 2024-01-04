@@ -10,24 +10,24 @@ import com.unciv.models.stats.Stat
 internal fun String.toCliInput() = this.lowercase().replace(" ","-")
 
 /** Returns the string to *add* to the existing command */
-fun getAutocompleteString(lastWord:String, allOptions:Iterable<String>):String? {
+fun getAutocompleteString(lastWord: String, allOptions: Collection<String>):String? {
     val matchingOptions = allOptions.filter { it.toCliInput().startsWith(lastWord.toCliInput()) }
     if (matchingOptions.isEmpty()) return null
-    if (matchingOptions.size == 1) return matchingOptions.first().removePrefix(lastWord)
+    if (matchingOptions.size == 1) return matchingOptions.first().drop(lastWord.length)
 
     val firstOption = matchingOptions.first()
     for ((index, char) in firstOption.withIndex()) {
         if (matchingOptions.any { it.lastIndex < index } ||
             matchingOptions.any { it[index] != char })
-            return firstOption.substring(0, index).removePrefix(lastWord)
+            return firstOption.substring(0, index).drop(lastWord.length)
     }
-    return firstOption.removePrefix(lastWord)
+    return firstOption.drop(lastWord.length)
 }
 
 interface ConsoleCommand {
     fun handle(console: DevConsolePopup, params: List<String>): DevConsoleResponse
     /** Returns the string to *add* to the existing command */
-    fun autocomplete(params: List<String>): String? = ""
+    fun autocomplete(console: DevConsolePopup, params: List<String>): String? = ""
 }
 
 class ConsoleHintException(val hint:String):Exception()
@@ -44,6 +44,36 @@ class ConsoleAction(val format: String, val action: (console: DevConsolePopup, p
             DevConsoleResponse.error(errorException.error)
         }
     }
+
+    override fun autocomplete(console: DevConsolePopup, params: List<String>): String? {
+        if (params.isEmpty()) return null
+
+        val formatParams = format.split(" ").drop(2).map {
+            it.removeSurrounding("<",">").removeSurrounding("[","]").removeSurrounding("\"")
+        }
+        if (formatParams.size < params.size) return null
+        val formatParam = formatParams[params.lastIndex]
+
+        val lastParam = params.last()
+        val options = when (formatParam) {
+            "civName" -> console.gameInfo.civilizations.map { it.civName }
+            "unitName" -> console.gameInfo.ruleset.units.keys
+            "promotionName" -> console.gameInfo.ruleset.unitPromotions.keys
+            "improvementName" -> console.gameInfo.ruleset.tileImprovements.keys
+            "featureName" -> console.gameInfo.ruleset.terrains.values.filter { it.type == TerrainType.TerrainFeature }.map { it.name }
+            "stat" -> Stat.names()
+            else -> listOf()
+        }
+        return getAutocompleteString(lastParam, options)
+    }
+
+    fun validateFormat(format: String, params:List<String>){
+        val allParams = format.split(" ")
+        val requiredParamsAmount = allParams.count { it.startsWith('<') }
+        val optionalParamsAmount = allParams.count { it.startsWith('[') }
+        if (params.size < requiredParamsAmount || params.size > requiredParamsAmount + optionalParamsAmount)
+            throw ConsoleHintException("Format: $format")
+    }
 }
 
 interface ConsoleCommandNode : ConsoleCommand {
@@ -57,10 +87,10 @@ interface ConsoleCommandNode : ConsoleCommand {
         return handler.handle(console, params.drop(1))
     }
 
-    override fun autocomplete(params: List<String>): String? {
+    override fun autocomplete(console: DevConsolePopup, params: List<String>): String? {
         if (params.isEmpty()) return null
         val firstParam = params[0]
-        if (firstParam in subcommands) return subcommands[firstParam]!!.autocomplete(params.drop(1))
+        if (firstParam in subcommands) return subcommands[firstParam]!!.autocomplete(console, params.drop(1))
         return getAutocompleteString(firstParam, subcommands.keys)
     }
 }
@@ -72,15 +102,6 @@ class ConsoleCommandRoot : ConsoleCommandNode {
         "tile" to ConsoleTileCommands(),
         "civ" to ConsoleCivCommands()
     )
-}
-
-
-fun validateFormat(format: String, params:List<String>){
-    val allParams = format.split(" ")
-    val requiredParamsAmount = allParams.count { it.startsWith('<') }
-    val optionalParamsAmount = allParams.count { it.startsWith('[') }
-    if (params.size < requiredParamsAmount || params.size > requiredParamsAmount + optionalParamsAmount)
-        throw ConsoleHintException("Format: $format")
 }
 
 class ConsoleUnitCommands : ConsoleCommandNode {
@@ -269,13 +290,4 @@ class ConsoleCivCommands : ConsoleCommandNode {
             DevConsoleResponse.OK
         }
     )
-
-    override fun autocomplete(params: List<String>): String? {
-        if (params.isNotEmpty())
-            when (params[0]){
-                "addstat" -> if (params.size == 2)
-                    return getAutocompleteString(params[1], Stat.names())
-            }
-        return super.autocomplete(params)
-    }
 }

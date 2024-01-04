@@ -85,7 +85,9 @@ class DevConsolePopup(val screen: WorldScreen) : Popup(screen) {
 
     private fun getAutocomplete(): String {
         val params = getParams(textField.text)
-        return commandRoot.autocomplete(params) ?: ""
+        val result = commandRoot.autocomplete(this, params)
+        if (result.isNullOrEmpty()) return ""
+        return "$result "
     }
 
     internal fun getCivByName(name: String) = gameInfo.civilizations.firstOrNull { it.civName.toCliInput() == name.toCliInput() }
