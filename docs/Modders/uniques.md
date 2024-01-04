@@ -1368,6 +1368,9 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Unit
 
+??? example  "Can be earned through combat"
+	Applicable to: Unit
+
 ??? example  "Invisible to others"
 	Applicable to: Unit
 

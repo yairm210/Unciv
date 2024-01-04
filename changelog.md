@@ -1,19 +1,19 @@
 ## 4.9.16
 
-By SeventhM:
-- Change the icons from some units/buildings 
-- Add unique to allow for generalized great generals 
+Console: civ/city names better matching
 
-Show carried hammers from mid turn obsolete units  - By soggerr
+By SeventhM:
+- Change the icons from some units/buildings
+- Add unique to allow for generalized great generals
+
+Show carried production from mid-turn obsoleted units  - By soggerr
 
 By tuvus:
-- Fixed crash when a worker tries to build a cached improvement that it can't build 
-- valueCityStateAlliance no longer causes a crash when the city-state has not been met 
+- Fixed crash when a worker tries to build a cached improvement it can't build
+- Fixed crash evaluating alliance with unmet city-state
 
 By SomeTroglodyte:
-- Wiki: Texture packing updated 
-- City-stationed unit icons get a circular touchable area 
-- Minor ImprovementPicker linting 
+- City-stationed unit icons get circular touchable area
 
 set minimum max coast extension to 1  - By remdu
 
