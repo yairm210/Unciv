@@ -28,6 +28,7 @@ import com.unciv.ui.components.extensions.equalizeColumns
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
 import com.unciv.ui.components.fonts.Fonts
+import com.unciv.ui.components.input.ClickableCircle
 import com.unciv.ui.components.input.onActivation
 import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.widgets.AutoScrollPane
@@ -533,19 +534,6 @@ class GlobalPoliticsOverviewTable(
             line.color = color
             add(line).size(lineLength, width).padTop(5f)
             add(ShadowedLabel(text)).padLeft(5f).padTop(10f).row()
-        }
-    }
-
-    /** An Image Actor does not respect alpha for its hit area, it's always square, but we want a clickable _circle_ */
-    private class ClickableCircle(size: Float) : Group() {
-        val center = Vector2(size / 2, size / 2)
-        val maxDst2 = size * size / 4 // squared radius
-        init {
-            touchable = Touchable.enabled
-            setSize(size, size)
-        }
-        override fun hit(x: Float, y: Float, touchable: Boolean): Actor? {
-            return if (center.dst2(x, y) < maxDst2) this else null
         }
     }
 
