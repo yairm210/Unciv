@@ -221,6 +221,7 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
             UniqueType.ModifierHiddenFromUsers -> true  // allowed to be attached to any Unique to hide it, no-op otherwise
 
             UniqueType.ConditionalChance -> stateBasedRandom.nextFloat() < condition.params[0].toFloat() / 100f
+            UniqueType.ConditionalEveryTurns -> checkOnCiv { gameInfo.turns % condition.params[0].toInt() == 0}
             UniqueType.ConditionalBeforeTurns -> checkOnCiv { gameInfo.turns < condition.params[0].toInt() }
             UniqueType.ConditionalAfterTurns -> checkOnCiv { gameInfo.turns >= condition.params[0].toInt() }
 
