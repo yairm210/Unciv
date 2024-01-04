@@ -9,6 +9,21 @@ import com.unciv.models.stats.Stat
 
 internal fun String.toCliInput() = this.lowercase().replace(" ","-")
 
+/** Returns the string to *add* to the existing command */
+fun getAutocompleteString(lastWord:String, allOptions:Iterable<String>):String? {
+    val matchingOptions = allOptions.filter { it.toCliInput().startsWith(lastWord.toCliInput()) }
+    if (matchingOptions.isEmpty()) return null
+    if (matchingOptions.size == 1) return matchingOptions.first().removePrefix(lastWord)
+
+    val firstOption = matchingOptions.first()
+    for ((index, char) in firstOption.withIndex()) {
+        if (matchingOptions.any { it.lastIndex < index } ||
+            matchingOptions.any { it[index] != char })
+            return firstOption.substring(0, index).removePrefix(lastWord)
+    }
+    return firstOption.removePrefix(lastWord)
+}
+
 interface ConsoleCommand {
     fun handle(console: DevConsolePopup, params: List<String>): DevConsoleResponse
     /** Returns the string to *add* to the existing command */
@@ -46,20 +61,8 @@ interface ConsoleCommandNode : ConsoleCommand {
         if (params.isEmpty()) return null
         val firstParam = params[0]
         if (firstParam in subcommands) return subcommands[firstParam]!!.autocomplete(params.drop(1))
-        val possibleSubcommands = subcommands.keys.filter { it.startsWith(firstParam) }
-        if (possibleSubcommands.isEmpty()) return null
-        if (possibleSubcommands.size == 1) return possibleSubcommands.first().removePrefix(firstParam)
-
-        val firstSubcommand = possibleSubcommands.first()
-        for ((index, char) in firstSubcommand.withIndex()){
-            if (possibleSubcommands.any { it.lastIndex < index } ||
-                possibleSubcommands.any { it[index] != char })
-                return firstSubcommand.substring(0,index).removePrefix(firstParam)
-        }
-        return firstSubcommand.removePrefix(firstParam)
+        return getAutocompleteString(firstParam, subcommands.keys)
     }
-
-
 }
 
 class ConsoleCommandRoot : ConsoleCommandNode {
@@ -228,7 +231,7 @@ class ConsoleCivCommands : ConsoleCommandNode {
     override val subcommands = hashMapOf<String, ConsoleCommand>(
         "addstat" to ConsoleAction("civ addstat <stat> <amount> [civ]") { console, params ->
             val stat = Stat.safeValueOf(params[0].replaceFirstChar(Char::titlecase))
-                ?: throw ConsoleErrorException("Whut? \"${params[0]}\" is not a Stat!")
+                ?: throw ConsoleErrorException("\"${params[0]}\" is not an acceptable Stat")
             if (stat !in Stat.statsWithCivWideField)
                 throw ConsoleErrorException("$stat is not civ-wide")
 
@@ -271,9 +274,7 @@ class ConsoleCivCommands : ConsoleCommandNode {
         if (params.isNotEmpty())
             when (params[0]){
                 "addstat" -> if (params.size == 2)
-                    return Stat.names()
-                        .firstOrNull { it.lowercase().startsWith(params[1]) }
-                        ?.drop(params[1].length)
+                    return getAutocompleteString(params[1], Stat.names())
             }
         return super.autocomplete(params)
     }
