@@ -37,6 +37,19 @@ object BackwardCompatibility {
         removeTechAndPolicies()
     }
 
+    fun GameInfo.migrateGreatGeneralPools() {
+        for (civ in civilizations) civ.greatPeople.run {
+            if (pointsForNextGreatGeneral >= pointsForNextGreatGeneralCounter["Great General"]) {
+                pointsForNextGreatGeneralCounter["Great General"] = pointsForNextGreatGeneral
+            } else pointsForNextGreatGeneral = pointsForNextGreatGeneralCounter["Great General"]
+
+
+            if (greatGeneralPoints >= greatGeneralPointsCounter["Great General"]) {
+                greatGeneralPointsCounter["Great General"] = greatGeneralPoints
+            } else greatGeneralPoints = greatGeneralPointsCounter["Great General"]
+        }
+    }
+
     private fun GameInfo.removeUnitsAndPromotions() {
         for (tile in tileMap.values) {
             for (unit in tile.getUnits().toList()) {

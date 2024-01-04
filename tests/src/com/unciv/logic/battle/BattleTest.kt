@@ -216,8 +216,8 @@ class BattleTest {
         Battle.attack(MapUnitCombatant(defaultAttackerUnit), MapUnitCombatant(defaultDefenderUnit))
 
         // then
-        assertEquals(5, attackerCiv.greatPeople.greatGeneralPoints)
-        assertEquals(4, defenderCiv.greatPeople.greatGeneralPoints)
+        assertEquals(5, attackerCiv.greatPeople.greatGeneralPointsCounter["Great General"])
+        assertEquals(4, defenderCiv.greatPeople.greatGeneralPointsCounter["Great General"])
     }
 
     @Test
@@ -230,8 +230,8 @@ class BattleTest {
         Battle.attack(MapUnitCombatant(defaultAttackerUnit), MapUnitCombatant(barbarianUnit))
 
         // then
-        assertEquals(0, attackerCiv.greatPeople.greatGeneralPoints)
-        assertEquals(0, barbarianCiv.greatPeople.greatGeneralPoints)
+        assertEquals(0, attackerCiv.greatPeople.greatGeneralPointsCounter["Great General"])
+        assertEquals(0, barbarianCiv.greatPeople.greatGeneralPointsCounter["Great General"])
     }
 
     @Test
@@ -243,7 +243,7 @@ class BattleTest {
         Battle.attack(MapUnitCombatant(attackerUnit), MapUnitCombatant(defaultDefenderUnit))
 
         // then
-        assertEquals(10, attackerCiv.greatPeople.greatGeneralPoints)
+        assertEquals(10, attackerCiv.greatPeople.greatGeneralPointsCounter["Great General"])
     }
 
     @Test
