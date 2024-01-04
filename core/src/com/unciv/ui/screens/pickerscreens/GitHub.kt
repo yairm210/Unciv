@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.Pixmap
 import com.unciv.json.fromJsonFile
 import com.unciv.json.json
 import com.unciv.logic.BackwardCompatibility.updateDeprecations
+import com.unciv.logic.UncivShowableException
 import com.unciv.models.ruleset.ModOptions
 import com.unciv.ui.screens.pickerscreens.Github.RateLimit
 import com.unciv.ui.screens.pickerscreens.Github.download
@@ -16,6 +17,7 @@ import com.unciv.utils.debug
 import java.io.BufferedInputStream
 import java.io.BufferedOutputStream
 import java.io.BufferedReader
+import java.io.File
 import java.io.FileOutputStream
 import java.io.InputStream
 import java.io.InputStreamReader
@@ -23,6 +25,7 @@ import java.net.HttpURLConnection
 import java.net.URL
 import java.nio.ByteBuffer
 import java.util.zip.ZipEntry
+import java.util.zip.ZipException
 import java.util.zip.ZipFile
 
 
@@ -36,6 +39,8 @@ import java.util.zip.ZipFile
  * has a separate limit (and I found none for cloning via a zip).
  */
 object Github {
+    private const val contentDispositionHeader = "Content-Disposition"
+    private const val attachmentDispositionPrefix = "attachment;filename="
 
     // Consider merging this with the Dropbox function
     /**
@@ -78,17 +83,32 @@ object Github {
         repo: Repo,
         folderFileHandle: FileHandle
     ): FileHandle? {
-        val defaultBranch = repo.default_branch
-        val gitRepoUrl = repo.html_url
-        // Initiate download - the helper returns null when it fails
-        // URL format see: https://docs.github.com/en/repositories/working-with-files/using-files/downloading-source-code-archives#source-code-archive-urls
-        // Note: https://api.github.com/repos/owner/mod/zipball would be an alternative. Its response is a redirect, but our lib follows that and delivers the zip just fine.
-        // Problems with the latter: Internal zip structure different, finalDestinationName would need a patch. Plus, normal URL escaping for owner/reponame does not work.
-        val zipUrl = "$gitRepoUrl/archive/refs/heads/$defaultBranch.zip"
-        val inputStream = download(zipUrl) ?: return null
+        var modNameFromFileName = repo.name
 
-        // Get a mod-specific temp file name
-        val tempName = "temp-" + gitRepoUrl.hashCode().toString(16)
+        val defaultBranch = repo.default_branch
+        val zipUrl: String
+        val tempName: String
+        if (repo.direct_zip_url.isEmpty()) {
+            val gitRepoUrl = repo.html_url
+            // Initiate download - the helper returns null when it fails
+            // URL format see: https://docs.github.com/en/repositories/working-with-files/using-files/downloading-source-code-archives#source-code-archive-urls
+            // Note: https://api.github.com/repos/owner/mod/zipball would be an alternative. Its response is a redirect, but our lib follows that and delivers the zip just fine.
+            // Problems with the latter: Internal zip structure different, finalDestinationName would need a patch. Plus, normal URL escaping for owner/reponame does not work.
+            zipUrl = "$gitRepoUrl/archive/refs/heads/$defaultBranch.zip"
+
+            // Get a mod-specific temp file name
+            tempName = "temp-" + gitRepoUrl.hashCode().toString(16)
+        } else {
+            zipUrl = repo.direct_zip_url
+            tempName = "temp-" + repo.toString().hashCode().toString(16)
+        }
+        val inputStream = download(zipUrl) {
+            val disposition = it.getHeaderField(contentDispositionHeader)
+            if (disposition.startsWith(attachmentDispositionPrefix))
+                modNameFromFileName = disposition.removePrefix(attachmentDispositionPrefix)
+                    .removeSuffix(".zip").replace('.', ' ')
+            // We could check Content-Type=[application/x-zip-compressed] here, but the ZipFile will catch that anyway. Would save some bandwidth, however.
+        } ?: return null
 
         // Download to temporary zip
         val tempZipFileHandle = folderFileHandle.child("$tempName.zip")
@@ -100,11 +120,16 @@ object Github {
         if (unzipDestination.exists())
             if (unzipDestination.isDirectory) unzipDestination.deleteDirectory() else unzipDestination.delete()
 
-        Zip.extractFolder(tempZipFileHandle, unzipDestination)
+        try {
+            Zip.extractFolder(tempZipFileHandle, unzipDestination)
+        } catch (ex: ZipException) {
+            throw UncivShowableException("That is not a valid ZIP file", ex)
+        }
 
-        val innerFolder = unzipDestination.list().first()
-        // innerFolder should now be "$tempName/$repoName-$defaultBranch/" - use this to get mod name
-        val finalDestinationName = innerFolder.name().replace("-$defaultBranch", "").repoNameToFolderName()
+        val (innerFolder, modName) = resolveZipStructure(unzipDestination, modNameFromFileName)
+
+        // modName can be "$repoName-$defaultBranch"
+        val finalDestinationName = modName.replace("-$defaultBranch", "").repoNameToFolderName()
         // finalDestinationName is now the mod name as we display it. Folder name needs to be identical.
         val finalDestination = folderFileHandle.child(finalDestinationName)
 
@@ -131,6 +156,33 @@ object Github {
             if (tempBackup.isDirectory) tempBackup.deleteDirectory() else tempBackup.delete()
 
         return finalDestination
+    }
+
+    private fun isValidModFolder(dir: FileHandle): Boolean {
+        val goodFolders = listOf("Images", "jsons", "maps", "music", "sounds", "Images\\..*")
+            .map { Regex(it, RegexOption.IGNORE_CASE) }
+        val goodFiles = listOf(".*\\.atlas", ".*\\.png", "preview.jpg", ".*\\.md", "Atlases.json", ".nomedia", "license")
+            .map { Regex(it, RegexOption.IGNORE_CASE) }
+        var good = 0
+        var bad = 0
+        for (file in dir.list()) {
+            val goodList = if (file.isDirectory) goodFolders else goodFiles
+            if (goodList.any { file.name().matches(it) }) good++ else bad++
+        }
+        return good > 0 && good > bad
+    }
+
+    /** Check whether the unpacked zip contains a subfolder with mod content or is already the mod.
+     *  If there's a subfolder we'll assume it is the mod name, optionally suffixed with branch or release-tag name like github does.
+     *  @return Pair: actual mod content folder to name (subfolder name or [defaultModName])
+     */
+    private fun resolveZipStructure(dir: FileHandle, defaultModName: String): Pair<FileHandle, String> {
+        if (isValidModFolder(dir))
+            return dir to defaultModName
+        val subdirs = dir.list { it: File -> it.isDirectory }
+        if (subdirs.size == 1 && isValidModFolder(subdirs[0]))
+            return subdirs[0] to subdirs[0].name()
+        throw UncivShowableException("Invalid Mod archive structure")
     }
 
     private fun FileHandle.renameOrMove(dest: FileHandle) {
@@ -368,6 +420,11 @@ object Github {
          *  to track whether [getRepoSize] has been run successfully for this repo */
         var hasUpdatedSize = false
 
+        /** Not part of the github schema: Explicit final zip download URL for non-github or release downloads */
+        var direct_zip_url = ""
+        /** Not part of the github schema: release tag, for debugging (DL via direct_zip_url) */
+        var release_tag = ""
+
         var name = ""
         var full_name = ""
         var description: String? = null
@@ -393,11 +450,13 @@ object Github {
          *   https://github.com/author/repoName/archive/refs/heads/branchName.zip
          * * or the branch url same as one navigates to on github through the "branches" menu:
          *   https://github.com/author/repoName/tree/branchName
+         * * or release tag
+         *   https://github.com/author/repoName/archive/refs/tags/tagname.zip
          *
          * In the case of the basic repo url, an API query is sent to determine the default branch.
          * Other url forms will not go online.
          *
-         * @return `this` to allow chaining, `null` for invalid links or any other failures
+         * @return a new Repo instance for the 'Basic repo url' case, otherwise `this`, modified, to allow chaining, `null` for invalid links or any other failures
          */
         fun parseUrl(url: String): Repo? {
             fun processMatch(matchResult: MatchResult): Repo {
@@ -410,7 +469,7 @@ object Github {
 
             html_url = url
             default_branch = "master"
-            val matchZip = Regex("""^(.*/(.*)/(.*))/archive/(?:.*/)?([^.]+).zip$""").matchEntire(url)
+            val matchZip = Regex("""^(.*/(.*)/(.*))/archive/(?:.*/)?heads/([^.]+).zip$""").matchEntire(url)
             if (matchZip != null && matchZip.groups.size > 4)
                 return processMatch(matchZip)
 
@@ -418,16 +477,43 @@ object Github {
             if (matchBranch != null && matchBranch.groups.size > 4)
                 return processMatch(matchBranch)
 
+            val matchTag = Regex("""^(.*/(.*)/(.*))/archive/(?:.*/)?tags/([^.]+).zip$""").matchEntire(url)
+            if (matchTag != null && matchTag.groups.size > 4) {
+                processMatch(matchTag)
+                release_tag = default_branch  // leave default_branch so the suffix of the inner first level folder inside the zip can be removed
+                direct_zip_url = url
+                return this
+            }
+
             val matchRepo = Regex("""^.*//.*/(.+)/(.+)/?$""").matchEntire(url)
             if (matchRepo != null && matchRepo.groups.size > 2) {
-                // Query API if we got the first URL format to get the correct default branch
+                // Query API if we got the 'https://github.com/author/repoName' URL format to get the correct default branch
                 val response = download("https://api.github.com/repos/${matchRepo.groups[1]!!.value}/${matchRepo.groups[2]!!.value}")
-                    ?: return null
-                val repoString = response.bufferedReader().readText()
-                return json().fromJson(Repo::class.java, repoString)
+                if (response != null) {
+                    val repoString = response.bufferedReader().readText()
+                    return json().fromJson(Repo::class.java, repoString)
+                }
             }
-            return null
+
+            // Only complain about invalid link if it isn't a http protocol (to think about: android document protocol? file protocol?)
+            if (!url.startsWith("http://") && !url.startsWith("https://") && !url.startsWith("blob:https://"))
+                return null
+
+            // From here, we'll always return success and treat the url as direct-downloadable zip.
+            // The Repo instance will be a pseudo-repo not corresponding to an actual github repo.
+            direct_zip_url = url
+            owner.login = "-unknown-"
+            default_branch = "master" // only used to remove this suffix should the zip contain a inner folder
+            // But see if we can extract a file name from the url
+            //TODO use filename from response headers instead
+            val matchAnyZip = Regex("""^.*//(?:.*/)*([^/]+\.zip)$""").matchEntire(url)
+            if (matchAnyZip != null && matchAnyZip.groups.size > 1)
+                name = matchAnyZip.groups[1]!!.value
+            return this
         }
+
+        /** String representation to be used for logging */
+        override fun toString() = name.ifEmpty { direct_zip_url }
     }
 
     /** Part of [Repo] in Github API response */
@@ -486,12 +572,19 @@ object Github {
     fun rewriteModOptions(repo: Repo, modFolder: FileHandle) {
         val modOptionsFile = modFolder.child("jsons/ModOptions.json")
         val modOptions = if (modOptionsFile.exists()) json().fromJsonFile(ModOptions::class.java, modOptionsFile) else ModOptions()
-        modOptions.modUrl = repo.html_url
-        modOptions.defaultBranch = repo.default_branch
-        modOptions.lastUpdated = repo.pushed_at
-        modOptions.author = repo.owner.login
-        modOptions.modSize = repo.size
-        modOptions.topics = repo.topics
+
+        // If this is false we didn't get github repo info, do a defensive merge so the Repo.parseUrl or download
+        // code can decide defaults but leave any meaningful field of a zip-included ModOptions alone.
+        val overwriteAlways = repo.direct_zip_url.isEmpty()
+
+        if (overwriteAlways || modOptions.modUrl.isEmpty()) modOptions.modUrl = repo.html_url
+        if (overwriteAlways || modOptions.defaultBranch == "master" && repo.default_branch.isNotEmpty())
+            modOptions.defaultBranch = repo.default_branch
+        if (overwriteAlways || modOptions.lastUpdated.isEmpty()) modOptions.lastUpdated = repo.pushed_at
+        if (overwriteAlways || modOptions.author.isEmpty()) modOptions.author = repo.owner.login
+        if (overwriteAlways || modOptions.modSize == 0) modOptions.modSize = repo.size
+        if (overwriteAlways || modOptions.topics.isEmpty()) modOptions.topics = repo.topics
+
         modOptions.updateDeprecations()
         json().toJson(modOptions, modOptionsFile)
     }

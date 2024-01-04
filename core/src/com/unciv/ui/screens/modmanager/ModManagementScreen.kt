@@ -13,6 +13,7 @@ import com.badlogic.gdx.utils.SerializationException
 import com.unciv.UncivGame
 import com.unciv.json.fromJsonFile
 import com.unciv.json.json
+import com.unciv.logic.UncivShowableException
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.tilesets.TileSetCache
@@ -363,7 +364,7 @@ class ModManagementScreen private constructor(
         val downloadButton = "Download mod from URL".toTextButton()
         downloadButton.onClick {
             val popup = Popup(this)
-            popup.addGoodSizedLabel("Please enter the mod repository -or- archive zip -or- branch url:").row()
+            popup.addGoodSizedLabel("Please enter the mod repository -or- archive zip -or- branch -or- release url:").row()
             val textField = UncivTextField.create("").apply { maxLength = 666 }
             popup.add(textField).width(stage.width / 2).row()
             val pasteLinkButton = "Paste from clipboard".toTextButton()
@@ -456,8 +457,14 @@ class ModManagementScreen private constructor(
                     unMarkUpdatedMod(repoName)
                     postAction()
                 }
+            } catch (ex: UncivShowableException) {
+                Log.error("Could not download $repo", ex)
+                launchOnGLThread {
+                    ToastPopup(ex.message, this@ModManagementScreen)
+                    postAction()
+                }
             } catch (ex: Exception) {
-                Log.error("Could not download ${repo.name}", ex)
+                Log.error("Could not download $repo", ex)
                 launchOnGLThread {
                     ToastPopup("Could not download [${repo.name}]", this@ModManagementScreen)
                     postAction()
