@@ -11,6 +11,7 @@ internal fun String.toCliInput() = this.lowercase().replace(" ","-")
 
 interface ConsoleCommand {
     fun handle(console: DevConsolePopup, params: List<String>): DevConsoleResponse
+    /** Returns the string to *add* to the existing command */
     fun autocomplete(params: List<String>): String? = ""
 }
 
@@ -57,6 +58,8 @@ interface ConsoleCommandNode : ConsoleCommand {
         }
         return firstSubcommand.removePrefix(firstParam)
     }
+
+
 }
 
 class ConsoleCommandRoot : ConsoleCommandNode {
@@ -223,18 +226,17 @@ class ConsoleTileCommands: ConsoleCommandNode {
 
 class ConsoleCivCommands : ConsoleCommandNode {
     override val subcommands = hashMapOf<String, ConsoleCommand>(
-        "addstat" to ConsoleAction("civ addstat [civ] <stat> <amount>") { console, params ->
-            var statPos = 0
-            val civ = if (params.size == 2) console.screen.selectedCiv
-                else {
-                    statPos++
-                    console.getCivByName(params[0])
-                }
-            val amount = console.getInt(params[statPos+1])
-            val stat = Stat.safeValueOf(params[statPos].replaceFirstChar(Char::titlecase))
-                ?: throw ConsoleErrorException("Whut? \"${params[statPos]}\" is not a Stat!")
+        "addstat" to ConsoleAction("civ addstat <stat> <amount> [civ]") { console, params ->
+            val stat = Stat.safeValueOf(params[0].replaceFirstChar(Char::titlecase))
+                ?: throw ConsoleErrorException("Whut? \"${params[0]}\" is not a Stat!")
             if (stat !in Stat.statsWithCivWideField)
                 throw ConsoleErrorException("$stat is not civ-wide")
+
+            val amount = console.getInt(params[1])
+
+            val civ = if (params.size == 2) console.screen.selectedCiv
+            else console.getCivByName(params[2])
+
             civ.addStat(stat, amount)
             DevConsoleResponse.OK
         },
