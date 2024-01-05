@@ -170,7 +170,7 @@ object Github {
     private fun resolveZipStructure(dir: FileHandle, defaultModName: String): Pair<FileHandle, String> {
         if (isValidModFolder(dir))
             return dir to defaultModName
-        val subdirs = dir.list { it: File -> it.isDirectory }
+        val subdirs = dir.list(fun (file: File): Boolean { return file.isDirectory })  // See detekt/#6822 - a lambda fails detektAnalysis
         if (subdirs.size == 1 && isValidModFolder(subdirs[0]))
             return subdirs[0] to subdirs[0].name()
         throw UncivShowableException("Invalid Mod archive structure")
