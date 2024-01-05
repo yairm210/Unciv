@@ -1,4 +1,4 @@
-package com.unciv.ui.screens.pickerscreens
+package com.unciv.logic.github
 
 import com.badlogic.gdx.Files
 import com.badlogic.gdx.files.FileHandle
@@ -7,11 +7,11 @@ import com.unciv.json.fromJsonFile
 import com.unciv.json.json
 import com.unciv.logic.BackwardCompatibility.updateDeprecations
 import com.unciv.logic.UncivShowableException
+import com.unciv.logic.github.Github.RateLimit
+import com.unciv.logic.github.Github.download
+import com.unciv.logic.github.Github.downloadAndExtract
+import com.unciv.logic.github.Github.tryGetGithubReposWithTopic
 import com.unciv.models.ruleset.ModOptions
-import com.unciv.ui.screens.pickerscreens.Github.RateLimit
-import com.unciv.ui.screens.pickerscreens.Github.download
-import com.unciv.ui.screens.pickerscreens.Github.downloadAndExtract
-import com.unciv.ui.screens.pickerscreens.Github.tryGetGithubReposWithTopic
 import com.unciv.utils.Log
 import com.unciv.utils.debug
 import java.io.BufferedInputStream

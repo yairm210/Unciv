@@ -3,7 +3,7 @@ package com.unciv.models.metadata
 import com.badlogic.gdx.Gdx
 import com.unciv.json.json
 import com.unciv.ui.components.widgets.TranslatedSelectBox
-import com.unciv.ui.screens.pickerscreens.Github
+import com.unciv.logic.github.Github
 
 
 class ModCategories : ArrayList<ModCategories.Category>() {
