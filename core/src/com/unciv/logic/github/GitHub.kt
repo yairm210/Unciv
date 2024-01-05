@@ -7,26 +7,19 @@ import com.unciv.json.fromJsonFile
 import com.unciv.json.json
 import com.unciv.logic.BackwardCompatibility.updateDeprecations
 import com.unciv.logic.UncivShowableException
-import com.unciv.logic.github.Github.RateLimit
 import com.unciv.logic.github.Github.download
 import com.unciv.logic.github.Github.downloadAndExtract
 import com.unciv.logic.github.Github.tryGetGithubReposWithTopic
 import com.unciv.models.ruleset.ModOptions
 import com.unciv.utils.Log
-import com.unciv.utils.debug
-import java.io.BufferedInputStream
-import java.io.BufferedOutputStream
 import java.io.BufferedReader
 import java.io.File
-import java.io.FileOutputStream
 import java.io.InputStream
 import java.io.InputStreamReader
 import java.net.HttpURLConnection
 import java.net.URL
 import java.nio.ByteBuffer
-import java.util.zip.ZipEntry
 import java.util.zip.ZipException
-import java.util.zip.ZipFile
 
 
 /**
@@ -80,7 +73,7 @@ object Github {
      * @return FileHandle for the downloaded Mod's folder or null if download failed
      */
     fun downloadAndExtract(
-        repo: Repo,
+        repo: GitHubData.Repo,
         folderFileHandle: FileHandle
     ): FileHandle? {
         var modNameFromFileName = repo.name
@@ -200,99 +193,13 @@ object Github {
     }
 
     /**
-     * Implements the ability wo work with GitHub's rate limit, recognize blocks from previous attempts, wait and retry.
-     * @see <a href="https://docs.github.com/en/rest/reference/search#rate-limit">Github API doc</a>
-     */
-    object RateLimit {
-        private const val maxRequestsPerInterval = 10
-        private const val intervalInMilliSeconds = 60000L
-        private const val maxWaitLoop = 3
-
-        private var account = 0         // used requests
-        private var firstRequest = 0L   // timestamp window start (java epoch millisecond)
-
-        /*
-            Github rate limits do not use sliding windows - you (if anonymous) get one window
-            which starts with the first request (if a window is not already active)
-            and ends 60s later, and a budget of 10 requests in that window. Once it expires,
-            everything is forgotten and the process starts from scratch
-         */
-
-        private val millis: Long
-            get() = System.currentTimeMillis()
-
-        /** calculate required wait in ms
-         * @return Estimated number of milliseconds to wait for the rate limit window to expire
-         */
-        private fun getWaitLength()
-                = (firstRequest + intervalInMilliSeconds - millis)
-
-        /** Maintain and check a rate-limit
-         *  @return **true** if rate-limited, **false** if another request is allowed
-         */
-        private fun isLimitReached(): Boolean {
-            val now = millis
-            val elapsed = if (firstRequest == 0L) intervalInMilliSeconds else now - firstRequest
-            if (elapsed >= intervalInMilliSeconds) {
-                firstRequest = now
-                account = 1
-                return false
-            }
-            if (account >= maxRequestsPerInterval) return true
-            account++
-            return false
-        }
-
-        /** If rate limit in effect, sleep long enough to allow next request.
-         *
-         *  @return **true** if waiting did not clear isLimitReached() (can only happen if the clock is broken),
-         *                  or the wait has been interrupted by Thread.interrupt()
-         *          **false** if we were below the limit or slept long enough to drop out of it.
-         */
-        fun waitForLimit(): Boolean {
-            var loopCount = 0
-            while (isLimitReached()) {
-                val waitLength = getWaitLength()
-                try {
-                    Thread.sleep(waitLength)
-                } catch ( ex: InterruptedException ) {
-                    return true
-                }
-                if (++loopCount >= maxWaitLoop) return true
-            }
-            return false
-        }
-
-        /** http responses should be passed to this so the actual rate limit window can be evaluated and used.
-         *  The very first response and all 403 ones are good candidates if they can be expected to contain GitHub's rate limit headers.
-         *
-         *  @see <a href="https://docs.github.com/en/rest/overview/resources-in-the-rest-api#rate-limiting">Github API doc</a>
-         */
-        fun notifyHttpResponse(response: HttpURLConnection) {
-            if (response.responseMessage != "rate limit exceeded" && response.responseCode != 200) return
-
-            fun getHeaderLong(name: String, default: Long = 0L) =
-                response.headerFields[name]?.get(0)?.toLongOrNull() ?: default
-            val limit = getHeaderLong("X-RateLimit-Limit", maxRequestsPerInterval.toLong()).toInt()
-            val remaining = getHeaderLong("X-RateLimit-Remaining").toInt()
-            val reset = getHeaderLong("X-RateLimit-Reset")
-
-            if (limit != maxRequestsPerInterval)
-                debug("GitHub API Limit reported via http (%s) not equal assumed value (%s)", limit, maxRequestsPerInterval)
-            account = maxRequestsPerInterval - remaining
-            if (reset == 0L) return
-            firstRequest = (reset + 1L) * 1000L - intervalInMilliSeconds
-        }
-    }
-
-    /**
      * Query GitHub for repositories marked "unciv-mod"
      * @param amountPerPage Number of search results to return for this request.
      * @param page          The "page" number, starting at 1.
      * @return              Parsed [RepoSearch] json on success, `null` on failure.
      * @see <a href="https://docs.github.com/en/rest/reference/search#search-repositories">Github API doc</a>
      */
-    fun tryGetGithubReposWithTopic(amountPerPage:Int, page:Int, searchRequest: String = ""): RepoSearch? {
+    fun tryGetGithubReposWithTopic(amountPerPage:Int, page:Int, searchRequest: String = ""): GitHubData.RepoSearch? {
         // Add + here to separate the query text from its parameters
         val searchText = if (searchRequest != "") "$searchRequest+" else ""
         val link = "https://api.github.com/search/repositories?q=${searchText}%20topic:unciv-mod%20fork:true&sort:stars&per_page=$amountPerPage&page=$page"
@@ -309,7 +216,7 @@ object Github {
                     retries++   // An extra retry so the 403 is ignored in the retry count
                 }
             } ?: continue
-            return json().fromJson(RepoSearch::class.java, inputStream.bufferedReader().readText())
+            return json().fromJson(GitHubData.RepoSearch::class.java, inputStream.bufferedReader().readText())
         }
         return null
     }
@@ -343,31 +250,11 @@ object Github {
         }
     }
 
-    /** Class to receive a github API "Get a tree" response parsed as json */
-    // Parts of the response we ignore are commented out
-    private class Tree {
-        //val sha = ""
-        //val url = ""
-
-        class TreeFile {
-            //val path = ""
-            //val mode = 0
-            //val type = "" // blob / tree
-            //val sha = ""
-            //val url = ""
-            var size: Long = 0L
-        }
-
-        @Suppress("MemberNameEqualsClassName")
-        var tree = ArrayList<TreeFile>()
-        var truncated = false
-    }
-
     /** Queries github for a tree and calculates the sum of the blob sizes.
      *  @return -1 on failure, else size rounded to kB
      *  @see <a href="https://docs.github.com/en/rest/git/trees#get-a-tree">Github API "Get a tree"</a>
      */
-    fun getRepoSize(repo: Repo): Int {
+    fun getRepoSize(repo: GitHubData.Repo): Int {
         val link = "https://api.github.com/repos/${repo.full_name}/git/trees/${repo.default_branch}?recursive=true"
 
         var retries = 2
@@ -384,7 +271,7 @@ object Github {
                 }
             } ?: continue
 
-            val tree = json().fromJson(Tree::class.java, inputStream.bufferedReader().readText())
+            val tree = json().fromJson(GitHubData.Tree::class.java, inputStream.bufferedReader().readText())
             if (tree.truncated) return -1  // unlikely: >100k blobs or blob > 7MB
 
             var totalSizeBytes = 0L
@@ -398,152 +285,10 @@ object Github {
     }
 
     /**
-     * Parsed GitHub repo search response
-     * @property total_count Total number of hits for the search (ignoring paging window)
-     * @property incomplete_results A flag set by github to indicate search was incomplete (never seen it on)
-     * @property items Array of [repositories][Repo]
-     * @see <a href="https://docs.github.com/en/rest/reference/search#search-repositories--code-samples">Github API doc</a>
-     */
-    @Suppress("PropertyName")
-    class RepoSearch {
-        @Suppress("MemberVisibilityCanBePrivate")
-        var total_count = 0
-        var incomplete_results = false
-        var items = ArrayList<Repo>()
-    }
-
-    /** Part of [RepoSearch] in Github API response - one repository entry in [items][RepoSearch.items] */
-    @Suppress("PropertyName")
-    class Repo {
-
-        /** Unlike the rest of this class, this is not part of the API but added by us locally
-         *  to track whether [getRepoSize] has been run successfully for this repo */
-        var hasUpdatedSize = false
-
-        /** Not part of the github schema: Explicit final zip download URL for non-github or release downloads */
-        var direct_zip_url = ""
-        /** Not part of the github schema: release tag, for debugging (DL via direct_zip_url) */
-        var release_tag = ""
-
-        var name = ""
-        var full_name = ""
-        var description: String? = null
-        var owner = RepoOwner()
-        var stargazers_count = 0
-        var default_branch = ""
-        var html_url = ""
-        var pushed_at = "" // don't use updated_at - see https://github.com/yairm210/Unciv/issues/6106
-        var size = 0
-        var topics = mutableListOf<String>()
-        //var stargazers_url = ""
-        //var homepage: String? = null      // might use instead of go to repo?
-        //var has_wiki = false              // a wiki could mean proper documentation for the mod?
-
-        /**
-         * Initialize `this` with an url, extracting all possible fields from it
-         * (html_url, author, repoName, branchName).
-         *
-         * Allow url formats:
-         * * Basic repo url:
-         *   https://github.com/author/repoName
-         * * or complete 'zip' url from github's code->download zip menu:
-         *   https://github.com/author/repoName/archive/refs/heads/branchName.zip
-         * * or the branch url same as one navigates to on github through the "branches" menu:
-         *   https://github.com/author/repoName/tree/branchName
-         * * or release tag
-         *   https://github.com/author/repoName/releases/tag/tagname
-         *   https://github.com/author/repoName/archive/refs/tags/tagname.zip
-         *
-         * In the case of the basic repo url, an [API query](https://docs.github.com/en/rest/repos/repos#get-a-repository) is sent to determine the default branch.
-         * Other url forms will not go online.
-         *
-         * @return a new Repo instance for the 'Basic repo url' case, otherwise `this`, modified, to allow chaining, `null` for invalid links or any other failures
-         */
-        fun parseUrl(url: String): Repo? {
-            fun processMatch(matchResult: MatchResult): Repo {
-                html_url = matchResult.groups[1]!!.value
-                owner.login = matchResult.groups[2]!!.value
-                name = matchResult.groups[3]!!.value
-                default_branch = matchResult.groups[4]!!.value
-                return this
-            }
-
-            html_url = url
-            default_branch = "master"
-            val matchZip = Regex("""^(.*/(.*)/(.*))/archive/(?:.*/)?heads/([^.]+).zip$""").matchEntire(url)
-            if (matchZip != null && matchZip.groups.size > 4)
-                return processMatch(matchZip)
-
-            val matchBranch = Regex("""^(.*/(.*)/(.*))/tree/([^/]+)$""").matchEntire(url)
-            if (matchBranch != null && matchBranch.groups.size > 4)
-                return processMatch(matchBranch)
-
-            // Releases and tags -
-            // TODO Query for latest release and save as Mod Version?
-            // https://docs.github.com/en/rest/releases/releases#get-the-latest-release
-            // TODO Query a specific release for its name attribute - the page will link the tag
-            // https://docs.github.com/en/rest/releases/releases#get-a-release-by-tag-name
-
-            val matchTagArchive = Regex("""^(.*/(.*)/(.*))/archive/(?:.*/)?tags/([^.]+).zip$""").matchEntire(url)
-            if (matchTagArchive != null && matchTagArchive.groups.size > 4) {
-                processMatch(matchTagArchive)
-                release_tag = default_branch
-                // leave default_branch even if it's actually a tag not a branch name
-                // so the suffix of the inner first level folder inside the zip can be removed later
-                direct_zip_url = url
-                return this
-            }
-            val matchTagPage = Regex("""^(.*/(.*)/(.*))/releases/(?:.*/)?tag/([^.]+)$""").matchEntire(url)
-            if (matchTagPage != null && matchTagPage.groups.size > 4) {
-                processMatch(matchTagPage)
-                release_tag = default_branch
-                direct_zip_url = "$html_url/archive/refs/tags/$release_tag.zip"
-                return this
-            }
-
-            val matchRepo = Regex("""^.*//.*/(.+)/(.+)/?$""").matchEntire(url)
-            if (matchRepo != null && matchRepo.groups.size > 2) {
-                // Query API if we got the 'https://github.com/author/repoName' URL format to get the correct default branch
-                val response = download("https://api.github.com/repos/${matchRepo.groups[1]!!.value}/${matchRepo.groups[2]!!.value}")
-                if (response != null) {
-                    val repoString = response.bufferedReader().readText()
-                    return json().fromJson(Repo::class.java, repoString)
-                }
-            }
-
-            // Only complain about invalid link if it isn't a http protocol (to think about: android document protocol? file protocol?)
-            if (!url.startsWith("http://") && !url.startsWith("https://") && !url.startsWith("blob:https://"))
-                return null
-
-            // From here, we'll always return success and treat the url as direct-downloadable zip.
-            // The Repo instance will be a pseudo-repo not corresponding to an actual github repo.
-            direct_zip_url = url
-            owner.login = "-unknown-"
-            default_branch = "master" // only used to remove this suffix should the zip contain a inner folder
-            // But see if we can extract a file name from the url
-            // Will use filename from response headers for the Mod name instead, done in downloadAndExtract
-            val matchAnyZip = Regex("""^.*//(?:.*/)*([^/]+\.zip)$""").matchEntire(url)
-            if (matchAnyZip != null && matchAnyZip.groups.size > 1)
-                name = matchAnyZip.groups[1]!!.value
-            return this
-        }
-
-        /** String representation to be used for logging */
-        override fun toString() = name.ifEmpty { direct_zip_url }
-    }
-
-    /** Part of [Repo] in Github API response */
-    @Suppress("PropertyName")
-    class RepoOwner {
-        var login = ""
-        var avatar_url: String? = null
-    }
-
-    /**
      * Query GitHub for topics named "unciv-mod*"
      * @return              Parsed [TopicSearchResponse] json on success, `null` on failure.
      */
-    fun tryGetGithubTopics(): TopicSearchResponse? {
+    fun tryGetGithubTopics(): GitHubData.TopicSearchResponse? {
         // `+repositories:>1` means ignore unused or practically unused topics
         val link = "https://api.github.com/search/topics?q=unciv-mod+repositories:%3E1&sort=name&order=asc"
         var retries = 2
@@ -559,33 +304,16 @@ object Github {
                     retries++   // An extra retry so the 403 is ignored in the retry count
                 }
             } ?: continue
-            return json().fromJson(TopicSearchResponse::class.java, inputStream.bufferedReader().readText())
+            return json().fromJson(GitHubData.TopicSearchResponse::class.java, inputStream.bufferedReader().readText())
         }
         return null
-    }
-
-    /** Topic search response */
-    @Suppress("PropertyName")
-    class TopicSearchResponse {
-        // Commented out: Github returns them, but we're not interested
-//         var total_count = 0
-//         var incomplete_results = false
-        var items = ArrayList<Topic>()
-        class Topic {
-            var name = ""
-            var display_name: String? = null  // Would need to be curated, which is alottawork
-//             var featured = false
-//             var curated = false
-            var created_at = "" // iso datetime with "Z" timezone
-            var updated_at = "" // iso datetime with "Z" timezone
-        }
     }
 
     /** Rewrite modOptions file for a mod we just installed to include metadata we got from the GitHub api
      *
      *  (called on background thread)
      */
-    fun rewriteModOptions(repo: Repo, modFolder: FileHandle) {
+    fun rewriteModOptions(repo: GitHubData.Repo, modFolder: FileHandle) {
         val modOptionsFile = modFolder.child("jsons/ModOptions.json")
         val modOptions = if (modOptionsFile.exists()) json().fromJsonFile(ModOptions::class.java, modOptionsFile) else ModOptions()
 
@@ -630,83 +358,5 @@ object Github {
         if (result.endsWith(outerBlankReplacement)) result = result.trimEnd(outerBlankReplacement) + '-'
         if (result.startsWith(outerBlankReplacement)) result = '-' + result.trimStart(outerBlankReplacement)
         return result
-    }
-}
-
-/** Utility - extract Zip archives
- * @see  [Zip.extractFolder]
- */
-object Zip {
-    private const val bufferSize = 2048
-
-    /**
-     * Extract one Zip file recursively (nested Zip files are extracted in turn).
-     *
-     * The source Zip is not deleted, but successfully extracted nested ones are.
-     *
-     * **Warning**: Extracting into a non-empty destination folder will merge contents. Existing
-     * files also included in the archive will be partially overwritten, when the new data is shorter
-     * than the old you will get _mixed contents!_
-     *
-     * @param zipFile The Zip file to extract
-     * @param unzipDestination The folder to extract into, preferably empty (not enforced).
-     */
-    fun extractFolder(zipFile: FileHandle, unzipDestination: FileHandle) {
-        // I went through a lot of similar answers that didn't work until I got to this gem by NeilMonday
-        //  (with mild changes to fit the FileHandles)
-        // https://stackoverflow.com/questions/981578/how-to-unzip-files-recursively-in-java
-
-        debug("Extracting %s to %s", zipFile, unzipDestination)
-        // establish buffer for writing file
-        val data = ByteArray(bufferSize)
-
-        fun streamCopy(fromStream: InputStream, toHandle: FileHandle) {
-            val inputStream = BufferedInputStream(fromStream)
-            var currentByte: Int
-
-            // write the current file to disk
-            val fos = FileOutputStream(toHandle.file())
-            val dest = BufferedOutputStream(fos, bufferSize)
-
-            // read and write until last byte is encountered
-            while (inputStream.read(data, 0, bufferSize).also { currentByte = it } != -1) {
-                dest.write(data, 0, currentByte)
-            }
-            dest.flush()
-            dest.close()
-            inputStream.close()
-        }
-
-        val file = zipFile.file()
-        val zip = ZipFile(file)
-        //unzipDestination.mkdirs()
-        val zipFileEntries = zip.entries()
-
-        // Process each entry
-        while (zipFileEntries.hasMoreElements()) {
-            // grab a zip file entry
-            val entry = zipFileEntries.nextElement() as ZipEntry
-            val currentEntry = entry.name
-            val destFile = unzipDestination.child(currentEntry)
-            val destinationParent = destFile.parent()
-
-            // create the parent directory structure if needed
-            destinationParent.mkdirs()
-            if (!entry.isDirectory) {
-                streamCopy ( zip.getInputStream(entry), destFile)
-            }
-            // The new file has a current last modification time
-            // and not the  one stored in the archive - we could:
-            //  'destFile.file().setLastModified(entry.time)'
-            // but later handling will throw these away anyway,
-            // and GitHub sets all timestamps to the download time.
-
-            if (currentEntry.endsWith(".zip")) {
-                // found a zip file, try to open
-                extractFolder(destFile, destinationParent)
-                destFile.delete()
-            }
-        }
-        zip.close() // Needed so we can delete the zip file later
     }
 }
