@@ -4,7 +4,7 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.Table
-import com.unciv.logic.github.GitHubData
+import com.unciv.logic.github.GithubAPI
 import com.unciv.models.metadata.BaseRuleset
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.validation.ModCompatibility
@@ -35,7 +35,7 @@ internal class ModInfoAndActionPane : Table() {
     /** Recreate the information part of the right-hand column
      * @param repo: the repository instance as received from the GitHub api
      */
-    fun update(repo: GitHubData.Repo) {
+    fun update(repo: GithubAPI.Repo) {
         isBuiltin = false
         enableVisualCheckBox = false
         update(

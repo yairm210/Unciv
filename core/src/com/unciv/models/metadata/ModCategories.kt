@@ -2,7 +2,7 @@ package com.unciv.models.metadata
 
 import com.badlogic.gdx.Gdx
 import com.unciv.json.json
-import com.unciv.logic.github.GitHubData
+import com.unciv.logic.github.GithubAPI
 import com.unciv.ui.components.widgets.TranslatedSelectBox
 import com.unciv.logic.github.Github
 
@@ -22,12 +22,12 @@ class ModCategories : ArrayList<ModCategories.Category>() {
         constructor() :
             this("", "", false, "", "")
 
-        constructor(topic: GitHubData.TopicSearchResponse.Topic) :
+        constructor(topic: GithubAPI.TopicSearchResponse.Topic) :
             this(labelSuggestion(topic), topic.name, true, topic.created_at, topic.updated_at)
 
         companion object {
             val All = Category("All mods", "unciv-mod", false, "", "")
-            fun labelSuggestion(topic: GitHubData.TopicSearchResponse.Topic) =
+            fun labelSuggestion(topic: GithubAPI.TopicSearchResponse.Topic) =
                 topic.display_name?.takeUnless { it.isBlank() }
                     ?: topic.name.removePrefix("unciv-mod-").replaceFirstChar(Char::titlecase)
         }

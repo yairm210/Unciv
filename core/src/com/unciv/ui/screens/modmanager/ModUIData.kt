@@ -1,6 +1,6 @@
 package com.unciv.ui.screens.modmanager
 
-import com.unciv.logic.github.GitHubData
+import com.unciv.logic.github.GithubAPI
 import com.unciv.models.metadata.ModCategories
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.translations.tr
@@ -15,7 +15,7 @@ internal class ModUIData private constructor(
     val name: String,
     val description: String,
     val ruleset: Ruleset?,
-    val repo: GitHubData.Repo?,
+    val repo: GithubAPI.Repo?,
     var isVisual: Boolean = false,
     var hasUpdate: Boolean = false
 ) {
@@ -27,7 +27,7 @@ internal class ModUIData private constructor(
         ruleset, null, isVisual = isVisual
     )
 
-    constructor(repo: GitHubData.Repo, isUpdated: Boolean): this (
+    constructor(repo: GithubAPI.Repo, isUpdated: Boolean): this (
         repo.name,
         (repo.description ?: "-{No description provided}-".tr()) +
                 "\n" + "[${repo.stargazers_count}]✯".tr(),
