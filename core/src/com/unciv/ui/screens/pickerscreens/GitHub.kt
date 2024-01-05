@@ -201,9 +201,9 @@ object Github {
 
     /**
      * Implements the ability wo work with GitHub's rate limit, recognize blocks from previous attempts, wait and retry.
+     * @see <a href="https://docs.github.com/en/rest/reference/search#rate-limit">Github API doc</a>
      */
     object RateLimit {
-        // https://docs.github.com/en/rest/reference/search#rate-limit
         private const val maxRequestsPerInterval = 10
         private const val intervalInMilliSeconds = 60000L
         private const val maxWaitLoop = 3
@@ -266,7 +266,7 @@ object Github {
         /** http responses should be passed to this so the actual rate limit window can be evaluated and used.
          *  The very first response and all 403 ones are good candidates if they can be expected to contain GitHub's rate limit headers.
          *
-         *  see: https://docs.github.com/en/rest/overview/resources-in-the-rest-api#rate-limiting
+         *  @see <a href="https://docs.github.com/en/rest/overview/resources-in-the-rest-api#rate-limiting">Github API doc</a>
          */
         fun notifyHttpResponse(response: HttpURLConnection) {
             if (response.responseMessage != "rate limit exceeded" && response.responseCode != 200) return
@@ -365,9 +365,9 @@ object Github {
 
     /** Queries github for a tree and calculates the sum of the blob sizes.
      *  @return -1 on failure, else size rounded to kB
-      */
+     *  @see <a href="https://docs.github.com/en/rest/git/trees#get-a-tree">Github API "Get a tree"</a>
+     */
     fun getRepoSize(repo: Repo): Int {
-        // See https://docs.github.com/en/rest/git/trees#get-a-tree
         val link = "https://api.github.com/repos/${repo.full_name}/git/trees/${repo.default_branch}?recursive=true"
 
         var retries = 2
@@ -451,9 +451,10 @@ object Github {
          * * or the branch url same as one navigates to on github through the "branches" menu:
          *   https://github.com/author/repoName/tree/branchName
          * * or release tag
+         *   https://github.com/author/repoName/releases/tag/tagname
          *   https://github.com/author/repoName/archive/refs/tags/tagname.zip
          *
-         * In the case of the basic repo url, an API query is sent to determine the default branch.
+         * In the case of the basic repo url, an [API query](https://docs.github.com/en/rest/repos/repos#get-a-repository) is sent to determine the default branch.
          * Other url forms will not go online.
          *
          * @return a new Repo instance for the 'Basic repo url' case, otherwise `this`, modified, to allow chaining, `null` for invalid links or any other failures
@@ -477,11 +478,26 @@ object Github {
             if (matchBranch != null && matchBranch.groups.size > 4)
                 return processMatch(matchBranch)
 
-            val matchTag = Regex("""^(.*/(.*)/(.*))/archive/(?:.*/)?tags/([^.]+).zip$""").matchEntire(url)
-            if (matchTag != null && matchTag.groups.size > 4) {
-                processMatch(matchTag)
-                release_tag = default_branch  // leave default_branch so the suffix of the inner first level folder inside the zip can be removed
+            // Releases and tags -
+            // TODO Query for latest release and save as Mod Version?
+            // https://docs.github.com/en/rest/releases/releases#get-the-latest-release
+            // TODO Query a specific release for its name attribute - the page will link the tag
+            // https://docs.github.com/en/rest/releases/releases#get-a-release-by-tag-name
+
+            val matchTagArchive = Regex("""^(.*/(.*)/(.*))/archive/(?:.*/)?tags/([^.]+).zip$""").matchEntire(url)
+            if (matchTagArchive != null && matchTagArchive.groups.size > 4) {
+                processMatch(matchTagArchive)
+                release_tag = default_branch
+                // leave default_branch even if it's actually a tag not a branch name
+                // so the suffix of the inner first level folder inside the zip can be removed later
                 direct_zip_url = url
+                return this
+            }
+            val matchTagPage = Regex("""^(.*/(.*)/(.*))/releases/(?:.*/)?tag/([^.]+)$""").matchEntire(url)
+            if (matchTagPage != null && matchTagPage.groups.size > 4) {
+                processMatch(matchTagPage)
+                release_tag = default_branch
+                direct_zip_url = "$html_url/archive/refs/tags/$release_tag.zip"
                 return this
             }
 
@@ -505,7 +521,7 @@ object Github {
             owner.login = "-unknown-"
             default_branch = "master" // only used to remove this suffix should the zip contain a inner folder
             // But see if we can extract a file name from the url
-            //TODO use filename from response headers instead
+            // Will use filename from response headers for the Mod name instead, done in downloadAndExtract
             val matchAnyZip = Regex("""^.*//(?:.*/)*([^/]+\.zip)$""").matchEntire(url)
             if (matchAnyZip != null && matchAnyZip.groups.size > 1)
                 name = matchAnyZip.groups[1]!!.value
