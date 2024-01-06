@@ -42,9 +42,6 @@ object BackwardCompatibility {
             if (pointsForNextGreatGeneral >= pointsForNextGreatGeneralCounter["Great General"]) {
                 pointsForNextGreatGeneralCounter["Great General"] = pointsForNextGreatGeneral
             } else pointsForNextGreatGeneral = pointsForNextGreatGeneralCounter["Great General"]
-
-
-            greatGeneralPoints = greatGeneralPointsCounter["Great General"]
         }
     }
 
