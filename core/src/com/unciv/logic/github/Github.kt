@@ -14,7 +14,7 @@ import com.unciv.logic.github.GithubAPI.getUrlForTreeQuery
 import com.unciv.models.ruleset.ModOptions
 import com.unciv.utils.Log
 import java.io.BufferedReader
-import java.io.File
+import java.io.FileFilter
 import java.io.InputStream
 import java.io.InputStreamReader
 import java.net.HttpURLConnection
@@ -170,7 +170,7 @@ object Github {
     private fun resolveZipStructure(dir: FileHandle, defaultModName: String): Pair<FileHandle, String> {
         if (isValidModFolder(dir))
             return dir to defaultModName
-        val subdirs = dir.list(fun (file: File): Boolean { return file.isDirectory })  // See detekt/#6822 - a lambda fails detektAnalysis
+        val subdirs = dir.list(FileFilter { it.isDirectory })  // See detekt/#6822 - a direct lambda-to-SAM with typed `it` fails detektAnalysis
         if (subdirs.size == 1 && isValidModFolder(subdirs[0]))
             return subdirs[0] to subdirs[0].name()
         throw UncivShowableException("Invalid Mod archive structure")
