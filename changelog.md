@@ -1,28 +1,19 @@
 ## 4.9.17
 
-Experimental pathfinding! 
+Experimental pathfinding - activate in Options > Gameplay > Experimental movement
 
 Console: autocomplete ALL THE THINGS!
 
-Console: Unified autocomplete
-
-Console: Normalized addStat subcommand
-
-Console: Format is inherent part of console action
-
-Fix "Performance" not translatable  - By Ouaz
-
 By SeventhM:
-- Allow mapUnitFilter to use CivFilter instead of NationFilter 
-- Add terrain filters for resources, any terrain, or "improved" 
-- Move trigger on founding/enhancing religion to after belief pick 
-- Fix Great General counter not decreasing upon spawning a general 
+- Allow mapUnitFilter to use CivFilter
+- Add terrain filters for resources, any terrain, or "improved"
+- Fix 'infinite Great Generals' bug
 
-Spectator now receives important diplomatic notifications again  - By tuvus
+Spectator receives diplomatic notifications again - By tuvus
 
 Download mod releases or any mod zip  - By SomeTroglodyte
 
-Add <every [positiveAmount] turns> Conditional unique (not TriggerCondition)  - By PLynx01
+Add <every [positiveAmount] turns> Conditional - By PLynx01
 
 ## 4.9.16
 
