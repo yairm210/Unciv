@@ -32,6 +32,7 @@ class GameSettings {
     var showUnitMovements: Boolean = false
     var showSettlersSuggestedCityLocations: Boolean = true
 
+    var experimentalMovement: Boolean = false
     var checkForDueUnits: Boolean = true
     var autoUnitCycle: Boolean = true
     var singleTapMove: Boolean = false
