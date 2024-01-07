@@ -324,6 +324,9 @@ class Civilization : IsPartOfGameInfoSerialization {
     fun getKnownCivs() = diplomacy.values.asSequence().map { it.otherCiv() }
         .filter { !it.isDefeated() && !it.isSpectator() }
 
+    fun getKnownCivsWithSpectators() = diplomacy.values.asSequence().map { it.otherCiv() }
+        .filter { !it.isDefeated() }
+
     fun knows(otherCivName: String) = diplomacy.containsKey(otherCivName)
     fun knows(otherCiv: Civilization) = knows(otherCiv.civName)
 
