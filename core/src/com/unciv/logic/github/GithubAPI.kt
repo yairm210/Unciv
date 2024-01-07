@@ -25,6 +25,9 @@ object GithubAPI {
     /** Format URL to fetch one specific [Repo] metadata from the API */
     private fun getUrlForSingleRepoQuery(owner: String, repoName: String) = "https://api.github.com/repos/$owner/$repoName"
 
+    /** Format URL to fetch one specific [Repo] metadata from the API */
+    private fun getUrlForLatestReleaseQuery(owner: String, repoName: String) = "https://api.github.com/repos/$owner/$repoName/releases/latest"
+
     /** Format a download URL for a release archive */
     private fun Repo.getUrlForReleaseZip() = "$html_url/archive/refs/tags/$release_tag.zip"
 
@@ -66,8 +69,10 @@ object GithubAPI {
 
         /** Not part of the github schema: Explicit final zip download URL for non-github or release downloads */
         var direct_zip_url = ""
-        /** Not part of the github schema: release tag, for debugging (DL via direct_zip_url) */
+        /** Not part of the github schema: release tag */
         var release_tag = ""
+        /** Not part of the github schema: release name */
+        var release_name = ""
 
         var name = ""
         var full_name = ""
@@ -112,7 +117,7 @@ object GithubAPI {
         }
     }
 
-    /** Part of [Repo] in Github API response */
+    /** Part of [Repo] or [Release] in Github API response */
     class RepoOwner {
         var login = ""
         var avatar_url: String? = null
@@ -152,6 +157,30 @@ object GithubAPI {
         @Suppress("MemberNameEqualsClassName")
         var tree = ArrayList<TreeFile>()
         var truncated = false
+    }
+
+    internal class Release {
+        var id = 0  // var avoids a warning, as inspection doesn't know the Json reader can change vals
+        val name = ""
+        val tag_name = ""
+        val draft = false
+        val prerelease = false
+        val html_url = ""
+        val author = RepoOwner()
+        val published_at = "" // iso datetime with "Z" timezone
+        val zipball_url = ""
+        //val body = ""  // This is the markdown displayed under the release name on the releases page
+        //val message = "" // We could catch a "Not Found" here for Mods without releases - using id == 0 instead
+
+        companion object {
+            /** Query Github API for [owner]'s [repoName] repository latest release info */
+            fun queryLatest(owner: String, repoName: String): Release? {
+                val response = Github.download(getUrlForLatestReleaseQuery(owner, repoName))
+                    ?: return null
+                val releaseString = response.bufferedReader().readText()
+                return json().fromJson(Release::class.java, releaseString).takeIf { it.id != 0 }
+            }
+        }
     }
 
     //endregion
@@ -222,8 +251,13 @@ object GithubAPI {
 
         val matchRepo = Regex("""^.*//.*/(.+)/(.+)/?$""").matchEntire(url)
         if (matchRepo != null && matchRepo.groups.size > 2) {
+            val owner = matchRepo.groups[1]!!.value
+            val repoName = matchRepo.groups[2]!!.value
+            val release = Release.queryLatest(owner, repoName)
+            if (release != null)
+                return parseRelease(release, repoName)
             // Query API if we got the 'https://github.com/author/repoName' URL format to get the correct default branch
-            val repo = Repo.query(matchRepo.groups[1]!!.value, matchRepo.groups[2]!!.value)
+            val repo = Repo.query(owner, repoName)
             if (repo != null) return repo
         }
 
@@ -243,6 +277,19 @@ object GithubAPI {
         if (matchAnyZip != null && matchAnyZip.groups.size > 1)
             name = matchAnyZip.groups[1]!!.value
         full_name = name
+        return this
+    }
+
+    private fun Repo.parseRelease(release: Release, repoName: String): Repo {
+        name = repoName
+        direct_zip_url = release.zipball_url
+        release_tag = release.tag_name
+        release_name = release.name
+        pushed_at = release.published_at
+        owner = release.author
+        html_url = release.html_url  // Used as open on Github link
+        full_name = "${owner.login}/$repoName"
+        default_branch = release_tag  // Used to remove folder name suffix
         return this
     }
     //endregion
