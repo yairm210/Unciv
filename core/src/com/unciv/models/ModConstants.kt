@@ -1,5 +1,16 @@
 package com.unciv.models
 
+/** Used as a member of [ModOptions][com.unciv.models.ruleset.ModOptions] for moddable "constants" - factors in formulae and such.
+ *
+ *  When combining mods, this is [merge]d _per constant/field_, not as entire object like other RulesetObjects.
+ *  Merging happens on a very simple basis: If a Mod comes with a non-default value, it is copied, otherwise the parent value is left intact.
+ *  If several mods change the same field, the last one wins.
+ *
+ *  Supports equality contract to enable the Json serializer to recognize unchanged defaults.
+ *
+ *  Methods [merge], [equals] and [hashCode] are done through reflection so adding a field will not need to update these methods
+ *  (overhead is not a factor, these routines run very rarely).
+ */
 class ModConstants {
     // Max amount of experience that can be gained from combat with barbarians
     @Suppress("SpellCheckingInspection") // Pfrom is not a word ;)
@@ -35,13 +46,14 @@ class ModConstants {
     var minimalCityDistanceOnDifferentContinents = 2
 
     // Constants used to calculate Unit Upgrade gold Cost (can only be modded all-or-nothing)
-    class UnitUpgradeCost {
-        val base = 10f
-        val perProduction = 2f
-        val eraMultiplier = 0f  // 0.3 in Civ5 cpp sources but 0 in xml
-        val exponent = 1f
-        val roundTo = 5
-    }
+    // This is a data class for one reason only: The equality implementation enables Gdx Json to omit it when default (otherwise only the individual fields are omitted)
+    data class UnitUpgradeCost(
+        val base: Float = 10f,
+        val perProduction: Float = 2f,
+        val eraMultiplier: Float = 0f,  // 0.3 in Civ5 cpp sources but 0 in xml
+        val exponent: Float = 1f,
+        val roundTo: Int = 5
+    )
     var unitUpgradeCost = UnitUpgradeCost()
 
     // NaturalWonderGenerator uses these to determine the number of Natural Wonders to spawn for a given map size.
@@ -71,32 +83,37 @@ class ModConstants {
     var pantheonGrowth = 5
 
     fun merge(other: ModConstants) {
-        if (other.maxXPfromBarbarians != defaults.maxXPfromBarbarians) maxXPfromBarbarians = other.maxXPfromBarbarians
-        if (other.cityStrengthBase != defaults.cityStrengthBase) cityStrengthBase = other.cityStrengthBase
-        if (other.cityStrengthPerPop != defaults.cityStrengthPerPop) cityStrengthPerPop = other.cityStrengthPerPop
-        if (other.cityStrengthFromTechsMultiplier != defaults.cityStrengthFromTechsMultiplier) cityStrengthFromTechsMultiplier = other.cityStrengthFromTechsMultiplier
-        if (other.cityStrengthFromTechsExponent != defaults.cityStrengthFromTechsExponent) cityStrengthFromTechsExponent = other.cityStrengthFromTechsExponent
-        if (other.cityStrengthFromTechsFullMultiplier != defaults.cityStrengthFromTechsFullMultiplier) cityStrengthFromTechsFullMultiplier = other.cityStrengthFromTechsFullMultiplier
-        if (other.cityStrengthFromGarrison != defaults.cityStrengthFromGarrison) cityStrengthFromGarrison = other.cityStrengthFromGarrison
-        if (other.unitSupplyPerPopulation != defaults.unitSupplyPerPopulation) unitSupplyPerPopulation = other.unitSupplyPerPopulation
-        if (other.minimalCityDistance != defaults.minimalCityDistance) minimalCityDistance = other.minimalCityDistance
-        if (other.minimalCityDistanceOnDifferentContinents != defaults.minimalCityDistanceOnDifferentContinents) minimalCityDistanceOnDifferentContinents = other.minimalCityDistanceOnDifferentContinents
-        if (other.unitUpgradeCost != defaults.unitUpgradeCost) unitUpgradeCost = other.unitUpgradeCost
-        if (other.naturalWonderCountMultiplier != defaults.naturalWonderCountMultiplier) naturalWonderCountMultiplier = other.naturalWonderCountMultiplier
-        if (other.naturalWonderCountAddedConstant != defaults.naturalWonderCountAddedConstant) naturalWonderCountAddedConstant = other.naturalWonderCountAddedConstant
-        if (other.ancientRuinCountMultiplier != defaults.ancientRuinCountMultiplier) ancientRuinCountMultiplier = other.ancientRuinCountMultiplier
-        if (other.spawnIceBelowTemperature != defaults.spawnIceBelowTemperature) spawnIceBelowTemperature = other.spawnIceBelowTemperature
-        if (other.maxLakeSize != defaults.maxLakeSize) maxLakeSize = other.maxLakeSize
-        if (other.riverCountMultiplier != defaults.riverCountMultiplier) riverCountMultiplier = other.riverCountMultiplier
-        if (other.minRiverLength != defaults.minRiverLength) minRiverLength = other.minRiverLength
-        if (other.maxRiverLength != defaults.maxRiverLength) maxRiverLength = other.maxRiverLength
-        if (other.religionLimitBase != defaults.religionLimitBase) religionLimitBase = other.religionLimitBase
-        if (other.religionLimitMultiplier != defaults.religionLimitMultiplier) religionLimitMultiplier = other.religionLimitMultiplier
-        if (other.pantheonBase != defaults.pantheonBase) pantheonBase = other.pantheonBase
-        if (other.pantheonGrowth != defaults.pantheonGrowth) pantheonGrowth = other.pantheonGrowth
+        for (field in this::class.java.declaredFields) {
+            val value = field.get(other)
+            if (field.get(defaults).equals(value)) continue
+            field.set(this, value)
+        }
+    }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is ModConstants) return false
+        return equalsReflected(other)
+    }
+
+    override fun hashCode(): Int {
+        var result = 0
+        for (field in this::class.java.declaredFields) {
+            result = result * 31 + field.get(this).hashCode()
+        }
+        return result
+    }
+
+    private fun equalsReflected(other: ModConstants): Boolean {
+        for (field in this::class.java.declaredFields) {
+            if (!field.get(this).equals(field.get(other))) return false
+        }
+        return true
     }
 
     companion object {
+        /** As merge will need a default instance repeatedly, store it as static */
+        // Note Json will not use this but get a fresh instance every time. A fix, if possible, could get messy.
         val defaults = ModConstants()
     }
 }
