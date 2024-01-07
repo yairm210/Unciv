@@ -14,7 +14,7 @@ import java.util.TreeSet
 
 
 fun List<UnitMovement.MovementStep>.toBackwardsCompatiblePath(): List<Tile> {
-    val backwardsCompatiblePath = this.reversed().filter { it.totalCost.movementLeft == 0f || it == this.last() }
+    val backwardsCompatiblePath = this.filter { it.totalCost.movementLeft == 0f || it == this.last() }
     return backwardsCompatiblePath.map { it.tile }
 }
 
