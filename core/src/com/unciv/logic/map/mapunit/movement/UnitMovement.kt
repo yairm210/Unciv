@@ -132,12 +132,11 @@ class UnitMovement(val unit: MapUnit) {
         val canPassThroughCache = HashMap<Tile, Boolean>()
 
         while (tilesToCheck.isNotEmpty()){
-            val currentTileToCheck = tilesToCheck.first()
-            tilesToCheck.remove(currentTileToCheck)
+            val currentTileToCheck = tilesToCheck.pollFirst()!!
+
             val currentTileStep = tileToBestStep[currentTileToCheck]!!
 
             for (neighbor in currentTileToCheck.neighbors){
-
                 if (shouldAvoidTileCache.getOrPut(neighbor){ shouldAvoidTile(neighbor) }) continue
                 val currentBestStepToNeighbor = tileToBestStep[neighbor]
                 // If this tile can't beat the current best then no point checking
