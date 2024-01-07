@@ -398,7 +398,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
             }
 
             // Do we need to stop AutoPlay?
-            if (UncivGame.Current.settings.autoPlay.isAutoPlaying() && player.victoryManager.hasWon())
+            if (UncivGame.Current.settings.autoPlay.isAutoPlaying() && player.victoryManager.hasWon() && !oneMoreTurnMode)
                 UncivGame.Current.settings.autoPlay.stopAutoPlay()
 
             // Clean up
