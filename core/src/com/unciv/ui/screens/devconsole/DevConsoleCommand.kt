@@ -67,7 +67,7 @@ class ConsoleAction(val format: String, val action: (console: DevConsolePopup, p
         return getAutocompleteString(lastParam, options)
     }
 
-    fun validateFormat(format: String, params:List<String>){
+    private fun validateFormat(format: String, params:List<String>){
         val allParams = format.split(" ")
         val requiredParamsAmount = allParams.count { it.startsWith('<') }
         val optionalParamsAmount = allParams.count { it.startsWith('[') }
@@ -110,7 +110,7 @@ class ConsoleUnitCommands : ConsoleCommandNode {
         "add" to ConsoleAction("unit add <civName> <unitName>") { console, params ->
             val selectedTile = console.getSelectedTile()
             val civ = console.getCivByName(params[0])
-            val baseUnit = console.gameInfo.ruleset.units.values.firstOrNull { it.name.toCliInput() == params[1] }
+            val baseUnit = console.gameInfo.ruleset.units.values.firstOrNull { it.name.toCliInput() == params[1].toCliInput() }
                 ?: throw ConsoleErrorException("Unknown unit")
             civ.units.placeUnitNearTile(selectedTile.position, baseUnit)
             DevConsoleResponse.OK

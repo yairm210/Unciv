@@ -120,7 +120,8 @@ class UnitMovement(val unit: MapUnit) {
         val tilesToCheck = TreeSet { t: Tile, t2: Tile ->
             val tStep = tileToBestStep[t]!!
             val t2Step = tileToBestStep[t2]!!
-            compareValuesBy(tStep, t2Step, {it.totalCost}, {it.tile.aerialDistanceTo(destination)})
+            // This last comparitor is REQUIRED otherwise the tree will think that tiles the same distance away are the same and will throw the second one away!
+            compareValuesBy(tStep, t2Step, {it.totalCost}, {it.tile.aerialDistanceTo(destination)}, {it.tile.position.hashCode()})
         }
 
         tilesToCheck.add(startingTile)
@@ -128,6 +129,7 @@ class UnitMovement(val unit: MapUnit) {
         val unitMaxMovement = unit.getMaxMovement().toFloat()
         val movementCostCache = HashMap<Pair<Tile, Tile>, Float>()
         val shouldAvoidTileCache = HashMap<Tile, Boolean>()
+        val canPassThroughCache = HashMap<Tile, Boolean>()
 
         while (tilesToCheck.isNotEmpty()){
             val currentTileToCheck = tilesToCheck.first()
@@ -141,6 +143,8 @@ class UnitMovement(val unit: MapUnit) {
                 // If this tile can't beat the current best then no point checking
                 if (currentBestStepToNeighbor!=null && (currentBestStepToNeighbor.totalCost < currentTileStep.totalCost))
                     continue
+
+                if (!canPassThroughCache.getOrPut(neighbor){ canPassThrough(neighbor) }) continue
 
                 val movementBetweenTiles: Float = if (!neighbor.isExplored(unit.civ)) 1f  // If we don't know then we just guess it to be 1.
                 else movementCostCache.getOrPut(currentTileToCheck to neighbor) {
@@ -192,8 +196,6 @@ class UnitMovement(val unit: MapUnit) {
             else MovementStepTotalCost(currentTileStep.totalCost.turn, (currentTileStep.totalCost.movementLeft - movementBetweenTiles).normalizeMovementLeft())
             return MovementStep(currentTileStep, neighbor, movementBetweenTiles, newTotalCost)
         }
-
-        return null
 
         // Backtracking nonsense - we CANNOT end the turn on the previous tile, AND we have no movement left, that means we need to do some alternate history
         val previousStep = currentTileStep.previousStep ?: return null
