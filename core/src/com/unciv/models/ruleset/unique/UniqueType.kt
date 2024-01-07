@@ -601,6 +601,7 @@ enum class UniqueType(
     /////// general conditionals
     ConditionalTimedUnique("for [amount] turns", UniqueTarget.Conditional),
     ConditionalChance("with [amount]% chance", UniqueTarget.Conditional),
+    ConditionalEveryTurns("every [positiveAmount] turns", UniqueTarget.Conditional),
     ConditionalBeforeTurns("before [amount] turns", UniqueTarget.Conditional),
 
     ConditionalAfterTurns("after [amount] turns", UniqueTarget.Conditional),

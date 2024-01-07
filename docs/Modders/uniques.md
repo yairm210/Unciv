@@ -1820,6 +1820,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Conditional
 
+??? example  "&lt;every [positiveAmount] turns&gt;"
+	Example: "&lt;every [3] turns&gt;"
+
+	Applicable to: Conditional
+
 ??? example  "&lt;before [amount] turns&gt;"
 	Example: "&lt;before [3] turns&gt;"
 
