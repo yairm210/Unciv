@@ -375,6 +375,12 @@ class ReligionManager : IsPartOfGameInfoSerialization {
         // Must be done first in case when gain more later
         freeBeliefs.clear()
 
+        when (religionState) {
+            ReligionState.None -> {
+                foundPantheon(beliefs[0].name, useFreeBeliefs)  // makes religion non-null
+            }
+            else -> {}
+        }
         // add beliefs (religion exists at this point)
         religion!!.followerBeliefs.addAll(
             beliefs
@@ -388,9 +394,6 @@ class ReligionManager : IsPartOfGameInfoSerialization {
         )
 
         when (religionState) {
-            ReligionState.None -> {
-                foundPantheon(beliefs[0].name, useFreeBeliefs)
-            }
             ReligionState.FoundingReligion -> {
                 religionState = ReligionState.Religion
                 for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponFoundingReligion))
