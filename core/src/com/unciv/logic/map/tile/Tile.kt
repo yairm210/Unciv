@@ -484,8 +484,9 @@ open class Tile : IsPartOfGameInfoSerialization {
     /** Implements [UniqueParameterType.TileFilter][com.unciv.models.ruleset.unique.UniqueParameterType.TileFilter] */
     fun matchesFilter(filter: String, civInfo: Civilization? = null): Boolean {
         if (matchesTerrainFilter(filter, civInfo)) return true
-        if (improvement != null && !improvementIsPillaged && ruleset.tileImprovements[improvement]!!.matchesFilter(filter)) return true
-        return improvement == null && filter == "unimproved"
+        if ((improvement == null || improvementIsPillaged) && filter == "unimproved") return true
+        if (improvement != null && !improvementIsPillaged && filter == "improved") return true
+        return improvement != null && !improvementIsPillaged && ruleset.tileImprovements[improvement]!!.matchesFilter(filter)
     }
 
     fun matchesTerrainFilter(filter: String, observingCiv: Civilization? = null): Boolean {
@@ -495,7 +496,7 @@ open class Tile : IsPartOfGameInfoSerialization {
     /** Implements [UniqueParameterType.TerrainFilter][com.unciv.models.ruleset.unique.UniqueParameterType.TerrainFilter] */
     fun matchesSingleTerrainFilter(filter: String, observingCiv: Civilization? = null): Boolean {
         return when (filter) {
-            "All" -> true
+            "All", "Terrain" -> true
             baseTerrain -> true
             "Water" -> isWater
             "Land" -> isLand
@@ -510,6 +511,7 @@ open class Tile : IsPartOfGameInfoSerialization {
             "Enemy Land", "Enemy" -> observingCiv != null && isEnemyTerritory(observingCiv)
 
             resource -> observingCiv != null && hasViewableResource(observingCiv)
+            "resource" -> observingCiv != null && hasViewableResource(observingCiv)
             "Water resource" -> isWater && observingCiv != null && hasViewableResource(observingCiv)
             "Natural Wonder" -> naturalWonder != null
             "Featureless" -> terrainFeatures.isEmpty()
