@@ -100,6 +100,7 @@ enum class UniqueParameterType(
         override fun isKnownValue(parameterText:String, ruleset: Ruleset): Boolean {
             if (parameterText in knownValues) return true
             if (ruleset.unitPromotions.values.any { it.hasUnique(parameterText) }) return true
+            if (CivFilter.isKnownValue(parameterText, ruleset)) return true
             if (BaseUnitFilter.isKnownValue(parameterText, ruleset)) return true
             return false
         }
