@@ -1,3 +1,29 @@
+## 4.9.17
+
+Experimental pathfinding! 
+
+Console: autocomplete ALL THE THINGS!
+
+Console: Unified autocomplete
+
+Console: Normalized addStat subcommand
+
+Console: Format is inherent part of console action
+
+Fix "Performance" not translatable  - By Ouaz
+
+By SeventhM:
+- Allow mapUnitFilter to use CivFilter instead of NationFilter 
+- Add terrain filters for resources, any terrain, or "improved" 
+- Move trigger on founding/enhancing religion to after belief pick 
+- Fix Great General counter not decreasing upon spawning a general 
+
+Spectator now receives important diplomatic notifications again  - By tuvus
+
+Download mod releases or any mod zip  - By SomeTroglodyte
+
+Add <every [positiveAmount] turns> Conditional unique (not TriggerCondition)  - By PLynx01
+
 ## 4.9.16
 
 Console: civ/city names better matching
