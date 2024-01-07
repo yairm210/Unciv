@@ -1811,6 +1811,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
     Modifiers that can be added to other uniques to limit when they will be active
 
 ??? example  "&lt;for [amount] turns&gt;"
+	Note this converts any normal Unique into a Triggerable that triggers the first time it is encountered. The counter will start when this condition is first evaluated, so it depends on the UniqueType and preceding Conditionals
 	Example: "&lt;for [3] turns&gt;"
 
 	Applicable to: Conditional
@@ -1821,17 +1822,36 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Conditional
 
 ??? example  "&lt;every [positiveAmount] turns&gt;"
+	Note this will always be true on turn 0, no matter the starting Era
 	Example: "&lt;every [3] turns&gt;"
 
 	Applicable to: Conditional
 
 ??? example  "&lt;before [amount] turns&gt;"
+	This excludes the specified turn number. Note turns are not adjusted for advanced starting Eras
 	Example: "&lt;before [3] turns&gt;"
 
 	Applicable to: Conditional
 
 ??? example  "&lt;after [amount] turns&gt;"
+	This includes the specified turn number. Note turns are not adjusted for advanced starting Eras
 	Example: "&lt;after [3] turns&gt;"
+
+	Applicable to: Conditional
+
+??? example  "&lt;every [positiveAmount] years&gt;"
+	Tests true when a multiple of game years, as defined in Speeds.json and adjusted by starting Era, has been reached or passed by the current turn. Always true for Speed.startYear
+	Example: "&lt;every [3] years&gt;"
+
+	Applicable to: Conditional
+
+??? example  "&lt;before the year [amount]&gt;"
+	Example: "&lt;before the year [3]&gt;"
+
+	Applicable to: Conditional
+
+??? example  "&lt;starting with the year [amount]&gt;"
+	Example: "&lt;starting with the year [3]&gt;"
 
 	Applicable to: Conditional
 

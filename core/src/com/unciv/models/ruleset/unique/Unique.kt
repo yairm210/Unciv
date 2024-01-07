@@ -225,6 +225,13 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
             UniqueType.ConditionalBeforeTurns -> checkOnCiv { gameInfo.turns < condition.params[0].toInt() }
             UniqueType.ConditionalAfterTurns -> checkOnCiv { gameInfo.turns >= condition.params[0].toInt() }
             UniqueType.ConditionalEveryTurns -> checkOnCiv { gameInfo.turns % condition.params[0].toInt() == 0 }
+            UniqueType.ConditionalBeforeYears -> checkOnCiv { gameInfo.getYear(0) < condition.params[0].toInt() }
+            UniqueType.ConditionalAfterYears -> checkOnCiv { gameInfo.getYear(0) >= condition.params[0].toInt() }
+            UniqueType.ConditionalEveryYears -> checkOnCiv {
+                val period = condition.params[0].toInt()
+                gameInfo.getEquivalentTurn() == 0 || // This will also avoid calling gameInfo.getYear(-1) when turns==0
+                    gameInfo.getYear(0) / period > gameInfo.getYear(-1) / period
+            }
 
             UniqueType.ConditionalCivFilter -> checkOnCiv { matchesFilter(condition.params[0]) }
             UniqueType.ConditionalWar -> checkOnCiv { isAtWar() }

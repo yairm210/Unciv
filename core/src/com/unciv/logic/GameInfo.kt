@@ -295,7 +295,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
         return gameParameters.espionageEnabled
     }
 
-    private fun getEquivalentTurn(): Int {
+    fun getEquivalentTurn(): Int {
         val totalTurns = speed.numTotalTurns()
         val startPercent = ruleset.eras[gameParameters.startingEra]!!.startPercent
         return turns + (totalTurns * startPercent / 100)
