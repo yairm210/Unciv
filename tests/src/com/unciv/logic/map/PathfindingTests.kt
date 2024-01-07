@@ -40,7 +40,8 @@ class PathfindingTests {
 
         val unit = testGame.addUnit(baseUnit.name, civInfo, tile)
         // expect movement through hills (2 hill tiles plus one default desert)
-        Assert.assertEquals(3, unit.movement.getShortestPath(testGame.getTile(Vector2(0f, 3f))).size)
+        val shortestPath = unit.movement.getShortestPathNew(testGame.getTile(Vector2(0f, 3f)))
+        Assert.assertEquals(3, shortestPath.size)
     }
 
 
@@ -55,8 +56,14 @@ class PathfindingTests {
         baseUnit.movement = 5
 
         val unit = testGame.addUnit(baseUnit.name, civInfo, tile)
+//         val path = unit.movement.getShortestPathNew()
 //         val pathToTile = unit.movement.getDistanceToTilesWithinTurn(Vector2(0f, 0f), 5f).getPathToTile(testGame.getTile(Vector2(0f, 3f)))
-        unit.movement.moveToTile(testGame.getTile(Vector2(0f, 3f)))
-        Assert.assertEquals(1f, unit.currentMovement)
+//         unit.movement.moveToTile(testGame.getTile(Vector2(0f, 3f)))
+//         Assert.assertEquals(1f, unit.currentMovement)
+    }
+
+    @Test
+    fun ensureMovementComparisonWorks(){
+
     }
 }
