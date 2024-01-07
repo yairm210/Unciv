@@ -99,6 +99,7 @@ class UnitMovement(val unit: MapUnit) {
             compareValuesBy(this, other, {it.turn}, {-it.movementLeft})
     }
 
+    /** Problem and solution documented at https://yairm210.medium.com/multi-turn-pathfinding-7136bd0bdaf0 */
     fun getShortestPathNew(destination: Tile, considerZoneOfControl: Boolean = true,
                            /** For allowing optional avoid of damaging tiles, tiles outside borders, etc */ shouldAvoidTile: (Tile) -> Boolean = {false},
                            maxTurns: Int = 25,
