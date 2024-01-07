@@ -86,6 +86,13 @@ object GithubAPI {
         /** String representation to be used for logging */
         override fun toString() = name.ifEmpty { direct_zip_url }
 
+        /** "Version" from release name and tag */
+        fun getVersion() = when (release_name) {
+            "" -> release_tag
+            release_tag -> release_name
+            else -> "$release_name ($release_tag)}"
+        }
+
         companion object {
             /** Create a [Repo] metadata instance from a [url], supporting various formats
              *  from a repository landing page url to a free non-github zip download.

@@ -315,13 +315,20 @@ object Github {
         // code can decide defaults but leave any meaningful field of a zip-included ModOptions alone.
         val overwriteAlways = repo.direct_zip_url.isEmpty()
 
-        if (overwriteAlways || modOptions.modUrl.isEmpty()) modOptions.modUrl = repo.html_url
-        if (overwriteAlways || modOptions.defaultBranch == "master" && repo.default_branch.isNotEmpty())
+        if (overwriteAlways || modOptions.modUrl.isEmpty())
+            modOptions.modUrl = repo.html_url
+        if (overwriteAlways || modOptions.defaultBranch == "master" && repo.default_branch != "master" && repo.release_tag.isEmpty())
             modOptions.defaultBranch = repo.default_branch
-        if (overwriteAlways || modOptions.lastUpdated.isEmpty()) modOptions.lastUpdated = repo.pushed_at
-        if (overwriteAlways || modOptions.author.isEmpty()) modOptions.author = repo.owner.login
-        if (overwriteAlways || modOptions.modSize == 0) modOptions.modSize = repo.size
-        if (overwriteAlways || modOptions.topics.isEmpty()) modOptions.topics = repo.topics
+        if (overwriteAlways || modOptions.lastUpdated.isEmpty())
+            modOptions.lastUpdated = repo.pushed_at
+        if (overwriteAlways || modOptions.author.isEmpty())
+            modOptions.author = repo.owner.login
+        if (overwriteAlways || modOptions.modSize == 0)
+            modOptions.modSize = repo.size
+        if (overwriteAlways || modOptions.topics.isEmpty())
+            modOptions.topics = repo.topics
+        if (modOptions.version.isEmpty())  // No overwriteAlways test to allow the mod author to set it without doing releases
+            modOptions.version = repo.getVersion()
 
         modOptions.updateDeprecations()
         json().toJson(modOptions, modOptionsFile)

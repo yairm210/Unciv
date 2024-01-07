@@ -14,6 +14,8 @@ import com.unciv.UncivGame
 import com.unciv.json.fromJsonFile
 import com.unciv.json.json
 import com.unciv.logic.UncivShowableException
+import com.unciv.logic.github.Github
+import com.unciv.logic.github.Github.repoNameToFolderName
 import com.unciv.logic.github.GithubAPI
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
@@ -43,8 +45,6 @@ import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.basescreen.RecreateOnResize
 import com.unciv.ui.screens.mainmenuscreen.MainMenuScreen
 import com.unciv.ui.screens.modmanager.ModManagementOptions.SortType
-import com.unciv.logic.github.Github
-import com.unciv.logic.github.Github.repoNameToFolderName
 import com.unciv.ui.screens.pickerscreens.PickerScreen
 import com.unciv.utils.Concurrency
 import com.unciv.utils.Log
@@ -484,7 +484,13 @@ class ModManagementScreen private constructor(
         val newModUIData = ModUIData(ruleset, isVisual)
         installedModInfo[modName] = newModUIData
         // The ModUIData in the actual button is now out of sync, but can be indexed using the new instance
-        modButtons[newModUIData]?.updateUIData(newModUIData)
+        modButtons[newModUIData]?.run {
+            updateUIData(newModUIData)
+            // The listeners have also captured a now outdated ModUIData
+            setModButtonOnClick(this, newModUIData)
+            // Simulate click to update the ModInfoAndActionPane
+            installedButtonAction(newModUIData, this)
+        }
     }
 
     /** Remove the visual indicators for an 'updated' mod after re-downloading it.
@@ -553,9 +559,12 @@ class ModManagementScreen private constructor(
 
     private fun getCachedModButton(mod: ModUIData) = modButtons.getOrPut(mod) {
         val newButton = ModDecoratedButton(mod)
-        if (mod.isInstalled) newButton.onClick { installedButtonAction(mod, newButton) }
-        else newButton.onClick { onlineButtonAction(mod.repo!!, newButton) }
+        setModButtonOnClick(newButton, mod)
         newButton
+    }
+    private fun setModButtonOnClick(button: ModDecoratedButton, mod: ModUIData) {
+        if (mod.isInstalled) button.onClick { installedButtonAction(mod, button) }
+        else button.onClick { onlineButtonAction(mod.repo!!, button) }
     }
 
     /** Rebuild the left-hand column containing all installed mods */
@@ -638,6 +647,7 @@ class ModManagementScreen private constructor(
         scrollOnlineMods.actor = onlineModsTable
     }
 
+    /** Updates the description label at the bottom of the screen */
     private fun showModDescription(modName: String) {
         val onlineModDescription = onlineModInfo[modName]?.description ?: "" // shows github info
         val installedModDescription = installedModInfo[modName]?.description ?: "" // shows ruleset info

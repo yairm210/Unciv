@@ -127,7 +127,7 @@ This file is a little different:
 Note that this file controls _declarative mod compatibility_ (Work in progress) - e.g. there's [uniques](../uniques.md#modoptions-uniques) to say your Mod should only or never be used as 'Permanent audiovisual mod'.
 Incompatibility filtering works so far between extension and base mods, but feel free to document known extension-to-extension incompatibilities using the same Unique now. Stay tuned!
 
-The file can have the following attributes, not including the values Unciv sets (no point in a mod author setting those):
+The file can have the following attributes, not including the values Unciv sets automatically:
 
 | Attribute | Type | | Notes |
 | --------- | ---- | ------- | ----- |
@@ -138,6 +138,22 @@ The file can have the following attributes, not including the values Unciv sets 
 | unitsToRemove | List | empty | List of [Units](4-Unit-related-JSON-files.md#unitsjson) or [unitFilter](../Unique-parameters.md#baseunitfilter) to remove (isBaseRuleset=false only) |
 | nationsToRemove | List | empty | List of [Nations](2-Civilization-related-JSON-files.md#nationsjson) or [nationFilter](../Unique-parameters.md#nationfilter) to remove (isBaseRuleset=false only) |
 | constants | Object | empty | See [ModConstants](#modconstants) |
+
+The values normally set automatically from github metadata are:
+
+| Attribute | Type | | Notes |
+| --------- | ---- | ------- | ----- |
+| modUrl | String | | The github page the mod was downloaded from, or empty if a freely hosted zip was used |
+| defaultBranch | String | master | The repo's default branch |
+| version | String | empty | Release version / tag when downloaded from releases |
+| author | String | | Repo owner |
+| lastUpdated | String | | ISO date |
+| modSize | Integer | 0 | Size in kB |
+| topics | List | empty | A list of "unciv-mod-*" github topics |
+
+When a Mod uses releases, or is distributed without a github repository, these values can and _should_ be set by the author in the distributed `ModOptions.json`.
+Currently, there's a limitation that the github _release_ downloading code cannot fetch and set the default branch and topics.
+In return, the release name and, if different, its tag are automatically displayed as version unless you explicitly set the field in the ModOptions file.
 
 ### ModConstants
 

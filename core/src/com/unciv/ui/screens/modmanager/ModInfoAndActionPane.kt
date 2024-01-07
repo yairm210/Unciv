@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.unciv.logic.github.Github
 import com.unciv.logic.github.GithubAPI
 import com.unciv.models.metadata.BaseRuleset
 import com.unciv.models.ruleset.Ruleset
@@ -15,7 +16,6 @@ import com.unciv.ui.components.extensions.toCheckBox
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
 import com.unciv.ui.components.input.onClick
-import com.unciv.logic.github.Github
 import com.unciv.utils.Concurrency
 import kotlin.math.max
 
@@ -41,6 +41,7 @@ internal class ModInfoAndActionPane : Table() {
         update(
             repo.name, repo.html_url, repo.default_branch,
             repo.pushed_at, repo.owner.login, repo.size,
+            repo.getVersion(),
             repo.owner.avatar_url
         )
     }
@@ -55,7 +56,8 @@ internal class ModInfoAndActionPane : Table() {
         enableVisualCheckBox = ModCompatibility.isAudioVisualMod(mod)
         update(
             modName, modOptions.modUrl, modOptions.defaultBranch,
-            modOptions.lastUpdated, modOptions.author, modOptions.modSize
+            modOptions.lastUpdated, modOptions.author, modOptions.modSize,
+            modOptions.version
         )
     }
 
@@ -66,6 +68,7 @@ internal class ModInfoAndActionPane : Table() {
            updatedAt: String,
            author: String,
            modSize: Int,
+           version: String,
            avatarUrl: String? = null
     ) {
         // Display metadata
@@ -81,6 +84,9 @@ internal class ModInfoAndActionPane : Table() {
 
         if (author.isNotEmpty())
             add("Author: [$author]".toLabel()).row()
+
+        if (version.isNotEmpty())
+            add("Version: [$version]".toLabel()).row()
 
         updateSize(modSize)
         add(sizeLabel).padBottom(15f).row()
