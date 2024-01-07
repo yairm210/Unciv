@@ -13,6 +13,8 @@ import com.badlogic.gdx.utils.SerializationException
 import com.unciv.UncivGame
 import com.unciv.json.fromJsonFile
 import com.unciv.json.json
+import com.unciv.logic.UncivShowableException
+import com.unciv.logic.github.GithubAPI
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.tilesets.TileSetCache
@@ -41,8 +43,8 @@ import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.basescreen.RecreateOnResize
 import com.unciv.ui.screens.mainmenuscreen.MainMenuScreen
 import com.unciv.ui.screens.modmanager.ModManagementOptions.SortType
-import com.unciv.ui.screens.pickerscreens.Github
-import com.unciv.ui.screens.pickerscreens.Github.repoNameToFolderName
+import com.unciv.logic.github.Github
+import com.unciv.logic.github.Github.repoNameToFolderName
 import com.unciv.ui.screens.pickerscreens.PickerScreen
 import com.unciv.utils.Concurrency
 import com.unciv.utils.Log
@@ -93,7 +95,7 @@ class ModManagementScreen private constructor(
 
     private var lastSelectedButton: ModDecoratedButton? = null
     private var lastSyncMarkedButton: ModDecoratedButton? = null
-    private var selectedMod: Github.Repo? = null
+    private var selectedMod: GithubAPI.Repo? = null
 
     private val modDescriptionLabel: WrappableLabel
 
@@ -233,7 +235,7 @@ class ModManagementScreen private constructor(
      */
     private fun tryDownloadPage(pageNum: Int) {
         runningSearchJob = Concurrency.run("GitHubSearch") {
-            val repoSearch: Github.RepoSearch
+            val repoSearch: GithubAPI.RepoSearch
             try {
                 repoSearch = Github.tryGetGithubReposWithTopic(amountPerPage, pageNum)!!
             } catch (ex: Exception) {
@@ -254,7 +256,7 @@ class ModManagementScreen private constructor(
         }
     }
 
-    private fun addModInfoFromRepoSearch(repoSearch: Github.RepoSearch, pageNum: Int) {
+    private fun addModInfoFromRepoSearch(repoSearch: GithubAPI.RepoSearch, pageNum: Int) {
         // clear and remove last cell if it is the "..." indicator
         val lastCell = onlineModsTable.cells.lastOrNull()
         if (lastCell != null && lastCell.actor is Label && (lastCell.actor as Label).text.toString() == "...") {
@@ -363,7 +365,7 @@ class ModManagementScreen private constructor(
         val downloadButton = "Download mod from URL".toTextButton()
         downloadButton.onClick {
             val popup = Popup(this)
-            popup.addGoodSizedLabel("Please enter the mod repository -or- archive zip -or- branch url:").row()
+            popup.addGoodSizedLabel("Please enter the mod repository -or- archive zip -or- branch -or- release url:").row()
             val textField = UncivTextField.create("").apply { maxLength = 666 }
             popup.add(textField).width(stage.width / 2).row()
             val pasteLinkButton = "Paste from clipboard".toTextButton()
@@ -375,7 +377,7 @@ class ModManagementScreen private constructor(
             actualDownloadButton.onClick {
                 actualDownloadButton.setText("Downloading...".tr())
                 actualDownloadButton.disable()
-                val repo = Github.Repo().parseUrl(textField.text)
+                val repo = GithubAPI.Repo.parseUrl(textField.text)
                 if (repo == null) {
                     ToastPopup("«RED»{Invalid link!}«»", this@ModManagementScreen)
                         .apply { isVisible = true }
@@ -392,7 +394,7 @@ class ModManagementScreen private constructor(
     }
 
     /** Used as onClick handler for the online Mod list buttons */
-    private fun onlineButtonAction(repo: Github.Repo, button: ModDecoratedButton) {
+    private fun onlineButtonAction(repo: GithubAPI.Repo, button: ModDecoratedButton) {
         syncOnlineSelected(repo.name, button)
         showModDescription(repo.name)
 
@@ -435,7 +437,7 @@ class ModManagementScreen private constructor(
     }
 
     /** Download and install a mod in the background, called both from the right-bottom button and the URL entry popup */
-    private fun downloadMod(repo: Github.Repo, postAction: () -> Unit = {}) {
+    private fun downloadMod(repo: GithubAPI.Repo, postAction: () -> Unit = {}) {
         Concurrency.run("DownloadMod") { // to avoid ANRs - we've learnt our lesson from previous download-related actions
             try {
                 val modFolder = Github.downloadAndExtract(
@@ -456,8 +458,14 @@ class ModManagementScreen private constructor(
                     unMarkUpdatedMod(repoName)
                     postAction()
                 }
+            } catch (ex: UncivShowableException) {
+                Log.error("Could not download $repo", ex)
+                launchOnGLThread {
+                    ToastPopup(ex.message, this@ModManagementScreen)
+                    postAction()
+                }
             } catch (ex: Exception) {
-                Log.error("Could not download ${repo.name}", ex)
+                Log.error("Could not download $repo", ex)
                 launchOnGLThread {
                     ToastPopup("Could not download [${repo.name}]", this@ModManagementScreen)
                     postAction()
