@@ -213,7 +213,15 @@ class UnitMovement(val unit: MapUnit) {
      * Returns an empty list if there's no way to get to the destination.
      */
     fun getShortestPath(destination: Tile, avoidDamagingTerrain: Boolean = false): List<Tile> {
-        if (UncivGame.Current.settings.experimentalMovement) return getShortestPathNew(destination).toBackwardsCompatiblePath()
+        if (UncivGame.Current.settings.experimentalMovement) {
+            fun shouldAvoidEnemyTile(tile:Tile) = unit.isCivilian() && unit.isAutomated() && tile.isEnemyTerritory(unit.civ)
+            if (avoidDamagingTerrain){
+                val shortestPathWithoutDamagingTiles = getShortestPathNew(destination,
+                    shouldAvoidTile = { shouldAvoidEnemyTile(it) || unit.getDamageFromTerrain(it) > 0 })
+                if (shortestPathWithoutDamagingTiles.isNotEmpty()) return shortestPathWithoutDamagingTiles.toBackwardsCompatiblePath()
+            }
+            return getShortestPathNew(destination, shouldAvoidTile = ::shouldAvoidEnemyTile).toBackwardsCompatiblePath()
+        }
         if (unit.cache.cannotMove) return listOf()
 
         // First try and find a path without damaging terrain
