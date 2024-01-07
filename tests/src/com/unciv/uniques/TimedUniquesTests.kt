@@ -1,7 +1,6 @@
 package com.unciv.uniques
 
 import com.badlogic.gdx.math.Vector2
-import com.unciv.Constants
 import com.unciv.logic.battle.BattleDamage
 import com.unciv.logic.battle.MapUnitCombatant
 import com.unciv.logic.civilization.managers.TurnManager
@@ -27,7 +26,7 @@ class TimedUniquesTests {
 
     @Test
     fun testConditionalTimedUniqueIsTriggerable() {
-        val unique = policy.uniqueObjects.first{ it.type == UniqueType.Strength }
+        val unique = policy.uniqueObjects.first { it.type == UniqueType.Strength }
         Assert.assertTrue("Unique with timed conditional must be triggerable", unique.isTriggerable)
     }
 

@@ -599,12 +599,16 @@ enum class UniqueType(
 
 
     /////// general conditionals
-    ConditionalTimedUnique("for [amount] turns", UniqueTarget.Conditional),
+    ConditionalTimedUnique("for [amount] turns", UniqueTarget.Conditional, docDescription =
+            "Note this converts any normal Unique into a Triggerable that triggers the first time it is encountered. The counter will start when this condition is first evaluated, so it depends on the UniqueType and preceding Conditionals"),
     ConditionalChance("with [amount]% chance", UniqueTarget.Conditional),
-    ConditionalEveryTurns("every [positiveAmount] turns", UniqueTarget.Conditional),
-    ConditionalBeforeTurns("before [amount] turns", UniqueTarget.Conditional),
 
-    ConditionalAfterTurns("after [amount] turns", UniqueTarget.Conditional),
+    ConditionalEveryTurns("every [positiveAmount] turns", UniqueTarget.Conditional, docDescription =
+            "Note this will always be true on turn 0, no matter the starting Era"),
+    ConditionalBeforeTurns("before [amount] turns", UniqueTarget.Conditional, docDescription =
+            "This excludes the specified turn number. Note turns are not adjusted for advanced starting Eras"),
+    ConditionalAfterTurns("after [amount] turns", UniqueTarget.Conditional, docDescription =
+            "This includes the specified turn number. Note turns are not adjusted for advanced starting Eras"),
 
 
     /////// civ conditionals

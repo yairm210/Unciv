@@ -224,6 +224,7 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
             UniqueType.ConditionalEveryTurns -> checkOnCiv { gameInfo.turns % condition.params[0].toInt() == 0}
             UniqueType.ConditionalBeforeTurns -> checkOnCiv { gameInfo.turns < condition.params[0].toInt() }
             UniqueType.ConditionalAfterTurns -> checkOnCiv { gameInfo.turns >= condition.params[0].toInt() }
+            UniqueType.ConditionalEveryTurns -> checkOnCiv { gameInfo.turns % condition.params[0].toInt() == 0 }
 
             UniqueType.ConditionalCivFilter -> checkOnCiv { matchesFilter(condition.params[0]) }
             UniqueType.ConditionalWar -> checkOnCiv { isAtWar() }
