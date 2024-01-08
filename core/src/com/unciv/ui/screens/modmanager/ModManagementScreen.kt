@@ -399,7 +399,7 @@ class ModManagementScreen private constructor(
         syncOnlineSelected(repo.name, button)
         showModDescription(repo.name)
 
-        //todo bug: this date fetch is too late for a correct "Updated" marker
+        //todo bug: this date fetch is too late for a correct "Updated" marker - the unMarkUpdatedMod is a temp kludge
         if (!repo.hasCheckedRelease) {
             repo.hasCheckedRelease = true
             Concurrency.run("GitHubLatestRelease") {
@@ -409,6 +409,10 @@ class ModManagementScreen private constructor(
                     if (repo.release_tag.isNotEmpty() && (selectedMod === repo)) {
                         launchOnGLThread {
                             modActionTable.update(repo) // Updates three things - version, date and "Open Github page" link
+                            installedModInfo[repo.name]?.ruleset?.modOptions?.also {
+                                if (repo.pushed_at == it.lastUpdated)
+                                    unMarkUpdatedMod(repo.name)
+                            }
                         }
                     }
                 } catch (ignore: IOException) {
@@ -637,6 +641,7 @@ class ModManagementScreen private constructor(
         mod.folderLocation!!.deleteDirectory()
         reloadCachesAfterModChange()
         installedModInfo.remove(mod.name)
+        unMarkUpdatedMod(mod.name)
         refreshInstalledModTable()
     }
 

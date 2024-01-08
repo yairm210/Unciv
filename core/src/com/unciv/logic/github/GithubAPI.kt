@@ -330,7 +330,9 @@ object GithubAPI {
         owner = release.author
         html_url = release.html_url  // Used as open on Github link
         if (full_name.isEmpty()) full_name = "${owner.login}/${repoName.folderNameToRepoName()}"  // safety - not seen it happen
-        // We could copy `description = release.body` here to get the release notice into the picker bottom pane - problem: It's markdown?
+        // We could copy `description = release.body` here to get the release notice into the picker bottom pane
+        // problems: It's markdown and would look bad? also, must be updated before the buttons are created or we'll need another updateInstalledModUIData for online
+        // description = description + "\n\n" + release.body
         return this
     }
     //endregion
