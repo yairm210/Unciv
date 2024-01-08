@@ -236,7 +236,7 @@ enum class UniqueType(
     TriggersCulturalVictory("Triggers a Cultural Victory upon completion", UniqueTarget.Global),
 
     /// Misc.
-    MayBuyConstructionsInPupets("May buy items in puppet cities", UniqueTarget.Global),    
+    MayBuyConstructionsInPuppets("May buy items in puppet cities", UniqueTarget.Global),    
     MayNotAnnexCities("May not annex cities", UniqueTarget.Global),
     BorrowsCityNames("\"Borrows\" city names from other civilizations in the game", UniqueTarget.Global),
     CitiesAreRazedXTimesFaster("Cities are razed [amount] times as fast", UniqueTarget.Global),
