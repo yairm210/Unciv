@@ -1,3 +1,255 @@
+## 4.9.17
+
+Experimental pathfinding - activate in Options > Gameplay > Experimental movement
+
+Console: autocomplete ALL THE THINGS!
+
+By SeventhM:
+- Allow mapUnitFilter to use CivFilter
+- Add terrain filters for resources, any terrain, or "improved"
+- Fix 'infinite Great Generals' bug
+
+Spectator receives diplomatic notifications again - By tuvus
+
+Download mod releases or any mod zip  - By SomeTroglodyte
+
+Add <every [positiveAmount] turns> Conditional - By PLynx01
+
+## 4.9.16
+
+Console: civ/city names better matching
+
+By SeventhM:
+- Change the icons from some units/buildings
+- Add unique to allow for generalized great generals
+
+Show carried production from mid-turn obsoleted units  - By soggerr
+
+By tuvus:
+- Fixed crash when a worker tries to build a cached improvement it can't build
+- Fixed crash evaluating alliance with unmet city-state
+
+By SomeTroglodyte:
+- City-stationed unit icons get circular touchable area
+
+set minimum max coast extension to 1  - By remdu
+
+## 4.9.15
+
+Added Tile Breakdown table, accessible by clicking on the stats in tile info table
+
+Solved rare pillage-related crash
+
+Added smoothing to vector images
+
+Console:
+- Add activatetrigger command for civ!
+- Allow "-delimited strings
+
+'capture all capitals' victory accepts defeat of civs that did not found capitals
+
+Map editor generation steps don't add multiple terrain features of the same type
+
+Worker remove feature far away from cities fix  - By tuvus
+
+## 4.9.14
+
+Fixed Scenario crashes
+
+Updating server URL allows checking connection immediately
+
+New Citizen Focus Options - by Itanasi
+
+By tuvus:
+- Worker AI short distance priority fix
+- AI focuses city-state gold gifting
+
+By SeventhM:
+- Spawn multiple great people if eligible
+- Initial Great Writer functionality
+
+## 4.9.13
+
+Religion button respects unique "hidden from users" modifier
+
+Trigger 'capture city' as a unit trigger
+
+By tuvus:
+- Worker AI Rework
+- AI doesn't counteroffer and request a treaty on the same turn
+- Civs now have a 50% chance of picking their favored religion
+
+By SeventhM:
+- Fix stat on tile uniques doubling on improvement tiles
+- Avoid crash if "Only available" unique in policy branch has 2 or more params
+- Allow for improvement removal "improvements"
+
+Randomize seed checkbox  - By remdu
+
+## 4.9.12
+
+Added experimental scenarios!
+
+Fixed Android status bar not disappearing ("immersion mode")
+
+Console: added 'set player type' command, for scenario setup
+
+Fix ShadowedLabel - By SomeTroglodyte
+
+## 4.9.11
+
+Fixed tech dependency related crash
+
+Unit by default not selected on turn start
+
+Added 'upon turn end' trigger
+
+By SomeTroglodyte:
+- City-state bonuses respect 'hidden from users' modifier
+- (UI) Politics overview diagram: Add legend popup
+
+By tuvus:
+- Added AutoPlay until end setting
+- if all players are defeated, one player will be processed
+
+Enable Domination to Capture All Capitals - By itanasi
+
+## 4.9.10
+
+Add remove unit promotion unique  - By PLynx01
+
+Fix key bindings in edge case - By SomeTroglodyte
+
+By remdu:
+- Coast spread algorithm
+- don'y initialize with non naturally generated terrain
+
+Stop movement on Path Blocked - By itanasi
+
+Only units that build roads have connect roads automation. - By willjallen
+
+By SeventhM:
+- Fix Great Scientist calculation
+- Show stat percent differences in replacement building
+
+Don't list Unique requiring a tech in the Civilopedia for that tech - By dHannasch
+
+## 4.9.9
+
+Finally deprecated old religion uniques
+
+By SeventhM:
+- Avoid crash in mod checker for mods with undefined tech requirements
+- Fix stats from tileFilter unique not working on improvements
+- Add damage dealing unit trigger
+- Fix not getting unique unit from tile based free unit trigger (For real this time)
+
+By soggerr:
+- Show average damage in battle calculations
+- Allow battle calculations when not your turn
+
+## 4.9.8
+
+Add new map types  - By remdu
+
+Avoid ANRs when users select mods that take above 500ms to run checks on
+
+Add warning when buying a religious unit not of your religion  - By WhoIsJohannes
+
+Allow arbitrary victory types for AI policy picking  - By SeventhM
+
+By SomeTroglodyte:
+- Civilopedia key bindings
+- Great Person Points - Rounding changes, Breakdown UI
+- Fix ended Leader Voice not cleared and resumed on un-pause
+
+Fix 'Sleep Until Healed' action missing  - By soggerr
+
+## 4.9.7
+
+Allow city conditionals on units to upgrade to
+
+Captured military units trigger a notification for the target civ
+
+Fixed city-state type coloring
+
+"Can instantly construct a [improvementFilter] improvement" works with improvementFilter
+
+Allow conditionals for trigger-type unit actions  - By SeventhM
+
+Fix connect road button when auto unit cycle turned on - By willjallen
+
+Add resource support to stat gamespeed conditional - By PLynx01
+
+Better Frigate and Ship of the Line sound - By tuvus
+
+## 4.9.6
+
+Connect roads automation  - By willjallen
+
+Fix not getting unique unit from tile based free unit trigger  - By SeventhM
+
+By Ouaz:
+- Fix Carthage civilopedia article
+- Add "UI tips" civilopedia article
+
+## 4.9.5
+
+Start turn with unit selected
+
+Add trigger from building improvements and trigger conditional for building improvements  - By SeventhM
+
+Preparation for multiple required uniques per ruleset object - By dHannasch
+
+Fixed trading with city-state through notifications  - By tuvus
+
+Mention the Railroad production bonus in the Civilopedia  - By Caballero-Arepa
+
+By SomeTroglodyte:
+- Notification for "Policy branch unlocked" clickable
+- Dev Console: Linting + add Stat
+
+## 4.9.4
+
+Stats from followers unique fixed
+
+City-state units work with 'get era' function
+
+Ruleset validation for negative-weight ruin rewards
+
+By SomeTroglodyte:
+- Fix crash for trade notifications as Spectator / waiting for player
+- Fix Unit rename popup offering up the icon
+
+Solved worker automation crash  - By willjallen
+
+By SeventhM:
+- Add "Unable to pillage tiles" unique
+- Fix objects being purchable with a blocking conditional
+
+Stats per Stat unique - By PLynx01
+
+## 4.9.3
+
+Cities you haven't bombarded with will auto-bombard at turn end
+
+Defeated (no units/cities) hotseat multiplayer no longer appears for turns ("player X ready")
+
+Console: Nicer available command display
+
+By willjallen:
+- Add tech queuing on right-click / doubleclick
+
+By tuvus:
+- Initial AutoPlay implementation
+- Fixed exploration for automated units
+
+By SomeTroglodyte:
+- Wesnoth map import polished up
+- City sounds again
+
+Fix founding cities removing city center tile improvement  - By SeventhM
+
 ## 4.9.2
 
 Console:

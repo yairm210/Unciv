@@ -663,7 +663,7 @@ class MusicController {
     }
 
     private fun MusicTrackController.overlayTick() {
-        if (timerTick() != MusicTrackController.State.Idle) return
+        if (!timerTick().canPlay) return
         if (!overlayPausing && !isPlaying())
             clearOverlay()  // means FadeOut-to-stop finished
     }

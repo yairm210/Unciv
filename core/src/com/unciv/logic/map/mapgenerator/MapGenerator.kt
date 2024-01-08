@@ -238,6 +238,31 @@ class MapGenerator(val ruleset: Ruleset, private val coroutineScope: CoroutineSc
         }
     }
 
+    private fun spreadCoast(map: TileMap) {
+        for (i in 1..map.mapParameters.maxCoastExtension) {
+            val toCoast = mutableListOf<Tile>()
+            for (tile in map.values.filter { it.baseTerrain == Constants.ocean }) {
+                val tilesInDistance = tile.getTilesInDistance(1)
+                for (neighborTile in tilesInDistance) {
+                    if (neighborTile.isLand) {
+                        toCoast.add(tile)
+                        break
+                    } else if (neighborTile.baseTerrain == Constants.coast) {
+                        val randbool = randomness.RNG.nextBoolean()
+                        if (randbool) {
+                            toCoast.add(tile)
+                        }
+                        break
+                    }
+                }
+            }
+            for (tile in toCoast) {
+                tile.baseTerrain = Constants.coast
+                tile.setTransients()
+            }
+        }
+    }
+
     private fun spawnLakesAndCoasts(map: TileMap) {
 
         if (ruleset.terrains.containsKey(Constants.lakes)) {
@@ -277,14 +302,7 @@ class MapGenerator(val ruleset: Ruleset, private val coroutineScope: CoroutineSc
 
         //Coasts
         if (ruleset.terrains.containsKey(Constants.coast)) {
-            for (tile in map.values.filter { it.baseTerrain == Constants.ocean }) {
-                val coastLength =
-                    max(1, randomness.RNG.nextInt(max(1, map.mapParameters.maxCoastExtension)))
-                if (tile.getTilesInDistance(coastLength).any { it.isLand }) {
-                    tile.baseTerrain = Constants.coast
-                    tile.setTransients()
-                }
-            }
+            spreadCoast(map)
         }
     }
 
@@ -389,10 +407,29 @@ class MapGenerator(val ruleset: Ruleset, private val coroutineScope: CoroutineSc
             elevation = abs(elevation).pow(1.0 - tileMap.mapParameters.elevationExponent.toDouble()) * elevation.sign
 
             when {
-                elevation <= 0.5 -> tile.baseTerrain = flat
-                elevation <= 0.7 && hill != null -> tile.addTerrainFeature(hill)
+                elevation <= 0.5 -> {
+                    tile.baseTerrain = flat
+                    if (hill != null && tile.terrainFeatures.contains(hill)) {
+                        tile.removeTerrainFeature(hill)
+                    }
+                }
+                elevation <= 0.7 && hill != null -> {
+                    tile.addTerrainFeature(hill)
+                    tile.baseTerrain = flat
+                }
                 elevation <= 0.7 && hill == null -> tile.baseTerrain = flat // otherwise would be hills become mountains
-                elevation <= 1.0 && mountain != null -> tile.baseTerrain = mountain
+                elevation > 0.7 && mountain != null -> {
+                    tile.baseTerrain = mountain
+                    if (hill != null && tile.terrainFeatures.contains(hill)) {
+                        tile.removeTerrainFeature(hill)
+                    }
+                }
+                else -> {
+                    tile.baseTerrain = flat
+                    if (hill != null && tile.terrainFeatures.contains(hill)) {
+                        tile.removeTerrainFeature(hill)
+                    }
+                }
             }
             tile.setTerrainTransients()
         }

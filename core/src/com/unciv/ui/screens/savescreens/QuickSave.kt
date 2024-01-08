@@ -35,6 +35,7 @@ object QuickSave {
     }
 
     fun load(screen: WorldScreen) {
+        UncivGame.Current.settings.autoPlay.stopAutoPlay()
         val files = UncivGame.Current.files
         val toast = ToastPopup("Quickloading...", screen)
         Concurrency.run("QuickLoadGame") {
@@ -57,6 +58,7 @@ object QuickSave {
     }
 
     fun autoLoadGame(screen: MainMenuScreen) {
+        UncivGame.Current.settings.autoPlay.stopAutoPlay()
         val loadingPopup = LoadingPopup(screen)
         Concurrency.run("autoLoadGame") {
             // Load game from file to class on separate thread to avoid ANR...
@@ -69,7 +71,7 @@ object QuickSave {
 
             val savedGame: GameInfo
             try {
-                savedGame = screen.game.files.loadLatestAutosave()
+                savedGame = screen.game.files.autosaves.loadLatestAutosave()
             } catch (_: OutOfMemoryError) {
                 outOfMemory()
                 return@run

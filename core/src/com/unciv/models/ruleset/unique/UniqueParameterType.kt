@@ -49,6 +49,16 @@ enum class UniqueParameterType(
         }
     },
 
+    PositiveNumber("positiveAmount", "3", "This indicates a positive whole number, larger than zero, a '+' sign is optional") {
+        override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
+                UniqueType.UniqueParameterErrorSeverity? {
+            val amount = parameterText.toIntOrNull()
+                ?: return UniqueType.UniqueParameterErrorSeverity.RulesetInvariant
+            if (amount <= 0) return UniqueType.UniqueParameterErrorSeverity.RulesetInvariant
+            return null
+        }
+    },
+
     Fraction("fraction", docExample = "0.5", "Indicates a fractional number, which can be negative") {
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset): UniqueType.UniqueParameterErrorSeverity? {
             return if (parameterText.toFloatOrNull () == null) UniqueType.UniqueParameterErrorSeverity.RulesetInvariant
@@ -90,6 +100,7 @@ enum class UniqueParameterType(
         override fun isKnownValue(parameterText:String, ruleset: Ruleset): Boolean {
             if (parameterText in knownValues) return true
             if (ruleset.unitPromotions.values.any { it.hasUnique(parameterText) }) return true
+            if (CivFilter.isKnownValue(parameterText, ruleset)) return true
             if (BaseUnitFilter.isKnownValue(parameterText, ruleset)) return true
             return false
         }
@@ -297,9 +308,9 @@ enum class UniqueParameterType(
     /** Implemented by [Tile.matchesTerrainFilter][com.unciv.logic.map.tile.Tile.matchesTerrainFilter] */
     TerrainFilter("terrainFilter", Constants.freshWaterFilter, null, "Terrain Filters") {
         private val knownValues = setOf(
-            "All",
-            Constants.coastal, Constants.river, "Open terrain", "Rough terrain", "Water resource",
-            "Foreign Land", "Foreign", "Friendly Land", "Friendly", "Enemy Land", "Enemy",
+            "All", "Terrain",
+            Constants.coastal, Constants.river, "Open terrain", "Rough terrain", "Water resource", 
+            "resource", "Foreign Land", "Foreign", "Friendly Land", "Friendly", "Enemy Land", "Enemy",
             "Featureless", Constants.freshWaterFilter, "non-fresh water", "Natural Wonder",
             "Impassable", "Land", "Water"
         ) +
@@ -327,7 +338,7 @@ enum class UniqueParameterType(
 
     /** Implemented by [Tile.matchesFilter][com.unciv.logic.map.tile.Tile.matchesFilter] */
     TileFilter("tileFilter", "Farm", "Anything that can be used either in an improvementFilter or in a terrainFilter can be used here, plus 'unimproved'", "Tile Filters") {
-        private val knownValues = setOf("unimproved", "All Road", "Great Improvement")
+        private val knownValues = setOf("unimproved", "improved", "All Road", "Great Improvement")
 
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
             UniqueType.UniqueParameterErrorSeverity? = getErrorSeverityForFilter(parameterText, ruleset)
@@ -562,7 +573,7 @@ enum class UniqueParameterType(
         override fun getTranslationWriterStringsForOutput() = knownValues
     },
 
-    /** Mod declarative compatibility: Behaves like [Unknown], but makes for nicer auto-generated documentation. */
+    /** Mod declarative compatibility: Define Mod relations by their name. */
     ModName("modFilter", "DeCiv Redux", """A Mod name, case-sensitive _or_ a simple wildcard filter beginning and ending in an Asterisk, case-insensitive""", "Mod name filter") {
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
             UniqueType.UniqueParameterErrorSeverity? =

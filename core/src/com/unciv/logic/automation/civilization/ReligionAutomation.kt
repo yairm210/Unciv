@@ -43,9 +43,8 @@ object ReligionAutomation {
         // The original had a cap at 4 missionaries total, but 1/4 * the number of cities should be more appropriate imo
         if (citiesWithoutOurReligion.count() >
             4 * civInfo.units.getCivUnits().count {
-                it.canDoLimitedAction(Constants.spreadReligion) // OLD
-                    || it.hasUnique(UniqueType.CanSpreadReligion) // NEW
-                    || it.canDoLimitedAction(Constants.removeHeresy) }
+                    it.hasUnique(UniqueType.CanSpreadReligion)
+                    || it.hasUnique(UniqueType.CanRemoveHeresy) }
         ) {
             val (city, pressureDifference) = citiesWithoutOurReligion.map { city ->
                 city to city.religion.getPressureDeficit(civInfo.religionManager.religion?.name)
@@ -81,10 +80,7 @@ object ReligionAutomation {
         // Todo: buy Great People post industrial era
 
         // Just buy missionaries to spread our religion outside of our civ
-        if (civInfo.units.getCivUnits().count {
-                it.canDoLimitedAction(Constants.spreadReligion) // OLD
-                    || it.hasUnique(UniqueType.CanSpreadReligion) // NEW
-        } < 4) {
+        if (civInfo.units.getCivUnits().count { it.hasUnique(UniqueType.CanSpreadReligion) } < 4) {
             buyMissionaryInAnyCity(civInfo)
             return
         }
@@ -110,10 +106,7 @@ object ReligionAutomation {
     private fun buyMissionaryInAnyCity(civInfo: Civilization) {
         if (civInfo.religionManager.religionState < ReligionState.Religion) return
         var missionaries = civInfo.gameInfo.ruleset.units.values.filter { unit ->
-            // OLD
-            unit.getMatchingUniques(UniqueType.CanActionSeveralTimes).filter { it.params[0] == Constants.spreadReligion }.any()
-                // NEW
-                || unit.hasUnique(UniqueType.CanSpreadReligion)
+                unit.hasUnique(UniqueType.CanSpreadReligion)
         }
         missionaries = missionaries.map { civInfo.getEquivalentUnit(it) }
 
@@ -137,11 +130,10 @@ object ReligionAutomation {
         if (validCitiesToBuy.isEmpty()) return
 
         val citiesWithBonusCharges = validCitiesToBuy.filter { city ->
-            city.getMatchingUniques(UniqueType.UnitStartingActions).any { it.params[2] == Constants.spreadReligion }
-                || city.getMatchingUniques(UniqueType.UnitStartingPromotions).any {
-                    val promotionName = it.params[2]
-                    val promotion = city.getRuleset().unitPromotions[promotionName] ?: return@any false
-                    promotion.hasUnique(UniqueType.CanSpreadReligion)
+            city.getMatchingUniques(UniqueType.UnitStartingPromotions).any {
+                val promotionName = it.params[2]
+                val promotion = city.getRuleset().unitPromotions[promotionName] ?: return@any false
+                promotion.hasUnique(UniqueType.CanSpreadReligion)
             }
         }
         val holyCity = validCitiesToBuy.firstOrNull { it.isHolyCityOf(civInfo.religionManager.religion!!.name) }
@@ -173,8 +165,7 @@ object ReligionAutomation {
     private fun buyInquisitorNear(civInfo: Civilization, city: City) {
         if (civInfo.religionManager.religionState < ReligionState.Religion) return
         var inquisitors = civInfo.gameInfo.ruleset.units.values.filter {
-            it.getMapUnit(civInfo).canDoLimitedAction(Constants.removeHeresy)
-            || it.hasUnique(UniqueType.PreventSpreadingReligion)
+            it.hasUnique(UniqueType.CanRemoveHeresy) || it.hasUnique(UniqueType.PreventSpreadingReligion)
         }
 
         inquisitors = inquisitors.map { civInfo.getEquivalentUnit(it) }
@@ -430,7 +421,8 @@ object ReligionAutomation {
             .filterNot { civInfo.gameInfo.religions.values.map { religion -> religion.name }.contains(it) }
         val favoredReligion = civInfo.nation.favoredReligion
         val religionIcon =
-            if (favoredReligion != null && favoredReligion in availableReligionIcons) favoredReligion
+            if (favoredReligion != null && favoredReligion in availableReligionIcons
+                && (1..10).random() <= 5) favoredReligion
             else availableReligionIcons.randomOrNull()
                 ?: return // Wait what? How did we pass the checking when using a great prophet but not this?
 

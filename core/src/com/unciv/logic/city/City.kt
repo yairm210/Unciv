@@ -87,7 +87,13 @@ class City : IsPartOfGameInfoSerialization {
     var hasSoldBuildingThisTurn = false
     var isPuppet = false
     var updateCitizens = false  // flag so that on startTurn() the Governor reassigns Citizens
-    var cityAIFocus: CityFocus = CityFocus.NoFocus
+
+    var cityAIFocus: String = CityFocus.NoFocus.name
+    fun getCityFocus() = CityFocus.values().firstOrNull { it.name == cityAIFocus } ?: CityFocus.NoFocus
+    fun setCityFocus(cityFocus: CityFocus){ cityAIFocus = cityFocus.name }
+
+
+
     var avoidGrowth: Boolean = false
     @Transient var currentGPPBonus: Int = 0  // temporary variable saved for rankSpecialist()
 
@@ -358,7 +364,7 @@ class City : IsPartOfGameInfoSerialization {
         if (resetLocked) {
             workedTiles = hashSetOf()
             lockedTiles = hashSetOf()
-        } else {
+        } else if(cityAIFocus != CityFocus.Manual.name){
             workedTiles = lockedTiles
         }
         if (!manualSpecialists)

@@ -19,8 +19,10 @@ class GreatPersonManager : IsPartOfGameInfoSerialization {
     /** Base points, without speed modifier */
     var pointsForNextGreatPersonCounter = Counter<String>()  // Initial values assigned in getPointsRequiredForGreatPerson as needed
     var pointsForNextGreatGeneral = 200
+    var pointsForNextGreatGeneralCounter = Counter<String>() // Initial values assigned when needed
 
     var greatPersonPointsCounter = Counter<String>()
+    var greatGeneralPointsCounter = Counter<String>()
     var greatGeneralPoints = 0
     var freeGreatPeople = 0
     /** Marks subset of [freeGreatPeople] as subject to maya ability restrictions (each only once untill all used) */
@@ -33,6 +35,8 @@ class GreatPersonManager : IsPartOfGameInfoSerialization {
         toReturn.freeGreatPeople = freeGreatPeople
         toReturn.greatPersonPointsCounter = greatPersonPointsCounter.clone()
         toReturn.pointsForNextGreatPersonCounter = pointsForNextGreatPersonCounter.clone()
+        toReturn.pointsForNextGreatGeneralCounter = pointsForNextGreatGeneralCounter.clone()
+        toReturn.greatGeneralPointsCounter = greatGeneralPointsCounter.clone()
         toReturn.pointsForNextGreatGeneral = pointsForNextGreatGeneral
         toReturn.greatGeneralPoints = greatGeneralPoints
         toReturn.mayaLimitedFreeGP = mayaLimitedFreeGP
@@ -54,10 +58,16 @@ class GreatPersonManager : IsPartOfGameInfoSerialization {
     }
 
     fun getNewGreatPerson(): String? {
-        if (greatGeneralPoints > pointsForNextGreatGeneral) {
-            greatGeneralPoints -= pointsForNextGreatGeneral
-            pointsForNextGreatGeneral += 50
-            return "Great General"
+        for ((unit, value) in greatGeneralPointsCounter){
+            if (pointsForNextGreatGeneralCounter[unit] == 0) {
+                pointsForNextGreatGeneralCounter[unit] = 200
+            }
+            val requiredPoints = pointsForNextGreatGeneralCounter[unit]
+            if (value > requiredPoints) {
+                greatGeneralPointsCounter[unit] -= requiredPoints
+                pointsForNextGreatGeneralCounter[unit] += 50
+                return unit
+            }
         }
 
         for ((greatPerson, value) in greatPersonPointsCounter) {

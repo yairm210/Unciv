@@ -13,6 +13,7 @@ import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
 import com.unciv.ui.screens.worldscreen.unit.actions.UnitActions
 import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionsFromUniques
+import kotlin.math.roundToInt
 
 object SpecificUnitAutomation {
 
@@ -44,7 +45,7 @@ object SpecificUnitAutomation {
                     // ...also get priorities to steal the most valuable for them
                     val owner = it.getOwner()
                     if (owner != null)
-                        distance - owner.getWorkerAutomation().getPriority(it)
+                        distance - owner.getWorkerAutomation().getBasePriority(it, unit).roundToInt()
                     else distance
                 }
                 .firstOrNull { unit.movement.canReach(it) } // canReach is performance-heavy and always a last resort
@@ -52,13 +53,13 @@ object SpecificUnitAutomation {
         if (tileToSteal != null) {
             unit.movement.headTowards(tileToSteal)
             if (unit.currentMovement > 0 && unit.currentTile == tileToSteal)
-                UnitActionsFromUniques.getImprovementConstructionActions(unit, unit.currentTile).firstOrNull()?.action?.invoke()
+                UnitActionsFromUniques.getImprovementConstructionActionsFromGeneralUnique(unit, unit.currentTile).firstOrNull()?.action?.invoke()
             return true
         }
 
         // try to build a citadel for defensive purposes
         if (unit.civ.getWorkerAutomation().evaluateFortPlacement(unit.currentTile, true)) {
-            UnitActionsFromUniques.getImprovementConstructionActions(unit, unit.currentTile).firstOrNull()?.action?.invoke()
+            UnitActionsFromUniques.getImprovementConstructionActionsFromGeneralUnique(unit, unit.currentTile).firstOrNull()?.action?.invoke()
             return true
         }
         return false
@@ -92,11 +93,11 @@ object SpecificUnitAutomation {
         }
         unit.movement.headTowards(tileForCitadel)
         if (unit.currentMovement > 0 && unit.currentTile == tileForCitadel)
-            UnitActionsFromUniques.getImprovementConstructionActions(unit, unit.currentTile)
+            UnitActionsFromUniques.getImprovementConstructionActionsFromGeneralUnique(unit, unit.currentTile)
                 .firstOrNull()?.action?.invoke()
     }
 
-    fun automateSettlerActions(unit: MapUnit, tilesWhereWeWillBeCaptured: Set<Tile>) {
+    fun automateSettlerActions(unit: MapUnit, dangerousTiles: HashSet<Tile>) {
         // If we don't have any cities, we are probably at the start of the game with only one settler
         // If we are at the start of the game lets spend a maximum of 3 turns to settle our first city
         // As our turns progress lets shrink the area that we look at to make sure that we stay on target
@@ -131,7 +132,7 @@ object SpecificUnitAutomation {
 
 
         // If the tile we are currently on is close to the best tile, then lets just settle here instead
-        if (bestTilesInfo.tileRankMap.containsKey(unit.getTile()) 
+        if (bestTilesInfo.tileRankMap.containsKey(unit.getTile())
                 && (bestTilesInfo.bestTile == null || bestTilesInfo.tileRankMap[unit.getTile()]!! >= bestTilesInfo.tileRankMap[bestTilesInfo.bestTile]!! - 10)) {
                 bestCityLocation = unit.getTile()
         }
@@ -144,7 +145,7 @@ object SpecificUnitAutomation {
         if (bestCityLocation == null) {
             // Find the best tile that is within
             bestCityLocation = bestTilesInfo.tileRankMap.filter { bestTilesInfo.bestTile == null || it.value >= bestTilesInfo.tileRankMap[bestTilesInfo.bestTile]!! - 5 }.asSequence().sortedByDescending { it.value }.firstOrNull {
-                if (it.key in tilesWhereWeWillBeCaptured) return@firstOrNull false
+                if (it.key in dangerousTiles && it != unit.getTile()) return@firstOrNull false
                 val pathSize = unit.movement.getShortestPath(it.key).size
                 return@firstOrNull pathSize in 1..3
             }?.key
@@ -168,7 +169,7 @@ object SpecificUnitAutomation {
             if (frontierCity != null && getFrontierScore(frontierCity) > 0  && unit.movement.canReach(frontierCity.getCenterTile()))
                 unit.movement.headTowards(frontierCity.getCenterTile())
             if (UnitAutomation.tryExplore(unit)) return // try to find new areas
-            UnitAutomation.wander(unit, tilesToAvoid = tilesWhereWeWillBeCaptured) // go around aimlessly
+            UnitAutomation.wander(unit, tilesToAvoid = dangerousTiles) // go around aimlessly
             return
         }
 
@@ -242,7 +243,7 @@ object SpecificUnitAutomation {
             if (unit.currentTile == chosenTile) {
                 if (unit.currentTile.isPillaged())
                     UnitActions.invokeUnitAction(unit, UnitActionType.Repair)
-                else UnitActions.invokeUnitAction(unit, UnitActionType.Create)
+                else UnitActions.invokeUnitAction(unit, UnitActionType.CreateImprovement)
                 return true
             }
             return unitTileBeforeMovement != unit.currentTile
@@ -336,7 +337,7 @@ object SpecificUnitAutomation {
         if (unit.movement.canReach(capitalTile))
             unit.movement.headTowards(capitalTile)
         if (unit.getTile() == capitalTile) {
-            UnitActionsFromUniques.getAddInCapitalAction(unit, capitalTile).action?.invoke()
+            UnitActions.invokeUnitAction(unit, UnitActionType.AddInCapital)
         }
     }
 

@@ -71,6 +71,7 @@ object Constants {
 
     const val OK = "OK"
     const val close = "Close"
+    const val cancel = "Cancel"
     const val yes = "Yes"
     const val no = "No"
     const val loading = "Loading..."

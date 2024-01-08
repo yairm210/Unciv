@@ -7,6 +7,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.utils.SerializationException
 import com.unciv.Constants
+import com.unciv.UncivGame
 import com.unciv.logic.MissingModsException
 import com.unciv.logic.UncivShowableException
 import com.unciv.logic.files.PlatformSaverLoader
@@ -26,8 +27,8 @@ import com.unciv.ui.components.input.onClick
 import com.unciv.ui.popups.LoadingPopup
 import com.unciv.ui.popups.Popup
 import com.unciv.ui.popups.ToastPopup
-import com.unciv.ui.screens.pickerscreens.Github
-import com.unciv.ui.screens.pickerscreens.Github.folderNameToRepoName
+import com.unciv.logic.github.Github
+import com.unciv.logic.github.Github.folderNameToRepoName
 import com.unciv.utils.Concurrency
 import com.unciv.utils.Log
 import com.unciv.utils.launchOnGLThread
@@ -121,6 +122,7 @@ class LoadGameScreen : LoadOrSaveScreen() {
     }
 
     private fun onLoadGame() {
+        UncivGame.Current.settings.autoPlay.stopAutoPlay()
         if (selectedSave == null) return
         val loadingPopup = LoadingPopup(this)
         Concurrency.run(loadGame) {

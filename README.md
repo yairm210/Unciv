@@ -16,7 +16,7 @@
 
 ## What is this?
 
-An open source, mod-friendly Android and Desktop remake of Civ V, made with LibGDX
+An open source, moddability-focused Android and Desktop remake of Civ V, made with LibGDX
 
 ## Is this any good?
 
@@ -36,8 +36,6 @@ In this order:
 * BNW mechanics - trade routes, world congress, etc.
 
 ## Contributing
-
-### How can I help?
 
 Programmers start [here](https://yairm210.github.io/Unciv/Developers/Building-Locally/)!
 
@@ -74,9 +72,7 @@ Steam has decided that they don't want to host Unciv, they probably don't want t
 
 If it's in the original Civ V, then yes!
 
-There's a lot left to implement, so it's hard to give an estimation of when exactly each feature will be added, but we're constantly improving!
-
-If not, then the feature won't be added until we've finished all the features from the original Civ - as mentioned, this will take a while!
+If not, then the feature won't be added to the base game - possibly it will be added as a way to mod the game, which is constantly expanding
 
 #### Why not? This is its own game, why not add features that weren't in Civ V?
 

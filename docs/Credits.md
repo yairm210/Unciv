@@ -108,7 +108,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 
 -   [Rifle](https://thenounproject.com/search/?q=Rifle&i=604291) By Chameleon Design for Rifleman
 -   [Bayonet](https://thenounproject.com/term/bayonet/3101681/) By food lover for Carolean
--   [soldier](https://thenounproject.com/term/soldier/2096497/) by ProSymbols for Mehal Sefari
+-   [military cap](https://thenounproject.com/icon/military-cap-4112703/) by Robert Bjurshagen for Mehal Sefari
 -   [Horse](https://thenounproject.com/search/?q=Horse&i=1023745) By Bakunetso Kaito for Cavalry
 -   [horse racing](https://thenounproject.com/antimso/uploads/?i=2427932) By Sergio Morozov for Cossack
 -   [Marching Band](https://thenounproject.com/term/marching-band/871426/) by Darrin Loeliger, US for Hussar. The original work has been modified.
@@ -240,6 +240,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 -   [obelisk](https://thenounproject.com/term/obelisk/3520415/) By IconMark for Stele
 -   [Cross swords](https://thenounproject.com/term/cross-swords/965398/) By Creaticca Creative Agency for Barracks
 -   [Fortress](https://thenounproject.com/search/?q=fortress&i=146989) By Creative Stall for Krepost
+-   [WaterMill](https://thenounproject.com/icon/watermill-4255/) by Jakub Ukrop for Water Mill
 -   [Paper](https://thenounproject.com/term/paper/1443472/) By anam
 -   [Circus](https://thenounproject.com/term/circus/743734/) By Ralph Schmitzer
 -   [Stonehenge](https://thenounproject.com/term/stonehenge/543289/) By icon 54
@@ -280,6 +281,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 -   [Angkor Wat](https://thenounproject.com/search/?q=angkor%20wat&i=2412873) By Phạm Thanh Lộc for Angkor Wat
 -   [Alhambra](https://thenounproject.com/search/?q=alhambra&i=2322217) By Phạm Thanh Lộc
 -   [Books](https://thenounproject.com/term/books/1140218/) By Abir Alward for Oxford University
+-   Icon for Heroic Epic made by [SomeTroglodyte](https://github.com/SomeTroglodyte) based on [Iwo Jima Memorial](https://upload.wikimedia.org/wikipedia/commons/5/54/2018-10-31_15_25_21_The_west_side_of_the_Marine_Corps_War_Memorial_in_Arlington_County%2C_Virginia.jpg) photo taken by Famartin
 -   [Forge](https://thenounproject.com/term/forge/1044767/) By Monjin Friends
 -   [Anchor](https://thenounproject.com/term/anchor/1258518/) By Saeful Muslim for Harbor
 -   [Hand saw](https://thenounproject.com/term/hand-saw/990902/) By b farias for Workshop
@@ -312,7 +314,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 -   [Mansion](https://www.flaticon.com/free-icon/mansion_509903#term=persian&page=1&position=19) by Freepik for Satrap's Court
 -   [Bullets](https://thenounproject.com/term/bullets/810156/) By Aldric Rodriguez for Arsenal
 -   [St. Petersburg](https://thenounproject.com/search/?q=kremlin&i=1569704) By Carpe Diem for Kremlin
--   [Ceilidh](https://thenounproject.com/term/ceilidh/403422/) By P Thanga Vignesh for Ceilidh Hall
+-   [cottage](https://thenounproject.com/icon/cottage-16478/) by Ole Sturm for Ceilidh Hall
 
 #### Industrial Era
 
@@ -341,7 +343,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 -   [Solar panel](https://thenounproject.com/term/solar-panel/1131/) By Modik for Solar Plant
 -   [Recycle](https://thenounproject.com/search/?q=recycling&i=4397434) By Umer Younas, PK for Recycling Center
 -   [Opera House Sydney](https://thenounproject.com/term/opera-house-sydney/1626283/) By Pham Duy Phuong Hung for Sydney Opera House
--   [Water dam](https://thenounproject.com/term/water-dam/1002726/) By Symbolon for Hydro Plant
+-   [hydro electric plant](https://thenounproject.com/term/water-dam/1002726/) By Juicy Fish for Hydro Plant
 -   [Manhattan Project](https://thenounproject.com/search/?q=Nuclear%20Bomb&i=2041074) By corpus delicti, GR
 -   [Nuclear Plant](https://thenounproject.com/term/nuclear-plant/1132340/) By Andrejs Kirma
 -   [Spaceship](https://thenounproject.com/term/spaceship/1444621/) By Dinosoft Labs for Apollo Program
@@ -665,6 +667,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 - [Circle](https://thenounproject.com/term/circle/1841891/) By Aybige
 - [Arrow](https://thenounproject.com/term/arrow/18123/) By Joe Mortell for movement
 - [Swap](https://thenounproject.com/search/?q=swap&i=1259600) By iconomania for swapping units
+- [Road](https://thenounproject.com/icon/road-224428/) By Gábor István Karaba for connect road automation
 - [Connection](https://thenounproject.com/search/?q=connection&i=1521886) By Travis Avery
 - [Skull](https://thenounproject.com/search/?q=Skull&i=1030702) By Vladimir Belochkin for disbanding units
 - [Crosshair](https://thenounproject.com/search/?q=crosshairs&i=916030) By Bakunetsu Kaito for selecting enemies to attack
@@ -733,6 +736,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 - [charts](https://thenounproject.com/icon/charts-2312023/) by Srinivas Agra (gimped to appear bolder) for the Charts page
 - [framed image](https://thenounproject.com/icon/framed-image-2332187/) by Jose Dean for Victory Illustrations page
 - [down](https://thenounproject.com/icon/down-39378/) by Cengiz SARI for Show unit destination
+- [Cat](https://thenounproject.com/icon/cat-158942/) by Josi for Politics overview diagram legend
 
 
 ### Main menu
@@ -770,11 +774,12 @@ Sounds are from FreeSound.org unless otherwise noted and are either Creative Com
 - [uzzi_full_single](https://freesound.org/people/Deganoth/sounds/348685/) By Deganoth as 'shot' for bullet attacks
 - [Grenade Launcher 2](https://soundbible.com/2140-Grenade-Launcher-2.html) By Daniel Simon as city bombard sound (CC Attribution 3.0 license)
 - [Woosh](https://soundbible.com/2068-Woosh.html) by Mark DiAngelo as 'slider' sound (CC Attribution 3.0 license)
+- [Large wooden wagon](https://freesound.org/people/craigsmith/sounds/675230/) by Craig Smith as 'connect road' sound
 - [Tornado-Siren-II](https://soundbible.com/1937-Tornado-Siren-II.html) by Delilah as part of 'nuke' sound (CC Attribution 3.0 license)
 - [Explosion-Ultra-Bass](https://soundbible.com/1807-Explosion-Ultra-Bass.html) by Mark DiAngelo as part of 'nuke' sound (CC Attribution 3.0 license)
 - [Short Choir](https://freesound.org/people/Breviceps/sounds/444491/) by Breviceps as 'choir' for free great person pick
 - [Death Robot! Robotic scream](https://freesound.org/people/vultraz168/sounds/334660/) by vultraz168 for Giant Death Robot Attack (CC0 1.0 Universal license)
-- [ceremonial cannon fire](https://freesound.org/people/DylanSmithSound/sounds/274826/) by DylanSmithSound for cannon
+- [ceremonial cannon fire](https://freesound.org/people/DylanSmithSound/sounds/274826/) by DylanSmithSound for cannon and shipCannonVolley
 - [artillery fire](https://freesound.org/people/Tomashevsky/sounds/476664/) by Tomashevsky for artillery
 - [20mm cannons](https://freesound.org/people/Piotr123/sounds/551534/) by Piotr123 for ship guns
 - "bombing" is made by the Unciv team using Audacity from
@@ -784,7 +789,7 @@ Sounds are from FreeSound.org unless otherwise noted and are either Creative Com
 - "jetgun" for Jet Fighter attack is made by the Unciv team using Audacity from
     -   [Fighter Jet Aircraft Fly by (synthesised)](https://freesound.org/people/Headphaze/sounds/347795/) by Headphaze
     -   [Machine Gun 001 - triple shot](https://freesound.org/people/pgi/sounds/212600/) by pgi
-- Excerpt from [Tanks Shooting](https://freesound.org/people/qubodup/sounds/189344/) by qubodup for tankshot
+- Excerpt from [Tanks Shooting](https://freesound.org/people/qubodup/sounds/189344/) by qubodup for tankshot and shipCannonVolley
 - "torpedo" is made by the Unciv team using Audacity from
     -   [Torpedo launch underwater](https://freesound.org/people/jobro/sounds/35530/) by jobro
     -   [Artillery Explosion (Close) (Mixed)](https://freesound.org/people/EFlexMusic/sounds/388528/) by EFlexMusic

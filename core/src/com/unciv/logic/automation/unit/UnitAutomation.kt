@@ -125,8 +125,8 @@ object UnitAutomation {
     }
 
     internal fun tryUpgradeUnit(unit: MapUnit): Boolean {
-        val isHuman = unit.civ.isHuman()
-        if (!UncivGame.Current.settings.automatedUnitsCanUpgrade && isHuman) return false
+        if (unit.civ.isHuman() && (!UncivGame.Current.settings.automatedUnitsCanUpgrade
+                || UncivGame.Current.settings.autoPlay.isAutoPlayingAndFullAI())) return false
         if (unit.baseUnit.upgradesTo == null) return false
         val upgradedUnit = unit.upgrade.getUnitToUpgradeTo()
         if (!upgradedUnit.isBuildable(unit.civ)) return false // for resource reasons, usually
@@ -151,7 +151,7 @@ object UnitAutomation {
 
 
         if (unit.isCivilian()) {
-            CivilianUnitAutomation.automateCivilianUnit(unit)
+            CivilianUnitAutomation.automateCivilianUnit(unit, getDangerousTiles(unit))
             return
         }
 
@@ -169,22 +169,22 @@ object UnitAutomation {
         //This allows for military units with certain civilian abilities to behave as civilians in peace and soldiers in war
         if ((unit.hasUnique(UniqueType.BuildImprovements) || unit.hasUnique(UniqueType.FoundCity) ||
                 unit.hasUnique(UniqueType.ReligiousUnit) || unit.hasUnique(UniqueType.CreateWaterImprovements))
-                && !unit.civ.isAtWar()) {
-            CivilianUnitAutomation.automateCivilianUnit(unit)
+                && !unit.civ.isAtWar()){
+            CivilianUnitAutomation.automateCivilianUnit(unit, getDangerousTiles(unit))
             return
         }
-        
+
         if (unit.baseUnit.isAirUnit()) {
             if (unit.canIntercept())
                 return AirUnitAutomation.automateFighter(unit)
-    
+
             if (!unit.baseUnit.isNuclearWeapon())
                 return AirUnitAutomation.automateBomber(unit)
-    
+
             // Note that not all nukes have to be air units
             if (unit.baseUnit.isNuclearWeapon())
                 return AirUnitAutomation.automateNukes(unit)
-    
+
             if (unit.hasUnique(UniqueType.SelfDestructs))
                 return AirUnitAutomation.automateMissile(unit)
         }
@@ -263,7 +263,7 @@ object UnitAutomation {
         if (unit.isCivilian()) return false
         // Better to do a more healing oriented move then
         if (unit.civ.threatManager.getDistanceToClosestEnemyUnit(unit.getTile(),6, true) > 4) return false
-      
+
         if (unit.baseUnit.isAirUnit()) {
             return false
         }
@@ -273,9 +273,8 @@ object UnitAutomation {
         for (swapTile in swapableTiles) {
             val otherUnit = swapTile.militaryUnit!!
             val ourDistanceToClosestEnemy = unit.civ.threatManager.getDistanceToClosestEnemyUnit(unit.getTile(),6, false)
-            if (otherUnit.health > 80 
+            if (otherUnit.health > 80
                 && ourDistanceToClosestEnemy < otherUnit.civ.threatManager.getDistanceToClosestEnemyUnit(otherUnit.getTile(),6,false)) {
-              
                 if (otherUnit.baseUnit.isRanged()) {
                     // Don't swap ranged units closer than they have to be
                     val range = otherUnit.baseUnit.range
@@ -347,6 +346,23 @@ object UnitAutomation {
         return true
     }
 
+    private fun getDangerousTiles(unit: MapUnit): HashSet<Tile> {
+        val nearbyRangedEnemyUnits = unit.currentTile.getTilesInDistance(3)
+            .flatMap { tile -> tile.getUnits().filter { unit.civ.isAtWarWith(it.civ) } }
+
+        val tilesInRangeOfAttack = nearbyRangedEnemyUnits
+            .flatMap { it.getTile().getTilesInDistance(it.getRange()) }
+
+        val tilesWithinBombardmentRange = unit.currentTile.getTilesInDistance(3)
+            .filter { it.isCityCenter() && it.getCity()!!.civ.isAtWarWith(unit.civ) }
+            .flatMap { it.getTilesInDistance(it.getCity()!!.range) }
+
+        val tilesWithTerrainDamage = unit.currentTile.getTilesInDistance(3)
+            .filter { unit.getDamageFromTerrain(it) > 0 }
+
+        return (tilesInRangeOfAttack + tilesWithinBombardmentRange + tilesWithTerrainDamage).toHashSet()
+    }
+
     fun tryPillageImprovement(unit: MapUnit): Boolean {
         if (unit.isCivilian()) return false
         val unitDistanceToTiles = unit.movement.getDistanceToTiles()
@@ -361,7 +377,9 @@ object UnitAutomation {
         if (unit.getTile() != tileToPillage)
             unit.movement.moveToTile(tileToPillage)
 
-        UnitActionsPillage.getPillageAction(unit)?.action?.invoke()
+        // We CANNOT use invokeUnitAction, since the default unit action contains a popup, which - when automated -
+        //  runs a UI action on a side thread leading to crash!
+        UnitActionsPillage.getPillageAction(unit, unit.currentTile)?.action?.invoke()
         return unit.currentMovement == 0f
     }
 
@@ -588,6 +606,6 @@ object UnitAutomation {
         unit.civ.addNotification("${unit.shortDisplayName()} finished exploring.", unit.currentTile.position, NotificationCategory.Units, unit.name, "OtherIcons/Sleep")
         unit.action = null
     }
-    
+
 
 }

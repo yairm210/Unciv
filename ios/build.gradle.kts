@@ -7,10 +7,6 @@ sourceSets {
     }
 }
 
-java {
-    sourceCompatibility = JavaVersion.VERSION_1_8
-}
-
 tasks {
     compileJava {
         options.encoding = "UTF-8"

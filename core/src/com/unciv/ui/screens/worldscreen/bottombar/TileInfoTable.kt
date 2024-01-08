@@ -1,24 +1,30 @@
 package com.unciv.ui.screens.worldscreen.bottombar
 
 import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.UncivGame
-import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.tile.Tile
 import com.unciv.logic.map.tile.TileDescription
-import com.unciv.ui.screens.civilopediascreen.CivilopediaScreen
-import com.unciv.ui.screens.civilopediascreen.FormattedLine.IconDisplay
-import com.unciv.ui.screens.civilopediascreen.MarkupRenderer
-import com.unciv.ui.images.ImageGetter
-import com.unciv.ui.screens.basescreen.BaseScreen
+import com.unciv.models.translations.tr
 import com.unciv.ui.components.extensions.addBorderAllowOpacity
 import com.unciv.ui.components.extensions.darken
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toPrettyString
+import com.unciv.ui.components.input.onClick
+import com.unciv.ui.images.ImageGetter
+import com.unciv.ui.popups.Popup
+import com.unciv.ui.screens.basescreen.BaseScreen
+import com.unciv.ui.screens.civilopediascreen.CivilopediaScreen
+import com.unciv.ui.screens.civilopediascreen.FormattedLine.IconDisplay
+import com.unciv.ui.screens.civilopediascreen.MarkupRenderer
+import com.unciv.ui.screens.worldscreen.WorldScreen
 import com.unciv.utils.DebugUtils
 
-class TileInfoTable(private val viewingCiv :Civilization) : Table(BaseScreen.skin) {
+class TileInfoTable(private val worldScreen: WorldScreen) : Table(BaseScreen.skin) {
+    val viewingCiv = worldScreen.viewingCiv
+
     init {
         background = BaseScreen.skinStrings.getUiBackground(
             "WorldScreen/TileInfoTable",
@@ -54,6 +60,14 @@ class TileInfoTable(private val viewingCiv :Civilization) : Table(BaseScreen.ski
             table.add(value.toInt().toLabel())
                 .align(Align.left).padRight(5f)
             table.row()
+        }
+        table.touchable = Touchable.enabled
+        table.onClick {
+            Popup(worldScreen).apply {
+                for ((name, stats) in tile.stats.getTileStatsBreakdown(tile.getCity(), viewingCiv))
+                    add("${name.tr()}: {${stats.clone()}}".toLabel()).row()
+                addCloseButton()
+            }.open()
         }
         return table
     }

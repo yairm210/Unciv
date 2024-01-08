@@ -27,6 +27,7 @@ import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.components.extensions.withItem
 import com.unciv.ui.components.extensions.withoutItem
 import com.unciv.utils.DebugUtils
+import com.unciv.utils.Log
 import kotlin.math.abs
 import kotlin.math.min
 import kotlin.random.Random
@@ -305,8 +306,8 @@ open class Tile : IsPartOfGameInfoSerialization {
     fun removeImprovement() =
         improvementFunctions.changeImprovement(null)
 
-    fun changeImprovement(improvementStr: String, civToHandleCompletion:Civilization? = null) =
-        improvementFunctions.changeImprovement(improvementStr, civToHandleCompletion)
+    fun changeImprovement(improvementStr: String, civToHandleCompletion: Civilization? = null, unit: MapUnit? = null) =
+        improvementFunctions.changeImprovement(improvementStr, civToHandleCompletion, unit)
 
     // function handling when adding a road to the tile
     fun addRoad(roadType: RoadStatus, creatingCivInfo: Civilization?) {
@@ -483,8 +484,9 @@ open class Tile : IsPartOfGameInfoSerialization {
     /** Implements [UniqueParameterType.TileFilter][com.unciv.models.ruleset.unique.UniqueParameterType.TileFilter] */
     fun matchesFilter(filter: String, civInfo: Civilization? = null): Boolean {
         if (matchesTerrainFilter(filter, civInfo)) return true
-        if (improvement != null && !improvementIsPillaged && ruleset.tileImprovements[improvement]!!.matchesFilter(filter)) return true
-        return improvement == null && filter == "unimproved"
+        if ((improvement == null || improvementIsPillaged) && filter == "unimproved") return true
+        if (improvement != null && !improvementIsPillaged && filter == "improved") return true
+        return improvement != null && !improvementIsPillaged && ruleset.tileImprovements[improvement]!!.matchesFilter(filter)
     }
 
     fun matchesTerrainFilter(filter: String, observingCiv: Civilization? = null): Boolean {
@@ -494,7 +496,7 @@ open class Tile : IsPartOfGameInfoSerialization {
     /** Implements [UniqueParameterType.TerrainFilter][com.unciv.models.ruleset.unique.UniqueParameterType.TerrainFilter] */
     fun matchesSingleTerrainFilter(filter: String, observingCiv: Civilization? = null): Boolean {
         return when (filter) {
-            "All" -> true
+            "All", "Terrain" -> true
             baseTerrain -> true
             "Water" -> isWater
             "Land" -> isLand
@@ -509,6 +511,7 @@ open class Tile : IsPartOfGameInfoSerialization {
             "Enemy Land", "Enemy" -> observingCiv != null && isEnemyTerritory(observingCiv)
 
             resource -> observingCiv != null && hasViewableResource(observingCiv)
+            "resource" -> observingCiv != null && hasViewableResource(observingCiv)
             "Water resource" -> isWater && observingCiv != null && hasViewableResource(observingCiv)
             "Natural Wonder" -> naturalWonder != null
             "Featureless" -> terrainFeatures.isEmpty()
@@ -670,7 +673,19 @@ open class Tile : IsPartOfGameInfoSerialization {
     }
 
     fun hasConnection(civInfo: Civilization) =
-            getUnpillagedRoad() != RoadStatus.None || forestOrJungleAreRoads(civInfo)
+        getUnpillagedRoad() != RoadStatus.None || forestOrJungleAreRoads(civInfo)
+
+    fun hasRoadConnection(civInfo: Civilization, mustBeUnpillaged: Boolean) =
+        if (mustBeUnpillaged)
+            (getUnpillagedRoad() == RoadStatus.Road) || forestOrJungleAreRoads(civInfo)
+        else
+            roadStatus == RoadStatus.Road || forestOrJungleAreRoads(civInfo)
+
+    fun hasRailroadConnection(mustBeUnpillaged: Boolean) =
+        if (mustBeUnpillaged)
+            getUnpillagedRoad() == RoadStatus.Railroad
+        else
+            roadStatus == RoadStatus.Railroad
 
 
     private fun forestOrJungleAreRoads(civInfo: Civilization) =
@@ -825,8 +840,10 @@ open class Tile : IsPartOfGameInfoSerialization {
         }
     }
 
-    fun addTerrainFeature(terrainFeature: String) =
-        setTerrainFeatures(ArrayList(terrainFeatures).apply { add(terrainFeature) })
+    fun addTerrainFeature(terrainFeature: String) {
+        if (!terrainFeatures.contains(terrainFeature))
+            setTerrainFeatures(ArrayList(terrainFeatures).apply { add(terrainFeature) })
+    }
 
     fun removeTerrainFeature(terrainFeature: String) =
         setTerrainFeatures(ArrayList(terrainFeatures).apply { remove(terrainFeature) })
@@ -895,13 +912,25 @@ open class Tile : IsPartOfGameInfoSerialization {
             // otherwise use pillage/repair systems
             if (canPillageTileImprovement())
                 improvementIsPillaged = true
-            else
+            else {
                 roadIsPillaged = true
+                clearAllPathfindingCaches()
+            }
         }
 
         owningCity?.reassignPopulationDeferred()
         if (owningCity != null)
             owningCity!!.civ.cache.updateCivResources()
+    }
+
+    private fun clearAllPathfindingCaches() {
+        val units = tileMap.gameInfo.civilizations.asSequence()
+            .filter { it.isAlive() }
+            .flatMap { it.units.getCivUnits() }
+        Log.debug("%s: road pillaged, clearing cache for %d units", this, { units.count() })
+        for (otherUnit in units) {
+            otherUnit.movement.clearPathfindingCache()
+        }
     }
 
     fun isPillaged(): Boolean = improvementIsPillaged || roadIsPillaged

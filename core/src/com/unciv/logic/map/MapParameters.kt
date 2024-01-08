@@ -145,7 +145,10 @@ object MapType : IsPartOfGameInfoSerialization {
     const val threeContinents = "Three Continents"
     const val fourCorners = "Four Corners"
     const val archipelago = "Archipelago"
+    const val fractal = "Fractal"
     const val innerSea = "Inner Sea"
+    const val lakes = "Lakes"
+    const val smallContinents = "Small Continents"
 
     // All ocean tiles
     const val empty = "Empty"

@@ -43,7 +43,7 @@ class OptionsPopup(
 
     private var keyBindingsTab: KeyBindingsTab? = null
     /** Enable the still experimental Keyboard Bindings page in OptionsPopup */
-    var enableKeyBindingsTab: Boolean = false
+    var enableKeyBindingsTab: Boolean = true
 
     //endregion
 
@@ -89,6 +89,11 @@ class OptionsPopup(
             ImageGetter.getImage("OtherIcons/Options"), 24f
         )
         tabs.addPage(
+            "AutoPlay",
+            autoPlayTab(this),
+            ImageGetter.getImage("OtherIcons/NationSwap"), 24f
+        )
+        tabs.addPage(
             "Language",
             LanguageTab(this, ::reloadWorldAndOptions),
             ImageGetter.getImage("FlagIcons/${settings.language}"), 24f
@@ -115,7 +120,7 @@ class OptionsPopup(
             tabs.addPage("Locate mod errors", content, ImageGetter.getImage("OtherIcons/Mods"), 24f)
         }
         if (withDebug || Gdx.input.areSecretKeysPressed()) {
-            tabs.addPage("Debug", debugTab(this), ImageGetter.getImage("OtherIcons/SecretOptions"), 24f, secret = true)
+            tabs.addPage("Debug", debugTab(this), ImageGetter.getImage("OtherIcons/SecretOptions"), 24f)
         }
 
         addCloseButton {
@@ -137,7 +142,6 @@ class OptionsPopup(
     override fun setVisible(visible: Boolean) {
         super.setVisible(visible)
         if (!visible) return
-        tabs.askForPassword(secretHashCode = 2747985)
         if (tabs.activePage < 0) tabs.selectPage(selectPage)
     }
 
@@ -205,7 +209,8 @@ class OptionsPopup(
     internal fun showOrHideKeyBindings() {
         // At the moment, the Key bindings Tab exists only on-demand. To refactor it back to permanent,
         // move the `keyBindingsTab =` line and addPage call to before the Advanced Tab creation,
-        // then delete this function, delete the enableKeyBindingsTab flag and clean up what is flagged by the compiler as missing or unused.
+        // then delete this function, delete the enableKeyBindingsTab flag and clean up what is flagged
+        // by the compiler as missing or unused - like the `add("Show keyboard bindings".toCheckBox` option on DebugTab.
         val existingIndex = tabs.getPageIndex(keysTabCaption)
         if (enableKeyBindingsTab && existingIndex < 0) {
             if (keyBindingsTab == null)

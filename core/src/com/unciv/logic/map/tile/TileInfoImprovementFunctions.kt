@@ -6,8 +6,10 @@ import com.unciv.logic.civilization.LocationAction
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
+import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.ruleset.unique.StateForConditionals
+import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unique.UniqueType
 
 
@@ -125,9 +127,9 @@ class TileInfoImprovementFunctions(val tile: Tile) {
             improvement.name == Constants.cancelImprovementOrder -> (tile.improvementInProgress != null)
             // Can only remove roads if that road is actually there
             RoadStatus.values().any { it.removeAction == improvement.name } -> tile.roadStatus.removeAction == improvement.name
-            // Can only remove features if that feature is actually there
-            improvement.name.startsWith(Constants.remove) -> tile.terrainFeatures.any { it == improvement.name.removePrefix(
-                Constants.remove) }
+            // Can only remove features or improvement if that feature/improvement is actually there
+            improvement.name.startsWith(Constants.remove) -> tile.terrainFeatures.any { Constants.remove + it == improvement.name } 
+                || Constants.remove + tile.improvement == improvement.name
             // Can only build roads if on land and they are better than the current road
             RoadStatus.values().any { it.name == improvement.name } -> !tile.isWater
                     && RoadStatus.valueOf(improvement.name) > tile.roadStatus
@@ -187,12 +189,12 @@ class TileInfoImprovementFunctions(val tile: Tile) {
 
     fun changeImprovement(improvementName: String?,
                           /** For road assignment and taking over tiles - DO NOT pass when simulating improvement effects! */
-                          civToActivateBroaderEffects:Civilization? = null) {
+                          civToActivateBroaderEffects: Civilization? = null, unit: MapUnit? = null) {
         val improvementObject = tile.ruleset.tileImprovements[improvementName]
 
         when {
             improvementName?.startsWith(Constants.remove) == true -> {
-                adtivateRemovalImprovement(improvementName, civToActivateBroaderEffects)
+                activateRemovalImprovement(improvementName, civToActivateBroaderEffects)
             }
             improvementName == RoadStatus.Road.name -> tile.addRoad(RoadStatus.Road, civToActivateBroaderEffects)
             improvementName == RoadStatus.Railroad.name -> tile.addRoad(RoadStatus.Railroad, civToActivateBroaderEffects)
@@ -223,6 +225,9 @@ class TileInfoImprovementFunctions(val tile: Tile) {
         )
             takeOverTilesAround(civToActivateBroaderEffects, tile)
 
+        if (civToActivateBroaderEffects != null && improvementObject != null)
+            triggerImprovementUniques(improvementObject, civToActivateBroaderEffects, unit)
+
         val city = tile.owningCity
         if (city != null) {
             city.cityStats.update()
@@ -233,7 +238,30 @@ class TileInfoImprovementFunctions(val tile: Tile) {
         }
     }
 
-    private fun adtivateRemovalImprovement(
+    private fun triggerImprovementUniques(
+        improvement: TileImprovement,
+        civ: Civilization,
+        unit: MapUnit? = null
+    ) {
+        for (unique in improvement.uniqueObjects.filter { !it.hasTriggerConditional() })
+            if (unit != null) {
+                UniqueTriggerActivation.triggerUnitwideUnique(unique, unit)
+            }
+            else UniqueTriggerActivation.triggerCivwideUnique(unique, civ, tile = tile)
+
+        if (unit != null){
+            for (unique in unit.getTriggeredUniques(UniqueType.TriggerUponBuildingImprovement)
+                .filter { improvement.matchesFilter(it.params[0]) })
+                UniqueTriggerActivation.triggerUnitwideUnique(unique, unit)
+            }
+
+        for (unique in civ.getMatchingUniques(
+            UniqueType.TriggerUponBuildingImprovement, StateForConditionals(civInfo = civ, unit = unit))
+            .filter { improvement.matchesFilter(it.params[0]) })
+            UniqueTriggerActivation.triggerCivwideUnique(unique, civ, tile = tile)
+    }
+
+    private fun activateRemovalImprovement(
         improvementName: String,
         civToActivateBroaderEffects: Civilization?
     ) {
@@ -249,7 +277,9 @@ class TileInfoImprovementFunctions(val tile: Tile) {
 
         if (RoadStatus.values().any { improvementName == it.removeAction }) {
             tile.removeRoad()
-        } else {
+        }
+        else if (tile.improvement == removedFeatureName) tile.removeImprovement()
+        else {
             val removedFeatureObject = tile.ruleset.terrains[removedFeatureName]
             if (removedFeatureObject != null
                 && civToActivateBroaderEffects != null

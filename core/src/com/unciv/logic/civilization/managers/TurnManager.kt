@@ -16,6 +16,8 @@ import com.unciv.logic.map.mapunit.UnitTurnManager
 import com.unciv.logic.map.tile.Tile
 import com.unciv.logic.trade.TradeEvaluation
 import com.unciv.models.ruleset.ModOptionsConstants
+import com.unciv.models.ruleset.unique.StateForConditionals
+import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unique.endTurn
 import com.unciv.models.stats.Stats
@@ -31,7 +33,7 @@ class TurnManager(val civInfo: Civilization) {
 
     fun startTurn(progressBar: NextTurnProgress? = null) {
         if (civInfo.isSpectator()) return
-        
+
         civInfo.threatManager.clear()
         if (civInfo.isMajorCiv() && civInfo.isAlive()) {
             civInfo.statsHistory.recordRankingStats(civInfo)
@@ -57,9 +59,12 @@ class TurnManager(val civInfo: Civilization) {
         // Generate great people at the start of the turn,
         // so they won't be generated out in the open and vulnerable to enemy attacks before you can control them
         if (civInfo.cities.isNotEmpty()) { //if no city available, addGreatPerson will throw exception
-            val greatPerson = civInfo.greatPeople.getNewGreatPerson()
-            if (greatPerson != null && civInfo.gameInfo.ruleset.units.containsKey(greatPerson))
-                civInfo.units.addUnit(greatPerson)
+            var greatPerson = civInfo.greatPeople.getNewGreatPerson()
+            while (greatPerson != null) {
+                if (civInfo.gameInfo.ruleset.units.containsKey(greatPerson))
+                    civInfo.units.addUnit(greatPerson)
+                greatPerson = civInfo.greatPeople.getNewGreatPerson()
+            }
             civInfo.religionManager.startTurn()
             if (civInfo.isLongCountActive())
                 MayaCalendar.startTurnForMaya(civInfo)
@@ -225,6 +230,11 @@ class TurnManager(val civInfo: Civilization) {
 
 
     fun endTurn(progressBar: NextTurnProgress? = null) {
+        NextTurnAutomation.automateCityBombardment(civInfo) // Bombard with all cities that haven't, maybe you missed one
+
+        for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponTurnEnd, StateForConditionals(civInfo)))
+            UniqueTriggerActivation.triggerCivwideUnique(unique, civInfo)
+
         val notificationsLog = civInfo.notificationsLog
         val notificationsThisTurn = Civilization.NotificationsLog(civInfo.gameInfo.turns)
         notificationsThisTurn.notifications.addAll(civInfo.notifications)

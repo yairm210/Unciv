@@ -7,6 +7,7 @@ import com.unciv.UncivGame.Version
 import com.unciv.json.json
 import com.unciv.logic.BackwardCompatibility.convertFortify
 import com.unciv.logic.BackwardCompatibility.guaranteeUnitPromotions
+import com.unciv.logic.BackwardCompatibility.migrateGreatGeneralPools
 import com.unciv.logic.BackwardCompatibility.migrateToTileHistory
 import com.unciv.logic.BackwardCompatibility.removeMissingModReferences
 import com.unciv.logic.GameInfo.Companion.CURRENT_COMPATIBILITY_NUMBER
@@ -38,7 +39,7 @@ import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.tr
 import com.unciv.ui.audio.MusicMood
 import com.unciv.ui.audio.MusicTrackChooserFlags
-import com.unciv.ui.screens.pickerscreens.Github.repoNameToFolderName
+import com.unciv.logic.github.Github.repoNameToFolderName
 import com.unciv.ui.screens.savescreens.Gzip
 import com.unciv.ui.screens.worldscreen.status.NextTurnProgress
 import com.unciv.utils.DebugUtils
@@ -362,11 +363,25 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
 
         val isOnline = gameParameters.isOnlineMultiplayer
 
+        // Skip the player if we are playing hotseat
+        // If all hotseat players are defeated then skip all but the first one
+        fun shouldAutoProcessHotseatPlayer(): Boolean =
+            !isOnline &&
+            player.isDefeated() && (civilizations.any { it.isHuman() && it.isAlive() }
+                || civilizations.first { it.isHuman() } != player)
+
+        // Skip all spectators and defeated players
+        // If all players are defeated then let the first player control next turn
+        fun shouldAutoProcessOnlinePlayer(): Boolean =
+            isOnline && (player.isSpectator() || player.isDefeated() &&
+                (civilizations.any { it.isHuman() && it.isAlive() }
+                    || civilizations.first { it.isHuman() } != player))
+
         // We process player automatically if:
         while (isSimulation() ||                    // simulation is active
                 player.isAI() ||                    // or player is AI
-                isOnline && (player.isDefeated() || // or player is online defeated
-                        player.isSpectator()))      // or player is online spectator
+            shouldAutoProcessHotseatPlayer() ||     // or a player is defeated in hotseat
+            shouldAutoProcessOnlinePlayer())        // or player is online spectator
         {
 
             // Starting preparations
@@ -378,8 +393,13 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
             // Do we need to break if player won?
             if (simulateUntilWin && player.victoryManager.hasWon()) {
                 simulateUntilWin = false
+                UncivGame.Current.settings.autoPlay.stopAutoPlay()
                 break
             }
+
+            // Do we need to stop AutoPlay?
+            if (UncivGame.Current.settings.autoPlay.isAutoPlaying() && player.victoryManager.hasWon() && !oneMoreTurnMode)
+                UncivGame.Current.settings.autoPlay.stopAutoPlay()
 
             // Clean up
             TurnManager(player).endTurn(progressBar)
@@ -391,12 +411,12 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
         if (turns == DebugUtils.SIMULATE_UNTIL_TURN)
             DebugUtils.SIMULATE_UNTIL_TURN = 0
 
-        // We found human player, so we are making him current
+        // We found a human player, so we are making them current
         currentTurnStartTime = System.currentTimeMillis()
         currentPlayer = player.civName
         currentPlayerCiv = getCivilization(currentPlayer)
 
-        // Starting his turn
+        // Starting their turn
         TurnManager(player).startTurn(progressBar)
 
         // No popups for spectators
@@ -651,6 +671,8 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
         guaranteeUnitPromotions()
 
         migrateToTileHistory()
+
+        migrateGreatGeneralPools()
     }
 
     private fun updateCivilizationState() {

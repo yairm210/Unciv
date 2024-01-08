@@ -32,6 +32,7 @@ class GameSettings {
     var showUnitMovements: Boolean = false
     var showSettlersSuggestedCityLocations: Boolean = true
 
+    var experimentalMovement: Boolean = false
     var checkForDueUnits: Boolean = true
     var autoUnitCycle: Boolean = true
     var singleTapMove: Boolean = false
@@ -91,6 +92,8 @@ class GameSettings {
     var androidHideSystemUi = true
 
     var multiplayer = GameSettingsMultiplayer()
+
+    var autoPlay = GameSettingsAutoPlay()
 
     var enableEspionageOption = false
 
@@ -320,6 +323,36 @@ class GameSettings {
             val preEncodedAuthValue = "$userId:$serverPassword"
             return "Basic ${Base64Coder.encodeString(preEncodedAuthValue)}"
         }
+    }
+
+    class GameSettingsAutoPlay {
+        var showAutoPlayButton: Boolean = false
+        var autoPlayUntilEnd: Boolean = false
+        var autoPlayMaxTurns = 10
+        var fullAutoPlayAI: Boolean = true
+        var autoPlayMilitary: Boolean = true
+        var autoPlayCivilian: Boolean = true
+        var autoPlayEconomy: Boolean = true
+        var autoPlayTechnology: Boolean = true
+        var autoPlayPolicies: Boolean = true
+        var autoPlayReligion: Boolean = true
+        var autoPlayDiplomacy: Boolean = true
+
+        var turnsToAutoPlay: Int = 0
+        var autoPlayTurnInProgress: Boolean = false
+
+        fun startAutoPlay() {
+            turnsToAutoPlay = autoPlayMaxTurns
+        }
+
+        fun stopAutoPlay() {
+            turnsToAutoPlay = 0
+            autoPlayTurnInProgress = false
+        }
+
+        fun isAutoPlaying(): Boolean = turnsToAutoPlay > 0
+
+        fun isAutoPlayingAndFullAI():Boolean = isAutoPlaying() && fullAutoPlayAI
     }
 
     @Suppress("SuspiciousCallableReferenceInLambda")  // By @Azzurite, safe as long as that warning below is followed

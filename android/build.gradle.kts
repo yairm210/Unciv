@@ -27,6 +27,7 @@ android {
         resources.excludes += "DebugProbesKt.bin"
     }
     defaultConfig {
+        namespace = "com.unciv.app"
         applicationId = "com.unciv.app"
         minSdk = 21
         targetSdk = 33 // See #5044
@@ -65,9 +66,7 @@ android {
         disable += "MissingTranslation"   // see res/values/strings.xml
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
-
         isCoreLibraryDesugaringEnabled = true
     }
     androidResources {

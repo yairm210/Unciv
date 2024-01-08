@@ -118,7 +118,7 @@ object NextTurnAutomation {
         civInfo.popupAlerts.clear() // AIs don't care about popups.
     }
 
-    internal fun valueCityStateAlliance(civInfo: Civilization, cityState: Civilization): Int {
+    internal fun valueCityStateAlliance(civInfo: Civilization, cityState: Civilization, includeQuests: Boolean = false): Int {
         var value = 0
 
         if (civInfo.wantsToFocusOn(Victory.Focus.Culture) && cityState.cityStateFunctions.canProvideStat(Stat.Culture)) {
@@ -151,7 +151,13 @@ object NextTurnAutomation {
         if (!cityState.isAlive() || cityState.cities.isEmpty() || civInfo.cities.isEmpty())
             return value
 
-        if (civInfo.gold < 100) {
+        // The more we have invested into the city-state the more the alliance is worth
+        val ourInfluence = if (civInfo.knows(cityState)) 
+            cityState.getDiplomacyManager(civInfo).getInfluence().toInt()
+        else 0
+        value += ourInfluence / 10
+
+        if (civInfo.gold < 100 && ourInfluence < 30) {
             // Consider bullying for cash
             value -= 5
         }
@@ -159,13 +165,18 @@ object NextTurnAutomation {
         if (cityState.getAllyCiv() != null && cityState.getAllyCiv() != civInfo.civName) {
             // easier not to compete if a third civ has this locked down
             val thirdCivInfluence = cityState.getDiplomacyManager(cityState.getAllyCiv()!!).getInfluence().toInt()
-            value -= (thirdCivInfluence - 60) / 10
+            value -= (thirdCivInfluence - 30) / 10
         }
 
         // Bonus for luxury resources we can get from them
         value += cityState.detailedCivResources.count {
             it.resource.resourceType == ResourceType.Luxury
             && it.resource !in civInfo.detailedCivResources.map { supply -> supply.resource }
+        }
+
+        if (includeQuests) {
+            // Investing is better if there is an investment bonus quest active.
+            value += (cityState.questManager.getInvestmentMultiplier(civInfo.civName) * 10).toInt() - 10
         }
 
         return value
@@ -339,7 +350,7 @@ object NextTurnAutomation {
         for (unit in sortedUnits) UnitAutomation.automateUnitMoves(unit)
     }
 
-    private fun getUnitPriority(unit: MapUnit, isAtWar: Boolean): Int {
+    fun getUnitPriority(unit: MapUnit, isAtWar: Boolean): Int {
         if (unit.isCivilian() && !unit.isGreatPersonOfType("War")) return 1 // Civilian
         if (unit.baseUnit.isAirUnit()) return 2
         val distance = if (!isAtWar) 0 else unit.civ.threatManager.getDistanceToClosestEnemyUnit(unit.getTile(),6)
@@ -352,11 +363,11 @@ object NextTurnAutomation {
         }
     }
 
-    private fun automateCityBombardment(civInfo: Civilization) {
+    fun automateCityBombardment(civInfo: Civilization) {
         for (city in civInfo.cities) UnitAutomation.tryBombardEnemy(city)
     }
 
-    private fun automateCities(civInfo: Civilization) {
+    fun automateCities(civInfo: Civilization) {
         val ownMilitaryStrength = civInfo.getStatForRanking(RankingType.Force)
         val sumOfEnemiesMilitaryStrength =
                 civInfo.gameInfo.civilizations

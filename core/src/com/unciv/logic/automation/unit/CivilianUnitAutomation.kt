@@ -1,6 +1,5 @@
 package com.unciv.logic.automation.unit
 
-import com.unciv.Constants
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.managers.ReligionState
 import com.unciv.logic.map.mapunit.MapUnit
@@ -15,7 +14,7 @@ object CivilianUnitAutomation {
         && !unit.hasUnique(UniqueType.AddInCapital)
         && unit.civ.units.getCivUnits().any { unit.hasUnique(UniqueType.AddInCapital) }
 
-    fun automateCivilianUnit(unit: MapUnit) {
+    fun automateCivilianUnit(unit: MapUnit, dangerousTiles: HashSet<Tile>) {
         if (tryRunAwayIfNeccessary(unit)) return
 
         if (shouldClearTileForAddInCapitalUnits(unit, unit.currentTile)) {
@@ -26,16 +25,14 @@ object CivilianUnitAutomation {
                 unit.movement.moveToTile(tilesCanMoveTo.minByOrNull { it.value.totalDistance }!!.key)
         }
 
-        val tilesWhereWeWillBeCaptured = unit.civ.threatManager.getEnemyMilitaryUnitsInDistance(unit.getTile(),5)
-            .flatMap { it.movement.getReachableTilesInCurrentTurn() }
-            .filter { it.militaryUnit?.civ != unit.civ }
-            .toSet()
-
         if (unit.hasUnique(UniqueType.FoundCity))
-            return SpecificUnitAutomation.automateSettlerActions(unit, tilesWhereWeWillBeCaptured)
+            return SpecificUnitAutomation.automateSettlerActions(unit, dangerousTiles)
+
+        if(unit.isAutomatingRoadConnection())
+            return unit.civ.getWorkerAutomation().automateConnectRoad(unit, dangerousTiles)
 
         if (unit.cache.hasUniqueToBuildImprovements)
-            return unit.civ.getWorkerAutomation().automateWorkerAction(unit, tilesWhereWeWillBeCaptured)
+            return unit.civ.getWorkerAutomation().automateWorkerAction(unit, dangerousTiles)
 
         if (unit.cache.hasUniqueToCreateWaterImprovements) {
             if (!unit.civ.getWorkerAutomation().automateWorkBoats(unit))
@@ -51,7 +48,7 @@ object CivilianUnitAutomation {
 
         if (unit.hasUnique(UniqueType.MayEnhanceReligion)
             && unit.civ.religionManager.religionState < ReligionState.EnhancedReligion
-            && unit.civ.religionManager.mayEnhanceReligionAtAll(unit)
+            && unit.civ.religionManager.mayEnhanceReligionAtAll()
         )
             return ReligiousUnitAutomation.enhanceReligion(unit)
 
@@ -73,7 +70,7 @@ object CivilianUnitAutomation {
         if (unit.civ.religionManager.maySpreadReligionAtAll(unit))
             return ReligiousUnitAutomation.automateMissionary(unit)
 
-        if (unit.hasUnique(UniqueType.PreventSpreadingReligion) || unit.canDoLimitedAction(Constants.removeHeresy))
+        if (unit.hasUnique(UniqueType.PreventSpreadingReligion) || unit.hasUnique(UniqueType.CanRemoveHeresy))
             return ReligiousUnitAutomation.automateInquisitor(unit)
 
         val isLateGame = isLateGame(unit.civ)
@@ -170,5 +167,5 @@ object CivilianUnitAutomation {
             ?: return // can't move anywhere!
         unit.movement.moveToTile(tileFurthestFromEnemy)
     }
-    
+
 }

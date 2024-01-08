@@ -32,46 +32,25 @@ Mods are located in a `/mods` directory, on Desktop that should be next to your 
 Mods typically have 2 subfolders:
 
 -   `jsons` - here you should put files that alter the data of game objects, the order of the files is as in [the base json files](https://github.com/yairm210/Unciv/tree/master/android/assets/jsons). More information on these can be found [here](Mod-file-structure/1-Overview.md)
--   `Images` - here you should put game images, as in [the base image files](/https://github.com/yairm210/Unciv/tree/master/android/Images).
--
-In order to remove objects from the game, you'll need to create a ModOptions file in the `/jsons` subfolder - there's an example [here](https://github.com/yairm210/Unciv-mod-example/blob/master/Removing%20Things/jsons/ModOptions.json)
+-   `Images` - here you should put game images, as in [the base image files](https://github.com/yairm210/Unciv/tree/master/android/Images).
 
-**Base Ruleset Mods** are mods that 'start from scratch' - ALL the original objects are removed, and only the objects
+In order to remove objects from the game, you'll need to create a ModOptions file in the `/jsons` subfolder - there's an example [here](https://github.com/yairm210/Unciv-mod-example/blob/master/Removing%20Things/jsons/ModOptions.json).
 
-This is done by adding a `"isBaseRuleset":true` configuration to your [modOptions file](Mod-file-structure/5-Miscellaneous-JSON-files.md#modoptionsjson), [like so](https://github.com/k4zoo/Civilization-6-Mod/blob/master/jsons/ModOptions.json)
+**Base Ruleset Mods** are mods that 'start from scratch' - ALL the original objects are removed, and only the objects of the mod in question are used.
+
+This is done by adding a `"isBaseRuleset":true` configuration to your [modOptions file](Mod-file-structure/5-Miscellaneous-JSON-files.md#modoptionsjson), [like so](https://github.com/k4zoo/Civilization-6-Mod/blob/master/jsons/ModOptions.json).
 
 ## Audiovisual components
 
 In addition to changing the rules - or even without doing so - mods can override existing graphics or sounds, or add music tracks. For details, see [Audiovisual Mods](Images-and-Audio.md).
 
-Custom tilesets and unitsets are a subgroup of these - see [Creating a custom tileset](Creating-a-custom-tileset.md) - as are UI skin mods, see [Creating a UI skin](Creating-a-UI-skin.md)
+Custom tilesets and unitsets are a subgroup of these - see [Creating a custom tileset](Creating-a-custom-tileset.md) - as are UI skin mods, see [Creating a UI skin](Creating-a-UI-skin.md).
 
-Such mods are candidates for the "Permanent audiovisual mod" switch available on the Mod Management Screen.
-Note that this feature includes graphics or sounds from the selected mod in _all_ games, even those started before installing the mod.
+Such mods are candidates for the "Permanent audiovisual mod" switch available on the Mod Management Screen, see [Permanent audiovisual mods](Images-and-Audio.md#permanent-audiovisual-mods).
 
-In case of a mod bringing both changed rules and audiovisuals, the 'permanent' feature will include only the media on all games, to use the rules you will still need to select the mod for a new game.
+Images need to be 'packed' before the game can use them, which the desktop version can do for you. Please make sure to read the [Texture atlas](Images-and-Audio.md#images-and-the-texture-atlas) chapter!
 
-### More on Images and the texture atlas
-
-When running on Desktop, images are combined on game startup into a large `game.png` file with a corresponding `.atlas` file.
-
-This means that if you're developing your mod on an Android version of Unciv (not recommended!) you won't be able to generate these images files - you can ask someone in the Discord server to help you out
-
-For your players, the individual images aren't important - only the combined images actually register to the game, so you need to include them in your repository and keep them up to date.
-
-Actually omitting the original images would work for these uses, but we still recommend including them, so developers running from source can access them.
-
-#### Extremely image-heavy mods
-
-If your mod has lots of images (or large ones), the textures might 'spill' into additional texture ".png" files - 2048x2048 is the limit for a single texture pack.
-
-This is not good for performance, which is why the base game controls which kinds of images go together into one texture(+atlas).
-
-This works for mods, too: Create not only one Images folder, but several, the additional ones named "Images.xyz", where xyz will become the filename of the additional texture file (So don't use both Images and Images.game - those will clash). Look at the Unciv base game to get a better idea how that works.
-
-To minimize texture swaps, try to group them by the situation where in the game they are needed. You can distibute by folder, but having the same subfolders under several "Images.xyz" and distributing the images between them will also work.
-
-### Adding maps to mods
+## Adding maps to mods
 
 You can also add maps to mods, so they'll be available to players who download your mod.
 
@@ -150,4 +129,3 @@ Existing mods can be found [here](https://github.com/topics/unciv-mod)!
 Now you should try to create your first mod!
 
 We recommend you start off by [adding a new civilization](Making-a-new-Civilization.md) as a mod, to get a hang of the process :)
-
