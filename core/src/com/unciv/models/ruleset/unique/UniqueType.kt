@@ -611,7 +611,7 @@ enum class UniqueType(
             "This includes the specified turn number. Note turns are not adjusted for advanced starting Eras"),
 
     ConditionalEveryYears("every [positiveAmount] years", UniqueTarget.Conditional, docDescription =
-            "Tests true when a multiple of game years, as defined in Speeds.json and adjusted by starting Era, has been reached or passed by the current turn. Always true for Speed.startYear"),
+            "Tests true when the game year, as defined in Speeds.json and adjusted by starting Era, has reached or passed a multiple of the parameter. Always true for Speed.startYear"),
     ConditionalBeforeYears("before the year [amount]", UniqueTarget.Conditional),
     ConditionalAfterYears("starting with the year [amount]", UniqueTarget.Conditional),
 

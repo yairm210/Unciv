@@ -1840,7 +1840,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Conditional
 
 ??? example  "&lt;every [positiveAmount] years&gt;"
-	Tests true when a multiple of game years, as defined in Speeds.json and adjusted by starting Era, has been reached or passed by the current turn. Always true for Speed.startYear
+	Tests true when the game year, as defined in Speeds.json and adjusted by starting Era, has reached or passed a multiple of the parameter. Always true for Speed.startYear
 	Example: "&lt;every [3] years&gt;"
 
 	Applicable to: Conditional

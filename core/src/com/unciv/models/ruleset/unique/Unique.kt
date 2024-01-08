@@ -228,9 +228,15 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
             UniqueType.ConditionalBeforeYears -> checkOnCiv { gameInfo.getYear(0) < condition.params[0].toInt() }
             UniqueType.ConditionalAfterYears -> checkOnCiv { gameInfo.getYear(0) >= condition.params[0].toInt() }
             UniqueType.ConditionalEveryYears -> checkOnCiv {
+                // turns to years is complex. Therefore, we cannot expect a certain multiple of the period parameter wo be hit exactly by the game year.
+                // we divide the year axis into intervals of length `period` and number them, then if the interval of last turn is less than this turn,
+                // we trigger. Thus every `period` interval leads to one trigger unless a game turn skips more than one such interval.
                 val period = condition.params[0].toInt()
-                gameInfo.getEquivalentTurn() == 0 || // This will also avoid calling gameInfo.getYear(-1) when turns==0
-                    gameInfo.getYear(0) / period > gameInfo.getYear(-1) / period
+                // Since years can be negative for BC, we need to use integer division that rounds to negative infinity
+                val thisTurnPeriodCount = gameInfo.getYear(turnOffset = 0).floorDiv(period)
+                // There's no "last turn" on turn number 0, better not assume gameInfo.getYear can work in any meaningful way for that.
+                val lastTurnPeriodCount = if (gameInfo.getEquivalentTurn() == 0) Int.MIN_VALUE else gameInfo.getYear(turnOffset = -1).floorDiv(period)
+                thisTurnPeriodCount > lastTurnPeriodCount
             }
 
             UniqueType.ConditionalCivFilter -> checkOnCiv { matchesFilter(condition.params[0]) }
