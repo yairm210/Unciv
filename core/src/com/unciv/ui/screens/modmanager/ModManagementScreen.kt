@@ -399,6 +399,24 @@ class ModManagementScreen private constructor(
         syncOnlineSelected(repo.name, button)
         showModDescription(repo.name)
 
+        //todo bug: this date fetch is too late for a correct "Updated" marker
+        if (!repo.hasCheckedRelease) {
+            repo.hasCheckedRelease = true
+            Concurrency.run("GitHubLatestRelease") {
+                try {
+                    // Do an api query to see if there's a latest release to use instead of the default branch
+                    repo.preferLatestRelease()
+                    if (repo.release_tag.isNotEmpty() && (selectedMod === repo)) {
+                        launchOnGLThread {
+                            modActionTable.update(repo) // Updates three things - version, date and "Open Github page" link
+                        }
+                    }
+                } catch (ignore: IOException) {
+                    /* Parsing of latest release failed, do nothing */
+                }
+            }
+        }
+
         if (!repo.hasUpdatedSize) {
             // Setting this later would mean a failed query is repeated on the next mod click,
             // and click-spamming would launch several github queries.
@@ -442,7 +460,7 @@ class ModManagementScreen private constructor(
         Concurrency.run("DownloadMod") { // to avoid ANRs - we've learnt our lesson from previous download-related actions
             try {
                 // Do an api query to see if there's a latest release to use instead of the default branch
-                val releaseRepo = repo.preferLatestRelease()
+                val releaseRepo = if (repo.hasCheckedRelease) repo else repo.preferLatestRelease()
 
                 // Perform download and metadata maintenance
                 val modFolder = Github.downloadAndExtract(

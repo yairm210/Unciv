@@ -256,7 +256,6 @@ object Github {
 
     /** Queries github for a tree and calculates the sum of the blob sizes.
      *  @return -1 on failure, else size rounded to kB
-     *  @see <a href="https://docs.github.com/en/rest/git/trees#get-a-tree">Github API "Get a tree"</a>
      */
     fun getRepoSize(repo: GithubAPI.Repo): Int {
         val link = repo.getUrlForTreeQuery()
@@ -328,7 +327,7 @@ object Github {
             modOptions.modUrl = repo.html_url
         if (overwriteAlways || modOptions.defaultBranch == "master" && repo.default_branch != "master" && repo.release_tag.isEmpty())
             modOptions.defaultBranch = repo.default_branch
-        if (overwriteAlways || modOptions.lastUpdated.isEmpty())
+        if (overwriteAlways || repo.pushed_at.isNotEmpty())  // Different logic to allow release info to override a mod-supplied ModOptions.lastUpdated too
             modOptions.lastUpdated = repo.pushed_at
         if (overwriteAlways || modOptions.author.isEmpty())
             modOptions.author = repo.owner.login

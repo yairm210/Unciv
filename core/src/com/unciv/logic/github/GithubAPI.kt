@@ -7,6 +7,13 @@ import com.unciv.logic.github.Github.folderNameToRepoName
  *  "Namespace" collects all Github API structural knowledge
  *  - Response schema
  *  - Query URL builders
+ *
+ *  ### Collected doc links:
+ *  - https://docs.github.com/en/repositories/working-with-files/using-files/downloading-source-code-archives#source-code-archive-urls
+ *  - https://docs.github.com/en/rest/reference/search#search-repositories--code-samples
+ *  - https://docs.github.com/en/rest/repos/repos
+ *  - https://docs.github.com/en/rest/releases/releases
+ *  - https://docs.github.com/en/rest/git/trees#get-a-tree
  */
 @Suppress("PropertyName")  // We're declaring an external API schema
 object GithubAPI {
@@ -32,9 +39,14 @@ object GithubAPI {
     /** Format a download URL for a release archive */
     private fun Repo.getUrlForReleaseZip() = "$html_url/archive/refs/tags/$release_tag.zip"
 
-    /** Format a URL to query a repo tree - to calculate actual size */
-    internal fun Repo.getUrlForTreeQuery() =
-        "https://api.github.com/repos/$full_name/git/trees/$default_branch?recursive=true"
+    /** Format a URL to query a repo tree - to calculate actual size
+     *  @see <a href="https://docs.github.com/en/rest/git/trees#get-a-tree">Github API "Get a tree"</a>
+     */
+    internal fun Repo.getUrlForTreeQuery(): String {
+        // It's hard to see in the doc this not only accepts a commit SHA, but either branch or tag names too:
+        val treeSelect = release_tag.ifEmpty { default_branch }
+        return "https://api.github.com/repos/$full_name/git/trees/$treeSelect?recursive=true"
+    }
 
     /** Format a URL to fetch a preview image - without extension */
     internal fun getUrlForPreview(modUrl: String, branch: String): String {
@@ -74,7 +86,10 @@ object GithubAPI {
 
         /** Not part of the github schema: Explicit final zip download URL for non-github or release downloads */
         var direct_zip_url = ""
-        /** Not part of the github schema: release tag */
+
+        /** Not part of the github schema for Repo: Tracks whether a query for the latest release has already been done */
+        var hasCheckedRelease = false
+        /** Not part of the github schema for Repo: release tag - copy from [Release] query */
         var release_tag = ""
         /** Not part of the github schema for Repo: release name - copy from [Release] query */
         var release_name = ""
@@ -175,8 +190,8 @@ object GithubAPI {
         var id = 0  // var avoids a warning, as inspection doesn't know the Json reader can change vals
         val name = ""
         val tag_name = ""
-        val draft = false
-        val prerelease = false
+        //val draft = false
+        //val prerelease = false
         val html_url = ""
         val author = RepoOwner()
         val published_at = "" // iso datetime with "Z" timezone
