@@ -135,10 +135,6 @@ class ReligionManager : IsPartOfGameInfoSerialization {
         civInfo.gameInfo.religions[beliefName] = religion!!
         for (city in civInfo.cities)
             city.religion.addPressure(beliefName, 200 * city.population.population)
-        religionState = ReligionState.Pantheon
-
-        for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponFoundingPantheon))
-            UniqueTriggerActivation.triggerCivwideUnique(unique, civInfo)
     }
 
     fun greatProphetsEarned(): Int = civInfo.civConstructions.boughtItemsWithIncreasingPrice[getGreatProphetEquivalent()?.name ?: ""]
@@ -394,6 +390,11 @@ class ReligionManager : IsPartOfGameInfoSerialization {
         )
 
         when (religionState) {
+            ReligionState.None -> {
+                religionState = ReligionState.Pantheon
+                for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponFoundingPantheon))
+                    UniqueTriggerActivation.triggerCivwideUnique(unique, civInfo)
+            }
             ReligionState.FoundingReligion -> {
                 religionState = ReligionState.Religion
                 for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponFoundingReligion))
@@ -402,8 +403,7 @@ class ReligionManager : IsPartOfGameInfoSerialization {
             ReligionState.EnhancingReligion -> {
                 religionState = ReligionState.EnhancedReligion
                 for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponEnhancingReligion))
-                UniqueTriggerActivation.triggerCivwideUnique(unique, civInfo)
-
+                    UniqueTriggerActivation.triggerCivwideUnique(unique, civInfo)
             }
             else -> {}
         }
