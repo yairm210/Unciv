@@ -1,12 +1,9 @@
 package com.unciv.ui.screens.modmanager
 
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton
+import com.unciv.logic.github.GithubAPI
 import com.unciv.models.metadata.ModCategories
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.translations.tr
-import com.unciv.ui.components.extensions.toLabel
-import com.unciv.ui.components.extensions.toTextButton
-import com.unciv.ui.screens.pickerscreens.Github
 
 /** Helper class holds combined mod info for ModManagementScreen, used for both installed and online lists.
  *
@@ -18,7 +15,7 @@ internal class ModUIData private constructor(
     val name: String,
     val description: String,
     val ruleset: Ruleset?,
-    val repo: Github.Repo?,
+    val repo: GithubAPI.Repo?,
     var isVisual: Boolean = false,
     var hasUpdate: Boolean = false
 ) {
@@ -30,7 +27,7 @@ internal class ModUIData private constructor(
         ruleset, null, isVisual = isVisual
     )
 
-    constructor(repo: Github.Repo, isUpdated: Boolean): this (
+    constructor(repo: GithubAPI.Repo, isUpdated: Boolean): this (
         repo.name,
         (repo.description ?: "-{No description provided}-".tr()) +
                 "\n" + "[${repo.stargazers_count}]✯".tr(),

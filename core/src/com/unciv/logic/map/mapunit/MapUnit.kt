@@ -545,7 +545,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
             "Non-City" -> true
             else -> {
                 if (baseUnit.matchesFilter(filter)) return true
-                if (civ.nation.matchesFilter(filter)) return true
+                if (civ.matchesFilter(filter)) return true
                 if (tempUniquesMap.containsKey(filter)) return true
                 return false
             }

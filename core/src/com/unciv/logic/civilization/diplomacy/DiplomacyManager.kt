@@ -405,6 +405,7 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
     /** Returns the [civilizations][Civilization] that know about both sides ([civInfo] and [otherCiv]) */
     fun getCommonKnownCivs(): Set<Civilization> = civInfo.getKnownCivs().toSet().intersect(otherCiv().getKnownCivs().toSet())
 
+    fun getCommonKnownCivsWithSpectators(): Set<Civilization> = civInfo.getKnownCivsWithSpectators().toSet().intersect(otherCiv().getKnownCivsWithSpectators().toSet())
     /** Returns true when the [civInfo]'s territory is considered allied for [otherCiv].
      *  This includes friendly and allied city-states and the open border treaties.
      */
@@ -458,7 +459,7 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
         makePeaceOneSide()
         otherCivDiplomacy().makePeaceOneSide()
 
-        for (civ in getCommonKnownCivs()) {
+        for (civ in getCommonKnownCivsWithSpectators()) {
             civ.addNotification(
                     "[${civInfo.civName}] and [$otherCivName] have signed a Peace Treaty!",
                     NotificationCategory.Diplomacy, civInfo.civName, NotificationIcon.Diplomacy, otherCivName
@@ -501,7 +502,7 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
         setFlag(DiplomacyFlags.DeclarationOfFriendship, 30)
         otherCivDiplomacy().setFlag(DiplomacyFlags.DeclarationOfFriendship, 30)
 
-        for (thirdCiv in getCommonKnownCivs().filter { it.isMajorCiv() || it.isSpectator() }) {
+        for (thirdCiv in getCommonKnownCivsWithSpectators()) {
             thirdCiv.addNotification("[${civInfo.civName}] and [$otherCivName] have signed the Declaration of Friendship!",
                 NotificationCategory.Diplomacy, civInfo.civName, NotificationIcon.Diplomacy, otherCivName)
             thirdCiv.getDiplomacyManager(civInfo).setFriendshipBasedModifier()
@@ -549,7 +550,7 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
         otherCivDiplomacy().diplomaticStatus = DiplomaticStatus.DefensivePact
 
 
-        for (thirdCiv in getCommonKnownCivs().filter { it.isMajorCiv() || it.isSpectator() }) {
+        for (thirdCiv in getCommonKnownCivsWithSpectators()) {
             thirdCiv.addNotification("[${civInfo.civName}] and [$otherCivName] have signed the Defensive Pact!",
                 NotificationCategory.Diplomacy, civInfo.civName, NotificationIcon.Diplomacy, otherCivName)
             if (thirdCiv.isSpectator()) return
@@ -597,7 +598,7 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
             NotificationCategory.Diplomacy, NotificationIcon.Diplomacy, civInfo.civName)
 
         // We, A, are denouncing B. What do other major civs (C,D, etc) think of this?
-        getCommonKnownCivs().filter { it.isMajorCiv() || it.isSpectator() }.forEach { thirdCiv ->
+        getCommonKnownCivsWithSpectators().forEach { thirdCiv ->
             thirdCiv.addNotification("[${civInfo.civName}] has denounced [$otherCivName]!",
                 NotificationCategory.Diplomacy, civInfo.civName, NotificationIcon.Diplomacy, otherCivName)
             if (thirdCiv.isSpectator()) return@forEach

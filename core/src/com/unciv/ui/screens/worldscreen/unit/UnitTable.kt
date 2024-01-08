@@ -214,7 +214,7 @@ class UnitTable(val worldScreen: WorldScreen) : Table() {
             separator.isVisible = true
             val city = selectedCity!!
             var nameLabelText = city.name.tr()
-            if(city.health<city.getMaxHealth()) nameLabelText+=" ("+city.health+")"
+            if (city.health < city.getMaxHealth()) nameLabelText += " ("+city.health+")"
             unitNameLabel.setText(nameLabelText)
 
             unitNameLabel.clearListeners()
@@ -286,10 +286,10 @@ class UnitTable(val worldScreen: WorldScreen) : Table() {
 
     fun citySelected(city: City) : Boolean {
         // If the last selected unit connecting a road, keep it selected. Otherwise, clear.
-        if(selectedUnitIsConnectingRoad){
+        if (selectedUnitIsConnectingRoad) {
             selectUnit(selectedUnits[0])
             selectedUnitIsConnectingRoad = true // selectUnit resets this
-        }else{
+        } else {
             selectUnit()
         }
         if (city == selectedCity) return false

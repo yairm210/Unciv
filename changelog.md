@@ -1,3 +1,39 @@
+## 4.9.17
+
+Experimental pathfinding - activate in Options > Gameplay > Experimental movement
+
+Console: autocomplete ALL THE THINGS!
+
+By SeventhM:
+- Allow mapUnitFilter to use CivFilter
+- Add terrain filters for resources, any terrain, or "improved"
+- Fix 'infinite Great Generals' bug
+
+Spectator receives diplomatic notifications again - By tuvus
+
+Download mod releases or any mod zip  - By SomeTroglodyte
+
+Add <every [positiveAmount] turns> Conditional - By PLynx01
+
+## 4.9.16
+
+Console: civ/city names better matching
+
+By SeventhM:
+- Change the icons from some units/buildings
+- Add unique to allow for generalized great generals
+
+Show carried production from mid-turn obsoleted units  - By soggerr
+
+By tuvus:
+- Fixed crash when a worker tries to build a cached improvement it can't build
+- Fixed crash evaluating alliance with unmet city-state
+
+By SomeTroglodyte:
+- City-stationed unit icons get circular touchable area
+
+set minimum max coast extension to 1  - By remdu
+
 ## 4.9.15
 
 Added Tile Breakdown table, accessible by clicking on the stats in tile info table

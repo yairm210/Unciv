@@ -437,6 +437,7 @@ enum class UniqueType(
     // XP
     FlatXPGain("[amount] XP gained from combat", UniqueTarget.Unit, UniqueTarget.Global),
     PercentageXPGain("[relativeAmount]% XP gained from combat", UniqueTarget.Unit, UniqueTarget.Global),
+    GreatPersonFromCombat("Can be earned through combat", UniqueTarget.Unit),
     GreatPersonEarnedFaster("[greatPerson] is earned [relativeAmount]% faster", UniqueTarget.Unit, UniqueTarget.Global),
 
     // Invisibility
@@ -600,6 +601,7 @@ enum class UniqueType(
     /////// general conditionals
     ConditionalTimedUnique("for [amount] turns", UniqueTarget.Conditional),
     ConditionalChance("with [amount]% chance", UniqueTarget.Conditional),
+    ConditionalEveryTurns("every [positiveAmount] turns", UniqueTarget.Conditional),
     ConditionalBeforeTurns("before [amount] turns", UniqueTarget.Conditional),
 
     ConditionalAfterTurns("after [amount] turns", UniqueTarget.Conditional),

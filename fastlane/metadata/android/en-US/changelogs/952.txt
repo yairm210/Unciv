@@ -1,0 +1,16 @@
+Console: civ/city names better matching
+
+By SeventhM:
+- Change the icons from some units/buildings
+- Add unique to allow for generalized great generals
+
+Show carried production from mid-turn obsoleted units  - By soggerr
+
+By tuvus:
+- Fixed crash when a worker tries to build a cached improvement it can't build
+- Fixed crash evaluating alliance with unmet city-state
+
+By SomeTroglodyte:
+- City-stationed unit icons get circular touchable area
+
+set minimum max coast extension to 1  - By remdu

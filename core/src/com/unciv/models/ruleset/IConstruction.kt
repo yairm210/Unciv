@@ -118,6 +118,8 @@ class RejectionReason(val type: RejectionReasonType,
 
     fun isImportantRejection(): Boolean = type in orderedImportantRejectionTypes
 
+    fun isConstructionRejection(): Boolean = type in constructionRejectionReasonType
+
     /** Returns the index of [orderedImportantRejectionTypes] with the smallest index having the
      * highest precedence */
     fun getRejectionPrecedence(): Int {
@@ -151,6 +153,12 @@ class RejectionReason(val type: RejectionReasonType,
         RejectionReasonType.CanOnlyBePurchased,
         RejectionReasonType.MaxNumberBuildable,
         RejectionReasonType.NoPlaceToPutUnit,
+    )
+    // Used for units spawned, not built
+    private val constructionRejectionReasonType = listOf(
+        RejectionReasonType.Unbuildable,
+        RejectionReasonType.CannotBeBuiltUnhappiness,
+        RejectionReasonType.CannotBeBuilt,
     )
 }
 

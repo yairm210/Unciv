@@ -150,9 +150,11 @@ object NextTurnAutomation {
 
         if (!cityState.isAlive() || cityState.cities.isEmpty() || civInfo.cities.isEmpty())
             return value
-        
+
         // The more we have invested into the city-state the more the alliance is worth
-        val ourInfluence = cityState.getDiplomacyManager(civInfo).getInfluence().toInt()
+        val ourInfluence = if (civInfo.knows(cityState)) 
+            cityState.getDiplomacyManager(civInfo).getInfluence().toInt()
+        else 0
         value += ourInfluence / 10
 
         if (civInfo.gold < 100 && ourInfluence < 30) {
@@ -171,7 +173,7 @@ object NextTurnAutomation {
             it.resource.resourceType == ResourceType.Luxury
             && it.resource !in civInfo.detailedCivResources.map { supply -> supply.resource }
         }
-        
+
         if (includeQuests) {
             // Investing is better if there is an investment bonus quest active.
             value += (cityState.questManager.getInvestmentMultiplier(civInfo.civName) * 10).toInt() - 10
