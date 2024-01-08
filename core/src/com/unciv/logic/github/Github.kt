@@ -77,15 +77,14 @@ object Github {
         repo: GithubAPI.Repo,
         folderFileHandle: FileHandle
     ): FileHandle? {
-        var modNameFromFileName = repo.name
+        var modNameFromFileName = repo.name // Can be replaced by the zip download's Content-Disposition header with the actual intended ZIP name
 
-        val defaultBranch = repo.default_branch
         val zipUrl: String
         val tempName: String
         if (repo.direct_zip_url.isEmpty()) {
             val gitRepoUrl = repo.html_url
             // Initiate download - the helper returns null when it fails
-            zipUrl = GithubAPI.getUrlForBranchZip(gitRepoUrl, defaultBranch)
+            zipUrl = GithubAPI.getUrlForBranchZip(gitRepoUrl, repo.default_branch)
 
             // Get a mod-specific temp file name
             tempName = "temp-" + gitRepoUrl.hashCode().toString(16)
@@ -117,10 +116,8 @@ object Github {
             throw UncivShowableException("That is not a valid ZIP file", ex)
         }
 
-        val (innerFolder, modName) = resolveZipStructure(unzipDestination, modNameFromFileName)
+        val (innerFolder, finalDestinationName) = repo.resolveZipStructure(unzipDestination, modNameFromFileName)
 
-        // modName can be "$repoName-$defaultBranch"
-        val finalDestinationName = modName.replace("-$defaultBranch", "").repoNameToFolderName()
         // finalDestinationName is now the mod name as we display it. Folder name needs to be identical.
         val finalDestination = folderFileHandle.child(finalDestinationName)
 
@@ -164,16 +161,28 @@ object Github {
     }
 
     /** Check whether the unpacked zip contains a subfolder with mod content or is already the mod.
-     *  If there's a subfolder we'll assume it is the mod name, optionally suffixed with branch or release-tag name like github does.
+     *  If there's a subfolder we'll assume it is the mod name, optionally suffixed with branch and/or
+     *  release-tag and/or some numeric ID, optionally prefixed with owner-login, like github does.
+     *  If removing these prefixes/suffixes results in garbage, take [defaultModName] instead.
      *  @return Pair: actual mod content folder to name (subfolder name or [defaultModName])
      */
-    private fun resolveZipStructure(dir: FileHandle, defaultModName: String): Pair<FileHandle, String> {
+    private fun GithubAPI.Repo.resolveZipStructure(dir: FileHandle, defaultModName: String): Pair<FileHandle, String> {
         if (isValidModFolder(dir))
             return dir to defaultModName
         val subdirs = dir.list(FileFilter { it.isDirectory })  // See detekt/#6822 - a direct lambda-to-SAM with typed `it` fails detektAnalysis
-        if (subdirs.size == 1 && isValidModFolder(subdirs[0]))
-            return subdirs[0] to subdirs[0].name()
-        throw UncivShowableException("Invalid Mod archive structure")
+        if (subdirs.size != 1 || !isValidModFolder(subdirs[0]))
+            throw UncivShowableException("Invalid Mod archive structure")
+        // Now the subdir name can be "$repoName-$defaultBranch" or maybe "$owner-$repoName-$someID"...
+        var name = subdirs[0].name()
+        Regex(""".*(-\d+)$""").matchEntire(name)?.run {
+            name = name.substring(0, groups[1]!!.range.first)
+        }
+        name = name
+            .removeSuffix("-$release_tag")
+            .removeSuffix("-$default_branch")
+            .removePrefix("${owner.login}-")
+        if (name.none { it.isLetter() }) name = defaultModName
+        return subdirs[0] to name.repoNameToFolderName()
     }
 
     private fun FileHandle.renameOrMove(dest: FileHandle) {

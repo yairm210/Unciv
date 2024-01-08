@@ -1,6 +1,7 @@
 package com.unciv.logic.github
 
 import com.unciv.json.json
+import com.unciv.logic.github.Github.folderNameToRepoName
 
 /**
  *  "Namespace" collects all Github API structural knowledge
@@ -36,8 +37,12 @@ object GithubAPI {
         "https://api.github.com/repos/$full_name/git/trees/$default_branch?recursive=true"
 
     /** Format a URL to fetch a preview image - without extension */
-    internal fun getUrlForPreview(modUrl: String, branch: String) = "$modUrl/$branch/preview"
-        .replace("github.com", "raw.githubusercontent.com")
+    internal fun getUrlForPreview(modUrl: String, branch: String): String {
+        val releasePos = modUrl.indexOf("/releases/tag/")
+        val baseUrl = if (releasePos < 0) modUrl else modUrl.substring(0, releasePos)
+        return "$baseUrl/$branch/preview"
+            .replace("github.com", "raw.githubusercontent.com")
+    }
 
     /** A query returning all known topics staring with "unciv-mod" and having at least two uses */
     // `+repositories:>1` means ignore unused or practically unused topics
@@ -64,18 +69,21 @@ object GithubAPI {
     class Repo {
 
         /** Unlike the rest of this class, this is not part of the API but added by us locally
-         *  to track whether [getRepoSize][Github.getRepoSize] has been run successfully for this repo */
+         *  to track whether [getRepoSize][Github.getRepoSize] has been run for this repo */
         var hasUpdatedSize = false
 
         /** Not part of the github schema: Explicit final zip download URL for non-github or release downloads */
         var direct_zip_url = ""
         /** Not part of the github schema: release tag */
         var release_tag = ""
-        /** Not part of the github schema: release name */
+        /** Not part of the github schema for Repo: release name - copy from [Release] query */
         var release_name = ""
 
+        /** Mod name - conversion to folder name ('-' replaced with ' ') allowed here */
         var name = ""
+        /** Full repo name - 'owner/repo' - no dashes-to-blanks conversion! */
         var full_name = ""
+
         var description: String? = null
         var owner = RepoOwner()
         var stargazers_count = 0
@@ -88,14 +96,18 @@ object GithubAPI {
         //var homepage: String? = null      // might use instead of go to repo?
         //var has_wiki = false              // a wiki could mean proper documentation for the mod?
 
-        /** String representation to be used for logging */
-        override fun toString() = name.ifEmpty { direct_zip_url }
+        /** String representation to be used for debugging and logging */
+        override fun toString() = when {
+            name.isEmpty() -> direct_zip_url
+            release_tag.isEmpty() && release_name.isEmpty() -> name
+            else -> "name: ${getVersion()}"
+        }
 
         /** "Version" from release name and tag */
         fun getVersion() = when (release_name) {
             "" -> release_tag
             release_tag -> release_name
-            else -> "$release_name ($release_tag)}"
+            else -> "$release_name ($release_tag)"
         }
 
         companion object {
@@ -178,7 +190,8 @@ object GithubAPI {
                 val response = Github.download(getUrlForLatestReleaseQuery(owner, repoName))
                     ?: return null
                 val releaseString = response.bufferedReader().readText()
-                return json().fromJson(Release::class.java, releaseString).takeIf { it.id != 0 }
+                return json().fromJson(Release::class.java, releaseString)
+                    .takeIf { it.id != 0 }
             }
         }
     }
@@ -208,54 +221,51 @@ object GithubAPI {
      * @see <a href="https://docs.github.com/en/rest/repos/repos#get-a-repository--code-samples">Github API Repository Code Samples</a>
      */
     private fun Repo.parseUrl(url: String): Repo? {
-        fun processMatch(matchResult: MatchResult): Repo {
-            html_url = matchResult.groups[1]!!.value
-            owner.login = matchResult.groups[2]!!.value
-            name = matchResult.groups[3]!!.value
-            default_branch = matchResult.groups[4]!!.value
-            return this
-        }
-
         html_url = url
         default_branch = "master"
+
+        // Check for link format as suppled by github's Code - Download ZIP
+        // https://codeload.github.com/$owner/$repo/zip/refs/heads/$branch
         val matchZip = Regex("""^(.*/(.*)/(.*))/archive/(?:.*/)?heads/([^.]+).zip$""").matchEntire(url)
         if (matchZip != null && matchZip.groups.size > 4)
-            return processMatch(matchZip)
+            return processMatch(matchZip, isRelease = false)
 
+        // Check for a github branch **page**
         val matchBranch = Regex("""^(.*/(.*)/(.*))/tree/([^/]+)$""").matchEntire(url)
         if (matchBranch != null && matchBranch.groups.size > 4)
-            return processMatch(matchBranch)
+            return processMatch(matchBranch, isRelease = false)
 
         // Releases and tags -
-        // TODO Query for latest release and save as Mod Version?
         // https://docs.github.com/en/rest/releases/releases#get-the-latest-release
-        // TODO Query a specific release for its name attribute - the page will link the tag
         // https://docs.github.com/en/rest/releases/releases#get-a-release-by-tag-name
-
+        // Check for a release page asset link ("Source code (zip)")
+        // example: https://github.com/$owner/$repo/archive/refs/tags/$release_tag.zip
         val matchTagArchive = Regex("""^(.*/(.*)/(.*))/archive/(?:.*/)?tags/([^.]+).zip$""").matchEntire(url)
         if (matchTagArchive != null && matchTagArchive.groups.size > 4) {
-            processMatch(matchTagArchive)
-            release_tag = default_branch
+            processMatch(matchTagArchive, isRelease = true)
             // leave default_branch even if it's actually a tag not a branch name
             // so the suffix of the inner first level folder inside the zip can be removed later
             direct_zip_url = url
             return this
         }
+        // Check for a release page - header link (right-click on the release name header - copy link)
+        // example: https://github.com/$owner/$repo/releases/tag/$release_tag
         val matchTagPage = Regex("""^(.*/(.*)/(.*))/releases/(?:.*/)?tag/([^.]+)$""").matchEntire(url)
         if (matchTagPage != null && matchTagPage.groups.size > 4) {
-            processMatch(matchTagPage)
-            release_tag = default_branch
+            processMatch(matchTagPage, isRelease = true)
             direct_zip_url = getUrlForReleaseZip()
             return this
         }
 
+        // Check for anything containing "//" and more than two url parts after that, take last two:
+        // Works for github landing pages, we can be lax here as a follow-up API query must succeed.
         val matchRepo = Regex("""^.*//.*/(.+)/(.+)/?$""").matchEntire(url)
         if (matchRepo != null && matchRepo.groups.size > 2) {
             val owner = matchRepo.groups[1]!!.value
             val repoName = matchRepo.groups[2]!!.value
             val release = Release.queryLatest(owner, repoName)
-            if (release != null)
-                return parseRelease(release, repoName)
+            // Query API for a latest release - if that worked, use that
+            if (release != null) return parseRelease(release, repoName)
             // Query API if we got the 'https://github.com/author/repoName' URL format to get the correct default branch
             val repo = Repo.query(owner, repoName)
             if (repo != null) return repo
@@ -276,7 +286,23 @@ object GithubAPI {
         val matchAnyZip = Regex("""^.*//(?:.*/)*([^/]+\.zip)$""").matchEntire(url)
         if (matchAnyZip != null && matchAnyZip.groups.size > 1)
             name = matchAnyZip.groups[1]!!.value
-        full_name = name
+        return this
+    }
+
+    /** Used for mod manager repo query results: We already have most data including default branch, but a "latest release" is not included. */
+    fun Repo.preferLatestRelease(): Repo {
+        // name is already '-'/' ' changed - get from fullname if that works
+        val parts = full_name.split('/')
+        val release = Release.queryLatest(owner.login, if (parts.size == 2 && parts[1].isNotEmpty()) parts[1] else name)
+        return if (release == null) this else parseRelease(release, name)
+    }
+
+    private fun Repo.processMatch(matchResult: MatchResult, isRelease: Boolean): Repo {
+        html_url = matchResult.groups[1]!!.value
+        owner.login = matchResult.groups[2]!!.value
+        name = matchResult.groups[3]!!.value
+        val lastGroup = matchResult.groups[4]!!.value
+        if (isRelease) release_tag = lastGroup else default_branch = lastGroup
         return this
     }
 
@@ -288,8 +314,8 @@ object GithubAPI {
         pushed_at = release.published_at
         owner = release.author
         html_url = release.html_url  // Used as open on Github link
-        full_name = "${owner.login}/$repoName"
-        default_branch = release_tag  // Used to remove folder name suffix
+        if (full_name.isEmpty()) full_name = "${owner.login}/${repoName.folderNameToRepoName()}"  // safety - not seen it happen
+        // We could copy `description = release.body` here to get the release notice into the picker bottom pane - problem: It's markdown?
         return this
     }
     //endregion

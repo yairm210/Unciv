@@ -17,6 +17,7 @@ import com.unciv.logic.UncivShowableException
 import com.unciv.logic.github.Github
 import com.unciv.logic.github.Github.repoNameToFolderName
 import com.unciv.logic.github.GithubAPI
+import com.unciv.logic.github.GithubAPI.preferLatestRelease
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.tilesets.TileSetCache
@@ -49,9 +50,9 @@ import com.unciv.ui.screens.pickerscreens.PickerScreen
 import com.unciv.utils.Concurrency
 import com.unciv.utils.Log
 import com.unciv.utils.launchOnGLThread
+import java.io.IOException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.isActive
-import java.io.IOException
 import kotlin.math.max
 
 /**
@@ -440,14 +441,20 @@ class ModManagementScreen private constructor(
     private fun downloadMod(repo: GithubAPI.Repo, postAction: () -> Unit = {}) {
         Concurrency.run("DownloadMod") { // to avoid ANRs - we've learnt our lesson from previous download-related actions
             try {
+                // Do an api query to see if there's a latest release to use instead of the default branch
+                val releaseRepo = repo.preferLatestRelease()
+
+                // Perform download and metadata maintenance
                 val modFolder = Github.downloadAndExtract(
-                    repo,
+                    releaseRepo,
                     Gdx.files.local("mods")
                 )
                     ?: throw Exception("Exception during GitHub download")    // downloadAndExtract returns null for 404 errors and the like -> display something!
-                Github.rewriteModOptions(repo, modFolder)
+                Github.rewriteModOptions(releaseRepo, modFolder)
+
+                // Update UI
+                val repoName = modFolder.name()  // repo.name still has the replaced "-"'s. Only closure captured for launchOnGLThread.
                 launchOnGLThread {
-                    val repoName = modFolder.name()  // repo.name still has the replaced "-"'s
                     ToastPopup("[$repoName] Downloaded!", this@ModManagementScreen)
                     reloadCachesAfterModChange()
                     UncivGame.Current.translations.tryReadTranslationForCurrentLanguage()
