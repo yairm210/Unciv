@@ -124,6 +124,9 @@ object GameStarter {
 
         runAndMeasure("Techs and Stats") {
             addCivTechs(gameInfo, ruleset, gameSetupInfo)
+            // Redo civ transients as some era conditionals have changed
+            for (civ in gameInfo.civilizations)
+                civ.setTransients()
         }
 
         runAndMeasure("Starting stats") {
