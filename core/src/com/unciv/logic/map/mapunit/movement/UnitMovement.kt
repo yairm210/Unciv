@@ -780,7 +780,7 @@ class UnitMovement(val unit: MapUnit) {
             if (!unitSpecificAllowOcean && unit.cache.cannotEnterOceanTiles) return false
         }
 
-        if (unit.hasUnique(UniqueType.CanTradeWithCityStateForGoldAndInfluence) && tile.getOwner()?.isCityState() == true)
+        if (unit.cache.canEnterCityStates && tile.getOwner()?.isCityState() == true)
             return true
         if (!unit.cache.canEnterForeignTerrain && !tile.canCivPassThrough(unit.civ)) return false
 
