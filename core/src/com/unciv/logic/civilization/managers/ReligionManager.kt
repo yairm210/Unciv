@@ -135,10 +135,6 @@ class ReligionManager : IsPartOfGameInfoSerialization {
         civInfo.gameInfo.religions[beliefName] = religion!!
         for (city in civInfo.cities)
             city.religion.addPressure(beliefName, 200 * city.population.population)
-        religionState = ReligionState.Pantheon
-
-        for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponFoundingPantheon))
-            UniqueTriggerActivation.triggerCivwideUnique(unique, civInfo)
     }
 
     fun greatProphetsEarned(): Int = civInfo.civConstructions.boughtItemsWithIncreasingPrice[getGreatProphetEquivalent()?.name ?: ""]
@@ -375,6 +371,8 @@ class ReligionManager : IsPartOfGameInfoSerialization {
         // Must be done first in case when gain more later
         freeBeliefs.clear()
 
+        if (religionState == ReligionState.None)
+            foundPantheon(beliefs[0].name, useFreeBeliefs)  // makes religion non-null
         // add beliefs (religion exists at this point)
         religion!!.followerBeliefs.addAll(
             beliefs
@@ -389,7 +387,9 @@ class ReligionManager : IsPartOfGameInfoSerialization {
 
         when (religionState) {
             ReligionState.None -> {
-                foundPantheon(beliefs[0].name, useFreeBeliefs)
+                religionState = ReligionState.Pantheon
+                for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponFoundingPantheon))
+                    UniqueTriggerActivation.triggerCivwideUnique(unique, civInfo)
             }
             ReligionState.FoundingReligion -> {
                 religionState = ReligionState.Religion
@@ -399,8 +399,7 @@ class ReligionManager : IsPartOfGameInfoSerialization {
             ReligionState.EnhancingReligion -> {
                 religionState = ReligionState.EnhancedReligion
                 for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponEnhancingReligion))
-                UniqueTriggerActivation.triggerCivwideUnique(unique, civInfo)
-
+                    UniqueTriggerActivation.triggerCivwideUnique(unique, civInfo)
             }
             else -> {}
         }
