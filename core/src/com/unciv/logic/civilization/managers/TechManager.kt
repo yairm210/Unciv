@@ -285,6 +285,15 @@ class TechManager : IsPartOfGameInfoSerialization {
         researchedTechnologies = researchedTechnologies.withItem(newTech)
         addTechToTransients(newTech)
 
+        moveToNewEra(showNotification)
+
+        if (!civInfo.isSpectator() && showNotification)
+            civInfo.addNotification("Research of [$techName] has completed!", TechAction(techName),
+                NotificationCategory.General,
+                NotificationIcon.Science)
+        if (isNewTech)
+            civInfo.popupAlerts.add(PopupAlert(AlertType.TechResearched, techName))
+
         val triggerNotificationText = "due to researching [$techName]"
         for (unique in newTech.uniqueObjects)
             if (!unique.hasTriggerConditional())
@@ -295,28 +304,23 @@ class TechManager : IsPartOfGameInfoSerialization {
                 UniqueTriggerActivation.triggerCivwideUnique(unique, civInfo, triggerNotificationText = triggerNotificationText)
 
 
-        updateTransientBooleans()
-        for (city in civInfo.cities) {
-            city.reassignPopulationDeferred()
-        }
-
-        if (!civInfo.isSpectator() && showNotification)
-            civInfo.addNotification("Research of [$techName] has completed!", TechAction(techName),
-                NotificationCategory.General,
-                NotificationIcon.Science)
-        if (isNewTech)
-            civInfo.popupAlerts.add(PopupAlert(AlertType.TechResearched, techName))
-
         val revealedResources = getRuleset().tileResources.values.filter { techName == it.revealedBy }
         if (civInfo.playerType == PlayerType.Human) {
             for (revealedResource in revealedResources) {
                 civInfo.gameInfo.notifyExploredResources(civInfo, revealedResource.name, 5)
             }
         }
+
+        updateTransientBooleans()
+
         // In the case of a player hurrying research, this civ's resource availability may now be out of date
         // - e.g. when an owned tile by luck already has an appropriate improvement or when a tech provides a resource.
         // That can be seen on WorldScreenTopBar, so better update.
         civInfo.cache.updateCivResources()
+
+        for (city in civInfo.cities) {
+            city.reassignPopulationDeferred()
+        }
 
         obsoleteOldUnits(techName)
 
@@ -326,7 +330,6 @@ class TechManager : IsPartOfGameInfoSerialization {
                 MayaLongCountAction(), NotificationCategory.General, MayaCalendar.notificationIcon)
         }
 
-        moveToNewEra(showNotification)
         updateResearchProgress()
     }
 
