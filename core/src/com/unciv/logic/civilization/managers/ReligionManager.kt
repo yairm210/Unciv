@@ -371,12 +371,8 @@ class ReligionManager : IsPartOfGameInfoSerialization {
         // Must be done first in case when gain more later
         freeBeliefs.clear()
 
-        when (religionState) {
-            ReligionState.None -> {
-                foundPantheon(beliefs[0].name, useFreeBeliefs)  // makes religion non-null
-            }
-            else -> {}
-        }
+        if (religionState == ReligionState.None)
+            foundPantheon(beliefs[0].name, useFreeBeliefs)  // makes religion non-null
         // add beliefs (religion exists at this point)
         religion!!.followerBeliefs.addAll(
             beliefs
