@@ -1,0 +1,25 @@
+
+
+Performance improvement for canPassThrough
+
+Final performance improvements for the new algotihm, before we say 'goodnight sweet prince' - it underperforms drastically compared to current
+
+4.9.17-patch2
+
+4.9.17-patch1
+
+Fix 'move to tile' for new movement 
+
+Added unique MayBuyConstructionsInPupets  - By rpolitex
+
+By SomeTroglodyte:
+- Linting of GameStarter.addCivTechs 
+- Prevent TranslationFileWriter from writing entries crippled by wrong nested brackets interpretation - when UniqueTyped 
+- Unit test against unmatched placeholders in a translation 
+- Fix the german line blocking  
+
+Reorder AddTechnology  - By SeventhM
+
+Fix NullPointerException on founding a pantheon  - By dHannasch
+
+Fixed AutoPlay not working after victory  - By tuvus
