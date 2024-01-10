@@ -83,7 +83,7 @@ object UnitActions {
         actionList += UnitActionsUpgrade.getUnitUpgradeActions(unit, unit.currentTile)
         actionList += UnitActionsPillage.getPillageActions(unit, unit.currentTile)
 
-        actionList += getSleepActions(unit, tile)
+        actionList += getSleepActions(unit, tile, false)
         actionList += getSleepUntilHealedActions(unit, tile)
 
         addFortifyActions(actionList, unit, false)
@@ -106,6 +106,7 @@ object UnitActions {
                 GUI.getMap().setCenterPosition(unit.getMovementDestination().position, true)
             }
         }
+        actionList += getSleepActions(unit, tile, true)
         addFortifyActions(actionList, unit, true)
         if (!shouldAutomationBePrimaryAction(unit))
             actionList += getAutomateActions(unit, unit.currentTile)
@@ -220,9 +221,10 @@ object UnitActions {
         ) return false
         return true
     }
-    private fun getSleepActions(unit: MapUnit, tile: Tile): List<UnitAction> {
+    private fun getSleepActions(unit: MapUnit, tile: Tile, showingAdditionalActions: Boolean): List<UnitAction> {
         if (!shouldHaveSleepAction(unit, tile)) return listOf()
-        if (unit.health < 100) return listOf()
+        // If we're wounded, still show Sleep, but on the second "page" instead
+        if (unit.health < 100 != showingAdditionalActions) return listOf()
         return listOf(UnitAction(UnitActionType.Sleep,
             action = { unit.action = UnitActionType.Sleep.value }.takeIf { !unit.isSleeping() }
         ))
