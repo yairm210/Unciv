@@ -269,6 +269,8 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
                 checkOnCiv { religionManager.religionState >= ReligionState.EnhancedReligion }
             UniqueType.ConditionalBuildingBuilt ->
                 checkOnCiv { cities.any { it.cityConstructions.containsBuildingOrEquivalent(condition.params[0]) } }
+            UniqueType.ConditionalBuildingBuiltByAnybody ->
+                checkOnCiv { gameInfo.getCities().any { it.cityConstructions.containsBuildingOrEquivalent(condition.params[0]) } }
 
             // Filtered via city.getMatchingUniques
             UniqueType.ConditionalInThisCity -> true
