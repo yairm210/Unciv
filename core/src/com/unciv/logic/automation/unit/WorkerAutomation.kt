@@ -274,8 +274,8 @@ class WorkerAutomation(
     }
 
     /**
-     * Uses a cache to find and return the connection to make that is assosiated with a city.
-     * May not work if the unit that originially created this cache is different from the next.
+     * Uses a cache to find and return the connection to make that is associated with a city.
+     * May not work if the unit that originally created this cache is different from the next.
      * (Due to the difference in [UnitMovement.canPassThrough()])
      */
     private fun getRoadConnectionBetweenCities(unit: MapUnit, city: City): List<Tile> {
