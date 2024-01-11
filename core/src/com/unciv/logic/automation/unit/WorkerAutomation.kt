@@ -674,10 +674,11 @@ class WorkerAutomation(
             && tile in tilesOfRoadsToConnectCities) {
             var value = 1f
             val city = tilesOfRoadsToConnectCities[tile]!!
-            // Bigger cities have a higher priority to connect
-            value += (city.population.population - 3) * .2f
+            if (civInfo.stats.statsForNextTurn.gold >= 20)
+                // Bigger cities have a higher priority to connect
+                value += (city.population.population - 3) * .3f
             // Higher priority if we are closer to connecting the city
-            value += 2 - roadsToConnectCitiesCache[city]!!.size * .2f
+            value += 5 - roadsToConnectCitiesCache[city]!!.size
             return value
         }
 
