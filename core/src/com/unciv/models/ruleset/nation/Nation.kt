@@ -51,6 +51,7 @@ class Nation : RulesetObject() {
     var uniqueText = ""
     var innerColor: List<Int>? = null
     var startBias = ArrayList<String>()
+    var personality: String? = null
 
     var startIntroPart1 = ""
     var startIntroPart2 = ""

@@ -40,6 +40,7 @@ import com.unciv.models.ruleset.Victory
 import com.unciv.models.ruleset.nation.CityStateType
 import com.unciv.models.ruleset.nation.Difficulty
 import com.unciv.models.ruleset.nation.Nation
+import com.unciv.models.ruleset.nation.Personality
 import com.unciv.models.ruleset.tech.Era
 import com.unciv.models.ruleset.tile.ResourceSupplyList
 import com.unciv.models.ruleset.tile.ResourceType
@@ -374,6 +375,10 @@ class Civilization : IsPartOfGameInfoSerialization {
 
     fun wantsToFocusOn(focus: Victory.Focus): Boolean {
         return thingsToFocusOnForVictory.contains(focus)
+    }
+
+    fun getPersonality(): Personality? {
+        return gameInfo.ruleset.personalities[nation.personality]
     }
 
     @Transient
