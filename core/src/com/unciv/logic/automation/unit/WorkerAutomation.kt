@@ -655,6 +655,18 @@ class WorkerAutomation(
             tile.neighbors.any {it.getOwner() == unit.civ && it.owningCity != null && tile.aerialDistanceTo(it.owningCity!!.getCenterTile()) <= 3}) 
             stats = tile.stats.getStatDiffForImprovement(improvement, civInfo, tile.getCity(), localUniqueCache).div(3f)
 
+        if (improvementName.startsWith("Remove ")) {
+            // We need to look beyond what we are doing right now and at the final improvement that will be on this tile
+            val terrainName = improvementName.replace("Remove ", "")
+            if (ruleSet.terrains.containsKey(terrainName)) { // Otherwise we get an infinite road loop
+                tile.removeTerrainFeature(terrainName)
+                val wantedFinalImprovement = chooseImprovement(unit, tile)
+                if (wantedFinalImprovement != null)
+                    stats.add(tile.stats.getStatDiffForImprovement(wantedFinalImprovement, civInfo, tile.getCity(), localUniqueCache))
+                tile.addTerrainFeature(terrainName)
+            }
+        }
+        
         var value = Automation.rankStatsValue(stats, unit.civ)
         // Calculate the bonus from gaining the resources, this isn't included in the stats above
         if (tile.resource != null && tile.tileResource.resourceType != ResourceType.Bonus) {
