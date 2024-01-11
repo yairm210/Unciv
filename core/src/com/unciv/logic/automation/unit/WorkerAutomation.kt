@@ -647,18 +647,21 @@ class WorkerAutomation(
 
     private fun getImprovementRanking(tile: Tile, unit: MapUnit, improvementName: String, localUniqueCache: LocalUniqueCache): Float {
         val improvement = ruleSet.tileImprovements[improvementName]!!
-        var stats = Stats()
-        if (tile.getOwner() == unit.civ) 
-            stats = tile.stats.getStatDiffForImprovement(improvement, civInfo, tile.getCity(), localUniqueCache)
-        // We could expand to this tile in the future
-        else if (ruleSet.tileImprovements[improvementName]!!.hasUnique(UniqueType.CanBuildOutsideBorders) &&
-            tile.neighbors.any {it.getOwner() == unit.civ && it.owningCity != null && tile.aerialDistanceTo(it.owningCity!!.getCenterTile()) <= 3}) 
-            stats = tile.stats.getStatDiffForImprovement(improvement, civInfo, tile.getCity(), localUniqueCache).div(3f)
+
+        // If this tile is not in our territory or neighboring it, it has no value
+        if (tile.getOwner() != unit.civ 
+            // Check if it is not an unowned neighboring tile that can be in city range
+            && !(ruleSet.tileImprovements[improvementName]!!.hasUnique(UniqueType.CanBuildOutsideBorders) 
+            && tile.neighbors.any { it.getOwner() == unit.civ && it.owningCity != null 
+            && tile.aerialDistanceTo(it.owningCity!!.getCenterTile()) <= 3 } ))
+            return 0f
+
+        val stats = tile.stats.getStatDiffForImprovement(improvement, civInfo, tile.getCity(), localUniqueCache)
 
         if (improvementName.startsWith("Remove ")) {
             // We need to look beyond what we are doing right now and at the final improvement that will be on this tile
             val terrainName = improvementName.replace("Remove ", "")
-            if (ruleSet.terrains.containsKey(terrainName)) { // Otherwise we get an infinite road loop
+            if (ruleSet.terrains.containsKey(terrainName)) { // Otherwise we get an infinite loop with remove roads
                 tile.removeTerrainFeature(terrainName)
                 val wantedFinalImprovement = chooseImprovement(unit, tile)
                 if (wantedFinalImprovement != null)
@@ -666,7 +669,11 @@ class WorkerAutomation(
                 tile.addTerrainFeature(terrainName)
             }
         }
-        
+
+        // If the tile is a neighboring tile it has a lower value
+        if (tile.getOwner() != unit.civ)
+            stats.div(3f)
+
         var value = Automation.rankStatsValue(stats, unit.civ)
         // Calculate the bonus from gaining the resources, this isn't included in the stats above
         if (tile.resource != null && tile.tileResource.resourceType != ResourceType.Bonus) {
