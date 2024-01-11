@@ -146,7 +146,7 @@ class CityPopulationManager : IsPartOfGameInfoSerialization {
     internal fun autoAssignPopulation() {
         city.cityStats.update()  // calculate current stats with current assignments
         val cityStats = city.cityStats.currentCityStats
-        city.currentGPPBonus = city.getGreatPersonPercentageBonus()  // pre-calculate
+        city.currentGPPBonus = city.getGreatPersonPercentageBonus()  // pre-calculate for use in Automation.rankSpecialist
         var specialistFoodBonus = 2f  // See CityStats.calcFoodEaten()
         for (unique in city.getMatchingUniques(UniqueType.FoodConsumptionBySpecialists))
             if (city.matchesFilter(unique.params[1]))
