@@ -449,7 +449,7 @@ class WorkerAutomation(
                 .filter { it.second < bestTileToConstructRoadOnDist }
                 .sortedBy { it.second }
                 .minByOrNull {
-                    unit.movement.canMoveTo(it.first) && unit.movement.canReach(it.first)
+                    unit.movement.canMoveTo(it.first) && unit.movement.canReach(it.first) 
                 } ?: continue // Apparently we can't reach any of these tiles at all
             bestTileToConstructRoadOn = reachableTile.first
             bestTileToConstructRoadOnDist = reachableTile.second
@@ -457,7 +457,7 @@ class WorkerAutomation(
 
         if (bestTileToConstructRoadOn == null) return false
 
-        if (bestTileToConstructRoadOn != currentTile)
+        if (bestTileToConstructRoadOn != currentTile && unit.currentMovement > 0)
             unit.movement.headTowards(bestTileToConstructRoadOn)
         if (unit.currentMovement > 0 && bestTileToConstructRoadOn == currentTile 
             && currentTile.improvementInProgress != bestRoadAvailable.name) {
