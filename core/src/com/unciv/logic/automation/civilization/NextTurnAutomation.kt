@@ -121,14 +121,28 @@ object NextTurnAutomation {
     internal fun valueCityStateAlliance(civInfo: Civilization, cityState: Civilization, includeQuests: Boolean = false): Int {
         var value = 0
 
-        if (civInfo.wantsToFocusOn(Victory.Focus.Culture) && cityState.cityStateFunctions.canProvideStat(Stat.Culture)) {
-            value += 10
+        if (cityState.cityStateFunctions.canProvideStat(Stat.Culture)) {
+            if (civInfo.wantsToFocusOn(Victory.Focus.Culture))
+                value += 10
+            value += (civInfo.getPersonality()?.culture ?: 5f).toInt() - 5
         }
-        else if (civInfo.wantsToFocusOn(Victory.Focus.Science) && cityState.cityStateFunctions.canProvideStat(Stat.Science)) {
+        if (cityState.cityStateFunctions.canProvideStat(Stat.Faith)) {
+            if (civInfo.wantsToFocusOn(Victory.Focus.Faith))
+                value += 10
+            value += (civInfo.getPersonality()?.faith ?: 5f).toInt() - 5
+        }
+        if (cityState.cityStateFunctions.canProvideStat(Stat.Production)) {
+            if (civInfo.wantsToFocusOn(Victory.Focus.Production))
+                value += 10
+            value += (civInfo.getPersonality()?.production ?: 5f).toInt() - 5
+        }
+        if (cityState.cityStateFunctions.canProvideStat(Stat.Science)) {
             // In case someone mods this in
-            value += 10
+            if (civInfo.wantsToFocusOn(Victory.Focus.Science))
+                value += 10
+            value += (civInfo.getPersonality()?.science ?: 5f).toInt() - 5
         }
-        else if (civInfo.wantsToFocusOn(Victory.Focus.Military)) {
+        if (civInfo.wantsToFocusOn(Victory.Focus.Military)) {
             if (!cityState.isAlive())
                 value -= 5
             else {
@@ -138,21 +152,22 @@ object NextTurnAutomation {
                     value -= (20 - distance) / 4
             }
         }
-        else if (civInfo.wantsToFocusOn(Victory.Focus.CityStates)) {
+        if (civInfo.wantsToFocusOn(Victory.Focus.CityStates)) {
             value += 5  // Generally be friendly
         }
         if (civInfo.getHappiness() < 5 && cityState.cityStateFunctions.canProvideStat(Stat.Happiness)) {
             value += 10 - civInfo.getHappiness()
+            value += (civInfo.getPersonality()?.happiness ?: 5f).toInt() - 5
         }
         if (civInfo.getHappiness() > 5 && cityState.cityStateFunctions.canProvideStat(Stat.Food)) {
-            value += 5
+            value += (civInfo.getPersonality()?.food ?: 5f).toInt()
         }
 
         if (!cityState.isAlive() || cityState.cities.isEmpty() || civInfo.cities.isEmpty())
             return value
 
         // The more we have invested into the city-state the more the alliance is worth
-        val ourInfluence = if (civInfo.knows(cityState)) 
+        val ourInfluence = if (civInfo.knows(cityState))
             cityState.getDiplomacyManager(civInfo).getInfluence().toInt()
         else 0
         value += ourInfluence / 10
@@ -397,7 +412,9 @@ object NextTurnAutomation {
     private fun trainSettler(civInfo: Civilization) {
         if (civInfo.isCityState()) return
         if (civInfo.isAtWar()) return // don't train settlers when you could be training troops.
-        if (civInfo.wantsToFocusOn(Victory.Focus.Culture) && civInfo.cities.size > 3) return
+        if (civInfo.wantsToFocusOn(Victory.Focus.Culture) && civInfo.cities.size > 3 &&
+            civInfo.getPersonality() != null)
+            return
         if (civInfo.cities.none()) return
         if (civInfo.getHappiness() <= civInfo.cities.size) return
 

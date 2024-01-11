@@ -92,6 +92,7 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
         addDefenceBuildingChoice()
         addUnitTrainingBuildingChoice()
         addCultureBuildingChoice()
+        addFaithBuildingChoice()
         addOtherBuildingChoice()
 
         if (!city.isPuppet) {
@@ -139,6 +140,7 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
         // most buildings and civ units contribute the the civ's growth, military units are anti-growth
         var modifier = sqrt(unitsToCitiesRatio) / 2
         if (civInfo.wantsToFocusOn(Victory.Focus.Military) || isAtWar) modifier *= 2
+        modifier *= (civInfo.getPersonality()?.military ?: 5f) / 5
 
         if (Automation.afraidOfBarbarians(civInfo)) modifier = 2f // military units are pro-growth if pressured by barbs
         if (!cityIsOverAverageProduction) modifier /= 5 // higher production cities will deal with this
@@ -213,6 +215,7 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
             if (city.cityStats.currentCityStats.culture == 0f) // It won't grow if we don't help it
                 modifier = 0.8f
             if (civInfo.wantsToFocusOn(Victory.Focus.Culture)) modifier = 1.6f
+            modifier *= (civInfo.getPersonality()?.culture ?: 5f) / 5
             addChoice(relativeCostEffectiveness, cultureBuilding.name, modifier)
         }
     }
@@ -295,6 +298,7 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
             if (isAtWar) modifier *= 2
             if (civInfo.wantsToFocusOn(Victory.Focus.Military))
                 modifier *= 1.3f
+            modifier *= (civInfo.getPersonality()?.military ?: 5f) / 5
             addChoice(relativeCostEffectiveness, unitTrainingBuilding.name, modifier)
         }
     }
@@ -332,6 +336,7 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
             if (civHappiness > 5) modifier = 1 / 2f // less desperate
             if (civHappiness < 0) modifier = 3f // more desperate
             else if (happinessBuilding.hasUnique(UniqueType.RemoveAnnexUnhappiness)) modifier = 2f // building courthouse is always important
+            modifier *= (civInfo.getPersonality()?.happiness ?: 5f) / 5
             addChoice(relativeCostEffectiveness, happinessBuilding.name, modifier)
         }
     }
@@ -347,6 +352,7 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
             var modifier = 1.1f
             if (civInfo.wantsToFocusOn(Victory.Focus.Science))
                 modifier *= 1.4f
+            modifier *= (civInfo.getPersonality()?.science ?: 5f) / 5
             addChoice(relativeCostEffectiveness, scienceBuilding.name, modifier)
         }
     }
@@ -356,7 +362,8 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
             .filterBuildable()
             .minByOrNull { it.cost }
         if (goldBuilding != null) {
-            val modifier = if (civInfo.stats.statsForNextTurn.gold < 0) 3f else 1.2f
+            var modifier = if (civInfo.stats.statsForNextTurn.gold < 0) 3f else 1.2f
+            modifier *= (civInfo.getPersonality()?.gold ?: 5f) / 5
             addChoice(relativeCostEffectiveness, goldBuilding.name, modifier)
         }
     }
@@ -366,8 +373,9 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
             .filter { it.isStatRelated(Stat.Production) }
             .filterBuildable()
             .minByOrNull { it.cost }
+        val modifier = (civInfo.getPersonality()?.production ?: 5f) / 5
         if (productionBuilding != null) {
-            addChoice(relativeCostEffectiveness, productionBuilding.name, 1.5f)
+            addChoice(relativeCostEffectiveness, productionBuilding.name, 1.5f * modifier)
         }
     }
 
@@ -382,7 +390,21 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
         if (foodBuilding != null) {
             var modifier = 1f
             if (city.population.population < 5) modifier = 1.3f
+            modifier *= (civInfo.getPersonality()?.food ?: 5f) / 5
             addChoice(relativeCostEffectiveness, foodBuilding.name, modifier)
+        }
+    }
+
+    private fun addFaithBuildingChoice() {
+        val faithBuilding = statBuildings
+            .filter { it.isStatRelated(Stat.Faith) }
+            .filterBuildable()
+            .minByOrNull { it.cost }
+        if (faithBuilding != null && civInfo.gameInfo.isReligionEnabled()) {
+            var modifier = 0.5f
+            if (civInfo.wantsToFocusOn(Victory.Focus.Faith)) modifier = 1f
+            modifier *= (civInfo.getPersonality()?.culture ?: 5f) / 5
+            addChoice(relativeCostEffectiveness, faithBuilding.name, modifier)
         }
     }
 }

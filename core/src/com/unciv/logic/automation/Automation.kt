@@ -85,15 +85,23 @@ object Automation {
         } else {
             if (city.civ.gold < 0 && city.civ.stats.statsForNextTurn.gold <= 0)
                 yieldStats.gold *= 2 // We have a global problem
+            yieldStats.gold * ((city.civ.getPersonality()?.gold ?: 5f) / 5) 
 
             if (city.tiles.size < 12 || city.civ.wantsToFocusOn(Victory.Focus.Culture))
                 yieldStats.culture *= 2
+            yieldStats.culture * ((city.civ.getPersonality()?.culture ?: 5f) / 5)
 
             if (city.civ.getHappiness() < 0 && !specialist) // since this doesn't get updated, may overshoot
                 yieldStats.happiness *= 2
+            yieldStats.happiness * ((city.civ.getPersonality()?.happiness ?: 5f) / 5)
 
             if (city.civ.wantsToFocusOn(Victory.Focus.Science))
                 yieldStats.science *= 2
+            yieldStats.science * ((city.civ.getPersonality()?.science ?: 5f) / 5)
+            
+            yieldStats.production * ((city.civ.getPersonality()?.production ?: 5f) / 5)
+            yieldStats.faith * ((city.civ.getPersonality()?.faith ?: 5f) / 5)
+            yieldStats.food * ((city.civ.getPersonality()?.food ?: 5f) / 5)
         }
 
         // Apply City focus
