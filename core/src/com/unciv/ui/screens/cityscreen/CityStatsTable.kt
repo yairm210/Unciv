@@ -11,6 +11,7 @@ import com.unciv.UncivGame
 import com.unciv.logic.city.City
 import com.unciv.logic.city.CityFlags
 import com.unciv.logic.city.CityFocus
+import com.unciv.logic.city.GreatPersonPointsBreakdown
 import com.unciv.models.Counter
 import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.tile.TileResource
@@ -350,21 +351,14 @@ class CityStatsTable(private val cityScreen: CityScreen) : Table() {
 
         val greatPeopleTable = Table()
 
-        val greatPersonPoints = city.getGreatPersonPointsForNextTurn()
-        val allGreatPersonNames = greatPersonPoints.asSequence().flatMap { it.value.keys }.distinct()
-
-        if (allGreatPersonNames.none())
+        val gppBreakdown = GreatPersonPointsBreakdown(city)
+        if (gppBreakdown.allNames.isEmpty())
             return
+        val greatPersonPoints = gppBreakdown.sum()
 
-        for (greatPersonName in allGreatPersonNames) {
-
-            var gppPerTurn = 0
-
-            for ((_, gppCounter) in greatPersonPoints) {
-                val gppPointsFromSource = gppCounter[greatPersonName]
-                if (gppPointsFromSource == 0) continue
-                gppPerTurn += gppPointsFromSource
-            }
+        // Iterating over allNames instead of greatPersonPoints will include those where the aggregation had points but ended up zero
+        for (greatPersonName in gppBreakdown.allNames) {
+            val gppPerTurn = greatPersonPoints[greatPersonName]
 
             val info = Table()
 
