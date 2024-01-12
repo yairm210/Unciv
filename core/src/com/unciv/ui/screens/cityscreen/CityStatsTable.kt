@@ -385,9 +385,15 @@ class CityStatsTable(private val cityScreen: CityScreen) : Table() {
             progressBar.setLabel(Color.WHITE, "$gppCurrent/$gppNeeded", fontSize = 14)
 
             info.add(progressBar).colspan(2).left().expandX().row()
-
+            info.onClick {
+                GreatPersonPointsBreakdownPopup(cityScreen, gppBreakdown, greatPersonName)
+            }
             greatPeopleTable.add(info).growX().top().padBottom(10f)
-            greatPeopleTable.add(ImageGetter.getConstructionPortrait(greatPersonName, 50f)).row()
+            val icon = ImageGetter.getConstructionPortrait(greatPersonName, 50f)
+            icon.onClick {
+                GreatPersonPointsBreakdownPopup(cityScreen, gppBreakdown, null)
+            }
+            greatPeopleTable.add(icon).row()
         }
 
         lowerTable.addCategory("Great People", greatPeopleTable, KeyboardBinding.GreatPeopleDetail)
