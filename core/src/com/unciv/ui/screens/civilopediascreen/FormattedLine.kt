@@ -2,6 +2,7 @@ package com.unciv.ui.screens.civilopediascreen
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.graphics.Colors
 import com.badlogic.gdx.graphics.Pixmap
 import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.badlogic.gdx.scenes.scene2d.Actor
@@ -16,8 +17,8 @@ import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.ui.components.extensions.getReadonlyPixmap
-import com.unciv.ui.components.widgets.ColorMarkupLabel
 import com.unciv.ui.components.extensions.toLabel
+import com.unciv.ui.components.widgets.ColorMarkupLabel
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.utils.Log
@@ -65,7 +66,7 @@ class FormattedLine (
     val indent: Int = 0,
     /** Defines vertical padding between rows, defaults to 5f. */
     val padding: Float = Float.NaN,
-    /** Sets text color, accepts 6/3-digit web colors (e.g. #FFA040). */
+    /** Sets text color, accepts 6/3-digit web colors (e.g. #FFA040) or names as defined by Gdx [Colors]. */
     val color: String = "",
     /** Renders a separator line instead of text. Can be combined only with [color] and [size] (line width, default 2) */
     val separator: Boolean = false,
@@ -226,7 +227,7 @@ class FormattedLine (
             val hex6 = String(charArrayOf(color[1], color[1], color[2], color[2], color[3], color[3]))
             return Color.valueOf(hex6)
         }
-        return defaultColor
+        return Colors.get(color.uppercase()) ?: defaultColor
     }
 
     /** Used only as parameter to [FormattedLine.render] and [MarkupRenderer.render] */
