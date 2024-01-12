@@ -740,6 +740,9 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "Triggers a Cultural Victory upon completion"
 	Applicable to: Global
 
+??? example  "May buy items in puppet cities"
+	Applicable to: Global
+
 ??? example  "May not annex cities"
 	Applicable to: Global
 
@@ -1368,6 +1371,9 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Unit
 
+??? example  "Can be earned through combat"
+	Applicable to: Unit
+
 ??? example  "Invisible to others"
 	Applicable to: Unit
 
@@ -1814,6 +1820,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 ??? example  "&lt;with [amount]% chance&gt;"
 	Example: "&lt;with [3]% chance&gt;"
+
+	Applicable to: Conditional
+
+??? example  "&lt;every [positiveAmount] turns&gt;"
+	Example: "&lt;every [3] turns&gt;"
 
 	Applicable to: Conditional
 

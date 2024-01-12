@@ -33,13 +33,9 @@ This is because to the player, the text will be `non-Wounded Armor units`, which
 
 Allows filtering for specific civs.
 
-- `All`
-- `City-states`
-- `Major`
 - `Human player`
 - `AI player`
-- Nation name
-- A unique a Nation has (verbatim, no placeholders)
+- [nationFilter](#nationfilter)
 
 ## nationFilter
 
@@ -205,6 +201,7 @@ This indicates the terrain on a single tile. The following values are allowed:
     - A [nationFilter](#nationfilter) matching the tile owner
 - Or the filter is a constant string choosing a derived test:
     - `All`
+    - `Terrain`
     - `Water`, `Land`
     - `Coastal` (at least one direct neighbor is a coast)
     - `River` (as in all 'river on tile' contexts, it means 'adjacent to a river on at least one side')
@@ -212,7 +209,7 @@ This indicates the terrain on a single tile. The following values are allowed:
     - `Friendly Land` - land belonging to you, or other civs with open borders to you
     - `Foreign Land` - any land that isn't friendly land
     - `Enemy land` - any land belonging to a civ you are at war with
-    - `Water resource`, `Strategic resource`, `Luxury resource`, `Bonus resource`
+    - `Water resource`, `Strategic resource`, `Luxury resource`, `Bonus resource`, `resource`
     - `Natural Wonder` (as opposed to above which means testing for a specific Natural Wonder by name, this tests for any of them)
 
 Please note all of these are _case-sensitive_.
@@ -227,7 +224,7 @@ Any of:
 
 - [terrainFilter](#terrainfilter) for this tile
 - [improvementFilter](#improvementfilter) for this tile
-- `Improvement` for tiles with any improvements
+- `Improvement` or `improved` for tiles with any improvements
 - `unimproved` for tiles with no improvement
 
 ## terrainQuality

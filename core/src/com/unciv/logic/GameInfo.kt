@@ -7,6 +7,7 @@ import com.unciv.UncivGame.Version
 import com.unciv.json.json
 import com.unciv.logic.BackwardCompatibility.convertFortify
 import com.unciv.logic.BackwardCompatibility.guaranteeUnitPromotions
+import com.unciv.logic.BackwardCompatibility.migrateGreatGeneralPools
 import com.unciv.logic.BackwardCompatibility.migrateToTileHistory
 import com.unciv.logic.BackwardCompatibility.removeMissingModReferences
 import com.unciv.logic.GameInfo.Companion.CURRENT_COMPATIBILITY_NUMBER
@@ -38,7 +39,7 @@ import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.tr
 import com.unciv.ui.audio.MusicMood
 import com.unciv.ui.audio.MusicTrackChooserFlags
-import com.unciv.ui.screens.pickerscreens.Github.repoNameToFolderName
+import com.unciv.logic.github.Github.repoNameToFolderName
 import com.unciv.ui.screens.savescreens.Gzip
 import com.unciv.ui.screens.worldscreen.status.NextTurnProgress
 import com.unciv.utils.DebugUtils
@@ -397,7 +398,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
             }
 
             // Do we need to stop AutoPlay?
-            if (UncivGame.Current.settings.autoPlay.isAutoPlaying() && player.victoryManager.hasWon())
+            if (UncivGame.Current.settings.autoPlay.isAutoPlaying() && player.victoryManager.hasWon() && !oneMoreTurnMode)
                 UncivGame.Current.settings.autoPlay.stopAutoPlay()
 
             // Clean up
@@ -670,6 +671,8 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
         guaranteeUnitPromotions()
 
         migrateToTileHistory()
+
+        migrateGreatGeneralPools()
     }
 
     private fun updateCivilizationState() {

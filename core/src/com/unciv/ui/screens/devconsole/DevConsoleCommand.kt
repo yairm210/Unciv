@@ -9,23 +9,70 @@ import com.unciv.models.stats.Stat
 
 internal fun String.toCliInput() = this.lowercase().replace(" ","-")
 
+/** Returns the string to *add* to the existing command */
+fun getAutocompleteString(lastWord: String, allOptions: Collection<String>):String? {
+    val matchingOptions = allOptions.filter { it.toCliInput().startsWith(lastWord.toCliInput()) }
+    if (matchingOptions.isEmpty()) return null
+    if (matchingOptions.size == 1) return matchingOptions.first().drop(lastWord.length)
+
+    val firstOption = matchingOptions.first()
+    for ((index, char) in firstOption.withIndex()) {
+        if (matchingOptions.any { it.lastIndex < index } ||
+            matchingOptions.any { it[index] != char })
+            return firstOption.substring(0, index).drop(lastWord.length)
+    }
+    return firstOption.drop(lastWord.length)
+}
+
 interface ConsoleCommand {
     fun handle(console: DevConsolePopup, params: List<String>): DevConsoleResponse
-    fun autocomplete(params: List<String>): String? = ""
+    /** Returns the string to *add* to the existing command */
+    fun autocomplete(console: DevConsolePopup, params: List<String>): String? = ""
 }
 
 class ConsoleHintException(val hint:String):Exception()
 class ConsoleErrorException(val error:String):Exception()
 
-class ConsoleAction(val action: (console: DevConsolePopup, params: List<String>) -> DevConsoleResponse) : ConsoleCommand {
+class ConsoleAction(val format: String, val action: (console: DevConsolePopup, params: List<String>) -> DevConsoleResponse) : ConsoleCommand {
     override fun handle(console: DevConsolePopup, params: List<String>): DevConsoleResponse {
         return try {
+            validateFormat(format, params)
             action(console, params)
         } catch (hintException: ConsoleHintException) {
             DevConsoleResponse.hint(hintException.hint)
         } catch (errorException: ConsoleErrorException) {
             DevConsoleResponse.error(errorException.error)
         }
+    }
+
+    override fun autocomplete(console: DevConsolePopup, params: List<String>): String? {
+        if (params.isEmpty()) return null
+
+        val formatParams = format.split(" ").drop(2).map {
+            it.removeSurrounding("<",">").removeSurrounding("[","]").removeSurrounding("\"")
+        }
+        if (formatParams.size < params.size) return null
+        val formatParam = formatParams[params.lastIndex]
+
+        val lastParam = params.last()
+        val options = when (formatParam) {
+            "civName" -> console.gameInfo.civilizations.map { it.civName }
+            "unitName" -> console.gameInfo.ruleset.units.keys
+            "promotionName" -> console.gameInfo.ruleset.unitPromotions.keys
+            "improvementName" -> console.gameInfo.ruleset.tileImprovements.keys
+            "featureName" -> console.gameInfo.ruleset.terrains.values.filter { it.type == TerrainType.TerrainFeature }.map { it.name }
+            "stat" -> Stat.names()
+            else -> listOf()
+        }
+        return getAutocompleteString(lastParam, options)
+    }
+
+    private fun validateFormat(format: String, params:List<String>){
+        val allParams = format.split(" ")
+        val requiredParamsAmount = allParams.count { it.startsWith('<') }
+        val optionalParamsAmount = allParams.count { it.startsWith('[') }
+        if (params.size < requiredParamsAmount || params.size > requiredParamsAmount + optionalParamsAmount)
+            throw ConsoleHintException("Format: $format")
     }
 }
 
@@ -40,21 +87,11 @@ interface ConsoleCommandNode : ConsoleCommand {
         return handler.handle(console, params.drop(1))
     }
 
-    override fun autocomplete(params: List<String>): String? {
+    override fun autocomplete(console: DevConsolePopup, params: List<String>): String? {
         if (params.isEmpty()) return null
         val firstParam = params[0]
-        if (firstParam in subcommands) return subcommands[firstParam]!!.autocomplete(params.drop(1))
-        val possibleSubcommands = subcommands.keys.filter { it.startsWith(firstParam) }
-        if (possibleSubcommands.isEmpty()) return null
-        if (possibleSubcommands.size == 1) return possibleSubcommands.first().removePrefix(firstParam)
-
-        val firstSubcommand = possibleSubcommands.first()
-        for ((index, char) in firstSubcommand.withIndex()){
-            if (possibleSubcommands.any { it.lastIndex < index } ||
-                possibleSubcommands.any { it[index] != char })
-                return firstSubcommand.substring(0,index).removePrefix(firstParam)
-        }
-        return firstSubcommand.removePrefix(firstParam)
+        if (firstParam in subcommands) return subcommands[firstParam]!!.autocomplete(console, params.drop(1))
+        return getAutocompleteString(firstParam, subcommands.keys)
     }
 }
 
@@ -67,37 +104,25 @@ class ConsoleCommandRoot : ConsoleCommandNode {
     )
 }
 
-
-fun validateFormat(format: String, params:List<String>){
-    val allParams = format.split(" ")
-    val requiredParamsAmount = allParams.count { it.startsWith('<') }
-    val optionalParamsAmount = allParams.count { it.startsWith('[') }
-    if (params.size < requiredParamsAmount || params.size > requiredParamsAmount + optionalParamsAmount)
-        throw ConsoleHintException("Format: $format")
-}
-
 class ConsoleUnitCommands : ConsoleCommandNode {
     override val subcommands = hashMapOf<String, ConsoleCommand>(
 
-        "add" to ConsoleAction { console, params ->
-            validateFormat("unit add <civName> <unitName>", params)
+        "add" to ConsoleAction("unit add <civName> <unitName>") { console, params ->
             val selectedTile = console.getSelectedTile()
             val civ = console.getCivByName(params[0])
-            val baseUnit = console.gameInfo.ruleset.units.values.firstOrNull { it.name.toCliInput() == params[1] }
+            val baseUnit = console.gameInfo.ruleset.units.values.firstOrNull { it.name.toCliInput() == params[1].toCliInput() }
                 ?: throw ConsoleErrorException("Unknown unit")
             civ.units.placeUnitNearTile(selectedTile.position, baseUnit)
             DevConsoleResponse.OK
         },
 
-        "remove" to ConsoleAction { console, params ->
-            validateFormat("unit remove", params)
+        "remove" to ConsoleAction("unit remove") { console, params ->
             val unit = console.getSelectedUnit()
             unit.destroy()
             DevConsoleResponse.OK
         },
 
-        "addpromotion" to ConsoleAction { console, params ->
-            validateFormat("unit addpromotion <promotionName>", params)
+        "addpromotion" to ConsoleAction("unit addpromotion <promotionName>") { console, params ->
             val unit = console.getSelectedUnit()
             val promotion = console.gameInfo.ruleset.unitPromotions.values.firstOrNull { it.name.toCliInput() == params[0] }
                 ?: throw ConsoleErrorException("Unknown promotion")
@@ -105,8 +130,7 @@ class ConsoleUnitCommands : ConsoleCommandNode {
             DevConsoleResponse.OK
         },
 
-        "removepromotion" to ConsoleAction { console, params ->
-            validateFormat("unit removepromotion <promotionName>", params)
+        "removepromotion" to ConsoleAction("unit removepromotion <promotionName>") { console, params ->
             val unit = console.getSelectedUnit()
             val promotion = unit.promotions.getPromotions().firstOrNull { it.name.toCliInput() == params[0] }
                 ?: throw ConsoleErrorException("Promotion not found on unit")
@@ -117,8 +141,7 @@ class ConsoleUnitCommands : ConsoleCommandNode {
             DevConsoleResponse.OK
         },
 
-        "setmovement" to ConsoleAction { console, params ->
-            validateFormat("unit setmovement <amount>", params)
+        "setmovement" to ConsoleAction("unit setmovement <amount>") { console, params ->
             val movement = params[0].toFloatOrNull()
             if (movement == null || movement < 0) throw ConsoleErrorException("Invalid number")
             val unit = console.getSelectedUnit()
@@ -131,8 +154,7 @@ class ConsoleUnitCommands : ConsoleCommandNode {
 class ConsoleCityCommands : ConsoleCommandNode {
     override val subcommands = hashMapOf<String, ConsoleCommand>(
 
-        "add" to ConsoleAction { console, params ->
-            validateFormat("city add <civName>", params)
+        "add" to ConsoleAction("city add <civName>") { console, params ->
             val civ = console.getCivByName(params[0])
             val selectedTile = console.getSelectedTile()
             if (selectedTile.isCityCenter())
@@ -141,15 +163,13 @@ class ConsoleCityCommands : ConsoleCommandNode {
             DevConsoleResponse.OK
         },
 
-        "remove" to ConsoleAction { console, params ->
-            validateFormat("city remove", params)
+        "remove" to ConsoleAction("city remove") { console, params ->
             val city = console.getSelectedCity()
             city.destroyCity(overrideSafeties = true)
             DevConsoleResponse.OK
         },
 
-        "setpop" to ConsoleAction { console, params ->
-            validateFormat("city setpop <amount>", params)
+        "setpop" to ConsoleAction("city setpop <amount>") { console, params ->
             val city = console.getSelectedCity()
             val newPop = console.getInt(params[0])
             if (newPop < 1) throw ConsoleErrorException("Population must be at least 1")
@@ -157,8 +177,7 @@ class ConsoleCityCommands : ConsoleCommandNode {
             DevConsoleResponse.OK
         },
 
-        "addtile" to ConsoleAction { console, params ->
-            validateFormat("city addtile <cityName>", params)
+        "addtile" to ConsoleAction("city addtile <cityName>") { console, params ->
             val selectedTile = console.getSelectedTile()
             val city = console.getCity(params[0])
             if (selectedTile.neighbors.none { it.getCity() == city })
@@ -168,16 +187,14 @@ class ConsoleCityCommands : ConsoleCommandNode {
             DevConsoleResponse.OK
         },
 
-        "removetile" to ConsoleAction { console, params ->
-            validateFormat("city removetile", params)
+        "removetile" to ConsoleAction("city removetile") { console, params ->
             val selectedTile = console.getSelectedTile()
             val city = console.getSelectedCity()
             city.expansion.relinquishOwnership(selectedTile)
             DevConsoleResponse.OK
         },
 
-        "religion" to ConsoleAction { console, params ->
-            validateFormat("city religion <name> <±pressure>", params)
+        "religion" to ConsoleAction("city religion <name> <±pressure>") { console, params ->
             val city = console.getSelectedCity()
             val religion = city.civ.gameInfo.religions.keys.firstOrNull { it.toCliInput() == params[0] }
                 ?: throw ConsoleErrorException("'${params[0]}' is not a known religion")
@@ -192,8 +209,7 @@ class ConsoleCityCommands : ConsoleCommandNode {
 class ConsoleTileCommands: ConsoleCommandNode {
     override val subcommands = hashMapOf<String, ConsoleCommand>(
 
-        "setimprovement" to ConsoleAction { console, params ->
-            validateFormat("tile setimprovement <improvementName> [civName]", params)
+        "setimprovement" to ConsoleAction("tile setimprovement <improvementName> [civName]") { console, params ->
             val selectedTile = console.getSelectedTile()
             val improvement = console.gameInfo.ruleset.tileImprovements.values.firstOrNull {
                 it.name.toCliInput() == params[0]
@@ -206,15 +222,13 @@ class ConsoleTileCommands: ConsoleCommandNode {
             DevConsoleResponse.OK
         },
 
-        "removeimprovement" to ConsoleAction { console, params ->
-            validateFormat("tile removeimprovement", params)
+        "removeimprovement" to ConsoleAction("tile removeimprovement") { console, params ->
             val selectedTile = console.getSelectedTile()
             selectedTile.improvementFunctions.changeImprovement(null)
             DevConsoleResponse.OK
         },
 
-        "addfeature" to ConsoleAction { console, params ->
-            validateFormat("tile addfeature <featureName>", params)
+        "addfeature" to ConsoleAction("tile addfeature <featureName>") { console, params ->
             val selectedTile = console.getSelectedTile()
             val feature = console.gameInfo.ruleset.terrains.values
                 .firstOrNull { it.type == TerrainType.TerrainFeature && it.name.toCliInput() == params[0] }
@@ -223,8 +237,7 @@ class ConsoleTileCommands: ConsoleCommandNode {
             DevConsoleResponse.OK
         },
 
-        "removefeature" to ConsoleAction { console, params ->
-            validateFormat("tile addfeature <featureName>", params)
+        "removefeature" to ConsoleAction("tile addfeature <featureName>") { console, params ->
             val selectedTile = console.getSelectedTile()
             val feature = console.gameInfo.ruleset.terrains.values
                 .firstOrNull { it.type == TerrainType.TerrainFeature && it.name.toCliInput() == params[0] }
@@ -237,25 +250,22 @@ class ConsoleTileCommands: ConsoleCommandNode {
 
 class ConsoleCivCommands : ConsoleCommandNode {
     override val subcommands = hashMapOf<String, ConsoleCommand>(
-        "addstat" to ConsoleAction { console, params ->
-            var statPos = 0
-            validateFormat("civ addstat [civ] <stat> <amount>", params)
-            val civ = if (params.size == 2) console.screen.selectedCiv
-                else {
-                    statPos++
-                    console.getCivByName(params[0])
-                }
-            val amount = console.getInt(params[statPos+1])
-            val stat = Stat.safeValueOf(params[statPos].replaceFirstChar(Char::titlecase))
-                ?: throw ConsoleErrorException("Whut? \"${params[statPos]}\" is not a Stat!")
+        "addstat" to ConsoleAction("civ addstat <stat> <amount> [civ]") { console, params ->
+            val stat = Stat.safeValueOf(params[0].replaceFirstChar(Char::titlecase))
+                ?: throw ConsoleErrorException("\"${params[0]}\" is not an acceptable Stat")
             if (stat !in Stat.statsWithCivWideField)
                 throw ConsoleErrorException("$stat is not civ-wide")
+
+            val amount = console.getInt(params[1])
+
+            val civ = if (params.size == 2) console.screen.selectedCiv
+            else console.getCivByName(params[2])
+
             civ.addStat(stat, amount)
             DevConsoleResponse.OK
         },
 
-        "setplayertype" to ConsoleAction { console, params ->
-            validateFormat("civ setplayertype <civName> <ai/human>", params)
+        "setplayertype" to ConsoleAction("civ setplayertype <civName> <ai/human>") { console, params ->
             val civ = console.getCivByName(params[0])
             val playerType = PlayerType.values().firstOrNull { it.name.lowercase() == params[1].lowercase() }
                 ?: throw ConsoleErrorException("Invalid player type, valid options are 'ai' or 'human'")
@@ -263,16 +273,14 @@ class ConsoleCivCommands : ConsoleCommandNode {
             DevConsoleResponse.OK
         },
 
-        "revealmap" to ConsoleAction { console, params ->
-            validateFormat("civ revealmap <civName>", params)
+        "revealmap" to ConsoleAction("civ revealmap <civName>") { console, params ->
             val civ = console.getCivByName(params[0])
             civ.gameInfo.tileMap.values.asSequence()
                 .forEach { it.setExplored(civ, true) }
             DevConsoleResponse.OK
         },
 
-        "activatetrigger" to ConsoleAction { console, params ->
-            validateFormat("civ activatetrigger <civName> <\"trigger\">", params)
+        "activatetrigger" to ConsoleAction("civ activatetrigger <civName> <\"trigger\">") { console, params ->
             val civ = console.getCivByName(params[0])
             val unique = Unique(params[1])
             if (unique.type == null) throw ConsoleErrorException("Unrecognized trigger")
@@ -282,15 +290,4 @@ class ConsoleCivCommands : ConsoleCommandNode {
             DevConsoleResponse.OK
         }
     )
-
-    override fun autocomplete(params: List<String>): String? {
-        if (params.isNotEmpty())
-            when (params[0]){
-                "addstat" -> if (params.size == 2)
-                    return Stat.names()
-                        .firstOrNull { it.lowercase().startsWith(params[1]) }
-                        ?.drop(params[1].length)
-            }
-        return super.autocomplete(params)
-    }
 }

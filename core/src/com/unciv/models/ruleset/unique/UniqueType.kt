@@ -236,6 +236,7 @@ enum class UniqueType(
     TriggersCulturalVictory("Triggers a Cultural Victory upon completion", UniqueTarget.Global),
 
     /// Misc.
+    MayBuyConstructionsInPuppets("May buy items in puppet cities", UniqueTarget.Global),    
     MayNotAnnexCities("May not annex cities", UniqueTarget.Global),
     BorrowsCityNames("\"Borrows\" city names from other civilizations in the game", UniqueTarget.Global),
     CitiesAreRazedXTimesFaster("Cities are razed [amount] times as fast", UniqueTarget.Global),
@@ -437,6 +438,7 @@ enum class UniqueType(
     // XP
     FlatXPGain("[amount] XP gained from combat", UniqueTarget.Unit, UniqueTarget.Global),
     PercentageXPGain("[relativeAmount]% XP gained from combat", UniqueTarget.Unit, UniqueTarget.Global),
+    GreatPersonFromCombat("Can be earned through combat", UniqueTarget.Unit),
     GreatPersonEarnedFaster("[greatPerson] is earned [relativeAmount]% faster", UniqueTarget.Unit, UniqueTarget.Global),
 
     // Invisibility
@@ -600,6 +602,7 @@ enum class UniqueType(
     /////// general conditionals
     ConditionalTimedUnique("for [amount] turns", UniqueTarget.Conditional),
     ConditionalChance("with [amount]% chance", UniqueTarget.Conditional),
+    ConditionalEveryTurns("every [positiveAmount] turns", UniqueTarget.Conditional),
     ConditionalBeforeTurns("before [amount] turns", UniqueTarget.Conditional),
 
     ConditionalAfterTurns("after [amount] turns", UniqueTarget.Conditional),

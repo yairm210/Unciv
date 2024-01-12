@@ -30,9 +30,7 @@ class TileStatFunctions(val tile: Tile) {
     fun getTileStats(city: City?, observingCiv: Civilization?,
                              localUniqueCache: LocalUniqueCache = LocalUniqueCache(false)
     ): Stats {
-        val stats = Stats()
-        for (statsToAdd in getTileStatsBreakdown(city, observingCiv, localUniqueCache))
-            stats.add(statsToAdd.second)
+        val stats = getTileStatsBreakdown(city, observingCiv, localUniqueCache).toStats()
 
         for ((stat, value) in getTilePercentageStats(observingCiv, city, localUniqueCache)) {
             stats[stat] *= value.toPercent()

@@ -4,8 +4,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.GUI
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.models.metadata.GameSettings
-import com.unciv.ui.components.widgets.UncivSlider
 import com.unciv.ui.components.extensions.toLabel
+import com.unciv.ui.components.widgets.UncivSlider
 import com.unciv.ui.screens.basescreen.BaseScreen
 
 fun gameplayTab(
@@ -53,6 +53,7 @@ fun gameplayTab(
     ) { settings.automatedUnitsChoosePromotions = it }
     optionsPopup.addCheckbox(this, "Order trade offers by amount", settings.orderTradeOffersByAmount) { settings.orderTradeOffersByAmount = it }
     optionsPopup.addCheckbox(this, "Ask for confirmation when pressing next turn", settings.confirmNextTurn) { settings.confirmNextTurn = it }
+    optionsPopup.addCheckbox(this, "EXPERIMENTAL movement - use at your own risk!", settings.experimentalMovement, true) { settings.experimentalMovement = it }
 
     addNotificationLogMaxTurnsSlider(this, settings, optionsPopup.selectBoxMinWidth)
 }

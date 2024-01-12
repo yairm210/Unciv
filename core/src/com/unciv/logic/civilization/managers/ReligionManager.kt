@@ -135,10 +135,6 @@ class ReligionManager : IsPartOfGameInfoSerialization {
         civInfo.gameInfo.religions[beliefName] = religion!!
         for (city in civInfo.cities)
             city.religion.addPressure(beliefName, 200 * city.population.population)
-        religionState = ReligionState.Pantheon
-
-        for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponFoundingPantheon))
-            UniqueTriggerActivation.triggerCivwideUnique(unique, civInfo)
     }
 
     fun greatProphetsEarned(): Int = civInfo.civConstructions.boughtItemsWithIncreasingPrice[getGreatProphetEquivalent()?.name ?: ""]
@@ -284,9 +280,6 @@ class ReligionManager : IsPartOfGameInfoSerialization {
         if (religionState == ReligionState.None) shouldChoosePantheonBelief = true
         religionState = ReligionState.FoundingReligion
         civInfo.religionManager.foundingCityId = prophet.getTile().getCity()!!.id
-
-        for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponFoundingReligion))
-            UniqueTriggerActivation.triggerCivwideUnique(unique, civInfo)
     }
 
     fun mayEnhanceReligionAtAll(): Boolean {
@@ -313,9 +306,6 @@ class ReligionManager : IsPartOfGameInfoSerialization {
     fun useProphetForEnhancingReligion(prophet: MapUnit) {
         if (!mayEnhanceReligionHere(prophet.getTile())) return // How did you do this?
         religionState = ReligionState.EnhancingReligion
-
-        for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponEnhancingReligion))
-            UniqueTriggerActivation.triggerCivwideUnique(unique, civInfo)
     }
 
     /**
@@ -381,15 +371,8 @@ class ReligionManager : IsPartOfGameInfoSerialization {
         // Must be done first in case when gain more later
         freeBeliefs.clear()
 
-        when (religionState) {
-            ReligionState.EnhancingReligion -> {
-                religionState = ReligionState.EnhancedReligion
-            }
-            ReligionState.None -> {
-                foundPantheon(beliefs[0].name, useFreeBeliefs)
-            }
-            else -> {}
-        }
+        if (religionState == ReligionState.None)
+            foundPantheon(beliefs[0].name, useFreeBeliefs)  // makes religion non-null
         // add beliefs (religion exists at this point)
         religion!!.followerBeliefs.addAll(
             beliefs
@@ -401,6 +384,25 @@ class ReligionManager : IsPartOfGameInfoSerialization {
                 .filter { it.type == BeliefType.Founder || it.type == BeliefType.Enhancer }
                 .map { it.name }
         )
+
+        when (religionState) {
+            ReligionState.None -> {
+                religionState = ReligionState.Pantheon
+                for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponFoundingPantheon))
+                    UniqueTriggerActivation.triggerCivwideUnique(unique, civInfo)
+            }
+            ReligionState.FoundingReligion -> {
+                religionState = ReligionState.Religion
+                for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponFoundingReligion))
+                    UniqueTriggerActivation.triggerCivwideUnique(unique, civInfo)
+            }
+            ReligionState.EnhancingReligion -> {
+                religionState = ReligionState.EnhancedReligion
+                for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponEnhancingReligion))
+                    UniqueTriggerActivation.triggerCivwideUnique(unique, civInfo)
+            }
+            else -> {}
+        }
 
         for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponAdoptingPolicyOrBelief))
             for (belief in beliefs)
@@ -426,8 +428,6 @@ class ReligionManager : IsPartOfGameInfoSerialization {
 
         religion = newReligion
         civInfo.gameInfo.religions[name] = newReligion
-
-        religionState = ReligionState.Religion
 
         val holyCity = civInfo.cities.first { it.id == foundingCityId }
         holyCity.religion.religionThisIsTheHolyCityOf = newReligion.name

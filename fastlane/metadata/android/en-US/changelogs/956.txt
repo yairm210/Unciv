@@ -1,0 +1,9 @@
+Performance improvements for movement and ruleset validation
+
+Added unique MayBuyConstructionsInPuppets  - By rpolitex
+
+Polynesia can immediately embark on turn zero - By SeventhM
+
+Fix NullPointerException on founding a pantheon  - By dHannasch
+
+Fixed AutoPlay not working after victory  - By tuvus

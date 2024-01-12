@@ -211,10 +211,14 @@ class StatsOverviewTab(
             add(greatPersonPointsPerTurn[greatPerson].toLabel()).right().row()
         }
 
-        val pointsForGreatGeneral = viewingPlayer.greatPeople.greatGeneralPoints
-        val pointsForNextGreatGeneral = viewingPlayer.greatPeople.pointsForNextGreatGeneral
-        add("Great General".toLabel()).left()
-        add("$pointsForGreatGeneral/$pointsForNextGreatGeneral".toLabel())
+        val greatGeneralPoints = viewingPlayer.greatPeople.greatGeneralPointsCounter
+        val pointsForNextGreatGeneral = viewingPlayer.greatPeople.pointsForNextGreatGeneralCounter
+        for ((unit, points) in greatGeneralPoints) {
+            val pointsToGreatGeneral = pointsForNextGreatGeneral[unit]
+            add(unit.toLabel()).left()
+            add("$points/$pointsToGreatGeneral".toLabel())
+        }
+
         pack()
     }
 
