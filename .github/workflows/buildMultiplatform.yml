@@ -30,7 +30,10 @@ jobs:
           java-version: ${{ matrix.java_version }}
 
       - name: Setup Gradle
-        uses: gradle/gradle-build-action@v2.4.2
+        uses: gradle/gradle-build-action@v2.11.1
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
 
       - name: Compile kotlin and build classes
         run: ./gradlew classes
@@ -59,8 +62,11 @@ jobs:
           distribution: 'temurin'
           java-version: ${{ matrix.java_version }}
 
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
       - name: Setup Gradle
-        uses: gradle/gradle-build-action@v2.4.2
+        uses: gradle/gradle-build-action@v2.11.1
 
       - name: Build Android debug and release files
         run: |
@@ -110,7 +116,7 @@ jobs:
           java-version: ${{ matrix.java_version }}
 
       - name: Setup Gradle
-        uses: gradle/gradle-build-action@v2.4.2
+        uses: gradle/gradle-build-action@v2.11.1
 
       - name: Build the Desktop app
         run: ./gradlew desktop:dist
