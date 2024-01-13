@@ -23,7 +23,7 @@ jobs:
           java-version: 11
 
       - name: Setup Gradle
-        uses: gradle/gradle-build-action@v2.4.2
+        uses: gradle/gradle-build-action@v2.11.1
 
       - name: Compile kotlin and build classes
         run: ./gradlew classes
