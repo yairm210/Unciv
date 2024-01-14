@@ -6,10 +6,12 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas.TextureAtlasData
 import com.unciv.Constants
 import com.unciv.json.fromJsonFile
 import com.unciv.json.json
+import com.unciv.logic.UncivShowableException
 import com.unciv.logic.map.tile.RoadStatus
 import com.unciv.models.metadata.BaseRuleset
 import com.unciv.models.ruleset.BeliefType
 import com.unciv.models.ruleset.Building
+import com.unciv.models.ruleset.ModOptions
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.ruleset.nation.Nation
@@ -17,22 +19,28 @@ import com.unciv.models.ruleset.nation.getContrastRatio
 import com.unciv.models.ruleset.nation.getRelativeLuminance
 import com.unciv.models.ruleset.tile.TerrainType
 import com.unciv.models.ruleset.unique.StateForConditionals
+import com.unciv.models.ruleset.unique.UniqueParameterType
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.ruleset.unit.Promotion
+import com.unciv.models.ruleset.validation.RulesetValidator.Suppression.removeSuppressions
 import com.unciv.models.stats.Stats
 import com.unciv.models.tilesets.TileSetCache
 import com.unciv.models.tilesets.TileSetConfig
+import com.unciv.models.translations.fillPlaceholders
 
 class RulesetValidator(val ruleset: Ruleset) {
 
     private val uniqueValidator = UniqueValidator(ruleset)
 
     fun getErrorList(tryFixUnknownUniques: Boolean = false): RulesetErrorList {
-        // When no base ruleset is loaded - references cannot be checked
-        if (!ruleset.modOptions.isBaseRuleset) return getNonBaseRulesetErrorList(tryFixUnknownUniques)
-
-        return getBaseRulesetErrorList(tryFixUnknownUniques)
+        val unfilteredResult =
+            if (ruleset.modOptions.isBaseRuleset)
+                getBaseRulesetErrorList(tryFixUnknownUniques)
+            else
+                // When no base ruleset is loaded - references cannot be checked
+                getNonBaseRulesetErrorList(tryFixUnknownUniques)
+        return unfilteredResult.removeSuppressions(ruleset.modOptions)
     }
 
     private fun getNonBaseRulesetErrorList(tryFixUnknownUniques: Boolean): RulesetErrorList {
@@ -876,6 +884,39 @@ class RulesetValidator(val ruleset: Ruleset) {
         }
     }
 
+    /**
+     *  All methods dealing with how Mod authors can suppress RulesetValidator output are here.
+     *
+     *  This allows the outside code to be agnostic about how each entry operates, it's all here,
+     *  and can easily be expanded, e.g. to some wildcard type.
+     *  The [docDescription], [isErrorSuppressed] and [isValidFilter] need to agree on the rules!
+     *
+     *  Current decisions:
+     *  * You cannot suppress [RulesetErrorSeverity.Error] level messages.
+     *  * Each suppression entry is compared verbatim and case-sensitive.
+     *  * Validation of the suppression entries themselves is rudimentary.
+     */
+    object Suppression {
+        /** Delegated from [UniqueParameterType.ValidationWarning] */
+        const val docDescription = "Suppresses one specific Ruleset validation warning. Needs to specify the full text verbatim including correct upper/lower case."
+
+        /** Delegated from [UniqueParameterType.ValidationWarning] */
+        const val docExample = "Tinman is supposed to automatically upgrade at tech Clockwork, and therefore Servos for its upgrade Mecha may not yet be researched!"
+
+        private val deprecationWarningRegex by lazy { Regex("""^.*unique ".*" is deprecated as of [0-9.]+, replace with.*$""") }
+        private val untypedWarningRegex by lazy { Regex("""^.*unique ".*" not found in Unciv's unique types, and is not used as a filtering unique.$""") }
+
+        /** Determine whether [parameterText] is a valid Suppression filter as implemented by [isErrorSuppressed] */
+        fun isValidFilter(parameterText: String) = when {
+            // Cannot contain {} or <>
+            '{' in parameterText || '<' in parameterText -> false
+            // Must not be a deprecation - these should be implemented by their replacement not suppressed
+            deprecationWarningRegex.matches(parameterText) -> false
+            // Must not be a untyped/nonfiltering warning (a case for the Comment UniqueType instead)
+            untypedWarningRegex.matches(parameterText) -> false
+            // More rules here???
+            else -> true
+        }
 
         /** Determine if [error] matches any entry in [suppressionFilters] */
         private fun isErrorSuppressed(error: RulesetError, suppressionFilters: Set<String>): Boolean {
