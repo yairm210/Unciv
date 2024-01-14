@@ -447,7 +447,7 @@ class WorkerAutomation(
             val reachableTile = roadableTiles.map { Pair(it, it.aerialDistanceTo(unit.getTile())) }
                 .filter { it.second < bestTileToConstructRoadOnDist }
                 .sortedBy { it.second }
-                .minByOrNull {
+                .firstOrNull {
                     unit.movement.canMoveTo(it.first) && unit.movement.canReach(it.first) 
                 } ?: continue // Apparently we can't reach any of these tiles at all
             bestTileToConstructRoadOn = reachableTile.first
