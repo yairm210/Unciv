@@ -33,7 +33,6 @@ enum class CityFlags {
 
 
 class City : IsPartOfGameInfoSerialization {
-    @Suppress("JoinDeclarationAndAssignment")
     @Transient
     lateinit var civ: Civilization
 

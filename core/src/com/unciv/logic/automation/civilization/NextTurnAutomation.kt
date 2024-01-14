@@ -151,7 +151,7 @@ object NextTurnAutomation {
             return value
 
         // The more we have invested into the city-state the more the alliance is worth
-        val ourInfluence = if (civInfo.knows(cityState)) 
+        val ourInfluence = if (civInfo.knows(cityState))
             cityState.getDiplomacyManager(civInfo).getInfluence().toInt()
         else 0
         value += ourInfluence / 10
@@ -420,10 +420,10 @@ object NextTurnAutomation {
         val bestCity = civInfo.cities.filterNot { it.isPuppet }
             // If we can build workers, then we want AT LEAST 2 improvements, OR a worker nearby.
             // Otherwise, AI tries to produce settlers when it can hardly sustain itself
-            .filter {
+            .filter { city ->
                 !workersBuildableForThisCiv
-                    || it.getCenterTile().getTilesInDistance(2).count { it.improvement!=null } > 1
-                    || it.getCenterTile().getTilesInDistance(3).any { it.civilianUnit?.hasUnique(UniqueType.BuildImprovements)==true }
+                    || city.getCenterTile().getTilesInDistance(2).count { it.improvement!=null } > 1
+                    || city.getCenterTile().getTilesInDistance(3).any { it.civilianUnit?.hasUnique(UniqueType.BuildImprovements)==true }
             }
             .maxByOrNull { it.cityStats.currentCityStats.production }
             ?: return

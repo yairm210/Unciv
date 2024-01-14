@@ -41,7 +41,6 @@ class TurnManager(val civInfo: Civilization) {
         if (civInfo.cities.isNotEmpty() && civInfo.gameInfo.ruleset.technologies.isNotEmpty())
             civInfo.tech.updateResearchProgress()
 
-
         civInfo.cache.updateCivResources() // If you offered a trade last turn, this turn it will have been accepted/declined
         for (stockpiledResource in civInfo.getCivResourceSupply().filter { it.resource.isStockpiled() })
             civInfo.resourceStockpiles.add(stockpiledResource.resource.name, stockpiledResource.amount)
