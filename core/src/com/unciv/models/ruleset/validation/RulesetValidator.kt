@@ -39,7 +39,7 @@ class RulesetValidator(val ruleset: Ruleset) {
         val lines = RulesetErrorList()
 
         // When not checking the entire ruleset, we can only really detect ruleset-invariant errors in uniques
-        addModOptionsErrors(lines)
+        addModOptionsErrors(lines, tryFixUnknownUniques)
         uniqueValidator.checkUniques(ruleset.globalUniques, lines, false, tryFixUnknownUniques)
         addUnitErrorsRulesetInvariant(lines, tryFixUnknownUniques)
         addTechErrorsRulesetInvariant(lines, tryFixUnknownUniques)
@@ -63,7 +63,7 @@ class RulesetValidator(val ruleset: Ruleset) {
         uniqueValidator.populateFilteringUniqueHashsets()
 
         val lines = RulesetErrorList()
-        addModOptionsErrors(lines)
+        addModOptionsErrors(lines, tryFixUnknownUniques)
         uniqueValidator.checkUniques(ruleset.globalUniques, lines, true, tryFixUnknownUniques)
 
         addUnitErrorsBaseRuleset(lines, tryFixUnknownUniques)
@@ -94,8 +94,12 @@ class RulesetValidator(val ruleset: Ruleset) {
         return lines
     }
 
-    private fun addModOptionsErrors(lines: RulesetErrorList) {
-        if (ruleset.name.isBlank()) return // These tests don't make sense for combined rulesets
+    private fun addModOptionsErrors(lines: RulesetErrorList, tryFixUnknownUniques: Boolean) {
+        // Basic Unique validation (type, target, parameters) should always run.
+        // Using reportRulesetSpecificErrors=true as ModOptions never should use Uniques depending on objects from a base ruleset anyway.
+        uniqueValidator.checkUniques(ruleset.modOptions, lines, reportRulesetSpecificErrors = true, tryFixUnknownUniques)
+
+        if (ruleset.name.isBlank()) return // The rest of these tests don't make sense for combined rulesets
 
         val audioVisualUniqueTypes = setOf(
             UniqueType.ModIsAudioVisual,
@@ -873,4 +877,40 @@ class RulesetValidator(val ruleset: Ruleset) {
     }
 
 
+        /** Determine if [error] matches any entry in [suppressionFilters] */
+        private fun isErrorSuppressed(error: RulesetError, suppressionFilters: Set<String>): Boolean {
+            if (error.errorSeverityToReport >= RulesetErrorSeverity.Error) return false
+            return error.text in suppressionFilters
+        }
+
+        /** Removes suppressed messages as declared in ModOptions using UniqueType.SuppressWarnings, allows chaining */
+        fun RulesetErrorList.removeSuppressions(modOptions: ModOptions): RulesetErrorList {
+            // Cache suppressions
+            val suppressionFilters = modOptions.uniqueMap.getUniques(UniqueType.SuppressWarnings)
+                .map { it.params[0] }.toSet()
+            if (suppressionFilters.isEmpty()) return this
+
+            // Check every error for suppression and if so, remove
+            val iterator = iterator()
+            while (iterator.hasNext()) {
+                val error = iterator.next()
+                if (isErrorSuppressed(error, suppressionFilters))
+                    iterator.remove()  // This is the one Collection removal not throwing those pesky CCM Exceptions
+            }
+
+            return this
+        }
+
+        /** Whosoever maketh this here methyd available to evil Mod whytches shall forever be cursed and damned to all Hell's tortures */
+        @Suppress("unused")  // Debug tool
+        fun autoSuppressAllWarnings(ruleset: Ruleset, toModOptions: ModOptions) {
+            if (ruleset.folderLocation == null)
+                throw UncivShowableException("autoSuppressAllWarnings needs Ruleset.folderLocation")
+            for (error in RulesetValidator(ruleset).getErrorList()) {
+                if (error.errorSeverityToReport >= RulesetErrorSeverity.Error) continue
+                toModOptions.uniques += UniqueType.SuppressWarnings.text.fillPlaceholders(error.text)
+            }
+            json().toJson(toModOptions, ruleset.folderLocation!!.child("jsons/ModOptions.json"))
+        }
+    }
 }
