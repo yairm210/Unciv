@@ -80,6 +80,12 @@ open class Tile : IsPartOfGameInfoSerialization {
     @Transient
     var isOcean = false
 
+    @Transient
+    var unitHeight = 0
+
+    @Transient
+    var tileHeight = 0
+
     var militaryUnit: MapUnit? = null
     var civilianUnit: MapUnit? = null
     var airUnits = ArrayList<MapUnit>()
@@ -347,19 +353,6 @@ open class Tile : IsPartOfGameInfoSerialization {
 
     fun getRow() = HexMath.getRow(position)
     fun getColumn() = HexMath.getColumn(position)
-
-    @delegate:Transient
-    val tileHeight : Int by lazy { // for e.g. hill+forest this is 2, since forest is visible above units
-        if (terrainHasUnique(UniqueType.BlocksLineOfSightAtSameElevation)) unitHeight + 1
-        else unitHeight
-    }
-
-    @delegate:Transient
-    val unitHeight : Int by lazy { // for e.g. hill+forest this is 1, since only hill provides height for units
-        allTerrains.flatMap { it.getMatchingUniques(UniqueType.VisibilityElevation) }
-            .map { it.params[0].toInt() }.sum()
-    }
-
 
     fun getBaseTerrain(): Terrain = baseTerrainObject
 
@@ -821,6 +814,11 @@ open class Tile : IsPartOfGameInfoSerialization {
             naturalWonder != null -> getNaturalWonder()
             else -> getBaseTerrain()
         }
+
+        unitHeight = allTerrains.flatMap { it.getMatchingUniques(UniqueType.VisibilityElevation) }
+            .map { it.params[0].toInt() }.sum()
+        tileHeight = if (terrainHasUnique(UniqueType.BlocksLineOfSightAtSameElevation)) unitHeight + 1
+        else unitHeight
     }
 
     private fun updateUniqueMap() {
