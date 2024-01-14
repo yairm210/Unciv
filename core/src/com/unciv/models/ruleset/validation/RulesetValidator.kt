@@ -36,7 +36,7 @@ class RulesetValidator(val ruleset: Ruleset) {
     }
 
     private fun getNonBaseRulesetErrorList(tryFixUnknownUniques: Boolean): RulesetErrorList {
-        val lines = RulesetErrorList()
+        val lines = RulesetErrorList(ruleset)
 
         // When not checking the entire ruleset, we can only really detect ruleset-invariant errors in uniques
         addModOptionsErrors(lines, tryFixUnknownUniques)
@@ -62,7 +62,7 @@ class RulesetValidator(val ruleset: Ruleset) {
 
         uniqueValidator.populateFilteringUniqueHashsets()
 
-        val lines = RulesetErrorList()
+        val lines = RulesetErrorList(ruleset)
         addModOptionsErrors(lines, tryFixUnknownUniques)
         uniqueValidator.checkUniques(ruleset.globalUniques, lines, true, tryFixUnknownUniques)
 

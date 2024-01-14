@@ -65,7 +65,7 @@ class UniqueValidator(val ruleset: Ruleset) {
             (if (uniqueContainer == null) "The" else "(${uniqueContainer.getUniqueTarget().name}) ${uniqueContainer.name}'s") }
         if (unique.type == null) return checkUntypedUnique(unique, tryFixUnknownUniques, prefix)
 
-        val rulesetErrors = RulesetErrorList()
+        val rulesetErrors = RulesetErrorList(ruleset)
 
         if (uniqueContainer != null && !unique.type.canAcceptUniqueTarget(uniqueContainer.getUniqueTarget()))
             rulesetErrors.add(uniqueContainer, RulesetError("$prefix unique \"${unique.text}\" is not allowed on its target type", RulesetErrorSeverity.Warning))

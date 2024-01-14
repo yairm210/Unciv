@@ -21,8 +21,12 @@ enum class RulesetErrorSeverity(val color: Color) {
  *  Bypassing these add methods means suppression is ignored. Thus using [addAll] is fine when the elements to add are all already checked.
  *
  *  //todo This version prepares suppression, but does not actually implement it
+ *
+ *  @param ruleset The ruleset being validated (needed to check modOptions for suppression uniques). Leave `null` only for validation results that need no suppression checks.
  */
-class RulesetErrorList : ArrayList<RulesetError>() {
+class RulesetErrorList(
+    ruleset: Ruleset? = null
+) : ArrayList<RulesetError>() {
     /** Add an [element], preventing duplicates (in which case the highest severity wins).
      *
      *  [sourceObject] is for future use and should be the originating object. When it is not known or not a [IHasUniques], pass `null`.
