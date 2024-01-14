@@ -294,21 +294,20 @@ class WorkerAutomation(
         val cityTilesToSeek = HashSet(tilesOfConnectedCities)
 
         var nextTile = bfs.nextStep()
-        do {
+        while (nextTile != null) {
             if (nextTile in cityTilesToSeek) {
                 // We have a winner!
-                val cityTile = nextTile!!
+                val cityTile = nextTile
                 val pathToCity = bfs.getPathTo(cityTile)
-                roadsToConnectCitiesCache[city] = pathToCity.toList()
+                roadsToConnectCitiesCache[city] = pathToCity.toList().filter { it.roadStatus != bestRoadAvailable }
                 for (tile in pathToCity) { 
                     if (tile !in tilesOfRoadsToConnectCities)
                         tilesOfRoadsToConnectCities[tile] = city
                 }
                 return roadsToConnectCitiesCache[city]!!
             }
-            if (bfs.hasEnded()) break // No tiles left
             nextTile = bfs.nextStep()
-        } while (nextTile != null)
+        } 
 
         roadsToConnectCitiesCache[city] = listOf()
         return roadsToConnectCitiesCache[city]!!
