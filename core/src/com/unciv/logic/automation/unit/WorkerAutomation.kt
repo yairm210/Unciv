@@ -644,6 +644,7 @@ class WorkerAutomation(
 
         // After gathering all the data, we conduct the hierarchy in one place
         val improvementString = when {
+            bestBuildableImprovement != null && bestBuildableImprovement.isRoad() -> bestBuildableImprovement.name
             improvementStringForResource != null -> if (improvementStringForResource==tile.improvement) null else improvementStringForResource
             // If this is a resource that HAS an improvement that we can see, but this unit can't build it, don't waste your time
             tile.resource != null && tile.hasViewableResource(civInfo) && tile.tileResource.getImprovements().any() -> return null
