@@ -280,7 +280,7 @@ class WorkerAutomation(
      */
     private fun getRoadConnectionBetweenCities(unit: MapUnit, city: City): List<Tile> {
         if (city in roadsToConnectCitiesCache) return roadsToConnectCitiesCache[city]!!
-        
+
         val isCandidateTilePredicate: (Tile) -> Boolean = { it.isLand && unit.movement.canPassThrough(it) }
         val toConnectTile = city.getCenterTile()
         val bfs: BFS = bfsCache[toConnectTile.position] ?:
@@ -291,7 +291,7 @@ class WorkerAutomation(
             )
             bfsCache[toConnectTile.position] = this@apply
         }
-        val cityTilesToSeek = HashSet(tilesOfConnectedCities.sortedBy { it.aerialDistanceTo(city.getCenterTile()) })
+        val cityTilesToSeek = HashSet(tilesOfConnectedCities)
 
         var nextTile = bfs.nextStep()
         do {
@@ -309,7 +309,7 @@ class WorkerAutomation(
             if (bfs.hasEnded()) break // No tiles left
             nextTile = bfs.nextStep()
         } while (nextTile != null)
-        
+
         roadsToConnectCitiesCache[city] = listOf()
         return roadsToConnectCitiesCache[city]!!
     }
@@ -327,7 +327,7 @@ class WorkerAutomation(
             return
         }
         val tileToWork = findTileToWork(unit, dangerousTiles)
-        
+
         if (tileToWork != currentTile) {
             debug("WorkerAutomation: %s -> head towards %s", unit.label(), tileToWork)
             val reachedTile = unit.movement.headTowards(tileToWork)
