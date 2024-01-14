@@ -15,7 +15,6 @@ import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.models.ruleset.MilestoneType
-import com.unciv.models.ruleset.ModOptionsConstants
 import com.unciv.models.ruleset.Policy
 import com.unciv.models.ruleset.PolicyBranch
 import com.unciv.models.ruleset.Victory
@@ -38,7 +37,7 @@ object NextTurnAutomation {
         TradeAutomation.respondToTradeRequests(civInfo)
 
         if (civInfo.isMajorCiv()) {
-            if (!civInfo.gameInfo.ruleset.modOptions.hasUnique(ModOptionsConstants.diplomaticRelationshipsCannotChange)) {
+            if (!civInfo.gameInfo.ruleset.modOptions.hasUnique(UniqueType.DiplomaticRelationshipsCannotChange)) {
                 DiplomacyAutomation.declareWar(civInfo)
                 DiplomacyAutomation.offerPeaceTreaty(civInfo)
                 DiplomacyAutomation.offerDeclarationOfFriendship(civInfo)

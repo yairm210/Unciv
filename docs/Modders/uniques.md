@@ -1787,6 +1787,29 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: CityState
 
 ## ModOptions uniques
+??? example  "Diplomatic relationships cannot change"
+	Applicable to: ModOptions
+
+??? example  "Can convert gold to science with sliders"
+	Applicable to: ModOptions
+
+??? example  "Allow City States to spawn with additional units"
+	Applicable to: ModOptions
+
+??? example  "Can trade civilization introductions for [positiveAmount] Gold"
+	Example: "Can trade civilization introductions for [3] Gold"
+
+	Applicable to: ModOptions
+
+??? example  "Disable religion"
+	Applicable to: ModOptions
+
+??? example  "Allow raze capital"
+	Applicable to: ModOptions
+
+??? example  "Allow raze holy city"
+	Applicable to: ModOptions
+
 ??? example  "Mod is incompatible with [modFilter]"
 	Specifies that your Mod is incompatible with another. Always treated symmetrically, and cannot be overridden by the Mod you are declaring as incompatible.
 	Example: "Mod is incompatible with [DeCiv Redux]"

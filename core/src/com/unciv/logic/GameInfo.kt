@@ -29,7 +29,6 @@ import com.unciv.logic.map.TileMap
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.Religion
 import com.unciv.models.metadata.GameParameters
-import com.unciv.models.ruleset.ModOptionsConstants
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.ruleset.Speed
@@ -287,7 +286,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
 
     fun isReligionEnabled(): Boolean {
         val religionDisabledByRuleset = (ruleset.eras[gameParameters.startingEra]!!.hasUnique(UniqueType.DisablesReligion)
-                || ruleset.modOptions.uniques.contains(ModOptionsConstants.disableReligion))
+                || ruleset.modOptions.hasUnique(UniqueType.DisableReligion))
         return !religionDisabledByRuleset
     }
 

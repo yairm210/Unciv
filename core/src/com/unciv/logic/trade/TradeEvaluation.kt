@@ -8,7 +8,6 @@ import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.logic.map.tile.Tile
-import com.unciv.models.ruleset.ModOptionsConstants
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.UniqueType
@@ -371,7 +370,7 @@ class TradeEvaluation {
     }
 
     private fun introductionValue(ruleSet: Ruleset): Int {
-        val unique = ruleSet.modOptions.getMatchingUniques(ModOptionsConstants.tradeCivIntroductions).firstOrNull()
+        val unique = ruleSet.modOptions.getMatchingUniques(UniqueType.TradeCivIntroductions).firstOrNull()
             ?: return 0
         return unique.params[0].toInt()
     }
