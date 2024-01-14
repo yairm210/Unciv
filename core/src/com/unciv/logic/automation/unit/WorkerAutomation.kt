@@ -669,7 +669,7 @@ class WorkerAutomation(
             }
         }
         if (isImprovementProbablyAFort(improvement)) {
-            value += evaluateFortSurroundings(tile, improvement.hasUnique("Constructing it will take over the tiles around it and assign them to your closest city"))
+            value += evaluateFortSurroundings(tile, improvement.hasUnique(UniqueType.TakesOverAdjacentTiles))
         }
         return value
     }
@@ -799,7 +799,7 @@ class WorkerAutomation(
     }
     
     fun isImprovementProbablyAFort(improvementName:String): Boolean = isImprovementProbablyAFort(ruleSet.tileImprovements[improvementName]!!)
-    fun isImprovementProbablyAFort(improvement: TileImprovement): Boolean = improvement.hasUnique("Gives a defensive bonus of []%")
+    fun isImprovementProbablyAFort(improvement: TileImprovement): Boolean = improvement.hasUnique(UniqueType.DefensiveBonus)
     
 
     private fun hasWorkableSeaResource(tile: Tile, civInfo: Civilization): Boolean =
