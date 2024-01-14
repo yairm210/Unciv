@@ -7,6 +7,7 @@ import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.ruleset.unique.IHasUniques
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueComplianceError
+import com.unciv.models.ruleset.unique.UniqueFlag
 import com.unciv.models.ruleset.unique.UniqueParameterType
 import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueType
@@ -105,6 +106,15 @@ class UniqueValidator(val ruleset: Ruleset) {
         unique: Unique,
         reportRulesetSpecificErrors: Boolean
     ) {
+        if (unique.hasFlag(UniqueFlag.NoConditionals)) {
+            rulesetErrors.add(
+                "$prefix unique \"${unique.text}\" contains the conditional \"${conditional.text}\"," +
+                    " but the unique does not accept conditionals!",
+                RulesetErrorSeverity.Error
+            )
+            return
+        }
+
         if (conditional.type == null) {
             rulesetErrors.add(
                 "$prefix unique \"${unique.text}\" contains the conditional \"${conditional.text}\"," +
