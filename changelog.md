@@ -1,3 +1,35 @@
+## 4.9.19
+
+Modding: "Cannot be traded" unique accepts Civ conditionals
+
+Changed unitHeight and tileHeight from by lazy to transient vars, to allow updates in preparation for base terrain changes
+
+Boni -> Bonuses, this is English
+
+build-multiplatform checks android only on java 17
+
+Proper build tools version update
+
+Sign APK for Github release using new build-tools
+
+Removed new shortestPath algorithm after we determined it to be objectively slower than the current one :(
+
+Allow comment uniques on follower beliefs
+
+Fix Github Actions pipelines 
+
+By tuvus:
+- Spectators receive era notifications again 
+- Temporarily disabled AI fort building 
+- Worker remove feature AI fix 
+
+By SomeTroglodyte:
+- Fix Paradrop crossing World-wrap seam 
+- ImagePacker lint and allow it to run on an assets folder devoid of atlases 
+- ModManagementScreen gets a loading indicator 
+
+Add modified nation descriptions  - By Ouaz
+
 ## 4.9.18
 
 Performance improvements for movement and ruleset validation
