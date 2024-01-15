@@ -193,8 +193,8 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
             }.filterBuildable()
         if (workerEquivalents.none()) return // for mods with no worker units
 
-        // Dedicate a worker for the first 7 cities, from then on only build another worker for every 2 cities.
-        val numberOfWorkersWeWant = if (cities < 7) cities else 7 + (cities - 7 / 2)
+        // Dedicate a worker for the first 5 cities, from then on only build another worker for every 2 cities.
+        val numberOfWorkersWeWant = if (cities <= 5) cities else 5 + (cities - 5 / 2)
 
         if (workers < numberOfWorkersWeWant) {
             var modifier = numberOfWorkersWeWant / (workers + 0.1f) // The worse our worker to city ratio is, the more desperate we are
