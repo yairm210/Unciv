@@ -19,6 +19,7 @@ import com.unciv.models.ruleset.ModOptionsConstants
 import com.unciv.models.ruleset.Policy
 import com.unciv.models.ruleset.PolicyBranch
 import com.unciv.models.ruleset.Victory
+import com.unciv.models.ruleset.nation.PersonalityValue
 import com.unciv.models.ruleset.tech.Technology
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.unique.StateForConditionals
@@ -124,23 +125,23 @@ object NextTurnAutomation {
         if (cityState.cityStateFunctions.canProvideStat(Stat.Culture)) {
             if (civInfo.wantsToFocusOn(Victory.Focus.Culture))
                 value += 10
-            value += (civInfo.getPersonality()?.culture ?: 5f).toInt() - 5
+            value += (civInfo.getPersonality()?.get(PersonalityValue.Culture) ?: 5f).toInt() - 5
         }
         if (cityState.cityStateFunctions.canProvideStat(Stat.Faith)) {
             if (civInfo.wantsToFocusOn(Victory.Focus.Faith))
                 value += 10
-            value += (civInfo.getPersonality()?.faith ?: 5f).toInt() - 5
+            value += (civInfo.getPersonality()?.get(PersonalityValue.Faith) ?: 5f).toInt() - 5
         }
         if (cityState.cityStateFunctions.canProvideStat(Stat.Production)) {
             if (civInfo.wantsToFocusOn(Victory.Focus.Production))
                 value += 10
-            value += (civInfo.getPersonality()?.production ?: 5f).toInt() - 5
+            value += (civInfo.getPersonality()?.get(PersonalityValue.Production) ?: 5f).toInt() - 5
         }
         if (cityState.cityStateFunctions.canProvideStat(Stat.Science)) {
             // In case someone mods this in
             if (civInfo.wantsToFocusOn(Victory.Focus.Science))
                 value += 10
-            value += (civInfo.getPersonality()?.science ?: 5f).toInt() - 5
+            value += (civInfo.getPersonality()?.get(PersonalityValue.Science) ?: 5f).toInt() - 5
         }
         if (civInfo.wantsToFocusOn(Victory.Focus.Military)) {
             if (!cityState.isAlive())
@@ -157,10 +158,10 @@ object NextTurnAutomation {
         }
         if (civInfo.getHappiness() < 5 && cityState.cityStateFunctions.canProvideStat(Stat.Happiness)) {
             value += 10 - civInfo.getHappiness()
-            value += (civInfo.getPersonality()?.happiness ?: 5f).toInt() - 5
+            value += (civInfo.getPersonality()?.get(PersonalityValue.Happiness) ?: 5f).toInt() - 5
         }
         if (civInfo.getHappiness() > 5 && cityState.cityStateFunctions.canProvideStat(Stat.Food)) {
-            value += (civInfo.getPersonality()?.food ?: 5f).toInt()
+            value += (civInfo.getPersonality()?.get(PersonalityValue.Food) ?: 5f).toInt() - 5
         }
 
         if (!cityState.isAlive() || cityState.cities.isEmpty() || civInfo.cities.isEmpty())

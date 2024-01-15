@@ -51,8 +51,8 @@ class Personality : RulesetObject() {
         return nameToVariable(value).get() / 5
     }
 
-    operator fun get(value: PersonalityValue){
-        nameToVariable(value).get()
+    operator fun get(value: PersonalityValue): Float {
+        return nameToVariable(value).get()
     }
 
     operator fun set(personalityValue: PersonalityValue, value: Float){
