@@ -410,7 +410,7 @@ class TechManager : IsPartOfGameInfoSerialization {
                         NotificationIcon.Science
                     )
                 if (civInfo.isMajorCiv()) {
-                    for (knownCiv in civInfo.getKnownCivs()) {
+                    for (knownCiv in civInfo.getKnownCivsWithSpectators()) {
                         knownCiv.addNotification(
                             "[${civInfo.civName}] has entered the [$currentEra]!",
                             NotificationCategory.General, civInfo.civName, NotificationIcon.Science
