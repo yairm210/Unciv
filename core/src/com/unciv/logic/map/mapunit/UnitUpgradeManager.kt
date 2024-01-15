@@ -12,15 +12,19 @@ class UnitUpgradeManager(val unit:MapUnit) {
 
     /** Returns FULL upgrade path, without checking what we can or cannot build currently.
      * Does not contain current baseunit, so will be empty if no upgrades. */
-    private fun getUpgradePath(): Iterable<BaseUnit> {
+    private fun getUpgradePath(upgradeUnit: BaseUnit?): Iterable<BaseUnit> {
         var currentUnit = unit.baseUnit
         val upgradeList = linkedSetOf<BaseUnit>()
-        while (currentUnit.upgradesTo != null) {
-            val nextUpgrade = unit.civ.getEquivalentUnit(currentUnit.upgradesTo!!)
+        var nextUpgrade = if (upgradeUnit != null ) unit.civ.getEquivalentUnit(upgradeUnit) else null
+        while (nextUpgrade != null) {
             if (nextUpgrade in upgradeList)
                 throw(UncivShowableException("Circular or self-referencing upgrade path for ${currentUnit.name}"))
             currentUnit = nextUpgrade
             upgradeList.add(currentUnit)
+            nextUpgrade = currentUnit.upgradeUnits()
+                .filter { unit.civ.gameInfo.ruleset.units[it] != null }
+                .map { unit.civ.getEquivalentUnit(it!!) }
+                .minByOrNull { it.cost }
         }
         return upgradeList
     }
@@ -30,15 +34,17 @@ class UnitUpgradeManager(val unit:MapUnit) {
      */
     // Used from UnitAutomation, UI action, canUpgrade
     fun getUnitToUpgradeTo(): BaseUnit {
-        val upgradePath = getUpgradePath()
+        val cheapestUnit = unit.baseUnit.upgradeUnits(StateForConditionals(unit.civ, unit = unit))
+            .mapNotNull { unit.civ.gameInfo.ruleset.units[it]
+                ?.let { unit -> this.unit.civ.getEquivalentUnit(unit) } }.minBy { it.cost }
+        val upgradePath = getUpgradePath(cheapestUnit)
 
         fun isInvalidUpgradeDestination(baseUnit: BaseUnit): Boolean{
             if (!unit.civ.tech.isResearched(baseUnit))
                 return true
-            if (baseUnit.getMatchingUniques(UniqueType.OnlyAvailableWhen, StateForConditionals.IgnoreConditionals).any {
-                        !it.conditionalsApply(StateForConditionals(unit.civ, unit = unit ))
-                    }) return true
-            return false
+            return baseUnit.getMatchingUniques(UniqueType.OnlyAvailableWhen, StateForConditionals.IgnoreConditionals).any {
+                !it.conditionalsApply(StateForConditionals(unit.civ, unit = unit ))
+            }
         }
 
         for (baseUnit in upgradePath.reversed()) {
@@ -49,14 +55,14 @@ class UnitUpgradeManager(val unit:MapUnit) {
     }
 
     /** Check whether this unit can upgrade to [unitToUpgradeTo]. This does not check or follow the
-     *  normal upgrade chain defined by [BaseUnit.upgradesTo], unless [unitToUpgradeTo] is left at default.
+     *  normal upgrade chain defined by [BaseUnit.upgradeUnits], unless [unitToUpgradeTo] is left at default.
      *  @param ignoreRequirements Ignore possible tech/policy/building requirements (e.g. resource requirements still count).
      *          Used for upgrading units via ancient ruins.
      *  @param ignoreResources Ignore resource requirements (tech still counts)
      *          Used to display disabled Upgrade button
      */
     fun canUpgrade(
-        unitToUpgradeTo: BaseUnit = getUnitToUpgradeTo(),
+        unitToUpgradeTo: BaseUnit,
         ignoreRequirements: Boolean = false,
         ignoreResources: Boolean = false
     ): Boolean {
@@ -96,7 +102,7 @@ class UnitUpgradeManager(val unit:MapUnit) {
         for (unique in unit.civ.getMatchingUniques(UniqueType.UnitUpgradeCost, stateForConditionals))
             civModifier *= unique.params[0].toPercent()
 
-        val upgradePath = getUpgradePath()
+        val upgradePath = getUpgradePath(unitToUpgradeTo)
         var currentUnit = unit.baseUnit
         for (baseUnit in upgradePath) {
             // do clamping and rounding here so upgrading stepwise costs the same as upgrading far down the chain

@@ -127,7 +127,7 @@ object UnitAutomation {
     internal fun tryUpgradeUnit(unit: MapUnit): Boolean {
         if (unit.civ.isHuman() && (!UncivGame.Current.settings.automatedUnitsCanUpgrade
                 || UncivGame.Current.settings.autoPlay.isAutoPlayingAndFullAI())) return false
-        if (unit.baseUnit.upgradesTo == null) return false
+        if (unit.baseUnit.upgradeUnits(StateForConditionals(unit.civ, unit = unit)).none()) return false
         val upgradedUnit = unit.upgrade.getUnitToUpgradeTo()
         if (!upgradedUnit.isBuildable(unit.civ)) return false // for resource reasons, usually
 
@@ -136,10 +136,9 @@ object UnitAutomation {
             if (!Automation.allowSpendingResource(unit.civ, upgradedUnit)) return false
         }
 
-        val upgradeAction = UnitActionsUpgrade.getUpgradeAction(unit)
-            ?: return false
+        val upgradeAction = UnitActionsUpgrade.getUpgradeActions(unit)
 
-        upgradeAction.action?.invoke()
+        upgradeAction.firstOrNull()?.action?.invoke()
         return unit.isDestroyed // a successful upgrade action will destroy this unit
     }
 

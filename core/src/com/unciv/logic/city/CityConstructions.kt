@@ -413,9 +413,13 @@ class CityConstructions : IsPartOfGameInfoSerialization {
                     }
                 } else if (construction is BaseUnit) {
                     // Production put into upgradable units gets put into upgraded version
-                    if (rejectionReasons.all { it.type == RejectionReasonType.Obsoleted } && construction.upgradesTo != null) {
-                        val upgradedUnitName = city.civ.getEquivalentUnit(construction.upgradesTo!!).name
-                        inProgressConstructions[upgradedUnitName] = (inProgressConstructions[upgradedUnitName] ?: 0) + workDone
+                    val cheapestUpgradeUnit = construction.upgradeUnits(StateForConditionals(city.civ, city))
+                        .mapNotNull { city.civ.gameInfo.ruleset.units[it]?.let { 
+                            unit -> city.civ.getEquivalentUnit(unit) } }
+                        .filter { it.isBuildable(this) }
+                        .minByOrNull { it.cost }
+                    if (rejectionReasons.all { it.type == RejectionReasonType.Obsoleted } && cheapestUpgradeUnit != null) {
+                        inProgressConstructions[cheapestUpgradeUnit.name] = (inProgressConstructions[cheapestUpgradeUnit.name] ?: 0) + workDone
                     }
                 }
                 inProgressConstructions.remove(constructionName)

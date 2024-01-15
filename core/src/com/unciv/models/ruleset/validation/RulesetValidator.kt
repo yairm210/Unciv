@@ -674,10 +674,12 @@ class RulesetValidator(val ruleset: Ruleset) {
     }
 
     private fun checkUnitRulesetInvariant(unit: BaseUnit, lines: RulesetErrorList) {
-        if (unit.upgradesTo == unit.name || (unit.upgradesTo != null && unit.upgradesTo == unit.replaces))
-            lines += "${unit.name} upgrades to itself!"
-        if (unit.isMilitary() && unit.strength == 0)  // Should only match ranged units with 0 strength
-            lines += "${unit.name} is a military unit but has no assigned strength!"
+        for (upgradesTo in unit.upgradeUnits()) {
+            if (upgradesTo == unit.name || (upgradesTo != null && upgradesTo == unit.replaces))
+                lines += "${unit.name} upgrades to itself!"
+            if (unit.isMilitary() && unit.strength == 0)  // Should only match ranged units with 0 strength
+                lines += "${unit.name} is a military unit but has no assigned strength!"
+        }
     }
 
     /** Collects all RulesetSpecific checks for a BaseUnit */
@@ -687,24 +689,24 @@ class RulesetValidator(val ruleset: Ruleset) {
                 lines += "${unit.name} requires tech $requiredTech which does not exist!"
         for (obsoleteTech: String in unit.techsAtWhichNoLongerAvailable())
             if (!ruleset.technologies.containsKey(obsoleteTech))
-                lines += "${unit.name} obsoletes at tech ${obsoleteTech} which does not exist!"
-        if (unit.upgradesTo != null && !ruleset.units.containsKey(unit.upgradesTo!!))
-            lines += "${unit.name} upgrades to unit ${unit.upgradesTo} which does not exist!"
+                lines += "${unit.name} obsoletes at tech $obsoleteTech which does not exist!"
+        for (upgradesTo in unit.upgradeUnits(StateForConditionals.IgnoreConditionals))
+            if (upgradesTo != null && !ruleset.units.containsKey(upgradesTo))
+                lines += "${unit.name} upgrades to unit $upgradesTo which does not exist!"
 
         // Check that we don't obsolete ourselves before we can upgrade
         for (obsoleteTech: String in unit.techsAtWhichAutoUpgradeInProduction())
-            if (unit.upgradesTo!=null && ruleset.units.containsKey(unit.upgradesTo!!)
-                && ruleset.technologies.containsKey(obsoleteTech)) {
-                val upgradedUnit = ruleset.units[unit.upgradesTo!!]!!
-                for (requiredTech: String in upgradedUnit.requiredTechs())
-                    if (requiredTech != obsoleteTech
-                        && !getPrereqTree(obsoleteTech).contains(requiredTech)
-                    )
-                        lines.add(
-                            "${unit.name} is supposed to automatically upgrade at tech ${obsoleteTech}," +
-                                " and therefore ${requiredTech} for its upgrade ${upgradedUnit.name} may not yet be researched!",
-                            RulesetErrorSeverity.Warning
-                        )
+            for (upgradesTo in unit.upgradeUnits())
+                if (upgradesTo != null && ruleset.units.containsKey(upgradesTo)
+                    && ruleset.technologies.containsKey(obsoleteTech)) {
+                    val upgradedUnit = ruleset.units[upgradesTo]!!
+                    for (requiredTech: String in upgradedUnit.requiredTechs())
+                        if (requiredTech != obsoleteTech && !getPrereqTree(obsoleteTech).contains(requiredTech))
+                            lines.add(
+                                "${unit.name} is supposed to automatically upgrade at tech ${obsoleteTech}," +
+                                    " and therefore $requiredTech for its upgrade ${upgradedUnit.name} may not yet be researched!",
+                                RulesetErrorSeverity.Warning
+                            )
             }
 
         for (resource in unit.getResourceRequirementsPerTurn(StateForConditionals.IgnoreConditionals).keys)
@@ -757,7 +759,7 @@ class RulesetValidator(val ruleset: Ruleset) {
 
     /** Checks all possible upgrade paths of [unit], reporting to [lines].
      *  @param path used in recursion collecting the BaseUnits seen so far
-     *  @return units checked in this session - includes all units in this tree
+*  @return units checked in this session - includes all units in this tree
      *
      *  Note: Since the units down the path will also be checked, this could log the same mistakes
      *  repeatedly, but that is mostly prevented by RulesetErrorList.add(). Each unit involved in a
@@ -774,15 +776,19 @@ class RulesetValidator(val ruleset: Ruleset) {
             lines += "Circular or self-referencing upgrade path for ${unit.name}"
             return setOf(unit)
         }
-        val upgrade = ruleset.units[unit.upgradesTo] ?: return setOf(unit)
-        val newPath = path + unit // All Set additions are new Sets - we're recursing!
-        val newPathWithReplacements = unitReplacesMap[unit.name]?.let { newPath + it } ?: newPath
-        checkUnitUpgradePath(upgrade, lines, newPathWithReplacements)
-        val replacements = unitReplacesMap[upgrade.name] ?: return setOf(unit)
         val checkedUnits = HashSet<BaseUnit>()
-        for (toCheck in replacements) {
-            checkedUnits += checkUnitUpgradePath(toCheck, lines, newPath)
+        for (upgradeUnit in unit.upgradeUnits(StateForConditionals.IgnoreConditionals))
+        {
+            val upgrade = ruleset.units[upgradeUnit] ?: continue
+            val newPath = path + unit // All Set additions are new Sets - we're recursing!
+            val newPathWithReplacements = unitReplacesMap[unit.name]?.let { newPath + it } ?: newPath
+            checkUnitUpgradePath(upgrade, lines, newPathWithReplacements)
+            val replacements = unitReplacesMap[upgrade.name] ?: continue
+            for (toCheck in replacements) {
+                checkedUnits += checkUnitUpgradePath(toCheck, lines, newPath)
+            }
         }
+        if (checkedUnits.isEmpty()) checkedUnits += unit
         return checkedUnits
     }
 

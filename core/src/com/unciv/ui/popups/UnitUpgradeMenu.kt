@@ -1,6 +1,5 @@
 package com.unciv.ui.popups
 
-import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.scenes.scene2d.ui.Table
@@ -93,8 +92,8 @@ class UnitUpgradeMenu(
     private fun doAllUpgrade() {
         SoundPlayer.playRepeated(unitAction.uncivSound)
         for (unit in allUpgradableUnits) {
-            val otherAction = UnitActionsUpgrade.getUpgradeAction(unit)
-            otherAction?.action?.invoke()
+            val otherAction = UnitActionsUpgrade.getUpgradeActions(unit)
+            otherAction.firstOrNull()?.action?.invoke()
         }
     }
 }
