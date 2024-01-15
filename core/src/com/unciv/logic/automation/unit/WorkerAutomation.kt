@@ -292,7 +292,8 @@ class WorkerAutomation(
             if (reachedTile != currentTile) unit.doAction() // otherwise, we get a situation where the worker is automated, so it tries to move but doesn't, then tries to automate, then move, etc, forever. Stack overflow exception!
 
             // If we have reached a fort tile that is in progress and shouldn't be there, cancel it.
-            if (reachedTile == tileToWork && reachedTile.improvementInProgress == Constants.fort && !evaluateFortSuroundings(currentTile, false)) {
+            // TODO: Replace this code entirely and change [chooseImprovement] to not continue building the improvement by default
+            if (reachedTile == tileToWork && reachedTile.improvementInProgress == Constants.fort && evaluateFortSurroundings(currentTile, false) <= 0) {
                 debug("Replacing fort in progress with new improvement")
                 reachedTile.stopWorkingOnImprovement()
             }
@@ -686,6 +687,9 @@ class WorkerAutomation(
                 value += (tile.resourceAmount / 2).coerceIn(1,2)
             }
         }
+        if (isImprovementProbablyAFort(improvement)) {
+            value += evaluateFortSurroundings(tile, improvement.hasUnique(UniqueType.TakesOverAdjacentTiles))
+        }
         return value
     }
 
@@ -729,37 +733,43 @@ class WorkerAutomation(
      * @param  isCitadel Controls within borders check - true also allows 1 tile outside borders
      * @return Yes the location is good for a Fort here
      */
-    private fun evaluateFortSuroundings(tile: Tile, isCitadel: Boolean): Boolean {
+    private fun evaluateFortSurroundings(tile: Tile, isCitadel: Boolean): Float {
+        //todo for placement is disabled for now, it should be re-enabled in the future.
+        return -100f
         //todo Is the Citadel code dead anyway? If not - why does the nearestTiles check not respect the param?
 
         // build on our land only
         if (tile.owningCity?.civ != civInfo &&
                     // except citadel which can be built near-by
                     (!isCitadel || tile.neighbors.all { it.getOwner() != civInfo }) ||
-            !isAcceptableTileForFort(tile)) return false
+            !isAcceptableTileForFort(tile)) return 0f
+        val enemyCivs = civInfo.getKnownCivs()
+            .filter { it != civInfo && it.cities.isNotEmpty() && civInfo.isAtWarWith(it) }
+        // no potential enemies
+        if (enemyCivs.none()) return 0f
+
+        var valueOfFort = 3f
 
         // if this place is not perfect, let's see if there is a better one
         val nearestTiles = tile.getTilesInDistance(2).filter { it.owningCity?.civ == civInfo }.toList()
         for (closeTile in nearestTiles) {
             // don't build forts too close to the cities
-            if (closeTile.isCityCenter()) return false
+            if (closeTile.isCityCenter()) valueOfFort -= 1f
             // don't build forts too close to other forts
             if (closeTile.improvement != null
-                && closeTile.getTileImprovement()!!.hasUnique("Gives a defensive bonus of []%")
-                || closeTile.improvementInProgress != Constants.fort) return false
+                && isImprovementProbablyAFort(closeTile.getTileImprovement()!!)
+                || (closeTile.improvementInProgress != null && isImprovementProbablyAFort(closeTile.improvementInProgress!!))) 
+                valueOfFort -= .5f
             // there is another better tile for the fort
             if (!tile.isHill() && closeTile.isHill() &&
-                isAcceptableTileForFort(closeTile)) return false
+                isAcceptableTileForFort(closeTile)) valueOfFort -= .5f
+            // We want to build forts more in choke points
+            if (tile.isImpassible()) valueOfFort += .2f
         }
-
-        val enemyCivs = civInfo.getKnownCivs()
-            .filterNot { it == civInfo || it.cities.isEmpty() || !civInfo.getDiplomacyManager(it).canAttack() }
-        // no potential enemies
-        if (enemyCivs.none()) return false
 
         val threatMapping: (Civilization) -> Int = {
             // the war is already a good nudge to build forts
-            (if (civInfo.isAtWarWith(it)) 20 else 0) +
+            (if (civInfo.isAtWarWith(it)) 5 else 0) +
                     // let's check also the force of the enemy
                     when (Automation.threatAssessment(civInfo, it)) {
                         ThreatLevel.VeryLow -> 1 // do not build forts
@@ -770,10 +780,9 @@ class WorkerAutomation(
                     }
         }
         val enemyCivsIsCloseEnough = enemyCivs.filter { NextTurnAutomation.getMinDistanceBetweenCities(
-            civInfo,
-            it) <= threatMapping(it) }
+            civInfo, it) <= threatMapping(it) }
         // no threat, let's not build fort
-        if (enemyCivsIsCloseEnough.none()) return false
+        if (enemyCivsIsCloseEnough.none()) return 0f
 
         // make list of enemy cities as sources of threat
         val enemyCities = mutableListOf<Tile>()
@@ -788,10 +797,13 @@ class WorkerAutomation(
         val distanceToOurCity = tile.aerialDistanceTo(closestOurCity)
 
         val distanceBetweenCities = closestEnemyCity.aerialDistanceTo(closestOurCity)
+        // This location is not between a city and the enemy
+        if (distanceToEnemy >= distanceBetweenCities) return 0f
 
+        valueOfFort += 2 - Math.abs(distanceBetweenCities - 1 - distanceToEnemy) 
         // let's build fort on the front line, not behind the city
         // +2 is a acceptable deviation from the straight line between cities
-        return distanceBetweenCities + 2 > distanceToEnemy + distanceToOurCity
+        return valueOfFort.coerceAtLeast(0f)
     }
 
     /**
@@ -802,8 +814,12 @@ class WorkerAutomation(
      */
     fun evaluateFortPlacement(tile: Tile, isCitadel: Boolean): Boolean {
         return tile.improvement != Constants.fort // don't build fort if it is already here
-            && evaluateFortSuroundings(tile,isCitadel)
+            && evaluateFortSurroundings(tile,isCitadel) > 0
     }
+    
+    fun isImprovementProbablyAFort(improvementName:String): Boolean = isImprovementProbablyAFort(ruleSet.tileImprovements[improvementName]!!)
+    fun isImprovementProbablyAFort(improvement: TileImprovement): Boolean = improvement.hasUnique(UniqueType.DefensiveBonus)
+    
 
     private fun hasWorkableSeaResource(tile: Tile, civInfo: Civilization): Boolean =
         tile.isWater && tile.improvement == null && tile.hasViewableResource(civInfo)
