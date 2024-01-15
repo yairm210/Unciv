@@ -374,11 +374,12 @@ class Civilization : IsPartOfGameInfoSerialization {
     }
 
     fun wantsToFocusOn(focus: Victory.Focus): Boolean {
-        return thingsToFocusOnForVictory.contains(focus)
+        return thingsToFocusOnForVictory.contains(focus) && isAI()
     }
 
     fun getPersonality(): Personality? {
-        return gameInfo.ruleset.personalities[nation.personality]
+        return  if (isAI()) gameInfo.ruleset.personalities[nation.personality]
+        else null
     }
 
     @Transient
