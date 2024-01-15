@@ -22,7 +22,7 @@ object BattleDamage {
             UniqueTarget.Unit -> "Unit ability"
             UniqueTarget.Nation -> "National ability"
             UniqueTarget.Global -> GlobalUniques.getUniqueSourceDescription(unique)
-            else -> "[${unique.sourceObjectName}] ([${unique.sourceObjectType?.name}])"
+            else -> "[${unique.sourceObjectName}] ([${unique.getSourceNameForUser()}])"
         }.tr()
         if (unique.conditionals.isEmpty()) return source
 
@@ -91,7 +91,7 @@ object BattleDamage {
             // https://steamcommunity.com/sharedfiles/filedetails/?id=326411722#464287
             val effect = unique.params[0].toInt() - 3 * distance
             if (effect > 0)
-                modifiers.add("${unique.sourceObjectName} (${unique.sourceObjectType})", effect)
+                modifiers.add("${unique.sourceObjectName} (${unique.getSourceNameForUser()})", effect)
         }
 
         //https://www.carlsguides.com/strategy/civilization5/war/combatbonuses.php
