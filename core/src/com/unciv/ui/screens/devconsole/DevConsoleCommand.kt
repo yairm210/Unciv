@@ -177,6 +177,12 @@ class ConsoleCityCommands : ConsoleCommandNode {
             DevConsoleResponse.OK
         },
 
+        "setname" to ConsoleAction("city setname <\"name\">") { console, params ->
+            val city = console.getSelectedCity()
+            city.name = params[0]
+            DevConsoleResponse.OK
+        },
+
         "addtile" to ConsoleAction("city addtile <cityName>") { console, params ->
             val selectedTile = console.getSelectedTile()
             val city = console.getCity(params[0])
