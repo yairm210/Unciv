@@ -468,7 +468,7 @@ class TemporaryUnique() : IsPartOfGameInfoSerialization {
 
     constructor(uniqueObject: Unique, turns: Int) : this() {
         val turnsText = uniqueObject.conditionals.first { it.isOfType(UniqueType.ConditionalTimedUnique) }.text
-        unique = uniqueObject.text.replace("<$turnsText>", "")
+        unique = uniqueObject.text.replaceFirst("<$turnsText>", "")
         sourceObjectType = uniqueObject.sourceObjectType
         sourceObjectName = uniqueObject.sourceObjectName
         turnsLeft = turns
