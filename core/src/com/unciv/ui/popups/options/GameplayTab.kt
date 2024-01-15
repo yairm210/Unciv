@@ -53,7 +53,6 @@ fun gameplayTab(
     ) { settings.automatedUnitsChoosePromotions = it }
     optionsPopup.addCheckbox(this, "Order trade offers by amount", settings.orderTradeOffersByAmount) { settings.orderTradeOffersByAmount = it }
     optionsPopup.addCheckbox(this, "Ask for confirmation when pressing next turn", settings.confirmNextTurn) { settings.confirmNextTurn = it }
-    optionsPopup.addCheckbox(this, "EXPERIMENTAL movement - use at your own risk!", settings.experimentalMovement, true) { settings.experimentalMovement = it }
 
     addNotificationLogMaxTurnsSlider(this, settings, optionsPopup.selectBoxMinWidth)
 }

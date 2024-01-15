@@ -4,13 +4,13 @@ import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.math.Vector3
 import kotlin.math.abs
 import kotlin.math.cos
+import kotlin.math.max
+import kotlin.math.min
 import kotlin.math.round
 import kotlin.math.roundToInt
 import kotlin.math.sign
 import kotlin.math.sin
 import kotlin.math.sqrt
-import kotlin.math.max
-import kotlin.math.min
 
 @Suppress("MemberVisibilityCanBePrivate", "unused")  // this is a library offering optional services
 object HexMath {
@@ -227,6 +227,7 @@ object HexMath {
         return hexesToReturn
     }
 
+    /** Get number of hexes from [origin] to [destination] _without respecting world-wrap_ */
     fun getDistance(origin: Vector2, destination: Vector2): Int {
         val relativeX = origin.x - destination.x
         val relativeY = origin.y - destination.y

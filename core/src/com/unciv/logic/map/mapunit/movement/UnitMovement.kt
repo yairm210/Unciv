@@ -4,21 +4,13 @@ package com.unciv.logic.map.mapunit.movement
 
 import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
-import com.unciv.UncivGame
 import com.unciv.logic.map.BFS
-import com.unciv.logic.map.HexMath.getDistance
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.UnitActionType
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.components.UnitMovementMemoryType
-import java.util.TreeSet
 
-
-fun List<UnitMovement.MovementStep>.toBackwardsCompatiblePath(): List<Tile> {
-    val backwardsCompatiblePath = this.filter { it.totalCost.movementLeft == 0f || it == this.last() }
-    return backwardsCompatiblePath.map { it.tile }
-}
 
 class UnitMovement(val unit: MapUnit) {
 
@@ -92,136 +84,6 @@ class UnitMovement(val unit: MapUnit) {
         return distanceToTiles
     }
 
-
-    data class MovementStep(val previousStep: MovementStep?, val tile: Tile, val movementCost:Float, val totalCost: MovementStepTotalCost)
-
-
-    data class MovementStepTotalCost(/** Turn 0 means the initial turn */ val turn: Int, val movementLeft: Float):Comparable<MovementStepTotalCost> {
-        override operator fun compareTo(other: MovementStepTotalCost): Int {
-            if (turn != other.turn) return turn.compareTo(other.turn)
-            return other.movementLeft.compareTo(movementLeft) // The higher the MovementLeft, the *lower* the turn cost
-        }
-    }
-
-    /** Problem and solution documented at https://yairm210.medium.com/multi-turn-pathfinding-7136bd0bdaf0 */
-    fun getShortestPathNew(destination: Tile, considerZoneOfControl: Boolean = true,
-                           /** For allowing optional avoid of damaging tiles, tiles outside borders, etc */ shouldAvoidTile: ((Tile) -> Boolean)? = null,
-                           maxTurns: Int = 25,
-    ): List<MovementStep> {
-        if (unit.cache.cannotMove) return listOf()
-
-        val startingTile = unit.getTile()
-        val initialStep = MovementStep(null, startingTile, 0f, MovementStepTotalCost(0, unit.currentMovement))
-
-        if (startingTile.position == destination) {
-            // edge case that's needed, so that workers will know that they can reach their own tile. *sigh*
-            pathfindingCache.setShortestPathCache(destination, listOf(startingTile))
-            return listOf(initialStep)
-        }
-
-
-        val tileToBestStep = HashMap<Tile, MovementStep>() // contains a map of "you can get from X to Y in that turn"
-        tileToBestStep[startingTile] = initialStep
-
-        val tilesToCheck = TreeSet { t: Tile, t2: Tile ->
-            val tStep = tileToBestStep[t]!!
-            val t2Step = tileToBestStep[t2]!!
-            // This last comparitor is REQUIRED otherwise the tree will think that tiles the same distance away are the same and will throw the second one away!
-            val totalCostComparison = tStep.totalCost.compareTo(t2Step.totalCost)
-            if (totalCostComparison != 0) return@TreeSet totalCostComparison
-            val aerialDistanceComparison = t.aerialDistanceTo(destination).compareTo(t2.aerialDistanceTo(destination))
-            if (aerialDistanceComparison != 0) return@TreeSet aerialDistanceComparison
-            return@TreeSet t.position.hashCode().compareTo(t2.position.hashCode())
-        }
-
-        tilesToCheck.add(startingTile)
-        val canEndTurnInCache = HashMap<Tile, Boolean>()
-        val unitMaxMovement = unit.getMaxMovement().toFloat()
-        val movementCostCache = HashMap<Pair<Tile, Tile>, Float>()
-        val shouldAvoidTileCache = HashMap<Tile, Boolean>()
-        val canPassThroughCache = HashMap<Tile, Boolean>()
-
-        while (tilesToCheck.isNotEmpty()){
-            val currentTileToCheck = tilesToCheck.pollFirst()!!
-
-            val currentTileStep = tileToBestStep[currentTileToCheck]!!
-
-            for (neighbor in currentTileToCheck.neighbors){
-                if (shouldAvoidTile != null && shouldAvoidTileCache.getOrPut(neighbor){
-                        shouldAvoidTile(neighbor)
-                    }) continue
-                val currentBestStepToNeighbor = tileToBestStep[neighbor]
-                // If this tile can't beat the current best then no point checking
-                if (currentBestStepToNeighbor!=null && (currentBestStepToNeighbor.totalCost < currentTileStep.totalCost))
-                    continue
-
-                if (!canPassThroughCache.getOrPut(neighbor){
-                        canPassThrough(neighbor)
-                    }) continue
-
-                val movementBetweenTiles: Float = if (!neighbor.isExplored(unit.civ)) 1f  // If we don't know then we just guess it to be 1.
-                else movementCostCache.getOrPut(currentTileToCheck to neighbor) {
-                    MovementCost.getMovementCostBetweenAdjacentTiles(unit, currentTileToCheck, neighbor, considerZoneOfControl)
-                }
-
-                val newStep = getNextStep(currentTileStep, neighbor, movementBetweenTiles, canEndTurnInCache, unitMaxMovement)
-                    ?: continue
-
-
-                if (neighbor == destination){
-                    val entirePath = arrayListOf<MovementStep>()
-                    var currentStep = newStep
-                    // We do NOT include the origin tile in this list
-                    while (currentStep.previousStep != null){
-                        entirePath.add(currentStep)
-                        currentStep = currentStep.previousStep!!
-                    }
-                    return entirePath.reversed()
-                }
-
-                if (currentBestStepToNeighbor == null ||
-                    newStep.totalCost < currentBestStepToNeighbor.totalCost) { // We have a winner!
-                    tileToBestStep[neighbor] = newStep
-                    if (newStep.totalCost.movementLeft == 0f && newStep.totalCost.turn == maxTurns) continue // don't schedule further expansion
-                    tilesToCheck.add(neighbor)
-                }
-            }
-        }
-
-        return listOf() // no path
-    }
-
-    fun getNextStep(currentTileStep:MovementStep, neighbor:Tile, movementBetweenTiles:Float,
-                    canEndTurnInCache:HashMap<Tile, Boolean>, unitMaxMovement:Float):MovementStep? {
-
-        fun canEndTurnIn(tile:Tile) = canEndTurnInCache.getOrPut(tile) { unit.movement.canMoveTo(tile) }
-
-        fun Float.normalizeMovementLeft() = if (this > Constants.minimumMovementEpsilon) this else 0f
-
-        val currentTile = currentTileStep.tile
-
-        // We can move directly
-        if (currentTileStep.totalCost.movementLeft != 0f || canEndTurnIn(currentTile)) {
-            val newTotalCost = if (currentTileStep.totalCost.movementLeft == 0f) MovementStepTotalCost(
-                currentTileStep.totalCost.turn + 1,
-                (unitMaxMovement - movementBetweenTiles).normalizeMovementLeft()
-            )
-            else MovementStepTotalCost(currentTileStep.totalCost.turn, (currentTileStep.totalCost.movementLeft - movementBetweenTiles).normalizeMovementLeft())
-            return MovementStep(currentTileStep, neighbor, movementBetweenTiles, newTotalCost)
-        }
-
-        // Backtracking nonsense - we CANNOT end the turn on the previous tile, AND we have no movement left, that means we need to do some alternate history
-        val previousStep = currentTileStep.previousStep ?: return null
-        if (previousStep.totalCost.movementLeft == 0f) return null // We backtracked until a previous end-of-turn and couldn't find any intermediate tiles
-        if (!canEndTurnIn(previousStep.tile)) return null
-        // We found somewhere we could have rested - let's do some alternate history!
-        val currentTileAlternateHistory = MovementStep(currentTileStep.previousStep, currentTile, currentTileStep.movementCost,
-            MovementStepTotalCost(currentTileStep.previousStep.totalCost.turn+1, (unitMaxMovement - currentTileStep.movementCost).normalizeMovementLeft()))
-        if (currentTileAlternateHistory.totalCost.movementLeft == 0f) return null // We tried, and even if we rest there we STILL have to stop at current tile... :/
-        val newTotalCost = MovementStepTotalCost(currentTileAlternateHistory.totalCost.turn, (currentTileAlternateHistory.totalCost.movementLeft-currentTileStep.movementCost).normalizeMovementLeft())
-        return MovementStep(currentTileAlternateHistory, neighbor, movementBetweenTiles, newTotalCost)
-    }
-
     /**
      * Does not consider if the [destination] tile can actually be entered, use [canMoveTo] for that.
      * Returns an empty list if there's no way to get to the destination.
@@ -250,19 +112,6 @@ class UnitMovement(val unit: MapUnit) {
             // edge case that's needed, so that workers will know that they can reach their own tile. *sigh*
             pathfindingCache.setShortestPathCache(destination, listOf(currentTile))
             return listOf(currentTile)
-        }
-
-        if (UncivGame.Current.settings.experimentalMovement) {
-            if (avoidDamagingTerrain){
-                val shouldAvoidTile: (Tile) -> Boolean = if (unit.isCivilian() && unit.isAutomated())
-                {{unit.getDamageFromTerrain(it) > 0 || it.isEnemyTerritory(unit.civ)}}
-                else {{unit.getDamageFromTerrain(it) > 0}}
-                return getShortestPathNew(destination,
-                    shouldAvoidTile = shouldAvoidTile).toBackwardsCompatiblePath()
-            }
-            val shouldAvoidTile :((Tile) -> Boolean)? = if (unit.isCivilian() && unit.isAutomated())
-            {{it.isEnemyTerritory(unit.civ)}} else null
-            return getShortestPathNew(destination, shouldAvoidTile = shouldAvoidTile).toBackwardsCompatiblePath()
         }
 
         var tilesToCheck = listOf(currentTile)
@@ -408,7 +257,7 @@ class UnitMovement(val unit: MapUnit) {
         if (unit.baseUnit.movesLikeAirUnits())
             return unit.currentTile.aerialDistanceTo(destination) <= unit.getMaxMovementForAirUnits()
         if (unit.isPreparingParadrop())
-            return getDistance(unit.currentTile.position, destination.position) <= unit.cache.paradropRange && canParadropOn(destination)
+            return unit.currentTile.aerialDistanceTo(destination) <= unit.cache.paradropRange && canParadropOn(destination)
         return getDistanceToTiles().containsKey(destination)
     }
 
