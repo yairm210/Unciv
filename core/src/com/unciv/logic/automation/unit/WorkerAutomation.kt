@@ -678,7 +678,7 @@ class WorkerAutomation(
             // Bigger cities have a higher priority to connect
                 value += (city.population.population - 3) * .3f
             // Higher priority if we are closer to connecting the city
-            value += 5 - roadsToConnectCitiesCache[city]!!.size
+            value += (5 - roadsToConnectCitiesCache[city]!!.size).coerceAtLeast(0)
             return value
         }
         
