@@ -111,9 +111,9 @@ class WorldScreen(
 
     // Floating Widgets going counter-clockwise
     val topBar = WorldScreenTopBar(this)
-    private val techPolicyAndDiplomacy = TechPolicyDiplomacyButtons(this)
-    private val fogOfWarButton = createFogOfWarButton()
-    private val unitActionsTable = UnitActionsTable(this)
+    val techPolicyAndDiplomacy = TechPolicyDiplomacyButtons(this)
+    val fogOfWarButton = createFogOfWarButton()
+    val unitActionsTable = UnitActionsTable(this)
     /** Bottom left widget holding information about a selected unit or city */
     val bottomUnitTable = UnitTable(this)
     private val battleTable = BattleTable(this)

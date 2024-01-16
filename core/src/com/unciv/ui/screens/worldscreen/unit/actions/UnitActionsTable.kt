@@ -17,12 +17,85 @@ import com.unciv.ui.popups.UnitUpgradeMenu
 import com.unciv.ui.screens.worldscreen.WorldScreen
 
 class UnitActionsTable(val worldScreen: WorldScreen) : Table() {
+    /** Distribute UnitActions on "pages" */
+    //todo allow keyboard bindings for "other page" actions to work
+    //todo left/between padding seems to now be less than before
+    //todo First update runs _before_ geometry on WorldScreen is valid - covered by minButtonsPerPage at the moment, and it seems always overridden by a later update
+    private var currentPage = 0
+    private var buttonsPerPage = Int.MAX_VALUE
+    private var numPages = 2
+
+    companion object {
+        /** Maximum for how many pages there can be. ([minButtonsPerPage]-2)*[maxAllowedPages]
+         *  is the upper bound for how many actions a unit can display. */
+        private const val maxAllowedPages = 10
+        /** Lower bound for how many buttons to distribute per page, including navigation buttons.
+         *  Affects really cramped displays. */
+        // less than navigation buttons + 2 makes no sense, and setting it to 5 isn't necessary.
+        private const val minButtonsPerPage = 4
+        /** Upper bound for how many buttons to distribute per page, including navigation buttons.
+         *  Affects large displays, resulting in more map visible between the actions and tech/diplo/policy buttons. */
+        private const val maxButtonsPerPage = 7
+        /** Maximum number of buttons to present without paging, overriding page preferences (implementation currently limited to merging two pages) */
+        private const val maxSinglePageButtons = 5
+        /** Vertical padding between the Buttons, not including any padding internal to IconTextButton */
+        private const val padBetweenButtons = 2f
+    }
+
+    init {
+        defaults().left().padBottom(padBetweenButtons)
+    }
+
+    fun changePage(delta: Int, unit: MapUnit) {
+        if (delta == 0 || numPages <= 1) return
+        currentPage = (currentPage + delta) % numPages
+        update(unit)
+    }
 
     fun update(unit: MapUnit?) {
         clear()
         if (unit == null) return
         if (!worldScreen.canChangeState) return // No actions when it's not your turn or spectator!
+
+        numPages = 0
+        val pageActionBuckets = Array<ArrayDeque<UnitAction>>(maxAllowedPages) { ArrayDeque() }
+        fun freeSlotsOnPage(page: Int) = buttonsPerPage -
+            pageActionBuckets[page].size -
+            (if (page > 0) 1 else 0) - // room for the previousPageButton
+            (if (page < numPages - 1) 1 else 0)  // room for the nextPageButton
+
+        val (nextPageAction, previousPageAction) = UnitActions.getPagingActions(unit)
+        val nextPageButton = getUnitActionButton(unit, nextPageAction)
+        val previousPageButton = getUnitActionButton(unit, previousPageAction)
+        updateButtonsPerPage(nextPageButton)
+
+        // Distribute sequentially into the buckets
         for (unitAction in UnitActions.getUnitActions(unit)) {
+            var actionPage = UnitActions.getActionDefaultPage(unit, unitAction.type)
+            while (actionPage < maxAllowedPages && freeSlotsOnPage(actionPage) <= 0)
+                actionPage++
+            if (actionPage >= maxAllowedPages) break
+            if (actionPage >= numPages) numPages = actionPage + 1
+            pageActionBuckets[actionPage].addLast(unitAction)
+        }
+        // Due to room reserved for paging buttons changing, buckets may now be too full
+        for (page in 0 until maxAllowedPages - 1) {
+            while (freeSlotsOnPage(page) < 0) {
+                val element = pageActionBuckets[page].removeLast()
+                pageActionBuckets[page + 1].addFirst(element)
+                if (numPages < page + 2) numPages = page + 2
+            }
+        }
+        // Special case: Only the default two pages used and all actions would fit in one
+        if (numPages == 2 && buttonsPerPage >= maxSinglePageButtons && pageActionBuckets[0].size + pageActionBuckets[1].size <= maxSinglePageButtons) {
+            pageActionBuckets[0].addAll(pageActionBuckets[1])
+            pageActionBuckets[1].clear()
+            numPages = 1
+        }
+        // clamp currentPage
+        if (currentPage !in 0 until numPages) currentPage = 0
+
+        for (unitAction in pageActionBuckets[currentPage]) {
             val button = getUnitActionButton(unit, unitAction)
             if (unitAction is UpgradeUnitAction) {
                 button.onRightClick {
@@ -31,11 +104,23 @@ class UnitActionsTable(val worldScreen: WorldScreen) : Table() {
                     }
                 }
             }
-            add(button).left().padBottom(2f).row()
+            add(button).row()
         }
+        if (currentPage > 0)
+            add(previousPageButton).row()
+        if (currentPage < numPages - 1)
+            add(nextPageButton).row()
         pack()
     }
 
+    private fun updateButtonsPerPage(button: Button) {
+        val upperLimit = if (worldScreen.fogOfWarButton.isVisible)
+            worldScreen.fogOfWarButton.y else worldScreen.techPolicyAndDiplomacy.y
+        val lowerLimit = this.y
+        val availableHeight = upperLimit - lowerLimit - padBetweenButtons
+        val buttonHeight = button.height + padBetweenButtons
+        buttonsPerPage = (availableHeight / buttonHeight).toInt().coerceIn(minButtonsPerPage, maxButtonsPerPage)
+    }
 
     private fun getUnitActionButton(unit: MapUnit, unitAction: UnitAction): Button {
         val icon = unitAction.getIcon()
@@ -69,4 +154,5 @@ class UnitActionsTable(val worldScreen: WorldScreen) : Table() {
 
          return actionButton
     }
+
 }
