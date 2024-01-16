@@ -2,6 +2,7 @@ package com.unciv.ui.screens.devconsole
 
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.PlayerType
+import com.unciv.logic.map.tile.RoadStatus
 import com.unciv.models.ruleset.tile.TerrainType
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueTriggerActivation
@@ -177,6 +178,12 @@ class ConsoleCityCommands : ConsoleCommandNode {
             DevConsoleResponse.OK
         },
 
+        "setname" to ConsoleAction("city setname <\"name\">") { console, params ->
+            val city = console.getSelectedCity()
+            city.name = params[0]
+            DevConsoleResponse.OK
+        },
+
         "addtile" to ConsoleAction("city addtile <cityName>") { console, params ->
             val selectedTile = console.getSelectedTile()
             val city = console.getCity(params[0])
@@ -225,6 +232,12 @@ class ConsoleTileCommands: ConsoleCommandNode {
         "removeimprovement" to ConsoleAction("tile removeimprovement") { console, params ->
             val selectedTile = console.getSelectedTile()
             selectedTile.improvementFunctions.changeImprovement(null)
+            DevConsoleResponse.OK
+        },
+
+        "removeroad" to ConsoleAction("tile removeroad") { console, params ->
+            val selectedTile = console.getSelectedTile()
+            selectedTile.roadStatus = RoadStatus.None
             DevConsoleResponse.OK
         },
 

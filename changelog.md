@@ -1,3 +1,19 @@
+## 4.9.19
+
+Modding:
+- "Cannot be traded" unique accepts Civ conditionals
+- Allow comment uniques on follower beliefs
+
+By tuvus:
+- Spectators receive era notifications again
+- Fixed AI Worker feature removal
+
+By SomeTroglodyte:
+- Fix Paradrop crossing World-wrap seam
+- ModManagementScreen gets a loading indicator
+
+Add modified nation descriptions  - By Ouaz
+
 ## 4.9.18
 
 Performance improvements for movement and ruleset validation

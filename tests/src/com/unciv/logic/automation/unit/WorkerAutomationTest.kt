@@ -55,6 +55,30 @@ internal class WorkerAutomationTest {
     }
 
     @Test
+    fun `should remove terrain feature enable resource`() {
+        // Add the needed tech to construct the improvements below
+        for (improvement in listOf("Remove Forest", "Plantation")) {
+            civInfo.tech.techsResearched.add(testGame.ruleset.tileImprovements[improvement]!!.techRequired!!)
+        }
+
+        testGame.addCity(civInfo, testGame.tileMap[0,0])
+
+        val currentTile = testGame.tileMap[1,1]
+        currentTile.addTerrainFeature("Hill")
+        currentTile.addTerrainFeature("Forest")
+        currentTile.resource = "Citrus"
+        currentTile.resourceAmount = 1
+
+        val mapUnit = testGame.addUnit("Worker", civInfo, currentTile)
+
+        workerAutomation.automateWorkerAction(mapUnit, hashSetOf())
+
+        assertEquals("Worker should begun removing the forest to clear a luxury resource but didn't",
+            "Remove Forest", currentTile.improvementInProgress)
+        assertTrue(currentTile.turnsToImprovement > 0)
+    }
+
+    @Test
     fun `should build improvement on unseen resource`() {
         // Add the needed tech to construct the improvements below
         for (improvement in listOf(RoadStatus.Road.name, "Farm")) {
