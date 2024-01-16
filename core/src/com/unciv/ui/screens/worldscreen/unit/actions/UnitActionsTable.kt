@@ -31,19 +31,19 @@ class UnitActionsTable(val worldScreen: WorldScreen) : Table() {
         private const val maxAllowedPages = 10
         /** Lower bound for how many buttons to distribute per page, including navigation buttons.
          *  Affects really cramped displays. */
-        // less than navigation buttons + 2 makes no sense, and setting it to 5 isn't necessary.
-        private const val minButtonsPerPage = 4
+        // less than navigation buttons + 2 makes no sense, and setting it to 4 isn't necessary.
+        private const val minButtonsPerPage = 3
         /** Upper bound for how many buttons to distribute per page, including navigation buttons.
          *  Affects large displays, resulting in more map visible between the actions and tech/diplo/policy buttons. */
         private const val maxButtonsPerPage = 7
         /** Maximum number of buttons to present without paging, overriding page preferences (implementation currently limited to merging two pages) */
         private const val maxSinglePageButtons = 5
-        /** Vertical padding between the Buttons, not including any padding internal to IconTextButton */
+        /** Padding between and to the left of the Buttons */
         private const val padBetweenButtons = 2f
     }
 
     init {
-        defaults().left().padBottom(padBetweenButtons)
+        defaults().left().padLeft(padBetweenButtons).padBottom(padBetweenButtons)
     }
 
     fun changePage(delta: Int, unit: MapUnit) {
@@ -61,8 +61,7 @@ class UnitActionsTable(val worldScreen: WorldScreen) : Table() {
         val pageActionBuckets = Array<ArrayDeque<UnitAction>>(maxAllowedPages) { ArrayDeque() }
         fun freeSlotsOnPage(page: Int) = buttonsPerPage -
             pageActionBuckets[page].size -
-            (if (page > 0) 1 else 0) - // room for the previousPageButton
-            (if (page < numPages - 1) 1 else 0)  // room for the nextPageButton
+            (if (numPages > 1) 1 else 0) // room for the navigation buttons
 
         val (nextPageAction, previousPageAction) = UnitActions.getPagingActions(unit)
         val nextPageButton = getUnitActionButton(unit, nextPageAction)
@@ -92,9 +91,10 @@ class UnitActionsTable(val worldScreen: WorldScreen) : Table() {
             pageActionBuckets[1].clear()
             numPages = 1
         }
+
         // clamp currentPage
         if (currentPage !in 0 until numPages) currentPage = 0
-
+        // actually show the buttons of the currentPage
         for (unitAction in pageActionBuckets[currentPage]) {
             val button = getUnitActionButton(unit, unitAction)
             if (unitAction is UpgradeUnitAction) {
@@ -104,12 +104,14 @@ class UnitActionsTable(val worldScreen: WorldScreen) : Table() {
                     }
                 }
             }
-            add(button).row()
+            add(button).colspan(2).row()
         }
+
+        // show page navigation
         if (currentPage > 0)
-            add(previousPageButton).row()
+            add(previousPageButton)
         if (currentPage < numPages - 1)
-            add(nextPageButton).row()
+            add(nextPageButton)
         pack()
     }
 
