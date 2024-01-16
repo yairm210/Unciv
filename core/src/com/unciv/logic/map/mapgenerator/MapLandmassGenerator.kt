@@ -153,9 +153,9 @@ class MapLandmassGenerator(val ruleset: Ruleset, val randomness: MapGenerationRa
 
     private fun createPangaea(tileMap: TileMap) {
         val largeContinentThreshold = (tileMap.values.size / 4).coerceAtMost(25)
-        var maxRetries = 200  // A bit much but enough to reach waterThreshold -1
+        var retryCount = 200  // A bit much but when relevant (tiny map) an iteration is relatively cheap
 
-        while(--maxRetries >= 0) {
+        while(--retryCount >= 0) {
             val elevationSeed = randomness.RNG.nextInt().toDouble()
             for (tile in tileMap.values) {
                 var elevation = randomness.getPerlinNoise(tile, elevationSeed)
