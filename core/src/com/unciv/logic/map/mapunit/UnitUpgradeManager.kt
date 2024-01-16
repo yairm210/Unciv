@@ -22,9 +22,8 @@ class UnitUpgradeManager(val unit:MapUnit) {
                 throw(UncivShowableException("Circular or self-referencing upgrade path for ${currentUnit.name}"))
             currentUnit = nextUpgrade
             upgradeList.add(currentUnit)
-            nextUpgrade = currentUnit.getUpgradeUnits(StateForConditionals(unit.civ, unit = unit))
-                .filter { unit.civ.gameInfo.ruleset.units[it] != null }
-                .map { unit.civ.getEquivalentUnit(it!!) }
+            nextUpgrade = currentUnit.getRulesetUpgradeUnits(StateForConditionals(unit.civ, unit = unit))
+                .map { unit.civ.getEquivalentUnit(it) }
                 .minByOrNull { it.cost }
         }
         return upgradeList
@@ -35,9 +34,8 @@ class UnitUpgradeManager(val unit:MapUnit) {
      */
     // Used from UnitAutomation
     fun getUnitToUpgradeTo(): BaseUnit {
-        val cheapestUnit = unit.baseUnit.getUpgradeUnits(StateForConditionals(unit.civ, unit = unit))
-            .mapNotNull { unit.civ.gameInfo.ruleset.units[it]
-                ?.let { unit -> this.unit.civ.getEquivalentUnit(unit) } }.minBy { it.cost }
+        val cheapestUnit = unit.baseUnit.getRulesetUpgradeUnits(StateForConditionals(unit.civ, unit = unit))
+            .map { unit.civ.getEquivalentUnit(it) }.minByOrNull { it.cost }
         val upgradePath = getUpgradePath(cheapestUnit)
 
         fun isInvalidUpgradeDestination(baseUnit: BaseUnit): Boolean{

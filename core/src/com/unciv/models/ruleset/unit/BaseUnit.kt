@@ -90,12 +90,9 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
     fun getRulesetUpgradeUnits(stateForConditionals: StateForConditionals? = null): Sequence<BaseUnit> {
         return sequence { 
             for (unit in getUpgradeUnits(stateForConditionals))
-            yieldIfNotNull(ruleset.units[unit])
+                yieldIfNotNull(ruleset.units[unit])
         }
     }
-    
-    fun getCheapestUpgradeUnit(stateForConditionals: StateForConditionals? = null) = 
-        getRulesetUpgradeUnits(stateForConditionals).minBy { it.cost }
 
     fun getMapUnit(civInfo: Civilization): MapUnit {
         val unit = MapUnit()
