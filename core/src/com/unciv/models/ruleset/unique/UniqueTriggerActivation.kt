@@ -18,6 +18,7 @@ import com.unciv.logic.civilization.TechAction
 import com.unciv.logic.civilization.managers.ReligionState
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
+import com.unciv.models.UpgradeUnitAction
 import com.unciv.models.ruleset.BeliefType
 import com.unciv.models.ruleset.Victory
 import com.unciv.models.stats.Stat
