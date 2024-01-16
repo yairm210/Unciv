@@ -443,8 +443,8 @@ enum class UniqueType(
     InvisibleToNonAdjacent("Invisible to non-adjacent units", UniqueTarget.Unit),
     CanSeeInvisibleUnits("Can see invisible [mapUnitFilter] units", UniqueTarget.Unit),
 
-    RuinsUpgrade("May upgrade to [baseUnitFilter] through ruins-like effects", UniqueTarget.Unit),
-    CanUpgrade("Can upgrade to [baseUnitFilter]", UniqueTarget.Unit),
+    RuinsUpgrade("May upgrade to [unit] through ruins-like effects", UniqueTarget.Unit),
+    CanUpgrade("Can upgrade to [unit]", UniqueTarget.Unit),
 
     DestroysImprovementUponAttack("Destroys tile improvements when attacking", UniqueTarget.Unit),
 
