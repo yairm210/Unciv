@@ -236,7 +236,7 @@ enum class UniqueType(
     TriggersCulturalVictory("Triggers a Cultural Victory upon completion", UniqueTarget.Global),
 
     /// Misc.
-    MayBuyConstructionsInPuppets("May buy items in puppet cities", UniqueTarget.Global),    
+MayBuyConstructionsInPuppets("May buy items in puppet cities", UniqueTarget.Global),    
     MayNotAnnexCities("May not annex cities", UniqueTarget.Global),
     BorrowsCityNames("\"Borrows\" city names from other civilizations in the game", UniqueTarget.Global),
     CitiesAreRazedXTimesFaster("Cities are razed [amount] times as fast", UniqueTarget.Global),
@@ -447,6 +447,7 @@ enum class UniqueType(
     CanSeeInvisibleUnits("Can see invisible [mapUnitFilter] units", UniqueTarget.Unit),
 
     RuinsUpgrade("May upgrade to [baseUnitFilter] through ruins-like effects", UniqueTarget.Unit),
+    CanUpgrade("Can upgrade to [baseUnitFilter]", UniqueTarget.Unit),
 
     DestroysImprovementUponAttack("Destroys tile improvements when attacking", UniqueTarget.Unit),
 
