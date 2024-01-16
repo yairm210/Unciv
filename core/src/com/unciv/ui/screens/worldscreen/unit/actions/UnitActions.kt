@@ -19,6 +19,7 @@ import com.unciv.ui.screens.pickerscreens.PromotionPickerScreen
  *
  *  API for UI: [getUnitActions], [getActionDefaultPage], [getPagingActions]
  *  API for Automation: [invokeUnitAction]
+ *  API for unit tests: [getGiftAction]
  */
 object UnitActions {
     // Todo some delegated `yieldAll(get...)` might be more efficient as `add...` with a `suspend fun SequenceScope<UnitAction>.add...()` signature
@@ -303,6 +304,11 @@ object UnitActions {
         }
         yield(UnitAction(UnitActionType.GiftUnit, action = giftAction))
     }
+
+    /** This exists exclusively for the unit tests, which cannot call getUnitActions.filter(type==GiftUnit) because some bad boys call GUI.worldScreen */
+    fun getGiftAction(unit: MapUnit, tile: Tile): UnitAction = sequence {
+            addGiftAction(unit, tile)
+        }.first()
 
     private suspend fun SequenceScope<UnitAction>.addAutomateActions(unit: MapUnit) {
         if (unit.isAutomated()) return
