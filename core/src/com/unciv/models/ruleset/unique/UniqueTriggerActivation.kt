@@ -790,7 +790,7 @@ object UniqueTriggerActivation {
             UniqueType.OneTimeUnitUpgrade -> {
                 val upgradeAction = UnitActionsUpgrade.getFreeUpgradeAction(unit)
                 if (upgradeAction.isEmpty()) return false
-                (upgradeAction.minBy { (it as UpgradeUnitAction).unitToUpgradeTo.cost }).action!!()
+                upgradeAction.first().action!!()
                 if (notification != null)
                     unit.civ.addNotification(notification, unit.getTile().position, NotificationCategory.Units)
                 return true
