@@ -674,7 +674,7 @@ class RulesetValidator(val ruleset: Ruleset) {
     }
 
     private fun checkUnitRulesetInvariant(unit: BaseUnit, lines: RulesetErrorList) {
-        for (upgradesTo in unit.upgradeUnits()) {
+        for (upgradesTo in unit.getUpgradeUnits(StateForConditionals.IgnoreConditionals)) {
             if (upgradesTo == unit.name || (upgradesTo != null && upgradesTo == unit.replaces))
                 lines += "${unit.name} upgrades to itself!"
             if (unit.isMilitary() && unit.strength == 0)  // Should only match ranged units with 0 strength
@@ -690,13 +690,13 @@ class RulesetValidator(val ruleset: Ruleset) {
         for (obsoleteTech: String in unit.techsAtWhichNoLongerAvailable())
             if (!ruleset.technologies.containsKey(obsoleteTech))
                 lines += "${unit.name} obsoletes at tech $obsoleteTech which does not exist!"
-        for (upgradesTo in unit.upgradeUnits(StateForConditionals.IgnoreConditionals))
+        for (upgradesTo in unit.getUpgradeUnits(StateForConditionals.IgnoreConditionals))
             if (upgradesTo != null && !ruleset.units.containsKey(upgradesTo))
                 lines += "${unit.name} upgrades to unit $upgradesTo which does not exist!"
 
         // Check that we don't obsolete ourselves before we can upgrade
         for (obsoleteTech: String in unit.techsAtWhichAutoUpgradeInProduction())
-            for (upgradesTo in unit.upgradeUnits())
+            for (upgradesTo in unit.getUpgradeUnits(StateForConditionals.IgnoreConditionals))
                 if (upgradesTo != null && ruleset.units.containsKey(upgradesTo)
                     && ruleset.technologies.containsKey(obsoleteTech)) {
                     val upgradedUnit = ruleset.units[upgradesTo]!!
@@ -777,7 +777,7 @@ class RulesetValidator(val ruleset: Ruleset) {
             return setOf(unit)
         }
         val checkedUnits = HashSet<BaseUnit>()
-        for (upgradeUnit in unit.upgradeUnits(StateForConditionals.IgnoreConditionals)) {
+        for (upgradeUnit in unit.getUpgradeUnits(StateForConditionals.IgnoreConditionals)) {
             val upgrade = ruleset.units[upgradeUnit] ?: continue
             val newPath = path + unit // All Set additions are new Sets - we're recursing!
             val newPathWithReplacements = unitReplacesMap[unit.name]?.let { newPath + it } ?: newPath

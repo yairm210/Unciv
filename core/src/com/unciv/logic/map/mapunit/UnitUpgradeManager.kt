@@ -22,7 +22,7 @@ class UnitUpgradeManager(val unit:MapUnit) {
                 throw(UncivShowableException("Circular or self-referencing upgrade path for ${currentUnit.name}"))
             currentUnit = nextUpgrade
             upgradeList.add(currentUnit)
-            nextUpgrade = currentUnit.upgradeUnits()
+            nextUpgrade = currentUnit.getUpgradeUnits(StateForConditionals(unit.civ, unit = unit))
                 .filter { unit.civ.gameInfo.ruleset.units[it] != null }
                 .map { unit.civ.getEquivalentUnit(it!!) }
                 .minByOrNull { it.cost }
@@ -35,7 +35,7 @@ class UnitUpgradeManager(val unit:MapUnit) {
      */
     // Used from UnitAutomation
     fun getUnitToUpgradeTo(): BaseUnit {
-        val cheapestUnit = unit.baseUnit.upgradeUnits(StateForConditionals(unit.civ, unit = unit))
+        val cheapestUnit = unit.baseUnit.getUpgradeUnits(StateForConditionals(unit.civ, unit = unit))
             .mapNotNull { unit.civ.gameInfo.ruleset.units[it]
                 ?.let { unit -> this.unit.civ.getEquivalentUnit(unit) } }.minBy { it.cost }
         val upgradePath = getUpgradePath(cheapestUnit)
@@ -56,7 +56,7 @@ class UnitUpgradeManager(val unit:MapUnit) {
     }
 
     /** Check whether this unit can upgrade to [unitToUpgradeTo]. This does not check or follow the
-     *  normal upgrade chain defined by [BaseUnit.upgradeUnits]
+     *  normal upgrade chain defined by [BaseUnit.getUpgradeUnits]
      *  @param ignoreRequirements Ignore possible tech/policy/building requirements (e.g. resource requirements still count).
      *          Used for upgrading units via ancient ruins.
      *  @param ignoreResources Ignore resource requirements (tech still counts)

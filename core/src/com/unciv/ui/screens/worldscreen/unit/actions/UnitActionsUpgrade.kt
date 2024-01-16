@@ -30,7 +30,7 @@ object UnitActionsUpgrade {
         val upgradeUnits = if (isSpecial) sequenceOf(
             unit.baseUnit().getMatchingUniques(UniqueType.RuinsUpgrade, StateForConditionals(civInfo, unit= unit))
                 .map { it.params[0] }.firstOrNull()).filterNotNull() // empty the sequence if null
-            else unit.baseUnit.upgradeUnits(StateForConditionals(civInfo, unit = unit))
+            else unit.baseUnit.getUpgradeUnits(StateForConditionals(civInfo, unit = unit))
         if (upgradeUnits.none()) return emptyList() // can't upgrade to anything
         if (!isAnywhere && unitTile.getOwner() != civInfo) return emptyList()
 
