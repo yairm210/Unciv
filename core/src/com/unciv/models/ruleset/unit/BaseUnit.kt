@@ -79,7 +79,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
     override fun getCivilopediaTextLines(ruleset: Ruleset): List<FormattedLine> =
             BaseUnitDescriptions.getCivilopediaTextLines(this, ruleset)
 
-    fun getUpgradeUnits(stateForConditionals: StateForConditionals? = null): Sequence<String?> {
+    fun getUpgradeUnits(stateForConditionals: StateForConditionals? = null): Sequence<String> {
         return sequence {
             yieldIfNotNull(upgradesTo)
             for (unique in getMatchingUniques(UniqueType.CanUpgrade, stateForConditionals))

@@ -36,7 +36,6 @@ object UnitActionsUpgrade {
 
         var upgradeActions = emptySequence<UnitAction>()
         for (upgradesTo in upgradeUnits){
-            if (upgradesTo == null) continue
             val upgradedUnit = civInfo.getEquivalentUnit(upgradesTo)
 
             if (!unit.upgrade.canUpgrade(unitToUpgradeTo = upgradedUnit, ignoreRequirements = isFree, ignoreResources = true))

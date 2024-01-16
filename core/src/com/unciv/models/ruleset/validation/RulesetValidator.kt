@@ -675,7 +675,7 @@ class RulesetValidator(val ruleset: Ruleset) {
 
     private fun checkUnitRulesetInvariant(unit: BaseUnit, lines: RulesetErrorList) {
         for (upgradesTo in unit.getUpgradeUnits(StateForConditionals.IgnoreConditionals)) {
-            if (upgradesTo == unit.name || (upgradesTo != null && upgradesTo == unit.replaces))
+            if (upgradesTo == unit.name || (upgradesTo == unit.replaces))
                 lines += "${unit.name} upgrades to itself!"
             if (unit.isMilitary() && unit.strength == 0)  // Should only match ranged units with 0 strength
                 lines += "${unit.name} is a military unit but has no assigned strength!"
@@ -691,7 +691,7 @@ class RulesetValidator(val ruleset: Ruleset) {
             if (!ruleset.technologies.containsKey(obsoleteTech))
                 lines += "${unit.name} obsoletes at tech $obsoleteTech which does not exist!"
         for (upgradesTo in unit.getUpgradeUnits(StateForConditionals.IgnoreConditionals))
-            if (upgradesTo != null && !ruleset.units.containsKey(upgradesTo))
+            if (!ruleset.units.containsKey(upgradesTo))
                 lines += "${unit.name} upgrades to unit $upgradesTo which does not exist!"
 
         // Check that we don't obsolete ourselves before we can upgrade
