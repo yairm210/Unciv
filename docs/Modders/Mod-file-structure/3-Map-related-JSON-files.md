@@ -10,8 +10,8 @@ Each terrain entry has the following structure:
 
 | Attribute | Type | Default | Notes |
 | --------- | ---- | ------- | ----- |
-| name | String | Required | |
-| type | Enum | Required | Land, Water, TerrainFeature, NaturalWonder |
+| name | String | Required | [^A] |
+| type | Enum | Required | Land, Water, TerrainFeature, NaturalWonder [^B] |
 | occursOn | List of Strings | none | Only for terrain features and Natural Wonders: The baseTerrain it can be placed on |
 | turnsInto | String | none | Only for NaturalWonder: the base terrain is changed to this after placing the Natural Wonder |
 | weight | Integer | 10 | Only for NaturalWonder: _relative_ weight of being picked by the map generator |
@@ -24,6 +24,11 @@ Each terrain entry has the following structure:
 | RGB | [List of 3× Integer](5-Miscellaneous-JSON-files.md#rgb-colors-list) | Gold | RGB color for 'Default' tileset display |
 | uniques | List of Strings | empty | List of [unique abilities](../uniques) this terrain has |
 | civilopediaText | List | empty | See [civilopediaText chapter](5-Miscellaneous-JSON-files.md#civilopedia-text) |
+
+[^A]: Some names have special meanings. `Grassland` is used as fallback in some cases - e.g. Civilopedia prefers to displays a TerrainFeature on top of it, unless `occursOn` is not empty and does not contain it.
+      `River` is hardcoded to be used to look up a [Stats](../uniques.md#global-uniques) unique to determine the bonuses an actual River provides (remember, rivers live on the edges not as terrain).
+      River should always be a TerrainFeature and have the same uniques the one in the vanilla rulesets has - if you change that, expect surprises.
+[^B]: A base ruleset mod is always expected to provide at least one Land and at least one Water terrain. We do not support Land-only or Water-only mods, even if they might be possible to pull off.
 
 ## TileImprovements.json
 
