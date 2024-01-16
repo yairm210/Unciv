@@ -16,6 +16,9 @@ class UnitUpgradeManager(val unit:MapUnit) {
     private fun getUpgradePath(upgradeUnit: BaseUnit?): Iterable<BaseUnit> {
         var currentUnit = unit.baseUnit
         val upgradeList = linkedSetOf<BaseUnit>()
+        if (upgradeUnit == null ||
+            upgradeUnit.name !in currentUnit.getUpgradeUnits(StateForConditionals(unit.civ, unit = unit)))
+            return upgradeList
         var nextUpgrade = if (upgradeUnit != null ) unit.civ.getEquivalentUnit(upgradeUnit) else null
         while (nextUpgrade != null) {
             if (nextUpgrade in upgradeList)
