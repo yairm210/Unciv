@@ -759,7 +759,7 @@ class RulesetValidator(val ruleset: Ruleset) {
 
     /** Checks all possible upgrade paths of [unit], reporting to [lines].
      *  @param path used in recursion collecting the BaseUnits seen so far
-*  @return units checked in this session - includes all units in this tree
+     *  @return units checked in this session - includes all units in this tree
      *
      *  Note: Since the units down the path will also be checked, this could log the same mistakes
      *  repeatedly, but that is mostly prevented by RulesetErrorList.add(). Each unit involved in a
@@ -777,8 +777,7 @@ class RulesetValidator(val ruleset: Ruleset) {
             return setOf(unit)
         }
         val checkedUnits = HashSet<BaseUnit>()
-        for (upgradeUnit in unit.upgradeUnits(StateForConditionals.IgnoreConditionals))
-        {
+        for (upgradeUnit in unit.upgradeUnits(StateForConditionals.IgnoreConditionals)) {
             val upgrade = ruleset.units[upgradeUnit] ?: continue
             val newPath = path + unit // All Set additions are new Sets - we're recursing!
             val newPathWithReplacements = unitReplacesMap[unit.name]?.let { newPath + it } ?: newPath

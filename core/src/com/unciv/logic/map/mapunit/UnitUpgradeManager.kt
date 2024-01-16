@@ -10,7 +10,8 @@ import kotlin.math.pow
 
 class UnitUpgradeManager(val unit:MapUnit) {
 
-    /** Returns FULL upgrade path, without checking what we can or cannot build currently.
+    /** Returns the cheapest FULL upgrade path starting from [upgradeUnit],
+     * Does not check what we can or cannot build currently.
      * Does not contain current baseunit, so will be empty if no upgrades. */
     private fun getUpgradePath(upgradeUnit: BaseUnit?): Iterable<BaseUnit> {
         var currentUnit = unit.baseUnit
@@ -32,7 +33,7 @@ class UnitUpgradeManager(val unit:MapUnit) {
     /** Get the base unit this map unit could upgrade to, respecting researched tech and nation uniques only.
      *  Note that if the unit can't upgrade, the current BaseUnit is returned.
      */
-    // Used from UnitAutomation, UI action, canUpgrade
+    // Used from UnitAutomation
     fun getUnitToUpgradeTo(): BaseUnit {
         val cheapestUnit = unit.baseUnit.upgradeUnits(StateForConditionals(unit.civ, unit = unit))
             .mapNotNull { unit.civ.gameInfo.ruleset.units[it]
@@ -55,7 +56,7 @@ class UnitUpgradeManager(val unit:MapUnit) {
     }
 
     /** Check whether this unit can upgrade to [unitToUpgradeTo]. This does not check or follow the
-     *  normal upgrade chain defined by [BaseUnit.upgradeUnits], unless [unitToUpgradeTo] is left at default.
+     *  normal upgrade chain defined by [BaseUnit.upgradeUnits]
      *  @param ignoreRequirements Ignore possible tech/policy/building requirements (e.g. resource requirements still count).
      *          Used for upgrading units via ancient ruins.
      *  @param ignoreResources Ignore resource requirements (tech still counts)
