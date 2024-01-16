@@ -80,7 +80,7 @@ object UnitActions {
             }
 
         actionList += getPromoteActions(unit, unit.currentTile)
-        actionList += UnitActionsUpgrade.getUnitUpgradeActions(unit, unit.currentTile)
+        actionList += UnitActionsUpgrade.getUpgradeActions(unit)
         actionList += UnitActionsPillage.getPillageActions(unit, unit.currentTile)
 
         actionList += getSleepActions(unit, tile)
