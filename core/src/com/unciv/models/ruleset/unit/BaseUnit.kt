@@ -82,7 +82,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
     fun getUpgradeUnits(stateForConditionals: StateForConditionals? = null): Sequence<String?> {
         return sequence {
             for (unique in getMatchingUniques(UniqueType.CanUpgrade, stateForConditionals))
-                yieldIfNotNull(unique.params[0])
+                yield(unique.params[0])
             yieldIfNotNull(upgradesTo)
         }
     }
