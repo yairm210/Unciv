@@ -696,17 +696,17 @@ class RulesetValidator(val ruleset: Ruleset) {
 
         // Check that we don't obsolete ourselves before we can upgrade
         for (obsoleteTech: String in unit.techsAtWhichAutoUpgradeInProduction())
-            for (upgradesTo in unit.getUpgradeUnits(StateForConditionals.IgnoreConditionals))
-                if (upgradesTo != null && ruleset.units.containsKey(upgradesTo)
-                    && ruleset.technologies.containsKey(obsoleteTech)) {
-                    val upgradedUnit = ruleset.units[upgradesTo]!!
-                    for (requiredTech: String in upgradedUnit.requiredTechs())
-                        if (requiredTech != obsoleteTech && !getPrereqTree(obsoleteTech).contains(requiredTech))
-                            lines.add(
-                                "${unit.name} is supposed to automatically upgrade at tech ${obsoleteTech}," +
-                                    " and therefore $requiredTech for its upgrade ${upgradedUnit.name} may not yet be researched!",
-                                RulesetErrorSeverity.Warning
-                            )
+            for (upgradesTo in unit.getUpgradeUnits(StateForConditionals.IgnoreConditionals)) {
+                if (!ruleset.units.containsKey(upgradesTo)) continue
+                if (!ruleset.technologies.containsKey(obsoleteTech)) continue
+                val upgradedUnit = ruleset.units[upgradesTo]!!
+                for (requiredTech: String in upgradedUnit.requiredTechs())
+                    if (requiredTech != obsoleteTech && !getPrereqTree(obsoleteTech).contains(requiredTech))
+                        lines.add(
+                            "${unit.name} is supposed to automatically upgrade at tech ${obsoleteTech}," +
+                                " and therefore $requiredTech for its upgrade ${upgradedUnit.name} may not yet be researched!",
+                            RulesetErrorSeverity.Warning
+                        )
             }
 
         for (resource in unit.getResourceRequirementsPerTurn(StateForConditionals.IgnoreConditionals).keys)
