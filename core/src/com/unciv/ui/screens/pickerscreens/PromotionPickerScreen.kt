@@ -16,11 +16,15 @@ import com.unciv.models.translations.tr
 import com.unciv.ui.audio.SoundPlayer
 import com.unciv.ui.components.extensions.isEnabled
 import com.unciv.ui.components.extensions.toTextButton
+import com.unciv.ui.components.input.KeyboardBinding
+import com.unciv.ui.components.input.keyShortcuts
+import com.unciv.ui.components.input.onActivation
 import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.input.onDoubleClick
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.basescreen.RecreateOnResize
+import com.unciv.ui.screens.civilopediascreen.CivilopediaScreen
 import kotlin.math.abs
 
 class PromotionPickerScreen(
@@ -324,6 +328,11 @@ class PromotionPickerScreen(
         }
         val promotionText = node.promotion.getDescription(tree.possiblePromotions)
         descriptionLabel.setText("$topLine\n$promotionText")
+        descriptionLabel.clearListeners()
+        descriptionLabel.onActivation {
+            game.pushScreen(CivilopediaScreen(unit.baseUnit.ruleset, link = node.promotion.makeLink()))
+        }
+        descriptionLabel.keyShortcuts.add(KeyboardBinding.Civilopedia)
     }
 
     override fun recreate() = recreate(closeOnPick)
