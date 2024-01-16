@@ -18,6 +18,7 @@ import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
 import com.unciv.ui.components.extensions.getNeedMoreAmountString
 import com.unciv.ui.components.extensions.toPercent
+import com.unciv.ui.components.extensions.yieldIfNotNull
 import com.unciv.ui.objectdescriptions.BaseUnitDescriptions
 import com.unciv.ui.screens.civilopediascreen.FormattedLine
 import kotlin.math.pow
@@ -77,6 +78,14 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
 
     override fun getCivilopediaTextLines(ruleset: Ruleset): List<FormattedLine> =
             BaseUnitDescriptions.getCivilopediaTextLines(this, ruleset)
+
+    fun upgradeUnits(stateForConditionals: StateForConditionals? = null): Sequence<String?> {
+        return sequence {
+            for (unique in getMatchingUniques(UniqueType.CanUpgrade, stateForConditionals))
+                yieldIfNotNull(unique.params[0])
+            yieldIfNotNull(upgradesTo)
+        }
+    }
 
     fun getMapUnit(civInfo: Civilization): MapUnit {
         val unit = MapUnit()
