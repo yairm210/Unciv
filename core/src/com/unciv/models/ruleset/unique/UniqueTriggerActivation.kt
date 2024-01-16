@@ -789,7 +789,7 @@ object UniqueTriggerActivation {
             }
             UniqueType.OneTimeUnitUpgrade -> {
                 val upgradeAction = UnitActionsUpgrade.getFreeUpgradeAction(unit)
-                if (upgradeAction.none()) return false
+                if (upgradeAction.isEmpty()) return false
                 upgradeAction.first().action!!()
                 if (notification != null)
                     unit.civ.addNotification(notification, unit.getTile().position, NotificationCategory.Units)
@@ -797,7 +797,7 @@ object UniqueTriggerActivation {
             }
             UniqueType.OneTimeUnitSpecialUpgrade -> {
                 val upgradeAction = UnitActionsUpgrade.getAncientRuinsUpgradeAction(unit)
-                if (upgradeAction.none()) return false
+                if (upgradeAction.isEmpty()) return false
                 upgradeAction.first().action!!()
                 if (notification != null)
                     unit.civ.addNotification(notification, unit.getTile().position, NotificationCategory.Units)
