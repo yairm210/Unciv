@@ -496,13 +496,6 @@ class RulesetValidator(val ruleset: Ruleset) {
             checkUnitRulesetSpecific(unit, lines)
             uniqueValidator.checkUniques(unit, lines, false, tryFixUnknownUniques)
         }
-
-        // We start with the units that are further along the tech tree, since they are likely to contain previous units.
-        // This allows us to minimize the double-checking.
-        val checkedUnits = HashSet<BaseUnit>()
-        for (unit in ruleset.units.values.sortedByDescending { it.techColumn(ruleset)?.columnNumber })
-            if (unit !in checkedUnits)
-                checkedUnits += checkUnitUpgradePath(unit, lines)
     }
 
     private fun addResourceErrorsRulesetInvariant(
@@ -745,50 +738,6 @@ class RulesetValidator(val ruleset: Ruleset) {
         if (ruleset.unitTypes.containsKey(type)) return
         if (ruleset.unitTypes.isEmpty() && vanillaRuleset.unitTypes.containsKey(type)) return
         reportError()
-    }
-
-    /** Maps unit name to a set of all units naming it in its "replaces" property,
-     *  only for units having such a non-empty set, for use in [checkUnitUpgradePath] */
-    private val unitReplacesMap: Map<String, Set<BaseUnit>> by lazy {
-        ruleset.units.values.asSequence()
-            .mapNotNull { it.replaces }.distinct()
-            .associateWith { base ->
-                ruleset.units.values.filter { it.replaces == base }.toSet()
-            }
-    }
-
-    /** Checks all possible upgrade paths of [unit], reporting to [lines].
-     *  @param path used in recursion collecting the BaseUnits seen so far
-     *  @return units checked in this session - includes all units in this tree
-     *
-     *  Note: Since the units down the path will also be checked, this could log the same mistakes
-     *  repeatedly, but that is mostly prevented by RulesetErrorList.add(). Each unit involved in a
-     *  loop will still be flagged individually.
-     */
-    private fun checkUnitUpgradePath(
-        unit: BaseUnit,
-        lines: RulesetErrorList,
-        path: Set<BaseUnit> = emptySet()
-    ) : Set<BaseUnit> {
-        // This is similar to UnitUpgradeManager.getUpgradePath but without the dependency on a Civilization instance
-        // It also branches over all possible nation-unique replacements in one go, since we only look for loops.
-        if (unit in path) {
-            lines += "Circular or self-referencing upgrade path for ${unit.name}"
-            return setOf(unit)
-        }
-        val checkedUnits = HashSet<BaseUnit>()
-        for (upgradeUnit in unit.getUpgradeUnits(StateForConditionals.IgnoreConditionals)) {
-            val upgrade = ruleset.units[upgradeUnit] ?: continue
-            val newPath = path + unit // All Set additions are new Sets - we're recursing!
-            val newPathWithReplacements = unitReplacesMap[unit.name]?.let { newPath + it } ?: newPath
-            checkUnitUpgradePath(upgrade, lines, newPathWithReplacements)
-            val replacements = unitReplacesMap[upgrade.name] ?: continue
-            for (toCheck in replacements) {
-                checkedUnits += checkUnitUpgradePath(toCheck, lines, newPath)
-            }
-        }
-        if (checkedUnits.isEmpty()) checkedUnits += unit
-        return checkedUnits
     }
 
     private fun checkTilesetSanity(lines: RulesetErrorList) {
