@@ -259,6 +259,7 @@ class UnitOverviewTab(
 
             // Upgrade column
             val unitActions = UnitActionsUpgrade.getUpgradeActionAnywhere(unit)
+            if (unitActions.isEmpty()) add()
             for (unitAction in unitActions){
                 val enable = unitAction.action != null && viewingPlayer.isCurrentPlayer() &&
                     GUI.isAllowedChangeState()
