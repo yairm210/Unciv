@@ -137,9 +137,7 @@ object UnitAutomation {
             // The upgrade requires new resource types, so check if we are willing to invest them
             if (!Automation.allowSpendingResource(unit.civ, upgradedUnit)) return false
         }
-
-        val upgradeAction = UnitActionsUpgrade.getUpgradeActions(unit)
-
+        
         val upgradeActions = UnitActionsUpgrade.getUpgradeActions(unit)
 
         upgradeActions.firstOrNull{ (it as UpgradeUnitAction).unitToUpgradeTo == upgradedUnit }?.action?.invoke() ?: return false
