@@ -22,7 +22,7 @@ import com.unciv.ui.screens.pickerscreens.PromotionPickerScreen
  *  API for unit tests: [getGiftAction]
  */
 object UnitActions {
-    // Todo some delegated `yieldAll(get...)` might be more efficient as `add...` with a `suspend fun SequenceScope<UnitAction>.add...()` signature
+    // Todo actionTypeToFunctions = linkedMapOf<UnitActionType, (unit: MapUnit, tile: Tile) -> Sequence<UnitAction>> - streams better and some already are
     // Todo invokeUnitAction fallback might be more efficient if it could ask getUnitActions to skip the actionTypeToFunctions-mapped ones
     //      - or enumerate them last, as in that case we can expect that to never be reached.
     //      But - ordering in the UI? Maybe make defaultPage a float and use fractions for sorting?
@@ -52,7 +52,7 @@ object UnitActions {
     fun getActionDefaultPage(unit: MapUnit, unitActionType: UnitActionType) =
         actionTypeToPageGetter[unitActionType]?.invoke(unit) ?: unitActionType.defaultPage
 
-    private val actionTypeToFunctions = linkedMapOf<UnitActionType, (unit: MapUnit, tile: Tile) -> Iterable<UnitAction>>(
+    private val actionTypeToFunctions = linkedMapOf<UnitActionType, (unit: MapUnit, tile: Tile) -> Sequence<UnitAction>>(
         // Determined by unit uniques
         UnitActionType.Transform to UnitActionsFromUniques::getTransformActions,
         UnitActionType.Paradrop to UnitActionsFromUniques::getParadropActions,
@@ -70,7 +70,7 @@ object UnitActions {
         UnitActionType.FoundReligion to UnitActionsReligion::getFoundReligionActions,
         UnitActionType.EnhanceReligion to UnitActionsReligion::getEnhanceReligionActions,
         UnitActionType.CreateImprovement to UnitActionsFromUniques::getImprovementCreationActions,
-        UnitActionType.SpreadReligion to UnitActionsReligion::addSpreadReligionActions,
+        UnitActionType.SpreadReligion to UnitActionsReligion::getSpreadReligionActions,
         UnitActionType.RemoveHeresy to UnitActionsReligion::getRemoveHeresyActions,
         UnitActionType.TriggerUnique to UnitActionsFromUniques::getTriggerUniqueActions,
         UnitActionType.AddInCapital to UnitActionsFromUniques::getAddInCapitalActions
