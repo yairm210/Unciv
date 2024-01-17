@@ -94,9 +94,10 @@ class UnitUpgradeMenu(
     private fun doAllUpgrade() {
         SoundPlayer.playRepeated(unitAction.uncivSound)
         for (unit in allUpgradableUnits) {
-            val otherActions = UnitActionsUpgrade.getUpgradeActions(unit)
-            otherActions.firstOrNull{ (it as UpgradeUnitAction).unitToUpgradeTo == unitToUpgradeTo }
-                ?.action?.invoke()
+            val otherAction = UnitActionsUpgrade.getUpgradeActions(unit)
+                .firstOrNull{ (it as UpgradeUnitAction).unitToUpgradeTo == unitToUpgradeTo && 
+                    it.action != null }
+            otherAction?.action?.invoke()
         }
     }
 }
