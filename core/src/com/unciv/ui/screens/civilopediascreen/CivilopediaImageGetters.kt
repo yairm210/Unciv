@@ -3,7 +3,6 @@ package com.unciv.ui.screens.civilopediascreen
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.ui.Container
-import com.unciv.Constants
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.tile.Terrain
@@ -26,9 +25,8 @@ internal object CivilopediaImageGetters {
     private fun terrainImage(terrain: Terrain, ruleset: Ruleset, imageSize: Float): Actor {
         val tile = Tile()
         tile.ruleset = ruleset
-        val baseTerrainFromOccursOn = Constants.grassland.takeIf { it in terrain.occursOn && it in ruleset.terrains }
-            ?: terrain.occursOn.lastOrNull()
-            ?: Constants.grassland.takeIf { it in ruleset.terrains }
+        val baseTerrainFromOccursOn =
+            terrain.occursOn.mapNotNull { ruleset.terrains[it] }.lastOrNull { it.type.isBaseTerrain }?.name
             ?: ruleset.terrains.values.firstOrNull { it.type == TerrainType.Land }?.name
             ?: ruleset.terrains.keys.first()
         when (terrain.type) {
