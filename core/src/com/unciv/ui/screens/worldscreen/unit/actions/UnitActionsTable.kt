@@ -22,6 +22,7 @@ class UnitActionsTable(val worldScreen: WorldScreen) : Table() {
     private var currentPage = 0
     private var buttonsPerPage = Int.MAX_VALUE
     private var numPages = 2
+    private var shownForUnitHash = 0
 
     companion object {
         /** Maximum for how many pages there can be. ([minButtonsPerPage]-2)*[maxAllowedPages]
@@ -51,6 +52,12 @@ class UnitActionsTable(val worldScreen: WorldScreen) : Table() {
     }
 
     fun update(unit: MapUnit?) {
+        val newUnitHash = unit?.hashCode() ?: 0
+        if (shownForUnitHash != newUnitHash) {
+            currentPage = 0
+            shownForUnitHash = newUnitHash
+        }
+
         clear()
         if (unit == null) return
         if (!worldScreen.canChangeState) return // No actions when it's not your turn or spectator!
