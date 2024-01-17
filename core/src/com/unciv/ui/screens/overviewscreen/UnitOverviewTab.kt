@@ -258,8 +258,9 @@ class UnitOverviewTab(
             add(promotionsTable)
 
             // Upgrade column
+            val upgradeTable = Table()
             val unitActions = UnitActionsUpgrade.getUpgradeActionAnywhere(unit)
-            if (unitActions.isEmpty()) add()
+            if (unitActions.isEmpty()) upgradeTable.add()
             for (unitAction in unitActions){
                 val enable = unitAction.action != null && viewingPlayer.isCurrentPlayer() &&
                     GUI.isAllowedChangeState()
@@ -273,8 +274,9 @@ class UnitOverviewTab(
                         select(selectKey)
                     }
                 }
-                add(upgradeIcon).size(28f)
+                upgradeTable.add(upgradeIcon).size(28f)
             }
+            add(upgradeTable)
             // Numeric health column - there's already a health bar on the button, but...?
             if (unit.health < 100) add(unit.health.toLabel()) else add()
             row()
