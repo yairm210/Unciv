@@ -104,24 +104,15 @@ class UnitUpgradeManager(val unit:MapUnit) {
         for (unique in unit.civ.getMatchingUniques(UniqueType.UnitUpgradeCost, stateForConditionals))
             civModifier *= unique.params[0].toPercent()
 
-        val upgradePath = getUpgradePath(unitToUpgradeTo)
-        var currentUnit = unit.baseUnit
-        for (baseUnit in upgradePath) {
-            // do clamping and rounding here so upgrading stepwise costs the same as upgrading far down the chain
-            var stepCost = constants.base
-            stepCost += (constants.perProduction * (baseUnit.cost - currentUnit.cost)).coerceAtLeast(0f)
-            val era = baseUnit.era(ruleset)
-            if (era != null)
-                stepCost *= (1f + era.eraNumber * constants.eraMultiplier)
-            stepCost = (stepCost * civModifier).pow(constants.exponent)
-            stepCost *= unit.civ.gameInfo.speed.modifier
-            goldCostOfUpgrade += (stepCost / constants.roundTo).toInt() * constants.roundTo
-            if (baseUnit == unitToUpgradeTo)
-                break  // stop at requested BaseUnit to upgrade to
-            currentUnit = baseUnit
-        }
-
-
+        var cost = constants.base
+        cost += (constants.perProduction * (unitToUpgradeTo.cost - unit.baseUnit.cost)).coerceAtLeast(0f)
+        val era = unitToUpgradeTo.era(ruleset)
+        if (era != null)
+            cost *= (1f + era.eraNumber * constants.eraMultiplier)
+        cost = (cost * civModifier).pow(constants.exponent)
+        cost *= unit.civ.gameInfo.speed.modifier
+        goldCostOfUpgrade += (cost / constants.roundTo).toInt() * constants.roundTo
+        
         return goldCostOfUpgrade
     }
 
