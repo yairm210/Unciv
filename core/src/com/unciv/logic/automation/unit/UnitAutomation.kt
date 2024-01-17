@@ -2,6 +2,7 @@ package com.unciv.logic.automation.unit
 
 import com.unciv.Constants
 import com.unciv.UncivGame
+import com.unciv.logic.UncivShowableException
 import com.unciv.logic.automation.Automation
 import com.unciv.logic.battle.Battle
 import com.unciv.logic.battle.BattleDamage
@@ -16,6 +17,7 @@ import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.UniqueType
+import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionsPillage
 import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionsUpgrade
 
