@@ -128,7 +128,7 @@ object UnitAutomation {
         if (unit.civ.isHuman() && (!UncivGame.Current.settings.automatedUnitsCanUpgrade
                 || UncivGame.Current.settings.autoPlay.isAutoPlayingAndFullAI())) return false
         if (unit.baseUnit.getUpgradeUnits(StateForConditionals(unit.civ, unit = unit)).none()) return false
-        val upgradedUnit = unit.upgrade.getUnitToUpgradeTo()
+        val upgradedUnit = getUnitToUpgradeTo(unit)
         if (!upgradedUnit.isBuildable(unit.civ)) return false // for resource reasons, usually
 
         if (upgradedUnit.getResourceRequirementsPerTurn(StateForConditionals(unit.civ, unit = unit)).keys.any { !unit.requiresResource(it) }) {
@@ -140,6 +140,52 @@ object UnitAutomation {
 
         upgradeAction.firstOrNull()?.action?.invoke()
         return unit.isDestroyed // a successful upgrade action will destroy this unit
+    }
+
+    /** Get the base unit this map unit could upgrade to, respecting researched tech and nation uniques only.
+     *  Note that if the unit can't upgrade, the current BaseUnit is returned.
+     */
+    // Used from UnitAutomation
+    fun getUnitToUpgradeTo(unit: MapUnit): BaseUnit {
+        val cheapestUnit = unit.baseUnit.getRulesetUpgradeUnits(StateForConditionals(unit.civ, unit = unit))
+            .map { unit.civ.getEquivalentUnit(it) }.minByOrNull { it.cost }
+        val upgradePath = getUpgradePath(unit, cheapestUnit)
+
+        fun isInvalidUpgradeDestination(baseUnit: BaseUnit): Boolean{
+            if (!unit.civ.tech.isResearched(baseUnit))
+                return true
+            return baseUnit.getMatchingUniques(UniqueType.OnlyAvailableWhen, StateForConditionals.IgnoreConditionals).any {
+                !it.conditionalsApply(StateForConditionals(unit.civ, unit = unit ))
+            }
+        }
+
+        for (baseUnit in upgradePath.reversed()) {
+            if (isInvalidUpgradeDestination(baseUnit)) continue
+            return baseUnit
+        }
+        return unit.baseUnit
+    }
+
+    /** Returns the cheapest FULL upgrade path starting from [upgradeUnit],
+     * Does not check what we can or cannot build currently.
+     * Does not contain current baseunit, so will be empty if no upgrades. */
+    private fun getUpgradePath(unit: MapUnit, upgradeUnit: BaseUnit?): Iterable<BaseUnit> {
+        var currentUnit = unit.baseUnit
+        val upgradeList = linkedSetOf<BaseUnit>()
+        if (upgradeUnit == null ||
+            upgradeUnit.name !in currentUnit.getUpgradeUnits(StateForConditionals(unit.civ, unit = unit)))
+            return upgradeList
+        var nextUpgrade: BaseUnit? = unit.civ.getEquivalentUnit(upgradeUnit)
+        while (nextUpgrade != null) {
+            if (nextUpgrade in upgradeList)
+                throw(UncivShowableException("Circular or self-referencing upgrade path for ${currentUnit.name}"))
+            currentUnit = nextUpgrade
+            upgradeList.add(currentUnit)
+            nextUpgrade = currentUnit.getRulesetUpgradeUnits(StateForConditionals(unit.civ, unit = unit))
+                .map { unit.civ.getEquivalentUnit(it) }
+                .minByOrNull { it.cost }
+        }
+        return upgradeList
     }
 
     fun automateUnitMoves(unit: MapUnit) {

@@ -10,52 +10,6 @@ import kotlin.math.pow
 
 class UnitUpgradeManager(val unit:MapUnit) {
 
-    /** Returns the cheapest FULL upgrade path starting from [upgradeUnit],
-     * Does not check what we can or cannot build currently.
-     * Does not contain current baseunit, so will be empty if no upgrades. */
-    private fun getUpgradePath(upgradeUnit: BaseUnit?): Iterable<BaseUnit> {
-        var currentUnit = unit.baseUnit
-        val upgradeList = linkedSetOf<BaseUnit>()
-        if (upgradeUnit == null ||
-            upgradeUnit.name !in currentUnit.getUpgradeUnits(StateForConditionals(unit.civ, unit = unit)))
-            return upgradeList
-        var nextUpgrade = if (upgradeUnit != null ) unit.civ.getEquivalentUnit(upgradeUnit) else null
-        while (nextUpgrade != null) {
-            if (nextUpgrade in upgradeList)
-                throw(UncivShowableException("Circular or self-referencing upgrade path for ${currentUnit.name}"))
-            currentUnit = nextUpgrade
-            upgradeList.add(currentUnit)
-            nextUpgrade = currentUnit.getRulesetUpgradeUnits(StateForConditionals(unit.civ, unit = unit))
-                .map { unit.civ.getEquivalentUnit(it) }
-                .minByOrNull { it.cost }
-        }
-        return upgradeList
-    }
-
-    /** Get the base unit this map unit could upgrade to, respecting researched tech and nation uniques only.
-     *  Note that if the unit can't upgrade, the current BaseUnit is returned.
-     */
-    // Used from UnitAutomation
-    fun getUnitToUpgradeTo(): BaseUnit {
-        val cheapestUnit = unit.baseUnit.getRulesetUpgradeUnits(StateForConditionals(unit.civ, unit = unit))
-            .map { unit.civ.getEquivalentUnit(it) }.minByOrNull { it.cost }
-        val upgradePath = getUpgradePath(cheapestUnit)
-
-        fun isInvalidUpgradeDestination(baseUnit: BaseUnit): Boolean{
-            if (!unit.civ.tech.isResearched(baseUnit))
-                return true
-            return baseUnit.getMatchingUniques(UniqueType.OnlyAvailableWhen, StateForConditionals.IgnoreConditionals).any {
-                !it.conditionalsApply(StateForConditionals(unit.civ, unit = unit ))
-            }
-        }
-
-        for (baseUnit in upgradePath.reversed()) {
-            if (isInvalidUpgradeDestination(baseUnit)) continue
-            return baseUnit
-        }
-        return unit.baseUnit
-    }
-
     /** Check whether this unit can upgrade to [unitToUpgradeTo]. This does not check or follow the
      *  normal upgrade chain defined by [BaseUnit.getUpgradeUnits]
      *  @param ignoreRequirements Ignore possible tech/policy/building requirements (e.g. resource requirements still count).
