@@ -677,9 +677,9 @@ class RulesetValidator(val ruleset: Ruleset) {
         for (upgradesTo in unit.getUpgradeUnits(StateForConditionals.IgnoreConditionals)) {
             if (upgradesTo == unit.name || (upgradesTo == unit.replaces))
                 lines += "${unit.name} upgrades to itself!"
-            if (unit.isMilitary() && unit.strength == 0)  // Should only match ranged units with 0 strength
-                lines += "${unit.name} is a military unit but has no assigned strength!"
         }
+        if (unit.isMilitary() && unit.strength == 0)  // Should only match ranged units with 0 strength
+            lines += "${unit.name} is a military unit but has no assigned strength!"
     }
 
     /** Collects all RulesetSpecific checks for a BaseUnit */
