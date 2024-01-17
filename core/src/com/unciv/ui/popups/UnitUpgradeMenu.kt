@@ -5,7 +5,6 @@ import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.models.UpgradeUnitAction
-import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.ui.audio.SoundPlayer
 import com.unciv.ui.components.extensions.pad
 import com.unciv.ui.components.input.KeyboardBinding
@@ -19,7 +18,6 @@ import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionsUpgrade
  *  @param stage The stage this will be shown on, passed to Popup and used for clamping **`position`**
  *  @param position stage coordinates to show this centered over - clamped so that nothing is clipped outside the [stage]
  *  @param unit Who is ready to upgrade?
- *  @param unitToUpgradeTo The unit this is being upgraded to
  *  @param unitAction Holds pre-calculated info like cost or resource requirements. Its action is mapped to the Upgrade button.
  *  @param callbackAfterAnimation If true the following will be delayed until the Popup is actually closed (Stage.hasOpenPopups returns false).
  *  @param onButtonClicked A callback after one or several upgrades have been performed (and the menu is about to close)
@@ -34,11 +32,12 @@ class UnitUpgradeMenu(
     stage: Stage,
     positionNextTo: Actor,
     private val unit: MapUnit,
-    private val unitToUpgradeTo: BaseUnit,
     private val unitAction: UpgradeUnitAction,
     private val callbackAfterAnimation: Boolean = false,
     private val onButtonClicked: () -> Unit
 ) : AnimatedMenuPopup(stage, getActorTopRight(positionNextTo)) {
+
+    private val unitToUpgradeTo by lazy { unitAction.unitToUpgradeTo }
 
     private val allUpgradableUnits: Sequence<MapUnit> by lazy {
         unit.civ.units.getCivUnits()
