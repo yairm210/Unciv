@@ -131,7 +131,7 @@ object UnitAutomation {
                 || UncivGame.Current.settings.autoPlay.isAutoPlayingAndFullAI())) return false
         if (unit.baseUnit.getUpgradeUnits(StateForConditionals(unit.civ, unit = unit)).none()) return false
         val upgradedUnit = getUnitToUpgradeTo(unit)
-        if (!upgradedUnit.isBuildable(unit.civ)) return false // for resource reasons, usually
+        if (upgradedUnit.getRejectionReasons(unit.civ).any { it.isConstructionRejection() }) return false // for resource reasons, usually
 
         if (upgradedUnit.getResourceRequirementsPerTurn(StateForConditionals(unit.civ, unit = unit)).keys.any { !unit.requiresResource(it) }) {
             // The upgrade requires new resource types, so check if we are willing to invest them
