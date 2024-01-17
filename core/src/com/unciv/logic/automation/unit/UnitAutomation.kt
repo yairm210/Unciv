@@ -140,7 +140,9 @@ object UnitAutomation {
 
         val upgradeAction = UnitActionsUpgrade.getUpgradeActions(unit)
 
-        upgradeAction.firstOrNull()?.action?.invoke()
+        val upgradeActions = UnitActionsUpgrade.getUpgradeActions(unit)
+
+        upgradeActions.firstOrNull{ (it as UpgradeUnitAction).unitToUpgradeTo == upgradedUnit }?.action?.invoke() ?: return false
         return unit.isDestroyed // a successful upgrade action will destroy this unit
     }
 
