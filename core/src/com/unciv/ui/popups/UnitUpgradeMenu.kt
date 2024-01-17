@@ -19,7 +19,8 @@ import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionsUpgrade
  *  @param stage The stage this will be shown on, passed to Popup and used for clamping **`position`**
  *  @param position stage coordinates to show this centered over - clamped so that nothing is clipped outside the [stage]
  *  @param unit Who is ready to upgrade?
- *  @param unitAction Holds pre-calculated info like unitToUpgradeTo, cost or resource requirements. Its action is mapped to the Upgrade button.
+ *  @param unitToUpgradeTo The unit this is being upgraded to
+ *  @param unitAction Holds pre-calculated info like cost or resource requirements. Its action is mapped to the Upgrade button.
  *  @param callbackAfterAnimation If true the following will be delayed until the Popup is actually closed (Stage.hasOpenPopups returns false).
  *  @param onButtonClicked A callback after one or several upgrades have been performed (and the menu is about to close)
  */
