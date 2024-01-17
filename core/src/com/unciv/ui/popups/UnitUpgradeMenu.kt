@@ -5,6 +5,7 @@ import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.models.UpgradeUnitAction
+import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.ui.audio.SoundPlayer
 import com.unciv.ui.components.extensions.pad
 import com.unciv.ui.components.input.KeyboardBinding
@@ -32,6 +33,7 @@ class UnitUpgradeMenu(
     stage: Stage,
     positionNextTo: Actor,
     private val unit: MapUnit,
+    private val unitToUpgradeTo: BaseUnit,
     private val unitAction: UpgradeUnitAction,
     private val callbackAfterAnimation: Boolean = false,
     private val onButtonClicked: () -> Unit
@@ -44,7 +46,7 @@ class UnitUpgradeMenu(
                     && it.currentMovement > 0f
                     && it.currentTile.getOwner() == unit.civ
                     && !it.isEmbarked()
-                    && it.upgrade.canUpgrade(unitAction.unitToUpgradeTo, ignoreResources = true)
+                    && it.upgrade.canUpgrade(unitToUpgradeTo, ignoreResources = true)
             }
     }
 
@@ -58,7 +60,7 @@ class UnitUpgradeMenu(
 
     override fun createContentTable(): Table {
         val newInnerTable = BaseUnitDescriptions.getUpgradeInfoTable(
-            unitAction.title, unit.baseUnit, unitAction.unitToUpgradeTo
+            unitAction.title, unit.baseUnit, unitToUpgradeTo
         )
         newInnerTable.row()
         newInnerTable.add(getButton("Upgrade", KeyboardBinding.Upgrade, ::doUpgrade))
@@ -92,8 +94,9 @@ class UnitUpgradeMenu(
     private fun doAllUpgrade() {
         SoundPlayer.playRepeated(unitAction.uncivSound)
         for (unit in allUpgradableUnits) {
-            val otherAction = UnitActionsUpgrade.getUpgradeActions(unit)
-            otherAction.firstOrNull()?.action?.invoke()
+            val otherActions = UnitActionsUpgrade.getUpgradeActions(unit)
+            otherActions.firstOrNull{ (it as UpgradeUnitAction).unitToUpgradeTo == unitToUpgradeTo }
+                ?.action?.invoke()
         }
     }
 }
