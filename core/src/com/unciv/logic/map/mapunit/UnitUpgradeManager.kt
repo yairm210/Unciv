@@ -26,7 +26,9 @@ class UnitUpgradeManager(val unit:MapUnit) {
 
         val rejectionReasons = unitToUpgradeTo.getRejectionReasons(unit.civ, additionalResources = unit.getResourceRequirementsPerTurn())
 
-        var relevantRejectionReasons = rejectionReasons.filterNot { it.isConstructionRejection() }
+        var relevantRejectionReasons = rejectionReasons.filterNot { 
+            it.isConstructionRejection() || it.type == RejectionReasonType.Obsoleted
+        }
         if (ignoreRequirements)
             relevantRejectionReasons = relevantRejectionReasons.filterNot { it.techPolicyEraWonderRequirements() }
         if (ignoreResources)
