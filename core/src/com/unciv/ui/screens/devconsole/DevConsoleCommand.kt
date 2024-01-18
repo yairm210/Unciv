@@ -142,11 +142,24 @@ class ConsoleUnitCommands : ConsoleCommandNode {
             DevConsoleResponse.OK
         },
 
-        "setmovement" to ConsoleAction("unit setmovement <amount>") { console, params ->
-            val movement = params[0].toFloatOrNull()
-            if (movement == null || movement < 0) throw ConsoleErrorException("Invalid number")
+        "setmovement" to ConsoleAction("unit setmovement [amount]") { console, params ->
+            // Note amount defaults to maxMovement, but is not limited by it - it's an arbitrary choice to allow that
             val unit = console.getSelectedUnit()
+            val movement = params.firstOrNull()?.run {
+                toFloatOrNull() ?: throw ConsoleErrorException("Invalid number")
+            } ?: unit.getMaxMovement().toFloat()
+            if (movement < 0f) throw ConsoleErrorException("Number out of range")
             unit.currentMovement = movement
+            DevConsoleResponse.OK
+        },
+
+        "sethealth" to ConsoleAction("unit sethealth [amount]") { console, params ->
+            val health = params.firstOrNull()?.run {
+                toIntOrNull() ?: throw ConsoleErrorException("Invalid number")
+            } ?: 100
+            if (health !in 1..100) throw ConsoleErrorException("Number out of range")
+            val unit = console.getSelectedUnit()
+            unit.health = health
             DevConsoleResponse.OK
         }
     )
@@ -208,6 +221,17 @@ class ConsoleCityCommands : ConsoleCommandNode {
             val pressure = console.getInt(params[1])
             city.religion.addPressure(religion, pressure.coerceAtLeast(-city.religion.getPressures()[religion]))
             city.religion.updatePressureOnPopulationChange(0)
+            DevConsoleResponse.OK
+        },
+
+        "sethealth" to ConsoleAction("city sethealth [amount]") { console, params ->
+            val city = console.getSelectedCity()
+            val maxHealth = city.getMaxHealth()
+            val health = params.firstOrNull()?.run {
+                toIntOrNull() ?: throw ConsoleErrorException("Invalid number")
+            } ?: maxHealth
+            if (health !in 1..maxHealth) throw ConsoleErrorException("Number out of range")
+            city.health = health
             DevConsoleResponse.OK
         },
     )
