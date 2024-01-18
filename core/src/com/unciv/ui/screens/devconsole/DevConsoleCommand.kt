@@ -132,7 +132,7 @@ class ConsoleUnitCommands : ConsoleCommandNode {
             DevConsoleResponse.OK
         },
 
-        "remove" to ConsoleAction("unit remove") { console, params ->
+        "remove" to ConsoleAction("unit remove") { console, _ ->
             val unit = console.getSelectedUnit()
             unit.destroy()
             DevConsoleResponse.OK
@@ -200,7 +200,7 @@ class ConsoleCityCommands : ConsoleCommandNode {
             DevConsoleResponse.OK
         },
 
-        "remove" to ConsoleAction("city remove") { console, params ->
+        "remove" to ConsoleAction("city remove") { console, _ ->
             val city = console.getSelectedCity()
             city.destroyCity(overrideSafeties = true)
             DevConsoleResponse.OK
@@ -230,7 +230,7 @@ class ConsoleCityCommands : ConsoleCommandNode {
             DevConsoleResponse.OK
         },
 
-        "removetile" to ConsoleAction("city removetile") { console, params ->
+        "removetile" to ConsoleAction("city removetile") { console, _ ->
             val selectedTile = console.getSelectedTile()
             val city = console.getSelectedCity()
             city.expansion.relinquishOwnership(selectedTile)
@@ -275,13 +275,13 @@ class ConsoleTileCommands: ConsoleCommandNode {
             DevConsoleResponse.OK
         },
 
-        "removeimprovement" to ConsoleAction("tile removeimprovement") { console, params ->
+        "removeimprovement" to ConsoleAction("tile removeimprovement") { console, _ ->
             val selectedTile = console.getSelectedTile()
             selectedTile.improvementFunctions.changeImprovement(null)
             DevConsoleResponse.OK
         },
 
-        "removeroad" to ConsoleAction("tile removeroad") { console, params ->
+        "removeroad" to ConsoleAction("tile removeroad") { console, _ ->
             val selectedTile = console.getSelectedTile()
             selectedTile.roadStatus = RoadStatus.None
             DevConsoleResponse.OK
