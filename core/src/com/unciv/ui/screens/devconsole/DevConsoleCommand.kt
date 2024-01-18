@@ -3,12 +3,23 @@ package com.unciv.ui.screens.devconsole
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.map.tile.RoadStatus
+import com.unciv.models.ruleset.IRulesetObject
 import com.unciv.models.ruleset.tile.TerrainType
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.stats.Stat
 
 internal fun String.toCliInput() = this.lowercase().replace(" ","-")
+
+private fun Iterable<String>.findCliInput(param: String): String? {
+    val paramCli = param.toCliInput()
+    return firstOrNull { it.toCliInput() == paramCli }
+}
+private fun <T: IRulesetObject> Iterable<T>.findCliInput(param: String): T? {
+    val paramCli = param.toCliInput()
+    return firstOrNull { it.name.toCliInput() == paramCli }
+}
+private fun <T: IRulesetObject> Sequence<T>.findCliInput(param: String) = asIterable().findCliInput(param)
 
 /** Returns the string to *add* to the existing command */
 fun getAutocompleteString(lastWord: String, allOptions: Collection<String>):String? {
@@ -31,8 +42,8 @@ interface ConsoleCommand {
     fun autocomplete(console: DevConsolePopup, params: List<String>): String? = ""
 }
 
-class ConsoleHintException(val hint:String):Exception()
-class ConsoleErrorException(val error:String):Exception()
+class ConsoleHintException(val hint: String) : Exception()
+class ConsoleErrorException(val error: String) : Exception()
 
 class ConsoleAction(val format: String, val action: (console: DevConsolePopup, params: List<String>) -> DevConsoleResponse) : ConsoleCommand {
     override fun handle(console: DevConsolePopup, params: List<String>): DevConsoleResponse {
@@ -111,7 +122,7 @@ class ConsoleUnitCommands : ConsoleCommandNode {
         "add" to ConsoleAction("unit add <civName> <unitName>") { console, params ->
             val selectedTile = console.getSelectedTile()
             val civ = console.getCivByName(params[0])
-            val baseUnit = console.gameInfo.ruleset.units.values.firstOrNull { it.name.toCliInput() == params[1].toCliInput() }
+            val baseUnit = console.gameInfo.ruleset.units.values.findCliInput(params[1])
                 ?: throw ConsoleErrorException("Unknown unit")
             civ.units.placeUnitNearTile(selectedTile.position, baseUnit)
             DevConsoleResponse.OK
@@ -125,7 +136,7 @@ class ConsoleUnitCommands : ConsoleCommandNode {
 
         "addpromotion" to ConsoleAction("unit addpromotion <promotionName>") { console, params ->
             val unit = console.getSelectedUnit()
-            val promotion = console.gameInfo.ruleset.unitPromotions.values.firstOrNull { it.name.toCliInput() == params[0] }
+            val promotion = console.gameInfo.ruleset.unitPromotions.values.findCliInput(params[0])
                 ?: throw ConsoleErrorException("Unknown promotion")
             unit.promotions.addPromotion(promotion.name, true)
             DevConsoleResponse.OK
@@ -133,7 +144,7 @@ class ConsoleUnitCommands : ConsoleCommandNode {
 
         "removepromotion" to ConsoleAction("unit removepromotion <promotionName>") { console, params ->
             val unit = console.getSelectedUnit()
-            val promotion = unit.promotions.getPromotions().firstOrNull { it.name.toCliInput() == params[0] }
+            val promotion = unit.promotions.getPromotions().findCliInput(params[0])
                 ?: throw ConsoleErrorException("Promotion not found on unit")
             // No such action in-game so we need to manually update
             unit.promotions.promotions.remove(promotion.name)
@@ -216,7 +227,7 @@ class ConsoleCityCommands : ConsoleCommandNode {
 
         "religion" to ConsoleAction("city religion <name> <±pressure>") { console, params ->
             val city = console.getSelectedCity()
-            val religion = city.civ.gameInfo.religions.keys.firstOrNull { it.toCliInput() == params[0] }
+            val religion = city.civ.gameInfo.religions.keys.findCliInput(params[0])
                 ?: throw ConsoleErrorException("'${params[0]}' is not a known religion")
             val pressure = console.getInt(params[1])
             city.religion.addPressure(religion, pressure.coerceAtLeast(-city.religion.getPressures()[religion]))
@@ -242,11 +253,10 @@ class ConsoleTileCommands: ConsoleCommandNode {
 
         "setimprovement" to ConsoleAction("tile setimprovement <improvementName> [civName]") { console, params ->
             val selectedTile = console.getSelectedTile()
-            val improvement = console.gameInfo.ruleset.tileImprovements.values.firstOrNull {
-                it.name.toCliInput() == params[0]
-            } ?: throw ConsoleErrorException("Unknown improvement")
+            val improvement = console.gameInfo.ruleset.tileImprovements.values.findCliInput(params[0])
+                ?: throw ConsoleErrorException("Unknown improvement")
             var civ: Civilization? = null
-            if (params.size == 2){
+            if (params.size == 2) {
                 civ = console.getCivByName(params[1])
             }
             selectedTile.improvementFunctions.changeImprovement(improvement.name, civ)
@@ -267,22 +277,23 @@ class ConsoleTileCommands: ConsoleCommandNode {
 
         "addfeature" to ConsoleAction("tile addfeature <featureName>") { console, params ->
             val selectedTile = console.getSelectedTile()
-            val feature = console.gameInfo.ruleset.terrains.values
-                .firstOrNull { it.type == TerrainType.TerrainFeature && it.name.toCliInput() == params[0] }
-                ?: throw ConsoleErrorException("Unknown feature")
+            val feature = getTerrainFeature(console, params[0])
             selectedTile.addTerrainFeature(feature.name)
             DevConsoleResponse.OK
         },
 
         "removefeature" to ConsoleAction("tile addfeature <featureName>") { console, params ->
             val selectedTile = console.getSelectedTile()
-            val feature = console.gameInfo.ruleset.terrains.values
-                .firstOrNull { it.type == TerrainType.TerrainFeature && it.name.toCliInput() == params[0] }
-                ?: throw ConsoleErrorException("Unknown feature")
+            val feature = getTerrainFeature(console, params[0])
             selectedTile.removeTerrainFeature(feature.name)
             DevConsoleResponse.OK
         }
     )
+
+    private fun getTerrainFeature(console: DevConsolePopup, param: String) =
+        console.gameInfo.ruleset.terrains.values.asSequence()
+        .filter { it.type == TerrainType.TerrainFeature }.findCliInput(param)
+        ?: throw ConsoleErrorException("Unknown feature")
 }
 
 class ConsoleCivCommands : ConsoleCommandNode {
