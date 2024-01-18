@@ -22,10 +22,10 @@ private fun <T: IRulesetObject> Iterable<T>.findCliInput(param: String): T? {
 private fun <T: IRulesetObject> Sequence<T>.findCliInput(param: String) = asIterable().findCliInput(param)
 
 /** Returns the string to *add* to the existing command */
-fun getAutocompleteString(lastWord: String, allOptions: Collection<String>):String? {
-    val matchingOptions = allOptions.filter { it.toCliInput().startsWith(lastWord.toCliInput()) }
+fun getAutocompleteString(lastWord: String, allOptions: Collection<String>): String? {
+    val matchingOptions = allOptions.map { it.toCliInput() }.filter { it.startsWith(lastWord.toCliInput()) }
     if (matchingOptions.isEmpty()) return null
-    if (matchingOptions.size == 1) return matchingOptions.first().drop(lastWord.length)
+    if (matchingOptions.size == 1) return matchingOptions.first().drop(lastWord.length) + " "
 
     val firstOption = matchingOptions.first()
     for ((index, char) in firstOption.withIndex()) {
@@ -33,12 +33,15 @@ fun getAutocompleteString(lastWord: String, allOptions: Collection<String>):Stri
             matchingOptions.any { it[index] != char })
             return firstOption.substring(0, index).drop(lastWord.length)
     }
-    return firstOption.drop(lastWord.length)
+    return firstOption.drop(lastWord.length)  // don't add space, e.g. found drill-i and user might want drill-ii
 }
 
 interface ConsoleCommand {
     fun handle(console: DevConsolePopup, params: List<String>): DevConsoleResponse
-    /** Returns the string to *add* to the existing command */
+    /** Returns the string to *add* to the existing command.
+     *  The function should add a space at the end if and only if the "match" is an unambiguous choice!
+     *  Returning `null` means there was no match at all, while returning an empty string means the last word is a match as-is.
+     */
     fun autocomplete(console: DevConsolePopup, params: List<String>): String? = ""
 }
 
