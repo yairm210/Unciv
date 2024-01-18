@@ -77,6 +77,7 @@ class ConsoleAction(val format: String, val action: (console: DevConsolePopup, p
             "improvementName" -> console.gameInfo.ruleset.tileImprovements.keys
             "featureName" -> console.gameInfo.ruleset.terrains.values.filter { it.type == TerrainType.TerrainFeature }.map { it.name }
             "stat" -> Stat.names()
+            "religionName" -> console.gameInfo.religions.keys
             else -> listOf()
         }
         return getAutocompleteString(lastParam, options)
@@ -228,7 +229,7 @@ class ConsoleCityCommands : ConsoleCommandNode {
             DevConsoleResponse.OK
         },
 
-        "religion" to ConsoleAction("city religion <name> <±pressure>") { console, params ->
+        "religion" to ConsoleAction("city religion <religionName> <±pressure>") { console, params ->
             val city = console.getSelectedCity()
             val religion = city.civ.gameInfo.religions.keys.findCliInput(params[0])
                 ?: throw ConsoleErrorException("'${params[0]}' is not a known religion")
