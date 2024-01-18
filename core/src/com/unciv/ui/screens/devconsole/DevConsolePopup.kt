@@ -64,7 +64,8 @@ class DevConsolePopup(val screen: WorldScreen) : Popup(screen) {
         val handleCommandResponse = handleCommand()
         if (handleCommandResponse.isOK) {
             screen.shouldUpdate = true
-            history.add(textField.text)
+            if (history.isEmpty() || history.last() != textField.text)
+                history.add(textField.text)
             close()
             return
         }
