@@ -22,7 +22,7 @@ private fun <T: IRulesetObject> Iterable<T>.findCliInput(param: String): T? {
 private fun <T: IRulesetObject> Sequence<T>.findCliInput(param: String) = asIterable().findCliInput(param)
 
 /** Returns the string to *add* to the existing command */
-fun getAutocompleteString(lastWord: String, allOptions: Collection<String>): String? {
+fun getAutocompleteString(lastWord: String, allOptions: Iterable<String>):String? {
     val matchingOptions = allOptions.map { it.toCliInput() }.filter { it.startsWith(lastWord.toCliInput()) }
     if (matchingOptions.isEmpty()) return null
     if (matchingOptions.size == 1) return matchingOptions.first().drop(lastWord.length) + " "
@@ -48,7 +48,7 @@ interface ConsoleCommand {
 class ConsoleHintException(val hint: String) : Exception()
 class ConsoleErrorException(val error: String) : Exception()
 
-class ConsoleAction(val format: String, val action: (console: DevConsolePopup, params: List<String>) -> DevConsoleResponse) : ConsoleCommand {
+open class ConsoleAction(val format: String, val action: (console: DevConsolePopup, params: List<String>) -> DevConsoleResponse) : ConsoleCommand {
     override fun handle(console: DevConsolePopup, params: List<String>): DevConsoleResponse {
         return try {
             validateFormat(format, params)
@@ -138,12 +138,20 @@ class ConsoleUnitCommands : ConsoleCommandNode {
             DevConsoleResponse.OK
         },
 
-        "addpromotion" to ConsoleAction("unit addpromotion <promotionName>") { console, params ->
+        "addpromotion" to object : ConsoleAction("unit addpromotion <promotionName>", { console, params ->
             val unit = console.getSelectedUnit()
             val promotion = console.gameInfo.ruleset.unitPromotions.values.findCliInput(params[0])
                 ?: throw ConsoleErrorException("Unknown promotion")
             unit.promotions.addPromotion(promotion.name, true)
             DevConsoleResponse.OK
+        }) {
+            override fun autocomplete(console: DevConsolePopup, params: List<String>): String? {
+                val promotions = console.getSelectedUnit().promotions.promotions
+                val options = console.gameInfo.ruleset.unitPromotions.keys.asSequence()
+                    .filter { it !in promotions }
+                    .asIterable()
+                return getAutocompleteString(params.last(), options)
+            }
         },
 
         "removepromotion" to ConsoleAction("unit removepromotion <promotionName>") { console, params ->
