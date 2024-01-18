@@ -26,6 +26,7 @@ class ConsoleUnitCommands : ConsoleCommandNode {
             DevConsoleResponse.OK
         }) {
             override fun autocomplete(console: DevConsolePopup, params: List<String>): String? {
+                if (params.isEmpty()) return null
                 val promotions = console.getSelectedUnit().promotions.promotions
                 val options = console.gameInfo.ruleset.unitPromotions.keys.asSequence()
                     .filter { it !in promotions }
