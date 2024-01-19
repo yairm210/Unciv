@@ -65,6 +65,8 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
 
     fun conditionalsApply(state: StateForConditionals = StateForConditionals()): Boolean {
         if (state.ignoreConditionals) return true
+        // Always allow Timed conditional uniques. They are managed elsewhere
+        if (conditionals.any{ it.isOfType(UniqueType.ConditionalTimedUnique) }) return true
         for (condition in conditionals) {
             if (!conditionalApplies(condition, state)) return false
         }
@@ -478,7 +480,8 @@ class UniqueMap: HashMap<String, ArrayList<Unique>>() {
 class TemporaryUnique() : IsPartOfGameInfoSerialization {
 
     constructor(uniqueObject: Unique, turns: Int) : this() {
-        unique = uniqueObject.text
+        val turnsText = uniqueObject.conditionals.first { it.isOfType(UniqueType.ConditionalTimedUnique) }.text
+        unique = uniqueObject.text.replaceFirst("<$turnsText>", "")
         sourceObjectType = uniqueObject.sourceObjectType
         sourceObjectName = uniqueObject.sourceObjectName
         turnsLeft = turns
