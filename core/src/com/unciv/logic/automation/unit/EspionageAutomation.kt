@@ -19,10 +19,12 @@ object EspionageAutomation {
         for (spy in civInfo.espionageManager.spyList) {
             if (spy.isDoingWork()) continue
             if (civsToStealFrom.isNotEmpty()) {
-                spy.moveTo(getCivsToStealFromSorted.first().cities.filter { it.getCenterTile().isVisible(civInfo) }.random())
-            } else if (spy.action == SpyAction.None) {
+                spy.moveTo(getCivsToStealFromSorted.first().cities.filter { it.getCenterTile().isVisible(civInfo) }.randomOrNull())
+                continue
+            } 
+            if (spy.action == SpyAction.None) {
                 spy.moveTo(civInfo.getKnownCivs().filter { otherCiv -> otherCiv.cities.any { it.getCenterTile().isVisible(civInfo) }}
-                    .toList().random().cities.filter { it.getCenterTile().isVisible(civInfo) }.random())
+                    .toList().randomOrNull()?.cities?.filter { it.getCenterTile().isVisible(civInfo) }?.randomOrNull())
             }
         }
     }
