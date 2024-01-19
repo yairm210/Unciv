@@ -11,9 +11,10 @@ import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.components.extensions.toPercent
 import kotlin.math.min
 
+@Suppress("UNUSED_PARAMETER") // references need to have the signature expected by UnitActions.actionTypeToFunctions
 object UnitActionsGreatPerson {
 
-    fun getHurryResearchActions(unit:MapUnit, tile: Tile) = sequence {
+    internal fun getHurryResearchActions(unit:MapUnit, tile: Tile) = sequence {
         for (unique in unit.getMatchingUniques(UniqueType.CanHurryResearch)){
             yield(UnitAction(
                 UnitActionType.HurryResearch,
@@ -27,9 +28,9 @@ object UnitActionsGreatPerson {
                 }
             ))
         }
-    }.asIterable()
+    }
 
-    fun getHurryPolicyActions(unit:MapUnit, tile: Tile) = sequence {
+    internal fun getHurryPolicyActions(unit:MapUnit, tile: Tile) = sequence {
         for (unique in unit.getMatchingUniques(UniqueType.CanHurryPolicy)){
             yield(UnitAction(
                 UnitActionType.HurryPolicy,
@@ -39,9 +40,9 @@ object UnitActionsGreatPerson {
                 }.takeIf {unit.currentMovement > 0}
             ))
         }
-    }.asIterable()
+    }
 
-    fun getHurryWonderActions(unit: MapUnit, tile: Tile) = sequence {
+    internal fun getHurryWonderActions(unit: MapUnit, tile: Tile) = sequence {
         for (unique in unit.getMatchingUniques(UniqueType.CanSpeedupWonderConstruction)) {
             val canHurryWonder =
                 if (!tile.isCityCenter()) false
@@ -61,9 +62,9 @@ object UnitActionsGreatPerson {
                 }.takeIf { unit.currentMovement > 0 && canHurryWonder }
             ))
         }
-    }.asIterable()
+    }
 
-    fun getHurryBuildingActions(unit:MapUnit, tile: Tile) = sequence {
+    internal fun getHurryBuildingActions(unit:MapUnit, tile: Tile) = sequence {
         for (unique in unit.getMatchingUniques(UniqueType.CanSpeedupConstruction)) {
             if (!tile.isCityCenter()) {
                 yield(UnitAction(UnitActionType.HurryBuilding, action = null))
@@ -94,9 +95,9 @@ object UnitActionsGreatPerson {
                 }.takeIf { unit.currentMovement > 0 && canHurryConstruction }
             ))
         }
-    }.asIterable()
+    }
 
-    fun getConductTradeMissionActions(unit:MapUnit, tile: Tile) = sequence {
+    internal fun getConductTradeMissionActions(unit:MapUnit, tile: Tile) = sequence {
         for (unique in unit.getMatchingUniques(UniqueType.CanTradeWithCityStateForGoldAndInfluence)) {
             val canConductTradeMission = tile.owningCity?.civ?.isCityState() == true
                 && tile.owningCity?.civ != unit.civ
@@ -120,5 +121,5 @@ object UnitActionsGreatPerson {
                 }.takeIf { unit.currentMovement > 0 && canConductTradeMission }
             ))
         }
-    }.asIterable()
+    }
 }

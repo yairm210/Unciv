@@ -48,7 +48,7 @@ class UnitUniquesTests {
     }
 
     @Test
-    fun CanConstructResourceRequiringImprovement() {
+    fun canConstructResourceRequiringImprovement() {
         // Do this early so the uniqueObjects lazy is still un-triggered
         val improvement = game.ruleset.tileImprovements["Manufactory"]!!
         val requireUnique = UniqueType.ConsumesResources.text.fillPlaceholders("3", "Iron")
@@ -73,7 +73,7 @@ class UnitUniquesTests {
             return
         }.filter { it.action != null }
         Assert.assertTrue("Great Engineer should NOT be able to create a Manufactory modded to require Iron with 0 Iron",
-            actionsWithoutIron.isEmpty())
+            actionsWithoutIron.none())
 
         // Supply Iron
         val ironTile = game.getTile(Vector2(0f,1f))
@@ -91,7 +91,7 @@ class UnitUniquesTests {
         val actionsWithIron = UnitActionsFromUniques.getImprovementConstructionActionsFromGeneralUnique(unit, unitTile)
             .filter { it.action != null }
         Assert.assertFalse("Great Engineer SHOULD be able to create a Manufactory modded to require Iron once Iron is available",
-            actionsWithIron.isEmpty())
+            actionsWithIron.none())
     }
 
     @Test
