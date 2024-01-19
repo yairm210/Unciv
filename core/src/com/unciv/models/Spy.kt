@@ -154,6 +154,9 @@ class Spy() : IsPartOfGameInfoSerialization {
 
     fun isSetUp() = action !in listOf(SpyAction.Moving, SpyAction.None, SpyAction.EstablishNetwork)
 
+    // Only returns true if the spy is doing a helpful and implemented action
+    fun isDoingWork() = action == SpyAction.StealingTech || action == SpyAction.EstablishNetwork
+
     fun getLocation(): City? {
         return civInfo.gameInfo.getCities().firstOrNull { it.id == location }
     }
