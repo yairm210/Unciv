@@ -3,9 +3,11 @@ package com.unciv.ui.screens.devconsole
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.tile.RoadStatus
 import com.unciv.models.ruleset.tile.TerrainType
-import com.unciv.ui.screens.mapeditorscreen.TileInfoNormalizer
 
 class ConsoleTileCommands: ConsoleCommandNode {
+    // Note: We *don't* call `TileInfoNormalizer.normalizeToRuleset(selectedTile, console.gameInfo.ruleset)`
+    // - we want the console to allow invalid tile configurations.
+
     override val subcommands = hashMapOf<String, ConsoleCommand>(
 
         "setimprovement" to ConsoleAction("tile setimprovement <improvementName> [civName]") { console, params ->
@@ -17,7 +19,6 @@ class ConsoleTileCommands: ConsoleCommandNode {
                 civ = console.getCivByName(params[1])
             }
             selectedTile.improvementFunctions.changeImprovement(improvement.name, civ)
-            TileInfoNormalizer.normalizeToRuleset(selectedTile, console.gameInfo.ruleset)
             selectedTile.getCity()?.reassignPopulation()
             DevConsoleResponse.OK
         },
@@ -41,7 +42,6 @@ class ConsoleTileCommands: ConsoleCommandNode {
             val selectedTile = console.getSelectedTile()
             val feature = getTerrainFeature(console, params[0])
             selectedTile.addTerrainFeature(feature.name)
-            TileInfoNormalizer.normalizeToRuleset(selectedTile, console.gameInfo.ruleset)
             selectedTile.getCity()?.reassignPopulation()
             DevConsoleResponse.OK
         },
@@ -71,7 +71,6 @@ class ConsoleTileCommands: ConsoleCommandNode {
             val resource = console.gameInfo.ruleset.tileResources.values.findCliInput(params[0])
                 ?: throw ConsoleErrorException("Unknown resource")
             selectedTile.resource = resource.name
-            TileInfoNormalizer.normalizeToRuleset(selectedTile, console.gameInfo.ruleset)
             selectedTile.setTerrainTransients()
             selectedTile.getCity()?.reassignPopulation()
             DevConsoleResponse.OK
