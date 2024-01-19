@@ -33,6 +33,7 @@ object NextTurnAutomation {
     /** Top-level AI turn task list */
     fun automateCivMoves(civInfo: Civilization) {
         if (civInfo.isBarbarian()) return BarbarianAutomation(civInfo).automate()
+        if (civInfo.isSpectator()) return // When there's a spectator in multiplayer games, it's processed automatically, but shouldn't be able to actually do anything
 
         respondToPopupAlerts(civInfo)
         TradeAutomation.respondToTradeRequests(civInfo)
@@ -152,7 +153,7 @@ object NextTurnAutomation {
             return value
 
         // The more we have invested into the city-state the more the alliance is worth
-        val ourInfluence = if (civInfo.knows(cityState)) 
+        val ourInfluence = if (civInfo.knows(cityState))
             cityState.getDiplomacyManager(civInfo).getInfluence().toInt()
         else 0
         value += ourInfluence / 10
