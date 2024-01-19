@@ -32,12 +32,21 @@ object UnitActions {
         else getNormalActions(unit)
     }
 
-    /** Returns whether the action was invoked */
+    /**
+     *  Get an instance of [UnitAction] of the [unitActionType] type for [unit] and execute its [action][UnitAction.action], if enabled.
+     *
+     *  Includes optimization for direct creation of the needed instance type, falls back to enumerating [getUnitActions] to look for the given type.
+     *
+     *  @return whether the action was invoked */
     fun invokeUnitAction(unit: MapUnit, unitActionType: UnitActionType): Boolean {
-        val unitAction = if (unitActionType in actionTypeToFunctions) actionTypeToFunctions[unitActionType]!!.invoke(unit, unit.getTile())
-            .firstOrNull { it.action != null }
-            else getNormalActions(unit).firstOrNull { it.type == unitActionType && it.action != null }
-            ?: getAdditionalActions(unit).firstOrNull { it.type == unitActionType && it.action != null }
+        val unitAction =
+            if (unitActionType in actionTypeToFunctions)
+                actionTypeToFunctions[unitActionType]!!  // we have a mapped getter...
+                    .invoke(unit, unit.getTile())        // ...call it to get a collection...
+                    .firstOrNull { it.action != null }   // ...then take the first enabled one.
+            else
+                (getNormalActions(unit) + getAdditionalActions(unit))                // No mapped getter: Enumerate all...
+                    .firstOrNull { it.type == unitActionType && it.action != null }  // ...and take first enabled one to match the type.
         val internalAction = unitAction?.action ?: return false
         internalAction.invoke()
         return true
@@ -72,6 +81,7 @@ object UnitActions {
     private fun getNormalActions(unit: MapUnit) = sequence {
         val tile = unit.getTile()
 
+        // Actions standardized with a directly callable invokeUnitAction
         for (getActionsFunction in actionTypeToFunctions.values)
             yieldAll(getActionsFunction(unit, tile))
 
