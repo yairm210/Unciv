@@ -5,7 +5,7 @@ object BuildConfig {
     const val kotlinVersion = "1.8.21"
     const val appName = "Unciv"
     const val appCodeNumber = 958
-    const val appVersion = "4.9.20"
+    const val appVersion = "4.10.0"
 
     const val gdxVersion = "1.12.1"
     const val ktorVersion = "2.2.3"

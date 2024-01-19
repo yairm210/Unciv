@@ -1,18 +1,15 @@
+Natural wonders no longer spawn next to start locations
 
+Automated spectator in multiplayer takes no actions
 
-Don't spawn nat wonders next to start location
-
-Automated spectator in multiplayer games does nothing
-
-Source object names for users unified
-
- - added removeroad command
-
- - Add console command to change city name
+Added console commands to remove roads, change city name
 
 By SomeTroglodyte:
-- The console key should be bindable? 
-- Avoid Civilopedia stumbling over missing Grassland 
-- Allow map editor to generate smaller than "tiny" Pangaea maps 
+- The console key is now bindable
+- Allow map editor to generate smaller than "tiny" Pangaea maps
 
-Treat all timed uniques as functioning as always true regardless of conditionals  - By SeventhM
+By SeventhM:
+- Treat all timed uniques as functioning as always true regardless of conditionals
+- Fix conditionals being ignored for some triggers
+
+Increase AI workers - By tuvus
