@@ -7,7 +7,7 @@ object EspionageAutomation {
 
     fun automateSpies(civInfo: Civilization) {
         val civsToStealFrom: List<Civilization> by lazy { 
-            civInfo.getKnownCivs().filter {otherCiv -> otherCiv.cities.any { it.getCenterTile().isVisible(civInfo) } 
+            civInfo.getKnownCivs().filter {otherCiv -> otherCiv.isMajorCiv() && otherCiv.cities.any { it.getCenterTile().isVisible(civInfo) } 
                 && civInfo.espionageManager.getTechsToSteal(otherCiv).isNotEmpty() }.toList()
         }
 
@@ -17,7 +17,7 @@ object EspionageAutomation {
             }.toList()
 
         for (spy in civInfo.espionageManager.spyList) {
-            if (spy.action == SpyAction.StealingTech) continue
+            if (spy.isDoingWork()) continue
             if (civsToStealFrom.isNotEmpty()) {
                 spy.moveTo(getCivsToStealFromSorted.first().cities.filter { it.getCenterTile().isVisible(civInfo) }.random())
             } else if (spy.action == SpyAction.None) {
