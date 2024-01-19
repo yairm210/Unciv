@@ -19,11 +19,13 @@ object EspionageAutomation {
         for (spy in civInfo.espionageManager.spyList) {
             if (spy.isDoingWork()) continue
             if (civsToStealFrom.isNotEmpty()) {
-                spy.moveTo(getCivsToStealFromSorted.first().cities.filter { it.getCenterTile().isVisible(civInfo) }.randomOrNull())
+                // We want to move the spy to the city with the highest science generation
+                // Players can't usually figure this out so lets do highest population instead
+                spy.moveTo(getCivsToStealFromSorted.first().cities.filter { it.getCenterTile().isVisible(civInfo) }.maxByOrNull { it.population.population })
                 continue
             } 
             if (spy.action == SpyAction.None) {
-                spy.moveTo(civInfo.getKnownCivs().filter { otherCiv -> otherCiv.cities.any { it.getCenterTile().isVisible(civInfo) }}
+                spy.moveTo(civInfo.getKnownCivs().filter { otherCiv -> otherCiv.isMajorCiv() && otherCiv.cities.any { it.getCenterTile().isVisible(civInfo) }}
                     .toList().randomOrNull()?.cities?.filter { it.getCenterTile().isVisible(civInfo) }?.randomOrNull())
             }
         }
