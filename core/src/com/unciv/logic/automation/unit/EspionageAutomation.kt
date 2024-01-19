@@ -20,6 +20,9 @@ object EspionageAutomation {
             if (spy.action == SpyAction.StealingTech) continue
             if (civsToStealFrom.isNotEmpty()) {
                 spy.moveTo(getCivsToStealFromSorted.first().cities.filter { it.getCenterTile().isVisible(civInfo) }.random())
+            } else if (spy.action == SpyAction.None) {
+                spy.moveTo(civInfo.getKnownCivs().filter { otherCiv -> otherCiv.cities.any { it.getCenterTile().isVisible(civInfo) }}
+                    .toList().random().cities.filter { it.getCenterTile().isVisible(civInfo) }.random())
             }
         }
     }
