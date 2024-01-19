@@ -71,6 +71,8 @@ open class ConsoleAction(val format: String, val action: (console: DevConsolePop
             "promotionName" -> console.gameInfo.ruleset.unitPromotions.keys
             "improvementName" -> console.gameInfo.ruleset.tileImprovements.keys
             "featureName" -> console.gameInfo.ruleset.terrains.values.filter { it.type == TerrainType.TerrainFeature }.map { it.name }
+            "terrainName" -> console.gameInfo.ruleset.terrains.values.filter { it.type.isBaseTerrain }.map { it.name }
+            "resourceName" -> console.gameInfo.ruleset.tileResources.keys
             "stat" -> Stat.names()
             "religionName" -> console.gameInfo.religions.keys
             else -> listOf()
