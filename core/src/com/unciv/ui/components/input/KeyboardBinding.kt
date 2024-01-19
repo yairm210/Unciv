@@ -8,6 +8,12 @@ import com.unciv.models.stats.Stat
 private val unCamelCaseRegex = Regex("([A-Z])([A-Z])([a-z])|([a-z])([A-Z])")
 private fun unCamelCase(name: String) = unCamelCaseRegex.replace(name, """$1$4 $2$3$5""")
 
+/**
+ *  This is the database of supported "bindable" keyboard shortcuts.
+ *
+ *  Note a label is automatically generated from the name by inserting spaces before each uppercase letter (except the initial one),
+ *  and translation keys are automatically generated for all labels. This also works for [KeyboardBinding.Category].
+ */
 enum class KeyboardBinding(
     val category: Category,
     label: String? = null,
@@ -35,6 +41,7 @@ enum class KeyboardBinding(
     NextTurnAlternate(Category.WorldScreen, KeyCharAndCode.SPACE),
     EmpireOverview(Category.WorldScreen),
     MusicPlayer(Category.WorldScreen, KeyCharAndCode.ctrl('m')),
+    DeveloperConsole(Category.WorldScreen, '`'),
 
     /*
      * These try to be faithful to default Civ5 key bindings as found in several places online
