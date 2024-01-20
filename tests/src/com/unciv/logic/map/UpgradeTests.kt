@@ -34,7 +34,7 @@ class UpgradeTests {
         UniqueTriggerActivation.triggerUnitwideUnique(triggerUnique, unit1)
         unit1 = testGame.getTile(Vector2.Zero).getFirstUnit()!!
 
-        Assert.assertTrue("Unit should upgrade to special unit, not worker", unit1.baseUnit == unitToUpgradeTo)
+        Assert.assertTrue("Unit should upgrade to special unit, not warrior", unit1.baseUnit == unitToUpgradeTo)
     }
     
     @Test
@@ -49,7 +49,7 @@ class UpgradeTests {
         UniqueTriggerActivation.triggerUnitwideUnique(triggerUnique, unit1)
         unit1 = testGame.getTile(Vector2.Zero).getFirstUnit()!!
 
-        Assert.assertTrue("Unit should upgrade to special unit, not worker", unit1.baseUnit.name == "Warrior")
+        Assert.assertTrue("Unit should upgrade to Warrior without unique", unit1.baseUnit.name == "Warrior")
     }
 
     @Test
