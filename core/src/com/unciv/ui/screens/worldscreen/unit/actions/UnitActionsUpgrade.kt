@@ -19,9 +19,11 @@ object UnitActionsUpgrade {
     ): List<UnitAction> {
         val unitTile = unit.getTile()
         val civInfo = unit.civ
-        val upgradeUnits = if (isSpecial) sequenceOf(
+        val specialUpgradesTo = if (isSpecial) 
             unit.baseUnit().getMatchingUniques(UniqueType.RuinsUpgrade, StateForConditionals(civInfo, unit= unit))
-                .map { it.params[0] }.firstOrNull()).filterNotNull() // empty the sequence if null
+                .map { it.params[0] }.firstOrNull()
+        else null
+        val upgradeUnits = if (specialUpgradesTo != null) sequenceOf(specialUpgradesTo)
             else unit.baseUnit.getUpgradeUnits(StateForConditionals(civInfo, unit = unit))
         if (upgradeUnits.none()) return emptyList() // can't upgrade to anything
         if (!isAnywhere && unitTile.getOwner() != civInfo) return emptyList()
