@@ -36,6 +36,21 @@ class UpgradeTests {
 
         Assert.assertTrue("Unit should upgrade to special unit, not worker", unit1.baseUnit == unitToUpgradeTo)
     }
+    
+    @Test
+    fun ruinsUpgradeToNormalUnitWithoutUnique() {
+        val unitToUpgradeTo = testGame.createBaseUnit()
+        val testUnit = testGame.createBaseUnit()
+        testUnit.upgradesTo = "Warrior"
+
+        val civ = testGame.addCiv()
+        var unit1 = testGame.addUnit(testUnit.name, civ, testGame.getTile(Vector2.Zero))
+        val triggerUnique = Unique("This Unit upgrades for free including special upgrades")
+        UniqueTriggerActivation.triggerUnitwideUnique(triggerUnique, unit1)
+        unit1 = testGame.getTile(Vector2.Zero).getFirstUnit()!!
+
+        Assert.assertTrue("Unit should upgrade to special unit, not worker", unit1.baseUnit.name == "Warrior")
+    }
 
     @Test
     fun regularUpgradeCannotUpgradeToSpecialUnit() {
