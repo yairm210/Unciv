@@ -129,6 +129,7 @@ object UniqueTriggerActivation {
                         civInfo.units.getCivUnits().any() ->
                             civInfo.units.placeUnitNearTile(civInfo.units.getCivUnits().first().currentTile.position, civUnit)
                         else -> null
+                    }
                     if (placedUnit != null)
                         tilesUnitsWerePlacedOn.add(placedUnit.getTile().position)
                 }
