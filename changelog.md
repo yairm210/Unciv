@@ -1,16 +1,13 @@
 ## 4.10.1
 
-Resolved  - 'cities auto-bombard at end of turn' is a user option
+'cities auto-bombard at end of turn' is a user option
 
-By SomeTroglodyte:
-- Unit actions builders use sequence 
-- Improved Console autocomplete 
-- Wrong atlas list still interfering with new commits 
+Improved Console autocomplete - By SomeTroglodyte
 
 By tuvus:
-- Spectators can now see the diplomacy screen of the civ that they have selected 
-- Checking if a tile is in work range now checks all cities 
-- AI worker road priority rework 
+- AI worker road priority rework
+- Spectators can see the diplomacy screen of the civ that they have selected
+- Checking if a tile is in work range now checks all cities
 
 Assume the relevant city for triggered uniques  - By SeventhM
 
