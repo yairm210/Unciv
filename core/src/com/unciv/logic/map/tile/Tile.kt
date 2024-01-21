@@ -484,10 +484,8 @@ open class Tile : IsPartOfGameInfoSerialization {
         if ((improvement == null || improvementIsPillaged) && filter == "unimproved") return true
         if (improvement != null && !improvementIsPillaged && filter == "improved") return true
         if (ignoreImprovement) return false
-        if (improvement != null && !improvementIsPillaged && ruleset.tileImprovements[improvement]!!.matchesFilter(filter))
-            return true
-        return roadStatus != RoadStatus.None &&
-            roadStatus.improvement(ruleset)!!.matchesFilter(filter) && !roadIsPillaged
+        if (getUnpillagedTileImprovement()?.matchesFilter(filter) == true) return true
+        return getUnpillagedRoadImprovement()?.matchesFilter(filter) == true
     }
 
     fun matchesTerrainFilter(filter: String, observingCiv: Civilization? = null): Boolean {
