@@ -40,13 +40,13 @@ class TileStatFunctions(val tile: Tile) {
         else null
 
         val percentageStats = getTilePercentageStats(observingCiv, city, localUniqueCache)
-        for (stats in statsBreakdown.filter { it.first != improvement?.name })
+        for (stats in statsBreakdown.filter { it.first != improvement?.name && it.first != road?.name })
             for ((stat, value) in percentageStats["Terrain"]!!)
                 stats.second[stat] *= value.toPercent()
         for ((stat, value) in percentageStats["Improvement"]!!)
-            statsBreakdown.firstOrNull { it.first == improvement?.name }?.second?.set(stat, value.toPercent())
+            statsBreakdown.firstOrNull { it.first == improvement?.name }?.second?.let { it[stat] *= value.toPercent() }
         for ((stat, value) in percentageStats["Road"]!!)
-            statsBreakdown.firstOrNull { it.first == road?.name }?.second?.set(stat, value.toPercent())
+            statsBreakdown.firstOrNull { it.first == road?.name }?.second?.let { it[stat] *= value.toPercent() }
 
         return statsBreakdown.toStats()
     }
