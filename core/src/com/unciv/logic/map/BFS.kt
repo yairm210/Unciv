@@ -47,15 +47,16 @@ class BFS(
      *
      * Will do nothing when [hasEnded] returns `true`
      */
-    fun nextStep() {
-        if (tilesReached.size >= maxSize) { tilesToCheck.clear(); return }
-        val current = tilesToCheck.removeFirstOrNull() ?: return
+    fun nextStep(): Tile? {
+        if (tilesReached.size >= maxSize) { tilesToCheck.clear(); return null }
+        val current = tilesToCheck.removeFirstOrNull() ?: return null
         for (neighbor in current.neighbors) {
             if (neighbor !in tilesReached && predicate(neighbor)) {
                 tilesReached[neighbor] = current
                 tilesToCheck.add(neighbor)
             }
         }
+        return current
     }
 
     /**

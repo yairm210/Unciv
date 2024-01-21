@@ -10,13 +10,13 @@ import com.unciv.models.translations.tr
 
 object UnitActionsUpgrade {
 
-    /**  Common implementation for [getUpgradeActions], [getFreeUpgradeAction] and [getAncientRuinsUpgradeAction] */
+    /**  Common implementation for [getUpgradeAction], [getFreeUpgradeAction] and [getAncientRuinsUpgradeAction] */
     private fun getUpgradeActions(
         unit: MapUnit,
-        isSpecial: Boolean,
         isFree: Boolean,
+        isSpecial: Boolean,
         isAnywhere: Boolean
-    ): List<UnitAction> {
+    ): Sequence<UnitAction> {
         val unitTile = unit.getTile()
         val civInfo = unit.civ
         val specialUpgradesTo = if (isSpecial) 
@@ -25,8 +25,8 @@ object UnitActionsUpgrade {
         else null
         val upgradeUnits = if (specialUpgradesTo != null) sequenceOf(specialUpgradesTo)
             else unit.baseUnit.getUpgradeUnits(StateForConditionals(civInfo, unit = unit))
-        if (upgradeUnits.none()) return emptyList() // can't upgrade to anything
-        if (!isAnywhere && unitTile.getOwner() != civInfo) return emptyList()
+        if (upgradeUnits.none()) return emptySequence() // can't upgrade to anything
+        if (!isAnywhere && unitTile.getOwner() != civInfo) return emptySequence()
 
         var upgradeActions = emptySequence<UnitAction>()
         for (upgradesTo in upgradeUnits){
@@ -90,7 +90,7 @@ object UnitActionsUpgrade {
                 }
             )
         }
-        return upgradeActions.toList()
+        return upgradeActions
     }
 
     fun getUpgradeActions(unit: MapUnit) =

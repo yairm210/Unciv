@@ -1,3 +1,34 @@
+## 4.10.1
+
+'cities auto-bombard at end of turn' is a user option
+
+Improved Console autocomplete - By SomeTroglodyte
+
+By tuvus:
+- AI worker road priority rework
+- Spectators can see the diplomacy screen of the civ that they have selected
+- Checking if a tile is in work range now checks all cities
+
+Assume the relevant city for triggered uniques  - By SeventhM
+
+## 4.10.0
+
+Natural wonders no longer spawn next to start locations
+
+Automated spectator in multiplayer takes no actions
+
+Added console commands to remove roads, change city name
+
+By SomeTroglodyte:
+- The console key is now bindable
+- Allow map editor to generate smaller than "tiny" Pangaea maps
+
+By SeventhM:
+- Treat all timed uniques as functioning as always true regardless of conditionals
+- Fix conditionals being ignored for some triggers
+
+Increase AI workers - By tuvus
+
 ## 4.9.19
 
 Modding:

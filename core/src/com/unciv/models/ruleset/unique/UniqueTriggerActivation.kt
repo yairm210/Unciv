@@ -42,16 +42,20 @@ object UniqueTriggerActivation {
         notification: String? = null,
         triggerNotificationText: String? = null
     ): Boolean {
+
+        val relevantCity by lazy {
+            city?: tile?.getCity()
+        }
+
         val timingConditional = unique.conditionals.firstOrNull { it.type == UniqueType.ConditionalTimedUnique }
         if (timingConditional != null) {
             civInfo.temporaryUniques.add(TemporaryUnique(unique, timingConditional.params[0].toInt()))
             return true
         }
 
-        if (!unique.conditionalsApply(civInfo, city)) return false
+        if (!unique.conditionalsApply(civInfo, relevantCity)) return false
 
-        val chosenCity = city ?:
-            tile?.getCity() ?:
+        val chosenCity = relevantCity ?:
             civInfo.cities.firstOrNull { it.isCapital() }
 
         val tileBasedRandom =
@@ -72,11 +76,13 @@ object UniqueTriggerActivation {
                 if (limit != null && limit <= civInfo.units.getCivUnits().count { it.name == unit.name })
                     return false
 
-                // 4 situations: If city ->
                 val placedUnit = when {
-                    city != null || (tile == null && civInfo.cities.isNotEmpty()) ->
+                    // Set unit at city if there's an explict city or if there's no tile to set at
+                    relevantCity != null || (tile == null && civInfo.cities.isNotEmpty()) ->
                         civInfo.units.addUnit(unit, chosenCity) ?: return false
+                    // Else set the unit at the given tile
                     tile != null -> civInfo.units.placeUnitNearTile(tile.position, unit) ?: return false
+                    // Else set unit unit near other units if we have no cities
                     civInfo.units.getCivUnits().any() ->
                         civInfo.units.placeUnitNearTile(civInfo.units.getCivUnits().first().currentTile.position, unit) ?: return false
                     else -> return false
@@ -95,9 +101,7 @@ object UniqueTriggerActivation {
             }
             UniqueType.OneTimeAmountFreeUnits -> {
                 val unitName = unique.params[1]
-                val baseUnit = ruleSet.units[unitName]
-                if ((chosenCity == null && tile == null) || baseUnit == null)
-                    return false
+                val baseUnit = ruleSet.units[unitName] ?: return false
                 val unit = civInfo.getEquivalentUnit(baseUnit)
                 if (unit.isCityFounder() && civInfo.isOneCityChallenger())
                     return false
@@ -116,12 +120,21 @@ object UniqueTriggerActivation {
 
                 val tilesUnitsWerePlacedOn: MutableList<Vector2> = mutableListOf()
                 repeat(actualAmount) {
-                    val placedUnit = if (city != null || tile == null) civInfo.units.addUnit(unit, chosenCity)
-                        else civInfo.units.placeUnitNearTile(tile.position, unit)
+                    val placedUnit = when {
+                        // Set unit at city if there's an explict city or if there's no tile to set at
+                        relevantCity != null || (tile == null && civInfo.cities.isNotEmpty()) ->
+                            civInfo.units.addUnit(unit, chosenCity)
+                        // Else set the unit at the given tile
+                        tile != null -> civInfo.units.placeUnitNearTile(tile.position, unit)
+                        // Else set unit unit near other units if we have no cities
+                        civInfo.units.getCivUnits().any() ->
+                            civInfo.units.placeUnitNearTile(civInfo.units.getCivUnits().first().currentTile.position, unit)
+                        else -> null
+                    }
                     if (placedUnit != null)
                         tilesUnitsWerePlacedOn.add(placedUnit.getTile().position)
                 }
-                if (tilesUnitsWerePlacedOn.isEmpty()) return true
+                if (tilesUnitsWerePlacedOn.isEmpty()) return false
 
                 val notificationText = getNotificationText(notification, triggerNotificationText,
                     "Gained [${tilesUnitsWerePlacedOn.size}] [${unit.name}] unit(s)")
@@ -258,7 +271,7 @@ object UniqueTriggerActivation {
 
             UniqueType.OneTimeGainPopulation -> {
                 val applicableCities =
-                    if (unique.params[1] == "in this city") sequenceOf(city!!)
+                    if (unique.params[1] == "in this city") sequenceOf(relevantCity!!)
                     else civInfo.cities.asSequence().filter { it.matchesFilter(unique.params[1]) }
                 for (applicableCity in applicableCities) {
                     applicableCity.population.addPopulation(unique.params[0].toInt())
@@ -687,7 +700,7 @@ object UniqueTriggerActivation {
             UniqueType.GainFreeBuildings -> {
                 val freeBuilding = civInfo.getEquivalentBuilding(unique.params[0])
                 val applicableCities =
-                    if (unique.params[1] == "in this city") sequenceOf(city!!)
+                    if (unique.params[1] == "in this city") sequenceOf(relevantCity!!)
                     else civInfo.cities.asSequence().filter { it.matchesFilter(unique.params[1]) }
                 for (applicableCity in applicableCities) {
                     applicableCity.cityConstructions.freeBuildingsProvidedFromThisCity.addToMapOfSets(applicableCity.id, freeBuilding.name)
@@ -710,9 +723,9 @@ object UniqueTriggerActivation {
 
             UniqueType.RemoveBuilding -> {
 
-                val applicableCities = civInfo.cities.asSequence().filter {
-                        it.matchesFilter(unique.params[1])
-                    }
+                val applicableCities =
+                    if (unique.params[1] == "in this city") sequenceOf(relevantCity!!)
+                    else civInfo.cities.asSequence().filter { it.matchesFilter(unique.params[1]) }
 
                 for (applicableCity in applicableCities) {
                     val buildingsToRemove = applicableCity.cityConstructions.getBuiltBuildings().filter {
@@ -727,9 +740,9 @@ object UniqueTriggerActivation {
 
             UniqueType.SellBuilding -> {
 
-                val applicableCities = civInfo.cities.asSequence().filter {
-                    it.matchesFilter(unique.params[1])
-                }
+                val applicableCities =
+                    if (unique.params[1] == "in this city") sequenceOf(relevantCity!!)
+                    else civInfo.cities.asSequence().filter { it.matchesFilter(unique.params[1]) }
 
                 for (applicableCity in applicableCities) {
                     val buildingsToSell = applicableCity.cityConstructions.getBuiltBuildings().filter {
