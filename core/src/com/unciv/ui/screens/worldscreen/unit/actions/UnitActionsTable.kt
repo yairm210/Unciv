@@ -17,6 +17,13 @@ import com.unciv.ui.popups.UnitUpgradeMenu
 import com.unciv.ui.screens.worldscreen.WorldScreen
 
 class UnitActionsTable(val worldScreen: WorldScreen) : Table() {
+    companion object {
+        /** Padding between and to the left of the Buttons */
+        private const val padBetweenButtons = 2f
+    }
+    init {
+        defaults().left().padLeft(padBetweenButtons).padBottom(padBetweenButtons)
+    }
 
     fun update(unit: MapUnit?) {
         clear()
@@ -31,7 +38,7 @@ class UnitActionsTable(val worldScreen: WorldScreen) : Table() {
                     }
                 }
             }
-            add(button).left().padBottom(2f).row()
+            add(button).row()
         }
         pack()
     }
