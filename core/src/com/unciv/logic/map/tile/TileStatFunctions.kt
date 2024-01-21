@@ -34,19 +34,18 @@ class TileStatFunctions(val tile: Tile) {
         val statsBreakdown = getTileStatsBreakdown(city, observingCiv, localUniqueCache)
 
         val improvement = tile.getUnpillagedTileImprovement()
-
-        val road = if (!tile.roadIsPillaged && tile.roadStatus != RoadStatus.None)
-            tile.roadStatus.improvement(tile.ruleset)
-        else null
+        val road = tile.getUnpillagedRoadImprovement()
 
         val percentageStats = getTilePercentageStats(observingCiv, city, localUniqueCache)
-        for (stats in statsBreakdown.filter { it.first != improvement?.name && it.first != road?.name })
-            for ((stat, value) in percentageStats["Terrain"]!!)
+        for (stats in statsBreakdown) {
+            val tileType = when(stats.first) {
+                improvement?.name -> "Improvement"
+                road?.name -> "Road"
+                else -> "Terrain"
+            }
+            for ((stat, value) in percentageStats[tileType]!!)
                 stats.second[stat] *= value.toPercent()
-        for ((stat, value) in percentageStats["Improvement"]!!)
-            statsBreakdown.firstOrNull { it.first == improvement?.name }?.second?.let { it[stat] *= value.toPercent() }
-        for ((stat, value) in percentageStats["Road"]!!)
-            statsBreakdown.firstOrNull { it.first == road?.name }?.second?.let { it[stat] *= value.toPercent() }
+        }
 
         return statsBreakdown.toStats()
     }
@@ -60,9 +59,7 @@ class TileStatFunctions(val tile: Tile) {
         val improvement = tile.getUnpillagedTileImprovement()
         val improvementStats = improvement?.cloneStats() ?: Stats()
 
-        val road = if (!tile.roadIsPillaged && tile.roadStatus != RoadStatus.None)
-            tile.roadStatus.improvement(tile.ruleset)
-        else null
+        val road = tile.getUnpillagedRoadImprovement()
         val roadStats = road?.cloneStats() ?: Stats()
 
         if (city != null) {
@@ -180,9 +177,7 @@ class TileStatFunctions(val tile: Tile) {
         val improvement = tile.getUnpillagedTileImprovement()
         val improvementStats = Stats()
 
-        val road = if (!tile.roadIsPillaged && tile.roadStatus != RoadStatus.None)
-            tile.roadStatus.improvement(tile.ruleset)
-        else null
+        val road = tile.getUnpillagedRoadImprovement()
         val roadStats = Stats()
 
         if (city != null) {
@@ -190,13 +185,16 @@ class TileStatFunctions(val tile: Tile) {
                 city, UniqueType.StatPercentFromObject, stateForConditionals)
 
             for (unique in cachedStatPercentFromObjectCityUniques) {
+                val amount = unique.params[0].toFloat()
+                val stat = Stat.valueOf(unique.params[1])
                 val tileFilter = unique.params[2]
+
                 if (tile.matchesFilter(tileFilter, observingCiv, true))
-                    terrainStats[Stat.valueOf(unique.params[1])] += unique.params[0].toFloat()
+                    terrainStats.add(stat, amount)
                 if (improvement != null && improvement.matchesFilter(tileFilter))
-                    improvementStats[Stat.valueOf(unique.params[1])] += unique.params[0].toFloat()
+                    improvementStats.add(stat, amount)
                 if (road != null && road.matchesFilter(tileFilter))
-                    roadStats[Stat.valueOf(unique.params[1])] += unique.params[0].toFloat()
+                    roadStats.add(stat, amount)
             }
 
             val cachedAllStatPercentFromObjectCityUniques = uniqueCache.forCityGetMatchingUniques(
@@ -204,28 +202,32 @@ class TileStatFunctions(val tile: Tile) {
             for (unique in cachedAllStatPercentFromObjectCityUniques) {
                 val tileFilter = unique.params[1]
                 val statPercentage = unique.params[0].toFloat()
+
                 if (tile.matchesFilter(tileFilter, observingCiv, true))
                     for (stat in Stat.values())
-                        terrainStats[stat] += statPercentage
+                        terrainStats.add(stat, statPercentage)
                 if (improvement != null && improvement.matchesFilter(tileFilter))
                     for (stat in Stat.values())
-                        improvementStats[stat] += statPercentage
+                        improvementStats.add(stat, statPercentage)
                 if (road != null && road.matchesFilter(tileFilter))
                     for (stat in Stat.values())
-                        roadStats[stat] += statPercentage
+                        roadStats.add(stat, statPercentage)
             }
 
         } else if (observingCiv != null) {
             val cachedStatPercentFromObjectCivUniques = uniqueCache.forCivGetMatchingUniques(
                 observingCiv, UniqueType.StatPercentFromObject, stateForConditionals)
             for (unique in cachedStatPercentFromObjectCivUniques) {
+                val amount = unique.params[0].toFloat()
+                val stat = Stat.valueOf(unique.params[1])
                 val tileFilter = unique.params[2]
+
                 if (tile.matchesFilter(tileFilter, observingCiv, true))
-                    terrainStats[Stat.valueOf(unique.params[1])] += unique.params[0].toFloat()
+                    terrainStats.add(stat, amount)
                 if (improvement != null && improvement.matchesFilter(tileFilter))
-                    improvementStats[Stat.valueOf(unique.params[1])] += unique.params[0].toFloat()
+                    improvementStats.add(stat, amount)
                 if (road != null && road.matchesFilter(tileFilter))
-                    roadStats[Stat.valueOf(unique.params[1])] += unique.params[0].toFloat()
+                    roadStats.add(stat, amount)
             }
 
             val cachedAllStatPercentFromObjectCivUniques = uniqueCache.forCivGetMatchingUniques(
@@ -233,15 +235,16 @@ class TileStatFunctions(val tile: Tile) {
             for (unique in cachedAllStatPercentFromObjectCivUniques) {
                 val tileFilter = unique.params[1]
                 val statPercentage = unique.params[0].toFloat()
+
                 if (tile.matchesFilter(tileFilter, observingCiv, true))
                     for (stat in Stat.values())
-                        terrainStats[stat] += statPercentage
+                        terrainStats.add(stat, statPercentage)
                 if (improvement != null && improvement.matchesFilter(tileFilter))
                     for (stat in Stat.values())
-                        improvementStats[stat] += statPercentage
+                        improvementStats.add(stat, statPercentage)
                 if (road != null && road.matchesFilter(tileFilter))
                     for (stat in Stat.values())
-                        roadStats[stat] += statPercentage
+                        roadStats.add(stat, statPercentage)
             }
         }
         return hashMapOf(
