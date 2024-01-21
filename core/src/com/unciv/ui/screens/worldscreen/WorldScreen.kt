@@ -98,7 +98,6 @@ class WorldScreen(
     var selectedCiv = viewingCiv
 
     var fogOfWar = true
-        private set
 
     /** `true` when it's the player's turn unless he is a spectator */
     val canChangeState
@@ -112,7 +111,6 @@ class WorldScreen(
     // Floating Widgets going counter-clockwise
     val topBar = WorldScreenTopBar(this)
     private val techPolicyAndDiplomacy = TechPolicyDiplomacyButtons(this)
-    private val fogOfWarButton = createFogOfWarButton()
     private val unitActionsTable = UnitActionsTable(this)
     /** Bottom left widget holding information about a selected unit or city */
     val bottomUnitTable = UnitTable(this)
@@ -148,8 +146,6 @@ class WorldScreen(
         // resume music (in case choices from the menu lead to instantiation of a new WorldScreen)
         UncivGame.Current.musicController.resume()
 
-        fogOfWarButton.isVisible = viewingCiv.isSpectator()
-
         stage.addActor(mapHolder)
         stage.scrollFocus = mapHolder
         stage.addActor(notificationsScroll)  // very low in z-order, so we're free to let it extend _below_ tile info and minimap if we want
@@ -162,7 +158,6 @@ class WorldScreen(
         stage.addActor(zoomController)
         zoomController.isVisible = UncivGame.Current.settings.showZoomButtons
 
-        stage.addActor(fogOfWarButton)
         stage.addActor(bottomUnitTable)
         stage.addActor(bottomTileInfoTable)
         battleTable.width = stage.width / 3
@@ -306,7 +301,6 @@ class WorldScreen(
         minimapWrapper.isVisible = uiEnabled
         bottomUnitTable.isVisible = uiEnabled
         if (uiEnabled) battleTable.update() else battleTable.isVisible = false
-        fogOfWarButton.isVisible = uiEnabled && viewingCiv.isSpectator()
     }
 
     private fun addKeyboardListener() {
@@ -408,9 +402,6 @@ class WorldScreen(
 
         if (techPolicyAndDiplomacy.update())
             displayTutorial(TutorialTrigger.OtherCivEncountered)
-
-        fogOfWarButton.isEnabled = !selectedCiv.isSpectator()
-        fogOfWarButton.setPosition(10f, topBar.y - fogOfWarButton.height - 10f)
 
         // If the game has ended, lets stop AutoPlay
         if (game.settings.autoPlay.isAutoPlaying()
@@ -555,19 +546,6 @@ class WorldScreen(
             bottomUnitTable.selectedCity != null -> bottomUnitTable.selectedCity!!.civ
             else -> viewingCiv
         }
-    }
-
-    private fun createFogOfWarButton(): TextButton {
-        val fogOfWarButton = "Fog of War".toTextButton()
-        fogOfWarButton.label.setFontSize(30)
-        fogOfWarButton.labelCell.pad(10f)
-        fogOfWarButton.pack()
-        fogOfWarButton.onClick {
-            fogOfWar = !fogOfWar
-            shouldUpdate = true
-        }
-        return fogOfWarButton
-
     }
 
     class RestoreState(
