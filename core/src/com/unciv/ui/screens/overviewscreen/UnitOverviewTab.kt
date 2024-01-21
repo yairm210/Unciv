@@ -273,7 +273,7 @@ class UnitOverviewTab(
         table.clearChildren()
 
         val unitActions = UnitActionsUpgrade.getUpgradeActionAnywhere(unit)
-        if (unitActions.isEmpty()) table.add()
+        if (unitActions.none()) table.add()
         for (unitAction in unitActions){
             val enable = unitAction.action != null && viewingPlayer.isCurrentPlayer() &&
                 GUI.isAllowedChangeState()
