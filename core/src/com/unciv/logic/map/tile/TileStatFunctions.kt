@@ -193,9 +193,9 @@ class TileStatFunctions(val tile: Tile) {
                 val tileFilter = unique.params[2]
                 if (tile.matchesFilter(tileFilter, observingCiv, true))
                     terrainStats[Stat.valueOf(unique.params[1])] += unique.params[0].toFloat()
-                else if (improvement != null && improvement.matchesFilter(tileFilter))
+                if (improvement != null && improvement.matchesFilter(tileFilter))
                     improvementStats[Stat.valueOf(unique.params[1])] += unique.params[0].toFloat()
-                else if (road != null && road.matchesFilter(tileFilter))
+                if (road != null && road.matchesFilter(tileFilter))
                     roadStats[Stat.valueOf(unique.params[1])] += unique.params[0].toFloat()
             }
 
@@ -207,10 +207,10 @@ class TileStatFunctions(val tile: Tile) {
                 if (tile.matchesFilter(tileFilter, observingCiv, true))
                     for (stat in Stat.values())
                         terrainStats[stat] += statPercentage
-                else if (improvement != null && improvement.matchesFilter(tileFilter))
+                if (improvement != null && improvement.matchesFilter(tileFilter))
                     for (stat in Stat.values())
                         improvementStats[stat] += statPercentage
-                else if (road != null && road.matchesFilter(tileFilter))
+                if (road != null && road.matchesFilter(tileFilter))
                     for (stat in Stat.values())
                         roadStats[stat] += statPercentage
             }
@@ -222,9 +222,9 @@ class TileStatFunctions(val tile: Tile) {
                 val tileFilter = unique.params[2]
                 if (tile.matchesFilter(tileFilter, observingCiv, true))
                     terrainStats[Stat.valueOf(unique.params[1])] += unique.params[0].toFloat()
-                else if (improvement != null && improvement.matchesFilter(tileFilter))
+                if (improvement != null && improvement.matchesFilter(tileFilter))
                     improvementStats[Stat.valueOf(unique.params[1])] += unique.params[0].toFloat()
-                else if (road != null && road.matchesFilter(tileFilter))
+                if (road != null && road.matchesFilter(tileFilter))
                     roadStats[Stat.valueOf(unique.params[1])] += unique.params[0].toFloat()
             }
 
@@ -236,10 +236,10 @@ class TileStatFunctions(val tile: Tile) {
                 if (tile.matchesFilter(tileFilter, observingCiv, true))
                     for (stat in Stat.values())
                         terrainStats[stat] += statPercentage
-                else if (improvement != null && improvement.matchesFilter(tileFilter))
+                if (improvement != null && improvement.matchesFilter(tileFilter))
                     for (stat in Stat.values())
                         improvementStats[stat] += statPercentage
-                else if (road != null && road.matchesFilter(tileFilter))
+                if (road != null && road.matchesFilter(tileFilter))
                     for (stat in Stat.values())
                         roadStats[stat] += statPercentage
             }
