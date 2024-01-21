@@ -35,8 +35,8 @@ class TileStatFunctions(val tile: Tile) {
 
         val improvement = tile.getUnpillagedTileImprovement()
 
-        val road = if (!tile.roadIsPillaged && tile.roadStatus != RoadStatus.None && observingCiv != null)
-            tile.roadStatus.improvement(observingCiv.gameInfo.ruleset)
+        val road = if (!tile.roadIsPillaged && tile.roadStatus != RoadStatus.None)
+            tile.roadStatus.improvement(tile.ruleset)
         else null
 
         val percentageStats = getTilePercentageStats(observingCiv, city, localUniqueCache)
@@ -60,8 +60,8 @@ class TileStatFunctions(val tile: Tile) {
         val improvement = tile.getUnpillagedTileImprovement()
         val improvementStats = improvement?.cloneStats() ?: Stats()
 
-        val road = if (!tile.roadIsPillaged && tile.roadStatus != RoadStatus.None && observingCiv != null)
-            tile.roadStatus.improvement(observingCiv.gameInfo.ruleset)
+        val road = if (!tile.roadIsPillaged && tile.roadStatus != RoadStatus.None)
+            tile.roadStatus.improvement(tile.ruleset)
         else null
         val roadStats = road?.cloneStats() ?: Stats()
 
@@ -180,11 +180,10 @@ class TileStatFunctions(val tile: Tile) {
         val improvement = tile.getUnpillagedTileImprovement()
         val improvementStats = Stats()
 
-        val road = if (!tile.roadIsPillaged && tile.roadStatus != RoadStatus.None && observingCiv != null)
-            tile.roadStatus.improvement(observingCiv.gameInfo.ruleset)
+        val road = if (!tile.roadIsPillaged && tile.roadStatus != RoadStatus.None)
+            tile.roadStatus.improvement(tile.ruleset)
         else null
         val roadStats = Stats()
-
 
         if (city != null) {
             val cachedStatPercentFromObjectCityUniques = uniqueCache.forCityGetMatchingUniques(
