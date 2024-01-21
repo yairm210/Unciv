@@ -122,12 +122,12 @@ object UniqueTriggerActivation {
                     val placedUnit = when {
                         // Set unit at city if there's an explict city or if there's no tile to set at
                         relevantCity != null || (tile == null && civInfo.cities.isNotEmpty()) ->
-                            civInfo.units.addUnit(civUnit, chosenCity)
+                            civInfo.units.addUnit(unit, chosenCity)
                         // Else set the unit at the given tile
-                        tile != null -> civInfo.units.placeUnitNearTile(tile.position, civUnit)
+                        tile != null -> civInfo.units.placeUnitNearTile(tile.position, unit)
                         // Else set unit unit near other units if we have no cities
                         civInfo.units.getCivUnits().any() ->
-                            civInfo.units.placeUnitNearTile(civInfo.units.getCivUnits().first().currentTile.position, civUnit)
+                            civInfo.units.placeUnitNearTile(civInfo.units.getCivUnits().first().currentTile.position, unit)
                         else -> null
                     }
                     if (placedUnit != null)
