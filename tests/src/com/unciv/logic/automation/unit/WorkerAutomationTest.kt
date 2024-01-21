@@ -292,12 +292,13 @@ internal class WorkerAutomationTest {
             // Prevent any sort of worker spawning
             civInfo.addGold(-civInfo.gold)
             civInfo.policies.freePolicies = 0
-            civInfo.addStat(Stat.Science, - 100000)
 
             NextTurnAutomation.automateCivMoves(civInfo)
             TurnManager(civInfo).endTurn()
             // Invalidate WorkerAutomationCache
             testGame.gameInfo.turns++
+            // Because the civ will annoyingly try to research it again
+            civInfo.tech.techsResearched.remove(testGame.ruleset.tileImprovements["Farm"]!!.techRequired!!)
         }
 
         var finishedCount = 0
