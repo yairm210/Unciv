@@ -51,6 +51,11 @@ fun gameplayTab(
         "Automated units choose promotions",
         settings.automatedUnitsChoosePromotions, false
     ) { settings.automatedUnitsChoosePromotions = it }
+    optionsPopup.addCheckbox(
+        this,
+        "Cities auto-bombard at end of turn",
+        settings.citiesAutoBombardAtEndOfTurn, false
+    ) { settings.citiesAutoBombardAtEndOfTurn = it }
     optionsPopup.addCheckbox(this, "Order trade offers by amount", settings.orderTradeOffersByAmount) { settings.orderTradeOffersByAmount = it }
     optionsPopup.addCheckbox(this, "Ask for confirmation when pressing next turn", settings.confirmNextTurn) { settings.confirmNextTurn = it }
 
