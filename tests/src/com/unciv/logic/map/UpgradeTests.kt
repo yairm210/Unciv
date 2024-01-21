@@ -62,7 +62,7 @@ class UpgradeTests {
         var unit1 = testGame.addUnit(testUnit.name, civ, testGame.getTile(Vector2.Zero))
         val upgradeActions = UnitActionsUpgrade.getFreeUpgradeAction(unit1)
 
-        Assert.assertTrue(upgradeActions.size == 1)
+        Assert.assertTrue(upgradeActions.count() == 1)
         Assert.assertFalse("Unit should not be able to upgrade to special unit",
             upgradeActions.any { (it as UpgradeUnitAction).unitToUpgradeTo == unitToUpgradeTo })
 
@@ -85,7 +85,7 @@ class UpgradeTests {
         var unit1 = testGame.addUnit(testUnit.name, civ, testGame.getTile(Vector2.Zero))
         val upgradeActions = UnitActionsUpgrade.getFreeUpgradeAction(unit1)
 
-        Assert.assertTrue(upgradeActions.size == 2)
+        Assert.assertTrue(upgradeActions.count() == 2)
 
         val triggerUnique = Unique("This Unit upgrades for free")
         UniqueTriggerActivation.triggerUnitwideUnique(triggerUnique, unit1)
@@ -112,7 +112,7 @@ class UpgradeTests {
 
         upgradeActions = UnitActionsUpgrade.getUpgradeActionAnywhere(unit1)
 
-        Assert.assertTrue(upgradeActions.size == 1)
+        Assert.assertTrue(upgradeActions.count() == 1)
         Assert.assertTrue(upgradeActions.none { it.action == null })
     }
 }
