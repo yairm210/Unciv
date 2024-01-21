@@ -23,7 +23,7 @@ object EspionageAutomation {
                 // Players can't usually figure this out so lets do highest population instead
                 spy.moveTo(getCivsToStealFromSorted.first().cities.filter { it.getCenterTile().isVisible(civInfo) }.maxByOrNull { it.population.population })
                 continue
-            } 
+            }
             if (spy.action == SpyAction.None) {
                 spy.moveTo(civInfo.getKnownCivs().filter { otherCiv -> otherCiv.isMajorCiv() && otherCiv.cities.any { it.getCenterTile().isVisible(civInfo) }}
                     .toList().randomOrNull()?.cities?.filter { it.getCenterTile().isVisible(civInfo) }?.randomOrNull())

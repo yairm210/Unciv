@@ -56,8 +56,6 @@ class Spy() : IsPartOfGameInfoSerialization {
     }
 
     fun endTurn() {
-        // If the city
-        if (getLocation() == null) moveTo(null)
         when (action) {
             SpyAction.None -> return
             SpyAction.Moving -> {
