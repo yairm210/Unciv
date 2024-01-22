@@ -2,6 +2,7 @@ package com.unciv.uniques
 
 import com.badlogic.gdx.math.Vector2
 import com.unciv.logic.map.mapunit.UnitTurnManager
+import com.unciv.models.UnitActionType
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.fillPlaceholders
 import com.unciv.testing.GdxTestRunner
@@ -42,7 +43,7 @@ class UnitUniquesTests {
         val greatPerson = game.addUnit("Great Scientist", mainCiv, unitTile)
 
         // then
-        val giftAction = UnitActions.getGiftAction(greatPerson, unitTile)
+        val giftAction = UnitActions.getUnitActions(greatPerson, UnitActionType.GiftUnit).firstOrNull()
 
         Assert.assertNotNull("Great Person should have a gift action", giftAction)
     }

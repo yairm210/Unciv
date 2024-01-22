@@ -27,9 +27,6 @@ import com.unciv.ui.screens.worldscreen.unit.actions.UnitActions.invokeUnitActio
  *  API for unit tests: [getGiftAction]
  */
 object UnitActions {
-    // Todo invokeUnitAction fallback might be more efficient if it could ask getUnitActions to skip the actionTypeToFunctions-mapped ones
-    //      - or enumerate them last, as in that case we can expect that to never be reached.
-    //      But - ordering in the UI? Maybe make defaultPage a float and use fractions for sorting?
 
     /**
      *  Get an instance of [UnitAction] of the [unitActionType] type for [unit] and execute its [action][UnitAction.action], if enabled.
@@ -39,22 +36,40 @@ object UnitActions {
      *  @return whether the action was invoked
      */
     fun invokeUnitAction(unit: MapUnit, unitActionType: UnitActionType): Boolean {
-        val unitAction =
-            if (unitActionType in actionTypeToFunctions)
-                actionTypeToFunctions[unitActionType]!!  // we have a mapped getter...
-                    .invoke(unit, unit.getTile())        // ...call it to get a collection...
-                    .firstOrNull { it.action != null }   // ...then take the first enabled one.
-            else
-                getUnitActions(unit)                     // No mapped getter: Enumerate all...
-                    .firstOrNull { it.type == unitActionType && it.action != null }  // ...and take first enabled one to match the type.
-        val internalAction = unitAction?.action ?: return false
+        val internalAction =
+            getUnitActions(unit, unitActionType)
+            .firstOrNull { it.action != null }   // If there's more than one, take the first enabled one.
+            ?.action ?: return false
         internalAction.invoke()
         return true
     }
 
-    /** Gets the preferred "page" to display a [UnitAction] of type [unitActionType] on, possibly dynamic depending on the state or situation [unit] is in. */
-    fun getActionDefaultPage(unit: MapUnit, unitActionType: UnitActionType) =
-        actionTypeToPageGetter[unitActionType]?.invoke(unit) ?: unitActionType.defaultPage
+    /**
+     *  Get all currently possible instances of [UnitAction] for [unit].
+     */
+    fun getUnitActions(unit: MapUnit) = sequence {
+        val tile = unit.getTile()
+
+        // Actions standardized with a directly callable invokeUnitAction
+        for (getActionsFunction in actionTypeToFunctions.values)
+            yieldAll(getActionsFunction(unit, tile))
+
+        // Actions not migrated to actionTypeToFunctions
+        addUnmappedUnitActions(unit)
+    }
+
+    /**
+     *  Get all instances of [UnitAction] of the [unitActionType] type for [unit].
+     *
+     *  Includes optimization for direct creation of the needed instance type, falls back to enumerating [getUnitActions] to look for the given type.
+     */
+    fun getUnitActions(unit: MapUnit, unitActionType: UnitActionType) =
+        if (unitActionType in actionTypeToFunctions)
+            actionTypeToFunctions[unitActionType]!!  // we have a mapped getter...
+                .invoke(unit, unit.getTile())        // ...call it to get a collection...
+        else sequence {
+            addUnmappedUnitActions(unit)             // No mapped getter: Enumerate all...
+        }.filter { it.type == unitActionType }       // ...and take ones matching the type.
 
     private val actionTypeToFunctions = linkedMapOf<UnitActionType, (unit: MapUnit, tile: Tile) -> Sequence<UnitAction>>(
         // Determined by unit uniques
@@ -79,6 +94,10 @@ object UnitActions {
         UnitActionType.TriggerUnique to UnitActionsFromUniques::getTriggerUniqueActions,
         UnitActionType.AddInCapital to UnitActionsFromUniques::getAddInCapitalActions
     )
+
+    /** Gets the preferred "page" to display a [UnitAction] of type [unitActionType] on, possibly dynamic depending on the state or situation [unit] is in. */
+    fun getActionDefaultPage(unit: MapUnit, unitActionType: UnitActionType) =
+        actionTypeToPageGetter[unitActionType]?.invoke(unit) ?: unitActionType.defaultPage
 
     /** Only for action types that wish to change their "More/Back" page position depending on context.
      *  All others get a defaultPage statically from [UnitActionType].
@@ -108,12 +127,8 @@ object UnitActions {
         },
     )
 
-    fun getUnitActions(unit: MapUnit) = sequence {
+    private suspend fun SequenceScope<UnitAction>.addUnmappedUnitActions(unit: MapUnit) {
         val tile = unit.getTile()
-
-        // Actions standardized with a directly callable invokeUnitAction
-        for (getActionsFunction in actionTypeToFunctions.values)
-            yieldAll(getActionsFunction(unit, tile))
 
         // General actions
         addAutomateActions(unit)
