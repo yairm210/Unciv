@@ -121,9 +121,9 @@ class TileStatFunctions(val tile: Tile) {
         val statsFromMinimum = missingFromMinimum(listOfStats.toStats(), minimumStats)
         listOfStats.add("Minimum" to statsFromMinimum)
 
-        if (observingCiv != null)
-            if (listOfStats.toStats().gold != 0f && observingCiv.goldenAges.isGoldenAge())
-                listOfStats.add("Golden Age" to Stats(gold = 1f))
+        if (observingCiv != null && 
+            listOfStats.toStats().gold != 0f && observingCiv.goldenAges.isGoldenAge())
+            listOfStats.add("Golden Age" to Stats(gold = 1f))
 
         return listOfStats.filter { !it.second.isEmpty() }
     }
@@ -180,72 +180,43 @@ class TileStatFunctions(val tile: Tile) {
 
         val road = tile.getUnpillagedRoadImprovement()
         val roadStats = Stats()
+        
+        fun addStats(filter: String, stat: Stat, amount: Float) {
+            if (tile.matchesFilter(filter, observingCiv, true))
+                terrainStats.add(stat, amount)
+            else if (improvement != null && improvement.matchesFilter(filter))
+                improvementStats.add(stat, amount)
+            else if (road != null && road.matchesFilter(filter))
+                roadStats.add(stat, amount)
+        }
 
         if (city != null) {
             val cachedStatPercentFromObjectCityUniques = uniqueCache.forCityGetMatchingUniques(
                 city, UniqueType.StatPercentFromObject, stateForConditionals)
 
             for (unique in cachedStatPercentFromObjectCityUniques) {
-                val amount = unique.params[0].toFloat()
-                val stat = Stat.valueOf(unique.params[1])
-                val tileFilter = unique.params[2]
-
-                if (tile.matchesFilter(tileFilter, observingCiv, true))
-                    terrainStats.add(stat, amount)
-                if (improvement != null && improvement.matchesFilter(tileFilter))
-                    improvementStats.add(stat, amount)
-                if (road != null && road.matchesFilter(tileFilter))
-                    roadStats.add(stat, amount)
+                addStats(unique.params[2], Stat.valueOf(unique.params[1]), unique.params[0].toFloat())
             }
 
             val cachedAllStatPercentFromObjectCityUniques = uniqueCache.forCityGetMatchingUniques(
                 city, UniqueType.AllStatsPercentFromObject, stateForConditionals)
             for (unique in cachedAllStatPercentFromObjectCityUniques) {
-                val tileFilter = unique.params[1]
-                val statPercentage = unique.params[0].toFloat()
-
-                if (tile.matchesFilter(tileFilter, observingCiv, true))
-                    for (stat in Stat.values())
-                        terrainStats.add(stat, statPercentage)
-                if (improvement != null && improvement.matchesFilter(tileFilter))
-                    for (stat in Stat.values())
-                        improvementStats.add(stat, statPercentage)
-                if (road != null && road.matchesFilter(tileFilter))
-                    for (stat in Stat.values())
-                        roadStats.add(stat, statPercentage)
+                for (stat in Stat.values())
+                    addStats(unique.params[1], stat, unique.params[0].toFloat())
             }
 
         } else if (observingCiv != null) {
             val cachedStatPercentFromObjectCivUniques = uniqueCache.forCivGetMatchingUniques(
                 observingCiv, UniqueType.StatPercentFromObject, stateForConditionals)
             for (unique in cachedStatPercentFromObjectCivUniques) {
-                val amount = unique.params[0].toFloat()
-                val stat = Stat.valueOf(unique.params[1])
-                val tileFilter = unique.params[2]
-
-                if (tile.matchesFilter(tileFilter, observingCiv, true))
-                    terrainStats.add(stat, amount)
-                if (improvement != null && improvement.matchesFilter(tileFilter))
-                    improvementStats.add(stat, amount)
-                if (road != null && road.matchesFilter(tileFilter))
-                    roadStats.add(stat, amount)
+                addStats(unique.params[2], Stat.valueOf(unique.params[1]), unique.params[0].toFloat())
             }
 
             val cachedAllStatPercentFromObjectCivUniques = uniqueCache.forCivGetMatchingUniques(
                 observingCiv, UniqueType.AllStatsPercentFromObject, stateForConditionals)
             for (unique in cachedAllStatPercentFromObjectCivUniques) {
-                val tileFilter = unique.params[1]
-                val statPercentage = unique.params[0].toFloat()
-
-                if (tile.matchesFilter(tileFilter, observingCiv, true))
-                    for (stat in Stat.values())
-                        terrainStats.add(stat, statPercentage)
-                if (improvement != null && improvement.matchesFilter(tileFilter))
-                    for (stat in Stat.values())
-                        improvementStats.add(stat, statPercentage)
-                if (road != null && road.matchesFilter(tileFilter))
-                    for (stat in Stat.values())
-                        roadStats.add(stat, statPercentage)
+                for (stat in Stat.values())
+                    addStats(unique.params[1], stat, unique.params[0].toFloat())
             }
         }
         return hashMapOf(
