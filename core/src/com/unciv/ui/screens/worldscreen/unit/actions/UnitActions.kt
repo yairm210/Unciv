@@ -10,13 +10,9 @@ import com.unciv.models.UnitAction
 import com.unciv.models.UnitActionType
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.tr
-import com.unciv.ui.components.extensions.yieldIfNotNull
 import com.unciv.ui.popups.ConfirmPopup
 import com.unciv.ui.popups.hasOpenPopups
 import com.unciv.ui.screens.pickerscreens.PromotionPickerScreen
-import com.unciv.ui.screens.worldscreen.unit.actions.UnitActions.getGiftAction
-import com.unciv.ui.screens.worldscreen.unit.actions.UnitActions.getUnitActions
-import com.unciv.ui.screens.worldscreen.unit.actions.UnitActions.invokeUnitAction
 
 /**
  *  Manages creation of [UnitAction] instances.
@@ -37,7 +33,8 @@ object UnitActions {
      *
      *  Includes optimization for direct creation of the needed instance type, falls back to enumerating [getUnitActions] to look for the given type.
      *
-     *  @return whether the action was invoked */
+     *  @return whether the action was invoked
+     */
     fun invokeUnitAction(unit: MapUnit, unitActionType: UnitActionType): Boolean {
         val unitAction =
             if (unitActionType in actionTypeToFunctions)
@@ -52,7 +49,7 @@ object UnitActions {
         return true
     }
 
-    private val actionTypeToFunctions = linkedMapOf<UnitActionType, (unit:MapUnit, tile: Tile) -> Sequence<UnitAction>>(
+    private val actionTypeToFunctions = linkedMapOf<UnitActionType, (unit: MapUnit, tile: Tile) -> Sequence<UnitAction>>(
         // Determined by unit uniques
         UnitActionType.Transform to UnitActionsFromUniques::getTransformActions,
         UnitActionType.Paradrop to UnitActionsFromUniques::getParadropActions,
@@ -136,7 +133,6 @@ object UnitActions {
     }
 
     private suspend fun SequenceScope<UnitAction>.addSwapAction(unit: MapUnit) {
-        val worldScreen = GUI.getWorldScreen()
         // Air units cannot swap
         if (unit.baseUnit.movesLikeAirUnits()) return
         // Disable unit swapping if multiple units are selected. It would make little sense.
@@ -145,6 +141,7 @@ object UnitActions {
         // have the visual bug that the tile overlays for the eligible swap locations are drawn for
         // /all/ selected units instead of only the first one. This could be fixed, but again,
         // swapping makes little sense for multiselect anyway.
+        val worldScreen = GUI.getWorldScreen()
         if (worldScreen.bottomUnitTable.selectedUnits.size > 1) return
         // Only show the swap action if there is at least one possible swap movement
         if (unit.movement.getUnitSwappableTiles().none()) return
@@ -160,23 +157,24 @@ object UnitActions {
     }
 
     private suspend fun SequenceScope<UnitAction>.addDisbandAction(unit: MapUnit) {
-        val worldScreen = GUI.getWorldScreen()
-        yield(UnitAction(type = UnitActionType.DisbandUnit, action = {
-            if (!worldScreen.hasOpenPopups()) {
-                val disbandText = if (unit.currentTile.getOwner() == unit.civ)
-                    "Disband this unit for [${unit.baseUnit.getDisbandGold(unit.civ)}] gold?".tr()
-                else "Do you really want to disband this unit?".tr()
-                ConfirmPopup(worldScreen, disbandText, "Disband unit") {
-                    unit.disband()
-                    unit.civ.updateStatsForNextTurn() // less upkeep!
-                    GUI.setUpdateWorldOnNextRender()
-                    if (GUI.getSettings().autoUnitCycle)
-                        worldScreen.switchToNextUnit()
-                }.open()
-            }
-        }.takeIf { unit.currentMovement > 0 }))
+        yield(UnitAction(type = UnitActionType.DisbandUnit,
+            action = {
+                val worldScreen = GUI.getWorldScreen()
+                if (!worldScreen.hasOpenPopups()) {
+                    val disbandText = if (unit.currentTile.getOwner() == unit.civ)
+                        "Disband this unit for [${unit.baseUnit.getDisbandGold(unit.civ)}] gold?".tr()
+                    else "Do you really want to disband this unit?".tr()
+                    ConfirmPopup(worldScreen, disbandText, "Disband unit") {
+                        unit.disband()
+                        unit.civ.updateStatsForNextTurn() // less upkeep!
+                        GUI.setUpdateWorldOnNextRender()
+                        if (GUI.getSettings().autoUnitCycle)
+                            worldScreen.switchToNextUnit()
+                    }.open()
+                }
+            }.takeIf { unit.currentMovement > 0 }
+        ))
     }
-
 
     private suspend fun SequenceScope<UnitAction>.addPromoteActions(unit: MapUnit) {
         if (unit.isCivilian() || !unit.promotions.canBePromoted()) return
@@ -249,16 +247,12 @@ object UnitActions {
     }
 
     private suspend fun SequenceScope<UnitAction>.addGiftAction(unit: MapUnit, tile: Tile) {
-        yieldIfNotNull(getGiftAction(unit, tile))
-    }
-
-    fun getGiftAction(unit: MapUnit, tile: Tile): UnitAction? {
         val recipient = tile.getOwner()
         // We need to be in another civs territory.
-        if (recipient == null || recipient.isCurrentPlayer()) return null
+        if (recipient == null || recipient.isCurrentPlayer()) return
 
         if (recipient.isCityState()) {
-            if (recipient.isAtWarWith(unit.civ)) return null // No gifts to enemy CS
+            if (recipient.isAtWarWith(unit.civ)) return // No gifts to enemy CS
             // City States only take military units (and units specifically allowed by uniques)
             if (!unit.isMilitary()
                 && unit.getMatchingUniques(
@@ -266,16 +260,18 @@ object UnitActions {
                     checkCivInfoUniques = true
                 )
                     .none { unit.matchesFilter(it.params[1]) }
-            ) return null
+            ) return
         }
         // If gifting to major civ they need to be friendly
-        else if (!tile.isFriendlyTerritory(unit.civ)) return null
+        else if (!tile.isFriendlyTerritory(unit.civ)) return
 
         // Transported units can't be gifted
-        if (unit.isTransported) return null
+        if (unit.isTransported) return
 
-        if (unit.currentMovement <= 0)
-            return UnitAction(UnitActionType.GiftUnit, action = null)
+        if (unit.currentMovement <= 0) {
+            yield(UnitAction(UnitActionType.GiftUnit, action = null))
+            return
+        }
 
         val giftAction = {
             if (recipient.isCityState()) {
@@ -300,9 +296,13 @@ object UnitActions {
                 unit.gift(recipient)
             GUI.setUpdateWorldOnNextRender()
         }
-
-        return UnitAction(UnitActionType.GiftUnit, action = giftAction)
+        yield(UnitAction(UnitActionType.GiftUnit, action = giftAction))
     }
+
+    /** This exists exclusively for the unit tests, which cannot call getUnitActions.filter(type==GiftUnit) because some bad boys call GUI.worldScreen */
+    fun getGiftAction(unit: MapUnit, tile: Tile): UnitAction = sequence {
+            addGiftAction(unit, tile)
+        }.first()
 
     private suspend fun SequenceScope<UnitAction>.addAutomateActions(unit: MapUnit) {
         if (unit.isAutomated()) return

@@ -21,6 +21,7 @@ class UnitActionsTable(val worldScreen: WorldScreen) : Table() {
         /** Padding between and to the left of the Buttons */
         private const val padBetweenButtons = 2f
     }
+
     init {
         defaults().left().padLeft(padBetweenButtons).padBottom(padBetweenButtons)
     }
@@ -74,6 +75,6 @@ class UnitActionsTable(val worldScreen: WorldScreen) : Table() {
             }
         }
 
-         return actionButton
+        return actionButton
     }
 }
