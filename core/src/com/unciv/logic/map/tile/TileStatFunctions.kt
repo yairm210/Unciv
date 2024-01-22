@@ -107,9 +107,6 @@ class TileStatFunctions(val tile: Tile) {
             if (road != null)
                 roadStats.add(getExtraImprovementStats(road, observingCiv, city))
 
-            if (listOfStats.toStats().gold != 0f && observingCiv.goldenAges.isGoldenAge())
-                listOfStats.add("Golden Age" to Stats(gold = 1f))
-
             if (improvement != null) {
                 val ensureMinUnique = improvement
                     .getMatchingUniques(UniqueType.EnsureMinimumStats, stateForConditionals)
@@ -123,6 +120,10 @@ class TileStatFunctions(val tile: Tile) {
 
         val statsFromMinimum = missingFromMinimum(listOfStats.toStats(), minimumStats)
         listOfStats.add("Minimum" to statsFromMinimum)
+
+        if (observingCiv != null)
+            if (listOfStats.toStats().gold != 0f && observingCiv.goldenAges.isGoldenAge())
+                listOfStats.add("Golden Age" to Stats(gold = 1f))
 
         return listOfStats.filter { !it.second.isEmpty() }
     }
