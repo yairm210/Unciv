@@ -33,14 +33,14 @@ class TileStatFunctions(val tile: Tile) {
     ): Stats {
         val statsBreakdown = getTileStatsBreakdown(city, observingCiv, localUniqueCache)
 
-        val improvement = tile.getUnpillagedTileImprovement()
-        val road = tile.getUnpillagedRoadImprovement()
+        val improvement = tile.getUnpillagedImprovement()
+        val road = tile.getUnpillagedRoad()
 
         val percentageStats = getTilePercentageStats(observingCiv, city, localUniqueCache)
         for (stats in statsBreakdown) {
             val tileType = when(stats.first) {
-                improvement?.name -> "Improvement"
-                road?.name -> "Road"
+                improvement -> "Improvement"
+                road.name -> "Road"
                 else -> "Terrain"
             }
             for ((stat, value) in percentageStats[tileType]!!)
