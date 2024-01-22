@@ -244,7 +244,7 @@ object UnitActions {
         if (!unit.canFortify() || unit.currentMovement == 0f) return
 
         yield(UnitAction(UnitActionType.Fortify,
-            action = { unit.fortify() }.takeIf { !unit.isFortified() }
+            action = { unit.fortify() }.takeIf { !unit.isFortified() || unit.isFortifyingUntilHealed() }
         ))
 
         if (unit.health == 100) return
@@ -259,7 +259,7 @@ object UnitActions {
         if (tile.hasImprovementInProgress() && unit.canBuildImprovement(tile.getTileImprovementInProgress()!!)) return
 
         yield(UnitAction(UnitActionType.Sleep,
-            action = { unit.action = UnitActionType.Sleep.value }.takeIf { !unit.isSleeping() }
+            action = { unit.action = UnitActionType.Sleep.value }.takeIf { !unit.isSleeping() || unit.isSleepingUntilHealed() }
         ))
 
         if (unit.health == 100) return
