@@ -14,7 +14,6 @@ import com.unciv.ui.popups.ConfirmPopup
 import com.unciv.ui.popups.hasOpenPopups
 import com.unciv.ui.screens.pickerscreens.PromotionPickerScreen
 import com.unciv.ui.screens.worldscreen.unit.actions.UnitActions.getActionDefaultPage
-import com.unciv.ui.screens.worldscreen.unit.actions.UnitActions.getGiftAction
 import com.unciv.ui.screens.worldscreen.unit.actions.UnitActions.getPagingActions
 import com.unciv.ui.screens.worldscreen.unit.actions.UnitActions.getUnitActions
 import com.unciv.ui.screens.worldscreen.unit.actions.UnitActions.invokeUnitAction
@@ -22,9 +21,11 @@ import com.unciv.ui.screens.worldscreen.unit.actions.UnitActions.invokeUnitActio
 /**
  *  Manages creation of [UnitAction] instances.
  *
- *  API for UI: [getUnitActions], [getActionDefaultPage], [getPagingActions]
- *  API for Automation: [invokeUnitAction]
- *  API for unit tests: [getGiftAction]
+ *  API used by UI: [getUnitActions] without `unitActionType` parameter, [getActionDefaultPage], [getPagingActions]
+ *  API used by Automation: [invokeUnitAction]
+ *  API used by unit tests: [getUnitActions] with `unitActionType` parameter
+ *      Note on unit test use: Some UnitAction factories access GUI helpers that crash from a unit test.
+ *      Avoid testing actions that need WorldScreen context, and migrate any un-mapped ones you need to `actionTypeToFunctions`.
  */
 object UnitActions {
 
@@ -92,7 +93,8 @@ object UnitActions {
         UnitActionType.SpreadReligion to UnitActionsReligion::getSpreadReligionActions,
         UnitActionType.RemoveHeresy to UnitActionsReligion::getRemoveHeresyActions,
         UnitActionType.TriggerUnique to UnitActionsFromUniques::getTriggerUniqueActions,
-        UnitActionType.AddInCapital to UnitActionsFromUniques::getAddInCapitalActions
+        UnitActionType.AddInCapital to UnitActionsFromUniques::getAddInCapitalActions,
+        UnitActionType.GiftUnit to UnitActions::getGiftActions
     )
 
     /** Gets the preferred "page" to display a [UnitAction] of type [unitActionType] on, possibly dynamic depending on the state or situation [unit] is in. */
@@ -162,7 +164,6 @@ object UnitActions {
 
         addSwapAction(unit)
         addDisbandAction(unit)
-        addGiftAction(unit, tile)
     }
 
     private suspend fun SequenceScope<UnitAction>.addSwapAction(unit: MapUnit) {
@@ -268,13 +269,13 @@ object UnitActions {
         ))
     }
 
-    private suspend fun SequenceScope<UnitAction>.addGiftAction(unit: MapUnit, tile: Tile) {
+    private fun getGiftActions(unit: MapUnit, tile: Tile) = sequence {
         val recipient = tile.getOwner()
         // We need to be in another civs territory.
-        if (recipient == null || recipient.isCurrentPlayer()) return
+        if (recipient == null || recipient.isCurrentPlayer()) return@sequence
 
         if (recipient.isCityState()) {
-            if (recipient.isAtWarWith(unit.civ)) return // No gifts to enemy CS
+            if (recipient.isAtWarWith(unit.civ)) return@sequence // No gifts to enemy CS
             // City States only take military units (and units specifically allowed by uniques)
             if (!unit.isMilitary()
                 && unit.getMatchingUniques(
@@ -282,17 +283,17 @@ object UnitActions {
                     checkCivInfoUniques = true
                 )
                     .none { unit.matchesFilter(it.params[1]) }
-            ) return
+            ) return@sequence
         }
         // If gifting to major civ they need to be friendly
-        else if (!tile.isFriendlyTerritory(unit.civ)) return
+        else if (!tile.isFriendlyTerritory(unit.civ)) return@sequence
 
         // Transported units can't be gifted
-        if (unit.isTransported) return
+        if (unit.isTransported) return@sequence
 
         if (unit.currentMovement <= 0) {
             yield(UnitAction(UnitActionType.GiftUnit, action = null))
-            return
+            return@sequence
         }
 
         val giftAction = {
@@ -320,11 +321,6 @@ object UnitActions {
         }
         yield(UnitAction(UnitActionType.GiftUnit, action = giftAction))
     }
-
-    /** This exists exclusively for the unit tests, which cannot call getUnitActions.filter(type==GiftUnit) because some bad boys call GUI.worldScreen */
-    fun getGiftAction(unit: MapUnit, tile: Tile): UnitAction = sequence {
-            addGiftAction(unit, tile)
-        }.first()
 
     private suspend fun SequenceScope<UnitAction>.addAutomateActions(unit: MapUnit) {
         if (unit.isAutomated()) return

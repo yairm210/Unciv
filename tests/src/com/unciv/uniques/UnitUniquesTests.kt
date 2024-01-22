@@ -43,7 +43,8 @@ class UnitUniquesTests {
         val greatPerson = game.addUnit("Great Scientist", mainCiv, unitTile)
 
         // then
-        val giftAction = UnitActions.getUnitActions(greatPerson, UnitActionType.GiftUnit).firstOrNull()
+        val giftAction = UnitActions.getUnitActions(greatPerson, UnitActionType.GiftUnit)
+            .firstOrNull { it.action != null } // This tests that the action should be enabled, too
 
         Assert.assertNotNull("Great Person should have a gift action", giftAction)
     }
