@@ -6,15 +6,22 @@ import com.unciv.logic.battle.TargetHelper
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
+import com.unciv.models.ruleset.unique.UniqueType
 
 object AirUnitAutomation {
 
     fun automateFighter(unit: MapUnit) {
+        if (unit.health <= 50 && !unit.hasUnique(UniqueType.HealsEvenAfterAction)) return // Wait and heal
+
         val tilesWithEnemyUnitsInRange = unit.civ.threatManager.getTilesWithEnemyUnitsInDistance(unit.getTile(), unit.getRange())
+        // TODO: Optimize [friendlyAirUnitsInRange] by creating an alternate [ThreatManager.getTilesWithEnemyUnitsInDistance] that handles only friendly units
+        val friendlyAirUnitsInRange = unit.getTile().getTilesInDistance(unit.getRange()).flatMap { it.airUnits }.filter { it.civ == unit.civ }
         val enemyAirUnitsInRange = tilesWithEnemyUnitsInRange
             .flatMap { it.airUnits.asSequence() }.filter { it.civ.isAtWarWith(unit.civ) }
+        val friendlyFighterCount = friendlyAirUnitsInRange.count { it.health >= 50 }
 
-        if (enemyAirUnitsInRange.any()) return // we need to be on standby in case they attack
+        // We need to be on standby in case they attack, assume half the planes are bombers
+        if (friendlyFighterCount < enemyAirUnitsInRange.size / 2) return 
 
         if (BattleHelper.tryAttackNearbyEnemy(unit)) return
 
@@ -47,6 +54,8 @@ object AirUnitAutomation {
     }
 
     fun automateBomber(unit: MapUnit) {
+        if (unit.health <= 50 && !unit.hasUnique(UniqueType.HealsEvenAfterAction)) return // Wait and heal
+
         if (BattleHelper.tryAttackNearbyEnemy(unit)) return
 
         if (tryRelocateToCitiesWithEnemyNearBy(unit)) return
