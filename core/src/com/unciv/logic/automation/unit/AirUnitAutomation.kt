@@ -1,5 +1,6 @@
 package com.unciv.logic.automation.unit
 
+import com.unciv.logic.battle.AirInterception
 import com.unciv.logic.battle.MapUnitCombatant
 import com.unciv.logic.battle.Nuke
 import com.unciv.logic.battle.TargetHelper
@@ -16,13 +17,23 @@ object AirUnitAutomation {
         val tilesWithEnemyUnitsInRange = unit.civ.threatManager.getTilesWithEnemyUnitsInDistance(unit.getTile(), unit.getRange())
         // TODO: Optimize [friendlyAirUnitsInRange] by creating an alternate [ThreatManager.getTilesWithEnemyUnitsInDistance] that handles only friendly units
         val friendlyAirUnitsInRange = unit.getTile().getTilesInDistance(unit.getRange()).flatMap { it.airUnits }.filter { it.civ == unit.civ }
+        // Find all visible enemy air units
         val enemyAirUnitsInRange = tilesWithEnemyUnitsInRange
             .flatMap { it.airUnits.asSequence() }.filter { it.civ.isAtWarWith(unit.civ) }
-        val friendlyFighterCount = friendlyAirUnitsInRange.count { it.health >= 50 }
+        val friendlyUnusedFighterCount = friendlyAirUnitsInRange.count { it.health >= 50 && it.canAttack() }
+        val friendlyUsedFighterCount = friendlyAirUnitsInRange.count { it.health >= 50 && !it.canAttack() }
 
         // We need to be on standby in case they attack, assume half the planes are bombers
-        if (friendlyFighterCount < enemyAirUnitsInRange.size / 2) return 
+        if (friendlyUnusedFighterCount < enemyAirUnitsInRange.size / 2) return 
 
+        if (friendlyUsedFighterCount <= enemyAirUnitsInRange.size / 2) {
+            if (tryAirSweep(unit, tilesWithEnemyUnitsInRange)) return
+        }
+
+        if (unit.health < 80) {
+            return // Wait and heal up, no point in moving closer to battle if we aren't healed
+        }
+        
         if (BattleHelper.tryAttackNearbyEnemy(unit)) return
 
         if (tryRelocateToCitiesWithEnemyNearBy(unit)) return
@@ -53,10 +64,24 @@ object AirUnitAutomation {
 
     }
 
+    private fun tryAirSweep(unit: MapUnit, tilesWithEnemyUnitsInRange: List<Tile>):Boolean {
+        val targetTile = tilesWithEnemyUnitsInRange.filter { 
+            tile -> tile.getUnits().any { it.civ.isAtWarWith(unit.civ) 
+                || (tile.isCityCenter() && tile.getCity()!!.civ.isAtWarWith(unit.civ)) }
+            }.minByOrNull { it.aerialDistanceTo(unit.getTile()) } ?: return false
+        AirInterception.airSweep(MapUnitCombatant(unit),targetTile)
+        if (unit.currentMovement > 0) return false
+        return true
+    }
+
     fun automateBomber(unit: MapUnit) {
         if (unit.health <= 50 && !unit.hasUnique(UniqueType.HealsEvenAfterAction)) return // Wait and heal
 
         if (BattleHelper.tryAttackNearbyEnemy(unit)) return
+
+        if (unit.health <= 90 || (unit.health < 100 && !unit.civ.isAtWar())) {
+            return // Wait and heal
+        }
 
         if (tryRelocateToCitiesWithEnemyNearBy(unit)) return
 
