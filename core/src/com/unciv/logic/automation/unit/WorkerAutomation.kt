@@ -688,10 +688,10 @@ class WorkerAutomation(
             }
         }
         if (isImprovementProbablyAFort(improvement)) {
-            // Forts have a base value, replace other improvements first
-            if (improvement.hasUnique(UniqueType.TakesOverAdjacentTiles)) value += 1
-            else value += .2f
             value += evaluateFortSurroundings(tile, improvement.hasUnique(UniqueType.TakesOverAdjacentTiles))
+        } else if (tile.getTileImprovement() != null && isImprovementProbablyAFort(tile.getTileImprovement()!!)) {
+            // Replace/build improvements on other tiles before this one
+            value /= 2
         }
         return value
     }
@@ -738,8 +738,6 @@ class WorkerAutomation(
      * @return Yes the location is good for a Fort here
      */
     private fun evaluateFortSurroundings(tile: Tile, isCitadel: Boolean): Float {
-        //todo Is the Citadel code dead anyway? If not - why does the nearestTiles check not respect the param?
-
         // build on our land only
         if (tile.owningCity?.civ != civInfo &&
             // except citadel which can be built near-by
