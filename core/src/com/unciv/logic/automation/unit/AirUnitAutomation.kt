@@ -20,14 +20,23 @@ object AirUnitAutomation {
         // Find all visible enemy air units
         val enemyAirUnitsInRange = tilesWithEnemyUnitsInRange
             .flatMap { it.airUnits.asSequence() }.filter { it.civ.isAtWarWith(unit.civ) }
+        val enemyFighters = enemyAirUnitsInRange.size / 2 // Assume half the planes are fighters
         val friendlyUnusedFighterCount = friendlyAirUnitsInRange.count { it.health >= 50 && it.canAttack() }
         val friendlyUsedFighterCount = friendlyAirUnitsInRange.count { it.health >= 50 && !it.canAttack() }
 
-        // We need to be on standby in case they attack, assume half the planes are bombers
-        if (friendlyUnusedFighterCount < enemyAirUnitsInRange.size / 2) return 
+        // We need to be on standby in case they attack
+        if (friendlyUnusedFighterCount < enemyFighters) return 
 
-        if (friendlyUsedFighterCount <= enemyAirUnitsInRange.size / 2) {
-            if (tryAirSweep(unit, tilesWithEnemyUnitsInRange)) return
+        if (friendlyUsedFighterCount <= enemyFighters) {
+            // If we are outnumbered, don't heal after attacking and don't have an Air Sweep bonus
+            // Then we shouldn't speed the air battle by killing our fighters, instead, focus on defending
+            if (friendlyUsedFighterCount + friendlyUnusedFighterCount < enemyFighters 
+                && !unit.hasUnique(UniqueType.HealsEvenAfterAction)
+                && unit.airSweepDamagePercentBonus() <= 0) {
+                return
+            } else {
+                if (tryAirSweep(unit, tilesWithEnemyUnitsInRange)) return
+            }
         }
 
         if (unit.health < 80) {
