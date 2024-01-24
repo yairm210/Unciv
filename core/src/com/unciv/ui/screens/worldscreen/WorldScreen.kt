@@ -5,7 +5,6 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.ui.Table
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
 import com.unciv.UncivGame
@@ -26,10 +25,7 @@ import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.components.extensions.centerX
 import com.unciv.ui.components.extensions.darken
-import com.unciv.ui.components.extensions.isEnabled
-import com.unciv.ui.components.extensions.setFontSize
 import com.unciv.ui.components.extensions.toLabel
-import com.unciv.ui.components.extensions.toTextButton
 import com.unciv.ui.components.input.KeyCharAndCode
 import com.unciv.ui.components.input.KeyShortcutDispatcherVeto
 import com.unciv.ui.components.input.KeyboardBinding

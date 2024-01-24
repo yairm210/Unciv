@@ -66,7 +66,7 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
     fun conditionalsApply(state: StateForConditionals = StateForConditionals()): Boolean {
         if (state.ignoreConditionals) return true
         // Always allow Timed conditional uniques. They are managed elsewhere
-        if (conditionals.any{ it.isOfType(UniqueType.ConditionalTimedUnique) }) return true
+        if (conditionals.any { it.isOfType(UniqueType.ConditionalTimedUnique) }) return true
         for (condition in conditionals) {
             if (!conditionalApplies(condition, state)) return false
         }
