@@ -7,6 +7,7 @@ import com.unciv.logic.battle.MapUnitCombatant
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.managers.ReligionState
+import com.unciv.models.ruleset.GlobalUniques
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.validation.UniqueValidator
 import com.unciv.models.stats.Stat
@@ -64,6 +65,8 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
 
     fun conditionalsApply(state: StateForConditionals = StateForConditionals()): Boolean {
         if (state.ignoreConditionals) return true
+        // Always allow Timed conditional uniques. They are managed elsewhere
+        if (conditionals.any{ it.isOfType(UniqueType.ConditionalTimedUnique) }) return true
         for (condition in conditionals) {
             if (!conditionalApplies(condition, state)) return false
         }
@@ -71,6 +74,18 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
     }
 
     fun getDeprecationAnnotation(): Deprecated? = type?.getDeprecationAnnotation()
+
+    fun getSourceNameForUser(): String {
+        return when (sourceObjectType) {
+            null -> ""
+            UniqueTarget.Global -> GlobalUniques.getUniqueSourceDescription(this)
+            UniqueTarget.Wonder -> "Wonders"
+            UniqueTarget.Building -> "Buildings"
+            UniqueTarget.Policy -> "Policies"
+            UniqueTarget.CityState -> Constants.cityStates
+            else -> sourceObjectType.name
+        }
+    }
 
     fun getReplacementText(ruleset: Ruleset): String {
         val deprecationAnnotation = getDeprecationAnnotation() ?: return ""
@@ -467,7 +482,8 @@ class UniqueMap: HashMap<String, ArrayList<Unique>>() {
 class TemporaryUnique() : IsPartOfGameInfoSerialization {
 
     constructor(uniqueObject: Unique, turns: Int) : this() {
-        unique = uniqueObject.text
+        val turnsText = uniqueObject.conditionals.first { it.isOfType(UniqueType.ConditionalTimedUnique) }.text
+        unique = uniqueObject.text.replaceFirst("<$turnsText>", "")
         sourceObjectType = uniqueObject.sourceObjectType
         sourceObjectName = uniqueObject.sourceObjectName
         turnsLeft = turns

@@ -13,6 +13,7 @@ import com.unciv.models.Spy
 import com.unciv.models.SpyAction
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.extensions.addSeparatorVertical
+import com.unciv.ui.components.extensions.disable
 import com.unciv.ui.components.extensions.setSize
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
@@ -24,9 +25,10 @@ import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.widgets.AutoScrollPane
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.pickerscreens.PickerScreen
+import com.unciv.ui.screens.worldscreen.WorldScreen
 
 /** Screen used for moving spies between cities */
-class EspionageOverviewScreen(val civInfo: Civilization) : PickerScreen(true) {
+class EspionageOverviewScreen(val civInfo: Civilization, val worldScreen: WorldScreen) : PickerScreen(true) {
     private val collator = UncivGame.Current.settings.getCollatorFromLocale()
 
     private val spySelectionTable = Table(skin)
@@ -102,6 +104,10 @@ class EspionageOverviewScreen(val civInfo: Civilization) : PickerScreen(true) {
                             && !city.espionage.hasSpyOf(civInfo)
                         )
                 }
+            }
+            if (worldScreen.viewingCiv != civInfo) {
+                // Spectators aren't allowed to move the spies of the Civs they are viewing
+                moveSpyButton.disable()
             }
             spySelectionTable.add(moveSpyButton).pad(5f, 10f, 5f, 20f).row()
         }

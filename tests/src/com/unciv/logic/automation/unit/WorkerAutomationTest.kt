@@ -55,6 +55,30 @@ internal class WorkerAutomationTest {
     }
 
     @Test
+    fun `should remove terrain feature enable resource`() {
+        // Add the needed tech to construct the improvements below
+        for (improvement in listOf("Remove Forest", "Plantation")) {
+            civInfo.tech.techsResearched.add(testGame.ruleset.tileImprovements[improvement]!!.techRequired!!)
+        }
+
+        testGame.addCity(civInfo, testGame.tileMap[0,0])
+
+        val currentTile = testGame.tileMap[1,1]
+        currentTile.addTerrainFeature("Hill")
+        currentTile.addTerrainFeature("Forest")
+        currentTile.resource = "Citrus"
+        currentTile.resourceAmount = 1
+
+        val mapUnit = testGame.addUnit("Worker", civInfo, currentTile)
+
+        workerAutomation.automateWorkerAction(mapUnit, hashSetOf())
+
+        assertEquals("Worker should begun removing the forest to clear a luxury resource but didn't",
+            "Remove Forest", currentTile.improvementInProgress)
+        assertTrue(currentTile.turnsToImprovement > 0)
+    }
+
+    @Test
     fun `should build improvement on unseen resource`() {
         // Add the needed tech to construct the improvements below
         for (improvement in listOf(RoadStatus.Road.name, "Farm")) {
@@ -268,12 +292,13 @@ internal class WorkerAutomationTest {
             // Prevent any sort of worker spawning
             civInfo.addGold(-civInfo.gold)
             civInfo.policies.freePolicies = 0
-            civInfo.addStat(Stat.Science, - 100000)
 
             NextTurnAutomation.automateCivMoves(civInfo)
             TurnManager(civInfo).endTurn()
             // Invalidate WorkerAutomationCache
             testGame.gameInfo.turns++
+            // Because the civ will annoyingly try to research it again
+            civInfo.tech.techsResearched.remove(testGame.ruleset.tileImprovements["Farm"]!!.techRequired!!)
         }
 
         var finishedCount = 0

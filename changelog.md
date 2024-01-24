@@ -1,3 +1,50 @@
+## 4.10.1
+
+'cities auto-bombard at end of turn' is a user option
+
+Improved Console autocomplete - By SomeTroglodyte
+
+By tuvus:
+- AI worker road priority rework
+- Spectators can see the diplomacy screen of the civ that they have selected
+- Checking if a tile is in work range now checks all cities
+
+Assume the relevant city for triggered uniques  - By SeventhM
+
+## 4.10.0
+
+Natural wonders no longer spawn next to start locations
+
+Automated spectator in multiplayer takes no actions
+
+Added console commands to remove roads, change city name
+
+By SomeTroglodyte:
+- The console key is now bindable
+- Allow map editor to generate smaller than "tiny" Pangaea maps
+
+By SeventhM:
+- Treat all timed uniques as functioning as always true regardless of conditionals
+- Fix conditionals being ignored for some triggers
+
+Increase AI workers - By tuvus
+
+## 4.9.19
+
+Modding:
+- "Cannot be traded" unique accepts Civ conditionals
+- Allow comment uniques on follower beliefs
+
+By tuvus:
+- Spectators receive era notifications again
+- Fixed AI Worker feature removal
+
+By SomeTroglodyte:
+- Fix Paradrop crossing World-wrap seam
+- ModManagementScreen gets a loading indicator
+
+Add modified nation descriptions  - By Ouaz
+
 ## 4.9.18
 
 Performance improvements for movement and ruleset validation

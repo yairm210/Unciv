@@ -544,17 +544,18 @@ class CityConstructions : IsPartOfGameInfoSerialization {
     }
 
     fun triggerNewBuildingUniques(building: Building) {
+        val stateForConditionals = StateForConditionals(city.civ, city)
         val triggerNotificationText ="due to constructing [${building.name}]"
 
         for (unique in building.uniqueObjects)
-            if (!unique.hasTriggerConditional())
+            if (!unique.hasTriggerConditional() && unique.conditionalsApply(stateForConditionals))
                 UniqueTriggerActivation.triggerCivwideUnique(unique, city.civ, city, triggerNotificationText = triggerNotificationText)
 
-        for (unique in city.civ.getTriggeredUniques(UniqueType.TriggerUponConstructingBuilding, StateForConditionals(city.civ, city)))
+        for (unique in city.civ.getTriggeredUniques(UniqueType.TriggerUponConstructingBuilding, stateForConditionals))
             if (unique.conditionals.any {it.type == UniqueType.TriggerUponConstructingBuilding && building.matchesFilter(it.params[0])})
                 UniqueTriggerActivation.triggerCivwideUnique(unique, city.civ, city, triggerNotificationText = triggerNotificationText)
 
-        for (unique in city.civ.getTriggeredUniques(UniqueType.TriggerUponConstructingBuildingCityFilter, StateForConditionals(city.civ, city)))
+        for (unique in city.civ.getTriggeredUniques(UniqueType.TriggerUponConstructingBuildingCityFilter, stateForConditionals))
             if (unique.conditionals.any {it.type == UniqueType.TriggerUponConstructingBuildingCityFilter
                     && building.matchesFilter(it.params[0])
                     && city.matchesFilter(it.params[1])})

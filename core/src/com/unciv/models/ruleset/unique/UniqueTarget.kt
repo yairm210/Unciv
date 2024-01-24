@@ -81,7 +81,7 @@ enum class UniqueTarget(
         /** All targets that can display their Uniques */
         // As Array so it can used in a vararg parameter list.
         val Displayable = arrayOf(
-            Building, Unit, UnitType, Improvement, Tech,
+            Building, Unit, UnitType, Improvement, Tech, FollowerBelief,
             Terrain, Resource, Policy, Promotion, Nation, Ruins, Speed
         )
     }

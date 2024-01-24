@@ -1,0 +1,10 @@
+'cities auto-bombard at end of turn' is a user option
+
+Improved Console autocomplete - By SomeTroglodyte
+
+By tuvus:
+- AI worker road priority rework
+- Spectators can see the diplomacy screen of the civ that they have selected
+- Checking if a tile is in work range now checks all cities
+
+Assume the relevant city for triggered uniques  - By SeventhM

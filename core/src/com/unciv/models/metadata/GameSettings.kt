@@ -32,7 +32,6 @@ class GameSettings {
     var showUnitMovements: Boolean = false
     var showSettlersSuggestedCityLocations: Boolean = true
 
-    var experimentalMovement: Boolean = false
     var checkForDueUnits: Boolean = true
     var autoUnitCycle: Boolean = true
     var singleTapMove: Boolean = false
@@ -68,6 +67,7 @@ class GameSettings {
     var automatedUnitsMoveOnTurnStart: Boolean = false
     var automatedUnitsCanUpgrade: Boolean = false
     var automatedUnitsChoosePromotions: Boolean = false
+    var citiesAutoBombardAtEndOfTurn: Boolean = false
 
     var showMinimap: Boolean = true
     var minimapSize: Int = 6    // default corresponds to 15% screen space

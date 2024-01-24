@@ -285,7 +285,7 @@ object SpecificUnitAutomation {
 
     /**
      * If there's a city nearby that can construct a wonder, walk there an get it built. Typically I
-     * like to build all wonders in the same city to have the boni accumulate (and it typically ends
+     * like to build all wonders in the same city to have the bonuses accumulate (and it typically ends
      * up being my capital), but that would need too much logic (e.g. how far away is the capital,
      * is the wonder likely still available by the time I'm there, is this particular wonder even
      * buildable in the capital, etc.)

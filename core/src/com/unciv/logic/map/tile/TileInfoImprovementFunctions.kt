@@ -243,7 +243,8 @@ class TileInfoImprovementFunctions(val tile: Tile) {
         civ: Civilization,
         unit: MapUnit? = null
     ) {
-        for (unique in improvement.uniqueObjects.filter { !it.hasTriggerConditional() })
+        for (unique in improvement.uniqueObjects.filter { !it.hasTriggerConditional()
+            && it.conditionalsApply(StateForConditionals(civ)) })
             if (unit != null) {
                 UniqueTriggerActivation.triggerUnitwideUnique(unique, unit)
             }

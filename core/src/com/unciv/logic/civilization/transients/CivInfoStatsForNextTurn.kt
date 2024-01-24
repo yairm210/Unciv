@@ -309,7 +309,7 @@ class CivInfoStatsForNextTurn(val civInfo: Civilization) {
 
         for (unique in civInfo.getMatchingUniques(UniqueType.Stats))
             if (unique.sourceObjectType != UniqueTarget.Building && unique.sourceObjectType != UniqueTarget.Wonder)
-                statMap.add(unique.sourceObjectType!!.name, unique.stats)
+                statMap.add(unique.getSourceNameForUser(), unique.stats)
 
         for (unique in civInfo.getMatchingUniques(UniqueType.StatsPerStat)) {
             val amount = civInfo.getStatReserve(Stat.valueOf(unique.params[2])) / unique.params[1].toInt()

@@ -11,14 +11,8 @@ import com.unciv.models.translations.tr
 
 object UnitActionsUpgrade {
 
-    internal fun getUnitUpgradeActions(
-        unit: MapUnit,
-        tile: Tile
-    ): List<UnitAction> {
-        val upgradeAction = getUpgradeAction(unit)
-        if (upgradeAction != null) return listOf(upgradeAction)
-        return listOf()
-    }
+    @Suppress("UNUSED_PARAMETER") // reference needs to have this signature
+    internal fun getUnitUpgradeActions(unit: MapUnit, tile: Tile) = sequenceOf(getUpgradeAction(unit)).filterNotNull()
 
     /**  Common implementation for [getUpgradeAction], [getFreeUpgradeAction] and [getAncientRuinsUpgradeAction] */
     private fun getUpgradeAction(

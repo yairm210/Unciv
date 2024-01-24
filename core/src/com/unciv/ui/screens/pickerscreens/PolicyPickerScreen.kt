@@ -229,9 +229,9 @@ class PolicyPickerScreen(
         }
         scrollPane.updateVisualScroll()
 
-        when(select) {
+        when (select) {
             in branches -> branchToGroup[select]?.toggle()
-            in policyNameToButton -> policyNameToButton[select]!!.also { pickPolicy(it) }
+            in policyNameToButton -> pickPolicy(policyNameToButton[select]!!)
         }
     }
 
