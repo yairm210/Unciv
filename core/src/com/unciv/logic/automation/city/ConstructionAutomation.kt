@@ -10,10 +10,10 @@ import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.map.BFS
 import com.unciv.models.ruleset.Building
-import com.unciv.models.ruleset.INonPerpetualConstruction
 import com.unciv.models.ruleset.MilestoneType
-import com.unciv.models.ruleset.PerpetualConstruction
 import com.unciv.models.ruleset.Victory
+import com.unciv.models.ruleset.construction.INonPerpetualConstruction
+import com.unciv.models.ruleset.construction.PerpetualConstruction
 import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat

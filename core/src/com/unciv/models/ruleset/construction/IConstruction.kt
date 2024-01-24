@@ -1,4 +1,4 @@
-package com.unciv.models.ruleset
+package com.unciv.models.ruleset.construction
 
 import com.unciv.logic.city.City
 import com.unciv.logic.city.CityConstructions

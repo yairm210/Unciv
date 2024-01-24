@@ -15,7 +15,7 @@ import com.unciv.logic.civilization.PopupAlert
 import com.unciv.logic.civilization.TechAction
 import com.unciv.logic.map.MapSize
 import com.unciv.logic.map.tile.RoadStatus
-import com.unciv.models.ruleset.INonPerpetualConstruction
+import com.unciv.models.ruleset.construction.INonPerpetualConstruction
 import com.unciv.models.ruleset.tech.Era
 import com.unciv.models.ruleset.tech.Technology
 import com.unciv.models.ruleset.unique.StateForConditionals

@@ -8,8 +8,8 @@ import com.unciv.logic.map.TileMap
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.Building
-import com.unciv.models.ruleset.INonPerpetualConstruction
 import com.unciv.models.ruleset.Victory
+import com.unciv.models.ruleset.construction.INonPerpetualConstruction
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.ruleset.unique.LocalUniqueCache

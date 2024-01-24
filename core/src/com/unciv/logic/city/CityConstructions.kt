@@ -15,12 +15,12 @@ import com.unciv.logic.civilization.PopupAlert
 import com.unciv.logic.map.tile.Tile
 import com.unciv.logic.multiplayer.isUsersTurn
 import com.unciv.models.ruleset.Building
-import com.unciv.models.ruleset.IConstruction
-import com.unciv.models.ruleset.INonPerpetualConstruction
 import com.unciv.models.ruleset.IRulesetObject
-import com.unciv.models.ruleset.PerpetualConstruction
-import com.unciv.models.ruleset.RejectionReasonType
 import com.unciv.models.ruleset.Ruleset
+import com.unciv.models.ruleset.construction.IConstruction
+import com.unciv.models.ruleset.construction.INonPerpetualConstruction
+import com.unciv.models.ruleset.construction.PerpetualConstruction
+import com.unciv.models.ruleset.construction.RejectionReasonType
 import com.unciv.models.ruleset.unique.LocalUniqueCache
 import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.UniqueMap

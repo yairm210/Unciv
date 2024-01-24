@@ -7,8 +7,8 @@ import com.unciv.logic.civilization.diplomacy.DiplomacyManager
 import com.unciv.logic.civilization.managers.TechManager
 import com.unciv.logic.map.tile.RoadStatus
 import com.unciv.models.ruleset.ModOptions
-import com.unciv.models.ruleset.PerpetualConstruction
 import com.unciv.models.ruleset.Ruleset
+import com.unciv.models.ruleset.construction.PerpetualConstruction
 
 /**
  * Container for all temporarily used code managing transitions from deprecated elements to their replacements.

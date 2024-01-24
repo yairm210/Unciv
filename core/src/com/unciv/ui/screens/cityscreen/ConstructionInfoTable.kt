@@ -7,10 +7,10 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.UncivGame
 import com.unciv.models.UncivSound
 import com.unciv.models.ruleset.Building
-import com.unciv.models.ruleset.IConstruction
 import com.unciv.models.ruleset.IRulesetObject
-import com.unciv.models.ruleset.PerpetualConstruction
-import com.unciv.models.ruleset.PerpetualStatConversion
+import com.unciv.models.ruleset.construction.IConstruction
+import com.unciv.models.ruleset.construction.PerpetualConstruction
+import com.unciv.models.ruleset.construction.PerpetualStatConversion
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.extensions.darken

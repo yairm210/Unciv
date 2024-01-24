@@ -6,11 +6,11 @@ import com.unciv.logic.city.CityConstructions
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.models.Counter
-import com.unciv.models.ruleset.INonPerpetualConstruction
-import com.unciv.models.ruleset.RejectionReason
-import com.unciv.models.ruleset.RejectionReasonType
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetObject
+import com.unciv.models.ruleset.construction.INonPerpetualConstruction
+import com.unciv.models.ruleset.construction.RejectionReason
+import com.unciv.models.ruleset.construction.RejectionReasonType
 import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueTarget

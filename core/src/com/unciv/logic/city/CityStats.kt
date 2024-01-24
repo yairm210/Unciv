@@ -3,9 +3,9 @@ package com.unciv.logic.city
 import com.unciv.logic.map.tile.RoadStatus
 import com.unciv.models.Counter
 import com.unciv.models.ruleset.Building
-import com.unciv.models.ruleset.IConstruction
-import com.unciv.models.ruleset.INonPerpetualConstruction
 import com.unciv.models.ruleset.ModOptionsConstants
+import com.unciv.models.ruleset.construction.IConstruction
+import com.unciv.models.ruleset.construction.INonPerpetualConstruction
 import com.unciv.models.ruleset.unique.LocalUniqueCache
 import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.Unique

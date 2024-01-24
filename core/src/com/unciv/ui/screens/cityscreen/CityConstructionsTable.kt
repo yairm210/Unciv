@@ -15,11 +15,11 @@ import com.unciv.logic.map.tile.Tile
 import com.unciv.models.Religion
 import com.unciv.models.UncivSound
 import com.unciv.models.ruleset.Building
-import com.unciv.models.ruleset.IConstruction
-import com.unciv.models.ruleset.INonPerpetualConstruction
-import com.unciv.models.ruleset.PerpetualConstruction
-import com.unciv.models.ruleset.RejectionReason
-import com.unciv.models.ruleset.RejectionReasonType
+import com.unciv.models.ruleset.construction.IConstruction
+import com.unciv.models.ruleset.construction.INonPerpetualConstruction
+import com.unciv.models.ruleset.construction.PerpetualConstruction
+import com.unciv.models.ruleset.construction.RejectionReason
+import com.unciv.models.ruleset.construction.RejectionReasonType
 import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
