@@ -105,11 +105,11 @@ class WorldScreen(
     private val mapVisualization = MapVisualization(gameInfo, viewingCiv)
 
     // Floating Widgets going counter-clockwise
-    val topBar = WorldScreenTopBar(this)
-    private val techPolicyAndDiplomacy = TechPolicyDiplomacyButtons(this)
+    internal val topBar = WorldScreenTopBar(this)
+    internal val techPolicyAndDiplomacy = TechPolicyDiplomacyButtons(this)
     private val unitActionsTable = UnitActionsTable(this)
     /** Bottom left widget holding information about a selected unit or city */
-    val bottomUnitTable = UnitTable(this)
+    internal val bottomUnitTable = UnitTable(this)
     private val battleTable = BattleTable(this)
     private val zoomController = ZoomButtonPair(mapHolder)
     internal val minimapWrapper = MinimapHolder(mapHolder)
@@ -369,9 +369,6 @@ class WorldScreen(
             battleTable.update()
 
             displayTutorialTaskOnUpdate()
-
-            unitActionsTable.update(bottomUnitTable.selectedUnit)
-            unitActionsTable.y = bottomUnitTable.height
         }
 
         mapHolder.resetArrows()
@@ -400,6 +397,12 @@ class WorldScreen(
 
         if (techPolicyAndDiplomacy.update())
             displayTutorial(TutorialTrigger.OtherCivEncountered)
+
+        if (uiEnabled) {
+            // UnitActionsTable measures geometry (its own y, techPolicyAndDiplomacy and fogOfWarButton), so call update this late
+            unitActionsTable.y = bottomUnitTable.height
+            unitActionsTable.update(bottomUnitTable.selectedUnit)
+        }
 
         // If the game has ended, lets stop AutoPlay
         if (game.settings.autoPlay.isAutoPlaying()
