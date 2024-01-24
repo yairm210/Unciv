@@ -1385,8 +1385,13 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Unit
 
-??? example  "May upgrade to [baseUnitFilter] through ruins-like effects"
-	Example: "May upgrade to [Melee] through ruins-like effects"
+??? example  "May upgrade to [unit] through ruins-like effects"
+	Example: "May upgrade to [Musketman] through ruins-like effects"
+
+	Applicable to: Unit
+
+??? example  "Can upgrade to [unit]"
+	Example: "Can upgrade to [Musketman]"
 
 	Applicable to: Unit
 
