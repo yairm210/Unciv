@@ -209,6 +209,7 @@ private class CityTable(city: City, forPopup: Boolean = false) : BorderedTable(
         touchable = Touchable.enabled
 
         val selectedCiv = GUI.getSelectedPlayer()
+        val viewingCiv = GUI.getViewingPlayer()
 
         bgBorderColor = when {
             city.civ == selectedCiv -> colorFromRGB(233, 233, 172)
@@ -228,7 +229,7 @@ private class CityTable(city: City, forPopup: Boolean = false) : BorderedTable(
 
         val isShowDetailedInfo = DebugUtils.VISIBLE_MAP
                 || city.civ == selectedCiv
-                || selectedCiv.isSpectator()
+                || viewingCiv.isSpectator()
 
         addCityPopNumber(city)
 
@@ -240,7 +241,7 @@ private class CityTable(city: City, forPopup: Boolean = false) : BorderedTable(
         if (isShowDetailedInfo)
             addCityConstruction(city)
 
-        if (city.civ != selectedCiv)
+        if (city.civ != viewingCiv)
             addCivIcon(city)
 
         cells.first().padLeft(4f)
