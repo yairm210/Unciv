@@ -100,7 +100,7 @@ object UnitActions {
             })
 
         addPromoteActions(unit)
-        yieldAll(UnitActionsUpgrade.getUnitUpgradeActions(unit, tile))
+        yieldAll(UnitActionsUpgrade.getUpgradeActions(unit))
         yieldAll(UnitActionsPillage.getPillageActions(unit, tile))
 
         addSleepActions(unit, tile)

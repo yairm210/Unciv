@@ -18,6 +18,7 @@ import com.unciv.logic.civilization.TechAction
 import com.unciv.logic.civilization.managers.ReligionState
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
+import com.unciv.models.UpgradeUnitAction
 import com.unciv.models.ruleset.BeliefType
 import com.unciv.models.ruleset.Victory
 import com.unciv.models.stats.Stat
@@ -802,16 +803,16 @@ object UniqueTriggerActivation {
             }
             UniqueType.OneTimeUnitUpgrade -> {
                 val upgradeAction = UnitActionsUpgrade.getFreeUpgradeAction(unit)
-                    ?: return false
-                upgradeAction.action!!()
+                if (upgradeAction.none()) return false
+                (upgradeAction.minBy { (it as UpgradeUnitAction).unitToUpgradeTo.cost }).action!!()
                 if (notification != null)
                     unit.civ.addNotification(notification, unit.getTile().position, NotificationCategory.Units)
                 return true
             }
             UniqueType.OneTimeUnitSpecialUpgrade -> {
                 val upgradeAction = UnitActionsUpgrade.getAncientRuinsUpgradeAction(unit)
-                    ?: return false
-                upgradeAction.action!!()
+                if (upgradeAction.none()) return false
+                (upgradeAction.minBy { (it as UpgradeUnitAction).unitToUpgradeTo.cost }).action!!()
                 if (notification != null)
                     unit.civ.addNotification(notification, unit.getTile().position, NotificationCategory.Units)
                 return true
