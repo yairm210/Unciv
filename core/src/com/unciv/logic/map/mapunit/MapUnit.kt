@@ -486,11 +486,6 @@ class MapUnit : IsPartOfGameInfoSerialization {
             damageFactor *= 1f - unique.params[0].toFloat() / 100f
         return damageFactor
     }
-    
-    fun airSweepDamagePercentBonus(): Int {
-        return getMatchingUniques(UniqueType.StrengthWhenAirsweep)
-            .sumOf { it.params[0].toInt() }
-    }
 
     fun getDamageFromTerrain(tile: Tile = currentTile): Int {
         if (civ.nonStandardTerrainDamage) {

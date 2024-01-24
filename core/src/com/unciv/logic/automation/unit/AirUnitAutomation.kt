@@ -28,11 +28,16 @@ object AirUnitAutomation {
         if (friendlyUnusedFighterCount < enemyFighters) return 
 
         if (friendlyUsedFighterCount <= enemyFighters) {
+            fun airSweepDamagePercentBonus(): Int {
+                return unit.getMatchingUniques(UniqueType.StrengthWhenAirsweep)
+                    .sumOf { it.params[0].toInt() }
+            }
+            
             // If we are outnumbered, don't heal after attacking and don't have an Air Sweep bonus
             // Then we shouldn't speed the air battle by killing our fighters, instead, focus on defending
             if (friendlyUsedFighterCount + friendlyUnusedFighterCount < enemyFighters 
                 && !unit.hasUnique(UniqueType.HealsEvenAfterAction)
-                && unit.airSweepDamagePercentBonus() <= 0) {
+                && airSweepDamagePercentBonus() <= 0) {
                 return
             } else {
                 if (tryAirSweep(unit, tilesWithEnemyUnitsInRange)) return
