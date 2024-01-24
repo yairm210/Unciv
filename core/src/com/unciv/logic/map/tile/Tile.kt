@@ -467,11 +467,11 @@ open class Tile : IsPartOfGameInfoSerialization {
     }
 
     // This should be the only adjacency function
-    fun isAdjacentTo(terrainFilter:String): Boolean {
+    fun isAdjacentTo(terrainFilter:String, observingCiv: Civilization?=null): Boolean {
         // Rivers are odd, as they aren't technically part of any specific tile but still count towards adjacency
         if (terrainFilter == Constants.river) return isAdjacentToRiver()
         if (terrainFilter == Constants.freshWater && isAdjacentToRiver()) return true
-        return (neighbors + this).any { neighbor -> neighbor.matchesFilter(terrainFilter) }
+        return (neighbors + this).any { neighbor -> neighbor.matchesFilter(terrainFilter, observingCiv) }
     }
 
     /** Implements [UniqueParameterType.TileFilter][com.unciv.models.ruleset.unique.UniqueParameterType.TileFilter] */
@@ -514,7 +514,7 @@ open class Tile : IsPartOfGameInfoSerialization {
             "Water resource" -> isWater && observingCiv != null && hasViewableResource(observingCiv)
             "Natural Wonder" -> naturalWonder != null
             "Featureless" -> terrainFeatures.isEmpty()
-            Constants.freshWaterFilter -> isAdjacentTo(Constants.freshWater)
+            Constants.freshWaterFilter -> isAdjacentTo(Constants.freshWater, observingCiv)
 
             in terrainFeatures -> true
             else -> {
