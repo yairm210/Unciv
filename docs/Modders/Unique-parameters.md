@@ -148,6 +148,12 @@ A filter determining a part of the population of a city. It can be any of the fo
 - `Unemployed`
 - `Followers of the Majority Religion` or `Followers of this Religion`, both of which only apply when this religion is the majority religion in that city
 
+## combatantFilter
+
+Can be any of:
+- [mapUnitFilter](#mapunitfilter), for unit combatants
+- "City", "All", or [civFilter](#civfilter), for city combatants
+
 ## regionType
 
 Used for dividing the world into regions in each of which a single player is placed at the start of the game.
