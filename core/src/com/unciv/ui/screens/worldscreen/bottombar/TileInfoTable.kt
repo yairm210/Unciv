@@ -23,7 +23,7 @@ import com.unciv.ui.screens.worldscreen.WorldScreen
 import com.unciv.utils.DebugUtils
 
 class TileInfoTable(private val worldScreen: WorldScreen) : Table(BaseScreen.skin) {
-    val viewingCiv = worldScreen.viewingCiv
+    var selectedCiv = worldScreen.selectedCiv
 
     init {
         background = BaseScreen.skinStrings.getUiBackground(
@@ -35,10 +35,10 @@ class TileInfoTable(private val worldScreen: WorldScreen) : Table(BaseScreen.ski
     internal fun updateTileTable(tile: Tile?) {
         clearChildren()
 
-        if (tile != null && (DebugUtils.VISIBLE_MAP || viewingCiv.hasExplored(tile)) ) {
+        if (tile != null && (DebugUtils.VISIBLE_MAP || selectedCiv.hasExplored(tile)) ) {
             add(getStatsTable(tile))
-            add(MarkupRenderer.render(TileDescription.toMarkup(tile, viewingCiv), padding = 0f, iconDisplay = IconDisplay.None) {
-                UncivGame.Current.pushScreen(CivilopediaScreen(viewingCiv.gameInfo.ruleset, link = it))
+            add(MarkupRenderer.render(TileDescription.toMarkup(tile, selectedCiv), padding = 0f, iconDisplay = IconDisplay.None) {
+                UncivGame.Current.pushScreen(CivilopediaScreen(selectedCiv.gameInfo.ruleset, link = it))
             } ).pad(5f).row()
             if (DebugUtils.VISIBLE_MAP)
                 add(tile.position.toPrettyString().toLabel()).colspan(2).pad(5f)
@@ -54,7 +54,7 @@ class TileInfoTable(private val worldScreen: WorldScreen) : Table(BaseScreen.ski
 
         // padLeft = padRight + 5: for symmetry. An extra 5 for the distance yield number to
         // tile text comes from the pad up there in updateTileTable
-        for ((key, value) in tile.stats.getTileStats(viewingCiv)) {
+        for ((key, value) in tile.stats.getTileStats(selectedCiv)) {
             table.add(ImageGetter.getStatIcon(key.name))
                 .size(20f).align(Align.right).padLeft(10f)
             table.add(value.toInt().toLabel())
@@ -64,7 +64,7 @@ class TileInfoTable(private val worldScreen: WorldScreen) : Table(BaseScreen.ski
         table.touchable = Touchable.enabled
         table.onClick {
             Popup(worldScreen).apply {
-                for ((name, stats) in tile.stats.getTileStatsBreakdown(tile.getCity(), viewingCiv))
+                for ((name, stats) in tile.stats.getTileStatsBreakdown(tile.getCity(), selectedCiv))
                     add("${name.tr()}: {${stats.clone()}}".toLabel()).row()
                 addCloseButton()
             }.open()
