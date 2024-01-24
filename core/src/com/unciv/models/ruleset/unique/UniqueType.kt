@@ -638,6 +638,7 @@ enum class UniqueType(
     ConditionalAfterEnhancingReligion("after enhancing a religion", UniqueTarget.Conditional),
 
     ConditionalBuildingBuilt("if [buildingFilter] is constructed", UniqueTarget.Conditional),
+    ConditionalBuildingBuiltByAnybody("if [buildingFilter] is constructed by anybody", UniqueTarget.Conditional),
 
     ConditionalWithResource("with [resource]", UniqueTarget.Conditional),
     ConditionalWithoutResource("without [resource]", UniqueTarget.Conditional),
