@@ -134,7 +134,7 @@ For filtering a specific improvement.
 
 Allowed values are:
 
-- improvement name (Note that "Road" and "Railroad" _do_ work as improvementFilters, but not as tileFilters at the moment.)
+- improvement name
 - `All`
 - `Great Improvements`, `Great`
 - `All Road` - for Roads & Railroads
