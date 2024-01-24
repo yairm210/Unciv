@@ -482,16 +482,16 @@ object Battle {
         promotions.XP += xpGained
 
         if (!otherIsBarbarian && civ.isMajorCiv()) { // Can't get great generals from Barbarians
-            var greatGeneralUnits = civ.gameInfo.ruleset.greatGeneralUnits
-                    .filter { it.hasUnique(UniqueType.GreatPersonFromCombat, stateForConditionals) && 
-                        // Check if the unit is allowed for the Civ, ignoring build constrants
+            var greatGeneralUnits = civ.gameInfo.ruleset.greatGeneralUnits.asSequence()
+                    .filter { it.hasUnique(UniqueType.GreatPersonFromCombat, stateForConditionals) &&
+                        // Check if the unit is allowed for the Civ, ignoring build constraints
                         it.getRejectionReasons(civ).none { reason ->
                             !reason.isConstructionRejection() &&
                             // Allow Generals even if not allowed via tech
                             !reason.techPolicyEraWonderRequirements() }
-                    }.asSequence()
+                    }
             // For compatibility with older rulesets
-            if (civ.gameInfo.ruleset.greatGeneralUnits.isEmpty() && 
+            if (civ.gameInfo.ruleset.greatGeneralUnits.isEmpty() &&
                 civ.gameInfo.ruleset.units["Great General"] != null)
                 greatGeneralUnits += civ.gameInfo.ruleset.units["Great General"]!!
 
