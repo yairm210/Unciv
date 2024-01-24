@@ -90,6 +90,12 @@ class UnitActionsTable(val worldScreen: WorldScreen) : Table() {
                 if (numPages < page + 2) numPages = page + 2
             }
         }
+        // Special case: Only the default two pages used and all actions would fit in one
+        if (numPages == 2 && buttonsPerPage >= maxSinglePageButtons && pageActionBuckets[0].size + pageActionBuckets[1].size <= maxSinglePageButtons) {
+            pageActionBuckets[0].addAll(pageActionBuckets[1])
+            pageActionBuckets[1].clear()
+            numPages = 1
+        }
 
         // clamp currentPage
         if (currentPage !in 0 until numPages) currentPage = 0
