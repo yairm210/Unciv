@@ -1,7 +1,7 @@
 package com.unciv.models.ruleset.construction
 
 // Note: Translation will need templates for new messages -
-//       IF and only if the corresponding toInstance call copies them. The others are entirely unused.
+//       IF and only if `shouldShow` is true AND the corresponding toInstance call copies them. The others are entirely unused.
 
 enum class RejectionReasonType(
     private val shouldShow: Boolean, // Only the 'instance' copy should be public
@@ -31,7 +31,7 @@ enum class RejectionReasonType(
     MustBeNextToTile(false, "Must be next to a specific tile"),
     MustNotBeNextToTile(false, "Must not be next to a specific tile"),
     MustOwnTile(false, "Must own a specific tile close by"),
-    WaterUnitsInCoastalCities(false, "May only built water units in coastal cities"),
+    WaterUnitsInCoastalCities(false, "May only build water units in coastal cities"),
     CanOnlyBeBuiltInSpecificCities(false, "Can only be built in specific cities"),
     MaxNumberBuildable(false, "Maximum number have been built or are being constructed",
         isReasonToDefinitivelyRemoveFromQueue = true,
