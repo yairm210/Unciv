@@ -80,7 +80,7 @@ enum class UniqueParameterType(
             if (parameterText == "All") null else UniqueType.UniqueParameterErrorSeverity.RulesetInvariant
     },
 
-    /** Implemented by [ICombatant.matchesCategory][com.unciv.logic.battle.ICombatant.matchesCategory] */
+    /** Implemented by [ICombatant.matchesCategory][com.unciv.logic.battle.ICombatant.matchesFilter] */
     CombatantFilter("combatantFilter", "City", "This indicates a combatant, which can either be a unit or a city (when bombarding). Must either be `City` or a `mapUnitFilter`") {
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
                 UniqueType.UniqueParameterErrorSeverity? {
@@ -309,7 +309,7 @@ enum class UniqueParameterType(
     TerrainFilter("terrainFilter", Constants.freshWaterFilter, null, "Terrain Filters") {
         private val knownValues = setOf(
             "All", "Terrain",
-            Constants.coastal, Constants.river, "Open terrain", "Rough terrain", "Water resource", 
+            Constants.coastal, Constants.river, "Open terrain", "Rough terrain", "Water resource",
             "resource", "Foreign Land", "Foreign", "Friendly Land", "Friendly", "Enemy Land", "Enemy",
             "Featureless", Constants.freshWaterFilter, "non-fresh water", "Natural Wonder",
             "Impassable", "Land", "Water"

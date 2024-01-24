@@ -299,8 +299,8 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
             UniqueType.ConditionalWhenGarrisoned ->
                 checkOnCity { getCenterTile().militaryUnit?.canGarrison() == true }
 
-            UniqueType.ConditionalVsCity -> state.theirCombatant?.matchesCategory("City") == true
-            UniqueType.ConditionalVsUnits -> state.theirCombatant?.matchesCategory(condition.params[0]) == true
+            UniqueType.ConditionalVsCity -> state.theirCombatant?.matchesFilter("City") == true
+            UniqueType.ConditionalVsUnits -> state.theirCombatant?.matchesFilter(condition.params[0]) == true
             UniqueType.ConditionalOurUnit, UniqueType.ConditionalOurUnitOnUnit ->
                 relevantUnit?.matchesFilter(condition.params[0]) == true
             UniqueType.ConditionalUnitWithPromotion -> relevantUnit?.promotions?.promotions?.contains(condition.params[0]) == true

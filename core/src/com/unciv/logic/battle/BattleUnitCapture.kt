@@ -45,7 +45,7 @@ object BattleUnitCapture {
 
     private fun unitCapturedPrizeShipsUnique(attacker: MapUnitCombatant, defender: MapUnitCombatant): Boolean {
         if (attacker.unit.getMatchingUniques(UniqueType.KillUnitCapture)
-                .none { defender.matchesCategory(it.params[0]) }
+                .none { defender.matchesFilter(it.params[0]) }
         ) return false
 
         val captureChance = min(
