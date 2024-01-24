@@ -1,14 +1,14 @@
 ## 4.10.2
 
-By SomeTroglodyte:
-- A Conditional checking for a Building globally 
-- Unit actions "paging" new architecture 
-- Fix RequiresBuildingInSomeCities not being displayed in city constructions as rejection reason 
-
 By SeventhM:
-- Fix Spectator stats when viewing another civ 
-- Allow units to upgrade to more than one unit 
-- Fix problems with stats from tiles and improvements 
+- Fix Spectator stats when viewing another civ
+- Allow units to upgrade to more than one unit
+- Fix problems with stats from tiles and improvements
+
+By SomeTroglodyte:
+- A Conditional checking for a Building globally
+- Unit actions "paging" for smaller screens
+- Fix RequiresBuildingInSomeCities not being displayed in city constructions as rejection reason
 
 Improved Spectator selected Civ coloring  - By tuvus
 

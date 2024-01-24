@@ -40,7 +40,6 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
     var unitType: String = ""
 
     val type by lazy { ruleset.unitTypes[unitType]!! }
-    @Deprecated("The functionality provided by the requiredTech field is provided by the OnlyAvailableWhen unique.")
     override var requiredTech: String? = null
     var requiredResource: String? = null
 
@@ -88,7 +87,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
     }
 
     fun getRulesetUpgradeUnits(stateForConditionals: StateForConditionals? = null): Sequence<BaseUnit> {
-        return sequence { 
+        return sequence {
             for (unit in getUpgradeUnits(stateForConditionals))
                 yieldIfNotNull(ruleset.units[unit])
         }

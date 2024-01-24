@@ -677,10 +677,13 @@ enum class UniqueType(
 
     /////// tile conditionals
     ConditionalNeighborTiles("with [amount] to [amount] neighboring [tileFilter] tiles", UniqueTarget.Conditional),
+    // TODO: Deprecate, since tilefilter is multifilter
     ConditionalNeighborTilesAnd("with [amount] to [amount] neighboring [tileFilter] [tileFilter] tiles", UniqueTarget.Conditional),
     ConditionalInTiles("in [tileFilter] tiles", UniqueTarget.Conditional),
+    // TODO: Deprecate, since tilefilter is multifilter
     ConditionalInTilesAnd("in [tileFilter] [tileFilter] tiles", UniqueTarget.Conditional),
     ConditionalInTilesNot("in tiles without [tileFilter]", UniqueTarget.Conditional),
+    // TODO: Add adjacency ("in tiles adjacent to [tileFilter]", "in tiles not adjacent to [tileFilter])
     ConditionalNearTiles("within [amount] tiles of a [tileFilter]", UniqueTarget.Conditional),
 
     /////// area conditionals

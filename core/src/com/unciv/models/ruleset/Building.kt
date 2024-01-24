@@ -23,7 +23,6 @@ import com.unciv.ui.objectdescriptions.BuildingDescriptions
 
 class Building : RulesetStatsObject(), INonPerpetualConstruction {
 
-    @Deprecated("The functionality provided by the requiredTech field is provided by the OnlyAvailableWhen unique.")
     override var requiredTech: String? = null
     override var cost: Int = -1
 

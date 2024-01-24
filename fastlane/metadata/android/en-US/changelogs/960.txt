@@ -1,5 +1,3 @@
-
-
 By SomeTroglodyte:
 - A Conditional checking for a Building globally 
 - Unit actions "paging" new architecture 
