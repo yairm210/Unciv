@@ -1,55 +1,26 @@
 package com.unciv.models.ruleset.construction
 
-class RejectionReason(val type: RejectionReasonType,
-                      val errorMessage: String = type.errorMessage,
-                      val shouldShow: Boolean = type.shouldShow) {
+class RejectionReason(
+    val type: RejectionReasonType,
+    val errorMessage: String,
+    val shouldShow: Boolean
+) {
+    //todo so far the "Used" documentation below is a comprehensive inventory - map to code simplification and proper Kdoc
 
-    fun techPolicyEraWonderRequirements(): Boolean = type in techPolicyEraWonderRequirements
+    // Used in Battle.addXp - true means it's _not_ blocking a unit from being awarded for Great General points
+    // Used in UnitUpgradeManager.canUpgrade - true means the `ignoreRequirements` parameter will filter these away
+    fun techPolicyEraWonderRequirements(): Boolean = type.isTechPolicyEraWonderRequirement
 
-    fun hasAReasonToBeRemovedFromQueue(): Boolean = type in reasonsToDefinitivelyRemoveFromQueue
+    // Used in CityConstructions.validateInProgressConstructions - true means remove+refund or replace with upgrade + transfer points
+    fun hasAReasonToBeRemovedFromQueue(): Boolean = type.isReasonToDefinitivelyRemoveFromQueue
 
-    fun isImportantRejection(): Boolean = type in orderedImportantRejectionTypes
+    // Used in CityConstructionsTable.getConstructionButtonDTOs to filter reasons from being displayed on the button
+    fun isImportantRejection(): Boolean = type.rejectionPrecedence >= 0
 
-    fun isConstructionRejection(): Boolean = type in constructionRejectionReasonType
+    // Used in Battle.addXp - true means it's _not_ blocking a unit from being awarded for Great General points
+    fun isConstructionRejection(): Boolean = type.isConstructionRejection
 
-    /** Returns the index of [orderedImportantRejectionTypes] with the smallest index having the
-     * highest precedence */
-    fun getRejectionPrecedence(): Int {
-        return orderedImportantRejectionTypes.indexOf(type)
-    }
-
-    // Used for constant variables in the functions above
-    private val techPolicyEraWonderRequirements = hashSetOf(
-        RejectionReasonType.Obsoleted,
-        RejectionReasonType.RequiresTech,
-        RejectionReasonType.RequiresPolicy,
-        RejectionReasonType.MorePolicyBranches,
-        RejectionReasonType.RequiresBuildingInSomeCity,
-    )
-    private val reasonsToDefinitivelyRemoveFromQueue = hashSetOf(
-        RejectionReasonType.Obsoleted,
-        RejectionReasonType.WonderAlreadyBuilt,
-        RejectionReasonType.NationalWonderAlreadyBuilt,
-        RejectionReasonType.CannotBeBuiltWith,
-        RejectionReasonType.MaxNumberBuildable,
-    )
-    private val orderedImportantRejectionTypes = listOf(
-        RejectionReasonType.WonderBeingBuiltElsewhere,
-        RejectionReasonType.NationalWonderBeingBuiltElsewhere,
-        RejectionReasonType.RequiresBuildingInAllCities,
-        RejectionReasonType.RequiresBuildingInThisCity,
-        RejectionReasonType.RequiresBuildingInSomeCity,
-        RejectionReasonType.CannotBeBuiltUnhappiness,
-        RejectionReasonType.PopulationRequirement,
-        RejectionReasonType.ConsumesResources,
-        RejectionReasonType.CanOnlyBePurchased,
-        RejectionReasonType.MaxNumberBuildable,
-        RejectionReasonType.NoPlaceToPutUnit,
-    )
-    // Used for units spawned, not built
-    private val constructionRejectionReasonType = listOf(
-        RejectionReasonType.Unbuildable,
-        RejectionReasonType.CannotBeBuiltUnhappiness,
-        RejectionReasonType.CannotBeBuilt,
-    )
+    /** Smaller numbers have the highest precedence (unless it's -1 in which case [isImportantRejection] returns `false`) */
+    // Used in CityConstructionsTable.getConstructionButtonDTOs to decide which of the reasons to be displayed on the button
+    fun getRejectionPrecedence(): Int = type.rejectionPrecedence
 }
