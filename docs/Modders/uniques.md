@@ -790,9 +790,6 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Global, Unit
 
-??? example  "+30% Strength when fighting City-State units and cities"
-	Applicable to: Global
-
 ??? example  "[amount] additional attacks per turn"
 	Example: "[3] additional attacks per turn"
 
@@ -2026,6 +2023,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Conditional
 
+??? example  "&lt;vs [combatantFilter]&gt;"
+	Example: "&lt;vs [City]&gt;"
+
+	Applicable to: Conditional
+
 ??? example  "&lt;when fighting units from a Civilization with more Cities than you&gt;"
 	Applicable to: Conditional
 
@@ -2066,23 +2068,23 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Conditional
 
-??? example  "&lt;with [amount] to [amount] neighboring [tileFilter] [tileFilter] tiles&gt;"
-	Example: "&lt;with [3] to [3] neighboring [Farm] [Farm] tiles&gt;"
-
-	Applicable to: Conditional
-
 ??? example  "&lt;in [tileFilter] tiles&gt;"
 	Example: "&lt;in [Farm] tiles&gt;"
 
 	Applicable to: Conditional
 
-??? example  "&lt;in [tileFilter] [tileFilter] tiles&gt;"
-	Example: "&lt;in [Farm] [Farm] tiles&gt;"
+??? example  "&lt;in tiles without [tileFilter]&gt;"
+	Example: "&lt;in tiles without [Farm]&gt;"
 
 	Applicable to: Conditional
 
-??? example  "&lt;in tiles without [tileFilter]&gt;"
-	Example: "&lt;in tiles without [Farm]&gt;"
+??? example  "&lt;in tiles adjacent to [tileFilter]&gt;"
+	Example: "&lt;in tiles adjacent to [Farm]&gt;"
+
+	Applicable to: Conditional
+
+??? example  "&lt;in tiles not adjacent to [tileFilter]&gt;"
+	Example: "&lt;in tiles not adjacent to [Farm]&gt;"
 
 	Applicable to: Conditional
 

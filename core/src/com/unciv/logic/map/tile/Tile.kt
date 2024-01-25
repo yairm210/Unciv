@@ -380,7 +380,7 @@ open class Tile : IsPartOfGameInfoSerialization {
         return civInfo.isAtWarWith(tileOwner)
     }
 
-    fun isRoughTerrain() = allTerrains.any{ it.isRough() }
+    fun isRoughTerrain() = allTerrains.any { it.isRough() }
 
     /** Checks whether any of the TERRAINS of this tile has a certain unique */
     fun terrainHasUnique(uniqueType: UniqueType) = terrainUniqueMap.getUniques(uniqueType).any()
