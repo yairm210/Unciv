@@ -390,9 +390,15 @@ object NextTurnAutomation {
         for (unit in sortedUnits) UnitAutomation.automateUnitMoves(unit)
     }
 
+    /** Returns the priority of the unit, a lower value is higher priority **/
     fun getUnitPriority(unit: MapUnit, isAtWar: Boolean): Int {
         if (unit.isCivilian() && !unit.isGreatPersonOfType("War")) return 1 // Civilian
-        if (unit.baseUnit.isAirUnit()) return 2
+        if (unit.baseUnit.isAirUnit()) return when {
+            unit.canIntercept() -> 2 // Fighers first
+            unit.baseUnit.isNuclearWeapon() -> 3 // Then Nukes (area damage)
+            !unit.hasUnique(UniqueType.SelfDestructs) -> 4 // Then Bombers (reusable)
+            else -> 5 // Missiles
+        }
         val distance = if (!isAtWar) 0 else unit.civ.threatManager.getDistanceToClosestEnemyUnit(unit.getTile(),6)
         // Lower health units should move earlier to swap with higher health units
         return distance + (unit.health / 10) + when {
