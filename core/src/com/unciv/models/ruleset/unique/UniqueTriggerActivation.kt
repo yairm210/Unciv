@@ -10,7 +10,6 @@ import com.unciv.logic.civilization.CivFlags
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.LocationAction
 import com.unciv.logic.civilization.MapUnitAction
-import com.unciv.logic.civilization.MayaLongCountAction
 import com.unciv.logic.civilization.NotificationAction
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
@@ -25,7 +24,6 @@ import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
 import com.unciv.models.translations.fillPlaceholders
 import com.unciv.models.translations.hasPlaceholderParameters
-import com.unciv.ui.components.MayaCalendar
 import com.unciv.ui.components.extensions.addToMapOfSets
 import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionsUpgrade
 import kotlin.math.roundToInt
@@ -242,26 +240,7 @@ object UniqueTriggerActivation {
                 if (civInfo.isAI() || UncivGame.Current.settings.autoPlay.isAutoPlayingAndFullAI()) {
                     NextTurnAutomation.chooseGreatPerson(civInfo)
                 }
-                
-                return true
-            }
-
-            UniqueType.MayanGainGreatPerson -> {
-                if (civInfo.isSpectator()) return false
-                val greatPeople = civInfo.greatPeople.getGreatPeople()
-                if (civInfo.greatPeople.longCountGPPool.isEmpty())
-                civInfo.greatPeople.longCountGPPool = greatPeople.map { it.name }.toHashSet()
-
-                civInfo.greatPeople.freeGreatPeople++
-                // Anyone an idea for a good icon?
-                civInfo.greatPeople.mayaLimitedFreeGP++
-                if (notification != null)
-                    civInfo.addNotification(notification, MayaLongCountAction(), NotificationCategory.General, MayaCalendar.notificationIcon)
-                
-                if (civInfo.isAI() || UncivGame.Current.settings.autoPlay.isAutoPlayingAndFullAI()) {
-                    NextTurnAutomation.chooseGreatPerson(civInfo)
-                }
-
+           
                 return true
             }
 
