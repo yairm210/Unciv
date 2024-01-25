@@ -18,7 +18,6 @@ import com.unciv.ui.screens.worldscreen.WorldScreen
 
 class UnitActionsTable(val worldScreen: WorldScreen) : Table() {
     /** Distribute UnitActions on "pages" */
-    // todo since this runs surprisingly often - some caching? Does it even need to do anything if unit and currentPage are the same?
     private var currentPage = 0
     private var buttonsPerPage = Int.MAX_VALUE
     private var numPages = 2
