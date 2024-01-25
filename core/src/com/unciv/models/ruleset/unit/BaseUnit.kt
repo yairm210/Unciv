@@ -18,6 +18,7 @@ import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
 import com.unciv.ui.components.extensions.getNeedMoreAmountString
 import com.unciv.ui.components.extensions.toPercent
+import com.unciv.ui.components.extensions.yieldIfNotNull
 import com.unciv.ui.objectdescriptions.BaseUnitDescriptions
 import com.unciv.ui.screens.civilopediascreen.FormattedLine
 import kotlin.math.pow
@@ -39,7 +40,6 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
     var unitType: String = ""
 
     val type by lazy { ruleset.unitTypes[unitType]!! }
-    @Deprecated("The functionality provided by the requiredTech field is provided by the OnlyAvailableWhen unique.")
     override var requiredTech: String? = null
     var requiredResource: String? = null
 
@@ -77,6 +77,21 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
 
     override fun getCivilopediaTextLines(ruleset: Ruleset): List<FormattedLine> =
             BaseUnitDescriptions.getCivilopediaTextLines(this, ruleset)
+
+    fun getUpgradeUnits(stateForConditionals: StateForConditionals? = null): Sequence<String> {
+        return sequence {
+            yieldIfNotNull(upgradesTo)
+            for (unique in getMatchingUniques(UniqueType.CanUpgrade, stateForConditionals))
+                yield(unique.params[0])
+        }
+    }
+
+    fun getRulesetUpgradeUnits(stateForConditionals: StateForConditionals? = null): Sequence<BaseUnit> {
+        return sequence {
+            for (unit in getUpgradeUnits(stateForConditionals))
+                yieldIfNotNull(ruleset.units[unit])
+        }
+    }
 
     fun getMapUnit(civInfo: Civilization): MapUnit {
         val unit = MapUnit()
@@ -144,9 +159,12 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         }
         val civInfo = cityConstructions.city.civ
 
-        for (unique in getMatchingUniques(UniqueType.OnlyAvailableWhen, StateForConditionals.IgnoreConditionals))
+        for (unique in getMatchingUniques(UniqueType.OnlyAvailable, StateForConditionals.IgnoreConditionals))
             if (!unique.conditionalsApply(civInfo, cityConstructions.city))
                 yield(RejectionReasonType.ShouldNotBeDisplayed.toInstance())
+
+        for (unique in getMatchingUniques(UniqueType.Unavailable, StateForConditionals(civInfo, cityConstructions.city)))
+            yield(RejectionReasonType.ShouldNotBeDisplayed.toInstance())
 
         for (unique in getMatchingUniques(UniqueType.RequiresPopulation))
             if (unique.params[0].toInt() > cityConstructions.city.population.population)

@@ -23,7 +23,6 @@ import com.unciv.utils.debug
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.isActive
 import kotlin.math.abs
-import kotlin.math.max
 import kotlin.math.pow
 import kotlin.math.roundToInt
 import kotlin.math.sign
@@ -342,8 +341,7 @@ class MapGenerator(val ruleset: Ruleset, private val coroutineScope: CoroutineSc
             // remove the tiles where previous resources have been placed
             val suitableTiles = candidateTiles
                     .filterNot { it.baseTerrain == Constants.snow && it.isHill() }
-                    .filter { it.resource == null
-                            && resource.terrainsCanBeFoundOn.contains(it.lastTerrain.name) }
+                    .filter { it.resource == null && resource.generatesNaturallyOn(it) }
 
             val locations = randomness.chooseSpreadOutLocations(resourcesPerType, suitableTiles, mapRadius)
 
@@ -361,8 +359,10 @@ class MapGenerator(val ruleset: Ruleset, private val coroutineScope: CoroutineSc
 
         val suitableTiles = tileMap.values
                 .filterNot { it.baseTerrain == Constants.snow && it.isHill() }
-                .filter { it.resource == null && it.neighbors.none { neighbor -> neighbor.isNaturalWonder() }
-                        && resourcesOfType.any { r -> r.terrainsCanBeFoundOn.contains(it.lastTerrain.name) } }
+                .filter { it.resource == null
+                    && it.neighbors.none { neighbor -> neighbor.isNaturalWonder() }
+                    && resourcesOfType.any { r -> r.generatesNaturallyOn(it) }
+                }
         val numberOfResources = tileMap.values.count { it.isLand && !it.isImpassible() } *
                 tileMap.mapParameters.resourceRichness
         val locations = randomness.chooseSpreadOutLocations(numberOfResources.toInt(), suitableTiles, mapRadius)
@@ -370,8 +370,7 @@ class MapGenerator(val ruleset: Ruleset, private val coroutineScope: CoroutineSc
         val resourceToNumber = Counter<String>()
 
         for (tile in locations) {
-            val possibleResources = resourcesOfType
-                    .filter { it.terrainsCanBeFoundOn.contains(tile.lastTerrain.name) }
+            val possibleResources = resourcesOfType.filter { it.generatesNaturallyOn(tile) }
             if (possibleResources.isEmpty()) continue
             val resourceWithLeastAssignments = possibleResources.minByOrNull { resourceToNumber[it.name] }!!
             resourceToNumber.add(resourceWithLeastAssignments.name, 1)

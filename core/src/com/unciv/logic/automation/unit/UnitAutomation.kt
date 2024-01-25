@@ -14,8 +14,10 @@ import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
+import com.unciv.models.UpgradeUnitAction
 import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.UniqueType
+import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionsPillage
 import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionsUpgrade
 
@@ -127,20 +129,37 @@ object UnitAutomation {
     internal fun tryUpgradeUnit(unit: MapUnit): Boolean {
         if (unit.civ.isHuman() && (!UncivGame.Current.settings.automatedUnitsCanUpgrade
                 || UncivGame.Current.settings.autoPlay.isAutoPlayingAndFullAI())) return false
-        if (unit.baseUnit.upgradesTo == null) return false
-        val upgradedUnit = unit.upgrade.getUnitToUpgradeTo()
-        if (!upgradedUnit.isBuildable(unit.civ)) return false // for resource reasons, usually
+
+        val upgradeUnits = getUnitsToUpgradeTo(unit)
+        if (upgradeUnits.none()) return false // for resource reasons, usually
+        val upgradedUnit = upgradeUnits.minBy { it.cost }
 
         if (upgradedUnit.getResourceRequirementsPerTurn(StateForConditionals(unit.civ, unit = unit)).keys.any { !unit.requiresResource(it) }) {
             // The upgrade requires new resource types, so check if we are willing to invest them
             if (!Automation.allowSpendingResource(unit.civ, upgradedUnit)) return false
         }
 
-        val upgradeAction = UnitActionsUpgrade.getUpgradeAction(unit)
-            ?: return false
+        val upgradeActions = UnitActionsUpgrade.getUpgradeActions(unit)
 
-        upgradeAction.action?.invoke()
+        upgradeActions.firstOrNull{ (it as UpgradeUnitAction).unitToUpgradeTo == upgradedUnit }?.action?.invoke() ?: return false
         return unit.isDestroyed // a successful upgrade action will destroy this unit
+    }
+
+    /** Get the base unit this map unit could upgrade to, respecting researched tech and nation uniques only.
+     *  Note that if the unit can't upgrade, the current BaseUnit is returned.
+     */
+    private fun getUnitsToUpgradeTo(unit: MapUnit): Sequence<BaseUnit> {
+
+        fun isInvalidUpgradeDestination(baseUnit: BaseUnit): Boolean {
+            if (!unit.civ.tech.isResearched(baseUnit))
+                return true
+            return baseUnit.getMatchingUniques(UniqueType.OnlyAvailable, StateForConditionals.IgnoreConditionals)
+                .any { !it.conditionalsApply(StateForConditionals(unit.civ, unit = unit)) }
+        }
+
+        return unit.baseUnit.getRulesetUpgradeUnits(StateForConditionals(unit.civ, unit = unit))
+            .map { unit.civ.getEquivalentUnit(it) }
+            .filter { !isInvalidUpgradeDestination(it) && unit.upgrade.canUpgrade(it) }
     }
 
     fun automateUnitMoves(unit: MapUnit) {

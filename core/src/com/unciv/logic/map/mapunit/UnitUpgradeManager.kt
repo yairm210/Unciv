@@ -10,53 +10,15 @@ import kotlin.math.pow
 
 class UnitUpgradeManager(val unit:MapUnit) {
 
-    /** Returns FULL upgrade path, without checking what we can or cannot build currently.
-     * Does not contain current baseunit, so will be empty if no upgrades. */
-    private fun getUpgradePath(): Iterable<BaseUnit> {
-        var currentUnit = unit.baseUnit
-        val upgradeList = linkedSetOf<BaseUnit>()
-        while (currentUnit.upgradesTo != null) {
-            val nextUpgrade = unit.civ.getEquivalentUnit(currentUnit.upgradesTo!!)
-            if (nextUpgrade in upgradeList)
-                throw(UncivShowableException("Circular or self-referencing upgrade path for ${currentUnit.name}"))
-            currentUnit = nextUpgrade
-            upgradeList.add(currentUnit)
-        }
-        return upgradeList
-    }
-
-    /** Get the base unit this map unit could upgrade to, respecting researched tech and nation uniques only.
-     *  Note that if the unit can't upgrade, the current BaseUnit is returned.
-     */
-    // Used from UnitAutomation, UI action, canUpgrade
-    fun getUnitToUpgradeTo(): BaseUnit {
-        val upgradePath = getUpgradePath()
-
-        fun isInvalidUpgradeDestination(baseUnit: BaseUnit): Boolean{
-            if (!unit.civ.tech.isResearched(baseUnit))
-                return true
-            if (baseUnit.getMatchingUniques(UniqueType.OnlyAvailableWhen, StateForConditionals.IgnoreConditionals).any {
-                        !it.conditionalsApply(StateForConditionals(unit.civ, unit = unit ))
-                    }) return true
-            return false
-        }
-
-        for (baseUnit in upgradePath.reversed()) {
-            if (isInvalidUpgradeDestination(baseUnit)) continue
-            return baseUnit
-        }
-        return unit.baseUnit
-    }
-
     /** Check whether this unit can upgrade to [unitToUpgradeTo]. This does not check or follow the
-     *  normal upgrade chain defined by [BaseUnit.upgradesTo], unless [unitToUpgradeTo] is left at default.
+     *  normal upgrade chain defined by [BaseUnit.getUpgradeUnits]
      *  @param ignoreRequirements Ignore possible tech/policy/building requirements (e.g. resource requirements still count).
      *          Used for upgrading units via ancient ruins.
      *  @param ignoreResources Ignore resource requirements (tech still counts)
      *          Used to display disabled Upgrade button
      */
     fun canUpgrade(
-        unitToUpgradeTo: BaseUnit = getUnitToUpgradeTo(),
+        unitToUpgradeTo: BaseUnit,
         ignoreRequirements: Boolean = false,
         ignoreResources: Boolean = false
     ): Boolean {
@@ -64,7 +26,9 @@ class UnitUpgradeManager(val unit:MapUnit) {
 
         val rejectionReasons = unitToUpgradeTo.getRejectionReasons(unit.civ, additionalResources = unit.getResourceRequirementsPerTurn())
 
-        var relevantRejectionReasons = rejectionReasons.filterNot { it.type == RejectionReasonType.Unbuildable }
+        var relevantRejectionReasons = rejectionReasons.filterNot { 
+            it.isConstructionRejection() || it.type == RejectionReasonType.Obsoleted
+        }
         if (ignoreRequirements)
             relevantRejectionReasons = relevantRejectionReasons.filterNot { it.techPolicyEraWonderRequirements() }
         if (ignoreResources)
@@ -96,24 +60,15 @@ class UnitUpgradeManager(val unit:MapUnit) {
         for (unique in unit.civ.getMatchingUniques(UniqueType.UnitUpgradeCost, stateForConditionals))
             civModifier *= unique.params[0].toPercent()
 
-        val upgradePath = getUpgradePath()
-        var currentUnit = unit.baseUnit
-        for (baseUnit in upgradePath) {
-            // do clamping and rounding here so upgrading stepwise costs the same as upgrading far down the chain
-            var stepCost = constants.base
-            stepCost += (constants.perProduction * (baseUnit.cost - currentUnit.cost)).coerceAtLeast(0f)
-            val era = baseUnit.era(ruleset)
-            if (era != null)
-                stepCost *= (1f + era.eraNumber * constants.eraMultiplier)
-            stepCost = (stepCost * civModifier).pow(constants.exponent)
-            stepCost *= unit.civ.gameInfo.speed.modifier
-            goldCostOfUpgrade += (stepCost / constants.roundTo).toInt() * constants.roundTo
-            if (baseUnit == unitToUpgradeTo)
-                break  // stop at requested BaseUnit to upgrade to
-            currentUnit = baseUnit
-        }
-
-
+        var cost = constants.base
+        cost += (constants.perProduction * (unitToUpgradeTo.cost - unit.baseUnit.cost)).coerceAtLeast(0f)
+        val era = unitToUpgradeTo.era(ruleset)
+        if (era != null)
+            cost *= (1f + era.eraNumber * constants.eraMultiplier)
+        cost = (cost * civModifier).pow(constants.exponent)
+        cost *= unit.civ.gameInfo.speed.modifier
+        goldCostOfUpgrade += (cost / constants.roundTo).toInt() * constants.roundTo
+        
         return goldCostOfUpgrade
     }
 

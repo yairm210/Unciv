@@ -34,8 +34,7 @@ class TileImprovement : RulesetStatsObject() {
 
     fun getTurnsToBuild(civInfo: Civilization, unit: MapUnit): Int {
         val state = StateForConditionals(civInfo, unit = unit)
-        val buildSpeedUniques = unit.getMatchingUniques(UniqueType.TileImprovementTime, state, checkCivInfoUniques = true) +
-            unit.getMatchingUniques(UniqueType.SpecificImprovementTime, state, checkCivInfoUniques = true)
+        val buildSpeedUniques = unit.getMatchingUniques(UniqueType.SpecificImprovementTime, state, checkCivInfoUniques = true)
                 .filter { matchesFilter(it.params[1]) }
         return buildSpeedUniques
             .fold(turnsToBuild.toFloat() * civInfo.gameInfo.speed.improvementBuildLengthModifier) { calculatedTurnsToBuild, unique ->
@@ -208,7 +207,7 @@ class TileImprovement : RulesetStatsObject() {
         val cannotFilters = getMatchingUniques(UniqueType.CannotBuildOnTile).map { it.params[0] }.toSet()
         val resourcesImprovedByThis = ruleset.tileResources.values.filter { it.isImprovedBy(name) }
 
-        val expandedCanBeBuiltOn = sequence {
+        val expandedTerrainsCanBeBuiltOn = sequence {
             yieldAll(terrainsCanBeBuiltOn)
             yieldAll(terrainsCanBeBuiltOn.asSequence().mapNotNull { ruleset.terrains[it] }.flatMap { it.occursOn.asSequence() })
             if (hasUnique(UniqueType.CanOnlyImproveResource))
@@ -221,21 +220,21 @@ class TileImprovement : RulesetStatsObject() {
         }.filter { it !in cannotFilters }.toMutableSet()
 
         val terrainsCanBeBuiltOnTypes = sequence {
-            yieldAll(expandedCanBeBuiltOn.asSequence()
+            yieldAll(expandedTerrainsCanBeBuiltOn.asSequence()
                 .mapNotNull { ruleset.terrains[it]?.type })
             yieldAll(TerrainType.values().asSequence()
-                .filter { it.name in expandedCanBeBuiltOn })
+                .filter { it.name in expandedTerrainsCanBeBuiltOn })
         }.filter { it.name !in cannotFilters }.toMutableSet()
 
-        if (canOnlyFilters.isNotEmpty() && canOnlyFilters.intersect(expandedCanBeBuiltOn).isEmpty()) {
-            expandedCanBeBuiltOn.clear()
+        if (canOnlyFilters.isNotEmpty() && canOnlyFilters.intersect(expandedTerrainsCanBeBuiltOn).isEmpty()) {
+            expandedTerrainsCanBeBuiltOn.clear()
             if (terrainsCanBeBuiltOnTypes.none { it.name in canOnlyFilters })
                 terrainsCanBeBuiltOnTypes.clear()
         }
 
         fun matchesBuildImprovementsFilter(filter: String) =
             matchesFilter(filter) ||
-            filter in expandedCanBeBuiltOn ||
+            filter in expandedTerrainsCanBeBuiltOn ||
             terrainsCanBeBuiltOnTypes.any { it.name == filter }
 
         return ruleset.units.values.asSequence()

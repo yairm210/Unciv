@@ -215,7 +215,7 @@ object Battle {
         val bonusUniques = getKillUnitPlunderUniques(civUnit, defeatedUnit)
 
         for (unique in bonusUniques) {
-            if (!defeatedUnit.matchesCategory(unique.params[1])) continue
+            if (!defeatedUnit.matchesFilter(unique.params[1])) continue
 
             val yieldPercent = unique.params[0].toFloat() / 100
             val defeatedUnitYieldSourceType = unique.params[2]
@@ -331,7 +331,7 @@ object Battle {
         val plunderedGoods = Stats()
 
         for (unique in plunderingUnit.unit.getMatchingUniques(UniqueType.DamageUnitsPlunder, checkCivInfoUniques = true)) {
-            if (plunderedUnit.matchesCategory(unique.params[1])) {
+            if (plunderedUnit.matchesFilter(unique.params[1])) {
                 val percentage = unique.params[0].toFloat()
                 plunderedGoods.add(Stat.valueOf(unique.params[2]), percentage / 100f * damageDealt)
             }
@@ -483,7 +483,7 @@ object Battle {
 
         if (!otherIsBarbarian && civ.isMajorCiv()) { // Can't get great generals from Barbarians
             var greatGeneralUnits = civ.gameInfo.ruleset.greatGeneralUnits
-                    .filter { it.hasUnique(UniqueType.GreatPersonFromCombat, stateForConditionals) && 
+                    .filter { it.hasUnique(UniqueType.GreatPersonFromCombat, stateForConditionals) &&
                         // Check if the unit is allowed for the Civ, ignoring build constrants
                         it.getRejectionReasons(civ).none { reason ->
                             !reason.isConstructionRejection() &&
@@ -491,7 +491,7 @@ object Battle {
                             !reason.techPolicyEraWonderRequirements() }
                     }.asSequence()
             // For compatibility with older rulesets
-            if (civ.gameInfo.ruleset.greatGeneralUnits.isEmpty() && 
+            if (civ.gameInfo.ruleset.greatGeneralUnits.isEmpty() &&
                 civ.gameInfo.ruleset.units["Great General"] != null)
                 greatGeneralUnits += civ.gameInfo.ruleset.units["Great General"]!!
 

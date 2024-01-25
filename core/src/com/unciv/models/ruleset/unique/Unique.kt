@@ -66,7 +66,7 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
     fun conditionalsApply(state: StateForConditionals = StateForConditionals()): Boolean {
         if (state.ignoreConditionals) return true
         // Always allow Timed conditional uniques. They are managed elsewhere
-        if (conditionals.any{ it.isOfType(UniqueType.ConditionalTimedUnique) }) return true
+        if (conditionals.any { it.isOfType(UniqueType.ConditionalTimedUnique) }) return true
         for (condition in conditionals) {
             if (!conditionalApplies(condition, state)) return false
         }
@@ -284,6 +284,8 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
                 checkOnCiv { religionManager.religionState >= ReligionState.EnhancedReligion }
             UniqueType.ConditionalBuildingBuilt ->
                 checkOnCiv { cities.any { it.cityConstructions.containsBuildingOrEquivalent(condition.params[0]) } }
+            UniqueType.ConditionalBuildingBuiltByAnybody ->
+                checkOnCiv { gameInfo.getCities().any { it.cityConstructions.containsBuildingOrEquivalent(condition.params[0]) } }
 
             // Filtered via city.getMatchingUniques
             UniqueType.ConditionalInThisCity -> true
@@ -297,8 +299,8 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
             UniqueType.ConditionalWhenGarrisoned ->
                 checkOnCity { getCenterTile().militaryUnit?.canGarrison() == true }
 
-            UniqueType.ConditionalVsCity -> state.theirCombatant?.matchesCategory("City") == true
-            UniqueType.ConditionalVsUnits -> state.theirCombatant?.matchesCategory(condition.params[0]) == true
+            UniqueType.ConditionalVsCity -> state.theirCombatant?.matchesFilter("City") == true
+            UniqueType.ConditionalVsUnits,  UniqueType.ConditionalVsCombatant -> state.theirCombatant?.matchesFilter(condition.params[0]) == true
             UniqueType.ConditionalOurUnit, UniqueType.ConditionalOurUnitOnUnit ->
                 relevantUnit?.matchesFilter(condition.params[0]) == true
             UniqueType.ConditionalUnitWithPromotion -> relevantUnit?.promotions?.promotions?.contains(condition.params[0]) == true
@@ -316,6 +318,8 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
                 relevantTile?.matchesFilter(condition.params[0], state.civInfo) == true
             UniqueType.ConditionalInTilesNot ->
                 relevantTile?.matchesFilter(condition.params[0], state.civInfo) == false
+            UniqueType.ConditionalAdjacentTo -> relevantTile?.isAdjacentTo(condition.params[0], state.civInfo) == true
+            UniqueType.ConditionalNotAdjacentTo -> relevantTile?.isAdjacentTo(condition.params[0], state.civInfo) == false
             UniqueType.ConditionalFightingInTiles ->
                 state.attackedTile?.matchesFilter(condition.params[0], state.civInfo) == true
             UniqueType.ConditionalInTilesAnd ->

@@ -19,7 +19,7 @@ interface ICombatant {
     fun isInvisible(to: Civilization): Boolean
     fun canAttack(): Boolean
     /** Implements [UniqueParameterType.CombatantFilter][com.unciv.models.ruleset.unique.UniqueParameterType.CombatantFilter] */
-    fun matchesCategory(category: String): Boolean
+    fun matchesFilter(filter: String): Boolean
     fun getAttackSound(): UncivSound
 
     fun isMelee(): Boolean = !isRanged()

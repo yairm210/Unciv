@@ -792,7 +792,7 @@ class MapRegions (val ruleset: Ruleset) {
                 continue
             val weightings = strategicResources.map {
                 if (fallbackStrategic) {
-                    if (tile.lastTerrain.name in it.terrainsCanBeFoundOn) 1f else 0f
+                    if (it.generatesNaturallyOn(tile)) 1f else 0f
                 } else {
                     val uniques = it.getMatchingUniques(UniqueType.MinorDepositWeighting, conditionalTerrain).toList()
                     uniques.sumOf { unique -> unique.params[0].toInt() }.toFloat()
@@ -822,10 +822,10 @@ class MapRegions (val ruleset: Ruleset) {
         for (resource in strategicResources) {
             val extraNeeded = min(2, regions.size - totalPlaced[resource]!!)
             if (extraNeeded > 0) {
-                if (isWaterOnlyResource(resource, ruleset))
-                    MapRegionResources.tryAddingResourceToTiles(tileData, resource, extraNeeded, tileMap.values.asSequence().filter { it.isWater }.shuffled(), respectImpacts = true)
-                else
-                    MapRegionResources.tryAddingResourceToTiles(tileData, resource, extraNeeded, landList.asSequence(), respectImpacts = true)
+                val tilesToAddTo = if (!isWaterOnlyResource(resource, ruleset)) landList.asSequence()
+                else tileMap.values.asSequence().filter { it.isWater }.shuffled()
+
+                MapRegionResources.tryAddingResourceToTiles(tileData, resource, extraNeeded, tilesToAddTo, respectImpacts = true)
             }
         }
 

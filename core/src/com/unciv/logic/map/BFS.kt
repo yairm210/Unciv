@@ -46,6 +46,8 @@ class BFS(
      * and to the yet-to-be-processed set.
      *
      * Will do nothing when [hasEnded] returns `true`
+     *
+     * @return The Tile that was checked, or `null` if there was nothing to do
      */
     fun nextStep(): Tile? {
         if (tilesReached.size >= maxSize) { tilesToCheck.clear(); return null }

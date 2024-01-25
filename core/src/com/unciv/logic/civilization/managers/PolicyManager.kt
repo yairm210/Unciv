@@ -166,8 +166,9 @@ class PolicyManager : IsPartOfGameInfoSerialization {
         if (policy.policyBranchType == PolicyBranchType.BranchComplete) return false
         if (!getAdoptedPolicies().containsAll(policy.requires!!)) return false
         if (checkEra && civInfo.gameInfo.ruleset.eras[policy.branch.era]!!.eraNumber > civInfo.getEraNumber()) return false
-        if (policy.uniqueObjects.filter { it.type == UniqueType.OnlyAvailableWhen }
+        if (policy.getMatchingUniques(UniqueType.OnlyAvailable, StateForConditionals.IgnoreConditionals)
                 .any { !it.conditionalsApply(civInfo) }) return false
+        if (policy.hasUnique(UniqueType.Unavailable)) return false
         return true
     }
 
@@ -256,7 +257,7 @@ class PolicyManager : IsPartOfGameInfoSerialization {
         }
     }
 
-    
+
     fun getCultureFromGreatWriter(): Int {
         return (cultureOfLast8Turns.sum() * civInfo.gameInfo.speed.cultureCostModifier).toInt()
     }

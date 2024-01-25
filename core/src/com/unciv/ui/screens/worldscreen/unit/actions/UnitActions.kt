@@ -10,49 +10,69 @@ import com.unciv.models.UnitAction
 import com.unciv.models.UnitActionType
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.tr
-import com.unciv.ui.components.extensions.yieldIfNotNull
 import com.unciv.ui.popups.ConfirmPopup
 import com.unciv.ui.popups.hasOpenPopups
 import com.unciv.ui.screens.pickerscreens.PromotionPickerScreen
-import com.unciv.ui.screens.worldscreen.unit.actions.UnitActions.getGiftAction
+import com.unciv.ui.screens.worldscreen.unit.actions.UnitActions.getActionDefaultPage
+import com.unciv.ui.screens.worldscreen.unit.actions.UnitActions.getPagingActions
 import com.unciv.ui.screens.worldscreen.unit.actions.UnitActions.getUnitActions
 import com.unciv.ui.screens.worldscreen.unit.actions.UnitActions.invokeUnitAction
 
 /**
  *  Manages creation of [UnitAction] instances.
  *
- *  API for UI: [getUnitActions]
- *  API for Automation: [invokeUnitAction]
- *  API for unit tests: [getGiftAction]
+ *  API used by UI: [getUnitActions] without `unitActionType` parameter, [getActionDefaultPage], [getPagingActions]
+ *  API used by Automation: [invokeUnitAction]
+ *  API used by unit tests: [getUnitActions] with `unitActionType` parameter
+ *      Note on unit test use: Some UnitAction factories access GUI helpers that crash from a unit test.
+ *      Avoid testing actions that need WorldScreen context, and migrate any un-mapped ones you need to `actionTypeToFunctions`.
  */
 object UnitActions {
-
-    fun getUnitActions(unit: MapUnit): Sequence<UnitAction> {
-        return if (unit.showAdditionalActions) getAdditionalActions(unit)
-        else getNormalActions(unit)
-    }
 
     /**
      *  Get an instance of [UnitAction] of the [unitActionType] type for [unit] and execute its [action][UnitAction.action], if enabled.
      *
      *  Includes optimization for direct creation of the needed instance type, falls back to enumerating [getUnitActions] to look for the given type.
      *
-     *  @return whether the action was invoked */
+     *  @return whether the action was invoked
+     */
     fun invokeUnitAction(unit: MapUnit, unitActionType: UnitActionType): Boolean {
-        val unitAction =
-            if (unitActionType in actionTypeToFunctions)
-                actionTypeToFunctions[unitActionType]!!  // we have a mapped getter...
-                    .invoke(unit, unit.getTile())        // ...call it to get a collection...
-                    .firstOrNull { it.action != null }   // ...then take the first enabled one.
-            else
-                (getNormalActions(unit) + getAdditionalActions(unit))                // No mapped getter: Enumerate all...
-                    .firstOrNull { it.type == unitActionType && it.action != null }  // ...and take first enabled one to match the type.
-        val internalAction = unitAction?.action ?: return false
+        val internalAction =
+            getUnitActions(unit, unitActionType)
+            .firstOrNull { it.action != null }   // If there's more than one, take the first enabled one.
+            ?.action ?: return false
         internalAction.invoke()
         return true
     }
 
-    private val actionTypeToFunctions = linkedMapOf<UnitActionType, (unit:MapUnit, tile: Tile) -> Sequence<UnitAction>>(
+    /**
+     *  Get all currently possible instances of [UnitAction] for [unit].
+     */
+    fun getUnitActions(unit: MapUnit) = sequence {
+        val tile = unit.getTile()
+
+        // Actions standardized with a directly callable invokeUnitAction
+        for (getActionsFunction in actionTypeToFunctions.values)
+            yieldAll(getActionsFunction(unit, tile))
+
+        // Actions not migrated to actionTypeToFunctions
+        addUnmappedUnitActions(unit)
+    }
+
+    /**
+     *  Get all instances of [UnitAction] of the [unitActionType] type for [unit].
+     *
+     *  Includes optimization for direct creation of the needed instance type, falls back to enumerating [getUnitActions] to look for the given type.
+     */
+    fun getUnitActions(unit: MapUnit, unitActionType: UnitActionType) =
+        if (unitActionType in actionTypeToFunctions)
+            actionTypeToFunctions[unitActionType]!!  // we have a mapped getter...
+                .invoke(unit, unit.getTile())        // ...call it to get a collection...
+        else sequence {
+            addUnmappedUnitActions(unit)             // No mapped getter: Enumerate all...
+        }.filter { it.type == unitActionType }       // ...and take ones matching the type.
+
+    private val actionTypeToFunctions = linkedMapOf<UnitActionType, (unit: MapUnit, tile: Tile) -> Sequence<UnitAction>>(
         // Determined by unit uniques
         UnitActionType.Transform to UnitActionsFromUniques::getTransformActions,
         UnitActionType.Paradrop to UnitActionsFromUniques::getParadropActions,
@@ -73,22 +93,47 @@ object UnitActions {
         UnitActionType.SpreadReligion to UnitActionsReligion::getSpreadReligionActions,
         UnitActionType.RemoveHeresy to UnitActionsReligion::getRemoveHeresyActions,
         UnitActionType.TriggerUnique to UnitActionsFromUniques::getTriggerUniqueActions,
-        UnitActionType.AddInCapital to UnitActionsFromUniques::getAddInCapitalActions
+        UnitActionType.AddInCapital to UnitActionsFromUniques::getAddInCapitalActions,
+        UnitActionType.GiftUnit to UnitActions::getGiftActions
     )
 
-    private fun shouldAutomationBePrimaryAction(unit:MapUnit) = unit.cache.hasUniqueToBuildImprovements || unit.hasUnique(UniqueType.AutomationPrimaryAction)
+    /** Gets the preferred "page" to display a [UnitAction] of type [unitActionType] on, possibly dynamic depending on the state or situation [unit] is in. */
+    fun getActionDefaultPage(unit: MapUnit, unitActionType: UnitActionType) =
+        actionTypeToPageGetter[unitActionType]?.invoke(unit) ?: unitActionType.defaultPage
 
-    private fun getNormalActions(unit: MapUnit) = sequence {
+    /** Only for action types that wish to change their "More/Back" page position depending on context.
+     *  All others get a defaultPage statically from [UnitActionType].
+     */
+    private val actionTypeToPageGetter = linkedMapOf<UnitActionType, (unit: MapUnit) -> Int>(
+        UnitActionType.Automate to { unit ->
+            if (unit.cache.hasUniqueToBuildImprovements || unit.hasUnique(UniqueType.AutomationPrimaryAction)) 0 else 1
+        },
+        UnitActionType.Fortify to { unit ->
+            // Fortify moves to second page if current action is FortifyUntilHealed or if unit is wounded and it's not already the current action
+            if (unit.isFortifyingUntilHealed() || unit.health < 100 && !(unit.isFortified() && !unit.isActionUntilHealed())) 1 else 0
+        },
+        UnitActionType.FortifyUntilHealed to { unit ->
+            // FortifyUntilHealed only moves to the second page if Fortify is the current action
+            if (unit.isFortified() && !unit.isActionUntilHealed()) 1 else 0
+        },
+        UnitActionType.Sleep to { unit ->
+            // Sleep moves to second page if current action is SleepUntilHealed or if unit is wounded and it's not already the current action
+            if (unit.isSleepingUntilHealed() || unit.health < 100 && !(unit.isSleeping() && !unit.isActionUntilHealed())) 1 else 0
+        },
+        UnitActionType.SleepUntilHealed to { unit ->
+            // SleepUntilHealed only moves to the second page if Sleep is the current action
+            if (unit.isSleeping() && !unit.isActionUntilHealed()) 1 else 0
+        },
+        UnitActionType.Explore to { unit ->
+            if (unit.isCivilian()) 1 else 0
+        },
+    )
+
+    private suspend fun SequenceScope<UnitAction>.addUnmappedUnitActions(unit: MapUnit) {
         val tile = unit.getTile()
 
-        // Actions standardized with a directly callable invokeUnitAction
-        for (getActionsFunction in actionTypeToFunctions.values)
-            yieldAll(getActionsFunction(unit, tile))
-
         // General actions
-
-        if (shouldAutomationBePrimaryAction(unit))
-            addAutomateActions(unit)
+        addAutomateActions(unit)
         if (unit.isMoving())
             yield(UnitAction(UnitActionType.StopMovement) { unit.action = null })
         if (unit.isExploring())
@@ -100,43 +145,28 @@ object UnitActions {
             })
 
         addPromoteActions(unit)
-        yieldAll(UnitActionsUpgrade.getUnitUpgradeActions(unit, tile))
+        yieldAll(UnitActionsUpgrade.getUpgradeActions(unit))
         yieldAll(UnitActionsPillage.getPillageActions(unit, tile))
 
         addSleepActions(unit, tile)
-        addSleepUntilHealedActions(unit, tile)
+        addFortifyActions(unit)
 
-        addFortifyActions(unit, false)
-
-        if (unit.isMilitary())
-            addExplorationActions(unit)
+        addExplorationActions(unit)
 
         addWaitAction(unit)
 
-        addToggleActionsAction(unit)
-    }
-
-    private fun getAdditionalActions(unit: MapUnit) = sequence {
+        // From here we have actions defaulting to the second page
         if (unit.isMoving()) {
             yield(UnitAction(UnitActionType.ShowUnitDestination) {
                 GUI.getMap().setCenterPosition(unit.getMovementDestination().position, true)
             })
         }
-        addFortifyActions(unit, true)
-        if (!shouldAutomationBePrimaryAction(unit))
-            addAutomateActions(unit)
 
         addSwapAction(unit)
         addDisbandAction(unit)
-        addGiftAction(unit, unit.getTile())
-        if (unit.isCivilian())
-            addExplorationActions(unit)
-
-        addToggleActionsAction(unit)
     }
 
     private suspend fun SequenceScope<UnitAction>.addSwapAction(unit: MapUnit) {
-        val worldScreen = GUI.getWorldScreen()
         // Air units cannot swap
         if (unit.baseUnit.movesLikeAirUnits()) return
         // Disable unit swapping if multiple units are selected. It would make little sense.
@@ -145,6 +175,7 @@ object UnitActions {
         // have the visual bug that the tile overlays for the eligible swap locations are drawn for
         // /all/ selected units instead of only the first one. This could be fixed, but again,
         // swapping makes little sense for multiselect anyway.
+        val worldScreen = GUI.getWorldScreen()
         if (worldScreen.bottomUnitTable.selectedUnits.size > 1) return
         // Only show the swap action if there is at least one possible swap movement
         if (unit.movement.getUnitSwappableTiles().none()) return
@@ -160,23 +191,24 @@ object UnitActions {
     }
 
     private suspend fun SequenceScope<UnitAction>.addDisbandAction(unit: MapUnit) {
-        val worldScreen = GUI.getWorldScreen()
-        yield(UnitAction(type = UnitActionType.DisbandUnit, action = {
-            if (!worldScreen.hasOpenPopups()) {
-                val disbandText = if (unit.currentTile.getOwner() == unit.civ)
-                    "Disband this unit for [${unit.baseUnit.getDisbandGold(unit.civ)}] gold?".tr()
-                else "Do you really want to disband this unit?".tr()
-                ConfirmPopup(worldScreen, disbandText, "Disband unit") {
-                    unit.disband()
-                    unit.civ.updateStatsForNextTurn() // less upkeep!
-                    GUI.setUpdateWorldOnNextRender()
-                    if (GUI.getSettings().autoUnitCycle)
-                        worldScreen.switchToNextUnit()
-                }.open()
-            }
-        }.takeIf { unit.currentMovement > 0 }))
+        yield(UnitAction(type = UnitActionType.DisbandUnit,
+            action = {
+                val worldScreen = GUI.getWorldScreen()
+                if (!worldScreen.hasOpenPopups()) {
+                    val disbandText = if (unit.currentTile.getOwner() == unit.civ)
+                        "Disband this unit for [${unit.baseUnit.getDisbandGold(unit.civ)}] gold?".tr()
+                    else "Do you really want to disband this unit?".tr()
+                    ConfirmPopup(worldScreen, disbandText, "Disband unit") {
+                        unit.disband()
+                        unit.civ.updateStatsForNextTurn() // less upkeep!
+                        GUI.setUpdateWorldOnNextRender()
+                        if (GUI.getSettings().autoUnitCycle)
+                            worldScreen.switchToNextUnit()
+                    }.open()
+                }
+            }.takeIf { unit.currentMovement > 0 }
+        ))
     }
-
 
     private suspend fun SequenceScope<UnitAction>.addPromoteActions(unit: MapUnit) {
         if (unit.isCivilian() || !unit.promotions.canBePromoted()) return
@@ -197,9 +229,8 @@ object UnitActions {
         })
     }
 
-
-    private suspend fun SequenceScope<UnitAction>.addFortifyActions(unit: MapUnit, showingAdditionalActions: Boolean) {
-        if (unit.isFortified() && !showingAdditionalActions) {
+    private suspend fun SequenceScope<UnitAction>.addFortifyActions(unit: MapUnit) {
+        if (unit.isFortified()) {
             yield(UnitAction(
                 type = if (unit.isActionUntilHealed())
                     UnitActionType.FortifyUntilHealed else
@@ -210,37 +241,27 @@ object UnitActions {
             return
         }
 
-        if (!unit.canFortify()) return
-        if (unit.currentMovement == 0f) return
+        if (!unit.canFortify() || unit.currentMovement == 0f) return
 
-        val isFortified = unit.isFortified()
-        val isDamaged = unit.health < 100
+        yield(UnitAction(UnitActionType.Fortify,
+            action = { unit.fortify() }.takeIf { !unit.isFortified() || unit.isFortifyingUntilHealed() }
+        ))
 
-        if (isDamaged && !showingAdditionalActions && unit.rankTileForHealing(unit.currentTile) != 0)
-            yield(UnitAction(UnitActionType.FortifyUntilHealed,
-                action = { unit.fortifyUntilHealed() }.takeIf { !unit.isFortifyingUntilHealed() }
-            ))
-        else if (isDamaged || !showingAdditionalActions)
-            yield(UnitAction(UnitActionType.Fortify,
-                action = { unit.fortify() }.takeIf { !isFortified }
-            ))
-    }
-
-    private fun shouldHaveSleepAction(unit: MapUnit, tile: Tile): Boolean {
-        if (unit.isFortified() || unit.canFortify() || unit.currentMovement == 0f) return false
-        return !(tile.hasImprovementInProgress()
-                && unit.canBuildImprovement(tile.getTileImprovementInProgress()!!))
-    }
-    private suspend fun SequenceScope<UnitAction>.addSleepActions(unit: MapUnit, tile: Tile) {
-        if (!shouldHaveSleepAction(unit, tile)) return
-        if (unit.health < 100) return
-        yield(UnitAction(UnitActionType.Sleep,
-            action = { unit.action = UnitActionType.Sleep.value }.takeIf { !unit.isSleeping() }
+        if (unit.health == 100) return
+        yield(UnitAction(UnitActionType.FortifyUntilHealed,
+            action = { unit.fortifyUntilHealed() }
+                .takeIf { !unit.isFortifyingUntilHealed() && unit.canHealInCurrentTile() }
         ))
     }
 
-    private suspend fun SequenceScope<UnitAction>.addSleepUntilHealedActions(unit: MapUnit, tile: Tile) {
-        if (!shouldHaveSleepAction(unit, tile)) return
+    private suspend fun SequenceScope<UnitAction>.addSleepActions(unit: MapUnit, tile: Tile) {
+        if (unit.isFortified() || unit.canFortify() || unit.currentMovement == 0f) return
+        if (tile.hasImprovementInProgress() && unit.canBuildImprovement(tile.getTileImprovementInProgress()!!)) return
+
+        yield(UnitAction(UnitActionType.Sleep,
+            action = { unit.action = UnitActionType.Sleep.value }.takeIf { !unit.isSleeping() || unit.isSleepingUntilHealed() }
+        ))
+
         if (unit.health == 100) return
         yield(UnitAction(UnitActionType.SleepUntilHealed,
             action = { unit.action = UnitActionType.SleepUntilHealed.value }
@@ -248,17 +269,13 @@ object UnitActions {
         ))
     }
 
-    private suspend fun SequenceScope<UnitAction>.addGiftAction(unit: MapUnit, tile: Tile) {
-        yieldIfNotNull(getGiftAction(unit, tile))
-    }
-
-    fun getGiftAction(unit: MapUnit, tile: Tile): UnitAction? {
+    private fun getGiftActions(unit: MapUnit, tile: Tile) = sequence {
         val recipient = tile.getOwner()
         // We need to be in another civs territory.
-        if (recipient == null || recipient.isCurrentPlayer()) return null
+        if (recipient == null || recipient.isCurrentPlayer()) return@sequence
 
         if (recipient.isCityState()) {
-            if (recipient.isAtWarWith(unit.civ)) return null // No gifts to enemy CS
+            if (recipient.isAtWarWith(unit.civ)) return@sequence // No gifts to enemy CS
             // City States only take military units (and units specifically allowed by uniques)
             if (!unit.isMilitary()
                 && unit.getMatchingUniques(
@@ -266,16 +283,18 @@ object UnitActions {
                     checkCivInfoUniques = true
                 )
                     .none { unit.matchesFilter(it.params[1]) }
-            ) return null
+            ) return@sequence
         }
         // If gifting to major civ they need to be friendly
-        else if (!tile.isFriendlyTerritory(unit.civ)) return null
+        else if (!tile.isFriendlyTerritory(unit.civ)) return@sequence
 
         // Transported units can't be gifted
-        if (unit.isTransported) return null
+        if (unit.isTransported) return@sequence
 
-        if (unit.currentMovement <= 0)
-            return UnitAction(UnitActionType.GiftUnit, action = null)
+        if (unit.currentMovement <= 0) {
+            yield(UnitAction(UnitActionType.GiftUnit, action = null))
+            return@sequence
+        }
 
         val giftAction = {
             if (recipient.isCityState()) {
@@ -300,8 +319,7 @@ object UnitActions {
                 unit.gift(recipient)
             GUI.setUpdateWorldOnNextRender()
         }
-
-        return UnitAction(UnitActionType.GiftUnit, action = giftAction)
+        yield(UnitAction(UnitActionType.GiftUnit, action = giftAction))
     }
 
     private suspend fun SequenceScope<UnitAction>.addAutomateActions(unit: MapUnit) {
@@ -327,15 +345,18 @@ object UnitActions {
         ))
     }
 
-    private suspend fun SequenceScope<UnitAction>.addToggleActionsAction(unit: MapUnit) {
-        yield(UnitAction(
-            type = if (unit.showAdditionalActions) UnitActionType.HideAdditionalActions
-            else UnitActionType.ShowAdditionalActions,
-            action = {
-                unit.showAdditionalActions = !unit.showAdditionalActions
-                GUI.getWorldScreen().bottomUnitTable.update()
-            }
-        ))
+    /**
+     *  Creates the "paging" [UnitAction]s for:
+     *  - [first][Pair.first] - [UnitActionType.ShowAdditionalActions] (page forward)
+     *  - [second][Pair.second] - [UnitActionType.HideAdditionalActions] (page back)
+     *
+     *  These are not returned as part of [getUnitActions]!
+     */
+    // This function is here for historic reasons, and to keep UnitActionType implementations closer together.
+    // The code might move to UnitActionsTable altogether, no big difference.
+    internal fun getPagingActions(unit: MapUnit, actionsTable: UnitActionsTable): Pair<UnitAction, UnitAction> {
+        return UnitAction(UnitActionType.ShowAdditionalActions) { actionsTable.changePage(1, unit) } to
+            UnitAction(UnitActionType.HideAdditionalActions) { actionsTable.changePage(-1, unit) }
     }
 
 }

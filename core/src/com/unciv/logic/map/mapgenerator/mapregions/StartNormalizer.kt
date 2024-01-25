@@ -162,9 +162,7 @@ object StartNormalizer {
 
                 if (plot.resource != null) continue
 
-                val bonusToPlace =
-                    productionBonuses.filter { plot.lastTerrain.name in it.terrainsCanBeFoundOn }
-                        .randomOrNull()
+                val bonusToPlace = productionBonuses.filter { it.generatesNaturallyOn(plot) }.randomOrNull()
                 if (bonusToPlace != null) {
                     plot.resource = bonusToPlace.name
                     productionBonusesNeeded--
@@ -280,7 +278,7 @@ object StartNormalizer {
             val validBonuses = ruleset.tileResources.values.filter {
                 it.resourceType == ResourceType.Bonus &&
                     it.food >= 1 &&
-                    plot.lastTerrain.name in it.terrainsCanBeFoundOn
+                    it.generatesNaturallyOn(plot)
             }
             val goodPlotForOasis =
                 canPlaceOasis && plot.lastTerrain.name in oasisEquivalent!!.occursOn

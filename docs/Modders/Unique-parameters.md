@@ -134,7 +134,7 @@ For filtering a specific improvement.
 
 Allowed values are:
 
-- improvement name (Note that "Road" and "Railroad" _do_ work as improvementFilters, but not as tileFilters at the moment.)
+- improvement name
 - `All`
 - `Great Improvements`, `Great`
 - `All Road` - for Roads & Railroads
@@ -147,6 +147,14 @@ A filter determining a part of the population of a city. It can be any of the fo
 - `Specialists`
 - `Unemployed`
 - `Followers of the Majority Religion` or `Followers of this Religion`, both of which only apply when this religion is the majority religion in that city
+
+## combatantFilter
+
+Can be any of:
+- [mapUnitFilter](#mapunitfilter), for unit combatants
+- `City`, `All`, or [civFilter](#civfilter), for city combatants
+
+Since mapUnitFilter contains civFilter, that means civFilter can be applied to combatantFilter for both units and cities.
 
 ## regionType
 

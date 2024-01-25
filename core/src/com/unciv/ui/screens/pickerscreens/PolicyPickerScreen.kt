@@ -300,9 +300,9 @@ class PolicyPickerScreen(
             label.wrap = true
             labelTable.add(label).pad(7f, 20f, 10f, 20f).grow().row()
 
-            if (branch.uniqueMap.getUniques(UniqueType.OnlyAvailableWhen).any()) {
-                var warning = UniqueType.OnlyAvailableWhen.text.tr() + ":\n"
-                for (unique in branch.uniqueMap.getUniques(UniqueType.OnlyAvailableWhen))
+            if (branch.uniqueMap.getUniques(UniqueType.OnlyAvailable).any()) {
+                var warning = UniqueType.OnlyAvailable.text.tr() + ":\n"
+                for (unique in branch.uniqueMap.getUniques(UniqueType.OnlyAvailable))
                     for (conditional in unique.conditionals) {
                         warning += "• " + conditional.text.tr() + "\n"
                     }

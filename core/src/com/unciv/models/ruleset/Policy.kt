@@ -38,7 +38,7 @@ open class Policy : RulesetObject() {
         return (if (policyBranchType == PolicyBranchType.Member) name.tr() + "\n" else "") +
             uniqueObjects.filterNot {
                 it.isHiddenToUsers()
-                    || it.isOfType(UniqueType.OnlyAvailableWhen)
+                    || it.isOfType(UniqueType.OnlyAvailable)
                     || it.isOfType(UniqueType.OneTimeGlobalAlert)
             }
             .joinToString("\n") { "• ${it.text.tr()}" }
@@ -91,9 +91,11 @@ open class Policy : RulesetObject() {
         }
 
         fun isEnabledByPolicy(rulesetObject: IRulesetObject) =
-                rulesetObject.getMatchingUniques(UniqueType.OnlyAvailableWhen, StateForConditionals.IgnoreConditionals).any { it.conditionals.any {
+                rulesetObject.getMatchingUniques(UniqueType.OnlyAvailable, StateForConditionals.IgnoreConditionals).any { it.conditionals.any {
                     it.type == UniqueType.ConditionalAfterPolicyOrBelief && it.params[0] == name
-                } }
+                } } || rulesetObject.getMatchingUniques(UniqueType.Unavailable).any { it.conditionals.any {
+                    it.type == UniqueType.ConditionalBeforePolicyOrBelief && it.params[0] == name
+                }}
 
         val enabledBuildings = ruleset.buildings.values.filter { isEnabledByPolicy(it) }
         val enabledUnits = ruleset.units.values.filter { isEnabledByPolicy(it) }
@@ -108,8 +110,10 @@ open class Policy : RulesetObject() {
 
 
         fun isDisabledByPolicy(rulesetObject: IRulesetObject) =
-                rulesetObject.getMatchingUniques(UniqueType.OnlyAvailableWhen, StateForConditionals.IgnoreConditionals).any { it.conditionals.any {
+                rulesetObject.getMatchingUniques(UniqueType.OnlyAvailable, StateForConditionals.IgnoreConditionals).any { it.conditionals.any {
                     it.type == UniqueType.ConditionalBeforePolicyOrBelief && it.params[0] == name
+                } } || rulesetObject.getMatchingUniques(UniqueType.Unavailable).any { it.conditionals.any {
+                    it.type == UniqueType.ConditionalAfterPolicyOrBelief && it.params[0] == name
                 } }
 
 

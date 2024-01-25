@@ -17,19 +17,57 @@ import com.unciv.ui.popups.UnitUpgradeMenu
 import com.unciv.ui.screens.worldscreen.WorldScreen
 
 class UnitActionsTable(val worldScreen: WorldScreen) : Table() {
+    /** Distribute UnitActions on "pages" */
+    // todo since this runs surprisingly often - some caching? Does it even need to do anything if unit and currentPage are the same?
+    private var currentPage = 0
+    private val numPages = 2  //todo static for now
+    private var shownForUnitHash = 0
+
     companion object {
+        /** Maximum for how many pages there can be. */
+        private const val maxAllowedPages = 10
         /** Padding between and to the left of the Buttons */
         private const val padBetweenButtons = 2f
     }
+
     init {
         defaults().left().padLeft(padBetweenButtons).padBottom(padBetweenButtons)
     }
 
+    fun changePage(delta: Int, unit: MapUnit) {
+        if (delta == 0) return
+        currentPage = (currentPage + delta) % numPages
+        update(unit)
+    }
+
     fun update(unit: MapUnit?) {
+        val newUnitHash = unit?.hashCode() ?: 0
+        if (shownForUnitHash != newUnitHash) {
+            currentPage = 0
+            shownForUnitHash = newUnitHash
+        }
+
         clear()
         if (unit == null) return
         if (!worldScreen.canChangeState) return // No actions when it's not your turn or spectator!
+
+        val pageActionBuckets = Array<ArrayDeque<UnitAction>>(maxAllowedPages) { ArrayDeque() }
+
+        val (nextPageAction, previousPageAction) = UnitActions.getPagingActions(unit, this)
+        val nextPageButton = getUnitActionButton(unit, nextPageAction)
+        val previousPageButton = getUnitActionButton(unit, previousPageAction)
+
+        // Distribute sequentially into the buckets
         for (unitAction in UnitActions.getUnitActions(unit)) {
+            val actionPage = UnitActions.getActionDefaultPage(unit, unitAction.type)
+            if (actionPage >= maxAllowedPages) break
+            pageActionBuckets[actionPage].addLast(unitAction)
+        }
+
+        // clamp currentPage
+        if (currentPage !in 0 until numPages) currentPage = 0
+        // actually show the buttons of the currentPage
+        for (unitAction in pageActionBuckets[currentPage]) {
             val button = getUnitActionButton(unit, unitAction)
             if (unitAction is UpgradeUnitAction) {
                 button.onRightClick {
@@ -38,11 +76,16 @@ class UnitActionsTable(val worldScreen: WorldScreen) : Table() {
                     }
                 }
             }
-            add(button).row()
+            add(button).colspan(2).row()
         }
+
+        // show page navigation
+        if (currentPage > 0)
+            add(previousPageButton)
+        if (currentPage < numPages - 1)
+            add(nextPageButton)
         pack()
     }
-
 
     private fun getUnitActionButton(unit: MapUnit, unitAction: UnitAction): Button {
         val icon = unitAction.getIcon()
@@ -74,6 +117,6 @@ class UnitActionsTable(val worldScreen: WorldScreen) : Table() {
             }
         }
 
-         return actionButton
+        return actionButton
     }
 }

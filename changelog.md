@@ -1,3 +1,17 @@
+## 4.10.2
+
+By SeventhM:
+- Fix Spectator stats when viewing another civ
+- Allow units to upgrade to more than one unit
+- Fix problems with stats from tiles and improvements
+
+By SomeTroglodyte:
+- A Conditional checking for a Building globally
+- Unit actions "paging" for smaller screens
+- Fix RequiresBuildingInSomeCities not being displayed in city constructions as rejection reason
+
+Improved Spectator selected Civ coloring  - By tuvus
+
 ## 4.10.1
 
 'cities auto-bombard at end of turn' is a user option
