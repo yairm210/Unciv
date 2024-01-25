@@ -313,7 +313,7 @@ enum class UniqueParameterType(
         private val knownValues = setOf(
             "All", "Terrain",
             Constants.coastal, Constants.river, "Open terrain", "Rough terrain", "Water resource",
-            "resource", "Foreign Land", "Foreign", "Friendly Land", "Friendly", "Enemy Land", "Enemy",
+            "resource", "Foreign Land", "Foreign", "Friendly Land", "Friendly", "Enemy Land", "Enemy", "your",
             "Featureless", Constants.freshWaterFilter, "non-fresh water", "Natural Wonder",
             "Impassable", "Land", "Water"
         ) +

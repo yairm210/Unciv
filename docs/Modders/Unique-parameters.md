@@ -217,6 +217,7 @@ This indicates the terrain on a single tile. The following values are allowed:
     - `Friendly Land` - land belonging to you, or other civs with open borders to you
     - `Foreign Land` - any land that isn't friendly land
     - `Enemy land` - any land belonging to a civ you are at war with
+    - `your` - land belonging to you
     - `Water resource`, `Strategic resource`, `Luxury resource`, `Bonus resource`, `resource`
     - `Natural Wonder` (as opposed to above which means testing for a specific Natural Wonder by name, this tests for any of them)
 

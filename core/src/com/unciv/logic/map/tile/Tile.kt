@@ -505,6 +505,7 @@ open class Tile : IsPartOfGameInfoSerialization {
             "Open terrain" -> !isRoughTerrain()
             "Rough terrain" -> isRoughTerrain()
 
+            "your" -> observingCiv != null && getOwner() == observingCiv
             "Foreign Land", "Foreign" -> observingCiv != null && !isFriendlyTerritory(observingCiv)
             "Friendly Land", "Friendly" -> observingCiv != null && isFriendlyTerritory(observingCiv)
             "Enemy Land", "Enemy" -> observingCiv != null && isEnemyTerritory(observingCiv)
