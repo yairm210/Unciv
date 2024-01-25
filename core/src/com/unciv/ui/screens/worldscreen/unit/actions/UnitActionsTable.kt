@@ -35,6 +35,8 @@ class UnitActionsTable(val worldScreen: WorldScreen) : Table() {
         /** Upper bound for how many buttons to distribute per page, including navigation buttons.
          *  Affects large displays, resulting in more map visible between the actions and tech/diplo/policy buttons. */
         private const val maxButtonsPerPage = 7
+        /** Maximum number of buttons to present without paging, overriding page preferences (implementation currently limited to merging two pages) */
+        private const val maxSinglePageButtons = 5
         /** Padding between and to the left of the Buttons */
         private const val padBetweenButtons = 2f
     }
@@ -87,6 +89,12 @@ class UnitActionsTable(val worldScreen: WorldScreen) : Table() {
                 pageActionBuckets[page + 1].addFirst(element)
                 if (numPages < page + 2) numPages = page + 2
             }
+        }
+        // Special case: Only the default two pages used and all actions would fit in one
+        if (numPages == 2 && buttonsPerPage >= maxSinglePageButtons && pageActionBuckets[0].size + pageActionBuckets[1].size <= maxSinglePageButtons) {
+            pageActionBuckets[0].addAll(pageActionBuckets[1])
+            pageActionBuckets[1].clear()
+            numPages = 1
         }
 
         // clamp currentPage
