@@ -232,23 +232,47 @@ object UniqueTriggerActivation {
                 return true
             }
 
-            UniqueType.OneTimeFreeGreatPerson, UniqueType.MayanGainGreatPerson -> {
+            UniqueType.OneTimeFreeGreatPerson -> {
                 if (civInfo.isSpectator()) return false
                 val greatPeople = civInfo.greatPeople.getGreatPeople()
-                if (unique.type == UniqueType.MayanGainGreatPerson && civInfo.greatPeople.longCountGPPool.isEmpty())
-                    civInfo.greatPeople.longCountGPPool = greatPeople.map { it.name }.toHashSet()
                 if (civInfo.isHuman() && !UncivGame.Current.settings.autoPlay.isAutoPlayingAndFullAI()) {
                     civInfo.greatPeople.freeGreatPeople++
                     // Anyone an idea for a good icon?
-                    if (unique.type == UniqueType.MayanGainGreatPerson) {
-                        civInfo.greatPeople.mayaLimitedFreeGP++
-                        civInfo.addNotification(notification!!, MayaLongCountAction(), NotificationCategory.General, MayaCalendar.notificationIcon)
-                    } else if (notification != null)
+                    if (notification != null)
                         civInfo.addNotification(notification, NotificationCategory.General)
                     return true
                 } else {
-                    if (unique.type == UniqueType.MayanGainGreatPerson)
-                        greatPeople.removeAll { it.name !in civInfo.greatPeople.longCountGPPool }
+                    if (greatPeople.isEmpty()) return false
+                    var greatPerson = greatPeople.random()
+
+                    if (civInfo.wantsToFocusOn(Victory.Focus.Culture)) {
+                        val culturalGP =
+                            greatPeople.firstOrNull { it.uniques.contains("Great Person - [Culture]") }
+                        if (culturalGP != null) greatPerson = culturalGP
+                    }
+                    if (civInfo.wantsToFocusOn(Victory.Focus.Science)) {
+                        val scientificGP =
+                            greatPeople.firstOrNull { it.uniques.contains("Great Person - [Science]") }
+                        if (scientificGP != null) greatPerson = scientificGP
+                    }
+                    return civInfo.units.addUnit(greatPerson.name, chosenCity) != null
+                }
+            }
+
+            UniqueType.MayanGainGreatPerson -> {
+                if (civInfo.isSpectator()) return false
+                val greatPeople = civInfo.greatPeople.getGreatPeople()
+                if (civInfo.greatPeople.longCountGPPool.isEmpty())
+                    civInfo.greatPeople.longCountGPPool = greatPeople.map { it.name }.toHashSet()
+                
+                if (civInfo.isHuman() && !UncivGame.Current.settings.autoPlay.isAutoPlayingAndFullAI()) {
+                    civInfo.greatPeople.freeGreatPeople++
+                    // Anyone an idea for a good icon?
+                    civInfo.greatPeople.mayaLimitedFreeGP++
+                    civInfo.addNotification(notification!!, MayaLongCountAction(), NotificationCategory.General, MayaCalendar.notificationIcon)
+                    return true
+                } else {
+                    greatPeople.removeAll { it.name !in civInfo.greatPeople.longCountGPPool }
                     if (greatPeople.isEmpty()) return false
                     var greatPerson = greatPeople.random()
 
@@ -263,8 +287,7 @@ object UniqueTriggerActivation {
                         if (scientificGP != null) greatPerson = scientificGP
                     }
 
-                    if (unique.type == UniqueType.MayanGainGreatPerson)
-                        civInfo.greatPeople.longCountGPPool.remove(greatPerson.name)
+                   civInfo.greatPeople.longCountGPPool.remove(greatPerson.name)
                     return civInfo.units.addUnit(greatPerson.name, chosenCity) != null
                 }
             }
