@@ -3,6 +3,7 @@ package com.unciv.models.ruleset.unique
 import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
 import com.unciv.UncivGame
+import com.unciv.logic.automation.civilization.NextTurnAutomation
 import com.unciv.logic.battle.MapUnitCombatant
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.CivFlags
@@ -20,7 +21,6 @@ import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.UpgradeUnitAction
 import com.unciv.models.ruleset.BeliefType
-import com.unciv.models.ruleset.Victory
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
 import com.unciv.models.translations.fillPlaceholders
@@ -234,64 +234,35 @@ object UniqueTriggerActivation {
 
             UniqueType.OneTimeFreeGreatPerson -> {
                 if (civInfo.isSpectator()) return false
-                val greatPeople = civInfo.greatPeople.getGreatPeople()
-                if (civInfo.isHuman() && !UncivGame.Current.settings.autoPlay.isAutoPlayingAndFullAI()) {
-                    civInfo.greatPeople.freeGreatPeople++
-                    // Anyone an idea for a good icon?
-                    if (notification != null)
-                        civInfo.addNotification(notification, NotificationCategory.General)
-                    return true
-                } else {
-                    if (greatPeople.isEmpty()) return false
-                    var greatPerson = greatPeople.random()
-
-                    if (civInfo.wantsToFocusOn(Victory.Focus.Culture)) {
-                        val culturalGP =
-                            greatPeople.firstOrNull { it.uniques.contains("Great Person - [Culture]") }
-                        if (culturalGP != null) greatPerson = culturalGP
-                    }
-                    if (civInfo.wantsToFocusOn(Victory.Focus.Science)) {
-                        val scientificGP =
-                            greatPeople.firstOrNull { it.uniques.contains("Great Person - [Science]") }
-                        if (scientificGP != null) greatPerson = scientificGP
-                    }
-                    return civInfo.units.addUnit(greatPerson.name, chosenCity) != null
+                civInfo.greatPeople.freeGreatPeople++
+                // Anyone an idea for a good icon?
+                if (notification != null)
+                    civInfo.addNotification(notification, NotificationCategory.General)
+                
+                if (civInfo.isAI() || UncivGame.Current.settings.autoPlay.isAutoPlayingAndFullAI()) {
+                    NextTurnAutomation.chooseGreatPerson(civInfo)
                 }
+                
+                return true
             }
 
             UniqueType.MayanGainGreatPerson -> {
                 if (civInfo.isSpectator()) return false
                 val greatPeople = civInfo.greatPeople.getGreatPeople()
                 if (civInfo.greatPeople.longCountGPPool.isEmpty())
-                    civInfo.greatPeople.longCountGPPool = greatPeople.map { it.name }.toHashSet()
+                civInfo.greatPeople.longCountGPPool = greatPeople.map { it.name }.toHashSet()
+
+                civInfo.greatPeople.freeGreatPeople++
+                // Anyone an idea for a good icon?
+                civInfo.greatPeople.mayaLimitedFreeGP++
+                if (notification != null)
+                    civInfo.addNotification(notification, MayaLongCountAction(), NotificationCategory.General, MayaCalendar.notificationIcon)
                 
-                if (civInfo.isHuman() && !UncivGame.Current.settings.autoPlay.isAutoPlayingAndFullAI()) {
-                    civInfo.greatPeople.freeGreatPeople++
-                    // Anyone an idea for a good icon?
-                    civInfo.greatPeople.mayaLimitedFreeGP++
-
-                    if (notification != null)
-                        civInfo.addNotification(notification!!, MayaLongCountAction(), NotificationCategory.General, MayaCalendar.notificationIcon)
-                    return true
-                } else {
-                    greatPeople.removeAll { it.name !in civInfo.greatPeople.longCountGPPool }
-                    if (greatPeople.isEmpty()) return false
-                    var greatPerson = greatPeople.random()
-
-                    if (civInfo.wantsToFocusOn(Victory.Focus.Culture)) {
-                        val culturalGP =
-                            greatPeople.firstOrNull { it.uniques.contains("Great Person - [Culture]") }
-                        if (culturalGP != null) greatPerson = culturalGP
-                    }
-                    if (civInfo.wantsToFocusOn(Victory.Focus.Science)) {
-                        val scientificGP =
-                            greatPeople.firstOrNull { it.uniques.contains("Great Person - [Science]") }
-                        if (scientificGP != null) greatPerson = scientificGP
-                    }
-
-                   civInfo.greatPeople.longCountGPPool.remove(greatPerson.name)
-                    return civInfo.units.addUnit(greatPerson.name, chosenCity) != null
+                if (civInfo.isAI() || UncivGame.Current.settings.autoPlay.isAutoPlayingAndFullAI()) {
+                    NextTurnAutomation.chooseGreatPerson(civInfo)
                 }
+
+                return true
             }
 
             UniqueType.OneTimeGainPopulation -> {
