@@ -1,38 +1,18 @@
 ## 4.10.3
 
-chore: Separated conditional checks to separate file
-
-Removed Unique.isOfType() + general code cleanup
-
-Replaced special "hidden after generating a Great Prophet" with a more multi-purpose conditional
-
-Add "Unavailable" unique for all except beliefs, which are a mess right now
-
-Enum rename: OnlyAvailableWhen -> OnlyAvailable
-
-Returned deprecated StrengthBonusVsCityStates to work for the usual transitional period
-
-Unified 'does resource generate naturally on' checks to include all uniques everywhere
-
-'not shown on world screen' unique accepts civ conditionals
-
-Adjacency function can receive civ, for foreign/resource filters
-
-Added adjacency conditionals
-
-CityCombatant.matchesFilter contains multifilter and civ filter
-
-ICombatant.matchesCategory -> matchesFilter, standardization
-
-Added deprecation for multi-tilefilter uniques
+Modding:
+- Add "Unavailable" unique (counterpart to Only Available)
+- Unified resource generation checks to include all uniques always
+- 'not shown on world screen' unique accepts civ conditionals
+- Added adjacency conditionals
+- CityCombatant.matchesFilter contains multifilter and civ filter
 
 By tuvus:
-- Air unit automation improvement 
-- Espionage automation 
+- Air unit automation improvement
+- Espionage automation
 
 By SeventhM:
-- Fix errors when starting games as Maya 
-- Fix build errors 
+- Fix errors when starting games as Maya
 
 ## 4.10.2
 
