@@ -13,10 +13,6 @@ import com.unciv.models.translations.tr
 import com.unciv.ui.popups.ConfirmPopup
 import com.unciv.ui.popups.hasOpenPopups
 import com.unciv.ui.screens.pickerscreens.PromotionPickerScreen
-import com.unciv.ui.screens.worldscreen.unit.actions.UnitActions.getActionDefaultPage
-import com.unciv.ui.screens.worldscreen.unit.actions.UnitActions.getPagingActions
-import com.unciv.ui.screens.worldscreen.unit.actions.UnitActions.getUnitActions
-import com.unciv.ui.screens.worldscreen.unit.actions.UnitActions.invokeUnitAction
 
 /**
  *  Manages creation of [UnitAction] instances.
