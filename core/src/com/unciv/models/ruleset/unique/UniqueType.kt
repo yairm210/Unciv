@@ -638,6 +638,7 @@ enum class UniqueType(
     ConditionalAfterReligion("after founding a religion", UniqueTarget.Conditional),
     ConditionalBeforeEnhancingReligion("before enhancing a religion", UniqueTarget.Conditional),
     ConditionalAfterEnhancingReligion("after enhancing a religion", UniqueTarget.Conditional),
+    ConditionalAfterGeneratingGreatProphet("after generating a Great Prophet", UniqueTarget.Conditional),
 
     ConditionalBuildingBuilt("if [buildingFilter] is constructed", UniqueTarget.Conditional),
     ConditionalBuildingBuiltByAnybody("if [buildingFilter] is constructed by anybody", UniqueTarget.Conditional),
@@ -794,6 +795,7 @@ enum class UniqueType(
         UniqueTarget.Unit, UniqueTarget.Building, UniqueTarget.Ruins, UniqueTarget.Tutorial,
         flags = UniqueFlag.setOfHiddenToUsers),
 
+    @Deprecated("as of 4.9.0", ReplaceWith("Unavailable <after generating a Great Prophet>"))
     HiddenAfterGreatProphet("Hidden after generating a Great Prophet", UniqueTarget.Ruins),
     HiddenWithoutVictoryType("Hidden when [victoryType] Victory is disabled", UniqueTarget.Building, UniqueTarget.Unit, flags = UniqueFlag.setOfHiddenToUsers),
     HiddenFromCivilopedia("Will not be displayed in Civilopedia", *UniqueTarget.Displayable, flags = UniqueFlag.setOfHiddenToUsers),

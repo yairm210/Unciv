@@ -260,12 +260,14 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
                 checkOnCiv { stats.happiness in condition.params[0].toInt() until condition.params[1].toInt() }
             UniqueType.ConditionalBelowHappiness -> checkOnCiv { stats.happiness < condition.params[0].toInt() }
             UniqueType.ConditionalGoldenAge -> checkOnCiv { goldenAges.isGoldenAge() }
+
             UniqueType.ConditionalBeforeEra -> compareEra(condition.params[0]) { current, param -> current < param }
             UniqueType.ConditionalStartingFromEra -> compareEra(condition.params[0]) { current, param -> current >= param }
             UniqueType.ConditionalDuringEra -> compareEra(condition.params[0]) { current, param -> current == param }
             UniqueType.ConditionalIfStartingInEra -> checkOnCiv { gameInfo.gameParameters.startingEra == condition.params[0] }
             UniqueType.ConditionalTech -> checkOnCiv { tech.isResearched(condition.params[0]) }
             UniqueType.ConditionalNoTech -> checkOnCiv { !tech.isResearched(condition.params[0]) }
+
             UniqueType.ConditionalAfterPolicyOrBelief ->
                 checkOnCiv { policies.isAdopted(condition.params[0]) || religionManager.religion?.hasBelief(condition.params[0]) == true }
             UniqueType.ConditionalBeforePolicyOrBelief ->
@@ -282,6 +284,9 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
                 checkOnCiv { religionManager.religionState < ReligionState.EnhancedReligion }
             UniqueType.ConditionalAfterEnhancingReligion ->
                 checkOnCiv { religionManager.religionState >= ReligionState.EnhancedReligion }
+            UniqueType.ConditionalAfterGeneratingGreatProphet ->
+                checkOnCiv { religionManager.greatProphetsEarned() > 0 }
+
             UniqueType.ConditionalBuildingBuilt ->
                 checkOnCiv { cities.any { it.cityConstructions.containsBuildingOrEquivalent(condition.params[0]) } }
             UniqueType.ConditionalBuildingBuiltByAnybody ->
@@ -314,6 +319,7 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
             UniqueType.ConditionalHasNotUsedOtherActions ->
                 state.unit == null || // So we get the action as a valid action in BaseUnit.hasUnique()
                     state.unit.abilityToTimesUsed.isEmpty()
+
             UniqueType.ConditionalInTiles ->
                 relevantTile?.matchesFilter(condition.params[0], state.civInfo) == true
             UniqueType.ConditionalInTilesNot ->
