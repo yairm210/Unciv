@@ -20,12 +20,21 @@ class UnitActionsTable(val worldScreen: WorldScreen) : Table() {
     /** Distribute UnitActions on "pages" */
     // todo since this runs surprisingly often - some caching? Does it even need to do anything if unit and currentPage are the same?
     private var currentPage = 0
-    private val numPages = 2  //todo static for now
+    private var buttonsPerPage = Int.MAX_VALUE
+    private var numPages = 2
     private var shownForUnitHash = 0
 
     companion object {
-        /** Maximum for how many pages there can be. */
+        /** Maximum for how many pages there can be. ([minButtonsPerPage]-1)*[maxAllowedPages]
+         *  is the upper bound for how many actions a unit can display. */
         private const val maxAllowedPages = 10
+        /** Lower bound for how many buttons to distribute per page, including navigation buttons.
+         *  Affects really cramped displays. */
+        // less than navigation buttons + 2 makes little sense, and setting it to 4 isn't necessary.
+        private const val minButtonsPerPage = 3
+        /** Upper bound for how many buttons to distribute per page, including navigation buttons.
+         *  Affects large displays, resulting in more map visible between the actions and tech/diplo/policy buttons. */
+        private const val maxButtonsPerPage = 7
         /** Padding between and to the left of the Buttons */
         private const val padBetweenButtons = 2f
     }
@@ -35,7 +44,7 @@ class UnitActionsTable(val worldScreen: WorldScreen) : Table() {
     }
 
     fun changePage(delta: Int, unit: MapUnit) {
-        if (delta == 0) return
+        if (delta == 0 || numPages <= 1) return
         currentPage = (currentPage + delta) % numPages
         update(unit)
     }
@@ -51,17 +60,33 @@ class UnitActionsTable(val worldScreen: WorldScreen) : Table() {
         if (unit == null) return
         if (!worldScreen.canChangeState) return // No actions when it's not your turn or spectator!
 
+        numPages = 0
         val pageActionBuckets = Array<ArrayDeque<UnitAction>>(maxAllowedPages) { ArrayDeque() }
+        fun freeSlotsOnPage(page: Int) = buttonsPerPage -
+            pageActionBuckets[page].size -
+            (if (numPages > 1) 1 else 0) // room for the navigation buttons
 
         val (nextPageAction, previousPageAction) = UnitActions.getPagingActions(unit, this)
         val nextPageButton = getUnitActionButton(unit, nextPageAction)
         val previousPageButton = getUnitActionButton(unit, previousPageAction)
+        updateButtonsPerPage(nextPageButton)
 
         // Distribute sequentially into the buckets
         for (unitAction in UnitActions.getUnitActions(unit)) {
-            val actionPage = UnitActions.getActionDefaultPage(unit, unitAction.type)
+            var actionPage = UnitActions.getActionDefaultPage(unit, unitAction.type)
+            while (actionPage < maxAllowedPages && freeSlotsOnPage(actionPage) <= 0)
+                actionPage++
             if (actionPage >= maxAllowedPages) break
+            if (actionPage >= numPages) numPages = actionPage + 1
             pageActionBuckets[actionPage].addLast(unitAction)
+        }
+        // Due to room reserved for paging buttons changing, buckets may now be too full
+        for (page in 0 until maxAllowedPages - 1) {
+            while (freeSlotsOnPage(page) < 0) {
+                val element = pageActionBuckets[page].removeLast()
+                pageActionBuckets[page + 1].addFirst(element)
+                if (numPages < page + 2) numPages = page + 2
+            }
         }
 
         // clamp currentPage
@@ -85,6 +110,14 @@ class UnitActionsTable(val worldScreen: WorldScreen) : Table() {
         if (currentPage < numPages - 1)
             add(nextPageButton)
         pack()
+    }
+
+    private fun updateButtonsPerPage(button: Button) {
+        val upperLimit = worldScreen.techPolicyAndDiplomacy.y
+        val lowerLimit = this.y
+        val availableHeight = upperLimit - lowerLimit - padBetweenButtons
+        val buttonHeight = button.height + padBetweenButtons
+        buttonsPerPage = (availableHeight / buttonHeight).toInt().coerceIn(minButtonsPerPage, maxButtonsPerPage)
     }
 
     private fun getUnitActionButton(unit: MapUnit, unitAction: UnitAction): Button {
