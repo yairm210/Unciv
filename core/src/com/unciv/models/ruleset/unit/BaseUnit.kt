@@ -420,14 +420,14 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
             when (unique.type) {
                 UniqueType.Strength -> {
                     if (unique.params[0].toInt() <= 0) continue
-                    if (unique.conditionals.any { it.isOfType(UniqueType.ConditionalVsUnits) }) { // Bonus vs some units - a quarter of the bonus
+                    if (unique.conditionals.any { it.type == UniqueType.ConditionalVsUnits }) { // Bonus vs some units - a quarter of the bonus
                         power *= (unique.params[0].toInt() / 4f).toPercent()
                     } else if (
                         unique.conditionals.any {
-                            it.isOfType(UniqueType.ConditionalVsCity) // City Attack - half the bonus
-                                || it.isOfType(UniqueType.ConditionalAttacking) // Attack - half the bonus
-                                || it.isOfType(UniqueType.ConditionalDefending) // Defense - half the bonus
-                                || it.isOfType(UniqueType.ConditionalFightingInTiles)
+                            it.type == UniqueType.ConditionalVsCity // City Attack - half the bonus
+                                || it.type == UniqueType.ConditionalAttacking // Attack - half the bonus
+                                || it.type == UniqueType.ConditionalDefending // Defense - half the bonus
+                                || it.type == UniqueType.ConditionalFightingInTiles
                         } // Bonus in terrain or feature - half the bonus
                     ) {
                         power *= (unique.params[0].toInt() / 2f).toPercent()

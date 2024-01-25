@@ -47,7 +47,7 @@ fun IHasUniques.uniquesToCivilopediaTextLines(
         // Optionally special-case ConsumesResources to give it a reddish color. Also ensures link always points to the resource
         // (the other constructor guesses the first object by name in the Unique parameters).
         yield(
-            if (colorConsumesResources && unique.isOfType(UniqueType.ConsumesResources))
+            if (colorConsumesResources && unique.type == UniqueType.ConsumesResources)
                 FormattedLine(unique.text, link = "Resources/${unique.params[1]}", color = "#F42")
                 else FormattedLine(unique)
         )

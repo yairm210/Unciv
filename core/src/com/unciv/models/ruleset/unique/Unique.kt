@@ -57,8 +57,6 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
         }
     }
 
-    fun isOfType(uniqueType: UniqueType) = uniqueType == type
-
     fun conditionalsApply(civInfo: Civilization? = null, city: City? = null): Boolean {
         return conditionalsApply(StateForConditionals(civInfo, city))
     }
@@ -66,7 +64,7 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
     fun conditionalsApply(state: StateForConditionals = StateForConditionals()): Boolean {
         if (state.ignoreConditionals) return true
         // Always allow Timed conditional uniques. They are managed elsewhere
-        if (conditionals.any { it.isOfType(UniqueType.ConditionalTimedUnique) }) return true
+        if (conditionals.any { it.type == UniqueType.ConditionalTimedUnique }) return true
         for (condition in conditionals) {
             if (!conditionalApplies(condition, state)) return false
         }
@@ -490,7 +488,7 @@ class UniqueMap: HashMap<String, ArrayList<Unique>>() {
 class TemporaryUnique() : IsPartOfGameInfoSerialization {
 
     constructor(uniqueObject: Unique, turns: Int) : this() {
-        val turnsText = uniqueObject.conditionals.first { it.isOfType(UniqueType.ConditionalTimedUnique) }.text
+        val turnsText = uniqueObject.conditionals.first { it.type == UniqueType.ConditionalTimedUnique }.text
         unique = uniqueObject.text.replaceFirst("<$turnsText>", "")
         sourceObjectType = uniqueObject.sourceObjectType
         sourceObjectName = uniqueObject.sourceObjectName
@@ -519,5 +517,5 @@ fun ArrayList<TemporaryUnique>.endTurn() {
 fun ArrayList<TemporaryUnique>.getMatchingUniques(uniqueType: UniqueType, stateForConditionals: StateForConditionals): Sequence<Unique> {
         return this.asSequence()
             .map { it.uniqueObject }
-            .filter { it.isOfType(uniqueType) && it.conditionalsApply(stateForConditionals) }
+            .filter { it.type == uniqueType && it.conditionalsApply(stateForConditionals) }
     }
