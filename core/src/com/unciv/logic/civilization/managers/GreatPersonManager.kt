@@ -90,13 +90,14 @@ class GreatPersonManager : IsPartOfGameInfoSerialization {
 
     fun triggerMayanGreatPerson() {
         if (civInfo.isSpectator()) return
-        val greatPeople = civInfo.greatPeople.getGreatPeople()
-        if (civInfo.greatPeople.longCountGPPool.isEmpty())
-            civInfo.greatPeople.longCountGPPool = greatPeople.map { it.name }.toHashSet()
+        val greatPeople = getGreatPeople()
+        if (longCountGPPool.isEmpty())
+            longCountGPPool = greatPeople.map { it.name }.toHashSet()
 
-        civInfo.greatPeople.freeGreatPeople++
+        freeGreatPeople++
+        mayaLimitedFreeGP++
+
         // Anyone an idea for a good icon?
-        civInfo.greatPeople.mayaLimitedFreeGP++
         val notification = "{A new b'ak'tun has just begun!}\n{A Great Person joins you!}"
         civInfo.addNotification(notification, MayaLongCountAction(), NotificationCategory.General, MayaCalendar.notificationIcon)
     }
