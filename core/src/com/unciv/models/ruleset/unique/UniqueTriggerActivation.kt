@@ -3,13 +3,13 @@ package com.unciv.models.ruleset.unique
 import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
 import com.unciv.UncivGame
+import com.unciv.logic.automation.civilization.NextTurnAutomation
 import com.unciv.logic.battle.MapUnitCombatant
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.CivFlags
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.LocationAction
 import com.unciv.logic.civilization.MapUnitAction
-import com.unciv.logic.civilization.MayaLongCountAction
 import com.unciv.logic.civilization.NotificationAction
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
@@ -20,12 +20,10 @@ import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.UpgradeUnitAction
 import com.unciv.models.ruleset.BeliefType
-import com.unciv.models.ruleset.Victory
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
 import com.unciv.models.translations.fillPlaceholders
 import com.unciv.models.translations.hasPlaceholderParameters
-import com.unciv.ui.components.MayaCalendar
 import com.unciv.ui.components.extensions.addToMapOfSets
 import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionsUpgrade
 import kotlin.math.roundToInt
@@ -232,41 +230,18 @@ object UniqueTriggerActivation {
                 return true
             }
 
-            UniqueType.OneTimeFreeGreatPerson, UniqueType.MayanGainGreatPerson -> {
+            UniqueType.OneTimeFreeGreatPerson -> {
                 if (civInfo.isSpectator()) return false
-                val greatPeople = civInfo.greatPeople.getGreatPeople()
-                if (unique.type == UniqueType.MayanGainGreatPerson && civInfo.greatPeople.longCountGPPool.isEmpty())
-                    civInfo.greatPeople.longCountGPPool = greatPeople.map { it.name }.toHashSet()
-                if (civInfo.isHuman() && !UncivGame.Current.settings.autoPlay.isAutoPlayingAndFullAI()) {
-                    civInfo.greatPeople.freeGreatPeople++
-                    // Anyone an idea for a good icon?
-                    if (unique.type == UniqueType.MayanGainGreatPerson) {
-                        civInfo.greatPeople.mayaLimitedFreeGP++
-                        civInfo.addNotification(notification!!, MayaLongCountAction(), NotificationCategory.General, MayaCalendar.notificationIcon)
-                    } else if (notification != null)
-                        civInfo.addNotification(notification, NotificationCategory.General)
-                    return true
-                } else {
-                    if (unique.type == UniqueType.MayanGainGreatPerson)
-                        greatPeople.removeAll { it.name !in civInfo.greatPeople.longCountGPPool }
-                    if (greatPeople.isEmpty()) return false
-                    var greatPerson = greatPeople.random()
-
-                    if (civInfo.wantsToFocusOn(Victory.Focus.Culture)) {
-                        val culturalGP =
-                            greatPeople.firstOrNull { it.uniques.contains("Great Person - [Culture]") }
-                        if (culturalGP != null) greatPerson = culturalGP
-                    }
-                    if (civInfo.wantsToFocusOn(Victory.Focus.Science)) {
-                        val scientificGP =
-                            greatPeople.firstOrNull { it.uniques.contains("Great Person - [Science]") }
-                        if (scientificGP != null) greatPerson = scientificGP
-                    }
-
-                    if (unique.type == UniqueType.MayanGainGreatPerson)
-                        civInfo.greatPeople.longCountGPPool.remove(greatPerson.name)
-                    return civInfo.units.addUnit(greatPerson.name, chosenCity) != null
+                civInfo.greatPeople.freeGreatPeople++
+                // Anyone an idea for a good icon?
+                if (notification != null)
+                    civInfo.addNotification(notification, NotificationCategory.General)
+                
+                if (civInfo.isAI() || UncivGame.Current.settings.autoPlay.isAutoPlayingAndFullAI()) {
+                    NextTurnAutomation.chooseGreatPerson(civInfo)
                 }
+           
+                return true
             }
 
             UniqueType.OneTimeGainPopulation -> {

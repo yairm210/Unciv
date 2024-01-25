@@ -310,6 +310,37 @@ object NextTurnAutomation {
         }
     }
 
+    fun chooseGreatPerson(civInfo: Civilization) {
+        if (civInfo.greatPeople.freeGreatPeople == 0) return
+        val mayanGreatPerson = civInfo.greatPeople.mayaLimitedFreeGP > 0
+        val greatPeople =
+            if (mayanGreatPerson)
+                civInfo.greatPeople.getGreatPeople().filter { it.name in civInfo.greatPeople.longCountGPPool }
+            else civInfo.greatPeople.getGreatPeople()
+
+        if (greatPeople.isEmpty()) return
+        var greatPerson = greatPeople.random()
+
+        if (civInfo.wantsToFocusOn(Victory.Focus.Culture)) {
+            val culturalGP =
+                greatPeople.firstOrNull { it.uniques.contains("Great Person - [Culture]") }
+            if (culturalGP != null) greatPerson = culturalGP
+        }
+        if (civInfo.wantsToFocusOn(Victory.Focus.Science)) {
+            val scientificGP =
+                greatPeople.firstOrNull { it.uniques.contains("Great Person - [Science]") }
+            if (scientificGP != null) greatPerson = scientificGP
+        }
+
+        civInfo.units.addUnit(greatPerson, civInfo.cities.firstOrNull { it.isCapital() })
+
+        civInfo.greatPeople.freeGreatPeople--
+        if (mayanGreatPerson){
+            civInfo.greatPeople.longCountGPPool.remove(greatPerson.name)
+            civInfo.greatPeople.mayaLimitedFreeGP--
+        }
+    }
+    
     /** If we are able to build a spaceship but have already spent our resources, try disbanding
      *  a unit and selling a building to make room. Can happen due to trades etc */
     private fun freeUpSpaceResources(civInfo: Civilization) {
