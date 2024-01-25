@@ -40,7 +40,7 @@ class RuinsManager(
                     || civInfo.gameInfo.difficulty in possibleReward.excludedDifficulties
                     || possibleReward.hasUnique(UniqueType.HiddenWithoutReligion) && !civInfo.gameInfo.isReligionEnabled()
                     || possibleReward.hasUnique(UniqueType.HiddenAfterGreatProphet) && civInfo.religionManager.greatProphetsEarned() > 0
-                    || possibleReward.getMatchingUniques(UniqueType.OnlyAvailableWhen, StateForConditionals.IgnoreConditionals)
+                    || possibleReward.getMatchingUniques(UniqueType.OnlyAvailable, StateForConditionals.IgnoreConditionals)
                     .any { !it.conditionalsApply(stateForOnlyAvailableWhen) }
             }
             // This might be a dirty way to do this, but it works (we do have randomWeighted in CollectionExtensions, but below we

@@ -159,7 +159,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         }
         val civInfo = cityConstructions.city.civ
 
-        for (unique in getMatchingUniques(UniqueType.OnlyAvailableWhen, StateForConditionals.IgnoreConditionals))
+        for (unique in getMatchingUniques(UniqueType.OnlyAvailable, StateForConditionals.IgnoreConditionals))
             if (!unique.conditionalsApply(civInfo, cityConstructions.city))
                 yield(RejectionReasonType.ShouldNotBeDisplayed.toInstance())
 

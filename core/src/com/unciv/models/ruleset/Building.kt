@@ -241,7 +241,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
             yield(RejectionReasonType.AlreadyBuilt.toInstance())
 
         for (unique in uniqueObjects) {
-            if (unique.type != UniqueType.OnlyAvailableWhen &&
+            if (unique.type != UniqueType.OnlyAvailable &&
                 !unique.conditionalsApply(StateForConditionals(civ, cityConstructions.city))) continue
 
             @Suppress("NON_EXHAUSTIVE_WHEN")
@@ -251,7 +251,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
                 UniqueType.Unbuildable ->
                     yield(RejectionReasonType.Unbuildable.toInstance())
 
-                UniqueType.OnlyAvailableWhen ->
+                UniqueType.OnlyAvailable ->
                     if (!unique.conditionalsApply(civ, cityConstructions.city))
                         yield(RejectionReasonType.ShouldNotBeDisplayed.toInstance())
 

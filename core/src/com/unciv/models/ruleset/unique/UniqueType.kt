@@ -263,7 +263,7 @@ enum class UniqueType(
     MaxNumberBuildable("Limited to [amount] per Civilization", UniqueTarget.Building, UniqueTarget.Unit),
     HiddenBeforeAmountPolicies("Hidden until [amount] social policy branches have been completed", UniqueTarget.Building, UniqueTarget.Unit),
     // Meant to be used together with conditionals, like "Only available <after adopting [policy]> <while the empire is happy>"
-    OnlyAvailableWhen("Only available", UniqueTarget.Unit, UniqueTarget.Building, UniqueTarget.Improvement,
+    OnlyAvailable("Only available", UniqueTarget.Unit, UniqueTarget.Building, UniqueTarget.Improvement,
         UniqueTarget.Policy, UniqueTarget.Tech, UniqueTarget.Promotion, UniqueTarget.Ruins, UniqueTarget.FollowerBelief, UniqueTarget.FounderBelief),
 
     ConvertFoodToProductionWhenConstructed("Excess Food converted to Production when under construction", UniqueTarget.Building, UniqueTarget.Unit),

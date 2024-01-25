@@ -161,7 +161,7 @@ class TechManager : IsPartOfGameInfoSerialization {
 
     fun canBeResearched(techName: String): Boolean {
         val tech = getRuleset().technologies[techName]!!
-        if (tech.uniqueObjects.any { it.type == UniqueType.OnlyAvailableWhen && !it.conditionalsApply(civInfo) })
+        if (tech.uniqueObjects.any { it.type == UniqueType.OnlyAvailable && !it.conditionalsApply(civInfo) })
             return false
 
         if (isResearched(tech.name) && !tech.isContinuallyResearchable())

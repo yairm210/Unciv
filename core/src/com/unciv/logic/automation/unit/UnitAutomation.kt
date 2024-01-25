@@ -129,7 +129,7 @@ object UnitAutomation {
     internal fun tryUpgradeUnit(unit: MapUnit): Boolean {
         if (unit.civ.isHuman() && (!UncivGame.Current.settings.automatedUnitsCanUpgrade
                 || UncivGame.Current.settings.autoPlay.isAutoPlayingAndFullAI())) return false
-        
+
         val upgradeUnits = getUnitsToUpgradeTo(unit)
         if (upgradeUnits.none()) return false // for resource reasons, usually
         val upgradedUnit = upgradeUnits.minBy { it.cost }
@@ -153,7 +153,7 @@ object UnitAutomation {
         fun isInvalidUpgradeDestination(baseUnit: BaseUnit): Boolean {
             if (!unit.civ.tech.isResearched(baseUnit))
                 return true
-            return baseUnit.getMatchingUniques(UniqueType.OnlyAvailableWhen, StateForConditionals.IgnoreConditionals)
+            return baseUnit.getMatchingUniques(UniqueType.OnlyAvailable, StateForConditionals.IgnoreConditionals)
                 .any { !it.conditionalsApply(StateForConditionals(unit.civ, unit = unit)) }
         }
 

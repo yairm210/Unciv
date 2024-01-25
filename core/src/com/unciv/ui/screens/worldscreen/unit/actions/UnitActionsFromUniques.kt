@@ -305,7 +305,7 @@ object UnitActionsFromUniques {
             val unitToTransformTo = civInfo.getEquivalentUnit(unique.params[0])
 
             if (unitToTransformTo.getMatchingUniques(
-                    UniqueType.OnlyAvailableWhen,
+                    UniqueType.OnlyAvailable,
                     StateForConditionals.IgnoreConditionals
                 )
                     .any { !it.conditionalsApply(stateForConditionals) })

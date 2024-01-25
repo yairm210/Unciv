@@ -118,7 +118,7 @@ class UnitPromotions : IsPartOfGameInfoSerialization {
             .filter { unit.type.name in it.unitTypes && it.name !in promotions }
             .filter { it.prerequisites.isEmpty() || it.prerequisites.any { p->p in promotions } }
             .filter { promotion -> promotion.uniqueObjects
-                .none { it.type == UniqueType.OnlyAvailableWhen
+                .none { it.type == UniqueType.OnlyAvailable
                         && !it.conditionalsApply(StateForConditionals(unit.civ, unit = unit))  }
             }
     }
