@@ -2,6 +2,7 @@ package com.unciv.logic.automation.civilization
 
 import com.unciv.logic.automation.Automation
 import com.unciv.logic.automation.ThreatLevel
+import com.unciv.logic.automation.unit.EspionageAutomation
 import com.unciv.logic.automation.unit.UnitAutomation
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.AlertType
@@ -13,6 +14,7 @@ import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
+import com.unciv.logic.civilization.managers.EspionageManager
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.models.ruleset.MilestoneType
 import com.unciv.models.ruleset.ModOptionsConstants
@@ -68,9 +70,15 @@ object NextTurnAutomation {
         }
         automateUnits(civInfo)  // this is the most expensive part
 
-        if (civInfo.isMajorCiv() && civInfo.gameInfo.isReligionEnabled()) {
-            // Can only be done now, as the prophet first has to decide to found/enhance a religion
-            ReligionAutomation.chooseReligiousBeliefs(civInfo)
+        if (civInfo.isMajorCiv()) {
+            if (civInfo.gameInfo.isReligionEnabled()) {
+                // Can only be done now, as the prophet first has to decide to found/enhance a religion
+                ReligionAutomation.chooseReligiousBeliefs(civInfo)
+            }
+            if (civInfo.gameInfo.isEspionageEnabled()) {
+                // Do after cities are conquered
+                EspionageAutomation.automateSpies(civInfo)
+            }
         }
 
         automateCities(civInfo)  // second most expensive
