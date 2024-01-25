@@ -344,7 +344,7 @@ enum class UniqueType(
     Strength("[relativeAmount]% Strength", UniqueTarget.Unit, UniqueTarget.Global),
     StrengthNearCapital("[relativeAmount]% Strength decreasing with distance from the capital", UniqueTarget.Unit, UniqueTarget.Global),
     FlankAttackBonus("[relativeAmount]% to Flank Attack bonuses", UniqueTarget.Unit, UniqueTarget.Global),
-    @Deprecated("as of 4.9.0",ReplaceWith("[+30%]% Strength <vs []>"), DeprecationLevel.ERROR)
+    @Deprecated("as of 4.9.0",ReplaceWith("[+30]% Strength <vs [City-States]>"), DeprecationLevel.ERROR)
     StrengthBonusVsCityStates("+30% Strength when fighting City-State units and cities", UniqueTarget.Global),
     StrengthForAdjacentEnemies("[relativeAmount]% Strength for enemy [combatantFilter] units in adjacent [tileFilter] tiles", UniqueTarget.Unit),
     StrengthWhenStacked("[relativeAmount]% Strength when stacked with [mapUnitFilter]", UniqueTarget.Unit),  // candidate for conditional!
@@ -664,6 +664,7 @@ enum class UniqueType(
     ConditionalUnitWithoutPromotion("for units without [promotion]", UniqueTarget.Conditional),
     ConditionalVsCity("vs cities", UniqueTarget.Conditional),
     ConditionalVsUnits("vs [mapUnitFilter] units", UniqueTarget.Conditional),
+    ConditionalVsCombatant("vs [combatantFilter]", UniqueTarget.Conditional),
     ConditionalVsLargerCiv("when fighting units from a Civilization with more Cities than you", UniqueTarget.Conditional),
     ConditionalAttacking("when attacking", UniqueTarget.Conditional),
     ConditionalDefending("when defending", UniqueTarget.Conditional),

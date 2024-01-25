@@ -83,9 +83,12 @@ enum class UniqueParameterType(
     /** Implemented by [ICombatant.matchesCategory][com.unciv.logic.battle.ICombatant.matchesFilter] */
     CombatantFilter("combatantFilter", "City", "This indicates a combatant, which can either be a unit or a city (when bombarding). Must either be `City` or a `mapUnitFilter`") {
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
-                UniqueType.UniqueParameterErrorSeverity? {
-            if (parameterText == "City") return null  // City also recognizes "All" but that's covered by BaseUnitFilter too
-            return MapUnitFilter.getErrorSeverity(parameterText, ruleset)
+            UniqueType.UniqueParameterErrorSeverity? = getErrorSeverityForFilter(parameterText, ruleset)
+
+        override fun isKnownValue(parameterText: String, ruleset: Ruleset): Boolean {
+            if (parameterText == "City") return true // MapUnitFilter covers CivFilter
+            if (MapUnitFilter.isKnownValue(parameterText, ruleset)) return true
+            return false
         }
     },
 
