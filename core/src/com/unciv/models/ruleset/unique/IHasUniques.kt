@@ -54,8 +54,8 @@ interface IHasUniques : INamed {
                 // Currently an OnlyAvailableWhen can have multiple conditionals, implicitly a conjunction.
                 // Therefore, if any of its several conditionals is a ConditionalTech, then that tech is required.
                 .flatMap{ it.conditionals }
-                .filter{ it.isOfType(UniqueType.ConditionalTech) }
-                .map{ it.params[0] }
+                .filter{ it.type == UniqueType.ConditionalTech }
+                .map { it.params[0] }
     }
 
     fun legacyRequiredTechs(): Sequence<String> = sequenceOf()

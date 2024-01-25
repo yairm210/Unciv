@@ -53,6 +53,9 @@ class TileInfoImprovementFunctions(val tile: Tile) {
         else if (improvement.hasUnique(UniqueType.Unbuildable, stateForConditionals))
             yield(ImprovementBuildingProblem.ConditionallyUnbuildable)
 
+        if (improvement.hasUnique(UniqueType.Unavailable, stateForConditionals))
+            yield(ImprovementBuildingProblem.ConditionallyUnbuildable)
+
         if (tile.getOwner() != civInfo && !improvement.hasUnique(UniqueType.CanBuildOutsideBorders, stateForConditionals)) {
             if (!improvement.hasUnique(UniqueType.CanBuildJustOutsideBorders, stateForConditionals))
                 yield(ImprovementBuildingProblem.OutsideBorders)

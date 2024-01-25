@@ -31,18 +31,8 @@ class RuinsManager(
     }
 
     private fun getShuffledPossibleRewards(triggeringUnit: MapUnit): Iterable<RuinReward> {
-        val stateForOnlyAvailableWhen = StateForConditionals(civInfo, unit = triggeringUnit, tile = triggeringUnit.getTile())
         val candidates =
-            validRewards.asSequence()
-            // Filter out what shouldn't be considered right now, before the random choice
-            .filterNot { possibleReward ->
-                possibleReward.name in lastChosenRewards
-                    || civInfo.gameInfo.difficulty in possibleReward.excludedDifficulties
-                    || possibleReward.hasUnique(UniqueType.HiddenWithoutReligion) && !civInfo.gameInfo.isReligionEnabled()
-                    || possibleReward.hasUnique(UniqueType.HiddenAfterGreatProphet) && civInfo.religionManager.greatProphetsEarned() > 0
-                    || possibleReward.getMatchingUniques(UniqueType.OnlyAvailable, StateForConditionals.IgnoreConditionals)
-                    .any { !it.conditionalsApply(stateForOnlyAvailableWhen) }
-            }
+            validRewards.asSequence().filter { isPossibleReward(it, triggeringUnit) }
             // This might be a dirty way to do this, but it works (we do have randomWeighted in CollectionExtensions, but below we
             // need to choose another when the first choice's TriggerActivations report failure, and that's simpler this way)
             // For each possible reward, this feeds (reward.weight) copies of this reward to the overall Sequence to implement 'weight'.
@@ -53,6 +43,18 @@ class RuinsManager(
         // Note both Sequence.shuffled and Iterable.shuffled (with a 'd') always pull an extra copy of a MutableList internally, even if you feed them one.
         candidates.shuffle(Random(triggeringUnit.getTile().position.hashCode()))
         return candidates
+    }
+
+    private fun isPossibleReward(ruinReward: RuinReward, unit: MapUnit): Boolean {
+        if (ruinReward.name in lastChosenRewards) return false
+        if (civInfo.gameInfo.difficulty in ruinReward.excludedDifficulties) return false
+        val stateForConditionals = StateForConditionals(civInfo, unit = unit, tile = unit.getTile())
+        if (ruinReward.hasUnique(UniqueType.HiddenWithoutReligion, stateForConditionals) && !civInfo.gameInfo.isReligionEnabled()) return false
+        if (ruinReward.hasUnique(UniqueType.HiddenAfterGreatProphet, stateForConditionals) && civInfo.religionManager.greatProphetsEarned() > 0) return false
+        if (ruinReward.hasUnique(UniqueType.Unavailable, stateForConditionals)) return false
+        if (ruinReward.getMatchingUniques(UniqueType.OnlyAvailable, StateForConditionals.IgnoreConditionals)
+                .any { !it.conditionalsApply(stateForConditionals) }) return false
+        return true
     }
 
     fun selectNextRuinsReward(triggeringUnit: MapUnit) {

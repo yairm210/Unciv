@@ -163,6 +163,9 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
             if (!unique.conditionalsApply(civInfo, cityConstructions.city))
                 yield(RejectionReasonType.ShouldNotBeDisplayed.toInstance())
 
+        for (unique in getMatchingUniques(UniqueType.Unavailable, StateForConditionals(civInfo, cityConstructions.city)))
+            yield(RejectionReasonType.ShouldNotBeDisplayed.toInstance())
+
         for (unique in getMatchingUniques(UniqueType.RequiresPopulation))
             if (unique.params[0].toInt() > cityConstructions.city.population.population)
                 yield(RejectionReasonType.PopulationRequirement.toInstance(unique.text))

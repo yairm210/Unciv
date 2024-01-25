@@ -113,14 +113,18 @@ class UnitPromotions : IsPartOfGameInfoSerialization {
      *  Checks unit type, already acquired promotions, prerequisites and incompatibility uniques.
      */
     fun getAvailablePromotions(): Sequence<Promotion> {
-        return unit.civ.gameInfo.ruleset.unitPromotions.values
-            .asSequence()
-            .filter { unit.type.name in it.unitTypes && it.name !in promotions }
-            .filter { it.prerequisites.isEmpty() || it.prerequisites.any { p->p in promotions } }
-            .filter { promotion -> promotion.uniqueObjects
-                .none { it.type == UniqueType.OnlyAvailable
-                        && !it.conditionalsApply(StateForConditionals(unit.civ, unit = unit))  }
-            }
+        return unit.civ.gameInfo.ruleset.unitPromotions.values.asSequence().filter { isAvailable(it) }
+    }
+
+    private fun isAvailable(promotion: Promotion):Boolean {
+        if (promotion.name in promotions) return false
+        if (unit.type.name !in promotion.unitTypes) return false
+        if (promotion.prerequisites.isNotEmpty() && promotion.prerequisites.none { it in promotions }) return false
+        val stateForConditionals = StateForConditionals(unit.civ, unit = unit)
+        if (promotion.hasUnique(UniqueType.Unavailable, stateForConditionals)) return false
+        if (promotion.getMatchingUniques(UniqueType.OnlyAvailable, StateForConditionals.IgnoreConditionals)
+            .any { !it.conditionalsApply(stateForConditionals) }) return false
+        return true
     }
 
     fun clone(): UnitPromotions {
