@@ -269,7 +269,9 @@ object UniqueTriggerActivation {
                     civInfo.greatPeople.freeGreatPeople++
                     // Anyone an idea for a good icon?
                     civInfo.greatPeople.mayaLimitedFreeGP++
-                    civInfo.addNotification(notification!!, MayaLongCountAction(), NotificationCategory.General, MayaCalendar.notificationIcon)
+
+                    if (notification != null)
+                        civInfo.addNotification(notification!!, MayaLongCountAction(), NotificationCategory.General, MayaCalendar.notificationIcon)
                     return true
                 } else {
                     greatPeople.removeAll { it.name !in civInfo.greatPeople.longCountGPPool }
