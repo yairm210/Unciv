@@ -3,13 +3,13 @@ package com.unciv.ui.screens.worldscreen.unit.actions
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Button
 import com.badlogic.gdx.scenes.scene2d.ui.Table
-import com.unciv.GUI
 import com.unciv.UncivGame
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.models.UnitAction
 import com.unciv.models.UnitActionType
 import com.unciv.models.UpgradeUnitAction
 import com.unciv.ui.components.extensions.disable
+import com.unciv.ui.components.input.keyShortcuts
 import com.unciv.ui.components.input.onActivation
 import com.unciv.ui.components.input.onRightClick
 import com.unciv.ui.images.IconTextButton
@@ -118,6 +118,18 @@ class UnitActionsTable(val worldScreen: WorldScreen) : Table() {
         if (currentPage < numPages - 1)
             add(nextPageButton)
         pack()
+
+        // Bind all currently invisible actions to their keys
+        keyShortcuts.clear()
+        for (page in pageActionBuckets.indices) {
+            if (page == currentPage) continue // these are already done
+            for (unitAction in pageActionBuckets[page]) {
+                if (unitAction.action == null) continue
+                keyShortcuts.add(unitAction.type.binding) {
+                    activateAction(unitAction, unit)
+                }
+            }
+        }
     }
 
     private fun updateButtonsPerPage(button: Button) {
@@ -145,19 +157,22 @@ class UnitActionsTable(val worldScreen: WorldScreen) : Table() {
             actionButton.disable()
         } else {
             actionButton.onActivation(unitAction.uncivSound, binding) {
-                unitAction.action.invoke()
-                GUI.setUpdateWorldOnNextRender()
-                // We keep the unit action/selection overlay from the previous unit open even when already selecting another unit
-                // so you need less clicks/touches to do things, but once we do an action with the new unit, we want to close this
-                // overlay, since the user definitely wants to interact with the new unit.
-                worldScreen.mapHolder.removeUnitActionOverlay()
-                if (UncivGame.Current.settings.autoUnitCycle
-                        && (unit.isDestroyed || (unit.isMoving() && unit.currentMovement == 0f && unitAction.type.isSkippingToNextUnit) || (!unit.isMoving() && unitAction.type.isSkippingToNextUnit))) {
-                    worldScreen.switchToNextUnit()
-                }
+                activateAction(unitAction, unit)
             }
         }
 
         return actionButton
+    }
+
+    private fun activateAction(unitAction: UnitAction, unit: MapUnit) {
+        unitAction.action!!.invoke()
+        worldScreen.shouldUpdate = true
+        // We keep the unit action/selection overlay from the previous unit open even when already selecting another unit
+        // so you need less clicks/touches to do things, but once we do an action with the new unit, we want to close this
+        // overlay, since the user definitely wants to interact with the new unit.
+        worldScreen.mapHolder.removeUnitActionOverlay()
+        if (!UncivGame.Current.settings.autoUnitCycle) return
+        if (unit.isDestroyed || unitAction.type.isSkippingToNextUnit && (unit.isMoving() && unit.currentMovement == 0f || !unit.isMoving()))
+            worldScreen.switchToNextUnit()
     }
 }
