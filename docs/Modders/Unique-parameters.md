@@ -152,7 +152,9 @@ A filter determining a part of the population of a city. It can be any of the fo
 
 Can be any of:
 - [mapUnitFilter](#mapunitfilter), for unit combatants
-- "City", "All", or [civFilter](#civfilter), for city combatants
+- `City`, `All`, or [civFilter](#civfilter), for city combatants
+
+Since mapUnitFilter contains civFilter, that means civFilter can be applied to combatantFilter for both units and cities.
 
 ## regionType
 
