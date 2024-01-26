@@ -18,7 +18,7 @@ class MapUnitCombatant(val unit: MapUnit) : ICombatant {
     override fun isDefeated(): Boolean = unit.health <= 0
     override fun isInvisible(to: Civilization): Boolean = unit.isInvisible(to)
     override fun canAttack(): Boolean = unit.canAttack()
-    override fun matchesCategory(category: String) = unit.matchesFilter(category)
+    override fun matchesFilter(filter: String) = unit.matchesFilter(filter)
     override fun getAttackSound() = unit.baseUnit.attackSound.let {
         if (it == null) UncivSound.Click else UncivSound(it)
     }

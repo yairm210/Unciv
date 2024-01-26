@@ -18,6 +18,7 @@ import com.unciv.logic.map.tile.RoadStatus
 import com.unciv.models.ruleset.INonPerpetualConstruction
 import com.unciv.models.ruleset.tech.Era
 import com.unciv.models.ruleset.tech.Technology
+import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.UniqueMap
 import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unique.UniqueType
@@ -160,8 +161,9 @@ class TechManager : IsPartOfGameInfoSerialization {
 
     fun canBeResearched(techName: String): Boolean {
         val tech = getRuleset().technologies[techName]!!
-        if (tech.uniqueObjects.any { it.type == UniqueType.OnlyAvailableWhen && !it.conditionalsApply(civInfo) })
+        if (tech.getMatchingUniques(UniqueType.OnlyAvailable, StateForConditionals.IgnoreConditionals).any { !it.conditionalsApply(civInfo) })
             return false
+        if (tech.hasUnique(UniqueType.Unavailable, StateForConditionals(civInfo))) return false
 
         if (isResearched(tech.name) && !tech.isContinuallyResearchable())
             return false
@@ -296,7 +298,7 @@ class TechManager : IsPartOfGameInfoSerialization {
 
         val triggerNotificationText = "due to researching [$techName]"
         for (unique in newTech.uniqueObjects)
-            if (!unique.hasTriggerConditional())
+            if (!unique.hasTriggerConditional() && unique.conditionalsApply(StateForConditionals(civInfo)))
                 UniqueTriggerActivation.triggerCivwideUnique(unique, civInfo, triggerNotificationText = triggerNotificationText)
 
         for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponResearch))
@@ -410,7 +412,7 @@ class TechManager : IsPartOfGameInfoSerialization {
                         NotificationIcon.Science
                     )
                 if (civInfo.isMajorCiv()) {
-                    for (knownCiv in civInfo.getKnownCivs()) {
+                    for (knownCiv in civInfo.getKnownCivsWithSpectators()) {
                         knownCiv.addNotification(
                             "[${civInfo.civName}] has entered the [$currentEra]!",
                             NotificationCategory.General, civInfo.civName, NotificationIcon.Science
@@ -437,7 +439,7 @@ class TechManager : IsPartOfGameInfoSerialization {
 
             for (era in erasPassed)
                 for (unique in era.uniqueObjects)
-                    if (!unique.hasTriggerConditional())
+                    if (!unique.hasTriggerConditional() && unique.conditionalsApply(StateForConditionals(civInfo)))
                         UniqueTriggerActivation.triggerCivwideUnique(
                             unique,
                             civInfo,

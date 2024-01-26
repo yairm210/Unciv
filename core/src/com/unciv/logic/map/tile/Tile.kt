@@ -380,7 +380,7 @@ open class Tile : IsPartOfGameInfoSerialization {
         return civInfo.isAtWarWith(tileOwner)
     }
 
-    fun isRoughTerrain() = allTerrains.any{ it.isRough() }
+    fun isRoughTerrain() = allTerrains.any { it.isRough() }
 
     /** Checks whether any of the TERRAINS of this tile has a certain unique */
     fun terrainHasUnique(uniqueType: UniqueType) = terrainUniqueMap.getUniques(uniqueType).any()
@@ -467,19 +467,25 @@ open class Tile : IsPartOfGameInfoSerialization {
     }
 
     // This should be the only adjacency function
-    fun isAdjacentTo(terrainFilter:String): Boolean {
+    fun isAdjacentTo(terrainFilter:String, observingCiv: Civilization?=null): Boolean {
         // Rivers are odd, as they aren't technically part of any specific tile but still count towards adjacency
         if (terrainFilter == Constants.river) return isAdjacentToRiver()
         if (terrainFilter == Constants.freshWater && isAdjacentToRiver()) return true
-        return (neighbors + this).any { neighbor -> neighbor.matchesFilter(terrainFilter) }
+        return (neighbors + this).any { neighbor -> neighbor.matchesFilter(terrainFilter, observingCiv) }
     }
 
     /** Implements [UniqueParameterType.TileFilter][com.unciv.models.ruleset.unique.UniqueParameterType.TileFilter] */
-    fun matchesFilter(filter: String, civInfo: Civilization? = null): Boolean {
+    fun matchesFilter(filter: String, civInfo: Civilization? = null, ignoreImprovement: Boolean = false): Boolean {
+        return MultiFilter.multiFilter(filter, { matchesSingleFilter(it, civInfo, ignoreImprovement) })
+    }
+
+    fun matchesSingleFilter(filter: String, civInfo: Civilization? = null, ignoreImprovement: Boolean = false): Boolean {
         if (matchesTerrainFilter(filter, civInfo)) return true
         if ((improvement == null || improvementIsPillaged) && filter == "unimproved") return true
         if (improvement != null && !improvementIsPillaged && filter == "improved") return true
-        return improvement != null && !improvementIsPillaged && ruleset.tileImprovements[improvement]!!.matchesFilter(filter)
+        if (ignoreImprovement) return false
+        if (getUnpillagedTileImprovement()?.matchesFilter(filter) == true) return true
+        return getUnpillagedRoadImprovement()?.matchesFilter(filter) == true
     }
 
     fun matchesTerrainFilter(filter: String, observingCiv: Civilization? = null): Boolean {
@@ -499,6 +505,7 @@ open class Tile : IsPartOfGameInfoSerialization {
             "Open terrain" -> !isRoughTerrain()
             "Rough terrain" -> isRoughTerrain()
 
+            "your" -> observingCiv != null && getOwner() == observingCiv
             "Foreign Land", "Foreign" -> observingCiv != null && !isFriendlyTerritory(observingCiv)
             "Friendly Land", "Friendly" -> observingCiv != null && isFriendlyTerritory(observingCiv)
             "Enemy Land", "Enemy" -> observingCiv != null && isEnemyTerritory(observingCiv)
@@ -508,7 +515,7 @@ open class Tile : IsPartOfGameInfoSerialization {
             "Water resource" -> isWater && observingCiv != null && hasViewableResource(observingCiv)
             "Natural Wonder" -> naturalWonder != null
             "Featureless" -> terrainFeatures.isEmpty()
-            Constants.freshWaterFilter -> isAdjacentTo(Constants.freshWater)
+            Constants.freshWaterFilter -> isAdjacentTo(Constants.freshWater, observingCiv)
 
             in terrainFeatures -> true
             else -> {

@@ -2,6 +2,7 @@ package com.unciv.logic.automation.civilization
 
 import com.unciv.logic.automation.Automation
 import com.unciv.logic.automation.ThreatLevel
+import com.unciv.logic.automation.unit.EspionageAutomation
 import com.unciv.logic.automation.unit.UnitAutomation
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.AlertType
@@ -13,6 +14,7 @@ import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
+import com.unciv.logic.civilization.managers.EspionageManager
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.models.ruleset.MilestoneType
 import com.unciv.models.ruleset.ModOptionsConstants
@@ -34,6 +36,7 @@ object NextTurnAutomation {
     /** Top-level AI turn task list */
     fun automateCivMoves(civInfo: Civilization) {
         if (civInfo.isBarbarian()) return BarbarianAutomation(civInfo).automate()
+        if (civInfo.isSpectator()) return // When there's a spectator in multiplayer games, it's processed automatically, but shouldn't be able to actually do anything
 
         respondToPopupAlerts(civInfo)
         TradeAutomation.respondToTradeRequests(civInfo)
@@ -68,9 +71,15 @@ object NextTurnAutomation {
         }
         automateUnits(civInfo)  // this is the most expensive part
 
-        if (civInfo.isMajorCiv() && civInfo.gameInfo.isReligionEnabled()) {
-            // Can only be done now, as the prophet first has to decide to found/enhance a religion
-            ReligionAutomation.chooseReligiousBeliefs(civInfo)
+        if (civInfo.isMajorCiv()) {
+            if (civInfo.gameInfo.isReligionEnabled()) {
+                // Can only be done now, as the prophet first has to decide to found/enhance a religion
+                ReligionAutomation.chooseReligiousBeliefs(civInfo)
+            }
+            if (civInfo.gameInfo.isEspionageEnabled()) {
+                // Do after cities are conquered
+                EspionageAutomation.automateSpies(civInfo)
+            }
         }
 
         automateCities(civInfo)  // second most expensive
@@ -325,6 +334,37 @@ object NextTurnAutomation {
         }
     }
 
+    fun chooseGreatPerson(civInfo: Civilization) {
+        if (civInfo.greatPeople.freeGreatPeople == 0) return
+        val mayanGreatPerson = civInfo.greatPeople.mayaLimitedFreeGP > 0
+        val greatPeople =
+            if (mayanGreatPerson)
+                civInfo.greatPeople.getGreatPeople().filter { it.name in civInfo.greatPeople.longCountGPPool }
+            else civInfo.greatPeople.getGreatPeople()
+
+        if (greatPeople.isEmpty()) return
+        var greatPerson = greatPeople.random()
+
+        if (civInfo.wantsToFocusOn(Victory.Focus.Culture)) {
+            val culturalGP =
+                greatPeople.firstOrNull { it.uniques.contains("Great Person - [Culture]") }
+            if (culturalGP != null) greatPerson = culturalGP
+        }
+        if (civInfo.wantsToFocusOn(Victory.Focus.Science)) {
+            val scientificGP =
+                greatPeople.firstOrNull { it.uniques.contains("Great Person - [Science]") }
+            if (scientificGP != null) greatPerson = scientificGP
+        }
+
+        civInfo.units.addUnit(greatPerson, civInfo.cities.firstOrNull { it.isCapital() })
+
+        civInfo.greatPeople.freeGreatPeople--
+        if (mayanGreatPerson){
+            civInfo.greatPeople.longCountGPPool.remove(greatPerson.name)
+            civInfo.greatPeople.mayaLimitedFreeGP--
+        }
+    }
+    
     /** If we are able to build a spaceship but have already spent our resources, try disbanding
      *  a unit and selling a building to make room. Can happen due to trades etc */
     private fun freeUpSpaceResources(civInfo: Civilization) {
@@ -366,9 +406,15 @@ object NextTurnAutomation {
         for (unit in sortedUnits) UnitAutomation.automateUnitMoves(unit)
     }
 
+    /** Returns the priority of the unit, a lower value is higher priority **/
     fun getUnitPriority(unit: MapUnit, isAtWar: Boolean): Int {
         if (unit.isCivilian() && !unit.isGreatPersonOfType("War")) return 1 // Civilian
-        if (unit.baseUnit.isAirUnit()) return 2
+        if (unit.baseUnit.isAirUnit()) return when {
+            unit.canIntercept() -> 2 // Fighers first
+            unit.baseUnit.isNuclearWeapon() -> 3 // Then Nukes (area damage)
+            !unit.hasUnique(UniqueType.SelfDestructs) -> 4 // Then Bombers (reusable)
+            else -> 5 // Missiles
+        }
         val distance = if (!isAtWar) 0 else unit.civ.threatManager.getDistanceToClosestEnemyUnit(unit.getTile(),6)
         // Lower health units should move earlier to swap with higher health units
         return distance + (unit.health / 10) + when {

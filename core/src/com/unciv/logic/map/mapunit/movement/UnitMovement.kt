@@ -5,7 +5,6 @@ package com.unciv.logic.map.mapunit.movement
 import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
 import com.unciv.logic.map.BFS
-import com.unciv.logic.map.HexMath.getDistance
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.UnitActionType
@@ -258,7 +257,7 @@ class UnitMovement(val unit: MapUnit) {
         if (unit.baseUnit.movesLikeAirUnits())
             return unit.currentTile.aerialDistanceTo(destination) <= unit.getMaxMovementForAirUnits()
         if (unit.isPreparingParadrop())
-            return getDistance(unit.currentTile.position, destination.position) <= unit.cache.paradropRange && canParadropOn(destination)
+            return unit.currentTile.aerialDistanceTo(destination) <= unit.cache.paradropRange && canParadropOn(destination)
         return getDistanceToTiles().containsKey(destination)
     }
 

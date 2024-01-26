@@ -134,7 +134,7 @@ For filtering a specific improvement.
 
 Allowed values are:
 
-- improvement name (Note that "Road" and "Railroad" _do_ work as improvementFilters, but not as tileFilters at the moment.)
+- improvement name
 - `All`
 - `Great Improvements`, `Great`
 - `All Road` - for Roads & Railroads
@@ -147,6 +147,14 @@ A filter determining a part of the population of a city. It can be any of the fo
 - `Specialists`
 - `Unemployed`
 - `Followers of the Majority Religion` or `Followers of this Religion`, both of which only apply when this religion is the majority religion in that city
+
+## combatantFilter
+
+Can be any of:
+- [mapUnitFilter](#mapunitfilter), for unit combatants
+- `City`, `All`, or [civFilter](#civfilter), for city combatants
+
+Since mapUnitFilter contains civFilter, that means civFilter can be applied to combatantFilter for both units and cities.
 
 ## regionType
 
@@ -209,6 +217,7 @@ This indicates the terrain on a single tile. The following values are allowed:
     - `Friendly Land` - land belonging to you, or other civs with open borders to you
     - `Foreign Land` - any land that isn't friendly land
     - `Enemy land` - any land belonging to a civ you are at war with
+    - `your` - land belonging to you
     - `Water resource`, `Strategic resource`, `Luxury resource`, `Bonus resource`, `resource`
     - `Natural Wonder` (as opposed to above which means testing for a specific Natural Wonder by name, this tests for any of them)
 

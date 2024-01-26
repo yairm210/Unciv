@@ -2,6 +2,7 @@ package com.unciv.models.ruleset.tile
 
 import com.badlogic.gdx.graphics.Color
 import com.unciv.Constants
+import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.Belief
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetStatsObject
@@ -141,6 +142,10 @@ class Terrain : RulesetStatsObject() {
         }
 
         return textList
+    }
+
+    fun canBePlacedOn(tile: Tile){
+
     }
 
     fun setTransients() {

@@ -71,7 +71,7 @@ object BuildingDescriptions {
             if (replacementTextForUniques.isNotEmpty()) translatedLines += replacementTextForUniques.tr()
             else translatedLines += getUniquesStringsWithoutDisablers(
                 filterUniques = if (missingCities.isEmpty()) null
-                else { unique -> !unique.isOfType(UniqueType.RequiresBuildingInAllCities) }
+                else { unique -> unique.type != UniqueType.RequiresBuildingInAllCities }
                 // Filter out the "Requires a [] in all cities" unique if any cities are still missing the required building, since in that case the list of cities will be appended at the end.
             ).map { it.tr() }
         }
@@ -259,7 +259,7 @@ object BuildingDescriptions {
     private fun Building.getUniquesStrings(filterUniques: ((Unique) -> Boolean)? = null) = sequence {
         val tileBonusHashmap = HashMap<String, ArrayList<String>>()
         for (unique in uniqueObjects) if (filterUniques == null || filterUniques(unique)) when {
-            unique.isOfType(UniqueType.StatsFromTiles) && unique.params[2] == "in this city" -> {
+            unique.type == UniqueType.StatsFromTiles && unique.params[2] == "in this city" -> {
                 val stats = unique.params[0]
                 if (!tileBonusHashmap.containsKey(stats)) tileBonusHashmap[stats] = ArrayList()
                 tileBonusHashmap[stats]!!.add(unique.params[1])

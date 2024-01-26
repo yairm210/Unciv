@@ -56,9 +56,11 @@ class NaturalWonderGenerator(val ruleset: Ruleset, val randomness: MapGeneration
             }
         }
 
+        val tilesTooCloseToSpawnLocations = tileMap.startingLocationsByNation.values.flatten().flatMap { it.getTilesInDistance(5) }.toSet()
+
         // First attempt to spawn the chosen wonders in order of least candidate tiles
         chosenWonders.forEach {
-            wonderCandidateTiles[it] = getCandidateTilesForWonder(tileMap, it)
+            wonderCandidateTiles[it] = getCandidateTilesForWonder(tileMap, it, tilesTooCloseToSpawnLocations)
         }
         chosenWonders.sortBy { wonderCandidateTiles[it]!!.size }
         for (wonder in chosenWonders) {
@@ -66,11 +68,12 @@ class NaturalWonderGenerator(val ruleset: Ruleset, val randomness: MapGeneration
                 spawned.add(wonder)
         }
 
+
         // If some wonders were not able to be spawned we will pull a wonder from the fallback list
         if (spawned.size < numberToSpawn) {
             // Now we have to do some more calculations. Unfortunately we have to calculate candidate tiles for everyone.
             allNaturalWonders.forEach {
-                wonderCandidateTiles[it] = getCandidateTilesForWonder(tileMap, it)
+                wonderCandidateTiles[it] = getCandidateTilesForWonder(tileMap, it, tilesTooCloseToSpawnLocations)
             }
             allNaturalWonders.sortBy { wonderCandidateTiles[it]!!.size }
             for (wonder in allNaturalWonders) {
@@ -87,7 +90,7 @@ class NaturalWonderGenerator(val ruleset: Ruleset, val randomness: MapGeneration
 
     private fun Unique.getIntParam(index: Int) = params[index].toInt()
 
-    private fun getCandidateTilesForWonder(tileMap: TileMap, naturalWonder: Terrain): Collection<Tile> {
+    private fun getCandidateTilesForWonder(tileMap: TileMap, naturalWonder: Terrain, tilesTooCloseToSpawnLocations: Set<Tile>): Collection<Tile> {
         val continentsRelevant = naturalWonder.hasUnique(UniqueType.NaturalWonderLargerLandmass) ||
                 naturalWonder.hasUnique(UniqueType.NaturalWonderSmallerLandmass)
         val sortedContinents = if (continentsRelevant)
@@ -99,6 +102,7 @@ class NaturalWonderGenerator(val ruleset: Ruleset, val randomness: MapGeneration
 
         val suitableLocations = tileMap.values.filter { tile->
             tile.resource == null &&
+            tile !in tilesTooCloseToSpawnLocations &&
             naturalWonder.occursOn.contains(tile.lastTerrain.name) &&
             naturalWonder.uniqueObjects.all { unique ->
                 when (unique.type) {

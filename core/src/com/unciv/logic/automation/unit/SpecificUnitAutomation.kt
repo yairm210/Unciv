@@ -313,7 +313,6 @@ object SpecificUnitAutomation {
                 0,
                 wonderToHurry.name
             )
-            unit.showAdditionalActions = false  // make sure getUnitActions doesn't skip the important ones
             return UnitActions.invokeUnitAction(unit, UnitActionType.HurryBuilding)
                 || UnitActions.invokeUnitAction(unit, UnitActionType.HurryWonder)
         }

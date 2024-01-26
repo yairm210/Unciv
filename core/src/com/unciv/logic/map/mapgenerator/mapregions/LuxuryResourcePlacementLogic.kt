@@ -26,8 +26,7 @@ object LuxuryResourcePlacementLogic {
         // If there are any weightings defined in json, assume they are complete. If there are none, use flat weightings instead
         val fallbackWeightings = ruleset.tileResources.values.none {
             it.resourceType == ResourceType.Luxury &&
-                (it.uniqueObjects.any { unique -> unique.isOfType(UniqueType.ResourceWeighting) } || it.hasUnique(
-                    UniqueType.LuxuryWeightingForCityStates)) }
+                (it.hasUnique(UniqueType.ResourceWeighting) || it.hasUnique(UniqueType.LuxuryWeightingForCityStates)) }
 
         val maxRegionsWithLuxury = when {
             regions.size > 12 -> 3

@@ -1,10 +1,8 @@
 package com.unciv.logic.city
 
-import com.unciv.Constants
 import com.unciv.logic.map.tile.RoadStatus
 import com.unciv.models.Counter
 import com.unciv.models.ruleset.Building
-import com.unciv.models.ruleset.GlobalUniques
 import com.unciv.models.ruleset.IConstruction
 import com.unciv.models.ruleset.INonPerpetualConstruction
 import com.unciv.models.ruleset.ModOptionsConstants
@@ -168,7 +166,7 @@ class CityStats(val city: City) {
             if (!city.matchesFilter(unique.params[1])) continue
 
             growthSources.add(
-                getSourceNameForUnique(unique),
+                unique.getSourceNameForUser(),
                 Stats(food = unique.params[0].toFloat() / 100f * totalFood)
             )
         }
@@ -212,7 +210,7 @@ class CityStats(val city: City) {
             if (unique.sourceObjectType==UniqueTarget.CityState)
                 for (multiplierUnique in cityStateStatsMultipliers)
                     stats[Stat.valueOf(multiplierUnique.params[1])] *= multiplierUnique.params[0].toPercent()
-            sourceToStats.addStats(stats, getSourceNameForUnique(unique), unique.sourceObjectName ?: "")
+            sourceToStats.addStats(stats, unique.getSourceNameForUser(), unique.sourceObjectName ?: "")
         }
 
         for (unique in city.getMatchingUniques(UniqueType.StatsPerCity))
@@ -223,7 +221,7 @@ class CityStats(val city: City) {
         for (unique in city.getMatchingUniques(UniqueType.StatsPerPopulation))
             if (city.matchesFilter(unique.params[2])) {
                 val amountOfEffects = (city.population.population / unique.params[1].toInt()).toFloat()
-                sourceToStats.addStats(unique.stats.times(amountOfEffects), getSourceNameForUnique(unique), unique.sourceObjectName ?: "")
+                sourceToStats.addStats(unique.stats.times(amountOfEffects), unique.getSourceNameForUser(), unique.sourceObjectName ?: "")
             }
 
         for (unique in city.getMatchingUniques(UniqueType.StatsFromCitiesOnSpecificTiles))
@@ -233,18 +231,6 @@ class CityStats(val city: City) {
 
 
         return sourceToStats
-    }
-
-    private fun getSourceNameForUnique(unique: Unique): String {
-        return when (unique.sourceObjectType) {
-            null -> ""
-            UniqueTarget.Global -> GlobalUniques.getUniqueSourceDescription(unique)
-            UniqueTarget.Wonder -> "Wonders"
-            UniqueTarget.Building -> "Buildings"
-            UniqueTarget.Policy -> "Policies"
-            UniqueTarget.CityState -> Constants.cityStates
-            else -> unique.sourceObjectType.name
-        }
     }
 
     private fun getStatPercentBonusesFromGoldenAge(isGoldenAge: Boolean): Stats {
@@ -260,7 +246,7 @@ class CityStats(val city: City) {
         val sourceToStats = StatTreeNode()
 
         fun addUniqueStats(unique:Unique, stat:Stat, amount:Float) {
-            sourceToStats.addStats(Stats().add(stat, amount), getSourceNameForUnique(unique), unique.sourceObjectName ?: "")
+            sourceToStats.addStats(Stats().add(stat, amount), unique.getSourceNameForUser(), unique.sourceObjectName ?: "")
         }
 
         for (unique in city.getMatchingUniques(UniqueType.StatPercentBonus)) {
@@ -554,7 +540,7 @@ class CityStats(val city: City) {
             val removedAmount = newFinalStatList.values.sumOf { it[statToBeRemoved].toDouble() }
 
             newFinalStatList.add(
-                getSourceNameForUnique(unique),
+                unique.getSourceNameForUser(),
                 Stats().apply { this[statToBeRemoved] = -removedAmount.toFloat() }
             )
         }
@@ -605,7 +591,7 @@ class CityStats(val city: City) {
             // Note that negative food will also be nullified. Pretty sure that's conform civ V, but haven't checked.
             val amountToRemove = -newFinalStatList.values.sumOf { it[Stat.Food].toDouble() }
             newFinalStatList.add(
-                getSourceNameForUnique(growthNullifyingUnique),
+                growthNullifyingUnique.getSourceNameForUser(),
                 Stats(food = amountToRemove.toFloat())
             )
         }

@@ -122,9 +122,6 @@ class MapUnit : IsPartOfGameInfoSerialization {
     @Transient
     var viewableTiles = HashSet<Tile>()
 
-    @Transient
-    var showAdditionalActions: Boolean = false
-
     //endregion
 
     /**
@@ -931,7 +928,6 @@ class MapUnit : IsPartOfGameInfoSerialization {
     }
 
     fun actionsOnDeselect() {
-        showAdditionalActions = false
         if (isPreparingParadrop() || isPreparingAirSweep()) action = null
     }
 

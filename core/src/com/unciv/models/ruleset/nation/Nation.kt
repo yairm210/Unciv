@@ -165,7 +165,7 @@ class Nation : RulesetObject() {
             textList += FormattedLine("{$header:} ")
             for (unique in bonuses) {
                 textList += FormattedLine(unique, indent = 1)
-                if (unique.isOfType(UniqueType.CityStateUniqueLuxury)) showResources = true
+                if (unique.type == UniqueType.CityStateUniqueLuxury) showResources = true
             }
         }
 
