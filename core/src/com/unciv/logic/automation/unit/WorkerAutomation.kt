@@ -804,7 +804,7 @@ class WorkerAutomation(
         val distanceOfEnemyCityToClosestCityOfUs = civInfo.cities.map {  it.getCenterTile().aerialDistanceTo(closestEnemyCity) }.minBy { it }
 
         // We don't want to defend city closest to this this tile if it is behind other cities
-        if (distanceBetweenCities > distanceOfEnemyCityToClosestCityOfUs + 2) return 0f
+        if (distanceBetweenCities >= distanceOfEnemyCityToClosestCityOfUs + 2) return 0f
 
         // This location is not between the city and the enemy
         if (distanceToEnemyCity >= distanceBetweenCities
