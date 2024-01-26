@@ -85,7 +85,10 @@ class UniqueValidator(val ruleset: Ruleset) {
             addConditionalErrors(conditional, rulesetErrors, prefix, unique, reportRulesetSpecificErrors)
         }
 
-        if (unique.conditionals.any() && unique.type in MapUnitCache.UnitMovementUniques)
+        if (unique.type in MapUnitCache.UnitMovementUniques
+                && unique.conditionals.any { it.type != UniqueType.ConditionalOurUnit || it.params[0] != "All" }
+            )
+            // (Stay silent if the only conditional is `<for [All] units>` - as in G&K Denmark)
             // Not necessarily even a problem, but yes something mod maker should be aware of
             rulesetErrors.add("$prefix unique \"${unique.text}\" contains a conditional on a unit movement unique. " +
                 "Due to performance considerations, this unique is cached on the unit," +
