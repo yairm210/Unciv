@@ -63,7 +63,6 @@ import com.unciv.ui.screens.worldscreen.topbar.WorldScreenTopBar
 import com.unciv.ui.screens.worldscreen.unit.UnitTable
 import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionsTable
 import com.unciv.utils.Concurrency
-import com.unciv.utils.Log
 import com.unciv.utils.debug
 import com.unciv.utils.launchOnGLThread
 import com.unciv.utils.launchOnThreadPool
@@ -722,25 +721,17 @@ class WorldScreen(
     override fun resize(width: Int, height: Int) {
         resizeDeferTimer?.cancel()
         if (resizeDeferTimer == null && stage.viewport.screenWidth == width && stage.viewport.screenHeight == height) return
-        if (resizeDeferTimer == null)
-            Log.debug("start resize timer")
-        else
-            Log.debug("prolong resize timer")
         resizeDeferTimer = timer("Resize", daemon = true, 500L, Long.MAX_VALUE) {
             resizeDeferTimer?.cancel()
             resizeDeferTimer = null
-            Log.debug("finish resize timer")
             startNewScreenJob(gameInfo, true) // start over
         }
     }
 
-
     override fun render(delta: Float) {
         //  This is so that updates happen in the MAIN THREAD, where there is a GL Context,
         //    otherwise images will not load properly!
-        if (resizeDeferTimer != null && shouldUpdate) {
-            Log.debug("defer update during resize")
-        } else if (shouldUpdate) {
+        if (shouldUpdate && resizeDeferTimer == null) {
             shouldUpdate = false
 
             // Since updating the worldscreen can take a long time, *especially* the first time, we disable input processing to avoid ANRs
@@ -753,6 +744,7 @@ class WorldScreen(
 
         super.render(delta)
     }
+
 
     private fun showTutorialsOnNextTurn() {
         if (!game.settings.showTutorials) return
