@@ -116,7 +116,7 @@ class MapGenerator(val ruleset: Ruleset, private val coroutineScope: CoroutineSc
 
         if (consoleTimings) debug("\nMapGenerator run with parameters %s", mapParameters)
         runAndMeasure("MapLandmassGenerator") {
-            MapLandmassGenerator(ruleset, randomness).generateLand(map)
+            MapLandmassGenerator(map, ruleset, randomness).generateLand()
         }
         runAndMeasure("raiseMountainsAndHills") {
             MapElevationGenerator(map, ruleset, randomness).raiseMountainsAndHills()
@@ -190,7 +190,7 @@ class MapGenerator(val ruleset: Ruleset, private val coroutineScope: CoroutineSc
             when (step) {
                 MapGeneratorSteps.None -> Unit
                 MapGeneratorSteps.All -> throw IllegalArgumentException("MapGeneratorSteps.All cannot be used in generateSingleStep")
-                MapGeneratorSteps.Landmass -> MapLandmassGenerator(ruleset, randomness).generateLand(map)
+                MapGeneratorSteps.Landmass -> MapLandmassGenerator(map, ruleset, randomness).generateLand()
                 MapGeneratorSteps.Elevation -> MapElevationGenerator(map, ruleset, randomness).raiseMountainsAndHills()
                 MapGeneratorSteps.HumidityAndTemperature -> applyHumidityAndTemperature(map)
                 MapGeneratorSteps.LakesAndCoast -> spawnLakesAndCoasts(map)
