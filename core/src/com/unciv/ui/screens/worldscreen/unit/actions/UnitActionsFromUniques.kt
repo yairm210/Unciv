@@ -54,7 +54,7 @@ object UnitActionsFromUniques {
         val foundAction = {
             if (unit.civ.playerType != PlayerType.AI)
                 UncivGame.Current.settings.addCompletedTutorialTask("Found city")
-            unit.civ.addCity(tile.position)
+            unit.civ.addCity(tile.position, unit)
 
             if (hasActionModifiers) UnitActionModifiers.activateSideEffects(unit, unique)
             else unit.destroy()
@@ -178,7 +178,7 @@ object UnitActionsFromUniques {
             val title = UnitActionModifiers.actionTextWithSideEffects(baseTitle, unique, unit)
 
             yield(UnitAction(UnitActionType.TriggerUnique, title) {
-                UniqueTriggerActivation.triggerUnitwideUnique(unique, unit)
+                UniqueTriggerActivation.triggerUnique(unique, unit)
                 UnitActionModifiers.activateSideEffects(unit, unique)
             })
         }

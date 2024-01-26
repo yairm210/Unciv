@@ -13,7 +13,7 @@ import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unique.UniqueType
 
 class CityFounder {
-    fun foundCity(civInfo: Civilization, cityLocation: Vector2): City {
+    fun foundCity(civInfo: Civilization, cityLocation: Vector2, unit: MapUnit? = null): City {
         val city = City()
 
         city.foundingCiv = civInfo.civName
@@ -91,8 +91,10 @@ class CityFounder {
         for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponFoundingCity,
             StateForConditionals(civInfo, city)
         ))
-            UniqueTriggerActivation.triggerCivwideUnique(unique, civInfo, city, triggerNotificationText = "due to founding a city")
-
+            UniqueTriggerActivation.triggerUnique(unique, civInfo, city, unit, triggerNotificationText = "due to founding a city")
+        if (unit != null)
+            for (unique in unit.getTriggeredUniques(UniqueType.TriggerUponFoundingCity))
+                UniqueTriggerActivation.triggerUnique(unique, civInfo, city, unit, triggerNotificationText = "due to founding a city")
 
         return city
     }

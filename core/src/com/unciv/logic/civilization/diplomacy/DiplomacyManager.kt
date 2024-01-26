@@ -510,12 +510,12 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
             thirdCiv.getDiplomacyManager(civInfo).setFriendshipBasedModifier()
         }
 
-        // Ignore contitionals as triggerCivwideUnique will check again, and that would break
+        // Ignore contitionals as triggerUnique will check again, and that would break
         // UniqueType.ConditionalChance - 25% declared chance would work as 6% actual chance
         for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponDeclaringFriendship, StateForConditionals.IgnoreConditionals))
-            UniqueTriggerActivation.triggerCivwideUnique(unique, civInfo)
+            UniqueTriggerActivation.triggerUnique(unique, civInfo)
         for (unique in otherCiv().getTriggeredUniques(UniqueType.TriggerUponDeclaringFriendship, StateForConditionals.IgnoreConditionals))
-            UniqueTriggerActivation.triggerCivwideUnique(unique, otherCiv())
+            UniqueTriggerActivation.triggerUnique(unique, otherCiv())
     }
 
     internal fun setFriendshipBasedModifier() {
@@ -557,12 +557,12 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
             thirdCiv.getDiplomacyManager(civInfo).setDefensivePactBasedModifier()
         }
 
-        // Ignore contitionals as triggerCivwideUnique will check again, and that would break
+        // Ignore contitionals as triggerUnique will check again, and that would break
         // UniqueType.ConditionalChance - 25% declared chance would work as 6% actual chance
         for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponSigningDefensivePact, StateForConditionals.IgnoreConditionals))
-            UniqueTriggerActivation.triggerCivwideUnique(unique, civInfo)
+            UniqueTriggerActivation.triggerUnique(unique, civInfo)
         for (unique in otherCiv().getTriggeredUniques(UniqueType.TriggerUponSigningDefensivePact, StateForConditionals.IgnoreConditionals))
-            UniqueTriggerActivation.triggerCivwideUnique(unique, otherCiv())
+            UniqueTriggerActivation.triggerUnique(unique, otherCiv())
     }
 
     internal fun setDefensivePactBasedModifier() {

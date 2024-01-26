@@ -43,7 +43,7 @@ class ConsoleCivCommands : ConsoleCommandNode {
             if (unique.type == null) throw ConsoleErrorException("Unrecognized trigger")
             val tile = console.screen.mapHolder.selectedTile
             val city = tile?.getCity()
-            UniqueTriggerActivation.triggerCivwideUnique(unique, civ, city, tile)
+            UniqueTriggerActivation.triggerUnique(unique, civ, city, tile = tile)
             DevConsoleResponse.OK
         }
     )

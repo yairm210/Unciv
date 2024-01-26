@@ -52,7 +52,7 @@ class GoldenAgeManager : IsPartOfGameInfoSerialization {
         civInfo.popupAlerts.add(PopupAlert(AlertType.GoldenAge, ""))
 
         for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponEnteringGoldenAge))
-            UniqueTriggerActivation.triggerCivwideUnique(unique, civInfo)
+            UniqueTriggerActivation.triggerUnique(unique, civInfo)
         //Golden Age can happen mid turn with Great Artist effects
         for (city in civInfo.cities)
             city.cityStats.update()

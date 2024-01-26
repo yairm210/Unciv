@@ -65,7 +65,7 @@ object DeclareWar {
 
         if (otherCiv.isMajorCiv())
             for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponDeclaringWar))
-                UniqueTriggerActivation.triggerCivwideUnique(unique, civInfo)
+                UniqueTriggerActivation.triggerUnique(unique, civInfo)
     }
 
     private fun breakTreaties(diplomacyManager: DiplomacyManager) {
