@@ -57,7 +57,7 @@ object UniqueTriggerActivation {
         civInfo: Civilization,
         city: City? = null,
         unit: MapUnit? = null,
-        tile: Tile? = city?.getCenterTile(),
+        tile: Tile? = city?.getCenterTile() ?: unit?.currentTile,
         notification: String? = null,
         triggerNotificationText: String? = null
     ): Boolean {
