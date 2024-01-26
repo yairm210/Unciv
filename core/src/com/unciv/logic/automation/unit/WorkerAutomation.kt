@@ -748,7 +748,9 @@ class WorkerAutomation(
         // no potential enemies
         if (enemyCivs.none()) return 0f
 
-        var valueOfFort = 3f
+        var valueOfFort = 2f
+        
+        if (civInfo.isCityState() && civInfo.getAllyCiv() != null) valueOfFort -= 1f // Allied city states probably don't need to build forts
 
         if (tile.hasViewableResource(civInfo)) valueOfFort -= 1
 
