@@ -88,14 +88,13 @@ class CityFounder {
         triggerCitiesSettledNearOtherCiv(city)
         civInfo.gameInfo.cityDistances.setDirty()
 
-
         for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponFoundingCity,
             StateForConditionals(civInfo, city, unit)
         ))
             UniqueTriggerActivation.triggerUnique(unique, civInfo, city, unit, triggerNotificationText = "due to founding a city")
         if (unit != null)
             for (unique in unit.getTriggeredUniques(UniqueType.TriggerUponFoundingCity,
-                StateForConditionals(civInfo, city, unit)
+                StateForConditionals(civInfo, city, unit)))
                 UniqueTriggerActivation.triggerUnique(unique, civInfo, city, unit, triggerNotificationText = "due to founding a city")
 
         return city
