@@ -246,7 +246,7 @@ class TileInfoImprovementFunctions(val tile: Tile) {
         civ: Civilization,
         unit: MapUnit? = null
     ) {
-        val stateForConditionals = StateForConditionals(civ, unit = unit)
+        val stateForConditionals = StateForConditionals(civ, unit = unit, tile = tile)
         
         for (unique in improvement.uniqueObjects.filter { !it.hasTriggerConditional()
             && it.conditionalsApply(stateForConditionals) })
