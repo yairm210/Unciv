@@ -9,7 +9,9 @@ import com.unciv.models.UncivSound
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.extensions.colorFromRGB
 import com.unciv.ui.components.extensions.disable
+import com.unciv.ui.components.extensions.setFontSize
 import com.unciv.ui.components.extensions.toLabel
+import com.unciv.ui.components.extensions.toTextButton
 import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.components.input.KeyboardBinding
 import com.unciv.ui.components.input.onActivation
@@ -26,6 +28,9 @@ import com.unciv.ui.screens.worldscreen.UndoHandler.Companion.restoreUndoCheckpo
 
 /** A holder for Tech, Policies and Diplomacy buttons going in the top left of the WorldScreen just under WorldScreenTopBar */
 class TechPolicyDiplomacyButtons(val worldScreen: WorldScreen) : Table(BaseScreen.skin) {
+    private val fogOfWarButtonHolder = Container<Button?>()
+    private val fogOfWarButton = "Fog of War".toTextButton()
+
     private val techButtonHolder = Container<Table?>()
     private val pickTechButton = Table(skin)
     private val pickTechLabel = "".toLabel(Color.WHITE, 30)
@@ -44,12 +49,21 @@ class TechPolicyDiplomacyButtons(val worldScreen: WorldScreen) : Table(BaseScree
 
     init {
         defaults().left()
+        add(fogOfWarButtonHolder).colspan(4).row()
         add(techButtonHolder).colspan(4).row()
         add(policyButtonHolder).padTop(10f).padRight(10f)
         add(diplomacyButtonHolder).padTop(10f).padRight(10f)
         add(espionageButtonHolder).padTop(10f).padRight(10f)
         add(undoButtonHolder).padTop(10f).padRight(10f)
         add().growX()  // Allows Policy and Diplo buttons to keep to the left
+
+        fogOfWarButton.label.setFontSize(30)
+        fogOfWarButton.labelCell.pad(10f)
+        fogOfWarButton.pack()
+        fogOfWarButtonHolder.onActivation(UncivSound.Paper, KeyboardBinding.TechnologyTree) {
+            worldScreen.fogOfWar = !worldScreen.fogOfWar
+            worldScreen.shouldUpdate = true
+        }
 
         pickTechButton.background = BaseScreen.skinStrings.getUiBackground("WorldScreen/PickTechButton", BaseScreen.skinStrings.roundedEdgeRectangleShape, colorFromRGB(7, 46, 43))
         pickTechButton.defaults().pad(20f)
@@ -76,14 +90,15 @@ class TechPolicyDiplomacyButtons(val worldScreen: WorldScreen) : Table(BaseScree
         if (game.gameInfo!!.isEspionageEnabled()) {
             espionageButton.add(ImageGetter.getImage("OtherIcons/Spy_White")).size(30f).pad(15f)
             espionageButtonHolder.onActivation(binding = KeyboardBinding.Espionage) {
-                game.pushScreen(EspionageOverviewScreen(viewingCiv))
+                game.pushScreen(EspionageOverviewScreen(worldScreen.selectedCiv, worldScreen))
             }
         }
     }
 
     fun update(): Boolean {
-        updateUndoButton()
+        updateFogOfWarButton()
         updateTechButton()
+        updateUndoButton()
         updatePolicyButton()
         val result = updateDiplomacyButton()
         if (game.gameInfo!!.isEspionageEnabled())
@@ -91,6 +106,16 @@ class TechPolicyDiplomacyButtons(val worldScreen: WorldScreen) : Table(BaseScree
         pack()
         setPosition(10f, worldScreen.topBar.y - height - 15f)
         return result
+    }
+
+    private fun updateFogOfWarButton() {
+        if (viewingCiv.isSpectator()) {
+            fogOfWarButtonHolder.actor = fogOfWarButton
+            fogOfWarButtonHolder.touchable = Touchable.enabled
+        } else {
+            fogOfWarButtonHolder.touchable = Touchable.disabled
+            fogOfWarButtonHolder.actor = null
+        }
     }
 
     private fun updateTechButton() {
@@ -154,7 +179,7 @@ class TechPolicyDiplomacyButtons(val worldScreen: WorldScreen) : Table(BaseScree
     }
 
     private fun updateEspionageButton() {
-        if (viewingCiv.espionageManager.spyList.isEmpty()) {
+        if (worldScreen.selectedCiv.espionageManager.spyList.isEmpty()) {
             espionageButtonHolder.touchable = Touchable.disabled
             espionageButtonHolder.actor = null
         } else {

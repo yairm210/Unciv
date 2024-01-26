@@ -1,3 +1,64 @@
+## 4.10.3
+
+Modding:
+- Add "Unavailable" unique (counterpart to Only Available)
+- Unified resource generation checks to include all uniques always
+- 'not shown on world screen' unique accepts civ conditionals
+- Added adjacency conditionals
+- CityCombatant.matchesFilter contains multifilter and civ filter
+
+By tuvus:
+- Air unit automation improvement
+- Espionage automation
+
+By SeventhM:
+- Fix errors when starting games as Maya
+
+## 4.10.2
+
+By SeventhM:
+- Fix Spectator stats when viewing another civ
+- Allow units to upgrade to more than one unit
+- Fix problems with stats from tiles and improvements
+
+By SomeTroglodyte:
+- A Conditional checking for a Building globally
+- Unit actions "paging" for smaller screens
+- Fix RequiresBuildingInSomeCities not being displayed in city constructions as rejection reason
+
+Improved Spectator selected Civ coloring  - By tuvus
+
+## 4.10.1
+
+'cities auto-bombard at end of turn' is a user option
+
+Improved Console autocomplete - By SomeTroglodyte
+
+By tuvus:
+- AI worker road priority rework
+- Spectators can see the diplomacy screen of the civ that they have selected
+- Checking if a tile is in work range now checks all cities
+
+Assume the relevant city for triggered uniques  - By SeventhM
+
+## 4.10.0
+
+Natural wonders no longer spawn next to start locations
+
+Automated spectator in multiplayer takes no actions
+
+Added console commands to remove roads, change city name
+
+By SomeTroglodyte:
+- The console key is now bindable
+- Allow map editor to generate smaller than "tiny" Pangaea maps
+
+By SeventhM:
+- Treat all timed uniques as functioning as always true regardless of conditionals
+- Fix conditionals being ignored for some triggers
+
+Increase AI workers - By tuvus
+
 ## 4.9.19
 
 Modding:

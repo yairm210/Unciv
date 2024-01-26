@@ -152,7 +152,10 @@ class MapLandmassGenerator(val ruleset: Ruleset, val randomness: MapGenerationRa
     }
 
     private fun createPangaea(tileMap: TileMap) {
-        do {
+        val largeContinentThreshold = (tileMap.values.size / 4).coerceAtMost(25)
+        var retryCount = 200  // A bit much but when relevant (tiny map) an iteration is relatively cheap
+
+        while(--retryCount >= 0) {
             val elevationSeed = randomness.RNG.nextInt().toDouble()
             for (tile in tileMap.values) {
                 var elevation = randomness.getPerlinNoise(tile, elevationSeed)
@@ -162,9 +165,11 @@ class MapLandmassGenerator(val ruleset: Ruleset, val randomness: MapGenerationRa
             }
 
             tileMap.assignContinents(TileMap.AssignContinentsMode.Reassign)
+            if ( tileMap.continentSizes.values.count { it > largeContinentThreshold } == 1  // Only one large continent
+                    && tileMap.values.count { it.baseTerrain == waterTerrainName } <= tileMap.values.size * 0.7f // And at most 70% water
+                ) break
             waterThreshold -= 0.01
-        } while (tileMap.continentSizes.values.count { it > 25 } != 1 // Multiple large continents
-                || tileMap.values.count { it.baseTerrain == waterTerrainName } > tileMap.values.size * 0.7f) // Over 70% water
+        }
         tileMap.assignContinents(TileMap.AssignContinentsMode.Clear)
     }
 

@@ -31,7 +31,6 @@ interface INonPerpetualConstruction : IConstruction, INamed, IHasUniques {
     val hurryCostModifier: Int
     // Future development should not increase the role of requiredTech, and should reduce it when possible.
     // https://yairm210.github.io/Unciv/Developers/Translations%2C-mods%2C-and-modding-freedom-in-Open-Source#filters
-    @Deprecated("The functionality provided by the requiredTech field is provided by the OnlyAvailableWhen unique.")
     var requiredTech: String?
 
     override fun legacyRequiredTechs(): Sequence<String> = if (requiredTech == null) sequenceOf() else sequenceOf(requiredTech!!)
@@ -147,6 +146,7 @@ class RejectionReason(val type: RejectionReasonType,
         RejectionReasonType.RequiresBuildingInAllCities,
         RejectionReasonType.RequiresBuildingInThisCity,
         RejectionReasonType.RequiresBuildingInSomeCity,
+        RejectionReasonType.RequiresBuildingInSomeCities,
         RejectionReasonType.CannotBeBuiltUnhappiness,
         RejectionReasonType.PopulationRequirement,
         RejectionReasonType.ConsumesResources,

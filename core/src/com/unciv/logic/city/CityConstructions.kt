@@ -413,9 +413,12 @@ class CityConstructions : IsPartOfGameInfoSerialization {
                     }
                 } else if (construction is BaseUnit) {
                     // Production put into upgradable units gets put into upgraded version
-                    if (rejectionReasons.all { it.type == RejectionReasonType.Obsoleted } && construction.upgradesTo != null) {
-                        val upgradedUnitName = city.civ.getEquivalentUnit(construction.upgradesTo!!).name
-                        inProgressConstructions[upgradedUnitName] = (inProgressConstructions[upgradedUnitName] ?: 0) + workDone
+                    val cheapestUpgradeUnit = construction.getRulesetUpgradeUnits(StateForConditionals(city.civ, city))
+                        .map { city.civ.getEquivalentUnit(it) }
+                        .filter { it.isBuildable(this) }
+                        .minByOrNull { it.cost }
+                    if (rejectionReasons.all { it.type == RejectionReasonType.Obsoleted } && cheapestUpgradeUnit != null) {
+                        inProgressConstructions[cheapestUpgradeUnit.name] = (inProgressConstructions[cheapestUpgradeUnit.name] ?: 0) + workDone
                     }
                 }
                 inProgressConstructions.remove(constructionName)
@@ -544,17 +547,18 @@ class CityConstructions : IsPartOfGameInfoSerialization {
     }
 
     fun triggerNewBuildingUniques(building: Building) {
+        val stateForConditionals = StateForConditionals(city.civ, city)
         val triggerNotificationText ="due to constructing [${building.name}]"
 
         for (unique in building.uniqueObjects)
-            if (!unique.hasTriggerConditional())
+            if (!unique.hasTriggerConditional() && unique.conditionalsApply(stateForConditionals))
                 UniqueTriggerActivation.triggerCivwideUnique(unique, city.civ, city, triggerNotificationText = triggerNotificationText)
 
-        for (unique in city.civ.getTriggeredUniques(UniqueType.TriggerUponConstructingBuilding, StateForConditionals(city.civ, city)))
+        for (unique in city.civ.getTriggeredUniques(UniqueType.TriggerUponConstructingBuilding, stateForConditionals))
             if (unique.conditionals.any {it.type == UniqueType.TriggerUponConstructingBuilding && building.matchesFilter(it.params[0])})
                 UniqueTriggerActivation.triggerCivwideUnique(unique, city.civ, city, triggerNotificationText = triggerNotificationText)
 
-        for (unique in city.civ.getTriggeredUniques(UniqueType.TriggerUponConstructingBuildingCityFilter, StateForConditionals(city.civ, city)))
+        for (unique in city.civ.getTriggeredUniques(UniqueType.TriggerUponConstructingBuildingCityFilter, stateForConditionals))
             if (unique.conditionals.any {it.type == UniqueType.TriggerUponConstructingBuildingCityFilter
                     && building.matchesFilter(it.params[0])
                     && city.matchesFilter(it.params[1])})

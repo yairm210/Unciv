@@ -229,9 +229,9 @@ class PolicyPickerScreen(
         }
         scrollPane.updateVisualScroll()
 
-        when(select) {
+        when (select) {
             in branches -> branchToGroup[select]?.toggle()
-            in policyNameToButton -> policyNameToButton[select]!!.also { pickPolicy(it) }
+            in policyNameToButton -> pickPolicy(policyNameToButton[select]!!)
         }
     }
 
@@ -300,9 +300,9 @@ class PolicyPickerScreen(
             label.wrap = true
             labelTable.add(label).pad(7f, 20f, 10f, 20f).grow().row()
 
-            if (branch.uniqueMap.getUniques(UniqueType.OnlyAvailableWhen).any()) {
-                var warning = UniqueType.OnlyAvailableWhen.text.tr() + ":\n"
-                for (unique in branch.uniqueMap.getUniques(UniqueType.OnlyAvailableWhen))
+            if (branch.uniqueMap.getUniques(UniqueType.OnlyAvailable).any()) {
+                var warning = UniqueType.OnlyAvailable.text.tr() + ":\n"
+                for (unique in branch.uniqueMap.getUniques(UniqueType.OnlyAvailable))
                     for (conditional in unique.conditionals) {
                         warning += "• " + conditional.text.tr() + "\n"
                     }

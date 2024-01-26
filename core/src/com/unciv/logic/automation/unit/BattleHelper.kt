@@ -15,8 +15,8 @@ object BattleHelper {
     fun tryAttackNearbyEnemy(unit: MapUnit, stayOnTile: Boolean = false): Boolean {
         if (unit.hasUnique(UniqueType.CannotAttack)) return false
         val attackableEnemies = TargetHelper.getAttackableEnemies(unit, unit.movement.getDistanceToTiles(), stayOnTile=stayOnTile)
-            // Only take enemies we can fight without dying
-            .filter {
+            // Only take enemies we can fight without dying or are made to die
+            .filter {unit.hasUnique(UniqueType.SelfDestructs) ||
                 BattleDamage.calculateDamageToAttacker(
                     MapUnitCombatant(unit),
                     Battle.getMapCombatantOfTile(it.tileToAttack)!!
@@ -92,7 +92,7 @@ object BattleHelper {
         
         if (attacker.baseUnit.isMelee()) {
             val battleDamage = BattleDamage.calculateDamageToAttacker(attackerUnit, cityUnit)
-            if (attacker.health - battleDamage * 2 <= 0) {
+            if (attacker.health - battleDamage * 2 <= 0 && !attacker.hasUnique(UniqueType.SelfDestructs)) {
                 // The more fiendly units around the city, the more willing we should be to just attack the city
                 val friendlyUnitsAroundCity = city.getCenterTile().getTilesInDistance(3).count { it.militaryUnit?.civ == attacker.civ }
                 // If we have more than 4 other units around the city, go for it

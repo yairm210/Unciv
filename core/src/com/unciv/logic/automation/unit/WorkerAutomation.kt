@@ -105,6 +105,12 @@ class WorkerAutomation(
         result
     }
 
+    /** Cache of roads to connect cities each turn */
+    private val roadsToConnectCitiesCache: HashMap<City, List<Tile>> = HashMap()
+    
+    /** Hashmap of all cached tiles in each list in [roadsToConnectCitiesCache] */
+    private val tilesOfRoadsToConnectCities: HashMap<Tile, City> = HashMap()
+
     /** Caches BFS by city locations (cities needing connecting).
      *
      *  key: The city to connect from as [hex position][Vector2].
@@ -267,24 +273,59 @@ class WorkerAutomation(
         }
     }
 
+    /**
+     * Uses a cache to find and return the connection to make that is associated with a city.
+     * May not work if the unit that originally created this cache is different from the next.
+     * (Due to the difference in [UnitMovement.canPassThrough()])
+     */
+    private fun getRoadConnectionBetweenCities(unit: MapUnit, city: City): List<Tile> {
+        if (city in roadsToConnectCitiesCache) return roadsToConnectCitiesCache[city]!!
 
+        val isCandidateTilePredicate: (Tile) -> Boolean = { it.isLand && unit.movement.canPassThrough(it) }
+        val toConnectTile = city.getCenterTile()
+        val bfs: BFS = bfsCache[toConnectTile.position] ?:
+        BFS(toConnectTile, isCandidateTilePredicate).apply {
+            maxSize = HexMath.getNumberOfTilesInHexagon(
+                WorkerAutomationConst.maxBfsReachPadding +
+                    tilesOfConnectedCities.minOf { it.aerialDistanceTo(toConnectTile) }
+            )
+            bfsCache[toConnectTile.position] = this@apply
+        }
+        val cityTilesToSeek = HashSet(tilesOfConnectedCities)
+
+        var nextTile = bfs.nextStep()
+        while (nextTile != null) {
+            if (nextTile in cityTilesToSeek) {
+                // We have a winner!
+                val cityTile = nextTile
+                val pathToCity = bfs.getPathTo(cityTile)
+                roadsToConnectCitiesCache[city] = pathToCity.toList().filter { it.roadStatus != bestRoadAvailable }
+                for (tile in pathToCity) { 
+                    if (tile !in tilesOfRoadsToConnectCities)
+                        tilesOfRoadsToConnectCities[tile] = city
+                }
+                return roadsToConnectCitiesCache[city]!!
+            }
+            nextTile = bfs.nextStep()
+        } 
+
+        roadsToConnectCitiesCache[city] = listOf()
+        return roadsToConnectCitiesCache[city]!!
+    }
 
     /**
      * Automate one Worker - decide what to do and where, move, start or continue work.
      */
     fun automateWorkerAction(unit: MapUnit, dangerousTiles: HashSet<Tile>) {
         val currentTile = unit.getTile()
-
+        // Must be called before any getPriority checks to guarantee the local road cache is processed
+        val citiesToConnect = getNearbyCitiesToConnect(unit)
         // Shortcut, we are working a good tile (like resource) and don't need to check for other tiles to work
         if (!dangerousTiles.contains(currentTile) && getFullPriority(unit.getTile(), unit) >= 10
             && currentTile.improvementInProgress != null) {
             return
         }
         val tileToWork = findTileToWork(unit, dangerousTiles)
-
-        // If we have < 20 GPT lets not spend time connecting roads
-        if (civInfo.stats.statsForNextTurn.gold >= 20
-            && tryConnectingCities(unit, getImprovementPriority(tileToWork, unit))) return
 
         if (tileToWork != currentTile) {
             debug("WorkerAutomation: %s -> head towards %s", unit.label(), tileToWork)
@@ -340,9 +381,6 @@ class WorkerAutomation(
             if (automateWorkBoats(unit)) return
         }
 
-        //Lets check again if we want to build roads because we don't have a tile nearby to improve
-        if (civInfo.stats.statsForNextTurn.gold > 15 && tryConnectingCities(unit, 0f)) return
-
         val citiesToNumberOfUnimprovedTiles = HashMap<String, Int>()
         for (city in unit.civ.cities) {
             citiesToNumberOfUnimprovedTiles[city.id] = city.getTiles()
@@ -362,7 +400,7 @@ class WorkerAutomation(
         }
 
         // Nothing to do, try again to connect cities
-        if (civInfo.stats.statsForNextTurn.gold > 10 && tryConnectingCities(unit, 0f)) return
+        if (civInfo.stats.statsForNextTurn.gold > 10 && tryConnectingCities(unit, citiesToConnect)) return
 
 
         debug("WorkerAutomation: %s -> nothing to do", unit.label())
@@ -374,84 +412,59 @@ class WorkerAutomation(
     }
 
     /**
-     * Looks for work connecting cities
-     * @return whether we actually did anything
+     * Most importantly builds the cache so that [chooseImprovement] knows later what tiles a road should be built on
+     * Returns a list of all the cities close by that this worker may want to connect
      */
-    private fun tryConnectingCities(unit: MapUnit, minPriority: Float): Boolean {
-        if (bestRoadAvailable == RoadStatus.None || citiesThatNeedConnecting.isEmpty()) return false
-        val maxDistanceWanted = when {
-            minPriority > 4 -> -1
-            minPriority > 3 -> 0
-            minPriority > 2 -> 1
-            minPriority > 1 -> 2
-            minPriority > 0 -> 10
-            else -> 20
-        }
-        if (maxDistanceWanted < 0) return false
-
-        // Since further away cities take longer to get to and - most importantly - the canReach() to them is very long,
-        // we order cities by their closeness to the worker first, and then check for each one whether there's a viable path
-        // it can take to an existing connected city.
-        val candidateCities = citiesThatNeedConnecting.asSequence().filter {
+    private fun getNearbyCitiesToConnect(unit: MapUnit): List<City> {
+        if (bestRoadAvailable == RoadStatus.None || citiesThatNeedConnecting.isEmpty()) return listOf()
+        val candidateCities = citiesThatNeedConnecting.filter {
             // Cities that are too far away make the canReach() calculations devastatingly long
             it.getCenterTile().aerialDistanceTo(unit.getTile()) < 20
         }
-        if (candidateCities.none()) return false // do nothing.
+        if (candidateCities.none()) return listOf() // do nothing.
 
-        val isCandidateTilePredicate: (Tile) -> Boolean = { it.isLand && unit.movement.canPassThrough(it) }
-        val currentTile = unit.getTile()
-        val cityTilesToSeek = ArrayList(tilesOfConnectedCities.sortedBy { it.aerialDistanceTo(currentTile) })
-
+        // Search through ALL candidate cities to build the cache
         for (toConnectCity in candidateCities) {
-            val toConnectTile = toConnectCity.getCenterTile()
-            val bfs: BFS = bfsCache[toConnectTile.position] ?:
-                BFS(toConnectTile, isCandidateTilePredicate).apply {
-                    maxSize = HexMath.getNumberOfTilesInHexagon(
-                        WorkerAutomationConst.maxBfsReachPadding +
-                            tilesOfConnectedCities.minOf { it.aerialDistanceTo(toConnectTile) }
-                    )
-                    bfsCache[toConnectTile.position] = this@apply
-                }
+            getRoadConnectionBetweenCities(unit, toConnectCity).filter { it.getUnpillagedRoad() < bestRoadAvailable }
+        }
+        return candidateCities
+    }
 
-            while (true) {
-                for (cityTile in cityTilesToSeek.toList()) { // copy since we change while running
-                    if (!bfs.hasReachedTile(cityTile)) continue
-                    // we have a winner!
-                    val pathToCity = bfs.getPathTo(cityTile)
-                    val roadableTiles = pathToCity.filter { it.getUnpillagedRoad() < bestRoadAvailable }
-                    val tileToConstructRoadOn: Tile
-                    if (currentTile in roadableTiles) tileToConstructRoadOn =
-                        currentTile
-                    else {
-                        val reachableTile = roadableTiles
-                            .filter { it.aerialDistanceTo(unit.getTile()) <= maxDistanceWanted }
-                            .sortedBy { it.aerialDistanceTo(unit.getTile()) }
-                            .firstOrNull {
-                                unit.movement.canMoveTo(it) && unit.movement.canReach(it)
-                            }
-                        if (reachableTile == null) {
-                            cityTilesToSeek.remove(cityTile) // Apparently we can't reach any of these tiles at all
-                            continue
-                        }
-                        tileToConstructRoadOn = reachableTile
-                        unit.movement.headTowards(tileToConstructRoadOn)
-                    }
-                    if (unit.currentMovement > 0 && currentTile == tileToConstructRoadOn
-                        && currentTile.improvementInProgress != bestRoadAvailable.name) {
-                        val improvement = bestRoadAvailable.improvement(ruleSet)!!
-                        tileToConstructRoadOn.startWorkingOnImprovement(improvement, civInfo, unit)
-                    }
-                    debug("WorkerAutomation: %s -> connect city %s to %s on %s",
-                        unit.label(), bfs.startingPoint.getCity()?.name, cityTile.getCity()!!.name, tileToConstructRoadOn)
-                    return true
-                }
-                if (bfs.hasEnded()) break // We've found another city that this one can connect to
-                bfs.nextStep()
-            }
-            debug("WorkerAutomation: ${unit.label()} -> connect city ${bfs.startingPoint.getCity()?.name} failed at BFS size ${bfs.size()}")
+    /**
+     * Looks for work connecting cities. Used to search for far away roads to build.
+     * @return whether we actually did anything
+     */
+    private fun tryConnectingCities(unit: MapUnit, candidateCities: List<City>): Boolean {
+        if (bestRoadAvailable == RoadStatus.None || citiesThatNeedConnecting.isEmpty()) return false
+
+        if (candidateCities.none()) return false // do nothing.
+        val currentTile = unit.getTile()
+        var bestTileToConstructRoadOn: Tile? = null
+        var bestTileToConstructRoadOnDist: Int = Int.MAX_VALUE
+
+        // Search through ALL candidate cities for the closest tile to build a road on
+        for (toConnectCity in candidateCities) {
+            val roadableTiles = getRoadConnectionBetweenCities(unit, toConnectCity).filter { it.getUnpillagedRoad() < bestRoadAvailable }
+            val reachableTile = roadableTiles.map { Pair(it, it.aerialDistanceTo(unit.getTile())) }
+                .filter { it.second < bestTileToConstructRoadOnDist }
+                .sortedBy { it.second }
+                .firstOrNull {
+                    unit.movement.canMoveTo(it.first) && unit.movement.canReach(it.first) 
+                } ?: continue // Apparently we can't reach any of these tiles at all
+            bestTileToConstructRoadOn = reachableTile.first
+            bestTileToConstructRoadOnDist = reachableTile.second
         }
 
-        return false
+        if (bestTileToConstructRoadOn == null) return false
+
+        if (bestTileToConstructRoadOn != currentTile && unit.currentMovement > 0)
+            unit.movement.headTowards(bestTileToConstructRoadOn)
+        if (unit.currentMovement > 0 && bestTileToConstructRoadOn == currentTile 
+            && currentTile.improvementInProgress != bestRoadAvailable.name) {
+            val improvement = bestRoadAvailable.improvement(ruleSet)!!
+            bestTileToConstructRoadOn.startWorkingOnImprovement(improvement, civInfo, unit)
+        }
+        return true
     }
 
     /**
@@ -525,6 +538,12 @@ class WorkerAutomation(
                 && !civInfo.hasResource(tile.resource!!))
                 priority += 2
         }
+        if (tile in tilesOfRoadsToConnectCities) priority += when {
+                civInfo.stats.statsForNextTurn.gold <= 5 -> 0
+                civInfo.stats.statsForNextTurn.gold <= 10 -> 1
+                civInfo.stats.statsForNextTurn.gold <= 30 -> 2
+                else -> 3
+            }
         tileRankings[tile] = TileImprovementRank(priority)
         return priority + unitSpecificPriority
     }
@@ -557,7 +576,7 @@ class WorkerAutomation(
                 var repairBonusPriority = tile.getImprovementToRepair()!!.getTurnsToBuild(unit.civ,unit) - UnitActionsFromUniques.getRepairTurns(unit)
                 if (tile.improvementInProgress == Constants.repair) repairBonusPriority += UnitActionsFromUniques.getRepairTurns(unit) - tile.turnsToImprovement
 
-                val repairPriority = repairBonusPriority + Automation.rankStatsValue(TileStatFunctions(tile).getImprovementStats(tile.getTileImprovement()!!,unit.civ, tile.owningCity), unit.civ)
+                val repairPriority = repairBonusPriority + Automation.rankStatsValue(TileStatFunctions(tile).getStatDiffForImprovement(tile.getTileImprovement()!!, unit.civ, tile.owningCity), unit.civ)
                 if (repairPriority > rank.improvementPriority!!) {
                     rank.improvementPriority = repairPriority
                     rank.bestImprovement = null
@@ -626,6 +645,7 @@ class WorkerAutomation(
 
         // After gathering all the data, we conduct the hierarchy in one place
         val improvementString = when {
+            bestBuildableImprovement != null && bestBuildableImprovement.isRoad() -> bestBuildableImprovement.name
             improvementStringForResource != null -> if (improvementStringForResource==tile.improvement) null else improvementStringForResource
             // If this is a resource that HAS an improvement that we can see, but this unit can't build it, don't waste your time
             tile.resource != null && tile.hasViewableResource(civInfo) && tile.tileResource.getImprovements().any() -> return null
@@ -648,7 +668,20 @@ class WorkerAutomation(
 
     private fun getImprovementRanking(tile: Tile, unit: MapUnit, improvementName: String, localUniqueCache: LocalUniqueCache): Float {
         val improvement = ruleSet.tileImprovements[improvementName]!!
-
+        
+        // Add the value of roads if we want to build it here
+        if (improvement.isRoad() && bestRoadAvailable.improvement(ruleSet) == improvement
+            && tile in tilesOfRoadsToConnectCities) {
+            var value = 1f
+            val city = tilesOfRoadsToConnectCities[tile]!!
+            if (civInfo.stats.statsForNextTurn.gold >= 20)
+            // Bigger cities have a higher priority to connect
+                value += (city.population.population - 3) * .3f
+            // Higher priority if we are closer to connecting the city
+            value += (5 - roadsToConnectCitiesCache[city]!!.size).coerceAtLeast(0)
+            return value
+        }
+        
         // If this tile is not in our territory or neighboring it, it has no value
         if (tile.getOwner() != unit.civ 
             // Check if it is not an unowned neighboring tile that can be in city range
