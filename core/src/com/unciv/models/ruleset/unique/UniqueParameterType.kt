@@ -8,7 +8,6 @@ import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.unique.UniqueParameterType.Companion.guessTypeForTranslationWriter
-import com.unciv.models.ruleset.validation.RulesetValidator
 import com.unciv.models.stats.Stat
 import com.unciv.models.translations.TranslationFileWriter
 
@@ -590,13 +589,6 @@ enum class UniqueParameterType(
         }
 
         override fun getTranslationWriterStringsForOutput() = scanExistingValues(this)
-    },
-
-    /** Suppress RulesetValidator warnings: Parameter check delegated to RulesetValidator, and auto-translation off. */
-    ValidationWarning("validationWarning", RulesetValidator.Suppression.docExample, RulesetValidator.Suppression.docDescription, "Mod-check warning") {
-        override fun getErrorSeverity(parameterText: String, ruleset: Ruleset): UniqueType.UniqueParameterErrorSeverity? =
-            if (RulesetValidator.Suppression.isValidFilter(parameterText)) null
-            else UniqueType.UniqueParameterErrorSeverity.RulesetInvariant
     },
 
     /** Behaves like [Unknown], but states explicitly the parameter is OK and its contents are ignored */

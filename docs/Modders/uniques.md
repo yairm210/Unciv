@@ -1812,12 +1812,6 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "Allow raze holy city"
 	Applicable to: ModOptions
 
-??? example  "Suppress Warning [validationWarning]"
-	Allows suppressing specific validation warnings. Errors, deprecation warnings, or warnings about untyped and non-filtering uniques should be heeded, not suppressed, and are therefore not accepted.
-	Example: "Suppress Warning [Tinman is supposed to automatically upgrade at tech Clockwork, and therefore Servos for its upgrade Mecha may not yet be researched!]"
-
-	Applicable to: ModOptions
-
 ??? example  "Mod is incompatible with [modFilter]"
 	Specifies that your Mod is incompatible with another. Always treated symmetrically, and cannot be overridden by the Mod you are declaring as incompatible.
 	Example: "Mod is incompatible with [DeCiv Redux]"
@@ -2300,5 +2294,4 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 *[stockpiledResource]: The name of any stockpiled.
 *[tech]: The name of any tech.
 *[tileFilter]: Anything that can be used either in an improvementFilter or in a terrainFilter can be used here, plus 'unimproved'
-*[validationWarning]: Suppresses one specific Ruleset validation warning. Needs to specify the full text verbatim including correct upper/lower case.
 *[victoryType]: The name of any victory type: 'Neutral', 'Cultural', 'Diplomatic', 'Domination', 'Scientific', 'Time'
