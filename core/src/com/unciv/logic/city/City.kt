@@ -532,7 +532,7 @@ class City : IsPartOfGameInfoSerialization {
     fun getLocalMatchingUniques(uniqueType: UniqueType, stateForConditionals: StateForConditionals = StateForConditionals(civ, this)): Sequence<Unique> {
         return (
             cityConstructions.builtBuildingUniqueMap.getUniques(uniqueType).filter { it.isLocalEffect }
-            + religion.getUniques().filter { it.isOfType(uniqueType) }
+            + religion.getUniques().filter { it.type == uniqueType }
         ).filter {
             it.conditionalsApply(stateForConditionals)
         }
@@ -541,7 +541,7 @@ class City : IsPartOfGameInfoSerialization {
     // Uniques coming from only this city
     fun getMatchingLocalOnlyUniques(uniqueType: UniqueType, stateForConditionals: StateForConditionals): Sequence<Unique> {
         val uniques = cityConstructions.builtBuildingUniqueMap.getUniques(uniqueType).filter { it.isLocalEffect } +
-            religion.getUniques().filter { it.isOfType(uniqueType) }
+            religion.getUniques().filter { it.type == uniqueType }
         return if (uniques.any()) uniques.filter { it.conditionalsApply(stateForConditionals) }
         else uniques
     }

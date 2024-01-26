@@ -354,7 +354,7 @@ class CityStateFunctions(val civInfo: Civilization) {
         }
         if (civInfo.cities.isEmpty() || civInfo.getCapital() == null) {
             modifiers["No Cities"] = -999
-            return  modifiers
+            return modifiers
         }
 
         modifiers["Base value"] = -110

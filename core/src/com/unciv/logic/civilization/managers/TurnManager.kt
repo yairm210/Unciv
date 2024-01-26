@@ -227,7 +227,8 @@ class TurnManager(val civInfo: Civilization) {
 
 
     fun endTurn(progressBar: NextTurnProgress? = null) {
-        NextTurnAutomation.automateCityBombardment(civInfo) // Bombard with all cities that haven't, maybe you missed one
+        if (UncivGame.Current.settings.citiesAutoBombardAtEndOfTurn)
+            NextTurnAutomation.automateCityBombardment(civInfo) // Bombard with all cities that haven't, maybe you missed one
 
         for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponTurnEnd, StateForConditionals(civInfo)))
             UniqueTriggerActivation.triggerCivwideUnique(unique, civInfo)

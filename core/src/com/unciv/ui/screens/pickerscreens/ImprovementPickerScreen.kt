@@ -161,13 +161,13 @@ class ImprovementPickerScreen(
             )
 
             //Warn when the current improvement will increase a stat for the tile,
-            // but the tile is outside of the range (> 3 tiles from city center) that can be
+            // but the tile is outside of the range (> 3 tiles from any city center) that can be
             // worked by a city's population
             if (tile.owningCity != null
                 && !improvement.isRoad()
                     && stats.values.any { it > 0f }
                     && !improvement.name.startsWith(Constants.remove)
-                    && !tile.owningCity!!.getWorkableTiles().contains(tile)
+                    && !tile.getTilesInDistance(3).any { it.isCityCenter() && it.getCity()!!.civ == currentPlayerCiv }
             )
                 labelText += "\n" + "Not in city work range".tr()
 

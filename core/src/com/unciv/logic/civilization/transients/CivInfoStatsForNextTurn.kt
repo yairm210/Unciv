@@ -285,13 +285,13 @@ class CivInfoStatsForNextTurn(val civInfo: Civilization) {
         val statMap = StatMap()
         if (civInfo.religionManager.religion != null) {
             for (unique in civInfo.religionManager.religion!!.getFounderUniques()) {
-                if (unique.isOfType(UniqueType.StatsFromGlobalCitiesFollowingReligion)) {
+                if (unique.type == UniqueType.StatsFromGlobalCitiesFollowingReligion) {
                     statMap.add(
                         "Religion",
                         unique.stats * civInfo.religionManager.numberOfCitiesFollowingThisReligion()
                     )
                 }
-                if (unique.isOfType(UniqueType.StatsFromGlobalFollowers))
+                if (unique.type == UniqueType.StatsFromGlobalFollowers)
                     statMap.add(
                         "Religion",
                         unique.stats * civInfo.religionManager.numberOfFollowersFollowingThisReligion(
@@ -309,7 +309,7 @@ class CivInfoStatsForNextTurn(val civInfo: Civilization) {
 
         for (unique in civInfo.getMatchingUniques(UniqueType.Stats))
             if (unique.sourceObjectType != UniqueTarget.Building && unique.sourceObjectType != UniqueTarget.Wonder)
-                statMap.add(unique.sourceObjectType!!.name, unique.stats)
+                statMap.add(unique.getSourceNameForUser(), unique.stats)
 
         for (unique in civInfo.getMatchingUniques(UniqueType.StatsPerStat)) {
             val amount = civInfo.getStatReserve(Stat.valueOf(unique.params[2])) / unique.params[1].toInt()

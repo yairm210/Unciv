@@ -12,18 +12,17 @@ import com.unciv.ui.components.extensions.toPercent
 
 object UnitActionsReligion {
 
-
-    internal fun getFoundReligionActions(unit: MapUnit, tile:Tile): List<UnitAction> {
-        if (!unit.civ.religionManager.mayFoundReligionAtAll()) return listOf()
+    internal fun getFoundReligionActions(unit: MapUnit, tile:Tile): Sequence<UnitAction> {
+        if (!unit.civ.religionManager.mayFoundReligionAtAll()) return emptySequence()
 
         val unique = UnitActionModifiers.getUsableUnitActionUniques(unit, UniqueType.MayFoundReligion)
-            .firstOrNull() ?: return listOf()
+            .firstOrNull() ?: return emptySequence()
 
         val hasActionModifiers = unique.conditionals.any { it.type?.targetTypes?.contains(
             UniqueTarget.UnitActionModifier
         ) == true }
 
-        return listOf(UnitAction(
+        return sequenceOf(UnitAction(
             UnitActionType.FoundReligion,
 
             if (hasActionModifiers) UnitActionModifiers.actionTextWithSideEffects(
@@ -41,18 +40,18 @@ object UnitActionsReligion {
         ))
     }
 
-    internal fun getEnhanceReligionActions(unit: MapUnit, tile: Tile): List<UnitAction> {
-        if (!unit.civ.religionManager.mayEnhanceReligionAtAll()) return listOf()
+    internal fun getEnhanceReligionActions(unit: MapUnit, tile: Tile): Sequence<UnitAction> {
+        if (!unit.civ.religionManager.mayEnhanceReligionAtAll()) return emptySequence()
 
         val unique = UnitActionModifiers.getUsableUnitActionUniques(unit, UniqueType.MayEnhanceReligion)
-            .firstOrNull() ?: return listOf()
+            .firstOrNull() ?: return emptySequence()
 
         val hasActionModifiers = unique.conditionals.any { it.type?.targetTypes?.contains(
             UniqueTarget.UnitActionModifier
         ) == true }
 
         val baseTitle = "Enhance [${unit.civ.religionManager.religion!!.getReligionDisplayName()}]"
-        return listOf(UnitAction(
+        return sequenceOf(UnitAction(
             UnitActionType.EnhanceReligion,
             title = if (hasActionModifiers) UnitActionModifiers.actionTextWithSideEffects(
                 baseTitle,
@@ -77,16 +76,17 @@ object UnitActionsReligion {
         return pressureAdded.toInt()
     }
 
-    fun addSpreadReligionActions(unit: MapUnit, tile: Tile): List<UnitAction> {
-        if (!unit.civ.religionManager.maySpreadReligionAtAll(unit)) return listOf()
-        val city = tile.getCity() ?: return listOf()
+    internal fun getSpreadReligionActions(unit: MapUnit, tile: Tile): Sequence<UnitAction> {
+        if (!unit.civ.religionManager.maySpreadReligionAtAll(unit)) return emptySequence()
+        val city = tile.getCity() ?: return emptySequence()
 
-        val newStyleUnique = UnitActionModifiers.getUsableUnitActionUniques(unit, UniqueType.CanSpreadReligion).firstOrNull() ?: return emptyList()
+        val newStyleUnique = UnitActionModifiers.getUsableUnitActionUniques(unit, UniqueType.CanSpreadReligion)
+            .firstOrNull() ?: return emptySequence()
 
         val title = UnitActionModifiers.actionTextWithSideEffects("Spread [${unit.getReligionDisplayName()!!}]",
             newStyleUnique, unit)
 
-        return listOf(UnitAction(
+        return sequenceOf(UnitAction(
             UnitActionType.SpreadReligion,
             title = title,
             action = {
@@ -103,26 +103,26 @@ object UnitActionsReligion {
         ))
     }
 
-    internal fun getRemoveHeresyActions(unit: MapUnit, tile: Tile): List<UnitAction> {
-        if (!unit.civ.gameInfo.isReligionEnabled()) return listOf()
-        val religion = unit.civ.gameInfo.religions[unit.religion] ?: return listOf()
-        if (religion.isPantheon()) return listOf()
+    internal fun getRemoveHeresyActions(unit: MapUnit, tile: Tile): Sequence<UnitAction> {
+        if (!unit.civ.gameInfo.isReligionEnabled()) return emptySequence()
+        val religion = unit.civ.gameInfo.religions[unit.religion] ?: return emptySequence()
+        if (religion.isPantheon()) return emptySequence()
 
-        val city = tile.getCity() ?: return listOf()
-        if (city.civ != unit.civ) return listOf()
+        val city = tile.getCity() ?: return emptySequence()
+        if (city.civ != unit.civ) return emptySequence()
         // Only allow the action if the city actually has any foreign religion
         // This will almost be always due to pressure from cities close-by
-        if (city.religion.getPressures().none { it.key != unit.religion!! }) return listOf()
+        if (city.religion.getPressures().none { it.key != unit.religion!! }) return emptySequence()
 
         val newStyleUnique = UnitActionModifiers.getUsableUnitActionUniques(unit, UniqueType.CanRemoveHeresy).firstOrNull()
         val hasNewStyleAbility = newStyleUnique != null
 
-        if (!hasNewStyleAbility) return listOf()
+        if (!hasNewStyleAbility) return emptySequence()
 
         val title =
             UnitActionModifiers.actionTextWithSideEffects("Remove Heresy", newStyleUnique!!, unit)
 
-        return listOf(UnitAction(
+        return sequenceOf(UnitAction(
             UnitActionType.RemoveHeresy,
             title = title,
             action = {

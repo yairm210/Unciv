@@ -16,12 +16,12 @@ import kotlin.random.Random
 
 object UnitActionsPillage {
 
-    fun getPillageActions(unit: MapUnit, tile: Tile): List<UnitAction> {
+    internal fun getPillageActions(unit: MapUnit, tile: Tile): Sequence<UnitAction> {
         val pillageAction = getPillageAction(unit, tile)
-            ?: return listOf()
+            ?: return emptySequence()
         if (pillageAction.action == null || unit.civ.isAI() || (unit.civ.isHuman() && UncivGame.Current.settings.autoPlay.isAutoPlaying()))
-            return listOf(pillageAction)
-        else return listOf(UnitAction(UnitActionType.Pillage, pillageAction.title) {
+            return sequenceOf(pillageAction)
+        else return sequenceOf(UnitAction(UnitActionType.Pillage, pillageAction.title) {
             val pillageText = "Are you sure you want to pillage this [${tile.getImprovementToPillageName()!!}]?"
             ConfirmPopup(
                 GUI.getWorldScreen(),
@@ -35,7 +35,7 @@ object UnitActionsPillage {
         })
     }
 
-    fun getPillageAction(unit: MapUnit, tile: Tile): UnitAction? {
+    internal fun getPillageAction(unit: MapUnit, tile: Tile): UnitAction? {
         val improvementName = unit.currentTile.getImprovementToPillageName()
         if (unit.isCivilian() || improvementName == null || tile.getOwner() == unit.civ) return null
         return UnitAction(
@@ -112,6 +112,7 @@ object UnitActionsPillage {
         globalPillageYield.notify("")
     }
 
+    // Public - used in UnitAutomation
     fun canPillage(unit: MapUnit, tile: Tile): Boolean {
         if (unit.isTransported) return false
         if (!tile.canPillageTile()) return false

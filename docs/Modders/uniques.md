@@ -790,9 +790,6 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Global, Unit
 
-??? example  "+30% Strength when fighting City-State units and cities"
-	Applicable to: Global
-
 ??? example  "[amount] additional attacks per turn"
 	Example: "[3] additional attacks per turn"
 
@@ -960,6 +957,9 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 ??? example  "Only available"
 	Applicable to: Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, Promotion, Improvement, Ruins
+
+??? example  "Unavailable"
+	Applicable to: Tech, Policy, Building, Unit, Promotion, Improvement, Ruins
 
 ??? example  "Cannot be hurried"
 	Applicable to: Tech, Building
@@ -1385,8 +1385,13 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Unit
 
-??? example  "May upgrade to [baseUnitFilter] through ruins-like effects"
-	Example: "May upgrade to [Melee] through ruins-like effects"
+??? example  "May upgrade to [unit] through ruins-like effects"
+	Example: "May upgrade to [Musketman] through ruins-like effects"
+
+	Applicable to: Unit
+
+??? example  "Can upgrade to [unit]"
+	Example: "Can upgrade to [Musketman]"
 
 	Applicable to: Unit
 
@@ -1774,9 +1779,6 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Ruins
 
-??? example  "Hidden after generating a Great Prophet"
-	Applicable to: Ruins
-
 ## CityState uniques
 ??? example  "Provides military units every ≈[amount] turns"
 	Example: "Provides military units every ≈[3] turns"
@@ -1961,8 +1963,16 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "&lt;after enhancing a religion&gt;"
 	Applicable to: Conditional
 
+??? example  "&lt;after generating a Great Prophet&gt;"
+	Applicable to: Conditional
+
 ??? example  "&lt;if [buildingFilter] is constructed&gt;"
 	Example: "&lt;if [Culture] is constructed&gt;"
+
+	Applicable to: Conditional
+
+??? example  "&lt;if [buildingFilter] is constructed by anybody&gt;"
+	Example: "&lt;if [Culture] is constructed by anybody&gt;"
 
 	Applicable to: Conditional
 
@@ -2045,6 +2055,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Conditional
 
+??? example  "&lt;vs [combatantFilter]&gt;"
+	Example: "&lt;vs [City]&gt;"
+
+	Applicable to: Conditional
+
 ??? example  "&lt;when fighting units from a Civilization with more Cities than you&gt;"
 	Applicable to: Conditional
 
@@ -2085,23 +2100,23 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Conditional
 
-??? example  "&lt;with [amount] to [amount] neighboring [tileFilter] [tileFilter] tiles&gt;"
-	Example: "&lt;with [3] to [3] neighboring [Farm] [Farm] tiles&gt;"
-
-	Applicable to: Conditional
-
 ??? example  "&lt;in [tileFilter] tiles&gt;"
 	Example: "&lt;in [Farm] tiles&gt;"
 
 	Applicable to: Conditional
 
-??? example  "&lt;in [tileFilter] [tileFilter] tiles&gt;"
-	Example: "&lt;in [Farm] [Farm] tiles&gt;"
+??? example  "&lt;in tiles without [tileFilter]&gt;"
+	Example: "&lt;in tiles without [Farm]&gt;"
 
 	Applicable to: Conditional
 
-??? example  "&lt;in tiles without [tileFilter]&gt;"
-	Example: "&lt;in tiles without [Farm]&gt;"
+??? example  "&lt;in tiles adjacent to [tileFilter]&gt;"
+	Example: "&lt;in tiles adjacent to [Farm]&gt;"
+
+	Applicable to: Conditional
+
+??? example  "&lt;in tiles not adjacent to [tileFilter]&gt;"
+	Example: "&lt;in tiles not adjacent to [Farm]&gt;"
 
 	Applicable to: Conditional
 
