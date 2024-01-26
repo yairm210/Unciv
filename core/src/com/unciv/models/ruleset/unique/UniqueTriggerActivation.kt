@@ -72,7 +72,7 @@ object UniqueTriggerActivation {
             return true
         }
 
-        if (!unique.conditionalsApply(civInfo, relevantCity)) return false
+        if (!unique.conditionalsApply(StateForConditionals(civInfo, city, unit, tile))) return false
 
         val chosenCity = relevantCity ?:
             civInfo.cities.firstOrNull { it.isCapital() }
