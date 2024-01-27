@@ -4,20 +4,20 @@ import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
 
+/**
+ * Handles optimised operations related to finding threats or allies in an area.
+ */
 class ThreatManager(val civInfo: Civilization) {
 
     class ClosestEnemyTileData(
-        /** The farthest radius in which we have checked all the tiles for enemies.
-         * A value of 2 means there are no enemies in a radius of 2. */
+        /** The farthest radius in which we have checked tiles for enemies.
+         * A value of 2 means all enemies at a radius of 2 are in tilesWithEnemies. */
         var distanceSearched: Int,
-        /** It is guaranteed that there is no enemy within a radius of D-1.
-         * The enemy that we saw might have been killed.
-         * so we have to check the tileWithEnemy to see if we need to search again. */
-        var distanceToClosestEnemy: Int? = null,
-        /** Stores the location of the enemy that we saw.
-        * This allows us to quickly check if they are still alive.
-        * and if we should search farther. */
-        var tileWithEnemy: Tile? = null
+        /** Stores the location of the enemy tiles that we saw with the distance at which we saw them.
+         * Tiles are sorted by distance in increasing order.
+         * This allows us to quickly check if they are still alive and if we should search farther. 
+         * It is not guaranteed that each tile in this list has an enemy (since they may have died).*/
+        var tilesWithEnemies: MutableList<Pair<Tile,Int>>
     )
 
     private val distanceToClosestEnemyTiles = HashMap<Tile, ClosestEnemyTileData>()
@@ -34,69 +34,94 @@ class ThreatManager(val civInfo: Civilization) {
         var minDistanceToSearch = 1
         // Look if we can return the cache or if we can reduce our search
         if (tileData != null) {
-            if (tileData.distanceToClosestEnemy == null) {
-                if (tileData.distanceSearched >= maxDist)
-                    return notFoundDistance
-                // else: we need to search more we didn't search as far as we are looking for now
-            } else if (doesTileHaveMilitaryEnemy(tileData.tileWithEnemy!!)) {
-                // The enemy is still there
-                return if (tileData.distanceToClosestEnemy!! <= maxDist || takeLargerValues)
-                    tileData.distanceToClosestEnemy!!
-                else notFoundDistance
+            val tilesWithEnemy = tileData.tilesWithEnemies
+            // Check the tiles where we have previously found an enemy, if so it must be the closest
+            while (tilesWithEnemy.isNotEmpty()) {
+                val enemyTile = tilesWithEnemy.first()
+                if (doesTileHaveMilitaryEnemy(enemyTile.first)) {
+                    return if (takeLargerValues) enemyTile.second
+                    else enemyTile.second.coerceAtMost(maxDist)
+                } else {
+                    // This tile is no longer valid
+                    tilesWithEnemy.removeFirst()
+                }
+            }
+
+            if (tileData.distanceSearched > maxDist) {
+                // We have already searched past the range we want to search and haven't found any enemies
+                return if (takeLargerValues) notFoundDistance else maxDist
             }
             // Only search the tiles that we haven't searched yet
             minDistanceToSearch = (tileData.distanceSearched + 1).coerceAtLeast(1)
         }
 
+        val tilesWithEnemyAtDistance: MutableList<Pair<Tile,Int>> = mutableListOf()
         // Search for nearby enemies and store the results
         for (i in minDistanceToSearch..maxDist) {
             for (searchTile in tile.getTilesAtDistance(i)) {
                 if (doesTileHaveMilitaryEnemy(searchTile)) {
-                    // We have only completely searched a radius of  i - 1 
-                    distanceToClosestEnemyTiles[tile] = ClosestEnemyTileData(i - 1, i, searchTile)
-                    return i
+                    tilesWithEnemyAtDistance.add(Pair(searchTile, i))
                 }
             }
+            if (tilesWithEnemyAtDistance.isNotEmpty()) {
+                distanceToClosestEnemyTiles[tile] = ClosestEnemyTileData(i, tilesWithEnemyAtDistance)
+                return i
+            }
         }
-        distanceToClosestEnemyTiles[tile] = ClosestEnemyTileData(maxDist, null, null)
+        distanceToClosestEnemyTiles[tile] = ClosestEnemyTileData(maxDist, mutableListOf())
         return notFoundDistance
     }
 
     /**
      * Returns all tiles with enemy units on them in distance.
+     * Every tile is guaranteed to have an enemy.
      * May be quicker than a manual search because of caching.
      * Also ends up calculating and caching [getDistanceToClosestEnemyUnit].
      */
     fun getTilesWithEnemyUnitsInDistance(tile: Tile, maxDist: Int): MutableList<Tile> {
         val tileData = distanceToClosestEnemyTiles[tile]
-        
+
         // Shortcut, we don't need to search for anything
         if (tileData != null && maxDist <= tileData.distanceSearched)
-            return ArrayList<Tile>()
-        
+            return mutableListOf()
+        val tilesWithEnemies = if (tileData?.tilesWithEnemies != null) tileData.tilesWithEnemies.map { it.first }.toMutableList() else mutableListOf()
+        val tileDataTilesWithEnemies: MutableList<Pair<Tile,Int>> = if (tileData?.tilesWithEnemies != null) tileData.tilesWithEnemies else mutableListOf()
+
+
+        if (tileData != null && tileData.distanceSearched >= maxDist) {
+            // Add all tiles that we have previously found
+            var index = 0
+            while (tileDataTilesWithEnemies.size > index) {
+                val tileWithDistance = tileDataTilesWithEnemies[index]
+                if (tileWithDistance.second > maxDist)
+                    return tilesWithEnemies
+                if (doesTileHaveMilitaryEnemy(tileWithDistance.first)) {
+                    tilesWithEnemies.add(tileWithDistance.first)
+                } else {
+                    tileDataTilesWithEnemies.removeAt(index)
+                    continue
+                }
+                index++
+            }
+        }
+
         val minDistanceToSearch = (tileData?.distanceSearched?.coerceAtLeast(0) ?: 0) + 1
-        var distanceWithNoEnemies = tileData?.distanceSearched ?: 0
-        var closestEnemyDistance = tileData?.distanceToClosestEnemy
-        var tileWithEnemy = tileData?.tileWithEnemy
-        val tilesWithEnemies = ArrayList<Tile>()
 
         for (i in minDistanceToSearch..maxDist) {
             for (searchTile in tile.getTilesAtDistance(i)) {
                 if (doesTileHaveMilitaryEnemy(searchTile)) {
                     tilesWithEnemies.add(searchTile)
+                    tileDataTilesWithEnemies.add(Pair(searchTile, i))
                 }
             }
-            if (tilesWithEnemies.isEmpty() && distanceWithNoEnemies < i) {
-                distanceWithNoEnemies = i
-            }
-            if (tilesWithEnemies.isNotEmpty() && (closestEnemyDistance == null || closestEnemyDistance < i)) {
-                closestEnemyDistance = i
-                tileWithEnemy = tilesWithEnemies.first()
-            }
         }
-        // Cache our results for later
-        // tilesWithEnemies must return the enemy at a distance of closestEnemyDistance
-        distanceToClosestEnemyTiles[tile] = ClosestEnemyTileData(distanceWithNoEnemies, closestEnemyDistance, tileWithEnemy)
+        if (tileData != null) {
+            tileData.distanceSearched = maxOf(tileData.distanceSearched, maxDist)
+        } else {
+            // Cache our results for later
+            // tilesWithEnemies must return the enemy at a distance of closestEnemyDistance
+            distanceToClosestEnemyTiles[tile] = ClosestEnemyTileData(maxDist, tileDataTilesWithEnemies)
+        }
         return tilesWithEnemies
     }
 
@@ -105,7 +130,7 @@ class ThreatManager(val civInfo: Civilization) {
      */
     fun getEnemyMilitaryUnitsInDistance(tile: Tile, maxDist: Int): List<MapUnit> = 
         getEnemyUnitsOnTiles(getTilesWithEnemyUnitsInDistance(tile, maxDist))
-    
+
     fun getEnemyUnitsOnTiles(tilesWithEnemyUnitsInDistance:List<Tile>): List<MapUnit> =
         tilesWithEnemyUnitsInDistance.flatMap { enemyTile -> enemyTile.getUnits()
             .filter { it.isMilitary() && civInfo.isAtWarWith(it.civ) } }
