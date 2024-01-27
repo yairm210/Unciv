@@ -621,10 +621,16 @@ class WorkerAutomation(
 
         val localUniqueCache = LocalUniqueCache()
 
-        val bestBuildableImprovement = potentialTileImprovements.values.asSequence()
+        var bestBuildableImprovement = potentialTileImprovements.values.asSequence()
             .map { Pair(it, getImprovementRanking(tile, unit,it.name, localUniqueCache)) }
             .filter { it.second > 0f }
             .maxByOrNull { it.second }?.first
+
+        if (tile.improvement != null && civInfo.isHuman() && (!UncivGame.Current.settings.automatedWorkersReplaceImprovements
+                || UncivGame.Current.settings.autoPlay.isAutoPlayingAndFullAI())) {
+            // Note that we might still want to build roads or remove fallout, so we can't exit the function immedietly
+            bestBuildableImprovement = null
+        }
 
         val lastTerrain = tile.lastTerrain
 
