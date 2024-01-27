@@ -38,7 +38,7 @@ object UniqueTriggerActivation {
         notification: String? = null,
         triggerNotificationText: String? = null
     ): Boolean {
-        return triggerUnique(unique, city.civ, city,
+        return triggerUnique(unique, city.civ, city, tile = city.getCenterTile(),
             notification = notification, triggerNotificationText = triggerNotificationText)
     }
     fun triggerUnique(
