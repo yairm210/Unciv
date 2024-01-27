@@ -1,5 +1,6 @@
 package com.unciv.models.ruleset.unique
 
+import com.unciv.logic.GameInfo
 import com.unciv.logic.battle.CombatAction
 import com.unciv.logic.battle.MapUnitCombatant
 import com.unciv.logic.city.City
@@ -50,6 +51,12 @@ object Conditionals {
             if (relevantCity != null) return relevantCity!!.getResourceAmount(resourceName)
             if (relevantCiv != null) return relevantCiv!!.getResourceAmount(resourceName)
             return 0
+        }
+
+        /** Helper to simplify conditional tests requiring gameInfo */
+        fun checkOnGameInfo(predicate: (GameInfo.() -> Boolean)): Boolean {
+            if (gameInfo == null) return false
+            return gameInfo!!.predicate()
         }
 
         /** Helper to simplify conditional tests requiring a Civilization */
@@ -105,9 +112,9 @@ object Conditionals {
             UniqueType.ModifierHiddenFromUsers -> true  // allowed to be attached to any Unique to hide it, no-op otherwise
 
             UniqueType.ConditionalChance -> stateBasedRandom.nextFloat() < condition.params[0].toFloat() / 100f
-            UniqueType.ConditionalEveryTurns -> gameInfo != null && gameInfo!!.turns % condition.params[0].toInt() == 0
-            UniqueType.ConditionalBeforeTurns -> gameInfo != null && gameInfo!!.turns < condition.params[0].toInt()
-            UniqueType.ConditionalAfterTurns -> gameInfo != null && gameInfo!!.turns >= condition.params[0].toInt()
+            UniqueType.ConditionalEveryTurns -> checkOnGameInfo { turns % condition.params[0].toInt() == 0 }
+            UniqueType.ConditionalBeforeTurns -> checkOnGameInfo { turns < condition.params[0].toInt() }
+            UniqueType.ConditionalAfterTurns -> checkOnGameInfo { turns >= condition.params[0].toInt() }
 
             UniqueType.ConditionalCivFilter -> checkOnCiv { matchesFilter(condition.params[0]) }
             UniqueType.ConditionalWar -> checkOnCiv { isAtWar() }
@@ -133,7 +140,7 @@ object Conditionals {
             UniqueType.ConditionalBeforeEra -> compareEra(condition.params[0]) { current, param -> current < param }
             UniqueType.ConditionalStartingFromEra -> compareEra(condition.params[0]) { current, param -> current >= param }
             UniqueType.ConditionalDuringEra -> compareEra(condition.params[0]) { current, param -> current == param }
-            UniqueType.ConditionalIfStartingInEra -> gameInfo != null && gameInfo!!.gameParameters.startingEra == condition.params[0]
+            UniqueType.ConditionalIfStartingInEra -> checkOnGameInfo { gameParameters.startingEra == condition.params[0] }
             UniqueType.ConditionalTech -> checkOnCiv { tech.isResearched(condition.params[0]) }
             UniqueType.ConditionalNoTech -> checkOnCiv { !tech.isResearched(condition.params[0]) }
 
@@ -158,8 +165,8 @@ object Conditionals {
 
             UniqueType.ConditionalBuildingBuilt ->
                 checkOnCiv { cities.any { it.cityConstructions.containsBuildingOrEquivalent(condition.params[0]) } }
-            UniqueType.ConditionalBuildingBuiltByAnybody -> gameInfo != null &&
-                gameInfo!!.getCities().any { it.cityConstructions.containsBuildingOrEquivalent(condition.params[0]) }
+            UniqueType.ConditionalBuildingBuiltByAnybody ->
+                checkOnGameInfo { getCities().any { it.cityConstructions.containsBuildingOrEquivalent(condition.params[0]) } }
 
             // Filtered via city.getMatchingUniques
             UniqueType.ConditionalInThisCity -> true
@@ -244,18 +251,17 @@ object Conditionals {
 
             UniqueType.ConditionalFirstCivToResearch ->
                 unique.sourceObjectType == UniqueTarget.Tech
-                    && gameInfo != null
-                    && gameInfo!!.civilizations.none {
-                    it != relevantCiv && it.isMajorCiv()
-                        && it.tech.isResearched(unique.sourceObjectName!!) // guarded by the sourceObjectType check
-                }
+                    && checkOnGameInfo { civilizations.none {
+                        it != relevantCiv && it.isMajorCiv()
+                            && it.tech.isResearched(unique.sourceObjectName!!) // guarded by the sourceObjectType check
+                    } }
+
             UniqueType.ConditionalFirstCivToAdopt ->
                 unique.sourceObjectType == UniqueTarget.Policy
-                    && gameInfo != null
-                    && gameInfo!!.civilizations.none {
-                    it != relevantCiv && it.isMajorCiv()
-                        && it.policies.isAdopted(unique.sourceObjectName!!) // guarded by the sourceObjectType check
-                }
+                    && checkOnGameInfo { civilizations.none {
+                        it != relevantCiv && it.isMajorCiv()
+                            && it.policies.isAdopted(unique.sourceObjectName!!) // guarded by the sourceObjectType check
+                    } }
 
             else -> false
         }
