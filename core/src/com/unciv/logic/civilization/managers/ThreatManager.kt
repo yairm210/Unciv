@@ -34,16 +34,16 @@ class ThreatManager(val civInfo: Civilization) {
         var minDistanceToSearch = 1
         // Look if we can return the cache or if we can reduce our search
         if (tileData != null) {
-            val tilesWithEnemy = tileData.tilesWithEnemies
+            val tilesWithEnemies = tileData.tilesWithEnemies
             // Check the tiles where we have previously found an enemy, if so it must be the closest
-            while (tilesWithEnemy.isNotEmpty()) {
-                val enemyTile = tilesWithEnemy.first()
+            while (tilesWithEnemies.isNotEmpty()) {
+                val enemyTile = tilesWithEnemies.first()
                 if (doesTileHaveMilitaryEnemy(enemyTile.first)) {
                     return if (takeLargerValues) enemyTile.second
                     else enemyTile.second.coerceAtMost(maxDist)
                 } else {
                     // This tile is no longer valid
-                    tilesWithEnemy.removeFirst()
+                    tilesWithEnemies.removeFirst()
                 }
             }
 
@@ -51,10 +51,12 @@ class ThreatManager(val civInfo: Civilization) {
                 // We have already searched past the range we want to search and haven't found any enemies
                 return if (takeLargerValues) notFoundDistance else maxDist
             }
+
             // Only search the tiles that we haven't searched yet
             minDistanceToSearch = (tileData.distanceSearched + 1).coerceAtLeast(1)
         }
 
+        if (tileData != null && tileData.tilesWithEnemies.isNotEmpty()) throw IllegalStateException("There must be no elements in tile.data.tilesWithEnemies at this point")
         val tilesWithEnemyAtDistance: MutableList<Pair<Tile,Int>> = mutableListOf()
         // Search for nearby enemies and store the results
         for (i in minDistanceToSearch..maxDist) {
