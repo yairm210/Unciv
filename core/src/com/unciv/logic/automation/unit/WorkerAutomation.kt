@@ -25,7 +25,6 @@ import com.unciv.models.ruleset.tile.Terrain
 import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.ruleset.unique.LocalUniqueCache
 import com.unciv.models.ruleset.unique.UniqueType
-import com.unciv.models.stats.Stats
 import com.unciv.ui.screens.worldscreen.unit.actions.UnitActions
 import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionsFromUniques
 import com.unciv.utils.Log
@@ -474,7 +473,7 @@ class WorkerAutomation(
     private fun findTileToWork(unit: MapUnit, tilesToAvoid: Set<Tile>): Tile {
         val currentTile = unit.getTile()
         if (currentTile != tilesToAvoid && getBasePriority(currentTile, unit) >= 5
-            && (tileHasWorkToDo(currentTile, unit) || currentTile.isPillaged() || currentTile.terrainFeatures.contains("Fallout"))) {
+            && (tileHasWorkToDo(currentTile, unit) || currentTile.isPillaged() || currentTile.hasFalloutEquivalent())) {
             return currentTile
         }
         val workableTilesCenterFirst = currentTile.getTilesInDistance(4)
@@ -524,8 +523,7 @@ class WorkerAutomation(
             priority += Automation.rankStatsValue(tile.stats.getTerrainStatsBreakdown().toStats(), civInfo)
             if (tile.providesYield()) priority += 2
             if (tile.isPillaged()) priority += 1
-            // TODO: Removing fallout is hardcoded for now, but what if we want to have other bad features on tiles?
-            if (tile.terrainFeatures.contains("Fallout")) priority += 1
+            if (tile.hasFalloutEquivalent()) priority += 1
         }
         // give a minor priority to tiles that we could expand onto
         else if (tile.getOwner() == null && tile.neighbors.any { it.getOwner() == civInfo })
