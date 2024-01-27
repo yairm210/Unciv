@@ -428,9 +428,10 @@ class CityButton(val city: City, private val tileGroup: TileGroup) : Table(BaseS
         cityTable = CityTable(city)
         add(cityTable).row()
 
+        val selectedPlayer = GUI.getSelectedPlayer()
         // If city state - add influence bar
-        if (city.civ.isCityState() && city.civ.knows(viewingPlayer)) {
-            val diplomacyManager = city.civ.getDiplomacyManager(viewingPlayer)
+        if (city.civ.isCityState() && city.civ.knows(selectedPlayer)) {
+            val diplomacyManager = city.civ.getDiplomacyManager(selectedPlayer)
             add(InfluenceTable(diplomacyManager.getInfluence(), diplomacyManager.relationshipLevel())).padTop(1f).row()
         }
 
