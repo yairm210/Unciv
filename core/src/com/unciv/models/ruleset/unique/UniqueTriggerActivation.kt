@@ -38,7 +38,7 @@ object UniqueTriggerActivation {
         notification: String? = null,
         triggerNotificationText: String? = null
     ): Boolean {
-        return triggerUnique(unique, city.civ, city, tile = city?.getCenterTile(),
+        return triggerUnique(unique, city.civ, city,
             notification = notification, triggerNotificationText = triggerNotificationText)
     }
     fun triggerUnique(
@@ -57,7 +57,7 @@ object UniqueTriggerActivation {
         civInfo: Civilization,
         city: City? = null,
         unit: MapUnit? = null,
-        tile: Tile? = city?.getCenterTile() ?: unit?.currentTile,
+        tile: Tile? = city?.getCenterTile(),
         notification: String? = null,
         triggerNotificationText: String? = null
     ): Boolean {
@@ -718,7 +718,6 @@ object UniqueTriggerActivation {
             }
 
             UniqueType.RemoveBuilding -> {
-
                 val applicableCities =
                     if (unique.params[1] == "in this city") sequenceOf(relevantCity!!)
                     else civInfo.cities.asSequence().filter { it.matchesFilter(unique.params[1]) }
@@ -727,7 +726,6 @@ object UniqueTriggerActivation {
                     val buildingsToRemove = applicableCity.cityConstructions.getBuiltBuildings().filter {
                         it.matchesFilter(unique.params[0])
                     }.toSet()
-
                     applicableCity.cityConstructions.removeBuildings(buildingsToRemove)
                 }
 
@@ -735,7 +733,6 @@ object UniqueTriggerActivation {
             }
 
             UniqueType.SellBuilding -> {
-
                 val applicableCities =
                     if (unique.params[1] == "in this city") sequenceOf(relevantCity!!)
                     else civInfo.cities.asSequence().filter { it.matchesFilter(unique.params[1]) }
@@ -748,16 +745,71 @@ object UniqueTriggerActivation {
                     for (building in buildingsToSell) {
                         applicableCity.sellBuilding(building)
                     }
-
                 }
 
                 return true
             }
 
+            UniqueType.OneTimeUnitHeal -> {
+                if (unit == null) return false
+                unit.healBy(unique.params[0].toInt())
+                if (notification != null)
+                    unit.civ.addNotification(notification, unit.getTile().position, NotificationCategory.Units) // Do we have a heal icon?
+                return true
+            }
+            UniqueType.OneTimeUnitDamage -> {
+                if (unit == null) return false
+                MapUnitCombatant(unit).takeDamage(unique.params[0].toInt())
+                if (notification != null)
+                    unit.civ.addNotification(notification, unit.getTile().position, NotificationCategory.Units) // Do we have a heal icon?
+                return true
+            }
+            UniqueType.OneTimeUnitGainXP -> {
+                if (unit == null) return false
+                if (!unit.baseUnit.isMilitary()) return false
+                unit.promotions.XP += unique.params[0].toInt()
+                if (notification != null)
+                    unit.civ.addNotification(notification, unit.getTile().position, NotificationCategory.Units)
+                return true
+            }
+            UniqueType.OneTimeUnitUpgrade -> {
+                if (unit == null) return false
+                val upgradeAction = UnitActionsUpgrade.getFreeUpgradeAction(unit)
+                if (upgradeAction.none()) return false
+                (upgradeAction.minBy { (it as UpgradeUnitAction).unitToUpgradeTo.cost }).action!!()
+                if (notification != null)
+                    unit.civ.addNotification(notification, unit.getTile().position, NotificationCategory.Units)
+                return true
+            }
+            UniqueType.OneTimeUnitSpecialUpgrade -> {
+                if (unit == null) return false
+                val upgradeAction = UnitActionsUpgrade.getAncientRuinsUpgradeAction(unit)
+                if (upgradeAction.none()) return false
+                (upgradeAction.minBy { (it as UpgradeUnitAction).unitToUpgradeTo.cost }).action!!()
+                if (notification != null)
+                    unit.civ.addNotification(notification, unit.getTile().position, NotificationCategory.Units)
+                return true
+            }
+            UniqueType.OneTimeUnitGainPromotion -> {
+                if (unit == null) return false
+                val promotion = unit.civ.gameInfo.ruleset.unitPromotions.keys
+                    .firstOrNull { it == unique.params[0] }
+                    ?: return false
+                unit.promotions.addPromotion(promotion, true)
+                if (notification != null)
+                    unit.civ.addNotification(notification, unit.getTile().position, NotificationCategory.Units, unit.name)
+                return true
+            }
+            UniqueType.OneTimeUnitRemovePromotion -> {
+                if (unit == null) return false
+                val promotion = unit.civ.gameInfo.ruleset.unitPromotions.keys
+                    .firstOrNull { it == unique.params[0]}
+                    ?: return false
+                unit.promotions.removePromotion(promotion)
+                return true
+            }
             else -> {}
         }
-        if (unit != null)
-            return triggerUnitwideUnique(unique, unit, notification)
         return false
     }
 
@@ -770,68 +822,5 @@ object UniqueTriggerActivation {
             else "{$triggerNotificationText}{ }{$effectNotificationText}"
         }
         else null
-    }
-
-    /** @return boolean whether an action was successfully performed */
-    private fun triggerUnitwideUnique(
-        unique: Unique,
-        unit: MapUnit,
-        notification: String? = null
-    ): Boolean {
-        when (unique.type) {
-            UniqueType.OneTimeUnitHeal -> {
-                unit.healBy(unique.params[0].toInt())
-                if (notification != null)
-                    unit.civ.addNotification(notification, unit.getTile().position, NotificationCategory.Units) // Do we have a heal icon?
-                return true
-            }
-            UniqueType.OneTimeUnitDamage -> {
-                MapUnitCombatant(unit).takeDamage(unique.params[0].toInt())
-                if (notification != null)
-                    unit.civ.addNotification(notification, unit.getTile().position, NotificationCategory.Units) // Do we have a heal icon?
-                return true
-            }
-            UniqueType.OneTimeUnitGainXP -> {
-                if (!unit.baseUnit.isMilitary()) return false
-                unit.promotions.XP += unique.params[0].toInt()
-                if (notification != null)
-                    unit.civ.addNotification(notification, unit.getTile().position, NotificationCategory.Units)
-                return true
-            }
-            UniqueType.OneTimeUnitUpgrade -> {
-                val upgradeAction = UnitActionsUpgrade.getFreeUpgradeAction(unit)
-                if (upgradeAction.none()) return false
-                (upgradeAction.minBy { (it as UpgradeUnitAction).unitToUpgradeTo.cost }).action!!()
-                if (notification != null)
-                    unit.civ.addNotification(notification, unit.getTile().position, NotificationCategory.Units)
-                return true
-            }
-            UniqueType.OneTimeUnitSpecialUpgrade -> {
-                val upgradeAction = UnitActionsUpgrade.getAncientRuinsUpgradeAction(unit)
-                if (upgradeAction.none()) return false
-                (upgradeAction.minBy { (it as UpgradeUnitAction).unitToUpgradeTo.cost }).action!!()
-                if (notification != null)
-                    unit.civ.addNotification(notification, unit.getTile().position, NotificationCategory.Units)
-                return true
-            }
-            UniqueType.OneTimeUnitGainPromotion -> {
-                val promotion = unit.civ.gameInfo.ruleset.unitPromotions.keys
-                    .firstOrNull { it == unique.params[0] }
-                    ?: return false
-                unit.promotions.addPromotion(promotion, true)
-                if (notification != null)
-                    unit.civ.addNotification(notification, unit.getTile().position, NotificationCategory.Units, unit.name)
-                return true
-            }
-            UniqueType.OneTimeUnitRemovePromotion -> {
-                val promotion = unit.civ.gameInfo.ruleset.unitPromotions.keys
-                    .firstOrNull { it == unique.params[0]}
-                    ?: return false
-                unit.promotions.removePromotion(promotion)
-                return true
-            }
-
-            else -> return false
-        }
     }
 }
