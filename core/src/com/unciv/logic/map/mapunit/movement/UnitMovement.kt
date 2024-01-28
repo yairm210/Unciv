@@ -267,7 +267,7 @@ class UnitMovement(val unit: MapUnit) {
         return getDistanceToTiles().containsKey(destination)
     }
 
-    fun getReachableTilesInCurrentTurn(): Sequence<Tile> {
+    fun getReachableTilesInCurrentTurn(escortFormation: Boolean = true): Sequence<Tile> {
         return when {
             unit.cache.cannotMove -> sequenceOf(unit.getTile())
             unit.baseUnit.movesLikeAirUnits() ->
@@ -275,8 +275,14 @@ class UnitMovement(val unit: MapUnit) {
             unit.isPreparingParadrop() ->
                 unit.getTile().getTilesInDistance(unit.cache.paradropRange)
                     .filter { unit.movement.canParadropOn(it) }
-            else ->
-                unit.movement.getDistanceToTiles().keys.asSequence()
+            else -> {
+                if (!unit.isEscorting() || !escortFormation) {
+                    unit.movement.getDistanceToTiles().keys.asSequence()
+                } else {
+                    val otherUnitTiles = unit.getOtherEscortUnit()!!.movement.getReachableTilesInCurrentTurn(false).toSet()
+                    unit.movement.getDistanceToTiles().filter { otherUnitTiles.contains(it.key) }.keys.asSequence()
+                }
+            }
         }
     }
 
@@ -486,6 +492,8 @@ class UnitMovement(val unit: MapUnit) {
         }
         if (escortUnit != null) {
             escortUnit.movement.moveToTile(finalTileReached)
+            escortUnit.escorting = true
+            unit.escorting = true
         }
 
         // Unit maintenance changed
@@ -559,7 +567,7 @@ class UnitMovement(val unit: MapUnit) {
      * Designates whether we can enter the tile - without attacking
      * DOES NOT designate whether we can reach that tile in the current turn
      */
-    fun canMoveTo(tile: Tile, assumeCanPassThrough: Boolean = false, canSwap: Boolean = false): Boolean {
+    fun canMoveTo(tile: Tile, assumeCanPassThrough: Boolean = false, canSwap: Boolean = false, escortFormation: Boolean = true): Boolean {
         if (unit.baseUnit.movesLikeAirUnits())
             return canAirUnitMoveTo(tile, unit)
 
@@ -568,6 +576,10 @@ class UnitMovement(val unit: MapUnit) {
 
         // even if they'll let us pass through, we can't enter their city - unless we just captured it
         if (isCityCenterCannotEnter(tile))
+            return false
+
+        if (escortFormation && unit.isEscorting() 
+            && !unit.getOtherEscortUnit()!!.movement.canMoveTo(tile, assumeCanPassThrough,canSwap, escortFormation = false)) 
             return false
 
         return if (unit.isCivilian())
