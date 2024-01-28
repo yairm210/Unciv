@@ -3,7 +3,7 @@ FROM $ARG_COMPILE_BASE_IMAGE as build
 USER root
 RUN  apt update && \
         apt upgrade -y && \
-        apt install --fix-broken -y wget curl default-jre default-jdk unzip
+        apt install --fix-broken -y wget curl openjdk-17-jdk openjdk-17-jre unzip
 WORKDIR /src
 # Get dependencies
 RUN wget -q -O packr-all-4.0.0.jar https://github.com/libgdx/packr/releases/download/4.0.0/packr-all-4.0.0.jar && \
