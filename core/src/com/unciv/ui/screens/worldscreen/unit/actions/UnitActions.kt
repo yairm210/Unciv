@@ -185,8 +185,7 @@ object UnitActions {
         yield(UnitAction(
             type = UnitActionType.EscortFormation,
             action = {
-                unit.escorting = true
-                unit.getOtherEscortUnit()!!.escorting = true
+                unit.startEscorting()
             }
         ))
     }

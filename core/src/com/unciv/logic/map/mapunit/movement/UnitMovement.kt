@@ -492,8 +492,7 @@ class UnitMovement(val unit: MapUnit) {
         }
         if (escortUnit != null) {
             escortUnit.movement.moveToTile(finalTileReached)
-            escortUnit.escorting = true
-            unit.escorting = true
+            unit.startEscorting() // Need to re-apply this
         }
 
         // Unit maintenance changed
@@ -516,6 +515,7 @@ class UnitMovement(val unit: MapUnit) {
      * Precondition: this unit can swap-move to the given tile, as determined by canUnitSwapTo
      */
     fun swapMoveToTile(destination: Tile) {
+        unit.stopEscorting()
         val otherUnit = (
             if (unit.isCivilian())
                 destination.civilianUnit

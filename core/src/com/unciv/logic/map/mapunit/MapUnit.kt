@@ -870,6 +870,22 @@ class MapUnit : IsPartOfGameInfoSerialization {
         moveThroughTile(tile)
     }
 
+    fun startEscorting() {
+        if (getOtherEscortUnit() != null) {
+            escorting = true
+            getOtherEscortUnit()!!.escorting = true
+        } else {
+            escorting = false
+        }
+    }
+
+    fun stopEscorting() {
+        if (getOtherEscortUnit() != null) {
+            getOtherEscortUnit()!!.escorting = false
+        }
+        escorting = false
+    }
+
     private fun clearEncampment(tile: Tile) {
         tile.removeImprovement()
 
