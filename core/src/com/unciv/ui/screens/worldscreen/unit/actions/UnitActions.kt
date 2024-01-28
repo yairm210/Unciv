@@ -181,17 +181,12 @@ object UnitActions {
         } else {
             return
         }
-        val tile = selectedUnits.first().getTile()
-        if (tile.militaryUnit == null || tile.civilianUnit == null
-            || tile.militaryUnit!!.civ != unit.civ || tile.civilianUnit!!.civ != unit.civ) return
-        if (!(tile.militaryUnit!! == unit || tile.civilianUnit!! == unit)) return
+        if (unit.getOtherEscortUnit() == null) return
         yield(UnitAction(
             type = UnitActionType.EscortFormation,
             action = {
-                debug("WORKED!!!")
-                debug("WORKED!!!")
-                debug("WORKED!!!")
-                debug("WORKED!!!")
+                unit.escorting = true
+                unit.getOtherEscortUnit()!!.escorting = true
             }
         ))
     }

@@ -60,6 +60,8 @@ class MapUnit : IsPartOfGameInfoSerialization {
     // Connect roads implies automated is true. It is specified by the action type.
     var action: String? = null
     var automated: Boolean = false
+    // We can infer who we are escorting based on our tile
+    var escorting: Boolean = false
 
     var automatedRoadConnectionDestination: Vector2? = null
     var automatedRoadConnectionPath: List<Vector2>? = null
@@ -573,6 +575,20 @@ class MapUnit : IsPartOfGameInfoSerialization {
         power *= health
         power /= 100
         return power
+    }
+    
+    fun getOtherEscortUnit(): MapUnit? {
+        if (isCivilian()) return getTile().militaryUnit
+        if (isMilitary()) return getTile().civilianUnit
+        return null
+    }
+    
+    fun isEscorting(): Boolean {
+        if (escorting) {
+            if (getOtherEscortUnit() != null) return true
+            escorting = false
+        }
+        return false
     }
 
     fun threatensCiv(civInfo: Civilization): Boolean {

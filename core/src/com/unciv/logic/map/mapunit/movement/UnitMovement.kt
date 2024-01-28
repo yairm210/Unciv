@@ -238,8 +238,14 @@ class UnitMovement(val unit: MapUnit) {
      * @return The tile that we reached this turn
      */
     fun headTowards(destination: Tile): Tile {
+        val escortUnit = if (unit.getOtherEscortUnit() != null && unit.escorting)
+            unit.getOtherEscortUnit() else null
+        val startTile = unit.getTile()
         val destinationTileThisTurn = getTileToMoveToThisTurn(destination)
         moveToTile(destinationTileThisTurn)
+        if (startTile != unit.getTile() && escortUnit != null) {
+            escortUnit.movement.headTowards(unit.getTile())
+        }
         return unit.currentTile
     }
 
@@ -370,6 +376,7 @@ class UnitMovement(val unit: MapUnit) {
     fun moveToTile(destination: Tile, considerZoneOfControl: Boolean = true) {
         if (destination == unit.getTile() || unit.isDestroyed) return // already here (or dead)!
         // Reset closestEnemy chache
+        val escortUnit = if (unit.isEscorting()) unit.getOtherEscortUnit()!! else null
 
         if (unit.baseUnit.movesLikeAirUnits()) { // air units move differently from all other units
             if (unit.action != UnitActionType.Automate.value) unit.action = null
@@ -476,6 +483,9 @@ class UnitMovement(val unit: MapUnit) {
             payload.putInTile(finalTileReached)
             payload.isTransported = true // restore the flag to not leave the payload in the city
             payload.mostRecentMoveType = UnitMovementMemoryType.UnitMoved
+        }
+        if (escortUnit != null) {
+            escortUnit.movement.moveToTile(finalTileReached)
         }
 
         // Unit maintenance changed
