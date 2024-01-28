@@ -430,7 +430,7 @@ object GameStarter {
             //We may need the starting location for some uniques, which is why we're doing it now
             val startingTriggers = (ruleset.globalUniques.uniqueObjects + civ.nation.uniqueObjects)
             for (unique in startingTriggers.filter { !it.hasTriggerConditional() && it.conditionalsApply(civ) })
-                UniqueTriggerActivation.triggerCivwideUnique(unique, civ, tile = startingLocation)
+                UniqueTriggerActivation.triggerUnique(unique, civ, tile = startingLocation)
         }
     }
 

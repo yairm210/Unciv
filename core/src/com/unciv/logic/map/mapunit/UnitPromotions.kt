@@ -73,7 +73,7 @@ class UnitPromotions : IsPartOfGameInfoSerialization {
             }
 
             for (unique in unit.getTriggeredUniques(UniqueType.TriggerUponPromotion))
-                UniqueTriggerActivation.triggerUnitwideUnique(unique, unit)
+                UniqueTriggerActivation.triggerUnique(unique, unit)
         }
 
         if (!promotion.hasUnique(UniqueType.SkipPromotion))
@@ -106,7 +106,7 @@ class UnitPromotions : IsPartOfGameInfoSerialization {
         for (unique in promotion.uniqueObjects)
             if (unique.conditionalsApply(StateForConditionals(civInfo = unit.civ, unit = unit))
                     && !unique.hasTriggerConditional())
-                UniqueTriggerActivation.triggerUnitwideUnique(unique, unit, triggerNotificationText = "due to our [${unit.name}] being promoted")
+                UniqueTriggerActivation.triggerUnique(unique, unit, triggerNotificationText = "due to our [${unit.name}] being promoted")
     }
 
     /** Gets all promotions this unit could currently "buy" with enough [XP]

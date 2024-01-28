@@ -246,23 +246,20 @@ class TileInfoImprovementFunctions(val tile: Tile) {
         civ: Civilization,
         unit: MapUnit? = null
     ) {
+        val stateForConditionals = StateForConditionals(civ, unit = unit, tile = tile)
+        
         for (unique in improvement.uniqueObjects.filter { !it.hasTriggerConditional()
-            && it.conditionalsApply(StateForConditionals(civ)) })
-            if (unit != null) {
-                UniqueTriggerActivation.triggerUnitwideUnique(unique, unit)
-            }
-            else UniqueTriggerActivation.triggerCivwideUnique(unique, civ, tile = tile)
+            && it.conditionalsApply(stateForConditionals) })
+            UniqueTriggerActivation.triggerUnique(unique, civ, unit = unit, tile = tile)
 
-        if (unit != null){
-            for (unique in unit.getTriggeredUniques(UniqueType.TriggerUponBuildingImprovement)
-                .filter { improvement.matchesFilter(it.params[0]) })
-                UniqueTriggerActivation.triggerUnitwideUnique(unique, unit)
-            }
-
-        for (unique in civ.getMatchingUniques(
-            UniqueType.TriggerUponBuildingImprovement, StateForConditionals(civInfo = civ, unit = unit))
+        for (unique in civ.getTriggeredUniques(UniqueType.TriggerUponBuildingImprovement, stateForConditionals)
             .filter { improvement.matchesFilter(it.params[0]) })
-            UniqueTriggerActivation.triggerCivwideUnique(unique, civ, tile = tile)
+            UniqueTriggerActivation.triggerUnique(unique, civ, unit = unit, tile = tile)
+        
+        if (unit == null) return
+        for (unique in unit.getTriggeredUniques(UniqueType.TriggerUponBuildingImprovement, stateForConditionals)
+            .filter { improvement.matchesFilter(it.params[0]) })
+            UniqueTriggerActivation.triggerUnique(unique, civ, unit = unit, tile = tile)
     }
 
     private fun activateRemovalImprovement(
