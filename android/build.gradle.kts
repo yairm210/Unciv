@@ -73,7 +73,10 @@ android {
         // Don't add local save files and fonts to release, obviously
         ignoreAssetsPattern = "!SaveFiles:!fonts:!maps:!music:!mods"
     }
-    buildToolsVersion = "33.0.2"
+    buildFeatures {
+        renderScript = true
+        aidl = true
+    }
 }
 
 task("texturePacker") {

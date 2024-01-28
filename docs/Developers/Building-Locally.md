@@ -21,8 +21,7 @@ By the end of this guide, you will have Unciv running locally from code, so you 
           (Optionally, you can save some space by selecting 'Show Package Details' and choosing the Platform SDK only, without Sources or system Images)
         - Click "SDK Tools"
         - Select "Show Package Details" in the bottom right
-        - Choose version 33.0.2 under "Android SDK Build-Tools"
-        ![image](/Unciv/assets/Android_SDK_Tools.png)
+        - Choose version 34.0.0 under "Android SDK Build-Tools"
         - Click "Apply"
         - Restart Android Studio
 -   In Android Studio, Run > Edit configurations (be sure the Gradle sync is finished successfully first).
