@@ -1,23 +1,19 @@
 ## 4.10.4
 
-4.10.3-patch1
-
-Avoid modifying the ruleset object and unique stats 
-
-New tileFilter parameter, for tiles belonging directly to you
+Modding:
+- New tileFilter `your`, for tiles belonging directly to you
+- Mods can use the Hills and mountains distribution uniques on Land or Feature terrains
 
 By SomeTroglodyte:
-- World screen resize delayed 
-- Unit actions dynamic paging 
-- Minor Mod manager fix, lints and dox 
-- Mods can use the Hills and mountains distribution uniques on Land or Feature terrains 
+- World screen resize delayed
+- Unit actions dynamic paging
+- Minor Mod manager fix, lints and dox
 
 By tuvus:
-- Workers now build forts 
-- Worker automation option fix 
-- Ranged units capture civilian 
-- Spectators can now see selected civ city-state influence bars 
-- Fixed spies errors 
+- Workers now build forts
+- Worker automation option fix
+- Ranged units capture civilian
+- Spectators can now see selected civ city-state influence bars
 
 Unify unit and civ triggers  - By SeventhM
 
