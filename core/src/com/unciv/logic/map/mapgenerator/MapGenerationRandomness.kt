@@ -2,10 +2,9 @@ package com.unciv.logic.map.mapgenerator
 
 import com.unciv.logic.map.HexMath
 import com.unciv.logic.map.tile.Tile
-import com.unciv.utils.Log
 import com.unciv.utils.debug
-import kotlin.math.max
 import kotlin.math.pow
+import kotlin.math.roundToInt
 import kotlin.random.Random
 
 class MapGenerationRandomness {
@@ -47,39 +46,54 @@ class MapGenerationRandomness {
         // The `if` means if we need to fill 60% or more of the available tiles, no sense starting with minimum distance 2.
         val sparsityFactor = (HexMath.getHexagonalRadiusForArea(suitableTiles.size) / mapRadius).pow(0.333f)
         val initialDistance = if (number == 1 || number * 5 >= suitableTiles.size * 3) 1
-            else max(1, (mapRadius * 0.666f / HexMath.getHexagonalRadiusForArea(number).pow(0.9f) * sparsityFactor + 0.5).toInt())
+            else (mapRadius * 0.666f / HexMath.getHexagonalRadiusForArea(number).pow(0.9f) * sparsityFactor).roundToInt().coerceAtLeast(1)
 
         // If possible, we want to equalize the base terrains upon which
         //  the resources are found, so we save how many have been
         //  found for each base terrain and try to get one from the lowest
         val baseTerrainsToChosenTiles = HashMap<String, Int>()
-        for (tileInfo in suitableTiles) {
-            if (tileInfo.baseTerrain !in baseTerrainsToChosenTiles)
-                baseTerrainsToChosenTiles[tileInfo.baseTerrain] = 0
+        // Once we have a preference to choose from a specific base terrain, we want quick lookup of the available candidates
+        val suitableTilesGrouped = LinkedHashMap<String, MutableSet<Tile>>(8)  // 8 is > number of base terrains in vanilla
+        // Prefill both with all existing base terrains as keys, and group suitableTiles into base terrain buckets
+        for (tile in suitableTiles) {
+            val terrain = tile.baseTerrain
+            if (terrain !in baseTerrainsToChosenTiles)
+                baseTerrainsToChosenTiles[terrain] = 0
+            suitableTilesGrouped.getOrPut(terrain) { mutableSetOf() }.add(tile)
+        }
+
+        fun LinkedHashMap<String, MutableSet<Tile>>.deepClone(): LinkedHashMap<String, MutableSet<Tile>> {
+            // map { it.key to it.value.toMutableSet() }.toMap() is marginally less efficient
+            val result = LinkedHashMap<String, MutableSet<Tile>>(size)
+            for ((key, value) in this)
+                result[key] = value.toMutableSet()
+            return result
         }
 
         for (distanceBetweenResources in initialDistance downTo 1) {
-            var availableTiles = suitableTiles
+            val availableTiles = suitableTilesGrouped.deepClone()
             val chosenTiles = ArrayList<Tile>(number)
 
             for (terrain in baseTerrainsToChosenTiles.keys)
                 baseTerrainsToChosenTiles[terrain] = 0
 
             for (i in 1..number) {
-                if (availableTiles.isEmpty()) break
                 val orderedKeys = baseTerrainsToChosenTiles.entries
-                        .sortedBy { it.value }.map { it.key }
+                    .sortedBy { it.value }.map { it.key }
                 val firstKeyWithTilesLeft = orderedKeys
-                        .first { availableTiles.any { tile -> tile.baseTerrain == it} }
-                val chosenTile = availableTiles.filter { it.baseTerrain == firstKeyWithTilesLeft }.random(RNG)
-                availableTiles = availableTiles.filter { it.aerialDistanceTo(chosenTile) > distanceBetweenResources }
+                    .firstOrNull { availableTiles[it]!!.isNotEmpty() }
+                    ?: break
+                val chosenTile = availableTiles[firstKeyWithTilesLeft]!!.random(RNG)
+                val closeTiles = chosenTile.getTilesInDistance(distanceBetweenResources).toSet()
+                for (availableSet in availableTiles.values)
+                    availableSet.removeAll(closeTiles)
                 chosenTiles.add(chosenTile)
                 baseTerrainsToChosenTiles[firstKeyWithTilesLeft] = baseTerrainsToChosenTiles[firstKeyWithTilesLeft]!! + 1
             }
             if (chosenTiles.size == number || distanceBetweenResources == 1) {
                 // Either we got them all, or we're not going to get anything better
-                if (Log.shouldLog() && distanceBetweenResources < initialDistance)
-                    debug("chooseSpreadOutLocations: distance $distanceBetweenResources < initial $initialDistance")
+                if (distanceBetweenResources < initialDistance)
+                    debug("chooseSpreadOutLocations: distance %d < initial %d", distanceBetweenResources, initialDistance)
                 return chosenTiles
             }
         }
