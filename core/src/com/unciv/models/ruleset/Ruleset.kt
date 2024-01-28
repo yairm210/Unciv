@@ -86,8 +86,9 @@ class Ruleset {
                             yield(conditional.params[0].toInt())
                             yield(conditional.params[1].toInt() + 1)
                         }
+                        if (conditional.type == UniqueType.ConditionalHappy) yield(0)
                     }
-        }.toList()
+        }.toSet()
     }
 
     val mods = LinkedHashSet<String>()
