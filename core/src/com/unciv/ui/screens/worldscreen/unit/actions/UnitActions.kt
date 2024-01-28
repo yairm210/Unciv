@@ -13,10 +13,6 @@ import com.unciv.models.translations.tr
 import com.unciv.ui.popups.ConfirmPopup
 import com.unciv.ui.popups.hasOpenPopups
 import com.unciv.ui.screens.pickerscreens.PromotionPickerScreen
-import com.unciv.ui.screens.worldscreen.unit.actions.UnitActions.getActionDefaultPage
-import com.unciv.ui.screens.worldscreen.unit.actions.UnitActions.getPagingActions
-import com.unciv.ui.screens.worldscreen.unit.actions.UnitActions.getUnitActions
-import com.unciv.ui.screens.worldscreen.unit.actions.UnitActions.invokeUnitAction
 
 /**
  *  Manages creation of [UnitAction] instances.
@@ -103,6 +99,7 @@ object UnitActions {
 
     /** Only for action types that wish to change their "More/Back" page position depending on context.
      *  All others get a defaultPage statically from [UnitActionType].
+     *  Note the returned "page numbers" are treated as suggestions, buttons may get redistributed when screen space is scarce.
      */
     private val actionTypeToPageGetter = linkedMapOf<UnitActionType, (unit: MapUnit) -> Int>(
         UnitActionType.Automate to { unit ->
