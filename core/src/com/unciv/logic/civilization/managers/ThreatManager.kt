@@ -83,10 +83,7 @@ class ThreatManager(val civInfo: Civilization) {
     fun getTilesWithEnemyUnitsInDistance(tile: Tile, maxDist: Int): MutableList<Tile> {
         val tileData = distanceToClosestEnemyTiles[tile]
 
-        // Shortcut, we don't need to search for anything
-        if (tileData != null && maxDist <= tileData.distanceSearched)
-            return mutableListOf()
-        val tilesWithEnemies = if (tileData?.tilesWithEnemies != null) tileData.tilesWithEnemies.map { it.first }.toMutableList() else mutableListOf()
+        val tilesWithEnemies: MutableList<Tile> = mutableListOf()
         val tileDataTilesWithEnemies: MutableList<Pair<Tile,Int>> = if (tileData?.tilesWithEnemies != null) tileData.tilesWithEnemies else mutableListOf()
 
 
@@ -106,6 +103,10 @@ class ThreatManager(val civInfo: Civilization) {
                 index++
             }
         }
+
+        // Shortcut, we don't need to search for anything more
+        if (tileData != null && maxDist <= tileData.distanceSearched)
+            return tilesWithEnemies
 
         val minDistanceToSearch = (tileData?.distanceSearched?.coerceAtLeast(0) ?: 0) + 1
 
@@ -162,9 +163,9 @@ class ThreatManager(val civInfo: Civilization) {
         if (!tile.isExplored(civInfo)) return false
         if (tile.isCityCenter() && tile.getCity()!!.civ.isAtWarWith(civInfo)) return true
         if (!tile.isVisible(civInfo)) return false
-        if (tile.getUnits().any {it.isMilitary()
+        if (tile.getUnits().any { it.isMilitary()
             && it.civ.isAtWarWith(civInfo)
-            && it.isInvisible(civInfo) })
+            && !it.isInvisible(civInfo) })
             return true
         return false
     }
