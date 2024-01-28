@@ -4,6 +4,11 @@ USER root
 RUN  apt update && \
         apt upgrade -y && \
         apt install --fix-broken -y wget curl openjdk-17-jdk openjdk-17-jre unzip
+
+# Gradle is dumb (https://github.com/gradle/gradle/issues/22921) and doesn't recognize the JDK location
+# Solution from https://www.linux.org.ru/forum/desktop/17285826 ¯\_(ツ)_/¯
+ln -sf /usr/lib/jvm/java-17-openjdk-amd64/ /usr/lib/jvm/openjdk-17
+
 WORKDIR /src
 # Get dependencies
 RUN wget -q -O packr-all-4.0.0.jar https://github.com/libgdx/packr/releases/download/4.0.0/packr-all-4.0.0.jar && \
