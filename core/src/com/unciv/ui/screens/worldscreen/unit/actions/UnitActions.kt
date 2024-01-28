@@ -17,6 +17,7 @@ import com.unciv.ui.screens.worldscreen.unit.actions.UnitActions.getActionDefaul
 import com.unciv.ui.screens.worldscreen.unit.actions.UnitActions.getPagingActions
 import com.unciv.ui.screens.worldscreen.unit.actions.UnitActions.getUnitActions
 import com.unciv.ui.screens.worldscreen.unit.actions.UnitActions.invokeUnitAction
+import com.unciv.utils.debug
 
 /**
  *  Manages creation of [UnitAction] instances.
@@ -161,11 +162,40 @@ object UnitActions {
                 GUI.getMap().setCenterPosition(unit.getMovementDestination().position, true)
             })
         }
-
+        addEscortAction(unit)
         addSwapAction(unit)
         addDisbandAction(unit)
     }
 
+    private suspend fun SequenceScope<UnitAction>.addEscortAction(unit: MapUnit) {
+        // Air units cannot escort
+        if (unit.baseUnit.movesLikeAirUnits()) return
+
+        val worldScreen = GUI.getWorldScreen()
+        val selectedUnits = worldScreen.bottomUnitTable.selectedUnits
+        if (selectedUnits.size == 2) {
+            val tile = selectedUnits.first().getTile()
+            if (selectedUnits.last().getTile() != tile) return
+            if (selectedUnits.any { it.baseUnit.movesLikeAirUnits() }) return
+        } else if (selectedUnits.size == 1) {
+        } else {
+            return
+        }
+        val tile = selectedUnits.first().getTile()
+        if (tile.militaryUnit == null || tile.civilianUnit == null
+            || tile.militaryUnit!!.civ != unit.civ || tile.civilianUnit!!.civ != unit.civ) return
+        if (!(tile.militaryUnit!! == unit || tile.civilianUnit!! == unit)) return
+        yield(UnitAction(
+            type = UnitActionType.EscortFormation,
+            action = {
+                debug("WORKED!!!")
+                debug("WORKED!!!")
+                debug("WORKED!!!")
+                debug("WORKED!!!")
+            }
+        ))
+    }
+    
     private suspend fun SequenceScope<UnitAction>.addSwapAction(unit: MapUnit) {
         // Air units cannot swap
         if (unit.baseUnit.movesLikeAirUnits()) return
