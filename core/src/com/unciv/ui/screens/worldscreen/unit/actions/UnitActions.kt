@@ -182,12 +182,19 @@ object UnitActions {
             return
         }
         if (unit.getOtherEscortUnit() == null) return
-        yield(UnitAction(
-            type = UnitActionType.EscortFormation,
-            action = {
-                unit.startEscorting()
-            }
-        ))
+        if (!unit.isEscorting()) {
+            yield(UnitAction(
+                type = UnitActionType.EscortFormation,
+                action = {
+                    unit.startEscorting()
+                }))
+        } else {
+            yield(UnitAction(
+                type = UnitActionType.StopEscortFormation,
+                action = {
+                    unit.stopEscorting()
+                }))
+        }
     }
     
     private suspend fun SequenceScope<UnitAction>.addSwapAction(unit: MapUnit) {

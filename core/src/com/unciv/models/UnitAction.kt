@@ -97,8 +97,10 @@ enum class UnitActionType(
     /** UI "page" preference, 0-based - Dynamic overrides to this are in `UnitActions.actionTypeToPageGetter` */
     val defaultPage: Int
 ) {
+    StopEscortFormation("Stop Escort formation",
+        { ImageGetter.getImage("OtherIcons/Stop") }, false, defaultPage = 1),
     EscortFormation("Escort formation",
-        { ImageGetter.getUnitActionPortrait("RoadConnection") }, false, defaultPage = 1),
+        { ImageGetter.getImage("OtherIcons/Link") }, false, defaultPage = 1),
     SwapUnits("Swap units",
         { ImageGetter.getUnitActionPortrait("Swap") }, false, defaultPage = 1),
     Automate("Automate",
