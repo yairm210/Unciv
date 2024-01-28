@@ -343,6 +343,9 @@ open class Tile : IsPartOfGameInfoSerialization {
             viewingCiv.lastSeenImprovement[position]
     }
 
+    /** Returns true if this tile has fallout or an equivalent terrain feature */
+    fun hasFalloutEquivalent(): Boolean = terrainFeatures.any { ruleset.terrains[it]!!.hasUnique(UniqueType.NullifyYields)}
+
 
     // This is for performance - since we access the neighbors of a tile ALL THE TIME,
     // and the neighbors of a tile never change, it's much more efficient to save the list once and for all!
