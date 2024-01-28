@@ -79,6 +79,8 @@ class CityConquestFunctions(val city: City) {
      * should go in `this.moveToCiv()`, which is called by `this.conquerCity()`.
      */
     private fun conquerCity(conqueringCiv: Civilization, conqueredCiv: Civilization, receivingCiv: Civilization) {
+        city.espionage.removeAllPresentSpies(SpyFleeReason.CityCaptured)
+        
         val goldPlundered = getGoldForCapturingCity(conqueringCiv)
         conqueringCiv.addGold(goldPlundered)
         conqueringCiv.addNotification("Received [$goldPlundered] Gold for capturing [${city.name}]",
@@ -105,8 +107,6 @@ class CityConquestFunctions(val city: City) {
             // reconquering or liberating city in resistance so eliminate it
             city.removeFlag(CityFlags.Resistance)
         }
-
-        city.espionage.removeAllPresentSpies(SpyFleeReason.CityCaptured)
     }
 
 

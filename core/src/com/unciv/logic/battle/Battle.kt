@@ -526,18 +526,7 @@ object Battle {
             if (civilianUnit != null) BattleUnitCapture.captureCivilianUnit(attacker, MapUnitCombatant(civilianUnit!!), checkDefeat = false)
             for (airUnit in airUnits.toList()) airUnit.destroy()
         }
-
-        // Move all spies in the city
-        if (attackerCiv.gameInfo.isEspionageEnabled()) {
-            for (civ in attackerCiv.gameInfo.civilizations.filter { it.isMajorCiv() }) {
-                for (spy in civ.espionageManager.spyList) {
-                    if (spy.getLocation() == city) {
-                        spy.moveTo(null)
-                    }
-                }
-            }
-        }
-
+        
         val stateForConditionals = StateForConditionals(civInfo = attackerCiv, city=city, unit = attacker.unit, ourCombatant = attacker, attackedTile = city.getCenterTile())
         for (unique in attacker.getMatchingUniques(UniqueType.CaptureCityPlunder, stateForConditionals, true)) {
             attackerCiv.addStat(
