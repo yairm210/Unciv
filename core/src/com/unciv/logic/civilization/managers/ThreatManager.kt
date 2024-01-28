@@ -162,9 +162,9 @@ class ThreatManager(val civInfo: Civilization) {
         if (!tile.isExplored(civInfo)) return false
         if (tile.isCityCenter() && tile.getCity()!!.civ.isAtWarWith(civInfo)) return true
         if (!tile.isVisible(civInfo)) return false
-        if (tile.militaryUnit != null
-            && tile.militaryUnit!!.civ.isAtWarWith(civInfo)
-            && !tile.militaryUnit!!.isInvisible(civInfo))
+        if (tile.getUnits().any {it.isMilitary()
+            && it.civ.isAtWarWith(civInfo)
+            && it.isInvisible(civInfo) })
             return true
         return false
     }
