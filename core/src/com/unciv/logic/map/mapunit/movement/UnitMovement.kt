@@ -334,6 +334,7 @@ class UnitMovement(val unit: MapUnit) {
      * CAN DESTROY THE UNIT.
      */
     fun teleportToClosestMoveableTile() {
+        unit.stopEscorting()
         if (unit.isTransported) return // handled when carrying unit is teleported
         var allowedTile: Tile? = null
         var distance = 0
@@ -679,7 +680,7 @@ class UnitMovement(val unit: MapUnit) {
     fun getDistanceToTiles(
         considerZoneOfControl: Boolean = true,
         passThroughCache: HashMap<Tile, Boolean> = HashMap(),
-        movementCostCache: HashMap<Pair<Tile, Tile>, Float> = HashMap())
+        movementCostCache: HashMap<Pair<Tile, Tile>, Float> = HashMap(), includeEscort: Boolean = true)
         : PathsToTilesWithinTurn {
         val cacheResults = pathfindingCache.getDistanceToTiles(considerZoneOfControl)
         if (cacheResults != null) {
@@ -694,6 +695,11 @@ class UnitMovement(val unit: MapUnit) {
             movementCostCache
         )
         pathfindingCache.setDistanceToTiles(considerZoneOfControl, distanceToTiles)
+        if (includeEscort && unit.isEscorting()) {
+            val escortDistanceToTiles = unit.getOtherEscortUnit()!!.movement
+                .getDistanceToTiles(considerZoneOfControl, passThroughCache, movementCostCache, false).keys.toSet()
+            distanceToTiles.filter { escortDistanceToTiles.contains(it.key) }
+        }
         return distanceToTiles
     }
 
