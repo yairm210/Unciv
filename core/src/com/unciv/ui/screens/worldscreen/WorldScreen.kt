@@ -69,6 +69,8 @@ import com.unciv.utils.launchOnThreadPool
 import com.unciv.utils.withGLContext
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.coroutineScope
+import java.util.Timer
+import kotlin.concurrent.timer
 
 /**
  * Do not create this screen without seriously thinking about the implications: this is the single most memory-intensive class in the application.
@@ -105,11 +107,11 @@ class WorldScreen(
     private val mapVisualization = MapVisualization(gameInfo, viewingCiv)
 
     // Floating Widgets going counter-clockwise
-    val topBar = WorldScreenTopBar(this)
-    private val techPolicyAndDiplomacy = TechPolicyDiplomacyButtons(this)
+    internal val topBar = WorldScreenTopBar(this)
+    internal val techPolicyAndDiplomacy = TechPolicyDiplomacyButtons(this)
     private val unitActionsTable = UnitActionsTable(this)
     /** Bottom left widget holding information about a selected unit or city */
-    val bottomUnitTable = UnitTable(this)
+    internal val bottomUnitTable = UnitTable(this)
     private val battleTable = BattleTable(this)
     private val zoomController = ZoomButtonPair(mapHolder)
     internal val minimapWrapper = MinimapHolder(mapHolder)
@@ -216,6 +218,7 @@ class WorldScreen(
     }
 
     override fun dispose() {
+        resizeDeferTimer?.cancel()
         events.stopReceiving()
         statusButtons.dispose()
         super.dispose()
@@ -369,9 +372,6 @@ class WorldScreen(
             battleTable.update()
 
             displayTutorialTaskOnUpdate()
-
-            unitActionsTable.update(bottomUnitTable.selectedUnit)
-            unitActionsTable.y = bottomUnitTable.height
         }
 
         mapHolder.resetArrows()
@@ -400,6 +400,12 @@ class WorldScreen(
 
         if (techPolicyAndDiplomacy.update())
             displayTutorial(TutorialTrigger.OtherCivEncountered)
+
+        if (uiEnabled) {
+            // UnitActionsTable measures geometry (its own y, techPolicyAndDiplomacy and fogOfWarButton), so call update this late
+            unitActionsTable.y = bottomUnitTable.height
+            unitActionsTable.update(bottomUnitTable.selectedUnit)
+        }
 
         // If the game has ended, lets stop AutoPlay
         if (game.settings.autoPlay.isAutoPlaying()
@@ -712,17 +718,23 @@ class WorldScreen(
         }
     }
 
+
+    private var resizeDeferTimer: Timer? = null
+
     override fun resize(width: Int, height: Int) {
-        if (stage.viewport.screenWidth != width || stage.viewport.screenHeight != height) {
+        resizeDeferTimer?.cancel()
+        if (resizeDeferTimer == null && stage.viewport.screenWidth == width && stage.viewport.screenHeight == height) return
+        resizeDeferTimer = timer("Resize", daemon = true, 500L, Long.MAX_VALUE) {
+            resizeDeferTimer?.cancel()
+            resizeDeferTimer = null
             startNewScreenJob(gameInfo, true) // start over
         }
     }
 
-
     override fun render(delta: Float) {
         //  This is so that updates happen in the MAIN THREAD, where there is a GL Context,
         //    otherwise images will not load properly!
-        if (shouldUpdate) {
+        if (shouldUpdate && resizeDeferTimer == null) {
             shouldUpdate = false
 
             // Since updating the worldscreen can take a long time, *especially* the first time, we disable input processing to avoid ANRs
@@ -732,11 +744,10 @@ class WorldScreen(
             if (Gdx.input.inputProcessor == null) // Update may have replaced the worldscreen with a GreatPersonPickerScreen etc, so the input would already be set
                 Gdx.input.inputProcessor = stage
         }
-//        topBar.selectedCivLabel.setText(Gdx.graphics.framesPerSecond) // for framerate testing
-
 
         super.render(delta)
     }
+
 
     private fun showTutorialsOnNextTurn() {
         if (!game.settings.showTutorials) return
@@ -796,7 +807,7 @@ class WorldScreen(
 }
 
 /** This exists so that no reference to the current world screen remains, so the old world screen can get garbage collected during [UncivGame.loadGame]. */
-private fun startNewScreenJob(gameInfo: GameInfo, autosaveDisabled:Boolean = false) {
+private fun startNewScreenJob(gameInfo: GameInfo, autosaveDisabled: Boolean = false) {
     Concurrency.run {
         val newWorldScreen = try {
             UncivGame.Current.loadGame(gameInfo)

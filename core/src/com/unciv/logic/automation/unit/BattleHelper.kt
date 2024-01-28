@@ -15,8 +15,8 @@ object BattleHelper {
     fun tryAttackNearbyEnemy(unit: MapUnit, stayOnTile: Boolean = false): Boolean {
         if (unit.hasUnique(UniqueType.CannotAttack)) return false
         val attackableEnemies = TargetHelper.getAttackableEnemies(unit, unit.movement.getDistanceToTiles(), stayOnTile=stayOnTile)
-            // Only take enemies we can fight without dying
-            .filter {
+            // Only take enemies we can fight without dying or are made to die
+            .filter {unit.hasUnique(UniqueType.SelfDestructs) ||
                 BattleDamage.calculateDamageToAttacker(
                     MapUnitCombatant(unit),
                     Battle.getMapCombatantOfTile(it.tileToAttack)!!
@@ -26,7 +26,13 @@ object BattleHelper {
         val enemyTileToAttack = chooseAttackTarget(unit, attackableEnemies)
 
         if (enemyTileToAttack != null) {
-            Battle.moveAndAttack(MapUnitCombatant(unit), enemyTileToAttack)
+            if (enemyTileToAttack.tileToAttack.militaryUnit == null && unit.baseUnit.isRanged()
+                && unit.movement.canMoveTo(enemyTileToAttack.tileToAttack)) {
+                // Ranged units should move to caputre a civilian unit instead of attacking it
+                unit.movement.moveToTile(enemyTileToAttack.tileToAttack)
+            } else {
+                Battle.moveAndAttack(MapUnitCombatant(unit), enemyTileToAttack)
+            }
         }
         return unit.currentMovement == 0f
     }
@@ -92,7 +98,7 @@ object BattleHelper {
         
         if (attacker.baseUnit.isMelee()) {
             val battleDamage = BattleDamage.calculateDamageToAttacker(attackerUnit, cityUnit)
-            if (attacker.health - battleDamage * 2 <= 0) {
+            if (attacker.health - battleDamage * 2 <= 0 && !attacker.hasUnique(UniqueType.SelfDestructs)) {
                 // The more fiendly units around the city, the more willing we should be to just attack the city
                 val friendlyUnitsAroundCity = city.getCenterTile().getTilesInDistance(3).count { it.militaryUnit?.civ == attacker.civ }
                 // If we have more than 4 other units around the city, go for it
@@ -148,12 +154,14 @@ object BattleHelper {
             else attackValue -= (attacksToKill * 5).toInt()
         } else if (civilianUnit != null) {
             attackValue = 50
-            // Only melee units should really attack/capture civilian units, ranged units take more than one turn
-            if (attacker.baseUnit.isMelee()) {
+            // Only melee units should really attack/capture civilian units, ranged units may be able to capture by moving
+            if (attacker.baseUnit.isMelee() || attacker.movement.canReachInCurrentTurn(attackTile.tileToAttack)) {
                 if (civilianUnit.isGreatPerson()) {
                     attackValue += 150
                 }
                 if (civilianUnit.hasUnique(UniqueType.FoundCity)) attackValue += 60
+            } else if (attacker.baseUnit.isRanged() && !civilianUnit.hasUnique(UniqueType.Uncapturable)) {
+                return 10 // Don't shoot civilians that we can capture!
             }
         }
         // Prioritise closer units as they are generally more threatening to this unit

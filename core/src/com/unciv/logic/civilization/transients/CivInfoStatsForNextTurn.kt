@@ -285,13 +285,13 @@ class CivInfoStatsForNextTurn(val civInfo: Civilization) {
         val statMap = StatMap()
         if (civInfo.religionManager.religion != null) {
             for (unique in civInfo.religionManager.religion!!.getFounderUniques()) {
-                if (unique.isOfType(UniqueType.StatsFromGlobalCitiesFollowingReligion)) {
+                if (unique.type == UniqueType.StatsFromGlobalCitiesFollowingReligion) {
                     statMap.add(
                         "Religion",
                         unique.stats * civInfo.religionManager.numberOfCitiesFollowingThisReligion()
                     )
                 }
-                if (unique.isOfType(UniqueType.StatsFromGlobalFollowers))
+                if (unique.type == UniqueType.StatsFromGlobalFollowers)
                     statMap.add(
                         "Religion",
                         unique.stats * civInfo.religionManager.numberOfFollowersFollowingThisReligion(

@@ -958,6 +958,9 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "Only available"
 	Applicable to: Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, Promotion, Improvement, Ruins
 
+??? example  "Unavailable"
+	Applicable to: Tech, Policy, Building, Unit, Promotion, Improvement, Ruins
+
 ??? example  "Cannot be hurried"
 	Applicable to: Tech, Building
 
@@ -1776,9 +1779,6 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Ruins
 
-??? example  "Hidden after generating a Great Prophet"
-	Applicable to: Ruins
-
 ## CityState uniques
 ??? example  "Provides military units every ≈[amount] turns"
 	Example: "Provides military units every ≈[3] turns"
@@ -1932,6 +1932,9 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Conditional
 
 ??? example  "&lt;after enhancing a religion&gt;"
+	Applicable to: Conditional
+
+??? example  "&lt;after generating a Great Prophet&gt;"
 	Applicable to: Conditional
 
 ??? example  "&lt;if [buildingFilter] is constructed&gt;"

@@ -11,6 +11,13 @@ sourceSets {
     }
 }
 
+kotlin {
+    jvmToolchain(11)
+}
+java {
+    targetCompatibility = JavaVersion.VERSION_11
+}
+
 dependencies {
     // See https://libgdx.com/news/2021/07/devlog-7-lwjgl3#do-i-need-to-do-anything-else
     api("com.badlogicgames.gdx:gdx-lwjgl3-glfw-awt-macos:$gdxVersion")

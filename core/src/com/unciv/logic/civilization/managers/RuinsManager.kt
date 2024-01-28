@@ -63,8 +63,7 @@ class RuinsManager(
             for (unique in possibleReward.uniqueObjects) {
                 atLeastOneUniqueHadEffect =
                     atLeastOneUniqueHadEffect
-                    || UniqueTriggerActivation.triggerCivwideUnique(unique, civInfo, tile = triggeringUnit.getTile(), notification = possibleReward.notification, triggerNotificationText = "from the ruins")
-                    || UniqueTriggerActivation.triggerUnitwideUnique(unique, triggeringUnit, notification = possibleReward.notification)
+                    || UniqueTriggerActivation.triggerUnique(unique, triggeringUnit, notification = possibleReward.notification)
             }
             if (atLeastOneUniqueHadEffect) {
                 rememberReward(possibleReward.name)

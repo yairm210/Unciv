@@ -475,7 +475,7 @@ class Civilization : IsPartOfGameInfoSerialization {
         yieldAll(cityStateFunctions.getUniquesProvidedByCityStates(uniqueType, stateForConditionals))
         if (religionManager.religion != null)
             yieldAll(religionManager.religion!!.getFounderUniques()
-                .filter { it.isOfType(uniqueType) && it.conditionalsApply(stateForConditionals) })
+                .filter { it.type == uniqueType && it.conditionalsApply(stateForConditionals) })
 
         yieldAll(getCivResourceSupply().asSequence()
             .filter { it.amount > 0 }
@@ -809,8 +809,8 @@ class Civilization : IsPartOfGameInfoSerialization {
     }
     // endregion
 
-    fun addCity(location: Vector2) {
-        val newCity = CityFounder().foundCity(this, location)
+    fun addCity(location: Vector2, unit: MapUnit? = null) {
+        val newCity = CityFounder().foundCity(this, location, unit)
         newCity.cityConstructions.chooseNextConstruction()
     }
 

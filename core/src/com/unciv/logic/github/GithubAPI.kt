@@ -6,6 +6,13 @@ import com.unciv.json.json
  *  "Namespace" collects all Github API structural knowledge
  *  - Response schema
  *  - Query URL builders
+ *
+ *  ### Collected doc links:
+ *  - https://docs.github.com/en/repositories/working-with-files/using-files/downloading-source-code-archives#source-code-archive-urls
+ *  - https://docs.github.com/en/rest/reference/search#search-repositories--code-samples
+ *  - https://docs.github.com/en/rest/repos/repos
+ *  - https://docs.github.com/en/rest/releases/releases
+ *  - https://docs.github.com/en/rest/git/trees#get-a-tree
  */
 @Suppress("PropertyName")  // We're declaring an external API schema
 object GithubAPI {
@@ -29,6 +36,7 @@ object GithubAPI {
     private fun Repo.getUrlForReleaseZip() = "$html_url/archive/refs/tags/$release_tag.zip"
 
     /** Format a URL to query a repo tree - to calculate actual size */
+    // It's hard to see in the doc this not only accepts a commit SHA, but either branch (used here) or tag names too
     internal fun Repo.getUrlForTreeQuery() =
         "https://api.github.com/repos/$full_name/git/trees/$default_branch?recursive=true"
 

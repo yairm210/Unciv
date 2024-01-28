@@ -17,22 +17,26 @@ object ModOptionsConstants {
 }
 
 class ModOptions : IHasUniques {
-    override var name = "ModOptions"
-
+    //region Modder choices
     var isBaseRuleset = false
     var techsToRemove = HashSet<String>()
     var buildingsToRemove = HashSet<String>()
     var unitsToRemove = HashSet<String>()
     var nationsToRemove = HashSet<String>()
+    val constants = ModConstants()
+    //endregion
 
-
-    var lastUpdated = ""
+    //region Metadata, automatic
     var modUrl = ""
     var defaultBranch = "master"
     var author = ""
+    var lastUpdated = ""
     var modSize = 0
     var topics = mutableListOf<String>()
+    //endregion
 
+    //region IHasUniques
+    override var name = "ModOptions"
     override var uniques = ArrayList<String>()
 
     @delegate:Transient
@@ -41,6 +45,5 @@ class ModOptions : IHasUniques {
     override val uniqueMap: UniqueMap by lazy(::uniqueMapProvider)
 
     override fun getUniqueTarget() = UniqueTarget.ModOptions
-
-    val constants = ModConstants()
+    //endregion
 }

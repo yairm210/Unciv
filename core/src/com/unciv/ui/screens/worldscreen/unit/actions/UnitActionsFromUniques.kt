@@ -54,7 +54,7 @@ object UnitActionsFromUniques {
         val foundAction = {
             if (unit.civ.playerType != PlayerType.AI)
                 UncivGame.Current.settings.addCompletedTutorialTask("Found city")
-            unit.civ.addCity(tile.position)
+            unit.civ.addCity(tile.position, unit)
 
             if (hasActionModifiers) UnitActionModifiers.activateSideEffects(unit, unique)
             else unit.destroy()
@@ -170,7 +170,7 @@ object UnitActionsFromUniques {
             if (!unique.conditionalsApply(StateForConditionals(civInfo = unit.civ, unit = unit, tile = unit.currentTile))) continue
             if (!UnitActionModifiers.canUse(unit, unique)) continue
 
-            val baseTitle = if (unique.isOfType(UniqueType.OneTimeEnterGoldenAgeTurns))
+            val baseTitle = if (unique.type == UniqueType.OneTimeEnterGoldenAgeTurns)
                 unique.placeholderText.fillPlaceholders(
                     unit.civ.goldenAges.calculateGoldenAgeLength(
                         unique.params[0].toInt()).toString())
@@ -178,7 +178,7 @@ object UnitActionsFromUniques {
             val title = UnitActionModifiers.actionTextWithSideEffects(baseTitle, unique, unit)
 
             yield(UnitAction(UnitActionType.TriggerUnique, title) {
-                UniqueTriggerActivation.triggerUnitwideUnique(unique, unit)
+                UniqueTriggerActivation.triggerUnique(unique, unit)
                 UnitActionModifiers.activateSideEffects(unit, unique)
             })
         }
@@ -236,8 +236,7 @@ object UnitActionsFromUniques {
                 if (tile.improvementFunctions.getImprovementBuildingProblems(improvement, unit.civ).any { it.permanent })
                     continue
 
-                val resourcesAvailable = improvement.uniqueObjects.none { improvementUnique ->
-                    improvementUnique.isOfType(UniqueType.ConsumesResources) &&
+                val resourcesAvailable = improvement.getMatchingUniques(UniqueType.ConsumesResources).none { improvementUnique ->
                         (civResources[improvementUnique.params[1]] ?: 0) < improvementUnique.params[0].toInt()
                 }
 

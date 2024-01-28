@@ -299,11 +299,11 @@ class TechManager : IsPartOfGameInfoSerialization {
         val triggerNotificationText = "due to researching [$techName]"
         for (unique in newTech.uniqueObjects)
             if (!unique.hasTriggerConditional() && unique.conditionalsApply(StateForConditionals(civInfo)))
-                UniqueTriggerActivation.triggerCivwideUnique(unique, civInfo, triggerNotificationText = triggerNotificationText)
+                UniqueTriggerActivation.triggerUnique(unique, civInfo, triggerNotificationText = triggerNotificationText)
 
         for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponResearch))
             if (unique.conditionals.any {it.type == UniqueType.TriggerUponResearch && it.params[0] == techName})
-                UniqueTriggerActivation.triggerCivwideUnique(unique, civInfo, triggerNotificationText = triggerNotificationText)
+                UniqueTriggerActivation.triggerUnique(unique, civInfo, triggerNotificationText = triggerNotificationText)
 
 
         val revealedResources = getRuleset().tileResources.values.filter { techName == it.revealedBy }
@@ -440,7 +440,7 @@ class TechManager : IsPartOfGameInfoSerialization {
             for (era in erasPassed)
                 for (unique in era.uniqueObjects)
                     if (!unique.hasTriggerConditional() && unique.conditionalsApply(StateForConditionals(civInfo)))
-                        UniqueTriggerActivation.triggerCivwideUnique(
+                        UniqueTriggerActivation.triggerUnique(
                             unique,
                             civInfo,
                             triggerNotificationText = "due to entering the [${era.name}]"
@@ -450,7 +450,7 @@ class TechManager : IsPartOfGameInfoSerialization {
             for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponEnteringEra))
                 for (eraName in eraNames)
                     if (unique.conditionals.any { it.type == UniqueType.TriggerUponEnteringEra && it.params[0] == eraName })
-                        UniqueTriggerActivation.triggerCivwideUnique(
+                        UniqueTriggerActivation.triggerUnique(
                             unique,
                             civInfo,
                             triggerNotificationText = "due to entering the [$eraName]"

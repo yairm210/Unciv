@@ -64,7 +64,7 @@
     {
         "name": "an ancient prophecy",
         "notification": "We have found an ancient prophecy in the ruins, greatly increasing our spiritual connection! (+[faithAmount] Faith)",
-        "uniques": ["Hidden when religion is disabled", "Gain enough Faith for [33]% of a Great Prophet", "Hidden after generating a Great Prophet",
+        "uniques": ["Hidden when religion is disabled", "Gain enough Faith for [33]% of a Great Prophet", "Unavailable <after generating a Great Prophet>",
             "Only available <after founding a Pantheon>", "Only available <after [20] turns>"],
 		"color": "#CDDDF4"
     }

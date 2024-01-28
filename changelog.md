@@ -1,3 +1,38 @@
+## 4.10.4
+
+Modding:
+- New tileFilter `your`, for tiles belonging directly to you
+- Mods can use the Hills and mountains distribution uniques on Land or Feature terrains
+
+By SomeTroglodyte:
+- World screen resize delayed
+- Unit actions dynamic paging
+- Minor Mod manager fix, lints and dox
+
+By tuvus:
+- Workers now build forts
+- Worker automation option fix
+- Ranged units capture civilian
+- Spectators can now see selected civ city-state influence bars
+
+Unify unit and civ triggers  - By SeventhM
+
+## 4.10.3
+
+Modding:
+- Add "Unavailable" unique (counterpart to Only Available)
+- Unified resource generation checks to include all uniques always
+- 'not shown on world screen' unique accepts civ conditionals
+- Added adjacency conditionals
+- CityCombatant.matchesFilter contains multifilter and civ filter
+
+By tuvus:
+- Air unit automation improvement
+- Espionage automation
+
+By SeventhM:
+- Fix errors when starting games as Maya
+
 ## 4.10.2
 
 By SeventhM:

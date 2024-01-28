@@ -38,7 +38,7 @@ class TileStatFunctions(val tile: Tile) {
 
         val percentageStats = getTilePercentageStats(observingCiv, city, localUniqueCache)
         for (stats in statsBreakdown) {
-            val tileType = when(stats.first) {
+            val tileType = when (stats.first) {
                 improvement -> "Improvement"
                 road.name -> "Road"
                 else -> "Terrain"
@@ -121,11 +121,12 @@ class TileStatFunctions(val tile: Tile) {
         val statsFromMinimum = missingFromMinimum(listOfStats.toStats(), minimumStats)
         listOfStats.add("Minimum" to statsFromMinimum)
 
-        if (observingCiv != null && 
+        if (observingCiv != null &&
             listOfStats.toStats().gold != 0f && observingCiv.goldenAges.isGoldenAge())
             listOfStats.add("Golden Age" to Stats(gold = 1f))
 
-        return listOfStats.filter { !it.second.isEmpty() }
+        // To ensure that the original stats (in uniques, terrains, etc) are not modified in getTileStats, we clone them all
+        return listOfStats.filter { !it.second.isEmpty() }.map { it.first to it.second.clone() }
     }
 
     /** Ensures each stat is >= [other].stat - modifies in place */
@@ -180,7 +181,7 @@ class TileStatFunctions(val tile: Tile) {
 
         val road = tile.getUnpillagedRoadImprovement()
         val roadStats = Stats()
-        
+
         fun addStats(filter: String, stat: Stat, amount: Float) {
             if (tile.matchesFilter(filter, observingCiv, true))
                 terrainStats.add(stat, amount)

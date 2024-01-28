@@ -679,8 +679,8 @@ class MapRegions (val ruleset: Ruleset) {
         // As usual, if there are any relevant json definitions, assume they are complete
         val fallbackStrategic = ruleset.tileResources.values.none {
             it.resourceType == ResourceType.Strategic &&
-                    it.uniqueObjects.any { unique -> unique.isOfType(UniqueType.ResourceWeighting) } ||
-                    it.uniqueObjects.any { unique -> unique.isOfType(UniqueType.MinorDepositWeighting) }
+                    it.hasUnique(UniqueType.ResourceWeighting) ||
+                    it.hasUnique(UniqueType.MinorDepositWeighting)
         }
         /* There are a couple competing/complementary distribution systems at work here. First, major
            deposits are placed according to a frequency defined in the terrains themselves, for each
@@ -710,15 +710,16 @@ class MapRegions (val ruleset: Ruleset) {
         for (resource in ruleset.tileResources.values.filter {
             it.resourceType == ResourceType.Strategic ||
             it.resourceType == ResourceType.Bonus }) {
+
             for (rule in resource.uniqueObjects.filter { unique ->
-                unique.isOfType(UniqueType.ResourceFrequency) ||
-                unique.isOfType(UniqueType.ResourceWeighting) ||
-                unique.isOfType(UniqueType.MinorDepositWeighting) }) {
+                unique.type == UniqueType.ResourceFrequency ||
+                unique.type == UniqueType.ResourceWeighting ||
+                unique.type == UniqueType.MinorDepositWeighting }) {
                 // Weed out some clearly impossible rules straight away to save time later
                 if (rule.conditionals.any { conditional ->
-                        (conditional.isOfType(UniqueType.ConditionalOnWaterMaps) && !usingArchipelagoRegions) ||
-                        (conditional.isOfType(UniqueType.ConditionalInRegionOfType) && regions.none { region -> region.type == conditional.params[0] }) ||
-                        (conditional.isOfType(UniqueType.ConditionalInRegionExceptOfType) && regions.all { region -> region.type == conditional.params[0] })
+                        (conditional.type == UniqueType.ConditionalOnWaterMaps && !usingArchipelagoRegions) ||
+                        (conditional.type == UniqueType.ConditionalInRegionOfType && regions.none { region -> region.type == conditional.params[0] }) ||
+                        (conditional.type == UniqueType.ConditionalInRegionExceptOfType && regions.all { region -> region.type == conditional.params[0] })
                     } )
                     continue
                 val simpleRule = anonymizeUnique(rule)

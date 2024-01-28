@@ -82,11 +82,11 @@ class UnitManager(val civInfo:Civilization) {
             val triggerNotificationText = "due to gaining a [${unit.name}]"
             for (unique in unit.getUniques())
                 if (!unique.hasTriggerConditional() && unique.conditionalsApply(StateForConditionals(civInfo, unit = unit)))
-                    UniqueTriggerActivation.triggerUnitwideUnique(unique, unit, triggerNotificationText = triggerNotificationText)
+                    UniqueTriggerActivation.triggerUnique(unique, unit, triggerNotificationText = triggerNotificationText)
             for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponGainingUnit))
-                if (unique.conditionals.any { it.isOfType(UniqueType.TriggerUponGainingUnit) &&
+                if (unique.conditionals.any { it.type == UniqueType.TriggerUponGainingUnit &&
                         unit.matchesFilter(it.params[0]) })
-                    UniqueTriggerActivation.triggerCivwideUnique(unique, civInfo, triggerNotificationText = triggerNotificationText)
+                    UniqueTriggerActivation.triggerUnique(unique, unit, triggerNotificationText = triggerNotificationText)
             if (unit.getResourceRequirementsPerTurn().isNotEmpty())
                 civInfo.cache.updateCivResources()
 

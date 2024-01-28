@@ -664,7 +664,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
                                     && tile.matchesFilter(it.params[0], civ)
                             } && unique.conditionalsApply(state)
                         )
-                            UniqueTriggerActivation.triggerUnitwideUnique(unique, this)
+                            UniqueTriggerActivation.triggerUnique(unique, this)
                     }
                 }
             }

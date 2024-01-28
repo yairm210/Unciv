@@ -38,8 +38,8 @@ open class Policy : RulesetObject() {
         return (if (policyBranchType == PolicyBranchType.Member) name.tr() + "\n" else "") +
             uniqueObjects.filterNot {
                 it.isHiddenToUsers()
-                    || it.isOfType(UniqueType.OnlyAvailable)
-                    || it.isOfType(UniqueType.OneTimeGlobalAlert)
+                    || it.type == UniqueType.OnlyAvailable
+                    || it.type == UniqueType.OneTimeGlobalAlert
             }
             .joinToString("\n") { "• ${it.text.tr()}" }
     }
