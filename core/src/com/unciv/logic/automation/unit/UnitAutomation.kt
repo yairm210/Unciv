@@ -496,6 +496,7 @@ object UnitAutomation {
 
     private fun chooseBombardTarget(city: City): ICombatant? {
         var targets = TargetHelper.getBombardableTiles(city).map { Battle.getMapCombatantOfTile(it)!! }
+            .filterNot { it.isCivilian() && !it.getUnitType().hasUnique(UniqueType.Uncapturable) } // Don't bombard capturable civilians
         if (targets.none()) return null
 
         val siegeUnits = targets
