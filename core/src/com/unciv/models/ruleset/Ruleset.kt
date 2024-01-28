@@ -70,8 +70,24 @@ class Ruleset {
     var victories = LinkedHashMap<String, Victory>()
     var cityStateTypes = LinkedHashMap<String, CityStateType>()
 
-    val greatGeneralUnits by lazy { 
+    val greatGeneralUnits by lazy {
         units.values.filter { it.hasUnique(UniqueType.GreatPersonFromCombat, StateForConditionals.IgnoreConditionals) }
+    }
+
+    /** Contains all happiness levels that moving *from* them, to one *below* them, can change uniques that apply */
+    val allHappinessLevelsThatAffectUniques by lazy {
+        sequence {
+            for (rulesetObject in (units.values + terrains.values + buildings.values + technologies.values + eras.values
+                + beliefs.values + unitPromotions.values + tileResources.values + policies.values + tileImprovements.values + globalUniques))
+                for (unique in rulesetObject.uniqueObjects)
+                    for (conditional in unique.conditionals){
+                        if (conditional.type == UniqueType.ConditionalBelowHappiness) yield(conditional.params[0].toInt())
+                        if (conditional.type == UniqueType.ConditionalBetweenHappiness){
+                            yield(conditional.params[0].toInt())
+                            yield(conditional.params[1].toInt() + 1)
+                        }
+                    }
+        }.toList()
     }
 
     val mods = LinkedHashSet<String>()
