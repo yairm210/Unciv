@@ -170,11 +170,22 @@ object UnitActionsFromUniques {
             if (!unique.conditionalsApply(StateForConditionals(civInfo = unit.civ, unit = unit, tile = unit.currentTile))) continue
             if (!UnitActionModifiers.canUse(unit, unique)) continue
 
-            val baseTitle = if (unique.type == UniqueType.OneTimeEnterGoldenAgeTurns)
-                unique.placeholderText.fillPlaceholders(
-                    unit.civ.goldenAges.calculateGoldenAgeLength(
-                        unique.params[0].toInt()).toString())
-            else unique.text.removeConditionals()
+            val baseTitle = when (unique.type) {
+                UniqueType.OneTimeEnterGoldenAgeTurns -> {
+                    unique.placeholderText.fillPlaceholders(
+                        unit.civ.goldenAges.calculateGoldenAgeLength(
+                            unique.params[0].toInt()).toString())
+                    }
+                UniqueType.OneTimeGainStatSpeed -> {
+                    val stat = unique.params[1]
+                    val modifier = unit.civ.gameInfo.speed.statCostModifiers[Stat.safeValueOf(stat)]
+                        ?: unit.civ.gameInfo.speed.modifier
+                    UniqueType.OneTimeGainStat.placeholderText.fillPlaceholders(
+                        (unique.params[0].toInt() * modifier).toString(), stat
+                    )
+                }
+                else -> unique.text.removeConditionals()
+            }
             val title = UnitActionModifiers.actionTextWithSideEffects(baseTitle, unique, unit)
 
             yield(UnitAction(UnitActionType.TriggerUnique, title) {
