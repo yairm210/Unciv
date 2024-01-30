@@ -179,6 +179,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
         toReturn.health = health
         toReturn.action = action
         toReturn.automated = automated
+        toReturn.escorting = escorting
         toReturn.automatedRoadConnectionDestination = automatedRoadConnectionDestination
         toReturn.automatedRoadConnectionPath = automatedRoadConnectionPath
         toReturn.attacksThisTurn = attacksThisTurn
