@@ -169,7 +169,15 @@ object Conditionals {
                 checkOnGameInfo { getCities().any { it.cityConstructions.containsBuildingOrEquivalent(condition.params[0]) } }
 
             // Filtered via city.getMatchingUniques
-            UniqueType.ConditionalInThisCity -> true
+            UniqueType.ConditionalInThisCity -> relevantCity != null
+            UniqueType.ConditionalCityFilter -> checkOnCity { matchesFilter(condition.params[0]), relevantCiv }
+            UniqueType.ConditionalCityConnected -> checkOnCity { isConnectedToCapital() }
+            UniqueType.ConditionalCityMajorReligion -> checkOnCity {
+                religion.getMajorityReligion()?.isMajorReligion() == true }
+            UniqueType.ConditionalCityEnhancedReligion -> checkOnCity {
+                religion.getMajorityReligion()?.isEnhancedReligion() == true }
+            UniqueType.ConditionalCityThisReligion -> checkOnCity {
+                religion.getMajorityReligion() == relevantCiv?.religionManager?.religion }
             UniqueType.ConditionalWLTKD -> checkOnCity { isWeLoveTheKingDayActive() }
             UniqueType.ConditionalCityWithBuilding ->
                 checkOnCity { cityConstructions.containsBuildingOrEquivalent(condition.params[0]) }

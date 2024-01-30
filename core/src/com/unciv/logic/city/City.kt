@@ -480,17 +480,22 @@ class City : IsPartOfGameInfoSerialization {
     }
 
     /** Implements [UniqueParameterType.CityFilter][com.unciv.models.ruleset.unique.UniqueParameterType.CityFilter] */
-    fun matchesFilter(filter: String, viewingCiv: Civilization = civ): Boolean {
+    fun matchesFilter(filter: String, viewingCiv: Civilization? = civ): Boolean {
+        return MultiFilter.multiFilter(filter, { matchesSingleFilter(it, viewingCiv) })
+    }
+
+    private fun matchesSingleFilter(filter: String, viewingCiv: Civilization? = civ): Boolean {
         return when (filter) {
             "in this city" -> true // Filtered by the way uniques are found
-            "in all cities" -> true
-            "in all coastal cities" -> isCoastal()
-            "in capital" -> isCapital()
-            "in all non-occupied cities" -> !cityStats.hasExtraAnnexUnhappiness() || isPuppet
+            "in all cities", "All" -> true
+            "in your cities", "Your" -> viewingCiv == civ
+            "in all coastal cities", "Coastal" -> isCoastal()
+            "in capital", "Capital" -> isCapital()
+            "in all non-occupied cities", "Non-occupied" -> !cityStats.hasExtraAnnexUnhappiness() || isPuppet
             "in all cities with a world wonder" -> cityConstructions.getBuiltBuildings()
                 .any { it.isWonder }
             "in all cities connected to capital" -> isConnectedToCapital()
-            "in all cities with a garrison" -> isGarrisoned()
+            "in all cities with a garrison", "Garrisoned" -> isGarrisoned()
             "in all cities in which the majority religion is a major religion" ->
                 religion.getMajorityReligionName() != null
                 && religion.getMajorityReligion()!!.isMajorReligion()
@@ -499,17 +504,19 @@ class City : IsPartOfGameInfoSerialization {
                 && religion.getMajorityReligion()!!.isEnhancedReligion()
             "in non-enemy foreign cities" ->
                 viewingCiv != civ
-                && !civ.isAtWarWith(viewingCiv)
-            "in foreign cities" -> viewingCiv != civ
-            "in annexed cities" -> foundingCiv != civ.civName && !isPuppet
-            "in puppeted cities" -> isPuppet
-            "in holy cities" -> isHolyCity()
+                && !civ.isAtWarWith(viewingCiv ?: civ)
+            "in enemy cities", "Enemy" -> civ.isAtWarWith(viewingCiv ?: civ)
+            "in foreign cities", "Foreign" -> viewingCiv != civ
+            "in annexed cities", "Annexed" -> foundingCiv != civ.civName && !isPuppet
+            "in puppeted cities", "Puppeted" -> isPuppet
+            "in holy cities", "Holy" -> isHolyCity()
             "in City-State cities" -> civ.isCityState()
             // This is only used in communication to the user indicating that only in cities with this
             // religion a unique is active. However, since religion uniques only come from the city itself,
             // this will always be true when checked.
             "in cities following this religion" -> true
-            else -> false
+            "in cities following our religion" -> viewingCiv?.religionManager?.religion == religion.getMajorityReligion()
+            else -> civ.matchesFilter(filter)
         }
     }
 
