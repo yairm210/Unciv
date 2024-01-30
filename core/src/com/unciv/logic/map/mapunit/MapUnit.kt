@@ -234,13 +234,14 @@ class MapUnit : IsPartOfGameInfoSerialization {
     fun isPreparingAirSweep() = action == UnitActionType.AirSweep.value
     fun isSetUpForSiege() = action == UnitActionType.SetUp.value
 
-    fun isIdle(): Boolean {
+    fun isIdle(escorting: Boolean = true): Boolean {
         if (currentMovement == 0f) return false
         val tile = getTile()
         if (tile.improvementInProgress != null &&
             canBuildImprovement(tile.getTileImprovementInProgress()!!) &&
             !tile.isMarkedForCreatesOneImprovement()
         ) return false
+        if (isEscorting() && escorting && !getOtherEscortUnit()!!.isIdle(false)) return false
         return !(isFortified() || isExploring() || isSleeping() || isAutomated() || isMoving())
     }
 
