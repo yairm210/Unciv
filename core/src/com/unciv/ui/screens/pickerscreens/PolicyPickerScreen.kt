@@ -19,7 +19,6 @@ import com.unciv.models.translations.tr
 import com.unciv.ui.components.extensions.addSeparator
 import com.unciv.ui.components.extensions.center
 import com.unciv.ui.components.extensions.colorFromRGB
-import com.unciv.ui.components.extensions.darken
 import com.unciv.ui.components.extensions.disable
 import com.unciv.ui.components.extensions.enable
 import com.unciv.ui.components.extensions.pad
@@ -44,24 +43,32 @@ import kotlin.math.min
 private enum class PolicyColors(
     val default: Color
 ) {
-    PolicyPickable(colorFromRGB(47,67,92).darken(0.3f)),
-    PolicyNotPickable(colorFromRGB(20, 20, 20)),
-    PolicyAdopted(colorFromRGB(10,90,100).darken(0.8f)),
-    PolicySelected(colorFromRGB(37,87,82)),
-    //todo Policy button icon colors
-    //todo Differentiate NotPickable and Adopted selected/unselected
+    // The getUIColor comments are picked up by UiElementDocsWriter, the actual call is not.
+    ButtonBGPickable(colorFromRGB(32,46,64)),             // getUIColor("PolicyScreen/Colors/ButtonBGPickable", colorFromRGB(32,46,64))
+    ButtonBGPickableSelected(colorFromRGB(37,87,82)),     // getUIColor("PolicyScreen/Colors/ButtonBGPickableSelected", colorFromRGB(37,87,82))
+    ButtonBGNotPickable(colorFromRGB(20,20,20)),          // getUIColor("PolicyScreen/Colors/ButtonBGNotPickable", colorFromRGB(20,20,20))
+    ButtonBGNotPickableSelected(colorFromRGB(20,20,20)),  // getUIColor("PolicyScreen/Colors/ButtonBGNotPickableSelected", colorFromRGB(20,20,20))
+    ButtonBGAdopted(colorFromRGB(1,17,19)),               // getUIColor("PolicyScreen/Colors/ButtonBGAdopted", colorFromRGB(1,17,19))
+    ButtonBGAdoptedSelected(colorFromRGB(1,17,19)),       // getUIColor("PolicyScreen/Colors/ButtonBGAdoptedSelected", colorFromRGB(1,17,19))
 
-    BranchCompleted(colorFromRGB(255, 205, 0)),
-    BranchNotAdopted(colorFromRGB(10,90,130).darken(0.5f)),
-    BranchAdopted(colorFromRGB(100, 90, 10).darken(0.5f)),
+    ButtonIconPickable(Color.WHITE),                              // getUIColor("PolicyScreen/Colors/ButtonIconPickable", Color.WHITE)
+    ButtonIconPickableSelected(Color.WHITE),                      // getUIColor("PolicyScreen/Colors/ButtonIconPickableSelected", Color.WHITE)
+    ButtonIconNotPickable(Color.valueOf("ffffff33")),         // getUIColor("PolicyScreen/Colors/ButtonIconNotPickable", Color(0xffffff33))
+    ButtonIconNotPickableSelected(Color.valueOf("ffffff33")), // getUIColor("PolicyScreen/Colors/ButtonIconNotPickableSelected", Color(0xffffff33))
+    ButtonIconAdopted(Color.GOLD),                                // getUIColor("PolicyScreen/Colors/ButtonIconAdopted", Color.GOLD)
+    ButtonIconAdoptedSelected(Color.GOLD),                        // getUIColor("PolicyScreen/Colors/ButtonIconAdoptedSelected", Color.GOLD)
 
-    BranchHeader(colorFromRGB(47,90,92)),
+    BranchBGCompleted(colorFromRGB(255,205,0)),           // getUIColor("PolicyScreen/Colors/BranchBGCompleted", colorFromRGB(255,205,0))
+    BranchBGNotAdopted(colorFromRGB(5,45,65)),            // getUIColor("PolicyScreen/Colors/BranchBGNotAdopted", colorFromRGB(5,45,65))
+    BranchBGAdopted(colorFromRGB(50,45,5)),               // getUIColor("PolicyScreen/Colors/BranchBGAdopted", colorFromRGB(50,45,5))
 
-    BranchLabelAdopted(colorFromRGB(150, 70, 40)),
-    //todo BranchLabel is default white when pickable, a=0.5 grey when not
+    BranchHeaderBG(colorFromRGB(47,90,92)),               // getUIColor("PolicyScreen/Colors/BranchHeaderBG", colorFromRGB(47,90,92))
+
+    BranchLabelAdopted(colorFromRGB(150,70,40)),          // getUIColor("PolicyScreen/Colors/BranchLabelAdopted", colorFromRGB(150,70,40))
+    BranchLabelPickable(Color.WHITE),                              // getUIColor("PolicyScreen/Colors/BranchLabelPickable", Color.WHITE)
+    BranchLabelNotPickable(Color.valueOf("ffffff7f")),        // getUIColor("PolicyScreen/Colors/BranchLabelNotPickable", Color(0xffffff7f))
 
     ;
-    //todo This is neat, but the auto doc writer won't pick it up correctly
     val color get() = BaseScreen.skinStrings.getUIColor("PolicyScreen/Colors/$name", default)
 }
 
@@ -115,20 +122,22 @@ private class PolicyButton(viewingCiv: Civilization, canChangeState: Boolean, va
     }
 
     private fun updateState() {
-        bgColor = when {
-            isSelected && isPickable -> PolicyColors.PolicySelected
-            isPickable -> PolicyColors.PolicyPickable
-
-            isAdopted -> {
-                icon.color = Color.GOLD.cpy()
-                PolicyColors.PolicyAdopted
-            }
-
-            else -> {
-                icon.color.a = 0.2f
-                PolicyColors.PolicyNotPickable
-            }
-        }.color
+        val colors = when {
+            isSelected && isPickable ->
+                PolicyColors.ButtonBGPickableSelected to PolicyColors.ButtonIconPickableSelected
+            isPickable ->
+                PolicyColors.ButtonBGPickable to PolicyColors.ButtonIconPickable
+            isSelected && isAdopted ->
+                PolicyColors.ButtonBGAdoptedSelected to PolicyColors.ButtonIconAdoptedSelected
+            isAdopted ->
+                PolicyColors.ButtonBGAdopted to PolicyColors.ButtonIconAdopted
+            isSelected ->
+                PolicyColors.ButtonBGNotPickableSelected to PolicyColors.ButtonIconNotPickableSelected
+            else ->
+                PolicyColors.ButtonBGNotPickable to PolicyColors.ButtonIconNotPickable
+        }
+        bgColor = colors.first.color
+        icon.color = colors.second.color
     }
 }
 
@@ -284,7 +293,7 @@ class PolicyPickerScreen(
 
             // Main table
             bgColor = if (viewingCiv.policies.isAdopted(branch.name))
-                PolicyColors.BranchAdopted.color else PolicyColors.BranchNotAdopted.color
+                PolicyColors.BranchBGAdopted.color else PolicyColors.BranchBGNotAdopted.color
 
             // Header
             add(header).growX().row()
@@ -521,7 +530,7 @@ class PolicyPickerScreen(
 
     private fun getBranchHeader(branch: PolicyBranch): Table {
         val header = BorderedTable(path = "PolicyScreen/PolicyBranchHeader")
-        header.bgColor = PolicyColors.BranchHeader.color
+        header.bgColor = PolicyColors.BranchHeaderBG.color
         header.borderSize = 5f
         header.pad(10f)
 
@@ -556,7 +565,7 @@ class PolicyPickerScreen(
         var percentage = 0f
 
         val lockIcon = ImageGetter.getImage("OtherIcons/LockSmall")
-            .apply { color = Color.WHITE.cpy() }.toGroup(15f)
+            .apply { color = Color.WHITE }.toGroup(15f)
 
 
         if (viewingCiv.policies.isAdopted(branch.name)) {
@@ -579,17 +588,12 @@ class PolicyPickerScreen(
         val label = text.toLabel(fontSize = 14)
         label.setAlignment(Align.center)
 
-        val color = when {
-            isPickable -> PolicyColors.PolicyPickable
-            else -> PolicyColors.PolicyNotPickable
+        label.color = when {
+            isAdoptedBranch -> PolicyColors.BranchLabelAdopted
+            isPickable -> PolicyColors.BranchLabelPickable
+            else -> PolicyColors.BranchLabelNotPickable
         }.color
-
-        if (isAdoptedBranch)
-            label.color = PolicyColors.BranchLabelAdopted.color
-        else if (!isPickable)
-            label.color.a = 0.5f
-        else
-            lockIcon.isVisible = false
+        lockIcon.isVisible = !isPickable && !isAdoptedBranch
 
         val table = object : BorderedTable(
             path="PolicyScreen/PolicyBranchAdoptButton",
@@ -603,7 +607,7 @@ class PolicyPickerScreen(
                     progress = Image(
                         skinStrings.getUiBackground("",
                             skinStrings.roundedEdgeRectangleSmallShape,
-                            tintColor = PolicyColors.BranchCompleted.color
+                            tintColor = PolicyColors.BranchBGCompleted.color
                         )
                     )
                     progress!!.setSize(this.width * percentage, this.height)
@@ -618,7 +622,10 @@ class PolicyPickerScreen(
             }
 
         }
-        table.bgColor = color
+        table.bgColor = when {
+            isPickable -> PolicyColors.ButtonBGPickable
+            else -> PolicyColors.ButtonBGNotPickable
+        }.color
         table.borderSize = 3f
 
         table.add(label).minHeight(30f).minWidth(150f).growX()
