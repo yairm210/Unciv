@@ -181,7 +181,7 @@ object UnitActionsFromUniques {
                     val modifier = unit.civ.gameInfo.speed.statCostModifiers[Stat.safeValueOf(stat)]
                         ?: unit.civ.gameInfo.speed.modifier
                     UniqueType.OneTimeGainStat.placeholderText.fillPlaceholders(
-                        (unique.params[0].toInt() * modifier).toString(), stat
+                        (unique.params[0].toInt() * modifier).toInt().toString(), stat
                     )
                 }
                 else -> unique.text.removeConditionals()
