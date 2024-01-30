@@ -17,6 +17,7 @@ import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unique.UniqueType
+import com.unciv.models.stats.Stat
 import com.unciv.models.translations.fillPlaceholders
 import com.unciv.models.translations.removeConditionals
 import com.unciv.models.translations.tr
@@ -170,11 +171,32 @@ object UnitActionsFromUniques {
             if (!unique.conditionalsApply(StateForConditionals(civInfo = unit.civ, unit = unit, tile = unit.currentTile))) continue
             if (!UnitActionModifiers.canUse(unit, unique)) continue
 
-            val baseTitle = if (unique.type == UniqueType.OneTimeEnterGoldenAgeTurns)
-                unique.placeholderText.fillPlaceholders(
-                    unit.civ.goldenAges.calculateGoldenAgeLength(
-                        unique.params[0].toInt()).toString())
-            else unique.text.removeConditionals()
+            val baseTitle = when (unique.type) {
+                UniqueType.OneTimeEnterGoldenAgeTurns -> {
+                    unique.placeholderText.fillPlaceholders(
+                        unit.civ.goldenAges.calculateGoldenAgeLength(
+                            unique.params[0].toInt()).toString())
+                    }
+                UniqueType.OneTimeGainStatSpeed -> {
+                    val stat = unique.params[1]
+                    val modifier = unit.civ.gameInfo.speed.statCostModifiers[Stat.safeValueOf(stat)]
+                        ?: unit.civ.gameInfo.speed.modifier
+                    UniqueType.OneTimeGainStat.placeholderText.fillPlaceholders(
+                        (unique.params[0].toInt() * modifier).toInt().toString(), stat
+                    )
+                }
+                UniqueType.OneTimeGainStatRange -> {
+                    val stat = unique.params[2]
+                    val modifier = unit.civ.gameInfo.speed.statCostModifiers[Stat.safeValueOf(stat)]
+                        ?: unit.civ.gameInfo.speed.modifier
+                    unique.placeholderText.fillPlaceholders(
+                        (unique.params[0].toInt() * modifier).toInt().toString(),
+                        (unique.params[1].toInt() * modifier).toInt().toString(),
+                        stat
+                    )
+                }
+                else -> unique.text.removeConditionals()
+            }
             val title = UnitActionModifiers.actionTextWithSideEffects(baseTitle, unique, unit)
 
             yield(UnitAction(UnitActionType.TriggerUnique, title) {
