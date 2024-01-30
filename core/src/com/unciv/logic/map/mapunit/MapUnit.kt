@@ -712,6 +712,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
     fun doAction() {
         if (action == null) return
         if (currentMovement == 0f) return  // We've already done stuff this turn, and can't do any more stuff
+        if (isEscorting() && getOtherEscortUnit()!!.currentMovement == 0f) return
 
         val enemyUnitsInWalkingDistance = movement.getDistanceToTiles().keys
             .filter { it.militaryUnit != null && civ.isAtWarWith(it.militaryUnit!!.civ) }
