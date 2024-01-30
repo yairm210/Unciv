@@ -1,3 +1,27 @@
+## 4.10.5
+
+Added 'copy to clipboard' button on map errors so we can debug them
+
+Restrict happiness change updates only to relevant thresholds 
+
+FINALLY
+
+Possible fix for OpenJDK gradle bug with using softlink chicanery
+
+Fix docker jdk to 17
+
+buildMultiplatform.yml - java 17, since that's the min requirement for new gradle version
+
+Gradle 8.2, remove all IOS references due to robovm bug (which we don't use)
+
+By SeventhM:
+- Add additional cityFilters 
+- Fix gain stat modifier by speed unique action text 
+
+By SomeTroglodyte:
+- Fix: Damage average was raw before clamping to health range 
+- RulesetValidator: Raise severity for untyped uniques with parameters 
+
 ## 4.10.4
 
 Modding:
