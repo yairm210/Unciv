@@ -503,10 +503,10 @@ class City : IsPartOfGameInfoSerialization {
                 religion.getMajorityReligionName() != null
                 && religion.getMajorityReligion()!!.isEnhancedReligion()
             "in non-enemy foreign cities" ->
-                viewingCiv != civ
+                viewingCiv != null && viewingCiv != civ
                 && !civ.isAtWarWith(viewingCiv ?: civ)
             "in enemy cities", "Enemy" -> civ.isAtWarWith(viewingCiv ?: civ)
-            "in foreign cities", "Foreign" -> viewingCiv != civ
+            "in foreign cities", "Foreign" -> viewingCiv != null && viewingCiv != civ
             "in annexed cities", "Annexed" -> foundingCiv != civ.civName && !isPuppet
             "in puppeted cities", "Puppeted" -> isPuppet
             "in holy cities", "Holy" -> isHolyCity()
