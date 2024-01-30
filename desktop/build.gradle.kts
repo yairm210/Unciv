@@ -1,3 +1,4 @@
+
 import com.unciv.build.BuildConfig
 import com.unciv.build.BuildConfig.gdxVersion
 
@@ -149,7 +150,7 @@ for (platform in Platform.values()) {
 
             val platformNameForPackrCmd =
                     if (platform == Platform.MacOS) "mac"
-                    else platform.name.toLowerCase()
+                    else platform.name.lowercase()
 
             val command = "java -jar $rootDir/packr-all-4.0.0.jar" +
                     " --platform $platformNameForPackrCmd" +
