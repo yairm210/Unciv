@@ -3,6 +3,7 @@ package com.unciv.logic.city
 import com.badlogic.gdx.math.Vector2
 import com.unciv.GUI
 import com.unciv.logic.IsPartOfGameInfoSerialization
+import com.unciv.logic.MultiFilter
 import com.unciv.logic.city.managers.CityConquestFunctions
 import com.unciv.logic.city.managers.CityEspionageManager
 import com.unciv.logic.city.managers.CityExpansionManager
@@ -511,7 +512,7 @@ class City : IsPartOfGameInfoSerialization {
             "in puppeted cities", "Puppeted" -> isPuppet
             "in holy cities", "Holy" -> isHolyCity()
             "in City-State cities" -> civ.isCityState()
-            // This is only used in communication to the user indicating that only in cities with this
+// This is only used in communication to the user indicating that only in cities with this
             // religion a unique is active. However, since religion uniques only come from the city itself,
             // this will always be true when checked.
             "in cities following this religion" -> true
