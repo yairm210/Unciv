@@ -185,6 +185,16 @@ object UnitActionsFromUniques {
                         (unique.params[0].toInt() * modifier).toInt().toString(), stat
                     )
                 }
+                UniqueType.OneTimeGainStatRange -> {
+                    val stat = unique.params[2]
+                    val modifier = unit.civ.gameInfo.speed.statCostModifiers[Stat.safeValueOf(stat)]
+                        ?: unit.civ.gameInfo.speed.modifier
+                    unique.placeholderText.fillPlaceholders(
+                        (unique.params[0].toInt() * modifier).toInt().toString(),
+                        (unique.params[1].toInt() * modifier).toInt().toString(),
+                        stat
+                    )
+                }
                 else -> unique.text.removeConditionals()
             }
             val title = UnitActionModifiers.actionTextWithSideEffects(baseTitle, unique, unit)
