@@ -17,6 +17,7 @@ import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unique.UniqueType
+import com.unciv.models.stats.Stat
 import com.unciv.models.translations.fillPlaceholders
 import com.unciv.models.translations.removeConditionals
 import com.unciv.models.translations.tr
