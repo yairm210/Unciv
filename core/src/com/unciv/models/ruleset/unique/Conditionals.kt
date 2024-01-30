@@ -170,7 +170,7 @@ object Conditionals {
 
             // Filtered via city.getMatchingUniques
             UniqueType.ConditionalInThisCity -> relevantCity != null
-            UniqueType.ConditionalCityFilter -> checkOnCity { matchesFilter(condition.params[0]), relevantCiv }
+            UniqueType.ConditionalCityFilter -> checkOnCity { matchesFilter(condition.params[0], relevantCiv) }
             UniqueType.ConditionalCityConnected -> checkOnCity { isConnectedToCapital() }
             UniqueType.ConditionalCityMajorReligion -> checkOnCity {
                 religion.getMajorityReligion()?.isMajorReligion() == true }
