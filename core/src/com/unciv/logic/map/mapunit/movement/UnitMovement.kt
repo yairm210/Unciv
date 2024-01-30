@@ -624,7 +624,7 @@ class UnitMovement(val unit: MapUnit) {
      * so multiple callees of this function have been optimized,
      * because optimization on this function results in massive benefits!
      */
-    fun canPassThrough(tile: Tile): Boolean {
+    fun canPassThrough(tile: Tile, escortFormation: Boolean = true): Boolean {
         if (tile.isImpassible()) {
             // special exception - ice tiles are technically impassible, but some units can move through them anyway
             // helicopters can pass through impassable tiles like mountains
@@ -672,7 +672,8 @@ class UnitMovement(val unit: MapUnit) {
             if (unit.civ.isAtWarWith(firstUnit.civ))
                 return false
         }
-
+        if (unit.isEscorting() && escortFormation && !unit.getOtherEscortUnit()!!.movement.canPassThrough(tile,false)) 
+            return false
         return true
     }
 
@@ -697,8 +698,8 @@ class UnitMovement(val unit: MapUnit) {
         pathfindingCache.setDistanceToTiles(considerZoneOfControl, distanceToTiles)
         if (includeEscort && unit.isEscorting()) {
             val escortDistanceToTiles = unit.getOtherEscortUnit()!!.movement
-                .getDistanceToTiles(considerZoneOfControl, passThroughCache, movementCostCache, false).keys.toSet()
-            distanceToTiles.filter { escortDistanceToTiles.contains(it.key) }
+                .getDistanceToTiles(considerZoneOfControl, includeEscort=false)
+            distanceToTiles.removeAllTilesNotInSet(escortDistanceToTiles)
         }
         return distanceToTiles
     }
@@ -834,5 +835,13 @@ class PathsToTilesWithinTurn : LinkedHashMap<Tile, UnitMovement.ParentTileAndTot
             currentTile = get(currentTile)!!.parentTile
         }
         return reversePathList.reversed()
+    }
+    
+    fun removeAllTilesNotInSet(otherPathsToTiles: PathsToTilesWithinTurn) {
+        for (entry in this.toList()) {
+            if (!otherPathsToTiles.contains(entry.first)) {
+                this.remove(entry.first)
+            }
+        }
     }
 }

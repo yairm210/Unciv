@@ -877,6 +877,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
         } else {
             escorting = false
         }
+        movement.clearPathfindingCache()
     }
 
     fun stopEscorting() {
@@ -884,6 +885,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
             getOtherEscortUnit()!!.escorting = false
         }
         escorting = false
+        movement.clearPathfindingCache()
     }
 
     private fun clearEncampment(tile: Tile) {
