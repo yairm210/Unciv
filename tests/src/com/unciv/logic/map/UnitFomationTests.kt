@@ -2,16 +2,11 @@ package com.unciv.logic.map
 
 import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
-import com.unciv.logic.automation.unit.WorkerAutomation
 import com.unciv.logic.civilization.Civilization
-import com.unciv.logic.map.tile.RoadStatus
-import com.unciv.models.UnitActionType
 import com.unciv.testing.GdxTestRunner
 import com.unciv.testing.TestGame
-import com.unciv.ui.screens.worldscreen.unit.actions.UnitActions
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
-import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 
@@ -180,5 +175,24 @@ internal class UnitFormationTests {
         assertTrue(militaryUnit.isEscorting())
         assertTrue(militaryUnit.currentMovement == 2f)
         assertFalse("The unit should not be idle if it's escort has no movement points",militaryUnit.isIdle())
+    }
+
+    @Test
+    fun `getDistanceToTiles when in formation`() {
+        setUp(5)
+        val centerTile = testGame.getTile(Vector2(0f,0f))
+        val civilianUnit = testGame.addUnit("Worker", civInfo, centerTile)
+        val militaryUnit = testGame.addUnit("Horseman", civInfo, centerTile) // 4 movement
+        civilianUnit.startEscorting()
+        var civilianDistanceToTiles = civilianUnit.movement.getDistanceToTiles()
+        assertFalse(militaryUnit.movement.getDistanceToTiles().any { !civilianDistanceToTiles.contains(it.key) })
+        
+        // Test again with caching
+        civilianUnit.stopEscorting()
+        militaryUnit.movement.getDistanceToTiles()
+        civilianUnit.movement.getDistanceToTiles()
+        civilianUnit.startEscorting()
+        civilianDistanceToTiles = civilianUnit.movement.getDistanceToTiles()
+        assertFalse(militaryUnit.movement.getDistanceToTiles().any { !civilianDistanceToTiles.contains(it.key) })
     }
 }
