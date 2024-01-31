@@ -695,7 +695,9 @@ class UnitMovement(val unit: MapUnit) {
             passThroughCache,
             movementCostCache
         )
-        pathfindingCache.setDistanceToTiles(considerZoneOfControl, distanceToTiles)
+        if (includeEscort) {
+            pathfindingCache.setDistanceToTiles(considerZoneOfControl, distanceToTiles)
+        }
         if (includeEscort && unit.isEscorting()) {
             val escortDistanceToTiles = unit.getOtherEscortUnit()!!.movement
                 .getDistanceToTiles(considerZoneOfControl, includeEscort=false)
