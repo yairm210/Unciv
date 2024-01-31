@@ -97,4 +97,53 @@ internal class UnitFormationTests {
         assertFalse(civilianUnit.isIdle())
         assertFalse(militaryUnit.isIdle())
     }
+
+    @Test
+    fun `formation movement` () {
+        setUp(3)
+        val centerTile = testGame.getTile(Vector2(0f,0f))
+        val civilianUnit = testGame.addUnit("Worker", civInfo, centerTile)
+        val militaryUnit = testGame.addUnit("Warrior", civInfo, centerTile)
+        civilianUnit.startEscorting()
+        val targetTile = testGame.getTile(Vector2(0f,2f))
+        civilianUnit.movement.moveToTile(targetTile)
+        assert(civilianUnit.getTile() == targetTile)
+        assert(militaryUnit.getTile() == targetTile)
+        assertTrue(civilianUnit.isEscorting())
+        assertTrue(militaryUnit.isEscorting())
+    }
+
+    @Test
+    fun `stop formation movement` () {
+        setUp(3)
+        val centerTile = testGame.getTile(Vector2(0f,0f))
+        val civilianUnit = testGame.addUnit("Worker", civInfo, centerTile)
+        val militaryUnit = testGame.addUnit("Warrior", civInfo, centerTile)
+        civilianUnit.startEscorting()
+        civilianUnit.stopEscorting()
+        val targetTile = testGame.getTile(Vector2(0f,2f))
+        civilianUnit.movement.moveToTile(targetTile)
+        assert(civilianUnit.getTile() == targetTile)
+        assert(militaryUnit.getTile() == centerTile)
+        assertFalse(civilianUnit.isEscorting())
+        assertFalse(militaryUnit.isEscorting())
+    }
+
+    @Test
+    fun `formation head towards with faster units` () {
+        setUp(5)
+        val centerTile = testGame.getTile(Vector2(0f,0f))
+        val civilianUnit = testGame.addUnit("Worker", civInfo, centerTile)
+        val militaryUnit = testGame.addUnit("Horseman", civInfo, centerTile) // 4 movement
+        civilianUnit.startEscorting()
+        val targetTile = testGame.getTile(Vector2(0f,4f))
+        val excpectedTile = testGame.getTile(Vector2(0f,2f))
+        militaryUnit.movement.headTowards(targetTile)
+        assert(civilianUnit.getTile() == excpectedTile)
+        assert(militaryUnit.getTile() == excpectedTile)
+        assertTrue(civilianUnit.isEscorting())
+        assertTrue(militaryUnit.isEscorting())
+        assertTrue(militaryUnit.currentMovement == 2f)
+        assertFalse("The unit should not be idle if it's escort has no movement points",militaryUnit.isIdle())
+    }
 }
