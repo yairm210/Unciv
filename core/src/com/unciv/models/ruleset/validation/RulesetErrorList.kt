@@ -1,6 +1,8 @@
 package com.unciv.models.ruleset.validation
 
 import com.badlogic.gdx.graphics.Color
+import com.unciv.models.ruleset.Ruleset
+import com.unciv.models.ruleset.unique.IHasUniques
 
 class RulesetError(val text: String, val errorSeverityToReport: RulesetErrorSeverity)
 
@@ -11,30 +13,55 @@ enum class RulesetErrorSeverity(val color: Color) {
     Error(Color.RED),
 }
 
+/**
+ *  A container collecting errors in a [Ruleset]
+ *
+ *  While this is based a standard collection, please do not use the standard add, [plusAssign] or [addAll].
+ *  Mod-controlled warning suppression is handled in [add] overloads that provide a source object, which can host suppression uniques.
+ *  Bypassing these add methods means suppression is ignored. Thus using [addAll] is fine when the elements to add are all already checked.
+ *
+ *  //todo This version prepares suppression, but does not actually implement it
+ */
 class RulesetErrorList : ArrayList<RulesetError>() {
-    operator fun plusAssign(text: String) {
-        add(text, RulesetErrorSeverity.Error)
+    /** Add an [element], preventing duplicates (in which case the highest severity wins).
+     *
+     *  [sourceObject] is for future use and should be the originating object. When it is not known or not a [IHasUniques], pass `null`.
+     */
+    fun add(sourceObject: IHasUniques?, element: RulesetError): Boolean {
+        // Suppression to be checked here
+        return addWithDuplicateCheck(element)
     }
 
-    fun add(text: String, errorSeverityToReport: RulesetErrorSeverity) {
-        add(RulesetError(text, errorSeverityToReport))
-    }
+    /** Shortcut: Add a new [RulesetError] built from [text] and [errorSeverityToReport].
+     *
+     *  [sourceObject] is for future use and should be the originating object. When it is not known or not a [IHasUniques], pass `null`.
+     */
+    fun add(sourceObject: IHasUniques?, text: String, errorSeverityToReport: RulesetErrorSeverity = RulesetErrorSeverity.Error) =
+        add(sourceObject, RulesetError(text, errorSeverityToReport))
 
-    override fun add(element: RulesetError): Boolean {
-        // Suppress duplicates due to the double run of some checks for invariant/specific,
-        // Without changing collection type or making RulesetError obey the equality contract
-        val existing = firstOrNull { it.text == element.text }
-            ?: return super.add(element)
-        if (existing.errorSeverityToReport >= element.errorSeverityToReport) return false
-        remove(existing)
-        return super.add(element)
-    }
+    @Deprecated("No adding without explicit source object", ReplaceWith("add(sourceObject, element)"))
+    override fun add(element: RulesetError) = super.add(element)
 
+    /** Add all [elements] with duplicate check, but without suppression check */
     override fun addAll(elements: Collection<RulesetError>): Boolean {
         var result = false
         for (element in elements)
-            if (add(element)) result = true
+            if (addWithDuplicateCheck(element)) result = true
         return result
+    }
+
+    private fun addWithDuplicateCheck(element: RulesetError) =
+        removeLowerSeverityDuplicate(element) && super.add(element)
+
+    /** @return `true` if the element is not present, or it was removed due to having a lower severity */
+    private fun removeLowerSeverityDuplicate(element: RulesetError): Boolean {
+        // Suppress duplicates due to the double run of some checks for invariant/specific,
+        // Without changing collection type or making RulesetError obey the equality contract
+        val existing = firstOrNull { it.text == element.text }
+            ?: return true
+        if (existing.errorSeverityToReport >= element.errorSeverityToReport) return false
+        remove(existing)
+        return true
     }
 
     fun getFinalSeverity(): RulesetErrorSeverity {

@@ -172,7 +172,7 @@ object RulesetCache : HashMap<String, Ruleset>() {
             // This happens if a building is dependent on a tech not in the base ruleset
             //  because newRuleset.updateBuildingCosts() in getComplexRuleset() throws an error
             RulesetErrorList()
-                .apply { add(ex.message, RulesetErrorSeverity.Error) }
+                .apply { add(null, ex.message, RulesetErrorSeverity.Error) }
         }
     }
 
