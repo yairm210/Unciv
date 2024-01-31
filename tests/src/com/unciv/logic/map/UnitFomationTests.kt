@@ -1,6 +1,7 @@
 package com.unciv.logic.map
 
 import com.badlogic.gdx.math.Vector2
+import com.unciv.Constants
 import com.unciv.logic.automation.unit.WorkerAutomation
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.tile.RoadStatus
@@ -19,7 +20,7 @@ internal class UnitFormationTests {
     private lateinit var civInfo: Civilization
 
     val testGame = TestGame()
-    fun setUp(size: Int) {
+    fun setUp(size: Int, baseTerrain: String = Constants.desert) {
         testGame.makeHexagonalMap(size)
         civInfo = testGame.addCiv()
     }
@@ -90,9 +91,7 @@ internal class UnitFormationTests {
         assertFalse(civilianUnit.isIdle())
         assertFalse(militaryUnit.isIdle())
         civilianUnit.currentMovement = 2f
-        for (improvement in listOf("Farm")) {
-            civInfo.tech.techsResearched.add(testGame.ruleset.tileImprovements[improvement]!!.techRequired!!)
-        }
+        civInfo.tech.techsResearched.add(testGame.ruleset.tileImprovements["Farm"]!!.techRequired!!)
         centerTile.startWorkingOnImprovement(testGame.ruleset.tileImprovements["Farm"]!!, civInfo, civilianUnit)
         assertFalse(civilianUnit.isIdle())
         assertFalse(militaryUnit.isIdle())
@@ -128,6 +127,42 @@ internal class UnitFormationTests {
         assertFalse(civilianUnit.isEscorting())
         assertFalse(militaryUnit.isEscorting())
     }
+
+    @Test
+    fun `formation canMoveTo` () {
+        setUp(3)
+        val centerTile = testGame.getTile(Vector2(0f,0f))
+        val civilianUnit = testGame.addUnit("Worker", civInfo, centerTile)
+        val militaryUnit = testGame.addUnit("Warrior", civInfo, centerTile)
+        val targetTile = testGame.getTile(Vector2(0f,2f))
+        val blockingCivilianUnit = testGame.addUnit("Worker", civInfo, targetTile)
+        assertFalse(civilianUnit.movement.canMoveTo(targetTile))
+        assertTrue(militaryUnit.movement.canMoveTo(targetTile))
+        civilianUnit.startEscorting()
+        assertFalse(militaryUnit.movement.canMoveTo(targetTile))
+    }
+
+    @Test
+    fun `formation canMoveTo water` () {
+        setUp(3, "Ocean")
+        val centerTile = testGame.getTile(Vector2(0f,0f))
+        centerTile.baseTerrain = "Coast"
+        centerTile.isWater = true
+        centerTile.isLand = false
+        civInfo.tech.embarkedUnitsCanEnterOcean = true
+        civInfo.tech.addTechnology("Astronomy")
+        val civilianUnit = testGame.addUnit("Work Boats", civInfo, centerTile) // Can enter ocean
+        val militaryUnit = testGame.addUnit("Trireme", civInfo, centerTile) // Can't enter ocean
+        val targetTile = testGame.getTile(Vector2(0f,1f))
+        targetTile.isWater = true
+        targetTile.isLand = false
+        targetTile.isOcean = true
+        assertFalse(militaryUnit.movement.canMoveTo(targetTile))
+        assertTrue(civilianUnit.movement.canMoveTo(targetTile))
+        civilianUnit.startEscorting()
+        assertFalse(civilianUnit.movement.canMoveTo(targetTile))
+    }
+
 
     @Test
     fun `formation head towards with faster units` () {
