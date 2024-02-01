@@ -9,30 +9,45 @@ import com.unciv.utils.Log
 object MapPathing {
 
     /**
-     * We prefer the worker to prioritize paths connected by existing roads. If a tile has a road, but the civ has the ability
-     * to upgrade it to a railroad, we consider it to be a railroad for pathing since it will be upgraded.
-     * Otherwise, we set every tile to have equal value since building a road on any of them makes the original movement cost irrelevant.
+     * Calculates the movement cost for a unit traveling from one tile to another, prioritizing paths with existing roads or railroads.
+     * If both tiles have a road connection, the cost is determined by the civilization's technology: if the civilization can build railroads,
+     * roads are treated as railroads for pathing purposes due to potential upgrades. If no railroad technology is available, the standard
+     * movement speed on roads is used. If both tiles are connected by a railroad, railroad movement cost is used.
+     * In cases where neither roads nor railroads connect the tiles, a default movement cost of 1f is applied.
+     * Note: The function accounts for civilizations that treat jungle/forest as roads and ignores road over river penalties.
+     *
+     * @param unit The unit for which the movement cost is being calculated.
+     * @param from The starting tile of the unit.
+     * @param to The destination tile of the unit.
+     * @return The movement cost for the unit to move from the starting tile to the destination tile.
      */
     private fun roadPreferredMovementCost(unit: MapUnit, from: Tile, to: Tile): Float{
         // hasRoadConnection accounts for civs that treat jungle/forest as roads
         // Ignore road over river penalties.
-        val areConnectedByRoad = from.hasRoadConnection(unit.civ, mustBeUnpillaged = false) && to.hasRoadConnection(unit.civ, mustBeUnpillaged = false)
-        if (areConnectedByRoad){
+        val isConnectedByRoad = from.hasRoadConnection(unit.civ, mustBeUnpillaged = false) && to.hasRoadConnection(unit.civ, mustBeUnpillaged = false)
+        if (isConnectedByRoad){
             // If the civ has railroad technology, consider roads as railroads since they will be upgraded
-            if (unit.civ.tech.getBestRoadAvailable() == RoadStatus.Railroad){
-                return RoadStatus.Railroad.movement
+            return if (unit.civ.tech.getBestRoadAvailable() == RoadStatus.Railroad){
+                RoadStatus.Railroad.movement
             }else{
-                return unit.civ.tech.movementSpeedOnRoads
+                unit.civ.tech.movementSpeedOnRoads
             }
         }
 
-        val areConnectedByRailroad = from.hasRailroadConnection(mustBeUnpillaged = false) && to.hasRailroadConnection(mustBeUnpillaged = false)
-        if (areConnectedByRailroad)
+        val isConnectedByRailroad = from.hasRailroadConnection(mustBeUnpillaged = false) && to.hasRailroadConnection(mustBeUnpillaged = false)
+        if (isConnectedByRailroad)
             return RoadStatus.Railroad.movement
 
         return 1f
     }
 
+    /**
+     * Determines if a given tile is a valid option for a road path for a specific unit.
+     *
+     * @param unit The unit for which the road path validity is being assessed.
+     * @param tile The tile to be evaluated for its suitability as part of the road path.
+     * @return True if the tile is a valid part of a road path for the given unit, False otherwise.
+     */
     fun isValidRoadPathTile(unit: MapUnit, tile: Tile): Boolean {
         return tile.isLand
             && !tile.isImpassible()
