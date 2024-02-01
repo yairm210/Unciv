@@ -28,8 +28,8 @@ object CivilianUnitAutomation {
         if (unit.hasUnique(UniqueType.FoundCity))
             return SpecificUnitAutomation.automateSettlerActions(unit, dangerousTiles)
 
-        if(unit.isAutomatingRoadConnection())
-            return unit.civ.getWorkerAutomation().automateConnectRoad(unit, dangerousTiles)
+        if (unit.isAutomatingRoadConnection())
+            return unit.civ.getWorkerAutomation().roadAutomation.automateConnectRoad(unit, dangerousTiles)
 
         if (unit.cache.hasUniqueToBuildImprovements)
             return unit.civ.getWorkerAutomation().automateWorkerAction(unit, dangerousTiles)
