@@ -2,6 +2,7 @@ package com.unciv.ui.components.widgets
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.actions.FloatAction
+import com.badlogic.gdx.scenes.scene2d.ui.ProgressBar
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.utils.Align
@@ -14,6 +15,7 @@ import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.worldscreen.BackgroundActor
 import kotlin.math.PI
+import kotlin.math.roundToInt
 import kotlin.math.sin
 
 /**
@@ -200,9 +202,16 @@ class HealthBar(
 
             val ourBar = HealthBar(0f..100f, style = Style.unitOrCity)
             ourBar[0] = 50f
+            val v0Bar = HealthBarV0(0f, 100f)
+            v0Bar.setupForUnitOrCity(50)
+
+            val gdxBar = HealthBarGdx()
+            gdxBar.value = 50f
 
             val slider = UncivSlider(0f, 100f, 1f, initial = 50f) {
                 ourBar[0] = it
+                v0Bar.setupForUnitOrCity(it.roundToInt())
+                gdxBar.value = it
                 replaceOldBar(it)
             }
 
@@ -217,11 +226,21 @@ class HealthBar(
                     val value = ((sin(percent * 2 * PI) + 1.0) * 50).toFloat()
                     slider.value = value
                     ourBar[0] = value
+                    v0Bar.setupForUnitOrCity(value.roundToInt())
+                    gdxBar.value = value
                 }
             }
 
             add("New:").uniformX()
             add(ourBar).size(102f, 12f).colspan(2) // ImageGetter.getHealthBar pads the dimensions it gets, this one has the padding inside its bounds
+            add().uniformX().row()
+
+            add("V0:").uniformX()
+            add(v0Bar).size(102f, 12f).colspan(2)
+            add().uniformX().row()
+
+            add("Gdx:").uniformX()
+            add(gdxBar).size(102f, 12f).colspan(2)
             add().uniformX().row()
 
             add(slider).colspan(4).row()
@@ -245,6 +264,31 @@ class HealthBar(
             add(stopButton)
             add().row()
             pack()
+        }
+
+        class HealthBarGdx : Table() {
+            private val greenBG = ImageGetter.getDrawable(null).tint(Color.GREEN)
+            private val orangeBG = ImageGetter.getDrawable(null).tint(Color.ORANGE)
+            private val redBG = ImageGetter.getDrawable(null).tint(Color.RED)
+            private val blackBG = ImageGetter.getDrawable(null).tint(Color.BLACK)
+            private val style = ProgressBar.ProgressBarStyle()
+            private val bar = ProgressBar(0f, 100f, 1f, false, style)
+            init {
+                style.knobAfter = blackBG
+                pad(1f)
+                background = blackBG
+                add(bar).size(100f, 10f)
+            }
+            var value
+                get() = bar.value
+                set(value) {
+                    style.knobBefore = when {
+                        value <= 33f -> redBG
+                        value <= 66f -> orangeBG
+                        else -> greenBG
+                    }
+                    bar.value = value
+                }
         }
     }
 }
