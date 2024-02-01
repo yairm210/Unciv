@@ -186,7 +186,7 @@ internal class UnitFormationTests {
         civilianUnit.startEscorting()
         var civilianDistanceToTiles = civilianUnit.movement.getDistanceToTiles()
         assertFalse(militaryUnit.movement.getDistanceToTiles().any { !civilianDistanceToTiles.contains(it.key) })
-        
+
         // Test again with caching
         civilianUnit.stopEscorting()
         militaryUnit.movement.getDistanceToTiles()
