@@ -201,13 +201,13 @@ class WorkerAutomation(
                     stopAndCleanAutomation()
                     unit.civ.addNotification("Connect road failed!", currentTile.position, NotificationCategory.Units, NotificationIcon.Construction)
                     return
-                } else {
-                    pathToDest = foundPath // Convert to a list of positions for serialization
-                    .map { it.position }
+                }
+            
+            pathToDest = foundPath // Convert to a list of positions for serialization
+                .map { it.position }
 
-                    unit.automatedRoadConnectionPath = pathToDest
-                    debug("WorkerAutomation: ${unit.label()} -> found connect road path to destination tile: %s, %s", destinationTile, pathToDest)
-            }
+            unit.automatedRoadConnectionPath = pathToDest
+            debug("WorkerAutomation: ${unit.label()} -> found connect road path to destination tile: %s, %s", destinationTile, pathToDest)
         }
 
         val currTileIndex = pathToDest.indexOf(currentTile.position)
@@ -220,49 +220,46 @@ class WorkerAutomation(
             return
         }
 
-        if (unit.currentMovement > 0) {
-            /* Can not build a road on this tile, try to move on.
-            * The worker should search for the next furthest tile in the path that:
-            * - It can move to
-            * - Can be improved/upgraded
-            * */
-            if (!shouldBuildRoadOnTile(currentTile)) {
-                when {
-                    currTileIndex < pathToDest.size - 1 -> { // Try to move to the next tile in the path
-                        val tileMap = unit.civ.gameInfo.tileMap
-                        var nextTile: Tile = currentTile
+        /* Can not build a road on this tile, try to move on.
+        * The worker should search for the next furthest tile in the path that:
+        * - It can move to
+        * - Can be improved/upgraded
+        * */
+        if (unit.currentMovement > 0 && !shouldBuildRoadOnTile(currentTile)) {
+            if (currTileIndex == pathToDest.size - 1) { // The last tile in the path is unbuildable or has a road.
+                stopAndCleanAutomation()
+                unit.civ.addNotification("Connect road completed!", currentTile.position, NotificationCategory.Units, unit.name)
+                return
+            }
 
-                        // Create a new list with tiles where the index is greater than currTileIndex
-                        val futureTiles = pathToDest.asSequence()
-                            .dropWhile { it != unit.currentTile.position }
-                            .drop(1)
-                            .map { tileMap[it] }
+            if (currTileIndex < pathToDest.size - 1) { // Try to move to the next tile in the path
+                val tileMap = unit.civ.gameInfo.tileMap
+                var nextTile: Tile = currentTile
 
-                       for (futureTile in futureTiles){ // Find the furthest tile we can reach in this turn, move to, and does not have a road
-                           if (unit.movement.canReachInCurrentTurn(futureTile) && unit.movement.canMoveTo(futureTile)) { // We can at least move to this tile
-                               nextTile = futureTile
-                               if (shouldBuildRoadOnTile(futureTile)) {
-                                   break // Stop on this tile
-                               }
-                           }
-                       }
+                // Create a new list with tiles where the index is greater than currTileIndex
+                val futureTiles = pathToDest.asSequence()
+                    .dropWhile { it != unit.currentTile.position }
+                    .drop(1)
+                    .map { tileMap[it] }
 
-                        unit.movement.moveToTile(nextTile)
-                        currentTile = unit.getTile()
-                    }
-                    currTileIndex == pathToDest.size - 1 -> { // The last tile in the path is unbuildable or has a road.
-                        stopAndCleanAutomation()
-                        unit.civ.addNotification("Connect road completed!", currentTile.position, NotificationCategory.Units, unit.name)
-                        return
+                for (futureTile in futureTiles) { // Find the furthest tile we can reach in this turn, move to, and does not have a road
+                    if (unit.movement.canReachInCurrentTurn(futureTile) && unit.movement.canMoveTo(futureTile)) { // We can at least move to this tile
+                        nextTile = futureTile
+                        if (shouldBuildRoadOnTile(futureTile)) {
+                            break // Stop on this tile
+                        }
                     }
                 }
+
+                unit.movement.moveToTile(nextTile)
+                currentTile = unit.getTile()
             }
         }
 
         // We need to check current movement again after we've (potentially) moved
         if (unit.currentMovement > 0) {
             // Repair pillaged roads first
-            if(currentTile.roadStatus != RoadStatus.None && currentTile.roadIsPillaged){
+            if (currentTile.roadStatus != RoadStatus.None && currentTile.roadIsPillaged){
                 currentTile.setRepaired()
                 return
             }
