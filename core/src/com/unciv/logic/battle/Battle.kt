@@ -156,7 +156,7 @@ object Battle {
             for (unique in ourUnit.unit.getTriggeredUniques(UniqueType.TriggerUponDefeatingUnit, stateForConditionals))
                 if (unique.conditionals.any { it.type == UniqueType.TriggerUponDefeatingUnit
                                 && enemy.unit.matchesFilter(it.params[0]) })
-                    UniqueTriggerActivation.triggerUnitwideUnique(unique, ourUnit.unit, triggerNotificationText = "due to our [${ourUnit.getName()}] defeating a [${enemy.getName()}]")
+                    UniqueTriggerActivation.triggerUnique(unique, ourUnit.unit, triggerNotificationText = "due to our [${ourUnit.getName()}] defeating a [${enemy.getName()}]")
         }
 
         // Add culture when defeating a barbarian when Honor policy is adopted, gold from enemy killed when honor is complete
@@ -205,7 +205,7 @@ object Battle {
         val stateForConditionals = StateForConditionals(civInfo = ourUnit.getCivInfo(),
             ourCombatant = ourUnit, theirCombatant=enemy, tile = attackedTile)
         for (unique in ourUnit.unit.getTriggeredUniques(UniqueType.TriggerUponDefeat, stateForConditionals))
-            UniqueTriggerActivation.triggerUnitwideUnique(unique, ourUnit.unit, triggerNotificationText = "due to our [${ourUnit.getName()}] being defeated by a [${enemy.getName()}]")
+            UniqueTriggerActivation.triggerUnique(unique, ourUnit.unit, triggerNotificationText = "due to our [${ourUnit.getName()}] being defeated by a [${enemy.getName()}]")
     }
 
     private fun tryEarnFromKilling(civUnit: ICombatant, defeatedUnit: MapUnitCombatant) {
@@ -310,12 +310,12 @@ object Battle {
         if (attacker is MapUnitCombatant)
             for (unique in attacker.unit.getTriggeredUniques(UniqueType.TriggerUponLosingHealth))
                 if (unique.conditionals.any { it.params[0].toInt() <= defenderDamageDealt })
-                    UniqueTriggerActivation.triggerUnitwideUnique(unique, attacker.unit, triggerNotificationText = "due to losing [$defenderDamageDealt] HP")
+                    UniqueTriggerActivation.triggerUnique(unique, attacker.unit, triggerNotificationText = "due to losing [$defenderDamageDealt] HP")
 
         if (defender is MapUnitCombatant)
             for (unique in defender.unit.getTriggeredUniques(UniqueType.TriggerUponLosingHealth))
                 if (unique.conditionals.any { it.params[0].toInt() <= attackerDamageDealt })
-                    UniqueTriggerActivation.triggerUnitwideUnique(unique, defender.unit, triggerNotificationText = "due to losing [$attackerDamageDealt] HP")
+                    UniqueTriggerActivation.triggerUnique(unique, defender.unit, triggerNotificationText = "due to losing [$attackerDamageDealt] HP")
 
         plunderFromDamage(attacker, defender, attackerDamageDealt)
         return DamageDealt(attackerDamageDealt, defenderDamageDealt)
@@ -526,18 +526,7 @@ object Battle {
             if (civilianUnit != null) BattleUnitCapture.captureCivilianUnit(attacker, MapUnitCombatant(civilianUnit!!), checkDefeat = false)
             for (airUnit in airUnits.toList()) airUnit.destroy()
         }
-
-        // Move all spies in the city
-        if (attackerCiv.gameInfo.isEspionageEnabled()) {
-            for (civ in attackerCiv.gameInfo.civilizations.filter { it.isMajorCiv() }) {
-                for (spy in civ.espionageManager.spyList) {
-                    if (spy.getLocation() == city) {
-                        spy.moveTo(null)
-                    }
-                }
-            }
-        }
-
+        
         val stateForConditionals = StateForConditionals(civInfo = attackerCiv, city=city, unit = attacker.unit, ourCombatant = attacker, attackedTile = city.getCenterTile())
         for (unique in attacker.getMatchingUniques(UniqueType.CaptureCityPlunder, stateForConditionals, true)) {
             attackerCiv.addStat(
@@ -566,7 +555,7 @@ object Battle {
 
         for (unique in attackerCiv.getTriggeredUniques(UniqueType.TriggerUponConqueringCity, stateForConditionals)
                 + attacker.unit.getTriggeredUniques(UniqueType.TriggerUponConqueringCity, stateForConditionals))
-            UniqueTriggerActivation.triggerUnitwideUnique(unique, attacker.unit)
+            UniqueTriggerActivation.triggerUnique(unique, attacker.unit)
     }
 
     /** Handle decision making after city conquest, namely whether the AI should liberate, puppet,

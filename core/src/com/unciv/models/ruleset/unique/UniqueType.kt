@@ -655,6 +655,11 @@ enum class UniqueType(
 
     /////// city conditionals
     ConditionalInThisCity("in this city", UniqueTarget.Conditional),
+    ConditionalCityFilter("in [cityFilter] cities", UniqueTarget.Conditional),
+    ConditionalCityConnected("in cities connected to the capital", UniqueTarget.Conditional),
+    ConditionalCityMajorReligion("in cities with a major religion", UniqueTarget.Conditional),
+    ConditionalCityEnhancedReligion("in cities with an enhanced religion", UniqueTarget.Conditional),
+    ConditionalCityThisReligion("in cities following our religion", UniqueTarget.Conditional),
     ConditionalCityWithBuilding("in cities with a [buildingFilter]", UniqueTarget.Conditional),
     ConditionalCityWithoutBuilding("in cities without a [buildingFilter]", UniqueTarget.Conditional),
     ConditionalPopulationFilter("in cities with at least [amount] [populationFilter]", UniqueTarget.Conditional),

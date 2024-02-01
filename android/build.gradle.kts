@@ -21,7 +21,7 @@ android {
             jniLibs.srcDirs("libs")
         }
     }
-    packagingOptions {
+    packaging {
         resources.excludes += "META-INF/robovm/ios/robovm.xml"
         // part of kotlinx-coroutines-android, should not go into the apk
         resources.excludes += "DebugProbesKt.bin"
@@ -73,7 +73,10 @@ android {
         // Don't add local save files and fonts to release, obviously
         ignoreAssetsPattern = "!SaveFiles:!fonts:!maps:!music:!mods"
     }
-    buildToolsVersion = "33.0.2"
+    buildFeatures {
+        renderScript = true
+        aidl = true
+    }
 }
 
 task("texturePacker") {

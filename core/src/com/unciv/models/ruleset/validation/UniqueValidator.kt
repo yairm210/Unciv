@@ -217,7 +217,8 @@ class UniqueValidator(val ruleset: Ruleset) {
 
         return listOf(RulesetError(
             "$prefix unique \"${unique.text}\" not found in Unciv's unique types, and is not used as a filtering unique.",
-            RulesetErrorSeverity.OK))
+            if (unique.params.isEmpty()) RulesetErrorSeverity.OK else RulesetErrorSeverity.Warning
+        ))
     }
 
     private fun isFilteringUniqueAllowed(unique: Unique): Boolean {

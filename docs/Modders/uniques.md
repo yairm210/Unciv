@@ -1980,6 +1980,23 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "&lt;in this city&gt;"
 	Applicable to: Conditional
 
+??? example  "&lt;in [cityFilter] cities&gt;"
+	Example: "&lt;in [in all cities] cities&gt;"
+
+	Applicable to: Conditional
+
+??? example  "&lt;in cities connected to the capital&gt;"
+	Applicable to: Conditional
+
+??? example  "&lt;in cities with a major religion&gt;"
+	Applicable to: Conditional
+
+??? example  "&lt;in cities with an enhanced religion&gt;"
+	Applicable to: Conditional
+
+??? example  "&lt;in cities following our religion&gt;"
+	Applicable to: Conditional
+
 ??? example  "&lt;in cities with a [buildingFilter]&gt;"
 	Example: "&lt;in cities with a [Culture]&gt;"
 

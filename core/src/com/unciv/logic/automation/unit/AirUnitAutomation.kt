@@ -190,7 +190,7 @@ object AirUnitAutomation {
             else if (targetTile.owningCity != null) {
                 val owningCiv = targetTile.owningCity?.civ!!
                 // If there is a tile to add fallout to there is a 50% chance it will get fallout
-                if (!(tile.isWater || tile.isImpassible() || targetTile.terrainFeatures.any { it == "Fallout" }))
+                if (!(tile.isWater || tile.isImpassible() || targetTile.hasFalloutEquivalent()))
                     explosionValue += evaluateCivValue(owningCiv, -40, 10)
                 // If there is an improvment to pillage
                 if (targetTile.improvement != null && !targetTile.improvementIsPillaged)

@@ -11,7 +11,7 @@ Note that all of these are case-sensitive!
 
 ## General Filter Rules
 
-All filters except for `cityFilter` and `populationFilter` accept multiple values in the format: `{A} {B} {C}` etc, meaning "the object must match ALL of these filters"
+All filters except for `populationFilter` accept multiple values in the format: `{A} {B} {C}` etc, meaning "the object must match ALL of these filters"
 
 > Example: `[{Military} {Water}] units`, `[{Wounded} {Armor}] units`, etc.
 
@@ -111,22 +111,25 @@ cityFilters allow us to choose the range of cities affected by this unique:
 
 - `in this city`
 - `in all cities`
-- `in other cities`
-- `in all coastal cities`
-- `in capital`
-- `in all non-occupied cities` - all cities that are not puppets and don't have extra unhappiness from being recently conquered
+- `in your cities`, `Your`
+- `in all coastal cities`, `Coastal`
+- `in capital`, `Capital`
+- `in all non-occupied cities`, `Non-occupied` - all cities that are not puppets and don't have extra unhappiness from being recently conquered
 - `in all cities with a world wonder`
 - `in all cities connected to capital`
-- `in all cities with a garrison`
+- `in all cities with a garrison`, `Garrisoned`
 - `in non-enemy foreign cities` - In all cities owned by civs other than you that you are not at war with
-- `in foreign cities`
-- `in annexed cities`
-- `in puppeted cities`
-- `in holy cities`
+- `in enemy cities`, `Enemy`
+- `in foreign cities`, `Foreign`
+- `in annexed cities`, `Annexed`
+- `in puppeted cities`, `Puppeted`
+- `in holy cities`, `Holy`
 - `in City-State cities`
 - `in cities following this religion` - Should only be used in pantheon/follower uniques for religions
+- `in cities following our religion`
 - `in all cities in which the majority religion is a major religion`
 - `in all cities in which the majority religion is an enhanced religion`
+- [civFilter]
 
 ## improvementFilter
 

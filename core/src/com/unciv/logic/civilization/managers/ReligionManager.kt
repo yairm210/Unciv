@@ -390,17 +390,17 @@ class ReligionManager : IsPartOfGameInfoSerialization {
             ReligionState.None -> {
                 religionState = ReligionState.Pantheon
                 for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponFoundingPantheon))
-                    UniqueTriggerActivation.triggerCivwideUnique(unique, civInfo)
+                    UniqueTriggerActivation.triggerUnique(unique, civInfo)
             }
             ReligionState.FoundingReligion -> {
                 religionState = ReligionState.Religion
                 for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponFoundingReligion))
-                    UniqueTriggerActivation.triggerCivwideUnique(unique, civInfo)
+                    UniqueTriggerActivation.triggerUnique(unique, civInfo)
             }
             ReligionState.EnhancingReligion -> {
                 religionState = ReligionState.EnhancedReligion
                 for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponEnhancingReligion))
-                    UniqueTriggerActivation.triggerCivwideUnique(unique, civInfo)
+                    UniqueTriggerActivation.triggerUnique(unique, civInfo)
             }
             else -> {}
         }
@@ -408,12 +408,12 @@ class ReligionManager : IsPartOfGameInfoSerialization {
         for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponAdoptingPolicyOrBelief))
             for (belief in beliefs)
                 if (unique.conditionals.any {it.type == UniqueType.TriggerUponAdoptingPolicyOrBelief && it.params[0] == belief.name})
-                    UniqueTriggerActivation.triggerCivwideUnique(unique, civInfo,
+                    UniqueTriggerActivation.triggerUnique(unique, civInfo,
                         triggerNotificationText = "due to adopting [${belief.name}]")
 
         for (belief in beliefs)
             for (unique in belief.uniqueObjects.filter { !it.hasTriggerConditional() && it.conditionalsApply(StateForConditionals(civInfo)) })
-                UniqueTriggerActivation.triggerCivwideUnique(unique, civInfo)
+                UniqueTriggerActivation.triggerUnique(unique, civInfo)
 
         civInfo.updateStatsForNextTurn()  // a belief can have an immediate effect on stats
     }

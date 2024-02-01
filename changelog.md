@@ -1,3 +1,35 @@
+## 4.10.5
+
+Added 'copy to clipboard' button on map errors so we can debug them
+
+Happiness building performance improvement
+
+By SeventhM:
+- Add additional cityFilters
+- Fix gain stat modifier by speed unique action text
+
+By SomeTroglodyte:
+- RulesetValidator: Raise severity for untyped uniques with parameters
+
+## 4.10.4
+
+Modding:
+- New tileFilter `your`, for tiles belonging directly to you
+- Mods can use the Hills and mountains distribution uniques on Land or Feature terrains
+
+By SomeTroglodyte:
+- World screen resize delayed
+- Unit actions dynamic paging
+- Minor Mod manager fix, lints and dox
+
+By tuvus:
+- Workers now build forts
+- Worker automation option fix
+- Ranged units capture civilian
+- Spectators can now see selected civ city-state influence bars
+
+Unify unit and civ triggers  - By SeventhM
+
 ## 4.10.3
 
 Modding:

@@ -31,7 +31,7 @@ class UpgradeTests {
         val civ = testGame.addCiv()
         var unit1 = testGame.addUnit(testUnit.name, civ, testGame.getTile(Vector2.Zero))
         val triggerUnique = Unique("This Unit upgrades for free including special upgrades")
-        UniqueTriggerActivation.triggerUnitwideUnique(triggerUnique, unit1)
+        UniqueTriggerActivation.triggerUnique(triggerUnique, unit1)
         unit1 = testGame.getTile(Vector2.Zero).getFirstUnit()!!
 
         Assert.assertTrue("Unit should upgrade to special unit, not warrior", unit1.baseUnit == unitToUpgradeTo)
@@ -46,7 +46,7 @@ class UpgradeTests {
         val civ = testGame.addCiv()
         var unit1 = testGame.addUnit(testUnit.name, civ, testGame.getTile(Vector2.Zero))
         val triggerUnique = Unique("This Unit upgrades for free including special upgrades")
-        UniqueTriggerActivation.triggerUnitwideUnique(triggerUnique, unit1)
+        UniqueTriggerActivation.triggerUnique(triggerUnique, unit1)
         unit1 = testGame.getTile(Vector2.Zero).getFirstUnit()!!
 
         Assert.assertTrue("Unit should upgrade to Warrior without unique", unit1.baseUnit.name == "Warrior")
@@ -67,7 +67,7 @@ class UpgradeTests {
             upgradeActions.any { (it as UpgradeUnitAction).unitToUpgradeTo == unitToUpgradeTo })
 
         val triggerUnique = Unique("This Unit upgrades for free")
-        UniqueTriggerActivation.triggerUnitwideUnique(triggerUnique, unit1)
+        UniqueTriggerActivation.triggerUnique(triggerUnique, unit1)
         unit1 = testGame.getTile(Vector2.Zero).getFirstUnit()!!
 
         Assert.assertTrue(unit1.baseUnit.name == "Warrior")
@@ -88,7 +88,7 @@ class UpgradeTests {
         Assert.assertTrue(upgradeActions.count() == 2)
 
         val triggerUnique = Unique("This Unit upgrades for free")
-        UniqueTriggerActivation.triggerUnitwideUnique(triggerUnique, unit1)
+        UniqueTriggerActivation.triggerUnique(triggerUnique, unit1)
         unit1 = testGame.getTile(Vector2.Zero).getFirstUnit()!!
 
         Assert.assertFalse(unit1.baseUnit == testUnit)

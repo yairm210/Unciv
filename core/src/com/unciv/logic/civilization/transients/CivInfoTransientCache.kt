@@ -237,7 +237,7 @@ class CivInfoTransientCache(val civInfo: Civilization) {
             for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponDiscoveringNaturalWonder,
                 StateForConditionals(civInfo, tile = tile)
             ))
-                UniqueTriggerActivation.triggerCivwideUnique(unique, civInfo, tile=tile, triggerNotificationText = "due to discovering a Natural Wonder")
+                UniqueTriggerActivation.triggerUnique(unique, civInfo, tile=tile, triggerNotificationText = "due to discovering a Natural Wonder")
         }
     }
 

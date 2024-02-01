@@ -343,6 +343,9 @@ open class Tile : IsPartOfGameInfoSerialization {
             viewingCiv.lastSeenImprovement[position]
     }
 
+    /** Returns true if this tile has fallout or an equivalent terrain feature */
+    fun hasFalloutEquivalent(): Boolean = terrainFeatures.any { ruleset.terrains[it]!!.hasUnique(UniqueType.NullifyYields)}
+
 
     // This is for performance - since we access the neighbors of a tile ALL THE TIME,
     // and the neighbors of a tile never change, it's much more efficient to save the list once and for all!
@@ -558,7 +561,7 @@ open class Tile : IsPartOfGameInfoSerialization {
     fun getTilesInDistanceRange(range: IntRange): Sequence<Tile> = tileMap.getTilesInDistanceRange(position, range)
     fun getTilesAtDistance(distance: Int): Sequence<Tile> =tileMap.getTilesAtDistance(position, distance)
 
-    fun getDefensiveBonus(): Float {
+    fun getDefensiveBonus(includeImprovementBonus: Boolean = true): Float {
         var bonus = baseTerrainObject.defenceBonus
         if (terrainFeatureObjects.isNotEmpty()) {
             val otherTerrainBonus = terrainFeatureObjects.maxOf { it.defenceBonus }
@@ -566,7 +569,7 @@ open class Tile : IsPartOfGameInfoSerialization {
         }
         if (naturalWonder != null) bonus += getNaturalWonder().defenceBonus
         val tileImprovement = getUnpillagedTileImprovement()
-        if (tileImprovement != null) {
+        if (tileImprovement != null && includeImprovementBonus) {
             for (unique in tileImprovement.getMatchingUniques(UniqueType.DefensiveBonus, StateForConditionals(tile = this)))
                 bonus += unique.params[0].toFloat() / 100
         }

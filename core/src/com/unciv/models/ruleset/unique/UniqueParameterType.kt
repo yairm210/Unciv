@@ -236,33 +236,42 @@ enum class UniqueParameterType(
 
     /** Implemented by [City.matchesFilter][com.unciv.logic.city.City.matchesFilter] */
     CityFilter("cityFilter", "in all cities", null, "City filters") {
-        private val cityFilterStrings = setOf(
+        private val knownValues = setOf(
             "in this city",
-            "in all cities",
-            "in all coastal cities",
-            "in capital",
-            "in all non-occupied cities",
+            "in all cities", "All",
+            "in your cities", "Your",
+            "in all coastal cities", "Coastal",
+            "in capital", "Capital",
+            "in all non-occupied cities", "Non-occupied",
             "in all cities with a world wonder",
             "in all cities connected to capital",
-            "in all cities with a garrison",
+            "in all cities with a garrison", "Garrisoned",
             "in all cities in which the majority religion is a major religion",
             "in all cities in which the majority religion is an enhanced religion",
             "in non-enemy foreign cities",
-            "in foreign cities",
-            "in annexed cities",
-            "in puppeted cities",
-            "in holy cities",
+            "in enemy cities", "Enemy",
+            "in foreign cities", "Foreign",
+            "in annexed cities", "Annexed",
+            "in puppeted cities", "Puppeted",
+            "in holy cities", "Holy",
             "in City-State cities",
             "in cities following this religion",
+            "in cities following our religion",
         )
 
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
                 UniqueType.UniqueParameterErrorSeverity? {
-            if (parameterText in cityFilterStrings) return null
+            if (parameterText in knownValues) return null
             return UniqueType.UniqueParameterErrorSeverity.RulesetInvariant
         }
 
-        override fun getTranslationWriterStringsForOutput() = cityFilterStrings
+        override fun isKnownValue(parameterText: String, ruleset: Ruleset): Boolean {
+            if (parameterText in knownValues) return true
+            if (CityFilter.isKnownValue(parameterText, ruleset)) return true
+            return false
+        }
+
+        override fun getTranslationWriterStringsForOutput() = knownValues
     },
 
     /** Used by [BuildingFilter] and e.g. [UniqueType.ConditionalCityWithBuilding] */

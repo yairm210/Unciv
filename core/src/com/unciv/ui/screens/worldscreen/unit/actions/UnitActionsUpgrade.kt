@@ -10,25 +10,24 @@ import com.unciv.models.translations.tr
 
 object UnitActionsUpgrade {
 
-    /**  Common implementation for [getUpgradeAction], [getFreeUpgradeAction] and [getAncientRuinsUpgradeAction] */
+    /**  Common implementation for `getUpgradeActions(unit)`, [getFreeUpgradeAction], [getAncientRuinsUpgradeAction] and [getUpgradeActionAnywhere] */
     private fun getUpgradeActions(
         unit: MapUnit,
         isFree: Boolean,
         isSpecial: Boolean,
         isAnywhere: Boolean
-    ): Sequence<UnitAction> {
+    ) = sequence<UnitAction> {
         val unitTile = unit.getTile()
         val civInfo = unit.civ
-        val specialUpgradesTo = if (isSpecial) 
-            unit.baseUnit().getMatchingUniques(UniqueType.RuinsUpgrade, StateForConditionals(civInfo, unit= unit))
+        val specialUpgradesTo = if (isSpecial)
+            unit.baseUnit().getMatchingUniques(UniqueType.RuinsUpgrade, StateForConditionals(civInfo, unit = unit))
                 .map { it.params[0] }.firstOrNull()
         else null
         val upgradeUnits = if (specialUpgradesTo != null) sequenceOf(specialUpgradesTo)
             else unit.baseUnit.getUpgradeUnits(StateForConditionals(civInfo, unit = unit))
-        if (upgradeUnits.none()) return emptySequence() // can't upgrade to anything
-        if (!isAnywhere && unitTile.getOwner() != civInfo) return emptySequence()
+        if (upgradeUnits.none()) return@sequence // can't upgrade to anything
+        if (!isAnywhere && unitTile.getOwner() != civInfo) return@sequence
 
-        var upgradeActions = emptySequence<UnitAction>()
         for (upgradesTo in upgradeUnits){
             val upgradedUnit = civInfo.getEquivalentUnit(upgradesTo)
 
@@ -55,7 +54,7 @@ object UnitActionsUpgrade {
                 "Upgrade to [${upgradedUnit.name}] ([$goldCostOfUpgrade] gold)"
             else "Upgrade to [${upgradedUnit.name}]\n([$goldCostOfUpgrade] gold, [$newResourceRequirementsString])"
 
-            upgradeActions += UpgradeUnitAction(
+            yield(UpgradeUnitAction(
                 title = title,
                 unitToUpgradeTo = upgradedUnit,
                 goldCostOfUpgrade = goldCostOfUpgrade,
@@ -63,10 +62,6 @@ object UnitActionsUpgrade {
                 action = {
                     unit.destroy(destroyTransportedUnit = false)
                     val newUnit = civInfo.units.placeUnitNearTile(unitTile.position, upgradedUnit)
-
-                    /** We were UNABLE to place the new unit, which means that the unit failed to upgrade!
-                     * The only known cause of this currently is "land units upgrading to water units" which fail to be placed.
-                     */
 
                     /** We were UNABLE to place the new unit, which means that the unit failed to upgrade!
                      * The only known cause of this currently is "land units upgrading to water units" which fail to be placed.
@@ -88,9 +83,8 @@ object UnitActionsUpgrade {
                             && unit.upgrade.canUpgrade(unitToUpgradeTo = upgradedUnit)
                         )
                 }
-            )
+            ))
         }
-        return upgradeActions
     }
 
     fun getUpgradeActions(unit: MapUnit) =

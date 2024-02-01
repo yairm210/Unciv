@@ -83,9 +83,6 @@ object Constants {
     const val embarked = "Embarked"
     const val wounded = "Wounded"
 
-
-    const val rising = "Rising"
-    const val lowering = "Lowering"
     const val remove = "Remove "
     const val repair = "Repair"
 
