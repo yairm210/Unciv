@@ -756,6 +756,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
     }
 
     fun destroy(destroyTransportedUnit: Boolean = true) {
+        stopEscorting()
         val currentPosition = Vector2(getTile().position)
         civ.attacksSinceTurnStart.addAll(attacksSinceTurnStart.asSequence().map { Civilization.HistoricalAttackMemory(this.name, currentPosition, it) })
         currentMovement = 0f
@@ -772,6 +773,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
     }
 
     fun gift(recipient: Civilization) {
+        stopEscorting()
         civ.units.removeUnit(this)
         civ.cache.updateViewableTiles()
         // all transported units should be gift as well
