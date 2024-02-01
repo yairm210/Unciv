@@ -5,7 +5,6 @@ import com.unciv.models.Counter
 import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.IConstruction
 import com.unciv.models.ruleset.INonPerpetualConstruction
-import com.unciv.models.ruleset.ModOptionsConstants
 import com.unciv.models.ruleset.unique.LocalUniqueCache
 import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.Unique
@@ -523,7 +522,7 @@ class CityStats(val city: City) {
         }
 
         // AFTER we've gotten all the gold stats figured out, only THEN do we plonk that gold into Science
-        if (city.getRuleset().modOptions.uniques.contains(ModOptionsConstants.convertGoldToScience)) {
+        if (city.getRuleset().modOptions.hasUnique(UniqueType.ConvertGoldToScience)) {
             val amountConverted = (newFinalStatList.values.sumOf { it.gold.toDouble() }
                     * city.civ.tech.goldPercentConvertedToScience).toInt().toFloat()
             if (amountConverted > 0) // Don't want you converting negative gold to negative science yaknow

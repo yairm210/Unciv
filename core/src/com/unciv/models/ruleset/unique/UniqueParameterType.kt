@@ -588,9 +588,14 @@ enum class UniqueParameterType(
     /** Mod declarative compatibility: Define Mod relations by their name. */
     ModName("modFilter", "DeCiv Redux", """A Mod name, case-sensitive _or_ a simple wildcard filter beginning and ending in an Asterisk, case-insensitive""", "Mod name filter") {
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
-            UniqueType.UniqueParameterErrorSeverity? =
-            if ('-' !in parameterText && ('*' !in parameterText || parameterText.matches(Regex("""^\*[^*]+\*$""")))) null
-            else UniqueType.UniqueParameterErrorSeverity.RulesetInvariant
+            UniqueType.UniqueParameterErrorSeverity? = when {
+                BaseRuleset.values().any { it.fullName == parameterText } -> null  // Only Builtin ruleset names can contain '-'
+                parameterText == "*Civ V -*" || parameterText == "*Civ V - *" -> null  // Wildcard filter for builtin
+                '-' in parameterText -> UniqueType.UniqueParameterErrorSeverity.RulesetInvariant
+                parameterText.matches(Regex("""^\*[^*]+\*$""")) -> null
+                parameterText.startsWith('*') || parameterText.endsWith('*') -> UniqueType.UniqueParameterErrorSeverity.RulesetInvariant
+                else -> null
+        }
 
         override fun getTranslationWriterStringsForOutput() = scanExistingValues(this)
     },

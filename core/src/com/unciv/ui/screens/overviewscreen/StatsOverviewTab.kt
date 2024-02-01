@@ -5,15 +5,14 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.Constants
 import com.unciv.GUI
 import com.unciv.logic.civilization.Civilization
-import com.unciv.models.ruleset.ModOptionsConstants
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.StatMap
-import com.unciv.ui.components.widgets.TabbedPager
-import com.unciv.ui.components.widgets.UncivSlider
 import com.unciv.ui.components.extensions.addSeparator
 import com.unciv.ui.components.extensions.toLabel
+import com.unciv.ui.components.widgets.TabbedPager
+import com.unciv.ui.components.widgets.UncivSlider
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.civilopediascreen.FormattedLine
 import com.unciv.ui.screens.civilopediascreen.MarkupRenderer
@@ -53,7 +52,7 @@ class StatsOverviewTab(
         unhappinessTable.update()
 
         goldAndSliderTable.add(goldTable).row()
-        if (gameInfo.ruleset.modOptions.uniques.contains(ModOptionsConstants.convertGoldToScience))
+        if (gameInfo.ruleset.modOptions.hasUnique(UniqueType.ConvertGoldToScience))
             goldAndSliderTable.addGoldSlider()
 
         update()

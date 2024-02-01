@@ -17,7 +17,6 @@ import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.logic.civilization.managers.EspionageManager
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.models.ruleset.MilestoneType
-import com.unciv.models.ruleset.ModOptionsConstants
 import com.unciv.models.ruleset.Policy
 import com.unciv.models.ruleset.PolicyBranch
 import com.unciv.models.ruleset.Victory
@@ -41,7 +40,7 @@ object NextTurnAutomation {
         TradeAutomation.respondToTradeRequests(civInfo)
 
         if (civInfo.isMajorCiv()) {
-            if (!civInfo.gameInfo.ruleset.modOptions.hasUnique(ModOptionsConstants.diplomaticRelationshipsCannotChange)) {
+            if (!civInfo.gameInfo.ruleset.modOptions.hasUnique(UniqueType.DiplomaticRelationshipsCannotChange)) {
                 DiplomacyAutomation.declareWar(civInfo)
                 DiplomacyAutomation.offerPeaceTreaty(civInfo)
                 DiplomacyAutomation.offerDeclarationOfFriendship(civInfo)
@@ -467,10 +466,10 @@ object NextTurnAutomation {
         val bestCity = civInfo.cities.filterNot { it.isPuppet }
             // If we can build workers, then we want AT LEAST 2 improvements, OR a worker nearby.
             // Otherwise, AI tries to produce settlers when it can hardly sustain itself
-            .filter {
+            .filter { city ->
                 !workersBuildableForThisCiv
-                    || it.getCenterTile().getTilesInDistance(2).count { it.improvement!=null } > 1
-                    || it.getCenterTile().getTilesInDistance(3).any { it.civilianUnit?.hasUnique(UniqueType.BuildImprovements)==true }
+                    || city.getCenterTile().getTilesInDistance(2).count { it.improvement!=null } > 1
+                    || city.getCenterTile().getTilesInDistance(3).any { it.civilianUnit?.hasUnique(UniqueType.BuildImprovements)==true }
             }
             .maxByOrNull { it.cityStats.currentCityStats.production }
             ?: return

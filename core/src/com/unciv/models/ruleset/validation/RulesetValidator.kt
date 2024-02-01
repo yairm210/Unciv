@@ -39,7 +39,7 @@ class RulesetValidator(val ruleset: Ruleset) {
         val lines = RulesetErrorList()
 
         // When not checking the entire ruleset, we can only really detect ruleset-invariant errors in uniques
-        addModOptionsErrors(lines)
+        addModOptionsErrors(lines, tryFixUnknownUniques)
         uniqueValidator.checkUniques(ruleset.globalUniques, lines, false, tryFixUnknownUniques)
         addUnitErrorsRulesetInvariant(lines, tryFixUnknownUniques)
         addTechErrorsRulesetInvariant(lines, tryFixUnknownUniques)
@@ -63,7 +63,7 @@ class RulesetValidator(val ruleset: Ruleset) {
         uniqueValidator.populateFilteringUniqueHashsets()
 
         val lines = RulesetErrorList()
-        addModOptionsErrors(lines)
+        addModOptionsErrors(lines, tryFixUnknownUniques)
         uniqueValidator.checkUniques(ruleset.globalUniques, lines, true, tryFixUnknownUniques)
 
         addUnitErrorsBaseRuleset(lines, tryFixUnknownUniques)
@@ -94,8 +94,12 @@ class RulesetValidator(val ruleset: Ruleset) {
         return lines
     }
 
-    private fun addModOptionsErrors(lines: RulesetErrorList) {
-        if (ruleset.name.isBlank()) return // These tests don't make sense for combined rulesets
+    private fun addModOptionsErrors(lines: RulesetErrorList, tryFixUnknownUniques: Boolean) {
+        // Basic Unique validation (type, target, parameters) should always run.
+        // Using reportRulesetSpecificErrors=true as ModOptions never should use Uniques depending on objects from a base ruleset anyway.
+        uniqueValidator.checkUniques(ruleset.modOptions, lines, reportRulesetSpecificErrors = true, tryFixUnknownUniques)
+
+        if (ruleset.name.isBlank()) return // The rest of these tests don't make sense for combined rulesets
 
         val audioVisualUniqueTypes = setOf(
             UniqueType.ModIsAudioVisual,
@@ -825,6 +829,4 @@ class RulesetValidator(val ruleset: Ruleset) {
             recursiveCheck(hashSetOf(), promotion, 0)
         }
     }
-
-
 }

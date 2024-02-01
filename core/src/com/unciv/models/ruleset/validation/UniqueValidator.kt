@@ -7,6 +7,7 @@ import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.ruleset.unique.IHasUniques
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueComplianceError
+import com.unciv.models.ruleset.unique.UniqueFlag
 import com.unciv.models.ruleset.unique.UniqueParameterType
 import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueType
@@ -84,7 +85,10 @@ class UniqueValidator(val ruleset: Ruleset) {
             addConditionalErrors(conditional, rulesetErrors, prefix, unique, reportRulesetSpecificErrors)
         }
 
-        if (unique.conditionals.any() && unique.type in MapUnitCache.UnitMovementUniques)
+        if (unique.type in MapUnitCache.UnitMovementUniques
+                && unique.conditionals.any { it.type != UniqueType.ConditionalOurUnit || it.params[0] != "All" }
+            )
+            // (Stay silent if the only conditional is `<for [All] units>` - as in G&K Denmark)
             // Not necessarily even a problem, but yes something mod maker should be aware of
             rulesetErrors.add("$prefix unique \"${unique.text}\" contains a conditional on a unit movement unique. " +
                 "Due to performance considerations, this unique is cached on the unit," +
@@ -105,6 +109,15 @@ class UniqueValidator(val ruleset: Ruleset) {
         unique: Unique,
         reportRulesetSpecificErrors: Boolean
     ) {
+        if (unique.hasFlag(UniqueFlag.NoConditionals)) {
+            rulesetErrors.add(
+                "$prefix unique \"${unique.text}\" contains the conditional \"${conditional.text}\"," +
+                    " but the unique does not accept conditionals!",
+                RulesetErrorSeverity.Error
+            )
+            return
+        }
+
         if (conditional.type == null) {
             rulesetErrors.add(
                 "$prefix unique \"${unique.text}\" contains the conditional \"${conditional.text}\"," +

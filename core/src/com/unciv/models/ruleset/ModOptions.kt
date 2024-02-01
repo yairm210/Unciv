@@ -6,16 +6,6 @@ import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueMap
 import com.unciv.models.ruleset.unique.UniqueTarget
 
-object ModOptionsConstants {
-    const val diplomaticRelationshipsCannotChange = "Diplomatic relationships cannot change"
-    const val convertGoldToScience = "Can convert gold to science with sliders"
-    const val allowCityStatesSpawnUnits = "Allow City States to spawn with additional units"
-    const val tradeCivIntroductions = "Can trade civilization introductions for [] Gold"
-    const val disableReligion = "Disable religion"
-    const val allowRazeCapital = "Allow raze capital"
-    const val allowRazeHolyCity = "Allow raze holy city"
-}
-
 class ModOptions : IHasUniques {
     //region Modder choices
     var isBaseRuleset = false
