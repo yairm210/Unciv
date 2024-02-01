@@ -1,3 +1,17 @@
+## 4.10.6
+
+Fixed crash due to ranged unit trying to capture civilian but being unable to reach the tile
+
+Added unit conditional support to pillage yield uniques
+
+Added unit conditional support to pillage yield uniques
+
+By SomeTroglodyte:
+- Fix ModOptions unique parameter types not checked and "uniquetype" ModOptionsConstants 
+- Policy picker colors skinnable 
+
+Players can't move spies when it is not their turn  - By tuvus
+
 ## 4.10.5
 
 Added 'copy to clipboard' button on map errors so we can debug them
