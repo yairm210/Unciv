@@ -902,11 +902,13 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "[amount] Movement point cost to disembark"
 	Example: "[3] Movement point cost to disembark"
 
+Due to performance considerations, this unique is cached, thus conditionals may not work.
 	Applicable to: Global, Unit
 
 ??? example  "[amount] Movement point cost to embark"
 	Example: "[3] Movement point cost to embark"
 
+Due to performance considerations, this unique is cached, thus conditionals may not work.
 	Applicable to: Global, Unit
 
 ## Nation uniques
@@ -924,9 +926,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Nation
 
 ??? example  "All units move through Forest and Jungle Tiles in friendly territory as if they have roads. These tiles can be used to establish City Connections upon researching the Wheel."
+Due to performance considerations, this unique is cached, thus conditionals may not work.
 	Applicable to: Nation
 
 ??? example  "Units ignore terrain costs when moving into any tile with Hills"
+Due to performance considerations, this unique is cached, thus conditionals may not work.
 	Applicable to: Nation
 
 ??? example  "Excluded from map editor"
@@ -1399,43 +1403,54 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Unit
 
 ??? example  "Cannot move"
+Due to performance considerations, this unique is cached, thus conditionals may not work.
 	Applicable to: Unit
 
 ??? example  "Double movement in [terrainFilter]"
 	Example: "Double movement in [Fresh Water]"
 
+Due to performance considerations, this unique is cached, thus conditionals may not work.
 	Applicable to: Unit
 
 ??? example  "All tiles cost 1 movement"
+Due to performance considerations, this unique is cached, thus conditionals may not work.
 	Applicable to: Unit
 
 ??? example  "May travel on Water tiles without embarking"
+Due to performance considerations, this unique is cached, thus conditionals may not work.
 	Applicable to: Unit
 
 ??? example  "Can pass through impassable tiles"
+Due to performance considerations, this unique is cached, thus conditionals may not work.
 	Applicable to: Unit
 
 ??? example  "Ignores terrain cost"
+Due to performance considerations, this unique is cached, thus conditionals may not work.
 	Applicable to: Unit
 
 ??? example  "Ignores Zone of Control"
+Due to performance considerations, this unique is cached, thus conditionals may not work.
 	Applicable to: Unit
 
 ??? example  "Rough terrain penalty"
+Due to performance considerations, this unique is cached, thus conditionals may not work.
 	Applicable to: Unit
 
 ??? example  "Can enter ice tiles"
+Due to performance considerations, this unique is cached, thus conditionals may not work.
 	Applicable to: Unit
 
 ??? example  "Cannot enter ocean tiles"
 	Applicable to: Unit
 
 ??? example  "May enter foreign tiles without open borders"
+Due to performance considerations, this unique is cached, thus conditionals may not work.
 	Applicable to: Unit
 
 ??? example  "May enter foreign tiles without open borders, but loses [amount] religious strength each turn it ends there"
 	Example: "May enter foreign tiles without open borders, but loses [3] religious strength each turn it ends there"
 
+Due to performance considerations, this unique is cached, thus conditionals may not work.
 	Applicable to: Unit
 
 ??? example  "Never appears as a Barbarian unit"
@@ -1511,6 +1526,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "Units ending their turn on this terrain take [amount] damage"
 	Example: "Units ending their turn on this terrain take [3] damage"
 
+Due to performance considerations, this unique is cached, thus conditionals may not work.
 	Applicable to: Terrain
 
 ??? example  "Grants [promotion] ([comment]) to adjacent [mapUnitFilter] units for the rest of the game"
