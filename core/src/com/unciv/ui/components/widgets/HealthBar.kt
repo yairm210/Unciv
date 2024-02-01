@@ -49,6 +49,7 @@ class HealthBar(
 
         background = BaseScreen.skinStrings.getUiBackground(style.backgroundPath, tintColor = style.backgroundTint)
         pad(style.borderSize)
+        setRound(false)
 
         for (i in segments.indices) {
             val segment = segments[i]
@@ -56,15 +57,8 @@ class HealthBar(
                 throw IllegalArgumentException("HealthBar segment with dynamicColor must leave color at WHITE")
 
             val backgroundPath = "General/HealthBar" + (segment.backgroundPath ?.let { "/$it" } ?: "Segment")
-            if (BaseScreen.skinStrings.hasUiBackground(backgroundPath)) {
-                val background = BaseScreen.skinStrings.getUiBackground(backgroundPath, tintColor = segment.color)
-                add(BackgroundActor(background, Align.center))
-            } else {
-                // This is a kludge to reduce visual impact of Table quirks - shouldn't be necessary, but using BackgroundActor will paint cells into the padding
-                val image = ImageGetter.getWhiteDot()
-                image.color = segment.color
-                add(image)
-            }
+            val background = BaseScreen.skinStrings.getUiBackground(backgroundPath, tintColor = segment.color)
+            add(BackgroundActor(background, Align.center))
 
             if (vertical) row()
         }
