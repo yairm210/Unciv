@@ -39,7 +39,9 @@ class WorkerAutomation(
 ) {
     ///////////////////////////////////////// Cached data /////////////////////////////////////////
 
-    val roadAutomation:RoadAutomation = RoadAutomation(civInfo, cachedForTurn, cloningSource?.roadAutomation)
+    val roadToAutomation:RoadToAutomation = RoadToAutomation(civInfo)
+    val roadBetweenCitiesAutomation:RoadBetweenCitiesAutomation = RoadBetweenCitiesAutomation(civInfo, cachedForTurn, cloningSource?.roadBetweenCitiesAutomation)
+
     private val ruleSet = civInfo.gameInfo.ruleset
 
 
@@ -70,7 +72,7 @@ class WorkerAutomation(
     fun automateWorkerAction(unit: MapUnit, dangerousTiles: HashSet<Tile>) {
         val currentTile = unit.getTile()
         // Must be called before any getPriority checks to guarantee the local road cache is processed
-        val citiesToConnect = roadAutomation.getNearbyCitiesToConnect(unit)
+        val citiesToConnect = roadBetweenCitiesAutomation.getNearbyCitiesToConnect(unit)
         // Shortcut, we are working a good tile (like resource) and don't need to check for other tiles to work
         if (!dangerousTiles.contains(currentTile) && getFullPriority(unit.getTile(), unit) >= 10
             && currentTile.improvementInProgress != null) {
@@ -149,7 +151,7 @@ class WorkerAutomation(
         }
 
         // Nothing to do, try again to connect cities
-        if (civInfo.stats.statsForNextTurn.gold > 10 && roadAutomation.tryConnectingCities(unit, citiesToConnect)) return
+        if (civInfo.stats.statsForNextTurn.gold > 10 && roadBetweenCitiesAutomation.tryConnectingCities(unit, citiesToConnect)) return
 
 
         debug("WorkerAutomation: %s -> nothing to do", unit.toString())
@@ -230,7 +232,7 @@ class WorkerAutomation(
                 && !civInfo.hasResource(tile.resource!!))
                 priority += 2
         }
-        if (tile in roadAutomation.tilesOfRoadsToConnectCities) priority += when {
+        if (tile in roadBetweenCitiesAutomation.tilesOfRoadsToConnectCities) priority += when {
                 civInfo.stats.statsForNextTurn.gold <= 5 -> 0
                 civInfo.stats.statsForNextTurn.gold <= 10 -> 1
                 civInfo.stats.statsForNextTurn.gold <= 30 -> 2
@@ -369,15 +371,15 @@ class WorkerAutomation(
         val improvement = ruleSet.tileImprovements[improvementName]!!
 
         // Add the value of roads if we want to build it here
-        if (improvement.isRoad() && roadAutomation.bestRoadAvailable.improvement(ruleSet) == improvement
-            && tile in roadAutomation.tilesOfRoadsToConnectCities) {
+        if (improvement.isRoad() && roadBetweenCitiesAutomation.bestRoadAvailable.improvement(ruleSet) == improvement
+            && tile in roadBetweenCitiesAutomation.tilesOfRoadsToConnectCities) {
             var value = 1f
-            val city = roadAutomation.tilesOfRoadsToConnectCities[tile]!!
+            val city = roadBetweenCitiesAutomation.tilesOfRoadsToConnectCities[tile]!!
             if (civInfo.stats.statsForNextTurn.gold >= 20)
             // Bigger cities have a higher priority to connect
                 value += (city.population.population - 3) * .3f
             // Higher priority if we are closer to connecting the city
-            value += (5 - roadAutomation.roadsToConnectCitiesCache[city]!!.size).coerceAtLeast(0)
+            value += (5 - roadBetweenCitiesAutomation.roadsToConnectCitiesCache[city]!!.size).coerceAtLeast(0)
             return value
         }
 
