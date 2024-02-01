@@ -5,8 +5,8 @@ import com.unciv.logic.battle.Battle
 import com.unciv.logic.battle.BattleDamage
 import com.unciv.logic.battle.CityCombatant
 import com.unciv.logic.battle.MapUnitCombatant
-import com.unciv.logic.city.City
 import com.unciv.logic.battle.TargetHelper
+import com.unciv.logic.city.City
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.models.ruleset.unique.UniqueType
 
@@ -14,6 +14,7 @@ object BattleHelper {
 
     fun tryAttackNearbyEnemy(unit: MapUnit, stayOnTile: Boolean = false): Boolean {
         if (unit.hasUnique(UniqueType.CannotAttack)) return false
+        val distanceToTiles = unit.movement.getDistanceToTiles()
         val attackableEnemies = TargetHelper.getAttackableEnemies(unit, unit.movement.getDistanceToTiles(), stayOnTile=stayOnTile)
             // Only take enemies we can fight without dying or are made to die
             .filter {unit.hasUnique(UniqueType.SelfDestructs) ||
@@ -27,7 +28,8 @@ object BattleHelper {
 
         if (enemyTileToAttack != null) {
             if (enemyTileToAttack.tileToAttack.militaryUnit == null && unit.baseUnit.isRanged()
-                && unit.movement.canMoveTo(enemyTileToAttack.tileToAttack)) {
+                && unit.movement.canMoveTo(enemyTileToAttack.tileToAttack)
+                && distanceToTiles.containsKey(enemyTileToAttack.tileToAttack)) { // Since the 'getAttackableEnemies' could return a tile we attack at range but cannot reach
                 // Ranged units should move to caputre a civilian unit instead of attacking it
                 unit.movement.moveToTile(enemyTileToAttack.tileToAttack)
             } else {
@@ -69,7 +71,7 @@ object BattleHelper {
         var attackTile: AttackableTile? = null
         // We always have to calculate the attack value even if there is only one attackableEnemy
         for (attackableEnemy in attackableEnemies) {
-            val tempAttackValue = if (attackableEnemy.tileToAttack.isCityCenter()) 
+            val tempAttackValue = if (attackableEnemy.tileToAttack.isCityCenter())
                 getCityAttackValue(unit, attackableEnemy.tileToAttack.getCity()!!)
             else getUnitAttackValue(unit, attackableEnemy)
             if (tempAttackValue > highestAttackValue) {
@@ -90,12 +92,12 @@ object BattleHelper {
     private fun getCityAttackValue(attacker: MapUnit, city: City): Int {
         val attackerUnit = MapUnitCombatant(attacker)
         val cityUnit = CityCombatant(city)
-        val isCityCapturable = city.health == 1 
+        val isCityCapturable = city.health == 1
             || attacker.baseUnit.isMelee() && city.health <= BattleDamage.calculateDamageToDefender(attackerUnit, cityUnit).coerceAtLeast(1)
         if (isCityCapturable)
             return if (attacker.baseUnit.isMelee()) 10000 // Capture the city immediatly!
             else 0 // Don't attack the city anymore since we are a ranged unit
-        
+
         if (attacker.baseUnit.isMelee()) {
             val battleDamage = BattleDamage.calculateDamageToAttacker(attackerUnit, cityUnit)
             if (attacker.health - battleDamage * 2 <= 0 && !attacker.hasUnique(UniqueType.SelfDestructs)) {
@@ -110,7 +112,7 @@ object BattleHelper {
             }
         }
 
-        var attackValue = 100 
+        var attackValue = 100
         // Siege units should really only attack the city
         if (attacker.baseUnit.isProbablySiegeUnit()) attackValue += 100
         // Ranged units don't take damage from the city
@@ -128,7 +130,7 @@ object BattleHelper {
                     attackValue += 15
             }
         }
-        
+
         return attackValue
     }
 
@@ -145,7 +147,7 @@ object BattleHelper {
         if (militaryUnit != null) {
             attackValue = 100
             // Associate enemy units with number of hits from this unit to kill them
-            val attacksToKill = (militaryUnit.health.toFloat() / 
+            val attacksToKill = (militaryUnit.health.toFloat() /
                 BattleDamage.calculateDamageToDefender(MapUnitCombatant(attacker), MapUnitCombatant(militaryUnit)))
                 .coerceAtLeast(1f).coerceAtMost(10f)
             // We can kill them in this turn
@@ -168,7 +170,7 @@ object BattleHelper {
         // Moving around less means we are straying less into enemy territory
         // Average should be around 2.5-5 early game and up to 35 for tanks in late game
         attackValue += (attackTile.movementLeftAfterMovingToAttackTile * 5).toInt()
-        
+
         return attackValue
     }
 }
