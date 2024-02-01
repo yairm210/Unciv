@@ -105,7 +105,7 @@ class EspionageOverviewScreen(val civInfo: Civilization, val worldScreen: WorldS
                         )
                 }
             }
-            if (worldScreen.viewingCiv != civInfo) {
+            if (!worldScreen.canChangeState) {
                 // Spectators aren't allowed to move the spies of the Civs they are viewing
                 moveSpyButton.disable()
             }
