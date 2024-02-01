@@ -46,21 +46,12 @@ class SkinStrings(skin: String = UncivGame.Current.settings.skin) {
      *                  separate alpha value, it will be applied to a clone of either color.
      */
     fun getUiBackground(path: String, default: String? = null, tintColor: Color? = null): NinePatchDrawable {
-        val locationByName = skinLocation + path
         val skinVariant = skinConfig.skinVariants[path]
-        val locationByConfigVariant = if (skinVariant?.image != null) skinLocation + skinVariant.image else null
         val tint = (skinVariant?.tint ?: tintColor)?.run {
             if (skinVariant?.alpha == null) this
             else cpy().apply { a = skinVariant.alpha }
         }
-        val location = when {
-            locationByConfigVariant != null && ImageGetter.ninePatchImageExists(locationByConfigVariant) ->
-                locationByConfigVariant
-            ImageGetter.ninePatchImageExists(locationByName) ->
-                locationByName
-            else ->
-                default
-        }
+        val location = getLocation(path, default)
         return ImageGetter.getNinePatch(location, tint)
     }
 
@@ -69,4 +60,20 @@ class SkinStrings(skin: String = UncivGame.Current.settings.skin) {
                 ?: default
                 ?: skinConfig.clearColor
 
+    /** Returns whether there is a skinned Ninepatch for [path], if `false` then [getUiBackground] would return a solid background. */
+    fun hasUiBackground(path: String) = getLocation(path, null) != null
+
+    private fun getLocation(path: String, default: String?): String? {
+        val locationByName = skinLocation + path
+        val skinVariant = skinConfig.skinVariants[path]
+        val locationByConfigVariant = if (skinVariant?.image != null) skinLocation + skinVariant.image else null
+        return when {
+            locationByConfigVariant != null && ImageGetter.ninePatchImageExists(locationByConfigVariant) ->
+                locationByConfigVariant
+            ImageGetter.ninePatchImageExists(locationByName) ->
+                locationByName
+            else ->
+                default
+        }
+    }
 }

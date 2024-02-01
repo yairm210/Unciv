@@ -14,12 +14,13 @@ import com.badlogic.gdx.scenes.scene2d.utils.Layout
 import com.unciv.UncivGame
 import com.unciv.dev.FasterUIDevelopment.DevElement
 import com.unciv.logic.files.UncivFiles
+import com.unciv.models.metadata.GameSettings
 import com.unciv.ui.components.extensions.center
-import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.fonts.FontFamilyData
 import com.unciv.ui.components.fonts.FontImplementation
 import com.unciv.ui.components.fonts.FontMetricsCommon
 import com.unciv.ui.components.fonts.Fonts
+import com.unciv.ui.components.widgets.HealthBar
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.images.ImageWithCustomSize
 import com.unciv.ui.screens.basescreen.BaseScreen
@@ -36,6 +37,7 @@ import java.awt.image.BufferedImage
  *    If you forget, you'll see an orange dot in the window center.
  *  * Resizing the window is not supported. You might lose interactivity.
  *  * The middle mouse button toggles Scene2D debug mode, like the full game offers in the Debug Options.
+ *  * Screen and Widget sizes will follow the normal game's display settings, especially [GameSettings.screenSize].
  */
 object FasterUIDevelopment {
 
@@ -45,7 +47,8 @@ object FasterUIDevelopment {
         lateinit var actor: Actor
 
         fun createDevElement() {
-            actor = "This could be your UI element in development!".toLabel()
+            //actor = "This could be your UI element in development!".toLabel()
+            actor = HealthBar.Testing.getFasterUIDevelopmentTester()
         }
 
         @Suppress("EmptyFunctionBlock")
