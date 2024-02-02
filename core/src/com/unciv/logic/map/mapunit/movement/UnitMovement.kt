@@ -856,9 +856,10 @@ class PathsToTilesWithinTurn : LinkedHashMap<Tile, UnitMovement.ParentTileAndTot
     }
     
     fun removeAllTilesNotInSet(otherPathsToTiles: PathsToTilesWithinTurn) {
-        for (entry in this.toList()) {
-            if (!otherPathsToTiles.contains(entry.first)) {
-                this.remove(entry.first)
+        val iterator = this.iterator()
+        while(iterator.hasNext()) {
+            if (!otherPathsToTiles.contains(iterator.next().key)) {
+                iterator.remove()
             }
         }
     }
