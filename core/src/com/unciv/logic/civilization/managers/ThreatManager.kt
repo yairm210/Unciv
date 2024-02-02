@@ -56,6 +56,7 @@ class ThreatManager(val civInfo: Civilization) {
             minDistanceToSearch = (tileData.distanceSearched + 1).coerceAtLeast(1)
         }
 
+
         if (tileData != null && tileData.tilesWithEnemies.isNotEmpty()) throw IllegalStateException("There must be no elements in tile.data.tilesWithEnemies at this point")
         val tilesWithEnemyAtDistance: MutableList<Pair<Tile,Int>> = mutableListOf()
         // Search for nearby enemies and store the results
@@ -83,9 +84,10 @@ class ThreatManager(val civInfo: Civilization) {
     fun getTilesWithEnemyUnitsInDistance(tile: Tile, maxDist: Int): MutableList<Tile> {
         val tileData = distanceToClosestEnemyTiles[tile]
 
+        // The list of tiles that we will return
         val tilesWithEnemies: MutableList<Tile> = mutableListOf()
+        // The list of tiles with distance that will be stored in distanceToClosestEnemyTiles
         val tileDataTilesWithEnemies: MutableList<Pair<Tile,Int>> = if (tileData?.tilesWithEnemies != null) tileData.tilesWithEnemies else mutableListOf()
-
 
         if (tileData != null && tileData.distanceSearched >= maxDist) {
             // Add all tiles that we have previously found
@@ -100,10 +102,12 @@ class ThreatManager(val civInfo: Civilization) {
             }
         }
 
-        // Shortcut, we don't need to search for anything more
+        // We don't need to search for anything more if we have previously searched past maxDist
         if (tileData != null && maxDist <= tileData.distanceSearched)
             return tilesWithEnemies
 
+
+        // Search all tiles that haven't been searched yet up until madDist
         val minDistanceToSearch = (tileData?.distanceSearched?.coerceAtLeast(0) ?: 0) + 1
 
         for (i in minDistanceToSearch..maxDist) {
@@ -118,7 +122,6 @@ class ThreatManager(val civInfo: Civilization) {
             tileData.distanceSearched = maxOf(tileData.distanceSearched, maxDist)
         } else {
             // Cache our results for later
-            // tilesWithEnemies must return the enemy at a distance of closestEnemyDistance
             distanceToClosestEnemyTiles[tile] = ClosestEnemyTileData(maxDist, tileDataTilesWithEnemies)
         }
         return tilesWithEnemies
