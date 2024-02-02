@@ -29,6 +29,7 @@ class Personality : RulesetObject() {
     var warMongering: Float = 5f // Todo: Look into where this should be inserted
     var policy = LinkedHashMap<String, Int>()
     var preferredVictoryType: String = Constants.neutralVictoryType
+    var basePersonality: Boolean = false
 
     private fun nameToVariable(value: PersonalityValue):KMutableProperty0<Float> {
         return when(value) {
@@ -45,7 +46,7 @@ class Personality : RulesetObject() {
     }
 
     companion object {
-        fun basePersonality(): Personality { 
+        fun basePersonality(): Personality {
             val base = Personality()
             base.basePersonality = true
             return base

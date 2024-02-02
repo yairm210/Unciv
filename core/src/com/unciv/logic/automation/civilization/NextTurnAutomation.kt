@@ -170,6 +170,7 @@ object NextTurnAutomation {
             value += (civInfo.getPersonality()[PersonalityValue.Happiness]).toInt() - 5
         }
         if (civInfo.getHappiness() > 5 && cityState.cityStateFunctions.canProvideStat(Stat.Food)) {
+            value += 5
             value += (civInfo.getPersonality()[PersonalityValue.Food]).toInt() - 5
         }
 
