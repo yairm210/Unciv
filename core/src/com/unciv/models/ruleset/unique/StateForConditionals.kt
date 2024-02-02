@@ -29,12 +29,13 @@ data class StateForConditionals(
     constructor(ourCombatant: ICombatant, theirCombatant: ICombatant? = null,
                 attackedTile: Tile? = null, combatAction: CombatAction? = null) : this(
         ourCombatant.getCivInfo(),
-        unit = (ourCombatant as? MapUnitCombatant)?.unit,
-        tile = ourCombatant.getTile(),
-        ourCombatant = ourCombatant,
-        theirCombatant = theirCombatant,
-        attackedTile = attackedTile,
-        combatAction = combatAction
+        (ourCombatant as? CityCombatant)?.city,
+        (ourCombatant as? MapUnitCombatant)?.unit,
+        ourCombatant.getTile(),
+        ourCombatant,
+        theirCombatant,
+        attackedTile,
+        combatAction
     )
 
     companion object {
