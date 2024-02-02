@@ -358,20 +358,21 @@ class Civilization : IsPartOfGameInfoSerialization {
     fun getCompletedPolicyBranchesCount(): Int = policies.adoptedPolicies.count { Policy.isBranchCompleteByName(it) }
     private fun getCivTerritory() = cities.asSequence().flatMap { it.tiles.asSequence() }
 
-    fun getPreferredVictoryType(): String {
+    fun getPreferredVictoryTypes(): List<String> {
         val victoryTypes = gameInfo.gameParameters.victoryTypes
         if (victoryTypes.size == 1)
-            return victoryTypes.first() // That is the most relevant one
-        val victoryType = nation.preferredVictoryType
-        return if (victoryType in gameInfo.ruleset.victories) victoryType
-               else Constants.neutralVictoryType
+            return listOf(victoryTypes.first()) // That is the most relevant one
+        val victoryType: List<String> = (setOf(nation.preferredVictoryType) + setOf(getPersonality().preferredVictoryType))
+            .filter { it in gameInfo.gameParameters.victoryTypes }
+        return victoryType.ifEmpty { listOf(Constants.neutralVictoryType) }
+
     }
 
     @Suppress("MemberVisibilityCanBePrivate")
-    fun getPreferredVictoryTypeObject(): Victory? {
-        val preferredVictoryType = getPreferredVictoryType()
-        return if (preferredVictoryType == Constants.neutralVictoryType) null
-               else gameInfo.ruleset.victories[getPreferredVictoryType()]!!
+    fun getPreferredVictoryTypeObjects(): List<Victory> {
+        val preferredVictoryTypes = getPreferredVictoryTypes()
+        return if (preferredVictoryTypes.contains(Constants.neutralVictoryType)) emptyList()
+               else preferredVictoryTypes.map { gameInfo.ruleset.victories[it]!! }
     }
 
     fun wantsToFocusOn(focus: Victory.Focus): Boolean {
