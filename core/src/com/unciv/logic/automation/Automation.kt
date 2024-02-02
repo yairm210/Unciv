@@ -86,23 +86,23 @@ object Automation {
         } else {
             if (city.civ.gold < 0 && city.civ.stats.statsForNextTurn.gold <= 0)
                 yieldStats.gold *= 2 // We have a global problem
-            yieldStats.gold * (city.civ.getPersonality()?.scaledFocus(PersonalityValue.Gold) ?: 1f)
+            yieldStats.gold * city.civ.getPersonality().scaledFocus(PersonalityValue.Gold)
 
             if (city.tiles.size < 12 || city.civ.wantsToFocusOn(Victory.Focus.Culture))
                 yieldStats.culture *= 2
-            yieldStats.culture * (city.civ.getPersonality()?.scaledFocus(PersonalityValue.Culture) ?: 1f)
+            yieldStats.culture * city.civ.getPersonality().scaledFocus(PersonalityValue.Culture)
 
             if (city.civ.getHappiness() < 0 && !specialist) // since this doesn't get updated, may overshoot
                 yieldStats.happiness *= 2
-            yieldStats.happiness * (city.civ.getPersonality()?.scaledFocus(PersonalityValue.Happiness) ?: 1f)
+            yieldStats.happiness * city.civ.getPersonality().scaledFocus(PersonalityValue.Happiness)
 
             if (city.civ.wantsToFocusOn(Victory.Focus.Science))
                 yieldStats.science *= 2
-            yieldStats.science * (city.civ.getPersonality()?.scaledFocus(PersonalityValue.Science) ?: 1f)
+            yieldStats.science * city.civ.getPersonality().scaledFocus(PersonalityValue.Science)
 
-            yieldStats.production * (city.civ.getPersonality()?.scaledFocus(PersonalityValue.Production) ?: 1f)
-            yieldStats.faith * (city.civ.getPersonality()?.scaledFocus(PersonalityValue.Faith) ?: 1f)
-            yieldStats.food * (city.civ.getPersonality()?.scaledFocus(PersonalityValue.Food) ?: 1f)
+            yieldStats.production * city.civ.getPersonality().scaledFocus(PersonalityValue.Production)
+            yieldStats.faith * city.civ.getPersonality().scaledFocus(PersonalityValue.Faith)
+            yieldStats.food * city.civ.getPersonality().scaledFocus(PersonalityValue.Food)
         }
 
         // Apply City focus

@@ -235,7 +235,7 @@ object DiplomacyAutomation {
 
     internal fun declareWar(civInfo: Civilization) {
         if (civInfo.wantsToFocusOn(Victory.Focus.Culture) &&
-            civInfo.getPersonality() == null)
+            civInfo.getPersonality().basePersonality)
             return
         if (civInfo.cities.isEmpty() || civInfo.diplomacy.isEmpty()) return
         if (civInfo.isAtWar() || civInfo.getHappiness() <= 0) return

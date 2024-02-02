@@ -26,7 +26,7 @@ class Personality : RulesetObject() {
     var happiness: Float = 5f
     var faith: Float = 5f
     var military: Float = 5f
-    var warMongering: Float = 5f
+    var warMongering: Float = 5f // Todo: Look into where this should be inserted
     var policy = LinkedHashMap<String, Int>()
     var preferredVictoryType: String = Constants.neutralVictoryType
 
@@ -41,6 +41,14 @@ class Personality : RulesetObject() {
             PersonalityValue.Faith -> ::faith
             PersonalityValue.Military -> ::military
             PersonalityValue.WarMongering -> ::warMongering
+        }
+    }
+
+    companion object {
+        fun basePersonality(): Personality { 
+            val base = Personality()
+            base.basePersonality = true
+            return base
         }
     }
 

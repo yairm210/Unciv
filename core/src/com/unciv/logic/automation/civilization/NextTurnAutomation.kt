@@ -134,23 +134,23 @@ object NextTurnAutomation {
         if (cityState.cityStateFunctions.canProvideStat(Stat.Culture)) {
             if (civInfo.wantsToFocusOn(Victory.Focus.Culture))
                 value += 10
-            value += (civInfo.getPersonality()?.get(PersonalityValue.Culture) ?: 5f).toInt() - 5
+            value += (civInfo.getPersonality()[PersonalityValue.Culture]).toInt() - 5
         }
         if (cityState.cityStateFunctions.canProvideStat(Stat.Faith)) {
             if (civInfo.wantsToFocusOn(Victory.Focus.Faith))
                 value += 10
-            value += (civInfo.getPersonality()?.get(PersonalityValue.Faith) ?: 5f).toInt() - 5
+            value += (civInfo.getPersonality()[PersonalityValue.Faith]).toInt() - 5
         }
         if (cityState.cityStateFunctions.canProvideStat(Stat.Production)) {
             if (civInfo.wantsToFocusOn(Victory.Focus.Production))
                 value += 10
-            value += (civInfo.getPersonality()?.get(PersonalityValue.Production) ?: 5f).toInt() - 5
+            value += (civInfo.getPersonality()[PersonalityValue.Production]).toInt() - 5
         }
         if (cityState.cityStateFunctions.canProvideStat(Stat.Science)) {
             // In case someone mods this in
             if (civInfo.wantsToFocusOn(Victory.Focus.Science))
                 value += 10
-            value += (civInfo.getPersonality()?.get(PersonalityValue.Science) ?: 5f).toInt() - 5
+            value += (civInfo.getPersonality()[PersonalityValue.Science]).toInt() - 5
         }
         if (civInfo.wantsToFocusOn(Victory.Focus.Military)) {
             if (!cityState.isAlive())
@@ -167,10 +167,10 @@ object NextTurnAutomation {
         }
         if (civInfo.getHappiness() < 5 && cityState.cityStateFunctions.canProvideStat(Stat.Happiness)) {
             value += 10 - civInfo.getHappiness()
-            value += (civInfo.getPersonality()?.get(PersonalityValue.Happiness) ?: 5f).toInt() - 5
+            value += (civInfo.getPersonality()[PersonalityValue.Happiness]).toInt() - 5
         }
         if (civInfo.getHappiness() > 5 && cityState.cityStateFunctions.canProvideStat(Stat.Food)) {
-            value += (civInfo.getPersonality()?.get(PersonalityValue.Food) ?: 5f).toInt() - 5
+            value += (civInfo.getPersonality()[PersonalityValue.Food]).toInt() - 5
         }
 
         if (!cityState.isAlive() || cityState.cities.isEmpty() || civInfo.cities.isEmpty())
@@ -460,7 +460,7 @@ object NextTurnAutomation {
         if (civInfo.isCityState()) return
         if (civInfo.isAtWar()) return // don't train settlers when you could be training troops.
         if (civInfo.wantsToFocusOn(Victory.Focus.Culture) && civInfo.cities.size > 3 &&
-            civInfo.getPersonality() != null)
+            civInfo.getPersonality().basePersonality)
             return
         if (civInfo.cities.none()) return
         if (civInfo.getHappiness() <= civInfo.cities.size) return

@@ -2,6 +2,7 @@ package com.unciv.logic.civilization
 
 import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
+import com.unciv.UncivGame
 import com.unciv.json.HashMapVector2
 import com.unciv.logic.GameInfo
 import com.unciv.logic.IsPartOfGameInfoSerialization
@@ -374,12 +375,13 @@ class Civilization : IsPartOfGameInfoSerialization {
     }
 
     fun wantsToFocusOn(focus: Victory.Focus): Boolean {
-        return thingsToFocusOnForVictory.contains(focus) && isAI()
+        return thingsToFocusOnForVictory.contains(focus) &&
+            (isAI() || UncivGame.Current.settings.autoPlay.isAutoPlayingAndFullAI())
     }
 
-    fun getPersonality(): Personality? {
-        return  if (isAI()) gameInfo.ruleset.personalities[nation.personality]
-        else null
+    fun getPersonality(): Personality {
+        return if (isAI() || UncivGame.Current.settings.autoPlay.isAutoPlayingAndFullAI()) gameInfo.ruleset.personalities[nation.personality] ?: Personality.basePersonality()
+        else Personality.basePersonality()
     }
 
     @Transient
