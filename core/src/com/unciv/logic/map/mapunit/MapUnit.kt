@@ -234,14 +234,18 @@ class MapUnit : IsPartOfGameInfoSerialization {
     fun isPreparingAirSweep() = action == UnitActionType.AirSweep.value
     fun isSetUpForSiege() = action == UnitActionType.SetUp.value
 
-    fun isIdle(escorting: Boolean = true): Boolean {
+    /**
+     * @param includeOtherEscortUnit determines whether or not this method will also check if it's other escort unit is idle if it has one
+     * Leave it as default unless you know what [isIdle] does.
+     */
+    fun isIdle(includeOtherEscortUnit: Boolean = true): Boolean {
         if (currentMovement == 0f) return false
         val tile = getTile()
         if (tile.improvementInProgress != null &&
             canBuildImprovement(tile.getTileImprovementInProgress()!!) &&
             !tile.isMarkedForCreatesOneImprovement()
         ) return false
-        if (isEscorting() && escorting && !getOtherEscortUnit()!!.isIdle(false)) return false
+        if (includeOtherEscortUnit && isEscorting() && !getOtherEscortUnit()!!.isIdle(false)) return false
         return !(isFortified() || isExploring() || isSleeping() || isAutomated() || isMoving())
     }
 

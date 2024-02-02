@@ -267,7 +267,11 @@ class UnitMovement(val unit: MapUnit) {
         return getDistanceToTiles().containsKey(destination)
     }
 
-    fun getReachableTilesInCurrentTurn(escortFormation: Boolean = true): Sequence<Tile> {
+    /**
+     * @param includeOtherEscortUnit determines whether or not this method will also check its the other escort unit if it has one
+     * Leave it as default unless you know what [getReachableTilesInCurrentTurn] does.
+     */
+    fun getReachableTilesInCurrentTurn(includeOtherEscortUnit: Boolean = true): Sequence<Tile> {
         return when {
             unit.cache.cannotMove -> sequenceOf(unit.getTile())
             unit.baseUnit.movesLikeAirUnits() ->
@@ -276,11 +280,11 @@ class UnitMovement(val unit: MapUnit) {
                 unit.getTile().getTilesInDistance(unit.cache.paradropRange)
                     .filter { unit.movement.canParadropOn(it) }
             else -> {
-                if (!unit.isEscorting() || !escortFormation) {
-                    unit.movement.getDistanceToTiles().keys.asSequence()
-                } else {
+                if (includeOtherEscortUnit && unit.isEscorting()) {
                     val otherUnitTiles = unit.getOtherEscortUnit()!!.movement.getReachableTilesInCurrentTurn(false).toSet()
                     unit.movement.getDistanceToTiles().filter { otherUnitTiles.contains(it.key) }.keys.asSequence()
+                } else {
+                    unit.movement.getDistanceToTiles().keys.asSequence()
                 }
             }
         }
@@ -567,8 +571,10 @@ class UnitMovement(val unit: MapUnit) {
     /**
      * Designates whether we can enter the tile - without attacking
      * DOES NOT designate whether we can reach that tile in the current turn
+     * @param includeOtherEscortUnit determines whether or not this method will also check if the other escort unit [canMoveTo] if it has one.
+     * Leave it as default unless you know what [canMoveTo] does.
      */
-    fun canMoveTo(tile: Tile, assumeCanPassThrough: Boolean = false, canSwap: Boolean = false, escortFormation: Boolean = true): Boolean {
+    fun canMoveTo(tile: Tile, assumeCanPassThrough: Boolean = false, canSwap: Boolean = false, includeOtherEscortUnit: Boolean = true): Boolean {
         if (unit.baseUnit.movesLikeAirUnits())
             return canAirUnitMoveTo(tile, unit)
 
@@ -579,8 +585,8 @@ class UnitMovement(val unit: MapUnit) {
         if (isCityCenterCannotEnter(tile))
             return false
 
-        if (escortFormation && unit.isEscorting() 
-            && !unit.getOtherEscortUnit()!!.movement.canMoveTo(tile, assumeCanPassThrough,canSwap, escortFormation = false)) 
+        if (includeOtherEscortUnit && unit.isEscorting() 
+            && !unit.getOtherEscortUnit()!!.movement.canMoveTo(tile, assumeCanPassThrough,canSwap, includeOtherEscortUnit = false)) 
             return false
 
         return if (unit.isCivilian())
@@ -623,8 +629,10 @@ class UnitMovement(val unit: MapUnit) {
      * This is the most called function in the entire game,
      * so multiple callees of this function have been optimized,
      * because optimization on this function results in massive benefits!
+     * @param includeOtherEscortUnit determines whether or not this method will also check if the other escort unit [canPassThrough] if it has one.
+     * Leave it as default unless you know what [canPassThrough] does.
      */
-    fun canPassThrough(tile: Tile, escortFormation: Boolean = true): Boolean {
+    fun canPassThrough(tile: Tile, includeOtherEscortUnit: Boolean = true): Boolean {
         if (tile.isImpassible()) {
             // special exception - ice tiles are technically impassible, but some units can move through them anyway
             // helicopters can pass through impassable tiles like mountains
@@ -672,16 +680,21 @@ class UnitMovement(val unit: MapUnit) {
             if (unit.civ.isAtWarWith(firstUnit.civ))
                 return false
         }
-        if (unit.isEscorting() && escortFormation && !unit.getOtherEscortUnit()!!.movement.canPassThrough(tile,false)) 
+        if (includeOtherEscortUnit && unit.isEscorting() && !unit.getOtherEscortUnit()!!.movement.canPassThrough(tile,false)) 
             return false
         return true
     }
 
 
+    /**
+     * @param includeOtherEscortUnit determines whether or not this method will also check if the other escort units [getDistanceToTiles] if it has one.
+     * Leave it as default unless you know what [getDistanceToTiles] does. 
+     */
     fun getDistanceToTiles(
         considerZoneOfControl: Boolean = true,
         passThroughCache: HashMap<Tile, Boolean> = HashMap(),
-        movementCostCache: HashMap<Pair<Tile, Tile>, Float> = HashMap(), includeEscort: Boolean = true)
+        movementCostCache: HashMap<Pair<Tile, Tile>, Float> = HashMap(),
+        includeOtherEscortUnit: Boolean = true)
         : PathsToTilesWithinTurn {
         val cacheResults = pathfindingCache.getDistanceToTiles(considerZoneOfControl)
         if (cacheResults != null) {
@@ -695,13 +708,16 @@ class UnitMovement(val unit: MapUnit) {
             passThroughCache,
             movementCostCache
         )
-        if (includeEscort) {
+        
+        if (includeOtherEscortUnit) {
+            // Only save to cache only if we are the original call and not the subsequent escort unit call
             pathfindingCache.setDistanceToTiles(considerZoneOfControl, distanceToTiles)
-        }
-        if (includeEscort && unit.isEscorting()) {
-            val escortDistanceToTiles = unit.getOtherEscortUnit()!!.movement
-                .getDistanceToTiles(considerZoneOfControl, includeEscort=false)
-            distanceToTiles.removeAllTilesNotInSet(escortDistanceToTiles)
+            if (unit.isEscorting()) {
+                // We should only be able to move to tiles that our escort can also move to
+                val escortDistanceToTiles = unit.getOtherEscortUnit()!!.movement
+                    .getDistanceToTiles(considerZoneOfControl, includeOtherEscortUnit = false)
+                distanceToTiles.removeAllTilesNotInSet(escortDistanceToTiles)
+            }
         }
         return distanceToTiles
     }

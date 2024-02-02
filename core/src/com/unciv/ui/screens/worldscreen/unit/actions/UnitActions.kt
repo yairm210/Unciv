@@ -170,11 +170,12 @@ object UnitActions {
         val worldScreen = GUI.getWorldScreen()
         val selectedUnits = worldScreen.bottomUnitTable.selectedUnits
         if (selectedUnits.size == 2) {
+            // We can still create a formation in the case that we have two units selected 
+            // and they are on the same tile. We still have to manualy confirm they are on the same tile here.
             val tile = selectedUnits.first().getTile()
             if (selectedUnits.last().getTile() != tile) return
             if (selectedUnits.any { it.baseUnit.movesLikeAirUnits() }) return
-        } else if (selectedUnits.size == 1) {
-        } else {
+        } else if (selectedUnits.size != 1) {
             return
         }
         if (unit.getOtherEscortUnit() == null) return
