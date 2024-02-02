@@ -89,18 +89,14 @@ class ThreatManager(val civInfo: Civilization) {
 
         if (tileData != null && tileData.distanceSearched >= maxDist) {
             // Add all tiles that we have previously found
-            var index = 0
-            while (tileDataTilesWithEnemies.size > index) {
-                val tileWithDistance = tileDataTilesWithEnemies[index]
-                if (tileWithDistance.second > maxDist)
-                    return tilesWithEnemies
-                if (doesTileHaveMilitaryEnemy(tileWithDistance.first)) {
+            val tilesWithEnemiesIterator = tileDataTilesWithEnemies.listIterator()
+            for (tileWithDistance in tilesWithEnemiesIterator) {
+                // Check if the next tile is out of our search range, if so lets stop here
+                if (tileWithDistance.second > maxDist) return tilesWithEnemies
+                // Check if the threat on the tile is still present
+                if (doesTileHaveMilitaryEnemy(tileWithDistance.first))
                     tilesWithEnemies.add(tileWithDistance.first)
-                } else {
-                    tileDataTilesWithEnemies.removeAt(index)
-                    continue
-                }
-                index++
+                else tilesWithEnemiesIterator.remove()
             }
         }
 
