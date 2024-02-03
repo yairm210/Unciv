@@ -168,6 +168,7 @@ class Spy() : IsPartOfGameInfoSerialization {
             civInfo.addNotification("Your spy [$name] stole the Technology [$stolenTech] from [$city]!", city.location,
                 NotificationCategory.Espionage, NotificationIcon.Spy)
             startStealingTech()
+            levelUpSpy()
         } else {
             civInfo.addNotification("Your spy [$name] was killed trying to steal Technology in [$city]!", city.location,
                 NotificationCategory.Espionage, NotificationIcon.Spy)
