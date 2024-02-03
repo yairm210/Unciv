@@ -107,9 +107,7 @@ class Spy() : IsPartOfGameInfoSerialization {
                 --turnsRemainingForAction
                 if (turnsRemainingForAction > 0) return
 
-                // TODO: Simple implementation, please implement this in the future. This is a guess.
-                getLocation()!!.civ.getDiplomacyManager(civInfo).addInfluence(5f + getSpyRank())
-                turnsRemainingForAction = 10
+                rigElection()
             }
             SpyAction.Dead -> {
                 --turnsRemainingForAction
@@ -145,13 +143,13 @@ class Spy() : IsPartOfGameInfoSerialization {
         // Lower is better
         var spyResult = Random(randomSeed.toInt()).nextInt(300)
         // Add our spies experience
-        spyResult -= getSpyRank() * 30
+        spyResult -= getSkillModifier()
         // Subtract the experience of the counter inteligence spies
         val defendingSpies = city.civ.espionageManager.getSpiesInCity(city)
         val mainDefendingSpy = defendingSpies.randomOrNull()
-        spyResult += defendingSpies.sumOf { it.getSpyRank() * 30 }
+        spyResult += defendingSpies.sumOf { it.getSkillModifier() }
         //TODO: Add policies modifier here
-        
+
         val detectionString = when {
             spyResult < 0 -> null // Not detected
             spyResult < 100 -> "An unidentified spy stole the Technology [$stolenTech] from [$city]!"
@@ -177,6 +175,37 @@ class Spy() : IsPartOfGameInfoSerialization {
 
     }
 
+    private fun rigElection() {
+        val city = getLocation()!!
+        val cityStateCiv = city.civ
+        // TODO: Simple implementation, please implement this in the future. This is a guess.
+        turnsRemainingForAction = 10
+
+        if (cityStateCiv.getAllyCiv() != null && cityStateCiv.getAllyCiv() != civInfo.civName) {
+            val allyCiv = civInfo.gameInfo.getCivilization(cityStateCiv.getAllyCiv()!!)
+            val allySpiesInCity = allyCiv.espionageManager.getSpiesInCity(getLocation()!!)
+            if (allySpiesInCity.isNotEmpty()) {
+                val mainDefendingSpy = allySpiesInCity.random()
+                val randomSeed = city.location.x * city.location.y + 123f * civInfo.gameInfo.turns
+                var spyResult = Random(randomSeed.toInt()).nextInt(120)
+                spyResult -= getSkillModifier()
+                spyResult += allySpiesInCity.sumOf { it.getSkillModifier() }
+                if (spyResult > 100) {
+                    // The Spy was killed
+                    allyCiv.addNotification("A spy from [${civInfo.civName}] tried to rig elections and was found and killed in [${city}] by [${mainDefendingSpy.name}]!",
+                        getLocation()!!.location, NotificationCategory.Espionage, NotificationIcon.Spy)
+                    civInfo.addNotification("Your spy [$name] was killed trying to rig the election in [$city]!", city.location,
+                        NotificationCategory.Espionage, NotificationIcon.Spy)
+                    killSpy()
+                    mainDefendingSpy.levelUpSpy()
+                    return
+                }
+            }
+        }
+        cityStateCiv.getDiplomacyManager(civInfo).addInfluence(5f + getSpyRank())
+        civInfo.addNotification("Your spy successfully rigged the election in [$city]!", city.location,
+            NotificationCategory.Espionage, NotificationIcon.Spy)
+    }
 
     fun moveTo(city: City?) {
         location = city?.id
@@ -214,6 +243,10 @@ class Spy() : IsPartOfGameInfoSerialization {
             civInfo.addNotification("Your spy [$name] has leveled up!",
                 NotificationCategory.Espionage, NotificationIcon.Spy)
         }
+    }
+
+    fun getSkillModifier(): Int {
+        return getSpyRank() * 30
     }
 
     fun killSpy() {
