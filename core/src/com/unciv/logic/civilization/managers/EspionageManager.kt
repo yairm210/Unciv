@@ -1,6 +1,7 @@
 package com.unciv.logic.civilization.managers
 
 import com.unciv.logic.IsPartOfGameInfoSerialization
+import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.Spy
@@ -63,5 +64,9 @@ class EspionageManager : IsPartOfGameInfoSerialization {
             techsToSteal.add(tech)
         }
         return techsToSteal
+    }
+
+    fun getSpiesInCity(city: City): MutableList<Spy> {
+        return spyList.filter { it.getLocation() != city }.toMutableList()
     }
 }

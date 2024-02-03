@@ -30,9 +30,7 @@ class CityEspionageManager : IsPartOfGameInfoSerialization {
     }
 
     private fun getAllStationedSpies(): List<Spy> {
-        return city.civ.gameInfo.civilizations.flatMap { civ ->
-            civ.espionageManager.spyList.filter { it.location == city.id }
-        }
+        return city.civ.gameInfo.civilizations.flatMap { it.espionageManager.getSpiesInCity(city) }
     }
 
     fun removeAllPresentSpies(reason: SpyFleeReason) {
