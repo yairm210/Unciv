@@ -34,7 +34,7 @@ class EspionageManager : IsPartOfGameInfoSerialization {
             spy.endTurn()
     }
 
-    private fun getSpyName(): String {
+    fun getSpyName(): String {
         val usedSpyNames = spyList.map { it.name }.toHashSet()
         val validSpyNames = civInfo.nation.spyNames.filter { it !in usedSpyNames }
         if (validSpyNames.isEmpty()) { return "Spy ${spyList.size+1}" } // +1 as non-programmers count from 1

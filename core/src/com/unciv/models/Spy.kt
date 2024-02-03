@@ -103,8 +103,16 @@ class Spy() : IsPartOfGameInfoSerialization {
                 }
             }
             SpyAction.Dead -> {
-                
+                turnsRemainingForAction--
+                if (turnsRemainingForAction <= 0) {
+                    val oldSpyName = name
+                    name = espionageManager.getSpyName()
+                    action = SpyAction.None
+                    civInfo.addNotification("We have recruited a new spy name [$name] after [$oldSpyName] was killed.", 
+                        NotificationCategory.Espionage, NotificationIcon.Spy)
+                }
             }
+            SpyAction.CounterIntelligence -> return // Counter inteligence spies don't do anything here
             else -> return // Not implemented yet, so don't do anything
         }
     }
@@ -190,11 +198,19 @@ class Spy() : IsPartOfGameInfoSerialization {
     }
 
     fun levelUpSpy() {
-
+        if (getLocation() != null) {
+            civInfo.addNotification("Your spy [$name] has leveled up!", getLocation()!!.location, 
+                NotificationCategory.Espionage, NotificationIcon.Spy)
+        } else {
+            civInfo.addNotification("Your spy [$name] has leveled up!",
+                NotificationCategory.Espionage, NotificationIcon.Spy)
+        }
     }
 
     fun killSpy() {
+        // We don't actually remove this spy object, we set them as dead and let them revive
         moveTo(null)
         action = SpyAction.Dead
+        turnsRemainingForAction = 5
     }
 }
