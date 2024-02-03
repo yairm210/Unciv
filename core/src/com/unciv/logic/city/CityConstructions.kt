@@ -532,7 +532,8 @@ class CityConstructions : IsPartOfGameInfoSerialization {
             civ.cache.updateHasActiveEnemyMovementPenalty()
 
         // Korean unique - apparently gives the same as the research agreement
-        if (building.isStatRelated(Stat.Science) && civ.hasUnique(UniqueType.TechBoostWhenScientificBuildingsBuiltInCapital))
+        if (building.isStatRelated(Stat.Science) && civ.hasUnique(UniqueType.TechBoostWhenScientificBuildingsBuiltInCapital)
+            && city.isCapital())
             civ.tech.addScience(civ.tech.scienceOfLast8Turns.sum() / 8)
 
         // Happiness is global, so it could affect all cities
