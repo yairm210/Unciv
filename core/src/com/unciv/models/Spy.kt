@@ -28,6 +28,7 @@ class Spy() : IsPartOfGameInfoSerialization {
     lateinit var name: String
     var action = SpyAction.None
         private set
+    var rank: Int = 1
     var turnsRemainingForAction = 0
         private set
     private var progressTowardsStealingTech = 0
@@ -232,7 +233,7 @@ class Spy() : IsPartOfGameInfoSerialization {
     }
 
     fun getSpyRank(): Int {
-        return 1
+        return rank
     }
 
     fun levelUpSpy() {
@@ -243,6 +244,7 @@ class Spy() : IsPartOfGameInfoSerialization {
             civInfo.addNotification("Your spy [$name] has leveled up!",
                 NotificationCategory.Espionage, NotificationIcon.Spy)
         }
+        rank++
     }
 
     fun getSkillModifier(): Int {
@@ -254,5 +256,6 @@ class Spy() : IsPartOfGameInfoSerialization {
         moveTo(null)
         action = SpyAction.Dead
         turnsRemainingForAction = 5
+        rank = 1
     }
 }
