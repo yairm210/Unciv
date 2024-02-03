@@ -18,7 +18,7 @@ class EspionageAutomation(val civInfo: Civilization) {
         }.toList()
 
     private val cityStatesToRig: List<Civilization> by lazy {
-        civInfo.getKnownCivs().filter {otherCiv -> otherCiv.isMinorCiv() && otherCiv.knows(civInfo) }.toList()
+        civInfo.getKnownCivs().filter { otherCiv -> otherCiv.isMinorCiv() && otherCiv.knows(civInfo) && !civInfo.isAtWarWith(otherCiv) }.toList()
     }
 
     fun automateSpies() {

@@ -237,8 +237,12 @@ class Spy() : IsPartOfGameInfoSerialization {
     fun isSetUp() = action !in listOf(SpyAction.Moving, SpyAction.None, SpyAction.EstablishNetwork)
 
     // Only returns true if the spy is doing a helpful and implemented action
-    fun isDoingWork() = action == SpyAction.StealingTech || action == SpyAction.EstablishNetwork 
-        || action == SpyAction.RiggingElections || (action == SpyAction.CounterIntelligence && turnsRemainingForAction > 0) || action == SpyAction.Moving
+    fun isDoingWork(): Boolean { 
+        if (action == SpyAction.StealingTech || action == SpyAction.EstablishNetwork || action == SpyAction.Moving) return true
+        if (action == SpyAction.RiggingElections && !civInfo.isAtWarWith(getLocation()!!.civ)) return true
+        if (action == SpyAction.CounterIntelligence && turnsRemainingForAction > 0) return true
+        else return false
+    }
 
     fun getLocation(): City? {
         if (location == null) return null
