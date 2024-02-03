@@ -47,7 +47,7 @@ class EspionageAutomation(val civInfo: Civilization) {
                 if(automateSpyCounterInteligence(spy)) continue
             }
             // There is nothing for our spy to do, put it in a random city
-            spy.moveTo(civInfo.gameInfo.getCities().filter { it.getCenterTile().isVisible(civInfo) && spy.canMoveTo(it) }.toList().random())
+            spy.moveTo(civInfo.gameInfo.getCities().filter { it.getCenterTile().isVisible(civInfo) && spy.canMoveTo(it) }.toList().randomOrNull())
         }
     }
 
