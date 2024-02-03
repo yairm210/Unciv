@@ -247,6 +247,8 @@ class Spy() : IsPartOfGameInfoSerialization {
     }
 
     fun levelUpSpy() {
+        //TODO: Make the spy level cap dependent on some unique
+        if (rank >= 3) return 
         if (getLocation() != null) {
             civInfo.addNotification("Your spy [$name] has leveled up!", getLocation()!!.location, 
                 NotificationCategory.Espionage, NotificationIcon.Spy)
