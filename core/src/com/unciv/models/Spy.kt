@@ -17,7 +17,8 @@ enum class SpyAction(val displayString: String) {
     Surveillance("Observing City"),
     StealingTech("Stealing Tech"),
     RiggingElections("Rigging Elections"),
-    CounterIntelligence("Conducting Counter-intelligence")
+    CounterIntelligence("Conducting Counter-intelligence"),
+    Dead("Dead")
 }
 
 
@@ -101,6 +102,9 @@ class Spy() : IsPartOfGameInfoSerialization {
                     stealTech()
                 }
             }
+            SpyAction.Dead -> {
+                
+            }
             else -> return // Not implemented yet, so don't do anything
         }
     }
@@ -121,23 +125,39 @@ class Spy() : IsPartOfGameInfoSerialization {
         if (stolenTech != null) {
             civInfo.tech.addTechnology(stolenTech)
         }
-
-        val spyDetected = Random(randomSeed.toInt()).nextInt(3)
-        val detectionString = when (spyDetected) {
-            0 -> "A spy from [${civInfo.civName}] stole the Technology [$stolenTech] from [$city]!"
-            1 -> "An unidentified spy stole the Technology [$stolenTech] from [$city]!"
-            else -> null // Not detected
+        // Lower is better
+        var spyResult = Random(randomSeed.toInt()).nextInt(300)
+        // Add our spies experience
+        spyResult -= getSpyRank() * 30
+        // Subtract the experience of the counter inteligence spies
+        val defendingSpies = city.civ.espionageManager.getSpiesInCity(city)
+        val mainDefendingSpy = defendingSpies.randomOrNull()
+        spyResult += defendingSpies.sumOf { it.getSpyRank() * 30 }
+        //TODO: Add policies modifier here
+        
+        val detectionString = when {
+            spyResult < 0 -> null // Not detected
+            spyResult < 100 -> "An unidentified spy stole the Technology [$stolenTech] from [$city]!"
+            spyResult < 200 -> "A spy from [${civInfo.civName}] stole the Technology [$stolenTech] from [$city]!"
+            else -> { // The spy was killed in the attempt
+                if (mainDefendingSpy == null) "A spy from [${civInfo.civName}] tried to steal our Technology was found and killed in [$city]!"
+                else "A spy from [${civInfo.civName}] tried to steal our Technology was found and killed in [$city] by [${mainDefendingSpy.name}]!"
+            }
         }
         if (detectionString != null)
             otherCiv.addNotification(detectionString, city.location, NotificationCategory.Espionage, NotificationIcon.Spy)
 
-        civInfo.addNotification("Your spy [$name] stole the Technology [$stolenTech] from [$city]!", city.location,
-            NotificationCategory.Espionage,
-            NotificationIcon.Spy
-        )
+        if (spyResult < 200) {
+            civInfo.addNotification("Your spy [$name] stole the Technology [$stolenTech] from [$city]!", city.location,
+                NotificationCategory.Espionage, NotificationIcon.Spy)
+            startStealingTech()
+        } else {
+            civInfo.addNotification("Your spy [$name] was killed trying to steal Technology in [$city]!", city.location,
+                NotificationCategory.Espionage, NotificationIcon.Spy)
+            mainDefendingSpy?.levelUpSpy()
+            killSpy()
+        }
 
-
-        startStealingTech()
     }
 
 
@@ -163,5 +183,18 @@ class Spy() : IsPartOfGameInfoSerialization {
 
     fun getLocationName(): String {
         return getLocation()?.name ?: Constants.spyHideout
+    }
+
+    fun getSpyRank(): Int {
+        return 1
+    }
+
+    fun levelUpSpy() {
+
+    }
+
+    fun killSpy() {
+        moveTo(null)
+        action = SpyAction.Dead
     }
 }
