@@ -204,7 +204,8 @@ class Spy() : IsPartOfGameInfoSerialization {
                 }
             }
         }
-        cityStateCiv.getDiplomacyManager(civInfo).addInfluence(5f + getSpyRank())
+        // Starts at 10 influence and increases by 3 for each extra rank.
+        cityStateCiv.getDiplomacyManager(civInfo).addInfluence(7f + getSpyRank() * 3)
         civInfo.addNotification("Your spy successfully rigged the election in [$city]!", city.location,
             NotificationCategory.Espionage, NotificationIcon.Spy)
     }
