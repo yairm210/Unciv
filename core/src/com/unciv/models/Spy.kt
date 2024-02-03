@@ -78,6 +78,7 @@ class Spy() : IsPartOfGameInfoSerialization {
                     turnsRemainingForAction = 10
                 } else if (location.civ == civInfo) {
                     action = SpyAction.CounterIntelligence
+                    turnsRemainingForAction = 10
                 } else {
                     startStealingTech()
                 }
@@ -122,7 +123,13 @@ class Spy() : IsPartOfGameInfoSerialization {
                 civInfo.addNotification("We have recruited a new spy name [$name] after [$oldSpyName] was killed.", 
                     NotificationCategory.Espionage, NotificationIcon.Spy)
             }
-            SpyAction.CounterIntelligence -> return // Counter inteligence spies don't do anything here
+            SpyAction.CounterIntelligence -> {
+                // Counter inteligence spies don't do anything here
+                // However the AI will want to keep track of how long a spy has been doing counter intelligence for
+                // Once turnRemainingForAction is <= 0 the spy won't be considered to be doing work any more
+                --turnsRemainingForAction
+                return
+            } 
             else -> return // Not implemented yet, so don't do anything
         }
     }
@@ -231,7 +238,7 @@ class Spy() : IsPartOfGameInfoSerialization {
 
     // Only returns true if the spy is doing a helpful and implemented action
     fun isDoingWork() = action == SpyAction.StealingTech || action == SpyAction.EstablishNetwork 
-        || action == SpyAction.RiggingElections || action == SpyAction.CounterIntelligence || action == SpyAction.Moving
+        || action == SpyAction.RiggingElections || (action == SpyAction.CounterIntelligence && turnsRemainingForAction > 0) || action == SpyAction.Moving
 
     fun getLocation(): City? {
         if (location == null) return null

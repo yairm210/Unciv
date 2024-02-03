@@ -32,7 +32,7 @@ class EspionageAutomation(val civInfo: Civilization) {
 
             // Try each operation based on the random value and the success rate
             // If an operation was not successfull try the next one
-            if (randomAction <= 6 && automateSpyStealTech(spy)) {
+            if (randomAction <= 7 && automateSpyStealTech(spy)) {
                 continue
             } else if (randomAction <= 9 && automateSpyRigElection(spy)) {
                 continue
@@ -58,12 +58,10 @@ class EspionageAutomation(val civInfo: Civilization) {
         if (civsToStealFrom.isNotEmpty()) {
             // We want to move the spy to the city with the highest science generation
             // Players can't usually figure this out so lets do highest population instead
-            spy.moveTo(getCivsToStealFromSorted.first().cities.filter { it.getCenterTile().isVisible(civInfo) }.maxByOrNull { it.population.population })
-            return false
+            spy.moveTo(getCivsToStealFromSorted.first().cities.filter { it.getCenterTile().isVisible(civInfo) && spy.canMoveTo(it) }.maxByOrNull { it.population.population })
+            return true
         }
-        spy.moveTo(civInfo.getKnownCivs().filter { otherCiv -> otherCiv.isMajorCiv() && otherCiv.cities.any { it.getCenterTile().isVisible(civInfo) }}
-            .toList().randomOrNull()?.cities?.filter { it.getCenterTile().isVisible(civInfo) }?.randomOrNull())
-        return true
+        return false
     }
 
     /**
