@@ -99,8 +99,8 @@ class Spy() : IsPartOfGameInfoSerialization {
                     return
                 }
                 val techStealCost = stealableTechs.maxOfOrNull { civInfo.gameInfo.ruleset.technologies[it]!!.cost }!!
-                // 20% spy bonus for each level
-                val progressThisTurn = getLocation()!!.cityStats.currentCityStats.science * (rank + 4) / 5
+                // 33% spy bonus for each level
+                val progressThisTurn = getLocation()!!.cityStats.currentCityStats.science * (rank + 2f) / 3f
                 progressTowardsStealingTech += progressThisTurn.toInt()
                 if (progressTowardsStealingTech > techStealCost) {
                     stealTech()
