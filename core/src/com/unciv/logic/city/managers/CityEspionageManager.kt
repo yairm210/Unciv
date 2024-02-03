@@ -26,7 +26,7 @@ class CityEspionageManager : IsPartOfGameInfoSerialization {
     }
 
     fun hasSpyOf(civInfo: Civilization): Boolean {
-        return civInfo.espionageManager.spyList.any { it.location == city.id }
+        return civInfo.espionageManager.spyList.any { it.getLocation() == city }
     }
 
     private fun getAllStationedSpies(): List<Spy> {
@@ -42,7 +42,7 @@ class CityEspionageManager : IsPartOfGameInfoSerialization {
                 else -> "Due to the chaos ensuing in [${city.name}], your spy [${spy.name}] has fled back to our hideout."
             }
             owningCiv.addNotification(notificationString, city.location, NotificationCategory.Espionage, NotificationIcon.Spy)
-            spy.location = null
+            spy.moveTo(null)
         }
     }
 }

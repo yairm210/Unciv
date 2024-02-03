@@ -1,5 +1,6 @@
 package com.unciv.models
 
+import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
 import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.city.City
@@ -24,7 +25,7 @@ enum class SpyAction(val displayString: String) {
 
 class Spy() : IsPartOfGameInfoSerialization {
     // `location == null` means that the spy is in its hideout
-    var location: String? = null
+    private var location: Vector2? = null
     lateinit var name: String
     var action = SpyAction.None
         private set
@@ -210,12 +211,13 @@ class Spy() : IsPartOfGameInfoSerialization {
     }
 
     fun moveTo(city: City?) {
-        location = city?.id
         if (city == null) { // Moving to spy hideout
+            location = null
             action = SpyAction.None
             turnsRemainingForAction = 0
             return
         }
+        location = city.location
         action = SpyAction.Moving
         turnsRemainingForAction = 1
     }
@@ -232,7 +234,8 @@ class Spy() : IsPartOfGameInfoSerialization {
         || action == SpyAction.RiggingElections || action == SpyAction.CounterIntelligence || action == SpyAction.Moving
 
     fun getLocation(): City? {
-        return civInfo.gameInfo.getCities().firstOrNull { it.id == location }
+        if (location == null) return null
+        return civInfo.gameInfo.tileMap[location!!].getCity()
     }
 
     fun getLocationName(): String {
