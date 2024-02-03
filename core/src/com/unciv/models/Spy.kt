@@ -148,9 +148,8 @@ class Spy() : IsPartOfGameInfoSerialization {
         // Add our spies experience
         spyResult -= getSkillModifier()
         // Subtract the experience of the counter inteligence spies
-        val defendingSpies = city.civ.espionageManager.getSpiesInCity(city)
-        val mainDefendingSpy = defendingSpies.randomOrNull()
-        spyResult += defendingSpies.sumOf { it.getSkillModifier() }
+        val defendingSpy = city.civ.espionageManager.getSpyAssignedToCity(city)
+        spyResult += defendingSpy?.getSkillModifier() ?: 0
         //TODO: Add policies modifier here
 
         val detectionString = when {
@@ -158,8 +157,8 @@ class Spy() : IsPartOfGameInfoSerialization {
             spyResult < 100 -> "An unidentified spy stole the Technology [$stolenTech] from [$city]!"
             spyResult < 200 -> "A spy from [${civInfo.civName}] stole the Technology [$stolenTech] from [$city]!"
             else -> { // The spy was killed in the attempt
-                if (mainDefendingSpy == null) "A spy from [${civInfo.civName}] tried to steal our Technology was found and killed in [$city]!"
-                else "A spy from [${civInfo.civName}] tried to steal our Technology was found and killed in [$city] by [${mainDefendingSpy.name}]!"
+                if (defendingSpy == null) "A spy from [${civInfo.civName}] tried to steal our Technology was found and killed in [$city]!"
+                else "A spy from [${civInfo.civName}] tried to steal our Technology was found and killed in [$city] by [${defendingSpy.name}]!"
             }
         }
         if (detectionString != null)
@@ -172,7 +171,7 @@ class Spy() : IsPartOfGameInfoSerialization {
         } else {
             civInfo.addNotification("Your spy [$name] was killed trying to steal Technology in [$city]!", city.location,
                 NotificationCategory.Espionage, NotificationIcon.Spy)
-            mainDefendingSpy?.levelUpSpy()
+            defendingSpy?.levelUpSpy()
             killSpy()
         }
 
@@ -186,21 +185,20 @@ class Spy() : IsPartOfGameInfoSerialization {
 
         if (cityStateCiv.getAllyCiv() != null && cityStateCiv.getAllyCiv() != civInfo.civName) {
             val allyCiv = civInfo.gameInfo.getCivilization(cityStateCiv.getAllyCiv()!!)
-            val allySpiesInCity = allyCiv.espionageManager.getSpiesInCity(getLocation()!!)
-            if (allySpiesInCity.isNotEmpty()) {
-                val mainDefendingSpy = allySpiesInCity.random()
+            val defendingSpy = allyCiv.espionageManager.getSpyAssignedToCity(getLocation()!!)
+            if (defendingSpy != null) {
                 val randomSeed = city.location.x * city.location.y + 123f * civInfo.gameInfo.turns
                 var spyResult = Random(randomSeed.toInt()).nextInt(120)
                 spyResult -= getSkillModifier()
-                spyResult += allySpiesInCity.sumOf { it.getSkillModifier() }
+                spyResult += defendingSpy.getSkillModifier()
                 if (spyResult > 100) {
                     // The Spy was killed
-                    allyCiv.addNotification("A spy from [${civInfo.civName}] tried to rig elections and was found and killed in [${city}] by [${mainDefendingSpy.name}]!",
+                    allyCiv.addNotification("A spy from [${civInfo.civName}] tried to rig elections and was found and killed in [${city}] by [${defendingSpy.name}]!",
                         getLocation()!!.location, NotificationCategory.Espionage, NotificationIcon.Spy)
                     civInfo.addNotification("Your spy [$name] was killed trying to rig the election in [$city]!", city.location,
                         NotificationCategory.Espionage, NotificationIcon.Spy)
                     killSpy()
-                    mainDefendingSpy.levelUpSpy()
+                    defendingSpy.levelUpSpy()
                     return
                 }
             }
