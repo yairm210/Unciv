@@ -219,11 +219,17 @@ class Spy() : IsPartOfGameInfoSerialization {
         action = SpyAction.Moving
         turnsRemainingForAction = 1
     }
+    
+    fun canMoveTo(city: City): Boolean {
+        if (getLocation() == city) return true
+        return espionageManager.getSpyAssignedToCity(city) == null
+    }
 
     fun isSetUp() = action !in listOf(SpyAction.Moving, SpyAction.None, SpyAction.EstablishNetwork)
 
     // Only returns true if the spy is doing a helpful and implemented action
-    fun isDoingWork() = action == SpyAction.StealingTech || action == SpyAction.EstablishNetwork
+    fun isDoingWork() = action == SpyAction.StealingTech || action == SpyAction.EstablishNetwork 
+        || action == SpyAction.RiggingElections || action == SpyAction.CounterIntelligence
 
     fun getLocation(): City? {
         return civInfo.gameInfo.getCities().firstOrNull { it.id == location }

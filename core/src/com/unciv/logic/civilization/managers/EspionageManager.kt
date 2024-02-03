@@ -69,4 +69,6 @@ class EspionageManager : IsPartOfGameInfoSerialization {
     fun getSpiesInCity(city: City): MutableList<Spy> {
         return spyList.filter { it.getLocation() != city }.toMutableList()
     }
+
+    fun getSpyAssignedToCity(city: City): Spy? = spyList.firstOrNull {it.getLocation() == city}
 }
