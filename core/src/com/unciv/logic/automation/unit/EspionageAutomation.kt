@@ -24,16 +24,17 @@ class EspionageAutomation(val civInfo: Civilization) {
     fun automateSpies() {
         val spies = civInfo.espionageManager.spyList
         val spiesDoingCounterIntelligence = spies.count { it.action == SpyAction.CounterIntelligence }
-        val spiesToMove = spies.filter { !it.isDoingWork() || (it.action == SpyAction.CounterIntelligence && spiesDoingCounterIntelligence > 2)}
+        val spiesToMove = spies.filter { it.isAlive() && 
+            (!it.isDoingWork() || (it.action == SpyAction.CounterIntelligence && spiesDoingCounterIntelligence > 2))}
         for (spy in spiesToMove) {
             val randomSeed = spies.size + spies.indexOf(spy) + civInfo.gameInfo.turns
-            val randomAction = Random(randomSeed).nextInt()
+            val randomAction = Random(randomSeed).nextInt(10)
 
             // Try each operation based on the random value and the success rate
             // If an operation was not successfull try the next one
             if (randomAction <= 6 && automateSpyStealTech(spy)) {
                 continue
-            } else if (randomAction <= 8 && automateSpyRigElection(spy)) {
+            } else if (randomAction <= 9 && automateSpyRigElection(spy)) {
                 continue
             } else if (automateSpyCounterInteligence(spy)) {
                 continue

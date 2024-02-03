@@ -229,7 +229,7 @@ class Spy() : IsPartOfGameInfoSerialization {
 
     // Only returns true if the spy is doing a helpful and implemented action
     fun isDoingWork() = action == SpyAction.StealingTech || action == SpyAction.EstablishNetwork 
-        || action == SpyAction.RiggingElections || action == SpyAction.CounterIntelligence
+        || action == SpyAction.RiggingElections || action == SpyAction.CounterIntelligence || action == SpyAction.Moving
 
     fun getLocation(): City? {
         return civInfo.gameInfo.getCities().firstOrNull { it.id == location }
@@ -265,4 +265,6 @@ class Spy() : IsPartOfGameInfoSerialization {
         turnsRemainingForAction = 5
         rank = 1
     }
+    
+    fun isAlive(): Boolean = action != SpyAction.Dead
 }
