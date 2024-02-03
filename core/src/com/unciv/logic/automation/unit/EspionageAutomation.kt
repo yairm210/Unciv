@@ -58,7 +58,7 @@ class EspionageAutomation(val civInfo: Civilization) {
         if (civsToStealFrom.isNotEmpty()) {
             // We want to move the spy to the city with the highest science generation
             // Players can't usually figure this out so lets do highest population instead
-            spy.moveTo(getCivsToStealFromSorted.first().cities.filter { it.getCenterTile().isVisible(civInfo) && spy.canMoveTo(it) }.maxByOrNull { it.population.population })
+            spy.moveTo(getCivsToStealFromSorted.first().cities.filter { spy.canMoveTo(it) }.maxByOrNull { it.population.population })
             return true
         }
         return false
