@@ -73,6 +73,7 @@ class Spy() : IsPartOfGameInfoSerialization {
                 val location = getLocation()!! // This should never throw an exception, as going to the hideout sets your action to None.
                 if (location.civ.isCityState()) {
                     action = SpyAction.RiggingElections
+                    turnsRemainingForAction = 10
                 } else if (location.civ == civInfo) {
                     action = SpyAction.CounterIntelligence
                 } else {
@@ -102,15 +103,23 @@ class Spy() : IsPartOfGameInfoSerialization {
                     stealTech()
                 }
             }
+            SpyAction.RiggingElections -> {
+                --turnsRemainingForAction
+                if (turnsRemainingForAction > 0) return
+
+                // TODO: Simple implementation, please implement this in the future. This is a guess.
+                getLocation()!!.civ.getDiplomacyManager(civInfo).addInfluence(5f + getSpyRank())
+                turnsRemainingForAction = 10
+            }
             SpyAction.Dead -> {
-                turnsRemainingForAction--
-                if (turnsRemainingForAction <= 0) {
-                    val oldSpyName = name
-                    name = espionageManager.getSpyName()
-                    action = SpyAction.None
-                    civInfo.addNotification("We have recruited a new spy name [$name] after [$oldSpyName] was killed.", 
-                        NotificationCategory.Espionage, NotificationIcon.Spy)
-                }
+                --turnsRemainingForAction
+                if (turnsRemainingForAction > 0) return
+
+                val oldSpyName = name
+                name = espionageManager.getSpyName()
+                action = SpyAction.None
+                civInfo.addNotification("We have recruited a new spy name [$name] after [$oldSpyName] was killed.", 
+                    NotificationCategory.Espionage, NotificationIcon.Spy)
             }
             SpyAction.CounterIntelligence -> return // Counter inteligence spies don't do anything here
             else -> return // Not implemented yet, so don't do anything
