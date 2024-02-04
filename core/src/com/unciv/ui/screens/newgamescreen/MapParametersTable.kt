@@ -55,6 +55,8 @@ class MapParametersTable(
     private lateinit var noRuinsCheckbox: CheckBox
     private lateinit var noNaturalWondersCheckbox: CheckBox
     private lateinit var worldWrapCheckbox: CheckBox
+    private lateinit var legendaryStartCheckbox: CheckBox
+    private lateinit var strategicBalanceCheckbox: CheckBox
     private lateinit var seedTextField: TextField
 
     private lateinit var mapShapesOptionsValues: HashSet<String>
@@ -320,11 +322,27 @@ class MapParametersTable(
         add(worldWrapCheckbox).row()
     }
 
+    private fun Table.addStrategicBalanceCheckbox() {
+        strategicBalanceCheckbox = "Strategic Balance".toCheckBox(mapParameters.strategicBalance) {
+            mapParameters.strategicBalance = it
+        }
+        add(strategicBalanceCheckbox).row()
+    }
+
+    private fun Table.addLegendaryStartCheckbox() {
+        legendaryStartCheckbox = "LegendaryStart".toCheckBox(mapParameters.legendaryStart) {
+            mapParameters.legendaryStart = it
+        }
+        add(legendaryStartCheckbox).row()
+    }
+
     private fun addWrappedCheckBoxes() {
         val worldWrapWarning = "World wrap maps are very memory intensive - creating large world wrap maps on Android can lead to crashes!"
         if (mapGeneratedMainType == MapGeneratedMainType.randomGenerated) {
             add(ExpanderTab("{Other Settings}", persistenceID = "NewGameOtherSettings", startsOutOpened = false) {
                 it.defaults().pad(5f,0f)
+                it.addStrategicBalanceCheckbox()
+                it.addLegendaryStartCheckbox()
                 it.addNoRuinsCheckbox()
                 it.addNoNaturalWondersCheckbox()
                 it.addWorldWrapCheckbox()
@@ -333,6 +351,8 @@ class MapParametersTable(
         } else {
             add(Table(skin).apply {
                 defaults().left().pad(2.5f)
+                addStrategicBalanceCheckbox()
+                addLegendaryStartCheckbox()
                 addNoRuinsCheckbox()
                 addNoNaturalWondersCheckbox()
                 addWorldWrapCheckbox()
