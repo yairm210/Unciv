@@ -1,5 +1,6 @@
 package com.unciv.models.ruleset.unique
 
+import com.unciv.logic.battle.CityCombatant
 import com.unciv.logic.battle.CombatAction
 import com.unciv.logic.battle.ICombatant
 import com.unciv.logic.battle.MapUnitCombatant
@@ -26,18 +27,16 @@ data class StateForConditionals(
 ) {
     constructor(city: City) : this(city.civ, city, tile = city.getCenterTile())
     constructor(unit: MapUnit) : this(unit.civ, unit = unit, tile = unit.currentTile)
-    constructor(ourCombatant: ICombatant) : this(
+    constructor(ourCombatant: ICombatant, theirCombatant: ICombatant? = null,
+                attackedTile: Tile? = null, combatAction: CombatAction? = null) : this(
         ourCombatant.getCivInfo(),
-        unit = (ourCombatant as MapUnitCombatant).unit,
-        tile = ourCombatant.getTile(),
-        ourCombatant = ourCombatant,
-    )
-    constructor(ourCombatant: ICombatant, theirCombatant: ICombatant) : this(
-        ourCombatant.getCivInfo(),
-        unit = (ourCombatant as MapUnitCombatant).unit,
-        tile = ourCombatant.getTile(),
-        ourCombatant = ourCombatant,
-        theirCombatant = theirCombatant,
+        (ourCombatant as? CityCombatant)?.city,
+        (ourCombatant as? MapUnitCombatant)?.unit,
+        ourCombatant.getTile(),
+        ourCombatant,
+        theirCombatant,
+        attackedTile,
+        combatAction
     )
 
     companion object {
