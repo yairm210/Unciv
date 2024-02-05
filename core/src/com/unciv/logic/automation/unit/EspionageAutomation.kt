@@ -55,13 +55,11 @@ class EspionageAutomation(val civInfo: Civilization) {
      * Moves the spy to a city that we can steal a tech from
      */
     fun automateSpyStealTech(spy: Spy): Boolean {
-        if (civsToStealFrom.isNotEmpty()) {
-            // We want to move the spy to the city with the highest science generation
-            // Players can't usually figure this out so lets do highest population instead
-            spy.moveTo(getCivsToStealFromSorted.first().cities.filter { spy.canMoveTo(it) }.maxByOrNull { it.population.population })
-            return true
-        }
-        return false
+        if (civsToStealFrom.isEmpty()) return false
+        // We want to move the spy to the city with the highest science generation
+        // Players can't usually figure this out so lets do highest population instead
+        spy.moveTo(getCivsToStealFromSorted.first().cities.filter { spy.canMoveTo(it) }.maxByOrNull { it.population.population })
+        return spy.action == SpyAction.StealingTech
     }
 
     /**
@@ -70,7 +68,7 @@ class EspionageAutomation(val civInfo: Civilization) {
     private fun automateSpyRigElection(spy: Spy): Boolean {
         val potentialCities = cityStatesToRig.flatMap { it.cities }.filter { !it.isBeingRazed && spy.canMoveTo(it) }
         spy.moveTo(potentialCities.randomOrNull())
-        return spy.getLocation() != null
+        return spy.action == SpyAction.RiggingElections
     }
 
     /**
@@ -78,6 +76,6 @@ class EspionageAutomation(val civInfo: Civilization) {
      */
     private fun automateSpyCounterInteligence(spy: Spy): Boolean {
         spy.moveTo(civInfo.cities.filter { spy.canMoveTo(it) }.randomOrNull())
-        return spy.getLocation() != null
+        return spy.action == SpyAction.CounterIntelligence
     }
 }
