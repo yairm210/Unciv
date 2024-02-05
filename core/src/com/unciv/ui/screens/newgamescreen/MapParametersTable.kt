@@ -330,7 +330,7 @@ class MapParametersTable(
     }
 
     private fun Table.addLegendaryStartCheckbox() {
-        legendaryStartCheckbox = "LegendaryStart".toCheckBox(mapParameters.legendaryStart) {
+        legendaryStartCheckbox = "Legendary Start".toCheckBox(mapParameters.legendaryStart) {
             mapParameters.legendaryStart = it
         }
         add(legendaryStartCheckbox).row()

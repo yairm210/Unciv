@@ -158,7 +158,9 @@ object MapResources {
     const val sparse = "Sparse"
     const val default = "Default"
     const val abundant = "Abundant"
+    @Deprecated("Since 4.10.7, moved to mapParameters")
     const val strategicBalance = "Strategic Balance"
+    @Deprecated("Since 4.10.7, moved to mapParameters")
     const val legendaryStart = "Legendary Start"
 }
 

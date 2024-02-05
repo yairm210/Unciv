@@ -264,7 +264,6 @@ enum class UniqueParameterType(
 
         override fun isKnownValue(parameterText: String, ruleset: Ruleset): Boolean {
             if (parameterText in knownValues) return true
-            if (CityFilter.isKnownValue(parameterText, ruleset)) return true
             return false
         }
 
