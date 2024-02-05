@@ -23,9 +23,7 @@ class EspionageAutomation(val civInfo: Civilization) {
 
     fun automateSpies() {
         val spies = civInfo.espionageManager.spyList
-        val spiesDoingCounterIntelligence = spies.count { it.action == SpyAction.CounterIntelligence }
-        val spiesToMove = spies.filter { it.isAlive() && 
-            (!it.isDoingWork() || (it.action == SpyAction.CounterIntelligence && spiesDoingCounterIntelligence > 2))}
+        val spiesToMove = spies.filter { it.isAlive() && !it.isDoingWork() }
         for (spy in spiesToMove) {
             val randomSeed = spies.size + spies.indexOf(spy) + civInfo.gameInfo.turns
             val randomAction = Random(randomSeed).nextInt(10)
@@ -47,7 +45,8 @@ class EspionageAutomation(val civInfo: Civilization) {
                 if(automateSpyCounterInteligence(spy)) continue
             }
             // There is nothing for our spy to do, put it in a random city
-            spy.moveTo(civInfo.gameInfo.getCities().filter { it.getCenterTile().isVisible(civInfo) && spy.canMoveTo(it) }.toList().randomOrNull())
+            val randomCity = civInfo.gameInfo.getCities().filter { spy.canMoveTo(it) }.toList().randomOrNull()
+            spy.moveTo(randomCity)
         }
     }
 
