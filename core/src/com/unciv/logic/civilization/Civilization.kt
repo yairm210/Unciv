@@ -126,10 +126,6 @@ class Civilization : IsPartOfGameInfoSerialization {
     var passThroughImpassableUnlocked = false   // Cached Boolean equal to passableImpassables.isNotEmpty()
 
     @Transient
-    var nonStandardTerrainDamage = false
-
-
-    @Transient
     var thingsToFocusOnForVictory = setOf<Victory.Focus>()
 
     @Transient
@@ -701,9 +697,6 @@ class Civilization : IsPartOfGameInfoSerialization {
                     city.workedTiles.remove(workedTile)
 
         passThroughImpassableUnlocked = passableImpassables.isNotEmpty()
-        // Cache whether this civ gets nonstandard terrain damage for performance reasons.
-        nonStandardTerrainDamage = getMatchingUniques(UniqueType.DamagesContainingUnits)
-            .any { gameInfo.ruleset.terrains[it.params[0]]!!.damagePerTurn != it.params[1].toInt() }
 
         hasLongCountDisplayUnique = hasUnique(UniqueType.MayanCalendarDisplay)
 
