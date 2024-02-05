@@ -171,6 +171,8 @@ class MapParameters : IsPartOfGameInfoSerialization {
     var noRuins = false
     var noNaturalWonders = false
     var worldWrap = false
+    var strategicBalance = false
+    var legendaryStart = false
 
     /** This is used mainly for the map editor, so you can continue editing a map under the same ruleset you started with */
     var mods = LinkedHashSet<String>()
@@ -201,6 +203,8 @@ class MapParameters : IsPartOfGameInfoSerialization {
         it.noRuins = noRuins
         it.noNaturalWonders = noNaturalWonders
         it.worldWrap = worldWrap
+        it.strategicBalance = strategicBalance
+        it.legendaryStart = legendaryStart
         it.mods = LinkedHashSet(mods)
         it.baseRuleset = baseRuleset
         it.seed = seed
@@ -256,6 +260,8 @@ class MapParameters : IsPartOfGameInfoSerialization {
         yield("{$shape}")
         yield(" " + displayMapDimensions() + ")")
         if(mapResources != MapResources.default) yield(" {Resource Setting}: {$mapResources}")
+        if (strategicBalance) yield(" {Strategic Balance}")
+        if (legendaryStart) yield(" {Legendary Start}")
         if (name.isEmpty()) return@sequence
         yield("\n")
         if (type != MapGeneratedMainType.custom && type != MapType.empty) yield("{Map Generation Type}: {$type}, ")
