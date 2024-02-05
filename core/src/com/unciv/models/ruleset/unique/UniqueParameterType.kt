@@ -260,10 +260,7 @@ enum class UniqueParameterType(
         )
 
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
-                UniqueType.UniqueParameterErrorSeverity? {
-            if (parameterText in knownValues) return null
-            return UniqueType.UniqueParameterErrorSeverity.RulesetInvariant
-        }
+                UniqueType.UniqueParameterErrorSeverity? = getErrorSeverityForFilter(parameterText, ruleset)
 
         override fun isKnownValue(parameterText: String, ruleset: Ruleset): Boolean {
             if (parameterText in knownValues) return true
