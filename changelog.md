@@ -1,3 +1,19 @@
+## 4.10.7
+
+Allow city filters to be multifilters and not throw ruleset errors
+
+Resolved  - Korean science boost only applies for buildings *in capital*
+
+Further split between different road automations, some cleanup of the roadTo automation (but not enough, still pretty bad)
+
+Separated road automation to a separate file, but actually we have 2 completely different functions here, not sure if requires subdivision
+
+By SeventhM:
+- Avoid crash from city combantants 
+- Remove cache for nonstandard tile damage 
+
+ThreatManager improvement  - By tuvus
+
 ## 4.10.6
 
 Fixed crash due to ranged unit trying to capture civilian but being unable to reach the tile
