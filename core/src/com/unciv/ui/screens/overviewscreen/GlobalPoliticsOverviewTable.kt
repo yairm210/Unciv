@@ -357,7 +357,9 @@ class GlobalPoliticsOverviewTable(
         add("[$relevantCivsCount] Civilizations in the game".toLabel()).colspan(columns).row()
         add("Our Civilization:".toLabel()).colspan(columns).left().padLeft(10f).padTop(10f).row()
         add(getCivMiniTable(viewingPlayer)).left()
-        add(viewingPlayer.calculateTotalScore().toInt().toLabel()).left().row()
+        val scoreText = if (viewingPlayer.isDefeated()) Fonts.death.toString()
+            else viewingPlayer.calculateTotalScore().toInt().toString()
+        add(scoreText.toLabel()).left().row()
         val turnsTillNextDiplomaticVote = viewingPlayer.getTurnsTillNextDiplomaticVote() ?: return
         add("Turns until the next\ndiplomacy victory vote: [$turnsTillNextDiplomaticVote]".toLabel()).colspan(columns).row()
     }
@@ -394,7 +396,10 @@ class GlobalPoliticsOverviewTable(
         }
     }
 
-    /** This is the 'spider net'-like polygon showing one line per civ-civ relation */
+    /** This is the 'spider net'-like polygon showing one line per civ-civ relation
+     *  @param undefeatedCivs Civs to display - note the viewing player is always included, so it's possible the name is off and there's a dead civ included.
+     *  @param freeSize Width and height this [Group] sizes itself to
+     */
     private class DiplomacyGroup(
         undefeatedCivs: Sequence<Civilization>,
         freeSize: Float
@@ -466,6 +471,7 @@ class GlobalPoliticsOverviewTable(
             }
 
             for (civ in undefeatedCivs) {
+                if (civ.isDefeated()) continue // if you're dead, icon but no lines (One more turn mode after losing)
                 for (diplomacy in civ.diplomacy.values) {
                     if (diplomacy.otherCiv() !in undefeatedCivs) continue
                     val civGroup = civGroups[civ.civName]!!
