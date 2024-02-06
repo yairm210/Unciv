@@ -122,9 +122,6 @@ class MapUnit : IsPartOfGameInfoSerialization {
     @Transient
     var viewableTiles = HashSet<Tile>()
 
-    @Transient
-    var showAdditionalActions: Boolean = false
-
     //endregion
 
     /**
@@ -488,14 +485,6 @@ class MapUnit : IsPartOfGameInfoSerialization {
     }
 
     fun getDamageFromTerrain(tile: Tile = currentTile): Int {
-        if (civ.nonStandardTerrainDamage) {
-            for (unique in getMatchingUniques(UniqueType.DamagesContainingUnits)) {
-                if (unique.params[0] in tile.allTerrains.map { it.name }) {
-                    return unique.params[1].toInt() // Use the damage from the unique
-                }
-            }
-        }
-        // Otherwise fall back to the defined standard damage
         return  tile.allTerrains.sumOf { it.damagePerTurn }
     }
 
@@ -667,7 +656,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
                                     && tile.matchesFilter(it.params[0], civ)
                             } && unique.conditionalsApply(state)
                         )
-                            UniqueTriggerActivation.triggerUnitwideUnique(unique, this)
+                            UniqueTriggerActivation.triggerUnique(unique, this)
                     }
                 }
             }
@@ -931,7 +920,6 @@ class MapUnit : IsPartOfGameInfoSerialization {
     }
 
     fun actionsOnDeselect() {
-        showAdditionalActions = false
         if (isPreparingParadrop() || isPreparingAirSweep()) action = null
     }
 

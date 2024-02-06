@@ -5,7 +5,6 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.ui.Table
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
 import com.unciv.UncivGame
@@ -26,10 +25,7 @@ import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.components.extensions.centerX
 import com.unciv.ui.components.extensions.darken
-import com.unciv.ui.components.extensions.isEnabled
-import com.unciv.ui.components.extensions.setFontSize
 import com.unciv.ui.components.extensions.toLabel
-import com.unciv.ui.components.extensions.toTextButton
 import com.unciv.ui.components.input.KeyCharAndCode
 import com.unciv.ui.components.input.KeyShortcutDispatcherVeto
 import com.unciv.ui.components.input.KeyboardBinding
@@ -73,6 +69,8 @@ import com.unciv.utils.launchOnThreadPool
 import com.unciv.utils.withGLContext
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.coroutineScope
+import java.util.Timer
+import kotlin.concurrent.timer
 
 /**
  * Do not create this screen without seriously thinking about the implications: this is the single most memory-intensive class in the application.
@@ -98,7 +96,6 @@ class WorldScreen(
     var selectedCiv = viewingCiv
 
     var fogOfWar = true
-        private set
 
     /** `true` when it's the player's turn unless he is a spectator */
     val canChangeState
@@ -110,12 +107,11 @@ class WorldScreen(
     private val mapVisualization = MapVisualization(gameInfo, viewingCiv)
 
     // Floating Widgets going counter-clockwise
-    val topBar = WorldScreenTopBar(this)
-    private val techPolicyAndDiplomacy = TechPolicyDiplomacyButtons(this)
-    private val fogOfWarButton = createFogOfWarButton()
+    internal val topBar = WorldScreenTopBar(this)
+    internal val techPolicyAndDiplomacy = TechPolicyDiplomacyButtons(this)
     private val unitActionsTable = UnitActionsTable(this)
     /** Bottom left widget holding information about a selected unit or city */
-    val bottomUnitTable = UnitTable(this)
+    internal val bottomUnitTable = UnitTable(this)
     private val battleTable = BattleTable(this)
     private val zoomController = ZoomButtonPair(mapHolder)
     internal val minimapWrapper = MinimapHolder(mapHolder)
@@ -148,8 +144,6 @@ class WorldScreen(
         // resume music (in case choices from the menu lead to instantiation of a new WorldScreen)
         UncivGame.Current.musicController.resume()
 
-        fogOfWarButton.isVisible = viewingCiv.isSpectator()
-
         stage.addActor(mapHolder)
         stage.scrollFocus = mapHolder
         stage.addActor(notificationsScroll)  // very low in z-order, so we're free to let it extend _below_ tile info and minimap if we want
@@ -162,7 +156,6 @@ class WorldScreen(
         stage.addActor(zoomController)
         zoomController.isVisible = UncivGame.Current.settings.showZoomButtons
 
-        stage.addActor(fogOfWarButton)
         stage.addActor(bottomUnitTable)
         stage.addActor(bottomTileInfoTable)
         battleTable.width = stage.width / 3
@@ -192,7 +185,7 @@ class WorldScreen(
         globalShortcuts.add(KeyCharAndCode.BACK) { backButtonAndESCHandler() }
 
 
-        globalShortcuts.add('`') {
+        globalShortcuts.add(KeyboardBinding.DeveloperConsole) {
             // No cheating unless you're by yourself
             if (gameInfo.civilizations.count { it.isHuman() } > 1) return@add
             val consolePopup = DevConsolePopup(this)
@@ -225,6 +218,7 @@ class WorldScreen(
     }
 
     override fun dispose() {
+        resizeDeferTimer?.cancel()
         events.stopReceiving()
         statusButtons.dispose()
         super.dispose()
@@ -306,7 +300,6 @@ class WorldScreen(
         minimapWrapper.isVisible = uiEnabled
         bottomUnitTable.isVisible = uiEnabled
         if (uiEnabled) battleTable.update() else battleTable.isVisible = false
-        fogOfWarButton.isVisible = uiEnabled && viewingCiv.isSpectator()
     }
 
     private fun addKeyboardListener() {
@@ -370,6 +363,8 @@ class WorldScreen(
             if (fogOfWar) minimapWrapper.update(selectedCiv)
             else minimapWrapper.update(viewingCiv)
 
+            if (fogOfWar) bottomTileInfoTable.selectedCiv = selectedCiv
+            else bottomTileInfoTable.selectedCiv = viewingCiv
             bottomTileInfoTable.updateTileTable(mapHolder.selectedTile)
             bottomTileInfoTable.x = stage.width - bottomTileInfoTable.width
             bottomTileInfoTable.y = if (game.settings.showMinimap) minimapWrapper.height else 0f
@@ -377,9 +372,6 @@ class WorldScreen(
             battleTable.update()
 
             displayTutorialTaskOnUpdate()
-
-            unitActionsTable.update(bottomUnitTable.selectedUnit)
-            unitActionsTable.y = bottomUnitTable.height
         }
 
         mapHolder.resetArrows()
@@ -409,8 +401,11 @@ class WorldScreen(
         if (techPolicyAndDiplomacy.update())
             displayTutorial(TutorialTrigger.OtherCivEncountered)
 
-        fogOfWarButton.isEnabled = !selectedCiv.isSpectator()
-        fogOfWarButton.setPosition(10f, topBar.y - fogOfWarButton.height - 10f)
+        if (uiEnabled) {
+            // UnitActionsTable measures geometry (its own y, techPolicyAndDiplomacy and fogOfWarButton), so call update this late
+            unitActionsTable.y = bottomUnitTable.height
+            unitActionsTable.update(bottomUnitTable.selectedUnit)
+        }
 
         // If the game has ended, lets stop AutoPlay
         if (game.settings.autoPlay.isAutoPlaying()
@@ -555,19 +550,6 @@ class WorldScreen(
             bottomUnitTable.selectedCity != null -> bottomUnitTable.selectedCity!!.civ
             else -> viewingCiv
         }
-    }
-
-    private fun createFogOfWarButton(): TextButton {
-        val fogOfWarButton = "Fog of War".toTextButton()
-        fogOfWarButton.label.setFontSize(30)
-        fogOfWarButton.labelCell.pad(10f)
-        fogOfWarButton.pack()
-        fogOfWarButton.onClick {
-            fogOfWar = !fogOfWar
-            shouldUpdate = true
-        }
-        return fogOfWarButton
-
     }
 
     class RestoreState(
@@ -736,17 +718,23 @@ class WorldScreen(
         }
     }
 
+
+    private var resizeDeferTimer: Timer? = null
+
     override fun resize(width: Int, height: Int) {
-        if (stage.viewport.screenWidth != width || stage.viewport.screenHeight != height) {
+        resizeDeferTimer?.cancel()
+        if (resizeDeferTimer == null && stage.viewport.screenWidth == width && stage.viewport.screenHeight == height) return
+        resizeDeferTimer = timer("Resize", daemon = true, 500L, Long.MAX_VALUE) {
+            resizeDeferTimer?.cancel()
+            resizeDeferTimer = null
             startNewScreenJob(gameInfo, true) // start over
         }
     }
 
-
     override fun render(delta: Float) {
         //  This is so that updates happen in the MAIN THREAD, where there is a GL Context,
         //    otherwise images will not load properly!
-        if (shouldUpdate) {
+        if (shouldUpdate && resizeDeferTimer == null) {
             shouldUpdate = false
 
             // Since updating the worldscreen can take a long time, *especially* the first time, we disable input processing to avoid ANRs
@@ -756,11 +744,10 @@ class WorldScreen(
             if (Gdx.input.inputProcessor == null) // Update may have replaced the worldscreen with a GreatPersonPickerScreen etc, so the input would already be set
                 Gdx.input.inputProcessor = stage
         }
-//        topBar.selectedCivLabel.setText(Gdx.graphics.framesPerSecond) // for framerate testing
-
 
         super.render(delta)
     }
+
 
     private fun showTutorialsOnNextTurn() {
         if (!game.settings.showTutorials) return
@@ -820,7 +807,7 @@ class WorldScreen(
 }
 
 /** This exists so that no reference to the current world screen remains, so the old world screen can get garbage collected during [UncivGame.loadGame]. */
-private fun startNewScreenJob(gameInfo: GameInfo, autosaveDisabled:Boolean = false) {
+private fun startNewScreenJob(gameInfo: GameInfo, autosaveDisabled: Boolean = false) {
     Concurrency.run {
         val newWorldScreen = try {
             UncivGame.Current.loadGame(gameInfo)

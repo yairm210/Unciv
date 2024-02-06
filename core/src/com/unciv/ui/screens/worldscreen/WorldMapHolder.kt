@@ -501,18 +501,22 @@ class WorldMapHolder(
     val smallerCircleSizes = 25f
 
     private fun getMoveHereButton(dto: MoveHereButtonDto): Group {
-        val moveHereButton = ImageGetter.getStatIcon("Movement")
-            .apply { color = Color.BLACK; width = buttonSize / 2; height = buttonSize / 2 }
-            .surroundWithCircle(buttonSize-2, false)
+        val isParadrop = dto.unitToTurnsToDestination.keys.all { it.isPreparingParadrop() }
+        val image = if (isParadrop)
+                ImageGetter.getUnitActionPortrait("Paradrop", buttonSize / 2)
+            else ImageGetter.getStatIcon("Movement")
+                .apply { color = Color.BLACK; width = buttonSize / 2; height = buttonSize / 2 }
+        val moveHereButton = image
+            .surroundWithCircle(buttonSize - 2, false)
             .surroundWithCircle(buttonSize, false, Color.BLACK)
 
-
-        val numberCircle = dto.unitToTurnsToDestination.values.maxOrNull()!!.toString().toLabel(fontSize = 14)
-            .apply { setAlignment(Align.center) }
-            .surroundWithCircle(smallerCircleSizes-2, color = BaseScreen.skinStrings.skinConfig.baseColor.darken(0.3f))
-            .surroundWithCircle(smallerCircleSizes,false)
-
-        moveHereButton.addActor(numberCircle)
+        if (!isParadrop) {
+            val numberCircle = dto.unitToTurnsToDestination.values.maxOrNull()!!.toString().toLabel(fontSize = 14)
+                .apply { setAlignment(Align.center) }
+                .surroundWithCircle(smallerCircleSizes - 2, color = BaseScreen.skinStrings.skinConfig.baseColor.darken(0.3f))
+                .surroundWithCircle(smallerCircleSizes, false)
+            moveHereButton.addActor(numberCircle)
+        }
 
         val firstUnit = dto.unitToTurnsToDestination.keys.first()
         val unitIcon = if (dto.unitToTurnsToDestination.size == 1) UnitGroup(firstUnit, smallerCircleSizes)
@@ -536,7 +540,7 @@ class WorldMapHolder(
     }
 
     private fun getSwapWithButton(dto: SwapWithButtonDto): Group {
-        val swapWithButton = Group().apply { width = buttonSize;height = buttonSize; }
+        val swapWithButton = Group().apply { width = buttonSize; height = buttonSize }
         swapWithButton.addActor(ImageGetter.getCircle().apply { width = buttonSize; height = buttonSize })
         swapWithButton.addActor(
             ImageGetter.getImage("OtherIcons/Swap")

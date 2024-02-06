@@ -2,9 +2,12 @@ package com.unciv.logic.civilization.managers
 
 import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.civilization.Civilization
+import com.unciv.logic.civilization.MayaLongCountAction
+import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.models.Counter
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
+import com.unciv.ui.components.MayaCalendar
 
 
 // todo: Great Admiral?
@@ -85,6 +88,19 @@ class GreatPersonManager : IsPartOfGameInfoSerialization {
         greatPersonPointsCounter.add(getGreatPersonPointsForNextTurn())
     }
 
+    fun triggerMayanGreatPerson() {
+        if (civInfo.isSpectator()) return
+        val greatPeople = getGreatPeople()
+        if (longCountGPPool.isEmpty())
+            longCountGPPool = greatPeople.map { it.name }.toHashSet()
+
+        freeGreatPeople++
+        mayaLimitedFreeGP++
+
+        // Anyone an idea for a good icon?
+        val notification = "{A new b'ak'tun has just begun!}\n{A Great Person joins you!}"
+        civInfo.addNotification(notification, MayaLongCountAction(), NotificationCategory.General, MayaCalendar.notificationIcon)
+    }
 
     fun getGreatPeople(): HashSet<BaseUnit> {
         val greatPeople = civInfo.gameInfo.ruleset.units.values.asSequence()

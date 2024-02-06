@@ -7,9 +7,9 @@ import com.unciv.logic.civilization.Civilization
 import com.unciv.models.Counter
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.tile.TileImprovement
-import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.LocalUniqueCache
 import com.unciv.models.ruleset.unique.StateForConditionals
+import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueParameterType
 import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueType
@@ -23,7 +23,6 @@ import com.unciv.ui.objectdescriptions.BuildingDescriptions
 
 class Building : RulesetStatsObject(), INonPerpetualConstruction {
 
-    @Deprecated("The functionality provided by the requiredTech field is provided by the OnlyAvailableWhen unique.")
     override var requiredTech: String? = null
     override var cost: Int = -1
 
@@ -106,7 +105,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
     override fun getProductionCost(civInfo: Civilization): Int {
         var productionCost = cost.toFloat()
 
-        for (unique in uniqueObjects.filter { it.isOfType(UniqueType.CostIncreasesPerCity) })
+        for (unique in getMatchingUniques(UniqueType.CostIncreasesPerCity, StateForConditionals(civInfo)))
             productionCost += civInfo.cities.size * unique.params[0].toInt()
 
         if (civInfo.isCityState())
@@ -242,7 +241,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
             yield(RejectionReasonType.AlreadyBuilt.toInstance())
 
         for (unique in uniqueObjects) {
-            if (unique.type != UniqueType.OnlyAvailableWhen &&
+            if (unique.type != UniqueType.OnlyAvailable &&
                 !unique.conditionalsApply(StateForConditionals(civ, cityConstructions.city))) continue
 
             @Suppress("NON_EXHAUSTIVE_WHEN")
@@ -252,7 +251,11 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
                 UniqueType.Unbuildable ->
                     yield(RejectionReasonType.Unbuildable.toInstance())
 
-                UniqueType.OnlyAvailableWhen ->
+                UniqueType.OnlyAvailable ->
+                    if (!unique.conditionalsApply(civ, cityConstructions.city))
+                        yield(RejectionReasonType.ShouldNotBeDisplayed.toInstance())
+
+                UniqueType.Unavailable ->
                     if (!unique.conditionalsApply(civ, cityConstructions.city))
                         yield(RejectionReasonType.ShouldNotBeDisplayed.toInstance())
 
@@ -272,7 +275,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
                         yield(RejectionReasonType.MustNotBeOnTile.toInstance(unique.text))
 
                 UniqueType.MustBeNextTo ->
-                    if (!cityCenter.isAdjacentTo(unique.params[0]))
+                    if (!cityCenter.isAdjacentTo(unique.params[0], civ))
                         yield(RejectionReasonType.MustBeNextToTile.toInstance(unique.text))
 
                 UniqueType.MustNotBeNextTo ->

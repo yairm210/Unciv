@@ -1,6 +1,5 @@
 package com.unciv.ui.popups
 
-import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.scenes.scene2d.ui.Table
@@ -38,6 +37,8 @@ class UnitUpgradeMenu(
     private val onButtonClicked: () -> Unit
 ) : AnimatedMenuPopup(stage, getActorTopRight(positionNextTo)) {
 
+    private val unitToUpgradeTo by lazy { unitAction.unitToUpgradeTo }
+
     private val allUpgradableUnits: Sequence<MapUnit> by lazy {
         unit.civ.units.getCivUnits()
             .filter {
@@ -45,7 +46,7 @@ class UnitUpgradeMenu(
                     && it.currentMovement > 0f
                     && it.currentTile.getOwner() == unit.civ
                     && !it.isEmbarked()
-                    && it.upgrade.canUpgrade(unitAction.unitToUpgradeTo, ignoreResources = true)
+                    && it.upgrade.canUpgrade(unitToUpgradeTo, ignoreResources = true)
             }
     }
 
@@ -59,7 +60,7 @@ class UnitUpgradeMenu(
 
     override fun createContentTable(): Table {
         val newInnerTable = BaseUnitDescriptions.getUpgradeInfoTable(
-            unitAction.title, unit.baseUnit, unitAction.unitToUpgradeTo
+            unitAction.title, unit.baseUnit, unitToUpgradeTo
         )
         newInnerTable.row()
         newInnerTable.add(getButton("Upgrade", KeyboardBinding.Upgrade, ::doUpgrade))
@@ -93,7 +94,9 @@ class UnitUpgradeMenu(
     private fun doAllUpgrade() {
         SoundPlayer.playRepeated(unitAction.uncivSound)
         for (unit in allUpgradableUnits) {
-            val otherAction = UnitActionsUpgrade.getUpgradeAction(unit)
+            val otherAction = UnitActionsUpgrade.getUpgradeActions(unit)
+                .firstOrNull{ (it as UpgradeUnitAction).unitToUpgradeTo == unitToUpgradeTo && 
+                    it.action != null }
             otherAction?.action?.invoke()
         }
     }

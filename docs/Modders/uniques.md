@@ -790,9 +790,6 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Global, Unit
 
-??? example  "+30% Strength when fighting City-State units and cities"
-	Applicable to: Global
-
 ??? example  "[amount] additional attacks per turn"
 	Example: "[3] additional attacks per turn"
 
@@ -905,11 +902,13 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "[amount] Movement point cost to disembark"
 	Example: "[3] Movement point cost to disembark"
 
+Due to performance considerations, this unique is cached, thus conditionals may not work.
 	Applicable to: Global, Unit
 
 ??? example  "[amount] Movement point cost to embark"
 	Example: "[3] Movement point cost to embark"
 
+Due to performance considerations, this unique is cached, thus conditionals may not work.
 	Applicable to: Global, Unit
 
 ## Nation uniques
@@ -927,22 +926,24 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Nation
 
 ??? example  "All units move through Forest and Jungle Tiles in friendly territory as if they have roads. These tiles can be used to establish City Connections upon researching the Wheel."
+Due to performance considerations, this unique is cached, thus conditionals may not work.
 	Applicable to: Nation
 
 ??? example  "Units ignore terrain costs when moving into any tile with Hills"
+Due to performance considerations, this unique is cached, thus conditionals may not work.
 	Applicable to: Nation
 
 ??? example  "Excluded from map editor"
 	Applicable to: Nation, Terrain, Improvement, Resource
 
 ??? example  "Will not be displayed in Civilopedia"
-	Applicable to: Nation, Tech, Policy, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed
+	Applicable to: Nation, Tech, Policy, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed
 
 ??? example  "Comment [comment]"
 	Allows displaying arbitrary text in a Unique listing. Only the text within the '[]' brackets will be displayed, the rest serves to allow Ruleset validation to recognize the intent.
 	Example: "Comment [comment]"
 
-	Applicable to: Nation, Tech, Policy, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed
+	Applicable to: Nation, Tech, Policy, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed
 
 ## Era uniques
 ??? example  "Starting in this era disables religion"
@@ -960,6 +961,9 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 ??? example  "Only available"
 	Applicable to: Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, Promotion, Improvement, Ruins
+
+??? example  "Unavailable"
+	Applicable to: Tech, Policy, Building, Unit, Promotion, Improvement, Ruins
 
 ??? example  "Cannot be hurried"
 	Applicable to: Tech, Building
@@ -1385,8 +1389,13 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Unit
 
-??? example  "May upgrade to [baseUnitFilter] through ruins-like effects"
-	Example: "May upgrade to [Melee] through ruins-like effects"
+??? example  "May upgrade to [unit] through ruins-like effects"
+	Example: "May upgrade to [Musketman] through ruins-like effects"
+
+	Applicable to: Unit
+
+??? example  "Can upgrade to [unit]"
+	Example: "Can upgrade to [Musketman]"
 
 	Applicable to: Unit
 
@@ -1394,43 +1403,54 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Unit
 
 ??? example  "Cannot move"
+Due to performance considerations, this unique is cached, thus conditionals may not work.
 	Applicable to: Unit
 
 ??? example  "Double movement in [terrainFilter]"
 	Example: "Double movement in [Fresh Water]"
 
+Due to performance considerations, this unique is cached, thus conditionals may not work.
 	Applicable to: Unit
 
 ??? example  "All tiles cost 1 movement"
+Due to performance considerations, this unique is cached, thus conditionals may not work.
 	Applicable to: Unit
 
 ??? example  "May travel on Water tiles without embarking"
+Due to performance considerations, this unique is cached, thus conditionals may not work.
 	Applicable to: Unit
 
 ??? example  "Can pass through impassable tiles"
+Due to performance considerations, this unique is cached, thus conditionals may not work.
 	Applicable to: Unit
 
 ??? example  "Ignores terrain cost"
+Due to performance considerations, this unique is cached, thus conditionals may not work.
 	Applicable to: Unit
 
 ??? example  "Ignores Zone of Control"
+Due to performance considerations, this unique is cached, thus conditionals may not work.
 	Applicable to: Unit
 
 ??? example  "Rough terrain penalty"
+Due to performance considerations, this unique is cached, thus conditionals may not work.
 	Applicable to: Unit
 
 ??? example  "Can enter ice tiles"
+Due to performance considerations, this unique is cached, thus conditionals may not work.
 	Applicable to: Unit
 
 ??? example  "Cannot enter ocean tiles"
 	Applicable to: Unit
 
 ??? example  "May enter foreign tiles without open borders"
+Due to performance considerations, this unique is cached, thus conditionals may not work.
 	Applicable to: Unit
 
 ??? example  "May enter foreign tiles without open borders, but loses [amount] religious strength each turn it ends there"
 	Example: "May enter foreign tiles without open borders, but loses [3] religious strength each turn it ends there"
 
+Due to performance considerations, this unique is cached, thus conditionals may not work.
 	Applicable to: Unit
 
 ??? example  "Never appears as a Barbarian unit"
@@ -1506,6 +1526,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "Units ending their turn on this terrain take [amount] damage"
 	Example: "Units ending their turn on this terrain take [3] damage"
 
+Due to performance considerations, this unique is cached, thus conditionals may not work.
 	Applicable to: Terrain
 
 ??? example  "Grants [promotion] ([comment]) to adjacent [mapUnitFilter] units for the rest of the game"
@@ -1774,9 +1795,6 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Ruins
 
-??? example  "Hidden after generating a Great Prophet"
-	Applicable to: Ruins
-
 ## CityState uniques
 ??? example  "Provides military units every ≈[amount] turns"
 	Example: "Provides military units every ≈[3] turns"
@@ -1787,6 +1805,29 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: CityState
 
 ## ModOptions uniques
+??? example  "Diplomatic relationships cannot change"
+	Applicable to: ModOptions
+
+??? example  "Can convert gold to science with sliders"
+	Applicable to: ModOptions
+
+??? example  "Allow City States to spawn with additional units"
+	Applicable to: ModOptions
+
+??? example  "Can trade civilization introductions for [positiveAmount] Gold"
+	Example: "Can trade civilization introductions for [3] Gold"
+
+	Applicable to: ModOptions
+
+??? example  "Disable religion"
+	Applicable to: ModOptions
+
+??? example  "Allow raze capital"
+	Applicable to: ModOptions
+
+??? example  "Allow raze holy city"
+	Applicable to: ModOptions
+
 ??? example  "Mod is incompatible with [modFilter]"
 	Specifies that your Mod is incompatible with another. Always treated symmetrically, and cannot be overridden by the Mod you are declaring as incompatible.
 	Example: "Mod is incompatible with [DeCiv Redux]"
@@ -1932,8 +1973,16 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "&lt;after enhancing a religion&gt;"
 	Applicable to: Conditional
 
+??? example  "&lt;after generating a Great Prophet&gt;"
+	Applicable to: Conditional
+
 ??? example  "&lt;if [buildingFilter] is constructed&gt;"
 	Example: "&lt;if [Culture] is constructed&gt;"
+
+	Applicable to: Conditional
+
+??? example  "&lt;if [buildingFilter] is constructed by anybody&gt;"
+	Example: "&lt;if [Culture] is constructed by anybody&gt;"
 
 	Applicable to: Conditional
 
@@ -1968,6 +2017,23 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Conditional
 
 ??? example  "&lt;in this city&gt;"
+	Applicable to: Conditional
+
+??? example  "&lt;in [cityFilter] cities&gt;"
+	Example: "&lt;in [in all cities] cities&gt;"
+
+	Applicable to: Conditional
+
+??? example  "&lt;in cities connected to the capital&gt;"
+	Applicable to: Conditional
+
+??? example  "&lt;in cities with a major religion&gt;"
+	Applicable to: Conditional
+
+??? example  "&lt;in cities with an enhanced religion&gt;"
+	Applicable to: Conditional
+
+??? example  "&lt;in cities following our religion&gt;"
 	Applicable to: Conditional
 
 ??? example  "&lt;in cities with a [buildingFilter]&gt;"
@@ -2016,6 +2082,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Conditional
 
+??? example  "&lt;vs [combatantFilter]&gt;"
+	Example: "&lt;vs [City]&gt;"
+
+	Applicable to: Conditional
+
 ??? example  "&lt;when fighting units from a Civilization with more Cities than you&gt;"
 	Applicable to: Conditional
 
@@ -2056,23 +2127,23 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Conditional
 
-??? example  "&lt;with [amount] to [amount] neighboring [tileFilter] [tileFilter] tiles&gt;"
-	Example: "&lt;with [3] to [3] neighboring [Farm] [Farm] tiles&gt;"
-
-	Applicable to: Conditional
-
 ??? example  "&lt;in [tileFilter] tiles&gt;"
 	Example: "&lt;in [Farm] tiles&gt;"
 
 	Applicable to: Conditional
 
-??? example  "&lt;in [tileFilter] [tileFilter] tiles&gt;"
-	Example: "&lt;in [Farm] [Farm] tiles&gt;"
+??? example  "&lt;in tiles without [tileFilter]&gt;"
+	Example: "&lt;in tiles without [Farm]&gt;"
 
 	Applicable to: Conditional
 
-??? example  "&lt;in tiles without [tileFilter]&gt;"
-	Example: "&lt;in tiles without [Farm]&gt;"
+??? example  "&lt;in tiles adjacent to [tileFilter]&gt;"
+	Example: "&lt;in tiles adjacent to [Farm]&gt;"
+
+	Applicable to: Conditional
+
+??? example  "&lt;in tiles not adjacent to [tileFilter]&gt;"
+	Example: "&lt;in tiles not adjacent to [Farm]&gt;"
 
 	Applicable to: Conditional
 

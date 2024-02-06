@@ -8,6 +8,7 @@ import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.UnitAction
 import com.unciv.models.UnitActionType
+import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
@@ -16,12 +17,12 @@ import kotlin.random.Random
 
 object UnitActionsPillage {
 
-    fun getPillageActions(unit: MapUnit, tile: Tile): List<UnitAction> {
+    internal fun getPillageActions(unit: MapUnit, tile: Tile): Sequence<UnitAction> {
         val pillageAction = getPillageAction(unit, tile)
-            ?: return listOf()
+            ?: return emptySequence()
         if (pillageAction.action == null || unit.civ.isAI() || (unit.civ.isHuman() && UncivGame.Current.settings.autoPlay.isAutoPlaying()))
-            return listOf(pillageAction)
-        else return listOf(UnitAction(UnitActionType.Pillage, pillageAction.title) {
+            return sequenceOf(pillageAction)
+        else return sequenceOf(UnitAction(UnitActionType.Pillage, pillageAction.title) {
             val pillageText = "Are you sure you want to pillage this [${tile.getImprovementToPillageName()!!}]?"
             ConfirmPopup(
                 GUI.getWorldScreen(),
@@ -35,7 +36,7 @@ object UnitActionsPillage {
         })
     }
 
-    fun getPillageAction(unit: MapUnit, tile: Tile): UnitAction? {
+    internal fun getPillageAction(unit: MapUnit, tile: Tile): UnitAction? {
         val improvementName = unit.currentTile.getImprovementToPillageName()
         if (unit.isCivilian() || improvementName == null || tile.getOwner() == unit.civ) return null
         return UnitAction(
@@ -74,14 +75,15 @@ object UnitActionsPillage {
 
         // Accumulate the loot
         val pillageYield = Stats()
-        for (unique in improvement.getMatchingUniques(UniqueType.PillageYieldRandom)) {
+        val stateForConditionals = StateForConditionals(unit=unit)
+        for (unique in improvement.getMatchingUniques(UniqueType.PillageYieldRandom, stateForConditionals)) {
             for ((stat, value) in unique.stats) {
                 // Unique text says "approximately [X]", so we add 0..X twice - think an RPG's 2d12
                 val looted = Random.nextInt((value + 1).toInt()) + Random.nextInt((value + 1).toInt())
                 pillageYield.add(stat, looted.toFloat())
             }
         }
-        for (unique in improvement.getMatchingUniques(UniqueType.PillageYieldFixed)) {
+        for (unique in improvement.getMatchingUniques(UniqueType.PillageYieldFixed, stateForConditionals)) {
             pillageYield.add(unique.stats)
         }
 
@@ -112,6 +114,7 @@ object UnitActionsPillage {
         globalPillageYield.notify("")
     }
 
+    // Public - used in UnitAutomation
     fun canPillage(unit: MapUnit, tile: Tile): Boolean {
         if (unit.isTransported) return false
         if (!tile.canPillageTile()) return false

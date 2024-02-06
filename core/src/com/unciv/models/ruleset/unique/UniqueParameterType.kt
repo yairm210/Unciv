@@ -80,12 +80,15 @@ enum class UniqueParameterType(
             if (parameterText == "All") null else UniqueType.UniqueParameterErrorSeverity.RulesetInvariant
     },
 
-    /** Implemented by [ICombatant.matchesCategory][com.unciv.logic.battle.ICombatant.matchesCategory] */
+    /** Implemented by [ICombatant.matchesCategory][com.unciv.logic.battle.ICombatant.matchesFilter] */
     CombatantFilter("combatantFilter", "City", "This indicates a combatant, which can either be a unit or a city (when bombarding). Must either be `City` or a `mapUnitFilter`") {
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
-                UniqueType.UniqueParameterErrorSeverity? {
-            if (parameterText == "City") return null  // City also recognizes "All" but that's covered by BaseUnitFilter too
-            return MapUnitFilter.getErrorSeverity(parameterText, ruleset)
+            UniqueType.UniqueParameterErrorSeverity? = getErrorSeverityForFilter(parameterText, ruleset)
+
+        override fun isKnownValue(parameterText: String, ruleset: Ruleset): Boolean {
+            if (parameterText == "City") return true // MapUnitFilter covers CivFilter
+            if (MapUnitFilter.isKnownValue(parameterText, ruleset)) return true
+            return false
         }
     },
 
@@ -233,33 +236,38 @@ enum class UniqueParameterType(
 
     /** Implemented by [City.matchesFilter][com.unciv.logic.city.City.matchesFilter] */
     CityFilter("cityFilter", "in all cities", null, "City filters") {
-        private val cityFilterStrings = setOf(
+        private val knownValues = setOf(
             "in this city",
-            "in all cities",
-            "in all coastal cities",
-            "in capital",
-            "in all non-occupied cities",
+            "in all cities", "All",
+            "in your cities", "Your",
+            "in all coastal cities", "Coastal",
+            "in capital", "Capital",
+            "in all non-occupied cities", "Non-occupied",
             "in all cities with a world wonder",
             "in all cities connected to capital",
-            "in all cities with a garrison",
+            "in all cities with a garrison", "Garrisoned",
             "in all cities in which the majority religion is a major religion",
             "in all cities in which the majority religion is an enhanced religion",
             "in non-enemy foreign cities",
-            "in foreign cities",
-            "in annexed cities",
-            "in puppeted cities",
-            "in holy cities",
+            "in enemy cities", "Enemy",
+            "in foreign cities", "Foreign",
+            "in annexed cities", "Annexed",
+            "in puppeted cities", "Puppeted",
+            "in holy cities", "Holy",
             "in City-State cities",
             "in cities following this religion",
+            "in cities following our religion",
         )
 
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
-                UniqueType.UniqueParameterErrorSeverity? {
-            if (parameterText in cityFilterStrings) return null
-            return UniqueType.UniqueParameterErrorSeverity.RulesetInvariant
+                UniqueType.UniqueParameterErrorSeverity? = getErrorSeverityForFilter(parameterText, ruleset)
+
+        override fun isKnownValue(parameterText: String, ruleset: Ruleset): Boolean {
+            if (parameterText in knownValues) return true
+            return false
         }
 
-        override fun getTranslationWriterStringsForOutput() = cityFilterStrings
+        override fun getTranslationWriterStringsForOutput() = knownValues
     },
 
     /** Used by [BuildingFilter] and e.g. [UniqueType.ConditionalCityWithBuilding] */
@@ -309,8 +317,8 @@ enum class UniqueParameterType(
     TerrainFilter("terrainFilter", Constants.freshWaterFilter, null, "Terrain Filters") {
         private val knownValues = setOf(
             "All", "Terrain",
-            Constants.coastal, Constants.river, "Open terrain", "Rough terrain", "Water resource", 
-            "resource", "Foreign Land", "Foreign", "Friendly Land", "Friendly", "Enemy Land", "Enemy",
+            Constants.coastal, Constants.river, "Open terrain", "Rough terrain", "Water resource",
+            "resource", "Foreign Land", "Foreign", "Friendly Land", "Friendly", "Enemy Land", "Enemy", "your",
             "Featureless", Constants.freshWaterFilter, "non-fresh water", "Natural Wonder",
             "Impassable", "Land", "Water"
         ) +
@@ -576,9 +584,14 @@ enum class UniqueParameterType(
     /** Mod declarative compatibility: Define Mod relations by their name. */
     ModName("modFilter", "DeCiv Redux", """A Mod name, case-sensitive _or_ a simple wildcard filter beginning and ending in an Asterisk, case-insensitive""", "Mod name filter") {
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
-            UniqueType.UniqueParameterErrorSeverity? =
-            if ('-' !in parameterText && ('*' !in parameterText || parameterText.matches(Regex("""^\*[^*]+\*$""")))) null
-            else UniqueType.UniqueParameterErrorSeverity.RulesetInvariant
+            UniqueType.UniqueParameterErrorSeverity? = when {
+                BaseRuleset.values().any { it.fullName == parameterText } -> null  // Only Builtin ruleset names can contain '-'
+                parameterText == "*Civ V -*" || parameterText == "*Civ V - *" -> null  // Wildcard filter for builtin
+                '-' in parameterText -> UniqueType.UniqueParameterErrorSeverity.RulesetInvariant
+                parameterText.matches(Regex("""^\*[^*]+\*$""")) -> null
+                parameterText.startsWith('*') || parameterText.endsWith('*') -> UniqueType.UniqueParameterErrorSeverity.RulesetInvariant
+                else -> null
+        }
 
         override fun getTranslationWriterStringsForOutput() = scanExistingValues(this)
     },

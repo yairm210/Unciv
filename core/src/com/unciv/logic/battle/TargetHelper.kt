@@ -107,7 +107,7 @@ object TargetHelper {
 
         if (combatant is MapUnitCombatant &&
             combatant.unit.getMatchingUniques(UniqueType.CanOnlyAttackUnits).run {
-                any() && none { tileCombatant.matchesCategory(it.params[0]) }
+                any() && none { tileCombatant.matchesFilter(it.params[0]) }
             }
         )
             return false

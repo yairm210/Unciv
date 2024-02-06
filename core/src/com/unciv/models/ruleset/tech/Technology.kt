@@ -43,7 +43,7 @@ class Technology: RulesetObject() {
 
     // Wrapper so that if the way to require a tech with a Unique ever changes, this only needs to change in one place.
     fun uniqueIsRequirementForThisTech(unique: Unique): Boolean =
-            unique.type == UniqueType.OnlyAvailableWhen
+            unique.type == UniqueType.OnlyAvailable
             // OnlyAvailableWhen can take multiple conditionals, in which case the true conditional is implicitly the conjunction of all those conditionals.
             // If an OnlyAvailableWhen there are multiple conditionals, one of which requires this tech,
             // then IHasUniques.techsRequiredByUniques() will list this tech as required (because it is),

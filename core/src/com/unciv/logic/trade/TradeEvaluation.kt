@@ -8,7 +8,6 @@ import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.logic.map.tile.Tile
-import com.unciv.models.ruleset.ModOptionsConstants
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.UniqueType
@@ -64,7 +63,7 @@ class TradeEvaluation {
     }
 
     fun getTradeAcceptability(trade: Trade, evaluator: Civilization, tradePartner: Civilization): Int {
-        val citiesAskedToSurrender = trade.ourOffers.filter { it.type == TradeType.City }.count()
+        val citiesAskedToSurrender = trade.ourOffers.count { it.type == TradeType.City }
         val maxCitiesToSurrender = ceil(evaluator.cities.size.toFloat() / 5).toInt()
         if (citiesAskedToSurrender > maxCitiesToSurrender) {
             return Int.MIN_VALUE
@@ -100,7 +99,7 @@ class TradeEvaluation {
         return evaluateBuyCost(offer, civInfo, tradePartner)
     }
 
-    fun evaluateBuyCost(offer: TradeOffer, civInfo: Civilization, tradePartner: Civilization): Int {
+    private fun evaluateBuyCost(offer: TradeOffer, civInfo: Civilization, tradePartner: Civilization): Int {
         when (offer.type) {
             TradeType.Gold -> return offer.amount
             // GPT loses 1% of value for each 'future' turn, meaning: gold now is more valuable than gold in the future
@@ -151,13 +150,13 @@ class TradeEvaluation {
                 val civToDeclareWarOn = civInfo.gameInfo.getCivilization(offer.name)
                 val threatToThem = Automation.threatAssessment(civInfo, civToDeclareWarOn)
 
-                if (!civInfo.isAtWarWith(civToDeclareWarOn)) return 0 // why should we pay you to go fight someone...?
+                return if (!civInfo.isAtWarWith(civToDeclareWarOn)) 0 // why should we pay you to go fight someone...?
                 else when (threatToThem) {
-                    ThreatLevel.VeryLow -> return 0
-                    ThreatLevel.Low -> return 0
-                    ThreatLevel.Medium -> return 100
-                    ThreatLevel.High -> return 500
-                    ThreatLevel.VeryHigh -> return 1000
+                    ThreatLevel.VeryLow -> 0
+                    ThreatLevel.Low -> 0
+                    ThreatLevel.Medium -> 100
+                    ThreatLevel.High -> 500
+                    ThreatLevel.VeryHigh -> 1000
                 }
             }
             TradeType.City -> {
@@ -209,7 +208,7 @@ class TradeEvaluation {
         return evaluateSellCost(offer, civInfo, tradePartner)
     }
 
-    fun evaluateSellCost(offer: TradeOffer, civInfo: Civilization, tradePartner: Civilization): Int {
+    private fun evaluateSellCost(offer: TradeOffer, civInfo: Civilization, tradePartner: Civilization): Int {
         when (offer.type) {
             TradeType.Gold -> return offer.amount
             TradeType.Gold_Per_Turn -> return offer.amount * offer.duration
@@ -307,7 +306,7 @@ class TradeEvaluation {
      * This returns how much one gold is worth now in comparison to starting out the game
      * Gold is worth less as the civilization has a higher income
      */
-    fun getGoldInflation(civInfo: Civilization): Double {
+    private fun getGoldInflation(civInfo: Civilization): Double {
         val modifier = 1000.0
         val goldPerTurn = civInfo.stats.statsForNextTurn.gold.toDouble()
         // To visualise the function, plug this into a 2d graphing calculator \frac{1000}{x^{1.2}+1.11*1000}
@@ -371,7 +370,7 @@ class TradeEvaluation {
     }
 
     private fun introductionValue(ruleSet: Ruleset): Int {
-        val unique = ruleSet.modOptions.getMatchingUniques(ModOptionsConstants.tradeCivIntroductions).firstOrNull()
+        val unique = ruleSet.modOptions.getMatchingUniques(UniqueType.TradeCivIntroductions).firstOrNull()
             ?: return 0
         return unique.params[0].toInt()
     }

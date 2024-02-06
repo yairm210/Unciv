@@ -18,7 +18,6 @@ import com.unciv.logic.civilization.managers.AssignedQuest
 import com.unciv.logic.trade.TradeLogic
 import com.unciv.logic.trade.TradeOffer
 import com.unciv.logic.trade.TradeType
-import com.unciv.models.ruleset.ModOptionsConstants
 import com.unciv.models.ruleset.Quest
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.unique.UniqueType
@@ -70,7 +69,7 @@ class CityStateDiplomacyTable(private val diplomacyScreen: DiplomacyScreen) {
         if (diplomacyScreen.isNotPlayersTurn() || viewingCiv.isAtWarWith(otherCiv)) demandTributeButton.disable()
 
         val diplomacyManager = viewingCiv.getDiplomacyManager(otherCiv)
-        if (!viewingCiv.gameInfo.ruleset.modOptions.uniques.contains(ModOptionsConstants.diplomaticRelationshipsCannotChange)) {
+        if (!viewingCiv.gameInfo.ruleset.modOptions.hasUnique(UniqueType.DiplomaticRelationshipsCannotChange)) {
             if (viewingCiv.isAtWarWith(otherCiv))
                 diplomacyTable.add(getNegotiatePeaceCityStateButton(otherCiv, diplomacyManager)).row()
             else diplomacyTable.add(diplomacyScreen.getDeclareWarButton(diplomacyManager, otherCiv)).row()
@@ -177,11 +176,11 @@ class CityStateDiplomacyTable(private val diplomacyScreen: DiplomacyScreen) {
         }
 
         fun getBonusText(header: String, level: RelationshipLevel): String {
-            val boni = viewingCiv.cityStateFunctions
+            val bonuses = viewingCiv.cityStateFunctions
                 .getCityStateBonuses(otherCiv.cityStateType, level)
                 .filterNot { it.isHiddenToUsers() }
-            if (boni.none()) return ""
-            return (sequenceOf(header) + boni.map { it.text }).joinToString(separator = "\n") { it.tr() }
+            if (bonuses.none()) return ""
+            return (sequenceOf(header) + bonuses.map { it.text }).joinToString(separator = "\n") { it.tr() }
         }
         fun addBonusLabel(header: String, bonusLevel: RelationshipLevel, relationLevel: RelationshipLevel) {
             val bonusLabelColor = if (relationLevel == bonusLevel) Color.GREEN else Color.GRAY

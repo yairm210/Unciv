@@ -72,7 +72,7 @@ class Era : RulesetObject() {
             ruleset.allRulesetObjects()
             .flatMap { obj ->
                 obj.getMatchingUniques(
-                    UniqueType.OnlyAvailableWhen,
+                    UniqueType.OnlyAvailable,
                     StateForConditionals.IgnoreConditionals
                 )
                 .map { unique -> obj to unique }
