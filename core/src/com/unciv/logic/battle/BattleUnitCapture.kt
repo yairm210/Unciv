@@ -163,7 +163,7 @@ object BattleUnitCapture {
                 attacker.getCivInfo().popupAlerts.add(
                     PopupAlert(
                         AlertType.RecapturedCivilian,
-                        capturedUnitTile.position.toString()
+                        capturedUnit.currentTile.position.toString()
                     )
                 )
             }
