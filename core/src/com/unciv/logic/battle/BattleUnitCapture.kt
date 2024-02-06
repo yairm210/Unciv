@@ -120,7 +120,7 @@ object BattleUnitCapture {
             "Can't capture our own unit!"
         }
 
-        // need to save this because if the unit is captured its owner wil be overwritten
+        // need to save this because if the unit is captured its owner will be overwritten
         val defenderCiv = defender.getCivInfo()
 
         val capturedUnit = defender.unit
