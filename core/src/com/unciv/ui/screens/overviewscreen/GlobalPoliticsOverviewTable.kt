@@ -473,7 +473,8 @@ class GlobalPoliticsOverviewTable(
             for (civ in undefeatedCivs) {
                 if (civ.isDefeated()) continue // if you're dead, icon but no lines (One more turn mode after losing)
                 for (diplomacy in civ.diplomacy.values) {
-                    if (diplomacy.otherCiv() !in undefeatedCivs) continue
+                    val otherCiv = diplomacy.otherCiv()
+                    if (otherCiv !in undefeatedCivs || otherCiv.isDefeated()) continue
                     val civGroup = civGroups[civ.civName]!!
                     val otherCivGroup = civGroups[diplomacy.otherCivName]!!
 
@@ -488,7 +489,7 @@ class GlobalPoliticsOverviewTable(
                     statusLine.color = if (diplomacy.diplomaticStatus == DiplomaticStatus.War) Color.RED
                     else if (diplomacy.diplomaticStatus == DiplomaticStatus.DefensivePact
                         || (diplomacy.civInfo.isCityState() && diplomacy.civInfo.getAllyCiv() == diplomacy.otherCivName)
-                        || (diplomacy.otherCiv().isCityState() && diplomacy.otherCiv().getAllyCiv() == diplomacy.civInfo.civName)
+                        || (otherCiv.isCityState() && otherCiv.getAllyCiv() == diplomacy.civInfo.civName)
                     ) Color.CYAN
                     else diplomacy.relationshipLevel().color
 
