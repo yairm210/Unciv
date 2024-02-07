@@ -206,6 +206,11 @@ class GlobalPoliticsOverviewTable(
         if (!viewingPlayer.knows(civ) && civ.civName != viewingPlayer.civName)
             return politicsTable
 
+        if (civ.isDefeated()) {
+            politicsTable.add("{Defeated} ${Fonts.death}".toLabel())
+            return politicsTable
+        }
+
         // wars
         for (otherCiv in civ.getKnownCivs()) {
             if (civ.isAtWarWith(otherCiv)) {
