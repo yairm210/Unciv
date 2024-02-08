@@ -14,27 +14,22 @@ class GreatPersonPointsBreakdownPopup(cityScreen: CityScreen, gppBreakdown: Grea
         lines += FormattedLine(headerText, header = 2, centered = true)
         lines += FormattedLine(separator = true)
 
-        for (entry in gppBreakdown.basePoints) {
+        fun addFormattedEntry(entry: GreatPersonPointsBreakdown.Entry, isPercentage: Boolean) {
             val text = if (greatPerson == null) {
-                entry.toString(false)
+                entry.toString(isPercentage)
             } else {
                 val amount = entry.counter[greatPerson]
-                if (amount == 0) continue
-                entry.toString(false, greatPerson, amount)
+                if (amount == 0) return
+                entry.toString(isPercentage, greatPerson, amount)
             }
             lines += FormattedLine(text, entry.pediaLink ?: "")
         }
 
-        for (entry in gppBreakdown.percentBonuses) {
-            val text = if (greatPerson == null) {
-                entry.toString(true)
-            } else {
-                val amount = entry.counter[greatPerson]
-                if (amount == 0) continue
-                entry.toString(true, greatPerson, amount)
-            }
-            lines += FormattedLine(text, entry.pediaLink ?: "")
-        }
+        for (entry in gppBreakdown.basePoints)
+            addFormattedEntry(entry, false)
+
+        for (entry in gppBreakdown.percentBonuses)
+            addFormattedEntry(entry, true)
 
         val game = cityScreen.game
         val ruleset = game.gameInfo!!.ruleset
