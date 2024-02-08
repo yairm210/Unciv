@@ -280,7 +280,8 @@ enum class UniqueType(
     ///////////////////////////////////////// region 03 BUILDING UNIQUES /////////////////////////////////////////
 
 
-    CostIncreasesPerCity("Cost increases by [amount] per owned city", UniqueTarget.Building),
+    CostIncreasesPerCity("Cost increases by [amount] per owned city", UniqueTarget.Building, UniqueTarget.Unit),
+    CostIncreasesWhenBuilt("Cost increases by [amount] when built", UniqueTarget.Building, UniqueTarget.Unit),
 
     RequiresBuildingInAllCities("Requires a [buildingFilter] in all cities", UniqueTarget.Building),
     RequiresBuildingInSomeCities("Requires a [buildingFilter] in at least [amount] cities", UniqueTarget.Building),
