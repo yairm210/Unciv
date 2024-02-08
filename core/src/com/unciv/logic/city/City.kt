@@ -3,6 +3,7 @@ package com.unciv.logic.city
 import com.badlogic.gdx.math.Vector2
 import com.unciv.GUI
 import com.unciv.logic.IsPartOfGameInfoSerialization
+import com.unciv.logic.MultiFilter
 import com.unciv.logic.city.managers.CityConquestFunctions
 import com.unciv.logic.city.managers.CityEspionageManager
 import com.unciv.logic.city.managers.CityExpansionManager
@@ -15,7 +16,6 @@ import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.RoadStatus
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.Building
-import com.unciv.models.ruleset.ModOptionsConstants
 import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueType
@@ -32,7 +32,6 @@ enum class CityFlags {
 
 
 class City : IsPartOfGameInfoSerialization {
-    @Suppress("JoinDeclarationAndAssignment")
     @Transient
     lateinit var civ: Civilization
 
@@ -243,8 +242,8 @@ class City : IsPartOfGameInfoSerialization {
     fun canBeDestroyed(justCaptured: Boolean = false): Boolean {
         if (civ.gameInfo.gameParameters.noCityRazing) return false
 
-        val allowRazeCapital = civ.gameInfo.ruleset.modOptions.uniques.contains(ModOptionsConstants.allowRazeCapital)
-        val allowRazeHolyCity = civ.gameInfo.ruleset.modOptions.uniques.contains(ModOptionsConstants.allowRazeHolyCity)
+        val allowRazeCapital = civ.gameInfo.ruleset.modOptions.hasUnique(UniqueType.AllowRazeCapital)
+        val allowRazeHolyCity = civ.gameInfo.ruleset.modOptions.hasUnique(UniqueType.AllowRazeHolyCity)
 
         if (isOriginalCapital && !allowRazeCapital) return false
         if (isHolyCity() && !allowRazeHolyCity) return false
@@ -417,17 +416,22 @@ class City : IsPartOfGameInfoSerialization {
     }
 
     /** Implements [UniqueParameterType.CityFilter][com.unciv.models.ruleset.unique.UniqueParameterType.CityFilter] */
-    fun matchesFilter(filter: String, viewingCiv: Civilization = civ): Boolean {
+    fun matchesFilter(filter: String, viewingCiv: Civilization? = civ): Boolean {
+        return MultiFilter.multiFilter(filter, { matchesSingleFilter(it, viewingCiv) })
+    }
+
+    private fun matchesSingleFilter(filter: String, viewingCiv: Civilization? = civ): Boolean {
         return when (filter) {
             "in this city" -> true // Filtered by the way uniques are found
-            "in all cities" -> true
-            "in all coastal cities" -> isCoastal()
-            "in capital" -> isCapital()
-            "in all non-occupied cities" -> !cityStats.hasExtraAnnexUnhappiness() || isPuppet
+            "in all cities", "All" -> true
+            "in your cities", "Your" -> viewingCiv == civ
+            "in all coastal cities", "Coastal" -> isCoastal()
+            "in capital", "Capital" -> isCapital()
+            "in all non-occupied cities", "Non-occupied" -> !cityStats.hasExtraAnnexUnhappiness() || isPuppet
             "in all cities with a world wonder" -> cityConstructions.getBuiltBuildings()
                 .any { it.isWonder }
             "in all cities connected to capital" -> isConnectedToCapital()
-            "in all cities with a garrison" -> isGarrisoned()
+            "in all cities with a garrison", "Garrisoned" -> isGarrisoned()
             "in all cities in which the majority religion is a major religion" ->
                 religion.getMajorityReligionName() != null
                 && religion.getMajorityReligion()!!.isMajorReligion()
@@ -435,18 +439,20 @@ class City : IsPartOfGameInfoSerialization {
                 religion.getMajorityReligionName() != null
                 && religion.getMajorityReligion()!!.isEnhancedReligion()
             "in non-enemy foreign cities" ->
-                viewingCiv != civ
+                viewingCiv != null && viewingCiv != civ
                 && !civ.isAtWarWith(viewingCiv)
-            "in foreign cities" -> viewingCiv != civ
-            "in annexed cities" -> foundingCiv != civ.civName && !isPuppet
-            "in puppeted cities" -> isPuppet
-            "in holy cities" -> isHolyCity()
+            "in enemy cities", "Enemy" -> civ.isAtWarWith(viewingCiv ?: civ)
+            "in foreign cities", "Foreign" -> viewingCiv != null && viewingCiv != civ
+            "in annexed cities", "Annexed" -> foundingCiv != civ.civName && !isPuppet
+            "in puppeted cities", "Puppeted" -> isPuppet
+            "in holy cities", "Holy" -> isHolyCity()
             "in City-State cities" -> civ.isCityState()
             // This is only used in communication to the user indicating that only in cities with this
             // religion a unique is active. However, since religion uniques only come from the city itself,
             // this will always be true when checked.
             "in cities following this religion" -> true
-            else -> false
+            "in cities following our religion" -> viewingCiv?.religionManager?.religion == religion.getMajorityReligion()
+            else -> civ.matchesFilter(filter)
         }
     }
 
@@ -471,7 +477,7 @@ class City : IsPartOfGameInfoSerialization {
     fun getLocalMatchingUniques(uniqueType: UniqueType, stateForConditionals: StateForConditionals = StateForConditionals(civ, this)): Sequence<Unique> {
         return (
             cityConstructions.builtBuildingUniqueMap.getUniques(uniqueType).filter { it.isLocalEffect }
-            + religion.getUniques().filter { it.isOfType(uniqueType) }
+            + religion.getUniques().filter { it.type == uniqueType }
         ).filter {
             it.conditionalsApply(stateForConditionals)
         }
@@ -480,7 +486,7 @@ class City : IsPartOfGameInfoSerialization {
     // Uniques coming from only this city
     fun getMatchingLocalOnlyUniques(uniqueType: UniqueType, stateForConditionals: StateForConditionals): Sequence<Unique> {
         val uniques = cityConstructions.builtBuildingUniqueMap.getUniques(uniqueType).filter { it.isLocalEffect } +
-            religion.getUniques().filter { it.isOfType(uniqueType) }
+            religion.getUniques().filter { it.type == uniqueType }
         return if (uniques.any()) uniques.filter { it.conditionalsApply(stateForConditionals) }
         else uniques
     }

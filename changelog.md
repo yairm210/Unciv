@@ -1,3 +1,146 @@
+## 4.10.7
+
+Allow city filters to be multifilters and not throw ruleset errors
+
+Korean science boost only applies for buildings *in capital*
+
+By SeventhM:
+- Avoid crash from city combantants with combatant conditional
+- Split Strat Balance and Legend Start into their own checkboxes
+
+ThreatManager improvement  - By tuvus
+
+## 4.10.6
+
+Fixed crash due to ranged unit trying to capture civilian but being unable to reach the tile
+
+Added unit conditional support to pillage yield uniques
+
+Policy picker colors are moddable - By SomeTroglodyte
+
+Players can't move spies when it is not their turn  - By tuvus
+
+## 4.10.5
+
+Added 'copy to clipboard' button on map errors so we can debug them
+
+Happiness building performance improvement
+
+By SeventhM:
+- Add additional cityFilters
+- Fix gain stat modifier by speed unique action text
+
+By SomeTroglodyte:
+- RulesetValidator: Raise severity for untyped uniques with parameters
+
+## 4.10.4
+
+Modding:
+- New tileFilter `your`, for tiles belonging directly to you
+- Mods can use the Hills and mountains distribution uniques on Land or Feature terrains
+
+By SomeTroglodyte:
+- World screen resize delayed
+- Unit actions dynamic paging
+- Minor Mod manager fix, lints and dox
+
+By tuvus:
+- Workers now build forts
+- Worker automation option fix
+- Ranged units capture civilian
+- Spectators can now see selected civ city-state influence bars
+
+Unify unit and civ triggers  - By SeventhM
+
+## 4.10.3
+
+Modding:
+- Add "Unavailable" unique (counterpart to Only Available)
+- Unified resource generation checks to include all uniques always
+- 'not shown on world screen' unique accepts civ conditionals
+- Added adjacency conditionals
+- CityCombatant.matchesFilter contains multifilter and civ filter
+
+By tuvus:
+- Air unit automation improvement
+- Espionage automation
+
+By SeventhM:
+- Fix errors when starting games as Maya
+
+## 4.10.2
+
+By SeventhM:
+- Fix Spectator stats when viewing another civ
+- Allow units to upgrade to more than one unit
+- Fix problems with stats from tiles and improvements
+
+By SomeTroglodyte:
+- A Conditional checking for a Building globally
+- Unit actions "paging" for smaller screens
+- Fix RequiresBuildingInSomeCities not being displayed in city constructions as rejection reason
+
+Improved Spectator selected Civ coloring  - By tuvus
+
+## 4.10.1
+
+'cities auto-bombard at end of turn' is a user option
+
+Improved Console autocomplete - By SomeTroglodyte
+
+By tuvus:
+- AI worker road priority rework
+- Spectators can see the diplomacy screen of the civ that they have selected
+- Checking if a tile is in work range now checks all cities
+
+Assume the relevant city for triggered uniques  - By SeventhM
+
+## 4.10.0
+
+Natural wonders no longer spawn next to start locations
+
+Automated spectator in multiplayer takes no actions
+
+Added console commands to remove roads, change city name
+
+By SomeTroglodyte:
+- The console key is now bindable
+- Allow map editor to generate smaller than "tiny" Pangaea maps
+
+By SeventhM:
+- Treat all timed uniques as functioning as always true regardless of conditionals
+- Fix conditionals being ignored for some triggers
+
+Increase AI workers - By tuvus
+
+## 4.9.19
+
+Modding:
+- "Cannot be traded" unique accepts Civ conditionals
+- Allow comment uniques on follower beliefs
+
+By tuvus:
+- Spectators receive era notifications again
+- Fixed AI Worker feature removal
+
+By SomeTroglodyte:
+- Fix Paradrop crossing World-wrap seam
+- ModManagementScreen gets a loading indicator
+
+Add modified nation descriptions  - By Ouaz
+
+## 4.9.18
+
+Performance improvements for movement and ruleset validation
+
+Added unique MayBuyConstructionsInPuppets  - By rpolitex
+
+Polynesia can immediately embark on turn zero - By SeventhM
+
+Fix NullPointerException on founding a pantheon  - By dHannasch
+
+Fixed AutoPlay not working after victory  - By tuvus
+
 ## 4.9.17
 
 Experimental pathfinding - activate in Options > Gameplay > Experimental movement

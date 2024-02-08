@@ -1,7 +1,9 @@
 package com.unciv.models.ruleset.unique
 
+import com.unciv.logic.battle.CityCombatant
 import com.unciv.logic.battle.CombatAction
 import com.unciv.logic.battle.ICombatant
+import com.unciv.logic.battle.MapUnitCombatant
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.mapgenerator.mapregions.Region
@@ -23,7 +25,19 @@ data class StateForConditionals(
 
     val ignoreConditionals: Boolean = false,
 ) {
-    constructor(city: City) : this(city.civ, city)
+    constructor(city: City) : this(city.civ, city, tile = city.getCenterTile())
+    constructor(unit: MapUnit) : this(unit.civ, unit = unit, tile = unit.currentTile)
+    constructor(ourCombatant: ICombatant, theirCombatant: ICombatant? = null,
+                attackedTile: Tile? = null, combatAction: CombatAction? = null) : this(
+        ourCombatant.getCivInfo(),
+        (ourCombatant as? CityCombatant)?.city,
+        (ourCombatant as? MapUnitCombatant)?.unit,
+        ourCombatant.getTile(),
+        ourCombatant,
+        theirCombatant,
+        attackedTile,
+        combatAction
+    )
 
     companion object {
         val IgnoreConditionals = StateForConditionals(ignoreConditionals = true)

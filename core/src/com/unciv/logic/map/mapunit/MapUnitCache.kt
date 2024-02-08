@@ -139,7 +139,9 @@ class MapUnitCache(private val mapUnit: MapUnit) {
             UniqueType.CanEnterForeignTilesButLosesReligiousStrength,
             // Special - applied in Nation and not here, wshould be moved to mapunitcache as well
             UniqueType.ForestsAndJunglesAreRoads,
-            UniqueType.IgnoreHillMovementCost
+            UniqueType.IgnoreHillMovementCost,
+            // Movement algorithm avoids damage on route, meaning terrain damage requires caching
+            UniqueType.DamagesContainingUnits
             )
     }
 }

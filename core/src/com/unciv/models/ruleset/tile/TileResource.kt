@@ -50,9 +50,8 @@ class TileResource : RulesetStatsObject() {
         if (terrainsCanBeFoundOn.isNotEmpty()) {
             textList += FormattedLine()
             if (terrainsCanBeFoundOn.size == 1) {
-                with (terrainsCanBeFoundOn[0]) {
-                    textList += FormattedLine("{Can be found on} {$this}", link = "Terrain/$this")
-                }
+                val terrainName = terrainsCanBeFoundOn[0]
+                textList += FormattedLine("{Can be found on} {$terrainName}", link = "Terrain/$terrainName")
             } else {
                 textList += FormattedLine("{Can be found on}:")
                 terrainsCanBeFoundOn.forEach {
@@ -142,6 +141,21 @@ class TileResource : RulesetStatsObject() {
         }
     }
 
+    fun generatesNaturallyOn(tile:Tile): Boolean {
+        if (tile.lastTerrain.name !in terrainsCanBeFoundOn) return false
+        val stateForConditionals = StateForConditionals(tile = tile)
+        if (hasUnique(UniqueType.NoNaturalGeneration, stateForConditionals)) return false
+        if (tile.allTerrains.any { it.hasUnique(UniqueType.BlocksResources, stateForConditionals) }) return false
+
+        if (tile.temperature!=null && tile.humidity!=null) // Only works when in map generation
+            for (unique in getMatchingUniques(UniqueType.TileGenerationConditions, stateForConditionals)){
+                if (tile.temperature!! !in unique.params[0].toDouble() .. unique.params[1].toDouble()) return false
+                if (tile.humidity!! !in unique.params[2].toDouble() .. unique.params[3].toDouble()) return false
+            }
+
+        return true
+    }
+
     fun isStockpiled() = hasUnique(UniqueType.Stockpiled)
 
     class DepositAmount {
@@ -149,5 +163,4 @@ class TileResource : RulesetStatsObject() {
         var default: Int = 2
         var abundant: Int = 3
     }
-
 }

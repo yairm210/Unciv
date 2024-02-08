@@ -126,10 +126,6 @@ class Civilization : IsPartOfGameInfoSerialization {
     var passThroughImpassableUnlocked = false   // Cached Boolean equal to passableImpassables.isNotEmpty()
 
     @Transient
-    var nonStandardTerrainDamage = false
-
-
-    @Transient
     var thingsToFocusOnForVictory = setOf<Victory.Focus>()
 
     @Transient
@@ -385,7 +381,9 @@ class Civilization : IsPartOfGameInfoSerialization {
     fun updateStatsForNextTurn() {
         val previousHappiness = stats.happiness
         stats.happiness = stats.getHappinessBreakdown().values.sum().roundToInt()
-        if (stats.happiness != previousHappiness)
+        if (stats.happiness != previousHappiness && gameInfo.ruleset.allHappinessLevelsThatAffectUniques.any {
+            stats.happiness < it != previousHappiness < it // If move from being below them to not, or vice versa
+            })
             for (city in cities) city.cityStats.update(updateCivStats = false)
         stats.statsForNextTurn = stats.getStatMapForNextTurn().values.reduce { a, b -> a + b }
     }
@@ -403,7 +401,7 @@ class Civilization : IsPartOfGameInfoSerialization {
 
         for (resourceSupply in detailedCivResources) {
             if (resourceSupply.resource.isStockpiled()) continue
-            if (resourceSupply.resource.hasUnique(UniqueType.CannotBeTraded)) continue
+            if (resourceSupply.resource.hasUnique(UniqueType.CannotBeTraded, StateForConditionals(this))) continue
             // If we got it from another trade or from a CS, preserve the origin
             if (resourceSupply.isCityStateOrTradeOrigin()) {
                 newResourceSupplyList.add(resourceSupply.copy())
@@ -475,7 +473,7 @@ class Civilization : IsPartOfGameInfoSerialization {
         yieldAll(cityStateFunctions.getUniquesProvidedByCityStates(uniqueType, stateForConditionals))
         if (religionManager.religion != null)
             yieldAll(religionManager.religion!!.getFounderUniques()
-                .filter { it.isOfType(uniqueType) && it.conditionalsApply(stateForConditionals) })
+                .filter { it.type == uniqueType && it.conditionalsApply(stateForConditionals) })
 
         yieldAll(getCivResourceSupply().asSequence()
             .filter { it.amount > 0 }
@@ -699,9 +697,6 @@ class Civilization : IsPartOfGameInfoSerialization {
                     city.workedTiles.remove(workedTile)
 
         passThroughImpassableUnlocked = passableImpassables.isNotEmpty()
-        // Cache whether this civ gets nonstandard terrain damage for performance reasons.
-        nonStandardTerrainDamage = getMatchingUniques(UniqueType.DamagesContainingUnits)
-            .any { gameInfo.ruleset.terrains[it.params[0]]!!.damagePerTurn != it.params[1].toInt() }
 
         hasLongCountDisplayUnique = hasUnique(UniqueType.MayanCalendarDisplay)
 
@@ -809,8 +804,8 @@ class Civilization : IsPartOfGameInfoSerialization {
     }
     // endregion
 
-    fun addCity(location: Vector2) {
-        val newCity = CityFounder().foundCity(this, location)
+    fun addCity(location: Vector2, unit: MapUnit? = null) {
+        val newCity = CityFounder().foundCity(this, location, unit)
         newCity.cityConstructions.chooseNextConstruction()
     }
 

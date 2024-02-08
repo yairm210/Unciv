@@ -60,7 +60,7 @@ class UnitTurnManager(val unit: MapUnit) {
         for (unique in unit.getTriggeredUniques(UniqueType.TriggerUponEndingTurnInTile))
             if (unique.conditionals.any { it.type == UniqueType.TriggerUponEndingTurnInTile
                             && unit.getTile().matchesFilter(it.params[0], unit.civ) })
-                UniqueTriggerActivation.triggerUnitwideUnique(unique, unit)
+                UniqueTriggerActivation.triggerUnique(unique, unit)
     }
 
 

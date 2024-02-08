@@ -220,7 +220,7 @@ class ReligiousBeliefsPickerScreen (
                     // The Belief is not available because someone already has it
                     beliefButton.disable(redDisableColor)
                 }
-                belief.getMatchingUniques(UniqueType.OnlyAvailableWhen, StateForConditionals.IgnoreConditionals)
+                belief.getMatchingUniques(UniqueType.OnlyAvailable, StateForConditionals.IgnoreConditionals)
                     .any { !it.conditionalsApply(choosingCiv) } ->
                     // The Belief is blocked
                     beliefButton.disable(redDisableColor)

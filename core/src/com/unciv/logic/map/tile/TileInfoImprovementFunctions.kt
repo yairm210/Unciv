@@ -53,6 +53,9 @@ class TileInfoImprovementFunctions(val tile: Tile) {
         else if (improvement.hasUnique(UniqueType.Unbuildable, stateForConditionals))
             yield(ImprovementBuildingProblem.ConditionallyUnbuildable)
 
+        if (improvement.hasUnique(UniqueType.Unavailable, stateForConditionals))
+            yield(ImprovementBuildingProblem.ConditionallyUnbuildable)
+
         if (tile.getOwner() != civInfo && !improvement.hasUnique(UniqueType.CanBuildOutsideBorders, stateForConditionals)) {
             if (!improvement.hasUnique(UniqueType.CanBuildJustOutsideBorders, stateForConditionals))
                 yield(ImprovementBuildingProblem.OutsideBorders)
@@ -60,7 +63,7 @@ class TileInfoImprovementFunctions(val tile: Tile) {
                 yield(ImprovementBuildingProblem.NotJustOutsideBorders)
         }
 
-        if (improvement.getMatchingUniques(UniqueType.OnlyAvailableWhen, StateForConditionals.IgnoreConditionals)
+        if (improvement.getMatchingUniques(UniqueType.OnlyAvailable, StateForConditionals.IgnoreConditionals)
                     .any { !it.conditionalsApply(stateForConditionals) })
             yield(ImprovementBuildingProblem.UnmetConditional)
 
@@ -128,7 +131,7 @@ class TileInfoImprovementFunctions(val tile: Tile) {
             // Can only remove roads if that road is actually there
             RoadStatus.values().any { it.removeAction == improvement.name } -> tile.roadStatus.removeAction == improvement.name
             // Can only remove features or improvement if that feature/improvement is actually there
-            improvement.name.startsWith(Constants.remove) -> tile.terrainFeatures.any { Constants.remove + it == improvement.name } 
+            improvement.name.startsWith(Constants.remove) -> tile.terrainFeatures.any { Constants.remove + it == improvement.name }
                 || Constants.remove + tile.improvement == improvement.name
             // Can only build roads if on land and they are better than the current road
             RoadStatus.values().any { it.name == improvement.name } -> !tile.isWater
@@ -243,22 +246,20 @@ class TileInfoImprovementFunctions(val tile: Tile) {
         civ: Civilization,
         unit: MapUnit? = null
     ) {
-        for (unique in improvement.uniqueObjects.filter { !it.hasTriggerConditional() })
-            if (unit != null) {
-                UniqueTriggerActivation.triggerUnitwideUnique(unique, unit)
-            }
-            else UniqueTriggerActivation.triggerCivwideUnique(unique, civ, tile = tile)
+        val stateForConditionals = StateForConditionals(civ, unit = unit, tile = tile)
+        
+        for (unique in improvement.uniqueObjects.filter { !it.hasTriggerConditional()
+            && it.conditionalsApply(stateForConditionals) })
+            UniqueTriggerActivation.triggerUnique(unique, civ, unit = unit, tile = tile)
 
-        if (unit != null){
-            for (unique in unit.getTriggeredUniques(UniqueType.TriggerUponBuildingImprovement)
-                .filter { improvement.matchesFilter(it.params[0]) })
-                UniqueTriggerActivation.triggerUnitwideUnique(unique, unit)
-            }
-
-        for (unique in civ.getMatchingUniques(
-            UniqueType.TriggerUponBuildingImprovement, StateForConditionals(civInfo = civ, unit = unit))
+        for (unique in civ.getTriggeredUniques(UniqueType.TriggerUponBuildingImprovement, stateForConditionals)
             .filter { improvement.matchesFilter(it.params[0]) })
-            UniqueTriggerActivation.triggerCivwideUnique(unique, civ, tile = tile)
+            UniqueTriggerActivation.triggerUnique(unique, civ, unit = unit, tile = tile)
+        
+        if (unit == null) return
+        for (unique in unit.getTriggeredUniques(UniqueType.TriggerUponBuildingImprovement, stateForConditionals)
+            .filter { improvement.matchesFilter(it.params[0]) })
+            UniqueTriggerActivation.triggerUnique(unique, civ, unit = unit, tile = tile)
     }
 
     private fun activateRemovalImprovement(

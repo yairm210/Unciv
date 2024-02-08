@@ -29,7 +29,7 @@ class EspionageManager : IsPartOfGameInfoSerialization {
     }
 
     fun endTurn() {
-        for (spy in spyList)
+        for (spy in spyList.toList())
             spy.endTurn()
     }
 

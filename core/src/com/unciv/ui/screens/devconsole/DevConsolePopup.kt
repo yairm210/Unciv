@@ -64,7 +64,8 @@ class DevConsolePopup(val screen: WorldScreen) : Popup(screen) {
         val handleCommandResponse = handleCommand()
         if (handleCommandResponse.isOK) {
             screen.shouldUpdate = true
-            history.add(textField.text)
+            if (history.isEmpty() || history.last() != textField.text)
+                history.add(textField.text)
             close()
             return
         }
@@ -85,9 +86,7 @@ class DevConsolePopup(val screen: WorldScreen) : Popup(screen) {
 
     private fun getAutocomplete(): String {
         val params = getParams(textField.text)
-        val result = commandRoot.autocomplete(this, params)
-        if (result.isNullOrEmpty()) return ""
-        return "$result "
+        return commandRoot.autocomplete(this, params).orEmpty()
     }
 
     internal fun getCivByName(name: String) = gameInfo.civilizations.firstOrNull { it.civName.toCliInput() == name.toCliInput() }

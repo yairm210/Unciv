@@ -156,7 +156,7 @@ object Battle {
             for (unique in ourUnit.unit.getTriggeredUniques(UniqueType.TriggerUponDefeatingUnit, stateForConditionals))
                 if (unique.conditionals.any { it.type == UniqueType.TriggerUponDefeatingUnit
                                 && enemy.unit.matchesFilter(it.params[0]) })
-                    UniqueTriggerActivation.triggerUnitwideUnique(unique, ourUnit.unit, triggerNotificationText = "due to our [${ourUnit.getName()}] defeating a [${enemy.getName()}]")
+                    UniqueTriggerActivation.triggerUnique(unique, ourUnit.unit, triggerNotificationText = "due to our [${ourUnit.getName()}] defeating a [${enemy.getName()}]")
         }
 
         // Add culture when defeating a barbarian when Honor policy is adopted, gold from enemy killed when honor is complete
@@ -205,7 +205,7 @@ object Battle {
         val stateForConditionals = StateForConditionals(civInfo = ourUnit.getCivInfo(),
             ourCombatant = ourUnit, theirCombatant=enemy, tile = attackedTile)
         for (unique in ourUnit.unit.getTriggeredUniques(UniqueType.TriggerUponDefeat, stateForConditionals))
-            UniqueTriggerActivation.triggerUnitwideUnique(unique, ourUnit.unit, triggerNotificationText = "due to our [${ourUnit.getName()}] being defeated by a [${enemy.getName()}]")
+            UniqueTriggerActivation.triggerUnique(unique, ourUnit.unit, triggerNotificationText = "due to our [${ourUnit.getName()}] being defeated by a [${enemy.getName()}]")
     }
 
     private fun tryEarnFromKilling(civUnit: ICombatant, defeatedUnit: MapUnitCombatant) {
@@ -215,7 +215,7 @@ object Battle {
         val bonusUniques = getKillUnitPlunderUniques(civUnit, defeatedUnit)
 
         for (unique in bonusUniques) {
-            if (!defeatedUnit.matchesCategory(unique.params[1])) continue
+            if (!defeatedUnit.matchesFilter(unique.params[1])) continue
 
             val yieldPercent = unique.params[0].toFloat() / 100
             val defeatedUnitYieldSourceType = unique.params[2]
@@ -310,12 +310,12 @@ object Battle {
         if (attacker is MapUnitCombatant)
             for (unique in attacker.unit.getTriggeredUniques(UniqueType.TriggerUponLosingHealth))
                 if (unique.conditionals.any { it.params[0].toInt() <= defenderDamageDealt })
-                    UniqueTriggerActivation.triggerUnitwideUnique(unique, attacker.unit, triggerNotificationText = "due to losing [$defenderDamageDealt] HP")
+                    UniqueTriggerActivation.triggerUnique(unique, attacker.unit, triggerNotificationText = "due to losing [$defenderDamageDealt] HP")
 
         if (defender is MapUnitCombatant)
             for (unique in defender.unit.getTriggeredUniques(UniqueType.TriggerUponLosingHealth))
                 if (unique.conditionals.any { it.params[0].toInt() <= attackerDamageDealt })
-                    UniqueTriggerActivation.triggerUnitwideUnique(unique, defender.unit, triggerNotificationText = "due to losing [$attackerDamageDealt] HP")
+                    UniqueTriggerActivation.triggerUnique(unique, defender.unit, triggerNotificationText = "due to losing [$attackerDamageDealt] HP")
 
         plunderFromDamage(attacker, defender, attackerDamageDealt)
         return DamageDealt(attackerDamageDealt, defenderDamageDealt)
@@ -331,7 +331,7 @@ object Battle {
         val plunderedGoods = Stats()
 
         for (unique in plunderingUnit.unit.getMatchingUniques(UniqueType.DamageUnitsPlunder, checkCivInfoUniques = true)) {
-            if (plunderedUnit.matchesCategory(unique.params[1])) {
+            if (plunderedUnit.matchesFilter(unique.params[1])) {
                 val percentage = unique.params[0].toFloat()
                 plunderedGoods.add(Stat.valueOf(unique.params[2]), percentage / 100f * damageDealt)
             }
@@ -483,7 +483,7 @@ object Battle {
 
         if (!otherIsBarbarian && civ.isMajorCiv()) { // Can't get great generals from Barbarians
             var greatGeneralUnits = civ.gameInfo.ruleset.greatGeneralUnits
-                    .filter { it.hasUnique(UniqueType.GreatPersonFromCombat, stateForConditionals) && 
+                    .filter { it.hasUnique(UniqueType.GreatPersonFromCombat, stateForConditionals) &&
                         // Check if the unit is allowed for the Civ, ignoring build constrants
                         it.getRejectionReasons(civ).none { reason ->
                             !reason.isConstructionRejection() &&
@@ -491,7 +491,7 @@ object Battle {
                             !reason.techPolicyEraWonderRequirements() }
                     }.asSequence()
             // For compatibility with older rulesets
-            if (civ.gameInfo.ruleset.greatGeneralUnits.isEmpty() && 
+            if (civ.gameInfo.ruleset.greatGeneralUnits.isEmpty() &&
                 civ.gameInfo.ruleset.units["Great General"] != null)
                 greatGeneralUnits += civ.gameInfo.ruleset.units["Great General"]!!
 
@@ -526,7 +526,7 @@ object Battle {
             if (civilianUnit != null) BattleUnitCapture.captureCivilianUnit(attacker, MapUnitCombatant(civilianUnit!!), checkDefeat = false)
             for (airUnit in airUnits.toList()) airUnit.destroy()
         }
-
+        
         val stateForConditionals = StateForConditionals(civInfo = attackerCiv, city=city, unit = attacker.unit, ourCombatant = attacker, attackedTile = city.getCenterTile())
         for (unique in attacker.getMatchingUniques(UniqueType.CaptureCityPlunder, stateForConditionals, true)) {
             attackerCiv.addStat(
@@ -555,7 +555,7 @@ object Battle {
 
         for (unique in attackerCiv.getTriggeredUniques(UniqueType.TriggerUponConqueringCity, stateForConditionals)
                 + attacker.unit.getTriggeredUniques(UniqueType.TriggerUponConqueringCity, stateForConditionals))
-            UniqueTriggerActivation.triggerUnitwideUnique(unique, attacker.unit)
+            UniqueTriggerActivation.triggerUnique(unique, attacker.unit)
     }
 
     /** Handle decision making after city conquest, namely whether the AI should liberate, puppet,

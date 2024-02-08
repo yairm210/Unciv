@@ -26,8 +26,7 @@ object LuxuryResourcePlacementLogic {
         // If there are any weightings defined in json, assume they are complete. If there are none, use flat weightings instead
         val fallbackWeightings = ruleset.tileResources.values.none {
             it.resourceType == ResourceType.Luxury &&
-                (it.uniqueObjects.any { unique -> unique.isOfType(UniqueType.ResourceWeighting) } || it.hasUnique(
-                    UniqueType.LuxuryWeightingForCityStates)) }
+                (it.hasUnique(UniqueType.ResourceWeighting) || it.hasUnique(UniqueType.LuxuryWeightingForCityStates)) }
 
         val maxRegionsWithLuxury = when {
             regions.size > 12 -> 3
@@ -240,7 +239,8 @@ object LuxuryResourcePlacementLogic {
         for (region in regions) {
             val tilesToCheck = tileMap[region.startPosition!!].getTilesInDistanceRange(1..2)
             val candidateLuxuries = randomLuxuries.shuffled().toMutableList()
-            if (tileMap.mapParameters.mapResources != MapResources.strategicBalance)
+            if (tileMap.mapParameters.mapResources != MapResources.strategicBalance &&
+                !tileMap.mapParameters.strategicBalance)
                 candidateLuxuries += specialLuxuries.shuffled()
                     .map { it.name } // Include marble!
             candidateLuxuries += cityStateLuxuries.shuffled()
@@ -382,7 +382,8 @@ object LuxuryResourcePlacementLogic {
             regions.sumOf { it.totalFertility } / regions.sumOf { it.tiles.size }.toFloat()
         for (region in regions) {
             var targetLuxuries = 1
-            if (tileMap.mapParameters.mapResources == MapResources.legendaryStart)
+            if (tileMap.mapParameters.mapResources == MapResources.legendaryStart ||
+                tileMap.mapParameters.legendaryStart)
                 targetLuxuries++
             if (region.totalFertility / region.tiles.size.toFloat() < averageFertilityDensity) {
                 targetLuxuries++

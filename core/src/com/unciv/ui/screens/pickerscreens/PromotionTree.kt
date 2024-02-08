@@ -34,7 +34,7 @@ class PromotionTree(val unit: MapUnit) {
         /** Off if there is only one "best" path of equal cost to adopt this node's promotion */
         var pathIsAmbiguous = false
         /** On for promotions having unavailable prerequisites (missing in ruleset, or not allowed for the unit's
-         *  UnitType, and not already adopted either); or currently disabled by a [UniqueType.OnlyAvailableWhen] unique.
+         *  UnitType, and not already adopted either); or currently disabled by a [UniqueType.OnlyAvailable] unique.
          *  (should never be on with a vanilla ruleset) */
         var unreachable = false
 
@@ -109,7 +109,7 @@ class PromotionTree(val unit: MapUnit) {
             // defensive - I don't know how to provoke the situation, but if it ever occurs, disallow choosing that promotion
             if (node.promotion.prerequisites.isNotEmpty() && node.parents.isEmpty())
                 node.unreachable = true
-            if (node.promotion.getMatchingUniques(UniqueType.OnlyAvailableWhen, StateForConditionals.IgnoreConditionals)
+            if (node.promotion.getMatchingUniques(UniqueType.OnlyAvailable, StateForConditionals.IgnoreConditionals)
                     .any { !it.conditionalsApply(state) })
                 node.unreachable = true
         }
@@ -118,7 +118,7 @@ class PromotionTree(val unit: MapUnit) {
         // Also determine preferredParent / pathIsAmbiguous by weighing distanceToAdopted
         for (node in allRoots()) {
             node.depth = 0
-            node.distanceToAdopted = if (node.isAdopted) 0 
+            node.distanceToAdopted = if (node.isAdopted) 0
                 else if (node.unreachable) Int.MAX_VALUE else 1
         }
         for (depth in 0..99) {

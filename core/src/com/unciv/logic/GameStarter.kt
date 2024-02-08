@@ -14,7 +14,6 @@ import com.unciv.logic.map.tile.Tile
 import com.unciv.models.metadata.GameParameters
 import com.unciv.models.metadata.GameSetupInfo
 import com.unciv.models.metadata.Player
-import com.unciv.models.ruleset.ModOptionsConstants
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.ruleset.unique.StateForConditionals
@@ -429,9 +428,8 @@ object GameStarter {
             //Trigger any global or nation uniques that should triggered.
             //We may need the starting location for some uniques, which is why we're doing it now
             val startingTriggers = (ruleset.globalUniques.uniqueObjects + civ.nation.uniqueObjects)
-            for (unique in startingTriggers.filter { !it.hasTriggerConditional() })
-                if (unique.isTriggerable)
-                    UniqueTriggerActivation.triggerCivwideUnique(unique, civ, tile = startingLocation)
+            for (unique in startingTriggers.filter { !it.hasTriggerConditional() && it.conditionalsApply(civ) })
+                UniqueTriggerActivation.triggerUnique(unique, civ, tile = startingLocation)
         }
     }
 
@@ -484,7 +482,7 @@ object GameStarter {
         settlerLikeUnits: Map<String, BaseUnit>
     ) {
         // Adjust starting units for city states
-        if (civ.isCityState() && !gameInfo.ruleset.modOptions.uniques.contains(ModOptionsConstants.allowCityStatesSpawnUnits)) {
+        if (civ.isCityState() && !gameInfo.ruleset.modOptions.hasUnique(UniqueType.AllowCityStatesSpawnUnits)) {
             val startingSettlers = startingUnits.filter { settlerLikeUnits.contains(it) }
 
             startingUnits.clear()

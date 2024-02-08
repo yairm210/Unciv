@@ -1,5 +1,6 @@
 package com.unciv.app.desktop
 
+import com.unciv.logic.map.mapunit.MapUnitCache
 import com.unciv.models.ruleset.unique.UniqueParameterType
 import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueType
@@ -66,6 +67,7 @@ class UniqueDocsWriter {
             if (targetType.documentationString.isNotEmpty())
                 lines += "!!! note \"\"\n\n    ${targetType.documentationString}\n"
 
+
             for (uniqueType in uniqueTypes) {
                 if (uniqueType.getDeprecationAnnotation() != null) continue
 
@@ -81,6 +83,9 @@ class UniqueDocsWriter {
                     // Might confuse modders to think "/" can go into the _actual_ unique and mean "or", so better show just one ("Farm" in the example above):
                     val paramExamples = uniqueType.parameterTypeMap.map { it.first().docExample }.toTypedArray()
                     lines += "\tExample: \"${uniqueText.fillPlaceholders(*paramExamples)}\"\n"
+                }
+                if (uniqueType in MapUnitCache.UnitMovementUniques) {
+                    lines += "Due to performance considerations, this unique is cached, thus conditionals may not work."
                 }
                 lines += "\tApplicable to: " + uniqueType.allTargets().sorted().joinToString()
                 lines += ""

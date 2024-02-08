@@ -1,21 +1,53 @@
 package com.unciv.logic.automation.unit
 
+import com.unciv.logic.battle.AirInterception
 import com.unciv.logic.battle.MapUnitCombatant
 import com.unciv.logic.battle.Nuke
 import com.unciv.logic.battle.TargetHelper
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
+import com.unciv.models.ruleset.unique.UniqueType
 
 object AirUnitAutomation {
 
     fun automateFighter(unit: MapUnit) {
+        if (unit.health <= 50 && !unit.hasUnique(UniqueType.HealsEvenAfterAction)) return // Wait and heal
+
         val tilesWithEnemyUnitsInRange = unit.civ.threatManager.getTilesWithEnemyUnitsInDistance(unit.getTile(), unit.getRange())
+        // TODO: Optimize [friendlyAirUnitsInRange] by creating an alternate [ThreatManager.getTilesWithEnemyUnitsInDistance] that handles only friendly units
+        val friendlyAirUnitsInRange = unit.getTile().getTilesInDistance(unit.getRange()).flatMap { it.airUnits }.filter { it.civ == unit.civ }
+        // Find all visible enemy air units
         val enemyAirUnitsInRange = tilesWithEnemyUnitsInRange
             .flatMap { it.airUnits.asSequence() }.filter { it.civ.isAtWarWith(unit.civ) }
+        val enemyFighters = enemyAirUnitsInRange.size / 2 // Assume half the planes are fighters
+        val friendlyUnusedFighterCount = friendlyAirUnitsInRange.count { it.health >= 50 && it.canAttack() }
+        val friendlyUsedFighterCount = friendlyAirUnitsInRange.count { it.health >= 50 && !it.canAttack() }
 
-        if (enemyAirUnitsInRange.any()) return // we need to be on standby in case they attack
+        // We need to be on standby in case they attack
+        if (friendlyUnusedFighterCount < enemyFighters) return 
 
+        if (friendlyUsedFighterCount <= enemyFighters) {
+            fun airSweepDamagePercentBonus(): Int {
+                return unit.getMatchingUniques(UniqueType.StrengthWhenAirsweep)
+                    .sumOf { it.params[0].toInt() }
+            }
+            
+            // If we are outnumbered, don't heal after attacking and don't have an Air Sweep bonus
+            // Then we shouldn't speed the air battle by killing our fighters, instead, focus on defending
+            if (friendlyUsedFighterCount + friendlyUnusedFighterCount < enemyFighters 
+                && !unit.hasUnique(UniqueType.HealsEvenAfterAction)
+                && airSweepDamagePercentBonus() <= 0) {
+                return
+            } else {
+                if (tryAirSweep(unit, tilesWithEnemyUnitsInRange)) return
+            }
+        }
+
+        if (unit.health < 80) {
+            return // Wait and heal up, no point in moving closer to battle if we aren't healed
+        }
+        
         if (BattleHelper.tryAttackNearbyEnemy(unit)) return
 
         if (tryRelocateToCitiesWithEnemyNearBy(unit)) return
@@ -46,8 +78,24 @@ object AirUnitAutomation {
 
     }
 
+    private fun tryAirSweep(unit: MapUnit, tilesWithEnemyUnitsInRange: List<Tile>):Boolean {
+        val targetTile = tilesWithEnemyUnitsInRange.filter { 
+            tile -> tile.getUnits().any { it.civ.isAtWarWith(unit.civ) 
+                || (tile.isCityCenter() && tile.getCity()!!.civ.isAtWarWith(unit.civ)) }
+            }.minByOrNull { it.aerialDistanceTo(unit.getTile()) } ?: return false
+        AirInterception.airSweep(MapUnitCombatant(unit),targetTile)
+        if (unit.currentMovement > 0) return false
+        return true
+    }
+
     fun automateBomber(unit: MapUnit) {
+        if (unit.health <= 50 && !unit.hasUnique(UniqueType.HealsEvenAfterAction)) return // Wait and heal
+
         if (BattleHelper.tryAttackNearbyEnemy(unit)) return
+
+        if (unit.health <= 90 || (unit.health < 100 && !unit.civ.isAtWar())) {
+            return // Wait and heal
+        }
 
         if (tryRelocateToCitiesWithEnemyNearBy(unit)) return
 
@@ -142,7 +190,7 @@ object AirUnitAutomation {
             else if (targetTile.owningCity != null) {
                 val owningCiv = targetTile.owningCity?.civ!!
                 // If there is a tile to add fallout to there is a 50% chance it will get fallout
-                if (!(tile.isWater || tile.isImpassible() || targetTile.terrainFeatures.any { it == "Fallout" }))
+                if (!(tile.isWater || tile.isImpassible() || targetTile.hasFalloutEquivalent()))
                     explosionValue += evaluateCivValue(owningCiv, -40, 10)
                 // If there is an improvment to pillage
                 if (targetTile.improvement != null && !targetTile.improvementIsPillaged)
