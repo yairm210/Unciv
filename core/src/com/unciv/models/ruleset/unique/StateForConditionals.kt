@@ -23,6 +23,7 @@ data class StateForConditionals(
 
     val ignoreConditionals: Boolean = false,
 ) {
+    constructor(city: City) : this(city.civ, city)
 
     companion object {
         val IgnoreConditionals = StateForConditionals(ignoreConditionals = true)

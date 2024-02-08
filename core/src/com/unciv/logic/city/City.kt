@@ -214,7 +214,7 @@ class City : IsPartOfGameInfoSerialization {
     fun containsBuildingUnique(uniqueType: UniqueType) =
         cityConstructions.builtBuildingUniqueMap.getUniques(uniqueType).any()
 
-    fun getGreatPersonPercentageBonus() = GreatPersonPointsBreakdown(this, true).allGppPercentageBonus()
+    fun getGreatPersonPercentageBonus() = GreatPersonPointsBreakdown.getGreatPersonPercentageBonus(this)
     fun getGreatPersonPoints() = GreatPersonPointsBreakdown(this).sum()
 
     fun addStat(stat: Stat, amount: Int) {
