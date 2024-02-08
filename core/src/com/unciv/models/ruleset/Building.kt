@@ -256,8 +256,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
                         yield(RejectionReasonType.ShouldNotBeDisplayed.toInstance())
 
                 UniqueType.Unavailable ->
-                    if (!unique.conditionalsApply(civ, cityConstructions.city))
-                        yield(RejectionReasonType.ShouldNotBeDisplayed.toInstance())
+                    yield(RejectionReasonType.ShouldNotBeDisplayed.toInstance())
 
                 UniqueType.RequiresPopulation ->
                     if (unique.params[0].toInt() > cityConstructions.city.population.population)

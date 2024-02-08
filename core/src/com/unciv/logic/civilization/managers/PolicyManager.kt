@@ -168,7 +168,7 @@ class PolicyManager : IsPartOfGameInfoSerialization {
         if (checkEra && civInfo.gameInfo.ruleset.eras[policy.branch.era]!!.eraNumber > civInfo.getEraNumber()) return false
         if (policy.getMatchingUniques(UniqueType.OnlyAvailable, StateForConditionals.IgnoreConditionals)
                 .any { !it.conditionalsApply(civInfo) }) return false
-        if (policy.hasUnique(UniqueType.Unavailable)) return false
+        if (policy.hasUnique(UniqueType.Unavailable, StateForConditionals(civInfo))) return false
         return true
     }
 
