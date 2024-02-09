@@ -270,7 +270,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
                                 {
                                     displayable = true
                                     yield(RejectionReasonType.RequiresBuildingInSomeCities.toInstance(
-                                        "Requires a [$building] in at least [$amount] cities".tr() +
+                                        "Requires a [$building] in at least [$amount] cities" +
                                             " ($numberOfCities/$numberOfCities)"))
                                 }
                             }
