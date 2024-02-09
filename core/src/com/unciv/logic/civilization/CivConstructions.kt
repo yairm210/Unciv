@@ -54,7 +54,7 @@ class CivConstructions : IsPartOfGameInfoSerialization {
         toReturn.freeStatBuildingsProvided.putAll(freeStatBuildingsProvided)
         toReturn.freeSpecificBuildingsProvided.putAll(freeSpecificBuildingsProvided)
         toReturn.boughtItemsWithIncreasingPrice.add(boughtItemsWithIncreasingPrice)  // add copies
-        toReturn.builtItemsWithIncreasingPrice.add(builtItemsWithIncreasingPrice)
+        toReturn.builtItemsWithIncreasingCost.add(builtItemsWithIncreasingCost)
         return toReturn
     }
 
