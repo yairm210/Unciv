@@ -21,8 +21,8 @@ class CivConstructions : IsPartOfGameInfoSerialization {
     /** Maps construction names to the amount of times bought */
     val boughtItemsWithIncreasingPrice: Counter<String> = Counter()
 
-    /** Maps construction names to the amount of times bought */
-    val builtItemsWithIncreasingPrice: Counter<String> = Counter()
+    /** Maps construction names to the amount of times built */
+    val builtItemsWithIncreasingCost: Counter<String> = Counter()
 
     /** Maps cities by id to a set of all free buildings by name they contain.
      *  The building name is the Nation-specific equivalent if available.

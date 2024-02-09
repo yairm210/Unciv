@@ -106,7 +106,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
         var productionCost = cost.toFloat()
 
         for (unique in getMatchingUniques(UniqueType.CostIncreasesWhenBuilt, StateForConditionals(civInfo)))
-            productionCost += civInfo.civConstructions.builtItemsWithIncreasingPrice[name] * unique.params[0].toInt()
+            productionCost += civInfo.civConstructions.builtItemsWithIncreasingCost[name] * unique.params[0].toInt()
 
         for (unique in getMatchingUniques(UniqueType.CostIncreasesPerCity, StateForConditionals(civInfo)))
             productionCost += civInfo.cities.size * unique.params[0].toInt()

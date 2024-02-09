@@ -16,7 +16,7 @@ class BaseUnitCost(val baseUnit: BaseUnit) {
             productionCost += civInfo.cities.size * unique.params[0].toInt()
 
         for (unique in baseUnit.getMatchingUniques(UniqueType.CostIncreasesWhenBuilt, StateForConditionals(civInfo)))
-            productionCost += civInfo.civConstructions.builtItemsWithIncreasingPrice[baseUnit.name] * unique.params[0].toInt()
+            productionCost += civInfo.civConstructions.builtItemsWithIncreasingCost[baseUnit.name] * unique.params[0].toInt()
 
         if (civInfo.isCityState())
             productionCost *= 1.5f

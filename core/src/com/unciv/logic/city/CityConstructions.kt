@@ -345,7 +345,7 @@ class CityConstructions : IsPartOfGameInfoSerialization {
                     city.civ.addNotification("No space available to place [${construction.name}] near [${city.name}]",
                         city.location, NotificationCategory.Production, construction.name)
                 }
-                city.civ.civConstructions.builtItemsWithIncreasingPrice[construction.name] += 1
+                city.civ.civConstructions.builtItemsWithIncreasingCost[construction.name] += 1
             }
         }
     }
