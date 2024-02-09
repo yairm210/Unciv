@@ -1,3 +1,20 @@
+## 4.10.8
+
+Fixed unhappiness effect when at 0 happiness
+
+Allow BaseUnit unique functions to return UnitType uniques
+
+By SeventhM:
+- Add unique for increasing price every time it's built 
+- Fix mistakes with unavailable unique 
+
+By SomeTroglodyte:
+- Tweak Overview-Politics-Diagram for a defeated player 
+- Patch AlertPopup to correctly close when it cannot find a required asset 
+- Fix Capture when a teleport was necessary 
+
+fix light/dark mode tooltip in the wiki  - By alexban011
+
 ## 4.10.7
 
 Allow city filters to be multifilters and not throw ruleset errors
