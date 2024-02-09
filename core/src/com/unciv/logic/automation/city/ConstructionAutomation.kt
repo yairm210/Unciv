@@ -398,11 +398,12 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
     }
 
     private fun addFaithBuildingChoice() {
+        if (civInfo.gameInfo.isReligionEnabled()) return
         val faithBuilding = statBuildings
             .filter { it.isStatRelated(Stat.Faith) }
             .filterBuildable()
             .minByOrNull { it.cost }
-        if (faithBuilding != null && civInfo.gameInfo.isReligionEnabled()) {
+        if (faithBuilding != null) {
             var modifier = 0.5f
             if (civInfo.wantsToFocusOn(Victory.Focus.Faith)) modifier = 1f
             modifier *= city.civ.getPersonality().scaledFocus(PersonalityValue.Faith)
