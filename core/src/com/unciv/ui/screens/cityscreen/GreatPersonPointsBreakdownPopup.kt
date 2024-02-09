@@ -16,11 +16,14 @@ class GreatPersonPointsBreakdownPopup(cityScreen: CityScreen, gppBreakdown: Grea
 
         fun addFormattedEntry(entry: GreatPersonPointsBreakdown.Entry, isPercentage: Boolean) {
             val text = if (greatPerson == null) {
+                // Popup shows all GP for a city - this will resolve the counters if necessary and dhow GP names from the keys
                 entry.toString(isPercentage)
             } else {
+                // Popup shows only a specific GP - check counters directly
                 val amount = entry.counter[greatPerson]
                 if (amount == 0) return
-                entry.toString(isPercentage, greatPerson, amount)
+                // Formatter does not need the GP name as in all cases the one in the header is clear enough
+                entry.toString(isPercentage, amount)
             }
             lines += FormattedLine(text, entry.pediaLink ?: "")
         }
@@ -49,9 +52,8 @@ class GreatPersonPointsBreakdownPopup(cityScreen: CityScreen, gppBreakdown: Grea
             else -> counter.entries.joinToString { it.value.toStringSigned() + " {${it.key}}" }
         }
 
-    private fun GreatPersonPointsBreakdown.Entry.toString(isPercentage: Boolean, greatPerson: String, amount: Int) =
+    private fun GreatPersonPointsBreakdown.Entry.toString(isPercentage: Boolean, amount: Int) =
         "{$source}: " +
             amount.toStringSigned() +
-            (if (isPercentage) "%" else "") +
-            (if (isAllGP || !isPercentage) "" else " {$greatPerson}")
+            (if (isPercentage) "%" else "")
 }
