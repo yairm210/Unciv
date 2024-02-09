@@ -642,7 +642,7 @@ enum class UniqueType(
 
     ConditionalBuildingBuilt("if [buildingFilter] is constructed", UniqueTarget.Conditional),
     ConditionalBuildingBuiltAll("if [buildingFilter] is constructed in all [cityFilter] cities", UniqueTarget.Conditional),
-    ConditionalBuildingBuiltAmount("if [buildingFilter] is constructed in [positiveAmount] [cityFilter] cities", UniqueTarget.Conditional),
+    ConditionalBuildingBuiltAmount("if [buildingFilter] is constructed in at least [positiveAmount] [cityFilter] cities", UniqueTarget.Conditional),
     ConditionalBuildingBuiltByAnybody("if [buildingFilter] is constructed by anybody", UniqueTarget.Conditional),
 
     ConditionalWithResource("with [resource]", UniqueTarget.Conditional),

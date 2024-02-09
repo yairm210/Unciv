@@ -166,8 +166,8 @@ object Conditionals {
             UniqueType.ConditionalBuildingBuilt ->
                 checkOnCiv { cities.any { it.cityConstructions.containsBuildingOrEquivalent(condition.params[0]) } }
             UniqueType.ConditionalBuildingBuiltAll ->
-                checkOnCiv { cities.all { it.cityConstructions.containsBuildingOrEquivalent(condition.params[0])
-                    && it.matchesFilter(condition.params[1]) } }
+                checkOnCiv { cities.filter { it.matchesFilter(condition.params[1]) }.all {
+                  it.cityConstructions.containsBuildingOrEquivalent(condition.params[0]) } }
             UniqueType.ConditionalBuildingBuiltAmount ->
                 checkOnCiv { cities.count { it.cityConstructions.containsBuildingOrEquivalent(condition.params[0])
                     && it.matchesFilter(condition.params[2]) } >= condition.params[1].toInt() }
