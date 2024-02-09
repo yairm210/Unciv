@@ -164,8 +164,8 @@ class Spy() : IsPartOfGameInfoSerialization {
             spyResult < 100 -> "An unidentified spy stole the Technology [$stolenTech] from [$city]!"
             spyResult < 200 -> "A spy from [${civInfo.civName}] stole the Technology [$stolenTech] from [$city]!"
             else -> { // The spy was killed in the attempt
-                if (defendingSpy == null) "A spy from [${civInfo.civName}] tried to steal our Technology was found and killed in [$city]!"
-                else "A spy from [${civInfo.civName}] tried to steal our Technology was found and killed in [$city] by [${defendingSpy.name}]!"
+                if (defendingSpy == null) "A spy from [${civInfo.civName}] was found and killed trying to steal Technology in [$city]!"
+                else "A spy from [${civInfo.civName}] was found and killed by [${defendingSpy.name}] trying to steal Technology in [$city]!"
             }
         }
         if (detectionString != null)
