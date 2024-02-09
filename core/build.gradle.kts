@@ -10,7 +10,13 @@ sourceSets {
 }
 
 kotlin {
-    jvmToolchain(11)
+    jvmToolchain(17)
+
+    target {
+        compilations.all {
+            kotlinOptions.jvmTarget = JavaVersion.VERSION_11.majorVersion
+        }
+    }
 }
 java {
     targetCompatibility = JavaVersion.VERSION_11
