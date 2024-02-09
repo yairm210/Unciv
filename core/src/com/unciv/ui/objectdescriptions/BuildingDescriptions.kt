@@ -45,7 +45,6 @@ object BuildingDescriptions {
         val isFree = city.civ.civConstructions.hasFreeBuilding(city, this)
         if (uniqueTo != null) translatedLines += if (replaces == null) "Unique to [$uniqueTo]".tr()
         else "Unique to [$uniqueTo], replaces [$replaces]".tr()
-        val missingUnique = getMatchingUniques(UniqueType.RequiresBuildingInAllCities).firstOrNull()
         if (isWonder) translatedLines += "Wonder".tr()
         if (isNationalWonder) translatedLines += "National Wonder".tr()
         if (!isFree) {
@@ -59,21 +58,9 @@ object BuildingDescriptions {
             }
         }
 
-        // Inefficient in theory. In practice, buildings seem to have only a small handful of uniques.
-        val missingCities = if (missingUnique != null)
-        // TODO: Unify with rejection reasons?
-            city.civ.cities.filterNot {
-                it.isPuppet
-                    || it.cityConstructions.containsBuildingOrEquivalent(missingUnique.params[0])
-            }
-        else listOf()
         if (uniques.isNotEmpty()) {
             if (replacementTextForUniques.isNotEmpty()) translatedLines += replacementTextForUniques.tr()
-            else translatedLines += getUniquesStringsWithoutDisablers(
-                filterUniques = if (missingCities.isEmpty()) null
-                else { unique -> unique.type != UniqueType.RequiresBuildingInAllCities }
-                // Filter out the "Requires a [] in all cities" unique if any cities are still missing the required building, since in that case the list of cities will be appended at the end.
-            ).map { it.tr() }
+            else translatedLines += getUniquesStringsWithoutDisablers().map { it.tr() }
         }
         if (!stats.isEmpty())
             translatedLines += stats.toString()
@@ -93,12 +80,38 @@ object BuildingDescriptions {
         if (cityStrength != 0) translatedLines += "{City strength} +$cityStrength".tr()
         if (cityHealth != 0) translatedLines += "{City health} +$cityHealth".tr()
         if (maintenance != 0 && !isFree) translatedLines += "{Maintenance cost}: $maintenance {Gold}".tr()
-        if (showAdditionalInfo && missingCities.isNotEmpty()) {
-            // Could be red. But IMO that should be done by enabling GDX's ColorMarkupLanguage globally instead of adding a separate label.
-            translatedLines += "\n" +
-                "[${city.civ.getEquivalentBuilding(missingUnique!!.params[0])}] required:".tr() +
-                " " + missingCities.joinToString(", ") { it.name.tr(hideIcons = true) }
-            // Can't nest square bracket placeholders inside curlies, and don't see any way to define wildcard placeholders. So run translation explicitly on base text.
+        if (showAdditionalInfo) {
+            // Inefficient in theory. In practice, buildings seem to have only a small handful of uniques.
+            for (unique in building.uniqueObjects) {
+                // TODO: Unify with rejection reasons?
+                if (unique.type == UniqueType.RequiresBuildingInAllCities) {
+                    val missingCities = city.civ.cities.filterNot {
+                        it.isPuppet
+                            || it.cityConstructions.containsBuildingOrEquivalent(unique.params[0])
+                    }
+                    // Could be red. But IMO that should be done by enabling GDX's ColorMarkupLanguage globally instead of adding a separate label.
+                    if (missingCities.isNotEmpty()) translatedLines += "\n" +
+                        "[${city.civ.getEquivalentBuilding(unique.params[0])}] required:".tr() +
+                        " " + missingCities.joinToString(", ") { it.name.tr(hideIcons = true) }
+                    // Can't nest square bracket placeholders inside curlies, and don't see any way to define wildcard placeholders. So run translation explicitly on base text.
+                }
+
+                else if (unique.type == UniqueType.OnlyAvailable)
+                    for (conditional in unique.conditionals) {
+                        // TODO: Unify with rejection reasons?
+                        if (conditional.type == UniqueType.ConditionalBuildingBuiltAll) {
+                            val missingCities = city.civ.cities.filterNot {
+                                it.cityConstructions.containsBuildingOrEquivalent(conditional.params[0])
+                                    && it.matchesFilter(conditional.params[1])
+                            }
+                            // Could be red. But IMO that should be done by enabling GDX's ColorMarkupLanguage globally instead of adding a separate label.
+                            if (missingCities.isNotEmpty()) translatedLines += "\n" +
+                                "[${city.civ.getEquivalentBuilding(unique.params[0])}] required:".tr() +
+                                " " + missingCities.joinToString(", ") { it.name.tr(hideIcons = true) }
+                            // Can't nest square bracket placeholders inside curlies, and don't see any way to define wildcard placeholders. So run translation explicitly on base text.
+                        }
+                    }
+            }
         }
         return translatedLines.joinToString("\n").trim()
     }

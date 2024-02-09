@@ -282,8 +282,10 @@ enum class UniqueType(
 
     CostIncreasesPerCity("Cost increases by [amount] per owned city", UniqueTarget.Building),
 
+    @Deprecated("as of 4.10.17", ReplaceWith("Only available <if [buildingFilter] is constructed in all [All] cities>"))
     RequiresBuildingInAllCities("Requires a [buildingFilter] in all cities", UniqueTarget.Building),
-    RequiresBuildingInSomeCities("Requires a [buildingFilter] in at least [amount] cities", UniqueTarget.Building),
+    @Deprecated("as of 4.10.17", ReplaceWith("Only available <if [buildingFilter] is constructed in at least [positiveAmount] [All] cities>"))
+    RequiresBuildingInSomeCities("Requires a [buildingFilter] in at least [positiveAmount] cities", UniqueTarget.Building),
     CanOnlyBeBuiltInCertainCities("Can only be built [cityFilter]", UniqueTarget.Building),
 
     MustHaveOwnedWithinTiles("Must have an owned [tileFilter] within [amount] tiles", UniqueTarget.Building),
