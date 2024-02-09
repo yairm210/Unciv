@@ -86,8 +86,9 @@ enum class UniqueParameterType(
             UniqueType.UniqueParameterErrorSeverity? = getErrorSeverityForFilter(parameterText, ruleset)
 
         override fun isKnownValue(parameterText: String, ruleset: Ruleset): Boolean {
-            if (parameterText == "City") return true // MapUnitFilter covers CivFilter
+            if (parameterText == "City") return true
             if (MapUnitFilter.isKnownValue(parameterText, ruleset)) return true
+            if (CityFilter.isKnownValue(parameterText, ruleset)) return true
             return false
         }
     },
