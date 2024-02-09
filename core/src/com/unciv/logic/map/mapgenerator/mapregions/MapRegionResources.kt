@@ -18,11 +18,11 @@ object MapRegionResources {
      *  Tries to avoid impacts, but falls back to lowest impact otherwise.
      *  Goes through the list in order, so pre-shuffle it!
      *  Assumes all tiles in the list are of the same terrain type when generating weightings, irrelevant if only one option.
-     *  Respects terrainsCanBeFoundOn when there is only one option, unless [forcePlacement] is true.
      *  @return a map of the resources in the options list to number placed. */
-    fun placeResourcesInTiles(tileData: TileDataMap, frequency: Int, tileList: List<Tile>, resourceOptions: List<TileResource>,
-                              baseImpact: Int = 0, randomImpact: Int = 0, majorDeposit: Boolean = false,
-                              forcePlacement: Boolean = false): Map<TileResource, Int> {
+    fun placeResourcesInTiles(
+        tileData: TileDataMap, frequency: Int, tileList: List<Tile>, resourceOptions: List<TileResource>,
+        baseImpact: Int = 0, randomImpact: Int = 0, majorDeposit: Boolean = false
+    ): Map<TileResource, Int> {
         if (tileList.none() || resourceOptions.isEmpty()) return mapOf()
         val impactType = when (resourceOptions.first().resourceType) {
             ResourceType.Strategic -> MapRegions.ImpactType.Strategic

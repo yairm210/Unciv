@@ -259,8 +259,8 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
     // This returns the name of the unit this tech upgrades this unit to,
     // or null if there is no automatic upgrade at that tech.
     fun automaticallyUpgradedInProductionToUnitByTech(techName: String): String? {
-        for (obsoleteTech: String in  techsAtWhichAutoUpgradeInProduction())
-            if (obsoleteTech != null && obsoleteTech == techName)
+        for (obsoleteTech: String in techsAtWhichAutoUpgradeInProduction())
+            if (obsoleteTech == techName)
                 return upgradesTo
         return null
     }

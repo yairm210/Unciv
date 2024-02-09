@@ -130,11 +130,11 @@ class ConstructionInfoTable(val cityScreen: CityScreen) : Table() {
                 cityScreen.update()
             }
         ) {
-            sellBuildingConfirmed(construction, isFree)
+            sellBuildingConfirmed(construction)
         }.open()
     }
 
-    private fun sellBuildingConfirmed(construction: Building, isFree: Boolean) {
+    private fun sellBuildingConfirmed(construction: Building) {
         cityScreen.city.sellBuilding(construction)
         cityScreen.clearSelection()
         cityScreen.update()

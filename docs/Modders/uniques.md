@@ -1052,7 +1052,12 @@ Due to performance considerations, this unique is cached, thus conditionals may 
 ??? example  "Cost increases by [amount] per owned city"
 	Example: "Cost increases by [3] per owned city"
 
-	Applicable to: Building
+	Applicable to: Building, Unit
+
+??? example  "Cost increases by [amount] when built"
+	Example: "Cost increases by [3] when built"
+
+	Applicable to: Building, Unit
 
 ??? example  "Requires a [buildingFilter] in all cities"
 	Example: "Requires a [Culture] in all cities"

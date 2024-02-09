@@ -129,8 +129,7 @@ object StartNormalizer {
                     999,
                     resourceTiles,
                     listOf(resource),
-                    majorDeposit = true,
-                    forcePlacement = true
+                    majorDeposit = true
                 )
             }
         }
