@@ -106,6 +106,15 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         return unit
     }
 
+    /** Allows unique functions (getMatchingUniques, hasUnique) to "see" uniques from the UnitType */
+    override fun getMatchingUniques(uniqueType: UniqueType, stateForConditionals: StateForConditionals?): Sequence<Unique> {
+        val ourUniques = super<RulesetObject>.getMatchingUniques(uniqueType, stateForConditionals)
+        if (! ::ruleset.isInitialized) { // Not sure if this will ever actually happen, but better safe than sorry
+            return ourUniques
+        }
+        return ourUniques + type.getMatchingUniques(uniqueType, stateForConditionals)
+    }
+
     override fun getProductionCost(civInfo: Civilization): Int  = costFunctions.getProductionCost(civInfo)
 
     override fun canBePurchasedWithStat(city: City?, stat: Stat): Boolean {
