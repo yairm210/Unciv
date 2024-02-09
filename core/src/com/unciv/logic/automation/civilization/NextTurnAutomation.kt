@@ -130,27 +130,28 @@ object NextTurnAutomation {
 
     internal fun valueCityStateAlliance(civInfo: Civilization, cityState: Civilization, includeQuests: Boolean = false): Int {
         var value = 0
+        val civPersonality = civInfo.getPersonality()
 
         if (cityState.cityStateFunctions.canProvideStat(Stat.Culture)) {
             if (civInfo.wantsToFocusOn(Victory.Focus.Culture))
                 value += 10
-            value += (civInfo.getPersonality()[PersonalityValue.Culture]).toInt() - 5
+            value += (civPersonality[PersonalityValue.Culture]).toInt() - 5
         }
         if (cityState.cityStateFunctions.canProvideStat(Stat.Faith)) {
             if (civInfo.wantsToFocusOn(Victory.Focus.Faith))
                 value += 10
-            value += (civInfo.getPersonality()[PersonalityValue.Faith]).toInt() - 5
+            value += (civPersonality[PersonalityValue.Faith]).toInt() - 5
         }
         if (cityState.cityStateFunctions.canProvideStat(Stat.Production)) {
             if (civInfo.wantsToFocusOn(Victory.Focus.Production))
                 value += 10
-            value += (civInfo.getPersonality()[PersonalityValue.Production]).toInt() - 5
+            value += (civPersonality[PersonalityValue.Production]).toInt() - 5
         }
         if (cityState.cityStateFunctions.canProvideStat(Stat.Science)) {
             // In case someone mods this in
             if (civInfo.wantsToFocusOn(Victory.Focus.Science))
                 value += 10
-            value += (civInfo.getPersonality()[PersonalityValue.Science]).toInt() - 5
+            value += (civPersonality[PersonalityValue.Science]).toInt() - 5
         }
         if (civInfo.wantsToFocusOn(Victory.Focus.Military)) {
             if (!cityState.isAlive())
@@ -167,11 +168,11 @@ object NextTurnAutomation {
         }
         if (civInfo.getHappiness() < 5 && cityState.cityStateFunctions.canProvideStat(Stat.Happiness)) {
             value += 10 - civInfo.getHappiness()
-            value += (civInfo.getPersonality()[PersonalityValue.Happiness]).toInt() - 5
+            value += (civPersonality[PersonalityValue.Happiness]).toInt() - 5
         }
         if (civInfo.getHappiness() > 5 && cityState.cityStateFunctions.canProvideStat(Stat.Food)) {
             value += 5
-            value += (civInfo.getPersonality()[PersonalityValue.Food]).toInt() - 5
+            value += (civPersonality[PersonalityValue.Food]).toInt() - 5
         }
 
         if (!cityState.isAlive() || cityState.cities.isEmpty() || civInfo.cities.isEmpty())

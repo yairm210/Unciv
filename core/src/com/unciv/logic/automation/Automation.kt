@@ -46,6 +46,7 @@ object Automation {
     private fun rankStatsForCityWork(stats: Stats, city: City, cityStats: Stats, specialist: Boolean, localUniqueCache: LocalUniqueCache): Float {
         val cityAIFocus = city.getCityFocus()
         val yieldStats = stats.clone()
+        val civPersonality = city.civ.getPersonality()
 
         if (specialist) {
             // If you have the Food Bonus, count as 1 extra food production (base is 2food)
@@ -86,23 +87,23 @@ object Automation {
         } else {
             if (city.civ.gold < 0 && city.civ.stats.statsForNextTurn.gold <= 0)
                 yieldStats.gold *= 2 // We have a global problem
-            yieldStats.gold *= city.civ.getPersonality().scaledFocus(PersonalityValue.Gold)
+            yieldStats.gold *= civPersonality.scaledFocus(PersonalityValue.Gold)
 
             if (city.tiles.size < 12 || city.civ.wantsToFocusOn(Victory.Focus.Culture))
                 yieldStats.culture *= 2
-            yieldStats.culture *= city.civ.getPersonality().scaledFocus(PersonalityValue.Culture)
+            yieldStats.culture *= civPersonality.scaledFocus(PersonalityValue.Culture)
 
             if (city.civ.getHappiness() < 0 && !specialist) // since this doesn't get updated, may overshoot
                 yieldStats.happiness *= 2
-            yieldStats.happiness *= city.civ.getPersonality().scaledFocus(PersonalityValue.Happiness)
+            yieldStats.happiness *= civPersonality.scaledFocus(PersonalityValue.Happiness)
 
             if (city.civ.wantsToFocusOn(Victory.Focus.Science))
                 yieldStats.science *= 2
-            yieldStats.science *= city.civ.getPersonality().scaledFocus(PersonalityValue.Science)
+            yieldStats.science *= civPersonality.scaledFocus(PersonalityValue.Science)
 
-            yieldStats.production * city.civ.getPersonality().scaledFocus(PersonalityValue.Production)
-            yieldStats.faith *= city.civ.getPersonality().scaledFocus(PersonalityValue.Faith)
-            yieldStats.food *= city.civ.getPersonality().scaledFocus(PersonalityValue.Food)
+            yieldStats.production *= civPersonality.scaledFocus(PersonalityValue.Production)
+            yieldStats.faith *= civPersonality.scaledFocus(PersonalityValue.Faith)
+            yieldStats.food *= civPersonality.scaledFocus(PersonalityValue.Food)
         }
 
         // Apply City focus

@@ -402,12 +402,10 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
         val faithBuilding = statBuildings
             .filter { it.isStatRelated(Stat.Faith) }
             .filterBuildable()
-            .minByOrNull { it.cost }
-        if (faithBuilding != null) {
-            var modifier = 0.5f
-            if (civInfo.wantsToFocusOn(Victory.Focus.Faith)) modifier = 1f
-            modifier *= city.civ.getPersonality().scaledFocus(PersonalityValue.Faith)
-            addChoice(relativeCostEffectiveness, faithBuilding.name, modifier)
-        }
+            .minByOrNull { it.cost } ?: return
+        var modifier = 0.5f
+        if (civInfo.wantsToFocusOn(Victory.Focus.Faith)) modifier = 1f
+        modifier *= city.civ.getPersonality().scaledFocus(PersonalityValue.Faith)
+        addChoice(relativeCostEffectiveness, faithBuilding.name, modifier)
     }
 }
