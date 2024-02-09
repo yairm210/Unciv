@@ -362,7 +362,7 @@ class Civilization : IsPartOfGameInfoSerialization {
         val victoryTypes = gameInfo.gameParameters.victoryTypes
         if (victoryTypes.size == 1)
             return listOf(victoryTypes.first()) // That is the most relevant one
-        val victoryType: List<String> = (setOf(nation.preferredVictoryType) + setOf(getPersonality().preferredVictoryType))
+        val victoryType: List<String> = listOf(nation.preferredVictoryType, getPersonality().preferredVictoryType)
             .filter { it in gameInfo.gameParameters.victoryTypes }
         return victoryType.ifEmpty { listOf(Constants.neutralVictoryType) }
 
