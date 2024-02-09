@@ -260,9 +260,9 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
                             continue
                         when (conditional.type) {
                             UniqueType.ConditionalBuildingBuiltAmount -> {
-                                val building = civ.getEquivalentBuilding(unique.params[0]).name
-                                val amount = unique.params[1].toInt()
-                                val cityFilter = unique.params[2]
+                                val building = civ.getEquivalentBuilding(conditional.params[0]).name
+                                val amount = conditional.params[1].toInt()
+                                val cityFilter = conditional.params[2]
                                 val numberOfCities = civ.cities.count {
                                     it.cityConstructions.containsBuildingOrEquivalent(building) && it.matchesFilter(cityFilter)
                                 }
@@ -275,8 +275,8 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
                                 }
                             }
                             UniqueType.ConditionalBuildingBuiltAll -> {
-                                val building = civ.getEquivalentBuilding(unique.params[0]).name
-                                val cityFilter = unique.params[1]
+                                val building = civ.getEquivalentBuilding(conditional.params[0]).name
+                                val cityFilter = conditional.params[1]
                                 if(civ.cities.any { it.matchesFilter(cityFilter)
                                     !it.isPuppet && !it.cityConstructions.containsBuildingOrEquivalent(building)
                                 }) {

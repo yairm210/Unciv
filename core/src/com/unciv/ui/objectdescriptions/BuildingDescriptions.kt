@@ -102,7 +102,7 @@ object BuildingDescriptions {
                         if (conditional.type == UniqueType.ConditionalBuildingBuiltAll) {
                             val missingCities = city.civ.cities.filterNot {
                                 it.cityConstructions.containsBuildingOrEquivalent(conditional.params[0])
-                                    && it.matchesFilter(conditional.params[1])
+                                    || !it.matchesFilter(conditional.params[1])
                             }
                             // Could be red. But IMO that should be done by enabling GDX's ColorMarkupLanguage globally instead of adding a separate label.
                             if (missingCities.isNotEmpty()) translatedLines += "\n" +
