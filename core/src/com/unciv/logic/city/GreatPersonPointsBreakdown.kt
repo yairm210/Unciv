@@ -145,7 +145,7 @@ class GreatPersonPointsBreakdown private constructor(private val ruleset: Rulese
 
         // Round fixed-point to integers, toSet() because a result of 0 will remove the entry (-99% bonus in a certain Mod)
         for (key in result.keys.toSet())
-            result[key] = (result[key] * 10 + 5) / fixedPointFactor / 10
+            result[key] = (result[key] + fixedPointFactor / 2) / fixedPointFactor
 
         // Remove all "gpp" values that are not valid units
         for (key in result.keys.toSet())
