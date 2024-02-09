@@ -68,7 +68,7 @@ class Personality : RulesetObject() {
         nameToVariable(personalityValue).set(value)
     }
 
-    override fun getUniqueTarget() = UniqueTarget.Personailty
+    override fun getUniqueTarget() = UniqueTarget.Personality
 
     override fun makeLink(): String {
         return ""
