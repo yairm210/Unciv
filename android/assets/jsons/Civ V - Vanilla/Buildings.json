@@ -246,7 +246,7 @@
 		"happiness": 5,
 		"culture": 1,
 		"isNationalWonder": true,
-		"uniques": ["Only available <if [Colosseum] is constructed in all [All] cities>", "Cost increases by [30] per owned city"],
+		"uniques": ["Only available <if [Colosseum] is constructed in all among [non-[Puppet]] cities>", "Cost increases by [30] per owned city"],
 		"requiredTech": "Construction"
 	},
 	{
@@ -300,7 +300,7 @@
 		"culture": 1,
 		"isNationalWonder": true,
 		"percentStatBonus": {"science": 50},
-		"uniques": ["Only available <if [Library] is constructed in all [All] cities>", "Cost increases by [30] per owned city"],
+		"uniques": ["Only available <if [Library] is constructed in all among [non-[Puppet]] cities>", "Cost increases by [30] per owned city"],
 		"requiredTech": "Philosophy"
 	},
 	{
@@ -317,7 +317,7 @@
 		"cost": 125,
 		"culture": 1,
 		"isNationalWonder": true,
-		"uniques": ["Only available <if [Monument] is constructed in all [All] cities>", "[+25]% Great Person generation [in this city]", "Cost increases by [30] per owned city"],
+		"uniques": ["Only available <if [Monument] is constructed in all among [non-[Puppet]] cities>", "[+25]% Great Person generation [in this city]", "Cost increases by [30] per owned city"],
 		"requiredTech": "Philosophy"
 	},
 	{
@@ -360,7 +360,7 @@
 		"cost": 125,
 		"culture": 1,
 		"isNationalWonder": true,
-		"uniques": ["Only available <if [Barracks] is constructed in all [All] cities>", "All newly-trained [non-[Air]] units [in this city] receive the [Morale] promotion",
+		"uniques": ["Only available <if [Barracks] is constructed in all among [non-[Puppet]] cities>", "All newly-trained [non-[Air]] units [in this city] receive the [Morale] promotion",
 			"Cost increases by [30] per owned city"],
 		"requiredTech": "Iron Working"
 	},
@@ -426,7 +426,7 @@
 		"gold": 8,
 		"culture": 1,
 		"isNationalWonder": true,
-		"uniques": ["Only available <if [Market] is constructed in all [All] cities>", "Cost increases by [30] per owned city"],
+		"uniques": ["Only available <if [Market] is constructed in all among [non-[Puppet]] cities>", "Cost increases by [30] per owned city"],
 		"requiredTech": "Currency"
 	},
 	{
@@ -509,7 +509,7 @@
 		"science": 3,
 		"culture": 1,
 		"isNationalWonder": true,
-		"uniques": ["Only available <if [University] is constructed in all [All] cities>", "Free Technology", "Cost increases by [30] per owned city"],
+		"uniques": ["Only available <if [University] is constructed in all among [non-[Puppet]] cities>", "Free Technology", "Cost increases by [30] per owned city"],
 		"requiredTech": "Education"
 	},
 	{
@@ -559,7 +559,7 @@
 		"production": 8,
 		"culture": 1,
 		"isNationalWonder": true,
-		"uniques": ["Only available <if [Workshop] is constructed in all [All] cities>", "Cost increases by [30] per owned city"],
+		"uniques": ["Only available <if [Workshop] is constructed in all among [non-[Puppet]] cities>", "Cost increases by [30] per owned city"],
 		"requiredTech": "Machinery"
 	},
 	{
@@ -656,7 +656,7 @@
 		"percentStatBonus": {"culture": 50},
 		"culture": 5,
 		"isNationalWonder": true,
-		"uniques": ["Only available <if [Opera House] is constructed in all [All] cities>", "Cost increases by [30] per owned city"],
+		"uniques": ["Only available <if [Opera House] is constructed in all among [non-[Puppet]] cities>", "Cost increases by [30] per owned city"],
 		"requiredTech": "Acoustics"
 	},
 	{
