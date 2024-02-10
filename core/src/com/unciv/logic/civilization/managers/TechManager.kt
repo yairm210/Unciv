@@ -502,10 +502,10 @@ class TechManager : IsPartOfGameInfoSerialization {
     private fun updateTransientBooleans() {
         unitsCanEmbark = civInfo.hasUnique(UniqueType.LandUnitEmbarkation)
         val enterOceanUniques = civInfo.getMatchingUniques(UniqueType.UnitsMayEnterOcean)
-        allUnitsCanEnterOcean = enterOceanUniques.any { it.params[0] == "All" }
+        allUnitsCanEnterOcean = enterOceanUniques.any { it.params[0] in Constants.all }
         embarkedUnitsCanEnterOcean = allUnitsCanEnterOcean ||
                 enterOceanUniques.any { it.params[0] == Constants.embarked }
-        specificUnitsCanEnterOcean = enterOceanUniques.any { it.params[0] != "All" && it.params[0] != Constants.embarked }
+        specificUnitsCanEnterOcean = enterOceanUniques.any { it.params[0] !in Constants.all && it.params[0] != Constants.embarked }
 
         movementSpeedOnRoads = if (civInfo.hasUnique(UniqueType.RoadMovementSpeed))
             RoadStatus.Road.movementImproved else RoadStatus.Road.movement

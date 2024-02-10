@@ -1,5 +1,6 @@
 package com.unciv.models.ruleset.unit
 
+import com.unciv.Constants
 import com.unciv.logic.MultiFilter
 import com.unciv.logic.city.City
 import com.unciv.logic.city.CityConstructions
@@ -315,7 +316,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
             unitType -> true
             name -> true
             replaces -> true
-            "All" -> true
+            in Constants.all -> true
 
             "Melee" -> isMelee()
             "Ranged" -> isRanged()

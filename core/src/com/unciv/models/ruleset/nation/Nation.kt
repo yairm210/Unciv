@@ -263,9 +263,9 @@ class Nation : RulesetObject() {
         return MultiFilter.multiFilter(filter, ::matchesSingleFilter)
     }
 
-    fun matchesSingleFilter(filter: String): Boolean {
+    private fun matchesSingleFilter(filter: String): Boolean {
         return when (filter) {
-            "All" -> true
+            in Constants.all -> true
             name -> true
             "Major" -> isMajorCiv
             // "CityState" to be deprecated, replaced by "City-States"

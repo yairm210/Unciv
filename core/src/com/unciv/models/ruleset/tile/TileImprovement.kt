@@ -93,10 +93,10 @@ class TileImprovement : RulesetStatsObject() {
         return MultiFilter.multiFilter(filter, ::matchesSingleFilter)
     }
 
-    fun matchesSingleFilter(filter: String): Boolean {
+    private fun matchesSingleFilter(filter: String): Boolean {
         return when (filter) {
             name -> true
-            "All" -> true
+            in Constants.all -> true
             "Improvement" -> true // For situations involving tileFilter
             "All Road" -> isRoad()
             "Great Improvement", "Great" -> isGreatImprovement()
