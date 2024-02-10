@@ -214,7 +214,9 @@ enum class KeyboardBinding(
             // Conflict checking within group plus keys assigned to UnitActions are a problem
             override fun checkConflictsIn() = sequenceOf(this, MapPanning, UnitActions)
         },
-        AutoPlayMenu,
+        AutoPlayMenu {
+            override val label = "AutoPlay menu" // adapt to existing usage
+        },
         MapPanning {
             override fun checkConflictsIn() = sequenceOf(this, WorldScreen)
         },
@@ -227,7 +229,7 @@ enum class KeyboardBinding(
         Civilopedia,
         Popups
         ;
-        val label = unCamelCase(name)
+        open val label = unCamelCase(name)
         open fun checkConflictsIn() = sequenceOf(this)
     }
 
