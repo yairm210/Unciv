@@ -1,5 +1,6 @@
 package com.unciv.models.ruleset
 
+import com.unciv.Constants
 import com.unciv.logic.MultiFilter
 import com.unciv.logic.city.City
 import com.unciv.logic.city.CityConstructions
@@ -447,9 +448,9 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
         return MultiFilter.multiFilter(filter, ::matchesSingleFilter)
     }
 
-    fun matchesSingleFilter(filter: String): Boolean {
+    private fun matchesSingleFilter(filter: String): Boolean {
         return when (filter) {
-            "All" -> true
+            in Constants.all -> true
             name -> true
             "Building", "Buildings" -> !isAnyWonder()
             "Wonder", "Wonders" -> isAnyWonder()

@@ -498,7 +498,8 @@ open class Tile : IsPartOfGameInfoSerialization {
     /** Implements [UniqueParameterType.TerrainFilter][com.unciv.models.ruleset.unique.UniqueParameterType.TerrainFilter] */
     fun matchesSingleTerrainFilter(filter: String, observingCiv: Civilization? = null): Boolean {
         return when (filter) {
-            "All", "Terrain" -> true
+            "Terrain" -> true
+            in Constants.all -> true
             baseTerrain -> true
             "Water" -> isWater
             "Land" -> isLand

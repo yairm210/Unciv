@@ -1,6 +1,7 @@
 package com.unciv.logic.city
 
 import com.badlogic.gdx.math.Vector2
+import com.unciv.Constants
 import com.unciv.GUI
 import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.MultiFilter
@@ -486,7 +487,8 @@ class City : IsPartOfGameInfoSerialization {
     private fun matchesSingleFilter(filter: String, viewingCiv: Civilization? = civ): Boolean {
         return when (filter) {
             "in this city" -> true // Filtered by the way uniques are found
-            "in all cities", "All" -> true
+            "in all cities" -> true
+            in Constants.all -> true
             "in your cities", "Your" -> viewingCiv == civ
             "in all coastal cities", "Coastal" -> isCoastal()
             "in capital", "Capital" -> isCapital()
