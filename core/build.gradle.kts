@@ -14,7 +14,7 @@ kotlin {
 
     target {
         compilations.all {
-            kotlinOptions.jvmTarget = JavaVersion.VERSION_1_8.majorVersion
+            kotlinOptions.jvmTarget = "1.8"
         }
     }
 }
