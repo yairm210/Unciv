@@ -48,7 +48,8 @@ class GreatPersonPointsBreakdown private constructor(private val ruleset: Rulese
 
         /** List all percentage bonuses that apply to all GPP
          *
-         *  For use by [City.getGreatPersonPercentageBonus] (which in turn is only used by autoAssignPopulation)
+         *  This is used internally from the public constructor to include them in the brakdown,
+         *  and exposed to autoAssignPopulation via [getGreatPersonPercentageBonus]
          */
         private fun getPercentagesApplyingToAllGP(city: City) = sequence {
             // Now add boni for GreatPersonPointPercentage
