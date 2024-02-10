@@ -24,12 +24,13 @@ class AutoPlayMenu(
 
     override fun createContentTable(): Table {
         val table = super.createContentTable()!!
+        // Using the same keyboard binding for bypassing this menu and the default option
         if (!worldScreen.gameInfo.gameParameters.isOnlineMultiplayer)
-            table.add(getButton("Start AutoPlay", KeyboardBinding.RaisePriority, ::autoPlay)).row()
-        table.add(getButton("AutoPlay End Turn", KeyboardBinding.RaisePriority, ::autoPlayEndTurn)).row()
-        table.add(getButton("AutoPlay Military Once", KeyboardBinding.RaisePriority, ::autoPlayMilitary)).row()
-        table.add(getButton("AutoPlay Civilians Once", KeyboardBinding.RaisePriority, ::autoPlayCivilian)).row()
-        table.add(getButton("AutoPlay Economy Once", KeyboardBinding.RaisePriority, ::autoPlayEconomy)).row()
+            table.add(getButton("Start AutoPlay", KeyboardBinding.AutoPlay, ::autoPlay)).row()
+        table.add(getButton("AutoPlay End Turn", KeyboardBinding.AutoPlayMenuEndTurn, ::autoPlayEndTurn)).row()
+        table.add(getButton("AutoPlay Military Once", KeyboardBinding.AutoPlayMenuMilitary, ::autoPlayMilitary)).row()
+        table.add(getButton("AutoPlay Civilians Once", KeyboardBinding.AutoPlayMenuCivilians, ::autoPlayCivilian)).row()
+        table.add(getButton("AutoPlay Economy Once", KeyboardBinding.AutoPlayMenuEconomy, ::autoPlayEconomy)).row()
 
         return table
     }

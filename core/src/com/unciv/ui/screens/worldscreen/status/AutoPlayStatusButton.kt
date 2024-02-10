@@ -6,7 +6,9 @@ import com.badlogic.gdx.scenes.scene2d.ui.Stack
 import com.badlogic.gdx.utils.Disposable
 import com.unciv.GUI
 import com.unciv.ui.components.extensions.setSize
-import com.unciv.ui.components.input.onClick
+import com.unciv.ui.components.input.KeyboardBinding
+import com.unciv.ui.components.input.keyShortcuts
+import com.unciv.ui.components.input.onActivation
 import com.unciv.ui.components.input.onRightClick
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.basescreen.BaseScreen
@@ -22,19 +24,21 @@ class AutoPlayStatusButton(
     init {
         add(Stack(autoPlayImage)).pad(5f)
         val settings = GUI.getSettings()
-        onClick {
+        onActivation(binding = KeyboardBinding.AutoPlayMenu) {
             if (settings.autoPlay.isAutoPlaying())
                 settings.autoPlay.stopAutoPlay()
             else if (worldScreen.viewingCiv == worldScreen.gameInfo.currentPlayerCiv)
                 AutoPlayMenu(stage,this, nextTurnButton, worldScreen)
         }
-        onRightClick {
-            if (!worldScreen.gameInfo.gameParameters.isOnlineMultiplayer 
+        val directAutoPlay = {
+            if (!worldScreen.gameInfo.gameParameters.isOnlineMultiplayer
                 && worldScreen.viewingCiv == worldScreen.gameInfo.currentPlayerCiv) {
                 settings.autoPlay.startAutoPlay()
                 nextTurnButton.update()
             }
         }
+        onRightClick(action = directAutoPlay)
+        keyShortcuts.add(KeyboardBinding.AutoPlay, action = directAutoPlay)
     }
 
     private fun createAutoplayImage(): Image {
