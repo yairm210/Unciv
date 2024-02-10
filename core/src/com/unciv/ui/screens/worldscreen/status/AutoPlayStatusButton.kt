@@ -9,7 +9,6 @@ import com.unciv.ui.components.extensions.setSize
 import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.input.onRightClick
 import com.unciv.ui.images.ImageGetter
-import com.unciv.ui.popups.AutoPlayMenu
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.worldscreen.WorldScreen
 
@@ -18,7 +17,7 @@ class AutoPlayStatusButton(
     nextTurnButton: NextTurnButton
 ) : Button(BaseScreen.skin), Disposable {
     private val autoPlayImage = createAutoplayImage()
-    
+
 
     init {
         add(Stack(autoPlayImage)).pad(5f)
@@ -43,7 +42,7 @@ class AutoPlayStatusButton(
         img.setSize(40f)
         return img
     }
-    
+
     override fun dispose() {
         val settings = GUI.getSettings()
         if (isPressed && settings.autoPlay.isAutoPlaying()) {
@@ -51,4 +50,3 @@ class AutoPlayStatusButton(
         }
     }
 }
-

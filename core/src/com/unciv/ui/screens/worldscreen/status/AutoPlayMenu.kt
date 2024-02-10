@@ -1,4 +1,4 @@
-package com.unciv.ui.popups
+package com.unciv.ui.screens.worldscreen.status
 
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Stage
@@ -8,14 +8,11 @@ import com.unciv.logic.automation.civilization.NextTurnAutomation
 import com.unciv.logic.automation.unit.UnitAutomation
 import com.unciv.logic.civilization.managers.TurnManager
 import com.unciv.ui.components.input.KeyboardBinding
+import com.unciv.ui.popups.AnimatedMenuPopup
 import com.unciv.ui.screens.worldscreen.WorldScreen
-import com.unciv.ui.screens.worldscreen.status.NextTurnButton
-
-//todo Check move/top/end for "place one improvement" buildings
-//todo Check add/remove-all for "place one improvement" buildings
 
 /**
- * Adds a number of options 
+ *  The "context" menu for the AutoPlay button
  */
 class AutoPlayMenu(
     stage: Stage,
@@ -25,12 +22,7 @@ class AutoPlayMenu(
 ) : AnimatedMenuPopup(stage, getActorTopRight(positionNextTo)) {
     private val settings = GUI.getSettings()
 
-    init {
-        closeListeners.add {
-        }
-    }
-
-    override fun createContentTable(): Table? {
+    override fun createContentTable(): Table {
         val table = super.createContentTable()!!
         if (!worldScreen.gameInfo.gameParameters.isOnlineMultiplayer)
             table.add(getButton("Start AutoPlay", KeyboardBinding.RaisePriority, ::autoPlay)).row()
@@ -39,9 +31,9 @@ class AutoPlayMenu(
         table.add(getButton("AutoPlay Civilians Once", KeyboardBinding.RaisePriority, ::autoPlayCivilian)).row()
         table.add(getButton("AutoPlay Economy Once", KeyboardBinding.RaisePriority, ::autoPlayEconomy)).row()
 
-        return table.takeUnless { it.cells.isEmpty }
+        return table
     }
-    
+
     private fun autoPlayEndTurn() {
         TurnManager(worldScreen.viewingCiv).automateTurn()
         worldScreen.nextTurn()
@@ -51,7 +43,7 @@ class AutoPlayMenu(
         settings.autoPlay.startAutoPlay()
         nextTurnButton.update()
     }
-    
+
     private fun autoPlayMilitary() {
         val civInfo = worldScreen.viewingCiv
         val isAtWar = civInfo.isAtWar()
@@ -71,7 +63,7 @@ class AutoPlayMenu(
         worldScreen.shouldUpdate = true
         worldScreen.render(0f)
     }
-    
+
     private fun autoPlayEconomy() {
         val civInfo = worldScreen.viewingCiv
         NextTurnAutomation.automateCities(civInfo)
