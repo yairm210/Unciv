@@ -186,7 +186,7 @@ class CityExpansionManager : IsPartOfGameInfoSerialization {
         for (unit in tile.getUnits().toList()) // toListed because we're modifying
             if (!unit.civ.diplomacyFunctions.canPassThroughTiles(city.civ))
                 unit.movement.teleportToClosestMoveableTile()
-            else if (unit.isSleeping()) {
+            else if (unit.civ == city.civ && unit.isSleeping()) {
                 // If the unit is sleeping and is a worker, it might want to build on this tile
                 // So lets try to wake it up for the player to notice it
                 if (unit.cache.hasUniqueToBuildImprovements || unit.cache.hasUniqueToCreateWaterImprovements) {
@@ -194,7 +194,6 @@ class CityExpansionManager : IsPartOfGameInfoSerialization {
                     unit.action = null;
                 }
             }
-
 
         tile.history.recordTakeOwnership(tile)
     }
