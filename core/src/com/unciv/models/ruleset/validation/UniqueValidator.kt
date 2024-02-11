@@ -1,5 +1,6 @@
 package com.unciv.models.ruleset.validation
 
+import com.unciv.Constants
 import com.unciv.logic.map.mapunit.MapUnitCache
 import com.unciv.models.ruleset.IRulesetObject
 import com.unciv.models.ruleset.Ruleset
@@ -86,7 +87,7 @@ class UniqueValidator(val ruleset: Ruleset) {
         }
 
         if (unique.type in MapUnitCache.UnitMovementUniques
-                && unique.conditionals.any { it.type != UniqueType.ConditionalOurUnit || it.params[0] != "All" }
+                && unique.conditionals.any { it.type != UniqueType.ConditionalOurUnit || it.params[0] !in Constants.all }
             )
             // (Stay silent if the only conditional is `<for [All] units>` - as in G&K Denmark)
             // Not necessarily even a problem, but yes something mod maker should be aware of

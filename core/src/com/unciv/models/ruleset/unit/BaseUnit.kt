@@ -1,5 +1,6 @@
 package com.unciv.models.ruleset.unit
 
+import com.unciv.Constants
 import com.unciv.logic.MultiFilter
 import com.unciv.logic.city.City
 import com.unciv.logic.city.CityConstructions
@@ -104,6 +105,15 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         unit.setTransients(civInfo.gameInfo.ruleset)
 
         return unit
+    }
+
+    /** Allows unique functions (getMatchingUniques, hasUnique) to "see" uniques from the UnitType */
+    override fun getMatchingUniques(uniqueType: UniqueType, stateForConditionals: StateForConditionals?): Sequence<Unique> {
+        val ourUniques = super<RulesetObject>.getMatchingUniques(uniqueType, stateForConditionals)
+        if (! ::ruleset.isInitialized) { // Not sure if this will ever actually happen, but better safe than sorry
+            return ourUniques
+        }
+        return ourUniques + type.getMatchingUniques(uniqueType, stateForConditionals)
     }
 
     override fun getProductionCost(civInfo: Civilization): Int  = costFunctions.getProductionCost(civInfo)
@@ -250,8 +260,8 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
     // This returns the name of the unit this tech upgrades this unit to,
     // or null if there is no automatic upgrade at that tech.
     fun automaticallyUpgradedInProductionToUnitByTech(techName: String): String? {
-        for (obsoleteTech: String in  techsAtWhichAutoUpgradeInProduction())
-            if (obsoleteTech != null && obsoleteTech == techName)
+        for (obsoleteTech: String in techsAtWhichAutoUpgradeInProduction())
+            if (obsoleteTech == techName)
                 return upgradesTo
         return null
     }
@@ -306,7 +316,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
             unitType -> true
             name -> true
             replaces -> true
-            "All" -> true
+            in Constants.all -> true
 
             "Melee" -> isMelee()
             "Ranged" -> isRanged()

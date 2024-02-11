@@ -1,5 +1,6 @@
 package com.unciv.models.ruleset
 
+import com.unciv.Constants
 import com.unciv.logic.MultiFilter
 import com.unciv.logic.city.City
 import com.unciv.logic.city.CityConstructions
@@ -105,6 +106,9 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
 
     override fun getProductionCost(civInfo: Civilization): Int {
         var productionCost = cost.toFloat()
+
+        for (unique in getMatchingUniques(UniqueType.CostIncreasesWhenBuilt, StateForConditionals(civInfo)))
+            productionCost += civInfo.civConstructions.builtItemsWithIncreasingCost[name] * unique.params[0].toInt()
 
         for (unique in getMatchingUniques(UniqueType.CostIncreasesPerCity, StateForConditionals(civInfo)))
             productionCost += civInfo.cities.size * unique.params[0].toInt()
@@ -293,8 +297,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
                 }
 
                 UniqueType.Unavailable ->
-                    if (!unique.conditionalsApply(civ, cityConstructions.city))
-                        yield(RejectionReasonType.ShouldNotBeDisplayed.toInstance())
+                    yield(RejectionReasonType.ShouldNotBeDisplayed.toInstance())
 
                 UniqueType.RequiresPopulation ->
                     if (unique.params[0].toInt() > cityConstructions.city.population.population)
@@ -482,9 +485,9 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
         return MultiFilter.multiFilter(filter, ::matchesSingleFilter)
     }
 
-    fun matchesSingleFilter(filter: String): Boolean {
+    private fun matchesSingleFilter(filter: String): Boolean {
         return when (filter) {
-            "All" -> true
+            in Constants.all -> true
             name -> true
             "Building", "Buildings" -> !isAnyWonder()
             "Wonder", "Wonders" -> isAnyWonder()

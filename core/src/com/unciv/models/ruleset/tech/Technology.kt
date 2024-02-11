@@ -1,5 +1,6 @@
 package com.unciv.models.ruleset.tech
 
+import com.unciv.Constants
 import com.unciv.logic.civilization.Civilization
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetObject
@@ -34,7 +35,7 @@ class Technology: RulesetObject() {
 
     fun matchesFilter(filter: String): Boolean {
         return when (filter) {
-            "All" -> true
+            in Constants.all -> true
             name -> true
             era() -> true
             else -> uniques.contains(filter)

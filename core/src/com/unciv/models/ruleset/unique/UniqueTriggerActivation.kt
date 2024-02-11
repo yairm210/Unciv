@@ -598,7 +598,7 @@ object UniqueTriggerActivation {
                 val filter = unique.params[1]
                 val radius = unique.params[2].toInt()
 
-                val isAll = amount == "All"
+                val isAll = amount in Constants.all
                 val positions = ArrayList<Vector2>()
 
                 var explorableTiles = tile.getTilesInDistance(radius)

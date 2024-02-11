@@ -3,8 +3,7 @@ package com.unciv
 object Constants {
     const val settler = "Settler"
     const val eraSpecificUnit = "Era Starting Unit"
-    const val spreadReligion = "Spread Religion"
-    const val removeHeresy = "Remove Foreign religions from your own cities"
+    val all = setOf("All", "all")
 
     const val english = "English"
 
