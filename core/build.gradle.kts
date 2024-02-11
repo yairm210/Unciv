@@ -14,10 +14,10 @@ kotlin {
 
     target {
         compilations.all {
-            kotlinOptions.jvmTarget = JavaVersion.VERSION_11.majorVersion
+            kotlinOptions.jvmTarget = JavaVersion.VERSION_1_8.toString()
         }
     }
 }
 java {
-    targetCompatibility = JavaVersion.VERSION_11
+    targetCompatibility = JavaVersion.VERSION_1_8
 }
