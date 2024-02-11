@@ -80,19 +80,6 @@ enum class UniqueParameterType(
             if (parameterText in Constants.all) null else UniqueType.UniqueParameterErrorSeverity.RulesetInvariant
     },
 
-    /** Implemented by [ICombatant.matchesCategory][com.unciv.logic.battle.ICombatant.matchesFilter] */
-    CombatantFilter("combatantFilter", "City", "This indicates a combatant, which can either be a unit or a city (when bombarding). Must either be `City` or a `mapUnitFilter`") {
-        override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
-            UniqueType.UniqueParameterErrorSeverity? = getErrorSeverityForFilter(parameterText, ruleset)
-
-        override fun isKnownValue(parameterText: String, ruleset: Ruleset): Boolean {
-            if (parameterText == "City") return true
-            if (MapUnitFilter.isKnownValue(parameterText, ruleset)) return true
-            if (CityFilter.isKnownValue(parameterText, ruleset)) return true
-            return false
-        }
-    },
-
     /** Implemented by [MapUnit.matchesFilter][com.unciv.logic.map.mapunit.MapUnit.matchesFilter] */
     MapUnitFilter("mapUnitFilter", Constants.wounded, null, "Map Unit Filters") {
         private val knownValues = setOf(Constants.wounded, Constants.barbarians, "Barbarian",

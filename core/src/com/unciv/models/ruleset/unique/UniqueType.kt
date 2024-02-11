@@ -351,7 +351,7 @@ enum class UniqueType(
     FlankAttackBonus("[relativeAmount]% to Flank Attack bonuses", UniqueTarget.Unit, UniqueTarget.Global),
     @Deprecated("as of 4.10.3", ReplaceWith("[+30]% Strength <vs [City-States]>"))
     StrengthBonusVsCityStates("+30% Strength when fighting City-State units and cities", UniqueTarget.Global),
-    StrengthForAdjacentEnemies("[relativeAmount]% Strength for enemy [combatantFilter] units in adjacent [tileFilter] tiles", UniqueTarget.Unit),
+    StrengthForAdjacentEnemies("[relativeAmount]% Strength for enemy [mapUnitFilter] units in adjacent [tileFilter] tiles", UniqueTarget.Unit),
     StrengthWhenStacked("[relativeAmount]% Strength when stacked with [mapUnitFilter]", UniqueTarget.Unit),  // candidate for conditional!
     StrengthBonusInRadius("[relativeAmount]% Strength bonus for [mapUnitFilter] units within [amount] tiles", UniqueTarget.Unit),
 
@@ -367,7 +367,7 @@ enum class UniqueType(
     StatsWhenSpreading("When spreading religion to a city, gain [amount] times the amount of followers of other religions as [stat]", UniqueTarget.Unit, UniqueTarget.Global),
 
     // Attack restrictions
-    CanOnlyAttackUnits("Can only attack [combatantFilter] units", UniqueTarget.Unit),
+    CanOnlyAttackUnits("Can only attack [mapUnitFilter] units", UniqueTarget.Unit),
     CanOnlyAttackTiles("Can only attack [tileFilter] tiles", UniqueTarget.Unit),
     CannotAttack("Cannot attack", UniqueTarget.Unit),
     MustSetUp("Must set up to ranged attack", UniqueTarget.Unit),
@@ -429,7 +429,7 @@ enum class UniqueType(
     UnitUpgradeCost("[relativeAmount]% Gold cost of upgrading", UniqueTarget.Unit, UniqueTarget.Global),
 
     // Gains from battle
-    DamageUnitsPlunder("Earn [amount]% of the damage done to [combatantFilter] units as [civWideStat]", UniqueTarget.Unit, UniqueTarget.Global),
+    DamageUnitsPlunder("Earn [amount]% of the damage done to [mapUnitFilter] units as [civWideStat]", UniqueTarget.Unit, UniqueTarget.Global),
     CaptureCityPlunder("Upon capturing a city, receive [amount] times its [stat] production as [civWideStat] immediately", UniqueTarget.Unit, UniqueTarget.Global),
     KillUnitPlunder("Earn [amount]% of killed [mapUnitFilter] unit's [costOrStrength] as [civWideStat]", UniqueTarget.Unit, UniqueTarget.Global),
     KillUnitPlunderNearCity("Earn [amount]% of [mapUnitFilter] unit's [costOrStrength] as [civWideStat] when killed within 4 tiles of a city following this religion", UniqueTarget.FollowerBelief),
@@ -672,9 +672,13 @@ enum class UniqueType(
     ConditionalOurUnitOnUnit("when [mapUnitFilter]", UniqueTarget.Conditional), // Same but for the unit itself
     ConditionalUnitWithPromotion("for units with [promotion]", UniqueTarget.Conditional),
     ConditionalUnitWithoutPromotion("for units without [promotion]", UniqueTarget.Conditional),
-    ConditionalVsCity("vs cities", UniqueTarget.Conditional),
+
+    ConditionalVsCity("vs [cityFilter] cities", UniqueTarget.Conditional),
+    @Deprecated("as of 4.10.9", ReplaceWith("vs [all] cities"))
+    ConditionalVsCityOld("vs cities", UniqueTarget.Conditional),
+
     ConditionalVsUnits("vs [mapUnitFilter] units", UniqueTarget.Conditional),
-    ConditionalVsCombatant("vs [combatantFilter]", UniqueTarget.Conditional),
+    ConditionalVsCiv("vs [civFilter]", UniqueTarget.Conditional),
     ConditionalVsLargerCiv("when fighting units from a Civilization with more Cities than you", UniqueTarget.Conditional),
     ConditionalAttacking("when attacking", UniqueTarget.Conditional),
     ConditionalDefending("when defending", UniqueTarget.Conditional),

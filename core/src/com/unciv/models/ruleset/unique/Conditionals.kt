@@ -1,6 +1,7 @@
 package com.unciv.models.ruleset.unique
 
 import com.unciv.logic.GameInfo
+import com.unciv.logic.battle.CityCombatant
 import com.unciv.logic.battle.CombatAction
 import com.unciv.logic.battle.MapUnitCombatant
 import com.unciv.logic.city.City
@@ -188,8 +189,9 @@ object Conditionals {
             UniqueType.ConditionalWhenGarrisoned ->
                 checkOnCity { getCenterTile().militaryUnit?.canGarrison() == true }
 
-            UniqueType.ConditionalVsCity -> state.theirCombatant?.matchesFilter("City") == true
-            UniqueType.ConditionalVsUnits,  UniqueType.ConditionalVsCombatant -> state.theirCombatant?.matchesFilter(condition.params[0]) == true
+            UniqueType.ConditionalVsCity -> state.theirCombatant?.let {
+                it is CityCombatant && it.city.matchesFilter(condition.params[0]) } == true
+            UniqueType.ConditionalVsUnits,  UniqueType.ConditionalVsCiv -> state.theirCombatant?.matchesFilter(condition.params[0]) == true
             UniqueType.ConditionalOurUnit, UniqueType.ConditionalOurUnitOnUnit ->
                 relevantUnit?.matchesFilter(condition.params[0]) == true
             UniqueType.ConditionalUnitWithPromotion -> relevantUnit?.promotions?.promotions?.contains(condition.params[0]) == true
