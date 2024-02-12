@@ -83,25 +83,24 @@ object BuildingDescriptions {
         if (showAdditionalInfo) additionalDecription(building, city, translatedLines)
         return translatedLines.joinToString("\n").trim()
     }
-    
+
     fun additionalDecription (building: Building, city: City, lines: ArrayList<String>) {
         // Inefficient in theory. In practice, buildings seem to have only a small handful of uniques.
         for (unique in building.uniqueObjects) {
-            // TODO: Unify with rejection reasons?
             if (unique.type == UniqueType.RequiresBuildingInAllCities) {
                 missingCityText(unique.params[0], city, "non-[Puppeted]", lines)
             }
 
             else if (unique.type == UniqueType.OnlyAvailable)
                 for (conditional in unique.conditionals) {
-                    // TODO: Unify with rejection reasons?
                     if (conditional.type == UniqueType.ConditionalBuildingBuiltAll) {
                         missingCityText(conditional.params[0], city, conditional.params[1], lines)
                     }
                 }
         }
     }
-    
+
+    // TODO: Unify with rejection reasons?
     fun missingCityText (building: String, city: City, filter: String, lines: ArrayList<String>) {
         val missingCities = city.civ.cities.filterNot {
             !it.matchesFilter(filter) || it.cityConstructions.containsBuildingOrEquivalent(building)
