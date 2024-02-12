@@ -89,33 +89,28 @@ object BuildingDescriptions {
         for (unique in building.uniqueObjects) {
             // TODO: Unify with rejection reasons?
             if (unique.type == UniqueType.RequiresBuildingInAllCities) {
-                val missingCities = city.civ.cities.filterNot {
-                    it.isPuppet
-                        || it.cityConstructions.containsBuildingOrEquivalent(unique.params[0])
-                }
-                // Could be red. But IMO that should be done by enabling GDX's ColorMarkupLanguage globally instead of adding a separate label.
-                if (missingCities.isNotEmpty()) lines += "\n" +
-                    "[${city.civ.getEquivalentBuilding(unique.params[0])}] required:".tr() +
-                    " " + missingCities.joinToString(", ") { it.name.tr(hideIcons = true) }
-                // Can't nest square bracket placeholders inside curlies, and don't see any way to define wildcard placeholders. So run translation explicitly on base text.
+                missingCityText(unique.params[0], city, "non-[Puppeted]", lines)
             }
 
             else if (unique.type == UniqueType.OnlyAvailable)
                 for (conditional in unique.conditionals) {
                     // TODO: Unify with rejection reasons?
                     if (conditional.type == UniqueType.ConditionalBuildingBuiltAll) {
-                        val missingCities = city.civ.cities.filterNot {
-                            it.cityConstructions.containsBuildingOrEquivalent(conditional.params[0])
-                                || !it.matchesFilter(conditional.params[1])
-                        }
-                        // Could be red. But IMO that should be done by enabling GDX's ColorMarkupLanguage globally instead of adding a separate label.
-                        if (missingCities.isNotEmpty()) lines += "\n" +
-                            "[${city.civ.getEquivalentBuilding(unique.params[0])}] required:".tr() +
-                            " " + missingCities.joinToString(", ") { it.name.tr(hideIcons = true) }
-                        // Can't nest square bracket placeholders inside curlies, and don't see any way to define wildcard placeholders. So run translation explicitly on base text.
+                        missingCityText(conditional.params[0], city, conditional.params[1], lines)
                     }
                 }
         }
+    }
+    
+    fun missingCityText (building: String, city: City, filter: String, lines: ArrayList<String>) {
+        val missingCities = city.civ.cities.filterNot {
+            !it.matchesFilter(filter) || it.cityConstructions.containsBuildingOrEquivalent(building)
+        }
+        // Could be red. But IMO that should be done by enabling GDX's ColorMarkupLanguage globally instead of adding a separate label.
+        if (missingCities.isNotEmpty()) lines += "\n" +
+            "[${city.civ.getEquivalentBuilding(building)}] required:".tr() +
+            " " + missingCities.joinToString(", ") { it.name.tr(hideIcons = true) }
+        // Can't nest square bracket placeholders inside curlies, and don't see any way to define wildcard placeholders. So run translation explicitly on base text.
     }
 
     /**
