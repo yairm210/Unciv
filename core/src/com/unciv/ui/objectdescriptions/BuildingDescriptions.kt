@@ -102,8 +102,8 @@ object BuildingDescriptions {
 
     // TODO: Unify with rejection reasons?
     fun missingCityText (building: String, city: City, filter: String, lines: ArrayList<String>) {
-        val missingCities = city.civ.cities.filterNot {
-            !it.matchesFilter(filter) || it.cityConstructions.containsBuildingOrEquivalent(building)
+        val missingCities = city.civ.cities.filter {
+            it.matchesFilter(filter) && !it.cityConstructions.containsBuildingOrEquivalent(building)
         }
         // Could be red. But IMO that should be done by enabling GDX's ColorMarkupLanguage globally instead of adding a separate label.
         if (missingCities.isNotEmpty()) lines += "\n" +
