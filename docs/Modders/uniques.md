@@ -2170,9 +2170,6 @@ Due to performance considerations, this unique is cached, thus conditionals may 
 
 	Applicable to: Conditional
 
-??? example  "&lt;hidden from users&gt;"
-	Applicable to: Conditional
-
 ## TriggerCondition uniques
 !!! note ""
 
@@ -2306,8 +2303,15 @@ Due to performance considerations, this unique is cached, thus conditionals may 
 ??? example  "&lt;after which this unit is consumed&gt;"
 	Applicable to: UnitActionModifier
 
+## MetaModifier uniques
+!!! note ""
 
-*[action]: An action that a unit can perform. Currently, there are only two actions part of this: 'Spread Religion' and 'Remove Foreign religions from your own cities'
+    Modifiers that can be added to other uniques changing user experience, not their behavior
+
+??? example  "&lt;hidden from users&gt;"
+	Applicable to: MetaModifier
+
+
 *[amount]: This indicates a whole number, possibly with a + or - sign, such as `2`, `+13`, or `-3`.
 *[baseTerrain]: The name of any terrain that is a base terrain according to the json file.
 *[belief]: The name of any belief.
