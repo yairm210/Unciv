@@ -91,4 +91,21 @@ class RulesetErrorList(
                         // out of place. Prevent via kludge:
                         it.text.replace('<','〈').replace('>','〉')
                 }
+
+    companion object {
+        private val empty = RulesetErrorList()
+
+        fun of(ruleset: Ruleset? = null, sourceObject: IHasUniques? = null, vararg errors: RulesetError): RulesetErrorList {
+            if (errors.isEmpty()) return empty
+            val result = RulesetErrorList(ruleset)
+            for (error in errors)
+                result.add(sourceObject, error)
+            return result
+        }
+        fun of(ruleset: Ruleset? = null, sourceObject: IHasUniques? = null, text: String, severity: RulesetErrorSeverity = RulesetErrorSeverity.Error): RulesetErrorList {
+            val result = RulesetErrorList(ruleset)
+            result.add(sourceObject, text, severity)
+            return result
+        }
+    }
 }

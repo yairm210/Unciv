@@ -8,7 +8,6 @@ import com.badlogic.gdx.utils.Align
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.ruleset.unique.Unique
-import com.unciv.models.ruleset.validation.RulesetError
 import com.unciv.models.ruleset.validation.RulesetErrorSeverity
 import com.unciv.models.ruleset.validation.UniqueValidator
 import com.unciv.models.translations.tr
@@ -101,8 +100,8 @@ class ModCheckTab(
                     else RulesetCache.checkCombinedModLinks(linkedSetOf(mod.name), base, tryFixUnknownUniques = true)
                 modLinks.sortByDescending { it.errorSeverityToReport }
                 val noProblem = !modLinks.isNotOK()
-                if (modLinks.isNotEmpty()) modLinks += RulesetError("", RulesetErrorSeverity.OK)
-                if (noProblem) modLinks += RulesetError("No problems found.".tr(), RulesetErrorSeverity.OK)
+                if (modLinks.isNotEmpty()) modLinks.add(null, "", RulesetErrorSeverity.OK)
+                if (noProblem) modLinks.add(null, "No problems found.".tr(), RulesetErrorSeverity.OK)
 
                 launchOnGLThread {
                     // When the options popup is already closed before this postRunnable is run,

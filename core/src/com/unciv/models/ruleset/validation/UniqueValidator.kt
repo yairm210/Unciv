@@ -60,9 +60,9 @@ class UniqueValidator(val ruleset: Ruleset) {
         tryFixUnknownUniques: Boolean,
         uniqueContainer: IHasUniques?,
         reportRulesetSpecificErrors: Boolean
-    ): List<RulesetError> {
+    ): RulesetErrorList {
         val prefix by lazy { getUniqueContainerPrefix(uniqueContainer) + "\"${unique.text}\"" }
-        if (unique.type == null) return checkUntypedUnique(unique, tryFixUnknownUniques, prefix)
+        if (unique.type == null) return checkUntypedUnique(unique, tryFixUnknownUniques, uniqueContainer, prefix)
 
         val rulesetErrors = RulesetErrorList(ruleset)
 
@@ -222,24 +222,25 @@ class UniqueValidator(val ruleset: Ruleset) {
         return severity
     }
 
-    private fun checkUntypedUnique(unique: Unique, tryFixUnknownUniques: Boolean, prefix: String ): List<RulesetError> {
+    private fun checkUntypedUnique(unique: Unique, tryFixUnknownUniques: Boolean, uniqueContainer: IHasUniques?, prefix: String): RulesetErrorList {
         // Malformed conditional is always bad
         if (unique.text.count { it == '<' } != unique.text.count { it == '>' })
-            return listOf(RulesetError(
+            return RulesetErrorList.of(ruleset, uniqueContainer,
                 "$prefix contains mismatched conditional braces!",
-                RulesetErrorSeverity.Warning))
+                RulesetErrorSeverity.Warning)
 
         // Support purely filtering Uniques without actual implementation
-        if (isFilteringUniqueAllowed(unique)) return emptyList()
+        if (isFilteringUniqueAllowed(unique)) return RulesetErrorList.of()
         if (tryFixUnknownUniques) {
-            val fixes = tryFixUnknownUnique(unique, prefix)
+            val fixes = tryFixUnknownUnique(unique, uniqueContainer, prefix)
             if (fixes.isNotEmpty()) return fixes
         }
 
-        return listOf(RulesetError(
+        return RulesetErrorList.of(
+            ruleset, uniqueContainer,
             "$prefix not found in Unciv's unique types, and is not used as a filtering unique.",
             if (unique.params.isEmpty()) RulesetErrorSeverity.OK else RulesetErrorSeverity.Warning
-        ))
+        )
     }
 
     private fun isFilteringUniqueAllowed(unique: Unique): Boolean {
@@ -249,7 +250,7 @@ class UniqueValidator(val ruleset: Ruleset) {
         return unique.text in allUniqueParameters // referenced at least once from elsewhere
     }
 
-    private fun tryFixUnknownUnique(unique: Unique, prefix: String): List<RulesetError> {
+    private fun tryFixUnknownUnique(unique: Unique, uniqueContainer: IHasUniques?, prefix: String): RulesetErrorList {
         val similarUniques = UniqueType.values().filter {
             getRelativeTextDistance(
                 it.placeholderText,
@@ -260,9 +261,9 @@ class UniqueValidator(val ruleset: Ruleset) {
             similarUniques.filter { it.placeholderText == unique.placeholderText }
         return when {
             // This should only ever happen if a bug is or has been introduced that prevents Unique.type from being set for a valid UniqueType, I think.\
-            equalUniques.isNotEmpty() -> listOf(RulesetError(
+            equalUniques.isNotEmpty() -> RulesetErrorList.of(ruleset, uniqueContainer,
                 "$prefix looks like it should be fine, but for some reason isn't recognized.",
-                RulesetErrorSeverity.OK))
+                RulesetErrorSeverity.OK)
 
             similarUniques.isNotEmpty() -> {
                 val text =
@@ -275,9 +276,9 @@ class UniqueValidator(val ruleset: Ruleset) {
                             if (uniqueType.getDeprecationAnnotation() != null) text += " (Deprecated)"
                             return@joinToString text
                         }.prependIndent("\t")
-                listOf(RulesetError(text, RulesetErrorSeverity.OK))
+                RulesetErrorList.of(ruleset, uniqueContainer, text, RulesetErrorSeverity.OK)
             }
-            else -> emptyList()
+            else -> RulesetErrorList.of()
         }
     }
 
