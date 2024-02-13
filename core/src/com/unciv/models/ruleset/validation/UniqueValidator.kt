@@ -61,21 +61,20 @@ class UniqueValidator(val ruleset: Ruleset) {
         uniqueContainer: IHasUniques?,
         reportRulesetSpecificErrors: Boolean
     ): List<RulesetError> {
-        val prefix by lazy { (if (uniqueContainer is IRulesetObject) "${uniqueContainer.originRuleset}: " else "") +
-            (if (uniqueContainer == null) "The" else "(${uniqueContainer.getUniqueTarget().name}) ${uniqueContainer.name}'s") }
+        val prefix by lazy { getUniqueContainerPrefix(uniqueContainer) + "\"${unique.text}\"" }
         if (unique.type == null) return checkUntypedUnique(unique, tryFixUnknownUniques, prefix)
 
         val rulesetErrors = RulesetErrorList(ruleset)
 
         if (uniqueContainer != null && !unique.type.canAcceptUniqueTarget(uniqueContainer.getUniqueTarget()))
-            rulesetErrors.add(uniqueContainer, RulesetError("$prefix unique \"${unique.text}\" is not allowed on its target type", RulesetErrorSeverity.Warning))
+            rulesetErrors.add(uniqueContainer, RulesetError("$prefix is not allowed on its target type", RulesetErrorSeverity.Warning))
 
         val typeComplianceErrors = getComplianceErrors(unique)
         for (complianceError in typeComplianceErrors) {
             if (!reportRulesetSpecificErrors && complianceError.errorSeverity == UniqueType.UniqueParameterErrorSeverity.RulesetSpecific)
                 continue
 
-            rulesetErrors.add(uniqueContainer, RulesetError("$prefix unique \"${unique.text}\" contains parameter ${complianceError.parameterName}," +
+            rulesetErrors.add(uniqueContainer, RulesetError("$prefix contains parameter ${complianceError.parameterName}," +
                 " which does not fit parameter type" +
                 " ${complianceError.acceptableParameterTypes.joinToString(" or ") { it.parameterName }} !",
                 complianceError.errorSeverity.getRulesetErrorSeverity()
@@ -92,7 +91,7 @@ class UniqueValidator(val ruleset: Ruleset) {
             // (Stay silent if the only conditional is `<for [All] units>` - as in G&K Denmark)
             // Not necessarily even a problem, but yes something mod maker should be aware of
             rulesetErrors.add(uniqueContainer,
-                "$prefix unique \"${unique.text}\" contains a conditional on a unit movement unique. " +
+                "$prefix contains a conditional on a unit movement unique. " +
                 "Due to performance considerations, this unique is cached on the unit," +
                 " and the conditional may not always limit the unique correctly.", RulesetErrorSeverity.OK)
 
@@ -115,7 +114,7 @@ class UniqueValidator(val ruleset: Ruleset) {
         if (unique.hasFlag(UniqueFlag.NoConditionals)) {
             rulesetErrors.add(
                 uniqueContainer,
-                "$prefix unique \"${unique.text}\" contains the conditional \"${conditional.text}\"," +
+                "$prefix contains the conditional \"${conditional.text}\"," +
                     " but the unique does not accept conditionals!",
                 RulesetErrorSeverity.Error
             )
@@ -125,7 +124,7 @@ class UniqueValidator(val ruleset: Ruleset) {
         if (conditional.type == null) {
             rulesetErrors.add(
                 uniqueContainer,
-                "$prefix unique \"${unique.text}\" contains the conditional \"${conditional.text}\"," +
+                "$prefix contains the conditional \"${conditional.text}\"," +
                     " which is of an unknown type!",
                 RulesetErrorSeverity.Warning
             )
@@ -135,7 +134,7 @@ class UniqueValidator(val ruleset: Ruleset) {
         if (conditional.type.targetTypes.none { it.modifierType != UniqueTarget.ModifierType.None })
             rulesetErrors.add(
                 uniqueContainer,
-                "$prefix unique \"${unique.text}\" contains the conditional \"${conditional.text}\"," +
+                "$prefix contains the conditional \"${conditional.text}\"," +
                     " which is a Unique type not allowed as conditional or trigger.",
                 RulesetErrorSeverity.Warning
             )
@@ -145,7 +144,7 @@ class UniqueValidator(val ruleset: Ruleset) {
         )
             rulesetErrors.add(
                 uniqueContainer,
-                "$prefix unique \"${unique.text}\" contains the conditional \"${conditional.text}\"," +
+                "$prefix contains the conditional \"${conditional.text}\"," +
                     " which as a UnitActionModifier is only allowed on UnitAction uniques.",
                 RulesetErrorSeverity.Warning
             )
@@ -160,7 +159,7 @@ class UniqueValidator(val ruleset: Ruleset) {
             rulesetErrors.add(
                 uniqueContainer,
                 RulesetError(
-                "$prefix unique \"${unique.text}\" contains the conditional \"${conditional.text}\"." +
+                "$prefix contains the conditional \"${conditional.text}\"." +
                     " This contains the parameter ${complianceError.parameterName} which does not fit parameter type" +
                     " ${complianceError.acceptableParameterTypes.joinToString(" or ") { it.parameterName }} !",
                     complianceError.errorSeverity.getRulesetErrorSeverity()
@@ -179,7 +178,7 @@ class UniqueValidator(val ruleset: Ruleset) {
         if (deprecationAnnotation != null) {
             val replacementUniqueText = unique.getReplacementText(ruleset)
             val deprecationText =
-                "$prefix unique \"${unique.text}\" is deprecated ${deprecationAnnotation.message}," +
+                "$prefix is deprecated ${deprecationAnnotation.message}," +
                         if (deprecationAnnotation.replaceWith.expression != "") " replace with \"${replacementUniqueText}\"" else ""
             val severity = if (deprecationAnnotation.level == DeprecationLevel.WARNING)
                 RulesetErrorSeverity.WarningOptionsOnly // Not user-visible
@@ -227,7 +226,7 @@ class UniqueValidator(val ruleset: Ruleset) {
         // Malformed conditional is always bad
         if (unique.text.count { it == '<' } != unique.text.count { it == '>' })
             return listOf(RulesetError(
-                "$prefix unique \"${unique.text}\" contains mismatched conditional braces!",
+                "$prefix contains mismatched conditional braces!",
                 RulesetErrorSeverity.Warning))
 
         // Support purely filtering Uniques without actual implementation
@@ -238,7 +237,7 @@ class UniqueValidator(val ruleset: Ruleset) {
         }
 
         return listOf(RulesetError(
-            "$prefix unique \"${unique.text}\" not found in Unciv's unique types, and is not used as a filtering unique.",
+            "$prefix not found in Unciv's unique types, and is not used as a filtering unique.",
             if (unique.params.isEmpty()) RulesetErrorSeverity.OK else RulesetErrorSeverity.Warning
         ))
     }
@@ -262,12 +261,12 @@ class UniqueValidator(val ruleset: Ruleset) {
         return when {
             // This should only ever happen if a bug is or has been introduced that prevents Unique.type from being set for a valid UniqueType, I think.\
             equalUniques.isNotEmpty() -> listOf(RulesetError(
-                "$prefix unique \"${unique.text}\" looks like it should be fine, but for some reason isn't recognized.",
+                "$prefix looks like it should be fine, but for some reason isn't recognized.",
                 RulesetErrorSeverity.OK))
 
             similarUniques.isNotEmpty() -> {
                 val text =
-                    "$prefix unique \"${unique.text}\" looks like it may be a misspelling of:\n" +
+                    "$prefix looks like it may be a misspelling of:\n" +
                         similarUniques.joinToString("\n") { uniqueType ->
                             var text = "\"${uniqueType.text}"
                             if (unique.conditionals.isNotEmpty())
@@ -280,5 +279,12 @@ class UniqueValidator(val ruleset: Ruleset) {
             }
             else -> emptyList()
         }
+    }
+
+    companion object {
+        internal fun getUniqueContainerPrefix(uniqueContainer: IHasUniques?) =
+            (if (uniqueContainer is IRulesetObject) "${uniqueContainer.originRuleset}: " else "") +
+                (if (uniqueContainer == null) "The" else "(${uniqueContainer.getUniqueTarget().name}) ${uniqueContainer.name}'s") +
+                " unique "
     }
 }
