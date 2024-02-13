@@ -290,7 +290,7 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
             .filterBuildable()
             .minByOrNull { it.cost } ?: return
         if ((isAtWar || 
-                !civInfo.wantsToFocusOn(Victory.Focus.Culture) || !city.civ.getPersonality().basePersonality)) {
+                !civInfo.wantsToFocusOn(Victory.Focus.Culture) || !city.civ.getPersonality().isNeutralPersonality)) {
             var modifier = if (cityIsOverAverageProduction) 0.5f else 0.1f // You shouldn't be cranking out units anytime soon
             if (isAtWar) modifier *= 2
             if (civInfo.wantsToFocusOn(Victory.Focus.Military))

@@ -5,7 +5,7 @@ import com.unciv.models.ruleset.RulesetObject
 import com.unciv.models.ruleset.unique.UniqueTarget
 import kotlin.reflect.KMutableProperty0
 
-enum class PersonalityValue{
+enum class PersonalityValue {
     Production,
     Food,
     Gold,
@@ -17,7 +17,7 @@ enum class PersonalityValue{
     WarMongering,
 }
 
-class Personality : RulesetObject() {
+class Personality: RulesetObject() {
     var production: Float = 5f
     var food: Float = 5f
     var gold: Float = 5f
@@ -29,7 +29,7 @@ class Personality : RulesetObject() {
     var warMongering: Float = 5f // Todo: Look into where this should be inserted
     var policy = LinkedHashMap<String, Int>()
     var preferredVictoryType: String = Constants.neutralVictoryType
-    var basePersonality: Boolean = false
+    var isNeutralPersonality: Boolean = false
 
     private fun nameToVariable(value: PersonalityValue):KMutableProperty0<Float> {
         return when(value) {
@@ -46,10 +46,10 @@ class Personality : RulesetObject() {
     }
 
     companion object {
-        fun basePersonality(): Personality {
+        val neutralPersonality: Personality by lazy {
             val base = Personality()
-            base.basePersonality = true
-            return base
+            base.isNeutralPersonality = true
+            base
         }
     }
 

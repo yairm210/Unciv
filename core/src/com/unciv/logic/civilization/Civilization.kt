@@ -381,8 +381,8 @@ class Civilization : IsPartOfGameInfoSerialization {
     }
 
     fun getPersonality(): Personality {
-        return if (isAI() || UncivGame.Current.settings.autoPlay.isAutoPlayingAndFullAI()) gameInfo.ruleset.personalities[nation.personality] ?: Personality.basePersonality()
-        else Personality.basePersonality()
+        return if (isAI() || UncivGame.Current.settings.autoPlay.isAutoPlayingAndFullAI()) gameInfo.ruleset.personalities[nation.personality] ?: Personality.neutralPersonality
+        else Personality.neutralPersonality
     }
 
     @Transient
