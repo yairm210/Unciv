@@ -10,7 +10,6 @@ import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueParameterType
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.fillPlaceholders
-import com.unciv.utils.Log
 
 /**
  *  All public methods dealing with how Mod authors can suppress RulesetValidator output.
@@ -92,8 +91,6 @@ object Suppression {
         if (sourceUnique != null)
             suppressions += sourceUnique.conditionals.filter { it.type == UniqueType.SuppressWarnings }.map { getWildcardFilter(it) }
 
-        if (Log.shouldLog() && suppressions.any())
-            Log.debug("Testing suppression of %s on %s (%s) against %s", error.text, sourceObject, sourceUnique, { suppressions.toList() })
         for (filter in suppressions)
             if (matchesFilter(error, filter)) return true
         return false
