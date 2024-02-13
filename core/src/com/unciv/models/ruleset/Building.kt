@@ -256,45 +256,8 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
                 UniqueType.Unbuildable ->
                     yield(RejectionReasonType.Unbuildable.toInstance())
 
-                UniqueType.OnlyAvailable -> {
-                    var displayable = false
-                    var shouldYield = false
-                    for (conditional in unique.conditionals) {
-                        if (Conditionals.conditionalApplies(unique, conditional, StateForConditionals(civ, cityConstructions.city)))
-                            continue
-                        when (conditional.type) {
-                            UniqueType.ConditionalBuildingBuiltAmount -> {
-                                val building = civ.getEquivalentBuilding(conditional.params[0]).name
-                                val amount = conditional.params[1].toInt()
-                                val cityFilter = conditional.params[2]
-                                val numberOfCities = civ.cities.count {
-                                    it.cityConstructions.containsBuildingOrEquivalent(building) && it.matchesFilter(cityFilter)
-                                }
-                                if (numberOfCities < amount)
-                                {
-                                    displayable = true
-                                    yield(RejectionReasonType.RequiresBuildingInSomeCities.toInstance(
-                                        "Requires a [$building] in at least [$amount] cities" +
-                                            " ($numberOfCities/$numberOfCities)"))
-                                }
-                            }
-                            UniqueType.ConditionalBuildingBuiltAll -> {
-                                val building = civ.getEquivalentBuilding(conditional.params[0]).name
-                                val cityFilter = conditional.params[1]
-                                if(civ.cities.any { it.matchesFilter(cityFilter)
-                                    && !it.cityConstructions.containsBuildingOrEquivalent(building)
-                                }) {
-                                    displayable = true
-                                    yield(RejectionReasonType.RequiresBuildingInAllCities.toInstance(
-                                        "Requires a [${building}] in all cities"))
-                                }
-                            }
-                            else -> { shouldYield = true}
-                        }
-                    }
-                    if (!displayable && shouldYield)
-                        yield(RejectionReasonType.ShouldNotBeDisplayed.toInstance())
-                }
+                UniqueType.OnlyAvailable ->
+                    yieldAll(onlyAvailableRejections(unique, cityConstructions))
 
                 UniqueType.Unavailable ->
                     yield(RejectionReasonType.ShouldNotBeDisplayed.toInstance())
@@ -462,6 +425,43 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
                 }
             if (!containsResourceWithImprovement)
                 yield(RejectionReasonType.RequiresNearbyResource.toInstance("Nearby $requiredNearbyImprovedResources required"))
+        }
+    }
+
+    private fun onlyAvailableRejections(unique: Unique, cityConstructions: CityConstructions): Sequence<RejectionReason> = sequence {
+        val civ = cityConstructions.city.civ
+        for (conditional in unique.conditionals) {
+            if (Conditionals.conditionalApplies(unique, conditional, StateForConditionals(civ, cityConstructions.city)))
+                continue
+            when (conditional.type) {
+                UniqueType.ConditionalBuildingBuiltAmount -> {
+                    val building = civ.getEquivalentBuilding(conditional.params[0]).name
+                    val amount = conditional.params[1].toInt()
+                    val cityFilter = conditional.params[2]
+                    val numberOfCities = civ.cities.count {
+                        it.cityConstructions.containsBuildingOrEquivalent(building) && it.matchesFilter(cityFilter)
+                    }
+                    if (numberOfCities < amount)
+                    {
+                        yield(RejectionReasonType.RequiresBuildingInSomeCities.toInstance(
+                            "Requires a [$building] in at least [$amount] cities" +
+                                " ($numberOfCities/$numberOfCities)"))
+                    }
+                }
+                UniqueType.ConditionalBuildingBuiltAll -> {
+                    val building = civ.getEquivalentBuilding(conditional.params[0]).name
+                    val cityFilter = conditional.params[1]
+                    if(civ.cities.any { it.matchesFilter(cityFilter)
+                            !it.isPuppet && !it.cityConstructions.containsBuildingOrEquivalent(building)
+                        }) {
+                        yield(RejectionReasonType.RequiresBuildingInAllCities.toInstance(
+                            "Requires a [${building}] in all cities"))
+                    }
+                }
+                else -> {
+                    yield(RejectionReasonType.ShouldNotBeDisplayed.toInstance())
+                }
+            }
         }
     }
 
