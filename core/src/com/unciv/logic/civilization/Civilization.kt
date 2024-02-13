@@ -2,6 +2,7 @@ package com.unciv.logic.civilization
 
 import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
+import com.unciv.UncivGame
 import com.unciv.json.HashMapVector2
 import com.unciv.logic.GameInfo
 import com.unciv.logic.IsPartOfGameInfoSerialization
@@ -40,6 +41,7 @@ import com.unciv.models.ruleset.Victory
 import com.unciv.models.ruleset.nation.CityStateType
 import com.unciv.models.ruleset.nation.Difficulty
 import com.unciv.models.ruleset.nation.Nation
+import com.unciv.models.ruleset.nation.Personality
 import com.unciv.models.ruleset.tech.Era
 import com.unciv.models.ruleset.tile.ResourceSupplyList
 import com.unciv.models.ruleset.tile.ResourceType
@@ -352,24 +354,31 @@ class Civilization : IsPartOfGameInfoSerialization {
     fun getCompletedPolicyBranchesCount(): Int = policies.adoptedPolicies.count { Policy.isBranchCompleteByName(it) }
     private fun getCivTerritory() = cities.asSequence().flatMap { it.tiles.asSequence() }
 
-    fun getPreferredVictoryType(): String {
+    fun getPreferredVictoryTypes(): List<String> {
         val victoryTypes = gameInfo.gameParameters.victoryTypes
         if (victoryTypes.size == 1)
-            return victoryTypes.first() // That is the most relevant one
-        val victoryType = nation.preferredVictoryType
-        return if (victoryType in gameInfo.ruleset.victories) victoryType
-               else Constants.neutralVictoryType
+            return listOf(victoryTypes.first()) // That is the most relevant one
+        val victoryType: List<String> = listOf(nation.preferredVictoryType, getPersonality().preferredVictoryType)
+            .filter { it in gameInfo.gameParameters.victoryTypes }
+        return victoryType.ifEmpty { listOf(Constants.neutralVictoryType) }
+
     }
 
     @Suppress("MemberVisibilityCanBePrivate")
-    fun getPreferredVictoryTypeObject(): Victory? {
-        val preferredVictoryType = getPreferredVictoryType()
-        return if (preferredVictoryType == Constants.neutralVictoryType) null
-               else gameInfo.ruleset.victories[getPreferredVictoryType()]!!
+    fun getPreferredVictoryTypeObjects(): List<Victory> {
+        val preferredVictoryTypes = getPreferredVictoryTypes()
+        return if (preferredVictoryTypes.contains(Constants.neutralVictoryType)) emptyList()
+               else preferredVictoryTypes.map { gameInfo.ruleset.victories[it]!! }
     }
 
     fun wantsToFocusOn(focus: Victory.Focus): Boolean {
-        return thingsToFocusOnForVictory.contains(focus)
+        return thingsToFocusOnForVictory.contains(focus) &&
+            (isAI() || UncivGame.Current.settings.autoPlay.isAutoPlayingAndFullAI())
+    }
+
+    fun getPersonality(): Personality {
+        return if (isAI() || UncivGame.Current.settings.autoPlay.isAutoPlayingAndFullAI()) gameInfo.ruleset.personalities[nation.personality] ?: Personality.neutralPersonality
+        else Personality.neutralPersonality
     }
 
     @Transient
