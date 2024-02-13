@@ -86,5 +86,11 @@ enum class UniqueTarget(
             Building, Unit, UnitType, Improvement, Tech, FollowerBelief,
             Terrain, Resource, Policy, Promotion, Nation, Ruins, Speed
         )
+        val CanIncludeSuppression = arrayOf(
+            Triggerable,    // Includes Global and covers most IHasUnique's
+            Terrain, Speed, // IHasUnique targets without inheritsFrom
+            ModOptions,     // For suppressions that target something that doesn't have Uniques
+            MetaModifier    // Allows use as Conditional-like syntax
+        )
     }
 }
