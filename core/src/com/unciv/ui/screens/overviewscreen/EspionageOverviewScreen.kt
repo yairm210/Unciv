@@ -77,10 +77,8 @@ class EspionageOverviewScreen(val civInfo: Civilization, val worldScreen: WorldS
             spySelectionTable.add(spy.getLocationName().toLabel())
             val actionString =
                 when (spy.action) {
-                    SpyAction.None, SpyAction.StealingTech, SpyAction.Surveillance -> spy.action.displayString
-                    SpyAction.Moving, SpyAction.EstablishNetwork -> "[${spy.action.displayString}] ${spy.turnsRemainingForAction}${Fonts.turn}"
-                    SpyAction.RiggingElections -> TODO()
-                    SpyAction.CounterIntelligence -> TODO()
+                    SpyAction.None, SpyAction.StealingTech, SpyAction.Surveillance, SpyAction.CounterIntelligence -> spy.action.displayString
+                    SpyAction.Moving, SpyAction.EstablishNetwork, SpyAction.Dead, SpyAction.RiggingElections -> "[${spy.action.displayString}] ${spy.turnsRemainingForAction}${Fonts.turn}"
                 }
             spySelectionTable.add(actionString.toLabel())
 
@@ -95,14 +93,10 @@ class EspionageOverviewScreen(val civInfo: Civilization, val worldScreen: WorldS
                 selectedSpy = spy
                 selectedSpyButton!!.label.setText(Constants.cancel.tr())
                 for ((button, city) in moveSpyHereButtons) {
-                    // For now, only allow spies to be sent to cities of other major civs and their hideout
                     // Not own cities as counterintelligence isn't implemented
                     // Not city-state civs as rigging elections isn't implemented
                     button.isVisible = city == null // hideout
-                        || (city.civ.isMajorCiv()
-                            && city.civ != civInfo
-                            && !city.espionage.hasSpyOf(civInfo)
-                        )
+                        || (city.civ != civInfo && !city.espionage.hasSpyOf(civInfo))
                 }
             }
             if (!worldScreen.canChangeState) {
