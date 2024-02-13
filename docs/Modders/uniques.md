@@ -869,8 +869,8 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Global, Unit
 
-??? example  "Earn [amount]% of the damage done to [combatantFilter] units as [civWideStat]"
-	Example: "Earn [3]% of the damage done to [City] units as [Gold]"
+??? example  "Earn [amount]% of the damage done to [mapUnitFilter] units as [civWideStat]"
+	Example: "Earn [3]% of the damage done to [Wounded] units as [Gold]"
 
 	Applicable to: Global, Unit
 
@@ -1232,8 +1232,8 @@ Due to performance considerations, this unique is cached, thus conditionals may 
 ??? example  "Automation is a primary action"
 	Applicable to: Unit
 
-??? example  "[relativeAmount]% Strength for enemy [combatantFilter] units in adjacent [tileFilter] tiles"
-	Example: "[+20]% Strength for enemy [City] units in adjacent [Farm] tiles"
+??? example  "[relativeAmount]% Strength for enemy [mapUnitFilter] units in adjacent [tileFilter] tiles"
+	Example: "[+20]% Strength for enemy [Wounded] units in adjacent [Farm] tiles"
 
 	Applicable to: Unit
 
@@ -1247,8 +1247,8 @@ Due to performance considerations, this unique is cached, thus conditionals may 
 
 	Applicable to: Unit
 
-??? example  "Can only attack [combatantFilter] units"
-	Example: "Can only attack [City] units"
+??? example  "Can only attack [mapUnitFilter] units"
+	Example: "Can only attack [Wounded] units"
 
 	Applicable to: Unit
 
@@ -2079,7 +2079,9 @@ Due to performance considerations, this unique is cached, thus conditionals may 
 
 	Applicable to: Conditional
 
-??? example  "&lt;vs cities&gt;"
+??? example  "&lt;vs [cityFilter] cities&gt;"
+	Example: "&lt;vs [in all cities] cities&gt;"
+
 	Applicable to: Conditional
 
 ??? example  "&lt;vs [mapUnitFilter] units&gt;"
@@ -2087,8 +2089,8 @@ Due to performance considerations, this unique is cached, thus conditionals may 
 
 	Applicable to: Conditional
 
-??? example  "&lt;vs [combatantFilter]&gt;"
-	Example: "&lt;vs [City]&gt;"
+??? example  "&lt;vs [civFilter]&gt;"
+	Example: "&lt;vs [City-States]&gt;"
 
 	Applicable to: Conditional
 
@@ -2307,14 +2309,12 @@ Due to performance considerations, this unique is cached, thus conditionals may 
 	Applicable to: UnitActionModifier
 
 
-*[action]: An action that a unit can perform. Currently, there are only two actions part of this: 'Spread Religion' and 'Remove Foreign religions from your own cities'
 *[amount]: This indicates a whole number, possibly with a + or - sign, such as `2`, `+13`, or `-3`.
 *[baseTerrain]: The name of any terrain that is a base terrain according to the json file.
 *[belief]: The name of any belief.
 *[beliefType]: 'Pantheon', 'Follower', 'Founder' or 'Enhancer'
 *[buildingName]: The name of any building.
 *[civWideStat]: All the following stats have civ-wide fields: `Gold`, `Science`, `Culture`, `Faith`.
-*[combatantFilter]: This indicates a combatant, which can either be a unit or a city (when bombarding). Must either be `City` or a `mapUnitFilter`.
 *[costOrStrength]: `Cost` or `Strength`.
 *[era]: The name of any era.
 *[foundingOrEnhancing]: `founding` or `enhancing`.

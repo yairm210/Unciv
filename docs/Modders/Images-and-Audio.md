@@ -12,6 +12,7 @@ If you're developing your mod on an Android version of Unciv (not recommended!) 
 
 ### Ways to pack texture atlases
 
+- Texture atlases *CANNOT BE PACKED* on Android (technical reason: TexturePacker uses `java.awt` to do heavy lifting, which is unavailable on Android 0_0)
 - Launch the desktop version with your mod (your mod's main folder is a subfolder of the game's "mods" folder, or symlinked there).
 - You can ask someone in the Discord server to help you out.
 - You can use external tools, [e.g. gdx-texture-packer-gui](https://github.com/crashinvaders/gdx-texture-packer-gui). Utmost care needs to be taken that the files can be discovered by Unciv and internal relative paths are correct.
