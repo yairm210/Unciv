@@ -17,7 +17,6 @@ import com.unciv.models.translations.squareBraceRegex
 import com.unciv.models.translations.tr
 import com.unciv.testing.GdxTestRunner
 import com.unciv.utils.Log
-import com.unciv.utils.debug
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
@@ -84,7 +83,8 @@ class TranslationTests {
 
     @Test
     fun translationsFromJSONsCanBeGenerated() {
-        // it triggers generation of the translation's strings
+        // Triggers generation of the translation's strings
+        // Will output "Translation writer took...", which is suppressed unless you use the @RedirectOutput(RedirectPolicy.Show) annotation
         val stringsSize = TranslationFileWriter.getGeneratedStringsSize()
 
         Assert.assertTrue("This test will only pass when all .json files are serializable",
@@ -308,7 +308,6 @@ class TranslationTests {
         addTranslation("best friend", "closest ally")
         addTranslation("America", "The old British colonies")
 
-        debug("[Dad] and [my [best friend]]".getPlaceholderText())
         Assert.assertEquals(listOf("Dad","my [best friend]"),
             "[Dad] and [my [best friend]]".getPlaceholderParameters())
         Assert.assertEquals("Father and indeed mine own closest ally", "[Dad] and [my [best friend]]".tr())
