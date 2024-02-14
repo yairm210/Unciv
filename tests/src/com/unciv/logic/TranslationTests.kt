@@ -4,6 +4,7 @@ package com.unciv.logic
 import com.badlogic.gdx.Gdx
 import com.unciv.Constants
 import com.unciv.UncivGame
+import com.unciv.models.metadata.BaseRuleset
 import com.unciv.models.metadata.GameSettings
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
@@ -16,14 +17,15 @@ import com.unciv.models.translations.getPlaceholderText
 import com.unciv.models.translations.squareBraceRegex
 import com.unciv.models.translations.tr
 import com.unciv.testing.GdxTestRunner
+import com.unciv.utils.BracketsParser
 import com.unciv.utils.Log
 import com.unciv.utils.debug
+import java.io.OutputStream
+import java.io.PrintStream
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
-import java.io.OutputStream
-import java.io.PrintStream
 
 @RunWith(GdxTestRunner::class)
 class TranslationTests {
@@ -326,6 +328,89 @@ class TranslationTests {
         Assert.assertTrue(Stats.isStats(Stats(1f,2f,3f).toStringForNotifications()))
     }
 
+    @Test
+    fun newBracketParserWorks() {
+        val parser = BracketsParser(10, supportPlaceholderText = true)
+
+        val conditionalDisjunctionExample = "Only available <either <after founding a religion> or <after discovering [Theology]>>"
+        val candidates = listOf(
+            "" to 0,
+            "Hello" to 0,
+            "My [Warrior]" to 1,
+            "My [A] (B) <C> {D}" to 3,  // BracketType Round is not configured
+            "gain [[Jaguar] ability]?" to 2,
+            "[+1 Food] from [Wheat] tiles [in this city]" to 3,
+            "[+15]% Strength <for [All] units> <vs cities> <when attacking>" to 5,
+            conditionalDisjunctionExample to 4
+        )
+        for ((input, expectedResults) in candidates) {
+            val results = parser.parse(input)
+            val resultCount = results.count { it.error == BracketsParser.ErrorType.Result }
+            Assert.assertEquals("BracketsParser should find $expectedResults bracket pairs in \"$input\" but finds $resultCount", expectedResults, resultCount)
+            Assert.assertEquals("BracketsParser should find no errors in \"$input\" but finds ${results.size - resultCount}", resultCount, results.size)
+        }
+
+        val badlyNested = "alice {bob [charlie} foxtrot] tango"
+        val results = parser.parse(badlyNested)
+        val expected = listOf(
+            BracketsParser.ResultEntry(2, 19, BracketsParser.BracketType.Curly, BracketsParser.ErrorType.InvalidClosing, ""),
+            BracketsParser.ResultEntry(1, 11, BracketsParser.BracketType.Square, BracketsParser.ErrorType.Result, "charlie} foxtrot"),
+            BracketsParser.ResultEntry(-1, 6, BracketsParser.BracketType.Curly, BracketsParser.ErrorType.UnmatchedOpening, "")
+        )
+        Assert.assertEquals(expected, results)
+
+        val superNestedString = "The brother of [[my [best friend]] and [[America]'s greatest [Dad]]]"
+
+        val superResults = parser.parse(superNestedString)
+            .sortedWith(compareBy<BracketsParser.ResultEntry> { it.level }.thenBy { it.position })
+            .map { it.level to it.value }
+        val superExpected = listOf(
+            0 to "[my [best friend]] and [[America]'s greatest [Dad]]",
+            1 to "my [best friend]",
+            1 to "[America]'s greatest [Dad]",
+            2 to "best friend",
+            2 to "America",
+            2 to "Dad"
+        )
+        Assert.assertEquals(superExpected, superResults)
+
+        val conditionalDisjunctionResults = mutableListOf<Pair<Int, String>>()
+        parser.parse(conditionalDisjunctionExample) {
+                level, _, _, _, _, getPlaceholderText ->
+            conditionalDisjunctionResults += level to getPlaceholderText()
+        }
+        conditionalDisjunctionResults.sortWith(compareBy<Pair<Int, String>> { it.first }.thenBy { it.second })
+        val conditionalDisjunctionExpected = listOf(
+            0 to "either <> or <>",
+            1 to "after discovering []",
+            1 to "after founding a religion",
+            2 to "Theology"
+        )
+        Assert.assertEquals(conditionalDisjunctionExpected, conditionalDisjunctionResults)
+        return
+    }
+
+    //@Test This test would at the moment correctly finger unsupproted nestings for Heroic Epic, Japan and Carthage:
+    fun baseRulesetUniquesHaveMatchedBrackets() {
+        val parser = BracketsParser(10)
+        var allOK = true
+        for (ruleset in BaseRuleset.values().mapNotNull { RulesetCache[it.fullName] }) {
+            for (obj in ruleset.allIHasUniques()) {
+                for (uniqueText in obj.uniques) {
+                    for (result in parser.parse(uniqueText)) {
+                        if (result.error != BracketsParser.ErrorType.Result) {
+                            println("%s, %s, \"%s\": %s at %d".format(ruleset.name, obj.name, uniqueText, result.error, result.position))
+                            allOK = false
+                        } else if (result.type.opening in result.value) {
+                            println("%s, %s, \"%s\" contains nested brackets: \"%s\" within %s".format(ruleset.name, obj.name, uniqueText, result.value, result.type))
+                            allOK = false
+                        }
+                    }
+                }
+            }
+        }
+        Assert.assertTrue("Not all base ruleset Uniques have balanced brackets", allOK)
+    }
 
 //    @Test
 //    fun allConditionalsAreContainedInConditionalOrderTranslation() {
