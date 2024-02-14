@@ -225,21 +225,22 @@ class UniqueValidator(val ruleset: Ruleset) {
     private fun checkUntypedUnique(unique: Unique, tryFixUnknownUniques: Boolean, uniqueContainer: IHasUniques?, prefix: String): RulesetErrorList {
         // Malformed conditional is always bad
         if (unique.text.count { it == '<' } != unique.text.count { it == '>' })
-            return RulesetErrorList.of(ruleset, uniqueContainer,
+            return RulesetErrorList.of(
                 "$prefix contains mismatched conditional braces!",
-                RulesetErrorSeverity.Warning)
+                RulesetErrorSeverity.Warning, ruleset, uniqueContainer
+            )
 
         // Support purely filtering Uniques without actual implementation
-        if (isFilteringUniqueAllowed(unique)) return RulesetErrorList.of()
+        if (isFilteringUniqueAllowed(unique)) return RulesetErrorList()
         if (tryFixUnknownUniques) {
             val fixes = tryFixUnknownUnique(unique, uniqueContainer, prefix)
             if (fixes.isNotEmpty()) return fixes
         }
 
         return RulesetErrorList.of(
-            ruleset, uniqueContainer,
             "$prefix not found in Unciv's unique types, and is not used as a filtering unique.",
-            if (unique.params.isEmpty()) RulesetErrorSeverity.OK else RulesetErrorSeverity.Warning
+            if (unique.params.isEmpty()) RulesetErrorSeverity.OK else RulesetErrorSeverity.Warning,
+            ruleset, uniqueContainer
         )
     }
 
@@ -261,9 +262,11 @@ class UniqueValidator(val ruleset: Ruleset) {
             similarUniques.filter { it.placeholderText == unique.placeholderText }
         return when {
             // This should only ever happen if a bug is or has been introduced that prevents Unique.type from being set for a valid UniqueType, I think.\
-            equalUniques.isNotEmpty() -> RulesetErrorList.of(ruleset, uniqueContainer,
+            equalUniques.isNotEmpty() -> RulesetErrorList.of(
                 "$prefix looks like it should be fine, but for some reason isn't recognized.",
-                RulesetErrorSeverity.OK)
+                RulesetErrorSeverity.OK,
+                ruleset, uniqueContainer
+            )
 
             similarUniques.isNotEmpty() -> {
                 val text =
@@ -276,9 +279,9 @@ class UniqueValidator(val ruleset: Ruleset) {
                             if (uniqueType.getDeprecationAnnotation() != null) text += " (Deprecated)"
                             return@joinToString text
                         }.prependIndent("\t")
-                RulesetErrorList.of(ruleset, uniqueContainer, text, RulesetErrorSeverity.OK)
+                RulesetErrorList.of(text, RulesetErrorSeverity.OK, ruleset, uniqueContainer)
             }
-            else -> RulesetErrorList.of()
+            else -> RulesetErrorList()
         }
     }
 

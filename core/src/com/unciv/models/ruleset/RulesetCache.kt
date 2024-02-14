@@ -9,6 +9,7 @@ import com.unciv.models.metadata.GameParameters
 import com.unciv.models.ruleset.validation.RulesetError
 import com.unciv.models.ruleset.validation.RulesetErrorList
 import com.unciv.models.ruleset.validation.RulesetErrorSeverity
+import com.unciv.models.ruleset.validation.getRelativeTextDistance
 import com.unciv.utils.Log
 import com.unciv.utils.debug
 
@@ -171,7 +172,7 @@ object RulesetCache : HashMap<String, Ruleset>() {
         } catch (ex: UncivShowableException) {
             // This happens if a building is dependent on a tech not in the base ruleset
             //  because newRuleset.updateBuildingCosts() in getComplexRuleset() throws an error
-            RulesetErrorList.of(null, null, ex.message, RulesetErrorSeverity.Error)
+            RulesetErrorList.of(ex.message, RulesetErrorSeverity.Error)
         }
     }
 }

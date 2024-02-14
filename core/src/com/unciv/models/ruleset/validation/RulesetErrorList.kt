@@ -93,16 +93,12 @@ class RulesetErrorList(
                 }
 
     companion object {
-        private val empty = RulesetErrorList()
-
-        fun of(ruleset: Ruleset? = null, sourceObject: IHasUniques? = null, vararg errors: RulesetError): RulesetErrorList {
-            if (errors.isEmpty()) return empty
-            val result = RulesetErrorList(ruleset)
-            for (error in errors)
-                result.add(sourceObject, error)
-            return result
-        }
-        fun of(ruleset: Ruleset? = null, sourceObject: IHasUniques? = null, text: String, severity: RulesetErrorSeverity = RulesetErrorSeverity.Error): RulesetErrorList {
+        fun of(
+            text: String,
+            severity: RulesetErrorSeverity = RulesetErrorSeverity.Error,
+            ruleset: Ruleset? = null,
+            sourceObject: IHasUniques? = null
+        ): RulesetErrorList {
             val result = RulesetErrorList(ruleset)
             result.add(sourceObject, text, severity)
             return result
