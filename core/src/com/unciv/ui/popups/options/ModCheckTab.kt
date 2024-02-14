@@ -100,8 +100,8 @@ class ModCheckTab(
                     else RulesetCache.checkCombinedModLinks(linkedSetOf(mod.name), base, tryFixUnknownUniques = true)
                 modLinks.sortByDescending { it.errorSeverityToReport }
                 val noProblem = !modLinks.isNotOK()
-                if (modLinks.isNotEmpty()) modLinks.add(null, "", RulesetErrorSeverity.OK)
-                if (noProblem) modLinks.add(null, "No problems found.".tr(), RulesetErrorSeverity.OK)
+                if (modLinks.isNotEmpty()) modLinks.add("", RulesetErrorSeverity.OK, sourceObject = null)
+                if (noProblem) modLinks.add("No problems found.".tr(), RulesetErrorSeverity.OK, sourceObject = null)
 
                 launchOnGLThread {
                     // When the options popup is already closed before this postRunnable is run,

@@ -31,7 +31,7 @@ class RulesetErrorList(
      *
      *  [sourceObject] is for future use and should be the originating object. When it is not known or not a [IHasUniques], pass `null`.
      */
-    fun add(sourceObject: IHasUniques?, element: RulesetError): Boolean {
+    fun add(element: RulesetError, sourceObject: IHasUniques?): Boolean {
         // Suppression to be checked here
         return addWithDuplicateCheck(element)
     }
@@ -40,10 +40,10 @@ class RulesetErrorList(
      *
      *  [sourceObject] is for future use and should be the originating object. When it is not known or not a [IHasUniques], pass `null`.
      */
-    fun add(sourceObject: IHasUniques?, text: String, errorSeverityToReport: RulesetErrorSeverity = RulesetErrorSeverity.Error) =
-        add(sourceObject, RulesetError(text, errorSeverityToReport))
+    fun add(text: String, errorSeverityToReport: RulesetErrorSeverity = RulesetErrorSeverity.Error, sourceObject: IHasUniques?) =
+        add(RulesetError(text, errorSeverityToReport), sourceObject)
 
-    @Deprecated("No adding without explicit source object", ReplaceWith("add(sourceObject, element)"))
+    @Deprecated("No adding without explicit source object", ReplaceWith("add(element, sourceObject)"))
     override fun add(element: RulesetError) = super.add(element)
 
     /** Add all [elements] with duplicate check, but without suppression check */
@@ -100,7 +100,7 @@ class RulesetErrorList(
             sourceObject: IHasUniques? = null
         ): RulesetErrorList {
             val result = RulesetErrorList(ruleset)
-            result.add(sourceObject, text, severity)
+            result.add(text, severity, sourceObject)
             return result
         }
     }

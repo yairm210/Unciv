@@ -67,18 +67,18 @@ class UniqueValidator(val ruleset: Ruleset) {
         val rulesetErrors = RulesetErrorList(ruleset)
 
         if (uniqueContainer != null && !unique.type.canAcceptUniqueTarget(uniqueContainer.getUniqueTarget()))
-            rulesetErrors.add(uniqueContainer, RulesetError("$prefix is not allowed on its target type", RulesetErrorSeverity.Warning))
+            rulesetErrors.add("$prefix is not allowed on its target type", RulesetErrorSeverity.Warning, uniqueContainer)
 
         val typeComplianceErrors = getComplianceErrors(unique)
         for (complianceError in typeComplianceErrors) {
             if (!reportRulesetSpecificErrors && complianceError.errorSeverity == UniqueType.UniqueParameterErrorSeverity.RulesetSpecific)
                 continue
 
-            rulesetErrors.add(uniqueContainer, RulesetError("$prefix contains parameter ${complianceError.parameterName}," +
+            rulesetErrors.add("$prefix contains parameter ${complianceError.parameterName}," +
                 " which does not fit parameter type" +
                 " ${complianceError.acceptableParameterTypes.joinToString(" or ") { it.parameterName }} !",
-                complianceError.errorSeverity.getRulesetErrorSeverity()
-            ))
+                complianceError.errorSeverity.getRulesetErrorSeverity(), uniqueContainer
+            )
         }
 
         for (conditional in unique.conditionals) {
@@ -90,10 +90,12 @@ class UniqueValidator(val ruleset: Ruleset) {
             )
             // (Stay silent if the only conditional is `<for [All] units>` - as in G&K Denmark)
             // Not necessarily even a problem, but yes something mod maker should be aware of
-            rulesetErrors.add(uniqueContainer,
+            rulesetErrors.add(
                 "$prefix contains a conditional on a unit movement unique. " +
                 "Due to performance considerations, this unique is cached on the unit," +
-                " and the conditional may not always limit the unique correctly.", RulesetErrorSeverity.OK)
+                " and the conditional may not always limit the unique correctly.",
+                RulesetErrorSeverity.OK, uniqueContainer
+            )
 
         if (reportRulesetSpecificErrors)
         // If we don't filter these messages will be listed twice as this function is called twice on most objects
@@ -113,40 +115,36 @@ class UniqueValidator(val ruleset: Ruleset) {
     ) {
         if (unique.hasFlag(UniqueFlag.NoConditionals)) {
             rulesetErrors.add(
-                uniqueContainer,
                 "$prefix contains the conditional \"${conditional.text}\"," +
                     " but the unique does not accept conditionals!",
-                RulesetErrorSeverity.Error
+                RulesetErrorSeverity.Error, uniqueContainer
             )
             return
         }
 
         if (conditional.type == null) {
             rulesetErrors.add(
-                uniqueContainer,
                 "$prefix contains the conditional \"${conditional.text}\"," +
                     " which is of an unknown type!",
-                RulesetErrorSeverity.Warning
+                RulesetErrorSeverity.Warning, uniqueContainer
             )
             return
         }
 
         if (conditional.type.targetTypes.none { it.modifierType != UniqueTarget.ModifierType.None })
             rulesetErrors.add(
-                uniqueContainer,
                 "$prefix contains the conditional \"${conditional.text}\"," +
                     " which is a Unique type not allowed as conditional or trigger.",
-                RulesetErrorSeverity.Warning
+                RulesetErrorSeverity.Warning, uniqueContainer
             )
 
         if (conditional.type.targetTypes.contains(UniqueTarget.UnitActionModifier)
             && unique.type!!.targetTypes.none { UniqueTarget.UnitAction.canAcceptUniqueTarget(it) }
         )
             rulesetErrors.add(
-                uniqueContainer,
                 "$prefix contains the conditional \"${conditional.text}\"," +
                     " which as a UnitActionModifier is only allowed on UnitAction uniques.",
-                RulesetErrorSeverity.Warning
+                RulesetErrorSeverity.Warning, uniqueContainer
             )
 
         val conditionalComplianceErrors =
@@ -157,13 +155,10 @@ class UniqueValidator(val ruleset: Ruleset) {
                 continue
 
             rulesetErrors.add(
-                uniqueContainer,
-                RulesetError(
                 "$prefix contains the conditional \"${conditional.text}\"." +
-                    " This contains the parameter ${complianceError.parameterName} which does not fit parameter type" +
-                    " ${complianceError.acceptableParameterTypes.joinToString(" or ") { it.parameterName }} !",
-                    complianceError.errorSeverity.getRulesetErrorSeverity()
-                )
+                " This contains the parameter ${complianceError.parameterName} which does not fit parameter type" +
+                " ${complianceError.acceptableParameterTypes.joinToString(" or ") { it.parameterName }} !",
+                complianceError.errorSeverity.getRulesetErrorSeverity(), uniqueContainer
             )
         }
     }
@@ -184,7 +179,7 @@ class UniqueValidator(val ruleset: Ruleset) {
                 RulesetErrorSeverity.WarningOptionsOnly // Not user-visible
             else RulesetErrorSeverity.Warning // User visible
 
-            rulesetErrors.add(uniqueContainer, deprecationText, severity)
+            rulesetErrors.add(deprecationText, severity, uniqueContainer)
         }
     }
 
