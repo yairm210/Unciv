@@ -41,15 +41,20 @@ class GdxTestRunner(klass: Class<*>?) : BlockJUnit4ClassRunner(klass), Applicati
         Gdx.gl = Mockito.mock(GL20::class.java)
     }
 
+    // ApplicationListener interface
     override fun create() {}
     override fun resume() {}
+    override fun resize(width: Int, height: Int) {}
+    override fun pause() {}
+    override fun dispose() {}
+
     override fun render() {
         synchronized(invokeInRender) {
             for ((method, notifier) in invokeInRender) {
                 val redirect = method.getAnnotation(RedirectOutput::class.java)
                     ?.policy
-                    ?: RedirectPolicy.Show
-                when(redirect) {
+                    ?: RedirectPolicy.ShowOnFailure
+                when (redirect) {
                     RedirectPolicy.ShowOnFailure ->
                         runChildRedirectingOutput(method, notifier)
                     RedirectPolicy.Discard ->
@@ -62,9 +67,7 @@ class GdxTestRunner(klass: Class<*>?) : BlockJUnit4ClassRunner(klass), Applicati
         }
     }
 
-    override fun resize(width: Int, height: Int) {}
-    override fun pause() {}
-    override fun dispose() {}
+    // BlockJUnit4ClassRunner interface
     override fun runChild(method: FrameworkMethod, notifier: RunNotifier) {
         synchronized(invokeInRender) {
             // add for invoking in render phase, where gl context is available
@@ -86,6 +89,7 @@ class GdxTestRunner(klass: Class<*>?) : BlockJUnit4ClassRunner(klass), Applicati
         }
     }
 
+    // Standard output redirection
     private fun runChildRedirectingOutput(method: FrameworkMethod, notifier: RunNotifier) {
         val outputBuffer = ByteArrayOutputStream(2048)
         val outputStream = PrintStream(outputBuffer)
