@@ -1,6 +1,7 @@
 package com.unciv.logic.city.managers
 
 import com.badlogic.gdx.math.Vector2
+import com.unciv.Constants
 import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.automation.Automation
 import com.unciv.logic.city.City
@@ -13,6 +14,7 @@ import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.components.extensions.toPercent
 import com.unciv.ui.components.extensions.withItem
 import com.unciv.ui.components.extensions.withoutItem
+import com.unciv.ui.screens.worldscreen.unit.actions.UnitActions
 import kotlin.math.max
 import kotlin.math.pow
 import kotlin.math.roundToInt
@@ -184,7 +186,14 @@ class CityExpansionManager : IsPartOfGameInfoSerialization {
         for (unit in tile.getUnits().toList()) // toListed because we're modifying
             if (!unit.civ.diplomacyFunctions.canPassThroughTiles(city.civ))
                 unit.movement.teleportToClosestMoveableTile()
-
+            else if (unit.civ == city.civ && unit.isSleeping()) {
+                // If the unit is sleeping and is a worker, it might want to build on this tile
+                // So lets try to wake it up for the player to notice it
+                if (unit.cache.hasUniqueToBuildImprovements || unit.cache.hasUniqueToCreateWaterImprovements) {
+                    unit.due = true
+                    unit.action = null;
+                }
+            }
 
         tile.history.recordTakeOwnership(tile)
     }

@@ -98,11 +98,17 @@ open class AnimatedMenuPopup(
         container.setScale(0.05f)
         container.color.a = 0f
 
-        open(true)  // this only does the screen-covering "click-behind" portion
+        open(true)  // this only does the screen-covering "click-behind" portion - and ensures this.stage is set
 
+        // Note that coerceIn throws if min>max, so we defend against newInnerTable being bigger than the stage,
+        // and padding helps the rounded edges to look more natural:
+        val paddedHalfWidth = newInnerTable.width / 2 + 2f
+        val paddedHalfHeight = newInnerTable.height / 2 + 2f
         container.setPosition(
-            position.x.coerceAtMost(stage.width - newInnerTable.width / 2),
-            position.y.coerceAtLeast(newInnerTable.height / 2)
+            if (paddedHalfWidth * 2 > stage.width) stage.width / 2
+            else position.x.coerceIn(paddedHalfWidth, stage.width - paddedHalfWidth),
+            if (paddedHalfHeight * 2 > stage.height) stage.height / 2
+            else position.y.coerceIn(paddedHalfHeight, stage.height - paddedHalfHeight)
         )
         super.addActor(container)
 

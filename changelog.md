@@ -1,3 +1,15 @@
+## 4.10.9
+
+Allow lower-case "all" for all filters
+Initial Civ Personality implementation  - By SeventhM
+
+By SomeTroglodyte:
+- Autoplay menu cleanup
+- Key binding categories properly sorted in options popup
+
+By tuvus:
+- Workers wake up on tile expansion
+
 ## 4.10.8
 
 Fixed unhappiness effect when at 0 happiness

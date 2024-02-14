@@ -1,6 +1,7 @@
 package com.unciv.logic.civilization.managers
 
 import com.unciv.logic.IsPartOfGameInfoSerialization
+import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.Spy
@@ -33,7 +34,7 @@ class EspionageManager : IsPartOfGameInfoSerialization {
             spy.endTurn()
     }
 
-    private fun getSpyName(): String {
+    fun getSpyName(): String {
         val usedSpyNames = spyList.map { it.name }.toHashSet()
         val validSpyNames = civInfo.nation.spyNames.filter { it !in usedSpyNames }
         if (validSpyNames.isEmpty()) { return "Spy ${spyList.size+1}" } // +1 as non-programmers count from 1
@@ -64,4 +65,10 @@ class EspionageManager : IsPartOfGameInfoSerialization {
         }
         return techsToSteal
     }
+
+    fun getSpiesInCity(city: City): MutableList<Spy> {
+        return spyList.filter { it.getLocation() == city }.toMutableList()
+    }
+
+    fun getSpyAssignedToCity(city: City): Spy? = spyList.firstOrNull {it.getLocation() == city}
 }

@@ -57,6 +57,7 @@ enum class UniqueTarget(
     Tutorial,
     CityState(inheritsFrom = Global),
     ModOptions,
+    Personality,
 
     // Modifiers
     Conditional("Modifiers that can be added to other uniques to limit when they will be active", modifierType = ModifierType.Conditional),

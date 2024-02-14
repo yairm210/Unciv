@@ -100,7 +100,7 @@ object DiplomacyAutomation {
                 && !civInfo.getDiplomacyManager(it).hasFlag(DiplomacyFlags.DeclinedOpenBorders)
                 && !isTradeBeingOffered(civInfo, it, Constants.openBorders)
             }
-            
+
             .sortedByDescending { it.getDiplomacyManager(civInfo).relationshipLevel() }.toList()
         for (otherCiv in civsThatWeCanOpenBordersWith) {
             // Default setting is 3, this will be changed according to different civ.
@@ -234,7 +234,9 @@ object DiplomacyAutomation {
     }
 
     internal fun declareWar(civInfo: Civilization) {
-        if (civInfo.wantsToFocusOn(Victory.Focus.Culture)) return
+        if (civInfo.wantsToFocusOn(Victory.Focus.Culture) &&
+            civInfo.getPersonality().isNeutralPersonality)
+            return
         if (civInfo.cities.isEmpty() || civInfo.diplomacy.isEmpty()) return
         if (civInfo.isAtWar() || civInfo.getHappiness() <= 0) return
 

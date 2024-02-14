@@ -39,6 +39,8 @@ enum class KeyboardBinding(
     Menu(Category.WorldScreen, KeyCharAndCode.TAB),
     NextTurn(Category.WorldScreen),
     NextTurnAlternate(Category.WorldScreen, KeyCharAndCode.SPACE),
+    AutoPlayMenu(Category.WorldScreen, "Open AutoPlay menu", KeyCharAndCode.UNKNOWN),  // 'a' is already assigned to map panning
+    AutoPlay(Category.WorldScreen, "Start AutoPlay", KeyCharAndCode.ctrl('a')),
     EmpireOverview(Category.WorldScreen),
     MusicPlayer(Category.WorldScreen, KeyCharAndCode.ctrl('m')),
     DeveloperConsole(Category.WorldScreen, '`'),
@@ -134,6 +136,12 @@ enum class KeyboardBinding(
     HideAdditionalActions(Category.UnitActions,"Back", Input.Keys.PAGE_UP),
     AddInCapital(Category.UnitActions, "Add in capital", 'g'),
 
+    // The AutoPlayMenu reuses the AutoPlay binding, under Worldscreen above - otherwise clear labeling would be tricky
+    AutoPlayMenuEndTurn(Category.AutoPlayMenu, "AutoPlay End Turn", 't'),
+    AutoPlayMenuMilitary(Category.AutoPlayMenu, "AutoPlay Military Once", 'm'),
+    AutoPlayMenuCivilians(Category.AutoPlayMenu, "AutoPlay Civilians Once", 'c'),
+    AutoPlayMenuEconomy(Category.AutoPlayMenu, "AutoPlay Economy Once", 'e'),
+
     // City Screen
     AddConstruction(Category.CityScreen, "Add to or remove from queue", KeyCharAndCode.RETURN),
     RaisePriority(Category.CityScreen, "Raise queue priority", Input.Keys.UP),
@@ -206,6 +214,9 @@ enum class KeyboardBinding(
             // Conflict checking within group plus keys assigned to UnitActions are a problem
             override fun checkConflictsIn() = sequenceOf(this, MapPanning, UnitActions)
         },
+        AutoPlayMenu {
+            override val label = "AutoPlay menu" // adapt to existing usage
+        },
         MapPanning {
             override fun checkConflictsIn() = sequenceOf(this, WorldScreen)
         },
@@ -218,7 +229,7 @@ enum class KeyboardBinding(
         Civilopedia,
         Popups
         ;
-        val label = unCamelCase(name)
+        open val label = unCamelCase(name)
         open fun checkConflictsIn() = sequenceOf(this)
     }
 
