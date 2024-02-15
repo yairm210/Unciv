@@ -64,7 +64,7 @@ Each nation has the following structure:
 | cityStateType | String | none | Distinguishes major civilizations from city states (must be in [CityStateTypes.json](#citystatetypesjson)) |
 | startBias | List of strings | empty | Zero or more of: [terrainFilter](../Unique-parameters.md/#terrainfilter) or "Avoid [terrainFilter]". [^S] |
 | preferredVictoryType | String | Neutral | The victory type major civilizations will pursue (need not be specified in [VictoryTypes.json](5-Miscellaneous-JSON-files.md#victorytypesjson)) |
-| personality | String | none | The name of the personality specified in [Personalities.json](#personalityjson)
+| personality | String | none | The name of the personality specified in [Personalities.json](#personalitiesjson)
 | favoredReligion | String | none | The religion major civilization will choose if available when founding a religion. Must be in [Religions.json](#religionsjson) |
 | startIntroPart1 | String | none | Introductory blurb shown to Player on game start... |
 | startIntroPart2 | String | none | ... second paragraph. ___NO___ "TBD"!!! Leave empty to skip that alert. |
