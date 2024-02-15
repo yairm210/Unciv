@@ -802,14 +802,15 @@ class MapUnit : IsPartOfGameInfoSerialization {
         // addPromotion requires currentTile to be valid because it accesses ruleset through it.
         // getAncientRuinBonus, if it places a new unit, does too
         currentTile = tile
+        val improvement = tile.improvement
 
         if (civ.isMajorCiv()
-            && tile.improvement != null
-            && tile.getTileImprovement()!!.isAncientRuinsEquivalent()
+            && improvement != null
+            && tile.ruleset.tileImprovements[improvement]!!.isAncientRuinsEquivalent()
         ) {
             getAncientRuinBonus(tile)
         }
-        if (tile.improvement == Constants.barbarianEncampment && !civ.isBarbarian())
+        if (improvement == Constants.barbarianEncampment && !civ.isBarbarian())
             clearEncampment(tile)
         // Check whether any civilians without military units are there.
         // Keep in mind that putInTile(), which calls this method,
