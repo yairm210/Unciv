@@ -180,7 +180,7 @@ Each policy branch has the following structure:
 
 ### Branch priorities
 
-The "priorities" object defines the priority major civilizations' AI give to a policy branch. The AI chooses the policy branch with the highest number for their preferred victory type added to the personality's priority. If two or more candidate branches have the same priority, the AI chooses a random branch among the candidates.
+The "priorities" object defines the priority major civilizations' AI give to a policy branch. The AI chooses the policy branch with the highest sum of the peferred victory type listed here and the number flisted in the personality's priority. If two or more candidate branches have the same priority, the AI chooses a random branch among the candidates.
 
 The object maps victory types to priority values for the major civilization using strings and integers. If the preferred victory type is not specified, the default priority value is set to 0.
 
