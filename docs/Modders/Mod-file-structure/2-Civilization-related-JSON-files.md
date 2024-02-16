@@ -96,7 +96,7 @@ Each nation has the following structure:
 
 This file contains all Personalities for computer players.
 
-Each nation has the following structure:
+Each personality has the following structure:
 
 | Attribute | Type | Default | Notes |
 | --------- | ---- | ------- | ----- |
