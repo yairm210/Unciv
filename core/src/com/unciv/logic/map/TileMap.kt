@@ -465,8 +465,8 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
             }
         } else {
             // Yes the map generator calls this repeatedly, and we don't want to end up with an oversized tileMatrix
-            // rightX is -leftX or -leftX + 1 or -leftX + 2
-            check(tileMatrix.size in (1 - 2 * leftX)..(3 - 2 * leftX)) {
+            // rightX is between -leftX - 1 (e.g. 105x90 map thanks @ravignir) and -leftX + 2
+            check(tileMatrix.size in (- 2 * leftX)..(3 - 2 * leftX)) {
                 "TileMap.setTransients called on existing tileMatrix of different size"
             }
         }
