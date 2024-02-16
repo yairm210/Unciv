@@ -102,16 +102,16 @@ Each nation has the following structure:
 | --------- | ---- | ------- | ----- |
 | name | String | Required | |
 | preferredVictoryType | String | Neutral | The victory type major civilizations will pursue (need not be specified in [VictoryTypes.json](5-Miscellaneous-JSON-files.md#victorytypesjson)) |
-| [`<stats>`](3-Map-related-JSON-files.md#general-stat) | Float | 5 | Amount of focus on the stat the computer player will have. Typically ranges from 0 (no focus) to 10 (maximum focus) |
-| military | Float | 5 | Amount of focus on the military growth the computer player will have. Typically ranges from 0 (no focus) to 10 (maximum focus) |
-<!-- | warMongering | Float | 5 | Amount of focus on the declaring war the computer player will have. Typically ranges from 0 (no focus) to 10 (maximum focus) |-->
+| [`<stats>`](3-Map-related-JSON-files.md#general-stat) | Float | 5 | Amount of focus on the stat the computer player will have. Typically ranges from 0 (no focus) to 10 (double focus) |
+| military | Float | 5 | Amount of focus on the military growth the computer player will have. Typically ranges from 0 (no focus) to 10 (double focus) |
+<!-- | warMongering | Float | 5 | Amount of focus on declaring war the computer player will have. Typically ranges from 0 (no focus) to 10 (double focus) |-->
 | priorities | Object | none | Priorities for each policy branch, [^B]
 | uniques | List | empty | List of [unique abilities](../uniques) this personality has |
 | civilopediaText | List | empty | See [civilopediaText chapter](5-Miscellaneous-JSON-files.md#civilopedia-text) |
 
 [^B]: Similar to [policy priorites](#branch-priorities) The "priorities" object defines the priority major civilizations' AI give to a policy branch. The AI chooses the policy branch with the highest number for their preferred victory type. If two or more candidate branches have the same priority, the AI chooses a random branch among the candidates.
 
-The object maps policy branches to priority values for the major civilization using the policy branches name and integers. Any branches not list has a default value of 0
+The object maps policy branches to priority values for the major civilization using the policy branches name and integers. Any branches not listed have a default value of 0
 
 The code below is an example of a valid "priorities" definition.
 

@@ -6,7 +6,7 @@ import com.unciv.models.ruleset.unique.UniqueTarget
 import kotlin.reflect.KMutableProperty0
 
 /**
- * Type of Personality focus. Typically ranges from 0 (no focus) to 10 (maximum focus)
+ * Type of Personality focus. Typically ranges from 0 (no focus) to 10 (double focus)
  */
 enum class PersonalityValue {
     Production,
