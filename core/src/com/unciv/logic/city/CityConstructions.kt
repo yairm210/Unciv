@@ -66,7 +66,6 @@ class CityConstructions : IsPartOfGameInfoSerialization {
         }
         set(value) {
             if (constructionQueue.isEmpty()) constructionQueue.add(value) else constructionQueue[0] = value
-            city.reassignPopulation()
         }
 
     //endregion
@@ -757,7 +756,6 @@ class CityConstructions : IsPartOfGameInfoSerialization {
                 constructionQueue.add(constructionName)
         }
         currentConstructionIsUserSet = true
-        city.reassignPopulation()
     }
 
     /** Add a construction named [constructionName] to the end of the queue with all checks
@@ -786,8 +784,6 @@ class CityConstructions : IsPartOfGameInfoSerialization {
             else constructionQueue.add(PerpetualConstruction.idle.name) // To prevent Construction Automation
             false
         } else true // we're just continuing the regular queue
-        if(constructionQueueIndex==0)
-            city.reassignPopulation()
     }
 
     /** Remove all queue entries for [constructionName].
@@ -809,7 +805,6 @@ class CityConstructions : IsPartOfGameInfoSerialization {
         if (constructionQueueIndex == 0 || constructionQueueIndex >= constructionQueue.size) return
         val constructionName = constructionQueue.removeAt(constructionQueueIndex)
         constructionQueue.add(0, constructionName)
-        city.reassignPopulation()
     }
 
     /** Moves an entry by index to the end of the queue, or just before a PerpetualConstruction
@@ -821,13 +816,10 @@ class CityConstructions : IsPartOfGameInfoSerialization {
         // Some of the overhead of addToQueue is redundant here, but if the complex "needs to replace or go before a perpetual" logic is needed, then use it anyway
         if (isLastConstructionPerpetual()) return addToQueue(constructionName)
         constructionQueue.add(constructionName)
-        city.reassignPopulation()
     }
 
     fun raisePriority(constructionQueueIndex: Int): Int {
         constructionQueue.swap(constructionQueueIndex - 1, constructionQueueIndex)
-        if(constructionQueueIndex==1)
-            city.reassignPopulation()
         return constructionQueueIndex - 1
     }
 
