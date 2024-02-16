@@ -871,7 +871,6 @@ class CityConstructions : IsPartOfGameInfoSerialization {
             constructionQueue.add(PerpetualConstruction.idle.name)
             false
         } else true
-        city.reassignPopulation()
     }
 
     /** Support for [UniqueType.CreatesOneImprovement]:
