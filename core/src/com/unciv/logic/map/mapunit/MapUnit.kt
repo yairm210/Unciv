@@ -802,6 +802,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
         // addPromotion requires currentTile to be valid because it accesses ruleset through it.
         // getAncientRuinBonus, if it places a new unit, does too
         currentTile = tile
+        // The improvement may get removed if it has ruins effects or is a barbarian camp, and will still be needed if removed
         val improvement = tile.improvement
 
         if (civ.isMajorCiv()
