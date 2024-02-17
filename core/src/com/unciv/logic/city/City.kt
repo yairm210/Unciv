@@ -12,12 +12,10 @@ import com.unciv.logic.city.managers.CityPopulationManager
 import com.unciv.logic.city.managers.CityReligionManager
 import com.unciv.logic.city.managers.SpyFleeReason
 import com.unciv.logic.civilization.Civilization
-import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.map.TileMap
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.RoadStatus
 import com.unciv.logic.map.tile.Tile
-import com.unciv.models.Counter
 import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.Unique
@@ -216,69 +214,8 @@ class City : IsPartOfGameInfoSerialization {
     fun containsBuildingUnique(uniqueType: UniqueType) =
         cityConstructions.builtBuildingUniqueMap.getUniques(uniqueType).any()
 
-    fun getGreatPersonPercentageBonus(): Int{
-        var allGppPercentageBonus = 0
-        for (unique in getMatchingUniques(UniqueType.GreatPersonPointPercentage)) {
-            if (!matchesFilter(unique.params[1])) continue
-            allGppPercentageBonus += unique.params[0].toInt()
-        }
-
-        // Sweden UP
-        for (otherCiv in civ.getKnownCivs()) {
-            if (!civ.getDiplomacyManager(otherCiv).hasFlag(DiplomacyFlags.DeclarationOfFriendship))
-                continue
-
-            for (ourUnique in civ.getMatchingUniques(UniqueType.GreatPersonBoostWithFriendship))
-                allGppPercentageBonus += ourUnique.params[0].toInt()
-            for (theirUnique in otherCiv.getMatchingUniques(UniqueType.GreatPersonBoostWithFriendship))
-                allGppPercentageBonus += theirUnique.params[0].toInt()
-        }
-        return allGppPercentageBonus
-    }
-
-    fun getGreatPersonPointsForNextTurn(): HashMap<String, Counter<String>> {
-        val sourceToGPP = HashMap<String, Counter<String>>()
-
-        val specialistsCounter = Counter<String>()
-        for ((specialistName, amount) in population.getNewSpecialists())
-            if (getRuleset().specialists.containsKey(specialistName)) { // To solve problems in total remake mods
-                val specialist = getRuleset().specialists[specialistName]!!
-                specialistsCounter.add(specialist.greatPersonPoints.times(amount))
-            }
-        sourceToGPP["Specialists"] = specialistsCounter
-
-        val buildingsCounter = Counter<String>()
-        for (building in cityConstructions.getBuiltBuildings())
-            buildingsCounter.add(building.greatPersonPoints)
-        sourceToGPP["Buildings"] = buildingsCounter
-
-        val stateForConditionals = StateForConditionals(civInfo = civ, city = this)
-        for ((_, gppCounter) in sourceToGPP) {
-            for (unique in civ.getMatchingUniques(UniqueType.GreatPersonEarnedFaster, stateForConditionals)) {
-                val unitName = unique.params[0]
-                if (!gppCounter.containsKey(unitName)) continue
-                gppCounter.add(unitName, gppCounter[unitName] * unique.params[1].toInt() / 100)
-            }
-
-            val allGppPercentageBonus = getGreatPersonPercentageBonus()
-
-            for (unitName in gppCounter.keys)
-                gppCounter.add(unitName, gppCounter[unitName] * allGppPercentageBonus / 100)
-        }
-
-        return sourceToGPP
-    }
-
-    fun getGreatPersonPoints(): Counter<String> {
-        val gppCounter = Counter<String>()
-        for (entry in getGreatPersonPointsForNextTurn().values)
-            gppCounter.add(entry)
-        // Remove all "gpp" values that are not valid units
-        for (key in gppCounter.keys.toSet())
-            if (key !in getRuleset().units)
-                gppCounter.remove(key)
-        return gppCounter
-    }
+    fun getGreatPersonPercentageBonus() = GreatPersonPointsBreakdown.getGreatPersonPercentageBonus(this)
+    fun getGreatPersonPoints() = GreatPersonPointsBreakdown(this).sum()
 
     fun addStat(stat: Stat, amount: Int) {
         when (stat) {
