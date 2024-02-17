@@ -5,6 +5,9 @@ import com.unciv.models.ruleset.RulesetObject
 import com.unciv.models.ruleset.unique.UniqueTarget
 import kotlin.reflect.KMutableProperty0
 
+/**
+ * Type of Personality focus. Typically ranges from 0 (no focus) to 10 (double focus)
+ */
 enum class PersonalityValue {
     Production,
     Food,
@@ -27,7 +30,7 @@ class Personality: RulesetObject() {
     var faith: Float = 5f
     var military: Float = 5f
     var warMongering: Float = 5f // Todo: Look into where this should be inserted
-    var policy = LinkedHashMap<String, Int>()
+    var priorities = LinkedHashMap<String, Int>()
     var preferredVictoryType: String = Constants.neutralVictoryType
     var isNeutralPersonality: Boolean = false
 

@@ -64,6 +64,7 @@ Each nation has the following structure:
 | cityStateType | String | none | Distinguishes major civilizations from city states (must be in [CityStateTypes.json](#citystatetypesjson)) |
 | startBias | List of strings | empty | Zero or more of: [terrainFilter](../Unique-parameters.md/#terrainfilter) or "Avoid [terrainFilter]". [^S] |
 | preferredVictoryType | String | Neutral | The victory type major civilizations will pursue (need not be specified in [VictoryTypes.json](5-Miscellaneous-JSON-files.md#victorytypesjson)) |
+| personality | String | none | The name of the personality specified in [Personalities.json](#personalitiesjson)
 | favoredReligion | String | none | The religion major civilization will choose if available when founding a religion. Must be in [Religions.json](#religionsjson) |
 | startIntroPart1 | String | none | Introductory blurb shown to Player on game start... |
 | startIntroPart2 | String | none | ... second paragraph. ___NO___ "TBD"!!! Leave empty to skip that alert. |
@@ -90,6 +91,37 @@ Each nation has the following structure:
       When combining preferred terrain with "Avoid", the latter takes precedence, and preferred terrain only has minor weight when choosing between regions that are not of a type to avoid.
       These notes are __only__ valid when playing on generated maps, loaded maps from map editor get no "regions" and startBias is processed differently (but you can expect single-entry startBias to work best).
 [^V]: See [Supply Leader Voices](../Images-and-Audio.md#supply-leader-voices)
+
+## Personalities.json
+
+This file contains all Personalities for computer players.
+
+Each personality has the following structure:
+
+| Attribute | Type | Default | Notes |
+| --------- | ---- | ------- | ----- |
+| name | String | Required | |
+| preferredVictoryType | String | Neutral | The victory type major civilizations will pursue (need not be specified in [VictoryTypes.json](5-Miscellaneous-JSON-files.md#victorytypesjson)) |
+| [`<stats>`](3-Map-related-JSON-files.md#general-stat) | Float | 5 | Amount of focus on the stat the computer player will have. Typically ranges from 0 (no focus) to 10 (double focus) |
+| military | Float | 5 | Amount of focus on the military growth the computer player will have. Typically ranges from 0 (no focus) to 10 (double focus) |
+<!-- | warMongering | Float | 5 | Amount of focus on declaring war the computer player will have. Typically ranges from 0 (no focus) to 10 (double focus) |-->
+| priorities | Object | none | Priorities for each policy branch, [^B]
+| uniques | List | empty | List of [unique abilities](../uniques) this personality has |
+| civilopediaText | List | empty | See [civilopediaText chapter](5-Miscellaneous-JSON-files.md#civilopedia-text) |
+
+[^B]: Similar to [policy priorites](#branch-priorities) The "priorities" object defines the priority major civilizations' AI give to a policy branch. The AI chooses the policy branch with the highest number for their preferred victory type. If two or more candidate branches have the same priority, the AI chooses a random branch among the candidates.
+
+The object maps policy branches to priority values for the major civilization using the policy branches name and integers. Any branches not listed have a default value of 0
+
+The code below is an example of a valid "priorities" definition.
+
+```
+"priorities": {
+    "Tradition": 30,
+    "Liberty": 20,
+    "Honor": 10
+}
+```
 
 ## CityStateTypes.json
 
@@ -148,7 +180,7 @@ Each policy branch has the following structure:
 
 ### Branch priorities
 
-The "priorities" object defines the priority major civilizations' AI give to a policy branch. The AI chooses the policy branch with the highest number for their preferred victory type. If two or more candidate branches have the same priority, the AI chooses a random branch among the candidates.
+The "priorities" object defines the priority major civilizations' AI give to a policy branch. The AI chooses the policy branch with the highest sum of the peferred victory type listed here and the number flisted in the personality's priority. If two or more candidate branches have the same priority, the AI chooses a random branch among the candidates.
 
 The object maps victory types to priority values for the major civilization using strings and integers. If the preferred victory type is not specified, the default priority value is set to 0.
 
