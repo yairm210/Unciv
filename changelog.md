@@ -1,3 +1,15 @@
+## 4.10.10
+
+By SomeTroglodyte:
+- Great Person Point breakdown UI in city
+- Fix creating odd-width rectangular no-wrap maps
+
+By SeventhM:
+- Allow barb camps to function after giving ruins effects
+- Conditional for building in amount of cities
+
+AutoAssign Population with Food Converts to Production  - By itanasi
+
 ## 4.10.9
 
 Allow lower-case "all" for all filters

@@ -46,7 +46,7 @@ class PolicyManager : IsPartOfGameInfoSerialization {
             val value = HashMap<PolicyBranch, Int>()
             for (branch in branches) {
                 val victoryPriority = branch.priorities[civInfo.nation.preferredVictoryType] ?: 0
-                val personalityPriority = civInfo.getPersonality().policy[branch.name] ?: 0
+                val personalityPriority = civInfo.getPersonality().priorities[branch.name] ?: 0
                 value[branch] = victoryPriority + personalityPriority
             }
             return value

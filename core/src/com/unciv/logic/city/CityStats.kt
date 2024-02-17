@@ -577,10 +577,7 @@ class CityStats(val city: City) {
         val buildingsMaintenance = getBuildingMaintenanceCosts() // this is AFTER the bonus calculation!
         newFinalStatList["Maintenance"] = Stats(gold = -buildingsMaintenance.toInt().toFloat())
 
-        if (totalFood > 0
-            && currentConstruction is INonPerpetualConstruction
-            && currentConstruction.hasUnique(UniqueType.ConvertFoodToProductionWhenConstructed)
-        ) {
+        if (canConvertFoodToProduction(totalFood, currentConstruction)) {
             newFinalStatList["Excess food to production"] =
                 Stats(production = getProductionFromExcessiveFood(totalFood), food = -totalFood)
         }
@@ -603,9 +600,15 @@ class CityStats(val city: City) {
         finalStatList = newFinalStatList
     }
 
+    fun canConvertFoodToProduction(food: Float, currentConstruction: IConstruction): Boolean {
+        return (food > 0
+            && currentConstruction is INonPerpetualConstruction
+            && currentConstruction.hasUnique(UniqueType.ConvertFoodToProductionWhenConstructed))
+    }
+
     // calculate the conversion of the excessive food to the production
     // See for details: https://civilization.fandom.com/wiki/Settler_(Civ5)
-    private fun getProductionFromExcessiveFood(food : Float): Float {
+    fun getProductionFromExcessiveFood(food : Float): Float {
         return if (food >= 4.0f ) 2.0f + (food / 4.0f).toInt()
           else if (food >= 2.0f ) 2.0f
           else if (food >= 1.0f ) 1.0f

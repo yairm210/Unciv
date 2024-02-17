@@ -283,8 +283,10 @@ enum class UniqueType(
     CostIncreasesPerCity("Cost increases by [amount] per owned city", UniqueTarget.Building, UniqueTarget.Unit),
     CostIncreasesWhenBuilt("Cost increases by [amount] when built", UniqueTarget.Building, UniqueTarget.Unit),
 
+    @Deprecated("as of 4.10.17", ReplaceWith("Only available <if [buildingFilter] is constructed in all [non-[Puppeted]] cities>"))
     RequiresBuildingInAllCities("Requires a [buildingFilter] in all cities", UniqueTarget.Building),
-    RequiresBuildingInSomeCities("Requires a [buildingFilter] in at least [amount] cities", UniqueTarget.Building),
+    @Deprecated("as of 4.10.17", ReplaceWith("Only available <if [buildingFilter] is constructed in at least [positiveAmount] of [All] cities>"))
+    RequiresBuildingInSomeCities("Requires a [buildingFilter] in at least [positiveAmount] cities", UniqueTarget.Building),
     CanOnlyBeBuiltInCertainCities("Can only be built [cityFilter]", UniqueTarget.Building),
 
     MustHaveOwnedWithinTiles("Must have an owned [tileFilter] within [amount] tiles", UniqueTarget.Building),
@@ -642,6 +644,8 @@ enum class UniqueType(
     ConditionalAfterGeneratingGreatProphet("after generating a Great Prophet", UniqueTarget.Conditional),
 
     ConditionalBuildingBuilt("if [buildingFilter] is constructed", UniqueTarget.Conditional),
+    ConditionalBuildingBuiltAll("if [buildingFilter] is constructed in all [cityFilter] cities", UniqueTarget.Conditional),
+    ConditionalBuildingBuiltAmount("if [buildingFilter] is constructed in at least [positiveAmount] of [cityFilter] cities", UniqueTarget.Conditional),
     ConditionalBuildingBuiltByAnybody("if [buildingFilter] is constructed by anybody", UniqueTarget.Conditional),
 
     ConditionalWithResource("with [resource]", UniqueTarget.Conditional),

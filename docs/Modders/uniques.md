@@ -1065,16 +1065,6 @@ Due to performance considerations, this unique is cached, thus conditionals may 
 
 	Applicable to: Building, Unit
 
-??? example  "Requires a [buildingFilter] in all cities"
-	Example: "Requires a [Culture] in all cities"
-
-	Applicable to: Building
-
-??? example  "Requires a [buildingFilter] in at least [amount] cities"
-	Example: "Requires a [Culture] in at least [3] cities"
-
-	Applicable to: Building
-
 ??? example  "Can only be built [cityFilter]"
 	Example: "Can only be built [in all cities]"
 
@@ -1989,6 +1979,16 @@ Due to performance considerations, this unique is cached, thus conditionals may 
 
 ??? example  "&lt;if [buildingFilter] is constructed&gt;"
 	Example: "&lt;if [Culture] is constructed&gt;"
+
+	Applicable to: Conditional
+
+??? example  "&lt;if [buildingFilter] is constructed in all [cityFilter] cities&gt;"
+	Example: "&lt;if [Culture] is constructed in all [in all cities] cities&gt;"
+
+	Applicable to: Conditional
+
+??? example  "&lt;if [buildingFilter] is constructed in at least [positiveAmount] of [cityFilter] cities&gt;"
+	Example: "&lt;if [Culture] is constructed in at least [3] of [in all cities] cities&gt;"
 
 	Applicable to: Conditional
 
