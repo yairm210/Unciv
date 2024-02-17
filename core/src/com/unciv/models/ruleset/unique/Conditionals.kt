@@ -18,7 +18,7 @@ object Conditionals {
     ): Boolean {
 
         if (condition.type?.targetTypes?.any { it.modifierType == UniqueTarget.ModifierType.Other } == true)
-            return true // not a filtering condition
+            return true // not a filtering condition, includes e.g. ModifierHiddenFromUsers
 
         val relevantUnit by lazy {
             if (state.ourCombatant != null && state.ourCombatant is MapUnitCombatant) state.ourCombatant.unit
@@ -109,7 +109,6 @@ object Conditionals {
         return when (condition.type) {
             // These are 'what to do' and not 'when to do' conditionals
             UniqueType.ConditionalTimedUnique -> true
-            UniqueType.ModifierHiddenFromUsers -> true  // allowed to be attached to any Unique to hide it, no-op otherwise
 
             UniqueType.ConditionalChance -> stateBasedRandom.nextFloat() < condition.params[0].toFloat() / 100f
             UniqueType.ConditionalEveryTurns -> checkOnGameInfo { turns % condition.params[0].toInt() == 0 }
