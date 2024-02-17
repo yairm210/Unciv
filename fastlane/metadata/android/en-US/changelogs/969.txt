@@ -1,5 +1,3 @@
-
-
 By SomeTroglodyte:
 - Don't prematurely round Great person point boni and GPP breakdown UI 
 - Fix creating 105x90 rectangular no-wrap maps 

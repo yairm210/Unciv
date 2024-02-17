@@ -1,16 +1,12 @@
 ## 4.10.10
 
 By SomeTroglodyte:
-- Don't prematurely round Great person point boni and GPP breakdown UI 
-- Fix creating 105x90 rectangular no-wrap maps 
-- Framework stuff: Preparation for another Warning-Suppression branch 
-- Clean up console output of unit test runs 
-- Fix translation placeholder mismatches failing unit tests 
+- Great Person Point breakdown UI in city
+- Fix creating odd-width rectangular no-wrap maps
 
 By SeventhM:
-- Documentation for Personality json 
-- Allow barb camps to function after giving ruins effects 
-- Conditional for building in amount of cities 
+- Allow barb camps to function after giving ruins effects
+- Conditional for building in amount of cities
 
 AutoAssign Population with Food Converts to Production  - By itanasi
 
