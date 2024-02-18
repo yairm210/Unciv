@@ -821,7 +821,7 @@ object UniqueTriggerActivation {
 
                 val terrain = ruleSet.terrains[unique.params[0]] ?: return false
                 if (terrain.type.isBaseTerrain) return false
-                if (terrain.type == TerrainType.NaturalWonder)
+                if (terrain.type == TerrainType.NaturalWonder) // Ignores all "must be" limitations
                     NaturalWonderGenerator.placeNaturalWonder(terrain, tile)
                 tile.addTerrainFeature(terrain.name)
 
