@@ -375,8 +375,16 @@ enum class UniqueParameterType(
     /** Used by [NaturalWonderGenerator.trySpawnOnSuitableLocation][com.unciv.logic.map.mapgenerator.NaturalWonderGenerator.trySpawnOnSuitableLocation], only tests base terrain */
     BaseTerrain("baseTerrain", Constants.grassland, "The name of any terrain that is a base terrain according to the json file") {
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
-                UniqueType.UniqueParameterErrorSeverity? {
+            UniqueType.UniqueParameterErrorSeverity? {
             if (ruleset.terrains[parameterText]?.type?.isBaseTerrain == true) return null
+            return UniqueType.UniqueParameterErrorSeverity.RulesetSpecific
+        }
+    },
+
+    TerrainFeature("terrainFeature", Constants.forest, "The name of any terrain that is a base terrain according to the json file") {
+        override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
+            UniqueType.UniqueParameterErrorSeverity? {
+            if (ruleset.terrains[parameterText]?.type?.isBaseTerrain == false) return null
             return UniqueType.UniqueParameterErrorSeverity.RulesetSpecific
         }
     },

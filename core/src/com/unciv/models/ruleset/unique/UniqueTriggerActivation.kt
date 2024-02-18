@@ -16,10 +16,12 @@ import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.civilization.PolicyAction
 import com.unciv.logic.civilization.TechAction
 import com.unciv.logic.civilization.managers.ReligionState
+import com.unciv.logic.map.mapgenerator.NaturalWonderGenerator
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.UpgradeUnitAction
 import com.unciv.models.ruleset.BeliefType
+import com.unciv.models.ruleset.tile.TerrainType
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
 import com.unciv.models.translations.fillPlaceholders
@@ -808,9 +810,33 @@ object UniqueTriggerActivation {
                 unit.promotions.removePromotion(promotion)
                 return true
             }
-            else -> {}
+
+            UniqueType.OneTimeCreateTerrainFeatureImprovement -> {
+                if (tile == null) return false
+                val improvement = ruleSet.tileImprovements[unique.params[0]]
+                if (improvement != null) { // Ignores "can be built on"
+                    tile.changeImprovement(improvement.name, civInfo, unit)
+                    return true
+                }
+
+                val terrain = ruleSet.terrains[unique.params[0]] ?: return false
+                if (terrain.type.isBaseTerrain) return false
+                if (terrain.type == TerrainType.NaturalWonder)
+                    NaturalWonderGenerator.placeNaturalWonder(terrain, tile)
+                tile.addTerrainFeature(terrain.name)
+
+                return true
+            }
+            UniqueType.OneTimeChangeTerrain -> {
+                if (tile == null) return false
+                val terrain = ruleSet.terrains[unique.params[0]] ?: return false
+                if (terrain.type == TerrainType.TerrainFeature) return false
+                tile.setBaseTerrain(terrain)
+                return true
+            }
+
+            else -> return false
         }
-        return false
     }
 
     private fun getNotificationText(notification: String?, triggerNotificationText: String?, effectNotificationText: String): String? {

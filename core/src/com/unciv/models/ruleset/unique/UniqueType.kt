@@ -755,6 +755,9 @@ enum class UniqueType(
     SkipPromotion("Doing so will consume this opportunity to choose a Promotion", UniqueTarget.Promotion),
     FreePromotion("This Promotion is free", UniqueTarget.Promotion),
 
+    OneTimeCreateTerrainFeatureImprovement("Create a [terrainFeature/improvement] on this tile", UniqueTarget.UnitTriggerable),
+    OneTimeChangeTerrain("Turn this tile into a [baseTerrain]", UniqueTarget.UnitTriggerable),
+
     UnitsGainPromotion("[mapUnitFilter] units gain the [promotion] promotion", UniqueTarget.Triggerable),  // Not used in Vanilla
     FreeStatBuildings("Provides the cheapest [stat] building in your first [positiveAmount] cities for free", UniqueTarget.Triggerable),  // used in Policy
     FreeSpecificBuildings("Provides a [buildingName] in your first [positiveAmount] cities for free", UniqueTarget.Triggerable),  // used in Policy
