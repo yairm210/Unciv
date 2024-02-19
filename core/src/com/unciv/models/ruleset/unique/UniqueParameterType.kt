@@ -381,7 +381,7 @@ enum class UniqueParameterType(
         }
     },
 
-    TerrainFeature("terrainFeature", Constants.forest, "The name of any terrain that is a base terrain according to the json file") {
+    TerrainFeature("terrainFeature", Constants.forest, "The name of any terrain that is NOT a base terrain") {
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
             UniqueType.UniqueParameterErrorSeverity? {
             if (ruleset.terrains[parameterText]?.type?.isBaseTerrain == false) return null
