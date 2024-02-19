@@ -27,6 +27,7 @@ import com.unciv.models.stats.Stats
 import com.unciv.models.translations.fillPlaceholders
 import com.unciv.models.translations.hasPlaceholderParameters
 import com.unciv.ui.components.extensions.addToMapOfSets
+import com.unciv.ui.screens.mapeditorscreen.TileInfoNormalizer
 import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionsUpgrade
 import kotlin.math.roundToInt
 import kotlin.random.Random
@@ -820,18 +821,20 @@ object UniqueTriggerActivation {
                 }
 
                 val terrain = ruleSet.terrains[unique.params[0]] ?: return false
-                if (terrain.type.isBaseTerrain) return false
-                if (terrain.type == TerrainType.NaturalWonder) // Ignores all "must be" limitations
-                    NaturalWonderGenerator.placeNaturalWonder(terrain, tile)
+                if (terrain.type != TerrainType.TerrainFeature) return false
                 tile.addTerrainFeature(terrain.name)
-
+                TileInfoNormalizer.normalizeToRuleset(tile, ruleSet)
                 return true
             }
             UniqueType.OneTimeChangeTerrain -> {
                 if (tile == null) return false
                 val terrain = ruleSet.terrains[unique.params[0]] ?: return false
                 if (terrain.type == TerrainType.TerrainFeature) return false
-                tile.setBaseTerrain(terrain)
+
+                if (terrain.type == TerrainType.NaturalWonder) // Ignores all "must be" limitations
+                    NaturalWonderGenerator.placeNaturalWonder(terrain, tile)
+                else tile.setBaseTerrain(terrain)
+                TileInfoNormalizer.normalizeToRuleset(tile, ruleSet)
                 return true
             }
 
