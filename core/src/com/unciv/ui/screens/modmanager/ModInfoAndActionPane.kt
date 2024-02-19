@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.unciv.logic.github.Github
 import com.unciv.logic.github.GithubAPI
 import com.unciv.models.metadata.BaseRuleset
 import com.unciv.models.ruleset.Ruleset
@@ -15,7 +16,8 @@ import com.unciv.ui.components.extensions.toCheckBox
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
 import com.unciv.ui.components.input.onClick
-import com.unciv.logic.github.Github
+import com.unciv.ui.components.input.onRightClick
+import com.unciv.ui.popups.ToastPopup
 import com.unciv.utils.Concurrency
 import kotlin.math.max
 
@@ -87,9 +89,15 @@ internal class ModInfoAndActionPane : Table() {
 
         // offer link to open the repo itself in a browser
         if (repoUrl.isNotEmpty()) {
-            add("Open Github page".toTextButton().onClick {
+            val githubButton = "Open Github page".toTextButton()
+            githubButton.onClick {
                 Gdx.net.openURI(repoUrl)
-            }).row()
+            }
+            githubButton.onRightClick {
+                Gdx.app.clipboard.contents = repoUrl
+                ToastPopup("Link copied to clipboard", stage)
+            }
+            add(githubButton).row()
         }
 
         // display "updated" date
