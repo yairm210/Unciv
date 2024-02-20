@@ -1937,6 +1937,12 @@ Due to performance considerations, this unique is cached, thus conditionals may 
 
 	Applicable to: Conditional
 
+??? example  "&lt;while researching [tech]&gt;"
+	This condition is fulfilled while the technology is actively being researched (it is the one research points are added to)
+	Example: "&lt;while researching [Agriculture]&gt;"
+
+	Applicable to: Conditional
+
 ??? example  "&lt;if no other Civilization has adopted this&gt;"
 	Applicable to: Conditional
 
