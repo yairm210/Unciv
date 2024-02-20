@@ -600,7 +600,11 @@ enum class UniqueType(
     AutomatedWorkersWillReplace("Will be replaced by automated workers", UniqueTarget.Improvement),
     //endregion
 
-    ///////////////////////////////////////// region 07 CONDITIONALS /////////////////////////////////////////
+    /////////////////////////////////// region 07 PERSONALITY UNIQUES ////////////////////////////////////////
+
+    WillNotBuild("Will not build [baseUnitFilter/buildingFilter]", UniqueTarget.Personality),
+
+    ///////////////////////////////////////// region 08 CONDITIONALS /////////////////////////////////////////
 
 
     /////// general conditionals
@@ -708,7 +712,7 @@ enum class UniqueType(
 
     //endregion
 
-    ///////////////////////////////////////// region 08 TRIGGERED ONE-TIME /////////////////////////////////////////
+    ///////////////////////////////////////// region 09 TRIGGERED ONE-TIME /////////////////////////////////////////
 
 
     OneTimeFreeUnit("Free [unit] appears", UniqueTarget.Triggerable),  // used in Policies, Buildings
@@ -763,7 +767,8 @@ enum class UniqueType(
 
     //endregion
 
-///////////////////////////////////////// region 09 TRIGGERS /////////////////////////////////////////
+
+    ///////////////////////////////////////// region 10 TRIGGERS /////////////////////////////////////////
 
     TriggerUponResearch("upon discovering [tech]", UniqueTarget.TriggerCondition),
     TriggerUponEnteringEra("upon entering the [era]", UniqueTarget.TriggerCondition),
@@ -790,7 +795,7 @@ enum class UniqueType(
     //endregion
 
 
-    ///////////////////////////////////////// region 10 UNIT TRIGGERS /////////////////////////////////////////
+    ///////////////////////////////////////// region 11 UNIT TRIGGERS /////////////////////////////////////////
 
     TriggerUponDefeatingUnit("upon defeating a [mapUnitFilter] unit", UniqueTarget.UnitTriggerCondition),
     TriggerUponDefeat("upon being defeated", UniqueTarget.UnitTriggerCondition),

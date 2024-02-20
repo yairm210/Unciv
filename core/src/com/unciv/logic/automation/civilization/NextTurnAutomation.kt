@@ -458,6 +458,7 @@ object NextTurnAutomation {
     }
 
     private fun trainSettler(civInfo: Civilization) {
+        val personality = civInfo.getPersonality()
         if (civInfo.isCityState()) return
         if (civInfo.isAtWar()) return // don't train settlers when you could be training troops.
         if (civInfo.wantsToFocusOn(Victory.Focus.Culture) && civInfo.cities.size > 3 &&
@@ -467,7 +468,9 @@ object NextTurnAutomation {
         if (civInfo.getHappiness() <= civInfo.cities.size) return
 
         val settlerUnits = civInfo.gameInfo.ruleset.units.values
-                .filter { it.isCityFounder() && it.isBuildable(civInfo) }
+                .filter { it.isCityFounder() && it.isBuildable(civInfo) &&
+                    personality.getMatchingUniques(UniqueType.WillNotBuild, StateForConditionals(civInfo))
+                        .none { unique -> it.matchesFilter(unique.params[0]) } }
         if (settlerUnits.isEmpty()) return
         if (!civInfo.units.getCivUnits().none { it.hasUnique(UniqueType.FoundCity) }) return
 
