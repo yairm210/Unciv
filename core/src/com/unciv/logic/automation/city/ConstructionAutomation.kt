@@ -30,7 +30,7 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
     
     private val personality = civInfo.getPersonality()
     
-    private val constructionsToAvoid = personality.getMatchingUniques(UniqueType.WillNotBuild, StateForConditionals(civInfo))
+    private val constructionsToAvoid = personality.getMatchingUniques(UniqueType.WillNotBuild, StateForConditionals(city))
         .map{ it.params[0] }
     private fun shouldAvoidConstruction (construction: IConstruction): Boolean {
         for (toAvoid in constructionsToAvoid) {
