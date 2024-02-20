@@ -712,7 +712,7 @@ class UnitMovement(val unit: MapUnit) {
                 // We should only be able to move to tiles that our escort can also move to
                 val escortDistanceToTiles = unit.getOtherEscortUnit()!!.movement
                     .getDistanceToTiles(considerZoneOfControl, includeOtherEscortUnit = false)
-                distanceToTiles.removeAllTilesNotInSet(escortDistanceToTiles)
+                distanceToTiles.keys.removeIf { !escortDistanceToTiles.containsKey(it) }
             }
         }
         return distanceToTiles
@@ -849,14 +849,5 @@ class PathsToTilesWithinTurn : LinkedHashMap<Tile, UnitMovement.ParentTileAndTot
             currentTile = get(currentTile)!!.parentTile
         }
         return reversePathList.reversed()
-    }
-    
-    fun removeAllTilesNotInSet(otherPathsToTiles: PathsToTilesWithinTurn) {
-        val iterator = this.iterator()
-        while(iterator.hasNext()) {
-            if (!otherPathsToTiles.contains(iterator.next().key)) {
-                iterator.remove()
-            }
-        }
     }
 }
