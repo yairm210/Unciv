@@ -238,8 +238,7 @@ class UnitMovement(val unit: MapUnit) {
      * @return The tile that we reached this turn
      */
     fun headTowards(destination: Tile): Tile {
-        val escortUnit = if (unit.getOtherEscortUnit() != null && unit.escorting)
-            unit.getOtherEscortUnit() else null
+        val escortUnit = if (unit.isEscorting()) unit.getOtherEscortUnit() else null
         val startTile = unit.getTile()
         val destinationTileThisTurn = getTileToMoveToThisTurn(destination)
         moveToTile(destinationTileThisTurn)
@@ -279,14 +278,11 @@ class UnitMovement(val unit: MapUnit) {
             unit.isPreparingParadrop() ->
                 unit.getTile().getTilesInDistance(unit.cache.paradropRange)
                     .filter { unit.movement.canParadropOn(it) }
-            else -> {
-                if (includeOtherEscortUnit && unit.isEscorting()) {
+            includeOtherEscortUnit && unit.isEscorting() -> {
                     val otherUnitTiles = unit.getOtherEscortUnit()!!.movement.getReachableTilesInCurrentTurn(false).toSet()
                     unit.movement.getDistanceToTiles().filter { otherUnitTiles.contains(it.key) }.keys.asSequence()
-                } else {
-                    unit.movement.getDistanceToTiles().keys.asSequence()
-                }
-            }
+                } 
+            else -> unit.movement.getDistanceToTiles().keys.asSequence()
         }
     }
 

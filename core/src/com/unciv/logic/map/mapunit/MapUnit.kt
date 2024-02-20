@@ -890,9 +890,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
     }
 
     fun stopEscorting() {
-        if (getOtherEscortUnit() != null) {
-            getOtherEscortUnit()!!.escorting = false
-        }
+        getOtherEscortUnit()?.escorting = false
         escorting = false
         movement.clearPathfindingCache()
     }
