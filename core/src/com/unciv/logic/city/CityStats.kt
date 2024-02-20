@@ -606,8 +606,13 @@ class CityStats(val city: City) {
             && currentConstruction.hasUnique(UniqueType.ConvertFoodToProductionWhenConstructed))
     }
 
-    // calculate the conversion of the excessive food to the production
-    // See for details: https://civilization.fandom.com/wiki/Settler_(Civ5)
+    /**
+     * Calculate the conversion of the excessive food to production when
+     * [UniqueType.ConvertFoodToProductionWhenConstructed] is at front of the build queue
+     * @param food is amount of excess Food generates this turn
+     * See for details: https://civilization.fandom.com/wiki/Settler_(Civ5)
+     * @see calcFoodEaten as well for Food consumed this turn
+     */
     fun getProductionFromExcessiveFood(food : Float): Float {
         return if (food >= 4.0f ) 2.0f + (food / 4.0f).toInt()
           else if (food >= 2.0f ) 2.0f
