@@ -763,8 +763,7 @@ enum class UniqueType(
 
     //endregion
 
-
-    ///////////////////////////////////////// region 09 TRIGGERS /////////////////////////////////////////
+///////////////////////////////////////// region 09 TRIGGERS /////////////////////////////////////////
 
     TriggerUponResearch("upon discovering [tech]", UniqueTarget.TriggerCondition),
     TriggerUponEnteringEra("upon entering the [era]", UniqueTarget.TriggerCondition),
