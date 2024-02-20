@@ -712,6 +712,10 @@ class Civilization : IsPartOfGameInfoSerialization {
         tacticalAI.init(this)
 
         cache.setTransients()
+
+        thingsToFocusOnForVictory = emptySet()
+        for (victory in getPreferredVictoryTypeObjects())
+            thingsToFocusOnForVictory += victory.getThingsToFocus(this)
     }
 
 

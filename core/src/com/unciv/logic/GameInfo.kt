@@ -648,11 +648,6 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
 
 
         for (civInfo in civilizations) civInfo.setTransients()
-        for (civInfo in civilizations) {
-            civInfo.thingsToFocusOnForVictory = emptySet()
-            for (victory in civInfo.getPreferredVictoryTypeObjects())
-                civInfo.thingsToFocusOnForVictory += victory.getThingsToFocus(civInfo)
-        }
         tileMap.setNeutralTransients() // has to happen after civInfo.setTransients() sets owningCity
 
         convertFortify()
