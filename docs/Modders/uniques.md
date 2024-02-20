@@ -190,6 +190,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: UnitTriggerable
 
+??? example  "Turn this tile into a [terrain] tile"
+	Example: "Turn this tile into a [Unknown] tile"
+
+	Applicable to: UnitTriggerable
+
 ## Global uniques
 !!! note ""
 
