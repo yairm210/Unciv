@@ -17,13 +17,14 @@ enum class PersonalityValue {
     Culture,
     Happiness,
     Faith,
+
     // Behaviour focused personalities
-    Militaristic, // Building a mility but not nessesarily using it
-    WarMongering, // Declaring war and expanding or defending
-    Trading, // Trading frequency, open borders and liberating city-states
+    Militaristic, // Building a military but not nessesarily using it
+    WarMongering, // Declaring war determines expanding or defending
+    Commerce, // Trading frequency, open borders and liberating city-states, less negative diplomacy impact
     Diplomatic, // Likelyhood of signing friendship, defensive pact, peace treaty and other diplomatic actions
     Loyalty, // Likelyhood to make a long lasting aliance with another civ and join wars with them
-    Expansion, // Building new cities, oposite of a cultural victory, capturing cities instead of razing or liberating
+    Expansion, // Founding/capturing new cities, oposite of a cultural victory
 }
 
 class Personality: RulesetObject() {
@@ -34,10 +35,10 @@ class Personality: RulesetObject() {
     var culture: Float = 5f
     var happiness: Float = 5f
     var faith: Float = 5f
-    
+
     var militaristic: Float = 5f
-    var warMongering: Float = 5f // Todo: Look into where this should be inserted
-    var trading: Float = 5f
+    var warMongering: Float = 5f
+    var commerce: Float = 5f
     var diplomatic: Float = 5f
     var loyalty: Float = 5f
     var expansion: Float = 5f
@@ -57,7 +58,7 @@ class Personality: RulesetObject() {
             PersonalityValue.Faith -> ::faith
             PersonalityValue.Militaristic -> ::militaristic
             PersonalityValue.WarMongering -> ::warMongering
-            PersonalityValue.Trading -> ::trading
+            PersonalityValue.Commerce -> ::commerce
             PersonalityValue.Diplomatic -> ::diplomatic
             PersonalityValue.Loyalty -> ::loyalty
             PersonalityValue.Expansion -> ::expansion

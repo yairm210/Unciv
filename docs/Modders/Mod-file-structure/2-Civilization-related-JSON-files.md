@@ -102,8 +102,7 @@ Each personality has the following structure:
 | --------- | ---- | ------- | ----- |
 | name | String | Required | |
 | preferredVictoryType | String | Neutral | The victory type major civilizations will pursue (need not be specified in [VictoryTypes.json](5-Miscellaneous-JSON-files.md#victorytypesjson)) |
-| [`<stats>`](3-Map-related-JSON-files.md#general-stat) | Float | 5 | Amount of focus on the stat the computer player will have. Typically ranges from 0 (no focus) to 10 (double focus) |
-| military | Float | 5 | Amount of focus on the military growth the computer player will have. Typically ranges from 0 (no focus) to 10 (double focus) |
+| [`<stats>`](3-Map-related-JSON-files.md#general-stat), [`<behaviors>`](3-Map-related-JSON-files.md#personality-behaviours) | Float | 5 | Amount of focus on the stat the computer player will have. Typically ranges from 0 (no focus) to 10 (double focus) |
 | priorities | Object | none | Priorities for each policy branch [^B] |
 | uniques | List | empty | List of [unique abilities](../uniques) this personality has |
 | civilopediaText | List | empty | See [civilopediaText chapter](5-Miscellaneous-JSON-files.md#civilopedia-text) |
@@ -122,6 +121,17 @@ The code below is an example of a valid "priorities" definition.
     "Honor": 10
 }
 ```
+
+### Personality Behaviours
+There are 6 defining behaviours that influnce an AI Civilization's behaviour. A higher value means they will behave more like the attribute.
+
+- Militaristic: Determines how much does the civilization prioritize building a military, but not nessesarily using it. A higher value means more focus on military, a lower value means it is likely more peacefull.
+- WarMongering: Determines how likely the civilization is to declares war. A higher value means the civilization is more aggressive, a lower value means it is more defensive.
+- Commerce: Determines how open the civilization is to trade, value open borders and liberate city-states. Higher value means more trading frequency even with civilizations they don't like.
+- Diplomatic: Determines how likely is the civilization to declare friendship, a defensive pact, peace treaty or other diplomatic actions.
+- Loyalty: Determines how much the civilization values a long lasting aliance, how willing they are to join wars with them and how much they dispise other unreliable civilizations.
+- Expansion: Determines how focused the civilization is on founding or capturing new cities. A lower value means they might focus on culture more.
+
 
 ## CityStateTypes.json
 
