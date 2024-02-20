@@ -16,15 +16,18 @@ import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.civilization.PolicyAction
 import com.unciv.logic.civilization.TechAction
 import com.unciv.logic.civilization.managers.ReligionState
+import com.unciv.logic.map.mapgenerator.NaturalWonderGenerator
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.UpgradeUnitAction
 import com.unciv.models.ruleset.BeliefType
+import com.unciv.models.ruleset.tile.TerrainType
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
 import com.unciv.models.translations.fillPlaceholders
 import com.unciv.models.translations.hasPlaceholderParameters
 import com.unciv.ui.components.extensions.addToMapOfSets
+import com.unciv.ui.screens.mapeditorscreen.TileInfoNormalizer
 import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionsUpgrade
 import kotlin.math.roundToInt
 import kotlin.random.Random
@@ -923,6 +926,28 @@ object UniqueTriggerActivation {
                     ?: return null
                 return {
                     unit.promotions.removePromotion(promotion)
+                    true
+                }
+            }
+
+            UniqueType.OneTimeChangeTerrain -> {
+                if (tile == null) return null
+                val terrain = ruleSet.terrains[unique.params[0]] ?: return null
+                if (terrain.type == TerrainType.TerrainFeature && !terrain.occursOn.contains(tile.lastTerrain.name))
+                    return null
+                if (tile.terrainFeatures.contains(terrain.name)) return null
+                if (tile.isCityCenter() && terrain.type != TerrainType.Land) return null
+                if (terrain.type.isBaseTerrain && tile.baseTerrain == terrain.name) return null
+
+                return {
+                    when (terrain.type) {
+                        TerrainType.Land, TerrainType.Water -> tile.setBaseTerrain(terrain)
+                        TerrainType.TerrainFeature -> tile.addTerrainFeature(terrain.name)
+                        TerrainType.NaturalWonder -> NaturalWonderGenerator.placeNaturalWonder(terrain, tile)
+                    }
+                    TileInfoNormalizer.normalizeToRuleset(tile, ruleSet)
+                    tile.getUnits().filter { !it.movement.canPassThrough(tile) }.toList()
+                        .forEach { it.movement.teleportToClosestMoveableTile() }
                     true
                 }
             }

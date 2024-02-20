@@ -30,6 +30,7 @@ enum class UniqueTarget(
 
     // Civilization-specific
     Nation(inheritsFrom = Global),
+    Personality,
     Era(inheritsFrom = Global),
     Tech(inheritsFrom = Global),
     Policy(inheritsFrom = Global),
@@ -57,7 +58,6 @@ enum class UniqueTarget(
     Tutorial,
     CityState(inheritsFrom = Global),
     ModOptions,
-    Personality,
 
     // Modifiers
     Conditional("Modifiers that can be added to other uniques to limit when they will be active", modifierType = ModifierType.Conditional),

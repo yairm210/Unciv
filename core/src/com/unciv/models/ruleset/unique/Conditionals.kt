@@ -142,6 +142,7 @@ object Conditionals {
             UniqueType.ConditionalIfStartingInEra -> checkOnGameInfo { gameParameters.startingEra == condition.params[0] }
             UniqueType.ConditionalTech -> checkOnCiv { tech.isResearched(condition.params[0]) }
             UniqueType.ConditionalNoTech -> checkOnCiv { !tech.isResearched(condition.params[0]) }
+            UniqueType.ConditionalWhileResearching -> checkOnCiv { tech.currentTechnologyName() == condition.params[0] }
 
             UniqueType.ConditionalAfterPolicyOrBelief ->
                 checkOnCiv { policies.isAdopted(condition.params[0]) || religionManager.religion?.hasBelief(condition.params[0]) == true }

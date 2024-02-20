@@ -481,7 +481,11 @@
             {"text":"Reveal known resources on world screen","header":5,"color":"#fa0"},
             {"text":"In the Resources overview, click on a resource icon to center the world screen on tiles already discovered and providing this resource."},
             {"text":"Alternatively, click on the \"Unimproved\" number to center the world screen only on owned tiles where the resource is not improved."},
-            {"text":"If more than one tile is available, click repeatedly on the notification to cycle through all of them."}
+            {"text":"If more than one tile is available, click repeatedly on the notification to cycle through all of them."},
+            {},
+            {"text":"External links","header":5,"color":"#fa0"},
+            {"text":"External links support right-click or long press to copy the link to the clipboard instead of launching the browser."},
+            {"text":"Example: The 'Open Github page' button on the Mod management screen."}
         ]
     }
 ]

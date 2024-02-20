@@ -600,7 +600,11 @@ enum class UniqueType(
     AutomatedWorkersWillReplace("Will be replaced by automated workers", UniqueTarget.Improvement),
     //endregion
 
-    ///////////////////////////////////////// region 07 CONDITIONALS /////////////////////////////////////////
+    /////////////////////////////////// region 07 PERSONALITY UNIQUES ////////////////////////////////////////
+
+    WillNotBuild("Will not build [baseUnitFilter/buildingFilter]", UniqueTarget.Personality),
+
+    ///////////////////////////////////////// region 08 CONDITIONALS /////////////////////////////////////////
 
 
     /////// general conditionals
@@ -630,6 +634,8 @@ enum class UniqueType(
     ConditionalFirstCivToResearch("if no other Civilization has researched this", UniqueTarget.Conditional),
     ConditionalTech("after discovering [tech]", UniqueTarget.Conditional),
     ConditionalNoTech("before discovering [tech]", UniqueTarget.Conditional),
+    ConditionalWhileResearching("while researching [tech]", UniqueTarget.Conditional,
+        docDescription = "This condition is fulfilled while the technology is actively being researched (it is the one research points are added to)"),
 
     ConditionalFirstCivToAdopt("if no other Civilization has adopted this", UniqueTarget.Conditional),
     ConditionalAfterPolicyOrBelief("after adopting [policy/belief]", UniqueTarget.Conditional),
@@ -708,7 +714,7 @@ enum class UniqueType(
 
     //endregion
 
-    ///////////////////////////////////////// region 08 TRIGGERED ONE-TIME /////////////////////////////////////////
+    ///////////////////////////////////////// region 09 TRIGGERED ONE-TIME /////////////////////////////////////////
 
 
     OneTimeFreeUnit("Free [unit] appears", UniqueTarget.Triggerable),  // used in Policies, Buildings
@@ -755,6 +761,8 @@ enum class UniqueType(
     SkipPromotion("Doing so will consume this opportunity to choose a Promotion", UniqueTarget.Promotion),
     FreePromotion("This Promotion is free", UniqueTarget.Promotion),
 
+    OneTimeChangeTerrain("Turn this tile into a [terrainName] tile", UniqueTarget.UnitTriggerable),
+
     UnitsGainPromotion("[mapUnitFilter] units gain the [promotion] promotion", UniqueTarget.Triggerable),  // Not used in Vanilla
     FreeStatBuildings("Provides the cheapest [stat] building in your first [positiveAmount] cities for free", UniqueTarget.Triggerable),  // used in Policy
     FreeSpecificBuildings("Provides a [buildingName] in your first [positiveAmount] cities for free", UniqueTarget.Triggerable),  // used in Policy
@@ -762,7 +770,7 @@ enum class UniqueType(
     //endregion
 
 
-    ///////////////////////////////////////// region 09 TRIGGERS /////////////////////////////////////////
+    ///////////////////////////////////////// region 10 TRIGGERS /////////////////////////////////////////
 
     TriggerUponResearch("upon discovering [tech]", UniqueTarget.TriggerCondition),
     TriggerUponEnteringEra("upon entering the [era]", UniqueTarget.TriggerCondition),
@@ -789,7 +797,7 @@ enum class UniqueType(
     //endregion
 
 
-    ///////////////////////////////////////// region 10 UNIT TRIGGERS /////////////////////////////////////////
+    ///////////////////////////////////////// region 11 UNIT TRIGGERS /////////////////////////////////////////
 
     TriggerUponDefeatingUnit("upon defeating a [mapUnitFilter] unit", UniqueTarget.UnitTriggerCondition),
     TriggerUponDefeat("upon being defeated", UniqueTarget.UnitTriggerCondition),

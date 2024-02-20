@@ -26,6 +26,7 @@ import com.unciv.models.ruleset.unique.UniqueMap
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.components.extensions.withItem
 import com.unciv.ui.components.extensions.withoutItem
+import com.unciv.ui.screens.mapeditorscreen.TileInfoNormalizer
 import com.unciv.utils.DebugUtils
 import com.unciv.utils.Log
 import kotlin.math.abs
@@ -830,6 +831,14 @@ open class Tile : IsPartOfGameInfoSerialization {
             .map { it.params[0].toInt() }.sum()
         tileHeight = if (terrainHasUnique(UniqueType.BlocksLineOfSightAtSameElevation)) unitHeight + 1
         else unitHeight
+    }
+
+    fun setBaseTerrain(baseTerrainObject: Terrain){
+        baseTerrain = baseTerrainObject.name
+        this.baseTerrainObject = baseTerrainObject
+        TileInfoNormalizer.normalizeToRuleset(this, ruleset)
+        setTerrainFeatures(terrainFeatures)
+        setTerrainTransients()
     }
 
     private fun updateUniqueMap() {
