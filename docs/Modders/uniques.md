@@ -190,13 +190,8 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: UnitTriggerable
 
-??? example  "Create a [terrainFeature/improvement] on this tile"
-	Example: "Create a [Forest] on this tile"
-
-	Applicable to: UnitTriggerable
-
-??? example  "Turn this tile into a [baseTerrain]"
-	Example: "Turn this tile into a [Grassland]"
+??? example  "Turn this tile into a [terrain] tile"
+	Example: "Turn this tile into a [Unknown] tile"
 
 	Applicable to: UnitTriggerable
 
@@ -2345,6 +2340,5 @@ Due to performance considerations, this unique is cached, thus conditionals may 
 *[stats]: For example: `+2 Production, +3 Food`. Note that the stat names need to be capitalized!
 *[stockpiledResource]: The name of any stockpiled.
 *[tech]: The name of any tech.
-*[terrainFeature]: The name of any terrain that is a base terrain according to the json file.
 *[tileFilter]: Anything that can be used either in an improvementFilter or in a terrainFilter can be used here, plus 'unimproved'
 *[victoryType]: The name of any victory type: 'Neutral', 'Cultural', 'Diplomatic', 'Domination', 'Scientific', 'Time'

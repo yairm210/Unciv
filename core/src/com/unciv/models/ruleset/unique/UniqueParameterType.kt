@@ -381,14 +381,6 @@ enum class UniqueParameterType(
         }
     },
 
-    TerrainFeature("terrainFeature", Constants.forest, "The name of any terrain that is NOT a base terrain") {
-        override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
-            UniqueType.UniqueParameterErrorSeverity? {
-            if (ruleset.terrains[parameterText]?.type?.isBaseTerrain == false) return null
-            return UniqueType.UniqueParameterErrorSeverity.RulesetSpecific
-        }
-    },
-
     /** Used by: [UniqueType.LandUnitsCrossTerrainAfterUnitGained] (CivilizationInfo.addUnit),
      *  [UniqueType.ChangesTerrain] (MapGenerator.convertTerrains) */
     TerrainName("terrainName", Constants.forest) {
