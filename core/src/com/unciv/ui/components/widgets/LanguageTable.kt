@@ -59,7 +59,7 @@ internal class LanguageTable(val language:String, val percentComplete: Int) : Ta
                 text = "Please note that translations are a community-based work in progress and are" +
                     " INCOMPLETE! The percentage shown is how much of the language is translated in-game." +
                     " If you want to help translating the game into your language, click here.",
-                link = "https://yairm210.github.io/Unciv/Other/Translating/",
+                link = "${Constants.wikiURL}Translating/",
                 size = 15
             )
             add(MarkupRenderer.render(listOf(translationDisclaimer),expectedWidth)).pad(5f).row()
