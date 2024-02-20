@@ -190,8 +190,8 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: UnitTriggerable
 
-??? example  "Turn this tile into a [terrain] tile"
-	Example: "Turn this tile into a [Unknown] tile"
+??? example  "Turn this tile into a [terrainName] tile"
+	Example: "Turn this tile into a [Forest] tile"
 
 	Applicable to: UnitTriggerable
 
@@ -949,6 +949,12 @@ Due to performance considerations, this unique is cached, thus conditionals may 
 	Example: "Comment [comment]"
 
 	Applicable to: Nation, Tech, Policy, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed
+
+## Personality uniques
+??? example  "Will not build [baseUnitFilter/buildingFilter]"
+	Example: "Will not build [Melee]"
+
+	Applicable to: Personality
 
 ## Era uniques
 ??? example  "Starting in this era disables religion"

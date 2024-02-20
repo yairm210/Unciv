@@ -1,26 +1,19 @@
 ## 4.10.11
 
-Terraforming! 
+Terraforming unique! 'Turn this tile into a [terrainName] tile'
 
-Fix timed uniques without further conditionals not getting type recognized
+Fix timed uniques without other conditionals
 
-Ensure that each uniquetype specified returns a value =- thank you amazing Kotlin compiler :)
-
-Only allow a trigger-based unit action if the trigger function is not null
-
-Allow determining *if* a unique can trigger a triggerable effect, *without* actually doing so
+Only allow a trigger-based unit action if actionable
 
 By SomeTroglodyte:
-- ConditionalWhileResearching as suggested by @woo1127 
-- External links: Right-click and some housecleaning 
-- Fix Maya "Long Count" unlock translations 
+- Conditional 'While Researching'
+- External links: Right-click and some housecleaning
+- Fix Maya "Long Count" unlock translations
 
 By SeventhM:
-- Fix victory focus being ignored 
-- Add unique for Personality to avoid building object 
-- Fix Personality documentation 
-
-Minor style updates  - By itanasi
+- Fix victory focus being ignored
+- Add unique for Personality to avoid building object
 
 ## 4.10.10
 
