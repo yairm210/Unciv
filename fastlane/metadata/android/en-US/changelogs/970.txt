@@ -1,0 +1,23 @@
+
+
+Terraforming! 
+
+Fix timed uniques without further conditionals not getting type recognized
+
+Ensure that each uniquetype specified returns a value =- thank you amazing Kotlin compiler :)
+
+Only allow a trigger-based unit action if the trigger function is not null
+
+Allow determining *if* a unique can trigger a triggerable effect, *without* actually doing so
+
+By SomeTroglodyte:
+- ConditionalWhileResearching as suggested by @woo1127 
+- External links: Right-click and some housecleaning 
+- Fix Maya "Long Count" unlock translations 
+
+By SeventhM:
+- Fix victory focus being ignored 
+- Add unique for Personality to avoid building object 
+- Fix Personality documentation 
+
+Minor style updates  - By itanasi
