@@ -858,7 +858,7 @@ object UniqueTriggerActivation {
 
             UniqueType.OneTimeUnitHeal -> {
                 if (unit == null) return null
-                if (unit.health == 100)
+                if (unit.health == 100) return null
                 return {
                     unit.healBy(unique.params[0].toInt())
                     if (notification != null)
@@ -951,9 +951,8 @@ object UniqueTriggerActivation {
                     true
                 }
             }
-            else -> {}
+            else -> return null
         }
-        return null
     }
 
     private fun getNotificationText(notification: String?, triggerNotificationText: String?, effectNotificationText: String): String? {
