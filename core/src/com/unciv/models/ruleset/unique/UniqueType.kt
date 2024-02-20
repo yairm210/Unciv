@@ -602,7 +602,7 @@ enum class UniqueType(
 
     /////////////////////////////////// region 07 PERSONALITY UNIQUES ////////////////////////////////////////
 
-    WillNotBuild("Will not build [unitFilter/buildingFilter]", UniqueTarget.Personality),
+    WillNotBuild("Will not build [baseUnitFilter/buildingFilter]", UniqueTarget.Personality),
 
     ///////////////////////////////////////// region 08 CONDITIONALS /////////////////////////////////////////
 
