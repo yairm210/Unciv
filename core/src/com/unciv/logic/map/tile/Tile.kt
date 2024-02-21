@@ -26,6 +26,7 @@ import com.unciv.models.ruleset.unique.UniqueMap
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.components.extensions.withItem
 import com.unciv.ui.components.extensions.withoutItem
+import com.unciv.ui.screens.mapeditorscreen.TileInfoNormalizer
 import com.unciv.utils.DebugUtils
 import com.unciv.utils.Log
 import kotlin.math.abs
@@ -79,6 +80,12 @@ open class Tile : IsPartOfGameInfoSerialization {
 
     @Transient
     var isOcean = false
+
+    @Transient
+    var unitHeight = 0
+
+    @Transient
+    var tileHeight = 0
 
     var militaryUnit: MapUnit? = null
     var civilianUnit: MapUnit? = null
@@ -337,6 +344,9 @@ open class Tile : IsPartOfGameInfoSerialization {
             viewingCiv.lastSeenImprovement[position]
     }
 
+    /** Returns true if this tile has fallout or an equivalent terrain feature */
+    fun hasFalloutEquivalent(): Boolean = terrainFeatures.any { ruleset.terrains[it]!!.hasUnique(UniqueType.NullifyYields)}
+
 
     // This is for performance - since we access the neighbors of a tile ALL THE TIME,
     // and the neighbors of a tile never change, it's much more efficient to save the list once and for all!
@@ -347,19 +357,6 @@ open class Tile : IsPartOfGameInfoSerialization {
 
     fun getRow() = HexMath.getRow(position)
     fun getColumn() = HexMath.getColumn(position)
-
-    @delegate:Transient
-    val tileHeight : Int by lazy { // for e.g. hill+forest this is 2, since forest is visible above units
-        if (terrainHasUnique(UniqueType.BlocksLineOfSightAtSameElevation)) unitHeight + 1
-        else unitHeight
-    }
-
-    @delegate:Transient
-    val unitHeight : Int by lazy { // for e.g. hill+forest this is 1, since only hill provides height for units
-        allTerrains.flatMap { it.getMatchingUniques(UniqueType.VisibilityElevation) }
-            .map { it.params[0].toInt() }.sum()
-    }
-
 
     fun getBaseTerrain(): Terrain = baseTerrainObject
 
@@ -387,7 +384,7 @@ open class Tile : IsPartOfGameInfoSerialization {
         return civInfo.isAtWarWith(tileOwner)
     }
 
-    fun isRoughTerrain() = allTerrains.any{ it.isRough() }
+    fun isRoughTerrain() = allTerrains.any { it.isRough() }
 
     /** Checks whether any of the TERRAINS of this tile has a certain unique */
     fun terrainHasUnique(uniqueType: UniqueType) = terrainUniqueMap.getUniques(uniqueType).any()
@@ -474,18 +471,25 @@ open class Tile : IsPartOfGameInfoSerialization {
     }
 
     // This should be the only adjacency function
-    fun isAdjacentTo(terrainFilter:String): Boolean {
+    fun isAdjacentTo(terrainFilter:String, observingCiv: Civilization?=null): Boolean {
         // Rivers are odd, as they aren't technically part of any specific tile but still count towards adjacency
         if (terrainFilter == Constants.river) return isAdjacentToRiver()
         if (terrainFilter == Constants.freshWater && isAdjacentToRiver()) return true
-        return (neighbors + this).any { neighbor -> neighbor.matchesFilter(terrainFilter) }
+        return (neighbors + this).any { neighbor -> neighbor.matchesFilter(terrainFilter, observingCiv) }
     }
 
     /** Implements [UniqueParameterType.TileFilter][com.unciv.models.ruleset.unique.UniqueParameterType.TileFilter] */
-    fun matchesFilter(filter: String, civInfo: Civilization? = null): Boolean {
+    fun matchesFilter(filter: String, civInfo: Civilization? = null, ignoreImprovement: Boolean = false): Boolean {
+        return MultiFilter.multiFilter(filter, { matchesSingleFilter(it, civInfo, ignoreImprovement) })
+    }
+
+    fun matchesSingleFilter(filter: String, civInfo: Civilization? = null, ignoreImprovement: Boolean = false): Boolean {
         if (matchesTerrainFilter(filter, civInfo)) return true
-        if (improvement != null && !improvementIsPillaged && ruleset.tileImprovements[improvement]!!.matchesFilter(filter)) return true
-        return improvement == null && filter == "unimproved"
+        if ((improvement == null || improvementIsPillaged) && filter == "unimproved") return true
+        if (improvement != null && !improvementIsPillaged && filter == "improved") return true
+        if (ignoreImprovement) return false
+        if (getUnpillagedTileImprovement()?.matchesFilter(filter) == true) return true
+        return getUnpillagedRoadImprovement()?.matchesFilter(filter) == true
     }
 
     fun matchesTerrainFilter(filter: String, observingCiv: Civilization? = null): Boolean {
@@ -495,7 +499,8 @@ open class Tile : IsPartOfGameInfoSerialization {
     /** Implements [UniqueParameterType.TerrainFilter][com.unciv.models.ruleset.unique.UniqueParameterType.TerrainFilter] */
     fun matchesSingleTerrainFilter(filter: String, observingCiv: Civilization? = null): Boolean {
         return when (filter) {
-            "All" -> true
+            "Terrain" -> true
+            in Constants.all -> true
             baseTerrain -> true
             "Water" -> isWater
             "Land" -> isLand
@@ -505,15 +510,17 @@ open class Tile : IsPartOfGameInfoSerialization {
             "Open terrain" -> !isRoughTerrain()
             "Rough terrain" -> isRoughTerrain()
 
+            "your" -> observingCiv != null && getOwner() == observingCiv
             "Foreign Land", "Foreign" -> observingCiv != null && !isFriendlyTerritory(observingCiv)
             "Friendly Land", "Friendly" -> observingCiv != null && isFriendlyTerritory(observingCiv)
             "Enemy Land", "Enemy" -> observingCiv != null && isEnemyTerritory(observingCiv)
 
             resource -> observingCiv != null && hasViewableResource(observingCiv)
+            "resource" -> observingCiv != null && hasViewableResource(observingCiv)
             "Water resource" -> isWater && observingCiv != null && hasViewableResource(observingCiv)
             "Natural Wonder" -> naturalWonder != null
             "Featureless" -> terrainFeatures.isEmpty()
-            Constants.freshWaterFilter -> isAdjacentTo(Constants.freshWater)
+            Constants.freshWaterFilter -> isAdjacentTo(Constants.freshWater, observingCiv)
 
             in terrainFeatures -> true
             else -> {
@@ -556,7 +563,7 @@ open class Tile : IsPartOfGameInfoSerialization {
     fun getTilesInDistanceRange(range: IntRange): Sequence<Tile> = tileMap.getTilesInDistanceRange(position, range)
     fun getTilesAtDistance(distance: Int): Sequence<Tile> =tileMap.getTilesAtDistance(position, distance)
 
-    fun getDefensiveBonus(): Float {
+    fun getDefensiveBonus(includeImprovementBonus: Boolean = true): Float {
         var bonus = baseTerrainObject.defenceBonus
         if (terrainFeatureObjects.isNotEmpty()) {
             val otherTerrainBonus = terrainFeatureObjects.maxOf { it.defenceBonus }
@@ -564,7 +571,7 @@ open class Tile : IsPartOfGameInfoSerialization {
         }
         if (naturalWonder != null) bonus += getNaturalWonder().defenceBonus
         val tileImprovement = getUnpillagedTileImprovement()
-        if (tileImprovement != null) {
+        if (tileImprovement != null && includeImprovementBonus) {
             for (unique in tileImprovement.getMatchingUniques(UniqueType.DefensiveBonus, StateForConditionals(tile = this)))
                 bonus += unique.params[0].toFloat() / 100
         }
@@ -819,6 +826,19 @@ open class Tile : IsPartOfGameInfoSerialization {
             naturalWonder != null -> getNaturalWonder()
             else -> getBaseTerrain()
         }
+
+        unitHeight = allTerrains.flatMap { it.getMatchingUniques(UniqueType.VisibilityElevation) }
+            .map { it.params[0].toInt() }.sum()
+        tileHeight = if (terrainHasUnique(UniqueType.BlocksLineOfSightAtSameElevation)) unitHeight + 1
+        else unitHeight
+    }
+
+    fun setBaseTerrain(baseTerrainObject: Terrain){
+        baseTerrain = baseTerrainObject.name
+        this.baseTerrainObject = baseTerrainObject
+        TileInfoNormalizer.normalizeToRuleset(this, ruleset)
+        setTerrainFeatures(terrainFeatures)
+        setTerrainTransients()
     }
 
     private fun updateUniqueMap() {
@@ -838,8 +858,10 @@ open class Tile : IsPartOfGameInfoSerialization {
         }
     }
 
-    fun addTerrainFeature(terrainFeature: String) =
-        setTerrainFeatures(ArrayList(terrainFeatures).apply { add(terrainFeature) })
+    fun addTerrainFeature(terrainFeature: String) {
+        if (!terrainFeatures.contains(terrainFeature))
+            setTerrainFeatures(ArrayList(terrainFeatures).apply { add(terrainFeature) })
+    }
 
     fun removeTerrainFeature(terrainFeature: String) =
         setTerrainFeatures(ArrayList(terrainFeatures).apply { remove(terrainFeature) })

@@ -7,8 +7,6 @@ import com.unciv.logic.civilization.PopupAlert
 import com.unciv.logic.civilization.diplomacy.CityStateFunctions
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
-import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
-import com.unciv.models.ruleset.ModOptionsConstants
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.unique.UniqueType
 
@@ -59,7 +57,7 @@ class TradeLogic(val ourCivilization:Civilization, val otherCivilization: Civili
         val otherCivsWeKnow = civInfo.getKnownCivs()
             .filter { it.civName != otherCivilization.civName && it.isMajorCiv() && !it.isDefeated() }
 
-        if (civInfo.gameInfo.ruleset.modOptions.hasUnique(ModOptionsConstants.tradeCivIntroductions)) {
+        if (civInfo.gameInfo.ruleset.modOptions.hasUnique(UniqueType.TradeCivIntroductions)) {
             val civsWeKnowAndTheyDont = otherCivsWeKnow
                 .filter { !otherCivilization.diplomacy.containsKey(it.civName) && !it.isDefeated() }
             for (thirdCiv in civsWeKnowAndTheyDont) {
@@ -68,7 +66,7 @@ class TradeLogic(val ourCivilization:Civilization, val otherCivilization: Civili
         }
 
         if (!civInfo.isCityState() && !otherCivilization.isCityState()
-                && !civInfo.gameInfo.ruleset.modOptions.hasUnique(ModOptionsConstants.diplomaticRelationshipsCannotChange)) {
+                && !civInfo.gameInfo.ruleset.modOptions.hasUnique(UniqueType.DiplomaticRelationshipsCannotChange)) {
             val civsWeBothKnow = otherCivsWeKnow
                     .filter { otherCivilization.diplomacy.containsKey(it.civName) }
             val civsWeArentAtWarWith = civsWeBothKnow
@@ -134,7 +132,7 @@ class TradeLogic(val ourCivilization:Civilization, val otherCivilization: Civili
                         from.getDiplomacyManager(to)
                             .setFlag(DiplomacyFlags.ResearchAgreement, offer.duration)
                     }
-                    if (offer.name == Constants.defensivePact) to.getDiplomacyManager(from).signDefensivePact(offer.duration);
+                    if (offer.name == Constants.defensivePact) to.getDiplomacyManager(from).signDefensivePact(offer.duration)
                 }
                 TradeType.Introduction -> to.diplomacyFunctions.makeCivilizationsMeet(to.gameInfo.getCivilization(offer.name))
                 TradeType.WarDeclaration -> {

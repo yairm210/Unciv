@@ -18,7 +18,6 @@ import com.unciv.logic.civilization.managers.AssignedQuest
 import com.unciv.logic.trade.TradeLogic
 import com.unciv.logic.trade.TradeOffer
 import com.unciv.logic.trade.TradeType
-import com.unciv.models.ruleset.ModOptionsConstants
 import com.unciv.models.ruleset.Quest
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.unique.UniqueType
@@ -70,7 +69,7 @@ class CityStateDiplomacyTable(private val diplomacyScreen: DiplomacyScreen) {
         if (diplomacyScreen.isNotPlayersTurn() || viewingCiv.isAtWarWith(otherCiv)) demandTributeButton.disable()
 
         val diplomacyManager = viewingCiv.getDiplomacyManager(otherCiv)
-        if (!viewingCiv.gameInfo.ruleset.modOptions.uniques.contains(ModOptionsConstants.diplomaticRelationshipsCannotChange)) {
+        if (!viewingCiv.gameInfo.ruleset.modOptions.hasUnique(UniqueType.DiplomaticRelationshipsCannotChange)) {
             if (viewingCiv.isAtWarWith(otherCiv))
                 diplomacyTable.add(getNegotiatePeaceCityStateButton(otherCiv, diplomacyManager)).row()
             else diplomacyTable.add(diplomacyScreen.getDeclareWarButton(diplomacyManager, otherCiv)).row()
@@ -167,14 +166,6 @@ class CityStateDiplomacyTable(private val diplomacyScreen: DiplomacyScreen) {
         }
         diplomacyTable.row().padTop(15f)
 
-        var friendBonusText = "When Friends:".tr()+"\n"
-        val friendBonusObjects = viewingCiv.cityStateFunctions.getCityStateBonuses(otherCiv.cityStateType, RelationshipLevel.Friend)
-        friendBonusText += friendBonusObjects.joinToString(separator = "\n") { it.text.tr() }
-
-        var allyBonusText = "When Allies:".tr()+"\n"
-        val allyBonusObjects = viewingCiv.cityStateFunctions.getCityStateBonuses(otherCiv.cityStateType, RelationshipLevel.Ally)
-        allyBonusText += allyBonusObjects.joinToString(separator = "\n") { it.text.tr() }
-
         val relationLevel = otherCivDiplomacyManager.relationshipIgnoreAfraid()
         if (relationLevel >= RelationshipLevel.Friend) {
             // RelationshipChange = Ally -> Friend or Friend -> Favorable
@@ -184,15 +175,21 @@ class CityStateDiplomacyTable(private val diplomacyScreen: DiplomacyScreen) {
                     .row()
         }
 
-        val friendBonusLabelColor = if (relationLevel == RelationshipLevel.Friend) Color.GREEN else Color.GRAY
-        val friendBonusLabel = ColorMarkupLabel(friendBonusText, friendBonusLabelColor)
-            .apply { setAlignment(Align.center) }
-        diplomacyTable.add(friendBonusLabel).row()
-
-        val allyBonusLabelColor = if (relationLevel == RelationshipLevel.Ally) Color.GREEN else Color.GRAY
-        val allyBonusLabel = ColorMarkupLabel(allyBonusText, allyBonusLabelColor)
-            .apply { setAlignment(Align.center) }
-        diplomacyTable.add(allyBonusLabel).row()
+        fun getBonusText(header: String, level: RelationshipLevel): String {
+            val bonuses = viewingCiv.cityStateFunctions
+                .getCityStateBonuses(otherCiv.cityStateType, level)
+                .filterNot { it.isHiddenToUsers() }
+            if (bonuses.none()) return ""
+            return (sequenceOf(header) + bonuses.map { it.text }).joinToString(separator = "\n") { it.tr() }
+        }
+        fun addBonusLabel(header: String, bonusLevel: RelationshipLevel, relationLevel: RelationshipLevel) {
+            val bonusLabelColor = if (relationLevel == bonusLevel) Color.GREEN else Color.GRAY
+            val bonusLabel = ColorMarkupLabel(getBonusText(header, bonusLevel), bonusLabelColor)
+                .apply { setAlignment(Align.center) }
+            diplomacyTable.add(bonusLabel).row()
+        }
+        addBonusLabel("When Friends:", RelationshipLevel.Friend, relationLevel)
+        addBonusLabel("When Allies:", RelationshipLevel.Ally, relationLevel)
 
         if (otherCiv.cityStateUniqueUnit != null) {
             val unitName = otherCiv.cityStateUniqueUnit

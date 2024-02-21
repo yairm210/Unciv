@@ -3,8 +3,7 @@ package com.unciv
 object Constants {
     const val settler = "Settler"
     const val eraSpecificUnit = "Era Starting Unit"
-    const val spreadReligion = "Spread Religion"
-    const val removeHeresy = "Remove Foreign religions from your own cities"
+    val all = setOf("All", "all")
 
     const val english = "English"
 
@@ -83,9 +82,6 @@ object Constants {
     const val embarked = "Embarked"
     const val wounded = "Wounded"
 
-
-    const val rising = "Rising"
-    const val lowering = "Lowering"
     const val remove = "Remove "
     const val repair = "Repair"
 
@@ -110,4 +106,10 @@ object Constants {
 
     const val defaultFontSize = 18
     const val headingFontSize = 24
+
+    /** URL to the root of the Unciv repository, including trailing slash */
+    // Note: Should the project move, this covers external links, but not comments e.g. mentioning issues
+    const val uncivRepoURL = "https://github.com/yairm210/Unciv/"
+    /** URL to the wiki, including trailing slash */
+    const val wikiURL = "https://yairm210.github.io/Unciv/"
 }

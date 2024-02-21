@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Touchable
+import com.badlogic.gdx.scenes.scene2d.ui.Cell
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
 import com.badlogic.gdx.scenes.scene2d.ui.Table
@@ -13,6 +14,10 @@ import com.badlogic.gdx.utils.SerializationException
 import com.unciv.UncivGame
 import com.unciv.json.fromJsonFile
 import com.unciv.json.json
+import com.unciv.logic.UncivShowableException
+import com.unciv.logic.github.Github
+import com.unciv.logic.github.Github.repoNameToFolderName
+import com.unciv.logic.github.GithubAPI
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.tilesets.TileSetCache
@@ -32,6 +37,7 @@ import com.unciv.ui.components.input.onActivation
 import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.widgets.AutoScrollPane
 import com.unciv.ui.components.widgets.ExpanderTab
+import com.unciv.ui.components.widgets.LoadingImage
 import com.unciv.ui.components.widgets.WrappableLabel
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popups.ConfirmPopup
@@ -41,8 +47,6 @@ import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.basescreen.RecreateOnResize
 import com.unciv.ui.screens.mainmenuscreen.MainMenuScreen
 import com.unciv.ui.screens.modmanager.ModManagementOptions.SortType
-import com.unciv.ui.screens.pickerscreens.Github
-import com.unciv.ui.screens.pickerscreens.Github.repoNameToFolderName
 import com.unciv.ui.screens.pickerscreens.PickerScreen
 import com.unciv.utils.Concurrency
 import com.unciv.utils.Log
@@ -79,6 +83,14 @@ class ModManagementScreen private constructor(
         }
     }
 
+    // Since we're `RecreateOnResize`, preserve the portrait/landscape mode for our lifetime
+    private val isPortrait: Boolean
+
+    // Will hold a LoadingImage until the online query is done, then it is freed/nulled
+    private var loading: LoadingImage? = null
+    // Holds the Cell in portrait mode which initially gets the loading image and later the options widget
+    private var optionsCell: Cell<Actor?>? = null
+
     // Left column (in landscape, portrait stacks them within expanders)
     private val installedModsTable = Table().apply { defaults().pad(10f) }
     private val scrollInstalledMods = AutoScrollPane(installedModsTable)
@@ -88,12 +100,12 @@ class ModManagementScreen private constructor(
     // Right column
     private val modActionTable = ModInfoAndActionPane()
     private val scrollActionTable = AutoScrollPane(modActionTable)
-    // Factory for the Widget floating top right
+    // Manager providing the Widget floating top right in landscape mode, stacked expander in portrait
     private val optionsManager = ModManagementOptions(this)
 
     private var lastSelectedButton: ModDecoratedButton? = null
     private var lastSyncMarkedButton: ModDecoratedButton? = null
-    private var selectedMod: Github.Repo? = null
+    private var selectedMod: GithubAPI.Repo? = null
 
     private val modDescriptionLabel: WrappableLabel
 
@@ -110,6 +122,8 @@ class ModManagementScreen private constructor(
 
     // cleanup - background processing needs to be stopped on exit and memory freed
     private var runningSearchJob: Job? = null
+    // This is only set for cleanup, not when the user stops the query (by clicking the loading icon)
+    // Therefore, finding `runningSearchJob?.isActive == false && !stopBackgroundTasks` means stopped by user
     private var stopBackgroundTasks = false
 
     override fun dispose() {
@@ -149,8 +163,10 @@ class ModManagementScreen private constructor(
         labelWrapper.add(modDescriptionLabel).row()
         labelScroll.actor = labelWrapper
 
-        if (isNarrowerThan4to3()) initPortrait()
+        isPortrait = isNarrowerThan4to3()
+        if (isPortrait) initPortrait()
         else initLandscape()
+        showLoadingImage()
 
         if (installedModInfo.isEmpty())
             refreshInstalledModInfo()
@@ -166,7 +182,8 @@ class ModManagementScreen private constructor(
     private fun initPortrait() {
         topTable.defaults().top().pad(0f)
 
-        topTable.add(optionsManager.expander).top().growX().row()
+        optionsCell = topTable.add().top().growX()
+        topTable.row()
 
         installedExpanderTab = ExpanderTab(optionsManager.getInstalledHeader(), expanderWidth = stage.width) {
             it.add(scrollInstalledMods).growX().maxHeight(stage.height / 2)
@@ -211,19 +228,57 @@ class ModManagementScreen private constructor(
         topTable.add(scrollActionTable)
         topTable.add().expandX().row()
 
-        stage.addActor(optionsManager.expander)
-        optionsManager.expanderChangeEvent = {
-            optionsManager.expander.pack()
-            optionsManager.expander.setPosition(stage.width - 2f, stage.height - 2f, Align.topRight)
+    }
+
+    private fun showLoadingImage() {
+        val loadingStyle = LoadingImage.Style(circleColor = Color.DARK_GRAY, loadingColor = Color.FIREBRICK)
+        // Size should fit where the Search and Filter expander will go, which is 48f high and set topRight with 2f margin.
+        // When changing this, please also change the setPosition in landscape mode
+        val loading = LoadingImage(40f, loadingStyle)
+        this.loading = loading
+
+        if (isPortrait) {
+            optionsCell!!.pad(4f)
+            optionsCell!!.setActor(loading)
+        } else {// mute complaints - we _know_ it's not null
+            optionsManager.expander.remove()
+            loading.setPosition(stage.width - 6f, stage.height - 6f, Align.topRight)
+            stage.addActor(loading)
         }
-        optionsManager.expanderChangeEvent?.invoke()
+
+        loading.show()  // Now that it's on stage, start animation
+        // Allow clicking the loading icon to stop the query
+        loading.onClick {
+            if (runningSearchJob?.isActive != true) return@onClick
+            runningSearchJob?.cancel()
+            markOnlineQueryIncomplete()
+            replaceLoadingWithOptions()
+        }
+    }
+
+    private fun replaceLoadingWithOptions() {
+        val actorToRemove = loading ?: return
+        loading = null
+        actorToRemove.remove()  // This is able to remove from a Cell or (the floating version) from the parent's children
+        actorToRemove.dispose()
+
+        if (isPortrait) {
+            optionsCell!!.pad(0f)
+            optionsCell!!.setActor(optionsManager.expander)
+        } else {
+            stage.addActor(optionsManager.expander)
+            optionsManager.expanderChangeEvent = {
+                optionsManager.expander.pack()
+                optionsManager.expander.setPosition(stage.width - 2f, stage.height - 2f, Align.topRight)
+            }
+            optionsManager.expanderChangeEvent?.invoke()
+        }
     }
 
     private fun reloadOnlineMods() {
         onlineModsTable.clear()
         onlineModInfo.clear()
         onlineModsTable.add(getDownloadFromUrlButton()).padBottom(15f).row()
-        onlineModsTable.add("...".toLabel()).row()
         tryDownloadPage(1)
     }
 
@@ -233,13 +288,14 @@ class ModManagementScreen private constructor(
      */
     private fun tryDownloadPage(pageNum: Int) {
         runningSearchJob = Concurrency.run("GitHubSearch") {
-            val repoSearch: Github.RepoSearch
+            val repoSearch: GithubAPI.RepoSearch
             try {
                 repoSearch = Github.tryGetGithubReposWithTopic(amountPerPage, pageNum)!!
             } catch (ex: Exception) {
                 Log.error("Could not download mod list", ex)
                 launchOnGLThread {
                     ToastPopup("Could not download mod list", this@ModManagementScreen)
+                    replaceLoadingWithOptions()
                 }
                 runningSearchJob = null
                 return@run
@@ -254,14 +310,7 @@ class ModManagementScreen private constructor(
         }
     }
 
-    private fun addModInfoFromRepoSearch(repoSearch: Github.RepoSearch, pageNum: Int) {
-        // clear and remove last cell if it is the "..." indicator
-        val lastCell = onlineModsTable.cells.lastOrNull()
-        if (lastCell != null && lastCell.actor is Label && (lastCell.actor as Label).text.toString() == "...") {
-            lastCell.setActor<Actor>(null)
-            onlineModsTable.cells.removeValue(lastCell, true)
-        }
-
+    private fun addModInfoFromRepoSearch(repoSearch: GithubAPI.RepoSearch, pageNum: Int) {
         for (repo in repoSearch.items) {
             if (stopBackgroundTasks) return
             repo.name = repo.name.repoNameToFolderName()
@@ -313,15 +362,8 @@ class ModManagementScreen private constructor(
         if (repoSearch.items.size < amountPerPage) {
             // Check: It is also not impossible we missed a mod - just inform user
             if (repoSearch.incomplete_results) {
-                val retryLabel = "Online query result is incomplete".toLabel(Color.RED)
-                retryLabel.touchable = Touchable.enabled
-                retryLabel.onClick { reloadOnlineMods() }
-                onlineModsTable.add(retryLabel)
+                markOnlineQueryIncomplete()
             }
-        } else {
-            // the page was full so there may be more pages.
-            // indicate that search will be continued
-            onlineModsTable.add("...".toLabel()).row()
         }
 
         onlineModsTable.pack()
@@ -332,6 +374,18 @@ class ModManagementScreen private constructor(
         // continue search unless last page was reached
         if (repoSearch.items.size >= amountPerPage && !stopBackgroundTasks)
             tryDownloadPage(pageNum + 1)
+        else
+            replaceLoadingWithOptions()
+    }
+
+    private fun markOnlineQueryIncomplete() {
+        val retryLabel = "Online query result is incomplete".toLabel(Color.RED)
+        retryLabel.touchable = Touchable.enabled
+        retryLabel.onClick {
+            showLoadingImage()
+            reloadOnlineMods()
+        }
+        onlineModsTable.add(retryLabel)
     }
 
     private fun syncOnlineSelected(modName: String, button: ModDecoratedButton) {
@@ -363,7 +417,7 @@ class ModManagementScreen private constructor(
         val downloadButton = "Download mod from URL".toTextButton()
         downloadButton.onClick {
             val popup = Popup(this)
-            popup.addGoodSizedLabel("Please enter the mod repository -or- archive zip -or- branch url:").row()
+            popup.addGoodSizedLabel("Please enter the mod repository -or- archive zip -or- branch -or- release url:").row()
             val textField = UncivTextField.create("").apply { maxLength = 666 }
             popup.add(textField).width(stage.width / 2).row()
             val pasteLinkButton = "Paste from clipboard".toTextButton()
@@ -375,7 +429,7 @@ class ModManagementScreen private constructor(
             actualDownloadButton.onClick {
                 actualDownloadButton.setText("Downloading...".tr())
                 actualDownloadButton.disable()
-                val repo = Github.Repo().parseUrl(textField.text)
+                val repo = GithubAPI.Repo.parseUrl(textField.text)
                 if (repo == null) {
                     ToastPopup("«RED»{Invalid link!}«»", this@ModManagementScreen)
                         .apply { isVisible = true }
@@ -392,7 +446,7 @@ class ModManagementScreen private constructor(
     }
 
     /** Used as onClick handler for the online Mod list buttons */
-    private fun onlineButtonAction(repo: Github.Repo, button: ModDecoratedButton) {
+    private fun onlineButtonAction(repo: GithubAPI.Repo, button: ModDecoratedButton) {
         syncOnlineSelected(repo.name, button)
         showModDescription(repo.name)
 
@@ -435,7 +489,7 @@ class ModManagementScreen private constructor(
     }
 
     /** Download and install a mod in the background, called both from the right-bottom button and the URL entry popup */
-    private fun downloadMod(repo: Github.Repo, postAction: () -> Unit = {}) {
+    private fun downloadMod(repo: GithubAPI.Repo, postAction: () -> Unit = {}) {
         Concurrency.run("DownloadMod") { // to avoid ANRs - we've learnt our lesson from previous download-related actions
             try {
                 val modFolder = Github.downloadAndExtract(
@@ -456,8 +510,14 @@ class ModManagementScreen private constructor(
                     unMarkUpdatedMod(repoName)
                     postAction()
                 }
+            } catch (ex: UncivShowableException) {
+                Log.error("Could not download $repo", ex)
+                launchOnGLThread {
+                    ToastPopup(ex.message, this@ModManagementScreen)
+                    postAction()
+                }
             } catch (ex: Exception) {
-                Log.error("Could not download ${repo.name}", ex)
+                Log.error("Could not download $repo", ex)
                 launchOnGLThread {
                     ToastPopup("Could not download [${repo.name}]", this@ModManagementScreen)
                     postAction()
@@ -476,7 +536,13 @@ class ModManagementScreen private constructor(
         val newModUIData = ModUIData(ruleset, isVisual)
         installedModInfo[modName] = newModUIData
         // The ModUIData in the actual button is now out of sync, but can be indexed using the new instance
-        modButtons[newModUIData]?.updateUIData(newModUIData)
+        modButtons[newModUIData]?.run {
+            updateUIData(newModUIData)
+            // The listeners have also captured a now outdated ModUIData
+            setModButtonOnClick(this, newModUIData)
+            // Simulate click to update the ModInfoAndActionPane
+            installedButtonAction(newModUIData, this)
+        }
     }
 
     /** Remove the visual indicators for an 'updated' mod after re-downloading it.
@@ -545,9 +611,12 @@ class ModManagementScreen private constructor(
 
     private fun getCachedModButton(mod: ModUIData) = modButtons.getOrPut(mod) {
         val newButton = ModDecoratedButton(mod)
-        if (mod.isInstalled) newButton.onClick { installedButtonAction(mod, newButton) }
-        else newButton.onClick { onlineButtonAction(mod.repo!!, newButton) }
+        setModButtonOnClick(newButton, mod)
         newButton
+    }
+    private fun setModButtonOnClick(button: ModDecoratedButton, mod: ModUIData) {
+        if (mod.isInstalled) button.onClick { installedButtonAction(mod, button) }
+        else button.onClick { onlineButtonAction(mod.repo!!, button) }
     }
 
     /** Rebuild the left-hand column containing all installed mods */
@@ -595,6 +664,7 @@ class ModManagementScreen private constructor(
         mod.folderLocation!!.deleteDirectory()
         reloadCachesAfterModChange()
         installedModInfo.remove(mod.name)
+        unMarkUpdatedMod(mod.name)
         refreshInstalledModTable()
     }
 
@@ -630,6 +700,7 @@ class ModManagementScreen private constructor(
         scrollOnlineMods.actor = onlineModsTable
     }
 
+    /** Updates the description label at the bottom of the screen */
     private fun showModDescription(modName: String) {
         val onlineModDescription = onlineModInfo[modName]?.description ?: "" // shows github info
         val installedModDescription = installedModInfo[modName]?.description ?: "" // shows ruleset info

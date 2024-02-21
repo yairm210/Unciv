@@ -47,10 +47,10 @@ import com.unciv.utils.debug
 import com.unciv.utils.launchOnGLThread
 import com.unciv.utils.withGLContext
 import com.unciv.utils.withThreadPoolContext
+import kotlinx.coroutines.CancellationException
 import java.io.PrintWriter
 import java.util.EnumSet
 import java.util.UUID
-import kotlinx.coroutines.CancellationException
 
 open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpecific {
 
@@ -376,7 +376,7 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
         // already has, but if we do _our_ pause before the MusicController timer notices, it will at least remember the current track.
         if (::musicController.isInitialized) musicController.pause()
         val curGameInfo = gameInfo
-        if (curGameInfo != null) files.requestAutoSave(curGameInfo)
+        if (curGameInfo != null) files.autosaves.requestAutoSave(curGameInfo)
         super.pause()
     }
 
@@ -395,7 +395,7 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
 
         val curGameInfo = gameInfo
         if (curGameInfo != null) {
-            val autoSaveJob = files.autoSaveJob
+            val autoSaveJob = files.autosaves.autoSaveJob
             if (autoSaveJob != null && autoSaveJob.isActive) {
                 // auto save is already in progress (e.g. started by onPause() event)
                 // let's allow it to finish and do not try to autosave second time
@@ -403,7 +403,7 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
                     autoSaveJob.join()
                 }
             } else {
-                files.autoSave(curGameInfo)      // NO new thread
+                files.autosaves.autoSave(curGameInfo)      // NO new thread
             }
         }
         settings.save()
@@ -450,7 +450,7 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
     fun goToMainMenu(): MainMenuScreen {
         val curGameInfo = gameInfo
         if (curGameInfo != null) {
-            files.requestAutoSaveUnCloned(curGameInfo) // Can save gameInfo directly because the user can't modify it on the MainMenuScreen
+            files.autosaves.requestAutoSaveUnCloned(curGameInfo) // Can save gameInfo directly because the user can't modify it on the MainMenuScreen
         }
         val mainMenuScreen = MainMenuScreen()
         pushScreen(mainMenuScreen)
@@ -464,7 +464,7 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
 
     companion object {
         //region AUTOMATICALLY GENERATED VERSION DATA - DO NOT CHANGE THIS REGION, INCLUDING THIS COMMENT
-        val VERSION = Version("4.9.10", 945)
+        val VERSION = Version("4.10.11", 970)
         //endregion
 
         lateinit var Current: UncivGame

@@ -8,6 +8,7 @@ import com.unciv.models.metadata.BaseRuleset
 import com.unciv.models.ruleset.nation.CityStateType
 import com.unciv.models.ruleset.nation.Difficulty
 import com.unciv.models.ruleset.nation.Nation
+import com.unciv.models.ruleset.nation.Personality
 import com.unciv.models.ruleset.tech.Era
 import com.unciv.models.ruleset.tech.TechColumn
 import com.unciv.models.ruleset.tech.Technology
@@ -15,6 +16,7 @@ import com.unciv.models.ruleset.tile.Terrain
 import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.ruleset.tile.TileResource
 import com.unciv.models.ruleset.unique.IHasUniques
+import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
@@ -68,6 +70,28 @@ class Ruleset {
     val unitTypes = LinkedHashMap<String, UnitType>()
     var victories = LinkedHashMap<String, Victory>()
     var cityStateTypes = LinkedHashMap<String, CityStateType>()
+    val personalities = LinkedHashMap<String, Personality>()
+
+    val greatGeneralUnits by lazy {
+        units.values.filter { it.hasUnique(UniqueType.GreatPersonFromCombat, StateForConditionals.IgnoreConditionals) }
+    }
+
+    /** Contains all happiness levels that moving *from* them, to one *below* them, can change uniques that apply */
+    val allHappinessLevelsThatAffectUniques by lazy {
+        sequence {
+            for (rulesetObject in (units.values + terrains.values + buildings.values + technologies.values + eras.values
+                + beliefs.values + unitPromotions.values + tileResources.values + policies.values + tileImprovements.values + globalUniques))
+                for (unique in rulesetObject.uniqueObjects)
+                    for (conditional in unique.conditionals){
+                        if (conditional.type == UniqueType.ConditionalBelowHappiness) yield(conditional.params[0].toInt())
+                        if (conditional.type == UniqueType.ConditionalBetweenHappiness){
+                            yield(conditional.params[0].toInt())
+                            yield(conditional.params[1].toInt() + 1)
+                        }
+                        if (conditional.type == UniqueType.ConditionalHappy) yield(0)
+                    }
+        }.toSet()
+    }
 
     val mods = LinkedHashSet<String>()
     var modOptions = ModOptions()
@@ -137,6 +161,7 @@ class Ruleset {
                 units.remove(it)
             }
         units.putAll(ruleset.units)
+        personalities.putAll(ruleset.personalities)
         modOptions.uniques.addAll(ruleset.modOptions.uniques)
         modOptions.constants.merge(ruleset.modOptions.constants)
 
@@ -170,6 +195,7 @@ class Ruleset {
         unitTypes.clear()
         victories.clear()
         cityStateTypes.clear()
+        personalities.clear()
     }
 
     fun allRulesetObjects(): Sequence<IRulesetObject> =
@@ -192,7 +218,8 @@ class Ruleset {
             tileResources.values.asSequence() +
             unitPromotions.values.asSequence() +
             units.values.asSequence() +
-            unitTypes.values.asSequence()
+            unitTypes.values.asSequence() +
+            personalities.values.asSequence()
             // Victories is only INamed
     fun allIHasUniques(): Sequence<IHasUniques> =
             allRulesetObjects() + sequenceOf(modOptions)
@@ -350,6 +377,11 @@ class Ruleset {
         val cityStateTypesFile = folderHandle.child("CityStateTypes.json")
         if (cityStateTypesFile.exists()) {
             cityStateTypes += createHashmap(json().fromJsonFile(Array<CityStateType>::class.java, cityStateTypesFile))
+        }
+
+        val personalitiesFile = folderHandle.child("Personalities.json")
+        if (personalitiesFile.exists()) {
+            personalities += createHashmap(json().fromJsonFile(Array<Personality>::class.java, personalitiesFile))
         }
 
 

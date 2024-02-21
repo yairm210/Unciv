@@ -20,6 +20,16 @@ import java.nio.file.attribute.BasicFileAttributes
  * [TexturePacker] documentation is [here](https://github.com/libgdx/libgdx/wiki/Texture-packer)
  */
 internal object ImagePacker {
+    private const val builtinImageSourcePath = ".."
+    private const val builtinAtlasDestinationPath = "."
+    private const val modsBasePath = "mods"
+    private const val imagesPathBase = "Images"
+    private const val existCheck2 = "Images.Icons"
+    private const val settingsFileName = "TexturePacker.settings"
+    private const val suffixUsingLinear = "Icons"
+    private const val atlasListFileName = "Atlases.json"
+    private val imageExtensions = listOf("png", "jpg", "jpeg")
+
     private fun getDefaultSettings() = TexturePacker.Settings().apply {
         // Apparently some chipsets, like NVIDIA Tegra 3 graphics chipset (used in Asus TF700T tablet),
         // don't support non-power-of-two texture sizes - kudos @yuroller!
@@ -57,17 +67,17 @@ internal object ImagePacker {
         filterMag = Texture.TextureFilter.MipMapLinearLinear // I'm pretty sure this doesn't make sense for magnification, but setting it to Linear gives strange results
     }
 
-    fun packImages(isRunFromJAR:Boolean) {
+    fun packImages(isRunFromJAR: Boolean) {
         val startTime = System.currentTimeMillis()
 
         val defaultSettings = getDefaultSettings()
 
         // Scan for Image folders and build one atlas each
         if (!isRunFromJAR)
-            packImagesPerMod("..", ".", defaultSettings)
+            packImagesPerMod(builtinImageSourcePath, builtinAtlasDestinationPath, defaultSettings)
 
         // pack for mods
-        val modDirectory = File("mods")
+        val modDirectory = File(modsBasePath)
         if (modDirectory.exists()) {
             for (mod in modDirectory.listFiles()!!) {
                 if (!mod.isHidden) {
@@ -86,14 +96,17 @@ internal object ImagePacker {
 
     // Scan multiple image folders and generate an atlas for each - if outdated
     private fun packImagesPerMod(input: String, output: String, defaultSettings: TexturePacker.Settings) {
-        if (!File("$input${File.separator}Images").exists()) return  // So we don't run this from within a fat JAR
+        val baseDir = File(input)
+        if (!File(baseDir, imagesPathBase).exists() && !File(baseDir, existCheck2).exists()) return  // So we don't run this from within a fat JAR
         val atlasList = mutableListOf<String>()
-        for ((file, packFileName) in imageFolders(input)) {
+        for ((file, packFileName) in imageFolders(baseDir)) {
             atlasList += packFileName
+            defaultSettings.filterMag = if (file.endsWith(suffixUsingLinear))
+                Texture.TextureFilter.Linear
+            else Texture.TextureFilter.MipMapLinearLinear
             packImagesIfOutdated(defaultSettings, file, output, packFileName)
         }
-        atlasList.remove("game")
-        val listFile = File("$output${File.separator}Atlases.json")
+        val listFile = File(output, atlasListFileName)
         if (atlasList.isEmpty()) listFile.delete()
         else listFile.writeText(atlasList.sorted().joinToString(",","[","]"))
     }
@@ -107,19 +120,19 @@ internal object ImagePacker {
         }
 
         // Check if outdated
-        val atlasFile = File("$output${File.separator}$packFileName.atlas")
-        if (atlasFile.exists() && File("$output${File.separator}$packFileName.png").exists()) {
+        val atlasFile = File(output, "$packFileName.atlas")
+        if (atlasFile.exists() && File(output, "$packFileName.png").exists()) {
             val atlasModTime = atlasFile.lastModified()
             if (File(input).listTree().none {
                 val attr: BasicFileAttributes = Files.readAttributes(it.toPath(), BasicFileAttributes::class.java)
                 val createdAt: Long = attr.creationTime().toMillis()
-                it.extension in listOf("png", "jpg", "jpeg")
+                it.extension in imageExtensions
                         && (it.lastModified() > atlasModTime || createdAt > atlasModTime)
             }) return
         }
 
         // An image folder can optionally have a TexturePacker settings file
-        val settingsFile = File("$input${File.separator}TexturePacker.settings")
+        val settingsFile = File(input, settingsFileName)
         val settings = if (settingsFile.exists())
             Json().fromJson(TexturePacker.Settings::class.java, settingsFile.reader(Charsets.UTF_8))
         else defaultSettings
@@ -129,12 +142,11 @@ internal object ImagePacker {
 
     // Iterator providing all Image folders to process with the destination atlas name
     private data class ImageFolderResult(val folder: String, val atlasName: String)
-    private fun imageFolders(path: String) = sequence {
-        val parent = File(path)
+    private fun imageFolders(parent: File) = sequence {
         for (folder in parent.listFiles()!!) {
             if (!folder.isDirectory) continue
-            if (folder.nameWithoutExtension != "Images") continue
-            val atlasName = if (folder.name == "Images") "game" else folder.extension
+            if (folder.nameWithoutExtension != imagesPathBase) continue
+            val atlasName = if (folder.name == imagesPathBase) "game" else folder.extension
             yield(ImageFolderResult(folder.path, atlasName))
         }
     }

@@ -19,7 +19,6 @@ import com.unciv.models.metadata.GameSetupInfo
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.translations.tr
-import com.unciv.ui.components.widgets.ExpanderTab
 import com.unciv.ui.components.extensions.addSeparator
 import com.unciv.ui.components.extensions.addSeparatorVertical
 import com.unciv.ui.components.extensions.disable
@@ -31,6 +30,7 @@ import com.unciv.ui.components.input.KeyCharAndCode
 import com.unciv.ui.components.input.keyShortcuts
 import com.unciv.ui.components.input.onActivation
 import com.unciv.ui.components.input.onClick
+import com.unciv.ui.components.widgets.ExpanderTab
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popups.ConfirmPopup
 import com.unciv.ui.popups.Popup
@@ -309,6 +309,9 @@ class NewGameScreen(
                     reuseWith("It looks like we can't make a map with the parameters you requested!")
                     row()
                     addGoodSizedLabel("Maybe you put too many players into too small a map?").row()
+                    addButton("Copy to clipboard"){
+                        Gdx.app.clipboard.contents = exception.stackTraceToString()
+                    }
                     addCloseButton()
                 }
                 Gdx.input.inputProcessor = stage
@@ -322,7 +325,7 @@ class NewGameScreen(
             newGame.isUpToDate = true // So we don't try to download it from dropbox the second after we upload it - the file is not yet ready for loading!
             try {
                 game.onlineMultiplayer.createGame(newGame)
-                game.files.requestAutoSave(newGame)
+                game.files.autosaves.requestAutoSave(newGame)
             } catch (ex: FileStorageRateLimitReached) {
                 launchOnGLThread {
                     popup.reuseWith("Server limit reached! Please wait for [${ex.limitRemainingSeconds}] seconds", true)

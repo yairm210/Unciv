@@ -58,8 +58,19 @@ fun autoPlayTab(
     ) { settings.autoPlay.showAutoPlayButton = it
         settings.autoPlay.stopAutoPlay() }
 
+    
+    optionsPopup.addCheckbox(
+        this,
+        "AutoPlay until victory",
+        settings.autoPlay.autoPlayUntilEnd, false
+    ) { settings.autoPlay.autoPlayUntilEnd = it
+        if (!it) addAutoPlayMaxTurnsSlider(this, settings, optionsPopup.selectBoxMinWidth) 
+        else optionsPopup.tabs.replacePage(optionsPopup.tabs.activePage, autoPlayTab(optionsPopup))}
 
-    addAutoPlayMaxTurnsSlider(this, settings, optionsPopup.selectBoxMinWidth)
+
+    if (!settings.autoPlay.autoPlayUntilEnd)
+        addAutoPlayMaxTurnsSlider(this, settings, optionsPopup.selectBoxMinWidth)
+    
 //    optionsPopup.addCheckbox(
 //        this,
 //        "Full AutoPlay AI",

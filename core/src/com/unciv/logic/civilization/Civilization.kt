@@ -2,6 +2,7 @@ package com.unciv.logic.civilization
 
 import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
+import com.unciv.UncivGame
 import com.unciv.json.HashMapVector2
 import com.unciv.logic.GameInfo
 import com.unciv.logic.IsPartOfGameInfoSerialization
@@ -40,6 +41,7 @@ import com.unciv.models.ruleset.Victory
 import com.unciv.models.ruleset.nation.CityStateType
 import com.unciv.models.ruleset.nation.Difficulty
 import com.unciv.models.ruleset.nation.Nation
+import com.unciv.models.ruleset.nation.Personality
 import com.unciv.models.ruleset.tech.Era
 import com.unciv.models.ruleset.tile.ResourceSupplyList
 import com.unciv.models.ruleset.tile.ResourceType
@@ -89,7 +91,7 @@ class Civilization : IsPartOfGameInfoSerialization {
 
     @Transient
     val units = UnitManager(this)
-    
+
     @Transient
     var threatManager = ThreatManager(this)
 
@@ -124,10 +126,6 @@ class Civilization : IsPartOfGameInfoSerialization {
 
     @Transient
     var passThroughImpassableUnlocked = false   // Cached Boolean equal to passableImpassables.isNotEmpty()
-
-    @Transient
-    var nonStandardTerrainDamage = false
-
 
     @Transient
     var thingsToFocusOnForVictory = setOf<Victory.Focus>()
@@ -321,7 +319,12 @@ class Civilization : IsPartOfGameInfoSerialization {
      *  city-states to contain the barbarians. Therefore, [getKnownCivs] will **not** list the barbarians
      *  for major civs, but **will** do so for city-states after some gameplay.
      */
-    fun getKnownCivs() = diplomacy.values.asSequence().map { it.otherCiv() }.filter { !it.isDefeated() }
+    fun getKnownCivs() = diplomacy.values.asSequence().map { it.otherCiv() }
+        .filter { !it.isDefeated() && !it.isSpectator() }
+
+    fun getKnownCivsWithSpectators() = diplomacy.values.asSequence().map { it.otherCiv() }
+        .filter { !it.isDefeated() }
+
     fun knows(otherCivName: String) = diplomacy.containsKey(otherCivName)
     fun knows(otherCiv: Civilization) = knows(otherCiv.civName)
 
@@ -349,27 +352,33 @@ class Civilization : IsPartOfGameInfoSerialization {
     fun hasMetCivTerritory(otherCiv: Civilization): Boolean =
             otherCiv.getCivTerritory().any { gameInfo.tileMap[it].isExplored(this) }
     fun getCompletedPolicyBranchesCount(): Int = policies.adoptedPolicies.count { Policy.isBranchCompleteByName(it) }
-    fun originalMajorCapitalsOwned(): Int = cities.count { it.isOriginalCapital && it.foundingCiv != "" && gameInfo.getCivilization(it.foundingCiv).isMajorCiv() }
     private fun getCivTerritory() = cities.asSequence().flatMap { it.tiles.asSequence() }
 
-    fun getPreferredVictoryType(): String {
+    fun getPreferredVictoryTypes(): List<String> {
         val victoryTypes = gameInfo.gameParameters.victoryTypes
         if (victoryTypes.size == 1)
-            return victoryTypes.first() // That is the most relevant one
-        val victoryType = nation.preferredVictoryType
-        return if (victoryType in gameInfo.ruleset.victories) victoryType
-               else Constants.neutralVictoryType
+            return listOf(victoryTypes.first()) // That is the most relevant one
+        val victoryType: List<String> = listOf(nation.preferredVictoryType, getPersonality().preferredVictoryType)
+            .filter { it in gameInfo.gameParameters.victoryTypes }
+        return victoryType.ifEmpty { listOf(Constants.neutralVictoryType) }
+
     }
 
     @Suppress("MemberVisibilityCanBePrivate")
-    fun getPreferredVictoryTypeObject(): Victory? {
-        val preferredVictoryType = getPreferredVictoryType()
-        return if (preferredVictoryType == Constants.neutralVictoryType) null
-               else gameInfo.ruleset.victories[getPreferredVictoryType()]!!
+    fun getPreferredVictoryTypeObjects(): List<Victory> {
+        val preferredVictoryTypes = getPreferredVictoryTypes()
+        return if (preferredVictoryTypes.contains(Constants.neutralVictoryType)) emptyList()
+               else preferredVictoryTypes.map { gameInfo.ruleset.victories[it]!! }
     }
 
     fun wantsToFocusOn(focus: Victory.Focus): Boolean {
-        return thingsToFocusOnForVictory.contains(focus)
+        return thingsToFocusOnForVictory.contains(focus) &&
+            (isAI() || UncivGame.Current.settings.autoPlay.isAutoPlayingAndFullAI())
+    }
+
+    fun getPersonality(): Personality {
+        return if (isAI() || UncivGame.Current.settings.autoPlay.isAutoPlayingAndFullAI()) gameInfo.ruleset.personalities[nation.personality] ?: Personality.neutralPersonality
+        else Personality.neutralPersonality
     }
 
     @Transient
@@ -381,7 +390,9 @@ class Civilization : IsPartOfGameInfoSerialization {
     fun updateStatsForNextTurn() {
         val previousHappiness = stats.happiness
         stats.happiness = stats.getHappinessBreakdown().values.sum().roundToInt()
-        if (stats.happiness != previousHappiness)
+        if (stats.happiness != previousHappiness && gameInfo.ruleset.allHappinessLevelsThatAffectUniques.any {
+            stats.happiness < it != previousHappiness < it // If move from being below them to not, or vice versa
+            })
             for (city in cities) city.cityStats.update(updateCivStats = false)
         stats.statsForNextTurn = stats.getStatMapForNextTurn().values.reduce { a, b -> a + b }
     }
@@ -399,7 +410,7 @@ class Civilization : IsPartOfGameInfoSerialization {
 
         for (resourceSupply in detailedCivResources) {
             if (resourceSupply.resource.isStockpiled()) continue
-            if (resourceSupply.resource.hasUnique(UniqueType.CannotBeTraded)) continue
+            if (resourceSupply.resource.hasUnique(UniqueType.CannotBeTraded, StateForConditionals(this))) continue
             // If we got it from another trade or from a CS, preserve the origin
             if (resourceSupply.isCityStateOrTradeOrigin()) {
                 newResourceSupplyList.add(resourceSupply.copy())
@@ -471,7 +482,7 @@ class Civilization : IsPartOfGameInfoSerialization {
         yieldAll(cityStateFunctions.getUniquesProvidedByCityStates(uniqueType, stateForConditionals))
         if (religionManager.religion != null)
             yieldAll(religionManager.religion!!.getFounderUniques()
-                .filter { it.isOfType(uniqueType) && it.conditionalsApply(stateForConditionals) })
+                .filter { it.type == uniqueType && it.conditionalsApply(stateForConditionals) })
 
         yieldAll(getCivResourceSupply().asSequence()
             .filter { it.amount > 0 }
@@ -695,15 +706,16 @@ class Civilization : IsPartOfGameInfoSerialization {
                     city.workedTiles.remove(workedTile)
 
         passThroughImpassableUnlocked = passableImpassables.isNotEmpty()
-        // Cache whether this civ gets nonstandard terrain damage for performance reasons.
-        nonStandardTerrainDamage = getMatchingUniques(UniqueType.DamagesContainingUnits)
-            .any { gameInfo.ruleset.terrains[it.params[0]]!!.damagePerTurn != it.params[1].toInt() }
 
         hasLongCountDisplayUnique = hasUnique(UniqueType.MayanCalendarDisplay)
 
         tacticalAI.init(this)
 
         cache.setTransients()
+
+        thingsToFocusOnForVictory = emptySet()
+        for (victory in getPreferredVictoryTypeObjects())
+            thingsToFocusOnForVictory += victory.getThingsToFocus(this)
     }
 
 
@@ -805,8 +817,8 @@ class Civilization : IsPartOfGameInfoSerialization {
     }
     // endregion
 
-    fun addCity(location: Vector2) {
-        val newCity = CityFounder().foundCity(this, location)
+    fun addCity(location: Vector2, unit: MapUnit? = null) {
+        val newCity = CityFounder().foundCity(this, location, unit)
         newCity.cityConstructions.chooseNextConstruction()
     }
 

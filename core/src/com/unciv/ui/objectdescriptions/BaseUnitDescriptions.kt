@@ -58,7 +58,7 @@ object BaseUnitDescriptions {
         lines += "$strengthLine${baseUnit.movement}${Fonts.movement}"
 
         if (baseUnit.replacementTextForUniques != "") lines += baseUnit.replacementTextForUniques
-        else baseUnit.uniquesToDescription(lines) { isOfType(UniqueType.Unbuildable) }
+        else baseUnit.uniquesToDescription(lines) { type == UniqueType.Unbuildable }
 
         if (baseUnit.promotions.isNotEmpty()) {
             val prefix = "Free promotion${if (baseUnit.promotions.size == 1) "" else "s"}:".tr() + " "
@@ -298,7 +298,7 @@ object BaseUnitDescriptions {
         for (promotion in betterUnit.promotions.filter { it !in originalUnit.promotions }) {
             // Needs tr for **individual** translations (no bracket nesting), default separator would have extra blank
             val effects = ruleset.unitPromotions[promotion]!!.uniques
-                .joinToString(",") { it.tr() }
+                .joinToString() { it.tr() }
             yield("{$promotion} ($effects)" to "Promotion/$promotion")
         }
     }

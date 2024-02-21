@@ -14,7 +14,6 @@ import com.unciv.logic.map.tile.Tile
 import com.unciv.models.metadata.GameParameters
 import com.unciv.models.metadata.GameSetupInfo
 import com.unciv.models.metadata.Player
-import com.unciv.models.ruleset.ModOptionsConstants
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.ruleset.unique.StateForConditionals
@@ -166,39 +165,41 @@ object GameStarter {
     }
 
     private fun addCivTechs(gameInfo: GameInfo, ruleset: Ruleset, gameSetupInfo: GameSetupInfo) {
-        for (civInfo in gameInfo.civilizations.filter { !it.isBarbarian() }) {
+        fun Civilization.addTechSilently(name: String) {
+            // check if the technology is in the ruleset and not already researched
+            if (!ruleset.technologies.containsKey(name)) return
+            if (tech.isResearched(name)) return
+            tech.addTechnology(name, false)
+        }
 
-        for(tech in ruleset.technologies.values.filter { it.hasUnique(UniqueType.StartingTech) })
-            {
-                civInfo.tech.addTechnology(tech.name, false)
-            }
+        for (civInfo in gameInfo.civilizations) {
+            if (civInfo.isBarbarian()) continue
+
+            for (tech in ruleset.technologies.values.filter { it.hasUnique(UniqueType.StartingTech) })
+                civInfo.addTechSilently(tech.name)
 
             if (!civInfo.isHuman())
                 for (tech in gameInfo.getDifficulty().aiFreeTechs)
-                    civInfo.tech.addTechnology(tech, false)
+                    civInfo.addTechSilently(tech)
 
             // generic start with technology unique
-            for (unique in civInfo.getMatchingUniques(UniqueType.StartsWithTech)) {
-                // get the parameter from the unique
-                val techName = unique.params[0]
-
-                // check if the technology is in the ruleset and not already researched
-                if (ruleset.technologies.containsKey(techName) && !civInfo.tech.isResearched(techName))
-                    civInfo.tech.addTechnology(techName, false)
-            }
+            for (unique in civInfo.getMatchingUniques(UniqueType.StartsWithTech))
+                civInfo.addTechSilently(unique.params[0])
 
             // add all techs to spectators
             if (civInfo.isSpectator())
                 for (tech in ruleset.technologies.values)
-                    if (!civInfo.tech.isResearched(tech.name))
-                        civInfo.tech.addTechnology(tech.name, false)
+                    civInfo.addTechSilently(tech.name)
 
-            for (tech in ruleset.technologies.values
-                    .filter { ruleset.eras[it.era()]!!.eraNumber < ruleset.eras[gameSetupInfo.gameParameters.startingEra]!!.eraNumber })
-                if (!civInfo.tech.isResearched(tech.name))
-                    civInfo.tech.addTechnology(tech.name, false)
+            // Add techs for advanced starting era
+            val startingEraNumber = ruleset.eras[gameSetupInfo.gameParameters.startingEra]!!.eraNumber
+            for (tech in ruleset.technologies.values) {
+                if (ruleset.eras[tech.era()]!!.eraNumber >= startingEraNumber) continue
+                civInfo.addTechSilently(tech.name)
+            }
 
-            civInfo.popupAlerts.clear() // Since adding technologies generates popups...
+            // Since adding technologies generates popups (addTechnology parameter showNotification only suppresses Notifications)
+            civInfo.popupAlerts.clear()
         }
     }
 
@@ -427,9 +428,8 @@ object GameStarter {
             //Trigger any global or nation uniques that should triggered.
             //We may need the starting location for some uniques, which is why we're doing it now
             val startingTriggers = (ruleset.globalUniques.uniqueObjects + civ.nation.uniqueObjects)
-            for (unique in startingTriggers.filter { !it.hasTriggerConditional() })
-                if (unique.isTriggerable)
-                    UniqueTriggerActivation.triggerCivwideUnique(unique, civ, tile = startingLocation)
+            for (unique in startingTriggers.filter { !it.hasTriggerConditional() && it.conditionalsApply(civ) })
+                UniqueTriggerActivation.triggerUnique(unique, civ, tile = startingLocation)
         }
     }
 
@@ -482,7 +482,7 @@ object GameStarter {
         settlerLikeUnits: Map<String, BaseUnit>
     ) {
         // Adjust starting units for city states
-        if (civ.isCityState() && !gameInfo.ruleset.modOptions.uniques.contains(ModOptionsConstants.allowCityStatesSpawnUnits)) {
+        if (civ.isCityState() && !gameInfo.ruleset.modOptions.hasUnique(UniqueType.AllowCityStatesSpawnUnits)) {
             val startingSettlers = startingUnits.filter { settlerLikeUnits.contains(it) }
 
             startingUnits.clear()

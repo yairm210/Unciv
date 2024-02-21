@@ -29,7 +29,8 @@ object StartNormalizer {
             }
         }
 
-        if (tileMap.mapParameters.mapResources == MapResources.strategicBalance)
+        if (tileMap.mapParameters.mapResources == MapResources.strategicBalance ||
+            tileMap.mapParameters.strategicBalance)
             placeStrategicBalanceResources(startTile, ruleset, tileData)
 
         normalizeProduction(startTile, isMinorCiv, ruleset, tileData)
@@ -128,8 +129,7 @@ object StartNormalizer {
                     999,
                     resourceTiles,
                     listOf(resource),
-                    majorDeposit = true,
-                    forcePlacement = true
+                    majorDeposit = true
                 )
             }
         }
@@ -162,9 +162,7 @@ object StartNormalizer {
 
                 if (plot.resource != null) continue
 
-                val bonusToPlace =
-                    productionBonuses.filter { plot.lastTerrain.name in it.terrainsCanBeFoundOn }
-                        .randomOrNull()
+                val bonusToPlace = productionBonuses.filter { it.generatesNaturallyOn(plot) }.randomOrNull()
                 if (bonusToPlace != null) {
                     plot.resource = bonusToPlace.name
                     productionBonusesNeeded--
@@ -219,7 +217,8 @@ object StartNormalizer {
                 else -> 0
             }
         }
-        if (tileMap.mapParameters.mapResources == MapResources.legendaryStart)
+        if (tileMap.mapParameters.mapResources == MapResources.legendaryStart  ||
+            tileMap.mapParameters.legendaryStart)
             bonusesNeeded += 2
 
         // Attempt to place one grassland at a plains-only spot (nor for minors)
@@ -280,7 +279,7 @@ object StartNormalizer {
             val validBonuses = ruleset.tileResources.values.filter {
                 it.resourceType == ResourceType.Bonus &&
                     it.food >= 1 &&
-                    plot.lastTerrain.name in it.terrainsCanBeFoundOn
+                    it.generatesNaturallyOn(plot)
             }
             val goodPlotForOasis =
                 canPlaceOasis && plot.lastTerrain.name in oasisEquivalent!!.occursOn

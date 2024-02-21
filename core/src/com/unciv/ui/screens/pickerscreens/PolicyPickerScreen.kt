@@ -15,12 +15,10 @@ import com.unciv.models.ruleset.Policy
 import com.unciv.models.ruleset.Policy.PolicyBranchType
 import com.unciv.models.ruleset.PolicyBranch
 import com.unciv.models.ruleset.unique.UniqueType
-import com.unciv.models.translations.fillPlaceholders
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.extensions.addSeparator
 import com.unciv.ui.components.extensions.center
 import com.unciv.ui.components.extensions.colorFromRGB
-import com.unciv.ui.components.extensions.darken
 import com.unciv.ui.components.extensions.disable
 import com.unciv.ui.components.extensions.enable
 import com.unciv.ui.components.extensions.pad
@@ -42,29 +40,46 @@ import java.lang.Integer.max
 import kotlin.math.abs
 import kotlin.math.min
 
-private object PolicyColors {
+private enum class PolicyColors(
+    val default: Color
+) {
+    // The getUIColor comments are picked up by UiElementDocsWriter, the actual call is not.
+    ButtonBGPickable(colorFromRGB(32,46,64)),             // getUIColor("PolicyScreen/Colors/ButtonBGPickable", colorFromRGB(32,46,64))
+    ButtonBGPickableSelected(colorFromRGB(37,87,82)),     // getUIColor("PolicyScreen/Colors/ButtonBGPickableSelected", colorFromRGB(37,87,82))
+    ButtonBGNotPickable(colorFromRGB(20,20,20)),          // getUIColor("PolicyScreen/Colors/ButtonBGNotPickable", colorFromRGB(20,20,20))
+    ButtonBGNotPickableSelected(colorFromRGB(20,20,20)),  // getUIColor("PolicyScreen/Colors/ButtonBGNotPickableSelected", colorFromRGB(20,20,20))
+    ButtonBGAdopted(colorFromRGB(1,17,19)),               // getUIColor("PolicyScreen/Colors/ButtonBGAdopted", colorFromRGB(1,17,19))
+    ButtonBGAdoptedSelected(colorFromRGB(1,17,19)),       // getUIColor("PolicyScreen/Colors/ButtonBGAdoptedSelected", colorFromRGB(1,17,19))
 
-    val policyPickable = colorFromRGB(47,67,92).darken(0.3f)
-    val policyNotPickable =  colorFromRGB(20, 20, 20)
-    val policySelected = colorFromRGB(37,87,82)
+    ButtonIconPickable(Color.WHITE),                              // getUIColor("PolicyScreen/Colors/ButtonIconPickable", Color.WHITE)
+    ButtonIconPickableSelected(Color.WHITE),                      // getUIColor("PolicyScreen/Colors/ButtonIconPickableSelected", Color.WHITE)
+    ButtonIconNotPickable(Color.valueOf("ffffff33")),         // getUIColor("PolicyScreen/Colors/ButtonIconNotPickable", Color(0xffffff33))
+    ButtonIconNotPickableSelected(Color.valueOf("ffffff33")), // getUIColor("PolicyScreen/Colors/ButtonIconNotPickableSelected", Color(0xffffff33))
+    ButtonIconAdopted(Color.GOLD),                                // getUIColor("PolicyScreen/Colors/ButtonIconAdopted", Color.GOLD)
+    ButtonIconAdoptedSelected(Color.GOLD),                        // getUIColor("PolicyScreen/Colors/ButtonIconAdoptedSelected", Color.GOLD)
 
-    val branchCompleted = colorFromRGB(255, 205, 0)
-    val branchNotAdopted = colorFromRGB(10,90,130).darken(0.5f)
-    val branchAdopted = colorFromRGB(100, 90, 10).darken(0.5f)
+    BranchBGCompleted(colorFromRGB(255,205,0)),           // getUIColor("PolicyScreen/Colors/BranchBGCompleted", colorFromRGB(255,205,0))
+    BranchBGNotAdopted(colorFromRGB(5,45,65)),            // getUIColor("PolicyScreen/Colors/BranchBGNotAdopted", colorFromRGB(5,45,65))
+    BranchBGAdopted(colorFromRGB(50,45,5)),               // getUIColor("PolicyScreen/Colors/BranchBGAdopted", colorFromRGB(50,45,5))
+
+    BranchHeaderBG(colorFromRGB(47,90,92)),               // getUIColor("PolicyScreen/Colors/BranchHeaderBG", colorFromRGB(47,90,92))
+
+    BranchLabelAdopted(colorFromRGB(150,70,40)),          // getUIColor("PolicyScreen/Colors/BranchLabelAdopted", colorFromRGB(150,70,40))
+    BranchLabelPickable(Color.WHITE),                              // getUIColor("PolicyScreen/Colors/BranchLabelPickable", Color.WHITE)
+    BranchLabelNotPickable(Color.valueOf("ffffff7f")),        // getUIColor("PolicyScreen/Colors/BranchLabelNotPickable", Color(0xffffff7f))
+
+    ;
+    val color get() = BaseScreen.skinStrings.getUIColor("PolicyScreen/Colors/$name", default)
 }
 
-private fun Policy.isPickable(viewingCiv: Civilization, canChangeState: Boolean) : Boolean {
-    if (!viewingCiv.isCurrentPlayer()
-            || !canChangeState
-            || viewingCiv.isDefeated()
-            || viewingCiv.policies.isAdopted(this.name)
-            || this.policyBranchType == PolicyBranchType.BranchComplete
-            || !viewingCiv.policies.isAdoptable(this)
-            || !viewingCiv.policies.canAdoptPolicy()
-    )
-        return false
-    return true
-}
+private fun Policy.isPickable(viewingCiv: Civilization, canChangeState: Boolean) =
+    viewingCiv.isCurrentPlayer()
+        && canChangeState
+        && !viewingCiv.isDefeated()
+        && !viewingCiv.policies.isAdopted(this.name)
+        && policyBranchType != PolicyBranchType.BranchComplete
+        && viewingCiv.policies.isAdoptable(this)
+        && viewingCiv.policies.canAdoptPolicy()
 
 private class PolicyButton(viewingCiv: Civilization, canChangeState: Boolean, val policy: Policy, size: Float = 30f) : BorderedTable(
     path = "PolicyScreen/PolicyButton",
@@ -107,26 +122,22 @@ private class PolicyButton(viewingCiv: Civilization, canChangeState: Boolean, va
     }
 
     private fun updateState() {
-
-        when {
-            isSelected && isPickable -> {
-                bgColor = PolicyColors.policySelected
-            }
-
-            isPickable -> {
-                bgColor = PolicyColors.policyPickable
-            }
-
-            isAdopted -> {
-                icon.color = Color.GOLD.cpy()
-                bgColor = colorFromRGB(10,90,100).darken(0.8f)
-            }
-
-            else -> {
-                icon.color.a = 0.2f
-                bgColor = PolicyColors.policyNotPickable
-            }
+        val colors = when {
+            isSelected && isPickable ->
+                PolicyColors.ButtonBGPickableSelected to PolicyColors.ButtonIconPickableSelected
+            isPickable ->
+                PolicyColors.ButtonBGPickable to PolicyColors.ButtonIconPickable
+            isSelected && isAdopted ->
+                PolicyColors.ButtonBGAdoptedSelected to PolicyColors.ButtonIconAdoptedSelected
+            isAdopted ->
+                PolicyColors.ButtonBGAdopted to PolicyColors.ButtonIconAdopted
+            isSelected ->
+                PolicyColors.ButtonBGNotPickableSelected to PolicyColors.ButtonIconNotPickableSelected
+            else ->
+                PolicyColors.ButtonBGNotPickable to PolicyColors.ButtonIconNotPickable
         }
+        bgColor = colors.first.color
+        icon.color = colors.second.color
     }
 }
 
@@ -185,10 +196,10 @@ class PolicyPickerScreen(
         // TODO If we'd want to use scene2d correctly, this is supposed to happen inside an overridden layout() method
         val numBranchesY = scrollPane.height / 305f
             // Landscape - arrange in as few rows as looks nice
-        if (numBranchesY > 1.5f) {
+        rowChangeCount = if (numBranchesY > 1.5f) {
             val numRows = if (numBranchesY < 2.9f) 2 else (numBranchesY + 0.1f).toInt()
-            rowChangeCount = (branches.size + numRows - 1) / numRows
-        } else rowChangeCount = branches.size
+            (branches.size + numRows - 1) / numRows
+        } else branches.size
 
 
         // Actually create and distribute the policy branches
@@ -230,9 +241,9 @@ class PolicyPickerScreen(
         }
         scrollPane.updateVisualScroll()
 
-        when(select) {
+        when (select) {
             in branches -> branchToGroup[select]?.toggle()
-            in policyNameToButton -> policyNameToButton[select]!!.also { pickPolicy(it) }
+            in policyNameToButton -> pickPolicy(policyNameToButton[select]!!)
         }
     }
 
@@ -281,7 +292,8 @@ class PolicyPickerScreen(
             val prefHeight = Sizes.paddingVertical * 2 + Sizes.iconSize * maxRow + Sizes.paddingBetweenVer * (maxRow - 1)
 
             // Main table
-            bgColor = if (viewingCiv.policies.isAdopted(branch.name)) PolicyColors.branchAdopted else PolicyColors.branchNotAdopted
+            bgColor = if (viewingCiv.policies.isAdopted(branch.name))
+                PolicyColors.BranchBGAdopted.color else PolicyColors.BranchBGNotAdopted.color
 
             // Header
             add(header).growX().row()
@@ -301,23 +313,12 @@ class PolicyPickerScreen(
             label.wrap = true
             labelTable.add(label).pad(7f, 20f, 10f, 20f).grow().row()
 
-            val conditionals = LinkedHashMap<UniqueType, ArrayList<String>>()
-
-            branch.uniqueMap[UniqueType.OnlyAvailableWhen.text]?.forEach { unique ->
-                unique.conditionals.forEach {
-                    if (it.type != null) {
-                        if (conditionals[it.type] == null)
-                            conditionals[it.type] = ArrayList()
-                        conditionals[it.type]!!.add(it.params.toString().tr())
+            if (branch.uniqueMap.getUniques(UniqueType.OnlyAvailable).any()) {
+                var warning = UniqueType.OnlyAvailable.text.tr() + ":\n"
+                for (unique in branch.uniqueMap.getUniques(UniqueType.OnlyAvailable))
+                    for (conditional in unique.conditionals) {
+                        warning += "• " + conditional.text.tr() + "\n"
                     }
-                }
-            }
-
-            if (conditionals.isNotEmpty()) {
-                var warning = UniqueType.OnlyAvailableWhen.text.tr() + ":\n"
-                for ((k, v) in conditionals) {
-                    warning += "• " + k.text.fillPlaceholders(v.joinToString()).tr() + "\n"
-                }
                 val warningLabel = ColorMarkupLabel(warning, Color.RED, fontSize = 13)
                 warningLabel.setAlignment(Align.topLeft)
                 warningLabel.wrap = true
@@ -368,7 +369,7 @@ class PolicyPickerScreen(
                 if (policy.policyBranchType == PolicyBranchType.BranchComplete)
                     continue
 
-                val button = getPolicyButton(policy, size = Sizes.iconSize)
+                val button = getPolicyButton(policy)
                 group.addActor(button)
 
                 val policyX = coords[policy.row][policy.column].first
@@ -528,8 +529,8 @@ class PolicyPickerScreen(
     }
 
     private fun getBranchHeader(branch: PolicyBranch): Table {
-        val header = BorderedTable(path="PolicyScreen/PolicyBranchHeader")
-        header.bgColor = colorFromRGB(47,90,92)
+        val header = BorderedTable(path = "PolicyScreen/PolicyBranchHeader")
+        header.bgColor = PolicyColors.BranchHeaderBG.color
         header.borderSize = 5f
         header.pad(10f)
 
@@ -564,7 +565,7 @@ class PolicyPickerScreen(
         var percentage = 0f
 
         val lockIcon = ImageGetter.getImage("OtherIcons/LockSmall")
-            .apply { color = Color.WHITE.cpy() }.toGroup(15f)
+            .apply { color = Color.WHITE }.toGroup(15f)
 
 
         if (viewingCiv.policies.isAdopted(branch.name)) {
@@ -587,17 +588,12 @@ class PolicyPickerScreen(
         val label = text.toLabel(fontSize = 14)
         label.setAlignment(Align.center)
 
-        val color = when {
-            isPickable -> PolicyColors.policyPickable
-            else -> PolicyColors.policyNotPickable
-        }
-
-        if (isAdoptedBranch)
-            label.color = colorFromRGB(150, 70, 40)
-        else if (!isPickable)
-            label.color.a = 0.5f
-        else
-            lockIcon.isVisible = false
+        label.color = when {
+            isAdoptedBranch -> PolicyColors.BranchLabelAdopted
+            isPickable -> PolicyColors.BranchLabelPickable
+            else -> PolicyColors.BranchLabelNotPickable
+        }.color
+        lockIcon.isVisible = !isPickable && !isAdoptedBranch
 
         val table = object : BorderedTable(
             path="PolicyScreen/PolicyBranchAdoptButton",
@@ -611,10 +607,10 @@ class PolicyPickerScreen(
                     progress = Image(
                         skinStrings.getUiBackground("",
                             skinStrings.roundedEdgeRectangleSmallShape,
-                            tintColor = PolicyColors.branchCompleted
+                            tintColor = PolicyColors.BranchBGCompleted.color
                         )
                     )
-                    progress!!.setSize(this.width*percentage, this.height)
+                    progress!!.setSize(this.width * percentage, this.height)
                     this.addActor(progress)
                     progress!!.toBack()
                 }
@@ -622,11 +618,14 @@ class PolicyPickerScreen(
 
             override fun sizeChanged() {
                 super.sizeChanged()
-                progress?.setSize(this.width*percentage, this.height)
+                progress?.setSize(this.width * percentage, this.height)
             }
 
         }
-        table.bgColor = color
+        table.bgColor = when {
+            isPickable -> PolicyColors.ButtonBGPickable
+            else -> PolicyColors.ButtonBGNotPickable
+        }.color
         table.borderSize = 3f
 
         table.add(label).minHeight(30f).minWidth(150f).growX()
@@ -649,8 +648,8 @@ class PolicyPickerScreen(
         return table
     }
 
-    private fun getPolicyButton(policy: Policy, size: Float): PolicyButton {
-        val button = PolicyButton(viewingCiv, canChangeState, policy, size = size)
+    private fun getPolicyButton(policy: Policy): PolicyButton {
+        val button = PolicyButton(viewingCiv, canChangeState, policy, size = Sizes.iconSize)
         button.onClick { pickPolicy(button = button) }
         if (policy.isPickable(viewingCiv, canChangeState))
             button.onDoubleClick(UncivSound.Policy) { confirmAction() }

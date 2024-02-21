@@ -179,6 +179,14 @@
             "name": "Checkbox-pressed",
             "color": "color"
         },
+        "checkbox-disabled-c": {
+            "name": "Checkbox",
+            "color": "disabled"
+        },
+        "checkbox-pressed-disabled-c": {
+            "name": "Checkbox-pressed",
+            "color": "disabled"
+        },
         "list-c": {
             "name": "RectangleWithOutline",
             "color": "color"
@@ -258,7 +266,9 @@
     "com.badlogic.gdx.scenes.scene2d.ui.CheckBox$CheckBoxStyle": {
         "default": {
             "checkboxOn": "checkbox-pressed-c",
+            "checkboxOnDisabled": "checkbox-pressed-disabled-c",
             "checkboxOff": "checkbox-c",
+            "checkboxOffDisabled": "checkbox-disabled-c",
             "font": "button",
             "fontColor": "color",
             "downFontColor": "pressed",

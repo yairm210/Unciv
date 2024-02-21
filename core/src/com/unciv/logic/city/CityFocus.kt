@@ -7,6 +7,7 @@ import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
 import com.unciv.ui.components.input.KeyboardBinding
 import com.unciv.ui.screens.cityscreen.CitizenManagementTable
+import com.unciv.ui.images.ImageGetter
 
 /**
  *  Controls automatic worker-to-tile assignment
@@ -16,6 +17,7 @@ import com.unciv.ui.screens.cityscreen.CitizenManagementTable
  *  @param  binding Bindable keyboard key in UI - this is an override, by default matching enum names in [KeyboardBinding] are assigned automatically
  *  @see    CityPopulationManager.autoAssignPopulation
  *  @see    Automation.rankStatsForCityWork
+ *  Order matters for building the [CitizenManagementTable]
  */
 enum class CityFocus(
     val label: String,
@@ -24,28 +26,31 @@ enum class CityFocus(
     binding: KeyboardBinding? = null
 ) : IsPartOfGameInfoSerialization {
     // region Enum values
-    NoFocus("Default Focus", true, null) {
+    NoFocus("Default", true, null) {
         override fun getStatMultiplier(stat: Stat) = 1f  // actually redundant, but that's two steps to see
     },
-    FoodFocus("[${Stat.Food.name}] Focus", true, Stat.Food),
-    ProductionFocus("[${Stat.Production.name}] Focus", true, Stat.Production),
-    GoldFocus("[${Stat.Gold.name}] Focus", true, Stat.Gold),
-    ScienceFocus("[${Stat.Science.name}] Focus", true, Stat.Science),
-    CultureFocus("[${Stat.Culture.name}] Focus", true, Stat.Culture),
-    GoldGrowthFocus("Gold Growth Focus", false) {
+    Manual("Manual", true, null) {
+        override fun getStatMultiplier(stat: Stat) = 1f
+    },
+    FoodFocus("${Stat.Food.character}", true, Stat.Food),
+    ProductionFocus("${Stat.Production.character}", true, Stat.Production),
+    GoldFocus("${Stat.Gold.character}", true, Stat.Gold),
+    ScienceFocus("${Stat.Science.character}", true, Stat.Science),
+    CultureFocus("${Stat.Culture.character}", true, Stat.Culture),
+    HappinessFocus("${Stat.Happiness.character}", false, Stat.Happiness),
+    FaithFocus("${Stat.Faith.character}", true, Stat.Faith),
+    GoldGrowthFocus("${Stat.Gold.character} ${Stat.Food.character}", true) {
         override fun getStatMultiplier(stat: Stat) = when (stat) {
             Stat.Gold, Stat.Food -> 2f
             else -> 1f
         }
     },
-    ProductionGrowthFocus("Production Growth Focus", false) {
+    ProductionGrowthFocus("${Stat.Production.character} ${Stat.Food.character}", true) {
         override fun getStatMultiplier(stat: Stat) = when (stat) {
             Stat.Production, Stat.Food -> 2f
             else -> 1f
         }
     },
-    FaithFocus("[${Stat.Faith.name}] Focus", true, Stat.Faith),
-    HappinessFocus("[${Stat.Happiness.name}] Focus", false, Stat.Happiness),
     //GreatPersonFocus
 
     ;
@@ -71,5 +76,14 @@ enum class CityFocus(
         fun safeValueOf(stat: Stat): CityFocus {
             return values().firstOrNull { it.stat == stat } ?: NoFocus
         }
+
+        // set used in Automation. All non-Food Focuses, so targets 0 Surplus Food
+        fun zeroFoodFocuses(): Set<CityFocus> {
+            return setOf(
+                CultureFocus, FaithFocus, GoldFocus,
+                HappinessFocus, ProductionFocus, ScienceFocus
+            )
+        }
     }
 }
+

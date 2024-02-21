@@ -1,5 +1,6 @@
 package com.unciv.models.ruleset
 
+import com.unciv.Constants
 import com.unciv.logic.MultiFilter
 import com.unciv.logic.city.City
 import com.unciv.logic.city.CityConstructions
@@ -7,9 +8,10 @@ import com.unciv.logic.civilization.Civilization
 import com.unciv.models.Counter
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.tile.TileImprovement
-import com.unciv.models.ruleset.unique.Unique
+import com.unciv.models.ruleset.unique.Conditionals
 import com.unciv.models.ruleset.unique.LocalUniqueCache
 import com.unciv.models.ruleset.unique.StateForConditionals
+import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueParameterType
 import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueType
@@ -23,7 +25,6 @@ import com.unciv.ui.objectdescriptions.BuildingDescriptions
 
 class Building : RulesetStatsObject(), INonPerpetualConstruction {
 
-    @Deprecated("The functionality provided by the requiredTech field is provided by the OnlyAvailableWhen unique.")
     override var requiredTech: String? = null
     override var cost: Int = -1
 
@@ -106,7 +107,10 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
     override fun getProductionCost(civInfo: Civilization): Int {
         var productionCost = cost.toFloat()
 
-        for (unique in uniqueObjects.filter { it.isOfType(UniqueType.CostIncreasesPerCity) })
+        for (unique in getMatchingUniques(UniqueType.CostIncreasesWhenBuilt, StateForConditionals(civInfo)))
+            productionCost += civInfo.civConstructions.builtItemsWithIncreasingCost[name] * unique.params[0].toInt()
+
+        for (unique in getMatchingUniques(UniqueType.CostIncreasesPerCity, StateForConditionals(civInfo)))
             productionCost += civInfo.cities.size * unique.params[0].toInt()
 
         if (civInfo.isCityState())
@@ -242,7 +246,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
             yield(RejectionReasonType.AlreadyBuilt.toInstance())
 
         for (unique in uniqueObjects) {
-            if (unique.type != UniqueType.OnlyAvailableWhen &&
+            if (unique.type != UniqueType.OnlyAvailable &&
                 !unique.conditionalsApply(StateForConditionals(civ, cityConstructions.city))) continue
 
             @Suppress("NON_EXHAUSTIVE_WHEN")
@@ -252,9 +256,11 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
                 UniqueType.Unbuildable ->
                     yield(RejectionReasonType.Unbuildable.toInstance())
 
-                UniqueType.OnlyAvailableWhen ->
-                    if (!unique.conditionalsApply(civ, cityConstructions.city))
-                        yield(RejectionReasonType.ShouldNotBeDisplayed.toInstance())
+                UniqueType.OnlyAvailable ->
+                    yieldAll(onlyAvailableRejections(unique, cityConstructions))
+
+                UniqueType.Unavailable ->
+                    yield(RejectionReasonType.ShouldNotBeDisplayed.toInstance())
 
                 UniqueType.RequiresPopulation ->
                     if (unique.params[0].toInt() > cityConstructions.city.population.population)
@@ -272,7 +278,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
                         yield(RejectionReasonType.MustNotBeOnTile.toInstance(unique.text))
 
                 UniqueType.MustBeNextTo ->
-                    if (!cityCenter.isAdjacentTo(unique.params[0]))
+                    if (!cityCenter.isAdjacentTo(unique.params[0], civ))
                         yield(RejectionReasonType.MustBeNextToTile.toInstance(unique.text))
 
                 UniqueType.MustNotBeNextTo ->
@@ -422,6 +428,43 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
         }
     }
 
+    private fun onlyAvailableRejections(unique: Unique, cityConstructions: CityConstructions): Sequence<RejectionReason> = sequence {
+        val civ = cityConstructions.city.civ
+        for (conditional in unique.conditionals) {
+            if (Conditionals.conditionalApplies(unique, conditional, StateForConditionals(civ, cityConstructions.city)))
+                continue
+            when (conditional.type) {
+                UniqueType.ConditionalBuildingBuiltAmount -> {
+                    val building = civ.getEquivalentBuilding(conditional.params[0]).name
+                    val amount = conditional.params[1].toInt()
+                    val cityFilter = conditional.params[2]
+                    val numberOfCities = civ.cities.count {
+                        it.cityConstructions.containsBuildingOrEquivalent(building) && it.matchesFilter(cityFilter)
+                    }
+                    if (numberOfCities < amount)
+                    {
+                        yield(RejectionReasonType.RequiresBuildingInSomeCities.toInstance(
+                            "Requires a [$building] in at least [$amount] cities" +
+                                " ($numberOfCities/$numberOfCities)"))
+                    }
+                }
+                UniqueType.ConditionalBuildingBuiltAll -> {
+                    val building = civ.getEquivalentBuilding(conditional.params[0]).name
+                    val cityFilter = conditional.params[1]
+                    if(civ.cities.any { it.matchesFilter(cityFilter)
+                            !it.isPuppet && !it.cityConstructions.containsBuildingOrEquivalent(building)
+                        }) {
+                        yield(RejectionReasonType.RequiresBuildingInAllCities.toInstance(
+                            "Requires a [${building}] in all cities"))
+                    }
+                }
+                else -> {
+                    yield(RejectionReasonType.ShouldNotBeDisplayed.toInstance())
+                }
+            }
+        }
+    }
+
     override fun isBuildable(cityConstructions: CityConstructions): Boolean =
             getRejectionReasons(cityConstructions).none()
 
@@ -442,9 +485,9 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
         return MultiFilter.multiFilter(filter, ::matchesSingleFilter)
     }
 
-    fun matchesSingleFilter(filter: String): Boolean {
+    private fun matchesSingleFilter(filter: String): Boolean {
         return when (filter) {
-            "All" -> true
+            in Constants.all -> true
             name -> true
             "Building", "Buildings" -> !isAnyWonder()
             "Wonder", "Wonders" -> isAnyWonder()

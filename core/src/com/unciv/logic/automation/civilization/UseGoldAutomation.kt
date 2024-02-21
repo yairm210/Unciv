@@ -61,7 +61,7 @@ object UseGoldAutomation {
         if (civ.gold < 250 || knownCityStates.none()) return
         val cityState = knownCityStates
             .filter { it.getAllyCiv() != civ.civName }
-            .associateWith { NextTurnAutomation.valueCityStateAlliance(civ, it) }
+            .associateWith { NextTurnAutomation.valueCityStateAlliance(civ, it, true) }
             .maxByOrNull { it.value }?.takeIf { it.value > 0 }?.key
         if (cityState != null) {
             tryGainInfluence(civ, cityState)
@@ -164,12 +164,14 @@ object UseGoldAutomation {
     }
 
     private fun tryGainInfluence(civInfo: Civilization, cityState: Civilization) {
-        if (civInfo.gold < 250) return // save up
-        if (cityState.getDiplomacyManager(civInfo).getInfluence() < 20) {
+        if (civInfo.gold < 250) return // Save up
+        if (cityState.getDiplomacyManager(civInfo).getInfluence() >= 20
+            && civInfo.gold < 500) {
+            // Only make a small investment if we have a bit of influence already to build off of so we don't waste our money
             cityState.cityStateFunctions.receiveGoldGift(civInfo, 250)
             return
         }
-        if (civInfo.gold < 500) return // it's not worth it to invest now, wait until you have enough for 2
+        if (civInfo.gold < 500) return // It's not worth it to invest now, wait until you have enough for 2
         cityState.cityStateFunctions.receiveGoldGift(civInfo, 500)
         return
     }

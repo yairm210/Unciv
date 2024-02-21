@@ -22,7 +22,10 @@ class KeyBindingsTab(
     private val labelWidth: Float
 ) : Table(BaseScreen.skin), TabbedPager.IPageExtensions {
     private val keyBindings = optionsPopup.settings.keyBindings
-    private val groupedWidgets: LinkedHashMap<KeyboardBinding.Category, LinkedHashMap<KeyboardBinding, KeyCapturingButton>>
+
+    // lazy triggers on activate(), not on init: init runs when Options is opened, even if we never look at this tab.
+    private val groupedWidgets by lazy { createGroupedWidgets() }
+
     private val disclaimer = MarkupRenderer.render(listOf(
         FormattedLine("This is a work in progress.", color = "#b22222", centered = true),  // FIREBRICK
         FormattedLine(),
@@ -39,20 +42,26 @@ class KeyBindingsTab(
         top()
         pad(10f)
         defaults().pad(5f)
+    }
 
+    private fun createGroupedWidgets(): LinkedHashMap<KeyboardBinding.Category, LinkedHashMap<KeyboardBinding, KeyCapturingButton>> {
+        // We want: For each category, sorted by their translated label,
+        //     a sorted (by translated label) collection of all visible bindings in that category,
+        //     associated with the actual UI widget (a KeyCapturingButton),
+        //     and we want to easily index that by binding, so it should be a order-preserving map.
         val collator = UncivGame.Current.settings.getCollatorFromLocale()
-        groupedWidgets = KeyboardBinding.values().asSequence()
-                .filterNot { it.hidden }
-                .groupBy { it.category }  // Materializes a Map<Category,List<KeyboardBinding>>
-                .asSequence()
-                .map { (category, bindings) ->
-                    category to bindings.asSequence()
-                        .sortedWith(compareBy(collator) { it.label.tr() })
-                        .map { it to KeyCapturingButton(it.defaultKey) { onKeyHit() } }  // associate would materialize a map
-                        .toMap(LinkedHashMap())
-                }
-                .sortedBy { it.first.name.tr() }
-                .toMap(LinkedHashMap())
+        return KeyboardBinding.values().asSequence()
+            .filterNot { it.hidden }
+            .groupBy { it.category }  // Materializes a Map<Category,List<KeyboardBinding>>
+            .asSequence()
+            .map { (category, bindings) ->
+                category to bindings.asSequence()
+                    .sortedWith(compareBy(collator) { it.label.tr() })  // sort bindings within each category
+                    .map { it to KeyCapturingButton(it.defaultKey) { onKeyHit() } }  // associate would materialize a map
+                    .toMap(LinkedHashMap())  // Stuff into a map that preserves our sorted order
+            }
+            .sortedWith(compareBy(collator) { it.first.label.tr() })  // sort the categories
+            .toMap(LinkedHashMap())
     }
 
     private fun update() {

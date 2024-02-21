@@ -39,11 +39,6 @@ class MapEditorGenerateTab(
     private val newTab = MapEditorNewMapTab(this)
     private val partialTab = MapEditorGenerateStepsTab(this)
 
-    // Since we allow generation components to be run repeatedly, it might surprise the user that
-    // the outcome stays the same when repeated - due to them operating on the same seed.
-    // So we change the seed behind the scenes if already used for a certain step...
-    private val seedUsedForStep = mutableSetOf<MapGeneratorSteps>()
-
     init {
         name = "Generate"
         top()
@@ -66,11 +61,11 @@ class MapEditorGenerateTab(
     }
 
     private fun generate(step: MapGeneratorSteps) {
-        if (step <= MapGeneratorSteps.Landmass && step in seedUsedForStep) {
-            // reseed visibly when starting from scratch (new seed shows in advanced settings widget)
+        if (newTab.mapParametersTable.randomizeSeed) {
+            // reseed visibly if the "Randomize seed" checkbox is checked
             newTab.mapParametersTable.reseed()
-            seedUsedForStep -= step
         }
+
         val mapParameters = editorScreen.newMapParameters.clone()  // this clone is very important here
         val message = mapParameters.mapSize.fixUndesiredSizes(mapParameters.worldWrap)
         if (message != null) {
@@ -90,11 +85,6 @@ class MapEditorGenerateTab(
             return
         }
 
-        if (step in seedUsedForStep) {
-            mapParameters.reseed()
-        } else {
-            seedUsedForStep += step
-        }
 
         Gdx.input.inputProcessor = null // remove input processing - nothing will be clicked!
         setButtonsEnabled(false)

@@ -19,7 +19,8 @@ import kotlin.math.max
 import kotlin.math.sign
 
 enum class RelationshipLevel(val color: Color) {
-    // War is tested separately for the Diplomacy Screen. Colored RED.
+    // DiplomaticStatus.War is tested separately for the Diplomacy Screen. Colored RED.
+    // DiplomaticStatus.DefensivePact - similar. Colored CYAN.
     Unforgivable(Color.FIREBRICK),
     Enemy(Color.YELLOW),
     Afraid(Color(0x5300ffff)),     // HSV(260,100,100)
@@ -404,6 +405,7 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
     /** Returns the [civilizations][Civilization] that know about both sides ([civInfo] and [otherCiv]) */
     fun getCommonKnownCivs(): Set<Civilization> = civInfo.getKnownCivs().toSet().intersect(otherCiv().getKnownCivs().toSet())
 
+    fun getCommonKnownCivsWithSpectators(): Set<Civilization> = civInfo.getKnownCivsWithSpectators().toSet().intersect(otherCiv().getKnownCivsWithSpectators().toSet())
     /** Returns true when the [civInfo]'s territory is considered allied for [otherCiv].
      *  This includes friendly and allied city-states and the open border treaties.
      */
@@ -457,7 +459,7 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
         makePeaceOneSide()
         otherCivDiplomacy().makePeaceOneSide()
 
-        for (civ in getCommonKnownCivs()) {
+        for (civ in getCommonKnownCivsWithSpectators()) {
             civ.addNotification(
                     "[${civInfo.civName}] and [$otherCivName] have signed a Peace Treaty!",
                     NotificationCategory.Diplomacy, civInfo.civName, NotificationIcon.Diplomacy, otherCivName
@@ -500,7 +502,7 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
         setFlag(DiplomacyFlags.DeclarationOfFriendship, 30)
         otherCivDiplomacy().setFlag(DiplomacyFlags.DeclarationOfFriendship, 30)
 
-        for (thirdCiv in getCommonKnownCivs().filter { it.isMajorCiv() || it.isSpectator() }) {
+        for (thirdCiv in getCommonKnownCivsWithSpectators()) {
             thirdCiv.addNotification("[${civInfo.civName}] and [$otherCivName] have signed the Declaration of Friendship!",
                 NotificationCategory.Diplomacy, civInfo.civName, NotificationIcon.Diplomacy, otherCivName)
             thirdCiv.getDiplomacyManager(civInfo).setFriendshipBasedModifier()
@@ -508,12 +510,12 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
             thirdCiv.getDiplomacyManager(civInfo).setFriendshipBasedModifier()
         }
 
-        // Ignore contitionals as triggerCivwideUnique will check again, and that would break
+        // Ignore contitionals as triggerUnique will check again, and that would break
         // UniqueType.ConditionalChance - 25% declared chance would work as 6% actual chance
         for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponDeclaringFriendship, StateForConditionals.IgnoreConditionals))
-            UniqueTriggerActivation.triggerCivwideUnique(unique, civInfo)
+            UniqueTriggerActivation.triggerUnique(unique, civInfo)
         for (unique in otherCiv().getTriggeredUniques(UniqueType.TriggerUponDeclaringFriendship, StateForConditionals.IgnoreConditionals))
-            UniqueTriggerActivation.triggerCivwideUnique(unique, otherCiv())
+            UniqueTriggerActivation.triggerUnique(unique, otherCiv())
     }
 
     internal fun setFriendshipBasedModifier() {
@@ -548,19 +550,19 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
         otherCivDiplomacy().diplomaticStatus = DiplomaticStatus.DefensivePact
 
 
-        for (thirdCiv in getCommonKnownCivs().filter { it.isMajorCiv() || it.isSpectator() }) {
+        for (thirdCiv in getCommonKnownCivsWithSpectators()) {
             thirdCiv.addNotification("[${civInfo.civName}] and [$otherCivName] have signed the Defensive Pact!",
                 NotificationCategory.Diplomacy, civInfo.civName, NotificationIcon.Diplomacy, otherCivName)
             if (thirdCiv.isSpectator()) return
             thirdCiv.getDiplomacyManager(civInfo).setDefensivePactBasedModifier()
         }
 
-        // Ignore contitionals as triggerCivwideUnique will check again, and that would break
+        // Ignore contitionals as triggerUnique will check again, and that would break
         // UniqueType.ConditionalChance - 25% declared chance would work as 6% actual chance
         for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponSigningDefensivePact, StateForConditionals.IgnoreConditionals))
-            UniqueTriggerActivation.triggerCivwideUnique(unique, civInfo)
+            UniqueTriggerActivation.triggerUnique(unique, civInfo)
         for (unique in otherCiv().getTriggeredUniques(UniqueType.TriggerUponSigningDefensivePact, StateForConditionals.IgnoreConditionals))
-            UniqueTriggerActivation.triggerCivwideUnique(unique, otherCiv())
+            UniqueTriggerActivation.triggerUnique(unique, otherCiv())
     }
 
     internal fun setDefensivePactBasedModifier() {
@@ -596,7 +598,7 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
             NotificationCategory.Diplomacy, NotificationIcon.Diplomacy, civInfo.civName)
 
         // We, A, are denouncing B. What do other major civs (C,D, etc) think of this?
-        getCommonKnownCivs().filter { it.isMajorCiv() || it.isSpectator() }.forEach { thirdCiv ->
+        getCommonKnownCivsWithSpectators().forEach { thirdCiv ->
             thirdCiv.addNotification("[${civInfo.civName}] has denounced [$otherCivName]!",
                 NotificationCategory.Diplomacy, civInfo.civName, NotificationIcon.Diplomacy, otherCivName)
             if (thirdCiv.isSpectator()) return@forEach

@@ -149,7 +149,9 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
 
     private fun updateButtons(construction: IConstruction?) {
         buyButtonsTable.clear()
-        if (!cityScreen.canCityBeChanged()) return
+        if (!cityScreen.canChangeState) return
+        /** [UniqueType.MayBuyConstructionsInPuppets] support - we need a buy button for civs that could buy items in puppets */
+        if (cityScreen.city.isPuppet && !cityScreen.city.getMatchingUniques(UniqueType.MayBuyConstructionsInPuppets).any()) return
         buyButtonsTable.add(getQueueButton(construction)).padRight(5f)
         if (construction != null && construction !is PerpetualConstruction)
             for (button in getBuyButtons(construction as INonPerpetualConstruction))
@@ -366,6 +368,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
         if (cityScreen.canCityBeChanged())
             table.onRightClick { selectQueueEntry {
                 CityScreenConstructionMenu(cityScreen.stage, table, cityScreen.city, construction) {
+                    cityScreen.city.reassignPopulation()
                     cityScreen.update()
                 }
             } }
@@ -485,6 +488,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
                 cityScreen.updateWithoutConstructionAndMap()
             }
             CityScreenConstructionMenu(cityScreen.stage, pickConstructionButton, cityScreen.city, construction) {
+                cityScreen.city.reassignPopulation()
                 cityScreen.update()
             }
         }
@@ -552,8 +556,11 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
                 cityConstructions.removeFromQueue(selectedQueueEntry, false)
                 cityScreen.clearSelection()
                 selectedQueueEntry = -1
+                cityScreen.city.reassignPopulation()
                 cityScreen.update()
             }
+            if (city.isPuppet)
+                button.disable()
         } else {
             button = "Add to queue".toTextButton()
             if (construction == null
@@ -587,6 +594,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
         cityConstructions.addToQueue(construction.name)
         if (!construction.shouldBeDisplayed(cityConstructions)) // For buildings - unlike units which can be queued multiple times
             cityScreen.clearSelection()
+        cityScreen.city.reassignPopulation()
         cityScreen.update()
         cityScreen.game.settings.addCompletedTutorialTask("Pick construction")
     }
@@ -717,7 +725,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
     private fun isConstructionPurchaseAllowed(construction: INonPerpetualConstruction, stat: Stat, constructionBuyCost: Int): Boolean {
         val city = cityScreen.city
         return when {
-            city.isPuppet -> false
+            city.isPuppet && !city.getMatchingUniques(UniqueType.MayBuyConstructionsInPuppets).any() -> false
             !cityScreen.canChangeState -> false
             city.isInResistance() -> false
             !construction.isPurchasable(city.cityConstructions) -> false    // checks via 'rejection reason'
@@ -758,6 +766,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
                     cityScreen.selectConstruction(newConstruction)
             }
         }
+        cityScreen.city.reassignPopulation()
         cityScreen.update()
     }
 
@@ -775,11 +784,11 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
         button.onActivation {
             button.touchable = Touchable.disabled
             selectedQueueEntry = movePriority(constructionQueueIndex)
-            // No need to call entire cityScreen.update() as reordering doesn't influence Stat or Map,
-            // nor does it need an expensive rebuild of the available constructions.
             // Selection display may need to update as I can click the button of a non-selected entry.
             cityScreen.selectConstruction(name)
-            cityScreen.updateWithoutConstructionAndMap()
+            cityScreen.city.reassignPopulation()
+            cityScreen.update()
+            //cityScreen.updateWithoutConstructionAndMap()
             updateQueueAndButtons(cityScreen.selectedConstruction)
             ensureQueueEntryVisible()  // Not passing current button info - already outdated, our parent is already removed from the stage hierarchy and replaced
         }
@@ -804,6 +813,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
             tab.touchable = Touchable.disabled
             city.cityConstructions.removeFromQueue(constructionQueueIndex, false)
             cityScreen.clearSelection()
+            cityScreen.city.reassignPopulation()
             cityScreen.update()
         }
         return tab

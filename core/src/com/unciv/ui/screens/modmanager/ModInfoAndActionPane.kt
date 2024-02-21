@@ -1,13 +1,14 @@
 package com.unciv.ui.screens.modmanager
 
 import com.badlogic.gdx.Gdx
-import com.badlogic.gdx.files.FileHandle
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.unciv.logic.github.Github
+import com.unciv.logic.github.GithubAPI
 import com.unciv.models.metadata.BaseRuleset
 import com.unciv.models.ruleset.Ruleset
-import com.unciv.models.ruleset.unique.UniqueType
+import com.unciv.models.ruleset.validation.ModCompatibility
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.extensions.UncivDateFormat.formatDate
 import com.unciv.ui.components.extensions.UncivDateFormat.parseDate
@@ -15,7 +16,8 @@ import com.unciv.ui.components.extensions.toCheckBox
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
 import com.unciv.ui.components.input.onClick
-import com.unciv.ui.screens.pickerscreens.Github
+import com.unciv.ui.components.input.onRightClick
+import com.unciv.ui.popups.ToastPopup
 import com.unciv.utils.Concurrency
 import kotlin.math.max
 
@@ -35,7 +37,7 @@ internal class ModInfoAndActionPane : Table() {
     /** Recreate the information part of the right-hand column
      * @param repo: the repository instance as received from the GitHub api
      */
-    fun update(repo: Github.Repo) {
+    fun update(repo: GithubAPI.Repo) {
         isBuiltin = false
         enableVisualCheckBox = false
         update(
@@ -52,7 +54,7 @@ internal class ModInfoAndActionPane : Table() {
         val modName = mod.name
         val modOptions = mod.modOptions  // The ModOptions as enriched by us with GitHub metadata when originally downloaded
         isBuiltin = modOptions.modUrl.isEmpty() && BaseRuleset.values().any { it.fullName == modName }
-        enableVisualCheckBox = shouldShowVisualCheckbox(mod)
+        enableVisualCheckBox = ModCompatibility.isAudioVisualMod(mod)
         update(
             modName, modOptions.modUrl, modOptions.defaultBranch,
             modOptions.lastUpdated, modOptions.author, modOptions.modSize
@@ -87,9 +89,15 @@ internal class ModInfoAndActionPane : Table() {
 
         // offer link to open the repo itself in a browser
         if (repoUrl.isNotEmpty()) {
-            add("Open Github page".toTextButton().onClick {
+            val githubButton = "Open Github page".toTextButton()
+            githubButton.onClick {
                 Gdx.net.openURI(repoUrl)
-            }).row()
+            }
+            githubButton.onRightClick {
+                Gdx.app.clipboard.contents = repoUrl
+                ToastPopup("Link copied to clipboard", stage)
+            }
+            add(githubButton).row()
         }
 
         // display "updated" date
@@ -169,27 +177,5 @@ internal class ModInfoAndActionPane : Table() {
             val resizeRatio = ModManagementScreen.maxAllowedPreviewImageSize / largestImageSize
             cell.size(texture.width * resizeRatio, texture.height * resizeRatio)
         }
-    }
-
-    private fun shouldShowVisualCheckbox(mod: Ruleset): Boolean {
-        val folder = mod.folderLocation ?: return false  // Also catches isBuiltin
-
-        // Check declared Mod Compatibility
-        if (mod.modOptions.hasUnique(UniqueType.ModIsAudioVisualOnly)) return true
-        if (mod.modOptions.hasUnique(UniqueType.ModIsAudioVisual)) return true
-        if (mod.modOptions.hasUnique(UniqueType.ModIsNotAudioVisual)) return false
-
-        // The following is the "guessing" part: If there's media, show the PAV choice...
-        // Might be deprecated if declarative Mod compatibility succeeds
-        fun isSubFolderNotEmpty(modFolder: FileHandle, name: String): Boolean {
-            val file = modFolder.child(name)
-            if (!file.exists()) return false
-            if (!file.isDirectory) return false
-            return file.list().isNotEmpty()
-        }
-        if (isSubFolderNotEmpty(folder, "music")) return true
-        if (isSubFolderNotEmpty(folder, "sounds")) return true
-        if (isSubFolderNotEmpty(folder, "voices")) return true
-        return folder.list("atlas").isNotEmpty()
     }
 }

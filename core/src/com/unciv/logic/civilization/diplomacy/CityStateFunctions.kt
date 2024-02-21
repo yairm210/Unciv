@@ -354,7 +354,7 @@ class CityStateFunctions(val civInfo: Civilization) {
         }
         if (civInfo.cities.isEmpty() || civInfo.getCapital() == null) {
             modifiers["No Cities"] = -999
-            return  modifiers
+            return modifiers
         }
 
         modifiers["Base value"] = -110
@@ -701,7 +701,7 @@ class CityStateFunctions(val civInfo: Civilization) {
     }
 
 
-    fun getCityStateBonuses(cityStateType: CityStateType, relationshipLevel: RelationshipLevel, uniqueType:UniqueType?=null): Sequence<Unique> {
+    fun getCityStateBonuses(cityStateType: CityStateType, relationshipLevel: RelationshipLevel, uniqueType: UniqueType? = null): Sequence<Unique> {
         val cityStateUniqueMap = when (relationshipLevel) {
             RelationshipLevel.Ally -> cityStateType.allyBonusUniqueMap
             RelationshipLevel.Friend -> cityStateType.friendBonusUniqueMap

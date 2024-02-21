@@ -226,7 +226,7 @@ class CityPopulationManagerTest {
     @Test
     fun `should automatically assign new pop to best job according to city focus`() {
         // given
-        city.cityAIFocus = CityFocus.GoldFocus
+        city.setCityFocus(CityFocus.GoldFocus)
         city.workedTiles.clear()
         city.workedTiles.add(Vector2(-1f, 0f))
         city.lockedTiles.add(Vector2(-1f, 0f)) // force the first pop to work on a specific tile to avoid being reassigned
@@ -253,7 +253,7 @@ class CityPopulationManagerTest {
     @Test
     fun `should automatically assign new pop to best job with specialists`() {
         // given
-        city.cityAIFocus = CityFocus.GoldFocus
+        city.setCityFocus(CityFocus.GoldFocus)
         city.workedTiles.clear()
         city.workedTiles.add(Vector2(-1f, 0f))
         city.lockedTiles.add(Vector2(-1f, 0f)) // force the first pop to work on a specific tile to avoid being reassigned

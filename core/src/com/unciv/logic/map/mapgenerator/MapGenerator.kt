@@ -23,7 +23,6 @@ import com.unciv.utils.debug
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.isActive
 import kotlin.math.abs
-import kotlin.math.max
 import kotlin.math.pow
 import kotlin.math.roundToInt
 import kotlin.math.sign
@@ -117,10 +116,10 @@ class MapGenerator(val ruleset: Ruleset, private val coroutineScope: CoroutineSc
 
         if (consoleTimings) debug("\nMapGenerator run with parameters %s", mapParameters)
         runAndMeasure("MapLandmassGenerator") {
-            MapLandmassGenerator(ruleset, randomness).generateLand(map)
+            MapLandmassGenerator(map, ruleset, randomness).generateLand()
         }
         runAndMeasure("raiseMountainsAndHills") {
-            raiseMountainsAndHills(map)
+            MapElevationGenerator(map, ruleset, randomness).raiseMountainsAndHills()
         }
         runAndMeasure("applyHumidityAndTemperature") {
             applyHumidityAndTemperature(map)
@@ -191,8 +190,8 @@ class MapGenerator(val ruleset: Ruleset, private val coroutineScope: CoroutineSc
             when (step) {
                 MapGeneratorSteps.None -> Unit
                 MapGeneratorSteps.All -> throw IllegalArgumentException("MapGeneratorSteps.All cannot be used in generateSingleStep")
-                MapGeneratorSteps.Landmass -> MapLandmassGenerator(ruleset, randomness).generateLand(map)
-                MapGeneratorSteps.Elevation -> raiseMountainsAndHills(map)
+                MapGeneratorSteps.Landmass -> MapLandmassGenerator(map, ruleset, randomness).generateLand()
+                MapGeneratorSteps.Elevation -> MapElevationGenerator(map, ruleset, randomness).raiseMountainsAndHills()
                 MapGeneratorSteps.HumidityAndTemperature -> applyHumidityAndTemperature(map)
                 MapGeneratorSteps.LakesAndCoast -> spawnLakesAndCoasts(map)
                 MapGeneratorSteps.Vegetation -> spawnVegetation(map)
@@ -342,8 +341,7 @@ class MapGenerator(val ruleset: Ruleset, private val coroutineScope: CoroutineSc
             // remove the tiles where previous resources have been placed
             val suitableTiles = candidateTiles
                     .filterNot { it.baseTerrain == Constants.snow && it.isHill() }
-                    .filter { it.resource == null
-                            && resource.terrainsCanBeFoundOn.contains(it.lastTerrain.name) }
+                    .filter { it.resource == null && resource.generatesNaturallyOn(it) }
 
             val locations = randomness.chooseSpreadOutLocations(resourcesPerType, suitableTiles, mapRadius)
 
@@ -361,8 +359,10 @@ class MapGenerator(val ruleset: Ruleset, private val coroutineScope: CoroutineSc
 
         val suitableTiles = tileMap.values
                 .filterNot { it.baseTerrain == Constants.snow && it.isHill() }
-                .filter { it.resource == null && it.neighbors.none { neighbor -> neighbor.isNaturalWonder() }
-                        && resourcesOfType.any { r -> r.terrainsCanBeFoundOn.contains(it.lastTerrain.name) } }
+                .filter { it.resource == null
+                    && it.neighbors.none { neighbor -> neighbor.isNaturalWonder() }
+                    && resourcesOfType.any { r -> r.generatesNaturallyOn(it) }
+                }
         val numberOfResources = tileMap.values.count { it.isLand && !it.isImpassible() } *
                 tileMap.mapParameters.resourceRichness
         val locations = randomness.chooseSpreadOutLocations(numberOfResources.toInt(), suitableTiles, mapRadius)
@@ -370,8 +370,7 @@ class MapGenerator(val ruleset: Ruleset, private val coroutineScope: CoroutineSc
         val resourceToNumber = Counter<String>()
 
         for (tile in locations) {
-            val possibleResources = resourcesOfType
-                    .filter { it.terrainsCanBeFoundOn.contains(tile.lastTerrain.name) }
+            val possibleResources = resourcesOfType.filter { it.generatesNaturallyOn(tile) }
             if (possibleResources.isEmpty()) continue
             val resourceWithLeastAssignments = possibleResources.minByOrNull { resourceToNumber[it.name] }!!
             resourceToNumber.add(resourceWithLeastAssignments.name, 1)
@@ -379,139 +378,6 @@ class MapGenerator(val ruleset: Ruleset, private val coroutineScope: CoroutineSc
         }
     }
 
-
-    /**
-     * [MapParameters.elevationExponent] favors high elevation
-     */
-    private fun raiseMountainsAndHills(tileMap: TileMap) {
-        val mountain = ruleset.terrains.values.firstOrNull { it.hasUnique(UniqueType.OccursInChains) }?.name
-        val hill = ruleset.terrains.values.firstOrNull { it.hasUnique(UniqueType.OccursInGroups) }?.name
-        val flat = ruleset.terrains.values.firstOrNull {
-            !it.impassable && it.type == TerrainType.Land && !it.hasUnique(UniqueType.RoughTerrain)
-        }?.name
-
-        if (flat == null) {
-            debug("Ruleset seems to contain no flat terrain - can't generate heightmap")
-            return
-        }
-
-        if (mountain != null)
-            debug("Mountain-like generation for %s", mountain)
-        if (hill != null)
-            debug("Hill-like generation for %s", mountain)
-
-        val elevationSeed = randomness.RNG.nextInt().toDouble()
-        tileMap.setTransients(ruleset)
-        for (tile in tileMap.values.asSequence().filter { !it.isWater }) {
-            var elevation = randomness.getPerlinNoise(tile, elevationSeed, scale = 2.0)
-            elevation = abs(elevation).pow(1.0 - tileMap.mapParameters.elevationExponent.toDouble()) * elevation.sign
-
-            when {
-                elevation <= 0.5 -> tile.baseTerrain = flat
-                elevation <= 0.7 && hill != null -> tile.addTerrainFeature(hill)
-                elevation <= 0.7 && hill == null -> tile.baseTerrain = flat // otherwise would be hills become mountains
-                elevation <= 1.0 && mountain != null -> tile.baseTerrain = mountain
-            }
-            tile.setTerrainTransients()
-        }
-
-        if (mountain != null)
-            cellularMountainRanges(tileMap, mountain, hill, flat)
-        if (hill != null)
-            cellularHills(tileMap, mountain, hill)
-    }
-
-    private fun cellularMountainRanges(tileMap: TileMap, mountain: String, hill: String?, flat: String) {
-        val targetMountains = tileMap.values.count { it.baseTerrain == mountain } * 2
-
-        for (i in 1..5) {
-            var totalMountains = tileMap.values.count { it.baseTerrain == mountain }
-
-            for (tile in tileMap.values.filter { !it.isWater }) {
-                val adjacentMountains =
-                    tile.neighbors.count { it.baseTerrain == mountain }
-                val adjacentImpassible =
-                    tile.neighbors.count { ruleset.terrains[it.baseTerrain]?.impassable == true }
-
-                if (adjacentMountains == 0 && tile.baseTerrain == mountain) {
-                    if (randomness.RNG.nextInt(until = 4) == 0)
-                        tile.addTerrainFeature(Constants.lowering)
-                } else if (adjacentMountains == 1) {
-                    if (randomness.RNG.nextInt(until = 10) == 0)
-                        tile.addTerrainFeature(Constants.rising)
-                } else if (adjacentImpassible == 3) {
-                    if (randomness.RNG.nextInt(until = 2) == 0)
-                        tile.addTerrainFeature(Constants.lowering)
-                } else if (adjacentImpassible > 3) {
-                    tile.addTerrainFeature(Constants.lowering)
-                }
-            }
-
-            for (tile in tileMap.values.filter { !it.isWater }) {
-                if (tile.terrainFeatures.contains(Constants.rising)) {
-                    tile.removeTerrainFeature(Constants.rising)
-                    if (totalMountains >= targetMountains) continue
-                    if (hill != null)
-                        tile.removeTerrainFeature(hill)
-                    tile.baseTerrain = mountain
-                    totalMountains++
-                }
-                if (tile.terrainFeatures.contains(Constants.lowering)) {
-                    tile.removeTerrainFeature(Constants.lowering)
-                    if (totalMountains <= targetMountains * 0.5f) continue
-                    if (tile.baseTerrain == mountain) {
-                        if (hill != null && !tile.terrainFeatures.contains(hill))
-                            tile.addTerrainFeature(hill)
-                        totalMountains--
-                    }
-                    tile.baseTerrain = flat
-                }
-            }
-        }
-    }
-
-    private fun cellularHills(tileMap: TileMap, mountain: String?, hill: String) {
-        val targetHills = tileMap.values.count { it.terrainFeatures.contains(hill) }
-
-        for (i in 1..5) {
-            var totalHills = tileMap.values.count { it.terrainFeatures.contains(hill) }
-
-            for (tile in tileMap.values.asSequence().filter { !it.isWater && (mountain == null || it.baseTerrain != mountain) }) {
-                val adjacentMountains = if (mountain == null) 0 else
-                    tile.neighbors.count { it.baseTerrain == mountain }
-                val adjacentHills =
-                    tile.neighbors.count { it.terrainFeatures.contains(hill) }
-
-                if (adjacentHills <= 1 && adjacentMountains == 0 && randomness.RNG.nextInt(until = 2) == 0) {
-                    tile.addTerrainFeature(Constants.lowering)
-                } else if (adjacentHills > 3 && adjacentMountains == 0 && randomness.RNG.nextInt(until = 2) == 0) {
-                    tile.addTerrainFeature(Constants.lowering)
-                } else if (adjacentHills + adjacentMountains in 2..3 && randomness.RNG.nextInt(until = 2) == 0) {
-                    tile.addTerrainFeature(Constants.rising)
-                }
-
-            }
-
-            for (tile in tileMap.values.asSequence().filter { !it.isWater && (mountain == null || it.baseTerrain != mountain) }) {
-                if (tile.terrainFeatures.contains(Constants.rising)) {
-                    tile.removeTerrainFeature(Constants.rising)
-                    if (totalHills > targetHills && i != 1) continue
-                    if (!tile.terrainFeatures.contains(hill)) {
-                        tile.addTerrainFeature(hill)
-                        totalHills++
-                    }
-                }
-                if (tile.terrainFeatures.contains(Constants.lowering)) {
-                    tile.removeTerrainFeature(Constants.lowering)
-                    if (totalHills >= targetHills * 0.9f || i == 1) {
-                        if (tile.terrainFeatures.contains(hill))
-                            tile.removeTerrainFeature(hill)
-                        totalHills--
-                    }
-                }
-            }
-        }
-    }
 
     /**
      * [MapParameters.tilesPerBiomeArea] to set biomes size
@@ -913,4 +779,3 @@ class MapGenerator(val ruleset: Ruleset, private val coroutineScope: CoroutineSc
         }
     }
 }
-

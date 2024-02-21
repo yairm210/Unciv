@@ -146,7 +146,7 @@ object TechnologyDescriptions {
         for (unique in tech.uniqueObjects) {
             yield(
                 when {
-                    unique.isOfType(UniqueType.EnablesCivWideStatProduction) ->
+                    unique.type == UniqueType.EnablesCivWideStatProduction ->
                         ImageGetter.getConstructionPortrait(unique.params[0], techIconSize)
                     else ->
                         ImageGetter.getUniquePortrait(unique.text, techIconSize)
@@ -344,15 +344,15 @@ object TechnologyDescriptions {
 
     /** Tests whether a Unique means bonus Stats enabled by [techName] */
     private fun Unique.isImprovementStatsEnabledByTech(techName: String) =
-            (isOfType(UniqueType.Stats) || isOfType(UniqueType.ImprovementStatsOnTile)) &&
+            (type == UniqueType.Stats || type == UniqueType.ImprovementStatsOnTile) &&
                     conditionals.any {
-                        it.isOfType(UniqueType.ConditionalTech) && it.params[0] == techName
+                        it.type == UniqueType.ConditionalTech && it.params[0] == techName
                     }
 
     /** Tests whether a Unique Conditional is enabling or disabling its parent by a tech */
     private fun Unique.isTechConditional() =
-            isOfType(UniqueType.ConditionalTech) ||
-            isOfType(UniqueType.ConditionalNoTech)
+            type == UniqueType.ConditionalTech ||
+            type == UniqueType.ConditionalNoTech
 
     /** Tests whether a Unique is enabled or disabled by [techName] */
     private fun Unique.isRelatedToTech(techName: String) =
@@ -363,7 +363,7 @@ object TechnologyDescriptions {
     /** Used by [getAffectedImprovements] only */
     private data class ImprovementAndUnique(val improvement: TileImprovement, val unique: Unique) {
         fun getText() = "[${unique.params[0]}] from every [${improvement.name}]" +
-                (if (unique.isOfType(UniqueType.Stats)) "" else " on [${unique.params[1]}] tiles")
+                (if (unique.type == UniqueType.Stats) "" else " on [${unique.params[1]}] tiles")
     }
 
     /** Yields Improvements with bonus Stats enabled by [techName] including the Unique doing it */

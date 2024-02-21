@@ -17,7 +17,9 @@ import com.unciv.ui.components.extensions.disable
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
 import com.unciv.ui.components.fonts.Fonts
+import com.unciv.ui.components.input.ActivationTypes
 import com.unciv.ui.components.input.keyShortcuts
+import com.unciv.ui.components.input.onActivation
 import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.input.onDoubleClick
 import com.unciv.ui.images.ImageGetter
@@ -159,13 +161,13 @@ class ImprovementPickerScreen(
             )
 
             //Warn when the current improvement will increase a stat for the tile,
-            // but the tile is outside of the range (> 3 tiles from city center) that can be
+            // but the tile is outside of the range (> 3 tiles from any city center) that can be
             // worked by a city's population
             if (tile.owningCity != null
                 && !improvement.isRoad()
                     && stats.values.any { it > 0f }
                     && !improvement.name.startsWith(Constants.remove)
-                    && !tile.owningCity!!.getWorkableTiles().contains(tile)
+                    && !tile.getTilesInDistance(3).any { it.isCityCenter() && it.getCity()!!.civ == currentPlayerCiv }
             )
                 labelText += "\n" + "Not in city work range".tr()
 
@@ -175,7 +177,8 @@ class ImprovementPickerScreen(
             regularImprovements.add(statIcons).align(Align.right)
 
             val improvementButton = PickerPane.getPickerOptionButton(image, labelText)
-            improvementButton.onClick {
+            // This is onClick without ActivationTypes.Keystroke equivalence - keys should select *and* close:
+            improvementButton.onActivation(type = ActivationTypes.Tap, noEquivalence = true) {
                 selectedImprovement = improvement
                 pick(improvement.name.tr())
                 descriptionLabel.setText(improvement.getDescription(ruleSet))
@@ -187,7 +190,7 @@ class ImprovementPickerScreen(
             if (proposedSolutions.isNotEmpty() || tileMarkedForCreatesOneImprovement) {
                 improvementButton.disable()
             } else if (shortcutKey != null) {
-                // FIXME: Different compared to onClick() and therefore no onActivation() here, to preserve pre-existing behavior. Reconsider this?
+                // Shortcut keys trigger what onDoubleClick does, not equivalent to single Click:
                 improvementButton.keyShortcuts.add(shortcutKey) { accept(improvement) }
                 improvementButton.addTooltip(shortcutKey)
             }
@@ -203,7 +206,7 @@ class ImprovementPickerScreen(
         } else if (tile.getOwner()!!.isCurrentPlayer()) {
             val button = tile.getCity()!!.name.toTextButton(hideIcons = true)
             button.onClick {
-                this.game.pushScreen(CityScreen(tile.getCity()!!,null,tile))
+                this.game.pushScreen(CityScreen(tile.getCity()!!, null, tile))
             }
             ownerTable.add("Tile owned by [${tile.getOwner()!!.civName}] (You)".toLabel()).padLeft(10f)
             ownerTable.add(button).padLeft(20f)

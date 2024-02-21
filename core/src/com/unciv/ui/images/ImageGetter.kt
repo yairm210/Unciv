@@ -58,8 +58,6 @@ object ImageGetter {
     fun resetAtlases() {
         atlases.values.forEach { it.dispose() }
         atlases.clear()
-        atlas = TextureAtlas("game.atlas")
-        atlases["game"] = atlas
     }
 
     fun reloadImages() = setNewRuleset(ruleset)
@@ -68,13 +66,8 @@ object ImageGetter {
     fun setNewRuleset(ruleset: Ruleset) {
         ImageGetter.ruleset = ruleset
         textureRegionDrawables.clear()
-        // These are the drawables from the base game
-        for (region in atlas.regions) {
-            val drawable = TextureRegionDrawable(region)
-            textureRegionDrawables[region.name] = drawable
-        }
 
-        // Load base (except game.atlas which is already loaded)
+        // Load base
         loadModAtlases("", Gdx.files.internal(""))
 
         // These are from the mods
@@ -95,8 +88,8 @@ object ImageGetter {
         // See #4993 - you can't .list() on a jar file, so the ImagePacker leaves us the list of actual atlases.
         val controlFile = folder.child("Atlases.json")
         val fileNames = (if (controlFile.exists()) json().fromJson(Array<String>::class.java, controlFile)
-            else emptyArray()).toMutableList()
-        if (mod.isNotEmpty()) fileNames += "game"
+            else emptyArray()).toMutableSet()
+        if (mod.isNotEmpty()) fileNames += "game"  // Backwards compatibility - when packed by 4.9.15+ this is already in the control file
         for (fileName in fileNames) {
             val file = folder.child("$fileName.atlas")
             if (!file.exists()) continue

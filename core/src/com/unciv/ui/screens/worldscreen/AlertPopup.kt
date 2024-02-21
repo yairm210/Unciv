@@ -40,6 +40,10 @@ import java.util.EnumSet
  * [Popup] communicating events other than trade offers to the player.
  * (e.g. First Contact, Wonder built, Tech researched,...)
  *
+ * **Opens itself at the end of instantiation!**
+ *
+ * (In rare cases, it chooses not to: Mods making a RecapturedCivilian not find the unit as it was illegal and removed after the actual capture)
+ *
  * Called in [WorldScreen].update, which pulls them from viewingCiv.popupAlerts.
  *
  * @param worldScreen The parent screen
@@ -73,6 +77,8 @@ class AlertPopup(
         addCloseButton(text, KeyboardBinding.NextTurnAlternate, null)
 
     init {
+        var skipThisAlert = false
+
         // This makes the buttons fill up available width. See comments in #9559.
         // To implement a middle ground, I would either simply replace growX() with minWidth(240f) or so,
         // or replace the Popup.equalizeLastTwoButtonWidths() function with something intelligent not
@@ -95,9 +101,10 @@ class AlertPopup(
             AlertType.StartIntro -> addStartIntro()
             AlertType.DiplomaticMarriage -> addDiplomaticMarriage()
             AlertType.BulliedProtectedMinor, AlertType.AttackedProtectedMinor -> addBulliedOrAttackedProtectedMinor()
-            AlertType.RecapturedCivilian -> addRecapturedCivilian()
+            AlertType.RecapturedCivilian -> skipThisAlert = addRecapturedCivilian()
             AlertType.GameHasBeenWon -> addGameHasBeenWon()
         }
+        if (!skipThisAlert) open()
     }
 
     //region AlertType handlers
@@ -279,14 +286,12 @@ class AlertPopup(
         music.chooseTrack(viewingCiv.civName, MusicMood.Golden, MusicTrackChooserFlags.setSpecific)
     }
 
-    private fun addRecapturedCivilian() {
+    /** @return true to skip opening this Popup, as we're running in the initialization phase before the Popup is open */
+    private fun addRecapturedCivilian(): Boolean {
         val position = Vector2().fromString(popupAlert.value)
         val tile = gameInfo.tileMap[position]
-        val capturedUnit = tile.civilianUnit // This has got to be it
-        if (capturedUnit == null) { // the unit disappeared somehow? maybe a modded action?
-            close()
-            return
-        }
+        val capturedUnit = tile.civilianUnit  // This has got to be it
+            ?: return true // the unit disappeared somehow? maybe a modded action?
         val originalOwner = getCiv(capturedUnit.originalOwner!!)
         val captor = viewingCiv
 
@@ -327,6 +332,7 @@ class AlertPopup(
             // Take it for ourselves
             BattleUnitCapture.captureOrConvertToWorker(capturedUnit, captor)
         }
+        return false
     }
 
     private fun addStartIntro() {

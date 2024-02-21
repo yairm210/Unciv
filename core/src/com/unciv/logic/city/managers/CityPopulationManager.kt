@@ -146,7 +146,7 @@ class CityPopulationManager : IsPartOfGameInfoSerialization {
     internal fun autoAssignPopulation() {
         city.cityStats.update()  // calculate current stats with current assignments
         val cityStats = city.cityStats.currentCityStats
-        city.currentGPPBonus = city.getGreatPersonPercentageBonus()  // pre-calculate
+        city.currentGPPBonus = city.getGreatPersonPercentageBonus()  // pre-calculate for use in Automation.rankSpecialist
         var specialistFoodBonus = 2f  // See CityStats.calcFoodEaten()
         for (unique in city.getMatchingUniques(UniqueType.FoodConsumptionBySpecialists))
             if (city.matchesFilter(unique.params[1]))
@@ -160,9 +160,12 @@ class CityPopulationManager : IsPartOfGameInfoSerialization {
         repeat(getFreePopulation()) {
             //evaluate tiles
             val bestTileAndRank = tilesToEvaluate
-                    .filterNot { it.providesYield() }
-                    .associateWith { Automation.rankTileForCityWork(it, city, cityStats, localUniqueCache) }
-                    .maxByOrNull { it.value }
+                .filterNot { it.providesYield() }
+                .associateWith { Automation.rankTileForCityWork(it, city, cityStats, localUniqueCache) }
+                // We need to make sure that we work the same tiles as last turn on a tile
+                // so that our workers know to prioritize this tile and don't move to the other tile
+                // This was just the easiest way I could think of.
+                .maxWithOrNull( compareBy({ it.value }, { it.key.longitude }, { it.key.latitude }))
             val bestTile = bestTileAndRank?.key
             val valueBestTile = bestTileAndRank?.value ?: 0f
 

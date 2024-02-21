@@ -1,5 +1,6 @@
 package com.unciv.models.ruleset.unit
 
+import com.unciv.Constants
 import com.unciv.logic.MultiFilter
 import com.unciv.logic.city.City
 import com.unciv.logic.city.CityConstructions
@@ -18,6 +19,7 @@ import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
 import com.unciv.ui.components.extensions.getNeedMoreAmountString
 import com.unciv.ui.components.extensions.toPercent
+import com.unciv.ui.components.extensions.yieldIfNotNull
 import com.unciv.ui.objectdescriptions.BaseUnitDescriptions
 import com.unciv.ui.screens.civilopediascreen.FormattedLine
 import kotlin.math.pow
@@ -39,7 +41,6 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
     var unitType: String = ""
 
     val type by lazy { ruleset.unitTypes[unitType]!! }
-    @Deprecated("The functionality provided by the requiredTech field is provided by the OnlyAvailableWhen unique.")
     override var requiredTech: String? = null
     var requiredResource: String? = null
 
@@ -78,6 +79,21 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
     override fun getCivilopediaTextLines(ruleset: Ruleset): List<FormattedLine> =
             BaseUnitDescriptions.getCivilopediaTextLines(this, ruleset)
 
+    fun getUpgradeUnits(stateForConditionals: StateForConditionals? = null): Sequence<String> {
+        return sequence {
+            yieldIfNotNull(upgradesTo)
+            for (unique in getMatchingUniques(UniqueType.CanUpgrade, stateForConditionals))
+                yield(unique.params[0])
+        }
+    }
+
+    fun getRulesetUpgradeUnits(stateForConditionals: StateForConditionals? = null): Sequence<BaseUnit> {
+        return sequence {
+            for (unit in getUpgradeUnits(stateForConditionals))
+                yieldIfNotNull(ruleset.units[unit])
+        }
+    }
+
     fun getMapUnit(civInfo: Civilization): MapUnit {
         val unit = MapUnit()
         unit.name = name
@@ -89,6 +105,15 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         unit.setTransients(civInfo.gameInfo.ruleset)
 
         return unit
+    }
+
+    /** Allows unique functions (getMatchingUniques, hasUnique) to "see" uniques from the UnitType */
+    override fun getMatchingUniques(uniqueType: UniqueType, stateForConditionals: StateForConditionals?): Sequence<Unique> {
+        val ourUniques = super<RulesetObject>.getMatchingUniques(uniqueType, stateForConditionals)
+        if (! ::ruleset.isInitialized) { // Not sure if this will ever actually happen, but better safe than sorry
+            return ourUniques
+        }
+        return ourUniques + type.getMatchingUniques(uniqueType, stateForConditionals)
     }
 
     override fun getProductionCost(civInfo: Civilization): Int  = costFunctions.getProductionCost(civInfo)
@@ -144,9 +169,12 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         }
         val civInfo = cityConstructions.city.civ
 
-        for (unique in getMatchingUniques(UniqueType.OnlyAvailableWhen, StateForConditionals.IgnoreConditionals))
+        for (unique in getMatchingUniques(UniqueType.OnlyAvailable, StateForConditionals.IgnoreConditionals))
             if (!unique.conditionalsApply(civInfo, cityConstructions.city))
                 yield(RejectionReasonType.ShouldNotBeDisplayed.toInstance())
+
+        for (unique in getMatchingUniques(UniqueType.Unavailable, StateForConditionals(civInfo, cityConstructions.city)))
+            yield(RejectionReasonType.ShouldNotBeDisplayed.toInstance())
 
         for (unique in getMatchingUniques(UniqueType.RequiresPopulation))
             if (unique.params[0].toInt() > cityConstructions.city.population.population)
@@ -232,8 +260,8 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
     // This returns the name of the unit this tech upgrades this unit to,
     // or null if there is no automatic upgrade at that tech.
     fun automaticallyUpgradedInProductionToUnitByTech(techName: String): String? {
-        for (obsoleteTech: String in  techsAtWhichAutoUpgradeInProduction())
-            if (obsoleteTech != null && obsoleteTech == techName)
+        for (obsoleteTech: String in techsAtWhichAutoUpgradeInProduction())
+            if (obsoleteTech == techName)
                 return upgradesTo
         return null
     }
@@ -288,7 +316,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
             unitType -> true
             name -> true
             replaces -> true
-            "All" -> true
+            in Constants.all -> true
 
             "Melee" -> isMelee()
             "Ranged" -> isRanged()
@@ -402,14 +430,14 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
             when (unique.type) {
                 UniqueType.Strength -> {
                     if (unique.params[0].toInt() <= 0) continue
-                    if (unique.conditionals.any { it.isOfType(UniqueType.ConditionalVsUnits) }) { // Bonus vs some units - a quarter of the bonus
+                    if (unique.conditionals.any { it.type == UniqueType.ConditionalVsUnits }) { // Bonus vs some units - a quarter of the bonus
                         power *= (unique.params[0].toInt() / 4f).toPercent()
                     } else if (
                         unique.conditionals.any {
-                            it.isOfType(UniqueType.ConditionalVsCity) // City Attack - half the bonus
-                                || it.isOfType(UniqueType.ConditionalAttacking) // Attack - half the bonus
-                                || it.isOfType(UniqueType.ConditionalDefending) // Defense - half the bonus
-                                || it.isOfType(UniqueType.ConditionalFightingInTiles)
+                            it.type == UniqueType.ConditionalVsCity // City Attack - half the bonus
+                                || it.type == UniqueType.ConditionalAttacking // Attack - half the bonus
+                                || it.type == UniqueType.ConditionalDefending // Defense - half the bonus
+                                || it.type == UniqueType.ConditionalFightingInTiles
                         } // Bonus in terrain or feature - half the bonus
                     ) {
                         power *= (unique.params[0].toInt() / 2f).toPercent()

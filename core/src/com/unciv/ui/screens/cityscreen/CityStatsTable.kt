@@ -2,7 +2,6 @@ package com.unciv.ui.screens.cityscreen
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Actor
-import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Cell
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
@@ -12,6 +11,7 @@ import com.unciv.UncivGame
 import com.unciv.logic.city.City
 import com.unciv.logic.city.CityFlags
 import com.unciv.logic.city.CityFocus
+import com.unciv.logic.city.GreatPersonPointsBreakdown
 import com.unciv.models.Counter
 import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.tile.TileResource
@@ -24,7 +24,6 @@ import com.unciv.ui.components.extensions.colorFromRGB
 import com.unciv.ui.components.extensions.surroundWithCircle
 import com.unciv.ui.components.extensions.toGroup
 import com.unciv.ui.components.extensions.toLabel
-import com.unciv.ui.components.extensions.toStringSigned
 import com.unciv.ui.components.extensions.toTextButton
 import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.components.input.KeyboardBinding
@@ -32,7 +31,6 @@ import com.unciv.ui.components.input.onActivation
 import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.widgets.ExpanderTab
 import com.unciv.ui.images.ImageGetter
-import com.unciv.ui.popups.Popup
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.civilopediascreen.CivilopediaScreen
 import kotlin.math.ceil
@@ -88,7 +86,7 @@ class CityStatsTable(private val cityScreen: CityScreen) : Table() {
             if (stat == Stat.Faith && !city.civ.gameInfo.isReligionEnabled()) continue
             val icon = Table()
             val focus = CityFocus.safeValueOf(stat)
-            val toggledFocus = if (focus == city.cityAIFocus) {
+            val toggledFocus = if (focus == city.getCityFocus()) {
                 icon.add(ImageGetter.getStatIcon(stat.name).surroundWithCircle(27f, false, color = selected))
                 CityFocus.NoFocus
             } else {
@@ -97,7 +95,7 @@ class CityStatsTable(private val cityScreen: CityScreen) : Table() {
             }
             if (cityScreen.canCityBeChanged()) {
                 icon.onActivation(binding = toggledFocus.binding) {
-                    city.cityAIFocus = toggledFocus
+                    city.setCityFocus(toggledFocus)
                     city.reassignPopulation()
                     cityScreen.update()
                 }
@@ -353,19 +351,24 @@ class CityStatsTable(private val cityScreen: CityScreen) : Table() {
 
         val greatPeopleTable = Table()
 
-        val greatPersonPoints = city.getGreatPersonPoints()
-        if (greatPersonPoints.isEmpty())
+        val gppBreakdown = GreatPersonPointsBreakdown(city)
+        if (gppBreakdown.allNames.isEmpty())
             return
+        val greatPersonPoints = gppBreakdown.sum()
 
-        for ((greatPersonName, gppPerTurn) in greatPersonPoints.asIterable().sortedBy { it.key }) {
+        // Iterating over allNames instead of greatPersonPoints will include those where the aggregation had points but ended up zero
+        for (greatPersonName in gppBreakdown.allNames) {
+            val gppPerTurn = greatPersonPoints[greatPersonName]
+
             val info = Table()
 
-            val specialistIcon = ImageGetter.getUnitIcon(greatPersonName, Color.GOLD).toGroup(20f)
-            info.add(specialistIcon).left().padBottom(4f).padRight(5f)
+            info.add(ImageGetter.getUnitIcon(greatPersonName, Color.GOLD).toGroup(20f))
+                .left().padBottom(4f).padRight(5f)
             info.add("{$greatPersonName} (+$gppPerTurn)".toLabel(hideIcons = true)).left().padBottom(4f).expandX().row()
 
             val gppCurrent = city.civ.greatPeople.greatPersonPointsCounter[greatPersonName]
             val gppNeeded = city.civ.greatPeople.getPointsRequiredForGreatPerson(greatPersonName)
+
             val percent = gppCurrent / gppNeeded.toFloat()
 
             val progressBar = ImageGetter.ProgressBar(300f, 25f, false)
@@ -380,34 +383,20 @@ class CityStatsTable(private val cityScreen: CityScreen) : Table() {
                 bar.toBack()
             }
             progressBar.setLabel(Color.WHITE, "$gppCurrent/$gppNeeded", fontSize = 14)
+
             info.add(progressBar).colspan(2).left().expandX().row()
-
+            info.onClick {
+                GreatPersonPointsBreakdownPopup(cityScreen, gppBreakdown, greatPersonName)
+            }
             greatPeopleTable.add(info).growX().top().padBottom(10f)
-            val unitIcon = ImageGetter.getConstructionPortrait(greatPersonName, 45f) // Will be 2f bigger than ordered
-            greatPeopleTable.add(unitIcon).padLeft(10f).row()
-
-            info.touchable = Touchable.enabled
-            info.onClick { GppBreakDownPopup(greatPersonName) }
-            unitIcon.onClick { GppBreakDownPopup(greatPersonName) }
+            val icon = ImageGetter.getConstructionPortrait(greatPersonName, 50f)
+            icon.onClick {
+                GreatPersonPointsBreakdownPopup(cityScreen, gppBreakdown, null)
+            }
+            greatPeopleTable.add(icon).row()
         }
 
         lowerTable.addCategory("Great People", greatPeopleTable, KeyboardBinding.GreatPeopleDetail)
     }
 
-    inner class GppBreakDownPopup(gppName: String) : Popup(cityScreen) {
-        init {
-            for ((source, isBonus, counter) in city.getGreatPersonPointsBreakdown()) {
-                val points = counter[gppName]
-                if (points == 0) continue
-                add("{$source}:".toLabel()).left().growX()
-                add((if (isBonus) points.toStringSigned() + "%" else points.toString()).toLabel(alignment = Align.right)).right().row()
-            }
-            addSeparator()
-            val total = city.getGreatPersonPoints()[gppName]
-            add("{Total}:".toLabel()).left().growX()
-            add(total.toString().toLabel(alignment = Align.right)).right().row()
-            addCloseButton()
-            open(true)
-        }
-    }
 }

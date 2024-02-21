@@ -1,13 +1,10 @@
 package com.unciv.logic.city
 
-import com.unciv.Constants
 import com.unciv.logic.map.tile.RoadStatus
 import com.unciv.models.Counter
 import com.unciv.models.ruleset.Building
-import com.unciv.models.ruleset.GlobalUniques
 import com.unciv.models.ruleset.IConstruction
 import com.unciv.models.ruleset.INonPerpetualConstruction
-import com.unciv.models.ruleset.ModOptionsConstants
 import com.unciv.models.ruleset.unique.LocalUniqueCache
 import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.Unique
@@ -168,7 +165,7 @@ class CityStats(val city: City) {
             if (!city.matchesFilter(unique.params[1])) continue
 
             growthSources.add(
-                getSourceNameForUnique(unique),
+                unique.getSourceNameForUser(),
                 Stats(food = unique.params[0].toFloat() / 100f * totalFood)
             )
         }
@@ -212,7 +209,7 @@ class CityStats(val city: City) {
             if (unique.sourceObjectType==UniqueTarget.CityState)
                 for (multiplierUnique in cityStateStatsMultipliers)
                     stats[Stat.valueOf(multiplierUnique.params[1])] *= multiplierUnique.params[0].toPercent()
-            sourceToStats.addStats(stats, getSourceNameForUnique(unique), unique.sourceObjectName ?: "")
+            sourceToStats.addStats(stats, unique.getSourceNameForUser(), unique.sourceObjectName ?: "")
         }
 
         for (unique in city.getMatchingUniques(UniqueType.StatsPerCity))
@@ -223,7 +220,7 @@ class CityStats(val city: City) {
         for (unique in city.getMatchingUniques(UniqueType.StatsPerPopulation))
             if (city.matchesFilter(unique.params[2])) {
                 val amountOfEffects = (city.population.population / unique.params[1].toInt()).toFloat()
-                sourceToStats.addStats(unique.stats.times(amountOfEffects), getSourceNameForUnique(unique), unique.sourceObjectName ?: "")
+                sourceToStats.addStats(unique.stats.times(amountOfEffects), unique.getSourceNameForUser(), unique.sourceObjectName ?: "")
             }
 
         for (unique in city.getMatchingUniques(UniqueType.StatsFromCitiesOnSpecificTiles))
@@ -233,18 +230,6 @@ class CityStats(val city: City) {
 
 
         return sourceToStats
-    }
-
-    private fun getSourceNameForUnique(unique: Unique): String {
-        return when (unique.sourceObjectType) {
-            null -> ""
-            UniqueTarget.Global -> GlobalUniques.getUniqueSourceDescription(unique)
-            UniqueTarget.Wonder -> "Wonders"
-            UniqueTarget.Building -> "Buildings"
-            UniqueTarget.Policy -> "Policies"
-            UniqueTarget.CityState -> Constants.cityStates
-            else -> unique.sourceObjectType.name
-        }
     }
 
     private fun getStatPercentBonusesFromGoldenAge(isGoldenAge: Boolean): Stats {
@@ -260,7 +245,7 @@ class CityStats(val city: City) {
         val sourceToStats = StatTreeNode()
 
         fun addUniqueStats(unique:Unique, stat:Stat, amount:Float) {
-            sourceToStats.addStats(Stats().add(stat, amount), getSourceNameForUnique(unique), unique.sourceObjectName ?: "")
+            sourceToStats.addStats(Stats().add(stat, amount), unique.getSourceNameForUser(), unique.sourceObjectName ?: "")
         }
 
         for (unique in city.getMatchingUniques(UniqueType.StatPercentBonus)) {
@@ -537,7 +522,7 @@ class CityStats(val city: City) {
         }
 
         // AFTER we've gotten all the gold stats figured out, only THEN do we plonk that gold into Science
-        if (city.getRuleset().modOptions.uniques.contains(ModOptionsConstants.convertGoldToScience)) {
+        if (city.getRuleset().modOptions.hasUnique(UniqueType.ConvertGoldToScience)) {
             val amountConverted = (newFinalStatList.values.sumOf { it.gold.toDouble() }
                     * city.civ.tech.goldPercentConvertedToScience).toInt().toFloat()
             if (amountConverted > 0) // Don't want you converting negative gold to negative science yaknow
@@ -554,7 +539,7 @@ class CityStats(val city: City) {
             val removedAmount = newFinalStatList.values.sumOf { it[statToBeRemoved].toDouble() }
 
             newFinalStatList.add(
-                getSourceNameForUnique(unique),
+                unique.getSourceNameForUser(),
                 Stats().apply { this[statToBeRemoved] = -removedAmount.toFloat() }
             )
         }
@@ -592,10 +577,7 @@ class CityStats(val city: City) {
         val buildingsMaintenance = getBuildingMaintenanceCosts() // this is AFTER the bonus calculation!
         newFinalStatList["Maintenance"] = Stats(gold = -buildingsMaintenance.toInt().toFloat())
 
-        if (totalFood > 0
-            && currentConstruction is INonPerpetualConstruction
-            && currentConstruction.hasUnique(UniqueType.ConvertFoodToProductionWhenConstructed)
-        ) {
+        if (canConvertFoodToProduction(totalFood, currentConstruction)) {
             newFinalStatList["Excess food to production"] =
                 Stats(production = getProductionFromExcessiveFood(totalFood), food = -totalFood)
         }
@@ -605,7 +587,7 @@ class CityStats(val city: City) {
             // Note that negative food will also be nullified. Pretty sure that's conform civ V, but haven't checked.
             val amountToRemove = -newFinalStatList.values.sumOf { it[Stat.Food].toDouble() }
             newFinalStatList.add(
-                getSourceNameForUnique(growthNullifyingUnique),
+                growthNullifyingUnique.getSourceNameForUser(),
                 Stats(food = amountToRemove.toFloat())
             )
         }
@@ -618,9 +600,20 @@ class CityStats(val city: City) {
         finalStatList = newFinalStatList
     }
 
-    // calculate the conversion of the excessive food to the production
-    // See for details: https://civilization.fandom.com/wiki/Settler_(Civ5)
-    private fun getProductionFromExcessiveFood(food : Float): Float {
+    fun canConvertFoodToProduction(food: Float, currentConstruction: IConstruction): Boolean {
+        return (food > 0
+            && currentConstruction is INonPerpetualConstruction
+            && currentConstruction.hasUnique(UniqueType.ConvertFoodToProductionWhenConstructed))
+    }
+
+    /**
+     * Calculate the conversion of the excessive food to production when
+     * [UniqueType.ConvertFoodToProductionWhenConstructed] is at front of the build queue
+     * @param food is amount of excess Food generates this turn
+     * See for details: https://civilization.fandom.com/wiki/Settler_(Civ5)
+     * @see calcFoodEaten as well for Food consumed this turn
+     */
+    fun getProductionFromExcessiveFood(food : Float): Float {
         return if (food >= 4.0f ) 2.0f + (food / 4.0f).toInt()
           else if (food >= 2.0f ) 2.0f
           else if (food >= 1.0f ) 1.0f

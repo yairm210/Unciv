@@ -6,7 +6,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
-import com.unciv.models.ruleset.unique.UniqueType
+import com.unciv.models.ruleset.validation.ModCompatibility
 import com.unciv.ui.components.extensions.pad
 import com.unciv.ui.components.extensions.toCheckBox
 import com.unciv.ui.components.input.onChange
@@ -49,10 +49,8 @@ class ModCheckboxTable(
     private val expanderPadTop = if (isPortrait) 0f else 16f
 
     init {
-        val modRulesets = RulesetCache.values.filterNot {
-            it.modOptions.isBaseRuleset
-            || it.name.isBlank()
-            || it.modOptions.hasUnique(UniqueType.ModIsAudioVisualOnly)
+        val modRulesets = RulesetCache.values.filter {
+            ModCompatibility.isExtensionMod(it)
         }
 
         for (mod in modRulesets.sortedBy { it.name }) {
@@ -77,7 +75,7 @@ class ModCheckboxTable(
         baseRuleset = RulesetCache[newBaseRuleset] ?: return
 
         val compatibleMods = modWidgets
-            .filterNot { isIncompatible(it.mod, baseRuleset) }
+            .filter { ModCompatibility.meetsBaseRequirements(it.mod, baseRuleset) }
 
         if (compatibleMods.none()) return
 
@@ -91,7 +89,8 @@ class ModCheckboxTable(
                 it.add(mod.widget).row()
             }
         }).pad(10f).padTop(expanderPadTop).growX().row()
-        // I think it's not necessary to uncheck the imcompatible (now invisible) checkBoxes
+
+        disableIncompatibleMods()
 
         runComplexModCheck()
     }
@@ -103,6 +102,8 @@ class ModCheckboxTable(
         }
         mods.clear()
         disableChangeEvents = false
+
+        disableIncompatibleMods()
         onUpdate("-")  // should match no mod
     }
 
@@ -114,6 +115,7 @@ class ModCheckboxTable(
         // Check over complete combination of selected mods
         val complexModLinkCheck = RulesetCache.checkCombinedModLinks(mods, baseRulesetName)
         if (!complexModLinkCheck.isWarnUser()){
+            savedModcheckResult = null
             Gdx.input.inputProcessor = currentInputProcessor
             return false
         }
@@ -167,20 +169,41 @@ class ModCheckboxTable(
 
         }
 
+        disableIncompatibleMods()
+
         return true
     }
 
-    private fun modNameFilter(modName: String, filter: String): Boolean {
-        if (modName == filter) return true
-        if (filter.length < 3 || !filter.startsWith('*') || !filter.endsWith('*')) return false
-        val partialName = filter.substring(1, filter.length - 1).lowercase()
-        return partialName in modName.lowercase()
+    /** Deselect incompatible mods after [skipCheckBox] was selected.
+     *
+     *  Note: Inactive - we don'n even allow a conflict to be turned on using [disableIncompatibleMods].
+     *  But if we want the alternative UX instead - use this in [checkBoxChanged] near `mods.add` and skip disabling...
+     */
+    @Suppress("unused")
+    private fun deselectIncompatibleMods(skipCheckBox: CheckBox) {
+        disableChangeEvents = true
+        for (modWidget in modWidgets) {
+            if (modWidget.widget == skipCheckBox) continue
+            if (!ModCompatibility.meetsAllRequirements(modWidget.mod, baseRuleset, getSelectedMods())) {
+                modWidget.widget.isChecked = false
+                mods.remove(modWidget.mod.name)
+            }
+        }
+        disableChangeEvents = true
     }
 
-    private fun isIncompatibleWith(mod: Ruleset, otherMod: Ruleset) =
-        mod.modOptions.getMatchingUniques(UniqueType.ModIncompatibleWith)
-            .any { modNameFilter(otherMod.name, it.params[0]) }
-    private fun isIncompatible(mod: Ruleset, otherMod: Ruleset) =
-        isIncompatibleWith(mod, otherMod) || isIncompatibleWith(otherMod, mod)
+    /** Disable incompatible mods - those that could not be turned on with the current selection */
+    private fun disableIncompatibleMods() {
+        for (modWidget in modWidgets) {
+            val enable = ModCompatibility.meetsAllRequirements(modWidget.mod, baseRuleset, getSelectedMods())
+            assert(enable || !modWidget.widget.isChecked) { "Mod compatibility conflict: Trying to disable ${modWidget.mod.name} while it is selected" }
+            modWidget.widget.isDisabled = !enable  // isEnabled is only for TextButtons
+        }
+    }
 
+    private fun getSelectedMods() =
+        modWidgets.asSequence()
+             .filter { it.widget.isChecked }
+             .map { it.mod }
+             .asIterable()
 }

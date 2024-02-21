@@ -7,7 +7,7 @@ package com.unciv.models.ruleset.unique
  * @param inheritsFrom means that all such uniques are acceptable as well. For example, all Global uniques are acceptable for Nations, Eras, etc.
  */
 enum class UniqueTarget(
-    val documentationString:String = "",
+    val documentationString: String = "",
     val inheritsFrom: UniqueTarget? = null,
     val modifierType: ModifierType = ModifierType.None
 ) {
@@ -30,6 +30,7 @@ enum class UniqueTarget(
 
     // Civilization-specific
     Nation(inheritsFrom = Global),
+    Personality,
     Era(inheritsFrom = Global),
     Tech(inheritsFrom = Global),
     Policy(inheritsFrom = Global),
@@ -63,6 +64,7 @@ enum class UniqueTarget(
     TriggerCondition("Special conditionals that can be added to Triggerable uniques, to make them activate upon specific actions.", inheritsFrom = Global, modifierType = ModifierType.Other),
     UnitTriggerCondition("Special conditionals that can be added to UnitTriggerable uniques, to make them activate upon specific actions.", inheritsFrom = TriggerCondition, modifierType = ModifierType.Other),
     UnitActionModifier("Modifiers that can be added to UnitAction uniques as conditionals", modifierType = ModifierType.Other),
+    MetaModifier("Modifiers that can be added to other uniques changing user experience, not their behavior", modifierType = ModifierType.Other),
     ;
 
     /** Whether a UniqueType is allowed in the `<conditional or trigger>` part - or not.
@@ -81,7 +83,7 @@ enum class UniqueTarget(
         /** All targets that can display their Uniques */
         // As Array so it can used in a vararg parameter list.
         val Displayable = arrayOf(
-            Building, Unit, UnitType, Improvement, Tech,
+            Building, Unit, UnitType, Improvement, Tech, FollowerBelief,
             Terrain, Resource, Policy, Promotion, Nation, Ruins, Speed
         )
     }

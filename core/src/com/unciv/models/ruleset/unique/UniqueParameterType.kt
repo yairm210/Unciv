@@ -77,15 +77,19 @@ enum class UniqueParameterType(
     // todo potentially remove if OneTimeRevealSpecificMapTiles changes
     KeywordAll("'all'", "All") {
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset) =
-            if (parameterText == "All") null else UniqueType.UniqueParameterErrorSeverity.RulesetInvariant
+            if (parameterText in Constants.all) null else UniqueType.UniqueParameterErrorSeverity.RulesetInvariant
     },
 
-    /** Implemented by [ICombatant.matchesCategory][com.unciv.logic.battle.ICombatant.matchesCategory] */
+    /** Implemented by [ICombatant.matchesCategory][com.unciv.logic.battle.ICombatant.matchesFilter] */
     CombatantFilter("combatantFilter", "City", "This indicates a combatant, which can either be a unit or a city (when bombarding). Must either be `City` or a `mapUnitFilter`") {
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
-                UniqueType.UniqueParameterErrorSeverity? {
-            if (parameterText == "City") return null  // City also recognizes "All" but that's covered by BaseUnitFilter too
-            return MapUnitFilter.getErrorSeverity(parameterText, ruleset)
+            UniqueType.UniqueParameterErrorSeverity? = getErrorSeverityForFilter(parameterText, ruleset)
+
+        override fun isKnownValue(parameterText: String, ruleset: Ruleset): Boolean {
+            if (parameterText == "City") return true
+            if (MapUnitFilter.isKnownValue(parameterText, ruleset)) return true
+            if (CityFilter.isKnownValue(parameterText, ruleset)) return true
+            return false
         }
     },
 
@@ -100,6 +104,7 @@ enum class UniqueParameterType(
         override fun isKnownValue(parameterText:String, ruleset: Ruleset): Boolean {
             if (parameterText in knownValues) return true
             if (ruleset.unitPromotions.values.any { it.hasUnique(parameterText) }) return true
+            if (CivFilter.isKnownValue(parameterText, ruleset)) return true
             if (BaseUnitFilter.isKnownValue(parameterText, ruleset)) return true
             return false
         }
@@ -110,10 +115,10 @@ enum class UniqueParameterType(
     /** Implemented by [BaseUnit.matchesFilter][com.unciv.models.ruleset.unit.BaseUnit.matchesFilter] */
     BaseUnitFilter("baseUnitFilter", "Melee") {
         private val knownValues = setOf(
-            "All", "Melee", "Ranged", "Civilian", "Military", "non-air",
+            "Melee", "Ranged", "Civilian", "Military", "non-air",
             "Nuclear Weapon", "Great Person", "Religious",
             "relevant", // used for UniqueType.UnitStartingPromotions
-        )
+        ) + Constants.all
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
             UniqueType.UniqueParameterErrorSeverity? = getErrorSeverityForFilter(parameterText, ruleset)
 
@@ -217,7 +222,7 @@ enum class UniqueParameterType(
 
     /** Implemented by [Nation.matchesFilter][com.unciv.models.ruleset.nation.Nation.matchesFilter] */
     NationFilter("nationFilter", Constants.cityStates) {
-        private val knownValues = setOf(Constants.cityStates, "Major", "All")
+        private val knownValues = setOf(Constants.cityStates, "Major") + Constants.all
 
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
             UniqueType.UniqueParameterErrorSeverity? = getErrorSeverityForFilter(parameterText, ruleset)
@@ -232,33 +237,38 @@ enum class UniqueParameterType(
 
     /** Implemented by [City.matchesFilter][com.unciv.logic.city.City.matchesFilter] */
     CityFilter("cityFilter", "in all cities", null, "City filters") {
-        private val cityFilterStrings = setOf(
+        private val knownValues = setOf(
             "in this city",
             "in all cities",
-            "in all coastal cities",
-            "in capital",
-            "in all non-occupied cities",
+            "in your cities", "Your",
+            "in all coastal cities", "Coastal",
+            "in capital", "Capital",
+            "in all non-occupied cities", "Non-occupied",
             "in all cities with a world wonder",
             "in all cities connected to capital",
-            "in all cities with a garrison",
+            "in all cities with a garrison", "Garrisoned",
             "in all cities in which the majority religion is a major religion",
             "in all cities in which the majority religion is an enhanced religion",
             "in non-enemy foreign cities",
-            "in foreign cities",
-            "in annexed cities",
-            "in puppeted cities",
-            "in holy cities",
+            "in enemy cities", "Enemy",
+            "in foreign cities", "Foreign",
+            "in annexed cities", "Annexed",
+            "in puppeted cities", "Puppeted",
+            "in holy cities", "Holy",
             "in City-State cities",
             "in cities following this religion",
-        )
+            "in cities following our religion",
+        ) + Constants.all
 
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
-                UniqueType.UniqueParameterErrorSeverity? {
-            if (parameterText in cityFilterStrings) return null
-            return UniqueType.UniqueParameterErrorSeverity.RulesetInvariant
+                UniqueType.UniqueParameterErrorSeverity? = getErrorSeverityForFilter(parameterText, ruleset)
+
+        override fun isKnownValue(parameterText: String, ruleset: Ruleset): Boolean {
+            if (parameterText in knownValues) return true
+            return false
         }
 
-        override fun getTranslationWriterStringsForOutput() = cityFilterStrings
+        override fun getTranslationWriterStringsForOutput() = knownValues
     },
 
     /** Used by [BuildingFilter] and e.g. [UniqueType.ConditionalCityWithBuilding] */
@@ -274,8 +284,8 @@ enum class UniqueParameterType(
 
     /** Implemented by [Building.matchesFilter][com.unciv.models.ruleset.Building.matchesFilter] */
     BuildingFilter("buildingFilter", "Culture") {
-        private val knownValues = mutableSetOf("All", "Building", "Buildings", "Wonder", "Wonders", "National Wonder", "World Wonder")
-            .apply { addAll(Stat.names()) }
+        private val knownValues = mutableSetOf("Building", "Buildings", "Wonder", "Wonders", "National Wonder", "World Wonder")
+            .apply { addAll(Stat.names()); addAll(Constants.all) }
 
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
             UniqueType.UniqueParameterErrorSeverity? = getErrorSeverityForFilter(parameterText, ruleset)
@@ -288,7 +298,7 @@ enum class UniqueParameterType(
         }
 
         override fun isTranslationWriterGuess(parameterText: String, ruleset: Ruleset) =
-            parameterText != "All" && getErrorSeverity(parameterText, ruleset) == null
+            parameterText !in Constants.all && getErrorSeverity(parameterText, ruleset) == null
     },
 
     /** Implemented by [PopulationManager.getPopulationFilterAmount][com.unciv.logic.city.managers.CityPopulationManager.getPopulationFilterAmount] */
@@ -307,13 +317,12 @@ enum class UniqueParameterType(
     /** Implemented by [Tile.matchesTerrainFilter][com.unciv.logic.map.tile.Tile.matchesTerrainFilter] */
     TerrainFilter("terrainFilter", Constants.freshWaterFilter, null, "Terrain Filters") {
         private val knownValues = setOf(
-            "All",
+            "Terrain",
             Constants.coastal, Constants.river, "Open terrain", "Rough terrain", "Water resource",
-            "Foreign Land", "Foreign", "Friendly Land", "Friendly", "Enemy Land", "Enemy",
+            "resource", "Foreign Land", "Foreign", "Friendly Land", "Friendly", "Enemy Land", "Enemy", "your",
             "Featureless", Constants.freshWaterFilter, "non-fresh water", "Natural Wonder",
             "Impassable", "Land", "Water"
-        ) +
-            ResourceType.values().map { it.name + " resource" }
+        ) + ResourceType.values().map { it.name + " resource" } + Constants.all
 
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
             UniqueType.UniqueParameterErrorSeverity? = getErrorSeverityForFilter(parameterText, ruleset)
@@ -330,14 +339,14 @@ enum class UniqueParameterType(
         }
 
         override fun isTranslationWriterGuess(parameterText: String, ruleset: Ruleset) =
-            parameterText in ruleset.terrains || parameterText != "All" && parameterText in knownValues
+            parameterText in ruleset.terrains || parameterText !in Constants.all && parameterText in knownValues
 
         override fun getTranslationWriterStringsForOutput() = knownValues
     },
 
     /** Implemented by [Tile.matchesFilter][com.unciv.logic.map.tile.Tile.matchesFilter] */
     TileFilter("tileFilter", "Farm", "Anything that can be used either in an improvementFilter or in a terrainFilter can be used here, plus 'unimproved'", "Tile Filters") {
-        private val knownValues = setOf("unimproved", "All Road", "Great Improvement")
+        private val knownValues = setOf("unimproved", "improved", "All Road", "Great Improvement")
 
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
             UniqueType.UniqueParameterErrorSeverity? = getErrorSeverityForFilter(parameterText, ruleset)
@@ -366,7 +375,7 @@ enum class UniqueParameterType(
     /** Used by [NaturalWonderGenerator.trySpawnOnSuitableLocation][com.unciv.logic.map.mapgenerator.NaturalWonderGenerator.trySpawnOnSuitableLocation], only tests base terrain */
     BaseTerrain("baseTerrain", Constants.grassland, "The name of any terrain that is a base terrain according to the json file") {
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
-                UniqueType.UniqueParameterErrorSeverity? {
+            UniqueType.UniqueParameterErrorSeverity? {
             if (ruleset.terrains[parameterText]?.type?.isBaseTerrain == true) return null
             return UniqueType.UniqueParameterErrorSeverity.RulesetSpecific
         }
@@ -440,7 +449,7 @@ enum class UniqueParameterType(
 
     /** Implemented by [TileImprovement.matchesFilter][com.unciv.models.ruleset.tile.TileImprovement.matchesFilter] */
     ImprovementFilter("improvementFilter", "All Road", null, "Improvement Filters") {
-        private val knownValues = setOf("All", "Improvement", "All Road", "Great Improvement", "Great")
+        private val knownValues = setOf("Improvement", "All Road", "Great Improvement", "Great") + Constants.all
 
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
             UniqueType.UniqueParameterErrorSeverity? = getErrorSeverityForFilter(parameterText, ruleset)
@@ -453,7 +462,7 @@ enum class UniqueParameterType(
         }
 
         override fun isTranslationWriterGuess(parameterText: String, ruleset: Ruleset) =
-            parameterText != "All" && getErrorSeverity(parameterText, ruleset) == null
+            parameterText !in Constants.all && getErrorSeverity(parameterText, ruleset) == null
 
         override fun getTranslationWriterStringsForOutput() = knownValues
     },
@@ -558,26 +567,17 @@ enum class UniqueParameterType(
         }
     },
 
-    /** For untyped "Can [] [] times" unique */
-    @Deprecated("As of 4.8.9")
-    Action("action", Constants.spreadReligion, "An action that a unit can perform. Currently, there are only two actions part of this: 'Spread Religion' and 'Remove Foreign religions from your own cities'", "Religious Action Filters") {
-        private val knownValues = setOf(Constants.spreadReligion, Constants.removeHeresy)
-        override fun getErrorSeverity(
-            parameterText: String,
-            ruleset: Ruleset
-        ): UniqueType.UniqueParameterErrorSeverity? {
-            return if (parameterText in knownValues) null
-            else UniqueType.UniqueParameterErrorSeverity.RulesetInvariant
-        }
-        override fun getTranslationWriterStringsForOutput() = knownValues
-    },
-
-    /** Mod declarative compatibility: Behaves like [Unknown], but makes for nicer auto-generated documentation. */
+    /** Mod declarative compatibility: Define Mod relations by their name. */
     ModName("modFilter", "DeCiv Redux", """A Mod name, case-sensitive _or_ a simple wildcard filter beginning and ending in an Asterisk, case-insensitive""", "Mod name filter") {
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
-            UniqueType.UniqueParameterErrorSeverity? =
-            if ('-' !in parameterText && ('*' !in parameterText || parameterText.matches(Regex("""^\*[^*]+\*$""")))) null
-            else UniqueType.UniqueParameterErrorSeverity.RulesetInvariant
+            UniqueType.UniqueParameterErrorSeverity? = when {
+                BaseRuleset.values().any { it.fullName == parameterText } -> null  // Only Builtin ruleset names can contain '-'
+                parameterText == "*Civ V -*" || parameterText == "*Civ V - *" -> null  // Wildcard filter for builtin
+                '-' in parameterText -> UniqueType.UniqueParameterErrorSeverity.RulesetInvariant
+                parameterText.matches(Regex("""^\*[^*]+\*$""")) -> null
+                parameterText.startsWith('*') || parameterText.endsWith('*') -> UniqueType.UniqueParameterErrorSeverity.RulesetInvariant
+                else -> null
+        }
 
         override fun getTranslationWriterStringsForOutput() = scanExistingValues(this)
     },

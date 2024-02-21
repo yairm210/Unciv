@@ -46,7 +46,7 @@ object DeclareWar {
             NotificationCategory.Diplomacy, NotificationIcon.War, civInfo.civName)
         otherCiv.popupAlerts.add(PopupAlert(AlertType.WarDeclaration, civInfo.civName))
 
-        diplomacyManager.getCommonKnownCivs().forEach {
+        diplomacyManager.getCommonKnownCivsWithSpectators().forEach {
             it.addNotification("[${civInfo.civName}] has declared war on [${diplomacyManager.otherCivName}]!",
                 NotificationCategory.Diplomacy, civInfo.civName, NotificationIcon.War, diplomacyManager.otherCivName)
         }
@@ -65,7 +65,7 @@ object DeclareWar {
 
         if (otherCiv.isMajorCiv())
             for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponDeclaringWar))
-                UniqueTriggerActivation.triggerCivwideUnique(unique, civInfo)
+                UniqueTriggerActivation.triggerUnique(unique, civInfo)
     }
 
     private fun breakTreaties(diplomacyManager: DiplomacyManager) {
@@ -179,7 +179,7 @@ object DeclareWar {
                 thirdPartyDiploManager.removeFlag(DiplomacyFlags.DefensivePact)
                 thirdPartyDiploManager.otherCivDiplomacy().removeFlag(DiplomacyFlags.DefensivePact)
             }
-            for (civ in diplomacyManager.getCommonKnownCivs().filter { civ -> civ.isMajorCiv() || civ.isSpectator() }) {
+            for (civ in diplomacyManager.getCommonKnownCivsWithSpectators()) {
                 civ.addNotification("[${diplomacyManager.civInfo.civName}] canceled their Defensive Pact with [${thirdPartyDiploManager.otherCivName}]!",
                     NotificationCategory.Diplomacy, diplomacyManager.civInfo.civName, NotificationIcon.Diplomacy, thirdPartyDiploManager.otherCivName)
             }

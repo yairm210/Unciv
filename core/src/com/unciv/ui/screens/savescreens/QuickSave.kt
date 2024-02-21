@@ -71,7 +71,7 @@ object QuickSave {
 
             val savedGame: GameInfo
             try {
-                savedGame = screen.game.files.loadLatestAutosave()
+                savedGame = screen.game.files.autosaves.loadLatestAutosave()
             } catch (_: OutOfMemoryError) {
                 outOfMemory()
                 return@run

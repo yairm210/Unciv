@@ -8,6 +8,12 @@ import com.unciv.models.stats.Stat
 private val unCamelCaseRegex = Regex("([A-Z])([A-Z])([a-z])|([a-z])([A-Z])")
 private fun unCamelCase(name: String) = unCamelCaseRegex.replace(name, """$1$4 $2$3$5""")
 
+/**
+ *  This is the database of supported "bindable" keyboard shortcuts.
+ *
+ *  Note a label is automatically generated from the name by inserting spaces before each uppercase letter (except the initial one),
+ *  and translation keys are automatically generated for all labels. This also works for [KeyboardBinding.Category].
+ */
 enum class KeyboardBinding(
     val category: Category,
     label: String? = null,
@@ -26,14 +32,18 @@ enum class KeyboardBinding(
     Multiplayer(Category.MainMenu),  // Name disambiguation maybe soon, not yet necessary
     MapEditor(Category.MainMenu, "Map editor", KeyCharAndCode('E')),
     ModManager(Category.MainMenu, "Mods", KeyCharAndCode('D')),
+    Scenarios(Category.MainMenu, "Scenarios", KeyCharAndCode('S')),
     MainMenuOptions(Category.MainMenu, "Options", KeyCharAndCode('O')),  // Separate binding from World where it's Ctrl-O default
 
     // Worldscreen
     Menu(Category.WorldScreen, KeyCharAndCode.TAB),
     NextTurn(Category.WorldScreen),
     NextTurnAlternate(Category.WorldScreen, KeyCharAndCode.SPACE),
+    AutoPlayMenu(Category.WorldScreen, "Open AutoPlay menu", KeyCharAndCode.UNKNOWN),  // 'a' is already assigned to map panning
+    AutoPlay(Category.WorldScreen, "Start AutoPlay", KeyCharAndCode.ctrl('a')),
     EmpireOverview(Category.WorldScreen),
     MusicPlayer(Category.WorldScreen, KeyCharAndCode.ctrl('m')),
+    DeveloperConsole(Category.WorldScreen, '`'),
 
     /*
      * These try to be faithful to default Civ5 key bindings as found in several places online
@@ -126,6 +136,12 @@ enum class KeyboardBinding(
     HideAdditionalActions(Category.UnitActions,"Back", Input.Keys.PAGE_UP),
     AddInCapital(Category.UnitActions, "Add in capital", 'g'),
 
+    // The AutoPlayMenu reuses the AutoPlay binding, under Worldscreen above - otherwise clear labeling would be tricky
+    AutoPlayMenuEndTurn(Category.AutoPlayMenu, "AutoPlay End Turn", 't'),
+    AutoPlayMenuMilitary(Category.AutoPlayMenu, "AutoPlay Military Once", 'm'),
+    AutoPlayMenuCivilians(Category.AutoPlayMenu, "AutoPlay Civilians Once", 'c'),
+    AutoPlayMenuEconomy(Category.AutoPlayMenu, "AutoPlay Economy Once", 'e'),
+
     // City Screen
     AddConstruction(Category.CityScreen, "Add to or remove from queue", KeyCharAndCode.RETURN),
     RaisePriority(Category.CityScreen, "Raise queue priority", Input.Keys.UP),
@@ -198,6 +214,9 @@ enum class KeyboardBinding(
             // Conflict checking within group plus keys assigned to UnitActions are a problem
             override fun checkConflictsIn() = sequenceOf(this, MapPanning, UnitActions)
         },
+        AutoPlayMenu {
+            override val label = "AutoPlay menu" // adapt to existing usage
+        },
         MapPanning {
             override fun checkConflictsIn() = sequenceOf(this, WorldScreen)
         },
@@ -210,7 +229,7 @@ enum class KeyboardBinding(
         Civilopedia,
         Popups
         ;
-        val label = unCamelCase(name)
+        open val label = unCamelCase(name)
         open fun checkConflictsIn() = sequenceOf(this)
     }
 

@@ -345,6 +345,7 @@ class CityConstructions : IsPartOfGameInfoSerialization {
                     city.civ.addNotification("No space available to place [${construction.name}] near [${city.name}]",
                         city.location, NotificationCategory.Production, construction.name)
                 }
+                city.civ.civConstructions.builtItemsWithIncreasingCost[construction.name] += 1
             }
         }
     }
@@ -386,7 +387,7 @@ class CityConstructions : IsPartOfGameInfoSerialization {
         chooseNextConstruction()
     }
 
-    private fun validateInProgressConstructions() {
+    fun validateInProgressConstructions() {
         // remove obsolete stuff from in progress constructions - happens often and leaves clutter in memory and save files
         // should have little visible consequences - any accumulated points that may be reused later should stay (nukes when manhattan project city lost, nat wonder when conquered an empty city...), all other points should be refunded
         // Should at least be called before each turn - if another civ completes a wonder after our previous turn, we should get the refund this turn
@@ -413,9 +414,12 @@ class CityConstructions : IsPartOfGameInfoSerialization {
                     }
                 } else if (construction is BaseUnit) {
                     // Production put into upgradable units gets put into upgraded version
-                    if (rejectionReasons.all { it.type == RejectionReasonType.Obsoleted } && construction.upgradesTo != null) {
-                        val upgradedUnitName = city.civ.getEquivalentUnit(construction.upgradesTo!!).name
-                        inProgressConstructions[upgradedUnitName] = (inProgressConstructions[upgradedUnitName] ?: 0) + workDone
+                    val cheapestUpgradeUnit = construction.getRulesetUpgradeUnits(StateForConditionals(city.civ, city))
+                        .map { city.civ.getEquivalentUnit(it) }
+                        .filter { it.isBuildable(this) }
+                        .minByOrNull { it.cost }
+                    if (rejectionReasons.all { it.type == RejectionReasonType.Obsoleted } && cheapestUpgradeUnit != null) {
+                        inProgressConstructions[cheapestUpgradeUnit.name] = (inProgressConstructions[cheapestUpgradeUnit.name] ?: 0) + workDone
                     }
                 }
                 inProgressConstructions.remove(constructionName)
@@ -529,7 +533,8 @@ class CityConstructions : IsPartOfGameInfoSerialization {
             civ.cache.updateHasActiveEnemyMovementPenalty()
 
         // Korean unique - apparently gives the same as the research agreement
-        if (building.isStatRelated(Stat.Science) && civ.hasUnique(UniqueType.TechBoostWhenScientificBuildingsBuiltInCapital))
+        if (building.isStatRelated(Stat.Science) && civ.hasUnique(UniqueType.TechBoostWhenScientificBuildingsBuiltInCapital)
+            && city.isCapital())
             civ.tech.addScience(civ.tech.scienceOfLast8Turns.sum() / 8)
 
         // Happiness is global, so it could affect all cities
@@ -544,21 +549,22 @@ class CityConstructions : IsPartOfGameInfoSerialization {
     }
 
     fun triggerNewBuildingUniques(building: Building) {
+        val stateForConditionals = StateForConditionals(city.civ, city)
         val triggerNotificationText ="due to constructing [${building.name}]"
 
         for (unique in building.uniqueObjects)
-            if (!unique.hasTriggerConditional())
-                UniqueTriggerActivation.triggerCivwideUnique(unique, city.civ, city, triggerNotificationText = triggerNotificationText)
+            if (!unique.hasTriggerConditional() && unique.conditionalsApply(stateForConditionals))
+                UniqueTriggerActivation.triggerUnique(unique, city, triggerNotificationText = triggerNotificationText)
 
-        for (unique in city.civ.getTriggeredUniques(UniqueType.TriggerUponConstructingBuilding, StateForConditionals(city.civ, city)))
+        for (unique in city.civ.getTriggeredUniques(UniqueType.TriggerUponConstructingBuilding, stateForConditionals))
             if (unique.conditionals.any {it.type == UniqueType.TriggerUponConstructingBuilding && building.matchesFilter(it.params[0])})
-                UniqueTriggerActivation.triggerCivwideUnique(unique, city.civ, city, triggerNotificationText = triggerNotificationText)
+                UniqueTriggerActivation.triggerUnique(unique, city, triggerNotificationText = triggerNotificationText)
 
-        for (unique in city.civ.getTriggeredUniques(UniqueType.TriggerUponConstructingBuildingCityFilter, StateForConditionals(city.civ, city)))
+        for (unique in city.civ.getTriggeredUniques(UniqueType.TriggerUponConstructingBuildingCityFilter, stateForConditionals))
             if (unique.conditionals.any {it.type == UniqueType.TriggerUponConstructingBuildingCityFilter
                     && building.matchesFilter(it.params[0])
                     && city.matchesFilter(it.params[1])})
-                UniqueTriggerActivation.triggerCivwideUnique(unique, city.civ, city, triggerNotificationText = triggerNotificationText)
+                UniqueTriggerActivation.triggerUnique(unique, city, triggerNotificationText = triggerNotificationText)
     }
 
     fun removeBuilding(buildingName: String) {

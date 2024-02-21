@@ -5,14 +5,12 @@ import com.badlogic.gdx.math.Interpolation
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Group
-import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.badlogic.gdx.scenes.scene2d.actions.FloatAction
 import com.badlogic.gdx.scenes.scene2d.actions.RelativeTemporalAction
 import com.badlogic.gdx.scenes.scene2d.actions.SequenceAction
 import com.badlogic.gdx.scenes.scene2d.actions.TemporalAction
 import com.badlogic.gdx.scenes.scene2d.ui.Image
-import com.badlogic.gdx.scenes.scene2d.ui.Stack
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.WidgetGroup
 import com.badlogic.gdx.utils.Align
@@ -20,8 +18,8 @@ import com.unciv.UncivGame
 import com.unciv.logic.battle.ICombatant
 import com.unciv.logic.battle.MapUnitCombatant
 import com.unciv.logic.map.HexMath
-import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.tilegroups.TileSetStrings
+import com.unciv.ui.components.widgets.ShadowedLabel
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.worldscreen.WorldScreen
 
@@ -210,17 +208,7 @@ object BattleTableHelpers {
     private fun createDamageLabel(damage: Int, target: Actor) {
         if (damage == 0) return
 
-        val label = (-damage).toString().toLabel(Color.RED, damageLabelFontSize, Align.topLeft, true)
-        label.touchable = Touchable.disabled
-        val shadow = (-damage).toString().toLabel(Color.BLACK, damageLabelFontSize, Align.bottomRight, true)
-        shadow.touchable = Touchable.disabled
-
-        val container = Stack(shadow, label)
-        container.touchable = Touchable.disabled
-
-        container.pack()
-        // The +1f is what displaces the shadow under the red label
-        container.setSize(container.width + 1f, container.height + 1f)
+        val container = ShadowedLabel((-damage).toString(), damageLabelFontSize, Color.RED)
         val targetRight = target.run { localToStageCoordinates(Vector2(width, height * 0.5f)) }
         container.setPosition(targetRight.x, targetRight.y, Align.center)
         target.stage.addActor(container)

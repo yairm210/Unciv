@@ -14,7 +14,7 @@ object CivilianUnitAutomation {
         && !unit.hasUnique(UniqueType.AddInCapital)
         && unit.civ.units.getCivUnits().any { unit.hasUnique(UniqueType.AddInCapital) }
 
-    fun automateCivilianUnit(unit: MapUnit) {
+    fun automateCivilianUnit(unit: MapUnit, dangerousTiles: HashSet<Tile>) {
         if (tryRunAwayIfNeccessary(unit)) return
 
         if (shouldClearTileForAddInCapitalUnits(unit, unit.currentTile)) {
@@ -25,19 +25,14 @@ object CivilianUnitAutomation {
                 unit.movement.moveToTile(tilesCanMoveTo.minByOrNull { it.value.totalDistance }!!.key)
         }
 
-        val tilesWhereWeWillBeCaptured = unit.civ.threatManager.getEnemyMilitaryUnitsInDistance(unit.getTile(),5)
-            .flatMap { it.movement.getReachableTilesInCurrentTurn() }
-            .filter { it.militaryUnit?.civ != unit.civ }
-            .toSet()
-
         if (unit.hasUnique(UniqueType.FoundCity))
-            return SpecificUnitAutomation.automateSettlerActions(unit, tilesWhereWeWillBeCaptured)
+            return SpecificUnitAutomation.automateSettlerActions(unit, dangerousTiles)
 
-        if(unit.isAutomatingRoadConnection())
-            return unit.civ.getWorkerAutomation().automateConnectRoad(unit, tilesWhereWeWillBeCaptured)
+        if (unit.isAutomatingRoadConnection())
+            return unit.civ.getWorkerAutomation().roadToAutomation.automateConnectRoad(unit, dangerousTiles)
 
         if (unit.cache.hasUniqueToBuildImprovements)
-            return unit.civ.getWorkerAutomation().automateWorkerAction(unit, tilesWhereWeWillBeCaptured)
+            return unit.civ.getWorkerAutomation().automateWorkerAction(unit, dangerousTiles)
 
         if (unit.cache.hasUniqueToCreateWaterImprovements) {
             if (!unit.civ.getWorkerAutomation().automateWorkBoats(unit))

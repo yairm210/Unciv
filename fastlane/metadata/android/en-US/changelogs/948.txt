@@ -1,0 +1,7 @@
+Added experimental scenarios!
+
+Fixed Android status bar not disappearing ("immersion mode")
+
+Console: added 'set player type' command, for scenario setup
+
+Fix ShadowedLabel - By SomeTroglodyte

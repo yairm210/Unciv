@@ -13,6 +13,7 @@ import com.unciv.models.Spy
 import com.unciv.models.SpyAction
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.extensions.addSeparatorVertical
+import com.unciv.ui.components.extensions.disable
 import com.unciv.ui.components.extensions.setSize
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
@@ -24,9 +25,10 @@ import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.widgets.AutoScrollPane
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.pickerscreens.PickerScreen
+import com.unciv.ui.screens.worldscreen.WorldScreen
 
 /** Screen used for moving spies between cities */
-class EspionageOverviewScreen(val civInfo: Civilization) : PickerScreen(true) {
+class EspionageOverviewScreen(val civInfo: Civilization, val worldScreen: WorldScreen) : PickerScreen(true) {
     private val collator = UncivGame.Current.settings.getCollatorFromLocale()
 
     private val spySelectionTable = Table(skin)
@@ -75,10 +77,8 @@ class EspionageOverviewScreen(val civInfo: Civilization) : PickerScreen(true) {
             spySelectionTable.add(spy.getLocationName().toLabel())
             val actionString =
                 when (spy.action) {
-                    SpyAction.None, SpyAction.StealingTech, SpyAction.Surveillance -> spy.action.displayString
-                    SpyAction.Moving, SpyAction.EstablishNetwork -> "[${spy.action.displayString}] ${spy.turnsRemainingForAction}${Fonts.turn}"
-                    SpyAction.RiggingElections -> TODO()
-                    SpyAction.CounterIntelligence -> TODO()
+                    SpyAction.None, SpyAction.StealingTech, SpyAction.Surveillance, SpyAction.CounterIntelligence -> spy.action.displayString
+                    SpyAction.Moving, SpyAction.EstablishNetwork, SpyAction.Dead, SpyAction.RiggingElections -> "[${spy.action.displayString}] ${spy.turnsRemainingForAction}${Fonts.turn}"
                 }
             spySelectionTable.add(actionString.toLabel())
 
@@ -93,15 +93,15 @@ class EspionageOverviewScreen(val civInfo: Civilization) : PickerScreen(true) {
                 selectedSpy = spy
                 selectedSpyButton!!.label.setText(Constants.cancel.tr())
                 for ((button, city) in moveSpyHereButtons) {
-                    // For now, only allow spies to be sent to cities of other major civs and their hideout
                     // Not own cities as counterintelligence isn't implemented
                     // Not city-state civs as rigging elections isn't implemented
                     button.isVisible = city == null // hideout
-                        || (city.civ.isMajorCiv()
-                            && city.civ != civInfo
-                            && !city.espionage.hasSpyOf(civInfo)
-                        )
+                        || (city.civ != civInfo && !city.espionage.hasSpyOf(civInfo))
                 }
+            }
+            if (!worldScreen.canChangeState) {
+                // Spectators aren't allowed to move the spies of the Civs they are viewing
+                moveSpyButton.disable()
             }
             spySelectionTable.add(moveSpyButton).pad(5f, 10f, 5f, 20f).row()
         }

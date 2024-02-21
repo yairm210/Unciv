@@ -18,11 +18,11 @@ object MapRegionResources {
      *  Tries to avoid impacts, but falls back to lowest impact otherwise.
      *  Goes through the list in order, so pre-shuffle it!
      *  Assumes all tiles in the list are of the same terrain type when generating weightings, irrelevant if only one option.
-     *  Respects terrainsCanBeFoundOn when there is only one option, unless [forcePlacement] is true.
      *  @return a map of the resources in the options list to number placed. */
-    fun placeResourcesInTiles(tileData: TileDataMap, frequency: Int, tileList: List<Tile>, resourceOptions: List<TileResource>,
-                              baseImpact: Int = 0, randomImpact: Int = 0, majorDeposit: Boolean = false,
-                              forcePlacement: Boolean = false): Map<TileResource, Int> {
+    fun placeResourcesInTiles(
+        tileData: TileDataMap, frequency: Int, tileList: List<Tile>, resourceOptions: List<TileResource>,
+        baseImpact: Int = 0, randomImpact: Int = 0, majorDeposit: Boolean = false
+    ): Map<TileResource, Int> {
         if (tileList.none() || resourceOptions.isEmpty()) return mapOf()
         val impactType = when (resourceOptions.first().resourceType) {
             ResourceType.Strategic -> MapRegions.ImpactType.Strategic
@@ -30,14 +30,11 @@ object MapRegionResources {
             ResourceType.Luxury -> MapRegions.ImpactType.Luxury
         }
         val conditionalTerrain = StateForConditionals(attackedTile = tileList.firstOrNull())
-        val weightings = resourceOptions.map {
+        val weightings = resourceOptions.associateWith {
             val unique = it.getMatchingUniques(UniqueType.ResourceWeighting, conditionalTerrain).firstOrNull()
-            if (unique != null)
-                unique.params[0].toFloat()
-            else
-                1f
+            val weight = if (unique != null) unique.params[0].toFloat() else 1f
+            weight
         }
-        val testTerrains = (resourceOptions.size == 1) && !forcePlacement
         val amountToPlace = (tileList.size / frequency) + 1
         var amountPlaced = 0
         val detailedPlaced = HashMap<TileResource, Int>()
@@ -45,17 +42,15 @@ object MapRegionResources {
         val fallbackTiles = ArrayList<Tile>()
         // First pass - avoid impacts entirely
         for (tile in tileList) {
-            if (tile.resource != null ||
-                (testTerrains &&
-                    (tile.lastTerrain.name !in resourceOptions.first().terrainsCanBeFoundOn ||
-                        resourceOptions.first().hasUnique(UniqueType.NoNaturalGeneration, conditionalTerrain)) ) ||
-                tile.getBaseTerrain().hasUnique(UniqueType.BlocksResources, conditionalTerrain))
-                continue // Can't place here, can't be a fallback tile
+            if (tile.resource != null) continue
+            val possibleResourcesForTile = resourceOptions.filter { it.generatesNaturallyOn(tile) }
+            if (possibleResourcesForTile.isEmpty()) continue
+
             if (tileData[tile.position]!!.impacts.containsKey(impactType)) {
                 fallbackTiles.add(tile) // Taken but might be a viable fallback tile
             } else {
                 // Add a resource to the tile
-                val resourceToPlace = resourceOptions.randomWeighted(weightings)
+                val resourceToPlace = possibleResourcesForTile.randomWeighted(possibleResourcesForTile.map { weightings[it] ?: 0f })
                 tile.setTileResource(resourceToPlace, majorDeposit)
                 tileData.placeImpact(impactType, tile, baseImpact + Random.nextInt(randomImpact + 1))
                 amountPlaced++
@@ -70,7 +65,8 @@ object MapRegionResources {
             // Sorry, we do need to re-sort the list for every pass since new impacts are made with every placement
             val bestTile = fallbackTiles.minByOrNull { tileData[it.position]!!.impacts[impactType]!! }!!
             fallbackTiles.remove(bestTile)
-            val resourceToPlace = resourceOptions.randomWeighted(weightings)
+            val possibleResourcesForTile = resourceOptions.filter { it.generatesNaturallyOn(bestTile) }
+            val resourceToPlace = possibleResourcesForTile.randomWeighted(possibleResourcesForTile.map { weightings[it] ?: 0f })
             bestTile.setTileResource(resourceToPlace, majorDeposit)
             tileData.placeImpact(impactType, bestTile, baseImpact + Random.nextInt(randomImpact + 1))
             amountPlaced++
@@ -95,17 +91,7 @@ object MapRegionResources {
         }
 
         for (tile in tiles) {
-            val conditionalTerrain = StateForConditionals(attackedTile = tile)
-            if (tile.resource == null &&
-                tile.lastTerrain.name in resource.terrainsCanBeFoundOn &&
-                !tile.getBaseTerrain().hasUnique(UniqueType.BlocksResources, conditionalTerrain) &&
-                !resource.hasUnique(UniqueType.NoNaturalGeneration, conditionalTerrain) &&
-
-                resource.getMatchingUniques(UniqueType.TileGenerationConditions).none {
-                    tile.temperature!! !in it.params[0].toDouble() .. it.params[1].toDouble()
-                        || tile.humidity!! !in it.params[2].toDouble() .. it.params[3].toDouble()
-                }
-            ) {
+            if (tile.resource == null && resource.generatesNaturallyOn(tile)) {
                 if (ratioProgress >= 1f &&
                     !(respectImpacts && tileData[tile.position]!!.impacts.containsKey(impactType))) {
                     tile.setTileResource(resource, majorDeposit)

@@ -41,6 +41,7 @@ import com.unciv.ui.components.extensions.isShiftKeyPressed
 import com.unciv.ui.components.extensions.surroundWithCircle
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.input.ActivationTypes
+import com.unciv.ui.components.input.ClickableCircle
 import com.unciv.ui.components.input.KeyCharAndCode
 import com.unciv.ui.components.input.KeyboardBinding
 import com.unciv.ui.components.input.keyShortcuts
@@ -480,12 +481,14 @@ class WorldMapHolder(
             val unitGroup = UnitGroup(unit, 48f).surroundWithCircle(68f, resizeActor = false)
             unitGroup.circle.color = Color.GRAY.cpy().apply { a = 0.5f }
             if (unit.currentMovement == 0f) unitGroup.color.a = 0.66f
-            unitGroup.touchable = Touchable.enabled
-            unitGroup.onClick {
+            val clickableCircle = ClickableCircle(68f)
+            clickableCircle.touchable = Touchable.enabled
+            clickableCircle.onClick {
                 worldScreen.bottomUnitTable.selectUnit(unit, Gdx.input.isShiftKeyPressed())
                 worldScreen.shouldUpdate = true
                 removeUnitActionOverlay()
             }
+            unitGroup.addActor(clickableCircle)
             table.add(unitGroup)
         }
 
@@ -498,18 +501,22 @@ class WorldMapHolder(
     val smallerCircleSizes = 25f
 
     private fun getMoveHereButton(dto: MoveHereButtonDto): Group {
-        val moveHereButton = ImageGetter.getStatIcon("Movement")
-            .apply { color = Color.BLACK; width = buttonSize / 2; height = buttonSize / 2 }
-            .surroundWithCircle(buttonSize-2, false)
+        val isParadrop = dto.unitToTurnsToDestination.keys.all { it.isPreparingParadrop() }
+        val image = if (isParadrop)
+                ImageGetter.getUnitActionPortrait("Paradrop", buttonSize / 2)
+            else ImageGetter.getStatIcon("Movement")
+                .apply { color = Color.BLACK; width = buttonSize / 2; height = buttonSize / 2 }
+        val moveHereButton = image
+            .surroundWithCircle(buttonSize - 2, false)
             .surroundWithCircle(buttonSize, false, Color.BLACK)
 
-
-        val numberCircle = dto.unitToTurnsToDestination.values.maxOrNull()!!.toString().toLabel(fontSize = 14)
-            .apply { setAlignment(Align.center) }
-            .surroundWithCircle(smallerCircleSizes-2, color = BaseScreen.skinStrings.skinConfig.baseColor.darken(0.3f))
-            .surroundWithCircle(smallerCircleSizes,false)
-
-        moveHereButton.addActor(numberCircle)
+        if (!isParadrop) {
+            val numberCircle = dto.unitToTurnsToDestination.values.maxOrNull()!!.toString().toLabel(fontSize = 14)
+                .apply { setAlignment(Align.center) }
+                .surroundWithCircle(smallerCircleSizes - 2, color = BaseScreen.skinStrings.skinConfig.baseColor.darken(0.3f))
+                .surroundWithCircle(smallerCircleSizes, false)
+            moveHereButton.addActor(numberCircle)
+        }
 
         val firstUnit = dto.unitToTurnsToDestination.keys.first()
         val unitIcon = if (dto.unitToTurnsToDestination.size == 1) UnitGroup(firstUnit, smallerCircleSizes)
@@ -533,7 +540,7 @@ class WorldMapHolder(
     }
 
     private fun getSwapWithButton(dto: SwapWithButtonDto): Group {
-        val swapWithButton = Group().apply { width = buttonSize;height = buttonSize; }
+        val swapWithButton = Group().apply { width = buttonSize; height = buttonSize }
         swapWithButton.addActor(ImageGetter.getCircle().apply { width = buttonSize; height = buttonSize })
         swapWithButton.addActor(
             ImageGetter.getImage("OtherIcons/Swap")
@@ -655,7 +662,7 @@ class WorldMapHolder(
                 val city = unitTable.selectedCity!!
                 updateBombardableTilesForSelectedCity(city)
                 // We still want to show road paths to the selected city if they are present
-                if (unitTable.selectedUnitIsConnectingRoad){
+                if (unitTable.selectedUnitIsConnectingRoad) {
                     updateTilesForSelectedUnit(unitTable.selectedUnits[0])
                 }
             }
@@ -715,11 +722,10 @@ class WorldMapHolder(
 
         // Z-Layer: 0
         // Highlight suitable tiles in road connecting mode
-        if (worldScreen.bottomUnitTable.selectedUnitIsConnectingRoad){
+        if (worldScreen.bottomUnitTable.selectedUnitIsConnectingRoad) {
             val validTiles = unit.civ.gameInfo.tileMap.tileList.filter {
                 MapPathing.isValidRoadPathTile(unit, it)
             }
-            unit.civ.gameInfo.civilizations
             val connectRoadTileOverlayColor = Color.RED
             for (tile in validTiles)  {
                 tileGroups[tile]!!.layerOverlay.showHighlight(connectRoadTileOverlayColor, 0.3f)
@@ -796,10 +802,10 @@ class WorldMapHolder(
             if (currTileIndex != -1) {
                 val futureTiles = unit.automatedRoadConnectionPath!!.filterIndexed { index, _ ->
                     index > currTileIndex
-                }.map{tilePos ->
+                }.map { tilePos ->
                     tileMap[tilePos]
                 }
-                for (tile in futureTiles){
+                for (tile in futureTiles) {
                     tileGroups[tile]!!.layerOverlay.showHighlight(Color.ORANGE, if (UncivGame.Current.settings.singleTapMove) 0.7f else 0.3f)
                 }
             }

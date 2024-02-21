@@ -3,7 +3,6 @@ package com.unciv.logic.civilization.managers
 import com.unciv.UncivGame
 import com.unciv.logic.VictoryData
 import com.unciv.logic.automation.civilization.NextTurnAutomation
-import com.unciv.logic.city.City
 import com.unciv.logic.city.managers.CityTurnManager
 import com.unciv.logic.civilization.AlertType
 import com.unciv.logic.civilization.CivFlags
@@ -16,12 +15,12 @@ import com.unciv.logic.civilization.diplomacy.DiplomacyTurnManager.nextTurn
 import com.unciv.logic.map.mapunit.UnitTurnManager
 import com.unciv.logic.map.tile.Tile
 import com.unciv.logic.trade.TradeEvaluation
-import com.unciv.models.ruleset.ModOptionsConstants
+import com.unciv.models.ruleset.unique.StateForConditionals
+import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unique.endTurn
 import com.unciv.models.stats.Stats
 import com.unciv.ui.components.MayaCalendar
-import com.unciv.ui.components.extensions.randomWeighted
 import com.unciv.ui.screens.worldscreen.status.NextTurnProgress
 import com.unciv.utils.Log
 import kotlin.math.max
@@ -42,7 +41,6 @@ class TurnManager(val civInfo: Civilization) {
         if (civInfo.cities.isNotEmpty() && civInfo.gameInfo.ruleset.technologies.isNotEmpty())
             civInfo.tech.updateResearchProgress()
 
-
         civInfo.cache.updateCivResources() // If you offered a trade last turn, this turn it will have been accepted/declined
         for (stockpiledResource in civInfo.getCivResourceSupply().filter { it.resource.isStockpiled() })
             civInfo.resourceStockpiles.add(stockpiledResource.resource.name, stockpiledResource.amount)
@@ -52,16 +50,18 @@ class TurnManager(val civInfo: Civilization) {
         civInfo.updateStatsForNextTurn() // for things that change when turn passes e.g. golden age, city state influence
 
         // Do this after updateStatsForNextTurn but before cities.startTurn
-        if (civInfo.playerType == PlayerType.AI && civInfo.gameInfo.ruleset.modOptions.uniques.contains(
-                    ModOptionsConstants.convertGoldToScience))
+        if (civInfo.playerType == PlayerType.AI && civInfo.gameInfo.ruleset.modOptions.hasUnique(UniqueType.ConvertGoldToScience))
             NextTurnAutomation.automateGoldToSciencePercentage(civInfo)
 
         // Generate great people at the start of the turn,
         // so they won't be generated out in the open and vulnerable to enemy attacks before you can control them
         if (civInfo.cities.isNotEmpty()) { //if no city available, addGreatPerson will throw exception
-            val greatPerson = civInfo.greatPeople.getNewGreatPerson()
-            if (greatPerson != null && civInfo.gameInfo.ruleset.units.containsKey(greatPerson))
-                civInfo.units.addUnit(greatPerson, getRandomWeightedCity(greatPerson))
+            var greatPerson = civInfo.greatPeople.getNewGreatPerson()
+            while (greatPerson != null) {
+                if (civInfo.gameInfo.ruleset.units.containsKey(greatPerson))
+                    civInfo.units.addUnit(greatPerson)
+                greatPerson = civInfo.greatPeople.getNewGreatPerson()
+            }
             civInfo.religionManager.startTurn()
             if (civInfo.isLongCountActive())
                 MayaCalendar.startTurnForMaya(civInfo)
@@ -96,19 +96,6 @@ class TurnManager(val civInfo: Civilization) {
         updateWinningCiv()
     }
 
-    /** Determine which city gets a new Great Person
-     *
-     *  - Choose randomly but chance proportional to the given city's contribution to [greatPerson]
-     *  - returning null will leave the decision to addUnit which will choose an unweighted random one
-     */
-    private fun getRandomWeightedCity(greatPerson: String): City? {
-        val cities = civInfo.cities.asSequence()
-            .map { it to it.getGreatPersonPoints()[greatPerson] }
-            .filter { it.second > 0 }
-            .toList()
-        if (cities.isEmpty()) return null
-        return cities.map { it.first }.randomWeighted(cities.map { it.second.toFloat() })
-    }
 
     private fun startTurnFlags() {
         for (flag in civInfo.flagsCountdown.keys.toList()) {
@@ -240,7 +227,11 @@ class TurnManager(val civInfo: Civilization) {
 
 
     fun endTurn(progressBar: NextTurnProgress? = null) {
-        NextTurnAutomation.automateCityBombardment(civInfo) // Bombard with all cities that haven't, maybe you missed one
+        if (UncivGame.Current.settings.citiesAutoBombardAtEndOfTurn)
+            NextTurnAutomation.automateCityBombardment(civInfo) // Bombard with all cities that haven't, maybe you missed one
+
+        for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponTurnEnd, StateForConditionals(civInfo)))
+            UniqueTriggerActivation.triggerUnique(unique, civInfo)
 
         val notificationsLog = civInfo.notificationsLog
         val notificationsThisTurn = Civilization.NotificationsLog(civInfo.gameInfo.turns)

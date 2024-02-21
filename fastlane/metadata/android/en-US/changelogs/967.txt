@@ -1,0 +1,12 @@
+Fixed unhappiness effect when at 0 happiness
+
+All BaseUnit uniques, e.g. Never appears as a Barbarian unit, Limited to [amount] per Civilization, can be placed on unit type
+
+By SeventhM:
+- Add unique for increasing price every time it's built
+- Fix mistakes with unavailable unique
+
+By SomeTroglodyte:
+- Fix Capture when a teleport was necessary
+- Tweak Overview Politics Diagram for a defeated player
+- Patch AlertPopup to correctly close when it cannot find a required asset

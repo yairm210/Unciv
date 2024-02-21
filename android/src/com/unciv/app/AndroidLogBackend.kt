@@ -5,6 +5,7 @@ import android.app.ActivityManager
 import android.content.Context
 import android.os.Build
 import android.util.Log
+import com.badlogic.gdx.backends.android.BuildConfig
 import com.unciv.utils.LogBackend
 import com.unciv.utils.Tag
 

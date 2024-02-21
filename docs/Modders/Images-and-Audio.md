@@ -1,11 +1,61 @@
 # Images and Audio
 
+## Images and the texture atlas
+
+Images need to be 'packed' before the game can use them. This preparation step needs to happen only once (as long as the original graphics are not changed).
+The result one ore more a pairs of files - a texture in [png format](https://en.wikipedia.org/wiki/PNG) and a corresponding [atlas](https://en.wikipedia.org/wiki/Texture_atlas) file.
+If you have a single `Images`folder, the default such pair is named `game.png`/`game.atlas`.
+For your players, the individual images aren't important - only the combined images actually register to the game, so you need to include them in your repository and keep them up to date.
+We still recommend including the originals in a mod, so other developers running from source can access them.
+With original images included, you can use a development environment using git, have it linked to your repository, while using a symlink to allow Unciv to see the mod - and pack your atlas for you on every launch.
+If you're developing your mod on an Android version of Unciv (not recommended!) you won't be able to generate these packed files directly.
+
+### Ways to pack texture atlases
+
+- Texture atlases *CANNOT BE PACKED* on Android (technical reason: TexturePacker uses `java.awt` to do heavy lifting, which is unavailable on Android 0_0)
+- Launch the desktop version with your mod (your mod's main folder is a subfolder of the game's "mods" folder, or symlinked there).
+- You can ask someone in the Discord server to help you out.
+- You can use external tools, [e.g. gdx-texture-packer-gui](https://github.com/crashinvaders/gdx-texture-packer-gui). Utmost care needs to be taken that the files can be discovered by Unciv and internal relative paths are correct.
+- The Unciv repo itself has a feature that can pack images on github runners - documentation still needs to be done.
+
+### Multiple texture atlases
+
+If your mod has lots of images (or large ones), the textures might 'spill' into additional texture files - 2048x2048 is the limit for a single texture pack. You will see a `game2.png`, possibly a `game3.png` or more appear.
+This is not good for performance, which is why the base game controls which kinds of images go together into one texture(+atlas).
+This works for mods, too: Create not only one Images folder, but several, the additional ones named "Images.xyz", where xyz will become the filename of the additional texture file (So don't use both Images and Images.game - those will clash). Look at the Unciv base game to get a better idea how that works.
+To minimize texture swaps, try to group them by the situation where in the game they are needed. You can distibute by folder, but having the same subfolders under several "Images.xyz" and distributing the images between them will also work.
+
+A file `Atlases.json` (uppercase 'A') in the mod root (not in `Images` or in `jsons`) controls which atlases to load, which in turn control which texture (`.png`) files are read.
+This file is automatically created by the built-in packer. Only the `game.atlas` file is read by default for backward compatibility.
+If you use external tools and multiple atlases, you will need to maintain this file yourself - it is a simple json array of strings, each a file name without the `.atlas` extension (saved as UTF-8 without byte order mark).
+
+### Texture packer settings
+
+The texture packers built into Unciv will look for a `TexturePacker.settings` file in each `Images` directory (_not_ under `jsons`).
+With this file you can tune the packer - e.g. control pixel interpolation filters.
+It is a json of a [Gdx TexturePacker.Settings](https://libgdx.com/wiki/tools/texture-packer#settings) instance.
+The default settings are as shown in the Gdx documentation linked above if you do supply a settings file, but without such a file, some fields have different defaults:
+- `maxWidth`, `maxHeight`: 2048
+- `fast`: true
+- `paddingX`, `paddingY`: 8
+- `duplicatePadding`: true
+- `filterMin`: MipMapLinearLinear
+- `filterMag`: MipMapLinearLinear unless the atlas name ends in `Icons`, then Linear.
+
+### Texture atlas encoding
+
+Due to certain circumstances, please make sure names and paths that will be mapped in an atlas use **only ascii**. Not all parts of the loader enforce strict UTF-8 usage, sorry.
+Symptoms if you fail to heed this: mod works on a Chinese Windows box but not on a western one or vice-versa, or mod works on a Chinese Windows box but not a Chinese Linux box or vice-versa, or mod works on a Chinese Windows box with default settings but not on the same box with "Use unicode UTF-8 for worldwide language support" turned on.
+This does not technically apply to the atlas name itself when multiple atlases are used (the xyz part in "Images.xyz"), but we nevertheless recommend the same rule for consistency.
+
 ## Permanent audiovisual mods
 
 The following chapters describe possibilities that will work while a mod is ***active***.
 It is either selected for the current game (during new game creation, cannot be changed after that for saved games), meaning all its rules and resources will be used.
 _Or_ it is marked as 'Permanent audiovisual mod' in the mod manager (you must select it in the 'installed' column to get the checkbox).
 In that case only graphics and audio will be active, the rule changes will be ignored (if it contains any) unless the first way is _also_ used.
+Note that this feature includes graphics or sounds from the selected mod in _all_ games, even those started before installing the mod.
+Repeat: In case of a mod bringing both changed rules and audiovisuals, the 'permanent' feature will include only the media on all games, to use the rules you will still need to select the mod for a new game.
 
 Note that the Mod author can (and often should) control whether the checkbox appears using [ModOptions](Mod-file-structure/5-Miscellaneous-JSON-files.md#modoptionsjson) [uniques](uniques.md#modoptions-uniques).
 

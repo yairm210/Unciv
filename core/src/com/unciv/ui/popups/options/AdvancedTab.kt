@@ -17,8 +17,8 @@ import com.unciv.Constants
 import com.unciv.GUI
 import com.unciv.UncivGame
 import com.unciv.models.metadata.GameSettings
-import com.unciv.models.metadata.ModCategories
 import com.unciv.models.metadata.GameSettings.ScreenSize
+import com.unciv.models.metadata.ModCategories
 import com.unciv.models.translations.TranslationFileWriter
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.UncivTooltip.Companion.addTooltip
@@ -42,11 +42,11 @@ import com.unciv.utils.Concurrency
 import com.unciv.utils.Display
 import com.unciv.utils.ScreenOrientation
 import com.unciv.utils.launchOnGLThread
-import java.util.UUID
-import java.util.zip.Deflater
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import java.util.UUID
+import java.util.zip.Deflater
 
 fun advancedTab(
     optionsPopup: OptionsPopup,

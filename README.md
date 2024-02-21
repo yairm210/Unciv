@@ -16,7 +16,7 @@
 
 ## What is this?
 
-An open source, mod-friendly Android and Desktop remake of Civ V, made with LibGDX
+An open source, moddability-focused Android and Desktop remake of Civ V, made with LibGDX
 
 ## Is this any good?
 
@@ -36,8 +36,6 @@ In this order:
 * BNW mechanics - trade routes, world congress, etc.
 
 ## Contributing
-
-### How can I help?
 
 Programmers start [here](https://yairm210.github.io/Unciv/Developers/Building-Locally/)!
 

@@ -93,10 +93,12 @@ enum class UnitActionType(
     val imageGetter: (()-> Actor)?,
     binding: KeyboardBinding? = null,
     val isSkippingToNextUnit: Boolean = true,
-    val uncivSound: UncivSound = UncivSound.Click
+    val uncivSound: UncivSound = UncivSound.Click,
+    /** UI "page" preference, 0-based - Dynamic overrides to this are in `UnitActions.actionTypeToPageGetter` */
+    val defaultPage: Int
 ) {
     SwapUnits("Swap units",
-        { ImageGetter.getUnitActionPortrait("Swap") }, false),
+        { ImageGetter.getUnitActionPortrait("Swap") }, false, defaultPage = 1),
     Automate("Automate",
         { ImageGetter.getUnitActionPortrait("Automate") }),
     ConnectRoad("Connect road",
@@ -106,7 +108,7 @@ enum class UnitActionType(
     StopMovement("Stop movement",
         { ImageGetter.getUnitActionPortrait("StopMove") }, false),
     ShowUnitDestination("Show unit destination",
-        { ImageGetter.getUnitActionPortrait("ShowUnitDestination")}, false),
+        { ImageGetter.getUnitActionPortrait("ShowUnitDestination")}, false, defaultPage = 1),
     Sleep("Sleep",
         { ImageGetter.getUnitActionPortrait("Sleep") }),
     SleepUntilHealed("Sleep until healed",
@@ -143,6 +145,8 @@ enum class UnitActionType(
         null, false, UncivSound.Chimes),
     HurryResearch("{Hurry Research} (${Fonts.death})",
         { ImageGetter.getUnitActionPortrait("HurryResearch") }, UncivSound.Chimes),
+    HurryPolicy("{Hurry Policy} (${Fonts.death})",
+        { ImageGetter.getUnitActionPortrait("HurryPolicy") }, UncivSound.Chimes),
     StartGoldenAge("Start Golden Age",
         { ImageGetter.getUnitActionPortrait("StartGoldenAge") }, UncivSound.Chimes),
     HurryWonder("{Hurry Wonder} (${Fonts.death})",
@@ -162,24 +166,24 @@ enum class UnitActionType(
     EnhanceReligion("Enhance a Religion",
         { ImageGetter.getUnitActionPortrait("EnhanceReligion") }, UncivSound.Choir),
     DisbandUnit("Disband unit",
-        { ImageGetter.getUnitActionPortrait("DisbandUnit") }, false),
+        { ImageGetter.getUnitActionPortrait("DisbandUnit") }, false, defaultPage = 1),
     GiftUnit("Gift unit",
-        { ImageGetter.getUnitActionPortrait("Present") }, UncivSound.Silent),
+        { ImageGetter.getUnitActionPortrait("Present") }, UncivSound.Silent, defaultPage = 1),
     Wait("Wait",
         { ImageGetter.getUnitActionPortrait("Wait") }, UncivSound.Silent),
     ShowAdditionalActions("Show more",
         { ImageGetter.getUnitActionPortrait("ShowMore") }, false),
     HideAdditionalActions("Back",
-        { ImageGetter.getUnitActionPortrait("HideMore") }, false),
+        { ImageGetter.getUnitActionPortrait("HideMore") }, false, defaultPage = 1),
     AddInCapital( "Add in capital",
         { ImageGetter.getUnitActionPortrait("AddInCapital")}, UncivSound.Chimes),
     ;
 
     // Allow shorter initializations
-    constructor(value: String, imageGetter: (() -> Actor)?, uncivSound: UncivSound = UncivSound.Click)
-            : this(value, imageGetter, null, true, uncivSound)
-    constructor(value: String, imageGetter: (() -> Actor)?, isSkippingToNextUnit: Boolean = true, uncivSound: UncivSound = UncivSound.Click)
-            : this(value, imageGetter, null, isSkippingToNextUnit, uncivSound)
+    constructor(value: String, imageGetter: (() -> Actor)?, uncivSound: UncivSound = UncivSound.Click, defaultPage: Int = 0)
+            : this(value, imageGetter, null, true, uncivSound, defaultPage)
+    constructor(value: String, imageGetter: (() -> Actor)?, isSkippingToNextUnit: Boolean = true, uncivSound: UncivSound = UncivSound.Click, defaultPage: Int = 0)
+            : this(value, imageGetter, null, isSkippingToNextUnit, uncivSound, defaultPage)
 
     val binding: KeyboardBinding =
             binding ?:

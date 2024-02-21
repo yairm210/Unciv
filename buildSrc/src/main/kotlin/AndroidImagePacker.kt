@@ -4,6 +4,7 @@ package com.unciv.build
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.tools.texturepacker.TexturePacker
 import com.badlogic.gdx.utils.Json
+import com.unciv.build.AndroidImagePacker.packImages
 import java.io.File
 import java.nio.file.Files
 import java.nio.file.attribute.BasicFileAttributes
@@ -84,7 +85,6 @@ object AndroidImagePacker {
             atlasList += packFileName
             packImagesIfOutdated(defaultSettings, file, output, packFileName)
         }
-        atlasList.remove("game")
         val listFile = File("$output${File.separator}Atlases.json")
         if (atlasList.isEmpty()) listFile.delete()
         else listFile.writeText(atlasList.sorted().joinToString(",","[","]"))

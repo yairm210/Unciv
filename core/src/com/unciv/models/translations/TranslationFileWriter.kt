@@ -363,19 +363,23 @@ object TranslationFileWriter {
                 return
             }
 
+            // Do simpler parameter numbering when typed, as the code below is susceptible to problems with nested brackets - UniqueTypes don't have them (yet)!
+            if (unique.type != null) {
+                for ((index, typeList) in unique.type.parameterTypeMap.withIndex()) {
+                    if (typeList.none { it in translatableUniqueParameterTypes }) continue
+                    // Unknown/Comment parameter contents better be offered to translators too
+                    resultStrings.add("${unique.params[index]} = ")
+                }
+                resultStrings.add("${unique.type.getTranslatable()} = ")
+                return
+            }
+
             val parameterNames = ArrayList<String>()
-            for ((index, parameter) in unique.params.withIndex()) {
-                val parameterName =
-                    if (unique.type != null) {
-                        val possibleParameterTypes = unique.type.parameterTypeMap[index]
-                        // for multiple types. will look like "[unitName/buildingName]"
-                        possibleParameterTypes.joinToString("/") { it.parameterName }
-                    } else {
-                        UniqueParameterType.guessTypeForTranslationWriter(parameter, ruleset).parameterName
-                    }
+            for (parameter in unique.params) {
+                val parameterName = UniqueParameterType.guessTypeForTranslationWriter(parameter, ruleset).parameterName
                 parameterNames.addNumberedParameter(parameterName)
-                if (parameterName == UniqueParameterType.Unknown.parameterName)
-                    resultStrings.add("$parameter = ")  // Unknown parameter contents better be offered to translators too
+                if (translatableUniqueParameterTypes.none { it.parameterName == parameterName }) continue
+                resultStrings.add("$parameter = ")
             }
             resultStrings.add("${stringToTranslate.fillPlaceholders(*parameterNames.toTypedArray())} = ")
         }
@@ -464,6 +468,13 @@ object TranslationFileWriter {
 
             /** Specifies Enums where the name property _is_ translatable, by Class name */
             private val translatableEnumsSet = setOf("BeliefType")
+
+            /** Only these Unique parameter types will be offered as translatables - for all others it is expected their content
+             *  corresponds with a ruleset object name which will be made translatable by their actual json definition */
+            private val translatableUniqueParameterTypes = setOf(
+                UniqueParameterType.Unknown,
+                UniqueParameterType.Comment
+            )
 
             private fun isFieldTypeRelevant(type: Class<*>) =
                     type == String::class.java ||

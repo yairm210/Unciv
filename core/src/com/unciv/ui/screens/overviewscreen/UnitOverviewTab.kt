@@ -258,28 +258,37 @@ class UnitOverviewTab(
             add(promotionsTable)
 
             // Upgrade column
-            val unitAction = UnitActionsUpgrade.getUpgradeActionAnywhere(unit)
-            if (unitAction != null) {
-                val enable = unitAction.action != null && viewingPlayer.isCurrentPlayer() &&
-                    GUI.isAllowedChangeState()
-                val unitToUpgradeTo = (unitAction as UpgradeUnitAction).unitToUpgradeTo
-                val selectKey = getUnitIdentifier(unit, unitToUpgradeTo)
-                val upgradeIcon = ImageGetter.getUnitIcon(unitToUpgradeTo.name,
-                    if (enable) Color.GREEN else Color.GREEN.darken(0.5f))
-                if (enable) upgradeIcon.onClick {
-                    UnitUpgradeMenu(overviewScreen.stage, upgradeIcon, unit, unitAction) {
-                        unitListTable.updateUnitListTable()
-                        select(selectKey)
-                    }
-                }
-                add(upgradeIcon).size(28f)
-            } else add()
+            val upgradeTable = Table()
+            updateUpgradeTable(upgradeTable, unit)
+            add(upgradeTable)
 
             // Numeric health column - there's already a health bar on the button, but...?
             if (unit.health < 100) add(unit.health.toLabel()) else add()
             row()
         }
         return this
+    }
+
+    private fun updateUpgradeTable(table: Table, unit: MapUnit){
+        table.clearChildren()
+
+        val unitActions = UnitActionsUpgrade.getUpgradeActionAnywhere(unit)
+        if (unitActions.none()) table.add()
+        for (unitAction in unitActions){
+            val enable = unitAction.action != null && viewingPlayer.isCurrentPlayer() &&
+                GUI.isAllowedChangeState()
+            val unitToUpgradeTo = (unitAction as UpgradeUnitAction).unitToUpgradeTo
+            val selectKey = getUnitIdentifier(unit, unitToUpgradeTo)
+            val upgradeIcon = ImageGetter.getUnitIcon(unitToUpgradeTo.name,
+                if (enable) Color.GREEN else Color.GREEN.darken(0.5f))
+            if (enable) upgradeIcon.onClick {
+                UnitUpgradeMenu(overviewScreen.stage, upgradeIcon, unit, unitAction) {
+                    unitListTable.updateUnitListTable()
+                    select(selectKey)
+                }
+            }
+            table.add(upgradeIcon).size(28f)
+        }
     }
 
     private fun updatePromotionsTable(table: Table, unit: MapUnit) {

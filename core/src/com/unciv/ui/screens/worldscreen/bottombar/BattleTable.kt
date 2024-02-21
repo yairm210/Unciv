@@ -200,14 +200,6 @@ class BattleTable(val worldScreen: WorldScreen) : Table() {
             row()
         }
 
-        val maxDamageToDefender = BattleDamage.calculateDamageToDefender(attacker, defender, tileToAttackFrom, 1f)
-        val minDamageToDefender = BattleDamage.calculateDamageToDefender(attacker, defender, tileToAttackFrom, 0f)
-        val avgDamageToDefender = arrayOf(maxDamageToDefender, minDamageToDefender).average().roundToInt()
-
-        val maxDamageToAttacker = BattleDamage.calculateDamageToAttacker(attacker, defender, tileToAttackFrom, 1f)
-        val minDamageToAttacker = BattleDamage.calculateDamageToAttacker(attacker, defender, tileToAttackFrom, 0f)
-        val avgDamageToAttacker = arrayOf(maxDamageToAttacker, minDamageToAttacker).average().roundToInt()
-
         if (attacker.isMelee() &&
                 (defender.isCivilian() || defender is CityCombatant && defender.isDefeated())) {
             add()
@@ -218,6 +210,12 @@ class BattleTable(val worldScreen: WorldScreen) : Table() {
             }
             add(defeatedText.toLabel())
         } else {
+            val maxDamageToDefender = BattleDamage.calculateDamageToDefender(attacker, defender, tileToAttackFrom, 1f)
+            val minDamageToDefender = BattleDamage.calculateDamageToDefender(attacker, defender, tileToAttackFrom, 0f)
+
+            val maxDamageToAttacker = BattleDamage.calculateDamageToAttacker(attacker, defender, tileToAttackFrom, 1f)
+            val minDamageToAttacker = BattleDamage.calculateDamageToAttacker(attacker, defender, tileToAttackFrom, 0f)
+
             val attackerHealth = attacker.getHealth()
             val minRemainingLifeAttacker = max(attackerHealth-maxDamageToAttacker, 0)
             val maxRemainingLifeAttacker = max(attackerHealth-minDamageToAttacker, 0)
@@ -228,6 +226,11 @@ class BattleTable(val worldScreen: WorldScreen) : Table() {
 
             add(getHealthBar(attacker.getMaxHealth(), attacker.getHealth(), maxRemainingLifeAttacker, minRemainingLifeAttacker))
             add(getHealthBar(defender.getMaxHealth(), defender.getHealth(), maxRemainingLifeDefender, minRemainingLifeDefender)).row()
+
+            fun avg(vararg values: Int) = values.average().roundToInt()
+            // Don't use original damage estimates - they're raw, before clamping to 0..max
+            val avgDamageToDefender = avg(defenderHealth - minRemainingLifeDefender, defenderHealth - maxRemainingLifeDefender)
+            val avgDamageToAttacker = avg(attackerHealth - minRemainingLifeAttacker, attackerHealth - maxRemainingLifeAttacker)
 
             if (minRemainingLifeAttacker == attackerHealth) add(attackerHealth.toLabel())
             else if (maxRemainingLifeAttacker == minRemainingLifeAttacker) add("$attackerHealth → $maxRemainingLifeAttacker ($avgDamageToAttacker)".toLabel())

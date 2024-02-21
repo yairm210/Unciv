@@ -31,7 +31,6 @@ interface INonPerpetualConstruction : IConstruction, INamed, IHasUniques {
     val hurryCostModifier: Int
     // Future development should not increase the role of requiredTech, and should reduce it when possible.
     // https://yairm210.github.io/Unciv/Developers/Translations%2C-mods%2C-and-modding-freedom-in-Open-Source#filters
-    @Deprecated("The functionality provided by the requiredTech field is provided by the OnlyAvailableWhen unique.")
     var requiredTech: String?
 
     override fun legacyRequiredTechs(): Sequence<String> = if (requiredTech == null) sequenceOf() else sequenceOf(requiredTech!!)
@@ -118,6 +117,8 @@ class RejectionReason(val type: RejectionReasonType,
 
     fun isImportantRejection(): Boolean = type in orderedImportantRejectionTypes
 
+    fun isConstructionRejection(): Boolean = type in constructionRejectionReasonType
+
     /** Returns the index of [orderedImportantRejectionTypes] with the smallest index having the
      * highest precedence */
     fun getRejectionPrecedence(): Int {
@@ -145,12 +146,19 @@ class RejectionReason(val type: RejectionReasonType,
         RejectionReasonType.RequiresBuildingInAllCities,
         RejectionReasonType.RequiresBuildingInThisCity,
         RejectionReasonType.RequiresBuildingInSomeCity,
+        RejectionReasonType.RequiresBuildingInSomeCities,
         RejectionReasonType.CannotBeBuiltUnhappiness,
         RejectionReasonType.PopulationRequirement,
         RejectionReasonType.ConsumesResources,
         RejectionReasonType.CanOnlyBePurchased,
         RejectionReasonType.MaxNumberBuildable,
         RejectionReasonType.NoPlaceToPutUnit,
+    )
+    // Used for units spawned, not built
+    private val constructionRejectionReasonType = listOf(
+        RejectionReasonType.Unbuildable,
+        RejectionReasonType.CannotBeBuiltUnhappiness,
+        RejectionReasonType.CannotBeBuilt,
     )
 }
 

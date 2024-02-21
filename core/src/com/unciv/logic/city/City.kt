@@ -1,8 +1,10 @@
 package com.unciv.logic.city
 
 import com.badlogic.gdx.math.Vector2
+import com.unciv.Constants
 import com.unciv.GUI
 import com.unciv.logic.IsPartOfGameInfoSerialization
+import com.unciv.logic.MultiFilter
 import com.unciv.logic.city.managers.CityConquestFunctions
 import com.unciv.logic.city.managers.CityEspionageManager
 import com.unciv.logic.city.managers.CityExpansionManager
@@ -10,14 +12,11 @@ import com.unciv.logic.city.managers.CityPopulationManager
 import com.unciv.logic.city.managers.CityReligionManager
 import com.unciv.logic.city.managers.SpyFleeReason
 import com.unciv.logic.civilization.Civilization
-import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.map.TileMap
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.RoadStatus
 import com.unciv.logic.map.tile.Tile
-import com.unciv.models.Counter
 import com.unciv.models.ruleset.Building
-import com.unciv.models.ruleset.ModOptionsConstants
 import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueType
@@ -86,7 +85,13 @@ class City : IsPartOfGameInfoSerialization {
     var hasSoldBuildingThisTurn = false
     var isPuppet = false
     var updateCitizens = false  // flag so that on startTurn() the Governor reassigns Citizens
-    var cityAIFocus: CityFocus = CityFocus.NoFocus
+
+    var cityAIFocus: String = CityFocus.NoFocus.name
+    fun getCityFocus() = CityFocus.values().firstOrNull { it.name == cityAIFocus } ?: CityFocus.NoFocus
+    fun setCityFocus(cityFocus: CityFocus){ cityAIFocus = cityFocus.name }
+
+
+
     var avoidGrowth: Boolean = false
     @Transient var currentGPPBonus: Int = 0  // temporary variable saved for rankSpecialist()
 
@@ -209,101 +214,8 @@ class City : IsPartOfGameInfoSerialization {
     fun containsBuildingUnique(uniqueType: UniqueType) =
         cityConstructions.builtBuildingUniqueMap.getUniques(uniqueType).any()
 
-    fun getGreatPersonPercentageBonus() = getGreatPersonPercentageBonusBreakdown().sumOf { it.second }
-
-    @Suppress("RemoveExplicitTypeArguments")  // Clearer readability
-    /** Collects percentage boni applying to all GPP. Each returned entry is a Pair naming the source and the integer percentage. */
-    private fun getGreatPersonPercentageBonusBreakdown() = sequence<Pair<String, Int>> {
-        for (unique in getMatchingUniques(UniqueType.GreatPersonPointPercentage)) {
-            if (!matchesFilter(unique.params[1])) continue
-            yield((unique.sourceObjectName ?: "Bonus") to unique.params[0].toInt())
-        }
-
-        // Sweden UP
-        for (otherCiv in civ.getKnownCivs()) {
-            if (!civ.getDiplomacyManager(otherCiv).hasFlag(DiplomacyFlags.DeclarationOfFriendship))
-                continue
-            val boostUniques = civ.getMatchingUniques(UniqueType.GreatPersonBoostWithFriendship) +
-                otherCiv.getMatchingUniques(UniqueType.GreatPersonBoostWithFriendship)
-            for (unique in boostUniques)
-                yield("Declaration of Friendship" to unique.params[0].toInt())
-        }
-    }
-
-    data class GreatPersonPointsBreakdownEntry(val source: String, val isBonus: Boolean, val counter: Counter<String> = Counter())
-    fun getGreatPersonPointsBreakdown(): Sequence<GreatPersonPointsBreakdownEntry> {
-        // First part: Base GPP points, materialized since we'll need to scan them twice
-        val basePoints = mutableListOf<GreatPersonPointsBreakdownEntry>()
-
-        // ... from Specialists
-        val specialists = GreatPersonPointsBreakdownEntry("Specialists", false)
-        for ((specialistName, amount) in population.getNewSpecialists())
-            if (getRuleset().specialists.containsKey(specialistName)) { // To solve problems in total remake mods
-                val specialist = getRuleset().specialists[specialistName]!!
-                specialists.counter.add(specialist.greatPersonPoints.times(amount))
-            }
-        basePoints.add(specialists)
-
-        // ... and from buildings, allowing multiples of the same name to be aggregated since builtBuildingObjects is a List
-        basePoints.addAll(
-            cityConstructions.getBuiltBuildings()
-                .groupBy({ it.name }, { it.greatPersonPoints })
-                .map { GreatPersonPointsBreakdownEntry(
-                    it.key,
-                    false,
-                    it.value.fold(null) { a: Counter<String>?, b -> if (a == null) b else a + b }!! // Just a sumOf<Counter>, !! because groupBy doesn't output empty lists
-                ) }
-        )
-
-        return sequence {
-            // Second part: passing the first part through first, but collecting all names with base points while doing so
-            val allGpp = mutableSetOf<String>()
-            for (element in basePoints) {
-                yield(element)
-                allGpp += element.counter.keys
-            }
-
-            // Now add boni: GreatPersonPointPercentage and GreatPersonBoostWithFriendship
-            for ((source, bonus) in getGreatPersonPercentageBonusBreakdown()) {
-                val bonusEntry = GreatPersonPointsBreakdownEntry(source, true)
-                for (gppName in allGpp)
-                    bonusEntry.counter[gppName] = bonus
-                yield(bonusEntry)
-            }
-
-            // And last, the GPP-type-specific GreatPersonEarnedFaster Unique
-            val stateForConditionals = StateForConditionals(civInfo = civ, city = this@City)
-            for (unique in civ.getMatchingUniques(UniqueType.GreatPersonEarnedFaster, stateForConditionals)) {
-                val bonusEntry = GreatPersonPointsBreakdownEntry(unique.sourceObjectName ?: "Bonus", true)
-                bonusEntry.counter.add(unique.params[0], unique.params[1].toInt())
-                yield(bonusEntry)
-            }
-        }
-    }
-
-    fun getGreatPersonPoints() = Counter<String>().apply {
-        // Using fixed-point(n.3) math to avoid surprises by rounding while still leveraging the Counter class
-        // Also accumulating boni separately - to ensure they operate additively not multiplicatively
-        val boni = Counter<String>()
-        for ((_, isBonus, counter) in getGreatPersonPointsBreakdown()) {
-            if (!isBonus) {
-                add(counter * 1000)
-            } else {
-                boni.add(counter)
-            }
-        }
-        for (key in keys.filter { it in boni }) {
-            add(key, this[key] * boni[key] / 100)
-        }
-        // round fixed-point to integers
-        for (key in keys)
-            this[key] = (this[key] * 0.001).roundToInt()
-
-        // Remove all "gpp" values that are not valid units
-        for (key in keys.toSet())
-            if (key !in getRuleset().units)
-                remove(key)
-    }
+    fun getGreatPersonPercentageBonus() = GreatPersonPointsBreakdown.getGreatPersonPercentageBonus(this)
+    fun getGreatPersonPoints() = GreatPersonPointsBreakdown(this).sum()
 
     fun addStat(stat: Stat, amount: Int) {
         when (stat) {
@@ -331,8 +243,8 @@ class City : IsPartOfGameInfoSerialization {
     fun canBeDestroyed(justCaptured: Boolean = false): Boolean {
         if (civ.gameInfo.gameParameters.noCityRazing) return false
 
-        val allowRazeCapital = civ.gameInfo.ruleset.modOptions.uniques.contains(ModOptionsConstants.allowRazeCapital)
-        val allowRazeHolyCity = civ.gameInfo.ruleset.modOptions.uniques.contains(ModOptionsConstants.allowRazeHolyCity)
+        val allowRazeCapital = civ.gameInfo.ruleset.modOptions.hasUnique(UniqueType.AllowRazeCapital)
+        val allowRazeHolyCity = civ.gameInfo.ruleset.modOptions.hasUnique(UniqueType.AllowRazeHolyCity)
 
         if (isOriginalCapital && !allowRazeCapital) return false
         if (isHolyCity() && !allowRazeHolyCity) return false
@@ -389,7 +301,7 @@ class City : IsPartOfGameInfoSerialization {
         if (resetLocked) {
             workedTiles = hashSetOf()
             lockedTiles = hashSetOf()
-        } else {
+        } else if(cityAIFocus != CityFocus.Manual.name){
             workedTiles = lockedTiles
         }
         if (!manualSpecialists)
@@ -505,17 +417,23 @@ class City : IsPartOfGameInfoSerialization {
     }
 
     /** Implements [UniqueParameterType.CityFilter][com.unciv.models.ruleset.unique.UniqueParameterType.CityFilter] */
-    fun matchesFilter(filter: String, viewingCiv: Civilization = civ): Boolean {
+    fun matchesFilter(filter: String, viewingCiv: Civilization? = civ): Boolean {
+        return MultiFilter.multiFilter(filter, { matchesSingleFilter(it, viewingCiv) })
+    }
+
+    private fun matchesSingleFilter(filter: String, viewingCiv: Civilization? = civ): Boolean {
         return when (filter) {
             "in this city" -> true // Filtered by the way uniques are found
             "in all cities" -> true
-            "in all coastal cities" -> isCoastal()
-            "in capital" -> isCapital()
-            "in all non-occupied cities" -> !cityStats.hasExtraAnnexUnhappiness() || isPuppet
+            in Constants.all -> true
+            "in your cities", "Your" -> viewingCiv == civ
+            "in all coastal cities", "Coastal" -> isCoastal()
+            "in capital", "Capital" -> isCapital()
+            "in all non-occupied cities", "Non-occupied" -> !cityStats.hasExtraAnnexUnhappiness() || isPuppet
             "in all cities with a world wonder" -> cityConstructions.getBuiltBuildings()
                 .any { it.isWonder }
             "in all cities connected to capital" -> isConnectedToCapital()
-            "in all cities with a garrison" -> isGarrisoned()
+            "in all cities with a garrison", "Garrisoned" -> isGarrisoned()
             "in all cities in which the majority religion is a major religion" ->
                 religion.getMajorityReligionName() != null
                 && religion.getMajorityReligion()!!.isMajorReligion()
@@ -523,18 +441,20 @@ class City : IsPartOfGameInfoSerialization {
                 religion.getMajorityReligionName() != null
                 && religion.getMajorityReligion()!!.isEnhancedReligion()
             "in non-enemy foreign cities" ->
-                viewingCiv != civ
+                viewingCiv != null && viewingCiv != civ
                 && !civ.isAtWarWith(viewingCiv)
-            "in foreign cities" -> viewingCiv != civ
-            "in annexed cities" -> foundingCiv != civ.civName && !isPuppet
-            "in puppeted cities" -> isPuppet
-            "in holy cities" -> isHolyCity()
+            "in enemy cities", "Enemy" -> civ.isAtWarWith(viewingCiv ?: civ)
+            "in foreign cities", "Foreign" -> viewingCiv != null && viewingCiv != civ
+            "in annexed cities", "Annexed" -> foundingCiv != civ.civName && !isPuppet
+            "in puppeted cities", "Puppeted" -> isPuppet
+            "in holy cities", "Holy" -> isHolyCity()
             "in City-State cities" -> civ.isCityState()
             // This is only used in communication to the user indicating that only in cities with this
             // religion a unique is active. However, since religion uniques only come from the city itself,
             // this will always be true when checked.
             "in cities following this religion" -> true
-            else -> false
+            "in cities following our religion" -> viewingCiv?.religionManager?.religion == religion.getMajorityReligion()
+            else -> civ.matchesFilter(filter)
         }
     }
 
@@ -559,7 +479,7 @@ class City : IsPartOfGameInfoSerialization {
     fun getLocalMatchingUniques(uniqueType: UniqueType, stateForConditionals: StateForConditionals = StateForConditionals(civ, this)): Sequence<Unique> {
         return (
             cityConstructions.builtBuildingUniqueMap.getUniques(uniqueType).filter { it.isLocalEffect }
-            + religion.getUniques().filter { it.isOfType(uniqueType) }
+            + religion.getUniques().filter { it.type == uniqueType }
         ).filter {
             it.conditionalsApply(stateForConditionals)
         }
@@ -568,7 +488,7 @@ class City : IsPartOfGameInfoSerialization {
     // Uniques coming from only this city
     fun getMatchingLocalOnlyUniques(uniqueType: UniqueType, stateForConditionals: StateForConditionals): Sequence<Unique> {
         val uniques = cityConstructions.builtBuildingUniqueMap.getUniques(uniqueType).filter { it.isLocalEffect } +
-            religion.getUniques().filter { it.isOfType(uniqueType) }
+            religion.getUniques().filter { it.type == uniqueType }
         return if (uniques.any()) uniques.filter { it.conditionalsApply(stateForConditionals) }
         else uniques
     }

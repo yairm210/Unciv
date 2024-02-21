@@ -27,8 +27,8 @@ import com.unciv.ui.components.input.onClick
 import com.unciv.ui.popups.LoadingPopup
 import com.unciv.ui.popups.Popup
 import com.unciv.ui.popups.ToastPopup
-import com.unciv.ui.screens.pickerscreens.Github
-import com.unciv.ui.screens.pickerscreens.Github.folderNameToRepoName
+import com.unciv.logic.github.Github
+import com.unciv.logic.github.Github.folderNameToRepoName
 import com.unciv.utils.Concurrency
 import com.unciv.utils.Log
 import com.unciv.utils.launchOnGLThread
