@@ -13,15 +13,15 @@ import com.badlogic.gdx.utils.Align
 import com.unciv.GUI
 import com.unciv.logic.civilization.Notification
 import com.unciv.logic.civilization.NotificationCategory
-import com.unciv.ui.components.widgets.AutoScrollPane as ScrollPane
-import com.unciv.ui.components.widgets.ColorMarkupLabel
-import com.unciv.ui.components.widgets.WrappableLabel
-import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.extensions.packIfNeeded
 import com.unciv.ui.components.extensions.surroundWithCircle
+import com.unciv.ui.components.input.onClick
+import com.unciv.ui.components.widgets.ColorMarkupLabel
+import com.unciv.ui.components.widgets.WrappableLabel
 import com.unciv.ui.images.IconCircleGroup
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.basescreen.BaseScreen
+import com.unciv.ui.components.widgets.AutoScrollPane as ScrollPane
 
 /*TODO
  *  Un-hiding the notifications when new ones arrive is a little pointless due to Categories:
@@ -34,7 +34,10 @@ import com.unciv.ui.screens.basescreen.BaseScreen
 class NotificationsScroll(
     private val worldScreen: WorldScreen
 ) : ScrollPane(null) {
-    enum class UserSetting(val static: Boolean = false) { Disabled(true), Hidden, Visible, Permanent(true) }
+    enum class UserSetting(val static: Boolean = false) {
+        Disabled(true), Hidden, Visible, Permanent(true);
+        companion object { fun default() = Visible }
+    }
 
     private companion object {
         /** Scale the entire ScrollPane by this factor */
@@ -455,7 +458,7 @@ class NotificationsScroll(
     private fun getUserSettingCheckDisabled(): Boolean {
         val settingString = GUI.getSettings().notificationScroll
         val setting = UserSetting.values().firstOrNull { it.name == settingString }
-            ?: UserSetting.Visible
+            ?: UserSetting.default()
         userSettingChanged = false
         if (setting == userSetting)
             return setting == UserSetting.Disabled
