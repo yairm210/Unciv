@@ -258,8 +258,7 @@ class Encampment() : IsPartOfGameInfoSerialization {
         barbarianCiv.tech.techsResearched = allResearchedTechs.toHashSet()
         val unitList = gameInfo.ruleset.units.values
             .filter { it.isMilitary() &&
-                    !(it.hasUnique(UniqueType.MustSetUp) ||
-                            it.hasUnique(UniqueType.CannotAttack) ||
+                    !(it.hasUnique(UniqueType.CannotAttack) ||
                             it.hasUnique(UniqueType.CannotBeBarbarian)) &&
                     (if (naval) it.isWaterUnit() else it.isLandUnit()) &&
                     it.isBuildable(barbarianCiv) }
