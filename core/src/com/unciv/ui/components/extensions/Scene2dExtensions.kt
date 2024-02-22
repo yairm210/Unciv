@@ -31,6 +31,9 @@ import com.unciv.ui.components.extensions.GdxKeyCodeFixes.DEL
 import com.unciv.ui.components.extensions.GdxKeyCodeFixes.toString
 import com.unciv.ui.components.extensions.GdxKeyCodeFixes.valueOf
 import com.unciv.ui.components.fonts.Fonts
+import com.unciv.ui.components.input.KeyCharAndCode
+import com.unciv.ui.components.input.keyShortcuts
+import com.unciv.ui.components.input.onActivation
 import com.unciv.ui.components.input.onChange
 import com.unciv.ui.images.IconCircleGroup
 import com.unciv.ui.images.ImageGetter
@@ -251,6 +254,24 @@ fun String.toImageButton(iconSize: Float, circleSize: Float, circleColor: Color,
     val button = ImageButton(style)
     button.setSize(iconSize, iconSize)
     return button.surroundWithCircle( circleSize, false, circleColor)
+}
+
+/** Return a "close" button, visually a circle with "x" icon that goes red on mouse-over.
+ *
+ *  For use e.g. in the top-right corner of screens such as CivilopediaScreen.
+ *  Automatically binds the BACK key to the [action].
+ */
+fun getCloseButton(
+    size: Float,
+    iconSize: Float = size - 20f,
+    circleColor: Color = BaseScreen.skinStrings.skinConfig.baseColor,
+    overColor: Color = Color.RED,
+    action: () -> Unit
+): Group {
+    val closeButton = "OtherIcons/Close".toImageButton(iconSize, size, circleColor, overColor)
+    closeButton.onActivation(action)
+    closeButton.keyShortcuts.add(KeyCharAndCode.BACK)
+    return closeButton
 }
 
 /** Translate a [String] and make a [Label] widget from it */

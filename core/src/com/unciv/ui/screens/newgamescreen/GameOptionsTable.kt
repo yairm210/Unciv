@@ -17,14 +17,12 @@ import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.tr
 import com.unciv.ui.audio.MusicMood
 import com.unciv.ui.audio.MusicTrackChooserFlags
+import com.unciv.ui.components.extensions.getCloseButton
 import com.unciv.ui.components.extensions.pad
 import com.unciv.ui.components.extensions.toCheckBox
 import com.unciv.ui.components.extensions.toImageButton
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
-import com.unciv.ui.components.input.KeyCharAndCode
-import com.unciv.ui.components.input.keyShortcuts
-import com.unciv.ui.components.input.onActivation
 import com.unciv.ui.components.input.onChange
 import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.widgets.AutoScrollPane
@@ -539,9 +537,7 @@ private class RandomNationPickerPopup(
         update()
         pack()
 
-        val closeButton = "OtherIcons/Close".toImageButton(Color.FIREBRICK)
-        closeButton.onActivation { close() }
-        closeButton.keyShortcuts.add(KeyCharAndCode.BACK)
+        val closeButton = getCloseButton(buttonsCircleSize, buttonsIconSize, buttonsBackColor, Color.FIREBRICK) { close() }
         closeButton.setPosition(buttonsOffsetFromEdge, buttonsOffsetFromEdge, Align.bottomLeft)
         innerTable.addActor(closeButton)
         clickBehindToClose = true
