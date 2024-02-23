@@ -253,8 +253,10 @@ class Nation : RulesetObject() {
                     )
                 }
             }
-            for (unique in improvement.uniques)
+            for (unique in improvement.uniqueObjects) {
+                if (unique.isHiddenToUsers()) continue
                 yield(FormattedLine(unique, indent = 1))
+            }
         }
     }
 
