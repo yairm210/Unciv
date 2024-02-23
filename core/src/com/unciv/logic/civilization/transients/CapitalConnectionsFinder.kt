@@ -85,8 +85,8 @@ class CapitalConnectionsFinder(private val civInfo: Civilization) {
         )
     }
 
-    private fun City.containsHarbor() =
-            this.cityConstructions.builtBuildingUniqueMap.getUniques(UniqueType.ConnectTradeRoutes).any()
+    private fun City.containsHarbor() = 
+        this.containsBuildingUnique(UniqueType.ConnectTradeRoutes)
 
     private fun check(cityToConnectFrom: City,
                       transportType: String,
