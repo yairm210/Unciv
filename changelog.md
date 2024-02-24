@@ -1,20 +1,16 @@
 ## 4.10.12
 
-Make terraform unique triggerable from improvements
+Terraform unique triggerable from improvements
 
 By SomeTroglodyte:
-- Right-click/longpress for World screen city buttons 
-- Unit actions from Uniques shouldn't be active at zero movement 
-- Fix double "close" action from Overview ESC key 
-- Fix a few applications of the "hidden from users" modifer 
-- Fix fortified units upgraded to ones that can't fortify still keeping their fortification 
-- Fix options setting for the notifications scroll visibility being wrong for new installs 
-- Change EmpireOverviewScreen closing to use the same button and UX as Civilopedia 
-- Normalize TNP 'search' links, fix a few broken or incomplete attributions 
+- Right-click/longpress for World screen city buttons
+- Fix some uses of "hidden from users" modifer
+- Fix fortified units upgraded to unfortifyable ones keeping fortification
+- Empire Overview Screen closing now with same UX as Civilopedia
 
-Added unit escorting formation!!!  - By tuvus
+Added unit escorting formation!  - By tuvus
 
-Allow conditional timed triggers for unit actions or most other trigger conditionals  - By SeventhM
+Allow conditional timed triggers for unit actions &c  - By SeventhM
 
 Allow Barbarians to make set-up ranged units  - By SpacedOutChicken
 

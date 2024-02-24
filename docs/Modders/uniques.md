@@ -139,6 +139,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Triggerable
 
+??? example  "Turn this tile into a [terrainName] tile"
+	Example: "Turn this tile into a [Forest] tile"
+
+	Applicable to: Triggerable
+
 ??? example  "[mapUnitFilter] units gain the [promotion] promotion"
 	Example: "[Wounded] units gain the [Shock I] promotion"
 
@@ -187,11 +192,6 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 ??? example  "This Unit loses the [promotion] promotion"
 	Example: "This Unit loses the [Shock I] promotion"
-
-	Applicable to: UnitTriggerable
-
-??? example  "Turn this tile into a [terrainName] tile"
-	Example: "Turn this tile into a [Forest] tile"
 
 	Applicable to: UnitTriggerable
 
