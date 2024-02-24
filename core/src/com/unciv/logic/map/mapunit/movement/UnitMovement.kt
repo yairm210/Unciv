@@ -238,8 +238,13 @@ class UnitMovement(val unit: MapUnit) {
      * @return The tile that we reached this turn
      */
     fun headTowards(destination: Tile): Tile {
+        val escortUnit = if (unit.isEscorting()) unit.getOtherEscortUnit() else null
+        val startTile = unit.getTile()
         val destinationTileThisTurn = getTileToMoveToThisTurn(destination)
         moveToTile(destinationTileThisTurn)
+        if (startTile != unit.getTile() && escortUnit != null) {
+            escortUnit.movement.headTowards(unit.getTile())
+        }
         return unit.currentTile
     }
 
@@ -261,7 +266,11 @@ class UnitMovement(val unit: MapUnit) {
         return getDistanceToTiles().containsKey(destination)
     }
 
-    fun getReachableTilesInCurrentTurn(): Sequence<Tile> {
+    /**
+     * @param includeOtherEscortUnit determines whether or not this method will also check its the other escort unit if it has one
+     * Leave it as default unless you know what [getReachableTilesInCurrentTurn] does.
+     */
+    fun getReachableTilesInCurrentTurn(includeOtherEscortUnit: Boolean = true): Sequence<Tile> {
         return when {
             unit.cache.cannotMove -> sequenceOf(unit.getTile())
             unit.baseUnit.movesLikeAirUnits() ->
@@ -269,8 +278,11 @@ class UnitMovement(val unit: MapUnit) {
             unit.isPreparingParadrop() ->
                 unit.getTile().getTilesInDistance(unit.cache.paradropRange)
                     .filter { unit.movement.canParadropOn(it) }
-            else ->
-                unit.movement.getDistanceToTiles().keys.asSequence()
+            includeOtherEscortUnit && unit.isEscorting() -> {
+                    val otherUnitTiles = unit.getOtherEscortUnit()!!.movement.getReachableTilesInCurrentTurn(false).toSet()
+                    unit.movement.getDistanceToTiles().filter { otherUnitTiles.contains(it.key) }.keys.asSequence()
+                } 
+            else -> unit.movement.getDistanceToTiles().keys.asSequence()
         }
     }
 
@@ -322,6 +334,7 @@ class UnitMovement(val unit: MapUnit) {
      * CAN DESTROY THE UNIT.
      */
     fun teleportToClosestMoveableTile() {
+        unit.stopEscorting()
         if (unit.isTransported) return // handled when carrying unit is teleported
         var allowedTile: Tile? = null
         var distance = 0
@@ -370,6 +383,7 @@ class UnitMovement(val unit: MapUnit) {
     fun moveToTile(destination: Tile, considerZoneOfControl: Boolean = true) {
         if (destination == unit.getTile() || unit.isDestroyed) return // already here (or dead)!
         // Reset closestEnemy chache
+        val escortUnit = if (unit.isEscorting()) unit.getOtherEscortUnit()!! else null
 
         if (unit.baseUnit.movesLikeAirUnits()) { // air units move differently from all other units
             if (unit.action != UnitActionType.Automate.value) unit.action = null
@@ -477,6 +491,10 @@ class UnitMovement(val unit: MapUnit) {
             payload.isTransported = true // restore the flag to not leave the payload in the city
             payload.mostRecentMoveType = UnitMovementMemoryType.UnitMoved
         }
+        if (escortUnit != null) {
+            escortUnit.movement.moveToTile(finalTileReached)
+            unit.startEscorting() // Need to re-apply this
+        }
 
         // Unit maintenance changed
         if (unit.canGarrison()
@@ -498,6 +516,7 @@ class UnitMovement(val unit: MapUnit) {
      * Precondition: this unit can swap-move to the given tile, as determined by canUnitSwapTo
      */
     fun swapMoveToTile(destination: Tile) {
+        unit.stopEscorting()
         val otherUnit = (
             if (unit.isCivilian())
                 destination.civilianUnit
@@ -548,8 +567,10 @@ class UnitMovement(val unit: MapUnit) {
     /**
      * Designates whether we can enter the tile - without attacking
      * DOES NOT designate whether we can reach that tile in the current turn
+     * @param includeOtherEscortUnit determines whether or not this method will also check if the other escort unit [canMoveTo] if it has one.
+     * Leave it as default unless you know what [canMoveTo] does.
      */
-    fun canMoveTo(tile: Tile, assumeCanPassThrough: Boolean = false, canSwap: Boolean = false): Boolean {
+    fun canMoveTo(tile: Tile, assumeCanPassThrough: Boolean = false, canSwap: Boolean = false, includeOtherEscortUnit: Boolean = true): Boolean {
         if (unit.baseUnit.movesLikeAirUnits())
             return canAirUnitMoveTo(tile, unit)
 
@@ -558,6 +579,10 @@ class UnitMovement(val unit: MapUnit) {
 
         // even if they'll let us pass through, we can't enter their city - unless we just captured it
         if (isCityCenterCannotEnter(tile))
+            return false
+
+        if (includeOtherEscortUnit && unit.isEscorting() 
+            && !unit.getOtherEscortUnit()!!.movement.canMoveTo(tile, assumeCanPassThrough,canSwap, includeOtherEscortUnit = false)) 
             return false
 
         return if (unit.isCivilian())
@@ -600,8 +625,10 @@ class UnitMovement(val unit: MapUnit) {
      * This is the most called function in the entire game,
      * so multiple callees of this function have been optimized,
      * because optimization on this function results in massive benefits!
+     * @param includeOtherEscortUnit determines whether or not this method will also check if the other escort unit [canPassThrough] if it has one.
+     * Leave it as default unless you know what [canPassThrough] does.
      */
-    fun canPassThrough(tile: Tile): Boolean {
+    fun canPassThrough(tile: Tile, includeOtherEscortUnit: Boolean = true): Boolean {
         if (tile.isImpassible()) {
             // special exception - ice tiles are technically impassible, but some units can move through them anyway
             // helicopters can pass through impassable tiles like mountains
@@ -649,15 +676,21 @@ class UnitMovement(val unit: MapUnit) {
             if (unit.civ.isAtWarWith(firstUnit.civ))
                 return false
         }
-
+        if (includeOtherEscortUnit && unit.isEscorting() && !unit.getOtherEscortUnit()!!.movement.canPassThrough(tile,false)) 
+            return false
         return true
     }
 
 
+    /**
+     * @param includeOtherEscortUnit determines whether or not this method will also check if the other escort units [getDistanceToTiles] if it has one.
+     * Leave it as default unless you know what [getDistanceToTiles] does. 
+     */
     fun getDistanceToTiles(
         considerZoneOfControl: Boolean = true,
         passThroughCache: HashMap<Tile, Boolean> = HashMap(),
-        movementCostCache: HashMap<Pair<Tile, Tile>, Float> = HashMap())
+        movementCostCache: HashMap<Pair<Tile, Tile>, Float> = HashMap(),
+        includeOtherEscortUnit: Boolean = true)
         : PathsToTilesWithinTurn {
         val cacheResults = pathfindingCache.getDistanceToTiles(considerZoneOfControl)
         if (cacheResults != null) {
@@ -671,7 +704,17 @@ class UnitMovement(val unit: MapUnit) {
             passThroughCache,
             movementCostCache
         )
-        pathfindingCache.setDistanceToTiles(considerZoneOfControl, distanceToTiles)
+        
+        if (includeOtherEscortUnit) {
+            // Only save to cache only if we are the original call and not the subsequent escort unit call
+            pathfindingCache.setDistanceToTiles(considerZoneOfControl, distanceToTiles)
+            if (unit.isEscorting()) {
+                // We should only be able to move to tiles that our escort can also move to
+                val escortDistanceToTiles = unit.getOtherEscortUnit()!!.movement
+                    .getDistanceToTiles(considerZoneOfControl, includeOtherEscortUnit = false)
+                distanceToTiles.keys.removeIf { !escortDistanceToTiles.containsKey(it) }
+            }
+        }
         return distanceToTiles
     }
 

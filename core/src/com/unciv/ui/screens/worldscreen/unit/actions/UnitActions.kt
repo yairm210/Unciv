@@ -158,11 +158,42 @@ object UnitActions {
                 GUI.getMap().setCenterPosition(unit.getMovementDestination().position, true)
             })
         }
-
+        addEscortAction(unit)
         addSwapAction(unit)
         addDisbandAction(unit)
     }
 
+    private suspend fun SequenceScope<UnitAction>.addEscortAction(unit: MapUnit) {
+        // Air units cannot escort
+        if (unit.baseUnit.movesLikeAirUnits()) return
+
+        val worldScreen = GUI.getWorldScreen()
+        val selectedUnits = worldScreen.bottomUnitTable.selectedUnits
+        if (selectedUnits.size == 2) {
+            // We can still create a formation in the case that we have two units selected 
+            // and they are on the same tile. We still have to manualy confirm they are on the same tile here.
+            val tile = selectedUnits.first().getTile()
+            if (selectedUnits.last().getTile() != tile) return
+            if (selectedUnits.any { it.baseUnit.movesLikeAirUnits() }) return
+        } else if (selectedUnits.size != 1) {
+            return
+        }
+        if (unit.getOtherEscortUnit() == null) return
+        if (!unit.isEscorting()) {
+            yield(UnitAction(
+                type = UnitActionType.EscortFormation,
+                action = {
+                    unit.startEscorting()
+                }))
+        } else {
+            yield(UnitAction(
+                type = UnitActionType.StopEscortFormation,
+                action = {
+                    unit.stopEscorting()
+                }))
+        }
+    }
+    
     private suspend fun SequenceScope<UnitAction>.addSwapAction(unit: MapUnit) {
         // Air units cannot swap
         if (unit.baseUnit.movesLikeAirUnits()) return

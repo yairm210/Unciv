@@ -60,6 +60,8 @@ class MapUnit : IsPartOfGameInfoSerialization {
     // Connect roads implies automated is true. It is specified by the action type.
     var action: String? = null
     var automated: Boolean = false
+    // We can infer who we are escorting based on our tile
+    var escorting: Boolean = false
 
     var automatedRoadConnectionDestination: Vector2? = null
     var automatedRoadConnectionPath: List<Vector2>? = null
@@ -177,6 +179,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
         toReturn.health = health
         toReturn.action = action
         toReturn.automated = automated
+        toReturn.escorting = escorting
         toReturn.automatedRoadConnectionDestination = automatedRoadConnectionDestination
         toReturn.automatedRoadConnectionPath = automatedRoadConnectionPath
         toReturn.attacksThisTurn = attacksThisTurn
@@ -231,13 +234,18 @@ class MapUnit : IsPartOfGameInfoSerialization {
     fun isPreparingAirSweep() = action == UnitActionType.AirSweep.value
     fun isSetUpForSiege() = action == UnitActionType.SetUp.value
 
-    fun isIdle(): Boolean {
+    /**
+     * @param includeOtherEscortUnit determines whether or not this method will also check if it's other escort unit is idle if it has one
+     * Leave it as default unless you know what [isIdle] does.
+     */
+    fun isIdle(includeOtherEscortUnit: Boolean = true): Boolean {
         if (currentMovement == 0f) return false
         val tile = getTile()
         if (tile.improvementInProgress != null &&
             canBuildImprovement(tile.getTileImprovementInProgress()!!) &&
             !tile.isMarkedForCreatesOneImprovement()
         ) return false
+        if (includeOtherEscortUnit && isEscorting() && !getOtherEscortUnit()!!.isIdle(false)) return false
         return !(isFortified() || isExploring() || isSleeping() || isAutomated() || isMoving())
     }
 
@@ -567,6 +575,20 @@ class MapUnit : IsPartOfGameInfoSerialization {
         power /= 100
         return power
     }
+    
+    fun getOtherEscortUnit(): MapUnit? {
+        if (isCivilian()) return getTile().militaryUnit
+        if (isMilitary()) return getTile().civilianUnit
+        return null
+    }
+    
+    fun isEscorting(): Boolean {
+        if (escorting) {
+            if (getOtherEscortUnit() != null) return true
+            escorting = false
+        }
+        return false
+    }
 
     fun threatensCiv(civInfo: Civilization): Boolean {
         if (getTile().getOwner() == civInfo)
@@ -687,6 +709,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
     fun doAction() {
         if (action == null) return
         if (currentMovement == 0f) return  // We've already done stuff this turn, and can't do any more stuff
+        if (isEscorting() && getOtherEscortUnit()!!.currentMovement == 0f) return
 
         val enemyUnitsInWalkingDistance = movement.getDistanceToTiles().keys
             .filter { it.militaryUnit != null && civ.isAtWarWith(it.militaryUnit!!.civ) }
@@ -730,6 +753,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
     }
 
     fun destroy(destroyTransportedUnit: Boolean = true) {
+        stopEscorting()
         val currentPosition = Vector2(getTile().position)
         civ.attacksSinceTurnStart.addAll(attacksSinceTurnStart.asSequence().map { Civilization.HistoricalAttackMemory(this.name, currentPosition, it) })
         currentMovement = 0f
@@ -746,6 +770,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
     }
 
     fun gift(recipient: Civilization) {
+        stopEscorting()
         civ.units.removeUnit(this)
         civ.cache.updateViewableTiles()
         // all transported units should be gift as well
@@ -847,6 +872,22 @@ class MapUnit : IsPartOfGameInfoSerialization {
         // this check is here in order to not load the fresh built unit into carrier right after the build
         isTransported = !tile.isCityCenter() && baseUnit.movesLikeAirUnits()  // not moving civilians
         moveThroughTile(tile)
+    }
+
+    fun startEscorting() {
+        if (getOtherEscortUnit() != null) {
+            escorting = true
+            getOtherEscortUnit()!!.escorting = true
+        } else {
+            escorting = false
+        }
+        movement.clearPathfindingCache()
+    }
+
+    fun stopEscorting() {
+        getOtherEscortUnit()?.escorting = false
+        escorting = false
+        movement.clearPathfindingCache()
     }
 
     private fun clearEncampment(tile: Tile) {
