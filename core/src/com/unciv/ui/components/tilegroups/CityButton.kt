@@ -24,6 +24,7 @@ import com.unciv.ui.components.extensions.toGroup
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.components.input.onClick
+import com.unciv.ui.components.input.onRightClick
 import com.unciv.ui.components.widgets.BorderedTable
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popups.Popup
@@ -526,24 +527,29 @@ class CityButton(val city: City, private val tileGroup: TileGroup) : Table(BaseS
         // So you can click anywhere on the button to go to the city
         touchable = Touchable.childrenOnly
 
+        fun enterCityOrInfoPopup() {
+            // second tap on the button will go to the city screen
+            // if this city belongs to you and you are not iterating though the air units
+            if (DebugUtils.VISIBLE_MAP || viewingPlayer.isSpectator()
+                || (belongsToViewingCiv() && !tileGroup.tile.airUnits.contains(unitTable.selectedUnit))) {
+                GUI.pushScreen(CityScreen(city))
+            } else if (viewingPlayer.knows(city.civ)) {
+                foreignCityInfoPopup()
+            }
+        }
+
         onClick {
             // clicking swings the button a little down to allow selection of units there.
             // this also allows to target selected units to move to the city tile from elsewhere.
             if (isButtonMoved) {
-                // second tap on the button will go to the city screen
-                // if this city belongs to you and you are not iterating though the air units
-                if (DebugUtils.VISIBLE_MAP || viewingPlayer.isSpectator()
-                    || (belongsToViewingCiv() && !tileGroup.tile.airUnits.contains(unitTable.selectedUnit))) {
-                        GUI.pushScreen(CityScreen(city))
-                } else if (viewingPlayer.knows(city.civ)) {
-                    foreignCityInfoPopup()
-                }
+                enterCityOrInfoPopup()
             } else {
                 moveButtonDown()
                 if ((unitTable.selectedUnit == null || unitTable.selectedUnit!!.currentMovement == 0f) && belongsToViewingCiv())
                     unitTable.citySelected(city)
             }
         }
+        onRightClick(action = ::enterCityOrInfoPopup)
 
         // when deselected, move city button to its original position
         if (unitTable.selectedCity != city
