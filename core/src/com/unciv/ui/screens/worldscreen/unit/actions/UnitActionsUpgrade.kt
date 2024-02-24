@@ -60,20 +60,7 @@ object UnitActionsUpgrade {
                 goldCostOfUpgrade = goldCostOfUpgrade,
                 newResourceRequirements = resourceRequirementsDelta,
                 action = {
-                    unit.destroy(destroyTransportedUnit = false)
-                    val newUnit = civInfo.units.placeUnitNearTile(unitTile.position, upgradedUnit)
-
-                    /** We were UNABLE to place the new unit, which means that the unit failed to upgrade!
-                     * The only known cause of this currently is "land units upgrading to water units" which fail to be placed.
-                     */
-                    if (newUnit == null) {
-                        val resurrectedUnit = civInfo.units.placeUnitNearTile(unitTile.position, unit.baseUnit)!!
-                        unit.copyStatisticsTo(resurrectedUnit)
-                    } else { // Managed to upgrade
-                        if (!isFree) civInfo.addGold(-goldCostOfUpgrade)
-                        unit.copyStatisticsTo(newUnit)
-                        newUnit.currentMovement = 0f
-                    }
+                    unit.upgrade.performUpgrade(upgradedUnit, isFree, goldCostOfUpgrade)
                 }.takeIf {
                     isFree || (
                         unit.civ.gold >= goldCostOfUpgrade

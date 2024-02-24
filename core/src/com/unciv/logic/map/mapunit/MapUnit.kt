@@ -377,14 +377,15 @@ class MapUnit : IsPartOfGameInfoSerialization {
     }
 
 
-    fun canFortify(): Boolean {
-        if (baseUnit.isWaterUnit()) return false
-        if (isCivilian()) return false
-        if (baseUnit.movesLikeAirUnits()) return false
-        if (isEmbarked()) return false
-        if (hasUnique(UniqueType.NoDefensiveTerrainBonus)) return false
-        if (isFortified()) return false
-        return true
+    fun canFortify(ignoreAlreadyFortified: Boolean = false) = when {
+        baseUnit.isWaterUnit() -> false
+        isCivilian() -> false
+        baseUnit.movesLikeAirUnits() -> false
+        isEmbarked() -> false
+        hasUnique(UniqueType.NoDefensiveTerrainBonus) -> false
+        ignoreAlreadyFortified -> true
+        isFortified() -> false
+        else -> true
     }
 
     private fun adjacentHealingBonus(): Int {

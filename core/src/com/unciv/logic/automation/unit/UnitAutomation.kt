@@ -142,6 +142,7 @@ object UnitAutomation {
         val upgradeActions = UnitActionsUpgrade.getUpgradeActions(unit)
 
         upgradeActions.firstOrNull{ (it as UpgradeUnitAction).unitToUpgradeTo == upgradedUnit }?.action?.invoke() ?: return false
+        //todo Incorrect - an _unsuccessful_ upgrade might have _resurrected_ the original in which case it's a new clone, and unit.isDestroyed is still true
         return unit.isDestroyed // a successful upgrade action will destroy this unit
     }
 
