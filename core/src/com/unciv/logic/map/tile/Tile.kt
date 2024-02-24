@@ -387,9 +387,10 @@ open class Tile : IsPartOfGameInfoSerialization {
     fun isRoughTerrain() = allTerrains.any { it.isRough() }
 
     /** Checks whether any of the TERRAINS of this tile has a certain unique */
-    fun terrainHasUnique(uniqueType: UniqueType) = terrainUniqueMap.getUniques(uniqueType).any()
+    fun terrainHasUnique(uniqueType: UniqueType, state: StateForConditionals = StateForConditionals(tile = this)) =
+        terrainUniqueMap.getMatchingUniques(uniqueType, state).any()
     /** Get all uniques of this type that any TERRAIN on this tile has */
-    fun getTerrainMatchingUniques(uniqueType: UniqueType, stateForConditionals: StateForConditionals = StateForConditionals(tile=this) ): Sequence<Unique> {
+    fun getTerrainMatchingUniques(uniqueType: UniqueType, stateForConditionals: StateForConditionals = StateForConditionals(tile = this) ): Sequence<Unique> {
         return terrainUniqueMap.getMatchingUniques(uniqueType, stateForConditionals)
     }
 

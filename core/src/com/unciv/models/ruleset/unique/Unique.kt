@@ -28,10 +28,12 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
     }
     val conditionals: List<Unique> = text.getConditionals()
 
+    val isTimedTriggerable = conditionals.any { it.type == UniqueType.ConditionalTimedUnique }
+
     val isTriggerable = type != null && (
         type.targetTypes.contains(UniqueTarget.Triggerable)
             || type.targetTypes.contains(UniqueTarget.UnitTriggerable)
-            || conditionals.any { it.type == UniqueType.ConditionalTimedUnique }
+            || isTimedTriggerable
         )
 
     /** Includes conditional params */
@@ -59,7 +61,7 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
     fun conditionalsApply(state: StateForConditionals = StateForConditionals()): Boolean {
         if (state.ignoreConditionals) return true
         // Always allow Timed conditional uniques. They are managed elsewhere
-        if (conditionals.any { it.type == UniqueType.ConditionalTimedUnique }) return true
+        if (isTimedTriggerable) return true
         for (condition in conditionals) {
             if (!Conditionals.conditionalApplies(this, condition, state)) return false
         }
@@ -209,8 +211,6 @@ class UniqueMap: HashMap<String, ArrayList<Unique>>() {
 
     /** Adds one [unique] unless it has a ConditionalTimedUnique conditional */
     fun addUnique(unique: Unique) {
-        if (unique.conditionals.any { it.type == UniqueType.ConditionalTimedUnique }) return
-
         val existingArrayList = get(unique.placeholderText)
         if (existingArrayList != null) existingArrayList.add(unique)
         else this[unique.placeholderText] = arrayListOf(unique)
@@ -228,7 +228,7 @@ class UniqueMap: HashMap<String, ArrayList<Unique>>() {
     fun getUniques(uniqueType: UniqueType) = getUniques(uniqueType.placeholderText)
 
     fun getMatchingUniques(uniqueType: UniqueType, state: StateForConditionals) = getUniques(uniqueType)
-        .filter { it.conditionalsApply(state) }
+        .filter { it.conditionalsApply(state) && !it.isTimedTriggerable }
 
     fun getAllUniques() = this.asSequence().flatMap { it.value.asSequence() }
 
