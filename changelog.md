@@ -1,3 +1,20 @@
+## 4.10.11
+
+Terraforming unique! 'Turn this tile into a [terrainName] tile'
+
+Fix timed uniques without other conditionals
+
+Only allow a trigger-based unit action if actionable
+
+By SomeTroglodyte:
+- Conditional 'While Researching'
+- External links: Right-click and some housecleaning
+- Fix Maya "Long Count" unlock translations
+
+By SeventhM:
+- Fix victory focus being ignored
+- Add unique for Personality to avoid building object
+
 ## 4.10.10
 
 By SomeTroglodyte:

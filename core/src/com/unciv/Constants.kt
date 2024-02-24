@@ -106,4 +106,10 @@ object Constants {
 
     const val defaultFontSize = 18
     const val headingFontSize = 24
+
+    /** URL to the root of the Unciv repository, including trailing slash */
+    // Note: Should the project move, this covers external links, but not comments e.g. mentioning issues
+    const val uncivRepoURL = "https://github.com/yairm210/Unciv/"
+    /** URL to the wiki, including trailing slash */
+    const val wikiURL = "https://yairm210.github.io/Unciv/"
 }

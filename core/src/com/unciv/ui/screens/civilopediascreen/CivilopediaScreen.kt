@@ -15,12 +15,11 @@ import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.INamed
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.extensions.colorFromRGB
+import com.unciv.ui.components.extensions.getCloseButton
 import com.unciv.ui.components.extensions.toImageButton
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.fonts.Fonts
-import com.unciv.ui.components.input.KeyCharAndCode
 import com.unciv.ui.components.input.KeyboardBinding
-import com.unciv.ui.components.input.keyShortcuts
 import com.unciv.ui.components.input.onActivation
 import com.unciv.ui.components.input.onClick
 import com.unciv.ui.images.IconTextButton
@@ -248,9 +247,7 @@ class CivilopediaScreen(
         val searchButton = "OtherIcons/Search".toImageButton(imageSize - 16f, imageSize, skinStrings.skinConfig.baseColor, Color.GOLD)
         searchButton.onActivation(binding = KeyboardBinding.PediaSearch) { searchPopup.open(true) }
 
-        val closeButton = "OtherIcons/Close".toImageButton(imageSize - 20f, imageSize, skinStrings.skinConfig.baseColor, Color.RED)
-        closeButton.onActivation { game.popScreen() }
-        closeButton.keyShortcuts.add(KeyCharAndCode.BACK)
+        val closeButton = getCloseButton(imageSize) { game.popScreen() }
 
         val topTable = Table()
         topTable.add(buttonTableScroll).growX()

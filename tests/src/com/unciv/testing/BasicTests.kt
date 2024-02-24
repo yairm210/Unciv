@@ -110,7 +110,7 @@ class BasicTests {
                 for (paramType in entry.value) {
                     if (paramType == UniqueParameterType.Unknown) {
                         val badParam = uniqueType.text.getPlaceholderParameters()[entry.index]
-                        debug("%s param[%s] type \"%s\" is unknown", uniqueType.name, entry.index, badParam)
+                        println("${uniqueType.name} param[${entry.index}] type \"$badParam\" is unknown")
                         noUnknownParameters = false
                     }
                 }

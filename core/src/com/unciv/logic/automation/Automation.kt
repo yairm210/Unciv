@@ -63,7 +63,7 @@ object Automation {
 
         val surplusFood = cityStats[Stat.Food]
         // If current Production converts Food into Production, then calculate increased Production Yield
-        if(cityStatsObj.canConvertFoodToProduction(surplusFood, city.cityConstructions.getCurrentConstruction())) {
+        if (cityStatsObj.canConvertFoodToProduction(surplusFood, city.cityConstructions.getCurrentConstruction())) {
             // calculate delta increase of food->prod. This isn't linear
             yieldStats.production += cityStatsObj.getProductionFromExcessiveFood(surplusFood+yieldStats.food) - cityStatsObj.getProductionFromExcessiveFood(surplusFood)
             yieldStats.food = 0f  // all food goes to 0

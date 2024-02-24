@@ -5,6 +5,7 @@ import com.unciv.Constants
 import com.unciv.GUI
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.Notification
+import com.unciv.ui.components.extensions.getCloseButton
 import com.unciv.ui.components.input.KeyCharAndCode
 import com.unciv.ui.components.widgets.TabbedPager
 import com.unciv.ui.images.ImageGetter
@@ -52,8 +53,6 @@ class EmpireOverviewScreen(
             separatorColor = Color.WHITE,
             capacity = EmpireOverviewCategories.values().size)
 
-        tabbedPager.addClosePage { game.popScreen() }
-
         for (category in EmpireOverviewCategories.values()) {
             val tabState = category.testState(viewingPlayer)
             if (tabState == EmpireOverviewTabState.Hidden) continue
@@ -75,8 +74,14 @@ class EmpireOverviewScreen(
             }
         }
 
+        val closeButton = getCloseButton(50f) { game.popScreen() }
+        tabbedPager.decorateHeader(closeButton, leftSide = false, fixed = true)
+
         tabbedPager.setFillParent(true)
         stage.addActor(tabbedPager)
+
+//         closeButton.setPosition(stage.width - 10f, stage.height - 10f, Align.topRight)
+//         stage.addActor(closeButton)
    }
 
     override fun recreate(): BaseScreen {

@@ -190,6 +190,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: UnitTriggerable
 
+??? example  "Turn this tile into a [terrainName] tile"
+	Example: "Turn this tile into a [Forest] tile"
+
+	Applicable to: UnitTriggerable
+
 ## Global uniques
 !!! note ""
 
@@ -944,6 +949,12 @@ Due to performance considerations, this unique is cached, thus conditionals may 
 	Example: "Comment [comment]"
 
 	Applicable to: Nation, Tech, Policy, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed
+
+## Personality uniques
+??? example  "Will not build [baseUnitFilter/buildingFilter]"
+	Example: "Will not build [Melee]"
+
+	Applicable to: Personality
 
 ## Era uniques
 ??? example  "Starting in this era disables religion"
@@ -1934,6 +1945,12 @@ Due to performance considerations, this unique is cached, thus conditionals may 
 
 ??? example  "&lt;before discovering [tech]&gt;"
 	Example: "&lt;before discovering [Agriculture]&gt;"
+
+	Applicable to: Conditional
+
+??? example  "&lt;while researching [tech]&gt;"
+	This condition is fulfilled while the technology is actively being researched (it is the one research points are added to)
+	Example: "&lt;while researching [Agriculture]&gt;"
 
 	Applicable to: Conditional
 
