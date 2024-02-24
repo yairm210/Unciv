@@ -6,7 +6,6 @@ import com.unciv.GUI
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.Notification
 import com.unciv.ui.components.extensions.getCloseButton
-import com.unciv.ui.components.input.KeyCharAndCode
 import com.unciv.ui.components.widgets.TabbedPager
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.basescreen.BaseScreen
@@ -44,8 +43,6 @@ class EmpireOverviewScreen(
     init {
         val selectCategory = defaultCategory ?: EmpireOverviewCategories.values().firstOrNull { it.name == game.settings.lastOverviewPage }
         val iconSize = Constants.defaultFontSize.toFloat()
-
-        globalShortcuts.add(KeyCharAndCode.BACK) { game.popScreen() }
 
         tabbedPager = TabbedPager(
             stage.width, stage.width,
