@@ -214,6 +214,9 @@ object UnitAutomation {
 
         if (unit.health < 50 && (trySwapRetreat(unit) || tryHealUnit(unit))) return // do nothing but heal
 
+        // If there are no enemies nearby and we can heal here, wait until we are at full health
+        if (unit.health < 100 && canUnitHealInTurnsOnCurrentTile(unit,2, 4)) return
+
         // Accompany settlers
         if (tryAccompanySettlerOrGreatPerson(unit)) return
 
@@ -321,14 +324,12 @@ object UnitAutomation {
         val unitDistanceToTiles = unit.movement.getDistanceToTiles()
         if (unitDistanceToTiles.isEmpty()) return true // can't move, so...
 
+        // If the unit can heal on this tile in two turns, just heal here
+        if (canUnitHealInTurnsOnCurrentTile(unit,3,)) return true
+
         val currentUnitTile = unit.getTile()
 
         val dangerousTiles = unit.civ.threatManager.getDangerousTiles(unit)
-
-        // If the unit can heal on this tile in two turns, just heal here
-        if (!dangerousTiles.contains(unit.getTile()) && !unit.hasUnique(UniqueType.HealsEvenAfterAction) 
-            && (100 - unit.health) / 2 <= unit.rankTileForHealing(unit.getTile())) return true
-
 
         val viableTilesForHealing = unitDistanceToTiles.keys
                 .filter { it !in dangerousTiles && unit.movement.canMoveTo(it) }
@@ -372,6 +373,17 @@ object UnitAutomation {
 
         unit.fortifyIfCan()
         return true
+    }
+
+    /**
+     * @return true if the tile is safe and the unit can heal to full within [turns]
+     */
+    private fun canUnitHealInTurnsOnCurrentTile(unit: MapUnit, turns: Int, noEnemyDistance: Int = 3): Boolean {
+        // Check if we are not in a safe city and there is an enemy nearby this isn't a good tile to heal on
+        if (!(unit.getTile().isCityCenter() && unit.getTile().getCity()!!.health > 50) 
+            && unit.civ.threatManager.getDistanceToClosestEnemyUnit(unit.getTile(), noEnemyDistance) <= noEnemyDistance) return false
+        return (!unit.hasUnique(UniqueType.HealsEvenAfterAction)
+            && (100 - unit.health) / turns <= unit.rankTileForHealing(unit.getTile()))
     }
 
     private fun getDangerousTiles(unit: MapUnit): HashSet<Tile> {
