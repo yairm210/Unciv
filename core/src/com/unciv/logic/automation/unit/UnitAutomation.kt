@@ -313,7 +313,11 @@ object UnitAutomation {
         if (unit.baseUnit.isRanged() && unit.hasUnique(UniqueType.HealsEvenAfterAction))
             return false // will heal anyway, and attacks don't hurt
 
-        if (tryPillageImprovement(unit)) return true
+        // Try pillage improvements until healed
+        while(tryPillageImprovement(unit, false)) {
+            if (unit.currentMovement == 0f || unit.health == 100) return true
+        }
+
         val unitDistanceToTiles = unit.movement.getDistanceToTiles()
         if (unitDistanceToTiles.isEmpty()) return true // can't move, so...
 
@@ -382,14 +386,17 @@ object UnitAutomation {
         return (tilesInRangeOfAttack + tilesWithinBombardmentRange + tilesWithTerrainDamage).toHashSet()
     }
 
-    fun tryPillageImprovement(unit: MapUnit): Boolean {
+    /**
+     * @return true if the unit was able to pillage a tile, false otherwise
+     */
+    fun tryPillageImprovement(unit: MapUnit, onlyPillageToHeal: Boolean = false): Boolean {
         if (unit.isCivilian()) return false
         val unitDistanceToTiles = unit.movement.getDistanceToTiles()
         val tilesThatCanWalkToAndThenPillage = unitDistanceToTiles
             .filter { it.value.totalDistance < unit.currentMovement }.keys
             .filter { unit.movement.canMoveTo(it) && UnitActionsPillage.canPillage(unit, it)
                     && (it.canPillageTileImprovement()
-                    || (it.canPillageRoad() && it.getRoadOwner() != null && unit.civ.isAtWarWith(it.getRoadOwner()!!))) }
+                    || (!onlyPillageToHeal && it.canPillageRoad() && it.getRoadOwner() != null && unit.civ.isAtWarWith(it.getRoadOwner()!!))) }
 
         if (tilesThatCanWalkToAndThenPillage.isEmpty()) return false
         val tileToPillage = tilesThatCanWalkToAndThenPillage.maxByOrNull { it.getDefensiveBonus(false) }!!
@@ -399,7 +406,7 @@ object UnitAutomation {
         // We CANNOT use invokeUnitAction, since the default unit action contains a popup, which - when automated -
         //  runs a UI action on a side thread leading to crash!
         UnitActionsPillage.getPillageAction(unit, unit.currentTile)?.action?.invoke()
-        return unit.currentMovement == 0f
+        return true
     }
 
     /** Move towards the closest attackable enemy of the [unit].
