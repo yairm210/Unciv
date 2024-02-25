@@ -11,6 +11,7 @@
               "uniqueItems": true
           },
           "improvement": { "type": "string" },
+          "resourceType": { "enum": ["Strategic", "Luxury", "Bonus"]},
           "techRequired": { "type": "string" },
           "improvementStats": { "$ref": "https://raw.githubusercontent.com/yairm210/Unciv/master/docs/Modders/schemas/stats.json" },
 
