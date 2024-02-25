@@ -32,7 +32,7 @@ import com.unciv.ui.screens.basescreen.BaseScreen
  * @param initContent Optional lambda with [innerTable] as parameter, to help initialize content.
  */
 class ExpanderTab(
-    title: String,
+    val title: String,
     fontSize: Int = Constants.headingFontSize,
     icon: Actor? = null,
     startsOutOpened: Boolean = true,

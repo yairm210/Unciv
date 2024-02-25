@@ -78,6 +78,9 @@ class ModCheckTab(
         modCheckFirstRun = false
         if (modCheckBaseSelect == null) return
 
+        val openedExpanderTitles = modCheckResultTable.children.filterIsInstance<ExpanderTab>()
+            .filter { it.isOpen }.map { it.title }.toSet()
+
         modCheckResultTable.clear()
 
         val rulesetErrors = RulesetCache.loadRulesets()
@@ -92,7 +95,7 @@ class ModCheckTab(
         modCheckBaseSelect!!.isDisabled = true
 
         Concurrency.run("ModChecker") {
-            for (mod in RulesetCache.values.sortedBy { it.name }) {
+            for (mod in RulesetCache.values.sortedBy { it.name }.sortedByDescending { it.name in openedExpanderTitles }) {
                 if (base != MOD_CHECK_WITHOUT_BASE && mod.modOptions.isBaseRuleset) continue
 
                 val modLinks =
@@ -121,7 +124,7 @@ class ModCheckTab(
                         .apply { color = Color.BLACK }
                         .surroundWithCircle(30f, color = iconColor)
 
-                    val expanderTab = ExpanderTab(mod.name, icon = icon, startsOutOpened = false) {
+                    val expanderTab = ExpanderTab(mod.name, icon = icon, startsOutOpened = mod.name in openedExpanderTitles) {
                         it.defaults().align(Align.left)
                         if (!noProblem && mod.folderLocation != null) {
                             val replaceableUniques = getDeprecatedReplaceableUniques(mod)
