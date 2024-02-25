@@ -1,0 +1,34 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "type": "array",
+  "items": {
+      "type": "object",
+      "properties": {
+          "name": { "type": "string" },
+          "terrainsCanBeFoundOn": {
+              "type": "array",
+              "items": { "type": "string" },
+              "uniqueItems": true
+          },
+          "improvement": { "type": "string" },
+          "techRequired": { "type": "string" },
+          "improvementStats": { "$ref": "https://raw.githubusercontent.com/yairm210/Unciv/master/docs/Modders/schemas/stats.json" },
+
+          "production": { "type": "number" },
+          "food": { "type": "number" },
+          "gold": { "type": "number" },
+          "science": { "type": "number" },
+          "culture": { "type": "number" },
+          "happiness": { "type": "number" },
+          "faith": { "type": "number" },
+
+          "uniques": { "$ref": "https://raw.githubusercontent.com/yairm210/Unciv/master/docs/Modders/schemas/uniques.json" },
+
+          "civilopediaText": { "$ref": "https://raw.githubusercontent.com/yairm210/Unciv/master/docs/Modders/schemas/civilopediaText.json" }
+      },
+      "required": [
+          "name",
+      ],
+      "additionalProperties": false
+  }
+}
