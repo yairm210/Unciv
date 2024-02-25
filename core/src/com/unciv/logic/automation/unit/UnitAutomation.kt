@@ -212,12 +212,12 @@ object UnitAutomation {
 
         if (tryUpgradeUnit(unit)) return
 
+        if (unit.health < 50 && (trySwapRetreat(unit) || tryHealUnit(unit))) return // do nothing but heal
+
         // Accompany settlers
         if (tryAccompanySettlerOrGreatPerson(unit)) return
 
         if (tryHeadTowardsOurSiegedCity(unit)) return
-
-        if (unit.health < 50 && (trySwapRetreat(unit) || tryHealUnit(unit))) return // do nothing but heal
 
         // if a embarked melee unit can land and attack next turn, do not attack from water.
         if (BattleHelper.tryDisembarkUnitToAttackPosition(unit)) return
