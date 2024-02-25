@@ -750,6 +750,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
             if (hasUnique(UniqueType.HealingEffectsDoubled, checkCivInfoUniques = true)) 2
             else 1
         if (health > 100) health = 100
+        cache.updateUniques()
     }
 
     fun takeDamage(amount: Int) {
@@ -757,6 +758,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
         if (health > 100) health = 100 // For cheating modders, e.g. negative tile damage
         if (health < 0) health = 0
         if (health == 0) destroy()
+        else cache.updateUniques()
     }
 
     fun destroy(destroyTransportedUnit: Boolean = true) {
@@ -879,6 +881,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
         // this check is here in order to not load the fresh built unit into carrier right after the build
         isTransported = !tile.isCityCenter() && baseUnit.movesLikeAirUnits()  // not moving civilians
         moveThroughTile(tile)
+        cache.updateUniques()
     }
 
     fun startEscorting() {
@@ -957,6 +960,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
         owner = civInfo.civName
         this.civ = civInfo
         civInfo.units.addUnit(this, updateCivInfo)
+        cache.updateUniques()
     }
 
     fun capturedBy(captor: Civilization) {

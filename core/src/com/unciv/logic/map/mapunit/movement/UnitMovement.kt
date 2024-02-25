@@ -281,7 +281,7 @@ class UnitMovement(val unit: MapUnit) {
             includeOtherEscortUnit && unit.isEscorting() -> {
                     val otherUnitTiles = unit.getOtherEscortUnit()!!.movement.getReachableTilesInCurrentTurn(false).toSet()
                     unit.movement.getDistanceToTiles().filter { otherUnitTiles.contains(it.key) }.keys.asSequence()
-                } 
+                }
             else -> unit.movement.getDistanceToTiles().keys.asSequence()
         }
     }
@@ -581,8 +581,8 @@ class UnitMovement(val unit: MapUnit) {
         if (isCityCenterCannotEnter(tile))
             return false
 
-        if (includeOtherEscortUnit && unit.isEscorting() 
-            && !unit.getOtherEscortUnit()!!.movement.canMoveTo(tile, assumeCanPassThrough,canSwap, includeOtherEscortUnit = false)) 
+        if (includeOtherEscortUnit && unit.isEscorting()
+            && !unit.getOtherEscortUnit()!!.movement.canMoveTo(tile, assumeCanPassThrough,canSwap, includeOtherEscortUnit = false))
             return false
 
         return if (unit.isCivilian())
@@ -676,7 +676,7 @@ class UnitMovement(val unit: MapUnit) {
             if (unit.civ.isAtWarWith(firstUnit.civ))
                 return false
         }
-        if (includeOtherEscortUnit && unit.isEscorting() && !unit.getOtherEscortUnit()!!.movement.canPassThrough(tile,false)) 
+        if (includeOtherEscortUnit && unit.isEscorting() && !unit.getOtherEscortUnit()!!.movement.canPassThrough(tile,false))
             return false
         return true
     }
@@ -684,7 +684,7 @@ class UnitMovement(val unit: MapUnit) {
 
     /**
      * @param includeOtherEscortUnit determines whether or not this method will also check if the other escort units [getDistanceToTiles] if it has one.
-     * Leave it as default unless you know what [getDistanceToTiles] does. 
+     * Leave it as default unless you know what [getDistanceToTiles] does.
      */
     fun getDistanceToTiles(
         considerZoneOfControl: Boolean = true,
@@ -704,7 +704,7 @@ class UnitMovement(val unit: MapUnit) {
             passThroughCache,
             movementCostCache
         )
-        
+
         if (includeOtherEscortUnit) {
             // Only save to cache only if we are the original call and not the subsequent escort unit call
             pathfindingCache.setDistanceToTiles(considerZoneOfControl, distanceToTiles)
