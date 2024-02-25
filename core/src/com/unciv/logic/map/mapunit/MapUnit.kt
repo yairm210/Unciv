@@ -575,13 +575,13 @@ class MapUnit : IsPartOfGameInfoSerialization {
         power /= 100
         return power
     }
-    
+
     fun getOtherEscortUnit(): MapUnit? {
         if (isCivilian()) return getTile().militaryUnit
         if (isMilitary()) return getTile().civilianUnit
         return null
     }
-    
+
     fun isEscorting(): Boolean {
         if (escorting) {
             if (getOtherEscortUnit() != null) return true
@@ -750,6 +750,13 @@ class MapUnit : IsPartOfGameInfoSerialization {
             if (hasUnique(UniqueType.HealingEffectsDoubled, checkCivInfoUniques = true)) 2
             else 1
         if (health > 100) health = 100
+    }
+
+    fun takeDamage(amount: Int) {
+        health -= amount
+        if (health > 100) health = 100 // For cheating modders, e.g. negative tile damage
+        if (health < 0) health = 0
+        if (health == 0) destroy()
     }
 
     fun destroy(destroyTransportedUnit: Boolean = true) {
