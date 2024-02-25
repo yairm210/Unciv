@@ -325,6 +325,11 @@ object UnitAutomation {
 
         val dangerousTiles = unit.civ.threatManager.getDangerousTiles(unit)
 
+        // If the unit can heal on this tile in two turns, just heal here
+        if (!dangerousTiles.contains(unit.getTile()) && !unit.hasUnique(UniqueType.HealsEvenAfterAction) 
+            && (100 - unit.health) / 2 <= unit.rankTileForHealing(unit.getTile())) return true
+
+
         val viableTilesForHealing = unitDistanceToTiles.keys
                 .filter { it !in dangerousTiles && unit.movement.canMoveTo(it) }
         val tilesByHealingRate = viableTilesForHealing.groupBy { unit.rankTileForHealing(it) }
