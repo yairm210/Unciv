@@ -194,13 +194,14 @@ object UnitAutomation {
             return
         }
 
+        // Note that not all nukes have to be air units
+        if (unit.baseUnit.isNuclearWeapon()) {
+            return AirUnitAutomation.automateNukes(unit)
+        }
+
         if (unit.baseUnit.isAirUnit()) {
             if (unit.canIntercept())
                 return AirUnitAutomation.automateFighter(unit)
-
-            // Note that not all nukes have to be air units
-            if (unit.baseUnit.isNuclearWeapon())
-                return AirUnitAutomation.automateNukes(unit)
 
             if (unit.hasUnique(UniqueType.SelfDestructs))
                 return AirUnitAutomation.automateMissile(unit)
