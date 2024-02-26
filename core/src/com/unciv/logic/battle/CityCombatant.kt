@@ -59,7 +59,7 @@ class CityCombatant(val city: City) : ICombatant {
 
         // Garrisoned unit gives up to 20% of strength to city, health-dependant
         if (cityTile.militaryUnit != null)
-            strength += cityTile.militaryUnit!!.baseUnit().strength * (cityTile.militaryUnit!!.health / 100f) * modConstants.cityStrengthFromGarrison
+            strength += cityTile.militaryUnit!!.baseUnit.strength * (cityTile.militaryUnit!!.health / 100f) * modConstants.cityStrengthFromGarrison
 
         var buildingsStrength = city.cityConstructions.getBuiltBuildings().sumOf { it.cityStrength }.toFloat()
         val stateForConditionals = StateForConditionals(getCivInfo(), city, ourCombatant = this, combatAction = combatAction)

@@ -26,16 +26,16 @@ class MapUnitCombatant(val unit: MapUnit) : ICombatant {
     override fun takeDamage(damage: Int) = unit.takeDamage(damage)
 
     override fun getAttackingStrength(): Int {
-        return if (isRanged()) unit.baseUnit().rangedStrength
-        else unit.baseUnit().strength
+        return if (isRanged()) unit.baseUnit.rangedStrength
+        else unit.baseUnit.strength
     }
 
     override fun getDefendingStrength(attackedByRanged: Boolean): Int {
         return if (unit.isEmbarked() && !isCivilian())
             unit.civ.getEra().embarkDefense
         else if (isRanged() && attackedByRanged)
-            unit.baseUnit().rangedStrength
-        else unit.baseUnit().strength
+            unit.baseUnit.rangedStrength
+        else unit.baseUnit.strength
     }
 
     override fun getUnitType(): UnitType {
