@@ -203,9 +203,9 @@ object Conditionals {
             UniqueType.ConditionalUnitWithoutPromotion -> relevantUnit?.promotions?.promotions?.contains(condition.params[0]) == false
             UniqueType.ConditionalAttacking -> state.combatAction == CombatAction.Attack
             UniqueType.ConditionalDefending -> state.combatAction == CombatAction.Defend
-            UniqueType.ConditionalAboveHP -> state.unit != null && state.unit.health > condition.params[0].toInt()
+            UniqueType.ConditionalAboveHP -> relevantUnit != null && relevantUnit!!.health > condition.params[0].toInt()
                     || state.ourCombatant != null && state.ourCombatant.getHealth() > condition.params[0].toInt()
-            UniqueType.ConditionalBelowHP -> state.unit != null && state.unit.health < condition.params[0].toInt()
+            UniqueType.ConditionalBelowHP -> relevantUnit != null && relevantUnit!!.health < condition.params[0].toInt()
                     ||state.ourCombatant != null && state.ourCombatant.getHealth() < condition.params[0].toInt()
             UniqueType.ConditionalHasNotUsedOtherActions ->
                 state.unit == null || // So we get the action as a valid action in BaseUnit.hasUnique()

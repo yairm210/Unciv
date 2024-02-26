@@ -1910,6 +1910,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Conditional
 
+??? example  "&lt;when above [amount] Happiness&gt;"
+	Example: "&lt;when above [3] Happiness&gt;"
+
+	Applicable to: Conditional
+
 ??? example  "&lt;when below [amount] Happiness&gt;"
 	Example: "&lt;when below [3] Happiness&gt;"
 

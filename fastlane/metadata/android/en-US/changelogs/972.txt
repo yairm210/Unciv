@@ -1,27 +1,13 @@
-
-
-Resolved  - Add AI for land-based nukes
-
-Fixed game load, removed extraneous getBaseUnit() function
-
-changed requiredTech to revealedBy in tileResources json schema, added deposit amounts and improvedBy
-
-Added resourceType field to tileResources json schema
-
-json schema for tileResources
+Add AI for land-based nuke units
 
 Keep opened mods open and at top of list when reloading mods in 'locate mod errors' tab
 
-Resolves  - above/below HP conditionals work outside of combat
+above/below HP conditionals work outside of combat
 
-Resolves  - update uniques upon taking damage and other situations
-
-Move takeDamage function from MapUnitCombatant to MApUnit where it belongs
-
-'cached unique' documentation is within collapsible block
+update uniques upon taking damage and other situations
 
 By SomeTroglodyte:
-- New notifications bell icon with actual count 
-- Fix TabbedPager geometry - the cell for the close button needs to be ignored in the rest of the Table! 
+- New notifications bell icon with actual count
+- Fix TabbedPager geometry - the cell for the close button needs to be ignored in the rest of the Table!
 
-Added ConditionalAboveHappiness unique  - By PLynx01
+Added ConditionalAboveHappiness unique - By PLynx01

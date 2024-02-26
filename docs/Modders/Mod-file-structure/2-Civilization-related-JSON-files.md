@@ -8,11 +8,11 @@ This file contains the beliefs that can be chosen for religions in your mod.
 
 Each belief has the following structure:
 
-| Attribute | Type | Default | Notes |
-| --------- | ---- | ------- | ----- |
-| name | String | Required | |
-| type | Enum | Required | Type of belief. Value must be Pantheon, Founder, Follower or Enhancer |
-| uniques | List of Strings | empty | List of [unique abilities](../uniques) this belief adds to cities following it |
+| Attribute | Type | Default | Notes                                                                         |
+| --------- | ---- | ------- |-------------------------------------------------------------------------------|
+| name | String | Required |                                                                               |
+| type | Enum | Required | Type of belief. Value must be Pantheon, Founder, Follower or Enhancer         |
+| uniques | List of Strings | empty | List of [unique abilities](../) this belief adds to cities following it       |
 | civilopediaText | List | empty | See [civilopediaText chapter](5-Miscellaneous-JSON-files.md#civilopedia-text) |
 
 ## Buildings.json
