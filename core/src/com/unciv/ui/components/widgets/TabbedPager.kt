@@ -317,8 +317,8 @@ open class TabbedPager(
             addSeparator(separatorColor)
 
         fixedContentScrollCell = add(fixedContentScroll)
-        fixedContentScrollCell.growX().row()
-        add(contentScroll).grow().row()
+        fixedContentScrollCell.colspan(2).growX().row()
+        add(contentScroll).colspan(2).grow().row()
     }
 
     //endregion
