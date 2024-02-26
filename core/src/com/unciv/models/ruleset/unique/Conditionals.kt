@@ -133,6 +133,7 @@ object Conditionals {
             UniqueType.ConditionalHappy -> checkOnCiv { stats.happiness >= 0 }
             UniqueType.ConditionalBetweenHappiness ->
                 checkOnCiv { stats.happiness in condition.params[0].toInt() .. condition.params[1].toInt() }
+            UniqueType.ConditionalAboveHappiness -> checkOnCiv { stats.happiness > condition.params[0].toInt() }
             UniqueType.ConditionalBelowHappiness -> checkOnCiv { stats.happiness < condition.params[0].toInt() }
             UniqueType.ConditionalGoldenAge -> checkOnCiv { goldenAges.isGoldenAge() }
 
