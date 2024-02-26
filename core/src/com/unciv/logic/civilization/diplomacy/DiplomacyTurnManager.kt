@@ -285,7 +285,7 @@ object DiplomacyTurnManager {
         // Positives
         revertToZero(DiplomaticModifiers.GaveUsUnits, 1 / 4f)
         revertToZero(DiplomaticModifiers.LiberatedCity, 1 / 8f)
-        revertToZero(DiplomaticModifiers.GaveUsGifts, 1 / 4f)
+        revertToZero(DiplomaticModifiers.GaveUsGifts, 1 / 5f) // Roughly worth 20 GPT without inflation
 
         setFriendshipBasedModifier()
 
