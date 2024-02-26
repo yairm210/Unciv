@@ -124,10 +124,10 @@ class DiplomacyScreen(
                         actor.color = Color.GOLD
                     }
             else
-                ImageGetter.getCircle().apply {
-                    color = if (viewingCiv.isAtWarWith(civ)) Color.RED else relationLevel.color
-                    setSize(30f, 30f)
-                }
+                ImageGetter.getCircle(
+                    color = if (viewingCiv.isAtWarWith(civ)) Color.RED else relationLevel.color,
+                    size = 30f
+                )
             civIndicator.addActor(relationshipIcon)
 
             if (civ.isCityState()) {

@@ -307,7 +307,7 @@ internal class NationPickerPopup(
         private val tempColor = Color()
 
         override fun begin() {
-            widget.background = ImageGetter.getDrawable("OtherIcons/Circle")
+            widget.background = ImageGetter.getCircleDrawable()
                 .apply { setMinSize(iconViewCellSize, iconViewCellSize) }
         }
         override fun update(percent: Float) {

@@ -105,8 +105,12 @@ fun Actor.centerY(parent: Stage) { y = parent.height / 2 - height / 2 }
 fun Actor.center(parent: Stage) { centerX(parent); centerY(parent) }
 
 
-fun Actor.surroundWithCircle(size: Float, resizeActor: Boolean = true,
-                             color: Color = Color.WHITE, circleImageLocation:String = "OtherIcons/Circle"): IconCircleGroup {
+fun Actor.surroundWithCircle(
+    size: Float,
+    resizeActor: Boolean = true,
+    color: Color = Color.WHITE,
+    circleImageLocation: String = ImageGetter.circleLocation
+): IconCircleGroup {
     return IconCircleGroup(size, this, resizeActor, color, circleImageLocation)
 }
 

@@ -43,7 +43,8 @@ import kotlin.math.min
 import kotlin.math.sqrt
 
 object ImageGetter {
-    private const val whiteDotLocation = "OtherIcons/whiteDot"
+    const val whiteDotLocation = "OtherIcons/whiteDot"
+    const val circleLocation = "OtherIcons/Circle"
 
     // We use texture atlases to minimize texture swapping - see https://yairm210.medium.com/the-libgdx-performance-guide-1d068a84e181
     lateinit var atlas: TextureAtlas
@@ -284,7 +285,13 @@ object ImageGetter {
 
     fun religionIconExists(iconName: String) = imageExists("ReligionIcons/$iconName")
 
-    fun getCircle() = getImage("OtherIcons/Circle")
+    fun getCircleDrawable() = getDrawable(circleLocation)
+    fun getCircle() = getImage(circleLocation)
+    fun getCircle(color: Color = Color.WHITE, size: Float? = null) = getCircle().apply {
+        setColor(color)
+        if (size != null) setSize(size, size)
+    }
+
     fun getTriangle() = getImage("OtherIcons/Triangle")
 
     fun getRedCross(size: Float, alpha: Float): Actor {
