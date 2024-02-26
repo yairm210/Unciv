@@ -55,7 +55,7 @@ object TradeAutomation {
         if (otherCiv.playerType == PlayerType.AI)
             return null
         val evaluation = TradeEvaluation()
-        var deltaInOurFavor = evaluation.getTradeAcceptability(tradeRequest.trade, civInfo, otherCiv)
+        var deltaInOurFavor = evaluation.getTradeAcceptability(tradeRequest.trade, civInfo, otherCiv, true)
         if (deltaInOurFavor > 0) deltaInOurFavor = (deltaInOurFavor / 1.1f).toInt() // They seem very interested in this deal, let's push it a bit.
         val tradeLogic = TradeLogic(civInfo, otherCiv)
 

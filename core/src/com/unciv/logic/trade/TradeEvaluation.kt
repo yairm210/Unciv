@@ -6,6 +6,7 @@ import com.unciv.logic.automation.ThreatLevel
 import com.unciv.logic.automation.civilization.DiplomacyAutomation
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
+import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.Ruleset
@@ -59,10 +60,10 @@ class TradeEvaluation {
     }
 
     fun isTradeAcceptable(trade: Trade, evaluator: Civilization, tradePartner: Civilization): Boolean {
-        return getTradeAcceptability(trade, evaluator, tradePartner) >= 0
+        return getTradeAcceptability(trade, evaluator, tradePartner, true) >= 0
     }
 
-    fun getTradeAcceptability(trade: Trade, evaluator: Civilization, tradePartner: Civilization): Int {
+    fun getTradeAcceptability(trade: Trade, evaluator: Civilization, tradePartner: Civilization, includeDiplomaticGifts:Boolean = false): Int {
         val citiesAskedToSurrender = trade.ourOffers.count { it.type == TradeType.City }
         val maxCitiesToSurrender = ceil(evaluator.cities.size.toFloat() / 5).toInt()
         if (citiesAskedToSurrender > maxCitiesToSurrender) {
@@ -89,8 +90,12 @@ class TradeEvaluation {
                 return Int.MIN_VALUE
             }
         }
-
-        return sumOfTheirOffers - sumOfOurOffers
+        val diplomaticGifts = if (includeDiplomaticGifts) {
+            // The inverse of howe we calculate GaveUsGifts in TradeLogic.acceptTrade gives us how much gold it is worth
+            val giftAmount = evaluator.getDiplomacyManager(tradePartner).getModifier(DiplomaticModifiers.GaveUsGifts)
+            (giftAmount / evaluator.gameInfo.speed.goldGiftModifier) * 100
+        } else 0f
+        return sumOfTheirOffers - sumOfOurOffers + diplomaticGifts.toInt()
     }
 
     fun evaluateBuyCostWithInflation(offer: TradeOffer, civInfo: Civilization, tradePartner: Civilization): Int {
