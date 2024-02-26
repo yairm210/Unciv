@@ -30,7 +30,6 @@ import com.unciv.ui.components.widgets.AutoScrollPane as ScrollPane
  *      * try to scroll new into view? Very complicated as the "old" state is only "available" in the Widgets
  *      * Don't unless a new user option disables categories, then scroll to top?
  *  Idea: Blink or tint the button when new notifications while Hidden
- *  Idea: The little "1" on the bell - remove and draw actual count
  */
 
 class NotificationsScroll(
