@@ -712,7 +712,7 @@ class UnitMovement(val unit: MapUnit) {
                 // We should only be able to move to tiles that our escort can also move to
                 val escortDistanceToTiles = unit.getOtherEscortUnit()!!.movement
                     .getDistanceToTiles(considerZoneOfControl, includeOtherEscortUnit = false)
-                distanceToTiles.keys.removeIf { !escortDistanceToTiles.containsKey(it) }
+                distanceToTiles.keys.removeAll { !escortDistanceToTiles.containsKey(it) }
             }
         }
         return distanceToTiles
