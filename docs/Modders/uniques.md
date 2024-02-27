@@ -1070,9 +1070,9 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Building, Unit
 
-??? example  "[amount]% Cost"
+??? example  "[amount]% production cost"
 	Intended to be used with conditionals to dynamically alter construction costs
-	Example: "[3]% Cost"
+	Example: "[3]% production cost"
 
 	Applicable to: Building, Unit
 
