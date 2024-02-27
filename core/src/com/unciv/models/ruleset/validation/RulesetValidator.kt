@@ -626,14 +626,22 @@ class RulesetValidator(val ruleset: Ruleset) {
         for (techColumn in ruleset.techColumns) {
             if (techColumn.columnNumber < 0)
                 lines.add("Tech Column number ${techColumn.columnNumber} is negative", sourceObject = null)
-            if (techColumn.buildingCost == -1)
+
+            val buildingsWithoutAssignedCost = ruleset.buildings.values.filter {
+                it.cost == -1 && techColumn.techs.map { it.name }.contains(it.requiredTech) }.toList()
+
+
+            val nonWondersWithoutAssignedCost = buildingsWithoutAssignedCost.filter { !it.isAnyWonder() }
+            if (techColumn.buildingCost == -1 && nonWondersWithoutAssignedCost.any())
                 lines.add(
-                    "Tech Column number ${techColumn.columnNumber} has no explicit building cost",
+                    "Tech Column number ${techColumn.columnNumber} has no explicit building cost leaving "+nonWondersWithoutAssignedCost.joinToString()+" unassigned",
                     RulesetErrorSeverity.Warning, sourceObject = null
                 )
-            if (techColumn.wonderCost == -1)
+
+            val wondersWithoutAssignedCost = buildingsWithoutAssignedCost.filter { it.isAnyWonder() }
+            if (techColumn.wonderCost == -1 && wondersWithoutAssignedCost.any())
                 lines.add(
-                    "Tech Column number ${techColumn.columnNumber} has no explicit wonder cost",
+                    "Tech Column number ${techColumn.columnNumber} has no explicit wonder cost leaving "+wondersWithoutAssignedCost.joinToString()+" unassigned",
                     RulesetErrorSeverity.Warning, sourceObject = null
                 )
         }
