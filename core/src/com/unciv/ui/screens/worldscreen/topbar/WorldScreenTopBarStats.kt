@@ -51,10 +51,11 @@ internal class WorldScreenTopBarStats(topbar: WorldScreenTopBar) : ScalingTableW
         isTransform = false
 
 
-        fun addStat(label: Label, icon: String, isLast: Boolean = false, screenFactory: ()-> BaseScreen) {
+        fun addStat(label: Label, icon: String, isLast: Boolean = false, screenFactory: ()-> BaseScreen?) {
             val image = ImageGetter.getStatIcon(icon)
             val action = {
-                worldScreen.game.pushScreen(screenFactory())
+                val screen = screenFactory()
+                if (screen != null) worldScreen.game.pushScreen(screen)
             }
             label.onClick(action)
             image.onClick(action)
@@ -79,7 +80,10 @@ internal class WorldScreenTopBarStats(topbar: WorldScreenTopBar) : ScalingTableW
         happinessContainer.onClick(invokeResourcesPage)
         happinessLabel.onClick(invokeResourcesPage)
 
-        addStat(cultureLabel, "Culture") { PolicyPickerScreen(worldScreen.selectedCiv, worldScreen.canChangeState) }
+        addStat(cultureLabel, "Culture") {
+            if (worldScreen.gameInfo.ruleset.policyBranches.isEmpty()) null
+            else PolicyPickerScreen(worldScreen.selectedCiv, worldScreen.canChangeState)
+        }
         if (worldScreen.gameInfo.isReligionEnabled()) {
             addStat(faithLabel, "Faith", EmpireOverviewCategories.Religion, isLast = true)
         } else {
