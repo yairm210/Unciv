@@ -302,11 +302,8 @@ class LineChart(
         line.color = lineColor
         addActor(line)
 
-        val edgeRounding = ImageGetter.getCircle().apply {
-            setSize(width, width)
-            color = lineColor
-            setPosition(x1 - width / 2f, y1 - width / 2f)
-        }
+        val edgeRounding = ImageGetter.getCircle(lineColor, width)
+        edgeRounding.setPosition(x1 - width / 2f, y1 - width / 2f)
         addActor(edgeRounding)
     }
 

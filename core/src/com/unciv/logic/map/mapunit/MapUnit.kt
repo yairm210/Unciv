@@ -101,6 +101,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
 
     @Transient
     lateinit var currentTile: Tile
+
     fun hasTile() = ::currentTile.isInitialized
 
     @Transient
@@ -198,7 +199,6 @@ class MapUnit : IsPartOfGameInfoSerialization {
     val type: UnitType
         get() = baseUnit.type
 
-    fun baseUnit(): BaseUnit = baseUnit
     fun getMovementString(): String =
         DecimalFormat("0.#").format(currentMovement.toDouble()) + "/" + getMaxMovement()
 
@@ -358,7 +358,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
 
     fun getRange(): Int {
         if (baseUnit.isMelee()) return 1
-        var range = baseUnit().range
+        var range = baseUnit.range
         range += getMatchingUniques(UniqueType.Range, checkCivInfoUniques = true)
             .sumOf { it.params[0].toInt() }
         return range
@@ -613,7 +613,6 @@ class MapUnit : IsPartOfGameInfoSerialization {
 
     fun updateUniques() {
         val uniques = ArrayList<Unique>()
-        val baseUnit = baseUnit()
         uniques.addAll(baseUnit.uniqueObjects)
         uniques.addAll(type.uniqueObjects)
 
@@ -960,6 +959,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
         owner = civInfo.civName
         this.civ = civInfo
         civInfo.units.addUnit(this, updateCivInfo)
+        if (::baseUnit.isInitialized)
         cache.updateUniques()
     }
 

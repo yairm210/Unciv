@@ -35,7 +35,7 @@ interface INonPerpetualConstruction : IConstruction, INamed, IHasUniques {
 
     override fun legacyRequiredTechs(): Sequence<String> = if (requiredTech == null) sequenceOf() else sequenceOf(requiredTech!!)
 
-    fun getProductionCost(civInfo: Civilization): Int
+    fun getProductionCost(civInfo: Civilization, city: City?): Int
     fun getStatBuyCost(city: City, stat: Stat): Int?
     fun getRejectionReasons(cityConstructions: CityConstructions): Sequence<RejectionReason>
 
@@ -74,9 +74,9 @@ interface INonPerpetualConstruction : IConstruction, INamed, IHasUniques {
         return ((30.0 * cost.toFloat()).pow(0.75) * hurryCostModifier.toPercent() / 10).toInt() * 10
     }
 
-    fun getBaseGoldCost(civInfo: Civilization): Double {
+    fun getBaseGoldCost(civInfo: Civilization, city: City?): Double {
         // https://forums.civfanatics.com/threads/rush-buying-formula.393892/
-        return (30.0 * getProductionCost(civInfo)).pow(0.75) * hurryCostModifier.toPercent()
+        return (30.0 * getProductionCost(civInfo, city)).pow(0.75) * hurryCostModifier.toPercent()
     }
 
     fun getBaseBuyCost(city: City, stat: Stat): Float? {
@@ -88,7 +88,7 @@ interface INonPerpetualConstruction : IConstruction, INamed, IHasUniques {
             .minByOrNull { it.params[0].toInt() }
         if (lowestCostUnique != null) return lowestCostUnique.params[0].toInt() * city.civ.gameInfo.speed.statCostModifiers[stat]!!
 
-        if (stat == Stat.Gold) return getBaseGoldCost(city.civ).toFloat()
+        if (stat == Stat.Gold) return getBaseGoldCost(city.civ, city).toFloat()
 
         // Can be purchased with [Stat] [cityFilter]
         if (getMatchingUniques(UniqueType.CanBePurchasedWithStat, conditionalState)

@@ -2,12 +2,11 @@ package com.unciv.logic.automation.ai
 
 import com.badlogic.gdx.graphics.Color
 import com.unciv.GUI
-import com.unciv.UncivGame
 import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.tile.Tile
-import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.components.extensions.toGroup
+import com.unciv.ui.images.ImageGetter
 import com.unciv.utils.Log
 
 class TacticalAI : IsPartOfGameInfoSerialization {
@@ -40,18 +39,18 @@ class TacticalAI : IsPartOfGameInfoSerialization {
             val otherZoneId = tacticalAnalysisMap.plotPositionToZoneId[otherTile.position]
             if (otherZoneId == zoneId) {
                 mapHolder.tileGroups[otherTile]?.let {
-                    mapHolder.addOverlayOnTileGroup(it, ImageGetter.getCircle().apply {
+                    mapHolder.addOverlayOnTileGroup(it, ImageGetter.getCircle(
                         color = when (zone?.territoryType) {
                             TacticalTerritoryType.FRIENDLY -> Color.GREEN
                             TacticalTerritoryType.ENEMY -> Color.RED
                             else -> Color.WHITE
                         }
-                    }.toGroup(20f)) }
+                    ).toGroup(20f)) }
             }
 
             if (zone?.neighboringZones?.contains(otherZoneId) == true) {
                 mapHolder.tileGroups[otherTile]?.let {
-                    mapHolder.addOverlayOnTileGroup(it, ImageGetter.getCircle().apply { color = Color.GRAY }.toGroup(20f)) }
+                    mapHolder.addOverlayOnTileGroup(it, ImageGetter.getCircle(color = Color.GRAY).toGroup(20f)) }
             }
         }
     }

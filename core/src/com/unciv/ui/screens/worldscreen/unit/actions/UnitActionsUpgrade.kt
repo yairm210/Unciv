@@ -20,7 +20,7 @@ object UnitActionsUpgrade {
         val unitTile = unit.getTile()
         val civInfo = unit.civ
         val specialUpgradesTo = if (isSpecial)
-            unit.baseUnit().getMatchingUniques(UniqueType.RuinsUpgrade, StateForConditionals(civInfo, unit = unit))
+            unit.baseUnit.getMatchingUniques(UniqueType.RuinsUpgrade, StateForConditionals(civInfo, unit = unit))
                 .map { it.params[0] }.firstOrNull()
         else null
         val upgradeUnits = if (specialUpgradesTo != null) sequenceOf(specialUpgradesTo)

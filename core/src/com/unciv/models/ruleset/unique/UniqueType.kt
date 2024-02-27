@@ -282,6 +282,7 @@ enum class UniqueType(
 
     CostIncreasesPerCity("Cost increases by [amount] per owned city", UniqueTarget.Building, UniqueTarget.Unit),
     CostIncreasesWhenBuilt("Cost increases by [amount] when built", UniqueTarget.Building, UniqueTarget.Unit),
+    CostPercentageChange("[amount]% production cost", UniqueTarget.Building, UniqueTarget.Unit, docDescription = "Intended to be used with conditionals to dynamically alter construction costs"),
 
     @Deprecated("as of 4.10.17", ReplaceWith("Only available <if [buildingFilter] is constructed in all [non-[Puppeted]] cities>"))
     RequiresBuildingInAllCities("Requires a [buildingFilter] in all cities", UniqueTarget.Building),
@@ -624,6 +625,7 @@ enum class UniqueType(
 
     ConditionalHappy("while the empire is happy", UniqueTarget.Conditional),
     ConditionalBetweenHappiness("when between [amount] and [amount] Happiness", UniqueTarget.Conditional),
+    ConditionalAboveHappiness("when above [amount] Happiness", UniqueTarget.Conditional),
     ConditionalBelowHappiness("when below [amount] Happiness", UniqueTarget.Conditional),
 
     ConditionalDuringEra("during the [era]", UniqueTarget.Conditional),
