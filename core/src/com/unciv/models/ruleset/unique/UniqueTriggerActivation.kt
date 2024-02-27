@@ -158,7 +158,7 @@ object UniqueTriggerActivation {
 
                 if (actualAmount <= 0) return null
 
-                fun placeUnits():Boolean {
+                fun placeUnits(): Boolean {
                     val tilesUnitsWerePlacedOn: MutableList<Vector2> = mutableListOf()
                     repeat(actualAmount) {
                         val placedUnit = when {
@@ -208,7 +208,7 @@ object UniqueTriggerActivation {
                 val placingTile =
                     tile ?: civInfo.cities.random().getCenterTile()
 
-                fun placeUnit():Boolean {
+                fun placeUnit(): Boolean {
                     val placedUnit = civInfo.units.placeUnitNearTile(placingTile.position, civUnit.name)
                     if (notification != null && placedUnit != null) {
                         val notificationText =

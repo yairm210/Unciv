@@ -147,7 +147,7 @@ class Translations : LinkedHashMap<String, TranslationEntry>() {
             for (file in Gdx.files.internal("jsons/translations").list())
                 languages.add(file.nameWithoutExtension())
         }
-        catch (ex:Exception) {
+        catch (ex: Exception) {
             Log.error("Failed to add languages", ex)
         } // Iterating on internal files will not work when running from a .jar
 
@@ -467,7 +467,7 @@ fun String.getPlaceholderText(): String {
     return stringToReturn
 }
 
-fun String.equalsPlaceholderText(str:String): Boolean {
+fun String.equalsPlaceholderText(str: String): Boolean {
     if (first() != str.first()) return false // for quick negative return 95% of the time
     return this.getPlaceholderText() == str
 }

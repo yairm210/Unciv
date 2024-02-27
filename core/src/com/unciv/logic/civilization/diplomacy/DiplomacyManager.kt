@@ -67,7 +67,7 @@ enum class DiplomacyFlags {
     RecentlyAttacked,
 }
 
-enum class DiplomaticModifiers(val text:String) {
+enum class DiplomaticModifiers(val text: String) {
     // Negative
     DeclaredWarOnUs("You declared war on us!"),
     WarMongerer("Your warmongering ways are unacceptable to us."),

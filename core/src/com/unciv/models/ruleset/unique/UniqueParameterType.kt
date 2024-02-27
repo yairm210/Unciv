@@ -101,7 +101,7 @@ enum class UniqueParameterType(
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
                 UniqueType.UniqueParameterErrorSeverity? = getErrorSeverityForFilter(parameterText, ruleset)
 
-        override fun isKnownValue(parameterText:String, ruleset: Ruleset): Boolean {
+        override fun isKnownValue(parameterText: String, ruleset: Ruleset): Boolean {
             if (parameterText in knownValues) return true
             if (ruleset.unitPromotions.values.any { it.hasUnique(parameterText) }) return true
             if (CivFilter.isKnownValue(parameterText, ruleset)) return true
@@ -122,7 +122,7 @@ enum class UniqueParameterType(
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
             UniqueType.UniqueParameterErrorSeverity? = getErrorSeverityForFilter(parameterText, ruleset)
 
-        override fun isKnownValue(parameterText:String, ruleset: Ruleset): Boolean {
+        override fun isKnownValue(parameterText: String, ruleset: Ruleset): Boolean {
             if (parameterText in knownValues) return true
             if (UnitName.getErrorSeverity(parameterText, ruleset) == null) return true
             if (ruleset.units.values.any { it.uniques.contains(parameterText) }) return true

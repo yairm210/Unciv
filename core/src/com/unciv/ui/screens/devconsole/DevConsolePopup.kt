@@ -97,7 +97,7 @@ class DevConsolePopup(val screen: WorldScreen) : Popup(screen) {
     /** Gets city by selected tile */
     internal fun getSelectedCity() = getSelectedTile().getCity() ?: throw ConsoleErrorException("Select tile belonging to city")
 
-    internal fun getCity(cityName:String) = gameInfo.getCities().firstOrNull { it.name.toCliInput() == cityName.toCliInput() }
+    internal fun getCity(cityName: String) = gameInfo.getCities().firstOrNull { it.name.toCliInput() == cityName.toCliInput() }
         ?: throw ConsoleErrorException("Unknown city: $cityName")
 
     internal fun getSelectedUnit(): MapUnit {

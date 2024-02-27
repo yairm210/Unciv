@@ -150,9 +150,9 @@ object Battle {
         if (!defender.isDefeated() && defender is MapUnitCombatant && defender.unit.isExploring())
             defender.unit.action = null
 
-        fun triggerVictoryUniques(ourUnit:MapUnitCombatant, enemy:MapUnitCombatant) {
+        fun triggerVictoryUniques(ourUnit: MapUnitCombatant, enemy: MapUnitCombatant) {
             val stateForConditionals = StateForConditionals(civInfo = ourUnit.getCivInfo(),
-                ourCombatant = ourUnit, theirCombatant=enemy, tile = attackedTile)
+                ourCombatant = ourUnit, theirCombatant = enemy, tile = attackedTile)
             for (unique in ourUnit.unit.getTriggeredUniques(UniqueType.TriggerUponDefeatingUnit, stateForConditionals))
                 if (unique.conditionals.any { it.type == UniqueType.TriggerUponDefeatingUnit
                                 && enemy.unit.matchesFilter(it.params[0]) })
@@ -526,7 +526,7 @@ object Battle {
             if (civilianUnit != null) BattleUnitCapture.captureCivilianUnit(attacker, MapUnitCombatant(civilianUnit!!), checkDefeat = false)
             for (airUnit in airUnits.toList()) airUnit.destroy()
         }
-        
+
         val stateForConditionals = StateForConditionals(civInfo = attackerCiv, city=city, unit = attacker.unit, ourCombatant = attacker, attackedTile = city.getCenterTile())
         for (unique in attacker.getMatchingUniques(UniqueType.CaptureCityPlunder, stateForConditionals, true)) {
             attackerCiv.addStat(

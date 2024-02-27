@@ -101,7 +101,7 @@ object TileSetCache : HashMap<String, TileSet>() {
     /** Determines potentially available TileSets - by scanning for TileSet jsons.
      *  Available before initialization finishes.
      */
-    fun getAvailableTilesets(imageGetterTilesets:Sequence<String>): Set<String> {
+    fun getAvailableTilesets(imageGetterTilesets: Sequence<String>): Set<String> {
         val modTilesetConfigFiles = Gdx.files.local("mods").list().asSequence()
             .filter { it.isDirectory && !it.name().startsWith('.') }
             .flatMap { it.child("jsons/TileSets").list().asSequence() }

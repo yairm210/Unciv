@@ -29,7 +29,7 @@ import kotlin.math.min
 import kotlin.math.roundToInt
 import kotlin.random.Random
 
-class TileDataMap:HashMap<Vector2, MapGenTileData>() {
+class TileDataMap : HashMap<Vector2, MapGenTileData>() {
 
     /** Adds numbers to tileData in a similar way to closeStartPenalty, but for different types */
     fun placeImpact(type: MapRegions.ImpactType, tile: Tile, radius: Int) {

@@ -151,7 +151,7 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
 
 /** Used to cache results of getMatchingUniques
  * Must only be used when we're sure the matching uniques will not change in the meantime */
-class LocalUniqueCache(val cache:Boolean = true) {
+class LocalUniqueCache(val cache: Boolean = true) {
     // This stores sequences *that iterate directly on a list* - that is, pre-resolved
     private val keyToUniques = HashMap<String, Sequence<Unique>>()
 

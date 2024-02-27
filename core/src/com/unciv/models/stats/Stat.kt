@@ -10,7 +10,7 @@ enum class Stat(
     val notificationIcon: String,
     val purchaseSound: UncivSound,
     val character: Char,
-    val color:Color
+    val color: Color
 ) {
     Production(NotificationIcon.Production, UncivSound.Click, Fonts.production, colorFromHex(0xc14d00)),
     Food(NotificationIcon.Food, UncivSound.Click, Fonts.food, colorFromHex(0x24A348)),

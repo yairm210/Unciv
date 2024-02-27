@@ -141,7 +141,7 @@ class TileResource : RulesetStatsObject() {
         }
     }
 
-    fun generatesNaturallyOn(tile:Tile): Boolean {
+    fun generatesNaturallyOn(tile: Tile): Boolean {
         if (tile.lastTerrain.name !in terrainsCanBeFoundOn) return false
         val stateForConditionals = StateForConditionals(tile = tile)
         if (hasUnique(UniqueType.NoNaturalGeneration, stateForConditionals)) return false

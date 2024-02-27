@@ -117,7 +117,7 @@ fun Actor.surroundWithCircle(
 fun Actor.surroundWithThinCircle(color: Color=Color.BLACK): IconCircleGroup = surroundWithCircle(width+2f, false, color)
 
 
-fun Actor.addBorder(size:Float, color: Color, expandCell:Boolean = false): Table {
+fun Actor.addBorder(size: Float, color: Color, expandCell: Boolean = false): Table {
     val table = Table()
     table.pad(size)
     table.background = BaseScreen.skinStrings.getUiBackground("General/Border", tintColor = color)
@@ -182,7 +182,7 @@ fun Rectangle.getOverlap(other: Rectangle): Rectangle? {
 val Rectangle.top get() = y + height
 val Rectangle.right get() = x + width
 
-fun Group.addBorderAllowOpacity(size:Float, color: Color): Group {
+fun Group.addBorderAllowOpacity(size: Float, color: Color): Group {
     val group = this
     fun getTopBottomBorder() = ImageGetter.getDot(color).apply { width=group.width; height=size }
     addActor(getTopBottomBorder().apply { setPosition(0f, group.height, Align.topLeft) })
@@ -324,7 +324,7 @@ fun Label.setFontColor(color: Color): Label {
 }
 
 /** Sets the font size on a [Label] and returns it to allow chaining */
-fun Label.setFontSize(size:Int): Label {
+fun Label.setFontSize(size: Int): Label {
     style = Label.LabelStyle(style)
     style.font = Fonts.font
     @Suppress("UsePropertyAccessSyntax") setStyle(style)

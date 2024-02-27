@@ -23,7 +23,7 @@ open class Stats(
 
     // This is what facilitates indexed access by [Stat] or add(Stat,Float)
     // without additional memory allocation or expensive conditionals
-    private fun statToProperty(stat: Stat):KMutableProperty0<Float>{
+    private fun statToProperty(stat: Stat): KMutableProperty0<Float> {
         return when(stat) {
             Stat.Production -> ::production
             Stat.Food -> ::food
@@ -262,7 +262,7 @@ open class Stats(
     }
 }
 
-class StatMap:LinkedHashMap<String,Stats>() {
+class StatMap : LinkedHashMap<String,Stats>() {
     fun add(source: String, stats: Stats) {
         // We always clone to avoid touching the mutable stats of uniques
         if (!containsKey(source)) put(source, stats.clone())

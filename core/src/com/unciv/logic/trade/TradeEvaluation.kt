@@ -186,7 +186,7 @@ class TradeEvaluation {
         return 0
     }
 
-    private fun getNeighbouringCivs(city:City): Set<String> {
+    private fun getNeighbouringCivs(city: City): Set<String> {
         val tilesList: HashSet<Tile> = city.getTiles().toHashSet()
         val cityPositionList: ArrayList<Tile> = arrayListOf()
 

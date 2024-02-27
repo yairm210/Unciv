@@ -120,7 +120,7 @@ object MovementCost {
         return hasDoubleMovement(doubleMovement, target, stateForConditionals)
     }
 
-    private fun getEnemyMovementPenalty(civInfo:Civilization, enemyUnit: MapUnit): Float {
+    private fun getEnemyMovementPenalty(civInfo: Civilization, enemyUnit: MapUnit): Float {
         if (civInfo.enemyMovementPenaltyUniques != null && civInfo.enemyMovementPenaltyUniques!!.any()) {
             return civInfo.enemyMovementPenaltyUniques!!.sumOf {
                 if (it.type!! == UniqueType.EnemyUnitsSpendExtraMovement

@@ -135,7 +135,7 @@ object CityLocationTileRanker {
         return modifier
     }
 
-    private fun rankTile(rankTile: Tile, civ:Civilization, onCoast: Boolean, newUniqueLuxuryResources:HashSet<String>,
+    private fun rankTile(rankTile: Tile, civ: Civilization, onCoast: Boolean, newUniqueLuxuryResources: HashSet<String>,
                          baseTileMap: HashMap<Tile, Float>, uniqueCache: LocalUniqueCache): Float {
         var locationSpecificTileValue = 0f
         // Don't settle near but not on the coast

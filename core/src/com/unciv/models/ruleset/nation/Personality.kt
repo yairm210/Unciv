@@ -34,7 +34,7 @@ class Personality: RulesetObject() {
     var preferredVictoryType: String = Constants.neutralVictoryType
     var isNeutralPersonality: Boolean = false
 
-    private fun nameToVariable(value: PersonalityValue):KMutableProperty0<Float> {
+    private fun nameToVariable(value: PersonalityValue): KMutableProperty0<Float> {
         return when(value) {
             PersonalityValue.Production -> ::production
             PersonalityValue.Food -> ::food

@@ -443,7 +443,7 @@ class Civilization : IsPartOfGameInfoSerialization {
     /** Gets the number of resources available to this city
      * Does not include city-wide resources
      * Returns 0 for undefined resources */
-    fun getResourceAmount(resourceName:String): Int {
+    fun getResourceAmount(resourceName: String): Int {
         return getCivResourcesByName()[resourceName] ?: 0
     }
 

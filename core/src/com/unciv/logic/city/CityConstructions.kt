@@ -140,11 +140,11 @@ class CityConstructions : IsPartOfGameInfoSerialization {
     }
 
     /** @param constructionName needs to be a non-perpetual construction, else an empty string is returned */
-    internal fun getTurnsToConstructionString(constructionName: String, useStoredProduction:Boolean = true) =
+    internal fun getTurnsToConstructionString(constructionName: String, useStoredProduction: Boolean = true) =
         getTurnsToConstructionString(getConstruction(constructionName), useStoredProduction)
 
     /** @param construction needs to be a non-perpetual construction, else an empty string is returned */
-    internal fun getTurnsToConstructionString(construction: IConstruction, useStoredProduction:Boolean = true): String {
+    internal fun getTurnsToConstructionString(construction: IConstruction, useStoredProduction: Boolean = true): String {
         if (construction !is INonPerpetualConstruction) return ""   // shouldn't happen
         val cost = construction.getProductionCost(city.civ, city)
         val turnsToConstruction = turnsToConstruction(construction.name, useStoredProduction)
@@ -590,7 +590,7 @@ class CityConstructions : IsPartOfGameInfoSerialization {
         setTransients()
     }
 
-    fun updateUniques(onLoadGame:Boolean = false) {
+    fun updateUniques(onLoadGame: Boolean = false) {
         builtBuildingUniqueMap.clear()
         for (building in getBuiltBuildings())
             builtBuildingUniqueMap.addUniques(building.uniqueObjects)

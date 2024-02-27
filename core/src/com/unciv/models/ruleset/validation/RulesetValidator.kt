@@ -564,7 +564,7 @@ class RulesetValidator(val ruleset: Ruleset) {
         }
     }
 
-    data class SuggestedColors(val innerColor: Color, val outerColor:Color)
+    data class SuggestedColors(val innerColor: Color, val outerColor: Color)
 
     private fun getSuggestedColors(nation: Nation): SuggestedColors {
         val innerColorLuminance = getRelativeLuminance(nation.getInnerColor())

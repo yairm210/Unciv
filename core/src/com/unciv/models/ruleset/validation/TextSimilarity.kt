@@ -76,7 +76,7 @@ fun getTextDistance(text1: String, text2: String): Int {
 /** @return the [getTextDistance] of two strings relative to their average length.
  * The original algorithm is very weak to short strings with errors at the start (can't figure out that "on [] tiles" and "in [] tiles" are the same)
  * So we run it twice, once with the string reversed */
-fun getRelativeTextDistance(text1: String, text2: String): Double{
-    fun textDistance(a:String, b:String):Double = getTextDistance(a, b).toDouble() / (text1.length + text2.length) * 2.0
+fun getRelativeTextDistance(text1: String, text2: String): Double {
+    fun textDistance(a: String, b: String): Double = getTextDistance(a, b).toDouble() / (text1.length + text2.length) * 2.0
     return min(textDistance(text1, text2), textDistance(text1.reversed(), text2.reversed()))
 }
