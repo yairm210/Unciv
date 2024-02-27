@@ -2039,6 +2039,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Conditional
 
+??? example  "&lt;when between [amount] to [amount] [stat/resource]&gt;"
+	Example: "&lt;when between [3] to [3] [Culture]&gt;"
+
+	Applicable to: Conditional
+
 ??? example  "&lt;when above [amount] [stat/resource] (modified by game speed)&gt;"
 	Example: "&lt;when above [3] [Culture] (modified by game speed)&gt;"
 
@@ -2046,6 +2051,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 ??? example  "&lt;when below [amount] [stat/resource] (modified by game speed)&gt;"
 	Example: "&lt;when below [3] [Culture] (modified by game speed)&gt;"
+
+	Applicable to: Conditional
+
+??? example  "&lt;when between [amount] to [amount] [stat/resource] (modified by game speed)&gt;"
+	Example: "&lt;when between [3] to [3] [Culture] (modified by game speed)&gt;"
 
 	Applicable to: Conditional
 
@@ -2081,6 +2091,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 ??? example  "&lt;in cities with at least [amount] [populationFilter]&gt;"
 	Example: "&lt;in cities with at least [3] [Followers of this Religion]&gt;"
+
+	Applicable to: Conditional
+
+??? example  "&lt;in cities with [amount] [populationFilter]&gt;"
+	Example: "&lt;in cities with [3] [Followers of this Religion]&gt;"
 
 	Applicable to: Conditional
 
