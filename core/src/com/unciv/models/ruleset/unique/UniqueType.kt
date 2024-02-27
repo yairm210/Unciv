@@ -305,6 +305,7 @@ enum class UniqueType(
     Unsellable("Unsellable", UniqueTarget.Building),
     ObsoleteWith("Obsolete with [tech]", UniqueTarget.Building, UniqueTarget.Resource, UniqueTarget.Improvement),
     IndicatesCapital("Indicates the capital city", UniqueTarget.Building),
+    MovedToNewCapital("Moved to the new capital", UniqueTarget.Building),
     ProvidesExtraLuxuryFromCityResources("Provides 1 extra copy of each improved luxury resource near this City", UniqueTarget.Building),
 
     DestroyedWhenCityCaptured("Destroyed when the city is captured", UniqueTarget.Building),
