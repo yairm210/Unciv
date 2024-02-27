@@ -123,9 +123,19 @@ class UniqueValidator(val ruleset: Ruleset) {
         }
 
         if (conditional.type == null) {
+            var text = "$prefix contains the conditional \"${conditional.text}\"," +
+                " which is of an unknown type!"
+
+            val similarConditionals = UniqueType.values().filter {
+                getRelativeTextDistance(
+                    it.placeholderText,
+                    conditional.placeholderText
+                ) <= RulesetCache.uniqueMisspellingThreshold
+            }
+            if (similarConditionals.isNotEmpty())
+                text += " May be a misspelling of \""+ similarConditionals.joinToString("\", or \"") { it.text } +"\""
             rulesetErrors.add(
-                "$prefix contains the conditional \"${conditional.text}\"," +
-                    " which is of an unknown type!",
+                text,
                 RulesetErrorSeverity.Warning, uniqueContainer
             )
             return
