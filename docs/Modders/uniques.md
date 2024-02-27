@@ -2084,6 +2084,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Conditional
 
+??? example  "&lt;in cities with [amount] [populationFilter]&gt;"
+	Example: "&lt;in cities with [3] [Followers of this Religion]&gt;"
+
+	Applicable to: Conditional
+
 ??? example  "&lt;with a garrison&gt;"
 	Applicable to: Conditional
 
