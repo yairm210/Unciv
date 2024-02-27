@@ -353,9 +353,9 @@ private class CityTable(city: City, forPopup: Boolean = false) : BorderedTable(
                 if (turnsToConstruction < 100)
                     turns = turnsToConstruction.toString()
                 percentage = cityConstructions.getWorkDone(cityCurrentConstruction.name) /
-                        (cityCurrentConstruction as INonPerpetualConstruction).getProductionCost(cityConstructions.city.civ).toFloat()
+                        (cityCurrentConstruction as INonPerpetualConstruction).getProductionCost(cityConstructions.city.civ, cityConstructions.city).toFloat()
                 nextTurnPercentage = (cityConstructions.getWorkDone(cityCurrentConstruction.name) + city.cityStats.currentCityStats.production) /
-                        cityCurrentConstruction.getProductionCost(cityConstructions.city.civ).toFloat()
+                        cityCurrentConstruction.getProductionCost(cityConstructions.city.civ, cityConstructions.city).toFloat()
 
                 if (nextTurnPercentage > 1f) nextTurnPercentage = 1f
                 if (nextTurnPercentage < 0f) nextTurnPercentage = 0f
