@@ -53,7 +53,7 @@ open class Tile : IsPartOfGameInfoSerialization {
     var owningCity: City? = null
         private set
 
-    fun setOwningCity(city:City?) {
+    fun setOwningCity(city: City?) {
         if (city != null) {
             if (roadStatus != RoadStatus.None && roadOwner != "") {
                 // remove previous neutral tile owner
@@ -118,11 +118,11 @@ open class Tile : IsPartOfGameInfoSerialization {
 
     @Transient
     /** Between 0.0 and 1.0 - For map generation use only */
-    var humidity:Double? = null
+    var humidity: Double? = null
 
     @Transient
     /** Between -1.0 and 1.0 - For map generation use only */
-    var temperature:Double? = null
+    var temperature: Double? = null
 
     var naturalWonder: String? = null
     var resource: String? = null
@@ -457,8 +457,8 @@ open class Tile : IsPartOfGameInfoSerialization {
             // Per Civ V, resources under city tiles require the *possibility of extraction* -
             //  that is, there needs to be a tile improvement you have the tech for.
             // Does NOT take all GetImprovementBuildingProblems into account.
-            return possibleImprovements.any {
-                ruleset.tileImprovements[it]?.let { it.techRequired==null || civInfo.tech.isResearched(it.techRequired!!) } == true
+            return possibleImprovements.any { improvement ->
+                ruleset.tileImprovements[improvement]?.let { it.techRequired == null || civInfo.tech.isResearched(it.techRequired!!) } == true
             }
         }
         val improvement = getUnpillagedTileImprovement()
@@ -525,7 +525,7 @@ open class Tile : IsPartOfGameInfoSerialization {
 
             in terrainFeatures -> true
             else -> {
-                if (terrainUniqueMap.getUniques(filter).any()) return true
+                if (terrainUniqueMap.containsFilteringUnique(filter)) return true
                 if (getOwner()?.matchesFilter(filter) == true) return true
 
                 // Resource type check is last - cannot succeed if no resource here
@@ -597,16 +597,14 @@ open class Tile : IsPartOfGameInfoSerialization {
 
     fun canBeSettled(): Boolean {
         val modConstants = tileMap.gameInfo.ruleset.modOptions.constants
-        if (isWater || isImpassible())
-            return false
-        if (getTilesInDistance(modConstants.minimalCityDistanceOnDifferentContinents)
-                .any { it.isCityCenter() && it.getContinent() != getContinent() }
-            || getTilesInDistance(modConstants.minimalCityDistance)
-                .any { it.isCityCenter() && it.getContinent() == getContinent() }
-        ) {
-            return false
+        return when {
+            isWater || isImpassible() -> false
+            getTilesInDistance(modConstants.minimalCityDistanceOnDifferentContinents)
+                .any { it.isCityCenter() && it.getContinent() != getContinent() } -> false
+            getTilesInDistance(modConstants.minimalCityDistance)
+                .any { it.isCityCenter() && it.getContinent() == getContinent() } -> false
+            else -> true
         }
-        return true
     }
 
     /** Shows important properties of this tile for debugging _only_, it helps to see what you're doing */
@@ -664,18 +662,17 @@ open class Tile : IsPartOfGameInfoSerialization {
         if (tileOwner == null || tileOwner == civInfo) return true
         if (isCityCenter() && civInfo.isAtWarWith(tileOwner)
                 && !getCity()!!.hasJustBeenConquered) return false
-        if (!civInfo.diplomacyFunctions.canPassThroughTiles(tileOwner)) return false
-        return true
+        return civInfo.diplomacyFunctions.canPassThroughTiles(tileOwner)
     }
 
     fun hasEnemyInvisibleUnit(viewingCiv: Civilization): Boolean {
         val unitsInTile = getUnits()
-        if (unitsInTile.none()) return false
-        if (unitsInTile.first().civ != viewingCiv &&
-                unitsInTile.firstOrNull { it.isInvisible(viewingCiv) } != null) {
-            return true
+        return when {
+            unitsInTile.none() -> false
+            unitsInTile.first().civ == viewingCiv -> false
+            unitsInTile.none { it.isInvisible(viewingCiv) } -> false
+            else -> true
         }
-        return false
     }
 
     fun hasConnection(civInfo: Civilization) =
@@ -769,7 +766,7 @@ open class Tile : IsPartOfGameInfoSerialization {
      *
      * [resourceAmount] is determined by [MapParameters.mapResources] and [majorDeposit], and
      * if the latter is `null` a random choice between major and minor deposit is made, approximating
-     * the frequency [MapRegions][com.unciv.logic.map.mapgenerator.MapRegions] would use.
+     * the frequency [MapRegions][com.unciv.logic.map.mapgenerator.mapregions.MapRegions] would use.
      * A randomness source ([rng]) can optionally be provided for that step (not used otherwise).
      */
     fun setTileResource(newResource: TileResource, majorDeposit: Boolean? = null, rng: Random = Random.Default) {
@@ -847,15 +844,8 @@ open class Tile : IsPartOfGameInfoSerialization {
         val terrainNameList = allTerrains.map { it.name }.toList()
 
         // List hash is function of all its items, so the same items in the same order will always give the same hash
-        val cachedUniqueMap = tileMap.tileUniqueMapCache[terrainNameList]
-        terrainUniqueMap = if (cachedUniqueMap != null)
-            cachedUniqueMap
-        else {
-            val newUniqueMap = UniqueMap()
-            for (terrain in allTerrains)
-                newUniqueMap.addUniques(terrain.uniqueObjects)
-            tileMap.tileUniqueMapCache[terrainNameList] = newUniqueMap
-            newUniqueMap
+        terrainUniqueMap = tileMap.tileUniqueMapCache.getOrPut(terrainNameList) {
+            UniqueMap(allTerrains.flatMap { it.uniqueObjects })
         }
     }
 
