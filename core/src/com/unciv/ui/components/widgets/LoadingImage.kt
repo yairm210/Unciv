@@ -63,9 +63,9 @@ class LoadingImage(
         val minShowTime: Int = 0,
 
         /** Texture name for the circle */
-        val circleImageName: String = "OtherIcons/Circle",
+        val circleImageName: String = ImageGetter.circleLocation,
         /** Texture name for the idle icon */
-        val idleImageName: String = "OtherIcons/whiteDot",
+        val idleImageName: String = ImageGetter.whiteDotLocation,
         /** Texture name for the loading icon */
         val loadingImageName: String = "OtherIcons/Loading",
 

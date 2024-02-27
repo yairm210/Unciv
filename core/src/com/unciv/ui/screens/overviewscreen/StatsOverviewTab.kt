@@ -137,10 +137,11 @@ class StatsOverviewTab(
             uniques = sequenceOf(
                     UniqueType.ConditionalBetweenHappiness,
                     UniqueType.ConditionalBelowHappiness
-                ).flatMap { conditional ->
-                    viewingPlayer.getTriggeredUniques(conditional)
+                ).flatMap { conditionalType ->
+                    viewingPlayer.getTriggeredUniques(conditionalType)
                         .sortedBy { it.type } // otherwise order might change as a HashMap is involved
-                }.toSet()
+                }.filterNot { it.isHiddenToUsers() }
+                .toSet()
             show = uniques.isNotEmpty()
         }
 

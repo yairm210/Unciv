@@ -5,14 +5,14 @@ import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.utils.Align
-import com.unciv.logic.map.HexMath
 import com.unciv.logic.civilization.Civilization
+import com.unciv.logic.map.HexMath
 import com.unciv.logic.map.tile.Tile
 import com.unciv.logic.map.tile.TileHistory.TileHistoryState.CityCenterType
+import com.unciv.ui.components.extensions.surroundWithCircle
+import com.unciv.ui.components.input.onClick
 import com.unciv.ui.images.IconCircleGroup
 import com.unciv.ui.images.ImageGetter
-import com.unciv.ui.components.input.onClick
-import com.unciv.ui.components.extensions.surroundWithCircle
 import com.unciv.utils.DebugUtils
 import kotlin.math.PI
 import kotlin.math.atan
@@ -127,7 +127,7 @@ class MinimapTile(val tile: Tile, tileSize: Float, val onClick: () -> Unit) {
                     tile.history.getState(turn).cityCenterType ==
                             CityCenterType.Capital
         val nationIconSize = (if (isCapital && owningCiv.isMajorCiv()) 1.667f else 1.25f) * image.width
-        val cityCircle = ImageGetter.getCircle().apply { color = nation.getInnerColor() }
+        val cityCircle = ImageGetter.getCircle(nation.getInnerColor())
             .surroundWithCircle(nationIconSize, color = nation.getOuterColor())
         val hexCenterXPosition = image.x + image.width / 2
         cityCircle.x = hexCenterXPosition - nationIconSize / 2

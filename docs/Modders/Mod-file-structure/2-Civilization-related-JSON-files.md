@@ -8,12 +8,12 @@ This file contains the beliefs that can be chosen for religions in your mod.
 
 Each belief has the following structure:
 
-| Attribute | Type | Default | Notes |
-| --------- | ---- | ------- | ----- |
-| name | String | Required | |
-| type | Enum | Required | Type of belief. Value must be Pantheon, Founder, Follower or Enhancer |
-| uniques | List of Strings | empty | List of [unique abilities](../uniques) this belief adds to cities following it |
-| civilopediaText | List | empty | See [civilopediaText chapter](5-Miscellaneous-JSON-files.md#civilopedia-text) |
+| Attribute | Type | Default | Notes                                                                             |
+| --------- | ---- | ------- |-----------------------------------------------------------------------------------|
+| name | String | Required |                                                                                   |
+| type | Enum | Required | Type of belief. Value must be Pantheon, Founder, Follower or Enhancer             |
+| uniques | List of Strings | empty | List of [unique abilities](../../uniques) this belief adds to cities following it |
+| civilopediaText | List | empty | See [civilopediaText chapter](5-Miscellaneous-JSON-files.md#civilopedia-text)     |
 
 ## Buildings.json
 
@@ -41,7 +41,7 @@ Each building has the following structure:
 | cityHealth | Integer | 0 | Health bonus the city in which this building is built receives |
 | hurryCostModifier | Integer | 0 | When this building is bought using gold or faith, the price is increased by this much percent |
 | quote | String | none | If this building is a (national) wonder, this string will be shown on the completion popup |
-| uniques | List of Strings | empty | List of [unique abilities](../uniques) this building has |
+| uniques | List of Strings | empty | List of [unique abilities](../../uniques) this building has |
 | replacementTextForUniques | String | none | If provided, this string will be shown instead of all of the uniques |
 | percentStatBonus | Object | none | Percentual bonus for stats provided by the building. Same format as [specialized stats](3-Map-related-JSON-files.md#specialized-stats) (numbers are in percent. i.e. `[30]` represents 30% __bonus__ to a stat) |
 | greatPersonPoints | Object | none | Great person points by this building generated per turn. Valid keys are the names of units (Great Scientist, Warrior, etc.), valid values are Integers |
@@ -56,33 +56,33 @@ This file contains all the nations and city states, including Barbarians and Spe
 
 Each nation has the following structure:
 
-| Attribute | Type | Default | Notes |
-| --------- | ---- | ------- | ----- |
-| name | String | Required | |
-| leaderName | String | none | Omit only for city states! If you want LeaderPortraits, the image file names must match exactly, including case |
-| style | String | none | Modifier appended to pixel unit image names |
-| cityStateType | String | none | Distinguishes major civilizations from city states (must be in [CityStateTypes.json](#citystatetypesjson)) |
-| startBias | List of strings | empty | Zero or more of: [terrainFilter](../Unique-parameters.md/#terrainfilter) or "Avoid [terrainFilter]". [^S] |
+| Attribute | Type | Default | Notes                                                                                                                                           |
+| --------- | ---- | ------- |-------------------------------------------------------------------------------------------------------------------------------------------------|
+| name | String | Required |                                                                                                                                                 |
+| leaderName | String | none | Omit only for city states! If you want LeaderPortraits, the image file names must match exactly, including case                                 |
+| style | String | none | Modifier appended to pixel unit image names                                                                                                     |
+| cityStateType | String | none | Distinguishes major civilizations from city states (must be in [CityStateTypes.json](#citystatetypesjson))                                      |
+| startBias | List of strings | empty | Zero or more of: [terrainFilter](../../Unique-parameters.md/#terrainfilter) or "Avoid [terrainFilter]". [^S]                                    |
 | preferredVictoryType | String | Neutral | The victory type major civilizations will pursue (need not be specified in [VictoryTypes.json](5-Miscellaneous-JSON-files.md#victorytypesjson)) |
 | personality | String | none | The name of the personality specified in [Personalities.json](#personalitiesjson)
-| favoredReligion | String | none | The religion major civilization will choose if available when founding a religion. Must be in [Religions.json](#religionsjson) |
-| startIntroPart1 | String | none | Introductory blurb shown to Player on game start... |
-| startIntroPart2 | String | none | ... second paragraph. ___NO___ "TBD"!!! Leave empty to skip that alert. |
-| declaringWar | String | none | Another greeting, voice hook supported [^V] |
-| attacked | String | none | Another greeting, voice hook supported [^V] |
-| defeated | String | none | Another greeting, voice hook supported [^V] |
-| introduction | String | none | Another greeting, voice hook supported [^V] |
-| neutralHello | String | none | Another greeting, voice hook supported [^V] |
-| hateHello | String | none | Another greeting, voice hook supported [^V] |
-| tradeRequest | String | none | Another greeting, voice hook supported [^V] |
-| innerColor | [List of 3× Integer](5-Miscellaneous-JSON-files.md#rgb-colors-list) | black | RGB color for outer ring of nation icon |
-| outerColor | [List of 3× Integer](5-Miscellaneous-JSON-files.md#rgb-colors-list) | Required | RGB color for inner circle of nation icon |
-| uniqueName | String | none | Decorative name for the special characteristic of this nation |
-| uniqueText | String | none | Replacement text for "uniques". If empty, uniques are listed individually |
-| uniques | List | empty | List of [unique abilities](../uniques) this civilisation has |
-| cities | List | empty | City names used sequentially for newly founded cities. Required for major civilizations and city states |
-| civilopediaText | List | empty | See [civilopediaText chapter](5-Miscellaneous-JSON-files.md#civilopedia-text) |
-<!-- | adjective | String | none | Currently unused | -->
+| favoredReligion | String | none | The religion major civilization will choose if available when founding a religion. Must be in [Religions.json](#religionsjson)                  |
+| startIntroPart1 | String | none | Introductory blurb shown to Player on game start...                                                                                             |
+| startIntroPart2 | String | none | ... second paragraph. ___NO___ "TBD"!!! Leave empty to skip that alert.                                                                         |
+| declaringWar | String | none | Another greeting, voice hook supported [^V]                                                                                                     |
+| attacked | String | none | Another greeting, voice hook supported [^V]                                                                                                     |
+| defeated | String | none | Another greeting, voice hook supported [^V]                                                                                                     |
+| introduction | String | none | Another greeting, voice hook supported [^V]                                                                                                     |
+| neutralHello | String | none | Another greeting, voice hook supported [^V]                                                                                                     |
+| hateHello | String | none | Another greeting, voice hook supported [^V]                                                                                                     |
+| tradeRequest | String | none | Another greeting, voice hook supported [^V]                                                                                                     |
+| innerColor | [List of 3× Integer](5-Miscellaneous-JSON-files.md#rgb-colors-list) | black | RGB color for outer ring of nation icon                                                                                                         |
+| outerColor | [List of 3× Integer](5-Miscellaneous-JSON-files.md#rgb-colors-list) | Required | RGB color for inner circle of nation icon                                                                                                       |
+| uniqueName | String | none | Decorative name for the special characteristic of this nation                                                                                   |
+| uniqueText | String | none | Replacement text for "uniques". If empty, uniques are listed individually                                                                       |
+| uniques | List | empty | List of [unique abilities](../../uniques) this civilisation has                                                                                 |
+| cities | List | empty | City names used sequentially for newly founded cities. Required for major civilizations and city states                                         |
+| civilopediaText | List | empty | See [civilopediaText chapter](5-Miscellaneous-JSON-files.md#civilopedia-text)                                                                   |
+<!-- | adjective | String | none                                                                                                                                            | Currently unused | -->
 
 [^S]: A "Coast" preference (_unless_ combined with "Avoid") is translated to a complex test for coastal land tiles, tiles next to Lakes, river tiles or near-river tiles, and such civs are processed first. Other startBias entries are ignored in that case.
       Other positive (no "Avoid") startBias are processed next. Multiple positive preferences are treated equally, but get no "fallback".
@@ -90,7 +90,7 @@ Each nation has the following structure:
       Multiple "Avoid" entries are treated equally (and reduce chance for success - if no region is left avoiding _all_ specified types that civ gets a random one).
       When combining preferred terrain with "Avoid", the latter takes precedence, and preferred terrain only has minor weight when choosing between regions that are not of a type to avoid.
       These notes are __only__ valid when playing on generated maps, loaded maps from map editor get no "regions" and startBias is processed differently (but you can expect single-entry startBias to work best).
-[^V]: See [Supply Leader Voices](../Images-and-Audio.md#supply-leader-voices)
+[^V]: See [Supply Leader Voices](../../Images-and-Audio.md#supply-leader-voices)
 
 ## Personalities.json
 
@@ -104,10 +104,10 @@ Each personality has the following structure:
 | preferredVictoryType | String | Neutral | The victory type major civilizations will pursue (need not be specified in [VictoryTypes.json](5-Miscellaneous-JSON-files.md#victorytypesjson)) |
 | [`<stats>`](3-Map-related-JSON-files.md#general-stat) | Float | 5 | Amount of focus on the stat the computer player will have. Typically ranges from 0 (no focus) to 10 (double focus) |
 | military | Float | 5 | Amount of focus on the military growth the computer player will have. Typically ranges from 0 (no focus) to 10 (double focus) |
-<!-- | warMongering | Float | 5 | Amount of focus on declaring war the computer player will have. Typically ranges from 0 (no focus) to 10 (double focus) |-->
-| priorities | Object | none | Priorities for each policy branch, [^B]
-| uniques | List | empty | List of [unique abilities](../uniques) this personality has |
+| priorities | Object | none | Priorities for each policy branch [^B] |
+| uniques | List | empty | List of [unique abilities](../../uniques) this personality has |
 | civilopediaText | List | empty | See [civilopediaText chapter](5-Miscellaneous-JSON-files.md#civilopedia-text) |
+<!-- | warMongering | Float | 5 | Amount of focus on declaring war the computer player will have. Typically ranges from 0 (no focus) to 10 (double focus) |-->
 
 [^B]: Similar to [policy priorites](#branch-priorities) The "priorities" object defines the priority major civilizations' AI give to a policy branch. The AI chooses the policy branch with the highest number for their preferred victory type. If two or more candidate branches have the same priority, the AI chooses a random branch among the candidates.
 
@@ -135,8 +135,8 @@ Each city state type has the following structure:
 | Attribute | Type | Default | Notes |
 | --------- | ---- | ------- | ----- |
 | name | String | Required | |
-| friendBonusUniques | List of Strings | empty | List of [unique abilities](../uniques) granted to major civilizations when friends with this city state |
-| allyBonusUniques | List of Strings | empty | List of [unique abilities](../uniques) granted to  major civilizations when allied to city state |
+| friendBonusUniques | List of Strings | empty | List of [unique abilities](../../uniques) granted to major civilizations when friends with this city state |
+| allyBonusUniques | List of Strings | empty | List of [unique abilities](../../uniques) granted to  major civilizations when allied to city state |
 | color | [List of 3× Integer](5-Miscellaneous-JSON-files.md#rgb-colors-list) | [255, 255, 255] | RGB color of text in civilopedia |
 
 ## Policies.json
@@ -158,7 +158,7 @@ Each policy branch has the following structure:
 | name | String | Required | |
 | era | String | Required | Unlocking era as defined in [Eras.json](5-Miscellaneous-JSON-files.md#Eras.json) |
 | priorities | Object | none | Priorities for each victory type, [see here](#branch-priorities)
-| uniques | List | empty | List of [unique abilities](../uniques) this policy branch grants upon adopting it |
+| uniques | List | empty | List of [unique abilities](../../uniques) this policy branch grants upon adopting it |
 | policies | List | empty | List of [member policies](#member-policy-structure) and [branch 'finisher'](#branch-finisher-structure) - pay attention to the nesting of {} and [] |
 
 #### Member policy structure
@@ -169,14 +169,14 @@ Each policy branch has the following structure:
 | row | Integer | Required | Placement in UI, each unit approximately half the icon size |
 | column | Integer | Required | Placement in UI, each unit approximately half the icon size |
 | requires | List | empty | List of prerequisite policy names |
-| uniques | List | empty | List of [unique abilities](../uniques) this policy member grants upon adopting it |
+| uniques | List | empty | List of [unique abilities](../../uniques) this policy member grants upon adopting it |
 
 #### Branch finisher structure
 
 | Attribute | Type | Default | Notes |
 | --------- | ---- | ------- | ----- |
 | name | String | Required | |
-| uniques | List | empty | List of [unique abilities](../uniques) this finisher grants upon adopting all the policy members in the branch |
+| uniques | List | empty | List of [unique abilities](../../uniques) this finisher grants upon adopting all the policy members in the branch |
 
 ### Branch priorities
 
@@ -303,5 +303,5 @@ Each tech column has the following structure:
 | cost | Integer | [Column techCost](#column-structure) | The amount of science required to research this tech |
 | prerequisites | List of Strings | empty | A list of the names of techs that are prerequisites of this tech. Only direct prerequisites are necessary |
 | quote | String | none | A nice story presented to the player when they research this tech |
-| uniques | List of Strings | empty | List of [unique abilities](../uniques) this technology grants |
+| uniques | List of Strings | empty | List of [unique abilities](../../uniques) this technology grants |
 | civilopediaText | List | empty | See [civilopediaText chapter](5-Miscellaneous-JSON-files.md#Civilopedia-text) |

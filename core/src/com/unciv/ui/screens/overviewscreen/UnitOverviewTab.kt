@@ -181,7 +181,7 @@ class UnitOverviewTab(
                 { it.currentMovement <= Constants.minimumMovementEpsilon },
                 { abs(it.currentTile.position.x) + abs(it.currentTile.position.y) })
         )) {
-            val baseUnit = unit.baseUnit()
+            val baseUnit = unit.baseUnit
 
             // Unit button column - name, health, fortified, sleeping, embarked are visible here
             val button = IconTextButton(

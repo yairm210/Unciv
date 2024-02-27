@@ -482,7 +482,7 @@ class Civilization : IsPartOfGameInfoSerialization {
         yieldAll(cityStateFunctions.getUniquesProvidedByCityStates(uniqueType, stateForConditionals))
         if (religionManager.religion != null)
             yieldAll(religionManager.religion!!.getFounderUniques()
-                .filter { it.type == uniqueType && it.conditionalsApply(stateForConditionals) })
+                .filter { !it.isTimedTriggerable && it.type == uniqueType && it.conditionalsApply(stateForConditionals) })
 
         yieldAll(getCivResourceSupply().asSequence()
             .filter { it.amount > 0 }
@@ -500,6 +500,10 @@ class Civilization : IsPartOfGameInfoSerialization {
         yieldAll(cities.asSequence()
             .flatMap { city -> city.cityConstructions.builtBuildingUniqueMap.getTriggeredUniques(trigger, stateForConditionals) }
         )
+        if (religionManager.religion != null)
+            yieldAll(religionManager.religion!!.getFounderUniques()
+                .filter { unique -> unique.conditionals.any { it.type == trigger }
+                    && unique.conditionalsApply(stateForConditionals) })
         yieldAll(policies.policyUniques.getTriggeredUniques(trigger, stateForConditionals))
         yieldAll(tech.techUniques.getTriggeredUniques(trigger, stateForConditionals))
         yieldAll(getEra().uniqueMap.getTriggeredUniques (trigger, stateForConditionals))
@@ -712,6 +716,10 @@ class Civilization : IsPartOfGameInfoSerialization {
         tacticalAI.init(this)
 
         cache.setTransients()
+
+        thingsToFocusOnForVictory = emptySet()
+        for (victory in getPreferredVictoryTypeObjects())
+            thingsToFocusOnForVictory += victory.getThingsToFocus(this)
     }
 
 

@@ -32,7 +32,7 @@ import com.unciv.ui.screens.basescreen.BaseScreen
  * @param initContent Optional lambda with [innerTable] as parameter, to help initialize content.
  */
 class ExpanderTab(
-    title: String,
+    val title: String,
     fontSize: Int = Constants.headingFontSize,
     icon: Actor? = null,
     startsOutOpened: Boolean = true,
@@ -54,7 +54,7 @@ class ExpanderTab(
     }
 
     val header = Table(skin)  // Header with label and icon, touchable to show/hide
-    private val headerLabel = title.toLabel(fontSize = fontSize)
+    private val headerLabel = title.toLabel(fontSize = fontSize, hideIcons = true)
     private val headerIcon = ImageGetter.getImage(arrowImage)
     private val contentWrapper = Table()  // Wrapper for innerTable, this is what will be shown/hidden
 

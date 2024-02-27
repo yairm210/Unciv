@@ -26,6 +26,7 @@ import com.unciv.models.ruleset.unique.UniqueMap
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.components.extensions.withItem
 import com.unciv.ui.components.extensions.withoutItem
+import com.unciv.ui.screens.mapeditorscreen.TileInfoNormalizer
 import com.unciv.utils.DebugUtils
 import com.unciv.utils.Log
 import kotlin.math.abs
@@ -386,9 +387,10 @@ open class Tile : IsPartOfGameInfoSerialization {
     fun isRoughTerrain() = allTerrains.any { it.isRough() }
 
     /** Checks whether any of the TERRAINS of this tile has a certain unique */
-    fun terrainHasUnique(uniqueType: UniqueType) = terrainUniqueMap.getUniques(uniqueType).any()
+    fun terrainHasUnique(uniqueType: UniqueType, state: StateForConditionals = StateForConditionals(tile = this)) =
+        terrainUniqueMap.getMatchingUniques(uniqueType, state).any()
     /** Get all uniques of this type that any TERRAIN on this tile has */
-    fun getTerrainMatchingUniques(uniqueType: UniqueType, stateForConditionals: StateForConditionals = StateForConditionals(tile=this) ): Sequence<Unique> {
+    fun getTerrainMatchingUniques(uniqueType: UniqueType, stateForConditionals: StateForConditionals = StateForConditionals(tile = this) ): Sequence<Unique> {
         return terrainUniqueMap.getMatchingUniques(uniqueType, stateForConditionals)
     }
 
@@ -830,6 +832,14 @@ open class Tile : IsPartOfGameInfoSerialization {
             .map { it.params[0].toInt() }.sum()
         tileHeight = if (terrainHasUnique(UniqueType.BlocksLineOfSightAtSameElevation)) unitHeight + 1
         else unitHeight
+    }
+
+    fun setBaseTerrain(baseTerrainObject: Terrain){
+        baseTerrain = baseTerrainObject.name
+        this.baseTerrainObject = baseTerrainObject
+        TileInfoNormalizer.normalizeToRuleset(this, ruleset)
+        setTerrainFeatures(terrainFeatures)
+        setTerrainTransients()
     }
 
     private fun updateUniqueMap() {

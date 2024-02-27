@@ -14,9 +14,10 @@ import com.unciv.models.translations.tr
 import com.unciv.ui.components.extensions.addSeparator
 import com.unciv.ui.components.extensions.center
 import com.unciv.ui.components.extensions.darken
+import com.unciv.ui.components.extensions.getCloseButton
 import com.unciv.ui.components.extensions.isShiftKeyPressed
-import com.unciv.ui.components.extensions.toImageButton
 import com.unciv.ui.components.extensions.toLabel
+import com.unciv.ui.components.input.keyShortcuts
 import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.widgets.UnitGroup
 import com.unciv.ui.images.ImageGetter
@@ -83,12 +84,12 @@ class UnitTable(val worldScreen: WorldScreen) : Table() {
 
         promotionsTable.touchable = Touchable.enabled
 
-        val deselectUnitButton = "OtherIcons/Close".toImageButton(20f, 50f, Color.CLEAR, Color.RED)
-        deselectUnitButton.onClick {
+        val deselectUnitButton = getCloseButton(50f, 20f, Color.CLEAR, Color.RED) {
             selectUnit()
             worldScreen.shouldUpdate = true
             this@UnitTable.isVisible = false
         }
+        deselectUnitButton.keyShortcuts.clear() // This is the only place we don't want the BACK keyshortcut getCloseButton assigns
         add(deselectUnitButton).left()
 
         add(Table().apply {
@@ -167,12 +168,12 @@ class UnitTable(val worldScreen: WorldScreen) : Table() {
 
                 if (!unit.isCivilian()) {
                     unitDescriptionTable.add(ImageGetter.getStatIcon("Strength")).size(20f)
-                    unitDescriptionTable.add(unit.baseUnit().strength.toString()).padRight(10f)
+                    unitDescriptionTable.add(unit.baseUnit.strength.toString()).padRight(10f)
                 }
 
-                if (unit.baseUnit().rangedStrength != 0) {
+                if (unit.baseUnit.rangedStrength != 0) {
                     unitDescriptionTable.add(ImageGetter.getStatIcon("RangedStrength")).size(20f)
-                    unitDescriptionTable.add(unit.baseUnit().rangedStrength.toString()).padRight(10f)
+                    unitDescriptionTable.add(unit.baseUnit.rangedStrength.toString()).padRight(10f)
                 }
 
                 if (unit.baseUnit.isRanged()) {

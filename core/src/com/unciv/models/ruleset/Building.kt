@@ -104,14 +104,18 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
         return stats
     }
 
-    override fun getProductionCost(civInfo: Civilization): Int {
+    override fun getProductionCost(civInfo: Civilization, city: City?): Int {
         var productionCost = cost.toFloat()
+        val stateForConditionals = StateForConditionals(civInfo, city)
 
-        for (unique in getMatchingUniques(UniqueType.CostIncreasesWhenBuilt, StateForConditionals(civInfo)))
+        for (unique in getMatchingUniques(UniqueType.CostIncreasesWhenBuilt, stateForConditionals))
             productionCost += civInfo.civConstructions.builtItemsWithIncreasingCost[name] * unique.params[0].toInt()
 
-        for (unique in getMatchingUniques(UniqueType.CostIncreasesPerCity, StateForConditionals(civInfo)))
+        for (unique in getMatchingUniques(UniqueType.CostIncreasesPerCity, stateForConditionals))
             productionCost += civInfo.cities.size * unique.params[0].toInt()
+
+        for (unique in getMatchingUniques(UniqueType.CostPercentageChange, stateForConditionals))
+            productionCost *= unique.params[0].toPercent()
 
         if (civInfo.isCityState())
             productionCost *= 1.5f
@@ -126,6 +130,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
         }
 
         productionCost *= civInfo.gameInfo.speed.productionCostModifier
+
         return productionCost.toInt()
     }
 
@@ -182,7 +187,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
             )
             yieldAll(city.getMatchingUniques(UniqueType.BuyBuildingsByProductionCost, conditionalState)
                 .filter { it.params[1] == stat.name && matchesFilter(it.params[0]) }
-                .map { (getProductionCost(city.civ) * it.params[2].toInt()).toFloat() }
+                .map { (getProductionCost(city.civ, city) * it.params[2].toInt()).toFloat() }
             )
             if (city.getMatchingUniques(UniqueType.BuyBuildingsWithStat, conditionalState)
                 .any {

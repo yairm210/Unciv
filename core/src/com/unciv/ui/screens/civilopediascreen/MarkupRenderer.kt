@@ -3,9 +3,11 @@ package com.unciv.ui.screens.civilopediascreen
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
-import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.components.extensions.addSeparator
 import com.unciv.ui.components.input.onClick
+import com.unciv.ui.components.input.onRightClick
+import com.unciv.ui.screens.basescreen.BaseScreen
+import com.unciv.ui.screens.civilopediascreen.MarkupRenderer.render
 
 
 /** Makes [renderer][render] available outside [ICivilopediaText] */
@@ -51,10 +53,14 @@ object MarkupRenderer {
                 actor.onClick {
                     linkAction(line.link)
                 }
-            else if (line.linkType == FormattedLine.LinkType.External)
+            else if (line.linkType == FormattedLine.LinkType.External) {
                 actor.onClick {
                     Gdx.net.openURI(line.link)
                 }
+                actor.onRightClick {
+                    Gdx.app.clipboard.contents = line.link
+                }
+            }
             if (labelWidth == 0f)
                 table.add(actor).align(line.align).row()
             else

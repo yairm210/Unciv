@@ -75,6 +75,7 @@ open class ConsoleAction(val format: String, val action: (console: DevConsolePop
             "resourceName" -> console.gameInfo.ruleset.tileResources.keys
             "stat" -> Stat.names()
             "religionName" -> console.gameInfo.religions.keys
+            "buildingName" -> console.gameInfo.ruleset.buildings.keys
             else -> listOf()
         }
         return getAutocompleteString(lastParam, options)

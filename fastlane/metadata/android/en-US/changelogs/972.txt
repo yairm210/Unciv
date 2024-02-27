@@ -1,0 +1,13 @@
+Add AI for land-based nuke units
+
+Keep opened mods open and at top of list when reloading mods in 'locate mod errors' tab
+
+above/below HP conditionals work outside of combat
+
+update uniques upon taking damage and other situations
+
+By SomeTroglodyte:
+- New notifications bell icon with actual count
+- Fix TabbedPager geometry - the cell for the close button needs to be ignored in the rest of the Table!
+
+Added ConditionalAboveHappiness unique - By PLynx01

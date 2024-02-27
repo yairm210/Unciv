@@ -199,10 +199,17 @@ object UnitActionsFromUniques {
             }
             val title = UnitActionModifiers.actionTextWithSideEffects(baseTitle, unique, unit)
 
-            yield(UnitAction(UnitActionType.TriggerUnique, title) {
-                UniqueTriggerActivation.triggerUnique(unique, unit)
-                UnitActionModifiers.activateSideEffects(unit, unique)
-            })
+            val unitAction = fun (): (()->Unit)? {
+                if (unit.currentMovement == 0f) return null
+                val triggerFunction = UniqueTriggerActivation.getTriggerFunction(unique, unit.civ, unit = unit, tile = unit.currentTile)
+                    ?: return null
+                return { // This is the *action* that will be triggered!
+                    triggerFunction.invoke()
+                    UnitActionModifiers.activateSideEffects(unit, unique)
+                }
+            }()
+
+            yield(UnitAction(UnitActionType.TriggerUnique, title, action = unitAction))
         }
     }
 

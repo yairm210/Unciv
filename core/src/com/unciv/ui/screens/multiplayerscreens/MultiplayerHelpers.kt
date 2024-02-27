@@ -1,15 +1,16 @@
 package com.unciv.ui.screens.multiplayerscreens
 
 import com.badlogic.gdx.Gdx
+import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.multiplayer.OnlineMultiplayer
 import com.unciv.logic.multiplayer.OnlineMultiplayerGame
 import com.unciv.models.translations.tr
-import com.unciv.ui.popups.Popup
-import com.unciv.ui.screens.savescreens.LoadGameScreen
-import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.components.extensions.formatShort
 import com.unciv.ui.components.extensions.toCheckBox
+import com.unciv.ui.popups.Popup
+import com.unciv.ui.screens.basescreen.BaseScreen
+import com.unciv.ui.screens.savescreens.LoadGameScreen
 import com.unciv.utils.Concurrency
 import com.unciv.utils.launchOnGLThread
 import java.time.Duration
@@ -61,7 +62,7 @@ object MultiplayerHelpers {
             "Consider using a custom server instead."
         ).colspan(2).row()
         dropboxWarning.addButton("Open Documentation") {
-            Gdx.net.openURI("https://yairm210.github.io/Unciv/Other/Multiplayer/#hosting-a-multiplayer-server")
+            Gdx.net.openURI("${Constants.wikiURL}Other/Multiplayer/#hosting-a-multiplayer-server")
         }.colspan(2).row()
 
         val checkBox = "Don't show again".toCheckBox()

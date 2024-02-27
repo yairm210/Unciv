@@ -14,7 +14,6 @@ import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
-import com.unciv.logic.civilization.managers.EspionageManager
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.models.ruleset.MilestoneType
 import com.unciv.models.ruleset.Policy
@@ -365,7 +364,7 @@ object NextTurnAutomation {
             civInfo.greatPeople.mayaLimitedFreeGP--
         }
     }
-    
+
     /** If we are able to build a spaceship but have already spent our resources, try disbanding
      *  a unit and selling a building to make room. Can happen due to trades etc */
     private fun freeUpSpaceResources(civInfo: Civilization) {
@@ -458,6 +457,7 @@ object NextTurnAutomation {
     }
 
     private fun trainSettler(civInfo: Civilization) {
+        val personality = civInfo.getPersonality()
         if (civInfo.isCityState()) return
         if (civInfo.isAtWar()) return // don't train settlers when you could be training troops.
         if (civInfo.wantsToFocusOn(Victory.Focus.Culture) && civInfo.cities.size > 3 &&
@@ -467,7 +467,9 @@ object NextTurnAutomation {
         if (civInfo.getHappiness() <= civInfo.cities.size) return
 
         val settlerUnits = civInfo.gameInfo.ruleset.units.values
-                .filter { it.isCityFounder() && it.isBuildable(civInfo) }
+                .filter { it.isCityFounder() && it.isBuildable(civInfo) &&
+                    personality.getMatchingUniques(UniqueType.WillNotBuild, StateForConditionals(civInfo))
+                        .none { unique -> it.matchesFilter(unique.params[0]) } }
         if (settlerUnits.isEmpty()) return
         if (!civInfo.units.getCivUnits().none { it.hasUnique(UniqueType.FoundCity) }) return
 
