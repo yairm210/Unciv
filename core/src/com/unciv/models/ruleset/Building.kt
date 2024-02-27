@@ -114,6 +114,9 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
         for (unique in getMatchingUniques(UniqueType.CostIncreasesPerCity, stateForConditionals))
             productionCost += civInfo.cities.size * unique.params[0].toInt()
 
+        for (unique in getMatchingUniques(UniqueType.CostPercentageChange, stateForConditionals))
+            productionCost *= unique.params[0].toPercent()
+
         if (civInfo.isCityState())
             productionCost *= 1.5f
         if (civInfo.isHuman()) {

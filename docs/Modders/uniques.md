@@ -1070,6 +1070,12 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Building, Unit
 
+??? example  "[amount]% Cost"
+	Intended to be used with conditionals to dynamically alter construction costs
+	Example: "[3]% Cost"
+
+	Applicable to: Building, Unit
+
 ??? example  "Can only be built [cityFilter]"
 	Example: "Can only be built [in all cities]"
 
