@@ -192,6 +192,8 @@ object Conditionals {
                 checkOnCity { !cityConstructions.containsBuildingOrEquivalent(condition.params[0]) }
             UniqueType.ConditionalPopulationFilter ->
                 checkOnCity { population.getPopulationFilterAmount(condition.params[1]) >= condition.params[0].toInt() }
+            UniqueType.ConditionalExactPopulationFilter ->
+                checkOnCity { population.getPopulationFilterAmount(condition.params[1]) == condition.params[0].toInt() }
             UniqueType.ConditionalWhenGarrisoned ->
                 checkOnCity { getCenterTile().militaryUnit?.canGarrison() == true }
 
