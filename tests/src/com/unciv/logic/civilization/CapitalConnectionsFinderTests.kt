@@ -36,7 +36,7 @@ class CapitalConnectionsFinderTests {
         ourCiv.tech.addTechnology(testGame.ruleset.tileImprovements[RoadStatus.Railroad.name]?.techRequired!!)
     }
 
-    private fun createMedium(from:Int, to: Int, type: RoadStatus) {
+    private fun createMedium(from: Int, to: Int, type: RoadStatus) {
         for (i in from..to) {
             val tile = testGame.tileMap[0, i]
             tile.roadStatus = type

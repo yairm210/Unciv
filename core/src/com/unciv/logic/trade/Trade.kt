@@ -19,7 +19,7 @@ class Trade : IsPartOfGameInfoSerialization {
         return newTrade
     }
 
-    fun equalTrade(trade: Trade):Boolean{
+    fun equalTrade(trade: Trade): Boolean {
        if(trade.ourOffers.size!=ourOffers.size
            || trade.theirOffers.size!=theirOffers.size) return false
 
@@ -32,7 +32,7 @@ class Trade : IsPartOfGameInfoSerialization {
         return true
     }
 
-    fun clone():Trade{
+    fun clone(): Trade {
         val toReturn = Trade()
         toReturn.theirOffers.addAll(theirOffers)
         toReturn.ourOffers.addAll(ourOffers)
@@ -51,7 +51,7 @@ class Trade : IsPartOfGameInfoSerialization {
 
 
 class TradeRequest : IsPartOfGameInfoSerialization {
-    fun decline(decliningCiv:Civilization) {
+    fun decline(decliningCiv: Civilization) {
         val requestingCivInfo = decliningCiv.gameInfo.getCivilization(requestingCiv)
         val requestingCivDiploManager = requestingCivInfo.getDiplomacyManager(decliningCiv)
         // the numbers of the flags (20,5) are the amount of turns to wait until offering again

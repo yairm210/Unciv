@@ -88,7 +88,7 @@ class TileSetStrings(
 
     fun getTile(baseTerrain: String) = getString(tilesLocation, baseTerrain)
 
-    fun getBorder(borderShapeString: String, innerOrOuter:String) = getString(bordersLocation, borderShapeString, innerOrOuter)
+    fun getBorder(borderShapeString: String, innerOrOuter: String) = getString(bordersLocation, borderShapeString, innerOrOuter)
 
     /** Fallback [TileSetStrings] to use when the currently chosen tileset is missing an image. */
     val fallback by lazy {

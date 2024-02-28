@@ -25,7 +25,7 @@ class TileImprovement : RulesetStatsObject() {
 
     var terrainsCanBeBuiltOn: Collection<String> = ArrayList()
     var techRequired: String? = null
-    var uniqueTo:String? = null
+    var uniqueTo: String? = null
     override fun getUniqueTarget() = UniqueTarget.Improvement
     val shortcutKey: Char? = null
     // This is the base cost. A cost of 0 means created instead of buildable.

@@ -12,7 +12,7 @@ import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 
-class UnitManager(val civInfo:Civilization) {
+class UnitManager(val civInfo: Civilization) {
 
     /**
      * We never add or remove from here directly, could cause comodification problems.

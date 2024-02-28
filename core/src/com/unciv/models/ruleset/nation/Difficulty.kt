@@ -11,30 +11,30 @@ class Difficulty: INamed, ICivilopediaText {
     override lateinit var name: String
     var baseHappiness: Int = 0
     var extraHappinessPerLuxury: Float = 0f
-    var researchCostModifier:Float = 1f
-    var unitCostModifier:Float = 1f
+    var researchCostModifier: Float = 1f
+    var unitCostModifier: Float = 1f
     var unitSupplyBase: Int = 5
     var unitSupplyPerCity: Int = 2
-    var buildingCostModifier:Float = 1f
-    var policyCostModifier:Float = 1f
-    var unhappinessModifier:Float = 1f
-    var barbarianBonus:Float = 0f
+    var buildingCostModifier: Float = 1f
+    var policyCostModifier: Float = 1f
+    var unhappinessModifier: Float = 1f
+    var barbarianBonus: Float = 0f
     var barbarianSpawnDelay: Int = 0
     var playerBonusStartingUnits = ArrayList<String>()
 
-    var aiCityGrowthModifier:Float = 1f
-    var aiUnitCostModifier:Float = 1f
-    var aiBuildingCostModifier:Float = 1f
-    var aiWonderCostModifier:Float = 1f
-    var aiBuildingMaintenanceModifier:Float = 1f
-    var aiUnitMaintenanceModifier = 1f
+    var aiCityGrowthModifier: Float = 1f
+    var aiUnitCostModifier: Float = 1f
+    var aiBuildingCostModifier: Float = 1f
+    var aiWonderCostModifier: Float = 1f
+    var aiBuildingMaintenanceModifier: Float = 1f
+    var aiUnitMaintenanceModifier: Float = 1f
     var aiUnitSupplyModifier: Float = 0f
     var aiFreeTechs = ArrayList<String>()
     var aiMajorCivBonusStartingUnits = ArrayList<String>()
     var aiCityStateBonusStartingUnits = ArrayList<String>()
-    var aiUnhappinessModifier = 1f
-    var turnBarbariansCanEnterPlayerTiles = 0
-    var clearBarbarianCampReward = 25
+    var aiUnhappinessModifier: Float = 1f
+    var turnBarbariansCanEnterPlayerTiles: Int = 0
+    var clearBarbarianCampReward: Int = 25
 
     // property defined in json but so far unused:
     // var aisExchangeTechs = false

@@ -301,9 +301,9 @@ private fun addTranslationGeneration(table: Table, optionsPopup: OptionsPopup) {
     table.add(generateScreenshotsButton).colspan(2).row()
 }
 
-data class ScreenshotConfig(val width: Int, val height: Int, val screenSize: ScreenSize, var fileLocation:String, var centerTile:Vector2, var attackCity:Boolean=true)
+data class ScreenshotConfig(val width: Int, val height: Int, val screenSize: ScreenSize, var fileLocation: String, var centerTile: Vector2, var attackCity: Boolean = true)
 
-private fun CoroutineScope.generateScreenshots(settings: GameSettings, configs:ArrayList<ScreenshotConfig>) {
+private fun CoroutineScope.generateScreenshots(settings: GameSettings, configs: ArrayList<ScreenshotConfig>) {
     val currentConfig = configs.first()
     launchOnGLThread {
         val screenshotGame =

@@ -16,7 +16,7 @@ class CityStateType: INamed {
     private fun ArrayList<String>.toUniqueMap() =
         UniqueMap(asSequence().map { Unique(it, sourceObjectType = UniqueTarget.CityState) })
 
-    var color:List<Int> = listOf(255,255,255)
+    var color: List<Int> = listOf(255,255,255)
     private val colorObject by lazy { colorFromRGB(color) }
     fun getColor() = colorObject
 }

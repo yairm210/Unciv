@@ -39,8 +39,9 @@ class WorkerAutomation(
 ) {
     ///////////////////////////////////////// Cached data /////////////////////////////////////////
 
-    val roadToAutomation:RoadToAutomation = RoadToAutomation(civInfo)
-    val roadBetweenCitiesAutomation:RoadBetweenCitiesAutomation = RoadBetweenCitiesAutomation(civInfo, cachedForTurn, cloningSource?.roadBetweenCitiesAutomation)
+    val roadToAutomation = RoadToAutomation(civInfo)
+    val roadBetweenCitiesAutomation: RoadBetweenCitiesAutomation =
+        RoadBetweenCitiesAutomation(civInfo, cachedForTurn, cloningSource?.roadBetweenCitiesAutomation)
 
     private val ruleSet = civInfo.gameInfo.ruleset
 
@@ -559,7 +560,7 @@ class WorkerAutomation(
      */
     fun evaluateFortPlacement(tile: Tile, isCitadel: Boolean): Boolean {
         return tile.improvement != Constants.fort // don't build fort if it is already here
-            && evaluateFortSurroundings(tile,isCitadel) > 0
+            && evaluateFortSurroundings(tile, isCitadel) > 0
     }
 
     fun isImprovementProbablyAFort(improvementName:String): Boolean = isImprovementProbablyAFort(ruleSet.tileImprovements[improvementName]!!)

@@ -8,7 +8,7 @@ import com.unciv.ui.components.extensions.toPercent
 import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionsUpgrade
 import kotlin.math.pow
 
-class UnitUpgradeManager(val unit:MapUnit) {
+class UnitUpgradeManager(val unit: MapUnit) {
 
     /** Check whether this unit can upgrade to [unitToUpgradeTo]. This does not check or follow the
      *  normal upgrade chain defined by [BaseUnit.getUpgradeUnits]

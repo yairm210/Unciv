@@ -10,7 +10,7 @@ import com.unciv.ui.components.extensions.isEnabled
 import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.input.onDoubleClick
 
-class GreatPersonPickerScreen(val civInfo:Civilization) : PickerScreen() {
+class GreatPersonPickerScreen(val civInfo: Civilization) : PickerScreen() {
     private var theChosenOne: BaseUnit? = null
 
     init {

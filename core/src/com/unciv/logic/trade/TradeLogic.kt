@@ -10,7 +10,7 @@ import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.unique.UniqueType
 
-class TradeLogic(val ourCivilization:Civilization, val otherCivilization: Civilization) {
+class TradeLogic(val ourCivilization: Civilization, val otherCivilization: Civilization) {
 
     /** Contains everything we could offer the other player, whether we've actually offered it or not */
     val ourAvailableOffers = getAvailableOffers(ourCivilization, otherCivilization)

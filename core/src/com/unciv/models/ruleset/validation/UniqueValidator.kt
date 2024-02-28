@@ -215,7 +215,7 @@ class UniqueValidator(val ruleset: Ruleset) {
     }
 
     private val paramTypeErrorSeverityCache = HashMap<UniqueParameterType, HashMap<String, UniqueType.UniqueParameterErrorSeverity?>>()
-    private fun getParamTypeErrorSeverityCached(uniqueParameterType: UniqueParameterType, param:String): UniqueType.UniqueParameterErrorSeverity? {
+    private fun getParamTypeErrorSeverityCached(uniqueParameterType: UniqueParameterType, param: String): UniqueType.UniqueParameterErrorSeverity? {
         if (!paramTypeErrorSeverityCache.containsKey(uniqueParameterType))
             paramTypeErrorSeverityCache[uniqueParameterType] = hashMapOf()
         val uniqueParamCache = paramTypeErrorSeverityCache[uniqueParameterType]!!

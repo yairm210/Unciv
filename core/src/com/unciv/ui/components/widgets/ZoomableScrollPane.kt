@@ -362,7 +362,7 @@ open class ZoomableScrollPane(
         return if (isScrolling()) scrollingTo!! else Vector2(scrollX, scrollY)
     }
 
-    class ScrollToAction(private val zoomableScrollPane: ZoomableScrollPane) :FloatAction(0f, 1f, 0.4f) {
+    class ScrollToAction(private val zoomableScrollPane: ZoomableScrollPane) : FloatAction(0f, 1f, 0.4f) {
 
         private val originalScrollX = zoomableScrollPane.scrollX
         private val originalScrollY = zoomableScrollPane.scrollY

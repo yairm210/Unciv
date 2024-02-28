@@ -50,7 +50,7 @@ class UnitTable(val worldScreen: WorldScreen) : Table() {
     var selectedUnitIsConnectingRoad = false
 
     /** Sending no unit clears the selected units entirely */
-    fun selectUnit(unit: MapUnit?=null, append:Boolean=false) {
+    fun selectUnit(unit: MapUnit? = null, append: Boolean = false) {
         if (!append) selectedUnits.clear()
         selectedCity = null
         if (unit != null) {

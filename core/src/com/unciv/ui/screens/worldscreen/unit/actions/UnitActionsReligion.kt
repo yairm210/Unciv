@@ -12,7 +12,7 @@ import com.unciv.ui.components.extensions.toPercent
 
 object UnitActionsReligion {
 
-    internal fun getFoundReligionActions(unit: MapUnit, tile:Tile): Sequence<UnitAction> {
+    internal fun getFoundReligionActions(unit: MapUnit, tile: Tile): Sequence<UnitAction> {
         if (!unit.civ.religionManager.mayFoundReligionAtAll()) return emptySequence()
 
         val unique = UnitActionModifiers.getUsableUnitActionUniques(unit, UniqueType.MayFoundReligion)

@@ -16,7 +16,7 @@ class UnitMovement(val unit: MapUnit) {
 
     private val pathfindingCache = PathfindingCache(unit)
 
-    class ParentTileAndTotalDistance(val tile:Tile, val parentTile: Tile, val totalDistance: Float)
+    class ParentTileAndTotalDistance(val tile: Tile, val parentTile: Tile, val totalDistance: Float)
 
     fun isUnknownTileWeShouldAssumeToBePassable(tile: Tile) = !unit.civ.hasExplored(tile)
 

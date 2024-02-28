@@ -79,7 +79,7 @@ object AirUnitAutomation {
 
     }
 
-    private fun tryAirSweep(unit: MapUnit, tilesWithEnemyUnitsInRange: List<Tile>):Boolean {
+    private fun tryAirSweep(unit: MapUnit, tilesWithEnemyUnitsInRange: List<Tile>): Boolean {
         val targetTile = tilesWithEnemyUnitsInRange.filter {
             tile -> tile.getUnits().any { it.civ.isAtWarWith(unit.civ)
                 || (tile.isCityCenter() && tile.getCity()!!.civ.isAtWarWith(unit.civ)) }

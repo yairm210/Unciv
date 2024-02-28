@@ -294,7 +294,7 @@ class OnlineMultiplayer {
     /**
      * Fires [MultiplayerGameNameChanged]
      */
-    fun changeGameName(game: OnlineMultiplayerGame, newName: String, onException:(Exception?)->Unit) {
+    fun changeGameName(game: OnlineMultiplayerGame, newName: String, onException: (Exception?)->Unit) {
         debug("Changing name of game %s to", game.name, newName)
         val oldPreview = game.preview ?: throw game.error!!
         val oldLastUpdate = game.lastUpdate

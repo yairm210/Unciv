@@ -204,7 +204,7 @@ class CityStats(val city: City) {
 
         val cityStateStatsMultipliers = city.civ.getMatchingUniques(UniqueType.BonusStatsFromCityStates).toList()
 
-        fun addUniqueStats(unique:Unique) {
+        fun addUniqueStats(unique: Unique) {
             val stats = unique.stats.clone()
             if (unique.sourceObjectType==UniqueTarget.CityState)
                 for (multiplierUnique in cityStateStatsMultipliers)
@@ -244,7 +244,7 @@ class CityStats(val city: City) {
     private fun getStatsPercentBonusesFromUniquesBySource(currentConstruction: IConstruction): StatTreeNode {
         val sourceToStats = StatTreeNode()
 
-        fun addUniqueStats(unique:Unique, stat:Stat, amount:Float) {
+        fun addUniqueStats(unique: Unique, stat: Stat, amount: Float) {
             sourceToStats.addStats(Stats().add(stat, amount), unique.getSourceNameForUser(), unique.sourceObjectName ?: "")
         }
 
@@ -339,7 +339,7 @@ class CityStats(val city: City) {
     //endregion
     //region State-Changing Methods
 
-    fun updateTileStats(localUniqueCache:LocalUniqueCache = LocalUniqueCache()) {
+    fun updateTileStats(localUniqueCache: LocalUniqueCache = LocalUniqueCache()) {
         val stats = Stats()
         val workedTiles = city.tilesInRange.asSequence()
             .filter {

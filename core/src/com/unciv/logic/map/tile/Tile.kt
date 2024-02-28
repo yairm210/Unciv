@@ -472,7 +472,7 @@ open class Tile : IsPartOfGameInfoSerialization {
     }
 
     // This should be the only adjacency function
-    fun isAdjacentTo(terrainFilter:String, observingCiv: Civilization?=null): Boolean {
+    fun isAdjacentTo(terrainFilter: String, observingCiv: Civilization? = null): Boolean {
         // Rivers are odd, as they aren't technically part of any specific tile but still count towards adjacency
         if (terrainFilter == Constants.river) return isAdjacentToRiver()
         if (terrainFilter == Constants.freshWater && isAdjacentToRiver()) return true

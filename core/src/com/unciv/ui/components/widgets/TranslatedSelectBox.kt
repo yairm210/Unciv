@@ -5,7 +5,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin
 import com.badlogic.gdx.utils.Array
 import com.unciv.models.translations.tr
 
-class TranslatedSelectBox(values : Collection<String>, default:String, skin: Skin) : SelectBox<TranslatedSelectBox.TranslatedString>(skin) {
+class TranslatedSelectBox(values: Collection<String>, default: String, skin: Skin) : SelectBox<TranslatedSelectBox.TranslatedString>(skin) {
     class TranslatedString(val value: String) {
         val translation = value.tr(hideIcons = true)
         override fun toString() = translation
