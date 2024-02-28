@@ -169,7 +169,7 @@ class WorkerAutomation(
      */
     private fun findTileToWork(unit: MapUnit, tilesToAvoid: Set<Tile>): Tile {
         val currentTile = unit.getTile()
-        if (currentTile != tilesToAvoid && getBasePriority(currentTile, unit) >= 5
+        if (currentTile !in tilesToAvoid && getBasePriority(currentTile, unit) >= 5
             && (tileHasWorkToDo(currentTile, unit) || currentTile.isPillaged() || currentTile.hasFalloutEquivalent())) {
             return currentTile
         }

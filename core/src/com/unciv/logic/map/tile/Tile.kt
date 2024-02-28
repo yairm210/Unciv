@@ -33,7 +33,7 @@ import kotlin.math.abs
 import kotlin.math.min
 import kotlin.random.Random
 
-open class Tile : IsPartOfGameInfoSerialization {
+class Tile : IsPartOfGameInfoSerialization {
     @Transient
     lateinit var tileMap: TileMap
 

@@ -108,7 +108,7 @@ class UnitMovement(val unit: MapUnit) {
             return cachedPath
 
         val currentTile = unit.getTile()
-        if (currentTile.position == destination) {
+        if (currentTile.position == destination.position) {
             // edge case that's needed, so that workers will know that they can reach their own tile. *sigh*
             pathfindingCache.setShortestPathCache(destination, listOf(currentTile))
             return listOf(currentTile)

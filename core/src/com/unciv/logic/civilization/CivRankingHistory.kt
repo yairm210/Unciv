@@ -6,7 +6,7 @@ import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.ui.screens.victoryscreen.RankingType
 
 /** Records for each turn (key of outer map) what the score (value of inner map) was for each RankingType. */
-open class CivRankingHistory : HashMap<Int, Map<RankingType, Int>>(),
+class CivRankingHistory : HashMap<Int, Map<RankingType, Int>>(),
     IsPartOfGameInfoSerialization {
 
     /**
