@@ -213,7 +213,7 @@ object UnitAutomation {
 
         if (tryUpgradeUnit(unit)) return
 
-        if (unit.health < 50 && (trySwapRetreat(unit) || tryHealUnit(unit))) return // do nothing but heal
+        if (unit.health < 50 && (tryRetreat(unit) || tryHealUnit(unit))) return // do nothing but heal
 
         // If there are no enemies nearby and we can heal here, wait until we are at full health
         if (unit.health < 100 && canUnitHealInTurnsOnCurrentTile(unit,2, 4)) return
@@ -262,6 +262,8 @@ object UnitAutomation {
     private fun tryAttacking(unit: MapUnit): Boolean {
         repeat(unit.maxAttacksPerTurn() - unit.attacksThisTurn) {
             if (BattleHelper.tryAttackNearbyEnemy(unit)) return true
+            // Calvary style tctic, attack and then retreat
+            if (unit.health < 50 && tryRetreat(unit)) return true
         }
         return false
     }
@@ -280,33 +282,55 @@ object UnitAutomation {
         return true
     }
 
-    private fun trySwapRetreat(unit: MapUnit): Boolean {
+    private fun tryRetreat(unit: MapUnit): Boolean {
         if (!unit.civ.isAtWar()) return false
         // Precondition: This must be a military unit
         if (unit.isCivilian()) return false
+        if (unit.baseUnit.isAirUnit()) return false
         // Better to do a more healing oriented move then
         if (unit.civ.threatManager.getDistanceToClosestEnemyUnit(unit.getTile(),6, true) > 4) return false
 
-        if (unit.baseUnit.isAirUnit()) {
-            return false
-        }
 
         val unitDistanceToTiles = unit.movement.getDistanceToTiles()
-        val swapableTiles = unitDistanceToTiles.keys.filter { it.militaryUnit != null && it.militaryUnit!!.owner == unit.owner}.reversed()
-        for (swapTile in swapableTiles) {
-            val otherUnit = swapTile.militaryUnit!!
+        val closestCity = unit.civ.cities.minByOrNull { it.getCenterTile().aerialDistanceTo(unit.getTile()) }?.takeIf { it.getCenterTile().aerialDistanceTo(unit.getTile()) < 20 }
+
+        // Finding the distance to the closest enemy is expensive, so lets sort the tiles using a cheaper function
+        val sortedTilesToRetreatTo: Sequence<Tile> = if (closestCity != null) {
+            // If we have a city, lets favor the tiles closer to that city
+            unitDistanceToTiles.asSequence().map { it.key }.sortedBy { it.aerialDistanceTo(closestCity.getCenterTile()) }
+        } else {
+            // Rare case, what if we don't have a city nearby?
+            // Lets favor the tiles that don't have enemies close by
+            // Ideally we should check in a greater radius but might get way too expensive
+            unitDistanceToTiles.asSequence().map { it.key }.sortedByDescending { unit.civ.threatManager.getDistanceToClosestEnemyUnit(it, 3, false) }
+        }
+
+        // Lets check all tiles and swap with the first one
+        for (retreatTile in sortedTilesToRetreatTo) {
             val ourDistanceToClosestEnemy = unit.civ.threatManager.getDistanceToClosestEnemyUnit(unit.getTile(),6, false)
-            if (otherUnit.health > 80
-                && ourDistanceToClosestEnemy < otherUnit.civ.threatManager.getDistanceToClosestEnemyUnit(otherUnit.getTile(),6,false)) {
-                if (otherUnit.baseUnit.isRanged()) {
-                    // Don't swap ranged units closer than they have to be
-                    val range = otherUnit.baseUnit.range
-                    if (ourDistanceToClosestEnemy < range)
-                        continue
-                }
-                if (unit.movement.canUnitSwapTo(swapTile)) {
-                    unit.movement.swapMoveToTile(swapTile)
+            val tileDistanceToClosestEnemy = unit.civ.threatManager.getDistanceToClosestEnemyUnit(retreatTile,6,false)
+            if (ourDistanceToClosestEnemy >= tileDistanceToClosestEnemy) continue
+
+            val otherUnit = retreatTile.militaryUnit
+            if (otherUnit == null) {
+                // See if we can retreat to the tile
+                if (unit.movement.canMoveTo(retreatTile)) {
+                    unit.movement.moveToTile(retreatTile)
                     return true
+                }
+            } else if (otherUnit.civ == unit.civ) {
+                // The tile is taken, lets see if we want to swap retreat to it
+                if (otherUnit.health > 80) {
+                    if (otherUnit.baseUnit.isRanged()) {
+                        // Don't swap ranged units closer than they have to be
+                        val range = otherUnit.baseUnit.range
+                        if (ourDistanceToClosestEnemy < range)
+                            continue
+                    }
+                    if (unit.movement.canUnitSwapTo(retreatTile)) {
+                        unit.movement.swapMoveToTile(retreatTile)
+                        return true
+                    }
                 }
             }
         }
@@ -331,7 +355,7 @@ object UnitAutomation {
 
         val currentUnitTile = unit.getTile()
 
-        val dangerousTiles = unit.civ.threatManager.getDangerousTiles(unit)
+        val dangerousTiles = unit.civ.threatManager.getDangerousTiles(unit, 4)
 
         val viableTilesForHealing = unitDistanceToTiles.keys
                 .filter { it !in dangerousTiles && unit.movement.canMoveTo(it) }
