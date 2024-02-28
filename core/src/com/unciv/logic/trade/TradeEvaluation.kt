@@ -318,7 +318,7 @@ class TradeEvaluation {
         // Goes from 1 at GPT = 0 to .834 at GPT = 100, .296 at GPT = 1000 and 0.116 at GPT = 10000
         // The current value of gold will never go below 10% or the .1f that it is set to
         // So this does not scale off to infinity
-        return modifier / (goldPerTurn.pow(1.2).coerceAtLeast(0.0) + (1.11f * modifier)) + .1f
+        return modifier / (goldPerTurn.coerceAtLeast(0.0).pow(1.2) + (1.11f * modifier)) + .1f
     }
 
     /** This code returns a positive value if the city is significantly far away from the capital
