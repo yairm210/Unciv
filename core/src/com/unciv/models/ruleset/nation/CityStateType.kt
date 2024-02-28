@@ -8,10 +8,13 @@ import com.unciv.ui.components.extensions.colorFromRGB
 
 class CityStateType: INamed {
     override var name = ""
+
     var friendBonusUniques = ArrayList<String>()
-    val friendBonusUniqueMap by lazy { UniqueMap().apply { addUniques(friendBonusUniques.map { Unique(it, sourceObjectType = UniqueTarget.CityState) }) } }
+    val friendBonusUniqueMap by lazy { friendBonusUniques.toUniqueMap() }
     var allyBonusUniques = ArrayList<String>()
-    val allyBonusUniqueMap by lazy { UniqueMap().apply { addUniques(allyBonusUniques.map { Unique(it, sourceObjectType = UniqueTarget.CityState) }) } }
+    val allyBonusUniqueMap by lazy { allyBonusUniques.toUniqueMap() }
+    private fun ArrayList<String>.toUniqueMap() =
+        UniqueMap(asSequence().map { Unique(it, sourceObjectType = UniqueTarget.CityState) })
 
     var color:List<Int> = listOf(255,255,255)
     private val colorObject by lazy { colorFromRGB(color) }

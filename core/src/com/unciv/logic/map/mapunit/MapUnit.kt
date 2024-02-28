@@ -612,18 +612,11 @@ class MapUnit : IsPartOfGameInfoSerialization {
     }
 
     fun updateUniques() {
-        val uniques = ArrayList<Unique>()
-        uniques.addAll(baseUnit.uniqueObjects)
-        uniques.addAll(type.uniqueObjects)
-
-        for (promotion in promotions.getPromotions()) {
-            uniques.addAll(promotion.uniqueObjects)
-        }
-
-        tempUniquesMap = UniqueMap().apply {
-            addUniques(uniques)
-        }
-
+        val uniqueSources =
+            baseUnit.uniqueObjects.asSequence() +
+                type.uniqueObjects +
+                promotions.getPromotions().flatMap { it.uniqueObjects }
+        tempUniquesMap = UniqueMap(uniqueSources)
         cache.updateUniques()
     }
 
