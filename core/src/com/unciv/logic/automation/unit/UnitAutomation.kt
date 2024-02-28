@@ -318,7 +318,8 @@ object UnitAutomation {
 
         // Try pillage improvements until healed
         while(tryPillageImprovement(unit, false)) {
-            if (unit.currentMovement == 0f || unit.health == 100) return true
+            // If we are fully healed and can still do things, lets keep on going by returning false
+            if (unit.currentMovement == 0f || unit.health == 100) return unit.currentMovement == 0f
         }
 
         val unitDistanceToTiles = unit.movement.getDistanceToTiles()
