@@ -17,6 +17,7 @@ import com.unciv.ui.screens.victoryscreen.RankingType
 import kotlin.math.ceil
 import kotlin.math.min
 import kotlin.math.pow
+import kotlin.math.roundToInt
 import kotlin.math.sqrt
 
 class TradeEvaluation {
@@ -90,12 +91,12 @@ class TradeEvaluation {
                 return Int.MIN_VALUE
             }
         }
-        val diplomaticGifts = if (includeDiplomaticGifts) {
+        val diplomaticGifts: Double = if (includeDiplomaticGifts) {
             // The inverse of howe we calculate GaveUsGifts in TradeLogic.acceptTrade gives us how much gold it is worth
             val giftAmount = evaluator.getDiplomacyManager(tradePartner).getModifier(DiplomaticModifiers.GaveUsGifts)
             (giftAmount * evaluator.gameInfo.speed.goldGiftModifier * 100) / getGoldInflation(evaluator)
-        } else 0f
-        return sumOfTheirOffers - sumOfOurOffers + diplomaticGifts.toInt()
+        } else 0.0
+        return sumOfTheirOffers - sumOfOurOffers + diplomaticGifts.roundToInt()
     }
 
     fun evaluateBuyCostWithInflation(offer: TradeOffer, civInfo: Civilization, tradePartner: Civilization): Int {
