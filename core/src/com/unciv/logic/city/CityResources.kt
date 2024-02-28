@@ -21,7 +21,7 @@ object CityResources {
 
         manageCityResourcesRequiredByBuildings(city, cityResources)
 
-        getCityResourcesFromUniqueBuildings(city, cityResources, resourceModifer)
+        getCityResourcesFromCiv(city, cityResources, resourceModifer)
 
         if (city.civ.isCityState() && city.isCapital() && city.civ.cityStateResource != null) {
             cityResources.add(
@@ -32,7 +32,6 @@ object CityResources {
 
         return cityResources
     }
-
 
     /** Gets the number of resources available to this city
      * Accommodates both city-wide and civ-wide resources */
@@ -82,9 +81,9 @@ object CityResources {
         }
     }
 
-    private fun getCityResourcesFromUniqueBuildings(city: City, cityResources: ResourceSupplyList, resourceModifer: HashMap<String, Float>) {
-        for (unique in city.cityConstructions.builtBuildingUniqueMap
-            .getMatchingUniques(UniqueType.ProvidesResources, StateForConditionals(city.civ, city))) { // E.G "Provides [1] [Iron]"
+    private fun getCityResourcesFromCiv(city: City, cityResources: ResourceSupplyList, resourceModifer: HashMap<String, Float>) {
+        // This includes the uniques from buildings, from this and all other cities
+        for (unique in city.civ.getMatchingUniques(UniqueType.ProvidesResources, StateForConditionals(city.civ, city))) { // E.G "Provides [1] [Iron]"
             val resource = city.getRuleset().tileResources[unique.params[1]]
                 ?: continue
             cityResources.add(

@@ -154,8 +154,7 @@ class City : IsPartOfGameInfoSerialization {
     fun isCoastal(): Boolean = centerTile.isCoastalTile()
 
     fun capitalCityIndicator(): Building {
-        val indicatorBuildings = getRuleset().buildings.values
-            .asSequence()
+        val indicatorBuildings = getRuleset().buildings.values.asSequence()
             .filter { it.hasUnique(UniqueType.IndicatesCapital) }
 
         val civSpecificBuilding = indicatorBuildings.firstOrNull { it.uniqueTo == civ.civName }
@@ -179,31 +178,17 @@ class City : IsPartOfGameInfoSerialization {
     fun isWeLoveTheKingDayActive() = hasFlag(CityFlags.WeLoveTheKing)
     fun isInResistance() = hasFlag(CityFlags.Resistance)
     fun isBlockaded(): Boolean {
-
-        // Landlocked cities are not blockaded
-        if (!isCoastal())
-            return false
-
         // Coastal cities are blocked if every adjacent water tile is blocked
-        for (tile in getCenterTile().neighbors) {
-
-            // Consider only water tiles
-            if (!tile.isWater)
-                continue
-
-            // One unblocked tile breaks whole city blockade
-            if (!tile.isBlockaded())
-                return false
+        if (!isCoastal()) return false
+        return getCenterTile().neighbors.filter { it.isWater }.all {
+            it.isBlockaded()
         }
-
-        // All tiles are blocked
-        return true
     }
 
     fun getRuleset() = civ.gameInfo.ruleset
 
     fun getCityResources() = CityResources.getCityResources(this)
-    fun getResourceAmount(resourceName:String) = CityResources.getResourceAmount(this, resourceName)
+    fun getResourceAmount(resourceName: String) = CityResources.getResourceAmount(this, resourceName)
 
     fun isGrowing() = foodForNextTurn() > 0
     fun isStarving() = foodForNextTurn() < 0
@@ -211,8 +196,8 @@ class City : IsPartOfGameInfoSerialization {
     fun foodForNextTurn() = cityStats.currentCityStats.food.roundToInt()
 
 
-    fun containsBuildingUnique(uniqueType: UniqueType) =
-        cityConstructions.builtBuildingUniqueMap.getUniques(uniqueType).any()
+    fun containsBuildingUnique(uniqueType: UniqueType, state: StateForConditionals = StateForConditionals(this)) =
+        cityConstructions.builtBuildingUniqueMap.getMatchingUniques(uniqueType, state).any()
 
     fun getGreatPersonPercentageBonus() = GreatPersonPointsBreakdown.getGreatPersonPercentageBonus(this)
     fun getGreatPersonPoints() = GreatPersonPointsBreakdown(this).sum()
@@ -479,17 +464,17 @@ class City : IsPartOfGameInfoSerialization {
     fun getLocalMatchingUniques(uniqueType: UniqueType, stateForConditionals: StateForConditionals = StateForConditionals(civ, this)): Sequence<Unique> {
         return (
             cityConstructions.builtBuildingUniqueMap.getUniques(uniqueType).filter { it.isLocalEffect }
-            + religion.getUniques().filter { it.type == uniqueType }
-        ).filter {
-            it.conditionalsApply(stateForConditionals)
-        }
+                + religion.getUniques().filter { it.type == uniqueType }
+            ).filter {
+                !it.isTimedTriggerable && it.conditionalsApply(stateForConditionals)
+            }
     }
 
     // Uniques coming from only this city
     fun getMatchingLocalOnlyUniques(uniqueType: UniqueType, stateForConditionals: StateForConditionals): Sequence<Unique> {
         val uniques = cityConstructions.builtBuildingUniqueMap.getUniques(uniqueType).filter { it.isLocalEffect } +
             religion.getUniques().filter { it.type == uniqueType }
-        return if (uniques.any()) uniques.filter { it.conditionalsApply(stateForConditionals) }
+        return if (uniques.any()) uniques.filter { !it.isTimedTriggerable && it.conditionalsApply(stateForConditionals) }
         else uniques
     }
 
@@ -497,7 +482,8 @@ class City : IsPartOfGameInfoSerialization {
     fun getMatchingUniquesWithNonLocalEffects(uniqueType: UniqueType, stateForConditionals: StateForConditionals): Sequence<Unique> {
         val uniques = cityConstructions.builtBuildingUniqueMap.getUniques(uniqueType)
         // Memory performance showed that this function was very memory intensive, thus we only create the filter if needed
-        return if (uniques.any()) uniques.filter { !it.isLocalEffect && it.conditionalsApply(stateForConditionals) }
+        return if (uniques.any()) uniques.filter { !it.isLocalEffect && !it.isTimedTriggerable
+            && it.conditionalsApply(stateForConditionals) }
         else uniques
     }
 

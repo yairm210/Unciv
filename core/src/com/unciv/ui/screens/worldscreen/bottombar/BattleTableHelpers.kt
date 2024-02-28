@@ -148,7 +148,7 @@ object BattleTableHelpers {
         attacker: ICombatant, damageToAttacker: Int,
         defender: ICombatant, damageToDefender: Int
     ) {
-        fun getMapActorsForCombatant(combatant: ICombatant):Sequence<Actor> =
+        fun getMapActorsForCombatant(combatant: ICombatant): Sequence<Actor> =
                 sequence {
                     val tileGroup = mapHolder.tileGroups[combatant.getTile()]!!
                     if (combatant.isCity()) {
@@ -219,7 +219,7 @@ object BattleTableHelpers {
     fun getHealthBar(maxHealth: Int, currentHealth: Int, maxRemainingHealth: Int, minRemainingHealth: Int): Table {
         val healthBar = Table()
         val totalWidth = 100f
-        fun addHealthToBar(image: Image, amount:Int) {
+        fun addHealthToBar(image: Image, amount: Int) {
             val width = totalWidth * amount / maxHealth
             healthBar.add(image).size(width.coerceIn(0f, totalWidth),3f)
         }

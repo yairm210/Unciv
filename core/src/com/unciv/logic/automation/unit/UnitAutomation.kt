@@ -109,7 +109,7 @@ object UnitAutomation {
                 && unit.movement.canReach(tile) // expensive, evaluate last
     }
 
-    fun wander(unit: MapUnit, stayInTerritory: Boolean = false, tilesToAvoid:Set<Tile> = setOf()) {
+    fun wander(unit: MapUnit, stayInTerritory: Boolean = false, tilesToAvoid: Set<Tile> = setOf()) {
         val unitDistanceToTiles = unit.movement.getDistanceToTiles()
         val reachableTiles = unitDistanceToTiles
                 .filter {
@@ -142,6 +142,7 @@ object UnitAutomation {
         val upgradeActions = UnitActionsUpgrade.getUpgradeActions(unit)
 
         upgradeActions.firstOrNull{ (it as UpgradeUnitAction).unitToUpgradeTo == upgradedUnit }?.action?.invoke() ?: return false
+        //todo Incorrect - an _unsuccessful_ upgrade might have _resurrected_ the original in which case it's a new clone, and unit.isDestroyed is still true
         return unit.isDestroyed // a successful upgrade action will destroy this unit
     }
 
@@ -193,13 +194,14 @@ object UnitAutomation {
             return
         }
 
+        // Note that not all nukes have to be air units
+        if (unit.baseUnit.isNuclearWeapon()) {
+            return AirUnitAutomation.automateNukes(unit)
+        }
+
         if (unit.baseUnit.isAirUnit()) {
             if (unit.canIntercept())
                 return AirUnitAutomation.automateFighter(unit)
-
-            // Note that not all nukes have to be air units
-            if (unit.baseUnit.isNuclearWeapon())
-                return AirUnitAutomation.automateNukes(unit)
 
             if (unit.hasUnique(UniqueType.SelfDestructs))
                 return AirUnitAutomation.automateMissile(unit)
@@ -211,12 +213,15 @@ object UnitAutomation {
 
         if (tryUpgradeUnit(unit)) return
 
+        if (unit.health < 50 && (trySwapRetreat(unit) || tryHealUnit(unit))) return // do nothing but heal
+
+        // If there are no enemies nearby and we can heal here, wait until we are at full health
+        if (unit.health < 100 && canUnitHealInTurnsOnCurrentTile(unit,2, 4)) return
+
         // Accompany settlers
         if (tryAccompanySettlerOrGreatPerson(unit)) return
 
         if (tryHeadTowardsOurSiegedCity(unit)) return
-
-        if (unit.health < 50 && (trySwapRetreat(unit) || tryHealUnit(unit))) return // do nothing but heal
 
         // if a embarked melee unit can land and attack next turn, do not attack from water.
         if (BattleHelper.tryDisembarkUnitToAttackPosition(unit)) return
@@ -312,9 +317,17 @@ object UnitAutomation {
         if (unit.baseUnit.isRanged() && unit.hasUnique(UniqueType.HealsEvenAfterAction))
             return false // will heal anyway, and attacks don't hurt
 
-        if (tryPillageImprovement(unit)) return true
+        // Try pillage improvements until healed
+        while(tryPillageImprovement(unit, false)) {
+            // If we are fully healed and can still do things, lets keep on going by returning false
+            if (unit.currentMovement == 0f || unit.health == 100) return unit.currentMovement == 0f
+        }
+
         val unitDistanceToTiles = unit.movement.getDistanceToTiles()
         if (unitDistanceToTiles.isEmpty()) return true // can't move, so...
+
+        // If the unit can heal on this tile in two turns, just heal here
+        if (canUnitHealInTurnsOnCurrentTile(unit,3,)) return true
 
         val currentUnitTile = unit.getTile()
 
@@ -364,6 +377,19 @@ object UnitAutomation {
         return true
     }
 
+    /**
+     * @return true if the tile is safe and the unit can heal to full within [turns]
+     */
+    private fun canUnitHealInTurnsOnCurrentTile(unit: MapUnit, turns: Int, noEnemyDistance: Int = 3): Boolean {
+        if (unit.hasUnique(UniqueType.HealsEvenAfterAction)) return false // We can keep on moving
+        // Check if we are not in a safe city and there is an enemy nearby this isn't a good tile to heal on
+        if (!(unit.getTile().isCityCenter() && unit.getTile().getCity()!!.health > 50) 
+            && unit.civ.threatManager.getDistanceToClosestEnemyUnit(unit.getTile(), noEnemyDistance) <= noEnemyDistance) return false
+
+        val healthRequiredPerTurn =  (100 - unit.health) / turns
+        return healthRequiredPerTurn <= unit.rankTileForHealing(unit.getTile())
+    }
+
     private fun getDangerousTiles(unit: MapUnit): HashSet<Tile> {
         val nearbyRangedEnemyUnits = unit.currentTile.getTilesInDistance(3)
             .flatMap { tile -> tile.getUnits().filter { unit.civ.isAtWarWith(it.civ) } }
@@ -381,14 +407,17 @@ object UnitAutomation {
         return (tilesInRangeOfAttack + tilesWithinBombardmentRange + tilesWithTerrainDamage).toHashSet()
     }
 
-    fun tryPillageImprovement(unit: MapUnit): Boolean {
+    /**
+     * @return true if the unit was able to pillage a tile, false otherwise
+     */
+    fun tryPillageImprovement(unit: MapUnit, onlyPillageToHeal: Boolean = false): Boolean {
         if (unit.isCivilian()) return false
         val unitDistanceToTiles = unit.movement.getDistanceToTiles()
         val tilesThatCanWalkToAndThenPillage = unitDistanceToTiles
             .filter { it.value.totalDistance < unit.currentMovement }.keys
             .filter { unit.movement.canMoveTo(it) && UnitActionsPillage.canPillage(unit, it)
                     && (it.canPillageTileImprovement()
-                    || (it.canPillageRoad() && it.getRoadOwner() != null && unit.civ.isAtWarWith(it.getRoadOwner()!!))) }
+                    || (!onlyPillageToHeal && it.canPillageRoad() && it.getRoadOwner() != null && unit.civ.isAtWarWith(it.getRoadOwner()!!))) }
 
         if (tilesThatCanWalkToAndThenPillage.isEmpty()) return false
         val tileToPillage = tilesThatCanWalkToAndThenPillage.maxByOrNull { it.getDefensiveBonus(false) }!!
@@ -398,7 +427,7 @@ object UnitAutomation {
         // We CANNOT use invokeUnitAction, since the default unit action contains a popup, which - when automated -
         //  runs a UI action on a side thread leading to crash!
         UnitActionsPillage.getPillageAction(unit, unit.currentTile)?.action?.invoke()
-        return unit.currentMovement == 0f
+        return true
     }
 
     /** Move towards the closest attackable enemy of the [unit].

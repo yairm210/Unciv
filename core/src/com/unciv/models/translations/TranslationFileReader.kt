@@ -23,7 +23,7 @@ object TranslationFileReader {
         return translations
     }
 
-    fun readLanguagePercentages():HashMap<String,Int>{
+    fun readLanguagePercentages(): HashMap<String,Int> {
 
         val hashmap = HashMap<String,Int>()
         val percentageFile = Gdx.files.internal(percentagesFileLocation)

@@ -23,24 +23,19 @@ class MapUnitCombatant(val unit: MapUnit) : ICombatant {
         if (it == null) UncivSound.Click else UncivSound(it)
     }
 
-    override fun takeDamage(damage: Int) {
-        unit.health -= damage
-        if (unit.health > 100) unit.health = 100 // For cheating modders, e.g. negative tile damage
-        if (unit.health < 0) unit.health = 0
-        if (isDefeated()) unit.destroy()
-    }
+    override fun takeDamage(damage: Int) = unit.takeDamage(damage)
 
     override fun getAttackingStrength(): Int {
-        return if (isRanged()) unit.baseUnit().rangedStrength
-        else unit.baseUnit().strength
+        return if (isRanged()) unit.baseUnit.rangedStrength
+        else unit.baseUnit.strength
     }
 
     override fun getDefendingStrength(attackedByRanged: Boolean): Int {
         return if (unit.isEmbarked() && !isCivilian())
             unit.civ.getEra().embarkDefense
         else if (isRanged() && attackedByRanged)
-            unit.baseUnit().rangedStrength
-        else unit.baseUnit().strength
+            unit.baseUnit.rangedStrength
+        else unit.baseUnit.strength
     }
 
     override fun getUnitType(): UnitType {

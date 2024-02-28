@@ -1,14 +1,14 @@
 package com.unciv.logic.map.mapunit
 
-import com.unciv.logic.UncivShowableException
 import com.unciv.models.ruleset.RejectionReasonType
 import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.ui.components.extensions.toPercent
+import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionsUpgrade
 import kotlin.math.pow
 
-class UnitUpgradeManager(val unit:MapUnit) {
+class UnitUpgradeManager(val unit: MapUnit) {
 
     /** Check whether this unit can upgrade to [unitToUpgradeTo]. This does not check or follow the
      *  normal upgrade chain defined by [BaseUnit.getUpgradeUnits]
@@ -26,7 +26,7 @@ class UnitUpgradeManager(val unit:MapUnit) {
 
         val rejectionReasons = unitToUpgradeTo.getRejectionReasons(unit.civ, additionalResources = unit.getResourceRequirementsPerTurn())
 
-        var relevantRejectionReasons = rejectionReasons.filterNot { 
+        var relevantRejectionReasons = rejectionReasons.filterNot {
             it.isConstructionRejection() || it.type == RejectionReasonType.Obsoleted
         }
         if (ignoreRequirements)
@@ -68,9 +68,42 @@ class UnitUpgradeManager(val unit:MapUnit) {
         cost = (cost * civModifier).pow(constants.exponent)
         cost *= unit.civ.gameInfo.speed.modifier
         goldCostOfUpgrade += (cost / constants.roundTo).toInt() * constants.roundTo
-        
+
         return goldCostOfUpgrade
     }
 
+    /** _Perform_ an upgrade, assuming validity checks were already passed.
+     *
+     *  Continuing to use a reference to this manager or its unit after this call is invalid!
+     *
+     *  Please use [UnitActionsUpgrade.getUpgradeActions] instead if at all possible.
+     *
+     *  Note - the upgraded unit is a new instance, and it's possible this method will need to place it on a different tile.
+     *  It is also possible the placement fails and the original is resurrected - in which case it is a **new instance** as well.
+     *  It might be desirable to return `newUnit` (or `resurrectedUnit`) if needed -
+     *  but then the lambda in UnitActionsUpgrade will complain and need to be forced back to Unit type.
+     */
+    fun performUpgrade(upgradedUnit: BaseUnit, isFree: Boolean, goldCostOfUpgrade: Int? = null) {
+        unit.destroy(destroyTransportedUnit = false)
+        val civ = unit.civ
+        val position = unit.currentTile.position
+        val newUnit = civ.units.placeUnitNearTile(position, upgradedUnit)
 
+        /** We were UNABLE to place the new unit, which means that the unit failed to upgrade!
+         * The only known cause of this currently is "land units upgrading to water units" which fail to be placed.
+         */
+        if (newUnit == null) {
+            val resurrectedUnit = civ.units.placeUnitNearTile(position, unit.baseUnit)!!
+            unit.copyStatisticsTo(resurrectedUnit)
+            return
+        }
+
+        // Managed to upgrade
+        if (!isFree) civ.addGold(-(goldCostOfUpgrade ?: getCostOfUpgrade(upgradedUnit)))
+        unit.copyStatisticsTo(newUnit)
+        newUnit.currentMovement = 0f
+        // wake up if lost ability to fortify
+        if (newUnit.isFortified() && !newUnit.canFortify(ignoreAlreadyFortified = true))
+            newUnit.action = null
+    }
 }

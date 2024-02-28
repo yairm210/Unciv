@@ -140,13 +140,13 @@ class CityConstructions : IsPartOfGameInfoSerialization {
     }
 
     /** @param constructionName needs to be a non-perpetual construction, else an empty string is returned */
-    internal fun getTurnsToConstructionString(constructionName: String, useStoredProduction:Boolean = true) =
+    internal fun getTurnsToConstructionString(constructionName: String, useStoredProduction: Boolean = true) =
         getTurnsToConstructionString(getConstruction(constructionName), useStoredProduction)
 
     /** @param construction needs to be a non-perpetual construction, else an empty string is returned */
-    internal fun getTurnsToConstructionString(construction: IConstruction, useStoredProduction:Boolean = true): String {
+    internal fun getTurnsToConstructionString(construction: IConstruction, useStoredProduction: Boolean = true): String {
         if (construction !is INonPerpetualConstruction) return ""   // shouldn't happen
-        val cost = construction.getProductionCost(city.civ)
+        val cost = construction.getProductionCost(city.civ, city)
         val turnsToConstruction = turnsToConstruction(construction.name, useStoredProduction)
         val currentProgress = if (useStoredProduction) getWorkDone(construction.name) else 0
         val lines = ArrayList<String>()
@@ -254,8 +254,8 @@ class CityConstructions : IsPartOfGameInfoSerialization {
         val constr = getConstruction(constructionName)
         return when {
             constr is PerpetualConstruction -> 0
-            useStoredProduction -> (constr as INonPerpetualConstruction).getProductionCost(city.civ) - getWorkDone(constructionName)
-            else -> (constr as INonPerpetualConstruction).getProductionCost(city.civ)
+            useStoredProduction -> (constr as INonPerpetualConstruction).getProductionCost(city.civ, city) - getWorkDone(constructionName)
+            else -> (constr as INonPerpetualConstruction).getProductionCost(city.civ, city)
         }
     }
 
@@ -331,7 +331,7 @@ class CityConstructions : IsPartOfGameInfoSerialization {
         val construction = getConstruction(currentConstructionFromQueue)
         if (construction is PerpetualConstruction) chooseNextConstruction() // check every turn if we could be doing something better, because this doesn't end by itself
         else {
-            val productionCost = (construction as INonPerpetualConstruction).getProductionCost(city.civ)
+            val productionCost = (construction as INonPerpetualConstruction).getProductionCost(city.civ, city)
             if (inProgressConstructions.containsKey(currentConstructionFromQueue)
                     && inProgressConstructions[currentConstructionFromQueue]!! >= productionCost) {
                 val potentialOverflow = inProgressConstructions[currentConstructionFromQueue]!! - productionCost
@@ -584,13 +584,13 @@ class CityConstructions : IsPartOfGameInfoSerialization {
 
     fun removeBuildings(buildings: Set<Building>) {
         val buildingsToRemove = buildings.map { it.name }.toSet()
-        builtBuildings.removeIf {
+        builtBuildings.removeAll {
             it in buildingsToRemove
         }
         setTransients()
     }
 
-    fun updateUniques(onLoadGame:Boolean = false) {
+    fun updateUniques(onLoadGame: Boolean = false) {
         builtBuildingUniqueMap.clear()
         for (building in getBuiltBuildings())
             builtBuildingUniqueMap.addUniques(building.uniqueObjects)

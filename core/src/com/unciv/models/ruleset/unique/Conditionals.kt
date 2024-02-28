@@ -133,6 +133,7 @@ object Conditionals {
             UniqueType.ConditionalHappy -> checkOnCiv { stats.happiness >= 0 }
             UniqueType.ConditionalBetweenHappiness ->
                 checkOnCiv { stats.happiness in condition.params[0].toInt() .. condition.params[1].toInt() }
+            UniqueType.ConditionalAboveHappiness -> checkOnCiv { stats.happiness > condition.params[0].toInt() }
             UniqueType.ConditionalBelowHappiness -> checkOnCiv { stats.happiness < condition.params[0].toInt() }
             UniqueType.ConditionalGoldenAge -> checkOnCiv { goldenAges.isGoldenAge() }
 
@@ -191,6 +192,8 @@ object Conditionals {
                 checkOnCity { !cityConstructions.containsBuildingOrEquivalent(condition.params[0]) }
             UniqueType.ConditionalPopulationFilter ->
                 checkOnCity { population.getPopulationFilterAmount(condition.params[1]) >= condition.params[0].toInt() }
+            UniqueType.ConditionalExactPopulationFilter ->
+                checkOnCity { population.getPopulationFilterAmount(condition.params[1]) == condition.params[0].toInt() }
             UniqueType.ConditionalWhenGarrisoned ->
                 checkOnCity { getCenterTile().militaryUnit?.canGarrison() == true }
 
@@ -202,10 +205,10 @@ object Conditionals {
             UniqueType.ConditionalUnitWithoutPromotion -> relevantUnit?.promotions?.promotions?.contains(condition.params[0]) == false
             UniqueType.ConditionalAttacking -> state.combatAction == CombatAction.Attack
             UniqueType.ConditionalDefending -> state.combatAction == CombatAction.Defend
-            UniqueType.ConditionalAboveHP ->
-                state.ourCombatant != null && state.ourCombatant.getHealth() > condition.params[0].toInt()
-            UniqueType.ConditionalBelowHP ->
-                state.ourCombatant != null && state.ourCombatant.getHealth() < condition.params[0].toInt()
+            UniqueType.ConditionalAboveHP -> relevantUnit != null && relevantUnit!!.health > condition.params[0].toInt()
+                    || state.ourCombatant != null && state.ourCombatant.getHealth() > condition.params[0].toInt()
+            UniqueType.ConditionalBelowHP -> relevantUnit != null && relevantUnit!!.health < condition.params[0].toInt()
+                    ||state.ourCombatant != null && state.ourCombatant.getHealth() < condition.params[0].toInt()
             UniqueType.ConditionalHasNotUsedOtherActions ->
                 state.unit == null || // So we get the action as a valid action in BaseUnit.hasUnique()
                     state.unit.abilityToTimesUsed.isEmpty()

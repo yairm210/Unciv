@@ -116,7 +116,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         return ourUniques + type.getMatchingUniques(uniqueType, stateForConditionals)
     }
 
-    override fun getProductionCost(civInfo: Civilization): Int  = costFunctions.getProductionCost(civInfo)
+    override fun getProductionCost(civInfo: Civilization, city: City?): Int  = costFunctions.getProductionCost(civInfo, city)
 
     override fun canBePurchasedWithStat(city: City?, stat: Stat): Boolean {
         if (city == null) return super.canBePurchasedWithStat(null, stat)
@@ -147,7 +147,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
 
     override fun getStatBuyCost(city: City, stat: Stat): Int? = costFunctions.getStatBuyCost(city, stat)
 
-    fun getDisbandGold(civInfo: Civilization) = getBaseGoldCost(civInfo).toInt() / 20
+    fun getDisbandGold(civInfo: Civilization) = getBaseGoldCost(civInfo, null).toInt() / 20
 
     override fun shouldBeDisplayed(cityConstructions: CityConstructions): Boolean {
         val rejectionReasons = getRejectionReasons(cityConstructions)

@@ -14,7 +14,7 @@ import kotlin.math.min
 @Suppress("UNUSED_PARAMETER") // references need to have the signature expected by UnitActions.actionTypeToFunctions
 object UnitActionsGreatPerson {
 
-    internal fun getHurryResearchActions(unit:MapUnit, tile: Tile) = sequence {
+    internal fun getHurryResearchActions(unit: MapUnit, tile: Tile) = sequence {
         for (unique in unit.getMatchingUniques(UniqueType.CanHurryResearch)){
             yield(UnitAction(
                 UnitActionType.HurryResearch,
@@ -30,7 +30,7 @@ object UnitActionsGreatPerson {
         }
     }
 
-    internal fun getHurryPolicyActions(unit:MapUnit, tile: Tile) = sequence {
+    internal fun getHurryPolicyActions(unit: MapUnit, tile: Tile) = sequence {
         for (unique in unit.getMatchingUniques(UniqueType.CanHurryPolicy)){
             yield(UnitAction(
                 UnitActionType.HurryPolicy,
@@ -64,7 +64,7 @@ object UnitActionsGreatPerson {
         }
     }
 
-    internal fun getHurryBuildingActions(unit:MapUnit, tile: Tile) = sequence {
+    internal fun getHurryBuildingActions(unit: MapUnit, tile: Tile) = sequence {
         for (unique in unit.getMatchingUniques(UniqueType.CanSpeedupConstruction)) {
             if (!tile.isCityCenter()) {
                 yield(UnitAction(UnitActionType.HurryBuilding, action = null))
@@ -97,7 +97,7 @@ object UnitActionsGreatPerson {
         }
     }
 
-    internal fun getConductTradeMissionActions(unit:MapUnit, tile: Tile) = sequence {
+    internal fun getConductTradeMissionActions(unit: MapUnit, tile: Tile) = sequence {
         for (unique in unit.getMatchingUniques(UniqueType.CanTradeWithCityStateForGoldAndInfluence)) {
             val canConductTradeMission = tile.owningCity?.civ?.isCityState() == true
                 && tile.owningCity?.civ != unit.civ

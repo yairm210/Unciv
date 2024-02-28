@@ -78,7 +78,7 @@ private class FlagBackground(drawable: TextureRegionDrawable, size: Float) : Ima
 }
 
 class UnitGroup(val unit: MapUnit, val size: Float) : Group() {
-    var actionGroup :Group? = null
+    var actionGroup: Group? = null
 
     private val flagIcon = ImageGetter.getUnitIcon(unit.name, unit.civ.nation.getInnerColor())
     private var flagBg: FlagBackground = FlagBackground(getBackgroundDrawableForUnit(), size)
@@ -177,6 +177,7 @@ class UnitGroup(val unit: MapUnit, val size: Float) : Group() {
     private fun getActionImage(): Image? {
         return when {
             unit.isSleeping() -> ImageGetter.getImage("UnitActionIcons/Sleep")
+            unit.isEscorting() -> ImageGetter.getImage("OtherIcons/Link")
             unit.isMoving() -> ImageGetter.getImage("UnitActionIcons/MoveTo")
             unit.isExploring() -> ImageGetter.getImage("UnitActionIcons/Explore")
             unit.getTile().improvementInProgress!=null && unit.canBuildImprovement(unit.getTile().getTileImprovementInProgress()!!) ->

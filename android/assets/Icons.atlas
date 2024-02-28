@@ -431,6 +431,27 @@ StatIcons/Faith
   orig: 100, 100
   offset: 0, 0
   index: -1
+NotificationIcons/Loading
+  rotate: false
+  xy: 220, 559
+  size: 100, 100
+  orig: 100, 100
+  offset: 0, 0
+  index: -1
+NotificationIcons/Working
+  rotate: false
+  xy: 220, 559
+  size: 100, 100
+  orig: 100, 100
+  offset: 0, 0
+  index: -1
+OtherIcons/Loading
+  rotate: false
+  xy: 220, 559
+  size: 100, 100
+  orig: 100, 100
+  offset: 0, 0
+  index: -1
 NotificationIcons/PickConstruction
   rotate: false
   xy: 544, 899
@@ -686,27 +707,6 @@ OtherIcons/Link
 OtherIcons/Load
   rotate: false
   xy: 220, 667
-  size: 100, 100
-  orig: 100, 100
-  offset: 0, 0
-  index: -1
-OtherIcons/Loading
-  rotate: false
-  xy: 220, 559
-  size: 100, 100
-  orig: 100, 100
-  offset: 0, 0
-  index: -1
-NotificationIcons/Loading
-  rotate: false
-  xy: 220, 559
-  size: 100, 100
-  orig: 100, 100
-  offset: 0, 0
-  index: -1
-NotificationIcons/Working
-  rotate: false
-  xy: 220, 559
   size: 100, 100
   orig: 100, 100
   offset: 0, 0

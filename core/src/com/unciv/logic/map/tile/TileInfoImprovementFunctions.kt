@@ -247,7 +247,7 @@ class TileInfoImprovementFunctions(val tile: Tile) {
         unit: MapUnit? = null
     ) {
         val stateForConditionals = StateForConditionals(civ, unit = unit, tile = tile)
-        
+
         for (unique in improvement.uniqueObjects.filter { !it.hasTriggerConditional()
             && it.conditionalsApply(stateForConditionals) })
             UniqueTriggerActivation.triggerUnique(unique, civ, unit = unit, tile = tile)
@@ -255,7 +255,7 @@ class TileInfoImprovementFunctions(val tile: Tile) {
         for (unique in civ.getTriggeredUniques(UniqueType.TriggerUponBuildingImprovement, stateForConditionals)
             .filter { improvement.matchesFilter(it.params[0]) })
             UniqueTriggerActivation.triggerUnique(unique, civ, unit = unit, tile = tile)
-        
+
         if (unit == null) return
         for (unique in unit.getTriggeredUniques(UniqueType.TriggerUponBuildingImprovement, stateForConditionals)
             .filter { improvement.matchesFilter(it.params[0]) })
@@ -292,7 +292,7 @@ class TileInfoImprovementFunctions(val tile: Tile) {
         }
     }
 
-    private fun tryProvideProductionToClosestCity(removedTerrainFeature: String, civ:Civilization) {
+    private fun tryProvideProductionToClosestCity(removedTerrainFeature: String, civ: Civilization) {
         val closestCity = civ.cities.minByOrNull { it.getCenterTile().aerialDistanceTo(tile) }
         @Suppress("FoldInitializerAndIfToElvis")
         if (closestCity == null) return

@@ -293,7 +293,7 @@ class TranslationTests {
         UncivGame.Current = UncivGame()
         UncivGame.Current.settings = GameSettings()
 
-        fun addTranslation(original:String, result:String) {
+        fun addTranslation(original: String, result: String) {
             UncivGame.Current.translations[original.getPlaceholderText()] = TranslationEntry(original)
                 .apply { this[Constants.english] = result }
         }

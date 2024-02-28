@@ -115,7 +115,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
     var gameId = UUID.randomUUID().toString() // random string
     var checksum = ""
 
-    var victoryData:VictoryData? = null
+    var victoryData: VictoryData? = null
 
     /** Maps a civ to the civ they voted for - `null` on the value side means they abstained */
     var diplomaticVictoryVotesCast = HashMap<String, String?>()
@@ -316,7 +316,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
         return year.toInt()
     }
 
-    fun calculateChecksum():String {
+    fun calculateChecksum(): String {
         val oldChecksum = checksum
         checksum = "" // Checksum calculation cannot include old checksum, obvs
         val bytes = MessageDigest

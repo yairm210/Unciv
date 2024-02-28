@@ -124,7 +124,7 @@ This file is a little different:
 - Does not exist in Vanilla ruleset
 - Is entirely optional but will be created after downloading a mod
 
-Note that this file controls _declarative mod compatibility_ (Work in progress) - e.g. there's [uniques](../uniques.md#modoptions-uniques) to say your Mod should only or never be used as 'Permanent audiovisual mod'.
+Note that this file controls _declarative mod compatibility_ (Work in progress) - e.g. there's [uniques](../../uniques.md#modoptions-uniques) to say your Mod should only or never be used as 'Permanent audiovisual mod'.
 Incompatibility filtering works so far between extension and base mods, but feel free to document known extension-to-extension incompatibilities using the same Unique now. Stay tuned!
 
 The file can have the following attributes, not including the values Unciv sets automatically:
@@ -132,11 +132,11 @@ The file can have the following attributes, not including the values Unciv sets 
 | Attribute | Type | | Notes |
 | --------- | ---- | ------- | ----- |
 | isBaseRuleset | Boolean | false | Replaces vanilla ruleset if true |
-| uniques | List | empty | Mod-wide specials, [see here](../uniques.md#modoptions-uniques) |
-| techsToRemove | List | empty | List of [Technologies](2-Civilization-related-JSON-files.md#techsjson) or [technologyFilter](../Unique-parameters.md#technologyfilter) to remove (isBaseRuleset=false only) |
-| buildingsToRemove | List | empty | List of [Buildings or Wonders](2-Civilization-related-JSON-files.md#buildingsjson) or [buildingFilter](../Unique-parameters.md#buildingfilter) to remove (isBaseRuleset=false only) |
-| unitsToRemove | List | empty | List of [Units](4-Unit-related-JSON-files.md#unitsjson) or [unitFilter](../Unique-parameters.md#baseunitfilter) to remove (isBaseRuleset=false only) |
-| nationsToRemove | List | empty | List of [Nations](2-Civilization-related-JSON-files.md#nationsjson) or [nationFilter](../Unique-parameters.md#nationfilter) to remove (isBaseRuleset=false only) |
+| uniques | List | empty | Mod-wide specials, [see here](../../uniques.md#modoptions-uniques) |
+| techsToRemove | List | empty | List of [Technologies](2-Civilization-related-JSON-files.md#techsjson) or [technologyFilter](../../Unique-parameters.md#technologyfilter) to remove (isBaseRuleset=false only) |
+| buildingsToRemove | List | empty | List of [Buildings or Wonders](2-Civilization-related-JSON-files.md#buildingsjson) or [buildingFilter](../../Unique-parameters.md#buildingfilter) to remove (isBaseRuleset=false only) |
+| unitsToRemove | List | empty | List of [Units](4-Unit-related-JSON-files.md#unitsjson) or [unitFilter](../../Unique-parameters.md#baseunitfilter) to remove (isBaseRuleset=false only) |
+| nationsToRemove | List | empty | List of [Nations](2-Civilization-related-JSON-files.md#nationsjson) or [nationFilter](../../Unique-parameters.md#nationfilter) to remove (isBaseRuleset=false only) |
 | constants | Object | empty | See [ModConstants](#modconstants) |
 
 The values normally set automatically from github metadata are:
@@ -231,7 +231,7 @@ The formula for the gold cost of a unit upgrade is (rounded down to a multiple o
             max((`base` + `perProduction` \* (new_unit_cost - old_unit_cost)), 0)
             \* (1 + eraNumber \* `eraMultiplier`) \* `civModifier`
         ) ^ `exponent`
-With `civModifier` being the multiplicative aggregate of ["\[relativeAmount\]% Gold cost of upgrading"](../uniques.md#global-uniques) uniques that apply.
+With `civModifier` being the multiplicative aggregate of ["\[relativeAmount\]% Gold cost of upgrading"](../../uniques.md#global-uniques) uniques that apply.
 
 ## GlobalUniques.json
 

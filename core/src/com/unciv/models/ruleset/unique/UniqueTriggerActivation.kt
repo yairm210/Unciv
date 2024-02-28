@@ -4,7 +4,6 @@ import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.automation.civilization.NextTurnAutomation
-import com.unciv.logic.battle.MapUnitCombatant
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.CivFlags
 import com.unciv.logic.civilization.Civilization
@@ -159,7 +158,7 @@ object UniqueTriggerActivation {
 
                 if (actualAmount <= 0) return null
 
-                fun placeUnits():Boolean {
+                fun placeUnits(): Boolean {
                     val tilesUnitsWerePlacedOn: MutableList<Vector2> = mutableListOf()
                     repeat(actualAmount) {
                         val placedUnit = when {
@@ -209,7 +208,7 @@ object UniqueTriggerActivation {
                 val placingTile =
                     tile ?: civInfo.cities.random().getCenterTile()
 
-                fun placeUnit():Boolean {
+                fun placeUnit(): Boolean {
                     val placedUnit = civInfo.units.placeUnitNearTile(placingTile.position, civUnit.name)
                     if (notification != null && placedUnit != null) {
                         val notificationText =
@@ -869,7 +868,7 @@ object UniqueTriggerActivation {
             UniqueType.OneTimeUnitDamage -> {
                 if (unit == null) return null
                 return {
-                    MapUnitCombatant(unit).takeDamage(unique.params[0].toInt())
+                    unit.takeDamage(unique.params[0].toInt())
                     if (notification != null)
                         unit.civ.addNotification(notification, unit.getTile().position, NotificationCategory.Units) // Do we have a heal icon?
                     true

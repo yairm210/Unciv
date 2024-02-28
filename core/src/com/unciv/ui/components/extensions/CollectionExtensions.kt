@@ -27,7 +27,7 @@ fun <T> List<T>.randomWeighted(weights: List<Float>, random: Random = Random): T
  *
  * Solves concurrent modification problems - everyone who had a reference to the previous arrayList can keep using it because it hasn't changed
  */
-fun <T> ArrayList<T>.withItem(item:T): ArrayList<T> {
+fun <T> ArrayList<T>.withItem(item: T): ArrayList<T> {
     val newArrayList = ArrayList(this)
     newArrayList.add(item)
     return newArrayList
@@ -37,7 +37,7 @@ fun <T> ArrayList<T>.withItem(item:T): ArrayList<T> {
  *
  * Solves concurrent modification problems - everyone who had a reference to the previous hashSet can keep using it because it hasn't changed
  */
-fun <T> HashSet<T>.withItem(item:T): HashSet<T> {
+fun <T> HashSet<T>.withItem(item: T): HashSet<T> {
     val newHashSet = HashSet(this)
     newHashSet.add(item)
     return newHashSet
@@ -47,7 +47,7 @@ fun <T> HashSet<T>.withItem(item:T): HashSet<T> {
  *
  * Solves concurrent modification problems - everyone who had a reference to the previous arrayList can keep using it because it hasn't changed
  */
-fun <T> ArrayList<T>.withoutItem(item:T): ArrayList<T> {
+fun <T> ArrayList<T>.withoutItem(item: T): ArrayList<T> {
     val newArrayList = ArrayList(this)
     newArrayList.remove(item)
     return newArrayList
@@ -57,7 +57,7 @@ fun <T> ArrayList<T>.withoutItem(item:T): ArrayList<T> {
  *
  * Solves concurrent modification problems - everyone who had a reference to the previous hashSet can keep using it because it hasn't changed
  */
-fun <T> HashSet<T>.withoutItem(item:T): HashSet<T> {
+fun <T> HashSet<T>.withoutItem(item: T): HashSet<T> {
     val newHashSet = HashSet(this)
     newHashSet.remove(item)
     return newHashSet

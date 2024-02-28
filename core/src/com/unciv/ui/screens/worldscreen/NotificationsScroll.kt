@@ -7,34 +7,38 @@ import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.badlogic.gdx.scenes.scene2d.ui.Cell
 import com.badlogic.gdx.scenes.scene2d.ui.Container
 import com.badlogic.gdx.scenes.scene2d.ui.Image
+import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable
 import com.badlogic.gdx.utils.Align
 import com.unciv.GUI
 import com.unciv.logic.civilization.Notification
 import com.unciv.logic.civilization.NotificationCategory
-import com.unciv.ui.components.widgets.AutoScrollPane as ScrollPane
-import com.unciv.ui.components.widgets.ColorMarkupLabel
-import com.unciv.ui.components.widgets.WrappableLabel
-import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.extensions.packIfNeeded
 import com.unciv.ui.components.extensions.surroundWithCircle
+import com.unciv.ui.components.extensions.toLabel
+import com.unciv.ui.components.input.onClick
+import com.unciv.ui.components.widgets.ColorMarkupLabel
+import com.unciv.ui.components.widgets.WrappableLabel
 import com.unciv.ui.images.IconCircleGroup
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.basescreen.BaseScreen
+import com.unciv.ui.components.widgets.AutoScrollPane as ScrollPane
 
 /*TODO
  *  Un-hiding the notifications when new ones arrive is a little pointless due to Categories:
  *      * try to scroll new into view? Very complicated as the "old" state is only "available" in the Widgets
  *      * Don't unless a new user option disables categories, then scroll to top?
  *  Idea: Blink or tint the button when new notifications while Hidden
- *  Idea: The little "1" on the bell - remove and draw actual count
  */
 
 class NotificationsScroll(
     private val worldScreen: WorldScreen
 ) : ScrollPane(null) {
-    enum class UserSetting(val static: Boolean = false) { Disabled(true), Hidden, Visible, Permanent(true) }
+    enum class UserSetting(val static: Boolean = false) {
+        Disabled(true), Hidden, Visible, Permanent(true);
+        companion object { fun default() = Visible }
+    }
 
     private companion object {
         /** Scale the entire ScrollPane by this factor */
@@ -65,6 +69,12 @@ class NotificationsScroll(
         const val restoreButtonSize = 42f
         /** Distance of restore button to TileInfoTable and screen edge */
         const val restoreButtonPad = 12f
+        /** The outer size of the number+circle within the restore button */
+        const val restoreButtonNumbersSize = 0.5f * restoreButtonSize
+        /** Font size for the "count" number label overlaid on the restore button */
+        const val restoreButtonNumberFontSize = 13
+        /** The x/y coords of the center of the number+circle within the restore button */
+        const val restoreButtonNumbersCenter = restoreButtonSize - restoreButtonNumbersSize / 2
         /** Background tint for [oneTimeNotification] */
         private val oneTimeNotificationColor = Color.valueOf("fceea8")
     }
@@ -222,6 +232,9 @@ class NotificationsScroll(
         // need the redraw to determine the selectedCell, to enable scroll-into-view
         if (notificationsHash == newHash && highlightNotification == null) return false
         notificationsHash = newHash
+
+        // Inform the Bell Button about the count - ignoring oneTimeNotification
+        restoreButton.updateCount(notifications.size)
 
         // Rebuild the notifications list
         notificationsTable.clear()
@@ -387,12 +400,28 @@ class NotificationsScroll(
         private var blockCheck = true
         private var blockAct = true
         private var active = false
+        private var shownCount = 0
+        private val countLabel: Label
+        private val labelInnerCircle: Image
+        private val labelOuterCircle: Image
 
         init {
             actor = ImageGetter.getImage("OtherIcons/Notifications")
                 .surroundWithCircle(restoreButtonSize * 0.9f, color = BaseScreen.skinStrings.skinConfig.baseColor)
                 .surroundWithCircle(restoreButtonSize, resizeActor = false)
             size(restoreButtonSize)
+
+            countLabel = "".toLabel(Color.BLACK, restoreButtonNumberFontSize, Align.center)
+            // not using surroundWithCircle for the count, as the centering will break if positioned within another IconCircleGroup (why?)
+            labelInnerCircle = ImageGetter.getCircle(Color.WHITE, restoreButtonNumbersSize * 0.9f)
+            labelInnerCircle.centerAtNumberPosition()
+            labelOuterCircle = ImageGetter.getCircle(Color.BLACK, restoreButtonNumbersSize)
+            labelOuterCircle.centerAtNumberPosition()
+            actor.addActor(labelOuterCircle)
+            actor.addActor(labelInnerCircle)
+            actor.addActor(countLabel)
+            updateCount(1)
+
             color = color.cpy()  // So we don't mutate a skin element while fading
             color.a = 0f  // for first fade-in
             onClick {
@@ -400,6 +429,16 @@ class NotificationsScroll(
                 hide()
             }
             pack()  // `this` needs to adopt the size of `actor`, won't happen automatically (surprisingly)
+        }
+
+        private fun Actor.centerAtNumberPosition() = setPosition(restoreButtonNumbersCenter, restoreButtonNumbersCenter, Align.center)
+
+        fun updateCount(count: Int) {
+            if (count == shownCount) return
+            shownCount = count
+            countLabel.setText(if (count > 9) "+" else count.toString()) // No tr() needed - or should we use Maya numerals for the Maya?
+            countLabel.pack()
+            countLabel.centerAtNumberPosition()
         }
 
         fun block() {
@@ -455,7 +494,7 @@ class NotificationsScroll(
     private fun getUserSettingCheckDisabled(): Boolean {
         val settingString = GUI.getSettings().notificationScroll
         val setting = UserSetting.values().firstOrNull { it.name == settingString }
-            ?: UserSetting.Visible
+            ?: UserSetting.default()
         userSettingChanged = false
         if (setting == userSetting)
             return setting == UserSetting.Disabled
@@ -468,7 +507,7 @@ class NotificationsScroll(
         notificationsHash = 0
         scrollX = 0f
         updateVisualScroll()
-        setScrollingDisabled(false, false)
+        setScrollingDisabled(x = false, y = false)
         isVisible = false
         restoreButton.hide()
         return true

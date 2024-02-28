@@ -31,6 +31,9 @@ import com.unciv.ui.components.extensions.GdxKeyCodeFixes.DEL
 import com.unciv.ui.components.extensions.GdxKeyCodeFixes.toString
 import com.unciv.ui.components.extensions.GdxKeyCodeFixes.valueOf
 import com.unciv.ui.components.fonts.Fonts
+import com.unciv.ui.components.input.KeyCharAndCode
+import com.unciv.ui.components.input.keyShortcuts
+import com.unciv.ui.components.input.onActivation
 import com.unciv.ui.components.input.onChange
 import com.unciv.ui.images.IconCircleGroup
 import com.unciv.ui.images.ImageGetter
@@ -102,15 +105,19 @@ fun Actor.centerY(parent: Stage) { y = parent.height / 2 - height / 2 }
 fun Actor.center(parent: Stage) { centerX(parent); centerY(parent) }
 
 
-fun Actor.surroundWithCircle(size: Float, resizeActor: Boolean = true,
-                             color: Color = Color.WHITE, circleImageLocation:String = "OtherIcons/Circle"): IconCircleGroup {
+fun Actor.surroundWithCircle(
+    size: Float,
+    resizeActor: Boolean = true,
+    color: Color = Color.WHITE,
+    circleImageLocation: String = ImageGetter.circleLocation
+): IconCircleGroup {
     return IconCircleGroup(size, this, resizeActor, color, circleImageLocation)
 }
 
 fun Actor.surroundWithThinCircle(color: Color=Color.BLACK): IconCircleGroup = surroundWithCircle(width+2f, false, color)
 
 
-fun Actor.addBorder(size:Float, color: Color, expandCell:Boolean = false): Table {
+fun Actor.addBorder(size: Float, color: Color, expandCell: Boolean = false): Table {
     val table = Table()
     table.pad(size)
     table.background = BaseScreen.skinStrings.getUiBackground("General/Border", tintColor = color)
@@ -175,7 +182,7 @@ fun Rectangle.getOverlap(other: Rectangle): Rectangle? {
 val Rectangle.top get() = y + height
 val Rectangle.right get() = x + width
 
-fun Group.addBorderAllowOpacity(size:Float, color: Color): Group {
+fun Group.addBorderAllowOpacity(size: Float, color: Color): Group {
     val group = this
     fun getTopBottomBorder() = ImageGetter.getDot(color).apply { width=group.width; height=size }
     addActor(getTopBottomBorder().apply { setPosition(0f, group.height, Align.topLeft) })
@@ -253,6 +260,24 @@ fun String.toImageButton(iconSize: Float, circleSize: Float, circleColor: Color,
     return button.surroundWithCircle( circleSize, false, circleColor)
 }
 
+/** Return a "close" button, visually a circle with "x" icon that goes red on mouse-over.
+ *
+ *  For use e.g. in the top-right corner of screens such as CivilopediaScreen.
+ *  Automatically binds the BACK key to the [action].
+ */
+fun getCloseButton(
+    size: Float,
+    iconSize: Float = size - 20f,
+    circleColor: Color = BaseScreen.skinStrings.skinConfig.baseColor,
+    overColor: Color = Color.RED,
+    action: () -> Unit
+): Group {
+    val closeButton = "OtherIcons/Close".toImageButton(iconSize, size, circleColor, overColor)
+    closeButton.onActivation(action)
+    closeButton.keyShortcuts.add(KeyCharAndCode.BACK)
+    return closeButton
+}
+
 /** Translate a [String] and make a [Label] widget from it */
 fun String.toLabel() = Label(this.tr(), BaseScreen.skin)
 /** Make a [Label] widget containing this [Int] as text */
@@ -299,7 +324,7 @@ fun Label.setFontColor(color: Color): Label {
 }
 
 /** Sets the font size on a [Label] and returns it to allow chaining */
-fun Label.setFontSize(size:Int): Label {
+fun Label.setFontSize(size: Int): Label {
     style = Label.LabelStyle(style)
     style.font = Fonts.font
     @Suppress("UsePropertyAccessSyntax") setStyle(style)

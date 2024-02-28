@@ -69,5 +69,20 @@ class ConsoleCityCommands : ConsoleCommandNode {
             city.health = health
             DevConsoleResponse.OK
         },
+
+        "addbuilding" to ConsoleAction("city addbuilding [buildingName]") { console, params ->
+            val city = console.getSelectedCity()
+            val building = console.gameInfo.ruleset.buildings.values
+                .firstOrNull { it.name.toCliInput() == params[0] }  ?: throw ConsoleErrorException("Unknown building")
+            city.cityConstructions.addBuilding(building)
+            DevConsoleResponse.OK
+        },
+        "removebuilding" to ConsoleAction("city removebuilding [buildingName]") { console, params ->
+            val city = console.getSelectedCity()
+            val building = console.gameInfo.ruleset.buildings.values
+                .firstOrNull { it.name.toCliInput() == params[0] } ?: throw ConsoleErrorException("Unknown building")
+            city.cityConstructions.removeBuilding(building)
+            DevConsoleResponse.OK
+        },
     )
 }
