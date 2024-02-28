@@ -380,11 +380,13 @@ object UnitAutomation {
      * @return true if the tile is safe and the unit can heal to full within [turns]
      */
     private fun canUnitHealInTurnsOnCurrentTile(unit: MapUnit, turns: Int, noEnemyDistance: Int = 3): Boolean {
+        if (unit.hasUnique(UniqueType.HealsEvenAfterAction)) return false // We can keep on moving
         // Check if we are not in a safe city and there is an enemy nearby this isn't a good tile to heal on
         if (!(unit.getTile().isCityCenter() && unit.getTile().getCity()!!.health > 50) 
             && unit.civ.threatManager.getDistanceToClosestEnemyUnit(unit.getTile(), noEnemyDistance) <= noEnemyDistance) return false
-        return (!unit.hasUnique(UniqueType.HealsEvenAfterAction)
-            && (100 - unit.health) / turns <= unit.rankTileForHealing(unit.getTile()))
+
+        val healthRequiredPerTurn =  (100 - unit.health) / turns
+        return healthRequiredPerTurn <= unit.rankTileForHealing(unit.getTile())
     }
 
     private fun getDangerousTiles(unit: MapUnit): HashSet<Tile> {
