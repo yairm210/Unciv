@@ -23,6 +23,7 @@ import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionsUpgrade
  *  @param positionNextTo stage coordinates to show this centered over - clamped so that nothing is clipped outside the [stage]
  *  @param unit Who is ready to upgrade?
  *  @param unitAction Holds pre-calculated info like unitToUpgradeTo, cost or resource requirements. Its action is mapped to the Upgrade button.
+ *  @param enable Whether the buttons should be enabled - allows use to display benefits when you can't actually afford them.
  *  @param callbackAfterAnimation If true the following will be delayed until the Popup is actually closed (Stage.hasOpenPopups returns false).
  *  @param onButtonClicked A callback after one or several upgrades have been performed (and the menu is about to close)
  */
@@ -37,6 +38,7 @@ class UnitUpgradeMenu(
     positionNextTo: Actor,
     private val unit: MapUnit,
     private val unitAction: UpgradeUnitAction,
+    private val enable: Boolean,
     private val callbackAfterAnimation: Boolean = false,
     private val onButtonClicked: () -> Unit
 ) : ScrollableAnimatedMenuPopup(stage, getActorTopRight(positionNextTo)) {
@@ -66,7 +68,10 @@ class UnitUpgradeMenu(
         BaseUnitDescriptions.getUpgradeInfoTable(unitAction.title, unit.baseUnit, unitToUpgradeTo)
 
     override fun createFixedContent() = Table().apply {
-        add(getButton("Upgrade", KeyboardBinding.Upgrade, ::doUpgrade)).growX().row()
+        val singleButton = getButton("Upgrade", KeyboardBinding.Upgrade, ::doUpgrade)
+        // Using Gdx standard here, not our extension `isEnabled`: These have full styling
+        singleButton.isDisabled = !enable
+        add(singleButton).growX().row()
 
         val allCount = allUpgradableUnits.count()
         if (allCount <= 1) return@apply
