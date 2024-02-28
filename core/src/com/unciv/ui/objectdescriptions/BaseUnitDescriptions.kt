@@ -1,6 +1,5 @@
 package com.unciv.ui.objectdescriptions
 
-import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.GUI
 import com.unciv.logic.city.City
@@ -18,7 +17,6 @@ import com.unciv.models.translations.tr
 import com.unciv.ui.components.extensions.getConsumesAmountString
 import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.images.ImageGetter
-import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.civilopediascreen.FormattedLine
 import com.unciv.ui.screens.civilopediascreen.MarkupRenderer
 
@@ -311,8 +309,6 @@ object BaseUnitDescriptions {
         val info = sequenceOf(FormattedLine(title, color = "#FDA", icon = unitToUpgradeTo.makeLink(), header = 5)) +
             getDifferences(ruleset, unitUpgrading, unitToUpgradeTo)
                 .map { FormattedLine(it.first, icon = it.second ?: "") }
-        val infoTable = MarkupRenderer.render(info.asIterable(), 400f)
-        infoTable.background = BaseScreen.skinStrings.getUiBackground("General/Tooltip", BaseScreen.skinStrings.roundedEdgeRectangleShape, Color.DARK_GRAY)
-        return infoTable
+        return MarkupRenderer.render(info.asIterable(), 400f)
     }
 }
