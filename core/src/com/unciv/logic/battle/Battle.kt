@@ -79,16 +79,14 @@ object Battle {
 
         if (tryHealPillage) {
             // Now lets retroactively see if we can pillage any improvement on the path improvement to heal
-            // While still being able to attack
-            val pillageIterator = tilesMovedThrough.toMutableList().listIterator()
-            while (attacker.unit.currentMovement > 1f && attacker.unit.health < 90 && pillageIterator.hasNext()) {
-                val tileToPillage = pillageIterator.next() 
+            // while still being able to attack
+            for (tileToPillage in tilesMovedThrough) {
+                if (attacker.unit.currentMovement <= 1f || attacker.unit.health > 90) break // We are done pillaging
+
                 if (UnitActionsPillage.canPillage(attacker.unit, tileToPillage)
                     && tileToPillage.canPillageTileImprovement()) {
                     UnitActionsPillage.getPillageAction(attacker.unit, tileToPillage)?.action?.invoke()
                 }
-                // Either we were successfull or we coulden't pillage the tile, it should be removed from the list
-                pillageIterator.remove()
             }
         }
         return (attacker.unit.currentMovement > 0f)
