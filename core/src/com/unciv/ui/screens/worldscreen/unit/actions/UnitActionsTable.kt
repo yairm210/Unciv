@@ -1,6 +1,7 @@
 package com.unciv.ui.screens.worldscreen.unit.actions
 
 import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Button
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.UncivGame
@@ -102,8 +103,13 @@ class UnitActionsTable(val worldScreen: WorldScreen) : Table() {
         for (unitAction in pageActionBuckets[currentPage]) {
             val button = getUnitActionButton(unit, unitAction)
             if (unitAction is UpgradeUnitAction) {
+                // This is bound even when the button is disabled, but Actor.activate in ActivationExtensions will block any activation for disabled actors...
+                // But the menu is built to be useful even when you can't upgrade - so **hack** it to get the handler through.
+                // Works because our disable() extension also changes style, and because the normal click is ignored due to unitAction.action being null.
+                button.isDisabled = false
+                button.touchable = Touchable.enabled
                 button.onRightClick {
-                    UnitUpgradeMenu(worldScreen.stage, button, unit, unitAction, callbackAfterAnimation = true) {
+                    UnitUpgradeMenu(worldScreen.stage, button, unit, unitAction, enable = unitAction.action != null, callbackAfterAnimation = true) {
                         worldScreen.shouldUpdate = true
                     }
                 }
