@@ -1,12 +1,17 @@
 package com.unciv.ui.popups
 
+import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.mapunit.MapUnit
+import com.unciv.models.Counter
 import com.unciv.models.UpgradeUnitAction
+import com.unciv.models.translations.tr
 import com.unciv.ui.audio.SoundPlayer
 import com.unciv.ui.components.input.KeyboardBinding
+import com.unciv.ui.components.widgets.ColorMarkupLabel
 import com.unciv.ui.objectdescriptions.BaseUnitDescriptions
 import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionsUpgrade
 
@@ -73,16 +78,25 @@ class UnitUpgradeMenu(
         val upgradeAllText = "Upgrade all [$allCount] [${unit.name}] ([$allCost] gold)"
         val upgradeAllButton = getButton(upgradeAllText, KeyboardBinding.UpgradeAll, ::doAllUpgrade)
         val insufficientGold = unit.civ.gold < allCost
-        val insufficientResources =
-            allResources.isNotEmpty() &&
-                unit.civ.getCivResourcesByName().run {
-                    allResources.any {
-                        it.value > (this[it.key] ?: 0)
-                    }
-                }
-        // TODO "Need [amount] more [resource]"
-        upgradeAllButton.isDisabled = insufficientGold || insufficientResources
+        val insufficientResources = getInsufficientResourcesMessage(allResources, unit.civ)
+        upgradeAllButton.isDisabled = insufficientGold || insufficientResources.isNotEmpty()
         add(upgradeAllButton).padTop(7f).growX().row()
+        if (insufficientResources.isEmpty()) return@apply
+        val label = ColorMarkupLabel(insufficientResources, Color.SCARLET)
+        add(label).center()
+    }
+
+    private fun getInsufficientResourcesMessage(requiredResources: Counter<String>, civ: Civilization): String {
+        if (requiredResources.isEmpty()) return ""
+        val available = civ.getCivResourcesByName()
+        val sb = StringBuilder()
+        for ((name, amount) in requiredResources) {
+            val difference = amount - (available[name] ?: 0)
+            if (difference <= 0) continue
+            if (sb.isEmpty()) sb.append('\n')
+            sb.append("Need [$difference] more [$name]".tr())
+        }
+        return sb.toString()
     }
 
     private fun doUpgrade() {
