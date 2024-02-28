@@ -305,9 +305,9 @@ object UnitAutomation {
             unitDistanceToTiles.asSequence().map { it.key }.sortedByDescending { unit.civ.threatManager.getDistanceToClosestEnemyUnit(it, 3, false) }
         }
 
+        val ourDistanceToClosestEnemy = unit.civ.threatManager.getDistanceToClosestEnemyUnit(unit.getTile(),6, false)
         // Lets check all tiles and swap with the first one
         for (retreatTile in sortedTilesToRetreatTo) {
-            val ourDistanceToClosestEnemy = unit.civ.threatManager.getDistanceToClosestEnemyUnit(unit.getTile(),6, false)
             val tileDistanceToClosestEnemy = unit.civ.threatManager.getDistanceToClosestEnemyUnit(retreatTile,6,false)
             if (ourDistanceToClosestEnemy >= tileDistanceToClosestEnemy) continue
 
