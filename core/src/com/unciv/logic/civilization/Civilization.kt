@@ -868,13 +868,13 @@ class Civilization : IsPartOfGameInfoSerialization {
 
             // move the buildings with MovedToNewCapital unique
             if (oldCapital != null) {
-                // Get the Sequence of the buildings to move
+                // Get the Set of the buildings to move
                 val buildingsToMove = oldCapital.cityConstructions.getBuiltBuildings().filter {
-                    it.hasUnique(UniqueType.MovedToNewCapital)
-                }
+                    it.hasUnique(UniqueType.MovesToNewCapital)
+                }.toSet()
 
                 // Remove the buildings from old capital
-                oldCapital.cityConstructions.removeBuildings(buildingsToMove.toSet())
+                oldCapital.cityConstructions.removeBuildings(buildingsToMove)
 
                 // Add the buildings to new capital
                 buildingsToMove.forEach {
