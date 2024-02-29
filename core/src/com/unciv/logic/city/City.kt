@@ -227,8 +227,7 @@ class City : IsPartOfGameInfoSerialization {
 
     fun getStatReserve(stat: Stat): Int {
         return when (stat) {
-            Stat.Food -> cityStats.currentCityStats.food.roundToInt()
-            Stat.Production -> cityStats.currentCityStats.production.roundToInt()
+            Stat.Food -> population.foodStored
             else -> civ.getStatReserve(stat)
         }
     }

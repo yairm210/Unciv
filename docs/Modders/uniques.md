@@ -2039,8 +2039,8 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Conditional
 
-??? example  "&lt;when between [amount] to [amount] [stat/resource]&gt;"
-	Example: "&lt;when between [3] to [3] [Culture]&gt;"
+??? example  "&lt;when between [amount] and [amount] [stat/resource]&gt;"
+	Example: "&lt;when between [3] and [3] [Culture]&gt;"
 
 	Applicable to: Conditional
 
@@ -2054,8 +2054,8 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Conditional
 
-??? example  "&lt;when between [amount] to [amount] [stat/resource] (modified by game speed)&gt;"
-	Example: "&lt;when between [3] to [3] [Culture] (modified by game speed)&gt;"
+??? example  "&lt;when between [amount] and [amount] [stat/resource] (modified by game speed)&gt;"
+	Example: "&lt;when between [3] and [3] [Culture] (modified by game speed)&gt;"
 
 	Applicable to: Conditional
 
