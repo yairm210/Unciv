@@ -18,7 +18,7 @@ import com.unciv.ui.audio.MusicMood
 import com.unciv.ui.audio.MusicTrackChooserFlags
 import com.unciv.ui.components.extensions.addSeparator
 import com.unciv.ui.components.extensions.disable
-import com.unciv.ui.components.extensions.setFontSize
+import com.unciv.ui.components.extensions.getCloseButton
 import com.unciv.ui.components.extensions.surroundWithCircle
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
@@ -52,6 +52,9 @@ class DiplomacyScreen(
     companion object {
         private const val nationIconSize = 100f
         private const val nationIconPad = 10f
+        private const val closeButtonSize = 50f
+        /** distance of the floating close button from the top and right */
+        private const val closeButtonPad = 10f
     }
 
     private val highlightColor: Color = clearColor.cpy().lerp(skin.getColor("color"), 0.333f)
@@ -68,7 +71,7 @@ class DiplomacyScreen(
         background = skinStrings.getUiBackground("DiplomacyScreen/RightSide", tintColor = highlightColor)
     }
 
-    private val closeButton = Constants.close.toTextButton()
+    private val closeButton = getCloseButton(closeButtonSize) { game.popScreen() }
 
     internal fun isNotPlayersTurn() = !GUI.isAllowedChangeState()
 
@@ -81,11 +84,6 @@ class DiplomacyScreen(
         splitPane.setFillParent(true)
         stage.addActor(splitPane)
 
-        closeButton.onActivation { UncivGame.Current.popScreen() }
-        closeButton.keyShortcuts.add(KeyCharAndCode.BACK)
-        closeButton.label.setFontSize(Constants.headingFontSize)
-        closeButton.labelCell.pad(10f)
-        closeButton.pack()
         positionCloseButton()
         stage.addActor(closeButton) // This must come after the split pane so it will be above, that the button will be clickable
 
@@ -101,12 +99,12 @@ class DiplomacyScreen(
     }
 
     private fun positionCloseButton() {
-        closeButton.setPosition(stage.width * 0.1f, stage.height - 10f, Align.top)
+        closeButton.setPosition(stage.width - closeButtonPad, stage.height - closeButtonPad, Align.topRight)
     }
 
     internal fun updateLeftSideTable(selectCiv: Civilization?) {
         leftSideTable.clear()
-        leftSideTable.add().padBottom(70f).row()  // room so the close button does not cover the first
+        leftSideTable.add().padBottom(closeButtonPad).row()  // no default pad, and make distance of first civ to top same as for the close button
 
         var selectCivY = 0f
 
