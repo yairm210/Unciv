@@ -23,6 +23,13 @@ fun <T> List<T>.randomWeighted(weights: List<Float>, random: Random = Random): T
     return this.last()
 }
 
+/** Get one random element of a given List.
+ *
+ * The probability for each element is proportional to the result of [getWeight] (evaluated only once).
+ */
+fun <T> List<T>.randomWeighted(random: Random = Random, getWeight: (T) -> Float): T =
+    randomWeighted(map(getWeight), random)
+
 /** Gets a clone of an [ArrayList] with an additional item
  *
  * Solves concurrent modification problems - everyone who had a reference to the previous arrayList can keep using it because it hasn't changed

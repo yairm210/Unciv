@@ -207,8 +207,7 @@ class QuestManager : IsPartOfGameInfoSerialization {
         }
 
         if (assignableQuests.isNotEmpty()) {
-            val weights = assignableQuests.map { getQuestWeight(it.name) }
-            val quest = assignableQuests.randomWeighted(weights)
+            val quest = assignableQuests.randomWeighted { getQuestWeight(it.name) }
             val assignees = civ.gameInfo.getAliveMajorCivs().filter { !it.isAtWarWith(civ) && isQuestValid(quest, it) }
 
             assignNewQuest(quest, assignees)
@@ -229,8 +228,7 @@ class QuestManager : IsPartOfGameInfoSerialization {
             val assignableQuests = getQuests { it.isIndividual() && isQuestValid(it, challenger) }
 
             if (assignableQuests.isNotEmpty()) {
-                val weights = assignableQuests.map { getQuestWeight(it.name) }
-                val quest = assignableQuests.randomWeighted(weights)
+                val quest = assignableQuests.randomWeighted { getQuestWeight(it.name) }
                 val assignees = arrayListOf(challenger)
 
                 assignNewQuest(quest, assignees)
