@@ -30,6 +30,7 @@ import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.translations.fillPlaceholders
 import com.unciv.models.translations.getPlaceholderParameters
+import com.unciv.models.translations.tr
 import com.unciv.ui.components.extensions.randomWeighted
 import com.unciv.ui.components.extensions.toPercent
 import kotlin.random.Random
@@ -267,17 +268,12 @@ class QuestManager : IsPartOfGameInfoSerialization {
     }
 
     private fun handleGlobalQuest(questName: QuestName) {
-        val quests = getAssignedQuestsOfName(questName).toList()
-        if (quests.isEmpty())
-            return
+        val winnersAndLosers = WinnersAndLosers(questName)
+        winnersAndLosers.winners.forEach { giveReward(it) }
+        winnersAndLosers.losers.forEach { notifyExpired(it, winnersAndLosers.winners) }
 
-        val topScore = quests.maxOf { getScoreForQuest(it) }
-        val winners = quests.filter { getScoreForQuest(it) == topScore }
-        winners.forEach { giveReward(it) }
-        for (loser in quests.filterNot { it in winners })
-            notifyExpired(loser, winners)
-
-        assignedQuests.removeAll(quests)
+        assignedQuests.removeAll(winnersAndLosers.winners)
+        assignedQuests.removeAll(winnersAndLosers.losers)
     }
 
     private fun handleIndividualQuests() {
@@ -506,17 +502,75 @@ class QuestManager : IsPartOfGameInfoSerialization {
         }
     }
 
-    /** Returns a string with the leading civ and their score for [questName] */
-    fun getLeaderStringForQuest(questName: QuestName): String {
-        val leadingQuest = getAssignedQuestsOfName(questName).maxByOrNull { getScoreForQuest(it) }
-            ?: return ""
+    /** Evaluate a contest-type quest:
+     *
+     *  - Determines [winner(s)][winners] (as AssignedQuest instances, which name their assignee): Those whose score is the [maximum score][maxScore], possibly tied.
+     *    and [losers]: all other [assignedQuests] matching parameter `questName`.
+     *  - Called by the UI via [getScoreStringForGlobalQuest] before a Contest is resolved to display who currently leads,
+     *    and by [handleGlobalQuest] to distribute rewards and notifications.
+     *  @param questName filters [assignedQuests] by their [QuestName][AssignedQuest.questNameInstance]
+     */
+    inner class WinnersAndLosers(questName: QuestName) {
+        val winners = mutableListOf<AssignedQuest>()
+        val losers = mutableListOf<AssignedQuest>()
+        var maxScore: Int = -1
+            private set
 
-        return when (questName) {
-            QuestName.ContestCulture -> "Current leader is [${leadingQuest.assignee}] with [${getScoreForQuest(leadingQuest)}] [Culture] generated."
-            QuestName.ContestFaith -> "Current leader is [${leadingQuest.assignee}] with [${getScoreForQuest(leadingQuest)}] [Faith] generated."
-            QuestName.ContestTech -> "Current leader is [${leadingQuest.assignee}] with [${getScoreForQuest(leadingQuest)}] Technologies discovered."
-            else -> ""
+        init {
+            require(ruleset.quests[questName.value]!!.isGlobal())
+
+            for (quest in getAssignedQuestsOfName(questName)) {
+                val qScore = getScoreForQuest(quest)
+                when {
+                    qScore <= 0 -> Unit // no civ is a winner if their score is 0
+                    qScore < maxScore ->
+                        losers.add(quest)
+                    qScore == maxScore ->
+                        winners.add(quest)
+                    else -> { // qScore > maxScore
+                        losers.addAll(winners)
+                        winners.clear()
+                        winners.add(quest)
+                        maxScore = qScore
+                    }
+                }
+            }
         }
+    }
+
+    /** Returns a string to show "competition" status:
+     *  - Show leading civ(s) (more than one only if tied for first place) with best score.
+     *  - The assignee civ of the given [inquiringAssignedQuest] is shown for comparison if it is not among the leaders.
+     *
+     *  Assumes the result will be passed to [String.tr] - but parts are pretranslated to avoid nested brackets.
+     *  Tied leaders are separated by ", " - translators cannot influence this, sorry.
+     *  @param inquiringAssignedQuest Determines ["type"][AssignedQuest.questNameInstance] to find all competitors in [assignedQuests] and [viewing civ][AssignedQuest.assignee].
+     */
+    fun getScoreStringForGlobalQuest(inquiringAssignedQuest: AssignedQuest): String {
+        require(inquiringAssignedQuest.assigner == civ.civName)
+        require(inquiringAssignedQuest.isGlobal())
+
+        val scoreDescriptor = when (inquiringAssignedQuest.questNameInstance) {
+            QuestName.ContestCulture -> "Culture"
+            QuestName.ContestFaith -> "Faith"
+            QuestName.ContestTech -> "Technologies"
+            else -> return "" //This handles global quests which aren't a competition, like invest
+        }
+
+        // Get list of leaders with leading score (the losers aren't used here)
+        val evaluation = WinnersAndLosers(inquiringAssignedQuest.questNameInstance)
+        if (evaluation.winners.isEmpty())   //Only show leaders if there are some
+            return ""
+
+        val listOfLeadersAsTranslatedString = evaluation.winners.joinToString(separator = ", ") { it.assignee.tr() }
+        fun getScoreString(name: String, score: Int) = "[$name] with [$score] [$scoreDescriptor]".tr()
+        val leadersString = getScoreString(listOfLeadersAsTranslatedString, evaluation.maxScore)
+
+        if (inquiringAssignedQuest in evaluation.winners)
+            return "Current leader(s): [$leadersString]"
+
+        val yourScoreString = getScoreString(inquiringAssignedQuest.assignee, getScoreForQuest(inquiringAssignedQuest))
+        return "Current leader(s): [$leadersString], you: [$yourScoreString]"
     }
 
     /**

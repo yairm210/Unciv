@@ -464,8 +464,8 @@ class CityStateDiplomacyTable(private val diplomacyScreen: DiplomacyScreen) {
         if (quest.duration > 0)
             questTable.add("[${remainingTurns}] turns remaining".toLabel()).row()
         if (quest.isGlobal()) {
-            val leaderString = viewingCiv.gameInfo.getCivilization(assignedQuest.assigner).questManager.getLeaderStringForQuest(assignedQuest.questNameInstance)
-            if (leaderString != "")
+            val leaderString = viewingCiv.gameInfo.getCivilization(assignedQuest.assigner).questManager.getScoreStringForGlobalQuest(assignedQuest)
+            if (leaderString.isNotEmpty())
                 questTable.add(leaderString.toLabel()).row()
         }
 
