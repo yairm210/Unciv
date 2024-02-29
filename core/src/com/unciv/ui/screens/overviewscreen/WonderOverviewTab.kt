@@ -162,8 +162,7 @@ class WonderInfo {
     private fun knownFromQuest(viewingPlayer: Civilization, name: String): Boolean {
         // No, *your* civInfo's QuestManager has no idea about your quests
         for (civ in gameInfo.civilizations) {
-            for (quest in civ.questManager.assignedQuests) {
-                if (quest.assignee != viewingPlayer.civName) continue
+            for (quest in civ.questManager.getAssignedQuestsFor(viewingPlayer.civName)) {
                 if (quest.questName == QuestName.FindNaturalWonder.value && quest.data1 == name)
                     return true
             }
