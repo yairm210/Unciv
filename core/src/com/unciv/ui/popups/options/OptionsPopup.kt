@@ -9,6 +9,7 @@ import com.unciv.models.metadata.BaseRuleset
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.ui.components.extensions.areSecretKeysPressed
 import com.unciv.ui.components.extensions.center
+import com.unciv.ui.components.extensions.getCloseButton
 import com.unciv.ui.components.extensions.toCheckBox
 import com.unciv.ui.components.widgets.TabbedPager
 import com.unciv.ui.images.ImageGetter
@@ -65,7 +66,7 @@ class OptionsPopup(
             selectBoxMinWidth = if (stage.width < 600f) 200f else 240f
             tabMaxWidth = if (isPortrait()) stage.width - 10f else 0.8f * stage.width
             tabMinWidth = 0.6f * stage.width
-            tabMaxHeight = (if (isPortrait()) 0.7f else 0.8f) * stage.height
+            tabMaxHeight = 0.8f * stage.height
         }
         tabs = TabbedPager(
             tabMinWidth, tabMaxWidth, 0f, tabMaxHeight,
@@ -123,13 +124,13 @@ class OptionsPopup(
             tabs.addPage("Debug", debugTab(this), ImageGetter.getImage("OtherIcons/SecretOptions"), 24f)
         }
 
-        addCloseButton {
+        tabs.decorateHeader(getCloseButton {
             screen.game.musicController.onChange(null)
             center(screen.stage)
             keyBindingsTab?.save()
             settings.save()
             onClose()
-        }.padBottom(10f)
+        })
 
         if (GUI.keyboardAvailable) {
             showOrHideKeyBindings()  // Do this late because it looks for the page to insert before
