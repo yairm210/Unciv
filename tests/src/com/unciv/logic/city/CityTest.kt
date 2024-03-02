@@ -108,11 +108,11 @@ class CityTest {
         tile.improvement = "Mine"
 
         // when
-        val cityResources = capitalCity.getCityResources()
+        val resources = testCiv.detailedCivResources
 
         // then
-        assertEquals(1, cityResources.size)
-        assertEquals("4 Iron from Tiles", cityResources[0].toString())
+        assertEquals(1, resources.size)
+        assertEquals("4 Iron from Tiles", resources[0].toString())
     }
 
     @Test
@@ -122,11 +122,11 @@ class CityTest {
         capitalCity.cityConstructions.addBuilding(building)
 
         // when
-        val cityResources = capitalCity.getCityResources()
+        val resources = testCiv.detailedCivResources
 
         // then
-        assertEquals(1, cityResources.size)
-        assertEquals("4 Iron from Buildings", cityResources[0].toString())
+        assertEquals(1, resources.size)
+        assertEquals("4 Iron from Buildings", resources[0].toString())
     }
 
     @Test
@@ -135,10 +135,10 @@ class CityTest {
         capitalCity.cityConstructions.addBuilding("Factory")
 
         // when
-        val cityResources = capitalCity.getCityResources()
+        val resources = testCiv.detailedCivResources
 
         // then
-        assertEquals(1, cityResources.size)
-        assertEquals("-1 Coal from Buildings", cityResources[0].toString())
+        assertEquals(1, resources.size)
+        assertEquals("-1 Coal from Buildings", resources[0].toString())
     }
 }
