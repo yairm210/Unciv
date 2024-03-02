@@ -756,10 +756,13 @@ class RulesetValidator(val ruleset: Ruleset) {
     }
 
     private fun checkTilesetSanity(lines: RulesetErrorList) {
+        // If running from a jar *and* checking a builtin ruleset, skip this check.
+        // - We can't list() the jsons, and the unit test before relase is sufficient, the tileset config can't have changed since then.
+        if (ruleset.folderLocation == null && this::class.java.`package`?.specificationVersion != null)
+            return
+
         val tilesetConfigFolder = (ruleset.folderLocation ?: Gdx.files.internal("")).child("jsons\\TileSets")
         if (!tilesetConfigFolder.exists()) return
-        if (ruleset.folderLocation == null && this::class.java.`package`?.specificationVersion != null)
-            return checkTilesetSanityForJar(lines, tilesetConfigFolder)
 
         val configTilesets = mutableSetOf<String>()
         val allFallbacks = mutableSetOf<String>()
@@ -792,11 +795,8 @@ class RulesetValidator(val ruleset: Ruleset) {
         if (configOnlyTilesets.isNotEmpty())
             lines.add("Mod has no graphics for configured tilesets: ${configOnlyTilesets.joinToString()}", RulesetErrorSeverity.Warning, sourceObject = null)
 
-        checkTilesetSanityFinish(lines, atlasTilesets - configTilesets, allFallbacks)
-    }
-
-    private fun checkTilesetSanityFinish(lines: RulesetErrorList, atlasOnlyTilesets: Set<String>, allFallbacks: Set<String>) {
         // For all atlas images matching "TileSets/*" there should be a json
+        val atlasOnlyTilesets = atlasTilesets - configTilesets
         if (atlasOnlyTilesets.isNotEmpty())
             lines.add("Mod has no configuration for tileset graphics: ${atlasOnlyTilesets.joinToString()}", RulesetErrorSeverity.Warning, sourceObject = null)
 
@@ -804,31 +804,6 @@ class RulesetValidator(val ruleset: Ruleset) {
         val unknownFallbacks = allFallbacks - TileSetCache.keys - Constants.defaultFallbackTileset
         if (unknownFallbacks.isNotEmpty())
             lines.add("Fallback tileset invalid: ${unknownFallbacks.joinToString()}", RulesetErrorSeverity.Warning, sourceObject = null)
-    }
-
-    private fun checkTilesetSanityForJar(lines: RulesetErrorList, tilesetConfigFolder: FileHandle) {
-        // We're checking a builin ruleset from the jar, so no folder listing
-        val atlasOnlyTilesets = mutableSetOf<String>()
-        val allFallbacks = mutableSetOf<String>()
-
-        // Perform the 'json exits', 'parseable', 'fallback exists' tests like above, but "reversed"
-        for (tilesetName in getTilesetNamesFromAtlases()) {
-            var file = tilesetConfigFolder.child("$tilesetName.json")
-            if (!file.exists()) file = tilesetConfigFolder.child("${tilesetName}Config.json")
-            if (!file.exists()) {
-                atlasOnlyTilesets += tilesetName
-                continue
-            }
-            val config = try {
-                json().fromJsonFile(TileSetConfig::class.java, file)
-            } catch (ex: Exception) {
-                lines.add("Tileset config '${file.name()}' cannot be loaded (${ex.cause?.message})", RulesetErrorSeverity.Warning, sourceObject = null)
-                continue
-            }
-            if (!config.fallbackTileSet.isNullOrEmpty()) allFallbacks += config.fallbackTileSet!!
-        }
-
-        checkTilesetSanityFinish(lines, atlasOnlyTilesets, allFallbacks)
     }
 
     private fun getTilesetNamesFromAtlases(): Set<String> {
