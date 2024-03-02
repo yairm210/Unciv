@@ -302,7 +302,6 @@ class CivInfoTransientCache(val civInfo: Civilization) {
         }
 
         for (unique in civInfo.getMatchingUniques(UniqueType.ProvidesResources)) {
-            if (unique.sourceObjectType == UniqueTarget.Building || unique.sourceObjectType == UniqueTarget.Wonder) continue // already calculated in city
             val resource = civInfo.gameInfo.ruleset.tileResources[unique.params[1]]!!
             newDetailedCivResources.add(
                 resource,

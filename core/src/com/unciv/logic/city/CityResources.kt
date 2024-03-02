@@ -86,6 +86,7 @@ object CityResources {
         for (unique in city.civ.getMatchingUniques(UniqueType.ProvidesResources, StateForConditionals(city.civ, city))) { // E.G "Provides [1] [Iron]"
             val resource = city.getRuleset().tileResources[unique.params[1]]
                 ?: continue
+            if (!resource.hasUnique(UniqueType.CityResource, StateForConditionals(city))) continue
             cityResources.add(
                 resource, "Buildings",
                 (unique.params[0].toFloat() * resourceModifer[resource.name]!!).toInt()
