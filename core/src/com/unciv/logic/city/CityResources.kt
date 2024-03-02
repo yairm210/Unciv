@@ -88,7 +88,7 @@ object CityResources {
                 ?: continue
             if (!resource.hasUnique(UniqueType.CityResource, stateForConditionals)) continue
             cityResources.add(
-                resource, "Buildings",
+                resource, unique.getSourceNameForUser(),
                 (unique.params[0].toFloat() * resourceModifer[resource.name]!!).toInt()
             )
         }
