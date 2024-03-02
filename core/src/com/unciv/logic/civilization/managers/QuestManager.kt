@@ -313,8 +313,6 @@ class QuestManager : IsPartOfGameInfoSerialization {
 
         for (assignee in assignees) {
 
-            val playerReligion = civ.gameInfo.religions.values.firstOrNull { it.foundingCivName == assignee.civName && it.isMajorReligion() }
-
             var data1 = ""
             var data2 = ""
             var notificationActions: List<NotificationAction> = listOf(DiplomacyAction(civ.civName))
@@ -337,7 +335,9 @@ class QuestManager : IsPartOfGameInfoSerialization {
                 QuestName.GiveGold -> data1 = getMostRecentBully()!!
                 QuestName.DenounceCiv -> data1 = getMostRecentBully()!!
                 QuestName.SpreadReligion -> {
-                    data1 = playerReligion!!.getReligionDisplayName() // For display
+                    val playerReligion = civ.gameInfo.religions.values
+                        .first { it.foundingCivName == assignee.civName && it.isMajorReligion() }  // isQuestValid must have ensured this won't throw
+                    data1 = playerReligion.getReligionDisplayName() // For display
                     data2 = playerReligion.name // To check completion
                 }
                 QuestName.ContestCulture -> data1 = assignee.totalCultureForContests.toString()
