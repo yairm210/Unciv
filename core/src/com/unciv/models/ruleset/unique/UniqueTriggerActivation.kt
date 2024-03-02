@@ -78,8 +78,9 @@ object UniqueTriggerActivation {
         triggerNotificationText: String? = null
     ): (()->Boolean)? {
 
-        val relevantCity by lazy {
-            city?: tile?.getCity()
+        val relevantCity by lazy { 
+            city ?: if (tile?.isCityCenter() == true) tile.getCity() 
+            else null
         }
 
         val timingConditional = unique.conditionals.firstOrNull { it.type == UniqueType.ConditionalTimedUnique }

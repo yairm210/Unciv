@@ -33,8 +33,9 @@ object Conditionals {
         }
 
         val relevantCity by lazy {
-            state.city
-                ?: relevantTile?.getCity()
+            state.city 
+                ?: if (relevantTile?.isCityCenter() == true) relevantTile?.getCity() 
+                else null
         }
 
         val relevantCiv by lazy {
