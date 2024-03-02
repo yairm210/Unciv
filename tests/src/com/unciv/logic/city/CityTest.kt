@@ -2,6 +2,7 @@ package com.unciv.logic.city
 
 import com.badlogic.gdx.math.Vector2
 import com.unciv.logic.civilization.Civilization
+import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.testing.GdxTestRunner
 import com.unciv.testing.TestGame
 import org.junit.Assert.assertEquals
@@ -108,7 +109,7 @@ class CityTest {
         tile.improvement = "Mine"
 
         // when
-        val cityResources = capitalCity.getCityResources()
+        val cityResources = capitalCity.getResourcesGeneratedByCity()
 
         // then
         assertEquals(1, cityResources.size)
@@ -122,11 +123,11 @@ class CityTest {
         capitalCity.cityConstructions.addBuilding(building)
 
         // when
-        val cityResources = capitalCity.getCityResources()
+        val resources = testCiv.detailedCivResources
 
         // then
-        assertEquals(1, cityResources.size)
-        assertEquals("4 Iron from Buildings", cityResources[0].toString())
+        assertEquals(1, resources.size)
+        assertEquals("4 Iron from Buildings", resources[0].toString())
     }
 
     @Test
@@ -135,10 +136,43 @@ class CityTest {
         capitalCity.cityConstructions.addBuilding("Factory")
 
         // when
-        val cityResources = capitalCity.getCityResources()
+        val resources = testCiv.detailedCivResources
 
         // then
-        assertEquals(1, cityResources.size)
-        assertEquals("-1 Coal from Buildings", cityResources[0].toString())
+        assertEquals(1, resources.size)
+        assertEquals("-1 Coal from Buildings", resources[0].toString())
     }
+
+
+    @Test
+    fun `City-wide resources from building uniques propagate between cities`() {
+        // given
+        val resource = testGame.createResource(UniqueType.CityResource.text)
+        val building = testGame.createBuilding("Provides [4] [${resource.name}]")
+        capitalCity.cityConstructions.addBuilding(building)
+
+        val otherCity = testCiv.addCity(Vector2(2f,2f))
+
+        // when
+        val resourceAmountInOtherCity = otherCity.getResourceAmount(resource.name)
+
+        // then
+        assertEquals(4, resourceAmountInOtherCity)
+    }
+
+    @Test
+    fun `City-wide resources not double-counted in same city`() {
+        // given
+        val resource = testGame.createResource(UniqueType.CityResource.text)
+        val building = testGame.createBuilding("Provides [4] [${resource.name}]")
+        capitalCity.cityConstructions.addBuilding(building)
+
+
+        // when
+        val resourceAmountInCapital = capitalCity.getResourceAmount(resource.name)
+
+        // then
+        assertEquals(4, resourceAmountInCapital)
+    }
+
 }

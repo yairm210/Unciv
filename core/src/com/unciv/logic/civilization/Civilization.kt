@@ -821,9 +821,10 @@ class Civilization : IsPartOfGameInfoSerialization {
     }
     // endregion
 
-    fun addCity(location: Vector2, unit: MapUnit? = null) {
+    fun addCity(location: Vector2, unit: MapUnit? = null): City {
         val newCity = CityFounder().foundCity(this, location, unit)
         newCity.cityConstructions.chooseNextConstruction()
+        return newCity
     }
 
     /** Destroy what's left of a Civilization
