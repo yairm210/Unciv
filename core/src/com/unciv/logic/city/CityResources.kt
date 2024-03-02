@@ -82,11 +82,11 @@ object CityResources {
     }
 
     private fun getCityResourcesFromCiv(city: City, cityResources: ResourceSupplyList, resourceModifer: HashMap<String, Float>) {
-        // This includes the uniques from buildings, from this and all other cities
-        for (unique in city.civ.getMatchingUniques(UniqueType.ProvidesResources, StateForConditionals(city.civ, city))) { // E.G "Provides [1] [Iron]"
+        val stateForConditionals = StateForConditionals(city)
+        for (unique in city.getMatchingUniques(UniqueType.ProvidesResources, stateForConditionals)) { // E.G "Provides [1] [Iron]"
             val resource = city.getRuleset().tileResources[unique.params[1]]
                 ?: continue
-            if (!resource.hasUnique(UniqueType.CityResource, StateForConditionals(city))) continue
+            if (!resource.hasUnique(UniqueType.CityResource, stateForConditionals)) continue
             cityResources.add(
                 resource, "Buildings",
                 (unique.params[0].toFloat() * resourceModifer[resource.name]!!).toInt()
