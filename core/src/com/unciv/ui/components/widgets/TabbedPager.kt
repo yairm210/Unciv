@@ -624,14 +624,13 @@ open class TabbedPager(
      *  Must be called _after_ all pages are final, otherwise effects not guaranteed.
      *
      *  Notes:
-     *  *  Using [fixed] will make the widths of content and header Scrollpanes different. Synchronized scrolling will look off.
      *  *  [fixed] decorations have predefined cells, thus decorateHeader will replace any previous decoration. Non-[fixed] are cumulative and cannot be removed.
      *  *  [leftSide] and [fixed] both true is not implemented.
      *
      *  @param leftSide If `true` then [actor] is inserted on the left, otherwise on the right of the page buttons.
      *  @param fixed If `true` [actor] is outside the header ScrollPane and thus always shown.
      */
-    fun decorateHeader(actor: Actor, leftSide: Boolean, fixed: Boolean = false) {
+    fun decorateHeader(actor: Actor, leftSide: Boolean = false, fixed: Boolean = true) {
         if (fixed) headerDecorationRightCell.pad(headerPadding).setActor(actor)
         else insertHeaderCellAt(if (leftSide) 0 else -1).setActor(actor)
         invalidate()

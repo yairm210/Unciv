@@ -135,10 +135,12 @@ class VictoryScreen(
         val difficultyLabel = "{Difficulty}: {${gameInfo.difficulty}}".toLabel()
         val neededSpace = topRightPanel.width.coerceAtLeast(difficultyLabel.width) * 2 + tabs.getHeaderPrefWidth()
         if (neededSpace > stage.width) {
-            tabs.decorateHeader(difficultyLabel, true)
-            tabs.decorateHeader(topRightPanel, false)
+            // Let additions take part in TabbedPager's header scrolling
+            tabs.decorateHeader(difficultyLabel, leftSide = true, fixed = false)
+            tabs.decorateHeader(topRightPanel, leftSide = false, fixed = false)
             tabs.headerScroll.fadeScrollBars = false
         } else {
+            // Let additions float in the corners
             val panelY = stage.height - tabs.getRowHeight(0) * 0.5f
             stage.addActor(topRightPanel)
             topRightPanel.setPosition(stage.width - 10f, panelY, Align.right)

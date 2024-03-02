@@ -266,7 +266,7 @@ fun String.toImageButton(iconSize: Float, circleSize: Float, circleColor: Color,
  *  Automatically binds the BACK key to the [action].
  */
 fun getCloseButton(
-    size: Float,
+    size: Float = 50f,
     iconSize: Float = size - 20f,
     circleColor: Color = BaseScreen.skinStrings.skinConfig.baseColor,
     overColor: Color = Color.RED,
