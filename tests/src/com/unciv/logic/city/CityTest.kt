@@ -106,6 +106,7 @@ class CityTest {
         tile.resource = "Iron"
         tile.resourceAmount = 4
         tile.improvement = "Mine"
+        testCiv.cache.updateCivResources()
 
         // when
         val resources = testCiv.detailedCivResources
