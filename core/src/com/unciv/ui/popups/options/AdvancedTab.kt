@@ -90,7 +90,7 @@ private fun addCutoutCheckbox(table: Table, optionsPopup: OptionsPopup) {
     {
         optionsPopup.settings.androidCutout = it
         Display.setCutout(it)
-        optionsPopup.reopenAfterDiplayLayoutChange()
+        optionsPopup.reopenAfterDisplayLayoutChange()
     }
 }
 
@@ -99,7 +99,7 @@ private fun addHideSystemUiCheckbox(table: Table, optionsPopup: OptionsPopup) {
     {
         optionsPopup.settings.androidHideSystemUi = it
         Display.setSystemUiVisibility(hide = it)
-        optionsPopup.reopenAfterDiplayLayoutChange()
+        optionsPopup.reopenAfterDisplayLayoutChange()
     }
 }
 
@@ -116,7 +116,7 @@ private fun addOrientationSelectBox(table: Table, optionsPopup: OptionsPopup) {
         val orientation = selectBox.selected
         settings.displayOrientation = orientation
         Display.setOrientation(orientation)
-        optionsPopup.reopenAfterDiplayLayoutChange()
+        optionsPopup.reopenAfterDisplayLayoutChange()
     }
 
     table.add(selectBox).minWidth(optionsPopup.selectBoxMinWidth).pad(10f).row()

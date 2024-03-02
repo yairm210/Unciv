@@ -172,7 +172,7 @@ class OptionsPopup(
      *  Does nothing if any Popup (which can only be this one) is still open after a short delay and context yield.
      *  Reason: A resize might relaunch the parent screen ([MainMenuScreen] is [RecreateOnResize]) and thus close this Popup.
      */
-    fun reopenAfterDiplayLayoutChange() {
+    internal fun reopenAfterDisplayLayoutChange() {
         Concurrency.run("Reload from options") {
             delay(100)
             withGLContext {
@@ -183,7 +183,7 @@ class OptionsPopup(
         }
     }
 
-    fun addCheckbox(table: Table, text: String, initialState: Boolean, updateWorld: Boolean = false, newRow: Boolean = true, action: ((Boolean) -> Unit)) {
+    internal fun addCheckbox(table: Table, text: String, initialState: Boolean, updateWorld: Boolean = false, newRow: Boolean = true, action: ((Boolean) -> Unit)) {
         val checkbox = text.toCheckBox(initialState) {
             action(it)
             val worldScreen = GUI.getWorldScreenIfActive()
@@ -193,7 +193,7 @@ class OptionsPopup(
         else table.add(checkbox).left()
     }
 
-    fun addCheckbox(
+    internal fun addCheckbox(
         table: Table,
         text: String,
         settingsProperty: KMutableProperty0<Boolean>,
