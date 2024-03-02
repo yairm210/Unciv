@@ -55,6 +55,15 @@ import com.unciv.ui.screens.basescreen.BaseScreen
  * maximum is not specified, that coordinate will grow with content up to screen size, and layout
  * max-W/H will always report the same as pref-W/H.
  */
+
+/*
+   Notes - this is implemented as 2x3 Table with 4 Cells.
+   First row is (scrolling header, fixed decoration) - second cell empty and size 0 until you use decorateHeader.
+   Second row / third Cell is "fixed" content, colspan 2. Used for pages that implement IPageExtensions.getFixedContent, otherwise size zero.
+   Third row / fourth Cell is scrolling content, colspan 2. Can scroll in both axes, while "fixed" only scrolls horizontally -
+   horizontal scroll is synchronized (for that to look good, both content parts must match in size and visual layout).
+*/
+
 //region Fields
 @Suppress("MemberVisibilityCanBePrivate", "unused")  // All members are part of our API
 open class TabbedPager(
@@ -287,12 +296,6 @@ open class TabbedPager(
             val wasFlinging = isFlinging
             super.act(delta)
             if (wasFlinging) sync()
-        }
-    }
-
-    private class EmptyClosePage(private val action: ()->Unit) : Actor(), IPageExtensions {
-        override fun activated(index: Int, caption: String, pager: TabbedPager) {
-            action()
         }
     }
 
@@ -580,18 +583,6 @@ open class TabbedPager(
         }
 
         return addAndShowPage(page, insertBefore)
-    }
-
-    /**
-     * Add a "Close" button tho the Tab headers, with empty content which will invoke [action] when clicked
-     */
-    fun addClosePage(
-        insertBefore: Int = -1,
-        color: Color = Color(0.75f, 0.1f, 0.1f, 1f),
-        action: ()->Unit
-    ) {
-        val index = addPage(Constants.close, EmptyClosePage(action), insertBefore = insertBefore)
-        pages[index].button.color = color
     }
 
     /**
