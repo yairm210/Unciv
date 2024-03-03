@@ -143,6 +143,21 @@ class CityTest {
         assertEquals("-1 Coal from Buildings", resources[0].toString())
     }
 
+    @Test
+    fun `Civ-wide resources from building uniques propagate between cities`() {
+        // given
+        val building = testGame.createBuilding("Provides [4] [Coal]")
+        capitalCity.cityConstructions.addBuilding(building)
+
+        val otherCity = testCiv.addCity(Vector2(2f,2f))
+
+        // when
+        val resourceAmountInOtherCity = otherCity.getAvailableResourceAmount("Coal")
+
+        // then
+        assertEquals(4, resourceAmountInOtherCity)
+    }
+
 
     @Test
     fun `City-wide resources from building uniques propagate between cities`() {
@@ -154,7 +169,7 @@ class CityTest {
         val otherCity = testCiv.addCity(Vector2(2f,2f))
 
         // when
-        val resourceAmountInOtherCity = otherCity.getResourceAmount(resource.name)
+        val resourceAmountInOtherCity = otherCity.getAvailableResourceAmount(resource.name)
 
         // then
         assertEquals(4, resourceAmountInOtherCity)
@@ -169,7 +184,7 @@ class CityTest {
 
 
         // when
-        val resourceAmountInCapital = capitalCity.getResourceAmount(resource.name)
+        val resourceAmountInCapital = capitalCity.getAvailableResourceAmount(resource.name)
 
         // then
         assertEquals(4, resourceAmountInCapital)

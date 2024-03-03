@@ -188,7 +188,7 @@ class City : IsPartOfGameInfoSerialization {
     fun getRuleset() = civ.gameInfo.ruleset
 
     fun getResourcesGeneratedByCity() = CityResources.getResourcesGeneratedByCity(this)
-    fun getResourceAmount(resourceName: String) = CityResources.getResourceAmount(this, resourceName)
+    fun getAvailableResourceAmount(resourceName: String) = CityResources.getAvailableResourceAmount(this, resourceName)
 
     fun isGrowing() = foodForNextTurn() > 0
     fun isStarving() = foodForNextTurn() < 0

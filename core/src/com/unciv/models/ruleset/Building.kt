@@ -412,7 +412,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
         for ((resourceName, requiredAmount) in getResourceRequirementsPerTurn(
             StateForConditionals(cityConstructions.city.civ, cityConstructions.city))
         ) {
-            val availableAmount = cityConstructions.city.getResourceAmount(resourceName)
+            val availableAmount = cityConstructions.city.getAvailableResourceAmount(resourceName)
             if (availableAmount < requiredAmount) {
                 yield(RejectionReasonType.ConsumesResources.toInstance(resourceName.getNeedMoreAmountString(requiredAmount - availableAmount)))
             }

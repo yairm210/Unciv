@@ -48,7 +48,7 @@ object Conditionals {
         val stateBasedRandom by lazy { Random(state.hashCode()) }
 
         fun getResourceAmount(resourceName: String): Int {
-            if (relevantCity != null) return relevantCity!!.getResourceAmount(resourceName)
+            if (relevantCity != null) return relevantCity!!.getAvailableResourceAmount(resourceName)
             if (relevantCiv != null) return relevantCiv!!.getResourceAmount(resourceName)
             return 0
         }

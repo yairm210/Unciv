@@ -69,7 +69,7 @@ object CityResources {
 
     /** Gets the number of resources available to this city
      * Accommodates both city-wide and civ-wide resources */
-    fun getResourceAmount(city: City, resourceName: String): Int {
+    fun getAvailableResourceAmount(city: City, resourceName: String): Int {
         val resource = city.getRuleset().tileResources[resourceName] ?: return 0
 
         if (resource.hasUnique(UniqueType.CityResource))
@@ -121,7 +121,7 @@ object CityResources {
             val resource = city.getRuleset().tileResources[unique.params[1]]
                 ?: continue
             cityResources.add(
-                resource, "Buildings",
+                resource, unique.getSourceNameForUser(),
                 (unique.params[0].toFloat() * resourceModifers[resource.name]!!).toInt()
             )
         }
