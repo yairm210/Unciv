@@ -3,9 +3,9 @@ package com.unciv.models.ruleset.unique
 import com.unciv.Constants
 import com.unciv.models.ruleset.validation.RulesetErrorSeverity
 import com.unciv.models.ruleset.validation.RulesetValidator
+import com.unciv.models.ruleset.validation.Suppression
 import com.unciv.models.translations.getPlaceholderParameters
 import com.unciv.models.translations.getPlaceholderText
-import java.util.EnumSet
 
 // I didn't put this in a companion object because APPARENTLY doing that means you can't use it in the init function.
 private val numberRegex = Regex("\\d+$") // Any number of trailing digits
@@ -13,7 +13,7 @@ private val numberRegex = Regex("\\d+$") // Any number of trailing digits
 enum class UniqueType(
     val text: String,
     vararg targets: UniqueTarget,
-    val flags: EnumSet<UniqueFlag> = UniqueFlag.none,
+    val flags: Set<UniqueFlag> = emptySet(),
     val docDescription: String? = null
 ) {
 
@@ -834,6 +834,8 @@ enum class UniqueType(
     DisableReligion("Disable religion", UniqueTarget.ModOptions, flags = UniqueFlag.setOfNoConditionals),
     AllowRazeCapital("Allow raze capital", UniqueTarget.ModOptions, flags = UniqueFlag.setOfNoConditionals),
     AllowRazeHolyCity("Allow raze holy city", UniqueTarget.ModOptions, flags = UniqueFlag.setOfNoConditionals),
+
+    SuppressWarnings("Suppress warning [validationWarning]", *UniqueTarget.CanIncludeSuppression, flags = UniqueFlag.setOfHiddenNoConditionals, docDescription = Suppression.uniqueDocDescription),
 
     // Declarative Mod compatibility (see [ModCompatibility]):
     // Note there is currently no display for these, but UniqueFlag.HiddenToUsers is not set.
