@@ -1,33 +1,17 @@
-
-
 AI tile evaluation considers Faith
 
-Mods with no policy branches don't crash when clicking on culture icon
-
-Simplified blockade function
-
 Civ-wide uniques for city-wide resources
-
-Added conditional for exact amount of population in a city
-
-Suggest corrections for misspelt conditionals; Better text similarity for strings with errors at the start
-
-Only require explicit building/wonder costs for tech columns that have buildings/wonders with unspecified cost
 
 Added 'city addbuilding', 'city removebuilding' console commands
 
 Add unique to conditionally control construction costs
 
-getProductionCost can receive city - this will allow us to control city-specific production cost changes!
+Added conditional for exact amount of population in a city
 
-RemoveIf -> RemoveAll to avoid jvm dependencies
+Mod checker:
+- Unique conditional corrections, and better correction
+- Limit tech column building/wonder costs warnings to when required
 
-Fix links in mod file structure - 
-
-By SomeTroglodyte:
-- Unit upgrade menu can scroll 
-- Remove unnecessary/harmful `open` on classes without subclasses 
-- Type declaration colon blanks linting 
-- Some linting and readability helpers 
+Unit upgrade menu can scroll - By SomeTroglodyte
 
 Military unit healing improvement  - By tuvus
