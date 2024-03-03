@@ -1126,6 +1126,9 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "Indicates the capital city"
 	Applicable to: Building
 
+??? example  "Moved to the new capital"
+	Applicable to: Building
+
 ??? example  "Provides 1 extra copy of each improved luxury resource near this City"
 	Applicable to: Building
 
