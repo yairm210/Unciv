@@ -28,7 +28,7 @@ enum class UniqueType(
 
     StatsFromSpecialist("[stats] from every specialist [cityFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
     StatsPerPopulation("[stats] per [amount] population [cityFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
-    StatsPerPolicies("[stats] per [amount] social policies adopted", UniqueTarget.Global),
+    StatsPerPolicies("[stats] per [amount] social policies adopted", UniqueTarget.Global, docDescription = "Only works for civ-wide stats"),
     StatsPerStat("[stats] per every [amount] [civWideStat]", UniqueTarget.Global),
 
     StatsFromCitiesOnSpecificTiles("[stats] in cities on [terrainFilter] tiles", UniqueTarget.Global, UniqueTarget.FollowerBelief),
