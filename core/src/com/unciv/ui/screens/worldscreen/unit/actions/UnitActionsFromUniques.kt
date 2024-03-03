@@ -47,7 +47,7 @@ object UnitActionsFromUniques {
         if (unit.civ.isOneCityChallenger() && unit.civ.hasEverOwnedOriginalCapital) return null
 
         if (unit.currentMovement <= 0 || !tile.canBeSettled())
-            return UnitAction(UnitActionType.FoundCity, 80, action = null)
+            return UnitAction(UnitActionType.FoundCity, 80f, action = null)
 
         val hasActionModifiers = unique.conditionals.any { it.type?.targetTypes?.contains(
             UniqueTarget.UnitActionModifier
@@ -63,7 +63,7 @@ object UnitActionsFromUniques {
         }
 
         if (unit.civ.playerType == PlayerType.AI)
-            return UnitAction(UnitActionType.FoundCity, 80, action = foundAction)
+            return UnitAction(UnitActionType.FoundCity, 80f, action = foundAction)
 
         val title =
             if (hasActionModifiers) UnitActionModifiers.actionTextWithSideEffects(
@@ -75,7 +75,7 @@ object UnitActionsFromUniques {
 
         return UnitAction(
             type = UnitActionType.FoundCity,
-            useFrequency = 80,
+            useFrequency = 80f,
             title = title,
             uncivSound = UncivSound.Chimes,
             action = {
@@ -122,7 +122,7 @@ object UnitActionsFromUniques {
         val isSetUp = unit.isSetUpForSiege()
         return sequenceOf(UnitAction(UnitActionType.SetUp,
             isCurrentAction = isSetUp,
-            useFrequency = 85,
+            useFrequency = 85f,
             action = {
                 unit.action = UnitActionType.SetUp.value
                 unit.useMovementPoints(1f)
@@ -137,7 +137,7 @@ object UnitActionsFromUniques {
         unit.cache.paradropRange = paradropUniques.maxOfOrNull { it.params[0] }!!.toInt()
         return sequenceOf(UnitAction(UnitActionType.Paradrop,
             isCurrentAction = unit.isPreparingParadrop(),
-            useFrequency = 60, // While it is important to see, it isn't nessesary used a lot
+            useFrequency = 60f, // While it is important to see, it isn't nessesary used a lot
             action = {
                 if (unit.isPreparingParadrop()) unit.action = null
                 else unit.action = UnitActionType.Paradrop.value
@@ -155,7 +155,7 @@ object UnitActionsFromUniques {
         if (!airsweepUniques.any()) return emptySequence()
         return sequenceOf(UnitAction(UnitActionType.AirSweep,
             isCurrentAction = unit.isPreparingAirSweep(),
-            useFrequency = 90,
+            useFrequency = 90f,
             action = {
                 if (unit.isPreparingAirSweep()) unit.action = null
                 else unit.action = UnitActionType.AirSweep.value
@@ -213,7 +213,7 @@ object UnitActionsFromUniques {
                 }
             }()
 
-            yield(UnitAction(UnitActionType.TriggerUnique, 80, title, action = unitAction))
+            yield(UnitAction(UnitActionType.TriggerUnique, 80f, title, action = unitAction))
         }
     }
 
@@ -223,7 +223,7 @@ object UnitActionsFromUniques {
             title = "Add to [${
                 unit.getMatchingUniques(UniqueType.AddInCapital).first().params[0]
             }]",
-            useFrequency = 80,
+            useFrequency = 80f,
             action = {
                 unit.civ.victoryManager.currentsSpaceshipParts.add(unit.name, 1)
                 unit.destroy()
@@ -247,7 +247,7 @@ object UnitActionsFromUniques {
         val improvement = tile.ruleset.tileImprovements[improvementName] ?: return null
         if (!tile.improvementFunctions.canBuildImprovement(improvement, unit.civ)) return null
 
-        return UnitAction(UnitActionType.CreateImprovement, 82, "Create [$improvementName]",
+        return UnitAction(UnitActionType.CreateImprovement, 82f, "Create [$improvementName]",
             action = {
                 tile.changeImprovement(improvementName, unit.civ, unit)
                 unit.destroy()  // Modders may wish for a nondestructive way, but that should be another Unique
@@ -274,7 +274,7 @@ object UnitActionsFromUniques {
                         (civResources[improvementUnique.params[1]] ?: 0) < improvementUnique.params[0].toInt()
                 }
 
-                yield(UnitAction(UnitActionType.CreateImprovement, 85,
+                yield(UnitAction(UnitActionType.CreateImprovement, 85f,
                     title = UnitActionModifiers.actionTextWithSideEffects(
                         "Create [${improvement.name}]",
                         unique,
@@ -317,7 +317,7 @@ object UnitActionsFromUniques {
         if(!unitCanBuildRoad) return@sequence
 
         val worldScreen = GUI.getWorldScreen()
-        yield(UnitAction(UnitActionType.ConnectRoad, 25, // Press once for a multiturn command, it doesn't need to be used that frequently
+        yield(UnitAction(UnitActionType.ConnectRoad, 25f, // Press once for a multiturn command, it doesn't need to be used that frequently
                isCurrentAction = unit.isAutomatingRoadConnection(),
                action = {
                    worldScreen.bottomUnitTable.selectedUnitIsConnectingRoad =
@@ -359,7 +359,7 @@ object UnitActionsFromUniques {
                 "Transform to [${unitToTransformTo.name}]"
             else "Transform to [${unitToTransformTo.name}]\n([$newResourceRequirementsString])"
 
-            yield(UnitAction(UnitActionType.Transform, 70,
+            yield(UnitAction(UnitActionType.Transform, 70f,
                 title = title,
                 action = {
                     unit.destroy()
@@ -403,7 +403,7 @@ object UnitActionsFromUniques {
                 && unit.canBuildImprovement(it)
         }
 
-        return sequenceOf(UnitAction(UnitActionType.ConstructImprovement, 85,
+        return sequenceOf(UnitAction(UnitActionType.ConstructImprovement, 85f,
             isCurrentAction = tile.hasImprovementInProgress(),
             action = {
                 GUI.pushScreen(ImprovementPickerScreen(tile, unit) {
@@ -443,7 +443,7 @@ object UnitActionsFromUniques {
 
         val turnsToBuild = getRepairTurns(unit)
 
-        return UnitAction(UnitActionType.Repair, 90,
+        return UnitAction(UnitActionType.Repair, 90f,
             title = "${UnitActionType.Repair} [${unit.currentTile.getImprovementToRepair()!!.name}] - [${turnsToBuild}${Fonts.turn}]",
             action = {
                 tile.turnsToImprovement = getRepairTurns(unit)
