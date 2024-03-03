@@ -1,6 +1,7 @@
 package com.unciv.models.ruleset.validation
 
 import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.files.FileHandle
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.g2d.TextureAtlas.TextureAtlasData
 import com.unciv.Constants
@@ -755,6 +756,11 @@ class RulesetValidator(val ruleset: Ruleset) {
     }
 
     private fun checkTilesetSanity(lines: RulesetErrorList) {
+        // If running from a jar *and* checking a builtin ruleset, skip this check.
+        // - We can't list() the jsons, and the unit test before relase is sufficient, the tileset config can't have changed since then.
+        if (ruleset.folderLocation == null && this::class.java.`package`?.specificationVersion != null)
+            return
+
         val tilesetConfigFolder = (ruleset.folderLocation ?: Gdx.files.internal("")).child("jsons\\TileSets")
         if (!tilesetConfigFolder.exists()) return
 
