@@ -109,9 +109,9 @@ class Nation : RulesetObject() {
     }
 
     override fun getCivilopediaTextLines(ruleset: Ruleset): List<FormattedLine> {
-        if (isCityState) return getCityStateInfo(ruleset)
-
         val textList = ArrayList<FormattedLine>()
+
+        if (isCityState) textList += getCityStateInfo(ruleset)
 
         if (leaderName.isNotEmpty()) {
             textList += FormattedLine(extraImage = "LeaderIcons/$leaderName", imageSize = 200f)
@@ -184,6 +184,7 @@ class Nation : RulesetObject() {
                 }
             }
         }
+        textList += FormattedLine(separator = true)
 
         // personality is not a nation property, it gets assigned to the civ randomly
         return textList
