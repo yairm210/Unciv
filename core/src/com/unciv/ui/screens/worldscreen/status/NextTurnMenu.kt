@@ -22,3 +22,4 @@ class NextTurnMenu(
         return table
     }
 }
+
