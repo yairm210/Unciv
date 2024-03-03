@@ -16,7 +16,9 @@ class NextTurnMenu(
     override fun createContentTable(): Table {
         val table = super.createContentTable()!!
         table.add(getButton("Next Turn", KeyboardBinding.NextTurn) { worldScreen.nextTurn() }).row()
-
+        val automateUnitsAction = NextTurnAction.values().first { it == NextTurnAction.MoveAutomatedUnits }
+        if (automateUnitsAction.isChoice(worldScreen))
+            table.add(getButton("Move automated units", KeyboardBinding.NextTurn) { automateUnitsAction.action(worldScreen) }).row()
         return table
     }
 }
