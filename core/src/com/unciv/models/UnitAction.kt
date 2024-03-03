@@ -15,6 +15,11 @@ import com.unciv.ui.images.ImageGetter
  */
 open class UnitAction(
     val type: UnitActionType,
+    /** How often this action is used, a higher value means more often and that it should be on an earlier page. 
+     * 100 is very frequent, 50 is somewhat frequent, less than 25 is press one time for multi-turn movement. 
+     * A Rare case is > 100 if a button is something like add in capital, promote or something,
+     * we need to inform the player that taking the action is an option. */
+    val useFrequency: Int,
     val title: String = type.value,
     val isCurrentAction: Boolean = false,
     val uncivSound: UncivSound = type.uncivSound,
@@ -74,7 +79,7 @@ class UpgradeUnitAction(
     val goldCostOfUpgrade: Int,
     val newResourceRequirements: Counter<String>,
     action: (() -> Unit)?
-) : UnitAction(UnitActionType.Upgrade, title, action = action)
+) : UnitAction(UnitActionType.Upgrade, 10, title, action = action)
 
 /** Unit Actions - generic enum with static properties
  *

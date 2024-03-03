@@ -17,7 +17,7 @@ object UnitActionsGreatPerson {
     internal fun getHurryResearchActions(unit: MapUnit, tile: Tile) = sequence {
         for (unique in unit.getMatchingUniques(UniqueType.CanHurryResearch)){
             yield(UnitAction(
-                UnitActionType.HurryResearch,
+                UnitActionType.HurryResearch, 76,
                 action = {
                     unit.civ.tech.addScience(unit.civ.tech.getScienceFromGreatScientist())
                     unit.consume()
@@ -33,7 +33,7 @@ object UnitActionsGreatPerson {
     internal fun getHurryPolicyActions(unit: MapUnit, tile: Tile) = sequence {
         for (unique in unit.getMatchingUniques(UniqueType.CanHurryPolicy)){
             yield(UnitAction(
-                UnitActionType.HurryPolicy,
+                UnitActionType.HurryPolicy, 76,
                 action = {
                     unit.civ.policies.addCulture(unit.civ.policies.getCultureFromGreatWriter())
                     unit.consume()
@@ -50,7 +50,7 @@ object UnitActionsGreatPerson {
                     && tile.getCity()!!.cityConstructions.canBeHurried()
 
             yield(UnitAction(
-                UnitActionType.HurryWonder,
+                UnitActionType.HurryWonder, 75,
                 action = {
                     tile.getCity()!!.cityConstructions.apply {
                         //http://civilization.wikia.com/wiki/Great_engineer_(Civ5)
@@ -67,7 +67,7 @@ object UnitActionsGreatPerson {
     internal fun getHurryBuildingActions(unit: MapUnit, tile: Tile) = sequence {
         for (unique in unit.getMatchingUniques(UniqueType.CanSpeedupConstruction)) {
             if (!tile.isCityCenter()) {
-                yield(UnitAction(UnitActionType.HurryBuilding, action = null))
+                yield(UnitAction(UnitActionType.HurryBuilding, 75, action = null))
                 continue
             }
 
@@ -83,7 +83,7 @@ object UnitActionsGreatPerson {
             if (productionPointsToAdd <= 0) continue
 
             yield(UnitAction(
-                UnitActionType.HurryBuilding,
+                UnitActionType.HurryBuilding, 75,
                 title = "Hurry Construction (+[$productionPointsToAdd]⚙)",
                 action = {
                     cityConstructions.apply {
@@ -105,7 +105,7 @@ object UnitActionsGreatPerson {
             val influenceEarned = unique.params[0].toFloat()
 
             yield(UnitAction(
-                UnitActionType.ConductTradeMission,
+                UnitActionType.ConductTradeMission, 70,
                 action = {
                     // http://civilization.wikia.com/wiki/Great_Merchant_(Civ5)
                     var goldEarned = (350 + 50 * unit.civ.getEraNumber()) * unit.civ.gameInfo.speed.goldCostModifier

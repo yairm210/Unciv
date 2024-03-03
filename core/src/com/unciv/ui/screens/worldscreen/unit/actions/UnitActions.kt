@@ -132,11 +132,11 @@ object UnitActions {
         // General actions
         addAutomateActions(unit)
         if (unit.isMoving())
-            yield(UnitAction(UnitActionType.StopMovement) { unit.action = null })
+            yield(UnitAction(UnitActionType.StopMovement, 20) { unit.action = null })
         if (unit.isExploring())
-            yield(UnitAction(UnitActionType.StopExploration) { unit.action = null })
+            yield(UnitAction(UnitActionType.StopExploration, 20) { unit.action = null })
         if (unit.isAutomated())
-            yield(UnitAction(UnitActionType.StopAutomation) {
+            yield(UnitAction(UnitActionType.StopAutomation, 10) {
                 unit.action = null
                 unit.automated = false
             })
@@ -154,7 +154,7 @@ object UnitActions {
 
         // From here we have actions defaulting to the second page
         if (unit.isMoving()) {
-            yield(UnitAction(UnitActionType.ShowUnitDestination) {
+            yield(UnitAction(UnitActionType.ShowUnitDestination, 30) {
                 GUI.getMap().setCenterPosition(unit.getMovementDestination().position, true)
             })
         }
@@ -182,12 +182,14 @@ object UnitActions {
         if (!unit.isEscorting()) {
             yield(UnitAction(
                 type = UnitActionType.EscortFormation,
+                useFrequency = 50,
                 action = {
                     unit.startEscorting()
                 }))
         } else {
             yield(UnitAction(
                 type = UnitActionType.StopEscortFormation,
+                useFrequency = 50,
                 action = {
                     unit.stopEscorting()
                 }))
@@ -210,6 +212,7 @@ object UnitActions {
         yield(UnitAction(
             type = UnitActionType.SwapUnits,
             isCurrentAction = worldScreen.bottomUnitTable.selectedUnitIsSwapping,
+            useFrequency = 70,
             action = {
                 worldScreen.bottomUnitTable.selectedUnitIsSwapping =
                     !worldScreen.bottomUnitTable.selectedUnitIsSwapping
@@ -220,6 +223,7 @@ object UnitActions {
 
     private suspend fun SequenceScope<UnitAction>.addDisbandAction(unit: MapUnit) {
         yield(UnitAction(type = UnitActionType.DisbandUnit,
+            useFrequency = 0, // Only can happen once per unit
             action = {
                 val worldScreen = GUI.getWorldScreen()
                 if (!worldScreen.hasOpenPopups()) {
@@ -242,6 +246,7 @@ object UnitActions {
         if (unit.isCivilian() || !unit.promotions.canBePromoted()) return
         // promotion does not consume movement points, but is not allowed if a unit has exhausted its movement or has attacked
         yield(UnitAction(UnitActionType.Promote,
+            useFrequency = 150, // We want to show the player that they can promote
             action = {
                 UncivGame.Current.pushScreen(PromotionPickerScreen(unit))
             }.takeIf { unit.currentMovement > 0 && unit.attacksThisTurn == 0 }
@@ -251,7 +256,7 @@ object UnitActions {
     private suspend fun SequenceScope<UnitAction>.addExplorationActions(unit: MapUnit) {
         if (unit.baseUnit.movesLikeAirUnits()) return
         if (unit.isExploring()) return
-        yield(UnitAction(UnitActionType.Explore) {
+        yield(UnitAction(UnitActionType.Explore, 5) {
             unit.action = UnitActionType.Explore.value
             if (unit.currentMovement > 0) UnitAutomation.automatedExplore(unit)
         })
@@ -263,6 +268,7 @@ object UnitActions {
                 type = if (unit.isActionUntilHealed())
                     UnitActionType.FortifyUntilHealed else
                     UnitActionType.Fortify,
+                useFrequency = 10,
                 isCurrentAction = true,
                 title = "${"Fortification".tr()} ${unit.getFortificationTurns() * 20}%"
             ))
@@ -272,13 +278,15 @@ object UnitActions {
         if (!unit.canFortify() || unit.currentMovement == 0f) return
 
         yield(UnitAction(UnitActionType.Fortify,
-            action = { unit.fortify() }.takeIf { !unit.isFortified() || unit.isFortifyingUntilHealed() }
+            action = { unit.fortify() }.takeIf { !unit.isFortified() || unit.isFortifyingUntilHealed() },
+            useFrequency = 30
         ))
 
         if (unit.health == 100) return
         yield(UnitAction(UnitActionType.FortifyUntilHealed,
             action = { unit.fortifyUntilHealed() }
-                .takeIf { !unit.isFortifyingUntilHealed() && unit.canHealInCurrentTile() }
+                .takeIf { !unit.isFortifyingUntilHealed() && unit.canHealInCurrentTile() },
+            useFrequency = 45
         ))
     }
 
@@ -287,13 +295,15 @@ object UnitActions {
         if (tile.hasImprovementInProgress() && unit.canBuildImprovement(tile.getTileImprovementInProgress()!!)) return
 
         yield(UnitAction(UnitActionType.Sleep,
-            action = { unit.action = UnitActionType.Sleep.value }.takeIf { !unit.isSleeping() || unit.isSleepingUntilHealed() }
+            action = { unit.action = UnitActionType.Sleep.value }.takeIf { !unit.isSleeping() || unit.isSleepingUntilHealed() },
+            useFrequency = 29
         ))
 
         if (unit.health == 100) return
         yield(UnitAction(UnitActionType.SleepUntilHealed,
             action = { unit.action = UnitActionType.SleepUntilHealed.value }
-                .takeIf { !unit.isSleepingUntilHealed() && unit.canHealInCurrentTile() }
+                .takeIf { !unit.isSleepingUntilHealed() && unit.canHealInCurrentTile() },
+            useFrequency = 44
         ))
     }
 
@@ -320,7 +330,7 @@ object UnitActions {
         if (unit.isTransported) return@sequence
 
         if (unit.currentMovement <= 0) {
-            yield(UnitAction(UnitActionType.GiftUnit, action = null))
+            yield(UnitAction(UnitActionType.GiftUnit, 1, action = null))
             return@sequence
         }
 
@@ -347,13 +357,14 @@ object UnitActions {
                 unit.gift(recipient)
             GUI.setUpdateWorldOnNextRender()
         }
-        yield(UnitAction(UnitActionType.GiftUnit, action = giftAction))
+        yield(UnitAction(UnitActionType.GiftUnit, 5, action = giftAction))
     }
 
     private suspend fun SequenceScope<UnitAction>.addAutomateActions(unit: MapUnit) {
         if (unit.isAutomated()) return
         yield(UnitAction(UnitActionType.Automate,
             isCurrentAction = unit.isAutomated(),
+            useFrequency = 25,
             action = {
                 // Temporary, for compatibility - we want games serialized *moving through old versions* to come out the other end with units still automated
                 unit.action = UnitActionType.Automate.value
@@ -366,6 +377,7 @@ object UnitActions {
     private suspend fun SequenceScope<UnitAction>.addWaitAction(unit: MapUnit) {
         yield(UnitAction(
             type = UnitActionType.Wait,
+            useFrequency = 85, // Preferably have this on the first page
             action = {
                 unit.due = false
                 GUI.getWorldScreen().switchToNextUnit()
@@ -383,8 +395,8 @@ object UnitActions {
     // This function is here for historic reasons, and to keep UnitActionType implementations closer together.
     // The code might move to UnitActionsTable altogether, no big difference.
     internal fun getPagingActions(unit: MapUnit, actionsTable: UnitActionsTable): Pair<UnitAction, UnitAction> {
-        return UnitAction(UnitActionType.ShowAdditionalActions) { actionsTable.changePage(1, unit) } to
-            UnitAction(UnitActionType.HideAdditionalActions) { actionsTable.changePage(-1, unit) }
+        return UnitAction(UnitActionType.ShowAdditionalActions, 0) { actionsTable.changePage(1, unit) } to
+            UnitAction(UnitActionType.HideAdditionalActions, 0) { actionsTable.changePage(-1, unit) }
     }
 
 }
