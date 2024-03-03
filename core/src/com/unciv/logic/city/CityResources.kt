@@ -15,7 +15,7 @@ object CityResources {
             resourceModifers[resource.name] = city.civ.getResourceModifier(resource)
 
         val cityResources = getResourcesGeneratedByCityNotIncludingBuildings(city, resourceModifers)
-        addCityResourcesFromUniqueBuildings(city, cityResources, resourceModifers)
+        addCityResourcesGeneratedFromUniqueBuildings(city, cityResources, resourceModifers)
 
         return cityResources
     }
@@ -56,7 +56,7 @@ object CityResources {
         return cityResources
     }
 
-    private fun addCityResourcesFromUniqueBuildings(city: City, cityResources: ResourceSupplyList, resourceModifer: HashMap<String, Float>) {
+    private fun addCityResourcesGeneratedFromUniqueBuildings(city: City, cityResources: ResourceSupplyList, resourceModifer: HashMap<String, Float>) {
         for (unique in city.getMatchingUniquesWithNonLocalEffects(UniqueType.ProvidesResources, StateForConditionals(city.civ, city))) { // E.G "Provides [1] [Iron]"
             val resource = city.getRuleset().tileResources[unique.params[1]]
                 ?: continue
