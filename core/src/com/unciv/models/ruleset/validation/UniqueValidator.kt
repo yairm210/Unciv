@@ -15,14 +15,20 @@ import com.unciv.models.ruleset.unique.UniqueType
 
 class UniqueValidator(val ruleset: Ruleset) {
 
-
+    /** Used to determine if certain uniques are used for filtering */
     private val allNonTypedUniques = HashSet<String>()
+    /** Used to determine if certain uniques are used for filtering */
     private val allUniqueParameters = HashSet<String>()
 
     private fun addToHashsets(uniqueHolder: IHasUniques) {
         for (unique in uniqueHolder.uniqueObjects) {
             if (unique.type == null) allNonTypedUniques.add(unique.text)
-            else allUniqueParameters.addAll(unique.allParams)
+            else allUniqueParameters.addAll(unique.allParams.flatMap {
+                // Multifilters have the actual filtering uniques
+                it.removePrefix("{").removeSuffix("}").split("} {")}
+                // Non-filters
+                .map { if (it.startsWith("non-[")) {it.removePrefix("non-[").removeSuffix("]")} else it }
+            )
         }
     }
 
