@@ -948,13 +948,13 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Nation, Terrain, Improvement, Resource
 
 ??? example  "Will not be displayed in Civilopedia"
-	Applicable to: Nation, Tech, Policy, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed
+	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed
 
 ??? example  "Comment [comment]"
 	Allows displaying arbitrary text in a Unique listing. Only the text within the '[]' brackets will be displayed, the rest serves to allow Ruleset validation to recognize the intent.
 	Example: "Comment [comment]"
 
-	Applicable to: Nation, Tech, Policy, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed
+	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed
 
 ## Personality uniques
 ??? example  "Will not build [baseUnitFilter/buildingFilter]"
@@ -1126,7 +1126,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "Indicates the capital city"
 	Applicable to: Building
 
-??? example  "Moved to the new capital"
+??? example  "Moves to new capital when capital changes"
 	Applicable to: Building
 
 ??? example  "Provides 1 extra copy of each improved luxury resource near this City"
@@ -2217,8 +2217,8 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
     Special conditionals that can be added to Triggerable uniques, to make them activate upon specific actions.
 
-??? example  "&lt;upon discovering [tech]&gt;"
-	Example: "&lt;upon discovering [Agriculture]&gt;"
+??? example  "&lt;upon discovering [techFilter] technology&gt;"
+	Example: "&lt;upon discovering [Agriculture] technology&gt;"
 
 	Applicable to: TriggerCondition
 
