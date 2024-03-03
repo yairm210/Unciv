@@ -522,6 +522,24 @@ enum class UniqueParameterType(
         }
     },
 
+    /** Implemented by [Technology.matchesFilter][com.unciv.models.ruleset.tech.Technology.matchesFilter] */
+    TechFilter("techFilter", "Agriculture") {
+        private val knownValues = setOf("All", "all")
+
+        override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
+            UniqueType.UniqueParameterErrorSeverity? = getErrorSeverityForFilter(parameterText, ruleset)
+
+        override fun isKnownValue(parameterText: String, ruleset: Ruleset): Boolean {
+            if (parameterText in knownValues) return true
+            if (parameterText in ruleset.technologies) return true
+            if (parameterText in ruleset.eras) return true
+            return false
+        }
+
+        override fun getTranslationWriterStringsForOutput() = knownValues
+    },
+
+
     /** unused at the moment with vanilla rulesets */
     Specialist("specialist", "Merchant", "The name of any specialist") {
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):

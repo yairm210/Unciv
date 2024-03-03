@@ -775,7 +775,9 @@ enum class UniqueType(
 
     ///////////////////////////////////////// region 10 TRIGGERS /////////////////////////////////////////
 
-    TriggerUponResearch("upon discovering [tech]", UniqueTarget.TriggerCondition),
+    TriggerUponResearch("upon discovering [techFilter] technology", UniqueTarget.TriggerCondition),
+    @Deprecated("as of 4.10.15", ReplaceWith("upon discovering [tech] technology"))
+    TriggerUponResearchOld("upon discovering [tech]", UniqueTarget.TriggerCondition),
     TriggerUponEnteringEra("upon entering the [era]", UniqueTarget.TriggerCondition),
     TriggerUponAdoptingPolicyOrBelief("upon adopting [policy/belief]", UniqueTarget.TriggerCondition),
     TriggerUponDeclaringWar("upon declaring war with a major Civilization", UniqueTarget.TriggerCondition),

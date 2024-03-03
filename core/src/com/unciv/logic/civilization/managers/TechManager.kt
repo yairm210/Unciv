@@ -301,8 +301,12 @@ class TechManager : IsPartOfGameInfoSerialization {
             if (!unique.hasTriggerConditional() && unique.conditionalsApply(StateForConditionals(civInfo)))
                 UniqueTriggerActivation.triggerUnique(unique, civInfo, triggerNotificationText = triggerNotificationText)
 
+        for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponResearchOld))
+            if (unique.conditionals.any {it.type == UniqueType.TriggerUponResearchOld && it.params[0] == techName})
+                UniqueTriggerActivation.triggerUnique(unique, civInfo, triggerNotificationText = triggerNotificationText)
+
         for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponResearch))
-            if (unique.conditionals.any {it.type == UniqueType.TriggerUponResearch && it.params[0] == techName})
+            if (unique.conditionals.any {it.type == UniqueType.TriggerUponResearch && newTech.matchesFilter(it.params[0]) })
                 UniqueTriggerActivation.triggerUnique(unique, civInfo, triggerNotificationText = triggerNotificationText)
 
 
