@@ -129,7 +129,8 @@ class OptionsPopup(
             center(screen.stage)
             keyBindingsTab?.save()
             settings.save()
-            onClose()
+            onClose() // activate the passed 'on close' button
+            close() // close this popup
         })
 
         if (GUI.keyboardAvailable) {
