@@ -62,7 +62,7 @@ class DiplomacyScreen(
     private val leftSideTable = Table().apply {
         background = skinStrings.getUiBackground("DiplomacyScreen/LeftSide", tintColor = clearColor)
     }
-    private val leftSideScroll = ScrollPane(leftSideTable)
+    private val leftSideScroll = ScrollPaneWithMinSize()
 
     private var highlightedCivButton: Table? = null
     private val highlightBackground = skinStrings.getUiBackground("DiplomacyScreen/SelectedCiv", tintColor = highlightColor)
@@ -76,8 +76,10 @@ class DiplomacyScreen(
     internal fun isNotPlayersTurn() = !GUI.isAllowedChangeState()
 
     init {
-        val splitPane = SplitPane(leftSideScroll, rightSideTable, false, skin)
-        splitPane.splitAmount = 0.2f
+        val splitPane = SplitPaneCenteringLeftSide()
+        // In cramped conditions, start the left side with enough width for nation icon and padding, but allow it to get squeezed until just the icon fits.
+        // (and SplitPane will squeeze even beyond the minWidth our left side supplies - when the right side has a conflicting minWidth, then both get squeezed).
+        splitPane.splitAmount = 0.2f.coerceAtLeast(leftSideScroll.prefWidth / stage.width)
 
         updateLeftSideTable(selectCiv)
 
@@ -95,6 +97,27 @@ class DiplomacyScreen(
                 tradeTable.offerColumnsTable.update()
             } else
                 updateRightSide(selectCiv)
+        }
+    }
+
+    private inner class ScrollPaneWithMinSize : ScrollPane(leftSideTable) {
+        // On cramped screens 20% default splitAmount can make the left side smaller than a nation icon.
+        // Also, content changes of the right side may claim too much space, pushing the split further to the left.
+        // This reduces some ugliness - but remember Portrait lies, its size parameter means the *inner* circle.
+        override fun getMinWidth() = nationIconSize * 1.1f // See PortraitNation's borderSize = size*0.1f parameter and how it's used
+        override fun getPrefWidth() = minWidth + 2 * nationIconPad
+    }
+
+    private inner class SplitPaneCenteringLeftSide : SplitPane(leftSideScroll, rightSideTable, false, skin) {
+        // A lot of effort for little effect, but noticeable on really cramped width.
+        // SplitPane supports no events at all, but this centers the nation icons whenever splitAmount changes,
+        // whether from touchDragged or clampSplitAmount (yes both actual methods in SplitPane).
+        var lastSplitAmount = splitAmount
+        override fun validate() {
+            super.validate()
+            if (splitAmount == lastSplitAmount) return
+            lastSplitAmount = splitAmount
+            leftSideScroll.scrollPercentX = 0.5f
         }
     }
 
