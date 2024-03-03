@@ -1,3 +1,22 @@
+## 4.10.15
+
+Fix double-count of civ-wide resources, while allowing propagation of city-wide resources via uniques 
+
+Changed tech trigger to accept tech filters
+
+By SomeTroglodyte:
+- Fix tileset sanity check for builtin rulesets when run from jar 
+- Improve DiplomacyScreen left side UX (nation icons) on really cramped screens 
+- Move DiplomacyScreen close button to top right 
+- Validation warning Suppression as Unique or modifier 
+- UI: Fix options popup "spilling" in cramped screen conditions 
+
+Allow city state uniques for nation descriptions  - By SeventhM
+
+Add MovedToNewCapital buiding unique  - By PLynx01
+
+Better military unit retreat  - By tuvus
+
 ## 4.10.14
 
 AI tile evaluation considers Faith
