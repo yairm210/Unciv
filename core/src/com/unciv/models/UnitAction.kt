@@ -79,7 +79,7 @@ class UpgradeUnitAction(
     val goldCostOfUpgrade: Int,
     val newResourceRequirements: Counter<String>,
     action: (() -> Unit)?
-) : UnitAction(UnitActionType.Upgrade, 10, title, action = action)
+) : UnitAction(UnitActionType.Upgrade, 120, title, action = action)
 
 /** Unit Actions - generic enum with static properties
  *
@@ -107,7 +107,7 @@ enum class UnitActionType(
     EscortFormation("Escort formation",
         { ImageGetter.getImage("OtherIcons/Link") }, false, defaultPage = 1),
     SwapUnits("Swap units",
-        { ImageGetter.getUnitActionPortrait("Swap") }, false, defaultPage = 1),
+        { ImageGetter.getUnitActionPortrait("Swap") }, false, defaultPage = 0),
     Automate("Automate",
         { ImageGetter.getUnitActionPortrait("Automate") }),
     ConnectRoad("Connect road",

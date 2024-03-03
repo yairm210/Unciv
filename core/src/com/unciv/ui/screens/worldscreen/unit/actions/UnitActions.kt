@@ -212,7 +212,7 @@ object UnitActions {
         yield(UnitAction(
             type = UnitActionType.SwapUnits,
             isCurrentAction = worldScreen.bottomUnitTable.selectedUnitIsSwapping,
-            useFrequency = 70,
+            useFrequency = 60,
             action = {
                 worldScreen.bottomUnitTable.selectedUnitIsSwapping =
                     !worldScreen.bottomUnitTable.selectedUnitIsSwapping
@@ -295,15 +295,15 @@ object UnitActions {
         if (tile.hasImprovementInProgress() && unit.canBuildImprovement(tile.getTileImprovementInProgress()!!)) return
 
         yield(UnitAction(UnitActionType.Sleep,
-            action = { unit.action = UnitActionType.Sleep.value }.takeIf { !unit.isSleeping() || unit.isSleepingUntilHealed() },
-            useFrequency = 29
+            useFrequency = if (!unit.isSleeping()) 29 else 21,
+            action = { unit.action = UnitActionType.Sleep.value }.takeIf { !unit.isSleeping() || unit.isSleepingUntilHealed() }
         ))
 
         if (unit.health == 100) return
         yield(UnitAction(UnitActionType.SleepUntilHealed,
+            useFrequency = if (!unit.isSleepingUntilHealed()) 44 else 20,
             action = { unit.action = UnitActionType.SleepUntilHealed.value }
-                .takeIf { !unit.isSleepingUntilHealed() && unit.canHealInCurrentTile() },
-            useFrequency = 44
+                .takeIf { !unit.isSleepingUntilHealed() && unit.canHealInCurrentTile() }
         ))
     }
 
@@ -377,7 +377,7 @@ object UnitActions {
     private suspend fun SequenceScope<UnitAction>.addWaitAction(unit: MapUnit) {
         yield(UnitAction(
             type = UnitActionType.Wait,
-            useFrequency = 85, // Preferably have this on the first page
+            useFrequency = 65, // Preferably have this on the first page
             action = {
                 unit.due = false
                 GUI.getWorldScreen().switchToNextUnit()

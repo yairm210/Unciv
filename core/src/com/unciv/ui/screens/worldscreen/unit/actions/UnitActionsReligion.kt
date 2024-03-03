@@ -23,7 +23,7 @@ object UnitActionsReligion {
         ) == true }
 
         return sequenceOf(UnitAction(
-            UnitActionType.FoundReligion,
+            UnitActionType.FoundReligion, 80,
 
             if (hasActionModifiers) UnitActionModifiers.actionTextWithSideEffects(
                 UnitActionType.FoundReligion.value,
@@ -52,7 +52,7 @@ object UnitActionsReligion {
 
         val baseTitle = "Enhance [${unit.civ.religionManager.religion!!.getReligionDisplayName()}]"
         return sequenceOf(UnitAction(
-            UnitActionType.EnhanceReligion,
+            UnitActionType.EnhanceReligion, 79,
             title = if (hasActionModifiers) UnitActionModifiers.actionTextWithSideEffects(
                 baseTitle,
                 unique,
@@ -87,7 +87,7 @@ object UnitActionsReligion {
             newStyleUnique, unit)
 
         return sequenceOf(UnitAction(
-            UnitActionType.SpreadReligion,
+            UnitActionType.SpreadReligion, 68,
             title = title,
             action = {
                 val followersOfOtherReligions = city.religion.getFollowersOfOtherReligionsThan(unit.religion!!)
@@ -123,7 +123,7 @@ object UnitActionsReligion {
             UnitActionModifiers.actionTextWithSideEffects("Remove Heresy", newStyleUnique!!, unit)
 
         return sequenceOf(UnitAction(
-            UnitActionType.RemoveHeresy,
+            UnitActionType.RemoveHeresy, 69,
             title = title,
             action = {
                 city.religion.removeAllPressuresExceptFor(unit.religion!!)
