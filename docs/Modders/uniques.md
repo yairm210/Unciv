@@ -227,6 +227,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Global, FollowerBelief
 
 ??? example  "[stats] per [amount] social policies adopted"
+	Only works for civ-wide stats
 	Example: "[+1 Gold, +2 Production] per [3] social policies adopted"
 
 	Applicable to: Global
@@ -544,7 +545,9 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Global
 
-??? example  "100 Gold for discovering a Natural Wonder (bonus enhanced to 500 Gold if first to discover it)"
+??? example  "[amount] [civWideStat] for discovering a Natural Wonder (bonus enhanced to [amount] if first to discover it)"
+	Example: "[3] [Gold] for discovering a Natural Wonder (bonus enhanced to [3] if first to discover it)"
+
 	Applicable to: Global
 
 ??? example  "[relativeAmount]% Great Person generation [cityFilter]"
@@ -1541,7 +1544,9 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Terrain
 
-??? example  "Grants 500 Gold to the first civilization to discover it"
+??? example  "Grants [amount] [civWideStat] to the first civilization to discover it"
+	Example: "Grants [3] [Gold] to the first civilization to discover it"
+
 	Applicable to: Terrain
 
 ??? example  "Units ending their turn on this terrain take [amount] damage"

@@ -149,8 +149,9 @@ enum class UniqueType(
 
     /// Natural Wonders
     StatsFromNaturalWonders("[stats] for every known Natural Wonder", UniqueTarget.Global),
-    // TODO: moddability of the numbers
+    @Deprecated("as of 4.10.16", ReplaceWith("[100] [Gold] for discovering a Natural Wonder (bonus enhanced to [500] if first to discover it)"))
     GoldWhenDiscoveringNaturalWonder("100 Gold for discovering a Natural Wonder (bonus enhanced to 500 Gold if first to discover it)", UniqueTarget.Global),
+    StatBonusWhenDiscoveringNaturalWonder("[amount] [civWideStat] for discovering a Natural Wonder (bonus enhanced to [amount] if first to discover it)", UniqueTarget.Global),
 
     /// Great Persons
     GreatPersonPointPercentage("[relativeAmount]% Great Person generation [cityFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
@@ -510,7 +511,9 @@ enum class UniqueType(
     NaturalWonderConvertNeighbors("Neighboring tiles will convert to [baseTerrain]", UniqueTarget.Terrain, flags = UniqueFlag.setOfHiddenToUsers),
     // The "Except [terrainFilter]" could theoretically be implemented with a conditional
     NaturalWonderConvertNeighborsExcept("Neighboring tiles except [baseTerrain] will convert to [baseTerrain]", UniqueTarget.Terrain, flags = UniqueFlag.setOfHiddenToUsers),
+    @Deprecated("As of 4.10.16", ReplaceWith("Grants [500] [Gold] to the first civilization to discover it"))
     GrantsGoldToFirstToDiscover("Grants 500 Gold to the first civilization to discover it", UniqueTarget.Terrain),
+    GrantsStatToFirstToDiscover("Grants [amount] [civWideStat] to the first civilization to discover it", UniqueTarget.Terrain),
 
     // General terrain
     DamagesContainingUnits("Units ending their turn on this terrain take [amount] damage", UniqueTarget.Terrain),

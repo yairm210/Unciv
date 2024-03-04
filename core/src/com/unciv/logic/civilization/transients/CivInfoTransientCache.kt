@@ -18,6 +18,7 @@ import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
+import com.unciv.models.stats.Stat
 import com.unciv.utils.DebugUtils
 
 /** CivInfo class was getting too crowded */
@@ -216,21 +217,80 @@ class CivInfoTransientCache(val civInfo: Civilization) {
                 tile.position, NotificationCategory.General, "StatIcons/Happiness")
 
             var goldGained = 0
+            var scienceGained = 0
+            var cultureGained = 0
+            var faithGained = 0
+
             val discoveredNaturalWonders = civInfo.gameInfo.civilizations.filter { it != civInfo && it.isMajorCiv() }
                     .flatMap { it.naturalWonders }
-            if (tile.terrainHasUnique(UniqueType.GrantsGoldToFirstToDiscover)
+            if (tile.terrainHasUnique(UniqueType.GrantsStatToFirstToDiscover)
                     && !discoveredNaturalWonders.contains(tile.naturalWonder!!)) {
-                goldGained += 500
+
+                for (unique in tile.getTerrainMatchingUniques(UniqueType.GrantsStatToFirstToDiscover)) {
+                    val relevantStat = Stat.safeValueOf(unique.params[1])
+                    val bonusAmount = unique.params[0].toInt()
+
+                    when (relevantStat) {
+                        Stat.Gold ->
+                            goldGained += bonusAmount
+                        Stat.Science ->
+                            scienceGained += bonusAmount
+                        Stat.Culture ->
+                            cultureGained += bonusAmount
+                        Stat.Faith ->
+                            faithGained += bonusAmount
+                        else -> {}
+                    }
+                }
             }
 
-            if (civInfo.hasUnique(UniqueType.GoldWhenDiscoveringNaturalWonder)) {
-                goldGained += if (discoveredNaturalWonders.contains(tile.naturalWonder!!)) 100 else 500
+            if (civInfo.hasUnique(UniqueType.StatBonusWhenDiscoveringNaturalWonder)) {
+                for (unique in civInfo.getMatchingUniques(UniqueType.StatBonusWhenDiscoveringNaturalWonder)) {
+                    val relevantStat = Stat.safeValueOf(unique.params[1])
+                    val normalBonus = unique.params[0].toInt()
+                    val firstDiscoveredBonus = unique.params[2].toInt()
+
+                    when (relevantStat) {
+                        Stat.Gold ->
+                            goldGained += if (discoveredNaturalWonders.contains(tile.naturalWonder!!)) normalBonus else firstDiscoveredBonus
+                        Stat.Science ->
+                            scienceGained += if (discoveredNaturalWonders.contains(tile.naturalWonder!!)) normalBonus else firstDiscoveredBonus
+                        Stat.Culture ->
+                            cultureGained += if (discoveredNaturalWonders.contains(tile.naturalWonder!!)) normalBonus else firstDiscoveredBonus
+                        Stat.Faith ->
+                            faithGained += if (discoveredNaturalWonders.contains(tile.naturalWonder!!)) normalBonus else firstDiscoveredBonus
+                        else -> {}
+                    }
+
+                }
+
             }
 
             if (goldGained > 0) {
                 civInfo.addGold(goldGained)
                 civInfo.addNotification("We have received [$goldGained] Gold for discovering [${tile.naturalWonder}]",
                     NotificationCategory.General, NotificationIcon.Gold
+                )
+            }
+
+            if (scienceGained > 0) {
+                civInfo.addStat(Stat.Science, scienceGained)
+                civInfo.addNotification("We have received [$scienceGained] Science for discovering [${tile.naturalWonder}]",
+                    NotificationCategory.General, NotificationIcon.Science
+                )
+            }
+
+            if (cultureGained > 0) {
+                civInfo.addStat(Stat.Culture, cultureGained)
+                civInfo.addNotification("We have received [$cultureGained] Culture for discovering [${tile.naturalWonder}]",
+                    NotificationCategory.General, NotificationIcon.Culture
+                )
+            }
+
+            if (faithGained > 0) {
+                civInfo.addStat(Stat.Faith, faithGained)
+                civInfo.addNotification("We have received [$faithGained] Faith for discovering [${tile.naturalWonder}]",
+                    NotificationCategory.General, NotificationIcon.Faith
                 )
             }
 
