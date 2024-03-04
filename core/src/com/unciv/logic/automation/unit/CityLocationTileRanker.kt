@@ -21,7 +21,7 @@ object CityLocationTileRanker {
     /**
      * Returns a hashmap of tiles to their ranking plus the a the highest value tile and its value
      */
-    fun getBestTilesToFoundCity(unit: MapUnit, distanceToSearch: Int? = null): BestTilesToFoundCity {
+    fun getBestTilesToFoundCity(unit: MapUnit, distanceToSearch: Int? = null, minimumValue: Float): BestTilesToFoundCity {
         val range =  if (distanceToSearch != null) distanceToSearch else {
             val distanceFromHome = if (unit.civ.cities.isEmpty()) 0
             else unit.civ.cities.minOf { it.getCenterTile().aerialDistanceTo(unit.getTile()) }
@@ -39,10 +39,11 @@ object CityLocationTileRanker {
         val possibleTileLocationsWithRank = possibleCityLocations
             .map {
                 val tileValue = rankTileToSettle(it, unit.civ, nearbyCities, baseTileMap, uniqueCache)
-                bestTilesToFoundCity.tileRankMap[it] = tileValue
+                if (tileValue >= minimumValue)
+                    bestTilesToFoundCity.tileRankMap[it] = tileValue
 
                 Pair(it, tileValue)
-            }
+            }.filter { it.second >= minimumValue }
             .sortedByDescending { it.second }
 
         val bestReachableTile = possibleTileLocationsWithRank.firstOrNull { unit.movement.canReach(it.first) }
