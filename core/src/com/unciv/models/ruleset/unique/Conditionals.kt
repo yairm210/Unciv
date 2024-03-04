@@ -53,6 +53,11 @@ object Conditionals {
             return 0
         }
 
+        fun checkOnResourceName(resourceName: String): Boolean {
+            if (gameInfo == null) return false
+            return gameInfo!!.ruleset.tileResources.containsKey(resourceName)
+        }
+
         /** Helper to simplify conditional tests requiring gameInfo */
         fun checkOnGameInfo(predicate: (GameInfo.() -> Boolean)): Boolean {
             if (gameInfo == null) return false
