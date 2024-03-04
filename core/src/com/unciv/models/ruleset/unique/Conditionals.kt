@@ -170,6 +170,14 @@ object Conditionals {
                 checkResourceOrStatAmountWithSpeed { current, limit -> current > limit }  // Note: Int.compareTo(Float)!
             UniqueType.ConditionalWhenBelowAmountStatResourceSpeed ->
                 checkResourceOrStatAmountWithSpeed { current, limit -> current < limit }  // Note: Int.compareTo(Float)!
+            UniqueType.ConditionalExactStatResourceNumber ->
+                checkResourceOrStatAmount { current, limit ->  current == limit }
+            UniqueType.ConditionalHasSameAmountOfTwoStatsResources ->
+                compareResourceOrStatAmount { first, second -> first == second }
+            UniqueType.ConditionalHasMoreStatResource ->
+                compareResourceOrStatAmount { first, second -> first > second }
+            UniqueType.ConditionalHasLessStatResource ->
+                compareResourceOrStatAmount { first, second -> first < second }
 
             UniqueType.ConditionalHappy -> checkOnCiv { stats.happiness >= 0 }
             UniqueType.ConditionalBetweenHappiness ->

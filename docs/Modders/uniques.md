@@ -227,6 +227,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Global, FollowerBelief
 
 ??? example  "[stats] per [amount] social policies adopted"
+	Only works for civ-wide stats
 	Example: "[+1 Gold, +2 Production] per [3] social policies adopted"
 
 	Applicable to: Global
@@ -2055,6 +2056,26 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 ??? example  "&lt;when below [amount] [stat/resource] (modified by game speed)&gt;"
 	Example: "&lt;when below [3] [Culture] (modified by game speed)&gt;"
+
+	Applicable to: Conditional
+
+??? example  "&lt;has exactly [amount] [stat/resource]&gt;"
+	Example: "&lt;has exactly [3] [Culture]&gt;"
+
+	Applicable to: Conditional
+
+??? example  "&lt;has the same number of [stat/resource] and [stat/resource]&gt;"
+	Example: "&lt;has the same number of [Culture] and [Culture]&gt;"
+
+	Applicable to: Conditional
+
+??? example  "&lt;has more [stat/resource] than [stat/resource]&gt;"
+	Example: "&lt;has more [Culture] than [Culture]&gt;"
+
+	Applicable to: Conditional
+
+??? example  "&lt;has less [stat/resource] than [stat/resource]&gt;"
+	Example: "&lt;has less [Culture] than [Culture]&gt;"
 
 	Applicable to: Conditional
 
