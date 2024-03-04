@@ -660,7 +660,7 @@ enum class UniqueType(
     ConditionalWithResource("with [resource]", UniqueTarget.Conditional),
     ConditionalWithoutResource("without [resource]", UniqueTarget.Conditional),
 
-    // Supports also stockpileable resources (Gold, Faith, Culture, Science)
+    // Supports also stockpileable stats (Gold, Faith, Culture, Science)
     ConditionalWhenAboveAmountStatResource("when above [amount] [stat/resource]", UniqueTarget.Conditional),
     ConditionalWhenBelowAmountStatResource("when below [amount] [stat/resource]", UniqueTarget.Conditional),
 
