@@ -83,6 +83,42 @@ object Conditionals {
             return compare(relevantCiv!!.getEraNumber(), era.eraNumber)
         }
 
+        /** Helper for comparing the Resource and Stat numbers **/
+        fun compareResourceOrStatAmount(compare: (first: Int, second: Int) -> Boolean): Boolean {
+            if (gameInfo == null) return false
+            val first = condition.params[0]
+            val second = condition.params[1]
+
+            // Compare Resource with Resource
+            if (checkOnResourceName(first) && checkOnResourceName(second)) {
+                return compare(getResourceAmount(first), getResourceAmount(second))
+            }
+            // Compare Stat with Stat
+            else if (Stat.isStat(first) && Stat.isStat(second)) {
+                val firstStat = Stat.safeValueOf(first) ?: return false
+                val secondStat = Stat.safeValueOf(second) ?: return false
+
+                return compare(relevantCiv!!.getStatReserve(firstStat), relevantCiv!!.getStatReserve(secondStat))
+            }
+            // Compare Stat with Resource
+            else if (Stat.isStat(first) && checkOnResourceName(second)) {
+                val stat = Stat.safeValueOf(first) ?: return false
+                val resourceAmount = getResourceAmount(second)
+
+                return compare(relevantCiv!!.getStatReserve(stat), resourceAmount)
+            }
+            // Compare Resource with Stat
+            else if (checkOnResourceName(first) && Stat.isStat(second)) {
+                val resourceAmount = getResourceAmount(first)
+                val stat = Stat.safeValueOf(second) ?: return false
+
+                return compare(resourceAmount, relevantCiv!!.getStatReserve(stat))
+            }
+            else {
+                return false
+            }
+        }
+
         /** Helper for ConditionalWhenAboveAmountStatResource and its below counterpart */
         fun checkResourceOrStatAmount(compare: (current: Int, limit: Int) -> Boolean): Boolean {
             if (gameInfo == null) return false
