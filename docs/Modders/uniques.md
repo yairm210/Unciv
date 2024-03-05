@@ -2059,8 +2059,8 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Conditional
 
-??? example  "&lt;has exactly [amount] [stat/resource]&gt;"
-	Example: "&lt;has exactly [3] [Culture]&gt;"
+??? example  "&lt;when exactly [amount] [stat/resource]&gt;"
+	Example: "&lt;when exactly [3] [Culture]&gt;"
 
 	Applicable to: Conditional
 
@@ -2069,13 +2069,13 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Conditional
 
-??? example  "&lt;has more [stat/resource] than [stat/resource]&gt;"
-	Example: "&lt;has more [Culture] than [Culture]&gt;"
+??? example  "&lt;when more [stat/resource] than [stat/resource]&gt;"
+	Example: "&lt;when more [Culture] than [Culture]&gt;"
 
 	Applicable to: Conditional
 
-??? example  "&lt;has less [stat/resource] than [stat/resource]&gt;"
-	Example: "&lt;has less [Culture] than [Culture]&gt;"
+??? example  "&lt;when less [stat/resource] than [stat/resource]&gt;"
+	Example: "&lt;when less [Culture] than [Culture]&gt;"
 
 	Applicable to: Conditional
 
