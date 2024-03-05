@@ -86,37 +86,35 @@ object Conditionals {
         /** Helper for comparing the Resource and Stat numbers **/
         fun compareResourceOrStatAmount(compare: (first: Int, second: Int) -> Boolean): Boolean {
             if (gameInfo == null) return false
+
+            // Get Stat or resource names
             val first = condition.params[0]
             val second = condition.params[1]
 
-            // Compare Resource with Resource
-            if (checkOnResourceName(first) && checkOnResourceName(second)) {
-                return compare(getResourceAmount(first), getResourceAmount(second))
-            }
-            // Compare Stat with Stat
-            else if (Stat.isStat(first) && Stat.isStat(second)) {
-                val firstStat = Stat.safeValueOf(first) ?: return false
-                val secondStat = Stat.safeValueOf(second) ?: return false
+            // Declare variables for Stat or Resource numbers
+            var firstAmount = 0
+            var secondAmount = 0
 
-                return compare(relevantCiv!!.getStatReserve(firstStat), relevantCiv!!.getStatReserve(secondStat))
-            }
-            // Compare Stat with Resource
-            else if (Stat.isStat(first) && checkOnResourceName(second)) {
-                val stat = Stat.safeValueOf(first) ?: return false
-                val resourceAmount = getResourceAmount(second)
-
-                return compare(relevantCiv!!.getStatReserve(stat), resourceAmount)
-            }
-            // Compare Resource with Stat
-            else if (checkOnResourceName(first) && Stat.isStat(second)) {
-                val resourceAmount = getResourceAmount(first)
-                val stat = Stat.safeValueOf(second) ?: return false
-
-                return compare(resourceAmount, relevantCiv!!.getStatReserve(stat))
-            }
-            else {
+            // Return false if the parameters are not Stat or Resource
+            if (!Stat.isStat(first) && !checkOnResourceName(first))
                 return false
-            }
+            if (!Stat.isStat(second) && !checkOnResourceName(second))
+                return false
+
+            // Get number of first
+            if (checkOnResourceName(first))
+                firstAmount = getResourceAmount(first)
+            else if (Stat.isStat(first))
+                firstAmount = relevantCiv!!.getStatReserve(Stat.safeValueOf(first)!!)
+
+            // Get number of second
+            if (checkOnResourceName(second))
+                secondAmount = getResourceAmount(second)
+            else if (Stat.isStat(second))
+                secondAmount = relevantCiv!!.getStatReserve(Stat.safeValueOf(second)!!)
+
+            // Compare the numbers
+            return compare(firstAmount, secondAmount)
         }
 
         /** Helper for ConditionalWhenAboveAmountStatResource and its below counterpart */
