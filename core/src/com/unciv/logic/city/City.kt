@@ -432,6 +432,8 @@ class City : IsPartOfGameInfoSerialization {
             "in foreign cities", "Foreign" -> viewingCiv != null && viewingCiv != civ
             "in annexed cities", "Annexed" -> foundingCiv != civ.civName && !isPuppet
             "in puppeted cities", "Puppeted" -> isPuppet
+            "in resisting cities", "Resisting" -> isInResistance()
+            "in cities being razed", "Razing" -> isBeingRazed
             "in holy cities", "Holy" -> isHolyCity()
             "in City-State cities" -> civ.isCityState()
             // This is only used in communication to the user indicating that only in cities with this

@@ -255,6 +255,8 @@ enum class UniqueParameterType(
             "in foreign cities", "Foreign",
             "in annexed cities", "Annexed",
             "in puppeted cities", "Puppeted",
+            "in resisting cities", "Resisting",
+            "in cities being razed", "Razing",
             "in holy cities", "Holy",
             "in City-State cities",
             "in cities following this religion",
@@ -394,7 +396,7 @@ enum class UniqueParameterType(
 
     /** Used for region definitions, can be a terrain type with region unique, or "Hybrid"
      *
-     *  See also: [UniqueType.ConditionalInRegionOfType], [UniqueType.ConditionalInRegionExceptOfType], [MapRegions][com.unciv.logic.map.mapgenerator.MapRegions] */
+     *  See also: [UniqueType.ConditionalInRegionOfType], [UniqueType.ConditionalInRegionExceptOfType], [MapRegions][com.unciv.logic.map.mapgenerator.mapregions.MapRegions] */
     RegionType("regionType", "Hybrid", null, "Region Types") {
         private val knownValues = setOf("Hybrid")
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
