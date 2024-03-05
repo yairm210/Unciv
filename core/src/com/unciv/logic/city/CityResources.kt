@@ -33,6 +33,8 @@ object CityResources {
         // This way we get them once, but it is ugly, I welcome other ideas :/
         getCityResourcesFromCiv(city, cityResources, resourceModifers)
 
+        cityResources.removeAll { !it.resource.hasUnique(UniqueType.CityResource) }
+
         return cityResources
     }
 
@@ -57,7 +59,7 @@ object CityResources {
     }
 
     private fun addCityResourcesGeneratedFromUniqueBuildings(city: City, cityResources: ResourceSupplyList, resourceModifer: HashMap<String, Float>) {
-        for (unique in city.getMatchingUniquesWithNonLocalEffects(UniqueType.ProvidesResources, StateForConditionals(city.civ, city))) { // E.G "Provides [1] [Iron]"
+        for (unique in city.getMatchingUniques(UniqueType.ProvidesResources, StateForConditionals(city), false)) { // E.G "Provides [1] [Iron]"
             val resource = city.getRuleset().tileResources[unique.params[1]]
                 ?: continue
             cityResources.add(
@@ -111,13 +113,13 @@ object CityResources {
         for (building in city.cityConstructions.getBuiltBuildings()) {
             // Free buildings cost no resources
             if (building.name in freeBuildings) continue
-            cityResources.subtractResourceRequirements(building.getResourceRequirementsPerTurn(StateForConditionals(city.civ, city)), city.getRuleset(), "Buildings")
+            cityResources.subtractResourceRequirements(building.getResourceRequirementsPerTurn(StateForConditionals(city)), city.getRuleset(), "Buildings")
         }
     }
 
     private fun getCityResourcesFromCiv(city: City, cityResources: ResourceSupplyList, resourceModifers: HashMap<String, Float>) {
         // This includes the uniques from buildings, from this and all other cities
-        for (unique in city.getMatchingUniques(UniqueType.ProvidesResources, StateForConditionals(city.civ, city))) { // E.G "Provides [1] [Iron]"
+        for (unique in city.getMatchingUniques(UniqueType.ProvidesResources, StateForConditionals(city))) { // E.G "Provides [1] [Iron]"
             val resource = city.getRuleset().tileResources[unique.params[1]]
                 ?: continue
             cityResources.add(
