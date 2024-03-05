@@ -437,6 +437,14 @@ enum class UniqueParameterType(
             }
     },
 
+    Speed("speed", "Quick", "The name of any speed") {
+        override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
+            UniqueType.UniqueParameterErrorSeverity? = when (parameterText) {
+                in ruleset.speeds -> null
+                else -> UniqueType.UniqueParameterErrorSeverity.RulesetSpecific
+            }
+    },
+
     /** For [UniqueType.CreatesOneImprovement] */
     ImprovementName("improvementName", "Trading Post", "The name of any improvement") {
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
