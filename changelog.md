@@ -1,3 +1,22 @@
+## 4.10.16
+
+Doc for stats per policies
+
+Allow multifilter uniques to count for filtering
+
+By tuvus:
+- Skip next unit button 
+- Better Unit Actions Sorting 
+
+By SomeTroglodyte:
+- Centralize infinity symbol 
+- More city filters 
+- Competition quests in progress display tied leaders (and your place if you're behind) 
+
+Allow AI to consider production bonuses when building  - By SeventhM
+
+Added ConditionalWhenBetweenStatResource unique  - By woo1127
+
 ## 4.10.15
 
 Changed tech trigger to accept tech filters
