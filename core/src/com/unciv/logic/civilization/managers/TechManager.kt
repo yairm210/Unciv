@@ -25,6 +25,7 @@ import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.ui.components.MayaCalendar
 import com.unciv.ui.components.extensions.withItem
+import com.unciv.ui.components.fonts.Fonts
 import kotlin.math.ceil
 import kotlin.math.max
 import kotlin.math.min
@@ -148,7 +149,7 @@ class TechManager : IsPartOfGameInfoSerialization {
         val remainingCost = remainingScienceToTech(techName).toDouble()
         return when {
             remainingCost <= 0f -> "0"
-            civInfo.stats.statsForNextTurn.science <= 0f -> "∞"
+            civInfo.stats.statsForNextTurn.science <= 0f -> Fonts.infinity.toString()
             else -> max(1, ceil(remainingCost / civInfo.stats.statsForNextTurn.science).toInt()).toString()
         }
     }

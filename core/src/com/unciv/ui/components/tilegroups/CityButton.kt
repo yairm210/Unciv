@@ -274,11 +274,11 @@ private class CityTable(city: City, forPopup: Boolean = false) : BorderedTable(
         val turnLabelText = when {
             city.isGrowing() -> {
                 val turnsToGrowth = city.population.getNumTurnsToNewPopulation()
-                if (turnsToGrowth != null && turnsToGrowth < 100) turnsToGrowth.toString() else "∞"
+                if (turnsToGrowth != null && turnsToGrowth < 100) turnsToGrowth.toString() else Fonts.infinity.toString()
             }
             city.isStarving() -> {
                 val turnsToStarvation = city.population.getNumTurnsToStarvation()
-                if (turnsToStarvation != null && turnsToStarvation < 100) turnsToStarvation.toString() else "∞"
+                if (turnsToStarvation != null && turnsToStarvation < 100) turnsToStarvation.toString() else Fonts.infinity.toString()
             }
             else -> "-"
         }
@@ -360,7 +360,7 @@ private class CityTable(city: City, forPopup: Boolean = false) : BorderedTable(
                 if (nextTurnPercentage > 1f) nextTurnPercentage = 1f
                 if (nextTurnPercentage < 0f) nextTurnPercentage = 0f
             } else {
-                turns = "∞"
+                turns = Fonts.infinity.toString()
             }
             icon = ImageGetter.getConstructionPortrait(cityCurrentConstruction.name, 24f)
         }
