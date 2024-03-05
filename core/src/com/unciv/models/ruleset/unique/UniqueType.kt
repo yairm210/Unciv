@@ -669,12 +669,12 @@ enum class UniqueType(
     ConditionalWhenBelowAmountStatResourceSpeed("when below [amount] [stat/resource] (modified by game speed)", UniqueTarget.Conditional),
 
     // When exact number of resources or stats
-    ConditionalExactStatResourceNumber("when exactly [amount] [stat/resource]", UniqueTarget.Conditional),
+    ConditionalExactStatResourceNumber("with exactly [amount] [stat/resource]", UniqueTarget.Conditional),
 
     // For comparison between resources
-    ConditionalHasSameAmountOfTwoStatsResources("has the same number of [stat/resource] and [stat/resource]", UniqueTarget.Conditional),
-    ConditionalHasMoreStatResource("when more [stat/resource] than [stat/resource]", UniqueTarget.Conditional),
-    ConditionalHasLessStatResource("when less [stat/resource] than [stat/resource]", UniqueTarget.Conditional),
+    ConditionalHasSameAmountOfTwoStatsResources("with the same number of [stat/resource] and [stat/resource]", UniqueTarget.Conditional),
+    ConditionalHasMoreStatResource("with more [stat/resource] than [stat/resource]", UniqueTarget.Conditional),
+    ConditionalHasLessStatResource("with less [stat/resource] than [stat/resource]", UniqueTarget.Conditional),
 
     /////// city conditionals
     ConditionalInThisCity("in this city", UniqueTarget.Conditional),
