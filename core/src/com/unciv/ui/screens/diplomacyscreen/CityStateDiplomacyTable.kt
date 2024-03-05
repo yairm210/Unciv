@@ -81,7 +81,7 @@ class CityStateDiplomacyTable(private val diplomacyScreen: DiplomacyScreen) {
         val diplomaticMarriageButton = getDiplomaticMarriageButton(otherCiv)
         if (diplomaticMarriageButton != null) diplomacyTable.add(diplomaticMarriageButton).row()
 
-        for (assignedQuest in otherCiv.questManager.assignedQuests.filter { it.assignee == viewingCiv.civName }) {
+        for (assignedQuest in otherCiv.questManager.getAssignedQuestsFor(viewingCiv.civName)) {
             diplomacyTable.addSeparator()
             diplomacyTable.add(getQuestTable(assignedQuest)).row()
         }
@@ -464,8 +464,8 @@ class CityStateDiplomacyTable(private val diplomacyScreen: DiplomacyScreen) {
         if (quest.duration > 0)
             questTable.add("[${remainingTurns}] turns remaining".toLabel()).row()
         if (quest.isGlobal()) {
-            val leaderString = viewingCiv.gameInfo.getCivilization(assignedQuest.assigner).questManager.getLeaderStringForQuest(assignedQuest.questName)
-            if (leaderString != "")
+            val leaderString = viewingCiv.gameInfo.getCivilization(assignedQuest.assigner).questManager.getScoreStringForGlobalQuest(assignedQuest)
+            if (leaderString.isNotEmpty())
                 questTable.add(leaderString.toLabel()).row()
         }
 
