@@ -1,18 +1,13 @@
-
-
-Doc for stats per policies
-
 Allow multifilter uniques to count for filtering
 
 By tuvus:
-- Skip next unit button 
-- Better Unit Actions Sorting 
+- Skip next unit button (right-click option)
+- Better Unit Actions Sorting
 
 By SomeTroglodyte:
-- Centralize infinity symbol 
-- More city filters 
-- Competition quests in progress display tied leaders (and your place if you're behind) 
+- City filters for cities in resistance and being razed
+- Competition quests in progress display tied leaders (and your place if you're behind)
 
-Allow AI to consider production bonuses when building  - By SeventhM
+AI consider production bonuses when building  - By SeventhM
 
-Added ConditionalWhenBetweenStatResource unique  - By woo1127
+Added ConditionalWhenBetweenStatResource unique  - By woo1127 (new contributor!)
