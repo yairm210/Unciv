@@ -644,13 +644,25 @@ class Tile : IsPartOfGameInfoSerialization {
         }
     }
 
-    @delegate:Transient
-    private val isAdjacentToRiverLazy by lazy {
-        // These are so if you add a river at the bottom of the map (no neighboring tile to be connected to)
-        //   that tile is still considered adjacent to river
-        hasBottomLeftRiver || hasBottomRiver || hasBottomRightRiver
-        || neighbors.any { isConnectedByRiver(it) } }
-    fun isAdjacentToRiver() = isAdjacentToRiverLazy
+    @Transient
+    private var isAdjacentToRiver = false
+    @Transient
+    private var isAdjacentToRiverKnown = false
+    fun isAdjacentToRiver(): Boolean {
+        if (!isAdjacentToRiverKnown) {
+            isAdjacentToRiver =
+            // These are so if you add a river at the bottom of the map (no neighboring tile to be connected to)
+                //   that tile is still considered adjacent to river
+                hasBottomLeftRiver || hasBottomRiver || hasBottomRightRiver
+                    || neighbors.any { isConnectedByRiver(it) }
+            isAdjacentToRiverKnown = true
+        }
+        return isAdjacentToRiver
+    }
+    fun resetAdjacentToRiverTransient(isKnownTrue: Boolean = false) {
+        isAdjacentToRiver = isKnownTrue
+        isAdjacentToRiverKnown = isKnownTrue
+    }
 
     /**
      * @returns whether units of [civInfo] can pass through this tile, considering only civ-wide filters.

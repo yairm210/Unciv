@@ -16,6 +16,7 @@ import com.unciv.logic.civilization.PolicyAction
 import com.unciv.logic.civilization.TechAction
 import com.unciv.logic.civilization.managers.ReligionState
 import com.unciv.logic.map.mapgenerator.NaturalWonderGenerator
+import com.unciv.logic.map.mapgenerator.RiverGenerator
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.UpgradeUnitAction
@@ -932,6 +933,8 @@ object UniqueTriggerActivation {
             UniqueType.OneTimeChangeTerrain -> {
                 if (tile == null) return null
                 val terrain = ruleSet.terrains[unique.params[0]] ?: return null
+                if (terrain.name == Constants.river)
+                    return getOneTimeChangeRiverTriggerFunction(tile)
                 if (terrain.type == TerrainType.TerrainFeature && !terrain.occursOn.contains(tile.lastTerrain.name))
                     return null
                 if (tile.terrainFeatures.contains(terrain.name)) return null
@@ -963,5 +966,11 @@ object UniqueTriggerActivation {
             else "{$triggerNotificationText}{ }{$effectNotificationText}"
         }
         else null
+    }
+
+    private fun getOneTimeChangeRiverTriggerFunction(tile: Tile): (()->Boolean)? {
+        if (tile.neighbors.none { it.isLand && !tile.isConnectedByRiver(it) })
+            return null  // no place for another river
+        return { RiverGenerator.continueRiverOn(tile) }
     }
 }
