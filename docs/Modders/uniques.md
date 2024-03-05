@@ -227,6 +227,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Global, FollowerBelief
 
 ??? example  "[stats] per [amount] social policies adopted"
+	Only works for civ-wide stats
 	Example: "[+1 Gold, +2 Production] per [3] social policies adopted"
 
 	Applicable to: Global
@@ -2225,6 +2226,9 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "&lt;upon entering the [era]&gt;"
 	Example: "&lt;upon entering the [Ancient era]&gt;"
 
+	Applicable to: TriggerCondition
+
+??? example  "&lt;upon entering the new era&gt;"
 	Applicable to: TriggerCondition
 
 ??? example  "&lt;upon adopting [policy/belief]&gt;"
