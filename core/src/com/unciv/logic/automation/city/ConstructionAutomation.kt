@@ -120,8 +120,6 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
             addMilitaryUnitChoice()
         }
 
-        val production = city.cityStats.currentCityStats.production
-
         val chosenConstruction: String =
             if (relativeCostEffectiveness.isEmpty()) { // choose one of the special constructions instead
                 // add science!
@@ -130,13 +128,15 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
                     PerpetualConstruction.gold.isBuildable(cityConstructions) -> PerpetualConstruction.gold.name
                     else -> PerpetualConstruction.idle.name
                 }
-            } else if (relativeCostEffectiveness.any { it.remainingWork < production * 30 }) {
-                relativeCostEffectiveness.removeAll { it.remainingWork >= production * 30 }
-                relativeCostEffectiveness.minByOrNull { it.remainingWork / it.choiceModifier }!!.choice
+            } else if (relativeCostEffectiveness.any { cityConstructions.turnsToConstruction(it.choice) < 30 }) {
+                relativeCostEffectiveness.removeAll { cityConstructions.turnsToConstruction(it.choice) >= 30 }
+                relativeCostEffectiveness.minByOrNull { it.remainingWork / it.choiceModifier / 
+                    cityConstructions.productionForConstruction(it.choice) }!!.choice
             }
             // it's possible that this is a new city and EVERYTHING is way expensive - ignore modifiers, go for the cheapest.
             // Nobody can plan 30 turns ahead, I don't care how cost-efficient you are.
-            else relativeCostEffectiveness.minByOrNull { it.remainingWork }!!.choice
+            else relativeCostEffectiveness.minByOrNull { it.remainingWork /
+                cityConstructions.productionForConstruction(it.choice) }!!.choice
 
         civInfo.addNotification(
             "Work has started on [$chosenConstruction]",
