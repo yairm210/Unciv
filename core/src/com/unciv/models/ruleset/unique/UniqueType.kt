@@ -616,6 +616,12 @@ enum class UniqueType(
     ConditionalBeforeTurns("before [amount] turns", UniqueTarget.Conditional),
     ConditionalAfterTurns("after [amount] turns", UniqueTarget.Conditional),
 
+    /////// year conditionals
+    ConditionalExactYear("is year [year]", UniqueTarget.Conditional),
+    ConditionalBeforeYear("is year before [year]", UniqueTarget.Conditional),
+    ConditionalAfterYear("is year after [year]", UniqueTarget.Conditional),
+    ConditionalBetweenYears("is year between [year] and [year]", UniqueTarget.Conditional,
+        docDescription = "The first year number must be smaller than the second (for BC years, the -150 is bigger than -750)"),
 
     /////// civ conditionals
     ConditionalCivFilter("for [civFilter]", UniqueTarget.Conditional),

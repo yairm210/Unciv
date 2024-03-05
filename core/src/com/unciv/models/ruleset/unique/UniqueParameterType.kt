@@ -437,6 +437,19 @@ enum class UniqueParameterType(
             }
     },
 
+    Year("year", "2000",
+        "For BC years use negative numbers without space beetween minus sign and number, for example -750 for year 750 BC") {
+        override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
+            UniqueType.UniqueParameterErrorSeverity? {
+            return try {
+                parameterText.toInt()
+                null
+            } catch (e: NumberFormatException) {
+                UniqueType.UniqueParameterErrorSeverity.RulesetSpecific
+            }
+        }
+    },
+
     /** For [UniqueType.CreatesOneImprovement] */
     ImprovementName("improvementName", "Trading Post", "The name of any improvement") {
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):

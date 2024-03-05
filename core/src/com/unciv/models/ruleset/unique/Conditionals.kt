@@ -106,6 +106,31 @@ object Conditionals {
             return compare(relevantCiv!!.getStatReserve(stat), limit * gameSpeedModifier)
         }
 
+        fun isYearValid(year: String): Boolean {
+            return try {
+                year.toInt()
+                true
+            } catch (e: NumberFormatException) {
+                false
+            }
+        }
+
+        /** Helper for ConditionalBetweenYears */
+        fun isYearBetween(beginning: String, end: String): Boolean {
+            if (!isYearValid(beginning) || !isYearValid(end) || gameInfo == null)
+                return false
+
+            val beginningYear = beginning.toInt()
+            val endYear = end.toInt()
+            val currentTurn = gameInfo!!.turns
+            val currentYear = gameInfo!!.getYear(currentTurn)
+
+            if (beginningYear > endYear)
+                return false
+
+            return currentYear in beginningYear..endYear
+        }
+
         return when (condition.type) {
             // These are 'what to do' and not 'when to do' conditionals
             UniqueType.ConditionalTimedUnique -> true
@@ -114,6 +139,14 @@ object Conditionals {
             UniqueType.ConditionalEveryTurns -> checkOnGameInfo { turns % condition.params[0].toInt() == 0 }
             UniqueType.ConditionalBeforeTurns -> checkOnGameInfo { turns < condition.params[0].toInt() }
             UniqueType.ConditionalAfterTurns -> checkOnGameInfo { turns >= condition.params[0].toInt() }
+
+            UniqueType.ConditionalExactYear ->
+                checkOnGameInfo { isYearValid(condition.params[0]) && getYear(turns) == condition.params[0].toInt()}
+            UniqueType.ConditionalAfterYear ->
+                checkOnGameInfo { isYearValid(condition.params[0]) && getYear(turns) > condition.params[0].toInt()}
+            UniqueType.ConditionalBeforeYear ->
+                checkOnGameInfo { isYearValid(condition.params[0]) && getYear(turns) < condition.params[0].toInt()}
+            UniqueType.ConditionalBetweenYears -> isYearBetween(condition.params[0], condition.params[1])
 
             UniqueType.ConditionalCivFilter -> checkOnCiv { matchesFilter(condition.params[0]) }
             UniqueType.ConditionalWar -> checkOnCiv { isAtWar() }

@@ -1900,6 +1900,27 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Conditional
 
+??? example  "&lt;is year [year]&gt;"
+	Example: "&lt;is year [2000]&gt;"
+
+	Applicable to: Conditional
+
+??? example  "&lt;is year before [year]&gt;"
+	Example: "&lt;is year before [2000]&gt;"
+
+	Applicable to: Conditional
+
+??? example  "&lt;is year after [year]&gt;"
+	Example: "&lt;is year after [2000]&gt;"
+
+	Applicable to: Conditional
+
+??? example  "&lt;is year between [year] and [year]&gt;"
+	The first year number must be smaller than the second (for BC years, the -150 is bigger than -750)
+	Example: "&lt;is year between [2000] and [2000]&gt;"
+
+	Applicable to: Conditional
+
 ??? example  "&lt;for [civFilter]&gt;"
 	Example: "&lt;for [City-States]&gt;"
 
