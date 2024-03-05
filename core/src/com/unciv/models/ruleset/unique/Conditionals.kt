@@ -79,31 +79,24 @@ object Conditionals {
         }
 
         /** Helper for ConditionalWhenAboveAmountStatResource and its below counterpart */
-        fun checkResourceOrStatAmount(compare: (current: Int, limit: Int) -> Boolean): Boolean {
+        fun checkResourceOrStatAmount(
+            resourceOrStatName: String, 
+            lowerLimit: Float, 
+            upperLimit: Float, 
+            modifyByGameSpeed: Boolean = false,
+            compare: (current: Int, lowerLimit: Float, upperLimit: Float) -> Boolean
+        ): Boolean {
             if (gameInfo == null) return false
-            val limit = condition.params[0].toInt()
-            val resourceOrStatName = condition.params[1]
-            if (gameInfo!!.ruleset.tileResources.containsKey(resourceOrStatName))
-                return compare(getResourceAmount(resourceOrStatName), limit)
-            val stat = Stat.safeValueOf(resourceOrStatName)
-                ?: return false
-            return compare(relevantCiv!!.getStatReserve(stat), limit)
-        }
-
-        /** Helper for ConditionalWhenAboveAmountStatSpeed and its below counterpart */
-        fun checkResourceOrStatAmountWithSpeed(compare: (current: Int, limit: Float) -> Boolean): Boolean {
-            if (gameInfo == null) return false
-            val limit = condition.params[0].toInt()
-            val resourceOrStatName = condition.params[1]
-            var gameSpeedModifier = gameInfo!!.speed.modifier
+            var gameSpeedModifier = if (modifyByGameSpeed) gameInfo!!.speed.modifier else 1f
 
             if (gameInfo!!.ruleset.tileResources.containsKey(resourceOrStatName))
-                return compare(getResourceAmount(resourceOrStatName), limit * gameSpeedModifier)
+                return compare(getResourceAmount(resourceOrStatName), lowerLimit * gameSpeedModifier, upperLimit * gameSpeedModifier)
             val stat = Stat.safeValueOf(resourceOrStatName)
                 ?: return false
+            val statReserve = if (relevantCity != null) relevantCity!!.getStatReserve(stat) else relevantCiv!!.getStatReserve(stat)
 
-            gameSpeedModifier = gameInfo!!.speed.statCostModifiers[stat]!!
-            return compare(relevantCiv!!.getStatReserve(stat), limit * gameSpeedModifier)
+            gameSpeedModifier = if (modifyByGameSpeed) gameInfo!!.speed.statCostModifiers[stat]!! else 1f
+            return compare(statReserve, lowerLimit * gameSpeedModifier, upperLimit * gameSpeedModifier)
         }
 
         return when (condition.type) {
@@ -122,13 +115,23 @@ object Conditionals {
             UniqueType.ConditionalWithoutResource -> getResourceAmount(condition.params[0]) <= 0
 
             UniqueType.ConditionalWhenAboveAmountStatResource ->
-                checkResourceOrStatAmount { current, limit -> current > limit }
+                checkResourceOrStatAmount(condition.params[1], condition.params[0].toFloat(), Float.MAX_VALUE) 
+                    { current, lowerLimit, _ -> current > lowerLimit }
             UniqueType.ConditionalWhenBelowAmountStatResource ->
-                checkResourceOrStatAmount { current, limit -> current < limit }
+                checkResourceOrStatAmount(condition.params[1], Float.MIN_VALUE, condition.params[0].toFloat()) 
+                    { current, _, upperLimit -> current < upperLimit }
+            UniqueType.ConditionalWhenBetweenStatResource ->
+                checkResourceOrStatAmount(condition.params[2], condition.params[0].toFloat(), condition.params[1].toFloat()) 
+                    { current, lowerLimit, upperLimit -> current >= lowerLimit && current <= upperLimit }
             UniqueType.ConditionalWhenAboveAmountStatResourceSpeed ->
-                checkResourceOrStatAmountWithSpeed { current, limit -> current > limit }  // Note: Int.compareTo(Float)!
+                checkResourceOrStatAmount(condition.params[1], condition.params[0].toFloat(), Float.MAX_VALUE, true) 
+                    { current, lowerLimit, _ -> current > lowerLimit }
             UniqueType.ConditionalWhenBelowAmountStatResourceSpeed ->
-                checkResourceOrStatAmountWithSpeed { current, limit -> current < limit }  // Note: Int.compareTo(Float)!
+                checkResourceOrStatAmount(condition.params[1], Float.MIN_VALUE, condition.params[0].toFloat(), true) 
+                    { current, _, upperLimit -> current < upperLimit }
+            UniqueType.ConditionalWhenBetweenStatResourceSpeed -> 
+                checkResourceOrStatAmount(condition.params[2], condition.params[0].toFloat(), condition.params[1].toFloat(), true) 
+                    { current, lowerLimit, upperLimit -> current >= lowerLimit && current <= upperLimit }
 
             UniqueType.ConditionalHappy -> checkOnCiv { stats.happiness >= 0 }
             UniqueType.ConditionalBetweenHappiness ->
