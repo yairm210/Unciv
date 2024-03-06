@@ -258,7 +258,7 @@ class RiverGenerator(
                     neighbor.edgeLeadsToSea -> edgeToSeaPriority + neighbor.connectedRiverCount - 3 * neighbor.verticesFormYCount
                     // Just 6 possible cases left:
                     //  * Connect two bends = -2
-                    //  * Connect a bend to nothing = -1
+                    //  * Connect a bend to nothing = -1 // debatable!
                     //  * Connect nothing = 0
                     //  * Connect a bend with an open end = 1
                     //  * Connect to one open end = 2
@@ -272,23 +272,7 @@ class RiverGenerator(
 
             // Finally - choose
             val choice = viableNeighbors.filter { it.priority == maxPriority }.random()
-            tile.setConnectedByRiver(choice.otherTile, choice.clockPosition)
-            return true
-        }
-
-        private fun Tile.setConnectedByRiver(otherTile: Tile, clockPosition: Int) {
-            when (clockPosition) {
-                2 -> otherTile.hasBottomLeftRiver = true // we're to the bottom-left of it
-                4 -> hasBottomRightRiver = true // we're to the top-left of it
-                6 -> hasBottomRiver = true // we're directly above it
-                8 -> hasBottomLeftRiver = true // we're to the top-right of it
-                10 -> otherTile.hasBottomRightRiver = true // we're to the bottom-right of it
-                12 -> otherTile.hasBottomRiver = true // we're directly below it
-            }
-            val affectedTiles = listOf(this, otherTile)
-            for (tile in affectedTiles)
-                tile.resetAdjacentToRiverTransient(true)
-            MapGenerator.Helpers.convertTerrains(ruleset, affectedTiles)
+            return tile.setConnectedByRiver(choice.otherTile, newValue = true, convertTerrains = true)
         }
     }
 }

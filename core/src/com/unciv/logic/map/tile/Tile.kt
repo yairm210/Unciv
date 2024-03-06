@@ -12,6 +12,7 @@ import com.unciv.logic.map.HexMath
 import com.unciv.logic.map.MapParameters
 import com.unciv.logic.map.MapResources
 import com.unciv.logic.map.TileMap
+import com.unciv.logic.map.mapgenerator.MapGenerator
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.mapunit.movement.UnitMovement
 import com.unciv.models.ruleset.Ruleset
@@ -659,9 +660,42 @@ class Tile : IsPartOfGameInfoSerialization {
         }
         return isAdjacentToRiver
     }
-    fun resetAdjacentToRiverTransient(isKnownTrue: Boolean = false) {
+
+    /** Allows resetting the cached value [isAdjacentToRiver] will return
+     *  @param isKnownTrue Set this to indicate you need to update the cache due to **adding** a river edge
+     *         (removing would need to look at other edges, and that is what isAdjacentToRiver will do)
+     */
+    private fun resetAdjacentToRiverTransient(isKnownTrue: Boolean = false) {
         isAdjacentToRiver = isKnownTrue
         isAdjacentToRiverKnown = isKnownTrue
+    }
+
+    /**
+     *  Sets the "has river" state of one edge of this Tile. Works for all six directions.
+     *  @param  otherTile The neighbor tile in the direction the river we wish to change is (If it's not a neighbor, this does nothing).
+     *  @param  newValue The new river edge state: `true` to create a river, `false` to remove one.
+     *  @param  convertTerrains If true, calls MapGenerator's convertTerrains to apply UniqueType.ChangesTerrain effects.
+     *  @return The state did change (`false`: the edge already had the `newValue`)
+     */
+    fun setConnectedByRiver(otherTile: Tile, newValue: Boolean, convertTerrains: Boolean = false): Boolean {
+        //todo synergy potential with [MapEditorEditRiversTab]?
+        val field = when (tileMap.getNeighborTileClockPosition(this, otherTile)) {
+            2 -> otherTile::hasBottomLeftRiver // we're to the bottom-left of it
+            4 -> ::hasBottomRightRiver // we're to the top-left of it
+            6 -> ::hasBottomRiver // we're directly above it
+            8 -> ::hasBottomLeftRiver // we're to the top-right of it
+            10 -> otherTile::hasBottomRightRiver // we're to the bottom-right of it
+            12 -> otherTile::hasBottomRiver // we're directly below it
+            else -> return false
+        }
+        if (field.get() == newValue) return false
+        field.set(newValue)
+        val affectedTiles = listOf(this, otherTile)
+        for (tile in affectedTiles)
+            tile.resetAdjacentToRiverTransient(newValue)
+        if (convertTerrains)
+            MapGenerator.Helpers.convertTerrains(ruleset, affectedTiles)
+        return true
     }
 
     /**
