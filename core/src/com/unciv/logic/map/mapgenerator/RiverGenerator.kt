@@ -205,19 +205,16 @@ class RiverGenerator(
             /** Helper to prioritize a tile edge for river placement - accesses [tile] as closure,
              *  and considers the edge common with [otherTile] in direction [clockPosition].
              *
-             *  Parameters are redundant because caller code has the info anyway, behavior undefined should they contradict.
              *  Will consider two additional tiles - those that are neighbor to both [tile] and [otherTile],
              *  and four other edges - those connecting to "our" edge.
-             *
-             *  [priority] is just storage and set by the caller.
              */
-            class NeighborData(val clockPosition: Int, val otherTile: Tile) {
+            class NeighborData(val otherTile: Tile) {
+                val clockPosition = tileMap.getNeighborTileClockPosition(tile, otherTile)
                 // Accesses `tile` as closure
                 val isConnectedByRiver = tile.isConnectedByRiver(otherTile)
                 val edgeLeadsToSea: Boolean
                 val connectedRiverCount: Int
                 val verticesFormYCount: Int
-                var priority = 0
 
                 init {
                     // Similar: private fun Tile.getLeftSharedNeighbor in TileLayerBorders
@@ -235,43 +232,37 @@ class RiverGenerator(
                         yield(rightSharedNeighbor?.run { isConnectedByRiver(tile) && isConnectedByRiver(otherTile) })
                     }.count { it == true }
                 }
+
+                fun getPriority(edgeToSeaPriority: Int) =
+                    // choose a priority - only order matters, not magnitude
+                    when {
+                        isConnectedByRiver -> -9 // ensures this isn't chosen, otherwise "cannot place another river" would have bailed
+                        edgeLeadsToSea -> edgeToSeaPriority + connectedRiverCount - 3 * verticesFormYCount
+                        // Just 6 possible cases left:
+                        //  * Connect two bends = -2
+                        //  * Connect a bend to nothing = -1 // debatable!
+                        //  * Connect nothing = 0
+                        //  * Connect a bend with an open end = 1
+                        //  * Connect to one open end = 2
+                        //  * Connect two open ends = 3 (make that 4 to simplify)
+                        verticesFormYCount == 2 -> -2
+                        verticesFormYCount == 1 -> connectedRiverCount * 2 - 5
+                        else -> connectedRiverCount * 2
+                    }
             }
 
-            // Collect data
-            val viableNeighbors = mutableListOf<NeighborData>() // includes those we already have a river edge with - need the stats
-            for (clockPosition in 2..12 step 2) {
-                val otherTile = tileMap.getClockPositionNeighborTile(tile, clockPosition)
-                    ?: continue // No tile in that direction
-                if (!otherTile.isLand) continue // No rivers bordering water
-                viableNeighbors += NeighborData(clockPosition, otherTile)
-            }
+            // Collect data (includes tiles we already have a river edge with - need the stats)
+            val viableNeighbors = tile.neighbors.filter { it.isLand }.map { NeighborData(it) }.toList()
             if (viableNeighbors.all { it.isConnectedByRiver }) return false // cannot place another river
 
             // Greatly encourage connecting to sea unless the tile already has a river to sea, in which case slightly discourage another one
             val edgeToSeaPriority = if (viableNeighbors.none { it.isConnectedByRiver && it.edgeLeadsToSea }) 9 else -1
 
-            // Assign priorities
-            var maxPriority = Int.MIN_VALUE
-            for (neighbor in viableNeighbors) {
-                neighbor.priority = when {
-                    neighbor.isConnectedByRiver -> -9 // ensures this isn't chosen
-                    neighbor.edgeLeadsToSea -> edgeToSeaPriority + neighbor.connectedRiverCount - 3 * neighbor.verticesFormYCount
-                    // Just 6 possible cases left:
-                    //  * Connect two bends = -2
-                    //  * Connect a bend to nothing = -1 // debatable!
-                    //  * Connect nothing = 0
-                    //  * Connect a bend with an open end = 1
-                    //  * Connect to one open end = 2
-                    //  * Connect two open ends = 3 (make that 4 to simplify)
-                    neighbor.verticesFormYCount == 2 -> -2
-                    neighbor.verticesFormYCount == 1 -> neighbor.connectedRiverCount * 2 - 5
-                    else -> neighbor.connectedRiverCount * 2
-                }
-                if (neighbor.priority > maxPriority) maxPriority = neighbor.priority
-            }
+            val choice = viableNeighbors
+                .groupBy { it.getPriority(edgeToSeaPriority) } // Assign and group by priorities
+                .maxBy { it.key }.value // Get the List with best priority - can't be empty
+                .random()
 
-            // Finally - choose
-            val choice = viableNeighbors.filter { it.priority == maxPriority }.random()
             return tile.setConnectedByRiver(choice.otherTile, newValue = true, convertTerrains = true)
         }
     }
