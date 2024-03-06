@@ -13,6 +13,12 @@ class NextTurnMenu(
     private val nextTurnButton: NextTurnButton,
     private val worldScreen: WorldScreen
 ) : AnimatedMenuPopup(stage, getActorTopRight(positionNextTo)) {
+
+    init {
+        // We need to activate the end turn button again after the menu closes
+        afterCloseCallback = { worldScreen.shouldUpdate = true }
+    }
+    
     override fun createContentTable(): Table {
         val table = super.createContentTable()!!
         table.add(getButton("Next Turn", KeyboardBinding.NextTurnMenuNextTurn) { 

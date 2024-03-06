@@ -22,6 +22,11 @@ class AutoPlayMenu(
 ) : AnimatedMenuPopup(stage, getActorTopRight(positionNextTo)) {
     private val settings = GUI.getSettings()
 
+    init {
+        // We need to activate the end turn button again after the menu closes
+        afterCloseCallback = { worldScreen.shouldUpdate = true }
+    }
+    
     override fun createContentTable(): Table {
         val table = super.createContentTable()!!
         // Using the same keyboard binding for bypassing this menu and the default option
