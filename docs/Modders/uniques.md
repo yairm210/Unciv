@@ -545,8 +545,8 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Global
 
-??? example  "[amount] [civWideStat] for discovering a Natural Wonder (bonus enhanced to [amount] if first to discover it)"
-	Example: "[3] [Gold] for discovering a Natural Wonder (bonus enhanced to [3] if first to discover it)"
+??? example  "[stats] for discovering a Natural Wonder (bonus enhanced to [stats] if first to discover it)"
+	Example: "[+1 Gold, +2 Production] for discovering a Natural Wonder (bonus enhanced to [+1 Gold, +2 Production] if first to discover it)"
 
 	Applicable to: Global
 
@@ -1544,8 +1544,8 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Terrain
 
-??? example  "Grants [amount] [civWideStat] to the first civilization to discover it"
-	Example: "Grants [3] [Gold] to the first civilization to discover it"
+??? example  "Grants [stats] to the first civilization to discover it"
+	Example: "Grants [+1 Gold, +2 Production] to the first civilization to discover it"
 
 	Applicable to: Terrain
 

@@ -19,7 +19,7 @@ import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
-import com.unciv.models.stats.Stat
+import com.unciv.models.stats.Stats
 import com.unciv.utils.DebugUtils
 
 /** CivInfo class was getting too crowded */
@@ -217,8 +217,7 @@ class CivInfoTransientCache(val civInfo: Civilization) {
             civInfo.addNotification("We have discovered [${tile.naturalWonder}]!",
                 tile.position, NotificationCategory.General, "StatIcons/Happiness")
 
-            var relevantStat: Stat? = null
-            var statGained = 0
+            val statsGained = Stats()
 
             val discoveredNaturalWonders = civInfo.gameInfo.civilizations.filter { it != civInfo && it.isMajorCiv() }
                     .flatMap { it.naturalWonders }
@@ -226,33 +225,26 @@ class CivInfoTransientCache(val civInfo: Civilization) {
                     && !discoveredNaturalWonders.contains(tile.naturalWonder!!)) {
 
                 for (unique in tile.getTerrainMatchingUniques(UniqueType.GrantsStatToFirstToDiscover)) {
-                    relevantStat = Stat.safeValueOf(unique.params[1])
-                    val bonusAmount = unique.params[0].toInt()
-
-                    statGained += bonusAmount
+                    statsGained.add(unique.stats)
                 }
             }
 
-            if (civInfo.hasUnique(UniqueType.StatBonusWhenDiscoveringNaturalWonder)) {
-                for (unique in civInfo.getMatchingUniques(UniqueType.StatBonusWhenDiscoveringNaturalWonder)) {
+            for (unique in civInfo.getMatchingUniques(UniqueType.StatBonusWhenDiscoveringNaturalWonder)) {
 
-                    if (relevantStat == null)
-                        relevantStat = Stat.safeValueOf(unique.params[1])
+                val normalBonus = Stats.parse(unique.params[0])
+                val firstDiscoveredBonus = Stats.parse(unique.params[1])
 
-                    val normalBonus = unique.params[0].toInt()
-                    val firstDiscoveredBonus = unique.params[2].toInt()
-
-                    statGained += if (discoveredNaturalWonders.contains(tile.naturalWonder!!))
-                        normalBonus
-                    else
-                        firstDiscoveredBonus
-                }
+                if (discoveredNaturalWonders.contains(tile.naturalWonder!!))
+                    statsGained.add(normalBonus)
+                else
+                    statsGained.add(firstDiscoveredBonus)
             }
 
-            if (relevantStat != null && statGained > 0) {
-                civInfo.addStat(relevantStat, statGained)
-                civInfo.addNotification("We have received [$statGained] [${relevantStat.name}] for discovering [${tile.naturalWonder}]",
-                    Notification.NotificationCategory.General, relevantStat.name
+
+            if (!statsGained.isEmpty()) {
+                civInfo.addStats(statsGained)
+                civInfo.addNotification("We have received [${statsGained}] for discovering [${tile.naturalWonder}]",
+                    Notification.NotificationCategory.General, statsGained.toString()
                     )
             }
 
