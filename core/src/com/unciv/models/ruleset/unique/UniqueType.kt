@@ -780,7 +780,7 @@ enum class UniqueType(
     @Deprecated("as of 4.10.15", ReplaceWith("upon discovering [tech] technology"))
     TriggerUponResearchOld("upon discovering [tech]", UniqueTarget.TriggerCondition),
     TriggerUponEnteringEra("upon entering the [era]", UniqueTarget.TriggerCondition),
-    TriggerUponEnteringEraUnfiltered("upon entering the new era", UniqueTarget.TriggerCondition),
+    TriggerUponEnteringEraUnfiltered("upon entering a new era", UniqueTarget.TriggerCondition),
     TriggerUponAdoptingPolicyOrBelief("upon adopting [policy/belief]", UniqueTarget.TriggerCondition),
     TriggerUponDeclaringWar("upon declaring war with a major Civilization", UniqueTarget.TriggerCondition),
     TriggerUponDeclaringFriendship("upon declaring friendship", UniqueTarget.TriggerCondition),

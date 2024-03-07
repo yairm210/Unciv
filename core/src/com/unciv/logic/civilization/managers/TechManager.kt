@@ -465,7 +465,7 @@ class TechManager : IsPartOfGameInfoSerialization {
                 UniqueTriggerActivation.triggerUnique(
                     unique,
                     civInfo,
-                    triggerNotificationText = "due to entering the new era")
+                    triggerNotificationText = "due to entering the [${currentEra.name}]")
         }
     }
 
