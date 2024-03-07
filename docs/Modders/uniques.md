@@ -1956,8 +1956,8 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Conditional
 
-??? example  "&lt;when speed is [speed]&gt;"
-	Example: "&lt;when speed is [Quick]&gt;"
+??? example  "&lt;on [speed] game speed&gt;"
+	Example: "&lt;on [Quick] game speed&gt;"
 
 	Applicable to: Conditional
 

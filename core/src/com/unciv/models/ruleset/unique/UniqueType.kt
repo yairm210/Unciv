@@ -634,7 +634,7 @@ enum class UniqueType(
     ConditionalStartingFromEra("starting from the [era]", UniqueTarget.Conditional),
     ConditionalIfStartingInEra("if starting in the [era]", UniqueTarget.Conditional),
 
-    ConditionalSpeed("when speed is [speed]", UniqueTarget.Conditional),
+    ConditionalSpeed("on [speed] game speed", UniqueTarget.Conditional),
 
     ConditionalFirstCivToResearch("if no other Civilization has researched this", UniqueTarget.Conditional),
     ConditionalTech("after discovering [tech]", UniqueTarget.Conditional),
