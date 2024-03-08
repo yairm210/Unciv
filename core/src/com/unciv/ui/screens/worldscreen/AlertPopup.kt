@@ -18,6 +18,7 @@ import com.unciv.logic.civilization.PopupAlert
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
+import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.fillPlaceholders
 import com.unciv.models.translations.tr
@@ -103,6 +104,7 @@ class AlertPopup(
             AlertType.BulliedProtectedMinor, AlertType.AttackedProtectedMinor -> addBulliedOrAttackedProtectedMinor()
             AlertType.RecapturedCivilian -> skipThisAlert = addRecapturedCivilian()
             AlertType.GameHasBeenWon -> addGameHasBeenWon()
+            AlertType.Event -> skipThisAlert = !addEvent()
         }
         if (!skipThisAlert) open()
     }
@@ -495,6 +497,24 @@ class AlertPopup(
         } else {
             addGoodSizedLabel("Original capitals and holy cities cannot be razed.").row()
         }
+    }
+
+    /** Returns if event was triggered correctly */
+    private fun addEvent(): Boolean {
+        val event = gameInfo.ruleset.events[popupAlert.value] ?: return false
+
+        val civ = gameInfo.currentPlayerCiv
+        val choices = event.choices.filter { it.matchesConditions(StateForConditionals(civ)) }
+        if (choices.isEmpty()) return false
+
+        addGoodSizedLabel(event.text)
+        for (choice in choices){
+            addSeparator()
+            addButton(choice.text) { close(); choice.triggerChoice(civ) }
+            for (triggeredUnique in choice.triggeredUniques)
+                addGoodSizedLabel(triggeredUnique)
+        }
+        return true
     }
 
     //endregion

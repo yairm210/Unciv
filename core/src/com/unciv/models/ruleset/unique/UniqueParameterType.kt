@@ -504,17 +504,15 @@ enum class UniqueParameterType(
         }
     },
 
-    /** Used by [UniqueType.FreeExtraBeliefs] and its any variant, see ReligionManager.getBeliefsToChooseAt* functions */
-    FoundingOrEnhancing("foundingOrEnhancing", "founding", "`founding` or `enhancing`", "Prophet Action Filters") {
-        // Used in FreeExtraBeliefs, FreeExtraAnyBeliefs
-        private val knownValues = setOf("founding", "enhancing")
+    /** [UniqueType.ConditionalTech] and others, no central implementation */
+    Event("event", "Inspiration", "The name of any event") {
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
-                UniqueType.UniqueParameterErrorSeverity? = when (parameterText) {
-            in knownValues -> null
-            else -> UniqueType.UniqueParameterErrorSeverity.RulesetInvariant
+            UniqueType.UniqueParameterErrorSeverity? = when (parameterText) {
+            in ruleset.events -> null
+            else -> UniqueType.UniqueParameterErrorSeverity.RulesetSpecific
         }
-        override fun getTranslationWriterStringsForOutput() = knownValues
     },
+
 
     /** [UniqueType.ConditionalTech] and others, no central implementation */
     Technology("tech", "Agriculture", "The name of any tech") {
