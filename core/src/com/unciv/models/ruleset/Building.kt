@@ -251,7 +251,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
             yield(RejectionReasonType.AlreadyBuilt.toInstance())
 
         for (unique in uniqueObjects) {
-            if (unique.type != UniqueType.OnlyAvailable &&
+            if (unique.type != UniqueType.OnlyAvailable && unique.type != UniqueType.BuildableOnly &&
                 !unique.conditionalsApply(StateForConditionals(civ, cityConstructions.city))) continue
 
             @Suppress("NON_EXHAUSTIVE_WHEN")
@@ -263,6 +263,9 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
 
                 UniqueType.OnlyAvailable ->
                     yieldAll(onlyAvailableRejections(unique, cityConstructions))
+
+                UniqueType.BuildableOnly ->
+                    yieldAll(onlyAvailableRejections(unique, cityConstructions, true))
 
                 UniqueType.Unavailable ->
                     yield(RejectionReasonType.ShouldNotBeDisplayed.toInstance())
@@ -433,7 +436,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
         }
     }
 
-    private fun onlyAvailableRejections(unique: Unique, cityConstructions: CityConstructions): Sequence<RejectionReason> = sequence {
+    private fun onlyAvailableRejections(unique: Unique, cityConstructions: CityConstructions, built: Boolean=false): Sequence<RejectionReason> = sequence {
         val civ = cityConstructions.city.civ
         for (conditional in unique.conditionals) {
             if (Conditionals.conditionalApplies(unique, conditional, StateForConditionals(civ, cityConstructions.city)))
@@ -464,7 +467,10 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
                     }
                 }
                 else -> {
-                    yield(RejectionReasonType.ShouldNotBeDisplayed.toInstance())
+                    if (built)
+                        yield(RejectionReasonType.CanOnlyBeBuiltInSpecificCities.toInstance(unique.text))
+                    else
+                        yield(RejectionReasonType.ShouldNotBeDisplayed.toInstance())
                 }
             }
         }

@@ -173,6 +173,10 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
             if (!unique.conditionalsApply(civInfo, cityConstructions.city))
                 yield(RejectionReasonType.ShouldNotBeDisplayed.toInstance())
 
+        for (unique in getMatchingUniques(UniqueType.BuildableOnly, StateForConditionals.IgnoreConditionals))
+            if (!unique.conditionalsApply(civInfo, cityConstructions.city))
+                yield(RejectionReasonType.CanOnlyBeBuiltInSpecificCities.toInstance())
+
         for (unique in getMatchingUniques(UniqueType.Unavailable, StateForConditionals(civInfo, cityConstructions.city)))
             yield(RejectionReasonType.ShouldNotBeDisplayed.toInstance())
 

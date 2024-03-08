@@ -337,6 +337,12 @@ object UnitActionsFromUniques {
         for (unique in unit.getMatchingUniques(UniqueType.CanTransform, stateForConditionals)) {
             val unitToTransformTo = civInfo.getEquivalentUnit(unique.params[0])
 
+            // Respect OnlyAvailable criteria
+            if (unitToTransformTo.getMatchingUniques(
+                    UniqueType.OnlyAvailable, StateForConditionals.IgnoreConditionals
+                ).any { !it.conditionalsApply(stateForConditionals) }
+            ) continue
+
             // Check _new_ resource requirements
             // Using Counter to aggregate is a bit exaggerated, but - respect the mad modder.
             val resourceRequirementsDelta = Counter<String>()

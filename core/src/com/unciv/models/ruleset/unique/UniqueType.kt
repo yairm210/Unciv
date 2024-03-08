@@ -263,12 +263,20 @@ enum class UniqueType(
     CanBePurchasedForAmountStat("Can be purchased for [amount] [stat] [cityFilter]", UniqueTarget.Building, UniqueTarget.Unit),
     MaxNumberBuildable("Limited to [amount] per Civilization", UniqueTarget.Building, UniqueTarget.Unit),
     HiddenBeforeAmountPolicies("Hidden until [amount] social policy branches have been completed", UniqueTarget.Building, UniqueTarget.Unit),
-    // Meant to be used together with conditionals, like "Only available <after adopting [policy]> <while the empire is happy>"
-    /** A special unique, as it only activates when it has conditionals that *do not* apply */
+    /** A special unique, as it only activates when it has conditionals that *do not* apply.
+     * Meant to be used together with conditionals, like "Buildable only <after adopting [policy]> <while the empire is happy>".
+     * Restricts Upgrade/Transform pathways
+     */
     OnlyAvailable("Only available", UniqueTarget.Unit, UniqueTarget.Building, UniqueTarget.Improvement,
-        UniqueTarget.Policy, UniqueTarget.Tech, UniqueTarget.Promotion, UniqueTarget.Ruins, UniqueTarget.FollowerBelief, UniqueTarget.FounderBelief),
+        UniqueTarget.Policy, UniqueTarget.Tech, UniqueTarget.Promotion, UniqueTarget.Ruins, UniqueTarget.FollowerBelief, UniqueTarget.FounderBelief,
+        docDescription = "Meant to be used together with conditionals, like \"Only available <after adopting [policy]> <while the empire is happy>\". Will also block Upgrade and Transform actions"),
+    /** See [OnlyAvailable]. Doesn't restrict Upgrade/Transform pathways
+     */
+    BuildableOnly("Buildable only", UniqueTarget.Unit, UniqueTarget.Building,
+        docDescription = "Meant to be used together with conditionals, like \"Buildable only <after adopting [policy]> <while the empire is happy>\". Will also NOT block Upgrade and Transform actions"),
     Unavailable("Unavailable", UniqueTarget.Unit, UniqueTarget.Building, UniqueTarget.Improvement,
-        UniqueTarget.Policy, UniqueTarget.Tech, UniqueTarget.Promotion, UniqueTarget.Ruins),
+        UniqueTarget.Policy, UniqueTarget.Tech, UniqueTarget.Promotion, UniqueTarget.Ruins,
+        docDescription = "Meant to be used together with conditionals, like \"Unavailable <after generating a Great Prophet>\"."),
 
     ConvertFoodToProductionWhenConstructed("Excess Food converted to Production when under construction", UniqueTarget.Building, UniqueTarget.Unit),
     RequiresPopulation("Requires at least [amount] population", UniqueTarget.Building, UniqueTarget.Unit),
