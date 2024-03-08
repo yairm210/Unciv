@@ -268,6 +268,11 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
                 var maxButtonWidth = constructionsQueueTable.width
                 for (dto in constructionButtonDTOList) {
 
+                    /** filter out showing buildings that have RequiresBuildingInThisCity
+                     * rejection (eg requiredBuilding entry) which are buildable.
+                     * The rejection for RequiresBuildingInThisCity isn't yielded if
+                     * the prerequisite is in the queue
+                     */
                     if (dto.construction is Building
                             && dto.rejectionReason?.type == RejectionReasonType.RequiresBuildingInThisCity
                             && constructionButtonDTOList.any {

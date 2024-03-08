@@ -251,7 +251,10 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
             yield(RejectionReasonType.AlreadyBuilt.toInstance())
 
         for (unique in uniqueObjects) {
-            if (unique.type != UniqueType.OnlyAvailable && unique.type != UniqueType.BuildableOnly &&
+            // skip uniques that don't have conditionals apply
+            // EXCEPT for [UniqueType.OnlyAvailable] and [UniqueType.CanOnlyBeBuiltInCertainCities]
+            // since they trigger (reject) only if conditionals ARE NOT met
+            if (unique.type != UniqueType.OnlyAvailable && unique.type != UniqueType.CanOnlyBeBuiltInCertainCities &&
                 !unique.conditionalsApply(StateForConditionals(civ, cityConstructions.city))) continue
 
             @Suppress("NON_EXHAUSTIVE_WHEN")
@@ -264,7 +267,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
                 UniqueType.OnlyAvailable ->
                     yieldAll(onlyAvailableRejections(unique, cityConstructions))
 
-                UniqueType.BuildableOnly ->
+                UniqueType.CanOnlyBeBuiltInCertainCities ->
                     yieldAll(onlyAvailableRejections(unique, cityConstructions, true))
 
                 UniqueType.Unavailable ->
@@ -298,10 +301,6 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
                         .none { it.matchesFilter(unique.params[0], civ) && it.getOwner() == cityConstructions.city.civ }
                     )
                         yield(RejectionReasonType.MustOwnTile.toInstance(unique.text))
-
-                UniqueType.CanOnlyBeBuiltInCertainCities ->
-                    if (!cityConstructions.city.matchesFilter(unique.params[0]))
-                        yield(RejectionReasonType.CanOnlyBeBuiltInSpecificCities.toInstance(unique.text))
 
                 UniqueType.ObsoleteWith ->
                     if (civ.tech.isResearched(unique.params[0]))
@@ -439,6 +438,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
     private fun onlyAvailableRejections(unique: Unique, cityConstructions: CityConstructions, built: Boolean=false): Sequence<RejectionReason> = sequence {
         val civ = cityConstructions.city.civ
         for (conditional in unique.conditionals) {
+            // We yield a rejection only when conditionals are NOT met
             if (Conditionals.conditionalApplies(unique, conditional, StateForConditionals(civ, cityConstructions.city)))
                 continue
             when (conditional.type) {

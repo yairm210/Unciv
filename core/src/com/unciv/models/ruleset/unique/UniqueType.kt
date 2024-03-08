@@ -257,7 +257,8 @@ enum class UniqueType(
 
     ///////////////////////////////////////// region 02 CONSTRUCTION UNIQUES /////////////////////////////////////////
 
-    Unbuildable("Unbuildable", UniqueTarget.Building, UniqueTarget.Unit, UniqueTarget.Improvement),
+    Unbuildable("Unbuildable", UniqueTarget.Building, UniqueTarget.Unit, UniqueTarget.Improvement,
+        docDescription = "Blocks from being built, possibly by conditional. However it can still appear in the menu and be bought with other means such as Gold or Faith"),
     CannotBePurchased("Cannot be purchased", UniqueTarget.Building, UniqueTarget.Unit),
     CanBePurchasedWithStat("Can be purchased with [stat] [cityFilter]", UniqueTarget.Building, UniqueTarget.Unit),
     CanBePurchasedForAmountStat("Can be purchased for [amount] [stat] [cityFilter]", UniqueTarget.Building, UniqueTarget.Unit),
@@ -272,8 +273,8 @@ enum class UniqueType(
         docDescription = "Meant to be used together with conditionals, like \"Only available <after adopting [policy]> <while the empire is happy>\". Will also block Upgrade and Transform actions"),
     /** See [OnlyAvailable]. Doesn't restrict Upgrade/Transform pathways
      */
-    BuildableOnly("Buildable only", UniqueTarget.Unit, UniqueTarget.Building,
-        docDescription = "Meant to be used together with conditionals, like \"Buildable only <after adopting [policy]> <while the empire is happy>\". Will also NOT block Upgrade and Transform actions"),
+    CanOnlyBeBuiltInCertainCities("Can only be built", UniqueTarget.Building, UniqueTarget.Unit,
+        docDescription = "Meant to be used together with conditionals, like \"Can only be built <after adopting [policy]> <while the empire is happy>\". Will also NOT block Upgrade and Transform actions"),
     Unavailable("Unavailable", UniqueTarget.Unit, UniqueTarget.Building, UniqueTarget.Improvement,
         UniqueTarget.Policy, UniqueTarget.Tech, UniqueTarget.Promotion, UniqueTarget.Ruins,
         docDescription = "Meant to be used together with conditionals, like \"Unavailable <after generating a Great Prophet>\"."),
@@ -296,7 +297,6 @@ enum class UniqueType(
     RequiresBuildingInAllCities("Requires a [buildingFilter] in all cities", UniqueTarget.Building),
     @Deprecated("as of 4.10.17", ReplaceWith("Only available <if [buildingFilter] is constructed in at least [positiveAmount] of [All] cities>"))
     RequiresBuildingInSomeCities("Requires a [buildingFilter] in at least [positiveAmount] cities", UniqueTarget.Building),
-    CanOnlyBeBuiltInCertainCities("Can only be built [cityFilter]", UniqueTarget.Building),
 
     MustHaveOwnedWithinTiles("Must have an owned [tileFilter] within [amount] tiles", UniqueTarget.Building),
 

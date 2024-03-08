@@ -91,7 +91,7 @@ object BuildingDescriptions {
                 missingCityText(unique.params[0], city, "non-[Puppeted]", lines)
             }
 
-            else if (unique.type == UniqueType.OnlyAvailable || unique.type == UniqueType.BuildableOnly)
+            else if (unique.type == UniqueType.OnlyAvailable || unique.type == UniqueType.CanOnlyBeBuiltInCertainCities)
                 for (conditional in unique.conditionals) {
                     if (conditional.type == UniqueType.ConditionalBuildingBuiltAll) {
                         missingCityText(conditional.params[0], city, conditional.params[1], lines)

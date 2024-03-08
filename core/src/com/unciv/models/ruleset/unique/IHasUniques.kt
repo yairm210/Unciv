@@ -47,7 +47,7 @@ interface IHasUniques : INamed {
     fun hasUnique(uniqueType: UniqueType, stateForConditionals: StateForConditionals? = null) =
         getMatchingUniques(uniqueType.placeholderText, stateForConditionals).any()
 
-    fun availabilityUniques(): Sequence<Unique> = getMatchingUniques(UniqueType.OnlyAvailable, StateForConditionals.IgnoreConditionals) + getMatchingUniques(UniqueType.BuildableOnly, StateForConditionals.IgnoreConditionals)
+    fun availabilityUniques(): Sequence<Unique> = getMatchingUniques(UniqueType.OnlyAvailable, StateForConditionals.IgnoreConditionals) + getMatchingUniques(UniqueType.CanOnlyBeBuiltInCertainCities, StateForConditionals.IgnoreConditionals)
 
     fun techsRequiredByUniques(): Sequence<String> {
         return availabilityUniques()

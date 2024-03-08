@@ -173,9 +173,9 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
             if (!unique.conditionalsApply(civInfo, cityConstructions.city))
                 yield(RejectionReasonType.ShouldNotBeDisplayed.toInstance())
 
-        for (unique in getMatchingUniques(UniqueType.BuildableOnly, StateForConditionals.IgnoreConditionals))
+        for (unique in getMatchingUniques(UniqueType.CanOnlyBeBuiltInCertainCities, StateForConditionals.IgnoreConditionals))
             if (!unique.conditionalsApply(civInfo, cityConstructions.city))
-                yield(RejectionReasonType.CanOnlyBeBuiltInSpecificCities.toInstance())
+                yield(RejectionReasonType.CanOnlyBeBuiltInSpecificCities.toInstance(unique.text))
 
         for (unique in getMatchingUniques(UniqueType.Unavailable, StateForConditionals(civInfo, cityConstructions.city)))
             yield(RejectionReasonType.ShouldNotBeDisplayed.toInstance())
