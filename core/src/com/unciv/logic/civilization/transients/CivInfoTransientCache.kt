@@ -221,10 +221,10 @@ class CivInfoTransientCache(val civInfo: Civilization) {
 
             val discoveredNaturalWonders = civInfo.gameInfo.civilizations.filter { it != civInfo && it.isMajorCiv() }
                     .flatMap { it.naturalWonders }
-            if (tile.terrainHasUnique(UniqueType.GrantsStatToFirstToDiscover)
+            if (tile.terrainHasUnique(UniqueType.GrantsStatsToFirstToDiscover)
                     && !discoveredNaturalWonders.contains(tile.naturalWonder!!)) {
 
-                for (unique in tile.getTerrainMatchingUniques(UniqueType.GrantsStatToFirstToDiscover)) {
+                for (unique in tile.getTerrainMatchingUniques(UniqueType.GrantsStatsToFirstToDiscover)) {
                     statsGained.add(unique.stats)
                 }
             }
@@ -240,12 +240,40 @@ class CivInfoTransientCache(val civInfo: Civilization) {
                     statsGained.add(firstDiscoveredBonus)
             }
 
+            // Variable for support of twooo deprecated uniques
+            var goldGained = 0
+
+            // Support for depreciated GoldWhenDiscoveringNaturalWonder unique
+            for (unique in civInfo.getMatchingUniques(UniqueType.GoldWhenDiscoveringNaturalWonder)) {
+
+                goldGained += if (discoveredNaturalWonders.contains(tile.naturalWonder!!)) {
+                    100
+                } else {
+                    500
+                }
+            }
+
+            // Support for depreciated GrantsGoldToFirstToDiscover unique
+            if (tile.terrainHasUnique(UniqueType.GrantsGoldToFirstToDiscover)
+                && !discoveredNaturalWonders.contains(tile.naturalWonder!!)) {
+
+                for (unique in tile.getTerrainMatchingUniques(UniqueType.GoldWhenDiscoveringNaturalWonder)) {
+                    goldGained += 500
+                }
+            }
+
 
             if (!statsGained.isEmpty()) {
                 civInfo.addStats(statsGained)
                 civInfo.addNotification("We have received [${statsGained}] for discovering [${tile.naturalWonder}]",
                     Notification.NotificationCategory.General, statsGained.toString()
                     )
+            }
+
+            if (goldGained > 0) {
+                civInfo.addGold(goldGained)
+                civInfo.addNotification("We have received [$goldGained] Gold for discovering [${tile.naturalWonder}]",
+                    Notification.NotificationCategory.General, NotificationIcon.Gold)
             }
 
             for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponDiscoveringNaturalWonder,
