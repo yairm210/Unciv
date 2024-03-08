@@ -714,12 +714,12 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Global
 
 ??? example  "May choose [amount] additional [beliefType] beliefs when [foundingOrEnhancing] a religion"
-	Example: "May choose [3] additional [Follower] beliefs when [Unknown] a religion"
+	Example: "May choose [3] additional [Follower] beliefs when [founding] a religion"
 
 	Applicable to: Global
 
 ??? example  "May choose [amount] additional belief(s) of any type when [foundingOrEnhancing] a religion"
-	Example: "May choose [3] additional belief(s) of any type when [Unknown] a religion"
+	Example: "May choose [3] additional belief(s) of any type when [founding] a religion"
 
 	Applicable to: Global
 
@@ -2380,6 +2380,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 *[costOrStrength]: `Cost` or `Strength`.
 *[era]: The name of any era.
 *[event]: The name of any event.
+*[foundingOrEnhancing]: `founding` or `enhancing`.
 *[fraction]: Indicates a fractional number, which can be negative.
 *[improvementName]: The name of any improvement.
 *[modFilter]: A Mod name, case-sensitive _or_ a simple wildcard filter beginning and ending in an Asterisk, case-insensitive.
