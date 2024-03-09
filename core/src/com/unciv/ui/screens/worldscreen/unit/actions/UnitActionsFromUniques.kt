@@ -333,9 +333,12 @@ object UnitActionsFromUniques {
         val civInfo = unit.civ
         val stateForConditionals =
             StateForConditionals(unit = unit, civInfo = civInfo, tile = unitTile)
+        var movementCost = Int.MIN_VALUE  // default, consume all movement
 
         for (unique in unit.getMatchingUniques(UniqueType.CanTransform, stateForConditionals)) {
             val unitToTransformTo = civInfo.getEquivalentUnit(unique.params[0])
+            for (conditional in unique.conditionals.filter { it.type == UniqueType.UnitActionMovementCost })
+                movementCost = conditional.params[0].toInt()
 
             // Respect OnlyAvailable criteria
             if (unitToTransformTo.getMatchingUniques(
@@ -354,20 +357,19 @@ object UnitActionsFromUniques {
                 .filter { it.value > 0 }
                 .joinToString { "${it.value} {${it.key}}".tr() }
 
-            val title = if (newResourceRequirementsString.isEmpty())
+            var title = if (newResourceRequirementsString.isEmpty())
                 "Transform to [${unitToTransformTo.name}]"
             else "Transform to [${unitToTransformTo.name}]\n([$newResourceRequirementsString])"
+            if (movementCost != Int.MIN_VALUE)
+                title += " ($movementCost${Fonts.movement})"
 
             yield(UnitAction(UnitActionType.Transform, 70f,
                 title = title,
                 action = {
+                    val oldMovement = unit.currentMovement
                     unit.destroy()
                     val newUnit =
                         civInfo.units.placeUnitNearTile(unitTile.position, unitToTransformTo)
-
-                    /** We were UNABLE to place the new unit, which means that the unit failed to upgrade!
-                     * The only known cause of this currently is "land units upgrading to water units" which fail to be placed.
-                     */
 
                     /** We were UNABLE to place the new unit, which means that the unit failed to upgrade!
                      * The only known cause of this currently is "land units upgrading to water units" which fail to be placed.
@@ -378,10 +380,19 @@ object UnitActionsFromUniques {
                         unit.copyStatisticsTo(resurrectedUnit)
                     } else { // Managed to upgrade
                         unit.copyStatisticsTo(newUnit)
-                        newUnit.currentMovement = 0f
+                        if (movementCost == Int.MIN_VALUE)
+                            newUnit.currentMovement = 0f
+                        else {
+                            newUnit.currentMovement = oldMovement - movementCost.toFloat()
+                            // adjust if newUnit has lower Max Movement
+                            if (newUnit.currentMovement.toInt() > newUnit.getMaxMovement())
+                                newUnit.currentMovement = newUnit.getMaxMovement().toFloat()
+                        }
                     }
                 }.takeIf {
-                    unit.currentMovement > 0 && !unit.isEmbarked()
+                    if (movementCost == Int.MIN_VALUE)
+                        unit.currentMovement > 0f && !unit.isEmbarked()
+                    else unit.currentMovement > movementCost.toFloat() && !unit.isEmbarked()
                 }
             ))
         }
