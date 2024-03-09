@@ -12,7 +12,7 @@ import kotlin.random.Random
 object Conditionals {
 
     fun conditionalApplies(
-        unique: Unique,
+        unique: Unique?,
         condition: Unique,
         state: StateForConditionals
     ): Boolean {
@@ -80,9 +80,9 @@ object Conditionals {
 
         /** Helper for ConditionalWhenAboveAmountStatResource and its below counterpart */
         fun checkResourceOrStatAmount(
-            resourceOrStatName: String, 
-            lowerLimit: Float, 
-            upperLimit: Float, 
+            resourceOrStatName: String,
+            lowerLimit: Float,
+            upperLimit: Float,
             modifyByGameSpeed: Boolean = false,
             compare: (current: Int, lowerLimit: Float, upperLimit: Float) -> Boolean
         ): Boolean {
@@ -115,22 +115,22 @@ object Conditionals {
             UniqueType.ConditionalWithoutResource -> getResourceAmount(condition.params[0]) <= 0
 
             UniqueType.ConditionalWhenAboveAmountStatResource ->
-                checkResourceOrStatAmount(condition.params[1], condition.params[0].toFloat(), Float.MAX_VALUE) 
+                checkResourceOrStatAmount(condition.params[1], condition.params[0].toFloat(), Float.MAX_VALUE)
                     { current, lowerLimit, _ -> current > lowerLimit }
             UniqueType.ConditionalWhenBelowAmountStatResource ->
-                checkResourceOrStatAmount(condition.params[1], Float.MIN_VALUE, condition.params[0].toFloat()) 
+                checkResourceOrStatAmount(condition.params[1], Float.MIN_VALUE, condition.params[0].toFloat())
                     { current, _, upperLimit -> current < upperLimit }
             UniqueType.ConditionalWhenBetweenStatResource ->
-                checkResourceOrStatAmount(condition.params[2], condition.params[0].toFloat(), condition.params[1].toFloat()) 
+                checkResourceOrStatAmount(condition.params[2], condition.params[0].toFloat(), condition.params[1].toFloat())
                     { current, lowerLimit, upperLimit -> current >= lowerLimit && current <= upperLimit }
             UniqueType.ConditionalWhenAboveAmountStatResourceSpeed ->
-                checkResourceOrStatAmount(condition.params[1], condition.params[0].toFloat(), Float.MAX_VALUE, true) 
+                checkResourceOrStatAmount(condition.params[1], condition.params[0].toFloat(), Float.MAX_VALUE, true)
                     { current, lowerLimit, _ -> current > lowerLimit }
             UniqueType.ConditionalWhenBelowAmountStatResourceSpeed ->
-                checkResourceOrStatAmount(condition.params[1], Float.MIN_VALUE, condition.params[0].toFloat(), true) 
+                checkResourceOrStatAmount(condition.params[1], Float.MIN_VALUE, condition.params[0].toFloat(), true)
                     { current, _, upperLimit -> current < upperLimit }
-            UniqueType.ConditionalWhenBetweenStatResourceSpeed -> 
-                checkResourceOrStatAmount(condition.params[2], condition.params[0].toFloat(), condition.params[1].toFloat(), true) 
+            UniqueType.ConditionalWhenBetweenStatResourceSpeed ->
+                checkResourceOrStatAmount(condition.params[2], condition.params[0].toFloat(), condition.params[1].toFloat(), true)
                     { current, lowerLimit, upperLimit -> current >= lowerLimit && current <= upperLimit }
 
             UniqueType.ConditionalHappy -> checkOnCiv { stats.happiness >= 0 }
@@ -270,14 +270,16 @@ object Conditionals {
             UniqueType.ConditionalInRegionExceptOfType -> state.region?.type != condition.params[0]
 
             UniqueType.ConditionalFirstCivToResearch ->
-                unique.sourceObjectType == UniqueTarget.Tech
+                unique != null
+                    && unique.sourceObjectType == UniqueTarget.Tech
                     && checkOnGameInfo { civilizations.none {
                         it != relevantCiv && it.isMajorCiv()
                             && it.tech.isResearched(unique.sourceObjectName!!) // guarded by the sourceObjectType check
                     } }
 
             UniqueType.ConditionalFirstCivToAdopt ->
-                unique.sourceObjectType == UniqueTarget.Policy
+                unique != null
+                    && unique.sourceObjectType == UniqueTarget.Policy
                     && checkOnGameInfo { civilizations.none {
                         it != relevantCiv && it.isMajorCiv()
                             && it.policies.isAdopted(unique.sourceObjectName!!) // guarded by the sourceObjectType check

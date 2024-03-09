@@ -5,6 +5,7 @@ import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.automation.civilization.NextTurnAutomation
 import com.unciv.logic.city.City
+import com.unciv.logic.civilization.AlertType
 import com.unciv.logic.civilization.CivFlags
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.LocationAction
@@ -13,6 +14,7 @@ import com.unciv.logic.civilization.NotificationAction
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.civilization.PolicyAction
+import com.unciv.logic.civilization.PopupAlert
 import com.unciv.logic.civilization.TechAction
 import com.unciv.logic.civilization.managers.ReligionState
 import com.unciv.logic.map.mapgenerator.NaturalWonderGenerator
@@ -87,7 +89,9 @@ object UniqueTriggerActivation {
             return { civInfo.temporaryUniques.add(TemporaryUnique(unique, timingConditional.params[0].toInt())) }
         }
 
-        if (!unique.conditionalsApply(StateForConditionals(civInfo, city, unit, tile))) return null
+        val stateForConditionals = StateForConditionals(civInfo, city, unit, tile)
+
+        if (!unique.conditionalsApply(stateForConditionals)) return null
 
         val chosenCity = relevantCity ?:
             civInfo.cities.firstOrNull { it.isCapital() }
@@ -98,6 +102,17 @@ object UniqueTriggerActivation {
         val ruleSet = civInfo.gameInfo.ruleset
 
         when (unique.type) {
+            UniqueType.TriggerEvent -> {
+                val event = ruleSet.events[unique.params[0]] ?: return null
+                val choices = event.choices.filter { it.matchesConditions(stateForConditionals) }
+                if (choices.isEmpty()) return null
+                return {
+                    if (civInfo.isAI()) choices.random().triggerChoice(civInfo)
+                    else civInfo.popupAlerts.add(PopupAlert(AlertType.Event, event.name))
+                    true
+                }
+            }
+
             UniqueType.OneTimeFreeUnit -> {
                 val unitName = unique.params[0]
                 val baseUnit = ruleSet.units[unitName] ?: return null
@@ -950,6 +965,7 @@ object UniqueTriggerActivation {
                     true
                 }
             }
+
             else -> return null
         }
     }

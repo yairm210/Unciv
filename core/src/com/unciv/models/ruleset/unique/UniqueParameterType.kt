@@ -509,12 +509,22 @@ enum class UniqueParameterType(
         // Used in FreeExtraBeliefs, FreeExtraAnyBeliefs
         private val knownValues = setOf("founding", "enhancing")
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
-                UniqueType.UniqueParameterErrorSeverity? = when (parameterText) {
+            UniqueType.UniqueParameterErrorSeverity? = when (parameterText) {
             in knownValues -> null
             else -> UniqueType.UniqueParameterErrorSeverity.RulesetInvariant
         }
         override fun getTranslationWriterStringsForOutput() = knownValues
     },
+
+    /** [UniqueType.ConditionalTech] and others, no central implementation */
+    Event("event", "Inspiration", "The name of any event") {
+        override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
+            UniqueType.UniqueParameterErrorSeverity? = when (parameterText) {
+            in ruleset.events -> null
+            else -> UniqueType.UniqueParameterErrorSeverity.RulesetSpecific
+        }
+    },
+
 
     /** [UniqueType.ConditionalTech] and others, no central implementation */
     Technology("tech", "Agriculture", "The name of any tech") {
