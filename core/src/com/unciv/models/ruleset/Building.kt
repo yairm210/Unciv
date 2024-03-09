@@ -302,7 +302,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
                     )
                         yield(RejectionReasonType.MustOwnTile.toInstance(unique.text))
 
-                UniqueType.CanOnlyBeBuiltInCertainCities_dep ->
+                UniqueType.CanOnlyBeBuiltInCertainCitiesDep ->
                     if (!cityConstructions.city.matchesFilter(unique.params[0]))
                         yield(RejectionReasonType.CanOnlyBeBuiltInSpecificCities.toInstance(unique.text))
 

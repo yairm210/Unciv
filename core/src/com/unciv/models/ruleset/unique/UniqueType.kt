@@ -298,7 +298,7 @@ enum class UniqueType(
     CanOnlyBeBuiltInCertainCities("Can only be built", UniqueTarget.Building, UniqueTarget.Unit,
         docDescription = "Meant to be used together with conditionals, like \"Can only be built <after adopting [policy]> <while the empire is happy>\". Will also NOT block Upgrade and Transform actions"),
     @Deprecated("as of x.xx.xx", ReplaceWith("Can only be built <in [cityFilter] cities>"))
-    CanOnlyBeBuiltInCertainCities_dep("Can only be built [cityFilter]", UniqueTarget.Building),
+    CanOnlyBeBuiltInCertainCitiesDep("Can only be built [cityFilter]", UniqueTarget.Building),
 
     MustHaveOwnedWithinTiles("Must have an owned [tileFilter] within [amount] tiles", UniqueTarget.Building),
 
