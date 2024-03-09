@@ -59,13 +59,14 @@ Almost all Unciv JSON files start with a "[" and end with a "]". In between thes
 This file contains two unit objects, one for a warrior and one for a spearman. These objects have different attributes, in this case "name", "cost" and "promotions". All these attributes have a certain type, a String (text) for "name", an Integer for "cost" and a List of Strings for "promotions".
 
 There are different types of attributes:
-| type | notes |
-| --------- | ----- |
-| String | A word or sentence. Should be between double quotes (") |
-| Integer | A number. Can be both positive or negative. Should **not** be between quotes |
-| Boolean | A value that can either be 'true' or 'false'. Should **not** be between quotes |
+
+| type           | notes                                                                                                                                                                                                                                                                          |
+|----------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| String         | A word or sentence. Should be between double quotes (")                                                                                                                                                                                                                        |
+| Integer        | A number. Can be both positive or negative. Should **not** be between quotes                                                                                                                                                                                                   |
+| Boolean        | A value that can either be 'true' or 'false'. Should **not** be between quotes                                                                                                                                                                                                 |
 | List of [type] | If multiple values could apply (such as with the promotions above), they should be put inside a list. Each element of the list should be written like a normal attribute, separated by commas, and enclosed between square braces. E.g.: ["Shock I", "Shock II"] or [1, 2, 3]. |
-| Object | The most complicated type of attribute. An object is comprised of multiple attributes, each of which again has a type. These attributes have a key (the part before the ":") and a value (the part behind it). For an example, see below. |
+| Object         | The most complicated type of attribute. An object is comprised of multiple attributes, each of which again has a type. These attributes have a key (the part before the ":") and a value (the part behind it). For an example, see below.                                      |
 
 Example of a Buildings.json adding a new "Cultural Library" building which gives +50% science and +50% culture:
 
