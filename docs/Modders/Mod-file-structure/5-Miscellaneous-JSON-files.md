@@ -114,6 +114,25 @@ The code below is an example of a valid "turns" definition and it specifies that
 ]
 ```
 
+## Events.json
+
+Events allow users to choose between options of triggers to activate.
+
+| Attribute | Type                 | Default  | Notes                                                     |
+|-----------|----------------------|----------|-----------------------------------------------------------|
+| name      | String               | Required | Used for triggering via "Triggers a [event] event" unique |
+| text      | String               | None     | Flavor text displayed to user                             |
+| choices   | List of EventChoices |          | User can choose to trigger one of the viable choices      |
+
+Event choices are comprised of:
+
+| Attribute        | Type                        | Default    | Notes                                                         |
+|------------------|-----------------------------|------------|---------------------------------------------------------------|
+| text             | String                      | Required   | Displayed to user. Should be an action name - "Do X"          |
+| triggeredUniques | List of trigger uniques     | Required   | The triggers that this choice activates upon being chosen     |
+| conditions       | List of conditional uniques | Empty list | If any conditional is not met, this option becomes unpickable |
+
+
 ## ModOptions.json
 
 <!-- [Link to original](https://github.com/yairm210/Unciv/tree/master/android/assets/jsons/Civ%20V%20-%20Gods%20&%20Kings/ModOptions.json) -->
