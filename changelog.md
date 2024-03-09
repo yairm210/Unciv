@@ -1,18 +1,14 @@
 ## 4.10.17
 
-Added ruleset validation for event uniques
-
-Added documentation and schemas for events
-
-Fix table formatting in all file documentation
-
-Events! 
+Added Events, moddable choices for triggering uniques!
 
 By tuvus:
-- Fixed swapping a unit with a unit that is escorting 
-- Next turn button reactivates after closing a popup menu 
+- Fixed swapping a unit with a unit that is escorting
+- Next turn button reactivates after closing a popup menu
 
 River terraform  - By SomeTroglodyte
+
+New language - Norwegian - by Floxudoxu
 
 ## 4.10.16
 

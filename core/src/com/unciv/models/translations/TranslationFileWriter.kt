@@ -10,6 +10,7 @@ import com.unciv.models.metadata.BaseRuleset
 import com.unciv.models.metadata.GameSettings.LocaleCode
 import com.unciv.models.ruleset.Belief
 import com.unciv.models.ruleset.Building
+import com.unciv.models.ruleset.Event
 import com.unciv.models.ruleset.GlobalUniques
 import com.unciv.models.ruleset.PolicyBranch
 import com.unciv.models.ruleset.Quest
@@ -520,6 +521,7 @@ object TranslationFileWriter {
                     "UnitTypes" -> emptyArray<UnitType>().javaClass
                     "VictoryTypes" -> emptyArray<Victory>().javaClass
                     "CityStateTypes" -> emptyArray<CityStateType>().javaClass
+                    "Events" -> emptyArray<Event>().javaClass
                     else -> this.javaClass // dummy value
                 }
             }

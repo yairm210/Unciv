@@ -104,7 +104,7 @@ object UniqueTriggerActivation {
 
         when (unique.type) {
             UniqueType.TriggerEvent -> {
-                val event = ruleSet.events[unique.params[0]] ?: return null
+                val event = ruleset.events[unique.params[0]] ?: return null
                 val choices = event.choices.filter { it.matchesConditions(stateForConditionals) }
                 if (choices.isEmpty()) return null
                 return {
