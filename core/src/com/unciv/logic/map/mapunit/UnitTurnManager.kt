@@ -12,6 +12,10 @@ class UnitTurnManager(val unit: MapUnit) {
 
     fun endTurn() {
         unit.movement.clearPathfindingCache()
+
+        for (unique in unit.getTriggeredUniques(UniqueType.TriggerUponTurnEnd))
+            UniqueTriggerActivation.triggerUnique(unique, unit)
+
         if (unit.currentMovement > 0
                 && unit.getTile().improvementInProgress != null
                 && unit.canBuildImprovement(unit.getTile().getTileImprovementInProgress()!!)
