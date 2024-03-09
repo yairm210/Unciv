@@ -345,7 +345,7 @@ enum class UniqueType(
     CanHurryResearch("Can hurry technology research", UniqueTarget.Unit),
     CanHurryPolicy("Can generate a large amount of culture", UniqueTarget.Unit),
     CanTradeWithCityStateForGoldAndInfluence("Can undertake a trade mission with City-State, giving a large sum of gold and [amount] Influence", UniqueTarget.Unit),
-    CanTransform("Can transform to [unit]", UniqueTarget.Unit),
+    CanTransform("Can transform to [unit]", UniqueTarget.UnitAction),
 
     AutomationPrimaryAction("Automation is a primary action", UniqueTarget.Unit, flags = UniqueFlag.setOfHiddenToUsers),
 
@@ -491,6 +491,8 @@ enum class UniqueType(
 
     UnitActionConsumeUnit("by consuming this unit", UniqueTarget.UnitActionModifier),
     UnitActionMovementCost("for [amount] movement", UniqueTarget.UnitActionModifier),
+    UnitActionStatCost("for [stats]", UniqueTarget.UnitActionModifier,
+        docDescription = "Currently specifically for Transform Action. Will deduct positive Integer value"),
     UnitActionOnce("once", UniqueTarget.UnitActionModifier),
     UnitActionLimitedTimes("[amount] times", UniqueTarget.UnitActionModifier),
     UnitActionExtraLimitedTimes("[amount] additional time(s)", UniqueTarget.UnitActionModifier),

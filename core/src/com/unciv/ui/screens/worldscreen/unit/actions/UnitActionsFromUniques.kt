@@ -18,6 +18,7 @@ import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
+import com.unciv.models.stats.Stats
 import com.unciv.models.translations.fillPlaceholders
 import com.unciv.models.translations.removeConditionals
 import com.unciv.models.translations.tr
@@ -334,11 +335,18 @@ object UnitActionsFromUniques {
         val stateForConditionals =
             StateForConditionals(unit = unit, civInfo = civInfo, tile = unitTile)
         var movementCost = Int.MIN_VALUE  // default, consume all movement
+        val statCost = Stats()
 
         for (unique in unit.getMatchingUniques(UniqueType.CanTransform, stateForConditionals)) {
+            for (conditional in unique.conditionals)
+                println(conditional)
             val unitToTransformTo = civInfo.getEquivalentUnit(unique.params[0])
             for (conditional in unique.conditionals.filter { it.type == UniqueType.UnitActionMovementCost })
                 movementCost = conditional.params[0].toInt()
+            for (conditional in unique.conditionals.filter { it.type == UniqueType.UnitActionStatCost }) {
+                statCost.add(conditional.stats)
+                println("$conditional")
+            }
 
             if (unitToTransformTo.getMatchingUniques(
                     UniqueType.OnlyAvailable,
@@ -358,11 +366,13 @@ object UnitActionsFromUniques {
                 .filter { it.value > 0 }
                 .joinToString { "${it.value} {${it.key}}".tr() }
 
-            var title = if (newResourceRequirementsString.isEmpty())
-                "Transform to [${unitToTransformTo.name}]"
-            else "Transform to [${unitToTransformTo.name}]\n([$newResourceRequirementsString])"
+            var title = "Transform to [${unitToTransformTo.name}]"
             if (movementCost != Int.MIN_VALUE)
                 title += " ($movementCost${Fonts.movement})"
+            if (!statCost.isEmpty())
+                title += " (${statCost.toStringForNotifications()})"
+            if (newResourceRequirementsString.isNotEmpty())
+                title += "\n([$newResourceRequirementsString])"
 
             yield(UnitAction(UnitActionType.Transform, 70f,
                 title = title,
@@ -389,11 +399,38 @@ object UnitActionsFromUniques {
                             if (newUnit.currentMovement.toInt() > newUnit.getMaxMovement())
                                 newUnit.currentMovement = newUnit.getMaxMovement().toFloat()
                         }
+
+                        // do Stat costs, potentially to local city
+                        // takeIf should have validated this doesn't send us negative
+                        for ((stat, value) in statCost) {
+                            if (stat in Stat.statsWithCivWideField) {
+                                unit.civ.addStat(stat, -value.toInt())
+                            } else unit.civ.cities.minByOrNull {
+                                it.getCenterTile().aerialDistanceTo(tile)
+                            }?.addStat(stat, -value.toInt())
+                        }
                     }
                 }.takeIf {
                     if (movementCost == Int.MIN_VALUE)
-                        unit.currentMovement > 0f && !unit.isEmbarked()
+                        unit.currentMovement > 0f && !unit.isEmbarked() // movement and embark check
+                            && statCost.asSequence().all { // stat cost check
+                            if (unit.civ.cities.minByOrNull {
+                                    it.getCenterTile().aerialDistanceTo(tile)
+                                } != null) unit.civ.cities.minByOrNull {
+                                it.getCenterTile().aerialDistanceTo(tile)
+                            }!!.hasStatToBuy(it.key, it.value.toInt()) // city check
+                            else unit.civ.hasStatToBuy(it.key, it.value.toInt()) // civ check
+                        }
                     else unit.currentMovement > movementCost.toFloat() && !unit.isEmbarked()
+                        && statCost.asSequence().all {
+                        if (unit.civ.cities.minByOrNull {
+                                it.getCenterTile().aerialDistanceTo(tile)
+                            } != null) unit.civ.cities.minByOrNull {
+                            it.getCenterTile().aerialDistanceTo(tile)
+                        }!!.hasStatToBuy(it.key, it.value.toInt())
+                        else unit.civ.hasStatToBuy(it.key, it.value.toInt())
+                    }
+
                 }
             ))
         }

@@ -212,8 +212,17 @@ class City : IsPartOfGameInfoSerialization {
 
     fun getStatReserve(stat: Stat): Int {
         return when (stat) {
+            Stat.Production -> cityConstructions.getWorkDone(cityConstructions.getCurrentConstruction().name)
             Stat.Food -> population.foodStored
             else -> civ.getStatReserve(stat)
+        }
+    }
+
+    fun hasStatToBuy(stat: Stat, price: Int): Boolean {
+        return when {
+            civ.gameInfo.gameParameters.godMode -> true
+            price == 0 -> true
+            else -> getStatReserve(stat) >= price
         }
     }
 
