@@ -265,10 +265,10 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
                     yield(RejectionReasonType.Unbuildable.toInstance())
 
                 UniqueType.OnlyAvailable ->
-                    yieldAll(onlyAvailableRejections(unique, cityConstructions))
+                    yieldAll(notMetRejections(unique, cityConstructions))
 
                 UniqueType.CanOnlyBeBuiltInCertainCities ->
-                    yieldAll(onlyAvailableRejections(unique, cityConstructions, true))
+                    yieldAll(notMetRejections(unique, cityConstructions, true))
 
                 UniqueType.Unavailable ->
                     yield(RejectionReasonType.ShouldNotBeDisplayed.toInstance())
@@ -435,7 +435,11 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
         }
     }
 
-    private fun onlyAvailableRejections(unique: Unique, cityConstructions: CityConstructions, built: Boolean=false): Sequence<RejectionReason> = sequence {
+    /**
+     * Handles inverted conditional rejections and cumulative conditional reporting
+     * See also [com.unciv.models.ruleset.unit.BaseUnit.notMetRejections]
+     */
+    private fun notMetRejections(unique: Unique, cityConstructions: CityConstructions, built: Boolean=false): Sequence<RejectionReason> = sequence {
         val civ = cityConstructions.city.civ
         for (conditional in unique.conditionals) {
             // We yield a rejection only when conditionals are NOT met
