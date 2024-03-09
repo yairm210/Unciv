@@ -1,3 +1,19 @@
+## 4.10.17
+
+Added ruleset validation for event uniques
+
+Added documentation and schemas for events
+
+Fix table formatting in all file documentation
+
+Events! 
+
+By tuvus:
+- Fixed swapping a unit with a unit that is escorting 
+- Next turn button reactivates after closing a popup menu 
+
+River terraform  - By SomeTroglodyte
+
 ## 4.10.16
 
 Allow multifilter uniques to count for filtering
