@@ -271,10 +271,6 @@ enum class UniqueType(
     OnlyAvailable("Only available", UniqueTarget.Unit, UniqueTarget.Building, UniqueTarget.Improvement,
         UniqueTarget.Policy, UniqueTarget.Tech, UniqueTarget.Promotion, UniqueTarget.Ruins, UniqueTarget.FollowerBelief, UniqueTarget.FounderBelief,
         docDescription = "Meant to be used together with conditionals, like \"Only available <after adopting [policy]> <while the empire is happy>\". Will also block Upgrade and Transform actions"),
-    /** See [OnlyAvailable]. Doesn't restrict Upgrade/Transform pathways
-     */
-    CanOnlyBeBuiltInCertainCities("Can only be built", UniqueTarget.Building, UniqueTarget.Unit,
-        docDescription = "Meant to be used together with conditionals, like \"Can only be built <after adopting [policy]> <while the empire is happy>\". Will also NOT block Upgrade and Transform actions"),
     Unavailable("Unavailable", UniqueTarget.Unit, UniqueTarget.Building, UniqueTarget.Improvement,
         UniqueTarget.Policy, UniqueTarget.Tech, UniqueTarget.Promotion, UniqueTarget.Ruins,
         docDescription = "Meant to be used together with conditionals, like \"Unavailable <after generating a Great Prophet>\"."),
@@ -297,6 +293,12 @@ enum class UniqueType(
     RequiresBuildingInAllCities("Requires a [buildingFilter] in all cities", UniqueTarget.Building),
     @Deprecated("as of 4.10.17", ReplaceWith("Only available <if [buildingFilter] is constructed in at least [positiveAmount] of [All] cities>"))
     RequiresBuildingInSomeCities("Requires a [buildingFilter] in at least [positiveAmount] cities", UniqueTarget.Building),
+    /** See [OnlyAvailable]. Doesn't restrict Upgrade/Transform pathways
+     */
+    CanOnlyBeBuiltInCertainCities("Can only be built", UniqueTarget.Building, UniqueTarget.Unit,
+        docDescription = "Meant to be used together with conditionals, like \"Can only be built <after adopting [policy]> <while the empire is happy>\". Will also NOT block Upgrade and Transform actions"),
+    @Deprecated("as of x.xx.xx", ReplaceWith("Can only be built <in [cityFilter] cities>"))
+    CanOnlyBeBuiltInCertainCities_dep("Can only be built [cityFilter]", UniqueTarget.Building),
 
     MustHaveOwnedWithinTiles("Must have an owned [tileFilter] within [amount] tiles", UniqueTarget.Building),
 

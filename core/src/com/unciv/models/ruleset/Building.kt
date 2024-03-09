@@ -302,6 +302,10 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
                     )
                         yield(RejectionReasonType.MustOwnTile.toInstance(unique.text))
 
+                UniqueType.CanOnlyBeBuiltInCertainCities_dep ->
+                    if (!cityConstructions.city.matchesFilter(unique.params[0]))
+                        yield(RejectionReasonType.CanOnlyBeBuiltInSpecificCities.toInstance(unique.text))
+
                 UniqueType.ObsoleteWith ->
                     if (civ.tech.isResearched(unique.params[0]))
                         yield(RejectionReasonType.Obsoleted.toInstance(unique.text))
