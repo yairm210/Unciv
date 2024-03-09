@@ -21,7 +21,7 @@ class Event : INamed {
 class EventChoice {
     var text = ""
     var triggeredUniques = ArrayList<String>()
-    val triggerredUniqueObjects by lazy { triggeredUniques.map { Unique(it) } }
+    val triggeredUniqueObjects by lazy { triggeredUniques.map { Unique(it) } }
 
     var conditions = ArrayList<String>()
     val conditionObjects by lazy { conditions.map { Unique(it) } }
@@ -29,7 +29,7 @@ class EventChoice {
         conditionObjects.all { Conditionals.conditionalApplies(null, it, stateForConditionals) }
 
     fun triggerChoice(civ: Civilization) {
-        for (unique in triggerredUniqueObjects)
+        for (unique in triggeredUniqueObjects)
             UniqueTriggerActivation.triggerUnique(unique, civ)
     }
 }
