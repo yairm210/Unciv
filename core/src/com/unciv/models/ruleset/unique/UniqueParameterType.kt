@@ -439,6 +439,14 @@ enum class UniqueParameterType(
             }
     },
 
+    Year("year", "year", "For BC years use negative numbers as amount. For example for 750 BC use -750") {
+        override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
+            UniqueType.UniqueParameterErrorSeverity? = when (parameterText) {
+            "year" -> null
+            else -> UniqueType.UniqueParameterErrorSeverity.RulesetInvariant
+        }
+    },
+
     /** For [UniqueType.CreatesOneImprovement] */
     ImprovementName("improvementName", "Trading Post", "The name of any improvement") {
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):

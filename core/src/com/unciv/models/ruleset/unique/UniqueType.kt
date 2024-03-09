@@ -660,15 +660,23 @@ enum class UniqueType(
     ConditionalWithResource("with [resource]", UniqueTarget.Conditional),
     ConditionalWithoutResource("without [resource]", UniqueTarget.Conditional),
 
-    // Supports also stockpileable resources (Gold, Faith, Culture, Science)
-    ConditionalWhenAboveAmountStatResource("when above [amount] [stat/resource]", UniqueTarget.Conditional),
-    ConditionalWhenBelowAmountStatResource("when below [amount] [stat/resource]", UniqueTarget.Conditional),
-    ConditionalWhenBetweenStatResource("when between [amount] and [amount] [stat/resource]", UniqueTarget.Conditional),
+    // Supports civ-wide stats (Gold, Faith, Culture, Science), resources and year
+    ConditionalWhenAboveAmountStatResourceYear("when above [amount] [stat/resource/year]", UniqueTarget.Conditional),
+    ConditionalWhenBelowAmountStatResourceYear("when below [amount] [stat/resource/year]", UniqueTarget.Conditional),
+    ConditionalWhenBetweenStatResourceYear("when between [amount] and [amount] [stat/resource/year]", UniqueTarget.Conditional),
 
     // The game speed-adjusted versions of above
-    ConditionalWhenAboveAmountStatResourceSpeed("when above [amount] [stat/resource] (modified by game speed)", UniqueTarget.Conditional),
-    ConditionalWhenBelowAmountStatResourceSpeed("when below [amount] [stat/resource] (modified by game speed)", UniqueTarget.Conditional),
-    ConditionalWhenBetweenStatResourceSpeed("when between [amount] and [amount] [stat/resource] (modified by game speed)", UniqueTarget.Conditional),
+    ConditionalWhenAboveAmountStatResourceYearSpeed("when above [amount] [stat/resource/year] (modified by game speed)", UniqueTarget.Conditional),
+    ConditionalWhenBelowAmountStatResourceYearSpeed("when below [amount] [stat/resource/year] (modified by game speed)", UniqueTarget.Conditional),
+    ConditionalWhenBetweenStatResourceYearSpeed("when between [amount] and [amount] [stat/resource/year] (modified by game speed)", UniqueTarget.Conditional),
+
+    // For exact amount of stats, resources or year
+    ConditionalExactStatResourceYearAmount("with exactly [amount] [stat/resource/year]", UniqueTarget.Conditional),
+
+    // For comparison between resources, stats or year
+    ConditionalSameAmountOfTwoStatsResourcesYears("with the same number of [stat/resource/year] and [stat/resource/year]", UniqueTarget.Conditional),
+    ConditionalHasMoreStatResourceYear("with more [stat/resource/year] than [stat/resource/year]", UniqueTarget.Conditional),
+    ConditionalHasLessStatResourceYear("with less [stat/resource/year] than [stat/resource/year]", UniqueTarget.Conditional),
 
     /////// city conditionals
     ConditionalInThisCity("in this city", UniqueTarget.Conditional),

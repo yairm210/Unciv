@@ -71,6 +71,11 @@ object Conditionals {
             return relevantCity!!.predicate()
         }
 
+        fun checkOnResourceName(resourceName: String): Boolean {
+            if (gameInfo == null) return false
+            return gameInfo!!.ruleset.tileResources.containsKey(resourceName)
+        }
+
         /** Helper to simplify the "compare civ's current era with named era" conditions */
         fun compareEra(eraParam: String, compare: (civEra: Int, paramEra: Int) -> Boolean): Boolean {
             if (gameInfo == null) return false
@@ -79,24 +84,65 @@ object Conditionals {
         }
 
         /** Helper for ConditionalWhenAboveAmountStatResource and its below counterpart */
-        fun checkResourceOrStatAmount(
-            resourceOrStatName: String, 
-            lowerLimit: Float, 
-            upperLimit: Float, 
+        fun checkResourceOrStatOrYearAmount(
+            resourceOrStatName: String,
+            lowerLimit: Float,
+            upperLimit: Float,
             modifyByGameSpeed: Boolean = false,
             compare: (current: Int, lowerLimit: Float, upperLimit: Float) -> Boolean
         ): Boolean {
             if (gameInfo == null) return false
             var gameSpeedModifier = if (modifyByGameSpeed) gameInfo!!.speed.modifier else 1f
 
-            if (gameInfo!!.ruleset.tileResources.containsKey(resourceOrStatName))
+            if (checkOnResourceName(resourceOrStatName))
                 return compare(getResourceAmount(resourceOrStatName), lowerLimit * gameSpeedModifier, upperLimit * gameSpeedModifier)
+
+            if (resourceOrStatName == "year")
+                return compare(gameInfo!!.getYear(gameInfo!!.turns), lowerLimit, upperLimit)
+
             val stat = Stat.safeValueOf(resourceOrStatName)
                 ?: return false
             val statReserve = if (relevantCity != null) relevantCity!!.getStatReserve(stat) else relevantCiv!!.getStatReserve(stat)
 
             gameSpeedModifier = if (modifyByGameSpeed) gameInfo!!.speed.statCostModifiers[stat]!! else 1f
             return compare(statReserve, lowerLimit * gameSpeedModifier, upperLimit * gameSpeedModifier)
+        }
+
+        fun compareTwoResourcesStatsOrYear(
+            first: String,
+            second: String,
+            compare: (firstAmount: Int, secondAmount: Int) -> Boolean
+        ): Boolean {
+            if (gameInfo == null) return false
+
+            // Return false if the parameters are not Stat, Resource or Year
+            if (!Stat.isStat(first) && !checkOnResourceName(first) && first != "year")
+                return false
+            if (!Stat.isStat(second) && !checkOnResourceName(second) && second != "year")
+                return false
+
+            var firstAmount = 0
+            var secondAmount = 0
+
+            // Get number of first
+            if (checkOnResourceName(first))
+                firstAmount = getResourceAmount(first)
+            else if (Stat.isStat(first))
+                firstAmount = relevantCiv!!.getStatReserve(Stat.safeValueOf(first)!!)
+            else if (first != "year")
+                firstAmount = gameInfo!!.getYear(gameInfo!!.turns)
+
+            // Get number of second
+            if (checkOnResourceName(second))
+                secondAmount = getResourceAmount(second)
+            else if (Stat.isStat(second))
+                secondAmount = relevantCiv!!.getStatReserve(Stat.safeValueOf(second)!!)
+            else if (second != "year")
+                secondAmount = gameInfo!!.getYear(gameInfo!!.turns)
+
+            // Compare the numbers
+            return compare(firstAmount, secondAmount)
+
         }
 
         return when (condition.type) {
@@ -114,24 +160,37 @@ object Conditionals {
             UniqueType.ConditionalWithResource -> getResourceAmount(condition.params[0]) > 0
             UniqueType.ConditionalWithoutResource -> getResourceAmount(condition.params[0]) <= 0
 
-            UniqueType.ConditionalWhenAboveAmountStatResource ->
-                checkResourceOrStatAmount(condition.params[1], condition.params[0].toFloat(), Float.MAX_VALUE) 
+            UniqueType.ConditionalWhenAboveAmountStatResourceYear ->
+                checkResourceOrStatOrYearAmount(condition.params[1], condition.params[0].toFloat(), Float.MAX_VALUE)
                     { current, lowerLimit, _ -> current > lowerLimit }
-            UniqueType.ConditionalWhenBelowAmountStatResource ->
-                checkResourceOrStatAmount(condition.params[1], Float.MIN_VALUE, condition.params[0].toFloat()) 
+            UniqueType.ConditionalWhenBelowAmountStatResourceYear ->
+                checkResourceOrStatOrYearAmount(condition.params[1], Float.MIN_VALUE, condition.params[0].toFloat())
                     { current, _, upperLimit -> current < upperLimit }
-            UniqueType.ConditionalWhenBetweenStatResource ->
-                checkResourceOrStatAmount(condition.params[2], condition.params[0].toFloat(), condition.params[1].toFloat()) 
+            UniqueType.ConditionalWhenBetweenStatResourceYear ->
+                checkResourceOrStatOrYearAmount(condition.params[2], condition.params[0].toFloat(), condition.params[1].toFloat())
                     { current, lowerLimit, upperLimit -> current >= lowerLimit && current <= upperLimit }
-            UniqueType.ConditionalWhenAboveAmountStatResourceSpeed ->
-                checkResourceOrStatAmount(condition.params[1], condition.params[0].toFloat(), Float.MAX_VALUE, true) 
+            UniqueType.ConditionalWhenAboveAmountStatResourceYearSpeed ->
+                checkResourceOrStatOrYearAmount(condition.params[1], condition.params[0].toFloat(), Float.MAX_VALUE, true)
                     { current, lowerLimit, _ -> current > lowerLimit }
-            UniqueType.ConditionalWhenBelowAmountStatResourceSpeed ->
-                checkResourceOrStatAmount(condition.params[1], Float.MIN_VALUE, condition.params[0].toFloat(), true) 
+            UniqueType.ConditionalWhenBelowAmountStatResourceYearSpeed ->
+                checkResourceOrStatOrYearAmount(condition.params[1], Float.MIN_VALUE, condition.params[0].toFloat(), true)
                     { current, _, upperLimit -> current < upperLimit }
-            UniqueType.ConditionalWhenBetweenStatResourceSpeed -> 
-                checkResourceOrStatAmount(condition.params[2], condition.params[0].toFloat(), condition.params[1].toFloat(), true) 
+            UniqueType.ConditionalWhenBetweenStatResourceYearSpeed ->
+                checkResourceOrStatOrYearAmount(condition.params[2], condition.params[0].toFloat(), condition.params[1].toFloat(), true)
                     { current, lowerLimit, upperLimit -> current >= lowerLimit && current <= upperLimit }
+            UniqueType.ConditionalExactStatResourceYearAmount ->
+                checkResourceOrStatOrYearAmount(condition.params[1], condition.params[0].toFloat(), condition.params[0].toFloat())
+                    { current, lowerLimit, upperLimit -> current.toFloat() == lowerLimit }
+
+            UniqueType.ConditionalSameAmountOfTwoStatsResourcesYears ->
+                compareTwoResourcesStatsOrYear(condition.params[0], condition.params[1])
+                    { firstAmount, secondAmount -> firstAmount == secondAmount }
+            UniqueType.ConditionalHasMoreStatResourceYear ->
+                compareTwoResourcesStatsOrYear(condition.params[0], condition.params[1])
+                { firstAmount, secondAmount -> firstAmount > secondAmount }
+            UniqueType.ConditionalHasLessStatResourceYear ->
+                compareTwoResourcesStatsOrYear(condition.params[0], condition.params[1])
+                { firstAmount, secondAmount -> firstAmount < secondAmount }
 
             UniqueType.ConditionalHappy -> checkOnCiv { stats.happiness >= 0 }
             UniqueType.ConditionalBetweenHappiness ->
