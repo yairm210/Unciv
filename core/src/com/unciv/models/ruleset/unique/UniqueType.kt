@@ -505,8 +505,8 @@ enum class UniqueType(
 
     UnitActionConsumeUnit("by consuming this unit", UniqueTarget.UnitActionModifier),
     UnitActionMovementCost("for [amount] movement", UniqueTarget.UnitActionModifier),
-    UnitActionStatCost("for [stats]", UniqueTarget.UnitActionModifier,
-        docDescription = "Currently specifically for Transform Action. Will deduct positive Integer value"),
+    UnitActionStatCost("costs [stats] to do", UniqueTarget.UnitActionModifier,
+        docDescription = "Currently specifically for Transform Action. A positive Integer value will be subtracted from your stock"),
     UnitActionOnce("once", UniqueTarget.UnitActionModifier),
     UnitActionLimitedTimes("[amount] times", UniqueTarget.UnitActionModifier),
     UnitActionExtraLimitedTimes("[amount] additional time(s)", UniqueTarget.UnitActionModifier),

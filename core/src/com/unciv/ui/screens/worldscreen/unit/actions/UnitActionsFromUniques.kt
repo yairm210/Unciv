@@ -338,15 +338,11 @@ object UnitActionsFromUniques {
         val statCost = Stats()
 
         for (unique in unit.getMatchingUniques(UniqueType.CanTransform, stateForConditionals)) {
-            for (conditional in unique.conditionals)
-                println(conditional)
             val unitToTransformTo = civInfo.getEquivalentUnit(unique.params[0])
             for (conditional in unique.conditionals.filter { it.type == UniqueType.UnitActionMovementCost })
                 movementCost = conditional.params[0].toInt()
-            for (conditional in unique.conditionals.filter { it.type == UniqueType.UnitActionStatCost }) {
+            for (conditional in unique.conditionals.filter { it.type == UniqueType.UnitActionStatCost })
                 statCost.add(conditional.stats)
-                println("$conditional")
-            }
 
             // Respect OnlyAvailable criteria
             if (unitToTransformTo.getMatchingUniques(

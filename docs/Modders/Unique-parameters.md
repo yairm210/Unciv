@@ -182,10 +182,23 @@ Allowed values are:
 
 This indicates a text comprised of specific stats and is slightly more complex.
 
-Each stats is comprised of several stat changes, each in the form of `+{amount} {stat}`, where 'stat' is one of the seven major stats mentioned above.
+Each stats is comprised of several stat changes, each in the form of `+{amount} {stat}`,
+where 'stat' is one of the seven major stats
+(eg `Production`, `Food`, `Gold`, `Science`, `Culture`, `Happiness` and `Faith`).
 For example: `+1 Science`.
 
 These can be strung together with ", " between them, for example: `+2 Production, +3 Food`.
+
+## stockpiledResource
+
+This indicates a text that corresponds to a custom Stockpile Resource.
+
+These are global civilization resources that act similar to the main Civ-wide resources like `Gold` and `Faith`.
+You can generate them and consume them. And actions that would consume them are blocked if you
+don't have enough left in stock.
+
+To use, you need to first define a TileResources with the "Stockpiled" Unique. Then you can reference
+them in other Uniques.
 
 ## technologyFilter
 
