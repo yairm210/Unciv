@@ -523,7 +523,7 @@ class UnitMovement(val unit: MapUnit) {
             else
                 destination.militaryUnit
             )?: return // The precondition guarantees that there is an eligible same-type unit at the destination
-
+        otherUnit.stopEscorting()
         val ourOldPosition = unit.getTile()
         val theirOldPosition = otherUnit.getTile()
 
