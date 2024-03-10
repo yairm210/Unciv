@@ -173,7 +173,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         for (unique in getMatchingUniques(UniqueType.OnlyAvailable, StateForConditionals.IgnoreConditionals))
             yieldAll(notMetRejections(unique, cityConstructions))
 
-        for (unique in getMatchingUniques(UniqueType.CanOnlyBeBuiltInCertainCities, StateForConditionals.IgnoreConditionals))
+        for (unique in getMatchingUniques(UniqueType.CanOnlyBeBuiltWhen, StateForConditionals.IgnoreConditionals))
             yieldAll(notMetRejections(unique, cityConstructions, true))
 
         for (unique in getMatchingUniques(UniqueType.Unavailable, StateForConditionals(civInfo, cityConstructions.city)))

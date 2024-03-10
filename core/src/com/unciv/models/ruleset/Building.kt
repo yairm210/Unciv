@@ -254,7 +254,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
             // skip uniques that don't have conditionals apply
             // EXCEPT for [UniqueType.OnlyAvailable] and [UniqueType.CanOnlyBeBuiltInCertainCities]
             // since they trigger (reject) only if conditionals ARE NOT met
-            if (unique.type != UniqueType.OnlyAvailable && unique.type != UniqueType.CanOnlyBeBuiltInCertainCities &&
+            if (unique.type != UniqueType.OnlyAvailable && unique.type != UniqueType.CanOnlyBeBuiltWhen &&
                 !unique.conditionalsApply(StateForConditionals(civ, cityConstructions.city))) continue
 
             @Suppress("NON_EXHAUSTIVE_WHEN")
@@ -267,7 +267,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
                 UniqueType.OnlyAvailable ->
                     yieldAll(notMetRejections(unique, cityConstructions))
 
-                UniqueType.CanOnlyBeBuiltInCertainCities ->
+                UniqueType.CanOnlyBeBuiltWhen ->
                     yieldAll(notMetRejections(unique, cityConstructions, true))
 
                 UniqueType.Unavailable ->
@@ -302,7 +302,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
                     )
                         yield(RejectionReasonType.MustOwnTile.toInstance(unique.text))
 
-                UniqueType.CanOnlyBeBuiltInCertainCitiesDep ->
+                UniqueType.CanOnlyBeBuiltInCertainCities ->
                     if (!cityConstructions.city.matchesFilter(unique.params[0]))
                         yield(RejectionReasonType.CanOnlyBeBuiltInSpecificCities.toInstance(unique.text))
 
