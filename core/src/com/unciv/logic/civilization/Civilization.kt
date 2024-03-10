@@ -821,9 +821,10 @@ class Civilization : IsPartOfGameInfoSerialization {
     }
     // endregion
 
-    fun addCity(location: Vector2, unit: MapUnit? = null) {
+    fun addCity(location: Vector2, unit: MapUnit? = null): City {
         val newCity = CityFounder().foundCity(this, location, unit)
         newCity.cityConstructions.chooseNextConstruction()
+        return newCity
     }
 
     /** Destroy what's left of a Civilization
@@ -865,6 +866,22 @@ class Civilization : IsPartOfGameInfoSerialization {
             // move new capital
             city.cityConstructions.addBuilding(city.capitalCityIndicator())
             city.isBeingRazed = false // stop razing the new capital if it was being razed
+
+            // move the buildings with MovedToNewCapital unique
+            if (oldCapital != null) {
+                // Get the Set of the buildings to move
+                val buildingsToMove = oldCapital.cityConstructions.getBuiltBuildings().filter {
+                    it.hasUnique(UniqueType.MovesToNewCapital)
+                }.toSet()
+
+                // Remove the buildings from old capital
+                oldCapital.cityConstructions.removeBuildings(buildingsToMove)
+
+                // Add the buildings to new capital
+                buildingsToMove.forEach {
+                    city.cityConstructions.addBuilding(it)
+                }
+            }
         }
         oldCapital?.cityConstructions?.removeBuilding(oldCapital.capitalCityIndicator())
     }

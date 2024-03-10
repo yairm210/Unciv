@@ -12,6 +12,7 @@ import com.unciv.models.ruleset.unique.UniqueType
 
 object BattleHelper {
 
+    /** Returns true if the unit cannot further move this turn - NOT if an attack was successful! */
     fun tryAttackNearbyEnemy(unit: MapUnit, stayOnTile: Boolean = false): Boolean {
         if (unit.hasUnique(UniqueType.CannotAttack)) return false
         val distanceToTiles = unit.movement.getDistanceToTiles()

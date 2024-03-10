@@ -5,6 +5,7 @@ import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.automation.civilization.NextTurnAutomation
 import com.unciv.logic.city.City
+import com.unciv.logic.civilization.AlertType
 import com.unciv.logic.civilization.CivFlags
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.LocationAction
@@ -13,9 +14,11 @@ import com.unciv.logic.civilization.NotificationAction
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.civilization.PolicyAction
+import com.unciv.logic.civilization.PopupAlert
 import com.unciv.logic.civilization.TechAction
 import com.unciv.logic.civilization.managers.ReligionState
 import com.unciv.logic.map.mapgenerator.NaturalWonderGenerator
+import com.unciv.logic.map.mapgenerator.RiverGenerator
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.UpgradeUnitAction
@@ -87,7 +90,9 @@ object UniqueTriggerActivation {
             return { civInfo.temporaryUniques.add(TemporaryUnique(unique, timingConditional.params[0].toInt())) }
         }
 
-        if (!unique.conditionalsApply(StateForConditionals(civInfo, city, unit, tile))) return null
+        val stateForConditionals = StateForConditionals(civInfo, city, unit, tile)
+
+        if (!unique.conditionalsApply(stateForConditionals)) return null
 
         val chosenCity = relevantCity ?:
             civInfo.cities.firstOrNull { it.isCapital() }
@@ -95,12 +100,23 @@ object UniqueTriggerActivation {
         val tileBasedRandom =
             if (tile != null) Random(tile.position.toString().hashCode())
             else Random(-550) // Very random indeed
-        val ruleSet = civInfo.gameInfo.ruleset
+        val ruleset = civInfo.gameInfo.ruleset
 
         when (unique.type) {
+            UniqueType.TriggerEvent -> {
+                val event = ruleset.events[unique.params[0]] ?: return null
+                val choices = event.choices.filter { it.matchesConditions(stateForConditionals) }
+                if (choices.isEmpty()) return null
+                return {
+                    if (civInfo.isAI()) choices.random().triggerChoice(civInfo)
+                    else civInfo.popupAlerts.add(PopupAlert(AlertType.Event, event.name))
+                    true
+                }
+            }
+
             UniqueType.OneTimeFreeUnit -> {
                 val unitName = unique.params[0]
-                val baseUnit = ruleSet.units[unitName] ?: return null
+                val baseUnit = ruleset.units[unitName] ?: return null
                 val civUnit = civInfo.getEquivalentUnit(baseUnit)
                 if (civUnit.isCityFounder() && civInfo.isOneCityChallenger())
                     return null
@@ -141,7 +157,7 @@ object UniqueTriggerActivation {
 
             UniqueType.OneTimeAmountFreeUnits -> {
                 val unitName = unique.params[1]
-                val baseUnit = ruleSet.units[unitName] ?: return null
+                val baseUnit = ruleset.units[unitName] ?: return null
                 val civUnit = civInfo.getEquivalentUnit(baseUnit)
                 if (civUnit.isCityFounder() && civInfo.isOneCityChallenger())
                     return null
@@ -197,7 +213,7 @@ object UniqueTriggerActivation {
             UniqueType.OneTimeFreeUnitRuins -> {
                 var civUnit = civInfo.getEquivalentUnit(unique.params[0])
                 if ( civUnit.isCityFounder() && civInfo.isOneCityChallenger()) {
-                     val replacementUnit = ruleSet.units.values
+                     val replacementUnit = ruleset.units.values
                          .firstOrNull {
                              it.getMatchingUniques(UniqueType.BuildImprovements)
                                 .any { unique -> unique.params[0] == "Land" }
@@ -368,7 +384,7 @@ object UniqueTriggerActivation {
                 }
             }
             UniqueType.OneTimeFreeTechRuins -> {
-                val researchableTechsFromThatEra = ruleSet.technologies.values
+                val researchableTechsFromThatEra = ruleset.technologies.values
                     .filter {
                         (it.column!!.era == unique.params[1] || unique.params[1] == "any era")
                                 && civInfo.tech.canBeResearched(it.name)
@@ -430,7 +446,7 @@ object UniqueTriggerActivation {
 
             UniqueType.OneTimeProvideResources -> {
                 val resourceName = unique.params[1]
-                val resource = ruleSet.tileResources[resourceName] ?: return null
+                val resource = ruleset.tileResources[resourceName] ?: return null
                 if (!resource.isStockpiled()) return null
 
                 return {
@@ -449,7 +465,7 @@ object UniqueTriggerActivation {
 
             UniqueType.OneTimeConsumeResources -> {
                 val resourceName = unique.params[1]
-                val resource = ruleSet.tileResources[resourceName] ?: return null
+                val resource = ruleset.tileResources[resourceName] ?: return null
                 if (!resource.isStockpiled()) return null
 
                 return {
@@ -483,7 +499,7 @@ object UniqueTriggerActivation {
 
                 val unitsToPromote = civInfo.units.getCivUnits().filter { it.matchesFilter(filter) }
                     .filter { unitToPromote ->
-                        ruleSet.unitPromotions.values.any {
+                        ruleset.unitPromotions.values.any {
                             it.name == promotion && unitToPromote.type.name in it.unitTypes
                         }
                     }.toList()
@@ -813,7 +829,7 @@ object UniqueTriggerActivation {
                 }
             }
             UniqueType.FreeSpecificBuildings ->{
-                val building = ruleSet.buildings[unique.params[0]] ?: return null
+                val building = ruleset.buildings[unique.params[0]] ?: return null
                 return {
                     civInfo.civConstructions.addFreeBuildings(building, unique.params[1].toInt())
                     true
@@ -931,7 +947,9 @@ object UniqueTriggerActivation {
 
             UniqueType.OneTimeChangeTerrain -> {
                 if (tile == null) return null
-                val terrain = ruleSet.terrains[unique.params[0]] ?: return null
+                val terrain = ruleset.terrains[unique.params[0]] ?: return null
+                if (terrain.name == Constants.river)
+                    return getOneTimeChangeRiverTriggerFunction(tile)
                 if (terrain.type == TerrainType.TerrainFeature && !terrain.occursOn.contains(tile.lastTerrain.name))
                     return null
                 if (tile.terrainFeatures.contains(terrain.name)) return null
@@ -944,12 +962,13 @@ object UniqueTriggerActivation {
                         TerrainType.TerrainFeature -> tile.addTerrainFeature(terrain.name)
                         TerrainType.NaturalWonder -> NaturalWonderGenerator.placeNaturalWonder(terrain, tile)
                     }
-                    TileInfoNormalizer.normalizeToRuleset(tile, ruleSet)
+                    TileInfoNormalizer.normalizeToRuleset(tile, ruleset)
                     tile.getUnits().filter { !it.movement.canPassThrough(tile) }.toList()
                         .forEach { it.movement.teleportToClosestMoveableTile() }
                     true
                 }
             }
+
             else -> return null
         }
     }
@@ -963,5 +982,11 @@ object UniqueTriggerActivation {
             else "{$triggerNotificationText}{ }{$effectNotificationText}"
         }
         else null
+    }
+
+    private fun getOneTimeChangeRiverTriggerFunction(tile: Tile): (()->Boolean)? {
+        if (tile.neighbors.none { it.isLand && !tile.isConnectedByRiver(it) })
+            return null  // no place for another river
+        return { RiverGenerator.continueRiverOn(tile) }
     }
 }

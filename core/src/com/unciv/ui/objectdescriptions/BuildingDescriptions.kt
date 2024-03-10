@@ -49,7 +49,7 @@ object BuildingDescriptions {
         if (isNationalWonder) translatedLines += "National Wonder".tr()
         if (!isFree) {
             for ((resourceName, amount) in getResourceRequirementsPerTurn(StateForConditionals(city.civ, city))) {
-                val available = city.getResourceAmount(resourceName)
+                val available = city.getAvailableResourceAmount(resourceName)
                 val resource = city.getRuleset().tileResources[resourceName] ?: continue
                 val consumesString = resourceName.getConsumesAmountString(amount, resource.isStockpiled())
 

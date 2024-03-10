@@ -19,8 +19,6 @@ import com.unciv.UncivGame
 import com.unciv.models.metadata.GameSettings
 import com.unciv.ui.components.ZoomGestureListener
 import com.unciv.ui.components.input.KeyboardPanningListener
-import java.lang.Float.max
-import java.lang.Float.min
 import kotlin.math.sqrt
 
 
@@ -138,7 +136,7 @@ open class ZoomableScrollPane(
     }
 
     open fun zoom(zoomScale: Float) {
-        val newZoom = min(max(zoomScale, minZoom), maxZoom)
+        val newZoom = zoomScale.coerceIn(minZoom, maxZoom)
         val oldZoomX = scaleX
         val oldZoomY = scaleY
 

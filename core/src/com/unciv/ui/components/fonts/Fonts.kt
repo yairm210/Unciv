@@ -122,6 +122,7 @@ object Fonts {
     const val greatScientist = '⚛'      // U+269B 'atom'
     const val death = '☠'               // U+2620 'skull and crossbones'
     const val automate = '⛏'            // U+26CF 'pick'
+    const val infinity = '∞'            // U+221E - not in `allSymbols`, taken as-is from system font
 
     val allSymbols = mapOf(
         turn to "EmojiIcons/Turn",

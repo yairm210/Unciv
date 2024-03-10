@@ -232,12 +232,10 @@ class TileInfoImprovementFunctions(val tile: Tile) {
             triggerImprovementUniques(improvementObject, civToActivateBroaderEffects, unit)
 
         val city = tile.owningCity
-        if (city != null) {
+        if (civToActivateBroaderEffects != null && city != null) {
             city.cityStats.update()
-            if (civToActivateBroaderEffects != null) {
-                city.civ.cache.updateCivResources()
-                city.reassignPopulationDeferred()
-            }
+            city.civ.cache.updateCivResources()
+            city.reassignPopulationDeferred()
         }
     }
 

@@ -84,6 +84,7 @@ class RulesetValidator(val ruleset: Ruleset) {
         addUnitTypeErrors(lines, tryFixUnknownUniques)
         addVictoryTypeErrors(lines)
         addDifficultyErrors(lines)
+        addEventErrors(lines, tryFixUnknownUniques)
         addCityStateTypeErrors(tryFixUnknownUniques, lines)
 
         // Check for mod or Civ_V_GnK to avoid running the same test twice (~200ms for the builtin assets)
@@ -138,6 +139,17 @@ class RulesetValidator(val ruleset: Ruleset) {
             for (unitName in difficulty.aiCityStateBonusStartingUnits + difficulty.aiMajorCivBonusStartingUnits + difficulty.playerBonusStartingUnits)
                 if (unitName != Constants.eraSpecificUnit && !ruleset.units.containsKey(unitName))
                     lines.add("Difficulty ${difficulty.name} contains starting unit $unitName which does not exist!", sourceObject = null)
+        }
+    }
+
+    private fun addEventErrors(lines: RulesetErrorList,
+                               tryFixUnknownUniques: Boolean) {
+        // A Difficulty is not a IHasUniques, so not suitable as sourceObject
+        for (event in ruleset.events.values) {
+            for (choice in event.choices) {
+                for (unique in choice.conditionObjects + choice.triggeredUniqueObjects)
+                    lines += uniqueValidator.checkUnique(unique, tryFixUnknownUniques, null, true)
+            }
         }
     }
 
@@ -755,6 +767,11 @@ class RulesetValidator(val ruleset: Ruleset) {
     }
 
     private fun checkTilesetSanity(lines: RulesetErrorList) {
+        // If running from a jar *and* checking a builtin ruleset, skip this check.
+        // - We can't list() the jsons, and the unit test before relase is sufficient, the tileset config can't have changed since then.
+        if (ruleset.folderLocation == null && this::class.java.`package`?.specificationVersion != null)
+            return
+
         val tilesetConfigFolder = (ruleset.folderLocation ?: Gdx.files.internal("")).child("jsons\\TileSets")
         if (!tilesetConfigFolder.exists()) return
 

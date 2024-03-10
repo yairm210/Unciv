@@ -49,7 +49,7 @@ class CityTurnManager(val city: City) {
 
     private fun tryWeLoveTheKing() {
         if (city.demandedResource == "") return
-        if (city.getResourceAmount(city.demandedResource) > 0) {
+        if (city.getAvailableResourceAmount(city.demandedResource) > 0) {
             city.setFlag(CityFlags.WeLoveTheKing, 20 + 1) // +1 because it will be decremented by 1 in the same startTurn()
             city.civ.addNotification(
                 "Because they have [${city.demandedResource}], the citizens of [${city.name}] are celebrating We Love The King Day!",

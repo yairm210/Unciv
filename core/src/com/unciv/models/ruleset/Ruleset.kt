@@ -71,6 +71,7 @@ class Ruleset {
     var victories = LinkedHashMap<String, Victory>()
     var cityStateTypes = LinkedHashMap<String, CityStateType>()
     val personalities = LinkedHashMap<String, Personality>()
+    val events = LinkedHashMap<String, Event>()
 
     val greatGeneralUnits by lazy {
         units.values.filter { it.hasUnique(UniqueType.GreatPersonFromCombat, StateForConditionals.IgnoreConditionals) }
@@ -162,6 +163,7 @@ class Ruleset {
             }
         units.putAll(ruleset.units)
         personalities.putAll(ruleset.personalities)
+        events.putAll(ruleset.events)
         modOptions.uniques.addAll(ruleset.modOptions.uniques)
         modOptions.constants.merge(ruleset.modOptions.constants)
 
@@ -196,6 +198,7 @@ class Ruleset {
         victories.clear()
         cityStateTypes.clear()
         personalities.clear()
+        events.clear()
     }
 
     fun allRulesetObjects(): Sequence<IRulesetObject> =
@@ -382,6 +385,11 @@ class Ruleset {
         val personalitiesFile = folderHandle.child("Personalities.json")
         if (personalitiesFile.exists()) {
             personalities += createHashmap(json().fromJsonFile(Array<Personality>::class.java, personalitiesFile))
+        }
+
+        val eventsFile = folderHandle.child("Events.json")
+        if (eventsFile.exists()) {
+            events += createHashmap(json().fromJsonFile(Array<Event>::class.java, eventsFile))
         }
 
 

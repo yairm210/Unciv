@@ -1,3 +1,67 @@
+## 4.10.17
+
+Added Events, moddable choices for triggering uniques!
+
+By tuvus:
+- Fixed swapping a unit with a unit that is escorting
+- Next turn button reactivates after closing a popup menu
+
+River terraform  - By SomeTroglodyte
+
+New language - Norwegian - by Floxudoxu
+
+## 4.10.16
+
+Allow multifilter uniques to count for filtering
+
+By tuvus:
+- Skip next unit button (right-click option)
+- Better Unit Actions Sorting
+
+By SomeTroglodyte:
+- City filters for cities in resistance and being razed
+- Competition quests in progress display tied leaders (and your place if you're behind)
+
+AI consider production bonuses when building  - By SeventhM
+
+Added ConditionalWhenBetweenStatResource unique  - By woo1127 (new contributor!)
+
+## 4.10.15
+
+Changed tech trigger to accept tech filters
+
+By SomeTroglodyte:
+- Improve DiplomacyScreen UX (nation icons) on cramped screens
+- Move DiplomacyScreen close button to top right
+- Validation warning Suppression as Unique or modifier
+- UI: Fix options popup "spilling" in cramped screen conditions
+
+Allow city state uniques for nation descriptions  - By SeventhM
+
+Add MovedToNewCapital buiding unique  - By PLynx01
+
+Better military unit retreat  - By tuvus
+
+## 4.10.14
+
+AI tile evaluation considers Faith
+
+Civ-wide uniques for city-wide resources
+
+Added 'city addbuilding', 'city removebuilding' console commands
+
+Add unique to conditionally control construction costs
+
+Added conditional for exact amount of population in a city
+
+Mod checker:
+- Unique conditional corrections, and better correction
+- Limit tech column building/wonder costs warnings to when required
+
+Unit upgrade menu can scroll - By SomeTroglodyte
+
+Military unit healing improvement  - By tuvus
+
 ## 4.10.13
 
 Add AI for land-based nuke units

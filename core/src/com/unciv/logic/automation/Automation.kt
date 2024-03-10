@@ -468,6 +468,7 @@ object Automation {
         rank += stats.production
         rank += stats.science
         rank += stats.culture
+        rank += stats.faith
         return rank
     }
 }

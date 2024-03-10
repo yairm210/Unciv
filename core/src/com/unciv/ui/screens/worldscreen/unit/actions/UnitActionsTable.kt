@@ -73,8 +73,9 @@ class UnitActionsTable(val worldScreen: WorldScreen) : Table() {
         val previousPageButton = getUnitActionButton(unit, previousPageAction)
         updateButtonsPerPage(nextPageButton)
 
+        val sortedUnitActions = UnitActions.getUnitActions(unit).sortedByDescending { it.useFrequency }
         // Distribute sequentially into the buckets
-        for (unitAction in UnitActions.getUnitActions(unit)) {
+        for (unitAction in sortedUnitActions) {
             var actionPage = UnitActions.getActionDefaultPage(unit, unitAction.type)
             while (actionPage < maxAllowedPages && freeSlotsOnPage(actionPage) <= 0)
                 actionPage++
