@@ -156,7 +156,7 @@ class RejectionReason(val type: RejectionReasonType,
         RejectionReasonType.MaxNumberBuildable,
         RejectionReasonType.NoPlaceToPutUnit,
     )
-    // Excpetions. Used for units spawned, not built
+    // Exceptions. Used for units spawned, not built
     private val constructionRejectionReasonType = listOf(
         RejectionReasonType.Unbuildable,
         RejectionReasonType.CannotBeBuiltUnhappiness,
