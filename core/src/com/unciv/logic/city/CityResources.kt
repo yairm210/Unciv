@@ -57,7 +57,8 @@ object CityResources {
     }
 
     private fun addCityResourcesGeneratedLocally(city: City, cityResources: ResourceSupplyList, resourceModifer: HashMap<String, Float>) {
-        for (unique in city.getLocalMatchingUniques(UniqueType.ProvidesResources, StateForConditionals(city.civ, city))) { // E.G "Provides [1] [Iron]"
+        for (unique in city.getMatchingUniquesWithNonLocalEffects(UniqueType.ProvidesResources, StateForConditionals(city.civ, city))
+            + city.getLocalMatchingUniques(UniqueType.ProvidesResources, StateForConditionals(city.civ, city))) { // E.G "Provides [1] [Iron]"
             val resource = city.getRuleset().tileResources[unique.params[1]]
                 ?: continue
             cityResources.add(
