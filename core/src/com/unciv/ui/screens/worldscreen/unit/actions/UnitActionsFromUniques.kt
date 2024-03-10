@@ -366,7 +366,7 @@ object UnitActionsFromUniques {
             if (movementCost != Int.MIN_VALUE)
                 title += " ($movementCost${Fonts.movement})"
             if (!statCost.isEmpty())
-                title += " (${statCost.toStringForNotifications()})"
+                title += " (${statCost.toString()})"
             if (newResourceRequirementsString.isNotEmpty())
                 title += "\n([$newResourceRequirementsString])"
 
