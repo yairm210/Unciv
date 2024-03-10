@@ -455,9 +455,9 @@ class City : IsPartOfGameInfoSerialization {
     fun getMatchingUniques(
         uniqueType: UniqueType,
         stateForConditionals: StateForConditionals = StateForConditionals(this),
-        civUniques: Boolean = true
+        includeCivUniques: Boolean = true
     ): Sequence<Unique> {
-        return if (civUniques)
+        return if (includeCivUniques)
             civ.getMatchingUniques(uniqueType, stateForConditionals) +
                 getLocalMatchingUniques(uniqueType, stateForConditionals)
         else (
