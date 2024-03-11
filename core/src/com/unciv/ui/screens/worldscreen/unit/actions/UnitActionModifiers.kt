@@ -3,9 +3,11 @@ package com.unciv.ui.screens.worldscreen.unit.actions
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueType
+import com.unciv.models.stats.Stat
 import com.unciv.models.translations.removeConditionals
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.fonts.Fonts
+import kotlin.math.roundToInt
 
 object UnitActionModifiers {
     fun canUse(unit: MapUnit, actionUnique: Unique): Boolean {
@@ -26,6 +28,36 @@ object UnitActionModifiers {
         return 1
     }
 
+    /**Check if the stat costs in this Action Modifier can be spent by the Civ/Closest City without
+     * going into the negatives
+     * @return Boolean
+     */
+    fun canSpendStatCost(unit: MapUnit, actionUnique: Unique): Boolean {
+        for (conditional in actionUnique.conditionals.filter { it.type == UniqueType.UnitActionStatCost }) {
+            for ((stat, value) in conditional.stats) {
+                if (stat in Stat.statsWithCivWideField) {
+                    if (!unit.civ.hasStatToBuy(stat, value.toInt()))
+                        return false
+                } else {
+                    if (unit.getClosestCity() != null)
+                        if (!unit.getClosestCity()!!.hasStatToBuy(stat, value.toInt()))
+                            return false
+                }
+            }
+        }
+
+        return true
+    }
+
+    /**Checks if this Action Unique can be executed, based on action modifiers
+     * @return Boolean
+     */
+    fun canAcivateSideEffects(unit: MapUnit, actionUnique: Unique): Boolean {
+        return canUse(unit, actionUnique)
+            && getMovementPointsToUse(actionUnique) <= (unit.currentMovement+0.5f).roundToInt() // ceiling
+            && canSpendStatCost(unit, actionUnique)
+    }
+
     fun activateSideEffects(unit: MapUnit, actionUnique: Unique) {
         val movementCost = getMovementPointsToUse(actionUnique)
         unit.useMovementPoints(movementCost.toFloat())
@@ -41,6 +73,15 @@ object UnitActionModifiers {
                     }
                     val usagesSoFar = unit.abilityToTimesUsed[actionUnique.placeholderText] ?: 0
                     unit.abilityToTimesUsed[actionUnique.placeholderText] = usagesSoFar + 1
+                }
+                UniqueType.UnitActionStatCost -> {
+                    // do Stat costs, either Civ-wide or local city
+                    // should have validated this doesn't send us negative
+                    for ((stat, value) in conditional.stats) {
+                        if (stat in Stat.statsWithCivWideField) {
+                            unit.civ.addStat(stat, -value.toInt())
+                        } else unit.getClosestCity()?.addStat(stat, -value.toInt())
+                    }
                 }
                 else -> continue
             }

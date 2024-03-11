@@ -1,6 +1,8 @@
 package com.unciv.models.stats
 
 import com.unciv.models.translations.tr
+import com.unciv.ui.components.fonts.FontRulesetIcons
+import com.unciv.ui.components.fonts.Fonts
 import kotlin.reflect.KMutableProperty0
 
 /**
@@ -182,6 +184,13 @@ open class Stats(
     fun toStringWithoutIcons(): String {
         return this.joinToString {
             it.value.toInt().toString() + " " + it.key.name.tr().substring(startIndex = 1)
+        }
+    }
+
+    /** Return a string of just +/- value and Stat symbol*/
+    fun toStringOnlyIcons(): String {
+        return this.joinToString {
+            (if (it.value > 0) "+" else "") + it.value.toInt() + " " + it.key.character
         }
     }
 
