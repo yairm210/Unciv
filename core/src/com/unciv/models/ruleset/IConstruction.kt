@@ -156,7 +156,7 @@ class RejectionReason(val type: RejectionReasonType,
         RejectionReasonType.MaxNumberBuildable,
         RejectionReasonType.NoPlaceToPutUnit,
     )
-    // Exceptions. Used for units spawned, not built
+    // Exceptions. Used for units spawned/upgrade path, not built
     private val constructionRejectionReasonType = listOf(
         RejectionReasonType.Unbuildable,
         RejectionReasonType.CannotBeBuiltUnhappiness,
@@ -181,7 +181,7 @@ enum class RejectionReasonType(val shouldShow: Boolean, val errorMessage: String
     MustNotBeNextToTile(false, "Must not be next to a specific tile"),
     MustOwnTile(false, "Must own a specific tile close by"),
     WaterUnitsInCoastalCities(false, "May only built water units in coastal cities"),
-    CanOnlyBeBuiltInSpecificCities(false, "Can only be built in specific cities"),
+    CanOnlyBeBuiltInSpecificCities(false, "Build requirements not met in this city"),
     MaxNumberBuildable(false, "Maximum number have been built or are being constructed"),
 
     UniqueToOtherNation(false, "Unique to another nation"),
