@@ -295,7 +295,7 @@ enum class UniqueType(
     RequiresBuildingInAllCities("Requires a [buildingFilter] in all cities", UniqueTarget.Building),
     @Deprecated("as of 4.10.17", ReplaceWith("Only available <if [buildingFilter] is constructed in at least [positiveAmount] of [All] cities>"))
     RequiresBuildingInSomeCities("Requires a [buildingFilter] in at least [positiveAmount] cities", UniqueTarget.Building),
-    @Deprecated("as of x.xx.xx", ReplaceWith("Can only be built <in [cityFilter] cities>"))
+    @Deprecated("as of 4.10.18", ReplaceWith("Can only be built <in [cityFilter] cities>"))
     CanOnlyBeBuiltInCertainCities("Can only be built [cityFilter]", UniqueTarget.Building),
     /** Triggers [RejectionReasonType] when any conditional does NOT apply.
      * Doesn't restrict Upgrade/Transform pathways.
