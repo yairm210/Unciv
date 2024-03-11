@@ -1,6 +1,8 @@
 package com.unciv.models.stats
 
 import com.unciv.models.translations.tr
+import com.unciv.ui.components.fonts.FontRulesetIcons
+import com.unciv.ui.components.fonts.Fonts
 import kotlin.reflect.KMutableProperty0
 
 /**
