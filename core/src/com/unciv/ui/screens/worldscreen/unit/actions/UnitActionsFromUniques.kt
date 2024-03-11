@@ -387,6 +387,9 @@ object UnitActionsFromUniques {
                         unit.copyStatisticsTo(resurrectedUnit)
                     } else { // Managed to upgrade
                         unit.copyStatisticsTo(newUnit)
+                        // have to handle movement manually because we killed the old unit
+                        // a .destroy() unit has 0 movement
+                        // and a new one may have less Max Movement
                         if (movementCost == Int.MIN_VALUE)
                             newUnit.currentMovement = 0f
                         else {
@@ -395,8 +398,9 @@ object UnitActionsFromUniques {
                             if (newUnit.currentMovement.toInt() > newUnit.getMaxMovement())
                                 newUnit.currentMovement = newUnit.getMaxMovement().toFloat()
                         }
-
-                        UnitActionModifiers.activateSideEffects(unit, unique) // execute any side effects
+                        // execute any side effects, mainly Stats.
+                        // currentMovement for newUnit handled manually above
+                        UnitActionModifiers.activateSideEffects(unit, unique)
                     }
                 }.takeIf {
                     if (movementCost == Int.MIN_VALUE)
