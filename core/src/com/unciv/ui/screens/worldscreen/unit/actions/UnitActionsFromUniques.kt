@@ -42,6 +42,7 @@ object UnitActionsFromUniques {
     internal fun getFoundCityAction(unit: MapUnit, tile: Tile): UnitAction? {
         val unique = UnitActionModifiers.getUsableUnitActionUniques(unit, UniqueType.FoundCity)
             .firstOrNull() ?: return null
+        if (!UnitActionModifiers.canAcivateSideEffects(unit, unique)) return null
 
         if (tile.isWater || tile.isImpassible()) return null
         // Spain should still be able to build Conquistadors in a one city challenge - but can't settle them
@@ -296,6 +297,7 @@ object UnitActionsFromUniques {
                             // not pretty, but users *can* remove the building from the city queue an thus clear this:
                             && !tile.isMarkedForCreatesOneImprovement()
                             && !tile.isImpassible() // Not 100% sure that this check is necessary...
+                            && UnitActionModifiers.canAcivateSideEffects(unit, unique)
                     }
                 ))
             }
