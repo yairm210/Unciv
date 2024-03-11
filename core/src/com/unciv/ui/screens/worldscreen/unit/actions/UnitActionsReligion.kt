@@ -36,7 +36,8 @@ object UnitActionsReligion {
 
                 if (hasActionModifiers) UnitActionModifiers.activateSideEffects(unit, unique)
                 else unit.consume()
-            }.takeIf { unit.civ.religionManager.mayFoundReligionHere(tile) }
+            }.takeIf { unit.civ.religionManager.mayFoundReligionHere(tile)
+                && UnitActionModifiers.canAcivateSideEffects(unit, unique)}
         ))
     }
 
@@ -63,7 +64,8 @@ object UnitActionsReligion {
                 unit.civ.religionManager.useProphetForEnhancingReligion(unit)
                 if (hasActionModifiers) UnitActionModifiers.activateSideEffects(unit, unique)
                 else unit.consume()
-            }.takeIf { unit.civ.religionManager.mayEnhanceReligionHere(tile) }
+            }.takeIf { unit.civ.religionManager.mayEnhanceReligionHere(tile)
+                && UnitActionModifiers.canAcivateSideEffects(unit, unique)}
         ))
     }
 
@@ -99,7 +101,8 @@ object UnitActionsReligion {
                     city.religion.removeAllPressuresExceptFor(unit.religion!!)
 
                 UnitActionModifiers.activateSideEffects(unit, newStyleUnique)
-            }.takeIf { unit.currentMovement > 0 && unit.civ.religionManager.maySpreadReligionNow(unit) }
+            }.takeIf { unit.civ.religionManager.maySpreadReligionNow(unit)
+                && UnitActionModifiers.canAcivateSideEffects(unit, newStyleUnique)}
         ))
     }
 
@@ -138,7 +141,7 @@ object UnitActionsReligion {
                     }
                 }
                 UnitActionModifiers.activateSideEffects(unit, newStyleUnique)
-            }.takeIf { unit.currentMovement > 0f }
+            }.takeIf { UnitActionModifiers.canAcivateSideEffects(unit, newStyleUnique)}
         ))
     }
 }
