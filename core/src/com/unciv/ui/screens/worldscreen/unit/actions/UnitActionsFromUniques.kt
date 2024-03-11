@@ -366,7 +366,7 @@ object UnitActionsFromUniques {
             if (movementCost != Int.MIN_VALUE)
                 title += " ($movementCost${Fonts.movement})"
             if (!statCost.isEmpty())
-                title += " (${statCost.toString()})"
+                title += " (${(statCost*-1).toStringOnlyIcons()})"
             if (newResourceRequirementsString.isNotEmpty())
                 title += "\n([$newResourceRequirementsString])"
 
@@ -396,37 +396,14 @@ object UnitActionsFromUniques {
                                 newUnit.currentMovement = newUnit.getMaxMovement().toFloat()
                         }
 
-                        // do Stat costs, potentially to local city
-                        // takeIf should have validated this doesn't send us negative
-                        for ((stat, value) in statCost) {
-                            if (stat in Stat.statsWithCivWideField) {
-                                unit.civ.addStat(stat, -value.toInt())
-                            } else unit.civ.cities.minByOrNull {
-                                it.getCenterTile().aerialDistanceTo(tile)
-                            }?.addStat(stat, -value.toInt())
-                        }
+                        UnitActionModifiers.activateSideEffects(unit, unique) // execute any side effects
                     }
                 }.takeIf {
                     if (movementCost == Int.MIN_VALUE)
                         unit.currentMovement > 0f && !unit.isEmbarked() // movement and embark check
-                            && statCost.asSequence().all { // stat cost check
-                            if (unit.civ.cities.minByOrNull {
-                                    it.getCenterTile().aerialDistanceTo(tile)
-                                } != null) unit.civ.cities.minByOrNull {
-                                it.getCenterTile().aerialDistanceTo(tile)
-                            }!!.hasStatToBuy(it.key, it.value.toInt()) // city check
-                            else unit.civ.hasStatToBuy(it.key, it.value.toInt()) // civ check
-                        }
-                    else unit.currentMovement > movementCost.toFloat() && !unit.isEmbarked()
-                        && statCost.asSequence().all {
-                        if (unit.civ.cities.minByOrNull {
-                                it.getCenterTile().aerialDistanceTo(tile)
-                            } != null) unit.civ.cities.minByOrNull {
-                            it.getCenterTile().aerialDistanceTo(tile)
-                        }!!.hasStatToBuy(it.key, it.value.toInt())
-                        else unit.civ.hasStatToBuy(it.key, it.value.toInt())
-                    }
-
+                            && UnitActionModifiers.canAcivateSideEffects(unit, unique)
+                    else unit.currentMovement >= movementCost.toFloat() && !unit.isEmbarked()
+                        && UnitActionModifiers.canAcivateSideEffects(unit, unique)
                 }
             ))
         }
