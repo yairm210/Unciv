@@ -32,16 +32,18 @@ object UnitActionModifiers {
      * going into the negatives
      * @return Boolean
      */
-    fun canSpendStatCost(unit: MapUnit, actionUnique: Unique): Boolean {
+    private fun canSpendStatsCost(unit: MapUnit, actionUnique: Unique): Boolean {
         for (conditional in actionUnique.conditionals.filter { it.type == UniqueType.UnitActionStatsCost }) {
             for ((stat, value) in conditional.stats) {
                 if (stat in Stat.statsWithCivWideField) {
                     if (!unit.civ.hasStatToBuy(stat, value.toInt()))
                         return false
                 } else {
-                    if (unit.getClosestCity() != null)
-                        if (!unit.getClosestCity()!!.hasStatToBuy(stat, value.toInt()))
+                    if (unit.getClosestCity() != null) {
+                        if (!unit.getClosestCity()!!.hasStatToBuy(stat, value.toInt())) {
                             return false
+                        }
+                    } else return false
                 }
             }
         }
@@ -55,7 +57,7 @@ object UnitActionModifiers {
     fun canAcivateSideEffects(unit: MapUnit, actionUnique: Unique): Boolean {
         return canUse(unit, actionUnique)
             && getMovementPointsToUse(actionUnique) <= (unit.currentMovement+0.5f).roundToInt() // ceiling
-            && canSpendStatCost(unit, actionUnique)
+            && canSpendStatsCost(unit, actionUnique)
     }
 
     fun activateSideEffects(unit: MapUnit, actionUnique: Unique) {
