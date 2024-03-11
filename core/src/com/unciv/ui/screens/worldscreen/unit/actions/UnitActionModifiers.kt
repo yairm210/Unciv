@@ -33,7 +33,7 @@ object UnitActionModifiers {
      * @return Boolean
      */
     fun canSpendStatCost(unit: MapUnit, actionUnique: Unique): Boolean {
-        for (conditional in actionUnique.conditionals.filter { it.type == UniqueType.UnitActionStatCost }) {
+        for (conditional in actionUnique.conditionals.filter { it.type == UniqueType.UnitActionStatsCost }) {
             for ((stat, value) in conditional.stats) {
                 if (stat in Stat.statsWithCivWideField) {
                     if (!unit.civ.hasStatToBuy(stat, value.toInt()))
@@ -74,7 +74,7 @@ object UnitActionModifiers {
                     val usagesSoFar = unit.abilityToTimesUsed[actionUnique.placeholderText] ?: 0
                     unit.abilityToTimesUsed[actionUnique.placeholderText] = usagesSoFar + 1
                 }
-                UniqueType.UnitActionStatCost -> {
+                UniqueType.UnitActionStatsCost -> {
                     // do Stat costs, either Civ-wide or local city
                     // should have validated this doesn't send us negative
                     for ((stat, value) in conditional.stats) {
