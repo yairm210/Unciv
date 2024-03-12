@@ -37,7 +37,7 @@ object UnitActionsReligion {
                 if (hasActionModifiers) UnitActionModifiers.activateSideEffects(unit, unique)
                 else unit.consume()
             }.takeIf { unit.civ.religionManager.mayFoundReligionHere(tile)
-                && UnitActionModifiers.canAcivateSideEffects(unit, unique)}
+                && UnitActionModifiers.canActivateSideEffects(unit, unique)}
         ))
     }
 
@@ -65,7 +65,7 @@ object UnitActionsReligion {
                 if (hasActionModifiers) UnitActionModifiers.activateSideEffects(unit, unique)
                 else unit.consume()
             }.takeIf { unit.civ.religionManager.mayEnhanceReligionHere(tile)
-                && UnitActionModifiers.canAcivateSideEffects(unit, unique)}
+                && UnitActionModifiers.canActivateSideEffects(unit, unique)}
         ))
     }
 
@@ -102,7 +102,7 @@ object UnitActionsReligion {
 
                 UnitActionModifiers.activateSideEffects(unit, newStyleUnique)
             }.takeIf { unit.civ.religionManager.maySpreadReligionNow(unit)
-                && UnitActionModifiers.canAcivateSideEffects(unit, newStyleUnique)}
+                && UnitActionModifiers.canActivateSideEffects(unit, newStyleUnique)}
         ))
     }
 
@@ -141,7 +141,7 @@ object UnitActionsReligion {
                     }
                 }
                 UnitActionModifiers.activateSideEffects(unit, newStyleUnique)
-            }.takeIf { UnitActionModifiers.canAcivateSideEffects(unit, newStyleUnique)}
+            }.takeIf { UnitActionModifiers.canActivateSideEffects(unit, newStyleUnique)}
         ))
     }
 }
