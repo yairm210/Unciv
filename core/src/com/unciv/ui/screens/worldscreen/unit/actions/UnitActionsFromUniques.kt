@@ -362,7 +362,7 @@ object UnitActionsFromUniques {
                 .joinToString { "${it.value} {${it.key}}".tr() }
 
             var title = "Transform to [${unitToTransformTo.name}] "
-            title += UnitActionModifiers.getSideEffectString(unit, unique)
+            title += UnitActionModifiers.getSideEffectString(unit, unique, true)
             if (newResourceRequirementsString.isNotEmpty())
                 title += "\n([$newResourceRequirementsString])"
 
@@ -387,11 +387,11 @@ object UnitActionsFromUniques {
                         // a .destroy() unit has 0 movement
                         // and a new one may have less Max Movement
                         newUnit.currentMovement = oldMovement
-                        // execute any side effects, Stat and Movement adjustments
-                        UnitActionModifiers.activateSideEffects(newUnit, unique)
                         // adjust if newUnit has lower Max Movement
                         if (newUnit.currentMovement.toInt() > newUnit.getMaxMovement())
                             newUnit.currentMovement = newUnit.getMaxMovement().toFloat()
+                        // execute any side effects, Stat and Movement adjustments
+                        UnitActionModifiers.activateSideEffects(newUnit, unique, true)
                     }
                 }.takeIf {
                     !unit.isEmbarked() && UnitActionModifiers.canActivateSideEffects(unit, unique)
