@@ -42,7 +42,7 @@ object UnitActionsFromUniques {
     internal fun getFoundCityAction(unit: MapUnit, tile: Tile): UnitAction? {
         val unique = UnitActionModifiers.getUsableUnitActionUniques(unit, UniqueType.FoundCity)
             .firstOrNull() ?: return null
-        if (!UnitActionModifiers.canAcivateSideEffects(unit, unique)) return null
+        if (!UnitActionModifiers.canActivateSideEffects(unit, unique)) return null
 
         if (tile.isWater || tile.isImpassible()) return null
         // Spain should still be able to build Conquistadors in a one city challenge - but can't settle them
@@ -297,7 +297,7 @@ object UnitActionsFromUniques {
                             // not pretty, but users *can* remove the building from the city queue an thus clear this:
                             && !tile.isMarkedForCreatesOneImprovement()
                             && !tile.isImpassible() // Not 100% sure that this check is necessary...
-                            && UnitActionModifiers.canAcivateSideEffects(unit, unique)
+                            && UnitActionModifiers.canActivateSideEffects(unit, unique)
                     }
                 ))
             }
@@ -336,15 +336,24 @@ object UnitActionsFromUniques {
         val civInfo = unit.civ
         val stateForConditionals =
             StateForConditionals(unit = unit, civInfo = civInfo, tile = unitTile)
-        var movementCost = Int.MIN_VALUE  // default, consume all movement
-        val statCost = Stats()
+        var movementCost: Int? = null  // default, consume all movement
+        var movementCostReq: Int? = null
 
         for (unique in unit.getMatchingUniques(UniqueType.CanTransform, stateForConditionals)) {
             val unitToTransformTo = civInfo.getEquivalentUnit(unique.params[0])
-            for (conditional in unique.conditionals.filter { it.type == UniqueType.UnitActionMovementCost })
-                movementCost = conditional.params[0].toInt()
-            for (conditional in unique.conditionals.filter { it.type == UniqueType.UnitActionStatsCost })
-                statCost.add(conditional.stats)
+            movementCost = unique.conditionals
+                .filter { it.type == UniqueType.UnitActionMovementCost }
+                .minOfOrNull { it.params[0].toInt() }
+            movementCostReq = unique.conditionals
+                .filter { it.type == UniqueType.UnitActionMovementCostRequired }
+                .minOfOrNull { it.params[0].toInt() }
+
+            if (movementCost != null && movementCostReq != null)
+                movementCost = maxOf(movementCost, movementCostReq)
+            else {
+                if (movementCostReq != null)
+                    movementCost = movementCostReq
+            }
 
             if (unitToTransformTo.getMatchingUniques(
                     UniqueType.OnlyAvailable,
@@ -364,11 +373,8 @@ object UnitActionsFromUniques {
                 .filter { it.value > 0 }
                 .joinToString { "${it.value} {${it.key}}".tr() }
 
-            var title = "Transform to [${unitToTransformTo.name}]"
-            if (movementCost != Int.MIN_VALUE)
-                title += " ($movementCost${Fonts.movement})"
-            if (!statCost.isEmpty())
-                title += " (${(statCost*-1).toStringOnlyIcons()})"
+            var title = "Transform to [${unitToTransformTo.name}] "
+            title += UnitActionModifiers.getSideEffectString(unit, unique)
             if (newResourceRequirementsString.isNotEmpty())
                 title += "\n([$newResourceRequirementsString])"
 
@@ -392,7 +398,7 @@ object UnitActionsFromUniques {
                         // have to handle movement manually because we killed the old unit
                         // a .destroy() unit has 0 movement
                         // and a new one may have less Max Movement
-                        if (movementCost == Int.MIN_VALUE)
+                        if (movementCost == null)
                             newUnit.currentMovement = 0f
                         else {
                             newUnit.currentMovement = oldMovement - movementCost.toFloat()
@@ -405,11 +411,7 @@ object UnitActionsFromUniques {
                         UnitActionModifiers.activateSideEffects(unit, unique)
                     }
                 }.takeIf {
-                    if (movementCost == Int.MIN_VALUE)
-                        unit.currentMovement > 0f && !unit.isEmbarked() // movement and embark check
-                            && UnitActionModifiers.canAcivateSideEffects(unit, unique)
-                    else unit.currentMovement >= movementCost.toFloat() && !unit.isEmbarked()
-                        && UnitActionModifiers.canAcivateSideEffects(unit, unique)
+                    !unit.isEmbarked() && UnitActionModifiers.canActivateSideEffects(unit, unique)
                 }
             ))
         }
