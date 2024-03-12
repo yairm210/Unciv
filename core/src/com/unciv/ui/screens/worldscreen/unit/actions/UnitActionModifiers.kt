@@ -21,7 +21,7 @@ object UnitActionModifiers {
             .filter { unique -> unique.conditionals.none { it.type == UniqueType.UnitActionExtraLimitedTimes } }
             .filter { canUse(unit, it) }
 
-    private fun getMovementPointsToUse(unit: MapUnit, actionUnique: Unique): Int {
+    private fun getMovementPointsToUse(unit: MapUnit, actionUnique: Unique, defaultAllMovement: Boolean = false): Int {
         if (actionUnique.conditionals.any { it.type == UniqueType.UnitActionMovementCostAll })
             return unit.getMaxMovement()
         val movementCost = actionUnique.conditionals
@@ -38,7 +38,7 @@ object UnitActionModifiers {
             if (movementCostRequired != null)
                 return movementCostRequired
         }
-        return 1
+        return if (defaultAllMovement) unit.getMaxMovement() else 1
     }
 
     private fun getMovementPointsRequired(actionUnique: Unique): Int {
@@ -82,8 +82,8 @@ object UnitActionModifiers {
             && canSpendStatsCost(unit, actionUnique)
     }
 
-    fun activateSideEffects(unit: MapUnit, actionUnique: Unique) {
-        val movementCost = getMovementPointsToUse(unit, actionUnique)
+    fun activateSideEffects(unit: MapUnit, actionUnique: Unique, defaultAllMovement: Boolean = false) {
+        val movementCost = getMovementPointsToUse(unit, actionUnique, defaultAllMovement)
         unit.useMovementPoints(movementCost.toFloat())
 
         for (conditional in actionUnique.conditionals) {
@@ -140,7 +140,7 @@ object UnitActionModifiers {
         else return "{$originalText} $sideEffectString"
     }
 
-    fun getSideEffectString(unit: MapUnit, actionUnique: Unique): String {
+    fun getSideEffectString(unit: MapUnit, actionUnique: Unique, defaultAllMovement: Boolean = false): String {
         val effects = ArrayList<String>()
 
         val maxUsages = getMaxUsages(unit, actionUnique)
@@ -156,7 +156,7 @@ object UnitActionModifiers {
         if (actionUnique.conditionals.any { it.type == UniqueType.UnitActionConsumeUnit }
             || actionUnique.conditionals.any { it.type == UniqueType.UnitActionAfterWhichConsumed } && usagesLeft(unit, actionUnique) == 1
         ) effects += Fonts.death.toString()
-        else effects += getMovementPointsToUse(unit, actionUnique).toString() + Fonts.movement
+        else effects += getMovementPointsToUse(unit, actionUnique, defaultAllMovement).toString() + Fonts.movement
 
         return if (effects.isEmpty()) ""
         else "(${effects.joinToString { it.tr() }})"
