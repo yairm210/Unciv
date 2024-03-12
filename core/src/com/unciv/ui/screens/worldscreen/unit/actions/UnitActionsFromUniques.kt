@@ -42,7 +42,6 @@ object UnitActionsFromUniques {
     internal fun getFoundCityAction(unit: MapUnit, tile: Tile): UnitAction? {
         val unique = UnitActionModifiers.getUsableUnitActionUniques(unit, UniqueType.FoundCity)
             .firstOrNull() ?: return null
-        if (!UnitActionModifiers.canActivateSideEffects(unit, unique)) return null
 
         if (tile.isWater || tile.isImpassible()) return null
         // Spain should still be able to build Conquistadors in a one city challenge - but can't settle them
@@ -95,7 +94,7 @@ object UnitActionsFromUniques {
                         action = foundAction
                     ).open(force = true)
                 }
-            }
+            }.takeIf { UnitActionModifiers.canActivateSideEffects(unit, unique) }
         )
     }
 
@@ -215,7 +214,12 @@ object UnitActionsFromUniques {
                 }
             }()
 
-            yield(UnitAction(UnitActionType.TriggerUnique, 80f, title, action = unitAction))
+            yield(
+                UnitAction(UnitActionType.TriggerUnique, 80f, title,
+                    action = unitAction.takeIf {
+                        UnitActionModifiers.canActivateSideEffects(unit, unique)
+                    })
+            )
         }
     }
 
