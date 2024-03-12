@@ -336,24 +336,9 @@ object UnitActionsFromUniques {
         val civInfo = unit.civ
         val stateForConditionals =
             StateForConditionals(unit = unit, civInfo = civInfo, tile = unitTile)
-        var movementCost: Int? = null  // default, consume all movement
-        var movementCostReq: Int? = null
 
         for (unique in unit.getMatchingUniques(UniqueType.CanTransform, stateForConditionals)) {
             val unitToTransformTo = civInfo.getEquivalentUnit(unique.params[0])
-            movementCost = unique.conditionals
-                .filter { it.type == UniqueType.UnitActionMovementCost }
-                .minOfOrNull { it.params[0].toInt() }
-            movementCostReq = unique.conditionals
-                .filter { it.type == UniqueType.UnitActionMovementCostRequired }
-                .minOfOrNull { it.params[0].toInt() }
-
-            if (movementCost != null && movementCostReq != null)
-                movementCost = maxOf(movementCost, movementCostReq)
-            else {
-                if (movementCostReq != null)
-                    movementCost = movementCostReq
-            }
 
             // Respect OnlyAvailable criteria
             if (unitToTransformTo.getMatchingUniques(
@@ -397,17 +382,12 @@ object UnitActionsFromUniques {
                         // have to handle movement manually because we killed the old unit
                         // a .destroy() unit has 0 movement
                         // and a new one may have less Max Movement
-                        if (movementCost == null)
-                            newUnit.currentMovement = 0f
-                        else {
-                            newUnit.currentMovement = oldMovement - movementCost.toFloat()
-                            // adjust if newUnit has lower Max Movement
-                            if (newUnit.currentMovement.toInt() > newUnit.getMaxMovement())
-                                newUnit.currentMovement = newUnit.getMaxMovement().toFloat()
-                        }
-                        // execute any side effects, mainly Stats.
-                        // currentMovement for newUnit handled manually above
-                        UnitActionModifiers.activateSideEffects(unit, unique)
+                        newUnit.currentMovement = oldMovement
+                        // execute any side effects, Stat and Movement adjustments
+                        UnitActionModifiers.activateSideEffects(newUnit, unique)
+                        // adjust if newUnit has lower Max Movement
+                        if (newUnit.currentMovement.toInt() > newUnit.getMaxMovement())
+                            newUnit.currentMovement = newUnit.getMaxMovement().toFloat()
                     }
                 }.takeIf {
                     !unit.isEmbarked() && UnitActionModifiers.canActivateSideEffects(unit, unique)
