@@ -175,7 +175,7 @@ class TileInfoImprovementFunctions(val tile: Tile) {
             // At this point we know this is a normal improvement and that there is no reason not to allow it to be built.
 
             // Lastly we check if the improvement may be built on this terrain or resource
-            improvement.canBeBuiltOn(tile.lastTerrain.name) -> true
+            improvement.isAllowedOnFeature(tile.lastTerrain) -> true
             tile.isLand && improvement.canBeBuiltOn("Land") -> true
             tile.isWater && improvement.canBeBuiltOn("Water") -> true
             // DO NOT reverse this &&. isAdjacentToFreshwater() is a lazy which calls a function, and reversing it breaks the tests.

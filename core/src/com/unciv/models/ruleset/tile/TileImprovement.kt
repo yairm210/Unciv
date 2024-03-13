@@ -89,7 +89,8 @@ class TileImprovement : RulesetStatsObject() {
      * so this check is done in conjunction - for the user, success means he does not need to remove
      * a terrain feature, thus the unique name.
      */
-    fun isAllowedOnFeature(terrain: Terrain) = terrainsCanBeBuiltOn.any { terrain.matchesFilter(it) } || getMatchingUniques(UniqueType.NoFeatureRemovalNeeded).any { terrain.matchesFilter(it.params[0]) }
+    fun isAllowedOnFeature(terrain: Terrain) = canBeBuiltOn(terrain)
+        || getMatchingUniques(UniqueType.NoFeatureRemovalNeeded).any { terrain.matchesFilter(it.params[0]) }
 
     /** Implements [UniqueParameterType.ImprovementFilter][com.unciv.models.ruleset.unique.UniqueParameterType.ImprovementFilter] */
     fun matchesFilter(filter: String): Boolean {
