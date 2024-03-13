@@ -410,7 +410,10 @@ class WorkerAutomation(
         if (tile.getOwner() != unit.civ)
             stats.div(3f)
 
-        var value = Automation.rankStatsValue(stats, unit.civ)
+        val city = tile.getWorkingCity() ?: tile.owningCity ?: tile.getTilesInDistance(3).firstOrNull { it.isCityCenter() }?.getCity()
+        var value = if (city != null) Automation.rankStatsForCityWork(stats, city, false, localUniqueCache)
+        else Automation.rankStatsValue(stats, unit.civ)
+
         // Calculate the bonus from gaining the resources, this isn't included in the stats above
         if (tile.resource != null && tile.tileResource.resourceType != ResourceType.Bonus) {
             // A better resource ranking system might be required, we don't want the improvement
