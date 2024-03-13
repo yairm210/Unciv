@@ -23,9 +23,9 @@ import com.unciv.ui.screens.victoryscreen.RankingType
 
 object Automation {
 
-    fun rankTileForCityWork(tile: Tile, city: City, cityStats: Stats, localUniqueCache: LocalUniqueCache = LocalUniqueCache(false)): Float {
+    fun rankTileForCityWork(tile: Tile, city: City, localUniqueCache: LocalUniqueCache = LocalUniqueCache(false)): Float {
         val stats = tile.stats.getTileStats(city, city.civ, localUniqueCache)
-        return rankStatsForCityWork(stats, city, cityStats, false, localUniqueCache)
+        return rankStatsForCityWork(stats, city, city.cityStats.currentCityStats, false, localUniqueCache)
     }
 
     fun rankSpecialist(specialist: String, city: City, cityStats: Stats, localUniqueCache: LocalUniqueCache): Float {
@@ -43,7 +43,7 @@ object Automation {
     }
 
 
-    private fun rankStatsForCityWork(stats: Stats, city: City, cityStats: Stats, specialist: Boolean, localUniqueCache: LocalUniqueCache): Float {
+    fun rankStatsForCityWork(stats: Stats, city: City, cityStats: Stats, specialist: Boolean, localUniqueCache: LocalUniqueCache): Float {
         val cityAIFocus = city.getCityFocus()
         val yieldStats = stats.clone()
         val civPersonality = city.civ.getPersonality()
@@ -376,7 +376,7 @@ object Automation {
         return city.getTiles().filter {
             it.improvementFunctions.canBuildImprovement(improvement, city.civ)
         }.maxByOrNull {
-            rankTileForCityWork(it, city, city.cityStats.currentCityStats, localUniqueCache)
+            rankTileForCityWork(it, city, localUniqueCache)
         }
     }
 
