@@ -26,6 +26,7 @@ import com.unciv.logic.map.MapPathing
 import com.unciv.logic.map.TileMap
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.mapunit.movement.UnitMovement
+import com.unciv.logic.map.tile.RoadStatus
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.UncivSound
 import com.unciv.models.UnitActionType
@@ -441,6 +442,7 @@ class WorldMapHolder(
            val validTile = tile.isLand &&
                !tile.isImpassible() &&
                 selectedUnit.civ.hasExplored(tile)
+
             if (validTile) {
                 val roadPath: List<Tile>? = MapPathing.getRoadPath(selectedUnit, selectedUnit.currentTile, tile)
                 launchOnGLThread {
@@ -729,8 +731,10 @@ class WorldMapHolder(
         // Z-Layer: 0
         // Highlight suitable tiles in road connecting mode
         if (worldScreen.bottomUnitTable.selectedUnitIsConnectingRoad) {
-            val validTiles = unit.civ.gameInfo.tileMap.tileList.filter {
-                MapPathing.isValidRoadPathTile(unit, it)
+            val roadImprovement = RoadStatus.Road.improvement(unit.currentTile.ruleset)
+            val validTiles = if (roadImprovement==null) listOf()
+            else unit.civ.gameInfo.tileMap.tileList.filter {
+                MapPathing.isValidRoadPathTile(unit, it, roadImprovement)
             }
             val connectRoadTileOverlayColor = Color.RED
             for (tile in validTiles)  {
