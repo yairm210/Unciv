@@ -28,9 +28,9 @@ object Automation {
         return rankStatsForCityWork(stats, city, city.cityStats.currentCityStats, false, localUniqueCache)
     }
 
-    fun rankSpecialist(specialist: String, city: City, cityStats: Stats, localUniqueCache: LocalUniqueCache): Float {
+    fun rankSpecialist(specialist: String, city: City, localUniqueCache: LocalUniqueCache): Float {
         val stats = city.cityStats.getStatsOfSpecialist(specialist, localUniqueCache)
-        var rank = rankStatsForCityWork(stats, city, cityStats, true, localUniqueCache)
+        var rank = rankStatsForCityWork(stats, city, city.cityStats.currentCityStats, true, localUniqueCache)
         // derive GPP score
         var gpp = 0f
         if (city.getRuleset().specialists.containsKey(specialist)) { // To solve problems in total remake mods
