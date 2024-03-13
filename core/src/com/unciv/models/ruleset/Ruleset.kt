@@ -76,6 +76,8 @@ class Ruleset {
         units.values.filter { it.hasUnique(UniqueType.GreatPersonFromCombat, StateForConditionals.IgnoreConditionals) }
     }
 
+    val tileRemovals by lazy { tileImprovements.values.filter { it.name.startsWith(Constants.remove) } }
+
     /** Contains all happiness levels that moving *from* them, to one *below* them, can change uniques that apply */
     val allHappinessLevelsThatAffectUniques by lazy {
         sequence {

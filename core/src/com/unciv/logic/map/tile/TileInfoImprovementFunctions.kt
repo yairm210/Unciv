@@ -79,10 +79,9 @@ class TileInfoImprovementFunctions(val tile: Tile) {
                     .any { civInfo.getResourceAmount(it.params[1]) < it.params[0].toInt() })
             yield(ImprovementBuildingProblem.MissingResources)
 
-        val knownFeatureRemovals = tile.ruleset.tileImprovements.values
+        val knownFeatureRemovals = tile.ruleset.tileRemovals
             .filter { rulesetImprovement ->
-                rulesetImprovement.name.startsWith(Constants.remove)
-                        && RoadStatus.values().none { it.removeAction == rulesetImprovement.name }
+                        RoadStatus.values().none { it.removeAction == rulesetImprovement.name }
                         && (rulesetImprovement.techRequired == null || civInfo.tech.isResearched(rulesetImprovement.techRequired!!))
             }
 
@@ -107,16 +106,17 @@ class TileInfoImprovementFunctions(val tile: Tile) {
         ): Boolean {
             val topTerrain = tile.lastTerrain
             // We can build if we are specifically allowed to build on this terrain
-            if (isAllowedOnFeature(topTerrain.name)) return true
+            if (isAllowedOnFeature(topTerrain)) return true
 
             // Otherwise, we can if this improvement removes the top terrain
             if (!hasUnique(UniqueType.RemovesFeaturesIfBuilt, stateForConditionals)) return false
-            val removeAction = tile.ruleset.tileImprovements[Constants.remove + topTerrain.name] ?: return false
-            // and we have the tech to remove that top terrain
-            if (removeAction.techRequired != null && (knownFeatureRemovals == null || removeAction !in knownFeatureRemovals)) return false
-            // and we can build it on the tile without the top terrain
+            if (knownFeatureRemovals == null) return false
+            val featureRemovals = tile.terrainFeatures.map {
+                feature -> tile.ruleset.tileRemovals.firstOrNull{ it.name == Constants.remove + feature } }
+            if (featureRemovals.any { it != null && it !in knownFeatureRemovals }) return false
             val clonedTile = tile.clone()
-            clonedTile.removeTerrainFeature(topTerrain.name)
+            clonedTile.setTerrainFeatures(tile.terrainFeatures.filterNot {
+                feature -> featureRemovals.any{ it?.name?.removePrefix(Constants.remove) == feature } })
             return clonedTile.improvementFunctions.canImprovementBeBuiltHere(improvement, resourceIsVisible, knownFeatureRemovals, stateForConditionals)
         }
 
@@ -213,14 +213,14 @@ class TileInfoImprovementFunctions(val tile: Tile) {
         if (improvementObject != null && improvementObject.hasUnique(UniqueType.RemovesFeaturesIfBuilt)) {
             // Remove terrainFeatures that a Worker can remove
             // and that aren't explicitly allowed under the improvement
-            val removableTerrainFeatures = tile.terrainFeatures.filter { feature ->
-                val removingAction = "${Constants.remove}$feature"
+            val removableTerrainFeatures = tile.terrainFeatureObjects.filter { feature ->
+                val removingAction = "${Constants.remove}${feature.name}"
 
                 removingAction in tile.ruleset.tileImprovements // is removable
                     && !improvementObject.isAllowedOnFeature(feature) // cannot coexist
             }
 
-            tile.setTerrainFeatures(tile.terrainFeatures.filterNot { it in removableTerrainFeatures })
+            tile.setTerrainFeatures(tile.terrainFeatures.filterNot { feature -> removableTerrainFeatures.any { it.name == feature } })
         }
 
         if (civToActivateBroaderEffects != null && improvementObject != null
