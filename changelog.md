@@ -1,32 +1,20 @@
 ## 4.10.18
 
-Resolved  - Free buildings granted properly when era-free cities also granted
+Performance improvements!
 
-Resolved  - "Connect road" unit action takes tiles where road is unbuildable into account
+Religious victory no longer causes crash
 
-Worker automation takes city focus and civ personality into account
+Worker automation takes city focus and civ personality into account evaluating stats
 
-rankStatsForCityWork doesn't need to get cityStats as a parameter
+Free buildings granted properly when era-free cities also granted
 
-rankSpecialist doesn't need to get cityStats as a parameter
-
-rankStatsForCityWork doesn't need to get cityStats as a parameter
-
-Resolved  - Religious victory no longer causes crash
-
-perf: Only attempt to get game ID for multiplayer game if current game is actually multiplayer
-
-4.10.17-patch1
-
-Don't update city stats when simulating improvement changes to see new stats!
-
-Catch error we've been encountering for a while but can't actually debug :(
+"Connect road" unit action doesn't build on unbuildable tiles
 
 Allow resources from follower beliefs  - By SeventhM
 
-Add the unfiltered version of new era unique  - By PLynx01
+Add "upon entering a new era" trigger - By PLynx01
 
-Expand CanOnlyBeBuiltInCertainCities to include Units and convert to use Conditionals  - By itanasi
+CanOnlyBeBuilt is its own conditional-friendly unique  - By itanasi
 
 ## 4.10.17
 
