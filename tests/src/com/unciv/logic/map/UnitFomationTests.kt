@@ -2,6 +2,7 @@ package com.unciv.logic.map
 
 import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
+import com.unciv.logic.battle.TargetHelper
 import com.unciv.logic.civilization.Civilization
 import com.unciv.testing.GdxTestRunner
 import com.unciv.testing.TestGame
@@ -194,5 +195,25 @@ internal class UnitFormationTests {
         civilianUnit.startEscorting()
         civilianDistanceToTiles = civilianUnit.movement.getDistanceToTiles()
         assertFalse(militaryUnit.movement.getDistanceToTiles().any { !civilianDistanceToTiles.contains(it.key) })
+    }
+
+    @Test
+    fun `test escort attack with military unit having ignoreTerrainCost`() {
+        setUp(3)
+        val enemyCiv = testGame.addCiv()
+        civInfo.diplomacyFunctions.makeCivilizationsMeet(enemyCiv)
+        civInfo.getDiplomacyManager(enemyCiv).declareWar()
+        val centerTile = testGame.getTile(Vector2(0f,0f))
+        val swampTile = testGame.getTile(Vector2(1f,1f))
+        val enemyTile = testGame.getTile(Vector2(2f,2f))
+        val scout = testGame.addUnit("Scout", civInfo, centerTile)
+        val civilianUnit = testGame.addUnit("Worker", civInfo, centerTile)
+        val enemyUnit = testGame.addUnit("Warrior", enemyCiv , enemyTile)
+        enemyUnit.health = 1 // Needs to be killable by the scout
+        swampTile.baseTerrain = "Swamp"
+        scout.startEscorting()
+        assertTrue(scout.isEscorting())
+        assertTrue(civilianUnit.isEscorting())
+        assertTrue(TargetHelper.getAttackableEnemies(scout, scout.movement.getDistanceToTiles()).isEmpty())
     }
 }
