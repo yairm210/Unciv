@@ -132,11 +132,11 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
                 }
             } else if (relativeCostEffectiveness.any { it.remainingWork < it.production * 30 }) {
                 relativeCostEffectiveness.removeAll { it.remainingWork >= it.production * 30 }
-                relativeCostEffectiveness.minByOrNull { it.remainingWork / it.choiceModifier / it.production }!!.choice
+                relativeCostEffectiveness.minByOrNull { it.remainingWork / it.choiceModifier / it.production.coerceAtLeast(1) }!!.choice
             }
             // it's possible that this is a new city and EVERYTHING is way expensive - ignore modifiers, go for the cheapest.
             // Nobody can plan 30 turns ahead, I don't care how cost-efficient you are.
-            else relativeCostEffectiveness.minByOrNull { it.remainingWork / it.production}!!.choice
+            else relativeCostEffectiveness.minByOrNull { it.remainingWork / it.production.coerceAtLeast(1) }!!.choice
 
         civInfo.addNotification(
             "Work has started on [$chosenConstruction]",
