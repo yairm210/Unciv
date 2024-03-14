@@ -439,6 +439,7 @@ object UnitActionsFromUniques {
 
         val couldConstruct = unit.currentMovement > 0
             && !tile.isCityCenter() && tile.improvementInProgress != Constants.repair
+            && !tile.isEnemyTerritory(unit.civ)
 
         val turnsToBuild = getRepairTurns(unit)
 
