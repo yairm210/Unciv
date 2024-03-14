@@ -734,6 +734,13 @@ enum class UniqueType(
     ConditionalInRegionOfType("in [regionType] Regions", UniqueTarget.Conditional),
     ConditionalInRegionExceptOfType("in all except [regionType] Regions", UniqueTarget.Conditional),
 
+    /////// countables conditionals
+    ConditionalCountableEqualTo("when number of [countable] is equal to [countable]", UniqueTarget.Conditional),
+    ConditionalCountableDifferentThan("when number of [countable] is different than [countable]", UniqueTarget.Conditional),
+    ConditionalCountableGreaterThan("when number of [countable] is greater than [countable]", UniqueTarget.Conditional),
+    ConditionalCountableLessThan("when number of [countable] is less than [countable]", UniqueTarget.Conditional),
+    ConditionalCountableBetween("when number of [countable] between [countable] and [countable]", UniqueTarget.Conditional),
+
     //endregion
 
     ///////////////////////////////////////// region 09 TRIGGERED ONE-TIME /////////////////////////////////////////
