@@ -141,12 +141,14 @@ class RejectionReason(val type: RejectionReasonType,
         RejectionReasonType.MaxNumberBuildable,
     )
     private val orderedImportantRejectionTypes = listOf(
+        RejectionReasonType.ShouldNotBeDisplayed,
         RejectionReasonType.WonderBeingBuiltElsewhere,
         RejectionReasonType.NationalWonderBeingBuiltElsewhere,
         RejectionReasonType.RequiresBuildingInAllCities,
         RejectionReasonType.RequiresBuildingInThisCity,
         RejectionReasonType.RequiresBuildingInSomeCity,
         RejectionReasonType.RequiresBuildingInSomeCities,
+        RejectionReasonType.CanOnlyBeBuiltInSpecificCities,
         RejectionReasonType.CannotBeBuiltUnhappiness,
         RejectionReasonType.PopulationRequirement,
         RejectionReasonType.ConsumesResources,
@@ -154,11 +156,12 @@ class RejectionReason(val type: RejectionReasonType,
         RejectionReasonType.MaxNumberBuildable,
         RejectionReasonType.NoPlaceToPutUnit,
     )
-    // Used for units spawned, not built
+    // Exceptions. Used for units spawned/upgrade path, not built
     private val constructionRejectionReasonType = listOf(
         RejectionReasonType.Unbuildable,
         RejectionReasonType.CannotBeBuiltUnhappiness,
         RejectionReasonType.CannotBeBuilt,
+        RejectionReasonType.CanOnlyBeBuiltInSpecificCities,
     )
 }
 
@@ -178,7 +181,7 @@ enum class RejectionReasonType(val shouldShow: Boolean, val errorMessage: String
     MustNotBeNextToTile(false, "Must not be next to a specific tile"),
     MustOwnTile(false, "Must own a specific tile close by"),
     WaterUnitsInCoastalCities(false, "May only built water units in coastal cities"),
-    CanOnlyBeBuiltInSpecificCities(false, "Can only be built in specific cities"),
+    CanOnlyBeBuiltInSpecificCities(false, "Build requirements not met in this city"),
     MaxNumberBuildable(false, "Maximum number have been built or are being constructed"),
 
     UniqueToOtherNation(false, "Unique to another nation"),

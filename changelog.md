@@ -1,3 +1,21 @@
+## 4.10.18
+
+Performance improvements!
+
+Religious victory no longer causes crash
+
+Worker automation takes city focus and civ personality into account evaluating stats
+
+Free buildings granted properly when era-free cities also granted
+
+"Connect road" unit action doesn't build on unbuildable tiles
+
+Allow resources from follower beliefs  - By SeventhM
+
+Add "upon entering a new era" trigger - By PLynx01
+
+CanOnlyBeBuilt is its own conditional-friendly unique  - By itanasi
+
 ## 4.10.17
 
 Added Events, moddable choices for triggering uniques!

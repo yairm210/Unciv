@@ -512,7 +512,9 @@ class CityConstructions : IsPartOfGameInfoSerialization {
         addBuilding(building)
     }
 
-    fun addBuilding(building: Building) {
+    fun addBuilding(building: Building,
+                    /** False when creating initial buildings in city - so we don't "waste" a free building on a building we're going to get anyway, from settler buildings */
+                    tryAddFreeBuildings: Boolean = true) {
         val buildingName = building.name
         val civ = city.civ
 
@@ -547,7 +549,8 @@ class CityConstructions : IsPartOfGameInfoSerialization {
         }
         else city.reassignPopulationDeferred()
 
-        city.civ.civConstructions.tryAddFreeBuildings()
+        if (tryAddFreeBuildings)
+            city.civ.civConstructions.tryAddFreeBuildings()
     }
 
     fun triggerNewBuildingUniques(building: Building) {

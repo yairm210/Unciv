@@ -460,6 +460,13 @@ class TechManager : IsPartOfGameInfoSerialization {
                             civInfo,
                             triggerNotificationText = "due to entering the [$eraName]"
                         )
+
+            // The unfiltered version
+            for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponEnteringEraUnfiltered))
+                UniqueTriggerActivation.triggerUnique(
+                    unique,
+                    civInfo,
+                    triggerNotificationText = "due to entering the [${currentEra.name}]")
         }
     }
 

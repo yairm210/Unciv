@@ -716,10 +716,6 @@ class Civilization : IsPartOfGameInfoSerialization {
         tacticalAI.init(this)
 
         cache.setTransients()
-
-        thingsToFocusOnForVictory = emptySet()
-        for (victory in getPreferredVictoryTypeObjects())
-            thingsToFocusOnForVictory += victory.getThingsToFocus(this)
     }
 
 
@@ -874,13 +870,10 @@ class Civilization : IsPartOfGameInfoSerialization {
                     it.hasUnique(UniqueType.MovesToNewCapital)
                 }.toSet()
 
-                // Remove the buildings from old capital
                 oldCapital.cityConstructions.removeBuildings(buildingsToMove)
 
                 // Add the buildings to new capital
-                buildingsToMove.forEach {
-                    city.cityConstructions.addBuilding(it)
-                }
+                for (building in buildingsToMove) city.cityConstructions.addBuilding(building)
             }
         }
         oldCapital?.cityConstructions?.removeBuilding(oldCapital.capitalCityIndicator())
