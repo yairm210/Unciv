@@ -287,7 +287,7 @@ enum class UniqueParameterType(
 
     /** Implemented by [Building.matchesFilter][com.unciv.models.ruleset.Building.matchesFilter] */
     BuildingFilter("buildingFilter", "Culture") {
-        private val knownValues = mutableSetOf("Building", "Buildings", "Wonder", "Wonders", "National Wonder", "World Wonder")
+        private val knownValues = mutableSetOf("Building", "Buildings", "Wonder", "Wonders", "National Wonder", "National", "World Wonder", "World")
             .apply { addAll(Stat.names()); addAll(Constants.all) }
 
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):

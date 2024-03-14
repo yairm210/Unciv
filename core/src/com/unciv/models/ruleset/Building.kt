@@ -510,14 +510,13 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
             name -> true
             "Building", "Buildings" -> !isAnyWonder()
             "Wonder", "Wonders" -> isAnyWonder()
-            "National Wonder" -> isNationalWonder
-            "World Wonder" -> isWonder
+            "National Wonder", "National" -> isNationalWonder
+            "World Wonder", "World" -> isWonder
             replaces -> true
             else -> {
                 if (uniques.contains(filter)) return true
                 val stat = Stat.safeValueOf(filter)
-                if (stat != null && isStatRelated(stat)) return true
-                return false
+                return stat != null && isStatRelated(stat)
             }
         }
     }

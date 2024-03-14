@@ -93,9 +93,9 @@ Allows to only activate a unique for certain buildings. Allowed options are:
 
 - `All`
 - `Buildings`, `Building`
-- `Wonders`, `Wonders`
-- `National Wonder`
-- `World Wonder` -- All wonders that are not national wonders
+- `Wonder`, `Wonders`
+- `National Wonder`, `National`
+- `World Wonder`, `World` -- All wonders that are not national wonders
 - building name
 - The name of the building it replaces (so for example uniques for libraries will apply to paper makers as well)
 - an exact unique the building has (e.g.: `spaceship part`)
