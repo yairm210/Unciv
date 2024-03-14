@@ -25,11 +25,18 @@ object TargetHelper {
         val tilesWithEnemies: HashSet<Tile> = HashSet()
         val tilesWithoutEnemies: HashSet<Tile> = HashSet()
         for ((reachableTile, movementLeft) in tilesToAttackFrom) {  // tiles we'll still have energy after we reach there
+            // If we are a melee unit that is escorting, we only want to be able to attack from this
+            // tile if the escorted unit can also move into the tile we are attacking if we kill the enemy unit.
+            if (unit.baseUnit.isMelee() && unit.isEscorting()) {
+                val escortingUnit = unit.getOtherEscortUnit()!!
+                if (!escortingUnit.movement.canReachInCurrentTurn(reachableTile)
+                    || escortingUnit.currentMovement - unit.getOtherEscortUnit()!!.movement.getDistanceToTiles()[reachableTile]!!.totalDistance <= 0f) 
+                    continue
+            }
             val tilesInAttackRange =
                 if (unit.hasUnique(UniqueType.IndirectFire) || unit.baseUnit.movesLikeAirUnits())
                     reachableTile.getTilesInDistance(rangeOfAttack)
                 else reachableTile.tileMap.getViewableTiles(reachableTile.position, rangeOfAttack, true).asSequence()
-
             for (tile in tilesInAttackRange) {
                 when {
                     // Since military units can technically enter tiles with enemy civilians,
