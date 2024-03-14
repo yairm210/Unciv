@@ -9,6 +9,7 @@ import com.unciv.ui.components.extensions.setSize
 import com.unciv.ui.components.input.KeyboardBinding
 import com.unciv.ui.components.input.keyShortcuts
 import com.unciv.ui.components.input.onActivation
+import com.unciv.ui.components.input.onRightClick
 import com.unciv.ui.images.IconTextButton
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popups.hasOpenPopups
@@ -22,6 +23,7 @@ class NextTurnButton(
 //         label.setFontSize(30)
         labelCell.pad(10f)
         onActivation { nextTurnAction.action(worldScreen) }
+        onRightClick { NextTurnMenu(stage, this, this, worldScreen) }
         keyShortcuts.add(KeyboardBinding.NextTurn)
         keyShortcuts.add(KeyboardBinding.NextTurnAlternate)
         // Let unit actions override this for command "Wait".

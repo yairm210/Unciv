@@ -9,6 +9,7 @@ import com.unciv.ui.components.extensions.colorFromRGB
 import com.unciv.ui.components.extensions.setFontColor
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toStringSigned
+import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.widgets.ScalingTableWrapper
 import com.unciv.ui.images.ImageGetter
@@ -124,12 +125,13 @@ internal class WorldScreenTopBarStats(topbar: WorldScreenTopBar) : ScalingTableW
 
     private fun getCultureText(civInfo: Civilization, nextTurnStats: Stats): String {
         var cultureString = rateLabel(nextTurnStats.culture)
-        //if (nextTurnStats.culture == 0f) return cultureString // when you start the game, you're not producing any culture
-
+        // kotlin Float division by Zero produces `Float.POSITIVE_INFINITY`, not an exception
         val turnsToNextPolicy = (civInfo.policies.getCultureNeededForNextPolicy() - civInfo.policies.storedCulture) / nextTurnStats.culture
-        cultureString +=  if  (turnsToNextPolicy <= 0f) " (!)"
-        else if (nextTurnStats.culture <= 0) " (∞)"
-        else " (" + ceil(turnsToNextPolicy).toInt() + ")"
+        cultureString += when {
+            turnsToNextPolicy <= 0f -> " (!)" // Can choose policy right now
+            nextTurnStats.culture <= 0 -> " (${Fonts.infinity})" // when you start the game, you're not producing any culture
+            else -> " (" + ceil(turnsToNextPolicy).toInt() + ")"
+        }
         return cultureString
     }
 

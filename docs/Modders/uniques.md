@@ -159,6 +159,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Triggerable
 
+??? example  "Triggers a [event] event"
+	Example: "Triggers a [Inspiration] event"
+
+	Applicable to: Triggerable
+
 ??? example  "Suppress warning [validationWarning]"
 	Allows suppressing specific validation warnings. Errors, deprecation warnings, or warnings about untyped and non-filtering uniques should be heeded, not suppressed, and are therefore not accepted. Note that this can be used in ModOptions, in the uniques a warning is about, or as modifier on the unique triggering a warning - but you still need to be specific. Even in the modifier case you will need to specify a sufficiently selective portion of the warning text as parameter.
 	Example: "Suppress warning [Tinman is supposed to automatically upgrade at tech Clockwork, and therefore Servos for its upgrade Mecha may not yet be researched! -or- *is supposed to automatically upgrade*]"
@@ -227,6 +232,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Global, FollowerBelief
 
 ??? example  "[stats] per [amount] social policies adopted"
+	Only works for civ-wide stats
 	Example: "[+1 Gold, +2 Production] per [3] social policies adopted"
 
 	Applicable to: Global
@@ -1955,6 +1961,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Conditional
 
+??? example  "&lt;on [speed] game speed&gt;"
+	Example: "&lt;on [Quick] game speed&gt;"
+
+	Applicable to: Conditional
+
 ??? example  "&lt;if no other Civilization has researched this&gt;"
 	Applicable to: Conditional
 
@@ -2048,6 +2059,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Conditional
 
+??? example  "&lt;when between [amount] and [amount] [stat/resource]&gt;"
+	Example: "&lt;when between [3] and [3] [Culture]&gt;"
+
+	Applicable to: Conditional
+
 ??? example  "&lt;when above [amount] [stat/resource] (modified by game speed)&gt;"
 	Example: "&lt;when above [3] [Culture] (modified by game speed)&gt;"
 
@@ -2055,6 +2071,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 ??? example  "&lt;when below [amount] [stat/resource] (modified by game speed)&gt;"
 	Example: "&lt;when below [3] [Culture] (modified by game speed)&gt;"
+
+	Applicable to: Conditional
+
+??? example  "&lt;when between [amount] and [amount] [stat/resource] (modified by game speed)&gt;"
+	Example: "&lt;when between [3] and [3] [Culture] (modified by game speed)&gt;"
 
 	Applicable to: Conditional
 
@@ -2363,6 +2384,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 *[combatantFilter]: This indicates a combatant, which can either be a unit or a city (when bombarding). Must either be `City` or a `mapUnitFilter`.
 *[costOrStrength]: `Cost` or `Strength`.
 *[era]: The name of any era.
+*[event]: The name of any event.
 *[foundingOrEnhancing]: `founding` or `enhancing`.
 *[fraction]: Indicates a fractional number, which can be negative.
 *[improvementName]: The name of any improvement.
@@ -2373,6 +2395,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 *[relativeAmount]: This indicates a number, usually with a + or - sign, such as `+25` (this kind of parameter is often followed by '%' which is nevertheless not part of the value).
 *[resource]: The name of any resource.
 *[specialist]: The name of any specialist.
+*[speed]: The name of any speed.
 *[stat]: This is one of the 7 major stats in the game - `Gold`, `Science`, `Production`, `Food`, `Happiness`, `Culture` and `Faith`. Note that the stat names need to be capitalized!
 *[stats]: For example: `+2 Production, +3 Food`. Note that the stat names need to be capitalized!
 *[stockpiledResource]: The name of any stockpiled.

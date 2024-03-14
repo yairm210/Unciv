@@ -50,7 +50,7 @@ object MapRegionResources {
                 fallbackTiles.add(tile) // Taken but might be a viable fallback tile
             } else {
                 // Add a resource to the tile
-                val resourceToPlace = possibleResourcesForTile.randomWeighted(possibleResourcesForTile.map { weightings[it] ?: 0f })
+                val resourceToPlace = possibleResourcesForTile.randomWeighted { weightings[it] ?: 0f }
                 tile.setTileResource(resourceToPlace, majorDeposit)
                 tileData.placeImpact(impactType, tile, baseImpact + Random.nextInt(randomImpact + 1))
                 amountPlaced++
@@ -66,7 +66,7 @@ object MapRegionResources {
             val bestTile = fallbackTiles.minByOrNull { tileData[it.position]!!.impacts[impactType]!! }!!
             fallbackTiles.remove(bestTile)
             val possibleResourcesForTile = resourceOptions.filter { it.generatesNaturallyOn(bestTile) }
-            val resourceToPlace = possibleResourcesForTile.randomWeighted(possibleResourcesForTile.map { weightings[it] ?: 0f })
+            val resourceToPlace = possibleResourcesForTile.randomWeighted { weightings[it] ?: 0f }
             bestTile.setTileResource(resourceToPlace, majorDeposit)
             tileData.placeImpact(impactType, bestTile, baseImpact + Random.nextInt(randomImpact + 1))
             amountPlaced++

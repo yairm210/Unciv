@@ -255,6 +255,8 @@ enum class UniqueParameterType(
             "in foreign cities", "Foreign",
             "in annexed cities", "Annexed",
             "in puppeted cities", "Puppeted",
+            "in resisting cities", "Resisting",
+            "in cities being razed", "Razing",
             "in holy cities", "Holy",
             "in City-State cities",
             "in cities following this religion",
@@ -394,7 +396,7 @@ enum class UniqueParameterType(
 
     /** Used for region definitions, can be a terrain type with region unique, or "Hybrid"
      *
-     *  See also: [UniqueType.ConditionalInRegionOfType], [UniqueType.ConditionalInRegionExceptOfType], [MapRegions][com.unciv.logic.map.mapgenerator.MapRegions] */
+     *  See also: [UniqueType.ConditionalInRegionOfType], [UniqueType.ConditionalInRegionExceptOfType], [MapRegions][com.unciv.logic.map.mapgenerator.mapregions.MapRegions] */
     RegionType("regionType", "Hybrid", null, "Region Types") {
         private val knownValues = setOf("Hybrid")
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
@@ -433,6 +435,14 @@ enum class UniqueParameterType(
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
             UniqueType.UniqueParameterErrorSeverity? = when (parameterText) {
                 in ruleset.eras -> null
+                else -> UniqueType.UniqueParameterErrorSeverity.RulesetSpecific
+            }
+    },
+
+    Speed("speed", "Quick", "The name of any speed") {
+        override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
+            UniqueType.UniqueParameterErrorSeverity? = when (parameterText) {
+                in ruleset.speeds -> null
                 else -> UniqueType.UniqueParameterErrorSeverity.RulesetSpecific
             }
     },
@@ -507,12 +517,22 @@ enum class UniqueParameterType(
         // Used in FreeExtraBeliefs, FreeExtraAnyBeliefs
         private val knownValues = setOf("founding", "enhancing")
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
-                UniqueType.UniqueParameterErrorSeverity? = when (parameterText) {
+            UniqueType.UniqueParameterErrorSeverity? = when (parameterText) {
             in knownValues -> null
             else -> UniqueType.UniqueParameterErrorSeverity.RulesetInvariant
         }
         override fun getTranslationWriterStringsForOutput() = knownValues
     },
+
+    /** [UniqueType.ConditionalTech] and others, no central implementation */
+    Event("event", "Inspiration", "The name of any event") {
+        override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
+            UniqueType.UniqueParameterErrorSeverity? = when (parameterText) {
+            in ruleset.events -> null
+            else -> UniqueType.UniqueParameterErrorSeverity.RulesetSpecific
+        }
+    },
+
 
     /** [UniqueType.ConditionalTech] and others, no central implementation */
     Technology("tech", "Agriculture", "The name of any tech") {

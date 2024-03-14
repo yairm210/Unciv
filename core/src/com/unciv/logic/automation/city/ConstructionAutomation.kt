@@ -27,9 +27,9 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
 
     private val city = cityConstructions.city
     private val civInfo = city.civ
-    
+
     private val personality = civInfo.getPersonality()
-    
+
     private val constructionsToAvoid = personality.getMatchingUniques(UniqueType.WillNotBuild, StateForConditionals(city))
         .map{ it.params[0] }
     private fun shouldAvoidConstruction (construction: IConstruction): Boolean {
@@ -57,7 +57,7 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
     private val wonders = buildings.filter { it.isAnyWonder() }
 
     private val units = city.getRuleset().units.values.asSequence()
-        .filterNot { buildableUnits[it.name] == false || // if we already know that this unit can't be built here then don't even consider it 
+        .filterNot { buildableUnits[it.name] == false || // if we already know that this unit can't be built here then don't even consider it
             it.name in disabledAutoAssignConstructions || shouldAvoidConstruction(it) }
 
     private val civUnits = civInfo.units.getCivUnits()
@@ -81,10 +81,12 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
 
     private val relativeCostEffectiveness = ArrayList<ConstructionChoice>()
 
-    private data class ConstructionChoice(val choice: String, var choiceModifier: Float, val remainingWork: Int)
+    private data class ConstructionChoice(val choice: String, var choiceModifier: Float,
+                                          val remainingWork: Int, val production: Int)
 
     private fun addChoice(choices: ArrayList<ConstructionChoice>, choice: String, choiceModifier: Float) {
-        choices.add(ConstructionChoice(choice, choiceModifier, cityConstructions.getRemainingWork(choice)))
+        choices.add(ConstructionChoice(choice, choiceModifier,
+            cityConstructions.getRemainingWork(choice), cityConstructions.productionForConstruction(choice)))
     }
 
     private fun Sequence<INonPerpetualConstruction>.filterBuildable(): Sequence<INonPerpetualConstruction> {
@@ -120,8 +122,6 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
             addMilitaryUnitChoice()
         }
 
-        val production = city.cityStats.currentCityStats.production
-
         val chosenConstruction: String =
             if (relativeCostEffectiveness.isEmpty()) { // choose one of the special constructions instead
                 // add science!
@@ -130,13 +130,13 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
                     PerpetualConstruction.gold.isBuildable(cityConstructions) -> PerpetualConstruction.gold.name
                     else -> PerpetualConstruction.idle.name
                 }
-            } else if (relativeCostEffectiveness.any { it.remainingWork < production * 30 }) {
-                relativeCostEffectiveness.removeAll { it.remainingWork >= production * 30 }
-                relativeCostEffectiveness.minByOrNull { it.remainingWork / it.choiceModifier }!!.choice
+            } else if (relativeCostEffectiveness.any { it.remainingWork < it.production * 30 }) {
+                relativeCostEffectiveness.removeAll { it.remainingWork >= it.production * 30 }
+                relativeCostEffectiveness.minByOrNull { it.remainingWork / it.choiceModifier / it.production }!!.choice
             }
             // it's possible that this is a new city and EVERYTHING is way expensive - ignore modifiers, go for the cheapest.
             // Nobody can plan 30 turns ahead, I don't care how cost-efficient you are.
-            else relativeCostEffectiveness.minByOrNull { it.remainingWork }!!.choice
+            else relativeCostEffectiveness.minByOrNull { it.remainingWork / it.production}!!.choice
 
         civInfo.addNotification(
             "Work has started on [$chosenConstruction]",
@@ -305,7 +305,7 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
             }
             .filterBuildable()
             .minByOrNull { it.cost } ?: return
-        if ((isAtWar || 
+        if ((isAtWar ||
                 !civInfo.wantsToFocusOn(Victory.Focus.Culture) || !personality.isNeutralPersonality)) {
             var modifier = if (cityIsOverAverageProduction) 0.5f else 0.1f // You shouldn't be cranking out units anytime soon
             if (isAtWar) modifier *= 2
@@ -393,7 +393,7 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
         if (city.population.population < 5) modifier = 1.3f
         modifier *= personality.scaledFocus(PersonalityValue.Food)
         addChoice(relativeCostEffectiveness, foodBuilding.name, modifier)
-        
+
     }
 
     private fun addFaithBuildingChoice() {

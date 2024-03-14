@@ -1,7 +1,6 @@
 package com.unciv.models.ruleset.validation
 
 import com.badlogic.gdx.Gdx
-import com.badlogic.gdx.files.FileHandle
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.g2d.TextureAtlas.TextureAtlasData
 import com.unciv.Constants
@@ -85,6 +84,7 @@ class RulesetValidator(val ruleset: Ruleset) {
         addUnitTypeErrors(lines, tryFixUnknownUniques)
         addVictoryTypeErrors(lines)
         addDifficultyErrors(lines)
+        addEventErrors(lines, tryFixUnknownUniques)
         addCityStateTypeErrors(tryFixUnknownUniques, lines)
 
         // Check for mod or Civ_V_GnK to avoid running the same test twice (~200ms for the builtin assets)
@@ -139,6 +139,17 @@ class RulesetValidator(val ruleset: Ruleset) {
             for (unitName in difficulty.aiCityStateBonusStartingUnits + difficulty.aiMajorCivBonusStartingUnits + difficulty.playerBonusStartingUnits)
                 if (unitName != Constants.eraSpecificUnit && !ruleset.units.containsKey(unitName))
                     lines.add("Difficulty ${difficulty.name} contains starting unit $unitName which does not exist!", sourceObject = null)
+        }
+    }
+
+    private fun addEventErrors(lines: RulesetErrorList,
+                               tryFixUnknownUniques: Boolean) {
+        // A Difficulty is not a IHasUniques, so not suitable as sourceObject
+        for (event in ruleset.events.values) {
+            for (choice in event.choices) {
+                for (unique in choice.conditionObjects + choice.triggeredUniqueObjects)
+                    lines += uniqueValidator.checkUnique(unique, tryFixUnknownUniques, null, true)
+            }
         }
     }
 

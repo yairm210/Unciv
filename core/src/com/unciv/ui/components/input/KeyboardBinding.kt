@@ -142,6 +142,10 @@ enum class KeyboardBinding(
     AutoPlayMenuCivilians(Category.AutoPlayMenu, "AutoPlay Civilians Once", 'c'),
     AutoPlayMenuEconomy(Category.AutoPlayMenu, "AutoPlay Economy Once", 'e'),
 
+    // NextTurnMenu
+    NextTurnMenuNextTurn(Category.NextTurnMenu, "Next Turn", 'n'),
+    NextTurnMenuMoveAutomatedUnits(Category.NextTurnMenu, "Move Automated Units", 'm'),
+
     // City Screen
     AddConstruction(Category.CityScreen, "Add to or remove from queue", KeyCharAndCode.RETURN),
     RaisePriority(Category.CityScreen, "Raise queue priority", Input.Keys.UP),
@@ -216,6 +220,9 @@ enum class KeyboardBinding(
         },
         AutoPlayMenu {
             override val label = "AutoPlay menu" // adapt to existing usage
+        },
+        NextTurnMenu {
+            override val label = "NextTurn menu" // adapt to existing usage
         },
         MapPanning {
             override fun checkConflictsIn() = sequenceOf(this, WorldScreen)

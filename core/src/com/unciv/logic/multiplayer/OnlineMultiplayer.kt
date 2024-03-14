@@ -12,6 +12,7 @@ import com.unciv.logic.multiplayer.storage.FileStorageRateLimitReached
 import com.unciv.logic.multiplayer.storage.MultiplayerAuthException
 import com.unciv.logic.multiplayer.storage.MultiplayerFileNotFoundException
 import com.unciv.logic.multiplayer.storage.OnlineMultiplayerServer
+import com.unciv.models.metadata.GameSettings
 import com.unciv.ui.components.extensions.isLargerThan
 import com.unciv.utils.Concurrency
 import com.unciv.utils.Dispatcher
@@ -66,8 +67,12 @@ class OnlineMultiplayer {
             while (true) {
                 delay(500)
                 if (!currentCoroutineContext().isActive) return@flow
+                val multiplayerSettings: GameSettings.GameSettingsMultiplayer
+                try { // Fails in unknown cases - cannot debug :/ This is just so it doesn't appear in GP analytics
+                    multiplayerSettings = UncivGame.Current.settings.multiplayer
+                } catch (ex:Exception){ continue }
+
                 val currentGame = getCurrentGame()
-                val multiplayerSettings = UncivGame.Current.settings.multiplayer
                 val preview = currentGame?.preview
                 if (currentGame != null && (usesCustomServer() || preview == null || !preview.isUsersTurn())) {
                     throttle(lastCurGameRefresh, multiplayerSettings.currentGameRefreshDelay, {}) { currentGame.requestUpdate() }
@@ -81,7 +86,7 @@ class OnlineMultiplayer {
 
     private fun getCurrentGame(): OnlineMultiplayerGame? {
         val gameInfo = UncivGame.Current.gameInfo
-        return if (gameInfo != null) {
+        return if (gameInfo != null && gameInfo.gameParameters.isOnlineMultiplayer) {
             getGameByGameId(gameInfo.gameId)
         } else null
     }

@@ -1,7 +1,7 @@
 package com.unciv.models.ruleset
 
+import com.unciv.logic.civilization.Civilization
 import com.unciv.models.stats.INamed
-import com.unciv.logic.civilization.Civilization // for Kdoc
 
 enum class QuestName(val value: String) {
     Route("Route"),
@@ -22,6 +22,10 @@ enum class QuestName(val value: String) {
     DenounceCiv("Denounce Civilization"),
     SpreadReligion("Spread Religion"),
     None("")
+    ;
+    companion object {
+        fun find(value: String) = values().firstOrNull { it.value == value } ?: None
+    }
 }
 
 enum class QuestType {
@@ -33,11 +37,13 @@ enum class QuestType {
 // Notes: This is **not** `IsPartOfGameInfoSerialization`, only Ruleset.
 // Saves contain [QuestManager]s instead, which contain lists of [AssignedQuest] instances.
 // These are matched to this Quest **by name**.
-// Note [name] must match one of the [QuestName] _values_ above for the Quest to have any functionality.
 class Quest : INamed {
 
-    /** Unique identifier name of the quest, it is also shown */
+    /** Unique identifier name of the quest, it is also shown.
+     *  Must match a [QuestName.value] for the Quest to have any functionality. */
     override var name: String = ""
+
+    val questNameInstance by lazy { QuestName.find(name) }  // lazy only ensures evaluation happens after deserialization, all will be 'triggered'
 
     /** Description of the quest shown to players */
     var description: String = ""
