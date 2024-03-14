@@ -12,7 +12,7 @@ import kotlin.random.Random
 object Conditionals {
 
     fun conditionalApplies(
-        unique: Unique,
+        unique: Unique?,
         condition: Unique,
         state: StateForConditionals
     ): Boolean {
@@ -48,7 +48,7 @@ object Conditionals {
         val stateBasedRandom by lazy { Random(state.hashCode()) }
 
         fun getResourceAmount(resourceName: String): Int {
-            if (relevantCity != null) return relevantCity!!.getResourceAmount(resourceName)
+            if (relevantCity != null) return relevantCity!!.getAvailableResourceAmount(resourceName)
             if (relevantCiv != null) return relevantCiv!!.getResourceAmount(resourceName)
             return 0
         }
@@ -79,31 +79,24 @@ object Conditionals {
         }
 
         /** Helper for ConditionalWhenAboveAmountStatResource and its below counterpart */
-        fun checkResourceOrStatAmount(compare: (current: Int, limit: Int) -> Boolean): Boolean {
+        fun checkResourceOrStatAmount(
+            resourceOrStatName: String,
+            lowerLimit: Float,
+            upperLimit: Float,
+            modifyByGameSpeed: Boolean = false,
+            compare: (current: Int, lowerLimit: Float, upperLimit: Float) -> Boolean
+        ): Boolean {
             if (gameInfo == null) return false
-            val limit = condition.params[0].toInt()
-            val resourceOrStatName = condition.params[1]
-            if (gameInfo!!.ruleset.tileResources.containsKey(resourceOrStatName))
-                return compare(getResourceAmount(resourceOrStatName), limit)
-            val stat = Stat.safeValueOf(resourceOrStatName)
-                ?: return false
-            return compare(relevantCiv!!.getStatReserve(stat), limit)
-        }
-
-        /** Helper for ConditionalWhenAboveAmountStatSpeed and its below counterpart */
-        fun checkResourceOrStatAmountWithSpeed(compare: (current: Int, limit: Float) -> Boolean): Boolean {
-            if (gameInfo == null) return false
-            val limit = condition.params[0].toInt()
-            val resourceOrStatName = condition.params[1]
-            var gameSpeedModifier = gameInfo!!.speed.modifier
+            var gameSpeedModifier = if (modifyByGameSpeed) gameInfo!!.speed.modifier else 1f
 
             if (gameInfo!!.ruleset.tileResources.containsKey(resourceOrStatName))
-                return compare(getResourceAmount(resourceOrStatName), limit * gameSpeedModifier)
+                return compare(getResourceAmount(resourceOrStatName), lowerLimit * gameSpeedModifier, upperLimit * gameSpeedModifier)
             val stat = Stat.safeValueOf(resourceOrStatName)
                 ?: return false
+            val statReserve = if (relevantCity != null) relevantCity!!.getStatReserve(stat) else relevantCiv!!.getStatReserve(stat)
 
-            gameSpeedModifier = gameInfo!!.speed.statCostModifiers[stat]!!
-            return compare(relevantCiv!!.getStatReserve(stat), limit * gameSpeedModifier)
+            gameSpeedModifier = if (modifyByGameSpeed) gameInfo!!.speed.statCostModifiers[stat]!! else 1f
+            return compare(statReserve, lowerLimit * gameSpeedModifier, upperLimit * gameSpeedModifier)
         }
 
         return when (condition.type) {
@@ -122,17 +115,28 @@ object Conditionals {
             UniqueType.ConditionalWithoutResource -> getResourceAmount(condition.params[0]) <= 0
 
             UniqueType.ConditionalWhenAboveAmountStatResource ->
-                checkResourceOrStatAmount { current, limit -> current > limit }
+                checkResourceOrStatAmount(condition.params[1], condition.params[0].toFloat(), Float.MAX_VALUE)
+                    { current, lowerLimit, _ -> current > lowerLimit }
             UniqueType.ConditionalWhenBelowAmountStatResource ->
-                checkResourceOrStatAmount { current, limit -> current < limit }
+                checkResourceOrStatAmount(condition.params[1], Float.MIN_VALUE, condition.params[0].toFloat())
+                    { current, _, upperLimit -> current < upperLimit }
+            UniqueType.ConditionalWhenBetweenStatResource ->
+                checkResourceOrStatAmount(condition.params[2], condition.params[0].toFloat(), condition.params[1].toFloat())
+                    { current, lowerLimit, upperLimit -> current >= lowerLimit && current <= upperLimit }
             UniqueType.ConditionalWhenAboveAmountStatResourceSpeed ->
-                checkResourceOrStatAmountWithSpeed { current, limit -> current > limit }  // Note: Int.compareTo(Float)!
+                checkResourceOrStatAmount(condition.params[1], condition.params[0].toFloat(), Float.MAX_VALUE, true)
+                    { current, lowerLimit, _ -> current > lowerLimit }
             UniqueType.ConditionalWhenBelowAmountStatResourceSpeed ->
-                checkResourceOrStatAmountWithSpeed { current, limit -> current < limit }  // Note: Int.compareTo(Float)!
+                checkResourceOrStatAmount(condition.params[1], Float.MIN_VALUE, condition.params[0].toFloat(), true)
+                    { current, _, upperLimit -> current < upperLimit }
+            UniqueType.ConditionalWhenBetweenStatResourceSpeed ->
+                checkResourceOrStatAmount(condition.params[2], condition.params[0].toFloat(), condition.params[1].toFloat(), true)
+                    { current, lowerLimit, upperLimit -> current >= lowerLimit && current <= upperLimit }
 
             UniqueType.ConditionalHappy -> checkOnCiv { stats.happiness >= 0 }
             UniqueType.ConditionalBetweenHappiness ->
                 checkOnCiv { stats.happiness in condition.params[0].toInt() .. condition.params[1].toInt() }
+            UniqueType.ConditionalAboveHappiness -> checkOnCiv { stats.happiness > condition.params[0].toInt() }
             UniqueType.ConditionalBelowHappiness -> checkOnCiv { stats.happiness < condition.params[0].toInt() }
             UniqueType.ConditionalGoldenAge -> checkOnCiv { goldenAges.isGoldenAge() }
 
@@ -140,6 +144,7 @@ object Conditionals {
             UniqueType.ConditionalStartingFromEra -> compareEra(condition.params[0]) { current, param -> current >= param }
             UniqueType.ConditionalDuringEra -> compareEra(condition.params[0]) { current, param -> current == param }
             UniqueType.ConditionalIfStartingInEra -> checkOnGameInfo { gameParameters.startingEra == condition.params[0] }
+            UniqueType.ConditionalSpeed -> checkOnGameInfo { gameParameters.speed == condition.params[0] }
             UniqueType.ConditionalTech -> checkOnCiv { tech.isResearched(condition.params[0]) }
             UniqueType.ConditionalNoTech -> checkOnCiv { !tech.isResearched(condition.params[0]) }
             UniqueType.ConditionalWhileResearching -> checkOnCiv { tech.currentTechnologyName() == condition.params[0] }
@@ -191,6 +196,8 @@ object Conditionals {
                 checkOnCity { !cityConstructions.containsBuildingOrEquivalent(condition.params[0]) }
             UniqueType.ConditionalPopulationFilter ->
                 checkOnCity { population.getPopulationFilterAmount(condition.params[1]) >= condition.params[0].toInt() }
+            UniqueType.ConditionalExactPopulationFilter ->
+                checkOnCity { population.getPopulationFilterAmount(condition.params[1]) == condition.params[0].toInt() }
             UniqueType.ConditionalWhenGarrisoned ->
                 checkOnCity { getCenterTile().militaryUnit?.canGarrison() == true }
 
@@ -202,10 +209,10 @@ object Conditionals {
             UniqueType.ConditionalUnitWithoutPromotion -> relevantUnit?.promotions?.promotions?.contains(condition.params[0]) == false
             UniqueType.ConditionalAttacking -> state.combatAction == CombatAction.Attack
             UniqueType.ConditionalDefending -> state.combatAction == CombatAction.Defend
-            UniqueType.ConditionalAboveHP ->
-                state.ourCombatant != null && state.ourCombatant.getHealth() > condition.params[0].toInt()
-            UniqueType.ConditionalBelowHP ->
-                state.ourCombatant != null && state.ourCombatant.getHealth() < condition.params[0].toInt()
+            UniqueType.ConditionalAboveHP -> relevantUnit != null && relevantUnit!!.health > condition.params[0].toInt()
+                    || state.ourCombatant != null && state.ourCombatant.getHealth() > condition.params[0].toInt()
+            UniqueType.ConditionalBelowHP -> relevantUnit != null && relevantUnit!!.health < condition.params[0].toInt()
+                    ||state.ourCombatant != null && state.ourCombatant.getHealth() < condition.params[0].toInt()
             UniqueType.ConditionalHasNotUsedOtherActions ->
                 state.unit == null || // So we get the action as a valid action in BaseUnit.hasUnique()
                     state.unit.abilityToTimesUsed.isEmpty()
@@ -264,14 +271,16 @@ object Conditionals {
             UniqueType.ConditionalInRegionExceptOfType -> state.region?.type != condition.params[0]
 
             UniqueType.ConditionalFirstCivToResearch ->
-                unique.sourceObjectType == UniqueTarget.Tech
+                unique != null
+                    && unique.sourceObjectType == UniqueTarget.Tech
                     && checkOnGameInfo { civilizations.none {
                         it != relevantCiv && it.isMajorCiv()
                             && it.tech.isResearched(unique.sourceObjectName!!) // guarded by the sourceObjectType check
                     } }
 
             UniqueType.ConditionalFirstCivToAdopt ->
-                unique.sourceObjectType == UniqueTarget.Policy
+                unique != null
+                    && unique.sourceObjectType == UniqueTarget.Policy
                     && checkOnGameInfo { civilizations.none {
                         it != relevantCiv && it.isMajorCiv()
                             && it.policies.isAdopted(unique.sourceObjectName!!) // guarded by the sourceObjectType check

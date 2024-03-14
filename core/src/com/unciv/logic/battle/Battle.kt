@@ -22,6 +22,7 @@ import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
 import com.unciv.ui.components.UnitMovementMemoryType
+import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionsPillage
 import com.unciv.utils.debug
 import kotlin.math.max
 import kotlin.math.min
@@ -39,7 +40,7 @@ object Battle {
      * Currently not used by UI, only by automation via [BattleHelper.tryAttackNearbyEnemy][com.unciv.logic.automation.unit.BattleHelper.tryAttackNearbyEnemy]
      */
     fun moveAndAttack(attacker: ICombatant, attackableTile: AttackableTile) {
-        if (!movePreparingAttack(attacker, attackableTile)) return
+        if (!movePreparingAttack(attacker, attackableTile, true)) return
         attackOrNuke(attacker, attackableTile)
     }
 
@@ -48,8 +49,9 @@ object Battle {
      *
      * This is a logic function, not UI, so e.g. sound needs to be handled after calling this.
      */
-    fun movePreparingAttack(attacker: ICombatant, attackableTile: AttackableTile): Boolean {
+    fun movePreparingAttack(attacker: ICombatant, attackableTile: AttackableTile, tryHealPillage: Boolean = false): Boolean {
         if (attacker !is MapUnitCombatant) return true
+        val tilesMovedThrough = attacker.unit.movement.getDistanceToTiles().getPathToTile(attackableTile.tileToAttackFrom)
         attacker.unit.movement.moveToTile(attackableTile.tileToAttackFrom)
         /**
          * When calculating movement distance, we assume that a hidden tile is 1 movement point,
@@ -73,6 +75,19 @@ object Battle {
         ) {
             attacker.unit.action = UnitActionType.SetUp.value
             attacker.unit.useMovementPoints(1f)
+        }
+
+        if (tryHealPillage) {
+            // Now lets retroactively see if we can pillage any improvement on the path improvement to heal
+            // while still being able to attack
+            for (tileToPillage in tilesMovedThrough) {
+                if (attacker.unit.currentMovement <= 1f || attacker.unit.health > 90) break // We are done pillaging
+
+                if (UnitActionsPillage.canPillage(attacker.unit, tileToPillage)
+                    && tileToPillage.canPillageTileImprovement()) {
+                    UnitActionsPillage.getPillageAction(attacker.unit, tileToPillage)?.action?.invoke()
+                }
+            }
         }
         return (attacker.unit.currentMovement > 0f)
     }
@@ -150,9 +165,9 @@ object Battle {
         if (!defender.isDefeated() && defender is MapUnitCombatant && defender.unit.isExploring())
             defender.unit.action = null
 
-        fun triggerVictoryUniques(ourUnit:MapUnitCombatant, enemy:MapUnitCombatant) {
+        fun triggerVictoryUniques(ourUnit: MapUnitCombatant, enemy: MapUnitCombatant) {
             val stateForConditionals = StateForConditionals(civInfo = ourUnit.getCivInfo(),
-                ourCombatant = ourUnit, theirCombatant=enemy, tile = attackedTile)
+                ourCombatant = ourUnit, theirCombatant = enemy, tile = attackedTile)
             for (unique in ourUnit.unit.getTriggeredUniques(UniqueType.TriggerUponDefeatingUnit, stateForConditionals))
                 if (unique.conditionals.any { it.type == UniqueType.TriggerUponDefeatingUnit
                                 && enemy.unit.matchesFilter(it.params[0]) })
@@ -526,7 +541,7 @@ object Battle {
             if (civilianUnit != null) BattleUnitCapture.captureCivilianUnit(attacker, MapUnitCombatant(civilianUnit!!), checkDefeat = false)
             for (airUnit in airUnits.toList()) airUnit.destroy()
         }
-        
+
         val stateForConditionals = StateForConditionals(civInfo = attackerCiv, city=city, unit = attacker.unit, ourCombatant = attacker, attackedTile = city.getCenterTile())
         for (unique in attacker.getMatchingUniques(UniqueType.CaptureCityPlunder, stateForConditionals, true)) {
             attackerCiv.addStat(

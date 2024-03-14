@@ -71,8 +71,8 @@ class EmpireOverviewScreen(
             }
         }
 
-        val closeButton = getCloseButton(50f) { game.popScreen() }
-        tabbedPager.decorateHeader(closeButton, leftSide = false, fixed = true)
+        val closeButton = getCloseButton { game.popScreen() }
+        tabbedPager.decorateHeader(closeButton)
 
         tabbedPager.setFillParent(true)
         stage.addActor(tabbedPager)

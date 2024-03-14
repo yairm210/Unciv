@@ -675,9 +675,10 @@ class CityStateFunctions(val civInfo: Civilization) {
     }
 
     fun getCityStateResourcesForAlly() = ResourceSupplyList().apply {
+        // TODO: City-states don't give allies resources from civ-wide uniques!
         for (city in civInfo.cities) {
             // IGNORE the fact that they consume their own resources - #4769
-            addPositiveByResource(city.getCityResources(), Constants.cityStates)
+            addPositiveByResource(city.getResourcesGeneratedByCity(), Constants.cityStates)
         }
     }
 

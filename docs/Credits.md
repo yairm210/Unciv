@@ -737,7 +737,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 - [framed image](https://thenounproject.com/icon/framed-image-2332187/) by Jose Dean for Victory Illustrations page
 - [down](https://thenounproject.com/icon/down-39378/) by Cengiz SARI for Show unit destination
 - [Cat](https://thenounproject.com/icon/cat-158942/) by Josi for Politics overview diagram legend
-
+- [Bell](https://thenounproject.com/icon/bell-2054409) by Lyhn, transparency modified, for Notifications (overview, unhide button)
 
 ### Main menu
 

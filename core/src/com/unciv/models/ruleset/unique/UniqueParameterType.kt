@@ -8,6 +8,7 @@ import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.unique.UniqueParameterType.Companion.guessTypeForTranslationWriter
+import com.unciv.models.ruleset.validation.Suppression
 import com.unciv.models.stats.Stat
 import com.unciv.models.translations.TranslationFileWriter
 
@@ -101,7 +102,7 @@ enum class UniqueParameterType(
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
                 UniqueType.UniqueParameterErrorSeverity? = getErrorSeverityForFilter(parameterText, ruleset)
 
-        override fun isKnownValue(parameterText:String, ruleset: Ruleset): Boolean {
+        override fun isKnownValue(parameterText: String, ruleset: Ruleset): Boolean {
             if (parameterText in knownValues) return true
             if (ruleset.unitPromotions.values.any { it.hasUnique(parameterText) }) return true
             if (CivFilter.isKnownValue(parameterText, ruleset)) return true
@@ -122,7 +123,7 @@ enum class UniqueParameterType(
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
             UniqueType.UniqueParameterErrorSeverity? = getErrorSeverityForFilter(parameterText, ruleset)
 
-        override fun isKnownValue(parameterText:String, ruleset: Ruleset): Boolean {
+        override fun isKnownValue(parameterText: String, ruleset: Ruleset): Boolean {
             if (parameterText in knownValues) return true
             if (UnitName.getErrorSeverity(parameterText, ruleset) == null) return true
             if (ruleset.units.values.any { it.uniques.contains(parameterText) }) return true
@@ -254,6 +255,8 @@ enum class UniqueParameterType(
             "in foreign cities", "Foreign",
             "in annexed cities", "Annexed",
             "in puppeted cities", "Puppeted",
+            "in resisting cities", "Resisting",
+            "in cities being razed", "Razing",
             "in holy cities", "Holy",
             "in City-State cities",
             "in cities following this religion",
@@ -393,7 +396,7 @@ enum class UniqueParameterType(
 
     /** Used for region definitions, can be a terrain type with region unique, or "Hybrid"
      *
-     *  See also: [UniqueType.ConditionalInRegionOfType], [UniqueType.ConditionalInRegionExceptOfType], [MapRegions][com.unciv.logic.map.mapgenerator.MapRegions] */
+     *  See also: [UniqueType.ConditionalInRegionOfType], [UniqueType.ConditionalInRegionExceptOfType], [MapRegions][com.unciv.logic.map.mapgenerator.mapregions.MapRegions] */
     RegionType("regionType", "Hybrid", null, "Region Types") {
         private val knownValues = setOf("Hybrid")
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
@@ -432,6 +435,14 @@ enum class UniqueParameterType(
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
             UniqueType.UniqueParameterErrorSeverity? = when (parameterText) {
                 in ruleset.eras -> null
+                else -> UniqueType.UniqueParameterErrorSeverity.RulesetSpecific
+            }
+    },
+
+    Speed("speed", "Quick", "The name of any speed") {
+        override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
+            UniqueType.UniqueParameterErrorSeverity? = when (parameterText) {
+                in ruleset.speeds -> null
                 else -> UniqueType.UniqueParameterErrorSeverity.RulesetSpecific
             }
     },
@@ -506,12 +517,22 @@ enum class UniqueParameterType(
         // Used in FreeExtraBeliefs, FreeExtraAnyBeliefs
         private val knownValues = setOf("founding", "enhancing")
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
-                UniqueType.UniqueParameterErrorSeverity? = when (parameterText) {
+            UniqueType.UniqueParameterErrorSeverity? = when (parameterText) {
             in knownValues -> null
             else -> UniqueType.UniqueParameterErrorSeverity.RulesetInvariant
         }
         override fun getTranslationWriterStringsForOutput() = knownValues
     },
+
+    /** [UniqueType.ConditionalTech] and others, no central implementation */
+    Event("event", "Inspiration", "The name of any event") {
+        override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
+            UniqueType.UniqueParameterErrorSeverity? = when (parameterText) {
+            in ruleset.events -> null
+            else -> UniqueType.UniqueParameterErrorSeverity.RulesetSpecific
+        }
+    },
+
 
     /** [UniqueType.ConditionalTech] and others, no central implementation */
     Technology("tech", "Agriculture", "The name of any tech") {
@@ -521,6 +542,24 @@ enum class UniqueParameterType(
             else -> UniqueType.UniqueParameterErrorSeverity.RulesetSpecific
         }
     },
+
+    /** Implemented by [Technology.matchesFilter][com.unciv.models.ruleset.tech.Technology.matchesFilter] */
+    TechFilter("techFilter", "Agriculture") {
+        private val knownValues = setOf("All", "all")
+
+        override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
+            UniqueType.UniqueParameterErrorSeverity? = getErrorSeverityForFilter(parameterText, ruleset)
+
+        override fun isKnownValue(parameterText: String, ruleset: Ruleset): Boolean {
+            if (parameterText in knownValues) return true
+            if (parameterText in ruleset.technologies) return true
+            if (parameterText in ruleset.eras) return true
+            return false
+        }
+
+        override fun getTranslationWriterStringsForOutput() = knownValues
+    },
+
 
     /** unused at the moment with vanilla rulesets */
     Specialist("specialist", "Merchant", "The name of any specialist") {
@@ -580,6 +619,13 @@ enum class UniqueParameterType(
         }
 
         override fun getTranslationWriterStringsForOutput() = scanExistingValues(this)
+    },
+
+    /** Suppress RulesetValidator warnings: Parameter check delegated to RulesetValidator, and auto-translation off. */
+    ValidationWarning("validationWarning", Suppression.parameterDocExample, Suppression.parameterDocDescription, "Mod-check warning") {
+        override fun getErrorSeverity(parameterText: String, ruleset: Ruleset): UniqueType.UniqueParameterErrorSeverity? =
+            if (Suppression.isValidFilter(parameterText)) null
+            else UniqueType.UniqueParameterErrorSeverity.RulesetInvariant
     },
 
     /** Behaves like [Unknown], but states explicitly the parameter is OK and its contents are ignored */

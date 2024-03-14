@@ -2,6 +2,8 @@ package com.unciv.logic.city
 
 import com.badlogic.gdx.math.Vector2
 import com.unciv.logic.civilization.Civilization
+import com.unciv.models.ruleset.BeliefType
+import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.testing.GdxTestRunner
 import com.unciv.testing.TestGame
 import org.junit.Assert.assertEquals
@@ -96,6 +98,7 @@ class CityTest {
         assertTrue(capitalCity.hasSoldBuildingThisTurn)
     }
 
+    // Resource tests
     @Test
     fun `should get resources from tiles`() {
         // given
@@ -108,7 +111,7 @@ class CityTest {
         tile.improvement = "Mine"
 
         // when
-        val cityResources = capitalCity.getCityResources()
+        val cityResources = capitalCity.getResourcesGeneratedByCity()
 
         // then
         assertEquals(1, cityResources.size)
@@ -122,11 +125,11 @@ class CityTest {
         capitalCity.cityConstructions.addBuilding(building)
 
         // when
-        val cityResources = capitalCity.getCityResources()
+        val resources = testCiv.detailedCivResources
 
         // then
-        assertEquals(1, cityResources.size)
-        assertEquals("4 Iron from Buildings", cityResources[0].toString())
+        assertEquals(1, resources.size)
+        assertEquals("4 Iron from Buildings", resources[0].toString())
     }
 
     @Test
@@ -135,10 +138,77 @@ class CityTest {
         capitalCity.cityConstructions.addBuilding("Factory")
 
         // when
-        val cityResources = capitalCity.getCityResources()
+        val resources = testCiv.detailedCivResources
 
         // then
-        assertEquals(1, cityResources.size)
-        assertEquals("-1 Coal from Buildings", cityResources[0].toString())
+        assertEquals(1, resources.size)
+        assertEquals("-1 Coal from Buildings", resources[0].toString())
     }
+
+    @Test
+    fun `Civ-wide resources from building uniques propagate between cities`() {
+        // given
+        val building = testGame.createBuilding("Provides [4] [Coal]")
+        capitalCity.cityConstructions.addBuilding(building)
+
+        val otherCity = testCiv.addCity(Vector2(2f,2f))
+
+        // when
+        val resourceAmountInOtherCity = otherCity.getAvailableResourceAmount("Coal")
+
+        // then
+        assertEquals(4, resourceAmountInOtherCity)
+    }
+
+
+    @Test
+    fun `City-wide resources from building uniques propagate between cities`() {
+        // given
+        val resource = testGame.createResource(UniqueType.CityResource.text)
+        val building = testGame.createBuilding("Provides [4] [${resource.name}]")
+        capitalCity.cityConstructions.addBuilding(building)
+
+        val otherCity = testCiv.addCity(Vector2(2f,2f))
+
+        // when
+        val resourceAmountInOtherCity = otherCity.getAvailableResourceAmount(resource.name)
+
+        // then
+        assertEquals(4, resourceAmountInOtherCity)
+    }
+
+    @Test
+    fun `City-wide resources not double-counted in same city`() {
+        // given
+        val resource = testGame.createResource(UniqueType.CityResource.text)
+        val building = testGame.createBuilding("Provides [4] [${resource.name}]")
+        capitalCity.cityConstructions.addBuilding(building)
+
+
+        // when
+        val resourceAmountInCapital = capitalCity.getAvailableResourceAmount(resource.name)
+
+        // then
+        assertEquals(4, resourceAmountInCapital)
+    }
+
+    @Test
+    fun `Civ-wide resources can come from follower beliefs, and affect all cities`() {
+        // given
+        val religion = testGame.addReligion(testCiv)
+        val belief = testGame.createBelief(BeliefType.Follower, "Provides [1] [Iron]")
+        religion.followerBeliefs.add(belief.name)
+        capitalCity.population.setPopulation(1)
+        capitalCity.religion.addPressure(religion.name, 1000)
+        val otherCity = testCiv.addCity(Vector2(2f,2f)) // NOT religionized
+
+        // when
+        val resourceAmountInCapital = capitalCity.getAvailableResourceAmount("Iron")
+        val resourceAmountInOtherCity = otherCity.getAvailableResourceAmount("Iron")
+
+        // then
+        assertEquals(1, resourceAmountInCapital)
+        assertEquals(1, resourceAmountInOtherCity)
+    }
+
 }

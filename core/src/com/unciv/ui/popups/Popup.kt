@@ -43,7 +43,8 @@ import com.unciv.ui.screens.basescreen.UncivStage
  *
  * @property stageToShowOn The stage that will be used for [open], measurements or finding other instances
  * @param scrollable Controls how content can scroll if too large - see [Scrollability]
- * @param maxSizePercentage Causes [topTable] to limit its height - useful if `scrollable` is on. Will be multiplied by stageToShowOn.height.
+ * @param maxSizePercentage Causes [topTable] to limit its width/height - useful if `scrollable` is on. Will be multiplied by stageToShowOn sizes.
+ *        Note this can be overridden if a larger minWidth is reported by [innerTable].
  */
 @Suppress("MemberVisibilityCanBePrivate")
 open class Popup(
@@ -63,7 +64,7 @@ open class Popup(
      * With scrolling enabled, the ScrollPane can be accessed via [getScrollPane].
      * @property None No scrolling
      * @property All Entire content wrapped in an [AutoScrollPane] so it can scroll if larger than maximum dimensions
-     * @property WithoutButtons content separated into scrollable upper part and static lower part containing the buttons
+     * @property WithoutButtons Content separated into scrollable upper part and static lower part containing the buttons
      */
     enum class Scrollability { None, All, WithoutButtons }
 
@@ -75,6 +76,8 @@ open class Popup(
      *
      *  Note you seldom need to interact directly with it, Popup has many Table method proxies
      *  that pass through, like [add], [row], [defaults], [addSeparator] or [clear].
+     *
+     *  For [Scrollability.WithoutButtons], this wraps [topTable] and [bottomTable], otherwise both are aliases.
      */
     /* Hierarchy:
         Scrollability.None:
@@ -98,11 +101,14 @@ open class Popup(
     */
     protected val innerTable = Table(BaseScreen.skin)
 
-    /** This contains most of the Popup content (except the closing buttons which go in [bottomTable]) */
+    /** This contains most of the Popup content.
+     *  For [Scrollability.WithoutButtons], that excludes the closing buttons which go in [bottomTable].
+     *  In other modes, this is an alias for [innerTable]. */
     private val topTable: Table
     private val topTableCell: Cell<WidgetGroup>
 
-    /** This contains the bottom row buttons and does not participate in scrolling */
+    /** This contains the bottom row buttons and does not participate in scrolling
+     *  (for [Scrollability.WithoutButtons], otherwise alias for [innerTable]). */
     protected val bottomTable: Table
 
     /** Callbacks that will be called whenever this Popup is shown */
@@ -180,6 +186,13 @@ open class Popup(
         innerTable.invalidate()
     }
 
+    private fun recalculateInnerTableMaxWidth() {
+        val minWidth = innerTable.minWidth.coerceAtMost(stageToShowOn.width)
+        if (minWidth < maxPopupWidth) return
+        topTableCell.maxWidth(minWidth)
+        innerTable.invalidate()
+    }
+
 
     /**
      * Displays the Popup on the screen. If another popup is already open, this one will display after the other has
@@ -189,6 +202,7 @@ open class Popup(
         stageToShowOn.addActor(this)
         recalculateInnerTableMaxHeight()
         innerTable.pack()
+        recalculateInnerTableMaxWidth()
         pack()
         center(stageToShowOn)
         events.receive(UncivStage.VisibleAreaChanged::class) {
@@ -240,18 +254,18 @@ open class Popup(
        Note the Kdoc mentions innerTable when under Scrollability.WithoutButtons it's actually topTable,
        but metioning that distinction seems overkill. innerTable has the clearer Kdoc for "where the Actors go".
     */
-    /** Popup proxy redirects [add][com.badlogic.gdx.scenes.scene2d.ui.Table.add] to [innerTable] */
+    /** Popup proxy redirects [add][com.badlogic.gdx.scenes.scene2d.ui.Table.add] to [topTable] */
     final override fun <T : Actor?> add(actor: T): Cell<T> = topTable.add(actor)
-    /** Popup proxy redirects [add][com.badlogic.gdx.scenes.scene2d.ui.Table.add] to [innerTable] */
+    /** Popup proxy redirects [add][com.badlogic.gdx.scenes.scene2d.ui.Table.add] to [topTable] */
     final override fun add(): Cell<Actor?> = topTable.add()
-    /** Popup proxy redirects [row][com.badlogic.gdx.scenes.scene2d.ui.Table.row] to [innerTable] */
+    /** Popup proxy redirects [row][com.badlogic.gdx.scenes.scene2d.ui.Table.row] to [topTable] */
     override fun row(): Cell<Actor> = topTable.row()
-    /** Popup proxy redirects [defaults][com.badlogic.gdx.scenes.scene2d.ui.Table.defaults] to [innerTable] */
+    /** Popup proxy redirects [defaults][com.badlogic.gdx.scenes.scene2d.ui.Table.defaults] to [topTable] */
     override fun defaults(): Cell<Actor> = topTable.defaults()
-    /** Popup proxy redirects [addSeparator][com.unciv.ui.components.extensions.addSeparator] to [innerTable] */
+    /** Popup proxy redirects [addSeparator][com.unciv.ui.components.extensions.addSeparator] to [topTable] */
     fun addSeparator(color: Color = Color.WHITE, colSpan: Int = 0, height: Float = 2f) =
         topTable.addSeparator(color, colSpan, height)
-    /** Proxy redirects [add][com.badlogic.gdx.scenes.scene2d.ui.Table.clear] to clear content:
+    /** Proxy redirects [clear][com.badlogic.gdx.scenes.scene2d.ui.Table.clear] to clear all content:
      *  [innerTable] or if [Scrollability.WithoutButtons] was used [topTable] and [bottomTable] */
     override fun clear() {
         topTable.clear()

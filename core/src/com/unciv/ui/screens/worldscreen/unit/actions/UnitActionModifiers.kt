@@ -13,9 +13,9 @@ object UnitActionModifiers {
         return usagesLeft == null || usagesLeft > 0
     }
 
-    fun getUsableUnitActionUniques(unit:MapUnit, actionUniqueType: UniqueType) =
+    fun getUsableUnitActionUniques(unit: MapUnit, actionUniqueType: UniqueType) =
         unit.getMatchingUniques(actionUniqueType)
-            .filter { it.conditionals.none { it.type == UniqueType.UnitActionExtraLimitedTimes } }
+            .filter { unique -> unique.conditionals.none { it.type == UniqueType.UnitActionExtraLimitedTimes } }
             .filter { canUse(unit, it) }
 
     private fun getMovementPointsToUse(actionUnique: Unique): Int {

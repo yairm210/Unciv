@@ -1,0 +1,54 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "type": "array",
+  "items": {
+      "type": "object",
+      "properties": {
+          "name": { "type": "string" },
+          "terrainsCanBeFoundOn": {
+              "type": "array",
+              "items": { "type": "string" },
+              "uniqueItems": true
+          },
+          "improvement": { "type": "string" },
+          "resourceType": { "enum": ["Strategic", "Luxury", "Bonus"]},
+          "revealedBy": { "type": "string" },
+          "improvedBy": {
+              "type": "array",
+              "items": { "type": "string" },
+              "uniqueItems": true
+          },
+          "improvementStats": { "$ref": "https://raw.githubusercontent.com/yairm210/Unciv/master/docs/Modders/schemas/stats.json" },
+
+          "production": { "type": "number" },
+          "food": { "type": "number" },
+          "gold": { "type": "number" },
+          "science": { "type": "number" },
+          "culture": { "type": "number" },
+          "happiness": { "type": "number" },
+          "faith": { "type": "number" },
+
+          "majorDepositAmount": {"$ref": "#/definitions/resourceAmount"},
+          "minorDepositAmount": {"$ref": "#/definitions/resourceAmount"},
+
+          "uniques": { "$ref": "https://raw.githubusercontent.com/yairm210/Unciv/master/docs/Modders/schemas/uniques.json" },
+
+          "civilopediaText": { "$ref": "https://raw.githubusercontent.com/yairm210/Unciv/master/docs/Modders/schemas/civilopediaText.json" }
+      },
+      "required": [
+          "name",
+      ],
+      "additionalProperties": false,
+      "definitions": {
+          "resourceAmount": {
+              "type": "object",
+              "properties": {
+                  "sparse": {"type": "number"},
+                  "default": {"type": "number"},
+                  "abundant": {"type": "number"}
+              },
+              "required": ["sparse","default","abundant"]
+          }
+      }
+  }
+}

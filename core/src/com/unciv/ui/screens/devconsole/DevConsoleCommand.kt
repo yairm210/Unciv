@@ -17,7 +17,7 @@ internal fun <T: IRulesetObject> Iterable<T>.findCliInput(param: String): T? {
 internal fun <T: IRulesetObject> Sequence<T>.findCliInput(param: String) = asIterable().findCliInput(param)
 
 /** Returns the string to *add* to the existing command */
-internal fun getAutocompleteString(lastWord: String, allOptions: Iterable<String>):String? {
+internal fun getAutocompleteString(lastWord: String, allOptions: Iterable<String>): String? {
     val matchingOptions = allOptions.map { it.toCliInput() }.filter { it.startsWith(lastWord.toCliInput()) }
     if (matchingOptions.isEmpty()) return null
     if (matchingOptions.size == 1) return matchingOptions.first().drop(lastWord.length) + " "
@@ -75,12 +75,13 @@ open class ConsoleAction(val format: String, val action: (console: DevConsolePop
             "resourceName" -> console.gameInfo.ruleset.tileResources.keys
             "stat" -> Stat.names()
             "religionName" -> console.gameInfo.religions.keys
+            "buildingName" -> console.gameInfo.ruleset.buildings.keys
             else -> listOf()
         }
         return getAutocompleteString(lastParam, options)
     }
 
-    private fun validateFormat(format: String, params:List<String>){
+    private fun validateFormat(format: String, params: List<String>) {
         val allParams = format.split(" ")
         val requiredParamsAmount = allParams.count { it.startsWith('<') }
         val optionalParamsAmount = allParams.count { it.startsWith('[') }

@@ -26,7 +26,8 @@ import com.unciv.utils.Concurrency
  *
  *  You must provide content by overriding [createContentTable] - see its doc.
  *
- *  The Popup opens automatically once created. Meant to be used for small menus.
+ *  The Popup opens automatically once created.
+ *  **Meant to be used for small menus.** - otherwise use [ScrollableAnimatedMenuPopup].
  *  No default close button - recommended to simply use "click-behind".
  *
  *  The "click-behind" semi-transparent covering of the rest of the stage is much darker than a normal

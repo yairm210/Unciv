@@ -122,7 +122,7 @@ class BattleTable(val worldScreen: WorldScreen) : Table() {
         return defender
     }
 
-    private fun getIcon(combatant:ICombatant) =
+    private fun getIcon(combatant: ICombatant) =
         if (combatant is MapUnitCombatant) UnitGroup(combatant.unit,25f)
         else ImageGetter.getNationPortrait(combatant.getCivInfo().nation, 25f)
 

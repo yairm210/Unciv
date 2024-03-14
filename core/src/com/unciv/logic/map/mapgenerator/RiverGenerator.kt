@@ -5,6 +5,7 @@ import com.unciv.Constants
 import com.unciv.logic.map.TileMap
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.Ruleset
+import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.utils.debug
 import kotlin.math.roundToInt
 
@@ -188,5 +189,81 @@ class RiverGenerator(
                 yield(myBottomRight?.hasBottomLeftRiver == true)
             }
         }.count { it }
+    }
+
+    companion object {
+        /** [UniqueType.OneTimeChangeTerrain] tries to place a "River" feature.
+         *
+         *  Operates on *edges* - while [spawnRiver] hops from [vertex][RiverCoordinate] to vertex!
+         *  Placed here to make comparison easier, even though the implementation has nothing else in common.
+         *  @return success - one edge of [tile] has a new river
+         */
+        fun continueRiverOn(tile: Tile): Boolean {
+            if (!tile.isLand) return false
+            val tileMap = tile.tileMap
+
+            /** Helper to prioritize a tile edge for river placement - accesses [tile] as closure,
+             *  and considers the edge common with [otherTile] in direction [clockPosition].
+             *
+             *  Will consider two additional tiles - those that are neighbor to both [tile] and [otherTile],
+             *  and four other edges - those connecting to "our" edge.
+             */
+            class NeighborData(val otherTile: Tile) {
+                val clockPosition = tileMap.getNeighborTileClockPosition(tile, otherTile)
+                // Accesses `tile` as closure
+                val isConnectedByRiver = tile.isConnectedByRiver(otherTile)
+                val edgeLeadsToSea: Boolean
+                val connectedRiverCount: Int
+                val verticesFormYCount: Int
+
+                init {
+                    // Similar: private fun Tile.getLeftSharedNeighbor in TileLayerBorders
+                    val leftSharedNeighbor = tileMap.getClockPositionNeighborTile(tile, (clockPosition - 2) % 12)
+                    val rightSharedNeighbor = tileMap.getClockPositionNeighborTile(tile, (clockPosition + 2) % 12)
+                    edgeLeadsToSea = leftSharedNeighbor?.isWater == true || rightSharedNeighbor?.isWater == true
+                    connectedRiverCount = sequence {
+                        yield(leftSharedNeighbor?.isConnectedByRiver(tile))
+                        yield(leftSharedNeighbor?.isConnectedByRiver(otherTile))
+                        yield(rightSharedNeighbor?.isConnectedByRiver(tile))
+                        yield(rightSharedNeighbor?.isConnectedByRiver(otherTile))
+                    }.count { it == true }
+                    verticesFormYCount = sequence {
+                        yield(leftSharedNeighbor?.run { isConnectedByRiver(tile) && isConnectedByRiver(otherTile) })
+                        yield(rightSharedNeighbor?.run { isConnectedByRiver(tile) && isConnectedByRiver(otherTile) })
+                    }.count { it == true }
+                }
+
+                fun getPriority(edgeToSeaPriority: Int) =
+                    // choose a priority - only order matters, not magnitude
+                    when {
+                        isConnectedByRiver -> -9 // ensures this isn't chosen, otherwise "cannot place another river" would have bailed
+                        edgeLeadsToSea -> edgeToSeaPriority + connectedRiverCount - 3 * verticesFormYCount
+                        // Just 6 possible cases left:
+                        //  * Connect two bends = -2
+                        //  * Connect a bend to nothing = -1 // debatable!
+                        //  * Connect nothing = 0
+                        //  * Connect a bend with an open end = 1
+                        //  * Connect to one open end = 2
+                        //  * Connect two open ends = 3 (make that 4 to simplify)
+                        verticesFormYCount == 2 -> -2
+                        verticesFormYCount == 1 -> connectedRiverCount * 2 - 5
+                        else -> connectedRiverCount * 2
+                    }
+            }
+
+            // Collect data (includes tiles we already have a river edge with - need the stats)
+            val viableNeighbors = tile.neighbors.filter { it.isLand }.map { NeighborData(it) }.toList()
+            if (viableNeighbors.all { it.isConnectedByRiver }) return false // cannot place another river
+
+            // Greatly encourage connecting to sea unless the tile already has a river to sea, in which case slightly discourage another one
+            val edgeToSeaPriority = if (viableNeighbors.none { it.isConnectedByRiver && it.edgeLeadsToSea }) 9 else -1
+
+            val choice = viableNeighbors
+                .groupBy { it.getPriority(edgeToSeaPriority) } // Assign and group by priorities
+                .maxBy { it.key }.value // Get the List with best priority - can't be empty
+                .random()
+
+            return tile.setConnectedByRiver(choice.otherTile, newValue = true, convertTerrains = true)
+        }
     }
 }

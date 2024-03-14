@@ -39,7 +39,7 @@ class GameSettings {
     var language: String = Constants.english
     @Transient
     var locale: Locale? = null
-    var screenSize:ScreenSize = ScreenSize.Small
+    var screenSize: ScreenSize = ScreenSize.Small
     var screenMode: Int = 0
     var tutorialsShown = HashSet<String>()
     var tutorialTasksCompleted = HashSet<String>()
@@ -354,7 +354,7 @@ class GameSettings {
 
         fun isAutoPlaying(): Boolean = turnsToAutoPlay > 0
 
-        fun isAutoPlayingAndFullAI():Boolean = isAutoPlaying() && fullAutoPlayAI
+        fun isAutoPlayingAndFullAI(): Boolean = isAutoPlaying() && fullAutoPlayAI
     }
 
     @Suppress("SuspiciousCallableReferenceInLambda")  // By @Azzurite, safe as long as that warning below is followed

@@ -19,7 +19,7 @@ private object WorkerAutomationConst {
 }
 
 /** Responsible for the "connect cities" automation as part of worker automation */
-class RoadBetweenCitiesAutomation(val civInfo: Civilization, cachedForTurn:Int, cloningSource: RoadBetweenCitiesAutomation? = null) {
+class RoadBetweenCitiesAutomation(val civInfo: Civilization, cachedForTurn: Int, cloningSource: RoadBetweenCitiesAutomation? = null) {
 
     /** Caches BFS by city locations (cities needing connecting).
      *

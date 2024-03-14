@@ -159,6 +159,17 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Triggerable
 
+??? example  "Triggers a [event] event"
+	Example: "Triggers a [Inspiration] event"
+
+	Applicable to: Triggerable
+
+??? example  "Suppress warning [validationWarning]"
+	Allows suppressing specific validation warnings. Errors, deprecation warnings, or warnings about untyped and non-filtering uniques should be heeded, not suppressed, and are therefore not accepted. Note that this can be used in ModOptions, in the uniques a warning is about, or as modifier on the unique triggering a warning - but you still need to be specific. Even in the modifier case you will need to specify a sufficiently selective portion of the warning text as parameter.
+	Example: "Suppress warning [Tinman is supposed to automatically upgrade at tech Clockwork, and therefore Servos for its upgrade Mecha may not yet be researched! -or- *is supposed to automatically upgrade*]"
+
+	Applicable to: Triggerable, Terrain, Speed, ModOptions, MetaModifier
+
 ## UnitTriggerable uniques
 !!! note ""
 
@@ -221,6 +232,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Global, FollowerBelief
 
 ??? example  "[stats] per [amount] social policies adopted"
+	Only works for civ-wide stats
 	Example: "[+1 Gold, +2 Production] per [3] social policies adopted"
 
 	Applicable to: Global
@@ -907,13 +919,13 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "[amount] Movement point cost to disembark"
 	Example: "[3] Movement point cost to disembark"
 
-Due to performance considerations, this unique is cached, thus conditionals may not work.
+	Due to performance considerations, this unique is cached, thus conditionals may not work.
 	Applicable to: Global, Unit
 
 ??? example  "[amount] Movement point cost to embark"
 	Example: "[3] Movement point cost to embark"
 
-Due to performance considerations, this unique is cached, thus conditionals may not work.
+	Due to performance considerations, this unique is cached, thus conditionals may not work.
 	Applicable to: Global, Unit
 
 ## Nation uniques
@@ -931,24 +943,24 @@ Due to performance considerations, this unique is cached, thus conditionals may 
 	Applicable to: Nation
 
 ??? example  "All units move through Forest and Jungle Tiles in friendly territory as if they have roads. These tiles can be used to establish City Connections upon researching the Wheel."
-Due to performance considerations, this unique is cached, thus conditionals may not work.
+	Due to performance considerations, this unique is cached, thus conditionals may not work.
 	Applicable to: Nation
 
 ??? example  "Units ignore terrain costs when moving into any tile with Hills"
-Due to performance considerations, this unique is cached, thus conditionals may not work.
+	Due to performance considerations, this unique is cached, thus conditionals may not work.
 	Applicable to: Nation
 
 ??? example  "Excluded from map editor"
 	Applicable to: Nation, Terrain, Improvement, Resource
 
 ??? example  "Will not be displayed in Civilopedia"
-	Applicable to: Nation, Tech, Policy, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed
+	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed
 
 ??? example  "Comment [comment]"
 	Allows displaying arbitrary text in a Unique listing. Only the text within the '[]' brackets will be displayed, the rest serves to allow Ruleset validation to recognize the intent.
 	Example: "Comment [comment]"
 
-	Applicable to: Nation, Tech, Policy, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed
+	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed
 
 ## Personality uniques
 ??? example  "Will not build [baseUnitFilter/buildingFilter]"
@@ -971,9 +983,11 @@ Due to performance considerations, this unique is cached, thus conditionals may 
 	Applicable to: Tech
 
 ??? example  "Only available"
+	Meant to be used together with conditionals, like "Only available <after adopting [policy]> <while the empire is happy>". Only allows Building when ALL conditionals are met. Will also block Upgrade and Transform actions. See also CanOnlyBeBuiltWhen
 	Applicable to: Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, Promotion, Improvement, Ruins
 
 ??? example  "Unavailable"
+	Meant to be used together with conditionals, like "Unavailable <after generating a Great Prophet>".
 	Applicable to: Tech, Policy, Building, Unit, Promotion, Improvement, Ruins
 
 ??? example  "Cannot be hurried"
@@ -1021,6 +1035,7 @@ Due to performance considerations, this unique is cached, thus conditionals may 
 	Applicable to: Building, Unit, Improvement
 
 ??? example  "Unbuildable"
+	Blocks from being built, possibly by conditional. However it can still appear in the menu and be bought with other means such as Gold or Faith
 	Applicable to: Building, Unit, Improvement
 
 ??? example  "Cannot be purchased"
@@ -1070,10 +1085,15 @@ Due to performance considerations, this unique is cached, thus conditionals may 
 
 	Applicable to: Building, Unit
 
-??? example  "Can only be built [cityFilter]"
-	Example: "Can only be built [in all cities]"
+??? example  "[amount]% production cost"
+	Intended to be used with conditionals to dynamically alter construction costs
+	Example: "[3]% production cost"
 
-	Applicable to: Building
+	Applicable to: Building, Unit
+
+??? example  "Can only be built"
+	Meant to be used together with conditionals, like "Can only be built <after adopting [policy]> <while the empire is happy>". Only allows Building when ALL conditionals are met. Will also NOT block Upgrade and Transform actions. See also OnlyAvailable
+	Applicable to: Building, Unit
 
 ??? example  "Must have an owned [tileFilter] within [amount] tiles"
 	Example: "Must have an owned [Farm] within [3] tiles"
@@ -1112,6 +1132,9 @@ Due to performance considerations, this unique is cached, thus conditionals may 
 	Applicable to: Building, Improvement, Resource
 
 ??? example  "Indicates the capital city"
+	Applicable to: Building
+
+??? example  "Moves to new capital when capital changes"
 	Applicable to: Building
 
 ??? example  "Provides 1 extra copy of each improved luxury resource near this City"
@@ -1409,54 +1432,54 @@ Due to performance considerations, this unique is cached, thus conditionals may 
 	Applicable to: Unit
 
 ??? example  "Cannot move"
-Due to performance considerations, this unique is cached, thus conditionals may not work.
+	Due to performance considerations, this unique is cached, thus conditionals may not work.
 	Applicable to: Unit
 
 ??? example  "Double movement in [terrainFilter]"
 	Example: "Double movement in [Fresh Water]"
 
-Due to performance considerations, this unique is cached, thus conditionals may not work.
+	Due to performance considerations, this unique is cached, thus conditionals may not work.
 	Applicable to: Unit
 
 ??? example  "All tiles cost 1 movement"
-Due to performance considerations, this unique is cached, thus conditionals may not work.
+	Due to performance considerations, this unique is cached, thus conditionals may not work.
 	Applicable to: Unit
 
 ??? example  "May travel on Water tiles without embarking"
-Due to performance considerations, this unique is cached, thus conditionals may not work.
+	Due to performance considerations, this unique is cached, thus conditionals may not work.
 	Applicable to: Unit
 
 ??? example  "Can pass through impassable tiles"
-Due to performance considerations, this unique is cached, thus conditionals may not work.
+	Due to performance considerations, this unique is cached, thus conditionals may not work.
 	Applicable to: Unit
 
 ??? example  "Ignores terrain cost"
-Due to performance considerations, this unique is cached, thus conditionals may not work.
+	Due to performance considerations, this unique is cached, thus conditionals may not work.
 	Applicable to: Unit
 
 ??? example  "Ignores Zone of Control"
-Due to performance considerations, this unique is cached, thus conditionals may not work.
+	Due to performance considerations, this unique is cached, thus conditionals may not work.
 	Applicable to: Unit
 
 ??? example  "Rough terrain penalty"
-Due to performance considerations, this unique is cached, thus conditionals may not work.
+	Due to performance considerations, this unique is cached, thus conditionals may not work.
 	Applicable to: Unit
 
 ??? example  "Can enter ice tiles"
-Due to performance considerations, this unique is cached, thus conditionals may not work.
+	Due to performance considerations, this unique is cached, thus conditionals may not work.
 	Applicable to: Unit
 
 ??? example  "Cannot enter ocean tiles"
 	Applicable to: Unit
 
 ??? example  "May enter foreign tiles without open borders"
-Due to performance considerations, this unique is cached, thus conditionals may not work.
+	Due to performance considerations, this unique is cached, thus conditionals may not work.
 	Applicable to: Unit
 
 ??? example  "May enter foreign tiles without open borders, but loses [amount] religious strength each turn it ends there"
 	Example: "May enter foreign tiles without open borders, but loses [3] religious strength each turn it ends there"
 
-Due to performance considerations, this unique is cached, thus conditionals may not work.
+	Due to performance considerations, this unique is cached, thus conditionals may not work.
 	Applicable to: Unit
 
 ??? example  "Never appears as a Barbarian unit"
@@ -1532,7 +1555,7 @@ Due to performance considerations, this unique is cached, thus conditionals may 
 ??? example  "Units ending their turn on this terrain take [amount] damage"
 	Example: "Units ending their turn on this terrain take [3] damage"
 
-Due to performance considerations, this unique is cached, thus conditionals may not work.
+	Due to performance considerations, this unique is cached, thus conditionals may not work.
 	Applicable to: Terrain
 
 ??? example  "Grants [promotion] ([comment]) to adjacent [mapUnitFilter] units for the rest of the game"
@@ -1910,6 +1933,11 @@ Due to performance considerations, this unique is cached, thus conditionals may 
 
 	Applicable to: Conditional
 
+??? example  "&lt;when above [amount] Happiness&gt;"
+	Example: "&lt;when above [3] Happiness&gt;"
+
+	Applicable to: Conditional
+
 ??? example  "&lt;when below [amount] Happiness&gt;"
 	Example: "&lt;when below [3] Happiness&gt;"
 
@@ -1932,6 +1960,11 @@ Due to performance considerations, this unique is cached, thus conditionals may 
 
 ??? example  "&lt;if starting in the [era]&gt;"
 	Example: "&lt;if starting in the [Ancient era]&gt;"
+
+	Applicable to: Conditional
+
+??? example  "&lt;on [speed] game speed&gt;"
+	Example: "&lt;on [Quick] game speed&gt;"
 
 	Applicable to: Conditional
 
@@ -2028,6 +2061,11 @@ Due to performance considerations, this unique is cached, thus conditionals may 
 
 	Applicable to: Conditional
 
+??? example  "&lt;when between [amount] and [amount] [stat/resource]&gt;"
+	Example: "&lt;when between [3] and [3] [Culture]&gt;"
+
+	Applicable to: Conditional
+
 ??? example  "&lt;when above [amount] [stat/resource] (modified by game speed)&gt;"
 	Example: "&lt;when above [3] [Culture] (modified by game speed)&gt;"
 
@@ -2035,6 +2073,11 @@ Due to performance considerations, this unique is cached, thus conditionals may 
 
 ??? example  "&lt;when below [amount] [stat/resource] (modified by game speed)&gt;"
 	Example: "&lt;when below [3] [Culture] (modified by game speed)&gt;"
+
+	Applicable to: Conditional
+
+??? example  "&lt;when between [amount] and [amount] [stat/resource] (modified by game speed)&gt;"
+	Example: "&lt;when between [3] and [3] [Culture] (modified by game speed)&gt;"
 
 	Applicable to: Conditional
 
@@ -2070,6 +2113,11 @@ Due to performance considerations, this unique is cached, thus conditionals may 
 
 ??? example  "&lt;in cities with at least [amount] [populationFilter]&gt;"
 	Example: "&lt;in cities with at least [3] [Followers of this Religion]&gt;"
+
+	Applicable to: Conditional
+
+??? example  "&lt;in cities with [amount] [populationFilter]&gt;"
+	Example: "&lt;in cities with [3] [Followers of this Religion]&gt;"
 
 	Applicable to: Conditional
 
@@ -2192,14 +2240,17 @@ Due to performance considerations, this unique is cached, thus conditionals may 
 
     Special conditionals that can be added to Triggerable uniques, to make them activate upon specific actions.
 
-??? example  "&lt;upon discovering [tech]&gt;"
-	Example: "&lt;upon discovering [Agriculture]&gt;"
+??? example  "&lt;upon discovering [techFilter] technology&gt;"
+	Example: "&lt;upon discovering [Agriculture] technology&gt;"
 
 	Applicable to: TriggerCondition
 
 ??? example  "&lt;upon entering the [era]&gt;"
 	Example: "&lt;upon entering the [Ancient era]&gt;"
 
+	Applicable to: TriggerCondition
+
+??? example  "&lt;upon entering a new era&gt;"
 	Applicable to: TriggerCondition
 
 ??? example  "&lt;upon adopting [policy/belief]&gt;"
@@ -2338,6 +2389,7 @@ Due to performance considerations, this unique is cached, thus conditionals may 
 *[combatantFilter]: This indicates a combatant, which can either be a unit or a city (when bombarding). Must either be `City` or a `mapUnitFilter`.
 *[costOrStrength]: `Cost` or `Strength`.
 *[era]: The name of any era.
+*[event]: The name of any event.
 *[foundingOrEnhancing]: `founding` or `enhancing`.
 *[fraction]: Indicates a fractional number, which can be negative.
 *[improvementName]: The name of any improvement.
@@ -2348,9 +2400,11 @@ Due to performance considerations, this unique is cached, thus conditionals may 
 *[relativeAmount]: This indicates a number, usually with a + or - sign, such as `+25` (this kind of parameter is often followed by '%' which is nevertheless not part of the value).
 *[resource]: The name of any resource.
 *[specialist]: The name of any specialist.
+*[speed]: The name of any speed.
 *[stat]: This is one of the 7 major stats in the game - `Gold`, `Science`, `Production`, `Food`, `Happiness`, `Culture` and `Faith`. Note that the stat names need to be capitalized!
 *[stats]: For example: `+2 Production, +3 Food`. Note that the stat names need to be capitalized!
 *[stockpiledResource]: The name of any stockpiled.
 *[tech]: The name of any tech.
 *[tileFilter]: Anything that can be used either in an improvementFilter or in a terrainFilter can be used here, plus 'unimproved'
+*[validationWarning]: Suppresses one specific Ruleset validation warning. This can specify the full text verbatim including correct upper/lower case, or it can be a wildcard case-insensitive simple pattern starting and ending in an asterisk ('*'). If the suppression unique is used within an object or as modifier (not ModOptions), the wildcard symbols can be omitted, as selectivity is better due to the limited scope.
 *[victoryType]: The name of any victory type: 'Neutral', 'Cultural', 'Diplomatic', 'Domination', 'Scientific', 'Time'

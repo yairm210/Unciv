@@ -154,8 +154,7 @@ class City : IsPartOfGameInfoSerialization {
     fun isCoastal(): Boolean = centerTile.isCoastalTile()
 
     fun capitalCityIndicator(): Building {
-        val indicatorBuildings = getRuleset().buildings.values
-            .asSequence()
+        val indicatorBuildings = getRuleset().buildings.values.asSequence()
             .filter { it.hasUnique(UniqueType.IndicatesCapital) }
 
         val civSpecificBuilding = indicatorBuildings.firstOrNull { it.uniqueTo == civ.civName }
@@ -179,31 +178,17 @@ class City : IsPartOfGameInfoSerialization {
     fun isWeLoveTheKingDayActive() = hasFlag(CityFlags.WeLoveTheKing)
     fun isInResistance() = hasFlag(CityFlags.Resistance)
     fun isBlockaded(): Boolean {
-
-        // Landlocked cities are not blockaded
-        if (!isCoastal())
-            return false
-
         // Coastal cities are blocked if every adjacent water tile is blocked
-        for (tile in getCenterTile().neighbors) {
-
-            // Consider only water tiles
-            if (!tile.isWater)
-                continue
-
-            // One unblocked tile breaks whole city blockade
-            if (!tile.isBlockaded())
-                return false
+        if (!isCoastal()) return false
+        return getCenterTile().neighbors.filter { it.isWater }.all {
+            it.isBlockaded()
         }
-
-        // All tiles are blocked
-        return true
     }
 
     fun getRuleset() = civ.gameInfo.ruleset
 
-    fun getCityResources() = CityResources.getCityResources(this)
-    fun getResourceAmount(resourceName:String) = CityResources.getResourceAmount(this, resourceName)
+    fun getResourcesGeneratedByCity() = CityResources.getResourcesGeneratedByCity(this)
+    fun getAvailableResourceAmount(resourceName: String) = CityResources.getAvailableResourceAmount(this, resourceName)
 
     fun isGrowing() = foodForNextTurn() > 0
     fun isStarving() = foodForNextTurn() < 0
@@ -447,6 +432,8 @@ class City : IsPartOfGameInfoSerialization {
             "in foreign cities", "Foreign" -> viewingCiv != null && viewingCiv != civ
             "in annexed cities", "Annexed" -> foundingCiv != civ.civName && !isPuppet
             "in puppeted cities", "Puppeted" -> isPuppet
+            "in resisting cities", "Resisting" -> isInResistance()
+            "in cities being razed", "Razing" -> isBeingRazed
             "in holy cities", "Holy" -> isHolyCity()
             "in City-State cities" -> civ.isCityState()
             // This is only used in communication to the user indicating that only in cities with this
@@ -469,24 +456,22 @@ class City : IsPartOfGameInfoSerialization {
     // Finds matching uniques provided from both local and non-local sources.
     fun getMatchingUniques(
         uniqueType: UniqueType,
-        stateForConditionals: StateForConditionals = StateForConditionals(civ, this)
+        stateForConditionals: StateForConditionals = StateForConditionals(this),
+        includeCivUniques: Boolean = true
     ): Sequence<Unique> {
-        return civ.getMatchingUniques(uniqueType, stateForConditionals) +
+        return if (includeCivUniques)
+            civ.getMatchingUniques(uniqueType, stateForConditionals) +
                 getLocalMatchingUniques(uniqueType, stateForConditionals)
-    }
-
-    // Uniques special to this city
-    fun getLocalMatchingUniques(uniqueType: UniqueType, stateForConditionals: StateForConditionals = StateForConditionals(civ, this)): Sequence<Unique> {
-        return (
-            cityConstructions.builtBuildingUniqueMap.getUniques(uniqueType).filter { it.isLocalEffect }
+        else (
+            cityConstructions.builtBuildingUniqueMap.getUniques(uniqueType)
                 + religion.getUniques().filter { it.type == uniqueType }
             ).filter {
                 !it.isTimedTriggerable && it.conditionalsApply(stateForConditionals)
             }
     }
 
-    // Uniques coming from only this city
-    fun getMatchingLocalOnlyUniques(uniqueType: UniqueType, stateForConditionals: StateForConditionals): Sequence<Unique> {
+    // Uniques special to this city
+    fun getLocalMatchingUniques(uniqueType: UniqueType, stateForConditionals: StateForConditionals = StateForConditionals(this)): Sequence<Unique> {
         val uniques = cityConstructions.builtBuildingUniqueMap.getUniques(uniqueType).filter { it.isLocalEffect } +
             religion.getUniques().filter { it.type == uniqueType }
         return if (uniques.any()) uniques.filter { !it.isTimedTriggerable && it.conditionalsApply(stateForConditionals) }

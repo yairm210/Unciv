@@ -104,14 +104,18 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
         return stats
     }
 
-    override fun getProductionCost(civInfo: Civilization): Int {
+    override fun getProductionCost(civInfo: Civilization, city: City?): Int {
         var productionCost = cost.toFloat()
+        val stateForConditionals = StateForConditionals(civInfo, city)
 
-        for (unique in getMatchingUniques(UniqueType.CostIncreasesWhenBuilt, StateForConditionals(civInfo)))
+        for (unique in getMatchingUniques(UniqueType.CostIncreasesWhenBuilt, stateForConditionals))
             productionCost += civInfo.civConstructions.builtItemsWithIncreasingCost[name] * unique.params[0].toInt()
 
-        for (unique in getMatchingUniques(UniqueType.CostIncreasesPerCity, StateForConditionals(civInfo)))
+        for (unique in getMatchingUniques(UniqueType.CostIncreasesPerCity, stateForConditionals))
             productionCost += civInfo.cities.size * unique.params[0].toInt()
+
+        for (unique in getMatchingUniques(UniqueType.CostPercentageChange, stateForConditionals))
+            productionCost *= unique.params[0].toPercent()
 
         if (civInfo.isCityState())
             productionCost *= 1.5f
@@ -126,6 +130,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
         }
 
         productionCost *= civInfo.gameInfo.speed.productionCostModifier
+
         return productionCost.toInt()
     }
 
@@ -182,7 +187,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
             )
             yieldAll(city.getMatchingUniques(UniqueType.BuyBuildingsByProductionCost, conditionalState)
                 .filter { it.params[1] == stat.name && matchesFilter(it.params[0]) }
-                .map { (getProductionCost(city.civ) * it.params[2].toInt()).toFloat() }
+                .map { (getProductionCost(city.civ, city) * it.params[2].toInt()).toFloat() }
             )
             if (city.getMatchingUniques(UniqueType.BuyBuildingsWithStat, conditionalState)
                 .any {
@@ -246,7 +251,10 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
             yield(RejectionReasonType.AlreadyBuilt.toInstance())
 
         for (unique in uniqueObjects) {
-            if (unique.type != UniqueType.OnlyAvailable &&
+            // skip uniques that don't have conditionals apply
+            // EXCEPT for [UniqueType.OnlyAvailable] and [UniqueType.CanOnlyBeBuiltInCertainCities]
+            // since they trigger (reject) only if conditionals ARE NOT met
+            if (unique.type != UniqueType.OnlyAvailable && unique.type != UniqueType.CanOnlyBeBuiltWhen &&
                 !unique.conditionalsApply(StateForConditionals(civ, cityConstructions.city))) continue
 
             @Suppress("NON_EXHAUSTIVE_WHEN")
@@ -257,7 +265,10 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
                     yield(RejectionReasonType.Unbuildable.toInstance())
 
                 UniqueType.OnlyAvailable ->
-                    yieldAll(onlyAvailableRejections(unique, cityConstructions))
+                    yieldAll(notMetRejections(unique, cityConstructions))
+
+                UniqueType.CanOnlyBeBuiltWhen ->
+                    yieldAll(notMetRejections(unique, cityConstructions, true))
 
                 UniqueType.Unavailable ->
                     yield(RejectionReasonType.ShouldNotBeDisplayed.toInstance())
@@ -407,7 +418,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
         for ((resourceName, requiredAmount) in getResourceRequirementsPerTurn(
             StateForConditionals(cityConstructions.city.civ, cityConstructions.city))
         ) {
-            val availableAmount = cityConstructions.city.getResourceAmount(resourceName)
+            val availableAmount = cityConstructions.city.getAvailableResourceAmount(resourceName)
             if (availableAmount < requiredAmount) {
                 yield(RejectionReasonType.ConsumesResources.toInstance(resourceName.getNeedMoreAmountString(requiredAmount - availableAmount)))
             }
@@ -428,9 +439,14 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
         }
     }
 
-    private fun onlyAvailableRejections(unique: Unique, cityConstructions: CityConstructions): Sequence<RejectionReason> = sequence {
+    /**
+     * Handles inverted conditional rejections and cumulative conditional reporting
+     * See also [com.unciv.models.ruleset.unit.BaseUnit.notMetRejections]
+     */
+    private fun notMetRejections(unique: Unique, cityConstructions: CityConstructions, built: Boolean=false): Sequence<RejectionReason> = sequence {
         val civ = cityConstructions.city.civ
         for (conditional in unique.conditionals) {
+            // We yield a rejection only when conditionals are NOT met
             if (Conditionals.conditionalApplies(unique, conditional, StateForConditionals(civ, cityConstructions.city)))
                 continue
             when (conditional.type) {
@@ -459,7 +475,10 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
                     }
                 }
                 else -> {
-                    yield(RejectionReasonType.ShouldNotBeDisplayed.toInstance())
+                    if (built)
+                        yield(RejectionReasonType.CanOnlyBeBuiltInSpecificCities.toInstance(unique.text))
+                    else
+                        yield(RejectionReasonType.ShouldNotBeDisplayed.toInstance())
                 }
             }
         }

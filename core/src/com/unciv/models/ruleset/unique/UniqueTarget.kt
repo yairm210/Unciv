@@ -83,8 +83,14 @@ enum class UniqueTarget(
         /** All targets that can display their Uniques */
         // As Array so it can used in a vararg parameter list.
         val Displayable = arrayOf(
-            Building, Unit, UnitType, Improvement, Tech, FollowerBelief,
+            Building, Unit, UnitType, Improvement, Tech, FollowerBelief, FounderBelief,
             Terrain, Resource, Policy, Promotion, Nation, Ruins, Speed
+        )
+        val CanIncludeSuppression = arrayOf(
+            Triggerable,    // Includes Global and covers most IHasUnique's
+            Terrain, Speed, // IHasUnique targets without inheritsFrom
+            ModOptions,     // For suppressions that target something that doesn't have Uniques
+            MetaModifier    // Allows use as Conditional-like syntax
         )
     }
 }

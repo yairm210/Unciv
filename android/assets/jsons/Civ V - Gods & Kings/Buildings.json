@@ -260,7 +260,7 @@
 		"maintenance": 4,
 		"hurryCostModifier": 50,
 		"uniques": ["Remove extra unhappiness from annexed cities",
-			"Can only be built [in annexed cities]"],
+			"Can only be built <in [Annexed] cities>"],
 		"requiredTech": "Mathematics"
 	},
 	{
@@ -469,7 +469,7 @@
 		"culture": 1,
 		"faith": 8,
 		"uniques": ["Only available <if [Temple] is constructed in all [non-[Puppeted]] cities>", "Cost increases by [30] per owned city",
-			"[+100]% Natural religion spread [in this city]", "Hidden when religion is disabled", "Can only be built [in holy cities]"],
+			"[+100]% Natural religion spread [in this city]", "Hidden when religion is disabled", "Can only be built <in [Holy] cities>"],
 		"requiredTech": "Theology",
 		"isNationalWonder": true
 	},
@@ -498,7 +498,7 @@
 		"greatPersonPoints": {"Great Merchant": 1},
 		"culture": 1,
 		"isWonder": true,
-		"uniques": ["[+25]% [Gold] from Trade Routes","Must have an owned [Mountain] within [2] tiles"],
+		"uniques": ["[+25]% [Gold] from Trade Routes", "Must have an owned [Mountain] within [2] tiles"],
 		"requiredTech": "Guilds",
 		"quote": "'Few romances can ever surpass that of the granite citadel on top of the beetling precipices of Machu Picchu, the crown of Inca Land.' - Hiram Bingham"
 	},

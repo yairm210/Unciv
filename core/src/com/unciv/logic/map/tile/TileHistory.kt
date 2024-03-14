@@ -13,7 +13,7 @@ import java.util.TreeMap
  *
  * @see com.unciv.ui.screens.victoryscreen.ReplayMap
  */
-open class TileHistory : IsPartOfGameInfoSerialization {
+class TileHistory : IsPartOfGameInfoSerialization {
 
     class TileHistoryState(
         /** The name of the civilization owning this tile or `null` if there is no owner. */

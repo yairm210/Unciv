@@ -26,6 +26,7 @@ import com.unciv.models.ruleset.Specialist
 import com.unciv.models.ruleset.Speed
 import com.unciv.models.ruleset.nation.Nation
 import com.unciv.models.ruleset.tile.TileImprovement
+import com.unciv.models.ruleset.tile.TileResource
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.ruleset.unit.Promotion
@@ -243,6 +244,8 @@ class TestGame {
         createRulesetObject(ruleset.beliefs, *uniques) { Belief(type) }
     fun createBuilding(vararg uniques: String) =
         createRulesetObject(ruleset.buildings, *uniques) { Building() }
+    fun createResource(vararg uniques: String) =
+        createRulesetObject(ruleset.tileResources, *uniques) { TileResource() }
 
     fun createWonder(vararg uniques: String): Building {
         val createdBuilding = createBuilding(*uniques)

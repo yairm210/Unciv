@@ -203,14 +203,14 @@ class CityFounder {
 
     private fun addStartingBuildings(city: City, civInfo: Civilization, startingEra: String) {
         val ruleset = civInfo.gameInfo.ruleset
-        if (civInfo.cities.size == 1) city.cityConstructions.addBuilding(city.capitalCityIndicator())
+        if (civInfo.cities.size == 1) city.cityConstructions.addBuilding(city.capitalCityIndicator(), tryAddFreeBuildings = false)
 
         // Add buildings and pop we get from starting in this era
         for (buildingName in ruleset.eras[startingEra]!!.settlerBuildings) {
             val building = ruleset.buildings[buildingName] ?: continue
             val uniqueBuilding = civInfo.getEquivalentBuilding(building)
             if (uniqueBuilding.isBuildable(city.cityConstructions))
-                city.cityConstructions.addBuilding(uniqueBuilding)
+                city.cityConstructions.addBuilding(uniqueBuilding, tryAddFreeBuildings = false)
         }
 
         civInfo.civConstructions.tryAddFreeBuildings()

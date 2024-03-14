@@ -14,10 +14,10 @@ import kotlin.math.min
 @Suppress("UNUSED_PARAMETER") // references need to have the signature expected by UnitActions.actionTypeToFunctions
 object UnitActionsGreatPerson {
 
-    internal fun getHurryResearchActions(unit:MapUnit, tile: Tile) = sequence {
+    internal fun getHurryResearchActions(unit: MapUnit, tile: Tile) = sequence {
         for (unique in unit.getMatchingUniques(UniqueType.CanHurryResearch)){
             yield(UnitAction(
-                UnitActionType.HurryResearch,
+                UnitActionType.HurryResearch, 76f,
                 action = {
                     unit.civ.tech.addScience(unit.civ.tech.getScienceFromGreatScientist())
                     unit.consume()
@@ -30,10 +30,10 @@ object UnitActionsGreatPerson {
         }
     }
 
-    internal fun getHurryPolicyActions(unit:MapUnit, tile: Tile) = sequence {
+    internal fun getHurryPolicyActions(unit: MapUnit, tile: Tile) = sequence {
         for (unique in unit.getMatchingUniques(UniqueType.CanHurryPolicy)){
             yield(UnitAction(
-                UnitActionType.HurryPolicy,
+                UnitActionType.HurryPolicy, 76f,
                 action = {
                     unit.civ.policies.addCulture(unit.civ.policies.getCultureFromGreatWriter())
                     unit.consume()
@@ -50,7 +50,7 @@ object UnitActionsGreatPerson {
                     && tile.getCity()!!.cityConstructions.canBeHurried()
 
             yield(UnitAction(
-                UnitActionType.HurryWonder,
+                UnitActionType.HurryWonder, 75f,
                 action = {
                     tile.getCity()!!.cityConstructions.apply {
                         //http://civilization.wikia.com/wiki/Great_engineer_(Civ5)
@@ -64,10 +64,10 @@ object UnitActionsGreatPerson {
         }
     }
 
-    internal fun getHurryBuildingActions(unit:MapUnit, tile: Tile) = sequence {
+    internal fun getHurryBuildingActions(unit: MapUnit, tile: Tile) = sequence {
         for (unique in unit.getMatchingUniques(UniqueType.CanSpeedupConstruction)) {
             if (!tile.isCityCenter()) {
-                yield(UnitAction(UnitActionType.HurryBuilding, action = null))
+                yield(UnitAction(UnitActionType.HurryBuilding, 75f, action = null))
                 continue
             }
 
@@ -83,7 +83,7 @@ object UnitActionsGreatPerson {
             if (productionPointsToAdd <= 0) continue
 
             yield(UnitAction(
-                UnitActionType.HurryBuilding,
+                UnitActionType.HurryBuilding, 75f,
                 title = "Hurry Construction (+[$productionPointsToAdd]⚙)",
                 action = {
                     cityConstructions.apply {
@@ -97,7 +97,7 @@ object UnitActionsGreatPerson {
         }
     }
 
-    internal fun getConductTradeMissionActions(unit:MapUnit, tile: Tile) = sequence {
+    internal fun getConductTradeMissionActions(unit: MapUnit, tile: Tile) = sequence {
         for (unique in unit.getMatchingUniques(UniqueType.CanTradeWithCityStateForGoldAndInfluence)) {
             val canConductTradeMission = tile.owningCity?.civ?.isCityState() == true
                 && tile.owningCity?.civ != unit.civ
@@ -105,7 +105,7 @@ object UnitActionsGreatPerson {
             val influenceEarned = unique.params[0].toFloat()
 
             yield(UnitAction(
-                UnitActionType.ConductTradeMission,
+                UnitActionType.ConductTradeMission, 70f,
                 action = {
                     // http://civilization.wikia.com/wiki/Great_Merchant_(Civ5)
                     var goldEarned = (350 + 50 * unit.civ.getEraNumber()) * unit.civ.gameInfo.speed.goldCostModifier

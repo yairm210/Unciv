@@ -404,7 +404,7 @@ class UncivFiles(
         }
 
         /** Returns gzipped serialization of [game], optionally gzipped ([forceZip] overrides [saveZipped]) */
-        fun gameInfoToString(game: GameInfo, forceZip: Boolean? = null, updateChecksum:Boolean=false): String {
+        fun gameInfoToString(game: GameInfo, forceZip: Boolean? = null, updateChecksum: Boolean = false): String {
             game.version = GameInfo.CURRENT_COMPATIBILITY_VERSION
 
             if (updateChecksum) game.checksum = game.calculateChecksum()

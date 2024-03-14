@@ -1,6 +1,7 @@
 package com.unciv.logic.automation.unit
 
 import com.unciv.logic.battle.AirInterception
+import com.unciv.logic.battle.Battle
 import com.unciv.logic.battle.MapUnitCombatant
 import com.unciv.logic.battle.Nuke
 import com.unciv.logic.battle.TargetHelper
@@ -25,17 +26,17 @@ object AirUnitAutomation {
         val friendlyUsedFighterCount = friendlyAirUnitsInRange.count { it.health >= 50 && !it.canAttack() }
 
         // We need to be on standby in case they attack
-        if (friendlyUnusedFighterCount < enemyFighters) return 
+        if (friendlyUnusedFighterCount < enemyFighters) return
 
         if (friendlyUsedFighterCount <= enemyFighters) {
             fun airSweepDamagePercentBonus(): Int {
                 return unit.getMatchingUniques(UniqueType.StrengthWhenAirsweep)
                     .sumOf { it.params[0].toInt() }
             }
-            
+
             // If we are outnumbered, don't heal after attacking and don't have an Air Sweep bonus
             // Then we shouldn't speed the air battle by killing our fighters, instead, focus on defending
-            if (friendlyUsedFighterCount + friendlyUnusedFighterCount < enemyFighters 
+            if (friendlyUsedFighterCount + friendlyUnusedFighterCount < enemyFighters
                 && !unit.hasUnique(UniqueType.HealsEvenAfterAction)
                 && airSweepDamagePercentBonus() <= 0) {
                 return
@@ -47,7 +48,7 @@ object AirUnitAutomation {
         if (unit.health < 80) {
             return // Wait and heal up, no point in moving closer to battle if we aren't healed
         }
-        
+
         if (BattleHelper.tryAttackNearbyEnemy(unit)) return
 
         if (tryRelocateToCitiesWithEnemyNearBy(unit)) return
@@ -78,9 +79,9 @@ object AirUnitAutomation {
 
     }
 
-    private fun tryAirSweep(unit: MapUnit, tilesWithEnemyUnitsInRange: List<Tile>):Boolean {
-        val targetTile = tilesWithEnemyUnitsInRange.filter { 
-            tile -> tile.getUnits().any { it.civ.isAtWarWith(unit.civ) 
+    private fun tryAirSweep(unit: MapUnit, tilesWithEnemyUnitsInRange: List<Tile>): Boolean {
+        val targetTile = tilesWithEnemyUnitsInRange.filter {
+            tile -> tile.getUnits().any { it.civ.isAtWarWith(unit.civ)
                 || (tile.isCityCenter() && tile.getCity()!!.civ.isAtWarWith(unit.civ)) }
             }.minByOrNull { it.aerialDistanceTo(unit.getTile()) } ?: return false
         AirInterception.airSweep(MapUnitCombatant(unit),targetTile)
@@ -124,20 +125,22 @@ object AirUnitAutomation {
     fun automateNukes(unit: MapUnit) {
         if (!unit.civ.isAtWar()) return
         // We should *Almost* never want to nuke our own city, so don't consider it
-        val tilesInRange = unit.currentTile.getTilesInDistanceRange(2..unit.getRange())
-        var highestTileNukeValue = 0
-        var tileToNuke: Tile? = null
-        tilesInRange.forEach {
-            val value = getNukeLocationValue(unit, it)
-            if (value > highestTileNukeValue) {
-                highestTileNukeValue = value
-                tileToNuke = it
-            }
+        if (unit.type.isAirUnit()) {
+            val tilesInRange = unit.currentTile.getTilesInDistanceRange(2..unit.getRange())
+            val highestTileNukeValue = tilesInRange.map { it to getNukeLocationValue(unit, it) }
+                .maxByOrNull { it.second }
+            if (highestTileNukeValue != null && highestTileNukeValue.second > 0)
+                Nuke.NUKE(MapUnitCombatant(unit), highestTileNukeValue.first)
+
+            tryRelocateMissileToNearbyAttackableCities(unit)
+        } else {
+            val attackableTiles = TargetHelper.getAttackableEnemies(unit, unit.movement.getDistanceToTiles())
+            val highestTileNukeValue = attackableTiles.map { it to getNukeLocationValue(unit, it.tileToAttack) }
+                .maxByOrNull { it.second }
+            if (highestTileNukeValue != null && highestTileNukeValue.second > 0)
+                Battle.moveAndAttack(MapUnitCombatant(unit), highestTileNukeValue.first)
+            HeadTowardsEnemyCityAutomation.tryHeadTowardsEnemyCity(unit)
         }
-        if (highestTileNukeValue > 0) {
-            Nuke.NUKE(MapUnitCombatant(unit), tileToNuke!!)
-        }
-        tryRelocateMissileToNearbyAttackableCities(unit)
     }
 
     /**
@@ -173,7 +176,7 @@ object AirUnitAutomation {
                     if (targetUnit.isInvisible(civ)) continue
                     // If we are nuking a unit at ground zero, it is more likely to be destroyed
                     val tileExplosionValue = if (targetTile == tile) 80 else 50
-                    
+
                     if (targetUnit.isMilitary()) {
                         explosionValue += if (targetTile == tile) evaluateCivValue(targetUnit.civ, -200, tileExplosionValue)
                         else evaluateCivValue(targetUnit.civ, -150, 50)

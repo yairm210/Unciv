@@ -90,7 +90,7 @@ private fun addCutoutCheckbox(table: Table, optionsPopup: OptionsPopup) {
     {
         optionsPopup.settings.androidCutout = it
         Display.setCutout(it)
-        optionsPopup.reopenAfterDiplayLayoutChange()
+        optionsPopup.reopenAfterDisplayLayoutChange()
     }
 }
 
@@ -99,7 +99,7 @@ private fun addHideSystemUiCheckbox(table: Table, optionsPopup: OptionsPopup) {
     {
         optionsPopup.settings.androidHideSystemUi = it
         Display.setSystemUiVisibility(hide = it)
-        optionsPopup.reopenAfterDiplayLayoutChange()
+        optionsPopup.reopenAfterDisplayLayoutChange()
     }
 }
 
@@ -116,7 +116,7 @@ private fun addOrientationSelectBox(table: Table, optionsPopup: OptionsPopup) {
         val orientation = selectBox.selected
         settings.displayOrientation = orientation
         Display.setOrientation(orientation)
-        optionsPopup.reopenAfterDiplayLayoutChange()
+        optionsPopup.reopenAfterDisplayLayoutChange()
     }
 
     table.add(selectBox).minWidth(optionsPopup.selectBoxMinWidth).pad(10f).row()
@@ -301,9 +301,9 @@ private fun addTranslationGeneration(table: Table, optionsPopup: OptionsPopup) {
     table.add(generateScreenshotsButton).colspan(2).row()
 }
 
-data class ScreenshotConfig(val width: Int, val height: Int, val screenSize: ScreenSize, var fileLocation:String, var centerTile:Vector2, var attackCity:Boolean=true)
+data class ScreenshotConfig(val width: Int, val height: Int, val screenSize: ScreenSize, var fileLocation: String, var centerTile: Vector2, var attackCity: Boolean = true)
 
-private fun CoroutineScope.generateScreenshots(settings: GameSettings, configs:ArrayList<ScreenshotConfig>) {
+private fun CoroutineScope.generateScreenshots(settings: GameSettings, configs: ArrayList<ScreenshotConfig>) {
     val currentConfig = configs.first()
     launchOnGLThread {
         val screenshotGame =

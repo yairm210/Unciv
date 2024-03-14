@@ -22,8 +22,8 @@ import org.junit.runner.RunWith
 @RunWith(GdxTestRunner::class)
 class UnitMovementTests {
 
-    private lateinit var tile:Tile
-    private lateinit var civInfo:Civilization
+    private lateinit var tile: Tile
+    private lateinit var civInfo: Civilization
     private var testGame = TestGame()
 
     @Before
@@ -48,7 +48,7 @@ class UnitMovementTests {
         }
     }
 
-    fun addFakeUnit(unitType: UnitType, uniques:List<String> = listOf()): MapUnit {
+    fun addFakeUnit(unitType: UnitType, uniques: List<String> = listOf()): MapUnit {
         val baseUnit = BaseUnit()
         baseUnit.unitType = unitType.name
         baseUnit.ruleset = testGame.ruleset

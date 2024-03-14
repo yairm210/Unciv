@@ -443,7 +443,7 @@ class Civilization : IsPartOfGameInfoSerialization {
     /** Gets the number of resources available to this city
      * Does not include city-wide resources
      * Returns 0 for undefined resources */
-    fun getResourceAmount(resourceName:String): Int {
+    fun getResourceAmount(resourceName: String): Int {
         return getCivResourcesByName()[resourceName] ?: 0
     }
 
@@ -716,10 +716,6 @@ class Civilization : IsPartOfGameInfoSerialization {
         tacticalAI.init(this)
 
         cache.setTransients()
-
-        thingsToFocusOnForVictory = emptySet()
-        for (victory in getPreferredVictoryTypeObjects())
-            thingsToFocusOnForVictory += victory.getThingsToFocus(this)
     }
 
 
@@ -821,9 +817,10 @@ class Civilization : IsPartOfGameInfoSerialization {
     }
     // endregion
 
-    fun addCity(location: Vector2, unit: MapUnit? = null) {
+    fun addCity(location: Vector2, unit: MapUnit? = null): City {
         val newCity = CityFounder().foundCity(this, location, unit)
         newCity.cityConstructions.chooseNextConstruction()
+        return newCity
     }
 
     /** Destroy what's left of a Civilization
@@ -865,6 +862,19 @@ class Civilization : IsPartOfGameInfoSerialization {
             // move new capital
             city.cityConstructions.addBuilding(city.capitalCityIndicator())
             city.isBeingRazed = false // stop razing the new capital if it was being razed
+
+            // move the buildings with MovedToNewCapital unique
+            if (oldCapital != null) {
+                // Get the Set of the buildings to move
+                val buildingsToMove = oldCapital.cityConstructions.getBuiltBuildings().filter {
+                    it.hasUnique(UniqueType.MovesToNewCapital)
+                }.toSet()
+
+                oldCapital.cityConstructions.removeBuildings(buildingsToMove)
+
+                // Add the buildings to new capital
+                for (building in buildingsToMove) city.cityConstructions.addBuilding(building)
+            }
         }
         oldCapital?.cityConstructions?.removeBuilding(oldCapital.capitalCityIndicator())
     }

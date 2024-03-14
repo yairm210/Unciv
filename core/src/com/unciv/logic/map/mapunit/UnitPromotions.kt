@@ -116,7 +116,7 @@ class UnitPromotions : IsPartOfGameInfoSerialization {
         return unit.civ.gameInfo.ruleset.unitPromotions.values.asSequence().filter { isAvailable(it) }
     }
 
-    private fun isAvailable(promotion: Promotion):Boolean {
+    private fun isAvailable(promotion: Promotion): Boolean {
         if (promotion.name in promotions) return false
         if (unit.type.name !in promotion.unitTypes) return false
         if (promotion.prerequisites.isNotEmpty() && promotion.prerequisites.none { it in promotions }) return false

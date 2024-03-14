@@ -23,7 +23,7 @@ object RulesetCache : HashMap<String, Ruleset>() {
 
 
     /** Returns error lines from loading the rulesets, so we can display the errors to users */
-    fun loadRulesets(consoleMode: Boolean = false, noMods: Boolean = false) :List<String> {
+    fun loadRulesets(consoleMode: Boolean = false, noMods: Boolean = false): List<String> {
         val newRulesets = HashMap<String, Ruleset>()
 
         for (ruleset in BaseRuleset.values()) {

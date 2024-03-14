@@ -19,8 +19,6 @@ import com.unciv.UncivGame
 import com.unciv.models.metadata.GameSettings
 import com.unciv.ui.components.ZoomGestureListener
 import com.unciv.ui.components.input.KeyboardPanningListener
-import java.lang.Float.max
-import java.lang.Float.min
 import kotlin.math.sqrt
 
 
@@ -138,7 +136,7 @@ open class ZoomableScrollPane(
     }
 
     open fun zoom(zoomScale: Float) {
-        val newZoom = min(max(zoomScale, minZoom), maxZoom)
+        val newZoom = zoomScale.coerceIn(minZoom, maxZoom)
         val oldZoomX = scaleX
         val oldZoomY = scaleY
 
@@ -362,7 +360,7 @@ open class ZoomableScrollPane(
         return if (isScrolling()) scrollingTo!! else Vector2(scrollX, scrollY)
     }
 
-    class ScrollToAction(private val zoomableScrollPane: ZoomableScrollPane) :FloatAction(0f, 1f, 0.4f) {
+    class ScrollToAction(private val zoomableScrollPane: ZoomableScrollPane) : FloatAction(0f, 1f, 0.4f) {
 
         private val originalScrollX = zoomableScrollPane.scrollX
         private val originalScrollY = zoomableScrollPane.scrollY

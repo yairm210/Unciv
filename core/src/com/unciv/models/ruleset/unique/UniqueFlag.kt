@@ -7,8 +7,8 @@ enum class UniqueFlag {
     NoConditionals,
     ;
     companion object {
-        val none: EnumSet<UniqueFlag> = EnumSet.noneOf(UniqueFlag::class.java)
         val setOfHiddenToUsers: EnumSet<UniqueFlag> = EnumSet.of(HiddenToUsers)
         val setOfNoConditionals: EnumSet<UniqueFlag> = EnumSet.of(NoConditionals)
+        val setOfHiddenNoConditionals: EnumSet<UniqueFlag> = EnumSet.of(HiddenToUsers, NoConditionals)
     }
 }

@@ -39,6 +39,7 @@ import com.unciv.ui.components.extensions.packIfNeeded
 import com.unciv.ui.components.extensions.surroundWithCircle
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
+import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.components.input.KeyboardBinding
 import com.unciv.ui.components.input.keyShortcuts
 import com.unciv.ui.components.input.onActivation
@@ -267,6 +268,11 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
                 var maxButtonWidth = constructionsQueueTable.width
                 for (dto in constructionButtonDTOList) {
 
+                    /** filter out showing buildings that have RequiresBuildingInThisCity
+                     * rejection (eg requiredBuilding entry) which are buildable.
+                     * The rejection for RequiresBuildingInThisCity isn't yielded if
+                     * the prerequisite is in the queue
+                     */
                     if (dto.construction is Building
                             && dto.rejectionReason?.type == RejectionReasonType.RequiresBuildingInThisCity
                             && constructionButtonDTOList.any {
@@ -327,7 +333,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
         val isFirstConstructionOfItsKind = cityConstructions.isFirstConstructionOfItsKind(constructionQueueIndex, constructionName)
 
         var text = constructionName.tr(true) +
-                if (constructionName in PerpetualConstruction.perpetualConstructionsMap) "\n∞"
+                if (constructionName in PerpetualConstruction.perpetualConstructionsMap) "\n" + Fonts.infinity
                 else cityConstructions.getTurnsToConstructionString(construction, isFirstConstructionOfItsKind)
 
         val constructionResource = if (construction is BaseUnit)
@@ -397,7 +403,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
         if (cityConstructions.getWorkDone(constructionName) == 0) return Table()
 
         val constructionPercentage = cityConstructions.getWorkDone(constructionName) /
-                (construction as INonPerpetualConstruction).getProductionCost(cityConstructions.city.civ).toFloat()
+                (construction as INonPerpetualConstruction).getProductionCost(cityConstructions.city.civ, cityConstructions.city).toFloat()
         return ImageGetter.getProgressBarVertical(2f, 30f, constructionPercentage,
                 Color.BROWN.brighten(0.5f), Color.WHITE)
     }

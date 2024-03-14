@@ -26,6 +26,7 @@ import com.unciv.logic.map.MapPathing
 import com.unciv.logic.map.TileMap
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.mapunit.movement.UnitMovement
+import com.unciv.logic.map.tile.RoadStatus
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.UncivSound
 import com.unciv.models.UnitActionType
@@ -38,6 +39,7 @@ import com.unciv.ui.components.extensions.center
 import com.unciv.ui.components.extensions.colorFromRGB
 import com.unciv.ui.components.extensions.darken
 import com.unciv.ui.components.extensions.isShiftKeyPressed
+import com.unciv.ui.components.extensions.setSize
 import com.unciv.ui.components.extensions.surroundWithCircle
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.input.ActivationTypes
@@ -440,6 +442,7 @@ class WorldMapHolder(
            val validTile = tile.isLand &&
                !tile.isImpassible() &&
                 selectedUnit.civ.hasExplored(tile)
+
             if (validTile) {
                 val roadPath: List<Tile>? = MapPathing.getRoadPath(selectedUnit, selectedUnit.currentTile, tile)
                 launchOnGLThread {
@@ -540,11 +543,16 @@ class WorldMapHolder(
     }
 
     private fun getSwapWithButton(dto: SwapWithButtonDto): Group {
-        val swapWithButton = Group().apply { width = buttonSize; height = buttonSize }
-        swapWithButton.addActor(ImageGetter.getCircle().apply { width = buttonSize; height = buttonSize })
+        val swapWithButton = Group()
+        swapWithButton.setSize(buttonSize, buttonSize)
+        swapWithButton.addActor(ImageGetter.getCircle(size = buttonSize))
         swapWithButton.addActor(
-            ImageGetter.getImage("OtherIcons/Swap")
-            .apply { color = Color.BLACK; width = buttonSize / 2; height = buttonSize / 2; center(swapWithButton) })
+            ImageGetter.getImage("OtherIcons/Swap").apply {
+                color = Color.BLACK
+                setSize(buttonSize / 2)
+                center(swapWithButton)
+            }
+        )
 
         val unitIcon = UnitGroup(dto.unit, smallerCircleSizes)
         unitIcon.y = buttonSize - unitIcon.height
@@ -562,7 +570,8 @@ class WorldMapHolder(
     }
 
     private fun getConnectRoadButton(dto: ConnectRoadButtonDto): Group {
-        val connectRoadButton = Group().apply { width = buttonSize;height = buttonSize; }
+        val connectRoadButton = Group()
+        connectRoadButton.setSize(buttonSize, buttonSize)
         connectRoadButton.addActor(ImageGetter.getUnitActionPortrait("RoadConnection", buttonSize * 0.8f).apply {
                 center(connectRoadButton)
             }
@@ -575,7 +584,6 @@ class WorldMapHolder(
         connectRoadButton.onActivation(UncivSound.Silent) {
             connectRoadToTargetTile(dto.unit, dto.tile)
         }
-
         connectRoadButton.keyShortcuts.add(KeyboardBinding.ConnectRoad)
 
         return connectRoadButton
@@ -723,8 +731,10 @@ class WorldMapHolder(
         // Z-Layer: 0
         // Highlight suitable tiles in road connecting mode
         if (worldScreen.bottomUnitTable.selectedUnitIsConnectingRoad) {
-            val validTiles = unit.civ.gameInfo.tileMap.tileList.filter {
-                MapPathing.isValidRoadPathTile(unit, it)
+            val roadImprovement = RoadStatus.Road.improvement(unit.currentTile.ruleset)
+            val validTiles = if (roadImprovement==null) listOf()
+            else unit.civ.gameInfo.tileMap.tileList.filter {
+                MapPathing.isValidRoadPathTile(unit, it, roadImprovement)
             }
             val connectRoadTileOverlayColor = Color.RED
             for (tile in validTiles)  {

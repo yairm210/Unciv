@@ -7,5 +7,5 @@ import com.unciv.logic.civilization.PlayerType
 class Player(
     var chosenCiv: String = Constants.random,
     var playerType: PlayerType = PlayerType.AI,
-    var playerId:String = ""
+    var playerId: String = ""
 ) : IsPartOfGameInfoSerialization

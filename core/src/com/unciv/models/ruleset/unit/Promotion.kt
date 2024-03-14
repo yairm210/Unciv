@@ -43,7 +43,7 @@ class Promotion : RulesetObject() {
 
 
     /** Used to describe a Promotion on the PromotionPickerScreen - fully translated */
-    fun getDescription(promotionsForUnitType: Collection<Promotion>):String {
+    fun getDescription(promotionsForUnitType: Collection<Promotion>): String {
         val textList = ArrayList<String>()
 
         uniquesToDescription(textList)

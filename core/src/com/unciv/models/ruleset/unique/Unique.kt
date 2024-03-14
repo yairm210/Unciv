@@ -151,7 +151,7 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
 
 /** Used to cache results of getMatchingUniques
  * Must only be used when we're sure the matching uniques will not change in the meantime */
-class LocalUniqueCache(val cache:Boolean = true) {
+class LocalUniqueCache(val cache: Boolean = true) {
     // This stores sequences *that iterate directly on a list* - that is, pre-resolved
     private val keyToUniques = HashMap<String, Sequence<Unique>>()
 
@@ -204,10 +204,14 @@ class LocalUniqueCache(val cache:Boolean = true) {
     }
 }
 
-class UniqueMap: HashMap<String, ArrayList<Unique>>() {
+class UniqueMap() : HashMap<String, ArrayList<Unique>>() {
     //todo Once all untyped Uniques are converted, this should be  HashMap<UniqueType, *>
     // For now, we can have both map types "side by side" each serving their own purpose,
     // and gradually this one will be deprecated in favor of the other
+
+    constructor(uniques: Sequence<Unique>) : this() {
+        addUniques(uniques.asIterable())
+    }
 
     /** Adds one [unique] unless it has a ConditionalTimedUnique conditional */
     fun addUnique(unique: Unique) {
@@ -221,11 +225,8 @@ class UniqueMap: HashMap<String, ArrayList<Unique>>() {
         for (unique in uniques) addUnique(unique)
     }
 
-    fun getUniques(placeholderText: String): Sequence<Unique> {
-        return this[placeholderText]?.asSequence() ?: emptySequence()
-    }
-
-    fun getUniques(uniqueType: UniqueType) = getUniques(uniqueType.placeholderText)
+    fun getUniques(uniqueType: UniqueType) =
+        this[uniqueType.placeholderText]?.asSequence() ?: emptySequence()
 
     fun getMatchingUniques(uniqueType: UniqueType, state: StateForConditionals) = getUniques(uniqueType)
         .filter { it.conditionalsApply(state) && !it.isTimedTriggerable }
@@ -238,6 +239,9 @@ class UniqueMap: HashMap<String, ArrayList<Unique>>() {
             && unique.conditionalsApply(stateForConditionals)
         }
     }
+
+    /** This is an alias for [containsKey] to clarify when a pure string-based check is legitimate. */
+    fun containsFilteringUnique(filter: String) = containsKey(filter)
 }
 
 
@@ -253,8 +257,8 @@ class TemporaryUnique() : IsPartOfGameInfoSerialization {
 
     var unique: String = ""
 
-    var sourceObjectType: UniqueTarget? = null
-    var sourceObjectName: String? = null
+    private var sourceObjectType: UniqueTarget? = null
+    private var sourceObjectName: String? = null
 
     @delegate:Transient
     val uniqueObject: Unique by lazy { Unique(unique, sourceObjectType, sourceObjectName) }

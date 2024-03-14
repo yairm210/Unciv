@@ -12,7 +12,7 @@ object MapSaver {
     const val mapsFolder = "maps"
     var saveZipped = true
 
-    private fun getMap(mapName:String) = Gdx.files.local("$mapsFolder/$mapName")
+    private fun getMap(mapName: String) = Gdx.files.local("$mapsFolder/$mapName")
 
     fun mapFromSavedString(mapString: String): TileMap {
         val unzippedJson = try {

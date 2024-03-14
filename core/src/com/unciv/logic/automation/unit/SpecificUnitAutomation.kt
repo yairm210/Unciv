@@ -144,11 +144,17 @@ object SpecificUnitAutomation {
 
         if (bestCityLocation == null) {
             // Find the best tile that is within
-            bestCityLocation = bestTilesInfo.tileRankMap.filter { bestTilesInfo.bestTile == null || it.value >= bestTilesInfo.tileRankMap[bestTilesInfo.bestTile]!! - 5 }.asSequence().sortedByDescending { it.value }.firstOrNull {
-                if (it.key in dangerousTiles && it != unit.getTile()) return@firstOrNull false
+            fun isTileRankOK(it: Map.Entry<Tile, Float>): Boolean {
+                if (it.key in dangerousTiles && it.key != unit.getTile()) return false
                 val pathSize = unit.movement.getShortestPath(it.key).size
-                return@firstOrNull pathSize in 1..3
-            }?.key
+                return pathSize in 1..3
+            }
+
+            bestCityLocation = bestTilesInfo.tileRankMap.entries.asSequence()
+                .filter { bestTilesInfo.bestTile == null || it.value >= bestTilesInfo.tileRankMap[bestTilesInfo.bestTile]!! - 5 }
+                .sortedByDescending { it.value }
+                .firstOrNull(::isTileRankOK)
+                ?.key
         }
 
         // We still haven't found a best city tile within 3 turns so lets just head to the best tile

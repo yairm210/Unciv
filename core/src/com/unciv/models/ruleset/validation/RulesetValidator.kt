@@ -84,6 +84,7 @@ class RulesetValidator(val ruleset: Ruleset) {
         addUnitTypeErrors(lines, tryFixUnknownUniques)
         addVictoryTypeErrors(lines)
         addDifficultyErrors(lines)
+        addEventErrors(lines, tryFixUnknownUniques)
         addCityStateTypeErrors(tryFixUnknownUniques, lines)
 
         // Check for mod or Civ_V_GnK to avoid running the same test twice (~200ms for the builtin assets)
@@ -138,6 +139,17 @@ class RulesetValidator(val ruleset: Ruleset) {
             for (unitName in difficulty.aiCityStateBonusStartingUnits + difficulty.aiMajorCivBonusStartingUnits + difficulty.playerBonusStartingUnits)
                 if (unitName != Constants.eraSpecificUnit && !ruleset.units.containsKey(unitName))
                     lines.add("Difficulty ${difficulty.name} contains starting unit $unitName which does not exist!", sourceObject = null)
+        }
+    }
+
+    private fun addEventErrors(lines: RulesetErrorList,
+                               tryFixUnknownUniques: Boolean) {
+        // A Difficulty is not a IHasUniques, so not suitable as sourceObject
+        for (event in ruleset.events.values) {
+            for (choice in event.choices) {
+                for (unique in choice.conditionObjects + choice.triggeredUniqueObjects)
+                    lines += uniqueValidator.checkUnique(unique, tryFixUnknownUniques, null, true)
+            }
         }
     }
 
@@ -564,7 +576,7 @@ class RulesetValidator(val ruleset: Ruleset) {
         }
     }
 
-    data class SuggestedColors(val innerColor: Color, val outerColor:Color)
+    data class SuggestedColors(val innerColor: Color, val outerColor: Color)
 
     private fun getSuggestedColors(nation: Nation): SuggestedColors {
         val innerColorLuminance = getRelativeLuminance(nation.getInnerColor())
@@ -626,14 +638,22 @@ class RulesetValidator(val ruleset: Ruleset) {
         for (techColumn in ruleset.techColumns) {
             if (techColumn.columnNumber < 0)
                 lines.add("Tech Column number ${techColumn.columnNumber} is negative", sourceObject = null)
-            if (techColumn.buildingCost == -1)
+
+            val buildingsWithoutAssignedCost = ruleset.buildings.values.filter {
+                it.cost == -1 && techColumn.techs.map { it.name }.contains(it.requiredTech) }.toList()
+
+
+            val nonWondersWithoutAssignedCost = buildingsWithoutAssignedCost.filter { !it.isAnyWonder() }
+            if (techColumn.buildingCost == -1 && nonWondersWithoutAssignedCost.any())
                 lines.add(
-                    "Tech Column number ${techColumn.columnNumber} has no explicit building cost",
+                    "Tech Column number ${techColumn.columnNumber} has no explicit building cost leaving "+nonWondersWithoutAssignedCost.joinToString()+" unassigned",
                     RulesetErrorSeverity.Warning, sourceObject = null
                 )
-            if (techColumn.wonderCost == -1)
+
+            val wondersWithoutAssignedCost = buildingsWithoutAssignedCost.filter { it.isAnyWonder() }
+            if (techColumn.wonderCost == -1 && wondersWithoutAssignedCost.any())
                 lines.add(
-                    "Tech Column number ${techColumn.columnNumber} has no explicit wonder cost",
+                    "Tech Column number ${techColumn.columnNumber} has no explicit wonder cost leaving "+wondersWithoutAssignedCost.joinToString()+" unassigned",
                     RulesetErrorSeverity.Warning, sourceObject = null
                 )
         }
@@ -747,6 +767,11 @@ class RulesetValidator(val ruleset: Ruleset) {
     }
 
     private fun checkTilesetSanity(lines: RulesetErrorList) {
+        // If running from a jar *and* checking a builtin ruleset, skip this check.
+        // - We can't list() the jsons, and the unit test before relase is sufficient, the tileset config can't have changed since then.
+        if (ruleset.folderLocation == null && this::class.java.`package`?.specificationVersion != null)
+            return
+
         val tilesetConfigFolder = (ruleset.folderLocation ?: Gdx.files.internal("")).child("jsons\\TileSets")
         if (!tilesetConfigFolder.exists()) return
 

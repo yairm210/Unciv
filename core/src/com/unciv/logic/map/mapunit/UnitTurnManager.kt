@@ -1,7 +1,6 @@
 package com.unciv.logic.map.mapunit
 
 import com.unciv.UncivGame
-import com.unciv.logic.battle.MapUnitCombatant
 import com.unciv.logic.civilization.LocationAction
 import com.unciv.logic.civilization.MapUnitAction
 import com.unciv.logic.civilization.NotificationCategory
@@ -13,6 +12,10 @@ class UnitTurnManager(val unit: MapUnit) {
 
     fun endTurn() {
         unit.movement.clearPathfindingCache()
+
+        for (unique in unit.getTriggeredUniques(UniqueType.TriggerUponTurnEnd))
+            UniqueTriggerActivation.triggerUnique(unique, unit)
+
         if (unit.currentMovement > 0
                 && unit.getTile().improvementInProgress != null
                 && unit.canBuildImprovement(unit.getTile().getTileImprovementInProgress()!!)
@@ -85,7 +88,7 @@ class UnitTurnManager(val unit: MapUnit) {
             }.maxByOrNull { it.second }
             ?: return
         if (damage == 0) return
-        MapUnitCombatant(unit).takeDamage(damage)
+        unit.takeDamage(damage)
         val improvementName = citadelTile.improvement!!  // guarded by `getUnpillagedImprovement() != null` above
         val improvementIcon = "ImprovementIcons/$improvementName"
         val locations = LocationAction(citadelTile.position, unit.currentTile.position)
@@ -116,7 +119,7 @@ class UnitTurnManager(val unit: MapUnit) {
         val tileDamage = unit.getDamageFromTerrain()
         if (tileDamage == 0) return
 
-        MapUnitCombatant(unit).takeDamage(tileDamage)
+        unit.takeDamage(tileDamage)
 
         if (unit.isDestroyed) {
             unit.civ.addNotification(

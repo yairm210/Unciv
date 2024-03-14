@@ -101,6 +101,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
 
     @Transient
     lateinit var currentTile: Tile
+
     fun hasTile() = ::currentTile.isInitialized
 
     @Transient
@@ -198,7 +199,6 @@ class MapUnit : IsPartOfGameInfoSerialization {
     val type: UnitType
         get() = baseUnit.type
 
-    fun baseUnit(): BaseUnit = baseUnit
     fun getMovementString(): String =
         DecimalFormat("0.#").format(currentMovement.toDouble()) + "/" + getMaxMovement()
 
@@ -358,7 +358,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
 
     fun getRange(): Int {
         if (baseUnit.isMelee()) return 1
-        var range = baseUnit().range
+        var range = baseUnit.range
         range += getMatchingUniques(UniqueType.Range, checkCivInfoUniques = true)
             .sumOf { it.params[0].toInt() }
         return range
@@ -460,7 +460,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
         return true
     }
 
-    fun getInterceptionRange():Int {
+    fun getInterceptionRange(): Int {
         val rangeFromUniques = getMatchingUniques(UniqueType.AirInterceptionRange, checkCivInfoUniques = true)
             .sumOf { it.params[0].toInt() }
         return baseUnit.interceptRange + rangeFromUniques
@@ -534,7 +534,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
         return MultiFilter.multiFilter(filter, ::matchesSingleFilter)
     }
 
-    private fun matchesSingleFilter(filter:String): Boolean {
+    private fun matchesSingleFilter(filter: String): Boolean {
         return when (filter) {
             Constants.wounded, "wounded units" -> health < 100
             Constants.barbarians, "Barbarian" -> civ.isBarbarian()
@@ -575,13 +575,13 @@ class MapUnit : IsPartOfGameInfoSerialization {
         power /= 100
         return power
     }
-    
+
     fun getOtherEscortUnit(): MapUnit? {
         if (isCivilian()) return getTile().militaryUnit
         if (isMilitary()) return getTile().civilianUnit
         return null
     }
-    
+
     fun isEscorting(): Boolean {
         if (escorting) {
             if (getOtherEscortUnit() != null) return true
@@ -612,19 +612,11 @@ class MapUnit : IsPartOfGameInfoSerialization {
     }
 
     fun updateUniques() {
-        val uniques = ArrayList<Unique>()
-        val baseUnit = baseUnit()
-        uniques.addAll(baseUnit.uniqueObjects)
-        uniques.addAll(type.uniqueObjects)
-
-        for (promotion in promotions.getPromotions()) {
-            uniques.addAll(promotion.uniqueObjects)
-        }
-
-        tempUniquesMap = UniqueMap().apply {
-            addUniques(uniques)
-        }
-
+        val uniqueSources =
+            baseUnit.uniqueObjects.asSequence() +
+                type.uniqueObjects +
+                promotions.getPromotions().flatMap { it.uniqueObjects }
+        tempUniquesMap = UniqueMap(uniqueSources)
         cache.updateUniques()
     }
 
@@ -750,6 +742,15 @@ class MapUnit : IsPartOfGameInfoSerialization {
             if (hasUnique(UniqueType.HealingEffectsDoubled, checkCivInfoUniques = true)) 2
             else 1
         if (health > 100) health = 100
+        cache.updateUniques()
+    }
+
+    fun takeDamage(amount: Int) {
+        health -= amount
+        if (health > 100) health = 100 // For cheating modders, e.g. negative tile damage
+        if (health < 0) health = 0
+        if (health == 0) destroy()
+        else cache.updateUniques()
     }
 
     fun destroy(destroyTransportedUnit: Boolean = true) {
@@ -872,6 +873,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
         // this check is here in order to not load the fresh built unit into carrier right after the build
         isTransported = !tile.isCityCenter() && baseUnit.movesLikeAirUnits()  // not moving civilians
         moveThroughTile(tile)
+        cache.updateUniques()
     }
 
     fun startEscorting() {
@@ -950,6 +952,8 @@ class MapUnit : IsPartOfGameInfoSerialization {
         owner = civInfo.civName
         this.civ = civInfo
         civInfo.units.addUnit(this, updateCivInfo)
+        if (::baseUnit.isInitialized)
+        cache.updateUniques()
     }
 
     fun capturedBy(captor: Civilization) {

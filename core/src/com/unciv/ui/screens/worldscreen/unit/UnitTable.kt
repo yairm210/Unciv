@@ -50,7 +50,7 @@ class UnitTable(val worldScreen: WorldScreen) : Table() {
     var selectedUnitIsConnectingRoad = false
 
     /** Sending no unit clears the selected units entirely */
-    fun selectUnit(unit: MapUnit?=null, append:Boolean=false) {
+    fun selectUnit(unit: MapUnit? = null, append: Boolean = false) {
         if (!append) selectedUnits.clear()
         selectedCity = null
         if (unit != null) {
@@ -168,12 +168,12 @@ class UnitTable(val worldScreen: WorldScreen) : Table() {
 
                 if (!unit.isCivilian()) {
                     unitDescriptionTable.add(ImageGetter.getStatIcon("Strength")).size(20f)
-                    unitDescriptionTable.add(unit.baseUnit().strength.toString()).padRight(10f)
+                    unitDescriptionTable.add(unit.baseUnit.strength.toString()).padRight(10f)
                 }
 
-                if (unit.baseUnit().rangedStrength != 0) {
+                if (unit.baseUnit.rangedStrength != 0) {
                     unitDescriptionTable.add(ImageGetter.getStatIcon("RangedStrength")).size(20f)
-                    unitDescriptionTable.add(unit.baseUnit().rangedStrength.toString()).padRight(10f)
+                    unitDescriptionTable.add(unit.baseUnit.rangedStrength.toString()).padRight(10f)
                 }
 
                 if (unit.baseUnit.isRanged()) {

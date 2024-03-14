@@ -35,7 +35,7 @@ interface INonPerpetualConstruction : IConstruction, INamed, IHasUniques {
 
     override fun legacyRequiredTechs(): Sequence<String> = if (requiredTech == null) sequenceOf() else sequenceOf(requiredTech!!)
 
-    fun getProductionCost(civInfo: Civilization): Int
+    fun getProductionCost(civInfo: Civilization, city: City?): Int
     fun getStatBuyCost(city: City, stat: Stat): Int?
     fun getRejectionReasons(cityConstructions: CityConstructions): Sequence<RejectionReason>
 
@@ -74,9 +74,9 @@ interface INonPerpetualConstruction : IConstruction, INamed, IHasUniques {
         return ((30.0 * cost.toFloat()).pow(0.75) * hurryCostModifier.toPercent() / 10).toInt() * 10
     }
 
-    fun getBaseGoldCost(civInfo: Civilization): Double {
+    fun getBaseGoldCost(civInfo: Civilization, city: City?): Double {
         // https://forums.civfanatics.com/threads/rush-buying-formula.393892/
-        return (30.0 * getProductionCost(civInfo)).pow(0.75) * hurryCostModifier.toPercent()
+        return (30.0 * getProductionCost(civInfo, city)).pow(0.75) * hurryCostModifier.toPercent()
     }
 
     fun getBaseBuyCost(city: City, stat: Stat): Float? {
@@ -88,7 +88,7 @@ interface INonPerpetualConstruction : IConstruction, INamed, IHasUniques {
             .minByOrNull { it.params[0].toInt() }
         if (lowestCostUnique != null) return lowestCostUnique.params[0].toInt() * city.civ.gameInfo.speed.statCostModifiers[stat]!!
 
-        if (stat == Stat.Gold) return getBaseGoldCost(city.civ).toFloat()
+        if (stat == Stat.Gold) return getBaseGoldCost(city.civ, city).toFloat()
 
         // Can be purchased with [Stat] [cityFilter]
         if (getMatchingUniques(UniqueType.CanBePurchasedWithStat, conditionalState)
@@ -141,12 +141,14 @@ class RejectionReason(val type: RejectionReasonType,
         RejectionReasonType.MaxNumberBuildable,
     )
     private val orderedImportantRejectionTypes = listOf(
+        RejectionReasonType.ShouldNotBeDisplayed,
         RejectionReasonType.WonderBeingBuiltElsewhere,
         RejectionReasonType.NationalWonderBeingBuiltElsewhere,
         RejectionReasonType.RequiresBuildingInAllCities,
         RejectionReasonType.RequiresBuildingInThisCity,
         RejectionReasonType.RequiresBuildingInSomeCity,
         RejectionReasonType.RequiresBuildingInSomeCities,
+        RejectionReasonType.CanOnlyBeBuiltInSpecificCities,
         RejectionReasonType.CannotBeBuiltUnhappiness,
         RejectionReasonType.PopulationRequirement,
         RejectionReasonType.ConsumesResources,
@@ -154,11 +156,12 @@ class RejectionReason(val type: RejectionReasonType,
         RejectionReasonType.MaxNumberBuildable,
         RejectionReasonType.NoPlaceToPutUnit,
     )
-    // Used for units spawned, not built
+    // Exceptions. Used for units spawned/upgrade path, not built
     private val constructionRejectionReasonType = listOf(
         RejectionReasonType.Unbuildable,
         RejectionReasonType.CannotBeBuiltUnhappiness,
         RejectionReasonType.CannotBeBuilt,
+        RejectionReasonType.CanOnlyBeBuiltInSpecificCities,
     )
 }
 
@@ -178,7 +181,7 @@ enum class RejectionReasonType(val shouldShow: Boolean, val errorMessage: String
     MustNotBeNextToTile(false, "Must not be next to a specific tile"),
     MustOwnTile(false, "Must own a specific tile close by"),
     WaterUnitsInCoastalCities(false, "May only built water units in coastal cities"),
-    CanOnlyBeBuiltInSpecificCities(false, "Can only be built in specific cities"),
+    CanOnlyBeBuiltInSpecificCities(false, "Build requirements not met in this city"),
     MaxNumberBuildable(false, "Maximum number have been built or are being constructed"),
 
     UniqueToOtherNation(false, "Unique to another nation"),

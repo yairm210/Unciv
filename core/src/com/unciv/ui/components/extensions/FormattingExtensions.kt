@@ -20,7 +20,7 @@ fun Int.toPercent() = toFloat().toPercent()
 fun Float.toPercent() = 1 + this/100
 
 /** Convert a [resource name][this] into "Consumes [amount] $resource" string (untranslated) */
-fun String.getConsumesAmountString(amount: Int, isStockpiled:Boolean): String {
+fun String.getConsumesAmountString(amount: Int, isStockpiled: Boolean): String {
     val uniqueString = "{Consumes [$amount] [$this]}"
     return if (isStockpiled) "$uniqueString /${Fonts.turn}" else uniqueString
 }

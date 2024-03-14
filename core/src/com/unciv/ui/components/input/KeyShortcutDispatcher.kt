@@ -18,7 +18,7 @@ open class KeyShortcutDispatcher {
 
     fun add(shortcut: KeyShortcut?, action: ActivationAction?) {
         if (action == null || shortcut == null) return
-        shortcuts.removeIf { it.shortcut == shortcut }
+        shortcuts.removeAll { it.shortcut == shortcut }
         shortcuts.add(ShortcutAction(shortcut, action))
     }
 
@@ -42,23 +42,23 @@ open class KeyShortcutDispatcher {
     }
 
     fun remove(shortcut: KeyShortcut?) {
-        shortcuts.removeIf { it.shortcut == shortcut }
+        shortcuts.removeAll { it.shortcut == shortcut }
     }
 
     fun remove(binding: KeyboardBinding) {
-        shortcuts.removeIf { it.shortcut.binding == binding }
+        shortcuts.removeAll { it.shortcut.binding == binding }
     }
 
     fun remove(key: KeyCharAndCode?) {
-        shortcuts.removeIf { it.shortcut.key == key }
+        shortcuts.removeAll { it.shortcut.key == key }
     }
 
     fun remove(char: Char?) {
-        shortcuts.removeIf { it.shortcut.key.char == char }
+        shortcuts.removeAll { it.shortcut.key.char == char }
     }
 
     fun remove(keyCode: Int?) {
-        shortcuts.removeIf { it.shortcut.key.code == keyCode }
+        shortcuts.removeAll { it.shortcut.key.code == keyCode }
     }
 
     open fun isActive(): Boolean = true

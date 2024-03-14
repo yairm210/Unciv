@@ -14,7 +14,6 @@ import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
-import com.unciv.logic.civilization.managers.EspionageManager
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.models.ruleset.MilestoneType
 import com.unciv.models.ruleset.Policy
@@ -365,7 +364,7 @@ object NextTurnAutomation {
             civInfo.greatPeople.mayaLimitedFreeGP--
         }
     }
-    
+
     /** If we are able to build a spaceship but have already spent our resources, try disbanding
      *  a unit and selling a building to make room. Can happen due to trades etc */
     private fun freeUpSpaceResources(civInfo: Civilization) {

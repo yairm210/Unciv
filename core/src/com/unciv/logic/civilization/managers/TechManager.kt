@@ -25,6 +25,7 @@ import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.ui.components.MayaCalendar
 import com.unciv.ui.components.extensions.withItem
+import com.unciv.ui.components.fonts.Fonts
 import kotlin.math.ceil
 import kotlin.math.max
 import kotlin.math.min
@@ -148,7 +149,7 @@ class TechManager : IsPartOfGameInfoSerialization {
         val remainingCost = remainingScienceToTech(techName).toDouble()
         return when {
             remainingCost <= 0f -> "0"
-            civInfo.stats.statsForNextTurn.science <= 0f -> "∞"
+            civInfo.stats.statsForNextTurn.science <= 0f -> Fonts.infinity.toString()
             else -> max(1, ceil(remainingCost / civInfo.stats.statsForNextTurn.science).toInt()).toString()
         }
     }
@@ -301,8 +302,12 @@ class TechManager : IsPartOfGameInfoSerialization {
             if (!unique.hasTriggerConditional() && unique.conditionalsApply(StateForConditionals(civInfo)))
                 UniqueTriggerActivation.triggerUnique(unique, civInfo, triggerNotificationText = triggerNotificationText)
 
+        for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponResearchOld))
+            if (unique.conditionals.any {it.type == UniqueType.TriggerUponResearchOld && it.params[0] == techName})
+                UniqueTriggerActivation.triggerUnique(unique, civInfo, triggerNotificationText = triggerNotificationText)
+
         for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponResearch))
-            if (unique.conditionals.any {it.type == UniqueType.TriggerUponResearch && it.params[0] == techName})
+            if (unique.conditionals.any {it.type == UniqueType.TriggerUponResearch && newTech.matchesFilter(it.params[0]) })
                 UniqueTriggerActivation.triggerUnique(unique, civInfo, triggerNotificationText = triggerNotificationText)
 
 
@@ -455,6 +460,13 @@ class TechManager : IsPartOfGameInfoSerialization {
                             civInfo,
                             triggerNotificationText = "due to entering the [$eraName]"
                         )
+
+            // The unfiltered version
+            for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponEnteringEraUnfiltered))
+                UniqueTriggerActivation.triggerUnique(
+                    unique,
+                    civInfo,
+                    triggerNotificationText = "due to entering the [${currentEra.name}]")
         }
     }
 

@@ -116,7 +116,7 @@ object DeclareWar {
 
 
     /** Everything that happens to both sides equally when war is declared by one side on the other */
-    private fun onWarDeclared(diplomacyManager:DiplomacyManager, isOffensiveWar: Boolean) {
+    private fun onWarDeclared(diplomacyManager: DiplomacyManager, isOffensiveWar: Boolean) {
         // Cancel all trades.
         for (trade in diplomacyManager.trades)
             for (offer in trade.theirOffers.filter { it.duration > 0 && it.name != Constants.defensivePact})

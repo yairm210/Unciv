@@ -35,7 +35,7 @@ class Terrain : RulesetStatsObject() {
     @Suppress("PropertyName")   // RGB is expected to be in caps
     var RGB: List<Int>? = null
     var movementCost = 1
-    var defenceBonus:Float = 0f
+    var defenceBonus: Float = 0f
     var impassable = false
 
     @Transient

@@ -8,25 +8,25 @@ This file contains the base terrains, terrain features and natural wonders that 
 
 Each terrain entry has the following structure:
 
-| Attribute | Type | Default | Notes |
-| --------- | ---- | ------- | ----- |
-| name | String | Required | [^A] |
-| type | Enum | Required | Land, Water, TerrainFeature, NaturalWonder [^B] |
-| occursOn | List of Strings | none | Only for terrain features and Natural Wonders: The baseTerrain it can be placed on |
-| turnsInto | String | none | Only for NaturalWonder: the base terrain is changed to this after placing the Natural Wonder |
-| weight | Integer | 10 | Only for NaturalWonder: _relative_ weight of being picked by the map generator |
-| [`<stats>`](#general-stat) | Float | 0 | Per-turn yield or bonus yield for the tile |
-| overrideStats | Boolean | false | If true, a feature's yields replace any yield from underlying terrain instead of adding to it |
-| unbuildable | Boolean | false | If true, nothing can be built here - not even resource improvements |
-| impassable | Boolean | false | No unit can enter unless it has a special unique |
-| movementCost | Integer | 1 | Base movement cost |
-| defenceBonus | Float | 0 | Combat bonus for units being attacked here |
-| RGB | [List of 3× Integer](5-Miscellaneous-JSON-files.md#rgb-colors-list) | Gold | RGB color for 'Default' tileset display |
-| uniques | List of Strings | empty | List of [unique abilities](../uniques) this terrain has |
-| civilopediaText | List | empty | See [civilopediaText chapter](5-Miscellaneous-JSON-files.md#civilopedia-text) |
+| Attribute                  | Type                                                                | Default  | Notes                                                                                         |
+|----------------------------|---------------------------------------------------------------------|----------|-----------------------------------------------------------------------------------------------|
+| name                       | String                                                              | Required | [^A]                                                                                          |
+| type                       | Enum                                                                | Required | Land, Water, TerrainFeature, NaturalWonder [^B]                                               |
+| occursOn                   | List of Strings                                                     | none     | Only for terrain features and Natural Wonders: The baseTerrain it can be placed on            |
+| turnsInto                  | String                                                              | none     | Only for NaturalWonder: the base terrain is changed to this after placing the Natural Wonder  |
+| weight                     | Integer                                                             | 10       | Only for NaturalWonder: _relative_ weight of being picked by the map generator                |
+| [`<stats>`](#general-stat) | Float                                                               | 0        | Per-turn yield or bonus yield for the tile                                                    |
+| overrideStats              | Boolean                                                             | false    | If true, a feature's yields replace any yield from underlying terrain instead of adding to it |
+| unbuildable                | Boolean                                                             | false    | If true, nothing can be built here - not even resource improvements                           |
+| impassable                 | Boolean                                                             | false    | No unit can enter unless it has a special unique                                              |
+| movementCost               | Integer                                                             | 1        | Base movement cost                                                                            |
+| defenceBonus               | Float                                                               | 0        | Combat bonus for units being attacked here                                                    |
+| RGB                        | [List of 3× Integer](5-Miscellaneous-JSON-files.md#rgb-colors-list) | Gold     | RGB color for 'Default' tileset display                                                       |
+| uniques                    | List of Strings                                                     | empty    | List of [unique abilities](../../uniques) this terrain has                                    |
+| civilopediaText            | List                                                                | empty    | See [civilopediaText chapter](5-Miscellaneous-JSON-files.md#civilopedia-text)                 |
 
 [^A]: Some names have special meanings. `Grassland` is used as fallback in some cases - e.g. Civilopedia prefers to displays a TerrainFeature on top of it, unless `occursOn` is not empty and does not contain it.
-      `River` is hardcoded to be used to look up a [Stats](../uniques.md#global-uniques) unique to determine the bonuses an actual River provides (remember, rivers live on the edges not as terrain).
+      `River` is hardcoded to be used to look up a [Stats](../../uniques.md#global-uniques) unique to determine the bonuses an actual River provides (remember, rivers live on the edges not as terrain).
       River should always be a TerrainFeature and have the same uniques the one in the vanilla rulesets has - if you change that, expect surprises.
 [^B]: A base ruleset mod is always expected to provide at least one Land and at least one Water terrain. We do not support Land-only or Water-only mods, even if they might be possible to pull off.
 
@@ -40,17 +40,17 @@ Note that improvements have two visual representations - icon and pixel graphic 
 
 Each improvement has the following structure:
 
-| Attribute | Type | Default | Notes |
-| --------- | ---- | ------- | ----- |
-| name | String | Required | [^A] |
-| terrainsCanBeBuiltOn | List of Strings | empty | Terrains that this improvement can be built on [^B]. Removable terrain features will need to be removed before building an improvement [^C]. Must be in [Terrains.json](#terrainsjson) |
-| techRequired | String | none | The name of the technology required to build this improvement |
-| uniqueTo | String | none | The name of the nation this improvement is unique for |
-| [`<stats>`](#stats) | Integer | 0 | Per-turn bonus yield for the tile |
-| turnsToBuild | Integer | -1 | Number of turns a worker spends building this. If -1, the improvement is unbuildable [^D]. If 0, the improvement is always built in one turn |
-| uniques | List of Strings | empty | List of [unique abilities](../uniques) this improvement has |
-| shortcutKey | String | none | Keyboard binding. Currently, only a single character is allowed (no function keys or Ctrl combinations) |
-| civilopediaText | List | empty | See [civilopediaText chapter](5-Miscellaneous-JSON-files.md#civilopedia-text) |
+| Attribute            | Type            | Default  | Notes                                                                                                                                                                                  |
+|----------------------|-----------------|----------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| name                 | String          | Required | [^A]                                                                                                                                                                                   |
+| terrainsCanBeBuiltOn | List of Strings | empty    | Terrains that this improvement can be built on [^B]. Removable terrain features will need to be removed before building an improvement [^C]. Must be in [Terrains.json](#terrainsjson) |
+| techRequired         | String          | none     | The name of the technology required to build this improvement                                                                                                                          |
+| uniqueTo             | String          | none     | The name of the nation this improvement is unique for                                                                                                                                  |
+| [`<stats>`](#stats)  | Integer         | 0        | Per-turn bonus yield for the tile                                                                                                                                                      |
+| turnsToBuild         | Integer         | -1       | Number of turns a worker spends building this. If -1, the improvement is unbuildable [^D]. If 0, the improvement is always built in one turn                                           |
+| uniques              | List of Strings | empty    | List of [unique abilities](../../uniques) this improvement has                                                                                                                         |
+| shortcutKey          | String          | none     | Keyboard binding. Currently, only a single character is allowed (no function keys or Ctrl combinations)                                                                                |
+| civilopediaText      | List            | empty    | See [civilopediaText chapter](5-Miscellaneous-JSON-files.md#civilopedia-text)                                                                                                          |
 
 [^A]: Special improvements: Road, Railroad, Remove \*, Cancel improvement order, City ruins, City center, Barbarian encampment - these have special meanings hardcoded to their names.
 [^B]: Improvements with an empty `terrainsCanBeBuiltOn` list and positive `turnsToBuild` value can only be built on [resources](#tileresourcesjson) with `improvedBy` or `improvement` that contains the corresponding improvement.
@@ -69,18 +69,18 @@ Note also that resources have two visual representations - icon and pixel graphi
 
 Each resource has the following structure:
 
-| Attribute | Type | Default | Notes |
-| --------- | ---- | ------- | ----- |
-| name | String | Required | |
-| resourceType | Enum | Bonus | Bonus, Luxury or Strategic |
-| terrainsCanBeFoundOn | List of Strings | empty | Terrains that this resource can be found on. Must be in [Terrains.json](#terrainsjson) |
-| [`<stats>`](#stats) | Integer | 0 | Per-turn bonus yield for the tile |
-| improvementStats | Object | none | The additional yield when improved, see [specialized stats](3-Map-related-JSON-files.md#specialized-stats)|
-| revealedBy | String | none | The technology name required to see, work and improve this resource |
-| improvedBy | List of strings | empty | The improvements required for obtaining this resource. Must be in [TileImprovements.json](#tileimprovementsjson) |
-| improvement | String | none | The improvement required to obtain this resource. Must be in [TileImprovements.json](#tileimprovementsjson) (redundant due to `improvedBy`) |
-| unique | List of Strings | empty | List of [unique abilities](../uniques) this resource has |
-| civilopediaText | List | empty | See [civilopediaText chapter](5-Miscellaneous-JSON-files.md#civilopedia-text) |
+| Attribute            | Type            | Default  | Notes                                                                                                                                       |
+|----------------------|-----------------|----------|---------------------------------------------------------------------------------------------------------------------------------------------|
+| name                 | String          | Required |                                                                                                                                             |
+| resourceType         | Enum            | Bonus    | Bonus, Luxury or Strategic                                                                                                                  |
+| terrainsCanBeFoundOn | List of Strings | empty    | Terrains that this resource can be found on. Must be in [Terrains.json](#terrainsjson)                                                      |
+| [`<stats>`](#stats)  | Integer         | 0        | Per-turn bonus yield for the tile                                                                                                           |
+| improvementStats     | Object          | none     | The additional yield when improved, see [specialized stats](3-Map-related-JSON-files.md#specialized-stats)                                  |
+| revealedBy           | String          | none     | The technology name required to see, work and improve this resource                                                                         |
+| improvedBy           | List of strings | empty    | The improvements required for obtaining this resource. Must be in [TileImprovements.json](#tileimprovementsjson)                            |
+| improvement          | String          | none     | The improvement required to obtain this resource. Must be in [TileImprovements.json](#tileimprovementsjson) (redundant due to `improvedBy`) |
+| unique               | List of Strings | empty    | List of [unique abilities](../../uniques) this resource has                                                                                 |
+| civilopediaText      | List            | empty    | See [civilopediaText chapter](5-Miscellaneous-JSON-files.md#civilopedia-text)                                                               |
 
 ## Ruins.json
 
@@ -90,13 +90,13 @@ This optional file contains the possible rewards ancient ruins give. If omitted,
 
 Each of the objects in the file represents a single reward you can get from ruins. It has the following structure:
 
-| Attribute | Type | Default | Notes |
-| --------- | ---- | ------- | ----- |
-| name | String | Required | Name of the ruins. Never shown to the user, but they have to be distinct |
-| notification | String | Required | Notification added to the user when this reward is chosen. If omitted, an empty notification is shown. Some notifications may have parameters, refer to the table below. |
-| weight | Integer (≥0) | 1 | _Relative_ weight this reward is chosen next [^E] |
-| uniques | List of Strings | empty |  List of [unique abilities](../uniques) that will trigger when entering the ruins. If more than 1 unique is added, the notification will be shown multiple times due to a bug (may be outdated) |
-| excludedDifficulties | List of Strings | empty | A list of all difficulties on which this reward may _not_ be awarded |
+| Attribute            | Type            | Default  | Notes                                                                                                                                                                                             |
+|----------------------|-----------------|----------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| name                 | String          | Required | Name of the ruins. Never shown to the user, but they have to be distinct                                                                                                                          |
+| notification         | String          | Required | Notification added to the user when this reward is chosen. If omitted, an empty notification is shown. Some notifications may have parameters, refer to the table below.                          |
+| weight               | Integer (≥0)    | 1        | _Relative_ weight this reward is chosen next [^E]                                                                                                                                                 |
+| uniques              | List of Strings | empty    | List of [unique abilities](../../uniques) that will trigger when entering the ruins. If more than 1 unique is added, the notification will be shown multiple times due to a bug (may be outdated) |
+| excludedDifficulties | List of Strings | empty    | A list of all difficulties on which this reward may _not_ be awarded                                                                                                                              |
 
 [^E]: The exact algorithm for choosing a reward is the following:
 
@@ -109,14 +109,14 @@ Each of the objects in the file represents a single reward you can get from ruin
 Some of the rewards ruins can give will have results that are not deterministic when writing it in the JSON, so creating a good notification for it would be impossible. An example for this would be the "Gain [50]-[100] [Gold]" unique, which will give a random amount of gold. For this reason, we allow some notifications to have parameters, in which values will be filled, such as "You found [goldAmount] gold in the ruins!". All the uniques which have this property can be found below.
 <!-- (need to update) -->
 
-| Unique | Parameters |
-| ------ | ---------- |
-| Free [] found in the ruins | The name of the unit will be filled in the notification, including unique units of the nation |
-| [] population in a random city | The name of the city to which the population is added will be filled in the notification |
-| Gain []-[] [] | The exact amount of the stat gained will be filled in the notification |
+| Unique                                           | Parameters                                                                                                                                                      |
+|--------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Free [] found in the ruins                       | The name of the unit will be filled in the notification, including unique units of the nation                                                                   |
+| [] population in a random city                   | The name of the city to which the population is added will be filled in the notification                                                                        |
+| Gain []-[] []                                    | The exact amount of the stat gained will be filled in the notification                                                                                          |
 | [] free random reasearchable Tech(s) from the [] | The notification must have placeholders equal to the number of techs granted this way. Each of the names of these free techs will be filled in the notification |
-| Gain enough Faith for a Pantheon | The amount of faith gained is filled in the notification |
-| Gain enough Faith for []% of a Great Prophet | The amount of faith gained is filled in the notification |
+| Gain enough Faith for a Pantheon                 | The amount of faith gained is filled in the notification                                                                                                        |
+| Gain enough Faith for []% of a Great Prophet     | The amount of faith gained is filled in the notification                                                                                                        |
 
 ### Specific uniques
 
@@ -126,22 +126,22 @@ A few uniques can be added to ancient ruin effects to modify when they can be ea
 - "Hidden when religion is disabled"
 - "Hidden after a great prophet has been earned"
 
-## [Tileset-specific json](../Creating-a-custom-tileset.md)
+## [Tileset-specific json](../../Creating-a-custom-tileset.md)
 
 [Link to original FantasyHex](https://github.com/yairm210/Unciv/blob/master/android/assets/jsons/TileSets/FantasyHex.json)
 
 A mod can define new Tilesets or add to existing ones, namely FantasyHex. There is one json file per Tileset, named same as the Tileset, and placed in a subfolder named "TileSets" relative to the other json files. This is called TileSetConfig and has the following structure:
 
-| Attribute | Type | Default | Notes |
-| --------- | ---- | ------- | ----- |
-| [useColorAsBaseTerrain](../Creating-a-custom-tileset.md#useColorAsBaseTerrain) | Boolean | false | |
-| [useSummaryImages](../Creating-a-custom-tileset.md#useSummaryImages) | Boolean | false | |
-| [unexploredTileColor](../Creating-a-custom-tileset.md#unexploredTileColor) | Color | Dark Gray | `{"r":0.25,"g":0.25,"b":0.25,"a":1}` |
-| [fogOfWarColor](../Creating-a-custom-tileset.md#fogOfWarColor) | Color | Black | `{"r":0,"g":0,"b":0,"a":1}` |
-| [fallbackTileSet](../Creating-a-custom-tileset.md#fallbackTileSet) | String | "FantasyHex" | null to disable |
-| [tileScale](../Creating-a-custom-tileset.md#tileScale) | Float | 1.0 | The scale of all tiles. Can be used to increase or decrease the size of every tile |
-| [tileScales](../Creating-a-custom-tileset.md#tileScales) | Object | empty | Used by the "Minimal" tileset to scale all its tiles except the base terrain down. Overrides `tileScale` value for specified terrain |
-| [ruleVariants](../Creating-a-custom-tileset.md#ruleVariants) | Object | empty | [See here](#layering-images) |
+| Attribute                                                                         | Type    | Default      | Notes                                                                                                                                |
+|-----------------------------------------------------------------------------------|---------|--------------|--------------------------------------------------------------------------------------------------------------------------------------|
+| [useColorAsBaseTerrain](../../Creating-a-custom-tileset.md#useColorAsBaseTerrain) | Boolean | false        |                                                                                                                                      |
+| [useSummaryImages](../../Creating-a-custom-tileset.md#useSummaryImages)           | Boolean | false        |                                                                                                                                      |
+| [unexploredTileColor](../../Creating-a-custom-tileset.md#unexploredTileColor)     | Color   | Dark Gray    | `{"r":0.25,"g":0.25,"b":0.25,"a":1}`                                                                                                 |
+| [fogOfWarColor](../../Creating-a-custom-tileset.md#fogOfWarColor)                 | Color   | Black        | `{"r":0,"g":0,"b":0,"a":1}`                                                                                                          |
+| [fallbackTileSet](../../Creating-a-custom-tileset.md#fallbackTileSet)             | String  | "FantasyHex" | null to disable                                                                                                                      |
+| [tileScale](../../Creating-a-custom-tileset.md#tileScale)                         | Float   | 1.0          | The scale of all tiles. Can be used to increase or decrease the size of every tile                                                   |
+| [tileScales](../../Creating-a-custom-tileset.md#tileScales)                       | Object  | empty        | Used by the "Minimal" tileset to scale all its tiles except the base terrain down. Overrides `tileScale` value for specified terrain |
+| [ruleVariants](../../Creating-a-custom-tileset.md#ruleVariants)                   | Object  | empty        | [See here](#layering-images)                                                                                                         |
 
 ### Layering images
 

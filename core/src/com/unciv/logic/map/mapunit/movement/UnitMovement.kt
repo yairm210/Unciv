@@ -16,7 +16,7 @@ class UnitMovement(val unit: MapUnit) {
 
     private val pathfindingCache = PathfindingCache(unit)
 
-    class ParentTileAndTotalDistance(val tile:Tile, val parentTile: Tile, val totalDistance: Float)
+    class ParentTileAndTotalDistance(val tile: Tile, val parentTile: Tile, val totalDistance: Float)
 
     fun isUnknownTileWeShouldAssumeToBePassable(tile: Tile) = !unit.civ.hasExplored(tile)
 
@@ -108,7 +108,7 @@ class UnitMovement(val unit: MapUnit) {
             return cachedPath
 
         val currentTile = unit.getTile()
-        if (currentTile.position == destination) {
+        if (currentTile.position == destination.position) {
             // edge case that's needed, so that workers will know that they can reach their own tile. *sigh*
             pathfindingCache.setShortestPathCache(destination, listOf(currentTile))
             return listOf(currentTile)
@@ -281,7 +281,7 @@ class UnitMovement(val unit: MapUnit) {
             includeOtherEscortUnit && unit.isEscorting() -> {
                     val otherUnitTiles = unit.getOtherEscortUnit()!!.movement.getReachableTilesInCurrentTurn(false).toSet()
                     unit.movement.getDistanceToTiles().filter { otherUnitTiles.contains(it.key) }.keys.asSequence()
-                } 
+                }
             else -> unit.movement.getDistanceToTiles().keys.asSequence()
         }
     }
@@ -523,7 +523,7 @@ class UnitMovement(val unit: MapUnit) {
             else
                 destination.militaryUnit
             )?: return // The precondition guarantees that there is an eligible same-type unit at the destination
-
+        otherUnit.stopEscorting()
         val ourOldPosition = unit.getTile()
         val theirOldPosition = otherUnit.getTile()
 
@@ -581,8 +581,8 @@ class UnitMovement(val unit: MapUnit) {
         if (isCityCenterCannotEnter(tile))
             return false
 
-        if (includeOtherEscortUnit && unit.isEscorting() 
-            && !unit.getOtherEscortUnit()!!.movement.canMoveTo(tile, assumeCanPassThrough,canSwap, includeOtherEscortUnit = false)) 
+        if (includeOtherEscortUnit && unit.isEscorting()
+            && !unit.getOtherEscortUnit()!!.movement.canMoveTo(tile, assumeCanPassThrough,canSwap, includeOtherEscortUnit = false))
             return false
 
         return if (unit.isCivilian())
@@ -676,7 +676,7 @@ class UnitMovement(val unit: MapUnit) {
             if (unit.civ.isAtWarWith(firstUnit.civ))
                 return false
         }
-        if (includeOtherEscortUnit && unit.isEscorting() && !unit.getOtherEscortUnit()!!.movement.canPassThrough(tile,false)) 
+        if (includeOtherEscortUnit && unit.isEscorting() && !unit.getOtherEscortUnit()!!.movement.canPassThrough(tile,false))
             return false
         return true
     }
@@ -684,7 +684,7 @@ class UnitMovement(val unit: MapUnit) {
 
     /**
      * @param includeOtherEscortUnit determines whether or not this method will also check if the other escort units [getDistanceToTiles] if it has one.
-     * Leave it as default unless you know what [getDistanceToTiles] does. 
+     * Leave it as default unless you know what [getDistanceToTiles] does.
      */
     fun getDistanceToTiles(
         considerZoneOfControl: Boolean = true,
@@ -704,7 +704,7 @@ class UnitMovement(val unit: MapUnit) {
             passThroughCache,
             movementCostCache
         )
-        
+
         if (includeOtherEscortUnit) {
             // Only save to cache only if we are the original call and not the subsequent escort unit call
             pathfindingCache.setDistanceToTiles(considerZoneOfControl, distanceToTiles)
@@ -712,7 +712,7 @@ class UnitMovement(val unit: MapUnit) {
                 // We should only be able to move to tiles that our escort can also move to
                 val escortDistanceToTiles = unit.getOtherEscortUnit()!!.movement
                     .getDistanceToTiles(considerZoneOfControl, includeOtherEscortUnit = false)
-                distanceToTiles.keys.removeIf { !escortDistanceToTiles.containsKey(it) }
+                distanceToTiles.keys.removeAll { !escortDistanceToTiles.containsKey(it) }
             }
         }
         return distanceToTiles
