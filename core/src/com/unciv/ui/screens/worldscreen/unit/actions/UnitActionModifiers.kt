@@ -25,19 +25,11 @@ object UnitActionModifiers {
         if (actionUnique.conditionals.any { it.type == UniqueType.UnitActionMovementCostAll })
             return unit.getMaxMovement()
         val movementCost = actionUnique.conditionals
-            .filter { it.type == UniqueType.UnitActionMovementCost }
-            .minOfOrNull { it.params[0].toInt() }
-        val movementCostRequired = actionUnique.conditionals
-            .filter { it.type == UniqueType.UnitActionMovementCostRequired }
-            .minOfOrNull { it.params[0].toInt() }
-        if (movementCost != null && movementCostRequired != null) {
-            return maxOf(movementCost, movementCostRequired)
-        } else {
-            if (movementCost != null)
-                return movementCost
-            if (movementCostRequired != null)
-                return movementCostRequired
-        }
+            .filter { it.type == UniqueType.UnitActionMovementCost || it.type == UniqueType.UnitActionMovementCostRequired }
+            .maxOfOrNull { it.params[0].toInt() }
+
+        if (movementCost != null)
+            return movementCost
         return if (defaultAllMovement) unit.getMaxMovement() else 1
     }
 
@@ -57,16 +49,14 @@ object UnitActionModifiers {
     private fun canSpendStatsCost(unit: MapUnit, actionUnique: Unique): Boolean {
         for (conditional in actionUnique.conditionals.filter { it.type == UniqueType.UnitActionStatsCost }) {
             for ((stat, value) in conditional.stats) {
-                if (stat in Stat.statsWithCivWideField) {
+                if (unit.getClosestCity() != null) {
+                    if (!unit.getClosestCity()!!.hasStatToBuy(stat, value.toInt())) {
+                        return false
+                    }
+                } else if (stat in Stat.statsWithCivWideField) {
                     if (!unit.civ.hasStatToBuy(stat, value.toInt()))
                         return false
-                } else {
-                    if (unit.getClosestCity() != null) {
-                        if (!unit.getClosestCity()!!.hasStatToBuy(stat, value.toInt())) {
-                            return false
-                        }
-                    } else return false
-                }
+                } else return false // no city to spend the Stat
             }
         }
 
