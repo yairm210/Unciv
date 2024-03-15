@@ -294,11 +294,15 @@ object DiplomacyTurnManager {
                 relationshipLevel() == RelationshipLevel.Competitor -> 5f
                 relationshipLevel() == RelationshipLevel.Enemy -> 7.5f
                 relationshipLevel() == RelationshipLevel.Unforgivable -> 10f
-                else -> 2f // Nuteral
+                else -> 2f // Neutral
             }
-            // We should subtract a certain amount from this balanced based on how much is already in it
-            //
-            val amountLost = (getModifier(DiplomaticModifiers.GaveUsGifts) * giftLoss / 100).coerceAtLeast(giftLoss / 5)
+            // We should subtract a certain amount from this balanced each turn
+            // Assuming neutral relations we will subtract the higher of either:
+            //  2% of the total amount or
+            //  roughly 40 gold per turn (a value of ~.4 without inflation)
+            // This ensures that the amount can be reduced to zero but scales with larger numbers
+            val amountLost = (getModifier(DiplomaticModifiers.GaveUsGifts).absoluteValue * giftLoss / 100)
+                .coerceAtLeast(giftLoss / 5)
             revertToZero(DiplomaticModifiers.GaveUsGifts, amountLost) // Roughly worth 20 GPT without inflation
         }
 

@@ -645,7 +645,6 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
 
     /**
      * Adds a gift from the other civilization of the value of [gold] that will deteriate over time.
-     * The gold given can also be negative.
      * @param gold the amount of gold without inflation
      */
     fun recieveGoldGifts(gold: Int) {
