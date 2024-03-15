@@ -7,6 +7,7 @@ import com.unciv.logic.MultiFilter
 import com.unciv.logic.automation.unit.UnitAutomation
 import com.unciv.logic.battle.BattleUnitCapture
 import com.unciv.logic.battle.MapUnitCombatant
+import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
@@ -203,6 +204,10 @@ class MapUnit : IsPartOfGameInfoSerialization {
         DecimalFormat("0.#").format(currentMovement.toDouble()) + "/" + getMaxMovement()
 
     fun getTile(): Tile = currentTile
+
+    fun getClosestCity(): City? = civ.cities.minByOrNull {
+        it.getCenterTile().aerialDistanceTo(currentTile)
+    }
 
     fun isMilitary() = baseUnit.isMilitary()
     fun isCivilian() = baseUnit.isCivilian()

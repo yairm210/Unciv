@@ -359,7 +359,8 @@ enum class UniqueType(
     CanHurryResearch("Can hurry technology research", UniqueTarget.Unit),
     CanHurryPolicy("Can generate a large amount of culture", UniqueTarget.Unit),
     CanTradeWithCityStateForGoldAndInfluence("Can undertake a trade mission with City-State, giving a large sum of gold and [amount] Influence", UniqueTarget.Unit),
-    CanTransform("Can transform to [unit]", UniqueTarget.Unit),
+    CanTransform("Can transform to [unit]", UniqueTarget.UnitAction,
+        docDescription = "By default consumes all movement"),
 
     AutomationPrimaryAction("Automation is a primary action", UniqueTarget.Unit, flags = UniqueFlag.setOfHiddenToUsers),
 
@@ -504,7 +505,14 @@ enum class UniqueType(
     ///////////////////////////////////////// region 05 UNIT ACTION MODIFIERS /////////////////////////////////////////
 
     UnitActionConsumeUnit("by consuming this unit", UniqueTarget.UnitActionModifier),
-    UnitActionMovementCost("for [amount] movement", UniqueTarget.UnitActionModifier),
+    UnitActionMovementCost("for [amount] movement", UniqueTarget.UnitActionModifier,
+        docDescription = "Will consume up to [amount] of Movement to execute"),
+    UnitActionMovementCostAll("for all movement", UniqueTarget.UnitActionModifier,
+        docDescription = "Will consume all Movement to execute"),
+    UnitActionMovementCostRequired("requires [amount] movement", UniqueTarget.UnitActionModifier,
+        docDescription = "Requires [amount] of Movement to execute. Unit's Movement is rounded up"),
+    UnitActionStatsCost("costs [stats] stats", UniqueTarget.UnitActionModifier,
+        docDescription = "A positive Integer value will be subtracted from your stock. Food and Production will be removed from Closest City's current stock"),
     UnitActionOnce("once", UniqueTarget.UnitActionModifier),
     UnitActionLimitedTimes("[amount] times", UniqueTarget.UnitActionModifier),
     UnitActionExtraLimitedTimes("[amount] additional time(s)", UniqueTarget.UnitActionModifier),
