@@ -91,7 +91,7 @@ class TradeEvaluation {
                 return Int.MIN_VALUE
             }
         }
-        val diplomaticGifts: Int = if (includeDiplomaticGifts) evaluator.getDiplomacyManager(tradePartner).getGoldGifts() else 0
+        val diplomaticGifts: Int = if (includeDiplomaticGifts) tradePartner.getDiplomacyManager(evaluator).getGoldGifts() else 0
         return sumOfTheirOffers - sumOfOurOffers + diplomaticGifts
     }
 
