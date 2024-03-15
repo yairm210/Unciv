@@ -1,3 +1,23 @@
+## 4.10.19
+
+Fixed group natural wonders only spawning in single tile
+
+Fixed crash entering trade from overview on other player's turn
+
+Fix visual bug in event when more than one trigger is activated by a choice
+
+Create stale-issues-and-prs.yaml
+
+Resolved  - Workers cannot repair improvements in enemy territory, thus avoiding repair-pillage exploit
+
+Resolved  - zero-cost constructions no longer cause automation crash
+
+Revert "Worker automation takes city focus and civ personality into account"
+
+Melee Escort Attacking Fix  - By tuvus
+
+New ActionModifiers to enable Stats and Minimum Movement  - By itanasi
+
 ## 4.10.18
 
 Performance improvements!
