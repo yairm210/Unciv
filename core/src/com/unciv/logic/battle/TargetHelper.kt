@@ -30,7 +30,7 @@ object TargetHelper {
             if (unit.baseUnit.isMelee() && unit.isEscorting()) {
                 val escortingUnit = unit.getOtherEscortUnit()!!
                 if (!escortingUnit.movement.canReachInCurrentTurn(reachableTile)
-                    || escortingUnit.currentMovement - unit.getOtherEscortUnit()!!.movement.getDistanceToTiles()[reachableTile]!!.totalDistance <= 0f) 
+                    || escortingUnit.currentMovement - escortingUnit.movement.getDistanceToTiles()[reachableTile]!!.totalDistance <= 0f) 
                     continue
             }
             val tilesInAttackRange =
