@@ -2,9 +2,15 @@ package com.unciv.logic.map
 
 import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
+import com.unciv.logic.battle.Battle
+import com.unciv.logic.battle.MapUnitCombatant
+import com.unciv.logic.battle.TargetHelper
 import com.unciv.logic.civilization.Civilization
 import com.unciv.testing.GdxTestRunner
 import com.unciv.testing.TestGame
+import com.unciv.utils.DebugUtils
+import org.junit.After
+import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -18,6 +24,11 @@ internal class UnitFormationTests {
     fun setUp(size: Int, baseTerrain: String = Constants.desert) {
         testGame.makeHexagonalMap(size)
         civInfo = testGame.addCiv()
+    }
+    
+    @After
+    fun wrapUp() {
+        DebugUtils.VISIBLE_MAP = false
     }
     
     @Test
@@ -194,5 +205,75 @@ internal class UnitFormationTests {
         civilianUnit.startEscorting()
         civilianDistanceToTiles = civilianUnit.movement.getDistanceToTiles()
         assertFalse(militaryUnit.movement.getDistanceToTiles().any { !civilianDistanceToTiles.contains(it.key) })
+    }
+
+    @Test
+    fun `test escort attack and move civilian unit`() {
+        setUp(3)
+        val enemyCiv = testGame.addCiv()
+        civInfo.diplomacyFunctions.makeCivilizationsMeet(enemyCiv)
+        civInfo.getDiplomacyManager(enemyCiv).declareWar()
+        val centerTile = testGame.getTile(Vector2(0f,0f))
+        val enemyTile = testGame.getTile(Vector2(2f,2f))
+        val scout = testGame.addUnit("Warrior", civInfo, centerTile)
+        val civilianUnit = testGame.addUnit("Worker", civInfo, centerTile)
+        val enemyUnit = testGame.addUnit("Warrior", enemyCiv , enemyTile)
+        enemyUnit.health = 1 // Needs to be killable by the scout
+        scout.startEscorting()
+        assertTrue(scout.isEscorting())
+        assertTrue(civilianUnit.isEscorting())
+
+        assertEquals(1, TargetHelper.getAttackableEnemies(scout, scout.movement.getDistanceToTiles()).count())
+        Battle.attack(MapUnitCombatant(scout), MapUnitCombatant(enemyUnit))
+        assertEquals(0, enemyUnit.health)
+        assertEquals(enemyTile, scout.getTile())
+        assertEquals(enemyTile, civilianUnit.getTile())
+        assertTrue(scout.isEscorting())
+        assertTrue(civilianUnit.isEscorting())
+    }
+
+    @Test
+    fun `test escort attack with ranged unit`() {
+        setUp(3)
+        val enemyCiv = testGame.addCiv()
+        DebugUtils.VISIBLE_MAP = true
+        civInfo.diplomacyFunctions.makeCivilizationsMeet(enemyCiv)
+        civInfo.getDiplomacyManager(enemyCiv).declareWar()
+        val centerTile = testGame.getTile(Vector2(0f,0f))
+        val enemyTile = testGame.getTile(Vector2(3f,3f))
+        val archer = testGame.addUnit("Archer", civInfo, centerTile)
+        val civilianUnit = testGame.addUnit("Worker", civInfo, centerTile)
+        val enemyUnit = testGame.addUnit("Warrior", enemyCiv , enemyTile)
+        enemyUnit.health = 1 // Needs to be killable by the scout
+        archer.startEscorting()
+        assertTrue(archer.isEscorting())
+        assertTrue(civilianUnit.isEscorting())
+
+        assertEquals(1, TargetHelper.getAttackableEnemies(archer, archer.movement.getDistanceToTiles()).count())
+        Battle.attack(MapUnitCombatant(archer), MapUnitCombatant(enemyUnit))
+        assertEquals(0, enemyUnit.health)
+        assertTrue(archer.isEscorting())
+        assertTrue(civilianUnit.isEscorting())
+        assertEquals(archer.getTile(), civilianUnit.getTile())
+    }
+
+    @Test
+    fun `test escort attack with military unit having ignoreTerrainCost`() {
+        setUp(3)
+        val enemyCiv = testGame.addCiv()
+        civInfo.diplomacyFunctions.makeCivilizationsMeet(enemyCiv)
+        civInfo.getDiplomacyManager(enemyCiv).declareWar()
+        val centerTile = testGame.getTile(Vector2(0f,0f))
+        val forestTile = testGame.getTile(Vector2(1f,1f))
+        val enemyTile = testGame.getTile(Vector2(2f,2f))
+        val scout = testGame.addUnit("Warrior", civInfo, centerTile)
+        val civilianUnit = testGame.addUnit("Worker", civInfo, centerTile)
+        val enemyUnit = testGame.addUnit("Warrior", enemyCiv , enemyTile)
+        enemyUnit.health = 1 // Needs to be killable by the scout
+        forestTile.addTerrainFeature("Forest")
+        scout.startEscorting()
+        assertTrue(scout.isEscorting())
+        assertTrue(civilianUnit.isEscorting())
+        assertTrue(TargetHelper.getAttackableEnemies(scout, scout.movement.getDistanceToTiles()).isEmpty())
     }
 }
