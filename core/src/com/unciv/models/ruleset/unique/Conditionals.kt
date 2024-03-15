@@ -100,22 +100,23 @@ object Conditionals {
         }
 
         fun getCountableAmount(countable: String): Float? {
-            if (countable.toIntOrNull() != null) return countable.toFloat()
             if (countable.toFloatOrNull() != null) return countable.toFloat()
-            if (countable == "year") return gameInfo!!.getYear(gameInfo!!.turns).toFloat()
 
             val relevantStat = Stat.safeValueOf(countable)
 
             if (relevantStat != null) {
-                if (relevantCity != null) {
-                    return relevantCity!!.getStatReserve(relevantStat).toFloat()
-                } else if (relevantStat in Stat.statsWithCivWideField) {
-                    return relevantCiv!!.getStatReserve(relevantStat).toFloat()
+                return if (relevantCity != null) {
+                    relevantCity!!.getStatReserve(relevantStat).toFloat()
+                } else if (relevantStat in Stat.statsWithCivWideField && relevantCiv != null) {
+                    relevantCiv!!.getStatReserve(relevantStat).toFloat()
                 } else {
-                    return null
+                    null
                 }
             }
 
+            if (gameInfo == null) return null
+
+            if (countable == "year") return gameInfo!!.getYear(gameInfo!!.turns).toFloat()
             if (gameInfo!!.ruleset.tileResources.containsKey(countable))
                 return getResourceAmount(countable).toFloat()
 
@@ -127,16 +128,24 @@ object Conditionals {
             second: String,
             compare: (first: Float, second: Float) -> Boolean): Boolean {
 
-            return if (getCountableAmount(first) != null && getCountableAmount(second) != null)
-                compare(getCountableAmount(first)!!, getCountableAmount(second)!!)
+            val firstNumber = getCountableAmount(first)
+            val secondNumber = getCountableAmount(second)
+
+            return if (firstNumber != null && secondNumber != null)
+                compare(firstNumber, secondNumber)
             else
                 false
         }
 
         fun compareCountables(first: String, second: String, third: String,
                               compare: (first: Float, second: Float, third: Float) -> Boolean): Boolean {
-            return if (getCountableAmount(first) != null && getCountableAmount(second) != null && getCountableAmount(third) != null)
-                compare(getCountableAmount(first)!!, getCountableAmount(second)!!, getCountableAmount(third)!!)
+
+            val firstNumber = getCountableAmount(first)
+            val secondNumber = getCountableAmount(second)
+            val thirdNumber = getCountableAmount(third)
+
+            return if (firstNumber != null && secondNumber != null && thirdNumber != null)
+                compare(firstNumber, secondNumber, thirdNumber)
             else
                 false
         }
