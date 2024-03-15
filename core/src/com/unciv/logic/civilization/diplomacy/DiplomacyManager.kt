@@ -7,6 +7,7 @@ import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.trade.Trade
+import com.unciv.logic.trade.TradeEvaluation
 import com.unciv.logic.trade.TradeOffer
 import com.unciv.logic.trade.TradeType
 import com.unciv.models.ruleset.tile.ResourceSupplyList
@@ -640,6 +641,25 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
         otherCiv().addNotification("City-States grow wary of your aggression. " +
                 "The resting point for Influence has decreased by [20] for [${civInfo.civName}].",
             NotificationCategory.Diplomacy, civInfo.civName)
+    }
+
+    /**
+     * Adds a gift from the other civilization of the value of [gold] that will deteriate over time.
+     * The gold given can also be negative.
+     * @param gold the amount of gold without inflation
+     */
+    fun recieveGoldGifts(gold: Int) {
+        val diplomaticValueOfTrade = (gold * TradeEvaluation().getGoldInflation(civInfo)) / (civInfo.gameInfo.speed.goldGiftModifier * 100)
+        addModifier(DiplomaticModifiers.GaveUsGifts, diplomaticValueOfTrade.toFloat())
+    }
+
+    /**
+     * @return the total value of the gold gifts the other civilization has given us
+     */
+    fun getGoldGifts(): Int {
+        // The inverse of howe we calculate GaveUsGifts in TradeLogic.acceptTrade gives us how much gold it is worth
+        val giftAmount = getModifier(DiplomaticModifiers.GaveUsGifts)
+        return ((giftAmount * civInfo.gameInfo.speed.goldGiftModifier * 100) / TradeEvaluation().getGoldInflation(civInfo)).toInt()
     }
 
     //endregion

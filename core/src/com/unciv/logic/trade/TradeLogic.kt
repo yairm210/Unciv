@@ -4,9 +4,7 @@ import com.unciv.Constants
 import com.unciv.logic.civilization.AlertType
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.PopupAlert
-import com.unciv.logic.civilization.diplomacy.CityStateFunctions
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
-import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.unique.UniqueType
 
@@ -145,8 +143,7 @@ class TradeLogic(val ourCivilization: Civilization, val otherCivilization: Civil
 
         // Must evaluate before moving, or else cities have already moved and we get an exception
         val goldValueOfTrade = TradeEvaluation().getTradeAcceptability(currentTrade, ourCivilization, otherCivilization, includeDiplomaticGifts = false)
-        val diplomaticValueOfTrade = (goldValueOfTrade * TradeEvaluation().getGoldInflation(ourCivilization)) / (ourCivilization.gameInfo.speed.goldGiftModifier * 100)
-        ourCivilization.getDiplomacyManager(otherCivilization).addModifier(DiplomaticModifiers.GaveUsGifts, diplomaticValueOfTrade.toFloat())
+        otherCivilization.getDiplomacyManager(ourCivilization).recieveGoldGifts(goldValueOfTrade)
 
         // Transfer of cities needs to happen before peace treaty, to avoid our units teleporting out of areas that soon will be ours
         for (offer in currentTrade.theirOffers.filterNot { it.type == TradeType.Treaty })

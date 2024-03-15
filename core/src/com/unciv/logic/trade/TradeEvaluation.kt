@@ -91,12 +91,8 @@ class TradeEvaluation {
                 return Int.MIN_VALUE
             }
         }
-        val diplomaticGifts: Double = if (includeDiplomaticGifts) {
-            // The inverse of howe we calculate GaveUsGifts in TradeLogic.acceptTrade gives us how much gold it is worth
-            val giftAmount = evaluator.getDiplomacyManager(tradePartner).getModifier(DiplomaticModifiers.GaveUsGifts)
-            (giftAmount * evaluator.gameInfo.speed.goldGiftModifier * 100) / getGoldInflation(evaluator)
-        } else 0.0
-        return sumOfTheirOffers - sumOfOurOffers + diplomaticGifts.roundToInt()
+        val diplomaticGifts: Int = if (includeDiplomaticGifts) evaluator.getDiplomacyManager(tradePartner).getGoldGifts() else 0
+        return sumOfTheirOffers - sumOfOurOffers + diplomaticGifts
     }
 
     fun evaluateBuyCostWithInflation(offer: TradeOffer, civInfo: Civilization, tradePartner: Civilization): Int {
