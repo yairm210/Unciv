@@ -1,6 +1,10 @@
 package com.unciv.logic.civilization.diplomacy
 
 import com.unciv.logic.civilization.diplomacy.DiplomacyTurnManager.nextTurn
+import com.unciv.logic.trade.TradeEvaluation
+import com.unciv.logic.trade.TradeLogic
+import com.unciv.logic.trade.TradeOffer
+import com.unciv.logic.trade.TradeType
 import com.unciv.testing.GdxTestRunner
 import com.unciv.testing.TestGame
 import org.junit.Assert.assertEquals
@@ -51,7 +55,7 @@ class GoldGiftingTests {
 
 
     @Test
-    fun `Gifted Gold is reduced less than 10%` () {
+    fun `Gifted Gold is reduced less than 10 percent` () {
         aDiplomacy.recieveGoldGifts(1000)
         assertTrue(aDiplomacy.getGoldGifts() > 0)
         val gold = aDiplomacy.getGoldGifts()
@@ -71,6 +75,34 @@ class GoldGiftingTests {
         bDiplomacy.declareWar()
         assertEquals(0, aDiplomacy.getGoldGifts())
         assertTrue(bDiplomacy.getGoldGifts() > 0)
+    }
+
+    @Test
+    fun `Excess gold from a trade become a gift` () {
+        a.addGold(1000)
+        assertEquals(0, bDiplomacy.getGoldGifts())
+        val tradeOffer = TradeLogic(a,b)
+        tradeOffer.currentTrade.ourOffers.add(tradeOffer.ourAvailableOffers.first { it.type == TradeType.Gold })
+        assertTrue(TradeEvaluation().getTradeAcceptability(tradeOffer.currentTrade.reverse(), b,a,false) > 0)
+        tradeOffer.acceptTrade()
+        assertEquals(0, aDiplomacy.getGoldGifts())
+        assertTrue(bDiplomacy.getGoldGifts() > 0)
+    }
+
+    @Test
+    fun `Can ask for 90 percent of gold gift back again a turn later` () {
+        // Due to rounding, we aren't going to assume we can get 100% of the gold back
+        // Therefore we only test for 90%
+        a.addGold(1000)
+        val tradeOffer = TradeLogic(a,b)
+        tradeOffer.currentTrade.ourOffers.add(tradeOffer.ourAvailableOffers.first { it.type == TradeType.Gold })
+        tradeOffer.acceptTrade()
+        bDiplomacy.nextTurn()
+        val tradeOffer2 = TradeLogic(a,b)
+        tradeOffer2.currentTrade.theirOffers.add(TradeOffer("Gold", TradeType.Gold, 900))
+        assertTrue(TradeEvaluation().getTradeAcceptability(tradeOffer.currentTrade.reverse(), b,a,false) > 0)
+        tradeOffer2.acceptTrade()
+        assertTrue(bDiplomacy.getGoldGifts() >= 0) // Must not be negative
     }
 
 }
