@@ -142,7 +142,7 @@ class TradeLogic(val ourCivilization: Civilization, val otherCivilization: Civil
         }
 
         // Must evaluate before moving, or else cities have already moved and we get an exception
-        val goldValueOfTrade = TradeEvaluation().getTradeAcceptability(currentTrade, ourCivilization, otherCivilization, includeDiplomaticGifts = false)
+        val goldValueOfTrade = TradeEvaluation().getTradeAcceptability(currentTrade.reverse(), otherCivilization, ourCivilization, includeDiplomaticGifts = false)
         otherCivilization.getDiplomacyManager(ourCivilization).recieveGoldGifts(goldValueOfTrade)
 
         // Transfer of cities needs to happen before peace treaty, to avoid our units teleporting out of areas that soon will be ours
