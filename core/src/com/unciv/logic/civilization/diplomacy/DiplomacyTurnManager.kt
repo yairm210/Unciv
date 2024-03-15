@@ -9,6 +9,7 @@ import com.unciv.logic.trade.TradeOffer
 import com.unciv.logic.trade.TradeType
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.components.extensions.toPercent
+import kotlin.math.absoluteValue
 import kotlin.math.max
 import kotlin.math.min
 
@@ -287,17 +288,17 @@ object DiplomacyTurnManager {
         revertToZero(DiplomaticModifiers.LiberatedCity, 1 / 8f)
         if (hasModifier(DiplomaticModifiers.GaveUsGifts)) {
             val giftLoss = when {
-                isRelationshipLevelGE(RelationshipLevel.Ally) -> 1f
-                isRelationshipLevelGE(RelationshipLevel.Friend) -> 2f
-                isRelationshipLevelGE(RelationshipLevel.Favorable) -> 4f
-                isRelationshipLevelGE(RelationshipLevel.Competitor) -> 7f
-                isRelationshipLevelGE(RelationshipLevel.Enemy) -> 10f
-                isRelationshipLevelGE(RelationshipLevel.Unforgivable) -> 20f
-                else -> 5f
+                relationshipLevel() == RelationshipLevel.Ally -> .5f
+                relationshipLevel() == RelationshipLevel.Friend -> 1f
+                relationshipLevel() == RelationshipLevel.Favorable -> 1.5f
+                relationshipLevel() == RelationshipLevel.Competitor -> 5f
+                relationshipLevel() == RelationshipLevel.Enemy -> 7.5f
+                relationshipLevel() == RelationshipLevel.Unforgivable -> 10f
+                else -> 2f // Nuteral
             }
             // We should subtract a certain amount from this balanced based on how much is already in it
             //
-            val amountLost = (getModifier(DiplomaticModifiers.GaveUsGifts) / (100 - giftLoss)).coerceAtLeast(giftLoss / 5)
+            val amountLost = (getModifier(DiplomaticModifiers.GaveUsGifts) * giftLoss / 100).coerceAtLeast(giftLoss / 5)
             revertToZero(DiplomaticModifiers.GaveUsGifts, amountLost) // Roughly worth 20 GPT without inflation
         }
 
@@ -337,7 +338,8 @@ object DiplomacyTurnManager {
     private fun DiplomacyManager.revertToZero(modifier: DiplomaticModifiers, amount: Float) {
         if (!hasModifier(modifier)) return
         val currentAmount = getModifier(modifier)
-        if (currentAmount > 0) addModifier(modifier, -amount)
+        if (amount >= currentAmount.absoluteValue) diplomaticModifiers.remove(modifier.name)
+        else if (currentAmount > 0) addModifier(modifier, -amount)
         else addModifier(modifier, amount)
     }
 
