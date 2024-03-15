@@ -285,7 +285,21 @@ object DiplomacyTurnManager {
         // Positives
         revertToZero(DiplomaticModifiers.GaveUsUnits, 1 / 4f)
         revertToZero(DiplomaticModifiers.LiberatedCity, 1 / 8f)
-        revertToZero(DiplomaticModifiers.GaveUsGifts, 1 / 5f) // Roughly worth 20 GPT without inflation
+        if (hasModifier(DiplomaticModifiers.GaveUsGifts)) {
+            val giftLoss = when {
+                isRelationshipLevelGE(RelationshipLevel.Ally) -> 1f
+                isRelationshipLevelGE(RelationshipLevel.Friend) -> 2f
+                isRelationshipLevelGE(RelationshipLevel.Favorable) -> 4f
+                isRelationshipLevelGE(RelationshipLevel.Competitor) -> 7f
+                isRelationshipLevelGE(RelationshipLevel.Enemy) -> 10f
+                isRelationshipLevelGE(RelationshipLevel.Unforgivable) -> 20f
+                else -> 5f
+            }
+            // We should subtract a certain amount from this balanced based on how much is already in it
+            //
+            val amountLost = (getModifier(DiplomaticModifiers.GaveUsGifts) / (100 - giftLoss)).coerceAtLeast(giftLoss / 5)
+            revertToZero(DiplomaticModifiers.GaveUsGifts, amountLost) // Roughly worth 20 GPT without inflation
+        }
 
         setFriendshipBasedModifier()
 
