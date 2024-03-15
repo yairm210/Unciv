@@ -51,7 +51,7 @@ class GoldGiftingTests {
 
 
     @Test
-    fun `A lot of Gifted Gold is reduced a little` () {
+    fun `Gifted Gold is reduced less than 10%` () {
         aDiplomacy.recieveGoldGifts(1000)
         assertTrue(aDiplomacy.getGoldGifts() > 0)
         val gold = aDiplomacy.getGoldGifts()
@@ -60,6 +60,17 @@ class GoldGiftingTests {
         assertTrue(gold > gold2)
         assertTrue(gold2 >= gold * .9) // We shoulden't loose more than 10% of the value in one turn
         assertTrue(gold2 >= 0) 
+    }
+
+    @Test
+    fun `Gold gifted is lost during war` () {
+        aDiplomacy.recieveGoldGifts(1000)
+        bDiplomacy.recieveGoldGifts(1000)
+        assertTrue(aDiplomacy.getGoldGifts() > 0)
+        assertTrue(bDiplomacy.getGoldGifts() > 0)
+        bDiplomacy.declareWar()
+        assertEquals(0, aDiplomacy.getGoldGifts())
+        assertTrue(bDiplomacy.getGoldGifts() > 0)
     }
 
 }
