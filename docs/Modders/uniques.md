@@ -1199,6 +1199,12 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "May enhance a religion"
 	Applicable to: UnitAction
 
+??? example  "Can transform to [unit]"
+	By default consumes all movement
+	Example: "Can transform to [Musketman]"
+
+	Applicable to: UnitAction
+
 ## Unit uniques
 !!! note ""
 
@@ -1245,11 +1251,6 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 ??? example  "Can undertake a trade mission with City-State, giving a large sum of gold and [amount] Influence"
 	Example: "Can undertake a trade mission with City-State, giving a large sum of gold and [3] Influence"
-
-	Applicable to: Unit
-
-??? example  "Can transform to [unit]"
-	Example: "Can transform to [Musketman]"
 
 	Applicable to: Unit
 
@@ -2351,7 +2352,24 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: UnitActionModifier
 
 ??? example  "&lt;for [amount] movement&gt;"
+	Will consume up to [amount] of Movement to execute
 	Example: "&lt;for [3] movement&gt;"
+
+	Applicable to: UnitActionModifier
+
+??? example  "&lt;for all movement&gt;"
+	Will consume all Movement to execute
+	Applicable to: UnitActionModifier
+
+??? example  "&lt;requires [amount] movement&gt;"
+	Requires [amount] of Movement to execute. Unit's Movement is rounded up
+	Example: "&lt;requires [3] movement&gt;"
+
+	Applicable to: UnitActionModifier
+
+??? example  "&lt;costs [stats] stats&gt;"
+	A positive Integer value will be subtracted from your stock. Food and Production will be removed from Closest City's current stock
+	Example: "&lt;costs [+1 Gold, +2 Production] stats&gt;"
 
 	Applicable to: UnitActionModifier
 
