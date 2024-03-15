@@ -512,7 +512,7 @@ class AlertPopup(
             addSeparator()
             add(choice.text.toTextButton().onActivation { close(); choice.triggerChoice(civ) }).row()
             for (triggeredUnique in choice.triggeredUniques)
-                addGoodSizedLabel(triggeredUnique)
+                addGoodSizedLabel(triggeredUnique).row()
         }
         return true
     }
