@@ -54,6 +54,8 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
     var quote: String = ""
     var replacementTextForUniques = ""
 
+    lateinit var ruleset: Ruleset
+
     override fun getUniqueTarget() = if (isAnyWonder()) UniqueTarget.Wonder else UniqueTarget.Building
 
     override fun makeLink() = if (isAnyWonder()) "Wonder/$name" else "Building/$name"
@@ -515,8 +517,10 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
             replaces -> true
             else -> {
                 if (uniques.contains(filter)) return true
+                for (requiredTech: String in requiredTechs())
+                    if (ruleset.technologies[requiredTech]?.matchesFilter(filter) == true) return true
                 val stat = Stat.safeValueOf(filter)
-                return stat != null && isStatRelated(stat)
+                return (stat != null && isStatRelated(stat))
             }
         }
     }

@@ -297,6 +297,7 @@ enum class UniqueParameterType(
             if (parameterText in knownValues) return true
             if (BuildingName.getErrorSeverity(parameterText, ruleset) == null) return true
             if (ruleset.buildings.values.any { it.hasUnique(parameterText) }) return true
+            if (ruleset.eras.containsKey(parameterText)) return true
             return false
         }
 
