@@ -128,6 +128,7 @@ enum class UniqueParameterType(
             if (UnitName.getErrorSeverity(parameterText, ruleset) == null) return true
             if (ruleset.units.values.any { it.uniques.contains(parameterText) }) return true
             if (UnitTypeFilter.isKnownValue(parameterText, ruleset)) return true
+            if (TechFilter.isKnownValue(parameterText, ruleset)) return true
             return false
         }
 
@@ -145,7 +146,6 @@ enum class UniqueParameterType(
         override fun isKnownValue(parameterText: String, ruleset: Ruleset): Boolean {
             if (parameterText in knownValues) return true
             if (ruleset.unitTypes.containsKey(parameterText)) return true
-            if (ruleset.eras.containsKey(parameterText)) return true
             if (ruleset.unitTypes.values.any { it.uniques.contains(parameterText) }) return true
             return false
         }
@@ -297,7 +297,7 @@ enum class UniqueParameterType(
             if (parameterText in knownValues) return true
             if (BuildingName.getErrorSeverity(parameterText, ruleset) == null) return true
             if (ruleset.buildings.values.any { it.hasUnique(parameterText) }) return true
-            if (ruleset.eras.containsKey(parameterText)) return true
+            if (TechFilter.isKnownValue(parameterText, ruleset)) return true
             return false
         }
 
