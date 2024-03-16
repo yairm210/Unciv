@@ -230,6 +230,7 @@ class TileImprovementConstructionTests {
             tile.improvementFunctions.canBuildImprovement(allowedImprovement, civInfo))
         tile.changeImprovement(allowedImprovement.name)
         Assert.assertTrue(tile.improvement == allowedImprovement.name)
+        Assert.assertTrue("Forest should not be removed with this improvement", tile.terrainFeatures.contains("Forest"))
     }
 
     @Test
@@ -242,7 +243,7 @@ class TileImprovementConstructionTests {
         Assert.assertTrue(tile.improvementFunctions.canBuildImprovement(improvement, civInfo))
         tile.changeImprovement(improvement.name)
         Assert.assertTrue(tile.improvement == improvement.name)
-        Assert.assertTrue("Forest should not be removed with this improvement",tile.terrainFeatures.contains("Forest"))
+        Assert.assertTrue("Forest should not be removed with this improvement", tile.terrainFeatures.contains("Forest"))
     }
 
     @Test

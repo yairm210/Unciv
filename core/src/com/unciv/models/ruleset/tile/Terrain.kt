@@ -161,9 +161,7 @@ class Terrain : RulesetStatsObject() {
             "Natural Wonder" -> type == TerrainType.NaturalWonder
             "Terrain Feature" -> type == TerrainType.TerrainFeature
 
-            else -> {
-                return uniques.contains(filter)
-            }
+            else -> uniques.contains(filter)
         }
     }
 
