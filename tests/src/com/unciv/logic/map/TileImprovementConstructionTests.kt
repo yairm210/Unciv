@@ -227,7 +227,7 @@ class TileImprovementConstructionTests {
         val allowedImprovement = testGame.createTileImprovement()
         allowedImprovement.terrainsCanBeBuiltOn += "Forest"
         Assert.assertTrue("Forest should allow building when allowed",
-            tile.improvementFunctions.canBuildImprovement(improvement, civInfo))
+            tile.improvementFunctions.canBuildImprovement(allowedImprovement, civInfo))
         tile.changeImprovement(allowedImprovement.name)
         Assert.assertTrue(tile.improvement == allowedImprovement.name)
     }
