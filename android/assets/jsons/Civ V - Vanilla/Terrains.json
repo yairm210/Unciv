@@ -13,7 +13,7 @@
 		"type": "Water",
 		"food": 1,
 		"movementCost": 1,
-		"RGB": [70, 138, 216], //Darker87, 139, 199  Lighter59, 137, 227
+		"RGB": [70, 138, 216],
 		"uniques": ["[+2] to Fertility for Map Generation",
 			"Considered [Desirable] when determining start locations <on water maps>",
 			"Every [60] tiles with this terrain will receive a major deposit of a strategic resource."]
@@ -76,7 +76,7 @@
 		"type": "Land",
 		"food": 1,
 		"movementCost": 1,
-		"RGB": [30, 113, 69],
+		"RGB": [124, 62, 57],
 		"uniques": ["Occurs at temperature between [-0.9] and [-0.6] and humidity between [0.8] and [1]",
 			"Occurs at temperature between [-0.8] and [-0.5] and humidity between [0.6] and [0.8]",
 			"Occurs at temperature between [-0.7] and [-0.4] and humidity between [0.4] and [0.6]",
@@ -140,7 +140,7 @@
 		"name": "Snow",
 		"type": "Land",
 		"movementCost": 1,
-		"RGB": [230, 238, 255], //Darker229, 229, 255
+		"RGB": [230, 238, 255],
 		"uniques": ["Occurs at temperature between [-1] and [-0.9] and humidity between [0] and [1]",
 			"Occurs at temperature between [-0.9] and [-0.8] and humidity between [0] and [0.8]",
 			"Occurs at temperature between [-0.8] and [-0.7] and humidity between [0] and [0.6]",
