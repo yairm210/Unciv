@@ -1,4 +1,4 @@
-[	
+[
 	// Bonus resources
 	{
 		"name": "Cattle",
@@ -84,7 +84,7 @@
 		"improvementStats": {"production": 1}
 	},
 	*/
-	
+
 	// Strategic resources
 	{
 		"name": "Horses",
@@ -207,7 +207,7 @@
 		"majorDepositAmount": {"sparse": 2, "default": 4, "abundant": 4},
 		"minorDepositAmount": {"sparse": 1, "default": 2, "abundant": 3}
 	},
-	
+
 	// Luxury resources
 	{
 		"name": "Furs",
@@ -371,7 +371,8 @@
 		"gold": 2,
 		"improvement": "Quarry",
 		"improvementStats": {"production": 1},
-		"uniques": ["[+15]% Production when constructing [All] wonders [in all cities]",
+		"uniques": ["[+15]% Production when constructing [Ancient era] wonders [in this city]",
+                    "[+15]% Production when constructing [Classical era] wonders [in this city]",
 					"Special placement during map generation",
 					"Doesn't generate naturally <in [Grassland] [Fresh Water] tiles>"]
 	},
@@ -449,7 +450,7 @@
 					"Doesn't generate naturally <in [Jungle] tiles> <in tiles without [Hill]>",
 					"Doesn't generate naturally <in [Forest] tiles> <in tiles without [Hill]> <in tiles without [Tundra]>"]
 	},
-	/* 
+	/*
 	{
 		"name": "Cocoa",
 		"resourceType": "Luxury",
