@@ -72,7 +72,7 @@ The following are allowed to be used:
 - Matching [technologyfilter](#technologyfilter) for the tech this unit requires - e.g. `Modern Era`
 - Any exact unique the unit has
 - Any exact unique the unit type has
-- Any combination of the above (will match only if all match). The format is `{filter1} {filter2}` and can match any number of filters. For example: `
+- Any combination of the above (will match only if all match). The format is `{filter1} {filter2}` and can match any number of filters. For example: `[{Modern era} {Land}]` units
 
 ## mapUnitFilter
 
@@ -98,12 +98,14 @@ Allows to only activate a unique for certain buildings. Allowed options are:
 - `World Wonder`, `World` -- All wonders that are not national wonders
 - building name
 - The name of the building it replaces (so for example uniques for libraries will apply to paper makers as well)
-- an exact unique the building has (e.g.: `spaceship part`)
+- Matching [technologyfilter](#technologyfilter) for the tech this building requires - e.g. Modern Era
+- An exact unique the building has (e.g.: `spaceship part`)
 - `Culture`, `Gold`, etc. if the building is `stat-related` for that stat. Stat-related buildings are defined as one of the following:
     - Provides that stat directly (e.g. +1 Culture)
     - Provides a percentage bonus for that stat (e.g. +10% Production)
     - Provides that stat as a bonus for resources (e.g. +1 Food from every Wheat)
     - Provides that stat per some amount of population (e.g. +1 Science for every 2 population [cityFilter])
+- Any combination of the above (will match only if all match). The format is `{filter1} {filter2}` up to any number of filters. For example `[{Ancient era} {Food}]` buildings.
 
 ## cityFilter
 
