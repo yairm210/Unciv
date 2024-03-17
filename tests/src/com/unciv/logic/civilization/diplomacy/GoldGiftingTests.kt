@@ -95,8 +95,6 @@ class GoldGiftingTests {
         assertTrue(bDiplomacy.getGoldGifts() == 0)
     }
 
-    
-
     @Test
     fun `Excess gold from a trade become a gift` () {
         a.addGold(1000)

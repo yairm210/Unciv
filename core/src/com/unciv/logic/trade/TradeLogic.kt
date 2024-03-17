@@ -77,7 +77,7 @@ class TradeLogic(val ourCivilization: Civilization, val otherCivilization: Civil
         return offers
     }
 
-    fun acceptTrade() {
+    fun acceptTrade(applyGifts: Boolean = true) {
         val ourDiploManager = ourCivilization.getDiplomacyManager(otherCivilization)
         val theirDiploManger = otherCivilization.getDiplomacyManager(ourCivilization)
 
@@ -146,7 +146,7 @@ class TradeLogic(val ourCivilization: Civilization, val otherCivilization: Civil
 
         // We shouldn't evaluate trades if we are doing a peace treaty
         // Their value can be so big it throws the gift system out of wack
-        if (!currentTrade.ourOffers.any { it.name == Constants.peaceTreaty }) {
+        if (applyGifts && !currentTrade.ourOffers.any { it.name == Constants.peaceTreaty }) {
             // Must evaluate before moving, or else cities have already moved and we get an exception
             val ourGoldValueOfTrade = TradeEvaluation().getTradeAcceptability(currentTrade, ourCivilization, otherCivilization, includeDiplomaticGifts = false)
             val theirGoldValueOfTrade = TradeEvaluation().getTradeAcceptability(currentTrade.reverse(), otherCivilization, ourCivilization, includeDiplomaticGifts = false)
