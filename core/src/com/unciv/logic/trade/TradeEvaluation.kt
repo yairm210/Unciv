@@ -6,7 +6,6 @@ import com.unciv.logic.automation.ThreatLevel
 import com.unciv.logic.automation.civilization.DiplomacyAutomation
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
-import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.Ruleset
@@ -17,7 +16,6 @@ import com.unciv.ui.screens.victoryscreen.RankingType
 import kotlin.math.ceil
 import kotlin.math.min
 import kotlin.math.pow
-import kotlin.math.roundToInt
 import kotlin.math.sqrt
 
 class TradeEvaluation {
@@ -91,7 +89,7 @@ class TradeEvaluation {
                 return Int.MIN_VALUE
             }
         }
-        val diplomaticGifts: Int = if (includeDiplomaticGifts) tradePartner.getDiplomacyManager(evaluator).getGoldGifts() else 0
+        val diplomaticGifts: Int = if (includeDiplomaticGifts) evaluator.getDiplomacyManager(tradePartner).getGoldGifts() else 0
         return sumOfTheirOffers - sumOfOurOffers + diplomaticGifts
     }
 

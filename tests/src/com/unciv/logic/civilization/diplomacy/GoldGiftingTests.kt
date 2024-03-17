@@ -105,5 +105,16 @@ class GoldGiftingTests {
         assertTrue(bDiplomacy.getGoldGifts() >= 0) // Must not be negative
     }
 
+    @Test
+    fun `Gold gifted impact trade acceptability`() {
+        a.addGold(1000)
+        val tradeOffer = TradeLogic(a,b)
+        tradeOffer.currentTrade.ourOffers.add(tradeOffer.ourAvailableOffers.first { it.type == TradeType.Gold })
+        assertTrue(TradeEvaluation().getTradeAcceptability(tradeOffer.currentTrade, b,a,true) < 0)
+        tradeOffer.acceptTrade()
+        val tradeOffer2 = TradeLogic(a,b)
+        assertTrue(TradeEvaluation().getTradeAcceptability(tradeOffer2.currentTrade.reverse(), b,a,true) > 0)
+    }
+
 }
 

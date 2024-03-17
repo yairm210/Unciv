@@ -78,11 +78,14 @@ class TradeLogic(val ourCivilization: Civilization, val otherCivilization: Civil
     }
 
     fun acceptTrade() {
-        ourCivilization.getDiplomacyManager(otherCivilization).apply {
+        val ourDiploManager = ourCivilization.getDiplomacyManager(otherCivilization)
+        val theirDiploManger = otherCivilization.getDiplomacyManager(ourCivilization)
+
+        ourDiploManager.apply {
             trades.add(currentTrade)
             updateHasOpenBorders()
         }
-        otherCivilization.getDiplomacyManager(ourCivilization).apply {
+        theirDiploManger.apply {
             trades.add(currentTrade.reverse())
             updateHasOpenBorders()
         }
@@ -142,11 +145,12 @@ class TradeLogic(val ourCivilization: Civilization, val otherCivilization: Civil
         }
 
         // Must evaluate before moving, or else cities have already moved and we get an exception
-        val goldValueOfTrade = TradeEvaluation().getTradeAcceptability(currentTrade, otherCivilization, ourCivilization, includeDiplomaticGifts = false)
-        if (goldValueOfTrade > 0) {
-            ourCivilization.getDiplomacyManager(otherCivilization).recieveGoldGifts(goldValueOfTrade)
-        } else if (goldValueOfTrade < 0) {
-            otherCivilization.getDiplomacyManager(ourCivilization).recieveGoldGifts(-goldValueOfTrade)
+        val ourGoldValueOfTrade = TradeEvaluation().getTradeAcceptability(currentTrade, ourCivilization, otherCivilization, includeDiplomaticGifts = false)
+        val theirGoldValueOfTrade = TradeEvaluation().getTradeAcceptability(currentTrade.reverse(), otherCivilization, ourCivilization, includeDiplomaticGifts = false)
+        if (ourGoldValueOfTrade > theirGoldValueOfTrade) {
+            ourDiploManager.handleGoldGifted(ourGoldValueOfTrade - theirGoldValueOfTrade.coerceAtLeast(0))
+        } else if (theirGoldValueOfTrade > ourGoldValueOfTrade) {
+            theirDiploManger.handleGoldGifted(theirGoldValueOfTrade - ourGoldValueOfTrade.coerceAtLeast(0))
         }
 
         // Transfer of cities needs to happen before peace treaty, to avoid our units teleporting out of areas that soon will be ours
