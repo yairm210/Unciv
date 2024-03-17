@@ -462,18 +462,18 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
                     if (numberOfCities < amount)
                     {
                         yield(RejectionReasonType.RequiresBuildingInSomeCities.toInstance(
-                            "Requires a [$building] in at least [$amount] cities" +
+                            "Requires a [$building] in at least [$amount] of [${cityFilter}] cities" +
                                 " ($numberOfCities/$numberOfCities)"))
                     }
                 }
                 UniqueType.ConditionalBuildingBuiltAll -> {
                     val building = civ.getEquivalentBuilding(conditional.params[0]).name
                     val cityFilter = conditional.params[1]
-                    if(civ.cities.any { it.matchesFilter(cityFilter)
+                    if (civ.cities.any { it.matchesFilter(cityFilter)
                             !it.isPuppet && !it.cityConstructions.containsBuildingOrEquivalent(building)
-                        }) {
+                    }) {
                         yield(RejectionReasonType.RequiresBuildingInAllCities.toInstance(
-                            "Requires a [${building}] in all cities"))
+                            "Requires a [${building}] in all [${cityFilter}] cities"))
                     }
                 }
                 else -> {
