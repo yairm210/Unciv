@@ -1,11 +1,9 @@
-
-
-Resolves  - modded units can construct improvements on impassible tiles
+Modded units can construct improvements on impassible tiles
 
 By woo1127:
-- Fixed error message of ConditionalBuilding 
-- Added multi filter support for BuildingFilter !! 
+- Added multi filter support for BuildingFilter
+- Fixed error message of ConditionalBuilding
 
-Remove comments of the terrain colors, and enhance tundra color  - By Caballero-Arepa
+Better tundra color - By Caballero-Arepa
 
-Allow improvements that don't need removal to build  - By SeventhM
+Allow improvements that don't need feature removal to be built on features  - By SeventhM
