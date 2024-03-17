@@ -1,3 +1,15 @@
+## 4.10.20
+
+Resolves  - modded units can construct improvements on impassible tiles
+
+By woo1127:
+- Fixed error message of ConditionalBuilding 
+- Added multi filter support for BuildingFilter !! 
+
+Remove comments of the terrain colors, and enhance tundra color  - By Caballero-Arepa
+
+Allow improvements that don't need removal to build  - By SeventhM
+
 ## 4.10.19
 
 Fixed group natural wonders only spawning in single tile
