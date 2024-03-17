@@ -32,13 +32,23 @@ class GoldGiftingTests {
     }
 
     @Test
-    fun `Gold Gift Test` () {
+    fun `Gold Gift Recieve Test` () {
         assertEquals(0, aDiplomacy.getGoldGifts())
         assertEquals(0, bDiplomacy.getGoldGifts())
         aDiplomacy.recieveGoldGifts(10)
         assertTrue(aDiplomacy.getGoldGifts() > 0)
         assertEquals(0, bDiplomacy.getGoldGifts())
     }
+
+    @Test
+    fun `Gold Gift Test` () {
+        assertEquals(0, aDiplomacy.getGoldGifts())
+        assertEquals(0, bDiplomacy.getGoldGifts())
+        aDiplomacy.giftGold(10)
+        assertTrue(aDiplomacy.getGoldGifts() > 0)
+        assertEquals(0, bDiplomacy.getGoldGifts())
+    }
+
 
     @Test
     fun `Gifted Gold Disapears` () {
@@ -52,7 +62,6 @@ class GoldGiftingTests {
         // We don't actually test if the gift has completely run out
         // since that may change in the future
     }
-
 
     @Test
     fun `Gifted Gold is reduced less than 10 percent` () {
@@ -76,6 +85,17 @@ class GoldGiftingTests {
         assertEquals(0, aDiplomacy.getGoldGifts())
         assertTrue(bDiplomacy.getGoldGifts() > 0)
     }
+
+    @Test
+    fun `Gifting gold reduces previous gifts taken` () {
+        aDiplomacy.giftGold(1000)
+        bDiplomacy.giftGold(500)
+        assertTrue(aDiplomacy.getGoldGifts() > 0)
+        assertTrue(aDiplomacy.getGoldGifts() < 1000)
+        assertTrue(bDiplomacy.getGoldGifts() == 0)
+    }
+
+    
 
     @Test
     fun `Excess gold from a trade become a gift` () {
