@@ -443,7 +443,7 @@ class WorkerAutomation(
         return tile.tileResource.getImprovements().any { resourceImprovementName ->
             if (resourceImprovementName !in potentialTileImprovements) return@any false
             val resourceImprovement = potentialTileImprovements[resourceImprovementName]!!
-            tile.terrainFeatures.any { resourceImprovement.isAllowedOnFeature(it) }
+            tile.terrainFeatureObjects.any { resourceImprovement.isAllowedOnFeature(it) }
         }
     }
 

@@ -30,11 +30,10 @@ class TileImprovementConstructionTests {
         testGame.makeHexagonalMap(4)
         tileMap = testGame.tileMap
         civInfo = testGame.addCiv()
-        civInfo.tech.researchedTechnologies.addAll(testGame.ruleset.technologies.values)
-        civInfo.tech.techsResearched.addAll(testGame.ruleset.technologies.keys)
+        for (tech in testGame.ruleset.technologies.values)
+            civInfo.tech.addTechnology(tech.name)
         city = testGame.addCity(civInfo, tileMap[0,0])
     }
-
 
     @Test
     fun allTerrainSpecificImprovementsCanBeBuilt() {
@@ -212,6 +211,39 @@ class TileImprovementConstructionTests {
         tile.improvementFunctions.changeImprovement("Remove Forest")
         assert(tile.terrainFeatures.isEmpty())
         assert(tile.improvement == "Camp") // Camp can be both on Forest AND on Plains, so not removed
+    }
+
+    @Test
+    fun improvementCannotBuildWhenNotAllowed() {
+        val tile = tileMap[1,1]
+        tile.baseTerrain ="Grassland"
+        tile.addTerrainFeature("Forest")
+
+        val improvement = testGame.createTileImprovement()
+        Assert.assertFalse("Forest doesn't allow building unless allowed",
+            tile.improvementFunctions.canBuildImprovement(improvement, civInfo))
+
+
+        val allowedImprovement = testGame.createTileImprovement()
+        allowedImprovement.terrainsCanBeBuiltOn += "Forest"
+        Assert.assertTrue("Forest should allow building when allowed",
+            tile.improvementFunctions.canBuildImprovement(allowedImprovement, civInfo))
+        tile.changeImprovement(allowedImprovement.name)
+        Assert.assertTrue(tile.improvement == allowedImprovement.name)
+        Assert.assertTrue("Forest should not be removed with this improvement", tile.terrainFeatures.contains("Forest"))
+    }
+
+    @Test
+    fun improvementDoesntNeedRemovalCanBuildHere() {
+        val tile = tileMap[1,1]
+        tile.baseTerrain ="Grassland"
+        tile.addTerrainFeature("Forest")
+
+        val improvement = testGame.createTileImprovement("Does not need removal of [Forest]")
+        Assert.assertTrue(tile.improvementFunctions.canBuildImprovement(improvement, civInfo))
+        tile.changeImprovement(improvement.name)
+        Assert.assertTrue(tile.improvement == improvement.name)
+        Assert.assertTrue("Forest should not be removed with this improvement", tile.terrainFeatures.contains("Forest"))
     }
 
     @Test
