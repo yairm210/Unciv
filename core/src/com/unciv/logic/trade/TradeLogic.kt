@@ -151,9 +151,9 @@ class TradeLogic(val ourCivilization: Civilization, val otherCivilization: Civil
             val ourGoldValueOfTrade = TradeEvaluation().getTradeAcceptability(currentTrade, ourCivilization, otherCivilization, includeDiplomaticGifts = false)
             val theirGoldValueOfTrade = TradeEvaluation().getTradeAcceptability(currentTrade.reverse(), otherCivilization, ourCivilization, includeDiplomaticGifts = false)
             if (ourGoldValueOfTrade > theirGoldValueOfTrade) {
-                ourDiploManager.handleGoldGifted(ourGoldValueOfTrade - theirGoldValueOfTrade.coerceAtLeast(0))
+                ourDiploManager.giftGold(ourGoldValueOfTrade - theirGoldValueOfTrade.coerceAtLeast(0))
             } else if (theirGoldValueOfTrade > ourGoldValueOfTrade) {
-                theirDiploManger.handleGoldGifted(theirGoldValueOfTrade - ourGoldValueOfTrade.coerceAtLeast(0))
+                theirDiploManger.giftGold(theirGoldValueOfTrade - ourGoldValueOfTrade.coerceAtLeast(0))
             }
         }
 

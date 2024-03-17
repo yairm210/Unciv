@@ -645,10 +645,10 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
 
     /**
      * Resolves adding gifts with negative gold values.
-     * Negative gold means that they we have gifted them gold. (Not that does not mean they took gold from us)
+     * Prioritises reducing gifts given to the other civ before increasing our gift value.
      * @param gold the amount of gold without inflation, can be negative
      */
-    fun handleGoldGifted(gold: Int) {
+    fun giftGold(gold: Int) {
         val otherGold = otherCivDiplomacy().getGoldGifts()
         if (otherGold > gold) {
             otherCivDiplomacy().recieveGoldGifts(-gold)
@@ -660,6 +660,7 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
 
     /**
      * Adds a gift from the other civilization of the value of [gold] that will deteriate over time.
+     * Does not take into account how much gold we have given to the other civ.
      * @param gold the amount of gold without inflation, cannot be negative
      */
     fun recieveGoldGifts(gold: Int) {
