@@ -27,7 +27,7 @@ class AutoPlayStatusButton(
         onActivation(binding = KeyboardBinding.AutoPlayMenu) {
             if (settings.autoPlay.isAutoPlaying())
                 settings.autoPlay.stopAutoPlay()
-            else if (worldScreen.viewingCiv == worldScreen.gameInfo.currentPlayerCiv)
+            else if (worldScreen.isPlayersTurn)
                 AutoPlayMenu(stage,this, nextTurnButton, worldScreen)
         }
         val directAutoPlay = {

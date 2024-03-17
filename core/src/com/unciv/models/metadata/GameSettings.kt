@@ -341,18 +341,21 @@ class GameSettings {
         var autoPlayDiplomacy: Boolean = true
 
         var turnsToAutoPlay: Int = 0
+        var autoPlaying: Boolean = false
         var autoPlayTurnInProgress: Boolean = false
 
         fun startAutoPlay() {
+            autoPlaying = true
             turnsToAutoPlay = autoPlayMaxTurns
         }
 
         fun stopAutoPlay() {
+            autoPlaying = false
             turnsToAutoPlay = 0
             autoPlayTurnInProgress = false
         }
 
-        fun isAutoPlaying(): Boolean = turnsToAutoPlay > 0
+        fun isAutoPlaying(): Boolean = autoPlaying
 
         fun isAutoPlayingAndFullAI(): Boolean = isAutoPlaying() && fullAutoPlayAI
     }

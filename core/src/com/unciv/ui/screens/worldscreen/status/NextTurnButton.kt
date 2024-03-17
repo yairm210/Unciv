@@ -34,7 +34,7 @@ class NextTurnButton(
         nextTurnAction = getNextTurnAction(worldScreen)
         updateButton(nextTurnAction)
         val settings = GUI.getSettings()
-        if (!settings.autoPlay.autoPlayTurnInProgress && settings.autoPlay.isAutoPlaying() 
+        if (!settings.autoPlay.autoPlayTurnInProgress && settings.autoPlay.isAutoPlaying() && settings.autoPlay.turnsToAutoPlay > 0
             && worldScreen.isPlayersTurn && !worldScreen.waitingForAutosave && !worldScreen.isNextTurnUpdateRunning()) {
             settings.autoPlay.autoPlayTurnInProgress = true
             if (!worldScreen.viewingCiv.isSpectator())
