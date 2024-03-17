@@ -646,6 +646,7 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
     /**
      * Resolves adding gifts with negative gold values.
      * Prioritises reducing gifts given to the other civ before increasing our gift value.
+     * Does not take the gold from either civ's stockpile
      * @param gold the amount of gold without inflation, can be negative
      */
     fun giftGold(gold: Int) {
@@ -660,7 +661,8 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
 
     /**
      * Adds a gift from the other civilization of the value of [gold] that will deteriate over time.
-     * Does not take into account how much gold we have given to the other civ.
+     * Does not take into account how much gold we have given to the other civ. Use [giftGold] for that.
+     * Does not take the gold from either civ's stockpile.
      * @param gold the amount of gold without inflation, cannot be negative
      */
     fun recieveGoldGifts(gold: Int) {
