@@ -110,13 +110,14 @@ class TileInfoImprovementFunctions(val tile: Tile) {
 
             // Otherwise, we can if this improvement removes the top terrain
             if (!hasUnique(UniqueType.RemovesFeaturesIfBuilt, stateForConditionals)) return false
-            if (knownFeatureRemovals == null) return false
-            val featureRemovals = tile.terrainFeatures.map {
-                feature -> tile.ruleset.tileRemovals.firstOrNull{ it.name == Constants.remove + feature } }
-            if (featureRemovals.any { it != null && it !in knownFeatureRemovals }) return false
+            if (knownFeatureRemovals.isNullOrEmpty()) return false
+            val featureRemovals = tile.terrainFeatures.mapNotNull { feature -> 
+                tile.ruleset.tileRemovals.firstOrNull { it.name == Constants.remove + feature } }
+            if (featureRemovals.isEmpty()) return false
+            if (featureRemovals.any { it !in knownFeatureRemovals }) return false
             val clonedTile = tile.clone()
             clonedTile.setTerrainFeatures(tile.terrainFeatures.filterNot {
-                feature -> featureRemovals.any{ it?.name?.removePrefix(Constants.remove) == feature } })
+                feature -> featureRemovals.any{ it.name.removePrefix(Constants.remove) == feature } })
             return clonedTile.improvementFunctions.canImprovementBeBuiltHere(improvement, resourceIsVisible, knownFeatureRemovals, stateForConditionals)
         }
 
