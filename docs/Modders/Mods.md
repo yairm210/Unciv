@@ -109,14 +109,16 @@ For mods which are primarily visual or audio, there is a second use - through th
 
 ## Mod location for manual loading of mods
 
-In general, you should never be manually-loading your mods - not only is this clunky, it's also more error-prone. Unless you have a very specific use-case, you probably shouldn't be doing this.
+In general, you should never be manually-loading your mods - not only is this clunky, it's also more error-prone. Unless you have a very specific use-case, you probably **shouldn't be doing this**
 
-In Android, they should go into the `Android/data/com.unciv.app/files/mods` directory.
+When loading a mod, it needs to be in its own folder in `/mods` - this is how you will work when you're editing your mod.
+
+In Android, you can copy them into the `Android/data/com.unciv.app/files/mods` directory.
+
+When the app starts, they will be auto-copied into the `/data/data/com.unciv.app/files/mods`, directory, that is inaccessible to users.
 
 In Chromebook, go to "Play files", should be on the sidebar on the left side of the window under "My files". Click the 3 vertical dots on the top right-hand corner of the window below the "X".
 If the option "Show all Play folders" does not have a check next to it click it. You should see some new files that appear on your screen. *Now* navigate to `Android/data/com.unciv.app/files/mods`
-
-When loading a mod, it needs to be in its own folder in `/mods` - this is how you will work when you're editing your mod.
 
 ## Other
 
