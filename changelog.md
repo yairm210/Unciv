@@ -1,14 +1,10 @@
 ## 4.10.21
 
-Resolved  - Fixed ruleset-dependant building filter activating *when initializing ruleset*
+Fixed ruleset-dependant building filter activating *when initializing ruleset*
 
-Resolved  - Fixed endless loop when unit tries to reach a tile it can pillage, but can't
+Fixed endless loop when unit tries to reach a tile it can pillage, but can't
 
-Resolved  - rare crash on city-state diplomatic relationship update
-
-Added "Guiding Principles" page
-
-Updated how manual mod copying actually works on Android
+Fixed rare crash on city-state diplomatic relationship update
 
 Fix loop when improvement is unbuildable and removements feature  - By SeventhM
 
