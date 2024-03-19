@@ -63,13 +63,34 @@ object UnitActionModifiers {
         return true
     }
 
+    private fun canSpendStockpileCost(unit: MapUnit, actionUnique: Unique): Boolean {
+        for (conditional in actionUnique.conditionals.filter { it.type == UniqueType.UnitActionStockpileCost }) {
+            val amount = conditional.params[0].toInt()
+            val resourceName = conditional.params[1]
+            if (!unit.civ.resourceStockpiles.containsKey(resourceName) || unit.civ.resourceStockpiles[resourceName] < amount) {
+//                 if (!unit.civ.resourceStockpiles.containsKey(resourceName)) {
+//                     println("cannot find $resourceName")
+//                 } else {
+//                     println("$resourceName=${unit.civ.resourceStockpiles[resourceName]} < $amount")
+//                 }
+                return false
+            }
+//             if (unit.civ.resourceStockpiles.containsKey(resourceName))
+//                 println("$resourceName=${unit.civ.resourceStockpiles[resourceName]}")
+        }
+        return true
+    }
+
     /**Checks if this Action Unique can be executed, based on action modifiers
+     * @param unit: The specific unit executing the Action
+     * @param actionUnique: Unique that defines the Action
      * @return Boolean
      */
     fun canActivateSideEffects(unit: MapUnit, actionUnique: Unique): Boolean {
         return canUse(unit, actionUnique)
             && getMovementPointsRequired(actionUnique) <= ceil(unit.currentMovement).toInt()
             && canSpendStatsCost(unit, actionUnique)
+            && canSpendStockpileCost(unit, actionUnique)
     }
 
     fun activateSideEffects(unit: MapUnit, actionUnique: Unique, defaultAllMovement: Boolean = false) {
@@ -96,6 +117,11 @@ object UnitActionModifiers {
                             unit.civ.addStat(stat, -value.toInt())
                         } else unit.getClosestCity()?.addStat(stat, -value.toInt())
                     }
+                }
+                UniqueType.UnitActionStockpileCost -> {
+                    val amount = conditional.params[0].toInt()
+                    val resourceName = conditional.params[1]
+                    unit.civ.resourceStockpiles.add(resourceName, -amount)
                 }
                 else -> continue
             }
@@ -141,6 +167,13 @@ object UnitActionModifiers {
             for (conditional in actionUnique.conditionals.filter { it.type == UniqueType.UnitActionStatsCost })
                 statCost.add(conditional.stats)
             effects += (statCost * -1).toStringOnlyIcons()
+        }
+
+        if (actionUnique.conditionals.any { it.type == UniqueType.UnitActionStockpileCost }) {
+            var stockpileString = ""
+            for (conditionals in actionUnique.conditionals.filter { it.type == UniqueType.UnitActionStockpileCost })
+                stockpileString += " ${-conditionals.params[0].toInt()} ${conditionals.params[1]}"
+            effects += stockpileString.drop(1) // drop leading space
         }
 
         if (actionUnique.conditionals.any { it.type == UniqueType.UnitActionConsumeUnit }
