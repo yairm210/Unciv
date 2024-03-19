@@ -517,8 +517,9 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
             replaces -> true
             else -> {
                 if (uniques.contains(filter)) return true
-                for (requiredTech: String in requiredTechs())
-                    if (ruleset.technologies[requiredTech]?.matchesFilter(filter) == true) return true
+                if (::ruleset.isInitialized) // False when loading ruleset and checking buildingsToRemove
+                    for (requiredTech: String in requiredTechs())
+                        if (ruleset.technologies[requiredTech]?.matchesFilter(filter) == true) return true
                 val stat = Stat.safeValueOf(filter)
                 return (stat != null && isStatRelated(stat))
             }
