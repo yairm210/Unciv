@@ -1,3 +1,17 @@
+## 4.10.21
+
+Resolved  - Fixed ruleset-dependant building filter activating *when initializing ruleset*
+
+Resolved  - Fixed endless loop when unit tries to reach a tile it can pillage, but can't
+
+Resolved  - rare crash on city-state diplomatic relationship update
+
+Added "Guiding Principles" page
+
+Updated how manual mod copying actually works on Android
+
+Fix loop when improvement is unbuildable and removements feature  - By SeventhM
+
 ## 4.10.20
 
 Modded units can construct improvements on impassible tiles
