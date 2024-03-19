@@ -1,28 +1,33 @@
 [
 	/*
+	{
 		"name": "Unciv to Civ V current equivalents",
 		"preferredVictoryType": "Victory",
 		"culture": CultureEmphasis + GreatPeopleEmphasis,
 		"faith": ReligionEmphasis + GreatPeopleEmphasis,
 		"food": Growth,
-		"gold": GoldEmphasis + Infrastructure
-		"happiness": HappinessEmphasis
-		"production": ProductionEmphasis
-		"science": ScienceEmphasis + SpaceshipVictory
-		"military": (OffensiveUnitProduction + DefensiveUnitProduction + DefensiveBuildingProduction + MilitaryTrainingBuildingsProduction + RangedUnitProduction + MobileUnitProduction + NavalUnitProduction + AirUnitProduction + NukeProduction + AntiAirProduction + AirCarrierProduction) + LikelinesstobeGuarded
+		"gold": GoldEmphasis + Infrastructure,
+		"happiness": HappinessEmphasis,
+		"production": ProductionEmphasis,
+		"science": ScienceEmphasis + SpaceshipVictory,
+		"military": (OffensiveUnitProduction + DefensiveUnitProduction + DefensiveBuildingProduction + MilitaryTrainingBuildingsProduction + RangedUnitProduction + MobileUnitProduction + NavalUnitProduction + AirUnitProduction + NukeProduction + AntiAirProduction + AirCarrierProduction) + LikelinesstobeGuarded,
 		"priorities": {
 			"Tradition": Growth + WonderEmphasis + WonderCompetitiveness,
 			"Liberty": Expansion + CultureEmphasis + TileImprovements + GreatPeopleEmphasis + DefensiveUnitProduction,
 			"Honor": MilitaryTrainingBuildingsProduction + OffensiveUnitProduction + DefensiveBuildingProduction,
 			"Commerce": NavalGrowth + NavalUnitProduction + WaterConnection + NavalTileImprovements + Diplobalance,
-			"Patronage": FriendlinesstoCityStates + ProtectionofCityStates + CityStateInfluenceCompetitiveness + GreatPeopleEmphasis + Neediness + WillingnesstoDeclareFriendship - (IgnoreCity-States + ConquestofCityStates + BullyingofCityStates),
+			"Patronage": FriendlinesstoCityStates + ProtectionofCityStates + CityStateInfluenceCompetitiveness + GreatPeopleEmphasis + Neediness + WillingnesstoDeclareFriendship - (IgnoreCityStates + ConquestofCityStates + BullyingofCityStates),
 			"Piety": ReligionEmphasis + CultureEmphasis,
 			"Rationalism": ScienceEmphasis + SpaceshipVictory + AirUnitProduction,
 			"Freedom": GreatPeopleEmphasis + DiplomacyVictory + HateWarmongers + DefensiveUnitProduction,
 			"Autocracy": Boldness + OffensiveUnitProduction + Expansion + NukeProduction,
-			"Order": ProductionEmphasis + DefensiveBuildingProduction,
+			"Order": ProductionEmphasis + DefensiveBuildingProduction + Infrastructure
 		},
 		"warMongering": LikelinesstoDeclareWar + (Competitiveness + Boldness + Meanness + OffensiveUnitProduction + LikelinesstobeHostile + LikelinesstobeDeceptive) - (Forgiveness + Loyalty + DefensiveUnitProduction + DiplomacyVictory + LikelinesstobeGuarded),
+		"civilopediaText": [
+			{"text": "Alexander the Great, born in Macedon, was one of the most skilled generals, even more by his young age, and in only 17 years he conquered all the Greek known world."}
+		]
+	},
 
 		This is mostly a guideline. Items that are first have more weigth, but still the most part is decided by ther personality description on the Civ 5 wiki, and adjust the numbers accordingly.
 		   Even then, its up to personal interpretation.
@@ -52,5 +57,80 @@
 		"civilopediaText": [
 			{"text": "Alexander the Great, born in Macedon, was one of the most skilled generals, even more by his young age, and in only 17 years he conquered all the Greek known world."}
 		]
-	}
+	},
+	{
+		"name": "Askia",
+		"preferredVictoryType": "Domination",
+		"culture": 6,
+		"faith": 8,
+		"food": 6,
+		"gold": 8,
+		"happiness": 4,
+		"production": 5,
+		"science": 6,
+		"military": 7,
+		"priorities": {
+			"Tradition": 20,
+			"Liberty": 10,
+			"Honor": 30,
+			"Commerce": 20,
+			"Piety": 30,
+			"Rationalism": 10,
+			"Autocracy": 20,
+			"Order": 10
+		},
+		"warMongering": 7,
+		"civilopediaText": [
+			{"text": "The general Askia turned the Songhai nation into the most powerful state of West Africa, bringing a golden age of religion and knowledge."}
+		]
+	},
+	{
+		"name": "Attila the Hun",
+		"preferredVictoryType": "Domination",
+		"culture": 6,
+		"faith": 5,
+		"food": 4,
+		"gold": 7,
+		"happiness": 5,
+		"production": 6,
+		"science": 4,
+		"military": 8,
+		"priorities": {
+			"Liberty": 6,
+			"Honor": 7,
+			"Piety": 5,
+			"Autocracy": 8,
+			"Order": 5
+		},
+		"warMongering": 10,
+		"civilopediaText": [
+			{"text": "'The Scourge of God' united the Hunnic tribes, and led them to great wealth and glory, antagonizing the Romans across his borders relentlessly."}
+		]
+	},
+	{
+		"name": "Augustus Caesar",
+		"preferredVictoryType": "Scientific",
+		"culture": 5,
+		"faith": 4,
+		"food": 5,
+		"gold": 7,
+		"happiness": 8,
+		"production": 6,
+		"science": 7,
+		"military": 6,
+		"priorities": {
+			"Tradition": 10,
+			"Liberty": 30,
+			"Honor": 30,
+			"Commerce": 10,
+			"Patronage": 15,
+			"Rationalism": 20,
+			"Autocracy": 25,
+			"Order": 20
+		},
+		"warMongering": 6,
+		"civilopediaText": [
+			{"text": "The creator of the Pax Romana and the Roman Empire, who ended a long civil war and brought peace to the entire Mediterranean, possibly the greatest emperor of Rome."}
+		]
+	},
 ]
