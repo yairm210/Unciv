@@ -1,0 +1,56 @@
+[
+	/*
+		"name": "Unciv to Civ V current equivalents",
+		"preferredVictoryType": "Victory",
+		"culture": CultureEmphasis + GreatPeopleEmphasis,
+		"faith": ReligionEmphasis + GreatPeopleEmphasis,
+		"food": Growth,
+		"gold": GoldEmphasis + Infrastructure
+		"happiness": HappinessEmphasis
+		"production": ProductionEmphasis
+		"science": ScienceEmphasis + SpaceshipVictory
+		"military": (OffensiveUnitProduction + DefensiveUnitProduction + DefensiveBuildingProduction + MilitaryTrainingBuildingsProduction + RangedUnitProduction + MobileUnitProduction + NavalUnitProduction + AirUnitProduction + NukeProduction + AntiAirProduction + AirCarrierProduction) + LikelinesstobeGuarded
+		"priorities": {
+			"Tradition": Growth + WonderEmphasis + WonderCompetitiveness,
+			"Liberty": Expansion + CultureEmphasis + TileImprovements + GreatPeopleEmphasis + DefensiveUnitProduction,
+			"Honor": MilitaryTrainingBuildingsProduction + OffensiveUnitProduction + DefensiveBuildingProduction,
+			"Commerce": NavalGrowth + NavalUnitProduction + WaterConnection + NavalTileImprovements + Diplobalance,
+			"Patronage": FriendlinesstoCityStates + ProtectionofCityStates + CityStateInfluenceCompetitiveness + GreatPeopleEmphasis + Neediness + WillingnesstoDeclareFriendship - (IgnoreCity-States + ConquestofCityStates + BullyingofCityStates),
+			"Piety": ReligionEmphasis + CultureEmphasis,
+			"Rationalism": ScienceEmphasis + SpaceshipVictory + AirUnitProduction,
+			"Freedom": GreatPeopleEmphasis + DiplomacyVictory + HateWarmongers + DefensiveUnitProduction,
+			"Autocracy": Boldness + OffensiveUnitProduction + Expansion + NukeProduction,
+			"Order": ProductionEmphasis + DefensiveBuildingProduction,
+		},
+		"warMongering": LikelinesstoDeclareWar + (Competitiveness + Boldness + Meanness + OffensiveUnitProduction + LikelinesstobeHostile + LikelinesstobeDeceptive) - (Forgiveness + Loyalty + DefensiveUnitProduction + DiplomacyVictory + LikelinesstobeGuarded),
+
+		This is mostly a guideline. Items that are first have more weigth, but still the most part is decided by ther personality description on the Civ 5 wiki, and adjust the numbers accordingly.
+		   Even then, its up to personal interpretation.
+		*/
+	{
+		"name": "Alexander",
+		"preferredVictoryType": "Domination",
+		"culture": 7,
+		"faith": 5,
+		"food": 4,
+		"gold": 3,
+		"happiness": 5,
+		"production": 5,
+		"science": 6,
+		"military": 8,
+		"priorities": {
+			"Tradition": 10,
+			"Liberty": 20,
+			"Honor": 20,
+			"Patronage": 30,
+			"Piety": 10,
+			"Rationalism": 10,
+			"Freedom": 20,
+			"Autocracy": 30
+		},
+		"warMongering": 8,
+		"civilopediaText": [
+			{"text": "Alexander the Great, born in Macedon, was one of the most skilled generals, even more by his young age, and in only 17 years he conquered all the Greek known world."}
+		]
+	}
+]
