@@ -67,16 +67,9 @@ object UnitActionModifiers {
         for (conditional in actionUnique.conditionals.filter { it.type == UniqueType.UnitActionStockpileCost }) {
             val amount = conditional.params[0].toInt()
             val resourceName = conditional.params[1]
-            if (!unit.civ.resourceStockpiles.containsKey(resourceName) || unit.civ.resourceStockpiles[resourceName] < amount) {
-//                 if (!unit.civ.resourceStockpiles.containsKey(resourceName)) {
-//                     println("cannot find $resourceName")
-//                 } else {
-//                     println("$resourceName=${unit.civ.resourceStockpiles[resourceName]} < $amount")
-//                 }
+            if (unit.civ.getCivResourcesByName()[resourceName]!! < amount) {
                 return false
             }
-//             if (unit.civ.resourceStockpiles.containsKey(resourceName))
-//                 println("$resourceName=${unit.civ.resourceStockpiles[resourceName]}")
         }
         return true
     }
@@ -172,7 +165,7 @@ object UnitActionModifiers {
         if (actionUnique.conditionals.any { it.type == UniqueType.UnitActionStockpileCost }) {
             var stockpileString = ""
             for (conditionals in actionUnique.conditionals.filter { it.type == UniqueType.UnitActionStockpileCost })
-                stockpileString += " ${-conditionals.params[0].toInt()} ${conditionals.params[1]}"
+                stockpileString += " ${-conditionals.params[0].toInt()} [${conditionals.params[1]}]"
             effects += stockpileString.drop(1) // drop leading space
         }
 
