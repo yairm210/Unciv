@@ -368,7 +368,7 @@ class WorkerAutomation(
         return ruleSet.tileImprovements[improvementString] // For mods, the tile improvement may not exist, so don't assume.
     }
 
-    private fun getImprovementRanking(tile: Tile, unit: MapUnit, improvement: String, localUniqueCache: LocalUniqueCache): Float {
+    private fun getImprovementRanking(tile: Tile, unit: MapUnit, improvementName: String, localUniqueCache: LocalUniqueCache): Float {
         val improvement = ruleSet.tileImprovements[improvementName]!!
 
         // Add the value of roads if we want to build it here
