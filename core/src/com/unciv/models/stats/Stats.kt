@@ -186,9 +186,9 @@ open class Stats(
     }
 
     /** Return a string of just +/- value and Stat symbol*/
-    fun toStringOnlyIcons(): String {
+    fun toStringOnlyIcons(plusSign: Boolean = true): String {
         return this.joinToString {
-            (if (it.value > 0) "+" else "") + it.value.toInt() + " " + it.key.character
+            (if (plusSign && it.value > 0) "+" else "") + it.value.toInt() + " " + it.key.character
         }
     }
 

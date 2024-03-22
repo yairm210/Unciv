@@ -159,13 +159,13 @@ object UnitActionModifiers {
             val statCost = Stats()
             for (conditional in actionUnique.conditionals.filter { it.type == UniqueType.UnitActionStatsCost })
                 statCost.add(conditional.stats)
-            effects += (statCost * -1).toStringOnlyIcons()
+            effects += statCost.toStringOnlyIcons(false)
         }
 
         if (actionUnique.conditionals.any { it.type == UniqueType.UnitActionStockpileCost }) {
             var stockpileString = ""
             for (conditionals in actionUnique.conditionals.filter { it.type == UniqueType.UnitActionStockpileCost })
-                stockpileString += " ${-conditionals.params[0].toInt()} [${conditionals.params[1]}]"
+                stockpileString += " ${conditionals.params[0].toInt()} [${conditionals.params[1]}]"
             effects += stockpileString.drop(1) // drop leading space
         }
 
