@@ -1,6 +1,8 @@
 ARG ARG_COMPILE_BASE_IMAGE=accetto/ubuntu-vnc-xfce-opengl-g3
+
 FROM $ARG_COMPILE_BASE_IMAGE as build
-USER root
+
+USER root 
 RUN  apt update && \
         apt upgrade -y && \
         apt install --fix-broken -y wget curl openjdk-17-jdk openjdk-11-jdk unzip
@@ -26,11 +28,11 @@ RUN chmod +x ./gradlew && ./gradlew --version
 
 # Build unciv
 COPY . /src/
-RUN chmod +x ./gradlew && ./gradlew desktop:classes
-RUN ./gradlew desktop:dist
-RUN ./gradlew desktop:zipLinuxFilesForJar
-RUN ./gradlew desktop:packrLinux64 --stacktrace --info --daemon --scan
-RUN cd /src/deploy && unzip Unciv-Linux64.zip
+RUN chmod +x ./gradlew && ./gradlew desktop:classes && \
+ ./gradlew desktop:dist && \
+ ./gradlew desktop:zipLinuxFilesForJar && \
+ ./gradlew desktop:packrLinux64 --stacktrace --info --daemon --scan && \
+ cd /src/deploy && unzip Unciv-Linux64.zip
 
 FROM accetto/ubuntu-vnc-xfce-opengl-g3 as run
 WORKDIR /home/headless/Desktop/
