@@ -30,17 +30,16 @@ class OnlineMultiplayerGame(
     lastOnlineUpdate: Instant? = null
 ) {
     private val lastOnlineUpdate: AtomicReference<Instant?> = AtomicReference(lastOnlineUpdate)
-    val lastUpdate: Instant
-        get() {
-            val lastFileUpdateTime = Instant.ofEpochMilli(fileHandle.lastModified())
-            val lastOnlineUpdateTime = lastOnlineUpdate.get()
-            return if (lastOnlineUpdateTime == null || lastFileUpdateTime.isLargerThan(lastOnlineUpdateTime)) {
-                lastFileUpdateTime
-            } else {
-                lastOnlineUpdateTime
-            }
+    fun getLastUpdate(): Instant {
+        val lastFileUpdateTime = Instant.ofEpochMilli(fileHandle.lastModified())
+        val lastOnlineUpdateTime = lastOnlineUpdate.get()
+        return if (lastOnlineUpdateTime == null || lastFileUpdateTime.isLargerThan(lastOnlineUpdateTime)) {
+            lastFileUpdateTime
+        } else {
+            lastOnlineUpdateTime
         }
-    val name get() = fileHandle.name()
+    }
+    val name = fileHandle.name()
     var error: Exception? = null
 
     init {
