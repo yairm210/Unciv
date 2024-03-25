@@ -320,7 +320,7 @@ class WorkerAutomation(
         val localUniqueCache = LocalUniqueCache()
 
         var bestBuildableImprovement = potentialTileImprovements.values.asSequence()
-            .map { Pair(it, getImprovementRanking(tile, unit,it.name, localUniqueCache)) }
+            .map { Pair(it, getImprovementRanking(tile, unit, it.name, localUniqueCache)) }
             .filter { it.second > 0f }
             .maxByOrNull { it.second }?.first
 
@@ -341,8 +341,8 @@ class WorkerAutomation(
                 && isRemovable(lastTerrain)
                 && !tile.providesResources(civInfo)
                 && !isResourceImprovementAllowedOnFeature(tile, potentialTileImprovements) -> Constants.remove + lastTerrain.name
-            else -> tile.tileResource.getImprovements().filter { it in potentialTileImprovements || it==tile.improvement }
-                .maxByOrNull { getImprovementRanking(tile, unit,it, localUniqueCache) }
+            else -> tile.tileResource.getImprovements().filter { it in potentialTileImprovements || it == tile.improvement }
+                .maxByOrNull { getImprovementRanking(tile, unit, it, localUniqueCache) }
         }
 
         // After gathering all the data, we conduct the hierarchy in one place
@@ -354,7 +354,7 @@ class WorkerAutomation(
             bestBuildableImprovement == null -> null
 
             tile.improvement != null &&
-                    getImprovementRanking(tile, unit, tile.improvement!!, localUniqueCache) > getImprovementRanking(tile, unit,bestBuildableImprovement.name, localUniqueCache)
+                    getImprovementRanking(tile, unit, tile.improvement!!, localUniqueCache) > getImprovementRanking(tile, unit, bestBuildableImprovement.name, localUniqueCache)
                 -> null // What we have is better, even if it's pillaged we should repair it
 
             lastTerrain.let {
@@ -394,15 +394,22 @@ class WorkerAutomation(
 
         val stats = tile.stats.getStatDiffForImprovement(improvement, civInfo, tile.getCity(), localUniqueCache)
 
-        if (improvementName.startsWith("Remove ")) {
+        if (improvementName.startsWith(Constants.remove)) {
             // We need to look beyond what we are doing right now and at the final improvement that will be on this tile
-            val terrainName = improvementName.replace("Remove ", "")
-            if (ruleSet.terrains.containsKey(terrainName)) { // Otherwise we get an infinite loop with remove roads
-                tile.removeTerrainFeature(terrainName)
-                val wantedFinalImprovement = chooseImprovement(unit, tile)
+            val removedObject = improvementName.replace(Constants.remove, "")
+            val removedFeature = tile.terrainFeatures.firstOrNull { it == removedObject }
+            val removedImprovement = if (removedObject == tile.improvement) removedObject else null
+            
+            if (removedFeature != null || removedImprovement != null) {
+                val newTile = tile.clone()
+                newTile.setTerrainTransients()
+                if (removedFeature != null)
+                    newTile.removeTerrainFeature(removedFeature)
+                if (removedImprovement != null)
+                    newTile.removeImprovement()
+                val wantedFinalImprovement = chooseImprovement(unit, newTile)
                 if (wantedFinalImprovement != null)
-                    stats.add(tile.stats.getStatDiffForImprovement(wantedFinalImprovement, civInfo, tile.getCity(), localUniqueCache))
-                tile.addTerrainFeature(terrainName)
+                    stats.add(newTile.stats.getStatDiffForImprovement(wantedFinalImprovement, civInfo, newTile.getCity(), localUniqueCache))
             }
         }
 
