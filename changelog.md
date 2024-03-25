@@ -1,3 +1,15 @@
+## 4.10.22
+
+Resolved  - Personalities.json no longer precludes generating translations
+
+Resolved  - discard all pending trade requests on both sides when war is declared
+
+perf: Don't re-substring multiplayer file name every time you do anything, dammit
+
+Fixed uniques of marble  - By woo1127
+
+Fix loop when AI is trying to remove an improvement with the same name as a terrain feature  - By SeventhM
+
 ## 4.10.21
 
 Fixed ruleset-dependant building filter activating *when initializing ruleset*
