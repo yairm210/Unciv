@@ -124,6 +124,7 @@ object DeclareWar {
                     DiplomacyAction(diplomacyManager.otherCivName, true),
                     NotificationCategory.Trade, diplomacyManager.otherCivName, NotificationIcon.Trade)
         diplomacyManager.trades.clear()
+        diplomacyManager.civInfo.tradeRequests.removeAll { it.requestingCiv == diplomacyManager.otherCivName }
 
         val civAtWarWith = diplomacyManager.otherCiv()
 
