@@ -67,7 +67,7 @@ object UnitActionModifiers {
         for (conditional in actionUnique.conditionals.filter { it.type == UniqueType.UnitActionStockpileCost }) {
             val amount = conditional.params[0].toInt()
             val resourceName = conditional.params[1]
-            if (unit.civ.getCivResourcesByName()[resourceName]!! < amount) {
+            if (unit.civ.getResourceAmount(resourceName) < amount) {
                 return false
             }
         }
@@ -114,7 +114,8 @@ object UnitActionModifiers {
                 UniqueType.UnitActionStockpileCost -> {
                     val amount = conditional.params[0].toInt()
                     val resourceName = conditional.params[1]
-                    unit.civ.resourceStockpiles.add(resourceName, -amount)
+                    if(unit.civ.getCivResourcesByName()[resourceName] != null)
+                        unit.civ.resourceStockpiles.add(resourceName, -amount)
                 }
                 else -> continue
             }
@@ -165,8 +166,8 @@ object UnitActionModifiers {
         if (actionUnique.conditionals.any { it.type == UniqueType.UnitActionStockpileCost }) {
             var stockpileString = ""
             for (conditionals in actionUnique.conditionals.filter { it.type == UniqueType.UnitActionStockpileCost })
-                stockpileString += " ${conditionals.params[0].toInt()} [${conditionals.params[1]}]"
-            effects += stockpileString.drop(1) // drop leading space
+                stockpileString += " ${conditionals.params[0].toInt()} {${conditionals.params[1]}}"
+            effects += stockpileString.removePrefix(" ") // drop leading space
         }
 
         if (actionUnique.conditionals.any { it.type == UniqueType.UnitActionConsumeUnit }
