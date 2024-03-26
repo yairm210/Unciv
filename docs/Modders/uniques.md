@@ -2255,8 +2255,8 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Conditional
 
-??? example  "&lt;when number of [countable] between [countable] and [countable]&gt;"
-	Example: "&lt;when number of [1000] between [1000] and [1000]&gt;"
+??? example  "&lt;when number of [countable] is between [countable] and [countable]&gt;"
+	Example: "&lt;when number of [1000] is between [1000] and [1000]&gt;"
 
 	Applicable to: Conditional
 
