@@ -1,3 +1,39 @@
+## 4.10.22
+
+Policy tables no longer repeat on some height/width configurations
+
+Discard all pending trade requests on both sides when war is declared
+
+Memory performance improvements
+
+Personalities.json no longer precludes generating translations
+
+Fix loop when AI is trying to remove an improvement with the same name as a terrain feature  - By SeventhM
+
+Fixed uniques of marble - By woo1127
+
+## 4.10.21
+
+Fixed ruleset-dependant building filter activating *when initializing ruleset*
+
+Fixed endless loop when unit tries to reach a tile it can pillage, but can't
+
+Fixed rare crash on city-state diplomatic relationship update
+
+Fix loop when improvement is unbuildable and removements feature  - By SeventhM
+
+## 4.10.20
+
+Modded units can construct improvements on impassible tiles
+
+By woo1127:
+- Added multi filter support for BuildingFilter
+- Fixed error message of ConditionalBuilding
+
+Better tundra color - By Caballero-Arepa
+
+Allow improvements that don't need feature removal to be built on features  - By SeventhM
+
 ## 4.10.19
 
 Fixed group natural wonders only spawning in single tile

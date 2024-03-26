@@ -461,7 +461,7 @@ class CityStateFunctions(val civInfo: Civilization) {
         // Check if city-state invaded by other civs
         if (getNumThreateningBarbarians() > 0) return // Assume any players are there to fight barbarians
 
-        for (otherCiv in civInfo.getKnownCivs().filter { it.isMajorCiv() }) {
+        for (otherCiv in civInfo.getKnownCivs().filter { it.isMajorCiv() }.toList()) {
             if (civInfo.isAtWarWith(otherCiv)) continue
             if (otherCiv.hasUnique(UniqueType.CityStateTerritoryAlwaysFriendly)) continue
             val diplomacy = civInfo.getDiplomacyManager(otherCiv)

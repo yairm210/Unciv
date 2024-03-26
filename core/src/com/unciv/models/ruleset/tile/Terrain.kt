@@ -2,6 +2,7 @@ package com.unciv.models.ruleset.tile
 
 import com.badlogic.gdx.graphics.Color
 import com.unciv.Constants
+import com.unciv.logic.MultiFilter
 import com.unciv.models.ruleset.Belief
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetStatsObject
@@ -141,6 +142,27 @@ class Terrain : RulesetStatsObject() {
         }
 
         return textList
+    }
+
+    fun matchesFilter(filter: String): Boolean {
+        return MultiFilter.multiFilter(filter, { matchesSingleFilter(it) })
+    }
+
+    /** Implements [UniqueParameterType.TerrainFilter][com.unciv.models.ruleset.unique.UniqueParameterType.TerrainFilter] */
+    fun matchesSingleFilter(filter: String): Boolean {
+        return when (filter) {
+            in Constants.all -> true
+            name -> true
+            "Terrain" -> true
+            in Constants.all -> true
+            "Open terrain" -> !isRough()
+            "Rough terrain" -> isRough()
+            type.name -> true
+            "Natural Wonder" -> type == TerrainType.NaturalWonder
+            "Terrain Feature" -> type == TerrainType.TerrainFeature
+
+            else -> uniques.contains(filter)
+        }
     }
 
     fun setTransients() {

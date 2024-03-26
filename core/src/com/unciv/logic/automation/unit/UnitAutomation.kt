@@ -407,7 +407,7 @@ object UnitAutomation {
     private fun canUnitHealInTurnsOnCurrentTile(unit: MapUnit, turns: Int, noEnemyDistance: Int = 3): Boolean {
         if (unit.hasUnique(UniqueType.HealsEvenAfterAction)) return false // We can keep on moving
         // Check if we are not in a safe city and there is an enemy nearby this isn't a good tile to heal on
-        if (!(unit.getTile().isCityCenter() && unit.getTile().getCity()!!.health > 50) 
+        if (!(unit.getTile().isCityCenter() && unit.getTile().getCity()!!.health > 50)
             && unit.civ.threatManager.getDistanceToClosestEnemyUnit(unit.getTile(), noEnemyDistance) <= noEnemyDistance) return false
 
         val healthRequiredPerTurn =  (100 - unit.health) / turns
@@ -447,6 +447,8 @@ object UnitAutomation {
         val tileToPillage = tilesThatCanWalkToAndThenPillage.maxByOrNull { it.getDefensiveBonus(false) }!!
         if (unit.getTile() != tileToPillage)
             unit.movement.moveToTile(tileToPillage)
+
+        if (unit.currentTile != tileToPillage) return false
 
         // We CANNOT use invokeUnitAction, since the default unit action contains a popup, which - when automated -
         //  runs a UI action on a side thread leading to crash!

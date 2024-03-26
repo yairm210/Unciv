@@ -1,6 +1,7 @@
 package com.unciv.models.ruleset
 
 import com.badlogic.gdx.files.FileHandle
+import com.unciv.Constants
 import com.unciv.json.fromJsonFile
 import com.unciv.json.json
 import com.unciv.logic.BackwardCompatibility.updateDeprecations
@@ -76,6 +77,8 @@ class Ruleset {
     val greatGeneralUnits by lazy {
         units.values.filter { it.hasUnique(UniqueType.GreatPersonFromCombat, StateForConditionals.IgnoreConditionals) }
     }
+
+    val tileRemovals by lazy { tileImprovements.values.filter { it.name.startsWith(Constants.remove) } }
 
     /** Contains all happiness levels that moving *from* them, to one *below* them, can change uniques that apply */
     val allHappinessLevelsThatAffectUniques by lazy {

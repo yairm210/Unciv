@@ -1,4 +1,4 @@
-[	
+[
 	// Bonus resources
 	{
 		"name": "Cattle",
@@ -86,7 +86,7 @@
 		"improvementStats": {"food": 1}
 	},
 	*/
-	
+
 	// Strategic resources
 	{
 		"name": "Horses",
@@ -384,7 +384,7 @@
 		"gold": 2,
 		"improvement": "Quarry",
 		"improvementStats": {"production": 1},
-		"uniques": ["[+15]% Production when constructing [All] wonders [in all cities]",
+		"uniques": ["[+15]% Production when constructing [All] wonders [in this city]",
 			"Special placement during map generation",
 			"Doesn't generate naturally <in [Grassland] [Fresh Water] tiles>"]
 	},

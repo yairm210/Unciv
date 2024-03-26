@@ -495,7 +495,7 @@ class Tile : IsPartOfGameInfoSerialization {
     }
 
     fun matchesTerrainFilter(filter: String, observingCiv: Civilization? = null): Boolean {
-        return MultiFilter.multiFilter(filter, {matchesSingleTerrainFilter(it, observingCiv)})
+        return MultiFilter.multiFilter(filter, { matchesSingleTerrainFilter(it, observingCiv) })
     }
 
     /** Implements [UniqueParameterType.TerrainFilter][com.unciv.models.ruleset.unique.UniqueParameterType.TerrainFilter] */
@@ -508,9 +508,6 @@ class Tile : IsPartOfGameInfoSerialization {
             "Land" -> isLand
             Constants.coastal -> isCoastalTile()
             Constants.river -> isAdjacentToRiver()
-            naturalWonder -> true
-            "Open terrain" -> !isRoughTerrain()
-            "Rough terrain" -> isRoughTerrain()
 
             "your" -> observingCiv != null && getOwner() == observingCiv
             "Foreign Land", "Foreign" -> observingCiv != null && !isFriendlyTerritory(observingCiv)
@@ -520,13 +517,11 @@ class Tile : IsPartOfGameInfoSerialization {
             resource -> observingCiv != null && hasViewableResource(observingCiv)
             "resource" -> observingCiv != null && hasViewableResource(observingCiv)
             "Water resource" -> isWater && observingCiv != null && hasViewableResource(observingCiv)
-            "Natural Wonder" -> naturalWonder != null
             "Featureless" -> terrainFeatures.isEmpty()
             Constants.freshWaterFilter -> isAdjacentTo(Constants.freshWater, observingCiv)
-
-            in terrainFeatures -> true
+            
             else -> {
-                if (terrainUniqueMap.containsFilteringUnique(filter)) return true
+                if (allTerrains.any { it.matchesFilter(filter) }) return true
                 if (getOwner()?.matchesFilter(filter) == true) return true
 
                 // Resource type check is last - cannot succeed if no resource here

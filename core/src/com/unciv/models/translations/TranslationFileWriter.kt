@@ -316,7 +316,7 @@ object TranslationFileWriter {
                 val filename = jsonFile.nameWithoutExtension()
 
                 val javaClass = getJavaClassByName(filename)
-                if (javaClass == this.javaClass)
+                if (javaClass == String.javaClass)
                     continue // unknown JSON, let's skip it
 
                 val array = json().fromJsonFile(javaClass, jsonFile.path())
@@ -522,7 +522,7 @@ object TranslationFileWriter {
                     "VictoryTypes" -> emptyArray<Victory>().javaClass
                     "CityStateTypes" -> emptyArray<CityStateType>().javaClass
                     "Events" -> emptyArray<Event>().javaClass
-                    else -> this.javaClass // dummy value
+                    else -> String.javaClass // dummy value
                 }
             }
         }

@@ -302,7 +302,7 @@ class OnlineMultiplayer {
     fun changeGameName(game: OnlineMultiplayerGame, newName: String, onException: (Exception?)->Unit) {
         debug("Changing name of game %s to", game.name, newName)
         val oldPreview = game.preview ?: throw game.error!!
-        val oldLastUpdate = game.lastUpdate
+        val oldLastUpdate = game.getLastUpdate()
         val oldName = game.name
 
         val newFileHandle = files.saveGame(oldPreview, newName, onException)
