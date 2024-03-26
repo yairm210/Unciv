@@ -262,17 +262,26 @@ class CivInfoTransientCache(val civInfo: Civilization) {
                 }
             }
 
+            var naturalWonder: String? = null
 
             if (!statsGained.isEmpty()) {
+                naturalWonder = tile.naturalWonder!!
+            }
+
+            if (!statsGained.isEmpty() && naturalWonder != null) {
                 civInfo.addStats(statsGained)
-                civInfo.addNotification("We have received [${statsGained}] for discovering [${tile.naturalWonder}]",
+                civInfo.addNotification("We have received [${statsGained}] for discovering [${naturalWonder}]",
                     Notification.NotificationCategory.General, statsGained.toString()
                     )
             }
 
             if (goldGained > 0) {
+                naturalWonder = tile.naturalWonder
+            }
+
+            if (goldGained > 0 && naturalWonder != null) {
                 civInfo.addGold(goldGained)
-                civInfo.addNotification("We have received [$goldGained] Gold for discovering [${tile.naturalWonder}]",
+                civInfo.addNotification("We have received [$goldGained] Gold for discovering [${naturalWonder}]",
                     Notification.NotificationCategory.General, NotificationIcon.Gold)
             }
 
