@@ -20,6 +20,10 @@ class UnitMovement(val unit: MapUnit) {
 
     fun isUnknownTileWeShouldAssumeToBePassable(tile: Tile) = !unit.civ.hasExplored(tile)
 
+    private fun canAssumeToBePassabeForWaterUnit(tile: Tile) = tile.isWater ||
+        isUnknownTileWeShouldAssumeToBePassable(tile) ||
+        tile.isCityCenter() && tile.getOwner() == unit.civ
+
     /**
      * Does not consider if tiles can actually be entered, use canMoveTo for that.
      * If a tile can be reached within the turn, but it cannot be passed through, the total distance to it is set to unitMovement
@@ -96,10 +100,9 @@ class UnitMovement(val unit: MapUnit) {
             val damageFreePath = getShortestPath(destination, true)
             if (damageFreePath.isNotEmpty()) return damageFreePath
         }
-        if (unit.baseUnit.isWaterUnit()
-            && destination.neighbors.none { isUnknownTileWeShouldAssumeToBePassable(it) || it.isWater }) {
+        if (unit.baseUnit.isWaterUnit() && destination.neighbors.none { canAssumeToBePassabeForWaterUnit(it) }) {
             // edge case where this unit is a boat and all of the tiles around the destination are
-            // explored and known to be land so we know a priori that no path exists
+            // explored and known to be land (but an own city is passable) so we know a priori that no path exists
             pathfindingCache.setShortestPathCache(destination, listOf())
             return listOf()
         }
