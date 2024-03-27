@@ -10,6 +10,7 @@ import com.unciv.logic.civilization.managers.TurnManager
 import com.unciv.ui.components.input.KeyboardBinding
 import com.unciv.ui.popups.AnimatedMenuPopup
 import com.unciv.ui.screens.worldscreen.WorldScreen
+import com.unciv.utils.Concurrency
 
 /**
  *  The "context" menu for the AutoPlay button
@@ -41,8 +42,19 @@ class AutoPlayMenu(
     }
 
     private fun autoPlayEndTurn() {
-        TurnManager(worldScreen.viewingCiv).automateTurn()
-        worldScreen.nextTurn()
+        settings.autoPlay.autoPlaying = true
+        nextTurnButton.update()
+        if (worldScreen.viewingCiv.units.getCivUnitsSize() + worldScreen.viewingCiv.cities.size >= 30) {
+            Concurrency.runOnNonDaemonThreadPool("AutoPlayEndTurn") {
+                TurnManager(worldScreen.viewingCiv).automateTurn()
+                settings.autoPlay.autoPlaying = false
+                worldScreen.nextTurn()
+            }
+        } else {
+            TurnManager(worldScreen.viewingCiv).automateTurn()
+            settings.autoPlay.autoPlaying = false
+            worldScreen.nextTurn()
+        }
     }
 
     private fun autoPlay() {
