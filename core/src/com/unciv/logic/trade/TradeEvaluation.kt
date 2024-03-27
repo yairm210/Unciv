@@ -59,10 +59,10 @@ class TradeEvaluation {
     }
 
     fun isTradeAcceptable(trade: Trade, evaluator: Civilization, tradePartner: Civilization): Boolean {
-        return getTradeAcceptability(trade, evaluator, tradePartner) >= 0
+        return getTradeAcceptability(trade, evaluator, tradePartner, true) >= 0
     }
 
-    fun getTradeAcceptability(trade: Trade, evaluator: Civilization, tradePartner: Civilization): Int {
+    fun getTradeAcceptability(trade: Trade, evaluator: Civilization, tradePartner: Civilization, includeDiplomaticGifts:Boolean = false): Int {
         val citiesAskedToSurrender = trade.ourOffers.count { it.type == TradeType.City }
         val maxCitiesToSurrender = ceil(evaluator.cities.size.toFloat() / 5).toInt()
         if (citiesAskedToSurrender > maxCitiesToSurrender) {
@@ -89,8 +89,8 @@ class TradeEvaluation {
                 return Int.MIN_VALUE
             }
         }
-
-        return sumOfTheirOffers - sumOfOurOffers
+        val diplomaticGifts: Int = if (includeDiplomaticGifts) evaluator.getDiplomacyManager(tradePartner).getGoldGifts() else 0
+        return sumOfTheirOffers - sumOfOurOffers + diplomaticGifts
     }
 
     fun evaluateBuyCostWithInflation(offer: TradeOffer, civInfo: Civilization, tradePartner: Civilization): Int {
@@ -306,14 +306,14 @@ class TradeEvaluation {
      * This returns how much one gold is worth now in comparison to starting out the game
      * Gold is worth less as the civilization has a higher income
      */
-    private fun getGoldInflation(civInfo: Civilization): Double {
+    fun getGoldInflation(civInfo: Civilization): Double {
         val modifier = 1000.0
         val goldPerTurn = civInfo.stats.statsForNextTurn.gold.toDouble()
         // To visualise the function, plug this into a 2d graphing calculator \frac{1000}{x^{1.2}+1.11*1000}
         // Goes from 1 at GPT = 0 to .834 at GPT = 100, .296 at GPT = 1000 and 0.116 at GPT = 10000
         // The current value of gold will never go below 10% or the .1f that it is set to
         // So this does not scale off to infinity
-        return modifier / (goldPerTurn.pow(1.2).coerceAtLeast(0.0) + (1.11f * modifier)) + .1f
+        return modifier / (goldPerTurn.coerceAtLeast(0.0).pow(1.2) + (1.11f * modifier)) + .1f
     }
 
     /** This code returns a positive value if the city is significantly far away from the capital
