@@ -75,6 +75,28 @@ enum class UniqueParameterType(
         }
     },
 
+    Countable("countable", "1000", "This indicate a number or a numeric variable") {
+        // todo add more countables
+        private val knownValues = setOf(
+            "year"
+        )
+
+        override fun isKnownValue(parameterText: String, ruleset: Ruleset): Boolean {
+            if (parameterText in knownValues) return true
+            if (parameterText.toIntOrNull() != null) return true
+            if (parameterText.toFloatOrNull() != null) return true
+            if (Stat.isStat(parameterText)) return true
+            if (parameterText in ruleset.tileResources) return true
+            return false
+        }
+
+        override fun getErrorSeverity(
+            parameterText: String, ruleset: Ruleset): UniqueType.UniqueParameterErrorSeverity? {
+            return if (isKnownValue(parameterText, ruleset)) null
+            else UniqueType.UniqueParameterErrorSeverity.RulesetSpecific
+        }
+    },
+
     // todo potentially remove if OneTimeRevealSpecificMapTiles changes
     KeywordAll("'all'", "All") {
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset) =

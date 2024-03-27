@@ -99,6 +99,57 @@ object Conditionals {
             return compare(statReserve, lowerLimit * gameSpeedModifier, upperLimit * gameSpeedModifier)
         }
 
+        fun getCountableAmount(countable: String): Float? {
+            if (countable.toFloatOrNull() != null) return countable.toFloat()
+
+            val relevantStat = Stat.safeValueOf(countable)
+
+            if (relevantStat != null) {
+                return if (relevantCity != null) {
+                    relevantCity!!.getStatReserve(relevantStat).toFloat()
+                } else if (relevantStat in Stat.statsWithCivWideField && relevantCiv != null) {
+                    relevantCiv!!.getStatReserve(relevantStat).toFloat()
+                } else {
+                    null
+                }
+            }
+
+            if (gameInfo == null) return null
+
+            if (countable == "year") return gameInfo!!.getYear(gameInfo!!.turns).toFloat()
+            if (gameInfo!!.ruleset.tileResources.containsKey(countable))
+                return getResourceAmount(countable).toFloat()
+
+            return null
+        }
+
+        fun compareCountables(
+            first: String,
+            second: String,
+            compare: (first: Float, second: Float) -> Boolean): Boolean {
+
+            val firstNumber = getCountableAmount(first)
+            val secondNumber = getCountableAmount(second)
+
+            return if (firstNumber != null && secondNumber != null)
+                compare(firstNumber, secondNumber)
+            else
+                false
+        }
+
+        fun compareCountables(first: String, second: String, third: String,
+                              compare: (first: Float, second: Float, third: Float) -> Boolean): Boolean {
+
+            val firstNumber = getCountableAmount(first)
+            val secondNumber = getCountableAmount(second)
+            val thirdNumber = getCountableAmount(third)
+
+            return if (firstNumber != null && secondNumber != null && thirdNumber != null)
+                compare(firstNumber, secondNumber, thirdNumber)
+            else
+                false
+        }
+
         return when (condition.type) {
             // These are 'what to do' and not 'when to do' conditionals
             UniqueType.ConditionalTimedUnique -> true
@@ -285,6 +336,32 @@ object Conditionals {
                         it != relevantCiv && it.isMajorCiv()
                             && it.policies.isAdopted(unique.sourceObjectName!!) // guarded by the sourceObjectType check
                     } }
+
+            UniqueType.ConditionalCountableEqualTo ->
+                compareCountables(condition.params[0], condition.params[1]) {
+                    first, second -> first == second
+                }
+
+            UniqueType.ConditionalCountableDifferentThan ->
+                compareCountables(condition.params[0], condition.params[1]) {
+                        first, second -> first != second
+                }
+
+            UniqueType.ConditionalCountableGreaterThan ->
+                compareCountables(condition.params[0], condition.params[1]) {
+                        first, second -> first > second
+                }
+
+            UniqueType.ConditionalCountableLessThan ->
+                compareCountables(condition.params[0], condition.params[1]) {
+                        first, second -> first < second
+                }
+
+            UniqueType.ConditionalCountableBetween ->
+                compareCountables(condition.params[0], condition.params[1], condition.params[2]) {
+                    first, second, third ->
+                    first in second..third
+                }
 
             else -> false
         }
