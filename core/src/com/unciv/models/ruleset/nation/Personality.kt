@@ -9,6 +9,7 @@ import kotlin.reflect.KMutableProperty0
  * Type of Personality focus. Typically ranges from 0 (no focus) to 10 (double focus)
  */
 enum class PersonalityValue {
+    // Stat focused personalities
     Production,
     Food,
     Gold,
@@ -16,8 +17,14 @@ enum class PersonalityValue {
     Culture,
     Happiness,
     Faith,
-    Military,
-    WarMongering,
+
+    // Behaviour focused personalities
+    Militaristic, // Building a military but not nessesarily using it
+    WarMongering, // Declaring war determines expanding or defending
+    Commerce, // Trading frequency, open borders and liberating city-states, less negative diplomacy impact
+    Diplomatic, // Likelyhood of signing friendship, defensive pact, peace treaty and other diplomatic actions
+    Loyalty, // Likelyhood to make a long lasting aliance with another civ and join wars with them
+    Expansion, // Founding/capturing new cities, oposite of a cultural victory
 }
 
 class Personality: RulesetObject() {
@@ -28,8 +35,14 @@ class Personality: RulesetObject() {
     var culture: Float = 5f
     var happiness: Float = 5f
     var faith: Float = 5f
-    var military: Float = 5f
-    var warMongering: Float = 5f // Todo: Look into where this should be inserted
+
+    var militaristic: Float = 5f
+    var warMongering: Float = 5f
+    var commerce: Float = 5f
+    var diplomatic: Float = 5f
+    var loyalty: Float = 5f
+    var expansion: Float = 5f
+
     var priorities = LinkedHashMap<String, Int>()
     var preferredVictoryType: String = Constants.neutralVictoryType
     var isNeutralPersonality: Boolean = false
@@ -43,8 +56,12 @@ class Personality: RulesetObject() {
             PersonalityValue.Culture -> ::culture
             PersonalityValue.Happiness -> ::happiness
             PersonalityValue.Faith -> ::faith
-            PersonalityValue.Military -> ::military
+            PersonalityValue.Militaristic -> ::militaristic
             PersonalityValue.WarMongering -> ::warMongering
+            PersonalityValue.Commerce -> ::commerce
+            PersonalityValue.Diplomatic -> ::diplomatic
+            PersonalityValue.Loyalty -> ::loyalty
+            PersonalityValue.Expansion -> ::expansion
         }
     }
 
