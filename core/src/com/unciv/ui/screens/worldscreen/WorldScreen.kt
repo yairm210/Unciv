@@ -60,6 +60,7 @@ import com.unciv.ui.screens.worldscreen.status.NextTurnButton
 import com.unciv.ui.screens.worldscreen.status.NextTurnProgress
 import com.unciv.ui.screens.worldscreen.status.StatusButtons
 import com.unciv.ui.screens.worldscreen.topbar.WorldScreenTopBar
+import com.unciv.ui.screens.worldscreen.unit.AutoPlay
 import com.unciv.ui.screens.worldscreen.unit.UnitTable
 import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionsTable
 import com.unciv.utils.Concurrency
@@ -130,6 +131,8 @@ class WorldScreen(
     private var uiEnabled = true
 
     internal val undoHandler = UndoHandler(this)
+    
+    val autoPlay: AutoPlay
 
     init {
         // notifications are right-aligned, they take up only as much space as necessary.
@@ -211,6 +214,8 @@ class WorldScreen(
         }
 
         if (restoreState != null) restore(restoreState)
+
+        autoPlay = AutoPlay(this)
 
         // don't run update() directly, because the UncivGame.worldScreen should be set so that the city buttons and tile groups
         //  know what the viewing civ is.
@@ -408,19 +413,18 @@ class WorldScreen(
         }
 
         // If the game has ended, lets stop AutoPlay
-        if (game.settings.autoPlay.isAutoPlaying()
-            && !gameInfo.oneMoreTurnMode && (viewingCiv.isDefeated() || gameInfo.checkForVictory())) {
-            game.settings.autoPlay.stopAutoPlay()
+        if (autoPlay.isAutoPlaying() && !gameInfo.oneMoreTurnMode && (viewingCiv.isDefeated() || gameInfo.checkForVictory())) {
+            autoPlay.stopAutoPlay()
         }
 
-        if (!hasOpenPopups() && !game.settings.autoPlay.isAutoPlaying() && isPlayersTurn) {
+        if (!hasOpenPopups() && !autoPlay.isAutoPlaying() && isPlayersTurn) {
             when {
                 viewingCiv.shouldShowDiplomaticVotingResults() ->
                     UncivGame.Current.pushScreen(DiplomaticVoteResultScreen(gameInfo.diplomaticVictoryVotesCast, viewingCiv))
                 !gameInfo.oneMoreTurnMode && (viewingCiv.isDefeated() || gameInfo.checkForVictory()) ->
                     game.pushScreen(VictoryScreen(this))
                 viewingCiv.greatPeople.freeGreatPeople > 0 ->
-                    game.pushScreen(GreatPersonPickerScreen(viewingCiv))
+                    game.pushScreen(GreatPersonPickerScreen(this, viewingCiv))
                 viewingCiv.popupAlerts.any() -> AlertPopup(this, viewingCiv.popupAlerts.first())
                 viewingCiv.tradeRequests.isNotEmpty() -> {
                     // In the meantime this became invalid, perhaps because we accepted previous trades
@@ -703,7 +707,7 @@ class WorldScreen(
         } else {
             if (!game.settings.autoPlay.showAutoPlayButton) {
                 statusButtons.autoPlayStatusButton = null
-                game.settings.autoPlay.stopAutoPlay()
+                autoPlay.stopAutoPlay()
             }
         }
     }

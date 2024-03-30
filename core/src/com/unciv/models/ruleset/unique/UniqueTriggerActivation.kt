@@ -318,7 +318,7 @@ object UniqueTriggerActivation {
                     if (notification != null)
                         civInfo.addNotification(notification, NotificationCategory.General)
 
-                    if (civInfo.isAI() || UncivGame.Current.settings.autoPlay.isAutoPlayingAndFullAI()) {
+                    if (civInfo.isAI() || UncivGame.Current.settings.autoPlay.fullAutoPlayAI) {
                         NextTurnAutomation.chooseGreatPerson(civInfo)
                     }
                     true

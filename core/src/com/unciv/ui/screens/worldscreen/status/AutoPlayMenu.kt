@@ -42,23 +42,23 @@ class AutoPlayMenu(
     }
 
     private fun autoPlayEndTurn() {
-        settings.autoPlay.autoPlaying = true
+        worldScreen.autoPlay.autoPlaying = true
         nextTurnButton.update()
         if (worldScreen.viewingCiv.units.getCivUnitsSize() + worldScreen.viewingCiv.cities.size >= 30) {
             Concurrency.runOnNonDaemonThreadPool("AutoPlayEndTurn") {
                 TurnManager(worldScreen.viewingCiv).automateTurn()
-                settings.autoPlay.autoPlaying = false
+                worldScreen.autoPlay.autoPlaying = false
                 worldScreen.nextTurn()
             }
         } else {
             TurnManager(worldScreen.viewingCiv).automateTurn()
-            settings.autoPlay.autoPlaying = false
+            worldScreen.autoPlay.autoPlaying = false
             worldScreen.nextTurn()
         }
     }
 
     private fun autoPlay() {
-        settings.autoPlay.startAutoPlay()
+        worldScreen.autoPlay.startAutoPlay()
         nextTurnButton.update()
     }
 

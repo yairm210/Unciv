@@ -122,7 +122,6 @@ class LoadGameScreen : LoadOrSaveScreen() {
     }
 
     private fun onLoadGame() {
-        UncivGame.Current.settings.autoPlay.stopAutoPlay()
         if (selectedSave == null) return
         val loadingPopup = LoadingPopup(this)
         Concurrency.run(loadGame) {

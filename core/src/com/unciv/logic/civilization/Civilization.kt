@@ -332,6 +332,11 @@ class Civilization : IsPartOfGameInfoSerialization {
         if (firstCityIfNoCapital) cities.firstOrNull() else null
     fun isHuman() = playerType == PlayerType.Human
     fun isAI() = playerType == PlayerType.AI
+    fun isAIOrAutoPlaying(): Boolean {
+        if (playerType == PlayerType.AI) return true
+        val worldScreen = UncivGame.Current.worldScreen ?: return false
+        return worldScreen.viewingCiv == this && worldScreen.autoPlay.isAutoPlaying()
+    }
     fun isOneCityChallenger() = playerType == PlayerType.Human && gameInfo.gameParameters.oneCityChallenge
 
     fun isCurrentPlayer() = gameInfo.currentPlayerCiv == this
@@ -372,12 +377,11 @@ class Civilization : IsPartOfGameInfoSerialization {
     }
 
     fun wantsToFocusOn(focus: Victory.Focus): Boolean {
-        return thingsToFocusOnForVictory.contains(focus) &&
-            (isAI() || UncivGame.Current.settings.autoPlay.isAutoPlayingAndFullAI())
+        return thingsToFocusOnForVictory.contains(focus) && isAIOrAutoPlaying()
     }
 
     fun getPersonality(): Personality {
-        return if (isAI() || UncivGame.Current.settings.autoPlay.isAutoPlayingAndFullAI()) gameInfo.ruleset.personalities[nation.personality] ?: Personality.neutralPersonality
+        return if (isAIOrAutoPlaying()) gameInfo.ruleset.personalities[nation.personality] ?: Personality.neutralPersonality
         else Personality.neutralPersonality
     }
 

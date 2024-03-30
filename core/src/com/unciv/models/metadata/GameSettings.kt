@@ -339,25 +339,6 @@ class GameSettings {
         var autoPlayPolicies: Boolean = true
         var autoPlayReligion: Boolean = true
         var autoPlayDiplomacy: Boolean = true
-
-        var turnsToAutoPlay: Int = 0
-        var autoPlaying: Boolean = false
-        var autoPlayTurnInProgress: Boolean = false
-
-        fun startAutoPlay() {
-            autoPlaying = true
-            turnsToAutoPlay = autoPlayMaxTurns
-        }
-
-        fun stopAutoPlay() {
-            autoPlaying = false
-            turnsToAutoPlay = 0
-            autoPlayTurnInProgress = false
-        }
-
-        fun isAutoPlaying(): Boolean = autoPlaying
-
-        fun isAutoPlayingAndFullAI(): Boolean = isAutoPlaying() && fullAutoPlayAI
     }
 
     @Suppress("SuspiciousCallableReferenceInLambda")  // By @Azzurite, safe as long as that warning below is followed

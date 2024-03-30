@@ -156,7 +156,7 @@ class DiplomacyFunctions(val civInfo: Civilization) {
         if (diplomacyManager != null && (diplomacyManager.hasOpenBorders || diplomacyManager.diplomaticStatus == DiplomaticStatus.War))
             return true
         // Players can always pass through city-state tiles
-        if ((civInfo.isHuman() && !UncivGame.Current.settings.autoPlay.isAutoPlayingAndFullAI()) && otherCiv.isCityState()) return true
+        if ((civInfo.isHuman() && !UncivGame.Current.settings.autoPlay.fullAutoPlayAI) && otherCiv.isCityState()) return true
         return false
     }
 
