@@ -22,3 +22,4 @@ class AutoPlay(val worldScreen: WorldScreen) {
 
     fun fullAutoPlayAI(): Boolean = isAutoPlaying() && worldScreen.game.settings.autoPlay.fullAutoPlayAI
 }
+
