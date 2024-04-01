@@ -34,6 +34,9 @@ class CivInfoTransientCache(val civInfo: Civilization) {
     val uniqueUnits = hashSetOf<BaseUnit>()
 
     @Transient
+    val uniqueImprovements = hashSetOf<TileImprovement>()
+
+    @Transient
     val uniqueBuildings = hashSetOf<Building>()
 
     /** Contains mapping of cities to travel mediums from ALL civilizations connected by trade routes to the capital */
@@ -61,6 +64,10 @@ class CivInfoTransientCache(val civInfo: Civilization) {
                 uniqueBuildings.add(building)
             }
         }
+
+        for (improvement in ruleset.tileImprovements.values)
+            if (improvement.uniqueTo == civInfo.civName)
+                uniqueImprovements.add(improvement)
 
         for (unit in ruleset.units.values) {
             if (unit.uniqueTo == civInfo.civName) {
