@@ -2236,6 +2236,31 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Conditional
 
+??? example  "&lt;when number of [countable] is equal to [countable]&gt;"
+	Example: "&lt;when number of [1000] is equal to [1000]&gt;"
+
+	Applicable to: Conditional
+
+??? example  "&lt;when number of [countable] is different than [countable]&gt;"
+	Example: "&lt;when number of [1000] is different than [1000]&gt;"
+
+	Applicable to: Conditional
+
+??? example  "&lt;when number of [countable] is greater than [countable]&gt;"
+	Example: "&lt;when number of [1000] is greater than [1000]&gt;"
+
+	Applicable to: Conditional
+
+??? example  "&lt;when number of [countable] is less than [countable]&gt;"
+	Example: "&lt;when number of [1000] is less than [1000]&gt;"
+
+	Applicable to: Conditional
+
+??? example  "&lt;when number of [countable] is between [countable] and [countable]&gt;"
+	Example: "&lt;when number of [1000] is between [1000] and [1000]&gt;"
+
+	Applicable to: Conditional
+
 ## TriggerCondition uniques
 !!! note ""
 
@@ -2406,6 +2431,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 *[civWideStat]: All the following stats have civ-wide fields: `Gold`, `Science`, `Culture`, `Faith`.
 *[combatantFilter]: This indicates a combatant, which can either be a unit or a city (when bombarding). Must either be `City` or a `mapUnitFilter`.
 *[costOrStrength]: `Cost` or `Strength`.
+*[countable]: This indicate a number or a numeric variable.
 *[era]: The name of any era.
 *[event]: The name of any event.
 *[foundingOrEnhancing]: `founding` or `enhancing`.
