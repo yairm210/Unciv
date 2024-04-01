@@ -7,6 +7,7 @@ import com.unciv.logic.map.tile.Tile
 import com.unciv.models.UnitActionType
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.screens.worldscreen.unit.actions.UnitActions
+import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionsFromUniques
 
 object CivilianUnitAutomation {
 
@@ -105,7 +106,6 @@ object CivilianUnitAutomation {
                 return
         }
 
-
         // This has to come after the individual abilities for the great people that can also place
         // instant improvements (e.g. great scientist).
         if (unit.hasUnique(UniqueType.ConstructImprovementInstantly)) {
@@ -116,6 +116,10 @@ object CivilianUnitAutomation {
             if (!improvementCanBePlacedEventually)
                 UnitActions.invokeUnitAction(unit, UnitActionType.StartGoldenAge)
         }
+
+        // if none of the conditions above are met,
+        // AI will attempt to activate the first triggerable unique whenever it is available.
+        UnitActionsFromUniques.getTriggerUniqueActions(unit, unit.getTile()).firstOrNull()?.action?.invoke()
 
         // TODO: The AI tends to have a lot of great generals. Maybe there should be a cutoff
         //  (depending on number of cities) and after that they should just be used to start golden
