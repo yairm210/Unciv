@@ -53,7 +53,7 @@ class GameOptionsTable(
      *
      *  The second reason this is public: [NewGameScreen] accesses [ModCheckboxTable.savedModcheckResult] for display.
      */
-    val modCheckboxes = getModCheckboxes(isPortrait = isPortrait)
+    var modCheckboxes = getModCheckboxes(isPortrait = isPortrait)
 
     // Remember this so we can unselect it when the pool dialog returns an empty pool
     private var randomNationsPoolCheckbox: CheckBox? = null
@@ -69,6 +69,8 @@ class GameOptionsTable(
 
     fun update() {
         clear()
+        // Mods may have changed
+        modCheckboxes = getModCheckboxes(isPortrait = isPortrait)
 
         add(Table().apply {
             defaults().pad(5f)
