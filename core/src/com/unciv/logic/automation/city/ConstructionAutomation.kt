@@ -20,6 +20,7 @@ import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stat
+import kotlin.math.ceil
 import kotlin.math.max
 import kotlin.math.sqrt
 
@@ -103,15 +104,8 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
     fun chooseNextConstruction() {
         if (cityConstructions.getCurrentConstruction() !is PerpetualConstruction) return  // don't want to be stuck on these forever
 
-        addFoodBuildingChoice()
-        addProductionBuildingChoice()
-        addGoldBuildingChoice()
-        addScienceBuildingChoice()
-        addHappinessBuildingChoice()
         addDefenceBuildingChoice()
         addUnitTrainingBuildingChoice()
-        addCultureBuildingChoice()
-        addFaithBuildingChoice()
         addOtherBuildingChoice()
 
         if (!city.isPuppet) {
@@ -222,19 +216,6 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
         }
     }
 
-    private fun addCultureBuildingChoice() {
-        val cultureBuilding = statBuildings
-            .filter { it.isStatRelated(Stat.Culture) }
-            .filterBuildable()
-            .minByOrNull { it.cost } ?: return
-        var modifier = 0.5f
-        if (city.cityStats.currentCityStats.culture == 0f) // It won't grow if we don't help it
-            modifier = 0.8f
-        if (civInfo.wantsToFocusOn(Victory.Focus.Culture)) modifier = 1.6f
-        modifier *= personality.scaledFocus(PersonalityValue.Culture)
-        addChoice(relativeCostEffectiveness, cultureBuilding.name, modifier)
-    }
-
     private fun addSpaceshipPartChoice() {
         if (!civInfo.hasUnique(UniqueType.EnablesConstructionOfSpaceshipParts)) return
         val spaceshipPart = (nonWonders + units).filter { it.name in spaceshipParts }.filterBuildable().firstOrNull()
@@ -334,77 +315,57 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
         addChoice(relativeCostEffectiveness, defensiveBuilding.name, modifier)
     }
 
-    private fun addHappinessBuildingChoice() {
-        val happinessBuilding = nonWonders
-            .filter { it.isStatRelated(Stat.Happiness)
-                    && Automation.allowAutomatedConstruction(civInfo, city, it) }
-            .filterBuildable()
-            .minByOrNull { it.cost } ?: return
-        var modifier = 1f
-        val civHappiness = civInfo.getHappiness()
-        if (civHappiness > 5) modifier = 1 / 2f // less desperate
-        if (civHappiness < 0) modifier = 3f // more desperate
-        else if (happinessBuilding.hasUnique(UniqueType.RemoveAnnexUnhappiness)) modifier = 2f // building courthouse is always important
-        modifier *= personality.scaledFocus(PersonalityValue.Happiness)
-        addChoice(relativeCostEffectiveness, happinessBuilding.name, modifier)
+    private fun buildingValue(building: Building): Float {
+        val buildingStats = city.cityStats.getStatDifferenceFromBuilding(building.name)
+        val surplusFood = city.cityStats.currentCityStats[Stat.Food]
+        if (surplusFood < 0) {
+            buildingStats.food *= 8 // Starving, need Food, get to 0
+        } else if (city.population.population < 5) {
+            buildingStats.food *= 3
+        }
+
+        if (buildingStats.gold < 0 && civInfo.gold < 0) {
+            buildingStats.gold *= 2 // We have a gold problem and this isn't helping
+        }
+
+        if (civInfo.getHappiness() < 0)
+            buildingStats.happiness *= 2
+
+        if (city.cityStats.currentCityStats.culture < 1) {
+            buildingStats.culture *= 2 // We need to start growing borders
+        }
+        else if (city.tiles.size < 12 && city.population.population < 5) {
+            buildingStats.culture *= 2
+        }
+
+        for (stat in Stat.values()) {
+            if (
+                stat == Stat.Culture && civInfo.wantsToFocusOn(Victory.Focus.Culture) ||
+                stat == Stat.Production && civInfo.wantsToFocusOn(Victory.Focus.Production) ||
+                stat == Stat.Science && civInfo.wantsToFocusOn(Victory.Focus.Science) ||
+                stat == Stat.Faith && civInfo.wantsToFocusOn(Victory.Focus.Faith) ||
+                stat == Stat.Gold && civInfo.wantsToFocusOn(Victory.Focus.Gold)
+                )
+                buildingStats[stat] *= 2f
+
+            buildingStats[stat] *= personality.scaledFocus(PersonalityValue[stat])
+        }
+
+        building.happiness /= 3 // Avoid overshooting that may happen from the following rank
+        return Automation.rankStatsValue(buildingStats.clone(), civInfo)
     }
 
-    private fun addScienceBuildingChoice() {
-        if (allTechsAreResearched) return
-        val scienceBuilding = statBuildings
-            .filter { it.isStatRelated(Stat.Science)
-                    && Automation.allowAutomatedConstruction(civInfo, city, it) }
+    private fun addAllStatChoice() {
+        val building = buildings
+            .filter { Automation.allowAutomatedConstruction(civInfo, city, it) }
             .filterBuildable()
-            .minByOrNull { it.cost } ?: return
-        var modifier = 1.1f
-        if (civInfo.wantsToFocusOn(Victory.Focus.Science))
-            modifier *= 1.4f
-        modifier *= personality.scaledFocus(PersonalityValue.Science)
-        addChoice(relativeCostEffectiveness, scienceBuilding.name, modifier)
-    }
+            .maxByOrNull { buildingValue(it as Building) /
+                ceil(it.cost.toFloat() / cityConstructions.productionForConstruction(it.name).coerceAtLeast(1))
+                    .coerceAtLeast(1f)
+            } ?: return
 
-    private fun addGoldBuildingChoice() {
-        val goldBuilding = statBuildings.filter { it.isStatRelated(Stat.Gold) }
-            .filterBuildable()
-            .minByOrNull { it.cost } ?: return
-        var modifier = if (civInfo.stats.statsForNextTurn.gold < 0) 3f else 1.2f
-        modifier *= personality.scaledFocus(PersonalityValue.Gold)
-        addChoice(relativeCostEffectiveness, goldBuilding.name, modifier)
-    }
-
-    private fun addProductionBuildingChoice() {
-        val productionBuilding = statBuildings
-            .filter { it.isStatRelated(Stat.Production) }
-            .filterBuildable()
-            .minByOrNull { it.cost } ?: return
-        val modifier = personality.scaledFocus(PersonalityValue.Production)
-        addChoice(relativeCostEffectiveness, productionBuilding.name, 1.5f * modifier)
-    }
-
-    private fun addFoodBuildingChoice() {
-        val conditionalState = StateForConditionals(civInfo, city)
-        val foodBuilding = nonWonders
-            .filter {
-                (it.isStatRelated(Stat.Food)
-                    || it.hasUnique(UniqueType.CarryOverFood, conditionalState)
-                ) && Automation.allowAutomatedConstruction(civInfo, city, it)
-            }.filterBuildable().minByOrNull { it.cost } ?: return
-        var modifier = 1f
-        if (city.population.population < 5) modifier = 1.3f
-        modifier *= personality.scaledFocus(PersonalityValue.Food)
-        addChoice(relativeCostEffectiveness, foodBuilding.name, modifier)
-
-    }
-
-    private fun addFaithBuildingChoice() {
-        if (civInfo.gameInfo.isReligionEnabled()) return
-        val faithBuilding = statBuildings
-            .filter { it.isStatRelated(Stat.Faith) }
-            .filterBuildable()
-            .minByOrNull { it.cost } ?: return
-        var modifier = 0.5f
-        if (civInfo.wantsToFocusOn(Victory.Focus.Faith)) modifier = 1f
-        modifier *= personality.scaledFocus(PersonalityValue.Faith)
-        addChoice(relativeCostEffectiveness, faithBuilding.name, modifier)
+        addChoice(
+            relativeCostEffectiveness, building.name,
+            buildingValue(building as Building) / 4)
     }
 }
