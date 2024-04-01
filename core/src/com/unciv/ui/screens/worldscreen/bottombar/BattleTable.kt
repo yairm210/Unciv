@@ -306,6 +306,7 @@ class BattleTable(val worldScreen: WorldScreen) : Table() {
         val (damageToDefender, damageToAttacker) = Battle.attackOrNuke(attacker, attackableTile)
 
         worldScreen.battleAnimation(attacker, damageToAttacker, defender, damageToDefender)
+        if (!attacker.canAttack()) hide()
     }
 
 
