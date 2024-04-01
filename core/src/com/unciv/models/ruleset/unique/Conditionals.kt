@@ -276,9 +276,6 @@ object Conditionals {
             UniqueType.ConditionalNotAdjacentTo -> relevantTile?.isAdjacentTo(condition.params[0], relevantCiv) == false
             UniqueType.ConditionalFightingInTiles ->
                 state.attackedTile?.matchesFilter(condition.params[0], relevantCiv) == true
-            UniqueType.ConditionalInTilesAnd ->
-                relevantTile != null && relevantTile!!.matchesFilter(condition.params[0], relevantCiv)
-                    && relevantTile!!.matchesFilter(condition.params[1], relevantCiv)
             UniqueType.ConditionalNearTiles ->
                 relevantTile != null && relevantTile!!.getTilesInDistance(condition.params[0].toInt()).any {
                     it.matchesFilter(condition.params[1])
@@ -309,12 +306,6 @@ object Conditionals {
                 relevantTile != null
                     && relevantTile!!.neighbors.count {
                     it.matchesFilter(condition.params[2], relevantCiv)
-                } in condition.params[0].toInt()..condition.params[1].toInt()
-            UniqueType.ConditionalNeighborTilesAnd ->
-                relevantTile != null
-                    && relevantTile!!.neighbors.count {
-                    it.matchesFilter(condition.params[2], relevantCiv)
-                        && it.matchesFilter(condition.params[3], relevantCiv)
                 } in condition.params[0].toInt()..condition.params[1].toInt()
 
             UniqueType.ConditionalOnWaterMaps -> state.region?.continentID == -1

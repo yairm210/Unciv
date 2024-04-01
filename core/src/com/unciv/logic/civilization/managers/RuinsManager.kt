@@ -50,7 +50,6 @@ class RuinsManager(
         if (civInfo.gameInfo.difficulty in ruinReward.excludedDifficulties) return false
         val stateForConditionals = StateForConditionals(civInfo, unit = unit, tile = unit.getTile())
         if (ruinReward.hasUnique(UniqueType.HiddenWithoutReligion, stateForConditionals) && !civInfo.gameInfo.isReligionEnabled()) return false
-        if (ruinReward.hasUnique(UniqueType.HiddenAfterGreatProphet, stateForConditionals) && civInfo.religionManager.greatProphetsEarned() > 0) return false
         if (ruinReward.hasUnique(UniqueType.Unavailable, stateForConditionals)) return false
         if (ruinReward.getMatchingUniques(UniqueType.OnlyAvailable, StateForConditionals.IgnoreConditionals)
                 .any { !it.conditionalsApply(stateForConditionals) }) return false
