@@ -1092,7 +1092,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Building, Unit
 
 ??? example  "Can only be built"
-	Meant to be used together with conditionals, like "Can only be built <after adopting [policy]> <while the empire is happy>". Only allows Building when ALL conditionals are met. Will also NOT block Upgrade and Transform actions. See also OnlyAvailable
+	Meant to be used together with conditionals, like "Can only be built <after adopting [policy]> <while the empire is happy>". Only allows Building when ALL conditionals are met. Will also NOT block Upgrade and Transform actions. See also OnlyAvailable.
 	Applicable to: Building, Unit
 
 ??? example  "Must have an owned [tileFilter] within [amount] tiles"
@@ -2395,6 +2395,12 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "&lt;costs [stats] stats&gt;"
 	A positive Integer value will be subtracted from your stock. Food and Production will be removed from Closest City's current stock
 	Example: "&lt;costs [+1 Gold, +2 Production] stats&gt;"
+
+	Applicable to: UnitActionModifier
+
+??? example  "&lt;costs [amount] [stockpiledResource]&gt;"
+	A positive Integer value will be subtracted from your stock.
+	Example: "&lt;costs [3] [StockpiledResource]&gt;"
 
 	Applicable to: UnitActionModifier
 
