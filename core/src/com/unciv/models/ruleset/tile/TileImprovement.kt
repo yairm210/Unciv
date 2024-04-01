@@ -23,6 +23,7 @@ import kotlin.math.roundToInt
 
 class TileImprovement : RulesetStatsObject() {
 
+    var replaces: String? = null
     var terrainsCanBeBuiltOn: Collection<String> = ArrayList()
     var techRequired: String? = null
     var uniqueTo: String? = null
