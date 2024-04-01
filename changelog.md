@@ -1,3 +1,23 @@
+## 4.10.23
+
+Resolved  - Hide battle table after attack if we can move, but not attack again
+
+Resolved  - maps with mods change mods visible on new game screen accordingly
+
+Barbarian units always placed next to encampment, so they don't "jump over" tiles they can't enter to the other side
+
+Clean up wiki main page - 
+
+Remove mod blacklist  - By SeventhM
+
+UI Tips article additions  - By Ouaz
+
+Add UnitActionModifier for Stockpile Cost  - By itanasi
+
+Countable comparison conditional uniques  - By PLynx01
+
+fix misimplemented Dromon  - By ravignir
+
 ## 4.10.22
 
 Policy tables no longer repeat on some height/width configurations
