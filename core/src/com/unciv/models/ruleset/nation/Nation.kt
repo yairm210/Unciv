@@ -255,18 +255,7 @@ class Nation : RulesetObject() {
             } else if (improvement.replaces != null) {
                 yield(FormattedLine("Replaces [${improvement.replaces}], which is not found in the ruleset!", indent=1))
             } else {
-                if (improvement.terrainsCanBeBuiltOn.isNotEmpty()) {
-                    improvement.terrainsCanBeBuiltOn.withIndex().forEach {
-                        yield(
-                            FormattedLine(if (it.index == 0) "{Can be built on} {${it.value}}" else "or [${it.value}]",
-                                link = "Terrain/${it.value}", indent = if (it.index == 0) 1 else 2)
-                        )
-                    }
-                }
-                for (unique in improvement.uniqueObjects) {
-                    if (unique.isHiddenToUsers()) continue
-                    yield(FormattedLine(unique, indent = 1))
-                }
+                improvement.getShortDecription()
             }
         }
     }

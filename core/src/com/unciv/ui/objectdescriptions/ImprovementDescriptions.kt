@@ -1,13 +1,14 @@
 package com.unciv.ui.objectdescriptions
 
-import com.unciv.models.ruleset.Building
+import com.unciv.UncivGame
+import com.unciv.models.ruleset.Belief
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.tile.TileImprovement
-import com.unciv.models.ruleset.unique.StateForConditionals
+import com.unciv.models.ruleset.tile.TileResource
 import com.unciv.models.ruleset.unique.Unique
-import com.unciv.models.ruleset.unit.BaseUnit
+import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.tr
-import com.unciv.ui.components.fonts.Fonts
+import com.unciv.ui.screens.civilopediascreen.CivilopediaScreen
 import com.unciv.ui.screens.civilopediascreen.FormattedLine
 
 object ImprovementDescriptions {
@@ -45,6 +46,153 @@ object ImprovementDescriptions {
         for (unique in originalImprovement.uniqueObjects.filterNot(lostAbilityPredicate)) {
             // Need double translation of the "ability" here - unique texts may contain square brackets
             yield(FormattedLine("Lost ability (vs [${originalImprovement.name}]): [${unique.text.tr()}]", indent=1))
+        }
+    }
+
+    fun getCivilopediaTextLines(improvement: TileImprovement, ruleset: Ruleset): List<FormattedLine> {
+        val textList = ArrayList<FormattedLine>()
+
+        val statsDesc = improvement.cloneStats().toString()
+        if (statsDesc.isNotEmpty()) textList += FormattedLine(statsDesc)
+
+        if (improvement.uniqueTo != null) {
+            textList += FormattedLine()
+            textList += FormattedLine("Unique to [${improvement.uniqueTo}]", link="Nation/${improvement.uniqueTo}")
+        }
+        if (improvement.replaces != null) {
+            val replaceImprovement = ruleset.tileImprovements[improvement.replaces]
+            textList += FormattedLine("Replaces [${improvement.replaces}]", link=replaceImprovement?.makeLink() ?: "", indent = 1)
+        }
+
+        val constructorUnits = improvement.getConstructorUnits(ruleset)
+        val creatingUnits = improvement.getCreatingUnits(ruleset)
+        val creatorExists = constructorUnits.isNotEmpty() || creatingUnits.isNotEmpty()
+
+        if (creatorExists && improvement.terrainsCanBeBuiltOn.isNotEmpty()) {
+            textList += FormattedLine()
+            if (improvement.terrainsCanBeBuiltOn.size == 1) {
+                with (improvement.terrainsCanBeBuiltOn.first()) {
+                    textList += FormattedLine("{Can be built on} {$this}", link="Terrain/$this")
+                }
+            } else {
+                textList += FormattedLine("{Can be built on}:")
+                improvement.terrainsCanBeBuiltOn.forEach {
+                    textList += FormattedLine(it, link="Terrain/$it", indent=1)
+                }
+            }
+        }
+
+        var addedLineBeforeResourceBonus = false
+        for (resource in ruleset.tileResources.values) {
+            if (resource.improvementStats == null || !resource.isImprovedBy(improvement.name)) continue
+            if (!addedLineBeforeResourceBonus) {
+                addedLineBeforeResourceBonus = true
+                textList += FormattedLine()
+            }
+            val statsString = resource.improvementStats.toString()
+            // Line intentionally modeled as UniqueType.Stats + ConditionalInTiles
+            textList += FormattedLine("[${statsString}] <in [${resource.name}] tiles>", link = resource.makeLink())
+        }
+
+        if (improvement.techRequired != null) {
+            textList += FormattedLine()
+            textList += FormattedLine("Required tech: [${improvement.techRequired}]", link="Technology/${improvement.techRequired}")
+        }
+
+        improvement.uniquesToCivilopediaTextLines(textList)
+
+        // Be clearer when one needs to chop down a Forest first... A "Can be built on Plains" is clear enough,
+        // but a "Can be built on Land" is not - how is the user to know Forest is _not_ Land?
+        if (creatorExists &&
+            !improvement.isEmpty() && // Has any Stats
+            !improvement.hasUnique(UniqueType.NoFeatureRemovalNeeded) &&
+            !improvement.hasUnique(UniqueType.RemovesFeaturesIfBuilt) &&
+            improvement.terrainsCanBeBuiltOn.none { it in ruleset.terrains }
+        )
+            textList += FormattedLine("Needs removal of terrain features to be built")
+
+        if (improvement.isAncientRuinsEquivalent() && ruleset.ruinRewards.isNotEmpty()) {
+            val difficulty = if (!UncivGame.isCurrentInitialized() || UncivGame.Current.gameInfo == null)
+                "Prince"  // most factors == 1
+            else UncivGame.Current.gameInfo!!.gameParameters.difficulty
+            val religionEnabled = CivilopediaScreen.showReligionInCivilopedia(ruleset)
+            textList += FormattedLine()
+            textList += FormattedLine("The possible rewards are:")
+            ruleset.ruinRewards.values.asSequence()
+                .filter { reward ->
+                    difficulty !in reward.excludedDifficulties &&
+                        (religionEnabled || !reward.hasUnique(UniqueType.HiddenWithoutReligion))
+                }
+                .forEach { reward ->
+                    textList += FormattedLine(reward.name, starred = true, color = reward.color)
+                    textList += reward.civilopediaText
+                }
+        }
+
+        if (creatorExists)
+            textList += FormattedLine()
+        for (unit in constructorUnits)
+            textList += FormattedLine("{Can be constructed by} {$unit}", unit.makeLink())
+        for (unit in creatingUnits)
+            textList += FormattedLine("{Can be created instantly by} {$unit}", unit.makeLink())
+
+        val seeAlso = ArrayList<FormattedLine>()
+        for (alsoImprovement in ruleset.tileImprovements.values) {
+            if (alsoImprovement.replaces == improvement.name)
+                seeAlso += FormattedLine(alsoImprovement.name, link = alsoImprovement.makeLink(), indent = 1)
+        }
+
+        seeAlso += Belief.getCivilopediaTextMatching(improvement.name, ruleset)
+
+        if (seeAlso.isNotEmpty()) {
+            textList += FormattedLine()
+            textList += FormattedLine("{See also}:")
+            textList += seeAlso
+        }
+
+        return textList
+    }
+
+    fun getDescription(improvement: TileImprovement, ruleset: Ruleset): String {
+        val lines = ArrayList<String>()
+
+        val statsDesc = improvement.cloneStats().toString()
+        if (statsDesc.isNotEmpty()) lines += statsDesc
+        if (improvement.uniqueTo != null) lines += "Unique to [${improvement.uniqueTo}]".tr()
+        if (improvement.replaces != null) lines += "Replaces [${improvement.replaces}]".tr()
+        if (!improvement.terrainsCanBeBuiltOn.isEmpty()) {
+            val terrainsCanBeBuiltOnString: ArrayList<String> = arrayListOf()
+            for (i in improvement.terrainsCanBeBuiltOn) {
+                terrainsCanBeBuiltOnString.add(i.tr())
+            }
+            lines += "Can be built on".tr() + terrainsCanBeBuiltOnString.joinToString(", ", " ") //language can be changed when setting changes.
+        }
+        for (resource: TileResource in ruleset.tileResources.values.filter { it.isImprovedBy(improvement.name) }) {
+            if (resource.improvementStats == null) continue
+            val statsString = resource.improvementStats.toString()
+            lines += "[${statsString}] <in [${resource.name}] tiles>".tr()
+        }
+        if (improvement.techRequired != null) lines += "Required tech: [${improvement.techRequired}]".tr()
+
+        improvement.uniquesToDescription(lines)
+
+        return lines.joinToString("\n")
+    }
+
+    fun getShortDescription(improvement: TileImprovement) = sequence {
+        if (improvement.terrainsCanBeBuiltOn.isNotEmpty()) {
+            improvement.terrainsCanBeBuiltOn.withIndex().forEach {
+                yield(
+                    FormattedLine(
+                        if (it.index == 0) "{Can be built on} {${it.value}}" else "or [${it.value}]",
+                        link = "Terrain/${it.value}", indent = if (it.index == 0) 1 else 2
+                    )
+                )
+            }
+        }
+        for (unique in improvement.uniqueObjects) {
+            if (unique.isHiddenToUsers()) continue
+            yield(FormattedLine(unique, indent = 1))
         }
     }
 }
