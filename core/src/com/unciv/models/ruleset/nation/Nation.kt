@@ -255,7 +255,7 @@ class Nation : RulesetObject() {
             } else if (improvement.replaces != null) {
                 yield(FormattedLine("Replaces [${improvement.replaces}], which is not found in the ruleset!", indent=1))
             } else {
-                improvement.getShortDecription()
+                yieldAll(improvement.getShortDecription())
             }
         }
     }
