@@ -29,10 +29,10 @@ object ImprovementDescriptions {
 
         for (terrain in replacementImprovement.terrainsCanBeBuiltOn)
             if (terrain !in originalImprovement.terrainsCanBeBuiltOn)
-                yield(FormattedLine("Is allowed on [${terrain}]", link = ruleset.terrains[terrain]?.makeLink() ?: "", indent = 1))
+                yield(FormattedLine("Can be built on [${terrain}]", link = ruleset.terrains[terrain]?.makeLink() ?: "", indent = 1))
         for (terrain in originalImprovement.terrainsCanBeBuiltOn)
             if (terrain !in replacementImprovement.terrainsCanBeBuiltOn)
-                yield(FormattedLine("Is not allowed on [${terrain}]", link = ruleset.terrains[terrain]?.makeLink() ?: "", indent = 1))
+                yield(FormattedLine("Cannot be built on [${terrain}]", link = ruleset.terrains[terrain]?.makeLink() ?: "", indent = 1))
 
         if (replacementImprovement.turnsToBuild != originalImprovement.turnsToBuild)
             yield(FormattedLine("{Turns to build} ".tr() + "[${replacementImprovement.turnsToBuild}] vs [${originalImprovement.turnsToBuild}]".tr(), indent=1))
