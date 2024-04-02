@@ -328,8 +328,10 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
             buildingStats.gold *= 2 // We have a gold problem and this isn't helping
         }
 
-        if (civInfo.getHappiness() < 0)
-            buildingStats.happiness *= 2
+        if (civInfo.getHappiness() < 5)
+            buildingStats.happiness * 3
+        else if (civInfo.getHappiness() < 10 || civInfo.getHappiness() < civInfo.cities.size)
+            buildingStats.happiness * 2
 
         if (city.cityStats.currentCityStats.culture < 1) {
             buildingStats.culture *= 2 // We need to start growing borders
