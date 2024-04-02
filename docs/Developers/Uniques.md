@@ -14,9 +14,11 @@ Game objects should have *concrete* uniques (parameters filled in)
 Every parameter in square brackets, is defined by its type, a list of which is available [here](../Modders/Unique-parameters.md) - each parameter type has its own text value, e.g. "amount" means an integer.
 That determines possible values that this parameter can contain, e.g. "amount" should only contain strings that can be serialized as integers.
 
-Concrete uniques that contain *incorrect values* (e.g. `"Gain [three] [money]"`) are warned against in the mod checker, and when starting a new game with the mod
+Concrete uniques that contain *incorrect values* (e.g. `"Gain [three] [money]"`) are warned against in the mod checker, and if they're serious enough, also when starting a new game with the mod
 
-### About Conditionals and Modifiers
+Sometimes uniques are deprecated - Unciv provides autoupdating, meaning you only need to click a button to update the deprecated uniques in your mod!
+
+### Conditionals and Modifiers
 
 Uniques can be modified to do certain things, using special Uniques that are shown in the [uniques list](../Modders/uniques.md) within `<these brackets>`.
 
@@ -24,7 +26,10 @@ This is done by adding these modifiers after the unique like so: `"Gain [30] [Go
 
 The most common type of modifier is a conditional - basically limiting the unique to only apply under certain conditions - so all modifiers are sometimes refered to as conditionals.
 
-Other more specialized types of conditionals exist, and each one has a dedicated explaination in the uniques list linked above.
+Other more specialized types of modifiers exist:
+
+- Trigger uniques can get *under what circumstances they activate*
+- Unit actions can get *costs, side effects, and limited uses*
 
 As you can see, these conditionals *also* can contain parameters, and these follow the same rules for parameters as the regular uniques.
 
