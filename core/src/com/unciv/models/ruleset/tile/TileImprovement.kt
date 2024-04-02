@@ -50,6 +50,8 @@ class TileImprovement : RulesetStatsObject() {
 
         val statsDesc = cloneStats().toString()
         if (statsDesc.isNotEmpty()) lines += statsDesc
+        if (uniqueTo != null) lines += "Unique to [$uniqueTo]".tr()
+        if (replaces != null) lines += "Replaces [$replaces]".tr()
         if (!terrainsCanBeBuiltOn.isEmpty()) {
             val terrainsCanBeBuiltOnString: ArrayList<String> = arrayListOf()
             for (i in terrainsCanBeBuiltOn) {
@@ -101,6 +103,7 @@ class TileImprovement : RulesetStatsObject() {
     private fun matchesSingleFilter(filter: String): Boolean {
         return when (filter) {
             name -> true
+            replaces -> true
             in Constants.all -> true
             "Improvement" -> true // For situations involving tileFilter
             "All Road" -> isRoad()
@@ -121,6 +124,10 @@ class TileImprovement : RulesetStatsObject() {
         if (uniqueTo != null) {
             textList += FormattedLine()
             textList += FormattedLine("Unique to [$uniqueTo]", link="Nation/$uniqueTo")
+        }
+        if (replaces != null) {
+            val replaceImprovement = ruleset.tileImprovements[replaces]
+            textList += FormattedLine("Replaces [$replaces]", link=replaceImprovement?.makeLink() ?: "", indent = 1)
         }
 
         val constructorUnits = getConstructorUnits(ruleset)
@@ -195,7 +202,19 @@ class TileImprovement : RulesetStatsObject() {
         for (unit in creatingUnits)
             textList += FormattedLine("{Can be created instantly by} {$unit}", unit.makeLink())
 
-        textList += Belief.getCivilopediaTextMatching(name, ruleset)
+        val seeAlso = ArrayList<FormattedLine>()
+        for (alsoImprovement in ruleset.tileImprovements.values) {
+            if (alsoImprovement.replaces == name)
+                seeAlso += FormattedLine(alsoImprovement.name, link = alsoImprovement.makeLink(), indent = 1)
+        }
+
+        seeAlso += Belief.getCivilopediaTextMatching(name, ruleset)
+
+        if (seeAlso.isNotEmpty()) {
+            textList += FormattedLine()
+            textList += FormattedLine("{See also}:")
+            textList += seeAlso
+        }
 
         return textList
     }
