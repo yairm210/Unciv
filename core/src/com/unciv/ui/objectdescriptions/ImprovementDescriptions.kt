@@ -141,7 +141,7 @@ object ImprovementDescriptions {
                 seeAlso += FormattedLine(alsoImprovement.name, link = alsoImprovement.makeLink(), indent = 1)
         }
 
-        seeAlso += Belief.getCivilopediaTextMatching(improvement.name, ruleset)
+        seeAlso += Belief.getCivilopediaTextMatching(improvement.name, ruleset, false)
 
         if (seeAlso.isNotEmpty()) {
             textList += FormattedLine()
