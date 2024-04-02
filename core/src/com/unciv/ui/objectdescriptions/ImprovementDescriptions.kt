@@ -13,9 +13,8 @@ import com.unciv.ui.screens.civilopediascreen.FormattedLine
 
 object ImprovementDescriptions {
     /**
-     * Lists differences: how a nation-unique Building compares to its replacement.
+     * Lists differences: how a nation-unique Improvement compares to its replacement.
      *
-     * Cost is **is** included.
      * Result as indented, non-linking [FormattedLine]s
      *
      * @param originalImprovement The "standard" Improvement
