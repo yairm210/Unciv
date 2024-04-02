@@ -351,7 +351,6 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
             buildingStats[stat] *= personality.scaledFocus(PersonalityValue[stat])
         }
 
-        building.happiness /= 3 // Avoid overshooting that may happen from the following rank
         return Automation.rankStatsValue(buildingStats.clone(), civInfo)
     }
 

@@ -464,7 +464,13 @@ object Automation {
                     stats.gold
                 else
                     stats.gold / 3 // 3 gold is much worse than 2 production
-        rank += stats.happiness * 3
+        
+        rank += if (civInfo.getHappiness() < 5) 
+                stats.happiness * 3 
+            else if (civInfo.getHappiness() < 10 || civInfo.getHappiness() < civInfo.cities.size)
+                stats.happiness * 2 
+            else stats.happiness
+        
         rank += stats.production
         rank += stats.science
         rank += stats.culture
