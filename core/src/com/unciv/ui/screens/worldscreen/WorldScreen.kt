@@ -26,7 +26,6 @@ import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.components.extensions.centerX
 import com.unciv.ui.components.extensions.darken
 import com.unciv.ui.components.extensions.toLabel
-import com.unciv.ui.components.input.KeyCharAndCode
 import com.unciv.ui.components.input.KeyShortcutDispatcherVeto
 import com.unciv.ui.components.input.KeyboardBinding
 import com.unciv.ui.components.input.KeyboardPanningListener
@@ -233,7 +232,8 @@ class WorldScreen(
     }
 
     private fun addKeyboardPresses() {
-        globalShortcuts.add(KeyCharAndCode.BACK) { backButtonAndESCHandler() }
+        globalShortcuts.add(KeyboardBinding.DeselectOrQuit) { backButtonAndESCHandler() }
+
         // Space and N are assigned in NextTurnButton constructor
         // Functions that have a big button are assigned there (WorldScreenTopBar, TechPolicyDiplomacyButtons..)
         globalShortcuts.add(KeyboardBinding.Civilopedia) { game.pushScreen(CivilopediaScreen(gameInfo.ruleset)) }

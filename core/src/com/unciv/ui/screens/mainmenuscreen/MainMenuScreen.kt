@@ -27,7 +27,6 @@ import com.unciv.ui.components.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.components.extensions.center
 import com.unciv.ui.components.extensions.surroundWithCircle
 import com.unciv.ui.components.extensions.toLabel
-import com.unciv.ui.components.input.KeyCharAndCode
 import com.unciv.ui.components.input.KeyShortcutDispatcherVeto
 import com.unciv.ui.components.input.KeyboardBinding
 import com.unciv.ui.components.input.keyShortcuts
@@ -189,7 +188,7 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
         stage.addActor(scrollPane)
         table.center(scrollPane)
 
-        globalShortcuts.add(KeyCharAndCode.BACK) {
+        globalShortcuts.add(KeyboardBinding.QuitMainMenu) {
             if (hasOpenPopups()) {
                 closeAllPopups()
                 return@add
@@ -358,5 +357,3 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
     // We contain a map...
     override fun getShortcutDispatcherVetoer() = KeyShortcutDispatcherVeto.createTileGroupMapDispatcherVetoer()
 }
-
-
