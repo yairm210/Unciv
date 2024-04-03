@@ -182,15 +182,6 @@ class WorldScreen(
 
         tutorialController.allTutorialsShowedCallback = { shouldUpdate = true }
 
-        globalShortcuts.add(KeyCharAndCode.BACK) { backButtonAndESCHandler() }
-
-
-        globalShortcuts.add(KeyboardBinding.DeveloperConsole) {
-            // No cheating unless you're by yourself
-            if (gameInfo.civilizations.count { it.isHuman() } > 1) return@add
-            val consolePopup = DevConsolePopup(this)
-        }
-
         addKeyboardListener() // for map panning by W,S,A,D
         addKeyboardPresses()  // shortcut keys like F1
 
@@ -242,6 +233,7 @@ class WorldScreen(
     }
 
     private fun addKeyboardPresses() {
+        globalShortcuts.add(KeyCharAndCode.BACK) { backButtonAndESCHandler() }
         // Space and N are assigned in NextTurnButton constructor
         // Functions that have a big button are assigned there (WorldScreenTopBar, TechPolicyDiplomacyButtons..)
         globalShortcuts.add(KeyboardBinding.Civilopedia) { game.pushScreen(CivilopediaScreen(gameInfo.ruleset)) }
@@ -276,6 +268,12 @@ class WorldScreen(
         globalShortcuts.add(KeyboardBinding.ToggleYieldDisplay) { minimapWrapper.yieldImageButton.toggle() }
         globalShortcuts.add(KeyboardBinding.ToggleWorkedTilesDisplay) { minimapWrapper.populationImageButton.toggle() }
         globalShortcuts.add(KeyboardBinding.ToggleMovementDisplay) { minimapWrapper.movementsImageButton.toggle() }
+
+        globalShortcuts.add(KeyboardBinding.DeveloperConsole) {
+            // No cheating unless you're by yourself
+            if (gameInfo.civilizations.count { it.isHuman() } > 1) return@add
+            val consolePopup = DevConsolePopup(this)
+        }
     }
 
     // Handle disabling and re-enabling WASD listener while Options are open
