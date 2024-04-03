@@ -9,6 +9,7 @@ import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.map.BFS
+import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.IConstruction
 import com.unciv.models.ruleset.INonPerpetualConstruction
@@ -166,36 +167,52 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
     }
 
     private fun addWorkBoatChoice() {
+        // Does the ruleset even have "Workboats"?
         val buildableWorkboatUnits = units
             .filter {
                 it.hasUnique(UniqueType.CreateWaterImprovements)
                     && Automation.allowAutomatedConstruction(civInfo, city, it)
             }.filterBuildable()
-        val alreadyHasWorkBoat = buildableWorkboatUnits.any()
-            && !city.getTiles().any {
+        if (buildableWorkboatUnits.none()) return
+
+        // Is there already a Workboat nearby?
+        // todo Checks only tiles belonging to this city irrespective of distance
+        val alreadyHasWorkBoat = city.getTiles().any {
                 it.civilianUnit?.hasUnique(UniqueType.CreateWaterImprovements) == true
             }
-        if (!alreadyHasWorkBoat) return
+        if (alreadyHasWorkBoat) return
 
-
-        val bfs = BFS(city.getCenterTile()) {
-            (it.isWater || it.isCityCenter()) && (it.getOwner() == null || it.isFriendlyTerritory(civInfo))
-        }
-        repeat(20) { bfs.nextStep() }
-
-        if (!bfs.getReachedTiles()
-            .any { tile ->
-                tile.hasViewableResource(civInfo) && tile.improvement == null && tile.getOwner() == civInfo
-                        && tile.tileResource.getImprovements().any {
-                    tile.improvementFunctions.canBuildImprovement(tile.ruleset.tileImprovements[it]!!, civInfo)
-                }
+        // Define what makes a tile worth sending a Workboat to
+        // todo Should consider tiles already having an improvement, but which does not unlock the tile's resource, as well
+        // todo Prepare for mods that allow improving water tiles without a resource?
+        fun Tile.isWorthImproving(): Boolean {
+            if (resource == null || getOwner() != civInfo) return false
+            if (improvement != null) return false
+            if (!hasViewableResource(civInfo)) return false  // Includes tile.resource != null - but the double check may be faster
+            return tileResource.getImprovements().any {
+                val improvement = ruleset.tileImprovements[it]!!
+                improvementFunctions.canBuildImprovement(improvement, civInfo)
             }
-        ) return
+        }
 
-        addChoice(
-            relativeCostEffectiveness, buildableWorkboatUnits.minByOrNull { it.cost }!!.name,
-            0.6f
-        )
+        // Search for a tile justifiying producing a Workboat
+        // todo Cheats - unexplored tiles are treated as known
+        // todo The constant 20 should be dynamic - moddable or depend on rules and/or game state? (e.g. more if a Workboat has >2 movement?)
+        fun findTileWorthImproving(): Boolean {
+            val bfs = BFS(city.getCenterTile()) {
+                (it.isWater || it.isCityCenter())
+                    && (it.getOwner() == null || it.isFriendlyTerritory(civInfo))
+            }
+            do {
+                val tile = bfs.nextStep() ?: break
+                if (tile.isWorthImproving()) return true
+            } while (bfs.size() < 20)
+            return false
+        }
+
+        if (!findTileWorthImproving()) return
+
+        addChoice(relativeCostEffectiveness, buildableWorkboatUnits.minBy { it.cost }.name, 0.6f)
     }
 
     private fun addWorkerChoice() {
