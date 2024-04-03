@@ -21,7 +21,6 @@ class AutoPlayMenu(
     private val nextTurnButton: NextTurnButton,
     private val worldScreen: WorldScreen
 ) : AnimatedMenuPopup(stage, getActorTopRight(positionNextTo)) {
-    private val settings = GUI.getSettings()
 
     init {
         // We need to activate the end turn button again after the menu closes
@@ -47,12 +46,12 @@ class AutoPlayMenu(
         if (worldScreen.viewingCiv.units.getCivUnitsSize() + worldScreen.viewingCiv.cities.size >= 30) {
             Concurrency.runOnNonDaemonThreadPool("AutoPlayEndTurn") {
                 TurnManager(worldScreen.viewingCiv).automateTurn()
-                worldScreen.autoPlay.autoPlaying = false
+                worldScreen.autoPlay.stopAutoPlay()
                 worldScreen.nextTurn()
             }
         } else {
             TurnManager(worldScreen.viewingCiv).automateTurn()
-            worldScreen.autoPlay.autoPlaying = false
+            worldScreen.autoPlay.stopAutoPlay()
             worldScreen.nextTurn()
         }
     }

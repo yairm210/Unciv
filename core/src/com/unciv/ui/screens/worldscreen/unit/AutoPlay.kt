@@ -21,5 +21,7 @@ class AutoPlay(val worldScreen: WorldScreen) {
     fun isAutoPlaying(): Boolean = autoPlaying
 
     fun fullAutoPlayAI(): Boolean = isAutoPlaying() && worldScreen.game.settings.autoPlay.fullAutoPlayAI
+
+    fun shouldContinueAutoPlaying(): Boolean = isAutoPlaying() && !autoPlayTurnInProgress && (turnsToAutoPlay > 0 || worldScreen.game.settings.autoPlay.autoPlayUntilEnd)
 }
 

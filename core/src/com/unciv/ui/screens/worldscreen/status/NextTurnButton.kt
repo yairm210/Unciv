@@ -33,8 +33,8 @@ class NextTurnButton(
     fun update() {
         nextTurnAction = getNextTurnAction(worldScreen)
         updateButton(nextTurnAction)
-        if (!worldScreen.autoPlay.autoPlayTurnInProgress && worldScreen.autoPlay.isAutoPlaying() && worldScreen.autoPlay.turnsToAutoPlay > 0
-            && worldScreen.isPlayersTurn && !worldScreen.waitingForAutosave && !worldScreen.isNextTurnUpdateRunning()) {
+        if (worldScreen.autoPlay.shouldContinueAutoPlaying() && worldScreen.isPlayersTurn
+            && !worldScreen.waitingForAutosave && !worldScreen.isNextTurnUpdateRunning()) {
             worldScreen.autoPlay.autoPlayTurnInProgress = true
             if (!worldScreen.viewingCiv.isSpectator())
                 TurnManager(worldScreen.viewingCiv).automateTurn()
@@ -43,8 +43,8 @@ class NextTurnButton(
                 worldScreen.autoPlay.turnsToAutoPlay--
             worldScreen.autoPlay.autoPlayTurnInProgress = false
         }
-                
-        isEnabled = nextTurnAction.getText (worldScreen) == "AutoPlay" 
+
+        isEnabled = nextTurnAction.getText (worldScreen) == "AutoPlay"
             || (!worldScreen.hasOpenPopups() && worldScreen.isPlayersTurn
                 && !worldScreen.waitingForAutosave && !worldScreen.isNextTurnUpdateRunning())
         if (isEnabled) addTooltip(KeyboardBinding.NextTurn) else addTooltip("")
