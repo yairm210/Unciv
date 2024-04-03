@@ -317,6 +317,12 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
 
     private fun buildingValue(building: Building): Float {
         val buildingStats = city.cityStats.getStatDifferenceFromBuilding(building.name)
+        for (unique in building.getMatchingUniques(UniqueType.CarryOverFood, StateForConditionals(city)))
+        {
+            if (city.matchesFilter(unique.params[1]) && unique.params[0].toInt() != 0)
+                buildingStats.food *= 1 / (unique.params[0].toFloat() / 100) // not acurate, but close enough
+        }
+
         val surplusFood = city.cityStats.currentCityStats[Stat.Food]
         if (surplusFood < 0) {
             buildingStats.food *= 8 // Starving, need Food, get to 0
