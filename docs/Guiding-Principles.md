@@ -12,7 +12,7 @@ Examples:
 There is a fine line here between "exploitable" and "no fun" regarding trade - regular players may refuse any trade you offer them on principle.
 We don't want that from the AI, which leaves us slightly open to exploits, but that's a trade-off we make knowingly.
 
-## Modding philosophy - minimal amount of objects, maximum amount of interactions
+## Modding philosophy - minimal objects, maximum interactions
 
 As a new modder it's easy to get lost in the sheer number of uniques.
 
@@ -24,3 +24,11 @@ Examples:
 - Conditions should be Conditionals, so they can be applied to all uniques
 - Triggered uniques and unique triggers - all combinations
 - Unit Action modifiers, rather than special attributes for specific unit actions
+
+## Crash early, crash often
+
+A crash stacktrace is halfway to a solution - a game save which reliably produces it is 90% there.
+
+Whenever an unexpected situation occurs - the game has reached an incorrect state - we should crash, to allow the problem to be fixed as soon as possible.
+
+Persisting with an incorrect state makes the eventual resulting problems further from the cause, and complicates debugging.
