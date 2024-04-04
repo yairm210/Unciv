@@ -196,17 +196,18 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
         }
 
         // Search for a tile justifiying producing a Workboat
-        // todo Cheats - unexplored tiles are treated as known
-        // todo The constant 20 should be dynamic - moddable or depend on rules and/or game state? (e.g. more if a Workboat has >2 movement?)
+        // todo should workboatAutomationSearchMaxTiles depend on game state?
         fun findTileWorthImproving(): Boolean {
+            val searchMaxTiles = civInfo.gameInfo.ruleset.modOptions.constants.workboatAutomationSearchMaxTiles
             val bfs = BFS(city.getCenterTile()) {
                 (it.isWater || it.isCityCenter())
                     && (it.getOwner() == null || it.isFriendlyTerritory(civInfo))
+                    && it.isExplored(civInfo)  // Sending WB's through unexplored terrain would be cheating
             }
             do {
                 val tile = bfs.nextStep() ?: break
                 if (tile.isWorthImproving()) return true
-            } while (bfs.size() < 20)
+            } while (bfs.size() < searchMaxTiles)
             return false
         }
 

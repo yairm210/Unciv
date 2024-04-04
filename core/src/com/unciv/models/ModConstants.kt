@@ -78,9 +78,11 @@ class ModConstants {
     var religionLimitBase = 1
     var religionLimitMultiplier = 0.5f
 
-    //Factors in formula for pantheon cost
+    // Factors in formula for pantheon cost
     var pantheonBase = 10
     var pantheonGrowth = 5
+
+    var workboatAutomationSearchMaxTiles = 20
 
     fun merge(other: ModConstants) {
         for (field in this::class.java.declaredFields) {
