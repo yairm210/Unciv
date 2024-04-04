@@ -43,7 +43,7 @@ class GameOptionsTable(
     private val updatePlayerPickerRandomLabel: () -> Unit
 ) : Table(BaseScreen.skin) {
     var gameParameters = previousScreen.gameSetupInfo.gameParameters
-    val ruleset = previousScreen.ruleset
+    var ruleset = previousScreen.ruleset
     var locked = false
 
     private var baseRulesetHash = gameParameters.baseRuleset.hashCode()
@@ -444,6 +444,12 @@ class GameOptionsTable(
         add(victoryConditionsTable).colspan(2).row()
     }
 
+    fun updateRuleset(ruleset: Ruleset) {
+        this.ruleset = ruleset
+        gameParameters.acceptedModCheckErrors = ""
+        modCheckboxes.setBaseRuleset(gameParameters.baseRuleset)
+    }
+
     fun resetRuleset() {
         val rulesetName = BaseRuleset.Civ_V_GnK.fullName
         gameParameters.baseRuleset = rulesetName
@@ -460,6 +466,7 @@ class GameOptionsTable(
         ruleset.mods += gameParameters.baseRuleset
         ruleset.mods += gameParameters.mods
         ruleset.modOptions = newRuleset.modOptions
+        gameParameters.acceptedModCheckErrors = ""
 
         ImageGetter.setNewRuleset(ruleset)
         UncivGame.Current.musicController.setModList(gameParameters.getModsAndBaseRuleset())
