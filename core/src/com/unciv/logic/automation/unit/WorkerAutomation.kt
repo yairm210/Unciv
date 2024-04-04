@@ -578,7 +578,7 @@ class WorkerAutomation(
         tile.isWater && tile.improvement == null && tile.hasViewableResource(civInfo)
 
     private fun isLuxuryResourceOrWorkable(tile:Tile, civInfo: Civilization): Boolean =
-        tile.tileResource.resourceType == ResourceType.Luxury || civInfo.cities.any { it.tilesInRange.contains(tile) }
+        tile.tileResource.resourceType != ResourceType.Bonus || civInfo.cities.any { it.tilesInRange.contains(tile) }
 
     /** Try improving a Water Resource
      *
