@@ -99,7 +99,7 @@ class VictoryManager : IsPartOfGameInfoSerialization {
         lines += when {
             lines.isNotEmpty() -> "No world leader was elected."
             winnerCiv == civInfo -> "You have been elected world leader!"
-            else -> "${civInfo.nation.getLeaderDisplayName()} has been elected world leader!"
+            else -> "${winnerCiv.nation.getLeaderDisplayName()} has been elected world leader!"
         }
         return lines.joinToString("\n") { "{$it}" }
     }
