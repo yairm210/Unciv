@@ -131,8 +131,9 @@ class MapFileSelectTable(
         // Do NOT try to put back the "bad" preselection!
     }
 
-    private fun onSelectBoxChange() {
+    fun onSelectBoxChange() {
         cancelBackgroundJobs()
+        if (mapFileSelectBox.selection.isEmpty) return
         val mapFile = mapFileSelectBox.selected.fileHandle
         mapParameters.name = mapFile.name()
         newGameScreen.gameSetupInfo.mapFile = mapFile
@@ -140,7 +141,7 @@ class MapFileSelectTable(
         newGameScreen.gameSetupInfo.gameParameters.mods = LinkedHashSet(mapMods.second)
         newGameScreen.gameSetupInfo.gameParameters.baseRuleset = mapMods.first.firstOrNull()
             ?: mapFileSelectBox.selected.mapParameters.baseRuleset
-        val success = newGameScreen.tryUpdateRuleset()
+        val success = newGameScreen.tryUpdateRuleset(updateUI = true)
         newGameScreen.updateTables()
         hideMiniMap()
         if (success) {

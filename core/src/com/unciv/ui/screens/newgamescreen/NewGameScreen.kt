@@ -61,7 +61,7 @@ class NewGameScreen(
     init {
         val isPortrait = isNarrowerThan4to3()
 
-        tryUpdateRuleset()  // must come before playerPickerTable so mod nations from fromSettings
+        tryUpdateRuleset(updateUI = false)  // must come before playerPickerTable so mod nations from fromSettings
 
         // remove the victory types which are not in the rule set (e.g. were in the recently disabled mod)
         gameSetupInfo.gameParameters.victoryTypes.removeAll { it !in ruleset.victories.keys }
@@ -365,7 +365,7 @@ class NewGameScreen(
      *
      *  @return Success - failure means gameSetupInfo was reset to defaults and the Ruleset was reverted to G&K
      */
-    fun tryUpdateRuleset(): Boolean {
+    fun tryUpdateRuleset(updateUI: Boolean): Boolean {
         var success = true
         fun handleFailure(message: String): Ruleset {
             success = false
@@ -388,6 +388,8 @@ class NewGameScreen(
         ruleset.add(newRuleset)
         ImageGetter.setNewRuleset(ruleset)
         game.musicController.setModList(gameSetupInfo.gameParameters.getModsAndBaseRuleset())
+
+        if (updateUI) newGameOptionsTable.updateRuleset(ruleset)
         return success
     }
 
