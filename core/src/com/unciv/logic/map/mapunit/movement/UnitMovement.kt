@@ -96,10 +96,9 @@ class UnitMovement(val unit: MapUnit) {
             val damageFreePath = getShortestPath(destination, true)
             if (damageFreePath.isNotEmpty()) return damageFreePath
         }
-        if (unit.baseUnit.isWaterUnit()
-            && destination.neighbors.none { isUnknownTileWeShouldAssumeToBePassable(it) || it.isWater }) {
-            // edge case where this unit is a boat and all of the tiles around the destination are
-            // explored and known to be land so we know a priori that no path exists
+        if (destination.neighbors.none { isUnknownTileWeShouldAssumeToBePassable(it) || canPassThrough(it) }) {
+            // edge case where this all of the tiles around the destination are
+            // explored and known the unit can't pass through any of thoes tiles so we know a priori that no path exists
             pathfindingCache.setShortestPathCache(destination, listOf())
             return listOf()
         }
