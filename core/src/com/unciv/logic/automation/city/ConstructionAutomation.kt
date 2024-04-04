@@ -17,6 +17,7 @@ import com.unciv.models.ruleset.MilestoneType
 import com.unciv.models.ruleset.PerpetualConstruction
 import com.unciv.models.ruleset.Victory
 import com.unciv.models.ruleset.nation.PersonalityValue
+import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
@@ -183,16 +184,17 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
         if (alreadyHasWorkBoat) return
 
         // Define what makes a tile worth sending a Workboat to
-        // todo Should consider tiles already having an improvement, but which does not unlock the tile's resource, as well
         // todo Prepare for mods that allow improving water tiles without a resource?
         fun Tile.isWorthImproving(): Boolean {
             if (resource == null || getOwner() != civInfo) return false
-            if (improvement != null) return false
+            if (improvement != null && improvement in tileResource.getImprovements()) return false
             if (!hasViewableResource(civInfo)) return false  // Includes tile.resource != null - but the double check may be faster
-            return tileResource.getImprovements().any {
+            if (tileResource.getImprovements().none {
                 val improvement = ruleset.tileImprovements[it]!!
                 improvementFunctions.canBuildImprovement(improvement, civInfo)
-            }
+            }) return false  // Can't improve - e.g. Oil but Refrigeration not yet researched
+            if (tileResource.resourceType != ResourceType.Bonus) return true  // Improve Oil even if no City reaps the yields
+            return civInfo.cities.any { this in city.tilesInRange }  // Improve Fish only if any of our Cities reaps the yields
         }
 
         // Search for a tile justifiying producing a Workboat
