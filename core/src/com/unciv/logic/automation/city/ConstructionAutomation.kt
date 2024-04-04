@@ -174,11 +174,13 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
                 it.hasUnique(UniqueType.CreateWaterImprovements)
                     && Automation.allowAutomatedConstruction(civInfo, city, it)
             }.filterBuildable()
-        if (buildableWorkboatUnits.none()) return
+            .toSet()
+        if (buildableWorkboatUnits.isEmpty()) return
 
         // Is there already a Workboat nearby?
-        // todo Checks only tiles belonging to this city irrespective of distance
-        val alreadyHasWorkBoat = city.getTiles().any {
+        // todo Still ignores whether that boat can reach the not-yet-found tile to improve
+        val twoTurnsMoves = buildableWorkboatUnits.maxOf { (it as BaseUnit).movement } * 2
+        val alreadyHasWorkBoat = city.getCenterTile().getTilesInDistanceRange(1..twoTurnsMoves).any {
                 it.civilianUnit?.hasUnique(UniqueType.CreateWaterImprovements) == true
             }
         if (alreadyHasWorkBoat) return
