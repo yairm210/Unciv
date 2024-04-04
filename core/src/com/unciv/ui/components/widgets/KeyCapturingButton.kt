@@ -95,7 +95,7 @@ class KeyCapturingButton(
     }
 
     private fun updateLabel() {
-        label.setText(if (current == KeyCharAndCode.UNKNOWN) "" else current.toString())
+        label.setText(if (current == KeyCharAndCode.BACK) "ESC/Back" else current.toString())
         updateStyle()
     }
     private fun updateStyle() {
@@ -130,11 +130,15 @@ class KeyCapturingButton(
         }
 
         override fun keyDown(event: InputEvent?, keycode: Int): Boolean {
-            if (keycode == Input.Keys.ESCAPE || keycode == Input.Keys.UNKNOWN) return false
+            if (keycode == Input.Keys.UNKNOWN) return false
             if (keycode == Input.Keys.CONTROL_LEFT || keycode == Input.Keys.CONTROL_RIGHT) return false
-            myButton.handleKey(keycode, Gdx.input.isControlKeyPressed())
+
+            myButton.handleKey(mapEscToBack(keycode), Gdx.input.isControlKeyPressed())
+            event?.cancel()
             return true
         }
+
+        private fun mapEscToBack(keycode: Int): Int = if (keycode == Input.Keys.ESCAPE) Input.Keys.BACK else keycode
 
         override fun clicked(event: InputEvent?, x: Float, y: Float) {
             if (tapCount < 2 || event?.target !is Image) return
