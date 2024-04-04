@@ -83,6 +83,7 @@ import kotlin.concurrent.timer
  */
 class WorldScreen(
     val gameInfo: GameInfo,
+    val autoPlay: AutoPlay,
     val viewingCiv: Civilization,
     restoreState: RestoreState? = null
 ) : BaseScreen() {
@@ -131,8 +132,7 @@ class WorldScreen(
     private var uiEnabled = true
 
     internal val undoHandler = UndoHandler(this)
-    
-    val autoPlay: AutoPlay
+
 
     init {
         // notifications are right-aligned, they take up only as much space as necessary.
@@ -214,8 +214,6 @@ class WorldScreen(
         }
 
         if (restoreState != null) restore(restoreState)
-
-        autoPlay = AutoPlay(this)
 
         // don't run update() directly, because the UncivGame.worldScreen should be set so that the city buttons and tile groups
         //  know what the viewing civ is.
@@ -335,7 +333,7 @@ class WorldScreen(
             launchOnGLThread {
                 loadingGamePopup.close()
             }
-            startNewScreenJob(latestGame)
+            startNewScreenJob(latestGame, autoPlay)
         } catch (ex: Throwable) {
             launchOnGLThread {
                 val (message) = LoadGameScreen.getLoadExceptionMessage(ex, "Couldn't download the latest game state!")
@@ -654,7 +652,7 @@ class WorldScreen(
 
             progressBar.increment()
 
-            startNewScreenJob(gameInfoClone)
+            startNewScreenJob(gameInfoClone, autoPlay)
         }
     }
 
@@ -731,7 +729,7 @@ class WorldScreen(
         resizeDeferTimer = timer("Resize", daemon = true, 500L, Long.MAX_VALUE) {
             resizeDeferTimer?.cancel()
             resizeDeferTimer = null
-            startNewScreenJob(gameInfo, true) // start over
+            startNewScreenJob(gameInfo, autoPlay, true) // start over
         }
     }
 
@@ -811,10 +809,10 @@ class WorldScreen(
 }
 
 /** This exists so that no reference to the current world screen remains, so the old world screen can get garbage collected during [UncivGame.loadGame]. */
-private fun startNewScreenJob(gameInfo: GameInfo, autosaveDisabled: Boolean = false) {
+private fun startNewScreenJob(gameInfo: GameInfo, autoPlay: AutoPlay, autosaveDisabled: Boolean = false) {
     Concurrency.run {
         val newWorldScreen = try {
-            UncivGame.Current.loadGame(gameInfo)
+            UncivGame.Current.loadGame(gameInfo, autoPlay)
         } catch (notAPlayer: UncivShowableException) {
             withGLContext {
                 val (message) = LoadGameScreen.getLoadExceptionMessage(notAPlayer)

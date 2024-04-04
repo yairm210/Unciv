@@ -135,7 +135,7 @@ fun debugTab(
                 val clipboardContentsString = Gdx.app.clipboard.contents.trim()
                 val loadedGame = UncivFiles.gameInfoFromString(clipboardContentsString)
                 loadedGame.gameParameters.isOnlineMultiplayer = false
-                optionsPopup.game.loadGame(loadedGame, true)
+                optionsPopup.game.loadGame(loadedGame, callFromLoadScreen =  true)
                 optionsPopup.close()
             } catch (ex: Exception) {
                 ToastPopup(ex.message ?: ex::class.java.simpleName, optionsPopup.stageToShowOn).open(true)
