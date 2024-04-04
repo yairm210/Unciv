@@ -570,14 +570,14 @@ class WorkerAutomation(
             && evaluateFortSurroundings(tile, isCitadel) > 0
     }
 
-    fun isImprovementProbablyAFort(improvementName:String): Boolean = isImprovementProbablyAFort(ruleSet.tileImprovements[improvementName]!!)
+    fun isImprovementProbablyAFort(improvementName: String): Boolean = isImprovementProbablyAFort(ruleSet.tileImprovements[improvementName]!!)
     fun isImprovementProbablyAFort(improvement: TileImprovement): Boolean = improvement.hasUnique(UniqueType.DefensiveBonus)
 
 
     private fun hasWorkableSeaResource(tile: Tile, civInfo: Civilization): Boolean =
         tile.isWater && tile.improvement == null && tile.hasViewableResource(civInfo)
 
-    private fun isNotBonusResourceOrWorkable(tile:Tile, civInfo: Civilization): Boolean =
+    private fun isNotBonusResourceOrWorkable(tile: Tile, civInfo: Civilization): Boolean =
         tile.tileResource.resourceType != ResourceType.Bonus || civInfo.cities.any { it.tilesInRange.contains(tile) }
 
     /** Try improving a Water Resource
