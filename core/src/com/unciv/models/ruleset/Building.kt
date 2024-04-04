@@ -551,6 +551,10 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
         }
         return _getImprovementToCreate
     }
+    fun getImprovementToCreate(ruleset: Ruleset, civInfo: Civilization): TileImprovement? {
+        val improvement = getImprovementToCreate(ruleset) ?: return null
+        return civInfo.getEquivalentTileImprovement(improvement)
+    }
 
     fun isSellable() = !isAnyWonder() && !hasUnique(UniqueType.Unsellable)
 

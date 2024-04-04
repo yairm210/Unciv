@@ -45,6 +45,7 @@ import com.unciv.models.ruleset.nation.Personality
 import com.unciv.models.ruleset.tech.Era
 import com.unciv.models.ruleset.tile.ResourceSupplyList
 import com.unciv.models.ruleset.tile.ResourceType
+import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.ruleset.tile.TileResource
 import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.TemporaryUnique
@@ -542,6 +543,22 @@ class Civilization : IsPartOfGameInfoSerialization {
             if (building.replaces == baseBuilding.name)
                 return building
         return baseBuilding
+    }
+
+    fun getEquivalentTileImprovement(tileImprovementName: String): TileImprovement {
+        val tileImprovement = gameInfo.ruleset.tileImprovements[tileImprovementName]
+            ?: throw UncivShowableException("Improvement $tileImprovementName doesn't seem to exist!")
+        return getEquivalentTileImprovement(tileImprovement)
+    }
+
+    fun getEquivalentTileImprovement(tileImprovement: TileImprovement): TileImprovement {
+        if (tileImprovement.replaces != null)
+            return getEquivalentTileImprovement(tileImprovement.replaces!!)
+
+        for (improvement in cache.uniqueImprovements)
+            if (improvement.replaces == tileImprovement.name)
+                return improvement
+        return tileImprovement
     }
 
     fun getEquivalentUnit(baseUnitName: String): BaseUnit {

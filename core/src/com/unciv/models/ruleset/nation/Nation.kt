@@ -13,6 +13,7 @@ import com.unciv.models.translations.tr
 import com.unciv.ui.components.extensions.colorFromRGB
 import com.unciv.ui.objectdescriptions.BaseUnitDescriptions
 import com.unciv.ui.objectdescriptions.BuildingDescriptions
+import com.unciv.ui.objectdescriptions.ImprovementDescriptions
 import com.unciv.ui.objectdescriptions.uniquesToCivilopediaTextLines
 import com.unciv.ui.screens.civilopediascreen.CivilopediaScreen.Companion.showReligionInCivilopedia
 import com.unciv.ui.screens.civilopediascreen.FormattedLine
@@ -246,17 +247,15 @@ class Nation : RulesetObject() {
             yield(FormattedLine(separator = true))
             yield(FormattedLine(improvement.name, link = "Improvement/${improvement.name}"))
             yield(FormattedLine(improvement.cloneStats().toString(), indent = 1))   // = (improvement as Stats).toString minus import plus copy overhead
-            if (improvement.terrainsCanBeBuiltOn.isNotEmpty()) {
-                improvement.terrainsCanBeBuiltOn.withIndex().forEach {
-                    yield(
-                        FormattedLine(if (it.index == 0) "{Can be built on} {${it.value}}" else "or [${it.value}]",
-                        link = "Terrain/${it.value}", indent = if (it.index == 0) 1 else 2)
-                    )
-                }
-            }
-            for (unique in improvement.uniqueObjects) {
-                if (unique.isHiddenToUsers()) continue
-                yield(FormattedLine(unique, indent = 1))
+            if (improvement.replaces != null && ruleset.tileImprovements.containsKey(improvement.replaces!!)) {
+                val originalImprovement = ruleset.tileImprovements[improvement.replaces!!]!!
+                yield(FormattedLine("Replaces [${originalImprovement.name}]", link = originalImprovement.makeLink(), indent=1))
+                yieldAll(ImprovementDescriptions.getDifferences(ruleset, originalImprovement, improvement))
+                yield(FormattedLine())
+            } else if (improvement.replaces != null) {
+                yield(FormattedLine("Replaces [${improvement.replaces}], which is not found in the ruleset!", indent=1))
+            } else {
+                yieldAll(improvement.getShortDecription())
             }
         }
     }

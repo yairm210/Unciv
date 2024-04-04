@@ -275,7 +275,7 @@ object Automation {
     ): Boolean {
         if (construction !is Building) return true
         if (!construction.hasCreateOneImprovementUnique()) return true  // redundant but faster???
-        val improvement = construction.getImprovementToCreate(city.getRuleset()) ?: return true
+        val improvement = construction.getImprovementToCreate(city.getRuleset(), civInfo) ?: return true
         return city.getTiles().any {
             it.improvementFunctions.canBuildImprovement(improvement, civInfo)
         }

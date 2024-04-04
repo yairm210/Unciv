@@ -14,6 +14,7 @@ import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.tile.ResourceSupplyList
 import com.unciv.models.ruleset.tile.ResourceType
+import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueTriggerActivation
@@ -34,6 +35,9 @@ class CivInfoTransientCache(val civInfo: Civilization) {
     /** Easy way to look up a Civilization's unique units and buildings */
     @Transient
     val uniqueUnits = hashSetOf<BaseUnit>()
+
+    @Transient
+    val uniqueImprovements = hashSetOf<TileImprovement>()
 
     @Transient
     val uniqueBuildings = hashSetOf<Building>()
@@ -63,6 +67,10 @@ class CivInfoTransientCache(val civInfo: Civilization) {
                 uniqueBuildings.add(building)
             }
         }
+
+        for (improvement in ruleset.tileImprovements.values)
+            if (improvement.uniqueTo == civInfo.civName)
+                uniqueImprovements.add(improvement)
 
         for (unit in ruleset.units.values) {
             if (unit.uniqueTo == civInfo.civName) {

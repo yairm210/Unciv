@@ -454,7 +454,7 @@ class CityScreen(
     fun selectConstruction(newConstruction: IConstruction) {
         selectedConstruction = newConstruction
         if (newConstruction is Building && newConstruction.hasCreateOneImprovementUnique()) {
-            val improvement = newConstruction.getImprovementToCreate(city.getRuleset())
+            val improvement = newConstruction.getImprovementToCreate(city.getRuleset(), city.civ)
             selectedQueueEntryTargetTile = if (improvement == null) null
                 else city.cityConstructions.getTileForImprovement(improvement.name)
         } else {
@@ -472,7 +472,7 @@ class CityScreen(
     fun clearSelection() = selectTile(null)
 
     fun startPickTileForCreatesOneImprovement(construction: Building, stat: Stat, isBuying: Boolean) {
-        val improvement = construction.getImprovementToCreate(city.getRuleset()) ?: return
+        val improvement = construction.getImprovementToCreate(city.getRuleset(), city.civ) ?: return
         pickTileData = PickTileForImprovementData(construction, improvement, isBuying, stat)
         updateTileGroups()
         ToastPopup("Please select a tile for this building's [${improvement.name}]", this)
