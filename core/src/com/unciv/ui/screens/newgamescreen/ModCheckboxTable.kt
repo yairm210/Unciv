@@ -47,6 +47,7 @@ class ModCheckboxTable(
     private var disableChangeEvents = false
 
     private val expanderPadTop = if (isPortrait) 0f else 16f
+    private val expanderPadOther = if (isPortrait) 0f else 10f
 
     init {
         val modRulesets = RulesetCache.values.filter {
@@ -88,7 +89,7 @@ class ModCheckboxTable(
             for (mod in compatibleMods) {
                 it.add(mod.widget).row()
             }
-        }).pad(10f).padTop(expanderPadTop).growX().row()
+        }).pad(expanderPadOther).padTop(expanderPadTop).growX().row()
 
         disableIncompatibleMods()
 
