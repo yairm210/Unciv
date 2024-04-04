@@ -399,7 +399,7 @@ class WorkerAutomation(
             val removedObject = improvementName.replace(Constants.remove, "")
             val removedFeature = tile.terrainFeatures.firstOrNull { it == removedObject }
             val removedImprovement = if (removedObject == tile.improvement) removedObject else null
-            
+
             if (removedFeature != null || removedImprovement != null) {
                 val newTile = tile.clone()
                 newTile.setTerrainTransients()
@@ -570,12 +570,15 @@ class WorkerAutomation(
             && evaluateFortSurroundings(tile, isCitadel) > 0
     }
 
-    fun isImprovementProbablyAFort(improvementName:String): Boolean = isImprovementProbablyAFort(ruleSet.tileImprovements[improvementName]!!)
+    fun isImprovementProbablyAFort(improvementName: String): Boolean = isImprovementProbablyAFort(ruleSet.tileImprovements[improvementName]!!)
     fun isImprovementProbablyAFort(improvement: TileImprovement): Boolean = improvement.hasUnique(UniqueType.DefensiveBonus)
 
 
     private fun hasWorkableSeaResource(tile: Tile, civInfo: Civilization): Boolean =
         tile.isWater && tile.improvement == null && tile.hasViewableResource(civInfo)
+
+    private fun isNotBonusResourceOrWorkable(tile: Tile, civInfo: Civilization): Boolean =
+        tile.tileResource.resourceType != ResourceType.Bonus || civInfo.cities.any { it.tilesInRange.contains(tile) }
 
     /** Try improving a Water Resource
      *
@@ -585,13 +588,13 @@ class WorkerAutomation(
      */
     fun automateWorkBoats(unit: MapUnit): Boolean {
         val closestReachableResource = unit.civ.cities.asSequence()
-            .flatMap { city -> city.getWorkableTiles() }
+            .flatMap { city -> city.getTiles() }
             .filter {
                 hasWorkableSeaResource(it, unit.civ)
                     && (unit.currentTile == it || unit.movement.canMoveTo(it))
             }
             .sortedBy { it.aerialDistanceTo(unit.currentTile) }
-            .firstOrNull { unit.movement.canReach(it) }
+            .firstOrNull { unit.movement.canReach(it) && isNotBonusResourceOrWorkable(it, unit.civ) }
             ?: return false
 
         // could be either fishing boats or oil well
