@@ -1,23 +1,17 @@
 ## 4.11.1
 
-Better performance for reassigning population - important, since AI does this every city every turn
-
-Add cache for terrain filter results
-
-Added documentation about saved games and transients, cleaned up existing unique documentation
+Performance improvements
 
 By SomeTroglodyte:
-- Fix: New game screen, selection of mods from custom maps 
-- Improve diplomatic vote result screen 
-- Make ESC/Back bindable (Main menu and world screen only) 
+- Improve diplomatic vote result screen
 
 By tuvus:
-- Changed the heuristic to be applicable to any unit and to use canPassThrough() 
-- Workboats improve resources outside of city work range 
+- Water units can enter lakes-near-cities
+- Workboats improve resources outside of city work range
 
 By SeventhM:
-- Allow AI to consider building stats more accurately 
-- Allow for replacement improvements 
+- Allow AI to consider building stats more accurately
+- Allow for replacement improvements
 
 Add configurable natural wonder discovery stat bonuses  - By PLynx01
 
