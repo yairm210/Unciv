@@ -320,7 +320,7 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
         for (unique in building.getMatchingUniques(UniqueType.CarryOverFood, StateForConditionals(city)))
         {
             if (city.matchesFilter(unique.params[1]) && unique.params[0].toInt() != 0)
-                buildingStats.food *= 1 / (unique.params[0].toFloat() / 100) // not acurate, but close enough
+                buildingStats.food *= 1 / (1 - (unique.params[0].toFloat() / 100)) // not acurate, but close enough
         }
 
         val surplusFood = city.cityStats.currentCityStats[Stat.Food]
