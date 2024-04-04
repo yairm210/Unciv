@@ -550,7 +550,9 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Global
 
-??? example  "100 Gold for discovering a Natural Wonder (bonus enhanced to 500 Gold if first to discover it)"
+??? example  "[stats] for discovering a Natural Wonder (bonus enhanced to [stats] if first to discover it)"
+	Example: "[+1 Gold, +2 Production] for discovering a Natural Wonder (bonus enhanced to [+1 Gold, +2 Production] if first to discover it)"
+
 	Applicable to: Global
 
 ??? example  "[relativeAmount]% Great Person generation [cityFilter]"
@@ -1550,7 +1552,9 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Terrain
 
-??? example  "Grants 500 Gold to the first civilization to discover it"
+??? example  "Grants [stats] to the first civilization to discover it"
+	Example: "Grants [+1 Gold, +2 Production] to the first civilization to discover it"
+
 	Applicable to: Terrain
 
 ??? example  "Units ending their turn on this terrain take [amount] damage"
