@@ -577,7 +577,7 @@ class WorkerAutomation(
     private fun hasWorkableSeaResource(tile: Tile, civInfo: Civilization): Boolean =
         tile.isWater && tile.improvement == null && tile.hasViewableResource(civInfo)
 
-    private fun isLuxuryResourceOrWorkable(tile:Tile, civInfo: Civilization): Boolean =
+    private fun isNotBonusResourceOrWorkable(tile:Tile, civInfo: Civilization): Boolean =
         tile.tileResource.resourceType != ResourceType.Bonus || civInfo.cities.any { it.tilesInRange.contains(tile) }
 
     /** Try improving a Water Resource
@@ -594,7 +594,7 @@ class WorkerAutomation(
                     && (unit.currentTile == it || unit.movement.canMoveTo(it))
             }
             .sortedBy { it.aerialDistanceTo(unit.currentTile) }
-            .firstOrNull { unit.movement.canReach(it) && isLuxuryResourceOrWorkable(it, unit.civ) }
+            .firstOrNull { unit.movement.canReach(it) && isNotBonusResourceOrWorkable(it, unit.civ) }
             ?: return false
 
         // could be either fishing boats or oil well
