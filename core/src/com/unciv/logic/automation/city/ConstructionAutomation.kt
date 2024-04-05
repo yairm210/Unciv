@@ -3,12 +3,14 @@ package com.unciv.logic.automation.city
 import com.unciv.GUI
 import com.unciv.logic.automation.Automation
 import com.unciv.logic.automation.civilization.NextTurnAutomation
+import com.unciv.logic.automation.unit.WorkerAutomation
 import com.unciv.logic.city.CityConstructions
 import com.unciv.logic.civilization.CityAction
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.map.BFS
+import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.IConstruction
@@ -17,7 +19,6 @@ import com.unciv.models.ruleset.MilestoneType
 import com.unciv.models.ruleset.PerpetualConstruction
 import com.unciv.models.ruleset.Victory
 import com.unciv.models.ruleset.nation.PersonalityValue
-import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
@@ -179,24 +180,18 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
 
         // Is there already a Workboat nearby?
         // todo Still ignores whether that boat can reach the not-yet-found tile to improve
-        val twoTurnsMoves = buildableWorkboatUnits.maxOf { (it as BaseUnit).movement } * 2
-        val alreadyHasWorkBoat = city.getCenterTile().getTilesInDistanceRange(1..twoTurnsMoves).any {
-                it.civilianUnit?.hasUnique(UniqueType.CreateWaterImprovements) == true
-            }
+        val twoTurnsMovement = buildableWorkboatUnits.maxOf { (it as BaseUnit).movement } * 2
+        fun MapUnit.isOurWorkBoat() = cache.hasUniqueToCreateWaterImprovements && this.civ == this@ConstructionAutomation.civInfo
+        val alreadyHasWorkBoat = city.getCenterTile().getTilesInDistanceRange(1..twoTurnsMovement)
+            .any { it.civilianUnit?.isOurWorkBoat() == true }
         if (alreadyHasWorkBoat) return
 
         // Define what makes a tile worth sending a Workboat to
         // todo Prepare for mods that allow improving water tiles without a resource?
         fun Tile.isWorthImproving(): Boolean {
-            if (resource == null || getOwner() != civInfo) return false
-            if (improvement != null && improvement in tileResource.getImprovements()) return false
-            if (!hasViewableResource(civInfo)) return false  // Includes tile.resource != null - but the double check may be faster
-            if (tileResource.getImprovements().none {
-                val improvement = ruleset.tileImprovements[it]!!
-                improvementFunctions.canBuildImprovement(improvement, civInfo)
-            }) return false  // Can't improve - e.g. Oil but Refrigeration not yet researched
-            if (tileResource.resourceType != ResourceType.Bonus) return true  // Improve Oil even if no City reaps the yields
-            return civInfo.cities.any { this in city.tilesInRange }  // Improve Fish only if any of our Cities reaps the yields
+            if (getOwner() != civInfo) return false
+            if (!WorkerAutomation.hasWorkableSeaResource(this, civInfo)) return false
+            return WorkerAutomation.isNotBonusResourceOrWorkable(this, civInfo)
         }
 
         // Search for a tile justifiying producing a Workboat
