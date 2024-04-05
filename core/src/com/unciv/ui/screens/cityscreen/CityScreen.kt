@@ -8,6 +8,7 @@ import com.unciv.GUI
 import com.unciv.UncivGame
 import com.unciv.logic.automation.Automation
 import com.unciv.logic.city.City
+import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.TutorialTrigger
 import com.unciv.models.UncivSound
@@ -60,12 +61,14 @@ class CityScreen(
         const val wltkIconSize = 40f
     }
 
-    private val isSpying = city.civ.gameInfo.isEspionageEnabled() && GUI.getWorldScreen().selectedCiv != city.civ
+    private val selectedCiv: Civilization = GUI.getWorldScreen().selectedCiv
+
+    private val isSpying = selectedCiv.gameInfo.isEspionageEnabled() && selectedCiv != city.civ
 
     /**
      * This is the regular civ city list if we are not spying, if we are spying then it is every foreign city that our spies are in
      */
-    val viewableCities = if (isSpying) GUI.getWorldScreen().selectedCiv.espionageManager.getCitiesWithOurSpies()
+    val viewableCities = if (isSpying) selectedCiv.espionageManager.getCitiesWithOurSpies()
         .filter { it.civ !=  GUI.getWorldScreen().selectedCiv }
     else city.civ.cities
 
@@ -323,7 +326,7 @@ class CityScreen(
     private fun addTiles() {
         val tileSetStrings = TileSetStrings()
         val cityTileGroups = city.getCenterTile().getTilesInDistance(5)
-                .filter { city.civ.hasExplored(it) }
+                .filter { selectedCiv.hasExplored(it) }
                 .map { CityTileGroup(city, it, tileSetStrings) }
 
         for (tileGroup in cityTileGroups) {

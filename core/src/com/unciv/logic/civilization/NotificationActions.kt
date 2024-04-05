@@ -91,7 +91,7 @@ class DiplomacyAction(
         // We should not be able to trade with city-states
         if (showTrade && (otherCiv.isCityState() || worldScreen.gameInfo.getCurrentPlayerCivilization().isCityState()))
             showTrade = false
-        
+
         worldScreen.game.pushScreen(DiplomacyScreen(worldScreen.selectedCiv, otherCiv, showTrade = showTrade))
     }
 }
