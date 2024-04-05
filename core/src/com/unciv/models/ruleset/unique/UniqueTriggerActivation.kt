@@ -295,6 +295,23 @@ object UniqueTriggerActivation {
                     true
                 }
             }
+            UniqueType.OneTimeRemovePolicy -> {
+                val policyName = unique.params[0]
+                if (!civInfo.policies.isAdopted(policyName)) return null
+                val policy = civInfo.gameInfo.ruleset.policies[policyName] ?: return null
+
+                return {
+                    civInfo.policies.removePolicy(policy)
+
+                    val notificationText = getNotificationText(
+                        notification, triggerNotificationText,
+                        "You loss the [$policyName] Policy"
+                    )
+                    if (notificationText != null)
+                        civInfo.addNotification(notificationText, PolicyAction(policyName), NotificationCategory.General, NotificationIcon.Culture)
+                    true
+                }
+            }
             UniqueType.OneTimeEnterGoldenAge, UniqueType.OneTimeEnterGoldenAgeTurns -> {
                 return {
                     if (unique.type == UniqueType.OneTimeEnterGoldenAgeTurns) civInfo.goldenAges.enterGoldenAge(unique.params[0].toInt())

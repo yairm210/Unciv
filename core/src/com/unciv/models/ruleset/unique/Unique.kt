@@ -225,6 +225,11 @@ class UniqueMap() : HashMap<String, ArrayList<Unique>>() {
         for (unique in uniques) addUnique(unique)
     }
 
+    fun removeUnique(unique: Unique) {
+        val existingArrayList = get(unique.placeholderText)
+        existingArrayList?.remove(unique)
+    }
+
     fun getUniques(uniqueType: UniqueType) =
         this[uniqueType.placeholderText]?.asSequence() ?: emptySequence()
 

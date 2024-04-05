@@ -117,6 +117,12 @@ class PolicyManager : IsPartOfGameInfoSerialization {
         }
     }
 
+    private fun removePolicyFromTransients(policy: Policy) {
+        for (unique in policy.uniqueObjects) {
+            policyUniques.removeUnique(unique)
+        }
+    }
+
     fun addCulture(culture: Int) {
         val couldAdoptPolicyBefore = canAdoptPolicy()
         storedCulture += culture
@@ -230,6 +236,12 @@ class PolicyManager : IsPartOfGameInfoSerialization {
         }
 
         if (!canAdoptPolicy()) shouldOpenPolicyPicker = false
+    }
+
+    fun removePolicy(policy: Policy) {
+        adoptedPolicies.remove(policy.name)
+        removePolicyFromTransients(policy)
+        numberOfAdoptedPolicies--
     }
 
     /**
