@@ -60,8 +60,17 @@ class CityScreen(
         const val wltkIconSize = 40f
     }
 
+    private val isSpying = city.civ.gameInfo.isEspionageEnabled() && GUI.getWorldScreen().selectedCiv != city.civ
+
+    /**
+     * This is the regular civ city list if we are not spying, if we are spying then it is every foreign city that our spies are in
+     */
+    val viewableCities = if (isSpying) GUI.getWorldScreen().selectedCiv.espionageManager.getCitiesWithOurSpies()
+        .filter { it.civ !=  GUI.getWorldScreen().selectedCiv }
+    else city.civ.cities
+
     /** Toggles or adds/removes all state changing buttons */
-    val canChangeState = GUI.isAllowedChangeState()
+    val canChangeState = GUI.isAllowedChangeState() && !isSpying
 
     // Clockwise from the top-left
 
@@ -136,6 +145,7 @@ class CityScreen(
 
         //stage.setDebugTableUnderMouse(true)
         stage.addActor(cityStatsTable)
+        // If we are spying then we shoulden't be able to see their construction screen.
         constructionsTable.addActorsToStage()
         stage.addActor(selectedConstructionTable)
         stage.addActor(tileTable)
@@ -151,7 +161,7 @@ class CityScreen(
         // Recalculate Stats
         city.cityStats.update()
 
-        constructionsTable.isVisible = true
+        constructionsTable.isVisible = !isSpying
         constructionsTable.update(selectedConstruction)
 
         updateWithoutConstructionAndMap()
@@ -501,12 +511,11 @@ class CityScreen(
         // Normal order is create new, then dispose old. But CityAmbiencePlayer delegates to a single instance of MusicController,
         // leading to one extra play followed by a stop for the city ambience sounds. To avoid that, we pass our player on and relinquish control.
 
-        val civInfo = city.civ
-        val numCities = civInfo.cities.size
+        val numCities = viewableCities.size
         if (numCities == 0) return
-        val indexOfCity = civInfo.cities.indexOf(city)
+        val indexOfCity = viewableCities.indexOf(city)
         val indexOfNextCity = (indexOfCity + delta + numCities) % numCities
-        val newCityScreen = CityScreen(civInfo.cities[indexOfNextCity], ambiencePlayer = passOnCityAmbiencePlayer())
+        val newCityScreen = CityScreen(viewableCities[indexOfNextCity], ambiencePlayer = passOnCityAmbiencePlayer())
         newCityScreen.update()
         game.replaceCurrentScreen(newCityScreen)
     }
