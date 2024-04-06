@@ -709,6 +709,14 @@
 		"requiredBuilding": "Market",
 		"requiredTech": "Banking"
 	},
+    {
+        "name": "Constabulary",
+        "cost": 160,
+        "maintenance": 1,
+        "hurryCostModifier": 10,
+        "uniques": ["Hidden when esionage is disabled", "[25]% reduction in enemy spy effectivenes"],
+        "requiredTech": "Banking"
+    },
 	// will be introduced in BNW expansion pack
 //	{
 //		"name": "Hanse",
@@ -934,6 +942,15 @@
 		"uniques": ["Must be on [River]","[+1 Production] from [River] tiles [in this city]"],
 		"requiredTech": "Electricity"
 	},
+    {
+        "name": "Police Station",
+        "cost": 300,
+        "maintenance": 1,
+        "hurryCostModifier": 10,
+        "uniques": ["Hidden when esionage is disabled", "[25]% reduction in enemy spy effectivenes"],
+        "requiredBuilding": "Constabulary",
+        "requiredTech": "Electricity"
+    },
 
 	// Modern Era
 
