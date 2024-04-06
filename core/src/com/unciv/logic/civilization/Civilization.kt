@@ -496,7 +496,7 @@ class Civilization : IsPartOfGameInfoSerialization {
     fun getTriggeredUniques(
         trigger: UniqueType,
         stateForConditionals: StateForConditionals = StateForConditionals(this)
-    ) : Sequence<Unique> = sequence {
+    ) : Iterable<Unique> = sequence {
         yieldAll(nation.uniqueMap.getTriggeredUniques(trigger, stateForConditionals))
         yieldAll(cities.asSequence()
             .flatMap { city -> city.cityConstructions.builtBuildingUniqueMap.getTriggeredUniques(trigger, stateForConditionals) }
@@ -509,7 +509,7 @@ class Civilization : IsPartOfGameInfoSerialization {
         yieldAll(tech.techUniques.getTriggeredUniques(trigger, stateForConditionals))
         yieldAll(getEra().uniqueMap.getTriggeredUniques (trigger, stateForConditionals))
         yieldAll(gameInfo.ruleset.globalUniques.uniqueMap.getTriggeredUniques(trigger, stateForConditionals))
-    }
+    }.toList() // Triggers can e.g. add buildings which contain triggers, causing concurrent modification errors
 
     fun matchesFilter(filter: String): Boolean {
         return MultiFilter.multiFilter(filter, ::matchesSingleFilter)
