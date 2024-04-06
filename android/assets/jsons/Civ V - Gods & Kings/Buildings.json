@@ -714,7 +714,7 @@
         "cost": 160,
         "maintenance": 1,
         "hurryCostModifier": 10,
-        "uniques": ["Hidden when espionage is disabled", "[25]% reduction in enemy spy effectivenes [in this city]"],
+        "uniques": ["Hidden when espionage is disabled", "[25]% reduction in enemy spy effectiveness [in this city]"],
         "requiredTech": "Banking"
     },
 	// will be introduced in BNW expansion pack
@@ -947,7 +947,7 @@
         "cost": 300,
         "maintenance": 1,
         "hurryCostModifier": 10,
-        "uniques": ["Hidden when espionage is disabled", "[25]% reduction in enemy spy effectivenes [in this city]"],
+        "uniques": ["Hidden when espionage is disabled", "[25]% reduction in enemy spy effectiveness [in this city]"],
         "requiredBuilding": "Constabulary",
         "requiredTech": "Electricity"
     },
@@ -986,7 +986,7 @@
         "cost": 120,
         "culture": 1,
         "isNationalWonder": true,
-        "uniques": ["Hidden when espionage is disabled", "Gain a spy", "Gives all spies one level", "[15]% reduction in enemy spy effectivenes [in this city]",
+        "uniques": ["Hidden when espionage is disabled", "Gain a spy", "Gives all spies one level", "[15]% reduction in enemy spy effectiveness [in this city]",
             "Only available <if [Police Station] is constructed in all [non-[Puppeted]] cities>", "Cost increases by [30] per owned city"],
         "requiredTech": "Radio"
     },
@@ -1112,8 +1112,8 @@
     {
         "name": "Great Firewall",
         "isWonder": true,
-        "uniques": ["Hidden when espionage is disabled", "[99]% reduction in enemy spy effectivenes [in this city]",
-            "[25]% reduction in enemy spy effectivenes [in all cities]",],
+        "uniques": ["Hidden when espionage is disabled", "[99]% reduction in enemy spy effectiveness [in this city]",
+            "[25]% reduction in enemy spy effectiveness [in all cities]",],
         "requiredTech": "Computers"
     },
 
