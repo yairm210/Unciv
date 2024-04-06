@@ -238,10 +238,28 @@ class PolicyManager : IsPartOfGameInfoSerialization {
         if (!canAdoptPolicy()) shouldOpenPolicyPicker = false
     }
 
-    fun removePolicy(policy: Policy) {
+    fun removePolicy(policy: Policy, branchCompletion: Boolean = false) {
+        if (!branchCompletion)
+            numberOfAdoptedPolicies--
+
         adoptedPolicies.remove(policy.name)
         removePolicyFromTransients(policy)
-        numberOfAdoptedPolicies--
+
+        // if a branch is already complete, revert it back to uncomplete
+        if (!branchCompletion) {
+            val branch = policy.branch
+            if (branch.policies.count { isAdopted(it.name) } == branch.policies.size - 1) {
+                removePolicy(branch.policies.last(), true)
+            }
+        }
+
+        civInfo.cache.updateCivResources()
+
+        // This ALSO has the side-effect of updating the CivInfo statForNextTurn so we don't need to call it explicitly
+        for (city in civInfo.cities) {
+            city.cityStats.update()
+            city.reassignPopulationDeferred()
+        }
     }
 
     /**
