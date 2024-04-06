@@ -1112,7 +1112,7 @@
     {
         "name": "Great Firewall",
         "isWonder": true,
-        "uniques": ["Hidden when esionage is disabled", "[99.9]% reduction in enemy spy effectivenes [in this city]",
+        "uniques": ["Hidden when esionage is disabled", "[99]% reduction in enemy spy effectivenes [in this city]",
             "[25]% reduction in enemy spy effectivenes [in all cities]",],
         "requiredTech": "Computers"
     },
