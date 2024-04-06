@@ -133,7 +133,7 @@ object SpecificUnitAutomation {
 
         // If the tile we are currently on is close to the best tile, then lets just settle here instead
         if (bestTilesInfo.tileRankMap.containsKey(unit.getTile())
-                && (bestTilesInfo.bestTile == null || bestTilesInfo.tileRankMap[unit.getTile()]!! >= bestTilesInfo.tileRankMap[bestTilesInfo.bestTile]!! - 10)) {
+                && (bestTilesInfo.bestTile == null || bestTilesInfo.tileRankMap[unit.getTile()]!! >= bestTilesInfo.bestTileRank - 10)) {
                 bestCityLocation = unit.getTile()
         }
 
@@ -151,7 +151,7 @@ object SpecificUnitAutomation {
             }
 
             bestCityLocation = bestTilesInfo.tileRankMap.entries.asSequence()
-                .filter { bestTilesInfo.bestTile == null || it.value >= bestTilesInfo.tileRankMap[bestTilesInfo.bestTile]!! - 5 }
+                .filter { bestTilesInfo.bestTile == null || it.value >= bestTilesInfo.bestTileRank - 5 }
                 .sortedByDescending { it.value }
                 .firstOrNull(::isTileRankOK)
                 ?.key
