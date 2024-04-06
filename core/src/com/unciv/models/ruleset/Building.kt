@@ -316,6 +316,10 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
                     if (!civ.gameInfo.isReligionEnabled())
                         yield(RejectionReasonType.DisabledBySetting.toInstance())
 
+                UniqueType.HiddenWithoutEspionage ->
+                    if (!civ.gameInfo.isEspionageEnabled())
+                        yield(RejectionReasonType.DisabledBySetting.toInstance())
+
                 UniqueType.MaxNumberBuildable ->
                     if (civ.civConstructions.countConstructedObjects(this@Building) >= unique.params[0].toInt())
                         yield(RejectionReasonType.MaxNumberBuildable.toInstance())
