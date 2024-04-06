@@ -858,7 +858,7 @@ enum class UniqueType(
     HiddenWithoutReligion("Hidden when religion is disabled",
         UniqueTarget.Unit, UniqueTarget.Building, UniqueTarget.Ruins, UniqueTarget.Tutorial,
         flags = UniqueFlag.setOfHiddenToUsers),
-    HiddenWithoutEspionage("Hidden when esionage is disabled", UniqueTarget.Building,
+    HiddenWithoutEspionage("Hidden when espionage is disabled", UniqueTarget.Building,
         flags = UniqueFlag.setOfHiddenToUsers),
 
     HiddenWithoutVictoryType("Hidden when [victoryType] Victory is disabled", UniqueTarget.Building, UniqueTarget.Unit, flags = UniqueFlag.setOfHiddenToUsers),
