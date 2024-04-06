@@ -26,7 +26,7 @@ class AutoPlayMenu(
         // We need to activate the end turn button again after the menu closes
         afterCloseCallback = { worldScreen.shouldUpdate = true }
     }
-    
+
     override fun createContentTable(): Table {
         val table = super.createContentTable()!!
         // Using the same keyboard binding for bypassing this menu and the default option
@@ -41,9 +41,11 @@ class AutoPlayMenu(
     }
 
     private fun autoPlayEndTurn() {
-        worldScreen.autoPlay.autoPlaying = true
+        worldScreen.autoPlay.autoPlayTurnInProgress = true
         nextTurnButton.update()
+
         if (worldScreen.viewingCiv.units.getCivUnitsSize() + worldScreen.viewingCiv.cities.size >= 30) {
+            worldScreen.isPlayersTurn = false
             Concurrency.runOnNonDaemonThreadPool("AutoPlayEndTurn") {
                 TurnManager(worldScreen.viewingCiv).automateTurn()
                 worldScreen.autoPlay.stopAutoPlay()

@@ -14,6 +14,7 @@ import com.unciv.ui.images.IconTextButton
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popups.hasOpenPopups
 import com.unciv.ui.screens.worldscreen.WorldScreen
+import com.unciv.utils.Concurrency
 
 class NextTurnButton(
     private val worldScreen: WorldScreen
@@ -36,12 +37,13 @@ class NextTurnButton(
         if (worldScreen.autoPlay.shouldContinueAutoPlaying() && worldScreen.isPlayersTurn
             && !worldScreen.waitingForAutosave && !worldScreen.isNextTurnUpdateRunning()) {
             worldScreen.autoPlay.autoPlayTurnInProgress = true
-            if (!worldScreen.viewingCiv.isSpectator())
-                TurnManager(worldScreen.viewingCiv).automateTurn()
-            worldScreen.nextTurn()
             if (!GUI.getSettings().autoPlay.autoPlayUntilEnd)
                 worldScreen.autoPlay.turnsToAutoPlay--
-            worldScreen.autoPlay.autoPlayTurnInProgress = false
+            Concurrency.runOnNonDaemonThreadPool("AutoPlay") {
+                TurnManager(worldScreen.viewingCiv).automateTurn()
+                worldScreen.nextTurn()
+                worldScreen.autoPlay.autoPlayTurnInProgress = false
+            }
         }
 
         isEnabled = nextTurnAction.getText (worldScreen) == "AutoPlay"
