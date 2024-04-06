@@ -809,7 +809,6 @@ object UniqueTriggerActivation {
                 if (!civInfo.gameInfo.isEspionageEnabled()) return null
 
                 return {
-                    unique.params[0].toInt()
                     civInfo.espionageManager.spyList.forEach { it.levelUpSpy() }
                     true
                 }
