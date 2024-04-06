@@ -68,10 +68,8 @@ class ModCheckboxTable(
         setBaseRuleset(initialBaseRuleset)
     }
 
-    fun updateSelection(newMods: Collection<String>) {
+    fun updateSelection() {
         savedModcheckResult = null
-        mods.clear()
-        mods.addAll(newMods)
         disableChangeEvents = true
         for (mod in modWidgets) {
             mod.widget.isChecked = mod.mod.name in mods
@@ -202,7 +200,7 @@ class ModCheckboxTable(
                 mods.remove(modWidget.mod.name)
             }
         }
-        disableChangeEvents = true
+        disableChangeEvents = false
     }
 
     /** Disable incompatible mods - those that could not be turned on with the current selection */

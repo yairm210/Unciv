@@ -47,7 +47,6 @@ class GameOptionsTable(
     var locked = false
 
     private var baseRulesetHash = gameParameters.baseRuleset.hashCode()
-    private var selectedModsHash = gameParameters.mods.hashCode()
 
     /** Holds the UI for the Extension Mods
      *
@@ -80,11 +79,7 @@ class GameOptionsTable(
             baseRulesetHash = newBaseRulesetHash
             modCheckboxes.setBaseRuleset(gameParameters.baseRuleset)
         }
-        val newSelectedModsHash = gameParameters.mods.hashCode()
-        if (newSelectedModsHash != selectedModsHash) {
-            selectedModsHash = newSelectedModsHash
-            modCheckboxes.updateSelection(gameParameters.mods)
-        }
+        modCheckboxes.updateSelection()
 
         add(Table().apply {
             defaults().pad(5f)
