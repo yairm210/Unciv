@@ -156,13 +156,13 @@ class Spy() : IsPartOfGameInfoSerialization {
             civInfo.tech.addTechnology(stolenTech)
         }
         // Lower is better
-        var spyResult = (Random(randomSeed.toInt()).nextInt(300) * getEfficiencyModifier()).toInt()
+        var spyResult = Random(randomSeed.toInt()).nextInt(300)
         // Add our spies experience
         spyResult -= getSkillModifier()
         // Subtract the experience of the counter inteligence spies
         val defendingSpy = city.civ.espionageManager.getSpyAssignedToCity(city)
         spyResult += defendingSpy?.getSkillModifier() ?: 0
-        //TODO: Add policies modifier here
+        spyResult = (spyResult * getEfficiencyModifier()).toInt()
 
         val detectionString = when {
             spyResult < 0 -> null // Not detected
@@ -201,9 +201,10 @@ class Spy() : IsPartOfGameInfoSerialization {
             val defendingSpy = allyCiv.espionageManager.getSpyAssignedToCity(getLocation()!!)
             if (defendingSpy != null) {
                 val randomSeed = city.location.x * city.location.y + 123f * civInfo.gameInfo.turns
-                var spyResult = (Random(randomSeed.toInt()).nextInt(120) * getEfficiencyModifier()).toInt()
+                var spyResult = Random(randomSeed.toInt()).nextInt(120)
                 spyResult -= getSkillModifier()
                 spyResult += defendingSpy.getSkillModifier()
+                spyResult = (spyResult * getEfficiencyModifier()).toInt()
                 if (spyResult > 100) {
                     // The Spy was killed
                     allyCiv.addNotification("A spy from [${civInfo.civName}] tried to rig elections and was found and killed in [${city}] by [${defendingSpy.name}]!",
