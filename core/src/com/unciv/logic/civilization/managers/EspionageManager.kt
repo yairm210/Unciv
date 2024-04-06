@@ -5,7 +5,6 @@ import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.Spy
-import kotlinx.coroutines.newFixedThreadPoolContext
 
 
 class EspionageManager : IsPartOfGameInfoSerialization {

@@ -303,7 +303,7 @@ class Spy() : IsPartOfGameInfoSerialization {
         }
         var totalEfficiency = 100.0
         totalEfficiency += friendlyUniques.sumOf { it.params[0].toDouble() }
-        totalEfficiency -= enemyUniques.sumOf { it.params[0].toDouble() }
+        totalEfficiency += enemyUniques.sumOf { it.params[0].toDouble() }
         return totalEfficiency.coerceAtLeast(0.0) / 100 // Convert to a percent to a value centered at 1
     }
 
