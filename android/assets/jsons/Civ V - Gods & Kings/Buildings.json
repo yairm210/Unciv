@@ -714,7 +714,7 @@
         "cost": 160,
         "maintenance": 1,
         "hurryCostModifier": 10,
-        "uniques": ["Hidden when esionage is disabled", "[25]% reduction in enemy spy effectivenes"],
+        "uniques": ["Hidden when esionage is disabled", "[25]% reduction in enemy spy effectivenes [in this city]"],
         "requiredTech": "Banking"
     },
 	// will be introduced in BNW expansion pack
@@ -947,7 +947,7 @@
         "cost": 300,
         "maintenance": 1,
         "hurryCostModifier": 10,
-        "uniques": ["Hidden when esionage is disabled", "[25]% reduction in enemy spy effectivenes"],
+        "uniques": ["Hidden when esionage is disabled", "[25]% reduction in enemy spy effectivenes [in this city]"],
         "requiredBuilding": "Constabulary",
         "requiredTech": "Electricity"
     },
@@ -981,6 +981,15 @@
 		"requiredTech": "Radio",
 		"quote": "'We live only to discover beauty, all else is a form of waiting' - Kahlil Gibran"
 	},
+    {
+        "name": "National Intelligence Agency",
+        "cost": 120,
+        "culture": 1,
+        "isNationalWonder": true,
+        "uniques": ["Hidden when esionage is disabled", "Gain a spy", "Gives all spies one level", "[15]% reduction in enemy spy effectivenes [in this city]",
+            "Only available <if [Police Station] is constructed in all [non-[Puppeted]] cities>", "Cost increases by [30] per owned city"],
+        "requiredTech": "Radio"
+    },
 	{
 		"name": "Military Base",
 		"cityStrength": 12,
