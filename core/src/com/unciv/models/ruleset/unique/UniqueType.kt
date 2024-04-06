@@ -228,8 +228,8 @@ enum class UniqueType(
     FaithCostOfGreatProphetChange("[relativeAmount]% Faith cost of generating Great Prophet equivalents", UniqueTarget.Global),
 
     /// Espionage
-    SpyEffectiveness("[relativeAmount]% spy effectivenes", UniqueTarget.Global, UniqueTarget.Global),
-    EnemySpyEffectiveness("[relativeAmount]% reduction in enemy spy effectivenes", UniqueTarget.Global, UniqueTarget.Global),
+    SpyEffectiveness("[relativeAmount]% spy effectivenes [cityFilter]", UniqueTarget.Global, UniqueTarget.Global),
+    EnemySpyEffectiveness("[relativeAmount]% reduction in enemy spy effectivenes [cityFilter]", UniqueTarget.Global, UniqueTarget.Global),
 
     /// Things you get at the start of the game
     StartingTech("Starting tech", UniqueTarget.Tech),
