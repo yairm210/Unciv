@@ -103,8 +103,10 @@ class Spy() : IsPartOfGameInfoSerialization {
                     return
                 }
                 val techStealCost = stealableTechs.maxOfOrNull { civInfo.gameInfo.ruleset.technologies[it]!!.cost }!!
+                var progressThisTurn = getLocation()!!.cityStats.currentCityStats.science
                 // 33% spy bonus for each level
-                val progressThisTurn = getLocation()!!.cityStats.currentCityStats.science * (rank + 2f) / 3f
+                progressThisTurn *= (rank + 2f) / 3f
+                progressThisTurn *= getEfficiencyModifier().toFloat()
                 progressTowardsStealingTech += progressThisTurn.toInt()
                 if (progressTowardsStealingTech > techStealCost) {
                     stealTech()
@@ -154,7 +156,7 @@ class Spy() : IsPartOfGameInfoSerialization {
             civInfo.tech.addTechnology(stolenTech)
         }
         // Lower is better
-        var spyResult = Random(randomSeed.toInt()).nextInt(300)
+        var spyResult = (Random(randomSeed.toInt()).nextInt(300) * getEfficiencyModifier()).toInt()
         // Add our spies experience
         spyResult -= getSkillModifier()
         // Subtract the experience of the counter inteligence spies
@@ -199,7 +201,7 @@ class Spy() : IsPartOfGameInfoSerialization {
             val defendingSpy = allyCiv.espionageManager.getSpyAssignedToCity(getLocation()!!)
             if (defendingSpy != null) {
                 val randomSeed = city.location.x * city.location.y + 123f * civInfo.gameInfo.turns
-                var spyResult = Random(randomSeed.toInt()).nextInt(120)
+                var spyResult = (Random(randomSeed.toInt()).nextInt(120) * getEfficiencyModifier()).toInt()
                 spyResult -= getSkillModifier()
                 spyResult += defendingSpy.getSkillModifier()
                 if (spyResult > 100) {
@@ -278,6 +280,10 @@ class Spy() : IsPartOfGameInfoSerialization {
         return getSpyRank() * 30
     }
 
+    /**
+     * Gets a feindly and enemy efficiency uniques for the spy at the location
+     * @return a value centered around 1 for the work efficiency of the spy
+     */
     fun getEfficiencyModifier(): Double {
         lateinit var friendlyUniques: Sequence<Unique>
         lateinit var enemyUniques: Sequence<Unique>
@@ -294,10 +300,10 @@ class Spy() : IsPartOfGameInfoSerialization {
             friendlyUniques = civInfo.getMatchingUniques(UniqueType.SpyEffectiveness)
             enemyUniques = sequenceOf()
         }
-        var totalEfficiency = 0.0
+        var totalEfficiency = 100.0
         totalEfficiency += friendlyUniques.sumOf { it.params[0].toDouble() }
         totalEfficiency -= enemyUniques.sumOf { it.params[0].toDouble() }
-        return totalEfficiency
+        return totalEfficiency.coerceAtLeast(0.0) / 100 // Convert to a percent to a value centered at 1
     }
 
     fun killSpy() {
