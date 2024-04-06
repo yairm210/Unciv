@@ -986,7 +986,7 @@
         "cost": 120,
         "culture": 1,
         "isNationalWonder": true,
-        "uniques": ["Hidden when espionage is disabled", "Gain a spy", "Gives all spies one level", "[-15]% enemy spy effectiveness [in this city]",
+        "uniques": ["Hidden when espionage is disabled", "Gain an extra spy", "Promotes all spies", "[-15]% enemy spy effectiveness [in this city]",
             "Only available <if [Police Station] is constructed in all [non-[Puppeted]] cities>", "Cost increases by [30] per owned city"],
         "requiredTech": "Radio"
     },
