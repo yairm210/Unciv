@@ -804,6 +804,27 @@ object UniqueTriggerActivation {
                 }
             }
 
+            UniqueType.OneTimeSpiesLevelUp -> {
+                if (!civInfo.isMajorCiv()) return null
+                if (!civInfo.gameInfo.isEspionageEnabled()) return null
+
+                return {
+                    unique.params[0].toInt()
+                    civInfo.espionageManager.spyList.forEach { it.levelUpSpy() }
+                    true
+                }
+            }
+
+            UniqueType.OneTimeGainSpy -> {
+                if (!civInfo.isMajorCiv()) return null
+                if (!civInfo.gameInfo.isEspionageEnabled()) return null
+
+                return {
+                    civInfo.espionageManager.addSpy()
+                    true
+                }
+            }
+
             UniqueType.GainFreeBuildings -> {
                 val freeBuilding = civInfo.getEquivalentBuilding(unique.params[0])
                 val applicableCities =

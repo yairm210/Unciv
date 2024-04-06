@@ -8,6 +8,9 @@ import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.civilization.managers.EspionageManager
+import com.unciv.models.ruleset.unique.StateForConditionals
+import com.unciv.models.ruleset.unique.Unique
+import com.unciv.models.ruleset.unique.UniqueType
 import kotlin.random.Random
 
 
@@ -120,7 +123,7 @@ class Spy() : IsPartOfGameInfoSerialization {
                 val oldSpyName = name
                 name = espionageManager.getSpyName()
                 action = SpyAction.None
-                civInfo.addNotification("We have recruited a new spy name [$name] after [$oldSpyName] was killed.", 
+                civInfo.addNotification("We have recruited a new spy name [$name] after [$oldSpyName] was killed.",
                     NotificationCategory.Espionage, NotificationIcon.Spy)
             }
             SpyAction.CounterIntelligence -> {
@@ -129,7 +132,7 @@ class Spy() : IsPartOfGameInfoSerialization {
                 // Once turnRemainingForAction is <= 0 the spy won't be considered to be doing work any more
                 --turnsRemainingForAction
                 return
-            } 
+            }
             else -> return // Not implemented yet, so don't do anything
         }
     }
@@ -228,7 +231,7 @@ class Spy() : IsPartOfGameInfoSerialization {
         action = SpyAction.Moving
         turnsRemainingForAction = 1
     }
-    
+
     fun canMoveTo(city: City): Boolean {
         if (getLocation() == city) return true
         if (!city.getCenterTile().isVisible(civInfo)) return false
@@ -238,7 +241,7 @@ class Spy() : IsPartOfGameInfoSerialization {
     fun isSetUp() = action !in listOf(SpyAction.Moving, SpyAction.None, SpyAction.EstablishNetwork)
 
     // Only returns true if the spy is doing a helpful and implemented action
-    fun isDoingWork(): Boolean { 
+    fun isDoingWork(): Boolean {
         if (action == SpyAction.StealingTech || action == SpyAction.EstablishNetwork || action == SpyAction.Moving) return true
         if (action == SpyAction.RiggingElections && !civInfo.isAtWarWith(getLocation()!!.civ)) return true
         if (action == SpyAction.CounterIntelligence && turnsRemainingForAction > 0) return true
@@ -260,9 +263,9 @@ class Spy() : IsPartOfGameInfoSerialization {
 
     fun levelUpSpy() {
         //TODO: Make the spy level cap dependent on some unique
-        if (rank >= 3) return 
+        if (rank >= 3) return
         if (getLocation() != null) {
-            civInfo.addNotification("Your spy [$name] has leveled up!", getLocation()!!.location, 
+            civInfo.addNotification("Your spy [$name] has leveled up!", getLocation()!!.location,
                 NotificationCategory.Espionage, NotificationIcon.Spy)
         } else {
             civInfo.addNotification("Your spy [$name] has leveled up!",
@@ -275,6 +278,28 @@ class Spy() : IsPartOfGameInfoSerialization {
         return getSpyRank() * 30
     }
 
+    fun getEfficiencyModifier(): Double {
+        lateinit var friendlyUniques: Sequence<Unique>
+        lateinit var enemyUniques: Sequence<Unique>
+        if (getLocation() != null) {
+            val city = getLocation()!!
+            if (city.civ == civInfo) {
+                friendlyUniques = city.getMatchingUniques(UniqueType.SpyEffectiveness, StateForConditionals(city), includeCivUniques = true)
+                enemyUniques = sequenceOf()
+            } else {
+                friendlyUniques = civInfo.getMatchingUniques(UniqueType.SpyEffectiveness)
+                enemyUniques = city.getMatchingUniques(UniqueType.EnemySpyEffectiveness, StateForConditionals(city), includeCivUniques = true)
+            }
+        } else {
+            friendlyUniques = civInfo.getMatchingUniques(UniqueType.SpyEffectiveness)
+            enemyUniques = sequenceOf()
+        }
+        var totalEfficiency = 0.0
+        totalEfficiency += friendlyUniques.sumOf { it.params[0].toDouble() }
+        totalEfficiency -= enemyUniques.sumOf { it.params[0].toDouble() }
+        return totalEfficiency
+    }
+
     fun killSpy() {
         // We don't actually remove this spy object, we set them as dead and let them revive
         moveTo(null)
@@ -282,6 +307,6 @@ class Spy() : IsPartOfGameInfoSerialization {
         turnsRemainingForAction = 5
         rank = 1
     }
-    
+
     fun isAlive(): Boolean = action != SpyAction.Dead
 }
