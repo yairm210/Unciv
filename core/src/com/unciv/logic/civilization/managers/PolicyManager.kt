@@ -245,7 +245,7 @@ class PolicyManager : IsPartOfGameInfoSerialization {
         adoptedPolicies.remove(policy.name)
         removePolicyFromTransients(policy)
 
-        // if a branch is already complete, revert it back to uncomplete
+        // if a branch is already marked as complete, revert it to incomplete
         if (!branchCompletion) {
             val branch = policy.branch
             if (branch.policies.count { isAdopted(it.name) } == branch.policies.size - 1) {

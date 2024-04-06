@@ -305,7 +305,7 @@ object UniqueTriggerActivation {
 
                     val notificationText = getNotificationText(
                         notification, triggerNotificationText,
-                        "You loss the [$policyName] Policy"
+                        "You lose the [$policyName] Policy"
                     )
                     if (notificationText != null)
                         civInfo.addNotification(notificationText, PolicyAction(policyName), NotificationCategory.General, NotificationIcon.Culture)
