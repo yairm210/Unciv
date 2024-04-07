@@ -203,7 +203,7 @@ class UniqueValidator(val ruleset: Ruleset) {
     }
 
     /** Maps uncompliant parameters to their required types */
-    private fun     getComplianceErrors(
+    private fun getComplianceErrors(
         unique: Unique,
     ): List<UniqueComplianceError> {
         if (unique.type == null) return emptyList()
