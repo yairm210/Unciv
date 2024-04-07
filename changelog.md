@@ -2,11 +2,7 @@
 
 Mod checker warns against deprecated conditionals
 
-Added exception to catch the situation causing 
-
-Resolved  - unclear settler edge case
-
-Fixed concurrent modification from triggers adding other triggers
+Resolved edge-case crashes
 
 Added triggerable unique to remove policy  - By woo1127
 
