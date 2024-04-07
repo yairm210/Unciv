@@ -102,6 +102,7 @@ enum class DiplomaticModifiers(val text: String) {
     GaveUsUnits("You gave us units!"),
     GaveUsGifts("We appreciate your gifts"),
     ReturnedCapturedUnits("You returned captured units to us"),
+    BelieveSameReligion("We believe in the same religion"),
 
 }
 
@@ -273,6 +274,33 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
             opinion >= 40 -> RelationshipLevel.Friend
             opinion >= 15 -> RelationshipLevel.Favorable
             else -> RelationshipLevel.Neutral
+        }
+    }
+
+    private fun believesSameReligion(): Boolean? {
+        // believing same/different religion - modifiers
+        // what is the majority religion of civInfo?
+        val civMajorityReligion = civInfo.gameInfo.religions.values.firstOrNull {
+            civInfo.religionManager.isMajorityReligionForCiv(it)
+        }
+        // if civInfo has a majority religion
+        if (civMajorityReligion!=null) {
+            val otherCivMajorityReligion = otherCiv().gameInfo.religions.values.firstOrNull {
+                otherCiv().religionManager.isMajorityReligionForCiv(it)
+            }
+            // if otherCiv has a majority religion
+            return if (otherCivMajorityReligion!=null) {
+                // if otherCiv's majority religion equals civInfo's religion return "true", "else" otherwise
+                (civMajorityReligion.name == otherCivMajorityReligion.name)
+            }
+            // if otherCiv hasn't a majority religion
+            else {
+                null
+            }
+        }
+        // if civInfo hasn't a majority religion
+        else {
+            return null
         }
     }
 
@@ -587,6 +615,23 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
         }
     }
 
+    internal fun setReligionBasedModifier() {
+        val shareReligionTrueFalseOrNull = civInfo.getDiplomacyManager(otherCiv()).believesSameReligion()
+        if (shareReligionTrueFalseOrNull!=null) {
+            if (shareReligionTrueFalseOrNull) {
+                // they share same majority religion
+                setModifier(DiplomaticModifiers.BelieveSameReligion, 5f)
+            }
+            else {
+                // their majority religions differ
+                removeModifier(DiplomaticModifiers.BelieveSameReligion)
+            }
+        }
+        else {
+            // one or both civs don't have a majority religion at all
+            removeModifier(DiplomaticModifiers.BelieveSameReligion)
+        }
+    }
 
     fun denounce() {
         setModifier(DiplomaticModifiers.Denunciation, -35f)
