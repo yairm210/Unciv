@@ -1,3 +1,23 @@
+## 4.11.2
+
+Mod checker warns against deprecated conditionals
+
+Added exception to catch the situation causing 
+
+Resolved  - unclear settler edge case
+
+Fixed concurrent modification from triggers adding other triggers
+
+Added triggerable unique to remove policy  - By woo1127
+
+By SomeTroglodyte:
+- Work boat construction automation tweaks 
+- Fix new game screen mod selection 
+
+By SeventhM:
+- Fix softlock for spectator with free policies 
+- Allow Civilian units to promote 
+
 ## 4.11.1
 
 Performance improvements
