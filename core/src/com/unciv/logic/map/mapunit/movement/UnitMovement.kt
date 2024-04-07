@@ -597,7 +597,13 @@ class UnitMovement(val unit: MapUnit) {
     private fun canAirUnitMoveTo(tile: Tile, unit: MapUnit): Boolean {
         // landing in the city
         if (tile.isCityCenter()) {
-            if (tile.airUnits.filter { !it.isTransported }.size < 6 && tile.getCity()?.civ == unit.civ)
+            val airUnitCapacity = tile.getCity()?.civ!!.gameInfo.ruleset.modOptions.constants.airUnitCapacity
+            val airUnitCapacityFromUniques = tile.getCity()?.civ!!.getMatchingUniques(UniqueType.AirUnitCapacity)
+                .filter { tile.getCity()!!.matchesFilter(it.params[1]) }
+                .sumOf { it.params[1].toInt() }
+
+            if (tile.airUnits.filter { !it.isTransported }.size < (airUnitCapacity + airUnitCapacityFromUniques)
+                && tile.getCity()?.civ == unit.civ)
                 return true // if city is free - no problem, get in
         } // let's check whether it enters city on carrier now...
 

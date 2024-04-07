@@ -251,6 +251,8 @@ enum class UniqueType(
 
     SpawnRebels("Rebel units may spawn", UniqueTarget.Global),
 
+    AirUnitCapacity("[amount] air unit capacity [cityFilter]", UniqueTarget.Global),
+
     // endregion Other global uniques
 
     // endregion 01 Global uniques
