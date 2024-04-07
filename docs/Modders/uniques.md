@@ -792,6 +792,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "Rebel units may spawn"
 	Applicable to: Global
 
+??? example  "[amount] air unit capacity [cityFilter]"
+	Example: "[3] air unit capacity [in all cities]"
+
+	Applicable to: Global
+
 ??? example  "[relativeAmount]% Strength"
 	Example: "[+20]% Strength"
 

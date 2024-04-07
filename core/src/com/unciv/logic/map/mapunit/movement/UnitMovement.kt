@@ -598,9 +598,9 @@ class UnitMovement(val unit: MapUnit) {
         // landing in the city
         if (tile.isCityCenter()) {
             val airUnitCapacity = tile.getCity()?.civ!!.gameInfo.ruleset.modOptions.constants.airUnitCapacity
-            val airUnitCapacityFromUniques = tile.getCity()?.civ!!.getMatchingUniques(UniqueType.AirUnitCapacity)
+            val airUnitCapacityFromUniques = tile.getCity()!!.getMatchingUniques(UniqueType.AirUnitCapacity)
                 .filter { tile.getCity()!!.matchesFilter(it.params[1]) }
-                .sumOf { it.params[1].toInt() }
+                .sumOf { it.params[0].toInt() }
 
             if (tile.airUnits.filter { !it.isTransported }.size < (airUnitCapacity + airUnitCapacityFromUniques)
                 && tile.getCity()?.civ == unit.civ)
