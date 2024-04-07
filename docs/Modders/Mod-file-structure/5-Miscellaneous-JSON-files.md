@@ -202,6 +202,7 @@ and city distance in another. In case of conflicts, there is no guarantee which 
 | religionLimitMultiplier                  | Float  | 0.5                           | [^K]  |
 | pantheonBase                             | Int    | 10                            | [^L]  |
 | pantheonGrowth                           | Int    | 5                             | [^L]  |
+| workboatAutomationSearchMaxTiles         | Int    | 20                            | [^M]  |
 
 Legend:
 
@@ -231,6 +232,7 @@ Legend:
 - [^J]: A [UnitUpgradeCost](#unitupgradecost) sub-structure.
 - [^K]: Maximum foundable Religions = religionLimitBase + floor(MajorCivCount * religionLimitMultiplier)
 - [^L]: Cost of pantheon = pantheonBase + CivsWithReligion * pantheonGrowth
+- [^M]: When the AI decidees whether to build a work boat, how many tiles to search from the city center for an improvable tile
 
 #### UnitUpgradeCost
 

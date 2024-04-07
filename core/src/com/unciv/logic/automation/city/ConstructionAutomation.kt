@@ -3,12 +3,15 @@ package com.unciv.logic.automation.city
 import com.unciv.GUI
 import com.unciv.logic.automation.Automation
 import com.unciv.logic.automation.civilization.NextTurnAutomation
+import com.unciv.logic.automation.unit.WorkerAutomation
 import com.unciv.logic.city.CityConstructions
 import com.unciv.logic.civilization.CityAction
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.map.BFS
+import com.unciv.logic.map.mapunit.MapUnit
+import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.IConstruction
 import com.unciv.models.ruleset.INonPerpetualConstruction
@@ -166,36 +169,50 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
     }
 
     private fun addWorkBoatChoice() {
+        // Does the ruleset even have "Workboats"?
         val buildableWorkboatUnits = units
             .filter {
                 it.hasUnique(UniqueType.CreateWaterImprovements)
                     && Automation.allowAutomatedConstruction(civInfo, city, it)
             }.filterBuildable()
-        val alreadyHasWorkBoat = buildableWorkboatUnits.any()
-            && !city.getTiles().any {
-                it.civilianUnit?.hasUnique(UniqueType.CreateWaterImprovements) == true
-            }
-        if (!alreadyHasWorkBoat) return
+            .toSet()
+        if (buildableWorkboatUnits.isEmpty()) return
 
+        // Is there already a Workboat nearby?
+        // todo Still ignores whether that boat can reach the not-yet-found tile to improve
+        val twoTurnsMovement = buildableWorkboatUnits.maxOf { (it as BaseUnit).movement } * 2
+        fun MapUnit.isOurWorkBoat() = cache.hasUniqueToCreateWaterImprovements && this.civ == this@ConstructionAutomation.civInfo
+        val alreadyHasWorkBoat = city.getCenterTile().getTilesInDistanceRange(1..twoTurnsMovement)
+            .any { it.civilianUnit?.isOurWorkBoat() == true }
+        if (alreadyHasWorkBoat) return
 
-        val bfs = BFS(city.getCenterTile()) {
-            (it.isWater || it.isCityCenter()) && (it.getOwner() == null || it.isFriendlyTerritory(civInfo))
+        // Define what makes a tile worth sending a Workboat to
+        // todo Prepare for mods that allow improving water tiles without a resource?
+        fun Tile.isWorthImproving(): Boolean {
+            if (getOwner() != civInfo) return false
+            if (!WorkerAutomation.hasWorkableSeaResource(this, civInfo)) return false
+            return WorkerAutomation.isNotBonusResourceOrWorkable(this, civInfo)
         }
-        repeat(20) { bfs.nextStep() }
 
-        if (!bfs.getReachedTiles()
-            .any { tile ->
-                tile.hasViewableResource(civInfo) && tile.improvement == null && tile.getOwner() == civInfo
-                        && tile.tileResource.getImprovements().any {
-                    tile.improvementFunctions.canBuildImprovement(tile.ruleset.tileImprovements[it]!!, civInfo)
-                }
+        // Search for a tile justifiying producing a Workboat
+        // todo should workboatAutomationSearchMaxTiles depend on game state?
+        fun findTileWorthImproving(): Boolean {
+            val searchMaxTiles = civInfo.gameInfo.ruleset.modOptions.constants.workboatAutomationSearchMaxTiles
+            val bfs = BFS(city.getCenterTile()) {
+                (it.isWater || it.isCityCenter())
+                    && (it.getOwner() == null || it.isFriendlyTerritory(civInfo))
+                    && it.isExplored(civInfo)  // Sending WB's through unexplored terrain would be cheating
             }
-        ) return
+            do {
+                val tile = bfs.nextStep() ?: break
+                if (tile.isWorthImproving()) return true
+            } while (bfs.size() < searchMaxTiles)
+            return false
+        }
 
-        addChoice(
-            relativeCostEffectiveness, buildableWorkboatUnits.minByOrNull { it.cost }!!.name,
-            0.6f
-        )
+        if (!findTileWorthImproving()) return
+
+        addChoice(relativeCostEffectiveness, buildableWorkboatUnits.minBy { it.cost }.name, 0.6f)
     }
 
     private fun addWorkerChoice() {
