@@ -74,7 +74,7 @@ class EspionageManager : IsPartOfGameInfoSerialization {
      * Returns a list of all cities with our spies in them.
      * The list needs to be stable accross calls on the same turn.
      */
-    fun getCitiesWithOurSpies(): List<City> = spyList.filter { it.isSetUp() && it.getLocation() != null }.map { it.getLocation()!! }
+    fun getCitiesWithOurSpies(): List<City> = spyList.filter { it.isSetUp() }.mapNotNull { it.getLocation() }
 
     fun getSpyAssignedToCity(city: City): Spy? = spyList.firstOrNull {it.getLocation() == city}
 }
