@@ -172,12 +172,14 @@ class UniqueValidator(val ruleset: Ruleset) {
                 continue
 
             rulesetErrors.add(
-                "$prefix contains the conditional \"${conditional.text}\"." +
+                "$prefix contains conditional \"${conditional.text}\"." +
                 " This contains the parameter ${complianceError.parameterName} which does not fit parameter type" +
                 " ${complianceError.acceptableParameterTypes.joinToString(" or ") { it.parameterName }} !",
                 complianceError.errorSeverity.getRulesetErrorSeverity(), uniqueContainer, unique
             )
         }
+
+        addDeprecationAnnotationErrors(conditional, "$prefix contains conditional \"${conditional.text}\" which", rulesetErrors, uniqueContainer)
     }
 
     private fun addDeprecationAnnotationErrors(
