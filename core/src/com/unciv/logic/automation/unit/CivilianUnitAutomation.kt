@@ -146,10 +146,6 @@ object CivilianUnitAutomation {
             return
         }
 
-        // if none of the conditions above are met,
-        // AI will attempt to activate the first triggerable unique whenever it is available.
-        UnitActionsFromUniques.getTriggerUniqueActions(unit, unit.getTile()).firstOrNull()?.action?.invoke()
-
         // TODO: The AI tends to have a lot of great generals. Maybe there should be a cutoff
         //  (depending on number of cities) and after that they should just be used to start golden
         //  ages?
