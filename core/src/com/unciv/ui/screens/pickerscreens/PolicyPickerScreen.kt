@@ -178,7 +178,7 @@ class PolicyPickerScreen(
 
         setDefaultCloseAction()
 
-        if (policies.freePolicies > 0 && policies.canAdoptPolicy() && !viewingCiv.isSpectator())
+        if (!viewingCiv.isSpectator() && policies.freePolicies > 0 && policies.canAdoptPolicy())
             closeButton.disable()
 
         rightSideButton.onClick(UncivSound.Policy) {
