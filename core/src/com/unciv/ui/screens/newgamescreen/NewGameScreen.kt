@@ -406,7 +406,7 @@ class NewGameScreen(
     fun updateTables() {
         playerPickerTable.gameParameters = gameSetupInfo.gameParameters
         playerPickerTable.update()
-        newGameOptionsTable.gameParameters = gameSetupInfo.gameParameters
+        newGameOptionsTable.changeGameParameters(gameSetupInfo.gameParameters)
         newGameOptionsTable.update()
     }
 

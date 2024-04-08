@@ -51,6 +51,7 @@ class MapFileSelectTable(
     private var mapNations = emptyList<Nation>()
     private val miniMapWrapper = Container<Group?>()
     private var mapPreviewJob: Job? = null
+    private var preselectedName = mapParameters.name
 
     // The SelectBox auto displays the text a object.toString(), which on the FileHandle itself includes the folder path.
     //  So we wrap it in another object with a custom toString()
@@ -153,8 +154,10 @@ class MapFileSelectTable(
         if (mapCategorySelectBox.selected != categoryName) return
 
         // .. but add the maps themselves as they come
+        mapFileSelectBox.selection.setProgrammaticChangeEvents(false)
         mapFileSelectBox.items.add(mapWrapper)
         mapFileSelectBox.items = mapFileSelectBox.items  // Call setItems so SelectBox sees the change
+        mapFileSelectBox.selection.setProgrammaticChangeEvents(true)
     }
 
     private val firstMap: FileHandle? by lazy {
@@ -174,6 +177,7 @@ class MapFileSelectTable(
 
     fun activateCustomMaps() {
         if (loadingIcon.isShowing()) return // Default map selection will be handled when background loading finishes
+        preselectedName = mapParameters.name
         onFileSelectBoxChange()
     }
 
@@ -190,17 +194,16 @@ class MapFileSelectTable(
                 .maxByOrNull { it.fileHandle.lastModified() }
             val oldestTimestamp = mapFiles.minOfOrNull { it.fileHandle.lastModified() } ?: 0L
             // Do not use most recent if all maps in the category have the same time within a tenth of a second (like a mod unzip does)
-            if (recent != null && (recent.fileHandle.lastModified() - oldestTimestamp) > 100 || mapFiles.size == 1) return recent
-            val named = mapFiles.firstOrNull { it.fileHandle.name() == mapParameters.name }
-            if (named != null) return named
+            if (recent != null && (recent.fileHandle.lastModified() - oldestTimestamp) > 100 || mapFiles.size == 1)
+                return recent
+            val named = mapFiles.firstOrNull { it.fileHandle.name() == preselectedName }
+            if (named != null)
+                return named
             return mapFiles.first()
         }
         val selectedItem = getPreselect()
 
-        // since mapFileSelectBox.selection.setProgrammaticChangeEvents() defaults to true, this would
-        // kill the mapParameters.name we would like to look for when determining what to pre-select -
-        // so do it ***after*** getting selectedItem - but control programmaticChangeEvents anyway
-        // to avoid the overhead of doing a full updateRuleset + updateTables + startMapPreview
+        // avoid the overhead of doing a full updateRuleset + updateTables + startMapPreview
         // (all expensive) for something that will be overthrown momentarily
         mapFileSelectBox.selection.setProgrammaticChangeEvents(false)
         mapFileSelectBox.items = mapFiles
