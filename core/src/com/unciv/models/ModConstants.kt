@@ -84,6 +84,8 @@ class ModConstants {
 
     var workboatAutomationSearchMaxTiles = 20
 
+    var airUnitCapacity = 6
+
     fun merge(other: ModConstants) {
         for (field in this::class.java.declaredFields) {
             val value = field.get(other)

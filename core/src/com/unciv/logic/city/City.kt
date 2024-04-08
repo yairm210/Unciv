@@ -403,9 +403,14 @@ class City : IsPartOfGameInfoSerialization {
 
     fun canPlaceNewUnit(construction: BaseUnit): Boolean {
         val tile = getCenterTile()
+        val airUnitCapacity = tile.getCity()?.civ!!.gameInfo.ruleset.modOptions.constants.airUnitCapacity
+        val airUnitCapacityFromUniques = getMatchingUniques(UniqueType.AirUnitCapacity)
+            .filter { matchesFilter(it.params[1]) }
+            .sumOf { it.params[0].toInt() }
+
         return when {
             construction.isCivilian() -> tile.civilianUnit == null
-            construction.movesLikeAirUnits() -> tile.airUnits.count { !it.isTransported } < 6
+            construction.movesLikeAirUnits() -> tile.airUnits.count { !it.isTransported } < (airUnitCapacity + airUnitCapacityFromUniques)
             else -> tile.militaryUnit == null
         }
     }
