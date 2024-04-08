@@ -28,10 +28,27 @@ The most common type of modifier is a conditional - basically limiting the uniqu
 
 Other more specialized types of modifiers exist:
 
-- Trigger uniques can get *under what circumstances they activate*
+- Triggerable uniques can get *under what circumstances they activate*
 - Unit actions can get *costs, side effects, and limited uses*
 
 As you can see, these conditionals *also* can contain parameters, and these follow the same rules for parameters as the regular uniques.
+
+### Triggerable Uniques
+
+Most uniques are long-term effects - they apply as long as you have the object containing them (building, resource, tech, policy).
+Trigger uniques are different - they are one-time effects, but which may be triggered several times.
+
+Trigger uniques come in two flavors - [civ-wide triggers](../Modders/uniques.md#triggerable-uniques) and [unit-wide triggers](../Modders/uniques.md#unittriggerable-uniques).
+Unit triggerables are only relevant in the context of a specific unit, so they can be attached to units, promotions or unit types.
+
+Any triggerable unique added to a unit which has [unit action modifiers](../Modders/uniques.md#unitactionmodifier-uniques) will be considered as a unit action.
+Unit actions can contain civ-wide effects as well.
+
+Trigger uniques specify their activation with trigger conditions.
+Like the triggers themselves, these come in two flavors - [civ-wide conditions](../Modders/uniques.md#triggercondition-uniques) and [unit-wide conditions](../Modders/uniques.md#unittriggercondition-uniques).
+Trigger uniques with no trigger modifiers are activated upon construction (units, buildings, improvements) or discovery (techs, policies).  
+
+Events are a ruleset object that act as a sort of "extended trigger" - they are activated by the `"Triggers a [event] event"` unique, and they trigger other uniques depending on user choice.
 
 ## What Developers Need To Know
 
