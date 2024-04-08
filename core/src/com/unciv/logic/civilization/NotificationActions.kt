@@ -83,16 +83,21 @@ class DiplomacyAction(
     private var showTrade: Boolean = false
 ) : NotificationAction {
     override fun execute(worldScreen: WorldScreen) {
+        val currentCiv = worldScreen.selectedCiv
         val otherCiv = worldScreen.gameInfo.getCivilization(otherCivName)
-        if (showTrade && otherCiv == worldScreen.gameInfo.getCurrentPlayerCivilization())
+
+        if (showTrade && otherCiv == currentCiv)
             // Because TradeTable will set up otherCiv against that one,
             // not the one we pass below, and two equal civs will crash - can't look up a DiplomacyManager.
             return
         // We should not be able to trade with city-states
-        if (showTrade && (otherCiv.isCityState() || worldScreen.gameInfo.getCurrentPlayerCivilization().isCityState()))
+        if (showTrade && (otherCiv.isCityState() || currentCiv.isCityState()))
             showTrade = false
 
-        worldScreen.game.pushScreen(DiplomacyScreen(worldScreen.selectedCiv, otherCiv, showTrade = showTrade))
+        if (showTrade && currentCiv.isAtWarWith(otherCiv))
+            showTrade = false  // Can't trade right now
+
+        worldScreen.game.pushScreen(DiplomacyScreen(currentCiv, otherCiv, showTrade = showTrade))
     }
 }
 

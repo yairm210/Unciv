@@ -243,7 +243,7 @@ object UnitActions {
     }
 
     private suspend fun SequenceScope<UnitAction>.addPromoteActions(unit: MapUnit) {
-        if (unit.isCivilian() || !unit.promotions.canBePromoted()) return
+        if (!unit.promotions.canBePromoted()) return
         // promotion does not consume movement points, but is not allowed if a unit has exhausted its movement or has attacked
         yield(UnitAction(UnitActionType.Promote,
             useFrequency = 150f, // We want to show the player that they can promote

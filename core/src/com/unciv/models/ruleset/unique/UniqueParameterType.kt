@@ -114,6 +114,7 @@ enum class UniqueParameterType(
             if (CityFilter.isKnownValue(parameterText, ruleset)) return true
             return false
         }
+        override fun getTranslationWriterStringsForOutput() = setOf("City")
     },
 
     /** Implemented by [MapUnit.matchesFilter][com.unciv.logic.map.mapunit.MapUnit.matchesFilter] */

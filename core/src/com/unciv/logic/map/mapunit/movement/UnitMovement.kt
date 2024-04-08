@@ -96,10 +96,9 @@ class UnitMovement(val unit: MapUnit) {
             val damageFreePath = getShortestPath(destination, true)
             if (damageFreePath.isNotEmpty()) return damageFreePath
         }
-        if (unit.baseUnit.isWaterUnit()
-            && destination.neighbors.none { isUnknownTileWeShouldAssumeToBePassable(it) || it.isWater }) {
-            // edge case where this unit is a boat and all of the tiles around the destination are
-            // explored and known to be land so we know a priori that no path exists
+        if (destination.neighbors.none { isUnknownTileWeShouldAssumeToBePassable(it) || canPassThrough(it) }) {
+            // edge case where this all of the tiles around the destination are
+            // explored and known the unit can't pass through any of thoes tiles so we know a priori that no path exists
             pathfindingCache.setShortestPathCache(destination, listOf())
             return listOf()
         }
@@ -249,21 +248,27 @@ class UnitMovement(val unit: MapUnit) {
     }
 
     /** This is performance-heavy - use as last resort, only after checking everything else!
-     * Also note that REACHABLE tiles are not necessarily tiles that the unit CAN ENTER */
-    fun canReach(destination: Tile): Boolean {
-        if (unit.cache.cannotMove) return destination == unit.getTile()
-        if (unit.baseUnit.movesLikeAirUnits() || unit.isPreparingParadrop())
-            return canReachInCurrentTurn(destination)
-        return getShortestPath(destination).any()
+     *  Also note that REACHABLE tiles are not necessarily tiles that the unit CAN ENTER
+     *  @see canReachInCurrentTurn
+     */
+    fun canReach(destination: Tile) = canReachCommon(destination) {
+        getShortestPath(it).any()
     }
 
-    fun canReachInCurrentTurn(destination: Tile): Boolean {
-        if (unit.cache.cannotMove) return destination == unit.getTile()
-        if (unit.baseUnit.movesLikeAirUnits())
-            return unit.currentTile.aerialDistanceTo(destination) <= unit.getMaxMovementForAirUnits()
-        if (unit.isPreparingParadrop())
-            return unit.currentTile.aerialDistanceTo(destination) <= unit.cache.paradropRange && canParadropOn(destination)
-        return getDistanceToTiles().containsKey(destination)
+    /** Cached and thus not as performance-heavy as [canReach] */
+    fun canReachInCurrentTurn(destination: Tile) = canReachCommon(destination) {
+        getDistanceToTiles().containsKey(it)
+    }
+
+    private inline fun canReachCommon(destination: Tile, specificFunction: (Tile) -> Boolean) = when {
+        unit.cache.cannotMove ->
+            destination == unit.getTile()
+        unit.baseUnit.movesLikeAirUnits() ->
+            unit.currentTile.aerialDistanceTo(destination) <= unit.getMaxMovementForAirUnits()
+        unit.isPreparingParadrop() ->
+            unit.currentTile.aerialDistanceTo(destination) <= unit.cache.paradropRange && canParadropOn(destination)
+        else ->
+            specificFunction(destination)  // Note: Could pass destination as implicit closure from outer fun to lambda, but explicit is clearer
     }
 
     /**
@@ -690,8 +695,8 @@ class UnitMovement(val unit: MapUnit) {
         considerZoneOfControl: Boolean = true,
         passThroughCache: HashMap<Tile, Boolean> = HashMap(),
         movementCostCache: HashMap<Pair<Tile, Tile>, Float> = HashMap(),
-        includeOtherEscortUnit: Boolean = true)
-        : PathsToTilesWithinTurn {
+        includeOtherEscortUnit: Boolean = true
+    ): PathsToTilesWithinTurn {
         val cacheResults = pathfindingCache.getDistanceToTiles(considerZoneOfControl)
         if (cacheResults != null) {
             return cacheResults

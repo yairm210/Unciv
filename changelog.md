@@ -1,3 +1,36 @@
+## 4.11.2
+
+Mod checker warns against deprecated conditionals
+
+Resolved edge-case crashes
+
+Added triggerable unique to remove policy  - By woo1127
+
+By SomeTroglodyte:
+- Work boat construction automation tweaks 
+- Fix new game screen mod selection 
+
+By SeventhM:
+- Fix softlock for spectator with free policies 
+- Allow Civilian units to promote 
+
+## 4.11.1
+
+Performance improvements
+
+By SomeTroglodyte:
+- Improve diplomatic vote result screen
+
+By tuvus:
+- Water units can enter lakes-near-cities
+- Workboats improve resources outside of city work range
+
+By SeventhM:
+- Allow AI to consider building stats more accurately
+- Allow for replacement improvements
+
+Add configurable natural wonder discovery stat bonuses  - By PLynx01
+
 ## 4.11.0
 
 Hide battle table after attack if we can move, but not attack again
