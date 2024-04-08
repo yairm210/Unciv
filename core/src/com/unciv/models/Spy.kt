@@ -104,8 +104,8 @@ class Spy() : IsPartOfGameInfoSerialization {
                 }
                 val techStealCost = stealableTechs.maxOfOrNull { civInfo.gameInfo.ruleset.technologies[it]!!.cost }!!
                 var progressThisTurn = getLocation()!!.cityStats.currentCityStats.science
-                // 25% spy bonus for each level
-                progressThisTurn *= (rank + 3) / 4
+                // 33% spy bonus for each level
+                progressThisTurn *= (rank + 2f) / 3f
                 progressThisTurn *= getEfficiencyModifier().toFloat()
                 progressTowardsStealingTech += progressThisTurn.toInt()
                 if (progressTowardsStealingTech > techStealCost) {
@@ -299,10 +299,10 @@ class Spy() : IsPartOfGameInfoSerialization {
             friendlyUniques = civInfo.getMatchingUniques(UniqueType.SpyEffectiveness)
             enemyUniques = sequenceOf()
         }
-        var totalEfficiency = 100
-        totalEfficiency += friendlyUniques.sumOf { it.params[0].toInt() }
-        totalEfficiency += enemyUniques.sumOf { it.params[0].toInt() }
-        return totalEfficiency.coerceAtLeast(0) / 100.0
+        var totalEfficiency = 1.0
+        totalEfficiency *= (100.0 + friendlyUniques.sumOf { it.params[0].toInt() }) / 100
+        totalEfficiency *= (100.0 + enemyUniques.sumOf { it.params[0].toInt() }) / 100
+        return totalEfficiency.coerceAtLeast(0.0)
     }
 
     fun killSpy() {
