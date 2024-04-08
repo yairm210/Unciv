@@ -279,9 +279,7 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
 
     private fun believesSameReligion(): Boolean {
         // what is the majority religion of civInfo?
-        val civMajorityReligion = civInfo.gameInfo.religions.values.firstOrNull {
-            civInfo.religionManager.isMajorityReligionForCiv(it)
-        }
+        val civMajorityReligion = civInfo.religionManager.getMajorityReligion()
         // if civInfo has a majority religion
         return if (civMajorityReligion==null) {
             // if civInfo hasn't a majority religion
