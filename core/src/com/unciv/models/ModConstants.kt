@@ -82,6 +82,8 @@ class ModConstants {
     var pantheonBase = 10
     var pantheonGrowth = 5
 
+    var workboatAutomationSearchMaxTiles = 20
+
     var airUnitCapacity = 6
 
     fun merge(other: ModConstants) {
