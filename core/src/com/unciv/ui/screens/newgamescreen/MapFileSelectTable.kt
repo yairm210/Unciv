@@ -16,6 +16,7 @@ import com.unciv.logic.map.MapParameters
 import com.unciv.logic.map.TileMap
 import com.unciv.models.metadata.Player
 import com.unciv.models.ruleset.RulesetCache
+import com.unciv.models.ruleset.nation.Nation
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.extensions.disable
 import com.unciv.ui.components.extensions.enable
@@ -47,7 +48,7 @@ class MapFileSelectTable(
     private val loadingIcon = LoadingImage(30f, LoadingImage.Style(loadingColor = Color.SCARLET))
     private val useNationsFromMapButton = "Select players from starting locations".toTextButton(AnimatedMenuPopup.SmallButtonStyle())
     private val useNationsButtonCell: Cell<Actor?>
-    private var mapNations = emptySequence<String>()
+    private var mapNations = emptyList<Nation>()
     private val miniMapWrapper = Container<Group?>()
     private var mapPreviewJob: Job? = null
 
@@ -143,8 +144,10 @@ class MapFileSelectTable(
                     compareBy<String?> { it != sortToTop }
                         .thenBy(collator) { it }
                 ).toGdxArray()
+            mapCategorySelectBox.selection.setProgrammaticChangeEvents(false)
             mapCategorySelectBox.items = newItems
             mapCategorySelectBox.selected = select
+            mapCategorySelectBox.selection.setProgrammaticChangeEvents(true)
         }
 
         if (mapCategorySelectBox.selected != categoryName) return
@@ -165,7 +168,7 @@ class MapFileSelectTable(
         }
     }
 
-    private fun FileHandle.isRecentlyModified() = lastModified() > System.currentTimeMillis() - 900000
+    private fun FileHandle.isRecentlyModified() = lastModified() > System.currentTimeMillis() - 900000 // 900s = quarter hour
     fun isNotEmpty() = firstMap != null
     fun recentlySavedMapExists() = firstMap != null && firstMap!!.isRecentlyModified()
 
@@ -182,11 +185,12 @@ class MapFileSelectTable(
             .toGdxArray()
         fun getPreselect(): MapWrapper? {
             if (mapFiles.isEmpty) return null
-            if (!mapFileSelectBox.selection.isEmpty) return mapFileSelectBox.selected
             val recent = mapFiles.asSequence()
                 .filter { it.fileHandle.isRecentlyModified() }
                 .maxByOrNull { it.fileHandle.lastModified() }
-            if (recent != null) return recent
+            val oldestTimestamp = mapFiles.minOfOrNull { it.fileHandle.lastModified() } ?: 0L
+            // Do not use most recent if all maps in the category have the same time within a tenth of a second (like a mod unzip does)
+            if (recent != null && (recent.fileHandle.lastModified() - oldestTimestamp) > 100 || mapFiles.size == 1) return recent
             val named = mapFiles.firstOrNull { it.fileHandle.name() == mapParameters.name }
             if (named != null) return named
             return mapFiles.first()
@@ -213,8 +217,21 @@ class MapFileSelectTable(
         if (mapFileSelectBox.selection.isEmpty) return
         val selection = mapFileSelectBox.selected
 
-        mapNations = selection.mapPreview.getDeclaredNations()
-        if (mapNations.none()) {
+        val mapMods = selection.mapPreview.mapParameters.mods
+            .partition { RulesetCache[it]?.modOptions?.isBaseRuleset == true }
+        newGameScreen.gameSetupInfo.gameParameters.mods = LinkedHashSet(mapMods.second)
+        newGameScreen.gameSetupInfo.gameParameters.baseRuleset = mapMods.first.firstOrNull()
+            ?: selection.mapPreview.mapParameters.baseRuleset
+        val success = newGameScreen.tryUpdateRuleset(updateUI = true)
+
+        mapNations = if (success)
+                selection.mapPreview.getDeclaredNations()
+                .mapNotNull { newGameScreen.ruleset.nations[it] }
+                .filter { it.isMajorCiv }
+                .toList()
+            else emptyList()
+
+        if (mapNations.isEmpty()) {
             useNationsButtonCell.setActor(null)
             useNationsButtonCell.height(0f).pad(0f)
         } else {
@@ -226,12 +243,7 @@ class MapFileSelectTable(
         val mapFile = selection.fileHandle
         mapParameters.name = mapFile.name()
         newGameScreen.gameSetupInfo.mapFile = mapFile
-        val mapMods = selection.mapPreview.mapParameters.mods
-            .partition { RulesetCache[it]?.modOptions?.isBaseRuleset == true }
-        newGameScreen.gameSetupInfo.gameParameters.mods = LinkedHashSet(mapMods.second)
-        newGameScreen.gameSetupInfo.gameParameters.baseRuleset = mapMods.first.firstOrNull()
-            ?: selection.mapPreview.mapParameters.baseRuleset
-        val success = newGameScreen.tryUpdateRuleset(updateUI = true)
+
         newGameScreen.updateTables()
         hideMiniMap()
         if (success) {
@@ -306,11 +318,13 @@ class MapFileSelectTable(
         useNationsFromMapButton.disable()
         val players = newGameScreen.playerPickerTable.gameParameters.players
         players.clear()
-        mapNations
-            .map { it.tr() }
-            .sortedWith(collator)
-            .withIndex()
-            .map { Player(it.value, if (it.index == 0) PlayerType.Human else PlayerType.AI) }
+        val pickForHuman = mapNations.random().name
+        mapNations.asSequence()
+            .map { it.name to it.name.tr(hideIcons = true) } // Sort by translation but keep untranslated name
+            .sortedWith(
+                compareBy<Pair<String, String>>{ it.first != pickForHuman }
+                .thenBy(collator) { it.second }
+            ).map { Player(it.first, if (it.first == pickForHuman) PlayerType.Human else PlayerType.AI) }
             .toCollection(players)
         newGameScreen.playerPickerTable.update()
     }
