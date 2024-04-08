@@ -519,7 +519,7 @@ class Tile : IsPartOfGameInfoSerialization {
             "Water resource" -> isWater && observingCiv != null && hasViewableResource(observingCiv)
             "Featureless" -> terrainFeatures.isEmpty()
             Constants.freshWaterFilter -> isAdjacentTo(Constants.freshWater, observingCiv)
-            
+
             else -> {
                 if (allTerrains.any { it.matchesFilter(filter) }) return true
                 if (getOwner()?.matchesFilter(filter) == true) return true
@@ -559,6 +559,15 @@ class Tile : IsPartOfGameInfoSerialization {
     fun getTilesInDistance(distance: Int): Sequence<Tile> = tileMap.getTilesInDistance(position, distance)
     fun getTilesInDistanceRange(range: IntRange): Sequence<Tile> = tileMap.getTilesInDistanceRange(position, range)
     fun getTilesAtDistance(distance: Int): Sequence<Tile> =tileMap.getTilesAtDistance(position, distance)
+
+    fun getAirUnitCapacity(): Int {
+        val airUnitCapacity = this.getCity()!!.civ.gameInfo.ruleset.modOptions.constants.airUnitCapacity
+        val airUnitCapacityFromUniques = this.getCity()!!.getMatchingUniques(UniqueType.AirUnitCapacity)
+            .filter { this.getCity()!!.matchesFilter(it.params[1]) }
+            .sumOf { it.params[0].toInt() }
+
+        return airUnitCapacity + airUnitCapacityFromUniques
+    }
 
     fun getDefensiveBonus(includeImprovementBonus: Boolean = true): Float {
         var bonus = baseTerrainObject.defenceBonus

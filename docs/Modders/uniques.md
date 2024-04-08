@@ -800,7 +800,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Global
 
 ??? example  "[amount] air unit capacity [cityFilter]"
-Example: "[3] air unit capacity [in all cities]"
+	Example: "[3] air unit capacity [in all cities]"
 
 	Applicable to: Global
 
