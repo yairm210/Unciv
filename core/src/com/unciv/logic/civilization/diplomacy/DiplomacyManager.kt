@@ -604,8 +604,7 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
     }
 
     internal fun setReligionBasedModifier() {
-        val shareReligionBoolean = civInfo.getDiplomacyManager(otherCiv()).believesSameReligion()
-        if (shareReligionBoolean) {
+        if (civInfo.getDiplomacyManager(otherCiv()).believesSameReligion()) {
             // they share same majority religion
             setModifier(DiplomaticModifiers.BelieveSameReligion, 5f)
         }
