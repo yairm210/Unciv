@@ -38,7 +38,7 @@ class MapOptionsTable(private val newGameScreen: NewGameScreen, isReset: Boolean
                 MapGeneratedMainType.custom -> {
                     mapParameters.type = MapGeneratedMainType.custom
                     mapTypeSpecificTable.add(savedMapOptionsTable)
-                    savedMapOptionsTable.onSelectBoxChange()
+                    savedMapOptionsTable.activateCustomMaps()
                     newGameScreen.unlockTables()
                 }
                 MapGeneratedMainType.generated -> {
