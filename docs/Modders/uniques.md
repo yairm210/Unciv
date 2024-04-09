@@ -72,6 +72,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Triggerable
 
+??? example  "Remove [policy]"
+	Example: "Remove [Oligarchy]"
+
+	Applicable to: Triggerable
+
 ??? example  "Free Technology"
 	Applicable to: Triggerable
 
@@ -550,7 +555,9 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Global
 
-??? example  "100 Gold for discovering a Natural Wonder (bonus enhanced to 500 Gold if first to discover it)"
+??? example  "[stats] for discovering a Natural Wonder (bonus enhanced to [stats] if first to discover it)"
+	Example: "[+1 Gold, +2 Production] for discovering a Natural Wonder (bonus enhanced to [+1 Gold, +2 Production] if first to discover it)"
+
 	Applicable to: Global
 
 ??? example  "[relativeAmount]% Great Person generation [cityFilter]"
@@ -1092,7 +1099,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Building, Unit
 
 ??? example  "Can only be built"
-	Meant to be used together with conditionals, like "Can only be built <after adopting [policy]> <while the empire is happy>". Only allows Building when ALL conditionals are met. Will also NOT block Upgrade and Transform actions. See also OnlyAvailable
+	Meant to be used together with conditionals, like "Can only be built <after adopting [policy]> <while the empire is happy>". Only allows Building when ALL conditionals are met. Will also NOT block Upgrade and Transform actions. See also OnlyAvailable.
 	Applicable to: Building, Unit
 
 ??? example  "Must have an owned [tileFilter] within [amount] tiles"
@@ -1550,7 +1557,9 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Terrain
 
-??? example  "Grants 500 Gold to the first civilization to discover it"
+??? example  "Grants [stats] to the first civilization to discover it"
+	Example: "Grants [+1 Gold, +2 Production] to the first civilization to discover it"
+
 	Applicable to: Terrain
 
 ??? example  "Units ending their turn on this terrain take [amount] damage"
@@ -2236,6 +2245,31 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Conditional
 
+??? example  "&lt;when number of [countable] is equal to [countable]&gt;"
+	Example: "&lt;when number of [1000] is equal to [1000]&gt;"
+
+	Applicable to: Conditional
+
+??? example  "&lt;when number of [countable] is different than [countable]&gt;"
+	Example: "&lt;when number of [1000] is different than [1000]&gt;"
+
+	Applicable to: Conditional
+
+??? example  "&lt;when number of [countable] is greater than [countable]&gt;"
+	Example: "&lt;when number of [1000] is greater than [1000]&gt;"
+
+	Applicable to: Conditional
+
+??? example  "&lt;when number of [countable] is less than [countable]&gt;"
+	Example: "&lt;when number of [1000] is less than [1000]&gt;"
+
+	Applicable to: Conditional
+
+??? example  "&lt;when number of [countable] is between [countable] and [countable]&gt;"
+	Example: "&lt;when number of [1000] is between [1000] and [1000]&gt;"
+
+	Applicable to: Conditional
+
 ## TriggerCondition uniques
 !!! note ""
 
@@ -2373,6 +2407,12 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: UnitActionModifier
 
+??? example  "&lt;costs [amount] [stockpiledResource]&gt;"
+	A positive Integer value will be subtracted from your stock.
+	Example: "&lt;costs [3] [StockpiledResource]&gt;"
+
+	Applicable to: UnitActionModifier
+
 ??? example  "&lt;once&gt;"
 	Applicable to: UnitActionModifier
 
@@ -2406,6 +2446,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 *[civWideStat]: All the following stats have civ-wide fields: `Gold`, `Science`, `Culture`, `Faith`.
 *[combatantFilter]: This indicates a combatant, which can either be a unit or a city (when bombarding). Must either be `City` or a `mapUnitFilter`.
 *[costOrStrength]: `Cost` or `Strength`.
+*[countable]: This indicate a number or a numeric variable.
 *[era]: The name of any era.
 *[event]: The name of any event.
 *[foundingOrEnhancing]: `founding` or `enhancing`.

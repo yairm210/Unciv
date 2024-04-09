@@ -121,7 +121,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
 
         if (civInfo.isCityState())
             productionCost *= 1.5f
-        if (civInfo.isHuman()) {
+        else if (civInfo.isHuman()) {
             if (!isWonder)
                 productionCost *= civInfo.getDifficulty().buildingCostModifier
         } else {
@@ -259,7 +259,6 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
             if (unique.type != UniqueType.OnlyAvailable && unique.type != UniqueType.CanOnlyBeBuiltWhen &&
                 !unique.conditionalsApply(StateForConditionals(civ, cityConstructions.city))) continue
 
-            @Suppress("NON_EXHAUSTIVE_WHEN")
             when (unique.type) {
                 // for buildings that are created as side effects of other things, and not directly built,
                 // or for buildings that can only be bought
@@ -550,6 +549,10 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
             _getImprovementToCreate = ruleset.tileImprovements[improvementUnique.params[0]]
         }
         return _getImprovementToCreate
+    }
+    fun getImprovementToCreate(ruleset: Ruleset, civInfo: Civilization): TileImprovement? {
+        val improvement = getImprovementToCreate(ruleset) ?: return null
+        return civInfo.getEquivalentTileImprovement(improvement)
     }
 
     fun isSellable() = !isAnyWonder() && !hasUnique(UniqueType.Unsellable)

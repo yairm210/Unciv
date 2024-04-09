@@ -275,7 +275,7 @@ object Automation {
     ): Boolean {
         if (construction !is Building) return true
         if (!construction.hasCreateOneImprovementUnique()) return true  // redundant but faster???
-        val improvement = construction.getImprovementToCreate(city.getRuleset()) ?: return true
+        val improvement = construction.getImprovementToCreate(city.getRuleset(), civInfo) ?: return true
         return city.getTiles().any {
             it.improvementFunctions.canBuildImprovement(improvement, civInfo)
         }
@@ -464,7 +464,8 @@ object Automation {
                     stats.gold
                 else
                     stats.gold / 3 // 3 gold is much worse than 2 production
-        rank += stats.happiness * 3
+
+        rank += stats.happiness
         rank += stats.production
         rank += stats.science
         rank += stats.culture

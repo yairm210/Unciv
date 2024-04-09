@@ -4,6 +4,7 @@ import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
+import com.unciv.logic.civilization.Notification
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.civilization.PlayerType
@@ -13,11 +14,13 @@ import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.tile.ResourceSupplyList
 import com.unciv.models.ruleset.tile.ResourceType
+import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
+import com.unciv.models.stats.Stats
 import com.unciv.utils.DebugUtils
 
 /** CivInfo class was getting too crowded */
@@ -32,6 +35,9 @@ class CivInfoTransientCache(val civInfo: Civilization) {
     /** Easy way to look up a Civilization's unique units and buildings */
     @Transient
     val uniqueUnits = hashSetOf<BaseUnit>()
+
+    @Transient
+    val uniqueImprovements = hashSetOf<TileImprovement>()
 
     @Transient
     val uniqueBuildings = hashSetOf<Building>()
@@ -61,6 +67,10 @@ class CivInfoTransientCache(val civInfo: Civilization) {
                 uniqueBuildings.add(building)
             }
         }
+
+        for (improvement in ruleset.tileImprovements.values)
+            if (improvement.uniqueTo == civInfo.civName)
+                uniqueImprovements.add(improvement)
 
         for (unit in ruleset.units.values) {
             if (unit.uniqueTo == civInfo.civName) {
@@ -215,23 +225,72 @@ class CivInfoTransientCache(val civInfo: Civilization) {
             civInfo.addNotification("We have discovered [${tile.naturalWonder}]!",
                 tile.position, NotificationCategory.General, "StatIcons/Happiness")
 
-            var goldGained = 0
+            val statsGained = Stats()
+
             val discoveredNaturalWonders = civInfo.gameInfo.civilizations.filter { it != civInfo && it.isMajorCiv() }
                     .flatMap { it.naturalWonders }
-            if (tile.terrainHasUnique(UniqueType.GrantsGoldToFirstToDiscover)
+            if (tile.terrainHasUnique(UniqueType.GrantsStatsToFirstToDiscover)
                     && !discoveredNaturalWonders.contains(tile.naturalWonder!!)) {
-                goldGained += 500
+
+                for (unique in tile.getTerrainMatchingUniques(UniqueType.GrantsStatsToFirstToDiscover)) {
+                    statsGained.add(unique.stats)
+                }
             }
 
-            if (civInfo.hasUnique(UniqueType.GoldWhenDiscoveringNaturalWonder)) {
-                goldGained += if (discoveredNaturalWonders.contains(tile.naturalWonder!!)) 100 else 500
+            for (unique in civInfo.getMatchingUniques(UniqueType.StatBonusWhenDiscoveringNaturalWonder)) {
+
+                val normalBonus = Stats.parse(unique.params[0])
+                val firstDiscoveredBonus = Stats.parse(unique.params[1])
+
+                if (discoveredNaturalWonders.contains(tile.naturalWonder!!))
+                    statsGained.add(normalBonus)
+                else
+                    statsGained.add(firstDiscoveredBonus)
+            }
+
+            // Variable for support of twooo deprecated uniques
+            var goldGained = 0
+
+            // Support for depreciated GoldWhenDiscoveringNaturalWonder unique
+            for (unique in civInfo.getMatchingUniques(UniqueType.GoldWhenDiscoveringNaturalWonder)) {
+
+                goldGained += if (discoveredNaturalWonders.contains(tile.naturalWonder!!)) {
+                    100
+                } else {
+                    500
+                }
+            }
+
+            // Support for depreciated GrantsGoldToFirstToDiscover unique
+            if (tile.terrainHasUnique(UniqueType.GrantsGoldToFirstToDiscover)
+                && !discoveredNaturalWonders.contains(tile.naturalWonder!!)) {
+
+                for (unique in tile.getTerrainMatchingUniques(UniqueType.GoldWhenDiscoveringNaturalWonder)) {
+                    goldGained += 500
+                }
+            }
+
+            var naturalWonder: String? = null
+
+            if (!statsGained.isEmpty()) {
+                naturalWonder = tile.naturalWonder!!
+            }
+
+            if (!statsGained.isEmpty() && naturalWonder != null) {
+                civInfo.addStats(statsGained)
+                civInfo.addNotification("We have received [${statsGained}] for discovering [${naturalWonder}]",
+                    Notification.NotificationCategory.General, statsGained.toString()
+                    )
             }
 
             if (goldGained > 0) {
+                naturalWonder = tile.naturalWonder
+            }
+
+            if (goldGained > 0 && naturalWonder != null) {
                 civInfo.addGold(goldGained)
-                civInfo.addNotification("We have received [$goldGained] Gold for discovering [${tile.naturalWonder}]",
-                    NotificationCategory.General, NotificationIcon.Gold
-                )
+                civInfo.addNotification("We have received [$goldGained] Gold for discovering [${naturalWonder}]",
+                    Notification.NotificationCategory.General, NotificationIcon.Gold)
             }
 
             for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponDiscoveringNaturalWonder,

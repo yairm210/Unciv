@@ -401,18 +401,20 @@ class RulesetValidator(val ruleset: Ruleset) {
         for (improvement in ruleset.tileImprovements.values) {
             if (improvement.techRequired != null && !ruleset.technologies.containsKey(improvement.techRequired!!))
                 lines.add("${improvement.name} requires tech ${improvement.techRequired} which does not exist!", sourceObject = improvement)
+            if (improvement.replaces != null && !ruleset.tileImprovements.containsKey(improvement.replaces))
+                lines.add("${improvement.name} replaces ${improvement.replaces} which does not exist!", sourceObject = improvement)
             for (terrain in improvement.terrainsCanBeBuiltOn)
                 if (!ruleset.terrains.containsKey(terrain) && terrain != "Land" && terrain != "Water")
                     lines.add("${improvement.name} can be built on terrain $terrain which does not exist!", sourceObject = improvement)
             if (improvement.terrainsCanBeBuiltOn.isEmpty()
                 && !improvement.hasUnique(UniqueType.CanOnlyImproveResource)
                 && !improvement.hasUnique(UniqueType.Unbuildable)
-                && !improvement.name.startsWith(Constants.remove)
+                && improvement !in ruleset.tileRemovals
                 && improvement.name !in RoadStatus.values().map { it.removeAction }
                 && improvement.name != Constants.cancelImprovementOrder
             ) {
                 lines.add(
-                    "${improvement.name} has an empty `terrainsCanBeBuiltOn`, isn't allowed to only improve resources and isn't unbuildable! Support for this will soon end. Either give this the unique \"Unbuildable\", \"Can only be built to improve a resource\" or add \"Land\", \"Water\" or any other value to `terrainsCanBeBuiltOn`.",
+                    "${improvement.name} has an empty `terrainsCanBeBuiltOn`, isn't allowed to only improve resources. As such it isn't buildable! Either give this the unique \"Unbuildable\", \"Can only be built to improve a resource\", or add \"Land\", \"Water\" or any other value to `terrainsCanBeBuiltOn`.",
                     RulesetErrorSeverity.Warning, improvement
                 )
             }

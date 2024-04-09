@@ -399,7 +399,7 @@ class WorkerAutomation(
             val removedObject = improvementName.replace(Constants.remove, "")
             val removedFeature = tile.terrainFeatures.firstOrNull { it == removedObject }
             val removedImprovement = if (removedObject == tile.improvement) removedObject else null
-            
+
             if (removedFeature != null || removedImprovement != null) {
                 val newTile = tile.clone()
                 newTile.setTerrainTransients()
@@ -570,37 +570,59 @@ class WorkerAutomation(
             && evaluateFortSurroundings(tile, isCitadel) > 0
     }
 
-    fun isImprovementProbablyAFort(improvementName:String): Boolean = isImprovementProbablyAFort(ruleSet.tileImprovements[improvementName]!!)
+    fun isImprovementProbablyAFort(improvementName: String): Boolean = isImprovementProbablyAFort(ruleSet.tileImprovements[improvementName]!!)
     fun isImprovementProbablyAFort(improvement: TileImprovement): Boolean = improvement.hasUnique(UniqueType.DefensiveBonus)
 
 
-    private fun hasWorkableSeaResource(tile: Tile, civInfo: Civilization): Boolean =
-        tile.isWater && tile.improvement == null && tile.hasViewableResource(civInfo)
-
     /** Try improving a Water Resource
      *
-     *  No logic to avoid capture by enemies yet!
+     *  todo: No logic to avoid capture by enemies yet!
      *
      *  @return Whether any progress was made (improved a tile or at least moved towards an opportunity)
      */
     fun automateWorkBoats(unit: MapUnit): Boolean {
         val closestReachableResource = unit.civ.cities.asSequence()
-            .flatMap { city -> city.getWorkableTiles() }
+            .flatMap { city -> city.getTiles() }
             .filter {
                 hasWorkableSeaResource(it, unit.civ)
                     && (unit.currentTile == it || unit.movement.canMoveTo(it))
             }
             .sortedBy { it.aerialDistanceTo(unit.currentTile) }
-            .firstOrNull { unit.movement.canReach(it) }
+            .firstOrNull { unit.movement.canReach(it) && isNotBonusResourceOrWorkable(it, unit.civ) }
             ?: return false
-
-        // could be either fishing boats or oil well
-        val isImprovable = closestReachableResource.tileResource.getImprovements().any()
-        if (!isImprovable) return false
 
         unit.movement.headTowards(closestReachableResource)
         if (unit.currentTile != closestReachableResource) return true // moving counts as progress
 
         return UnitActions.invokeUnitAction(unit, UnitActionType.CreateImprovement)
+    }
+
+    companion object {
+        // Static methods so they can be reused in ConstructionAutomation
+        /** Checks whether [tile] is water and has a resource [civInfo] can improve
+         *
+         *  Does check whether a matching improvement can currently be built (e.g. Oil before Refrigeration).
+         *  Can return `true` if there is an improvement that does not match the resource (for future modding abilities).
+         *  Does not check tile ownership - caller [automateWorkBoats] already did, other callers need to ensure this explicitly.
+         */
+        fun hasWorkableSeaResource(tile: Tile, civInfo: Civilization) = when {
+            !tile.isWater -> false
+            tile.resource == null -> false
+            tile.improvement != null && tile.tileResource.isImprovedBy(tile.improvement!!) -> false
+            !tile.hasViewableResource(civInfo) -> false
+            else -> tile.tileResource.getImprovements().any {
+                val improvement = civInfo.gameInfo.ruleset.tileImprovements[it]!!
+                tile.improvementFunctions.canBuildImprovement(improvement, civInfo)
+            }
+        }
+
+        /** Test whether improving the resource on [tile] benefits [civInfo] (yields or strategic or luxury)
+         *
+         *  Only tests resource type and city range, not any improvement requirements.
+         *  @throws NullPointerException on tiles without a resource
+         */
+        fun isNotBonusResourceOrWorkable(tile: Tile, civInfo: Civilization): Boolean =
+            tile.tileResource.resourceType != ResourceType.Bonus // Improve Oil even if no City reaps the yields
+                || civInfo.cities.any { it.tilesInRange.contains(tile) } // Improve Fish only if any of our Cities reaps the yields
     }
 }

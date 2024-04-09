@@ -11,6 +11,7 @@ import com.unciv.logic.civilization.PlayerType
 import com.unciv.models.metadata.BaseRuleset
 import com.unciv.models.metadata.GameParameters
 import com.unciv.models.metadata.Player
+import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.ruleset.nation.Nation
 import com.unciv.models.ruleset.unique.UniqueType
@@ -42,8 +43,10 @@ class GameOptionsTable(
     private val updatePlayerPickerRandomLabel: () -> Unit
 ) : Table(BaseScreen.skin) {
     var gameParameters = previousScreen.gameSetupInfo.gameParameters
-    val ruleset = previousScreen.ruleset
+    var ruleset = previousScreen.ruleset
     var locked = false
+
+    private var baseRulesetHash = gameParameters.baseRuleset.hashCode()
 
     /** Holds the UI for the Extension Mods
      *
@@ -69,6 +72,14 @@ class GameOptionsTable(
 
     fun update() {
         clear()
+
+        // Mods may have changed (e.g. custom map selection)
+        val newBaseRulesetHash = gameParameters.baseRuleset.hashCode()
+        if (newBaseRulesetHash != baseRulesetHash) {
+            baseRulesetHash = newBaseRulesetHash
+            modCheckboxes.setBaseRuleset(gameParameters.baseRuleset)
+        }
+        modCheckboxes.updateSelection()
 
         add(Table().apply {
             defaults().pad(5f)
@@ -428,6 +439,12 @@ class GameOptionsTable(
         add(victoryConditionsTable).colspan(2).row()
     }
 
+    fun updateRuleset(ruleset: Ruleset) {
+        this.ruleset = ruleset
+        gameParameters.acceptedModCheckErrors = ""
+        modCheckboxes.setBaseRuleset(gameParameters.baseRuleset)
+    }
+
     fun resetRuleset() {
         val rulesetName = BaseRuleset.Civ_V_GnK.fullName
         gameParameters.baseRuleset = rulesetName
@@ -444,6 +461,7 @@ class GameOptionsTable(
         ruleset.mods += gameParameters.baseRuleset
         ruleset.mods += gameParameters.mods
         ruleset.modOptions = newRuleset.modOptions
+        gameParameters.acceptedModCheckErrors = ""
 
         ImageGetter.setNewRuleset(ruleset)
         UncivGame.Current.musicController.setModList(gameParameters.getModsAndBaseRuleset())

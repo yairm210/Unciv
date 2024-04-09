@@ -47,6 +47,7 @@ class ModCheckboxTable(
     private var disableChangeEvents = false
 
     private val expanderPadTop = if (isPortrait) 0f else 16f
+    private val expanderPadOther = if (isPortrait) 0f else 10f
 
     init {
         val modRulesets = RulesetCache.values.filter {
@@ -65,6 +66,16 @@ class ModCheckboxTable(
         }
 
         setBaseRuleset(initialBaseRuleset)
+    }
+
+    fun updateSelection() {
+        savedModcheckResult = null
+        disableChangeEvents = true
+        for (mod in modWidgets) {
+            mod.widget.isChecked = mod.mod.name in mods
+        }
+        disableChangeEvents = false
+        deselectIncompatibleMods(null)
     }
 
     fun setBaseRuleset(newBaseRuleset: String) {
@@ -88,7 +99,7 @@ class ModCheckboxTable(
             for (mod in compatibleMods) {
                 it.add(mod.widget).row()
             }
-        }).pad(10f).padTop(expanderPadTop).growX().row()
+        }).pad(expanderPadOther).padTop(expanderPadTop).growX().row()
 
         disableIncompatibleMods()
 
@@ -103,6 +114,7 @@ class ModCheckboxTable(
         mods.clear()
         disableChangeEvents = false
 
+        savedModcheckResult = null
         disableIncompatibleMods()
         onUpdate("-")  // should match no mod
     }
@@ -176,11 +188,10 @@ class ModCheckboxTable(
 
     /** Deselect incompatible mods after [skipCheckBox] was selected.
      *
-     *  Note: Inactive - we don'n even allow a conflict to be turned on using [disableIncompatibleMods].
+     *  Note: Inactive - we don't even allow a conflict to be turned on using [disableIncompatibleMods].
      *  But if we want the alternative UX instead - use this in [checkBoxChanged] near `mods.add` and skip disabling...
      */
-    @Suppress("unused")
-    private fun deselectIncompatibleMods(skipCheckBox: CheckBox) {
+    private fun deselectIncompatibleMods(skipCheckBox: CheckBox?) {
         disableChangeEvents = true
         for (modWidget in modWidgets) {
             if (modWidget.widget == skipCheckBox) continue
@@ -189,7 +200,7 @@ class ModCheckboxTable(
                 mods.remove(modWidget.mod.name)
             }
         }
-        disableChangeEvents = true
+        disableChangeEvents = false
     }
 
     /** Disable incompatible mods - those that could not be turned on with the current selection */

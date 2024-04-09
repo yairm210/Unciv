@@ -20,6 +20,7 @@ enum class ImprovementBuildingProblem(
     /** `true` if the ImprovementPicker should report this problem */
     val reportable: Boolean = false
 ) {
+    Replaced(permanent = true),
     WrongCiv(permanent = true),
     MissingTech(reportable = true),
     Unbuildable(permanent = true),
@@ -45,6 +46,8 @@ class TileInfoImprovementFunctions(val tile: Tile) {
 
         if (improvement.uniqueTo != null && improvement.uniqueTo != civInfo.civName)
             yield(ImprovementBuildingProblem.WrongCiv)
+        if (civInfo.cache.uniqueImprovements.any { it.replaces == improvement.name })
+            yield(ImprovementBuildingProblem.Replaced)
         if (improvement.techRequired != null && !civInfo.tech.isResearched(improvement.techRequired!!))
             yield(ImprovementBuildingProblem.MissingTech)
         if (improvement.getMatchingUniques(UniqueType.Unbuildable, StateForConditionals.IgnoreConditionals)

@@ -109,12 +109,6 @@ object BattleDamage {
         if (strengthMalus != null) {
             modifiers.add("Adjacent enemy units", strengthMalus.params[0].toInt())
         }
-
-        // e.g., Mongolia - https://civilization.fandom.com/wiki/Mongolian_(Civ5)
-        if (enemy.getCivInfo().isCityState()
-            && civInfo.hasUnique(UniqueType.StrengthBonusVsCityStates)
-        )
-            modifiers["vs [City-States]"] = 30
     }
 
     private fun addResourceLackingMalus(combatant: MapUnitCombatant, modifiers: Counter<String>) {

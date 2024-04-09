@@ -633,4 +633,13 @@ class CityStats(val city: City) {
     }
 
     //endregion
+
+    fun getStatDifferenceFromBuilding(building: String): Stats {
+        val newCity = city.clone()
+        newCity.setTransients(city.civ)
+        newCity.cityConstructions.builtBuildings.add(building)
+        newCity.cityConstructions.setTransients()
+        newCity.cityStats.update(updateCivStats = false)
+        return newCity.cityStats.currentCityStats - currentCityStats
+    }
 }
