@@ -36,13 +36,13 @@ open class Policy : RulesetObject() {
     }
 
     fun matchesFilter(filter: String): Boolean {
-        return MultiFilter.multiFilter(filter, ::matchesSinlgeFilter)
+        return MultiFilter.multiFilter(filter, ::matchesSingleFilter)
     }
-    fun matchesSinlgeFilter(filter: String): Boolean {
+    fun matchesSingleFilter(filter: String): Boolean {
         return when(filter) {
             in Constants.all -> true
             name -> true
-            branch.name + "branch" -> true
+            "[${branch.name}] branch" -> true
             in uniques -> true
             else -> false
         }
