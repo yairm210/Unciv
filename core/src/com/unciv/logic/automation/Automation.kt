@@ -102,13 +102,7 @@ object Automation {
         }
 
         for (stat in Stat.values()) {
-            if (
-                stat == Stat.Culture && city.civ.wantsToFocusOn(Victory.Focus.Culture) ||
-                stat == Stat.Production && city.civ.wantsToFocusOn(Victory.Focus.Production) ||
-                stat == Stat.Science && city.civ.wantsToFocusOn(Victory.Focus.Science) ||
-                stat == Stat.Faith && city.civ.wantsToFocusOn(Victory.Focus.Faith) ||
-                stat == Stat.Gold && city.civ.wantsToFocusOn(Victory.Focus.Gold)
-            )
+            if (city.civ.wantsToFocusOn(stat))
                 yieldStats[stat] *= 2f
 
             yieldStats[stat] *= civPersonality.scaledFocus(PersonalityValue[stat])
