@@ -1,3 +1,21 @@
+## 4.11.3
+
+Cannot trade with civs you're at war with through notification action
+
+Remove city-state construction bonuses from difficulty
+
+By tuvus:
+- Espionage Uniques, Buildings and Policy 
+- Civs with spies in a foreign cities get some information 
+
+By SomeTroglodyte:
+- Fix "Connect road" through Mountains 
+- "New game" UI improvements 
+
+Implement Same-majority-religion diplomatic modifier  - By TommasoPetrolito (new contributor!)
+
+AI civilian units consider more triggerable uniques  - By woo1127
+
 ## 4.11.2
 
 Mod checker warns against deprecated conditionals

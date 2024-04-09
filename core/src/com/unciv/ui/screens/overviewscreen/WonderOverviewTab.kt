@@ -98,6 +98,7 @@ class WonderInfo {
     val gameInfo = UncivGame.Current.gameInfo!!
     val ruleSet = gameInfo.ruleset
     private val hideReligionItems = !gameInfo.isReligionEnabled()
+    private val hideEspionageItems = !gameInfo.isEspionageEnabled()
     private val startingObsolete = ruleSet.eras[gameInfo.gameParameters.startingEra]!!.startingObsoleteWonders
 
     enum class WonderStatus(val label: String) {
@@ -150,6 +151,7 @@ class WonderInfo {
     private fun shouldBeDisplayed(viewingPlayer: Civilization, wonder: Building, wonderEra: Int?) = when {
         wonder.hasUnique(UniqueType.HiddenFromCivilopedia) -> false
         wonder.hasUnique(UniqueType.HiddenWithoutReligion) && hideReligionItems -> false
+        wonder.hasUnique(UniqueType.HiddenWithoutEspionage) && hideEspionageItems -> false
         wonder.name in startingObsolete -> false
         wonder.getMatchingUniques(UniqueType.HiddenWithoutVictoryType)
             .any { unique ->

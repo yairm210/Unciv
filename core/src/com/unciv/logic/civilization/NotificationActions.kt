@@ -96,7 +96,7 @@ class DiplomacyAction(
 
         if (showTrade && currentCiv.isAtWarWith(otherCiv))
             showTrade = false  // Can't trade right now
-        
+
         worldScreen.game.pushScreen(DiplomacyScreen(currentCiv, otherCiv, showTrade = showTrade))
     }
 }

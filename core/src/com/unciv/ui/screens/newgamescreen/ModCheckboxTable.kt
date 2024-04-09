@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener
+import com.unciv.models.metadata.GameParameters
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.ruleset.validation.ModCompatibility
@@ -18,14 +19,14 @@ import com.unciv.ui.screens.basescreen.BaseScreen
  * A widget containing one expander for extension mods.
  * Manages compatibility checks, warns or prevents incompatibilities.
  *
- * @param mods In/out set of active mods, modified in place
+ * @param mods **Reference**: In/out set of active mods, modified in place: If this needs to change, call [changeGameParameters]
  * @param initialBaseRuleset The selected base Ruleset, only for running mod checks against. Use [setBaseRuleset] to change on the fly.
  * @param screen Parent screen, used only to show [ToastPopup]s
  * @param isPortrait Used only for minor layout tweaks, arrangement is always vertical
  * @param onUpdate Callback, parameter is the mod name, called after any checks that may prevent mod selection succeed.
  */
 class ModCheckboxTable(
-    private val mods: LinkedHashSet<String>,
+    private var mods: LinkedHashSet<String>,
     initialBaseRuleset: String,
     private val screen: BaseScreen,
     isPortrait: Boolean = false,
@@ -217,4 +218,8 @@ class ModCheckboxTable(
              .filter { it.widget.isChecked }
              .map { it.mod }
              .asIterable()
+
+    fun changeGameParameters(newGameParameters: GameParameters) {
+        mods = newGameParameters.mods
+    }
 }

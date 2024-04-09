@@ -102,6 +102,7 @@ enum class DiplomaticModifiers(val text: String) {
     GaveUsUnits("You gave us units!"),
     GaveUsGifts("We appreciate your gifts"),
     ReturnedCapturedUnits("You returned captured units to us"),
+    BelieveSameReligion("We believe in the same religion"),
 
 }
 
@@ -274,6 +275,14 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
             opinion >= 15 -> RelationshipLevel.Favorable
             else -> RelationshipLevel.Neutral
         }
+    }
+
+    private fun believesSameReligion(): Boolean {
+        // what is the majorityReligion of civInfo? If it is null, we immediately return false
+        val civMajorityReligion = civInfo.religionManager.getMajorityReligion() ?: return false
+        // if not yet returned false from previous line, return the Boolean isMajorityReligionForCiv
+        // true if majorityReligion of civInfo is also majorityReligion of otherCiv, false otherwise
+        return otherCiv().religionManager.isMajorityReligionForCiv(civMajorityReligion)
     }
 
     /** Returns the number of turns to degrade from Ally or from Friend */
@@ -587,6 +596,14 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
         }
     }
 
+    internal fun setReligionBasedModifier() {
+        if (civInfo.getDiplomacyManager(otherCiv()).believesSameReligion())
+            // they share same majority religion
+            setModifier(DiplomaticModifiers.BelieveSameReligion, 5f)
+        else
+            // their majority religions differ or one or both don't have a majority religion at all
+            removeModifier(DiplomaticModifiers.BelieveSameReligion)
+    }
 
     fun denounce() {
         setModifier(DiplomaticModifiers.Denunciation, -35f)
