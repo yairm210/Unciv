@@ -59,7 +59,7 @@ class AutoPlayMenu(
     }
 
     private fun autoPlay() {
-        worldScreen.autoPlay.startAutoPlay()
+        worldScreen.autoPlay.startMultiturnAutoPlay()
         nextTurnButton.update()
     }
 

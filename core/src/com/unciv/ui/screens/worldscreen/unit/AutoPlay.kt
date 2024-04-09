@@ -4,24 +4,30 @@ import com.unciv.models.metadata.GameSettings
 
 class AutoPlay(private var autoPlaySettings: GameSettings.GameSettingsAutoPlay) {
     var turnsToAutoPlay: Int = 0
-    var autoPlaying: Boolean = false
     var autoPlayTurnInProgress: Boolean = false
 
-    fun startAutoPlay() {
-        autoPlaying = true
+    fun startMultiturnAutoPlay() {
+        autoPlayTurnInProgress = false
         turnsToAutoPlay = autoPlaySettings.autoPlayMaxTurns
     }
 
+    /**
+     * Processes the end of the user's turn being AutoPlayed
+     */
+    fun endTurnMultiturnAutoPlay() {
+        if (!autoPlaySettings.autoPlayUntilEnd)
+            turnsToAutoPlay--
+    }
+
     fun stopAutoPlay() {
-        autoPlaying = false
         turnsToAutoPlay = 0
         autoPlayTurnInProgress = false
     }
 
-    fun isAutoPlaying(): Boolean = autoPlaying
+    fun isAutoPlaying(): Boolean = turnsToAutoPlay > 0 || autoPlayTurnInProgress
 
     fun fullAutoPlayAI(): Boolean = isAutoPlaying() && autoPlaySettings.fullAutoPlayAI
 
-    fun shouldContinueAutoPlaying(): Boolean = isAutoPlaying() && !autoPlayTurnInProgress && (turnsToAutoPlay > 0 || autoPlaySettings.autoPlayUntilEnd)
+    fun shouldContinueAutoPlaying(): Boolean = isAutoPlaying() && !autoPlayTurnInProgress && turnsToAutoPlay > 0
 }
 

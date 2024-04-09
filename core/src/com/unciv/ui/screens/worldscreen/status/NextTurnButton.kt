@@ -34,15 +34,15 @@ class NextTurnButton(
     fun update() {
         nextTurnAction = getNextTurnAction(worldScreen)
         updateButton(nextTurnAction)
-        if (worldScreen.autoPlay.shouldContinueAutoPlaying() && worldScreen.isPlayersTurn
+        val autoPlay = worldScreen.autoPlay
+        if (autoPlay.shouldContinueAutoPlaying() && worldScreen.isPlayersTurn
             && !worldScreen.waitingForAutosave && !worldScreen.isNextTurnUpdateRunning()) {
-            worldScreen.autoPlay.autoPlayTurnInProgress = true
-            if (!GUI.getSettings().autoPlay.autoPlayUntilEnd)
-                worldScreen.autoPlay.turnsToAutoPlay--
+            autoPlay.autoPlayTurnInProgress = true
+            autoPlay.endTurnMultiturnAutoPlay()
             Concurrency.runOnNonDaemonThreadPool("AutoPlay") {
                 TurnManager(worldScreen.viewingCiv).automateTurn()
                 worldScreen.nextTurn()
-                worldScreen.autoPlay.autoPlayTurnInProgress = false
+                autoPlay.autoPlayTurnInProgress = false
             }
         }
 
