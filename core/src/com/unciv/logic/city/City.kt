@@ -373,11 +373,11 @@ class City : IsPartOfGameInfoSerialization {
 
     internal fun tryUpdateRoadStatus() {
         if (getCenterTile().roadStatus == RoadStatus.None) {
-            val roadImprovement = RoadStatus.Road.improvement(getRuleset())
+            val roadImprovement = getRuleset().roadImprovement
             if (roadImprovement != null && roadImprovement.techRequired in civ.tech.techsResearched)
                 getCenterTile().roadStatus = RoadStatus.Road
         } else if (getCenterTile().roadStatus != RoadStatus.Railroad) {
-            val railroadImprovement = RoadStatus.Railroad.improvement(getRuleset())
+            val railroadImprovement = getRuleset().railroadImprovement
             if (railroadImprovement != null && railroadImprovement.techRequired in civ.tech.techsResearched)
                 getCenterTile().roadStatus = RoadStatus.Railroad
         }

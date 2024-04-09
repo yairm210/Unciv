@@ -131,7 +131,7 @@ class CityStats(val city: City) {
 
     private fun getStatPercentBonusesFromRailroad(): Stats {
         val stats = Stats()
-        val railroadImprovement = RoadStatus.Railroad.improvement(city.getRuleset())
+        val railroadImprovement = city.getRuleset().railroadImprovement
             ?: return stats // for mods
         val techEnablingRailroad = railroadImprovement.techRequired
         // If we conquered enemy cities connected by railroad, but we don't yet have that tech,
