@@ -1,26 +1,20 @@
 ## 4.11.3
 
-Cannot trade screen for civs you're at war with through notification action
-
-docs: Info regarding triggerable uniques
+Cannot trade with civs you're at war with through notification action
 
 Remove city-state construction bonuses from difficulty
 
-Fix untranslateables
-
 By tuvus:
 - Espionage Uniques, Buildings and Policy 
-- Civs with a spy set up in a foreign city can view some information 
+- Civs with spies in a foreign cities get some information 
 
 By SomeTroglodyte:
-- Fix "Connect road" going through Mountains 
-- New game and custom/mod maps UI update and sync fixes 
+- Fix "Connect road" through Mountains 
+- "New game" UI improvements 
 
-Allow players to close the policy screen with free policies  - By SeventhM
+Implement Same-majority-religion diplomatic modifier  - By TommasoPetrolito (new contributor!)
 
-Implement Same-majority-religion-based diplomatic modifier  - By TommasoPetrolito
-
-Allow AI civilian unit to consider other triggerable uniques  - By woo1127
+AI civilian units consider more triggerable uniques  - By woo1127
 
 ## 4.11.2
 
