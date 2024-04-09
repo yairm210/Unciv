@@ -5,8 +5,11 @@ import com.unciv.logic.civilization.managers.ReligionState
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.UnitActionType
+import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unique.UniqueType
+import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionModifiers
 import com.unciv.ui.screens.worldscreen.unit.actions.UnitActions
+import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionsFromUniques
 
 object CivilianUnitAutomation {
 
@@ -76,9 +79,13 @@ object CivilianUnitAutomation {
 
         val isLateGame = isLateGame(unit.civ)
         // Great scientist -> Hurry research if late game
+        // Great writer -> Hurry policy  if late game
         if (isLateGame) {
             val hurriedResearch = UnitActions.invokeUnitAction(unit, UnitActionType.HurryResearch)
             if (hurriedResearch) return
+
+            val hurriedPolicy = UnitActions.invokeUnitAction(unit, UnitActionType.HurryPolicy)
+            if (hurriedPolicy) return
         }
 
         // Great merchant -> Conduct trade mission if late game and if not at war.
@@ -105,7 +112,6 @@ object CivilianUnitAutomation {
                 return
         }
 
-
         // This has to come after the individual abilities for the great people that can also place
         // instant improvements (e.g. great scientist).
         if (unit.hasUnique(UniqueType.ConstructImprovementInstantly)) {
@@ -115,6 +121,29 @@ object CivilianUnitAutomation {
                 SpecificUnitAutomation.automateImprovementPlacer(unit)
             if (!improvementCanBePlacedEventually)
                 UnitActions.invokeUnitAction(unit, UnitActionType.StartGoldenAge)
+        }
+
+        if (unit.hasUnique(UniqueType.GainFreeBuildings)) {
+            val unique = unit.getMatchingUniques(UniqueType.GainFreeBuildings).first()
+            val buildingName = unique.params[0]
+            // Choose the city that is closest in distance and does not have the building constructed.
+            val cityToGainBuilding = unit.civ.cities.filter {
+                !it.cityConstructions.containsBuildingOrEquivalent(buildingName)
+                    && (unit.movement.canMoveTo(it.getCenterTile()) || unit.currentTile == it.getCenterTile())
+            }.minByOrNull {
+                val path = unit.movement.getShortestPath(it.getCenterTile())
+                path.size
+            }
+
+            if (cityToGainBuilding != null) {
+                if (unit.currentTile == cityToGainBuilding.getCenterTile()) {
+                    UniqueTriggerActivation.triggerUnique(unique, unit.civ, unit = unit, tile = unit.currentTile)
+                    UnitActionModifiers.activateSideEffects(unit, unique)
+                    return
+                }
+                else unit.movement.headTowards(cityToGainBuilding.getCenterTile())
+            }
+            return
         }
 
         // TODO: The AI tends to have a lot of great generals. Maybe there should be a cutoff
