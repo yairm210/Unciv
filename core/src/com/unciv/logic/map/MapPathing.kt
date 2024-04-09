@@ -39,7 +39,7 @@ object MapPathing {
             && !tile.isImpassible()
             && unit.civ.hasExplored(tile)
             && tile.canCivPassThrough(unit.civ)
-            && tile.hasRoadConnection(unit.civ, true) || tile.improvementFunctions.canBuildImprovement(roadImprovement, unit.civ)
+            && (tile.hasRoadConnection(unit.civ, true) || tile.improvementFunctions.canBuildImprovement(roadImprovement, unit.civ))
     }
 
     /**
