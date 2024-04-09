@@ -110,6 +110,7 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
         addDefenceBuildingChoice()
         addUnitTrainingBuildingChoice()
         addOtherBuildingChoice()
+        addAllStatChoice()
 
         if (!city.isPuppet) {
             addSpaceshipPartChoice()
