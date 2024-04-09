@@ -178,9 +178,6 @@ class PolicyPickerScreen(
 
         setDefaultCloseAction()
 
-        if (viewingCiv.isCurrentPlayer() && policies.freePolicies > 0 && policies.canAdoptPolicy())
-            closeButton.disable()
-
         rightSideButton.onClick(UncivSound.Policy) {
             confirmAction()
         }
