@@ -144,6 +144,12 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Triggerable
 
+??? example  "Promotes all spies"
+	Applicable to: Triggerable
+
+??? example  "Gain an extra spy"
+	Applicable to: Triggerable
+
 ??? example  "Turn this tile into a [terrainName] tile"
 	Example: "Turn this tile into a [Forest] tile"
 
@@ -758,6 +764,16 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Global
 
+??? example  "[relativeAmount]% spy effectiveness [cityFilter]"
+	Example: "[+20]% spy effectiveness [in all cities]"
+
+	Applicable to: Global
+
+??? example  "[relativeAmount]% enemy spy effectiveness [cityFilter]"
+	Example: "[+20]% enemy spy effectiveness [in all cities]"
+
+	Applicable to: Global
+
 ??? example  "Triggers victory"
 	Applicable to: Global
 
@@ -1175,6 +1191,9 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 ??? example  "Hidden when religion is disabled"
 	Applicable to: Building, Unit, Ruins, Tutorial
+
+??? example  "Hidden when espionage is disabled"
+	Applicable to: Building
 
 ??? example  "Hidden when [victoryType] Victory is disabled"
 	Example: "Hidden when [Domination] Victory is disabled"

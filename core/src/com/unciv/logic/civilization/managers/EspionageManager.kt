@@ -41,12 +41,12 @@ class EspionageManager : IsPartOfGameInfoSerialization {
         return validSpyNames.random()
     }
 
-    fun addSpy(): String {
+    fun addSpy(): Spy {
         val spyName = getSpyName()
         val newSpy = Spy(spyName)
         newSpy.setTransients(civInfo)
         spyList.add(newSpy)
-        return spyName
+        return newSpy
     }
 
     fun getTilesVisibleViaSpies(): Sequence<Tile> {
