@@ -22,12 +22,13 @@ class BaseUnitCost(val baseUnit: BaseUnit) {
         for (unique in baseUnit.getMatchingUniques(UniqueType.CostPercentageChange, stateForConditionals))
             productionCost *= unique.params[0].toPercent()
 
-        if (civInfo.isCityState())
-            productionCost *= 1.5f
-        productionCost *= if (civInfo.isHuman())
+        productionCost *= if (civInfo.isCityState())
+            1.5f
+        else if (civInfo.isHuman())
             civInfo.getDifficulty().unitCostModifier
         else
             civInfo.gameInfo.getDifficulty().aiUnitCostModifier
+
         productionCost *= civInfo.gameInfo.speed.productionCostModifier
         return productionCost.toInt()
     }

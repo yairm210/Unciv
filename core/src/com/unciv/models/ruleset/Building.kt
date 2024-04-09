@@ -121,7 +121,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
 
         if (civInfo.isCityState())
             productionCost *= 1.5f
-        if (civInfo.isHuman()) {
+        else if (civInfo.isHuman()) {
             if (!isWonder)
                 productionCost *= civInfo.getDifficulty().buildingCostModifier
         } else {
@@ -259,7 +259,6 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
             if (unique.type != UniqueType.OnlyAvailable && unique.type != UniqueType.CanOnlyBeBuiltWhen &&
                 !unique.conditionalsApply(StateForConditionals(civ, cityConstructions.city))) continue
 
-            @Suppress("NON_EXHAUSTIVE_WHEN")
             when (unique.type) {
                 // for buildings that are created as side effects of other things, and not directly built,
                 // or for buildings that can only be bought
@@ -314,6 +313,10 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
 
                 UniqueType.HiddenWithoutReligion ->
                     if (!civ.gameInfo.isReligionEnabled())
+                        yield(RejectionReasonType.DisabledBySetting.toInstance())
+
+                UniqueType.HiddenWithoutEspionage ->
+                    if (!civ.gameInfo.isEspionageEnabled())
                         yield(RejectionReasonType.DisabledBySetting.toInstance())
 
                 UniqueType.MaxNumberBuildable ->

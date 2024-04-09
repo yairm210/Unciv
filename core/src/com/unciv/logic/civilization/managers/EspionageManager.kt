@@ -41,12 +41,12 @@ class EspionageManager : IsPartOfGameInfoSerialization {
         return validSpyNames.random()
     }
 
-    fun addSpy(): String {
+    fun addSpy(): Spy {
         val spyName = getSpyName()
         val newSpy = Spy(spyName)
         newSpy.setTransients(civInfo)
         spyList.add(newSpy)
-        return spyName
+        return newSpy
     }
 
     fun getTilesVisibleViaSpies(): Sequence<Tile> {
@@ -69,6 +69,12 @@ class EspionageManager : IsPartOfGameInfoSerialization {
     fun getSpiesInCity(city: City): MutableList<Spy> {
         return spyList.filter { it.getLocation() == city }.toMutableList()
     }
+
+    /**
+     * Returns a list of all cities with our spies in them.
+     * The list needs to be stable accross calls on the same turn.
+     */
+    fun getCitiesWithOurSpies(): List<City> = spyList.filter { it.isSetUp() }.mapNotNull { it.getLocation() }
 
     fun getSpyAssignedToCity(city: City): Spy? = spyList.firstOrNull {it.getLocation() == city}
 }

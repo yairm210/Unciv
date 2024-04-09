@@ -42,9 +42,9 @@ class GameOptionsTable(
     private val updatePlayerPickerTable: (desiredCiv: String) -> Unit,
     private val updatePlayerPickerRandomLabel: () -> Unit
 ) : Table(BaseScreen.skin) {
-    var gameParameters = previousScreen.gameSetupInfo.gameParameters
-    var ruleset = previousScreen.ruleset
-    var locked = false
+    private var gameParameters = previousScreen.gameSetupInfo.gameParameters
+    private var ruleset = previousScreen.ruleset
+    internal var locked = false
 
     private var baseRulesetHash = gameParameters.baseRuleset.hashCode()
 
@@ -56,7 +56,7 @@ class GameOptionsTable(
      *
      *  The second reason this is public: [NewGameScreen] accesses [ModCheckboxTable.savedModcheckResult] for display.
      */
-    val modCheckboxes = getModCheckboxes(isPortrait = isPortrait)
+    internal val modCheckboxes = getModCheckboxes(isPortrait = isPortrait)
 
     // Remember this so we can unselect it when the pool dialog returns an empty pool
     private var randomNationsPoolCheckbox: CheckBox? = null
@@ -74,12 +74,12 @@ class GameOptionsTable(
         clear()
 
         // Mods may have changed (e.g. custom map selection)
+        modCheckboxes.updateSelection()
         val newBaseRulesetHash = gameParameters.baseRuleset.hashCode()
         if (newBaseRulesetHash != baseRulesetHash) {
             baseRulesetHash = newBaseRulesetHash
             modCheckboxes.setBaseRuleset(gameParameters.baseRuleset)
         }
-        modCheckboxes.updateSelection()
 
         add(Table().apply {
             defaults().pad(5f)
@@ -442,6 +442,7 @@ class GameOptionsTable(
     fun updateRuleset(ruleset: Ruleset) {
         this.ruleset = ruleset
         gameParameters.acceptedModCheckErrors = ""
+        modCheckboxes.updateSelection()
         modCheckboxes.setBaseRuleset(gameParameters.baseRuleset)
     }
 
@@ -492,6 +493,11 @@ class GameOptionsTable(
         }
 
         updatePlayerPickerTable(desiredCiv)
+    }
+
+    fun changeGameParameters(newGameParameters: GameParameters) {
+        gameParameters = newGameParameters
+        modCheckboxes.changeGameParameters(newGameParameters)
     }
 }
 

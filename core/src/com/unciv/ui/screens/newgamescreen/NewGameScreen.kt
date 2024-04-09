@@ -41,9 +41,9 @@ import com.unciv.ui.screens.pickerscreens.PickerScreen
 import com.unciv.utils.Concurrency
 import com.unciv.utils.Log
 import com.unciv.utils.launchOnGLThread
-import kotlinx.coroutines.coroutineScope
 import java.net.URL
 import java.util.UUID
+import kotlinx.coroutines.coroutineScope
 import kotlin.math.floor
 import com.unciv.ui.components.widgets.AutoScrollPane as ScrollPane
 
@@ -55,7 +55,7 @@ class NewGameScreen(
     override var gameSetupInfo = defaultGameSetupInfo ?: GameSetupInfo.fromSettings()
     override val ruleset = Ruleset()  // updateRuleset will clear and add
     private val newGameOptionsTable: GameOptionsTable
-    private val playerPickerTable: PlayerPickerTable
+    internal val playerPickerTable: PlayerPickerTable
     private val mapOptionsTable: MapOptionsTable
 
     init {
@@ -406,7 +406,7 @@ class NewGameScreen(
     fun updateTables() {
         playerPickerTable.gameParameters = gameSetupInfo.gameParameters
         playerPickerTable.update()
-        newGameOptionsTable.gameParameters = gameSetupInfo.gameParameters
+        newGameOptionsTable.changeGameParameters(gameSetupInfo.gameParameters)
         newGameOptionsTable.update()
     }
 
