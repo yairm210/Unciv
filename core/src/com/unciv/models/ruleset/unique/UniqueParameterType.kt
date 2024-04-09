@@ -607,6 +607,25 @@ enum class UniqueParameterType(
         }
     },
 
+    /** Implemtented by [com.unciv.models.ruleset.Policy.matchesFilter] */
+    PolicyFilter("policyFilter", "Oligarchy", "The name of any policy") {
+        private val knownValues = Constants.all
+
+        override fun isKnownValue(parameterText: String, ruleset: Ruleset): Boolean {
+            if (parameterText in knownValues) return true
+            if (parameterText in ruleset.policies) return true
+            if (ruleset.policies.values.any { it.hasUnique(parameterText) }) return true
+            return false
+        }
+
+        override fun getErrorSeverity(
+            parameterText: String,
+            ruleset: Ruleset
+        ): UniqueType.UniqueParameterErrorSeverity? {
+            return getErrorSeverityForFilter(parameterText, ruleset)
+        }
+    },
+
     /** Used by [UniqueType.HiddenWithoutVictoryType], implementation in Civilopedia and OverviewScreen */
     VictoryT("victoryType", "Domination", "The name of any victory type: 'Neutral', 'Cultural', 'Diplomatic', 'Domination', 'Scientific', 'Time'") {
         override fun getErrorSeverity(
