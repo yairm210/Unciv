@@ -291,6 +291,8 @@ object DiplomacyTurnManager {
 
         setDefensivePactBasedModifier()
 
+        setReligionBasedModifier()
+
         if (!hasFlag(DiplomacyFlags.DeclarationOfFriendship))
             revertToZero(DiplomaticModifiers.DeclarationOfFriendship, 1 / 2f) //decreases slowly and will revert to full if it is declared later
 
