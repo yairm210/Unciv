@@ -49,6 +49,7 @@ class MapFileSelectTable(
     private val useNationsFromMapButton = "Select players from starting locations".toTextButton(AnimatedMenuPopup.SmallButtonStyle())
     private val useNationsButtonCell: Cell<Actor?>
     private var mapNations = emptyList<Nation>()
+    private var mapHumanPick: String? = null
     private val miniMapWrapper = Container<Group?>()
     private var mapPreviewJob: Job? = null
     private var preselectedName = mapParameters.name
@@ -227,12 +228,18 @@ class MapFileSelectTable(
             ?: selection.mapPreview.mapParameters.baseRuleset
         val success = newGameScreen.tryUpdateRuleset(updateUI = true)
 
-        mapNations = if (success)
-                selection.mapPreview.getDeclaredNations()
+        if (success) {
+            mapNations = selection.mapPreview.getDeclaredNations()
                 .mapNotNull { newGameScreen.ruleset.nations[it] }
                 .filter { it.isMajorCiv }
                 .toList()
-            else emptyList()
+            mapHumanPick = selection.mapPreview.getNationsForHumanPlayer()
+                .filter { newGameScreen.ruleset.nations[it]?.isMajorCiv == true }
+                .toList().randomOrNull()
+        } else {
+            mapNations = emptyList()
+            mapHumanPick = null
+        }
 
         if (mapNations.isEmpty()) {
             useNationsButtonCell.setActor(null)
@@ -321,13 +328,12 @@ class MapFileSelectTable(
         useNationsFromMapButton.disable()
         val players = newGameScreen.playerPickerTable.gameParameters.players
         players.clear()
-        val pickForHuman = mapNations.random().name
         mapNations.asSequence()
             .map { it.name to it.name.tr(hideIcons = true) } // Sort by translation but keep untranslated name
             .sortedWith(
-                compareBy<Pair<String, String>>{ it.first != pickForHuman }
+                compareBy<Pair<String, String>>{ it.first != mapHumanPick }
                 .thenBy(collator) { it.second }
-            ).map { Player(it.first, if (it.first == pickForHuman) PlayerType.Human else PlayerType.AI) }
+            ).map { Player(it.first, if (it.first == mapHumanPick) PlayerType.Human else PlayerType.AI) }
             .toCollection(players)
         newGameScreen.playerPickerTable.update()
     }

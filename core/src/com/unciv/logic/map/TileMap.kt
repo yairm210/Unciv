@@ -39,11 +39,26 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
      * @param position [Vector2] of the location
      * @param nation Name of the nation
      */
-    private data class StartingLocation(
+    data class StartingLocation(
         val position: Vector2 = Vector2.Zero,
-        val nation: String = ""
-    ) : IsPartOfGameInfoSerialization
-    private val startingLocations = arrayListOf<StartingLocation>()
+        val nation: String = "",
+        val usage: Usage = Usage.default // default for maps saved pior to this feature
+    ) : IsPartOfGameInfoSerialization {
+        /** How a starting location may be used when the map is loaded for a new game */
+        enum class Usage(val label: String) {
+            /** Starting location only */
+            Normal("None"),
+            /** Use for "Select players from starting locations" */
+            Player("Player"),
+            /** Use as first Human player */
+            Human("Human")
+            ;
+            companion object {
+                val default get() = Player
+            }
+        }
+    }
+    val startingLocations = arrayListOf<StartingLocation>()
 
     //endregion
     //region Fields, Transient
@@ -636,10 +651,16 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
     }
 
     /** Adds a starting position, maintaining the transients
+     *
+     * Note: Will not replace an existing StartingLocation to update its [usage]
      * @return true if the starting position was not already stored as per [Collection]'s add */
-    fun addStartingLocation(nationName: String, tile: Tile): Boolean {
+    fun addStartingLocation(
+        nationName: String,
+        tile: Tile,
+        usage: StartingLocation.Usage = StartingLocation.Usage.Player
+    ): Boolean {
         if (startingLocationsByNation.contains(nationName, tile)) return false
-        startingLocations.add(StartingLocation(tile.position, nationName))
+        startingLocations.add(StartingLocation(tile.position, nationName, usage))
         return startingLocationsByNation.addToMapOfSets(nationName, tile)
     }
 
@@ -728,6 +749,13 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
     class Preview {
         val mapParameters = MapParameters()
         private val startingLocations = arrayListOf<StartingLocation>()
-        fun getDeclaredNations() = startingLocations.asSequence().map { it.nation }.distinct()
+        fun getDeclaredNations() = startingLocations.asSequence()
+            .filter { it.usage != StartingLocation.Usage.Normal }
+            .map { it.nation }
+            .distinct()
+        fun getNationsForHumanPlayer() = startingLocations.asSequence()
+            .filter { it.usage == StartingLocation.Usage.Human }
+            .map { it.nation }
+            .distinct()
     }
 }
