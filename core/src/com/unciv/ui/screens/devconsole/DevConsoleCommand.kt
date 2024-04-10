@@ -16,6 +16,13 @@ internal fun <T: IRulesetObject> Iterable<T>.findCliInput(param: String): T? {
 }
 internal fun <T: IRulesetObject> Sequence<T>.findCliInput(param: String) = asIterable().findCliInput(param)
 
+internal inline fun <reified T: Enum<T>> findCliInput(param: String): T? {
+    val paramCli = param.toCliInput()
+    return enumValues<T>().firstOrNull {
+        it.name.toCliInput() == paramCli
+    }
+}
+
 /** Returns the string to *add* to the existing command */
 internal fun getAutocompleteString(lastWord: String, allOptions: Iterable<String>): String? {
     val matchingOptions = allOptions.map { it.toCliInput() }.filter { it.startsWith(lastWord.toCliInput()) }

@@ -93,10 +93,47 @@ class ConsoleTileCommands: ConsoleCommandNode {
             DevConsoleResponse.OK
         },
 
+        "addriver" to ConsoleRiverAction("tile addriver <direction>", true),
+        "removeriver" to ConsoleRiverAction("tile removeriver <direction>", false),
     )
 
     private fun getTerrainFeature(console: DevConsolePopup, param: String) =
         console.gameInfo.ruleset.terrains.values.asSequence()
         .filter { it.type == TerrainType.TerrainFeature }.findCliInput(param)
         ?: throw ConsoleErrorException("Unknown feature")
+
+    private enum class RiverDirections(val clockPosition: Int) {
+        North(12),
+        NorthEast(2),
+        SouthEast(4),
+        South(6),
+        SouthWest(8),
+        NorthWest(10)
+    }
+
+    private class ConsoleRiverAction(format: String, newValue: Boolean) : ConsoleAction(
+        format,
+        action = { console, params -> action(console, params, newValue) }
+    ) {
+        override fun autocomplete(console: DevConsolePopup, params: List<String>): String? {
+            if (params.isEmpty()) return null
+            // Note this could filter which directions are allowed on the selected tile... too lazy
+            val options = RiverDirections.values().map { it.name }
+            return getAutocompleteString(params.last(), options, console)
+        }
+
+        companion object {
+            private fun action(console: DevConsolePopup, params: List<String>, newValue: Boolean): DevConsoleResponse {
+                val selectedTile = console.getSelectedTile()
+                val direction = findCliInput<RiverDirections>(params[0])
+                    ?: throw ConsoleErrorException("Unknown direction - use " + RiverDirections.values().joinToString { it.name })
+                val otherTile = selectedTile.tileMap.getClockPositionNeighborTile(selectedTile, direction.clockPosition)
+                    ?: throw ConsoleErrorException("tile has no neighbor to the " + direction.name)
+                if (!otherTile.isLand)
+                    throw ConsoleErrorException("there's no land to the " + direction.name)
+                selectedTile.setConnectedByRiver(otherTile, newValue)
+                return DevConsoleResponse.OK
+            }
+        }
+    }
 }
