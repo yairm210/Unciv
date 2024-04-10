@@ -1,6 +1,8 @@
 package com.unciv.ui.screens.devconsole
 
+import com.unciv.Constants
 import com.unciv.logic.civilization.Civilization
+import com.unciv.logic.map.mapgenerator.RiverGenerator
 import com.unciv.logic.map.tile.RoadStatus
 import com.unciv.models.ruleset.tile.TerrainType
 
@@ -41,14 +43,21 @@ class ConsoleTileCommands: ConsoleCommandNode {
         "addfeature" to ConsoleAction("tile addfeature <featureName>") { console, params ->
             val selectedTile = console.getSelectedTile()
             val feature = getTerrainFeature(console, params[0])
-            selectedTile.addTerrainFeature(feature.name)
+
+            if (feature.name == Constants.river)
+                RiverGenerator.continueRiverOn(selectedTile)
+            else
+                selectedTile.addTerrainFeature(feature.name)
+
             selectedTile.getCity()?.reassignPopulation()
             DevConsoleResponse.OK
         },
 
-        "removefeature" to ConsoleAction("tile addfeature <featureName>") { console, params ->
+        "removefeature" to ConsoleAction("tile removefeature <featureName>") { console, params ->
             val selectedTile = console.getSelectedTile()
             val feature = getTerrainFeature(console, params[0])
+            if (feature.name == Constants.river)
+                throw ConsoleHintException("Rivers cannot be removed like a terrain feature - use tile removeriver <direction>")
             selectedTile.removeTerrainFeature(feature.name)
             selectedTile.getCity()?.reassignPopulation()
             DevConsoleResponse.OK
