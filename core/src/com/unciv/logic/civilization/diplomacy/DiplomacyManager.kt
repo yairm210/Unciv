@@ -168,9 +168,11 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
     fun otherCivDiplomacy() = otherCiv().getDiplomacyManager(civInfo)
 
     fun turnsToPeaceTreaty(): Int {
-        for (trade in trades)
-            for (offer in trade.ourOffers)
+        for (trade in trades) {
+            val allOffers = trade.ourOffers.union(trade.theirOffers)
+            for (offer in allOffers)
                 if (offer.name == Constants.peaceTreaty && offer.duration > 0) return offer.duration
+        }
         return 0
     }
 

@@ -54,6 +54,7 @@ class TradeEvaluation {
             TradeType.Technology -> true
             TradeType.Introduction -> !tradePartner.knows(tradeOffer.name) // You can't introduce them to someone they already know!
             TradeType.WarDeclaration -> true
+            TradeType.PeaceDeclaration -> true
             TradeType.City -> offerer.cities.any { it.id == tradeOffer.name }
         }
     }
@@ -148,10 +149,9 @@ class TradeEvaluation {
             TradeType.Introduction -> return introductionValue(civInfo.gameInfo.ruleset)
             TradeType.WarDeclaration -> {
                 val civToDeclareWarOn = civInfo.gameInfo.getCivilization(offer.name)
-                val threatToThem = Automation.threatAssessment(civInfo, civToDeclareWarOn)
 
                 return if (!civInfo.isAtWarWith(civToDeclareWarOn)) 0 // why should we pay you to go fight someone...?
-                else when (threatToThem) {
+                else when (Automation.threatAssessment(civInfo, civToDeclareWarOn)) {
                     ThreatLevel.VeryLow -> 0
                     ThreatLevel.Low -> 0
                     ThreatLevel.Medium -> 100
@@ -159,6 +159,19 @@ class TradeEvaluation {
                     ThreatLevel.VeryHigh -> 1000
                 }
             }
+
+            TradeType.PeaceDeclaration -> {
+                val civToMakePeaceWith = civInfo.gameInfo.getCivilization(offer.name)
+
+                return when (Automation.threatAssessment(civInfo, civToMakePeaceWith)) {
+                    ThreatLevel.VeryLow -> 1000
+                    ThreatLevel.Low -> 500
+                    ThreatLevel.Medium -> 100
+                    ThreatLevel.High -> 0
+                    ThreatLevel.VeryHigh -> 0
+                }
+            }
+
             TradeType.City -> {
                 val city = tradePartner.cities.firstOrNull { it.id == offer.name }
                     ?: throw Exception("Got an offer for city id "+offer.name+" which does't seem to exist for this civ!")
@@ -273,7 +286,19 @@ class TradeEvaluation {
                     ThreatLevel.Low -> 250
                     ThreatLevel.Medium -> 500
                     ThreatLevel.High -> 1000
-                    ThreatLevel.VeryHigh -> 10000 // no way boyo
+                    ThreatLevel.VeryHigh -> 10000 // declaring war to a super power is NO WAY
+                }
+            }
+
+            TradeType.PeaceDeclaration -> {
+                val civToMakePeaceWith = civInfo.gameInfo.getCivilization(offer.name)
+
+                return when (Automation.threatAssessment(civInfo, civToMakePeaceWith)) {
+                    ThreatLevel.VeryLow -> 1000 // making peace with someone very weak, for just some turns is not a nightmare
+                    ThreatLevel.Low -> 750
+                    ThreatLevel.Medium -> 500
+                    ThreatLevel.High -> 250
+                    ThreatLevel.VeryHigh -> 100
                 }
             }
 

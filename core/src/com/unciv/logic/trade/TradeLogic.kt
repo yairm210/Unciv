@@ -7,6 +7,7 @@ import com.unciv.logic.civilization.PopupAlert
 import com.unciv.logic.civilization.diplomacy.CityStateFunctions
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
+import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.unique.UniqueType
 
@@ -67,12 +68,21 @@ class TradeLogic(val ourCivilization: Civilization, val otherCivilization: Civil
 
         if (!civInfo.isCityState() && !otherCivilization.isCityState()
                 && !civInfo.gameInfo.ruleset.modOptions.hasUnique(UniqueType.DiplomaticRelationshipsCannotChange)) {
-            val civsWeBothKnow = otherCivsWeKnow
-                    .filter { otherCivilization.diplomacy.containsKey(it.civName) }
+
+            val civsWeBothKnow = civInfo.getDiplomacyManager(otherCivilization).getCommonKnownCivs()
+
             val civsWeArentAtWarWith = civsWeBothKnow
                     .filter { civInfo.getDiplomacyManager(it).canDeclareWar() }
+
             for (thirdCiv in civsWeArentAtWarWith) {
                 offers.add(TradeOffer(thirdCiv.civName, TradeType.WarDeclaration))
+            }
+
+            val civsWeAreAtWarWith = civsWeBothKnow
+                .filter { civInfo.getDiplomacyManager(it).diplomaticStatus == DiplomaticStatus.War }
+
+            for (thirdCiv in civsWeAreAtWarWith) {
+                offers.add(TradeOffer(thirdCiv.civName, TradeType.PeaceDeclaration))
             }
         }
 
@@ -138,6 +148,22 @@ class TradeLogic(val ourCivilization: Civilization, val otherCivilization: Civil
                 TradeType.WarDeclaration -> {
                     val nameOfCivToDeclareWarOn = offer.name
                     from.getDiplomacyManager(nameOfCivToDeclareWarOn).declareWar()
+                }
+                TradeType.PeaceDeclaration -> {
+                    val nameOfCivToDeclarePeaceOn = offer.name
+                    from.getDiplomacyManager(nameOfCivToDeclarePeaceOn).makePeace()
+                    //let's get the civilization to declare peace on
+                    val civToDeclarePeaceOn = from.gameInfo.civilizations.first() { it.civName == nameOfCivToDeclarePeaceOn}
+                    // let's create a "puppet" peaceTreaty to propagate turnsToPeaceTreaty duration-related effects
+                    val peaceTrade = Trade()
+                    peaceTrade.ourOffers.add(TradeOffer(Constants.peaceTreaty, TradeType.Treaty, 1, com.unciv.UncivGame.Current.gameInfo!!.speed))
+                    // let's add peaceTreaties to both diplomacyManagers
+                    from.getDiplomacyManager(civToDeclarePeaceOn).apply {
+                        trades.add(peaceTrade)
+                    }
+                    civToDeclarePeaceOn.getDiplomacyManager(from).apply {
+                        trades.add(peaceTrade.reverse())
+                    }
                 }
                 else -> {}
             }
