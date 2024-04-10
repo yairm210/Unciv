@@ -101,6 +101,8 @@ class MapEditorViewTab(
         val statsLabel = WrappableLabel(statsText, labelWidth)
         add(statsLabel.apply { wrap = true }).row()
 
+        add(editorScreen.descriptionTextField).growX().row()
+
         // Map editor must not touch tileMap.naturalWonders as it is a by lazy immutable list,
         // and we wouldn't be able to fix it when the natural wonders change
         if (editorScreen.naturalWondersNeedRefresh) {

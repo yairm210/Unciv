@@ -60,6 +60,9 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
     }
     val startingLocations = arrayListOf<StartingLocation>()
 
+    /** Optional freeform text a mod map creator can set for their "customers" */
+    var description = ""
+
     //endregion
     //region Fields, Transient
 
@@ -185,6 +188,8 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
         toReturn.startingLocations.clear()
         toReturn.startingLocations.ensureCapacity(startingLocations.size)
         toReturn.startingLocations.addAll(startingLocations)
+
+        toReturn.description = description
         toReturn.tileUniqueMapCache = tileUniqueMapCache
 
         return toReturn

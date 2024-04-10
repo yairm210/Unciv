@@ -7,6 +7,7 @@ import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.badlogic.gdx.scenes.scene2d.ui.Cell
 import com.badlogic.gdx.scenes.scene2d.ui.Container
+import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.SelectBox
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.UncivGame
@@ -53,6 +54,8 @@ class MapFileSelectTable(
     private val miniMapWrapper = Container<Group?>()
     private var mapPreviewJob: Job? = null
     private var preselectedName = mapParameters.name
+    private val descriptionLabel = "".toLabel()
+    private val descriptionLabelCell: Cell<Label>
 
     // The SelectBox auto displays the text a object.toString(), which on the FileHandle itself includes the folder path.
     //  So we wrap it in another object with a custom toString()
@@ -85,6 +88,9 @@ class MapFileSelectTable(
 
         useNationsButtonCell = add().pad(0f)
         row()
+
+        descriptionLabelCell = add(descriptionLabel)
+        descriptionLabelCell.height(0f).row()
 
         add(miniMapWrapper)
             .pad(15f)
@@ -279,8 +285,10 @@ class MapFileSelectTable(
                 // ReplayMap still paints outside its bounds - so we subtract padding and a little extra
                 val size = (columnWidth - 40f).coerceAtMost(500f)
                 val miniMap = LoadMapPreview(map, size, size)
+                val description = map.description
                 if (!isActive) return@run
                 Concurrency.runOnGLThread {
+                    showDescription(description)
                     showMinimap(miniMap)
                 }
             } catch (_: Throwable) {}
@@ -304,6 +312,13 @@ class MapFileSelectTable(
         miniMapWrapper.actor = miniMap
         miniMapWrapper.invalidateHierarchy()
         miniMapWrapper.addAction(Actions.fadeIn(0.2f))
+    }
+
+    private fun showDescription(text: String) {
+        descriptionLabel.setText(text)
+        descriptionLabelCell
+            .height(if (text.isEmpty()) 0f else descriptionLabel.prefHeight)
+            .padTop(if (text.isEmpty()) 0f else 10f)
     }
 
     private fun hideMiniMap() {
