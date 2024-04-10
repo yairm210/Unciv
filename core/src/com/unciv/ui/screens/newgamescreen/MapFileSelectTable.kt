@@ -133,7 +133,7 @@ class MapFileSelectTable(
                 loadingIcon.hide {
                     loadingIcon.remove()
                 }
-                onCategorySelectBoxChange() // re-sort lower SelectBox
+                onCategorySelectBoxChange() // re-sort lower SelectBox, and trigger map selection (mod select, description and preview)
             }
         }
     }
@@ -214,10 +214,15 @@ class MapFileSelectTable(
         // (all expensive) for something that will be overthrown momentarily
         mapFileSelectBox.selection.setProgrammaticChangeEvents(false)
         mapFileSelectBox.items = mapFiles
-        // Now, we want this ON because the event removes map selections which are pulling mods
-        // that trip updateRuleset - so that code should still be active for the pre-selection
-        mapFileSelectBox.selection.setProgrammaticChangeEvents(true)
         mapFileSelectBox.selected = selectedItem
+        mapFileSelectBox.selection.setProgrammaticChangeEvents(true)
+
+        // Now, we want this to *always* run even when setting mapFileSelectBox.selected would
+        // not have fired the event (which it won't if the selection is already as asked).
+        // Reasons:
+        // * Mods that trip validation in updateRuleset
+        // * Update description and minimap preview
+        onFileSelectBoxChange()
         // In the event described above, we now have: mapFileSelectBox.selected != selectedItem
         // Do NOT try to put back the "bad" preselection!
     }
