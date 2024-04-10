@@ -673,7 +673,7 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
     /** Removes a starting position, maintaining the transients
      * @return true if the starting position was removed as per [Collection]'s remove */
     fun removeStartingLocation(nationName: String, tile: Tile): Boolean {
-        if (startingLocationsByNation.contains(nationName, tile)) return false
+        if (!startingLocationsByNation.contains(nationName, tile)) return false
         startingLocations.remove(StartingLocation(tile.position, nationName))
         return startingLocationsByNation[nationName]!!.remove(tile)
         // we do not clean up an empty startingLocationsByNation[nationName] set - not worth it
