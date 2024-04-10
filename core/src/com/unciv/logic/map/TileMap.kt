@@ -29,18 +29,6 @@ import kotlin.math.abs
  * @param initialCapacity Passed to constructor of [tileList]
  */
 class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
-    companion object {
-        /** Legacy way to store starting locations - now this is used only in [translateStartingLocationsFromMap] */
-        const val startingLocationPrefix = "StartingLocation "
-
-        /**
-         * To be backwards compatible, a json without a startingLocations element will be recognized by an entry with this marker
-         * New saved maps will never have this marker and will always have a serialized startingLocations list even if empty.
-         * New saved maps will also never have "StartingLocation" improvements, these are converted on load in [setTransients].
-         */
-        private const val legacyMarker = " Legacy "
-    }
-
     //region Fields, Serialized
 
     var mapParameters = MapParameters()
@@ -51,8 +39,11 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
      * @param position [Vector2] of the location
      * @param nation Name of the nation
      */
-    private data class StartingLocation(val position: Vector2 = Vector2.Zero, val nation: String = "") : IsPartOfGameInfoSerialization
-    private val startingLocations = arrayListOf(StartingLocation(Vector2.Zero, legacyMarker))
+    private data class StartingLocation(
+        val position: Vector2 = Vector2.Zero,
+        val nation: String = ""
+    ) : IsPartOfGameInfoSerialization
+    private val startingLocations = arrayListOf<StartingLocation>()
 
     //endregion
     //region Fields, Transient
@@ -635,31 +626,13 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
     }
 
     /**
-     *  Initialize startingLocations transients, including legacy support (maps saved with placeholder improvements)
+     *  Initialize startingLocations transients
      */
     fun setStartingLocationsTransients() {
-        if (startingLocations.size == 1 && startingLocations[0].nation == legacyMarker)
-            return translateStartingLocationsFromMap()
         startingLocationsByNation.clear()
         for ((position, nationName) in startingLocations) {
             startingLocationsByNation.addToMapOfSets(nationName, get(position))
         }
-    }
-
-    /**
-     *  Scan and remove placeholder improvements from map and build startingLocations from them
-     */
-    private fun translateStartingLocationsFromMap() {
-        startingLocations.clear()
-        tileList.asSequence()
-            .filter { it.improvement?.startsWith(startingLocationPrefix) == true }
-            .map { it to StartingLocation(it.position, it.improvement!!.removePrefix(startingLocationPrefix)) }
-            .sortedBy { it.second.nation }  // vanity, or to make diffs between un-gzipped map files easier
-            .forEach { (tile, startingLocation) ->
-                tile.removeImprovement()
-                startingLocations.add(startingLocation)
-            }
-        setStartingLocationsTransients()
     }
 
     /** Adds a starting position, maintaining the transients
