@@ -40,6 +40,12 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.isActive
 
+private inline fun <T> SelectBox<T>.withoutChangeEvents(block: SelectBox<T>.() -> Unit) {
+    selection.setProgrammaticChangeEvents(false)
+    block()
+    selection.setProgrammaticChangeEvents(true)
+}
+
 class MapFileSelectTable(
     private val newGameScreen: NewGameScreen,
     private val mapParameters: MapParameters
@@ -152,19 +158,19 @@ class MapFileSelectTable(
                     compareBy<String?> { it != sortToTop }
                         .thenBy(collator) { it }
                 ).toGdxArray()
-            mapCategorySelectBox.selection.setProgrammaticChangeEvents(false)
-            mapCategorySelectBox.items = newItems
-            mapCategorySelectBox.selected = select
-            mapCategorySelectBox.selection.setProgrammaticChangeEvents(true)
+            mapCategorySelectBox.withoutChangeEvents {
+                items = newItems
+                selected = select
+            }
         }
 
         if (mapCategorySelectBox.selected != categoryName) return
 
         // .. but add the maps themselves as they come
-        mapFileSelectBox.selection.setProgrammaticChangeEvents(false)
-        mapFileSelectBox.items.add(mapWrapper)
-        mapFileSelectBox.items = mapFileSelectBox.items  // Call setItems so SelectBox sees the change
-        mapFileSelectBox.selection.setProgrammaticChangeEvents(true)
+        mapFileSelectBox.withoutChangeEvents {
+            items.add(mapWrapper)
+            setItems(items) // Call setItems so SelectBox sees the change
+        }
     }
 
     private val firstMap: FileHandle? by lazy {
@@ -212,10 +218,10 @@ class MapFileSelectTable(
 
         // avoid the overhead of doing a full updateRuleset + updateTables + startMapPreview
         // (all expensive) for something that will be overthrown momentarily
-        mapFileSelectBox.selection.setProgrammaticChangeEvents(false)
-        mapFileSelectBox.items = mapFiles
-        mapFileSelectBox.selected = selectedItem
-        mapFileSelectBox.selection.setProgrammaticChangeEvents(true)
+        mapFileSelectBox.withoutChangeEvents {
+            items = mapFiles
+            selected = selectedItem
+        }
 
         // Now, we want this to *always* run even when setting mapFileSelectBox.selected would
         // not have fired the event (which it won't if the selection is already as asked).
