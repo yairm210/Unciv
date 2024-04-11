@@ -9,8 +9,6 @@ import com.unciv.logic.files.MapSaver
 import com.unciv.logic.map.MapGeneratedMainType
 import com.unciv.logic.map.TileMap
 import com.unciv.models.translations.tr
-import com.unciv.ui.components.widgets.AutoScrollPane
-import com.unciv.ui.components.widgets.TabbedPager
 import com.unciv.ui.components.UncivTextField
 import com.unciv.ui.components.extensions.isEnabled
 import com.unciv.ui.components.extensions.toTextButton
@@ -19,6 +17,8 @@ import com.unciv.ui.components.input.keyShortcuts
 import com.unciv.ui.components.input.onActivation
 import com.unciv.ui.components.input.onChange
 import com.unciv.ui.components.input.onClick
+import com.unciv.ui.components.widgets.AutoScrollPane
+import com.unciv.ui.components.widgets.TabbedPager
 import com.unciv.ui.popups.ConfirmPopup
 import com.unciv.ui.popups.Popup
 import com.unciv.ui.popups.ToastPopup
@@ -89,6 +89,7 @@ class MapEditorSaveTab(
         if (mapNameTextField.text.isBlank()) return
         editorScreen.tileMap.mapParameters.name = mapNameTextField.text
         editorScreen.tileMap.mapParameters.type = MapGeneratedMainType.custom
+        editorScreen.tileMap.description = editorScreen.descriptionTextField.text
         setSaveButton(false)
         editorScreen.startBackgroundJob("MapSaver", false) { saverThread() }
     }

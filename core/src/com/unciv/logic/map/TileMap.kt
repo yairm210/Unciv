@@ -29,18 +29,6 @@ import kotlin.math.abs
  * @param initialCapacity Passed to constructor of [tileList]
  */
 class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
-    companion object {
-        /** Legacy way to store starting locations - now this is used only in [translateStartingLocationsFromMap] */
-        const val startingLocationPrefix = "StartingLocation "
-
-        /**
-         * To be backwards compatible, a json without a startingLocations element will be recognized by an entry with this marker
-         * New saved maps will never have this marker and will always have a serialized startingLocations list even if empty.
-         * New saved maps will also never have "StartingLocation" improvements, these are converted on load in [setTransients].
-         */
-        private const val legacyMarker = " Legacy "
-    }
-
     //region Fields, Serialized
 
     var mapParameters = MapParameters()
@@ -51,8 +39,29 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
      * @param position [Vector2] of the location
      * @param nation Name of the nation
      */
-    private data class StartingLocation(val position: Vector2 = Vector2.Zero, val nation: String = "") : IsPartOfGameInfoSerialization
-    private val startingLocations = arrayListOf(StartingLocation(Vector2.Zero, legacyMarker))
+    data class StartingLocation(
+        val position: Vector2 = Vector2.Zero,
+        val nation: String = "",
+        val usage: Usage = Usage.default // default for maps saved pior to this feature
+    ) : IsPartOfGameInfoSerialization {
+        /** How a starting location may be used when the map is loaded for a new game */
+        enum class Usage(val label: String) {
+            /** Starting location only */
+            Normal("None"),
+            /** Use for "Select players from starting locations" */
+            Player("Player"),
+            /** Use as first Human player */
+            Human("Human")
+            ;
+            companion object {
+                val default get() = Player
+            }
+        }
+    }
+    val startingLocations = arrayListOf<StartingLocation>()
+
+    /** Optional freeform text a mod map creator can set for their "customers" */
+    var description = ""
 
     //endregion
     //region Fields, Transient
@@ -179,6 +188,8 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
         toReturn.startingLocations.clear()
         toReturn.startingLocations.ensureCapacity(startingLocations.size)
         toReturn.startingLocations.addAll(startingLocations)
+
+        toReturn.description = description
         toReturn.tileUniqueMapCache = tileUniqueMapCache
 
         return toReturn
@@ -635,45 +646,33 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
     }
 
     /**
-     *  Initialize startingLocations transients, including legacy support (maps saved with placeholder improvements)
+     *  Initialize startingLocations transients
      */
     fun setStartingLocationsTransients() {
-        if (startingLocations.size == 1 && startingLocations[0].nation == legacyMarker)
-            return translateStartingLocationsFromMap()
         startingLocationsByNation.clear()
         for ((position, nationName) in startingLocations) {
             startingLocationsByNation.addToMapOfSets(nationName, get(position))
         }
     }
 
-    /**
-     *  Scan and remove placeholder improvements from map and build startingLocations from them
-     */
-    private fun translateStartingLocationsFromMap() {
-        startingLocations.clear()
-        tileList.asSequence()
-            .filter { it.improvement?.startsWith(startingLocationPrefix) == true }
-            .map { it to StartingLocation(it.position, it.improvement!!.removePrefix(startingLocationPrefix)) }
-            .sortedBy { it.second.nation }  // vanity, or to make diffs between un-gzipped map files easier
-            .forEach { (tile, startingLocation) ->
-                tile.removeImprovement()
-                startingLocations.add(startingLocation)
-            }
-        setStartingLocationsTransients()
-    }
-
     /** Adds a starting position, maintaining the transients
+     *
+     * Note: Will not replace an existing StartingLocation to update its [usage]
      * @return true if the starting position was not already stored as per [Collection]'s add */
-    fun addStartingLocation(nationName: String, tile: Tile): Boolean {
+    fun addStartingLocation(
+        nationName: String,
+        tile: Tile,
+        usage: StartingLocation.Usage = StartingLocation.Usage.Player
+    ): Boolean {
         if (startingLocationsByNation.contains(nationName, tile)) return false
-        startingLocations.add(StartingLocation(tile.position, nationName))
+        startingLocations.add(StartingLocation(tile.position, nationName, usage))
         return startingLocationsByNation.addToMapOfSets(nationName, tile)
     }
 
     /** Removes a starting position, maintaining the transients
      * @return true if the starting position was removed as per [Collection]'s remove */
     fun removeStartingLocation(nationName: String, tile: Tile): Boolean {
-        if (startingLocationsByNation.contains(nationName, tile)) return false
+        if (!startingLocationsByNation.contains(nationName, tile)) return false
         startingLocations.remove(StartingLocation(tile.position, nationName))
         return startingLocationsByNation[nationName]!!.remove(tile)
         // we do not clean up an empty startingLocationsByNation[nationName] set - not worth it
@@ -755,6 +754,13 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
     class Preview {
         val mapParameters = MapParameters()
         private val startingLocations = arrayListOf<StartingLocation>()
-        fun getDeclaredNations() = startingLocations.asSequence().map { it.nation }.distinct()
+        fun getDeclaredNations() = startingLocations.asSequence()
+            .filter { it.usage != StartingLocation.Usage.Normal }
+            .map { it.nation }
+            .distinct()
+        fun getNationsForHumanPlayer() = startingLocations.asSequence()
+            .filter { it.usage == StartingLocation.Usage.Human }
+            .map { it.nation }
+            .distinct()
     }
 }

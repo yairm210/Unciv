@@ -2,9 +2,12 @@ package com.unciv.ui.screens.mapeditorscreen.tabs
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Group
+import com.badlogic.gdx.scenes.scene2d.ui.ButtonGroup
+import com.badlogic.gdx.scenes.scene2d.ui.CheckBox
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.Constants
 import com.unciv.UncivGame
+import com.unciv.logic.map.TileMap
 import com.unciv.logic.map.tile.RoadStatus
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.Ruleset
@@ -269,6 +272,7 @@ class MapEditorEditStartsTab(
     private val ruleset: Ruleset
 ): Table(BaseScreen.skin), IMapEditorEditSubTabs {
     private val collator = UncivGame.Current.settings.getCollatorFromLocale()
+    private val usageOptionGroup = ButtonGroup<CheckBox>()
 
     init {
         top()
@@ -287,6 +291,8 @@ class MapEditorEditStartsTab(
             }
         } }).padBottom(0f).row()
 
+        addUsage()
+
         // Create the nation list with the spectator nation included, and shown/interpreted as "Any Civ" starting location.
         // We use Nation/Spectator because it hasn't been used yet and we need an icon within the Nation.
         add(
@@ -297,10 +303,13 @@ class MapEditorEditStartsTab(
                 UncivGame.Current.musicController.chooseTrack(it, MusicMood.Theme, MusicTrackChooserFlags.setSpecific)
                 val icon = "Nation/$it"
                 val pediaLink = if (it == Constants.spectator) "" else icon
+                val isMajorCiv = ruleset.nations[it]?.isMajorCiv ?: false
+                val selectedUsage = if (isMajorCiv) TileMap.StartingLocation.Usage.values()[usageOptionGroup.checkedIndex]
+                    else TileMap.StartingLocation.Usage.Normal
                 editTab.setBrush(BrushHandlerType.Direct, it.spectatorToAnyCiv(), icon, pediaLink) { tile ->
                     // toggle the starting location here, note this allows
                     // both multiple locations per nation and multiple nations per tile
-                    if (!tile.tileMap.addStartingLocation(it, tile))
+                    if (!tile.tileMap.addStartingLocation(it, tile, selectedUsage))
                         tile.tileMap.removeStartingLocation(it, tile)
                 }
             }
@@ -317,6 +326,20 @@ class MapEditorEditStartsTab(
         ).map {
             FormattedLine("[${it.name.spectatorToAnyCiv()}] starting location", link = it.name, icon = "Nation/${it.name}", size = 24)
         }.asIterable()
+
+    private fun addUsage() {
+        val table = Table()
+        table.defaults().pad(5f)
+        table.add("Use for new game \"Select players\" button:".toLabel()).colspan(3).row()
+        val defaultUsage = TileMap.StartingLocation.Usage.default
+        for (usage in TileMap.StartingLocation.Usage.values()) {
+            val checkBox = CheckBox(usage.label.tr(), skin)
+            table.add(checkBox)
+            usageOptionGroup.add(checkBox)
+            checkBox.isChecked = usage == defaultUsage
+        }
+        add(table).row()
+    }
 
     override fun isDisabled() = allowedNations().none()
 }
