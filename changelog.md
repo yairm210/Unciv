@@ -1,3 +1,17 @@
+## 4.11.4
+
+Added an extra barbarian check to nukes  - By tuvus
+
+By SomeTroglodyte:
+- Images for Escort Formation 
+- Fix OptionPopup should follow the "click behind to close allowed" global setting 
+- Two extension features for custom maps 
+- Clean up github runner output 
+
+By SeventhM:
+- Allow policy removal unique to remove multiple policies 
+- Fix personality being ignored for tile rankings in small cities 
+
 ## 4.11.3
 
 Cannot trade with civs you're at war with through notification action
