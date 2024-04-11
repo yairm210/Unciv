@@ -1,3 +1,5 @@
+@file:Suppress("UNUSED_VARIABLE")  // These are tests and the names serve readability
+
 package com.unciv.logic.civilization
 
 import com.badlogic.gdx.math.Vector2
