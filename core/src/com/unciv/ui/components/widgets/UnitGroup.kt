@@ -177,10 +177,10 @@ class UnitGroup(val unit: MapUnit, val size: Float) : Group() {
     private fun getActionImage(): Image? {
         return when {
             unit.isSleeping() -> ImageGetter.getImage("UnitActionIcons/Sleep")
-            unit.isEscorting() -> ImageGetter.getImage("OtherIcons/Link")
+            unit.isEscorting() -> ImageGetter.getImage("UnitActionIcons/Escort")
             unit.isMoving() -> ImageGetter.getImage("UnitActionIcons/MoveTo")
             unit.isExploring() -> ImageGetter.getImage("UnitActionIcons/Explore")
-            unit.getTile().improvementInProgress!=null && unit.canBuildImprovement(unit.getTile().getTileImprovementInProgress()!!) ->
+            unit.getTile().improvementInProgress != null && unit.canBuildImprovement(unit.getTile().getTileImprovementInProgress()!!) ->
                 ImageGetter.getImage("ImprovementIcons/${unit.getTile().improvementInProgress}")
             unit.isAutomated() -> ImageGetter.getImage("UnitActionIcons/Automate")
             unit.isSetUpForSiege() -> ImageGetter.getImage("UnitActionIcons/SetUp")
