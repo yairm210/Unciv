@@ -2473,6 +2473,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 *[improvementName]: The name of any improvement.
 *[modFilter]: A Mod name, case-sensitive _or_ a simple wildcard filter beginning and ending in an Asterisk, case-insensitive.
 *[policy]: The name of any policy.
+*[policyFilter]: The name of any policy.
 *[positiveAmount]: This indicates a positive whole number, larger than zero, a '+' sign is optional.
 *[promotion]: The name of any promotion.
 *[relativeAmount]: This indicates a number, usually with a + or - sign, such as `+25` (this kind of parameter is often followed by '%' which is nevertheless not part of the value).

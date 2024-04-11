@@ -1,16 +1,15 @@
 ## 4.11.4
 
-Added an extra barbarian check to nukes  - By tuvus
+Can nuke barbarians - By tuvus
 
 By SomeTroglodyte:
-- Images for Escort Formation 
-- Fix OptionPopup should follow the "click behind to close allowed" global setting 
-- Two extension features for custom maps 
-- Clean up github runner output 
+- Two extension features for custom maps
+- Images for Escort Formation
+- Can click behind OptionPopup to close
 
 By SeventhM:
-- Allow policy removal unique to remove multiple policies 
-- Fix personality being ignored for tile rankings in small cities 
+- Allow policy removal unique to remove multiple policies
+- Fix personality being ignored for tile rankings in small cities
 
 ## 4.11.3
 
@@ -19,12 +18,12 @@ Cannot trade with civs you're at war with through notification action
 Remove city-state construction bonuses from difficulty
 
 By tuvus:
-- Espionage Uniques, Buildings and Policy 
-- Civs with spies in a foreign cities get some information 
+- Espionage Uniques, Buildings and Policy
+- Civs with spies in a foreign cities get some information
 
 By SomeTroglodyte:
-- Fix "Connect road" through Mountains 
-- "New game" UI improvements 
+- Fix "Connect road" through Mountains
+- "New game" UI improvements
 
 Implement Same-majority-religion diplomatic modifier  - By TommasoPetrolito (new contributor!)
 
@@ -39,12 +38,12 @@ Resolved edge-case crashes
 Added triggerable unique to remove policy  - By woo1127
 
 By SomeTroglodyte:
-- Work boat construction automation tweaks 
-- Fix new game screen mod selection 
+- Work boat construction automation tweaks
+- Fix new game screen mod selection
 
 By SeventhM:
-- Fix softlock for spectator with free policies 
-- Allow Civilian units to promote 
+- Fix softlock for spectator with free policies
+- Allow Civilian units to promote
 
 ## 4.11.1
 
