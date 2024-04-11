@@ -6,7 +6,16 @@ import com.unciv.utils.Concurrency
 import kotlinx.coroutines.Job
 
 class AutoPlay(private var autoPlaySettings: GameSettings.GameSettingsAutoPlay) {
+    /**
+     * How many turns we should multiturn AutoPlay for.
+     * In the case that [autoPlaySettings].autoPlayUntilEnd is true, the value should not be decremented after each turn.
+     */
     var turnsToAutoPlay: Int = 0
+
+    /**
+     * Determines whether or not we are currently processing the viewing player's turn.
+     * This can be on the main thread or on a different thread.
+     */
     var autoPlayTurnInProgress: Boolean = false
     var autoPlayJob: Job? = null
 
@@ -16,13 +25,17 @@ class AutoPlay(private var autoPlaySettings: GameSettings.GameSettingsAutoPlay) 
     }
 
     /**
-     * Processes the end of the user's turn being AutoPlayed
+     * Processes the end of the user's turn being AutoPlayed.
+     * Only decrements [turnsToAutoPlay] if [autoPlaySettings].autoPlayUntilEnd is false.
      */
     fun endTurnMultiturnAutoPlay() {
-        if (!autoPlaySettings.autoPlayUntilEnd)
+        if (!autoPlaySettings.autoPlayUntilEnd && turnsToAutoPlay > 0)
             turnsToAutoPlay--
     }
 
+    /**
+     * Stops multiturn AutoPlay and sets [autoPlayTurnInProgress] to false
+     */
     fun stopAutoPlay() {
         turnsToAutoPlay = 0
         autoPlayTurnInProgress = false
@@ -52,7 +65,9 @@ class AutoPlay(private var autoPlaySettings: GameSettings.GameSettingsAutoPlay) 
 
     fun fullAutoPlayAI(): Boolean = isAutoPlaying() && autoPlaySettings.fullAutoPlayAI
 
-    fun shouldContinueAutoPlaying(): Boolean =
-        isAutoPlaying() && !autoPlayTurnInProgress && turnsToAutoPlay > 0
+    /**
+     * @return true if we should play at least 1 more turn and we are not currenlty processing any AutoPlay
+     */
+    fun shouldContinueAutoPlaying(): Boolean = !autoPlayTurnInProgress && turnsToAutoPlay > 0
 }
 
