@@ -636,10 +636,11 @@ class CityStats(val city: City) {
 
     fun getStatDifferenceFromBuilding(building: String): Stats {
         val newCity = city.clone()
-        newCity.setTransients(city.civ)
+        newCity.setTransients(city.civ) // Will break the owned tiles. Needs to be reverted before leaving this function
         newCity.cityConstructions.builtBuildings.add(building)
         newCity.cityConstructions.setTransients()
         newCity.cityStats.update(updateCivStats = false)
+        city.expansion.setTransients() // Revert owned tiles to original city
         return newCity.cityStats.currentCityStats - currentCityStats
     }
 }
