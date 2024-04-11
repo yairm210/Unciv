@@ -157,12 +157,13 @@ class TradeLogic(val ourCivilization: Civilization, val otherCivilization: Civil
                     // let's create a "puppet" peaceTreaty to propagate turnsToPeaceTreaty duration-related effects
                     val peaceTrade = Trade()
                     peaceTrade.ourOffers.add(TradeOffer(Constants.peaceTreaty, TradeType.Treaty, 1, com.unciv.UncivGame.Current.gameInfo!!.speed))
+                    peaceTrade.theirOffers.add(TradeOffer(Constants.peaceTreaty, TradeType.Treaty, 1, com.unciv.UncivGame.Current.gameInfo!!.speed))
                     // let's add peaceTreaties to both diplomacyManagers
                     from.getDiplomacyManager(civToDeclarePeaceOn).apply {
                         trades.add(peaceTrade)
                     }
                     civToDeclarePeaceOn.getDiplomacyManager(from).apply {
-                        trades.add(peaceTrade.reverse())
+                        trades.add(peaceTrade)
                     }
                 }
                 else -> {}
