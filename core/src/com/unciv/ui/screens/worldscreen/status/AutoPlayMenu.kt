@@ -43,20 +43,18 @@ class AutoPlayMenu(
     }
 
     private fun autoPlayEndTurn() {
-        autoPlay.autoPlayTurnInProgress = true
-        nextTurnButton.update()
-
-        if (worldScreen.viewingCiv.units.getCivUnitsSize() + worldScreen.viewingCiv.cities.size >= 30) {
-
-            Concurrency.runOnNonDaemonThreadPool("AutoPlayEndTurn") {
-                TurnManager(worldScreen.viewingCiv).automateTurn()
-                worldScreen.autoPlay.stopAutoPlay()
-                worldScreen.nextTurn()
-            }
-        } else {
+        val endTurnFunction = {
+            nextTurnButton.update()
             TurnManager(worldScreen.viewingCiv).automateTurn()
             worldScreen.autoPlay.stopAutoPlay()
             worldScreen.nextTurn()
+        }
+
+        if (worldScreen.viewingCiv.units.getCivUnitsSize() + worldScreen.viewingCiv.cities.size >= 30) {
+            autoPlay.runAutoPlayJobInNewThread("AutoPlayEndTurn", worldScreen, false, endTurnFunction)
+        } else {
+            autoPlay.autoPlayTurnInProgress = true
+            endTurnFunction()
         }
     }
 
@@ -67,22 +65,39 @@ class AutoPlayMenu(
 
     private fun autoPlayMilitary() {
         val civInfo = worldScreen.viewingCiv
-        val isAtWar = civInfo.isAtWar()
-        val sortedUnits = civInfo.units.getCivUnits().filter { it.isMilitary() }.sortedBy { unit -> NextTurnAutomation.getUnitPriority(unit, isAtWar) }
-        for (unit in sortedUnits) UnitAutomation.automateUnitMoves(unit)
+        val autoPlayMilitaryFunction = {
+            val isAtWar = civInfo.isAtWar()
+            val sortedUnits = civInfo.units.getCivUnits().filter { it.isMilitary() }.sortedBy { unit -> NextTurnAutomation.getUnitPriority(unit, isAtWar) }
+            for (unit in sortedUnits) UnitAutomation.automateUnitMoves(unit)
 
-        for (city in civInfo.cities) UnitAutomation.tryBombardEnemy(city)
-        worldScreen.shouldUpdate = true
-        worldScreen.render(0f)
+            for (city in civInfo.cities) UnitAutomation.tryBombardEnemy(city)
+            worldScreen.shouldUpdate = true
+        }
+        if (civInfo.units.getCivUnitsSize() > 30) {
+            autoPlay.runAutoPlayJobInNewThread("AutoPlayMilitary", worldScreen, true, autoPlayMilitaryFunction)
+        } else {
+            autoPlay.autoPlayTurnInProgress = true
+            autoPlayMilitaryFunction()
+            autoPlay.autoPlayTurnInProgress = false
+        }
     }
 
     private fun autoPlayCivilian() {
         val civInfo = worldScreen.viewingCiv
-        val isAtWar = civInfo.isAtWar()
-        val sortedUnits = civInfo.units.getCivUnits().filter { it.isCivilian() }.sortedBy { unit -> NextTurnAutomation.getUnitPriority(unit, isAtWar) }
-        for (unit in sortedUnits) UnitAutomation.automateUnitMoves(unit)
-        worldScreen.shouldUpdate = true
-        worldScreen.render(0f)
+        val autoPlayCivilainFunction = {
+            val isAtWar = civInfo.isAtWar()
+            val sortedUnits = civInfo.units.getCivUnits().filter { it.isCivilian() }
+                .sortedBy { unit -> NextTurnAutomation.getUnitPriority(unit, isAtWar) }
+            for (unit in sortedUnits) UnitAutomation.automateUnitMoves(unit)
+            worldScreen.shouldUpdate = true
+        }
+        if (civInfo.units.getCivUnitsSize() > 50) {
+            autoPlay.runAutoPlayJobInNewThread("AutoPlayCivilian", worldScreen, true, autoPlayCivilainFunction)
+        } else {
+            autoPlay.autoPlayTurnInProgress = true
+            autoPlayCivilainFunction()
+            autoPlay.autoPlayTurnInProgress = false
+        }
     }
 
     private fun autoPlayEconomy() {
