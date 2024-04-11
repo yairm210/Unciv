@@ -69,10 +69,13 @@ class DevConsolePopup(val screen: WorldScreen) : Popup(screen) {
             close()
             return
         }
-        responseLabel.setText(handleCommandResponse.message)
-        responseLabel.style.fontColor = handleCommandResponse.color
+        showResponse(handleCommandResponse.message, handleCommandResponse.color)
     }
 
+    internal fun showResponse(message: String?, color: Color) {
+        responseLabel.setText(message)
+        responseLabel.style.fontColor = color
+    }
 
     val splitStringRegex = Regex("\"([^\"]+)\"|\\S+") // Read: "(phrase)" OR non-whitespace
     private fun getParams(text: String): List<String> {

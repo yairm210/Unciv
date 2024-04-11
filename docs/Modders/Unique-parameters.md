@@ -153,6 +153,15 @@ A filter determining a part of the population of a city. It can be any of the fo
 - `Unemployed`
 - `Followers of the Majority Religion` or `Followers of this Religion`, both of which only apply when this religion is the majority religion in that city
 
+## policyFilter
+
+Can be any of:
+
+- `All` or `all`
+- `[policyBranchName] branch`
+- The name of the policy
+- A unique the Policy has (verbatim, no placeholders)
+
 ## combatantFilter
 
 Can be any of:

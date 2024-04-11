@@ -110,6 +110,7 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
         addDefenceBuildingChoice()
         addUnitTrainingBuildingChoice()
         addOtherBuildingChoice()
+        addAllStatChoice()
 
         if (!city.isPuppet) {
             addSpaceshipPartChoice()
@@ -364,13 +365,7 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
         }
 
         for (stat in Stat.values()) {
-            if (
-                stat == Stat.Culture && civInfo.wantsToFocusOn(Victory.Focus.Culture) ||
-                stat == Stat.Production && civInfo.wantsToFocusOn(Victory.Focus.Production) ||
-                stat == Stat.Science && civInfo.wantsToFocusOn(Victory.Focus.Science) ||
-                stat == Stat.Faith && civInfo.wantsToFocusOn(Victory.Focus.Faith) ||
-                stat == Stat.Gold && civInfo.wantsToFocusOn(Victory.Focus.Gold)
-                )
+            if (civInfo.wantsToFocusOn(stat))
                 buildingStats[stat] *= 2f
 
             buildingStats[stat] *= personality.scaledFocus(PersonalityValue[stat])

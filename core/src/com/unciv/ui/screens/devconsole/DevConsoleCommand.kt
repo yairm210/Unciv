@@ -1,5 +1,6 @@
 package com.unciv.ui.screens.devconsole
 
+import com.badlogic.gdx.graphics.Color
 import com.unciv.models.ruleset.IRulesetObject
 import com.unciv.models.ruleset.tile.TerrainType
 import com.unciv.models.stats.Stat
@@ -16,11 +17,22 @@ internal fun <T: IRulesetObject> Iterable<T>.findCliInput(param: String): T? {
 }
 internal fun <T: IRulesetObject> Sequence<T>.findCliInput(param: String) = asIterable().findCliInput(param)
 
+internal inline fun <reified T: Enum<T>> findCliInput(param: String): T? {
+    val paramCli = param.toCliInput()
+    return enumValues<T>().firstOrNull {
+        it.name.toCliInput() == paramCli
+    }
+}
+
 /** Returns the string to *add* to the existing command */
-internal fun getAutocompleteString(lastWord: String, allOptions: Iterable<String>): String? {
+internal fun getAutocompleteString(lastWord: String, allOptions: Iterable<String>, console: DevConsolePopup): String? {
+    console.showResponse(null, Color.WHITE)
+
     val matchingOptions = allOptions.map { it.toCliInput() }.filter { it.startsWith(lastWord.toCliInput()) }
     if (matchingOptions.isEmpty()) return null
     if (matchingOptions.size == 1) return matchingOptions.first().drop(lastWord.length) + " "
+
+    console.showResponse("Matching completions: " + matchingOptions.joinToString(), Color.FOREST)
 
     val firstOption = matchingOptions.first()
     for ((index, char) in firstOption.withIndex()) {
@@ -78,7 +90,7 @@ open class ConsoleAction(val format: String, val action: (console: DevConsolePop
             "buildingName" -> console.gameInfo.ruleset.buildings.keys
             else -> listOf()
         }
-        return getAutocompleteString(lastParam, options)
+        return getAutocompleteString(lastParam, options, console)
     }
 
     private fun validateFormat(format: String, params: List<String>) {
@@ -105,7 +117,7 @@ interface ConsoleCommandNode : ConsoleCommand {
         if (params.isEmpty()) return null
         val firstParam = params[0]
         if (firstParam in subcommands) return subcommands[firstParam]!!.autocomplete(console, params.drop(1))
-        return getAutocompleteString(firstParam, subcommands.keys)
+        return getAutocompleteString(firstParam, subcommands.keys, console)
     }
 }
 

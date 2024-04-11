@@ -7,6 +7,7 @@ import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.badlogic.gdx.scenes.scene2d.ui.Cell
 import com.badlogic.gdx.scenes.scene2d.ui.Container
+import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.SelectBox
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.UncivGame
@@ -39,6 +40,12 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.isActive
 
+private inline fun <T> SelectBox<T>.withoutChangeEvents(block: SelectBox<T>.() -> Unit) {
+    selection.setProgrammaticChangeEvents(false)
+    block()
+    selection.setProgrammaticChangeEvents(true)
+}
+
 class MapFileSelectTable(
     private val newGameScreen: NewGameScreen,
     private val mapParameters: MapParameters
@@ -49,9 +56,12 @@ class MapFileSelectTable(
     private val useNationsFromMapButton = "Select players from starting locations".toTextButton(AnimatedMenuPopup.SmallButtonStyle())
     private val useNationsButtonCell: Cell<Actor?>
     private var mapNations = emptyList<Nation>()
+    private var mapHumanPick: String? = null
     private val miniMapWrapper = Container<Group?>()
     private var mapPreviewJob: Job? = null
     private var preselectedName = mapParameters.name
+    private val descriptionLabel = "".toLabel()
+    private val descriptionLabelCell: Cell<Label>
 
     // The SelectBox auto displays the text a object.toString(), which on the FileHandle itself includes the folder path.
     //  So we wrap it in another object with a custom toString()
@@ -84,6 +94,9 @@ class MapFileSelectTable(
 
         useNationsButtonCell = add().pad(0f)
         row()
+
+        descriptionLabelCell = add(descriptionLabel)
+        descriptionLabelCell.height(0f).row()
 
         add(miniMapWrapper)
             .pad(15f)
@@ -126,7 +139,7 @@ class MapFileSelectTable(
                 loadingIcon.hide {
                     loadingIcon.remove()
                 }
-                onCategorySelectBoxChange() // re-sort lower SelectBox
+                onCategorySelectBoxChange() // re-sort lower SelectBox, and trigger map selection (mod select, description and preview)
             }
         }
     }
@@ -145,19 +158,19 @@ class MapFileSelectTable(
                     compareBy<String?> { it != sortToTop }
                         .thenBy(collator) { it }
                 ).toGdxArray()
-            mapCategorySelectBox.selection.setProgrammaticChangeEvents(false)
-            mapCategorySelectBox.items = newItems
-            mapCategorySelectBox.selected = select
-            mapCategorySelectBox.selection.setProgrammaticChangeEvents(true)
+            mapCategorySelectBox.withoutChangeEvents {
+                items = newItems
+                selected = select
+            }
         }
 
         if (mapCategorySelectBox.selected != categoryName) return
 
         // .. but add the maps themselves as they come
-        mapFileSelectBox.selection.setProgrammaticChangeEvents(false)
-        mapFileSelectBox.items.add(mapWrapper)
-        mapFileSelectBox.items = mapFileSelectBox.items  // Call setItems so SelectBox sees the change
-        mapFileSelectBox.selection.setProgrammaticChangeEvents(true)
+        mapFileSelectBox.withoutChangeEvents {
+            items.add(mapWrapper)
+            setItems(items) // Call setItems so SelectBox sees the change
+        }
     }
 
     private val firstMap: FileHandle? by lazy {
@@ -205,12 +218,17 @@ class MapFileSelectTable(
 
         // avoid the overhead of doing a full updateRuleset + updateTables + startMapPreview
         // (all expensive) for something that will be overthrown momentarily
-        mapFileSelectBox.selection.setProgrammaticChangeEvents(false)
-        mapFileSelectBox.items = mapFiles
-        // Now, we want this ON because the event removes map selections which are pulling mods
-        // that trip updateRuleset - so that code should still be active for the pre-selection
-        mapFileSelectBox.selection.setProgrammaticChangeEvents(true)
-        mapFileSelectBox.selected = selectedItem
+        mapFileSelectBox.withoutChangeEvents {
+            items = mapFiles
+            selected = selectedItem
+        }
+
+        // Now, we want this to *always* run even when setting mapFileSelectBox.selected would
+        // not have fired the event (which it won't if the selection is already as asked).
+        // Reasons:
+        // * Mods that trip validation in updateRuleset
+        // * Update description and minimap preview
+        onFileSelectBoxChange()
         // In the event described above, we now have: mapFileSelectBox.selected != selectedItem
         // Do NOT try to put back the "bad" preselection!
     }
@@ -227,12 +245,18 @@ class MapFileSelectTable(
             ?: selection.mapPreview.mapParameters.baseRuleset
         val success = newGameScreen.tryUpdateRuleset(updateUI = true)
 
-        mapNations = if (success)
-                selection.mapPreview.getDeclaredNations()
+        if (success) {
+            mapNations = selection.mapPreview.getDeclaredNations()
                 .mapNotNull { newGameScreen.ruleset.nations[it] }
                 .filter { it.isMajorCiv }
                 .toList()
-            else emptyList()
+            mapHumanPick = selection.mapPreview.getNationsForHumanPlayer()
+                .filter { newGameScreen.ruleset.nations[it]?.isMajorCiv == true }
+                .toList().randomOrNull()
+        } else {
+            mapNations = emptyList()
+            mapHumanPick = null
+        }
 
         if (mapNations.isEmpty()) {
             useNationsButtonCell.setActor(null)
@@ -272,8 +296,10 @@ class MapFileSelectTable(
                 // ReplayMap still paints outside its bounds - so we subtract padding and a little extra
                 val size = (columnWidth - 40f).coerceAtMost(500f)
                 val miniMap = LoadMapPreview(map, size, size)
+                val description = map.description
                 if (!isActive) return@run
                 Concurrency.runOnGLThread {
+                    showDescription(description)
                     showMinimap(miniMap)
                 }
             } catch (_: Throwable) {}
@@ -299,6 +325,13 @@ class MapFileSelectTable(
         miniMapWrapper.addAction(Actions.fadeIn(0.2f))
     }
 
+    private fun showDescription(text: String) {
+        descriptionLabel.setText(text)
+        descriptionLabelCell
+            .height(if (text.isEmpty()) 0f else descriptionLabel.prefHeight)
+            .padTop(if (text.isEmpty()) 0f else 10f)
+    }
+
     private fun hideMiniMap() {
         if (miniMapWrapper.actor !is LoadMapPreview) return
         miniMapWrapper.clearActions()
@@ -321,13 +354,12 @@ class MapFileSelectTable(
         useNationsFromMapButton.disable()
         val players = newGameScreen.playerPickerTable.gameParameters.players
         players.clear()
-        val pickForHuman = mapNations.random().name
         mapNations.asSequence()
             .map { it.name to it.name.tr(hideIcons = true) } // Sort by translation but keep untranslated name
             .sortedWith(
-                compareBy<Pair<String, String>>{ it.first != pickForHuman }
+                compareBy<Pair<String, String>>{ it.first != mapHumanPick }
                 .thenBy(collator) { it.second }
-            ).map { Player(it.first, if (it.first == pickForHuman) PlayerType.Human else PlayerType.AI) }
+            ).map { Player(it.first, if (it.first == mapHumanPick) PlayerType.Human else PlayerType.AI) }
             .toCollection(players)
         newGameScreen.playerPickerTable.update()
     }

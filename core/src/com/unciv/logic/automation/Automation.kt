@@ -58,7 +58,6 @@ object Automation {
             for (unique in localUniqueCache.forCityGetMatchingUniques(city, UniqueType.UnhappinessFromPopulationTypePercentageChange))
                 if (city.matchesFilter(unique.params[2]) && unique.params[1] == "Specialists")
                     yieldStats.happiness -= (unique.params[0].toFloat() / 100f)  // relative val is negative, make positive
-            if (city.civ.getHappiness() < 0) yieldStats.happiness *= 2  // double weight for unhappy civilization
         }
 
         val surplusFood = city.cityStats.currentCityStats[Stat.Food]
@@ -94,23 +93,19 @@ object Automation {
         } else {
             if (city.civ.gold < 0 && city.civ.stats.statsForNextTurn.gold <= 0)
                 yieldStats.gold *= 2 // We have a global problem
-            yieldStats.gold *= civPersonality.scaledFocus(PersonalityValue.Gold)
 
-            if (city.tiles.size < 12 || city.civ.wantsToFocusOn(Victory.Focus.Culture))
+            if (city.tiles.size < 12)
                 yieldStats.culture *= 2
-            yieldStats.culture *= civPersonality.scaledFocus(PersonalityValue.Culture)
 
-            if (city.civ.getHappiness() < 0 && !areWeRankingSpecialist) // since this doesn't get updated, may overshoot
+            if (city.civ.getHappiness() < 0)
                 yieldStats.happiness *= 2
-            yieldStats.happiness *= civPersonality.scaledFocus(PersonalityValue.Happiness)
+        }
 
-            if (city.civ.wantsToFocusOn(Victory.Focus.Science))
-                yieldStats.science *= 2
-            yieldStats.science *= civPersonality.scaledFocus(PersonalityValue.Science)
+        for (stat in Stat.values()) {
+            if (city.civ.wantsToFocusOn(stat))
+                yieldStats[stat] *= 2f
 
-            yieldStats.production *= civPersonality.scaledFocus(PersonalityValue.Production)
-            yieldStats.faith *= civPersonality.scaledFocus(PersonalityValue.Faith)
-            yieldStats.food *= civPersonality.scaledFocus(PersonalityValue.Food)
+            yieldStats[stat] *= civPersonality.scaledFocus(PersonalityValue[stat])
         }
 
         // Apply City focus

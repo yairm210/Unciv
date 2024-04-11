@@ -1,5 +1,7 @@
 package com.unciv.models.ruleset
 
+import com.unciv.Constants
+import com.unciv.logic.MultiFilter
 import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueType
@@ -31,6 +33,19 @@ open class Policy : RulesetObject() {
          *  To keep the hardcoding in one place, this is public and should be used instead of duplicating it.
          */
         fun isBranchCompleteByName(name: String) = name.endsWith(branchCompleteSuffix)
+    }
+
+    fun matchesFilter(filter: String): Boolean {
+        return MultiFilter.multiFilter(filter, ::matchesSingleFilter)
+    }
+    fun matchesSingleFilter(filter: String): Boolean {
+        return when(filter) {
+            in Constants.all -> true
+            name -> true
+            "[${branch.name}] branch" -> true
+            in uniques -> true
+            else -> false
+        }
     }
 
     /** Used in PolicyPickerScreen to display Policy properties */

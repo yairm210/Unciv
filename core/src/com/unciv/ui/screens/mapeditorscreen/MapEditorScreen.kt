@@ -21,9 +21,11 @@ import com.unciv.models.metadata.BaseRuleset
 import com.unciv.models.metadata.GameSetupInfo
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
+import com.unciv.ui.components.UncivTextField
 import com.unciv.ui.components.input.KeyCharAndCode
 import com.unciv.ui.components.input.KeyShortcutDispatcherVeto
 import com.unciv.ui.components.input.KeyboardPanningListener
+import com.unciv.ui.components.input.onChange
 import com.unciv.ui.components.tilegroups.TileGroup
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.images.ImageWithCustomSize
@@ -83,6 +85,7 @@ class MapEditorScreen(map: TileMap? = null) : BaseScreen(), RecreateOnResize {
     val tabs: MapEditorMainTabs
     var tileClickHandler: ((tile: Tile)->Unit)? = null
     private var zoomController: ZoomButtonPair? = null
+    val descriptionTextField = UncivTextField.create("Enter a description for the users of this map")
 
     private val highlightedTileGroups = mutableListOf<TileGroup>()
 
@@ -98,10 +101,12 @@ class MapEditorScreen(map: TileMap? = null) : BaseScreen(), RecreateOnResize {
         } else {
             ruleset = map.ruleset ?: RulesetCache.getComplexRuleset(map.mapParameters)
             tileMap = map
+            descriptionTextField.text = map.description
         }
 
         mapHolder = newMapHolder() // will set up ImageGetter and translations, and all dirty flags
         isDirty = false
+        descriptionTextField.onChange { isDirty = true }
 
         tabs = MapEditorMainTabs(this)
         MapEditorToolsDrawer(tabs, stage, mapHolder)
@@ -212,6 +217,7 @@ class MapEditorScreen(map: TileMap? = null) : BaseScreen(), RecreateOnResize {
         clearOverlayImages()
         mapHolder.remove()
         tileMap = map
+        descriptionTextField.text = map.description
         ruleset = newRuleset ?: RulesetCache.getComplexRuleset(map.mapParameters)
         mapHolder = newMapHolder()
         isDirty = false
