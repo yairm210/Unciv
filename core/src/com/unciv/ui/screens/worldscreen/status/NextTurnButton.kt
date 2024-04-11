@@ -37,12 +37,10 @@ class NextTurnButton(
         val autoPlay = worldScreen.autoPlay
         if (autoPlay.shouldContinueAutoPlaying() && worldScreen.isPlayersTurn
             && !worldScreen.waitingForAutosave && !worldScreen.isNextTurnUpdateRunning()) {
-            autoPlay.autoPlayTurnInProgress = true
-            autoPlay.endTurnMultiturnAutoPlay()
-            Concurrency.runOnNonDaemonThreadPool("AutoPlay") {
+            autoPlay.runAutoPlayJobInNewThread("MultiturnAutoPlay", worldScreen, false) {
                 TurnManager(worldScreen.viewingCiv).automateTurn()
                 worldScreen.nextTurn()
-                autoPlay.autoPlayTurnInProgress = false
+                autoPlay.endTurnMultiturnAutoPlay()
             }
         }
 

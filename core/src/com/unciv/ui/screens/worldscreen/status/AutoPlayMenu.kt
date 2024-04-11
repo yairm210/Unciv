@@ -3,13 +3,13 @@ package com.unciv.ui.screens.worldscreen.status
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.scenes.scene2d.ui.Table
-import com.unciv.GUI
 import com.unciv.logic.automation.civilization.NextTurnAutomation
 import com.unciv.logic.automation.unit.UnitAutomation
 import com.unciv.logic.civilization.managers.TurnManager
 import com.unciv.ui.components.input.KeyboardBinding
 import com.unciv.ui.popups.AnimatedMenuPopup
 import com.unciv.ui.screens.worldscreen.WorldScreen
+import com.unciv.ui.screens.worldscreen.unit.AutoPlay
 import com.unciv.utils.Concurrency
 
 /**
@@ -22,6 +22,8 @@ class AutoPlayMenu(
     private val worldScreen: WorldScreen
 ) : AnimatedMenuPopup(stage, getActorTopRight(positionNextTo)) {
 
+    private val autoPlay: AutoPlay = worldScreen.autoPlay
+
     init {
         // We need to activate the end turn button again after the menu closes
         afterCloseCallback = { worldScreen.shouldUpdate = true }
@@ -31,7 +33,7 @@ class AutoPlayMenu(
         val table = super.createContentTable()!!
         // Using the same keyboard binding for bypassing this menu and the default option
         if (!worldScreen.gameInfo.gameParameters.isOnlineMultiplayer)
-            table.add(getButton("Start AutoPlay", KeyboardBinding.AutoPlay, ::autoPlay)).row()
+            table.add(getButton("Start AutoPlay", KeyboardBinding.AutoPlay, ::multiturnAutoPlay)).row()
         table.add(getButton("AutoPlay End Turn", KeyboardBinding.AutoPlayMenuEndTurn, ::autoPlayEndTurn)).row()
         table.add(getButton("AutoPlay Military Once", KeyboardBinding.AutoPlayMenuMilitary, ::autoPlayMilitary)).row()
         table.add(getButton("AutoPlay Civilians Once", KeyboardBinding.AutoPlayMenuCivilians, ::autoPlayCivilian)).row()
@@ -41,11 +43,11 @@ class AutoPlayMenu(
     }
 
     private fun autoPlayEndTurn() {
-        worldScreen.autoPlay.autoPlayTurnInProgress = true
+        autoPlay.autoPlayTurnInProgress = true
         nextTurnButton.update()
 
         if (worldScreen.viewingCiv.units.getCivUnitsSize() + worldScreen.viewingCiv.cities.size >= 30) {
-            worldScreen.isPlayersTurn = false
+
             Concurrency.runOnNonDaemonThreadPool("AutoPlayEndTurn") {
                 TurnManager(worldScreen.viewingCiv).automateTurn()
                 worldScreen.autoPlay.stopAutoPlay()
@@ -58,7 +60,7 @@ class AutoPlayMenu(
         }
     }
 
-    private fun autoPlay() {
+    private fun multiturnAutoPlay() {
         worldScreen.autoPlay.startMultiturnAutoPlay()
         nextTurnButton.update()
     }
