@@ -26,6 +26,8 @@ class ConsoleUnitCommands : ConsoleCommandNode {
             DevConsoleResponse.OK
         }) {
             override fun autocomplete(console: DevConsolePopup, params: List<String>): String {
+                // Note: filtering by unit.type.name in promotion.unitTypes sounds good (No [Zero]-Ability on an Archer),
+                // but would also prevent promotions that can be legally obtained like Morale and Rejuvenation
                 val promotions = console.getSelectedUnit().promotions.promotions
                 val options = console.gameInfo.ruleset.unitPromotions.keys.asSequence()
                     .filter { it !in promotions }
@@ -34,7 +36,7 @@ class ConsoleUnitCommands : ConsoleCommandNode {
             }
         },
 
-        "removepromotion" to ConsoleAction("unit removepromotion <promotionName>") { console, params ->
+        "removepromotion" to object : ConsoleAction("unit removepromotion <promotionName>", { console, params ->
             val unit = console.getSelectedUnit()
             val promotion = unit.promotions.getPromotions().findCliInput(params[0])
                 ?: throw ConsoleErrorException("Promotion not found on unit")
@@ -43,6 +45,9 @@ class ConsoleUnitCommands : ConsoleCommandNode {
             unit.updateUniques()
             unit.updateVisibleTiles()
             DevConsoleResponse.OK
+        }) {
+            override fun autocomplete(console: DevConsolePopup, params: List<String>) =
+                getAutocompleteString(params.lastOrNull().orEmpty(), console.getSelectedUnit().promotions.promotions, console)
         },
 
         "setmovement" to ConsoleAction("unit setmovement [amount]") { console, params ->
