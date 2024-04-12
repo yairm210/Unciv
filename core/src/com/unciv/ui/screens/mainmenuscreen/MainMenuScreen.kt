@@ -167,7 +167,7 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
         column2.add(modsTable).row()
 
         if (game.files.getScenarioFiles().any()){
-            val scenarioTable = getMenuButton("Scenarios", "OtherIcons/Mods", KeyboardBinding.Scenarios)
+            val scenarioTable = getMenuButton("Scenarios", "OtherIcons/Scenarios", KeyboardBinding.Scenarios)
             { game.pushScreen(ScenarioScreen()) }
             column2.add(scenarioTable).row()
         }

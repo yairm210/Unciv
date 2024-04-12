@@ -748,7 +748,8 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 -   [Go back](https://thenounproject.com/icon/go%20back-1901947) by Salvia Santos for Resume
 -   [Multiplayer](https://thenounproject.com/icon/multiplayer-1215652) by Roy Charles
 -   [Options](https://thenounproject.com/icon/options-866090) By Thengakola
--   [Package](https://thenounproject.com/icon/package-1886048) by shashank singh
+-   [Package](https://thenounproject.com/icon/package-1886048) by shashank singh for Mods
+-   [scenario planning](https://thenounproject.com/icon/scenario-6569968) by nicolas for Scenarios
 
 ## Sound credits
 
