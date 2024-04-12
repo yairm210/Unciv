@@ -33,7 +33,7 @@ internal fun getAutocompleteString(lastWord: String, allOptions: Iterable<String
     if (matchingOptions.isEmpty()) return ""
     if (matchingOptions.size == 1) return matchingOptions.first().drop(lastWord.length) + " "
 
-    console.showResponse("Matching completions: " + matchingOptions.joinToString(), Color.LIME)
+    console.showResponse("Matching completions: " + matchingOptions.joinToString(), Color.LIME.lerp(Color.OLIVE.cpy(), 0.5f))
 
     val firstOption = matchingOptions.first()
     for ((index, char) in firstOption.withIndex()) {
