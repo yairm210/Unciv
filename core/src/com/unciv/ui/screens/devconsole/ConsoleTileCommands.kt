@@ -107,12 +107,6 @@ class ConsoleTileCommands: ConsoleCommandNode {
         format,
         action = { console, params -> action(console, params, newValue) }
     ) {
-        override fun autocomplete(console: DevConsolePopup, params: List<String>): String? {
-            if (params.isEmpty()) return null
-            // Note this could filter which directions are allowed on the selected tile... too lazy
-            return getAutocompleteString(params.last(), RiverDirections.names, console)
-        }
-
         companion object {
             private fun action(console: DevConsolePopup, params: List<String>, newValue: Boolean): DevConsoleResponse {
                 val selectedTile = console.getSelectedTile()

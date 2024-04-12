@@ -1,6 +1,7 @@
 package com.unciv.ui.screens.devconsole
 
 import com.badlogic.gdx.graphics.Color
+import com.unciv.logic.map.mapgenerator.RiverGenerator
 import com.unciv.models.ruleset.IRulesetObject
 import com.unciv.models.ruleset.tile.TerrainType
 import com.unciv.models.stats.Stat
@@ -88,6 +89,7 @@ open class ConsoleAction(val format: String, val action: (console: DevConsolePop
             "stat" -> Stat.names()
             "religionName" -> console.gameInfo.religions.keys
             "buildingName" -> console.gameInfo.ruleset.buildings.keys
+            "direction" -> RiverGenerator.RiverDirections.names
             else -> listOf()
         }
         return getAutocompleteString(lastParam, options, console)
