@@ -499,7 +499,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
     }
 
     fun getDamageFromTerrain(tile: Tile = currentTile): Int {
-        return  tile.allTerrains.sumOf { it.damagePerTurn }
+        return tile.allTerrains.sumOf { it.damagePerTurn }
     }
 
     fun isTransportTypeOf(mapUnit: MapUnit): Boolean {
