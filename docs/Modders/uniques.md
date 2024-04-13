@@ -1907,6 +1907,12 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "Cannot be used as permanent audiovisual mod"
 	Applicable to: ModOptions
 
+??? example  "Mod preselects map [comment]"
+	Only meaningful for Mods containing several maps. When this mod is selected on the new game screen's custom maps mod dropdown, the named map will be selected on the map dropdown. Also disables selection by recently modified. Case insensitive.
+	Example: "Mod preselects map [comment]"
+
+	Applicable to: ModOptions
+
 ## Conditional uniques
 !!! note ""
 
