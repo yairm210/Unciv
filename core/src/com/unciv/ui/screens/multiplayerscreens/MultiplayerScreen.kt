@@ -17,22 +17,11 @@ import com.unciv.ui.components.widgets.AutoScrollPane as ScrollPane
 class MultiplayerScreen : PickerScreen() {
     private var selectedGame: OnlineMultiplayerGame? = null
 
-    private val editButtonText = "Game settings"
     private val editButton = createEditButton()
-
-    private val addGameText = "Add multiplayer game"
     private val addGameButton = createAddGameButton()
-
-    private val copyGameIdText = "Copy game ID"
     private val copyGameIdButton = createCopyGameIdButton()
-
-    private val copyUserIdText = "Copy user ID"
     private val copyUserIdButton = createCopyUserIdButton()
-
-    private val friendsListText = "Friends list"
     private val friendsListButton = createFriendsListButton()
-
-    private val refreshText = "Refresh list"
     private val refreshButton = createRefreshButton()
 
     private val rightSideTable = createRightSideTable()
@@ -80,13 +69,13 @@ class MultiplayerScreen : PickerScreen() {
     }
 
     fun createRefreshButton(): TextButton {
-        val btn = refreshText.toTextButton()
+        val btn = "Refresh list".toTextButton()
         btn.onClick { game.onlineMultiplayer.requestUpdate() }
         return btn
     }
 
     fun createAddGameButton(): TextButton {
-        val btn = addGameText.toTextButton()
+        val btn = "Add multiplayer game".toTextButton()
         btn.onClick {
             game.pushScreen(AddMultiplayerGameScreen(this))
         }
@@ -94,7 +83,7 @@ class MultiplayerScreen : PickerScreen() {
     }
 
     fun createEditButton(): TextButton {
-        val btn = editButtonText.toTextButton().apply { disable() }
+        val btn = "Game settings".toTextButton().apply { disable() }
         btn.onClick {
             game.pushScreen(EditMultiplayerGameInfoScreen(selectedGame!!))
         }
@@ -102,7 +91,7 @@ class MultiplayerScreen : PickerScreen() {
     }
 
     fun createCopyGameIdButton(): TextButton {
-        val btn = copyGameIdText.toTextButton().apply { disable() }
+        val btn = "Copy game ID".toTextButton().apply { disable() }
         btn.onClick {
             val gameInfo = selectedGame?.preview
             if (gameInfo != null) {
@@ -114,7 +103,7 @@ class MultiplayerScreen : PickerScreen() {
     }
 
     fun createFriendsListButton(): TextButton {
-        val btn = friendsListText.toTextButton()
+        val btn = "Friends list".toTextButton()
         btn.onClick {
             game.pushScreen(ViewFriendsListScreen())
         }
@@ -122,7 +111,7 @@ class MultiplayerScreen : PickerScreen() {
     }
 
     private fun createCopyUserIdButton(): TextButton {
-        val btn = copyUserIdText.toTextButton()
+        val btn = "Copy user ID".toTextButton()
         btn.onClick {
             Gdx.app.clipboard.contents = game.settings.multiplayer.userId
             ToastPopup("UserID copied to clipboard", this)
@@ -146,13 +135,13 @@ class MultiplayerScreen : PickerScreen() {
                 .row()
             helpPopup.addGoodSizedLabel("You can assign your own user ID there easily, and other players can copy their user IDs here and send them to you for you to include them in the game.")
                 .row()
-            helpPopup.addGoodSizedLabel("").row()
+            helpPopup.row()
 
             helpPopup.addGoodSizedLabel("Once you've created your game, the Game ID gets automatically copied to your clipboard so you can send it to the other players.")
                 .row()
             helpPopup.addGoodSizedLabel("Players can enter your game by copying the game ID to the clipboard, and clicking on the 'Add multiplayer game' button")
                 .row()
-            helpPopup.addGoodSizedLabel("").row()
+            helpPopup.row()
 
             helpPopup.addGoodSizedLabel("The symbol of your nation will appear next to the game when it's your turn").row()
 
