@@ -13,12 +13,6 @@ interface MultiplayerGameUpdateSucceeded : Event, HasMultiplayerGameName {
 }
 
 /**
- * Gets sent when a game was added.
- */
-class MultiplayerGameAdded(
-    override val name: String
-) : Event, HasMultiplayerGameName
-/**
  * Gets sent when a game successfully updated
  */
 class MultiplayerGameUpdated(

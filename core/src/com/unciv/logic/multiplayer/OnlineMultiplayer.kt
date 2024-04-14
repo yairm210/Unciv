@@ -18,7 +18,6 @@ import com.unciv.utils.Concurrency
 import com.unciv.utils.Dispatcher
 import com.unciv.utils.debug
 import com.unciv.utils.launchOnThreadPool
-import com.unciv.utils.withGLContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.coroutineScope
@@ -42,7 +41,7 @@ private val FILE_UPDATE_THROTTLE_PERIOD = Duration.ofSeconds(60)
 /**
  * Provides multiplayer functionality to the rest of the game.
  *
- * See the file of [com.unciv.logic.multiplayer.MultiplayerGameAdded] for all available [EventBus] events.
+ * See the file of [com.unciv.logic.multiplayer.HasMultiplayerGameName] for all available [EventBus] events.
  */
 class OnlineMultiplayer {
     private val files = UncivGame.Current.files
@@ -129,8 +128,6 @@ class OnlineMultiplayer {
 
 
     /**
-     * Fires [MultiplayerGameAdded]
-     *
      * @throws FileStorageRateLimitReached if the file storage backend can't handle any additional actions for a time
      */
     suspend fun createGame(newGame: GameInfo) {
@@ -139,8 +136,6 @@ class OnlineMultiplayer {
     }
 
     /**
-     * Fires [MultiplayerGameAdded]
-     *
      * @param gameName if this is null or blank, will use the gameId as the game name
      * @return the final name the game was added under
      * @throws FileStorageRateLimitReached if the file storage backend can't handle any additional actions for a time
@@ -167,13 +162,10 @@ class OnlineMultiplayer {
         return addGame(fileHandle, preview)
     }
 
-    private suspend fun addGame(fileHandle: FileHandle, preview: GameInfoPreview? = null) {
+    private fun addGame(fileHandle: FileHandle, preview: GameInfoPreview? = null) {
         debug("Adding game %s", fileHandle.name())
         val game = OnlineMultiplayerGame(fileHandle, preview, if (preview != null) Instant.now() else null)
         savedGames[fileHandle] = game
-        withGLContext {
-            EventBus.send(MultiplayerGameAdded(game.name))
-        }
     }
 
     fun getGameByName(name: String): OnlineMultiplayerGame? {
