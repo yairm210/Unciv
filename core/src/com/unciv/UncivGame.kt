@@ -19,7 +19,6 @@ import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.skins.SkinCache
 import com.unciv.models.tilesets.TileSetCache
 import com.unciv.models.translations.Translations
-import com.unciv.ui.audio.GameSounds
 import com.unciv.ui.audio.MusicController
 import com.unciv.ui.audio.MusicMood
 import com.unciv.ui.audio.MusicTrackChooserFlags
@@ -103,7 +102,6 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
         settings = files.getGeneralSettings() // needed for the screen
         Display.setScreenMode(settings.screenMode, settings)
         setAsRootScreen(GameStartScreen())  // NOT dependent on any atlas or skin
-        GameSounds.init()
 
         musicController = MusicController()  // early, but at this point does only copy volume from settings
         installAudioHooks()
@@ -292,7 +290,7 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
     fun popScreen(): BaseScreen? {
         if (screenStack.size == 1) {
             musicController.pause()
-            UncivGame.Current.settings.autoPlay.stopAutoPlay()
+            settings.autoPlay.stopAutoPlay()
             ConfirmPopup(
                 screen = screenStack.last(),
                 question = "Do you want to exit the game?",
