@@ -65,6 +65,7 @@ enum class DiplomacyFlags {
     WaryOf,
     Bullied,
     RecentlyAttacked,
+    AcceptedPeaceNegotiationPeriod
 }
 
 enum class DiplomaticModifiers(val text: String) {
