@@ -4,6 +4,7 @@ import com.unciv.Constants
 import com.unciv.logic.automation.Automation
 import com.unciv.logic.automation.ThreatLevel
 import com.unciv.logic.automation.civilization.DiplomacyAutomation
+import com.unciv.logic.automation.civilization.MotivationToAttackAutomation
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
@@ -11,6 +12,7 @@ import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.UniqueType
+import com.unciv.models.translations.tr
 import com.unciv.ui.components.extensions.toPercent
 import com.unciv.ui.screens.victoryscreen.RankingType
 import kotlin.math.ceil
@@ -54,7 +56,7 @@ class TradeEvaluation {
             TradeType.Technology -> true
             TradeType.Introduction -> !tradePartner.knows(tradeOffer.name) // You can't introduce them to someone they already know!
             TradeType.WarDeclaration -> true
-            TradeType.PeaceDeclaration -> true
+            TradeType.PeaceNegotiation -> true
             TradeType.City -> offerer.cities.any { it.id == tradeOffer.name }
         }
     }
@@ -160,16 +162,33 @@ class TradeEvaluation {
                 }
             }
 
-            TradeType.PeaceDeclaration -> {
+            TradeType.PeaceNegotiation -> {
                 val civToMakePeaceWith = civInfo.gameInfo.getCivilization(offer.name)
-
-                return when (Automation.threatAssessment(civInfo, civToMakePeaceWith)) {
-                    ThreatLevel.VeryLow -> 1000
-                    ThreatLevel.Low -> 500
-                    ThreatLevel.Medium -> 100
-                    ThreatLevel.High -> 0
-                    ThreatLevel.VeryHigh -> 0
+                // following Boolean condition check is the same that triggers the Peace Offer automation in Diplomacy Automation
+                val alreadyWantsPeaceFlag = (MotivationToAttackAutomation.hasAtLeastMotivationToAttack(civInfo, civToMakePeaceWith, 10)  >= 10)
+                val costRequiredByEnemy = evaluatePeaceCostForThem(civInfo, civToMakePeaceWith)
+                val costRequiredByCiv = evaluatePeaceCostForThem(civToMakePeaceWith, civInfo)
+                val gapToPay = if (alreadyWantsPeaceFlag && (civInfo.gold < costRequiredByEnemy))
+                                    costRequiredByEnemy - civInfo.gold
+                                else if (alreadyWantsPeaceFlag)
+                                        0
+                                     else if (civToMakePeaceWith.gold < costRequiredByCiv)
+                                        costRequiredByCiv - civToMakePeaceWith.gold
+                                     else
+                                         0
+                return if (alreadyWantsPeaceFlag) {
+                    // just to cover next turn eventual inflation and diplomatic expenses
+                    (gapToPay + ((gapToPay) * 0.01)).toInt()
+                } else {
+                    when (Automation.threatAssessment(civInfo, tradePartner)) {
+                        ThreatLevel.VeryLow -> 1000 + gapToPay
+                        ThreatLevel.Low -> 500 + gapToPay
+                        ThreatLevel.Medium -> 250 + gapToPay
+                        ThreatLevel.High -> 100 + gapToPay
+                        ThreatLevel.VeryHigh -> 50 + gapToPay
+                    }
                 }
+
             }
 
             TradeType.City -> {
@@ -290,16 +309,16 @@ class TradeEvaluation {
                 }
             }
 
-            TradeType.PeaceDeclaration -> {
+            TradeType.PeaceNegotiation -> {
                 val civToMakePeaceWith = civInfo.gameInfo.getCivilization(offer.name)
-
                 return when (Automation.threatAssessment(civInfo, civToMakePeaceWith)) {
-                    ThreatLevel.VeryLow -> 1000 // making peace with someone very weak, for just some turns is not a nightmare
-                    ThreatLevel.Low -> 750
+                    ThreatLevel.VeryLow -> 10000
+                    ThreatLevel.Low -> 1000
                     ThreatLevel.Medium -> 500
                     ThreatLevel.High -> 250
                     ThreatLevel.VeryHigh -> 100
                 }
+
             }
 
             TradeType.City -> {
