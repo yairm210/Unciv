@@ -22,6 +22,7 @@ class Speed : RulesetObject(), IsPartOfGameInfoSerialization {
     var goldenAgeLengthModifier: Float = modifier
     var religiousPressureAdjacentCity: Int = 6
     var peaceDealDuration: Int = 10
+    var peaceNegotiationDuration: Int = 10
     var dealDuration: Int = 30
     var startYear: Float = -4000f
     var turns: ArrayList<HashMap<String, Float>> = ArrayList()
