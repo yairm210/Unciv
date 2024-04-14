@@ -151,7 +151,7 @@ class TradeLogic(val ourCivilization: Civilization, val otherCivilization: Civil
                 }
                 TradeType.PeaceNegotiation -> {
                     val nameOfCivToDeclarePeaceOn = offer.name
-                    from.getDiplomacyManager(nameOfCivToDeclarePeaceOn).setFlag(DiplomacyFlags.AcceptedPeaceNegotiationPeriod, 10)
+                    from.getDiplomacyManager(nameOfCivToDeclarePeaceOn).setFlag(DiplomacyFlags.AcceptedPeaceNegotiationPeriod, com.unciv.UncivGame.Current.gameInfo!!.speed.peaceNegotiationDuration)
                 }
                 else -> {}
             }
