@@ -10,8 +10,8 @@ import com.unciv.models.UncivSound
 import com.unciv.models.metadata.GameSettings
 import com.unciv.models.metadata.GameSettings.GameSetting
 import com.unciv.models.metadata.SettingsPropertyChanged
-import com.unciv.models.metadata.SettingsPropertyUncivSoundChanged
 import com.unciv.models.translations.tr
+import com.unciv.ui.audio.SoundPlayer
 import com.unciv.ui.components.input.onChange
 import com.unciv.ui.components.extensions.toGdxArray
 import com.unciv.ui.components.extensions.toLabel
@@ -84,10 +84,7 @@ open class SettingsSelect<T : Any>(
 
     private fun sendChangeEvent(item: T) {
         when (item) {
-            is UncivSound -> EventBus.send(object : SettingsPropertyUncivSoundChanged {
-                override val gameSetting = setting
-                override val value: UncivSound = settingsProperty.get() as UncivSound
-            })
+            is UncivSound -> SoundPlayer.play(item)
             else -> EventBus.send(object : SettingsPropertyChanged {
                 override val gameSetting = setting
             })

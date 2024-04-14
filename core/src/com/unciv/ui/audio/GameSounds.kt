@@ -4,7 +4,6 @@ import com.unciv.UncivGame
 import com.unciv.logic.event.EventBus
 import com.unciv.logic.multiplayer.MultiplayerGameUpdated
 import com.unciv.logic.multiplayer.isUsersTurn
-import com.unciv.models.metadata.SettingsPropertyUncivSoundChanged
 
 /**
  * Controls which sounds should be played when something happens while playing the game.
@@ -18,14 +17,7 @@ object GameSounds {
      * Has to be called for sounds to be played.
      */
     fun init() {
-        playSettingsSounds()
         playMultiplayerTurnNotification()
-    }
-
-    private fun playSettingsSounds() {
-        events.receive(SettingsPropertyUncivSoundChanged::class) {
-            SoundPlayer.play(it.value)
-        }
     }
 
     private fun playMultiplayerTurnNotification() {
