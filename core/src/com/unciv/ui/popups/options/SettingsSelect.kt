@@ -5,11 +5,9 @@ import com.badlogic.gdx.scenes.scene2d.ui.SelectBox
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener
 import com.badlogic.gdx.utils.Array
-import com.unciv.logic.event.EventBus
 import com.unciv.models.UncivSound
 import com.unciv.models.metadata.GameSettings
 import com.unciv.models.metadata.GameSettings.GameSetting
-import com.unciv.models.metadata.SettingsPropertyChanged
 import com.unciv.models.translations.tr
 import com.unciv.ui.audio.SoundPlayer
 import com.unciv.ui.components.input.onChange
@@ -60,7 +58,7 @@ open class SettingsSelect<T : Any>(
         selectBox.onChange {
             val newValue = selectBox.selected.value
             settingsProperty.set(newValue)
-            sendChangeEvent(newValue)
+            if (newValue is UncivSound) SoundPlayer.play(newValue)
         }
 
         return selectBox
@@ -80,14 +78,5 @@ open class SettingsSelect<T : Any>(
         val prev = refreshSelectBox.selected
         refreshSelectBox.items = options
         refreshSelectBox.selected = prev
-    }
-
-    private fun sendChangeEvent(item: T) {
-        when (item) {
-            is UncivSound -> SoundPlayer.play(item)
-            else -> EventBus.send(object : SettingsPropertyChanged {
-                override val gameSetting = setting
-            })
-        }
     }
 }
