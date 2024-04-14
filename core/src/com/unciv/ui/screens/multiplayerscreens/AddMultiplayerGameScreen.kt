@@ -18,7 +18,7 @@ import com.unciv.utils.Concurrency
 import com.unciv.utils.launchOnGLThread
 import java.util.UUID
 
-class AddMultiplayerGameScreen : PickerScreen() {
+class AddMultiplayerGameScreen(multiplayerScreen: MultiplayerScreen) : PickerScreen() {
     init {
         val gameNameTextField = UncivTextField.create("Game name")
         val gameIDTextField = UncivTextField.create("GameID")
@@ -63,6 +63,7 @@ class AddMultiplayerGameScreen : PickerScreen() {
                     launchOnGLThread {
                         popup.close()
                         game.popScreen()
+                        multiplayerScreen.gameList.update()
                     }
                 } catch (ex: Exception) {
                     val (message) = LoadGameScreen.getLoadExceptionMessage(ex)

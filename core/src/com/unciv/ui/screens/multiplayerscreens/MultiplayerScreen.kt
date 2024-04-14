@@ -38,7 +38,7 @@ class MultiplayerScreen : PickerScreen() {
     private val refreshButton = createRefreshButton()
 
     private val rightSideTable = createRightSideTable()
-    private val leftSideTable = GameList(::selectGame)
+    val gameList = GameList(::selectGame)
 
     private val events = EventBus.EventReceiver()
 
@@ -91,7 +91,7 @@ class MultiplayerScreen : PickerScreen() {
     fun createAddGameButton(): TextButton {
         val btn = addGameText.toTextButton()
         btn.onClick {
-            game.pushScreen(AddMultiplayerGameScreen())
+            game.pushScreen(AddMultiplayerGameScreen(this))
         }
         return btn
     }
@@ -135,7 +135,7 @@ class MultiplayerScreen : PickerScreen() {
 
     private fun createMainContent(): Table {
         val mainTable = Table()
-        mainTable.add(ScrollPane(leftSideTable).apply { setScrollingDisabled(true, false) }).center()
+        mainTable.add(ScrollPane(gameList).apply { setScrollingDisabled(true, false) }).center()
         mainTable.add(rightSideTable)
         return mainTable
     }
