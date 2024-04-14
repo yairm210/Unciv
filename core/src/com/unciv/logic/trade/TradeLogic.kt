@@ -82,7 +82,7 @@ class TradeLogic(val ourCivilization: Civilization, val otherCivilization: Civil
                 .filter { civInfo.getDiplomacyManager(it).diplomaticStatus == DiplomaticStatus.War }
 
             for (thirdCiv in civsWeAreAtWarWith) {
-                offers.add(TradeOffer(thirdCiv.civName, TradeType.PeaceDeclaration))
+                offers.add(TradeOffer(thirdCiv.civName, TradeType.PeaceNegotiation))
             }
         }
 
@@ -149,22 +149,9 @@ class TradeLogic(val ourCivilization: Civilization, val otherCivilization: Civil
                     val nameOfCivToDeclareWarOn = offer.name
                     from.getDiplomacyManager(nameOfCivToDeclareWarOn).declareWar()
                 }
-                TradeType.PeaceDeclaration -> {
+                TradeType.PeaceNegotiation -> {
                     val nameOfCivToDeclarePeaceOn = offer.name
-                    from.getDiplomacyManager(nameOfCivToDeclarePeaceOn).makePeace()
-                    //let's get the civilization to declare peace on
-                    val civToDeclarePeaceOn = from.gameInfo.civilizations.first() { it.civName == nameOfCivToDeclarePeaceOn}
-                    // let's create a "puppet" peaceTreaty to propagate turnsToPeaceTreaty duration-related effects
-                    val peaceTrade = Trade()
-                    peaceTrade.ourOffers.add(TradeOffer(Constants.peaceTreaty, TradeType.Treaty, 1, com.unciv.UncivGame.Current.gameInfo!!.speed))
-                    peaceTrade.theirOffers.add(TradeOffer(Constants.peaceTreaty, TradeType.Treaty, 1, com.unciv.UncivGame.Current.gameInfo!!.speed))
-                    // let's add peaceTreaties to both diplomacyManagers
-                    from.getDiplomacyManager(civToDeclarePeaceOn).apply {
-                        trades.add(peaceTrade)
-                    }
-                    civToDeclarePeaceOn.getDiplomacyManager(from).apply {
-                        trades.add(peaceTrade)
-                    }
+                    from.getDiplomacyManager(nameOfCivToDeclarePeaceOn).setFlag(DiplomacyFlags.AcceptedPeaceNegotiationPeriod, 10)
                 }
                 else -> {}
             }
