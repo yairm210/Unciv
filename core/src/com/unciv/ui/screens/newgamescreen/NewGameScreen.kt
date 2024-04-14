@@ -148,9 +148,8 @@ class NewGameScreen(
 
         if (gameSetupInfo.gameParameters.players.none {
                     it.playerType == PlayerType.Human &&
-                            // do not allow multiplayer with only remote spectator(s) and AI(s) - non-MP that works
-                            !(it.chosenCiv == Constants.spectator && gameSetupInfo.gameParameters.isOnlineMultiplayer &&
-                                    it.playerId != UncivGame.Current.settings.multiplayer.userId)
+                            // do not allow multiplayer with only spectator(s) and AI(s) - non-MP that works
+                            !(it.chosenCiv == Constants.spectator && gameSetupInfo.gameParameters.isOnlineMultiplayer)
                 }) {
             val noHumanPlayersPopup = Popup(this)
             noHumanPlayersPopup.addGoodSizedLabel("No human players selected!".tr()).row()
