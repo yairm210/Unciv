@@ -43,6 +43,7 @@ object Constants {
     const val cityCenter = "City center"
 
     const val peaceTreaty = "Peace Treaty"
+    const val peaceNegotiation = "Peace Negotiation"
     const val researchAgreement = "Research Agreement"
     const val openBorders = "Open Borders"
     const val defensivePact = "Defensive Pact"
