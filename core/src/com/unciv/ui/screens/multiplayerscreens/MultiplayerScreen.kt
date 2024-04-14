@@ -3,8 +3,6 @@ package com.unciv.ui.screens.multiplayerscreens
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
-import com.unciv.logic.event.EventBus
-import com.unciv.logic.multiplayer.MultiplayerGameDeleted
 import com.unciv.logic.multiplayer.OnlineMultiplayerGame
 import com.unciv.models.translations.tr
 import com.unciv.ui.screens.pickerscreens.PickerScreen
@@ -40,8 +38,6 @@ class MultiplayerScreen : PickerScreen() {
     private val rightSideTable = createRightSideTable()
     val gameList = GameList(::selectGame)
 
-    private val events = EventBus.EventReceiver()
-
     init {
         setDefaultCloseAction()
 
@@ -53,14 +49,15 @@ class MultiplayerScreen : PickerScreen() {
 
         setupRightSideButton()
 
-        events.receive(MultiplayerGameDeleted::class, { it.name == selectedGame?.name }) {
-            unselectGame()
-        }
-
         game.onlineMultiplayer.requestUpdate()
 
         pickerPane.bottomTable.background = skinStrings.getUiBackground("MultiplayerScreen/BottomTable", tintColor = skinStrings.skinConfig.clearColor)
         pickerPane.topTable.background = skinStrings.getUiBackground("MultiplayerScreen/TopTable", tintColor = skinStrings.skinConfig.clearColor)
+    }
+
+    fun onGameDeleted(gameName:String){
+        if (selectedGame?.name == gameName) unselectGame()
+        gameList.update()
     }
 
     private fun setupRightSideButton() {

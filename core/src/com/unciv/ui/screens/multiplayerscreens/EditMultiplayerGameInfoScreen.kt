@@ -41,7 +41,7 @@ class EditMultiplayerGameInfoScreen(val multiplayerGame: OnlineMultiplayerGame) 
             ) {
                 try {
                     game.onlineMultiplayer.deleteGame(multiplayerGame)
-                    game.popScreen()
+                    (game.popScreen() as? MultiplayerScreen)?.onGameDeleted(multiplayerGame.name)
                 } catch (ex: Exception) {
                     Log.error("Could not delete game!", ex)
                     ToastPopup("Could not delete game!", this)

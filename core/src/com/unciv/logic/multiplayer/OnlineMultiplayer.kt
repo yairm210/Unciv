@@ -112,7 +112,7 @@ class OnlineMultiplayer {
         }
     }
 
-    private suspend fun updateSavesFromFiles() {
+    private fun updateSavesFromFiles() {
         val saves = files.getMultiplayerSaves()
 
         val removedSaves = savedGames.keys - saves.toSet()
@@ -152,12 +152,12 @@ class OnlineMultiplayer {
         addGame(gamePreview, saveFileName)
     }
 
-    private suspend fun addGame(newGame: GameInfo) {
+    private fun addGame(newGame: GameInfo) {
         val newGamePreview = newGame.asPreview()
         addGame(newGamePreview, newGamePreview.gameId)
     }
 
-    private suspend fun addGame(preview: GameInfoPreview, saveFileName: String) {
+    private fun addGame(preview: GameInfoPreview, saveFileName: String) {
         val fileHandle = files.saveGame(preview, saveFileName)
         return addGame(fileHandle, preview)
     }
@@ -271,8 +271,6 @@ class OnlineMultiplayer {
 
     /**
      * Deletes the game from disk, does not delete it remotely.
-     *
-     * Fires [MultiplayerGameDeleted]
      */
     fun deleteGame(multiplayerGame: OnlineMultiplayerGame) {
         deleteGame(multiplayerGame.fileHandle)
@@ -285,7 +283,6 @@ class OnlineMultiplayer {
 
         debug("Deleting game %s with id %s", fileHandle.name(), game.preview?.gameId)
         savedGames.remove(game.fileHandle)
-        Concurrency.runOnGLThread { EventBus.send(MultiplayerGameDeleted(game.name)) }
     }
 
     /**

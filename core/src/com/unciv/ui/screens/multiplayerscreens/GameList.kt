@@ -10,7 +10,6 @@ import com.unciv.UncivGame
 import com.unciv.logic.GameInfoPreview
 import com.unciv.logic.event.EventBus
 import com.unciv.logic.multiplayer.HasMultiplayerGameName
-import com.unciv.logic.multiplayer.MultiplayerGameDeleted
 import com.unciv.logic.multiplayer.MultiplayerGameNameChanged
 import com.unciv.logic.multiplayer.MultiplayerGameUpdateEnded
 import com.unciv.logic.multiplayer.MultiplayerGameUpdateFailed
@@ -36,9 +35,6 @@ class GameList(
         padBottom(10f)
 
         events.receive(MultiplayerGameNameChanged::class) {
-            update()
-        }
-        events.receive(MultiplayerGameDeleted::class) {
             update()
         }
 
@@ -99,11 +95,6 @@ private class GameDisplay(
         events.receive(MultiplayerGameUpdateFailed::class, isOurGame) {
             updateErrorIndicator(true)
         }
-    }
-
-    fun changeName(newName: String) {
-        gameName = newName
-        gameButton.setText(newName)
     }
 
     private fun updateTurnIndicator() {
