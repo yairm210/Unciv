@@ -268,7 +268,6 @@ When extension rulesets define GlobalUniques, all uniques are merged. At the mom
 **Note a Base Ruleset mod can define a "welcome page" here by adding a "Tutorial" with a name equal to the name of the mod!**
 As an exception to the general rule, this file in a Base Ruleset mod will not _replace_ the default, but add to it like extension mods do.
 Also, place it under `<mod>/jsons/` normally even if the original is found one level above the vanilla jsons.
-Also, place it under `<mod>/jsons/` normally even if the original is found one level above the vanilla jsons.
 
 Each tutorial has the following structure:
 
@@ -279,6 +278,8 @@ Each tutorial has the following structure:
 | steps           | List of Strings | Optional | Plain text                                                                    |
 
 If an entry contains both `steps` and `civilopediaText` attributes, the `civilopediaText` is shown first.
+Tutorials shown as Popup can show an show an external image (not part of the texture atlases) if there is an image unter ExtraImages (directly under assets or the Mod folder) having the same name.
+This is searched for, meaning the mod defining the Tutorial is irrelevant, mods can override builtin ExtraImages, and case sensitivity depends on the OS.
 
 ## VictoryTypes.json
 
@@ -361,6 +362,8 @@ The lines from json will 'surround' the automatically generated lines such that 
 
 Note: `text` now also supports inline color markup. Insert `«color»` to start coloring text, `«»` to stop. `color` can be a name or 6/8-digit hex notation like `#ffa040` (different from the `color` attribute notation only by not allowing 3-digit codes, but allowing the alpha channel).
 Effectively, the `«»` markers are replaced with `[]` _after_ translation and then passed to [gdx markup language](https://libgdx.com/wiki/graphics/2d/fonts/color-markup-language).
+
+Note: Using an ExtraImages folder in a mod was not working until version 4.11.5
 
 ## RGB colors list
 

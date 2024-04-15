@@ -239,30 +239,7 @@ class FormattedLine (
      * @param iconDisplay Flag to omit link or all images.
      */
     fun render(labelWidth: Float, iconDisplay: IconDisplay = IconDisplay.All): Actor {
-        if (extraImage.isNotEmpty()) {
-            val table = Table(BaseScreen.skin)
-            try {
-                val image = when {
-                    ImageGetter.imageExists(extraImage) ->
-                        if (centered) ImageGetter.getDrawable(extraImage).cropToContent()
-                        else ImageGetter.getImage(extraImage)
-                    Gdx.files.internal("ExtraImages/$extraImage.png").exists() ->
-                        ImageGetter.getExternalImage("$extraImage.png")
-                    Gdx.files.internal("ExtraImages/$extraImage.jpg").exists() ->
-                        ImageGetter.getExternalImage("$extraImage.jpg")
-                    else -> return table
-                }
-                // limit larger cordinate to a given max size
-                val maxSize = if (imageSize.isNaN()) labelWidth else imageSize
-                val (width, height) = if (image.width > image.height)
-                        maxSize to maxSize * image.height / image.width
-                    else maxSize * image.width / image.height to maxSize
-                table.add(image).size(width, height)
-            } catch (exception: Exception) {
-                Log.error("Exception while rendering civilopedia text", exception)
-            }
-            return table
-        }
+        if (extraImage.isNotEmpty()) return renderExtraImage(labelWidth)
 
         val fontSize = when {
             header in 1 until headerSizes.size -> headerSizes[header]
@@ -312,6 +289,30 @@ class FormattedLine (
                     .width(labelWidth - usedWidth - indentWidth)
                     .padLeft(indentWidth)
                     .align(align)
+        }
+        return table
+    }
+
+    private fun renderExtraImage(labelWidth: Float): Table {
+        val table = Table(BaseScreen.skin)
+        fun getExtraImage(): Image? {
+            if (ImageGetter.imageExists(extraImage))
+                return if (centered) ImageGetter.getDrawable(extraImage).cropToContent()
+                    else ImageGetter.getImage(extraImage)
+            val externalImage = ImageGetter.findExternalImage(extraImage)
+                ?: return null
+            return ImageGetter.getExternalImage(externalImage)
+        }
+        try {
+            val image = getExtraImage() ?: return table
+            // limit larger cordinate to a given max size
+            val maxSize = if (imageSize.isNaN()) labelWidth else imageSize
+            val (width, height) = if (image.width > image.height)
+                maxSize to maxSize * image.height / image.width
+            else maxSize * image.width / image.height to maxSize
+            table.add(image).size(width, height)
+        } catch (exception: Exception) {
+            Log.error("Exception while rendering civilopedia text", exception)
         }
         return table
     }
