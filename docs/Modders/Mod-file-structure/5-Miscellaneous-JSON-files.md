@@ -118,20 +118,26 @@ The code below is an example of a valid "turns" definition and it specifies that
 
 Events allow users to choose between options of triggers to activate.
 
-| Attribute | Type                 | Default  | Notes                                                     |
-|-----------|----------------------|----------|-----------------------------------------------------------|
-| name      | String               | Required | Used for triggering via "Triggers a [event] event" unique |
-| text      | String               | None     | Flavor text displayed to user                             |
-| choices   | List of EventChoices |          | User can choose to trigger one of the viable choices      |
+| Attribute       | Type                 | Default  | Notes                                                                         |
+|-----------------|----------------------|----------|-------------------------------------------------------------------------------|
+| name            | String               | Required | Used for triggering via "Triggers a [event] event" unique                     |
+| text            | String               | None     | Flavor text displayed to user                                                 |
+| civilopediaText | List                 | Optional | See [civilopediaText chapter](5-Miscellaneous-JSON-files.md#civilopedia-text) |
+| choices         | List of EventChoices |          | User can choose to trigger one of the viable choices                          |
+
+You can use text and/or civilopediaText, if both are present both are shown (but why would you?)
 
 Event choices are comprised of:
 
-| Attribute        | Type                        | Default    | Notes                                                         |
-|------------------|-----------------------------|------------|---------------------------------------------------------------|
-| text             | String                      | Required   | Displayed to user. Should be an action name - "Do X"          |
-| triggeredUniques | List of trigger uniques     | Required   | The triggers that this choice activates upon being chosen     |
-| conditions       | List of conditional uniques | Empty list | If any conditional is not met, this option becomes unpickable |
+| Attribute        | Type                        | Default    | Notes                                                                                                                |
+|------------------|-----------------------------|------------|----------------------------------------------------------------------------------------------------------------------|
+| text             | String                      | Required   | Displayed to user as button. Should be an action name - "Do X"                                                       |
+| triggeredUniques | List of trigger uniques     | Required   | The triggers that this choice activates upon being chosen                                                            |
+| conditions       | List of conditional uniques | Empty list | If any conditional is not met, this option becomes unpickable (not shown)                                            |
+| keyShortcut      | key to select (name)        | none       | Key names see [Gdx.Input.Keys](https://github.com/libgdx/libgdx/blob/master/gdx/src/com/badlogic/gdx/Input.java#L69) |
+| civilopediaText  | List                        | Optional   | See [civilopediaText chapter](5-Miscellaneous-JSON-files.md#civilopedia-text)                                        |
 
+Here, civilopediaText is shown outside the active Button, before the triggeredUniques.
 
 ## ModOptions.json
 
