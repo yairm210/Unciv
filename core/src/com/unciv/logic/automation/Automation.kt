@@ -256,7 +256,8 @@ object Automation {
         city: City,
         construction: INonPerpetualConstruction
     ): Boolean {
-        return allowCreateImprovementBuildings(civInfo, city, construction)
+        return  !(construction is Building && construction.isWonder && city.isPuppet)
+            && allowCreateImprovementBuildings(civInfo, city, construction)
                 && allowSpendingResource(civInfo, construction, city)
     }
 
