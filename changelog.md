@@ -1,30 +1,15 @@
 ## 4.11.5
 
-Better multiplayer game screen - all 'game settings' are accessible immediately without a subscreen!
+Better multiplayer game screen
 
-Solved some problems with resigning - we have others, specifically - TradeOffer's constructor assumes Unciv.Current.gameInfo... That'll eb a hassle to deal with...
-
-MultiplayerScreen cleanup
-
-EventHub removal - Removed 'MultiplayerGameDeleted' event
-
-EventHub removal - Removed 'MultiplayerGameAdded' event
-
-EventHub removal - 'add multiplayer game' no longer works through EventHub
+Solved some problems with resigning MP games
 
 Disallow creating "multiplayer" games with only AI and spectator
 
-EventBus removal - deleted GameSounds, play mp sounds directly
-
-There is no SettingsEvent, no one's listening for settings changes
-
-EventBus removal - remove 'settings updated' sound playing via eventbus
-
 By SomeTroglodyte:
-- Commenting UnitManager.unitList stuff 
-- Fix Invest quest stays forever 
-- Minor Scenarios UX improvements 
-- Console autocompletion can display *all* possibilities 
+- Fix Invest quest stays forever
+- Minor Scenarios UX improvements
+- Console autocompletion can display *all* possibilities
 
 ## 4.11.4
 
