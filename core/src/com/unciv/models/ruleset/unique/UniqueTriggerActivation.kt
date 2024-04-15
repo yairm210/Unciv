@@ -105,8 +105,8 @@ object UniqueTriggerActivation {
         when (unique.type) {
             UniqueType.TriggerEvent -> {
                 val event = ruleset.events[unique.params[0]] ?: return null
-                val choices = event.choices.filter { it.matchesConditions(stateForConditionals) }
-                if (choices.isEmpty()) return null
+                val choices = event.getMatchingChoices(stateForConditionals)
+                    ?: return null
                 return {
                     if (civInfo.isAI()) choices.random().triggerChoice(civInfo)
                     else civInfo.popupAlerts.add(PopupAlert(AlertType.Event, event.name))
@@ -301,7 +301,7 @@ object UniqueTriggerActivation {
                     .mapNotNull { civInfo.gameInfo.ruleset.policies[it] }
                     .filter { it.matchesFilter(policyFilter) }
                 if (policiesToRemove.isEmpty()) return null
-                
+
                 return {
                     for (policy in policiesToRemove){
                         civInfo.policies.removePolicy(policy)

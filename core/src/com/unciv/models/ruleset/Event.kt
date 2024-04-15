@@ -6,25 +6,40 @@ import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.stats.INamed
+import com.unciv.ui.components.input.KeyCharAndCode
+import com.unciv.ui.screens.civilopediascreen.FormattedLine
+import com.unciv.ui.screens.civilopediascreen.ICivilopediaText
 
 
-
-class Event : INamed {
+class Event : INamed, ICivilopediaText {
 
     override var name = ""
     var text = ""
+    override var civilopediaText = listOf<FormattedLine>()
+    override fun makeLink() = "Event/$name"
+
     // todo: add unrepeatable events
 
     var choices = ArrayList<EventChoice>()
+
+    fun getMatchingChoices(stateForConditionals: StateForConditionals) =
+        choices.filter { it.matchesConditions(stateForConditionals) }.ifEmpty { null }
 }
 
-class EventChoice {
+class EventChoice : ICivilopediaText {
     var text = ""
+    override var civilopediaText = listOf<FormattedLine>()
+    override fun makeLink() = ""
+
+    /** Keyboard support - not user-rebindable, mod control only. Will be [parsed][KeyCharAndCode.parse], so Gdx key names will work. */
+    val keyShortcut = ""
+
     var triggeredUniques = ArrayList<String>()
     val triggeredUniqueObjects by lazy { triggeredUniques.map { Unique(it) } }
 
     var conditions = ArrayList<String>()
     val conditionObjects by lazy { conditions.map { Unique(it) } }
+
     fun matchesConditions(stateForConditionals: StateForConditionals) =
         conditionObjects.all { Conditionals.conditionalApplies(null, it, stateForConditionals) }
 
