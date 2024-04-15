@@ -102,8 +102,12 @@ enum class DiplomaticModifiers(val text: String) {
     GaveUsUnits("You gave us units!"),
     GaveUsGifts("We appreciate your gifts"),
     ReturnedCapturedUnits("You returned captured units to us"),
-    BelieveSameReligion("We believe in the same religion"),
+    BelieveSameReligion("We believe in the same religion");
 
+    companion object{
+        private val valuesAsMap = DiplomaticModifiers.values().associateBy { it.name }
+        fun safeValueOf(name: String) = valuesAsMap[name]
+    }
 }
 
 class DiplomacyManager() : IsPartOfGameInfoSerialization {
@@ -113,7 +117,6 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
         const val MINIMUM_INFLUENCE = -60f
     }
 
-    @Suppress("JoinDeclarationAndAssignment")  // incorrect warning - constructor would need to be higher in scope
     @Transient
     lateinit var civInfo: Civilization
 

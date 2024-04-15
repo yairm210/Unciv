@@ -199,7 +199,9 @@ class MajorCivDiplomacyTable(private val diplomacyScreen: DiplomacyScreen) {
                 && otherCivDiplomacyManager.hasModifier(DiplomaticModifiers.DestroyedProtectedMinor))
                 continue
 
-            var text = DiplomaticModifiers.valueOf(modifier.key).text.tr() + " "
+            val diplomaticModifier = DiplomaticModifiers.safeValueOf(modifier.key)
+                ?: continue // This modifier is from the future, you cannot understand it yet
+            var text = diplomaticModifier.text.tr() + " "
             if (modifier.value > 0) text += "+"
             text += modifier.value.roundToInt()
             val color = if (modifier.value < 0) Color.RED else Color.GREEN
