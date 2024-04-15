@@ -1,6 +1,7 @@
 package com.unciv.ui.screens.devconsole
 
 import com.badlogic.gdx.graphics.Color
+import com.unciv.logic.map.mapgenerator.RiverGenerator
 import com.unciv.models.ruleset.IRulesetObject
 import com.unciv.models.ruleset.tile.TerrainType
 import com.unciv.models.stats.Stat
@@ -25,14 +26,14 @@ internal inline fun <reified T: Enum<T>> findCliInput(param: String): T? {
 }
 
 /** Returns the string to *add* to the existing command */
-internal fun getAutocompleteString(lastWord: String, allOptions: Iterable<String>, console: DevConsolePopup): String? {
+internal fun getAutocompleteString(lastWord: String, allOptions: Iterable<String>, console: DevConsolePopup): String {
     console.showResponse(null, Color.WHITE)
 
     val matchingOptions = allOptions.map { it.toCliInput() }.filter { it.startsWith(lastWord.toCliInput()) }
-    if (matchingOptions.isEmpty()) return null
+    if (matchingOptions.isEmpty()) return ""
     if (matchingOptions.size == 1) return matchingOptions.first().drop(lastWord.length) + " "
 
-    console.showResponse("Matching completions: " + matchingOptions.joinToString(), Color.FOREST)
+    console.showResponse("Matching completions: " + matchingOptions.joinToString(), Color.LIME.lerp(Color.OLIVE.cpy(), 0.5f))
 
     val firstOption = matchingOptions.first()
     for ((index, char) in firstOption.withIndex()) {
@@ -45,11 +46,11 @@ internal fun getAutocompleteString(lastWord: String, allOptions: Iterable<String
 
 interface ConsoleCommand {
     fun handle(console: DevConsolePopup, params: List<String>): DevConsoleResponse
+
     /** Returns the string to *add* to the existing command.
      *  The function should add a space at the end if and only if the "match" is an unambiguous choice!
-     *  Returning `null` means there was no match at all, while returning an empty string means the last word is a match as-is.
      */
-    fun autocomplete(console: DevConsolePopup, params: List<String>): String? = ""
+    fun autocomplete(console: DevConsolePopup, params: List<String>): String = ""
 }
 
 class ConsoleHintException(val hint: String) : Exception()
@@ -67,13 +68,11 @@ open class ConsoleAction(val format: String, val action: (console: DevConsolePop
         }
     }
 
-    override fun autocomplete(console: DevConsolePopup, params: List<String>): String? {
-        if (params.isEmpty()) return null
-
+    override fun autocomplete(console: DevConsolePopup, params: List<String>): String {
         val formatParams = format.split(" ").drop(2).map {
             it.removeSurrounding("<",">").removeSurrounding("[","]").removeSurrounding("\"")
         }
-        if (formatParams.size < params.size) return null
+        if (formatParams.size < params.size) return ""
         val formatParam = formatParams[params.lastIndex]
 
         val lastParam = params.last()
@@ -88,6 +87,7 @@ open class ConsoleAction(val format: String, val action: (console: DevConsolePop
             "stat" -> Stat.names()
             "religionName" -> console.gameInfo.religions.keys
             "buildingName" -> console.gameInfo.ruleset.buildings.keys
+            "direction" -> RiverGenerator.RiverDirections.names
             else -> listOf()
         }
         return getAutocompleteString(lastParam, options, console)
@@ -113,9 +113,8 @@ interface ConsoleCommandNode : ConsoleCommand {
         return handler.handle(console, params.drop(1))
     }
 
-    override fun autocomplete(console: DevConsolePopup, params: List<String>): String? {
-        if (params.isEmpty()) return null
-        val firstParam = params[0]
+    override fun autocomplete(console: DevConsolePopup, params: List<String>): String {
+        val firstParam = params.firstOrNull().orEmpty()
         if (firstParam in subcommands) return subcommands[firstParam]!!.autocomplete(console, params.drop(1))
         return getAutocompleteString(firstParam, subcommands.keys, console)
     }
