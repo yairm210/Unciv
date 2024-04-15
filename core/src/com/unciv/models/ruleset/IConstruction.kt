@@ -209,6 +209,7 @@ enum class RejectionReasonType(val shouldShow: Boolean, val errorMessage: String
     NationalWonderBeingBuiltElsewhere(true, "National Wonder is being built elsewhere"),
     CityStateWonder(false, "No Wonders for city-states"),
     CityStateNationalWonder(false, "No National Wonders for city-states"),
+    PuppetWonder(false, "No Wonders for Puppets"),
     WonderDisabledEra(false, "This Wonder is disabled when starting in this era"),
 
     ConsumesResources(true, "Consumes resources which you are lacking"),

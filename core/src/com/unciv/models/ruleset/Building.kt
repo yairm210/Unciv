@@ -415,6 +415,8 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
             if (civ.isCityState())
                 yield(RejectionReasonType.CityStateNationalWonder.toInstance())
         }
+        if (isAnyWonder() && cityConstructions.city.isPuppet)
+            yield(RejectionReasonType.PuppetWonder.toInstance())
 
         if (requiredBuilding != null && !cityConstructions.containsBuildingOrEquivalent(requiredBuilding!!)) {
             yield(RejectionReasonType.RequiresBuildingInThisCity.toInstance("Requires a [${civ.getEquivalentBuilding(requiredBuilding!!)}] in this city"))
