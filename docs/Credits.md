@@ -724,6 +724,9 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 - [Reindeer in santa hat peeping out](https://www.freepik.com/free-vector/reindeer-santa-hat-peeping-out_1430479.htm) by katemangostar for easter eggs
 - [Positive santa ringing bell](https://www.freepik.com/free-vector/positive-santa-ringing-bell-waving-hand_3636285.htm) by katemangostar for easter eggs
 - [Snowman wearing santa hat scarf and mittens](https://www.freepik.com/free-vector/snowman-wearing-santa-hat-scarf-mittens_3636292.htm) by katemangostar for easter eggs
+- [Calavera Catrina](https://commons.wikimedia.org/wiki/File:Posada2.Catrina.jpeg) by José Guadalupe Posada for easter eggs (CC0 1.0 public domain)
+- [Calavera Maderista](https://commons.wikimedia.org/wiki/File:Jos%C3%A9_Guadalupe_Posada,_Calavera_Maderista,_NGA_30476.jpg) by José Guadalupe Posada for easter eggs (CC0 1.0 public domain)
+- [Gran calavera eléctrica](https://commons.wikimedia.org/wiki/File:Gran_calavera_el%C3%A9ctrica2.jpg) by José Guadalupe Posada for easter eggs (CC0 1.0 public domain)
 - [AirSweep](https://thenounproject.com/icon/jet-134340/) by Creative Stall for Air Sweep icon
 - [Timer](https://www.flaticon.com/free-icon/stopwatch_563480) created by Gregor Cresnar Premium - Flaticon - for Game speeds civilopedia category
 - [Political Science](https://www.flaticon.com/premium-icon/political-science_5403775) created by Hilmy Abiyyu A. - Flaticon - for Global politics overview screen

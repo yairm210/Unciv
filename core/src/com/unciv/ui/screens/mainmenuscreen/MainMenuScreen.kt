@@ -10,6 +10,7 @@ import com.unciv.GUI
 import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
 import com.unciv.logic.GameStarter
+import com.unciv.logic.HolidayDates
 import com.unciv.logic.UncivShowableException
 import com.unciv.logic.map.MapParameters
 import com.unciv.logic.map.MapShape
@@ -114,6 +115,9 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
         backgroundStack.add(BackgroundActor(background, Align.center))
         stage.addActor(backgroundStack)
         backgroundStack.setFillParent(true)
+
+        if (HolidayDates.getHolidayByDate() == HolidayDates.Holidays.DiaDeLosMuertos)
+            EasterEggVisitors(stage, "Calavera")
 
         // If we were in a mod, some of the resource images for the background map we're creating
         // will not exist unless we reset the ruleset and images
