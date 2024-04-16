@@ -30,9 +30,6 @@ class Tutorial : RulesetObject() {
     override fun getUniqueTarget() = UniqueTarget.Tutorial
     override fun makeLink() = "Tutorial/$name"
 
-    override fun getCivilopediaTextLines(ruleset: Ruleset): List<FormattedLine> {
-        val imageLine = FormattedLine(extraImage = name.replace(' ', '_'))
-        if (steps == null) return listOf(imageLine)
-        return (sequenceOf(imageLine) + steps.asSequence().map { FormattedLine(it) }).toList()
-    }
+    override fun getCivilopediaTextLines(ruleset: Ruleset) =
+        steps?.map { FormattedLine(it) }.orEmpty()
 }
