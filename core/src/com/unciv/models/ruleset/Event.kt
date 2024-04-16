@@ -22,6 +22,7 @@ class Event : INamed, ICivilopediaText {
 
     var choices = ArrayList<EventChoice>()
 
+    /** @return `null` when no choice passes the condition tests, so client code can easily bail using Elvis `?:`. */
     fun getMatchingChoices(stateForConditionals: StateForConditionals) =
         choices.filter { it.matchesConditions(stateForConditionals) }.ifEmpty { null }
 }
