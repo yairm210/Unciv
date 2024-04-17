@@ -26,14 +26,16 @@ class EasterEggVisitors(stage: Stage, name: String) : WidgetGroup() {
     private val centerY = stage.height / 2
     private val placementRadius = sqrt(
         centerX * centerX + centerY * centerY
-            + images.maxOf { it.prefWidth }.pow(2)
-            + images.maxOf { it.prefHeight }.pow(2)
+            + (images.maxOfOrNull { it.prefWidth } ?: 0f).pow(2)
+            + (images.maxOfOrNull { it.prefHeight } ?: 0f).pow(2)
     )
 
     init {
-        setFillParent(true)
-        stage.addActor(this)
-        nextImage()
+        if (images.isNotEmpty()) {
+            setFillParent(true)
+            stage.addActor(this)
+            nextImage()
+        }
     }
 
     private fun nextImage() {
