@@ -388,8 +388,8 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
             if (!civ.tech.isResearched(requiredTech))
                 yield(RejectionReasonType.RequiresTech.toInstance("$requiredTech not researched!"))
 
-        // Regular wonders
-        if (isWonder) {
+        // All Wonders
+        if(isAnyWonder()) {
             if (civ.gameInfo.getCities().any { it.cityConstructions.isBuilt(name) })
                 yield(RejectionReasonType.WonderAlreadyBuilt.toInstance())
 
@@ -399,24 +399,16 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
             if (civ.isCityState())
                 yield(RejectionReasonType.CityStateWonder.toInstance())
 
+            if (cityConstructions.city.isPuppet)
+                yield(RejectionReasonType.PuppetWonder.toInstance())
+        }
+
+        // Regular wonders
+        if (isWonder) {
             val startingEra = civ.gameInfo.gameParameters.startingEra
             if (name in ruleSet.eras[startingEra]!!.startingObsoleteWonders)
                 yield(RejectionReasonType.WonderDisabledEra.toInstance())
         }
-
-        // National wonders
-        if (isNationalWonder) {
-            if (civ.cities.any { it.cityConstructions.isBuilt(name) })
-                yield(RejectionReasonType.NationalWonderAlreadyBuilt.toInstance())
-
-            if (civ.cities.any { it != cityConstructions.city && it.cityConstructions.isBeingConstructedOrEnqueued(name) })
-                yield(RejectionReasonType.NationalWonderBeingBuiltElsewhere.toInstance())
-
-            if (civ.isCityState())
-                yield(RejectionReasonType.CityStateNationalWonder.toInstance())
-        }
-        if (isAnyWonder() && cityConstructions.city.isPuppet)
-            yield(RejectionReasonType.PuppetWonder.toInstance())
 
         if (requiredBuilding != null && !cityConstructions.containsBuildingOrEquivalent(requiredBuilding!!)) {
             yield(RejectionReasonType.RequiresBuildingInThisCity.toInstance("Requires a [${civ.getEquivalentBuilding(requiredBuilding!!)}] in this city"))

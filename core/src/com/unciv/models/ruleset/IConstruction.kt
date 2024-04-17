@@ -136,14 +136,12 @@ class RejectionReason(val type: RejectionReasonType,
     private val reasonsToDefinitivelyRemoveFromQueue = hashSetOf(
         RejectionReasonType.Obsoleted,
         RejectionReasonType.WonderAlreadyBuilt,
-        RejectionReasonType.NationalWonderAlreadyBuilt,
         RejectionReasonType.CannotBeBuiltWith,
         RejectionReasonType.MaxNumberBuildable,
     )
     private val orderedImportantRejectionTypes = listOf(
         RejectionReasonType.ShouldNotBeDisplayed,
         RejectionReasonType.WonderBeingBuiltElsewhere,
-        RejectionReasonType.NationalWonderBeingBuiltElsewhere,
         RejectionReasonType.RequiresBuildingInAllCities,
         RejectionReasonType.RequiresBuildingInThisCity,
         RejectionReasonType.RequiresBuildingInSomeCity,
@@ -204,11 +202,8 @@ enum class RejectionReasonType(val shouldShow: Boolean, val errorMessage: String
     RequiresBuildingInSomeCity(true, "Requires a specific building anywhere in your empire!"),
 
     WonderAlreadyBuilt(false, "Wonder already built"),
-    NationalWonderAlreadyBuilt(false, "National Wonder already built"),
     WonderBeingBuiltElsewhere(true, "Wonder is being built elsewhere"),
-    NationalWonderBeingBuiltElsewhere(true, "National Wonder is being built elsewhere"),
     CityStateWonder(false, "No Wonders for city-states"),
-    CityStateNationalWonder(false, "No National Wonders for city-states"),
     PuppetWonder(false, "No Wonders for Puppets"),
     WonderDisabledEra(false, "This Wonder is disabled when starting in this era"),
 
