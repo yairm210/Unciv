@@ -14,7 +14,7 @@ import kotlin.math.sin
 import kotlin.math.sqrt
 import kotlin.random.Random
 
-class EasterEggVisitors(stage: Stage, name: String) : WidgetGroup() {
+class EasterEggFloatingArt(stage: Stage, name: String) : WidgetGroup() {
     private val images = sequence {
         for (index in 1..99) {
             val textureName = "EasterEggs/$name$index"

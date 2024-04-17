@@ -1,10 +1,12 @@
 package com.unciv.logic
 
+import com.unciv.ui.screens.mainmenuscreen.EasterEggFloatingArt
 import java.time.DayOfWeek
 import java.time.Instant
 import java.time.LocalDate
 import java.time.Month
 import java.time.ZoneId
+import java.time.temporal.ChronoUnit
 import kotlin.random.Random
 
 
@@ -12,11 +14,9 @@ object HolidayDates {
     /**
      *  Known holidays (for easter egg use).
      *  @property getByYear Determines when the holiday happens for a given year.
-     *  @property name Can be used as-is in a `-DeasterEgg=name` command line parameter for testing.
-     *  @property chance To equalize impact over holidays with different durations. Affects [getHolidayByDate].
-     *  @property floatingArt If set, will be presented as random floating art, texture name EasterEggs/$floatingArt$index
+     *  @property name Used to look for art automatically presented via [EasterEggFloatingArt], can be used as-is in a `-DeasterEgg=name` command line parameter for testing.
      */
-    enum class Holidays(val chance: Float = 1f, val floatingArt: String? = null) {
+    enum class Holidays {
         Easter {
             override fun getByYear(year: Int): DateRange {
                 // https://en.wikipedia.org/wiki/Date_of_Easter
@@ -43,7 +43,7 @@ object HolidayDates {
         Xmas {
             override fun getByYear(year: Int) = DateRange.of(year, 12, 24, 4)
         },
-        DiaDeLosMuertos(0.5f, "Calavera") {
+        DiaDeLosMuertos {
             // https://en.wikipedia.org/wiki/Day_of_the_Dead
             override fun getByYear(year: Int) = DateRange.of(year, 11, 1, 2)
         },
@@ -55,22 +55,22 @@ object HolidayDates {
             override fun getByYear(year: Int) =
                 DateRange.of(LocalDate.of(year, 11, 30).closestWeekday(DayOfWeek.SUNDAY))
         },
-        Qingming(floatingArt = "Qingming") {
+        Qingming {
             // https://en.wikipedia.org/wiki/Qingming_Festival
             // "it falls on the first day of the fifth solar term (also called Qingming) of the traditional Chinese lunisolar calendar.
             // This makes it the 15th day after the Spring Equinox, either 4, 5 or 6 April in a given year"
             override fun getByYear(year: Int): DateRange {
-                val springEquinoxInstant = Equinoxes.knownValues[year] ?: return DateRange.never
+                val springEquinoxInstant = Tables.equinoxes[year] ?: return DateRange.never
                 val springEquinox = LocalDate.ofInstant(springEquinoxInstant, ZoneId.systemDefault())
                 return DateRange.of(springEquinox.plusDays(15L))
             }
         },
-        Diwali(0.2f, "Diwali") {
+        Diwali {
             // https://en.wikipedia.org/wiki/Diwali#Dates
             // Darkest new moon night between mid-october and mid-november, then add +/- two days for a 5-day festival...
             // For moon phase, could adapt http://www.stargazing.net/kepler/jsmoon.html - or use a table
             override fun getByYear(year: Int): DateRange {
-                val knownValue = DiwaliTable.knownValues[year] ?: return DateRange.never
+                val knownValue = Tables.diwali[year] ?: return DateRange.never
                 return DateRange.of(knownValue.plusDays(-2L), 5)
             }
         }
@@ -91,6 +91,9 @@ object HolidayDates {
     }
 
     open class DateRange(override val start: LocalDate, override val endInclusive: LocalDate) : ClosedRange<LocalDate> {
+        val length
+            get() = start.until(endInclusive, ChronoUnit.DAYS).toInt().coerceAtLeast(0)
+
         override fun toString() = "$start..$endInclusive"
         override fun equals(other: Any?): Boolean {
             if (this === other) return true
@@ -114,7 +117,8 @@ object HolidayDates {
         return System.getProperty("easterEgg")?.let {
             Holidays.safeValueOf(it)
         } ?: Holidays.values().firstOrNull {
-            date in it.getByYear(date.year) && Random.nextFloat() <= it.chance
+            val range = it.getByYear(date.year)
+            date in range && Random.nextInt(range.length) == 0
         }
     }
 
@@ -127,9 +131,9 @@ object HolidayDates {
         return if (delta < 4) plusDays(delta.toLong()) else minusDays((7 - delta).toLong())
     }
 
-    private object Equinoxes {
+    private object Tables {
         // http://www.astropixels.com/ephemeris/soleq2001.html
-        val knownValues by lazy {
+        val equinoxes by lazy {
             listOf(
                 2024 to "2024-03-20T03:07:00Z",
                 2025 to "2025-03-20T09:02:00Z",
@@ -212,9 +216,8 @@ object HolidayDates {
         }
     }
 
-    private object DiwaliTable {
         // from e.g. https://www.theholidayspot.com/diwali/calendar.htm
-        val knownValues by lazy {
+        val diwali by lazy {
             listOf(
                 2024 to "2024-11-01",
                 2025 to "2025-10-21",

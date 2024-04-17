@@ -122,9 +122,9 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
         ImageGetter.ruleset = baseRuleset
 
         if (game.settings.enableEasterEggs) {
-            val floatingArt = HolidayDates.getHolidayByDate()?.floatingArt
-            if (floatingArt != null)
-                EasterEggVisitors(stage, floatingArt)
+            val holiday = HolidayDates.getHolidayByDate()
+            if (holiday != null)
+                EasterEggFloatingArt(stage, holiday.name)
             val easterEggMod = EasterEggRulesets.getTodayEasterEggRuleset()
             if (easterEggMod != null)
                 easterEggRuleset = RulesetCache.getComplexRuleset(baseRuleset, listOf(easterEggMod))
