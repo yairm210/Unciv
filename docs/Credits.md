@@ -732,6 +732,9 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 - [Top view of marigold flowers surrounded by Diya on tray](https://thenounproject.com/photo/5rAx20) by Scopio for Diwali easter egg (CC BY-NC-ND 2.0)
 - [Lit diyas in dark room](https://thenounproject.com/photo/5lKe70) by Scopio for Diwali easter egg (CC BY-NC-ND 2.0)
 - [Top view of orange and yellow flower petals in bowls with candles](https://thenounproject.com/photo/0vmgxb) by Scopio for Diwali easter egg (CC BY-NC-ND 2.0)
+- [Joss sticks](https://commons.wikimedia.org/wiki/File:Joss_sticks.jpg) by Hans Bernhard for easter eggs (GFDL-CC-BY-SA-all)
+- [Qingtuan](https://commons.wikimedia.org/wiki/File:Qingtuan_1.jpg) by Vtorok for easter eggs (CC-BY-SA 4.0)
+- [Dabai Shoujin joss paper](https://commons.wikimedia.org/wiki/File:%E5%A4%A7%E7%99%BE%E5%A3%BD%E9%87%91.jpg) by Sean Chiu for easter eggs (CC-BY-SA 4.0)
 - [AirSweep](https://thenounproject.com/icon/jet-134340/) by Creative Stall for Air Sweep icon
 - [Timer](https://www.flaticon.com/free-icon/stopwatch_563480) created by Gregor Cresnar Premium - Flaticon - for Game speeds civilopedia category
 - [Political Science](https://www.flaticon.com/premium-icon/political-science_5403775) created by Hilmy Abiyyu A. - Flaticon - for Global politics overview screen

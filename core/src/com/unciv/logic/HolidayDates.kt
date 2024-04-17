@@ -55,9 +55,7 @@ object HolidayDates {
             override fun getByYear(year: Int) =
                 DateRange.of(LocalDate.of(year, 11, 30).closestWeekday(DayOfWeek.SUNDAY))
         },
-        Qingming {
-            //todo add art and visualization
-
+        Qingming(floatingArt = "Qingming") {
             // https://en.wikipedia.org/wiki/Qingming_Festival
             // "it falls on the first day of the fifth solar term (also called Qingming) of the traditional Chinese lunisolar calendar.
             // This makes it the 15th day after the Spring Equinox, either 4, 5 or 6 April in a given year"
