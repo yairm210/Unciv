@@ -249,7 +249,7 @@ class CityStateFunctions(val civInfo: Civilization) {
                         if (!civInfo.knows(newEnemy))
                             // We have to meet first
                             civInfo.diplomacyFunctions.makeCivilizationsMeet(newEnemy, warOnContact = true)
-                        civInfo.getDiplomacyManager(newEnemy).declareWar(DeclareWarReason.CityStateAllianceWar)
+                        civInfo.getDiplomacyManager(newEnemy).declareWar(DeclareWarReason(WarType.CityStateAllianceWar, newAllyCiv))
                     }
                 }
             }

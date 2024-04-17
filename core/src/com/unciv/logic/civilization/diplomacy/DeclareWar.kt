@@ -2,6 +2,7 @@ package com.unciv.logic.civilization.diplomacy
 
 import com.unciv.Constants
 import com.unciv.logic.civilization.AlertType
+import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.DiplomacyAction
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
@@ -26,7 +27,7 @@ object DeclareWar {
         val otherCiv = diplomacyManager.otherCiv()
         val otherCivDiplomacy = diplomacyManager.otherCivDiplomacy()
 
-        if (otherCiv.isCityState() && declareWarReason == DeclareWarReason.DirectWar) {
+        if (otherCiv.isCityState() && declareWarReason.warType == WarType.DirectWar) {
             otherCivDiplomacy.setInfluence(-60f)
             civInfo.numMinorCivsAttacked += 1
             otherCiv.cityStateFunctions.cityStateAttacked(civInfo)
@@ -44,14 +45,7 @@ object DeclareWar {
         onWarDeclared(diplomacyManager, true)
         onWarDeclared(otherCivDiplomacy, false)
 
-        otherCiv.addNotification("[${civInfo.civName}] has declared war on us!",
-            NotificationCategory.Diplomacy, NotificationIcon.War, civInfo.civName)
-        otherCiv.popupAlerts.add(PopupAlert(AlertType.WarDeclaration, civInfo.civName))
-
-        diplomacyManager.getCommonKnownCivsWithSpectators().forEach {
-            it.addNotification("[${civInfo.civName}] has declared war on [${diplomacyManager.otherCivName}]!",
-                NotificationCategory.Diplomacy, civInfo.civName, NotificationIcon.War, diplomacyManager.otherCivName)
-        }
+        notifyOfWar(diplomacyManager, declareWarReason)
 
         otherCivDiplomacy.setModifier(DiplomaticModifiers.DeclaredWarOnUs, -20f)
         otherCivDiplomacy.removeModifier(DiplomaticModifiers.ReturnedCapturedUnits)
@@ -68,6 +62,43 @@ object DeclareWar {
         if (otherCiv.isMajorCiv())
             for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponDeclaringWar))
                 UniqueTriggerActivation.triggerUnique(unique, civInfo)
+    }
+
+    private fun notifyOfWar(diplomacyManager: DiplomacyManager, declareWarReason: DeclareWarReason) {
+        val civInfo = diplomacyManager.civInfo
+        val otherCiv = diplomacyManager.otherCiv()
+
+        when (declareWarReason.warType) {
+            WarType.DirectWar -> {
+                otherCiv.popupAlerts.add(PopupAlert(AlertType.WarDeclaration, civInfo.civName))
+
+                otherCiv.addNotification("[${civInfo.civName}] has declared war on us!",
+                    NotificationCategory.Diplomacy, NotificationIcon.War, civInfo.civName)
+
+                diplomacyManager.getCommonKnownCivsWithSpectators().forEach {
+                    it.addNotification("[${civInfo.civName}] has declared war on [${diplomacyManager.otherCivName}]!",
+                        NotificationCategory.Diplomacy, civInfo.civName, NotificationIcon.War, otherCiv.civName)
+                }
+            }
+            WarType.DefensivePactWar, WarType.CityStateAllianceWar, WarType.JoinWar -> {
+                val allyCiv = declareWarReason.allyCiv!!
+                otherCiv.popupAlerts.add(PopupAlert(AlertType.WarDeclaration, civInfo.civName))
+
+                civInfo.addNotification("[${otherCiv.civName}] has joined [${allyCiv.civName}] in the war against us!",
+                    NotificationCategory.Diplomacy, NotificationIcon.War, otherCiv.civName)
+
+                otherCiv.addNotification("We have joined [${allyCiv.civName}] in the war against [${civInfo.civName}]!",
+                    NotificationCategory.Diplomacy, NotificationIcon.War, civInfo.civName)
+
+                diplomacyManager.getCommonKnownCivsWithSpectators().filterNot { it == allyCiv }.forEach {
+                    it.addNotification("[${otherCiv.civName}] has joined [${allyCiv.civName}] in the war against [${civInfo.civName}]!",
+                        NotificationCategory.Diplomacy, civInfo.civName, NotificationIcon.War, otherCiv.civName)
+                }
+
+                allyCiv.addNotification("[${otherCiv.civName}] has joined us in the war against [${civInfo.civName}]!",
+                        NotificationCategory.Diplomacy, civInfo.civName, NotificationIcon.War, otherCiv.civName)
+            }
+        }
     }
 
     private fun breakTreaties(diplomacyManager: DiplomacyManager) {
@@ -207,10 +238,7 @@ object DeclareWar {
             val ally = ourDefensivePact.otherCiv()
             if (!civAtWarWith.knows(ally)) civAtWarWith.diplomacyFunctions.makeCivilizationsMeet(ally, true)
             // Have the aggressor declare war on the ally.
-            civAtWarWith.getDiplomacyManager(ally).declareWar(DeclareWarReason.DefensivePactWar)
-            // Notify the aggressor
-            civAtWarWith.addNotification("[${ally.civName}] has joined the defensive war with [${diplomacyManager.civInfo.civName}]!",
-                NotificationCategory.Diplomacy, ally.civName, NotificationIcon.Diplomacy, diplomacyManager.civInfo.civName)
+            civAtWarWith.getDiplomacyManager(ally).declareWar(DeclareWarReason(WarType.DefensivePactWar, diplomacyManager.civInfo))
         }
     }
 
@@ -223,16 +251,25 @@ object DeclareWar {
                 if (!thirdCiv.knows(civAtWarWith))
                     // Our city state ally has not met them yet, so they have to meet first
                     thirdCiv.diplomacyFunctions.makeCivilizationsMeet(civAtWarWith, warOnContact = true)
-                thirdCiv.getDiplomacyManager(civAtWarWith).declareWar(DeclareWarReason.CityStateAllianceWar)
+                thirdCiv.getDiplomacyManager(civAtWarWith).declareWar(DeclareWarReason(WarType.CityStateAllianceWar, diplomacyManager.civInfo))
             }
         }
     }
 }
 
-enum class DeclareWarReason {
+enum class WarType {
+    /** One civ declared war on the other. */
     DirectWar,
+    /** A city state has joined a war through it's alliance. */
     CityStateAllianceWar,
+    /** A civilization has joined a war through it's defensive pact. */
     DefensivePactWar,
+    /** A civilization has joined a war through a trade. */
     JoinWar,
 }
+
+/**
+ * Stores the reason for the war. We might want to add justified wars in the future
+ */
+class DeclareWarReason(val warType: WarType, val allyCiv: Civilization? = null)
 
