@@ -116,15 +116,15 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
         stage.addActor(backgroundStack)
         backgroundStack.setFillParent(true)
 
-        if (HolidayDates.getHolidayByDate() == HolidayDates.Holidays.DiaDeLosMuertos)
-            EasterEggVisitors(stage, "Calavera")
-
         // If we were in a mod, some of the resource images for the background map we're creating
         // will not exist unless we reset the ruleset and images
         val baseRuleset = RulesetCache.getVanillaRuleset()
         ImageGetter.ruleset = baseRuleset
 
         if (game.settings.enableEasterEggs) {
+            val floatingArt = HolidayDates.getHolidayByDate()?.floatingArt
+            if (floatingArt != null)
+                EasterEggVisitors(stage, floatingArt)
             val easterEggMod = EasterEggRulesets.getTodayEasterEggRuleset()
             if (easterEggMod != null)
                 easterEggRuleset = RulesetCache.getComplexRuleset(baseRuleset, listOf(easterEggMod))

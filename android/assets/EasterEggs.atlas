@@ -1,348 +1,383 @@
 
 EasterEggs.png
-size: 1024, 512
+size: 2048, 512
 format: RGBA8888
 filter: MipMapLinearLinear, MipMapLinearLinear
 repeat: none
 EasterEggs/Calavera1
   rotate: false
-  xy: 4, 68
+  xy: 4, 70
   size: 300, 220
   orig: 300, 220
   offset: 0, 0
   index: -1
 EasterEggs/Calavera2
   rotate: false
-  xy: 332, 96
+  xy: 1384, 98
   size: 163, 360
   orig: 163, 360
   offset: 0, 0
   index: -1
 EasterEggs/Calavera3
   rotate: false
-  xy: 4, 296
+  xy: 4, 298
   size: 320, 160
   orig: 320, 160
   offset: 0, 0
   index: -1
+EasterEggs/Diwali1
+  rotate: false
+  xy: 332, 272
+  size: 300, 186
+  orig: 300, 186
+  offset: 0, 0
+  index: -1
+EasterEggs/Diwali2
+  rotate: false
+  xy: 928, 282
+  size: 240, 176
+  orig: 240, 176
+  offset: 0, 0
+  index: -1
+EasterEggs/Diwali3
+  rotate: false
+  xy: 1176, 158
+  size: 200, 300
+  orig: 200, 300
+  offset: 0, 0
+  index: -1
+EasterEggs/Diwali4
+  rotate: false
+  xy: 640, 300
+  size: 280, 158
+  orig: 280, 158
+  offset: 0, 0
+  index: -1
+EasterEggs/Diwali5
+  rotate: false
+  xy: 312, 4
+  size: 260, 260
+  orig: 260, 260
+  offset: 0, 0
+  index: -1
 TileSets/FantasyHex/Tiles/Easter Egg 1
   rotate: false
-  xy: 4, 4
+  xy: 4, 6
   size: 64, 56
   orig: 64, 56
   offset: 0, 0
   index: -1
 TileSets/HexaRealm/Tiles/Easter Egg 1
   rotate: false
-  xy: 4, 4
+  xy: 4, 6
   size: 64, 56
   orig: 64, 56
   offset: 0, 0
   index: -1
 TileSets/FantasyHex/Tiles/Easter Egg 2
   rotate: false
-  xy: 503, 400
+  xy: 1555, 402
   size: 64, 56
   orig: 64, 56
   offset: 0, 0
   index: -1
 TileSets/HexaRealm/Tiles/Easter Egg 2
   rotate: false
-  xy: 503, 400
+  xy: 1555, 402
   size: 64, 56
   orig: 64, 56
   offset: 0, 0
   index: -1
 TileSets/FantasyHex/Tiles/Easter Egg 3
   rotate: false
-  xy: 503, 334
+  xy: 1555, 336
   size: 64, 58
   orig: 64, 58
   offset: 0, 0
   index: -1
 TileSets/HexaRealm/Tiles/Easter Egg 3
   rotate: false
-  xy: 503, 334
+  xy: 1555, 336
   size: 64, 58
   orig: 64, 58
   offset: 0, 0
   index: -1
 TileSets/FantasyHex/Tiles/Easter Egg 4
   rotate: false
-  xy: 575, 399
+  xy: 1627, 401
   size: 64, 57
   orig: 64, 57
   offset: 0, 0
   index: -1
 TileSets/HexaRealm/Tiles/Easter Egg 4
   rotate: false
-  xy: 575, 399
+  xy: 1627, 401
   size: 64, 57
   orig: 64, 57
   offset: 0, 0
   index: -1
 TileSets/FantasyHex/Tiles/Easter Egg 5
   rotate: false
-  xy: 503, 263
+  xy: 1555, 265
   size: 64, 63
   orig: 64, 63
   offset: 0, 0
   index: -1
 TileSets/HexaRealm/Tiles/Easter Egg 5
   rotate: false
-  xy: 503, 263
+  xy: 1555, 265
   size: 64, 63
   orig: 64, 63
   offset: 0, 0
   index: -1
 TileSets/FantasyHex/Tiles/Easter Egg 6
   rotate: false
-  xy: 76, 4
+  xy: 76, 6
   size: 64, 56
   orig: 64, 56
   offset: 0, 0
   index: -1
 TileSets/HexaRealm/Tiles/Easter Egg 6
   rotate: false
-  xy: 76, 4
+  xy: 76, 6
   size: 64, 56
   orig: 64, 56
   offset: 0, 0
   index: -1
 TileSets/FantasyHex/Tiles/Easter Egg 7
   rotate: false
-  xy: 575, 333
+  xy: 1627, 335
   size: 64, 58
   orig: 64, 58
   offset: 0, 0
   index: -1
 TileSets/HexaRealm/Tiles/Easter Egg 7
   rotate: false
-  xy: 575, 333
+  xy: 1627, 335
   size: 64, 58
   orig: 64, 58
   offset: 0, 0
   index: -1
 TileSets/FantasyHex/Tiles/Easter Egg 8
   rotate: false
-  xy: 647, 398
+  xy: 1699, 400
   size: 64, 58
   orig: 64, 58
   offset: 0, 0
   index: -1
 TileSets/HexaRealm/Tiles/Easter Egg 8
   rotate: false
-  xy: 647, 398
+  xy: 1699, 400
   size: 64, 58
   orig: 64, 58
   offset: 0, 0
   index: -1
 TileSets/FantasyHex/Tiles/Giant Easter Egg
   rotate: false
-  xy: 503, 171
+  xy: 1555, 173
   size: 64, 84
   orig: 64, 84
   offset: 0, 0
   index: -1
 TileSets/HexaRealm/Tiles/Giant Easter Egg
   rotate: false
-  xy: 503, 171
+  xy: 1555, 173
   size: 64, 84
   orig: 64, 84
   offset: 0, 0
   index: -1
 TileSets/FantasyHex/Tiles/Giant Pumpkin
   rotate: false
-  xy: 575, 252
+  xy: 1627, 254
   size: 64, 73
   orig: 64, 73
   offset: 0, 0
   index: -1
 TileSets/HexaRealm/Tiles/Giant Pumpkin
   rotate: false
-  xy: 575, 252
+  xy: 1627, 254
   size: 64, 73
   orig: 64, 73
   offset: 0, 0
   index: -1
 TileSets/FantasyHex/Tiles/Halloween candy 1
   rotate: false
-  xy: 148, 4
+  xy: 148, 6
   size: 64, 56
   orig: 64, 56
   offset: 0, 0
   index: -1
 TileSets/HexaRealm/Tiles/Halloween candy 1
   rotate: false
-  xy: 148, 4
+  xy: 148, 6
   size: 64, 56
   orig: 64, 56
   offset: 0, 0
   index: -1
 TileSets/FantasyHex/Tiles/Halloween candy 2
   rotate: false
-  xy: 647, 334
+  xy: 1699, 336
   size: 64, 56
   orig: 64, 56
   offset: 0, 0
   index: -1
 TileSets/HexaRealm/Tiles/Halloween candy 2
   rotate: false
-  xy: 647, 334
+  xy: 1699, 336
   size: 64, 56
   orig: 64, 56
   offset: 0, 0
   index: -1
 TileSets/FantasyHex/Tiles/Halloween candy 3
   rotate: false
-  xy: 719, 392
+  xy: 1771, 394
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
   index: -1
 TileSets/HexaRealm/Tiles/Halloween candy 3
   rotate: false
-  xy: 719, 392
+  xy: 1771, 394
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
   index: -1
 TileSets/FantasyHex/Tiles/Halloween candy 4
   rotate: false
-  xy: 503, 107
+  xy: 1555, 109
   size: 64, 56
   orig: 64, 56
   offset: 0, 0
   index: -1
 TileSets/HexaRealm/Tiles/Halloween candy 4
   rotate: false
-  xy: 503, 107
+  xy: 1555, 109
   size: 64, 56
   orig: 64, 56
   offset: 0, 0
   index: -1
 TileSets/FantasyHex/Tiles/Halloween candy 5
   rotate: false
-  xy: 575, 188
+  xy: 1627, 190
   size: 64, 56
   orig: 64, 56
   offset: 0, 0
   index: -1
 TileSets/HexaRealm/Tiles/Halloween candy 5
   rotate: false
-  xy: 575, 188
+  xy: 1627, 190
   size: 64, 56
   orig: 64, 56
   offset: 0, 0
   index: -1
 TileSets/FantasyHex/Tiles/Xmas Tree
   rotate: false
-  xy: 647, 212
+  xy: 1699, 214
   size: 64, 114
   orig: 64, 114
   offset: 0, 0
   index: -1
 TileSets/HexaRealm/Tiles/Xmas Tree
   rotate: false
-  xy: 647, 212
+  xy: 1699, 214
   size: 64, 114
   orig: 64, 114
   offset: 0, 0
   index: -1
 TileSets/FantasyHex/Tiles/Xmas decoration 1
   rotate: false
-  xy: 220, 8
+  xy: 220, 10
   size: 64, 52
   orig: 64, 52
   offset: 0, 0
   index: -1
 TileSets/HexaRealm/Tiles/Xmas decoration 1
   rotate: false
-  xy: 220, 8
+  xy: 220, 10
   size: 64, 52
   orig: 64, 52
   offset: 0, 0
   index: -1
 TileSets/FantasyHex/Tiles/Xmas decoration 2
   rotate: false
-  xy: 719, 328
+  xy: 1771, 330
   size: 64, 56
   orig: 64, 56
   offset: 0, 0
   index: -1
 TileSets/HexaRealm/Tiles/Xmas decoration 2
   rotate: false
-  xy: 719, 328
+  xy: 1771, 330
   size: 64, 56
   orig: 64, 56
   offset: 0, 0
   index: -1
 TileSets/FantasyHex/Tiles/Xmas decoration 3
   rotate: false
-  xy: 791, 400
+  xy: 1843, 402
   size: 64, 56
   orig: 64, 56
   offset: 0, 0
   index: -1
 TileSets/HexaRealm/Tiles/Xmas decoration 3
   rotate: false
-  xy: 791, 400
+  xy: 1843, 402
   size: 64, 56
   orig: 64, 56
   offset: 0, 0
   index: -1
 TileSets/FantasyHex/Tiles/Xmas decoration 4
   rotate: false
-  xy: 575, 124
+  xy: 1627, 126
   size: 64, 56
   orig: 64, 56
   offset: 0, 0
   index: -1
 TileSets/HexaRealm/Tiles/Xmas decoration 4
   rotate: false
-  xy: 575, 124
+  xy: 1627, 126
   size: 64, 56
   orig: 64, 56
   offset: 0, 0
   index: -1
 TileSets/FantasyHex/Tiles/Xmas decoration 5
   rotate: false
-  xy: 647, 148
+  xy: 1699, 150
   size: 64, 56
   orig: 64, 56
   offset: 0, 0
   index: -1
 TileSets/HexaRealm/Tiles/Xmas decoration 5
   rotate: false
-  xy: 647, 148
+  xy: 1699, 150
   size: 64, 56
   orig: 64, 56
   offset: 0, 0
   index: -1
 TileSets/FantasyHex/Tiles/Xmas decoration 6
   rotate: false
-  xy: 719, 256
+  xy: 1771, 258
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
   index: -1
 TileSets/HexaRealm/Tiles/Xmas decoration 6
   rotate: false
-  xy: 719, 256
+  xy: 1771, 258
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
   index: -1
 TileSets/FantasyHex/Tiles/Xmas decoration 7
   rotate: false
-  xy: 791, 320
+  xy: 1843, 322
   size: 64, 72
   orig: 64, 72
   offset: 0, 0
   index: -1
 TileSets/HexaRealm/Tiles/Xmas decoration 7
   rotate: false
-  xy: 791, 320
+  xy: 1843, 322
   size: 64, 72
   orig: 64, 72
   offset: 0, 0

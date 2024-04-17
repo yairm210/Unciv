@@ -9,7 +9,14 @@ import kotlin.random.Random
 
 
 object HolidayDates {
-    enum class Holidays(val chance: Float = 1f) {
+    /**
+     *  Known holidays (for easter egg use).
+     *  @property getByYear Determines when the holiday happens for a given year.
+     *  @property name Can be used as-is in a `-DeasterEgg=name` command line parameter for testing.
+     *  @property chance To equalize impact over holidays with different durations. Affects [getHolidayByDate].
+     *  @property floatingArt If set, will be presented as random floating art, texture name EasterEggs/$floatingArt$index
+     */
+    enum class Holidays(val chance: Float = 1f, val floatingArt: String? = null) {
         Easter {
             override fun getByYear(year: Int): DateRange {
                 // https://en.wikipedia.org/wiki/Date_of_Easter
@@ -36,7 +43,7 @@ object HolidayDates {
         Xmas {
             override fun getByYear(year: Int) = DateRange.of(year, 12, 24, 4)
         },
-        DiaDeLosMuertos(0.5f) {
+        DiaDeLosMuertos(0.5f, "Calavera") {
             // https://en.wikipedia.org/wiki/Day_of_the_Dead
             override fun getByYear(year: Int) = DateRange.of(year, 11, 1, 2)
         },
@@ -60,9 +67,7 @@ object HolidayDates {
                 return DateRange.of(springEquinox.plusDays(15L))
             }
         },
-        Diwali(0.2f) {
-            //todo add art and visualization
-
+        Diwali(0.2f, "Diwali") {
             // https://en.wikipedia.org/wiki/Diwali#Dates
             // Darkest new moon night between mid-october and mid-november, then add +/- two days for a 5-day festival...
             // For moon phase, could adapt http://www.stargazing.net/kepler/jsmoon.html - or use a table
@@ -75,7 +80,9 @@ object HolidayDates {
         // Inspiration...
         // https://github.com/00-Evan/shattered-pixel-dungeon/blob/master/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/utils/Holiday.java
         // ... has Lunar new year, April fools and Pride.
+        // The birthday of the game itself (2017-11-21: https://github.com/yairm210/Unciv/commit/45b4131c0b7c9aa9c63cfca26ac744056aa70b71)
         // Fridays the 13th are also candidates.
+        // Last not least: Passah - date calculation tricky
         ;
 
         abstract fun getByYear(year: Int): DateRange
