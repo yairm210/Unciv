@@ -16,7 +16,7 @@ object DeclareWar {
      * Handles all war effects and diplomatic changes with other civs and such.
      *
      * @param declareWarReason Changes what sort of effects the war has depending on how it was initiated.
-     * If it was a direct attack put [DeclareWarReason.DirectWar] for the following effects.
+     * If it was a direct attack put [WarType.DirectWar] for the following effects.
      * Influence with city states should only be set to -60
      * when they are attacked directly, not when their ally is attacked.
      * When @indirectCityStateAttack is set to true, we thus don't reset the influence with this city state.
@@ -35,15 +35,7 @@ object DeclareWar {
 
         notifyOfWar(diplomacyManager, declareWarReason)
 
-        otherCivDiplomacy.setModifier(DiplomaticModifiers.DeclaredWarOnUs, -20f)
-        otherCivDiplomacy.removeModifier(DiplomaticModifiers.ReturnedCapturedUnits)
-
-        for (thirdCiv in civInfo.getKnownCivs()) {
-            if (thirdCiv.isAtWarWith(otherCiv)) {
-                if (thirdCiv.isCityState()) thirdCiv.getDiplomacyManager(civInfo).addInfluence(10f)
-                else thirdCiv.getDiplomacyManager(civInfo).addModifier(DiplomaticModifiers.SharedEnemy, 5f)
-            } else thirdCiv.getDiplomacyManager(civInfo).addModifier(DiplomaticModifiers.WarMongerer, -5f)
-        }
+        changeOpinions(diplomacyManager)
 
         breakTreaties(diplomacyManager)
 
@@ -105,6 +97,22 @@ object DeclareWar {
                 allyCiv.addNotification("[${otherCiv.civName}] has joined us in the war against [${civInfo.civName}]!",
                         NotificationCategory.Diplomacy, civInfo.civName, NotificationIcon.War, otherCiv.civName)
             }
+        }
+    }
+
+    private fun changeOpinions(diplomacyManager: DiplomacyManager) {
+        val civInfo = diplomacyManager.civInfo
+        val otherCiv = diplomacyManager.otherCiv()
+        val otherCivDiplomacy = diplomacyManager.otherCivDiplomacy()
+
+        otherCivDiplomacy.setModifier(DiplomaticModifiers.DeclaredWarOnUs, -20f)
+        otherCivDiplomacy.removeModifier(DiplomaticModifiers.ReturnedCapturedUnits)
+
+        for (thirdCiv in civInfo.getKnownCivs()) {
+            if (thirdCiv.isAtWarWith(otherCiv)) {
+                if (thirdCiv.isCityState()) thirdCiv.getDiplomacyManager(civInfo).addInfluence(10f)
+                else thirdCiv.getDiplomacyManager(civInfo).addModifier(DiplomaticModifiers.SharedEnemy, 5f)
+            } else thirdCiv.getDiplomacyManager(civInfo).addModifier(DiplomaticModifiers.WarMongerer, -5f)
         }
     }
 
