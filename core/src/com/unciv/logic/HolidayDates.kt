@@ -16,7 +16,7 @@ object HolidayDates {
      *  @property getByYear Determines when the holiday happens for a given year.
      *  @property name Used to look for art automatically presented via [EasterEggFloatingArt], can be used as-is in a `-DeasterEgg=name` command line parameter for testing.
      */
-    enum class Holidays {
+    enum class Holidays(val chance: Float = 1f) {
         Easter {
             override fun getByYear(year: Int): DateRange {
                 // https://en.wikipedia.org/wiki/Date_of_Easter
@@ -43,7 +43,7 @@ object HolidayDates {
         Xmas {
             override fun getByYear(year: Int) = DateRange.of(year, 12, 24, 4)
         },
-        DiaDeLosMuertos {
+        DiaDeLosMuertos(0.5f) {
             // https://en.wikipedia.org/wiki/Day_of_the_Dead
             override fun getByYear(year: Int) = DateRange.of(year, 11, 1, 2)
         },
@@ -65,7 +65,7 @@ object HolidayDates {
                 return DateRange.of(springEquinox.plusDays(15L))
             }
         },
-        Diwali {
+        Diwali(0.2f) {
             // https://en.wikipedia.org/wiki/Diwali#Dates
             // Darkest new moon night between mid-october and mid-november, then add +/- two days for a 5-day festival...
             // For moon phase, could adapt http://www.stargazing.net/kepler/jsmoon.html - or use a table
@@ -83,7 +83,7 @@ object HolidayDates {
         AprilFoolsDay {
             override fun getByYear(year: Int) = DateRange.of(year, 4, 1)
         },
-        PrideDay {
+        PrideDay(0.333f) {
             // https://en.wikipedia.org/wiki/LGBT_pride
             // Actually, let's not make this a month. Beginning on original Christopher Street is fine IMO.
             override fun getByYear(year: Int) = DateRange.of(year, 6, 28, 3)
@@ -110,7 +110,7 @@ object HolidayDates {
             // https://en.wikipedia.org/wiki/Star_Wars_Day
             override fun getByYear(year: Int) = DateRange.of(year, 5, 4)  // evil puns begone
         },
-        Passover {
+        Passover(0.2f) {
             // Last not least: Passah
             // חַג הַפֶּסַח
             // https://en.wikipedia.org/wiki/Passover
@@ -157,7 +157,7 @@ object HolidayDates {
             Holidays.safeValueOf(it)
         } ?: Holidays.values().firstOrNull {
             val range = it.getByYear(date.year)
-            date in range && Random.nextInt(range.length) == 0
+            date in range && Random.nextFloat() <= it.chance
         }
     }
 
