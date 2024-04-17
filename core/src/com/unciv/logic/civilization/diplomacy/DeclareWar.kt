@@ -27,20 +27,8 @@ object DeclareWar {
         val otherCiv = diplomacyManager.otherCiv()
         val otherCivDiplomacy = diplomacyManager.otherCivDiplomacy()
 
-        if (otherCiv.isCityState() && declareWarReason.warType == WarType.DirectWar) {
-            otherCivDiplomacy.setInfluence(-60f)
-            civInfo.numMinorCivsAttacked += 1
-            otherCiv.cityStateFunctions.cityStateAttacked(civInfo)
-
-            // You attacked your own ally, you're a right bastard
-            if (otherCiv.getAllyCiv() == civInfo.civName) {
-                otherCiv.cityStateFunctions.updateAllyCivForCityState()
-                otherCivDiplomacy.setInfluence(-120f)
-                for (knownCiv in civInfo.getKnownCivs()) {
-                    knownCiv.getDiplomacyManager(civInfo).addModifier(DiplomaticModifiers.BetrayedDeclarationOfFriendship, -10f)
-                }
-            }
-        }
+        if (otherCiv.isCityState() && declareWarReason.warType == WarType.DirectWar)
+            handleCityStateDirectAttack(diplomacyManager)
 
         onWarDeclared(diplomacyManager, true)
         onWarDeclared(otherCivDiplomacy, false)
@@ -62,6 +50,25 @@ object DeclareWar {
         if (otherCiv.isMajorCiv())
             for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponDeclaringWar))
                 UniqueTriggerActivation.triggerUnique(unique, civInfo)
+    }
+
+    private fun handleCityStateDirectAttack(diplomacyManager: DiplomacyManager) {
+        val civInfo = diplomacyManager.civInfo
+        val otherCiv = diplomacyManager.otherCiv()
+        val otherCivDiplomacy = diplomacyManager.otherCivDiplomacy()
+
+        otherCivDiplomacy.setInfluence(-60f)
+        civInfo.numMinorCivsAttacked += 1
+        otherCiv.cityStateFunctions.cityStateAttacked(civInfo)
+
+        // You attacked your own ally, you're a right bastard
+        if (otherCiv.getAllyCiv() == civInfo.civName) {
+            otherCiv.cityStateFunctions.updateAllyCivForCityState()
+            otherCivDiplomacy.setInfluence(-120f)
+            for (knownCiv in civInfo.getKnownCivs()) {
+                knownCiv.getDiplomacyManager(civInfo).addModifier(DiplomaticModifiers.BetrayedDeclarationOfFriendship, -10f)
+            }
+        }
     }
 
     private fun notifyOfWar(diplomacyManager: DiplomacyManager, declareWarReason: DeclareWarReason) {
