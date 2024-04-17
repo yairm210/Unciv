@@ -14,17 +14,19 @@ object DeclareWar {
     /** Declares war with the other civ in this diplomacy manager.
      * Handles all war effects and diplomatic changes with other civs and such.
      *
-     * @param indirectCityStateAttack Influence with city states should only be set to -60
+     * @param declareWarReason Changes what sort of effects the war has depending on how it was initiated.
+     * If it was a direct attack put [DeclareWarReason.DirectWar] for the following effects.
+     * Influence with city states should only be set to -60
      * when they are attacked directly, not when their ally is attacked.
      * When @indirectCityStateAttack is set to true, we thus don't reset the influence with this city state.
      * Should only ever be set to true for calls originating from within this function.
      */
-    internal fun declareWar(diplomacyManager: DiplomacyManager, indirectCityStateAttack: Boolean = false) {
+    internal fun declareWar(diplomacyManager: DiplomacyManager, declareWarReason: DeclareWarReason) {
         val civInfo = diplomacyManager.civInfo
         val otherCiv = diplomacyManager.otherCiv()
         val otherCivDiplomacy = diplomacyManager.otherCivDiplomacy()
 
-        if (otherCiv.isCityState() && !indirectCityStateAttack) {
+        if (otherCiv.isCityState() && declareWarReason == DeclareWarReason.DirectWar) {
             otherCivDiplomacy.setInfluence(-60f)
             civInfo.numMinorCivsAttacked += 1
             otherCiv.cityStateFunctions.cityStateAttacked(civInfo)
@@ -135,7 +137,8 @@ object DeclareWar {
         diplomacyManager.diplomaticStatus = DiplomaticStatus.War
 
         if (diplomacyManager.civInfo.isMajorCiv()) {
-            if (!isOffensiveWar && !civAtWarWith.isCityState()) callInDefensivePactAllies(diplomacyManager)
+            if (!isOffensiveWar && !civAtWarWith.isCityState())
+                callInDefensivePactAllies(diplomacyManager)
             callInCityStateAllies(diplomacyManager)
         }
 
@@ -204,7 +207,7 @@ object DeclareWar {
             val ally = ourDefensivePact.otherCiv()
             if (!civAtWarWith.knows(ally)) civAtWarWith.diplomacyFunctions.makeCivilizationsMeet(ally, true)
             // Have the aggressor declare war on the ally.
-            civAtWarWith.getDiplomacyManager(ally).declareWar(true)
+            civAtWarWith.getDiplomacyManager(ally).declareWar(DeclareWarReason.DefensivePactWar)
             // Notify the aggressor
             civAtWarWith.addNotification("[${ally.civName}] has joined the defensive war with [${diplomacyManager.civInfo.civName}]!",
                 NotificationCategory.Diplomacy, ally.civName, NotificationIcon.Diplomacy, diplomacyManager.civInfo.civName)
@@ -216,13 +219,20 @@ object DeclareWar {
         for (thirdCiv in diplomacyManager.civInfo.getKnownCivs()
             .filter { it.isCityState() && it.getAllyCiv() == diplomacyManager.civInfo.civName }) {
 
-            if (thirdCiv.knows(civAtWarWith) && !thirdCiv.isAtWarWith(civAtWarWith))
-                thirdCiv.getDiplomacyManager(civAtWarWith).declareWar(true)
-            else if (!thirdCiv.knows(civAtWarWith)) {
-                // Our city state ally has not met them yet, so they have to meet first
-                thirdCiv.diplomacyFunctions.makeCivilizationsMeet(civAtWarWith, warOnContact = true)
-                thirdCiv.getDiplomacyManager(civAtWarWith).declareWar(true)
+            if (!thirdCiv.isAtWarWith(civAtWarWith)) {
+                if (!thirdCiv.knows(civAtWarWith))
+                    // Our city state ally has not met them yet, so they have to meet first
+                    thirdCiv.diplomacyFunctions.makeCivilizationsMeet(civAtWarWith, warOnContact = true)
+                thirdCiv.getDiplomacyManager(civAtWarWith).declareWar(DeclareWarReason.CityStateAllianceWar)
             }
         }
     }
 }
+
+enum class DeclareWarReason {
+    DirectWar,
+    CityStateAllianceWar,
+    DefensivePactWar,
+    JoinWar,
+}
+

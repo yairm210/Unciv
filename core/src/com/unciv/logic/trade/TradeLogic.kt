@@ -5,6 +5,7 @@ import com.unciv.logic.civilization.AlertType
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.PopupAlert
 import com.unciv.logic.civilization.diplomacy.CityStateFunctions
+import com.unciv.logic.civilization.diplomacy.DeclareWarReason
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
 import com.unciv.models.ruleset.tile.ResourceType
@@ -137,7 +138,7 @@ class TradeLogic(val ourCivilization: Civilization, val otherCivilization: Civil
                 TradeType.Introduction -> to.diplomacyFunctions.makeCivilizationsMeet(to.gameInfo.getCivilization(offer.name))
                 TradeType.WarDeclaration -> {
                     val nameOfCivToDeclareWarOn = offer.name
-                    from.getDiplomacyManager(nameOfCivToDeclareWarOn).declareWar()
+                    from.getDiplomacyManager(nameOfCivToDeclareWarOn).declareWar(DeclareWarReason.JoinWar)
                 }
                 else -> {}
             }

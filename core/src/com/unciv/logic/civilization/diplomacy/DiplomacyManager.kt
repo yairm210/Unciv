@@ -379,7 +379,7 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
 
     fun canDeclareWar() = turnsToPeaceTreaty() == 0 && diplomaticStatus != DiplomaticStatus.War
 
-    fun declareWar(indirectCityStateAttack: Boolean = false) = DeclareWar.declareWar(this, indirectCityStateAttack)
+    fun declareWar(declareWarReason: DeclareWarReason = DeclareWarReason.DirectWar) = DeclareWar.declareWar(this, declareWarReason)
 
     //Used for nuke
     fun canAttack() = turnsToPeaceTreaty() == 0
