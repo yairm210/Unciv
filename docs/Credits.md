@@ -727,6 +727,11 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 - [Calavera Catrina](https://commons.wikimedia.org/wiki/File:Posada2.Catrina.jpeg) by José Guadalupe Posada for easter eggs (CC0 1.0 public domain)
 - [Calavera Maderista](https://commons.wikimedia.org/wiki/File:Jos%C3%A9_Guadalupe_Posada,_Calavera_Maderista,_NGA_30476.jpg) by José Guadalupe Posada for easter eggs (CC0 1.0 public domain)
 - [Gran calavera eléctrica](https://commons.wikimedia.org/wiki/File:Gran_calavera_el%C3%A9ctrica2.jpg) by José Guadalupe Posada for easter eggs (CC0 1.0 public domain)
+- [Person holding golden tray with candle on it](https://thenounproject.com/photo/5lr2vb) by Scopio for Diwali easter egg (CC BY-NC-ND 2.0)
+- [Lit candles on flower shaped carving on floor](https://thenounproject.com/photo/476lB5) by Scopio for Diwali easter egg (CC BY-NC-ND 2.0)
+- [Top view of marigold flowers surrounded by Diya on tray](https://thenounproject.com/photo/5rAx20) by Scopio for Diwali easter egg (CC BY-NC-ND 2.0)
+- [Lit diyas in dark room](https://thenounproject.com/photo/5lKe70) by Scopio for Diwali easter egg (CC BY-NC-ND 2.0)
+- [Top view of orange and yellow flower petals in bowls with candles](https://thenounproject.com/photo/0vmgxb) by Scopio for Diwali easter egg (CC BY-NC-ND 2.0)
 - [AirSweep](https://thenounproject.com/icon/jet-134340/) by Creative Stall for Air Sweep icon
 - [Timer](https://www.flaticon.com/free-icon/stopwatch_563480) created by Gregor Cresnar Premium - Flaticon - for Game speeds civilopedia category
 - [Political Science](https://www.flaticon.com/premium-icon/political-science_5403775) created by Hilmy Abiyyu A. - Flaticon - for Global politics overview screen
