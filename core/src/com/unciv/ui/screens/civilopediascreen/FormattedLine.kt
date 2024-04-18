@@ -10,10 +10,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable
 import com.badlogic.gdx.utils.Align
-import com.badlogic.gdx.utils.GdxRuntimeException
 import com.unciv.Constants
 import com.unciv.UncivGame
-import com.unciv.logic.UncivShowableException
 import com.unciv.models.metadata.BaseRuleset
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
@@ -23,6 +21,7 @@ import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.widgets.ColorMarkupLabel
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.basescreen.BaseScreen
+import com.unciv.utils.Log
 import kotlin.math.max
 
 /* Ideas:
@@ -238,8 +237,6 @@ class FormattedLine (
      * Renders the formatted line as a scene2d [Actor] (currently always a [Table])
      * @param labelWidth Total width to render into, needed to support wrap on Labels.
      * @param iconDisplay Flag to omit link or all images.
-     * @throws UncivShowableException extraImage not found
-     * @throws GdxRuntimeException extraImage file invalid
      */
     fun render(labelWidth: Float, iconDisplay: IconDisplay = IconDisplay.All): Actor {
         if (extraImage.isNotEmpty()) return renderExtraImage(labelWidth)
@@ -298,24 +295,26 @@ class FormattedLine (
 
     private fun renderExtraImage(labelWidth: Float): Table {
         val table = Table(BaseScreen.skin)
-        fun getExtraImage(): Image {
+        fun getExtraImage(): Image? {
             if (ImageGetter.imageExists(extraImage))
                 return if (centered) ImageGetter.getDrawable(extraImage).cropToContent()
                     else ImageGetter.getImage(extraImage)
             val externalImage = ImageGetter.findExternalImage(extraImage)
-                ?: throw UncivShowableException("Extra image '[$extraImage]' not found")
+                ?: return null
             return ImageGetter.getExternalImage(externalImage)
         }
-        val image = getExtraImage()
-        // limit larger cordinate to a given max size
-        val maxSize = if (imageSize.isNaN()) labelWidth else imageSize
-        val (width, height) = if (image.width > image.height)
-            maxSize to maxSize * image.height / image.width
-        else maxSize * image.width / image.height to maxSize
-        table.add(image).size(width, height)
+        try {
+            val image = getExtraImage() ?: return table
+            // limit larger cordinate to a given max size
+            val maxSize = if (imageSize.isNaN()) labelWidth else imageSize
+            val (width, height) = if (image.width > image.height)
+                maxSize to maxSize * image.height / image.width
+            else maxSize * image.width / image.height to maxSize
+            table.add(image).size(width, height)
+        } catch (exception: Exception) {
+            Log.error("Exception while rendering civilopedia text", exception)
+        }
         return table
-        // If a caller ever catches and displays it might be prettier to convert the case of image formats too modern for Gdx:
-        // catch (exception: GdxRuntimeException) .. if (exception.cause is IOException) throw UncivShowableException("${exception.message} (${exception.cause!!.message})")
     }
 
     /** Place a RuleSet object icon.
