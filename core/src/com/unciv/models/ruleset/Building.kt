@@ -390,9 +390,6 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
 
         // All Wonders
         if(isAnyWonder()) {
-            if (civ.gameInfo.getCities().any { it.cityConstructions.isBuilt(name) })
-                yield(RejectionReasonType.WonderAlreadyBuilt.toInstance())
-
             if (civ.cities.any { it != cityConstructions.city && it.cityConstructions.isBeingConstructedOrEnqueued(name) })
                 yield(RejectionReasonType.WonderBeingBuiltElsewhere.toInstance())
 
@@ -403,11 +400,20 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
                 yield(RejectionReasonType.PuppetWonder.toInstance())
         }
 
-        // Regular wonders
+        // World Wonders
         if (isWonder) {
+            if (civ.gameInfo.getCities().any { it.cityConstructions.isBuilt(name) })
+                yield(RejectionReasonType.WonderAlreadyBuilt.toInstance())
+
             val startingEra = civ.gameInfo.gameParameters.startingEra
             if (name in ruleSet.eras[startingEra]!!.startingObsoleteWonders)
                 yield(RejectionReasonType.WonderDisabledEra.toInstance())
+        }
+
+        // National Wonders
+        if (isNationalWonder) {
+            if (civ.cities.any { it.cityConstructions.isBuilt(name) })
+                yield(RejectionReasonType.NationalWonderAlreadyBuilt.toInstance())
         }
 
         if (requiredBuilding != null && !cityConstructions.containsBuildingOrEquivalent(requiredBuilding!!)) {
