@@ -2,7 +2,6 @@ package com.unciv.models.ruleset.validation
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
-import com.badlogic.gdx.graphics.g2d.TextureAtlas.TextureAtlasData
 import com.unciv.Constants
 import com.unciv.json.fromJsonFile
 import com.unciv.json.json
@@ -23,10 +22,13 @@ import com.unciv.models.ruleset.unit.Promotion
 import com.unciv.models.stats.Stats
 import com.unciv.models.tilesets.TileSetCache
 import com.unciv.models.tilesets.TileSetConfig
+import com.unciv.ui.images.AtlasPreview
 
 class RulesetValidator(val ruleset: Ruleset) {
 
     private val uniqueValidator = UniqueValidator(ruleset)
+
+    private val textureNamesCache by lazy { AtlasPreview(ruleset) }
 
     fun getErrorList(tryFixUnknownUniques: Boolean = false): RulesetErrorList {
         // When no base ruleset is loaded - references cannot be checked
@@ -818,21 +820,11 @@ class RulesetValidator(val ruleset: Ruleset) {
             lines.add("Fallback tileset invalid: ${unknownFallbacks.joinToString()}", RulesetErrorSeverity.Warning, sourceObject = null)
     }
 
-    private fun getTilesetNamesFromAtlases(): Set<String> {
-        // This partially duplicates code in ImageGetter.getAvailableTilesets, but we don't want to reload that singleton cache.
-
-        // Our builtin rulesets have no folderLocation, in that case cheat and apply knowledge about
-        // where the builtin Tileset textures are (correct would be to parse Atlases.json):
-        val files = ruleset.folderLocation?.list("atlas")?.asSequence()
-            ?: sequenceOf(Gdx.files.internal("Tilesets.atlas"))
-        // Next, we need to cope with this running without GL context (unit test) - no TextureAtlas(file)
-        return files
-            .flatMap { file ->
-                TextureAtlasData(file, file.parent(), false).regions.asSequence()
-                    .filter { it.name.startsWith("TileSets/") && !it.name.contains("/Units/") }
-            }.map { it.name.split("/")[1] }
+    private fun getTilesetNamesFromAtlases() =
+        textureNamesCache
+            .filter { it.startsWith("TileSets/") && !it.contains("/Units/") }
+            .map { it.split("/")[1] }
             .toSet()
-    }
 
     private fun checkPromotionCircularReferences(lines: RulesetErrorList) {
         fun recursiveCheck(history: HashSet<Promotion>, promotion: Promotion, level: Int) {
