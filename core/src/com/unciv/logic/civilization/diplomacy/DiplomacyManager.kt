@@ -563,7 +563,7 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
 
 
         for (thirdCiv in getCommonKnownCivsWithSpectators()) {
-            thirdCiv.addNotification("[${civInfo.civName}] and [$otherCivName] have signed the Defensive Pact!",
+            thirdCiv.addNotification("[${civInfo.civName}] and [$otherCivName] have signed a Defensive Pact!",
                 NotificationCategory.Diplomacy, civInfo.civName, NotificationIcon.Diplomacy, otherCivName)
             if (thirdCiv.isSpectator()) return
             thirdCiv.getDiplomacyManager(civInfo).setDefensivePactBasedModifier()
