@@ -35,7 +35,7 @@ object DeclareWar {
         onWarDeclared(diplomacyManager, true)
         onWarDeclared(otherCivDiplomacy, false)
 
-        changeOpinions(diplomacyManager, declareWarReason)
+        changeOpinions(diplomacyManager, declareWarReason.warType)
 
         breakTreaties(diplomacyManager)
 
@@ -138,7 +138,7 @@ object DeclareWar {
         diplomacyManager.removeFlag(DiplomacyFlags.BorderConflict)
     }
 
-    private fun changeOpinions(diplomacyManager: DiplomacyManager, declareWarReason: DeclareWarReason) {
+    private fun changeOpinions(diplomacyManager: DiplomacyManager, warType: WarType) {
         val civInfo = diplomacyManager.civInfo
         val otherCiv = diplomacyManager.otherCiv()
         val otherCivDiplomacy = diplomacyManager.otherCivDiplomacy()
@@ -146,13 +146,27 @@ object DeclareWar {
         otherCivDiplomacy.setModifier(DiplomaticModifiers.DeclaredWarOnUs, -20f)
         otherCivDiplomacy.removeModifier(DiplomaticModifiers.ReturnedCapturedUnits)
 
-        for (thirdCiv in civInfo.getKnownCivs()) {
-            if (thirdCiv.isAtWarWith(otherCiv)) {
+        // Apply warmongering
+        if (warType == WarType.DirectWar || warType == WarType.JoinWar) {
+            for (thirdCiv in civInfo.getKnownCivs()) {
+                if (!thirdCiv.isAtWarWith(otherCiv))
+                // We don't want this modify to stack if there is a defensive pact
+                    thirdCiv.getDiplomacyManager(civInfo)
+                        .addModifier(DiplomaticModifiers.WarMongerer, -5f)
+            }
+        }
+
+        // Apply shared enemy modifiers
+        for (thirdCiv in diplomacyManager.getCommonKnownCivs()) {
+            if (thirdCiv.isAtWarWith(otherCiv) && !thirdCiv.isAtWarWith(civInfo)) {
+                // Improve our relations
                 if (thirdCiv.isCityState()) thirdCiv.getDiplomacyManager(civInfo).addInfluence(10f)
                 else thirdCiv.getDiplomacyManager(civInfo).addModifier(DiplomaticModifiers.SharedEnemy, 5f)
-            } else if (declareWarReason.warType == WarType.DirectWar || declareWarReason.warType == WarType.JoinWar)
-                // We don't want this modify to stack if there is a defensive pact
-                thirdCiv.getDiplomacyManager(civInfo).addModifier(DiplomaticModifiers.WarMongerer, -5f)
+            } else if (thirdCiv.isAtWarWith(civInfo)) {
+                // Improve their relations
+                if (thirdCiv.isCityState()) thirdCiv.getDiplomacyManager(otherCiv).addInfluence(10f)
+                else thirdCiv.getDiplomacyManager(otherCiv).addModifier(DiplomaticModifiers.SharedEnemy, 5f)
+            }
         }
     }
 
