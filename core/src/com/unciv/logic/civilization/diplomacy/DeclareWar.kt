@@ -281,12 +281,14 @@ enum class WarType {
     CityStateAllianceWar,
     /** A civilization has joined a war through it's defensive pact. */
     DefensivePactWar,
-    /** A civilization has joined a war through a trade. */
+    /** A civilization has joined a war through a trade. Has the same diplomatic repercussions as direct war.*/
     JoinWar,
 }
 
 /**
- * Stores the reason for the war. We might want to add justified wars in the future
+ * Stores the reason for the war. We might want to add justified wars in the future.
+ * @param allyCiv If the given [WarType] is [WarType.CityStateAllianceWar], [WarType.DefensivePactWar] or [WarType.JoinWar]
+ * the allyCiv needs to be given
  */
 class DeclareWarReason(val warType: WarType, val allyCiv: Civilization? = null)
 
