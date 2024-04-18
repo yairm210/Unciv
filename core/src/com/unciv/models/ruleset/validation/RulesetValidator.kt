@@ -49,10 +49,8 @@ class RulesetValidator(val ruleset: Ruleset) {
         addPromotionErrorsRulesetInvariant(lines, tryFixUnknownUniques)
         addResourceErrorsRulesetInvariant(lines, tryFixUnknownUniques)
 
-        /**********************  **********************/
-        // e.g. json configs complete and parseable
-        // Check for mod or Civ_V_GnK to avoid running the same test twice (~200ms for the builtin assets)
-        if (ruleset.folderLocation != null) checkTilesetSanity(lines)
+        // Tileset tests - e.g. json configs complete and parseable
+        checkTilesetSanity(lines)
 
         return lines
     }
@@ -87,6 +85,7 @@ class RulesetValidator(val ruleset: Ruleset) {
         addEventErrors(lines, tryFixUnknownUniques)
         addCityStateTypeErrors(tryFixUnknownUniques, lines)
 
+        // Tileset tests - e.g. json configs complete and parseable
         // Check for mod or Civ_V_GnK to avoid running the same test twice (~200ms for the builtin assets)
         if (ruleset.folderLocation != null || ruleset.name == BaseRuleset.Civ_V_GnK.fullName) {
             checkTilesetSanity(lines)
@@ -144,7 +143,7 @@ class RulesetValidator(val ruleset: Ruleset) {
 
     private fun addEventErrors(lines: RulesetErrorList,
                                tryFixUnknownUniques: Boolean) {
-        // A Difficulty is not a IHasUniques, so not suitable as sourceObject
+        // An Event is not a IHasUniques, so not suitable as sourceObject
         for (event in ruleset.events.values) {
             for (choice in event.choices) {
                 for (unique in choice.conditionObjects + choice.triggeredUniqueObjects)
