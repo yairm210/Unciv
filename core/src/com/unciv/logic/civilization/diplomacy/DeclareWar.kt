@@ -227,11 +227,15 @@ object DeclareWar {
                 thirdPartyDiploManager.removeFlag(DiplomacyFlags.DefensivePact)
                 thirdPartyDiploManager.otherCivDiplomacy().removeFlag(DiplomacyFlags.DefensivePact)
             }
-            for (civ in diplomacyManager.getCommonKnownCivsWithSpectators()) {
+            for (civ in thirdPartyDiploManager.getCommonKnownCivsWithSpectators()) {
                 civ.addNotification("[${diplomacyManager.civInfo.civName}] canceled their Defensive Pact with [${thirdPartyDiploManager.otherCivName}]!",
                     NotificationCategory.Diplomacy, diplomacyManager.civInfo.civName, NotificationIcon.Diplomacy, thirdPartyDiploManager.otherCivName)
             }
-            diplomacyManager.civInfo.addNotification("We have canceled our Defensive Pact with [${thirdPartyDiploManager.otherCivName}]!",
+
+            thirdPartyDiploManager.otherCiv().addNotification("[${diplomacyManager.civInfo.civName}] canceled their Defensive Pact with us!",
+                NotificationCategory.Diplomacy, diplomacyManager.civInfo.civName, NotificationIcon.Diplomacy, thirdPartyDiploManager.otherCivName)
+
+            thirdPartyDiploManager.civInfo.addNotification("We have canceled our Defensive Pact with [${thirdPartyDiploManager.otherCivName}]!",
                 NotificationCategory.Diplomacy, NotificationIcon.Diplomacy, thirdPartyDiploManager.otherCivName)
         }
     }
