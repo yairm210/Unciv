@@ -9,6 +9,7 @@ import com.unciv.logic.map.tile.RoadStatus
 import com.unciv.models.metadata.BaseRuleset
 import com.unciv.models.ruleset.BeliefType
 import com.unciv.models.ruleset.Building
+import com.unciv.models.ruleset.IRulesetObject
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.ruleset.nation.Nation
@@ -19,6 +20,7 @@ import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.ruleset.unit.Promotion
+import com.unciv.models.stats.INamed
 import com.unciv.models.stats.Stats
 import com.unciv.models.tilesets.TileSetCache
 import com.unciv.models.tilesets.TileSetConfig
@@ -855,12 +857,12 @@ class RulesetValidator(val ruleset: Ruleset) {
     }
 
     private fun checkCivilopediaText(lines: RulesetErrorList) {
-        // Note - currently there can be no classes in a RuleSet that are ICivilopediaText but not IRulesetObject - if there ever are, this needs an expanded scope
-        for (sourceObject in ruleset.allRulesetObjects()) {
+        for (sourceObject in ruleset.allICivilopediaText()) {
             for ((index, line) in sourceObject.civilopediaText.withIndex()) {
                 for (error in line.unsupportedReasons(this)) {
-                    val text = "(${sourceObject::class.java.simpleName}) ${sourceObject.name}'s civilopediaText line ${index + 1}: $error"
-                    lines.add(text, RulesetErrorSeverity.WarningOptionsOnly, sourceObject, null)
+                    val nameText = (sourceObject as? INamed)?.name?.plus("'s ") ?: ""
+                    val text = "(${sourceObject::class.java.simpleName}) ${nameText}civilopediaText line ${index + 1}: $error"
+                    lines.add(text, RulesetErrorSeverity.WarningOptionsOnly, sourceObject as? IRulesetObject, null)
                 }
             }
         }
