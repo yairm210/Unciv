@@ -16,6 +16,7 @@ import com.unciv.models.metadata.BaseRuleset
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.ruleset.unique.Unique
+import com.unciv.models.ruleset.validation.RulesetValidator
 import com.unciv.ui.components.extensions.getReadonlyPixmap
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.widgets.ColorMarkupLabel
@@ -113,25 +114,58 @@ class FormattedLine (
     }
 
     /** Retrieves the parsed [Color] corresponding to the [color] property (String)*/
-    val displayColor: Color by lazy { parseColor() }
+    val displayColor: Color by lazy { parseColor() ?: defaultColor }
 
     /** Returns true if this formatted line will not display anything */
     fun isEmpty(): Boolean = text.isEmpty() && extraImage.isEmpty() &&
             !starred && icon.isEmpty() && link.isEmpty() && !separator
 
-    /** Self-check to potentially support the mod checker
-     * @return `null` if no problems found, or multiline String naming problems.
+    /** Self-check to support the RulesetValidator
+     * @return 0 or more Strings naming problems - all occurrences get the same severity upstream
      */
-    @Suppress("unused")
-    fun unsupportedReason(): String? {
-        val reasons = sequence {
-            if (text.isNotEmpty() && separator) yield("separator and text are incompatible")
-            if (extraImage.isNotEmpty() && link.isNotEmpty()) yield("extraImage and other options except imageSize are incompatible")
-            if (header != 0 && size != Int.MIN_VALUE) yield("use either size or header but not both")
-            // ...
-        }
-        return reasons.joinToString { "\n" }.takeIf { it.isNotEmpty() }
+    fun unsupportedReasons(validator: RulesetValidator) = sequence {
+        if (hasNormalContent() && separator)
+            yield("separator and other options are incompatible")
+        if (link.isNotEmpty() && !(isValidInternalLink(link) || link.hasProtocol()))
+            yield("link is invalid - use internal category/name format or a https:// URL")
+        if (icon.isNotEmpty() && !isValidInternalLink(link))
+            yield("icon is invalid - use internal category/name format")
+        if (header != 0 && size != Int.MIN_VALUE)
+            yield("use either size or header but not both")
+        if (header !in headerSizes.indices)
+            yield("header should be in the range 1..${headerSizes.size - 1}") // Not mentioning 0 is valid too - same as omitting it
+        if (size != Int.MIN_VALUE && size !in 1..100)  // arbitrary
+            yield("size is out of sensible range")
+        if (indent !in 0..100)  // arbitrary
+            yield("indent is out of sensible range")
+        if (color.isNotEmpty())
+            if (parseColor() == null)
+                yield("unknown color \"$color\"")
+            else if (text.isEmpty() && textToDisplay.isEmpty() && !starred && !separator)
+                yield("color set but nothing to apply it to")
+        if (iconCrossed && link.isEmpty() && icon.isEmpty())
+            yield("iconCrossed set without icon or link")
+        if (extraImage.isNotEmpty()) checkExtraImage(validator)
+        if (!imageSize.isNaN() && extraImage.isEmpty())
+            yield("imageSize is only valid for an extraImage")
     }
+
+    private suspend fun SequenceScope<String>.checkExtraImage(validator: RulesetValidator) {
+        if (hasNormalContent() || separator)
+            // not checking centered or padding - these may be implementable
+            yield("extraImage and other options except imageSize are incompatible")
+        // check image exists - but for textures from atlases we can't rely on ImageGetter having cached the appropriate combo???
+        if (ImageGetter.imageExists(extraImage)) return
+        //todo activate after merging #11474
+        // if (ImageGetter.findExternalImage(extraImage) != null) return
+        if (validator.uncachedImageExists(extraImage)) return
+        yield("extraImage not found as either atlas texture or in ExtraImages folder")
+    }
+
+    /** Not one of the exceptions - empty, separator or extraImage. For validation, independent of [isEmpty] which looks for **visible** content */
+    private fun hasNormalContent() =
+        text.isNotEmpty() || link.isNotEmpty() || icon.isNotEmpty() || color.isNotEmpty() || size != Int.MIN_VALUE || header != 0 || starred
+    private fun isValidInternalLink(link: String) = link.matches(Regex("""^[^/]+/[^/]+$"""))
 
     /** Constants used by [FormattedLine] */
     companion object {
@@ -220,14 +254,14 @@ class FormattedLine (
         }
 
     /** Parse a json-supplied color string to [Color], defaults to [defaultColor]. */
-    private fun parseColor(): Color {
-        if (color.isEmpty()) return defaultColor
+    private fun parseColor(): Color? {
+        if (color.isEmpty()) return null
         if (color[0] == '#' && color.isHex(1,3)) {
             if (color.isHex(1,6)) return Color.valueOf(color)
             val hex6 = String(charArrayOf(color[1], color[1], color[2], color[2], color[3], color[3]))
             return Color.valueOf(hex6)
         }
-        return Colors.get(color.uppercase()) ?: defaultColor
+        return Colors.get(color.uppercase())
     }
 
     /** Used only as parameter to [FormattedLine.render] and [MarkupRenderer.render] */

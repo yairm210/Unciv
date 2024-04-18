@@ -54,6 +54,8 @@ class RulesetValidator(val ruleset: Ruleset) {
         // Tileset tests - e.g. json configs complete and parseable
         checkTilesetSanity(lines)
 
+        checkCivilopediaText(lines)
+
         return lines
     }
 
@@ -92,6 +94,8 @@ class RulesetValidator(val ruleset: Ruleset) {
         if (ruleset.folderLocation != null || ruleset.name == BaseRuleset.Civ_V_GnK.fullName) {
             checkTilesetSanity(lines)
         }
+
+        checkCivilopediaText(lines)
 
         return lines
     }
@@ -848,5 +852,22 @@ class RulesetValidator(val ruleset: Ruleset) {
             if (promotion.prerequisites.isEmpty()) continue
             recursiveCheck(hashSetOf(), promotion, 0)
         }
+    }
+
+    private fun checkCivilopediaText(lines: RulesetErrorList) {
+        // Note - currently there can be no classes in a RuleSet that are ICivilopediaText but not IRulesetObject - if there ever are, this needs an expanded scope
+        for (sourceObject in ruleset.allRulesetObjects()) {
+            for ((index, line) in sourceObject.civilopediaText.withIndex()) {
+                for (error in line.unsupportedReasons(this)) {
+                    val text = "(${sourceObject::class.java.simpleName}) ${sourceObject.name}'s civilopediaText line ${index + 1}: $error"
+                    lines.add(text, RulesetErrorSeverity.WarningOptionsOnly, sourceObject, null)
+                }
+            }
+        }
+    }
+
+    fun uncachedImageExists(name: String): Boolean {
+        if (ruleset.folderLocation == null) return false // Can't check in this case
+        return textureNamesCache.imageExists(name)
     }
 }
