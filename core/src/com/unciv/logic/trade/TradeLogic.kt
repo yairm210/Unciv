@@ -139,7 +139,7 @@ class TradeLogic(val ourCivilization: Civilization, val otherCivilization: Civil
                 TradeType.Introduction -> to.diplomacyFunctions.makeCivilizationsMeet(to.gameInfo.getCivilization(offer.name))
                 TradeType.WarDeclaration -> {
                     val nameOfCivToDeclareWarOn = offer.name
-                    from.getDiplomacyManager(nameOfCivToDeclareWarOn).declareWar(DeclareWarReason(WarType.JoinWar))
+                    from.getDiplomacyManager(nameOfCivToDeclareWarOn).declareWar(DeclareWarReason(WarType.JoinWar, to))
                 }
                 else -> {}
             }

@@ -82,20 +82,22 @@ object DeclareWar {
             WarType.DefensivePactWar, WarType.CityStateAllianceWar, WarType.JoinWar -> {
                 val allyCiv = declareWarReason.allyCiv!!
                 otherCiv.popupAlerts.add(PopupAlert(AlertType.WarDeclaration, civInfo.civName))
+                val agressor = if (declareWarReason.warType == WarType.JoinWar) civInfo else otherCiv
+                val defender = if (declareWarReason.warType == WarType.JoinWar) otherCiv else civInfo
 
-                civInfo.addNotification("[${otherCiv.civName}] has joined [${allyCiv.civName}] in the war against us!",
-                    NotificationCategory.Diplomacy, NotificationIcon.War, otherCiv.civName)
+                defender.addNotification("[${agressor.civName}] has joined [${allyCiv.civName}] in the war against us!",
+                    NotificationCategory.Diplomacy, NotificationIcon.War, agressor.civName)
 
-                otherCiv.addNotification("We have joined [${allyCiv.civName}] in the war against [${civInfo.civName}]!",
-                    NotificationCategory.Diplomacy, NotificationIcon.War, civInfo.civName)
+                agressor.addNotification("We have joined [${allyCiv.civName}] in the war against [${defender.civName}]!",
+                    NotificationCategory.Diplomacy, NotificationIcon.War, defender.civName)
 
                 diplomacyManager.getCommonKnownCivsWithSpectators().filterNot { it == allyCiv }.forEach {
-                    it.addNotification("[${otherCiv.civName}] has joined [${allyCiv.civName}] in the war against [${civInfo.civName}]!",
-                        NotificationCategory.Diplomacy, civInfo.civName, NotificationIcon.War, otherCiv.civName)
+                    it.addNotification("[${agressor.civName}] has joined [${allyCiv.civName}] in the war against [${defender.civName}]!",
+                        NotificationCategory.Diplomacy, agressor.civName, NotificationIcon.War, defender.civName)
                 }
 
-                allyCiv.addNotification("[${otherCiv.civName}] has joined us in the war against [${civInfo.civName}]!",
-                        NotificationCategory.Diplomacy, civInfo.civName, NotificationIcon.War, otherCiv.civName)
+                allyCiv.addNotification("[${agressor.civName}] has joined us in the war against [${defender.civName}]!",
+                        NotificationCategory.Diplomacy, agressor.civName, NotificationIcon.War, defender.civName)
             }
         }
     }
@@ -304,7 +306,7 @@ enum class WarType {
 /**
  * Stores the reason for the war. We might want to add justified wars in the future.
  * @param allyCiv If the given [WarType] is [WarType.CityStateAllianceWar], [WarType.DefensivePactWar] or [WarType.JoinWar]
- * the allyCiv needs to be given
+ * the allyCiv needs to be given.
  */
 class DeclareWarReason(val warType: WarType, val allyCiv: Civilization? = null)
 
