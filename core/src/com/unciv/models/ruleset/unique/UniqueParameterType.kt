@@ -694,7 +694,7 @@ enum class UniqueParameterType(
     open fun isKnownValue(parameterText: String, ruleset: Ruleset): Boolean = false
 
     fun getErrorSeverityForFilter(parameterText: String, ruleset: Ruleset): UniqueType.UniqueParameterErrorSeverity? {
-        val isKnown = MultiFilter.multiFilter(parameterText, {isKnownValue(it, ruleset)}, true)
+        val isKnown = MultiFilter.multiFilter(parameterText, { isKnownValue(it, ruleset) }, true)
         if (isKnown) return null
         return UniqueType.UniqueParameterErrorSeverity.PossibleFilteringUnique
     }

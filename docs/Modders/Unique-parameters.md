@@ -15,7 +15,7 @@ All filters except for `populationFilter` accept multiple values in the format: 
 
 > Example: `[{Military} {Water}] units`, `[{Wounded} {Armor}] units`, etc.
 
-No space or other text is allowed between the `[` and the first `{`.
+No space or other text is allowed between the `[` and the first `{`, nor between the last `}` and the ending `]`. The space in `} {`, however, is mandatory.
 
 All filters accept `non-[filter]` as a possible value
 
@@ -125,6 +125,7 @@ cityFilters allow us to choose the range of cities affected by this unique:
 - `in foreign cities`, `Foreign`
 - `in annexed cities`, `Annexed`
 - `in puppeted cities`, `Puppeted`
+- `in cities being razed`, `Razing`
 - `in holy cities`, `Holy`
 - `in City-State cities`
 - `in cities following this religion` - Should only be used in pantheon/follower uniques for religions

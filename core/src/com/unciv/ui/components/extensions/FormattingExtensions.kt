@@ -92,18 +92,5 @@ object UncivDateFormat {
     fun String.parseDate(): Date = utcFormat.parse(this)
 }
 
-/** For filters containing '{', apply the [predicate] to each part inside "{}" and aggregate using [operation];
- *  otherwise return `null` for Elvis chaining of the individual filter. */
-fun <T> String.filterCompositeLogic(predicate: (String) -> T?, operation: (T, T) -> T): T? {
-    val elements: List<T> = removePrefix("{").removeSuffix("}").split("} {")
-        .mapNotNull(predicate)
-    if (elements.isEmpty()) return null
-    return elements.reduce(operation)
-}
-/** If a filter string contains '{', apply the [predicate] to each part inside "{}" then 'and' (`&&`) them together;
- *  otherwise return `null` for Elvis chaining of the individual filter. */
-fun String.filterAndLogic(predicate: (String) -> Boolean): Boolean? =
-        if (contains('{')) filterCompositeLogic(predicate) { a, b -> a && b } else null
-
 /** Format a Vector2 like (0,0) instead of (0.0,0.0) like [toString][Vector2.toString] does */
 fun Vector2.toPrettyString(): String = "(${x.toInt()},${y.toInt()})"
