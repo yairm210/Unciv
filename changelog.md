@@ -1,3 +1,17 @@
+## 4.11.6
+
+Disallow wonders from being selected in puppets, even when 'just' choosing best stat building
+
+Resolved  - Made diplomatic modifiers table backwards-compatible
+
+Military unit capturing respects "Uncapturable" unique
+
+By SomeTroglodyte:
+- Do not preselect custom map option and defer map file loading 
+- Prettier Events - that now respect 'hidden from users' 
+
+Fix Puppets building wonders  - By SeventhM
+
 ## 4.11.5
 
 Better multiplayer game screen
