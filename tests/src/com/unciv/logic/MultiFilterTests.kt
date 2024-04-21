@@ -63,6 +63,20 @@ class MultiFilterTests {
     }
 
     @Test
+    fun testOrLogic() {
+        Assert.assertTrue(MultiFilter.multiFilter("[A] or [B]", { it=="A"}))
+        Assert.assertTrue(MultiFilter.multiFilter("[A] or [B]", { it=="B"}))
+        Assert.assertFalse(MultiFilter.multiFilter("[A] or [B]", { it=="C"}))
+    }
+
+    @Test
+    fun testAndNestedInOrLogic() {
+        Assert.assertTrue(MultiFilter.multiFilter("[{A} {B}] or [{C} {D}]", { it=="A" || it == "B"}))
+        Assert.assertTrue(MultiFilter.multiFilter("[{A} {B}] or [{C} {D}]", { it=="C" || it == "D"}))
+        Assert.assertFalse(MultiFilter.multiFilter("[{A} {B}] or [{C} {D}]", { it=="A" || it == "C"}))
+    }
+
+    @Test
     fun `test a complete Unique with a complex multi-filter is parsed and validated correctly`() {
         val text = "Only available <if [Colosseum] is constructed in all [non-[{non-[Resisting]} {non-[Razing]} {non-[Coastal]}]] cities>"
         val unique = Unique(text)
@@ -108,5 +122,18 @@ class MultiFilterTests {
 
         city.isPuppet = true
         Assert.assertFalse(Conditionals.conditionalApplies(null, conditional, stateForConditionals))
+    }
+
+    @Test
+    fun `test cityFilter nesting 'or' logic in 'and' logic`() {
+        val condition = "in [{[Puppeted] or [Razing]} {[Coastal] or [non-[Garrisoned]]}] cities"
+        val conditional = Unique(condition)
+        Assert.assertFalse(Conditionals.conditionalApplies(null, conditional, stateForConditionals)) // only [non-[Garrisoned]] is true
+
+        city.isPuppet = true
+        Assert.assertTrue(Conditionals.conditionalApplies(null, conditional, stateForConditionals)) // Puppeted fulfills left of AND, no garrison right
+
+        game.addUnit("Warrior", civ, game.getTile(Vector2.Zero)).fortify()
+        Assert.assertFalse(Conditionals.conditionalApplies(null, conditional, stateForConditionals)) // Adding garrison will make right term false
     }
 }

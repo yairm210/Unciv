@@ -11,22 +11,29 @@ Note that all of these are case-sensitive!
 
 ## General Filter Rules
 
-All filters except for `populationFilter` accept multiple values in the format: `{A} {B} {C}` etc, meaning "the object must match ALL of these filters"
+All filters except for `populationFilter` accept combining sub-filters with 'and', 'or' or 'not' logic.
+
+'And' logic combines multiple values in the format: `{A} {B} {C}` etc, meaning "the object must match ALL of these filters".
 
 > Example: `[{Military} {Water}] units`, `[{Wounded} {Armor}] units`, etc.
 
 No space or other text is allowed between the `[` and the first `{`, nor between the last `}` and the ending `]`. The space in `} {`, however, is mandatory.
 
-All filters accept `non-[filter]` as a possible value
+'Or' logic combines multiple values in the format: `[A] or [B] or [C]` etc, meaning "the object must match ANY of these filters".
+
+> Example: `[[Water] or [Helicopter]] units`, `[[Puppeted] or [Razing]] cities`, etc.
+
+'Not' logic uses the syntax `non-[filter]`.
 
 > Example: `[non-[Wounded]] units`
 
-These can be combined by nesting, with the exception that an "ALL" filter cannot contain another "ALL" filter, even with a NON-filter in between.
+These can be combined by nesting, with the exception that an "ALL" filter cannot contain another "ALL" filter, or an "ANY" filter cannot contain another "ANY" filter, even with other logic types in between.
 
 > Example: `[{non-[Wounded]} {Armor}] units` means unit is type Armor and at full health.
 > Example: `[non-[{Wounded} {Armor}]] units` means unit is neither wounded nor an Armor one.
+> Example: `[[{Wounded} {Water}] or [{Embarked} {Scout}]] units`
 
-`[{non-[{Wounded} {Armor}]} {Embarked}] units` WILL FAIL because the game will treat both "} {" at the same time and see `non-[{Wounded` and `Armor}]`, both invalid.
+However, `[{non-[{Wounded} {Armor}]} {Embarked}] units` WILL FAIL because the game will treat both "} {" at the same time and see `non-[{Wounded` and `Armor}]`, both invalid.
 
 Display of complex filters in Civilopedia may become unreadable. If so, consider hiding that unique and provide a better wording using the `Comment []` unique separately.
 
