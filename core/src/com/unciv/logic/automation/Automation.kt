@@ -256,9 +256,8 @@ object Automation {
         city: City,
         construction: INonPerpetualConstruction
     ): Boolean {
-        return  !(construction is Building && construction.isWonder && city.isPuppet)
-            && allowCreateImprovementBuildings(civInfo, city, construction)
-                && allowSpendingResource(civInfo, construction, city)
+        return allowCreateImprovementBuildings(civInfo, city, construction)
+            && allowSpendingResource(civInfo, construction, city)
     }
 
     @Suppress("MemberVisibilityCanBePrivate")
