@@ -240,9 +240,7 @@ class Ruleset {
     fun allIHasUniques(): Sequence<IHasUniques> =
             allRulesetObjects() + sequenceOf(modOptions)
     fun allICivilopediaText(): Sequence<ICivilopediaText> =
-        allRulesetObjects()
-        //todo add this when #11474 is merged:
-        // + events + events.values.asSequence().flatMap { it.choices }
+            allRulesetObjects() + events.values + events.values.flatMap { it.choices }
 
     fun load(folderHandle: FileHandle) {
         // Note: Most files are loaded using createHashmap, which sets originRuleset automatically.

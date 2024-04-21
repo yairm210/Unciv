@@ -157,8 +157,7 @@ class FormattedLine (
             yield("extraImage and other options except imageSize are incompatible")
         // check image exists - but for textures from atlases we can't rely on ImageGetter having cached the appropriate combo???
         if (ImageGetter.imageExists(extraImage)) return
-        //todo activate after merging #11474
-        // if (ImageGetter.findExternalImage(extraImage) != null) return
+        if (ImageGetter.findExternalImage(extraImage) != null) return
         if (validator.uncachedImageExists(extraImage)) return
         yield("extraImage not found as either atlas texture or in ExtraImages folder")
     }
