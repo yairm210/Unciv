@@ -15,6 +15,7 @@ import com.unciv.ui.objectdescriptions.BaseUnitDescriptions
 import com.unciv.ui.objectdescriptions.BuildingDescriptions
 import com.unciv.ui.objectdescriptions.ImprovementDescriptions
 import com.unciv.ui.objectdescriptions.uniquesToCivilopediaTextLines
+import com.unciv.ui.screens.civilopediascreen.CivilopediaScreen.Companion.showEspionageInCivilopedia
 import com.unciv.ui.screens.civilopediascreen.CivilopediaScreen.Companion.showReligionInCivilopedia
 import com.unciv.ui.screens.civilopediascreen.FormattedLine
 import kotlin.math.pow
@@ -193,11 +194,13 @@ class Nation : RulesetObject() {
 
     private fun getUniqueBuildingsText(ruleset: Ruleset) = sequence {
         val religionEnabled = showReligionInCivilopedia(ruleset)
+        val espionageEnabled = showEspionageInCivilopedia(ruleset)
         for (building in ruleset.buildings.values) {
             when {
                 building.uniqueTo != name -> continue
                 building.hasUnique(UniqueType.HiddenFromCivilopedia) -> continue
                 !religionEnabled && building.hasUnique(UniqueType.HiddenWithoutReligion) -> continue
+                !espionageEnabled && building.hasUnique(UniqueType.HiddenWithoutEspionage) -> continue
             }
             yield(FormattedLine(separator = true))
             yield(FormattedLine("{${building.name}} -", link=building.makeLink()))

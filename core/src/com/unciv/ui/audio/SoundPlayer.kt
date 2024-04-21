@@ -164,12 +164,7 @@ object SoundPlayer {
         return GetSoundResult(newSound, true)
     }
 
-    /**
-     * Find, cache and play a Sound.
-     *
-     * **Attention:** The [GameSounds] object has been set up to control playing all sounds of the game. Chances are that you shouldn't be calling this method
-     * from anywhere but [GameSounds].
-     *
+    /** Play a sound once. Will not play if the sound is [UncivSound.Silent] or the volume is too low.
      * Sources are mods from a loaded game, then mods marked as permanent audiovisual,
      * and lastly Unciv's own assets/sounds. Will fail silently if the sound file cannot be found.
      *

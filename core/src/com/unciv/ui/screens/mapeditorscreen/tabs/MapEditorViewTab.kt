@@ -101,6 +101,8 @@ class MapEditorViewTab(
         val statsLabel = WrappableLabel(statsText, labelWidth)
         add(statsLabel.apply { wrap = true }).row()
 
+        add(editorScreen.descriptionTextField).growX().row()
+
         // Map editor must not touch tileMap.naturalWonders as it is a by lazy immutable list,
         // and we wouldn't be able to fix it when the natural wonders change
         if (editorScreen.naturalWondersNeedRefresh) {
@@ -191,8 +193,7 @@ class MapEditorViewTab(
             lines += FormattedLine(stats.toString())
         }
 
-        val nations = tile.tileMap.getTileStartingLocations(tile)
-            .joinToString { it.name.tr() }
+        val nations = tile.tileMap.getTileStartingLocationSummary(tile)
         if (nations.isNotEmpty()) {
             lines += FormattedLine()
             lines += FormattedLine("Starting location(s): [$nations]")
@@ -257,11 +258,12 @@ class MapEditorViewTab(
         tileClickHandler(tile)
     }
 
-    private fun TileMap.getTileStartingLocations(tile: Tile?) =
-        startingLocationsByNation.asSequence()
-        .filter { tile == null || tile in it.value }
-        .mapNotNull { ruleset!!.nations[it.key] }
-        .sortedWith(compareBy<Nation>{ it.isCityState }.thenBy(collator) { it.name.tr(hideIcons = true) })
+    private fun TileMap.getTileStartingLocationSummary(tile: Tile) =
+        startingLocations.asSequence()
+            .filter { it.position == tile.position }
+            .mapNotNull { if (it.nation in ruleset!!.nations) ruleset!!.nations[it.nation]!! to it.usage else null }
+            .sortedWith(compareBy<Pair<Nation,TileMap.StartingLocation.Usage>>{ it.first.isCityState }.thenBy(collator) { it.first.name.tr(hideIcons = true) })
+            .joinToString { "{${it.first.name}} ({${it.second.label}})".tr() }
 
     private fun TileMap.getStartingLocationSummary() =
         startingLocationsByNation.asSequence()

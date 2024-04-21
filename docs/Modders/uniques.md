@@ -144,6 +144,12 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Triggerable
 
+??? example  "Promotes all spies"
+	Applicable to: Triggerable
+
+??? example  "Gain an extra spy"
+	Applicable to: Triggerable
+
 ??? example  "Turn this tile into a [terrainName] tile"
 	Example: "Turn this tile into a [Forest] tile"
 
@@ -758,6 +764,16 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Global
 
+??? example  "[relativeAmount]% spy effectiveness [cityFilter]"
+	Example: "[+20]% spy effectiveness [in all cities]"
+
+	Applicable to: Global
+
+??? example  "[relativeAmount]% enemy spy effectiveness [cityFilter]"
+	Example: "[+20]% enemy spy effectiveness [in all cities]"
+
+	Applicable to: Global
+
 ??? example  "Triggers victory"
 	Applicable to: Global
 
@@ -1175,6 +1191,9 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 ??? example  "Hidden when religion is disabled"
 	Applicable to: Building, Unit, Ruins, Tutorial
+
+??? example  "Hidden when espionage is disabled"
+	Applicable to: Building
 
 ??? example  "Hidden when [victoryType] Victory is disabled"
 	Example: "Hidden when [Domination] Victory is disabled"
@@ -2454,6 +2473,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 *[improvementName]: The name of any improvement.
 *[modFilter]: A Mod name, case-sensitive _or_ a simple wildcard filter beginning and ending in an Asterisk, case-insensitive.
 *[policy]: The name of any policy.
+*[policyFilter]: The name of any policy.
 *[positiveAmount]: This indicates a positive whole number, larger than zero, a '+' sign is optional.
 *[promotion]: The name of any promotion.
 *[relativeAmount]: This indicates a number, usually with a + or - sign, such as `+25` (this kind of parameter is often followed by '%' which is nevertheless not part of the value).

@@ -40,22 +40,20 @@ object MapSaver {
 
     private fun mapFromJson(json: String): TileMap = json().fromJson(TileMap::class.java, json)
 
-    /** Class to parse only the parameters out of a map file */
-    private class TileMapPreview {
-        val mapParameters = MapParameters()
-    }
-
     fun loadMapParameters(mapFile: FileHandle): MapParameters {
-        return mapParametersFromSavedString(mapFile.readString())
+        return loadMapPreview(mapFile).mapParameters
     }
 
-    @Suppress("MemberVisibilityCanBePrivate")
-    fun mapParametersFromSavedString(mapString: String): MapParameters {
+    fun loadMapPreview(mapFile: FileHandle): TileMap.Preview {
+        return mapPreviewFromSavedString(mapFile.readString())
+    }
+
+    private fun mapPreviewFromSavedString(mapString: String): TileMap.Preview {
         val unzippedJson = try {
             Gzip.unzip(mapString.trim())
         } catch (_: Exception) {
             mapString
         }
-        return json().fromJson(TileMapPreview::class.java, unzippedJson).mapParameters
+        return json().fromJson(TileMap.Preview::class.java, unzippedJson)
     }
 }

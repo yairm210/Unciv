@@ -23,6 +23,9 @@ object BattleUnitCapture {
         // There are 3 ways of capturing a unit, we separate them for cleaner code but we also need to ensure a unit isn't captured twice
 
         if (defender !is MapUnitCombatant || attacker !is MapUnitCombatant) return false
+        if (defender.hasUnique(UniqueType.Uncapturable, StateForConditionals(unit = defender.unit,
+                ourCombatant = defender, theirCombatant = attacker, attackedTile = attackedTile)))
+            return false
 
         if (!defender.isDefeated() || defender.unit.isCivilian()) return false
 

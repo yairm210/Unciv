@@ -956,12 +956,19 @@ class MapUnit : IsPartOfGameInfoSerialization {
         civ.ruinsManager.selectNextRuinsReward(this)
     }
 
+    /** Assigns ownership to [civInfo], updating its [unit manager][Civilization.units] and our [cache].
+     *
+     *  Used during game load to rebuild the transient `UnitManager.unitList` from Tile data.
+     *  Cannot be used to reassign from one civ to another - doesn't remove from old owner.
+     */
     fun assignOwner(civInfo: Civilization, updateCivInfo: Boolean = true) {
         owner = civInfo.civName
         this.civ = civInfo
         civInfo.units.addUnit(this, updateCivInfo)
+        // commit named "Fixed game load": GameInfo.setTransients code flow and dependency requirements
+        // may lead to this being called before our own setTransients
         if (::baseUnit.isInitialized)
-        cache.updateUniques()
+            cache.updateUniques()
     }
 
     fun capturedBy(captor: Civilization) {

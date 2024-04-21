@@ -20,7 +20,7 @@ class DevConsolePopup(val screen: WorldScreen) : Popup(screen) {
     private var currentHistoryEntry = history.size
 
     private val textField = TextField("", BaseScreen.skin)
-    private val responseLabel = "".toLabel(Color.RED)
+    private val responseLabel = "".toLabel(Color.RED).apply { wrap = true }
 
     private val commandRoot = ConsoleCommandRoot()
     internal val gameInfo = screen.gameInfo
@@ -32,7 +32,7 @@ class DevConsolePopup(val screen: WorldScreen) : Popup(screen) {
         // Without this, console popup will always contain a `
         textField.addAction(Actions.delay(0.05f, Actions.run { textField.text = "" }))
 
-        add(responseLabel)
+        add(responseLabel).maxWidth(screen.stage.width * 0.8f)
 
         open(true)
 
@@ -69,10 +69,13 @@ class DevConsolePopup(val screen: WorldScreen) : Popup(screen) {
             close()
             return
         }
-        responseLabel.setText(handleCommandResponse.message)
-        responseLabel.style.fontColor = handleCommandResponse.color
+        showResponse(handleCommandResponse.message, handleCommandResponse.color)
     }
 
+    internal fun showResponse(message: String?, color: Color) {
+        responseLabel.setText(message)
+        responseLabel.style.fontColor = color
+    }
 
     val splitStringRegex = Regex("\"([^\"]+)\"|\\S+") // Read: "(phrase)" OR non-whitespace
     private fun getParams(text: String): List<String> {
@@ -86,7 +89,7 @@ class DevConsolePopup(val screen: WorldScreen) : Popup(screen) {
 
     private fun getAutocomplete(): String {
         val params = getParams(textField.text)
-        return commandRoot.autocomplete(this, params).orEmpty()
+        return commandRoot.autocomplete(this, params)
     }
 
     internal fun getCivByName(name: String) = gameInfo.civilizations.firstOrNull { it.civName.toCliInput() == name.toCliInput() }

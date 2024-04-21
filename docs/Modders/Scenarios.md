@@ -17,5 +17,15 @@ To create a scenario:
 
 To open the console, click the `` button on your keyboard.
 
-To see available commands, click enter. This works for subcommands as well (e.g. when you entered `tile`)
+To see available commands, click enter. This works for subcommands as well (e.g. when you entered `tile`).
 
+The console has autocompletion:
+* Enter a partial command, subcommand or argument and hit Tab...
+* When the entered part, compared from the start, matches exactly one of the possible options, that option is completed and a space added for the next subcommand or parameter.
+* When no option matches, nothing happens.
+* When two or more options match, the possibilities are displayed, and the longest common substring is entered for you (e.g. you enter 'c', Tab: commands 'city' or 'civ' match, the console partially completes 'ci' for you).
+* When you haven't yet entered a partial text (console input is empty or ends in a space), autocompletion will display all options.
+
+Some commands operate on a tile or unit you need to select on the map before opening the console.
+
+The console does intentionally not follow all rules defined by the ruleset - e.g. it allows Farms on hills without fresh water or the Mobility promotion on a Worker. Any unexpected consequences are your responsibility.

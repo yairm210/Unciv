@@ -5,6 +5,7 @@ import com.unciv.Constants
 import com.unciv.json.fromJsonFile
 import com.unciv.json.json
 import com.unciv.logic.BackwardCompatibility.updateDeprecations
+import com.unciv.logic.map.tile.RoadStatus
 import com.unciv.models.metadata.BaseRuleset
 import com.unciv.models.ruleset.nation.CityStateType
 import com.unciv.models.ruleset.nation.Difficulty
@@ -48,6 +49,10 @@ class Ruleset {
      */
     var name = ""
 
+    /** The list of mods that made up this Ruleset, including the base ruleset. */
+    val mods = LinkedHashSet<String>()
+
+    //region Json fields
     val beliefs = LinkedHashMap<String, Belief>()
     val buildings = LinkedHashMap<String, Building>()
     val difficulties = LinkedHashMap<String, Difficulty>()
@@ -73,7 +78,10 @@ class Ruleset {
     var cityStateTypes = LinkedHashMap<String, CityStateType>()
     val personalities = LinkedHashMap<String, Personality>()
     val events = LinkedHashMap<String, Event>()
+    var modOptions = ModOptions()
+    //endregion
 
+    //region cache fields
     val greatGeneralUnits by lazy {
         units.values.filter { it.hasUnique(UniqueType.GreatPersonFromCombat, StateForConditionals.IgnoreConditionals) }
     }
@@ -97,8 +105,9 @@ class Ruleset {
         }.toSet()
     }
 
-    val mods = LinkedHashSet<String>()
-    var modOptions = ModOptions()
+    val roadImprovement by lazy { RoadStatus.Road.improvement(this) }
+    val railroadImprovement by lazy { RoadStatus.Railroad.improvement(this) }
+    //endregion
 
     fun clone(): Ruleset {
         val newRuleset = Ruleset()

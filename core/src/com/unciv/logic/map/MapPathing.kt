@@ -3,7 +3,6 @@ package com.unciv.logic.map
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.RoadStatus
 import com.unciv.logic.map.tile.Tile
-import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.utils.Log
 
 //TODO: Eventually, all path generation in the game should be moved into here.
@@ -34,12 +33,13 @@ object MapPathing {
         return 1f
     }
 
-    fun isValidRoadPathTile(unit: MapUnit, tile: Tile, roadImprovement: TileImprovement): Boolean {
+    fun isValidRoadPathTile(unit: MapUnit, tile: Tile): Boolean {
+        val roadImprovement = tile.ruleset.roadImprovement ?: return false
         return tile.isLand
             && !tile.isImpassible()
             && unit.civ.hasExplored(tile)
             && tile.canCivPassThrough(unit.civ)
-            && tile.hasRoadConnection(unit.civ, true) || tile.improvementFunctions.canBuildImprovement(roadImprovement, unit.civ)
+            && (tile.hasRoadConnection(unit.civ, true) || tile.improvementFunctions.canBuildImprovement(roadImprovement, unit.civ))
     }
 
     /**
@@ -53,11 +53,10 @@ object MapPathing {
      * @return A sequence of tiles representing the path from startTile to endTile, or null if no valid path is found.
      */
     fun getRoadPath(unit: MapUnit, startTile: Tile, endTile: Tile): List<Tile>?{
-        val roadImprovement = RoadStatus.Road.improvement(startTile.ruleset) ?: return null
         return getPath(unit,
             startTile,
             endTile,
-            { unit, tile -> isValidRoadPathTile(unit, tile, roadImprovement) },
+            ::isValidRoadPathTile,
             ::roadPreferredMovementCost,
             {_, _, _ -> 0f}
             )
@@ -106,5 +105,3 @@ object MapPathing {
     }
 
 }
-
-

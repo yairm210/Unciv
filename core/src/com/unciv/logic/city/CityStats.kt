@@ -131,7 +131,7 @@ class CityStats(val city: City) {
 
     private fun getStatPercentBonusesFromRailroad(): Stats {
         val stats = Stats()
-        val railroadImprovement = RoadStatus.Railroad.improvement(city.getRuleset())
+        val railroadImprovement = city.getRuleset().railroadImprovement
             ?: return stats // for mods
         val techEnablingRailroad = railroadImprovement.techRequired
         // If we conquered enemy cities connected by railroad, but we don't yet have that tech,
@@ -636,10 +636,11 @@ class CityStats(val city: City) {
 
     fun getStatDifferenceFromBuilding(building: String): Stats {
         val newCity = city.clone()
-        newCity.setTransients(city.civ)
+        newCity.setTransients(city.civ) // Will break the owned tiles. Needs to be reverted before leaving this function
         newCity.cityConstructions.builtBuildings.add(building)
         newCity.cityConstructions.setTransients()
         newCity.cityStats.update(updateCivStats = false)
+        city.expansion.setTransients() // Revert owned tiles to original city
         return newCity.cityStats.currentCityStats - currentCityStats
     }
 }

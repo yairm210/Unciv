@@ -15,8 +15,8 @@ import com.unciv.ui.images.ImageGetter
  */
 open class UnitAction(
     val type: UnitActionType,
-    /** How often this action is used, a higher value means more often and that it should be on an earlier page. 
-     * 100 is very frequent, 50 is somewhat frequent, less than 25 is press one time for multi-turn movement. 
+    /** How often this action is used, a higher value means more often and that it should be on an earlier page.
+     * 100 is very frequent, 50 is somewhat frequent, less than 25 is press one time for multi-turn movement.
      * A Rare case is > 100 if a button is something like add in capital, promote or something,
      * we need to inform the player that taking the action is an option. */
     val useFrequency: Float,
@@ -103,9 +103,9 @@ enum class UnitActionType(
     val defaultPage: Int
 ) {
     StopEscortFormation("Stop Escort formation",
-        { ImageGetter.getImage("OtherIcons/Stop") }, false, defaultPage = 1),
+        { ImageGetter.getUnitActionPortrait("StopEscort") }, false, defaultPage = 1),
     EscortFormation("Escort formation",
-        { ImageGetter.getImage("OtherIcons/Link") }, false, defaultPage = 1),
+        { ImageGetter.getUnitActionPortrait("Escort") }, false, defaultPage = 1),
     SwapUnits("Swap units",
         { ImageGetter.getUnitActionPortrait("Swap") }, false, defaultPage = 0),
     Automate("Automate",

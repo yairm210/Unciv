@@ -309,20 +309,21 @@ object TechnologyDescriptions {
         civInfo: Civilization?,
         predicate: (Building) -> Boolean
     ): Sequence<Building> {
-        val (nuclearWeaponsEnabled, religionEnabled) = getNukeAndReligionSwitches(civInfo)
+        val (nuclearWeaponsEnabled, religionEnabled, espionageEnabled) = getNukeAndReligionSwitches(civInfo)
         return ruleset.buildings.values.asSequence()
             .filter {
                 predicate(it)   // expected to be the most selective, thus tested first
                         && (it.uniqueTo == civInfo?.civName || it.uniqueTo == null && civInfo?.getEquivalentBuilding(it) == it)
                         && (nuclearWeaponsEnabled || !it.hasUnique(UniqueType.EnablesNuclearWeapons))
                         && (religionEnabled || !it.hasUnique(UniqueType.HiddenWithoutReligion))
+                        && (espionageEnabled || !it.hasUnique(UniqueType.HiddenWithoutEspionage))
                         && !it.hasUnique(UniqueType.HiddenFromCivilopedia)
             }
     }
 
-    private fun getNukeAndReligionSwitches(civInfo: Civilization?): Pair<Boolean, Boolean> {
-        if (civInfo == null) return true to true
-        return civInfo.gameInfo.run { gameParameters.nuclearWeaponsEnabled to isReligionEnabled() }
+    private fun getNukeAndReligionSwitches(civInfo: Civilization?): Triple<Boolean, Boolean, Boolean> {
+        if (civInfo == null) return Triple(true, true, true)
+        return civInfo.gameInfo.run { Triple(gameParameters.nuclearWeaponsEnabled, isReligionEnabled(), isEspionageEnabled()) }
     }
 
     /**

@@ -1,3 +1,47 @@
+## 4.11.5
+
+Better multiplayer game screen
+
+Solved some problems with resigning MP games
+
+Disallow creating "multiplayer" games with only AI and spectator
+
+By SomeTroglodyte:
+- Fix Invest quest stays forever
+- Minor Scenarios UX improvements
+- Console autocompletion can display *all* possibilities
+
+## 4.11.4
+
+Can nuke barbarians - By tuvus
+
+By SomeTroglodyte:
+- Two extension features for custom maps
+- Images for Escort Formation
+- Can click behind OptionPopup to close
+
+By SeventhM:
+- Allow policy removal unique to remove multiple policies
+- Fix personality being ignored for tile rankings in small cities
+
+## 4.11.3
+
+Cannot trade with civs you're at war with through notification action
+
+Remove city-state construction bonuses from difficulty
+
+By tuvus:
+- Espionage Uniques, Buildings and Policy
+- Civs with spies in a foreign cities get some information
+
+By SomeTroglodyte:
+- Fix "Connect road" through Mountains
+- "New game" UI improvements
+
+Implement Same-majority-religion diplomatic modifier  - By TommasoPetrolito (new contributor!)
+
+AI civilian units consider more triggerable uniques  - By woo1127
+
 ## 4.11.2
 
 Mod checker warns against deprecated conditionals
@@ -7,12 +51,12 @@ Resolved edge-case crashes
 Added triggerable unique to remove policy  - By woo1127
 
 By SomeTroglodyte:
-- Work boat construction automation tweaks 
-- Fix new game screen mod selection 
+- Work boat construction automation tweaks
+- Fix new game screen mod selection
 
 By SeventhM:
-- Fix softlock for spectator with free policies 
-- Allow Civilian units to promote 
+- Fix softlock for spectator with free policies
+- Allow Civilian units to promote
 
 ## 4.11.1
 

@@ -478,6 +478,26 @@ class ReligionManager : IsPartOfGameInfoSerialization {
         if (religion == null) return null
         return civInfo.gameInfo.getCities().firstOrNull { it.isHolyCityOf(religion!!.name) }
     }
+
+    fun getMajorityReligion(): Religion? {
+        // let's count for each religion (among those actually presents in civ's cities)
+        val religionCounter = Counter<Religion>()
+        for (city in civInfo.cities) {
+            // if city's majority Religion is null, let's just continue to next loop iteration
+            val cityMajorityReligion = city.religion.getMajorityReligion() ?: continue
+            // if not yet continued to next iteration from previous line, let's add the Religion to religionCounter
+            religionCounter.add(cityMajorityReligion, 1)
+        }
+        // let's get the max-counted Religion if there is one, null otherwise; if null, return null
+        val maxReligionCounterEntry = religionCounter.maxByOrNull { it.value } ?: return null
+        // if not returned null from prev. line, check if the maxReligion is in most of the cities
+        return if (maxReligionCounterEntry.value > civInfo.cities.size / 2)
+        // if maxReligionCounterEntry > half-cities-count we return the Religion of maxReligionCounterEntry
+            maxReligionCounterEntry.key
+        else
+        // if maxReligionCounterEntry <= half-cities-count we just return null
+            null
+    }
 }
 
 enum class ReligionState : IsPartOfGameInfoSerialization {

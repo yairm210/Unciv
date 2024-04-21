@@ -296,19 +296,23 @@ object UniqueTriggerActivation {
                 }
             }
             UniqueType.OneTimeRemovePolicy -> {
-                val policyName = unique.params[0]
-                if (!civInfo.policies.isAdopted(policyName)) return null
-                val policy = civInfo.gameInfo.ruleset.policies[policyName] ?: return null
-
+                val policyFilter = unique.params[0]
+                val policiesToRemove = civInfo.policies.adoptedPolicies
+                    .mapNotNull { civInfo.gameInfo.ruleset.policies[it] }
+                    .filter { it.matchesFilter(policyFilter) }
+                if (policiesToRemove.isEmpty()) return null
+                
                 return {
-                    civInfo.policies.removePolicy(policy)
+                    for (policy in policiesToRemove){
+                        civInfo.policies.removePolicy(policy)
 
-                    val notificationText = getNotificationText(
-                        notification, triggerNotificationText,
-                        "You lose the [$policyName] Policy"
-                    )
-                    if (notificationText != null)
-                        civInfo.addNotification(notificationText, PolicyAction(policyName), NotificationCategory.General, NotificationIcon.Culture)
+                        val notificationText = getNotificationText(
+                            notification, triggerNotificationText,
+                            "You lose the [${policy.name}] Policy"
+                        )
+                        if (notificationText != null)
+                            civInfo.addNotification(notificationText, PolicyAction(policy.name), NotificationCategory.General, NotificationIcon.Culture)
+                    }
                     true
                 }
             }
@@ -804,7 +808,7 @@ object UniqueTriggerActivation {
                     val currentEra = civInfo.getEra().name
                     for (otherCiv in civInfo.gameInfo.getAliveMajorCivs()) {
                         if (currentEra !in otherCiv.espionageManager.erasSpyEarnedFor) {
-                            val spyName = otherCiv.espionageManager.addSpy()
+                            val spyName = otherCiv.espionageManager.addSpy().name
                             otherCiv.espionageManager.erasSpyEarnedFor.add(currentEra)
                             if (otherCiv == civInfo || otherCiv.knows(civInfo))
                             // We don't tell which civilization entered the new era, as that is done in the notification directly above this one
@@ -817,6 +821,26 @@ object UniqueTriggerActivation {
                                 )
                         }
                     }
+                    true
+                }
+            }
+
+            UniqueType.OneTimeSpiesLevelUp -> {
+                if (!civInfo.isMajorCiv()) return null
+                if (!civInfo.gameInfo.isEspionageEnabled()) return null
+
+                return {
+                    civInfo.espionageManager.spyList.forEach { it.levelUpSpy() }
+                    true
+                }
+            }
+
+            UniqueType.OneTimeGainSpy -> {
+                if (!civInfo.isMajorCiv()) return null
+                if (!civInfo.gameInfo.isEspionageEnabled()) return null
+
+                return {
+                    civInfo.espionageManager.addSpy()
                     true
                 }
             }
