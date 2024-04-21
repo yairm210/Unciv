@@ -21,13 +21,14 @@ All filters accept `non-[filter]` as a possible value
 
 > Example: `[non-[Wounded]] units`
 
-These can be combined by having the values be negative filters
+These can be combined by nesting, with the exception that an "ALL" filter cannot contain another "ALL" filter, even with a NON-filter in between.
 
-> Example: `[{non-[Wounded]} {Armor}] units`
+> Example: `[{non-[Wounded]} {Armor}] units` means unit is type Armor and at full health.
+> Example: `[non-[{Wounded} {Armor}]] units` means unit is neither wounded nor an Armor one.
 
-These CANNOT be combined in the other way - e.g. `[non-[{Wounded} {Armor}]] units` is NOT valid and will fail to register any units.
+`[{non-[{Wounded} {Armor}]} {Embarked}] units` WILL FAIL because the game will treat both "} {" at the same time and see `non-[{Wounded` and `Armor}]`, both invalid.
 
-This is because to the player, the text will be `non-Wounded Armor units`, which parses like `[{non-[Wounded]} {Armor}] units`
+Display of complex filters in Civilopedia may become unreadable. If so, consider hiding that unique and provide a better wording using the `Comment []` unique separately.
 
 ## civFilter
 
