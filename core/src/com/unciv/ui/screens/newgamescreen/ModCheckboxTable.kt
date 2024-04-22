@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener
+import com.unciv.models.metadata.BaseRuleset
 import com.unciv.models.metadata.GameParameters
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
@@ -84,7 +85,9 @@ class ModCheckboxTable(
         savedModcheckResult = null
         clear()
         mods.clear()  // We'll regenerate this from checked widgets
-        baseRuleset = RulesetCache[newBaseRuleset] ?: return
+        baseRuleset = RulesetCache[newBaseRuleset]
+            // We're calling this from init, baseRuleset is lateinit, and the mod may have been deleted: Must make sure baseRuleset is initialized
+            ?: return setBaseRuleset(BaseRuleset.Civ_V_GnK.fullName)
 
         val compatibleMods = modWidgets
             .filter { ModCompatibility.meetsBaseRequirements(it.mod, baseRuleset) }
