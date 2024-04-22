@@ -80,7 +80,8 @@ class CityConquestFunctions(val city: City) {
      */
     private fun conquerCity(conqueringCiv: Civilization, conqueredCiv: Civilization, receivingCiv: Civilization) {
         city.espionage.removeAllPresentSpies(SpyFleeReason.CityCaptured)
-        
+
+        // Gain gold for plundering city
         val goldPlundered = getGoldForCapturingCity(conqueringCiv)
         conqueringCiv.addGold(goldPlundered)
         conqueringCiv.addNotification("Received [$goldPlundered] Gold for capturing [${city.name}]",
@@ -112,9 +113,6 @@ class CityConquestFunctions(val city: City) {
 
     /** This happens when we either puppet OR annex, basically whenever we conquer a city and don't liberate it */
     fun puppetCity(conqueringCiv: Civilization) {
-        // Gain gold for plundering city
-        @Suppress("UNUSED_VARIABLE")  // todo: use this val
-        val goldPlundered = getGoldForCapturingCity(conqueringCiv)
         val oldCiv = city.civ
 
         // must be before moving the city to the conquering civ,
@@ -251,7 +249,7 @@ class CityConquestFunctions(val city: City) {
 
         // Remove/relocate palace for old Civ - need to do this BEFORE we move the cities between
         //  civs so the capitalCityIndicator recognizes the unique buildings of the conquered civ
-        if (city.isCapital())  oldCiv.moveCapitalToNextLargest(city)
+        if (city.isCapital()) oldCiv.moveCapitalToNextLargest(city)
 
         oldCiv.cities = oldCiv.cities.toMutableList().apply { remove(city) }
         newCiv.cities = newCiv.cities.toMutableList().apply { add(city) }
