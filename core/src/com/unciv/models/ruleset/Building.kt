@@ -388,32 +388,32 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
             if (!civ.tech.isResearched(requiredTech))
                 yield(RejectionReasonType.RequiresTech.toInstance("$requiredTech not researched!"))
 
-        // Regular wonders
-        if (isWonder) {
-            if (civ.gameInfo.getCities().any { it.cityConstructions.isBuilt(name) })
-                yield(RejectionReasonType.WonderAlreadyBuilt.toInstance())
-
+        // All Wonders
+        if(isAnyWonder()) {
             if (civ.cities.any { it != cityConstructions.city && it.cityConstructions.isBeingConstructedOrEnqueued(name) })
                 yield(RejectionReasonType.WonderBeingBuiltElsewhere.toInstance())
 
             if (civ.isCityState())
                 yield(RejectionReasonType.CityStateWonder.toInstance())
 
+            if (cityConstructions.city.isPuppet)
+                yield(RejectionReasonType.PuppetWonder.toInstance())
+        }
+
+        // World Wonders
+        if (isWonder) {
+            if (civ.gameInfo.getCities().any { it.cityConstructions.isBuilt(name) })
+                yield(RejectionReasonType.WonderAlreadyBuilt.toInstance())
+
             val startingEra = civ.gameInfo.gameParameters.startingEra
             if (name in ruleSet.eras[startingEra]!!.startingObsoleteWonders)
                 yield(RejectionReasonType.WonderDisabledEra.toInstance())
         }
 
-        // National wonders
+        // National Wonders
         if (isNationalWonder) {
             if (civ.cities.any { it.cityConstructions.isBuilt(name) })
                 yield(RejectionReasonType.NationalWonderAlreadyBuilt.toInstance())
-
-            if (civ.cities.any { it != cityConstructions.city && it.cityConstructions.isBeingConstructedOrEnqueued(name) })
-                yield(RejectionReasonType.NationalWonderBeingBuiltElsewhere.toInstance())
-
-            if (civ.isCityState())
-                yield(RejectionReasonType.CityStateNationalWonder.toInstance())
         }
 
         if (requiredBuilding != null && !cityConstructions.containsBuildingOrEquivalent(requiredBuilding!!)) {

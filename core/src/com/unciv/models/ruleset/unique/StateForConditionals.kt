@@ -42,4 +42,27 @@ data class StateForConditionals(
     companion object {
         val IgnoreConditionals = StateForConditionals(ignoreConditionals = true)
     }
+
+    /**  Used ONLY for stateBasedRandom in [Conditionals.conditionalApplies] to prevent save scumming on [UniqueType.ConditionalChance] */
+    override fun hashCode(): Int {
+        fun Civilization?.hash() = this?.civName?.hashCode() ?: 0
+        fun City?.hash() = this?.id?.hashCode() ?: 0
+        fun Tile?.hash() = this?.position?.hashCode() ?: 0
+        fun MapUnit?.hash() = (this?.name?.hashCode() ?: 0) + 17 * this?.currentTile.hash()
+        fun ICombatant?.hash() = (this?.getName()?.hashCode() ?: 0) + 17 * this?.getTile().hash()
+        fun CombatAction?.hash() = this?.name?.hashCode() ?: 0
+        fun Region?.hash() = this?.rect?.hashCode() ?: 0
+
+        var result = civInfo.hash()
+        result = 31 * result + city.hash()
+        result = 31 * result + unit.hash()
+        result = 31 * result + tile.hash()
+        result = 31 * result + ourCombatant.hash()
+        result = 31 * result + theirCombatant.hash()
+        result = 31 * result + attackedTile.hash()
+        result = 31 * result + combatAction.hash()
+        result = 31 * result + region.hash()
+        result = 31 * result + ignoreConditionals.hashCode()
+        return result
+    }
 }
