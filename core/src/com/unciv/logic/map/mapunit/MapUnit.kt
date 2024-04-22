@@ -653,7 +653,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
         val oldViewableTiles = viewableTiles
 
         viewableTiles = when {
-            hasUnique(UniqueType.NoSight) -> hashSetOf()
+            hasUnique(UniqueType.NoSight) -> hashSetOf(getTile()) // 0 sight distance still means we can see the Tile we're in
             hasUnique(UniqueType.CanSeeOverObstacles) ->
                 getTile().getTilesInDistance(getVisibilityRange()).toHashSet() // it's that simple
             else -> getTile().getViewableTilesList(getVisibilityRange()).toHashSet()
