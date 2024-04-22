@@ -6,16 +6,12 @@ object MultiFilter {
     private const val andSuffix = "}"
     private const val notPrefix = "non-["
     private const val notSuffix = "]"
-    private const val orPrefix = "["
-    private const val orSeparator = "] or ["
-    private const val orSuffix = "]"
 
     /**
-     *  Implements `and`, `or` and `not` logic on top of a [filterFunction].
+     *  Implements `and` and `not` logic on top of a [filterFunction].
      *
      *  Syntax:
      *      - `and`: `{filter1} {filter2}`... (can repeat as needed)
-     *      - `or`:  `[filter1] or [filter2]`... (can repeat as needed)
      *      - `not`: `non-[filter]`
      *  @param input The complex filtering term
      *  @param filterFunction The single filter implementation
@@ -29,9 +25,6 @@ object MultiFilter {
         if (input.hasSurrounding(andPrefix, andSuffix) && input.contains(andSeparator))
             return input.removeSurrounding(andPrefix, andSuffix).split(andSeparator)
                 .all { multiFilter(it, filterFunction, forUniqueValidityTests) }
-        if (input.hasSurrounding(orPrefix, orSuffix) && input.contains(orSeparator))
-            return input.removeSurrounding(orPrefix, orSuffix).split(orSeparator)
-                .any { multiFilter(it, filterFunction, forUniqueValidityTests) }
         if (input.hasSurrounding(notPrefix, notSuffix)) {
             //same as `return multiFilter() == forUniqueValidityTests`, but clearer
             val internalResult = multiFilter(input.removeSurrounding(notPrefix, notSuffix), filterFunction, forUniqueValidityTests)
@@ -45,11 +38,6 @@ object MultiFilter {
             // Resolve "AND" filters
             input.removeSurrounding(andPrefix, andSuffix)
                 .splitToSequence(andSeparator)
-                .flatMap { getAllSingleFilters(it) }
-        input.hasSurrounding(orPrefix, orSuffix) && input.contains(orSeparator) ->
-            // Resolve "OR" filters
-            input.removeSurrounding(orPrefix, orSuffix)
-                .splitToSequence(orSeparator)
                 .flatMap { getAllSingleFilters(it) }
         input.hasSurrounding(notPrefix, notSuffix) ->
             // Simply remove "non" syntax
