@@ -80,14 +80,15 @@ class ModCheckboxTable(
         deselectIncompatibleMods(null)
     }
 
-    fun setBaseRuleset(newBaseRuleset: String) {
-        baseRulesetName = newBaseRuleset
+    fun setBaseRuleset(newBaseRulesetName: String) {
+        val newBaseRuleset = RulesetCache[newBaseRulesetName]
+            // We're calling this from init, baseRuleset is lateinit, and the mod may have been deleted: Must make sure baseRuleset is initialized
+            ?: return setBaseRuleset(BaseRuleset.Civ_V_GnK.fullName)
+        baseRulesetName = newBaseRulesetName
+        baseRuleset = newBaseRuleset
         savedModcheckResult = null
         clear()
         mods.clear()  // We'll regenerate this from checked widgets
-        baseRuleset = RulesetCache[newBaseRuleset]
-            // We're calling this from init, baseRuleset is lateinit, and the mod may have been deleted: Must make sure baseRuleset is initialized
-            ?: return setBaseRuleset(BaseRuleset.Civ_V_GnK.fullName)
 
         val compatibleMods = modWidgets
             .filter { ModCompatibility.meetsBaseRequirements(it.mod, baseRuleset) }
