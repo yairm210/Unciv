@@ -18,6 +18,7 @@ import com.unciv.logic.map.MapSizeNew
 import com.unciv.logic.map.TileMap
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.metadata.BaseRuleset
+import com.unciv.models.metadata.GameParameters
 import com.unciv.models.metadata.GameSetupInfo
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
@@ -131,9 +132,8 @@ class MapEditorScreen(map: TileMap? = null) : BaseScreen(), RecreateOnResize {
         }
         fun saveDefaultParameters(parameters: MapParameters) {
             val settings = UncivGame.Current.settings
-            val lastSetup = settings.lastGameSetup
-                ?: GameSetupInfo().also { settings.lastGameSetup = it }
-            lastSetup.mapParameters = parameters.clone()
+            val gameParameters = settings.lastGameSetup?.gameParameters ?: GameParameters()
+            settings.lastGameSetup = GameSetupInfo(gameParameters, parameters)
             settings.save()
         }
     }
