@@ -128,7 +128,7 @@ object UnitAutomation {
 
     internal fun tryUpgradeUnit(unit: MapUnit): Boolean {
         if (unit.civ.isHuman() && (!UncivGame.Current.settings.automatedUnitsCanUpgrade
-                || UncivGame.Current.settings.autoPlay.isAutoPlayingAndFullAI())) return false
+                || UncivGame.Current.settings.autoPlay.fullAutoPlayAI)) return false
 
         val upgradeUnits = getUnitsToUpgradeTo(unit)
         if (upgradeUnits.none()) return false // for resource reasons, usually

@@ -27,9 +27,9 @@ enum class NextTurnAction(protected val text: String, val color: Color) {
     },
     AutoPlay("AutoPlay", Color.WHITE) {
         override fun isChoice(worldScreen: WorldScreen) =
-            UncivGame.Current.settings.autoPlay.isAutoPlaying()
+            worldScreen.autoPlay.isAutoPlaying()
         override fun action(worldScreen: WorldScreen) =
-            UncivGame.Current.settings.autoPlay.stopAutoPlay()
+            worldScreen.autoPlay.stopAutoPlay()
     },
     Working(Constants.working, Color.GRAY) {
         override fun isChoice(worldScreen: WorldScreen) =

@@ -389,16 +389,17 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
             // Automation done here
             TurnManager(player).automateTurn()
 
+            val worldScreen = UncivGame.Current.worldScreen
             // Do we need to break if player won?
             if (simulateUntilWin && player.victoryManager.hasWon()) {
                 simulateUntilWin = false
-                UncivGame.Current.settings.autoPlay.stopAutoPlay()
+                worldScreen?.autoPlay?.stopAutoPlay()
                 break
             }
 
             // Do we need to stop AutoPlay?
-            if (UncivGame.Current.settings.autoPlay.isAutoPlaying() && player.victoryManager.hasWon() && !oneMoreTurnMode)
-                UncivGame.Current.settings.autoPlay.stopAutoPlay()
+            if (worldScreen != null && worldScreen.autoPlay.isAutoPlaying() && player.victoryManager.hasWon() && !oneMoreTurnMode)
+                worldScreen.autoPlay.stopAutoPlay()
 
             // Clean up
             TurnManager(player).endTurn(progressBar)
