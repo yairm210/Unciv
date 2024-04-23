@@ -563,7 +563,7 @@ object Battle {
         } else if (attackerCiv.isHuman() && !(UncivGame.Current.settings.autoPlay.fullAutoPlayAI)) {
             // we're not taking our former capital
             attackerCiv.popupAlerts.add(PopupAlert(AlertType.CityConquered, city.id))
-        } else  automateCityConquer(attackerCiv, city)
+        } else automateCityConquer(attackerCiv, city)
 
         if (attackerCiv.isCurrentPlayer())
             UncivGame.Current.settings.addCompletedTutorialTask("Conquer a city")
