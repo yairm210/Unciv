@@ -1,3 +1,16 @@
+## 4.11.7
+
+By tuvus:
+- Declare War Reason 
+- AutoPlayEndTurn can run on a different thread 
+
+By SomeTroglodyte:
+- Multi-filter improve code clarity and more unit tests 
+- Modding: Validation for civilopediaText 
+- Fix: Potential crash on new game after deleting a base ruleset mod 
+- UX: Auto rename new capital in rare cases to prevent confusing notifications later 
+- A visually challenged unit with UniqueType.NoSight should still see its own feet 
+
 ## 4.11.6
 
 Military unit capturing respects "Uncapturable" unique
