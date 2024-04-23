@@ -1,12 +1,9 @@
-
-
 By tuvus:
-- Declare War Reason 
-- AutoPlayEndTurn can run on a different thread 
+- Declare War Reason
+- Autoplay can run on a different thread, to update game UI continuously
 
 By SomeTroglodyte:
-- Multi-filter improve code clarity and more unit tests 
-- Modding: Validation for civilopediaText 
-- Fix: Potential crash on new game after deleting a base ruleset mod 
-- UX: Auto rename new capital in rare cases to prevent confusing notifications later 
-- A visually challenged unit with UniqueType.NoSight should still see its own feet 
+- Units with "no sight" should still see their own tile
+- Modding: Validation for civilopediaText
+- Fix: Potential crash on new game after deleting a base ruleset mod
+- UX: Auto rename new capital in rare cases to prevent confusing notifications later
