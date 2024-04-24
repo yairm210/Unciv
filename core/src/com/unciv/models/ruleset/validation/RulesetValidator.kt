@@ -416,7 +416,7 @@ class RulesetValidator(val ruleset: Ruleset) {
             if (improvement.terrainsCanBeBuiltOn.isEmpty()
                 && !improvement.hasUnique(UniqueType.CanOnlyImproveResource)
                 && !improvement.hasUnique(UniqueType.Unbuildable)
-                && improvement !in ruleset.tileRemovals
+                && !improvement.name.startsWith(Constants.remove)
                 && improvement.name !in RoadStatus.values().map { it.removeAction }
                 && improvement.name != Constants.cancelImprovementOrder
             ) {
