@@ -35,6 +35,7 @@ import com.unciv.ui.components.extensions.withoutItem
 import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.screens.civilopediascreen.CivilopediaCategories
 import com.unciv.ui.screens.civilopediascreen.FormattedLine
+import com.unciv.ui.screens.worldscreen.WorldScreen
 import kotlin.math.ceil
 import kotlin.math.min
 import kotlin.math.roundToInt
@@ -709,7 +710,7 @@ class CityConstructions : IsPartOfGameInfoSerialization {
         val isCurrentPlayersTurn = city.civ.gameInfo.isUsersTurn()
                 || !city.civ.gameInfo.gameParameters.isOnlineMultiplayer
         if ((isCurrentPlayersTurn && (UncivGame.Current.settings.autoAssignCityProduction
-                || UncivGame.Current.settings.autoPlay.fullAutoPlayAI)) // only automate if the active human player has the setting to automate production
+                || UncivGame.Current.worldScreen!!.autoPlay.isAutoPlayingAndFullAutoPlayAI())) // only automate if the active human player has the setting to automate production
                 || !city.civ.isHuman() || city.isPuppet) {
             ConstructionAutomation(this).chooseNextConstruction()
         }
