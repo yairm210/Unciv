@@ -105,8 +105,9 @@ class TutorialRender(private val screen: BaseScreen) {
         val tutorialPopup = Popup(screen)
         tutorialPopup.name = Constants.tutorialPopupNamePrefix + tutorialName
 
-        if (Gdx.files.internal("ExtraImages/$tutorialName").exists()) {
-            tutorialPopup.add(ImageGetter.getExternalImage(tutorialName)).row()
+        val externalImage = ImageGetter.findExternalImage(tutorialName)
+        if (externalImage != null) {
+            tutorialPopup.add(ImageGetter.getExternalImage(externalImage)).row()
         }
 
         tutorialPopup.addGoodSizedLabel(texts[0]).row()

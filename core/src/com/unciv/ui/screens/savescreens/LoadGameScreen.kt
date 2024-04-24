@@ -29,6 +29,7 @@ import com.unciv.ui.popups.Popup
 import com.unciv.ui.popups.ToastPopup
 import com.unciv.logic.github.Github
 import com.unciv.logic.github.Github.folderNameToRepoName
+import com.unciv.ui.popups.closeAllPopups
 import com.unciv.utils.Concurrency
 import com.unciv.utils.Log
 import com.unciv.utils.launchOnGLThread
@@ -122,14 +123,13 @@ class LoadGameScreen : LoadOrSaveScreen() {
     }
 
     private fun onLoadGame() {
-        UncivGame.Current.settings.autoPlay.stopAutoPlay()
         if (selectedSave == null) return
         val loadingPopup = LoadingPopup(this)
         Concurrency.run(loadGame) {
             try {
                 // This is what can lead to ANRs - reading the file and setting the transients, that's why this is in another thread
                 val loadedGame = game.files.loadGameFromFile(selectedSave!!)
-                game.loadGame(loadedGame, true)
+                game.loadGame(loadedGame, callFromLoadScreen = true)
             } catch (notAPlayer: UncivShowableException) {
                 launchOnGLThread {
                     val (message) = getLoadExceptionMessage(notAPlayer)
@@ -155,7 +155,7 @@ class LoadGameScreen : LoadOrSaveScreen() {
                 try {
                     val clipboardContentsString = Gdx.app.clipboard.contents.trim()
                     val loadedGame = UncivFiles.gameInfoFromString(clipboardContentsString)
-                    game.loadGame(loadedGame, true)
+                    game.loadGame(loadedGame, callFromLoadScreen = true)
                 } catch (ex: Exception) {
                     launchOnGLThread { handleLoadGameException(ex, "Could not load game from clipboard!") }
                 } finally {
@@ -181,7 +181,7 @@ class LoadGameScreen : LoadOrSaveScreen() {
             Concurrency.run(Companion.loadFromCustomLocation) {
                 game.files.loadGameFromCustomLocation(
                     {
-                        Concurrency.run { game.loadGame(it, true) }
+                        Concurrency.run { game.loadGame(it, callFromLoadScreen = true) }
                     },
                     {
                         if (it !is PlatformSaverLoader.Cancelled)

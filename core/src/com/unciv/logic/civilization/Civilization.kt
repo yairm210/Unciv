@@ -58,6 +58,7 @@ import com.unciv.models.stats.Stats
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.extensions.toPercent
 import com.unciv.ui.screens.victoryscreen.RankingType
+import org.jetbrains.annotations.VisibleForTesting
 import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.roundToInt
@@ -141,7 +142,16 @@ class Civilization : IsPartOfGameInfoSerialization {
     /** The Civ's gold reserves. Public get, private set - please use [addGold] method to modify. */
     var gold = 0
         private set
+
+    /** The Civ's name
+     *
+     *  - must always be equal to Nation.name (except in the unit test code, where only local consistency is needed)
+     *  - used as uniquely identifying key, so no two players can used the same Nation
+     *  - Displayed and translated as-is
+     */
     var civName = ""
+        private set
+
     var tech = TechManager()
     var policies = PolicyManager()
     var civConstructions = CivConstructions()
@@ -333,6 +343,11 @@ class Civilization : IsPartOfGameInfoSerialization {
         if (firstCityIfNoCapital) cities.firstOrNull() else null
     fun isHuman() = playerType == PlayerType.Human
     fun isAI() = playerType == PlayerType.AI
+    fun isAIOrAutoPlaying(): Boolean {
+        if (playerType == PlayerType.AI) return true
+        val worldScreen = UncivGame.Current.worldScreen ?: return false
+        return worldScreen.viewingCiv == this && worldScreen.autoPlay.isAutoPlaying()
+    }
     fun isOneCityChallenger() = playerType == PlayerType.Human && gameInfo.gameParameters.oneCityChallenge
 
     fun isCurrentPlayer() = gameInfo.currentPlayerCiv == this
@@ -384,12 +399,11 @@ class Civilization : IsPartOfGameInfoSerialization {
     }
 
     fun wantsToFocusOn(focus: Victory.Focus): Boolean {
-        return thingsToFocusOnForVictory.contains(focus) &&
-            (isAI() || UncivGame.Current.settings.autoPlay.isAutoPlayingAndFullAI())
+        return thingsToFocusOnForVictory.contains(focus) && isAIOrAutoPlaying()
     }
 
     fun getPersonality(): Personality {
-        return if (isAI() || UncivGame.Current.settings.autoPlay.isAutoPlayingAndFullAI()) gameInfo.ruleset.personalities[nation.personality] ?: Personality.neutralPersonality
+        return if (isAIOrAutoPlaying()) gameInfo.ruleset.personalities[nation.personality] ?: Personality.neutralPersonality
         else Personality.neutralPersonality
     }
 
@@ -701,6 +715,11 @@ class Civilization : IsPartOfGameInfoSerialization {
 
     //region state-changing functions
 
+    @VisibleForTesting
+    fun setNameForUnitTests(name: String) {
+        civName = name
+    }
+
     /** This is separate because the REGULAR setTransients updates the viewable ties,
      *  and updateVisibleTiles tries to meet civs...
      *  And if the civs don't yet know who they are then they don't know if they're barbarians =\
@@ -907,6 +926,7 @@ class Civilization : IsPartOfGameInfoSerialization {
         oldCapital?.cityConstructions?.removeBuilding(oldCapital.capitalCityIndicator())
     }
 
+    /** @param oldCapital `null` when destroying, otherwise old capital */
     fun moveCapitalToNextLargest(oldCapital: City?) {
         val availableCities = cities.filterNot { it.isCapital() }
         if (availableCities.none()) {
@@ -920,6 +940,13 @@ class Civilization : IsPartOfGameInfoSerialization {
             newCapital = availableCities.maxByOrNull { it.population.population }!!
             newCapital.annexCity()
         }
+
+        // Slight "Easter egg": see #11486: In the rare case a City-state loses their last city but it's not their original capital, the notification names the Nation which confuses players.
+        // Rename the newly conquered city when the conquering Nation's first-city name is equal to the nation name (meaning Babylon too) and the civ has lost that...
+        val currentCapital = getCapital()
+        if (currentCapital != null && currentCapital.isOriginalCapital && civName == currentCapital.name)
+            newCapital.name = "New [${civName}]\n(formerly known as [${newCapital.name}])"
+
         moveCapitalTo(newCapital, oldCapital)
     }
 

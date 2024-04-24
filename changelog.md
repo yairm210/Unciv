@@ -1,3 +1,25 @@
+## 4.11.7
+
+By tuvus:
+- Declare War Reason
+- Autoplay can run on a different thread, to update game UI continuously
+
+By SomeTroglodyte:
+- Units with "no sight" should still see their own tile
+- Modding: Validation for civilopediaText
+- Fix: Potential crash on new game after deleting a base ruleset mod
+- UX: Auto rename new capital in rare cases to prevent confusing notifications later
+
+## 4.11.6
+
+Military unit capturing respects "Uncapturable" unique
+
+By SomeTroglodyte:
+- Do not preselect custom map option and defer map file loading
+- Prettier Events - that now respect 'hidden from users'
+
+Fix Puppets building wonders  - By SeventhM
+
 ## 4.11.5
 
 Better multiplayer game screen

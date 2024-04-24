@@ -379,7 +379,7 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
 
     fun canDeclareWar() = turnsToPeaceTreaty() == 0 && diplomaticStatus != DiplomaticStatus.War
 
-    fun declareWar(indirectCityStateAttack: Boolean = false) = DeclareWar.declareWar(this, indirectCityStateAttack)
+    fun declareWar(declareWarReason: DeclareWarReason = DeclareWarReason(WarType.DirectWar)) = DeclareWar.declareWar(this, declareWarReason)
 
     //Used for nuke
     fun canAttack() = turnsToPeaceTreaty() == 0
@@ -563,7 +563,7 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
 
 
         for (thirdCiv in getCommonKnownCivsWithSpectators()) {
-            thirdCiv.addNotification("[${civInfo.civName}] and [$otherCivName] have signed the Defensive Pact!",
+            thirdCiv.addNotification("[${civInfo.civName}] and [$otherCivName] have signed a Defensive Pact!",
                 NotificationCategory.Diplomacy, civInfo.civName, NotificationIcon.Diplomacy, otherCivName)
             if (thirdCiv.isSpectator()) return
             thirdCiv.getDiplomacyManager(civInfo).setDefensivePactBasedModifier()

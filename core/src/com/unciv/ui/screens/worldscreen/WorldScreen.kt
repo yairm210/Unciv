@@ -59,6 +59,7 @@ import com.unciv.ui.screens.worldscreen.status.NextTurnButton
 import com.unciv.ui.screens.worldscreen.status.NextTurnProgress
 import com.unciv.ui.screens.worldscreen.status.StatusButtons
 import com.unciv.ui.screens.worldscreen.topbar.WorldScreenTopBar
+import com.unciv.ui.screens.worldscreen.unit.AutoPlay
 import com.unciv.ui.screens.worldscreen.unit.UnitTable
 import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionsTable
 import com.unciv.utils.Concurrency
@@ -81,6 +82,7 @@ import kotlin.concurrent.timer
  */
 class WorldScreen(
     val gameInfo: GameInfo,
+    val autoPlay: AutoPlay,
     val viewingCiv: Civilization,
     restoreState: RestoreState? = null
 ) : BaseScreen() {
@@ -129,6 +131,7 @@ class WorldScreen(
     private var uiEnabled = true
 
     internal val undoHandler = UndoHandler(this)
+
 
     init {
         // notifications are right-aligned, they take up only as much space as necessary.
@@ -328,7 +331,7 @@ class WorldScreen(
             launchOnGLThread {
                 loadingGamePopup.close()
             }
-            startNewScreenJob(latestGame)
+            startNewScreenJob(latestGame, autoPlay)
         } catch (ex: Throwable) {
             launchOnGLThread {
                 val (message) = LoadGameScreen.getLoadExceptionMessage(ex, "Couldn't download the latest game state!")
@@ -406,19 +409,18 @@ class WorldScreen(
         }
 
         // If the game has ended, lets stop AutoPlay
-        if (game.settings.autoPlay.isAutoPlaying()
-            && !gameInfo.oneMoreTurnMode && (viewingCiv.isDefeated() || gameInfo.checkForVictory())) {
-            game.settings.autoPlay.stopAutoPlay()
+        if (autoPlay.isAutoPlaying() && !gameInfo.oneMoreTurnMode && (viewingCiv.isDefeated() || gameInfo.checkForVictory())) {
+            autoPlay.stopAutoPlay()
         }
 
-        if (!hasOpenPopups() && !game.settings.autoPlay.isAutoPlaying() && isPlayersTurn) {
+        if (!hasOpenPopups() && !autoPlay.isAutoPlaying() && isPlayersTurn) {
             when {
                 viewingCiv.shouldShowDiplomaticVotingResults() ->
                     UncivGame.Current.pushScreen(DiplomaticVoteResultScreen(gameInfo.diplomaticVictoryVotesCast, viewingCiv))
                 !gameInfo.oneMoreTurnMode && (viewingCiv.isDefeated() || gameInfo.checkForVictory()) ->
                     game.pushScreen(VictoryScreen(this))
                 viewingCiv.greatPeople.freeGreatPeople > 0 ->
-                    game.pushScreen(GreatPersonPickerScreen(viewingCiv))
+                    game.pushScreen(GreatPersonPickerScreen(this, viewingCiv))
                 viewingCiv.popupAlerts.any() -> AlertPopup(this, viewingCiv.popupAlerts.first())
                 viewingCiv.tradeRequests.isNotEmpty() -> {
                     // In the meantime this became invalid, perhaps because we accepted previous trades
@@ -648,7 +650,7 @@ class WorldScreen(
 
             progressBar.increment()
 
-            startNewScreenJob(gameInfoClone)
+            startNewScreenJob(gameInfoClone, autoPlay)
         }
     }
 
@@ -701,7 +703,7 @@ class WorldScreen(
         } else {
             if (!game.settings.autoPlay.showAutoPlayButton) {
                 statusButtons.autoPlayStatusButton = null
-                game.settings.autoPlay.stopAutoPlay()
+                autoPlay.stopAutoPlay()
             }
         }
     }
@@ -725,7 +727,7 @@ class WorldScreen(
         resizeDeferTimer = timer("Resize", daemon = true, 500L, Long.MAX_VALUE) {
             resizeDeferTimer?.cancel()
             resizeDeferTimer = null
-            startNewScreenJob(gameInfo, true) // start over
+            startNewScreenJob(gameInfo, autoPlay, true) // start over
         }
     }
 
@@ -805,10 +807,10 @@ class WorldScreen(
 }
 
 /** This exists so that no reference to the current world screen remains, so the old world screen can get garbage collected during [UncivGame.loadGame]. */
-private fun startNewScreenJob(gameInfo: GameInfo, autosaveDisabled: Boolean = false) {
+private fun startNewScreenJob(gameInfo: GameInfo, autoPlay: AutoPlay, autosaveDisabled: Boolean = false) {
     Concurrency.run {
         val newWorldScreen = try {
-            UncivGame.Current.loadGame(gameInfo)
+            UncivGame.Current.loadGame(gameInfo, autoPlay)
         } catch (notAPlayer: UncivShowableException) {
             withGLContext {
                 val (message) = LoadGameScreen.getLoadExceptionMessage(notAPlayer)

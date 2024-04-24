@@ -164,7 +164,7 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
                 && city.getCenterTile().getTilesInDistance(5).none { it.militaryUnit?.civ == civInfo })
             modifier = 5f // there's a settler just sitting here, doing nothing - BAD
 
-        if (civInfo.playerType == PlayerType.Human) modifier /= 2 // Players prefer to make their own unit choices usually
+        if (!civInfo.isAIOrAutoPlaying()) modifier /= 2 // Players prefer to make their own unit choices usually
         modifier *= personality.scaledFocus(PersonalityValue.Military)
         addChoice(relativeCostEffectiveness, militaryUnit, modifier)
     }

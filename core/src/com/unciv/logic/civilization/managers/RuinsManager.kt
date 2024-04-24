@@ -16,13 +16,13 @@ class RuinsManager(
     @Transient
     lateinit var civInfo: Civilization
     @Transient
-    lateinit var validRewards: List<RuinReward>
+    lateinit var validRewards: Collection<RuinReward>
 
     fun clone() = RuinsManager(ArrayList(lastChosenRewards))  // needs to deep-clone (the List, not the Strings) so undo works
 
     fun setTransients(civInfo: Civilization) {
         this.civInfo = civInfo
-        validRewards = civInfo.gameInfo.ruleset.ruinRewards.values.toList()
+        validRewards = civInfo.gameInfo.ruleset.ruinRewards.values
     }
 
     private fun rememberReward(reward: String) {

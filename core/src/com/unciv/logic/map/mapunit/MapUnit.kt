@@ -653,7 +653,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
         val oldViewableTiles = viewableTiles
 
         viewableTiles = when {
-            hasUnique(UniqueType.NoSight) -> hashSetOf()
+            hasUnique(UniqueType.NoSight) -> hashSetOf(getTile()) // 0 sight distance still means we can see the Tile we're in
             hasUnique(UniqueType.CanSeeOverObstacles) ->
                 getTile().getTilesInDistance(getVisibilityRange()).toHashSet() // it's that simple
             else -> getTile().getViewableTilesList(getVisibilityRange()).toHashSet()
@@ -840,10 +840,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
         // The improvement may get removed if it has ruins effects or is a barbarian camp, and will still be needed if removed
         val improvement = tile.improvement
 
-        if (civ.isMajorCiv()
-            && improvement != null
-            && tile.ruleset.tileImprovements[improvement]!!.isAncientRuinsEquivalent()
-        ) {
+        if (civ.isMajorCiv() && tile.getTileImprovement()?.isAncientRuinsEquivalent() == true) {
             getAncientRuinBonus(tile)
         }
         if (improvement == Constants.barbarianEncampment && !civ.isBarbarian())

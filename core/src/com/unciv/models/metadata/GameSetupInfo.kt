@@ -6,8 +6,8 @@ import com.unciv.logic.GameInfo
 import com.unciv.logic.map.MapParameters
 
 class GameSetupInfo(
-    var gameParameters: GameParameters = GameParameters(),
-    var mapParameters: MapParameters = MapParameters()
+    val gameParameters: GameParameters = GameParameters(),
+    val mapParameters: MapParameters = MapParameters()
 ) {
     @Transient
     var mapFile: FileHandle? = null

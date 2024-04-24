@@ -246,6 +246,7 @@
   },
   {
     "name": "World Screen",
+    "civilopediaText": [{"extraImage":"World_Screen"}],
     "steps": [
     "",
     "This is where you spend most of your time playing Unciv. See the world, control your units, access other screens from here.",

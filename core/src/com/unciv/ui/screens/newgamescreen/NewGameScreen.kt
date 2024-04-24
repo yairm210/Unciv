@@ -41,9 +41,9 @@ import com.unciv.ui.screens.pickerscreens.PickerScreen
 import com.unciv.utils.Concurrency
 import com.unciv.utils.Log
 import com.unciv.utils.launchOnGLThread
+import kotlinx.coroutines.coroutineScope
 import java.net.URL
 import java.util.UUID
-import kotlinx.coroutines.coroutineScope
 import kotlin.math.floor
 import com.unciv.ui.components.widgets.AutoScrollPane as ScrollPane
 
@@ -52,7 +52,7 @@ class NewGameScreen(
     isReset: Boolean = false
 ): IPreviousScreen, PickerScreen(), RecreateOnResize {
 
-    override var gameSetupInfo = defaultGameSetupInfo ?: GameSetupInfo.fromSettings()
+    override val gameSetupInfo = defaultGameSetupInfo ?: GameSetupInfo.fromSettings()
     override val ruleset = Ruleset()  // updateRuleset will clear and add
     private val newGameOptionsTable: GameOptionsTable
     internal val playerPickerTable: PlayerPickerTable
@@ -368,8 +368,9 @@ class NewGameScreen(
         var success = true
         fun handleFailure(message: String): Ruleset {
             success = false
-            gameSetupInfo = GameSetupInfo()
             ToastPopup(message, this, 5000)
+            gameSetupInfo.gameParameters.mods.clear()
+            gameSetupInfo.gameParameters.baseRuleset = BaseRuleset.Civ_V_GnK.fullName
             return RulesetCache[BaseRuleset.Civ_V_GnK.fullName]!!
         }
 
