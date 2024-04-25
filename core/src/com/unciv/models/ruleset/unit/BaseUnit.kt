@@ -12,11 +12,7 @@ import com.unciv.models.ruleset.RejectionReason
 import com.unciv.models.ruleset.RejectionReasonType
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetObject
-import com.unciv.models.ruleset.unique.Conditionals
-import com.unciv.models.ruleset.unique.StateForConditionals
-import com.unciv.models.ruleset.unique.Unique
-import com.unciv.models.ruleset.unique.UniqueTarget
-import com.unciv.models.ruleset.unique.UniqueType
+import com.unciv.models.ruleset.unique.*
 import com.unciv.models.stats.Stat
 import com.unciv.ui.components.extensions.getNeedMoreAmountString
 import com.unciv.ui.components.extensions.toPercent
@@ -360,9 +356,16 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         else ruleset.units[replaces!!]!!
     }
 
+
+    val cachedMatchesFilterResult = HashMap<String, Boolean>()
+
     /** Implements [UniqueParameterType.BaseUnitFilter][com.unciv.models.ruleset.unique.UniqueParameterType.BaseUnitFilter] */
     fun matchesFilter(filter: String): Boolean {
-        return MultiFilter.multiFilter(filter, ::matchesSingleFilter)
+        val cachedAnswer = cachedMatchesFilterResult[filter]
+        if (cachedAnswer != null) return cachedAnswer
+        val newAnswer = MultiFilter.multiFilter(filter, { matchesSingleFilter(it) })
+        cachedMatchesFilterResult[filter] = newAnswer
+        return newAnswer
     }
 
     fun matchesSingleFilter(filter: String): Boolean {

@@ -504,9 +504,16 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
         return true
     }
 
+
+    val cachedMatchesFilterResult = HashMap<String, Boolean>()
+
     /** Implements [UniqueParameterType.BuildingFilter] */
     fun matchesFilter(filter: String): Boolean {
-        return MultiFilter.multiFilter(filter, ::matchesSingleFilter)
+        val cachedAnswer = cachedMatchesFilterResult[filter]
+        if (cachedAnswer != null) return cachedAnswer
+        val newAnswer = MultiFilter.multiFilter(filter, { matchesSingleFilter(it) })
+        cachedMatchesFilterResult[filter] = newAnswer
+        return newAnswer
     }
 
     private fun matchesSingleFilter(filter: String): Boolean {
