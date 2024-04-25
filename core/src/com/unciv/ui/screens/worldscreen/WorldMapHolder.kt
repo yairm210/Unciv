@@ -910,7 +910,7 @@ class WorldMapHolder(
         if (scaleX == minZoom)
             for (tileGroup in tileGroups.values){
                 val tile = tileGroup.tile
-                if (!worldScreen.viewingCiv.hasExplored(tile)) continue
+                if (!worldScreen.selectedCiv.hasExplored(tile)) continue
                 val owner = tile.getOwner()
                 if (owner != null){
                     val color = if (tile.isCityCenter()) owner.nation.getInnerColor() else owner.nation.getOuterColor()
