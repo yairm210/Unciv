@@ -5,8 +5,11 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.ui.Cell
+import com.badlogic.gdx.scenes.scene2d.ui.HorizontalGroup
+import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.badlogic.gdx.scenes.scene2d.utils.Layout
 import com.badlogic.gdx.utils.Align
 import com.unciv.ui.components.ISortableGridContentProvider
 import com.unciv.ui.components.UncivTooltip.Companion.addTooltip
@@ -15,6 +18,7 @@ import com.unciv.ui.components.extensions.center
 import com.unciv.ui.components.extensions.pad
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.input.onClick
+import com.unciv.ui.images.IconCircleGroup
 import com.unciv.ui.screens.basescreen.BaseScreen
 
 
@@ -81,7 +85,7 @@ class SortableGrid<IT, ACT, CT: ISortableGridContentProvider<IT, ACT>> (
     }
 
     private val headerRow = Table(skin)
-    private val headerIcons = hashMapOf<CT, HeaderGroup>()
+    private val headerElements = hashMapOf<CT, IHeaderElement>()
     private val sortSymbols = hashMapOf<Boolean, Label>()
 
     private val details = Table(skin)
@@ -130,10 +134,11 @@ class SortableGrid<IT, ACT, CT: ISortableGridContentProvider<IT, ACT>> (
         sortSymbols[true] = "￬".toLabel()   // U+FFEC
 
         for (column in columns) {
-            val group = HeaderGroup(column)
-            headerIcons[column] = group
-            headerRow.add(group).size(iconSize).align(column.align)
-                .fill(column.fillX, false).expand(column.expandX, false)
+            val element = getHeaderElement(column)
+            headerElements[column] = element
+            val cell = headerRow.add(element.outerActor)
+            element.sizeCell(cell)
+            cell.align(column.align).fill(column.fillX, false).expand(column.expandX, false)
         }
     }
 
@@ -147,13 +152,15 @@ class SortableGrid<IT, ACT, CT: ISortableGridContentProvider<IT, ACT>> (
         updateDetails()
     }
 
+    /** Update the sort direction icons of the header */
     fun updateHeader() {
         for (column in columns) {
             val sortDirection = if (sortState.sortedBy == column) sortState.direction else SortDirection.None
-            headerIcons[column]?.setSortState(sortDirection)
+            headerElements[column]?.setSortState(sortDirection)
         }
     }
 
+    /** Rebuild the grid cells to update and/or resort the data */
     fun updateDetails() {
         details.clear()
         if (data.none()) return
@@ -216,44 +223,123 @@ class SortableGrid<IT, ACT, CT: ISortableGridContentProvider<IT, ACT>> (
         fireCallback()
     }
 
-    // We must be careful - this is an inner class in order to have access to the SortableGrid
-    // type parameters, but that also means we have access to this@SortableGrid - automatically.
+    // We must be careful - the implementations of IHeaderElement are inner classes in order to have access
+    // to the SortableGrid type parameters, but that also means we have access to this@SortableGrid - automatically.
     // Any unqualified method calls not implemented in this or a superclass will silently try a
-    // method offered by Table! Thus all the explicit `this` - to be really safe.
-    //
-    // Using Group to overlay an optional sort symbol on top of the icon - we could also
-    // do HorizontalGroup to have them side by side. Also, note this is not a WidgetGroup
-    // so all layout details are left to the container - in this case, a Table.Cell
-    // This will knowingly place the arrow partly outside the Group bounds.
-    /** Wrap icon and sort symbol for a header cell */
-    inner class HeaderGroup(column: CT) : Group() {
-        private val icon = column.getHeaderIcon(iconSize)
-        private var sortShown: SortDirection = SortDirection.None
+    // method offered by Table! Thus make sure any Actor methods run for the contained actors.
 
-        init {
-            this.isTransform = false
-            this.setSize(iconSize, iconSize)
-            if (icon != null) {
-                this.onClick { toggleSort(column) }
-                icon.setSize(iconSize, iconSize)
-                icon.center(this)
-                if (column.headerTip.isNotEmpty())
-                    icon.addTooltip(column.headerTip, 18f, tipAlign = Align.center, hideIcons = column.headerTipHideIcons)
-                this.addActor(icon)
-            }
-        }
+    /** Wrap icon, label or other Actor and sort symbol for a header cell.
+     *
+     *  Not an Actor but a wrapper that contains [outerActor] which goes into the actual header.
+     *
+     *  Where/how the sort symbol is rendered depends on the type returned by [ISortableGridContentProvider.getHeaderActor].
+     *  Instantiate through [getHeaderElement] - can be [EmptyHeaderElement], [LayoutHeaderElement] or [IconHeaderElement].
+     */
+    // Note - not an Actor because Actor is not an interface. Otherwise we *could* build a class that **is** an Actor which can be
+    // implemented by any Actor subclass but also carry additional fields and methods - via delegation.
+    interface IHeaderElement {
+        val outerActor: Actor
+        val headerActor: Actor?
+        var sortShown: SortDirection
 
         /** Show or remove the sort symbol.
-         * @param showSort None removes the symbol, Ascending shows an up arrow, Descending a down arrow */
-        fun setSortState(showSort: SortDirection) {
-            if (showSort == sortShown) return
-            for (symbol in sortSymbols.values)
-                removeActor(symbol)  // Important: Does nothing if the actor is not our child
-            sortShown = showSort
-            if (showSort == SortDirection.None) return
-            val sortSymbol = sortSymbols[showSort == SortDirection.Descending]!!
+         * @param newSort None removes the symbol, Ascending shows an up arrow, Descending a down arrow */
+        fun setSortState(newSort: SortDirection)
+
+        /** Internal: Used by common implementation for [setSortState] */
+        fun removeSortSymbol(sortSymbol: Label)
+        /** Internal: Used by common implementation for [setSortState] */
+        fun showSortSymbol(sortSymbol: Label)
+
+        /** Override in case the implementation has specific requirements for the Table.Cell its [outerActor] is hosted in. */
+        fun sizeCell(cell: Cell<Actor>) {}
+    }
+
+    private fun IHeaderElement.initActivationAndTooltip(column: CT) {
+        if (column.defaultSort != SortDirection.None)
+            outerActor.onClick { toggleSort(column) }
+        if (column.headerTip.isNotEmpty())
+            headerActor!!.addTooltip(column.headerTip, 18f, tipAlign = Align.center, hideIcons = column.headerTipHideIcons)
+    }
+
+    private fun IHeaderElement.setSortStateImpl(newSort: SortDirection) {
+        if (newSort == sortShown) return
+        for (symbol in sortSymbols.values)
+            removeSortSymbol(symbol)  // Important: Does nothing if the actor is not our child
+        sortShown = newSort
+        if (newSort == SortDirection.None) return
+        val sortSymbol = sortSymbols[newSort == SortDirection.Descending]!!
+        showSortSymbol(sortSymbol)
+    }
+
+    private inner class EmptyHeaderElement : IHeaderElement {
+        override val outerActor = Actor()
+        override val headerActor = null
+        override var sortShown = SortDirection.None
+        override fun setSortState(newSort: SortDirection) {}
+        override fun removeSortSymbol(sortSymbol: Label) {}
+        override fun showSortSymbol(sortSymbol: Label) {}
+    }
+
+    /** Version of [IHeaderElement] that works fine for Image or IconCircleGroup and **overlays** the sort symbol on its lower right.
+     *  Also used for all non-Layout non-null returns from [ISortableGridContentProvider.getHeaderActor].
+     */
+    // Note this is not a WidgetGroup and thus does not implement Layout, so all layout details are left to the container
+    // - in this case, a Table.Cell.  This will knowingly place the arrow partly outside the Group bounds.
+    private inner class IconHeaderElement(column: CT, override val headerActor: Actor) : IHeaderElement {
+        override val outerActor = Group()
+        override var sortShown = SortDirection.None
+
+        init {
+            outerActor.isTransform = false
+            outerActor.setSize(iconSize, iconSize)
+            outerActor.addActor(headerActor)
+            headerActor.setSize(iconSize, iconSize)
+            headerActor.center(outerActor)
+            initActivationAndTooltip(column)
+        }
+
+        override fun sizeCell(cell: Cell<Actor>) {
+            cell.size(iconSize)
+        }
+        override fun setSortState(newSort: SortDirection) = setSortStateImpl(newSort)
+        override fun removeSortSymbol(sortSymbol: Label) {
+            outerActor.removeActor(sortSymbol)
+        }
+        override fun showSortSymbol(sortSymbol: Label) {
             sortSymbol.setPosition(iconSize - 2f, 0f)
-            addActor(sortSymbol)
+            outerActor.addActor(sortSymbol)
+        }
+    }
+
+    /** Version of [IHeaderElement] for all Layout returns from [ISortableGridContentProvider.getHeaderActor].
+     *  Draws the sort symbol by rendering [headerActor] and the sort symbol side by side in a HorizontalGroup
+     */
+    private inner class LayoutHeaderElement(column: CT, override val headerActor: Actor) : IHeaderElement {
+        override val outerActor = HorizontalGroup()
+        override var sortShown = SortDirection.None
+
+        init {
+            outerActor.isTransform = false
+            outerActor.align(column.align)
+            outerActor.addActor(headerActor)
+            initActivationAndTooltip(column)
+        }
+        override fun setSortState(newSort: SortDirection) = setSortStateImpl(newSort)
+        override fun removeSortSymbol(sortSymbol: Label) {
+            outerActor.removeActor(sortSymbol)
+        }
+        override fun showSortSymbol(sortSymbol: Label) {
+            outerActor.addActor(sortSymbol)
+        }
+    }
+
+    private fun getHeaderElement(column: CT): IHeaderElement {
+        return when (val headerActor = column.getHeaderActor(iconSize)) {
+            null -> EmptyHeaderElement()
+            is Image, is IconCircleGroup -> IconHeaderElement(column, headerActor) // They're also `is Layout`, but we want the overlaid header version
+            is Layout -> LayoutHeaderElement(column, headerActor)
+            else -> IconHeaderElement(column, headerActor)  // We haven't got a better implementation for other non-Layout Actors.
         }
     }
 }

@@ -10,7 +10,7 @@ import com.unciv.ui.components.widgets.SortableGrid
  * - [isVisible] can hide a column
  * - [align], [fillX], [expandX], [equalizeHeight] control geometry
  * - [getComparator] or [getEntryValue] control sorting, [defaultSort] the initial order
- * - [getHeaderIcon], [headerTip] and [headerTipHideIcons] define how the header row looks
+ * - [getHeaderActor], [headerTip] and [headerTipHideIcons] define how the header row looks
  * - [getEntryValue] or [getEntryActor] define what the cells display
  * - [getEntryValue] or [getTotalsActor] define what the totals row displays
  * @param IT The item type - what defines the row
@@ -48,8 +48,10 @@ interface ISortableGridContentProvider<IT, ACT> {
      */
     fun getComparator(): Comparator<IT> = compareBy { item: IT -> getEntryValue(item) }
 
-    /** Factory for the header cell [Actor] */
-    fun getHeaderIcon(iconSize: Float): Actor?
+    /** Factory for the header cell [Actor]
+     *  @param iconSize Suggestion for icon size passed down from [SortableGrid] constructor, intended to scale the grid header. If the actor is not an icon, treat as height.
+     */
+    fun getHeaderActor(iconSize: Float): Actor?
 
     /** A getter for the numeric value to display in a cell */
     fun getEntryValue(item: IT): Int

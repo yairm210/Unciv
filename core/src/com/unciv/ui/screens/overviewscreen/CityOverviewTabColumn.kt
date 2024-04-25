@@ -37,7 +37,7 @@ enum class CityOverviewTabColumn : ISortableGridContentProvider<City, EmpireOver
         override val fillX = true
         override val defaultSort get() = SortableGrid.SortDirection.Ascending
         override fun getComparator() = compareBy<City, String>(collator) { it.name.tr(hideIcons = true) }
-        override fun getHeaderIcon(iconSize: Float) =
+        override fun getHeaderActor(iconSize: Float) =
                 ImageGetter.getUnitIcon("Settler")
                 .surroundWithCircle(iconSize)
         override fun getEntryValue(item: City) = 0  // make sure that `stat!!` in the super isn't used
@@ -52,7 +52,7 @@ enum class CityOverviewTabColumn : ISortableGridContentProvider<City, EmpireOver
 
     Status {
         override val headerTip = "Status\n(puppet, resistance or being razed)"
-        override fun getHeaderIcon(iconSize: Float) = ImageGetter.getImage("OtherIcons/CityStatus")
+        override fun getHeaderActor(iconSize: Float) = ImageGetter.getImage("OtherIcons/CityStatus")
         override fun getEntryValue(item: City) = when {
             item.isBeingRazed -> 3
             item.isInResistance() -> 2
@@ -73,7 +73,7 @@ enum class CityOverviewTabColumn : ISortableGridContentProvider<City, EmpireOver
     },
 
     ConstructionIcon {
-        override fun getHeaderIcon(iconSize: Float) = null
+        override fun getHeaderActor(iconSize: Float) = null
         override fun getEntryValue(item: City) =
                 item.cityConstructions.run { turnsToConstruction(currentConstructionFromQueue) }
         override fun getEntryActor(item: City, iconSize: Float, actionContext: EmpireOverviewScreen): Actor? {
@@ -92,7 +92,7 @@ enum class CityOverviewTabColumn : ISortableGridContentProvider<City, EmpireOver
         override val defaultSort get() = SortableGrid.SortDirection.Ascending
         override fun getComparator() =
             compareBy<City, String>(collator) { it.cityConstructions.currentConstructionFromQueue.tr(hideIcons = true) }
-        override fun getHeaderIcon(iconSize: Float) =
+        override fun getHeaderActor(iconSize: Float) =
                 getCircledIcon("OtherIcons/Settings", iconSize)
         override fun getEntryValue(item: City) = 0
         override fun getEntryActor(item: City, iconSize: Float, actionContext: EmpireOverviewScreen) =
@@ -128,7 +128,7 @@ enum class CityOverviewTabColumn : ISortableGridContentProvider<City, EmpireOver
         override val defaultSort get() = SortableGrid.SortDirection.Ascending
         override fun getComparator() =
             super.getComparator().thenBy { it.demandedResource.tr(hideIcons = true) }
-        override fun getHeaderIcon(iconSize: Float) =
+        override fun getHeaderActor(iconSize: Float) =
                 getCircledIcon("OtherIcons/WLTK 2", iconSize, Color.TAN)
         override fun getEntryValue(item: City) =
                 if (item.isWeLoveTheKingDayActive()) 1 else 0
@@ -157,7 +157,7 @@ enum class CityOverviewTabColumn : ISortableGridContentProvider<City, EmpireOver
         override val defaultSort get() = SortableGrid.SortDirection.Ascending
         override fun getComparator() =
             compareBy<City, String>(collator) { it.getGarrison()?.name?.tr(hideIcons = true) ?: "" }
-        override fun getHeaderIcon(iconSize: Float) =
+        override fun getHeaderActor(iconSize: Float) =
                 getCircledIcon("OtherIcons/Shield", iconSize)
         override fun getEntryValue(item: City) =
                 if (item.getGarrison() != null) 1 else 0
@@ -194,7 +194,7 @@ enum class CityOverviewTabColumn : ISortableGridContentProvider<City, EmpireOver
      * - Must override unless a texture exists for "StatIcons/$name" - e.g. a [Stat] column or [Population].
      * - _Should_ be sized to [iconSize].
      */
-    override fun getHeaderIcon(iconSize: Float): Actor? =
+    override fun getHeaderActor(iconSize: Float): Actor? =
             ImageGetter.getStatIcon(name)
 
     /** A getter for the numeric value to display in a cell
