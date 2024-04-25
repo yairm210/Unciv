@@ -2,15 +2,15 @@ package com.unciv.ui.screens.overviewscreen
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Actor
-import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.utils.Align
-import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
 import com.unciv.logic.city.City
 import com.unciv.logic.city.CityFlags
 import com.unciv.models.stats.Stat
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.ISortableGridContentProvider
+import com.unciv.ui.components.ISortableGridContentProvider.Companion.collator
+import com.unciv.ui.components.ISortableGridContentProvider.Companion.getCircledIcon
 import com.unciv.ui.components.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.components.extensions.surroundWithCircle
 import com.unciv.ui.components.extensions.toLabel
@@ -206,34 +206,5 @@ enum class CityOverviewTabColumn : ISortableGridContentProvider<City, EmpireOver
     override fun getEntryValue(item: City): Int =
             item.cityStats.currentCityStats[stat!!].roundToInt()
 
-    /** Factory for entry cell [Actor]
-     * - By default displays the (numeric) result of [getEntryValue].
-     * - [actionContext] will be the parent screen used to define `onClick` actions.
-     */
-    override fun getEntryActor(item: City, iconSize: Float, actionContext: EmpireOverviewScreen): Actor? =
-            getEntryValue(item).toCenteredLabel()
-
     //endregion
-
-    /** Factory for totals cell [Actor]
-     * - By default displays the sum over [getEntryValue].
-     * - Note a count may be meaningful even if entry cells display something other than a number,
-     *   In that case _not_ overriding this and supply a meaningful [getEntryValue] may be easier.
-     * - On the other hand, a sum may not be meaningful even if the cells are numbers - to leave
-     *   the total empty override to return `null`.
-     */
-    override fun getTotalsActor(items: Iterable<City>): Actor? =
-            items.sumOf { getEntryValue(it) }.toCenteredLabel()
-
-    companion object {
-        private val collator = UncivGame.Current.settings.getCollatorFromLocale()
-
-        private fun getCircledIcon(path: String, iconSize: Float, circleColor: Color = Color.LIGHT_GRAY) =
-                ImageGetter.getImage(path)
-                    .apply { color = Color.BLACK }
-                    .surroundWithCircle(iconSize, color = circleColor)
-
-        private fun Int.toCenteredLabel(): Label =
-                this.toLabel().apply { setAlignment(Align.center) }
-    }
 }

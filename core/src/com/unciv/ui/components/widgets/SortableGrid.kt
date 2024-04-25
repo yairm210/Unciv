@@ -34,7 +34,10 @@ import com.unciv.ui.screens.basescreen.BaseScreen
 class SortableGrid<IT, ACT, CT: ISortableGridContentProvider<IT, ACT>> (
     /** Provides the columns to render as [ISortableGridContentProvider] instances */
     private val columns: Iterable<CT>,
-    /** Provides the actual "data" as in one object per row that can then be passed to [ISortableGridContentProvider] methods to fetch cell content */
+    /** Provides the actual "data" as in one object per row that can then be passed to [ISortableGridContentProvider] methods to fetch cell content.
+     *
+     *  Note: If your initial [sortState] has [SortDirection.None], then enumeration order of this will determine initial presentation order.
+     */
     private val data: Iterable<IT>,
     /** Passed to [ISortableGridContentProvider.getEntryActor] where it can be used to define `onClick` actions. */
     private val actionContext: ACT,
@@ -88,7 +91,7 @@ class SortableGrid<IT, ACT, CT: ISortableGridContentProvider<IT, ACT>> (
     private val headerElements = hashMapOf<CT, IHeaderElement>()
     private val sortSymbols = hashMapOf<Boolean, Label>()
 
-    private val details = Table(skin)
+    val details = Table(skin) // public otherwise can't be used in reified public method
     private val totalsRow = Table(skin)
 
     init {
@@ -222,6 +225,21 @@ class SortableGrid<IT, ACT, CT: ISortableGridContentProvider<IT, ACT>> (
         update()
         fireCallback()
     }
+
+    /** Find the first Cell that contains an Actor of type [T] that matches [predicate].
+     *  @return `null` if no such Actor found */
+    inline fun <reified T : Actor> findCell(predicate: (T) -> Boolean): Cell<T>? =
+        details.cells.asSequence()
+            .filterIsInstance<Cell<T>>() // does not remove cells with null actors, still necessary so the return type is fulfilled
+            .firstOrNull { it.actor is T && predicate(it.actor) }
+
+    /** Find the first Cell that contains an Actor of type [T] with the given [name][Actor.name].
+     *
+     *  Not to be confused with [Group.findActor], which does a recursive search over children, does not filter by the type, and returns the actor.
+     *  @return `null` if no such Actor found */
+    inline fun <reified T : Actor> findCell(name: String): Cell<T>? =
+        findCell { it.name == name }
+
 
     // We must be careful - the implementations of IHeaderElement are inner classes in order to have access
     // to the SortableGrid type parameters, but that also means we have access to this@SortableGrid - automatically.

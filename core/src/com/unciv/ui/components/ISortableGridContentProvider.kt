@@ -1,9 +1,16 @@
 package com.unciv.ui.components
 
+import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.ui.Cell
+import com.badlogic.gdx.scenes.scene2d.ui.Label
+import com.badlogic.gdx.utils.Align
+import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
+import com.unciv.ui.components.extensions.surroundWithCircle
+import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.widgets.SortableGrid
+import com.unciv.ui.images.ImageGetter
 
 /**
  * This defines all behaviour of a sortable Grid per column through overridable parts:
@@ -60,7 +67,8 @@ interface ISortableGridContentProvider<IT, ACT> {
      * - By default displays the (numeric) result of [getEntryValue].
      * - [actionContext] can be used to define `onClick` actions.
      */
-    fun getEntryActor(item: IT, iconSize: Float, actionContext: ACT): Actor?
+    fun getEntryActor(item: IT, iconSize: Float, actionContext: ACT): Actor? =
+        getEntryValue(item).toCenteredLabel()
 
     /** Factory for totals cell [Actor]
      * - By default displays the sum over [getEntryValue].
@@ -69,6 +77,21 @@ interface ISortableGridContentProvider<IT, ACT> {
      * - On the other hand, a sum may not be meaningful even if the cells are numbers - to leave
      *   the total empty override to return `null`.
      */
-    fun getTotalsActor(items: Iterable<IT>): Actor?
+    fun getTotalsActor(items: Iterable<IT>): Actor? =
+        items.sumOf { getEntryValue(it) }.toCenteredLabel()
 
+    companion object {
+        @JvmStatic
+        val collator = UncivGame.Current.settings.getCollatorFromLocale()
+
+        @JvmStatic
+        fun getCircledIcon(path: String, iconSize: Float, circleColor: Color = Color.LIGHT_GRAY) =
+            ImageGetter.getImage(path)
+                .apply { color = Color.BLACK }
+                .surroundWithCircle(iconSize, color = circleColor)
+
+        @JvmStatic
+        fun Int.toCenteredLabel(): Label =
+            this.toLabel().apply { setAlignment(Align.center) }
+    }
 }
