@@ -149,6 +149,7 @@ class CivInfoTransientCache(val civInfo: Civilization) {
                 .toList() // save this, it'll be seeing a lot of use
             for (tile in unit.viewableTiles) {
                 if (tile.militaryUnit == null) continue
+                if (tile in newViewableInvisibleTiles) continue
                 if (visibleUnitTypes.any { tile.militaryUnit!!.matchesFilter(it) })
                     newViewableInvisibleTiles.add(tile)
             }
