@@ -114,6 +114,11 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         if (! ::ruleset.isInitialized) { // Not sure if this will ever actually happen, but better safe than sorry
             return ourUniques
         }
+        val typeUniques = type.getMatchingUniques(uniqueType, stateForConditionals)
+        // Memory optimization - very rarely do we actually get uniques from both sources,
+        //   and sequence addition is expensive relative to the rare case that we'll actually need it
+        if (ourUniques.none()) return typeUniques
+        if (typeUniques.none()) return ourUniques
         return ourUniques + type.getMatchingUniques(uniqueType, stateForConditionals)
     }
 
@@ -422,6 +427,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         }
         return false
     }
+
 
     fun isRanged() = rangedStrength > 0
     fun isMelee() = !isRanged() && strength > 0
