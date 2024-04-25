@@ -959,11 +959,11 @@ class WorldMapHolder(
     }
 
     override fun restrictX(deltaX: Float): Float {
-        val exploredRegion = worldScreen.viewingCiv.exploredRegion
         var result = scrollX - deltaX
+        if (worldScreen.viewingCiv.isSpectator()) return result
 
+        val exploredRegion = worldScreen.viewingCiv.exploredRegion
         if (exploredRegion.shouldRecalculateCoords()) exploredRegion.calculateStageCoords(maxX, maxY)
-
         if (!exploredRegion.shouldRestrictX()) return result
 
         val leftX = exploredRegion.getLeftX()
@@ -978,9 +978,10 @@ class WorldMapHolder(
     }
 
     override fun restrictY(deltaY: Float): Float {
-        val exploredRegion = worldScreen.viewingCiv.exploredRegion
         var result = scrollY + deltaY
+        if (worldScreen.viewingCiv.isSpectator()) return result
 
+        val exploredRegion = worldScreen.viewingCiv.exploredRegion
         if (exploredRegion.shouldRecalculateCoords()) exploredRegion.calculateStageCoords(maxX, maxY)
 
         val topY = exploredRegion.getTopY()
