@@ -907,6 +907,16 @@ class WorldMapHolder(
     override fun zoom(zoomScale: Float) {
         super.zoom(zoomScale)
 
+        if (scaleX == minZoom)
+            for (tileGroup in tileGroups.values){
+                if (!worldScreen.viewingCiv.hasExplored(tileGroup.tile)) continue
+                val owner = tileGroup.tile.getOwner()
+                if (owner != null) tileGroup.layerMisc.overlayTerrain(owner.nation.getOuterColor(), 0.7f)
+            }
+        else
+            for (tileGroup in tileGroups.values)
+                tileGroup.layerMisc.hideTerrainOverlay()
+
         clampCityButtonSize()
     }
 
