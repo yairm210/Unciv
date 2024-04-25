@@ -909,9 +909,13 @@ class WorldMapHolder(
 
         if (scaleX == minZoom)
             for (tileGroup in tileGroups.values){
-                if (!worldScreen.viewingCiv.hasExplored(tileGroup.tile)) continue
-                val owner = tileGroup.tile.getOwner()
-                if (owner != null) tileGroup.layerMisc.overlayTerrain(owner.nation.getOuterColor(), 0.7f)
+                val tile = tileGroup.tile
+                if (!worldScreen.viewingCiv.hasExplored(tile)) continue
+                val owner = tile.getOwner()
+                if (owner != null){
+                    val color = if (tile.isCityCenter()) owner.nation.getInnerColor() else owner.nation.getOuterColor()
+                    tileGroup.layerMisc.overlayTerrain(color, 0.7f)
+                }
             }
         else
             for (tileGroup in tileGroups.values)
