@@ -420,14 +420,6 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         return resourceRequirements
     }
 
-    override fun requiresResource(resource: String, stateForConditionals: StateForConditionals?): Boolean {
-        if (getResourceRequirementsPerTurn(stateForConditionals).contains(resource)) return true
-        for (unique in getMatchingUniques(UniqueType.CostsResources, stateForConditionals)) {
-            if (unique.params[1] == resource) return true
-        }
-        return false
-    }
-
 
     fun isRanged() = rangedStrength > 0
     fun isMelee() = !isRanged() && strength > 0

@@ -568,12 +568,4 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
             resourceRequirements[unique.params[1]] += unique.params[0].toInt()
         return resourceRequirements
     }
-
-    override fun requiresResource(resource: String, stateForConditionals: StateForConditionals?): Boolean {
-        if (getResourceRequirementsPerTurn(stateForConditionals).contains(resource)) return true
-        for (unique in getMatchingUniques(UniqueType.CostsResources, stateForConditionals)) {
-            if (unique.params[1] == resource) return true
-        }
-        return false
-    }
 }
