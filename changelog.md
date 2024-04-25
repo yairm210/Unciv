@@ -1,32 +1,16 @@
 ## 4.11.8
 
-Perf: Yet more caching ruleset objects' filter results
-
-Perf: Minor hotspot when you have many invisible-unit detectors
+Performance: Memory and CPU optimizations
 
 Civilian AI wandering avoids enemy melee units correctly
 
-Perf: RequiresResource -> RequiredResources, for CivInfo.setTransients memory performance
-
-Perf: memory optimizations
-
-selectedCiv instead of currentCiv, so spectators get a view like the civ they're spectating as
-
-Color city centers differently on max zoom out, like in minimap
-
 Color lands by owner on max zoom out, for better overview
 
-Resolved  - MP Spectator can scroll entire map
-
-4.11.7-patch1
-
-Don't use tileRemovals for ruleset validation check, since we edit the ruleset as we go in the new game screen, so the tileRemovals is not accurate once mods are changed
+MP Spectator can scroll entire map
 
 Resolved  - Safeguard against uniques specifying non-existant promotions
 
 Fix: Android pause/resume cycle not working  - By SomeTroglodyte
-
-Fixed problem with selecting city constructions option and AutoPlay  - By tuvus
 
 ## 4.11.7
 
