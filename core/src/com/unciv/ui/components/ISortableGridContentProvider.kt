@@ -3,12 +3,13 @@ package com.unciv.ui.components
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.ui.Cell
 import com.unciv.logic.GameInfo
+import com.unciv.ui.components.widgets.SortableGrid
 
 /**
  * This defines all behaviour of a sortable Grid per column through overridable parts:
  * - [isVisible] can hide a column
  * - [align], [fillX], [expandX], [equalizeHeight] control geometry
- * - [getComparator] or [getEntryValue] control sorting, [defaultDescending] the initial order
+ * - [getComparator] or [getEntryValue] control sorting, [defaultSort] the initial order
  * - [getHeaderIcon], [headerTip] and [headerTipHideIcons] define how the header row looks
  * - [getEntryValue] or [getEntryActor] define what the cells display
  * - [getEntryValue] or [getTotalsActor] define what the totals row displays
@@ -34,9 +35,9 @@ interface ISortableGridContentProvider<IT, ACT> {
     /** When overridden `true`, the entry cells of this column will be equalized to their max height */
     val equalizeHeight: Boolean
 
-    /** When `true` the column will be sorted descending when the user switches sort to it. */
+    /** Default sort direction when a column is first sorted - can be None to disable sorting entirely for this column. */
     // Relevant for visuals (simply inverting the comparator would leave the displayed arrow not matching)
-    val defaultDescending: Boolean
+    val defaultSort: SortableGrid.SortDirection
 
     /** @return whether the column should be rendered */
     fun isVisible(gameInfo: GameInfo): Boolean = true

@@ -137,6 +137,16 @@ class SortableGrid<IT, ACT, CT: ISortableGridContentProvider<IT, ACT>> (
         }
     }
 
+    /** Calls [updateHeader] and [updateDetails] but not [updateCallback].
+     *
+     *  Clients can call this if some data change affects cell content and sorting.
+     *  Note there is optimization potential here - a mechanism that updates one cell, and resorts only if it is in the currently sorted column
+     */
+    fun update() {
+        updateHeader()
+        updateDetails()
+    }
+
     fun updateHeader() {
         for (column in columns) {
             val sortDirection = if (sortState.sortedBy == column) sortState.direction else SortDirection.None
@@ -190,23 +200,19 @@ class SortableGrid<IT, ACT, CT: ISortableGridContentProvider<IT, ACT>> (
         fun SortDirection.inverted() = when {
             this == SortDirection.Ascending -> SortDirection.Descending
             this == SortDirection.Descending -> SortDirection.Ascending
-            sortBy.defaultDescending -> SortDirection.Descending
-            else -> SortDirection.Ascending
+            else -> sortBy.defaultSort
         }
+        val direction = if (sortState.sortedBy == sortBy) sortState.direction else SortDirection.None
+        setSort(sortBy, direction.inverted())
+    }
 
-        sortState.run {
-            if (sortedBy == sortBy) {
-                direction = direction.inverted()
-            } else {
-                sortedBy = sortBy
-                direction = SortDirection.None.inverted()
-            }
-        }
+    fun setSort(sortBy: CT, direction: SortDirection) {
+        sortState.sortedBy = sortBy
+        sortState.direction = direction
 
         // Rebuild header content to show sort state
-        updateHeader()
-        // Sort the table: clear and fill with sorted data
-        updateDetails()
+        // And resort the table: clear and fill with sorted data
+        update()
         fireCallback()
     }
 
