@@ -3,6 +3,8 @@ package com.unciv.ui.screens.overviewscreen
 import com.badlogic.gdx.scenes.scene2d.Action
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
+import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.badlogic.gdx.utils.Align
 import com.unciv.logic.civilization.Civilization
 import com.unciv.ui.components.extensions.equalizeColumns
 import com.unciv.ui.components.widgets.SortableGrid
@@ -24,6 +26,8 @@ class UnitOverviewTab(
         override fun isEmpty() = scrollY == null && sortedBy == UnitOverviewTabColumn.Name && direction != SortableGrid.SortDirection.Descending
     }
     override val persistableData = (persistedData as? UnitTabPersistableData) ?: UnitTabPersistableData()
+
+    private val fixedContent = Table()
 
     // used for select()
     private var blinkAction: Action? = null
@@ -73,9 +77,13 @@ class UnitOverviewTab(
         this.validate()
     }
 
-    override fun getFixedContent() = grid.getHeader()
+    override fun getFixedContent() = fixedContent
 
     init {
+        val supplyTableWidth = (overviewScreen.stage.width * 0.25f).coerceAtLeast(240f)
+        val unitSupplyTable = UnitSupplyTable.create(overviewScreen, this, viewingPlayer, supplyTableWidth)
+        fixedContent.add(unitSupplyTable).align(Align.top).padBottom(10f).row()
+        fixedContent.add(grid.getHeader()).grow()
         top()
         add(grid)
     }

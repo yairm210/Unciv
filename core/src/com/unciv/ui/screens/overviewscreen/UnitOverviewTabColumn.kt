@@ -18,7 +18,6 @@ import com.unciv.ui.images.IconTextButton
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.pickerscreens.UnitRenamePopup
 
-//todo unit supply!
 //todo Extending getEntryValue here to have a second String-based "channel" - could go into SortableGrid, possibly by defining a DataType per column???
 
 enum class UnitOverviewTabColumn(
