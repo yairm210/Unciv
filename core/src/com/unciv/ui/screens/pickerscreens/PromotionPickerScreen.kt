@@ -16,6 +16,7 @@ import com.unciv.models.translations.tr
 import com.unciv.ui.audio.SoundPlayer
 import com.unciv.ui.components.extensions.isEnabled
 import com.unciv.ui.components.extensions.toTextButton
+import com.unciv.ui.components.input.KeyCharAndCode
 import com.unciv.ui.components.input.KeyboardBinding
 import com.unciv.ui.components.input.keyShortcuts
 import com.unciv.ui.components.input.onActivation
@@ -27,11 +28,20 @@ import com.unciv.ui.screens.basescreen.RecreateOnResize
 import com.unciv.ui.screens.civilopediascreen.CivilopediaScreen
 import kotlin.math.abs
 
-class PromotionPickerScreen(
+class PromotionPickerScreen private constructor(
     val unit: MapUnit,
-    private val closeOnPick: Boolean = true,
-    private val onChange: (() -> Unit)? = null
+    private val closeOnPick: Boolean,
+    private val originalName: String?,
+    private val onChange: (() -> Unit)?
 ) : PickerScreen(), RecreateOnResize {
+    /** Show promotions organized by depencencies, allow picking new ones, allow unit rename
+     *  @param unit The MapUnit to work with
+     *  @param closeOnPick Should picking a new promotion close the screen?
+     *  @param onChange Optional callback called when a promotion is picked or during close if the name was changed
+     */
+    constructor(unit: MapUnit, closeOnPick: Boolean = true, onChange: (() -> Unit)? = null)
+        : this(unit, closeOnPick, unit.instanceName, onChange)
+
     // Style stuff
     private val colors = skin[PromotionScreenColors::class.java]
     private val promotedLabelStyle = Label.LabelStyle(skin[Label.LabelStyle::class.java]).apply {
@@ -57,7 +67,12 @@ class PromotionPickerScreen(
 
 
     init {
-        setDefaultCloseAction()
+        closeButton.onActivation {
+            if (unit.instanceName != originalName)
+                onChange?.invoke()
+            game.popScreen()
+        }
+        closeButton.keyShortcuts.add(KeyCharAndCode.BACK)
 
         if (canPromoteNow) {
             rightSideButton.setText("Pick promotion".tr())
@@ -338,7 +353,7 @@ class PromotionPickerScreen(
     override fun recreate() = recreate(closeOnPick)
 
     fun recreate(closeOnPick: Boolean): BaseScreen {
-        val newScreen = PromotionPickerScreen(unit, closeOnPick, onChange)
+        val newScreen = PromotionPickerScreen(unit, closeOnPick, originalName, onChange)
         newScreen.setScrollY(scrollPane.scrollY)
         return newScreen
     }
