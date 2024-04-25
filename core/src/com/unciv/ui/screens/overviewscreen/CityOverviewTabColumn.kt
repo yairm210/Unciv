@@ -167,7 +167,7 @@ enum class CityOverviewTabColumn : ISortableGridContentProvider<City, EmpireOver
             val unitIcon = ImageGetter.getConstructionPortrait(unit.baseUnit.getIconName(), iconSize * 0.7f)
             unitIcon.addTooltip(unitName, 18f, tipAlign = Align.topLeft)
             unitIcon.onClick {
-                actionContext.select(EmpireOverviewCategories.Units, UnitOverviewTab.getUnitIdentifier(unit) )
+                actionContext.select(EmpireOverviewCategories.Units, UnitOverviewTabColumn.getUnitIdentifier(unit) )
             }
             return unitIcon
         }
