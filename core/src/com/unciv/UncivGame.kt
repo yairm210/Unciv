@@ -464,7 +464,7 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
 
     companion object {
         //region AUTOMATICALLY GENERATED VERSION DATA - DO NOT CHANGE THIS REGION, INCLUDING THIS COMMENT
-        val VERSION = Version("4.11.7-patch1", 991)
+        val VERSION = Version("4.11.8", 992)
         //endregion
 
         lateinit var Current: UncivGame
@@ -487,8 +487,7 @@ private class GameStartScreen : BaseScreen() {
     init {
         val logoImage = ImageGetter.getExternalImage("banner.png")
         logoImage.center(stage)
-        logoImage.setOrigin(Align.center)
-        logoImage.color = Color.WHITE.cpy().apply { a = 0f }
+        logoImage.color.a = 0f
         logoImage.addAction(Actions.alpha(1f, 0.3f))
         stage.addActor(logoImage)
     }

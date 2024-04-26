@@ -613,7 +613,7 @@ class Civilization : IsPartOfGameInfoSerialization {
     fun isDefeated() = when {
         isBarbarian() || isSpectator() -> false     // Barbarians and voyeurs can't lose
         hasEverOwnedOriginalCapital -> cities.isEmpty()
-        else -> units.getCivUnits().none()
+        else -> units.getCivUnitsSize() == 0
     }
 
     fun getEra(): Era = tech.era

@@ -49,9 +49,17 @@ class CivInfoTransientCache(val civInfo: Civilization) {
     fun setTransients() {
         val ruleset = civInfo.gameInfo.ruleset
 
+        val buildingsToRequiredResources = ruleset.buildings.values
+                .filter { civInfo.getEquivalentBuilding(it) == it }
+                .associateWith { it.requiredResources() }
+
+        val unitsToRequiredResources = ruleset.units.values
+                .filter { civInfo.getEquivalentUnit(it) == it }
+                .associateWith { it.requiredResources() }
+
         for (resource in ruleset.tileResources.values.asSequence().filter { it.resourceType == ResourceType.Strategic }.map { it.name }) {
-            val applicableBuildings = ruleset.buildings.values.filter { it.requiresResource(resource, StateForConditionals.IgnoreConditionals) && civInfo.getEquivalentBuilding(it) == it }
-            val applicableUnits = ruleset.units.values.filter { it.requiresResource(resource, StateForConditionals.IgnoreConditionals) && civInfo.getEquivalentUnit(it) == it }
+            val applicableBuildings = buildingsToRequiredResources.filter { it.value.contains(resource) }.map { it.key }
+            val applicableUnits = unitsToRequiredResources.filter { it.value.contains(resource) }.map { it.key }
 
             val lastEraForBuilding = applicableBuildings.maxOfOrNull { it.era(ruleset)?.eraNumber ?: 0 }
             val lastEraForUnit = applicableUnits.maxOfOrNull { it.era(ruleset)?.eraNumber ?: 0 }
@@ -141,6 +149,7 @@ class CivInfoTransientCache(val civInfo: Civilization) {
                 .toList() // save this, it'll be seeing a lot of use
             for (tile in unit.viewableTiles) {
                 if (tile.militaryUnit == null) continue
+                if (tile in newViewableInvisibleTiles) continue
                 if (visibleUnitTypes.any { tile.militaryUnit!!.matchesFilter(it) })
                     newViewableInvisibleTiles.add(tile)
             }

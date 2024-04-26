@@ -504,9 +504,16 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
         return true
     }
 
+
+    val cachedMatchesFilterResult = HashMap<String, Boolean>()
+
     /** Implements [UniqueParameterType.BuildingFilter] */
     fun matchesFilter(filter: String): Boolean {
-        return MultiFilter.multiFilter(filter, ::matchesSingleFilter)
+        val cachedAnswer = cachedMatchesFilterResult[filter]
+        if (cachedAnswer != null) return cachedAnswer
+        val newAnswer = MultiFilter.multiFilter(filter, { matchesSingleFilter(it) })
+        cachedMatchesFilterResult[filter] = newAnswer
+        return newAnswer
     }
 
     private fun matchesSingleFilter(filter: String): Boolean {
@@ -567,13 +574,5 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
         for (unique in getMatchingUniques(UniqueType.ConsumesResources, stateForConditionals))
             resourceRequirements[unique.params[1]] += unique.params[0].toInt()
         return resourceRequirements
-    }
-
-    override fun requiresResource(resource: String, stateForConditionals: StateForConditionals?): Boolean {
-        if (getResourceRequirementsPerTurn(stateForConditionals).contains(resource)) return true
-        for (unique in getMatchingUniques(UniqueType.CostsResources, stateForConditionals)) {
-            if (unique.params[1] == resource) return true
-        }
-        return false
     }
 }

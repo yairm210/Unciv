@@ -55,13 +55,17 @@ android {
     }
 
     buildTypes {
-        getByName("release") {
+        debug {
+            isDebuggable = true
+        }
+        release {
             // If you make this true you get a version of the game that just flat-out doesn't run
             isMinifyEnabled = false
             proguardFiles(getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro")
+            isDebuggable = false
         }
-
     }
+
     lint {
         disable += "MissingTranslation"   // see res/values/strings.xml
     }

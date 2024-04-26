@@ -415,11 +415,11 @@ object UnitAutomation {
     }
 
     private fun getDangerousTiles(unit: MapUnit): HashSet<Tile> {
-        val nearbyRangedEnemyUnits = unit.currentTile.getTilesInDistance(3)
+        val nearbyEnemyUnits = unit.currentTile.getTilesInDistance(3)
             .flatMap { tile -> tile.getUnits().filter { unit.civ.isAtWarWith(it.civ) } }
 
-        val tilesInRangeOfAttack = nearbyRangedEnemyUnits
-            .flatMap { it.getTile().getTilesInDistance(it.getRange()) }
+        val tilesInRangeOfAttack = nearbyEnemyUnits
+            .flatMap { it.getTile().getTilesInDistance((it.getMaxMovement() - 1) + it.getRange()) }
 
         val tilesWithinBombardmentRange = unit.currentTile.getTilesInDistance(3)
             .filter { it.isCityCenter() && it.getCity()!!.civ.isAtWarWith(unit.civ) }

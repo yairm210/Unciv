@@ -12,11 +12,11 @@ import com.unciv.models.ruleset.RejectionReason
 import com.unciv.models.ruleset.RejectionReasonType
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetObject
-import com.unciv.models.ruleset.unique.Conditionals
 import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueType
+import com.unciv.models.ruleset.unique.Conditionals
 import com.unciv.models.stats.Stat
 import com.unciv.ui.components.extensions.getNeedMoreAmountString
 import com.unciv.ui.components.extensions.toPercent
@@ -114,6 +114,11 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         if (! ::ruleset.isInitialized) { // Not sure if this will ever actually happen, but better safe than sorry
             return ourUniques
         }
+        val typeUniques = type.getMatchingUniques(uniqueType, stateForConditionals)
+        // Memory optimization - very rarely do we actually get uniques from both sources,
+        //   and sequence addition is expensive relative to the rare case that we'll actually need it
+        if (ourUniques.none()) return typeUniques
+        if (typeUniques.none()) return ourUniques
         return ourUniques + type.getMatchingUniques(uniqueType, stateForConditionals)
     }
 
@@ -355,9 +360,16 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         else ruleset.units[replaces!!]!!
     }
 
+
+    val cachedMatchesFilterResult = HashMap<String, Boolean>()
+
     /** Implements [UniqueParameterType.BaseUnitFilter][com.unciv.models.ruleset.unique.UniqueParameterType.BaseUnitFilter] */
     fun matchesFilter(filter: String): Boolean {
-        return MultiFilter.multiFilter(filter, ::matchesSingleFilter)
+        val cachedAnswer = cachedMatchesFilterResult[filter]
+        if (cachedAnswer != null) return cachedAnswer
+        val newAnswer = MultiFilter.multiFilter(filter, { matchesSingleFilter(it) })
+        cachedMatchesFilterResult[filter] = newAnswer
+        return newAnswer
     }
 
     fun matchesSingleFilter(filter: String): Boolean {
@@ -415,13 +427,6 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         return resourceRequirements
     }
 
-    override fun requiresResource(resource: String, stateForConditionals: StateForConditionals?): Boolean {
-        if (getResourceRequirementsPerTurn(stateForConditionals).contains(resource)) return true
-        for (unique in getMatchingUniques(UniqueType.CostsResources, stateForConditionals)) {
-            if (unique.params[1] == resource) return true
-        }
-        return false
-    }
 
     fun isRanged() = rangedStrength > 0
     fun isMelee() = !isRanged() && strength > 0

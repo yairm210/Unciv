@@ -1,3 +1,17 @@
+## 4.11.8
+
+Performance: Memory and CPU optimizations
+
+Civilian AI wandering avoids enemy melee units correctly
+
+Color lands by owner on max zoom out, for better overview
+
+MP Spectator can scroll entire map
+
+Resolved  - Safeguard against uniques specifying non-existant promotions
+
+Fix: Android pause/resume cycle not working  - By SomeTroglodyte
+
 ## 4.11.7
 
 By tuvus:

@@ -38,7 +38,7 @@ class Tile : IsPartOfGameInfoSerialization {
     //region Serialized fields
     var militaryUnit: MapUnit? = null
     var civilianUnit: MapUnit? = null
-    var airUnits = ArrayList<MapUnit>()
+    var airUnits = ArrayList<MapUnit>(0)
 
     var position: Vector2 = Vector2.Zero
     lateinit var baseTerrain: String
@@ -46,7 +46,7 @@ class Tile : IsPartOfGameInfoSerialization {
         private set
 
     /** Should be immutable - never be altered in-place, instead replaced */
-    var exploredBy = HashSet<String>()
+    var exploredBy = HashSet<String>(0)
 
     var naturalWonder: String? = null
     var resource: String? = null
