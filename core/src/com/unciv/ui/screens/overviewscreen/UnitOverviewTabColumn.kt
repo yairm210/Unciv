@@ -48,14 +48,14 @@ enum class UnitOverviewTabColumn(
     EditName("") {
         override val defaultSort get() = SortableGrid.SortDirection.None
         override fun getEntryActor(item: MapUnit, iconSize: Float, actionContext: UnitOverviewTab): Actor {
+            val selectKey = getUnitIdentifier(item)
             val editIcon = ImageGetter.getImage("OtherIcons/Pencil")
                 .apply { this.color = Color.WHITE }
                 .surroundWithCircle(30f, true, Color(0x000c31))
             editIcon.onClick {
                 UnitRenamePopup(actionContext.overviewScreen, item) {
-                    actionContext.overviewScreen.game.replaceCurrentScreen(
-                        EmpireOverviewScreen(actionContext.viewingPlayer, selection = getUnitIdentifier(item))
-                    )
+                    actionContext.update()
+                    actionContext.overviewScreen.select(EmpireOverviewCategories.Units, selectKey)
                 }
             }
             return editIcon
