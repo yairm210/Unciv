@@ -293,14 +293,15 @@ object Conditionals {
                     )
             }
             UniqueType.ConditionalAdjacentUnit ->
-                relevantCiv != null
-                    && relevantUnit != null
-                    && relevantTile!!.neighbors.any {
-                    it.militaryUnit != null
-                        && it.militaryUnit != relevantUnit
-                        && it.militaryUnit!!.civ == relevantCiv
-                        && it.militaryUnit!!.matchesFilter(condition.params[0])
-                }
+                relevantCiv != null &&
+                    relevantUnit != null &&
+                    relevantTile!!.neighbors.any {
+                        it.getUnits().any {
+                            it != relevantUnit &&
+                                it.civ == relevantCiv &&
+                                it.matchesFilter(condition.params[0])
+                        }
+                    }
 
             UniqueType.ConditionalNeighborTiles ->
                 relevantTile != null
