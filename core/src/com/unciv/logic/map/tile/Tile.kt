@@ -507,6 +507,7 @@ class Tile : IsPartOfGameInfoSerialization {
             "resource" -> observingCiv != null && hasViewableResource(observingCiv)
             "Water resource" -> isWater && observingCiv != null && hasViewableResource(observingCiv)
             "Featureless" -> terrainFeatures.isEmpty()
+            "Open terrain" -> allTerrains.all { !it.isRough() } // special case - if *one* terrain is open, we don't care, we need *all*
             Constants.freshWaterFilter -> isAdjacentTo(Constants.freshWater, observingCiv)
 
             else -> {
