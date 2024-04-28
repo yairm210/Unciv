@@ -438,7 +438,6 @@ class UnitMovement(val unit: MapUnit) {
         var previousTile = unit.getTile()
         var passingMovementSpent = 0f // Movement points spent since last tile we could end our turn on
 
-        unit.removeFromTile()
 
         for (tile in pathToLastReachableTile) {
             if (!unit.movement.canPassThrough(tile)) {
@@ -460,6 +459,7 @@ class UnitMovement(val unit: MapUnit) {
             if (unit.movement.canMoveTo(tile, assumeCanPassThrough = true)) {
                 lastReachedEnterableTile = tile
                 unit.useMovementPoints(passingMovementSpent)
+                unit.removeFromTile()
                 unit.putInTile(tile) // Required for ruins,
 
                 if (escortUnit != null) {
