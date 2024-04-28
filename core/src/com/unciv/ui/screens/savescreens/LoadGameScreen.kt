@@ -7,11 +7,12 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.utils.SerializationException
 import com.unciv.Constants
-import com.unciv.UncivGame
 import com.unciv.logic.MissingModsException
 import com.unciv.logic.UncivShowableException
 import com.unciv.logic.files.PlatformSaverLoader
 import com.unciv.logic.files.UncivFiles
+import com.unciv.logic.github.Github
+import com.unciv.logic.github.Github.folderNameToRepoName
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.UncivTooltip.Companion.addTooltip
@@ -27,9 +28,6 @@ import com.unciv.ui.components.input.onClick
 import com.unciv.ui.popups.LoadingPopup
 import com.unciv.ui.popups.Popup
 import com.unciv.ui.popups.ToastPopup
-import com.unciv.logic.github.Github
-import com.unciv.logic.github.Github.folderNameToRepoName
-import com.unciv.ui.popups.closeAllPopups
 import com.unciv.utils.Concurrency
 import com.unciv.utils.Log
 import com.unciv.utils.launchOnGLThread
@@ -73,7 +71,7 @@ class LoadGameScreen : LoadOrSaveScreen() {
                     }
                 }
                 else -> {
-                    errorText.append("Unhandled problem, [${ex::class.simpleName} ${ex.localizedMessage}]".tr())
+                    errorText.append("Unhandled problem, [${ex::class.simpleName} ${ex.stackTraceToString()}]".tr())
                     isUserFixable = false
                 }
             }
