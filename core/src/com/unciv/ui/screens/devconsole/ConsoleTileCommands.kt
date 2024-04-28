@@ -13,6 +13,11 @@ class ConsoleTileCommands: ConsoleCommandNode {
 
     override val subcommands = hashMapOf<String, ConsoleCommand>(
 
+        "checkfilter" to ConsoleAction("tile checkfilter <tileFilter>") { console, params ->
+            val selectedTile = console.getSelectedTile()
+            DevConsoleResponse.hint(selectedTile.matchesFilter(params[0]).toString())
+        },
+
         "setimprovement" to ConsoleAction("tile setimprovement <improvementName> [civName]") { console, params ->
             val selectedTile = console.getSelectedTile()
             val improvement = console.gameInfo.ruleset.tileImprovements.values.findCliInput(params[0])
