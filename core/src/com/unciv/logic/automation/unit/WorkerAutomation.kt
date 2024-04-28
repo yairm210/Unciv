@@ -324,8 +324,8 @@ class WorkerAutomation(
             .filter { it.second > 0f }
             .maxByOrNull { it.second }?.first
 
-        if (tile.improvement != null && civInfo.isHuman() && (!UncivGame.Current.settings.automatedWorkersReplaceImprovements
-                || UncivGame.Current.settings.autoPlay.fullAutoPlayAI)) {
+        if (tile.improvement != null && civInfo.isHuman() && !UncivGame.Current.settings.automatedWorkersReplaceImprovements
+            && UncivGame.Current.worldScreen?.autoPlay?.isAutoPlayingAndFullAutoPlayAI() == false) {
             // Note that we might still want to build roads or remove fallout, so we can't exit the function immedietly
             bestBuildableImprovement = null
         }
