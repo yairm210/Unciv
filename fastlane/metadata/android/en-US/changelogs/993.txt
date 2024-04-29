@@ -1,0 +1,23 @@
+
+
+More info for MP load exceptions
+
+Adjacent unit filter takes civilians into account
+
+Better UX for multiplayer game add
+
+Better UX for multiplayer game rename
+
+Fix tests
+
+Added "checkfilter" console commands for city, tile, and unit, for easy mod checking
+
+Resolved  - "Open terrain" filter would return true if *any( terrain was open, instead of *all*
+
+RISKY - *actually* move units into tiles along the path - this should solve the "ruins bonus generates units that then block path" as well as giving correct LOS reveals for intermediate tiles when units are escorted
+
+Resolved  - better "escort settler" logic
+
+Fixed old references to autoPlaySettings.fullAutoPlayAI without checking if we are currently AutoPlaying  - By tuvus
+
+[docs] fix links to Unique-parameters#terrainfilter and uniques.md  - By husujo
