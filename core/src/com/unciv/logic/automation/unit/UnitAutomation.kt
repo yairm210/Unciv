@@ -127,8 +127,8 @@ object UnitAutomation {
     }
 
     internal fun tryUpgradeUnit(unit: MapUnit): Boolean {
-        if (unit.civ.isHuman() && (!UncivGame.Current.settings.automatedUnitsCanUpgrade
-                || UncivGame.Current.settings.autoPlay.fullAutoPlayAI)) return false
+        if (unit.civ.isHuman() && !UncivGame.Current.settings.automatedUnitsCanUpgrade
+            && UncivGame.Current.worldScreen?.autoPlay?.isAutoPlayingAndFullAutoPlayAI() == false) return false
 
         val upgradeUnits = getUnitsToUpgradeTo(unit)
         if (upgradeUnits.none()) return false // for resource reasons, usually
@@ -209,6 +209,9 @@ object UnitAutomation {
             return AirUnitAutomation.automateBomber(unit)
         }
 
+        // Accompany settlers
+        if (tryAccompanySettlerOrGreatPerson(unit)) return
+
         if (tryGoToRuinAndEncampment(unit) && unit.currentMovement == 0f) return
 
         if (tryUpgradeUnit(unit)) return
@@ -217,9 +220,6 @@ object UnitAutomation {
 
         // If there are no enemies nearby and we can heal here, wait until we are at full health
         if (unit.health < 100 && canUnitHealInTurnsOnCurrentTile(unit,2, 4)) return
-
-        // Accompany settlers
-        if (tryAccompanySettlerOrGreatPerson(unit)) return
 
         if (tryHeadTowardsOurSiegedCity(unit)) return
 
@@ -494,13 +494,14 @@ object UnitAutomation {
     }
 
     private fun tryAccompanySettlerOrGreatPerson(unit: MapUnit): Boolean {
+        val distanceToTiles = unit.movement.getDistanceToTiles()
         val settlerOrGreatPersonToAccompany = unit.civ.units.getCivUnits()
             .firstOrNull {
                 val tile = it.currentTile
                 it.isCivilian() &&
                         (it.hasUnique(UniqueType.FoundCity) || unit.isGreatPerson())
-                        && tile.militaryUnit == null && unit.movement.canMoveTo(tile)
-                        && unit.movement.getDistanceToTiles().containsKey(tile)
+                        && (tile == unit.currentTile || tile.militaryUnit == null && unit.movement.canMoveTo(tile))
+                        && distanceToTiles.containsKey(tile)
             } ?: return false
         unit.movement.headTowards(settlerOrGreatPersonToAccompany.currentTile)
         return true

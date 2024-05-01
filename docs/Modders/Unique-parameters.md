@@ -88,6 +88,8 @@ This indicates a unit as placed on the map. Compare with `baseUnitFilter`.
 - `Barbarians`, `Barbarian`
 - Again, any combination of the above is also allowed, e.g. `[{Wounded} {Water}]` units.
 
+You can check this in-game using the console with the `unit checkfilter <filter>` command
+
 ## buildingFilter
 
 Allows to only activate a unique for certain buildings. Allowed options are:
@@ -134,6 +136,8 @@ cityFilters allow us to choose the range of cities affected by this unique:
 - `in all cities in which the majority religion is a major religion`
 - `in all cities in which the majority religion is an enhanced religion`
 - [civFilter]
+
+You can check this in-game using the console with the `city checkfilter <filter>` command
 
 ## improvementFilter
 
@@ -264,6 +268,8 @@ Any of:
 - [improvementFilter](#improvementfilter) for this tile
 - `Improvement` or `improved` for tiles with any improvements
 - `unimproved` for tiles with no improvement
+
+You can check this in-game using the console with the `tile checkfilter <filter>` command
 
 ## terrainQuality
 

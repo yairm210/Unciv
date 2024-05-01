@@ -3,6 +3,11 @@ package com.unciv.ui.screens.devconsole
 class ConsoleUnitCommands : ConsoleCommandNode {
     override val subcommands = hashMapOf<String, ConsoleCommand>(
 
+        "checkfilter" to ConsoleAction("unit checkfilter <unitFilter>") { console, params ->
+            val unit = console.getSelectedUnit()
+            DevConsoleResponse.hint(unit.matchesFilter(params[0]).toString())
+        },
+
         "add" to ConsoleAction("unit add <civName> <unitName>") { console, params ->
             val selectedTile = console.getSelectedTile()
             val civ = console.getCivByName(params[0])

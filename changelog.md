@@ -1,3 +1,19 @@
+## 4.11.9
+
+Added "checkfilter" console commands for city, tile, and unit, for easy mod checking
+
+Unit movement changes - should solve some edge-case problems
+
+"Adjacent unit" conditional takes civilians into account
+
+Better UX for multiplayer game add & rename
+
+Fixed "Open terrain" filter
+
+Better "escort settler" logic
+
+Automation fixes - By tuvus
+
 ## 4.11.8
 
 Performance: Memory and CPU optimizations
