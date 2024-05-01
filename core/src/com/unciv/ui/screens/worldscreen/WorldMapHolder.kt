@@ -917,9 +917,9 @@ class WorldMapHolder(
                     tileGroup.layerMisc.overlayTerrain(color, 0.7f)
                 }
             }
-        else
-            for (tileGroup in tileGroups.values)
-                tileGroup.layerMisc.hideTerrainOverlay()
+//         else
+//             for (tileGroup in tileGroups.values)
+//                 tileGroup.layerMisc.hideTerrainOverlay()
 
         clampCityButtonSize()
     }
