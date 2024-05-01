@@ -1,6 +1,7 @@
 package com.unciv.models.ruleset.unit
 
 import com.unciv.Constants
+import com.unciv.logic.GameInfo
 import com.unciv.logic.MultiFilter
 import com.unciv.logic.city.City
 import com.unciv.logic.city.CityConstructions
@@ -80,6 +81,10 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
 
     override fun getCivilopediaTextLines(ruleset: Ruleset): List<FormattedLine> =
             BaseUnitDescriptions.getCivilopediaTextLines(this, ruleset)
+
+    override fun isHiddenBySettings(gameInfo: GameInfo) =
+        super<INonPerpetualConstruction>.isHiddenBySettings(gameInfo) ||
+        (!gameInfo.gameParameters.nuclearWeaponsEnabled && isNuclearWeapon())
 
     fun getUpgradeUnits(stateForConditionals: StateForConditionals? = null): Sequence<String> {
         return sequence {
@@ -209,7 +214,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         if (civ.cache.uniqueUnits.any { it.replaces == name })
             yield(RejectionReasonType.ReplacedByOurUnique.toInstance("Our unique unit replaces this"))
 
-        if (!civ.gameInfo.gameParameters.nuclearWeaponsEnabled && isNuclearWeapon())
+        if (isHiddenBySettings(civ.gameInfo))
             yield(RejectionReasonType.DisabledBySetting.toInstance())
 
         val stateForConditionals = StateForConditionals(civ, city)

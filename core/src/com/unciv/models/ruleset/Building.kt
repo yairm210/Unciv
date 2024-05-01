@@ -1,6 +1,7 @@
 package com.unciv.models.ruleset
 
 import com.unciv.Constants
+import com.unciv.logic.GameInfo
 import com.unciv.logic.MultiFilter
 import com.unciv.logic.city.City
 import com.unciv.logic.city.CityConstructions
@@ -63,6 +64,17 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
     fun getShortDescription(multiline: Boolean = false, uniqueInclusionFilter: ((Unique) -> Boolean)? = null) = BuildingDescriptions.getShortDescription(this, multiline, uniqueInclusionFilter)
     fun getDescription(city: City, showAdditionalInfo: Boolean) = BuildingDescriptions.getDescription(this, city, showAdditionalInfo)
     override fun getCivilopediaTextLines(ruleset: Ruleset) = BuildingDescriptions.getCivilopediaTextLines(this, ruleset)
+
+    override fun isHiddenBySettings(gameInfo: GameInfo): Boolean {
+        if (super<INonPerpetualConstruction>.isHiddenBySettings(gameInfo)) return true
+        if (!gameInfo.gameParameters.nuclearWeaponsEnabled && hasUnique(UniqueType.EnablesNuclearWeapons)) return true
+        return isHiddenByStartingEra(gameInfo)
+    }
+    private fun isHiddenByStartingEra(gameInfo: GameInfo): Boolean {
+        if (!isWonder) return false
+        val startingEra = ruleset.eras[gameInfo.gameParameters.startingEra] ?: return false
+        return name in startingEra.startingObsoleteWonders
+    }
 
     fun getStats(city: City,
                  /* By default, do not cache - if we're getting stats for only one building this isn't efficient.
@@ -252,6 +264,14 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
         if (cityConstructions.isBuilt(name))
             yield(RejectionReasonType.AlreadyBuilt.toInstance())
 
+        if (isHiddenBySettings(civ.gameInfo)) {
+            // Repeat the starting era test isHiddenBySettings already did to change the RejectionReasonType
+            if (isHiddenByStartingEra(civ.gameInfo))
+                yield(RejectionReasonType.WonderDisabledEra.toInstance())
+            else
+                yield(RejectionReasonType.DisabledBySetting.toInstance())
+        }
+
         for (unique in uniqueObjects) {
             // skip uniques that don't have conditionals apply
             // EXCEPT for [UniqueType.OnlyAvailable] and [UniqueType.CanOnlyBeBuiltInCertainCities]
@@ -277,9 +297,6 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
                 UniqueType.RequiresPopulation ->
                     if (unique.params[0].toInt() > cityConstructions.city.population.population)
                         yield(RejectionReasonType.PopulationRequirement.toInstance(unique.text))
-
-                UniqueType.EnablesNuclearWeapons -> if (!cityConstructions.city.civ.gameInfo.gameParameters.nuclearWeaponsEnabled)
-                    yield(RejectionReasonType.DisabledBySetting.toInstance())
 
                 UniqueType.MustBeOn ->
                     if (!cityCenter.matchesTerrainFilter(unique.params[0], civ))
@@ -310,14 +327,6 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
                 UniqueType.ObsoleteWith ->
                     if (civ.tech.isResearched(unique.params[0]))
                         yield(RejectionReasonType.Obsoleted.toInstance(unique.text))
-
-                UniqueType.HiddenWithoutReligion ->
-                    if (!civ.gameInfo.isReligionEnabled())
-                        yield(RejectionReasonType.DisabledBySetting.toInstance())
-
-                UniqueType.HiddenWithoutEspionage ->
-                    if (!civ.gameInfo.isEspionageEnabled())
-                        yield(RejectionReasonType.DisabledBySetting.toInstance())
 
                 UniqueType.MaxNumberBuildable ->
                     if (civ.civConstructions.countConstructedObjects(this@Building) >= unique.params[0].toInt())
@@ -369,11 +378,6 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
                         yield(RejectionReasonType.MorePolicyBranches.toInstance(unique.text))
                 }
 
-                UniqueType.HiddenWithoutVictoryType -> {
-                    if (!civ.gameInfo.gameParameters.victoryTypes.contains(unique.params[0]))
-                        yield(RejectionReasonType.HiddenWithoutVictory.toInstance(unique.text))
-                }
-
                 else -> {}
             }
         }
@@ -404,10 +408,6 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
         if (isWonder) {
             if (civ.gameInfo.getCities().any { it.cityConstructions.isBuilt(name) })
                 yield(RejectionReasonType.WonderAlreadyBuilt.toInstance())
-
-            val startingEra = civ.gameInfo.gameParameters.startingEra
-            if (name in ruleSet.eras[startingEra]!!.startingObsoleteWonders)
-                yield(RejectionReasonType.WonderDisabledEra.toInstance())
         }
 
         // National Wonders

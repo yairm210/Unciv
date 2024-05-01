@@ -6,7 +6,6 @@ import com.unciv.logic.civilization.MayaLongCountAction
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.models.Counter
 import com.unciv.models.ruleset.unique.UniqueType
-import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.ui.components.MayaCalendar
 
 
@@ -102,14 +101,12 @@ class GreatPersonManager : IsPartOfGameInfoSerialization {
         civInfo.addNotification(notification, MayaLongCountAction(), NotificationCategory.General, MayaCalendar.notificationIcon)
     }
 
-    fun getGreatPeople(): HashSet<BaseUnit> {
-        val greatPeople = civInfo.gameInfo.ruleset.units.values.asSequence()
-            .filter { it.isGreatPerson() }
-            .map { civInfo.getEquivalentUnit(it.name) }
-        return if (!civInfo.gameInfo.isReligionEnabled())
-            greatPeople.filter { !it.hasUnique(UniqueType.HiddenWithoutReligion) }.toHashSet()
-        else greatPeople.toHashSet()
-    }
+    /** Get Great People specific to this manager's Civilization, already filtered by `isHiddenBySettings` */
+    fun getGreatPeople() = civInfo.gameInfo.ruleset.units.values.asSequence()
+        .filter { it.isGreatPerson() }
+        .map { civInfo.getEquivalentUnit(it.name) }
+        .filterNot { it.isHiddenBySettings(civInfo.gameInfo) }
+        .toHashSet()
 
     fun getGreatPersonPointsForNextTurn(): Counter<String> {
         val greatPersonPoints = Counter<String>()

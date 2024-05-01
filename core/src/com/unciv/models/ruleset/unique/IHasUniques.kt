@@ -1,5 +1,7 @@
 package com.unciv.models.ruleset.unique
 
+import com.unciv.UncivGame
+import com.unciv.logic.GameInfo
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.tech.Era
 import com.unciv.models.ruleset.tech.TechColumn
@@ -82,4 +84,40 @@ interface IHasUniques : INamed {
         // Currently this is only used in CityStateFunctions.kt.
         return eraAvailable.eraNumber <= ruleset.eras[requestedEra]!!.eraNumber
     }
+
+    /**
+     *  Is this ruleset object unavailable as determined by settings chosen at game start?
+     *
+     *  - **Not** checked: HiddenFromCivilopedia - That is a Mod choice and less a user choice and these objects should otherwise work.
+     *  - Default implementation checks disabling by Religion, Espionage or Victory types.
+     *  - Overrides need to deal with e.g. Era-specific wonder disabling, no-nukes, ruin rewards by difficulty, and so on!
+     */
+    fun isHiddenBySettings(gameInfo: GameInfo): Boolean {
+        if (!gameInfo.isReligionEnabled() && hasUnique(UniqueType.HiddenWithoutReligion)) return true
+        if (!gameInfo.isEspionageEnabled() && hasUnique(UniqueType.HiddenWithoutEspionage)) return true
+        if (getMatchingUniques(UniqueType.HiddenWithoutVictoryType).any { it.params[0] !in gameInfo.gameParameters.victoryTypes }) return true
+        return false
+    }
+
+    /**
+     *  Is this ruleset object hidden from Civilopedia?
+     *
+     *  - Obviously, the [UniqueType.HiddenFromCivilopedia] test is done here (and nowhere else - exception TranslationFileWriter for Tutorials).
+     *  - Includes the [isHiddenBySettings] test if [gameInfo] is known, otherwise existence of Religion is guessed from [ruleset], and all victory types are assumed enabled.
+     *  - Note: RulesetObject-type specific overrides should not be necessary unless (TODO) we implement support for conditionals on the 'Hidden*' Uniques.
+     *  @param gameInfo Defaults to [UncivGame.getGameInfoOrNull]. Civilopedia must also be able to run from MainMenu without a game loaded. In that case only this parameter can be `null`. So if you know it - provide!
+     *  @param ruleset required if [gameInfo] is null, otherwise optional.
+     *  @throws NullPointerException if both parameters are null
+     */
+    fun isHiddenFromCivilopedia(
+        gameInfo: GameInfo?,
+        ruleset: Ruleset? = null
+    ): Boolean {
+        if (hasUnique(UniqueType.HiddenFromCivilopedia)) return true
+        if (gameInfo != null && isHiddenBySettings(gameInfo)) return true
+        if (gameInfo == null && hasUnique(UniqueType.HiddenWithoutReligion) && ruleset!!.beliefs.isEmpty()) return true
+        return false
+    }
+    /** Overload of [isHiddenFromCivilopedia] for use in actually game-agnostic parts of Civilopedia */
+    fun isHiddenFromCivilopedia(ruleset: Ruleset) = isHiddenFromCivilopedia(UncivGame.getGameInfoOrNull(), ruleset)
 }

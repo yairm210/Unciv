@@ -479,6 +479,8 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
         lateinit var Current: UncivGame
         /** @return `true` if [Current] has been set yet and can be accessed */
         fun isCurrentInitialized() = this::Current.isInitialized
+        /** Get the game currently in progress safely - null either if [Current] has not yet been set or if its gameInfo field has no game */
+        fun getGameInfoOrNull() = if (isCurrentInitialized()) Current.gameInfo else null
         fun isCurrentGame(gameId: String): Boolean = isCurrentInitialized() && Current.gameInfo != null && Current.gameInfo!!.gameId == gameId
         fun isDeepLinkedGameLoading() = isCurrentInitialized() && Current.deepLinkedMultiplayerGame != null
     }

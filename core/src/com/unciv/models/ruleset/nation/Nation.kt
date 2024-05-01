@@ -15,8 +15,6 @@ import com.unciv.ui.objectdescriptions.BaseUnitDescriptions
 import com.unciv.ui.objectdescriptions.BuildingDescriptions
 import com.unciv.ui.objectdescriptions.ImprovementDescriptions
 import com.unciv.ui.objectdescriptions.uniquesToCivilopediaTextLines
-import com.unciv.ui.screens.civilopediascreen.CivilopediaScreen.Companion.showEspionageInCivilopedia
-import com.unciv.ui.screens.civilopediascreen.CivilopediaScreen.Companion.showReligionInCivilopedia
 import com.unciv.ui.screens.civilopediascreen.FormattedLine
 import kotlin.math.pow
 
@@ -193,15 +191,9 @@ class Nation : RulesetObject() {
     }
 
     private fun getUniqueBuildingsText(ruleset: Ruleset) = sequence {
-        val religionEnabled = showReligionInCivilopedia(ruleset)
-        val espionageEnabled = showEspionageInCivilopedia(ruleset)
         for (building in ruleset.buildings.values) {
-            when {
-                building.uniqueTo != name -> continue
-                building.hasUnique(UniqueType.HiddenFromCivilopedia) -> continue
-                !religionEnabled && building.hasUnique(UniqueType.HiddenWithoutReligion) -> continue
-                !espionageEnabled && building.hasUnique(UniqueType.HiddenWithoutEspionage) -> continue
-            }
+            if (building.uniqueTo != name) continue
+            if (building.isHiddenFromCivilopedia(ruleset)) continue
             yield(FormattedLine(separator = true))
             yield(FormattedLine("{${building.name}} -", link = building.makeLink()))
             if (building.replaces != null && ruleset.buildings.containsKey(building.replaces!!)) {
@@ -219,7 +211,7 @@ class Nation : RulesetObject() {
 
     private fun getUniqueUnitsText(ruleset: Ruleset) = sequence {
         for (unit in ruleset.units.values) {
-            if (unit.uniqueTo != name || unit.hasUnique(UniqueType.HiddenFromCivilopedia)) continue
+            if (unit.uniqueTo != name || unit.isHiddenFromCivilopedia(ruleset)) continue
             yield(FormattedLine(separator = true))
             yield(FormattedLine("{${unit.name}} -", link = "Unit/${unit.name}"))
             if (unit.replaces != null && ruleset.units.containsKey(unit.replaces!!)) {
@@ -245,7 +237,7 @@ class Nation : RulesetObject() {
 
     private fun getUniqueImprovementsText(ruleset: Ruleset) = sequence {
         for (improvement in ruleset.tileImprovements.values) {
-            if (improvement.uniqueTo != name || improvement.hasUnique(UniqueType.HiddenFromCivilopedia)) continue
+            if (improvement.uniqueTo != name || improvement.isHiddenFromCivilopedia(ruleset)) continue
 
             yield(FormattedLine(separator = true))
             yield(FormattedLine(improvement.name, link = "Improvement/${improvement.name}"))

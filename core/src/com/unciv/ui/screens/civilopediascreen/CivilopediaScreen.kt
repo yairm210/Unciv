@@ -11,7 +11,6 @@ import com.unciv.UncivGame
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.ruleset.unique.IHasUniques
-import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.INamed
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.extensions.colorFromRGB
@@ -199,25 +198,17 @@ class CivilopediaScreen(
     init {
         val imageSize = 50f
 
-        val religionEnabled = showReligionInCivilopedia(ruleset)
-        val espionageEnabled = showEspionageInCivilopedia(ruleset)
-        val victoryTypes = game.gameInfo?.gameParameters?.victoryTypes ?: ruleset.victories.keys
+        val religionEnabled = showReligionInCivilopedia(ruleset) // To filter the Belief Category only
 
-        fun shouldBeDisplayed(obj: IHasUniques): Boolean {
-            return when {
-                obj.hasUnique(UniqueType.HiddenFromCivilopedia) -> false
-                (!religionEnabled && obj.hasUnique(UniqueType.HiddenWithoutReligion)) -> false
-                (!espionageEnabled && obj.hasUnique(UniqueType.HiddenWithoutEspionage)) -> false
-                obj.getMatchingUniques(UniqueType.HiddenWithoutVictoryType).any { !victoryTypes.contains(it.params[0]) } -> false
-                else -> true
-            }
-        }
+        // do not confuse with IConstruction.shouldBeDisplayed - that one tests all prerequisites for building
+        fun shouldBeDisplayed(obj: ICivilopediaText) =
+            obj is IHasUniques && !obj.isHiddenFromCivilopedia(game.gameInfo, ruleset)
 
         for (loopCategory in CivilopediaCategories.values()) {
             if (!religionEnabled && loopCategory == CivilopediaCategories.Belief) continue
             categoryToEntries[loopCategory] =
                 loopCategory.getCategoryIterator(ruleset, tutorialController)
-                    .filter { (it as? IHasUniques)?.let { obj -> shouldBeDisplayed(obj) } ?: true }
+                    .filter(::shouldBeDisplayed)
                     .map { CivilopediaEntry(
                         (it as INamed).name,
                         loopCategory.getImage?.invoke(it.getIconName(), imageSize),
@@ -319,19 +310,16 @@ class CivilopediaScreen(
     override fun recreate(): BaseScreen = CivilopediaScreen(ruleset, currentCategory, currentEntry)
 
     companion object {
-        /** Test whether to show Religion-specific items, does not require a game to be running */
-        // Here we decide whether to show Religion in Civilopedia from Main Menu (no gameInfo loaded)
-        fun showReligionInCivilopedia(ruleset: Ruleset? = null) = when {
-            UncivGame.isCurrentInitialized() && UncivGame.Current.gameInfo != null ->
-                UncivGame.Current.gameInfo!!.isReligionEnabled()
-            ruleset != null -> ruleset.beliefs.isNotEmpty()
-            else -> true
-        }
-
-        fun showEspionageInCivilopedia(ruleset: Ruleset? = null) = when {
-            UncivGame.isCurrentInitialized() && UncivGame.Current.gameInfo != null ->
-                UncivGame.Current.gameInfo!!.isEspionageEnabled()
-            else -> true
+        /** Test whether to show Religion-specific items, does not require a game to be running
+         *  - Do not make public - use IHasUniques.isHiddenFromCivilopedia if possible!
+         */
+        private fun showReligionInCivilopedia(ruleset: Ruleset? = null): Boolean {
+            val gameInfo = UncivGame.getGameInfoOrNull()
+            return when {
+                gameInfo != null -> gameInfo.isReligionEnabled()
+                ruleset != null -> ruleset.beliefs.isNotEmpty()
+                else -> true
+            }
         }
     }
 }

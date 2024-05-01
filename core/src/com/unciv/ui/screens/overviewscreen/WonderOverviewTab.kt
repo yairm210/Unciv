@@ -10,7 +10,6 @@ import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.QuestName
 import com.unciv.models.ruleset.tech.Era
-import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.extensions.equalizeColumns
 import com.unciv.ui.components.extensions.toLabel
@@ -97,9 +96,6 @@ class WonderOverviewTab(
 class WonderInfo {
     val gameInfo = UncivGame.Current.gameInfo!!
     val ruleSet = gameInfo.ruleset
-    private val hideReligionItems = !gameInfo.isReligionEnabled()
-    private val hideEspionageItems = !gameInfo.isEspionageEnabled()
-    private val startingObsolete = ruleSet.eras[gameInfo.gameParameters.startingEra]!!.startingObsoleteWonders
 
     enum class WonderStatus(val label: String) {
         Hidden(""),
@@ -148,17 +144,9 @@ class WonderInfo {
         }
     }
 
-    private fun shouldBeDisplayed(viewingPlayer: Civilization, wonder: Building, wonderEra: Int?) = when {
-        wonder.hasUnique(UniqueType.HiddenFromCivilopedia) -> false
-        wonder.hasUnique(UniqueType.HiddenWithoutReligion) && hideReligionItems -> false
-        wonder.hasUnique(UniqueType.HiddenWithoutEspionage) && hideEspionageItems -> false
-        wonder.name in startingObsolete -> false
-        wonder.getMatchingUniques(UniqueType.HiddenWithoutVictoryType)
-            .any { unique ->
-                !gameInfo.gameParameters.victoryTypes.contains(unique.params[0])
-            } -> false
-        else -> wonderEra==null || wonderEra <= viewingPlayer.getEraNumber()
-    }
+    private fun shouldBeDisplayed(viewingPlayer: Civilization, wonder: Building, wonderEra: Int?) =
+        !wonder.isHiddenFromCivilopedia(viewingPlayer.gameInfo) &&
+        (wonderEra == null || wonderEra <= viewingPlayer.getEraNumber())
 
     /** Do we know about a natural wonder despite not having found it yet? */
     private fun knownFromQuest(viewingPlayer: Civilization, name: String): Boolean {

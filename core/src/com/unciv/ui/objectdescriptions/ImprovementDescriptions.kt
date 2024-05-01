@@ -1,6 +1,5 @@
 package com.unciv.ui.objectdescriptions
 
-import com.unciv.UncivGame
 import com.unciv.models.ruleset.Belief
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.tile.TileImprovement
@@ -8,7 +7,6 @@ import com.unciv.models.ruleset.tile.TileResource
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.tr
-import com.unciv.ui.screens.civilopediascreen.CivilopediaScreen
 import com.unciv.ui.screens.civilopediascreen.FormattedLine
 
 object ImprovementDescriptions {
@@ -111,17 +109,10 @@ object ImprovementDescriptions {
             textList += FormattedLine("Needs removal of terrain features to be built")
 
         if (improvement.isAncientRuinsEquivalent() && ruleset.ruinRewards.isNotEmpty()) {
-            val difficulty = if (!UncivGame.isCurrentInitialized() || UncivGame.Current.gameInfo == null)
-                "Prince"  // most factors == 1
-            else UncivGame.Current.gameInfo!!.gameParameters.difficulty
-            val religionEnabled = CivilopediaScreen.showReligionInCivilopedia(ruleset)
             textList += FormattedLine()
             textList += FormattedLine("The possible rewards are:")
             ruleset.ruinRewards.values.asSequence()
-                .filter { reward ->
-                    difficulty !in reward.excludedDifficulties &&
-                        (religionEnabled || !reward.hasUnique(UniqueType.HiddenWithoutReligion))
-                }
+                .filterNot { it.isHiddenFromCivilopedia(ruleset) }
                 .forEach { reward ->
                     textList += FormattedLine(reward.name, starred = true, color = reward.color)
                     textList += reward.civilopediaText
