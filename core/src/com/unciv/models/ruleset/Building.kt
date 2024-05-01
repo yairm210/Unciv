@@ -72,7 +72,8 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
     }
     private fun isHiddenByStartingEra(gameInfo: GameInfo): Boolean {
         if (!isWonder) return false
-        val startingEra = ruleset.eras[gameInfo.gameParameters.startingEra] ?: return false
+        // do not rely on this.ruleset or unit tests break
+        val startingEra = gameInfo.ruleset.eras[gameInfo.gameParameters.startingEra] ?: return false
         return name in startingEra.startingObsoleteWonders
     }
 
