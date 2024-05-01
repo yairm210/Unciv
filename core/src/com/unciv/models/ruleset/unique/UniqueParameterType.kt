@@ -626,7 +626,7 @@ enum class UniqueParameterType(
         }
     },
 
-    /** Used by [UniqueType.HiddenWithoutVictoryType], implementation in Civilopedia and OverviewScreen */
+    /** Used by [UniqueType.HiddenWithoutVictoryType], implementation in Civilopedia, OverviewScreen and to exclude e.g. from Quests */
     VictoryT("victoryType", "Domination", "The name of any victory type: 'Neutral', 'Cultural', 'Diplomatic', 'Domination', 'Scientific', 'Time'") {
         override fun getErrorSeverity(
             parameterText: String,

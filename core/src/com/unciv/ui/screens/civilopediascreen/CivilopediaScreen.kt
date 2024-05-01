@@ -214,7 +214,6 @@ class CivilopediaScreen(
         }
 
         for (loopCategory in CivilopediaCategories.values()) {
-            if (loopCategory.hide) continue
             if (!religionEnabled && loopCategory == CivilopediaCategories.Belief) continue
             categoryToEntries[loopCategory] =
                 loopCategory.getCategoryIterator(ruleset, tutorialController)

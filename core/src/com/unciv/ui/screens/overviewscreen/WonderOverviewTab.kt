@@ -26,7 +26,7 @@ class WonderOverviewTab(
 ) : EmpireOverviewTab(viewingPlayer, overviewScreen) {
     val ruleSet = gameInfo.ruleset
 
-    val wonderInfo = WonderInfo()
+    private val wonderInfo = WonderInfo()
     private val wonders: Array<WonderInfo.WonderInfo> = wonderInfo.collectInfo(viewingPlayer)
 
     private val fixedContent = Table()
@@ -55,7 +55,7 @@ class WonderOverviewTab(
         equalizeColumns(fixedContent, this)
     }
 
-    fun createGrid() {
+    private fun createGrid() {
         var lastGroup = ""
 
         for (wonder in wonders) {
@@ -120,7 +120,7 @@ class WonderInfo {
         val city: City?,
         val location: Tile?
     ) {
-        val viewEntireMapForDebug = DebugUtils.VISIBLE_MAP
+        private val viewEntireMapForDebug = DebugUtils.VISIBLE_MAP
 
         fun getImage() = if (status == WonderStatus.Unknown && !viewEntireMapForDebug) null
         else category.getImage?.invoke(name, if (category == CivilopediaCategories.Terrain) 50f else 45f)

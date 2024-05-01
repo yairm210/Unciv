@@ -192,7 +192,7 @@ class QuestManager : IsPartOfGameInfoSerialization {
         individualQuestCountdown[challenger.civName] = (countdown * civ.gameInfo.speed.modifier).toInt()
     }
 
-    // Readabilty helper - No asSequence(): call frequency * data size is small
+    // Readability helper - No asSequence(): call frequency * data size is small
     private fun getQuests(predicate: (Quest) -> Boolean) = ruleset.quests.values.filter(predicate)
 
     private fun tryStartNewGlobalQuest() {
@@ -755,10 +755,7 @@ class QuestManager : IsPartOfGameInfoSerialization {
         val encampments = civ.getCapital()!!.getCenterTile().getTilesInDistance(8)
                 .filter { it.improvement == Constants.barbarianEncampment }.toList()
 
-        if (encampments.isNotEmpty())
-            return encampments.random()
-
-        return null
+        return encampments.randomOrNull()
     }
 
     /**
@@ -781,10 +778,7 @@ class QuestManager : IsPartOfGameInfoSerialization {
                     !ownedByMajorResources.contains(it)
         }.toList()
 
-        if (notOwnedResources.isNotEmpty())
-            return notOwnedResources.random()
-
-        return null
+        return notOwnedResources.randomOrNull()
     }
 
     private fun getWonderToBuildForQuest(challenger: Civilization): Building? {
@@ -805,10 +799,7 @@ class QuestManager : IsPartOfGameInfoSerialization {
                             && building.uniqueTo == null
                 }
 
-        if (wonders.isNotEmpty())
-            return wonders.random()
-
-        return null
+        return wonders.randomOrNull()
     }
 
     /**
@@ -817,10 +808,7 @@ class QuestManager : IsPartOfGameInfoSerialization {
     private fun getNaturalWonderToFindForQuest(challenger: Civilization): String? {
         val naturalWondersToFind = civ.gameInfo.tileMap.naturalWonders.subtract(challenger.naturalWonders)
 
-        if (naturalWondersToFind.isNotEmpty())
-            return naturalWondersToFind.random()
-
-        return null
+        return naturalWondersToFind.randomOrNull()
     }
 
     /**
@@ -840,10 +828,7 @@ class QuestManager : IsPartOfGameInfoSerialization {
                         || (it.hasUnique(UniqueType.HiddenWithoutReligion) && !civ.gameInfo.isReligionEnabled()) }
                 .toList()
 
-        if (greatPeople.isNotEmpty())
-            return greatPeople.random()
-
-        return null
+        return greatPeople.randomOrNull()
     }
 
     /**
@@ -852,12 +837,10 @@ class QuestManager : IsPartOfGameInfoSerialization {
      */
     private fun getCivilizationToFindForQuest(challenger: Civilization): Civilization? {
         val civilizationsToFind = challenger.getKnownCivs()
-                .filter { it.isAlive() && it.isMajorCiv() && !challenger.hasMetCivTerritory(it) }
+            .filter { it.isAlive() && it.isMajorCiv() && !challenger.hasMetCivTerritory(it) }
+            .toList()
 
-        if (civilizationsToFind.any())
-            return civilizationsToFind.toList().random()
-
-        return null
+        return civilizationsToFind.randomOrNull()
     }
 
     /**

@@ -505,7 +505,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
     }
 
 
-    val cachedMatchesFilterResult = HashMap<String, Boolean>()
+    private val cachedMatchesFilterResult = HashMap<String, Boolean>()
 
     /** Implements [UniqueParameterType.BuildingFilter] */
     fun matchesFilter(filter: String): Boolean {
@@ -552,7 +552,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
     fun hasCreateOneImprovementUnique() = _hasCreatesOneImprovementUnique
 
     private var _getImprovementToCreate: TileImprovement? = null
-    fun getImprovementToCreate(ruleset: Ruleset): TileImprovement? {
+    private fun getImprovementToCreate(ruleset: Ruleset): TileImprovement? {
         if (!hasCreateOneImprovementUnique()) return null
         if (_getImprovementToCreate == null) {
             val improvementUnique = getMatchingUniques(UniqueType.CreatesOneImprovement)

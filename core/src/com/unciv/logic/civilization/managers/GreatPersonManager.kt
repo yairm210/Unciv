@@ -28,7 +28,7 @@ class GreatPersonManager : IsPartOfGameInfoSerialization {
     var greatGeneralPointsCounter = Counter<String>()
     var greatGeneralPoints = 0
     var freeGreatPeople = 0
-    /** Marks subset of [freeGreatPeople] as subject to maya ability restrictions (each only once untill all used) */
+    /** Marks subset of [freeGreatPeople] as subject to maya ability restrictions (each only once until all used) */
     var mayaLimitedFreeGP = 0
     /** Remaining candidates for maya ability - whenever empty refilled from all GP, starts out empty */
     var longCountGPPool = HashSet<String>()
