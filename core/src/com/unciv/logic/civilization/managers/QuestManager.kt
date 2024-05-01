@@ -7,6 +7,7 @@ import com.unciv.Constants
 import com.unciv.GUI
 import com.unciv.logic.GameInfo
 import com.unciv.logic.IsPartOfGameInfoSerialization
+import com.unciv.logic.city.City
 import com.unciv.logic.civilization.CivFlags
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.DiplomacyAction
@@ -789,20 +790,20 @@ class QuestManager : IsPartOfGameInfoSerialization {
 
     private fun getWonderToBuildForQuest(challenger: Civilization): Building? {
         val startingEra = ruleset.eras[civ.gameInfo.gameParameters.startingEra]!!
+        fun isMoreThanAQuarterDone(city: City, buildingName: String) =
+            city.cityConstructions.getWorkDone(buildingName) * 3 > city.cityConstructions.getRemainingWork(buildingName)
         val wonders = ruleset.buildings.values
                 .filter { building ->
                             // Buildable wonder
                             building.isWonder
                             && challenger.tech.isResearched(building)
-                            && civ.gameInfo.getCities().none { it.cityConstructions.isBuilt(building.name) }
                             // Can't be disabled
                             && building.name !in startingEra.startingObsoleteWonders
                             && (civ.gameInfo.isReligionEnabled() || !building.hasUnique(UniqueType.HiddenWithoutReligion))
-                            // Can't be more than 25% built anywhere
-                            && civ.gameInfo.getCities().none {
-                        it.cityConstructions.getWorkDone(building.name) * 3 > it.cityConstructions.getRemainingWork(building.name) }
                             // Can't be a unique wonder
                             && building.uniqueTo == null
+                            // Big loop last: Exists or more than 25% built anywhere
+                            && civ.gameInfo.getCities().none { it.cityConstructions.isBuilt(building.name) || isMoreThanAQuarterDone(it, building.name) }
                 }
 
         if (wonders.isNotEmpty())
