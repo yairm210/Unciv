@@ -241,7 +241,8 @@ class Spy() : IsPartOfGameInfoSerialization {
 
     fun isSetUp() = action !in listOf(SpyAction.Moving, SpyAction.None, SpyAction.EstablishNetwork)
 
-    // Only returns true if the spy is doing a helpful and implemented action
+    fun isIdle(): Boolean =action == SpyAction.None || action == SpyAction.Surveillance
+
     fun isDoingWork(): Boolean {
         if (action == SpyAction.StealingTech || action == SpyAction.EstablishNetwork || action == SpyAction.Moving) return true
         if (action == SpyAction.RiggingElections && !civInfo.isAtWarWith(getLocation()!!.civ)) return true
