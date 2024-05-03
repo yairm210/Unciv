@@ -23,14 +23,14 @@ import com.unciv.ui.screens.victoryscreen.RankingType
 
 object Automation {
 
-    fun rankTileForCityWork(tile: Tile, city: City, cityStats: Stats, localUniqueCache: LocalUniqueCache = LocalUniqueCache(false)): Float {
+    fun rankTileForCityWork(tile: Tile, city: City, localUniqueCache: LocalUniqueCache = LocalUniqueCache(false)): Float {
         val stats = tile.stats.getTileStats(city, city.civ, localUniqueCache)
-        return rankStatsForCityWork(stats, city, cityStats, false, localUniqueCache)
+        return rankStatsForCityWork(stats, city, false, localUniqueCache)
     }
 
-    fun rankSpecialist(specialist: String, city: City, cityStats: Stats, localUniqueCache: LocalUniqueCache): Float {
+    fun rankSpecialist(specialist: String, city: City, localUniqueCache: LocalUniqueCache): Float {
         val stats = city.cityStats.getStatsOfSpecialist(specialist, localUniqueCache)
-        var rank = rankStatsForCityWork(stats, city, cityStats, true, localUniqueCache)
+        var rank = rankStatsForCityWork(stats, city, true, localUniqueCache)
         // derive GPP score
         var gpp = 0f
         if (city.getRuleset().specialists.containsKey(specialist)) { // To solve problems in total remake mods
@@ -43,13 +43,13 @@ object Automation {
     }
 
 
-    private fun rankStatsForCityWork(stats: Stats, city: City, cityStats: Stats, specialist: Boolean, localUniqueCache: LocalUniqueCache): Float {
+    fun rankStatsForCityWork(stats: Stats, city: City, areWeRankingSpecialist: Boolean, localUniqueCache: LocalUniqueCache): Float {
         val cityAIFocus = city.getCityFocus()
         val yieldStats = stats.clone()
         val civPersonality = city.civ.getPersonality()
         val cityStatsObj = city.cityStats
 
-        if (specialist) {
+        if (areWeRankingSpecialist) {
             // If you have the Food Bonus, count as 1 extra food production (base is 2food)
             for (unique in localUniqueCache.forCityGetMatchingUniques(city, UniqueType.FoodConsumptionBySpecialists))
                 if (city.matchesFilter(unique.params[1]))
@@ -58,10 +58,9 @@ object Automation {
             for (unique in localUniqueCache.forCityGetMatchingUniques(city, UniqueType.UnhappinessFromPopulationTypePercentageChange))
                 if (city.matchesFilter(unique.params[2]) && unique.params[1] == "Specialists")
                     yieldStats.happiness -= (unique.params[0].toFloat() / 100f)  // relative val is negative, make positive
-            if (city.civ.getHappiness() < 0) yieldStats.happiness *= 2  // double weight for unhappy civilization
         }
 
-        val surplusFood = cityStats[Stat.Food]
+        val surplusFood = city.cityStats.currentCityStats[Stat.Food]
         // If current Production converts Food into Production, then calculate increased Production Yield
         if (cityStatsObj.canConvertFoodToProduction(surplusFood, city.cityConstructions.getCurrentConstruction())) {
             // calculate delta increase of food->prod. This isn't linear
@@ -94,23 +93,19 @@ object Automation {
         } else {
             if (city.civ.gold < 0 && city.civ.stats.statsForNextTurn.gold <= 0)
                 yieldStats.gold *= 2 // We have a global problem
-            yieldStats.gold *= civPersonality.scaledFocus(PersonalityValue.Gold)
 
-            if (city.tiles.size < 12 || city.civ.wantsToFocusOn(Victory.Focus.Culture))
+            if (city.tiles.size < 12)
                 yieldStats.culture *= 2
-            yieldStats.culture *= civPersonality.scaledFocus(PersonalityValue.Culture)
 
-            if (city.civ.getHappiness() < 0 && !specialist) // since this doesn't get updated, may overshoot
+            if (city.civ.getHappiness() < 0)
                 yieldStats.happiness *= 2
-            yieldStats.happiness *= civPersonality.scaledFocus(PersonalityValue.Happiness)
+        }
 
-            if (city.civ.wantsToFocusOn(Victory.Focus.Science))
-                yieldStats.science *= 2
-            yieldStats.science *= civPersonality.scaledFocus(PersonalityValue.Science)
+        for (stat in Stat.values()) {
+            if (city.civ.wantsToFocusOn(stat))
+                yieldStats[stat] *= 2f
 
-            yieldStats.production *= civPersonality.scaledFocus(PersonalityValue.Production)
-            yieldStats.faith *= civPersonality.scaledFocus(PersonalityValue.Faith)
-            yieldStats.food *= civPersonality.scaledFocus(PersonalityValue.Food)
+            yieldStats[stat] *= civPersonality.scaledFocus(PersonalityValue[stat])
         }
 
         // Apply City focus
@@ -262,7 +257,7 @@ object Automation {
         construction: INonPerpetualConstruction
     ): Boolean {
         return allowCreateImprovementBuildings(civInfo, city, construction)
-                && allowSpendingResource(civInfo, construction, city)
+            && allowSpendingResource(civInfo, construction, city)
     }
 
     @Suppress("MemberVisibilityCanBePrivate")
@@ -275,7 +270,7 @@ object Automation {
     ): Boolean {
         if (construction !is Building) return true
         if (!construction.hasCreateOneImprovementUnique()) return true  // redundant but faster???
-        val improvement = construction.getImprovementToCreate(city.getRuleset()) ?: return true
+        val improvement = construction.getImprovementToCreate(city.getRuleset(), civInfo) ?: return true
         return city.getTiles().any {
             it.improvementFunctions.canBuildImprovement(improvement, civInfo)
         }
@@ -376,7 +371,7 @@ object Automation {
         return city.getTiles().filter {
             it.improvementFunctions.canBuildImprovement(improvement, city.civ)
         }.maxByOrNull {
-            rankTileForCityWork(it, city, city.cityStats.currentCityStats, localUniqueCache)
+            rankTileForCityWork(it, city, localUniqueCache)
         }
     }
 
@@ -464,7 +459,8 @@ object Automation {
                     stats.gold
                 else
                     stats.gold / 3 // 3 gold is much worse than 2 production
-        rank += stats.happiness * 3
+
+        rank += stats.happiness
         rank += stats.production
         rank += stats.science
         rank += stats.culture

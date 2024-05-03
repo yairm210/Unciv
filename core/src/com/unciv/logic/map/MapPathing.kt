@@ -21,7 +21,7 @@ object MapPathing {
             // If the civ has railroad technology, consider roads as railroads since they will be upgraded
             if (unit.civ.tech.getBestRoadAvailable() == RoadStatus.Railroad){
                 return RoadStatus.Railroad.movement
-            }else{
+            } else {
                 return unit.civ.tech.movementSpeedOnRoads
             }
         }
@@ -34,10 +34,12 @@ object MapPathing {
     }
 
     fun isValidRoadPathTile(unit: MapUnit, tile: Tile): Boolean {
+        val roadImprovement = tile.ruleset.roadImprovement ?: return false
         return tile.isLand
             && !tile.isImpassible()
             && unit.civ.hasExplored(tile)
             && tile.canCivPassThrough(unit.civ)
+            && (tile.hasRoadConnection(unit.civ, true) || tile.improvementFunctions.canBuildImprovement(roadImprovement, unit.civ))
     }
 
     /**
@@ -103,5 +105,3 @@ object MapPathing {
     }
 
 }
-
-

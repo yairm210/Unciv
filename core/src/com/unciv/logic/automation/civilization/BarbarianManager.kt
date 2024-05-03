@@ -2,7 +2,6 @@ package com.unciv.logic.automation.civilization
 
 import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
-import com.unciv.json.HashMapVector2
 import com.unciv.logic.GameInfo
 import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.civilization.NotificationCategory
@@ -215,7 +214,7 @@ class Encampment() : IsPartOfGameInfoSerialization {
 
         // Empty camp - spawn a defender
         if (tile.militaryUnit == null) {
-            return spawnOnTile(tile) // Try spawning a unit on this tile, return false if unsuccessful
+            return spawnUnit(false) // Try spawning a unit on this tile, return false if unsuccessful
         }
 
         // Don't spawn wandering barbs too early
@@ -237,13 +236,13 @@ class Encampment() : IsPartOfGameInfoSerialization {
         }
         if (validTiles.isEmpty()) return false
 
-        return spawnOnTile(validTiles.random()) // Attempt to spawn a barbarian on a valid tile
+        return spawnUnit(validTiles.random().isWater) // Attempt to spawn a barbarian on a valid tile
     }
 
     /** Attempts to spawn a barbarian on [tile], returns true if successful and false if unsuccessful. */
-    private fun spawnOnTile(tile: Tile): Boolean {
-        val unitToSpawn = chooseBarbarianUnit(tile.isWater) ?: return false // return false if we didn't find a unit
-        val spawnedUnit = gameInfo.tileMap.placeUnitNearTile(tile.position, unitToSpawn, gameInfo.getBarbarianCivilization())
+    private fun spawnUnit(naval: Boolean): Boolean {
+        val unitToSpawn = chooseBarbarianUnit(naval) ?: return false // return false if we didn't find a unit
+        val spawnedUnit = gameInfo.tileMap.placeUnitNearTile(position, unitToSpawn, gameInfo.getBarbarianCivilization())
         return (spawnedUnit != null)
     }
 

@@ -116,6 +116,7 @@ class GlobalUniquesTests {
         city.cityStats.update()
         Assert.assertTrue(city.cityStats.finalStatList["Buildings"]!!.gold == 3f)
         tile.baseTerrain = Constants.grassland
+        tile.setTransients()
         city.cityStats.update()
         Assert.assertTrue(city.cityStats.finalStatList["Buildings"]!!.gold == 0f)
     }

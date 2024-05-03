@@ -1,6 +1,7 @@
 package com.unciv.models.ruleset.validation
 
 import com.unciv.Constants
+import com.unciv.logic.MultiFilter
 import com.unciv.logic.map.mapunit.MapUnitCache
 import com.unciv.models.ruleset.IRulesetObject
 import com.unciv.models.ruleset.Ruleset
@@ -23,11 +24,8 @@ class UniqueValidator(val ruleset: Ruleset) {
     private fun addToHashsets(uniqueHolder: IHasUniques) {
         for (unique in uniqueHolder.uniqueObjects) {
             if (unique.type == null) allNonTypedUniques.add(unique.text)
-            else allUniqueParameters.addAll(unique.allParams.flatMap {
-                // Multifilters have the actual filtering uniques
-                it.removePrefix("{").removeSuffix("}").split("} {")}
-                // Non-filters
-                .map { if (it.startsWith("non-[")) {it.removePrefix("non-[").removeSuffix("]")} else it }
+            else allUniqueParameters.addAll(
+                unique.allParams.asSequence().flatMap { MultiFilter.getAllSingleFilters(it) }
             )
         }
     }
@@ -172,12 +170,14 @@ class UniqueValidator(val ruleset: Ruleset) {
                 continue
 
             rulesetErrors.add(
-                "$prefix contains the conditional \"${conditional.text}\"." +
+                "$prefix contains conditional \"${conditional.text}\"." +
                 " This contains the parameter ${complianceError.parameterName} which does not fit parameter type" +
                 " ${complianceError.acceptableParameterTypes.joinToString(" or ") { it.parameterName }} !",
                 complianceError.errorSeverity.getRulesetErrorSeverity(), uniqueContainer, unique
             )
         }
+
+        addDeprecationAnnotationErrors(conditional, "$prefix contains conditional \"${conditional.text}\" which", rulesetErrors, uniqueContainer)
     }
 
     private fun addDeprecationAnnotationErrors(
@@ -207,6 +207,11 @@ class UniqueValidator(val ruleset: Ruleset) {
         if (unique.type == null) return emptyList()
         val errorList = ArrayList<UniqueComplianceError>()
         for ((index, param) in unique.params.withIndex()) {
+            // Trying to catch the error at #11404
+            if (unique.type.parameterTypeMap.size != unique.params.size) {
+                throw Exception("Unique ${unique.text} has ${unique.params.size} parameters, " +
+                        "but its type ${unique.type} only ${unique.type.parameterTypeMap.size} parameters?!")
+            }
             val acceptableParamTypes = unique.type.parameterTypeMap[index]
             val errorTypesForAcceptableParameters =
                 acceptableParamTypes.map { getParamTypeErrorSeverityCached(it, param) }

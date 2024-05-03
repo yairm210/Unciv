@@ -82,6 +82,11 @@ After building, the output .JAR file should be in `/desktop/build/libs/Unciv.jar
 
 For actual development, you'll probably need to download Android Studio and build it yourself - see above :)
 
+## Debugging on Android
+
+Sometimes, checking things out on the desktop version is not enough and you need to debug Unciv running on an Android device.
+For an introduction, see [Testing android builds](Testing-Android-Builds.md).
+
 ## Next steps
 
 Congratulations! Unciv should now be running on your computer! Now we can start changing some code, and later we'll see how your changes make it into the main repository!

@@ -3,9 +3,9 @@ package com.unciv.app
 import android.app.Activity
 import android.app.ActivityManager
 import android.content.Context
+import android.content.pm.ApplicationInfo
 import android.os.Build
 import android.util.Log
-import com.badlogic.gdx.backends.android.BuildConfig
 import com.unciv.utils.LogBackend
 import com.unciv.utils.Tag
 
@@ -14,11 +14,31 @@ private const val TAG_MAX_LENGTH = 23
 /**
  *  Unciv's logger implementation for Android
  *
+ *  Will log depending on whether the build was a debug build, with a manual override.
+ *  - An APK built from Studio's "Build APK's" menu is still a debug build
+ *  - A store-installed APK should be a release build - UNTESTED
+ *  - The override can be set in Studio's Run Configuration: "General" Tab, "Launch Flags" field: `--ez debugLogging true` or `--ez debugLogging false`
+ *  - Setting the override without Studio - from the device itself or simple adb - is possible, it's an activity manager command line option.
+ *    Terminal or adb shell: `am start com.unciv.app/com.unciv.app.AndroidLauncher --ez debugLogging true` (Tested)
+ *
  *  * Note: Gets and keeps a reference to [AndroidLauncher] as [activity] only to get memory info for [CrashScreen][com.unciv.ui.crashhandling.CrashScreen].
  *
  *  @see com.unciv.utils.Log
  */
 class AndroidLogBackend(private val activity: Activity) : LogBackend {
+    private val isRelease: Boolean
+
+    init {
+        // BuildConfig.DEBUG is **NOT** helpful as it always imports com.badlogic.gdx.backends.android.BuildConfig
+
+        /** This is controlled by the buildTypes -> isDebuggable flag in android -> build.gradle.kts */
+        val isDebuggable = (activity.applicationContext.applicationInfo.flags and ApplicationInfo.FLAG_DEBUGGABLE) != 0
+
+        val debugLogging = activity.intent.extras?.getBoolean("debugLogging")
+
+        // Log.d(toAndroidTag(Tag("Log init")), "isDebuggable=$isDebuggable, debugLogging=$debugLogging")
+        this.isRelease = !(debugLogging ?: isDebuggable) // cache as isRelease() is called all the time
+    }
 
     override fun debug(tag: Tag, curThreadName: String, msg: String) {
         Log.d(toAndroidTag(tag), "[$curThreadName] $msg")
@@ -29,7 +49,7 @@ class AndroidLogBackend(private val activity: Activity) : LogBackend {
     }
 
     override fun isRelease(): Boolean {
-        return !BuildConfig.DEBUG
+        return isRelease
     }
 
     /**

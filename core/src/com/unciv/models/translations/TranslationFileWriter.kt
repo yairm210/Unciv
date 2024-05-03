@@ -316,8 +316,7 @@ object TranslationFileWriter {
                 val filename = jsonFile.nameWithoutExtension()
 
                 val javaClass = getJavaClassByName(filename)
-                if (javaClass == this.javaClass)
-                    continue // unknown JSON, let's skip it
+                    ?: continue // unknown JSON, let's skip it
 
                 val array = json().fromJsonFile(javaClass, jsonFile.path())
 
@@ -497,13 +496,14 @@ object TranslationFileWriter {
                         (clazz.componentType?.simpleName ?: clazz.simpleName) + "." + field.name !in untranslatableFieldSet
             }
 
-            private fun getJavaClassByName(name: String): Class<Any> {
+            private fun getJavaClassByName(name: String): Class<Any>? {
                 return when (name) {
                     "Beliefs" -> emptyArray<Belief>().javaClass
                     "Buildings" -> emptyArray<Building>().javaClass
+                    "CityStateTypes" -> emptyArray<CityStateType>().javaClass
                     "Difficulties" -> emptyArray<Difficulty>().javaClass
                     "Eras" -> emptyArray<Era>().javaClass
-                    "Speeds" -> emptyArray<Speed>().javaClass
+                    "Events" -> emptyArray<Event>().javaClass
                     "GlobalUniques" -> GlobalUniques().javaClass
                     "Nations" -> emptyArray<Nation>().javaClass
                     "Policies" -> emptyArray<PolicyBranch>().javaClass
@@ -511,6 +511,7 @@ object TranslationFileWriter {
                     "Religions" -> emptyArray<String>().javaClass
                     "Ruins" -> emptyArray<RuinReward>().javaClass
                     "Specialists" -> emptyArray<Specialist>().javaClass
+                    "Speeds" -> emptyArray<Speed>().javaClass
                     "Techs" -> emptyArray<TechColumn>().javaClass
                     "Terrains" -> emptyArray<Terrain>().javaClass
                     "TileImprovements" -> emptyArray<TileImprovement>().javaClass
@@ -520,9 +521,7 @@ object TranslationFileWriter {
                     "Units" -> emptyArray<BaseUnit>().javaClass
                     "UnitTypes" -> emptyArray<UnitType>().javaClass
                     "VictoryTypes" -> emptyArray<Victory>().javaClass
-                    "CityStateTypes" -> emptyArray<CityStateType>().javaClass
-                    "Events" -> emptyArray<Event>().javaClass
-                    else -> this.javaClass // dummy value
+                    else -> null // dummy value
                 }
             }
         }

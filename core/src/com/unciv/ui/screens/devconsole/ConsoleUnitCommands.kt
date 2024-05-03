@@ -3,6 +3,11 @@ package com.unciv.ui.screens.devconsole
 class ConsoleUnitCommands : ConsoleCommandNode {
     override val subcommands = hashMapOf<String, ConsoleCommand>(
 
+        "checkfilter" to ConsoleAction("unit checkfilter <unitFilter>") { console, params ->
+            val unit = console.getSelectedUnit()
+            DevConsoleResponse.hint(unit.matchesFilter(params[0]).toString())
+        },
+
         "add" to ConsoleAction("unit add <civName> <unitName>") { console, params ->
             val selectedTile = console.getSelectedTile()
             val civ = console.getCivByName(params[0])
@@ -25,17 +30,18 @@ class ConsoleUnitCommands : ConsoleCommandNode {
             unit.promotions.addPromotion(promotion.name, true)
             DevConsoleResponse.OK
         }) {
-            override fun autocomplete(console: DevConsolePopup, params: List<String>): String? {
-                if (params.isEmpty()) return null
+            override fun autocomplete(console: DevConsolePopup, params: List<String>): String {
+                // Note: filtering by unit.type.name in promotion.unitTypes sounds good (No [Zero]-Ability on an Archer),
+                // but would also prevent promotions that can be legally obtained like Morale and Rejuvenation
                 val promotions = console.getSelectedUnit().promotions.promotions
                 val options = console.gameInfo.ruleset.unitPromotions.keys.asSequence()
                     .filter { it !in promotions }
                     .asIterable()
-                return getAutocompleteString(params.last(), options)
+                return getAutocompleteString(params.lastOrNull().orEmpty(), options, console)
             }
         },
 
-        "removepromotion" to ConsoleAction("unit removepromotion <promotionName>") { console, params ->
+        "removepromotion" to object : ConsoleAction("unit removepromotion <promotionName>", { console, params ->
             val unit = console.getSelectedUnit()
             val promotion = unit.promotions.getPromotions().findCliInput(params[0])
                 ?: throw ConsoleErrorException("Promotion not found on unit")
@@ -44,6 +50,9 @@ class ConsoleUnitCommands : ConsoleCommandNode {
             unit.updateUniques()
             unit.updateVisibleTiles()
             DevConsoleResponse.OK
+        }) {
+            override fun autocomplete(console: DevConsolePopup, params: List<String>) =
+                getAutocompleteString(params.lastOrNull().orEmpty(), console.getSelectedUnit().promotions.promotions, console)
         },
 
         "setmovement" to ConsoleAction("unit setmovement [amount]") { console, params ->

@@ -16,13 +16,13 @@ class RuinsManager(
     @Transient
     lateinit var civInfo: Civilization
     @Transient
-    lateinit var validRewards: List<RuinReward>
+    lateinit var validRewards: Collection<RuinReward>
 
     fun clone() = RuinsManager(ArrayList(lastChosenRewards))  // needs to deep-clone (the List, not the Strings) so undo works
 
     fun setTransients(civInfo: Civilization) {
         this.civInfo = civInfo
-        validRewards = civInfo.gameInfo.ruleset.ruinRewards.values.toList()
+        validRewards = civInfo.gameInfo.ruleset.ruinRewards.values
     }
 
     private fun rememberReward(reward: String) {
@@ -50,7 +50,6 @@ class RuinsManager(
         if (civInfo.gameInfo.difficulty in ruinReward.excludedDifficulties) return false
         val stateForConditionals = StateForConditionals(civInfo, unit = unit, tile = unit.getTile())
         if (ruinReward.hasUnique(UniqueType.HiddenWithoutReligion, stateForConditionals) && !civInfo.gameInfo.isReligionEnabled()) return false
-        if (ruinReward.hasUnique(UniqueType.HiddenAfterGreatProphet, stateForConditionals) && civInfo.religionManager.greatProphetsEarned() > 0) return false
         if (ruinReward.hasUnique(UniqueType.Unavailable, stateForConditionals)) return false
         if (ruinReward.getMatchingUniques(UniqueType.OnlyAvailable, StateForConditionals.IgnoreConditionals)
                 .any { !it.conditionalsApply(stateForConditionals) }) return false

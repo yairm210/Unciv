@@ -12,7 +12,7 @@ Each belief has the following structure:
 |-----------------|-----------------|----------|-----------------------------------------------------------------------------------|
 | name            | String          | Required |                                                                                   |
 | type            | Enum            | Required | Type of belief. Value must be Pantheon, Founder, Follower or Enhancer             |
-| uniques         | List of Strings | empty    | List of [unique abilities](../../uniques) this belief adds to cities following it |
+| uniques         | List of Strings | empty    | List of [unique abilities](../uniques.md) this belief adds to cities following it |
 | civilopediaText | List            | empty    | See [civilopediaText chapter](5-Miscellaneous-JSON-files.md#civilopedia-text)     |
 
 ## Buildings.json
@@ -62,7 +62,7 @@ Each nation has the following structure:
 | leaderName           | String                                                              | none     | Omit only for city states! If you want LeaderPortraits, the image file names must match exactly, including case                                 |
 | style                | String                                                              | none     | Modifier appended to pixel unit image names                                                                                                     |
 | cityStateType        | String                                                              | none     | Distinguishes major civilizations from city states (must be in [CityStateTypes.json](#citystatetypesjson))                                      |
-| startBias            | List of strings                                                     | empty    | Zero or more of: [terrainFilter](../../Unique-parameters.md/#terrainfilter) or "Avoid [terrainFilter]". [^S]                                    |
+| startBias            | List of strings                                                     | empty    | Zero or more of: [terrainFilter](../Unique-parameters.md#terrainfilter) or "Avoid [terrainFilter]". [^S]                                    |
 | preferredVictoryType | String                                                              | Neutral  | The victory type major civilizations will pursue (need not be specified in [VictoryTypes.json](5-Miscellaneous-JSON-files.md#victorytypesjson)) |
 | personality          | String                                                              | none     | The name of the personality specified in [Personalities.json](#personalitiesjson)                                                               |
 | favoredReligion      | String                                                              | none     | The religion major civilization will choose if available when founding a religion. Must be in [Religions.json](#religionsjson)                  |

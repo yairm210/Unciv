@@ -15,19 +15,20 @@ All filters except for `populationFilter` accept multiple values in the format: 
 
 > Example: `[{Military} {Water}] units`, `[{Wounded} {Armor}] units`, etc.
 
-No space or other text is allowed between the `[` and the first `{`.
+No space or other text is allowed between the `[` and the first `{`, nor between the last `}` and the ending `]`. The space in `} {`, however, is mandatory.
 
 All filters accept `non-[filter]` as a possible value
 
 > Example: `[non-[Wounded]] units`
 
-These can be combined by having the values be negative filters
+These can be combined by nesting, with the exception that an "ALL" filter cannot contain another "ALL" filter, even with a NON-filter in between.
 
-> Example: `[{non-[Wounded]} {Armor}] units`
+> Example: `[{non-[Wounded]} {Armor}] units` means unit is type Armor and at full health.
+> Example: `[non-[{Wounded} {Armor}]] units` means unit is neither wounded nor an Armor one.
 
-These CANNOT be combined in the other way - e.g. `[non-[{Wounded} {Armor}]] units` is NOT valid and will fail to register any units.
+`[{non-[{Wounded} {Armor}]} {Embarked}] units` WILL FAIL because the game will treat both "} {" at the same time and see `non-[{Wounded` and `Armor}]`, both invalid.
 
-This is because to the player, the text will be `non-Wounded Armor units`, which parses like `[{non-[Wounded]} {Armor}] units`
+Display of complex filters in Civilopedia may become unreadable. If so, consider hiding that unique and provide a better wording using the `Comment []` unique separately.
 
 ## civFilter
 
@@ -72,7 +73,7 @@ The following are allowed to be used:
 - Matching [technologyfilter](#technologyfilter) for the tech this unit requires - e.g. `Modern Era`
 - Any exact unique the unit has
 - Any exact unique the unit type has
-- Any combination of the above (will match only if all match). The format is `{filter1} {filter2}` and can match any number of filters. For example: `
+- Any combination of the above (will match only if all match). The format is `{filter1} {filter2}` and can match any number of filters. For example: `[{Modern era} {Land}]` units
 
 ## mapUnitFilter
 
@@ -87,23 +88,27 @@ This indicates a unit as placed on the map. Compare with `baseUnitFilter`.
 - `Barbarians`, `Barbarian`
 - Again, any combination of the above is also allowed, e.g. `[{Wounded} {Water}]` units.
 
+You can check this in-game using the console with the `unit checkfilter <filter>` command
+
 ## buildingFilter
 
 Allows to only activate a unique for certain buildings. Allowed options are:
 
 - `All`
 - `Buildings`, `Building`
-- `Wonders`, `Wonders`
-- `National Wonder`
-- `World Wonder` -- All wonders that are not national wonders
+- `Wonder`, `Wonders`
+- `National Wonder`, `National`
+- `World Wonder`, `World` -- All wonders that are not national wonders
 - building name
 - The name of the building it replaces (so for example uniques for libraries will apply to paper makers as well)
-- an exact unique the building has (e.g.: `spaceship part`)
+- Matching [technologyfilter](#technologyfilter) for the tech this building requires - e.g. Modern Era
+- An exact unique the building has (e.g.: `spaceship part`)
 - `Culture`, `Gold`, etc. if the building is `stat-related` for that stat. Stat-related buildings are defined as one of the following:
     - Provides that stat directly (e.g. +1 Culture)
     - Provides a percentage bonus for that stat (e.g. +10% Production)
     - Provides that stat as a bonus for resources (e.g. +1 Food from every Wheat)
     - Provides that stat per some amount of population (e.g. +1 Science for every 2 population [cityFilter])
+- Any combination of the above (will match only if all match). The format is `{filter1} {filter2}` up to any number of filters. For example `[{Ancient era} {Food}]` buildings.
 
 ## cityFilter
 
@@ -123,6 +128,7 @@ cityFilters allow us to choose the range of cities affected by this unique:
 - `in foreign cities`, `Foreign`
 - `in annexed cities`, `Annexed`
 - `in puppeted cities`, `Puppeted`
+- `in cities being razed`, `Razing`
 - `in holy cities`, `Holy`
 - `in City-State cities`
 - `in cities following this religion` - Should only be used in pantheon/follower uniques for religions
@@ -130,6 +136,8 @@ cityFilters allow us to choose the range of cities affected by this unique:
 - `in all cities in which the majority religion is a major religion`
 - `in all cities in which the majority religion is an enhanced religion`
 - [civFilter]
+
+You can check this in-game using the console with the `city checkfilter <filter>` command
 
 ## improvementFilter
 
@@ -150,6 +158,15 @@ A filter determining a part of the population of a city. It can be any of the fo
 - `Specialists`
 - `Unemployed`
 - `Followers of the Majority Religion` or `Followers of this Religion`, both of which only apply when this religion is the majority religion in that city
+
+## policyFilter
+
+Can be any of:
+
+- `All` or `all`
+- `[policyBranchName] branch`
+- The name of the policy
+- A unique the Policy has (verbatim, no placeholders)
 
 ## combatantFilter
 
@@ -182,10 +199,23 @@ Allowed values are:
 
 This indicates a text comprised of specific stats and is slightly more complex.
 
-Each stats is comprised of several stat changes, each in the form of `+{amount} {stat}`, where 'stat' is one of the seven major stats mentioned above.
+Each stats is comprised of several stat changes, each in the form of `+{amount} {stat}`,
+where 'stat' is one of the seven major stats
+(eg `Production`, `Food`, `Gold`, `Science`, `Culture`, `Happiness` and `Faith`).
 For example: `+1 Science`.
 
 These can be strung together with ", " between them, for example: `+2 Production, +3 Food`.
+
+## stockpiledResource
+
+This indicates a text that corresponds to a custom Stockpile Resource.
+
+These are global civilization resources that act similar to the main Civ-wide resources like `Gold` and `Faith`.
+You can generate them and consume them. And actions that would consume them are blocked if you
+don't have enough left in stock.
+
+To use, you need to first define a TileResources with the "Stockpiled" Unique. Then you can reference
+them in other Uniques.
 
 ## technologyFilter
 
@@ -238,6 +268,8 @@ Any of:
 - [improvementFilter](#improvementfilter) for this tile
 - `Improvement` or `improved` for tiles with any improvements
 - `unimproved` for tiles with no improvement
+
+You can check this in-game using the console with the `tile checkfilter <filter>` command
 
 ## terrainQuality
 

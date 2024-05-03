@@ -4,6 +4,8 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener
+import com.unciv.models.metadata.BaseRuleset
+import com.unciv.models.metadata.GameParameters
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.ruleset.validation.ModCompatibility
@@ -18,14 +20,14 @@ import com.unciv.ui.screens.basescreen.BaseScreen
  * A widget containing one expander for extension mods.
  * Manages compatibility checks, warns or prevents incompatibilities.
  *
- * @param mods In/out set of active mods, modified in place
+ * @param mods **Reference**: In/out set of active mods, modified in place: If this needs to change, call [changeGameParameters]
  * @param initialBaseRuleset The selected base Ruleset, only for running mod checks against. Use [setBaseRuleset] to change on the fly.
  * @param screen Parent screen, used only to show [ToastPopup]s
  * @param isPortrait Used only for minor layout tweaks, arrangement is always vertical
  * @param onUpdate Callback, parameter is the mod name, called after any checks that may prevent mod selection succeed.
  */
 class ModCheckboxTable(
-    private val mods: LinkedHashSet<String>,
+    private var mods: LinkedHashSet<String>,
     initialBaseRuleset: String,
     private val screen: BaseScreen,
     isPortrait: Boolean = false,
@@ -47,6 +49,7 @@ class ModCheckboxTable(
     private var disableChangeEvents = false
 
     private val expanderPadTop = if (isPortrait) 0f else 16f
+    private val expanderPadOther = if (isPortrait) 0f else 10f
 
     init {
         val modRulesets = RulesetCache.values.filter {
@@ -67,12 +70,25 @@ class ModCheckboxTable(
         setBaseRuleset(initialBaseRuleset)
     }
 
-    fun setBaseRuleset(newBaseRuleset: String) {
-        baseRulesetName = newBaseRuleset
+    fun updateSelection() {
+        savedModcheckResult = null
+        disableChangeEvents = true
+        for (mod in modWidgets) {
+            mod.widget.isChecked = mod.mod.name in mods
+        }
+        disableChangeEvents = false
+        deselectIncompatibleMods(null)
+    }
+
+    fun setBaseRuleset(newBaseRulesetName: String) {
+        val newBaseRuleset = RulesetCache[newBaseRulesetName]
+            // We're calling this from init, baseRuleset is lateinit, and the mod may have been deleted: Must make sure baseRuleset is initialized
+            ?: return setBaseRuleset(BaseRuleset.Civ_V_GnK.fullName)
+        baseRulesetName = newBaseRulesetName
+        baseRuleset = newBaseRuleset
         savedModcheckResult = null
         clear()
         mods.clear()  // We'll regenerate this from checked widgets
-        baseRuleset = RulesetCache[newBaseRuleset] ?: return
 
         val compatibleMods = modWidgets
             .filter { ModCompatibility.meetsBaseRequirements(it.mod, baseRuleset) }
@@ -88,7 +104,7 @@ class ModCheckboxTable(
             for (mod in compatibleMods) {
                 it.add(mod.widget).row()
             }
-        }).pad(10f).padTop(expanderPadTop).growX().row()
+        }).pad(expanderPadOther).padTop(expanderPadTop).growX().row()
 
         disableIncompatibleMods()
 
@@ -103,6 +119,7 @@ class ModCheckboxTable(
         mods.clear()
         disableChangeEvents = false
 
+        savedModcheckResult = null
         disableIncompatibleMods()
         onUpdate("-")  // should match no mod
     }
@@ -176,11 +193,10 @@ class ModCheckboxTable(
 
     /** Deselect incompatible mods after [skipCheckBox] was selected.
      *
-     *  Note: Inactive - we don'n even allow a conflict to be turned on using [disableIncompatibleMods].
+     *  Note: Inactive - we don't even allow a conflict to be turned on using [disableIncompatibleMods].
      *  But if we want the alternative UX instead - use this in [checkBoxChanged] near `mods.add` and skip disabling...
      */
-    @Suppress("unused")
-    private fun deselectIncompatibleMods(skipCheckBox: CheckBox) {
+    private fun deselectIncompatibleMods(skipCheckBox: CheckBox?) {
         disableChangeEvents = true
         for (modWidget in modWidgets) {
             if (modWidget.widget == skipCheckBox) continue
@@ -189,7 +205,7 @@ class ModCheckboxTable(
                 mods.remove(modWidget.mod.name)
             }
         }
-        disableChangeEvents = true
+        disableChangeEvents = false
     }
 
     /** Disable incompatible mods - those that could not be turned on with the current selection */
@@ -206,4 +222,8 @@ class ModCheckboxTable(
              .filter { it.widget.isChecked }
              .map { it.mod }
              .asIterable()
+
+    fun changeGameParameters(newGameParameters: GameParameters) {
+        mods = newGameParameters.mods
+    }
 }

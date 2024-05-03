@@ -13,7 +13,7 @@
 		"type": "Water",
 		"food": 1,
 		"movementCost": 1,
-		"RGB": [70, 138, 216], //Darker87, 139, 199  Lighter59, 137, 227
+		"RGB": [70, 138, 216],
 		"uniques": ["[+2] to Fertility for Map Generation",
             "Considered [Desirable] when determining start locations <on water maps>",
             "Every [60] tiles with this terrain will receive a major deposit of a strategic resource."]
@@ -76,7 +76,7 @@
 		"type": "Land",
 		"food": 1,
 		"movementCost": 1,
-		"RGB": [30, 113, 69],
+		"RGB": [124, 62, 57],
 		"uniques": ["Occurs at temperature between [-0.9] and [-0.6] and humidity between [0.8] and [1]",
             "Occurs at temperature between [-0.8] and [-0.5] and humidity between [0.6] and [0.8]",
             "Occurs at temperature between [-0.7] and [-0.4] and humidity between [0.4] and [0.6]",
@@ -375,7 +375,7 @@
 		"unbuildable": true,
 		"uniques": ["Must be adjacent to [0] [Coast] tiles",
 			"Must be adjacent to [1] to [6] [Jungle] tiles",
-			"Grants 500 Gold to the first civilization to discover it"],
+			"Grants [+500 Gold] to the first civilization to discover it"],
 		"weight": 2
 	},
 	{ // This will count as "Fresh water" in civ 6

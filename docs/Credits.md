@@ -665,6 +665,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 ### Others
 
 - [Circle](https://thenounproject.com/term/circle/1841891/) By Aybige - Circle used to compose icons on the fly
+- [Link](https://thenounproject.com/icon/chain-link-3111403/) By Brad for Civilopedia links and unit escort formation. The original work has been slightly modified.
 - [Arrow](https://thenounproject.com/term/arrow/18123/) By Joe Mortell for movement
 - [Swap](https://thenounproject.com/term/swap/1259600) By iconomania for swapping units
 - [Road](https://thenounproject.com/icon/road-224428/) By Gábor István Karaba for connect road automation
@@ -747,7 +748,8 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 -   [Go back](https://thenounproject.com/icon/go%20back-1901947) by Salvia Santos for Resume
 -   [Multiplayer](https://thenounproject.com/icon/multiplayer-1215652) by Roy Charles
 -   [Options](https://thenounproject.com/icon/options-866090) By Thengakola
--   [Package](https://thenounproject.com/icon/package-1886048) by shashank singh
+-   [Package](https://thenounproject.com/icon/package-1886048) by shashank singh for Mods
+-   [scenario planning](https://thenounproject.com/icon/scenario-6569968) by nicolas for Scenarios
 
 ## Sound credits
 

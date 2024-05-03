@@ -181,6 +181,8 @@ class CityReligionManager : IsPartOfGameInfoSerialization {
             if (oldMajorityReligion != newMajorityReligion && newMajorityReligion != null) {
                 triggerReligionAdoption(newMajorityReligion)
             }
+            if (oldMajorityReligion != newMajorityReligion)
+                city.civ.cache.updateCivResources() // follower uniques can provide resources
             if (followers != previousFollowers)
                 city.cityStats.update()
         }

@@ -105,8 +105,8 @@ object UniqueTriggerActivation {
         when (unique.type) {
             UniqueType.TriggerEvent -> {
                 val event = ruleset.events[unique.params[0]] ?: return null
-                val choices = event.choices.filter { it.matchesConditions(stateForConditionals) }
-                if (choices.isEmpty()) return null
+                val choices = event.getMatchingChoices(stateForConditionals)
+                    ?: return null
                 return {
                     if (civInfo.isAI()) choices.random().triggerChoice(civInfo)
                     else civInfo.popupAlerts.add(PopupAlert(AlertType.Event, event.name))
@@ -295,6 +295,27 @@ object UniqueTriggerActivation {
                     true
                 }
             }
+            UniqueType.OneTimeRemovePolicy -> {
+                val policyFilter = unique.params[0]
+                val policiesToRemove = civInfo.policies.adoptedPolicies
+                    .mapNotNull { civInfo.gameInfo.ruleset.policies[it] }
+                    .filter { it.matchesFilter(policyFilter) }
+                if (policiesToRemove.isEmpty()) return null
+
+                return {
+                    for (policy in policiesToRemove){
+                        civInfo.policies.removePolicy(policy)
+
+                        val notificationText = getNotificationText(
+                            notification, triggerNotificationText,
+                            "You lose the [${policy.name}] Policy"
+                        )
+                        if (notificationText != null)
+                            civInfo.addNotification(notificationText, PolicyAction(policy.name), NotificationCategory.General, NotificationIcon.Culture)
+                    }
+                    true
+                }
+            }
             UniqueType.OneTimeEnterGoldenAge, UniqueType.OneTimeEnterGoldenAgeTurns -> {
                 return {
                     if (unique.type == UniqueType.OneTimeEnterGoldenAgeTurns) civInfo.goldenAges.enterGoldenAge(unique.params[0].toInt())
@@ -318,7 +339,7 @@ object UniqueTriggerActivation {
                     if (notification != null)
                         civInfo.addNotification(notification, NotificationCategory.General)
 
-                    if (civInfo.isAI() || UncivGame.Current.settings.autoPlay.isAutoPlayingAndFullAI()) {
+                    if (civInfo.isAI() || UncivGame.Current.worldScreen?.autoPlay?.isAutoPlayingAndFullAutoPlayAI() == true) {
                         NextTurnAutomation.chooseGreatPerson(civInfo)
                     }
                     true
@@ -787,7 +808,7 @@ object UniqueTriggerActivation {
                     val currentEra = civInfo.getEra().name
                     for (otherCiv in civInfo.gameInfo.getAliveMajorCivs()) {
                         if (currentEra !in otherCiv.espionageManager.erasSpyEarnedFor) {
-                            val spyName = otherCiv.espionageManager.addSpy()
+                            val spyName = otherCiv.espionageManager.addSpy().name
                             otherCiv.espionageManager.erasSpyEarnedFor.add(currentEra)
                             if (otherCiv == civInfo || otherCiv.knows(civInfo))
                             // We don't tell which civilization entered the new era, as that is done in the notification directly above this one
@@ -800,6 +821,26 @@ object UniqueTriggerActivation {
                                 )
                         }
                     }
+                    true
+                }
+            }
+
+            UniqueType.OneTimeSpiesLevelUp -> {
+                if (!civInfo.isMajorCiv()) return null
+                if (!civInfo.gameInfo.isEspionageEnabled()) return null
+
+                return {
+                    civInfo.espionageManager.spyList.forEach { it.levelUpSpy() }
+                    true
+                }
+            }
+
+            UniqueType.OneTimeGainSpy -> {
+                if (!civInfo.isMajorCiv()) return null
+                if (!civInfo.gameInfo.isEspionageEnabled()) return null
+
+                return {
+                    civInfo.espionageManager.addSpy()
                     true
                 }
             }

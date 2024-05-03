@@ -3,6 +3,7 @@ package com.unciv.models.ruleset.nation
 import com.unciv.Constants
 import com.unciv.models.ruleset.RulesetObject
 import com.unciv.models.ruleset.unique.UniqueTarget
+import com.unciv.models.stats.Stat
 import kotlin.reflect.KMutableProperty0
 
 /**
@@ -17,14 +18,27 @@ enum class PersonalityValue {
     Culture,
     Happiness,
     Faith,
-
     // Behaviour focused personalities
     Militaristic, // Building a military but not nessesarily using it
     WarMongering, // Declaring war determines expanding or defending
     Commerce, // Trading frequency, open borders and liberating city-states, less negative diplomacy impact
     Diplomatic, // Likelyhood of signing friendship, defensive pact, peace treaty and other diplomatic actions
     Loyalty, // Likelyhood to make a long lasting aliance with another civ and join wars with them
-    Expansion, // Founding/capturing new cities, oposite of a cultural victory
+    Expansion; // Founding/capturing new cities, oposite of a cultural victory
+
+    companion object  {
+        operator fun get(stat: Stat): PersonalityValue {
+            return when (stat) {
+                Stat.Production -> Production
+                Stat.Food -> Food
+                Stat.Gold -> Gold
+                Stat.Science -> Science
+                Stat.Culture -> Culture
+                Stat.Happiness -> Happiness
+                Stat.Faith -> Faith
+            }
+        }
+    }
 }
 
 class Personality: RulesetObject() {

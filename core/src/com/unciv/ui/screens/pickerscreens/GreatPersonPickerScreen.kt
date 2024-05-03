@@ -9,12 +9,13 @@ import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.components.extensions.isEnabled
 import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.input.onDoubleClick
+import com.unciv.ui.screens.worldscreen.WorldScreen
 
-class GreatPersonPickerScreen(val civInfo: Civilization) : PickerScreen() {
+class GreatPersonPickerScreen(val worldScreen: WorldScreen, val civInfo: Civilization) : PickerScreen() {
     private var theChosenOne: BaseUnit? = null
 
     init {
-        UncivGame.Current.settings.autoPlay.stopAutoPlay()
+        worldScreen.autoPlay.stopAutoPlay()
         closeButton.isVisible = false
         rightSideButton.setText("Choose a free great person".tr())
 

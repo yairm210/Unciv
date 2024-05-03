@@ -245,12 +245,11 @@ class CityStateFunctions(val civInfo: Civilization) {
 
                 // Join the wars of our new ally - loop through all civs they are at war with
                 for (newEnemy in civInfo.gameInfo.civilizations.filter { it.isAtWarWith(newAllyCiv) && it.isAlive() } ) {
-                    if (civInfo.knows(newEnemy) && !civInfo.isAtWarWith(newEnemy))
-                        civInfo.getDiplomacyManager(newEnemy).declareWar()
-                    else if (!civInfo.knows(newEnemy)) {
-                        // We have to meet first
-                        civInfo.diplomacyFunctions.makeCivilizationsMeet(newEnemy, warOnContact = true)
-                        civInfo.getDiplomacyManager(newEnemy).declareWar()
+                    if (!civInfo.isAtWarWith(newEnemy)) {
+                        if (!civInfo.knows(newEnemy))
+                            // We have to meet first
+                            civInfo.diplomacyFunctions.makeCivilizationsMeet(newEnemy, warOnContact = true)
+                        civInfo.getDiplomacyManager(newEnemy).declareWar(DeclareWarReason(WarType.CityStateAllianceWar, newAllyCiv))
                     }
                 }
             }
@@ -461,7 +460,7 @@ class CityStateFunctions(val civInfo: Civilization) {
         // Check if city-state invaded by other civs
         if (getNumThreateningBarbarians() > 0) return // Assume any players are there to fight barbarians
 
-        for (otherCiv in civInfo.getKnownCivs().filter { it.isMajorCiv() }) {
+        for (otherCiv in civInfo.getKnownCivs().filter { it.isMajorCiv() }.toList()) {
             if (civInfo.isAtWarWith(otherCiv)) continue
             if (otherCiv.hasUnique(UniqueType.CityStateTerritoryAlwaysFriendly)) continue
             val diplomacy = civInfo.getDiplomacyManager(otherCiv)

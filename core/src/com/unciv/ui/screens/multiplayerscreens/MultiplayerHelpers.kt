@@ -42,7 +42,7 @@ object MultiplayerHelpers {
             val (message) = LoadGameScreen.getLoadExceptionMessage(ex, "Error while refreshing:")
             descriptionText.appendLine(message)
         }
-        val lastUpdate = multiplayerGame.lastUpdate
+        val lastUpdate = multiplayerGame.getLastUpdate()
         descriptionText.appendLine("Last refresh: [${Duration.between(lastUpdate, Instant.now()).formatShort()}] ago".tr())
         val preview = multiplayerGame.preview
         if (preview?.currentPlayer != null) {

@@ -13,23 +13,23 @@ import com.unciv.ui.components.input.onClick
 import com.unciv.ui.screens.basescreen.BaseScreen
 
 class TradeTable(
+    private val civ: Civilization,
     private val otherCivilization: Civilization,
     diplomacyScreen: DiplomacyScreen
 ): Table(BaseScreen.skin) {
-    private val currentPlayerCiv = otherCivilization.gameInfo.getCurrentPlayerCivilization()
-    internal val tradeLogic = TradeLogic(currentPlayerCiv, otherCivilization)
-    internal val offerColumnsTable = OfferColumnsTable(tradeLogic, diplomacyScreen , currentPlayerCiv, otherCivilization) { onChange() }
+    internal val tradeLogic = TradeLogic(civ, otherCivilization)
+    internal val offerColumnsTable = OfferColumnsTable(tradeLogic, diplomacyScreen , civ, otherCivilization) { onChange() }
     // This is so that after a trade has been traded, we can switch out the offersToDisplay to start anew - this is the easiest way
     private val offerColumnsTableWrapper = Table()
 
     val offerTradeText = "{Offer trade}\n({They'll decide on their turn})"
     private val offerButton = offerTradeText.toTextButton()
 
-    private fun isTradeOffered() = otherCivilization.tradeRequests.any { it.requestingCiv == currentPlayerCiv.civName }
+    private fun isTradeOffered() = otherCivilization.tradeRequests.any { it.requestingCiv == civ.civName }
 
     private fun retractOffer() {
-        otherCivilization.tradeRequests.removeAll { it.requestingCiv == currentPlayerCiv.civName }
-        currentPlayerCiv.cache.updateCivResources()
+        otherCivilization.tradeRequests.removeAll { it.requestingCiv == civ.civName }
+        civ.cache.updateCivResources()
         offerButton.setText(offerTradeText.tr())
     }
 
@@ -39,7 +39,7 @@ class TradeTable(
 
         val lowerTable = Table().apply { defaults().pad(10f) }
 
-        val existingOffer = otherCivilization.tradeRequests.firstOrNull { it.requestingCiv == currentPlayerCiv.civName }
+        val existingOffer = otherCivilization.tradeRequests.firstOrNull { it.requestingCiv == civ.civName }
         if (existingOffer != null) {
             tradeLogic.currentTrade.set(existingOffer.trade.reverse())
             offerColumnsTable.update()
@@ -57,10 +57,10 @@ class TradeTable(
             // If not lets add an extra gold offer to satisfy this.
             // There must be enough gold to add to the offer to satisfy this, otherwise the research agreement button would be disabled
             if (tradeLogic.currentTrade.ourOffers.any { it.name == Constants.researchAgreement}) {
-                val researchCost = currentPlayerCiv.diplomacyFunctions.getResearchAgreementCost(otherCivilization)
+                val researchCost = civ.diplomacyFunctions.getResearchAgreementCost(otherCivilization)
                 val currentPlayerOfferedGold = tradeLogic.currentTrade.ourOffers.firstOrNull { it.type == TradeType.Gold }?.amount ?: 0
                 val otherCivOfferedGold = tradeLogic.currentTrade.theirOffers.firstOrNull { it.type == TradeType.Gold }?.amount ?: 0
-                val newCurrentPlayerGold = currentPlayerCiv.gold + otherCivOfferedGold - researchCost
+                val newCurrentPlayerGold = civ.gold + otherCivOfferedGold - researchCost
                 val newOtherCivGold = otherCivilization.gold + currentPlayerOfferedGold - researchCost
                 // Check if we require more gold from them
                 if (newCurrentPlayerGold < 0) {
@@ -74,8 +74,8 @@ class TradeTable(
                 }
             }
 
-            otherCivilization.tradeRequests.add(TradeRequest(currentPlayerCiv.civName, tradeLogic.currentTrade.reverse()))
-            currentPlayerCiv.cache.updateCivResources()
+            otherCivilization.tradeRequests.add(TradeRequest(civ.civName, tradeLogic.currentTrade.reverse()))
+            civ.cache.updateCivResources()
             offerButton.setText("Retract offer".tr())
         }
 

@@ -16,6 +16,7 @@ import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueType
+import com.unciv.models.ruleset.unique.Conditionals
 import com.unciv.models.stats.Stat
 import com.unciv.ui.components.extensions.getNeedMoreAmountString
 import com.unciv.ui.components.extensions.toPercent
@@ -113,6 +114,11 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         if (! ::ruleset.isInitialized) { // Not sure if this will ever actually happen, but better safe than sorry
             return ourUniques
         }
+        val typeUniques = type.getMatchingUniques(uniqueType, stateForConditionals)
+        // Memory optimization - very rarely do we actually get uniques from both sources,
+        //   and sequence addition is expensive relative to the rare case that we'll actually need it
+        if (ourUniques.none()) return typeUniques
+        if (typeUniques.none()) return ourUniques
         return ourUniques + type.getMatchingUniques(uniqueType, stateForConditionals)
     }
 
@@ -170,8 +176,10 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         val civInfo = cityConstructions.city.civ
 
         for (unique in getMatchingUniques(UniqueType.OnlyAvailable, StateForConditionals.IgnoreConditionals))
-            if (!unique.conditionalsApply(civInfo, cityConstructions.city))
-                yield(RejectionReasonType.ShouldNotBeDisplayed.toInstance())
+            yieldAll(notMetRejections(unique, cityConstructions))
+
+        for (unique in getMatchingUniques(UniqueType.CanOnlyBeBuiltWhen, StateForConditionals.IgnoreConditionals))
+            yieldAll(notMetRejections(unique, cityConstructions, true))
 
         for (unique in getMatchingUniques(UniqueType.Unavailable, StateForConditionals(civInfo, cityConstructions.city)))
             yield(RejectionReasonType.ShouldNotBeDisplayed.toInstance())
@@ -236,6 +244,52 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
                     yield(RejectionReasonType.CannotBeBuiltUnhappiness.toInstance(unique.text))
                 else yield(RejectionReasonType.CannotBeBuilt.toInstance())
             }
+    }
+
+    /**
+     * Copy of [com.unciv.models.ruleset.Building.notMetRejections] to handle inverted conditionals.
+     * Also custom handles [UniqueType.ConditionalBuildingBuiltAmount], and
+     * [UniqueType.ConditionalBuildingBuiltAll]
+     */
+    private fun notMetRejections(unique: Unique, cityConstructions: CityConstructions, built: Boolean=false): Sequence<RejectionReason> = sequence {
+        val civ = cityConstructions.city.civ
+        for (conditional in unique.conditionals) {
+            // We yield a rejection only when conditionals are NOT met
+            if (Conditionals.conditionalApplies(unique, conditional, StateForConditionals(civ, cityConstructions.city)))
+                continue
+            when (conditional.type) {
+                UniqueType.ConditionalBuildingBuiltAmount -> {
+                    val building = civ.getEquivalentBuilding(conditional.params[0]).name
+                    val amount = conditional.params[1].toInt()
+                    val cityFilter = conditional.params[2]
+                    val numberOfCities = civ.cities.count {
+                        it.cityConstructions.containsBuildingOrEquivalent(building) && it.matchesFilter(cityFilter)
+                    }
+                    if (numberOfCities < amount)
+                    {
+                        yield(RejectionReasonType.RequiresBuildingInSomeCities.toInstance(
+                            "Requires a [$building] in at least [$amount] cities" +
+                                " ($numberOfCities/$numberOfCities)"))
+                    }
+                }
+                UniqueType.ConditionalBuildingBuiltAll -> {
+                    val building = civ.getEquivalentBuilding(conditional.params[0]).name
+                    val cityFilter = conditional.params[1]
+                    if(civ.cities.any { it.matchesFilter(cityFilter)
+                            !it.isPuppet && !it.cityConstructions.containsBuildingOrEquivalent(building)
+                        }) {
+                        yield(RejectionReasonType.RequiresBuildingInAllCities.toInstance(
+                            "Requires a [${building}] in all cities"))
+                    }
+                }
+                else -> {
+                    if (built)
+                        yield(RejectionReasonType.CanOnlyBeBuiltInSpecificCities.toInstance(unique.text))
+                    else
+                        yield(RejectionReasonType.ShouldNotBeDisplayed.toInstance())
+                }
+            }
+        }
     }
 
     fun isBuildable(civInfo: Civilization) = getRejectionReasons(civInfo).none()
@@ -306,9 +360,16 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         else ruleset.units[replaces!!]!!
     }
 
+
+    val cachedMatchesFilterResult = HashMap<String, Boolean>()
+
     /** Implements [UniqueParameterType.BaseUnitFilter][com.unciv.models.ruleset.unique.UniqueParameterType.BaseUnitFilter] */
     fun matchesFilter(filter: String): Boolean {
-        return MultiFilter.multiFilter(filter, ::matchesSingleFilter)
+        val cachedAnswer = cachedMatchesFilterResult[filter]
+        if (cachedAnswer != null) return cachedAnswer
+        val newAnswer = MultiFilter.multiFilter(filter, { matchesSingleFilter(it) })
+        cachedMatchesFilterResult[filter] = newAnswer
+        return newAnswer
     }
 
     fun matchesSingleFilter(filter: String): Boolean {
@@ -366,13 +427,6 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         return resourceRequirements
     }
 
-    override fun requiresResource(resource: String, stateForConditionals: StateForConditionals?): Boolean {
-        if (getResourceRequirementsPerTurn(stateForConditionals).contains(resource)) return true
-        for (unique in getMatchingUniques(UniqueType.CostsResources, stateForConditionals)) {
-            if (unique.params[1] == resource) return true
-        }
-        return false
-    }
 
     fun isRanged() = rangedStrength > 0
     fun isMelee() = !isRanged() && strength > 0

@@ -200,12 +200,14 @@ class CivilopediaScreen(
         val imageSize = 50f
 
         val religionEnabled = showReligionInCivilopedia(ruleset)
+        val espionageEnabled = showEspionageInCivilopedia(ruleset)
         val victoryTypes = game.gameInfo?.gameParameters?.victoryTypes ?: ruleset.victories.keys
 
         fun shouldBeDisplayed(obj: IHasUniques): Boolean {
             return when {
                 obj.hasUnique(UniqueType.HiddenFromCivilopedia) -> false
                 (!religionEnabled && obj.hasUnique(UniqueType.HiddenWithoutReligion)) -> false
+                (!espionageEnabled && obj.hasUnique(UniqueType.HiddenWithoutEspionage)) -> false
                 obj.getMatchingUniques(UniqueType.HiddenWithoutVictoryType).any { !victoryTypes.contains(it.params[0]) } -> false
                 else -> true
             }
@@ -324,6 +326,12 @@ class CivilopediaScreen(
             UncivGame.isCurrentInitialized() && UncivGame.Current.gameInfo != null ->
                 UncivGame.Current.gameInfo!!.isReligionEnabled()
             ruleset != null -> ruleset.beliefs.isNotEmpty()
+            else -> true
+        }
+
+        fun showEspionageInCivilopedia(ruleset: Ruleset? = null) = when {
+            UncivGame.isCurrentInitialized() && UncivGame.Current.gameInfo != null ->
+                UncivGame.Current.gameInfo!!.isEspionageEnabled()
             else -> true
         }
     }

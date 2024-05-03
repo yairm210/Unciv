@@ -56,6 +56,8 @@ class OptionsPopup(
     }
 
     init {
+        clickBehindToClose = true
+
         if (settings.addCompletedTutorialTask("Open the options table"))
             (screen as? WorldScreen)?.shouldUpdate = true
 

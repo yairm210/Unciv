@@ -1,0 +1,11 @@
+Policy tables no longer repeat on some height/width configurations
+
+Discard all pending trade requests on both sides when war is declared
+
+Memory performance improvements
+
+Personalities.json no longer precludes generating translations
+
+Fix loop when AI is trying to remove an improvement with the same name as a terrain feature  - By SeventhM
+
+Fixed uniques of marble - By woo1127

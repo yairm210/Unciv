@@ -1,4 +1,4 @@
-[	
+[
 	// Bonus resources
 	{
 		"name": "Cattle",
@@ -7,8 +7,8 @@
 		"food": 1,
 		"improvement": "Pasture",
 		"improvementStats": {"production": 1},
-		"uniques": ["Generated on every [18] tiles <in [Featureless] [Grassland] tiles>",
-					"Generated on every [22] tiles <in [Featureless] [Grassland] tiles> <in [Hill] Regions>"]
+		"uniques": ["Generated on every [18] tiles <in [{Featureless} {Grassland}] tiles>",
+					"Generated on every [22] tiles <in [{Featureless} {Grassland}] tiles> <in [Hill] Regions>"]
 	},
 	{
 		"name": "Sheep",
@@ -27,11 +27,11 @@
 		"food": 1,
 		"improvement": "Camp",
 		"improvementStats": {"production": 1},
-		"uniques": ["Generated on every [8] tiles <in [Tundra] [Forest] tiles>",
-					"Generated on every [12] tiles <in [Featureless] [Tundra] tiles>",
-					"Generated on every [25] tiles <in [Plains] [Forest] tiles> <in tiles without [Hill]>",
-					"Generated on every [25] tiles <in [Grassland] [Forest] tiles> <in tiles without [Hill]>",
-					"Generated on every [16] tiles <in [Featureless] [Tundra] tiles> <in [Hill] Regions>",
+		"uniques": ["Generated on every [8] tiles <in [{Tundra} {Forest}] tiles>",
+					"Generated on every [12] tiles <in [{Featureless} {Tundra}] tiles>",
+					"Generated on every [25] tiles <in [{Plains} {Forest}] tiles> <in tiles without [Hill]>",
+					"Generated on every [25] tiles <in [{Grassland} {Forest}] tiles> <in tiles without [Hill]>",
+					"Generated on every [16] tiles <in [{Featureless} {Tundra}] tiles> <in [Hill] Regions>",
 					"Generated on every [28] tiles <in [Forest] tiles> <in [Hill] Regions>"]
 	},
 	{
@@ -50,10 +50,10 @@
 		"terrainsCanBeFoundOn": ["Plains","Flood plains","Desert"], // Desert only if fresh water
 		"food": 1,
 		"improvement": "Farm",
-		"uniques": ["Generated on every [27] tiles <in [Featureless] [Plains] tiles>",
-					"Generated on every [10] tiles <in [Desert] [Fresh Water] tiles> <in tiles without [Hill]>",
-					"Generated on every [20] tiles <in [Featureless] [Plains] tiles> <in [Hill] Regions>",
-					"Generated on every [20] tiles <in [Fresh Water] [Desert] tiles> <in tiles without [Hill]> <in [Hill] Regions>"]
+		"uniques": ["Generated on every [27] tiles <in [{Featureless} {Plains}] tiles>",
+					"Generated on every [10] tiles <in [{Desert} {Fresh Water}] tiles> <in tiles without [Hill]>",
+					"Generated on every [20] tiles <in [{Featureless} {Plains}] tiles> <in [Hill] Regions>",
+					"Generated on every [20] tiles <in [{Fresh Water} {Desert}] tiles> <in tiles without [Hill]> <in [Hill] Regions>"]
 	},
 	{
 		"name": "Stone",
@@ -62,9 +62,9 @@
 		"production": 1,
 		"improvement": "Quarry",
 		"improvementStats": {"production": 1},
-		"uniques": ["Generated on every [20] tiles <in [Featureless] [Grassland] tiles> <in tiles without [Fresh Water]>",
-					"Generated on every [15] tiles <in [Featureless] [Tundra] tiles>",
-					"Generated on every [19] tiles <in [Featureless] [Desert] tiles>"]
+		"uniques": ["Generated on every [20] tiles <in [{Featureless} {Grassland}] tiles> <in tiles without [Fresh Water]>",
+					"Generated on every [15] tiles <in [{Featureless} {Tundra}] tiles>",
+					"Generated on every [19] tiles <in [{Featureless} {Desert}] tiles>"]
 	},
 	{
 		"name": "Fish",
@@ -72,7 +72,7 @@
 		"terrainsCanBeFoundOn": ["Coast"],
 		"food": 1,
 		"improvement": "Fishing Boats",
-		"uniques": ["Generated on every [10] tiles <in [Featureless] [Coast] tiles>"]
+		"uniques": ["Generated on every [10] tiles <in [{Featureless} {Coast}] tiles>"]
 	},
 	/*
 	{
@@ -84,7 +84,7 @@
 		"improvementStats": {"production": 1}
 	},
 	*/
-	
+
 	// Strategic resources
 	{
 		"name": "Horses",
@@ -95,13 +95,13 @@
 		"improvement": "Pasture",
 		"improvementStats": {"production": 1},
 		"uniques": ["Guaranteed with Strategic Balance resource option",
-					"Generated with weight [100] <in [Featureless] [Grassland] tiles>",
-					"Generated with weight [100] <in [Featureless] [Plains] tiles>",
-					"Minor deposits generated with weight [10] <in [Grassland] [Hill] tiles> <in tiles without [Forest]> <in tiles without [Jungle]>",
-					"Minor deposits generated with weight [10] <in [Plains] [Hill] tiles> <in tiles without [Forest]> <in tiles without [Jungle]>",
-					"Minor deposits generated with weight [100] <in [Featureless] [Grassland] tiles> <in [Fresh Water] tiles>",
-					"Minor deposits generated with weight [20] <in [Featureless] [Grassland] tiles> <in tiles without [Fresh Water]>",
-					"Minor deposits generated with weight [30] <in [Featureless] [Plains] tiles>"],
+					"Generated with weight [100] <in [{Featureless} {Grassland}] tiles>",
+					"Generated with weight [100] <in [{Featureless} {Plains}] tiles>",
+					"Minor deposits generated with weight [10] <in [{Grassland} {Hill}] tiles> <in tiles without [Forest]> <in tiles without [Jungle]>",
+					"Minor deposits generated with weight [10] <in [{Plains} {Hill}] tiles> <in tiles without [Forest]> <in tiles without [Jungle]>",
+					"Minor deposits generated with weight [100] <in [{Featureless} {Grassland}] tiles> <in [Fresh Water] tiles>",
+					"Minor deposits generated with weight [20] <in [{Featureless} {Grassland}] tiles> <in tiles without [Fresh Water]>",
+					"Minor deposits generated with weight [30] <in [{Featureless} {Plains}] tiles>"],
 		"majorDepositAmount": {"sparse": 4, "default": 4, "abundant": 6},
 		"minorDepositAmount": {"sparse": 1, "default": 2, "abundant": 3}
 	},
@@ -113,19 +113,19 @@
 		"production": 1,
 		"improvement": "Mine",
 		"uniques": ["Guaranteed with Strategic Balance resource option",
-					"Generated with weight [45] <in [Featureless] [Tundra] tiles>",
-					"Generated with weight [25] <in [Featureless] [Snow] tiles>",
-					"Generated with weight [35] <in [Featureless] [Desert] tiles>",
+					"Generated with weight [45] <in [{Featureless} {Tundra}] tiles>",
+					"Generated with weight [25] <in [{Featureless} {Snow}] tiles>",
+					"Generated with weight [35] <in [{Featureless} {Desert}] tiles>",
 					"Generated with weight [26] <in [Hill] tiles>",
 					"Minor deposits generated with weight [10] <in [Marsh] tiles> <in tiles without [Hill]>",
-					"Minor deposits generated with weight [10] <in [Jungle] [Hill] tiles>",
+					"Minor deposits generated with weight [10] <in [{Jungle} {Hill}] tiles>",
 					"Minor deposits generated with weight [20] <in [Forest] tiles>",
 					"Minor deposits generated with weight [20] <in [Hill] tiles> <in tiles without [Forest]> <in tiles without [Jungle]>",
-					"Minor deposits generated with weight [30] <in [Featureless] [Grassland] tiles> <in tiles without [Fresh Water]>",
-					"Minor deposits generated with weight [20] <in [Featureless] [Plains] tiles>",
-					"Minor deposits generated with weight [10] <in [Featureless] [Desert] tiles>",
-					"Minor deposits generated with weight [10] <in [Featureless] [Tundra] tiles>",
-					"Minor deposits generated with weight [10] <in [Featureless] [Snow] tiles>"],
+					"Minor deposits generated with weight [30] <in [{Featureless} {Grassland}] tiles> <in tiles without [Fresh Water]>",
+					"Minor deposits generated with weight [20] <in [{Featureless} {Plains}] tiles>",
+					"Minor deposits generated with weight [10] <in [{Featureless} {Desert}] tiles>",
+					"Minor deposits generated with weight [10] <in [{Featureless} {Tundra}] tiles>",
+					"Minor deposits generated with weight [10] <in [{Featureless} {Snow}] tiles>"],
 		"majorDepositAmount": {"sparse": 4, "default": 6, "abundant": 9},
 		"minorDepositAmount": {"sparse": 1, "default": 2, "abundant": 3}
 	},
@@ -143,11 +143,11 @@
 					"Minor deposits generated with weight [10] <in [Marsh] tiles> <in tiles without [Hill]>",
 					"Minor deposits generated with weight [10] <in [Jungle] tiles>",
 					"Minor deposits generated with weight [10] <in [Forest] tiles>",
-					"Minor deposits generated with weight [20] <in [Grassland] [Hill] tiles>",
-					"Minor deposits generated with weight [20] <in [Plains] [Hill] tiles>",
-					"Minor deposits generated with weight [30] <in [Desert] [Hill] tiles>",
-					"Minor deposits generated with weight [30] <in [Tundra] [Hill] tiles>",
-					"Minor deposits generated with weight [30] <in [Snow] [Hill] tiles>"],
+					"Minor deposits generated with weight [20] <in [{Grassland} {Hill}] tiles>",
+					"Minor deposits generated with weight [20] <in [{Plains} {Hill}] tiles>",
+					"Minor deposits generated with weight [30] <in [{Desert} {Hill}] tiles>",
+					"Minor deposits generated with weight [30] <in [{Tundra} {Hill}] tiles>",
+					"Minor deposits generated with weight [30] <in [{Snow} {Hill}] tiles>"],
 		"majorDepositAmount": {"sparse": 5, "default": 7, "abundant": 10},
 		"minorDepositAmount": {"sparse": 2, "default": 3, "abundant": 3}
 	},
@@ -162,15 +162,15 @@
 		"uniques": ["Deposits in [Coast] tiles always provide [4] resources",
 					"Guaranteed with Strategic Balance resource option",
 					"Generated with weight [65] <in [Marsh] tiles> <in tiles without [Hill]>",
-					"Generated with weight [40] <in [Featureless] [Tundra] tiles>",
-					"Generated with weight [60] <in [Featureless] [Snow] tiles>",
-					"Generated with weight [65] <in [Featureless] [Desert] tiles>",
-					"Generated with weight [100] <in [Featureless] [Coast] tiles>",
+					"Generated with weight [40] <in [{Featureless} {Tundra}] tiles>",
+					"Generated with weight [60] <in [{Featureless} {Snow}] tiles>",
+					"Generated with weight [65] <in [{Featureless} {Desert}] tiles>",
+					"Generated with weight [100] <in [{Featureless} {Coast}] tiles>",
 					"Minor deposits generated with weight [20] <in [Marsh] tiles> <in tiles without [Hill]>",
 					"Minor deposits generated with weight [10] <in [Jungle] tiles> <in tiles without [Hill]>",
-					"Minor deposits generated with weight [10] <in [Featureless] [Desert] tiles>",
-					"Minor deposits generated with weight [20] <in [Featureless] [Tundra] tiles>",
-					"Minor deposits generated with weight [20] <in [Featureless] [Snow] tiles>"],
+					"Minor deposits generated with weight [10] <in [{Featureless} {Desert}] tiles>",
+					"Minor deposits generated with weight [20] <in [{Featureless} {Tundra}] tiles>",
+					"Minor deposits generated with weight [20] <in [{Featureless} {Snow}] tiles>"],
 		"majorDepositAmount": {"sparse": 5, "default": 7, "abundant": 9},
 		"minorDepositAmount": {"sparse": 2, "default": 3, "abundant": 3}
 	},
@@ -182,11 +182,11 @@
 		"production": 1,
 		"improvement": "Mine",
 		"improvementStats": {"production": 1},
-		"uniques": ["Generated with weight [15] <in [Featureless] [Tundra] tiles>",
-					"Generated with weight [15] <in [Featureless] [Snow] tiles>",
+		"uniques": ["Generated with weight [15] <in [{Featureless} {Tundra}] tiles>",
+					"Generated with weight [15] <in [{Featureless} {Snow}] tiles>",
 					"Generated with weight [39] <in [Hill] tiles>",
 					"Minor deposits generated with weight [20] <in [Jungle] tiles>",
-					"Minor deposits generated with weight [10] <in [Featureless] [Desert] tiles>"],
+					"Minor deposits generated with weight [10] <in [{Featureless} {Desert}] tiles>"],
 		"majorDepositAmount": {"sparse": 5, "default": 8, "abundant": 10},
 		"minorDepositAmount": {"sparse": 2, "default": 3, "abundant": 3}
 	},
@@ -202,12 +202,12 @@
 					"Generated with weight [70] <in [Jungle] tiles> <in tiles without [Hill]>",
 					"Generated with weight [70] <in [Forest] tiles> <in tiles without [Hill]>",
 					"Minor deposits generated with weight [10] <in [Forest] tiles>",
-					"Minor deposits generated with weight [10] <in [Featureless] [Tundra] tiles>",
-					"Minor deposits generated with weight [10] <in [Featureless] [Snow] tiles>"],
+					"Minor deposits generated with weight [10] <in [{Featureless} {Tundra}] tiles>",
+					"Minor deposits generated with weight [10] <in [{Featureless} {Snow}] tiles>"],
 		"majorDepositAmount": {"sparse": 2, "default": 4, "abundant": 4},
 		"minorDepositAmount": {"sparse": 1, "default": 2, "abundant": 3}
 	},
-	
+
 	// Luxury resources
 	{
 		"name": "Furs",
@@ -285,9 +285,9 @@
 					"Generated near City States with weight [10]",
 					"Doesn't generate naturally <in [Forest] tiles> <in tiles without [Hill]>",
 					"Doesn't generate naturally <in [Jungle] tiles> <in tiles without [Hill]>",
-					"Doesn't generate naturally <in [Tundra] [Hill] tiles>",
-					"Doesn't generate naturally <in [Grassland] [Fresh Water] tiles>",
-					"Doesn't generate naturally <in [Grassland] [Hill] tiles>"
+					"Doesn't generate naturally <in [{Tundra} {Hill}] tiles>",
+					"Doesn't generate naturally <in [{Grassland} {Fresh Water}] tiles>",
+					"Doesn't generate naturally <in [{Grassland} {Hill}] tiles>"
 		]
 	},
 	{
@@ -311,7 +311,7 @@
 		"uniques": ["Generated with weight [35] <in [Plains] Regions>",
 					"Generated with weight [15] <in [Hybrid] Regions>",
 					"Generated near City States with weight [10]",
-					"Doesn't generate naturally <in [Grassland] [Fresh Water] tiles>"]
+					"Doesn't generate naturally <in [{Grassland} {Fresh Water}] tiles>"]
 	},
 	{
 		"name": "Silk",
@@ -338,7 +338,7 @@
 					"Generated with weight [5] <in [Hybrid] Regions>",
 					"Generated near City States with weight [15]",
 					"Doesn't generate naturally <in [Hill] tiles>",
-					"Doesn't generate naturally <in [Tundra] [Forest] tiles>"]
+					"Doesn't generate naturally <in [{Tundra} {Forest}] tiles>"]
 	},
 	{
 		"name": "Wine",
@@ -371,9 +371,9 @@
 		"gold": 2,
 		"improvement": "Quarry",
 		"improvementStats": {"production": 1},
-		"uniques": ["[+15]% Production when constructing [All] wonders [in all cities]",
+		"uniques": ["[+15]% Production when constructing [All] wonders [in this city]",
 					"Special placement during map generation",
-					"Doesn't generate naturally <in [Grassland] [Fresh Water] tiles>"]
+					"Doesn't generate naturally <in [{Grassland} {Fresh Water}] tiles>"]
 	},
 	{
 		"name": "Whales",
@@ -445,11 +445,11 @@
 					"Generated with weight [20] <in [Grassland] Regions>",
 					"Generated with weight [20] <in [Hybrid] Regions>",
 					"Generated near City States with weight [10]",
-					"Doesn't generate naturally <in [Grassland] [Fresh Water] tiles>",
+					"Doesn't generate naturally <in [{Grassland} {Fresh Water}] tiles>",
 					"Doesn't generate naturally <in [Jungle] tiles> <in tiles without [Hill]>",
 					"Doesn't generate naturally <in [Forest] tiles> <in tiles without [Hill]> <in tiles without [Tundra]>"]
 	},
-	/* 
+	/*
 	{
 		"name": "Cocoa",
 		"resourceType": "Luxury",
@@ -490,7 +490,7 @@
 					"Generated with weight [25] <in [Plains] Regions>",
 					"Generated with weight [15] <in [Hybrid] Regions>",
 					"Generated near City States with weight [10]",
-					"Doesn't generate naturally <in [Forest] [Hill] tiles>"]
+					"Doesn't generate naturally <in [{Forest} {Hill}] tiles>"]
 	},
 	{
 		"name": "Truffles",
@@ -505,7 +505,7 @@
 					"Generated with weight [5] <in [Grassland] Regions>",
 					"Generated with weight [10] <in [Hybrid] Regions>",
 					"Generated near City States with weight [15]",
-					"Doesn't generate naturally <in [Forest] [Hill] tiles>",
-					"Doesn't generate naturally <in [Tundra] [Forest] tiles>"]
+					"Doesn't generate naturally <in [{Forest} {Hill}] tiles>",
+					"Doesn't generate naturally <in [{Tundra} {Forest}] tiles>"]
 	}
 ]

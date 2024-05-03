@@ -153,7 +153,7 @@ class CivConstructions : IsPartOfGameInfoSerialization {
         // "Gain a free [buildingName] [cityFilter]"
         val freeBuildingsFromCiv = civInfo.getMatchingUniques(UniqueType.GainFreeBuildings, StateForConditionals.IgnoreConditionals)
         for (city in civInfo.cities) {
-            val freeBuildingsFromCity = city.getMatchingLocalOnlyUniques(UniqueType.GainFreeBuildings, StateForConditionals.IgnoreConditionals)
+            val freeBuildingsFromCity = city.getLocalMatchingUniques(UniqueType.GainFreeBuildings, StateForConditionals.IgnoreConditionals)
             val freeBuildingUniques = (freeBuildingsFromCiv + freeBuildingsFromCity)
                 .filter { city.matchesFilter(it.params[1]) && it.conditionalsApply(StateForConditionals(city.civ, city))
                     && !it.hasTriggerConditional() }

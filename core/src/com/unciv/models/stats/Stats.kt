@@ -185,6 +185,13 @@ open class Stats(
         }
     }
 
+    /** Return a string of just +/- value and Stat symbol*/
+    fun toStringOnlyIcons(addPlusSign: Boolean = true): String {
+        return this.joinToString {
+            (if (addPlusSign && it.value > 0) "+" else "") + it.value.toInt() + " " + it.key.character
+        }
+    }
+
     /** Represents one [key][Stat]/[value][Float] pair returned by the [iterator] */
     data class StatValuePair (val key: Stat, val value: Float)
 

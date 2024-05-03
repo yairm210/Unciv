@@ -96,10 +96,9 @@ class UnitMovement(val unit: MapUnit) {
             val damageFreePath = getShortestPath(destination, true)
             if (damageFreePath.isNotEmpty()) return damageFreePath
         }
-        if (unit.baseUnit.isWaterUnit()
-            && destination.neighbors.none { isUnknownTileWeShouldAssumeToBePassable(it) || it.isWater }) {
-            // edge case where this unit is a boat and all of the tiles around the destination are
-            // explored and known to be land so we know a priori that no path exists
+        if (destination.neighbors.none { isUnknownTileWeShouldAssumeToBePassable(it) || canPassThrough(it) }) {
+            // edge case where this all of the tiles around the destination are
+            // explored and known the unit can't pass through any of thoes tiles so we know a priori that no path exists
             pathfindingCache.setShortestPathCache(destination, listOf())
             return listOf()
         }
@@ -249,21 +248,27 @@ class UnitMovement(val unit: MapUnit) {
     }
 
     /** This is performance-heavy - use as last resort, only after checking everything else!
-     * Also note that REACHABLE tiles are not necessarily tiles that the unit CAN ENTER */
-    fun canReach(destination: Tile): Boolean {
-        if (unit.cache.cannotMove) return destination == unit.getTile()
-        if (unit.baseUnit.movesLikeAirUnits() || unit.isPreparingParadrop())
-            return canReachInCurrentTurn(destination)
-        return getShortestPath(destination).any()
+     *  Also note that REACHABLE tiles are not necessarily tiles that the unit CAN ENTER
+     *  @see canReachInCurrentTurn
+     */
+    fun canReach(destination: Tile) = canReachCommon(destination) {
+        getShortestPath(it).any()
     }
 
-    fun canReachInCurrentTurn(destination: Tile): Boolean {
-        if (unit.cache.cannotMove) return destination == unit.getTile()
-        if (unit.baseUnit.movesLikeAirUnits())
-            return unit.currentTile.aerialDistanceTo(destination) <= unit.getMaxMovementForAirUnits()
-        if (unit.isPreparingParadrop())
-            return unit.currentTile.aerialDistanceTo(destination) <= unit.cache.paradropRange && canParadropOn(destination)
-        return getDistanceToTiles().containsKey(destination)
+    /** Cached and thus not as performance-heavy as [canReach] */
+    fun canReachInCurrentTurn(destination: Tile) = canReachCommon(destination) {
+        getDistanceToTiles().containsKey(it)
+    }
+
+    private inline fun canReachCommon(destination: Tile, specificFunction: (Tile) -> Boolean) = when {
+        unit.cache.cannotMove ->
+            destination == unit.getTile()
+        unit.baseUnit.movesLikeAirUnits() ->
+            unit.currentTile.aerialDistanceTo(destination) <= unit.getMaxMovementForAirUnits()
+        unit.isPreparingParadrop() ->
+            unit.currentTile.aerialDistanceTo(destination) <= unit.cache.paradropRange && canParadropOn(destination)
+        else ->
+            specificFunction(destination)  // Note: Could pass destination as implicit closure from outer fun to lambda, but explicit is clearer
     }
 
     /**
@@ -433,7 +438,6 @@ class UnitMovement(val unit: MapUnit) {
         var previousTile = unit.getTile()
         var passingMovementSpent = 0f // Movement points spent since last tile we could end our turn on
 
-        unit.removeFromTile()
 
         for (tile in pathToLastReachableTile) {
             if (!unit.movement.canPassThrough(tile)) {
@@ -445,7 +449,6 @@ class UnitMovement(val unit: MapUnit) {
                 needToFindNewRoute = true
                 break // If you ever remove this break, remove the `assumeCanPassThrough` param below
             }
-            unit.moveThroughTile(tile)
 
             // This fixes a bug where tiles in the fog of war would always only cost 1 mp
             if (!unit.civ.gameInfo.gameParameters.godMode)
@@ -456,6 +459,14 @@ class UnitMovement(val unit: MapUnit) {
             if (unit.movement.canMoveTo(tile, assumeCanPassThrough = true)) {
                 lastReachedEnterableTile = tile
                 unit.useMovementPoints(passingMovementSpent)
+                unit.removeFromTile()
+                unit.putInTile(tile) // Required for ruins,
+
+                if (escortUnit != null) {
+                    escortUnit.movement.moveToTile(tile)
+                    unit.startEscorting() // Need to re-apply this
+                }
+
                 passingMovementSpent = 0f
             }
 
@@ -474,9 +485,6 @@ class UnitMovement(val unit: MapUnit) {
             unit.currentMovement = 0f
 
 
-        if (!unit.isDestroyed)
-            unit.putInTile(finalTileReached)
-
         // The .toList() here is because we have a sequence that's running on the units in the tile,
         // then if we move one of the units we'll get a ConcurrentModificationException, se we save them all to a list
         val payloadUnits = origin.getUnits().filter { it.isTransported && unit.canTransport(it) }.toList()
@@ -490,10 +498,6 @@ class UnitMovement(val unit: MapUnit) {
             payload.putInTile(finalTileReached)
             payload.isTransported = true // restore the flag to not leave the payload in the city
             payload.mostRecentMoveType = UnitMovementMemoryType.UnitMoved
-        }
-        if (escortUnit != null) {
-            escortUnit.movement.moveToTile(finalTileReached)
-            unit.startEscorting() // Need to re-apply this
         }
 
         // Unit maintenance changed
@@ -690,8 +694,8 @@ class UnitMovement(val unit: MapUnit) {
         considerZoneOfControl: Boolean = true,
         passThroughCache: HashMap<Tile, Boolean> = HashMap(),
         movementCostCache: HashMap<Pair<Tile, Tile>, Float> = HashMap(),
-        includeOtherEscortUnit: Boolean = true)
-        : PathsToTilesWithinTurn {
+        includeOtherEscortUnit: Boolean = true
+    ): PathsToTilesWithinTurn {
         val cacheResults = pathfindingCache.getDistanceToTiles(considerZoneOfControl)
         if (cacheResults != null) {
             return cacheResults

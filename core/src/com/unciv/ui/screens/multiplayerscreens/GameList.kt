@@ -10,8 +10,6 @@ import com.unciv.UncivGame
 import com.unciv.logic.GameInfoPreview
 import com.unciv.logic.event.EventBus
 import com.unciv.logic.multiplayer.HasMultiplayerGameName
-import com.unciv.logic.multiplayer.MultiplayerGameAdded
-import com.unciv.logic.multiplayer.MultiplayerGameDeleted
 import com.unciv.logic.multiplayer.MultiplayerGameNameChanged
 import com.unciv.logic.multiplayer.MultiplayerGameUpdateEnded
 import com.unciv.logic.multiplayer.MultiplayerGameUpdateFailed
@@ -25,7 +23,7 @@ import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.extensions.setSize
 
 class GameList(
-    onSelected: (String) -> Unit
+    val onSelected: (String) -> Unit
 ) : VerticalGroup() {
 
     private val gameDisplays = mutableMapOf<String, GameDisplay>()
@@ -36,33 +34,21 @@ class GameList(
         padTop(10f)
         padBottom(10f)
 
-        events.receive(MultiplayerGameAdded::class) {
-            val multiplayerGame = UncivGame.Current.onlineMultiplayer.getGameByName(it.name)
-            if (multiplayerGame == null) return@receive
-            addGame(it.name, multiplayerGame.preview, multiplayerGame.error, onSelected)
-        }
         events.receive(MultiplayerGameNameChanged::class) {
-            val gameDisplay = gameDisplays.remove(it.name)
-            if (gameDisplay == null) return@receive
-            gameDisplay.changeName(it.newName)
-            gameDisplays[it.newName] = gameDisplay
-            children.sort()
-        }
-        events.receive(MultiplayerGameDeleted::class) {
-            val gameDisplay = gameDisplays.remove(it.name)
-            if (gameDisplay == null) return@receive
-            gameDisplay.remove()
+            update()
         }
 
-        for (game in UncivGame.Current.onlineMultiplayer.games) {
-            addGame(game.name, game.preview, game.error, onSelected)
-        }
+        update()
     }
 
-    private fun addGame(name: String, preview: GameInfoPreview?, error: Exception?, onSelected: (String) -> Unit) {
-        val gameDisplay = GameDisplay(name, preview, error, onSelected)
-        gameDisplays[name] = gameDisplay
-        addActor(gameDisplay)
+    fun update(){
+        clearChildren()
+        gameDisplays.clear()
+        for (game in UncivGame.Current.onlineMultiplayer.games) {
+            val gameDisplay = GameDisplay(game.name, game.preview, game.error, onSelected)
+            gameDisplays[game.name] = gameDisplay
+            addActor(gameDisplay)
+        }
         children.sort()
     }
 }
@@ -109,11 +95,6 @@ private class GameDisplay(
         events.receive(MultiplayerGameUpdateFailed::class, isOurGame) {
             updateErrorIndicator(true)
         }
-    }
-
-    fun changeName(newName: String) {
-        gameName = newName
-        gameButton.setText(newName)
     }
 
     private fun updateTurnIndicator() {

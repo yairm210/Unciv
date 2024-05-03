@@ -2,6 +2,7 @@ package com.unciv.models.ruleset.tile
 
 import com.badlogic.gdx.graphics.Color
 import com.unciv.Constants
+import com.unciv.logic.MultiFilter
 import com.unciv.models.ruleset.Belief
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetStatsObject
@@ -141,6 +142,34 @@ class Terrain : RulesetStatsObject() {
         }
 
         return textList
+    }
+
+    /** Terrain filter matching is "pure" - input always returns same output, and it's called a bajillion times */
+    val cachedMatchesFilterResult = HashMap<String, Boolean>()
+
+    fun matchesFilter(filter: String): Boolean {
+        val cachedAnswer = cachedMatchesFilterResult[filter]
+        if (cachedAnswer != null) return cachedAnswer
+        val newAnswer = MultiFilter.multiFilter(filter, { matchesSingleFilter(it) })
+        cachedMatchesFilterResult[filter] = newAnswer
+        return newAnswer
+    }
+
+    /** Implements [UniqueParameterType.TerrainFilter][com.unciv.models.ruleset.unique.UniqueParameterType.TerrainFilter] */
+    fun matchesSingleFilter(filter: String): Boolean {
+        return when (filter) {
+            in Constants.all -> true
+            name -> true
+            "Terrain" -> true
+            in Constants.all -> true
+            "Open terrain" -> !isRough()
+            "Rough terrain" -> isRough()
+            type.name -> true
+            "Natural Wonder" -> type == TerrainType.NaturalWonder
+            "Terrain Feature" -> type == TerrainType.TerrainFeature
+
+            else -> uniques.contains(filter)
+        }
     }
 
     fun setTransients() {

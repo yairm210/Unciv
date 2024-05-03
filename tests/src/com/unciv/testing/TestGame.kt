@@ -133,7 +133,7 @@ class TestGame {
         val civInfo = Civilization()
         civInfo.nation = nation
         civInfo.gameInfo = gameInfo
-        civInfo.civName = nation.name
+        civInfo.setNameForUnitTests(nation.name)
         if (isPlayer) civInfo.playerType = PlayerType.Human
         civInfo.setTransients()
 

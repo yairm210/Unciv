@@ -389,16 +389,17 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
             // Automation done here
             TurnManager(player).automateTurn()
 
+            val worldScreen = UncivGame.Current.worldScreen
             // Do we need to break if player won?
             if (simulateUntilWin && player.victoryManager.hasWon()) {
                 simulateUntilWin = false
-                UncivGame.Current.settings.autoPlay.stopAutoPlay()
+                worldScreen?.autoPlay?.stopAutoPlay()
                 break
             }
 
             // Do we need to stop AutoPlay?
-            if (UncivGame.Current.settings.autoPlay.isAutoPlaying() && player.victoryManager.hasWon() && !oneMoreTurnMode)
-                UncivGame.Current.settings.autoPlay.stopAutoPlay()
+            if (worldScreen != null && worldScreen.autoPlay.isAutoPlaying() && player.victoryManager.hasWon() && !oneMoreTurnMode)
+                worldScreen.autoPlay.stopAutoPlay()
 
             // Clean up
             TurnManager(player).endTurn(progressBar)
@@ -621,6 +622,9 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
         for (baseUnit in ruleset.units.values)
             baseUnit.ruleset = ruleset
 
+        for (building in ruleset.buildings.values)
+            building.ruleset = ruleset
+
         // This needs to go before tileMap.setTransients, as units need to access
         // the nation of their civilization when setting transients
         for (civInfo in civilizations) civInfo.gameInfo = this
@@ -649,6 +653,9 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
 
         for (civInfo in civilizations) civInfo.setTransients()
         tileMap.setNeutralTransients() // has to happen after civInfo.setTransients() sets owningCity
+
+        for (civInfo in civilizations) // Due to religion victory, has to happen after civInfo.religionManager is set for all civs
+            civInfo.thingsToFocusOnForVictory = civInfo.getPreferredVictoryTypeObjects().flatMap { it.getThingsToFocus(civInfo) }.toSet()
 
         convertFortify()
 

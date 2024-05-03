@@ -72,6 +72,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Triggerable
 
+??? example  "Remove [policy]"
+	Example: "Remove [Oligarchy]"
+
+	Applicable to: Triggerable
+
 ??? example  "Free Technology"
 	Applicable to: Triggerable
 
@@ -137,6 +142,12 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "Triggers the following global alert: [comment]"
 	Example: "Triggers the following global alert: [comment]"
 
+	Applicable to: Triggerable
+
+??? example  "Promotes all spies"
+	Applicable to: Triggerable
+
+??? example  "Gain an extra spy"
 	Applicable to: Triggerable
 
 ??? example  "Turn this tile into a [terrainName] tile"
@@ -550,7 +561,9 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Global
 
-??? example  "100 Gold for discovering a Natural Wonder (bonus enhanced to 500 Gold if first to discover it)"
+??? example  "[stats] for discovering a Natural Wonder (bonus enhanced to [stats] if first to discover it)"
+	Example: "[+1 Gold, +2 Production] for discovering a Natural Wonder (bonus enhanced to [+1 Gold, +2 Production] if first to discover it)"
+
 	Applicable to: Global
 
 ??? example  "[relativeAmount]% Great Person generation [cityFilter]"
@@ -748,6 +761,16 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 ??? example  "[relativeAmount]% Faith cost of generating Great Prophet equivalents"
 	Example: "[+20]% Faith cost of generating Great Prophet equivalents"
+
+	Applicable to: Global
+
+??? example  "[relativeAmount]% spy effectiveness [cityFilter]"
+	Example: "[+20]% spy effectiveness [in all cities]"
+
+	Applicable to: Global
+
+??? example  "[relativeAmount]% enemy spy effectiveness [cityFilter]"
+	Example: "[+20]% enemy spy effectiveness [in all cities]"
 
 	Applicable to: Global
 
@@ -983,9 +1006,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Tech
 
 ??? example  "Only available"
+	Meant to be used together with conditionals, like "Only available <after adopting [policy]> <while the empire is happy>". Only allows Building when ALL conditionals are met. Will also block Upgrade and Transform actions. See also CanOnlyBeBuiltWhen
 	Applicable to: Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, Promotion, Improvement, Ruins
 
 ??? example  "Unavailable"
+	Meant to be used together with conditionals, like "Unavailable <after generating a Great Prophet>".
 	Applicable to: Tech, Policy, Building, Unit, Promotion, Improvement, Ruins
 
 ??? example  "Cannot be hurried"
@@ -1033,6 +1058,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Building, Unit, Improvement
 
 ??? example  "Unbuildable"
+	Blocks from being built, possibly by conditional. However it can still appear in the menu and be bought with other means such as Gold or Faith
 	Applicable to: Building, Unit, Improvement
 
 ??? example  "Cannot be purchased"
@@ -1088,10 +1114,9 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Building, Unit
 
-??? example  "Can only be built [cityFilter]"
-	Example: "Can only be built [in all cities]"
-
-	Applicable to: Building
+??? example  "Can only be built"
+	Meant to be used together with conditionals, like "Can only be built <after adopting [policy]> <while the empire is happy>". Only allows Building when ALL conditionals are met. Will also NOT block Upgrade and Transform actions. See also OnlyAvailable.
+	Applicable to: Building, Unit
 
 ??? example  "Must have an owned [tileFilter] within [amount] tiles"
 	Example: "Must have an owned [Farm] within [3] tiles"
@@ -1167,6 +1192,9 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "Hidden when religion is disabled"
 	Applicable to: Building, Unit, Ruins, Tutorial
 
+??? example  "Hidden when espionage is disabled"
+	Applicable to: Building
+
 ??? example  "Hidden when [victoryType] Victory is disabled"
 	Example: "Hidden when [Domination] Victory is disabled"
 
@@ -1195,6 +1223,12 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: UnitAction
 
 ??? example  "May enhance a religion"
+	Applicable to: UnitAction
+
+??? example  "Can transform to [unit]"
+	By default consumes all movement
+	Example: "Can transform to [Musketman]"
+
 	Applicable to: UnitAction
 
 ## Unit uniques
@@ -1243,11 +1277,6 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 ??? example  "Can undertake a trade mission with City-State, giving a large sum of gold and [amount] Influence"
 	Example: "Can undertake a trade mission with City-State, giving a large sum of gold and [3] Influence"
-
-	Applicable to: Unit
-
-??? example  "Can transform to [unit]"
-	Example: "Can transform to [Musketman]"
 
 	Applicable to: Unit
 
@@ -1547,7 +1576,9 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Terrain
 
-??? example  "Grants 500 Gold to the first civilization to discover it"
+??? example  "Grants [stats] to the first civilization to discover it"
+	Example: "Grants [+1 Gold, +2 Production] to the first civilization to discover it"
+
 	Applicable to: Terrain
 
 ??? example  "Units ending their turn on this terrain take [amount] damage"
@@ -2233,6 +2264,31 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Conditional
 
+??? example  "&lt;when number of [countable] is equal to [countable]&gt;"
+	Example: "&lt;when number of [1000] is equal to [1000]&gt;"
+
+	Applicable to: Conditional
+
+??? example  "&lt;when number of [countable] is different than [countable]&gt;"
+	Example: "&lt;when number of [1000] is different than [1000]&gt;"
+
+	Applicable to: Conditional
+
+??? example  "&lt;when number of [countable] is greater than [countable]&gt;"
+	Example: "&lt;when number of [1000] is greater than [1000]&gt;"
+
+	Applicable to: Conditional
+
+??? example  "&lt;when number of [countable] is less than [countable]&gt;"
+	Example: "&lt;when number of [1000] is less than [1000]&gt;"
+
+	Applicable to: Conditional
+
+??? example  "&lt;when number of [countable] is between [countable] and [countable]&gt;"
+	Example: "&lt;when number of [1000] is between [1000] and [1000]&gt;"
+
+	Applicable to: Conditional
+
 ## TriggerCondition uniques
 !!! note ""
 
@@ -2246,6 +2302,9 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "&lt;upon entering the [era]&gt;"
 	Example: "&lt;upon entering the [Ancient era]&gt;"
 
+	Applicable to: TriggerCondition
+
+??? example  "&lt;upon entering a new era&gt;"
 	Applicable to: TriggerCondition
 
 ??? example  "&lt;upon adopting [policy/belief]&gt;"
@@ -2346,7 +2405,30 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: UnitActionModifier
 
 ??? example  "&lt;for [amount] movement&gt;"
+	Will consume up to [amount] of Movement to execute
 	Example: "&lt;for [3] movement&gt;"
+
+	Applicable to: UnitActionModifier
+
+??? example  "&lt;for all movement&gt;"
+	Will consume all Movement to execute
+	Applicable to: UnitActionModifier
+
+??? example  "&lt;requires [amount] movement&gt;"
+	Requires [amount] of Movement to execute. Unit's Movement is rounded up
+	Example: "&lt;requires [3] movement&gt;"
+
+	Applicable to: UnitActionModifier
+
+??? example  "&lt;costs [stats] stats&gt;"
+	A positive Integer value will be subtracted from your stock. Food and Production will be removed from Closest City's current stock
+	Example: "&lt;costs [+1 Gold, +2 Production] stats&gt;"
+
+	Applicable to: UnitActionModifier
+
+??? example  "&lt;costs [amount] [stockpiledResource]&gt;"
+	A positive Integer value will be subtracted from your stock.
+	Example: "&lt;costs [3] [StockpiledResource]&gt;"
 
 	Applicable to: UnitActionModifier
 
@@ -2383,6 +2465,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 *[civWideStat]: All the following stats have civ-wide fields: `Gold`, `Science`, `Culture`, `Faith`.
 *[combatantFilter]: This indicates a combatant, which can either be a unit or a city (when bombarding). Must either be `City` or a `mapUnitFilter`.
 *[costOrStrength]: `Cost` or `Strength`.
+*[countable]: This indicate a number or a numeric variable.
 *[era]: The name of any era.
 *[event]: The name of any event.
 *[foundingOrEnhancing]: `founding` or `enhancing`.
@@ -2390,6 +2473,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 *[improvementName]: The name of any improvement.
 *[modFilter]: A Mod name, case-sensitive _or_ a simple wildcard filter beginning and ending in an Asterisk, case-insensitive.
 *[policy]: The name of any policy.
+*[policyFilter]: The name of any policy.
 *[positiveAmount]: This indicates a positive whole number, larger than zero, a '+' sign is optional.
 *[promotion]: The name of any promotion.
 *[relativeAmount]: This indicates a number, usually with a + or - sign, such as `+25` (this kind of parameter is often followed by '%' which is nevertheless not part of the value).

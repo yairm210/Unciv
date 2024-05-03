@@ -272,8 +272,7 @@ class QuestManager : IsPartOfGameInfoSerialization {
         winnersAndLosers.winners.forEach { giveReward(it) }
         winnersAndLosers.losers.forEach { notifyExpired(it, winnersAndLosers.winners) }
 
-        assignedQuests.removeAll(winnersAndLosers.winners)
-        assignedQuests.removeAll(winnersAndLosers.losers)
+        assignedQuests.removeAll { it.questNameInstance == questName }  // removing winners then losers would leave those with score 0
     }
 
     private fun handleIndividualQuests() {

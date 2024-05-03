@@ -1,3 +1,5 @@
+@file:Suppress("UNUSED_VARIABLE")  // These are tests and the names serve readability
+
 package com.unciv.logic.map
 
 import com.badlogic.gdx.math.Vector2
@@ -36,7 +38,7 @@ class UpgradeTests {
 
         Assert.assertTrue("Unit should upgrade to special unit, not warrior", unit1.baseUnit == unitToUpgradeTo)
     }
-    
+
     @Test
     fun ruinsUpgradeToNormalUnitWithoutUnique() {
         val unitToUpgradeTo = testGame.createBaseUnit()
@@ -102,7 +104,7 @@ class UpgradeTests {
 
         val civ = testGame.addCiv()
         testGame.addCity(civ, testGame.getTile(Vector2.Zero)) // We need to own the tile to be able to upgrade here
-        
+
         val unit1 = testGame.addUnit(testUnit.name, civ, testGame.getTile(Vector2.Zero))
         var upgradeActions = UnitActionsUpgrade.getUpgradeActionAnywhere(unit1)
 

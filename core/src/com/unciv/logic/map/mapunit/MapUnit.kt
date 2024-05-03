@@ -7,6 +7,7 @@ import com.unciv.logic.MultiFilter
 import com.unciv.logic.automation.unit.UnitAutomation
 import com.unciv.logic.battle.BattleUnitCapture
 import com.unciv.logic.battle.MapUnitCombatant
+import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
@@ -203,6 +204,10 @@ class MapUnit : IsPartOfGameInfoSerialization {
         DecimalFormat("0.#").format(currentMovement.toDouble()) + "/" + getMaxMovement()
 
     fun getTile(): Tile = currentTile
+
+    fun getClosestCity(): City? = civ.cities.minByOrNull {
+        it.getCenterTile().aerialDistanceTo(currentTile)
+    }
 
     fun isMilitary() = baseUnit.isMilitary()
     fun isCivilian() = baseUnit.isCivilian()
@@ -558,7 +563,10 @@ class MapUnit : IsPartOfGameInfoSerialization {
             && tile.improvementInProgress != improvement.name
         ) return false
         val buildImprovementUniques = getMatchingUniques(UniqueType.BuildImprovements)
-        if (tile.improvementInProgress == Constants.repair && buildImprovementUniques.any()) return true
+        if (tile.improvementInProgress == Constants.repair) {
+            if (tile.isEnemyTerritory(civ)) return false
+            return buildImprovementUniques.any()
+        }
         return buildImprovementUniques
             .any { improvement.matchesFilter(it.params[0]) || tile.matchesTerrainFilter(it.params[0]) }
     }
@@ -645,7 +653,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
         val oldViewableTiles = viewableTiles
 
         viewableTiles = when {
-            hasUnique(UniqueType.NoSight) -> hashSetOf()
+            hasUnique(UniqueType.NoSight) -> hashSetOf(getTile()) // 0 sight distance still means we can see the Tile we're in
             hasUnique(UniqueType.CanSeeOverObstacles) ->
                 getTile().getTilesInDistance(getVisibilityRange()).toHashSet() // it's that simple
             else -> getTile().getViewableTilesList(getVisibilityRange()).toHashSet()
@@ -832,10 +840,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
         // The improvement may get removed if it has ruins effects or is a barbarian camp, and will still be needed if removed
         val improvement = tile.improvement
 
-        if (civ.isMajorCiv()
-            && improvement != null
-            && tile.ruleset.tileImprovements[improvement]!!.isAncientRuinsEquivalent()
-        ) {
+        if (civ.isMajorCiv() && tile.getTileImprovement()?.isAncientRuinsEquivalent() == true) {
             getAncientRuinBonus(tile)
         }
         if (improvement == Constants.barbarianEncampment && !civ.isBarbarian())
@@ -948,12 +953,19 @@ class MapUnit : IsPartOfGameInfoSerialization {
         civ.ruinsManager.selectNextRuinsReward(this)
     }
 
+    /** Assigns ownership to [civInfo], updating its [unit manager][Civilization.units] and our [cache].
+     *
+     *  Used during game load to rebuild the transient `UnitManager.unitList` from Tile data.
+     *  Cannot be used to reassign from one civ to another - doesn't remove from old owner.
+     */
     fun assignOwner(civInfo: Civilization, updateCivInfo: Boolean = true) {
         owner = civInfo.civName
         this.civ = civInfo
         civInfo.units.addUnit(this, updateCivInfo)
+        // commit named "Fixed game load": GameInfo.setTransients code flow and dependency requirements
+        // may lead to this being called before our own setTransients
         if (::baseUnit.isInitialized)
-        cache.updateUniques()
+            cache.updateUniques()
     }
 
     fun capturedBy(captor: Civilization) {
