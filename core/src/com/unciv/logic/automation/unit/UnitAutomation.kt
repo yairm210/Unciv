@@ -3,6 +3,7 @@ package com.unciv.logic.automation.unit
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.automation.Automation
+import com.unciv.logic.automation.civilization.NextTurnAutomation
 import com.unciv.logic.battle.Battle
 import com.unciv.logic.battle.BattleDamage
 import com.unciv.logic.battle.CityCombatant
@@ -11,6 +12,7 @@ import com.unciv.logic.battle.MapUnitCombatant
 import com.unciv.logic.battle.TargetHelper
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.NotificationCategory
+import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
@@ -246,6 +248,8 @@ object UnitAutomation {
         if (tryHeadTowardsEncampment(unit)) return
 
         if (unit.health < 100 && tryHealUnit(unit)) return
+
+        if (tryPrepare(unit)) return
 
         // else, try to go to unreached tiles
         if (tryExplore(unit)) return
@@ -488,6 +492,18 @@ object UnitAutomation {
 
         if (closestEnemy != null) {
             unit.movement.headTowards(closestEnemy.tileToAttackFrom)
+            return true
+        }
+        return false
+    }
+
+    private fun tryPrepare(unit: MapUnit): Boolean {
+        val civInfo = unit.civ
+        val hostileCivs = civInfo.getKnownCivs().filter { it.isAtWarWith(civInfo) || it.getDiplomacyManager(civInfo).hasFlag(DiplomacyFlags.Denunciation) }
+        val citiesToDefend = hostileCivs.mapNotNull() { NextTurnAutomation.getClosestCities(civInfo, it) }
+        val cityToMoveTo = citiesToDefend.minByOrNull { unit.getTile().aerialDistanceTo(it.city1.getCenterTile()) }
+        if (cityToMoveTo != null) {
+            unit.movement.headTowards(cityToMoveTo.city1.getCenterTile());
             return true
         }
         return false
