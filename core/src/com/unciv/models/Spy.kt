@@ -43,12 +43,13 @@ class Spy() : IsPartOfGameInfoSerialization {
     @Transient
     private lateinit var espionageManager: EspionageManager
 
-    constructor(name: String) : this() {
+    constructor(name: String, rank:Int) : this() {
         this.name = name
+        this.rank = rank
     }
 
     fun clone(): Spy {
-        val toReturn = Spy(name)
+        val toReturn = Spy(name, rank)
         toReturn.location = location
         toReturn.action = action
         toReturn.turnsRemainingForAction = turnsRemainingForAction
@@ -125,6 +126,7 @@ class Spy() : IsPartOfGameInfoSerialization {
                 val oldSpyName = name
                 name = espionageManager.getSpyName()
                 action = SpyAction.None
+                rank = espionageManager.getStartingSpyRank()
                 civInfo.addNotification("We have recruited a new spy name [$name] after [$oldSpyName] was killed.",
                     NotificationCategory.Espionage, NotificationIcon.Spy)
             }
