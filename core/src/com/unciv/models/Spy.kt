@@ -50,7 +50,6 @@ class Spy() : IsPartOfGameInfoSerialization {
     fun clone(): Spy {
         val toReturn = Spy(name)
         toReturn.location = location
-        toReturn.rank = rank
         toReturn.action = action
         toReturn.turnsRemainingForAction = turnsRemainingForAction
         toReturn.progressTowardsStealingTech = progressTowardsStealingTech
