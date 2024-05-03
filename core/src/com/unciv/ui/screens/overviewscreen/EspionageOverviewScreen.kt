@@ -101,7 +101,7 @@ class EspionageOverviewScreen(val civInfo: Civilization, val worldScreen: WorldS
                         || (city.civ != civInfo && !city.espionage.hasSpyOf(civInfo))
                 }
             }
-            if (!worldScreen.canChangeState) {
+            if (!worldScreen.canChangeState || !spy.isAlive()) {
                 // Spectators aren't allowed to move the spies of the Civs they are viewing
                 moveSpyButton.disable()
             }
