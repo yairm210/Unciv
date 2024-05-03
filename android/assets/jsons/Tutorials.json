@@ -192,6 +192,17 @@
     ]
   },
   {
+    "name": "Wars",
+    "steps": [
+        "There are multiple ways to declare war, some ways give less diplomatic repercussions than others.",
+        "The first type of war is the surprise war. This occurs when a war is declared with no warning and has massive diplomatic penalties.",
+        "The second type of war is the formal war. This is available after denouncing  the other civ, waiting 5 turns, and then declaring the war. This has much less diplomatic penalties",
+        "Watch out for civilizations that have denounced you, they may declare war on you in a few turns.",
+        "The third type of war is to join an ally. To do this go into your trades tab and offer to join one of their wars.",
+        "Nuking a civilization will immediately declare a suprise war on them so be careful!"
+    ]
+  },
+  {
     "name": "Research Agreements",
     "steps": [
 	"In research agreements, you and another civilization decide to jointly research technology.\nAt the end of the agreement, you will both receive a 'lump sum' of Science, which will go towards one of your unresearched technologies.",
