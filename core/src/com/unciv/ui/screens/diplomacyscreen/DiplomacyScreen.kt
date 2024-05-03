@@ -8,9 +8,11 @@ import com.badlogic.gdx.utils.Align
 import com.unciv.GUI
 import com.unciv.UncivGame
 import com.unciv.logic.civilization.Civilization
+import com.unciv.logic.civilization.diplomacy.DeclareWarType
 import com.unciv.logic.civilization.diplomacy.DiplomacyManager
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
+import com.unciv.logic.civilization.diplomacy.WarType
 import com.unciv.logic.trade.Trade
 import com.unciv.models.translations.tr
 import com.unciv.ui.audio.MusicMood
@@ -259,7 +261,12 @@ class DiplomacyScreen(
         }
         declareWarButton.onClick {
             ConfirmPopup(this, getDeclareWarButtonText(otherCiv), "Declare war") {
-                diplomacyManager.declareWar()
+                // If we have denounced the other civ for 5 turns or more we can declare a formal war instead of a suprise war
+                if (diplomacyManager.canDeclareFormalWar()) {
+                    diplomacyManager.declareWar(DeclareWarType(WarType.FormalWar))
+                } else {
+                    diplomacyManager.declareWar(DeclareWarType(WarType.SupriseWar))
+                }
                 setRightSideFlavorText(otherCiv, otherCiv.nation.attacked, "Very well.")
                 updateLeftSideTable(otherCiv)
                 val music = UncivGame.Current.musicController

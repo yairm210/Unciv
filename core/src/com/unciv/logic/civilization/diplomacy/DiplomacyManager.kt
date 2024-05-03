@@ -379,7 +379,11 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
 
     fun canDeclareWar() = turnsToPeaceTreaty() == 0 && diplomaticStatus != DiplomaticStatus.War
 
-    fun declareWar(declareWarReason: DeclareWarReason = DeclareWarReason(WarType.DirectWar)) = DeclareWar.declareWar(this, declareWarReason)
+    /** A civ can declare a formal war instead of a suprise war if they have denounced them for 5 turns. */
+    fun canDeclareFormalWar() = hasFlag(DiplomacyFlags.Denunciation) && getFlag(DiplomacyFlags.Denunciation) <= 25 && !otherCiv().isCityState()
+
+    /** Declares a war with the other civ. The diplimatic penalties depend on the [declareWarType] given. */
+    fun declareWar(declareWarType: DeclareWarType = DeclareWarType(WarType.SupriseWar)) = DeclareWar.declareWar(this, declareWarType)
 
     //Used for nuke
     fun canAttack() = turnsToPeaceTreaty() == 0

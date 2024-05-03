@@ -7,9 +7,11 @@ import com.unciv.logic.automation.civilization.MotivationToAttackAutomation.hasA
 import com.unciv.logic.civilization.AlertType
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.PopupAlert
+import com.unciv.logic.civilization.diplomacy.DeclareWarType
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
+import com.unciv.logic.civilization.diplomacy.WarType
 import com.unciv.logic.trade.TradeEvaluation
 import com.unciv.logic.trade.TradeLogic
 import com.unciv.logic.trade.TradeOffer
@@ -19,6 +21,7 @@ import com.unciv.models.ruleset.Victory
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.tr
 import com.unciv.ui.screens.victoryscreen.RankingType
+import kotlin.random.Random
 
 object DiplomacyAutomation {
 
@@ -264,8 +267,23 @@ object DiplomacyAutomation {
             .filter { hasAtLeastMotivationToAttack(civInfo, it, minMotivationToAttack) >= 20 }
             .maxByOrNull { it.getStatForRanking(RankingType.Score) }
 
-        if (civWithBestMotivationToAttack != null)
-            civInfo.getDiplomacyManager(civWithBestMotivationToAttack).declareWar()
+        if (civWithBestMotivationToAttack != null) {
+            val bestTargetDiplo = civInfo.getDiplomacyManager(civWithBestMotivationToAttack)
+            // If we have denounced the other civ for 5 turns or more we can declare a formal war instead of a suprise war
+            if (bestTargetDiplo.canDeclareFormalWar()) {
+                bestTargetDiplo.declareWar(DeclareWarType(WarType.FormalWar))
+            } else if (!bestTargetDiplo.hasFlag(DiplomacyFlags.Denunciation) || bestTargetDiplo.otherCiv().isCityState()) {
+                // 80% of the time we probably want to declare a formal war
+                // TODO: More robust logic for deciding this should be done in the future
+                // Maybe also put join war logic here
+                val randomSeed = civInfo.gameInfo.civilizations.indexOf(civInfo) + civInfo.gameInfo.civilizations.indexOf(bestTargetDiplo.otherCiv()) + 123f * civInfo.gameInfo.turns
+                if (Random(randomSeed.toInt()).nextInt(100) > 20) {
+                    bestTargetDiplo.denounce()
+                } else {
+                    bestTargetDiplo.declareWar(DeclareWarType(WarType.SupriseWar))
+                }
+            }
+        }
     }
 
 

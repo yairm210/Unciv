@@ -243,7 +243,7 @@ class DiplomacyManagerTests {
         meet(e, cityState)
         // we cannot be allied and simoultaneously having a city state declare indirect war on us
         cityState.getDiplomacyManager(e).addInfluence(31f)
-        cityState.getDiplomacyManager(e).declareWar(DeclareWarReason(WarType.DefensivePactWar, a))
+        cityState.getDiplomacyManager(e).declareWar(DeclareWarType(WarType.DefensivePactWar, a))
 
         // when
         e.getDiplomacyManager(cityState).makePeace()

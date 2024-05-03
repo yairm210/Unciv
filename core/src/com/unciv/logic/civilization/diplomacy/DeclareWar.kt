@@ -15,27 +15,27 @@ object DeclareWar {
     /** Declares war with the other civ in this diplomacy manager.
      * Handles all war effects and diplomatic changes with other civs and such.
      *
-     * @param declareWarReason Changes what sort of effects the war has depending on how it was initiated.
-     * If it was a direct attack put [WarType.DirectWar] for the following effects.
+     * @param declareWarType Changes what sort of effects the war has depending on how it was initiated.
+     * If it was a direct attack put [WarType.SupriseWar] or [WarType.FormalWar] for the following effects.
      * Influence with city states should only be set to -60
      * when they are attacked directly, not when their ally is attacked.
      * When @indirectCityStateAttack is set to true, we thus don't reset the influence with this city state.
      * Should only ever be set to true for calls originating from within this function.
      */
-    internal fun declareWar(diplomacyManager: DiplomacyManager, declareWarReason: DeclareWarReason) {
+    internal fun declareWar(diplomacyManager: DiplomacyManager, declareWarType: DeclareWarType) {
         val civInfo = diplomacyManager.civInfo
         val otherCiv = diplomacyManager.otherCiv()
         val otherCivDiplomacy = diplomacyManager.otherCivDiplomacy()
 
-        if (otherCiv.isCityState() && declareWarReason.warType == WarType.DirectWar)
+        if (otherCiv.isCityState() && (declareWarType.warType == WarType.SupriseWar || declareWarType.warType == WarType.FormalWar))
             handleCityStateDirectAttack(diplomacyManager)
 
-        notifyOfWar(diplomacyManager, declareWarReason)
+        notifyOfWar(diplomacyManager, declareWarType)
 
         onWarDeclared(diplomacyManager, true)
         onWarDeclared(otherCivDiplomacy, false)
 
-        changeOpinions(diplomacyManager, declareWarReason.warType)
+        changeOpinions(diplomacyManager, declareWarType.warType)
 
         breakTreaties(diplomacyManager)
 
@@ -63,12 +63,12 @@ object DeclareWar {
         }
     }
 
-    private fun notifyOfWar(diplomacyManager: DiplomacyManager, declareWarReason: DeclareWarReason) {
+    private fun notifyOfWar(diplomacyManager: DiplomacyManager, declareWarType: DeclareWarType) {
         val civInfo = diplomacyManager.civInfo
         val otherCiv = diplomacyManager.otherCiv()
 
-        when (declareWarReason.warType) {
-            WarType.DirectWar -> {
+        when (declareWarType.warType) {
+            WarType.SupriseWar, WarType.FormalWar -> {
                 otherCiv.popupAlerts.add(PopupAlert(AlertType.WarDeclaration, civInfo.civName))
 
                 otherCiv.addNotification("[${civInfo.civName}] has declared war on us!",
@@ -80,10 +80,10 @@ object DeclareWar {
                 }
             }
             WarType.DefensivePactWar, WarType.CityStateAllianceWar, WarType.JoinWar -> {
-                val allyCiv = declareWarReason.allyCiv!!
+                val allyCiv = declareWarType.allyCiv!!
                 otherCiv.popupAlerts.add(PopupAlert(AlertType.WarDeclaration, civInfo.civName))
-                val agressor = if (declareWarReason.warType == WarType.JoinWar) civInfo else otherCiv
-                val defender = if (declareWarReason.warType == WarType.JoinWar) otherCiv else civInfo
+                val agressor = if (declareWarType.warType == WarType.JoinWar) civInfo else otherCiv
+                val defender = if (declareWarType.warType == WarType.JoinWar) otherCiv else civInfo
 
                 defender.addNotification("[${agressor.civName}] has joined [${allyCiv.civName}] in the war against us!",
                     NotificationCategory.Diplomacy, NotificationIcon.War, agressor.civName)
@@ -149,12 +149,13 @@ object DeclareWar {
         otherCivDiplomacy.removeModifier(DiplomaticModifiers.ReturnedCapturedUnits)
 
         // Apply warmongering
-        if (warType == WarType.DirectWar || warType == WarType.JoinWar) {
+        if (warType == WarType.SupriseWar || warType == WarType.FormalWar || warType == WarType.JoinWar) {
+            val penalty = if (warType == WarType.SupriseWar) -20f else -5f
             for (thirdCiv in civInfo.getKnownCivs()) {
                 if (!thirdCiv.isAtWarWith(otherCiv))
                 // We don't want this modify to stack if there is a defensive pact
                     thirdCiv.getDiplomacyManager(civInfo)
-                        .addModifier(DiplomaticModifiers.WarMongerer, -5f)
+                        .addModifier(DiplomaticModifiers.WarMongerer, penalty)
             }
         }
 
@@ -273,7 +274,7 @@ object DeclareWar {
             val ally = ourDefensivePact.otherCiv()
             if (!civAtWarWith.knows(ally)) civAtWarWith.diplomacyFunctions.makeCivilizationsMeet(ally, true)
             // Have the aggressor declare war on the ally.
-            civAtWarWith.getDiplomacyManager(ally).declareWar(DeclareWarReason(WarType.DefensivePactWar, diplomacyManager.civInfo))
+            civAtWarWith.getDiplomacyManager(ally).declareWar(DeclareWarType(WarType.DefensivePactWar, diplomacyManager.civInfo))
         }
     }
 
@@ -286,20 +287,22 @@ object DeclareWar {
                 if (!thirdCiv.knows(civAtWarWith))
                     // Our city state ally has not met them yet, so they have to meet first
                     thirdCiv.diplomacyFunctions.makeCivilizationsMeet(civAtWarWith, warOnContact = true)
-                thirdCiv.getDiplomacyManager(civAtWarWith).declareWar(DeclareWarReason(WarType.CityStateAllianceWar, diplomacyManager.civInfo))
+                thirdCiv.getDiplomacyManager(civAtWarWith).declareWar(DeclareWarType(WarType.CityStateAllianceWar, diplomacyManager.civInfo))
             }
         }
     }
 }
 
 enum class WarType {
-    /** One civ declared war on the other. */
-    DirectWar,
+    /** One civ declared war on the other without denouncing. */
+    SupriseWar,
+    /** One civ denounced the other, waited and then declared war */
+    FormalWar,
     /** A city state has joined a war through it's alliance. */
     CityStateAllianceWar,
     /** A civilization has joined a war through it's defensive pact. */
     DefensivePactWar,
-    /** A civilization has joined a war through a trade. Has the same diplomatic repercussions as direct war.*/
+    /** A civilization has joined a war through a trade. Has the same diplomatic repercussions as [WarType.FormalWar].*/
     JoinWar,
 }
 
@@ -308,5 +311,5 @@ enum class WarType {
  * @param allyCiv If the given [WarType] is [WarType.CityStateAllianceWar], [WarType.DefensivePactWar] or [WarType.JoinWar]
  * the allyCiv needs to be given.
  */
-class DeclareWarReason(val warType: WarType, val allyCiv: Civilization? = null)
+class DeclareWarType(val warType: WarType, val allyCiv: Civilization? = null)
 

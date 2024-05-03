@@ -8,8 +8,10 @@ import com.unciv.logic.civilization.CivilopediaAction
 import com.unciv.logic.civilization.LocationAction
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
+import com.unciv.logic.civilization.diplomacy.DeclareWarType
 import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
+import com.unciv.logic.civilization.diplomacy.WarType
 import com.unciv.logic.map.tile.RoadStatus
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.unique.UniqueType
@@ -161,7 +163,7 @@ object Nuke {
                 && civSuffered.knows(attackingCiv)
                 && civSuffered.getDiplomacyManager(attackingCiv).diplomaticStatus != DiplomaticStatus.War
             ) {
-                attackingCiv.getDiplomacyManager(civSuffered).declareWar()
+                attackingCiv.getDiplomacyManager(civSuffered).declareWar(DeclareWarType(WarType.SupriseWar))
                 if (!notifyDeclaredWarCivs.contains(civSuffered)) notifyDeclaredWarCivs.add(
                     civSuffered
                 )

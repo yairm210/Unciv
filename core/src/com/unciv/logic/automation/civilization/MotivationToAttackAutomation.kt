@@ -87,6 +87,9 @@ object MotivationToAttackAutomation {
 
         modifierMap["War with allies"] = getAlliedWarMotivation(civInfo, otherCiv)
 
+        if (diplomacyManager.hasFlag(DiplomacyFlags.Denunciation))
+            modifierMap["Denounced"] = 10
+
 
         var motivationSoFar = modifierMap.values.sum()
 
