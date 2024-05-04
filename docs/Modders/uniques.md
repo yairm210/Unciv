@@ -774,6 +774,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Global
 
+??? example  "New spies start with [amount] level(s)"
+	Example: "New spies start with [3] level(s)"
+
+	Applicable to: Global
+
 ??? example  "Triggers victory"
 	Applicable to: Global
 

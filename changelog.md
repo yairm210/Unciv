@@ -1,13 +1,13 @@
 ## 4.11.10
 
 By tuvus:
-- Add missing espionage uniques 
-- Next turn button shows move spies notification icon 
-- Added diplomatic repercussions for spying on a civ 
-- Spy rank UI and fixes 
-- Fixed city-state alliance join war notification 
+- Add missing espionage uniques
+- Next turn button shows move spies notification icon
+- Added diplomatic repercussions for spying on a civ
+- Spy rank UI and fixes
+- Fixed city-state alliance join war notification
 
-Overhaul "hidden" architecture, closing some gaps  - By SomeTroglodyte
+Better "hidden in civilopedia" logic - By SomeTroglodyte
 
 Added victoryType conditionals  - By PLynx01
 
