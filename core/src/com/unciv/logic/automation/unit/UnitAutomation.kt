@@ -500,8 +500,8 @@ object UnitAutomation {
     private fun tryPrepare(unit: MapUnit): Boolean {
         val civInfo = unit.civ
         val hostileCivs = civInfo.getKnownCivs().filter { it.isAtWarWith(civInfo) || it.getDiplomacyManager(civInfo).hasFlag(DiplomacyFlags.Denunciation) }
-        val citiesToDefend = hostileCivs.mapNotNull() { NextTurnAutomation.getClosestCities(civInfo, it) }
-        val cityToMoveTo = citiesToDefend.minByOrNull { unit.getTile().aerialDistanceTo(it.city1.getCenterTile()) }
+        val citiesToDefend = hostileCivs.mapNotNull { NextTurnAutomation.getClosestCities(civInfo, it) }
+        val cityToMoveTo = citiesToDefend.sortedBy { unit.getTile().aerialDistanceTo(it.city1.getCenterTile()) }.firstOrNull { unit.movement.canReach(it.city1.getCenterTile()) }
         if (cityToMoveTo != null) {
             unit.movement.headTowards(cityToMoveTo.city1.getCenterTile());
             return true
