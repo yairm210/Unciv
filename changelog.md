@@ -1,3 +1,16 @@
+## 4.11.10
+
+By tuvus:
+- Add missing espionage uniques 
+- Next turn button shows move spies notification icon 
+- Added diplomatic repercussions for spying on a civ 
+- Spy rank UI and fixes 
+- Fixed city-state alliance join war notification 
+
+Overhaul "hidden" architecture, closing some gaps  - By SomeTroglodyte
+
+Added victoryType conditionals  - By PLynx01
+
 ## 4.11.9
 
 Added "checkfilter" console commands for city, tile, and unit, for easy mod checking
