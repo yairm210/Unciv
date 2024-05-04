@@ -82,8 +82,8 @@ object DeclareWar {
             WarType.DefensivePactWar, WarType.CityStateAllianceWar, WarType.JoinWar -> {
                 val allyCiv = declareWarReason.allyCiv!!
                 otherCiv.popupAlerts.add(PopupAlert(AlertType.WarDeclaration, civInfo.civName))
-                val agressor = if (declareWarReason.warType == WarType.JoinWar) civInfo else otherCiv
-                val defender = if (declareWarReason.warType == WarType.JoinWar) otherCiv else civInfo
+                val agressor = if (declareWarReason.warType == WarType.DefensivePactWar) otherCiv else civInfo
+                val defender = if (declareWarReason.warType == WarType.DefensivePactWar) civInfo else otherCiv
 
                 defender.addNotification("[${agressor.civName}] has joined [${allyCiv.civName}] in the war against us!",
                     NotificationCategory.Diplomacy, NotificationIcon.War, agressor.civName)
