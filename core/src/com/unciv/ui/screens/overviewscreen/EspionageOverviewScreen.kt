@@ -70,10 +70,12 @@ class EspionageOverviewScreen(val civInfo: Civilization, val worldScreen: WorldS
     private fun updateSpyList() {
         spySelectionTable.clear()
         spySelectionTable.add("Spy".toLabel())
+        spySelectionTable.add("Rank".toLabel())
         spySelectionTable.add("Location".toLabel())
         spySelectionTable.add("Action".toLabel()).row()
         for (spy in civInfo.espionageManager.spyList) {
             spySelectionTable.add(spy.name.toLabel())
+            spySelectionTable.add(spy.rank.toLabel())
             spySelectionTable.add(spy.getLocationName().toLabel())
             val actionString =
                 when (spy.action) {
@@ -99,7 +101,7 @@ class EspionageOverviewScreen(val civInfo: Civilization, val worldScreen: WorldS
                         || (city.civ != civInfo && !city.espionage.hasSpyOf(civInfo))
                 }
             }
-            if (!worldScreen.canChangeState) {
+            if (!worldScreen.canChangeState || !spy.isAlive()) {
                 // Spectators aren't allowed to move the spies of the Civs they are viewing
                 moveSpyButton.disable()
             }

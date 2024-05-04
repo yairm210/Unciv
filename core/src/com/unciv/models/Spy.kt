@@ -235,7 +235,7 @@ class Spy() : IsPartOfGameInfoSerialization {
 
     fun canMoveTo(city: City): Boolean {
         if (getLocation() == city) return true
-        if (!city.getCenterTile().isVisible(civInfo)) return false
+        if (!city.getCenterTile().isExplored(civInfo)) return false
         return espionageManager.getSpyAssignedToCity(city) == null
     }
 
