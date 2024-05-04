@@ -1,5 +1,6 @@
 package com.unciv.models.ruleset
 
+import com.unciv.logic.GameInfo
 import com.unciv.models.ruleset.unique.UniqueTarget
 
 class RuinReward : RulesetObject() {
@@ -12,4 +13,7 @@ class RuinReward : RulesetObject() {
     val color: String = ""  // For Civilopedia
 
     override fun makeLink() = "" //No own category on Civilopedia screen
+
+    override fun isHiddenBySettings(gameInfo: GameInfo) =
+        gameInfo.difficulty in excludedDifficulties || super.isHiddenBySettings(gameInfo)
 }

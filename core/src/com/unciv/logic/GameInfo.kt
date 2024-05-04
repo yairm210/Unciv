@@ -87,6 +87,7 @@ data class VictoryData(val winningCiv: String, val victoryType: String, val vict
     constructor(): this("","",0)
 }
 
+/** The virtual world the users play in */
 class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion {
     companion object {
         /** The current compatibility version of [GameInfo]. This number is incremented whenever changes are made to the save file structure that guarantee that

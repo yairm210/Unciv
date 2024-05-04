@@ -52,9 +52,16 @@ import java.io.PrintWriter
 import java.util.EnumSet
 import java.util.UUID
 
+/** Represents the Unciv app itself:
+ *  - implements the [Game] interface Gdx requires.
+ *  - marshals [platform-specific stuff][PlatformSpecific].
+ *  - contains references to [the game being played][gameInfo], and high-level UI elements.
+ */
 open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpecific {
 
     var deepLinkedMultiplayerGame: String? = null
+
+    /** The game currently in progress */
     var gameInfo: GameInfo? = null
 
     lateinit var settings: GameSettings
@@ -467,8 +474,13 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
         val VERSION = Version("4.11.9", 993)
         //endregion
 
+        /** Global reference to the one Gdx.Game instance created by the platform launchers - do not use without checking [isCurrentInitialized] first. */
+        // Set by Gdx Game.create callback, or the special cases ConsoleLauncher and unit tests make do with out Gdx and set this themselves.
         lateinit var Current: UncivGame
+        /** @return `true` if [Current] has been set yet and can be accessed */
         fun isCurrentInitialized() = this::Current.isInitialized
+        /** Get the game currently in progress safely - null either if [Current] has not yet been set or if its gameInfo field has no game */
+        fun getGameInfoOrNull() = if (isCurrentInitialized()) Current.gameInfo else null
         fun isCurrentGame(gameId: String): Boolean = isCurrentInitialized() && Current.gameInfo != null && Current.gameInfo!!.gameId == gameId
         fun isDeepLinkedGameLoading() = isCurrentInitialized() && Current.deepLinkedMultiplayerGame != null
     }
