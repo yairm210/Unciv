@@ -113,10 +113,9 @@ class Spy() : IsPartOfGameInfoSerialization {
                 }
             }
             SpyAction.RiggingElections -> {
-                --turnsRemainingForAction
-                if (turnsRemainingForAction > 0) return
-
-                rigElection()
+                // No action done here
+                // Handled in CityStateFunctions.nextTurnElections()
+                turnsRemainingForAction = 0
             }
             SpyAction.Dead -> {
                 --turnsRemainingForAction
@@ -187,38 +186,6 @@ class Spy() : IsPartOfGameInfoSerialization {
             killSpy()
         }
 
-    }
-
-    private fun rigElection() {
-        val city = getLocation()!!
-        val cityStateCiv = city.civ
-        // TODO: Simple implementation, please implement this in the future. This is a guess.
-        turnsRemainingForAction = 10
-
-        if (cityStateCiv.getAllyCiv() != null && cityStateCiv.getAllyCiv() != civInfo.civName) {
-            val allyCiv = civInfo.gameInfo.getCivilization(cityStateCiv.getAllyCiv()!!)
-            val defendingSpy = allyCiv.espionageManager.getSpyAssignedToCity(getLocation()!!)
-            if (defendingSpy != null) {
-                val randomSeed = city.location.x * city.location.y + 123f * civInfo.gameInfo.turns
-                var spyResult = Random(randomSeed.toInt()).nextInt(120)
-                spyResult -= getSkillModifier()
-                spyResult += defendingSpy.getSkillModifier()
-                if (spyResult > 100) {
-                    // The Spy was killed
-                    allyCiv.addNotification("A spy from [${civInfo.civName}] tried to rig elections and was found and killed in [${city}] by [${defendingSpy.name}]!",
-                        getLocation()!!.location, NotificationCategory.Espionage, NotificationIcon.Spy)
-                    civInfo.addNotification("Your spy [$name] was killed trying to rig the election in [$city]!", city.location,
-                        NotificationCategory.Espionage, NotificationIcon.Spy)
-                    killSpy()
-                    defendingSpy.levelUpSpy()
-                    return
-                }
-            }
-        }
-        // Starts at 10 influence and increases by 3 for each extra rank.
-        cityStateCiv.getDiplomacyManager(civInfo).addInfluence(7f + getSpyRank() * 3)
-        civInfo.addNotification("Your spy successfully rigged the election in [$city]!", city.location,
-            NotificationCategory.Espionage, NotificationIcon.Spy)
     }
 
     fun moveTo(city: City?) {
