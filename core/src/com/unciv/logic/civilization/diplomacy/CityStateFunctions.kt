@@ -93,25 +93,35 @@ class CityStateFunctions(val civInfo: Civilization) {
             for (vote in spiesVotes) {
                 if (vote.second >= totalVotes) {
                     winner = vote.first.civInfo
-                    break;
+                    break
                 } else {
                     totalVotes -= vote.second
                 }
             }
 
             if (winner != null) {
+                // Check if we should send an extra message to the ally civ if they are not partaking in election rigging
+                val allyCiv = civInfo.getAllyCiv()?.let { civInfo.gameInfo.getCivilization(it) }
+                if (allyCiv != null && !spies.any { it.civInfo == allyCiv}) {
+                    allyCiv.addNotification("The election in [${civInfo.civName} were rigged by [${winner.civName}]]!", capital.location, NotificationCategory.Espionage, NotificationIcon.Spy)
+                }
+
                 // Winning civ gets influence and all others loose influence
                 for (civ in civInfo.getKnownCivs()) {
-                    if (civ == winner) {
-                        civInfo.getDiplomacyManager(civ).addInfluence(20f)
+                    val influence = if (civ == winner) 20f else -5f
+                    civInfo.getDiplomacyManager(civ).addInfluence(influence)
+                    if (civ == winner)  {
+                        civ.addNotification("Your spy successfully rigged the election in [${civInfo.civName}]!", capital.location, NotificationCategory.Espionage, NotificationIcon.Spy)
                     } else {
-                        civInfo.getDiplomacyManager(civ).addInfluence(-5f)
+                        civ.addNotification("Your spy lost the election in [${civInfo.civName}] to [${winner.civName}]!", capital.location, NotificationCategory.Espionage, NotificationIcon.Spy)
                     }
                 }
+
             } else {
                 // No spy won the election, the civs that tried to rig the election loose influence
                 for (spy in spies) {
                     civInfo.getDiplomacyManager(spy.civInfo).addInfluence(-5f)
+                    spy.civInfo.addNotification("Your spy lost the election in [$capital]!", capital.location, NotificationCategory.Espionage, NotificationIcon.Spy)
                 }
             }
         }
