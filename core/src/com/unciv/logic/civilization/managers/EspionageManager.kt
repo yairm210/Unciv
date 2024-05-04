@@ -15,6 +15,13 @@ class EspionageManager : IsPartOfGameInfoSerialization {
     @Transient
     lateinit var civInfo: Civilization
 
+    /**
+     * Part of the nextTurnAction of MoveSpies.
+     * We need to store if the player has clicked the button already
+     */
+    @Transient
+    var dismissedShouldMoveSpies = false
+
     fun clone(): EspionageManager {
         val toReturn = EspionageManager()
         spyList.mapTo(toReturn.spyList) { it.clone() }
@@ -77,4 +84,10 @@ class EspionageManager : IsPartOfGameInfoSerialization {
     fun getCitiesWithOurSpies(): List<City> = spyList.filter { it.isSetUp() }.mapNotNull { it.getLocation() }
 
     fun getSpyAssignedToCity(city: City): Spy? = spyList.firstOrNull {it.getLocation() == city}
+
+    /**
+     * Determines whether the NextTurnAction MoveSpies should be shown or not
+     * @return true if there are spies waiting to be moved
+     */
+    fun shouldShowMoveSpies(): Boolean = !dismissedShouldMoveSpies && spyList.any { it.isIdle() }
 }
