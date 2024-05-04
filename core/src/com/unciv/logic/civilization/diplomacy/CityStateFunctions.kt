@@ -14,6 +14,8 @@ import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.civilization.PopupAlert
 import com.unciv.logic.civilization.Proximity
+import com.unciv.models.Spy
+import com.unciv.models.SpyAction
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.nation.CityStateType
 import com.unciv.models.ruleset.tile.ResourceSupplyList
@@ -63,6 +65,56 @@ class CityStateFunctions(val civInfo: Civilization) {
         // TODO: Return false if attempting to put a religious city-state in a game without religion
 
         return true
+    }
+
+    fun nextTurnElections() {
+        civInfo.cityStateTurnsUntilElection--
+        val capital = civInfo.cities.firstOrNull { it.isCapital() }
+        if (civInfo.cityStateTurnsUntilElection <= 0) {
+            if (capital == null) return
+            civInfo.cityStateTurnsUntilElection = 15
+            val spies = capital.espionage.getAllStationedSpies().filter { it.action == SpyAction.RiggingElections }
+            if (spies.isEmpty()) return
+
+            fun getVotesFromSpy(spy: Spy): Int {
+                var votes = civInfo.getDiplomacyManager(spy.civInfo).influence.toInt()
+                votes += (spy.getSkillModifier() * spy.getEfficiencyModifier()).toInt() // ranges from 30 to a little more than 90
+                return votes
+            }
+
+            val spiesVotes = spies.map { Pair(it, getVotesFromSpy(it)) }
+            var totalVotes = spiesVotes.sumOf { it.second } + 20
+
+            val randomSeed = capital.location.x * capital.location.y + 123f * civInfo.gameInfo.turns
+            Random(randomSeed.toInt()).nextInt(totalVotes)
+
+            // There may be no winner, in that case all spies will loose 5 influence
+            var winner: Civilization? = null
+            for (vote in spiesVotes) {
+                if (vote.second >= totalVotes) {
+                    winner = vote.first.civInfo
+                    break;
+                } else {
+                    totalVotes -= vote.second
+                }
+            }
+
+            if (winner != null) {
+                // Winning civ gets influence and all others loose influence
+                for (civ in civInfo.getKnownCivs()) {
+                    if (civ == winner) {
+                        civInfo.getDiplomacyManager(civ).addInfluence(20f)
+                    } else {
+                        civInfo.getDiplomacyManager(civ).addInfluence(-5f)
+                    }
+                }
+            } else {
+                // No spy won the election, the civs that tried to rig the election loose influence
+                for (spy in spies) {
+                    civInfo.getDiplomacyManager(spy.civInfo).addInfluence(-5f)
+                }
+            }
+        }
     }
 
     fun turnsForGreatPersonFromCityState(): Int = ((37 + Random.Default.nextInt(7)) * civInfo.gameInfo.speed.modifier).toInt()
