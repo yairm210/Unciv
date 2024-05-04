@@ -5,6 +5,7 @@ import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.Spy
+import com.unciv.models.ruleset.unique.UniqueType
 
 
 class EspionageManager : IsPartOfGameInfoSerialization {
@@ -50,7 +51,7 @@ class EspionageManager : IsPartOfGameInfoSerialization {
 
     fun addSpy(): Spy {
         val spyName = getSpyName()
-        val newSpy = Spy(spyName)
+        val newSpy = Spy(spyName, getStartingSpyRank())
         newSpy.setTransients(civInfo)
         spyList.add(newSpy)
         return newSpy
@@ -76,6 +77,8 @@ class EspionageManager : IsPartOfGameInfoSerialization {
     fun getSpiesInCity(city: City): MutableList<Spy> {
         return spyList.filter { it.getLocation() == city }.toMutableList()
     }
+
+    fun getStartingSpyRank(): Int = 1 + civInfo.getMatchingUniques(UniqueType.SpyStartingLevel).sumOf { it.params[0].toInt() }
 
     /**
      * Returns a list of all cities with our spies in them.

@@ -230,6 +230,7 @@ enum class UniqueType(
     /// Espionage
     SpyEffectiveness("[relativeAmount]% spy effectiveness [cityFilter]", UniqueTarget.Global, UniqueTarget.Global),
     EnemySpyEffectiveness("[relativeAmount]% enemy spy effectiveness [cityFilter]", UniqueTarget.Global, UniqueTarget.Global),
+    SpyStartingLevel("New spies start with [amount] level(s)", UniqueTarget.Global),
 
     /// Things you get at the start of the game
     StartingTech("Starting tech", UniqueTarget.Tech),
