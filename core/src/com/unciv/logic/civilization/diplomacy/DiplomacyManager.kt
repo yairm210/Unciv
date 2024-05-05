@@ -87,6 +87,7 @@ enum class DiplomaticModifiers(val text: String) {
     AttackedProtectedMinor("You attacked City-States that were under our protection!"),
     BulliedProtectedMinor("You demanded tribute from City-States that were under our protection!"),
     SidedWithProtectedMinor("You sided with a City-State over us"),
+    SpiedOnUs("You spied on us!"),
 
     // Positive
     YearsOfPeace("Years of peace have strengthened our relations."),

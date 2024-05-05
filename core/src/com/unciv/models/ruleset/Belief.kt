@@ -5,7 +5,6 @@ import com.unciv.UncivGame
 import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.translations.tr
 import com.unciv.ui.objectdescriptions.uniquesToCivilopediaTextLines
-import com.unciv.ui.screens.civilopediascreen.CivilopediaScreen.Companion.showReligionInCivilopedia
 import com.unciv.ui.screens.civilopediascreen.FormattedLine
 
 class Belief() : RulesetObject() {
@@ -42,12 +41,10 @@ class Belief() : RulesetObject() {
 
     companion object {
         // private but potentially reusable, therefore not folded into getCivilopediaTextMatching
-        private fun getBeliefsMatching(name: String, ruleset: Ruleset): Sequence<Belief> {
-            if (!showReligionInCivilopedia(ruleset)) return sequenceOf()
-            return ruleset.beliefs.asSequence().map { it.value }
-                .filter { belief -> belief.uniqueObjects.any { unique -> unique.params.any { it == name } }
-            }
-        }
+        private fun getBeliefsMatching(name: String, ruleset: Ruleset) =
+            ruleset.beliefs.values.asSequence()
+            .filterNot { it.isHiddenFromCivilopedia(ruleset) }
+            .filter { belief -> belief.uniqueObjects.any { unique -> unique.params.any { it == name } } }
 
         /** Get CivilopediaText lines for all Beliefs referencing a given name in an unique parameter,
          *  With optional spacing and "See Also:" header.

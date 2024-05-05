@@ -840,7 +840,8 @@ object UniqueTriggerActivation {
                 if (!civInfo.gameInfo.isEspionageEnabled()) return null
 
                 return {
-                    civInfo.espionageManager.addSpy()
+                    val spyName = civInfo.espionageManager.addSpy().name
+                    civInfo.addNotification("We have recruited [${spyName}] as a spy!", NotificationCategory.Espionage, NotificationIcon.Spy)
                     true
                 }
             }
