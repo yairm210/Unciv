@@ -77,8 +77,8 @@ class CityStateFunctions(val civInfo: Civilization) {
             if (spies.isEmpty()) return
 
             fun getVotesFromSpy(spy: Spy): Int {
-                var votes = civInfo.getDiplomacyManager(spy.civInfo).influence.toInt()
-                votes += (spy.getSkillModifier() * spy.getEfficiencyModifier()).toInt() // ranges from 30 to a little more than 90
+                var votes = (civInfo.getDiplomacyManager(spy.civInfo).influence / 2).toInt()
+                votes += (spy.getSkillModifier() * spy.getEfficiencyModifier()).toInt() // ranges from 30 to 90
                 return votes
             }
 
