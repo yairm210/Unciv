@@ -156,9 +156,6 @@ class Spy private constructor() : IsPartOfGameInfoSerialization {
 
         val stolenTech = espionageManager.getTechsToSteal(getCity().civ)
             .randomOrNull(Random(randomSeed)) // Could be improved to for example steal the most expensive tech or the tech that has the least progress as of yet
-        if (stolenTech != null) {
-            civInfo.tech.addTechnology(stolenTech)
-        }
 
         // Lower is better
         var spyResult = Random(randomSeed).nextInt(300)
@@ -169,27 +166,30 @@ class Spy private constructor() : IsPartOfGameInfoSerialization {
         spyResult += defendingSpy?.getSkillModifier() ?: 0
 
         val detectionString = when {
-            spyResult < 0 -> null // Not detected
-            spyResult < 100 -> "An unidentified spy stole the Technology [$stolenTech] from [$city]!"
-            spyResult < 200 -> "A spy from [${civInfo.civName}] stole the Technology [$stolenTech] from [$city]!"
-            else -> { // The spy was killed in the attempt
+            spyResult >= 200 -> { // The spy was killed in the attempt (should be able to happen even if there's nothing to steal?)
                 if (defendingSpy == null) "A spy from [${civInfo.civName}] was found and killed trying to steal Technology in [$city]!"
                 else "A spy from [${civInfo.civName}] was found and killed by [${defendingSpy.name}] trying to steal Technology in [$city]!"
             }
+            stolenTech == null -> null // Nothing to steal
+            spyResult < 0 -> null // Not detected
+            spyResult < 100 -> "An unidentified spy stole the Technology [$stolenTech] from [$city]!"
+            else -> "A spy from [${civInfo.civName}] stole the Technology [$stolenTech] from [$city]!"
         }
         if (detectionString != null)
             // Not using Spy.addNotification, shouldn't open the espionage screen
             otherCiv.addNotification(detectionString, city.location, NotificationCategory.Espionage, NotificationIcon.Spy)
 
-        if (spyResult < 200) {
+        if (spyResult < 200 && stolenTech != null) {
+            civInfo.tech.addTechnology(stolenTech)
             addNotification("Your spy [$name] stole the Technology [$stolenTech] from [$city]!")
-            startStealingTech()
             levelUpSpy()
-        } else {
+        }
+
+        if (spyResult >= 200) {
             addNotification("Your spy [$name] was killed trying to steal Technology in [$city]!")
             defendingSpy?.levelUpSpy()
             killSpy()
-        }
+        } else startStealingTech()  // reset progress
 
         if (spyResult >= 100) {
             otherCiv.getDiplomacyManager(civInfo).addModifier(DiplomaticModifiers.SpiedOnUs, -15f)
