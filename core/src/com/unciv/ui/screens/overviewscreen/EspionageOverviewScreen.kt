@@ -91,10 +91,8 @@ class EspionageOverviewScreen(val civInfo: Civilization, val worldScreen: WorldS
                 selectedSpy = spy
                 selectedSpyButton!!.label.setText(Constants.cancel.tr())
                 for ((button, city) in moveSpyHereButtons) {
-                    // Not own cities as counterintelligence isn't implemented
-                    // Not city-state civs as rigging elections isn't implemented
                     button.isVisible = city == null // hideout
-                        || (city.civ != civInfo && !city.espionage.hasSpyOf(civInfo))
+                        || !city.espionage.hasSpyOf(civInfo)
                 }
             }
             if (!worldScreen.canChangeState || !spy.isAlive()) {
