@@ -246,7 +246,7 @@ class Spy private constructor() : IsPartOfGameInfoSerialization {
 
     fun isSetUp() = action.isSetUp
 
-    fun isIdle(): Boolean =action == SpyAction.None || action == SpyAction.Surveillance
+    fun isIdle() = action == SpyAction.None
 
     fun isDoingWork() = action.isDoingWork(this)
 
