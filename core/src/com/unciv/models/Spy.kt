@@ -90,7 +90,9 @@ class Spy private constructor() : IsPartOfGameInfoSerialization {
         when (action) {
             SpyAction.None -> return
             SpyAction.Moving ->
-                setAction(SpyAction.EstablishNetwork, 3)
+                // Your own cities are certainly familiar surroundings, so establish network quickly
+                // Should depend on cultural familiarity level if that is ever implemented inter-civ
+                setAction(SpyAction.EstablishNetwork, if (getCity().civ == civInfo) 1 else 3)
             SpyAction.EstablishNetwork -> {
                 val city = getCity() // This should never throw an exception, as going to the hideout sets your action to None.
                 if (city.civ.isCityState())
