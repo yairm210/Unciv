@@ -73,9 +73,11 @@ open class ConsoleAction(val format: String, val action: (console: DevConsolePop
             it.removeSurrounding("<",">").removeSurrounding("[","]").removeSurrounding("\"")
         }
         if (formatParams.size < params.size) return ""
-        val formatParam = formatParams[params.lastIndex]
+        // It is possible we're here *with* another format parameter but an *empty* params (e.g. `tile addriver ` and hit tab) -> see else branch
+        val (formatParam, lastParam) = if (params.lastIndex in formatParams.indices)
+                formatParams[params.lastIndex] to params.last()
+            else formatParams.first() to ""
 
-        val lastParam = params.last()
         val options = when (formatParam) {
             "civName" -> console.gameInfo.civilizations.map { it.civName }
             "unitName" -> console.gameInfo.ruleset.units.keys
