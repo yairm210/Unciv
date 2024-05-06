@@ -5,7 +5,7 @@ import com.unciv.Constants
 import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
-import com.unciv.logic.civilization.LocationAction
+import com.unciv.logic.civilization.EspionageAction
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
@@ -111,8 +111,7 @@ class Spy private constructor() : IsPartOfGameInfoSerialization {
                 val stealableTechs = espionageManager.getTechsToSteal(getCity().civ)
                 if (stealableTechs.isEmpty()) {
                     setAction(SpyAction.Surveillance)
-                    val notificationString = "Your spy [$name] cannot steal any more techs from [${getCity().civ}] as we've already researched all the technology they know!"
-                    civInfo.addNotification(notificationString, getCity().location, NotificationCategory.Espionage, NotificationIcon.Spy)
+                    addNotification("Your spy [$name] cannot steal any more techs from [${getCity().civ}] as we've already researched all the technology they know!")
                     return
                 }
                 val techStealCost = stealableTechs.maxOfOrNull { civInfo.gameInfo.ruleset.technologies[it]!!.cost }!!
@@ -133,8 +132,7 @@ class Spy private constructor() : IsPartOfGameInfoSerialization {
                 name = espionageManager.getSpyName()
                 setAction(SpyAction.None)
                 rank = espionageManager.getStartingSpyRank()
-                civInfo.addNotification("We have recruited a new spy name [$name] after [$oldSpyName] was killed.",
-                    NotificationCategory.Espionage, NotificationIcon.Spy)
+                addNotification("We have recruited a new spy name [$name] after [$oldSpyName] was killed.")
             }
             SpyAction.CounterIntelligence -> {
                 // Counter intelligence spies don't do anything here
@@ -180,16 +178,15 @@ class Spy private constructor() : IsPartOfGameInfoSerialization {
             }
         }
         if (detectionString != null)
+            // Not using Spy.addNotification, shouldn't open the espionage screen
             otherCiv.addNotification(detectionString, city.location, NotificationCategory.Espionage, NotificationIcon.Spy)
 
         if (spyResult < 200) {
-            civInfo.addNotification("Your spy [$name] stole the Technology [$stolenTech] from [$city]!", city.location,
-                NotificationCategory.Espionage, NotificationIcon.Spy)
+            addNotification("Your spy [$name] stole the Technology [$stolenTech] from [$city]!")
             startStealingTech()
             levelUpSpy()
         } else {
-            civInfo.addNotification("Your spy [$name] was killed trying to steal Technology in [$city]!", city.location,
-                NotificationCategory.Espionage, NotificationIcon.Spy)
+            addNotification("Your spy [$name] was killed trying to steal Technology in [$city]!")
             defendingSpy?.levelUpSpy()
             killSpy()
         }
@@ -213,11 +210,10 @@ class Spy private constructor() : IsPartOfGameInfoSerialization {
                 spyResult -= getSkillModifier()
                 spyResult += defendingSpy.getSkillModifier()
                 if (spyResult > 100) {
-                    // The Spy was killed
+                    // The Spy was killed (use the notification without EspionageAction)
                     allyCiv.addNotification("A spy from [${civInfo.civName}] tried to rig elections and was found and killed in [${city}] by [${defendingSpy.name}]!",
                         city.location, NotificationCategory.Espionage, NotificationIcon.Spy)
-                    civInfo.addNotification("Your spy [$name] was killed trying to rig the election in [$city]!", city.location,
-                        NotificationCategory.Espionage, NotificationIcon.Spy)
+                    addNotification("Your spy [$name] was killed trying to rig the election in [$city]!")
                     killSpy()
                     defendingSpy.levelUpSpy()
                     return
@@ -270,8 +266,7 @@ class Spy private constructor() : IsPartOfGameInfoSerialization {
     fun levelUpSpy() {
         //TODO: Make the spy level cap dependent on some unique
         if (rank >= 3) return
-        civInfo.addNotification("Your spy [$name] has leveled up!", LocationAction(getCity().location),
-            NotificationCategory.Espionage, NotificationIcon.Spy)
+        addNotification("Your spy [$name] has leveled up!")
         rank++
     }
 
@@ -316,6 +311,10 @@ class Spy private constructor() : IsPartOfGameInfoSerialization {
     }
 
     fun isAlive(): Boolean = action != SpyAction.Dead
+
+    /** Shorthand for [Civilization.addNotification] specialized for espionage - action, category and icon are always the same */
+    fun addNotification(text: String) =
+        civInfo.addNotification(text, EspionageAction.withLocation(location), NotificationCategory.Espionage, NotificationIcon.Spy)
 
     /** Anti-save-scum: Deterministic random from city and turn
      *  @throws NullPointerException for spies in the hideout */
