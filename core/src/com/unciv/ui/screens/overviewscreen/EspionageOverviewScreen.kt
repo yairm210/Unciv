@@ -11,6 +11,7 @@ import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
 import com.unciv.models.Spy
 import com.unciv.models.translations.tr
+import com.unciv.ui.components.SmallButtonStyle
 import com.unciv.ui.components.extensions.addSeparatorVertical
 import com.unciv.ui.components.extensions.disable
 import com.unciv.ui.components.extensions.setSize
@@ -40,7 +41,10 @@ class EspionageOverviewScreen(val civInfo: Civilization, val worldScreen: WorldS
     private var selectedSpy: Spy? = null
 
     // if the value == null, this means the Spy Hideout.
-    private var moveSpyHereButtons = hashMapOf<Button, City?>()
+    private var moveSpyHereButtons = hashMapOf<MoveToCityButton, City?>()
+
+    /** Readability shortcut */
+    private val manager get() = civInfo.espionageManager
 
     init {
         spySelectionTable.defaults().pad(10f)
@@ -72,7 +76,7 @@ class EspionageOverviewScreen(val civInfo: Civilization, val worldScreen: WorldS
         spySelectionTable.add("Rank".toLabel())
         spySelectionTable.add("Location".toLabel())
         spySelectionTable.add("Action".toLabel()).row()
-        for (spy in civInfo.espionageManager.spyList) {
+        for (spy in manager.spyList) {
             spySelectionTable.add(spy.name.toLabel())
             spySelectionTable.add(spy.rank.toLabel())
             spySelectionTable.add(spy.getLocationName().toLabel())
@@ -91,8 +95,14 @@ class EspionageOverviewScreen(val civInfo: Civilization, val worldScreen: WorldS
                 selectedSpy = spy
                 selectedSpyButton!!.label.setText(Constants.cancel.tr())
                 for ((button, city) in moveSpyHereButtons) {
-                    button.isVisible = city == null // hideout
-                        || !city.espionage.hasSpyOf(civInfo)
+                    if (city == spy.getCityOrNull()) {
+                        button.isVisible = true
+                        button.setDirection(Align.right)
+                    } else {
+                        button.isVisible = city == null // hideout
+                            || !city.espionage.hasSpyOf(civInfo)
+                        button.setDirection(Align.left)
+                    }
                 }
             }
             if (!worldScreen.canChangeState || !spy.isAlive()) {
@@ -107,15 +117,15 @@ class EspionageOverviewScreen(val civInfo: Civilization, val worldScreen: WorldS
         citySelectionTable.clear()
         moveSpyHereButtons.clear()
         citySelectionTable.add()
-        citySelectionTable.add("City".toLabel())
-        citySelectionTable.add("Spy present".toLabel()).row()
+        citySelectionTable.add("City".toLabel()).padTop(10f)
+        citySelectionTable.add("Spy present".toLabel()).padTop(10f).row()
 
         // First add the hideout to the table
 
         citySelectionTable.add()
         citySelectionTable.add("Spy Hideout".toLabel())
         citySelectionTable.add()
-        val moveSpyHereButton = getMoveToCityButton(null)
+        val moveSpyHereButton = MoveToCityButton(null)
         citySelectionTable.add(moveSpyHereButton).row()
 
         // Then add all cities
@@ -153,23 +163,32 @@ class EspionageOverviewScreen(val civInfo: Civilization, val worldScreen: WorldS
             citySelectionTable.add()
         }
 
-        val moveSpyHereButton = getMoveToCityButton(city)
+        val moveSpyHereButton = MoveToCityButton(city)
         citySelectionTable.add(moveSpyHereButton)
         citySelectionTable.row()
     }
 
     // city == null is interpreted as 'spy hideout'
-    private fun getMoveToCityButton(city: City?): Button {
-        val moveSpyHereButton = Button(skin)
-        moveSpyHereButton.add(ImageGetter.getArrowImage(Align.left).apply { color = Color.WHITE })
-        moveSpyHereButton.onClick {
-            selectedSpy!!.moveTo(city)
-            resetSelection()
-            update()
+    private inner class MoveToCityButton(city: City?) : Button(SmallButtonStyle()) {
+        val arrow = ImageGetter.getArrowImage(Align.left)
+        init {
+            arrow.setSize(24f)
+            add(arrow).size(24f)
+            arrow.setOrigin(Align.center)
+            arrow.color = Color.WHITE
+            onClick {
+                selectedSpy!!.moveTo(city)
+                resetSelection()
+                update()
+            }
+            moveSpyHereButtons[this] = city
+            isVisible = false
         }
-        moveSpyHereButtons[moveSpyHereButton] = city
-        moveSpyHereButton.isVisible = false
-        return moveSpyHereButton
+
+        fun setDirection(align: Int) {
+            arrow.rotation = if (align == Align.right) 0f else 180f
+            isDisabled = align == Align.right
+        }
     }
 
     private fun resetSelection() {
