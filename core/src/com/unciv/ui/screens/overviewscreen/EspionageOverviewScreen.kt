@@ -10,7 +10,6 @@ import com.unciv.UncivGame
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
 import com.unciv.models.Spy
-import com.unciv.models.SpyAction
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.extensions.addSeparatorVertical
 import com.unciv.ui.components.extensions.disable
@@ -77,11 +76,8 @@ class EspionageOverviewScreen(val civInfo: Civilization, val worldScreen: WorldS
             spySelectionTable.add(spy.name.toLabel())
             spySelectionTable.add(spy.rank.toLabel())
             spySelectionTable.add(spy.getLocationName().toLabel())
-            val actionString =
-                when (spy.action) {
-                    SpyAction.None, SpyAction.StealingTech, SpyAction.Surveillance, SpyAction.CounterIntelligence -> spy.action.displayString
-                    SpyAction.Moving, SpyAction.EstablishNetwork, SpyAction.Dead, SpyAction.RiggingElections -> "[${spy.action.displayString}] ${spy.turnsRemainingForAction}${Fonts.turn}"
-                }
+            val actionString = if (spy.action.hasTurns) "[${spy.action.displayString}] ${spy.turnsRemainingForAction}${Fonts.turn}"
+                else spy.action.displayString
             spySelectionTable.add(actionString.toLabel())
 
             val moveSpyButton = "Move".toTextButton()

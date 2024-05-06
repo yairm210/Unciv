@@ -16,15 +16,21 @@ import com.unciv.models.ruleset.unique.UniqueType
 import kotlin.random.Random
 
 
-enum class SpyAction(val displayString: String) {
-    None("None"),
-    Moving("Moving"),
-    EstablishNetwork("Establishing Network"),
-    Surveillance("Observing City"),
-    StealingTech("Stealing Tech"),
-    RiggingElections("Rigging Elections"),
-    CounterIntelligence("Conducting Counter-intelligence"),
-    Dead("Dead")
+enum class SpyAction(val displayString: String, val hasTurns: Boolean, internal val isSetUp: Boolean, private val isDoingWork: Boolean = false) {
+    None("None", false, false),
+    Moving("Moving", true, false, true),
+    EstablishNetwork("Establishing Network", true, false, true),
+    Surveillance("Observing City", false, true),
+    StealingTech("Stealing Tech", false, true, true),
+    RiggingElections("Rigging Elections", true, true) {
+        override fun isDoingWork(spy: Spy) = !spy.civInfo.isAtWarWith(spy.getCity().civ)
+    },
+    CounterIntelligence("Conducting Counter-intelligence", false, true) {
+        override fun isDoingWork(spy: Spy) = spy.turnsRemainingForAction > 0
+    },
+    Dead("Dead", true, false),
+    ;
+    internal open fun isDoingWork(spy: Spy) = isDoingWork
 }
 
 
@@ -80,17 +86,12 @@ class Spy private constructor() : IsPartOfGameInfoSerialization {
     }
 
     fun endTurn() {
+        if (action.hasTurns && --turnsRemainingForAction > 0) return
         when (action) {
             SpyAction.None -> return
-            SpyAction.Moving -> {
-                --turnsRemainingForAction
-                if (turnsRemainingForAction > 0) return
+            SpyAction.Moving ->
                 setAction(SpyAction.EstablishNetwork, 3)
-            }
             SpyAction.EstablishNetwork -> {
-                --turnsRemainingForAction
-                if (turnsRemainingForAction > 0) return
-
                 val city = getCity() // This should never throw an exception, as going to the hideout sets your action to None.
                 if (city.civ.isCityState())
                     setAction(SpyAction.RiggingElections, 10)
@@ -125,15 +126,9 @@ class Spy private constructor() : IsPartOfGameInfoSerialization {
                 }
             }
             SpyAction.RiggingElections -> {
-                --turnsRemainingForAction
-                if (turnsRemainingForAction > 0) return
-
                 rigElection()
             }
             SpyAction.Dead -> {
-                --turnsRemainingForAction
-                if (turnsRemainingForAction > 0) return
-
                 val oldSpyName = name
                 name = espionageManager.getSpyName()
                 setAction(SpyAction.None)
@@ -253,16 +248,11 @@ class Spy private constructor() : IsPartOfGameInfoSerialization {
         return espionageManager.getSpyAssignedToCity(city) == null
     }
 
-    fun isSetUp() = action !in listOf(SpyAction.Moving, SpyAction.None, SpyAction.EstablishNetwork)
+    fun isSetUp() = action.isSetUp
 
     fun isIdle(): Boolean =action == SpyAction.None || action == SpyAction.Surveillance
 
-    fun isDoingWork(): Boolean {
-        if (action == SpyAction.StealingTech || action == SpyAction.EstablishNetwork || action == SpyAction.Moving) return true
-        if (action == SpyAction.RiggingElections && !civInfo.isAtWarWith(getLocation()!!.civ)) return true
-        if (action == SpyAction.CounterIntelligence && turnsRemainingForAction > 0) return true
-        else return false
-    }
+    fun isDoingWork() = action.isDoingWork(this)
 
     /** Returns the City this Spy is in, or `null` if it is in the hideout. */
     fun getCityOrNull(): City? {
