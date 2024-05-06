@@ -59,7 +59,7 @@ class EspionageManager : IsPartOfGameInfoSerialization {
     fun getTilesVisibleViaSpies(): Sequence<Tile> {
         return spyList.asSequence()
             .filter { it.isSetUp() }
-            .mapNotNull { it.getLocation() }
+            .mapNotNull { it.getCityOrNull() }
             .flatMap { it.getCenterTile().getTilesInDistance(1) }
     }
 
@@ -83,9 +83,9 @@ class EspionageManager : IsPartOfGameInfoSerialization {
      * Returns a list of all cities with our spies in them.
      * The list needs to be stable across calls on the same turn.
      */
-    fun getCitiesWithOurSpies(): List<City> = spyList.filter { it.isSetUp() }.mapNotNull { it.getLocation() }
+    fun getCitiesWithOurSpies(): List<City> = spyList.filter { it.isSetUp() }.mapNotNull { it.getCityOrNull() }
 
-    fun getSpyAssignedToCity(city: City): Spy? = spyList.firstOrNull {it.getLocation() == city}
+    fun getSpyAssignedToCity(city: City): Spy? = spyList.firstOrNull { it.getCityOrNull() == city }
 
     /**
      * Determines whether the NextTurnAction MoveSpies should be shown or not

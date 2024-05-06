@@ -51,6 +51,9 @@ class Spy private constructor() : IsPartOfGameInfoSerialization {
     @Transient
     private lateinit var espionageManager: EspionageManager
 
+    @Transient
+    private var city: City? = null
+
     constructor(name: String, rank:Int) : this() {
         this.name = name
         this.rank = rank
@@ -70,49 +73,49 @@ class Spy private constructor() : IsPartOfGameInfoSerialization {
         this.espionageManager = civInfo.espionageManager
     }
 
+    private fun setAction(newAction: SpyAction, turns: Int = 0) {
+        assert(!newAction.hasTurns || turns > 0) // hasTurns==false but turns > 0 is allowed (CounterIntelligence), hasTurns==true and turns==0 is not.
+        action = newAction
+        turnsRemainingForAction = turns
+    }
+
     fun endTurn() {
         when (action) {
             SpyAction.None -> return
             SpyAction.Moving -> {
                 --turnsRemainingForAction
                 if (turnsRemainingForAction > 0) return
-
-                action = SpyAction.EstablishNetwork
-                turnsRemainingForAction = 3 // Depending on cultural familiarity level if that is ever implemented
+                setAction(SpyAction.EstablishNetwork, 3)
             }
             SpyAction.EstablishNetwork -> {
                 --turnsRemainingForAction
                 if (turnsRemainingForAction > 0) return
 
-                val location = getLocation()!! // This should never throw an exception, as going to the hideout sets your action to None.
-                if (location.civ.isCityState()) {
-                    action = SpyAction.RiggingElections
-                    turnsRemainingForAction = 10
-                } else if (location.civ == civInfo) {
-                    action = SpyAction.CounterIntelligence
-                    turnsRemainingForAction = 10
-                } else {
+                val city = getCity() // This should never throw an exception, as going to the hideout sets your action to None.
+                if (city.civ.isCityState())
+                    setAction(SpyAction.RiggingElections, 10)
+                else if (city.civ == civInfo)
+                    setAction(SpyAction.CounterIntelligence, 10)
+                else
                     startStealingTech()
-                }
             }
             SpyAction.Surveillance -> {
-                if (!getLocation()!!.civ.isMajorCiv()) return
+                if (!getCity().civ.isMajorCiv()) return
 
-                val stealableTechs = espionageManager.getTechsToSteal(getLocation()!!.civ)
+                val stealableTechs = espionageManager.getTechsToSteal(getCity().civ)
                 if (stealableTechs.isEmpty()) return
-                action = SpyAction.StealingTech // There are new techs to steal!
+                setAction(SpyAction.StealingTech) // There are new techs to steal!
             }
             SpyAction.StealingTech -> {
-                val stealableTechs = espionageManager.getTechsToSteal(getLocation()!!.civ)
+                val stealableTechs = espionageManager.getTechsToSteal(getCity().civ)
                 if (stealableTechs.isEmpty()) {
-                    action = SpyAction.Surveillance
-                    turnsRemainingForAction = 0
-                    val notificationString = "Your spy [$name] cannot steal any more techs from [${getLocation()!!.civ}] as we've already researched all the technology they know!"
-                    civInfo.addNotification(notificationString, getLocation()!!.location, NotificationCategory.Espionage, NotificationIcon.Spy)
+                    setAction(SpyAction.Surveillance)
+                    val notificationString = "Your spy [$name] cannot steal any more techs from [${getCity().civ}] as we've already researched all the technology they know!"
+                    civInfo.addNotification(notificationString, getCity().location, NotificationCategory.Espionage, NotificationIcon.Spy)
                     return
                 }
                 val techStealCost = stealableTechs.maxOfOrNull { civInfo.gameInfo.ruleset.technologies[it]!!.cost }!!
-                var progressThisTurn = getLocation()!!.cityStats.currentCityStats.science
+                var progressThisTurn = getCity().cityStats.currentCityStats.science
                 // 33% spy bonus for each level
                 progressThisTurn *= (rank + 2f) / 3f
                 progressThisTurn *= getEfficiencyModifier().toFloat()
@@ -133,7 +136,7 @@ class Spy private constructor() : IsPartOfGameInfoSerialization {
 
                 val oldSpyName = name
                 name = espionageManager.getSpyName()
-                action = SpyAction.None
+                setAction(SpyAction.None)
                 rank = espionageManager.getStartingSpyRank()
                 civInfo.addNotification("We have recruited a new spy name [$name] after [$oldSpyName] was killed.",
                     NotificationCategory.Espionage, NotificationIcon.Spy)
@@ -148,18 +151,17 @@ class Spy private constructor() : IsPartOfGameInfoSerialization {
         }
     }
 
-    fun startStealingTech() {
-        action = SpyAction.StealingTech
-        turnsRemainingForAction = 0
+    private fun startStealingTech() {
+        setAction(SpyAction.StealingTech)
         progressTowardsStealingTech = 0
     }
 
     private fun stealTech() {
-        val city = getLocation()!!
+        val city = getCity()
         val otherCiv = city.civ
         val randomSeed = randomSeed()
 
-        val stolenTech = espionageManager.getTechsToSteal(getLocation()!!.civ)
+        val stolenTech = espionageManager.getTechsToSteal(getCity().civ)
             .randomOrNull(Random(randomSeed)) // Could be improved to for example steal the most expensive tech or the tech that has the least progress as of yet
         if (stolenTech != null) {
             civInfo.tech.addTechnology(stolenTech)
@@ -203,7 +205,7 @@ class Spy private constructor() : IsPartOfGameInfoSerialization {
     }
 
     private fun rigElection() {
-        val city = getLocation()!!
+        val city = getCity()
         val cityStateCiv = city.civ
         // TODO: Simple implementation, please implement this in the future. This is a guess.
         turnsRemainingForAction = 10
@@ -228,7 +230,7 @@ class Spy private constructor() : IsPartOfGameInfoSerialization {
             }
         }
         // Starts at 10 influence and increases by 3 for each extra rank.
-        cityStateCiv.getDiplomacyManager(civInfo).addInfluence(7f + getSpyRank() * 3)
+        cityStateCiv.getDiplomacyManager(civInfo).addInfluence(7f + rank * 3)
         civInfo.addNotification("Your spy successfully rigged the election in [$city]!", city.location,
             NotificationCategory.Espionage, NotificationIcon.Spy)
     }
@@ -236,17 +238,17 @@ class Spy private constructor() : IsPartOfGameInfoSerialization {
     fun moveTo(city: City?) {
         if (city == null) { // Moving to spy hideout
             location = null
-            action = SpyAction.None
-            turnsRemainingForAction = 0
+            this.city = null
+            setAction(SpyAction.None)
             return
         }
         location = city.location
-        action = SpyAction.Moving
-        turnsRemainingForAction = 1
+        this.city = city
+        setAction(SpyAction.Moving, 1)
     }
 
     fun canMoveTo(city: City): Boolean {
-        if (getLocation() == city) return true
+        if (getCityOrNull() == city) return true
         if (!city.getCenterTile().isExplored(civInfo)) return false
         return espionageManager.getSpyAssignedToCity(city) == null
     }
@@ -262,30 +264,28 @@ class Spy private constructor() : IsPartOfGameInfoSerialization {
         else return false
     }
 
-    fun getLocation(): City? {
+    /** Returns the City this Spy is in, or `null` if it is in the hideout. */
+    fun getCityOrNull(): City? {
         if (location == null) return null
-        return civInfo.gameInfo.tileMap[location!!].getCity()
+        if (city == null) city = civInfo.gameInfo.tileMap[location!!].getCity()
+        return city
     }
 
-    fun getLocationName(): String {
-        return getLocation()?.name ?: Constants.spyHideout
-    }
+    /** Non-null version of [getCityOrNull] for the frequent case it is known the spy cannot be in the hideout.
+     *  @throws NullPointerException if the spy is in the hideout */
+    fun getCity(): City = getCityOrNull()!!
 
-    fun getSpyRank(): Int {
-        return rank
-    }
+    fun getLocationName() = getCityOrNull()?.name ?: Constants.spyHideout
 
     fun levelUpSpy() {
         //TODO: Make the spy level cap dependent on some unique
         if (rank >= 3) return
-        civInfo.addNotification("Your spy [$name] has leveled up!", LocationAction(getLocation()!!.location),
+        civInfo.addNotification("Your spy [$name] has leveled up!", LocationAction(getCity().location),
             NotificationCategory.Espionage, NotificationIcon.Spy)
         rank++
     }
 
-    fun getSkillModifier(): Int {
-        return getSpyRank() * 30
-    }
+    private fun getSkillModifier() = rank * 30
 
     /**
      * Gets a friendly and enemy efficiency uniques for the spy at the location
@@ -294,7 +294,7 @@ class Spy private constructor() : IsPartOfGameInfoSerialization {
     fun getEfficiencyModifier(): Double {
         val friendlyUniques: Sequence<Unique>
         val enemyUniques: Sequence<Unique>
-        val city = getLocation()
+        val city = getCityOrNull()
         when {
             city == null -> {
                 // Spy is in hideout - effectiveness won't matter
@@ -321,8 +321,7 @@ class Spy private constructor() : IsPartOfGameInfoSerialization {
     private fun killSpy() {
         // We don't actually remove this spy object, we set them as dead and let them revive
         moveTo(null)
-        action = SpyAction.Dead
-        turnsRemainingForAction = 5
+        setAction(SpyAction.Dead, 5)
         rank = 1
     }
 

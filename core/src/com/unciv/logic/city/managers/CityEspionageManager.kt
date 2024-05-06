@@ -26,7 +26,7 @@ class CityEspionageManager : IsPartOfGameInfoSerialization {
     }
 
     fun hasSpyOf(civInfo: Civilization): Boolean {
-        return civInfo.espionageManager.spyList.any { it.getLocation() == city }
+        return civInfo.espionageManager.spyList.any { it.getCityOrNull() == city }
     }
 
     private fun getAllStationedSpies(): List<Spy> {

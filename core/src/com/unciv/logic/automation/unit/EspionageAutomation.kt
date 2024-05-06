@@ -1,6 +1,5 @@
 package com.unciv.logic.automation.unit
 
-import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
 import com.unciv.models.Spy
 import com.unciv.models.SpyAction
@@ -15,7 +14,7 @@ class EspionageAutomation(val civInfo: Civilization) {
 
     private val getCivsToStealFromSorted: List<Civilization> =
         civsToStealFrom.sortedBy { otherCiv -> civInfo.espionageManager.spyList
-            .count { it.isDoingWork() && it.getLocation()?.civ == otherCiv }
+            .count { it.isDoingWork() && it.getCityOrNull()?.civ == otherCiv }
         }.toList()
 
     private val cityStatesToRig: List<Civilization> by lazy {
