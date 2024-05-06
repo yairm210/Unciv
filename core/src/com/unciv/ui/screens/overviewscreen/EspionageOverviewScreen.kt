@@ -124,7 +124,7 @@ class EspionageOverviewScreen(val civInfo: Civilization, val worldScreen: WorldS
 
         citySelectionTable.add()
         citySelectionTable.add("Spy Hideout".toLabel())
-        citySelectionTable.add()
+        citySelectionTable.add(getSpyIcons(manager.getIdleSpies()))
         val moveSpyHereButton = MoveToCityButton(null)
         citySelectionTable.add(moveSpyHereButton).row()
 
@@ -152,20 +152,36 @@ class EspionageOverviewScreen(val civInfo: Civilization, val worldScreen: WorldS
         citySelectionTable.add(ImageGetter.getNationPortrait(city.civ.nation, 30f))
             .padLeft(20f)
         citySelectionTable.add(city.name.toLabel(hideIcons = true))
-        if (city.espionage.hasSpyOf(civInfo)) {
-            citySelectionTable.add(
-                ImageGetter.getImage("OtherIcons/Spy_White").apply {
-                    setSize(30f)
-                    color = Color.WHITE
-                }
-            )
-        } else {
-            citySelectionTable.add()
-        }
+        citySelectionTable.add(getSpyIcons(manager.getSpiesInCity(city)))
 
         val moveSpyHereButton = MoveToCityButton(city)
         citySelectionTable.add(moveSpyHereButton)
         citySelectionTable.row()
+    }
+
+    private fun getSpyIcon(spy: Spy) = Table().apply {
+        add (ImageGetter.getImage("OtherIcons/Spy_White").apply {
+            color = Color.WHITE
+        }).size(30f)
+        val color = when(spy.rank) {
+            1 -> Color.BROWN
+            2 -> Color.LIGHT_GRAY
+            3 -> Color.GOLD
+            else -> return@apply
+        }
+        val starTable = Table()
+        repeat(spy.rank) {
+            val star = ImageGetter.getImage("OtherIcons/Star")
+            star.color = color
+            starTable.add(star).size(8f).pad(1f).row()
+        }
+        add(starTable).center().padLeft(-4f)
+    }
+
+    private fun getSpyIcons(spies: Iterable<Spy>) = Table().apply {
+        defaults().space(0f, 2f, 0f, 2f)
+        for (spy in spies)
+            add(getSpyIcon(spy))
     }
 
     // city == null is interpreted as 'spy hideout'
