@@ -5,6 +5,7 @@ import com.unciv.Constants
 import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
+import com.unciv.logic.civilization.LocationAction
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
@@ -209,7 +210,7 @@ class Spy private constructor() : IsPartOfGameInfoSerialization {
 
         if (cityStateCiv.getAllyCiv() != null && cityStateCiv.getAllyCiv() != civInfo.civName) {
             val allyCiv = civInfo.gameInfo.getCivilization(cityStateCiv.getAllyCiv()!!)
-            val defendingSpy = allyCiv.espionageManager.getSpyAssignedToCity(getLocation()!!)
+            val defendingSpy = allyCiv.espionageManager.getSpyAssignedToCity(city)
             if (defendingSpy != null) {
                 var spyResult = Random(randomSeed()).nextInt(120)
                 spyResult -= getSkillModifier()
@@ -217,7 +218,7 @@ class Spy private constructor() : IsPartOfGameInfoSerialization {
                 if (spyResult > 100) {
                     // The Spy was killed
                     allyCiv.addNotification("A spy from [${civInfo.civName}] tried to rig elections and was found and killed in [${city}] by [${defendingSpy.name}]!",
-                        getLocation()!!.location, NotificationCategory.Espionage, NotificationIcon.Spy)
+                        city.location, NotificationCategory.Espionage, NotificationIcon.Spy)
                     civInfo.addNotification("Your spy [$name] was killed trying to rig the election in [$city]!", city.location,
                         NotificationCategory.Espionage, NotificationIcon.Spy)
                     killSpy()
@@ -277,13 +278,8 @@ class Spy private constructor() : IsPartOfGameInfoSerialization {
     fun levelUpSpy() {
         //TODO: Make the spy level cap dependent on some unique
         if (rank >= 3) return
-        if (getLocation() != null) {
-            civInfo.addNotification("Your spy [$name] has leveled up!", getLocation()!!.location,
-                NotificationCategory.Espionage, NotificationIcon.Spy)
-        } else {
-            civInfo.addNotification("Your spy [$name] has leveled up!",
-                NotificationCategory.Espionage, NotificationIcon.Spy)
-        }
+        civInfo.addNotification("Your spy [$name] has leveled up!", LocationAction(getLocation()!!.location),
+            NotificationCategory.Espionage, NotificationIcon.Spy)
         rank++
     }
 
@@ -296,20 +292,25 @@ class Spy private constructor() : IsPartOfGameInfoSerialization {
      * @return a value centered around 100 for the work efficiency of the spy, won't be negative
      */
     fun getEfficiencyModifier(): Double {
-        lateinit var friendlyUniques: Sequence<Unique>
-        lateinit var enemyUniques: Sequence<Unique>
-        if (getLocation() != null) {
-            val city = getLocation()!!
-            if (city.civ == civInfo) {
+        val friendlyUniques: Sequence<Unique>
+        val enemyUniques: Sequence<Unique>
+        val city = getLocation()
+        when {
+            city == null -> {
+                // Spy is in hideout - effectiveness won't matter
+                friendlyUniques = civInfo.getMatchingUniques(UniqueType.SpyEffectiveness)
+                enemyUniques = sequenceOf()
+            }
+            city.civ == civInfo -> {
+                // Spy is in our own city
                 friendlyUniques = city.getMatchingUniques(UniqueType.SpyEffectiveness, StateForConditionals(city), includeCivUniques = true)
                 enemyUniques = sequenceOf()
-            } else {
+            }
+            else -> {
+                // Spy is active in a foreign city
                 friendlyUniques = civInfo.getMatchingUniques(UniqueType.SpyEffectiveness)
                 enemyUniques = city.getMatchingUniques(UniqueType.EnemySpyEffectiveness, StateForConditionals(city), includeCivUniques = true)
             }
-        } else {
-            friendlyUniques = civInfo.getMatchingUniques(UniqueType.SpyEffectiveness)
-            enemyUniques = sequenceOf()
         }
         var totalEfficiency = 1.0
         totalEfficiency *= (100.0 + friendlyUniques.sumOf { it.params[0].toInt() }) / 100
@@ -317,7 +318,7 @@ class Spy private constructor() : IsPartOfGameInfoSerialization {
         return totalEfficiency.coerceAtLeast(0.0)
     }
 
-    fun killSpy() {
+    private fun killSpy() {
         // We don't actually remove this spy object, we set them as dead and let them revive
         moveTo(null)
         action = SpyAction.Dead
