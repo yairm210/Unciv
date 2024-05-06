@@ -89,10 +89,14 @@ class Spy private constructor() : IsPartOfGameInfoSerialization {
         if (action.hasTurns && --turnsRemainingForAction > 0) return
         when (action) {
             SpyAction.None -> return
-            SpyAction.Moving ->
-                // Your own cities are certainly familiar surroundings, so establish network quickly
-                // Should depend on cultural familiarity level if that is ever implemented inter-civ
-                setAction(SpyAction.EstablishNetwork, if (getCity().civ == civInfo) 1 else 3)
+            SpyAction.Moving -> {
+                if (getCity().civ == civInfo)
+                    // Your own cities are certainly familiar surroundings, so skip establishing a network
+                    setAction(SpyAction.CounterIntelligence, 10)
+                else
+                    // Should depend on cultural familiarity level if that is ever implemented inter-civ
+                    setAction(SpyAction.EstablishNetwork, 3)
+            }
             SpyAction.EstablishNetwork -> {
                 val city = getCity() // This should never throw an exception, as going to the hideout sets your action to None.
                 if (city.civ.isCityState())
@@ -272,11 +276,20 @@ class Spy private constructor() : IsPartOfGameInfoSerialization {
         rank++
     }
 
+    /** Zero-based modifier expressing shift of probabilities from Spy Rank
+     *
+     *  100 units change one step in results, there are 4 such steps, and the default random spans 300 units and excludes the best result (undetected success).
+     *  Thus the return value translates into (return / 3) percent chance to get the very best result, reducing the chance to get the worst result (kill) by the same amount.
+     *  The same modifier from defending counter-intelligence spies goes linearly in the opposite direction.
+     *  With the range of this function being hardcoded to 30..90 (and 0 for no defensive spy present), ranks cannot guarantee either best or worst outcome.
+     *  Or - chance range of best result is 0% (rank 1 vs rank 3 defender) to 30% (rank 3 vs no defender), range of worst is 53% to 3%, respectively.
+     */
+    // Todo Moddable as some global and/or in-game-gainable Uniques?
     private fun getSkillModifier() = rank * 30
 
     /**
      * Gets a friendly and enemy efficiency uniques for the spy at the location
-     * @return a value centered around 100 for the work efficiency of the spy, won't be negative
+     * @return a value centered around 1.0 for the work efficiency of the spy, won't be negative
      */
     fun getEfficiencyModifier(): Double {
         val friendlyUniques: Sequence<Unique>
