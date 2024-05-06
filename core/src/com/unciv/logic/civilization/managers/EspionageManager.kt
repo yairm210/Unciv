@@ -45,8 +45,7 @@ class EspionageManager : IsPartOfGameInfoSerialization {
     fun getSpyName(): String {
         val usedSpyNames = spyList.map { it.name }.toHashSet()
         val validSpyNames = civInfo.nation.spyNames.filter { it !in usedSpyNames }
-        if (validSpyNames.isEmpty()) { return "Spy ${spyList.size+1}" } // +1 as non-programmers count from 1
-        return validSpyNames.random()
+        return validSpyNames.randomOrNull() ?: "Spy ${spyList.size+1}" // +1 as non-programmers count from 1
     }
 
     fun addSpy(): Spy {
@@ -74,15 +73,15 @@ class EspionageManager : IsPartOfGameInfoSerialization {
         return techsToSteal
     }
 
-    fun getSpiesInCity(city: City): MutableList<Spy> {
-        return spyList.filter { it.getLocation() == city }.toMutableList()
+    fun getSpiesInCity(city: City): List<Spy> {
+        return spyList.filterTo(mutableListOf()) { it.getCityOrNull() == city }
     }
 
     fun getStartingSpyRank(): Int = 1 + civInfo.getMatchingUniques(UniqueType.SpyStartingLevel).sumOf { it.params[0].toInt() }
 
     /**
      * Returns a list of all cities with our spies in them.
-     * The list needs to be stable accross calls on the same turn.
+     * The list needs to be stable across calls on the same turn.
      */
     fun getCitiesWithOurSpies(): List<City> = spyList.filter { it.isSetUp() }.mapNotNull { it.getLocation() }
 

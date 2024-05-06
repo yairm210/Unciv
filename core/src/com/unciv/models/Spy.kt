@@ -27,19 +27,25 @@ enum class SpyAction(val displayString: String) {
 }
 
 
-class Spy() : IsPartOfGameInfoSerialization {
-    // `location == null` means that the spy is in its hideout
-    private var location: Vector2? = null
+class Spy private constructor() : IsPartOfGameInfoSerialization {
     lateinit var name: String
-    var action = SpyAction.None
         private set
     var rank: Int = 1
+        private set
+
+    // `location == null` means that the spy is in its hideout
+    private var location: Vector2? = null
+
+    var action = SpyAction.None
+        private set
+
     var turnsRemainingForAction = 0
         private set
     private var progressTowardsStealingTech = 0
 
     @Transient
     lateinit var civInfo: Civilization
+        private set
 
     @Transient
     private lateinit var espionageManager: EspionageManager
@@ -132,13 +138,12 @@ class Spy() : IsPartOfGameInfoSerialization {
                     NotificationCategory.Espionage, NotificationIcon.Spy)
             }
             SpyAction.CounterIntelligence -> {
-                // Counter inteligence spies don't do anything here
+                // Counter intelligence spies don't do anything here
                 // However the AI will want to keep track of how long a spy has been doing counter intelligence for
-                // Once turnRemainingForAction is <= 0 the spy won't be considered to be doing work any more
+                // Once turnsRemainingForAction is <= 0 the spy won't be considered to be doing work any more
                 --turnsRemainingForAction
                 return
             }
-            else -> return // Not implemented yet, so don't do anything
         }
     }
 
@@ -151,18 +156,19 @@ class Spy() : IsPartOfGameInfoSerialization {
     private fun stealTech() {
         val city = getLocation()!!
         val otherCiv = city.civ
-        val randomSeed = city.location.x * city.location.y + 123f * civInfo.gameInfo.turns
+        val randomSeed = randomSeed()
 
         val stolenTech = espionageManager.getTechsToSteal(getLocation()!!.civ)
-            .randomOrNull(Random(randomSeed.toInt())) // Could be improved to for example steal the most expensive tech or the tech that has the least progress as of yet
+            .randomOrNull(Random(randomSeed)) // Could be improved to for example steal the most expensive tech or the tech that has the least progress as of yet
         if (stolenTech != null) {
             civInfo.tech.addTechnology(stolenTech)
         }
+
         // Lower is better
-        var spyResult = Random(randomSeed.toInt()).nextInt(300)
+        var spyResult = Random(randomSeed).nextInt(300)
         // Add our spies experience
         spyResult -= getSkillModifier()
-        // Subtract the experience of the counter inteligence spies
+        // Subtract the experience of the counter intelligence spies
         val defendingSpy = city.civ.espionageManager.getSpyAssignedToCity(city)
         spyResult += defendingSpy?.getSkillModifier() ?: 0
 
@@ -205,8 +211,7 @@ class Spy() : IsPartOfGameInfoSerialization {
             val allyCiv = civInfo.gameInfo.getCivilization(cityStateCiv.getAllyCiv()!!)
             val defendingSpy = allyCiv.espionageManager.getSpyAssignedToCity(getLocation()!!)
             if (defendingSpy != null) {
-                val randomSeed = city.location.x * city.location.y + 123f * civInfo.gameInfo.turns
-                var spyResult = Random(randomSeed.toInt()).nextInt(120)
+                var spyResult = Random(randomSeed()).nextInt(120)
                 spyResult -= getSkillModifier()
                 spyResult += defendingSpy.getSkillModifier()
                 if (spyResult > 100) {
@@ -321,4 +326,8 @@ class Spy() : IsPartOfGameInfoSerialization {
     }
 
     fun isAlive(): Boolean = action != SpyAction.Dead
+
+    /** Anti-save-scum: Deterministic random from city and turn
+     *  @throws NullPointerException for spies in the hideout */
+    private fun randomSeed() = (getCity().run { location.x * location.y } + 123f * civInfo.gameInfo.turns).toInt()
 }

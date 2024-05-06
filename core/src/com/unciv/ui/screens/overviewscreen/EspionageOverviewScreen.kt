@@ -180,8 +180,7 @@ class EspionageOverviewScreen(val civInfo: Civilization, val worldScreen: WorldS
 
     private fun resetSelection() {
         selectedSpy = null
-        if (selectedSpyButton != null)
-            selectedSpyButton!!.label.setText("Move".tr())
+        selectedSpyButton?.label?.setText("Move".tr())
         selectedSpyButton = null
         for ((button, _) in moveSpyHereButtons)
             button.isVisible = false
