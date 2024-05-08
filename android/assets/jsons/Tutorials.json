@@ -504,7 +504,7 @@
             {},
             {"text":"Reveal known resources on world screen","header":5,"color":"#fa0"},
             {"text":"In the Resources overview, click on a resource icon to center the world screen on tiles already discovered and providing this resource."},
-            {"text":"Alternatively, click on the \"Unimproved\" number to center the world screen only on owned tiles where the resource is not improved."},
+            {"text":"Alternatively, click on the \"Unimproved\" number to center the world screen only on owned (by you or your allied City-states) tiles where the resource is not improved."},
             {"text":"If more than one tile is available, click repeatedly on the notification to cycle through all of them."},
             {},
             {"text":"Show diagram line colors","header":5,"color":"#fa0"},
