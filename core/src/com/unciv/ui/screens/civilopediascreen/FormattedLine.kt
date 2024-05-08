@@ -225,7 +225,7 @@ class FormattedLine (
                 yield(CivilopediaCategories.Wonder to ruleSet.buildings.filter { it.value.isAnyWonder() })
             }
             val result = HashMap<String, CivilopediaCategories>()
-            allObjectMapsSequence.filter { !it.first.hide }
+            allObjectMapsSequence
                 .flatMap { pair -> pair.second.keys.asSequence().map { key -> pair.first to key } }
                 .forEach {
                     result[it.second] = it.first
