@@ -1,6 +1,7 @@
 package com.unciv.models.ruleset.unit
 
 import com.unciv.Constants
+import com.unciv.logic.GameInfo
 import com.unciv.logic.MultiFilter
 import com.unciv.logic.city.City
 import com.unciv.logic.city.CityConstructions
@@ -53,6 +54,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
     fun techsThatObsoleteThis(): Sequence<String> = if (obsoleteTech == null) sequenceOf() else sequenceOf(obsoleteTech!!)
     fun techsAtWhichAutoUpgradeInProduction(): Sequence<String> = techsThatObsoleteThis()
     fun techsAtWhichNoLongerAvailable(): Sequence<String> = techsThatObsoleteThis()
+    @Suppress("unused") // Keep the how-to around
     fun isObsoletedBy(techName: String): Boolean = techsThatObsoleteThis().contains(techName)
     var upgradesTo: String? = null
     var replaces: String? = null
@@ -79,6 +81,10 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
 
     override fun getCivilopediaTextLines(ruleset: Ruleset): List<FormattedLine> =
             BaseUnitDescriptions.getCivilopediaTextLines(this, ruleset)
+
+    override fun isHiddenBySettings(gameInfo: GameInfo) =
+        super<INonPerpetualConstruction>.isHiddenBySettings(gameInfo) ||
+        (!gameInfo.gameParameters.nuclearWeaponsEnabled && isNuclearWeapon())
 
     fun getUpgradeUnits(stateForConditionals: StateForConditionals? = null): Sequence<String> {
         return sequence {
@@ -139,7 +145,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         val baseUnitMatchingUniques = super<RulesetObject>.getMatchingUniques(uniqueTemplate, stateForConditionals)
         return if (::ruleset.isInitialized) baseUnitMatchingUniques +
                 type.getMatchingUniques(uniqueTemplate, stateForConditionals)
-        else baseUnitMatchingUniques // for e.g. Mod Checker, we may chech a BaseUnit's uniques without initializing ruleset
+        else baseUnitMatchingUniques // for e.g. Mod Checker, we may check a BaseUnit's uniques without initializing ruleset
     }
 
     override fun getBaseBuyCost(city: City, stat: Stat): Float? {
@@ -208,7 +214,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         if (civ.cache.uniqueUnits.any { it.replaces == name })
             yield(RejectionReasonType.ReplacedByOurUnique.toInstance("Our unique unit replaces this"))
 
-        if (!civ.gameInfo.gameParameters.nuclearWeaponsEnabled && isNuclearWeapon())
+        if (isHiddenBySettings(civ.gameInfo))
             yield(RejectionReasonType.DisabledBySetting.toInstance())
 
         val stateForConditionals = StateForConditionals(civ, city)
@@ -361,7 +367,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
     }
 
 
-    val cachedMatchesFilterResult = HashMap<String, Boolean>()
+    private val cachedMatchesFilterResult = HashMap<String, Boolean>()
 
     /** Implements [UniqueParameterType.BaseUnitFilter][com.unciv.models.ruleset.unique.UniqueParameterType.BaseUnitFilter] */
     fun matchesFilter(filter: String): Boolean {
@@ -414,7 +420,8 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
     fun isGreatPerson() = getMatchingUniques(UniqueType.GreatPerson).any()
     fun isGreatPersonOfType(type: String) = getMatchingUniques(UniqueType.GreatPerson).any { it.params[0] == type }
 
-    fun isNuclearWeapon() = hasUnique(UniqueType.NuclearWeapon)
+    /** Has a MapUnit implementation that does not ignore conditionals, which should be usually used */
+    private fun isNuclearWeapon() = hasUnique(UniqueType.NuclearWeapon, StateForConditionals.IgnoreConditionals)
 
     fun movesLikeAirUnits() = type.getMovementType() == UnitMovementType.Air
 

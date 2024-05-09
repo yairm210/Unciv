@@ -8,7 +8,8 @@ import kotlin.random.Random
 
 class EspionageAutomation(val civInfo: Civilization) {
     private val civsToStealFrom: List<Civilization> by lazy {
-        civInfo.getKnownCivs().filter {otherCiv -> otherCiv.isMajorCiv() && otherCiv.cities.any { it.getCenterTile().isVisible(civInfo) }
+        civInfo.getKnownCivs().filter {otherCiv -> otherCiv.isMajorCiv()
+            && otherCiv.cities.any { it.getCenterTile().isExplored(civInfo) && civInfo.espionageManager.getSpyAssignedToCity(it) == null }
             && civInfo.espionageManager.getTechsToSteal(otherCiv).isNotEmpty() }.toList()
     }
 
@@ -57,17 +58,19 @@ class EspionageAutomation(val civInfo: Civilization) {
         if (civsToStealFrom.isEmpty()) return false
         // We want to move the spy to the city with the highest science generation
         // Players can't usually figure this out so lets do highest population instead
-        spy.moveTo(getCivsToStealFromSorted.first().cities.filter { spy.canMoveTo(it) }.maxByOrNull { it.population.population })
-        return spy.action == SpyAction.StealingTech
+        val cityToMoveTo = getCivsToStealFromSorted.first().cities.filter { spy.canMoveTo(it) }.maxByOrNull { it.population.population }
+        spy.moveTo(cityToMoveTo)
+        return cityToMoveTo != null
     }
 
     /**
      * Moves the spy to a random city-state
      */
     private fun automateSpyRigElection(spy: Spy): Boolean {
-        val potentialCities = cityStatesToRig.flatMap { it.cities }.filter { !it.isBeingRazed && spy.canMoveTo(it) }
-        spy.moveTo(potentialCities.randomOrNull())
-        return spy.action == SpyAction.RiggingElections
+        val cityToMoveTo = cityStatesToRig.flatMap { it.cities }.filter { !it.isBeingRazed && spy.canMoveTo(it) && (it.civ.getDiplomacyManager(civInfo).getInfluence() < 150 || it.civ.getAllyCiv() != civInfo.civName) }
+            .maxByOrNull { it.civ.getDiplomacyManager(civInfo).getInfluence() }
+        spy.moveTo(cityToMoveTo)
+        return cityToMoveTo != null
     }
 
     /**

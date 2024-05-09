@@ -7,6 +7,7 @@ import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
+import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
 import com.unciv.logic.civilization.managers.EspionageManager
 import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.Unique
@@ -43,12 +44,13 @@ class Spy() : IsPartOfGameInfoSerialization {
     @Transient
     private lateinit var espionageManager: EspionageManager
 
-    constructor(name: String) : this() {
+    constructor(name: String, rank:Int) : this() {
         this.name = name
+        this.rank = rank
     }
 
     fun clone(): Spy {
-        val toReturn = Spy(name)
+        val toReturn = Spy(name, rank)
         toReturn.location = location
         toReturn.action = action
         toReturn.turnsRemainingForAction = turnsRemainingForAction
@@ -124,6 +126,7 @@ class Spy() : IsPartOfGameInfoSerialization {
                 val oldSpyName = name
                 name = espionageManager.getSpyName()
                 action = SpyAction.None
+                rank = espionageManager.getStartingSpyRank()
                 civInfo.addNotification("We have recruited a new spy name [$name] after [$oldSpyName] was killed.",
                     NotificationCategory.Espionage, NotificationIcon.Spy)
             }
@@ -186,6 +189,9 @@ class Spy() : IsPartOfGameInfoSerialization {
             killSpy()
         }
 
+        if (spyResult >= 100) {
+            otherCiv.getDiplomacyManager(civInfo).addModifier(DiplomaticModifiers.SpiedOnUs, -15f)
+        }
     }
 
     fun moveTo(city: City?) {
@@ -202,13 +208,14 @@ class Spy() : IsPartOfGameInfoSerialization {
 
     fun canMoveTo(city: City): Boolean {
         if (getLocation() == city) return true
-        if (!city.getCenterTile().isVisible(civInfo)) return false
+        if (!city.getCenterTile().isExplored(civInfo)) return false
         return espionageManager.getSpyAssignedToCity(city) == null
     }
 
     fun isSetUp() = action !in listOf(SpyAction.Moving, SpyAction.None, SpyAction.EstablishNetwork)
 
-    // Only returns true if the spy is doing a helpful and implemented action
+    fun isIdle(): Boolean =action == SpyAction.None || action == SpyAction.Surveillance
+
     fun isDoingWork(): Boolean {
         if (action == SpyAction.StealingTech || action == SpyAction.EstablishNetwork || action == SpyAction.Moving) return true
         if (action == SpyAction.RiggingElections && !civInfo.isAtWarWith(getLocation()!!.civ)) return true

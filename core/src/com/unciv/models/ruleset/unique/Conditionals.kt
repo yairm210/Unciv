@@ -196,6 +196,8 @@ object Conditionals {
             UniqueType.ConditionalDuringEra -> compareEra(condition.params[0]) { current, param -> current == param }
             UniqueType.ConditionalIfStartingInEra -> checkOnGameInfo { gameParameters.startingEra == condition.params[0] }
             UniqueType.ConditionalSpeed -> checkOnGameInfo { gameParameters.speed == condition.params[0] }
+            UniqueType.ConditionalVictoryEnabled -> checkOnGameInfo { gameParameters.victoryTypes.contains(condition.params[0]) }
+            UniqueType.ConditionalVictoryDisabled-> checkOnGameInfo { !gameParameters.victoryTypes.contains(condition.params[0]) }
             UniqueType.ConditionalTech -> checkOnCiv { tech.isResearched(condition.params[0]) }
             UniqueType.ConditionalNoTech -> checkOnCiv { !tech.isResearched(condition.params[0]) }
             UniqueType.ConditionalWhileResearching -> checkOnCiv { tech.currentTechnologyName() == condition.params[0] }

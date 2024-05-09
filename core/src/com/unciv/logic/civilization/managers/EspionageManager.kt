@@ -5,6 +5,7 @@ import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.Spy
+import com.unciv.models.ruleset.unique.UniqueType
 
 
 class EspionageManager : IsPartOfGameInfoSerialization {
@@ -14,6 +15,13 @@ class EspionageManager : IsPartOfGameInfoSerialization {
 
     @Transient
     lateinit var civInfo: Civilization
+
+    /**
+     * Part of the nextTurnAction of MoveSpies.
+     * We need to store if the player has clicked the button already
+     */
+    @Transient
+    var dismissedShouldMoveSpies = false
 
     fun clone(): EspionageManager {
         val toReturn = EspionageManager()
@@ -43,7 +51,7 @@ class EspionageManager : IsPartOfGameInfoSerialization {
 
     fun addSpy(): Spy {
         val spyName = getSpyName()
-        val newSpy = Spy(spyName)
+        val newSpy = Spy(spyName, getStartingSpyRank())
         newSpy.setTransients(civInfo)
         spyList.add(newSpy)
         return newSpy
@@ -70,6 +78,8 @@ class EspionageManager : IsPartOfGameInfoSerialization {
         return spyList.filter { it.getLocation() == city }.toMutableList()
     }
 
+    fun getStartingSpyRank(): Int = 1 + civInfo.getMatchingUniques(UniqueType.SpyStartingLevel).sumOf { it.params[0].toInt() }
+
     /**
      * Returns a list of all cities with our spies in them.
      * The list needs to be stable accross calls on the same turn.
@@ -77,4 +87,10 @@ class EspionageManager : IsPartOfGameInfoSerialization {
     fun getCitiesWithOurSpies(): List<City> = spyList.filter { it.isSetUp() }.mapNotNull { it.getLocation() }
 
     fun getSpyAssignedToCity(city: City): Spy? = spyList.firstOrNull {it.getLocation() == city}
+
+    /**
+     * Determines whether the NextTurnAction MoveSpies should be shown or not
+     * @return true if there are spies waiting to be moved
+     */
+    fun shouldShowMoveSpies(): Boolean = !dismissedShouldMoveSpies && spyList.any { it.isIdle() }
 }
