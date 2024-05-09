@@ -80,7 +80,7 @@ class Spy() : IsPartOfGameInfoSerialization {
                 val location = getLocation()!! // This should never throw an exception, as going to the hideout sets your action to None.
                 if (location.civ.isCityState()) {
                     action = SpyAction.RiggingElections
-                    turnsRemainingForAction = 10
+                    turnsRemainingForAction = getLocation()!!.civ.cityStateTurnsUntilElection - 1
                 } else if (location.civ == civInfo) {
                     action = SpyAction.CounterIntelligence
                     turnsRemainingForAction = 10
@@ -117,7 +117,7 @@ class Spy() : IsPartOfGameInfoSerialization {
             SpyAction.RiggingElections -> {
                 // No action done here
                 // Handled in CityStateFunctions.nextTurnElections()
-                turnsRemainingForAction = 0
+                turnsRemainingForAction = getLocation()!!.civ.cityStateTurnsUntilElection - 1
             }
             SpyAction.Dead -> {
                 --turnsRemainingForAction
