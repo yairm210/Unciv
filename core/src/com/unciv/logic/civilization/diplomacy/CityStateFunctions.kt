@@ -86,34 +86,33 @@ class CityStateFunctions(val civInfo: Civilization) {
             var totalVotes = spiesVotes.sumOf { it.second } + 20
 
             val randomSeed = capital.location.x * capital.location.y + 123f * civInfo.gameInfo.turns
-            Random(randomSeed.toInt()).nextInt(totalVotes)
+            var winningVotes = Random(randomSeed.toInt()).nextInt(totalVotes)
 
             // There may be no winner, in that case all spies will loose 5 influence
             var winner: Civilization? = null
             for (vote in spiesVotes) {
-                if (vote.second >= totalVotes) {
+                if (vote.second >= winningVotes) {
                     winner = vote.first.civInfo
                     break
                 } else {
-                    totalVotes -= vote.second
+                    winningVotes -= vote.second
                 }
             }
 
             if (winner != null) {
-                // Check if we should send an extra message to the ally civ if they are not partaking in election rigging
                 val allyCiv = civInfo.getAllyCiv()?.let { civInfo.gameInfo.getCivilization(it) }
-                if (allyCiv != null && !spies.any { it.civInfo == allyCiv}) {
-                    allyCiv.addNotification("The election in [${civInfo.civName} were rigged by [${winner.civName}]]!", capital.location, NotificationCategory.Espionage, NotificationIcon.Spy)
-                }
 
                 // Winning civ gets influence and all others loose influence
-                for (civ in civInfo.getKnownCivs()) {
+                for (civ in civInfo.getKnownCivs().toList()) {
                     val influence = if (civ == winner) 20f else -5f
                     civInfo.getDiplomacyManager(civ).addInfluence(influence)
                     if (civ == winner)  {
                         civ.addNotification("Your spy successfully rigged the election in [${civInfo.civName}]!", capital.location, NotificationCategory.Espionage, NotificationIcon.Spy)
-                    } else {
+                    } else if (spies.any { it.civInfo == civ}) {
                         civ.addNotification("Your spy lost the election in [${civInfo.civName}] to [${winner.civName}]!", capital.location, NotificationCategory.Espionage, NotificationIcon.Spy)
+                    } else if (civ == allyCiv) {
+                        // If the previous ally has no spy in the city then we should notify them
+                        allyCiv.addNotification("The election in [${civInfo.civName} were rigged by [${winner.civName}]]!", capital.location, NotificationCategory.Espionage, NotificationIcon.Spy)
                     }
                 }
 
