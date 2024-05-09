@@ -753,7 +753,7 @@ class WorldMapHolder(
         val moveTileOverlayColor = if (unit.isPreparingParadrop()) Color.BLUE else Color.WHITE
         val tilesInMoveRange = unit.movement.getReachableTilesInCurrentTurn()
         // Prepare special Nuke blast radius display
-        val nukeBlastRadius = if (unit.baseUnit.isNuclearWeapon() && selectedTile != null && selectedTile != unit.getTile())
+        val nukeBlastRadius = if (unit.isNuclearWeapon() && selectedTile != null && selectedTile != unit.getTile())
             unit.getNukeBlastRadius() else -1
 
         // Z-Layer: 1
