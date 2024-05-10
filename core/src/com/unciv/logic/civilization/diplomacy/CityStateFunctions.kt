@@ -62,6 +62,9 @@ class CityStateFunctions(val civInfo: Civilization) {
                 civInfo.cityStateUniqueUnit = possibleUnits.random().name
         }
 
+        // Set turns to elections to a random number so not every city-state has the same election date
+        civInfo.cityStateTurnsUntilElection = Random.nextInt(15)
+
         // TODO: Return false if attempting to put a religious city-state in a game without religion
 
         return true
