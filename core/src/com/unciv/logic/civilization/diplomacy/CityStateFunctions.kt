@@ -72,7 +72,7 @@ class CityStateFunctions(val civInfo: Civilization) {
 
     fun nextTurnElections() {
         civInfo.cityStateTurnsUntilElection--
-        val capital = civInfo.cities.firstOrNull { it.isCapital() }
+        val capital = civInfo.getCapital()
         if (civInfo.cityStateTurnsUntilElection <= 0) {
             if (capital == null) return
             civInfo.cityStateTurnsUntilElection = 15
