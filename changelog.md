@@ -1,16 +1,12 @@
 ## 4.11.11
 
-Resolved  - Remove 'color civ areas on max zoomout' due to conflict with aircraft
-
 Nuclear weapon uniques accept conditionals
 
-More movement uniques that have problems with conditionals
-
 By SomeTroglodyte:
-- Console: `civ addpolicy` 
-- Resource Overview: Info on unavailable strategic and unimproved by allies 
-- Spy UI improvements 
-- Fix potential crash in console autocomplete 
+- Console: `civ addpolicy`
+- Resource Overview: Info on unavailable strategic and unimproved by allies
+- Spy UI improvements
+- Fix potential crash in console autocomplete
 
 ## 4.11.10
 
