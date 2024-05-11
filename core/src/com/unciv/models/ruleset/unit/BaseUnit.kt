@@ -420,7 +420,8 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
     fun isGreatPerson() = getMatchingUniques(UniqueType.GreatPerson).any()
     fun isGreatPersonOfType(type: String) = getMatchingUniques(UniqueType.GreatPerson).any { it.params[0] == type }
 
-    fun isNuclearWeapon() = hasUnique(UniqueType.NuclearWeapon)
+    /** Has a MapUnit implementation that does not ignore conditionals, which should be usually used */
+    private fun isNuclearWeapon() = hasUnique(UniqueType.NuclearWeapon, StateForConditionals.IgnoreConditionals)
 
     fun movesLikeAirUnits() = type.getMovementType() == UnitMovementType.Air
 

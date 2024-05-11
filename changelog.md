@@ -1,3 +1,13 @@
+## 4.11.11
+
+Nuclear weapon uniques accept conditionals
+
+By SomeTroglodyte:
+- Console: `civ addpolicy`
+- Resource Overview: Info on unavailable strategic and unimproved by allies
+- Spy UI improvements
+- Fix potential crash in console autocomplete
+
 ## 4.11.10
 
 By tuvus:

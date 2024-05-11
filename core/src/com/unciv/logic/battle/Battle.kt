@@ -97,7 +97,7 @@ object Battle {
      * This is meant to be called only after all prerequisite checks have been done.
      */
     fun attackOrNuke(attacker: ICombatant, attackableTile: AttackableTile): DamageDealt {
-        return if (attacker is MapUnitCombatant && attacker.unit.baseUnit.isNuclearWeapon()) {
+        return if (attacker is MapUnitCombatant && attacker.unit.isNuclearWeapon()) {
             Nuke.NUKE(attacker, attackableTile.tileToAttack)
             DamageDealt.None
         } else {

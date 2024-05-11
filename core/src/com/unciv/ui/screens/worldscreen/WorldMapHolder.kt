@@ -753,7 +753,7 @@ class WorldMapHolder(
         val moveTileOverlayColor = if (unit.isPreparingParadrop()) Color.BLUE else Color.WHITE
         val tilesInMoveRange = unit.movement.getReachableTilesInCurrentTurn()
         // Prepare special Nuke blast radius display
-        val nukeBlastRadius = if (unit.baseUnit.isNuclearWeapon() && selectedTile != null && selectedTile != unit.getTile())
+        val nukeBlastRadius = if (unit.isNuclearWeapon() && selectedTile != null && selectedTile != unit.getTile())
             unit.getNukeBlastRadius() else -1
 
         // Z-Layer: 1
@@ -906,21 +906,6 @@ class WorldMapHolder(
 
     override fun zoom(zoomScale: Float) {
         super.zoom(zoomScale)
-
-        if (scaleX == minZoom)
-            for (tileGroup in tileGroups.values){
-                val tile = tileGroup.tile
-                if (!worldScreen.selectedCiv.hasExplored(tile)) continue
-                val owner = tile.getOwner()
-                if (owner != null){
-                    val color = if (tile.isCityCenter()) owner.nation.getInnerColor() else owner.nation.getOuterColor()
-                    tileGroup.layerMisc.overlayTerrain(color, 0.7f)
-                }
-            }
-//         else
-//             for (tileGroup in tileGroups.values)
-//                 tileGroup.layerMisc.hideTerrainOverlay()
-
         clampCityButtonSize()
     }
 

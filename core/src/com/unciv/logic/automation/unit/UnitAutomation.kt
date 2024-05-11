@@ -195,7 +195,7 @@ object UnitAutomation {
         }
 
         // Note that not all nukes have to be air units
-        if (unit.baseUnit.isNuclearWeapon()) {
+        if (unit.isNuclearWeapon()) {
             return AirUnitAutomation.automateNukes(unit)
         }
 

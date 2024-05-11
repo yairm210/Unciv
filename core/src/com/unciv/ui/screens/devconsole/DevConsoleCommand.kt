@@ -25,6 +25,10 @@ internal inline fun <reified T: Enum<T>> findCliInput(param: String): T? {
     }
 }
 
+@Suppress("USELESS_CAST")  // not useless, filterIsInstance annotates `T` with `@NoInfer`
+internal inline fun <reified T: IRulesetObject> DevConsolePopup.findCliInput(param: String) =
+    (gameInfo.ruleset.allRulesetObjects().filterIsInstance<T>() as Sequence<T>).findCliInput(param)
+
 /** Returns the string to *add* to the existing command */
 internal fun getAutocompleteString(lastWord: String, allOptions: Iterable<String>, console: DevConsolePopup): String {
     console.showResponse(null, Color.WHITE)
@@ -73,9 +77,11 @@ open class ConsoleAction(val format: String, val action: (console: DevConsolePop
             it.removeSurrounding("<",">").removeSurrounding("[","]").removeSurrounding("\"")
         }
         if (formatParams.size < params.size) return ""
-        val formatParam = formatParams[params.lastIndex]
+        // It is possible we're here *with* another format parameter but an *empty* params (e.g. `tile addriver ` and hit tab) -> see else branch
+        val (formatParam, lastParam) = if (params.lastIndex in formatParams.indices)
+                formatParams[params.lastIndex] to params.last()
+            else formatParams.first() to ""
 
-        val lastParam = params.last()
         val options = when (formatParam) {
             "civName" -> console.gameInfo.civilizations.map { it.civName }
             "unitName" -> console.gameInfo.ruleset.units.keys
@@ -88,6 +94,7 @@ open class ConsoleAction(val format: String, val action: (console: DevConsolePop
             "religionName" -> console.gameInfo.religions.keys
             "buildingName" -> console.gameInfo.ruleset.buildings.keys
             "direction" -> RiverGenerator.RiverDirections.names
+            "policyName" -> console.gameInfo.ruleset.policyBranches.keys + console.gameInfo.ruleset.policies.keys
             else -> listOf()
         }
         return getAutocompleteString(lastParam, options, console)
