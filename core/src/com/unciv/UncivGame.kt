@@ -329,7 +329,7 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
     fun resetToWorldScreen(): WorldScreen {
         for (screen in screenStack.filter { it !is WorldScreen }) screen.dispose()
         screenStack.removeAll { it !is WorldScreen }
-        val worldScreen= screenStack.last() as WorldScreen
+        val worldScreen = screenStack.last() as WorldScreen
 
         // Re-initialize translations, images etc. that may have been 'lost' when we were playing around in NewGameScreen
         val ruleset = worldScreen.gameInfo.ruleset

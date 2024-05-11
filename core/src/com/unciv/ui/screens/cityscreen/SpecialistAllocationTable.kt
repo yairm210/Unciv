@@ -5,6 +5,7 @@ import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
+import com.unciv.ui.components.SmallButtonStyle
 import com.unciv.ui.components.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.components.extensions.addSeparatorVertical
 import com.unciv.ui.components.extensions.darken
@@ -16,15 +17,14 @@ import com.unciv.ui.components.input.onActivation
 import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.widgets.ExpanderTab
 import com.unciv.ui.images.ImageGetter
-import com.unciv.ui.popups.AnimatedMenuPopup
 import com.unciv.ui.screens.basescreen.BaseScreen
 
 class SpecialistAllocationTable(private val cityScreen: CityScreen) : Table(BaseScreen.skin) {
     val city = cityScreen.city
-    private val smallButtonStyle = AnimatedMenuPopup.SmallButtonStyle()
+    private val smallButtonStyle = SmallButtonStyle()
 
     fun update() {
-        // 5 columns: "-" unassignButton, AllocationTable, "+" assignButton, SeparatorVertical, SpecialistsStatsTabe
+        // 5 columns: "-" unassignButton, AllocationTable, "+" assignButton, SeparatorVertical, SpecialistsStatsTable
         clear()
 
         // Auto/Manual Specialists Toggle

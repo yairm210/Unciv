@@ -808,17 +808,13 @@ object UniqueTriggerActivation {
                     val currentEra = civInfo.getEra().name
                     for (otherCiv in civInfo.gameInfo.getAliveMajorCivs()) {
                         if (currentEra !in otherCiv.espionageManager.erasSpyEarnedFor) {
-                            val spyName = otherCiv.espionageManager.addSpy().name
+                            val spy = otherCiv.espionageManager.addSpy()
                             otherCiv.espionageManager.erasSpyEarnedFor.add(currentEra)
                             if (otherCiv == civInfo || otherCiv.knows(civInfo))
                             // We don't tell which civilization entered the new era, as that is done in the notification directly above this one
-                                otherCiv.addNotification("We have recruited [${spyName}] as a spy!", NotificationCategory.Espionage, NotificationIcon.Spy)
+                                spy.addNotification("We have recruited [${spy.name}] as a spy!")
                             else
-                                otherCiv.addNotification(
-                                    "After an unknown civilization entered the [${currentEra}], we have recruited [${spyName}] as a spy!",
-                                    NotificationCategory.Espionage,
-                                    NotificationIcon.Spy
-                                )
+                                spy.addNotification("After an unknown civilization entered the [$currentEra], we have recruited [${spy.name}] as a spy!")
                         }
                     }
                     true
@@ -840,8 +836,8 @@ object UniqueTriggerActivation {
                 if (!civInfo.gameInfo.isEspionageEnabled()) return null
 
                 return {
-                    val spyName = civInfo.espionageManager.addSpy().name
-                    civInfo.addNotification("We have recruited [${spyName}] as a spy!", NotificationCategory.Espionage, NotificationIcon.Spy)
+                    val spy = civInfo.espionageManager.addSpy()
+                    spy.addNotification("We have recruited [${spy.name}] as a spy!")
                     true
                 }
             }
