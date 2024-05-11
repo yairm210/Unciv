@@ -24,6 +24,7 @@ import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stat
+import com.unciv.ui.components.extensions.randomWeighted
 import com.unciv.ui.screens.victoryscreen.RankingType
 import kotlin.math.min
 import kotlin.math.pow
@@ -76,32 +77,22 @@ class CityStateFunctions(val civInfo: Civilization) {
         if (civInfo.cityStateTurnsUntilElection <= 0) {
             if (capital == null) return
             civInfo.cityStateTurnsUntilElection = 15
-            val spies = capital.espionage.getAllStationedSpies().filter { it.action == SpyAction.RiggingElections }
+            val spies= capital.espionage.getAllStationedSpies().filter { it.action == SpyAction.RiggingElections }
             if (spies.isEmpty()) return
 
-            fun getVotesFromSpy(spy: Spy): Int {
-                var votes = (civInfo.getDiplomacyManager(spy.civInfo).influence / 2).toInt()
-                votes += (spy.getSkillModifier() * spy.getEfficiencyModifier()).toInt() // ranges from 30 to 90
+            fun getVotesFromSpy(spy: Spy?): Float {
+                if (spy == null) return 20f
+                var votes = (civInfo.getDiplomacyManager(spy.civInfo).influence / 2)
+                votes += (spy.getSkillModifier() * spy.getEfficiencyModifier()).toFloat() // ranges from 30 to 90
                 return votes
             }
 
-            val spiesVotes = spies.map { Pair(it, getVotesFromSpy(it)) }
-            var totalVotes = spiesVotes.sumOf { it.second } + 20
-
+            val parties: MutableList<Spy?> = spies.toMutableList()
+            parties.add(null) // Null spy is a neuteral party in the election
             val randomSeed = capital.location.x * capital.location.y + 123f * civInfo.gameInfo.turns
-            var winningVotes = Random(randomSeed.toInt()).nextInt(totalVotes)
+            val winner: Civilization? = parties.randomWeighted(Random(randomSeed.toInt()))  { getVotesFromSpy(it) }?.civInfo
 
             // There may be no winner, in that case all spies will loose 5 influence
-            var winner: Civilization? = null
-            for (vote in spiesVotes) {
-                if (vote.second >= winningVotes) {
-                    winner = vote.first.civInfo
-                    break
-                } else {
-                    winningVotes -= vote.second
-                }
-            }
-
             if (winner != null) {
                 val allyCiv = civInfo.getAllyCiv()?.let { civInfo.gameInfo.getCivilization(it) }
 
