@@ -25,7 +25,7 @@ enum class SpyAction(val displayString: String, val hasTurns: Boolean, internal 
     RiggingElections("Rigging Elections", true, true) {
         override fun isDoingWork(spy: Spy) = !spy.civInfo.isAtWarWith(spy.getCity().civ)
     },
-    CounterIntelligence("Conducting Counter-intelligence", false, true) {
+    CounterIntelligence("Counter-intelligence", false, true) {
         override fun isDoingWork(spy: Spy) = spy.turnsRemainingForAction > 0
     },
     Dead("Dead", true, false),
