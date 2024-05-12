@@ -82,7 +82,7 @@ open class ConsoleAction(val format: String, val action: (console: DevConsolePop
                 formatParams[params.lastIndex] to params.last()
             else formatParams.first() to ""
 
-        val options = ConsoleParameterType.getOptions(formatParam, console)
+        val options = ConsoleParameterType.multiOptions(formatParam, console)
         return getAutocompleteString(lastParam, options, console)
     }
 

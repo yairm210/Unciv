@@ -37,5 +37,6 @@ internal enum class ConsoleParameterType(
     companion object {
         fun safeValueOf(name: String): ConsoleParameterType = values().firstOrNull { it.name == name } ?: none
         fun getOptions(name: String, console: DevConsolePopup) = safeValueOf(name).getOptions(console)
+        fun multiOptions(name: String, console: DevConsolePopup) = name.split('|').flatMap { getOptions(it, console) }
     }
 }
