@@ -22,7 +22,7 @@ enum class SpyAction(val displayString: String, val hasTurns: Boolean, internal 
     EstablishNetwork("Establishing Network", true, false, true),
     Surveillance("Observing City", false, true),
     StealingTech("Stealing Tech", false, true, true),
-    RiggingElections("Rigging Elections", true, true) {
+    RiggingElections("Rigging Elections", false, true) {
         override fun isDoingWork(spy: Spy) = !spy.civInfo.isAtWarWith(spy.getCity().civ)
     },
     CounterIntelligence("Conducting Counter-intelligence", false, true) {
@@ -257,7 +257,7 @@ class Spy private constructor() : IsPartOfGameInfoSerialization {
      *  Or - chance range of best result is 0% (rank 1 vs rank 3 defender) to 30% (rank 3 vs no defender), range of worst is 53% to 3%, respectively.
      */
     // Todo Moddable as some global and/or in-game-gainable Uniques?
-    private fun getSkillModifier() = rank * 30
+    fun getSkillModifier() = rank * 30
 
     /**
      * Gets a friendly and enemy efficiency uniques for the spy at the location
