@@ -19,6 +19,7 @@ import com.unciv.models.metadata.Player
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.ruleset.nation.Nation
 import com.unciv.models.translations.tr
+import com.unciv.ui.components.SmallButtonStyle
 import com.unciv.ui.components.extensions.disable
 import com.unciv.ui.components.extensions.enable
 import com.unciv.ui.components.extensions.pad
@@ -28,7 +29,6 @@ import com.unciv.ui.components.extensions.toTextButton
 import com.unciv.ui.components.input.onActivation
 import com.unciv.ui.components.input.onChange
 import com.unciv.ui.components.widgets.LoadingImage
-import com.unciv.ui.popups.AnimatedMenuPopup
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.victoryscreen.LoadMapPreview
 import com.unciv.utils.Concurrency
@@ -53,7 +53,7 @@ class MapFileSelectTable(
     private val mapCategorySelectBox = SelectBox<String>(BaseScreen.skin)
     private val mapFileSelectBox = SelectBox<MapWrapper>(BaseScreen.skin)
     private val loadingIcon = LoadingImage(30f, LoadingImage.Style(loadingColor = Color.SCARLET))
-    private val useNationsFromMapButton = "Select players from starting locations".toTextButton(AnimatedMenuPopup.SmallButtonStyle())
+    private val useNationsFromMapButton = "Select players from starting locations".toTextButton(SmallButtonStyle())
     private val useNationsButtonCell: Cell<Actor?>
     private var mapNations = emptyList<Nation>()
     private var mapHumanPick: String? = null

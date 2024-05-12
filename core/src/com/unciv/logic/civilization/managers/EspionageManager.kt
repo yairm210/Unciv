@@ -45,8 +45,7 @@ class EspionageManager : IsPartOfGameInfoSerialization {
     fun getSpyName(): String {
         val usedSpyNames = spyList.map { it.name }.toHashSet()
         val validSpyNames = civInfo.nation.spyNames.filter { it !in usedSpyNames }
-        if (validSpyNames.isEmpty()) { return "Spy ${spyList.size+1}" } // +1 as non-programmers count from 1
-        return validSpyNames.random()
+        return validSpyNames.randomOrNull() ?: "Spy ${spyList.size+1}" // +1 as non-programmers count from 1
     }
 
     fun addSpy(): Spy {
@@ -60,7 +59,7 @@ class EspionageManager : IsPartOfGameInfoSerialization {
     fun getTilesVisibleViaSpies(): Sequence<Tile> {
         return spyList.asSequence()
             .filter { it.isSetUp() }
-            .mapNotNull { it.getLocation() }
+            .mapNotNull { it.getCityOrNull() }
             .flatMap { it.getCenterTile().getTilesInDistance(1) }
     }
 
@@ -74,23 +73,31 @@ class EspionageManager : IsPartOfGameInfoSerialization {
         return techsToSteal
     }
 
-    fun getSpiesInCity(city: City): MutableList<Spy> {
-        return spyList.filter { it.getLocation() == city }.toMutableList()
+    fun getSpiesInCity(city: City): List<Spy> {
+        return spyList.filterTo(mutableListOf()) { it.getCityOrNull() == city }
     }
 
     fun getStartingSpyRank(): Int = 1 + civInfo.getMatchingUniques(UniqueType.SpyStartingLevel).sumOf { it.params[0].toInt() }
 
     /**
      * Returns a list of all cities with our spies in them.
-     * The list needs to be stable accross calls on the same turn.
+     * The list needs to be stable across calls on the same turn.
      */
-    fun getCitiesWithOurSpies(): List<City> = spyList.filter { it.isSetUp() }.mapNotNull { it.getLocation() }
+    fun getCitiesWithOurSpies(): List<City> = spyList.filter { it.isSetUp() }.mapNotNull { it.getCityOrNull() }
 
-    fun getSpyAssignedToCity(city: City): Spy? = spyList.firstOrNull {it.getLocation() == city}
+    fun getSpyAssignedToCity(city: City): Spy? = spyList.firstOrNull { it.getCityOrNull() == city }
 
     /**
      * Determines whether the NextTurnAction MoveSpies should be shown or not
      * @return true if there are spies waiting to be moved
      */
-    fun shouldShowMoveSpies(): Boolean = !dismissedShouldMoveSpies && spyList.any { it.isIdle() }
+    fun shouldShowMoveSpies(): Boolean = !dismissedShouldMoveSpies && hasIdleSpies()
+
+    /** Are any spies in the hideout?
+     *  @see shouldShowMoveSpies */
+    fun hasIdleSpies() = spyList.any { it.isIdle() }
+
+    fun getIdleSpies(): List<Spy> {
+        return spyList.filterTo(mutableListOf()) { it.isIdle() }
+    }
 }

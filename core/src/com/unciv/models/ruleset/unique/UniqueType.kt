@@ -228,8 +228,8 @@ enum class UniqueType(
     FaithCostOfGreatProphetChange("[relativeAmount]% Faith cost of generating Great Prophet equivalents", UniqueTarget.Global),
 
     /// Espionage
-    SpyEffectiveness("[relativeAmount]% spy effectiveness [cityFilter]", UniqueTarget.Global, UniqueTarget.Global),
-    EnemySpyEffectiveness("[relativeAmount]% enemy spy effectiveness [cityFilter]", UniqueTarget.Global, UniqueTarget.Global),
+    SpyEffectiveness("[relativeAmount]% spy effectiveness [cityFilter]", UniqueTarget.Global),
+    EnemySpyEffectiveness("[relativeAmount]% enemy spy effectiveness [cityFilter]", UniqueTarget.Global),
     SpyStartingLevel("New spies start with [amount] level(s)", UniqueTarget.Global),
 
     /// Things you get at the start of the game

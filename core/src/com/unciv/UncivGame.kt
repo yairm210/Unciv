@@ -329,7 +329,7 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
     fun resetToWorldScreen(): WorldScreen {
         for (screen in screenStack.filter { it !is WorldScreen }) screen.dispose()
         screenStack.removeAll { it !is WorldScreen }
-        val worldScreen= screenStack.last() as WorldScreen
+        val worldScreen = screenStack.last() as WorldScreen
 
         // Re-initialize translations, images etc. that may have been 'lost' when we were playing around in NewGameScreen
         val ruleset = worldScreen.gameInfo.ruleset
@@ -471,7 +471,7 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
 
     companion object {
         //region AUTOMATICALLY GENERATED VERSION DATA - DO NOT CHANGE THIS REGION, INCLUDING THIS COMMENT
-        val VERSION = Version("4.11.10", 994)
+        val VERSION = Version("4.11.11", 995)
         //endregion
 
         /** Global reference to the one Gdx.Game instance created by the platform launchers - do not use without checking [isCurrentInitialized] first. */

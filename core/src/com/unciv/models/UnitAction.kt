@@ -156,8 +156,6 @@ enum class UnitActionType(
         { ImageGetter.getUnitActionPortrait("HurryResearch") }, UncivSound.Chimes),
     HurryPolicy("{Hurry Policy} (${Fonts.death})",
         { ImageGetter.getUnitActionPortrait("HurryPolicy") }, UncivSound.Chimes),
-    StartGoldenAge("Start Golden Age",
-        { ImageGetter.getUnitActionPortrait("StartGoldenAge") }, UncivSound.Chimes),
     HurryWonder("{Hurry Wonder} (${Fonts.death})",
         { ImageGetter.getUnitActionPortrait("HurryConstruction") }, UncivSound.Chimes),
     HurryBuilding("{Hurry Construction} (${Fonts.death})",
