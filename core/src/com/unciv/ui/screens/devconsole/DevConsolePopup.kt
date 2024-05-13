@@ -15,6 +15,9 @@ import com.unciv.ui.screens.worldscreen.WorldScreen
 
 
 class DevConsolePopup(val screen: WorldScreen) : Popup(screen) {
+    companion object {
+        private const val maxHistorySize = 42
+    }
     private val history by screen.game.settings::consoleCommandHistory
     private var keepOpen by screen.game.settings::keepConsoleOpen
 
@@ -65,12 +68,23 @@ class DevConsolePopup(val screen: WorldScreen) : Popup(screen) {
         val handleCommandResponse = handleCommand()
         if (handleCommandResponse.isOK) {
             screen.shouldUpdate = true
-            if (history.isEmpty() || history.last() != textField.text)
-                history.add(textField.text)
+            addHistory()
             if (!keepOpen) close() else textField.text = ""
             return
         }
         showResponse(handleCommandResponse.message, handleCommandResponse.color)
+    }
+
+    private fun addHistory() {
+        val text = textField.text
+        if (text.isBlank()) return
+        if (history.isNotEmpty() && history.last().equals(text, true)) return
+        if (history.size >= maxHistorySize) {
+            history.removeAll { it.equals(text, true) }
+            if (history.size >= maxHistorySize)
+                history.removeAt(0)
+        }
+        history.add(textField.text)
     }
 
     internal fun showResponse(message: String?, color: Color) {
