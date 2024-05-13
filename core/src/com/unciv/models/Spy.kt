@@ -25,6 +25,7 @@ enum class SpyAction(val displayString: String, val hasTurns: Boolean, internal 
     RiggingElections("Rigging Elections", true, true) {
         override fun isDoingWork(spy: Spy) = !spy.civInfo.isAtWarWith(spy.getCity().civ)
     },
+    Coup("Coup", true, true, true),
     CounterIntelligence("Conducting Counter-intelligence", false, true) {
         override fun isDoingWork(spy: Spy) = spy.turnsRemainingForAction > 0
     },
@@ -133,6 +134,9 @@ class Spy private constructor() : IsPartOfGameInfoSerialization {
             SpyAction.RiggingElections -> {
                 rigElection()
             }
+            SpyAction.Coup -> {
+                initiateCoup()
+            }
             SpyAction.Dead -> {
                 val oldSpyName = name
                 name = espionageManager.getSpyName()
@@ -232,6 +236,31 @@ class Spy private constructor() : IsPartOfGameInfoSerialization {
             NotificationCategory.Espionage, NotificationIcon.Spy)
     }
 
+    private fun initiateCoup() {
+        
+    }
+
+    /**
+     * Calculates the success chance of a coup in this city state.
+     */
+    fun getCoupChanceOfSuccess(): Float {
+        val cityState = getCity().civ
+        var successPercentage = 50f
+        
+        // Influence difference should always be a positive value
+        var influenceDifference: Float = if (cityState.getAllyCiv() != null)
+            cityState.getDiplomacyManager(cityState.getAllyCiv()!!).getInfluence()
+        else 60f
+        influenceDifference -= cityState.getDiplomacyManager(civInfo).getInfluence()
+        successPercentage -= influenceDifference / 2f
+        
+        val defendingSpy = cityState.getAllyCiv()?.let { civInfo.gameInfo.getCivilization(it) }?.espionageManager?.getSpyAssignedToCity(getCity())
+        val spyRanks = getSkillModifier() - (defendingSpy?.getSkillModifier() ?: 0)
+        successPercentage *= (1f + 0.2f + spyRanks)
+        
+        return successPercentage / 100f
+    }
+    
     fun moveTo(city: City?) {
         if (city == null) { // Moving to spy hideout
             location = null
