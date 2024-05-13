@@ -250,7 +250,7 @@ class Spy private constructor() : IsPartOfGameInfoSerialization {
             setAction(SpyAction.RiggingElections, 10)
             return
         }
-        val successChance = getCoupChanceOfSuccess()
+        val successChance = getCoupChanceOfSuccess(true)
         val randomValue = Random(randomSeed()).nextFloat()
         if (randomValue <= successChance) {
             // Success
@@ -284,11 +284,16 @@ class Spy private constructor() : IsPartOfGameInfoSerialization {
             cityState.getDiplomacyManager(cityState.getAllyCiv()!!).getInfluence()
         else 60f
         influenceDifference -= cityState.getDiplomacyManager(civInfo).getInfluence()
-        successPercentage -= influenceDifference / 4f
+        successPercentage -= influenceDifference / 2f
         
-        val defendingSpy = cityState.getAllyCiv()?.let { civInfo.gameInfo.getCivilization(it) }?.espionageManager?.getSpyAssignedToCity(getCity())
+        // If we are viewing the success chance we don't want to reveal that there is a defending spy
+        val defendingSpy = if (includeUnkownFactors) 
+            cityState.getAllyCiv()?.let { civInfo.gameInfo.getCivilization(it) }?.espionageManager?.getSpyAssignedToCity(getCity()) 
+        else null
+        
         val spyRanks = getSkillModifier() - (defendingSpy?.getSkillModifier() ?: 0)
         successPercentage *= 1f + (spyRanks / 100f)
+        
         successPercentage.coerceIn(0f, 85f)
         return successPercentage / 100f
     }
