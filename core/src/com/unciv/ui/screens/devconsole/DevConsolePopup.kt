@@ -85,6 +85,7 @@ class DevConsolePopup(val screen: WorldScreen) : Popup(screen) {
                 history.removeAt(0)
         }
         history.add(textField.text)
+        currentHistoryEntry = history.size
     }
 
     internal fun showResponse(message: String?, color: Color) {
