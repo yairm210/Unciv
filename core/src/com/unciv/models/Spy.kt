@@ -240,9 +240,8 @@ class Spy private constructor() : IsPartOfGameInfoSerialization {
     
     /**
      * Initiates a coup if this spies civ is not the ally of the city-state.
-     * The coup will only happen at the end of the Civ's turn.
-     * This is done for save scum reasons, so a play may not reload in multiplayer.
-     * If successfull the 
+     * The coup will only happen at the end of the Civ's turn for save scum reasons, so a play may not reload in multiplayer.
+     * If successfull the coup will 
      */
     private fun initiateCoup() {
         if (!canDoCoup()) {
@@ -252,7 +251,7 @@ class Spy private constructor() : IsPartOfGameInfoSerialization {
             return
         }
         val successChance = getCoupChanceOfSuccess()
-        val randomValue = Random(randomSeed()).nextFloat() * 100f
+        val randomValue = Random(randomSeed()).nextFloat()
         if (randomValue >= successChance) {
             // Success
             val cityState = getCity().civ
