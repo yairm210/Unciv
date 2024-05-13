@@ -263,7 +263,7 @@ class Spy private constructor() : IsPartOfGameInfoSerialization {
                     NotificationCategory.Espionage, NotificationIcon.Spy, cityState.civName)
             if (pastAlly != null) {
                 cityState.getDiplomacyManager(pastAlly).reduceInfluence(20f)
-                pastAlly.addNotification("A spy from [${civInfo.civName}] successfully staged a coup in our ally [${cityState.civName}]!", getCity().location,
+                pastAlly.addNotification("A spy from [${civInfo.civName}] successfully staged a coup in our former ally [${cityState.civName}]!", getCity().location,
                         NotificationCategory.Espionage, civInfo.civName,  NotificationIcon.Spy, cityState.civName)
                 pastAlly.getDiplomacyManager(civInfo).addModifier(DiplomaticModifiers.SpiedOnUs, -15f)
             }
@@ -281,6 +281,7 @@ class Spy private constructor() : IsPartOfGameInfoSerialization {
             val cityState = getCity().civ
             val allyCiv = cityState.getAllyCiv()?.let { civInfo.gameInfo.getCivilization(it) }
             val spy = allyCiv?.espionageManager?.getSpyAssignedToCity(getCity())
+            cityState.getDiplomacyManager(civInfo).addInfluence(-20f)
             allyCiv?.addNotification("A spy from [${civInfo.civName}] failed staged a coup in our ally [${cityState.civName}] and was killed!", getCity().location,
                     NotificationCategory.Espionage, civInfo.civName,  NotificationIcon.Spy, cityState.civName)
             allyCiv?.getDiplomacyManager(civInfo)?.addModifier(DiplomaticModifiers.SpiedOnUs, -10f)
@@ -315,7 +316,7 @@ class Spy private constructor() : IsPartOfGameInfoSerialization {
         val spyRanks = getSkillModifier() - (defendingSpy?.getSkillModifier() ?: 0)
         successPercentage *= 1f + (spyRanks / 100f)
         
-        successPercentage.coerceIn(0f, 85f)
+        successPercentage = successPercentage.coerceIn(0f, 85f)
         return successPercentage / 100f
     }
     
