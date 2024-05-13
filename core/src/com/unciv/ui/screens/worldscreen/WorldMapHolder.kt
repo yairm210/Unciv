@@ -208,7 +208,7 @@ class WorldMapHolder(
                     else -> addTileOverlaysWithUnitMovement(previousSelectedUnits, tile) // Long-running task
                 }
             }
-        } else if (movingSpyOnMap && tile.getCity() != null && unitTable.selectedSpy!!.canMoveTo(tile.getCity()!!)) {
+        } else if (movingSpyOnMap && tile.isCityCenter() != null && unitTable.selectedSpy!!.canMoveTo(tile.getCity()!!)) {
             addMovingSpyOverlay(unitTable.selectedSpy!!, tile)
         } else {
             addTileOverlays(tile) // no unit movement but display the units in the tile etc.
