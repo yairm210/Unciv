@@ -41,7 +41,7 @@ class DevConsolePopup(val screen: WorldScreen) : Popup(screen) {
         keyShortcuts.add(KeyCharAndCode.BACK) { close() }
         clickBehindToClose = true
 
-        keyShortcuts.add(KeyCharAndCode.TAB) {
+        textField.keyShortcuts.add(KeyCharAndCode.TAB) {
             val textToAdd = getAutocomplete()
             textField.appendText(textToAdd)
         }
