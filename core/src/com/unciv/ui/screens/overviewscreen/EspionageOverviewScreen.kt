@@ -22,6 +22,7 @@ import com.unciv.ui.components.input.KeyCharAndCode
 import com.unciv.ui.components.input.keyShortcuts
 import com.unciv.ui.components.input.onActivation
 import com.unciv.ui.components.input.onClick
+import com.unciv.ui.components.input.onRightClick
 import com.unciv.ui.components.widgets.AutoScrollPane
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.pickerscreens.PickerScreen
@@ -104,6 +105,11 @@ class EspionageOverviewScreen(val civInfo: Civilization, val worldScreen: WorldS
                         button.setDirection(Align.left)
                     }
                 }
+            }
+            moveSpyButton.onRightClick { 
+                worldScreen.bottomUnitTable.selectSpy(spy)
+                worldScreen.game.popScreen()
+                worldScreen.shouldUpdate = true
             }
             if (!worldScreen.canChangeState || !spy.isAlive()) {
                 // Spectators aren't allowed to move the spies of the Civs they are viewing

@@ -10,6 +10,7 @@ import com.unciv.logic.battle.CityCombatant
 import com.unciv.logic.city.City
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
+import com.unciv.models.Spy
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.extensions.addSeparator
 import com.unciv.ui.components.extensions.center
@@ -24,6 +25,7 @@ import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.civilopediascreen.CivilopediaCategories
 import com.unciv.ui.screens.civilopediascreen.CivilopediaScreen
+import com.unciv.ui.screens.overviewscreen.EspionageOverviewScreen
 import com.unciv.ui.screens.pickerscreens.CityRenamePopup
 import com.unciv.ui.screens.pickerscreens.PromotionPickerScreen
 import com.unciv.ui.screens.pickerscreens.UnitRenamePopup
@@ -67,6 +69,16 @@ class UnitTable(val worldScreen: WorldScreen) : Table() {
     // Most of the time it's the same unit with the same stats so why waste precious time?
     private var selectedUnitHasChanged = false
     val separator: Actor
+    
+    var selectedSpy: Spy? = null
+    
+    fun selectSpy(spy: Spy?) {
+        selectedSpy = spy
+        selectedCity = null
+        selectedUnits.clear()
+        selectedUnitIsSwapping = false
+        selectedUnitIsConnectingRoad = false
+    }
 
     private var bg = Image(
         BaseScreen.skinStrings.getUiBackground("WorldScreen/UnitTable",
@@ -220,15 +232,14 @@ class UnitTable(val worldScreen: WorldScreen) : Table() {
 
             unitNameLabel.clearListeners()
             unitNameLabel.onClick {
-            if (!worldScreen.canChangeState) return@onClick
-                CityRenamePopup(
-                    screen = worldScreen,
-                    city = city,
-                    actionOnClose = {
-                        unitNameLabel.setText(city.name.tr())
-                        worldScreen.shouldUpdate = true
-                    }
-                )
+                if (!worldScreen.canChangeState) return@onClick
+                    CityRenamePopup(
+                        screen = worldScreen,
+                        city = city,
+                        actionOnClose = {
+                            unitNameLabel.setText(city.name.tr())
+                            worldScreen.shouldUpdate = true
+                        })
             }
 
             unitDescriptionTable.clear()
