@@ -791,6 +791,12 @@ class WorldScreen(
             shouldUpdate = true
             return
         }
+        
+        if (bottomUnitTable.selectedSpy != null) {
+            bottomUnitTable.selectSpy(null)
+            shouldUpdate = true
+            return
+        }
 
         game.popScreen()
     }
