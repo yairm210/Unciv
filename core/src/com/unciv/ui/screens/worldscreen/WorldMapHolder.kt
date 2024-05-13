@@ -912,13 +912,13 @@ class WorldMapHolder(
     private fun updateTilesForSelectedSpy(spy: Spy) {
         for (group in tileGroups.values) {
             group.layerOverlay.reset()
-            group.layerMisc.dimImprovement(true)
+            if (!group.tile.isCityCenter())
+                group.layerMisc.dimImprovement(true)
             group.layerCityButton.moveDown()
         }
         for (city in worldScreen.gameInfo.getCities()) {
             if (spy.canMoveTo(city)) {
-                tileGroups[city.getCenterTile()]!!.layerOverlay.showHighlight(Color.CYAN,
-                        if (UncivGame.Current.settings.singleTapMove) 0.7f else 0.3f)
+                tileGroups[city.getCenterTile()]!!.layerOverlay.showHighlight(Color.CYAN, .7f)
                 
             }
         }
