@@ -252,7 +252,7 @@ class Spy private constructor() : IsPartOfGameInfoSerialization {
         }
         val successChance = getCoupChanceOfSuccess()
         val randomValue = Random(randomSeed()).nextFloat()
-        if (randomValue >= successChance) {
+        if (randomValue <= successChance) {
             // Success
             val cityState = getCity().civ
             val pastAlly = cityState.getAllyCiv()?.let { civInfo.gameInfo.getCivilization(it) }
