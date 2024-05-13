@@ -16,6 +16,7 @@ import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.components.input.KeyboardBinding
 import com.unciv.ui.components.input.onActivation
 import com.unciv.ui.components.input.onClick
+import com.unciv.ui.components.input.onRightClick
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.civilopediascreen.CivilopediaCategories
@@ -212,9 +213,8 @@ class WorldScreenTopBar(internal val worldScreen: WorldScreen) : Table() {
             padTop((10f - descenderHeight).coerceAtLeast(0f))
 
             menuButton.color = Color.WHITE
-            menuButton.onActivation(binding = KeyboardBinding.Menu) {
-                WorldScreenMenuPopup(worldScreen).open(force = true)
-            }
+            menuButton.onActivation(binding = KeyboardBinding.Menu) { WorldScreenMenuPopup(worldScreen) }
+            menuButton.onRightClick { WorldScreenMenuPopup(worldScreen, true) }
 
             val onNationClick = {
                 val civilopediaScreen = CivilopediaScreen(

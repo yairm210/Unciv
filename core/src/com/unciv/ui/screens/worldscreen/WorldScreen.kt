@@ -272,11 +272,7 @@ class WorldScreen(
         globalShortcuts.add(KeyboardBinding.ToggleWorkedTilesDisplay) { minimapWrapper.populationImageButton.toggle() }
         globalShortcuts.add(KeyboardBinding.ToggleMovementDisplay) { minimapWrapper.movementsImageButton.toggle() }
 
-        globalShortcuts.add(KeyboardBinding.DeveloperConsole) {
-            // No cheating unless you're by yourself
-            if (gameInfo.civilizations.count { it.isHuman() } > 1) return@add
-            val consolePopup = DevConsolePopup(this)
-        }
+        globalShortcuts.add(KeyboardBinding.DeveloperConsole, action = ::openDeveloperConsole)
     }
 
     // Handle disabling and re-enabling WASD listener while Options are open
@@ -287,6 +283,12 @@ class WorldScreen(
             addKeyboardListener()
             onClose()
         }
+    }
+
+    fun openDeveloperConsole() {
+        // No cheating unless you're by yourself
+        if (gameInfo.civilizations.count { it.isHuman() } > 1) return
+        val consolePopup = DevConsolePopup(this)
     }
 
     private fun toggleUI() {

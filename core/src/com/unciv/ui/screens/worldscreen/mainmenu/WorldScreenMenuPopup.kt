@@ -1,6 +1,7 @@
 package com.unciv.ui.screens.worldscreen.mainmenu
 
-import com.unciv.UncivGame
+import com.badlogic.gdx.scenes.scene2d.Actor
+import com.badlogic.gdx.scenes.scene2d.ui.Cell
 import com.unciv.ui.components.input.KeyboardBinding
 import com.unciv.ui.components.input.onLongPress
 import com.unciv.ui.popups.Popup
@@ -9,35 +10,48 @@ import com.unciv.ui.screens.savescreens.LoadGameScreen
 import com.unciv.ui.screens.victoryscreen.VictoryScreen
 import com.unciv.ui.screens.worldscreen.WorldScreen
 
-class WorldScreenMenuPopup(val worldScreen: WorldScreen) : Popup(worldScreen, scrollable = Scrollability.All) {
+/** The in-game menu called from the "Hamburger" button top-left
+ *
+ *  Popup automatically opens as soon as it's initialized
+ */
+class WorldScreenMenuPopup(
+    val worldScreen: WorldScreen,
+    expertMode: Boolean = false
+) : Popup(worldScreen, scrollable = Scrollability.All) {
+    private val singleColumn = !expertMode || worldScreen.isCrampedPortrait()
+    private fun <T: Actor?> Cell<T>.nextColumn() {
+        if (!singleColumn && column == 0) return
+        row()
+    }
+
     init {
         worldScreen.autoPlay.stopAutoPlay()
         defaults().fillX()
 
         addButton("Main menu") {
             worldScreen.game.goToMainMenu()
-        }.row()
+        }.nextColumn()
         addButton("Civilopedia", KeyboardBinding.Civilopedia) {
             close()
             worldScreen.game.pushScreen(CivilopediaScreen(worldScreen.gameInfo.ruleset))
-        }.row()
+        }.nextColumn()
         if (!worldScreen.gameInfo.gameParameters.isOnlineMultiplayer)
             addButton("Save game", KeyboardBinding.SaveGame) {
                 close()
                 worldScreen.openSaveGameScreen()
-            }.row()
+            }.nextColumn()
         addButton("Load game", KeyboardBinding.LoadGame) {
             close()
             worldScreen.game.pushScreen(LoadGameScreen())
-        }.row()
+        }.nextColumn()
         addButton("Start new game", KeyboardBinding.NewGame) {
             close()
             worldScreen.openNewGameScreen()
-        }.row()
+        }.nextColumn()
         addButton("Victory status", KeyboardBinding.VictoryScreen) {
             close()
             worldScreen.game.pushScreen(VictoryScreen(worldScreen))
-        }.row()
+        }.nextColumn()
         val optionsCell = addButton("Options", KeyboardBinding.Options) {
             close()
             worldScreen.openOptionsPopup()
@@ -46,17 +60,26 @@ class WorldScreenMenuPopup(val worldScreen: WorldScreen) : Popup(worldScreen, sc
             close()
             worldScreen.openOptionsPopup(withDebug = true)
         }
-        optionsCell.row()
+        optionsCell.nextColumn()
         addButton("Community") {
             close()
             WorldScreenCommunityPopup(worldScreen).open(force = true)
-        }.row()
-        addButton("Music", KeyboardBinding.MusicPlayer) {
-            close()
-            WorldScreenMusicPopup(worldScreen).open(force = true)
-        }.row()
+        }.nextColumn()
+        if (worldScreen.game.musicController.isMusicAvailable())
+            addButton("Music", KeyboardBinding.MusicPlayer) {
+                close()
+                WorldScreenMusicPopup(worldScreen).open(force = true)
+            }.nextColumn()
 
-        addCloseButton()
+        if (expertMode)
+            addButton("Developer Console", KeyboardBinding.DeveloperConsole) {
+                close()
+                worldScreen.openDeveloperConsole()
+            }.nextColumn()
+
+        addCloseButton().run { colspan(if (singleColumn || column == 1) 1 else 2) }
         pack()
+
+        open(force = true)
     }
 }
