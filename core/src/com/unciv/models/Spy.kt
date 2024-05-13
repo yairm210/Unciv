@@ -245,11 +245,30 @@ class Spy private constructor() : IsPartOfGameInfoSerialization {
      * If successfull the 
      */
     private fun initiateCoup() {
+        if (!canDoCoup()) {
+            // Maybe we are the new ally of the city-state
+            // However we know that we are still in the city and it hasn't been conquered
+            setAction(SpyAction.RiggingElections, 10)
+            return
+        }
         val successChance = getCoupChanceOfSuccess()
         val randomValue = Random(randomSeed()).nextFloat() * 100f
-        if (randomValue >= getCoupChanceOfSuccess()) {
+        if (randomValue >= successChance) {
             // Success
+            val cityState = getCity().civ
+            val pastAlly = cityState.getAllyCiv()?.let { civInfo.gameInfo.getCivilization(it) }
+            val previousInfluence = if (pastAlly != null) cityState.getDiplomacyManager(pastAlly).getInfluence() else 80f
+            cityState.getDiplomacyManager(civInfo).setInfluence(previousInfluence)
+            if (pastAlly != null) {
+                cityState.getDiplomacyManager(pastAlly).addInfluence(-20f)
+            }
+            setAction(SpyAction.RiggingElections, 10)
         } else {
+            // Failure
+            val cityState = getCity().civ
+            val allyCiv = cityState.getAllyCiv()?.let { civInfo.gameInfo.getCivilization(it) }
+            val spy = allyCiv?.espionageManager?.getSpyAssignedToCity(getCity())
+            spy?.levelUpSpy() // Technically not in Civ V, but it's like the same thing as with counter-intelligence
             killSpy()
         }
     }
