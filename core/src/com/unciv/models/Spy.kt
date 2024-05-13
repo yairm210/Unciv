@@ -235,9 +235,21 @@ class Spy private constructor() : IsPartOfGameInfoSerialization {
         civInfo.addNotification("Your spy successfully rigged the election in [$city]!", city.location,
             NotificationCategory.Espionage, NotificationIcon.Spy)
     }
-
+    
+    fun canDoCoup(): Boolean = getCityOrNull() != null && getCity().civ.isCityState() && isSetUp() && getCity().civ.getAllyCiv() != civInfo.civName
+    
+    /**
+     * Initiates a coup if this spies civ is not the ally of the city-state.
+     * If successfull the 
+     */
     private fun initiateCoup() {
-        
+        val successChance = getCoupChanceOfSuccess()
+        val randomValue = Random(randomSeed()).nextFloat() * 100f
+        if (randomValue >= getCoupChanceOfSuccess()) {
+            // Success
+        } else {
+            killSpy()
+        }
     }
 
     /**
