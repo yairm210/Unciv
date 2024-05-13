@@ -250,6 +250,30 @@ class UnitTable(val worldScreen: WorldScreen) : Table() {
             unitDescriptionTable.add(CityCombatant(city).getAttackingStrength().toString()).row()
 
             selectedUnitHasChanged = true
+        } else if (selectedSpy != null) {
+            val spy = selectedSpy!!
+            isVisible = true
+            unitNameLabel.clearListeners()
+            unitNameLabel.setText(spy.name)
+            unitDescriptionTable.clear()
+            
+            unitIconHolder.clear()
+            unitIconHolder.add (ImageGetter.getImage("OtherIcons/Spy_White").apply {
+                color = Color.WHITE
+            }).size(30f)
+            
+            separator.isVisible = true
+            val color = when(spy.rank) {
+                1 -> Color.BROWN
+                2 -> Color.LIGHT_GRAY
+                3 -> Color.GOLD
+                else -> Color.BLACK
+            }
+            repeat(spy.rank) {
+                val star = ImageGetter.getImage("OtherIcons/Star")
+                star.color = color
+                unitDescriptionTable.add(star).size(20f).pad(1f)
+            }
         } else {
             isVisible = false
         }
