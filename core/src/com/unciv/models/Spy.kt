@@ -258,24 +258,45 @@ class Spy private constructor() : IsPartOfGameInfoSerialization {
             val pastAlly = cityState.getAllyCiv()?.let { civInfo.gameInfo.getCivilization(it) }
             val previousInfluence = if (pastAlly != null) cityState.getDiplomacyManager(pastAlly).getInfluence() else 80f
             cityState.getDiplomacyManager(civInfo).setInfluence(previousInfluence)
+            
+            civInfo.addNotification("Your spy [$name] successfully staged a coup in [${getCity()}]!", getCity().location,
+                    NotificationCategory.Espionage, NotificationIcon.Spy, cityState.civName)
             if (pastAlly != null) {
-                cityState.getDiplomacyManager(pastAlly).addInfluence(-20f)
+                cityState.getDiplomacyManager(pastAlly).reduceInfluence(20f)
+                pastAlly.addNotification("A spy from [${civInfo.civName}] successfully staged a coup in our ally [$cityState]!", getCity().location,
+                        NotificationCategory.Espionage, civInfo.civName,  NotificationIcon.Spy, cityState.civName)
+                pastAlly.getDiplomacyManager(civInfo).addModifier(DiplomaticModifiers.SpiedOnUs, -15f)
+            }
+            for (civ in cityState.getKnownCivs()) {
+                if (civ == pastAlly || civ == civInfo) continue
+                civ.addNotification("A spy from [${civInfo.civName}] successfully staged a coup in [$cityState]!", getCity().location,
+                        NotificationCategory.Espionage, civInfo.civName,  NotificationIcon.Spy, cityState.civName)
+                cityState.getDiplomacyManager(civ).reduceInfluence(10f) // Guess
             }
             setAction(SpyAction.RiggingElections, 10)
+            cityState.cityStateFunctions.updateAllyCivForCityState()
+
         } else {
             // Failure
             val cityState = getCity().civ
             val allyCiv = cityState.getAllyCiv()?.let { civInfo.gameInfo.getCivilization(it) }
             val spy = allyCiv?.espionageManager?.getSpyAssignedToCity(getCity())
-            spy?.levelUpSpy() // Technically not in Civ V, but it's like the same thing as with counter-intelligence
+            allyCiv?.addNotification("A spy from [${civInfo.civName}] failed staged a coup in our ally [$cityState] and was killed!", getCity().location,
+                    NotificationCategory.Espionage, civInfo.civName,  NotificationIcon.Spy, cityState.civName)
+            allyCiv?.getDiplomacyManager(civInfo)?.addModifier(DiplomaticModifiers.SpiedOnUs, -10f)
+
+            civInfo.addNotification("Our spy [$name] failed staged a coup in [$cityState] and was killed!", getCity().location,
+                    NotificationCategory.Espionage, civInfo.civName,  NotificationIcon.Spy, cityState.civName)
+
             killSpy()
+            spy?.levelUpSpy() // Technically not in Civ V, but it's like the same thing as with counter-intelligence
         }
     }
 
     /**
      * Calculates the success chance of a coup in this city state.
      */
-    fun getCoupChanceOfSuccess(): Float {
+    fun getCoupChanceOfSuccess(includeUnkownFactors: Boolean): Float {
         val cityState = getCity().civ
         var successPercentage = 50f
         
