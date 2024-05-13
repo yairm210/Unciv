@@ -243,7 +243,10 @@ class EspionageOverviewScreen(val civInfo: Civilization, val worldScreen: WorldS
             onClick {
                 val spy = selectedSpy!!
                 if (!isCurrentAction) {
-                    ConfirmPopup(this@EspionageOverviewScreen, "Do you want to stage a coup in [${city.civ.civName}] with a [${(selectedSpy!!.getCoupChanceOfSuccess(false) * 100f).toInt()}]% chance of success?", "Stage Coup") {
+                    ConfirmPopup(this@EspionageOverviewScreen, 
+                            "Do you want to stage a coup in [${city.civ.civName}] with a " +
+                                    "[${(selectedSpy!!.getCoupChanceOfSuccess(false) * 100f).toInt()}]% " +
+                                    "chance of success?", "Stage Coup") {
                         spy.setAction(SpyAction.Coup, 1)
                         fist.color = Color.DARK_GRAY
                         update()
