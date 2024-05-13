@@ -196,9 +196,9 @@ class EspionageOverviewScreen(val civInfo: Civilization, val worldScreen: WorldS
         for (spy in spies)
             add(getSpyIcon(spy))
     }
-    
-    private abstract inner class SpyCityActionButton() : Button(SmallButtonStyle()) {
-        abstract fun setDirection(align: Int);
+
+    private abstract inner class SpyCityActionButton : Button(SmallButtonStyle()) {
+        open fun setDirection(align: Int) { }
     }
 
     // city == null is interpreted as 'spy hideout'
@@ -256,9 +256,6 @@ class EspionageOverviewScreen(val civInfo: Civilization, val worldScreen: WorldS
             }
             spyActionButtons[this] = city
             isVisible = false
-        }
-
-        override fun setDirection(align: Int) {
         }
     }
 }
