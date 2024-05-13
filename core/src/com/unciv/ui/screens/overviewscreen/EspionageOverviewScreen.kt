@@ -25,6 +25,7 @@ import com.unciv.ui.components.input.onActivation
 import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.widgets.AutoScrollPane
 import com.unciv.ui.images.ImageGetter
+import com.unciv.ui.popups.ConfirmPopup
 import com.unciv.ui.screens.pickerscreens.PickerScreen
 import com.unciv.ui.screens.worldscreen.WorldScreen
 
@@ -231,16 +232,27 @@ class EspionageOverviewScreen(val civInfo: Civilization, val worldScreen: WorldS
             button.isVisible = false
     }
 
-    private inner class CoupButton(city: City?, isCurrentAction: Boolean) : SpyCityActionButton() {
+    private inner class CoupButton(city: City, isCurrentAction: Boolean) : SpyCityActionButton() {
         val fist = ImageGetter.getStatIcon("Resistance")
         init {
             fist.setSize(24f)
             add(fist).size(24f)
             fist.setOrigin(Align.center)
             if (isCurrentAction) fist.color = Color.WHITE
-            else fist.color = Color.LIGHT_GRAY
+            else fist.color = Color.DARK_GRAY
             onClick {
-                update()
+                val spy = selectedSpy!!
+                if (!isCurrentAction) {
+                    ConfirmPopup(this@EspionageOverviewScreen, "Do you want to stage a coup in [${city.civ.civName}] with a [${(selectedSpy!!.getCoupChanceOfSuccess() * 100f).toInt()}]% chance of success?", "Stage Coup") {
+                        spy.setAction(SpyAction.Coup, 1)
+                        fist.color = Color.DARK_GRAY
+                        update()
+                    }.open()
+                } else {
+                    spy.setAction(SpyAction.CounterIntelligence, 10)
+                    fist.color = Color.WHITE
+                    update()
+                }
             }
             spyActionButtons[this] = city
             isVisible = false

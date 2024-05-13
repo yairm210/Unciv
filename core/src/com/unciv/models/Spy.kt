@@ -80,7 +80,7 @@ class Spy private constructor() : IsPartOfGameInfoSerialization {
         this.espionageManager = civInfo.espionageManager
     }
 
-    private fun setAction(newAction: SpyAction, turns: Int = 0) {
+    fun setAction(newAction: SpyAction, turns: Int = 0) {
         assert(!newAction.hasTurns || turns > 0) // hasTurns==false but turns > 0 is allowed (CounterIntelligence), hasTurns==true and turns==0 is not.
         action = newAction
         turnsRemainingForAction = turns
