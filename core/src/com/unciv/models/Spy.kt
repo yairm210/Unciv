@@ -240,6 +240,8 @@ class Spy private constructor() : IsPartOfGameInfoSerialization {
     
     /**
      * Initiates a coup if this spies civ is not the ally of the city-state.
+     * The coup will only happen at the end of the Civ's turn.
+     * This is done for save scum reasons, so a play may not reload in multiplayer.
      * If successfull the 
      */
     private fun initiateCoup() {
@@ -264,12 +266,12 @@ class Spy private constructor() : IsPartOfGameInfoSerialization {
             cityState.getDiplomacyManager(cityState.getAllyCiv()!!).getInfluence()
         else 60f
         influenceDifference -= cityState.getDiplomacyManager(civInfo).getInfluence()
-        successPercentage -= influenceDifference / 2f
+        successPercentage -= influenceDifference / 4f
         
         val defendingSpy = cityState.getAllyCiv()?.let { civInfo.gameInfo.getCivilization(it) }?.espionageManager?.getSpyAssignedToCity(getCity())
         val spyRanks = getSkillModifier() - (defendingSpy?.getSkillModifier() ?: 0)
-        successPercentage *= (1f + 0.2f + spyRanks)
-        
+        successPercentage *= 1f + (spyRanks / 100f)
+        successPercentage.coerceIn(0f, 85f)
         return successPercentage / 100f
     }
     
