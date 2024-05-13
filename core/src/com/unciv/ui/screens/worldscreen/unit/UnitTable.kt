@@ -233,13 +233,13 @@ class UnitTable(val worldScreen: WorldScreen) : Table() {
             unitNameLabel.clearListeners()
             unitNameLabel.onClick {
                 if (!worldScreen.canChangeState) return@onClick
-                    CityRenamePopup(
-                        screen = worldScreen,
-                        city = city,
-                        actionOnClose = {
-                            unitNameLabel.setText(city.name.tr())
-                            worldScreen.shouldUpdate = true
-                        })
+                CityRenamePopup(
+                    screen = worldScreen,
+                    city = city,
+                    actionOnClose = {
+                        unitNameLabel.setText(city.name.tr())
+                        worldScreen.shouldUpdate = true
+                    })
             }
 
             unitDescriptionTable.clear()
