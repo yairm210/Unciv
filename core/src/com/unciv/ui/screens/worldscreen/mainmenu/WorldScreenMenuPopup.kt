@@ -18,7 +18,7 @@ class WorldScreenMenuPopup(
     val worldScreen: WorldScreen,
     expertMode: Boolean = false
 ) : Popup(worldScreen, scrollable = Scrollability.All) {
-    private val singleColumn = !expertMode || worldScreen.isCrampedPortrait()
+    private val singleColumn: Boolean
     private fun <T: Actor?> Cell<T>.nextColumn() {
         if (!singleColumn && column == 0) return
         row()
@@ -28,14 +28,24 @@ class WorldScreenMenuPopup(
         worldScreen.autoPlay.stopAutoPlay()
         defaults().fillX()
 
-        addButton("Main menu") {
+        val showSave = !worldScreen.gameInfo.gameParameters.isOnlineMultiplayer
+        val showMusic = worldScreen.game.musicController.isMusicAvailable()
+        val buttonCount = 8 + (if (showSave) 1 else 0) + (if (showMusic) 1 else 0) + (if (expertMode) 1 else 0)
+
+        val emptyPrefHeight = this.prefHeight
+        val firstCell = addButton("Main menu") {
             worldScreen.game.goToMainMenu()
-        }.nextColumn()
+        }
+        singleColumn = worldScreen.isCrampedPortrait() ||
+            2 * prefWidth > maxPopupWidth ||  // Very coarse: Assume width of translated "Main menu" is representative
+            buttonCount * (prefHeight - emptyPrefHeight) + emptyPrefHeight < maxPopupHeight
+        firstCell.nextColumn()
+
         addButton("Civilopedia", KeyboardBinding.Civilopedia) {
             close()
             worldScreen.game.pushScreen(CivilopediaScreen(worldScreen.gameInfo.ruleset))
         }.nextColumn()
-        if (!worldScreen.gameInfo.gameParameters.isOnlineMultiplayer)
+        if (showSave)
             addButton("Save game", KeyboardBinding.SaveGame) {
                 close()
                 worldScreen.openSaveGameScreen()
@@ -65,7 +75,7 @@ class WorldScreenMenuPopup(
             close()
             WorldScreenCommunityPopup(worldScreen).open(force = true)
         }.nextColumn()
-        if (worldScreen.game.musicController.isMusicAvailable())
+        if (showMusic)
             addButton("Music", KeyboardBinding.MusicPlayer) {
                 close()
                 WorldScreenMusicPopup(worldScreen).open(force = true)
