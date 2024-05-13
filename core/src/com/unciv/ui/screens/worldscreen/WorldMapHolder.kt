@@ -178,7 +178,8 @@ class WorldMapHolder(
         val previousSelectedUnitIsSwapping = unitTable.selectedUnitIsSwapping
         val previousSelectedUnitIsConnectingRoad = unitTable.selectedUnitIsConnectingRoad
         val movingSpyOnMap = unitTable.selectedSpy != null
-        unitTable.tileSelected(tile)
+        if (!movingSpyOnMap)
+            unitTable.tileSelected(tile)
         val newSelectedUnit = unitTable.selectedUnit
 
         if (previousSelectedCity != null && tile != previousSelectedCity.getCenterTile() && !movingSpyOnMap)
@@ -208,7 +209,7 @@ class WorldMapHolder(
                     else -> addTileOverlaysWithUnitMovement(previousSelectedUnits, tile) // Long-running task
                 }
             }
-        } else if (movingSpyOnMap && tile.isCityCenter() != null && unitTable.selectedSpy!!.canMoveTo(tile.getCity()!!)) {
+        } else if (movingSpyOnMap && tile.isCityCenter() && unitTable.selectedSpy!!.canMoveTo(tile.getCity()!!)) {
             addMovingSpyOverlay(unitTable.selectedSpy!!, tile)
         } else {
             addTileOverlays(tile) // no unit movement but display the units in the tile etc.
@@ -611,7 +612,7 @@ class WorldMapHolder(
         swapWithButton.setSize(buttonSize, buttonSize)
         swapWithButton.addActor(ImageGetter.getCircle(size = buttonSize))
         swapWithButton.addActor(
-                ImageGetter.getImage("OtherIcons/Swap").apply {
+                ImageGetter.getStatIcon("Movement").apply {
                     color = Color.BLACK
                     setSize(buttonSize / 2)
                     center(swapWithButton)

@@ -61,6 +61,7 @@ class UnitTable(val worldScreen: WorldScreen) : Table() {
         }
         selectedUnitIsSwapping = false
         selectedUnitIsConnectingRoad = false
+        selectedSpy = null
     }
 
     var selectedCity : City? = null
@@ -220,9 +221,7 @@ class UnitTable(val worldScreen: WorldScreen) : Table() {
                 unitNameLabel.setText("")
                 unitDescriptionTable.clear()
             }
-        }
-
-        else if (selectedCity != null) {
+        } else if (selectedCity != null) {
             isVisible = true
             separator.isVisible = true
             val city = selectedCity!!
