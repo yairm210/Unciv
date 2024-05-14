@@ -316,6 +316,33 @@ object UniqueTriggerActivation {
                     true
                 }
             }
+
+            UniqueType.OneTimeRemovePolicyRefund -> {
+                val policyFilter = unique.params[0]
+                val refundPercentage = unique.params[1].toInt()
+                val policiesToRemove = civInfo.policies.adoptedPolicies
+                    .mapNotNull { civInfo.gameInfo.ruleset.policies[it] }
+                    .filter { it.matchesFilter(policyFilter) }
+                if (policiesToRemove.isEmpty()) return null
+
+                val policiesToRemoveMap = civInfo.policies.getCultureRefundMap(policiesToRemove, refundPercentage)
+
+                return {
+                    for (policy in policiesToRemoveMap){
+                        civInfo.policies.removePolicy(policy.key)
+                        civInfo.policies.addCulture(policy.value)
+
+                        val notificationText = getNotificationText(
+                            notification, triggerNotificationText,
+                            "You lose the [${policy.key.name}] Policy. [${policy.value}] Culture has been refunded"
+                        )
+                        if (notificationText != null)
+                            civInfo.addNotification(notificationText, PolicyAction(policy.key.name), NotificationCategory.General, NotificationIcon.Culture)
+                    }
+                    true
+                }
+            }
+
             UniqueType.OneTimeEnterGoldenAge, UniqueType.OneTimeEnterGoldenAgeTurns -> {
                 return {
                     if (unique.type == UniqueType.OneTimeEnterGoldenAgeTurns) civInfo.goldenAges.enterGoldenAge(unique.params[0].toInt())
