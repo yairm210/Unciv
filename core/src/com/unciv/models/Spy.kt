@@ -287,7 +287,7 @@ class Spy private constructor() : IsPartOfGameInfoSerialization {
         else null
         
         val spyRanks = getSkillModifier() - (defendingSpy?.getSkillModifier() ?: 0)
-        successPercentage *= 1f + (spyRanks / 100f)
+        successPercentage += spyRanks / 2f // Each rank counts for 15%
         
         successPercentage = successPercentage.coerceIn(0f, 85f)
         return successPercentage / 100f
