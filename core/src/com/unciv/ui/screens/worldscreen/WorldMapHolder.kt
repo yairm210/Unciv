@@ -126,7 +126,7 @@ class WorldMapHolder(
     class ConnectRoadButtonDto(val unit: MapUnit, val tile: Tile) : ButtonDto
     
     // Contains the data required to draw a "move spy" button
-    class MoveSpyButtonDto(val spy: Spy, val city: City) : ButtonDto
+    class MoveSpyButtonDto(val spy: Spy, val city: City?) : ButtonDto
 
 
     internal fun addTiles() {
@@ -209,7 +209,7 @@ class WorldMapHolder(
                     else -> addTileOverlaysWithUnitMovement(previousSelectedUnits, tile) // Long-running task
                 }
             }
-        } else if (movingSpyOnMap && tile.isCityCenter() && unitTable.selectedSpy!!.canMoveTo(tile.getCity()!!)) {
+        } else if (movingSpyOnMap) {
             addMovingSpyOverlay(unitTable.selectedSpy!!, tile)
         } else {
             addTileOverlays(tile) // no unit movement but display the units in the tile etc.
@@ -476,11 +476,9 @@ class WorldMapHolder(
     }
     
     private fun addMovingSpyOverlay(spy: Spy, tile: Tile) {
-        val city = tile.getCity() ?: return
-        if (spy.canMoveTo(city)) {
-            addTileOverlays(tile, MoveSpyButtonDto(spy, city))
-            worldScreen.shouldUpdate = true
-        }
+        val city: City? = if (tile.isCityCenter() && spy.canMoveTo(tile.getCity()!!)) tile.getCity() else null
+        addTileOverlays(tile, MoveSpyButtonDto(spy, city))
+        worldScreen.shouldUpdate = true
     }
     
     private fun addTileOverlays(tile: Tile, buttonDto: ButtonDto? = null) {
@@ -609,27 +607,46 @@ class WorldMapHolder(
     }
     
     private fun getMoveSpyButton(dto: MoveSpyButtonDto): Group {
-        val swapWithButton = Group()
-        swapWithButton.setSize(buttonSize, buttonSize)
-        swapWithButton.addActor(ImageGetter.getCircle(size = buttonSize))
-        swapWithButton.addActor(
-                ImageGetter.getStatIcon("Movement").apply {
-                    color = Color.BLACK
-                    setSize(buttonSize / 2)
-                    center(swapWithButton)
-                }
-        )
-
-        swapWithButton.onActivation(UncivSound.Silent) {
-            dto.spy.moveTo(dto.city)
-            worldScreen.game.pushScreen(EspionageOverviewScreen(worldScreen.selectedCiv, worldScreen))
-            worldScreen.bottomUnitTable.selectedSpy = null
+        val spyActionButton = Group()
+        spyActionButton.setSize(buttonSize, buttonSize)
+        spyActionButton.addActor(ImageGetter.getCircle(size = buttonSize))
+        if (dto.city != null) {
+            spyActionButton.addActor(
+                    ImageGetter.getStatIcon("Movement").apply {
+                        name = "Button"
+                        color = Color.BLACK
+                        setSize(buttonSize / 2)
+                        center(spyActionButton)
+                    }
+            )
+        } else {
+            spyActionButton.addActor(
+                    ImageGetter.getImage("OtherIcons/Close").apply {
+                        name = "Button"
+                        color = Color.RED
+                        setSize(buttonSize / 2)
+                        center(spyActionButton)
+                    }
+            )
         }
-        swapWithButton.keyShortcuts.add(KeyCharAndCode.TAB)
-        swapWithButton.keyShortcuts.add(KeyCharAndCode.RETURN)
-        swapWithButton.keyShortcuts.add(KeyCharAndCode.NUMPAD_ENTER)
 
-        return swapWithButton
+        spyActionButton.onActivation(UncivSound.Silent) {
+            if (dto.city != null) {
+                dto.spy.moveTo(dto.city)
+                worldScreen.game.pushScreen(EspionageOverviewScreen(worldScreen.selectedCiv, worldScreen))
+            } else {
+                worldScreen.game.pushScreen(EspionageOverviewScreen(worldScreen.selectedCiv, worldScreen))
+                worldScreen.bottomUnitTable.selectedSpy = null
+            }
+            removeUnitActionOverlay()
+            selectedTile = null
+            worldScreen.shouldUpdate = true
+        }
+        spyActionButton.keyShortcuts.add(KeyCharAndCode.TAB)
+        spyActionButton.keyShortcuts.add(KeyCharAndCode.RETURN)
+        spyActionButton.keyShortcuts.add(KeyCharAndCode.NUMPAD_ENTER)
+
+        return spyActionButton
     }
 
     fun addOverlayOnTileGroup(group: TileGroup, actor: Actor) {
