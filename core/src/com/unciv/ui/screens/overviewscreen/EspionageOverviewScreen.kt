@@ -43,6 +43,7 @@ class EspionageOverviewScreen(val civInfo: Civilization, val worldScreen: WorldS
 
     // if the value == null, this means the Spy Hideout.
     private var moveSpyHereButtons = hashMapOf<MoveToCityButton, City?>()
+    private var moveSpyButtons = hashMapOf<Spy, TextButton>()
 
     /** Readability shortcut */
     private val manager get() = civInfo.espionageManager
@@ -73,6 +74,7 @@ class EspionageOverviewScreen(val civInfo: Civilization, val worldScreen: WorldS
 
     private fun updateSpyList() {
         spySelectionTable.clear()
+        moveSpyButtons.clear()
         spySelectionTable.add("Spy".toLabel())
         spySelectionTable.add("Rank".toLabel())
         spySelectionTable.add("Location".toLabel())
@@ -87,24 +89,7 @@ class EspionageOverviewScreen(val civInfo: Civilization, val worldScreen: WorldS
 
             val moveSpyButton = "Move".toTextButton()
             moveSpyButton.onClick {
-                if (selectedSpyButton == moveSpyButton) {
-                    resetSelection()
-                    return@onClick
-                }
-                resetSelection()
-                selectedSpyButton = moveSpyButton
-                selectedSpy = spy
-                selectedSpyButton!!.label.setText(Constants.cancel.tr())
-                for ((button, city) in moveSpyHereButtons) {
-                    if (city == spy.getCityOrNull()) {
-                        button.isVisible = true
-                        button.setDirection(Align.right)
-                    } else {
-                        button.isVisible = city == null // hideout
-                            || !city.espionage.hasSpyOf(civInfo)
-                        button.setDirection(Align.left)
-                    }
-                }
+                onSpyClicked(moveSpyButton, spy)
             }
             moveSpyButton.onRightClick { 
                 worldScreen.bottomUnitTable.selectSpy(spy)
@@ -116,6 +101,7 @@ class EspionageOverviewScreen(val civInfo: Civilization, val worldScreen: WorldS
                 moveSpyButton.disable()
             }
             spySelectionTable.add(moveSpyButton).pad(5f, 10f, 5f, 20f).row()
+            moveSpyButtons[spy] = moveSpyButton
         }
     }
 
@@ -187,6 +173,10 @@ class EspionageOverviewScreen(val civInfo: Civilization, val worldScreen: WorldS
             starTable.add(star).size(8f).pad(1f).row()
         }
         add(starTable).center().padLeft(-4f)
+
+        onClick {
+            onSpyClicked(moveSpyButtons[spy]!!, spy)
+        }
     }
 
     private fun getSpyIcons(spies: Iterable<Spy>) = Table().apply {
@@ -215,6 +205,27 @@ class EspionageOverviewScreen(val civInfo: Civilization, val worldScreen: WorldS
         fun setDirection(align: Int) {
             arrow.rotation = if (align == Align.right) 0f else 180f
             isDisabled = align == Align.right
+        }
+    }
+
+    private fun onSpyClicked(moveSpyButton: TextButton, spy: Spy) {
+        if (selectedSpyButton == moveSpyButton) {
+            resetSelection()
+            return
+        }
+        resetSelection()
+        selectedSpyButton = moveSpyButton
+        selectedSpy = spy
+        selectedSpyButton!!.label.setText(Constants.cancel.tr())
+        for ((button, city) in moveSpyHereButtons) {
+            if (city == spy.getCityOrNull()) {
+                button.isVisible = true
+                button.setDirection(Align.right)
+            } else {
+                button.isVisible = city == null // hideout
+                        || !city.espionage.hasSpyOf(civInfo)
+                button.setDirection(Align.left)
+            }
         }
     }
 

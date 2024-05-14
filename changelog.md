@@ -1,3 +1,17 @@
+## 4.11.12
+
+By tuvus:
+- More espionage UI improvements
+- City state election rigging
+
+By SomeTroglodyte:
+- Fix "Move a unit" tutorial isn't completed by moving via right-click
+- Fix "Translating" wiki link
+
+Added the culture-refunding remove policy unique  - By PLynx01
+
+Corrected Coast yields to give 1 Food and 1 Gold  - By Skekdog
+
 ## 4.11.11
 
 Nuclear weapon uniques accept conditionals

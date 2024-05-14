@@ -121,6 +121,8 @@ class MapEditorScreen(map: TileMap? = null) : BaseScreen(), RecreateOnResize {
         globalShortcuts.add(KeyCharAndCode.BACK) { closeEditor() }
     }
 
+    override fun getCivilopediaRuleset() = ruleset
+
     companion object {
         private fun getDefaultParameters(): MapParameters {
             val lastSetup = UncivGame.Current.settings.lastGameSetup
@@ -250,7 +252,7 @@ class MapEditorScreen(map: TileMap? = null) : BaseScreen(), RecreateOnResize {
         }
     }
 
-    fun askIfDirty(question: String, confirmText: String, isConfirmPositive: Boolean = false, action: ()->Unit) {
+    private fun askIfDirty(question: String, confirmText: String, isConfirmPositive: Boolean = false, action: ()->Unit) {
         if (!isDirty) return action()
         ConfirmPopup(screen = this, question, confirmText, isConfirmPositive, action = action).open()
     }

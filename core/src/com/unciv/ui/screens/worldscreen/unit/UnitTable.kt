@@ -23,9 +23,6 @@ import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.widgets.UnitGroup
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.basescreen.BaseScreen
-import com.unciv.ui.screens.civilopediascreen.CivilopediaCategories
-import com.unciv.ui.screens.civilopediascreen.CivilopediaScreen
-import com.unciv.ui.screens.overviewscreen.EspionageOverviewScreen
 import com.unciv.ui.screens.pickerscreens.CityRenamePopup
 import com.unciv.ui.screens.pickerscreens.PromotionPickerScreen
 import com.unciv.ui.screens.pickerscreens.UnitRenamePopup
@@ -298,7 +295,7 @@ class UnitTable(val worldScreen: WorldScreen) : Table() {
                 }
 
                 unitIconHolder.onClick {
-                    worldScreen.game.pushScreen(CivilopediaScreen(worldScreen.gameInfo.ruleset, CivilopediaCategories.Unit, selectedUnit!!.name))
+                    worldScreen.openCivilopedia(selectedUnit!!.baseUnit.makeLink())
                 }
             } else { // multiple selected units
                 for (unit in selectedUnits)
