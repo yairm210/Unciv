@@ -92,9 +92,7 @@ class EspionageOverviewScreen(val civInfo: Civilization, val worldScreen: WorldS
                 onSpyClicked(moveSpyButton, spy)
             }
             moveSpyButton.onRightClick { 
-                worldScreen.bottomUnitTable.selectSpy(spy)
-                worldScreen.game.popScreen()
-                worldScreen.shouldUpdate = true
+                onSpyRightClicked(spy)
             }
             if (!worldScreen.canChangeState || !spy.isAlive()) {
                 // Spectators aren't allowed to move the spies of the Civs they are viewing
@@ -177,6 +175,9 @@ class EspionageOverviewScreen(val civInfo: Civilization, val worldScreen: WorldS
         onClick {
             onSpyClicked(moveSpyButtons[spy]!!, spy)
         }
+        onRightClick {
+            onSpyRightClicked(spy)
+        }
     }
 
     private fun getSpyIcons(spies: Iterable<Spy>) = Table().apply {
@@ -229,6 +230,12 @@ class EspionageOverviewScreen(val civInfo: Civilization, val worldScreen: WorldS
         }
     }
 
+    private fun onSpyRightClicked(spy: Spy) {
+        worldScreen.bottomUnitTable.selectSpy(spy)
+        worldScreen.game.popScreen()
+        worldScreen.shouldUpdate = true
+    }
+    
     private fun resetSelection() {
         selectedSpy = null
         selectedSpyButton?.label?.setText("Move".tr())
