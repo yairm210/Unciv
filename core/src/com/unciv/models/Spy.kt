@@ -22,10 +22,10 @@ enum class SpyAction(val displayString: String, val hasTurns: Boolean, internal 
     EstablishNetwork("Establishing Network", true, false, true),
     Surveillance("Observing City", false, true),
     StealingTech("Stealing Tech", false, true, true),
-    RiggingElections("Rigging Elections", true, true) {
+    RiggingElections("Rigging Elections", false, true) {
         override fun isDoingWork(spy: Spy) = !spy.civInfo.isAtWarWith(spy.getCity().civ)
     },
-    CounterIntelligence("Conducting Counter-intelligence", false, true) {
+    CounterIntelligence("Counter-intelligence", false, true) {
         override fun isDoingWork(spy: Spy) = spy.turnsRemainingForAction > 0
     },
     Dead("Dead", true, false),
@@ -100,7 +100,7 @@ class Spy private constructor() : IsPartOfGameInfoSerialization {
             SpyAction.EstablishNetwork -> {
                 val city = getCity() // This should never throw an exception, as going to the hideout sets your action to None.
                 if (city.civ.isCityState())
-                    setAction(SpyAction.RiggingElections, 10)
+                    setAction(SpyAction.RiggingElections, getCity().civ.cityStateTurnsUntilElection - 1)
                 else if (city.civ == civInfo)
                     setAction(SpyAction.CounterIntelligence, 10)
                 else
@@ -131,7 +131,9 @@ class Spy private constructor() : IsPartOfGameInfoSerialization {
                 }
             }
             SpyAction.RiggingElections -> {
-                rigElection()
+                // No action done here
+                // Handled in CityStateFunctions.nextTurnElections()
+                turnsRemainingForAction = getCity().civ.cityStateTurnsUntilElection - 1
             }
             SpyAction.Dead -> {
                 val oldSpyName = name
@@ -202,36 +204,6 @@ class Spy private constructor() : IsPartOfGameInfoSerialization {
         }
     }
 
-    private fun rigElection() {
-        val city = getCity()
-        val cityStateCiv = city.civ
-        // TODO: Simple implementation, please implement this in the future. This is a guess.
-        turnsRemainingForAction = 10
-
-        if (cityStateCiv.getAllyCiv() != null && cityStateCiv.getAllyCiv() != civInfo.civName) {
-            val allyCiv = civInfo.gameInfo.getCivilization(cityStateCiv.getAllyCiv()!!)
-            val defendingSpy = allyCiv.espionageManager.getSpyAssignedToCity(city)
-            if (defendingSpy != null) {
-                var spyResult = Random(randomSeed()).nextInt(120)
-                spyResult -= getSkillModifier()
-                spyResult += defendingSpy.getSkillModifier()
-                if (spyResult > 100) {
-                    // The Spy was killed (use the notification without EspionageAction)
-                    allyCiv.addNotification("A spy from [${civInfo.civName}] tried to rig elections and was found and killed in [${city}] by [${defendingSpy.name}]!",
-                        city.location, NotificationCategory.Espionage, NotificationIcon.Spy)
-                    addNotification("Your spy [$name] was killed trying to rig the election in [$city]!")
-                    killSpy()
-                    defendingSpy.levelUpSpy()
-                    return
-                }
-            }
-        }
-        // Starts at 10 influence and increases by 3 for each extra rank.
-        cityStateCiv.getDiplomacyManager(civInfo).addInfluence(7f + rank * 3)
-        civInfo.addNotification("Your spy successfully rigged the election in [$city]!", city.location,
-            NotificationCategory.Espionage, NotificationIcon.Spy)
-    }
-
     fun moveTo(city: City?) {
         if (city == null) { // Moving to spy hideout
             location = null
@@ -285,7 +257,7 @@ class Spy private constructor() : IsPartOfGameInfoSerialization {
      *  Or - chance range of best result is 0% (rank 1 vs rank 3 defender) to 30% (rank 3 vs no defender), range of worst is 53% to 3%, respectively.
      */
     // Todo Moddable as some global and/or in-game-gainable Uniques?
-    private fun getSkillModifier() = rank * 30
+    fun getSkillModifier() = rank * 30
 
     /**
      * Gets a friendly and enemy efficiency uniques for the spy at the location

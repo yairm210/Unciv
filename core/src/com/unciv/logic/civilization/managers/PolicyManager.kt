@@ -139,6 +139,23 @@ class PolicyManager : IsPartOfGameInfoSerialization {
     // from https://forums.civfanatics.com/threads/the-number-crunching-thread.389702/
     // round down to nearest 5
     fun getCultureNeededForNextPolicy(): Int {
+        return getPolicyCultureCost(numberOfAdoptedPolicies)
+    }
+
+    fun getCultureRefundMap(policiesToRemove: List<Policy>, refundPercentage: Int): Map<Policy, Int> {
+        var policyCostInput = numberOfAdoptedPolicies
+
+        val policyMap = mutableMapOf<Policy, Int>()
+
+        for (policy in policiesToRemove) {
+            policyCostInput--
+            policyMap.put(policy, getPolicyCultureCost(policyCostInput))
+        }
+
+        return policyMap.toMap()
+    }
+
+    fun getPolicyCultureCost(numberOfAdoptedPolicies: Int): Int {
         var policyCultureCost = 25 + (numberOfAdoptedPolicies * 6).toDouble().pow(1.7)
         // https://civilization.fandom.com/wiki/Map_(Civ5)
         val worldSizeModifier = with(civInfo.gameInfo.tileMap.mapParameters.mapSize) {

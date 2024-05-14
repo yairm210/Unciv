@@ -34,10 +34,8 @@ class GreatPersonPointsBreakdownPopup(cityScreen: CityScreen, gppBreakdown: Grea
         for (entry in gppBreakdown.percentBonuses)
             addFormattedEntry(entry, true)
 
-        val game = cityScreen.game
-        val ruleset = game.gameInfo!!.ruleset
         add(MarkupRenderer.render(lines) {
-            game.pushScreen(CivilopediaScreen(ruleset, link = it))
+            cityScreen.openCivilopedia(it)
         })
 
         addCloseButton()

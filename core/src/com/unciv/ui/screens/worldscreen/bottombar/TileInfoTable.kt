@@ -4,7 +4,6 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
-import com.unciv.UncivGame
 import com.unciv.logic.map.tile.Tile
 import com.unciv.logic.map.tile.TileDescription
 import com.unciv.models.translations.tr
@@ -16,7 +15,6 @@ import com.unciv.ui.components.input.onClick
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popups.Popup
 import com.unciv.ui.screens.basescreen.BaseScreen
-import com.unciv.ui.screens.civilopediascreen.CivilopediaScreen
 import com.unciv.ui.screens.civilopediascreen.FormattedLine.IconDisplay
 import com.unciv.ui.screens.civilopediascreen.MarkupRenderer
 import com.unciv.ui.screens.worldscreen.WorldScreen
@@ -38,7 +36,7 @@ class TileInfoTable(private val worldScreen: WorldScreen) : Table(BaseScreen.ski
         if (tile != null && (DebugUtils.VISIBLE_MAP || selectedCiv.hasExplored(tile)) ) {
             add(getStatsTable(tile))
             add(MarkupRenderer.render(TileDescription.toMarkup(tile, selectedCiv), padding = 0f, iconDisplay = IconDisplay.None) {
-                UncivGame.Current.pushScreen(CivilopediaScreen(selectedCiv.gameInfo.ruleset, link = it))
+                worldScreen.openCivilopedia(it)
             } ).pad(5f).row()
             if (DebugUtils.VISIBLE_MAP)
                 add(tile.position.toPrettyString().toLabel()).colspan(2).pad(5f)
@@ -48,7 +46,7 @@ class TileInfoTable(private val worldScreen: WorldScreen) : Table(BaseScreen.ski
         addBorderAllowOpacity(1f, Color.WHITE)
     }
 
-    fun getStatsTable(tile: Tile): Table {
+    private fun getStatsTable(tile: Tile): Table {
         val table = Table()
         table.defaults().pad(2f)
 

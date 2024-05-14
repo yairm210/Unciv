@@ -5,7 +5,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Cell
 import com.unciv.ui.components.input.KeyboardBinding
 import com.unciv.ui.components.input.onLongPress
 import com.unciv.ui.popups.Popup
-import com.unciv.ui.screens.civilopediascreen.CivilopediaScreen
 import com.unciv.ui.screens.savescreens.LoadGameScreen
 import com.unciv.ui.screens.victoryscreen.VictoryScreen
 import com.unciv.ui.screens.worldscreen.WorldScreen
@@ -43,7 +42,7 @@ class WorldScreenMenuPopup(
 
         addButton("Civilopedia", KeyboardBinding.Civilopedia) {
             close()
-            worldScreen.game.pushScreen(CivilopediaScreen(worldScreen.gameInfo.ruleset))
+            worldScreen.openCivilopedia()
         }.nextColumn()
         if (showSave)
             addButton("Save game", KeyboardBinding.SaveGame) {

@@ -50,7 +50,7 @@ class CityScreenTileTable(private val cityScreen: CityScreen) : Table() {
         innerTable.pad(5f)
 
         innerTable.add(MarkupRenderer.render(TileDescription.toMarkup(selectedTile, city.civ), iconDisplay = IconDisplay.None) {
-            UncivGame.Current.pushScreen(CivilopediaScreen(city.getRuleset(), link = it))
+            cityScreen.openCivilopedia(it)
         } )
         innerTable.row()
         innerTable.add(getTileStatsTable(stats)).row()

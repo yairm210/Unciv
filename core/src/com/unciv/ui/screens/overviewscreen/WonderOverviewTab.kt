@@ -16,15 +16,12 @@ import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.input.onClick
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.civilopediascreen.CivilopediaCategories
-import com.unciv.ui.screens.civilopediascreen.CivilopediaScreen
 import com.unciv.utils.DebugUtils
 
 class WonderOverviewTab(
     viewingPlayer: Civilization,
     overviewScreen: EmpireOverviewScreen
 ) : EmpireOverviewTab(viewingPlayer, overviewScreen) {
-    val ruleSet = gameInfo.ruleset
-
     private val wonderInfo = WonderInfo()
     private val wonders: Array<WonderInfo.WonderInfo> = wonderInfo.collectInfo(viewingPlayer)
 
@@ -70,7 +67,7 @@ class WonderOverviewTab(
 
             val image = wonder.getImage()
             image?.onClick {
-                UncivGame.Current.pushScreen(CivilopediaScreen(ruleSet, wonder.category, wonder.name))
+                overviewScreen.openCivilopedia(wonder.makeLink())
             }
             // Terrain image padding is a bit unpredictable, they need ~5f more. Ensure equal line spacing on name, not image:
             add(image).pad(0f, 10f, 0f, 10f)
@@ -142,6 +139,8 @@ class WonderInfo {
             viewEntireMapForDebug -> location.position.toString()
             else -> "Far away"
         }
+
+        fun makeLink() = category.name + "/" + name
     }
 
     private fun shouldBeDisplayed(viewingPlayer: Civilization, wonder: Building, wonderEra: Int?) =

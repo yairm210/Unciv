@@ -21,6 +21,7 @@ import com.unciv.logic.multiplayer.storage.MultiplayerAuthException
 import com.unciv.logic.trade.TradeEvaluation
 import com.unciv.models.TutorialTrigger
 import com.unciv.models.metadata.GameSetupInfo
+import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.components.extensions.centerX
@@ -217,6 +218,18 @@ class WorldScreen(
         super.dispose()
     }
 
+    override fun getCivilopediaRuleset() = gameInfo.ruleset
+
+    // Handle disabling and re-enabling WASD listener while Options are open
+    override fun openOptionsPopup(startingPage: Int, withDebug: Boolean, onClose: () -> Unit) {
+        val oldListener = stage.root.listeners.filterIsInstance<KeyboardPanningListener>().firstOrNull()
+        if (oldListener != null) stage.removeListener(oldListener)
+        super.openOptionsPopup(startingPage, withDebug) {
+            addKeyboardListener()
+            onClose()
+        }
+    }
+
     fun openEmpireOverview(category: EmpireOverviewCategories? = null) {
         game.pushScreen(EmpireOverviewScreen(selectedCiv, category))
     }
@@ -239,7 +252,7 @@ class WorldScreen(
 
         // Space and N are assigned in NextTurnButton constructor
         // Functions that have a big button are assigned there (WorldScreenTopBar, TechPolicyDiplomacyButtons..)
-        globalShortcuts.add(KeyboardBinding.Civilopedia) { game.pushScreen(CivilopediaScreen(gameInfo.ruleset)) }
+        globalShortcuts.add(KeyboardBinding.Civilopedia) { openCivilopedia() }
         globalShortcuts.add(KeyboardBinding.EmpireOverviewTrades) { openEmpireOverview(EmpireOverviewCategories.Trades) }
         globalShortcuts.add(KeyboardBinding.EmpireOverviewUnits) { openEmpireOverview(EmpireOverviewCategories.Units) }
         globalShortcuts.add(KeyboardBinding.EmpireOverviewPolitics) { openEmpireOverview(EmpireOverviewCategories.Politics) }
@@ -273,16 +286,6 @@ class WorldScreen(
         globalShortcuts.add(KeyboardBinding.ToggleMovementDisplay) { minimapWrapper.movementsImageButton.toggle() }
 
         globalShortcuts.add(KeyboardBinding.DeveloperConsole, action = ::openDeveloperConsole)
-    }
-
-    // Handle disabling and re-enabling WASD listener while Options are open
-    override fun openOptionsPopup(startingPage: Int, withDebug: Boolean, onClose: () -> Unit) {
-        val oldListener = stage.root.listeners.filterIsInstance<KeyboardPanningListener>().firstOrNull()
-        if (oldListener != null) stage.removeListener(oldListener)
-        super.openOptionsPopup(startingPage, withDebug) {
-            addKeyboardListener()
-            onClose()
-        }
     }
 
     fun openDeveloperConsole() {
