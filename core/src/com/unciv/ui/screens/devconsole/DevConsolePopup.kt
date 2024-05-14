@@ -30,8 +30,11 @@ class DevConsolePopup(val screen: WorldScreen) : Popup(screen) {
     internal val gameInfo = screen.gameInfo
 
     init {
-        add("Developer Console".toLabel(fontSize = Constants.headingFontSize)).growX()  // translation template is automatic via the keybinding
-        add("Keep open".toCheckBox(keepOpen) { keepOpen = it }).right().row()
+        // Use untranslated text here! The entire console, including messages, should stay English.
+        // But "Developer Console" *has* a translation from KeyboardBinding.DeveloperConsole.
+        // The extensions still help, even with a "don't translate" kludge ("Keep open" has no template but might in the future).
+        add("Developer Console {}".toLabel(fontSize = Constants.headingFontSize)).growX()  // translation template is automatic via the keybinding
+        add("Keep open {}".toCheckBox(keepOpen) { keepOpen = it }).right().row()
 
         add(textField).width(stageToShowOn.width / 2).colspan(2).row()
         textField.keyShortcuts.add(Input.Keys.ENTER, ::onEnter)
