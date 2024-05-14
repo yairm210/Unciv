@@ -937,11 +937,11 @@ class WorldMapHolder(
         for (city in worldScreen.gameInfo.getCities()) {
             if (spy.canMoveTo(city)) {
                 tileGroups[city.getCenterTile()]!!.layerOverlay.showHighlight(Color.CYAN, .7f)
-                
+
             }
         }
     }
-    
+
     private fun updateBombardableTilesForSelectedCity(city: City) {
         if (!city.canBombard()) return
         for (attackableTile in TargetHelper.getBombardableTiles(city)) {
