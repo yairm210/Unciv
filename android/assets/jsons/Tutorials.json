@@ -418,6 +418,24 @@
         "One of your cities is under a naval blockade! When all adjacent water tiles of a coastal city are blocked - city loses harbor connection to all other cities, including capital. Make sure to de-blockade cities by deploying friendly military naval units to fight off invaders."
     ]
   },
+  {
+    "name": "Espionage",
+    "steps": [
+      "The first time a civ reaches Renaissance era each nation gets one spy. Every time a civ reaches an era afterwards they get one more spy.",
+      "Spies can be sent out to foreign cities to steal technology, rigg elections or stage coups. Place them in your own cities to do counter-intelligence work.",
+      "Only one spy is alowed in each city. Spies that are not in any city are on vacation in your spy hideout.",
+      "",
+      " - Spies set up in cities of major civilizations will try to steal technology at a rate which is based off of the science production in the city. Succeeding to steal technology will level up your spy. Failing to succeed will level up the defending spy if it is present.",
+      " - Spies set in city-states will try to rig elections in order to gain influence and reduce the influence of other civilizations. Only one spy partaking in rigging the election can win.",
+      " - Spies that are rigging elections in city-state may also stage a coup. The likelyhood of success for the coup depends on your relative influence to the current ally of the city-state, your spy level, and the level of of the spy that the current ally has in the city-state if present. Suceeding a coup will make you their new ally and reduce the influence of all other civs. Failing a coup will kill your spy and level up the defending spy if present.",
+      " - Spies that are set up in your own cities will be conducting counter-intelligence. They reduce the success chance of other spies trying to steal your technology.",
+      "",
+      "Spies at a higher rank have a higher chance of success. The max rank a spy can reach is rank 3. After a spy is killed it will revive after a certain amount of turns back at rank 1. ",
+      "Building buildings like the constabulary and police station will reduce the technology steal rate of spies in that city.",
+      "",
+      "Espionage is available using the Gods and Kings ruleset. To enable it in a new game click advanced settings, then click on the Enable Espionage option."
+    ]
+  },
     {
         "name": "Keyboard Bindings",
         "civilopediaText": [
