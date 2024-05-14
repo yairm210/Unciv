@@ -223,7 +223,7 @@ class EspionageOverviewScreen(val civInfo: Civilization, val worldScreen: WorldS
         selectedSpyButton = moveSpyButton
         selectedSpy = spy
         selectedSpyButton!!.label.setText(Constants.cancel.tr())
-        for ((button, city) in moveSpyHereButtons) {
+        for ((button, city) in spyActionButtons) {
             if (city == spy.getCityOrNull()) {
                 button.isVisible = true
                 button.setDirection(Align.right)
