@@ -19,8 +19,6 @@ import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.input.onRightClick
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.basescreen.BaseScreen
-import com.unciv.ui.screens.civilopediascreen.CivilopediaCategories
-import com.unciv.ui.screens.civilopediascreen.CivilopediaScreen
 import com.unciv.ui.screens.overviewscreen.EmpireOverviewCategories
 import com.unciv.ui.screens.worldscreen.BackgroundActor
 import com.unciv.ui.screens.worldscreen.WorldScreen

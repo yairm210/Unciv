@@ -21,7 +21,6 @@ import com.unciv.logic.multiplayer.storage.MultiplayerAuthException
 import com.unciv.logic.trade.TradeEvaluation
 import com.unciv.models.TutorialTrigger
 import com.unciv.models.metadata.GameSetupInfo
-import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.components.extensions.centerX
@@ -38,7 +37,6 @@ import com.unciv.ui.popups.ToastPopup
 import com.unciv.ui.popups.hasOpenPopups
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.cityscreen.CityScreen
-import com.unciv.ui.screens.civilopediascreen.CivilopediaScreen
 import com.unciv.ui.screens.devconsole.DevConsolePopup
 import com.unciv.ui.screens.mainmenuscreen.MainMenuScreen
 import com.unciv.ui.screens.newgamescreen.NewGameScreen
