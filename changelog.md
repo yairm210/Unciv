@@ -1,13 +1,12 @@
 ## 4.11.12
 
 By tuvus:
-- More espionage UI improvements 
-- City state election rigging 
+- More espionage UI improvements
+- City state election rigging
 
 By SomeTroglodyte:
-- Fix "Move a unit" tutorial isn't completed by moving via right-click 
-- Architecture overhaul: openCivilopedia and "hey, who knows which Ruleset we're running"? 
-- Fix "Translating" wiki link 
+- Fix "Move a unit" tutorial isn't completed by moving via right-click
+- Fix "Translating" wiki link
 
 Added the culture-refunding remove policy unique  - By PLynx01
 
