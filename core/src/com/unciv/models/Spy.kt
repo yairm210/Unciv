@@ -239,10 +239,11 @@ class Spy private constructor() : IsPartOfGameInfoSerialization {
                         NotificationCategory.Espionage, civInfo.civName,  NotificationIcon.Spy, cityState.civName)
                 pastAlly.getDiplomacyManager(civInfo).addModifier(DiplomaticModifiers.SpiedOnUs, -15f)
             }
-            for (civ in cityState.getKnownCivs()) {
+            for (civ in cityState.getKnownCivsWithSpectators()) {
                 if (civ == pastAlly || civ == civInfo) continue
                 civ.addNotification("A spy from [${civInfo.civName}] successfully staged a coup in [${cityState.civName}]!", getCity().location,
                         NotificationCategory.Espionage, civInfo.civName,  NotificationIcon.Spy, cityState.civName)
+                if (civ.isSpectator()) continue
                 cityState.getDiplomacyManager(civ).reduceInfluence(10f) // Guess
             }
             setAction(SpyAction.RiggingElections, 10)
