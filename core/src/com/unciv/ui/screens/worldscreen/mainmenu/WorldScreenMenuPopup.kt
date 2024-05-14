@@ -19,7 +19,7 @@ class WorldScreenMenuPopup(val worldScreen: WorldScreen) : Popup(worldScreen, sc
         }.row()
         addButton("Civilopedia", KeyboardBinding.Civilopedia) {
             close()
-            worldScreen.game.pushScreen(CivilopediaScreen(worldScreen.gameInfo.ruleset))
+            worldScreen.openCivilopedia()
         }.row()
         if (!worldScreen.gameInfo.gameParameters.isOnlineMultiplayer)
             addButton("Save game", KeyboardBinding.SaveGame) {

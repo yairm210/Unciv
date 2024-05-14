@@ -133,7 +133,7 @@ class MapUnitAction(private val location: Vector2 = Vector2.Zero) : Notification
 /** A notification action that shows a Civilopedia entry, e.g. for a Wonder. */
 class CivilopediaAction(private val link: String = "") : NotificationAction {
     override fun execute(worldScreen: WorldScreen) {
-        worldScreen.game.pushScreen(CivilopediaScreen(worldScreen.gameInfo.ruleset, link = link))
+        worldScreen.openCivilopedia(link)
     }
 }
 

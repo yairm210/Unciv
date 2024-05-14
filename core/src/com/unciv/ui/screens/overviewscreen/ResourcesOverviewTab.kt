@@ -23,8 +23,6 @@ import com.unciv.ui.components.extensions.surroundWithCircle
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.basescreen.BaseScreen
-import com.unciv.ui.screens.civilopediascreen.CivilopediaCategories
-import com.unciv.ui.screens.civilopediascreen.CivilopediaScreen
 
 
 class ResourcesOverviewTab(
@@ -106,7 +104,7 @@ class ResourcesOverviewTab(
         }
     private fun TileResource.getLabel() = name.toLabel(hideIcons = true).apply {
         onClick {
-            overviewScreen.game.pushScreen(CivilopediaScreen(gameInfo.ruleset, CivilopediaCategories.Resource, this@getLabel.name))
+            overviewScreen.openCivilopedia(makeLink())
         }
     }
 

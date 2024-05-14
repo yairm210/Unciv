@@ -28,7 +28,6 @@ import com.unciv.ui.components.widgets.UncivSlider
 import com.unciv.ui.components.widgets.WrappableLabel
 import com.unciv.ui.popups.ToastPopup
 import com.unciv.ui.screens.basescreen.BaseScreen
-import com.unciv.ui.screens.civilopediascreen.CivilopediaScreen
 import com.unciv.ui.screens.civilopediascreen.FormattedLine
 import com.unciv.ui.screens.civilopediascreen.FormattedLine.IconDisplay
 import com.unciv.ui.screens.civilopediascreen.MarkupRenderer
@@ -216,7 +215,7 @@ class MapEditorViewTab(
                 }
             } else {
                 // This needs CivilopediaScreen to be able to work without a GameInfo!
-                UncivGame.Current.pushScreen(CivilopediaScreen(tile.ruleset, link = it))
+                editorScreen.openCivilopedia(it)
             }
         }
 
