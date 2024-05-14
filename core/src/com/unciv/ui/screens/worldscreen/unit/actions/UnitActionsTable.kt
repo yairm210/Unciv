@@ -9,6 +9,7 @@ import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.models.UnitAction
 import com.unciv.models.UnitActionType
 import com.unciv.models.UpgradeUnitAction
+import com.unciv.ui.components.extensions.brighten
 import com.unciv.ui.components.extensions.disable
 import com.unciv.ui.components.input.keyShortcuts
 import com.unciv.ui.components.input.onActivation
@@ -155,7 +156,7 @@ class UnitActionsTable(val worldScreen: WorldScreen) : Table() {
         val actionButton = IconTextButton(unitAction.title, icon, fontColor = fontColor)
 
         if (unitAction.type == UnitActionType.Promote && unitAction.action != null)
-            actionButton.color = Color.GREEN.cpy().lerp(Color.WHITE, 0.5f)
+            actionButton.color = Color.GREEN.brighten(0.5f)
 
         actionButton.pack()
 

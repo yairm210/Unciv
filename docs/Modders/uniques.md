@@ -77,6 +77,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Triggerable
 
+??? example  "Remove [policy] and refund [amount]% of its cost"
+	Example: "Remove [Oligarchy] and refund [3]% of its cost"
+
+	Applicable to: Triggerable
+
 ??? example  "Free Technology"
 	Applicable to: Triggerable
 

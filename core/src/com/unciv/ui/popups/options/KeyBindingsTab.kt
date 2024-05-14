@@ -33,9 +33,7 @@ class KeyBindingsTab(
         FormattedLine("Please see the Tutorial.", link = "Tutorial/Keyboard Bindings"),
         FormattedLine(separator = true),
     ), labelWidth) {
-        // This ruleset is a kludge - but since OptionPopup can be called from anywhere, getting the relevant one is a chore
-        //TODO better pedia call architecture, or a tutorial render method once that has markup capability
-        GUI.pushScreen(CivilopediaScreen(RulesetCache.getVanillaRuleset(), link = it))
+        GUI.openCivilopedia(it)
     }
 
     init {

@@ -99,6 +99,8 @@ class DiplomacyScreen(
         }
     }
 
+    override fun getCivilopediaRuleset() = viewingCiv.gameInfo.ruleset
+
     private inner class ScrollPaneWithMinSize : ScrollPane(leftSideTable) {
         // On cramped screens 20% default splitAmount can make the left side smaller than a nation icon.
         // Also, content changes of the right side may claim too much space, pushing the split further to the left.
