@@ -165,7 +165,7 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
             modifier = 5f // there's a settler just sitting here, doing nothing - BAD
 
         if (!civInfo.isAIOrAutoPlaying()) modifier /= 2 // Players prefer to make their own unit choices usually
-        modifier *= personality.scaledFocus(PersonalityValue.Militaristic)
+        modifier *= personality.scaledFocus(PersonalityValue.Aggressive)
         addChoice(relativeCostEffectiveness, militaryUnit, modifier)
     }
 
@@ -310,7 +310,7 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
             if (isAtWar) modifier *= 2
             if (civInfo.wantsToFocusOn(Victory.Focus.Military))
                 modifier *= 1.3f
-            modifier *= personality.scaledFocus(PersonalityValue.Militaristic)
+            modifier *= personality.scaledFocus(PersonalityValue.Aggressive)
             addChoice(relativeCostEffectiveness, unitTrainingBuilding.name, modifier)
         }
     }

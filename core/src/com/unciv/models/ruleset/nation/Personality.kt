@@ -19,11 +19,11 @@ enum class PersonalityValue {
     Happiness,
     Faith,
     // Behaviour focused personalities
-    Militaristic, // Building a military but not nessesarily using it
-    WarMongering, // Declaring war determines expanding or defending
+    Military, // Building a military but not nessesarily using it
+    Aggressive, // Declaring war determines expanding or defending
     Commerce, // Trading frequency, open borders and liberating city-states, less negative diplomacy impact
-    Diplomatic, // Likelyhood of signing friendship, defensive pact, peace treaty and other diplomatic actions
-    Loyalty, // Likelyhood to make a long lasting aliance with another civ and join wars with them
+    Diplomacy, // Likelyhood of signing friendship, defensive pact, peace treaty and other diplomatic actions
+    Loyal, // Likelyhood to make a long lasting aliance with another civ and join wars with them
     Expansion; // Founding/capturing new cities, oposite of a cultural victory
 
     companion object  {
@@ -50,11 +50,11 @@ class Personality: RulesetObject() {
     var happiness: Float = 5f
     var faith: Float = 5f
 
-    var militaristic: Float = 5f
-    var warMongering: Float = 5f
+    var military: Float = 5f
+    var aggressive: Float = 5f
     var commerce: Float = 5f
-    var diplomatic: Float = 5f
-    var loyalty: Float = 5f
+    var diplomacy: Float = 5f
+    var loyal: Float = 5f
     var expansion: Float = 5f
 
     var priorities = LinkedHashMap<String, Int>()
@@ -70,11 +70,11 @@ class Personality: RulesetObject() {
             PersonalityValue.Culture -> ::culture
             PersonalityValue.Happiness -> ::happiness
             PersonalityValue.Faith -> ::faith
-            PersonalityValue.Militaristic -> ::militaristic
-            PersonalityValue.WarMongering -> ::warMongering
+            PersonalityValue.Military -> ::military
+            PersonalityValue.Aggressive -> ::aggressive
             PersonalityValue.Commerce -> ::commerce
-            PersonalityValue.Diplomatic -> ::diplomatic
-            PersonalityValue.Loyalty -> ::loyalty
+            PersonalityValue.Diplomacy -> ::diplomacy
+            PersonalityValue.Loyal -> ::loyal
             PersonalityValue.Expansion -> ::expansion
         }
     }

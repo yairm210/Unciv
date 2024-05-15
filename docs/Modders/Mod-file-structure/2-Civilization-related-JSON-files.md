@@ -141,15 +141,15 @@ are ready might make the mod unplayable.
 value means they will behave more like the attribute.)
 
 
-[//]: # (- Militaristic: Determines how much does the civilization prioritizes building a military, but not necessarily using it. A higher value means more focus on military, a lower value means it is likely more peaceful.)
+[//]: # (- Military: Determines how much does the civilization prioritizes building a military, but not necessarily using it. A higher value means more focus on military, a lower value means it is likely more peaceful.)
 
-[//]: # (- WarMongering: Determines how likely the civilization is to declare war. A higher value means the civilization is more aggressive, a lower value means it is more defensive.)
+[//]: # (- Agressive: Determines how likely the civilization is to declare war. A higher value means the civilization is more aggressive, a lower value means it is more defensive.)
 
 [//]: # (- Commerce: Determines how open the civilization is to trade, value open borders, and liberate city-states. A higher value means more trading frequency even with civilizations they don't like.)
 
-[//]: # (- Diplomatic: Determines how likely the civilization is to declare friendship, a defensive pact, peace treaty, or other diplomatic actions.)
+[//]: # (- Diplomacy: Determines how likely the civilization is to declare friendship, a defensive pact, peace treaty, or other diplomatic actions.)
 
-[//]: # (- Loyalty: Determines how much the civilization values a long-lasting alliance, how willing they are to join wars with them, and how much they despise other unreliable civilizations.)
+[//]: # (- Loyal: Determines how much the civilization values a long-lasting alliance, how willing they are to join wars with them, and how much they despise other unreliable civilizations.)
 
 [//]: # (- Expansion: Determines how focused the civilization is on founding or capturing new cities. A lower value means they might focus on culture more.)
 
