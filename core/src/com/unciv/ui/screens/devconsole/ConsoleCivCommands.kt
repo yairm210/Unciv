@@ -1,6 +1,8 @@
 package com.unciv.ui.screens.devconsole
 
 import com.unciv.logic.civilization.PlayerType
+import com.unciv.models.ruleset.Policy
+import com.unciv.models.ruleset.PolicyBranch
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.stats.Stat
@@ -45,6 +47,19 @@ class ConsoleCivCommands : ConsoleCommandNode {
             val city = tile?.getCity()
             UniqueTriggerActivation.triggerUnique(unique, civ, city, tile = tile)
             DevConsoleResponse.OK
+        },
+
+        "addpolicy" to ConsoleAction("civ addpolicy <civName> <policyName>")  { console, params ->
+            val civ = console.getCivByName(params[0])
+            val policy = console.findCliInput<Policy>(params[1]) // yes this also finds PolicyBranch instances
+                ?: throw ConsoleErrorException("Unrecognized policy")
+            if (civ.policies.isAdopted(policy.name))
+                DevConsoleResponse.hint("${civ.civName} already has adopted ${policy.name}")
+            else {
+                civ.policies.freePolicies++
+                civ.policies.adopt(policy)
+                DevConsoleResponse.OK
+            }
         }
     )
 }

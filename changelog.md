@@ -1,3 +1,40 @@
+## 4.11.12
+
+By tuvus:
+- More espionage UI improvements
+- City state election rigging
+
+By SomeTroglodyte:
+- Fix "Move a unit" tutorial isn't completed by moving via right-click
+- Fix "Translating" wiki link
+
+Added the culture-refunding remove policy unique  - By PLynx01
+
+Corrected Coast yields to give 1 Food and 1 Gold  - By Skekdog
+
+## 4.11.11
+
+Nuclear weapon uniques accept conditionals
+
+By SomeTroglodyte:
+- Console: `civ addpolicy`
+- Resource Overview: Info on unavailable strategic and unimproved by allies
+- Spy UI improvements
+- Fix potential crash in console autocomplete
+
+## 4.11.10
+
+By tuvus:
+- Add missing espionage uniques
+- Next turn button shows move spies notification icon
+- Added diplomatic repercussions for spying on a civ
+- Spy rank UI and fixes
+- Fixed city-state alliance join war notification
+
+Better "hidden in civilopedia" logic - By SomeTroglodyte
+
+Added victoryType conditionals  - By PLynx01
+
 ## 4.11.9
 
 Added "checkfilter" console commands for city, tile, and unit, for easy mod checking

@@ -336,17 +336,21 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
         }
     }
 
-    private fun openCivilopedia() {
-        stopBackgroundMapGeneration()
+    override fun getCivilopediaRuleset(): Ruleset {
+        if (easterEggRuleset != null) return easterEggRuleset!!
         val rulesetParameters = game.settings.lastGameSetup?.gameParameters
-        val ruleset = easterEggRuleset ?:
-            if (rulesetParameters == null)
-                RulesetCache[BaseRuleset.Civ_V_GnK.fullName] ?: return
-            else RulesetCache.getComplexRuleset(rulesetParameters)
+        if (rulesetParameters != null) return RulesetCache.getComplexRuleset(rulesetParameters)
+        return RulesetCache[BaseRuleset.Civ_V_GnK.fullName]
+            ?: throw IllegalStateException("No ruleset found")
+    }
+
+    override fun openCivilopedia(link: String) {
+        stopBackgroundMapGeneration()
+        val ruleset = getCivilopediaRuleset()
         UncivGame.Current.translations.translationActiveMods = ruleset.mods
         ImageGetter.setNewRuleset(ruleset)
         setSkin()
-        game.pushScreen(CivilopediaScreen(ruleset))
+        openCivilopedia(ruleset)
     }
 
     override fun recreate(): BaseScreen {

@@ -85,7 +85,7 @@ class UniqueDocsWriter {
                     lines += "\tExample: \"${uniqueText.fillPlaceholders(*paramExamples)}\"\n"
                 }
                 if (uniqueType in MapUnitCache.UnitMovementUniques) {
-                    lines += "\tDue to performance considerations, this unique is cached, thus conditionals may not work."
+                    lines += "\tDue to performance considerations, this unique is cached, thus conditionals that may change within a turn may not work."
                 }
                 lines += "\tApplicable to: " + uniqueType.allTargets().sorted().joinToString()
                 lines += ""

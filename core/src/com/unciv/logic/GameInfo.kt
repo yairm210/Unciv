@@ -87,6 +87,7 @@ data class VictoryData(val winningCiv: String, val victoryType: String, val vict
     constructor(): this("","",0)
 }
 
+/** The virtual world the users play in */
 class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion {
     companion object {
         /** The current compatibility version of [GameInfo]. This number is incremented whenever changes are made to the save file structure that guarantee that
@@ -538,13 +539,20 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
      * @see notifyExploredResources
      */
     fun getExploredResourcesNotification(
-        civInfo: Civilization,
+        civ: Civilization,
         resourceName: String,
         maxDistance: Int = Int.MAX_VALUE,
         filter: (Tile) -> Boolean = { true }
     ): Notification? {
         data class CityTileAndDistance(val city: City, val tile: Tile, val distance: Int)
 
+        // Include your city-state allies' cities with your own for the purpose of showing the closest city
+        val relevantCities: Sequence<City> = civ.cities.asSequence() +
+            civ.getKnownCivs()
+                .filter { it.isCityState() && it.getAllyCiv() == civ.civName }
+                .flatMap { it.cities }
+
+        // All sources of the resource on the map, using a city-state's capital center tile for the CityStateOnlyResource types
         val exploredRevealTiles: Sequence<Tile> =
                 if (ruleset.tileResources[resourceName]!!.hasUnique(UniqueType.CityStateOnlyResource)) {
                     // Look for matching mercantile CS centers
@@ -558,15 +566,15 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
                         .filter { it.resource == resourceName }
                 }
 
+        // Apply all filters to the above collection and sort them by distance to closest city
         val exploredRevealInfo = exploredRevealTiles
-            .filter { civInfo.hasExplored(it) }
+            .filter { civ.hasExplored(it) }
             .flatMap { tile ->
-                civInfo.cities.asSequence()
-                    .map {
+                relevantCities
+                    .map { city ->
                         // build a full cross join all revealed tiles * civ's cities (should rarely surpass a few hundred)
                         // cache distance for each pair as sort will call it ~ 2n log n times
                         // should still be cheaper than looking up 'the' closest city per reveal tile before sorting
-                            city ->
                         CityTileAndDistance(city, tile, tile.aerialDistanceTo(city.getCenterTile()))
                     }
             }

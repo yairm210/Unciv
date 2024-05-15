@@ -141,7 +141,10 @@ class MapUnitCache(private val mapUnit: MapUnit) {
             UniqueType.ForestsAndJunglesAreRoads,
             UniqueType.IgnoreHillMovementCost,
             // Movement algorithm avoids damage on route, meaning terrain damage requires caching
-            UniqueType.DamagesContainingUnits
+            UniqueType.DamagesContainingUnits,
+            UniqueType.LandUnitEmbarkation,
+            UniqueType.LandUnitsCrossTerrainAfterUnitGained,
+            UniqueType.EnemyUnitsSpendExtraMovement
             )
     }
 }

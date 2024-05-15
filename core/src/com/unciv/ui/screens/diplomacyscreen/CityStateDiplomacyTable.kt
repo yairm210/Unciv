@@ -32,7 +32,6 @@ import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.widgets.ColorMarkupLabel
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popups.ConfirmPopup
-import com.unciv.ui.screens.civilopediascreen.CivilopediaScreen
 
 class CityStateDiplomacyTable(private val diplomacyScreen: DiplomacyScreen) {
     val viewingCiv = diplomacyScreen.viewingCiv
@@ -121,7 +120,7 @@ class CityStateDiplomacyTable(private val diplomacyScreen: DiplomacyScreen) {
                 resourcesTable.add(wrapper).padRight(20f)
                 wrapper.addTooltip(name, 18f)
                 wrapper.onClick {
-                    UncivGame.Current.pushScreen(CivilopediaScreen(UncivGame.Current.gameInfo!!.ruleset, link = "Resource/$name"))
+                    diplomacyScreen.openCivilopedia(supplyList.resource.makeLink())
                 }
             }
             diplomacyTable.add(resourcesTable).row()

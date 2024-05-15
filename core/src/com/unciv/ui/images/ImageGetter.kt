@@ -330,7 +330,7 @@ object ImageGetter {
             addActor(cross)
         }
 
-    fun getArrowImage(align:Int = Align.right): Image {
+    fun getArrowImage(align: Int = Align.right): Image {
         val image = getImage("OtherIcons/ArrowRight")
         image.setOrigin(Align.center)
         if (align == Align.left) image.rotation = 180f

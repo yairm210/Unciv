@@ -267,6 +267,11 @@ class WorldMapHolder(
         worldScreen.shouldUpdate = localShouldUpdate
     }
 
+    private fun markUnitMoveTutorialComplete(unit: MapUnit) {
+        val key = if (unit.baseUnit.movesLikeAirUnits()) "Move an air unit" else "Move unit"
+        UncivGame.Current.settings.addCompletedTutorialTask(key)
+    }
+
     private fun moveUnitToTargetTile(selectedUnits: List<MapUnit>, targetTile: Tile) {
         // this can take a long time, because of the unit-to-tile calculation needed, so we put it in a different thread
         // THIS PART IS REALLY ANNOYING
@@ -277,6 +282,7 @@ class WorldMapHolder(
         // and then calling the function again but without the unit that moved.
 
         val selectedUnit = selectedUnits.first()
+        markUnitMoveTutorialComplete(selectedUnit) // not too expensive to have it repeat too often
 
         Concurrency.run("TileToMoveTo") {
             // these are the heavy parts, finding where we want to go
@@ -334,6 +340,7 @@ class WorldMapHolder(
     }
 
     private fun swapMoveUnitToTargetTile(selectedUnit: MapUnit, targetTile: Tile) {
+        markUnitMoveTutorialComplete(selectedUnit)
         selectedUnit.movement.swapMoveToTile(targetTile)
 
         if (selectedUnit.isExploring() || selectedUnit.isMoving())
@@ -531,9 +538,6 @@ class WorldMapHolder(
         if (unitsThatCanMove.isEmpty()) moveHereButton.color.a = 0.5f
         else {
             moveHereButton.onActivation(UncivSound.Silent) {
-                UncivGame.Current.settings.addCompletedTutorialTask("Move unit")
-                if (unitsThatCanMove.any { it.baseUnit.movesLikeAirUnits() })
-                    UncivGame.Current.settings.addCompletedTutorialTask("Move an air unit")
                 moveUnitToTargetTile(unitsThatCanMove, dto.tile)
             }
             moveHereButton.keyShortcuts.add(KeyCharAndCode.TAB)
@@ -558,9 +562,6 @@ class WorldMapHolder(
         swapWithButton.addActor(unitIcon)
 
         swapWithButton.onActivation(UncivSound.Silent) {
-            UncivGame.Current.settings.addCompletedTutorialTask("Move unit")
-            if (dto.unit.baseUnit.movesLikeAirUnits())
-                UncivGame.Current.settings.addCompletedTutorialTask("Move an air unit")
             swapMoveUnitToTargetTile(dto.unit, dto.tile)
         }
         swapWithButton.keyShortcuts.add(KeyCharAndCode.TAB)
@@ -753,7 +754,7 @@ class WorldMapHolder(
         val moveTileOverlayColor = if (unit.isPreparingParadrop()) Color.BLUE else Color.WHITE
         val tilesInMoveRange = unit.movement.getReachableTilesInCurrentTurn()
         // Prepare special Nuke blast radius display
-        val nukeBlastRadius = if (unit.baseUnit.isNuclearWeapon() && selectedTile != null && selectedTile != unit.getTile())
+        val nukeBlastRadius = if (unit.isNuclearWeapon() && selectedTile != null && selectedTile != unit.getTile())
             unit.getNukeBlastRadius() else -1
 
         // Z-Layer: 1
@@ -906,21 +907,6 @@ class WorldMapHolder(
 
     override fun zoom(zoomScale: Float) {
         super.zoom(zoomScale)
-
-        if (scaleX == minZoom)
-            for (tileGroup in tileGroups.values){
-                val tile = tileGroup.tile
-                if (!worldScreen.selectedCiv.hasExplored(tile)) continue
-                val owner = tile.getOwner()
-                if (owner != null){
-                    val color = if (tile.isCityCenter()) owner.nation.getInnerColor() else owner.nation.getOuterColor()
-                    tileGroup.layerMisc.overlayTerrain(color, 0.7f)
-                }
-            }
-        else
-            for (tileGroup in tileGroups.values)
-                tileGroup.layerMisc.hideTerrainOverlay()
-
         clampCityButtonSize()
     }
 
