@@ -241,7 +241,7 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
     }
 
     private fun addBuildingChoices() {
-        for (building in buildings) {
+        for (building in buildings.filterBuildable() as Sequence<Building>) {
             if (building.isWonder && city.isPuppet) continue
             addChoice(relativeCostEffectiveness, building.name, getValueOfBuilding(building))
         }
