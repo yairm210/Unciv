@@ -1,6 +1,14 @@
 package com.unciv.ui.screens.cityscreen
 
+import kotlin.random.Random
+import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.graphics.GL20
+import com.badlogic.gdx.graphics.g2d.Batch
+import com.badlogic.gdx.graphics.g2d.ParticleEffect
+import com.badlogic.gdx.graphics.g2d.SpriteBatch
+import com.badlogic.gdx.math.Vector2
+import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
@@ -137,10 +145,21 @@ class CityScreen(
 
     private var cityAmbiencePlayer: CityAmbiencePlayer?  = ambiencePlayer ?: CityAmbiencePlayer(city)
 
+    /** Particle effects for WLTK day decoration */
+    private data class ParticleEffectData(val effect: ParticleEffect, val duration: Float, val endPoint: Vector2)
+    private val isWLTKday = city.isWeLoveTheKingDayActive()
+    private val fireworks = arrayListOf<ParticleEffectData>()
+    private lateinit var effectsBatch: Batch
+    private lateinit var cityCenterTileGroup: CityTileGroup
+    private val batchTempPos = Vector2()
+    private val batchTempPos2 = Vector2()
+    private val useFireworks: Boolean
+
     init {
-        if (city.isWeLoveTheKingDayActive() && UncivGame.Current.settings.citySoundsVolume > 0) {
+        if ( isWLTKday && UncivGame.Current.settings.citySoundsVolume > 0) {
             SoundPlayer.play(UncivSound("WLTK"))
         }
+        useFireworks = isWLTKday && game.settings.continuousRendering && ImageGetter.getSpecificAtlas("Effects") != null
 
         UncivGame.Current.settings.addCompletedTutorialTask("Enter city screen")
 
@@ -179,6 +198,8 @@ class CityScreen(
             scrollY = (maxY - cityStatsTable.packIfNeeded().height - posFromEdge + cityPickerTable.top) / 2
             updateVisualScroll()
         }
+
+        if (useFireworks) addFireworks()
     }
 
     internal fun updateWithoutConstructionAndMap() {
@@ -277,7 +298,7 @@ class CityScreen(
         fun addWltkIcon(name: String, apply: Image.()->Unit = {}) =
             razeCityButtonHolder.add(ImageGetter.getImage(name).apply(apply)).size(wltkIconSize)
 
-        if (city.isWeLoveTheKingDayActive()) {
+        if (isWLTKday && !useFireworks) {
             addWltkIcon("OtherIcons/WLTK LR") { color = Color.GOLD }
             addWltkIcon("OtherIcons/WLTK 1") { color = Color.FIREBRICK }.padRight(10f)
         }
@@ -309,7 +330,7 @@ class CityScreen(
             razeCityButtonHolder.add(stopRazingCityButton) //.colspan(cityPickerTable.columns)
         }
 
-        if (city.isWeLoveTheKingDayActive()) {
+        if (isWLTKday && !useFireworks) {
             addWltkIcon("OtherIcons/WLTK 2") { color = Color.FIREBRICK }.padLeft(10f)
             addWltkIcon("OtherIcons/WLTK LR") {
                 color = Color.GOLD
@@ -531,6 +552,73 @@ class CityScreen(
 
     override fun dispose() {
         cityAmbiencePlayer?.dispose()
+        val effects = fireworks.toList()
+        fireworks.clear()
+        for (effect in effects) effect.effect.dispose()
         super.dispose()
+    }
+
+    private fun addFireworks() {
+        fireworks.clear()
+        if (!useFireworks) return
+        val atlas = ImageGetter.getSpecificAtlas("Effects")!!
+        if (!::effectsBatch.isInitialized) effectsBatch = SpriteBatch()
+
+        val endPoints = arrayOf(
+            Vector2(0f, 1.6f),
+            Vector2(-0.5f, 1.1f),
+            Vector2(0.5f, 1.1f),
+        )
+        for (i in 0..2) {
+            val effect = ParticleEffect()
+            effect.load(Gdx.files.internal("effects/fireworks.p"), atlas)
+            effect.emitters.forEach {
+                it.setPosition(stage.width / 2 + i * stage.width / 8, stage.height / 4)
+            }
+            effect.setEmittersCleanUpBlendFunction(false)  // Treat it as Unknown whether the effect file changes blend state -> do it ourselves
+            effect.start()
+            val duration = effect.emitters.maxOf { it.duration }
+            effect.update(duration * i / 4)
+            fireworks.add(ParticleEffectData(effect, duration, endPoints[i]))
+        }
+        cityCenterTileGroup = tileGroups.first { it.tile == city.getCenterTile() }
+    }
+
+    private fun Actor.fixedLocalToStage(coord: Vector2) {
+        val x = listOf(1,5,9).average()
+        var actor: Actor? = this
+        do {
+            actor!!.localToParentCoordinates(coord)
+            coord.set(coord.x * actor.scaleX, coord.y * actor.scaleY)
+            actor = actor.parent ?: break
+        } while (true)
+    }
+
+    override fun render(delta: Float) {
+        super.render(delta)
+        if (fireworks.isEmpty()) return
+
+        cityCenterTileGroup.run {
+            batchTempPos.set(x + width / 2, y + height / 2)
+            batchTempPos2.set(width, height)
+        }
+        cityCenterTileGroup.fixedLocalToStage(batchTempPos)
+        cityCenterTileGroup.fixedLocalToStage(batchTempPos2)
+
+        effectsBatch.begin()
+        for ((effect, duration, endPoint) in fireworks) {
+            effect.update(delta)
+            val percent = effect.emitters.first().durationTimer / duration
+            val x = batchTempPos.x + percent * endPoint.x * batchTempPos2.x
+            val y = batchTempPos.y + percent * endPoint.y * batchTempPos2.y
+            effect.setPosition(x, y)
+            effect.draw(effectsBatch)
+            if (effect.isComplete) {
+                effect.reset()
+                endPoint.set(Random.nextFloat() * 0.7f - 0.35f, 0.75f + Random.nextFloat() * 1.2f)
+            }
+        }
+        effectsBatch.setBlendFunction(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
+        effectsBatch.end()
     }
 }
