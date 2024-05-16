@@ -554,7 +554,7 @@ class CityButton(val city: City, private val tileGroup: TileGroup) : Table(BaseS
 
         // when deselected, move city button to its original position
         if (unitTable.selectedCity != city
-                && unitTable.selectedUnit?.currentTile != city.getCenterTile()) {
+                && unitTable.selectedUnit?.currentTile != city.getCenterTile() && unitTable.selectedSpy == null) {
 
             moveButtonUp()
         }
