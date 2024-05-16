@@ -315,6 +315,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 -   [Bullets](https://thenounproject.com/term/bullets/810156/) By Aldric Rodriguez for Arsenal
 -   [St. Petersburg](https://thenounproject.com/icon/kremlin-1569704) By Carpe Diem for Kremlin
 -   [cottage](https://thenounproject.com/icon/cottage-16478/) by Ole Sturm for Ceilidh Hall
+-   [police station](https://thenounproject.com/icon/6629384/) by Andi Nur Abdillah for Constabulary
 
 #### Industrial Era
 
@@ -323,6 +324,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 -   [Stock exchange](https://thenounproject.com/term/stock-exchange/1210199/) By Pundimon
 -   [Military](https://thenounproject.com/term/military/1857519/) By myiconfinder for Military Academy
 -   [Factory](https://thenounproject.com/term/factory/545906/) By icon 54
+-   [police station](https://thenounproject.com/icon/6104453/) by Mia Elysia
 
 #### Modern Era
 
@@ -335,6 +337,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 -   [Christ the redeemer](https://thenounproject.com/term/christ-the-redeemer/56112/) By Stefan Spieler for Cristo Redentor
 -   [Neuschwanstein](https://thenounproject.com/icon/Neuschwanstein-2107683) By Vectors Market
 -   [Big Ben](https://thenounproject.com/icon/Big%20Ben-443690) By Ben Davis, RO
+-   National Intelligence Agency is a gimp of [spy](https://thenounproject.com/icon/2518785/) by Adrien Coquet and [police station](https://thenounproject.com/icon/5776179/) by Firza Alamsyah.
 
 #### Atomic Era
 
@@ -347,6 +350,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 -   [Manhattan Project](https://thenounproject.com/icon/Nuclear%20Bomb-2041074) By corpus delicti, GR
 -   [Nuclear Plant](https://thenounproject.com/term/nuclear-plant/1132340/) By Andrejs Kirma
 -   [Spaceship](https://thenounproject.com/term/spaceship/1444621/) By Dinosoft Labs for Apollo Program
+-   Great Firefall is a gimp of [world](https://thenounproject.com/icon/6838782/) by Suharsono and [firewall](https://thenounproject.com/icon/6438674/) by M. Faisal.
 
 #### Information Era
 
@@ -426,7 +430,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 
 -   [Social Network](https://thenounproject.com/term/social-network/746002/) By Kirby Wu for Civil Society
 -   [Gender Equality](https://thenounproject.com/term/gender-equality/577561/) By corpus delicti for Universal Suffrage
--   [Feather](https://thenounproject.com/term/feather/1628/) By Eduardo Souza for Constitution
+-   [Feather](https://thenounproject.com/term/feather/1628/) By Eduardo Souza for Constitution and Open Policies button
 -   [Voting](https://thenounproject.com/term/voting/981735/) By Nikita Kozin for Democracy
 -   [Mic](https://thenounproject.com/term/mic/1666564/) By Aybige for Free Speech
 
@@ -711,6 +715,8 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 - [Party](https://thenounproject.com/icon/party-1784941/) by Adrien Coquet for WLTK header on City Overview
 - [Party](https://thenounproject.com/icon/party-2955155/) by Lars Meiertoberens as additional WLKT decoration
 - [spy](https://thenounproject.com/icon/spy-2905374/) by Vectorstall for Spy
+- [spy](https://thenounproject.com/icon/4660058/) by Adriano Vabeni - Espionage button
+- [secret agency](https://thenounproject.com/icon/2817176/) by Martina Hanžlová - Espionage tutorial
 - [turn right](https://thenounproject.com/icon/turn-right-1920867/) by Alice Design for Resource Overview
 - [Tyrannosaurus Rex](https://thenounproject.com/icon/tyrannosaurus-rex-4130976/) by Amethyst Studio for Civilopedia Eras header
 - [Realistic easter day eggs with curvy lines and dots](https://www.freepik.com/free-vector/realistic-easter-day-eggs-with-curvy-lines-dots_6839373.htm) by freepik for easter eggs
@@ -745,7 +751,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 -   [Lightning](https://thenounproject.com/icon/lightning-102300) by Rohith M S for Quickstart
 -   [Loading](https://thenounproject.com/icon/load-208033) by Universal Icons for Load Game
 -   [New](https://thenounproject.com/icon/new-1886943) by Alice Design for New Game
--   [Go back](https://thenounproject.com/icon/go%20back-1901947) by Salvia Santos for Resume
+-   [Go back](https://thenounproject.com/icon/go%20back-1901947) by Salvia Santos for Resume and Undo button
 -   [Multiplayer](https://thenounproject.com/icon/multiplayer-1215652) by Roy Charles
 -   [Options](https://thenounproject.com/icon/options-866090) By Thengakola
 -   [Package](https://thenounproject.com/icon/package-1886048) by shashank singh for Mods
