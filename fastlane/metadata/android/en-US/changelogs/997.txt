@@ -1,5 +1,3 @@
-
-
 Barbarian water units no longer pillage
 
 By SomeTroglodyte:
@@ -8,6 +6,6 @@ By SomeTroglodyte:
 - Espionage icons 
 
 By tuvus:
-- Spies can be moved on map 
-- City state coup 
-- AI doesn't settle very unfavorable locations 
+- Espionage: Spies can be moved on map 
+- Espionage: City state coup 
+- AI doesn't settle very unfavorable locations

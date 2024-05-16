@@ -8,8 +8,8 @@ By SomeTroglodyte:
 - Espionage icons 
 
 By tuvus:
-- Spies can be moved on map 
-- City state coup 
+- Espionage: Spies can be moved on map 
+- Espionage: City state coup 
 - AI doesn't settle very unfavorable locations 
 
 ## 4.11.12
