@@ -21,7 +21,7 @@ import com.unciv.models.stats.Stat
 import com.unciv.models.translations.tr
 import com.unciv.ui.audio.CityAmbiencePlayer
 import com.unciv.ui.audio.SoundPlayer
-import com.unciv.ui.components.ParticleEffectFireworks
+import com.unciv.ui.components.ParticleEffectMapFireworks
 import com.unciv.ui.components.extensions.colorFromRGB
 import com.unciv.ui.components.extensions.disable
 import com.unciv.ui.components.extensions.packIfNeeded
@@ -140,13 +140,13 @@ class CityScreen(
 
     /** Particle effects for WLTK day decoration */
     private val isWLTKday = city.isWeLoveTheKingDayActive()
-    private val fireworks: ParticleEffectFireworks?
+    private val fireworks: ParticleEffectMapFireworks?
 
     init {
         if (isWLTKday && UncivGame.Current.settings.citySoundsVolume > 0) {
             SoundPlayer.play(UncivSound("WLTK"))
         }
-        fireworks = if (isWLTKday) ParticleEffectFireworks.create(game, mapScrollPane) else null
+        fireworks = if (isWLTKday) ParticleEffectMapFireworks.create(game, mapScrollPane) else null
 
         UncivGame.Current.settings.addCompletedTutorialTask("Enter city screen")
 
@@ -183,14 +183,6 @@ class CityScreen(
             scrollX = (maxX - constructionsTable.getLowerWidth() - posFromEdge) / 2
             scrollY = (maxY - cityStatsTable.packIfNeeded().height - posFromEdge + cityPickerTable.top) / 2
             updateVisualScroll()
-        }
-
-        fireworks?.run {
-            val cityGroup = tileGroups.first { it.tile == city.getCenterTile() }
-            // These correction constants were done empirically
-            val x = cityGroup.x + cityGroup.hexagonImageOrigin.first - 13f
-            val y = cityGroup.y + cityGroup.hexagonImageOrigin.second - 7f
-            update(stage.width / 2, stage.height / 2, x, y, stage.width / 2, stage.height / 2)
         }
     }
 
@@ -264,6 +256,7 @@ class CityScreen(
                 else -> Color.GREEN to 0.5f
             }
         }
+
         for (tileGroup in tileGroups) {
             tileGroup.update()
             tileGroup.layerMisc.removeHexOutline()
@@ -281,6 +274,11 @@ class CityScreen(
                     getPickImprovementColor(tileGroup.tile).run {
                         tileGroup.layerMisc.addHexOutline(first.cpy().apply { this.a = second }) }
             }
+
+            if (fireworks == null || tileGroup.tile.position != city.location) continue
+            val width = stage.width / 2
+            val x = tileGroup.x + tileGroup.hexagonImageOrigin.first - width / 2
+            fireworks.setActorBounds(x, tileGroup.y, width, stage.height / 2)
         }
     }
 
