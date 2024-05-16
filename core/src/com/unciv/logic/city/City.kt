@@ -86,6 +86,7 @@ class City : IsPartOfGameInfoSerialization {
     var isPuppet = false
     var updateCitizens = false  // flag so that on startTurn() the Governor reassigns Citizens
 
+    @delegate:Transient
     val neighboringCities: List<City> by lazy { 
         civ.gameInfo.getCities().filter { it != this && it.getCenterTile().aerialDistanceTo(getCenterTile()) <= 8 }.toList()
     }
