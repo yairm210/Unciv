@@ -323,6 +323,15 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
         setInfluence(influence + amount)
     }
 
+    /**
+     * Reduces the influence to zero, or if they have negative influence does nothing
+     * @param amount A positive value to subtract from the influecne
+     */
+    fun reduceInfluence(amount: Float) {
+        if (influence <= 0) return
+        influence = (influence - amount).coerceAtLeast(0f)
+    }
+
     fun setInfluence(amount: Float) {
         influence = max(amount, MINIMUM_INFLUENCE)
         civInfo.cityStateFunctions.updateAllyCivForCityState()
