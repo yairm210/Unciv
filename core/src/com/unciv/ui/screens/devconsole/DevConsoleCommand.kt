@@ -82,21 +82,7 @@ open class ConsoleAction(val format: String, val action: (console: DevConsolePop
                 formatParams[params.lastIndex] to params.last()
             else formatParams.first() to ""
 
-        val options = when (formatParam) {
-            "civName" -> console.gameInfo.civilizations.map { it.civName }
-            "unitName" -> console.gameInfo.ruleset.units.keys
-            "promotionName" -> console.gameInfo.ruleset.unitPromotions.keys
-            "improvementName" -> console.gameInfo.ruleset.tileImprovements.keys
-            "featureName" -> console.gameInfo.ruleset.terrains.values.filter { it.type == TerrainType.TerrainFeature }.map { it.name }
-            "terrainName" -> console.gameInfo.ruleset.terrains.values.filter { it.type.isBaseTerrain }.map { it.name }
-            "resourceName" -> console.gameInfo.ruleset.tileResources.keys
-            "stat" -> Stat.names()
-            "religionName" -> console.gameInfo.religions.keys
-            "buildingName" -> console.gameInfo.ruleset.buildings.keys
-            "direction" -> RiverGenerator.RiverDirections.names
-            "policyName" -> console.gameInfo.ruleset.policyBranches.keys + console.gameInfo.ruleset.policies.keys
-            else -> listOf()
-        }
+        val options = ConsoleParameterType.multiOptions(formatParam, console)
         return getAutocompleteString(lastParam, options, console)
     }
 

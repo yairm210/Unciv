@@ -1,6 +1,7 @@
 package com.unciv.ui.screens.devconsole
 
 import com.unciv.Constants
+import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.mapgenerator.RiverGenerator
 import com.unciv.logic.map.mapgenerator.RiverGenerator.RiverDirections
@@ -101,6 +102,28 @@ class ConsoleTileCommands: ConsoleCommandNode {
 
         "addriver" to ConsoleRiverAction("tile addriver <direction>", true),
         "removeriver" to ConsoleRiverAction("tile removeriver <direction>", false),
+
+        "setowner" to ConsoleAction("tile setowner [civName|cityName]") { console, params ->
+            val selectedTile = console.getSelectedTile()
+            val oldOwner = selectedTile.getCity()
+            val newOwner: City? =
+                if (params.isEmpty() || params[0].isEmpty()) null
+                else {
+                    val param = params[0].toCliInput()
+                    // Look for a city name to assign the Tile to
+                    console.gameInfo.civilizations
+                        .flatMap { civ -> civ.cities }
+                        .firstOrNull { it.name.toCliInput() == param }
+                    // If the user didn't specify a City, they must have given us a Civilization instead -
+                    // copy of TileInfoImprovementFunctions.takeOverTilesAround.fallbackNearestCity
+                    ?: console.getCivByName(params[0]) // throws if no match
+                        .cities.minByOrNull { it.getCenterTile().aerialDistanceTo(selectedTile) + (if (it.isBeingRazed) 5 else 0) }
+                }
+            // for simplicity, treat assign to civ without cities same as un-assign
+            oldOwner?.expansion?.relinquishOwnership(selectedTile) // redundant if new owner is not null, but simpler for un-assign
+            newOwner?.expansion?.takeOwnership(selectedTile)
+            DevConsoleResponse.OK
+        },
     )
 
     private fun getTerrainFeature(console: DevConsolePopup, param: String) =
