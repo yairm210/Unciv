@@ -1085,7 +1085,8 @@
 		"name": "Barbarians",
 		"outerColor": [0,0,0],
 		"innerColor": [185,12,12],
-		"uniques": ["Can only heal by pillaging", "Excluded from map editor"]
+		"uniques": ["Can only heal by pillaging", "Excluded from map editor",
+			"[Water] units gain the [Unable to pillage tiles] promotion"]
 	}
 
 ]
