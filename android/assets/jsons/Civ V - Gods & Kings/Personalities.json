@@ -1,7 +1,10 @@
 [
 	/*
+
+		This is mostly a guideline. Items that are first have more weigth, but still the most part is decided by ther personality description on the Civ 5 wiki, and adjust the numbers accordingly.
+		   Even then, its up to personal interpretation.
 	{
-		"name": "Unciv to Civ V current equivalents",
+		"name": "Template",
 		"preferredVictoryType": "Victory",
 		"culture": CultureEmphasis + GreatPeopleEmphasis,
 		"faith": ReligionEmphasis + GreatPeopleEmphasis,
@@ -19,7 +22,7 @@
 			"Patronage": FriendlinesstoCityStates + ProtectionofCityStates + CityStateInfluenceCompetitiveness + GreatPeopleEmphasis + Neediness + WillingnesstoDeclareFriendship - (IgnoreCityStates + ConquestofCityStates + BullyingofCityStates),
 			"Piety": ReligionEmphasis + CultureEmphasis,
 			"Rationalism": ScienceEmphasis + SpaceshipVictory + AirUnitProduction,
-			"Freedom": GreatPeopleEmphasis + DiplomacyVictory + HateWarmongers + DefensiveUnitProduction,
+			"Freedom": GreatPeopleEmphasis + DiplomacyVictory + WonderEmphasis + HateWarmongers + DefensiveUnitProduction,
 			"Autocracy": Boldness + OffensiveUnitProduction + Expansion + NukeProduction,
 			"Order": ProductionEmphasis + DefensiveBuildingProduction + Infrastructure
 		},
@@ -28,9 +31,6 @@
 			{"text": "Alexander the Great, born in Macedon, was one of the most skilled generals, even more by his young age, and in only 17 years he conquered all the Greek known world."}
 		]
 	},
-
-		This is mostly a guideline. Items that are first have more weigth, but still the most part is decided by ther personality description on the Civ 5 wiki, and adjust the numbers accordingly.
-		   Even then, its up to personal interpretation.
 		*/
 	{
 		"name": "Alexander",
@@ -131,6 +131,59 @@
 		"warMongering": 6,
 		"civilopediaText": [
 			{"text": "The creator of the Pax Romana and the Roman Empire, who ended a long civil war and brought peace to the entire Mediterranean, possibly the greatest emperor of Rome."}
+		]
+	},
+	{
+		"name": "Bismark",
+		"preferredVictoryType": "Scientific",
+		"culture": 5,
+		"faith": 3,
+		"food": 5,
+		"gold": 5,
+		"happiness": 5,
+		"production": 9,
+		"science": 8,
+		"military": 7,
+		"priorities": {
+			"Tradition": 35,
+			"Liberty": 30,
+			"Honor": 40,
+			"Commerce": 10,
+			"Patronage": 30,
+			"Rationalism": 40,
+			"Freedom": 20,
+			"Autocracy": 30,
+			"Order": 35,
+		},
+		"warMongering":5,
+		"civilopediaText": [
+			{"text": "The successful political career of the Iron Chancellor cannot be undermined, for he united Germany as we know it today, in his own way."}
+		]
+	},
+	{
+		"name": "Boudicca",
+		"preferredVictoryType": "Domination",
+		"culture": 7,
+		"faith": 8,
+		"food": 4,
+		"gold": 5,
+		"happiness": 8,
+		"production": 5,
+		"science": 6,
+		"military": 6,
+		"priorities": {
+			"Liberty": 20,
+			"Honor": 30,
+			"Commerce": 10,
+			"Piety": 35,
+			"Rationalism": 15,
+			"Freedom": 10,
+			"Autocracy": 15,
+			"Order": 5
+		},
+		"warMongering": 5,
+		"civilopediaText": [
+			{"text": "The noble warrior fought with bravery and courage to gain the freedom of the Celtic people from the Roman subjugation, inspiring many others after her."}
 		]
 	},
 ]
