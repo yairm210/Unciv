@@ -315,6 +315,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 -   [Bullets](https://thenounproject.com/term/bullets/810156/) By Aldric Rodriguez for Arsenal
 -   [St. Petersburg](https://thenounproject.com/icon/kremlin-1569704) By Carpe Diem for Kremlin
 -   [cottage](https://thenounproject.com/icon/cottage-16478/) by Ole Sturm for Ceilidh Hall
+-   [police station](https://thenounproject.com/icon/6629384/) by Andi Nur Abdillah for Constabulary
 
 #### Industrial Era
 
@@ -323,6 +324,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 -   [Stock exchange](https://thenounproject.com/term/stock-exchange/1210199/) By Pundimon
 -   [Military](https://thenounproject.com/term/military/1857519/) By myiconfinder for Military Academy
 -   [Factory](https://thenounproject.com/term/factory/545906/) By icon 54
+-   [police station](https://thenounproject.com/icon/6104453/) by Mia Elysia
 
 #### Modern Era
 
@@ -335,6 +337,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 -   [Christ the redeemer](https://thenounproject.com/term/christ-the-redeemer/56112/) By Stefan Spieler for Cristo Redentor
 -   [Neuschwanstein](https://thenounproject.com/icon/Neuschwanstein-2107683) By Vectors Market
 -   [Big Ben](https://thenounproject.com/icon/Big%20Ben-443690) By Ben Davis, RO
+-   National Intelligence Agency is a gimp of [spy](https://thenounproject.com/icon/2518785/) by Adrien Coquet and [police station](https://thenounproject.com/icon/5776179/) by Firza Alamsyah.
 
 #### Atomic Era
 
@@ -347,6 +350,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 -   [Manhattan Project](https://thenounproject.com/icon/Nuclear%20Bomb-2041074) By corpus delicti, GR
 -   [Nuclear Plant](https://thenounproject.com/term/nuclear-plant/1132340/) By Andrejs Kirma
 -   [Spaceship](https://thenounproject.com/term/spaceship/1444621/) By Dinosoft Labs for Apollo Program
+-   Great Firefall is a gimp of [world](https://thenounproject.com/icon/6838782/) by Suharsono and [firewall](https://thenounproject.com/icon/6438674/) by M. Faisal.
 
 #### Information Era
 
