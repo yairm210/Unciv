@@ -81,7 +81,6 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
 
     private val averageProduction = civInfo.cities.map { it.cityStats.currentCityStats.production }.average()
     private val cityIsOverAverageProduction = city.cityStats.currentCityStats.production >= averageProduction
-    private val averageBuildingCost = buildings.filterBuildable().sumOf { it.cost } / buildings.filterBuildable().count()
 
     private val relativeCostEffectiveness = ArrayList<ConstructionChoice>()
     private val cityState = StateForConditionals(city)
@@ -128,7 +127,14 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
                 }
             } else if (relativeCostEffectiveness.any { it.remainingWork < it.production * 30 }) {
                 relativeCostEffectiveness.removeAll { it.remainingWork >= it.production * 30 }
-                relativeCostEffectiveness.minByOrNull { it.remainingWork / it.choiceModifier / it.production.coerceAtLeast(1) }!!.choice
+                // If there are any positive choiceModifiers then we have to take out the negative value or else they will get a very low value
+                // If there are no positive choiceModifiers then we want to take the least negative value building since we will be dividing by a negative
+                if (relativeCostEffectiveness.none { it.choiceModifier >= 0 }) {
+                    relativeCostEffectiveness.maxByOrNull { (it.remainingWork / it.choiceModifier) / it.production.coerceAtLeast(1) }!!.choice
+                } else {
+                    relativeCostEffectiveness.removeAll { it.choiceModifier < 0 }
+                    relativeCostEffectiveness.minByOrNull { (it.remainingWork / it.choiceModifier) / it.production.coerceAtLeast(1) }!!.choice
+                }
             }
             // it's possible that this is a new city and EVERYTHING is way expensive - ignore modifiers, go for the cheapest.
             // Nobody can plan 30 turns ahead, I don't care how cost-efficient you are.
@@ -265,7 +271,8 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
 
     private fun applyVictoryBuildingValue(building: Building, pastValue: Float): Float {
         var value = pastValue
-        if (building.isWonder) value += 5f
+        if (!cityIsOverAverageProduction) return value
+        if (building.isWonder) value += 2f
         if (building.hasUnique(UniqueType.TriggersCulturalVictory)) value += 10f
         if (building.hasUnique(UniqueType.EnablesConstructionOfSpaceshipParts)) value += 10f
         return value
@@ -273,17 +280,18 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
 
     private fun applyMilitaryBuildingValue(building: Building, pastValue: Float): Float {
         var value = pastValue
-        var warModifier = if (isAtWar) 2f else 1f
+        var warModifier = if (isAtWar) 1f else .5f
         // If this city is the closest city to another civ, that makes it a likely candidate for attack
         if (civInfo.getKnownCivs()
                     .mapNotNull { NextTurnAutomation.getClosestCities(civInfo, it) }
                     .any { it.city1 == city })
             warModifier *= 2f
         value += warModifier * building.cityHealth.toFloat() / city.getMaxHealth()
-        value += warModifier * building.cityStrength.toFloat() / city.getStrength()
+        value += warModifier * building.cityStrength.toFloat() / (city.getStrength() + 3) // The + 3 here is to reduce the priority of building walls immedietly
 
         for (experienceUnique in building.getMatchingUniques(UniqueType.UnitStartingExperience, cityState)) {
-            var modifier = if (cityIsOverAverageProduction) 1f else 0.2f // You shouldn't be cranking out units anytime soon
+            var modifier = experienceUnique.params[1].toFloat() / 5
+            modifier *= if (cityIsOverAverageProduction) 1f else 0.2f // You shouldn't be cranking out units anytime soon
             modifier *= personality.modifierFocus(PersonalityValue.Military, 0.3f)
             value += modifier
         }
