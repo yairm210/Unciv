@@ -133,7 +133,7 @@ object SpecificUnitAutomation {
 
         // If the tile we are currently on is close to the best tile, then lets just settle here instead
         if (bestTilesInfo.tileRankMap.containsKey(unit.getTile())
-                && (bestTilesInfo.bestTile == null || bestTilesInfo.tileRankMap[unit.getTile()]!! >= bestTilesInfo.bestTileRank - 10)) {
+                && (bestTilesInfo.bestTile == null || bestTilesInfo.tileRankMap[unit.getTile()]!! >= bestTilesInfo.bestTileRank - 2)) {
                 bestCityLocation = unit.getTile()
         }
 

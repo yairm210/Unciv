@@ -145,6 +145,7 @@ object CityLocationTileRanker {
 
     private fun rankTile(rankTile: Tile, civ: Civilization, onCoast: Boolean, newUniqueLuxuryResources: HashSet<String>,
                          baseTileMap: HashMap<Tile, Float>, uniqueCache: LocalUniqueCache): Float {
+        if (rankTile.getCity() != null) return -1f
         var locationSpecificTileValue = 0f
         // Don't settle near but not on the coast
         if (rankTile.isCoastalTile() && !onCoast) locationSpecificTileValue -= 2
