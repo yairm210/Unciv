@@ -14,6 +14,12 @@ import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.cityscreen.CityMapHolder
 import kotlin.random.Random
 
+//todo Find correct placement formula
+//todo Kdoc
+//todo random Colors - I see only blue and red?
+//todo The spark shower seems to happen where the rocket started, not where it ends
+//todo spark shower timing - before or after "explosion"?
+
 class ParticleEffectFireworks(
     private val mapHolder: ZoomableScrollPane
 ) : Disposable {
