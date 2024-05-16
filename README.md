@@ -31,7 +31,6 @@ In this order:
 * Polish! As you may have noticed, Unciv is fully functional but rough around the edges. This means:
     * UI+UX improvements ([suggestions welcome!](https://github.com/yairm210/Unciv/issues/new?assignees=&labels=feature&template=feature_request.md&title=Feature+request%3A+))
     * Better automation, AI etc. in-game
-* Finishing off Vanilla mechanics - mostly done!
 * G&K mechanics - espionage, small other changes (see [#4697](https://www.github.com/yairm210/Unciv/issues/4697))
 * BNW mechanics - trade routes, world congress, etc.
 
@@ -111,7 +110,7 @@ From what I understand, intellectual property rights apply to names, characters 
 
 If anyone has any real legal sources, or can shed some light on the limits of what is and is not allowed, I'd be happy to hear!
 
-## Run with Docker [![Docker](https://github.com/haimlm/Unciv/actions/workflows/dockerPublish.yml/badge.svg)](https://github.com/haimlm/Unciv/actions/workflows/dockerPublish.yml)
+## Run with Docker [![Docker](https://github.com/yairm210/Unciv/actions/workflows/dockerPublish.yml/badge.svg)](https://github.com/yairm210/Unciv/actions/workflows/dockerPublish.yml)
 
 If you have docker compose installed:
 

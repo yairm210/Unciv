@@ -217,12 +217,7 @@ class WorldScreenTopBar(internal val worldScreen: WorldScreen) : Table() {
             }
 
             val onNationClick = {
-                val civilopediaScreen = CivilopediaScreen(
-                    worldScreen.selectedCiv.gameInfo.ruleset,
-                    CivilopediaCategories.Nation,
-                    worldScreen.selectedCiv.civName
-                )
-                worldScreen.game.pushScreen(civilopediaScreen)
+                worldScreen.openCivilopedia(worldScreen.selectedCiv.nation.makeLink())
             }
 
             selectedCivLabel.setFontSize(25)

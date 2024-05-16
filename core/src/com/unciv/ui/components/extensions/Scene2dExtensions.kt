@@ -384,8 +384,8 @@ object GdxKeyCodeFixes {
 
     fun toString(keyCode: Int): String = when(keyCode) {
         UNKNOWN -> ""
-        DEL -> "Del"
-        BACKSPACE -> "Backspace"
+        DEL -> "Del"  // Gdx would name this "Forward Delete"
+        BACKSPACE -> "Backspace"  // Gdx would name this "Delete"
         else -> Input.Keys.toString(keyCode)
             ?: ""
     }

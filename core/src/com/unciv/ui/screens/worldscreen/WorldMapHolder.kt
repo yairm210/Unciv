@@ -267,6 +267,11 @@ class WorldMapHolder(
         worldScreen.shouldUpdate = localShouldUpdate
     }
 
+    private fun markUnitMoveTutorialComplete(unit: MapUnit) {
+        val key = if (unit.baseUnit.movesLikeAirUnits()) "Move an air unit" else "Move unit"
+        UncivGame.Current.settings.addCompletedTutorialTask(key)
+    }
+
     private fun moveUnitToTargetTile(selectedUnits: List<MapUnit>, targetTile: Tile) {
         // this can take a long time, because of the unit-to-tile calculation needed, so we put it in a different thread
         // THIS PART IS REALLY ANNOYING
@@ -277,6 +282,7 @@ class WorldMapHolder(
         // and then calling the function again but without the unit that moved.
 
         val selectedUnit = selectedUnits.first()
+        markUnitMoveTutorialComplete(selectedUnit) // not too expensive to have it repeat too often
 
         Concurrency.run("TileToMoveTo") {
             // these are the heavy parts, finding where we want to go
@@ -334,6 +340,7 @@ class WorldMapHolder(
     }
 
     private fun swapMoveUnitToTargetTile(selectedUnit: MapUnit, targetTile: Tile) {
+        markUnitMoveTutorialComplete(selectedUnit)
         selectedUnit.movement.swapMoveToTile(targetTile)
 
         if (selectedUnit.isExploring() || selectedUnit.isMoving())
@@ -441,6 +448,7 @@ class WorldMapHolder(
            val validTile = tile.isLand &&
                !tile.isImpassible() &&
                 selectedUnit.civ.hasExplored(tile)
+
             if (validTile) {
                 val roadPath: List<Tile>? = MapPathing.getRoadPath(selectedUnit, selectedUnit.currentTile, tile)
                 launchOnGLThread {
@@ -530,9 +538,6 @@ class WorldMapHolder(
         if (unitsThatCanMove.isEmpty()) moveHereButton.color.a = 0.5f
         else {
             moveHereButton.onActivation(UncivSound.Silent) {
-                UncivGame.Current.settings.addCompletedTutorialTask("Move unit")
-                if (unitsThatCanMove.any { it.baseUnit.movesLikeAirUnits() })
-                    UncivGame.Current.settings.addCompletedTutorialTask("Move an air unit")
                 moveUnitToTargetTile(unitsThatCanMove, dto.tile)
             }
             moveHereButton.keyShortcuts.add(KeyCharAndCode.TAB)
@@ -557,9 +562,6 @@ class WorldMapHolder(
         swapWithButton.addActor(unitIcon)
 
         swapWithButton.onActivation(UncivSound.Silent) {
-            UncivGame.Current.settings.addCompletedTutorialTask("Move unit")
-            if (dto.unit.baseUnit.movesLikeAirUnits())
-                UncivGame.Current.settings.addCompletedTutorialTask("Move an air unit")
             swapMoveUnitToTargetTile(dto.unit, dto.tile)
         }
         swapWithButton.keyShortcuts.add(KeyCharAndCode.TAB)
@@ -729,6 +731,7 @@ class WorldMapHolder(
         // Z-Layer: 0
         // Highlight suitable tiles in road connecting mode
         if (worldScreen.bottomUnitTable.selectedUnitIsConnectingRoad) {
+            if (unit.currentTile.ruleset.roadImprovement == null) return
             val validTiles = unit.civ.gameInfo.tileMap.tileList.filter {
                 MapPathing.isValidRoadPathTile(unit, it)
             }
@@ -751,7 +754,7 @@ class WorldMapHolder(
         val moveTileOverlayColor = if (unit.isPreparingParadrop()) Color.BLUE else Color.WHITE
         val tilesInMoveRange = unit.movement.getReachableTilesInCurrentTurn()
         // Prepare special Nuke blast radius display
-        val nukeBlastRadius = if (unit.baseUnit.isNuclearWeapon() && selectedTile != null && selectedTile != unit.getTile())
+        val nukeBlastRadius = if (unit.isNuclearWeapon() && selectedTile != null && selectedTile != unit.getTile())
             unit.getNukeBlastRadius() else -1
 
         // Z-Layer: 1
@@ -904,7 +907,6 @@ class WorldMapHolder(
 
     override fun zoom(zoomScale: Float) {
         super.zoom(zoomScale)
-
         clampCityButtonSize()
     }
 
@@ -957,11 +959,11 @@ class WorldMapHolder(
     }
 
     override fun restrictX(deltaX: Float): Float {
-        val exploredRegion = worldScreen.viewingCiv.exploredRegion
         var result = scrollX - deltaX
+        if (worldScreen.viewingCiv.isSpectator()) return result
 
+        val exploredRegion = worldScreen.viewingCiv.exploredRegion
         if (exploredRegion.shouldRecalculateCoords()) exploredRegion.calculateStageCoords(maxX, maxY)
-
         if (!exploredRegion.shouldRestrictX()) return result
 
         val leftX = exploredRegion.getLeftX()
@@ -976,9 +978,10 @@ class WorldMapHolder(
     }
 
     override fun restrictY(deltaY: Float): Float {
-        val exploredRegion = worldScreen.viewingCiv.exploredRegion
         var result = scrollY + deltaY
+        if (worldScreen.viewingCiv.isSpectator()) return result
 
+        val exploredRegion = worldScreen.viewingCiv.exploredRegion
         if (exploredRegion.shouldRecalculateCoords()) exploredRegion.calculateStageCoords(maxX, maxY)
 
         val topY = exploredRegion.getTopY()

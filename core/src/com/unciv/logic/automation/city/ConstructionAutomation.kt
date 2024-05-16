@@ -3,12 +3,15 @@ package com.unciv.logic.automation.city
 import com.unciv.GUI
 import com.unciv.logic.automation.Automation
 import com.unciv.logic.automation.civilization.NextTurnAutomation
+import com.unciv.logic.automation.unit.WorkerAutomation
 import com.unciv.logic.city.CityConstructions
 import com.unciv.logic.civilization.CityAction
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.map.BFS
+import com.unciv.logic.map.mapunit.MapUnit
+import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.IConstruction
 import com.unciv.models.ruleset.INonPerpetualConstruction
@@ -20,6 +23,7 @@ import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stat
+import kotlin.math.ceil
 import kotlin.math.max
 import kotlin.math.sqrt
 
@@ -103,16 +107,10 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
     fun chooseNextConstruction() {
         if (cityConstructions.getCurrentConstruction() !is PerpetualConstruction) return  // don't want to be stuck on these forever
 
-        addFoodBuildingChoice()
-        addProductionBuildingChoice()
-        addGoldBuildingChoice()
-        addScienceBuildingChoice()
-        addHappinessBuildingChoice()
         addDefenceBuildingChoice()
         addUnitTrainingBuildingChoice()
-        addCultureBuildingChoice()
-        addFaithBuildingChoice()
         addOtherBuildingChoice()
+        addAllStatChoice()
 
         if (!city.isPuppet) {
             addSpaceshipPartChoice()
@@ -132,11 +130,11 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
                 }
             } else if (relativeCostEffectiveness.any { it.remainingWork < it.production * 30 }) {
                 relativeCostEffectiveness.removeAll { it.remainingWork >= it.production * 30 }
-                relativeCostEffectiveness.minByOrNull { it.remainingWork / it.choiceModifier / it.production }!!.choice
+                relativeCostEffectiveness.minByOrNull { it.remainingWork / it.choiceModifier / it.production.coerceAtLeast(1) }!!.choice
             }
             // it's possible that this is a new city and EVERYTHING is way expensive - ignore modifiers, go for the cheapest.
             // Nobody can plan 30 turns ahead, I don't care how cost-efficient you are.
-            else relativeCostEffectiveness.minByOrNull { it.remainingWork / it.production}!!.choice
+            else relativeCostEffectiveness.minByOrNull { it.remainingWork / it.production.coerceAtLeast(1) }!!.choice
 
         civInfo.addNotification(
             "Work has started on [$chosenConstruction]",
@@ -166,42 +164,56 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
                 && city.getCenterTile().getTilesInDistance(5).none { it.militaryUnit?.civ == civInfo })
             modifier = 5f // there's a settler just sitting here, doing nothing - BAD
 
-        if (civInfo.playerType == PlayerType.Human) modifier /= 2 // Players prefer to make their own unit choices usually
+        if (!civInfo.isAIOrAutoPlaying()) modifier /= 2 // Players prefer to make their own unit choices usually
         modifier *= personality.scaledFocus(PersonalityValue.Military)
         addChoice(relativeCostEffectiveness, militaryUnit, modifier)
     }
 
     private fun addWorkBoatChoice() {
+        // Does the ruleset even have "Workboats"?
         val buildableWorkboatUnits = units
             .filter {
                 it.hasUnique(UniqueType.CreateWaterImprovements)
                     && Automation.allowAutomatedConstruction(civInfo, city, it)
             }.filterBuildable()
-        val alreadyHasWorkBoat = buildableWorkboatUnits.any()
-            && !city.getTiles().any {
-                it.civilianUnit?.hasUnique(UniqueType.CreateWaterImprovements) == true
-            }
-        if (!alreadyHasWorkBoat) return
+            .toSet()
+        if (buildableWorkboatUnits.isEmpty()) return
 
+        // Is there already a Workboat nearby?
+        // todo Still ignores whether that boat can reach the not-yet-found tile to improve
+        val twoTurnsMovement = buildableWorkboatUnits.maxOf { (it as BaseUnit).movement } * 2
+        fun MapUnit.isOurWorkBoat() = cache.hasUniqueToCreateWaterImprovements && this.civ == this@ConstructionAutomation.civInfo
+        val alreadyHasWorkBoat = city.getCenterTile().getTilesInDistanceRange(1..twoTurnsMovement)
+            .any { it.civilianUnit?.isOurWorkBoat() == true }
+        if (alreadyHasWorkBoat) return
 
-        val bfs = BFS(city.getCenterTile()) {
-            (it.isWater || it.isCityCenter()) && (it.getOwner() == null || it.isFriendlyTerritory(civInfo))
+        // Define what makes a tile worth sending a Workboat to
+        // todo Prepare for mods that allow improving water tiles without a resource?
+        fun Tile.isWorthImproving(): Boolean {
+            if (getOwner() != civInfo) return false
+            if (!WorkerAutomation.hasWorkableSeaResource(this, civInfo)) return false
+            return WorkerAutomation.isNotBonusResourceOrWorkable(this, civInfo)
         }
-        repeat(20) { bfs.nextStep() }
 
-        if (!bfs.getReachedTiles()
-            .any { tile ->
-                tile.hasViewableResource(civInfo) && tile.improvement == null && tile.getOwner() == civInfo
-                        && tile.tileResource.getImprovements().any {
-                    tile.improvementFunctions.canBuildImprovement(tile.ruleset.tileImprovements[it]!!, civInfo)
-                }
+        // Search for a tile justifiying producing a Workboat
+        // todo should workboatAutomationSearchMaxTiles depend on game state?
+        fun findTileWorthImproving(): Boolean {
+            val searchMaxTiles = civInfo.gameInfo.ruleset.modOptions.constants.workboatAutomationSearchMaxTiles
+            val bfs = BFS(city.getCenterTile()) {
+                (it.isWater || it.isCityCenter())
+                    && (it.getOwner() == null || it.isFriendlyTerritory(civInfo))
+                    && it.isExplored(civInfo)  // Sending WB's through unexplored terrain would be cheating
             }
-        ) return
+            do {
+                val tile = bfs.nextStep() ?: break
+                if (tile.isWorthImproving()) return true
+            } while (bfs.size() < searchMaxTiles)
+            return false
+        }
 
-        addChoice(
-            relativeCostEffectiveness, buildableWorkboatUnits.minByOrNull { it.cost }!!.name,
-            0.6f
-        )
+        if (!findTileWorthImproving()) return
+
+        addChoice(relativeCostEffectiveness, buildableWorkboatUnits.minBy { it.cost }.name, 0.6f)
     }
 
     private fun addWorkerChoice() {
@@ -220,19 +232,6 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
             if (!cityIsOverAverageProduction) modifier /= 5 // higher production cities will deal with this
             addChoice(relativeCostEffectiveness, workerEquivalents.minByOrNull { it.cost }!!.name, modifier)
         }
-    }
-
-    private fun addCultureBuildingChoice() {
-        val cultureBuilding = statBuildings
-            .filter { it.isStatRelated(Stat.Culture) }
-            .filterBuildable()
-            .minByOrNull { it.cost } ?: return
-        var modifier = 0.5f
-        if (city.cityStats.currentCityStats.culture == 0f) // It won't grow if we don't help it
-            modifier = 0.8f
-        if (civInfo.wantsToFocusOn(Victory.Focus.Culture)) modifier = 1.6f
-        modifier *= personality.scaledFocus(PersonalityValue.Culture)
-        addChoice(relativeCostEffectiveness, cultureBuilding.name, modifier)
     }
 
     private fun addSpaceshipPartChoice() {
@@ -334,77 +333,58 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
         addChoice(relativeCostEffectiveness, defensiveBuilding.name, modifier)
     }
 
-    private fun addHappinessBuildingChoice() {
-        val happinessBuilding = nonWonders
-            .filter { it.isStatRelated(Stat.Happiness)
-                    && Automation.allowAutomatedConstruction(civInfo, city, it) }
-            .filterBuildable()
-            .minByOrNull { it.cost } ?: return
-        var modifier = 1f
-        val civHappiness = civInfo.getHappiness()
-        if (civHappiness > 5) modifier = 1 / 2f // less desperate
-        if (civHappiness < 0) modifier = 3f // more desperate
-        else if (happinessBuilding.hasUnique(UniqueType.RemoveAnnexUnhappiness)) modifier = 2f // building courthouse is always important
-        modifier *= personality.scaledFocus(PersonalityValue.Happiness)
-        addChoice(relativeCostEffectiveness, happinessBuilding.name, modifier)
+    private fun buildingValue(building: Building): Float {
+        val buildingStats = city.cityStats.getStatDifferenceFromBuilding(building.name)
+        for (unique in building.getMatchingUniques(UniqueType.CarryOverFood, StateForConditionals(city)))
+        {
+            if (city.matchesFilter(unique.params[1]) && unique.params[0].toInt() != 0)
+                buildingStats.food *= 1 / (1 - (unique.params[0].toFloat() / 100)) // not acurate, but close enough
+        }
+
+        val surplusFood = city.cityStats.currentCityStats[Stat.Food]
+        if (surplusFood < 0) {
+            buildingStats.food *= 8 // Starving, need Food, get to 0
+        } else if (city.population.population < 5) {
+            buildingStats.food *= 3
+        }
+
+        if (buildingStats.gold < 0 && civInfo.gold < 0) {
+            buildingStats.gold *= 2 // We have a gold problem and this isn't helping
+        }
+
+        if (civInfo.getHappiness() < 5)
+            buildingStats.happiness * 3
+        else if (civInfo.getHappiness() < 10 || civInfo.getHappiness() < civInfo.cities.size)
+            buildingStats.happiness * 2
+
+        if (city.cityStats.currentCityStats.culture < 1) {
+            buildingStats.culture *= 2 // We need to start growing borders
+        }
+        else if (city.tiles.size < 12 && city.population.population < 5) {
+            buildingStats.culture *= 2
+        }
+
+        for (stat in Stat.values()) {
+            if (civInfo.wantsToFocusOn(stat))
+                buildingStats[stat] *= 2f
+
+            buildingStats[stat] *= personality.scaledFocus(PersonalityValue[stat])
+        }
+
+        return Automation.rankStatsValue(buildingStats.clone(), civInfo)
     }
 
-    private fun addScienceBuildingChoice() {
-        if (allTechsAreResearched) return
-        val scienceBuilding = statBuildings
-            .filter { it.isStatRelated(Stat.Science)
-                    && Automation.allowAutomatedConstruction(civInfo, city, it) }
+    private fun addAllStatChoice() {
+        val building = buildings
+            .filter { Automation.allowAutomatedConstruction(civInfo, city, it) }
             .filterBuildable()
-            .minByOrNull { it.cost } ?: return
-        var modifier = 1.1f
-        if (civInfo.wantsToFocusOn(Victory.Focus.Science))
-            modifier *= 1.4f
-        modifier *= personality.scaledFocus(PersonalityValue.Science)
-        addChoice(relativeCostEffectiveness, scienceBuilding.name, modifier)
-    }
+            .maxByOrNull { buildingValue(it as Building) /
+                ceil(it.cost.toFloat() / cityConstructions.productionForConstruction(it.name).coerceAtLeast(1))
+                    .coerceAtLeast(1f)
+            } ?: return
 
-    private fun addGoldBuildingChoice() {
-        val goldBuilding = statBuildings.filter { it.isStatRelated(Stat.Gold) }
-            .filterBuildable()
-            .minByOrNull { it.cost } ?: return
-        var modifier = if (civInfo.stats.statsForNextTurn.gold < 0) 3f else 1.2f
-        modifier *= personality.scaledFocus(PersonalityValue.Gold)
-        addChoice(relativeCostEffectiveness, goldBuilding.name, modifier)
-    }
-
-    private fun addProductionBuildingChoice() {
-        val productionBuilding = statBuildings
-            .filter { it.isStatRelated(Stat.Production) }
-            .filterBuildable()
-            .minByOrNull { it.cost } ?: return
-        val modifier = personality.scaledFocus(PersonalityValue.Production)
-        addChoice(relativeCostEffectiveness, productionBuilding.name, 1.5f * modifier)
-    }
-
-    private fun addFoodBuildingChoice() {
-        val conditionalState = StateForConditionals(civInfo, city)
-        val foodBuilding = nonWonders
-            .filter {
-                (it.isStatRelated(Stat.Food)
-                    || it.hasUnique(UniqueType.CarryOverFood, conditionalState)
-                ) && Automation.allowAutomatedConstruction(civInfo, city, it)
-            }.filterBuildable().minByOrNull { it.cost } ?: return
-        var modifier = 1f
-        if (city.population.population < 5) modifier = 1.3f
-        modifier *= personality.scaledFocus(PersonalityValue.Food)
-        addChoice(relativeCostEffectiveness, foodBuilding.name, modifier)
-
-    }
-
-    private fun addFaithBuildingChoice() {
-        if (civInfo.gameInfo.isReligionEnabled()) return
-        val faithBuilding = statBuildings
-            .filter { it.isStatRelated(Stat.Faith) }
-            .filterBuildable()
-            .minByOrNull { it.cost } ?: return
-        var modifier = 0.5f
-        if (civInfo.wantsToFocusOn(Victory.Focus.Faith)) modifier = 1f
-        modifier *= personality.scaledFocus(PersonalityValue.Faith)
-        addChoice(relativeCostEffectiveness, faithBuilding.name, modifier)
+        addChoice(
+            relativeCostEffectiveness, building.name,
+            buildingValue(building as Building) / 4)
     }
 }

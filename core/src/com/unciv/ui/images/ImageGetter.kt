@@ -176,14 +176,33 @@ object ImageGetter {
     fun getWhiteDotDrawable() = textureRegionDrawables[whiteDotLocation]!!
     fun getDot(dotColor: Color) = getWhiteDot().apply { color = dotColor }
 
-    fun getExternalImage(fileName: String): Image {
+    /** Finds an image file under /ExtraImages/, including Mods (which can override builtin).
+     *  Extension can be included or is guessed as png/jpg.
+     *  @return `null` if no match found.
+     */
+    fun findExternalImage(name: String): FileHandle? {
+        val folders = ruleset.mods.asSequence().map { Gdx.files.local("mods/$it/ExtraImages") } +
+            sequenceOf(Gdx.files.internal("ExtraImages"))
+        val extensions = sequenceOf("", ".png", ".jpg")
+        return folders.flatMap { folder ->
+            extensions.map { folder.child(name + it) }
+        }.firstOrNull { it.exists() }
+    }
+
+    /** Loads an image on the fly - uncached Texture, not too fast. */
+    fun getExternalImage(file: FileHandle): Image {
         // Since these are not packed in an atlas, they have no scaling filter metadata and
         // default to Nearest filter, anisotropic level 1. Use Linear instead, helps
         // loading screen and Tutorial.WorldScreen quite a bit. More anisotropy barely helps.
-        val texture = Texture("ExtraImages/$fileName")
+        val texture = Texture(file)
         texture.setFilter(TextureFilter.Linear, TextureFilter.Linear)
         return ImageWithCustomSize(TextureRegion(texture))
     }
+    /** Loads an image from (assets)/ExtraImages, from the jar if Unciv runs packaged.
+     *  Cannot load ExtraImages from a Mod - use [findExternalImage] and the [getExternalImage](FileHandle) overload instead.
+     */
+    fun getExternalImage(fileName: String) =
+        getExternalImage(Gdx.files.internal("ExtraImages/$fileName"))
 
     fun getImage(fileName: String?): Image {
         return ImageWithCustomSize(getDrawable(fileName))
@@ -311,7 +330,7 @@ object ImageGetter {
             addActor(cross)
         }
 
-    fun getArrowImage(align:Int = Align.right): Image {
+    fun getArrowImage(align: Int = Align.right): Image {
         val image = getImage("OtherIcons/ArrowRight")
         image.setOrigin(Align.center)
         if (align == Align.left) image.rotation = 180f

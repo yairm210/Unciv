@@ -212,8 +212,17 @@ class City : IsPartOfGameInfoSerialization {
 
     fun getStatReserve(stat: Stat): Int {
         return when (stat) {
+            Stat.Production -> cityConstructions.getWorkDone(cityConstructions.getCurrentConstruction().name)
             Stat.Food -> population.foodStored
             else -> civ.getStatReserve(stat)
+        }
+    }
+
+    fun hasStatToBuy(stat: Stat, price: Int): Boolean {
+        return when {
+            civ.gameInfo.gameParameters.godMode -> true
+            price == 0 -> true
+            else -> getStatReserve(stat) >= price
         }
     }
 
@@ -364,11 +373,11 @@ class City : IsPartOfGameInfoSerialization {
 
     internal fun tryUpdateRoadStatus() {
         if (getCenterTile().roadStatus == RoadStatus.None) {
-            val roadImprovement = RoadStatus.Road.improvement(getRuleset())
+            val roadImprovement = getRuleset().roadImprovement
             if (roadImprovement != null && roadImprovement.techRequired in civ.tech.techsResearched)
                 getCenterTile().roadStatus = RoadStatus.Road
         } else if (getCenterTile().roadStatus != RoadStatus.Railroad) {
-            val railroadImprovement = RoadStatus.Railroad.improvement(getRuleset())
+            val railroadImprovement = getRuleset().railroadImprovement
             if (railroadImprovement != null && railroadImprovement.techRequired in civ.tech.techsResearched)
                 getCenterTile().roadStatus = RoadStatus.Railroad
         }
@@ -456,24 +465,22 @@ class City : IsPartOfGameInfoSerialization {
     // Finds matching uniques provided from both local and non-local sources.
     fun getMatchingUniques(
         uniqueType: UniqueType,
-        stateForConditionals: StateForConditionals = StateForConditionals(civ, this)
+        stateForConditionals: StateForConditionals = StateForConditionals(this),
+        includeCivUniques: Boolean = true
     ): Sequence<Unique> {
-        return civ.getMatchingUniques(uniqueType, stateForConditionals) +
+        return if (includeCivUniques)
+            civ.getMatchingUniques(uniqueType, stateForConditionals) +
                 getLocalMatchingUniques(uniqueType, stateForConditionals)
-    }
-
-    // Uniques special to this city
-    fun getLocalMatchingUniques(uniqueType: UniqueType, stateForConditionals: StateForConditionals = StateForConditionals(civ, this)): Sequence<Unique> {
-        return (
-            cityConstructions.builtBuildingUniqueMap.getUniques(uniqueType).filter { it.isLocalEffect }
+        else (
+            cityConstructions.builtBuildingUniqueMap.getUniques(uniqueType)
                 + religion.getUniques().filter { it.type == uniqueType }
             ).filter {
                 !it.isTimedTriggerable && it.conditionalsApply(stateForConditionals)
             }
     }
 
-    // Uniques coming from only this city
-    fun getMatchingLocalOnlyUniques(uniqueType: UniqueType, stateForConditionals: StateForConditionals): Sequence<Unique> {
+    // Uniques special to this city
+    fun getLocalMatchingUniques(uniqueType: UniqueType, stateForConditionals: StateForConditionals = StateForConditionals(this)): Sequence<Unique> {
         val uniques = cityConstructions.builtBuildingUniqueMap.getUniques(uniqueType).filter { it.isLocalEffect } +
             religion.getUniques().filter { it.type == uniqueType }
         return if (uniques.any()) uniques.filter { !it.isTimedTriggerable && it.conditionalsApply(stateForConditionals) }

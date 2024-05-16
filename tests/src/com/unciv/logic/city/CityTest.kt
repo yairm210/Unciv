@@ -2,6 +2,7 @@ package com.unciv.logic.city
 
 import com.badlogic.gdx.math.Vector2
 import com.unciv.logic.civilization.Civilization
+import com.unciv.models.ruleset.BeliefType
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.testing.GdxTestRunner
 import com.unciv.testing.TestGame
@@ -97,6 +98,7 @@ class CityTest {
         assertTrue(capitalCity.hasSoldBuildingThisTurn)
     }
 
+    // Resource tests
     @Test
     fun `should get resources from tiles`() {
         // given
@@ -188,6 +190,25 @@ class CityTest {
 
         // then
         assertEquals(4, resourceAmountInCapital)
+    }
+
+    @Test
+    fun `Civ-wide resources can come from follower beliefs, and affect all cities`() {
+        // given
+        val religion = testGame.addReligion(testCiv)
+        val belief = testGame.createBelief(BeliefType.Follower, "Provides [1] [Iron]")
+        religion.followerBeliefs.add(belief.name)
+        capitalCity.population.setPopulation(1)
+        capitalCity.religion.addPressure(religion.name, 1000)
+        val otherCity = testCiv.addCity(Vector2(2f,2f)) // NOT religionized
+
+        // when
+        val resourceAmountInCapital = capitalCity.getAvailableResourceAmount("Iron")
+        val resourceAmountInOtherCity = otherCity.getAvailableResourceAmount("Iron")
+
+        // then
+        assertEquals(1, resourceAmountInCapital)
+        assertEquals(1, resourceAmountInOtherCity)
     }
 
 }

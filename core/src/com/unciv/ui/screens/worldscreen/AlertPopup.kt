@@ -18,21 +18,26 @@ import com.unciv.logic.civilization.PopupAlert
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
+import com.unciv.models.ruleset.EventChoice
 import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.fillPlaceholders
 import com.unciv.models.translations.tr
 import com.unciv.ui.audio.MusicMood
 import com.unciv.ui.audio.MusicTrackChooserFlags
+import com.unciv.ui.components.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.components.extensions.disable
 import com.unciv.ui.components.extensions.pad
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
+import com.unciv.ui.components.input.KeyCharAndCode
 import com.unciv.ui.components.input.KeyboardBinding
 import com.unciv.ui.components.input.keyShortcuts
 import com.unciv.ui.components.input.onActivation
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popups.Popup
+import com.unciv.ui.screens.civilopediascreen.FormattedLine
+import com.unciv.ui.screens.civilopediascreen.MarkupRenderer
 import com.unciv.ui.screens.diplomacyscreen.LeaderIntroTable
 import com.unciv.ui.screens.victoryscreen.VictoryScreen
 import java.util.EnumSet
@@ -503,17 +508,17 @@ class AlertPopup(
     private fun addEvent(): Boolean {
         val event = gameInfo.ruleset.events[popupAlert.value] ?: return false
 
-        val civ = gameInfo.currentPlayerCiv
-        val choices = event.choices.filter { it.matchesConditions(StateForConditionals(civ)) }
-        if (choices.isEmpty()) return false
+        val stateForConditionals = StateForConditionals(gameInfo.currentPlayerCiv)
+        val choices = event.getMatchingChoices(stateForConditionals)
+            ?: return false
 
-        addGoodSizedLabel(event.text)
-        for (choice in choices){
-            addSeparator()
-            add(choice.text.toTextButton().onActivation { close(); choice.triggerChoice(civ) }).row()
-            for (triggeredUnique in choice.triggeredUniques)
-                addGoodSizedLabel(triggeredUnique)
+        if (event.text.isNotEmpty())
+            addGoodSizedLabel(event.text)
+        if (event.civilopediaText.isNotEmpty()) {
+            add(event.renderCivilopediaText(stageWidth * 0.5f, ::openCivilopedia)).row()
         }
+
+        for (choice in choices) addChoice(choice)
         return true
     }
 
@@ -524,4 +529,30 @@ class AlertPopup(
         worldScreen.shouldUpdate = true
         super.close()
     }
+
+    private fun addChoice(choice: EventChoice) {
+        addSeparator()
+
+        val button = choice.text.toTextButton()
+        button.onActivation {
+            close()
+            choice.triggerChoice(gameInfo.currentPlayerCiv)
+        }
+        val key = KeyCharAndCode.parse(choice.keyShortcut)
+        if (key != KeyCharAndCode.UNKNOWN) {
+            button.keyShortcuts.add(key)
+            button.addTooltip(key)
+        }
+        add(button).row()
+
+        val lines = (
+                choice.civilopediaText.asSequence()
+                + choice.triggeredUniqueObjects.asSequence()
+                    .filterNot { it.isHiddenToUsers() }
+                    .map { FormattedLine(it) }
+            ).asIterable()
+        add(MarkupRenderer.render(lines, stageWidth * 0.5f, linkAction = ::openCivilopedia)).row()
+    }
+
+    private fun openCivilopedia(link: String) = worldScreen.openCivilopedia(link)
 }

@@ -268,6 +268,11 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
                 var maxButtonWidth = constructionsQueueTable.width
                 for (dto in constructionButtonDTOList) {
 
+                    /** filter out showing buildings that have RequiresBuildingInThisCity
+                     * rejection (eg requiredBuilding entry) which are buildable.
+                     * The rejection for RequiresBuildingInThisCity isn't yielded if
+                     * the prerequisite is in the queue
+                     */
                     if (dto.construction is Building
                             && dto.rejectionReason?.type == RejectionReasonType.RequiresBuildingInThisCity
                             && constructionButtonDTOList.any {
@@ -655,7 +660,8 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
             return cityScreen.startPickTileForCreatesOneImprovement(construction, stat, true)
         // Buying a UniqueType.CreatesOneImprovement building from queue must pass down
         // the already selected tile, otherwise a new one is chosen from Automation code.
-        val improvement = construction.getImprovementToCreate(cityScreen.city.getRuleset())!!
+        val improvement = construction.getImprovementToCreate(
+            cityScreen.city.getRuleset(), cityScreen.city.civ)!!
         val tileForImprovement = cityScreen.city.cityConstructions.getTileForImprovement(improvement.name)
         askToBuyConstruction(construction, stat, tileForImprovement)
     }

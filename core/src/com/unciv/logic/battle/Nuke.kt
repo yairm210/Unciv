@@ -39,6 +39,7 @@ object Nuke {
             if (defenderCiv == null) return
             // Allow nuking yourself! (Civ5 source: CvUnit::isNukeVictim)
             if (defenderCiv == attackerCiv || defenderCiv.isDefeated()) return
+            if (defenderCiv.isBarbarian()) return
             // Gleaned from Civ5 source - this disallows nuking unknown civs even in invisible tiles
             // https://github.com/Gedemon/Civ5-DLL/blob/master/CvGameCoreDLL_Expansion1/CvUnit.cpp#L5056
             // https://github.com/Gedemon/Civ5-DLL/blob/master/CvGameCoreDLL_Expansion1/CvTeam.cpp#L986

@@ -75,6 +75,11 @@ fun <T> Iterable<T>.toGdxArray(): Array<T> {
     for (it in this) arr.add(it)
     return arr
 }
+fun <T> Sequence<T>.toGdxArray(): Array<T> {
+    val arr = Array<T>()
+    for (it in this) arr.add(it)
+    return arr
+}
 
 /** [yield][SequenceScope.yield]s [element] if it's not null */
 suspend fun <T> SequenceScope<T>.yieldIfNotNull(element: T?) {

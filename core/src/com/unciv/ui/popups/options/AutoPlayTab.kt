@@ -1,13 +1,14 @@
 package com.unciv.ui.popups.options
 
 import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.unciv.GUI
 import com.unciv.models.metadata.GameSettings
 import com.unciv.ui.components.widgets.UncivSlider
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.screens.basescreen.BaseScreen
+import com.unciv.ui.screens.worldscreen.WorldScreen
 
-fun autoPlayTab(
-    optionsPopup: OptionsPopup
+fun autoPlayTab(optionsPopup: OptionsPopup
 ): Table = Table(BaseScreen.skin).apply {
     pad(10f)
     defaults().pad(5f)
@@ -56,7 +57,8 @@ fun autoPlayTab(
         "Show AutoPlay button",
         settings.autoPlay.showAutoPlayButton, true
     ) { settings.autoPlay.showAutoPlayButton = it
-        settings.autoPlay.stopAutoPlay() }
+        GUI.getWorldScreenIfActive()?.autoPlay?.stopAutoPlay() 
+    }
 
     
     optionsPopup.addCheckbox(

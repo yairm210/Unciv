@@ -35,8 +35,8 @@ class RoadBetweenCitiesAutomation(val civInfo: Civilization, cachedForTurn: Int,
     internal val bestRoadAvailable: RoadStatus =
         cloningSource?.bestRoadAvailable ?:
         //Player can choose not to auto-build roads & railroads.
-        if (civInfo.isHuman() && (!UncivGame.Current.settings.autoBuildingRoads
-                || UncivGame.Current.settings.autoPlay.isAutoPlayingAndFullAI()))
+        if (civInfo.isHuman() && !UncivGame.Current.settings.autoBuildingRoads
+            && UncivGame.Current.worldScreen?.autoPlay?.isAutoPlayingAndFullAutoPlayAI() == false)
             RoadStatus.None
         else civInfo.tech.getBestRoadAvailable()
 

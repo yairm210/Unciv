@@ -1,9 +1,11 @@
 package com.unciv.models.ruleset
 
 import com.badlogic.gdx.files.FileHandle
+import com.unciv.Constants
 import com.unciv.json.fromJsonFile
 import com.unciv.json.json
 import com.unciv.logic.BackwardCompatibility.updateDeprecations
+import com.unciv.logic.map.tile.RoadStatus
 import com.unciv.models.metadata.BaseRuleset
 import com.unciv.models.ruleset.nation.CityStateType
 import com.unciv.models.ruleset.nation.Difficulty
@@ -26,6 +28,7 @@ import com.unciv.models.ruleset.validation.RulesetValidator
 import com.unciv.models.ruleset.validation.UniqueValidator
 import com.unciv.models.stats.INamed
 import com.unciv.models.translations.tr
+import com.unciv.ui.screens.civilopediascreen.ICivilopediaText
 import com.unciv.utils.Log
 import kotlin.collections.set
 
@@ -47,6 +50,10 @@ class Ruleset {
      */
     var name = ""
 
+    /** The list of mods that made up this Ruleset, including the base ruleset. */
+    val mods = LinkedHashSet<String>()
+
+    //region Json fields
     val beliefs = LinkedHashMap<String, Belief>()
     val buildings = LinkedHashMap<String, Building>()
     val difficulties = LinkedHashMap<String, Difficulty>()
@@ -72,10 +79,15 @@ class Ruleset {
     var cityStateTypes = LinkedHashMap<String, CityStateType>()
     val personalities = LinkedHashMap<String, Personality>()
     val events = LinkedHashMap<String, Event>()
+    var modOptions = ModOptions()
+    //endregion
 
+    //region cache fields
     val greatGeneralUnits by lazy {
         units.values.filter { it.hasUnique(UniqueType.GreatPersonFromCombat, StateForConditionals.IgnoreConditionals) }
     }
+
+    val tileRemovals by lazy { tileImprovements.values.filter { it.name.startsWith(Constants.remove) } }
 
     /** Contains all happiness levels that moving *from* them, to one *below* them, can change uniques that apply */
     val allHappinessLevelsThatAffectUniques by lazy {
@@ -94,8 +106,9 @@ class Ruleset {
         }.toSet()
     }
 
-    val mods = LinkedHashSet<String>()
-    var modOptions = ModOptions()
+    val roadImprovement by lazy { RoadStatus.Road.improvement(this) }
+    val railroadImprovement by lazy { RoadStatus.Railroad.improvement(this) }
+    //endregion
 
     fun clone(): Ruleset {
         val newRuleset = Ruleset()
@@ -226,6 +239,8 @@ class Ruleset {
             // Victories is only INamed
     fun allIHasUniques(): Sequence<IHasUniques> =
             allRulesetObjects() + sequenceOf(modOptions)
+    fun allICivilopediaText(): Sequence<ICivilopediaText> =
+            allRulesetObjects() + events.values + events.values.flatMap { it.choices }
 
     fun load(folderHandle: FileHandle) {
         // Note: Most files are loaded using createHashmap, which sets originRuleset automatically.

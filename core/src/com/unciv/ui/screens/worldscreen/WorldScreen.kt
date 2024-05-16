@@ -21,12 +21,12 @@ import com.unciv.logic.multiplayer.storage.MultiplayerAuthException
 import com.unciv.logic.trade.TradeEvaluation
 import com.unciv.models.TutorialTrigger
 import com.unciv.models.metadata.GameSetupInfo
+import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.components.extensions.centerX
 import com.unciv.ui.components.extensions.darken
 import com.unciv.ui.components.extensions.toLabel
-import com.unciv.ui.components.input.KeyCharAndCode
 import com.unciv.ui.components.input.KeyShortcutDispatcherVeto
 import com.unciv.ui.components.input.KeyboardBinding
 import com.unciv.ui.components.input.KeyboardPanningListener
@@ -60,6 +60,7 @@ import com.unciv.ui.screens.worldscreen.status.NextTurnButton
 import com.unciv.ui.screens.worldscreen.status.NextTurnProgress
 import com.unciv.ui.screens.worldscreen.status.StatusButtons
 import com.unciv.ui.screens.worldscreen.topbar.WorldScreenTopBar
+import com.unciv.ui.screens.worldscreen.unit.AutoPlay
 import com.unciv.ui.screens.worldscreen.unit.UnitTable
 import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionsTable
 import com.unciv.utils.Concurrency
@@ -82,6 +83,7 @@ import kotlin.concurrent.timer
  */
 class WorldScreen(
     val gameInfo: GameInfo,
+    val autoPlay: AutoPlay,
     val viewingCiv: Civilization,
     restoreState: RestoreState? = null
 ) : BaseScreen() {
@@ -130,6 +132,7 @@ class WorldScreen(
     private var uiEnabled = true
 
     internal val undoHandler = UndoHandler(this)
+
 
     init {
         // notifications are right-aligned, they take up only as much space as necessary.
@@ -182,15 +185,6 @@ class WorldScreen(
 
         tutorialController.allTutorialsShowedCallback = { shouldUpdate = true }
 
-        globalShortcuts.add(KeyCharAndCode.BACK) { backButtonAndESCHandler() }
-
-
-        globalShortcuts.add(KeyboardBinding.DeveloperConsole) {
-            // No cheating unless you're by yourself
-            if (gameInfo.civilizations.count { it.isHuman() } > 1) return@add
-            val consolePopup = DevConsolePopup(this)
-        }
-
         addKeyboardListener() // for map panning by W,S,A,D
         addKeyboardPresses()  // shortcut keys like F1
 
@@ -224,6 +218,18 @@ class WorldScreen(
         super.dispose()
     }
 
+    override fun getCivilopediaRuleset() = gameInfo.ruleset
+
+    // Handle disabling and re-enabling WASD listener while Options are open
+    override fun openOptionsPopup(startingPage: Int, withDebug: Boolean, onClose: () -> Unit) {
+        val oldListener = stage.root.listeners.filterIsInstance<KeyboardPanningListener>().firstOrNull()
+        if (oldListener != null) stage.removeListener(oldListener)
+        super.openOptionsPopup(startingPage, withDebug) {
+            addKeyboardListener()
+            onClose()
+        }
+    }
+
     fun openEmpireOverview(category: EmpireOverviewCategories? = null) {
         game.pushScreen(EmpireOverviewScreen(selectedCiv, category))
     }
@@ -242,9 +248,11 @@ class WorldScreen(
     }
 
     private fun addKeyboardPresses() {
+        globalShortcuts.add(KeyboardBinding.DeselectOrQuit) { backButtonAndESCHandler() }
+
         // Space and N are assigned in NextTurnButton constructor
         // Functions that have a big button are assigned there (WorldScreenTopBar, TechPolicyDiplomacyButtons..)
-        globalShortcuts.add(KeyboardBinding.Civilopedia) { game.pushScreen(CivilopediaScreen(gameInfo.ruleset)) }
+        globalShortcuts.add(KeyboardBinding.Civilopedia) { openCivilopedia() }
         globalShortcuts.add(KeyboardBinding.EmpireOverviewTrades) { openEmpireOverview(EmpireOverviewCategories.Trades) }
         globalShortcuts.add(KeyboardBinding.EmpireOverviewUnits) { openEmpireOverview(EmpireOverviewCategories.Units) }
         globalShortcuts.add(KeyboardBinding.EmpireOverviewPolitics) { openEmpireOverview(EmpireOverviewCategories.Politics) }
@@ -276,15 +284,11 @@ class WorldScreen(
         globalShortcuts.add(KeyboardBinding.ToggleYieldDisplay) { minimapWrapper.yieldImageButton.toggle() }
         globalShortcuts.add(KeyboardBinding.ToggleWorkedTilesDisplay) { minimapWrapper.populationImageButton.toggle() }
         globalShortcuts.add(KeyboardBinding.ToggleMovementDisplay) { minimapWrapper.movementsImageButton.toggle() }
-    }
 
-    // Handle disabling and re-enabling WASD listener while Options are open
-    override fun openOptionsPopup(startingPage: Int, withDebug: Boolean, onClose: () -> Unit) {
-        val oldListener = stage.root.listeners.filterIsInstance<KeyboardPanningListener>().firstOrNull()
-        if (oldListener != null) stage.removeListener(oldListener)
-        super.openOptionsPopup(startingPage, withDebug) {
-            addKeyboardListener()
-            onClose()
+        globalShortcuts.add(KeyboardBinding.DeveloperConsole) {
+            // No cheating unless you're by yourself
+            if (gameInfo.civilizations.count { it.isHuman() } > 1) return@add
+            val consolePopup = DevConsolePopup(this)
         }
     }
 
@@ -330,7 +334,7 @@ class WorldScreen(
             launchOnGLThread {
                 loadingGamePopup.close()
             }
-            startNewScreenJob(latestGame)
+            startNewScreenJob(latestGame, autoPlay)
         } catch (ex: Throwable) {
             launchOnGLThread {
                 val (message) = LoadGameScreen.getLoadExceptionMessage(ex, "Couldn't download the latest game state!")
@@ -408,19 +412,18 @@ class WorldScreen(
         }
 
         // If the game has ended, lets stop AutoPlay
-        if (game.settings.autoPlay.isAutoPlaying()
-            && !gameInfo.oneMoreTurnMode && (viewingCiv.isDefeated() || gameInfo.checkForVictory())) {
-            game.settings.autoPlay.stopAutoPlay()
+        if (autoPlay.isAutoPlaying() && !gameInfo.oneMoreTurnMode && (viewingCiv.isDefeated() || gameInfo.checkForVictory())) {
+            autoPlay.stopAutoPlay()
         }
 
-        if (!hasOpenPopups() && !game.settings.autoPlay.isAutoPlaying() && isPlayersTurn) {
+        if (!hasOpenPopups() && !autoPlay.isAutoPlaying() && isPlayersTurn) {
             when {
                 viewingCiv.shouldShowDiplomaticVotingResults() ->
                     UncivGame.Current.pushScreen(DiplomaticVoteResultScreen(gameInfo.diplomaticVictoryVotesCast, viewingCiv))
                 !gameInfo.oneMoreTurnMode && (viewingCiv.isDefeated() || gameInfo.checkForVictory()) ->
                     game.pushScreen(VictoryScreen(this))
                 viewingCiv.greatPeople.freeGreatPeople > 0 ->
-                    game.pushScreen(GreatPersonPickerScreen(viewingCiv))
+                    game.pushScreen(GreatPersonPickerScreen(this, viewingCiv))
                 viewingCiv.popupAlerts.any() -> AlertPopup(this, viewingCiv.popupAlerts.first())
                 viewingCiv.tradeRequests.isNotEmpty() -> {
                     // In the meantime this became invalid, perhaps because we accepted previous trades
@@ -650,7 +653,7 @@ class WorldScreen(
 
             progressBar.increment()
 
-            startNewScreenJob(gameInfoClone)
+            startNewScreenJob(gameInfoClone, autoPlay)
         }
     }
 
@@ -703,7 +706,7 @@ class WorldScreen(
         } else {
             if (!game.settings.autoPlay.showAutoPlayButton) {
                 statusButtons.autoPlayStatusButton = null
-                game.settings.autoPlay.stopAutoPlay()
+                autoPlay.stopAutoPlay()
             }
         }
     }
@@ -727,7 +730,7 @@ class WorldScreen(
         resizeDeferTimer = timer("Resize", daemon = true, 500L, Long.MAX_VALUE) {
             resizeDeferTimer?.cancel()
             resizeDeferTimer = null
-            startNewScreenJob(gameInfo, true) // start over
+            startNewScreenJob(gameInfo, autoPlay, true) // start over
         }
     }
 
@@ -807,10 +810,10 @@ class WorldScreen(
 }
 
 /** This exists so that no reference to the current world screen remains, so the old world screen can get garbage collected during [UncivGame.loadGame]. */
-private fun startNewScreenJob(gameInfo: GameInfo, autosaveDisabled: Boolean = false) {
+private fun startNewScreenJob(gameInfo: GameInfo, autoPlay: AutoPlay, autosaveDisabled: Boolean = false) {
     Concurrency.run {
         val newWorldScreen = try {
-            UncivGame.Current.loadGame(gameInfo)
+            UncivGame.Current.loadGame(gameInfo, autoPlay)
         } catch (notAPlayer: UncivShowableException) {
             withGLContext {
                 val (message) = LoadGameScreen.getLoadExceptionMessage(notAPlayer)

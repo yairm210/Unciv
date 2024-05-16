@@ -11,7 +11,7 @@ import com.unciv.ui.screens.worldscreen.WorldScreen
 
 class WorldScreenMenuPopup(val worldScreen: WorldScreen) : Popup(worldScreen, scrollable = Scrollability.All) {
     init {
-        UncivGame.Current.settings.autoPlay.stopAutoPlay()
+        worldScreen.autoPlay.stopAutoPlay()
         defaults().fillX()
 
         addButton("Main menu") {
@@ -19,7 +19,7 @@ class WorldScreenMenuPopup(val worldScreen: WorldScreen) : Popup(worldScreen, sc
         }.row()
         addButton("Civilopedia", KeyboardBinding.Civilopedia) {
             close()
-            worldScreen.game.pushScreen(CivilopediaScreen(worldScreen.gameInfo.ruleset))
+            worldScreen.openCivilopedia()
         }.row()
         if (!worldScreen.gameInfo.gameParameters.isOnlineMultiplayer)
             addButton("Save game", KeyboardBinding.SaveGame) {

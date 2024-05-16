@@ -93,7 +93,7 @@ object UnitActionsFromUniques {
                         action = foundAction
                     ).open(force = true)
                 }
-            }
+            }.takeIf { UnitActionModifiers.canActivateSideEffects(unit, unique) }
         )
     }
 
@@ -213,7 +213,12 @@ object UnitActionsFromUniques {
                 }
             }()
 
-            yield(UnitAction(UnitActionType.TriggerUnique, 80f, title, action = unitAction))
+            yield(
+                UnitAction(UnitActionType.TriggerUnique, 80f, title,
+                    action = unitAction.takeIf {
+                        UnitActionModifiers.canActivateSideEffects(unit, unique)
+                    })
+            )
         }
     }
 
@@ -294,7 +299,7 @@ object UnitActionsFromUniques {
                             // Next test is to prevent interfering with UniqueType.CreatesOneImprovement -
                             // not pretty, but users *can* remove the building from the city queue an thus clear this:
                             && !tile.isMarkedForCreatesOneImprovement()
-                            && !tile.isImpassible() // Not 100% sure that this check is necessary...
+                            && UnitActionModifiers.canActivateSideEffects(unit, unique)
                     }
                 ))
             }
@@ -337,12 +342,11 @@ object UnitActionsFromUniques {
         for (unique in unit.getMatchingUniques(UniqueType.CanTransform, stateForConditionals)) {
             val unitToTransformTo = civInfo.getEquivalentUnit(unique.params[0])
 
+            // Respect OnlyAvailable criteria
             if (unitToTransformTo.getMatchingUniques(
-                    UniqueType.OnlyAvailable,
-                    StateForConditionals.IgnoreConditionals
-                )
-                    .any { !it.conditionalsApply(stateForConditionals) })
-                continue
+                    UniqueType.OnlyAvailable, StateForConditionals.IgnoreConditionals
+                ).any { !it.conditionalsApply(stateForConditionals) }
+            ) continue
 
             // Check _new_ resource requirements
             // Using Counter to aggregate is a bit exaggerated, but - respect the mad modder.
@@ -355,20 +359,18 @@ object UnitActionsFromUniques {
                 .filter { it.value > 0 }
                 .joinToString { "${it.value} {${it.key}}".tr() }
 
-            val title = if (newResourceRequirementsString.isEmpty())
-                "Transform to [${unitToTransformTo.name}]"
-            else "Transform to [${unitToTransformTo.name}]\n([$newResourceRequirementsString])"
+            var title = "Transform to [${unitToTransformTo.name}] "
+            title += UnitActionModifiers.getSideEffectString(unit, unique, true)
+            if (newResourceRequirementsString.isNotEmpty())
+                title += "\n([$newResourceRequirementsString])"
 
             yield(UnitAction(UnitActionType.Transform, 70f,
                 title = title,
                 action = {
+                    val oldMovement = unit.currentMovement
                     unit.destroy()
                     val newUnit =
                         civInfo.units.placeUnitNearTile(unitTile.position, unitToTransformTo)
-
-                    /** We were UNABLE to place the new unit, which means that the unit failed to upgrade!
-                     * The only known cause of this currently is "land units upgrading to water units" which fail to be placed.
-                     */
 
                     /** We were UNABLE to place the new unit, which means that the unit failed to upgrade!
                      * The only known cause of this currently is "land units upgrading to water units" which fail to be placed.
@@ -379,10 +381,18 @@ object UnitActionsFromUniques {
                         unit.copyStatisticsTo(resurrectedUnit)
                     } else { // Managed to upgrade
                         unit.copyStatisticsTo(newUnit)
-                        newUnit.currentMovement = 0f
+                        // have to handle movement manually because we killed the old unit
+                        // a .destroy() unit has 0 movement
+                        // and a new one may have less Max Movement
+                        newUnit.currentMovement = oldMovement
+                        // adjust if newUnit has lower Max Movement
+                        if (newUnit.currentMovement.toInt() > newUnit.getMaxMovement())
+                            newUnit.currentMovement = newUnit.getMaxMovement().toFloat()
+                        // execute any side effects, Stat and Movement adjustments
+                        UnitActionModifiers.activateSideEffects(newUnit, unique, true)
                     }
                 }.takeIf {
-                    unit.currentMovement > 0 && !unit.isEmbarked()
+                    !unit.isEmbarked() && UnitActionModifiers.canActivateSideEffects(unit, unique)
                 }
             ))
         }
@@ -440,6 +450,7 @@ object UnitActionsFromUniques {
 
         val couldConstruct = unit.currentMovement > 0
             && !tile.isCityCenter() && tile.improvementInProgress != Constants.repair
+            && !tile.isEnemyTerritory(unit.civ)
 
         val turnsToBuild = getRepairTurns(unit)
 

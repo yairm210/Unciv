@@ -24,9 +24,8 @@ class CityFounder {
 
         city.name = generateNewCityName(
             civInfo,
-            civInfo.gameInfo.civilizations.asSequence().filter { civ -> civ.isAlive() }.toSet(),
-            arrayListOf("New ", "Neo ", "Nova ", "Altera ")
-        ) ?: "City Without A Name"
+            civInfo.gameInfo.civilizations.asSequence().filter { civ -> civ.isAlive() }.toSet()
+        ) ?: NamingConstants.fallback
 
         city.isOriginalCapital = civInfo.citiesCreated == 0
         if (city.isOriginalCapital) {
@@ -100,6 +99,11 @@ class CityFounder {
         return city
     }
 
+    private object NamingConstants {
+        /** Prefixes to add when every base name is taken, ordered. */
+        val prefixes = arrayListOf("New", "Neo", "Nova", "Altera")
+        const val fallback = "City Without A Name"
+    }
 
     /**
      * Generates and returns a new city name for the [foundingCiv].
@@ -112,13 +116,11 @@ class CityFounder {
      *
      * @param foundingCiv The civilization that founded this city.
      * @param aliveCivs Every civilization currently alive.
-     * @param prefixes Prefixes to add when every base name is taken, ordered.
      * @return A new city name in [String]. Null if failed to generate a name.
      */
     private fun generateNewCityName(
         foundingCiv: Civilization,
-        aliveCivs: Set<Civilization>,
-        prefixes: List<String>
+        aliveCivs: Set<Civilization>
     ): String? {
         val usedCityNames: Set<String> =
                 aliveCivs.asSequence().flatMap { civilization ->
@@ -139,14 +141,14 @@ class CityFounder {
         // If the nation doesn't have the unique above,
         // return the first missing name with an increasing number of prefixes attached
         // TODO: Make prefixes moddable per nation? Support suffixes?
-        var candidate: String?
         for (number in (1..10)) {
-            for (prefix in prefixes) {
-                val currentPrefix: String = prefix.repeat(number)
-                candidate = foundingCiv.nation.cities.firstOrNull { cityName ->
-                    (currentPrefix + cityName) !in usedCityNames
-                }
-                if (candidate != null) return currentPrefix + candidate
+            for (prefix in NamingConstants.prefixes) {
+                val repeatedPredix = "$prefix [".repeat(number)
+                val suffix = "]".repeat(number)
+                val candidate = foundingCiv.nation.cities.asSequence()
+                    .map { repeatedPredix + it + suffix }
+                    .firstOrNull { it !in usedCityNames }
+                if (candidate != null) return candidate
             }
         }
 
@@ -203,14 +205,14 @@ class CityFounder {
 
     private fun addStartingBuildings(city: City, civInfo: Civilization, startingEra: String) {
         val ruleset = civInfo.gameInfo.ruleset
-        if (civInfo.cities.size == 1) city.cityConstructions.addBuilding(city.capitalCityIndicator())
+        if (civInfo.cities.size == 1) city.cityConstructions.addBuilding(city.capitalCityIndicator(), tryAddFreeBuildings = false)
 
         // Add buildings and pop we get from starting in this era
         for (buildingName in ruleset.eras[startingEra]!!.settlerBuildings) {
             val building = ruleset.buildings[buildingName] ?: continue
             val uniqueBuilding = civInfo.getEquivalentBuilding(building)
             if (uniqueBuilding.isBuildable(city.cityConstructions))
-                city.cityConstructions.addBuilding(uniqueBuilding)
+                city.cityConstructions.addBuilding(uniqueBuilding, tryAddFreeBuildings = false)
         }
 
         civInfo.civConstructions.tryAddFreeBuildings()

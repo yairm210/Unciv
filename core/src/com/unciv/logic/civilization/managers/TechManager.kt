@@ -460,6 +460,13 @@ class TechManager : IsPartOfGameInfoSerialization {
                             civInfo,
                             triggerNotificationText = "due to entering the [$eraName]"
                         )
+
+            // The unfiltered version
+            for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponEnteringEraUnfiltered))
+                UniqueTriggerActivation.triggerUnique(
+                    unique,
+                    civInfo,
+                    triggerNotificationText = "due to entering the [${currentEra.name}]")
         }
     }
 
@@ -518,12 +525,12 @@ class TechManager : IsPartOfGameInfoSerialization {
     }
 
     fun getBestRoadAvailable(): RoadStatus {
-        val railroadImprovement = RoadStatus.Railroad.improvement(getRuleset())  // May not exist in mods
-        if (railroadImprovement != null && (railroadImprovement.techRequired==null || isResearched(railroadImprovement.techRequired!!)))
+        val railroadImprovement = getRuleset().railroadImprovement  // May not exist in mods
+        if (railroadImprovement != null && (railroadImprovement.techRequired == null || isResearched(railroadImprovement.techRequired!!)))
             return RoadStatus.Railroad
 
-        val roadImprovement = RoadStatus.Road.improvement(getRuleset())
-        if (roadImprovement != null && (roadImprovement.techRequired==null || isResearched(roadImprovement.techRequired!!)))
+        val roadImprovement = getRuleset().roadImprovement
+        if (roadImprovement != null && (roadImprovement.techRequired == null || isResearched(roadImprovement.techRequired!!)))
             return RoadStatus.Road
 
         return RoadStatus.None

@@ -35,9 +35,9 @@ import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popups.ConfirmPopup
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.basescreen.RecreateOnResize
-import com.unciv.ui.screens.civilopediascreen.CivilopediaScreen
-import java.lang.Integer.max
 import kotlin.math.abs
+import kotlin.math.ceil
+import kotlin.math.max
 import kotlin.math.min
 
 private enum class PolicyColors(
@@ -146,8 +146,7 @@ class PolicyPickerScreen(
     val viewingCiv: Civilization,
     val canChangeState: Boolean,
     select: String? = null
-)
-    : PickerScreen(), RecreateOnResize {
+) : PickerScreen(), RecreateOnResize {
 
     object Sizes {
         const val paddingVertical = 10f
@@ -177,9 +176,6 @@ class PolicyPickerScreen(
 
         setDefaultCloseAction()
 
-        if (policies.freePolicies > 0 && policies.canAdoptPolicy())
-            closeButton.disable()
-
         rightSideButton.onClick(UncivSound.Policy) {
             confirmAction()
         }
@@ -190,43 +186,47 @@ class PolicyPickerScreen(
         topTable.row()
 
         val branches = viewingCiv.gameInfo.ruleset.policyBranches
-        val rowChangeCount: Int
+        val branchesPerRow: Int
 
         // estimate how many branch boxes fit using average size (including pad)
         // TODO If we'd want to use scene2d correctly, this is supposed to happen inside an overridden layout() method
         val numBranchesY = scrollPane.height / 305f
             // Landscape - arrange in as few rows as looks nice
-        rowChangeCount = if (numBranchesY > 1.5f) {
+        branchesPerRow = if (numBranchesY > 1.5f) {
             val numRows = if (numBranchesY < 2.9f) 2 else (numBranchesY + 0.1f).toInt()
             (branches.size + numRows - 1) / numRows
         } else branches.size
 
 
         // Actually create and distribute the policy branches
-        var wrapper = Table()
-        val size = ((branches.size / rowChangeCount) + if (branches.size % rowChangeCount == 0) 0 else 1)*rowChangeCount
-        for (i in 0 until size) {
+        val numberOfRows = ceil(branches.size / branchesPerRow.toFloat()).toInt()
 
-            val change = (i % rowChangeCount == 0)
-            val rightToLeft = ((i / rowChangeCount) % 2)
-            val r = (i % rowChangeCount) + (i / rowChangeCount)*(rowChangeCount-rightToLeft) + rightToLeft*(rowChangeCount-2*(i % rowChangeCount))
-
-            if (i > 0 && change) {
-                topTable.add(wrapper).pad(5f,10f)
-                topTable.addSeparator().pad(0f, 10f)
-                wrapper = Table()
+        val positionToTable = HashMap<String,Table>()
+        val allPoliciesTable = Table()
+        for (rowNum in 0 until numberOfRows){
+            val row = Table()
+            for (columnNum in 0 until branchesPerRow){
+                val branchTable = Table()
+                row.add(branchTable).grow()
+                positionToTable["$rowNum-$columnNum"] = branchTable
             }
-
-            if (r >= branches.size) {
-                wrapper.add().expand()
-            } else {
-                val branch = branches.values.elementAt(r)
-                val branchGroup = BranchGroup(branch)
-                wrapper.add(branchGroup).growY().growX()
-                branchToGroup[branch.name] = branchGroup
-            }
+            allPoliciesTable.add(row).pad(5f,10f)
+            if (rowNum != numberOfRows-1) allPoliciesTable.addSeparator().pad(0f, 10f)
         }
-        topTable.add(wrapper).pad(5f,10f)
+
+        for ((index, branch) in branches.values.withIndex()){
+            val branchGroup = BranchGroup(branch)
+            branchToGroup[branch.name] = branchGroup
+
+            val rowNumber = index / branchesPerRow
+            val isRowLeftToRight = rowNumber % 2 == 0
+            val numberInRow =  index % branchesPerRow // RTL rows
+            val rowPosition = if (isRowLeftToRight) numberInRow else branchesPerRow-1-numberInRow
+            val policyTable = positionToTable["$rowNumber-$rowPosition"]!!
+            policyTable.add(branchGroup).grow()
+        }
+        topTable.add(allPoliciesTable)
+
 
         // If topTable is larger than available space, scroll in a little - up to top/left
         // total padding, or up to where the axis is centered, whichever is smaller
@@ -247,6 +247,8 @@ class PolicyPickerScreen(
         }
     }
 
+    override fun getCivilopediaRuleset() = viewingCiv.gameInfo.ruleset
+
     private fun pickPolicy(button: PolicyButton) {
 
         val policy = button.policy
@@ -265,7 +267,7 @@ class PolicyPickerScreen(
         descriptionLabel.setText(policy.getDescription())
         descriptionLabel.clearListeners()
         descriptionLabel.onActivation {
-            game.pushScreen(CivilopediaScreen(viewingCiv.gameInfo.ruleset, link = policy.makeLink()))
+            openCivilopedia(policy.makeLink())
         }
         descriptionLabel.keyShortcuts.add(KeyboardBinding.Civilopedia)
     }
