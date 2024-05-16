@@ -430,7 +430,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 
 -   [Social Network](https://thenounproject.com/term/social-network/746002/) By Kirby Wu for Civil Society
 -   [Gender Equality](https://thenounproject.com/term/gender-equality/577561/) By corpus delicti for Universal Suffrage
--   [Feather](https://thenounproject.com/term/feather/1628/) By Eduardo Souza for Constitution
+-   [Feather](https://thenounproject.com/term/feather/1628/) By Eduardo Souza for Constitution and Open Policies button
 -   [Voting](https://thenounproject.com/term/voting/981735/) By Nikita Kozin for Democracy
 -   [Mic](https://thenounproject.com/term/mic/1666564/) By Aybige for Free Speech
 
@@ -715,6 +715,8 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 - [Party](https://thenounproject.com/icon/party-1784941/) by Adrien Coquet for WLTK header on City Overview
 - [Party](https://thenounproject.com/icon/party-2955155/) by Lars Meiertoberens as additional WLKT decoration
 - [spy](https://thenounproject.com/icon/spy-2905374/) by Vectorstall for Spy
+- [spy](https://thenounproject.com/icon/4660058/) by Adriano Vabeni - Espionage button
+- [secret agency](https://thenounproject.com/icon/2817176/) by Martina Hanžlová - Espionage tutorial
 - [turn right](https://thenounproject.com/icon/turn-right-1920867/) by Alice Design for Resource Overview
 - [Tyrannosaurus Rex](https://thenounproject.com/icon/tyrannosaurus-rex-4130976/) by Amethyst Studio for Civilopedia Eras header
 - [Realistic easter day eggs with curvy lines and dots](https://www.freepik.com/free-vector/realistic-easter-day-eggs-with-curvy-lines-dots_6839373.htm) by freepik for easter eggs
@@ -749,7 +751,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 -   [Lightning](https://thenounproject.com/icon/lightning-102300) by Rohith M S for Quickstart
 -   [Loading](https://thenounproject.com/icon/load-208033) by Universal Icons for Load Game
 -   [New](https://thenounproject.com/icon/new-1886943) by Alice Design for New Game
--   [Go back](https://thenounproject.com/icon/go%20back-1901947) by Salvia Santos for Resume
+-   [Go back](https://thenounproject.com/icon/go%20back-1901947) by Salvia Santos for Resume and Undo button
 -   [Multiplayer](https://thenounproject.com/icon/multiplayer-1215652) by Roy Charles
 -   [Options](https://thenounproject.com/icon/options-866090) By Thengakola
 -   [Package](https://thenounproject.com/icon/package-1886048) by shashank singh for Mods
