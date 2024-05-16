@@ -1,3 +1,17 @@
+## 4.11.13
+
+Barbarian water units no longer pillage
+
+By SomeTroglodyte:
+- Console: tile setowner, civ removepolicy 
+- Fix crash when a starting unit has a random conditional 
+- Espionage icons 
+
+By tuvus:
+- Spies can be moved on map 
+- City state coup 
+- AI doesn't settle very unfavorable locations 
+
 ## 4.11.12
 
 By tuvus:
