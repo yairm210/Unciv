@@ -17,8 +17,8 @@ import com.unciv.dev.FasterUIDevelopment.DevElement
 import com.unciv.json.json
 import com.unciv.logic.files.UncivFiles
 import com.unciv.models.metadata.GameSettings
-import com.unciv.ui.components.ParticleEffectActorFireworks
 import com.unciv.ui.components.extensions.center
+import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.fonts.FontFamilyData
 import com.unciv.ui.components.fonts.FontImplementation
 import com.unciv.ui.components.fonts.FontMetricsCommon
@@ -47,19 +47,14 @@ object FasterUIDevelopment {
     class DevElement(
         @Suppress("unused") val screen: UIDevScreen
     ) {
-        lateinit var actor: ParticleEffectActorFireworks.TestActor
+        lateinit var actor: Actor
 
         fun createDevElement() {
-            actor = ParticleEffectActorFireworks.TestActor(screen.stage)
+            actor = "This could be your UI element in development!".toLabel()
         }
 
         @Suppress("EmptyFunctionBlock")
         fun afterAdd() {
-            actor.load()
-        }
-
-        fun render(delta: Float) {
-            actor.render(delta)
         }
     }
 
@@ -132,11 +127,6 @@ object FasterUIDevelopment {
             stage.addActor(actor)
             devElement.afterAdd()
             stage.addListener(ToggleDebugListener(stage as UncivStage))
-        }
-
-        override fun render(delta: Float) {
-            super.render(delta)
-            devElement.render(delta)
         }
 
         private fun addBorder(actor: Actor, color: Color) {
