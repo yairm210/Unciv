@@ -5,21 +5,14 @@ import com.unciv.UncivGame
 import com.unciv.ui.components.widgets.ZoomableScrollPane
 import com.unciv.ui.screens.cityscreen.CityMapHolder
 
-//todo Fix placement
-//todo Kdoc
-//todo random Colors - I see only blue and red?
-//todo The spark shower seems to happen where the rocket started, not where it ends
-//todo spark shower timing - before or after "explosion"?
-
 /**
  *  Display fireworks using the Gdx ParticleEffect system, over a map view, centered on a specific tile.
  *  - Use the [create] factory for instantiation - it handles checking the continuousRendering setting and asset existence.
  *  - Repeats endlessly
  *  - Handles the zooming and panning of the map
+ *  - Intentionally exceeds the bounds of the passed (TileGroup) actor bounds
  *  @param mapHolder the CityMapHolder (or WorldMapHolder) this should draw over
  *  @property setActorBounds Informs this where, relative to the TileGroupMap that is zoomed and panned through the ZoomableScrollPane, to draw - can be constant over lifetime
- *  @property render Needs to be called from the hosting Screen in its render override
- *  @property dispose Required - this is just the Gdx Disposable interface, no automatic call
  */
 class ParticleEffectMapFireworks(
     private val mapHolder: ZoomableScrollPane
@@ -41,7 +34,9 @@ class ParticleEffectMapFireworks(
         actorBounds.height = actorHeight
     }
 
-    override fun getStageBounds(bounds: Rectangle) {
+    override fun getScale() = mapHolder.scaleX
+
+    override fun getTargetBounds(bounds: Rectangle) {
         // Empiric math - any attempts to ask Gdx via localToStageCoordinates were way off
         val scale = mapHolder.scaleX // just assume scaleX==scaleY
         mapHolder.getViewport(tempViewport)
@@ -50,5 +45,4 @@ class ParticleEffectMapFireworks(
         bounds.width = actorBounds.width * scale
         bounds.height = actorBounds.height * scale
     }
-
 }

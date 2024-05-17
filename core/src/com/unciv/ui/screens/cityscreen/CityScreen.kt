@@ -548,6 +548,6 @@ class CityScreen(
 
     override fun render(delta: Float) {
         super.render(delta)
-        fireworks?.render(delta)
+        fireworks?.render(stage, delta)
     }
 }

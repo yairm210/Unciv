@@ -3,35 +3,35 @@ package com.unciv.ui.components
 import com.badlogic.gdx.math.Rectangle
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.Actor
+import com.badlogic.gdx.scenes.scene2d.Group
+import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.utils.Align
-import com.unciv.ui.screens.basescreen.BaseScreen
+import com.unciv.ui.images.ImageGetter
 
 class ParticleEffectActorFireworks(
     private val actor: Actor
 ) : ParticleEffectFireworks() {
-    companion object {
-        fun getTester(screen: BaseScreen): TestActor {
-            val actor = TestActor()
-            actor.setSize(screen.stage.width /2, screen.stage.height / 2)
-            actor.setPosition(screen.stage.width /2, screen.stage.height / 2, Align.center)
-            return actor
-        }
-    }
-
-    class TestActor : Actor() {
+    class TestActor(stage: Stage) : Group() {
         private val fireworks = ParticleEffectActorFireworks(this)
-        fun render(delta: Float) = fireworks.render(delta)
+        private val launcher = ImageGetter.getImage("UnitIcons/SS Booster")
+        init {
+            setSize(stage.width /2, stage.height / 2)
+            setPosition(stage.width /2, stage.height / 2, Align.center)
+            launcher.setBounds(stage.width / 4 - 12.5f, 0f, 25f, 25f)
+            addActor(launcher)
+        }
+        fun render(delta: Float) = fireworks.render(stage, delta)
         fun load() = fireworks.load()
     }
 
     private val tempVector = Vector2()
 
-    override fun getStageBounds(bounds: Rectangle) {
-        tempVector.set(actor.x, actor.y)
+    override fun getTargetBounds(bounds: Rectangle) {
+        tempVector.set(0f, 0f)
         actor.localToStageCoordinates(tempVector)
         bounds.setPosition(tempVector)
         tempVector.set(actor.width, actor.height)
         actor.localToStageCoordinates(tempVector)
-        bounds.setSize(tempVector.x, tempVector.y)
+        bounds.setSize(tempVector.x - bounds.x, tempVector.y - bounds.y)
     }
 }

@@ -15,12 +15,10 @@ import com.badlogic.gdx.scenes.scene2d.utils.Layout
 import com.unciv.UncivGame
 import com.unciv.dev.FasterUIDevelopment.DevElement
 import com.unciv.json.json
-import com.unciv.logic.files.SETTINGS_FILE_NAME
 import com.unciv.logic.files.UncivFiles
 import com.unciv.models.metadata.GameSettings
 import com.unciv.ui.components.ParticleEffectActorFireworks
 import com.unciv.ui.components.extensions.center
-import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.fonts.FontFamilyData
 import com.unciv.ui.components.fonts.FontImplementation
 import com.unciv.ui.components.fonts.FontMetricsCommon
@@ -32,7 +30,6 @@ import com.unciv.ui.screens.basescreen.UncivStage
 import java.awt.Font
 import java.awt.RenderingHints
 import java.awt.image.BufferedImage
-import java.io.File
 
 /** Creates a basic GDX application that mimics [UncivGame] as closely as possible,
  *  starts up fast and shows one UI element, to be returned by [DevElement.createDevElement].
@@ -53,7 +50,7 @@ object FasterUIDevelopment {
         lateinit var actor: ParticleEffectActorFireworks.TestActor
 
         fun createDevElement() {
-            actor = ParticleEffectActorFireworks.getTester(screen)
+            actor = ParticleEffectActorFireworks.TestActor(screen.stage)
         }
 
         @Suppress("EmptyFunctionBlock")
