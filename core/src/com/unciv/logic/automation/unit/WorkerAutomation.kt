@@ -142,7 +142,7 @@ class WorkerAutomation(
         val citiesToNumberOfUnimprovedTiles = HashMap<String, Int>()
         for (city in unit.civ.cities) {
             citiesToNumberOfUnimprovedTiles[city.id] = city.getTiles()
-                .count { it.isLand && it.civilianUnit == null && (it.isPillaged() || tileHasWorkToDo(it, unit)) }
+                .count { tile -> tile.isLand && tile.getUnits().any { unit -> unit.cache.hasUniqueToBuildImprovements } && (tile.isPillaged() || tileHasWorkToDo(tile, unit)) }
         }
 
         val closestUndevelopedCity = unit.civ.cities.asSequence()
@@ -182,7 +182,8 @@ class WorkerAutomation(
         val workableTilesCenterFirst = currentTile.getTilesInDistance(4)
             .filter {
                 it !in tilesToAvoid
-                && (it.civilianUnit == null || !it.civilianUnit!!.cache.hasUniqueToBuildImprovements || it == currentTile)
+                && (it == currentTile || (unit.isCivilian() && (it.civilianUnit == null || !it.civilianUnit!!.cache.hasUniqueToBuildImprovements))
+                        || (unit.isMilitary() && (it.militaryUnit == null || !it.militaryUnit!!.cache.hasUniqueToBuildImprovements)))
                 && (it.owningCity == null || it.getOwner() == civInfo)
                 && !it.isCityCenter()
                 && getBasePriority(it, unit) > 1
