@@ -378,7 +378,7 @@ class WorkerAutomation(
             var value = roadPlan.priority
             if (civInfo.stats.statsForNextTurn.gold >= 20)
             // Higher priority if we are closer to connecting the city
-            value += (5 - roadPlan.numberOfRoadsToBuild).coerceAtLeast(0)
+                value += (5 - roadPlan.numberOfRoadsToBuild).coerceAtLeast(0)
             return value
         }
 
