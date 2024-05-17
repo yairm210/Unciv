@@ -83,6 +83,12 @@ class WorkerAutomation(
 
         if (tileToWork != currentTile) {
             debug("WorkerAutomation: %s -> head towards %s", unit.toString(), tileToWork)
+            if (unit.movement.canReachInCurrentTurn(tileToWork) && unit.movement.canMoveTo(tileToWork, canSwap = true)) {
+                if (!unit.movement.canMoveTo(tileToWork, canSwap = false)) {
+                    // There must be a unit on the target tile! Lets swap with it.
+                    unit.movement.swapMoveToTile(tileToWork)
+                }
+            }
             val reachedTile = unit.movement.headTowards(tileToWork)
             if (reachedTile != currentTile) unit.doAction() // otherwise, we get a situation where the worker is automated, so it tries to move but doesn't, then tries to automate, then move, etc, forever. Stack overflow exception!
 
@@ -176,7 +182,7 @@ class WorkerAutomation(
         val workableTilesCenterFirst = currentTile.getTilesInDistance(4)
             .filter {
                 it !in tilesToAvoid
-                && (it.civilianUnit == null || it == currentTile)
+                && (it.civilianUnit == null || !it.civilianUnit!!.cache.hasUniqueToBuildImprovements || it == currentTile)
                 && (it.owningCity == null || it.getOwner() == civInfo)
                 && !it.isCityCenter()
                 && getBasePriority(it, unit) > 1
@@ -194,7 +200,7 @@ class WorkerAutomation(
                 // These are the expensive calculations (tileCanBeImproved, canReach), so we only apply these filters after everything else it done.
                 if (!tileHasWorkToDo(tileInGroup, unit)) continue
                 if (unit.getTile() == tileInGroup) return unit.getTile()
-                if (!unit.movement.canReach(tileInGroup) || tileInGroup.civilianUnit != null) continue
+                if (!unit.movement.canReach(tileInGroup)) continue
                 if (bestTile == null || getFullPriority(tileInGroup, unit) > getFullPriority(bestTile, unit)) {
                     bestTile = tileInGroup
                 }
