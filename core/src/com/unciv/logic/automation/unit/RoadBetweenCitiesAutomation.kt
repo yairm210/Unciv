@@ -86,7 +86,7 @@ class RoadBetweenCitiesAutomation(val civInfo: Civilization, cachedForTurn: Int,
         val roadToCapitalStatus = city.cityStats.getRoadTypeOfConnectionToCapital()
 
         fun rankRoadCapitalPriority(roadStatus: RoadStatus): Float {
-            return when(roadToCapitalStatus) {
+            return when(roadStatus) {
                 RoadStatus.None -> if (bestRoadAvailable != RoadStatus.None) 2f else 0f
                 RoadStatus.Road -> if (bestRoadAvailable != RoadStatus.Road) 1f else 0f
                 else -> 0f
@@ -111,7 +111,8 @@ class RoadBetweenCitiesAutomation(val civInfo: Civilization, cachedForTurn: Int,
             }
 
             // Try to build a plan for the road to the city
-            val roadPath = MapPathing.getRoadPath(workerUnit, city.getCenterTile(), closeCity.getCenterTile()) ?: continue
+            val roadPath = if (civInfo.cities.indexOf(city) < civInfo.cities.indexOf(closeCity)) MapPathing.getRoadPath(workerUnit, city.getCenterTile(), closeCity.getCenterTile()) ?: continue
+                else MapPathing.getRoadPath(workerUnit, closeCity.getCenterTile(), city.getCenterTile()) ?: continue
             val worstRoadStatus = getWorstRoadTypeInPath(roadPath)
             if (worstRoadStatus == bestRoadAvailable) continue
 

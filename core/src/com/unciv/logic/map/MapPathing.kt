@@ -16,19 +16,9 @@ object MapPathing {
     private fun roadPreferredMovementCost(unit: MapUnit, from: Tile, to: Tile): Float{
         // hasRoadConnection accounts for civs that treat jungle/forest as roads
         // Ignore road over river penalties.
-        val areConnectedByRoad = from.hasRoadConnection(unit.civ, mustBeUnpillaged = false) && to.hasRoadConnection(unit.civ, mustBeUnpillaged = false)
-        if (areConnectedByRoad){
-            // If the civ has railroad technology, consider roads as railroads since they will be upgraded
-            if (unit.civ.tech.getBestRoadAvailable() == RoadStatus.Railroad){
-                return RoadStatus.Railroad.movement
-            } else {
-                return unit.civ.tech.movementSpeedOnRoads
-            }
-        }
-
-        val areConnectedByRailroad = from.hasRailroadConnection(mustBeUnpillaged = false) && to.hasRailroadConnection(mustBeUnpillaged = false)
-        if (areConnectedByRailroad)
-            return RoadStatus.Railroad.movement
+        if ((from.hasRoadConnection(unit.civ, false) || from.hasRailroadConnection(false))
+                && (to.hasRoadConnection(unit.civ, false) || to.hasRoadConnection(unit.civ, false)))
+            return .3f
 
         return 1f
     }
@@ -39,7 +29,9 @@ object MapPathing {
             && !tile.isImpassible()
             && unit.civ.hasExplored(tile)
             && tile.canCivPassThrough(unit.civ)
-            && (tile.hasRoadConnection(unit.civ, true) || tile.improvementFunctions.canBuildImprovement(roadImprovement, unit.civ))
+            && (tile.hasRoadConnection(unit.civ, false) 
+                || tile.hasRailroadConnection(false) 
+                || tile.improvementFunctions.canBuildImprovement(roadImprovement, unit.civ))
     }
 
     /**
