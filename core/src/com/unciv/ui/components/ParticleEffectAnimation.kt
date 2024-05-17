@@ -128,6 +128,8 @@ abstract class ParticleEffectAnimation : Disposable {
             for (emitter in effect.emitters)
                 emitter.delay.add(data.delay * 1000)
         }
+        if (lastScale != 1f)
+            effect.scaleEffect(lastScale)
         effect.start()
         activeEffectData += data
     }

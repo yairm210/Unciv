@@ -6,28 +6,32 @@ lowMin: 600.0
 lowMax: 600.0
 - Count - 
 min: 0
-max: 25
+max: 20
 - Emission - 
-lowMin: 0.0
-lowMax: 0.0
-highMin: 10.0
-highMax: 10.0
+lowMin: 120.0
+lowMax: 120.0
+highMin: 120.0
+highMax: 120.0
 relative: false
 scalingCount: 1
 scaling0: 1.0
 timelineCount: 1
 timeline0: 0.0
 - Life - 
-lowMin: 0.0
-lowMax: 0.0
-highMin: 500.0
-highMax: 500.0
+lowMin: 75.0
+lowMax: 75.0
+highMin: 75.0
+highMax: 75.0
 relative: false
-scalingCount: 1
+scalingCount: 3
 scaling0: 1.0
-timelineCount: 1
+scaling1: 1.0
+scaling2: 0.0
+timelineCount: 3
 timeline0: 0.0
-independent: false
+timeline1: 0.74550897
+timeline2: 1.0
+independent: true
 - Life Offset - 
 active: false
 independent: false
@@ -58,10 +62,10 @@ scaling0: 1.0
 timelineCount: 1
 timeline0: 0.0
 - X Scale - 
-lowMin: 0.0
-lowMax: 0.0
-highMin: 60.0
-highMax: 60.0
+lowMin: 12.0
+lowMax: 12.0
+highMin: 36.0
+highMax: 36.0
 relative: false
 scalingCount: 1
 scaling0: 1.0
@@ -73,8 +77,148 @@ active: false
 active: true
 lowMin: 0.0
 lowMax: 0.0
-highMin: 4.0
-highMax: 4.0
+highMin: 5.0
+highMax: 5.0
+relative: false
+scalingCount: 1
+scaling0: 1.0
+timelineCount: 1
+timeline0: 0.0
+- Angle - 
+active: true
+lowMin: 0.0
+lowMax: 0.0
+highMin: 0.0
+highMax: 360.0
+relative: false
+scalingCount: 1
+scaling0: 1.0
+timelineCount: 1
+timeline0: 0.0
+- Rotation - 
+active: false
+- Wind - 
+active: false
+- Gravity - 
+active: false
+- Tint - 
+colorsCount: 9
+colors0: 1.0
+colors1: 1.0
+colors2: 1.0
+colors3: 0.6
+colors4: 0.2
+colors5: 1.0
+colors6: 0.49803922
+colors7: 0.047058824
+colors8: 0.047058824
+timelineCount: 3
+timeline0: 0.0
+timeline1: 0.59396434
+timeline2: 0.99176955
+- Transparency - 
+lowMin: 0.0
+lowMax: 0.0
+highMin: 1.0
+highMax: 1.0
+relative: false
+scalingCount: 1
+scaling0: 1.0
+timelineCount: 1
+timeline0: 0.0
+- Options - 
+attached: true
+continuous: false
+aligned: false
+additive: true
+behind: false
+premultipliedAlpha: false
+spriteMode: single
+- Image Paths -
+pp_firework.png
+
+
+trail
+- Delay -
+active: false
+- Duration - 
+lowMin: 600.0
+lowMax: 600.0
+- Count - 
+min: 0
+max: 160
+- Emission - 
+lowMin: 240.0
+lowMax: 240.0
+highMin: 320.0
+highMax: 320.0
+relative: false
+scalingCount: 1
+scaling0: 1.0
+timelineCount: 1
+timeline0: 0.0
+- Life - 
+lowMin: 80.0
+lowMax: 80.0
+highMin: 140.0
+highMax: 140.0
+relative: false
+scalingCount: 3
+scaling0: 1.0
+scaling1: 1.0
+scaling2: 0.0
+timelineCount: 3
+timeline0: 0.0
+timeline1: 0.8958333
+timeline2: 1.0
+independent: true
+- Life Offset - 
+active: false
+independent: false
+- X Offset - 
+active: false
+- Y Offset - 
+active: false
+- Spawn Shape - 
+shape: point
+- Spawn Width - 
+lowMin: 0.0
+lowMax: 0.0
+highMin: 0.0
+highMax: 0.0
+relative: false
+scalingCount: 1
+scaling0: 1.0
+timelineCount: 1
+timeline0: 0.0
+- Spawn Height - 
+lowMin: 0.0
+lowMax: 0.0
+highMin: 0.0
+highMax: 0.0
+relative: false
+scalingCount: 1
+scaling0: 1.0
+timelineCount: 1
+timeline0: 0.0
+- X Scale - 
+lowMin: 2.0
+lowMax: 2.0
+highMin: 8.0
+highMax: 8.0
+relative: false
+scalingCount: 1
+scaling0: 1.0
+timelineCount: 1
+timeline0: 0.0
+- Y Scale - 
+active: false
+- Velocity - 
+active: true
+lowMin: 0.0
+lowMax: 0.0
+highMin: 12.0
+highMax: 12.0
 relative: false
 scalingCount: 1
 scaling0: 1.0
@@ -99,9 +243,9 @@ active: false
 active: false
 - Tint - 
 colorsCount: 3
-colors0: 0.0
-colors1: 0.7647059
-colors2: 1.0
+colors0: 1.0
+colors1: 0.4509804
+colors2: 0.3254902
 timelineCount: 1
 timeline0: 0.0
 - Transparency - 
@@ -115,7 +259,7 @@ scaling0: 1.0
 timelineCount: 1
 timeline0: 0.0
 - Options - 
-attached: true
+attached: false
 continuous: false
 aligned: false
 additive: true

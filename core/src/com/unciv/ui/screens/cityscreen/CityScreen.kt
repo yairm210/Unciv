@@ -276,9 +276,7 @@ class CityScreen(
             }
 
             if (fireworks == null || tileGroup.tile.position != city.location) continue
-            val width = stage.width / 2
-            val x = tileGroup.x + tileGroup.hexagonImageOrigin.first - width / 2
-            fireworks.setActorBounds(x, tileGroup.y, width, stage.height / 2)
+            fireworks.setActorBounds(tileGroup)
         }
     }
 
@@ -340,7 +338,7 @@ class CityScreen(
         val tileSetStrings = TileSetStrings()
         val cityTileGroups = city.getCenterTile().getTilesInDistance(5)
                 .filter { selectedCiv.hasExplored(it) }
-                .map { CityTileGroup(city, it, tileSetStrings) }
+                .map { CityTileGroup(city, it, tileSetStrings, fireworks != null) }
 
         for (tileGroup in cityTileGroups) {
             tileGroup.onClick { tileGroupOnClick(tileGroup, city) }

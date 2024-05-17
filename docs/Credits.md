@@ -826,3 +826,22 @@ The following audio is from https://pixabay.com/ [Pixabay License](https://pixab
 -   [Cinematic Boom](https://pixabay.com/sound-effects/cinematic-boom-6872/) by Rizzard for final boom
 -   [Cymbal Swell 2](https://pixabay.com/sound-effects/cymbal-swell-2-74766/) by rubberduckie for cymbal swells
 -   [hit of orchestral cymbals and bass drum](https://pixabay.com/sound-effects/hit-of-orchestral-cymbals-and-bass-drum-14471/) by Selector for intro crash
+
+## Visual effects
+
+The fireworks on the City screen of a WLTK-celebrating city are loosely based on the Fireworks.p file included in [Particle Park](https://github.com/raeleus/Particle-Park).
+All differences and edits done by the Unciv team.
+License quoted:
+```
+Particle Park Fireworks License
+
+------------------------------------------------------------------------------------------
+
+Copyright © 2019 Raymond Buckley
+
+Particle Park Fireworks can be used under the Creative Commons Attribution 4.0 International license.
+
+See a human readable version here: https://creativecommons.org/licenses/by/4.0/
+
+------------------------------------------------------------------------------------------
+```
