@@ -25,7 +25,7 @@ import com.unciv.ui.images.ImageGetter
 abstract class ParticleEffectAnimation : Disposable {
     @Suppress("MemberVisibilityCanBePrivate", "ConstPropertyName")
     companion object {
-        const val defaultAtlasName = "Effects"
+        const val defaultAtlasName = "ConstructionIcons"
 
         fun isEnabled(game: UncivGame, atlasName: String = defaultAtlasName) =
             game.settings.continuousRendering && ImageGetter.getSpecificAtlas(atlasName) != null
