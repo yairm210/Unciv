@@ -84,7 +84,12 @@ internal object ImagePacker {
                     try {
                         packImagesPerMod(mod.path, mod.path, defaultSettings)
                     } catch (ex: Throwable) {
-                        Log.error("Exception in ImagePacker: %s", ex.message)
+                        var innerException = ex
+                        while (innerException.cause != null && innerException.cause !== innerException) innerException = innerException.cause!!
+                        if (innerException === ex)
+                            Log.error("Exception in ImagePacker: %s", ex.message)
+                        else
+                            Log.error("Exception in ImagePacker: %s (%s)", ex.message, innerException.message)
                     }
                 }
             }
