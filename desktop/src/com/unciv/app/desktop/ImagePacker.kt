@@ -11,11 +11,15 @@ import java.nio.file.Files
 import java.nio.file.attribute.BasicFileAttributes
 
 /**
- * Entry point: _ImagePacker.[packImages] ()_
+ * Entry point: _ImagePacker.[packImages]`()`_
  *
  * Re-packs our texture assets into atlas + png File pairs, which will be loaded by the game.
- * With the exception of the ExtraImages folder and the Font system these are the only
- * graphics used (The source Image folders are unused at run time except here).
+ * With the exception of the ExtraImages folder and the Font system these are the only graphics used
+ * (The source Image folders are unused at run time except here, and in RulesetValidator when it detects this failed).
+ *
+ * RulesetValidator relies on packer failures to remove the atlas files, but write the atlas name into Atlases.json nevertheless:
+ * It detects that case and only then does a scan for corrupt images.
+ * This is fulfilled by [packImagesIfOutdated] catching and logging exceptions, and [packImagesPerMod] ignoring that.
  *
  * [TexturePacker] documentation is [here](https://github.com/libgdx/libgdx/wiki/Texture-packer)
  */
