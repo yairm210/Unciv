@@ -107,6 +107,7 @@ class RoadBetweenCitiesAutomation(val civInfo: Civilization, cachedForTurn: Int,
 
     /** Civ-wide list of unconnected Cities, sorted by closest to capital first */
     private val citiesThatNeedConnecting: List<City> by lazy {
+        val capital = civInfo.getCapital() ?: return@lazy listOf() // No capital, no roads to connect
         val result = civInfo.cities.asSequence()
             .filter {
                 civInfo.getCapital() != null
@@ -114,7 +115,7 @@ class RoadBetweenCitiesAutomation(val civInfo: Civilization, cachedForTurn: Int,
                     && !it.isCapital() && !it.isBeingRazed // Cities being razed should not be connected.
                     && !it.cityStats.isConnectedToCapital(bestRoadAvailable)
             }.sortedBy {
-                it.getCenterTile().aerialDistanceTo(civInfo.getCapital()!!.getCenterTile())
+                it.getCenterTile().aerialDistanceTo(capital.getCenterTile())
             }.toList()
         if (Log.shouldLog()) {
             debug("WorkerAutomation citiesThatNeedConnecting for ${civInfo.civName} turn $cachedForTurn:")

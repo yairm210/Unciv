@@ -153,12 +153,12 @@ class City : IsPartOfGameInfoSerialization {
     fun isCapital(): Boolean = cityConstructions.getBuiltBuildings().any { it.hasUnique(UniqueType.IndicatesCapital) }
     fun isCoastal(): Boolean = centerTile.isCoastalTile()
 
-    fun capitalCityIndicator(): Building {
+    fun capitalCityIndicator(): Building? {
         val indicatorBuildings = getRuleset().buildings.values.asSequence()
             .filter { it.hasUnique(UniqueType.IndicatesCapital) }
 
         val civSpecificBuilding = indicatorBuildings.firstOrNull { it.uniqueTo == civ.civName }
-        return civSpecificBuilding ?: indicatorBuildings.first()
+        return civSpecificBuilding ?: indicatorBuildings.firstOrNull()
     }
 
     fun isConnectedToCapital(connectionTypePredicate: (Set<String>) -> Boolean = { true }): Boolean {
