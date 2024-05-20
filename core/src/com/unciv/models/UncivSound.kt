@@ -7,7 +7,8 @@ data class UncivSound(
     /** The base filename without extension. */
     val fileName: String
 ) {
-    /** For serialization */
+    /** For deserialization - used in [GameSettingsMultiplayer][com.unciv.models.metadata.GameSettings.GameSettingsMultiplayer] */
+    @Suppress("unused")
     private constructor() : this("")
 
     companion object {
