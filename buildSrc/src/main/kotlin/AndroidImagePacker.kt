@@ -105,8 +105,8 @@ object AndroidImagePacker {
             if (File(input).listTree().none {
                 val attr: BasicFileAttributes = Files.readAttributes(it.toPath(), BasicFileAttributes::class.java)
                 val createdAt: Long = attr.creationTime().toMillis()
-                it.extension in listOf("png", "jpg", "jpeg")
-                        && (it.lastModified() > atlasModTime || createdAt > atlasModTime)
+                (it.extension in listOf("png", "jpg", "jpeg") || it.name == "TexturePacker.settings")
+                    && (it.lastModified() > atlasModTime || createdAt > atlasModTime)
             }) return
         }
 
@@ -131,4 +131,3 @@ object AndroidImagePacker {
         }
     }
 }
-

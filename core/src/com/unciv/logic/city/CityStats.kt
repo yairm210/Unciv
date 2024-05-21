@@ -320,6 +320,12 @@ class CityStats(val city: City) {
             else city.isConnectedToCapital()
     }
 
+    fun getRoadTypeOfConnectionToCapital(): RoadStatus {
+        return if (isConnectedToCapital(RoadStatus.Railroad)) RoadStatus.Railroad
+        else if (isConnectedToCapital(RoadStatus.Road)) RoadStatus.Road
+        else RoadStatus.None
+    }
+
     private fun getBuildingMaintenanceCosts(): Float {
         // Same here - will have a different UI display.
         var buildingsMaintenance = city.cityConstructions.getMaintenanceCosts().toFloat() // this is AFTER the bonus calculation!
