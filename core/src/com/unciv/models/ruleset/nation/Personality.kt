@@ -10,6 +10,7 @@ import kotlin.reflect.KMutableProperty0
  * Type of Personality focus. Typically ranges from 0 (no focus) to 10 (double focus)
  */
 enum class PersonalityValue {
+    // Stat focused personalities
     Production,
     Food,
     Gold,
@@ -17,8 +18,13 @@ enum class PersonalityValue {
     Culture,
     Happiness,
     Faith,
-    Military,
-    WarMongering,;
+    // Behaviour focused personalities
+    Military, // Building a military but not nessesarily using it
+    Aggressive, // Declaring war determines expanding or defending
+    Commerce, // Trading frequency, open borders and liberating city-states, less negative diplomacy impact
+    Diplomacy, // Likelyhood of signing friendship, defensive pact, peace treaty and other diplomatic actions
+    Loyal, // Likelyhood to make a long lasting aliance with another civ and join wars with them
+    Expansion; // Founding/capturing new cities, oposite of a cultural victory
 
     companion object  {
         operator fun get(stat: Stat): PersonalityValue {
@@ -43,8 +49,14 @@ class Personality: RulesetObject() {
     var culture: Float = 5f
     var happiness: Float = 5f
     var faith: Float = 5f
+
     var military: Float = 5f
-    var warMongering: Float = 5f // Todo: Look into where this should be inserted
+    var aggressive: Float = 5f
+    var commerce: Float = 5f
+    var diplomacy: Float = 5f
+    var loyal: Float = 5f
+    var expansion: Float = 5f
+
     var priorities = LinkedHashMap<String, Int>()
     var preferredVictoryType: String = Constants.neutralVictoryType
     var isNeutralPersonality: Boolean = false
@@ -59,7 +71,11 @@ class Personality: RulesetObject() {
             PersonalityValue.Happiness -> ::happiness
             PersonalityValue.Faith -> ::faith
             PersonalityValue.Military -> ::military
-            PersonalityValue.WarMongering -> ::warMongering
+            PersonalityValue.Aggressive -> ::aggressive
+            PersonalityValue.Commerce -> ::commerce
+            PersonalityValue.Diplomacy -> ::diplomacy
+            PersonalityValue.Loyal -> ::loyal
+            PersonalityValue.Expansion -> ::expansion
         }
     }
 
