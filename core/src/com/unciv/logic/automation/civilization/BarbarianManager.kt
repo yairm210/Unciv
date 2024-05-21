@@ -73,9 +73,9 @@ class BarbarianManager : IsPartOfGameInfoSerialization {
         encampments.firstOrNull { it.position == position }?.wasAttacked()
     }
 
-    fun placeBarbarianEncampment() {
+    fun placeBarbarianEncampment(forTesting: Boolean = false) {
         // Before we do the expensive stuff, do a roll to see if we will place a camp at all
-        if (gameInfo.turns > 1 && Random.Default.nextBoolean())
+        if (!forTesting && gameInfo.turns > 1 && Random.Default.nextBoolean())
             return
 
         // Barbarians will only spawn in places that no one can see
