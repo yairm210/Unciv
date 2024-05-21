@@ -5,21 +5,24 @@ import com.badlogic.gdx.utils.JsonValue
 import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.map.tile.TileHistory.TileHistoryState.CityCenterType
 import java.util.TreeMap
+import org.jetbrains.annotations.VisibleForTesting
 
 /**
  * Records events throughout the game related to a tile.
  *
  * Used for end of game replay.
  *
+ * @property history History records by turn.
  * @see com.unciv.ui.screens.victoryscreen.ReplayMap
  */
-class TileHistory : IsPartOfGameInfoSerialization {
-
+class TileHistory(
+    private val history: TreeMap<Int, TileHistoryState> = TreeMap()
+) : IsPartOfGameInfoSerialization, Iterable<MutableMap.MutableEntry<Int, TileHistory.TileHistoryState>> {
     class TileHistoryState(
         /** The name of the civilization owning this tile or `null` if there is no owner. */
-        var owningCivName: String? = null,
+        val owningCivName: String? = null,
         /** `null` if this tile does not have a city center. Otherwise this field denotes of which type this city center is. */
-        var cityCenterType: CityCenterType = CityCenterType.None
+        val cityCenterType: CityCenterType = CityCenterType.None
     ) : IsPartOfGameInfoSerialization {
         enum class CityCenterType(val serializedRepresentation: String) {
             None("N"),
@@ -42,9 +45,6 @@ class TileHistory : IsPartOfGameInfoSerialization {
         )
     }
 
-    /** History records by turn. */
-    private var history: TreeMap<Int, TileHistoryState> = TreeMap()
-
     fun recordTakeOwnership(tile: Tile) {
         history[tile.tileMap.gameInfo.turns] =
                 TileHistoryState(tile)
@@ -59,11 +59,7 @@ class TileHistory : IsPartOfGameInfoSerialization {
         return history.floorEntry(turn)?.value ?: TileHistoryState()
     }
 
-    fun clone(): TileHistory {
-        val toReturn = TileHistory()
-        toReturn.history = TreeMap(history)
-        return toReturn
-    }
+    fun clone(): TileHistory = TileHistory(TreeMap(history))
 
     /** Custom Json formatter for a [TileHistory].
      *  Output looks like this: `history:{0:[Spain,C],12:[China,R]}`
@@ -90,4 +86,12 @@ class TileHistory : IsPartOfGameInfoSerialization {
             }
         }
     }
+
+    @VisibleForTesting
+    fun addTestEntry(turn: Int, entry: TileHistoryState) {
+        history[turn] = entry
+    }
+
+    @VisibleForTesting
+    override fun iterator() = history.iterator()
 }
