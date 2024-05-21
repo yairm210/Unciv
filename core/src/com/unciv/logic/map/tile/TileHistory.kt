@@ -17,7 +17,7 @@ import org.jetbrains.annotations.VisibleForTesting
  */
 class TileHistory(
     private val history: TreeMap<Int, TileHistoryState> = TreeMap()
-) : IsPartOfGameInfoSerialization, Iterable<MutableMap.MutableEntry<Int, TileHistory.TileHistoryState>> {
+) : IsPartOfGameInfoSerialization, Json.Serializable, Iterable<MutableMap.MutableEntry<Int, TileHistory.TileHistoryState>> {
     class TileHistoryState(
         /** The name of the civilization owning this tile or `null` if there is no owner. */
         val owningCivName: String? = null,
@@ -61,29 +61,26 @@ class TileHistory(
 
     fun clone(): TileHistory = TileHistory(TreeMap(history))
 
-    /** Custom Json formatter for a [TileHistory].
-     *  Output looks like this: `history:{0:[Spain,C],12:[China,R]}`
+    /** Implement Json.Serializable
+     *  - Output looked like this: `history:{0:[Spain,C],12:[China,R]}`
+     *    (but now we have turned off simplifed json, so it's properly quoted)
      */
-    class Serializer : Json.Serializer<TileHistory> {
-        override fun write(json: Json, `object`: TileHistory, knownType: Class<*>?) {
-            json.writeObjectStart()
-            for ((key, entry) in `object`.history) {
-                json.writeArrayStart(key.toString())
-                json.writeValue(entry.owningCivName)
-                json.writeValue(entry.cityCenterType.serializedRepresentation)
-                json.writeArrayEnd()
-            }
-            json.writeObjectEnd()
+    override fun write(json: Json) {
+        for ((key, entry) in history) {
+            json.writeArrayStart(key.toString())
+            json.writeValue(entry.owningCivName)
+            json.writeValue(entry.cityCenterType.serializedRepresentation)
+            json.writeArrayEnd()
         }
+    }
 
-        override fun read(json: Json, jsonData: JsonValue, type: Class<*>?) = TileHistory().apply {
-            for (entry in jsonData) {
-                val turn = entry.name.toInt()
-                val owningCivName =
-                        (if (entry[0].isString) entry.getString(0) else "").takeUnless { it.isEmpty() }
-                val cityCenterType = CityCenterType.deserialize(entry.getString(1))
-                history[turn] = TileHistoryState(owningCivName, cityCenterType)
-            }
+    override fun read(json: Json, jsonData: JsonValue) {
+        for (entry in jsonData) {
+            val turn = entry.name.toInt()
+            val owningCivName =
+                (if (entry[0].isString) entry.getString(0) else "").takeUnless { it.isEmpty() }
+            val cityCenterType = CityCenterType.deserialize(entry.getString(1))
+            history[turn] = TileHistoryState(owningCivName, cityCenterType)
         }
     }
 
