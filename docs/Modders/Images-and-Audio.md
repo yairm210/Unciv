@@ -13,7 +13,7 @@ If you're developing your mod on an Android version of Unciv (not recommended!) 
 ### Ways to pack texture atlases
 
 - Texture atlases *CANNOT BE PACKED* on Android (technical reason: TexturePacker uses `java.awt` to do heavy lifting, which is unavailable on Android 0_0)
-- Launch the desktop version with your mod (your mod's main folder is a subfolder of the game's "mods" folder, or symlinked there).
+- Launch the desktop version with your mod (your mod's main folder is a subfolder of the game's "mods" folder, or symlinked there). This uses the packing methods [documented here](https://libgdx.com/wiki/tools/texture-packer).
 - You can ask someone in the Discord server to help you out.
 - You can use external tools, [e.g. gdx-texture-packer-gui](https://github.com/crashinvaders/gdx-texture-packer-gui). Utmost care needs to be taken that the files can be discovered by Unciv and internal relative paths are correct.
 - The Unciv repo itself has a feature that can pack images on github runners - documentation still needs to be done.
@@ -34,13 +34,23 @@ If you use external tools and multiple atlases, you will need to maintain this f
 The texture packers built into Unciv will look for a `TexturePacker.settings` file in each `Images` directory (_not_ under `jsons`).
 With this file you can tune the packer - e.g. control pixel interpolation filters.
 It is a json of a [Gdx TexturePacker.Settings](https://libgdx.com/wiki/tools/texture-packer#settings) instance.
-The default settings are as shown in the Gdx documentation linked above if you do supply a settings file, but without such a file, some fields have different defaults:
-- `maxWidth`, `maxHeight`: 2048
-- `fast`: true
-- `paddingX`, `paddingY`: 8
-- `duplicatePadding`: true
-- `filterMin`: MipMapLinearLinear
-- `filterMag`: MipMapLinearLinear unless the atlas name ends in `Icons`, then Linear.
+The default settings are as shown in the Gdx documentation linked above if you do supply a settings file, but without such a file, some fields have different defaults.
+To get these changed defaults, start with the following as base for your custom `TexturePacker.settings` file:
+
+```json
+{
+	"fast": true,
+	"combineSubdirectories": true,
+	"maxWidth": 2048,
+	"maxHeight": 2048,
+	"paddingX": 8,
+	"paddingY": 8,
+	"duplicatePadding": true,
+	"filterMin": "MipMapLinearLinear",
+	"filterMag": "MipMapLinearLinear",
+}
+```
+(change "filterMag" to "Linear" if your atlas name will end in "Icons".)
 
 ### Texture atlas encoding
 
