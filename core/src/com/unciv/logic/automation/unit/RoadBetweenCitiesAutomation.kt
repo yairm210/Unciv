@@ -6,11 +6,14 @@ import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.BFS
 import com.unciv.logic.map.HexMath
+import com.unciv.logic.map.MapPathing
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.RoadStatus
 import com.unciv.logic.map.tile.Tile
+import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.utils.Log
 import com.unciv.utils.debug
+import kotlin.math.max
 
 private object WorkerAutomationConst {
     /** BFS max size is determined by the aerial distance of two cities to connect, padded with this */
@@ -57,21 +60,122 @@ class RoadBetweenCitiesAutomation(val civInfo: Civilization, cachedForTurn: Int,
         result
     }
 
-    /** Cache of roads to connect cities each turn */
-    internal val roadsToConnectCitiesCache: HashMap<City, List<Tile>> = HashMap()
+    /** Cache of roads to connect cities each turn. Call [getRoadsToBuildFromCity] instead of using this */
+    private val roadsToBuildByCitiesCache: HashMap<City, List<RoadPlan>> = HashMap()
 
-    /** Hashmap of all cached tiles in each list in [roadsToConnectCitiesCache] */
-    internal val tilesOfRoadsToConnectCities: HashMap<Tile, City> = HashMap()
+    /** Hashmap of all cached tiles in each list in [roadsToBuildByCitiesCache] */
+    internal val tilesOfRoadsMap: HashMap<Tile, RoadPlan> = HashMap()
+
+    inner class RoadPlan(val tiles: List<Tile>, val priority: Float, val fromCity: City, val toCity: City) {
+        val numberOfRoadsToBuild: Int by lazy { tiles.count { it.getUnpillagedRoad() != bestRoadAvailable } }
+    }
 
 
     /**
-     * Uses a cache to find and return the connection to make that is associated with a city.
-     * May not work if the unit that originally created this cache is different from the next.
-     * (Due to the difference in [UnitMovement.canPassThrough()])
+     * Tries to return a list of road plans to connect this city to the surrounding cities.
+     * If there are no surrounding cities to connect to and this city is still unconnected to the capital it will try and build a special road to the capital.
+     * 
+     * @return every road that we want to try and connect assosiated with this city.
      */
-    private fun getRoadConnectionBetweenCities(unit: MapUnit, city: City): List<Tile> {
-        if (city in roadsToConnectCitiesCache) return roadsToConnectCitiesCache[city]!!
+    fun getRoadsToBuildFromCity(city: City): List<RoadPlan> {
+        if (roadsToBuildByCitiesCache.containsKey(city)) {
+            return roadsToBuildByCitiesCache[city]!!
+        }
+        // TODO: some better worker representative needs to be used here
+        val workerUnit = civInfo.gameInfo.ruleset.units.map { it.value }.firstOrNull { it.hasUnique(UniqueType.BuildImprovements) }?.getMapUnit(civInfo) ?: return listOf()
+        val roadToCapitalStatus = city.cityStats.getRoadTypeOfConnectionToCapital()
 
+        fun rankRoadCapitalPriority(roadStatus: RoadStatus): Float {
+            return when(roadStatus) {
+                RoadStatus.None -> if (bestRoadAvailable != RoadStatus.None) 2f else 0f
+                RoadStatus.Road -> if (bestRoadAvailable != RoadStatus.Road) 1f else 0f
+                else -> 0f
+            }
+        }
+
+        val basePriority = rankRoadCapitalPriority(roadToCapitalStatus)
+
+        val roadsToBuild: MutableList<RoadPlan> = mutableListOf()
+        for (closeCity in city.neighboringCities.filter { it.civ == civInfo }) {
+
+            // Try to find if the other city has planned to build a road to this city
+            if (roadsToBuildByCitiesCache.containsKey(closeCity)) {
+                // There should only ever be one or zero possible connections from their city to this city
+                val roadToBuild = roadsToBuildByCitiesCache[closeCity]!!.firstOrNull { it.fromCity == city || it.toCity == city}
+
+                if (roadToBuild != null) {
+                    roadsToBuild.add(roadToBuild)
+                }
+                // We already did the hard work, there can't be any other possible roads to this city
+                continue
+            }
+
+            // Try to build a plan for the road to the city
+            val roadPath = if (civInfo.cities.indexOf(city) < civInfo.cities.indexOf(closeCity)) MapPathing.getRoadPath(workerUnit, city.getCenterTile(), closeCity.getCenterTile()) ?: continue
+                else MapPathing.getRoadPath(workerUnit, closeCity.getCenterTile(), city.getCenterTile()) ?: continue
+            val worstRoadStatus = getWorstRoadTypeInPath(roadPath)
+            if (worstRoadStatus == bestRoadAvailable) continue
+
+            // Make sure that we are taking in to account the other cities needs
+            var roadPriority = max(basePriority, rankRoadCapitalPriority(closeCity.cityStats.getRoadTypeOfConnectionToCapital()))
+            if (worstRoadStatus == RoadStatus.None) {
+                roadPriority += 2
+            } else if (worstRoadStatus == RoadStatus.Road && bestRoadAvailable == RoadStatus.Railroad) {
+                roadPriority += 1
+            }
+            if (closeCity.cityStats.getRoadTypeOfConnectionToCapital() > roadToCapitalStatus)
+                roadPriority += 1
+
+            val newRoadPlan = RoadPlan(roadPath, roadPriority + (city.population.population + closeCity.population.population) / 4f, city, closeCity)
+            roadsToBuild.add(newRoadPlan)
+            for (tile in newRoadPlan.tiles) {
+                if (tile !in tilesOfRoadsMap || tilesOfRoadsMap[tile]!!.priority < newRoadPlan.priority)
+                    tilesOfRoadsMap[tile] = newRoadPlan
+            }
+        }
+
+        // If and only if we have no roads to build to close-by cities then we check for a road to build to the capital
+        if (roadsToBuild.isEmpty() && roadToCapitalStatus < bestRoadAvailable) {
+            val roadToCapital = getRoadToConnectCityToCapital(workerUnit, city)
+
+            if (roadToCapital != null) {
+                val worstRoadStatus = getWorstRoadTypeInPath(roadToCapital.second)
+                var roadPriority = basePriority
+                roadPriority += if (worstRoadStatus == RoadStatus.None) 2f else 1f 
+
+                val newRoadPlan = RoadPlan(roadToCapital.second, roadPriority + (city.population.population) / 2f, city, roadToCapital.first)
+                roadsToBuild.add(newRoadPlan)
+                for (tile in newRoadPlan.tiles) {
+                    if (tile !in tilesOfRoadsMap || tilesOfRoadsMap[tile]!!.priority < newRoadPlan.priority)
+                        tilesOfRoadsMap[tile] = newRoadPlan
+                }
+            }
+        }
+
+        workerUnit.destroy()
+        roadsToBuildByCitiesCache[city] = roadsToBuild
+        return roadsToBuild
+    }
+
+    private fun getWorstRoadTypeInPath(path: List<Tile>): RoadStatus {
+        var worstRoadTile = RoadStatus.Railroad
+        for (tile in path) {
+            if (tile.getUnpillagedRoad() < worstRoadTile) {
+                worstRoadTile = tile.getUnpillagedRoad()
+                if (worstRoadTile == RoadStatus.None)
+                    return RoadStatus.None
+            }
+        }
+        return worstRoadTile
+    }
+
+    /**
+     * Returns a road that can connect this city to the capital.
+     * This is a very expensive function that doesn't nessesarily produce the same roads as in [getRoadsToBuildFromCity].
+     * So it should only be used if it is the only road that a city wants to build.
+     * @return a pair containing a list of tiles that resemble the road to build and the city that the road will connect to
+     */
+    private fun getRoadToConnectCityToCapital(unit: MapUnit, city: City): Pair<City, List<Tile>>? {
         val isCandidateTilePredicate: (Tile) -> Boolean = { it.isLand && unit.movement.canPassThrough(it) }
         val toConnectTile = city.getCenterTile()
         val bfs: BFS = bfsCache[toConnectTile.position] ?:
@@ -90,38 +194,12 @@ class RoadBetweenCitiesAutomation(val civInfo: Civilization, cachedForTurn: Int,
                 // We have a winner!
                 val cityTile = nextTile
                 val pathToCity = bfs.getPathTo(cityTile)
-                roadsToConnectCitiesCache[city] = pathToCity.toList().filter { it.roadStatus != bestRoadAvailable }
-                for (tile in pathToCity) {
-                    if (tile !in tilesOfRoadsToConnectCities)
-                        tilesOfRoadsToConnectCities[tile] = city
-                }
-                return roadsToConnectCitiesCache[city]!!
+
+                return Pair(cityTile.getCity()!!, pathToCity.toList())
             }
             nextTile = bfs.nextStep()
         }
-
-        roadsToConnectCitiesCache[city] = listOf()
-        return roadsToConnectCitiesCache[city]!!
-    }
-
-
-    /** Civ-wide list of unconnected Cities, sorted by closest to capital first */
-    private val citiesThatNeedConnecting: List<City> by lazy {
-        val result = civInfo.cities.asSequence()
-            .filter {
-                civInfo.getCapital() != null
-                    && it.population.population > 3
-                    && !it.isCapital() && !it.isBeingRazed // Cities being razed should not be connected.
-                    && !it.cityStats.isConnectedToCapital(bestRoadAvailable)
-            }.sortedBy {
-                it.getCenterTile().aerialDistanceTo(civInfo.getCapital()!!.getCenterTile())
-            }.toList()
-        if (Log.shouldLog()) {
-            debug("WorkerAutomation citiesThatNeedConnecting for ${civInfo.civName} turn $cachedForTurn:")
-            if (result.isEmpty()) debug("\tempty")
-            else result.forEach { debug("\t${it.name}") }
-        }
-        result
+        return null
     }
 
     /**
@@ -129,17 +207,13 @@ class RoadBetweenCitiesAutomation(val civInfo: Civilization, cachedForTurn: Int,
      * Returns a list of all the cities close by that this worker may want to connect
      */
     internal fun getNearbyCitiesToConnect(unit: MapUnit): List<City> {
-        if (bestRoadAvailable == RoadStatus.None || citiesThatNeedConnecting.isEmpty()) return listOf()
-        val candidateCities = citiesThatNeedConnecting.filter {
+        if (bestRoadAvailable == RoadStatus.None) return listOf()
+        val candidateCities = civInfo.cities.filter {
             // Cities that are too far away make the canReach() calculations devastatingly long
-            it.getCenterTile().aerialDistanceTo(unit.getTile()) < 20
+            it.getCenterTile().aerialDistanceTo(unit.getTile()) < 20 && getRoadsToBuildFromCity(it).isNotEmpty()
         }
         if (candidateCities.none()) return listOf() // do nothing.
 
-        // Search through ALL candidate cities to build the cache
-        for (toConnectCity in candidateCities) {
-            getRoadConnectionBetweenCities(unit, toConnectCity).filter { it.getUnpillagedRoad() < bestRoadAvailable }
-        }
         return candidateCities
     }
 
@@ -148,35 +222,30 @@ class RoadBetweenCitiesAutomation(val civInfo: Civilization, cachedForTurn: Int,
      * @return whether we actually did anything
      */
     internal fun tryConnectingCities(unit: MapUnit, candidateCities: List<City>): Boolean {
-        if (bestRoadAvailable == RoadStatus.None || citiesThatNeedConnecting.isEmpty()) return false
+        if (bestRoadAvailable == RoadStatus.None) return false
 
         if (candidateCities.none()) return false // do nothing.
         val currentTile = unit.getTile()
-        var bestTileToConstructRoadOn: Tile? = null
-        var bestTileToConstructRoadOnDist: Int = Int.MAX_VALUE
 
         // Search through ALL candidate cities for the closest tile to build a road on
-        for (toConnectCity in candidateCities) {
-            val roadableTiles = getRoadConnectionBetweenCities(unit, toConnectCity).filter { it.getUnpillagedRoad() < bestRoadAvailable }
-            val reachableTile = roadableTiles.map { Pair(it, it.aerialDistanceTo(unit.getTile())) }
-                .filter { it.second < bestTileToConstructRoadOnDist }
-                .sortedBy { it.second }
-                .firstOrNull {
+        for (toConnectCity in candidateCities.sortedByDescending { it.getCenterTile().aerialDistanceTo(unit.getTile()) }) {
+            val tilesByPriority = getRoadsToBuildFromCity(toConnectCity).flatMap { roadPlan -> roadPlan.tiles.map { tile ->  Pair(tile, roadPlan.priority) } }
+            val tilesSorted = tilesByPriority.filter { it.first.getUnpillagedRoad() < bestRoadAvailable }
+                    .sortedBy { it.first.aerialDistanceTo(unit.getTile()) + (it.second / 10f) }
+            val bestTile = tilesSorted.firstOrNull {
                     unit.movement.canMoveTo(it.first) && unit.movement.canReach(it.first)
-                } ?: continue // Apparently we can't reach any of these tiles at all
-            bestTileToConstructRoadOn = reachableTile.first
-            bestTileToConstructRoadOnDist = reachableTile.second
+                }?.first ?: continue // Apparently we can't reach any of these tiles at all
+
+            if (bestTile != currentTile && unit.currentMovement > 0)
+                unit.movement.headTowards(bestTile)
+            if (unit.currentMovement > 0 && bestTile == currentTile
+                    && currentTile.improvementInProgress != bestRoadAvailable.name) {
+                val improvement = bestRoadAvailable.improvement(civInfo.gameInfo.ruleset)!!
+                bestTile.startWorkingOnImprovement(improvement, civInfo, unit)
+            }
+            return true
         }
 
-        if (bestTileToConstructRoadOn == null) return false
-
-        if (bestTileToConstructRoadOn != currentTile && unit.currentMovement > 0)
-            unit.movement.headTowards(bestTileToConstructRoadOn)
-        if (unit.currentMovement > 0 && bestTileToConstructRoadOn == currentTile
-            && currentTile.improvementInProgress != bestRoadAvailable.name) {
-            val improvement = bestRoadAvailable.improvement(civInfo.gameInfo.ruleset)!!
-            bestTileToConstructRoadOn.startWorkingOnImprovement(improvement, civInfo, unit)
-        }
-        return true
+        return false
     }
 }

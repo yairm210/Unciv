@@ -45,7 +45,7 @@ object Conditionals {
 
         val gameInfo by lazy { relevantCiv?.gameInfo }
 
-        val stateBasedRandom by lazy { Random(state.hashCode()) }
+        val stateBasedRandom by lazy { Random(state.hashCode() * 31 + (gameInfo?.turns?.hashCode() ?: 0)) }
 
         fun getResourceAmount(resourceName: String): Int {
             if (relevantCity != null) return relevantCity!!.getAvailableResourceAmount(resourceName)
