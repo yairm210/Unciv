@@ -86,6 +86,11 @@ class City : IsPartOfGameInfoSerialization {
     var isPuppet = false
     var updateCitizens = false  // flag so that on startTurn() the Governor reassigns Citizens
 
+    @delegate:Transient
+    val neighboringCities: List<City> by lazy { 
+        civ.gameInfo.getCities().filter { it != this && it.getCenterTile().aerialDistanceTo(getCenterTile()) <= 8 }.toList()
+    }
+
     var cityAIFocus: String = CityFocus.NoFocus.name
     fun getCityFocus() = CityFocus.values().firstOrNull { it.name == cityAIFocus } ?: CityFocus.NoFocus
     fun setCityFocus(cityFocus: CityFocus){ cityAIFocus = cityFocus.name }
