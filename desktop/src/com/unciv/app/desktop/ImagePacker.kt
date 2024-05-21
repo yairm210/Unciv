@@ -54,7 +54,7 @@ internal object ImagePacker {
 
         // Trying to disable the subdirectory combine lead to even worse results. Don't.
         combineSubdirectories = true
-        pot = true  // powers of two only for width/height
+        pot = true  // powers of two only for width/height, default anyway, repeat for clarity
         fast = true  // with pot on this just sorts by width
         // settings.rotation - do not set. Allows rotation, potentially packing tighter.
         //      Proper rendering is mostly automatic - except borders which overwrite rotation.
@@ -64,7 +64,7 @@ internal object ImagePacker {
         paddingY = 8
         duplicatePadding = true
         filterMin = Texture.TextureFilter.MipMapLinearLinear
-        filterMag = Texture.TextureFilter.MipMapLinearLinear // I'm pretty sure this doesn't make sense for magnification, but setting it to Linear gives strange results
+        filterMag = Texture.TextureFilter.MipMapLinearLinear // This is changed to Linear if the folder name ends in `Icons` - see `suffixUsingLinear`
     }
 
     fun packImages(isRunFromJAR: Boolean) {
@@ -126,7 +126,7 @@ internal object ImagePacker {
             if (File(input).listTree().none {
                 val attr: BasicFileAttributes = Files.readAttributes(it.toPath(), BasicFileAttributes::class.java)
                 val createdAt: Long = attr.creationTime().toMillis()
-                it.extension in imageExtensions
+                    (it.extension in imageExtensions || it.name == "TexturePacker.settings")
                         && (it.lastModified() > atlasModTime || createdAt > atlasModTime)
             }) return
         }
