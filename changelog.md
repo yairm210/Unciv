@@ -1,37 +1,33 @@
 ## 4.11.14
 
-Allow rulesets to forgo capital city indicators entirely! 
-
-Sepcific Exception for starting a game with a starting era not defined in the ruleset (not sure how they managed this)
+Allow rulesets to forgo capital city indicators entirely!
 
 Default city for hexarealm does NOT have a question mark
-
-Copy stacktrace to clipboard when failing to load mods - 
 
 Added ruleset validation for preferred victory type
 
 By SomeTroglodyte:
-- ImagePacker detects changed settings file, improve documentation. 
-- Mod checker reports some problems with texture atlases or their source images 
-- Make stateBasedRandom depend on turn 
+- Mod checker reports some problems with texture atlases or their source images
+- ImagePacker detects changed settings file
+- Make random conditionals depend on turn
 
 By tuvus:
-- Fixed gold ruin not displaying notification 
-- AI worker build roads improvement 
+- Fixed gold ruin not displaying notification
+- AI worker build roads improvement
 
 ## 4.11.13
 
 Barbarian water units no longer pillage
 
 By SomeTroglodyte:
-- Console: tile setowner, civ removepolicy 
-- Fix crash when a starting unit has a random conditional 
-- Espionage icons 
+- Console: tile setowner, civ removepolicy
+- Fix crash when a starting unit has a random conditional
+- Espionage icons
 
 By tuvus:
-- Espionage: Spies can be moved on map 
-- Espionage: City state coup 
-- AI doesn't settle very unfavorable locations 
+- Espionage: Spies can be moved on map
+- Espionage: City state coup
+- AI doesn't settle very unfavorable locations
 
 ## 4.11.12
 
