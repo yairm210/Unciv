@@ -88,7 +88,7 @@ class TechPolicyDiplomacyButtons(val worldScreen: WorldScreen) : Table(BaseScree
         }
 
         if (game.gameInfo!!.isEspionageEnabled()) {
-            espionageButton.add(ImageGetter.getImage("OtherIcons/Spy_White")).size(30f).pad(15f)
+            espionageButton.add(ImageGetter.getImage("OtherIcons/Espionage")).size(30f).pad(15f)
             espionageButtonHolder.onActivation(binding = KeyboardBinding.Espionage) {
                 game.pushScreen(EspionageOverviewScreen(worldScreen.selectedCiv, worldScreen))
             }
