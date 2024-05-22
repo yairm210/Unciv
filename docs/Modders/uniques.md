@@ -348,6 +348,18 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Global, FollowerBelief
 
+??? example  "[stats] from every [tileFilter/specialist/buildingFilter] per every neighboring [tileFilter]"
+	The stat bonus scale with the number of adjacent tiles, up to 6 times
+	Example: "[+1 Gold, +2 Production] from every [Farm] per every neighboring [Farm]"
+
+	Applicable to: Global, FollowerBelief
+
+??? example  "[stats] from every [tileFilter/specialist/buildingFilter] per every neighboring [tileFilter] (from [positiveAmount] to [positiveAmount])"
+	Works similarly as previous unique, but the effect applies when the object is adjacent to at least X tiles, and is capped at following amount
+	Example: "[+1 Gold, +2 Production] from every [Farm] per every neighboring [Farm] (from [3] to [3])"
+
+	Applicable to: Global, FollowerBelief
+
 ??? example  "Military Units gifted from City-States start with [amount] XP"
 	Example: "Military Units gifted from City-States start with [3] XP"
 

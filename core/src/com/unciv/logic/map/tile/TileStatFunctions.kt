@@ -70,6 +70,12 @@ class TileStatFunctions(val tile: Tile) {
             val statsFromObjectsUniques = localUniqueCache.forCityGetMatchingUniques(
                 city, UniqueType.StatsFromObject, stateForConditionals)
 
+            val statsFromObjectUniquesAdjacencyScaled =
+                localUniqueCache.forCityGetMatchingUniques(city, UniqueType.StatsFromObjectAdjacencyScaled, stateForConditionals)
+
+            val statsFromObjectUniquesAdjacencyScaledCapped =
+                localUniqueCache.forCityGetMatchingUniques(city, UniqueType.StatsFromObjectAdjacencyScaledCapped, stateForConditionals)
+
             val statsFromTilesWithoutUniques = localUniqueCache.forCityGetMatchingUniques(
                 city, UniqueType.StatsFromTilesWithout, stateForConditionals)
                 .filter { city.matchesFilter(it.params[3]) && !tile.matchesFilter(it.params[2]) }
@@ -82,6 +88,45 @@ class TileStatFunctions(val tile: Tile) {
                     improvementStats.add(unique.stats)
                 else if (road != null && road.matchesFilter(tileType))
                     roadStats.add(unique.stats)
+            }
+
+            for (unique in statsFromObjectUniquesAdjacencyScaled) {
+                val tileType = unique.params[1]
+                val adjacentTileCount = tile.neighbors.count {
+                    it.matchesFilter(unique.params[2])
+                }
+                if (tile.matchesFilter(tileType, observingCiv, true))
+                    listOfStats.add("{${unique.sourceObjectName}} ({${unique.text}})" to unique.stats * adjacentTileCount)
+                else if (improvement != null && improvement.matchesFilter(tileType))
+                    improvementStats.add(unique.stats * adjacentTileCount)
+                else if (road != null && road.matchesFilter(tileType))
+                    roadStats.add(unique.stats * adjacentTileCount)
+            }
+
+            for (unique in statsFromObjectUniquesAdjacencyScaledCapped) {
+                val tileType = unique.params[1]
+                val adjacentTileCount = tile.neighbors.count {
+                    it.matchesFilter(unique.params[2])
+                }
+                val minTiles = unique.params[3].toInt()
+                val maxTiles = unique.params[4].toInt()
+
+                if (adjacentTileCount in minTiles..maxTiles) {
+                    if (tile.matchesFilter(tileType, observingCiv, true))
+                        listOfStats.add("{${unique.sourceObjectName}} ({${unique.text}})" to unique.stats * adjacentTileCount)
+                    else if (improvement != null && improvement.matchesFilter(tileType))
+                        improvementStats.add(unique.stats * adjacentTileCount)
+                    else if (road != null && road.matchesFilter(tileType))
+                        roadStats.add(unique.stats * adjacentTileCount)
+                }
+                else if (adjacentTileCount > maxTiles) {
+                    if (tile.matchesFilter(tileType, observingCiv, true))
+                        listOfStats.add("{${unique.sourceObjectName}} ({${unique.text}})" to unique.stats * maxTiles)
+                    else if (improvement != null && improvement.matchesFilter(tileType))
+                        improvementStats.add(unique.stats * maxTiles)
+                    else if (road != null && road.matchesFilter(tileType))
+                        roadStats.add(unique.stats * maxTiles)
+                }
             }
         }
 

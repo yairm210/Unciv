@@ -89,6 +89,29 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
             stats.add(unique.stats)
         }
 
+        for (unique in localUniqueCache.forCityGetMatchingUniques(city, UniqueType.StatsFromObjectAdjacencyScaled)) {
+            val adjacentTileCount = city.getCenterTile().neighbors.count {
+                it.matchesFilter(unique.params[2])
+            }
+
+            if (!matchesFilter(unique.params[1])) continue
+            stats.add(unique.stats * adjacentTileCount)
+        }
+
+        for (unique in localUniqueCache.forCityGetMatchingUniques(city, UniqueType.StatsFromObjectAdjacencyScaledCapped)) {
+            val adjacentTileCount = city.getCenterTile().neighbors.count {
+                it.matchesFilter(unique.params[2])
+            }
+
+            if (!matchesFilter(unique.params[1])) continue
+            if (adjacentTileCount in unique.params[3].toInt()..unique.params[4].toInt()) {
+                stats.add(unique.stats * adjacentTileCount)
+            }
+            else if (adjacentTileCount > unique.params[4].toInt()) {
+                stats.add(unique.stats * unique.params[4].toInt())
+            }
+        }
+
         for (unique in getMatchingUniques(UniqueType.Stats, StateForConditionals(city.civ, city)))
             stats.add(unique.stats)
 

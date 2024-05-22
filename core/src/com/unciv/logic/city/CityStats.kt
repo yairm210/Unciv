@@ -172,6 +172,13 @@ class CityStats(val city: City) {
         return growthSources
     }
 
+    private fun getTileCountAdjacentToCity(city: City, tileFilter: String): Int {
+        val tileCount = city.getCenterTile().neighbors.count {
+            it.matchesFilter(tileFilter)
+        }
+        return tileCount
+    }
+
     fun hasExtraAnnexUnhappiness(): Boolean {
         if (city.civ.civName == city.foundingCiv || city.isPuppet) return false
         return !city.containsBuildingUnique(UniqueType.RemoveAnnexUnhappiness)
@@ -187,6 +194,18 @@ class CityStats(val city: City) {
         for (unique in localUniqueCache.forCityGetMatchingUniques(city, UniqueType.StatsFromObject))
             if (unique.params[1] == specialistName)
                 stats.add(unique.stats)
+        for (unique in localUniqueCache.forCityGetMatchingUniques(city, UniqueType.StatsFromObjectAdjacencyScaled))
+            if (unique.params[1] == specialistName)
+                stats.add(unique.stats * getTileCountAdjacentToCity(city, unique.params[2]))
+        for (unique in localUniqueCache.forCityGetMatchingUniques(city, UniqueType.StatsFromObjectAdjacencyScaledCapped))
+            if (unique.params[1] == specialistName) {
+                if (getTileCountAdjacentToCity(city, unique.params[2]) in unique.params[3].toInt()..unique.params[4].toInt()) {
+                    stats.add(unique.stats * getTileCountAdjacentToCity(city, unique.params[2]))
+                }
+                else if (getTileCountAdjacentToCity(city, unique.params[2]) > unique.params[4].toInt()) {
+                    stats.add(unique.stats * unique.params[4].toInt())
+                }
+            }
         return stats
     }
 

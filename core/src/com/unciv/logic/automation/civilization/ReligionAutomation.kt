@@ -193,6 +193,13 @@ object ReligionAutomation {
         cityToBuy.cityConstructions.purchaseConstruction(inquisitorConstruction, -1, true, Stat.Faith)
     }
 
+    private fun getAdjacentTileCount(centerTile: Tile, tileFilter: String): Int {
+        val tileCount = centerTile.neighbors.count {
+            it.matchesFilter(tileFilter)
+        }
+        return tileCount
+    }
+
     // endregion
 
     // region rate beliefs
@@ -229,6 +236,13 @@ object ReligionAutomation {
             when (unique.type) {
                 UniqueType.StatsFromObject -> if (tile.matchesFilter(unique.params[1]))
                     bonusYield += unique.stats.values.sum()
+                UniqueType.StatsFromObjectAdjacencyScaled -> if (tile.matchesFilter(unique.params[1]))
+                    bonusYield += unique.stats.values.sum() * getAdjacentTileCount(tile, unique.params[2])
+                UniqueType.StatsFromObjectAdjacencyScaledCapped -> if (tile.matchesFilter(unique.params[1]))
+                    if (getAdjacentTileCount(tile, unique.params[2]) in unique.params[3].toInt()..unique.params[4].toInt())
+                        bonusYield += unique.stats.values.sum() * getAdjacentTileCount(tile, unique.params[2])
+                    else if (getAdjacentTileCount(tile, unique.params[2]) > unique.params[4].toInt())
+                        bonusYield += unique.stats.values.sum() * unique.params[4].toInt()
                 UniqueType.StatsFromTilesWithout ->
                     if (city.matchesFilter(unique.params[3])
                         && tile.matchesFilter(unique.params[1])
@@ -273,6 +287,52 @@ object ReligionAutomation {
                             unique.stats.values.sum() *
                                 if (city.population.population > 8f) 3f
                                 else 1f
+                        }
+                        else -> 0f
+                    }
+                UniqueType.StatsFromObjectAdjacencyScaled ->
+                    when {
+                        ruleSet.buildings.containsKey(unique.params[1]) -> {
+                            unique.stats.values.sum() * getAdjacentTileCount(city.getCenterTile(), unique.params[2]) /
+                                if (ruleSet.buildings[unique.params[1]]!!.isWonder) 2f
+                                else 1f
+                        }
+                        ruleSet.specialists.containsKey(unique.params[1]) -> {
+                            unique.stats.values.sum() * getAdjacentTileCount(city.getCenterTile(), unique.params[2]) *
+                                if (city.population.population > 8f) 3f
+                                else 1f
+                        }
+                        else -> 0f
+                    }
+                UniqueType.StatsFromObjectAdjacencyScaledCapped ->
+                    when {
+                        ruleSet.buildings.containsKey(unique.params[1]) -> {
+                            if (getAdjacentTileCount(city.getCenterTile(), unique.params[2]) in unique.params[3].toInt()..unique.params[4].toInt()) {
+                                unique.stats.values.sum() * getAdjacentTileCount(city.getCenterTile(), unique.params[2]) /
+                                    if (ruleSet.buildings[unique.params[1]]!!.isWonder) 2f
+                                    else 1f
+                            }
+                            else if (getAdjacentTileCount(city.getCenterTile(), unique.params[2]) > unique.params[4].toInt()) {
+                                unique.stats.values.sum() * unique.params[4].toInt() /
+                                    if (ruleSet.buildings[unique.params[1]]!!.isWonder) 2f
+                                    else 1f
+                            } else {
+                                return 0f
+                            }
+                        }
+                        ruleSet.specialists.containsKey(unique.params[1]) -> {
+                            if (getAdjacentTileCount(city.getCenterTile(), unique.params[2]) in unique.params[3].toInt()..unique.params[4].toInt()) {
+                                unique.stats.values.sum() * getAdjacentTileCount(city.getCenterTile(), unique.params[2]) /
+                                    if (city.population.population > 8f) 3f
+                                    else 1f
+                            }
+                            else if (getAdjacentTileCount(city.getCenterTile(), unique.params[2]) > unique.params[4].toInt()) {
+                                unique.stats.values.sum() * unique.params[4].toInt() /
+                                    if (city.population.population > 8f) 3f
+                                    else 1f
+                            } else {
+                                return 0f
+                            }
                         }
                         else -> 0f
                     }
