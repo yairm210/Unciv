@@ -62,9 +62,9 @@ enum class UniqueType(
     // endregion Stat providing uniques
 
     // region Adjacency-Scaled Stat providing uniques
-    StatsFromObjectAdjacencyScaled("[stats] from every [tileFilter/specialist/buildingFilter] per every neighboring [tileFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief,
+    StatsFromObjectAdjacencyScaled("[stats] from every [tileFilter/specialist/buildingFilter] per every neighboring [tileFilter] tile", UniqueTarget.Global, UniqueTarget.FollowerBelief,
         docDescription = "The stat bonus scale with the number of adjacent tiles, up to 6 times"),
-    StatsFromObjectAdjacencyScaledCapped("[stats] from every [tileFilter/specialist/buildingFilter] per every neighboring [tileFilter] (from [positiveAmount] to [positiveAmount])", UniqueTarget.Global, UniqueTarget.FollowerBelief,
+    StatsFromObjectAdjacencyScaledCapped("[stats] from every [tileFilter/specialist/buildingFilter] per every neighboring [tileFilter] tile (from [positiveAmount] to [positiveAmount])", UniqueTarget.Global, UniqueTarget.FollowerBelief,
         docDescription = "Works similarly as previous unique, but the effect applies when the object is adjacent to at least X tiles, and is capped at following amount"),
 
     // endregion Adjacency-Scaled Stat providing uniques
