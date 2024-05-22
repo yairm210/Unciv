@@ -60,6 +60,18 @@ class ConsoleCivCommands : ConsoleCommandNode {
                 civ.policies.adopt(policy)
                 DevConsoleResponse.OK
             }
-        }
+        },
+
+        "removepolicy" to ConsoleAction("civ removepolicy <civName> <policyName>")  { console, params ->
+            val civ = console.getCivByName(params[0])
+            val policy = console.findCliInput<Policy>(params[1])
+                ?: throw ConsoleErrorException("Unrecognized policy")
+            if (!civ.policies.isAdopted(policy.name))
+                DevConsoleResponse.hint("${civ.civName} does not have ${policy.name}")
+            else {
+                civ.policies.removePolicy(policy, assumeWasFree = true) // See UniqueType.OneTimeRemovePolicy
+                DevConsoleResponse.OK
+            }
+        },
     )
 }

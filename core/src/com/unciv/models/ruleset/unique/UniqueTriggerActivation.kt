@@ -303,7 +303,7 @@ object UniqueTriggerActivation {
                 if (policiesToRemove.isEmpty()) return null
 
                 return {
-                    for (policy in policiesToRemove){
+                    for (policy in policiesToRemove) {
                         civInfo.policies.removePolicy(policy)
 
                         val notificationText = getNotificationText(

@@ -1,6 +1,7 @@
 package com.unciv.logic.automation.unit
 
 import com.unciv.logic.civilization.Civilization
+import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.models.Spy
 import com.unciv.models.SpyAction
 import kotlin.random.Random
@@ -48,6 +49,7 @@ class EspionageAutomation(val civInfo: Civilization) {
             val randomCity = civInfo.gameInfo.getCities().filter { spy.canMoveTo(it) }.toList().randomOrNull()
             spy.moveTo(randomCity)
         }
+        spies.forEach { checkIfShouldStageCoup(it) }
     }
 
     /**
@@ -78,5 +80,17 @@ class EspionageAutomation(val civInfo: Civilization) {
     private fun automateSpyCounterInteligence(spy: Spy): Boolean {
         spy.moveTo(civInfo.cities.filter { spy.canMoveTo(it) }.randomOrNull())
         return spy.action == SpyAction.CounterIntelligence
+    }
+    
+    private fun checkIfShouldStageCoup(spy: Spy) {
+        if (!spy.canDoCoup()) return
+        if (spy.getCoupChanceOfSuccess(false) < .7) return
+        val allyCiv = spy.getCity().civ.getAllyCiv()?.let { civInfo.gameInfo.getCivilization(it) }
+        // Don't coup ally city-states
+        if (allyCiv != null && civInfo.getDiplomacyManager(allyCiv).isRelationshipLevelGE(RelationshipLevel.Friend)) return
+        val spies = civInfo.espionageManager.spyList
+        val randomSeed = spies.size + spies.indexOf(spy) + civInfo.gameInfo.turns
+        val randomAction = Random(randomSeed).nextInt(100)
+        if (randomAction < 20) spy.setAction(SpyAction.Coup, 1)
     }
 }

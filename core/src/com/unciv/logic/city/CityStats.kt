@@ -95,9 +95,9 @@ class CityStats(val city: City) {
 
     private fun getStatsFromTradeRoute(): Stats {
         val stats = Stats()
-        if (!city.isCapital() && city.isConnectedToCapital()) {
-            val civInfo = city.civ
-            stats.gold = civInfo.getCapital()!!.population.population * 0.15f + city.population.population * 1.1f - 1 // Calculated by http://civilization.wikia.com/wiki/Trade_route_(Civ5)
+        val capitalForTradeRoutePurposes = city.civ.getCapital()!!
+        if (city != capitalForTradeRoutePurposes && city.isConnectedToCapital()) {
+            stats.gold = capitalForTradeRoutePurposes.population.population * 0.15f + city.population.population * 1.1f - 1 // Calculated by http://civilization.wikia.com/wiki/Trade_route_(Civ5)
             for (unique in city.getMatchingUniques(UniqueType.StatsFromTradeRoute))
                 stats.add(unique.stats)
             val percentageStats = Stats()
@@ -285,9 +285,7 @@ class CityStats(val city: City) {
                 ))
 
         if (currentConstruction is Building
-            && city.civ.cities.isNotEmpty()
-            && city.civ.getCapital() != null
-            && city.civ.getCapital()!!.cityConstructions.isBuilt(currentConstruction.name)
+            && city.civ.getCapital()?.cityConstructions?.isBuilt(currentConstruction.name) == true
         ) {
             for (unique in city.getMatchingUniques(UniqueType.PercentProductionBuildingsInCapital))
                 addUniqueStats(unique, Stat.Production, unique.params[0].toFloat())
@@ -320,6 +318,12 @@ class CityStats(val city: City) {
                     roadTypes.any { it.contains(RoadStatus.Railroad.name) }
                 }
             else city.isConnectedToCapital()
+    }
+
+    fun getRoadTypeOfConnectionToCapital(): RoadStatus {
+        return if (isConnectedToCapital(RoadStatus.Railroad)) RoadStatus.Railroad
+        else if (isConnectedToCapital(RoadStatus.Road)) RoadStatus.Road
+        else RoadStatus.None
     }
 
     private fun getBuildingMaintenanceCosts(): Float {

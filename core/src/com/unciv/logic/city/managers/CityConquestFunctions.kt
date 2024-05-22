@@ -182,7 +182,8 @@ class CityConquestFunctions(val city: City) {
 
         if (foundingCiv.cities.size == 1) {
             // Resurrection!
-            city.cityConstructions.addBuilding(city.capitalCityIndicator())
+            val capitalCityIndicator = city.capitalCityIndicator()
+            if (capitalCityIndicator != null) city.cityConstructions.addBuilding(capitalCityIndicator)
             for (civ in city.civ.gameInfo.civilizations) {
                 if (civ == foundingCiv || civ == conqueringCiv) continue // don't need to notify these civs
                 when {

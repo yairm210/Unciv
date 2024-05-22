@@ -30,9 +30,9 @@ class PolicyManager : IsPartOfGameInfoSerialization {
     var freePolicies = 0
     var storedCulture = 0
     internal val adoptedPolicies = HashSet<String>()
-    var numberOfAdoptedPolicies = 0
+    private var numberOfAdoptedPolicies = 0
 
-    var cultureOfLast8Turns = IntArray(8) { 0 }
+    private var cultureOfLast8Turns = IntArray(8) { 0 }
 
     /** Indicates whether we should *check* if policy is adoptible, and if so open */
     var shouldOpenPolicyPicker = false
@@ -255,11 +255,22 @@ class PolicyManager : IsPartOfGameInfoSerialization {
         if (!canAdoptPolicy()) shouldOpenPolicyPicker = false
     }
 
-    fun removePolicy(policy: Policy, branchCompletion: Boolean = false) {
-        if (!branchCompletion)
-            numberOfAdoptedPolicies--
+    /**
+     * @param branchCompletion Internal! Do not use in normal calls (used to recursively remove the "complete" object too)
+     * @param assumeWasFree If set, removal does not touch culture progression (numberOfAdoptedPolicies not decremented)
+     * @throws IllegalStateException when the given Policy is not adopted or when the removal would leave numberOfAdoptedPolicies negative
+     */
+    // Note: A policy gained as a free one is not marked as such, therefore we need the parameter
+    // Note: a negative numberOfAdoptedPolicies would later throw in getCultureNeededForNextPolicy: -1.pow() gives NaN, which throws on toInt... Autosaved!
+    fun removePolicy(policy: Policy, branchCompletion: Boolean = false, assumeWasFree: Boolean = false) {
+        if (!adoptedPolicies.remove(policy.name))
+            throw IllegalStateException("Attempt to remove non-adopted Policy ${policy.name}")
 
-        adoptedPolicies.remove(policy.name)
+        if (!assumeWasFree) {
+            if (--numberOfAdoptedPolicies < 0)
+                throw IllegalStateException("Attempt to remove Policy ${policy.name} but civ only has free policies left")
+        }
+
         removePolicyFromTransients(policy)
 
         // if a branch is already marked as complete, revert it to incomplete
