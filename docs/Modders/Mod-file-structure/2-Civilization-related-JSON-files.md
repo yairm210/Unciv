@@ -83,12 +83,20 @@ Each nation has the following structure:
 | cities               | List                                                                | empty    | City names used sequentially for newly founded cities. Required for major civilizations and city states                                         |
 | civilopediaText      | List                                                                | empty    | See [civilopediaText chapter](5-Miscellaneous-JSON-files.md#civilopedia-text)                                                                   |
 
-[^S]: A "Coast" preference (_unless_ combined with "Avoid") is translated to a complex test for coastal land tiles, tiles next to Lakes, river tiles or near-river tiles, and such civs are processed first. Other startBias entries are ignored in that case.
-      Other positive (no "Avoid") startBias are processed next. Multiple positive preferences are treated equally, but get no "fallback".
-      Single positive startBias can get a "fallback" region if there is no (or no more) region with that primary type: any leftover region with as much of the specified terrain as possible will do.
-      Multiple "Avoid" entries are treated equally (and reduce chance for success - if no region is left avoiding _all_ specified types that civ gets a random one).
-      When combining preferred terrain with "Avoid", the latter takes precedence, and preferred terrain only has minor weight when choosing between regions that are not of a type to avoid.
-      These notes are __only__ valid when playing on generated maps, loaded maps from map editor get no "regions" and startBias is processed differently (but you can expect single-entry startBias to work best).
+[^S]: A "Coast" preference (_unless_ combined with "Avoid") is translated to a complex test for
+coastal land tiles, tiles next to Lakes, river tiles or near-river tiles, and such civs are
+processed first. Other startBias entries are ignored in that case.
+Other positive (no "Avoid") startBias are processed next. Multiple positive preferences are treated
+equally, but get no "fallback".
+Single positive startBias can get a "fallback" region if there is no (or no more) region with that
+primary type: any leftover region with as much of the specified terrain as possible will do.
+Multiple "Avoid" entries are treated equally (and reduce chance for success - if no region is left
+avoiding _all_ specified types that civ gets a random one).
+When combining preferred terrain with "Avoid", the latter takes precedence, and preferred terrain
+only has minor weight when choosing between regions that are not of a type to avoid.
+These notes are __only__ valid when playing on generated maps, loaded maps from map editor get no "
+regions" and startBias is processed differently (but you can expect single-entry startBias to work
+best).
 [^V]: See [Supply Leader Voices](../../Images-and-Audio.md#supply-leader-voices)
 
 ## Personalities.json
@@ -97,20 +105,23 @@ This file contains all Personalities for computer players.
 
 Each personality has the following structure:
 
-| Attribute                                             | Type   | Default  | Notes                                                                                                                                           |
-|-------------------------------------------------------|--------|----------|-------------------------------------------------------------------------------------------------------------------------------------------------|
-| name                                                  | String | Required |                                                                                                                                                 |
-| preferredVictoryType                                  | String | Neutral  | The victory type major civilizations will pursue (need not be specified in [VictoryTypes.json](5-Miscellaneous-JSON-files.md#victorytypesjson)) |
-| [`<stats>`](3-Map-related-JSON-files.md#general-stat) | Float  | 5        | Amount of focus on the stat the computer player will have. Typically ranges from 0 (no focus) to 10 (double focus)                              |
-| military                                              | Float  | 5        | Amount of focus on the military growth the computer player will have. Typically ranges from 0 (no focus) to 10 (double focus)                   |
-| priorities                                            | Object | none     | Priorities for each policy branch [^B]                                                                                                          |
-| uniques                                               | List   | empty    | List of [unique abilities](../../uniques) this personality has                                                                                  |
-| civilopediaText                                       | List   | empty    | See [civilopediaText chapter](5-Miscellaneous-JSON-files.md#civilopedia-text)                                                                   |
-| warMongering                                          | Float  | 5        | Amount of focus on declaring war the computer player will have. Typically ranges from 0 (no focus) to 10 (double focus)                         |
+| Attribute                                                                                                                  | Type   | Default  | Notes                                                                                                                                           |
+|----------------------------------------------------------------------------------------------------------------------------|--------|----------|-------------------------------------------------------------------------------------------------------------------------------------------------|
+| name                                                                                                                       | String | Required |                                                                                                                                                 |
+| preferredVictoryType                                                                                                       | String | Neutral  | The victory type major civilizations will pursue (need not be specified in [VictoryTypes.json](5-Miscellaneous-JSON-files.md#victorytypesjson)) |
+| [`<stats>`](3-Map-related-JSON-files.md#general-stat), [`<behaviors>`](3-Map-related-JSON-files.md#personality-behaviours) | Float  | 5        | Amount of focus on the stat the computer player will have. Typically ranges from 0 (no focus) to 10 (double focus)                              |
+| priorities                                                                                                                 | Object | none     | Priorities for each policy branch [^B]                                                                                                          |
+| uniques                                                                                                                    | List   | empty    | List of [unique abilities](../../uniques) this personality has                                                                                  |
+| civilopediaText                                                                                                            | List   | empty    | See [civilopediaText chapter](5-Miscellaneous-JSON-files.md#civilopedia-text)                                                                   |
+| warMongering                                                                                                               | Float  | 5        | Amount of focus on declaring war the computer player will have. Typically ranges from 0 (no focus) to 10 (double focus)                         |
 
-[^B]: Similar to [policy priorites](#branch-priorities) The "priorities" object defines the priority major civilizations' AI give to a policy branch. The AI chooses the policy branch with the highest number for their preferred victory type. If two or more candidate branches have the same priority, the AI chooses a random branch among the candidates.
+[^B]: Similar to [policy priorites](#branch-priorities) The "priorities" object defines the priority
+major civilizations' AI give to a policy branch. The AI chooses the policy branch with the highest
+number for their preferred victory type. If two or more candidate branches have the same priority,
+the AI chooses a random branch among the candidates.
 
-The object maps policy branches to priority values for the major civilization using the policy branches name and integers. Any branches not listed have a default value of 0
+The object maps policy branches to priority values for the major civilization using the policy
+branches name and integers. Any branches not listed have a default value of 0
 
 The code below is an example of a valid "priorities" definition.
 
@@ -122,11 +133,33 @@ The code below is an example of a valid "priorities" definition.
 }
 ```
 
+### Personality Behaviours
+
+Personality Behaviours are not implemented yet and their names may change. Using them before they
+are ready might make the mod unplayable.
+[//]: # (There are 6 defining behaviours that influnce an AI Civilization's behaviour. A higher
+value means they will behave more like the attribute.)
+
+
+[//]: # (- Military: Determines how much does the civilization prioritizes building a military, but not necessarily using it. A higher value means more focus on military, a lower value means it is likely more peaceful.)
+
+[//]: # (- Agressive: Determines how likely the civilization is to declare war. A higher value means the civilization is more aggressive, a lower value means it is more defensive.)
+
+[//]: # (- Commerce: Determines how open the civilization is to trade, value open borders, and liberate city-states. A higher value means more trading frequency even with civilizations they don't like.)
+
+[//]: # (- Diplomacy: Determines how likely the civilization is to declare friendship, a defensive pact, peace treaty, or other diplomatic actions.)
+
+[//]: # (- Loyal: Determines how much the civilization values a long-lasting alliance, how willing they are to join wars with them, and how much they despise other unreliable civilizations.)
+
+[//]: # (- Expansion: Determines how focused the civilization is on founding or capturing new cities. A lower value means they might focus on culture more.)
+
 ## CityStateTypes.json
 
 [Link to original](https://github.com/yairm210/Unciv/blob/master/android/assets/jsons/Civ%20V%20-%20Gods%20%26%20Kings/CityStateTypes.json)
 
-This optional file is used for defining new types of city states. These types determine the benefits major civilizations gets when they befriend or ally the city state with influence. If the file is ommitted, the following are automatically added:
+This optional file is used for defining new types of city states. These types determine the benefits
+major civilizations gets when they befriend or ally the city state with influence. If the file is
+ommitted, the following are automatically added:
 Cultured, Maritime, Mercantile, Militaristic, Religious.
 
 Each city state type has the following structure:
@@ -144,9 +177,12 @@ Each city state type has the following structure:
 
 This file contains all the available social policies that can be "bought" with culture.
 
-They are organized in 'branches', each branch has an 'opener', one or more 'member' policies, and a 'finisher'. Therefore this file is organized using two levels - branch and member policy.
+They are organized in 'branches', each branch has an 'opener', one or more 'member' policies, and
+a 'finisher'. Therefore this file is organized using two levels - branch and member policy.
 
-The properties of the 'opener' are defined with the branch level, while the 'finisher' is an entry on the member level which _must_ be named as `branch name + " Complete"`, case sensitive. For example, the finisher of a policy branch "Tradition" will have the name "Tradition Complete".
+The properties of the 'opener' are defined with the branch level, while the 'finisher' is an entry
+on the member level which _must_ be named as `branch name + " Complete"`, case sensitive. For
+example, the finisher of a policy branch "Tradition" will have the name "Tradition Complete".
 
 ### Branch structure
 
@@ -179,19 +215,23 @@ Each policy branch has the following structure:
 
 ### Branch priorities
 
-The "priorities" object defines the priority major civilizations' AI give to a policy branch. The AI chooses the policy branch with the highest sum of the peferred victory type listed here and the number flisted in the personality's priority. If two or more candidate branches have the same priority, the AI chooses a random branch among the candidates.
+The "priorities" object defines the priority major civilizations' AI give to a policy branch. The AI
+chooses the policy branch with the highest sum of the peferred victory type listed here and the
+number flisted in the personality's priority. If two or more candidate branches have the same
+priority, the AI chooses a random branch among the candidates.
 
-The object maps victory types to priority values for the major civilization using strings and integers. If the preferred victory type is not specified, the default priority value is set to 0.
+The object maps victory types to priority values for the major civilization using strings and
+integers. If the preferred victory type is not specified, the default priority value is set to 0.
 
 The code below is an example of a valid "priorities" definition.
 
 ```json
 "priorities": {
-    "Neutral": 0,
-    "Cultural": 10,
-    "Diplomatic": 0,
-    "Domination": 0,
-    "Scientific": 10
+"Neutral": 0,
+"Cultural": 10,
+"Diplomatic": 0,
+"Domination": 0,
+"Scientific": 10
 }
 ```
 
@@ -215,7 +255,10 @@ Each quest has the following structure:
 
 ### Quest name
 
-The name of the quest defines the criteria for the quest. If they are not defined in the predefined enum, they will have no behavior. In the description, square brackets `[]` in the description of the quest is replaced with extra information (except for `Invest`). The list of predefined quest names are as follows:
+The name of the quest defines the criteria for the quest. If they are not defined in the predefined
+enum, they will have no behavior. In the description, square brackets `[]` in the description of the
+quest is replaced with extra information (except for `Invest`). The list of predefined quest names
+are as follows:
 
 | Name                  | Criteria                                                                            | Additional info                                                                                  |
 |-----------------------|-------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------|
@@ -239,17 +282,23 @@ The name of the quest defines the criteria for the quest. If they are not define
 
 ### Quest weight
 
-The "weightForCityStateType" object determines the quest's weight multiplier. When a city state initiates a quest, the initial weight is 1, and it is multiplied by values based on [city state type](#citystatetypesjson) and personality (Friendly, Neutral, Hostile, Irrational). The AI then randomly selects a quest based on the final weighted values.
+The "weightForCityStateType" object determines the quest's weight multiplier. When a city state
+initiates a quest, the initial weight is 1, and it is multiplied by values based
+on [city state type](#citystatetypesjson) and personality (Friendly, Neutral, Hostile, Irrational).
+The AI then randomly selects a quest based on the final weighted values.
 
-The object maps city state type and personality to the weight multipliers for the city state using strings to floats. If the preferred victory type is not found, the default multiplier is 1.
+The object maps city state type and personality to the weight multipliers for the city state using
+strings to floats. If the preferred victory type is not found, the default multiplier is 1.
 
-The code below is an example of a valid "weightForCityStateType" definition. In this case, a friendly militaristic city state will be 0.4 (0.2 × 2) times as likely to pick this quest than a quest with weight 1.
+The code below is an example of a valid "weightForCityStateType" definition. In this case, a
+friendly militaristic city state will be 0.4 (0.2 × 2) times as likely to pick this quest than a
+quest with weight 1.
 
 ```json
 "weightForCityStateType": {
-    "Hostile": 2,
-    "Friendly": 0.2,
-    "Militaristic": 2
+"Hostile": 2,
+"Friendly": 0.2,
+"Militaristic": 2
 }
 ```
 
@@ -257,7 +306,8 @@ The code below is an example of a valid "weightForCityStateType" definition. In 
 
 [Link to original](https://github.com/yairm210/Unciv/tree/master/android/assets/jsons/Civ%20V%20-%20Gods%20&%20Kings/Religions.json)
 
-This is just a list of Strings specifying all predefined religion names. Corresponding icons must exist, that's all to it. After all, they're just containers for [beliefs](#beliefsjson).
+This is just a list of Strings specifying all predefined religion names. Corresponding icons must
+exist, that's all to it. After all, they're just containers for [beliefs](#beliefsjson).
 
 ## Specialists.json
 
@@ -278,7 +328,8 @@ Each specialist has the following structure:
 
 [Link to original](https://github.com/yairm210/Unciv/blob/master/android/assets/jsons/Civ%20V%20-%20Gods%20%26%20Kings/Techs.json)
 
-This file contains all the technologies that can be researched with science. It is organized into an outer list of 'columns', which in turn contains one or more tech each.
+This file contains all the technologies that can be researched with science. It is organized into an
+outer list of 'columns', which in turn contains one or more tech each.
 
 ### Column structure
 
