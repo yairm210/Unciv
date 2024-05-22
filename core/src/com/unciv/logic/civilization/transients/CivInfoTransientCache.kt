@@ -325,7 +325,7 @@ class CivInfoTransientCache(val civInfo: Civilization) {
             civInfo.cities.filter { it.connectedToCapitalStatus != City.ConnectedToCapitalStatus.`false` }
         else citiesConnectedToCapitalToMediums.keys
 
-        citiesConnectedToCapitalToMediums = if(civInfo.getCapital() == null) mapOf()
+        citiesConnectedToCapitalToMediums = if (civInfo.getCapital() == null) mapOf()
         else CapitalConnectionsFinder(civInfo).find()
 
         val newConnectedCities = citiesConnectedToCapitalToMediums.keys
@@ -448,7 +448,7 @@ class CivInfoTransientCache(val civInfo: Civilization) {
 
         // Check if different continents (unless already max distance, or water map)
         if (connections > 0 && proximity != Proximity.Distant && !civInfo.gameInfo.tileMap.isWaterMap()
-                && civInfo.getCapital(true)!!.getCenterTile().getContinent() != otherCiv.getCapital(true)!!.getCenterTile().getContinent()
+                && civInfo.getCapital()!!.getCenterTile().getContinent() != otherCiv.getCapital()!!.getCenterTile().getContinent()
         ) {
             // Different continents - increase separation by one step
             proximity = when (proximity) {

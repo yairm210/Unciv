@@ -340,7 +340,7 @@ class Civilization : IsPartOfGameInfoSerialization {
     fun knows(otherCivName: String) = diplomacy.containsKey(otherCivName)
     fun knows(otherCiv: Civilization) = knows(otherCiv.civName)
 
-    fun getCapital(firstCityIfNoCapital: Boolean = false) = cities.firstOrNull { it.isCapital() } ?:
+    fun getCapital(firstCityIfNoCapital: Boolean = true) = cities.firstOrNull { it.isCapital() } ?:
         if (firstCityIfNoCapital) cities.firstOrNull() else null
     fun isHuman() = playerType == PlayerType.Human
     fun isAI() = playerType == PlayerType.AI
@@ -906,9 +906,10 @@ class Civilization : IsPartOfGameInfoSerialization {
      */
     fun moveCapitalTo(city: City?, oldCapital: City?) {
         // Add new capital first so the civ doesn't get stuck in a state where it has cities but no capital
-        if (city != null) {
+        val newCapitalIndicator = city?.capitalCityIndicator()
+        if (newCapitalIndicator != null) {
             // move new capital
-            city.cityConstructions.addBuilding(city.capitalCityIndicator())
+            city.cityConstructions.addBuilding(newCapitalIndicator)
             city.isBeingRazed = false // stop razing the new capital if it was being razed
 
             // move the buildings with MovedToNewCapital unique
@@ -924,7 +925,9 @@ class Civilization : IsPartOfGameInfoSerialization {
                 for (building in buildingsToMove) city.cityConstructions.addBuilding(building)
             }
         }
-        oldCapital?.cityConstructions?.removeBuilding(oldCapital.capitalCityIndicator())
+
+        val oldCapitalIndicator = oldCapital?.capitalCityIndicator()
+        if (oldCapitalIndicator != null) oldCapital.cityConstructions.removeBuilding(oldCapitalIndicator)
     }
 
     /** @param oldCapital `null` when destroying, otherwise old capital */

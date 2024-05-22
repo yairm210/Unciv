@@ -292,6 +292,7 @@ class ModManagementScreen private constructor(
                     ToastPopup("Could not download mod list", this@ModManagementScreen)
                     replaceLoadingWithOptions()
                 }
+                Gdx.app.clipboard.contents = ex.stackTraceToString()
                 runningSearchJob = null
                 return@run
             }
