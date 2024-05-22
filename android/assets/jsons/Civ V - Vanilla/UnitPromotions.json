@@ -585,5 +585,9 @@
 	{
 		"name": "[Zero] ability",
 		"uniques": ["[+33]% Strength <vs [Fighter] units>"]
+	},
+	{	// For barbarian water units
+		"name": "Unable to pillage tiles",
+		"uniques": ["Unable to pillage tiles"]
 	}
 ]

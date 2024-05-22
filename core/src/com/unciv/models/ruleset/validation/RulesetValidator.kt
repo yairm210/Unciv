@@ -571,6 +571,9 @@ class RulesetValidator(val ruleset: Ruleset) {
             lines.add("${nation.name} can settle cities, but has no city names!", sourceObject = nation)
         }
 
+        if (nation.preferredVictoryType != Constants.neutralVictoryType && nation.preferredVictoryType !in ruleset.victories)
+            lines.add("${nation.name}'s preferredVictoryType is ${nation.preferredVictoryType} which does not exist!", sourceObject = nation)
+
         // https://www.w3.org/TR/WCAG20/#visual-audio-contrast-contrast
         val constrastRatio = nation.getContrastRatio()
         if (constrastRatio < 3) {
