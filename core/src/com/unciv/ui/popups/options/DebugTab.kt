@@ -75,13 +75,6 @@ fun debugTab(
         MapSaver.saveZipped = it
     }).colspan(2).row()
 
-    if (GUI.keyboardAvailable) {
-        add("Show keyboard bindings".toCheckBox(optionsPopup.enableKeyBindingsTab) {
-            optionsPopup.enableKeyBindingsTab = it
-            optionsPopup.showOrHideKeyBindings()
-        }).colspan(2).row()
-    }
-
     add("Gdx Scene2D debug".toCheckBox(BaseScreen.enableSceneDebug) {
         BaseScreen.enableSceneDebug = it
     }).colspan(2).row()
