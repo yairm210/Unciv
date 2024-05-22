@@ -114,7 +114,7 @@ class OptionsPopup(
 
         tabs.addPage(
             "Advanced",
-            advancedTab(this, ::reloadWorldAndOptions),
+            AdvancedTab(this, ::reloadWorldAndOptions),
             ImageGetter.getImage("OtherIcons/Settings"), 24f
         )
 
@@ -129,9 +129,9 @@ class OptionsPopup(
         tabs.decorateHeader(getCloseButton {
             screen.game.musicController.onChange(null)
             center(screen.stage)
-            keyBindingsTab?.save()
+            tabs.selectPage(-1, false)
             settings.save()
-            onClose() // activate the passed 'on close' button
+            onClose() // activate the passed 'on close' callback
             close() // close this popup
         })
 

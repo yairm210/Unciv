@@ -28,9 +28,10 @@ object UncivTextField {
     /**
      * Creates a text field that has nicer platform-specific input added compared to the default gdx [TextField].
      * @param hint The text that should be displayed in the text field when no text is entered, will automatically be translated
-     * @param preEnteredText the text already entered within this text field. Supported on all platforms.
+     * @param preEnteredText The text already entered within this text field. Supported on all platforms.
+     * @param onFocusChange This will be called every time the field receives or loses focus. Receiver is the field, so you can simply use its elements. Parameter `it` is a Boolean indicating focus was received.
      */
-    fun create(hint: String, preEnteredText: String = "", onFocusChange: ((Boolean) -> Unit)? = null): TextField {
+    fun create(hint: String, preEnteredText: String = "", onFocusChange: (TextField.(Boolean) -> Unit)? = null): TextField {
         @Suppress("UNCIV_RAW_TEXTFIELD")
         val textField = TextField(preEnteredText, BaseScreen.skin)
         val translatedHint = hint.tr()
@@ -40,7 +41,7 @@ object UncivTextField {
                 if (focused) {
                     textField.scrollAscendantToTextField()
                 }
-                onFocusChange?.invoke(focused)
+                onFocusChange?.invoke(textField, focused)
             }
         })
 

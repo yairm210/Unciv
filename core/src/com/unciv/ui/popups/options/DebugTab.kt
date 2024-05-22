@@ -138,7 +138,7 @@ fun debugTab(
                 optionsPopup.game.loadGame(loadedGame, callFromLoadScreen =  true)
                 optionsPopup.close()
             } catch (ex: Exception) {
-                ToastPopup(ex.message ?: ex::class.java.simpleName, optionsPopup.stageToShowOn).open(true)
+                ToastPopup(ex.message ?: ex::class.java.simpleName, optionsPopup.stageToShowOn)
             }
         }
     }).colspan(2).row()
