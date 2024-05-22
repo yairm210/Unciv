@@ -425,7 +425,7 @@
         "name": "Keyboard Bindings",
         "civilopediaText": [
             {"text":"Limitations","header":3},
-            {"text":"This is a work in progress.","color":"#b22222","starred":true},
+            {"text":"This is a work in progress.","color":"FIREBRICK","starred":true},
             {"text":"For technical reasons, only direct keys or Ctrl-Letter combinations can be used.","starred":true},
             {},
             {"text":"Using the Keys page","header":3},
