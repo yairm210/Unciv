@@ -99,21 +99,7 @@ object MotivationToAttackAutomation {
         // Short-circuit to avoid expensive BFS
         if (motivationSoFar < atLeast) return motivationSoFar
 
-        val landPathBFS = BFS(ourCity.getCenterTile()) {
-            it.isLand && isTileCanMoveThrough(it)
-        }
-
-        landPathBFS.stepUntilDestination(theirCity.getCenterTile())
-        if (!landPathBFS.hasReachedTile(theirCity.getCenterTile()))
-            motivationSoFar -= -10
-
-        // Short-circuit to avoid expensive BFS
-        if (motivationSoFar < atLeast) return motivationSoFar
-
-        val reachableEnemyCitiesBfs = BFS(civInfo.getCapital(true)!!.getCenterTile()) { isTileCanMoveThrough(it) }
-        reachableEnemyCitiesBfs.stepToEnd()
-        val reachableEnemyCities = otherCiv.cities.filter { reachableEnemyCitiesBfs.hasReachedTile(it.getCenterTile()) }
-        if (reachableEnemyCities.isEmpty()) return 0 // Can't even reach the enemy city, no point in war.
+        motivationSoFar += getAttackPathsModifier(civInfo, otherCiv, targetCitiesWithOurCity)
 
         return motivationSoFar
     }
@@ -264,4 +250,47 @@ object MotivationToAttackAutomation {
         damageReceivedWhenAttacking < 100
     }
 
+    private fun getAttackPathsModifier(civInfo: Civilization, otherCiv: Civilization, targetCitiesWithOurCity: List<Pair<City, City>>): Int {
+
+        fun isTileCanMoveThrough(civInfo: Civilization, tile: Tile): Boolean {
+            val owner = tile.getOwner()
+            return !tile.isImpassible()
+                    && (owner == otherCiv || owner == null || civInfo.diplomacyFunctions.canPassThroughTiles(owner))
+        }
+
+        fun isLandTileCnaMoveThrough(civInfo: Civilization, tile: Tile): Boolean {
+            return tile.isLand && isTileCanMoveThrough(civInfo, tile)
+        }
+
+        val attackPaths: MutableList<List<Tile>> = mutableListOf()
+        var attackPathModifiers: Int = 0
+
+
+        for (potentialAttack in targetCitiesWithOurCity) {
+            val landAttackPath = MapPathing.getConnection(civInfo, potentialAttack.first.getCenterTile(), potentialAttack.second.getCenterTile(), ::isLandTileCnaMoveThrough)
+            if (landAttackPath != null) {
+                attackPaths.add(landAttackPath)
+                attackPathModifiers += 3
+                continue
+            }
+            val landSeaAttackPath = MapPathing.getConnection(civInfo, potentialAttack.first.getCenterTile(), potentialAttack.second.getCenterTile(), ::isTileCanMoveThrough)
+            if (landSeaAttackPath != null) {
+                attackPaths.add(landSeaAttackPath)
+                attackPathModifiers += 2
+            }
+        }
+
+        if (attackPaths.isEmpty()) {
+            // Do an expensive BFS to find any possible attack path
+            val reachableEnemyCitiesBfs = BFS(civInfo.getCapital(true)!!.getCenterTile()) { isTileCanMoveThrough(civInfo, it) }
+            reachableEnemyCitiesBfs.stepToEnd()
+            val reachableEnemyCities = otherCiv.cities.filter { reachableEnemyCitiesBfs.hasReachedTile(it.getCenterTile()) }
+            if (reachableEnemyCities.isEmpty()) return 0 // Can't even reach the enemy city, no point in war.
+            val minAttackDistance = reachableEnemyCities.minOf { reachableEnemyCitiesBfs.getPathTo(it.getCenterTile()).count() }
+
+            // Longer attack paths are worse, but if the attack path is too far away we shouldn't completely discard the posibility 
+            attackPathModifiers -= (minAttackDistance - 10).coerceIn(0, 30) 
+        }
+        return attackPathModifiers
+    }
 }
