@@ -9,6 +9,7 @@ import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.civilization.diplomacy.DiplomacyManager
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.logic.map.BFS
+import com.unciv.logic.map.MapPathing
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.unique.UniqueType
@@ -20,25 +21,20 @@ object MotivationToAttackAutomation {
     /** Will return the motivation to attack, but might short circuit if the value is guaranteed to
      * be lower than `atLeast`. So any values below `atLeast` should not be used for comparison. */
     fun hasAtLeastMotivationToAttack(civInfo: Civilization, otherCiv: Civilization, atLeast: Int): Int {
-        val closestCities = NextTurnAutomation.getClosestCities(civInfo, otherCiv) ?: return 0
+        val targetCitiesWithOurCity = civInfo.threatManager.getNeighboringCitiesOfOtherCivs().filter { it.second.civ == otherCiv }.toList()
+        val targetCities = targetCitiesWithOurCity.map { it.second }
+
+        if (targetCitiesWithOurCity.isEmpty()) return 0
+
+        if (targetCities.all { hasNoUnitsThatCanAttackCityWithoutDying(civInfo, it) })
+            return 0
+
         val baseForce = 30f
 
         val ourCombatStrength = calculateSelfCombatStrength(civInfo, baseForce)
         val theirCombatStrength = calculateCombatStrengthWithProtectors(otherCiv, baseForce, civInfo)
 
         if (theirCombatStrength > ourCombatStrength) return 0
-
-        val ourCity = closestCities.city1
-        val theirCity = closestCities.city2
-
-        if (hasNoUnitsThatCanAttackCityWithoutDying(civInfo, theirCity))
-            return 0
-
-        fun isTileCanMoveThrough(tile: Tile): Boolean {
-            val owner = tile.getOwner()
-            return !tile.isImpassible()
-                && (owner == otherCiv || owner == null || civInfo.diplomacyFunctions.canPassThroughTiles(owner))
-        }
 
         val modifierMap = HashMap<String, Int>()
         modifierMap["Relative combat strength"] = getCombatStrengthModifier(ourCombatStrength, theirCombatStrength)
@@ -56,8 +52,14 @@ object MotivationToAttackAutomation {
 
         modifierMap["Relative technologies"] = getRelativeTechModifier(civInfo, otherCiv)
 
-        if (closestCities.aerialDistance > 7)
-            modifierMap["Far away cities"] = -10
+        val minTargetCityDistance = targetCitiesWithOurCity.minOf { it.second.getCenterTile().aerialDistanceTo(it.first.getCenterTile()) }
+        modifierMap["Far away cities"] = when {
+            minTargetCityDistance > 15 -> -15
+            minTargetCityDistance > 10 -> -10
+            minTargetCityDistance > 8 -> -5
+            minTargetCityDistance < 6 -> 10
+            else -> 0
+        }
 
         val diplomacyManager = civInfo.getDiplomacyManager(otherCiv)
         if (diplomacyManager.hasFlag(DiplomacyFlags.ResearchAgreement))
@@ -74,8 +76,12 @@ object MotivationToAttackAutomation {
         if (diplomacyManager.resourcesFromTrade().any { it.amount > 0 })
             modifierMap["Receiving trade resources"] = -5
 
-        if (theirCity.getTiles().none { tile -> tile.neighbors.any { it.getOwner() == theirCity.civ && it.getCity() != theirCity } })
+        // If their cities don't have any nearby cities that are also targets to us and it doesn't include their capital
+        // Then there cities are likely isolated and a good target.
+        if (otherCiv.getCapital(true) !in targetCities
+                && targetCities.all { theirCity -> !theirCity.neighboringCities.any { it !in targetCities } }) {
             modifierMap["Isolated city"] = 15
+        }
 
         if (otherCiv.isCityState()) {
             modifierMap["City-state"] = -20

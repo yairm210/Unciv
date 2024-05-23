@@ -1,5 +1,6 @@
 package com.unciv.logic.civilization.managers
 
+import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
@@ -168,6 +169,12 @@ class ThreatManager(val civInfo: Civilization) {
             return true
         return false
     }
+
+    /** @return a sqeuence of pairs of cities, the first city is our city and the seccond city is a nearby city that is not from our civ. */
+    fun getNeighboringCitiesOfOtherCivs(): Sequence<Pair<City,City>> = civInfo.cities.flatMap {
+        ourCity -> ourCity.neighboringCities.filter { it.civ != civInfo }.map { Pair(ourCity, it) } }.asSequence()
+
+    fun getNearbyCivilizaitons(): Sequence<Civilization> = civInfo.cities.map { it.civ }.distinct().asSequence()
 
     fun clear() {
         distanceToClosestEnemyTiles.clear()
