@@ -270,6 +270,8 @@ class RulesetValidator(val ruleset: Ruleset) {
 
             uniqueValidator.checkUniques(nation, lines, true, tryFixUnknownUniques)
 
+            if (nation.preferredVictoryType != Constants.neutralVictoryType && nation.preferredVictoryType !in ruleset.victories)
+                lines.add("${nation.name}'s preferredVictoryType is ${nation.preferredVictoryType} which does not exist!", sourceObject = nation)
             if (nation.cityStateType != null && nation.cityStateType !in ruleset.cityStateTypes)
                 lines.add("${nation.name} is of city-state type ${nation.cityStateType} which does not exist!", sourceObject = nation)
             if (nation.favoredReligion != null && nation.favoredReligion !in ruleset.religions)
@@ -576,9 +578,6 @@ class RulesetValidator(val ruleset: Ruleset) {
         if (nation.cities.isEmpty() && !nation.isSpectator && !nation.isBarbarian) {
             lines.add("${nation.name} can settle cities, but has no city names!", sourceObject = nation)
         }
-
-        if (nation.preferredVictoryType != Constants.neutralVictoryType && nation.preferredVictoryType !in ruleset.victories)
-            lines.add("${nation.name}'s preferredVictoryType is ${nation.preferredVictoryType} which does not exist!", sourceObject = nation)
 
         // https://www.w3.org/TR/WCAG20/#visual-audio-contrast-contrast
         val constrastRatio = nation.getContrastRatio()
