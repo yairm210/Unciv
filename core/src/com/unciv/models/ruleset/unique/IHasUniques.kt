@@ -37,7 +37,15 @@ interface IHasUniques : INamed {
 
     fun getMatchingUniques(uniqueTemplate: String, stateForConditionals: StateForConditionals? = null): Sequence<Unique> {
         val matchingUniques = uniqueMap[uniqueTemplate] ?: return sequenceOf()
-        return matchingUniques.asSequence().filter { it.conditionalsApply(stateForConditionals ?: StateForConditionals()) }
+
+        val actualStateForConditionals = stateForConditionals ?: StateForConditionals()
+        val uniques = matchingUniques.asSequence().filter { it.conditionalsApply(actualStateForConditionals) }
+        return uniques
+            .flatMap { unique ->
+                val multiplier = unique.getUniqueMultiplier(actualStateForConditionals)
+                // There MUST be a more performant way!!
+                sequence { repeat(multiplier) { yield(unique) } }
+            }
     }
 
     fun getMatchingUniques(uniqueType: UniqueType, stateForConditionals: StateForConditionals? = null) =

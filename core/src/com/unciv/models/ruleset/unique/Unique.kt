@@ -68,6 +68,17 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
         return true
     }
 
+    fun getUniqueMultiplier(stateForConditionals: StateForConditionals = StateForConditionals()): Int {
+        val multiplierConditionals = conditionals.filter { it.type == UniqueType.ForEveryCountable }
+        if (multiplierConditionals.isEmpty()) return 1
+        var amount = 1
+        for (conditional in multiplierConditionals) { // multiple multipliers DO multiply.
+            val multiplier = Countables.getCountableAmount(conditional.params[0], stateForConditionals)
+            if (multiplier != null) amount *= multiplier
+        }
+        return amount
+    }
+
     fun getDeprecationAnnotation(): Deprecated? = type?.getDeprecationAnnotation()
 
     fun getSourceNameForUser(): String {

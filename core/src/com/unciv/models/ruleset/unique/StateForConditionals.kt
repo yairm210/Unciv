@@ -39,6 +39,38 @@ data class StateForConditionals(
         combatAction
     )
 
+
+    val relevantUnit by lazy {
+        if (ourCombatant != null && ourCombatant is MapUnitCombatant) ourCombatant.unit
+        else unit
+    }
+
+    val relevantTile by lazy { attackedTile
+        ?: tile
+        // We need to protect against conditionals checking tiles for units pre-placement - see #10425, #10512
+        ?: relevantUnit?.run { if (hasTile()) getTile() else null }
+        ?: city?.getCenterTile()
+    }
+
+    val relevantCity by lazy {
+        city
+            ?: relevantTile?.getCity()
+    }
+
+    val relevantCiv by lazy {
+        civInfo ?:
+        relevantCity?.civ ?:
+        relevantUnit?.civ
+    }
+
+    val gameInfo by lazy { relevantCiv?.gameInfo }
+
+    fun getResourceAmount(resourceName: String): Int {
+        if (relevantCity != null) return relevantCity!!.getAvailableResourceAmount(resourceName)
+        if (relevantCiv != null) return relevantCiv!!.getResourceAmount(resourceName)
+        return 0
+    }
+
     companion object {
         val IgnoreConditionals = StateForConditionals(ignoreConditionals = true)
     }
@@ -67,4 +99,7 @@ data class StateForConditionals(
         result = 31 * result + ignoreConditionals.hashCode()
         return result
     }
+
+
 }
+
