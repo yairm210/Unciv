@@ -242,8 +242,9 @@ object DiplomacyAutomation {
 
         val ourMilitaryUnits = civInfo.units.getCivUnits().filter { !it.isCivilian() }.count()
         if (ourMilitaryUnits < civInfo.cities.size) return
-        if (ourMilitaryUnits < 4) return  // to stop AI declaring war at the beginning of games when everyone isn't set up well enough\
-        if (civInfo.cities.size < 3) return // FAR too early for that what are you thinking!
+        if (ourMilitaryUnits < 4) return  // to stop AI declaring war at the beginning of games when everyone isn't set up well enough
+        // For mods we can't check the number of cities, so we will check the population instead.
+        if (civInfo.cities.sumOf { it.population.population } < 12) return // FAR too early for that what are you thinking!
 
         //evaluate war
         val enemyCivs = civInfo.getKnownCivs()
