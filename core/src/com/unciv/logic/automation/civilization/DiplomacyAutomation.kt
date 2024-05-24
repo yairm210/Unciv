@@ -247,7 +247,7 @@ object DiplomacyAutomation {
         if (civInfo.cities.sumOf { it.population.population } < 12) return // FAR too early for that what are you thinking!
 
         //evaluate war
-        val enemyCivs = civInfo.getKnownCivs()
+        val targetCivs = civInfo.getKnownCivs()
             .filterNot {
                 it == civInfo || it.cities.isEmpty() || !civInfo.getDiplomacyManager(it).canDeclareWar()
                     || it.cities.none { city -> civInfo.hasExplored(city.getCenterTile()) }
@@ -255,18 +255,13 @@ object DiplomacyAutomation {
         // If the AI declares war on a civ without knowing the location of any cities, it'll just keep amassing an army and not sending it anywhere,
         //   and end up at a massive disadvantage
 
-        if (enemyCivs.none()) return
+        if (targetCivs.none()) return
 
-        val minMotivationToAttack = 20
-        // Attack the highest score enemy that we are willing to fight.
-        // This is to help prevent civs from ganging up on smaller civs
-        // and directs them to fight their competitors instead.
-        val civWithBestMotivationToAttack = enemyCivs
-            .filter { hasAtLeastMotivationToAttack(civInfo, it, minMotivationToAttack) >= 20 }
-            .maxByOrNull { it.getStatForRanking(RankingType.Score) }
+        val targetCivsWithMotivation: List<Pair<Civilization, Int>> = targetCivs.map { Pair(it, hasAtLeastMotivationToAttack(civInfo, it, 0)) }.toList()
+        val bestTargetCiv = DeclareWarTargetAutomation.chooseDeclareWarTaget(civInfo, targetCivsWithMotivation)
 
-        if (civWithBestMotivationToAttack != null)
-            civInfo.getDiplomacyManager(civWithBestMotivationToAttack).declareWar()
+        if (bestTargetCiv != null)
+            civInfo.getDiplomacyManager(bestTargetCiv).declareWar()
     }
 
 
