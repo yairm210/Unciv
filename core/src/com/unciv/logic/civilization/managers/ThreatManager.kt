@@ -174,7 +174,7 @@ class ThreatManager(val civInfo: Civilization) {
     fun getNeighboringCitiesOfOtherCivs(): Sequence<Pair<City,City>> = civInfo.cities.flatMap {
         ourCity -> ourCity.neighboringCities.filter { it.civ != civInfo }.map { Pair(ourCity, it) } }.asSequence()
 
-    fun getNearbyCivilizaitons(): Sequence<Civilization> = civInfo.cities.map { it.civ }.distinct().asSequence()
+    fun getNeighboringCivilizaitons(): Set<Civilization> = civInfo.cities.map { it.civ }.toSet()
 
     fun clear() {
         distanceToClosestEnemyTiles.clear()

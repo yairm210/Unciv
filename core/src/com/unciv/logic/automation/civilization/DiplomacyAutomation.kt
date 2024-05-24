@@ -18,7 +18,6 @@ import com.unciv.logic.trade.TradeType
 import com.unciv.models.ruleset.Victory
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.tr
-import com.unciv.ui.screens.victoryscreen.RankingType
 
 object DiplomacyAutomation {
 
@@ -252,16 +251,16 @@ object DiplomacyAutomation {
                 it == civInfo || it.cities.isEmpty() || !civInfo.getDiplomacyManager(it).canDeclareWar()
                     || it.cities.none { city -> civInfo.hasExplored(city.getCenterTile()) }
             }
-        // If the AI declares war on a civ without knowing the location of any cities, it'll just keep amassing an army and not sending it anywhere,
-        //   and end up at a massive disadvantage
+        // If the AI declares war on a civ without knowing the location of any cities, 
+        // it'll just keep amassing an army and not sending it anywhere, and end up at a massive disadvantage.
 
         if (targetCivs.none()) return
 
-        val targetCivsWithMotivation: List<Pair<Civilization, Int>> = targetCivs.map { Pair(it, hasAtLeastMotivationToAttack(civInfo, it, 0)) }.toList()
-        val bestTargetCiv = DeclareWarTargetAutomation.chooseDeclareWarTaget(civInfo, targetCivsWithMotivation)
+        val targetCivsWithMotivation: List<Pair<Civilization, Int>> = targetCivs
+                .map { Pair(it, hasAtLeastMotivationToAttack(civInfo, it, 0)) }
+                .filter { it.second >= 0 }.toList()
 
-        if (bestTargetCiv != null)
-            civInfo.getDiplomacyManager(bestTargetCiv).declareWar()
+        DeclareWarTargetAutomation.chooseDeclareWarTarget(civInfo, targetCivsWithMotivation)
     }
 
 
