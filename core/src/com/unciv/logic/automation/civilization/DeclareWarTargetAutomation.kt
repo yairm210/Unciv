@@ -1,6 +1,7 @@
 package com.unciv.logic.automation.civilization
 
 import com.unciv.logic.civilization.Civilization
+import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.logic.trade.TradeLogic
@@ -48,6 +49,7 @@ object DeclareWarTargetAutomation {
         val targetForce = target.getStatForRanking(RankingType.Force)
 
         val potentialAllies = civInfo.getDiplomacyManager(target).getCommonKnownCivs()
+                .filter { !civInfo.getDiplomacyManager(it).hasFlag(DiplomacyFlags.DeclinedJoinWarOffer) }
                 .filter { !it.isAtWarWith(target) } // Must be a civ not already at war with them
                 .sortedByDescending { it.getStatForRanking(RankingType.Force) }
         for (thirdCiv in potentialAllies) {
@@ -91,6 +93,7 @@ object DeclareWarTargetAutomation {
         val targetForce = target.getStatForRanking(RankingType.Force)
 
         val potentialAllies = civInfo.getDiplomacyManager(target).getCommonKnownCivs()
+                .filter { !civInfo.getDiplomacyManager(it).hasFlag(DiplomacyFlags.DeclinedJoinWarOffer) }
                 .filter { it.isAtWarWith(target) } // Must be a civ not already at war with them
                 .sortedByDescending { it.getStatForRanking(RankingType.Force) }
 
