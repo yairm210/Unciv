@@ -408,7 +408,7 @@ class GameOptionsTable(
     }
 
     private fun Table.addEraSelectBox() {
-        if (ruleset.technologies.isEmpty()) return // mod with no techs
+        if (ruleset.eras.isEmpty()) return // mod with no techs
         val eras = ruleset.eras.keys
         addSelectBox("{Starting Era}:", eras, gameParameters.startingEra)
         { gameParameters.startingEra = it; null }
