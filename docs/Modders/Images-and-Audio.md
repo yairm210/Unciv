@@ -100,6 +100,7 @@ All fonts are rendered by default at 50 pixel size and rescaled later for the ga
 
 The textures in the EmojiIcons subfolder and some others are mapped into the font at specific codepoints. They are used by the game, can be used in any text of a mod, and can be overridden by mod textures.
 Additionally, some code points are normally provided by the chosen system font, but have EmojiIcons names that will override the font glyph if a mod supplies them (marked 'optional' in the table below).
+Note textures provided for such codepoints *do* respect aspect ratio, they do *not* need to be square like many built-in icons are!
 
 | Symbol | Codepoint | Unicode name                       | Texture path                | Optional |
 |:------:|:---------:|:-----------------------------------|:----------------------------|:--------:|
