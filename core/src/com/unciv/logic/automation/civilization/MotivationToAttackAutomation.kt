@@ -73,6 +73,10 @@ object MotivationToAttackAutomation {
 
         modifierMap["Relationship"] = getRelationshipModifier(diplomacyManager)
 
+        if (diplomacyManager.hasFlag(DiplomacyFlags.Denunciation)) {
+            modifierMap["Denunciation"] = -5
+        }
+
         if (diplomacyManager.resourcesFromTrade().any { it.amount > 0 })
             modifierMap["Receiving trade resources"] = -5
         // If their cities don't have any nearby cities that are also targets to us and it doesn't include their capital
@@ -142,10 +146,14 @@ object MotivationToAttackAutomation {
         var alliedWarMotivation = 0
         for (thirdCiv in civInfo.getDiplomacyManager(otherCiv).getCommonKnownCivs()) {
             val thirdCivDiploManager = civInfo.getDiplomacyManager(thirdCiv)
-            if (thirdCivDiploManager.hasFlag(DiplomacyFlags.DeclinedDeclarationOfFriendship)
+            if (thirdCivDiploManager.isRelationshipLevelGE(RelationshipLevel.Friend)
                 && thirdCiv.isAtWarWith(otherCiv)
             ) {
-                alliedWarMotivation += if (thirdCivDiploManager.hasFlag(DiplomacyFlags.DefensivePact)) 15 else 5
+                if (thirdCiv.getDiplomacyManager(otherCiv).hasFlag(DiplomacyFlags.Denunciation))
+                    alliedWarMotivation += 2
+                alliedWarMotivation += if (thirdCivDiploManager.hasFlag(DiplomacyFlags.DefensivePact)) 15 
+                else if (thirdCivDiploManager.isRelationshipLevelGT(RelationshipLevel.Friend)) 5
+                else 2
             }
         }
         return alliedWarMotivation
