@@ -96,6 +96,62 @@ You can add custom `.ttf` fonts into the game: place `.ttf` file inside of `/fon
 
 All fonts are rendered by default at 50 pixel size and rescaled later for the game's needs. Currently fonts are NOT mipmapped on minification.
 
+### Overriding special characters
+
+The textures in the EmojiIcons subfolder and some others are mapped into the font at specific codepoints. They are used by the game, can be used in any text of a mod, and can be overridden by mod textures.
+Additionally, some code points are normally provided by the chosen system font, but have EmojiIcons names that will override the font glyph if a mod supplies them (marked 'optional' in the table below).
+
+| Symbol | Codepoint | Unicode name                       | Texture path                | Optional |
+|:------:|:---------:|:-----------------------------------|:----------------------------|:--------:|
+|   ⛏    |  U+26CF   | pick                               | EmojiIcons/Automate         |          |
+|   ♪    |  U+266A   | eighth note                        | EmojiIcons/Culture          |          |
+|   ☠    |  U+2620   | skull and crossbones               | EmojiIcons/Death            |          |
+|   ☮    |  U+262E   | peace symbol                       | EmojiIcons/Faith            |          |
+|   ⁂    |  U+2042   | asterism                           | EmojiIcons/Food             |          |
+|   ¤    |  U+00A4   | currency sign                      | EmojiIcons/Gold             |          |
+|   ♬    |  U+266C   | sixteenth note                     | EmojiIcons/Great Artist     |          |
+|   ⚒    |  U+2692   | hammer                             | EmojiIcons/Great Engineer   |          |
+|   ⛤    |  U+26E4   | pentagram                          | EmojiIcons/Great General    |          |
+|   ⚖    |  U+2696   | scale                              | EmojiIcons/Great Merchant   |          |
+|   ⚛    |  U+269B   | atom                               | EmojiIcons/Great Scientist  |          |
+|   ⌣    |  U+2323   | smile                              | EmojiIcons/Happiness        |          |
+|   ∞    |  U+221E   | infinity                           | EmojiIcons/Infinity         |    *     |
+|   ⚙    |  U+2699   | gear                               | EmojiIcons/Production       |          |
+|   ⍾    |  U+237E   | bell symbol                        | EmojiIcons/Science          |          |
+|   ￪    |  U+FFEA   | halfwidth upwards arrow            | EmojiIcons/SortedAscending  |    *     |
+|   ◉    |  U+25C9   | fisheye                            | EmojiIcons/SortedByStatus   |    *     |
+|   ⌚    |  U+231A   | watch                              | EmojiIcons/SortedByTime     |    *     |
+|   ￬    |  U+FFEC   | halfwidth upwards arrow            | EmojiIcons/SortedDescending |    *     |
+|   ✯    |  U+272F   | pinwheel star                      | EmojiIcons/Star             |    *     |
+|   ⏳    |  U+23F3   | hourglass                          | EmojiIcons/Turn             |          |
+|   ⅰ    |  U+2170   | small roman numeral one            | MayaCalendar/0              |          |
+|   ⅱ    |  U+2171   | small roman numeral two            | MayaCalendar/1              |          |
+|   ⅲ    |  U+2172   | small roman numeral three          | MayaCalendar/2              |          |
+|   ⅳ    |  U+2173   | small roman numeral four           | MayaCalendar/3              |          |
+|   ⅴ    |  U+2174   | small roman numeral five           | MayaCalendar/4              |          |
+|   ⅵ    |  U+2175   | small roman numeral six            | MayaCalendar/5              |          |
+|   ⅶ    |  U+2176   | small roman numeral seven          | MayaCalendar/6              |          |
+|   ⅷ    |  U+2177   | small roman numeral eight          | MayaCalendar/7              |          |
+|   ⅸ    |  U+2178   | small roman numeral nine           | MayaCalendar/8              |          |
+|   ⅹ    |  U+2179   | small roman numeral ten            | MayaCalendar/9              |          |
+|   ⅺ    |  U+217A   | small roman numeral eleven         | MayaCalendar/10             |          |
+|   ⅻ    |  U+217B   | small roman numeral twelve         | MayaCalendar/11             |          |
+|   ⅼ    |  U+217C   | small roman numeral fifty          | MayaCalendar/12             |          |
+|   ⅽ    |  U+217D   | small roman numeral one hundred    | MayaCalendar/13             |          |
+|   ⅾ    |  U+217E   | small roman numeral five hundred   | MayaCalendar/14             |          |
+|   ⅿ    |  U+217F   | small roman numeral one thousand   | MayaCalendar/15             |          |
+|   ↀ    |  U+2180   | roman numeral one thousand cd      | MayaCalendar/16             |          |
+|   ↁ    |  U+2181   | roman numeral five thousand        | MayaCalendar/17             |          |
+|   ↂ    |  U+2182   | roman numeral ten thousand         | MayaCalendar/18             |          |
+|   Ↄ    |  U+2183   | roman numeral reversed one hundred | MayaCalendar/19             |          |
+|   ය    |  U+0DBA   | sinhala letter yayanna             | MayaCalendar/Baktun         |          |
+|   ඹ    |  U+0DB9   | sinhala letter amba bayanna        | MayaCalendar/Katun          |          |
+|   ම    |  U+0DB8   | sinhala letter mayanna             | MayaCalendar/Tun            |          |
+|   ➡    |  U+27A1   | black rightwards arrow             | StatIcons/Movement          |          |
+|   …    |  U+2026   | horizontal ellipsis                | StatIcons/Range             |          |
+|   ‡    |  U+2021   | double dagger                      | StatIcons/RangedStrength    |          |
+|   †    |  U+2020   | dagger                             | StatIcons/Strength          |          |
+
 ### Adding Wonder Splash Screens
 
 You can add wonder images to mods and they'll be displayed instead of the standard icon when a wonder is finished. The image needs to be a .png and 2:1 ratio so for example 200x100 px.
