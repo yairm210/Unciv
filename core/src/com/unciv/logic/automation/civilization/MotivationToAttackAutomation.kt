@@ -29,7 +29,7 @@ object MotivationToAttackAutomation {
         if (targetCities.all { hasNoUnitsThatCanAttackCityWithoutDying(civInfo, it) })
             return 0
 
-        val baseForce = 30f
+        val baseForce = 100f
 
         val ourCombatStrength = calculateSelfCombatStrength(civInfo, baseForce)
         val theirCombatStrength = calculateCombatStrengthWithProtectors(otherCiv, baseForce, civInfo)
@@ -75,7 +75,6 @@ object MotivationToAttackAutomation {
 
         if (diplomacyManager.resourcesFromTrade().any { it.amount > 0 })
             modifierMap["Receiving trade resources"] = -5
-
         // If their cities don't have any nearby cities that are also targets to us and it doesn't include their capital
         // Then there cities are likely isolated and a good target.
         if (otherCiv.getCapital(true) !in targetCities
