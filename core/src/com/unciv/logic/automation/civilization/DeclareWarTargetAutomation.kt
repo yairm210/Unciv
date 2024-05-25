@@ -29,7 +29,7 @@ object DeclareWarTargetAutomation {
      * Determines a war plan against this [target] and executes it if able.
      * TODO: Multiturn war plans so units can get into position
      */
-    fun tryDeclareWarWithPlan(civInfo: Civilization, target: Civilization, motivation: Int): Boolean {
+    private fun tryDeclareWarWithPlan(civInfo: Civilization, target: Civilization, motivation: Int): Boolean {
 
         if (!target.isCityState()) {
             if (motivation > 0 && tryTeamWar(civInfo, target, motivation)) return true
@@ -37,7 +37,9 @@ object DeclareWarTargetAutomation {
             if (motivation >= 10 && tryJoinWar(civInfo, target, motivation)) return true
         }
 
-        if (motivation >= 20 && declareWar(civInfo, target, motivation)) return true
+        if (motivation >= 50 && declareWar(civInfo, target, motivation)) return true
+
+        if (motivation >= 20 && declarePlannedWar(civInfo, target, motivation)) return true
 
         return false
     }
@@ -46,7 +48,7 @@ object DeclareWarTargetAutomation {
      * The safest option for war is to invite a new ally to join the war with us.
      * Together we are stronger and are more likely to take down bigger threats.
      */
-    fun tryTeamWar(civInfo: Civilization, target: Civilization, motivation: Int): Boolean {
+    private fun tryTeamWar(civInfo: Civilization, target: Civilization, motivation: Int): Boolean {
         val civForce = civInfo.getStatForRanking(RankingType.Force)
         val targetForce = target.getStatForRanking(RankingType.Force)
 
@@ -90,7 +92,7 @@ object DeclareWarTargetAutomation {
     /**
      * The next safest aproach is to join an existing war on the side of an ally that is already at war with [target].
      */
-    fun tryJoinWar(civInfo: Civilization, target: Civilization, motivation: Int): Boolean {
+    private fun tryJoinWar(civInfo: Civilization, target: Civilization, motivation: Int): Boolean {
         val civForce = civInfo.getStatForRanking(RankingType.Force)
         val targetForce = target.getStatForRanking(RankingType.Force)
 
@@ -135,9 +137,33 @@ object DeclareWarTargetAutomation {
     }
 
     /**
+     * Slightly safter is to silently plan an invasion and declare war later.
+     */
+    private fun declarePlannedWar(civInfo: Civilization, target: Civilization, motivation: Int): Boolean {
+        val diploManager = civInfo.getDiplomacyManager(target)
+        val turnsToWait = when {
+            motivation < 10 -> 8
+            motivation < 20 -> 6
+            motivation < 30 -> 5
+            motivation < 40 -> 4
+            else -> 3
+        }
+
+        // TODO: We use negative values in WaryOf for now so that we aren't adding any extra fields to the save file
+        // This will very likely change in the future and we will want to build upon it
+        if (diploManager.hasFlag(DiplomacyFlags.WaryOf)) {
+            if (diploManager.flagsCountdown[DiplomacyFlags.WaryOf.name]!! < -turnsToWait)
+                civInfo.getDiplomacyManager(target).declareWar()
+        } else {
+            diploManager.setFlag(DiplomacyFlags.WaryOf, -1)
+        }
+        return true
+    }
+
+    /**
      * Lastly, if our motivation is high enough and we don't have any better plans then lets just declare war.
      */
-    fun declareWar(civInfo: Civilization, target: Civilization, motivation: Int): Boolean {
+    private fun declareWar(civInfo: Civilization, target: Civilization, motivation: Int): Boolean {
         civInfo.getDiplomacyManager(target).declareWar()
         return true
     }
