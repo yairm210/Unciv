@@ -58,6 +58,7 @@ import com.unciv.models.stats.Stats
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.extensions.toPercent
 import com.unciv.ui.screens.victoryscreen.RankingType
+import com.unciv.utils.Log
 import org.jetbrains.annotations.VisibleForTesting
 import kotlin.math.max
 import kotlin.math.min
@@ -861,6 +862,10 @@ class Civilization : IsPartOfGameInfoSerialization {
 
     fun addNotification(text: String, actions: Iterable<NotificationAction>?, category: NotificationCategory, vararg notificationIcons: String) {
         if (playerType == PlayerType.AI) return // no point in lengthening the saved game info if no one will read it
+        if (notifications.lastOrNull()?.let { it.text == text && it.category == category && it.icons == notificationIcons.toList() } == true) {
+            Log.debug("Duplicate notification \"%s\"", text)
+            return
+        }
         notifications.add(Notification(text, notificationIcons, actions, category))
     }
     // endregion
