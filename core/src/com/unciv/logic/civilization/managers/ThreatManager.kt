@@ -4,6 +4,7 @@ import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
+import com.unciv.ui.screens.victoryscreen.RankingType
 
 /**
  * Handles optimised operations related to finding threats or allies in an area.
@@ -175,6 +176,8 @@ class ThreatManager(val civInfo: Civilization) {
         ourCity -> ourCity.neighboringCities.filter { it.civ != civInfo }.map { Pair(ourCity, it) } }.asSequence()
 
     fun getNeighboringCivilizaitons(): Set<Civilization> = civInfo.cities.map { it.civ }.toSet()
+
+    fun getCombinedForceOfWarringCivs(): Int = civInfo.getCivsAtWarWith().sumOf { it.getStatForRanking(RankingType.Force) } 
 
     fun clear() {
         distanceToClosestEnemyTiles.clear()

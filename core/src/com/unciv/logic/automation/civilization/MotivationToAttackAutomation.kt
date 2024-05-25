@@ -37,6 +37,7 @@ object MotivationToAttackAutomation {
         if (theirCombatStrength > ourCombatStrength) return 0
 
         val modifierMap = HashMap<String, Int>()
+        modifierMap["Base motivation"] = (-20f * (theirCombatStrength + civInfo.threatManager.getCombinedForceOfWarringCivs()).toFloat() / ourCombatStrength).toInt()
         modifierMap["Relative combat strength"] = getCombatStrengthModifier(ourCombatStrength, theirCombatStrength)
 
         modifierMap["Their allies"] = getDefensivePactAlliesScore(otherCiv, civInfo, baseForce, ourCombatStrength)
@@ -87,7 +88,7 @@ object MotivationToAttackAutomation {
         }
 
         if (otherCiv.isCityState()) {
-            modifierMap["City-state"] = -20
+            modifierMap["City-state"] = -30
             if (otherCiv.getAllyCiv() == civInfo.civName)
                 modifierMap["Allied City-state"] = -20 // There had better be a DAMN good reason
         }

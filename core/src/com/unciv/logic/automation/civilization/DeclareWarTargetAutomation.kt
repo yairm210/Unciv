@@ -50,17 +50,16 @@ object DeclareWarTargetAutomation {
 
         val potentialAllies = civInfo.getDiplomacyManager(target).getCommonKnownCivs()
                 .filter { !civInfo.getDiplomacyManager(it).hasFlag(DiplomacyFlags.DeclinedJoinWarOffer) }
+                .filter { civInfo.getDiplomacyManager(it).isRelationshipLevelGE(RelationshipLevel.Favorable) }
                 .filter { !it.isAtWarWith(target) } // Must be a civ not already at war with them
                 .sortedByDescending { it.getStatForRanking(RankingType.Force) }
-        for (thirdCiv in potentialAllies) {
-            // Make sure that they are at least friendly to us
-            if (civInfo.getDiplomacyManager(thirdCiv).isRelationshipLevelLT(RelationshipLevel.Favorable)) return false
 
+        for (thirdCiv in potentialAllies) {
             // Make sure that they can actually help us with the target
             if (!thirdCiv.threatManager.getNeighboringCivilizaitons().contains(target)) return false
 
             // They need to be at least half the targets size, and we need to be stronger than the target together
-            val thirdCivForce = thirdCiv.getStatForRanking(RankingType.Force) - 0.8f * thirdCiv.getCivsAtWarWith().sumOf { it.getStatForRanking(RankingType.Force) }
+            val thirdCivForce = thirdCiv.getStatForRanking(RankingType.Force) - 0.8f * thirdCiv.threatManager.getCombinedForceOfWarringCivs()
             if (thirdCivForce > targetForce / 2) return false
 
             // A higher motivation means that we can be riskier
@@ -94,15 +93,15 @@ object DeclareWarTargetAutomation {
 
         val potentialAllies = civInfo.getDiplomacyManager(target).getCommonKnownCivs()
                 .filter { !civInfo.getDiplomacyManager(it).hasFlag(DiplomacyFlags.DeclinedJoinWarOffer) }
+                .filter { civInfo.getDiplomacyManager(it).isRelationshipLevelGE(RelationshipLevel.Friend) }
                 .filter { it.isAtWarWith(target) } // Must be a civ not already at war with them
                 .sortedByDescending { it.getStatForRanking(RankingType.Force) }
 
         for (thirdCiv in potentialAllies) {
             // We need to be able to trust the thirdCiv at least somewhat
             val thirdCivDiplo = civInfo.getDiplomacyManager(thirdCiv)
-            if (thirdCivDiplo.diplomaticStatus != DiplomaticStatus.DefensivePact &&
-                    thirdCivDiplo.isRelationshipLevelLT(RelationshipLevel.Friend)) return false
-            if (thirdCivDiplo.opinionOfOtherCiv() + motivation * 2 < 80) return false
+            if (thirdCivDiplo.diplomaticStatus != DiplomaticStatus.DefensivePact ||
+                    thirdCivDiplo.opinionOfOtherCiv() + motivation * 2 < 80) return false
 
             // They need to be at least half the targets size, and we need to be stronger than the target together
             val thirdCivForce = thirdCiv.getStatForRanking(RankingType.Force) - 0.8f * thirdCiv.getCivsAtWarWith().sumOf { it.getStatForRanking(RankingType.Force) }
