@@ -81,7 +81,7 @@ class Tile : IsPartOfGameInfoSerialization {
     lateinit var ruleset: Ruleset  // a tile can be a tile with a ruleset, even without a map.
 
     @Transient
-    val improvementFunctions = TileInfoImprovementFunctions(this)
+    val improvementFunctions = TileImprovementFunctions(this)
 
     @Transient
     val stats = TileStatFunctions(this)
