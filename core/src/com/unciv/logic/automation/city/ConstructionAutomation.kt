@@ -1,6 +1,7 @@
 package com.unciv.logic.automation.city
 
 import com.unciv.GUI
+import com.unciv.UncivGame
 import com.unciv.logic.automation.Automation
 import com.unciv.logic.automation.civilization.NextTurnAutomation
 import com.unciv.logic.automation.unit.WorkerAutomation
@@ -23,6 +24,7 @@ import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
+import com.unciv.ui.screens.cityscreen.CityScreen
 import kotlin.math.max
 import kotlin.math.sqrt
 
@@ -140,13 +142,21 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
             // Nobody can plan 30 turns ahead, I don't care how cost-efficient you are.
             else relativeCostEffectiveness.minByOrNull { it.remainingWork / it.production.coerceAtLeast(1) }!!.choice
 
+        // Do not notify while in resistance (you can't do anything about it) - still notify for puppets ("annex already!")
+        // Also do not notify while city screen open - might be a buying spree, not helpful
+        // Also do not notify when the decision hasn't changed - duh!
+        val noNotification = city.isInResistance()
+            || UncivGame.Current.screen is CityScreen
+            || cityConstructions.currentConstructionFromQueue == chosenConstruction
+        cityConstructions.currentConstructionFromQueue = chosenConstruction
+        if (noNotification) return
+
         civInfo.addNotification(
-            "Work has started on [$chosenConstruction]",
-            CityAction(city.location),
+            "[${city.name}] has started working on [$chosenConstruction]",
+            CityAction.withLocation(city),
             NotificationCategory.Production,
             NotificationIcon.Construction
         )
-        cityConstructions.currentConstructionFromQueue = chosenConstruction
     }
 
     private fun addMilitaryUnitChoice() {
