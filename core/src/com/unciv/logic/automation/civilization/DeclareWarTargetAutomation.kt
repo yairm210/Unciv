@@ -51,9 +51,10 @@ object DeclareWarTargetAutomation {
         val targetForce = target.getStatForRanking(RankingType.Force)
 
         val potentialAllies = civInfo.getDiplomacyManager(target).getCommonKnownCivs()
-                .filter { !civInfo.getDiplomacyManager(it).hasFlag(DiplomacyFlags.DeclinedJoinWarOffer) }
-                .filter { civInfo.getDiplomacyManager(it).isRelationshipLevelGE(RelationshipLevel.Favorable) }
-                .filter { !it.isAtWarWith(target) } // Must be a civ not already at war with them
+                .filter { it.isMajorCiv() 
+                        && !civInfo.getDiplomacyManager(it).hasFlag(DiplomacyFlags.DeclinedJoinWarOffer) 
+                        && civInfo.getDiplomacyManager(it).isRelationshipLevelGE(RelationshipLevel.Favorable) 
+                        && !it.isAtWarWith(target) } 
                 .sortedByDescending { it.getStatForRanking(RankingType.Force) }
 
         for (thirdCiv in potentialAllies) {
@@ -94,9 +95,10 @@ object DeclareWarTargetAutomation {
         val targetForce = target.getStatForRanking(RankingType.Force)
 
         val potentialAllies = civInfo.getDiplomacyManager(target).getCommonKnownCivs()
-                .filter { !civInfo.getDiplomacyManager(it).hasFlag(DiplomacyFlags.DeclinedJoinWarOffer) }
-                .filter { civInfo.getDiplomacyManager(it).isRelationshipLevelGE(RelationshipLevel.Friend) }
-                .filter { it.isAtWarWith(target) } // Must be a civ not already at war with them
+                .filter { it.isMajorCiv()  
+                        && !civInfo.getDiplomacyManager(it).hasFlag(DiplomacyFlags.DeclinedJoinWarOffer) 
+                        && civInfo.getDiplomacyManager(it).isRelationshipLevelGE(RelationshipLevel.Friend) 
+                        && it.isAtWarWith(target) } // Must be a civ not already at war with them
                 .sortedByDescending { it.getStatForRanking(RankingType.Force) }
 
         for (thirdCiv in potentialAllies) {
