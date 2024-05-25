@@ -258,7 +258,7 @@ object DiplomacyAutomation {
 
         val targetCivsWithMotivation: List<Pair<Civilization, Int>> = targetCivs
                 .map { Pair(it, hasAtLeastMotivationToAttack(civInfo, it, 0)) }
-                .filter { it.second >= 0 }.toList()
+                .filter { it.second > 0 }.toList()
 
         DeclareWarTargetAutomation.chooseDeclareWarTarget(civInfo, targetCivsWithMotivation)
     }
