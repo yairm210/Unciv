@@ -35,7 +35,6 @@ import com.unciv.ui.components.extensions.withoutItem
 import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.screens.civilopediascreen.CivilopediaCategories
 import com.unciv.ui.screens.civilopediascreen.FormattedLine
-import com.unciv.ui.screens.worldscreen.WorldScreen
 import kotlin.math.ceil
 import kotlin.math.min
 import kotlin.math.roundToInt

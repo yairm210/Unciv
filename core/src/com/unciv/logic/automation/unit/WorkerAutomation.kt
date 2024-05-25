@@ -11,7 +11,6 @@ import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
-import com.unciv.logic.map.tile.TileStatFunctions
 import com.unciv.logic.map.tile.toStats
 import com.unciv.models.UnitActionType
 import com.unciv.models.ruleset.tile.ResourceType
@@ -278,7 +277,7 @@ class WorkerAutomation(
                 var repairBonusPriority = tile.getImprovementToRepair()!!.getTurnsToBuild(unit.civ,unit) - UnitActionsFromUniques.getRepairTurns(unit)
                 if (tile.improvementInProgress == Constants.repair) repairBonusPriority += UnitActionsFromUniques.getRepairTurns(unit) - tile.turnsToImprovement
 
-                val repairPriority = repairBonusPriority + Automation.rankStatsValue(TileStatFunctions(tile).getStatDiffForImprovement(tile.getTileImprovement()!!, unit.civ, tile.owningCity), unit.civ)
+                val repairPriority = repairBonusPriority + Automation.rankStatsValue(tile.stats.getStatDiffForImprovement(tile.getTileImprovement()!!, unit.civ, tile.owningCity), unit.civ)
                 if (repairPriority > rank.improvementPriority!!) {
                     rank.improvementPriority = repairPriority
                     rank.bestImprovement = null
