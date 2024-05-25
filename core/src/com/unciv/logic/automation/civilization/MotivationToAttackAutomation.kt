@@ -267,26 +267,36 @@ object MotivationToAttackAutomation {
                     && (owner == otherCiv || owner == null || civInfo.diplomacyFunctions.canPassThroughTiles(owner))
         }
 
-        fun isLandTileCnaMoveThrough(civInfo: Civilization, tile: Tile): Boolean {
+        fun isLandTileCanMoveThrough(civInfo: Civilization, tile: Tile): Boolean {
             return tile.isLand && isTileCanMoveThrough(civInfo, tile)
         }
 
         val attackPaths: MutableList<List<Tile>> = mutableListOf()
-        var attackPathModifiers: Int = 0
+        var attackPathModifiers: Int = -3
 
+        // For each city, we want to calculate if there is an attack path to the enemy
+        for (attacksGroupedByCity in targetCitiesWithOurCity.groupBy { it.first }) {
+            val cityToAttackFrom = attacksGroupedByCity.key
+            var cityAttackValue = 0
 
-        for (potentialAttack in targetCitiesWithOurCity) {
-            val landAttackPath = MapPathing.getConnection(civInfo, potentialAttack.first.getCenterTile(), potentialAttack.second.getCenterTile(), ::isLandTileCnaMoveThrough)
-            if (landAttackPath != null) {
-                attackPaths.add(landAttackPath)
-                attackPathModifiers += 2
-                continue
+            // We only want to calculate the best attack path and use it's value
+            for (cityToAttack in attacksGroupedByCity.value.map { it.second }) {
+                val landAttackPath = MapPathing.getConnection(civInfo, cityToAttackFrom.getCenterTile(), cityToAttack.getCenterTile(), ::isLandTileCanMoveThrough)
+                if (landAttackPath != null && landAttackPath.size < 16) {
+                    attackPaths.add(landAttackPath)
+                    cityAttackValue = 3
+                    break
+                }
+
+                if (cityAttackValue > 0) continue
+
+                val landAndSeaAttackPath = MapPathing.getConnection(civInfo, cityToAttackFrom.getCenterTile(), cityToAttack.getCenterTile(), ::isTileCanMoveThrough)
+                if (landAndSeaAttackPath != null  && landAndSeaAttackPath.size < 16) {
+                    attackPaths.add(landAndSeaAttackPath)
+                    cityAttackValue += 1
+                }
             }
-            val landSeaAttackPath = MapPathing.getConnection(civInfo, potentialAttack.first.getCenterTile(), potentialAttack.second.getCenterTile(), ::isTileCanMoveThrough)
-            if (landSeaAttackPath != null) {
-                attackPaths.add(landSeaAttackPath)
-                attackPathModifiers += 1
-            }
+            attackPathModifiers += cityAttackValue
         }
 
         if (attackPaths.isEmpty()) {
