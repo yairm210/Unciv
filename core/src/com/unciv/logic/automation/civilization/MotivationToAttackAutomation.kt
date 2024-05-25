@@ -47,7 +47,7 @@ object MotivationToAttackAutomation {
 
         if (civInfo.stats.getUnitSupplyDeficit() != 0) {
             modifierMap["Over unit supply"] = (civInfo.stats.getUnitSupplyDeficit() * 2).coerceAtMost(20)
-        } else if (otherCiv.stats.getUnitSupplyDeficit() == 0) {
+        } else if (otherCiv.stats.getUnitSupplyDeficit() == 0 && !otherCiv.isCityState()) {
             modifierMap["Relative production"] = getProductionRatioModifier(civInfo, otherCiv)
         }
 
@@ -58,7 +58,7 @@ object MotivationToAttackAutomation {
             minTargetCityDistance > 15 -> -15
             minTargetCityDistance > 10 -> -10
             minTargetCityDistance > 8 -> -5
-            minTargetCityDistance < 6 -> 10
+            minTargetCityDistance < 6 -> 5
             else -> 0
         }
 
@@ -244,6 +244,7 @@ object MotivationToAttackAutomation {
             combatStrengthRatio > 2.5f -> 25
             combatStrengthRatio > 2f -> 20
             combatStrengthRatio > 1.5f -> 10
+            combatStrengthRatio > 1.2f -> 5
             else -> 0
         }
         return combatStrengthModifier
@@ -278,13 +279,13 @@ object MotivationToAttackAutomation {
             val landAttackPath = MapPathing.getConnection(civInfo, potentialAttack.first.getCenterTile(), potentialAttack.second.getCenterTile(), ::isLandTileCnaMoveThrough)
             if (landAttackPath != null) {
                 attackPaths.add(landAttackPath)
-                attackPathModifiers += 3
+                attackPathModifiers += 2
                 continue
             }
             val landSeaAttackPath = MapPathing.getConnection(civInfo, potentialAttack.first.getCenterTile(), potentialAttack.second.getCenterTile(), ::isTileCanMoveThrough)
             if (landSeaAttackPath != null) {
                 attackPaths.add(landSeaAttackPath)
-                attackPathModifiers += 2
+                attackPathModifiers += 1
             }
         }
 
