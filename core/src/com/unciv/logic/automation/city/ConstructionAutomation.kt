@@ -58,8 +58,10 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
 
     private val nonWonders = buildings.filterNot { it.isAnyWonder() }
         .filterNot { buildableBuildings[it.name] == false } // if we already know that this building can't be built here then don't even consider it
-    private val statBuildings = nonWonders.filter { !it.isEmpty() && Automation.allowAutomatedConstruction(civInfo, city, it) }
-    private val wonders = buildings.filter { it.isAnyWonder() }
+    //Obsoleted by #11370, but maybe useful in the future: allowed buildings that have non-zero Stats (isEmpty is a Stats method)
+    //private val statBuildings = nonWonders.filter { !it.isEmpty() && Automation.allowAutomatedConstruction(civInfo, city, it) }
+    //Obsoleted by #11601
+    //private val wonders = buildings.filter { it.isAnyWonder() }
 
     private val units = city.getRuleset().units.values.asSequence()
         .filterNot { buildableUnits[it.name] == false || // if we already know that this unit can't be built here then don't even consider it
@@ -209,7 +211,7 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
             return WorkerAutomation.isNotBonusResourceOrWorkable(this, civInfo)
         }
 
-        // Search for a tile justifiying producing a Workboat
+        // Search for a tile justifying producing a Workboat
         // todo should workboatAutomationSearchMaxTiles depend on game state?
         fun findTileWorthImproving(): Boolean {
             val searchMaxTiles = civInfo.gameInfo.ruleset.modOptions.constants.workboatAutomationSearchMaxTiles
