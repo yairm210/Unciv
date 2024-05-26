@@ -37,13 +37,17 @@ object MotivationToAttackAutomation {
         if (theirCombatStrength > ourCombatStrength) return 0
 
         val modifierMap = HashMap<String, Int>()
+        modifierMap["Base motivation"] = -20
+
         modifierMap["Relative combat strength"] = getCombatStrengthModifier(ourCombatStrength, theirCombatStrength + 0.8f * civInfo.threatManager.getCombinedForceOfWarringCivs())
         // TODO: For now this will be a very high value because the AI can't handle multiple fronts, this should be changed later though
         modifierMap["Concurrent wars"] = -civInfo.getCivsAtWarWith().count { it.isMajorCiv() } * 30
+        modifierMap["Their concurrent wars"] = otherCiv.getCivsAtWarWith().count { it.isMajorCiv() } * 3
 
         modifierMap["Their allies"] = getDefensivePactAlliesScore(otherCiv, civInfo, baseForce, ourCombatStrength)
 
-        if (civInfo.threatManager.getNeighboringCivilizations().none { it != otherCiv && it.isMajorCiv() })
+        if (civInfo.threatManager.getNeighboringCivilizations().none { it != otherCiv && it.isMajorCiv() 
+                        && civInfo.getDiplomacyManager(it).isRelationshipLevelLT(RelationshipLevel.Friend) })
             modifierMap["No other threats"] = 5
 
         val scoreRatioModifier = getScoreRatioModifier(otherCiv, civInfo)
@@ -104,7 +108,8 @@ object MotivationToAttackAutomation {
 
         modifierMap["War with allies"] = getAlliedWarMotivation(civInfo, otherCiv)
 
-
+        // Purely for debugging, remove modifiers that don't have an effect
+        modifierMap.filter { it.value == 0 }.toList().forEach { modifierMap.remove(it.first) }
         var motivationSoFar = modifierMap.values.sum()
 
         // Short-circuit to avoid expensive BFS
@@ -252,8 +257,10 @@ object MotivationToAttackAutomation {
             combatStrengthRatio > 3f -> 15
             combatStrengthRatio > 2f -> 10
             combatStrengthRatio > 1.5f -> 5
-            combatStrengthRatio > .5f -> 0
-            combatStrengthRatio > .2f -> -10
+            combatStrengthRatio > .8f -> 0
+            combatStrengthRatio > .6f -> -5
+            combatStrengthRatio > .4f -> -15
+            combatStrengthRatio > .2f -> -20
             else -> -20
         }
         return combatStrengthModifier
