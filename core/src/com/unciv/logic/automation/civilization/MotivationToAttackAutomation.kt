@@ -58,9 +58,9 @@ object MotivationToAttackAutomation {
 
         val minTargetCityDistance = targetCitiesWithOurCity.minOf { it.second.getCenterTile().aerialDistanceTo(it.first.getCenterTile()) }
         modifierMap["Far away cities"] = when {
-            minTargetCityDistance > 15 -> -15
-            minTargetCityDistance > 10 -> -10
-            minTargetCityDistance > 8 -> -5
+            minTargetCityDistance > 20 -> -10
+            minTargetCityDistance > 14 -> -8
+            minTargetCityDistance > 10 -> -3
             minTargetCityDistance < 6 -> 5
             else -> 0
         }
