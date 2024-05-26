@@ -66,11 +66,20 @@ object MotivationToAttackAutomation {
             minTargetCityDistance > 20 -> -10
             minTargetCityDistance > 14 -> -8
             minTargetCityDistance > 10 -> -3
-            minTargetCityDistance < 6 -> 5
+            else -> 0
+        }
+        if (minTargetCityDistance < 6) modifierMap["Close cities"] = 5
+
+        val diplomacyManager = civInfo.getDiplomacyManager(otherCiv)
+        val relationshipLevel = diplomacyManager.relationshipLevel()
+
+        modifierMap["Friendship"] = when (relationshipLevel) {
+            RelationshipLevel.Favorable -> -5
+            RelationshipLevel.Friend -> -10
+            RelationshipLevel.Ally -> -15
             else -> 0
         }
 
-        val diplomacyManager = civInfo.getDiplomacyManager(otherCiv)
         if (diplomacyManager.hasFlag(DiplomacyFlags.ResearchAgreement))
             modifierMap["Research Agreement"] = -5
 
@@ -78,16 +87,17 @@ object MotivationToAttackAutomation {
             modifierMap["Declaration of Friendship"] = -10
 
         if (diplomacyManager.hasFlag(DiplomacyFlags.DefensivePact))
-            modifierMap["Defensive Pact"] = -10
+            modifierMap["Defensive Pact"] = -15
 
         modifierMap["Relationship"] = getRelationshipModifier(diplomacyManager)
 
         if (diplomacyManager.hasFlag(DiplomacyFlags.Denunciation)) {
-            modifierMap["Denunciation"] = -5
+            modifierMap["Denunciation"] = 5
         }
 
         if (diplomacyManager.resourcesFromTrade().any { it.amount > 0 })
             modifierMap["Receiving trade resources"] = -5
+
         // If their cities don't have any nearby cities that are also targets to us and it doesn't include their capital
         // Then there cities are likely isolated and a good target.
         if (otherCiv.getCapital(true) !in targetCities
