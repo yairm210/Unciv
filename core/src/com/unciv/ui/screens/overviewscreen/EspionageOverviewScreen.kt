@@ -86,14 +86,14 @@ class EspionageOverviewScreen(val civInfo: Civilization, val worldScreen: WorldS
             spySelectionTable.add(spy.rank.toLabel())
             spySelectionTable.add(spy.getLocationName().toLabel())
             val actionString = if (spy.action.hasTurns) "[${spy.action.displayString}] ${spy.turnsRemainingForAction}${Fonts.turn}"
-                else spy.action.displayString
+            else spy.action.displayString
             spySelectionTable.add(actionString.toLabel())
 
             val moveSpyButton = "Move".toTextButton()
             moveSpyButton.onClick {
                 onSpyClicked(moveSpyButton, spy)
             }
-            moveSpyButton.onRightClick { 
+            moveSpyButton.onRightClick {
                 onSpyRightClicked(spy)
             }
             if (!worldScreen.canChangeState || !spy.isAlive()) {
@@ -123,18 +123,18 @@ class EspionageOverviewScreen(val civInfo: Civilization, val worldScreen: WorldS
         // Then add all cities
 
         val sortedCities = civInfo.gameInfo.getCities()
-            .filter { civInfo.hasExplored(it.getCenterTile()) }
-            .sortedWith(
-                compareBy<City> {
-                    it.civ != civInfo
-                }.thenBy {
-                    it.civ.isCityState()
-                }.thenBy(collator) {
-                    it.civ.civName.tr(hideIcons = true)
-                }.thenBy(collator) {
-                    it.name.tr(hideIcons = true)
-                }
-            )
+                .filter { civInfo.hasExplored(it.getCenterTile()) }
+                .sortedWith(
+                        compareBy<City> {
+                            it.civ != civInfo
+                        }.thenBy {
+                            it.civ.isCityState()
+                        }.thenBy(collator) {
+                            it.civ.civName.tr(hideIcons = true)
+                        }.thenBy(collator) {
+                            it.name.tr(hideIcons = true)
+                        }
+                )
         for (city in sortedCities) {
             addCityToSelectionTable(city)
         }
@@ -142,7 +142,7 @@ class EspionageOverviewScreen(val civInfo: Civilization, val worldScreen: WorldS
 
     private fun addCityToSelectionTable(city: City) {
         citySelectionTable.add(ImageGetter.getNationPortrait(city.civ.nation, 30f))
-            .padLeft(20f)
+                .padLeft(20f)
         val label = city.name.toLabel(hideIcons = true)
         label.onClick {
             worldScreen.game.popScreen() // If a detour to this screen (i.e. not directly from worldScreen) is made possible, use resetToWorldScreen instead
@@ -151,7 +151,7 @@ class EspionageOverviewScreen(val civInfo: Civilization, val worldScreen: WorldS
         citySelectionTable.add(label).fill()
         citySelectionTable.add(getSpyIcons(manager.getSpiesInCity(city)))
 
-        val spy = civInfo.espionageManager.getSpyAssignedToCity(city) 
+        val spy = civInfo.espionageManager.getSpyAssignedToCity(city)
         if (city.civ.isCityState() && spy != null && spy.canDoCoup()) {
             val coupButton = CoupButton(city, spy.action == SpyAction.Coup)
             citySelectionTable.add(coupButton)
@@ -163,20 +163,31 @@ class EspionageOverviewScreen(val civInfo: Civilization, val worldScreen: WorldS
     }
 
     private fun getSpyIcon(spy: Spy) = Table().apply {
-        add (ImageGetter.getImage("OtherIcons/Spy_White").apply {
+        add(ImageGetter.getImage("OtherIcons/Spy_White").apply {
             color = Color.WHITE
         }).size(30f)
-        val color = when(spy.rank) {
+        fun getColor(rank: Int): Color = when (rank) {
             1 -> Color.BROWN
             2 -> Color.LIGHT_GRAY
-            3 -> Color.GOLD
-            else -> return@apply
+            else -> Color.GOLD
         }
+
+        // If we have 10 or more ranks, display them with a bigger star
+        if (spy.rank >= 10) {
+            val star = ImageGetter.getImage("OtherIcons/Star")
+            star.color = getColor(spy.rank / 10)
+            add(star).size(20f).pad(3f)
+        }
+
+        val color = getColor(spy.rank)
         val starTable = Table()
-        repeat(spy.rank) {
+        // Create a grid of up to 9 stars
+        repeat(spy.rank % 10) {
             val star = ImageGetter.getImage("OtherIcons/Star")
             star.color = color
-            starTable.add(star).size(8f).pad(1f).row()
+            starTable.add(star).size(8f).pad(1f)
+            if (it % 3 == 2)
+                starTable.row()
         }
         add(starTable).center().padLeft(-4f)
 
@@ -195,12 +206,13 @@ class EspionageOverviewScreen(val civInfo: Civilization, val worldScreen: WorldS
     }
 
     private abstract inner class SpyCityActionButton : Button(SmallButtonStyle()) {
-        open fun setDirection(align: Int) { }
+        open fun setDirection(align: Int) {}
     }
 
     // city == null is interpreted as 'spy hideout'
     private inner class MoveToCityButton(city: City?) : SpyCityActionButton() {
         val arrow = ImageGetter.getArrowImage(Align.left)
+
         init {
             arrow.setSize(24f)
             add(arrow).size(24f)
@@ -247,7 +259,7 @@ class EspionageOverviewScreen(val civInfo: Civilization, val worldScreen: WorldS
         worldScreen.game.popScreen()
         worldScreen.shouldUpdate = true
     }
-    
+
     private fun resetSelection() {
         selectedSpy = null
         selectedSpyButton?.label?.setText("Move".tr())
@@ -258,6 +270,7 @@ class EspionageOverviewScreen(val civInfo: Civilization, val worldScreen: WorldS
 
     private inner class CoupButton(city: City, isCurrentAction: Boolean) : SpyCityActionButton() {
         val fist = ImageGetter.getStatIcon("Resistance")
+
         init {
             fist.setSize(24f)
             add(fist).size(24f)
@@ -267,7 +280,7 @@ class EspionageOverviewScreen(val civInfo: Civilization, val worldScreen: WorldS
             onClick {
                 val spy = selectedSpy!!
                 if (!isCurrentAction) {
-                    ConfirmPopup(this@EspionageOverviewScreen, 
+                    ConfirmPopup(this@EspionageOverviewScreen,
                             "Do you want to stage a coup in [${city.civ.civName}] with a " +
                                     "[${(selectedSpy!!.getCoupChanceOfSuccess(false) * 100f).toInt()}]% " +
                                     "chance of success?", "Stage Coup") {
