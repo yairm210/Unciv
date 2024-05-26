@@ -61,11 +61,11 @@ object DeclareWarTargetAutomation {
 
         for (thirdCiv in potentialAllies) {
             // Make sure that they can actually help us with the target
-            if (!thirdCiv.threatManager.getNeighboringCivilizaitons().contains(target)) return false
+            if (!thirdCiv.threatManager.getNeighboringCivilizaitons().contains(target)) continue
 
             // They need to be at least half the targets size, and we need to be stronger than the target together
             val thirdCivForce = thirdCiv.getStatForRanking(RankingType.Force) - 0.8f * thirdCiv.threatManager.getCombinedForceOfWarringCivs()
-            if (thirdCivForce > targetForce / 2) return false
+            if (thirdCivForce > targetForce / 2) continue
 
             // A higher motivation means that we can be riskier
             val multiplier = when {
@@ -74,7 +74,7 @@ object DeclareWarTargetAutomation {
                 motivation < 20 -> 1f
                 else -> 0.8f
             }
-            if (thirdCivForce + civForce < targetForce * multiplier) return false
+            if (thirdCivForce + civForce < targetForce * multiplier) continue
 
             // Send them an offer
             val tradeLogic = TradeLogic(civInfo, thirdCiv)
@@ -107,11 +107,11 @@ object DeclareWarTargetAutomation {
             // We need to be able to trust the thirdCiv at least somewhat
             val thirdCivDiplo = civInfo.getDiplomacyManager(thirdCiv)
             if (thirdCivDiplo.diplomaticStatus != DiplomaticStatus.DefensivePact &&
-                    thirdCivDiplo.opinionOfOtherCiv() + motivation * 2 < 80) return false
+                    thirdCivDiplo.opinionOfOtherCiv() + motivation * 2 < 80) continue
 
             // They need to be at least half the targets size, and we need to be stronger than the target together
             val thirdCivForce = thirdCiv.getStatForRanking(RankingType.Force) - 0.8f * thirdCiv.getCivsAtWarWith().sumOf { it.getStatForRanking(RankingType.Force) }
-            if (thirdCivForce < targetForce / 2) return false
+            if (thirdCivForce < targetForce / 2) continue
 
             // A higher motivation means that we can be riskier
             val multiplier = when {
@@ -121,7 +121,7 @@ object DeclareWarTargetAutomation {
                 motivation < 20 -> 1f
                 else -> 0.8f
             }
-            if (thirdCivForce + civForce < targetForce * multiplier) return false
+            if (thirdCivForce + civForce < targetForce * multiplier) continue
 
             // Send them an offer
             val tradeLogic = TradeLogic(civInfo, thirdCiv)
