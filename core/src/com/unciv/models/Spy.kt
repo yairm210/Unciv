@@ -87,7 +87,6 @@ class Spy private constructor() : IsPartOfGameInfoSerialization {
     }
 
     fun endTurn() {
-        levelUpSpy()
         if (action.hasTurns && --turnsRemainingForAction > 0) return
         when (action) {
             SpyAction.None -> return
