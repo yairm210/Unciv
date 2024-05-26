@@ -99,19 +99,19 @@ object DeclareWarTargetAutomation {
         val potentialAllies = civInfo.getDiplomacyManager(target).getCommonKnownCivs()
                 .filter { it.isMajorCiv()  
                         && !civInfo.getDiplomacyManager(it).hasFlag(DiplomacyFlags.DeclinedJoinWarOffer) 
-                        && civInfo.getDiplomacyManager(it).isRelationshipLevelGE(RelationshipLevel.Friend) 
+                        && civInfo.getDiplomacyManager(it).isRelationshipLevelGE(RelationshipLevel.Favorable) 
                         && it.isAtWarWith(target) } // Must be a civ not already at war with them
                 .sortedByDescending { it.getStatForRanking(RankingType.Force) }
 
         for (thirdCiv in potentialAllies) {
             // We need to be able to trust the thirdCiv at least somewhat
             val thirdCivDiplo = civInfo.getDiplomacyManager(thirdCiv)
-            if (thirdCivDiplo.diplomaticStatus != DiplomaticStatus.DefensivePact ||
+            if (thirdCivDiplo.diplomaticStatus != DiplomaticStatus.DefensivePact &&
                     thirdCivDiplo.opinionOfOtherCiv() + motivation * 2 < 80) return false
 
             // They need to be at least half the targets size, and we need to be stronger than the target together
             val thirdCivForce = thirdCiv.getStatForRanking(RankingType.Force) - 0.8f * thirdCiv.getCivsAtWarWith().sumOf { it.getStatForRanking(RankingType.Force) }
-            if (thirdCivForce > targetForce / 2) return false
+            if (thirdCivForce < targetForce / 2) return false
 
             // A higher motivation means that we can be riskier
             val multiplier = when {
