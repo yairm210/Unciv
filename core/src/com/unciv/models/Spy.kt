@@ -87,6 +87,7 @@ class Spy private constructor() : IsPartOfGameInfoSerialization {
     }
 
     fun endTurn() {
+        levelUpSpy()
         if (action.hasTurns && --turnsRemainingForAction > 0) return
         when (action) {
             SpyAction.None -> return
@@ -207,9 +208,9 @@ class Spy private constructor() : IsPartOfGameInfoSerialization {
             otherCiv.getDiplomacyManager(civInfo).addModifier(DiplomaticModifiers.SpiedOnUs, -15f)
         }
     }
-    
+
     fun canDoCoup(): Boolean = getCityOrNull() != null && getCity().civ.isCityState() && isSetUp() && getCity().civ.getAllyCiv() != civInfo.civName
-    
+
     /**
      * Initiates a coup if this spies civ is not the ally of the city-state.
      * The coup will only happen at the end of the Civ's turn for save scum reasons, so a play may not reload in multiplayer.
@@ -230,7 +231,7 @@ class Spy private constructor() : IsPartOfGameInfoSerialization {
             val pastAlly = cityState.getAllyCiv()?.let { civInfo.gameInfo.getCivilization(it) }
             val previousInfluence = if (pastAlly != null) cityState.getDiplomacyManager(pastAlly).getInfluence() else 80f
             cityState.getDiplomacyManager(civInfo).setInfluence(previousInfluence)
-            
+
             civInfo.addNotification("Your spy [$name] successfully staged a coup in [${cityState.civName}]!", getCity().location,
                     NotificationCategory.Espionage, NotificationIcon.Spy, cityState.civName)
             if (pastAlly != null) {
@@ -273,26 +274,26 @@ class Spy private constructor() : IsPartOfGameInfoSerialization {
     fun getCoupChanceOfSuccess(includeUnkownFactors: Boolean): Float {
         val cityState = getCity().civ
         var successPercentage = 50f
-        
+
         // Influence difference should always be a positive value
         var influenceDifference: Float = if (cityState.getAllyCiv() != null)
             cityState.getDiplomacyManager(cityState.getAllyCiv()!!).getInfluence()
         else 60f
         influenceDifference -= cityState.getDiplomacyManager(civInfo).getInfluence()
         successPercentage -= influenceDifference / 2f
-        
+
         // If we are viewing the success chance we don't want to reveal that there is a defending spy
         val defendingSpy = if (includeUnkownFactors) 
             cityState.getAllyCiv()?.let { civInfo.gameInfo.getCivilization(it) }?.espionageManager?.getSpyAssignedToCity(getCity()) 
         else null
-        
+
         val spyRanks = getSkillModifier() - (defendingSpy?.getSkillModifier() ?: 0)
         successPercentage += spyRanks / 2f // Each rank counts for 15%
-        
+
         successPercentage = successPercentage.coerceIn(0f, 85f)
         return successPercentage / 100f
     }
-    
+
     fun moveTo(city: City?) {
         if (city == null) { // Moving to spy hideout
             location = null
@@ -331,8 +332,7 @@ class Spy private constructor() : IsPartOfGameInfoSerialization {
     fun getLocationName() = getCityOrNull()?.name ?: Constants.spyHideout
 
     fun levelUpSpy() {
-        //TODO: Make the spy level cap dependent on some unique
-        if (rank >= 3) return
+        if (rank >= civInfo.gameInfo.ruleset.modOptions.constants.maxSpyLevel) return
         addNotification("Your spy [$name] has leveled up!")
         rank++
     }
