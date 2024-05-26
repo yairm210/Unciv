@@ -91,7 +91,10 @@ object MotivationToAttackAutomation {
         }
 
         if (otherCiv.isCityState()) {
-            modifierMap["City-state"] = -30
+            modifierMap["City-state"] = -10
+            modifierMap["Protectors"] = -otherCiv.cityStateFunctions.getProtectorCivs().size * 3
+            if (otherCiv.cityStateFunctions.getProtectorCivs().contains(civInfo))
+                modifierMap["Under our protection"] = -15
             if (otherCiv.getAllyCiv() == civInfo.civName)
                 modifierMap["Allied City-state"] = -20 // There had better be a DAMN good reason
         }
