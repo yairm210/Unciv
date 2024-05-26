@@ -15,7 +15,6 @@ import com.unciv.logic.trade.TradeLogic
 import com.unciv.logic.trade.TradeOffer
 import com.unciv.logic.trade.TradeRequest
 import com.unciv.logic.trade.TradeType
-import com.unciv.models.ruleset.Victory
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.tr
 
@@ -86,7 +85,7 @@ object DiplomacyAutomation {
         motivation -= ((civsToKnow - knownCivs) / civsToKnow * 30f).toInt().coerceAtLeast(0)
 
         // If they are the only non-friendly civ near us then they are the only civ to attack and expand into
-        if (civInfo.threatManager.getNeighboringCivilizaitons().none { it.isMajorCiv() && it != otherCiv 
+        if (civInfo.threatManager.getNeighboringCivilizations().none { it.isMajorCiv() && it != otherCiv 
                         && civInfo.getDiplomacyManager(it).isRelationshipLevelLT(RelationshipLevel.Favorable) })
             motivation -= 20
 
@@ -130,7 +129,7 @@ object DiplomacyAutomation {
         if (civInfo.diplomacy.values.any { it.isRelationshipLevelGE(RelationshipLevel.Friend) && it.otherCiv().isAtWarWith(otherCiv)})
             return false
         // Being able to see their cities can give us an advantage later on, espesialy with espionage enabled
-        if (otherCiv.cities.count { !it.getCenterTile().isVisible(civInfo) } < otherCiv.cities.count() / 2)
+        if (otherCiv.cities.count { !it.getCenterTile().isVisible(civInfo) } < otherCiv.cities.count() * .8f)
             return true
         if (hasAtLeastMotivationToAttack(civInfo, otherCiv, (diploManager.opinionOfOtherCiv()/ 2 - 10).toInt()) > 0)
             return false

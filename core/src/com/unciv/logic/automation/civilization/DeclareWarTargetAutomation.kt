@@ -61,11 +61,11 @@ object DeclareWarTargetAutomation {
 
         for (thirdCiv in potentialAllies) {
             // Make sure that they can actually help us with the target
-            if (!thirdCiv.threatManager.getNeighboringCivilizaitons().contains(target)) continue
+            if (!thirdCiv.threatManager.getNeighboringCivilizations().contains(target)) continue
 
             // They need to be at least half the targets size, and we need to be stronger than the target together
             val thirdCivForce = thirdCiv.getStatForRanking(RankingType.Force) - 0.8f * thirdCiv.threatManager.getCombinedForceOfWarringCivs()
-            if (thirdCivForce > targetForce / 2) continue
+            if (thirdCivForce < targetForce / 2) continue
 
             // A higher motivation means that we can be riskier
             val multiplier = when {

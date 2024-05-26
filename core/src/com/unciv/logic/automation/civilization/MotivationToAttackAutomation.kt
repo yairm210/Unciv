@@ -38,11 +38,12 @@ object MotivationToAttackAutomation {
 
         val modifierMap = HashMap<String, Int>()
         modifierMap["Relative combat strength"] = getCombatStrengthModifier(ourCombatStrength, theirCombatStrength + 0.8f * civInfo.threatManager.getCombinedForceOfWarringCivs())
-        modifierMap["Concurrent wars"] = -civInfo.getCivsAtWarWith().count { it.isMajorCiv() } * 5
+        // TODO: For now this will be a very high value because the AI can't handle multiple fronts, this should be changed later though
+        modifierMap["Concurrent wars"] = -civInfo.getCivsAtWarWith().count { it.isMajorCiv() } * 30
 
         modifierMap["Their allies"] = getDefensivePactAlliesScore(otherCiv, civInfo, baseForce, ourCombatStrength)
 
-        if (civInfo.threatManager.getNeighboringCivilizaitons().none { it != otherCiv && it.isMajorCiv() })
+        if (civInfo.threatManager.getNeighboringCivilizations().none { it != otherCiv && it.isMajorCiv() })
             modifierMap["No other threats"] = 5
 
         val scoreRatioModifier = getScoreRatioModifier(otherCiv, civInfo)
