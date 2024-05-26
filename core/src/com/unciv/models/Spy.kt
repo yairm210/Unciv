@@ -330,10 +330,13 @@ class Spy private constructor() : IsPartOfGameInfoSerialization {
 
     fun getLocationName() = getCityOrNull()?.name ?: Constants.spyHideout
 
-    fun levelUpSpy() {
+    fun levelUpSpy(amount: Int = 1) {
         if (rank >= civInfo.gameInfo.ruleset.modOptions.constants.maxSpyLevel) return
-        addNotification("Your spy [$name] has leveled up!")
-        rank++
+        val ranksToLevelUp = amount.coerceAtMost(civInfo.gameInfo.ruleset.modOptions.constants.maxSpyLevel - rank)
+
+        if (ranksToLevelUp == 1) addNotification("Your spy [$name] has leveled up!")
+        else addNotification("Your spy [$name] has leveled up [$ranksToLevelUp] times!")
+        rank += ranksToLevelUp
     }
 
     /** Zero-based modifier expressing shift of probabilities from Spy Rank
