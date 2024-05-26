@@ -175,7 +175,7 @@ class ThreatManager(val civInfo: Civilization) {
     fun getNeighboringCitiesOfOtherCivs(): Sequence<Pair<City,City>> = civInfo.cities.flatMap {
         ourCity -> ourCity.neighboringCities.filter { it.civ != civInfo }.map { Pair(ourCity, it) } }.asSequence()
 
-    fun getNeighboringCivilizaitons(): Set<Civilization> = civInfo.cities.filter { it.civ != civInfo && civInfo.knows(it.civ) }.map { it.civ }.toSet()
+    fun getNeighboringCivilizations(): Set<Civilization> = civInfo.cities.flatMap { it.neighboringCities }.filter { it.civ != civInfo && civInfo.knows(it.civ) }.map { it.civ }.toSet()
 
     fun getCombinedForceOfWarringCivs(): Int = civInfo.getCivsAtWarWith().sumOf { it.getStatForRanking(RankingType.Force) } 
 
