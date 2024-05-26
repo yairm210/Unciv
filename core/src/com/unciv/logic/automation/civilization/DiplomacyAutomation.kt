@@ -85,6 +85,11 @@ object DiplomacyAutomation {
         val civsToKnow = 0.75f * allAliveCivs
         motivation -= ((civsToKnow - knownCivs) / civsToKnow * 30f).toInt().coerceAtLeast(0)
 
+        // If they are the only non-friendly civ near us then they are the only civ to attack and expand into
+        if (civInfo.threatManager.getNeighboringCivilizaitons().none { it.isMajorCiv() && it != otherCiv 
+                        && civInfo.getDiplomacyManager(it).isRelationshipLevelLT(RelationshipLevel.Favorable) })
+            motivation -= 20
+
         motivation -= hasAtLeastMotivationToAttack(civInfo, otherCiv, motivation / 2) * 2
 
         return motivation > 0
