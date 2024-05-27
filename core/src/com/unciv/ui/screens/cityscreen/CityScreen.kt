@@ -205,9 +205,9 @@ class CityScreen(
         // Bottom center: Name, paging, exit city button
         val centeredX = (stage.width - leftMargin - rightMargin) / 2 + leftMargin
         if (isPortrait()) {
-            cityVerticalTabs.setPosition(stage.width / 2, cityVerticalTabs.height / 2, Align.bottom)
+            cityVerticalTabs.setPosition(stage.width / 2, cityVerticalTabs.height / 2 + 10f, Align.bottom)
         }
-        val exitCityButtonHeight = if (isPortrait()) 60f else 20f
+        val exitCityButtonHeight = if (isPortrait()) 70f else 20f
 
         exitCityButton.setPosition(stage.width / 2, exitCityButtonHeight, Align.bottom)
         cityPickerTable.update()
