@@ -126,8 +126,7 @@ class TradeEvaluation {
                             civInfo.getHappiness() < 10 -> 350
                             else -> 300 // Higher than corresponding sell cost since a trade is mutually beneficial!
                         }
-                    } else
-                        0
+                    } else 0
             }
 
             TradeType.Strategic_Resource -> {
