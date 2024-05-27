@@ -10,20 +10,31 @@ object Countables {
         val relevantStat = Stat.safeValueOf(countable)
 
         if (relevantStat != null) {
-            return if (stateForConditionals.relevantCity != null) {
-                stateForConditionals.relevantCity!!.getStatReserve(relevantStat)
-            } else if (relevantStat in Stat.statsWithCivWideField && stateForConditionals.relevantCiv != null) {
-                stateForConditionals.relevantCiv!!.getStatReserve(relevantStat)
-            } else {
-                null
+            return when {
+                stateForConditionals.relevantCity != null ->
+                    stateForConditionals.relevantCity!!.getStatReserve(relevantStat)
+                relevantStat in Stat.statsWithCivWideField && stateForConditionals.relevantCiv != null ->
+                    stateForConditionals.relevantCiv!!.getStatReserve(relevantStat)
+                else -> null
             }
         }
 
-        if (stateForConditionals.gameInfo == null) return null
+        val gameInfo = stateForConditionals.gameInfo ?: return null
 
-        if (countable == "year") return stateForConditionals.gameInfo!!.getYear(stateForConditionals.gameInfo!!.turns)
-        if (stateForConditionals.gameInfo!!.ruleset.tileResources.containsKey(countable))
+        if (countable == "year") return stateForConditionals.gameInfo!!.getYear(gameInfo.turns)
+
+        val civInfo = stateForConditionals.relevantCiv ?: return null
+
+        if (gameInfo.ruleset.tileResources.containsKey(countable))
             return stateForConditionals.getResourceAmount(countable)
+
+        if (countable in gameInfo.ruleset.units){
+            return civInfo.units.getCivUnits().count { it.name == countable }
+        }
+
+        if (countable in gameInfo.ruleset.buildings){
+            return civInfo.cities.count { it.cityConstructions.containsBuildingOrEquivalent(countable) }
+        }
 
         return null
     }
