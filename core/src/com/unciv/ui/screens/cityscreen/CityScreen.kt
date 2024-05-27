@@ -23,6 +23,7 @@ import com.unciv.ui.audio.CityAmbiencePlayer
 import com.unciv.ui.audio.SoundPlayer
 import com.unciv.ui.components.extensions.colorFromRGB
 import com.unciv.ui.components.extensions.disable
+import com.unciv.ui.components.extensions.enable
 import com.unciv.ui.components.extensions.packIfNeeded
 import com.unciv.ui.components.extensions.toTextButton
 import com.unciv.ui.components.input.KeyCharAndCode
@@ -181,12 +182,6 @@ class CityScreen(
 
         // Rest of screen: Map of surroundings
         updateTileGroups()
-        if (isPortrait()) mapScrollPane.apply {
-            // center scrolling so city center sits more to the bottom right
-            scrollX = (maxX - constructionsTable.getLowerWidth() - posFromEdge) / 2
-            scrollY = (maxY - cityStatsTable.packIfNeeded().height - posFromEdge + cityPickerTable.top) / 2
-            updateVisualScroll()
-        }
     }
 
     internal fun updateWithoutConstructionAndMap() {
@@ -544,6 +539,9 @@ class CityScreen(
         cityPickerTable.isVisible = false
         exitCityButton.isVisible = false
         razeCityButtonHolder.isVisible = false
+        cityVerticalTabs.constructionButton.disable()
+        cityVerticalTabs.viewCityButton.enable()
+        cityVerticalTabs.viewBuildingsButton.enable()
     }
 
     fun selectCityPanel() {
@@ -553,6 +551,9 @@ class CityScreen(
         cityPickerTable.isVisible = true
         exitCityButton.isVisible = true
         razeCityButtonHolder.isVisible = true
+        cityVerticalTabs.constructionButton.enable()
+        cityVerticalTabs.viewCityButton.disable()
+        cityVerticalTabs.viewBuildingsButton.enable()
     }
 
     fun selectCityBuildingsPanel() {
@@ -562,6 +563,9 @@ class CityScreen(
         cityPickerTable.isVisible = false
         exitCityButton.isVisible = false
         razeCityButtonHolder.isVisible = false
+        cityVerticalTabs.constructionButton.enable()
+        cityVerticalTabs.viewCityButton.enable()
+        cityVerticalTabs.viewBuildingsButton.disable()
     }
 
     // Don't use passOnCityAmbiencePlayer here - continuing play on the replacement screen would be nice,
