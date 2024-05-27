@@ -22,3 +22,4 @@ class CityVerticalTabs(cityScreen: CityScreen) : HorizontalGroup() {
         addActor(viewBuildingsButton)
     }
 }
+
