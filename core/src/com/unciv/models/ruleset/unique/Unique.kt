@@ -68,7 +68,7 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
         return true
     }
 
-    fun getUniqueMultiplier(stateForConditionals: StateForConditionals = StateForConditionals()): Int {
+    private fun getUniqueMultiplier(stateForConditionals: StateForConditionals = StateForConditionals()): Int {
         val multiplierConditionals = conditionals.filter { it.type == UniqueType.ForEveryCountable }
         if (multiplierConditionals.isEmpty()) return 1
         var amount = 1
@@ -76,7 +76,20 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
             val multiplier = Countables.getCountableAmount(conditional.params[0], stateForConditionals)
             if (multiplier != null) amount *= multiplier
         }
-        return amount
+        return amount.coerceAtLeast(0)
+    }
+
+    /** Multiplies the unique according to the multiplication conditionals */
+    fun getMultiplied(stateForConditionals: StateForConditionals = StateForConditionals()): Sequence<Unique> {
+        val multiplier = getUniqueMultiplier(stateForConditionals)
+        return EndlessSequenceOf(this).take(multiplier)
+    }
+
+    private class EndlessSequenceOf<T>(private val value: T) : Sequence<T> {
+        override fun iterator(): Iterator<T> = object : Iterator<T> {
+            override fun next() = value
+            override fun hasNext() = true
+        }
     }
 
     fun getDeprecationAnnotation(): Deprecated? = type?.getDeprecationAnnotation()
@@ -255,9 +268,6 @@ class UniqueMap() : HashMap<String, ArrayList<Unique>>() {
             && unique.conditionalsApply(stateForConditionals)
         }
     }
-
-    /** This is an alias for [containsKey] to clarify when a pure string-based check is legitimate. */
-    fun containsFilteringUnique(filter: String) = containsKey(filter)
 }
 
 

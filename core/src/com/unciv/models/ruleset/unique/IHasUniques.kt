@@ -40,12 +40,7 @@ interface IHasUniques : INamed {
 
         val actualStateForConditionals = stateForConditionals ?: StateForConditionals()
         val uniques = matchingUniques.asSequence().filter { it.conditionalsApply(actualStateForConditionals) }
-        return uniques
-            .flatMap { unique ->
-                val multiplier = unique.getUniqueMultiplier(actualStateForConditionals)
-                // There MUST be a more performant way!!
-                sequence { repeat(multiplier) { yield(unique) } }
-            }
+        return uniques.flatMap { it.getMultiplied(actualStateForConditionals) }
     }
 
     fun getMatchingUniques(uniqueType: UniqueType, stateForConditionals: StateForConditionals? = null) =
