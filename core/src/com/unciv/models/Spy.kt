@@ -13,23 +13,24 @@ import com.unciv.logic.civilization.managers.EspionageManager
 import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueType
+import kotlin.math.ceil
 import kotlin.random.Random
 
 
-enum class SpyAction(val displayString: String, val hasTurns: Boolean, internal val isSetUp: Boolean, private val isDoingWork: Boolean = false) {
-    None("None", false, false),
-    Moving("Moving", true, false, true),
-    EstablishNetwork("Establishing Network", true, false, true),
-    Surveillance("Observing City", false, true),
-    StealingTech("Stealing Tech", false, true, true),
-    RiggingElections("Rigging Elections", false, true) {
+enum class SpyAction(val displayString: String, val hasCountdownTurns: Boolean, val showTurns: Boolean, internal val isSetUp: Boolean, private val isDoingWork: Boolean = false) {
+    None("None", false, false, false),
+    Moving("Moving", true, true, false, true),
+    EstablishNetwork("Establishing Network", true, true, false, true),
+    Surveillance("Observing City", false, false, true),
+    StealingTech("Stealing Tech", false, true, true, true),
+    RiggingElections("Rigging Elections", false, true, true) {
         override fun isDoingWork(spy: Spy) = !spy.civInfo.isAtWarWith(spy.getCity().civ)
     },
-    Coup("Coup", true, true, true),
-    CounterIntelligence("Counter-intelligence", false, true) {
+    Coup("Coup", false, false, true, true),
+    CounterIntelligence("Counter-intelligence", false, false, true) {
         override fun isDoingWork(spy: Spy) = spy.turnsRemainingForAction > 0
     },
-    Dead("Dead", true, false),
+    Dead("Dead", true, true, false),
     ;
     internal open fun isDoingWork(spy: Spy) = isDoingWork
 }
@@ -81,13 +82,13 @@ class Spy private constructor() : IsPartOfGameInfoSerialization {
     }
 
     fun setAction(newAction: SpyAction, turns: Int = 0) {
-        assert(!newAction.hasTurns || turns > 0) // hasTurns==false but turns > 0 is allowed (CounterIntelligence), hasTurns==true and turns==0 is not.
+        assert(!newAction.hasCountdownTurns || turns > 0) // hasTurns==false but turns > 0 is allowed (CounterIntelligence), hasTurns==true and turns==0 is not.
         action = newAction
         turnsRemainingForAction = turns
     }
 
     fun endTurn() {
-        if (action.hasTurns && --turnsRemainingForAction > 0) return
+        if (action.hasCountdownTurns && --turnsRemainingForAction > 0) return
         when (action) {
             SpyAction.None -> return
             SpyAction.Moving -> {
@@ -115,19 +116,12 @@ class Spy private constructor() : IsPartOfGameInfoSerialization {
                 setAction(SpyAction.StealingTech) // There are new techs to steal!
             }
             SpyAction.StealingTech -> {
-                val stealableTechs = espionageManager.getTechsToSteal(getCity().civ)
-                if (stealableTechs.isEmpty()) {
+                turnsRemainingForAction = getTurnsRemainingToStealTech()
+
+                if (turnsRemainingForAction == -1) {
                     setAction(SpyAction.Surveillance)
                     addNotification("Your spy [$name] cannot steal any more techs from [${getCity().civ}] as we've already researched all the technology they know!")
-                    return
-                }
-                val techStealCost = stealableTechs.maxOfOrNull { civInfo.gameInfo.ruleset.technologies[it]!!.cost }!!
-                var progressThisTurn = getCity().cityStats.currentCityStats.science
-                // 33% spy bonus for each level
-                progressThisTurn *= (rank + 2f) / 3f
-                progressThisTurn *= getEfficiencyModifier().toFloat()
-                progressTowardsStealingTech += progressThisTurn.toInt()
-                if (progressTowardsStealingTech > techStealCost) {
+                } else if (turnsRemainingForAction == 0) {
                     stealTech()
                 }
             }
@@ -159,6 +153,30 @@ class Spy private constructor() : IsPartOfGameInfoSerialization {
     private fun startStealingTech() {
         setAction(SpyAction.StealingTech)
         progressTowardsStealingTech = 0
+        turnsRemainingForAction = getTurnsRemainingToStealTech()
+    }
+
+    /**
+     * @return The number of turns left to steal the technology, note that this is a guess and may change.
+     * A 0 means that we are ready to steal the technology. 
+     * A -1 means we have no techonologies to steal.
+     */
+    private fun getTurnsRemainingToStealTech(): Int {
+        val stealableTechs = espionageManager.getTechsToSteal(getCity().civ)
+        if (stealableTechs.isEmpty()) return -1
+
+        val techStealCost = stealableTechs.maxOfOrNull { civInfo.gameInfo.ruleset.technologies[it]!!.cost }!!
+        var progressThisTurn = getCity().cityStats.currentCityStats.science
+        // 33% spy bonus for each level
+        progressThisTurn *= (rank + 2f) / 3f
+        progressThisTurn *= getEfficiencyModifier().toFloat()
+        progressTowardsStealingTech += progressThisTurn.toInt()
+
+        if (progressTowardsStealingTech >= techStealCost) {
+            return 0
+        } else {
+            return ceil((techStealCost - progressTowardsStealingTech) / progressThisTurn).toInt()
+        }
     }
 
     private fun stealTech() {
@@ -230,7 +248,7 @@ class Spy private constructor() : IsPartOfGameInfoSerialization {
             val pastAlly = cityState.getAllyCiv()?.let { civInfo.gameInfo.getCivilization(it) }
             val previousInfluence = if (pastAlly != null) cityState.getDiplomacyManager(pastAlly).getInfluence() else 80f
             cityState.getDiplomacyManager(civInfo).setInfluence(previousInfluence)
-            
+
             civInfo.addNotification("Your spy [$name] successfully staged a coup in [${cityState.civName}]!", getCity().location,
                     NotificationCategory.Espionage, NotificationIcon.Spy, cityState.civName)
             if (pastAlly != null) {
@@ -273,26 +291,26 @@ class Spy private constructor() : IsPartOfGameInfoSerialization {
     fun getCoupChanceOfSuccess(includeUnkownFactors: Boolean): Float {
         val cityState = getCity().civ
         var successPercentage = 50f
-        
+
         // Influence difference should always be a positive value
         var influenceDifference: Float = if (cityState.getAllyCiv() != null)
             cityState.getDiplomacyManager(cityState.getAllyCiv()!!).getInfluence()
         else 60f
         influenceDifference -= cityState.getDiplomacyManager(civInfo).getInfluence()
         successPercentage -= influenceDifference / 2f
-        
+
         // If we are viewing the success chance we don't want to reveal that there is a defending spy
         val defendingSpy = if (includeUnkownFactors) 
             cityState.getAllyCiv()?.let { civInfo.gameInfo.getCivilization(it) }?.espionageManager?.getSpyAssignedToCity(getCity()) 
         else null
-        
+
         val spyRanks = getSkillModifier() - (defendingSpy?.getSkillModifier() ?: 0)
         successPercentage += spyRanks / 2f // Each rank counts for 15%
-        
+
         successPercentage = successPercentage.coerceIn(0f, 85f)
         return successPercentage / 100f
     }
-    
+
     fun moveTo(city: City?) {
         if (city == null) { // Moving to spy hideout
             location = null
