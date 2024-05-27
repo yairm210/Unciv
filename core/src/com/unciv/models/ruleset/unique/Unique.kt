@@ -77,7 +77,7 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
             val multiplier = Countables.getCountableAmount(conditional.params[0], stateForConditionals)
             if (multiplier != null) amount *= multiplier
         }
-        for (conditional in forEveryConditionals) { // multiple multipliers DO multiply.
+        for (conditional in forEveryAmountConditionals) { // multiple multipliers DO multiply.
             val multiplier = Countables.getCountableAmount(conditional.params[1], stateForConditionals)
             val perEvery = conditional.params[0].toInt()
             if (multiplier != null) amount *= multiplier / perEvery
