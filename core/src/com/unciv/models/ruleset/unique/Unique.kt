@@ -68,6 +68,30 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
         return true
     }
 
+    private fun getUniqueMultiplier(stateForConditionals: StateForConditionals = StateForConditionals()): Int {
+        val multiplierConditionals = conditionals.filter { it.type == UniqueType.ForEveryCountable }
+        if (multiplierConditionals.isEmpty()) return 1
+        var amount = 1
+        for (conditional in multiplierConditionals) { // multiple multipliers DO multiply.
+            val multiplier = Countables.getCountableAmount(conditional.params[0], stateForConditionals)
+            if (multiplier != null) amount *= multiplier
+        }
+        return amount.coerceAtLeast(0)
+    }
+
+    /** Multiplies the unique according to the multiplication conditionals */
+    fun getMultiplied(stateForConditionals: StateForConditionals = StateForConditionals()): Sequence<Unique> {
+        val multiplier = getUniqueMultiplier(stateForConditionals)
+        return EndlessSequenceOf(this).take(multiplier)
+    }
+
+    private class EndlessSequenceOf<T>(private val value: T) : Sequence<T> {
+        override fun iterator(): Iterator<T> = object : Iterator<T> {
+            override fun next() = value
+            override fun hasNext() = true
+        }
+    }
+
     fun getDeprecationAnnotation(): Deprecated? = type?.getDeprecationAnnotation()
 
     fun getSourceNameForUser(): String {
@@ -244,9 +268,6 @@ class UniqueMap() : HashMap<String, ArrayList<Unique>>() {
             && unique.conditionalsApply(stateForConditionals)
         }
     }
-
-    /** This is an alias for [containsKey] to clarify when a pure string-based check is legitimate. */
-    fun containsFilteringUnique(filter: String) = containsKey(filter)
 }
 
 

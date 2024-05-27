@@ -483,7 +483,7 @@ class City : IsPartOfGameInfoSerialization {
                 + religion.getUniques().filter { it.type == uniqueType }
             ).filter {
                 !it.isTimedTriggerable && it.conditionalsApply(stateForConditionals)
-            }
+            }.flatMap { it.getMultiplied(stateForConditionals) }
     }
 
     // Uniques special to this city
@@ -491,6 +491,7 @@ class City : IsPartOfGameInfoSerialization {
         val uniques = cityConstructions.builtBuildingUniqueMap.getUniques(uniqueType).filter { it.isLocalEffect } +
             religion.getUniques().filter { it.type == uniqueType }
         return if (uniques.any()) uniques.filter { !it.isTimedTriggerable && it.conditionalsApply(stateForConditionals) }
+            .flatMap { it.getMultiplied(stateForConditionals) }
         else uniques
     }
 
@@ -499,7 +500,7 @@ class City : IsPartOfGameInfoSerialization {
         val uniques = cityConstructions.builtBuildingUniqueMap.getUniques(uniqueType)
         // Memory performance showed that this function was very memory intensive, thus we only create the filter if needed
         return if (uniques.any()) uniques.filter { !it.isLocalEffect && !it.isTimedTriggerable
-            && it.conditionalsApply(stateForConditionals) }
+            && it.conditionalsApply(stateForConditionals) }.flatMap { it.getMultiplied(stateForConditionals) }
         else uniques
     }
 
