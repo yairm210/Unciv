@@ -67,9 +67,9 @@ class UnitTable(val worldScreen: WorldScreen) : Table() {
     // Most of the time it's the same unit with the same stats so why waste precious time?
     private var selectedUnitHasChanged = false
     val separator: Actor
-    
+
     var selectedSpy: Spy? = null
-    
+
     fun selectSpy(spy: Spy?) {
         selectedSpy = spy
         selectedCity = null
@@ -252,12 +252,12 @@ class UnitTable(val worldScreen: WorldScreen) : Table() {
             unitNameLabel.clearListeners()
             unitNameLabel.setText(spy.name)
             unitDescriptionTable.clear()
-            
+
             unitIconHolder.clear()
             unitIconHolder.add (ImageGetter.getImage("OtherIcons/Spy_White").apply {
                 color = Color.WHITE
             }).size(30f)
-            
+
             separator.isVisible = true
             val color = when(spy.rank) {
                 1 -> Color.BROWN
