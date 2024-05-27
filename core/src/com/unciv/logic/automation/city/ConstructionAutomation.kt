@@ -8,7 +8,6 @@ import com.unciv.logic.city.CityConstructions
 import com.unciv.logic.civilization.CityAction
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
-import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.map.BFS
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
@@ -23,7 +22,7 @@ import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stat
-import kotlin.math.ceil
+import com.unciv.models.stats.Stats
 import kotlin.math.max
 import kotlin.math.sqrt
 
@@ -84,6 +83,8 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
     private val cityIsOverAverageProduction = city.cityStats.currentCityStats.production >= averageProduction
 
     private val relativeCostEffectiveness = ArrayList<ConstructionChoice>()
+    private val cityState = StateForConditionals(city)
+    private val cityStats = city.cityStats
 
     private data class ConstructionChoice(val choice: String, var choiceModifier: Float,
                                           val remainingWork: Int, val production: Int)
@@ -107,14 +108,10 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
     fun chooseNextConstruction() {
         if (cityConstructions.getCurrentConstruction() !is PerpetualConstruction) return  // don't want to be stuck on these forever
 
-        addDefenceBuildingChoice()
-        addUnitTrainingBuildingChoice()
-        addOtherBuildingChoice()
-        addAllStatChoice()
+        addBuildingChoices()
 
         if (!city.isPuppet) {
             addSpaceshipPartChoice()
-            addWondersChoice()
             addWorkerChoice()
             addWorkBoatChoice()
             addMilitaryUnitChoice()
@@ -130,7 +127,14 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
                 }
             } else if (relativeCostEffectiveness.any { it.remainingWork < it.production * 30 }) {
                 relativeCostEffectiveness.removeAll { it.remainingWork >= it.production * 30 }
-                relativeCostEffectiveness.minByOrNull { it.remainingWork / it.choiceModifier / it.production.coerceAtLeast(1) }!!.choice
+                // If there are any positive choiceModifiers then we have to take out the negative value or else they will get a very low value
+                // If there are no positive choiceModifiers then we want to take the least negative value building since we will be dividing by a negative
+                if (relativeCostEffectiveness.none { it.choiceModifier >= 0 }) {
+                    relativeCostEffectiveness.maxByOrNull { (it.remainingWork / it.choiceModifier) / it.production.coerceAtLeast(1) }!!.choice
+                } else {
+                    relativeCostEffectiveness.removeAll { it.choiceModifier < 0 }
+                    relativeCostEffectiveness.minByOrNull { (it.remainingWork / it.choiceModifier) / it.production.coerceAtLeast(1) }!!.choice
+                }
             }
             // it's possible that this is a new city and EVERYTHING is way expensive - ignore modifiers, go for the cheapest.
             // Nobody can plan 30 turns ahead, I don't care how cost-efficient you are.
@@ -228,7 +232,7 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
         val numberOfWorkersWeWant = if (cities <= 5) cities else 5 + (cities - 5 / 2)
 
         if (workers < numberOfWorkersWeWant) {
-            var modifier = numberOfWorkersWeWant / (workers + 0.1f) // The worse our worker to city ratio is, the more desperate we are
+            var modifier = numberOfWorkersWeWant / (workers + 0.4f) // The worse our worker to city ratio is, the more desperate we are
             if (!cityIsOverAverageProduction) modifier /= 5 // higher production cities will deal with this
             addChoice(relativeCostEffectiveness, workerEquivalents.minByOrNull { it.cost }!!.name, modifier)
         }
@@ -242,104 +246,64 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
         addChoice(relativeCostEffectiveness, spaceshipPart.name, modifier)
     }
 
-    private fun addOtherBuildingChoice() {
-        val otherBuilding = nonWonders
-            .filter { Automation.allowAutomatedConstruction(civInfo, city, it) }
-            .filterBuildable()
-            .minByOrNull { it.cost } ?: return
-        val modifier = 0.6f
-        addChoice(relativeCostEffectiveness, otherBuilding.name, modifier)
-    }
-
-    private fun getWonderPriority(wonder: Building): Float {
-        // Only start building if we are the city that would complete it the soonest
-        if (wonder.hasUnique(UniqueType.TriggersCulturalVictory)
-                && city == civInfo.cities.minByOrNull {
-                    it.cityConstructions.turnsToConstruction(wonder.name)
-                }!!
-        ) {
-            return 10f
-        }
-        if (wonder.name in buildingsForVictory)
-            return 5f
-        if (civInfo.wantsToFocusOn(Victory.Focus.Culture)
-                // TODO: Moddability
-                && wonder.name in listOf("Sistine Chapel", "Eiffel Tower", "Cristo Redentor", "Neuschwanstein", "Sydney Opera House"))
-            return 3f
-        if (wonder.isStatRelated(Stat.Science)) {
-            if (allTechsAreResearched) return .5f
-            return if (civInfo.wantsToFocusOn(Victory.Focus.Science)) 1.5f
-            else 1.3f
-        }
-        if (wonder.hasUnique(UniqueType.EnablesNuclearWeapons)) {
-            return if (civInfo.wantsToFocusOn(Victory.Focus.Military)) 2f
-            else 1.3f
-        }
-        if (wonder.isStatRelated(Stat.Happiness)) return 1.2f
-        if (wonder.isStatRelated(Stat.Production)) return 1.1f
-        return 1f
-    }
-
-    private fun addWondersChoice() {
-        if (!wonders.any()) return
-
-        val highestPriorityWonder = wonders
-            .filter { Automation.allowAutomatedConstruction(civInfo, city, it) }
-            .filterBuildable()
-            .maxByOrNull { getWonderPriority(it as Building) }
-            ?: return
-
-        val citiesBuildingWonders = civInfo.cities
-                .count { it.cityConstructions.isBuildingWonder() }
-
-        var modifier = 2f * getWonderPriority(highestPriorityWonder as Building) / (citiesBuildingWonders + 1)
-        if (!cityIsOverAverageProduction) modifier /= 5  // higher production cities will deal with this
-        addChoice(relativeCostEffectiveness, highestPriorityWonder.name, modifier)
-    }
-
-    private fun addUnitTrainingBuildingChoice() {
-        val unitTrainingBuilding = nonWonders
-            .filter { it.hasUnique(UniqueType.UnitStartingExperience)
-                    && Automation.allowAutomatedConstruction(civInfo, city, it)
-            }
-            .filterBuildable()
-            .minByOrNull { it.cost } ?: return
-        if ((isAtWar ||
-                !civInfo.wantsToFocusOn(Victory.Focus.Culture) || !personality.isNeutralPersonality)) {
-            var modifier = if (cityIsOverAverageProduction) 0.5f else 0.1f // You shouldn't be cranking out units anytime soon
-            if (isAtWar) modifier *= 2
-            if (civInfo.wantsToFocusOn(Victory.Focus.Military))
-                modifier *= 1.3f
-            modifier *= personality.scaledFocus(PersonalityValue.Aggressive)
-            addChoice(relativeCostEffectiveness, unitTrainingBuilding.name, modifier)
+    private fun addBuildingChoices() {
+        for (building in buildings.filterBuildable() as Sequence<Building>) {
+            if (building.isWonder && city.isPuppet) continue
+            addChoice(relativeCostEffectiveness, building.name, getValueOfBuilding(building))
         }
     }
 
-    private fun addDefenceBuildingChoice() {
-        val defensiveBuilding = nonWonders
-            .filter { it.cityStrength > 0
-                    && Automation.allowAutomatedConstruction(civInfo, city, it)
-            }
-            .filterBuildable()
-            .minByOrNull { it.cost } ?: return
-        var modifier = 0.2f
-        if (isAtWar) modifier = 0.5f
+    private fun getValueOfBuilding(building: Building): Float {
+        var value = 0f
+        value += applyBuildingStats(building)
+        value += applyMilitaryBuildingValue(building)
+        value += applyVictoryBuildingValue(building)
+        value += applyOnetimeUniqueBonuses(building)
+        return value
+    }
 
+
+    private fun applyOnetimeUniqueBonuses(building: Building): Float {
+        var value = 0f
+        // TODO: Add specific Uniques here
+        return value
+    }
+
+    private fun applyVictoryBuildingValue(building: Building): Float {
+        var value = 0f
+        if (!cityIsOverAverageProduction) return value
+        if (building.isWonder) value += 2f
+        if (building.hasUnique(UniqueType.TriggersCulturalVictory)) value += 10f
+        if (building.hasUnique(UniqueType.EnablesConstructionOfSpaceshipParts)) value += 10f
+        return value
+    }
+
+    private fun applyMilitaryBuildingValue(building: Building): Float {
+        var value = 0f
+        var warModifier = if (isAtWar) 1f else .5f
         // If this city is the closest city to another civ, that makes it a likely candidate for attack
         if (civInfo.getKnownCivs()
                     .mapNotNull { NextTurnAutomation.getClosestCities(civInfo, it) }
                     .any { it.city1 == city })
-            modifier *= 1.5f
-        addChoice(relativeCostEffectiveness, defensiveBuilding.name, modifier)
+            warModifier *= 2f
+        value += warModifier * building.cityHealth.toFloat() / city.getMaxHealth()
+        value += warModifier * building.cityStrength.toFloat() / (city.getStrength() + 3) // The + 3 here is to reduce the priority of building walls immedietly
+
+        for (experienceUnique in building.getMatchingUniques(UniqueType.UnitStartingExperience, cityState)) {
+            var modifier = experienceUnique.params[1].toFloat() / 5
+            modifier *= if (cityIsOverAverageProduction) 1f else 0.2f // You shouldn't be cranking out units anytime soon
+            modifier *= personality.modifierFocus(PersonalityValue.Military, 0.3f)
+            modifier *= personality.modifierFocus(PersonalityValue.Aggressive, 0.2f).coerceAtLeast(1f) // Defensive civs can still want a good military
+            value += modifier
+        }
+        if (building.hasUnique(UniqueType.EnablesNuclearWeapons) && !civInfo.hasUnique(UniqueType.EnablesNuclearWeapons))
+            value += 4f * personality.modifierFocus(PersonalityValue.Military, 0.3f)
+        return value
     }
 
-    private fun buildingValue(building: Building): Float {
+    private fun applyBuildingStats(building: Building): Float {
         val buildingStats = city.cityStats.getStatDifferenceFromBuilding(building.name)
-        for (unique in building.getMatchingUniques(UniqueType.CarryOverFood, StateForConditionals(city)))
-        {
-            if (city.matchesFilter(unique.params[1]) && unique.params[0].toInt() != 0)
-                buildingStats.food *= 1 / (1 - (unique.params[0].toFloat() / 100)) // not acurate, but close enough
-        }
+        getBuildingStatsFromUniques(building, buildingStats)
 
         val surplusFood = city.cityStats.currentCityStats[Stat.Food]
         if (surplusFood < 0) {
@@ -348,7 +312,7 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
             buildingStats.food *= 3
         }
 
-        if (buildingStats.gold < 0 && civInfo.gold < 0) {
+        if (buildingStats.gold < 0 && civInfo.stats.statsForNextTurn.gold < 10) {
             buildingStats.gold *= 2 // We have a gold problem and this isn't helping
         }
 
@@ -371,20 +335,23 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
             buildingStats[stat] *= personality.scaledFocus(PersonalityValue[stat])
         }
 
-        return Automation.rankStatsValue(buildingStats.clone(), civInfo)
+        return Automation.rankStatsValue(civInfo.getPersonality().scaleStats(buildingStats.clone(), .3f), civInfo)
     }
 
-    private fun addAllStatChoice() {
-        val building = buildings
-            .filter { Automation.allowAutomatedConstruction(civInfo, city, it) }
-            .filterBuildable()
-            .maxByOrNull { buildingValue(it as Building) /
-                ceil(it.cost.toFloat() / cityConstructions.productionForConstruction(it.name).coerceAtLeast(1))
-                    .coerceAtLeast(1f)
-            } ?: return
+    private fun getBuildingStatsFromUniques(building: Building, buildingStats: Stats) {
+        for (unique in building.getMatchingUniques(UniqueType.StatPercentBonusCities, cityState)) {
+            val statType = Stat.valueOf(unique.params[1])
+            val relativeAmount = unique.params[0].toFloat() / 100f
+            val amount = civInfo.stats.statsForNextTurn[statType] * relativeAmount
+            buildingStats[statType] += amount
+        }
 
-        addChoice(
-            relativeCostEffectiveness, building.name,
-            buildingValue(building as Building) / 4)
+        for (unique in building.getMatchingUniques(UniqueType.CarryOverFood, cityState)) {
+            if (city.matchesFilter(unique.params[1]) && unique.params[0].toInt() != 0) {
+                val foodGain = cityStats.currentCityStats.food + buildingStats.food
+                val relativeAmount = unique.params[0].toFloat() / 100f
+                buildingStats[Stat.Food] += foodGain * relativeAmount // Essentialy gives us the food per turn this unique saves us
+            }
+        }
     }
 }
