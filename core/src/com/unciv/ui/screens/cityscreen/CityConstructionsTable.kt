@@ -131,7 +131,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
     fun addActorsToStage() {
         cityScreen.stage.addActor(upperTable)
         cityScreen.stage.addActor(lowerTable)
-        lowerTable.setPosition(posFromEdge, posFromEdge, Align.bottomLeft)
+        lowerTable.setPosition(posFromEdge, if (cityScreen.isPortrait()) posFromEdge + 60f else posFromEdge,  Align.bottomLeft)
     }
 
     fun update(selectedConstruction: IConstruction?) {
