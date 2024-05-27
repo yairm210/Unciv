@@ -42,17 +42,10 @@ class OptionsPopup(
     val selectBoxMinWidth: Float
     private val tabMinWidth: Float
 
-    private var keyBindingsTab: KeyBindingsTab? = null
-    /** Enable the still experimental Keyboard Bindings page in OptionsPopup */
-    var enableKeyBindingsTab: Boolean = true
-
     //endregion
 
     companion object {
         const val defaultPage = 2  // Gameplay
-
-        const val keysTabCaption = "Keys"
-        const val keysTabBeforeCaption = "Advanced"
     }
 
     init {
@@ -112,9 +105,17 @@ class OptionsPopup(
             ImageGetter.getImage("OtherIcons/Multiplayer"), 24f
         )
 
+        if (GUI.keyboardAvailable) {
+            tabs.addPage(
+                "Keys",
+                KeyBindingsTab(this, tabMinWidth - 40f),  // 40 = padding
+                ImageGetter.getImage("OtherIcons/Keyboard"), 24f
+            )
+        }
+
         tabs.addPage(
             "Advanced",
-            advancedTab(this, ::reloadWorldAndOptions),
+            AdvancedTab(this, ::reloadWorldAndOptions),
             ImageGetter.getImage("OtherIcons/Settings"), 24f
         )
 
@@ -129,15 +130,11 @@ class OptionsPopup(
         tabs.decorateHeader(getCloseButton {
             screen.game.musicController.onChange(null)
             center(screen.stage)
-            keyBindingsTab?.save()
+            tabs.selectPage(-1, false)
             settings.save()
-            onClose() // activate the passed 'on close' button
+            onClose() // activate the passed 'on close' callback
             close() // close this popup
         })
-
-        if (GUI.keyboardAvailable) {
-            showOrHideKeyBindings()  // Do this late because it looks for the page to insert before
-        }
 
         pack() // Needed to show the background.
         center(screen.stage)
@@ -207,26 +204,6 @@ class OptionsPopup(
         addCheckbox(table, text, settingsProperty.get(), updateWorld) {
             action(it)
             settingsProperty.set(it)
-        }
-    }
-
-    internal fun showOrHideKeyBindings() {
-        // At the moment, the Key bindings Tab exists only on-demand. To refactor it back to permanent,
-        // move the `keyBindingsTab =` line and addPage call to before the Advanced Tab creation,
-        // then delete this function, delete the enableKeyBindingsTab flag and clean up what is flagged
-        // by the compiler as missing or unused - like the `add("Show keyboard bindings".toCheckBox` option on DebugTab.
-        val existingIndex = tabs.getPageIndex(keysTabCaption)
-        if (enableKeyBindingsTab && existingIndex < 0) {
-            if (keyBindingsTab == null)
-                keyBindingsTab = KeyBindingsTab(this, tabMinWidth - 40f)  // 40 = padding
-            val beforeIndex = tabs.getPageIndex(keysTabBeforeCaption)
-            tabs.addPage(
-                keysTabCaption, keyBindingsTab,
-                ImageGetter.getImage("OtherIcons/Keyboard"), 24f,
-                insertBefore = beforeIndex
-            )
-        } else if (!enableKeyBindingsTab && existingIndex >= 0) {
-            tabs.removePage(existingIndex)
         }
     }
 }

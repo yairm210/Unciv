@@ -1,5 +1,7 @@
 package com.unciv.uniques
 
+import com.unciv.models.ruleset.unique.Unique
+import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.testing.GdxTestRunner
 import com.unciv.testing.TestGame
 import org.junit.Assert
@@ -120,5 +122,17 @@ class ResourceTests {
         val doubleStrategic = game.createBuilding("Quantity of strategic resources produced by the empire +[100]%")
         city.cityConstructions.addBuilding(doubleStrategic)
         Assert.assertTrue(civInfo.getCivResourcesByName()["Coal"] == 4)
+    }
+
+    @Test
+    fun testPerCountableForGlobalAndLocalResources() {
+        // one coal provided locally
+        val consumesCoal = game.createBuilding("Provides [1] [Coal]")
+        city.cityConstructions.addBuilding(consumesCoal)
+        // one globally
+        UniqueTriggerActivation.triggerUnique(Unique("Provides [1] [Coal] <for [2] turns>"), civInfo)
+        val providesFaithPerCoal = game.createBuilding("[+1 Faith] [in this city] <for every [Coal]>")
+        city.cityConstructions.addBuilding(providesFaithPerCoal)
+        Assert.assertEquals(2f, city.cityStats.currentCityStats.faith)
     }
 }

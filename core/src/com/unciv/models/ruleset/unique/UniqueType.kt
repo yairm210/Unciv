@@ -635,6 +635,7 @@ enum class UniqueType(
     /////////////////////////////////// region 07 PERSONALITY UNIQUES ////////////////////////////////////////
 
     WillNotBuild("Will not build [baseUnitFilter/buildingFilter]", UniqueTarget.Personality),
+    //endregion
 
     ///////////////////////////////////////// region 08 CONDITIONALS /////////////////////////////////////////
 
@@ -869,6 +870,8 @@ enum class UniqueType(
     HiddenWithoutVictoryType("Hidden when [victoryType] Victory is disabled", UniqueTarget.Building, UniqueTarget.Unit, flags = UniqueFlag.setOfHiddenToUsers),
     HiddenFromCivilopedia("Will not be displayed in Civilopedia", *UniqueTarget.Displayable, flags = UniqueFlag.setOfHiddenToUsers),
     ModifierHiddenFromUsers("hidden from users", UniqueTarget.MetaModifier),
+    ForEveryCountable("for every [countable]", UniqueTarget.MetaModifier),
+    ForEveryAmountCountable("for every [amount] [countable]", UniqueTarget.MetaModifier),
     Comment("Comment [comment]", *UniqueTarget.Displayable,
         docDescription = "Allows displaying arbitrary text in a Unique listing. Only the text within the '[]' brackets will be displayed, the rest serves to allow Ruleset validation to recognize the intent."),
 

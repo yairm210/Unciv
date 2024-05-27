@@ -212,7 +212,7 @@ class ModCheckboxTable(
     private fun disableIncompatibleMods() {
         for (modWidget in modWidgets) {
             val enable = ModCompatibility.meetsAllRequirements(modWidget.mod, baseRuleset, getSelectedMods())
-            assert(enable || !modWidget.widget.isChecked) { "Mod compatibility conflict: Trying to disable ${modWidget.mod.name} while it is selected" }
+            if (!enable && modWidget.widget.isChecked) modWidget.widget.isChecked = false  // mod widgets can't, but selecting a map can cause this situation
             modWidget.widget.isDisabled = !enable  // isEnabled is only for TextButtons
         }
     }

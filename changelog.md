@@ -1,3 +1,65 @@
+## 4.11.15
+
+Modding: "for every [countable]" unique modifier 
+
+Added links to base ruleset template in docs
+
+Fixed "don't allow era select" if the game has no techs
+
+By SomeTroglodyte: 
+- Support for Zulu language 
+
+By tuvus:
+- Clicking the spy button no longer allows the spy to be moved when it isn't their turn 
+- Added the Espionage civilopedia entry 
+- Construction automation rework 
+- Espionage button cancels moving spy
+
+## 4.11.14
+
+Allow rulesets to forgo capital city indicators entirely!
+
+Default city for hexarealm does NOT have a question mark
+
+Added ruleset validation for preferred victory type
+
+By SomeTroglodyte:
+- Mod checker reports some problems with texture atlases or their source images
+- ImagePacker detects changed settings file
+- Make random conditionals depend on turn
+
+By tuvus:
+- Fixed gold ruin not displaying notification
+- AI worker build roads improvement
+
+## 4.11.13
+
+Barbarian water units no longer pillage
+
+By SomeTroglodyte:
+- Console: tile setowner, civ removepolicy
+- Fix crash when a starting unit has a random conditional
+- Espionage icons
+
+By tuvus:
+- Espionage: Spies can be moved on map
+- Espionage: City state coup
+- AI doesn't settle very unfavorable locations
+
+## 4.11.12
+
+By tuvus:
+- More espionage UI improvements
+- City state election rigging
+
+By SomeTroglodyte:
+- Fix "Move a unit" tutorial isn't completed by moving via right-click
+- Fix "Translating" wiki link
+
+Added the culture-refunding remove policy unique  - By PLynx01
+
+Corrected Coast yields to give 1 Food and 1 Gold  - By Skekdog
+
 ## 4.11.11
 
 Nuclear weapon uniques accept conditionals

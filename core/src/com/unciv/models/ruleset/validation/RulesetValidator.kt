@@ -30,7 +30,7 @@ class RulesetValidator(val ruleset: Ruleset) {
 
     private val uniqueValidator = UniqueValidator(ruleset)
 
-    private val textureNamesCache by lazy { AtlasPreview(ruleset) }
+    private lateinit var textureNamesCache: AtlasPreview
 
     fun getErrorList(tryFixUnknownUniques: Boolean = false): RulesetErrorList {
         // When no base ruleset is loaded - references cannot be checked
@@ -53,10 +53,13 @@ class RulesetValidator(val ruleset: Ruleset) {
         addPromotionErrorsRulesetInvariant(lines, tryFixUnknownUniques)
         addResourceErrorsRulesetInvariant(lines, tryFixUnknownUniques)
 
-        // Tileset tests - e.g. json configs complete and parseable
-        checkTilesetSanity(lines)
+        if (!::textureNamesCache.isInitialized)
+            textureNamesCache = AtlasPreview(ruleset, lines)  // This logs Atlas list errors, and if these exist, scans for invalid png's
 
-        checkCivilopediaText(lines)
+        // Tileset tests - e.g. json configs complete and parseable
+        checkTilesetSanity(lines)  // relies on textureNamesCache
+
+        checkCivilopediaText(lines)  // relies on textureNamesCache
 
         return lines
     }
@@ -90,6 +93,9 @@ class RulesetValidator(val ruleset: Ruleset) {
         addDifficultyErrors(lines)
         addEventErrors(lines, tryFixUnknownUniques)
         addCityStateTypeErrors(tryFixUnknownUniques, lines)
+
+        if (!::textureNamesCache.isInitialized)
+            textureNamesCache = AtlasPreview(ruleset, lines)  // This logs Atlas list errors, and if these exist, scans for invalid png's
 
         // Tileset tests - e.g. json configs complete and parseable
         // Check for mod or Civ_V_GnK to avoid running the same test twice (~200ms for the builtin assets)
@@ -264,6 +270,8 @@ class RulesetValidator(val ruleset: Ruleset) {
 
             uniqueValidator.checkUniques(nation, lines, true, tryFixUnknownUniques)
 
+            if (nation.preferredVictoryType != Constants.neutralVictoryType && nation.preferredVictoryType !in ruleset.victories)
+                lines.add("${nation.name}'s preferredVictoryType is ${nation.preferredVictoryType} which does not exist!", sourceObject = nation)
             if (nation.cityStateType != null && nation.cityStateType !in ruleset.cityStateTypes)
                 lines.add("${nation.name} is of city-state type ${nation.cityStateType} which does not exist!", sourceObject = nation)
             if (nation.favoredReligion != null && nation.favoredReligion !in ruleset.religions)
@@ -777,11 +785,11 @@ class RulesetValidator(val ruleset: Ruleset) {
 
     private fun checkTilesetSanity(lines: RulesetErrorList) {
         // If running from a jar *and* checking a builtin ruleset, skip this check.
-        // - We can't list() the jsons, and the unit test before relase is sufficient, the tileset config can't have changed since then.
+        // - We can't list() the jsons, and the unit test before release is sufficient, the tileset config can't have changed since then.
         if (ruleset.folderLocation == null && this::class.java.`package`?.specificationVersion != null)
             return
 
-        val tilesetConfigFolder = (ruleset.folderLocation ?: Gdx.files.internal("")).child("jsons\\TileSets")
+        val tilesetConfigFolder = (ruleset.folderLocation ?: Gdx.files.internal("")).child("jsons/TileSets")
         if (!tilesetConfigFolder.exists()) return
 
         val configTilesets = mutableSetOf<String>()

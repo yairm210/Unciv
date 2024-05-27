@@ -256,7 +256,17 @@ class GameSettings {
 
     enum class NationPickerListMode { Icons, List }
 
+    /** Map Unciv language key to Java locale, for the purpose of getting a Collator for sorting.
+     *  - Effect depends on the Java libraries and may not always conform to expectations.
+     *    If in doubt, debug and see what Locale instance you get and compare its properties with `Locale.getDefault()`.
+     *    (`Collator.getInstance(LocaleCode.*.run { Locale(language, country) }) to Collator.getInstance())`, drill to both `rules`, compare hashes - if equal and other properties equal, then Java doesn't know your Language))
+     *  @property name same as translation file name with ' ', '_', '-', '(', ')' removed
+     *  @property language ISO 639-1 code for the language
+     *  @property country ISO 3166 code for the nation this is predominantly spoken in
+     *  @property trueLanguage If set, used instead of language to trick Java into supplying a close-enough collator (a no-match would otherwise give us the default collator, not a collator for a partial match)
+     */
     enum class LocaleCode(val language: String, val country: String, val trueLanguage: String? = null) {
+        Afrikaans("af", "ZA"),
         Arabic("ar", "IQ"),
         Belarusian("be", "BY"),
         Bosnian("bs", "BA"),
@@ -302,7 +312,7 @@ class GameSettings {
         Turkish("tr", "TR"),
         Ukrainian("uk", "UA"),
         Vietnamese("vi", "VN"),
-        Afrikaans("af", "ZA")
+        Zulu("zu", "ZA")
     }
 
     //endregion

@@ -74,7 +74,7 @@ class CityStateDiplomacyTable(private val diplomacyScreen: DiplomacyScreen) {
             else diplomacyTable.add(diplomacyScreen.getDeclareWarButton(diplomacyManager, otherCiv)).row()
         }
 
-        if (otherCiv.cities.isNotEmpty() && otherCiv.getCapital() != null && viewingCiv.hasExplored(otherCiv.getCapital()!!.getCenterTile()))
+        if (otherCiv.getCapital() != null && viewingCiv.hasExplored(otherCiv.getCapital()!!.getCenterTile()))
             diplomacyTable.add(diplomacyScreen.getGoToOnMapButton(otherCiv)).row()
 
         val diplomaticMarriageButton = getDiplomaticMarriageButton(otherCiv)

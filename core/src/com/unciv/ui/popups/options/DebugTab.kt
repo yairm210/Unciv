@@ -75,13 +75,6 @@ fun debugTab(
         MapSaver.saveZipped = it
     }).colspan(2).row()
 
-    if (GUI.keyboardAvailable) {
-        add("Show keyboard bindings".toCheckBox(optionsPopup.enableKeyBindingsTab) {
-            optionsPopup.enableKeyBindingsTab = it
-            optionsPopup.showOrHideKeyBindings()
-        }).colspan(2).row()
-    }
-
     add("Gdx Scene2D debug".toCheckBox(BaseScreen.enableSceneDebug) {
         BaseScreen.enableSceneDebug = it
     }).colspan(2).row()
@@ -138,7 +131,7 @@ fun debugTab(
                 optionsPopup.game.loadGame(loadedGame, callFromLoadScreen =  true)
                 optionsPopup.close()
             } catch (ex: Exception) {
-                ToastPopup(ex.message ?: ex::class.java.simpleName, optionsPopup.stageToShowOn).open(true)
+                ToastPopup(ex.message ?: ex::class.java.simpleName, optionsPopup.stageToShowOn)
             }
         }
     }).colspan(2).row()

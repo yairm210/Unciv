@@ -350,7 +350,7 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
         UncivGame.Current.translations.translationActiveMods = ruleset.mods
         ImageGetter.setNewRuleset(ruleset)
         setSkin()
-        openCivilopedia(ruleset)
+        openCivilopedia(ruleset, link = link)
     }
 
     override fun recreate(): BaseScreen {

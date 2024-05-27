@@ -39,8 +39,9 @@ object UncivTextField {
      * @param hint The text that should be displayed in the text field when no text is entered and it does not have focus, will automatically be translated. Also shown as Label in the "emergency" Popup.
      * @param preEnteredText the text initially entered within this text field.
      * @param onFocusChange a callback that will be notified when this TextField loses or gains the [keyboardFocus][com.badlogic.gdx.scenes.scene2d.Stage.keyboardFocus].
+     *        Receiver is the field, so you can simply use its elements. Parameter `it` is a Boolean indicating focus was received.
      */
-    fun create(hint: String, preEnteredText: String = "", onFocusChange: ((Boolean) -> Unit)? = null): TextField {
+    fun create(hint: String, preEnteredText: String = "", onFocusChange: (TextField.(Boolean) -> Unit)? = null): TextField {
         @Suppress("UNCIV_RAW_TEXTFIELD")
         val textField = object : TextField(preEnteredText, BaseScreen.skin) {
             override fun next(up: Boolean) {
@@ -55,7 +56,7 @@ object UncivTextField {
                 if (focused) {
                     textField.scrollAscendantToTextField()
                 }
-                onFocusChange?.invoke(focused)
+                onFocusChange?.invoke(textField, focused)
             }
         })
 

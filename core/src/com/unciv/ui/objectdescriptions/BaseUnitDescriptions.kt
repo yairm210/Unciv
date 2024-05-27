@@ -201,7 +201,7 @@ object BaseUnitDescriptions {
         val imageName = "TileSets/${settings.unitSet}/Units/${baseUnit.name}"
         if (!ImageGetter.imageExists(imageName)) return  // Some units don't have Unit art (e.g. nukes)
         add(FormattedLine(extraImage = imageName, imageSize = settings.pediaUnitArtSize, centered = true))
-        add(FormattedLine(separator = true, color = "#7f7f7f"))
+        add(FormattedLine(separator = true, color = "GRAY"))
     }
 
     @Suppress("RemoveExplicitTypeArguments")  // for faster IDE - inferring sequence types can be slow
