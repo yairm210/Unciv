@@ -237,11 +237,14 @@
   },
   {
     "name": "Keyboard",
-    "steps": [
-    "If you have a keyboard, some shortcut keys become available. Unit command or improvement picker keys, for example, are shown directly in their corresponding buttons.",
-    "On the world screen the hotkeys are as follows:", "Space or 'N' - Next unit or turn\n'E' - Empire overview (last viewed page)\n'+', '-' - Zoom in / out\nHome - center on capital or open its city screen if already centered",
-    "F1 - Open Civilopedia\nF2 - Empire overview Trades\nF3 - Empire overview Units\nF4 - Empire overview Diplomacy\nF5 - Social policies\nF6 - Technologies\nF7 - Empire overview Cities\nF8 - Victory Progress\nF9 - Empire overview Stats\nF10 - Empire overview Resources\nF11 - Quicksave\nF12 - Quickload",
-    "Ctrl-R - Toggle tile resource display\nCtrl-Y - Toggle tile yield display\nCtrl-O - Game options\nCtrl-S - Save game\nCtrl-L - Load game\nCtrl-U - Toggle UI (World Screen only)"
+      "civilopediaText": [
+          {"text": "If you have a keyboard, some shortcut keys become available. Unit command or improvement picker keys, for example, are shown directly in their corresponding buttons."},
+          {"text": "On the world screen the hotkeys are as follows:"},
+          {"text": "Space or 'N' - Next unit or turn\n'E' - Empire overview (last viewed page)\n'+', '-' - Zoom in / out\nHome - center on capital or open its city screen if already centered"},
+          {"text": "F1 - Open Civilopedia\nF2 - Empire overview Trades\nF3 - Empire overview Units\nF4 - Empire overview Diplomacy\nF5 - Social policies\nF6 - Technologies\nF7 - Empire overview Cities\nF8 - Victory Progress\nF9 - Empire overview Stats\nF10 - Empire overview Resources\nF11 - Quicksave\nF12 - Quickload"},
+          {"text": "Ctrl-R - Toggle tile resource display\nCtrl-Y - Toggle tile yield display\nCtrl-O - Game options\nCtrl-S - Save game\nCtrl-L - Load game\nCtrl-U - Toggle UI (World Screen only)"},
+          {},
+          {"text": "All of these can be reassigned.", "link": "Tutorial/Keyboard Bindings"}
     ]
   },
   {
@@ -422,9 +425,8 @@
         "name": "Keyboard Bindings",
         "civilopediaText": [
             {"text":"Limitations","header":3},
-            {"text":"This is a work in progress.","color":"#b22222","starred":true},
+            {"text":"This is a work in progress.","color":"FIREBRICK","starred":true},
             {"text":"For technical reasons, only direct keys or Ctrl-Letter combinations can be used.","starred":true},
-            {"text":"The Escape key is intentionally excluded from being reassigned.","starred":true},
             {},
             {"text":"Using the Keys page","header":3},
             {"text":"Each binding has a button with an image looking like this:"},
