@@ -69,13 +69,20 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
     }
 
     private fun getUniqueMultiplier(stateForConditionals: StateForConditionals = StateForConditionals()): Int {
-        val multiplierConditionals = conditionals.filter { it.type == UniqueType.ForEveryCountable }
-        if (multiplierConditionals.isEmpty()) return 1
+        val forEveryConditionals = conditionals.filter { it.type == UniqueType.ForEveryCountable }
+        val forEveryAmountConditionals = conditionals.filter { it.type == UniqueType.ForEveryAmountCountable }
+        if (forEveryConditionals.isEmpty() && forEveryAmountConditionals.isEmpty()) return 1
         var amount = 1
-        for (conditional in multiplierConditionals) { // multiple multipliers DO multiply.
+        for (conditional in forEveryConditionals) { // multiple multipliers DO multiply.
             val multiplier = Countables.getCountableAmount(conditional.params[0], stateForConditionals)
             if (multiplier != null) amount *= multiplier
         }
+        for (conditional in forEveryConditionals) { // multiple multipliers DO multiply.
+            val multiplier = Countables.getCountableAmount(conditional.params[1], stateForConditionals)
+            val perEvery = conditional.params[0].toInt()
+            if (multiplier != null) amount *= multiplier / perEvery
+        }
+
         return amount.coerceAtLeast(0)
     }
 
