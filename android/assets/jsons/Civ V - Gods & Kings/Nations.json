@@ -539,7 +539,7 @@
 		"innerColor": [255,255,75],
 		"favoredReligion": "Christianity",
 		"uniqueName": "Wayfinding",
-		"uniques": ["Enables embarkation for land units <starting from the [Ancient era]>",
+		"uniques": ["Enables embarkation for land units <starting from the [Ancient era]> <Suppress warning [*contains a conditional on a unit movement unique*]>",
             "Enables [All] units to enter ocean tiles <starting from the [Ancient era]>",
             "[+1] Sight <for [Embarked] units>",  "[+10]% Strength <within [2] tiles of a [Moai]>"],
 		"cities": ["Honolulu","Samoa","Tonga","Nuku Hiva","Raiatea","Aotearoa","Tahiti","Hilo","Te Wai Pounamu","Rapa Nui",

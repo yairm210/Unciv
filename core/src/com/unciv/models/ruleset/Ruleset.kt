@@ -473,7 +473,7 @@ class Ruleset {
     override fun toString() = when {
         name.isNotEmpty() -> name
         mods.size == 1 && RulesetCache[mods.first()]!!.modOptions.isBaseRuleset -> mods.first()
-        else -> "Combined RuleSet"
+        else -> "Combined RuleSet ($mods)"
     }
 
     fun getSummary(): String {

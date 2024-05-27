@@ -500,7 +500,7 @@
 		"outerColor": [217,89,0],
 		"innerColor": [255,255,75],
 		"uniqueName": "Wayfinding",
-		"uniques": ["Enables embarkation for land units <starting from the [Ancient era]>",
+		"uniques": ["Enables embarkation for land units <starting from the [Ancient era]> <Suppress warning [*contains a conditional on a unit movement unique*]>",
             "Enables [All] units to enter ocean tiles <starting from the [Ancient era]>",
             "[+1] Sight <for [Embarked] units>",
             "[+10]% Strength <within [2] tiles of a [Moai]>"],
