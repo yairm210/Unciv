@@ -715,8 +715,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 - WLTKD by [vegeta1k95](https://github.com/vegeta1k95) based on [favor](https://thenounproject.com/icon/favor-1029350/) by MICHAEL G BROWN for WLTKD status icon
 - [Party](https://thenounproject.com/icon/party-1784941/) by Adrien Coquet for WLTK header on City Overview
 - [Party](https://thenounproject.com/icon/party-2955155/) by Lars Meiertoberens as additional WLKT decoration
-- [spy](https://thenounproject.com/icon/spy-2905374/) by Vectorstall for Spy
-- [spy](https://thenounproject.com/icon/4660058/) by Adriano Vabeni - Espionage button
+- [spy](https://thenounproject.com/icon/spy-2905374/) by Vectorstall for Spy and the Espionage button
 - [secret agency](https://thenounproject.com/icon/2817176/) by Martina Hanžlová - Espionage tutorial
 - [turn right](https://thenounproject.com/icon/turn-right-1920867/) by Alice Design for Resource Overview
 - [Tyrannosaurus Rex](https://thenounproject.com/icon/tyrannosaurus-rex-4130976/) by Amethyst Studio for Civilopedia Eras header
