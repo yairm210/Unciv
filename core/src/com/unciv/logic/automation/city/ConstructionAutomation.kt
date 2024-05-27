@@ -253,24 +253,24 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
         }
     }
 
-    fun getValueOfBuilding(building: Building): Float {
+    private fun getValueOfBuilding(building: Building): Float {
         var value = 0f
-        value = applyBuildingStats(building, value)
-        value = applyMilitaryBuildingValue(building, value)
-        value = applyVictoryBuildingValue(building, value)
-        value = applyOnetimeUniqueBonuses(building, value)
+        value += applyBuildingStats(building)
+        value += applyMilitaryBuildingValue(building)
+        value += applyVictoryBuildingValue(building)
+        value += applyOnetimeUniqueBonuses(building)
         return value
     }
 
 
-    private fun applyOnetimeUniqueBonuses(building: Building, pastValue: Float): Float {
-        var value = pastValue
+    private fun applyOnetimeUniqueBonuses(building: Building): Float {
+        var value = 0f
         // TODO: Add specific Uniques here
         return value
     }
 
-    private fun applyVictoryBuildingValue(building: Building, pastValue: Float): Float {
-        var value = pastValue
+    private fun applyVictoryBuildingValue(building: Building): Float {
+        var value = 0f
         if (!cityIsOverAverageProduction) return value
         if (building.isWonder) value += 2f
         if (building.hasUnique(UniqueType.TriggersCulturalVictory)) value += 10f
@@ -278,8 +278,8 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
         return value
     }
 
-    private fun applyMilitaryBuildingValue(building: Building, pastValue: Float): Float {
-        var value = pastValue
+    private fun applyMilitaryBuildingValue(building: Building): Float {
+        var value = 0f
         var warModifier = if (isAtWar) 1f else .5f
         // If this city is the closest city to another civ, that makes it a likely candidate for attack
         if (civInfo.getKnownCivs()
@@ -301,7 +301,7 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
         return value
     }
 
-    private fun applyBuildingStats(building: Building, pastValue: Float): Float {
+    private fun applyBuildingStats(building: Building): Float {
         val buildingStats = city.cityStats.getStatDifferenceFromBuilding(building.name)
         getBuildingStatsFromUniques(building, buildingStats)
 
@@ -335,7 +335,7 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
             buildingStats[stat] *= personality.scaledFocus(PersonalityValue[stat])
         }
 
-        return pastValue + Automation.rankStatsValue(civInfo.getPersonality().scaleStats(buildingStats.clone(), .3f), civInfo)
+        return Automation.rankStatsValue(civInfo.getPersonality().scaleStats(buildingStats.clone(), .3f), civInfo)
     }
 
     private fun getBuildingStatsFromUniques(building: Building, buildingStats: Stats) {
