@@ -6,6 +6,7 @@ import com.unciv.logic.automation.ThreatLevel
 import com.unciv.logic.automation.civilization.DiplomacyAutomation
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
+import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.Ruleset
@@ -115,6 +116,9 @@ class TradeEvaluation {
             }
 
             TradeType.Luxury_Resource -> {
+                if (civInfo.getDiplomacyManager(tradePartner).hasFlag(DiplomacyFlags.ResourceTradesCutShort))
+                    return 0 // We don't trust you for resources
+
                 val weLoveTheKingPotential = civInfo.cities.count { it.demandedResource == offer.name } * 50
                 return if(!civInfo.hasResource(offer.name)) { // we can't trade on resources, so we are only interested in 1 copy for ourselves
                         weLoveTheKingPotential + when { // We're a lot more interested in luxury if low on happiness (AI is never low on happiness though)
@@ -127,6 +131,9 @@ class TradeEvaluation {
             }
 
             TradeType.Strategic_Resource -> {
+                if (civInfo.getDiplomacyManager(tradePartner).hasFlag(DiplomacyFlags.ResourceTradesCutShort))
+                    return 0 // We don't trust you for resources
+
                 val amountWillingToBuy = 2 - civInfo.getResourceAmount(offer.name)
                 if (amountWillingToBuy <= 0) return 0 // we already have enough.
                 val amountToBuyInOffer = min(amountWillingToBuy, offer.amount)
