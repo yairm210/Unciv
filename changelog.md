@@ -1,27 +1,19 @@
 ## 4.11.15
 
-"for every [countable]" unique modifier 
-
-4.11.14-patch1
-
-Fixed preferred victory type ruleset validation - should NOT be invariant! 
+Modding: "for every [countable]" unique modifier 
 
 Added links to base ruleset template in docs
 
 Fixed "don't allow era select" if the game has no techs
 
-By SomeTroglodyte:
-- Cleaner Json custom serialization and unit tests 
-- Fix bug in ModConstants handling 
-- Some minor behind-the-scenes UI architecture changes 
+By SomeTroglodyte: 
 - Support for Zulu language 
 
 By tuvus:
 - Clicking the spy button no longer allows the spy to be moved when it isn't their turn 
 - Added the Espionage civilopedia entry 
 - Construction automation rework 
-- Espionage button cancels moving spy 
-- Revert Espionage button icon 
+- Espionage button cancels moving spy
 
 ## 4.11.14
 
