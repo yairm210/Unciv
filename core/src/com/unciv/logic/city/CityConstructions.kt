@@ -35,7 +35,6 @@ import com.unciv.ui.components.extensions.withoutItem
 import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.screens.civilopediascreen.CivilopediaCategories
 import com.unciv.ui.screens.civilopediascreen.FormattedLine
-import com.unciv.ui.screens.worldscreen.WorldScreen
 import kotlin.math.ceil
 import kotlin.math.min
 import kotlin.math.roundToInt
@@ -338,7 +337,7 @@ class CityConstructions : IsPartOfGameInfoSerialization {
             if (inProgressConstructions.containsKey(currentConstructionFromQueue)
                     && inProgressConstructions[currentConstructionFromQueue]!! >= productionCost) {
                 val potentialOverflow = inProgressConstructions[currentConstructionFromQueue]!! - productionCost
-                if (constructionComplete(construction)) {
+                if (completeConstruction(construction)) {
                     // See the URL below for explanation for this cap
                     // https://forums.civfanatics.com/threads/hammer-overflow.419352/
                     val maxOverflow = maxOf(productionCost, city.cityStats.currentCityStats.production.roundToInt())
@@ -458,7 +457,7 @@ class CityConstructions : IsPartOfGameInfoSerialization {
     }
 
     /** Returns false if we tried to construct a unit but it has nowhere to go */
-    fun constructionComplete(construction: INonPerpetualConstruction): Boolean {
+    fun completeConstruction(construction: INonPerpetualConstruction): Boolean {
         val managedToConstruct = construction.postBuildEvent(this)
         if (!managedToConstruct) return false
 
