@@ -217,7 +217,8 @@ class CivInfoTransientCache(val civInfo: Civilization) {
         }
     }
 
-    private fun discoverNaturalWonders() {
+    /** Visible for DevConsole use only */
+    fun discoverNaturalWonders() {
         val newlyViewedNaturalWonders = HashSet<Tile>()
         for (tile in civInfo.viewableTiles) {
             if (tile.naturalWonder != null && !civInfo.naturalWonders.contains(tile.naturalWonder!!))
