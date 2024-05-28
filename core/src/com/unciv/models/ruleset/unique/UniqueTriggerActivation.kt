@@ -70,7 +70,10 @@ object UniqueTriggerActivation {
         return function.invoke()
     }
 
-        /** @return The action to be performed if possible, else null */
+    /** @return The action to be performed if possible, else null
+     * This is so the unit actions can be displayed as "disabled" if they won't actually do anything
+     * Even if the action itself is performable, there are still cases where it can fail -
+     *   for example unit placement - which is why the action itself needs to return Boolean to indicate success */
     fun getTriggerFunction(
         unique: Unique,
         civInfo: Civilization,
