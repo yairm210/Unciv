@@ -1,5 +1,36 @@
 ## 4.11.16
 
+Version rollout 
+
+doc: getTriggerFunction
+
+Don't crash if starting units contain OneTimeGainPopulation uniques
+
+Better naming - constructionComplete -> completeConstruction
+
+Fix tests
+
+AI no longer trusts you on resource trades if you cut deals short
+
+Add unit name and building name countables
+
+Added "per every X countables" modifier
+
+ Resolved  - Mamalahoe Kawanai -> Kanawai Mamalahoe
+
+By SomeTroglodyte:
+- UI: Allow any mod sound to be selected as a multiplayer turn notification sound 
+- Allow access to the Dev Console on mobile devices 
+- Linting and re-sort Tile class so the regions are no longer lying 
+- Tune "work has started" notification 
+- Console create natural wonder and `tile find` 
+
+By tuvus:
+- Removed espionage debug setting 
+- Added spy steal tech timer 
+
+## 4.11.16
+
 doc: getTriggerFunction
 
 Don't crash if starting units contain OneTimeGainPopulation uniques
