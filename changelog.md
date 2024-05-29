@@ -1,3 +1,21 @@
+## 4.11.16
+
+doc: getTriggerFunction
+
+Don't crash if starting units contain OneTimeGainPopulation uniques
+
+Better naming - constructionComplete -> completeConstruction
+
+Fix tests
+
+AI no longer trusts you on resource trades if you cut deals short
+
+Add unit name and building name countables
+
+Added "per every X countables" modifier
+
+ Resolved  - Mamalahoe Kawanai -> Kanawai Mamalahoe
+
 ## 4.11.15
 
 Modding: "for every [countable]" unique modifier 
