@@ -119,7 +119,7 @@ class ConsoleTileCommands: ConsoleCommandNode {
                         .flatMap { civ -> civ.cities }
                         .firstOrNull { it.name.toCliInput() == param }
                     // If the user didn't specify a City, they must have given us a Civilization instead -
-                    // copy of TileInfoImprovementFunctions.takeOverTilesAround.fallbackNearestCity
+                    // copy of TileImprovementFunctions.takeOverTilesAround.fallbackNearestCity
                     ?: console.getCivByName(params[0]) // throws if no match
                         .cities.minByOrNull { it.getCenterTile().aerialDistanceTo(selectedTile) + (if (it.isBeingRazed) 5 else 0) }
                 }

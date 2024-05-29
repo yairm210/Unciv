@@ -33,7 +33,7 @@ enum class ImprovementBuildingProblem(
     Other
 }
 
-class TileInfoImprovementFunctions(val tile: Tile) {
+class TileImprovementFunctions(val tile: Tile) {
 
     /** Returns true if the [improvement] can be built on this [Tile] */
     fun canBuildImprovement(improvement: TileImprovement, civInfo: Civilization): Boolean = getImprovementBuildingProblems(improvement, civInfo).none()
@@ -114,7 +114,7 @@ class TileInfoImprovementFunctions(val tile: Tile) {
             // Otherwise, we can if this improvement removes the top terrain
             if (!hasUnique(UniqueType.RemovesFeaturesIfBuilt, stateForConditionals)) return false
             if (knownFeatureRemovals.isNullOrEmpty()) return false
-            val featureRemovals = tile.terrainFeatures.mapNotNull { feature -> 
+            val featureRemovals = tile.terrainFeatures.mapNotNull { feature ->
                 tile.ruleset.tileRemovals.firstOrNull { it.name == Constants.remove + feature } }
             if (featureRemovals.isEmpty()) return false
             if (featureRemovals.any { it !in knownFeatureRemovals }) return false
