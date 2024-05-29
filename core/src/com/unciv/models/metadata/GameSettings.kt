@@ -96,8 +96,6 @@ class GameSettings {
 
     var autoPlay = GameSettingsAutoPlay()
 
-    var enableEspionageOption = false
-
     // This is a string not an enum so if tabs change it won't screw up the json serialization
     var lastOverviewPage = EmpireOverviewCategories.Cities.name
 
