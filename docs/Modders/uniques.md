@@ -2484,6 +2484,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: MetaModifier
 
+??? example  "&lt;for every [amount] [countable]&gt;"
+	Example: "&lt;for every [3] [1000]&gt;"
+
+	Applicable to: MetaModifier
+
 
 *[amount]: This indicates a whole number, possibly with a + or - sign, such as `2`, `+13`, or `-3`.
 *[baseTerrain]: The name of any terrain that is a base terrain according to the json file.
