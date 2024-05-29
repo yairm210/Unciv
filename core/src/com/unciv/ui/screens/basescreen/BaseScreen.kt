@@ -192,7 +192,7 @@ abstract class BaseScreen : Screen {
      */
     open fun getCivilopediaRuleset(): Ruleset {
         if (game.worldScreen != null) return game.worldScreen!!.gameInfo.ruleset
-        val mainMenuScreen = game.screenStack.filterIsInstance<MainMenuScreen>().firstOrNull()
+        val mainMenuScreen = game.getScreensOfType(MainMenuScreen::class).firstOrNull()
         if (mainMenuScreen != null) return mainMenuScreen.getCivilopediaRuleset()
         return RulesetCache[BaseRuleset.Civ_V_GnK.fullName]!!
     }

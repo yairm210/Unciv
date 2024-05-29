@@ -1,6 +1,7 @@
 package com.unciv.logic.automation.city
 
 import com.unciv.GUI
+import com.unciv.UncivGame
 import com.unciv.logic.automation.Automation
 import com.unciv.logic.automation.civilization.NextTurnAutomation
 import com.unciv.logic.automation.unit.WorkerAutomation
@@ -23,6 +24,7 @@ import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
+import com.unciv.ui.screens.cityscreen.CityScreen
 import kotlin.math.max
 import kotlin.math.sqrt
 
@@ -56,8 +58,10 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
 
     private val nonWonders = buildings.filterNot { it.isAnyWonder() }
         .filterNot { buildableBuildings[it.name] == false } // if we already know that this building can't be built here then don't even consider it
-    private val statBuildings = nonWonders.filter { !it.isEmpty() && Automation.allowAutomatedConstruction(civInfo, city, it) }
-    private val wonders = buildings.filter { it.isAnyWonder() }
+    //Obsoleted by #11370, but maybe useful in the future: allowed buildings that have non-zero Stats (isEmpty is a Stats method)
+    //private val statBuildings = nonWonders.filter { !it.isEmpty() && Automation.allowAutomatedConstruction(civInfo, city, it) }
+    //Obsoleted by #11601
+    //private val wonders = buildings.filter { it.isAnyWonder() }
 
     private val units = city.getRuleset().units.values.asSequence()
         .filterNot { buildableUnits[it.name] == false || // if we already know that this unit can't be built here then don't even consider it
@@ -140,13 +144,22 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
             // Nobody can plan 30 turns ahead, I don't care how cost-efficient you are.
             else relativeCostEffectiveness.minByOrNull { it.remainingWork / it.production.coerceAtLeast(1) }!!.choice
 
+        // Do not notify while in resistance (you can't do anything about it) - still notify for puppets ("annex already!")
+        // Also do not notify while city screen open - might be a buying spree, not helpful
+        // Also do not notify when the decision hasn't changed - duh!
+        val noNotification = city.isInResistance()
+            || civInfo.isAI() // Optimization: addNotification filters anyway, but saves a string builder and a CityAction instantiation
+            || cityConstructions.currentConstructionFromQueue == chosenConstruction
+            || UncivGame.Current.screen is CityScreen
+        cityConstructions.currentConstructionFromQueue = chosenConstruction
+        if (noNotification) return
+
         civInfo.addNotification(
-            "Work has started on [$chosenConstruction]",
-            CityAction(city.location),
+            "[${city.name}] has started working on [$chosenConstruction]",
+            CityAction.withLocation(city),
             NotificationCategory.Production,
             NotificationIcon.Construction
         )
-        cityConstructions.currentConstructionFromQueue = chosenConstruction
     }
 
     private fun addMilitaryUnitChoice() {
@@ -199,7 +212,7 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
             return WorkerAutomation.isNotBonusResourceOrWorkable(this, civInfo)
         }
 
-        // Search for a tile justifiying producing a Workboat
+        // Search for a tile justifying producing a Workboat
         // todo should workboatAutomationSearchMaxTiles depend on game state?
         fun findTileWorthImproving(): Boolean {
             val searchMaxTiles = civInfo.gameInfo.ruleset.modOptions.constants.workboatAutomationSearchMaxTiles

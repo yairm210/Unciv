@@ -280,8 +280,7 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
             val currentGameSetting = GUI.getSettings()
             if (currentTileSet.tileSetName != currentGameSetting.tileSet ||
                     currentTileSet.unitSetName != currentGameSetting.unitSet) {
-                for (screen in game.screenStack.filterIsInstance<WorldScreen>()) screen.dispose()
-                game.screenStack.removeAll { it is WorldScreen }
+                game.removeScreensOfType(WorldScreen::class)
                 QuickSave.autoLoadGame(this)
             } else {
                 GUI.resetToWorldScreen()
