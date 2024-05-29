@@ -17,6 +17,7 @@ import com.unciv.ui.components.extensions.getOverlap
 import com.unciv.ui.components.extensions.right
 import com.unciv.ui.components.extensions.stageBoundingBox
 import com.unciv.ui.components.extensions.top
+import com.unciv.ui.components.input.KeyCharAndCode
 import com.unciv.ui.components.input.keyShortcuts
 import com.unciv.ui.popups.Popup
 import com.unciv.ui.screens.basescreen.BaseScreen
@@ -42,7 +43,12 @@ object UncivTextField {
      */
     fun create(hint: String, preEnteredText: String = "", onFocusChange: (TextField.(Boolean) -> Unit)? = null): TextField {
         @Suppress("UNCIV_RAW_TEXTFIELD")
-        val textField = TextField(preEnteredText, BaseScreen.skin)
+        val textField = object : TextField(preEnteredText, BaseScreen.skin) {
+            override fun next(up: Boolean) {
+                if (KeyCharAndCode.TAB in keyShortcuts) return
+                super.next(up)
+            }
+        }
         val translatedHint = hint.tr()
         textField.messageText = translatedHint
         textField.addListener(object : FocusListener() {

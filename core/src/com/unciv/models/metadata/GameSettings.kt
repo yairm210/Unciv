@@ -128,6 +128,11 @@ class GameSettings {
     /** Size of automatic display of UnitSet art in Civilopedia - 0 to disable */
     var pediaUnitArtSize = 0f
 
+    /** Don't close developer console after a successful command */
+    var keepConsoleOpen = false
+    /** Persist the history of successful developer console commands */
+    val consoleCommandHistory = ArrayList<String>()
+
     /** used to migrate from older versions of the settings */
     var version: Int? = null
 
