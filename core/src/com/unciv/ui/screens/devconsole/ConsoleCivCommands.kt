@@ -2,12 +2,11 @@ package com.unciv.ui.screens.devconsole
 
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.models.ruleset.Policy
-import com.unciv.models.ruleset.PolicyBranch
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.stats.Stat
 
-class ConsoleCivCommands : ConsoleCommandNode {
+internal class ConsoleCivCommands : ConsoleCommandNode {
     override val subcommands = hashMapOf<String, ConsoleCommand>(
         "addstat" to ConsoleAction("civ addstat <stat> <amount> [civ]") { console, params ->
             val stat = Stat.safeValueOf(params[0].replaceFirstChar(Char::titlecase))

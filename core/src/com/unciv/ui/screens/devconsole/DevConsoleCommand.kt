@@ -1,10 +1,7 @@
 package com.unciv.ui.screens.devconsole
 
 import com.badlogic.gdx.graphics.Color
-import com.unciv.logic.map.mapgenerator.RiverGenerator
 import com.unciv.models.ruleset.IRulesetObject
-import com.unciv.models.ruleset.tile.TerrainType
-import com.unciv.models.stats.Stat
 
 internal fun String.toCliInput() = this.lowercase().replace(" ","-")
 
@@ -48,7 +45,7 @@ internal fun getAutocompleteString(lastWord: String, allOptions: Iterable<String
     return firstOption.drop(lastWord.length)  // don't add space, e.g. found drill-i and user might want drill-ii
 }
 
-interface ConsoleCommand {
+internal interface ConsoleCommand {
     fun handle(console: DevConsolePopup, params: List<String>): DevConsoleResponse
 
     /** Returns the string to *add* to the existing command.
@@ -57,10 +54,10 @@ interface ConsoleCommand {
     fun autocomplete(console: DevConsolePopup, params: List<String>): String = ""
 }
 
-class ConsoleHintException(val hint: String) : Exception()
-class ConsoleErrorException(val error: String) : Exception()
+internal class ConsoleHintException(val hint: String) : Exception()
+internal class ConsoleErrorException(val error: String) : Exception()
 
-open class ConsoleAction(val format: String, val action: (console: DevConsolePopup, params: List<String>) -> DevConsoleResponse) : ConsoleCommand {
+internal open class ConsoleAction(val format: String, val action: (console: DevConsolePopup, params: List<String>) -> DevConsoleResponse) : ConsoleCommand {
     override fun handle(console: DevConsolePopup, params: List<String>): DevConsoleResponse {
         return try {
             validateFormat(format, params)
@@ -95,7 +92,7 @@ open class ConsoleAction(val format: String, val action: (console: DevConsolePop
     }
 }
 
-interface ConsoleCommandNode : ConsoleCommand {
+internal interface ConsoleCommandNode : ConsoleCommand {
     val subcommands: HashMap<String, ConsoleCommand>
 
     override fun handle(console: DevConsolePopup, params: List<String>): DevConsoleResponse {
@@ -113,7 +110,7 @@ interface ConsoleCommandNode : ConsoleCommand {
     }
 }
 
-class ConsoleCommandRoot : ConsoleCommandNode {
+internal class ConsoleCommandRoot : ConsoleCommandNode {
     override val subcommands = hashMapOf<String, ConsoleCommand>(
         "unit" to ConsoleUnitCommands(),
         "city" to ConsoleCityCommands(),

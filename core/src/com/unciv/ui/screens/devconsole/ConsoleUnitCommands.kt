@@ -1,6 +1,6 @@
 package com.unciv.ui.screens.devconsole
 
-class ConsoleUnitCommands : ConsoleCommandNode {
+internal class ConsoleUnitCommands : ConsoleCommandNode {
     override val subcommands = hashMapOf<String, ConsoleCommand>(
 
         "checkfilter" to ConsoleAction("unit checkfilter <unitFilter>") { console, params ->

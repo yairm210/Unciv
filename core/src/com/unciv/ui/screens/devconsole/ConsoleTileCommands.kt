@@ -14,7 +14,7 @@ import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.tile.Terrain
 import com.unciv.models.ruleset.tile.TerrainType
 
-class ConsoleTileCommands: ConsoleCommandNode {
+internal class ConsoleTileCommands: ConsoleCommandNode {
     // Note: We *don't* call `TileInfoNormalizer.normalizeToRuleset(selectedTile, console.gameInfo.ruleset)`
     // - we want the console to allow invalid tile configurations.
 

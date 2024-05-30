@@ -2,7 +2,7 @@ package com.unciv.ui.screens.devconsole
 
 import com.unciv.models.ruleset.Building
 
-class ConsoleCityCommands : ConsoleCommandNode {
+internal class ConsoleCityCommands : ConsoleCommandNode {
     override val subcommands = hashMapOf<String, ConsoleCommand>(
 
         "checkfilter" to ConsoleAction("city checkfilter <cityFilter>") { console, params ->
