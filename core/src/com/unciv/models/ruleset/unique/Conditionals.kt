@@ -61,7 +61,7 @@ object Conditionals {
                 return compare(state.getResourceAmount(resourceOrStatName), lowerLimit * gameSpeedModifier, upperLimit * gameSpeedModifier)
             val stat = Stat.safeValueOf(resourceOrStatName)
                 ?: return false
-            val statReserve = if (state.relevantCity != null) state.relevantCity!!.getStatReserve(stat) else state.relevantCiv!!.getStatReserve(stat)
+            val statReserve = state.getStatAmount(stat)
 
             gameSpeedModifier = if (modifyByGameSpeed) state.gameInfo!!.speed.statCostModifiers[stat]!! else 1f
             return compare(statReserve, lowerLimit * gameSpeedModifier, upperLimit * gameSpeedModifier)

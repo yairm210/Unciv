@@ -9,6 +9,7 @@ import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.mapgenerator.mapregions.Region
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
+import com.unciv.models.stats.Stat
 
 data class StateForConditionals(
     val civInfo: Civilization? = null,
@@ -66,9 +67,19 @@ data class StateForConditionals(
     val gameInfo by lazy { relevantCiv?.gameInfo }
 
     fun getResourceAmount(resourceName: String): Int {
-        if (relevantCity != null) return relevantCity!!.getAvailableResourceAmount(resourceName)
-        if (relevantCiv != null) return relevantCiv!!.getResourceAmount(resourceName)
-        return 0
+        return when {
+            relevantCity != null -> relevantCity!!.getAvailableResourceAmount(resourceName)
+            relevantCiv != null -> relevantCiv!!.getResourceAmount(resourceName)
+            else -> 0
+        }
+    }
+
+    fun getStatAmount(stat: Stat) : Int {
+        return when {
+            relevantCity != null -> relevantCity!!.getStatReserve(stat)
+            relevantCiv != null && stat in Stat.statsWithCivWideField -> relevantCiv!!.getStatReserve(stat)
+            else -> 0
+        }
     }
 
     companion object {

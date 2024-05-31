@@ -8,16 +8,7 @@ object Countables {
         if (countable.toIntOrNull() != null) return countable.toInt()
 
         val relevantStat = Stat.safeValueOf(countable)
-
-        if (relevantStat != null) {
-            return when {
-                stateForConditionals.relevantCity != null ->
-                    stateForConditionals.relevantCity!!.getStatReserve(relevantStat)
-                relevantStat in Stat.statsWithCivWideField && stateForConditionals.relevantCiv != null ->
-                    stateForConditionals.relevantCiv!!.getStatReserve(relevantStat)
-                else -> null
-            }
-        }
+        if (relevantStat != null) return stateForConditionals.getStatAmount(relevantStat)
 
         val gameInfo = stateForConditionals.gameInfo ?: return null
 
