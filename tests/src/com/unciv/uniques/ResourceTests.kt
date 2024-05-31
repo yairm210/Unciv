@@ -1,10 +1,14 @@
 package com.unciv.uniques
 
+import com.badlogic.gdx.math.Vector2
+import com.unciv.models.ruleset.BeliefType
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueTriggerActivation
+import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.testing.GdxTestRunner
 import com.unciv.testing.TestGame
 import org.junit.Assert
+import org.junit.Assert.assertEquals
 import org.junit.Test
 import org.junit.runner.RunWith
 
@@ -74,11 +78,11 @@ class ResourceTests {
         tile.changeImprovement("Mine")
 
         civInfo.tech.addTechnology(game.ruleset.tileImprovements["Mine"]!!.techRequired!!)
-        Assert.assertEquals(civInfo.getCivResourcesByName()["Coal"], 0)
+        assertEquals(civInfo.getCivResourcesByName()["Coal"], 0)
 
         civInfo.tech.addTechnology(game.ruleset.tileResources["Coal"]!!.revealedBy!!)
 
-        Assert.assertEquals(civInfo.getCivResourcesByName()["Coal"], 1)
+        assertEquals(civInfo.getCivResourcesByName()["Coal"], 1)
     }
 
 
@@ -91,10 +95,10 @@ class ResourceTests {
 
         civInfo.tech.addTechnology(game.ruleset.tileImprovements["Mine"]!!.techRequired!!)
         civInfo.tech.addTechnology(game.ruleset.tileResources["Coal"]!!.revealedBy!!)
-        Assert.assertEquals(civInfo.getCivResourcesByName()["Coal"], 1)
+        assertEquals(civInfo.getCivResourcesByName()["Coal"], 1)
 
         tile.setPillaged()
-        Assert.assertEquals(civInfo.getCivResourcesByName()["Coal"], 0)
+        assertEquals(civInfo.getCivResourcesByName()["Coal"], 0)
     }
 
     @Test
@@ -133,6 +137,120 @@ class ResourceTests {
         UniqueTriggerActivation.triggerUnique(Unique("Provides [1] [Coal] <for [2] turns>"), civInfo)
         val providesFaithPerCoal = game.createBuilding("[+1 Faith] [in this city] <for every [Coal]>")
         city.cityConstructions.addBuilding(providesFaithPerCoal)
-        Assert.assertEquals(2f, city.cityStats.currentCityStats.faith)
+        assertEquals(2f, city.cityStats.currentCityStats.faith)
+    }
+
+
+    // Resource tests
+    @Test
+    fun `should get resources from tiles`() {
+        // given
+        civInfo.tech.addTechnology("Iron Working")
+        civInfo.tech.addTechnology("Mining")
+
+        val tile = game.getTile(Vector2(1f, 1f))
+        tile.resource = "Iron"
+        tile.resourceAmount = 4
+        tile.improvement = "Mine"
+
+        // when
+        val cityResources = city.getResourcesGeneratedByCity()
+
+        // then
+        assertEquals(1, cityResources.size)
+        assertEquals("4 Iron from Tiles", cityResources[0].toString())
+    }
+
+    @Test
+    fun `should get resources from unique buildings`() {
+        // given
+        val building = game.createBuilding("Provides [4] [Iron]")
+        city.cityConstructions.addBuilding(building)
+
+        // when
+        val resources = civInfo.detailedCivResources
+
+        // then
+        assertEquals(1, resources.size)
+        assertEquals("4 Iron from Buildings", resources[0].toString())
+    }
+
+    @Test
+    fun `should reduce resources due to buildings`() {
+        // given
+        city.cityConstructions.addBuilding("Factory")
+
+        // when
+        val resources = civInfo.detailedCivResources
+
+        // then
+        assertEquals(1, resources.size)
+        assertEquals("-1 Coal from Buildings", resources[0].toString())
+    }
+
+    @Test
+    fun `Civ-wide resources from building uniques propagate between cities`() {
+        // given
+        val building = game.createBuilding("Provides [4] [Coal]")
+        city.cityConstructions.addBuilding(building)
+
+        val otherCity = civInfo.addCity(Vector2(2f,2f))
+
+        // when
+        val resourceAmountInOtherCity = otherCity.getAvailableResourceAmount("Coal")
+
+        // then
+        assertEquals(4, resourceAmountInOtherCity)
+    }
+
+
+    @Test
+    fun `City-wide resources from building uniques propagate between cities`() {
+        // given
+        val resource = game.createResource(UniqueType.CityResource.text)
+        val building = game.createBuilding("Provides [4] [${resource.name}]")
+        city.cityConstructions.addBuilding(building)
+
+        val otherCity = civInfo.addCity(Vector2(2f,2f))
+
+        // when
+        val resourceAmountInOtherCity = otherCity.getAvailableResourceAmount(resource.name)
+
+        // then
+        assertEquals(4, resourceAmountInOtherCity)
+    }
+
+    @Test
+    fun `City-wide resources not double-counted in same city`() {
+        // given
+        val resource = game.createResource(UniqueType.CityResource.text)
+        val building = game.createBuilding("Provides [4] [${resource.name}]")
+        city.cityConstructions.addBuilding(building)
+
+
+        // when
+        val resourceAmountInCapital = city.getAvailableResourceAmount(resource.name)
+
+        // then
+        assertEquals(4, resourceAmountInCapital)
+    }
+
+    @Test
+    fun `Civ-wide resources can come from follower beliefs, and affect all cities`() {
+        // given
+        val religion = game.addReligion(civInfo)
+        val belief = game.createBelief(BeliefType.Follower, "Provides [1] [Iron]")
+        religion.followerBeliefs.add(belief.name)
+        city.population.setPopulation(1)
+        city.religion.addPressure(religion.name, 1000)
+        val otherCity = civInfo.addCity(Vector2(2f,2f)) // NOT religionized
+
+        // when
+        val resourceAmountInCapital = city.getAvailableResourceAmount("Iron")
+        val resourceAmountInOtherCity = otherCity.getAvailableResourceAmount("Iron")
+
+        // then
+        assertEquals(1, resourceAmountInCapital)
+        assertEquals(1, resourceAmountInOtherCity)
     }
 }
