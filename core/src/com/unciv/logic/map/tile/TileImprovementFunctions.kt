@@ -101,7 +101,8 @@ class TileImprovementFunctions(val tile: Tile) {
         improvement: TileImprovement,
         resourceIsVisible: Boolean = tile.resource != null,
         knownFeatureRemovals: List<TileImprovement>? = null,
-        stateForConditionals: StateForConditionals = StateForConditionals(tile=tile)
+        stateForConditionals: StateForConditionals = StateForConditionals(tile=tile),
+        isNormalizeCheck: Boolean = false
     ): Boolean {
 
         fun TileImprovement.canBeBuildOnThisUnbuildableTerrain(
@@ -125,8 +126,8 @@ class TileImprovementFunctions(val tile: Tile) {
         }
 
         return when {
-            improvement.name == tile.improvement -> false
-            tile.isCityCenter() -> false
+            improvement.name == tile.improvement && !isNormalizeCheck -> false
+            tile.isCityCenter() -> isNormalizeCheck && improvement.name == Constants.cityCenter
 
             // First we handle a few special improvements
 

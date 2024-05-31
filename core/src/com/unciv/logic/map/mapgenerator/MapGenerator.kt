@@ -318,7 +318,7 @@ class MapGenerator(val ruleset: Ruleset, private val coroutineScope: CoroutineSc
                 suitableTiles,
                 map.mapParameters.mapSize.radius)
         for (tile in locations)
-            tile.changeImprovement(ruinsEquivalents.keys.random())
+            tile.improvement = ruinsEquivalents.keys.random()
     }
 
     private fun spreadResources(tileMap: TileMap) {
