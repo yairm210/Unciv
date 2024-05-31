@@ -4,7 +4,7 @@ import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.tile.TerrainType
 import com.unciv.models.ruleset.unique.StateForConditionals
 
-object TileInfoNormalizer {
+object TileNormalizer {
 
     fun normalizeToRuleset(tile: Tile, ruleset: Ruleset) {
         if (tile.naturalWonder != null && !ruleset.terrains.containsKey(tile.naturalWonder))

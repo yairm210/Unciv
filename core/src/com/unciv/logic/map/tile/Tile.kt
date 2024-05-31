@@ -774,7 +774,7 @@ class Tile : IsPartOfGameInfoSerialization {
     fun setBaseTerrain(baseTerrainObject: Terrain){
         baseTerrain = baseTerrainObject.name
         this.baseTerrainObject = baseTerrainObject
-        TileInfoNormalizer.normalizeToRuleset(this, ruleset)
+        TileNormalizer.normalizeToRuleset(this, ruleset)
         setTerrainFeatures(terrainFeatures)
         setTerrainTransients()
     }
