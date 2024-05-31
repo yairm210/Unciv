@@ -4,7 +4,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextField
 import com.unciv.GUI
 import com.unciv.UncivGame
-import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.UncivTextField
 import com.unciv.ui.components.extensions.addSeparator
@@ -20,7 +19,6 @@ import com.unciv.ui.components.widgets.TabbedPager
 import com.unciv.ui.popups.AnimatedMenuPopup
 import com.unciv.ui.popups.ConfirmPopup
 import com.unciv.ui.screens.basescreen.BaseScreen
-import com.unciv.ui.screens.civilopediascreen.CivilopediaScreen
 import com.unciv.ui.screens.civilopediascreen.FormattedLine
 import com.unciv.ui.screens.civilopediascreen.MarkupRenderer
 
@@ -213,13 +211,13 @@ class KeyBindingsTab(
         }
 
         fun Table.addNameField() {
-            nameField = UncivTextField.create("Key name", widget.current.toString(), fun (focused: Boolean) {
-                if (focused) return
+            nameField = UncivTextField.create("Key name", widget.current.toString()) { focused ->
+                if (focused) return@create
                 val key = KeyCharAndCode.parse(nameField.text)
-                if (key == KeyCharAndCode.UNKNOWN) return
+                if (key == KeyCharAndCode.UNKNOWN) return@create
                 widget.current = key
                 onKeyChanged()
-            })
+            }
             add(nameField).growX().row()
         }
 
