@@ -72,7 +72,7 @@ enum class UnitOverviewTabColumn(
     },
     RangedStrength(Fonts.rangedStrength.toString(), "Ranged strength", true) {
         override val defaultSort get() = SortableGrid.SortDirection.Descending
-        override fun getEntryValue(item: MapUnit) = item.baseUnit.strength
+        override fun getEntryValue(item: MapUnit) = item.baseUnit.rangedStrength
     },
     Movement(Fonts.movement.toString(), "Movement", true) {
         override val defaultSort get() = SortableGrid.SortDirection.Descending
