@@ -1,18 +1,20 @@
 package com.unciv.ui.screens.devconsole
 
+import com.unciv.ui.screens.devconsole.CliInput.Companion.getAutocompleteString
+import com.unciv.ui.screens.devconsole.CliInput.Companion.orEmpty
+
 internal class ConsoleUnitCommands : ConsoleCommandNode {
     override val subcommands = hashMapOf<String, ConsoleCommand>(
 
         "checkfilter" to ConsoleAction("unit checkfilter <unitFilter>") { console, params ->
             val unit = console.getSelectedUnit()
-            DevConsoleResponse.hint(unit.matchesFilter(params[0]).toString())
+            DevConsoleResponse.hint(unit.matchesFilter(params[0].toString()).toString())
         },
 
         "add" to ConsoleAction("unit add <civName> <unitName>") { console, params ->
             val selectedTile = console.getSelectedTile()
             val civ = console.getCivByName(params[0])
-            val baseUnit = console.gameInfo.ruleset.units.values.findCliInput(params[1])
-                ?: throw ConsoleErrorException("Unknown unit")
+            val baseUnit = params[1].find(console.gameInfo.ruleset.units.values)
             civ.units.placeUnitNearTile(selectedTile.position, baseUnit)
             DevConsoleResponse.OK
         },
@@ -25,12 +27,11 @@ internal class ConsoleUnitCommands : ConsoleCommandNode {
 
         "addpromotion" to object : ConsoleAction("unit addpromotion <promotionName>", { console, params ->
             val unit = console.getSelectedUnit()
-            val promotion = console.gameInfo.ruleset.unitPromotions.values.findCliInput(params[0])
-                ?: throw ConsoleErrorException("Unknown promotion")
+            val promotion = params[0].find(console.gameInfo.ruleset.unitPromotions.values)
             unit.promotions.addPromotion(promotion.name, true)
             DevConsoleResponse.OK
         }) {
-            override fun autocomplete(console: DevConsolePopup, params: List<String>): String {
+            override fun autocomplete(console: DevConsolePopup, params: List<CliInput>): String? {
                 // Note: filtering by unit.type.name in promotion.unitTypes sounds good (No [Zero]-Ability on an Archer),
                 // but would also prevent promotions that can be legally obtained like Morale and Rejuvenation
                 val promotions = console.getSelectedUnit().promotions.promotions
@@ -43,7 +44,7 @@ internal class ConsoleUnitCommands : ConsoleCommandNode {
 
         "removepromotion" to object : ConsoleAction("unit removepromotion <promotionName>", { console, params ->
             val unit = console.getSelectedUnit()
-            val promotion = unit.promotions.getPromotions().findCliInput(params[0])
+            val promotion = params[0].findOrNull(unit.promotions.getPromotions())
                 ?: throw ConsoleErrorException("Promotion not found on unit")
             // No such action in-game so we need to manually update
             unit.promotions.promotions.remove(promotion.name)
@@ -51,25 +52,21 @@ internal class ConsoleUnitCommands : ConsoleCommandNode {
             unit.updateVisibleTiles()
             DevConsoleResponse.OK
         }) {
-            override fun autocomplete(console: DevConsolePopup, params: List<String>) =
+            override fun autocomplete(console: DevConsolePopup, params: List<CliInput>) =
                 getAutocompleteString(params.lastOrNull().orEmpty(), console.getSelectedUnit().promotions.promotions, console)
         },
 
         "setmovement" to ConsoleAction("unit setmovement [amount]") { console, params ->
             // Note amount defaults to maxMovement, but is not limited by it - it's an arbitrary choice to allow that
             val unit = console.getSelectedUnit()
-            val movement = params.firstOrNull()?.run {
-                toFloatOrNull() ?: throw ConsoleErrorException("Invalid number")
-            } ?: unit.getMaxMovement().toFloat()
+            val movement = params.firstOrNull()?.toFloat() ?: unit.getMaxMovement().toFloat()
             if (movement < 0f) throw ConsoleErrorException("Number out of range")
             unit.currentMovement = movement
             DevConsoleResponse.OK
         },
 
         "sethealth" to ConsoleAction("unit sethealth [amount]") { console, params ->
-            val health = params.firstOrNull()?.run {
-                toIntOrNull() ?: throw ConsoleErrorException("Invalid number")
-            } ?: 100
+            val health = params.firstOrNull()?.toInt() ?: 100
             if (health !in 1..100) throw ConsoleErrorException("Number out of range")
             val unit = console.getSelectedUnit()
             unit.health = health

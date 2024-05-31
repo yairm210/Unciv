@@ -14,7 +14,8 @@ import com.unciv.models.stats.Stat
  *  - Supports multi-type parameters via [Companion.multiOptions]
  */
 internal enum class ConsoleParameterType(
-    private val getOptions: GameInfo.() -> Iterable<String>
+    private val getOptions: GameInfo.() -> Iterable<String>,
+    val preferquoted: Boolean = false
 ) {
     none( { emptyList() } ),
     civName( { civilizations.map { it.civName } } ),
@@ -36,7 +37,10 @@ internal enum class ConsoleParameterType(
 
     companion object {
         fun safeValueOf(name: String): ConsoleParameterType = values().firstOrNull { it.name == name } ?: none
-        fun getOptions(name: String, console: DevConsolePopup) = safeValueOf(name).getOptions(console)
+        fun getOptions(name: String, console: DevConsolePopup) = safeValueOf(name).let { type ->
+            if (type.preferquoted) type.getOptions(console).map { CliInput(it, CliInput.Method.Quoted) }
+            else type.getOptions(console).map { CliInput(it) }
+        }
         fun multiOptions(name: String, console: DevConsolePopup) = name.split('|').flatMap { getOptions(it, console) }
     }
 }
