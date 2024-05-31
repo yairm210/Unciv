@@ -258,28 +258,6 @@ class CivInfoTransientCache(val civInfo: Civilization) {
                     statsGained.add(firstDiscoveredBonus)
             }
 
-            // Variable for support of twooo deprecated uniques
-            var goldGained = 0
-
-            // Support for depreciated GoldWhenDiscoveringNaturalWonder unique
-            for (unique in civInfo.getMatchingUniques(UniqueType.GoldWhenDiscoveringNaturalWonder)) {
-
-                goldGained += if (discoveredNaturalWonders.contains(tile.naturalWonder!!)) {
-                    100
-                } else {
-                    500
-                }
-            }
-
-            // Support for depreciated GrantsGoldToFirstToDiscover unique
-            if (tile.terrainHasUnique(UniqueType.GrantsGoldToFirstToDiscover)
-                && !discoveredNaturalWonders.contains(tile.naturalWonder!!)) {
-
-                for (unique in tile.getTerrainMatchingUniques(UniqueType.GoldWhenDiscoveringNaturalWonder)) {
-                    goldGained += 500
-                }
-            }
-
             var naturalWonder: String? = null
 
             if (!statsGained.isEmpty()) {
@@ -291,16 +269,6 @@ class CivInfoTransientCache(val civInfo: Civilization) {
                 civInfo.addNotification("We have received [${statsGained}] for discovering [${naturalWonder}]",
                     Notification.NotificationCategory.General, statsGained.toString()
                     )
-            }
-
-            if (goldGained > 0) {
-                naturalWonder = tile.naturalWonder
-            }
-
-            if (goldGained > 0 && naturalWonder != null) {
-                civInfo.addGold(goldGained)
-                civInfo.addNotification("We have received [$goldGained] Gold for discovering [${naturalWonder}]",
-                    Notification.NotificationCategory.General, NotificationIcon.Gold)
             }
 
             for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponDiscoveringNaturalWonder,

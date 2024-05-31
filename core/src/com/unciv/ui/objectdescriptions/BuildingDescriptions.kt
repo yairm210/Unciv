@@ -87,11 +87,7 @@ object BuildingDescriptions {
     fun additionalDescription (building: Building, city: City, lines: ArrayList<String>) {
         // Inefficient in theory. In practice, buildings seem to have only a small handful of uniques.
         for (unique in building.uniqueObjects) {
-            if (unique.type == UniqueType.RequiresBuildingInAllCities) {
-                missingCityText(unique.params[0], city, "non-[Puppeted]", lines)
-            }
-
-            else if (unique.type == UniqueType.OnlyAvailable || unique.type == UniqueType.CanOnlyBeBuiltWhen)
+            if (unique.type == UniqueType.OnlyAvailable || unique.type == UniqueType.CanOnlyBeBuiltWhen)
                 for (conditional in unique.conditionals) {
                     if (conditional.type == UniqueType.ConditionalBuildingBuiltAll) {
                         missingCityText(conditional.params[0], city, conditional.params[1], lines)
