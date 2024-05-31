@@ -209,12 +209,8 @@ class CivInfoTransientCache(val civInfo: Civilization) {
     private fun updateLastSeenImprovements() {
         if (civInfo.playerType == PlayerType.AI) return // don't bother for AI, they don't really use the info anyway
 
-        for (tile in civInfo.viewableTiles) {
-            if (tile.improvement == null)
-                civInfo.lastSeenImprovement.remove(tile.position)
-            else
-                civInfo.lastSeenImprovement[tile.position] = tile.improvement!!
-        }
+        for (tile in civInfo.viewableTiles)
+            civInfo.setLastSeenImprovement(tile.position, tile.improvement)
     }
 
     /** Visible for DevConsole use only */

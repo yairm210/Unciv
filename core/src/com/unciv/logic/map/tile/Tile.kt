@@ -299,12 +299,7 @@ class Tile : IsPartOfGameInfoSerialization {
         else ruleset.tileImprovements[getUnpillagedRoad().name]
     }
 
-    fun getShownImprovement(viewingCiv: Civilization?): String? {
-        return if (viewingCiv == null || viewingCiv.playerType == PlayerType.AI || viewingCiv.isSpectator())
-            improvement
-        else
-            viewingCiv.lastSeenImprovement[position]
-    }
+    fun getShownImprovement(viewingCiv: Civilization?): String? = viewingCiv?.getLastSeenImprovement(position) ?: improvement
 
     /** Returns true if this tile has fallout or an equivalent terrain feature */
     fun hasFalloutEquivalent(): Boolean = terrainFeatures.any { ruleset.terrains[it]!!.hasUnique(UniqueType.NullifyYields)}

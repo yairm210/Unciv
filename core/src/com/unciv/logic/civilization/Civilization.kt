@@ -207,7 +207,7 @@ class Civilization : IsPartOfGameInfoSerialization {
 
     fun hasExplored(tile: Tile) = tile.isExplored(this)
 
-    var lastSeenImprovement = HashMapVector2<String>()
+    private val lastSeenImprovement = HashMapVector2<String>()
 
     // To correctly determine "game over" condition as clarified in #4707
     var hasEverOwnedOriginalCapital: Boolean = false
@@ -977,6 +977,18 @@ class Civilization : IsPartOfGameInfoSerialization {
     }
 
     fun asPreview() = CivilizationInfoPreview(this)
+
+    fun getLastSeenImprovement(position: Vector2): String? {
+        if (isAI() || isSpectator()) return null
+        return lastSeenImprovement[position]
+    }
+    fun setLastSeenImprovement(position: Vector2, improvement: String?) {
+        if (isAI() || isSpectator()) return
+        if (improvement == null)
+            lastSeenImprovement.remove(position)
+        else
+            lastSeenImprovement[position] = improvement
+    }
 }
 
 /**

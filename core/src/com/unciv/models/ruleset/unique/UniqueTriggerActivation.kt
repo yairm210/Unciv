@@ -771,11 +771,8 @@ object UniqueTriggerActivation {
                 return {
                     for (explorableTile in explorableTiles) {
                         explorableTile.setExplored(civInfo, true)
+                        civInfo.setLastSeenImprovement(explorableTile.position, explorableTile.improvement)
                         positions += explorableTile.position
-                        if (explorableTile.improvement == null)
-                            civInfo.lastSeenImprovement.remove(explorableTile.position)
-                        else
-                            civInfo.lastSeenImprovement[explorableTile.position] = explorableTile.improvement!!
                     }
 
                     if (notification != null) {
