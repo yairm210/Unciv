@@ -121,8 +121,7 @@ class GameOptionsTable(
             it.addRagingBarbariansCheckbox()
             it.addOneCityChallengeCheckbox()
             it.addNuclearWeaponsCheckbox()
-            if (UncivGame.Current.settings.enableEspionageOption)
-                it.addEnableEspionageCheckbox()
+            it.addEnableEspionageCheckbox()
             it.addNoStartBiasCheckbox()
             it.addRandomPlayersCheckbox()
             it.addRandomCityStatesCheckbox()
@@ -408,7 +407,7 @@ class GameOptionsTable(
     }
 
     private fun Table.addEraSelectBox() {
-        if (ruleset.technologies.isEmpty()) return // mod with no techs
+        if (ruleset.eras.isEmpty()) return // mod with no techs
         val eras = ruleset.eras.keys
         addSelectBox("{Starting Era}:", eras, gameParameters.startingEra)
         { gameParameters.startingEra = it; null }

@@ -47,9 +47,8 @@ class RuinsManager(
 
     private fun isPossibleReward(ruinReward: RuinReward, unit: MapUnit): Boolean {
         if (ruinReward.name in lastChosenRewards) return false
-        if (civInfo.gameInfo.difficulty in ruinReward.excludedDifficulties) return false
+        if (ruinReward.isHiddenBySettings(civInfo.gameInfo)) return false
         val stateForConditionals = StateForConditionals(civInfo, unit = unit, tile = unit.getTile())
-        if (ruinReward.hasUnique(UniqueType.HiddenWithoutReligion, stateForConditionals) && !civInfo.gameInfo.isReligionEnabled()) return false
         if (ruinReward.hasUnique(UniqueType.Unavailable, stateForConditionals)) return false
         if (ruinReward.getMatchingUniques(UniqueType.OnlyAvailable, StateForConditionals.IgnoreConditionals)
                 .any { !it.conditionalsApply(stateForConditionals) }) return false
@@ -62,7 +61,7 @@ class RuinsManager(
             for (unique in possibleReward.uniqueObjects) {
                 atLeastOneUniqueHadEffect =
                     atLeastOneUniqueHadEffect
-                    || UniqueTriggerActivation.triggerUnique(unique, triggeringUnit, notification = possibleReward.notification)
+                    || UniqueTriggerActivation.triggerUnique(unique, triggeringUnit, notification = possibleReward.notification, triggerNotificationText = "from the ruins")
             }
             if (atLeastOneUniqueHadEffect) {
                 rememberReward(possibleReward.name)

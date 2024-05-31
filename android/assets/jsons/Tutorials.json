@@ -237,11 +237,14 @@
   },
   {
     "name": "Keyboard",
-    "steps": [
-    "If you have a keyboard, some shortcut keys become available. Unit command or improvement picker keys, for example, are shown directly in their corresponding buttons.",
-    "On the world screen the hotkeys are as follows:", "Space or 'N' - Next unit or turn\n'E' - Empire overview (last viewed page)\n'+', '-' - Zoom in / out\nHome - center on capital or open its city screen if already centered",
-    "F1 - Open Civilopedia\nF2 - Empire overview Trades\nF3 - Empire overview Units\nF4 - Empire overview Diplomacy\nF5 - Social policies\nF6 - Technologies\nF7 - Empire overview Cities\nF8 - Victory Progress\nF9 - Empire overview Stats\nF10 - Empire overview Resources\nF11 - Quicksave\nF12 - Quickload",
-    "Ctrl-R - Toggle tile resource display\nCtrl-Y - Toggle tile yield display\nCtrl-O - Game options\nCtrl-S - Save game\nCtrl-L - Load game\nCtrl-U - Toggle UI (World Screen only)"
+      "civilopediaText": [
+          {"text": "If you have a keyboard, some shortcut keys become available. Unit command or improvement picker keys, for example, are shown directly in their corresponding buttons."},
+          {"text": "On the world screen the hotkeys are as follows:"},
+          {"text": "Space or 'N' - Next unit or turn\n'E' - Empire overview (last viewed page)\n'+', '-' - Zoom in / out\nHome - center on capital or open its city screen if already centered"},
+          {"text": "F1 - Open Civilopedia\nF2 - Empire overview Trades\nF3 - Empire overview Units\nF4 - Empire overview Diplomacy\nF5 - Social policies\nF6 - Technologies\nF7 - Empire overview Cities\nF8 - Victory Progress\nF9 - Empire overview Stats\nF10 - Empire overview Resources\nF11 - Quicksave\nF12 - Quickload"},
+          {"text": "Ctrl-R - Toggle tile resource display\nCtrl-Y - Toggle tile yield display\nCtrl-O - Game options\nCtrl-S - Save game\nCtrl-L - Load game\nCtrl-U - Toggle UI (World Screen only)"},
+          {},
+          {"text": "All of these can be reassigned.", "link": "Tutorial/Keyboard Bindings"}
     ]
   },
   {
@@ -418,13 +421,32 @@
         "One of your cities is under a naval blockade! When all adjacent water tiles of a coastal city are blocked - city loses harbor connection to all other cities, including capital. Make sure to de-blockade cities by deploying friendly military naval units to fight off invaders."
     ]
   },
+  {
+    "name": "Espionage",
+    "civilopediaText": [
+      {"text": "Spies!", "header": 2, "color": "red", "centered": true},
+      {"extraImage": "OtherIcons/EspionageTutorial", "imageSize": 200},
+      {"text":"The first time a civ reaches the Renaissance era each nation gets one spy. Every time a civ reaches an era afterwards they get one more spy."},
+      {"text":"Spies can be sent out to foreign cities to steal technology, rigging elections or stage coups. Place them in your own cities to do counter-intelligence work."},
+      {"text":"Only one spy per civ is allowed in each city. Spies that are not in any city are on vacation in your spy hideout."},
+      {},
+      {"text":"Spies set up in cities of major civilizations will try to steal technology at a rate which is based off of the science production in the city. Succeeding to steal technology will level up your spy. Failing to succeed will level up the defending spy if it is present.","starred":true},
+      {"text":"Spies set in city-states will try to rigg the elections in order to gain influence and reduce the influence of other civilizations. Only one spy partaking in rigging the election can win.","starred":true},
+      {"text":"A spy that is rigging an election in a city-state may also stage a coup. The likelihood of success for the coup depends on your relative influence to the current ally of the city-state, your spy level, and the level of the spy that the current ally has in the city-state if present. Succeeding a coup will make you their new ally and reduce the influence of all other civs. Failing a coup will kill your spy and level up the defending spy if present.","starred":true},
+      {"text":"Spies that are set up in your own cities will be conducting counter-intelligence. They reduce the success chance of other spies trying to steal your technology.","starred":true},
+      {},
+      {"text":"Spies at a higher rank have a higher chance of success. The max rank a spy can reach is rank 3. After a spy is killed it will revive after a certain amount of turns back at rank 1."},
+      {"text":"Building buildings like the constabulary and police station will reduce the technology steal rate of spies in that city."},
+      {},
+      {"text":"Espionage is available using the Gods and Kings ruleset. To enable it in a new game click advanced settings, then click on the Enable Espionage option."},
+    ]
+  },
     {
         "name": "Keyboard Bindings",
         "civilopediaText": [
             {"text":"Limitations","header":3},
-            {"text":"This is a work in progress.","color":"#b22222","starred":true},
+            {"text":"This is a work in progress.","color":"FIREBRICK","starred":true},
             {"text":"For technical reasons, only direct keys or Ctrl-Letter combinations can be used.","starred":true},
-            {"text":"The Escape key is intentionally excluded from being reassigned.","starred":true},
             {},
             {"text":"Using the Keys page","header":3},
             {"text":"Each binding has a button with an image looking like this:"},
@@ -504,7 +526,7 @@
             {},
             {"text":"Reveal known resources on world screen","header":5,"color":"#fa0"},
             {"text":"In the Resources overview, click on a resource icon to center the world screen on tiles already discovered and providing this resource."},
-            {"text":"Alternatively, click on the \"Unimproved\" number to center the world screen only on owned tiles where the resource is not improved."},
+            {"text":"Alternatively, click on the \"Unimproved\" number to center the world screen only on owned (by you or your allied City-states) tiles where the resource is not improved."},
             {"text":"If more than one tile is available, click repeatedly on the notification to cycle through all of them."},
             {},
             {"text":"Show diagram line colors","header":5,"color":"#fa0"},

@@ -37,7 +37,6 @@ import com.unciv.ui.popups.ToastPopup
 import com.unciv.ui.popups.hasOpenPopups
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.cityscreen.CityScreen
-import com.unciv.ui.screens.civilopediascreen.CivilopediaScreen
 import com.unciv.ui.screens.devconsole.DevConsolePopup
 import com.unciv.ui.screens.mainmenuscreen.MainMenuScreen
 import com.unciv.ui.screens.newgamescreen.NewGameScreen
@@ -168,7 +167,7 @@ class WorldScreen(
 
         val tileToCenterOn: Vector2 =
                 when {
-                    viewingCiv.cities.isNotEmpty() && viewingCiv.getCapital() != null -> viewingCiv.getCapital()!!.location
+                    viewingCiv.getCapital() != null -> viewingCiv.getCapital()!!.location
                     viewingCiv.units.getCivUnits().any() -> viewingCiv.units.getCivUnits().first().getTile().position
                     else -> Vector2.Zero
                 }
@@ -217,6 +216,18 @@ class WorldScreen(
         super.dispose()
     }
 
+    override fun getCivilopediaRuleset() = gameInfo.ruleset
+
+    // Handle disabling and re-enabling WASD listener while Options are open
+    override fun openOptionsPopup(startingPage: Int, withDebug: Boolean, onClose: () -> Unit) {
+        val oldListener = stage.root.listeners.filterIsInstance<KeyboardPanningListener>().firstOrNull()
+        if (oldListener != null) stage.removeListener(oldListener)
+        super.openOptionsPopup(startingPage, withDebug) {
+            addKeyboardListener()
+            onClose()
+        }
+    }
+
     fun openEmpireOverview(category: EmpireOverviewCategories? = null) {
         game.pushScreen(EmpireOverviewScreen(selectedCiv, category))
     }
@@ -239,7 +250,7 @@ class WorldScreen(
 
         // Space and N are assigned in NextTurnButton constructor
         // Functions that have a big button are assigned there (WorldScreenTopBar, TechPolicyDiplomacyButtons..)
-        globalShortcuts.add(KeyboardBinding.Civilopedia) { game.pushScreen(CivilopediaScreen(gameInfo.ruleset)) }
+        globalShortcuts.add(KeyboardBinding.Civilopedia) { openCivilopedia() }
         globalShortcuts.add(KeyboardBinding.EmpireOverviewTrades) { openEmpireOverview(EmpireOverviewCategories.Trades) }
         globalShortcuts.add(KeyboardBinding.EmpireOverviewUnits) { openEmpireOverview(EmpireOverviewCategories.Units) }
         globalShortcuts.add(KeyboardBinding.EmpireOverviewPolitics) { openEmpireOverview(EmpireOverviewCategories.Politics) }
@@ -272,21 +283,13 @@ class WorldScreen(
         globalShortcuts.add(KeyboardBinding.ToggleWorkedTilesDisplay) { minimapWrapper.populationImageButton.toggle() }
         globalShortcuts.add(KeyboardBinding.ToggleMovementDisplay) { minimapWrapper.movementsImageButton.toggle() }
 
-        globalShortcuts.add(KeyboardBinding.DeveloperConsole) {
-            // No cheating unless you're by yourself
-            if (gameInfo.civilizations.count { it.isHuman() } > 1) return@add
-            val consolePopup = DevConsolePopup(this)
-        }
+        globalShortcuts.add(KeyboardBinding.DeveloperConsole, action = ::openDeveloperConsole)
     }
 
-    // Handle disabling and re-enabling WASD listener while Options are open
-    override fun openOptionsPopup(startingPage: Int, withDebug: Boolean, onClose: () -> Unit) {
-        val oldListener = stage.root.listeners.filterIsInstance<KeyboardPanningListener>().firstOrNull()
-        if (oldListener != null) stage.removeListener(oldListener)
-        super.openOptionsPopup(startingPage, withDebug) {
-            addKeyboardListener()
-            onClose()
-        }
+    fun openDeveloperConsole() {
+        // No cheating unless you're by yourself
+        if (gameInfo.civilizations.count { it.isHuman() } > 1) return
+        val consolePopup = DevConsolePopup(this)
     }
 
     private fun toggleUI() {
@@ -788,6 +791,12 @@ class WorldScreen(
         if (bottomUnitTable.selectedCity != null) {
             bottomUnitTable.selectedCity = null
             bottomUnitTable.isVisible = false
+            shouldUpdate = true
+            return
+        }
+        
+        if (bottomUnitTable.selectedSpy != null) {
+            bottomUnitTable.selectSpy(null)
             shouldUpdate = true
             return
         }

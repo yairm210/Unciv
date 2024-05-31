@@ -7,6 +7,7 @@ import com.unciv.Constants
 import com.unciv.GUI
 import com.unciv.logic.GameInfo
 import com.unciv.logic.IsPartOfGameInfoSerialization
+import com.unciv.logic.city.City
 import com.unciv.logic.civilization.CivFlags
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.DiplomacyAction
@@ -26,7 +27,6 @@ import com.unciv.models.ruleset.Quest
 import com.unciv.models.ruleset.QuestName
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.tile.TileResource
-import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.translations.fillPlaceholders
 import com.unciv.models.translations.getPlaceholderParameters
@@ -192,7 +192,7 @@ class QuestManager : IsPartOfGameInfoSerialization {
         individualQuestCountdown[challenger.civName] = (countdown * civ.gameInfo.speed.modifier).toInt()
     }
 
-    // Readabilty helper - No asSequence(): call frequency * data size is small
+    // Readability helper - No asSequence(): call frequency * data size is small
     private fun getQuests(predicate: (Quest) -> Boolean) = ruleset.quests.values.filter(predicate)
 
     private fun tryStartNewGlobalQuest() {
@@ -755,10 +755,7 @@ class QuestManager : IsPartOfGameInfoSerialization {
         val encampments = civ.getCapital()!!.getCenterTile().getTilesInDistance(8)
                 .filter { it.improvement == Constants.barbarianEncampment }.toList()
 
-        if (encampments.isNotEmpty())
-            return encampments.random()
-
-        return null
+        return encampments.randomOrNull()
     }
 
     /**
@@ -781,34 +778,26 @@ class QuestManager : IsPartOfGameInfoSerialization {
                     !ownedByMajorResources.contains(it)
         }.toList()
 
-        if (notOwnedResources.isNotEmpty())
-            return notOwnedResources.random()
-
-        return null
+        return notOwnedResources.randomOrNull()
     }
 
     private fun getWonderToBuildForQuest(challenger: Civilization): Building? {
-        val startingEra = ruleset.eras[civ.gameInfo.gameParameters.startingEra]!!
+        fun isMoreThanAQuarterDone(city: City, buildingName: String) =
+            city.cityConstructions.getWorkDone(buildingName) * 3 > city.cityConstructions.getRemainingWork(buildingName)
         val wonders = ruleset.buildings.values
                 .filter { building ->
-                            // Buildable wonder
-                            building.isWonder
-                            && challenger.tech.isResearched(building)
-                            && civ.gameInfo.getCities().none { it.cityConstructions.isBuilt(building.name) }
-                            // Can't be disabled
-                            && building.name !in startingEra.startingObsoleteWonders
-                            && (civ.gameInfo.isReligionEnabled() || !building.hasUnique(UniqueType.HiddenWithoutReligion))
-                            // Can't be more than 25% built anywhere
-                            && civ.gameInfo.getCities().none {
-                        it.cityConstructions.getWorkDone(building.name) * 3 > it.cityConstructions.getRemainingWork(building.name) }
-                            // Can't be a unique wonder
-                            && building.uniqueTo == null
+                    // Buildable wonder
+                    building.isWonder
+                    && challenger.tech.isResearched(building)
+                    // Can't be disabled
+                    && !building.isHiddenBySettings(civ.gameInfo)
+                    // Can't be a unique wonder
+                    && building.uniqueTo == null
+                    // Big loop last: Exists or more than 25% built anywhere
+                    && civ.gameInfo.getCities().none { it.cityConstructions.isBuilt(building.name) || isMoreThanAQuarterDone(it, building.name) }
                 }
 
-        if (wonders.isNotEmpty())
-            return wonders.random()
-
-        return null
+        return wonders.randomOrNull()
     }
 
     /**
@@ -817,10 +806,7 @@ class QuestManager : IsPartOfGameInfoSerialization {
     private fun getNaturalWonderToFindForQuest(challenger: Civilization): String? {
         val naturalWondersToFind = civ.gameInfo.tileMap.naturalWonders.subtract(challenger.naturalWonders)
 
-        if (naturalWondersToFind.isNotEmpty())
-            return naturalWondersToFind.random()
-
-        return null
+        return naturalWondersToFind.randomOrNull()
     }
 
     /**
@@ -829,21 +815,20 @@ class QuestManager : IsPartOfGameInfoSerialization {
     private fun getGreatPersonForQuest(challenger: Civilization): BaseUnit? {
         val ruleset = ruleset // omit if the accessor should be converted to a transient field
 
-        val challengerGreatPeople = challenger.units.getCivGreatPeople().map { it.baseUnit.getReplacedUnit(ruleset) }
-        val cityStateGreatPeople = civ.units.getCivGreatPeople().map { it.baseUnit.getReplacedUnit(ruleset) }
+        val existingGreatPeople =
+            // concatenate sequences of existing GP for the challenger (a player) and our `civ` (the quest-giving city-state)
+            (challenger.units.getCivGreatPeople() + civ.units.getCivGreatPeople())
+            .map { it.baseUnit.getReplacedUnit(ruleset) }.toSet()
 
         val greatPeople = challenger.greatPeople.getGreatPeople()
                 .map { it.getReplacedUnit(ruleset) }
                 .distinct()
-                .filterNot { challengerGreatPeople.contains(it)
-                        || cityStateGreatPeople.contains(it)
-                        || (it.hasUnique(UniqueType.HiddenWithoutReligion) && !civ.gameInfo.isReligionEnabled()) }
+                // The hidden test is already done by getGreatPeople for the civ-specific units,
+                // repeat for the replaced one we'll be asking for
+                .filterNot { it in existingGreatPeople || it.isHiddenBySettings(civ.gameInfo) }
                 .toList()
 
-        if (greatPeople.isNotEmpty())
-            return greatPeople.random()
-
-        return null
+        return greatPeople.randomOrNull()
     }
 
     /**
@@ -852,12 +837,10 @@ class QuestManager : IsPartOfGameInfoSerialization {
      */
     private fun getCivilizationToFindForQuest(challenger: Civilization): Civilization? {
         val civilizationsToFind = challenger.getKnownCivs()
-                .filter { it.isAlive() && it.isMajorCiv() && !challenger.hasMetCivTerritory(it) }
+            .filter { it.isAlive() && it.isMajorCiv() && !challenger.hasMetCivTerritory(it) }
+            .toList()
 
-        if (civilizationsToFind.any())
-            return civilizationsToFind.toList().random()
-
-        return null
+        return civilizationsToFind.randomOrNull()
     }
 
     /**

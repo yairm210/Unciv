@@ -17,6 +17,8 @@ import com.unciv.ui.components.extensions.getOverlap
 import com.unciv.ui.components.extensions.right
 import com.unciv.ui.components.extensions.stageBoundingBox
 import com.unciv.ui.components.extensions.top
+import com.unciv.ui.components.input.KeyCharAndCode
+import com.unciv.ui.components.input.keyShortcuts
 import com.unciv.ui.popups.Popup
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.basescreen.UncivStage
@@ -26,13 +28,27 @@ import kotlinx.coroutines.delay
 
 object UncivTextField {
     /**
-     * Creates a text field that has nicer platform-specific input added compared to the default gdx [TextField].
-     * @param hint The text that should be displayed in the text field when no text is entered, will automatically be translated
-     * @param preEnteredText the text already entered within this text field. Supported on all platforms.
+     * Creates a text field that has nicer platform-specific input added compared to the default Gdx [TextField].
+     *
+     * - On Android, manages on-screen keyboard visibility and reacts to how the on-screen keyboard reduces screen space.
+     * - Tries to scroll the field into view when receiving focus using an ascendant ScrollPane.
+     * - If view of the field is still obscured, show am "emergency" Popup instead (can help when on Android the on-screen keyboard is large and the screen small).
+     * - If this TextField handles the Tab key (see [keyShortcuts]), its [focus navigation feature][TextField.next] is disabled (otherwise it would search for another TextField in the same parent to give focus to, and remove the on-screen keyboard if it finds none).
+     * - All parameters are supported on all platforms.
+     *
+     * @param hint The text that should be displayed in the text field when no text is entered and it does not have focus, will automatically be translated. Also shown as Label in the "emergency" Popup.
+     * @param preEnteredText the text initially entered within this text field.
+     * @param onFocusChange a callback that will be notified when this TextField loses or gains the [keyboardFocus][com.badlogic.gdx.scenes.scene2d.Stage.keyboardFocus].
+     *        Receiver is the field, so you can simply use its elements. Parameter `it` is a Boolean indicating focus was received.
      */
-    fun create(hint: String, preEnteredText: String = "", onFocusChange: ((Boolean) -> Unit)? = null): TextField {
+    fun create(hint: String, preEnteredText: String = "", onFocusChange: (TextField.(Boolean) -> Unit)? = null): TextField {
         @Suppress("UNCIV_RAW_TEXTFIELD")
-        val textField = TextField(preEnteredText, BaseScreen.skin)
+        val textField = object : TextField(preEnteredText, BaseScreen.skin) {
+            override fun next(up: Boolean) {
+                if (KeyCharAndCode.TAB in keyShortcuts) return
+                super.next(up)
+            }
+        }
         val translatedHint = hint.tr()
         textField.messageText = translatedHint
         textField.addListener(object : FocusListener() {
@@ -40,7 +56,7 @@ object UncivTextField {
                 if (focused) {
                     textField.scrollAscendantToTextField()
                 }
-                onFocusChange?.invoke(focused)
+                onFocusChange?.invoke(textField, focused)
             }
         })
 

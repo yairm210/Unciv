@@ -38,7 +38,7 @@ class Tile : IsPartOfGameInfoSerialization {
     //region Serialized fields
     var militaryUnit: MapUnit? = null
     var civilianUnit: MapUnit? = null
-    var airUnits = ArrayList<MapUnit>()
+    var airUnits = ArrayList<MapUnit>(0)
 
     var position: Vector2 = Vector2.Zero
     lateinit var baseTerrain: String
@@ -46,7 +46,7 @@ class Tile : IsPartOfGameInfoSerialization {
         private set
 
     /** Should be immutable - never be altered in-place, instead replaced */
-    var exploredBy = HashSet<String>()
+    private var exploredBy = HashSet<String>(0)
 
     var naturalWonder: String? = null
     var resource: String? = null
@@ -55,13 +55,14 @@ class Tile : IsPartOfGameInfoSerialization {
             field = value
         }
     var resourceAmount: Int = 0
+
     var improvement: String? = null
     var improvementInProgress: String? = null
     var improvementIsPillaged = false
 
     var roadStatus = RoadStatus.None
     var roadIsPillaged = false
-    var roadOwner: String = "" // either who last built the road or last owner of tile
+    private var roadOwner: String = "" // either who last built the road or last owner of tile
     var turnsToImprovement: Int = 0
 
     var hasBottomRightRiver = false
@@ -81,10 +82,17 @@ class Tile : IsPartOfGameInfoSerialization {
     lateinit var ruleset: Ruleset  // a tile can be a tile with a ruleset, even without a map.
 
     @Transient
-    val improvementFunctions = TileInfoImprovementFunctions(this)
+    val improvementFunctions = TileImprovementFunctions(this)
 
     @Transient
     val stats = TileStatFunctions(this)
+
+    // This is for performance - since we access the neighbors of a tile ALL THE TIME,
+    // and the neighbors of a tile never change, it's much more efficient to save the list once and for all!
+    @delegate:Transient
+    val neighbors: Sequence<Tile> by lazy { getTilesAtDistance(1).toList().asSequence() }
+    // We have to .toList() so that the values are stored together once for caching,
+    // and the toSequence so that aggregations (like neighbors.flatMap{it.units} don't take up their own space
 
     @Transient
     private var isCityCenterInternal = false
@@ -105,6 +113,9 @@ class Tile : IsPartOfGameInfoSerialization {
 
     @Transient
     var isOcean = false
+
+    @delegate:Transient
+    private val _isCoastalTile: Boolean by lazy { neighbors.any { it.baseTerrain == Constants.coast } }
 
     @Transient
     var unitHeight = 0
@@ -153,6 +164,11 @@ class Tile : IsPartOfGameInfoSerialization {
             }
             return tileResourceCache!!
         }
+
+    @Transient
+    private var isAdjacentToRiver = false
+    @Transient
+    private var isAdjacentToRiverKnown = false
     //endregion
 
     fun clone(): Tile {
@@ -197,10 +213,6 @@ class Tile : IsPartOfGameInfoSerialization {
 
     fun isHill() = baseTerrain == Constants.hill || terrainFeatures.contains(Constants.hill)
 
-    fun containsGreatImprovement(): Boolean {
-        return getTileImprovement()?.isGreatImprovement() == true
-    }
-
     /** Returns military, civilian and air units in tile */
     fun getUnits() = sequence {
         if (militaryUnit != null) yield(militaryUnit!!)
@@ -234,28 +246,16 @@ class Tile : IsPartOfGameInfoSerialization {
         return exploredBy.contains(player.civName)
     }
 
-    fun setExplored(player: Civilization, isExplored: Boolean, explorerPosition: Vector2? = null) {
-        if (isExplored) {
-            // Disable the undo button if a new tile has been explored
-            if (!exploredBy.contains(player.civName)) {
-                GUI.clearUndoCheckpoints()
-                exploredBy = exploredBy.withItem(player.civName)
-            }
-
-            if (player.playerType == PlayerType.Human)
-                player.exploredRegion.checkTilePosition(position, explorerPosition)
-        } else {
-            exploredBy = exploredBy.withoutItem(player.civName)
-        }
-    }
-
     fun isCityCenter(): Boolean = isCityCenterInternal
     fun isNaturalWonder(): Boolean = naturalWonder != null
     fun isImpassible() = lastTerrain.impassable
 
+
     fun getTileImprovement(): TileImprovement? = if (improvement == null) null else ruleset.tileImprovements[improvement!!]
+    fun isPillaged(): Boolean = improvementIsPillaged || roadIsPillaged
     fun getUnpillagedTileImprovement(): TileImprovement? = if (getUnpillagedImprovement() == null) null else ruleset.tileImprovements[improvement!!]
     fun getTileImprovementInProgress(): TileImprovement? = if (improvementInProgress == null) null else ruleset.tileImprovements[improvementInProgress!!]
+    fun containsGreatImprovement() = getTileImprovement()?.isGreatImprovement() == true
 
     fun getImprovementToPillage(): TileImprovement? {
         if (canPillageTileImprovement())
@@ -299,34 +299,6 @@ class Tile : IsPartOfGameInfoSerialization {
         else ruleset.tileImprovements[getUnpillagedRoad().name]
     }
 
-    /** Does not remove roads */
-    fun removeImprovement() =
-        improvementFunctions.changeImprovement(null)
-
-    fun changeImprovement(improvementStr: String, civToHandleCompletion: Civilization? = null, unit: MapUnit? = null) =
-        improvementFunctions.changeImprovement(improvementStr, civToHandleCompletion, unit)
-
-    // function handling when adding a road to the tile
-    fun addRoad(roadType: RoadStatus, creatingCivInfo: Civilization?) {
-        roadStatus = roadType
-        roadIsPillaged = false
-        if (getOwner() != null) {
-            roadOwner = getOwner()!!.civName
-        } else if (creatingCivInfo != null) {
-            roadOwner = creatingCivInfo.civName // neutral tile, use building unit
-            creatingCivInfo.neutralRoads.add(this.position)
-        }
-    }
-
-    // function handling when removing a road from the tile
-    fun removeRoad() {
-        roadIsPillaged = false
-        if (roadStatus == RoadStatus.None) return
-        roadStatus = RoadStatus.None
-        if (owningCity == null)
-            getRoadOwner()?.neutralRoads?.remove(this.position)
-    }
-
     fun getShownImprovement(viewingCiv: Civilization?): String? {
         return if (viewingCiv == null || viewingCiv.playerType == PlayerType.AI || viewingCiv.isSpectator())
             improvement
@@ -337,13 +309,6 @@ class Tile : IsPartOfGameInfoSerialization {
     /** Returns true if this tile has fallout or an equivalent terrain feature */
     fun hasFalloutEquivalent(): Boolean = terrainFeatures.any { ruleset.terrains[it]!!.hasUnique(UniqueType.NullifyYields)}
 
-
-    // This is for performance - since we access the neighbors of a tile ALL THE TIME,
-    // and the neighbors of a tile never change, it's much more efficient to save the list once and for all!
-    @delegate:Transient
-    val neighbors: Sequence<Tile> by lazy { getTilesAtDistance(1).toList().asSequence() }
-    // We have to .toList() so that the values are stored together once for caching,
-    // and the toSequence so that aggregations (like neighbors.flatMap{it.units} don't take up their own space
 
     fun getRow() = HexMath.getRow(position)
     fun getColumn() = HexMath.getColumn(position)
@@ -507,6 +472,7 @@ class Tile : IsPartOfGameInfoSerialization {
             "resource" -> observingCiv != null && hasViewableResource(observingCiv)
             "Water resource" -> isWater && observingCiv != null && hasViewableResource(observingCiv)
             "Featureless" -> terrainFeatures.isEmpty()
+            "Open terrain" -> allTerrains.all { !it.isRough() } // special case - if *one* terrain is open, we don't care, we need *all*
             Constants.freshWaterFilter -> isAdjacentTo(Constants.freshWater, observingCiv)
 
             else -> {
@@ -536,8 +502,6 @@ class Tile : IsPartOfGameInfoSerialization {
 
     fun hasImprovementInProgress() = improvementInProgress != null && turnsToImprovement > 0
 
-    @delegate:Transient
-    private val _isCoastalTile: Boolean by lazy { neighbors.any { it.baseTerrain == Constants.coast } }
     fun isCoastalTile() = _isCoastalTile
 
     fun hasViewableResource(civInfo: Civilization): Boolean =
@@ -592,28 +556,6 @@ class Tile : IsPartOfGameInfoSerialization {
         }
     }
 
-    /** Shows important properties of this tile for debugging _only_, it helps to see what you're doing */
-    override fun toString(): String {
-        val lineList = arrayListOf("Tile @$position")
-        if (!this::baseTerrain.isInitialized) return lineList[0] + ", uninitialized"
-        if (isCityCenter()) lineList += getCity()!!.name
-        lineList += baseTerrain
-        for (terrainFeature in terrainFeatures) lineList += terrainFeature
-        if (resource != null) {
-            lineList += if (tileResource.resourceType == ResourceType.Strategic)
-                    "{$resourceAmount} {$resource}"
-                else
-                    resource!!
-        }
-        if (naturalWonder != null) lineList += naturalWonder!!
-        if (roadStatus !== RoadStatus.None && !isCityCenter()) lineList += roadStatus.name
-        if (improvement != null) lineList += improvement!!
-        if (civilianUnit != null) lineList += civilianUnit!!.name + " - " + civilianUnit!!.civ.civName
-        if (militaryUnit != null) lineList += militaryUnit!!.name + " - " + militaryUnit!!.civ.civName
-        if (this::baseTerrainObject.isInitialized && isImpassible()) lineList += Constants.impassable
-        return lineList.joinToString()
-    }
-
     /** The two tiles have a river between them */
     fun isConnectedByRiver(otherTile: Tile): Boolean {
         if (otherTile == this) throw Exception("Should not be called to compare to self!")
@@ -629,10 +571,6 @@ class Tile : IsPartOfGameInfoSerialization {
         }
     }
 
-    @Transient
-    private var isAdjacentToRiver = false
-    @Transient
-    private var isAdjacentToRiverKnown = false
     fun isAdjacentToRiver(): Boolean {
         if (!isAdjacentToRiverKnown) {
             isAdjacentToRiver =
@@ -643,43 +581,6 @@ class Tile : IsPartOfGameInfoSerialization {
             isAdjacentToRiverKnown = true
         }
         return isAdjacentToRiver
-    }
-
-    /** Allows resetting the cached value [isAdjacentToRiver] will return
-     *  @param isKnownTrue Set this to indicate you need to update the cache due to **adding** a river edge
-     *         (removing would need to look at other edges, and that is what isAdjacentToRiver will do)
-     */
-    private fun resetAdjacentToRiverTransient(isKnownTrue: Boolean = false) {
-        isAdjacentToRiver = isKnownTrue
-        isAdjacentToRiverKnown = isKnownTrue
-    }
-
-    /**
-     *  Sets the "has river" state of one edge of this Tile. Works for all six directions.
-     *  @param  otherTile The neighbor tile in the direction the river we wish to change is (If it's not a neighbor, this does nothing).
-     *  @param  newValue The new river edge state: `true` to create a river, `false` to remove one.
-     *  @param  convertTerrains If true, calls MapGenerator's convertTerrains to apply UniqueType.ChangesTerrain effects.
-     *  @return The state did change (`false`: the edge already had the `newValue`)
-     */
-    fun setConnectedByRiver(otherTile: Tile, newValue: Boolean, convertTerrains: Boolean = false): Boolean {
-        //todo synergy potential with [MapEditorEditRiversTab]?
-        val field = when (tileMap.getNeighborTileClockPosition(this, otherTile)) {
-            2 -> otherTile::hasBottomLeftRiver // we're to the bottom-left of it
-            4 -> ::hasBottomRightRiver // we're to the top-left of it
-            6 -> ::hasBottomRiver // we're directly above it
-            8 -> ::hasBottomLeftRiver // we're to the top-right of it
-            10 -> otherTile::hasBottomRightRiver // we're to the bottom-right of it
-            12 -> otherTile::hasBottomRiver // we're directly below it
-            else -> return false
-        }
-        if (field.get() == newValue) return false
-        field.set(newValue)
-        val affectedTiles = listOf(this, otherTile)
-        for (tile in affectedTiles)
-            tile.resetAdjacentToRiverTransient(newValue)
-        if (convertTerrains)
-            MapGenerator.Helpers.convertTerrains(ruleset, affectedTiles)
-        return true
     }
 
     /**
@@ -749,6 +650,20 @@ class Tile : IsPartOfGameInfoSerialization {
     /** Checks if this tile is marked as target tile for a building with a [UniqueType.CreatesOneImprovement] unique creating a specific [improvement] */
     fun isMarkedForCreatesOneImprovement(improvement: String) =
         turnsToImprovement < 0 && improvementInProgress == improvement
+
+    private fun approximateMajorDepositDistribution(): Double {
+        // We can't replicate the MapRegions resource distributor, so let's try to get
+        // a close probability of major deposits per tile
+        var probability = 0.0
+        for (unique in allTerrains.flatMap { it.getMatchingUniques(UniqueType.MajorStrategicFrequency) }) {
+            val frequency = unique.params[0].toIntOrNull() ?: continue
+            if (frequency <= 0) continue
+            // The unique param is literally "every N tiles", so to get a probability p=1/f
+            probability += 1.0 / frequency
+        }
+        return if (probability == 0.0) 0.04  // This is the default of 1 per 25 tiles
+        else probability
+    }
 
     //endregion
     //region state-changing functions
@@ -838,20 +753,6 @@ class Tile : IsPartOfGameInfoSerialization {
         }
     }
 
-    private fun approximateMajorDepositDistribution(): Double {
-        // We can't replicate the MapRegions resource distributor, so let's try to get
-        // a close probability of major deposits per tile
-        var probability = 0.0
-        for (unique in allTerrains.flatMap { it.getMatchingUniques(UniqueType.MajorStrategicFrequency) }) {
-            val frequency = unique.params[0].toIntOrNull() ?: continue
-            if (frequency <= 0) continue
-            // The unique param is literally "every N tiles", so to get a probability p=1/f
-            probability += 1.0 / frequency
-        }
-        return if (probability == 0.0) 0.04  // This is the default of 1 per 25 tiles
-            else probability
-    }
-
     fun setTerrainFeatures(terrainFeatureList: List<String>) {
         terrainFeatures = terrainFeatureList
         terrainFeatureObjects = terrainFeatureList.mapNotNull { ruleset.terrains[it] }
@@ -927,6 +828,35 @@ class Tile : IsPartOfGameInfoSerialization {
         }
     }
 
+
+    /** Does not remove roads */
+    fun removeImprovement() =
+        improvementFunctions.changeImprovement(null)
+
+    fun changeImprovement(improvementStr: String, civToHandleCompletion: Civilization? = null, unit: MapUnit? = null) =
+        improvementFunctions.changeImprovement(improvementStr, civToHandleCompletion, unit)
+
+    // function handling when adding a road to the tile
+    fun addRoad(roadType: RoadStatus, creatingCivInfo: Civilization?) {
+        roadStatus = roadType
+        roadIsPillaged = false
+        if (getOwner() != null) {
+            roadOwner = getOwner()!!.civName
+        } else if (creatingCivInfo != null) {
+            roadOwner = creatingCivInfo.civName // neutral tile, use building unit
+            creatingCivInfo.neutralRoads.add(this.position)
+        }
+    }
+
+    // function handling when removing a road from the tile
+    fun removeRoad() {
+        roadIsPillaged = false
+        if (roadStatus == RoadStatus.None) return
+        roadStatus = RoadStatus.None
+        if (owningCity == null)
+            getRoadOwner()?.neutralRoads?.remove(this.position)
+    }
+
     fun startWorkingOnImprovement(improvement: TileImprovement, civInfo: Civilization, unit: MapUnit) {
         improvementInProgress = improvement.name
         turnsToImprovement = if (civInfo.gameInfo.gameParameters.godMode) 1
@@ -977,18 +907,6 @@ class Tile : IsPartOfGameInfoSerialization {
             owningCity!!.civ.cache.updateCivResources()
     }
 
-    private fun clearAllPathfindingCaches() {
-        val units = tileMap.gameInfo.civilizations.asSequence()
-            .filter { it.isAlive() }
-            .flatMap { it.units.getCivUnits() }
-        Log.debug("%s: road pillaged, clearing cache for %d units", this, { units.count() })
-        for (otherUnit in units) {
-            otherUnit.movement.clearPathfindingCache()
-        }
-    }
-
-    fun isPillaged(): Boolean = improvementIsPillaged || roadIsPillaged
-
     fun setRepaired() {
         improvementInProgress = null
         turnsToImprovement = 0
@@ -1000,6 +918,31 @@ class Tile : IsPartOfGameInfoSerialization {
         owningCity?.reassignPopulationDeferred()
     }
 
+
+    private fun clearAllPathfindingCaches() {
+        val units = tileMap.gameInfo.civilizations.asSequence()
+            .filter { it.isAlive() }
+            .flatMap { it.units.getCivUnits() }
+        Log.debug("%s: road pillaged, clearing cache for %d units", this, { units.count() })
+        for (otherUnit in units) {
+            otherUnit.movement.clearPathfindingCache()
+        }
+    }
+
+    fun setExplored(player: Civilization, isExplored: Boolean, explorerPosition: Vector2? = null) {
+        if (isExplored) {
+            // Disable the undo button if a new tile has been explored
+            if (!exploredBy.contains(player.civName)) {
+                GUI.clearUndoCheckpoints()
+                exploredBy = exploredBy.withItem(player.civName)
+            }
+
+            if (player.playerType == PlayerType.Human)
+                player.exploredRegion.checkTilePosition(position, explorerPosition)
+        } else {
+            exploredBy = exploredBy.withoutItem(player.civName)
+        }
+    }
 
     /**
      * Assign a continent ID to this tile.
@@ -1016,6 +959,68 @@ class Tile : IsPartOfGameInfoSerialization {
 
     /** Clear continent ID, for map editor */
     fun clearContinent() { continent = -1 }
+
+    /** Allows resetting the cached value [isAdjacentToRiver] will return
+     *  @param isKnownTrue Set this to indicate you need to update the cache due to **adding** a river edge
+     *         (removing would need to look at other edges, and that is what isAdjacentToRiver will do)
+     */
+    private fun resetAdjacentToRiverTransient(isKnownTrue: Boolean = false) {
+        isAdjacentToRiver = isKnownTrue
+        isAdjacentToRiverKnown = isKnownTrue
+    }
+
+    /**
+     *  Sets the "has river" state of one edge of this Tile. Works for all six directions.
+     *  @param  otherTile The neighbor tile in the direction the river we wish to change is (If it's not a neighbor, this does nothing).
+     *  @param  newValue The new river edge state: `true` to create a river, `false` to remove one.
+     *  @param  convertTerrains If true, calls MapGenerator's convertTerrains to apply UniqueType.ChangesTerrain effects.
+     *  @return The state did change (`false`: the edge already had the `newValue`)
+     */
+    fun setConnectedByRiver(otherTile: Tile, newValue: Boolean, convertTerrains: Boolean = false): Boolean {
+        //todo synergy potential with [MapEditorEditRiversTab]?
+        val field = when (tileMap.getNeighborTileClockPosition(this, otherTile)) {
+            2 -> otherTile::hasBottomLeftRiver // we're to the bottom-left of it
+            4 -> ::hasBottomRightRiver // we're to the top-left of it
+            6 -> ::hasBottomRiver // we're directly above it
+            8 -> ::hasBottomLeftRiver // we're to the top-right of it
+            10 -> otherTile::hasBottomRightRiver // we're to the bottom-right of it
+            12 -> otherTile::hasBottomRiver // we're directly below it
+            else -> return false
+        }
+        if (field.get() == newValue) return false
+        field.set(newValue)
+        val affectedTiles = listOf(this, otherTile)
+        for (tile in affectedTiles)
+            tile.resetAdjacentToRiverTransient(newValue)
+        if (convertTerrains)
+            MapGenerator.Helpers.convertTerrains(ruleset, affectedTiles)
+        return true
+    }
+
+    //endregion
+    //region Overrides
+
+    /** Shows important properties of this tile for debugging _only_, it helps to see what you're doing */
+    override fun toString(): String {
+        val lineList = arrayListOf("Tile @$position")
+        if (!this::baseTerrain.isInitialized) return lineList[0] + ", uninitialized"
+        if (isCityCenter()) lineList += getCity()!!.name
+        lineList += baseTerrain
+        for (terrainFeature in terrainFeatures) lineList += terrainFeature
+        if (resource != null) {
+            lineList += if (tileResource.resourceType == ResourceType.Strategic)
+                "{$resourceAmount} {$resource}"
+            else
+                resource!!
+        }
+        if (naturalWonder != null) lineList += naturalWonder!!
+        if (roadStatus !== RoadStatus.None && !isCityCenter()) lineList += roadStatus.name
+        if (improvement != null) lineList += improvement!!
+        if (civilianUnit != null) lineList += civilianUnit!!.name + " - " + civilianUnit!!.civ.civName
+        if (militaryUnit != null) lineList += militaryUnit!!.name + " - " + militaryUnit!!.civ.civName
+        if (this::baseTerrainObject.isInitialized && isImpassible()) lineList += Constants.impassable
+        return lineList.joinToString()
+    }
 
     //endregion
 }

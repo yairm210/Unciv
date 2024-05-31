@@ -36,7 +36,6 @@ import com.unciv.ui.components.input.keyShortcuts
 import com.unciv.ui.components.input.onActivation
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popups.Popup
-import com.unciv.ui.screens.civilopediascreen.CivilopediaScreen
 import com.unciv.ui.screens.civilopediascreen.FormattedLine
 import com.unciv.ui.screens.civilopediascreen.MarkupRenderer
 import com.unciv.ui.screens.diplomacyscreen.LeaderIntroTable
@@ -555,7 +554,5 @@ class AlertPopup(
         add(MarkupRenderer.render(lines, stageWidth * 0.5f, linkAction = ::openCivilopedia)).row()
     }
 
-    private fun openCivilopedia(link: String) {
-        worldScreen.game.pushScreen(CivilopediaScreen(gameInfo.ruleset, link = link))
-    }
+    private fun openCivilopedia(link: String) = worldScreen.openCivilopedia(link)
 }

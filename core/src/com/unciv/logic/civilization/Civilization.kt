@@ -58,6 +58,7 @@ import com.unciv.models.stats.Stats
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.extensions.toPercent
 import com.unciv.ui.screens.victoryscreen.RankingType
+import com.unciv.utils.Log
 import org.jetbrains.annotations.VisibleForTesting
 import kotlin.math.max
 import kotlin.math.min
@@ -303,6 +304,7 @@ class Civilization : IsPartOfGameInfoSerialization {
         toReturn.hasMovedAutomatedUnits = hasMovedAutomatedUnits
         toReturn.statsHistory = statsHistory.clone()
         toReturn.resourceStockpiles = resourceStockpiles.clone()
+        toReturn.cityStateTurnsUntilElection = cityStateTurnsUntilElection
         return toReturn
     }
 
@@ -339,7 +341,7 @@ class Civilization : IsPartOfGameInfoSerialization {
     fun knows(otherCivName: String) = diplomacy.containsKey(otherCivName)
     fun knows(otherCiv: Civilization) = knows(otherCiv.civName)
 
-    fun getCapital(firstCityIfNoCapital: Boolean = false) = cities.firstOrNull { it.isCapital() } ?:
+    fun getCapital(firstCityIfNoCapital: Boolean = true) = cities.firstOrNull { it.isCapital() } ?:
         if (firstCityIfNoCapital) cities.firstOrNull() else null
     fun isHuman() = playerType == PlayerType.Human
     fun isAI() = playerType == PlayerType.AI
@@ -363,7 +365,7 @@ class Civilization : IsPartOfGameInfoSerialization {
     var cityStatePersonality: CityStatePersonality = CityStatePersonality.Neutral
     var cityStateResource: String? = null
     var cityStateUniqueUnit: String? = null // Unique unit for militaristic city state. Might still be null if there are no appropriate units
-
+    var cityStateTurnsUntilElection: Int = 0
 
     fun hasMetCivTerritory(otherCiv: Civilization): Boolean =
             otherCiv.getCivTerritory().any { gameInfo.tileMap[it].isExplored(this) }
@@ -613,7 +615,7 @@ class Civilization : IsPartOfGameInfoSerialization {
     fun isDefeated() = when {
         isBarbarian() || isSpectator() -> false     // Barbarians and voyeurs can't lose
         hasEverOwnedOriginalCapital -> cities.isEmpty()
-        else -> units.getCivUnits().none()
+        else -> units.getCivUnitsSize() == 0
     }
 
     fun getEra(): Era = tech.era
@@ -860,6 +862,10 @@ class Civilization : IsPartOfGameInfoSerialization {
 
     fun addNotification(text: String, actions: Iterable<NotificationAction>?, category: NotificationCategory, vararg notificationIcons: String) {
         if (playerType == PlayerType.AI) return // no point in lengthening the saved game info if no one will read it
+        if (notifications.lastOrNull()?.let { it.text == text && it.category == category && it.icons == notificationIcons.toList() } == true) {
+            Log.debug("Duplicate notification \"%s\"", text)
+            return
+        }
         notifications.add(Notification(text, notificationIcons, actions, category))
     }
     // endregion
@@ -905,9 +911,10 @@ class Civilization : IsPartOfGameInfoSerialization {
      */
     fun moveCapitalTo(city: City?, oldCapital: City?) {
         // Add new capital first so the civ doesn't get stuck in a state where it has cities but no capital
-        if (city != null) {
+        val newCapitalIndicator = city?.capitalCityIndicator()
+        if (newCapitalIndicator != null) {
             // move new capital
-            city.cityConstructions.addBuilding(city.capitalCityIndicator())
+            city.cityConstructions.addBuilding(newCapitalIndicator)
             city.isBeingRazed = false // stop razing the new capital if it was being razed
 
             // move the buildings with MovedToNewCapital unique
@@ -923,7 +930,9 @@ class Civilization : IsPartOfGameInfoSerialization {
                 for (building in buildingsToMove) city.cityConstructions.addBuilding(building)
             }
         }
-        oldCapital?.cityConstructions?.removeBuilding(oldCapital.capitalCityIndicator())
+
+        val oldCapitalIndicator = oldCapital?.capitalCityIndicator()
+        if (oldCapitalIndicator != null) oldCapital.cityConstructions.removeBuilding(oldCapitalIndicator)
     }
 
     /** @param oldCapital `null` when destroying, otherwise old capital */

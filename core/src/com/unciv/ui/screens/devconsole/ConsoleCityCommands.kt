@@ -1,7 +1,14 @@
 package com.unciv.ui.screens.devconsole
 
+import com.unciv.models.ruleset.Building
+
 class ConsoleCityCommands : ConsoleCommandNode {
     override val subcommands = hashMapOf<String, ConsoleCommand>(
+
+        "checkfilter" to ConsoleAction("city checkfilter <cityFilter>") { console, params ->
+            val city = console.getSelectedCity()
+            DevConsoleResponse.hint(city.matchesFilter(params[0]).toString())
+        },
 
         "add" to ConsoleAction("city add <civName>") { console, params ->
             val civ = console.getCivByName(params[0])
@@ -72,15 +79,15 @@ class ConsoleCityCommands : ConsoleCommandNode {
 
         "addbuilding" to ConsoleAction("city addbuilding [buildingName]") { console, params ->
             val city = console.getSelectedCity()
-            val building = console.gameInfo.ruleset.buildings.values
-                .firstOrNull { it.name.toCliInput() == params[0] }  ?: throw ConsoleErrorException("Unknown building")
+            val building = console.findCliInput<Building>(params[0])
+                ?: throw ConsoleErrorException("Unknown building")
             city.cityConstructions.addBuilding(building)
             DevConsoleResponse.OK
         },
         "removebuilding" to ConsoleAction("city removebuilding [buildingName]") { console, params ->
             val city = console.getSelectedCity()
-            val building = console.gameInfo.ruleset.buildings.values
-                .firstOrNull { it.name.toCliInput() == params[0] } ?: throw ConsoleErrorException("Unknown building")
+            val building = console.findCliInput<Building>(params[0])
+                ?: throw ConsoleErrorException("Unknown building")
             city.cityConstructions.removeBuilding(building)
             DevConsoleResponse.OK
         },

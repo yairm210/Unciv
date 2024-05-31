@@ -56,7 +56,7 @@ class CityFounder {
 
         if (civInfo.gameInfo.ruleset.tileImprovements.containsKey(Constants.cityCenter))
             tile.changeImprovement(Constants.cityCenter, civInfo)
-        tile.improvementInProgress = null
+        tile.stopWorkingOnImprovement()
 
         val ruleset = civInfo.gameInfo.ruleset
         city.workedTiles = hashSetOf() //reassign 1st working tile
@@ -111,8 +111,8 @@ class CityFounder {
      * This method attempts to return the first unused city name of the [foundingCiv], taking used
      * city names into consideration (including foreign cities). If that fails, it then checks
      * whether the civilization has [UniqueType.BorrowsCityNames] and, if true, returns a borrowed
-     * name. Else, it repeatedly attaches one of the given [prefixes] to the list of names up to ten
-     * times until an unused name is successfully generated. If all else fails, null is returned.
+     * name. Else, it repeatedly attaches one of the given [prefixes][NamingConstants.prefixes] to the list of names
+     * up to ten times until an unused name is successfully generated. If all else fails, null is returned.
      *
      * @param foundingCiv The civilization that founded this city.
      * @param aliveCivs Every civilization currently alive.
@@ -205,7 +205,11 @@ class CityFounder {
 
     private fun addStartingBuildings(city: City, civInfo: Civilization, startingEra: String) {
         val ruleset = civInfo.gameInfo.ruleset
-        if (civInfo.cities.size == 1) city.cityConstructions.addBuilding(city.capitalCityIndicator(), tryAddFreeBuildings = false)
+        if (civInfo.cities.size == 1) {
+            val capitalCityIndicator = city.capitalCityIndicator()
+            if (capitalCityIndicator != null)
+                city.cityConstructions.addBuilding(capitalCityIndicator, tryAddFreeBuildings = false)
+        }
 
         // Add buildings and pop we get from starting in this era
         for (buildingName in ruleset.eras[startingEra]!!.settlerBuildings) {

@@ -72,12 +72,12 @@ class TechPolicyDiplomacyButtons(val worldScreen: WorldScreen) : Table(BaseScree
             game.pushScreen(TechPickerScreen(viewingCiv))
         }
 
-        undoButton.add(ImageGetter.getImage("OtherIcons/Resume")).size(30f).pad(15f)
+        undoButton.add(ImageGetter.getImage("OtherIcons/Undo")).size(30f).pad(15f)
         undoButton.onActivation(binding = KeyboardBinding.Undo) {
             handleUndo()
         }
 
-        policyScreenButton.add(ImageGetter.getImage("PolicyIcons/Constitution")).size(30f).pad(15f)
+        policyScreenButton.add(ImageGetter.getImage("OtherIcons/Policies")).size(30f).pad(15f)
         policyButtonHolder.onActivation(binding = KeyboardBinding.SocialPolicies) {
             game.pushScreen(PolicyPickerScreen(worldScreen.selectedCiv, worldScreen.canChangeState))
         }
@@ -88,8 +88,13 @@ class TechPolicyDiplomacyButtons(val worldScreen: WorldScreen) : Table(BaseScree
         }
 
         if (game.gameInfo!!.isEspionageEnabled()) {
-            espionageButton.add(ImageGetter.getImage("OtherIcons/Spy_White")).size(30f).pad(15f)
+            espionageButton.add(ImageGetter.getImage("OtherIcons/Espionage")).size(30f).pad(15f)
             espionageButtonHolder.onActivation(binding = KeyboardBinding.Espionage) {
+                // We want to make sure to deselect a spy in the case that the player wants to cancel moving
+                // the spy on the map screen by pressing this button
+                if (worldScreen.bottomUnitTable.selectedSpy != null) {
+                    worldScreen.bottomUnitTable.selectSpy(null)
+                }
                 game.pushScreen(EspionageOverviewScreen(worldScreen.selectedCiv, worldScreen))
             }
         }

@@ -1,10 +1,17 @@
 package com.unciv.ui.screens.devconsole
 
 import com.unciv.Constants
+import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
+import com.unciv.logic.civilization.LocationAction
+import com.unciv.logic.civilization.Notification
+import com.unciv.logic.civilization.NotificationCategory
+import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.map.mapgenerator.RiverGenerator
 import com.unciv.logic.map.mapgenerator.RiverGenerator.RiverDirections
 import com.unciv.logic.map.tile.RoadStatus
+import com.unciv.logic.map.tile.Tile
+import com.unciv.models.ruleset.tile.Terrain
 import com.unciv.models.ruleset.tile.TerrainType
 
 class ConsoleTileCommands: ConsoleCommandNode {
@@ -12,6 +19,11 @@ class ConsoleTileCommands: ConsoleCommandNode {
     // - we want the console to allow invalid tile configurations.
 
     override val subcommands = hashMapOf<String, ConsoleCommand>(
+
+        "checkfilter" to ConsoleAction("tile checkfilter <tileFilter>") { console, params ->
+            val selectedTile = console.getSelectedTile()
+            DevConsoleResponse.hint(selectedTile.matchesFilter(params[0]).toString())
+        },
 
         "setimprovement" to ConsoleAction("tile setimprovement <improvementName> [civName]") { console, params ->
             val selectedTile = console.getSelectedTile()
@@ -68,12 +80,10 @@ class ConsoleTileCommands: ConsoleCommandNode {
             val selectedTile = console.getSelectedTile()
             val terrain = console.gameInfo.ruleset.terrains.values.findCliInput(params[0])
                 ?: throw ConsoleErrorException("Unknown terrain")
-            if (terrain.type != selectedTile.getBaseTerrain().type)
-                throw ConsoleErrorException("Changing terrain type is not allowed")
-            selectedTile.baseTerrain = terrain.name
-            selectedTile.setTerrainTransients()
-            selectedTile.getCity()?.reassignPopulation()
-            DevConsoleResponse.OK
+            if (terrain.type == TerrainType.NaturalWonder)
+                setNaturalWonder(selectedTile, terrain)
+            else
+                setBaseTerrain(selectedTile, terrain)
         },
 
         "setresource" to ConsoleAction("tile setresource <resourceName>") { console, params ->
@@ -96,7 +106,69 @@ class ConsoleTileCommands: ConsoleCommandNode {
 
         "addriver" to ConsoleRiverAction("tile addriver <direction>", true),
         "removeriver" to ConsoleRiverAction("tile removeriver <direction>", false),
+
+        "setowner" to ConsoleAction("tile setowner [civName|cityName]") { console, params ->
+            val selectedTile = console.getSelectedTile()
+            val oldOwner = selectedTile.getCity()
+            val newOwner: City? =
+                if (params.isEmpty() || params[0].isEmpty()) null
+                else {
+                    val param = params[0].toCliInput()
+                    // Look for a city name to assign the Tile to
+                    console.gameInfo.civilizations
+                        .flatMap { civ -> civ.cities }
+                        .firstOrNull { it.name.toCliInput() == param }
+                    // If the user didn't specify a City, they must have given us a Civilization instead -
+                    // copy of TileImprovementFunctions.takeOverTilesAround.fallbackNearestCity
+                    ?: console.getCivByName(params[0]) // throws if no match
+                        .cities.minByOrNull { it.getCenterTile().aerialDistanceTo(selectedTile) + (if (it.isBeingRazed) 5 else 0) }
+                }
+            // for simplicity, treat assign to civ without cities same as un-assign
+            oldOwner?.expansion?.relinquishOwnership(selectedTile) // redundant if new owner is not null, but simpler for un-assign
+            newOwner?.expansion?.takeOwnership(selectedTile)
+            DevConsoleResponse.OK
+        },
+
+        "find" to ConsoleAction("tile find <tileFilter>") { console, params ->
+            val filter = params[0]
+            val locations = console.gameInfo.tileMap.tileList
+                .filter { it.matchesFilter(filter) }
+                .map { it.position }
+            if (locations.isEmpty()) DevConsoleResponse.hint("None found")
+            else {
+                val notification = Notification("tile find [$filter]", arrayOf(NotificationIcon.Spy),
+                    LocationAction(locations).asIterable(), NotificationCategory.General)
+                console.screen.notificationsScroll.oneTimeNotification = notification
+                notification.execute(console.screen)
+                DevConsoleResponse.OK
+            }
+        },
     )
+
+    private fun setBaseTerrain(tile: Tile, terrain: Terrain): DevConsoleResponse {
+        if (terrain.type != tile.getBaseTerrain().type)
+            throw ConsoleErrorException("Changing terrain type is not allowed")
+        setBaseTerrain(tile, terrain.name)
+        return DevConsoleResponse.OK
+    }
+    private fun setBaseTerrain(tile: Tile, terrainName: String) {
+        tile.baseTerrain = terrainName
+        tile.setTerrainTransients()
+        tile.getCity()?.reassignPopulation()
+    }
+    private fun setNaturalWonder(tile: Tile, wonder: Terrain): DevConsoleResponse {
+        tile.removeTerrainFeatures()
+        tile.naturalWonder = wonder.name
+        setBaseTerrain(tile, wonder.turnsInto ?: tile.baseTerrain)
+        for (civ in tile.tileMap.gameInfo.civilizations) {
+            if (wonder.name in civ.naturalWonders) continue
+            if (civ.isDefeated() || civ.isBarbarian() || civ.isSpectator()) continue
+            if (!civ.hasExplored(tile)) continue
+            civ.cache.discoverNaturalWonders()
+            civ.updateStatsForNextTurn()
+        }
+        return DevConsoleResponse.OK
+    }
 
     private fun getTerrainFeature(console: DevConsolePopup, param: String) =
         console.gameInfo.ruleset.terrains.values.asSequence()

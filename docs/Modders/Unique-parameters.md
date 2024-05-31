@@ -88,6 +88,8 @@ This indicates a unit as placed on the map. Compare with `baseUnitFilter`.
 - `Barbarians`, `Barbarian`
 - Again, any combination of the above is also allowed, e.g. `[{Wounded} {Water}]` units.
 
+You can check this in-game using the console with the `unit checkfilter <filter>` command
+
 ## buildingFilter
 
 Allows to only activate a unique for certain buildings. Allowed options are:
@@ -134,6 +136,8 @@ cityFilters allow us to choose the range of cities affected by this unique:
 - `in all cities in which the majority religion is a major religion`
 - `in all cities in which the majority religion is an enhanced religion`
 - [civFilter]
+
+You can check this in-game using the console with the `city checkfilter <filter>` command
 
 ## improvementFilter
 
@@ -265,6 +269,8 @@ Any of:
 - `Improvement` or `improved` for tiles with any improvements
 - `unimproved` for tiles with no improvement
 
+You can check this in-game using the console with the `tile checkfilter <filter>` command
+
 ## terrainQuality
 
 Used to indicate for what use the terrain should be viewed when dividing the world into regions, in each of which a single player is placed at the start of the game.
@@ -272,6 +278,21 @@ Used to indicate for what use the terrain should be viewed when dividing the wor
 Allowed values are:
 
 - improvement name (Note that "Road" and "Railroad" _do_ work as improvementFilters, but not as tileFilters at the moment.)
-- "All"
-- "Great Improvements", "Great"
-- "All Road" - for Roads & Railroads
+- `All`
+- `Great Improvements`, `Great`
+- `All Road` - for Roads & Railroads
+
+## countable
+
+Indicates *something that can be counted*, used both for comparisons and for multiplying uniques
+
+Allowed values:
+- `year`
+- Unit name (counts your existing units)
+- Building name (counts your existing buildings)
+- Stat name - gets the stat *reserve*, not the amount per turn (can be city stats or civilization stats, depending on where the unique is used)
+- Resource name (can be city stats or civilization stats, depending on where the unique is used)
+
+For example: If a unique is placed on a building, then the retrieved resources will be of the city. If placed on a policy, they will be of the civilization.
+
+This can make a difference for e.g. local resources, which are counted per city.

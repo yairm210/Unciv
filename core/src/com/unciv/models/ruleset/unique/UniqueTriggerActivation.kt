@@ -70,7 +70,10 @@ object UniqueTriggerActivation {
         return function.invoke()
     }
 
-        /** @return The action to be performed if possible, else null */
+    /** @return The action to be performed if possible, else null
+     * This is so the unit actions can be displayed as "disabled" if they won't actually do anything
+     * Even if the action itself is performable, there are still cases where it can fail -
+     *   for example unit placement - which is why the action itself needs to return Boolean to indicate success */
     fun getTriggerFunction(
         unique: Unique,
         civInfo: Civilization,
@@ -87,7 +90,12 @@ object UniqueTriggerActivation {
 
         val timingConditional = unique.conditionals.firstOrNull { it.type == UniqueType.ConditionalTimedUnique }
         if (timingConditional != null) {
-            return { civInfo.temporaryUniques.add(TemporaryUnique(unique, timingConditional.params[0].toInt())) }
+            return {
+                civInfo.temporaryUniques.add(TemporaryUnique(unique, timingConditional.params[0].toInt()))
+                if (unique.type in setOf(UniqueType.ProvidesResources, UniqueType.ConsumesResources))
+                    civInfo.cache.updateCivResources()
+                true
+            }
         }
 
         val stateForConditionals = StateForConditionals(civInfo, city, unit, tile)
@@ -303,7 +311,7 @@ object UniqueTriggerActivation {
                 if (policiesToRemove.isEmpty()) return null
 
                 return {
-                    for (policy in policiesToRemove){
+                    for (policy in policiesToRemove) {
                         civInfo.policies.removePolicy(policy)
 
                         val notificationText = getNotificationText(
@@ -316,6 +324,33 @@ object UniqueTriggerActivation {
                     true
                 }
             }
+
+            UniqueType.OneTimeRemovePolicyRefund -> {
+                val policyFilter = unique.params[0]
+                val refundPercentage = unique.params[1].toInt()
+                val policiesToRemove = civInfo.policies.adoptedPolicies
+                    .mapNotNull { civInfo.gameInfo.ruleset.policies[it] }
+                    .filter { it.matchesFilter(policyFilter) }
+                if (policiesToRemove.isEmpty()) return null
+
+                val policiesToRemoveMap = civInfo.policies.getCultureRefundMap(policiesToRemove, refundPercentage)
+
+                return {
+                    for (policy in policiesToRemoveMap){
+                        civInfo.policies.removePolicy(policy.key)
+                        civInfo.policies.addCulture(policy.value)
+
+                        val notificationText = getNotificationText(
+                            notification, triggerNotificationText,
+                            "You lose the [${policy.key.name}] Policy. [${policy.value}] Culture has been refunded"
+                        )
+                        if (notificationText != null)
+                            civInfo.addNotification(notificationText, PolicyAction(policy.key.name), NotificationCategory.General, NotificationIcon.Culture)
+                    }
+                    true
+                }
+            }
+
             UniqueType.OneTimeEnterGoldenAge, UniqueType.OneTimeEnterGoldenAgeTurns -> {
                 return {
                     if (unique.type == UniqueType.OneTimeEnterGoldenAgeTurns) civInfo.goldenAges.enterGoldenAge(unique.params[0].toInt())
@@ -339,7 +374,7 @@ object UniqueTriggerActivation {
                     if (notification != null)
                         civInfo.addNotification(notification, NotificationCategory.General)
 
-                    if (civInfo.isAI() || UncivGame.Current.settings.autoPlay.fullAutoPlayAI) {
+                    if (civInfo.isAI() || UncivGame.Current.worldScreen?.autoPlay?.isAutoPlayingAndFullAutoPlayAI() == true) {
                         NextTurnAutomation.chooseGreatPerson(civInfo)
                     }
                     true
@@ -348,7 +383,7 @@ object UniqueTriggerActivation {
 
             UniqueType.OneTimeGainPopulation -> {
                 val applicableCities =
-                    if (unique.params[1] == "in this city") sequenceOf(relevantCity!!)
+                    if (unique.params[1] == "in this city") sequenceOf(relevantCity).filterNotNull()
                     else civInfo.cities.asSequence().filter { it.matchesFilter(unique.params[1]) }
                 if (applicableCities.none()) return null
                 return {
@@ -808,17 +843,13 @@ object UniqueTriggerActivation {
                     val currentEra = civInfo.getEra().name
                     for (otherCiv in civInfo.gameInfo.getAliveMajorCivs()) {
                         if (currentEra !in otherCiv.espionageManager.erasSpyEarnedFor) {
-                            val spyName = otherCiv.espionageManager.addSpy().name
+                            val spy = otherCiv.espionageManager.addSpy()
                             otherCiv.espionageManager.erasSpyEarnedFor.add(currentEra)
                             if (otherCiv == civInfo || otherCiv.knows(civInfo))
                             // We don't tell which civilization entered the new era, as that is done in the notification directly above this one
-                                otherCiv.addNotification("We have recruited [${spyName}] as a spy!", NotificationCategory.Espionage, NotificationIcon.Spy)
+                                spy.addNotification("We have recruited [${spy.name}] as a spy!")
                             else
-                                otherCiv.addNotification(
-                                    "After an unknown civilization entered the [${currentEra}], we have recruited [${spyName}] as a spy!",
-                                    NotificationCategory.Espionage,
-                                    NotificationIcon.Spy
-                                )
+                                spy.addNotification("After an unknown civilization entered the [$currentEra], we have recruited [${spy.name}] as a spy!")
                         }
                     }
                     true
@@ -840,7 +871,8 @@ object UniqueTriggerActivation {
                 if (!civInfo.gameInfo.isEspionageEnabled()) return null
 
                 return {
-                    civInfo.espionageManager.addSpy()
+                    val spy = civInfo.espionageManager.addSpy()
+                    spy.addNotification("We have recruited [${spy.name}] as a spy!")
                     true
                 }
             }
@@ -857,7 +889,7 @@ object UniqueTriggerActivation {
                         applicableCity.cityConstructions.freeBuildingsProvidedFromThisCity.addToMapOfSets(applicableCity.id, freeBuilding.name)
 
                         if (applicableCity.cityConstructions.containsBuildingOrEquivalent(freeBuilding.name)) continue
-                        applicableCity.cityConstructions.constructionComplete(freeBuilding)
+                        applicableCity.cityConstructions.completeConstruction(freeBuilding)
                     }
                     true
                 }

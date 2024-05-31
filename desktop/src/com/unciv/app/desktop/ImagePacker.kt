@@ -11,11 +11,15 @@ import java.nio.file.Files
 import java.nio.file.attribute.BasicFileAttributes
 
 /**
- * Entry point: _ImagePacker.[packImages] ()_
+ * Entry point: _ImagePacker.[packImages]`()`_
  *
  * Re-packs our texture assets into atlas + png File pairs, which will be loaded by the game.
- * With the exception of the ExtraImages folder and the Font system these are the only
- * graphics used (The source Image folders are unused at run time except here).
+ * With the exception of the ExtraImages folder and the Font system these are the only graphics used
+ * (The source Image folders are unused at run time except here, and in RulesetValidator when it detects this failed).
+ *
+ * RulesetValidator relies on packer failures to remove the atlas files, but write the atlas name into Atlases.json nevertheless:
+ * It detects that case and only then does a scan for corrupt images.
+ * This is fulfilled by [packImagesIfOutdated] catching and logging exceptions, and [packImagesPerMod] ignoring that.
  *
  * [TexturePacker] documentation is [here](https://github.com/libgdx/libgdx/wiki/Texture-packer)
  */
@@ -54,7 +58,7 @@ internal object ImagePacker {
 
         // Trying to disable the subdirectory combine lead to even worse results. Don't.
         combineSubdirectories = true
-        pot = true  // powers of two only for width/height
+        pot = true  // powers of two only for width/height, default anyway, repeat for clarity
         fast = true  // with pot on this just sorts by width
         // settings.rotation - do not set. Allows rotation, potentially packing tighter.
         //      Proper rendering is mostly automatic - except borders which overwrite rotation.
@@ -64,7 +68,7 @@ internal object ImagePacker {
         paddingY = 8
         duplicatePadding = true
         filterMin = Texture.TextureFilter.MipMapLinearLinear
-        filterMag = Texture.TextureFilter.MipMapLinearLinear // I'm pretty sure this doesn't make sense for magnification, but setting it to Linear gives strange results
+        filterMag = Texture.TextureFilter.MipMapLinearLinear // This is changed to Linear if the folder name ends in `Icons` - see `suffixUsingLinear`
     }
 
     fun packImages(isRunFromJAR: Boolean) {
@@ -84,7 +88,12 @@ internal object ImagePacker {
                     try {
                         packImagesPerMod(mod.path, mod.path, defaultSettings)
                     } catch (ex: Throwable) {
-                        Log.error("Exception in ImagePacker: %s", ex.message)
+                        var innerException = ex
+                        while (innerException.cause != null && innerException.cause !== innerException) innerException = innerException.cause!!
+                        if (innerException === ex)
+                            Log.error("Exception in ImagePacker: %s", ex.message)
+                        else
+                            Log.error("Exception in ImagePacker: %s (%s)", ex.message, innerException.message)
                     }
                 }
             }
@@ -126,7 +135,7 @@ internal object ImagePacker {
             if (File(input).listTree().none {
                 val attr: BasicFileAttributes = Files.readAttributes(it.toPath(), BasicFileAttributes::class.java)
                 val createdAt: Long = attr.creationTime().toMillis()
-                it.extension in imageExtensions
+                    (it.extension in imageExtensions || it.name == "TexturePacker.settings")
                         && (it.lastModified() > atlasModTime || createdAt > atlasModTime)
             }) return
         }

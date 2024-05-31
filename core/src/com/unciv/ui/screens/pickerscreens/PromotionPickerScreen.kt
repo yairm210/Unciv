@@ -25,7 +25,6 @@ import com.unciv.ui.components.input.onDoubleClick
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.basescreen.RecreateOnResize
-import com.unciv.ui.screens.civilopediascreen.CivilopediaScreen
 import kotlin.math.abs
 
 class PromotionPickerScreen private constructor(
@@ -108,6 +107,8 @@ class PromotionPickerScreen private constructor(
 
         displayTutorial(TutorialTrigger.Experience)
     }
+
+    override fun getCivilopediaRuleset() = unit.civ.gameInfo.ruleset
 
     private fun acceptPromotion(button: PromotionButton?) {
         // if user managed to click disabled button, still do nothing
@@ -345,7 +346,7 @@ class PromotionPickerScreen private constructor(
         descriptionLabel.setText("$topLine\n$promotionText")
         descriptionLabel.clearListeners()
         descriptionLabel.onActivation {
-            game.pushScreen(CivilopediaScreen(unit.baseUnit.ruleset, link = node.promotion.makeLink()))
+            openCivilopedia(node.promotion.makeLink())
         }
         descriptionLabel.keyShortcuts.add(KeyboardBinding.Civilopedia)
     }
