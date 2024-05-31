@@ -1537,6 +1537,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Unit
 
 ??? example  "Is part of Great Person group [comment]"
+	Great people in the same group increase teach other's costs when gained. Gaining one will make all others in the same group cost more GPP.
 	Example: "Is part of Great Person group [comment]"
 
 	Applicable to: Unit

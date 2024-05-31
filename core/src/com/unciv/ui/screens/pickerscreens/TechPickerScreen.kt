@@ -416,7 +416,7 @@ class TechPickerScreen(
             }
         }
 
-        if(queue){
+        if (queue){
             for (pathTech in pathToTech) {
                 if (pathTech.name !in tempTechsToResearch) {
                     tempTechsToResearch.add(pathTech.name)
@@ -427,10 +427,14 @@ class TechPickerScreen(
             tempTechsToResearch.addAll(pathToTech.map { it.name })
         }
 
-        val label = "Research [${tempTechsToResearch[0]}]".tr()
-        val techProgression = getTechProgressLabel(tempTechsToResearch)
-
-        pick("${label}\n${techProgression}")
+        if (tempTechsToResearch.any()) {
+            val label = "Research [${tempTechsToResearch[0]}]".tr()
+            val techProgression = getTechProgressLabel(tempTechsToResearch)
+            pick("${label}\n${techProgression}")
+        } else {
+            rightSideButton.setText("Unavailable".tr())
+            rightSideButton.disable()
+        }
         setButtonsInfo()
     }
 
