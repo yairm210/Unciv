@@ -502,7 +502,8 @@ enum class UniqueType(
     // Hurried means: sped up using great engineer/scientist ability, so this is in some sense a unit unique that should be here
     CannotBeHurried("Cannot be hurried", UniqueTarget.Building, UniqueTarget.Tech),
     GreatPerson("Great Person - [comment]", UniqueTarget.Unit),
-    GPPointPool("Is part of Great Person group [comment]", UniqueTarget.Unit),
+    GPPointPool("Is part of Great Person group [comment]", UniqueTarget.Unit,
+        docDescription = "Great people in the same group increase teach other's costs when gained. Gaining one will make all others in the same group cost more GPP."),
 
     //endregion
 
