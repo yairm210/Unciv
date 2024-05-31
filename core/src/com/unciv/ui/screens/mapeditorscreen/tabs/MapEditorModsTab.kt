@@ -18,7 +18,7 @@ import com.unciv.ui.components.input.onClick
 import com.unciv.ui.popups.Popup
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.mapeditorscreen.MapEditorScreen
-import com.unciv.ui.screens.mapeditorscreen.TileInfoNormalizer
+import com.unciv.logic.map.tile.TileInfoNormalizer
 import com.unciv.ui.screens.newgamescreen.ModCheckboxTable
 
 class MapEditorModsTab(

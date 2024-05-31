@@ -1,6 +1,5 @@
-package com.unciv.ui.screens.mapeditorscreen
+package com.unciv.logic.map.tile
 
-import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.tile.TerrainType
 import com.unciv.models.ruleset.unique.StateForConditionals

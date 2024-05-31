@@ -29,7 +29,7 @@ import com.unciv.models.stats.Stats
 import com.unciv.models.translations.fillPlaceholders
 import com.unciv.models.translations.hasPlaceholderParameters
 import com.unciv.ui.components.extensions.addToMapOfSets
-import com.unciv.ui.screens.mapeditorscreen.TileInfoNormalizer
+import com.unciv.logic.map.tile.TileInfoNormalizer
 import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionsUpgrade
 import kotlin.math.roundToInt
 import kotlin.random.Random

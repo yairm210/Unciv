@@ -26,7 +26,7 @@ import com.unciv.ui.popups.ToastPopup
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.civilopediascreen.FormattedLine
 import com.unciv.ui.screens.mapeditorscreen.MapEditorScreen
-import com.unciv.ui.screens.mapeditorscreen.TileInfoNormalizer
+import com.unciv.logic.map.tile.TileInfoNormalizer
 import com.unciv.ui.screens.mapeditorscreen.tabs.MapEditorOptionsTab.TileMatchFuzziness
 import com.unciv.utils.Log
 
