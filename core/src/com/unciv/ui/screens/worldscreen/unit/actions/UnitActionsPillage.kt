@@ -20,7 +20,7 @@ object UnitActionsPillage {
     internal fun getPillageActions(unit: MapUnit, tile: Tile): Sequence<UnitAction> {
         val pillageAction = getPillageAction(unit, tile)
             ?: return emptySequence()
-        if (pillageAction.action == null || unit.civ.isAI() || (unit.civ.isHuman() && UncivGame.Current.settings.autoPlay.isAutoPlaying()))
+        if (pillageAction.action == null || unit.civ.isAIOrAutoPlaying())
             return sequenceOf(pillageAction)
         else return sequenceOf(UnitAction(UnitActionType.Pillage, 65f, pillageAction.title) {
             val pillageText = "Are you sure you want to pillage this [${tile.getImprovementToPillageName()!!}]?"

@@ -11,7 +11,6 @@ import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
-import com.unciv.logic.map.tile.TileStatFunctions
 import com.unciv.logic.map.tile.toStats
 import com.unciv.models.UnitActionType
 import com.unciv.models.ruleset.tile.ResourceType
@@ -83,6 +82,12 @@ class WorkerAutomation(
 
         if (tileToWork != currentTile) {
             debug("WorkerAutomation: %s -> head towards %s", unit.toString(), tileToWork)
+            if (unit.movement.canReachInCurrentTurn(tileToWork) && unit.movement.canMoveTo(tileToWork, canSwap = true)) {
+                if (!unit.movement.canMoveTo(tileToWork, canSwap = false) && unit.movement.canUnitSwapTo(tileToWork)) {
+                    // There must be a unit on the target tile! Lets swap with it.
+                    unit.movement.swapMoveToTile(tileToWork)
+                }
+            }
             val reachedTile = unit.movement.headTowards(tileToWork)
             if (reachedTile != currentTile) unit.doAction() // otherwise, we get a situation where the worker is automated, so it tries to move but doesn't, then tries to automate, then move, etc, forever. Stack overflow exception!
 
@@ -136,7 +141,7 @@ class WorkerAutomation(
         val citiesToNumberOfUnimprovedTiles = HashMap<String, Int>()
         for (city in unit.civ.cities) {
             citiesToNumberOfUnimprovedTiles[city.id] = city.getTiles()
-                .count { it.isLand && it.civilianUnit == null && (it.isPillaged() || tileHasWorkToDo(it, unit)) }
+                .count { tile -> tile.isLand && tile.getUnits().any { unit -> unit.cache.hasUniqueToBuildImprovements } && (tile.isPillaged() || tileHasWorkToDo(tile, unit)) }
         }
 
         val closestUndevelopedCity = unit.civ.cities.asSequence()
@@ -176,7 +181,8 @@ class WorkerAutomation(
         val workableTilesCenterFirst = currentTile.getTilesInDistance(4)
             .filter {
                 it !in tilesToAvoid
-                && (it.civilianUnit == null || it == currentTile)
+                && (it == currentTile || (unit.isCivilian() && (it.civilianUnit == null || !it.civilianUnit!!.cache.hasUniqueToBuildImprovements))
+                        || (unit.isMilitary() && (it.militaryUnit == null || !it.militaryUnit!!.cache.hasUniqueToBuildImprovements)))
                 && (it.owningCity == null || it.getOwner() == civInfo)
                 && !it.isCityCenter()
                 && getBasePriority(it, unit) > 1
@@ -194,7 +200,7 @@ class WorkerAutomation(
                 // These are the expensive calculations (tileCanBeImproved, canReach), so we only apply these filters after everything else it done.
                 if (!tileHasWorkToDo(tileInGroup, unit)) continue
                 if (unit.getTile() == tileInGroup) return unit.getTile()
-                if (!unit.movement.canReach(tileInGroup) || tileInGroup.civilianUnit != null) continue
+                if (!unit.movement.canReach(tileInGroup)) continue
                 if (bestTile == null || getFullPriority(tileInGroup, unit) > getFullPriority(bestTile, unit)) {
                     bestTile = tileInGroup
                 }
@@ -233,7 +239,7 @@ class WorkerAutomation(
                 && !civInfo.hasResource(tile.resource!!))
                 priority += 2
         }
-        if (tile in roadBetweenCitiesAutomation.tilesOfRoadsToConnectCities) priority += when {
+        if (tile in roadBetweenCitiesAutomation.tilesOfRoadsMap) priority += when {
                 civInfo.stats.statsForNextTurn.gold <= 5 -> 0
                 civInfo.stats.statsForNextTurn.gold <= 10 -> 1
                 civInfo.stats.statsForNextTurn.gold <= 30 -> 2
@@ -271,7 +277,7 @@ class WorkerAutomation(
                 var repairBonusPriority = tile.getImprovementToRepair()!!.getTurnsToBuild(unit.civ,unit) - UnitActionsFromUniques.getRepairTurns(unit)
                 if (tile.improvementInProgress == Constants.repair) repairBonusPriority += UnitActionsFromUniques.getRepairTurns(unit) - tile.turnsToImprovement
 
-                val repairPriority = repairBonusPriority + Automation.rankStatsValue(TileStatFunctions(tile).getStatDiffForImprovement(tile.getTileImprovement()!!, unit.civ, tile.owningCity), unit.civ)
+                val repairPriority = repairBonusPriority + Automation.rankStatsValue(tile.stats.getStatDiffForImprovement(tile.getTileImprovement()!!, unit.civ, tile.owningCity), unit.civ)
                 if (repairPriority > rank.improvementPriority!!) {
                     rank.improvementPriority = repairPriority
                     rank.bestImprovement = null
@@ -324,8 +330,8 @@ class WorkerAutomation(
             .filter { it.second > 0f }
             .maxByOrNull { it.second }?.first
 
-        if (tile.improvement != null && civInfo.isHuman() && (!UncivGame.Current.settings.automatedWorkersReplaceImprovements
-                || UncivGame.Current.settings.autoPlay.isAutoPlayingAndFullAI())) {
+        if (tile.improvement != null && civInfo.isHuman() && !UncivGame.Current.settings.automatedWorkersReplaceImprovements
+            && UncivGame.Current.worldScreen?.autoPlay?.isAutoPlayingAndFullAutoPlayAI() == false) {
             // Note that we might still want to build roads or remove fallout, so we can't exit the function immedietly
             bestBuildableImprovement = null
         }
@@ -373,14 +379,12 @@ class WorkerAutomation(
 
         // Add the value of roads if we want to build it here
         if (improvement.isRoad() && roadBetweenCitiesAutomation.bestRoadAvailable.improvement(ruleSet) == improvement
-            && tile in roadBetweenCitiesAutomation.tilesOfRoadsToConnectCities) {
-            var value = 1f
-            val city = roadBetweenCitiesAutomation.tilesOfRoadsToConnectCities[tile]!!
+            && tile in roadBetweenCitiesAutomation.tilesOfRoadsMap) {
+            val roadPlan = roadBetweenCitiesAutomation.tilesOfRoadsMap[tile]!!
+            var value = roadPlan.priority
             if (civInfo.stats.statsForNextTurn.gold >= 20)
-            // Bigger cities have a higher priority to connect
-                value += (city.population.population - 3) * .3f
             // Higher priority if we are closer to connecting the city
-            value += (5 - roadBetweenCitiesAutomation.roadsToConnectCitiesCache[city]!!.size).coerceAtLeast(0)
+                value += (5 - roadPlan.numberOfRoadsToBuild).coerceAtLeast(0)
             return value
         }
 

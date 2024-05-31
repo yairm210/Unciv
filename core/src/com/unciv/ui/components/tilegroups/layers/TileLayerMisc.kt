@@ -14,6 +14,7 @@ import com.unciv.ui.components.MapArrowType
 import com.unciv.ui.components.MiscArrowTypes
 import com.unciv.ui.components.TintedMapArrow
 import com.unciv.ui.components.UnitMovementMemoryType
+import com.unciv.ui.components.extensions.brighten
 import com.unciv.ui.components.extensions.center
 import com.unciv.ui.components.extensions.centerX
 import com.unciv.ui.components.extensions.toLabel
@@ -333,7 +334,7 @@ class TileLayerMisc(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup, si
 
     /** Activates a colored semitransparent overlay. [color] is cloned, brightened by 0.3f and an alpha of 0.4f applied. */
     fun overlayTerrain(color: Color) {
-        terrainOverlay.color = color.cpy().lerp(Color.WHITE, 0.3f).apply { a = 0.4f }
+        terrainOverlay.color = color.brighten(0.3f).apply { a = 0.4f }
         terrainOverlay.isVisible = true
         determineVisibility()
     }

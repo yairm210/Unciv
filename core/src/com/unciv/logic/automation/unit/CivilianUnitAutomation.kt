@@ -9,7 +9,6 @@ import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionModifiers
 import com.unciv.ui.screens.worldscreen.unit.actions.UnitActions
-import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionsFromUniques
 
 object CivilianUnitAutomation {
 
@@ -119,8 +118,6 @@ object CivilianUnitAutomation {
             // includes great people plus moddable units
             val improvementCanBePlacedEventually =
                 SpecificUnitAutomation.automateImprovementPlacer(unit)
-            if (!improvementCanBePlacedEventually)
-                UnitActions.invokeUnitAction(unit, UnitActionType.StartGoldenAge)
         }
 
         if (unit.hasUnique(UniqueType.GainFreeBuildings)) {

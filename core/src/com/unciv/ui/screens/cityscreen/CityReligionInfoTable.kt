@@ -84,14 +84,15 @@ class CityReligionInfoTable(
     private fun linkedReligionIcon(iconName: String, religion: String?): Portrait {
         val icon = ImageGetter.getReligionPortrait(iconName, 30f)
         if (religion == null) return icon
-        icon.onClick {
-            val newScreen = if (religion == iconName) {
-                EmpireOverviewScreen(GUI.getViewingPlayer(), EmpireOverviewCategories.Religion, religion)
-            } else {
-                CivilopediaScreen(gameInfo.ruleset, CivilopediaCategories.Belief, religion)
+        if (religion == iconName)
+            icon.onClick {
+                val newScreen = EmpireOverviewScreen(GUI.getViewingPlayer(), EmpireOverviewCategories.Religion, religion)
+                UncivGame.Current.pushScreen(newScreen)
             }
-            UncivGame.Current.pushScreen(newScreen)
-        }
+        else // This is used only for Pantheons
+            icon.onClick {
+                GUI.openCivilopedia("Belief/$religion")
+            }
         return icon
     }
 

@@ -14,6 +14,8 @@ import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.civilization.PopupAlert
 import com.unciv.logic.civilization.Proximity
+import com.unciv.models.Spy
+import com.unciv.models.SpyAction
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.nation.CityStateType
 import com.unciv.models.ruleset.tile.ResourceSupplyList
@@ -22,6 +24,7 @@ import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stat
+import com.unciv.ui.components.extensions.randomWeighted
 import com.unciv.ui.screens.victoryscreen.RankingType
 import kotlin.math.min
 import kotlin.math.pow
@@ -60,9 +63,61 @@ class CityStateFunctions(val civInfo: Civilization) {
                 civInfo.cityStateUniqueUnit = possibleUnits.random().name
         }
 
+        // Set turns to elections to a random number so not every city-state has the same election date
+        civInfo.cityStateTurnsUntilElection = Random.nextInt(15)
+
         // TODO: Return false if attempting to put a religious city-state in a game without religion
 
         return true
+    }
+
+    fun nextTurnElections() {
+        civInfo.cityStateTurnsUntilElection--
+        val capital = civInfo.getCapital()
+        if (civInfo.cityStateTurnsUntilElection <= 0) {
+            if (capital == null) return
+            civInfo.cityStateTurnsUntilElection = 15
+            val spies= capital.espionage.getAllStationedSpies().filter { it.action == SpyAction.RiggingElections }
+            if (spies.isEmpty()) return
+
+            fun getVotesFromSpy(spy: Spy?): Float {
+                if (spy == null) return 20f
+                var votes = (civInfo.getDiplomacyManager(spy.civInfo).influence / 2)
+                votes += (spy.getSkillModifier() * spy.getEfficiencyModifier()).toFloat() // ranges from 30 to 90
+                return votes
+            }
+
+            val parties: MutableList<Spy?> = spies.toMutableList()
+            parties.add(null) // Null spy is a neuteral party in the election
+            val randomSeed = capital.location.x * capital.location.y + 123f * civInfo.gameInfo.turns
+            val winner: Civilization? = parties.randomWeighted(Random(randomSeed.toInt()))  { getVotesFromSpy(it) }?.civInfo
+
+            // There may be no winner, in that case all spies will loose 5 influence
+            if (winner != null) {
+                val allyCiv = civInfo.getAllyCiv()?.let { civInfo.gameInfo.getCivilization(it) }
+
+                // Winning civ gets influence and all others loose influence
+                for (civ in civInfo.getKnownCivs().toList()) {
+                    val influence = if (civ == winner) 20f else -5f
+                    civInfo.getDiplomacyManager(civ).addInfluence(influence)
+                    if (civ == winner)  {
+                        civ.addNotification("Your spy successfully rigged the election in [${civInfo.civName}]!", capital.location, NotificationCategory.Espionage, NotificationIcon.Spy)
+                    } else if (spies.any { it.civInfo == civ}) {
+                        civ.addNotification("Your spy lost the election in [${civInfo.civName}] to [${winner.civName}]!", capital.location, NotificationCategory.Espionage, NotificationIcon.Spy)
+                    } else if (civ == allyCiv) {
+                        // If the previous ally has no spy in the city then we should notify them
+                        allyCiv.addNotification("The election in [${civInfo.civName}] were rigged by [${winner.civName}]!", capital.location, NotificationCategory.Espionage, NotificationIcon.Spy)
+                    }
+                }
+
+            } else {
+                // No spy won the election, the civs that tried to rig the election loose influence
+                for (spy in spies) {
+                    civInfo.getDiplomacyManager(spy.civInfo).addInfluence(-5f)
+                    spy.civInfo.addNotification("Your spy lost the election in [$capital]!", capital.location, NotificationCategory.Espionage, NotificationIcon.Spy)
+                }
+            }
+        }
     }
 
     fun turnsForGreatPersonFromCityState(): Int = ((37 + Random.Default.nextInt(7)) * civInfo.gameInfo.speed.modifier).toInt()
@@ -245,12 +300,11 @@ class CityStateFunctions(val civInfo: Civilization) {
 
                 // Join the wars of our new ally - loop through all civs they are at war with
                 for (newEnemy in civInfo.gameInfo.civilizations.filter { it.isAtWarWith(newAllyCiv) && it.isAlive() } ) {
-                    if (civInfo.knows(newEnemy) && !civInfo.isAtWarWith(newEnemy))
-                        civInfo.getDiplomacyManager(newEnemy).declareWar()
-                    else if (!civInfo.knows(newEnemy)) {
-                        // We have to meet first
-                        civInfo.diplomacyFunctions.makeCivilizationsMeet(newEnemy, warOnContact = true)
-                        civInfo.getDiplomacyManager(newEnemy).declareWar()
+                    if (!civInfo.isAtWarWith(newEnemy)) {
+                        if (!civInfo.knows(newEnemy))
+                            // We have to meet first
+                            civInfo.diplomacyFunctions.makeCivilizationsMeet(newEnemy, warOnContact = true)
+                        civInfo.getDiplomacyManager(newEnemy).declareWar(DeclareWarReason(WarType.CityStateAllianceWar, newAllyCiv))
                     }
                 }
             }

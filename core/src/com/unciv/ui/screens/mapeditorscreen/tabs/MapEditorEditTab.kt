@@ -24,7 +24,6 @@ import com.unciv.ui.components.widgets.UncivSlider
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popups.ToastPopup
 import com.unciv.ui.screens.basescreen.BaseScreen
-import com.unciv.ui.screens.civilopediascreen.CivilopediaScreen
 import com.unciv.ui.screens.civilopediascreen.FormattedLine
 import com.unciv.ui.screens.mapeditorscreen.MapEditorScreen
 import com.unciv.ui.screens.mapeditorscreen.TileInfoNormalizer
@@ -145,7 +144,7 @@ class MapEditorEditTab(
         brushActor.touchable = Touchable.enabled
         // As so often, doing the binding separately to avoid the tooltip
         brushActor.onActivation {
-            editorScreen.game.pushScreen(CivilopediaScreen(ruleset, link = link))
+            editorScreen.openCivilopedia(link)
         }
         brushActor.keyShortcuts.add(KeyboardBinding.Civilopedia)
     }

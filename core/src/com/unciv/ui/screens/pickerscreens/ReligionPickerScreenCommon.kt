@@ -21,7 +21,6 @@ import com.unciv.ui.components.extensions.enable
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.widgets.WrappableLabel
-import com.unciv.ui.screens.civilopediascreen.CivilopediaScreen
 import com.unciv.ui.screens.civilopediascreen.MarkupRenderer
 
 abstract class ReligionPickerScreenCommon(
@@ -61,6 +60,8 @@ abstract class ReligionPickerScreenCommon(
         closeButton.isVisible = true
         setDefaultCloseAction()
     }
+
+    override fun getCivilopediaRuleset() = ruleset
 
     protected fun setOKAction(buttonText: String, action: ReligionManager.() -> Unit) {
         rightSideButton.setText(buttonText.tr())
@@ -109,7 +110,7 @@ abstract class ReligionPickerScreenCommon(
                     MarkupRenderer.render(
                     belief.getCivilopediaTextLines(withHeader = true), width - 20f
                 ) {
-                    UncivGame.Current.pushScreen(CivilopediaScreen(ruleset,  link = it))
+                    openCivilopedia(it)
                 }).growX()
                 // Icon should it be needed:  CivilopediaImageGetters.belief(belief.getIconName(), 50f)
             }

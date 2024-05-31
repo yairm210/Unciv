@@ -49,11 +49,10 @@ class CrashScreen(val exception: Throwable) : BaseScreen() {
 
     /** @return The last active save game serialized as a compressed string if any, or an informational note otherwise. */
     private fun tryGetSaveGame(): String {
-        if (!UncivGame.isCurrentInitialized() || UncivGame.Current.gameInfo == null)
-            return ""
+        val gameInfo = UncivGame.getGameInfoOrNull() ?: return ""
         return "\n**Save Data:**\n<details><summary>Show Saved Game</summary>\n\n```\n" +
             try {
-                UncivFiles.gameInfoToString(UncivGame.Current.gameInfo!!, forceZip = true)
+                UncivFiles.gameInfoToString(gameInfo, forceZip = true)
             } catch (e: Throwable) {
                 "No save data: $e" // In theory .toString() could still error here.
             } + "\n```\n</details>\n"
@@ -61,16 +60,17 @@ class CrashScreen(val exception: Throwable) : BaseScreen() {
 
     /** @return Mods from the last active save game if any, or an informational note otherwise. */
     private fun tryGetSaveMods(): String {
-        if (!UncivGame.isCurrentInitialized()) return ""
-        val game = UncivGame.Current.gameInfo ?: return ""
         val sb = StringBuilder(160)  // capacity: Just some guess
-        sb.append("\n**Save Mods:**\n```\n")
-        try { // Also from old CrashController().buildReport(), also could still error at .toString().
-            sb.append(game.gameParameters.getModsAndBaseRuleset().toString())
-        } catch (e: Throwable) {
-            sb.append("No mod data: $e")
+        val gameInfo = UncivGame.getGameInfoOrNull()
+        if (gameInfo != null) {
+            sb.append("\n**Save Mods:**\n```\n")
+            try { // Also from old CrashController().buildReport(), also could still error at .toString().
+                sb.append(gameInfo.gameParameters.getModsAndBaseRuleset().toString())
+            } catch (e: Throwable) {
+                sb.append("No mod data: $e")
+            }
+            sb.append("\n```\n")
         }
-        sb.append("\n```\n")
         val visualMods = UncivGame.Current.settings.visualMods
         if (visualMods.isEmpty())
             return sb.toString()

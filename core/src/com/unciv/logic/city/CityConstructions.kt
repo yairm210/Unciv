@@ -337,7 +337,7 @@ class CityConstructions : IsPartOfGameInfoSerialization {
             if (inProgressConstructions.containsKey(currentConstructionFromQueue)
                     && inProgressConstructions[currentConstructionFromQueue]!! >= productionCost) {
                 val potentialOverflow = inProgressConstructions[currentConstructionFromQueue]!! - productionCost
-                if (constructionComplete(construction)) {
+                if (completeConstruction(construction)) {
                     // See the URL below for explanation for this cap
                     // https://forums.civfanatics.com/threads/hammer-overflow.419352/
                     val maxOverflow = maxOf(productionCost, city.cityStats.currentCityStats.production.roundToInt())
@@ -457,7 +457,7 @@ class CityConstructions : IsPartOfGameInfoSerialization {
     }
 
     /** Returns false if we tried to construct a unit but it has nowhere to go */
-    fun constructionComplete(construction: INonPerpetualConstruction): Boolean {
+    fun completeConstruction(construction: INonPerpetualConstruction): Boolean {
         val managedToConstruct = construction.postBuildEvent(this)
         if (!managedToConstruct) return false
 
@@ -709,8 +709,8 @@ class CityConstructions : IsPartOfGameInfoSerialization {
         val isCurrentPlayersTurn = city.civ.gameInfo.isUsersTurn()
                 || !city.civ.gameInfo.gameParameters.isOnlineMultiplayer
         if ((isCurrentPlayersTurn && (UncivGame.Current.settings.autoAssignCityProduction
-                || UncivGame.Current.settings.autoPlay.isAutoPlayingAndFullAI())) // only automate if the active human player has the setting to automate production
-                || !city.civ.isHuman() || city.isPuppet) {
+                || UncivGame.Current.worldScreen?.autoPlay?.isAutoPlayingAndFullAutoPlayAI() == true)) // only automate if the active human player has the setting to automate production
+                || city.civ.isAI() || city.isPuppet) {
             ConstructionAutomation(this).chooseNextConstruction()
         }
 

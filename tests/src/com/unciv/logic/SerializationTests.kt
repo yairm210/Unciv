@@ -1,125 +1,128 @@
 package com.unciv.logic
 
-import com.badlogic.gdx.Gdx
-import com.unciv.Constants
-import com.unciv.UncivGame
-import com.unciv.json.json
-import com.unciv.logic.civilization.PlayerType
-import com.unciv.logic.files.UncivFiles
-import com.unciv.logic.map.MapParameters
-import com.unciv.logic.map.MapSize
-import com.unciv.logic.map.MapSizeNew
-import com.unciv.models.metadata.GameParameters
-import com.unciv.models.metadata.GameSettings
-import com.unciv.models.metadata.GameSetupInfo
-import com.unciv.models.metadata.Player
-import com.unciv.models.ruleset.RulesetCache
-import com.unciv.models.ruleset.unique.UniqueType
+import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.math.Vector2
+import com.unciv.json.HashMapVector2
+import com.unciv.logic.civilization.CivRankingHistory
+import com.unciv.logic.civilization.CivilopediaAction
+import com.unciv.logic.civilization.DiplomacyAction
+import com.unciv.logic.civilization.LocationAction
+import com.unciv.logic.civilization.Notification
+import com.unciv.logic.map.tile.TileHistory
 import com.unciv.testing.GdxTestRunner
-import com.unciv.utils.Log
-import com.unciv.utils.debug
-import org.junit.After
+import com.unciv.ui.components.input.KeyCharAndCode
+import com.unciv.ui.components.input.KeyboardBinding
+import com.unciv.ui.components.input.KeyboardBindings
+import com.unciv.ui.screens.victoryscreen.RankingType
 import org.junit.Assert
-import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
-
+import java.time.Duration
+import java.time.temporal.ChronoUnit
 
 @RunWith(GdxTestRunner::class)
 class SerializationTests {
+    private val json = com.unciv.json.json()
 
-    private var game = GameInfo()
-    private var settingsBackup = GameSettings()
+    // use @RedirectOutput(RedirectPolicy.Show) to see the actual json
 
-    /** A runtime Class object for [kotlin.SynchronizedLazyImpl] to enable helping Gdx.Json to
-     * not StackOverflow on them, as a direct compile time retrieval is forbidden */
-    private val classSynchronizedLazyImpl: Class<*> by lazy {
-        // I hope you get the irony...
-        @Suppress("unused") // No, test is not _directly_ used, only reflected on
-        class TestWithLazy { val test: Int by lazy { 0 } }
-        val badInstance = TestWithLazy()
-        val badField = badInstance::class.java.declaredFields[0]
-        badField.isAccessible = true
-        badField.get(badInstance)::class.java
-    }
-
-    @Before
-    fun prepareGame() {
-        RulesetCache.loadRulesets(noMods = true)
-
-        // Create a tiny game with just 1 human player and the barbarians
-        // Must be 1 human otherwise GameInfo.setTransients crashes on the `if (currentPlayer == "")` line
-        val param = GameParameters().apply {
-            numberOfCityStates = 0
-            players.clear()
-            players.add(Player("Rome", PlayerType.Human))
-            players.add(Player("Greece"))
-        }
-        val mapParameters = MapParameters().apply {
-            mapSize = MapSizeNew(MapSize.Tiny)
-            seed = 42L
-        }
-        val setup = GameSetupInfo(param, mapParameters)
-        UncivGame.Current = UncivGame()
-        UncivGame.Current.files = UncivFiles(Gdx.files)
-
-        // Both startNewGame and makeCivilizationsMeet will cause a save to storage of our empty settings
-        settingsBackup = UncivGame.Current.files.getGeneralSettings()
-
-        UncivGame.Current.settings = GameSettings()
-        game = GameStarter.startNewGame(setup)
-        UncivGame.Current.startSimulation(game)
-
-        // Found a city otherwise too many classes have no instance and are not tested
-        val civ = game.getCurrentPlayerCivilization()
-        val unit = civ.units.getCivUnits().first { it.hasUnique(UniqueType.FoundCity) }
-        val tile = unit.getTile()
-        unit.civ.addCity(tile.position)
-        if (tile.ruleset.tileImprovements.containsKey(Constants.cityCenter))
-            tile.changeImprovement(Constants.cityCenter)
-        unit.destroy()
-
-        // Ensure some diplomacy objects are instantiated
-        val otherCiv = game.getCivilization("Greece")
-        civ.diplomacyFunctions.makeCivilizationsMeet(otherCiv)
+    @Test
+    fun `test DurationSerializer`() {
+        val data = arrayListOf(
+            // Java Duration! (even though kotlin.Duration is perfectly fine - all the multiplayer code is outdated in that respect)
+            Duration.ZERO,
+            Duration.of(666, ChronoUnit.HOURS),
+            Duration.parse("P1DT2H3M4.058S"),
+        )
+        testRoundtrip(data, Duration::class.java)
     }
 
     @Test
-    fun canSerializeGame() {
-        val json = try {
-            json().toJson(game)
-        } catch (_: Exception) {
-            ""
-        }
-        Assert.assertTrue("This test will only pass when a game can be serialized", json.isNotEmpty())
+    fun `test HashMapVector2 serialization roundtrip`() {
+        val data = HashMapVector2<Color>()
+        data[Vector2.Zero] = Color.GRAY
+        data[Vector2.X] = Color.CORAL
+        data[Vector2.Y] = Color.CHARTREUSE
+        testRoundtrip(data)
     }
 
     @Test
-    fun serializedLaziesTest() {
-        val jsonSerializer = com.badlogic.gdx.utils.Json().apply {
-            setIgnoreDeprecated(true)
-            setDeprecated(classSynchronizedLazyImpl, "initializer", true)
-            setDeprecated(classSynchronizedLazyImpl, "lock", true)  // this is the culprit as kotlin initializes it to `this@SynchronizedLazyImpl`
-        }
-
-        val json = try {
-            jsonSerializer.toJson(game)
-        } catch (ex: Throwable) {
-            Log.error("Failed to serialize game", ex)
-            return
-        }
-
-        val pattern = """\{(\w+)\\${'$'}delegate:\{class:kotlin.SynchronizedLazyImpl,"""
-        val matches = Regex(pattern).findAll(json)
-        matches.forEach {
-            debug("Lazy missing `@delegate:Transient` annotation: %s", it.groups[1]!!.value)
-        }
-        val result = matches.any()
-        Assert.assertFalse("This test will only pass when no serializable lazy fields are found", result)
+    fun `test KeyboardBindings serialization roundtrip`() {
+        val data = KeyboardBindings()
+        data[KeyboardBinding.DeveloperConsole] = KeyCharAndCode.TAB
+        data[KeyboardBinding.NextTurn] = KeyCharAndCode('X')
+        data[KeyboardBinding.NextTurnAlternate] = KeyCharAndCode.ctrl('X')
+        data[KeyboardBinding.Menu] = KeyCharAndCode.BACK
+        testRoundtrip(data)
     }
 
-    @After
-    fun cleanup() {
-        settingsBackup.save()
+    @Test
+    fun `test TileHistory serialization roundtrip`() {
+        val data = TileHistory()
+        data.addTestEntry(0, TileHistory.TileHistoryState("Greece", TileHistory.TileHistoryState.CityCenterType.Capital))
+        data.addTestEntry(1, TileHistory.TileHistoryState(null, TileHistory.TileHistoryState.CityCenterType.None))
+        testRoundtrip(data) { old, new ->
+            // Neither TileHistory nor TileHistoryState support equality contract
+            Assert.assertTrue(old.all {
+                val oldState = it.value
+                val newState = new.getState(it.key)
+                oldState.owningCivName == newState.owningCivName && oldState.cityCenterType == newState.cityCenterType
+            })
+        }
+    }
+
+    @Test
+    fun `test CivRankingHistory serialization roundtrip`() {
+        val data = CivRankingHistory()
+        data[0] = mapOf(RankingType.Force to 0, RankingType.Territory to 7)
+        data[20] = mapOf(RankingType.Culture to 42, RankingType.Territory to 666)
+        testRoundtrip(data)
+    }
+
+    @Test
+    fun `test Notification serialization roundtrip`() {
+        val data = arrayListOf(
+            Notification("hello", emptyArray(), emptyList(), Notification.NotificationCategory.Espionage),
+            Notification("Oh my goddesses", arrayOf("ReligionIcons/Pray"), listOf(CivilopediaAction("Tutorial/Religion")), Notification.NotificationCategory.Religion),
+            Notification("There's Horses", arrayOf("ResourceIcons/Horses"), LocationAction(Vector2.Zero, Vector2.X).asIterable(), Notification.NotificationCategory.General),
+            Notification("An evil overlord has arisen", arrayOf("PersonalityIcons/Devil"), listOf(DiplomacyAction("Russia")), Notification.NotificationCategory.War),
+        )
+
+        // Neither Notification nor NotificationAction support equality contract
+        fun Notification.isEqual(other: Notification): Boolean {
+            if (text != other.text) return false
+            if (category != other.category) return false
+            if (icons != other.icons) return false
+            val otherIterator = other.actions.iterator()
+            for (action in actions) {
+                if (!otherIterator.hasNext()) return false
+                val otherAction = otherIterator.next()
+                if (action.javaClass != otherAction.javaClass) return false
+                // The lazy way to compare fields that vary from one NotificationAction subclass to the next
+                if (json.toJson(action) != json.toJson(otherAction)) return false
+            }
+            return !otherIterator.hasNext()
+        }
+
+        testRoundtrip(data, Notification::class.java) { old, new ->
+            Assert.assertTrue(old.withIndex().all { (index, notification) ->
+                notification.isEqual(new[index])
+            })
+        }
+    }
+
+    ///////////////////////////////// Helper
+    private inline fun <reified T> testRoundtrip(
+        data: T,
+        elementType: Class<*>? = null,
+        testEquality: ((old: T, new: T)->Unit) = { old, new ->
+            Assert.assertEquals(old, new)
+        }
+    ) {
+        val serialized = json.toJson(data)
+        println("Serialized form: $serialized")
+        Assert.assertTrue(serialized.isNotBlank())
+        val deserialized = json.fromJson(T::class.java, elementType, serialized)
+        testEquality(data, deserialized)
     }
 }

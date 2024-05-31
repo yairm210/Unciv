@@ -1,6 +1,7 @@
 package com.unciv.models.ruleset.validation
 
 import com.unciv.Constants
+import com.unciv.logic.MultiFilter
 import com.unciv.logic.map.mapunit.MapUnitCache
 import com.unciv.models.ruleset.IRulesetObject
 import com.unciv.models.ruleset.Ruleset
@@ -23,11 +24,8 @@ class UniqueValidator(val ruleset: Ruleset) {
     private fun addToHashsets(uniqueHolder: IHasUniques) {
         for (unique in uniqueHolder.uniqueObjects) {
             if (unique.type == null) allNonTypedUniques.add(unique.text)
-            else allUniqueParameters.addAll(unique.allParams.flatMap {
-                // Multifilters have the actual filtering uniques
-                it.removePrefix("{").removeSuffix("}").split("} {")}
-                // Non-filters
-                .map { if (it.startsWith("non-[")) {it.removePrefix("non-[").removeSuffix("]")} else it }
+            else allUniqueParameters.addAll(
+                unique.allParams.asSequence().flatMap { MultiFilter.getAllSingleFilters(it) }
             )
         }
     }

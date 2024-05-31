@@ -256,7 +256,7 @@ class ModCheckTab(
             file.writeString(newFileText, false)
         }
         val toastText = "Uniques updated!"
-        ToastPopup(toastText, screen).open(true)
+        ToastPopup(toastText, screen)
         runModChecker()
     }
 }

@@ -12,7 +12,7 @@ import com.unciv.ui.screens.worldscreen.WorldScreen
 
 typealias NotificationCategory = Notification.NotificationCategory
 
-open class Notification() : IsPartOfGameInfoSerialization {
+class Notification() : IsPartOfGameInfoSerialization, Json.Serializable {
     /** Category - UI grouping, within a Category the most recent Notification will be shown on top */
     var category: NotificationCategory = NotificationCategory.General
         private set
@@ -93,7 +93,7 @@ open class Notification() : IsPartOfGameInfoSerialization {
     }
 
     /**
-     *  Custom [Gdx.Json][Json] serializer/deserializer for one [Notification].
+     *  Custom [Gdx.Json][Json] serialization by impementing Json.Serializable
      *
      *  Example of the serialized format:
      *  ```json
@@ -111,49 +111,41 @@ open class Notification() : IsPartOfGameInfoSerialization {
      *  ]
      *  ```
      */
-    class Serializer : Json.Serializer<Notification> {
 
-        override fun write(json: Json, notification: Notification, knownType: Class<*>?) {
+    override fun write(json: Json) {
+        if (category != NotificationCategory.General)
+            json.writeValue("category", category)
+        if (text.isNotEmpty())
+            json.writeValue("text", text)
+        if (icons.isNotEmpty())
+            json.writeValue("icons", icons, null, String::class.java)
+        writeActions(json)
+    }
+    private fun writeActions(json: Json) {
+        if (actions.isEmpty()) return
+        json.writeArrayStart("actions")
+        for (action in actions) {
             json.writeObjectStart()
-            if (notification.category != NotificationCategory.General)
-                json.writeValue("category", notification.category)
-            if (notification.text.isNotEmpty())
-                json.writeValue("text", notification.text)
-            if (notification.icons.isNotEmpty())
-                json.writeValue("icons", notification.icons, null, String::class.java)
-
-            writeActions(json, notification)
-
+            json.writeObjectStart(action::class.java.simpleName)
+            json.writeFields(action)
+            json.writeObjectEnd()
             json.writeObjectEnd()
         }
+        json.writeArrayEnd()
+    }
 
-        private fun writeActions(json: Json, notification: Notification) {
-            if (notification.actions.isEmpty()) return
-            json.writeArrayStart("actions")
-            for (action in notification.actions) {
-                json.writeObjectStart()
-                json.writeObjectStart(action::class.java.simpleName)
-                json.writeFields(action)
-                json.writeObjectEnd()
-                json.writeObjectEnd()
-            }
-            json.writeArrayEnd()
-        }
-
-        override fun read(json: Json, jsonData: JsonValue, type: Class<*>?) = Notification().apply {
-            json.readField(this, "category", jsonData)
-            json.readField(this, "text", jsonData)
-            readActions(json, jsonData)
-            json.readField(this, "icons", jsonData)
-        }
-
-        private fun Notification.readActions(json: Json, jsonData: JsonValue) {
-            if (!jsonData.hasChild("actions")) return
-            var entry = jsonData.get("actions").child
-            while (entry != null) {
-                actions.addAll(NotificationActionsDeserializer().read(json, entry))
-                entry = entry.next
-            }
+    override fun read(json: Json, jsonData: JsonValue) {
+        json.readField(this, "category", jsonData)
+        json.readField(this, "text", jsonData)
+        readActions(json, jsonData)
+        json.readField(this, "icons", jsonData)
+    }
+    private fun readActions(json: Json, jsonData: JsonValue) {
+        if (!jsonData.hasChild("actions")) return
+        var entry = jsonData.get("actions").child
+        while (entry != null) {
+            actions.addAll(NotificationActionsDeserializer().read(json, entry))
+            entry = entry.next
         }
     }
 }

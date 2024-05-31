@@ -28,6 +28,7 @@ import com.unciv.models.ruleset.validation.RulesetValidator
 import com.unciv.models.ruleset.validation.UniqueValidator
 import com.unciv.models.stats.INamed
 import com.unciv.models.translations.tr
+import com.unciv.ui.screens.civilopediascreen.ICivilopediaText
 import com.unciv.utils.Log
 import kotlin.collections.set
 
@@ -238,6 +239,8 @@ class Ruleset {
             // Victories is only INamed
     fun allIHasUniques(): Sequence<IHasUniques> =
             allRulesetObjects() + sequenceOf(modOptions)
+    fun allICivilopediaText(): Sequence<ICivilopediaText> =
+            allRulesetObjects() + events.values + events.values.flatMap { it.choices }
 
     fun load(folderHandle: FileHandle) {
         // Note: Most files are loaded using createHashmap, which sets originRuleset automatically.
@@ -470,7 +473,7 @@ class Ruleset {
     override fun toString() = when {
         name.isNotEmpty() -> name
         mods.size == 1 && RulesetCache[mods.first()]!!.modOptions.isBaseRuleset -> mods.first()
-        else -> "Combined RuleSet"
+        else -> "Combined RuleSet ($mods)"
     }
 
     fun getSummary(): String {

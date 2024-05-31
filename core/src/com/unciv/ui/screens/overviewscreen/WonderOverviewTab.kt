@@ -10,23 +10,19 @@ import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.QuestName
 import com.unciv.models.ruleset.tech.Era
-import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.extensions.equalizeColumns
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.input.onClick
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.civilopediascreen.CivilopediaCategories
-import com.unciv.ui.screens.civilopediascreen.CivilopediaScreen
 import com.unciv.utils.DebugUtils
 
 class WonderOverviewTab(
     viewingPlayer: Civilization,
     overviewScreen: EmpireOverviewScreen
 ) : EmpireOverviewTab(viewingPlayer, overviewScreen) {
-    val ruleSet = gameInfo.ruleset
-
-    val wonderInfo = WonderInfo()
+    private val wonderInfo = WonderInfo()
     private val wonders: Array<WonderInfo.WonderInfo> = wonderInfo.collectInfo(viewingPlayer)
 
     private val fixedContent = Table()
@@ -55,7 +51,7 @@ class WonderOverviewTab(
         equalizeColumns(fixedContent, this)
     }
 
-    fun createGrid() {
+    private fun createGrid() {
         var lastGroup = ""
 
         for (wonder in wonders) {
@@ -71,7 +67,7 @@ class WonderOverviewTab(
 
             val image = wonder.getImage()
             image?.onClick {
-                UncivGame.Current.pushScreen(CivilopediaScreen(ruleSet, wonder.category, wonder.name))
+                overviewScreen.openCivilopedia(wonder.makeLink())
             }
             // Terrain image padding is a bit unpredictable, they need ~5f more. Ensure equal line spacing on name, not image:
             add(image).pad(0f, 10f, 0f, 10f)
@@ -97,9 +93,6 @@ class WonderOverviewTab(
 class WonderInfo {
     val gameInfo = UncivGame.Current.gameInfo!!
     val ruleSet = gameInfo.ruleset
-    private val hideReligionItems = !gameInfo.isReligionEnabled()
-    private val hideEspionageItems = !gameInfo.isEspionageEnabled()
-    private val startingObsolete = ruleSet.eras[gameInfo.gameParameters.startingEra]!!.startingObsoleteWonders
 
     enum class WonderStatus(val label: String) {
         Hidden(""),
@@ -120,7 +113,7 @@ class WonderInfo {
         val city: City?,
         val location: Tile?
     ) {
-        val viewEntireMapForDebug = DebugUtils.VISIBLE_MAP
+        private val viewEntireMapForDebug = DebugUtils.VISIBLE_MAP
 
         fun getImage() = if (status == WonderStatus.Unknown && !viewEntireMapForDebug) null
         else category.getImage?.invoke(name, if (category == CivilopediaCategories.Terrain) 50f else 45f)
@@ -146,19 +139,13 @@ class WonderInfo {
             viewEntireMapForDebug -> location.position.toString()
             else -> "Far away"
         }
+
+        fun makeLink() = category.name + "/" + name
     }
 
-    private fun shouldBeDisplayed(viewingPlayer: Civilization, wonder: Building, wonderEra: Int?) = when {
-        wonder.hasUnique(UniqueType.HiddenFromCivilopedia) -> false
-        wonder.hasUnique(UniqueType.HiddenWithoutReligion) && hideReligionItems -> false
-        wonder.hasUnique(UniqueType.HiddenWithoutEspionage) && hideEspionageItems -> false
-        wonder.name in startingObsolete -> false
-        wonder.getMatchingUniques(UniqueType.HiddenWithoutVictoryType)
-            .any { unique ->
-                !gameInfo.gameParameters.victoryTypes.contains(unique.params[0])
-            } -> false
-        else -> wonderEra==null || wonderEra <= viewingPlayer.getEraNumber()
-    }
+    private fun shouldBeDisplayed(viewingPlayer: Civilization, wonder: Building, wonderEra: Int?) =
+        !wonder.isHiddenFromCivilopedia(viewingPlayer.gameInfo) &&
+        (wonderEra == null || wonderEra <= viewingPlayer.getEraNumber())
 
     /** Do we know about a natural wonder despite not having found it yet? */
     private fun knownFromQuest(viewingPlayer: Civilization, name: String): Boolean {
