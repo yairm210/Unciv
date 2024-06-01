@@ -85,7 +85,7 @@ class EspionageOverviewScreen(val civInfo: Civilization, val worldScreen: WorldS
             spySelectionTable.add(spy.name.toLabel())
             spySelectionTable.add(spy.rank.toLabel())
             spySelectionTable.add(spy.getLocationName().toLabel())
-            val actionString = if (spy.action.hasTurns) 
+            val actionString = if (spy.action.showTurns) 
                 "[${spy.action.displayString}] ${spy.turnsRemainingForAction}${Fonts.turn}"
                 else spy.action.displayString
             spySelectionTable.add(actionString.toLabel())
