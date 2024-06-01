@@ -296,8 +296,7 @@ class TileImprovementFunctions(val tile: Tile) {
 
     private fun tryProvideProductionToClosestCity(removedTerrainFeature: String, civ: Civilization) {
         val closestCity = civ.cities.minByOrNull { it.getCenterTile().aerialDistanceTo(tile) }
-        @Suppress("FoldInitializerAndIfToElvis")
-        if (closestCity == null) return
+            ?: return
         val distance = closestCity.getCenterTile().aerialDistanceTo(tile)
         var productionPointsToAdd = if (distance == 1) 20 else 20 - (distance - 2) * 5
         if (tile.owningCity == null || tile.owningCity!!.civ != civ) productionPointsToAdd =
@@ -361,8 +360,8 @@ class TileImprovementFunctions(val tile: Tile) {
 
     /** Marks tile as target tile for a building with a [UniqueType.CreatesOneImprovement] unique */
     fun markForCreatesOneImprovement(improvement: String) {
-        tile.improvementInProgress = improvement
-        tile.turnsToImprovement = -1
+        tile.stopWorkingOnImprovement()
+        tile.queueImprovement(improvement, -1)
     }
 
     /** Un-Marks a tile as target tile for a building with a [UniqueType.CreatesOneImprovement] unique,
@@ -372,6 +371,4 @@ class TileImprovementFunctions(val tile: Tile) {
         tile.owningCity?.cityConstructions?.removeCreateOneImprovementConstruction(tile.improvementInProgress!!)
         tile.stopWorkingOnImprovement()
     }
-
-
 }

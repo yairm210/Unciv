@@ -1,8 +1,12 @@
 ﻿package com.unciv.logic.map.tile
 
 import com.badlogic.gdx.math.Vector2
+import com.badlogic.gdx.utils.Json
+import com.badlogic.gdx.utils.JsonValue
+import com.badlogic.gdx.utils.SerializationException
 import com.unciv.Constants
 import com.unciv.GUI
+import com.unciv.UncivGame
 import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.MultiFilter
 import com.unciv.logic.city.City
@@ -27,6 +31,7 @@ import com.unciv.models.ruleset.unique.UniqueMap
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.components.extensions.withItem
 import com.unciv.ui.components.extensions.withoutItem
+import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.screens.mapeditorscreen.TileInfoNormalizer
 import com.unciv.utils.DebugUtils
 import com.unciv.utils.Log
@@ -34,7 +39,7 @@ import kotlin.math.abs
 import kotlin.math.min
 import kotlin.random.Random
 
-class Tile : IsPartOfGameInfoSerialization {
+class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
     //region Serialized fields
     var militaryUnit: MapUnit? = null
     var civilianUnit: MapUnit? = null
@@ -57,13 +62,27 @@ class Tile : IsPartOfGameInfoSerialization {
     var resourceAmount: Int = 0
 
     var improvement: String? = null
-    var improvementInProgress: String? = null
     var improvementIsPillaged = false
+
+    internal class ImprovementQueueEntry(
+        val improvement: String, turnsToImprovement: Int
+    ) : IsPartOfGameInfoSerialization {
+        @Suppress("unused") // Gdx Json will find this constructor and use it
+        private constructor() : this("", 0)
+        var turnsToImprovement: Int = turnsToImprovement
+            private set
+        override fun toString() = "$improvement: $turnsToImprovement${Fonts.turn}"
+        /** @return `true` if it's still counting and not finished */
+        fun countDown(): Boolean {
+            turnsToImprovement = (turnsToImprovement - 1).coerceAtLeast(0)
+            return turnsToImprovement > 0
+        }
+    }
+    private val improvementQueue = ArrayList<ImprovementQueueEntry>(1)
 
     var roadStatus = RoadStatus.None
     var roadIsPillaged = false
     private var roadOwner: String = "" // either who last built the road or last owner of tile
-    var turnsToImprovement: Int = 0
 
     var hasBottomRightRiver = false
     var hasBottomRiver = false
@@ -169,6 +188,10 @@ class Tile : IsPartOfGameInfoSerialization {
     private var isAdjacentToRiver = false
     @Transient
     private var isAdjacentToRiverKnown = false
+
+    val improvementInProgress get() = improvementQueue.firstOrNull()?.improvement
+    val turnsToImprovement get() = improvementQueue.firstOrNull()?.turnsToImprovement ?: 0
+
     //endregion
 
     fun clone(): Tile {
@@ -192,12 +215,11 @@ class Tile : IsPartOfGameInfoSerialization {
         toReturn.resource = resource
         toReturn.resourceAmount = resourceAmount
         toReturn.improvement = improvement
-        toReturn.improvementInProgress = improvementInProgress
+        toReturn.improvementQueue.addAll(improvementQueue)
         toReturn.improvementIsPillaged = improvementIsPillaged
         toReturn.roadStatus = roadStatus
         toReturn.roadIsPillaged = roadIsPillaged
         toReturn.roadOwner = roadOwner
-        toReturn.turnsToImprovement = turnsToImprovement
         toReturn.hasBottomLeftRiver = hasBottomLeftRiver
         toReturn.hasBottomRightRiver = hasBottomRightRiver
         toReturn.hasBottomRiver = hasBottomRiver
@@ -828,7 +850,6 @@ class Tile : IsPartOfGameInfoSerialization {
         }
     }
 
-
     /** Does not remove roads */
     fun removeImprovement() =
         improvementFunctions.changeImprovement(null)
@@ -858,15 +879,39 @@ class Tile : IsPartOfGameInfoSerialization {
     }
 
     fun startWorkingOnImprovement(improvement: TileImprovement, civInfo: Civilization, unit: MapUnit) {
-        improvementInProgress = improvement.name
-        turnsToImprovement = if (civInfo.gameInfo.gameParameters.godMode) 1
-            else improvement.getTurnsToBuild(civInfo, unit)
+        improvementQueue.clear()
+        queueImprovement(improvement, civInfo, unit)
     }
 
-    /** Clears [improvementInProgress] and [turnsToImprovement] */
+    /** Clears [improvementQueue] */
     fun stopWorkingOnImprovement() {
-        improvementInProgress = null
-        turnsToImprovement = 0
+        improvementQueue.clear()
+    }
+
+    /** Adds an entry to the [improvementQueue], by looking up the time it takes using [civInfo] and [unit] */
+    fun queueImprovement(improvement: TileImprovement, civInfo: Civilization, unit: MapUnit) {
+        val turns = if (civInfo.gameInfo.gameParameters.godMode) 1
+            else improvement.getTurnsToBuild(civInfo, unit)
+        queueImprovement(improvement.name, turns)
+    }
+
+    /** Adds an entry to the [improvementQueue] with explicit [turnsToImprovement] */
+    fun queueImprovement(improvementName: String, turnsToImprovement: Int) {
+        improvementQueue.add(ImprovementQueueEntry(improvementName, turnsToImprovement))
+    }
+
+    /** Called from UnitTurnManager when a Worker "spends time" here */
+    fun endTurn(worker: MapUnit) {
+        if (isMarkedForCreatesOneImprovement()) return
+        if (improvementQueue.isEmpty()) return
+
+        if (improvementQueue.first().countDown()) return
+        val queueEntry = improvementQueue.removeAt(0)
+
+        if (worker.civ.isCurrentPlayer())
+            UncivGame.Current.settings.addCompletedTutorialTask("Construct an improvement")
+
+        changeImprovement(queueEntry.improvement, worker.civ, worker)
     }
 
     /** Sets tile improvement to pillaged (without prior checks for validity)
@@ -884,8 +929,7 @@ class Tile : IsPartOfGameInfoSerialization {
 
         // Setting turnsToImprovement might interfere with UniqueType.CreatesOneImprovement
         improvementFunctions.removeCreatesOneImprovementMarker()
-        improvementInProgress = null  // remove any in progress work as well
-        turnsToImprovement = 0
+        improvementQueue.clear()  // remove any in progress work as well
         // if no Repair action, destroy improvements instead
         if (ruleset.tileImprovements[Constants.repair] == null) {
             if (canPillageTileImprovement())
@@ -908,8 +952,7 @@ class Tile : IsPartOfGameInfoSerialization {
     }
 
     fun setRepaired() {
-        improvementInProgress = null
-        turnsToImprovement = 0
+        improvementQueue.clear()
         if (improvementIsPillaged)
             improvementIsPillaged = false
         else
@@ -1020,6 +1063,28 @@ class Tile : IsPartOfGameInfoSerialization {
         if (militaryUnit != null) lineList += militaryUnit!!.name + " - " + militaryUnit!!.civ.civName
         if (this::baseTerrainObject.isInitialized && isImpassible()) lineList += Constants.impassable
         return lineList.joinToString()
+    }
+
+    override fun write(json: Json) {
+        json.writeFields(this)
+        // Compatibility code for the case an improvementQueue-using game is loaded by an older version: Write fake fields
+        json.writeValue("improvementInProgress", improvementInProgress, String::class.java)
+        json.writeValue("turnsToImprovement", turnsToImprovement, Int::class.java)
+    }
+
+    override fun read(json: Json, jsonData: JsonValue) {
+        try {
+            json.readFields(this, jsonData)
+        } catch (ex: SerializationException) {
+            throw ex
+        }
+        // Compatibility code for the case an pre-improvementQueue game is loaded by this version: Read legacy fields
+        if (improvementQueue.isEmpty() && jsonData.get("improvementQueue") == null) {
+            val improvementInProgress = jsonData.getString("improvementInProgress", "")
+            val turnsToImprovement = jsonData.getInt("turnsToImprovement", 0)
+            if (improvementInProgress.isNotEmpty() && turnsToImprovement != 0)
+                improvementQueue.add(ImprovementQueueEntry(improvementInProgress, turnsToImprovement))
+        }
     }
 
     //endregion
