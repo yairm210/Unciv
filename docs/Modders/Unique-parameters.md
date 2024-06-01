@@ -135,7 +135,8 @@ cityFilters allow us to choose the range of cities affected by this unique:
 - `in cities following our religion`
 - `in all cities in which the majority religion is a major religion`
 - `in all cities in which the majority religion is an enhanced religion`
-- [civFilter]
+- [civFilter] - Owner of the city
+- [buildingFilter] - Building(s) bulit in cities
 
 You can check this in-game using the console with the `city checkfilter <filter>` command
 

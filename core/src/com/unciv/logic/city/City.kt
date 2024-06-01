@@ -457,7 +457,7 @@ class City : IsPartOfGameInfoSerialization {
             // this will always be true when checked.
             "in cities following this religion" -> true
             "in cities following our religion" -> viewingCiv?.religionManager?.religion == religion.getMajorityReligion()
-            else -> civ.matchesFilter(filter)
+            else -> civ.matchesFilter(filter) || cityConstructions.getBuiltBuildings().any { it.matchesFilter(filter) }
         }
     }
 
