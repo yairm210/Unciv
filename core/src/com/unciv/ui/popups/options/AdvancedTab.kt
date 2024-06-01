@@ -12,15 +12,18 @@ import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.ui.Cell
 import com.badlogic.gdx.scenes.scene2d.ui.SelectBox
 import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.badlogic.gdx.scenes.scene2d.ui.TextField
 import com.badlogic.gdx.utils.Array
 import com.unciv.Constants
 import com.unciv.GUI
 import com.unciv.UncivGame
+import com.unciv.logic.github.GraphQL
 import com.unciv.models.metadata.GameSettings
 import com.unciv.models.metadata.GameSettings.ScreenSize
 import com.unciv.models.metadata.ModCategories
 import com.unciv.models.translations.TranslationFileWriter
 import com.unciv.models.translations.tr
+import com.unciv.ui.components.UncivTextField
 import com.unciv.ui.components.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.components.extensions.addSeparator
 import com.unciv.ui.components.extensions.disable
@@ -35,8 +38,10 @@ import com.unciv.ui.components.input.keyShortcuts
 import com.unciv.ui.components.input.onActivation
 import com.unciv.ui.components.input.onChange
 import com.unciv.ui.components.input.onClick
+import com.unciv.ui.components.widgets.TabbedPager
 import com.unciv.ui.components.widgets.UncivSlider
 import com.unciv.ui.popups.ConfirmPopup
+import com.unciv.ui.popups.ToastPopup
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.utils.Concurrency
 import com.unciv.utils.Display
@@ -51,14 +56,19 @@ import java.util.zip.Deflater
 class AdvancedTab(
     private val optionsPopup: OptionsPopup,
     onFontChange: () -> Unit
-): Table(BaseScreen.skin) {
+): Table(BaseScreen.skin), TabbedPager.IPageExtensions {
     private val settings = optionsPopup.settings
+
+    private val githubTokenField: TextField
 
     init {
         pad(10f)
         defaults().pad(5f)
 
         addAutosaveTurnsSelectBox()
+        addSeparator(Color.GRAY)
+
+        githubTokenField = addGithubTokenField()
         addSeparator(Color.GRAY)
 
         if (Display.hasOrientation())
@@ -384,5 +394,32 @@ class AdvancedTab(
         val checkbox = "Enlarge selected notifications"
             .toCheckBox(settings.enlargeSelectedNotification) { settings.enlargeSelectedNotification = it }
         add(checkbox).colspan(2).row()
+    }
+
+    override fun activated(index: Int, caption: String, pager: TabbedPager) {}
+    override fun deactivated(index: Int, caption: String, pager: TabbedPager) {
+        githubTokenField.saveToken()
+    }
+
+    private fun addGithubTokenField(): TextField {
+        add("Github token".toLabel()).left()
+        val field = UncivTextField.create("", getToken()) {
+            saveToken()
+        }
+        add(field).growX().row()
+        return field
+    }
+
+    private fun getToken() = settings.githubAccessToken ?: ""
+    private fun setToken(value: String) {
+        settings.githubAccessToken = value.ifBlank { null }
+    }
+    private fun TextField.saveToken() {
+        if (text.isBlank() || !GraphQL { text }.isTokenInvalid())
+            setToken(text)
+        else {
+            ToastPopup("That's not a valid Github access token!", stage, 3000)
+            text = getToken()
+        }
     }
 }

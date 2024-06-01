@@ -133,6 +133,9 @@ class GameSettings {
     /** Persist the history of successful developer console commands */
     val consoleCommandHistory = ArrayList<String>()
 
+    /** Github personal access token. If set, the GraphQL API is used instead of REST. */
+    var githubAccessToken: String? = null
+
     /** used to migrate from older versions of the settings */
     var version: Int? = null
 
