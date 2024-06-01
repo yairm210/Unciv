@@ -1073,11 +1073,7 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
     }
 
     override fun read(json: Json, jsonData: JsonValue) {
-        try {
-            json.readFields(this, jsonData)
-        } catch (ex: SerializationException) {
-            throw ex
-        }
+        json.readFields(this, jsonData)
         // Compatibility code for the case an pre-improvementQueue game is loaded by this version: Read legacy fields
         if (improvementQueue.isEmpty() && jsonData.get("improvementQueue") == null) {
             val improvementInProgress = jsonData.getString("improvementInProgress", "")
