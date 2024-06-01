@@ -3,6 +3,7 @@ package com.unciv.ui.screens.modmanager
 import com.unciv.logic.github.GithubAPI
 import com.unciv.models.metadata.ModCategories
 import com.unciv.models.ruleset.Ruleset
+import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.translations.tr
 
 /** Helper class holds combined mod info for ModManagementScreen, used for both installed and online lists.
@@ -33,6 +34,7 @@ internal class ModUIData private constructor(
                 "\n" + "[${repo.stargazers_count}]✯".tr(),
         null, repo, hasUpdate = isUpdated
     )
+    constructor(repo: GithubAPI.Repo) : this(repo, isUpdated(repo.name, repo.pushed_at))
 
     val isInstalled get() = ruleset != null
     fun lastUpdated() = ruleset?.modOptions?.lastUpdated ?: repo?.pushed_at ?: ""
@@ -76,4 +78,12 @@ internal class ModUIData private constructor(
     }
 
     override fun hashCode() = name.hashCode() * (if (isInstalled) 31 else 19)
+
+    companion object {
+        private fun isUpdated(repoName: String, timestamp: String): Boolean {
+            val installedMod = RulesetCache[repoName]
+            if (installedMod?.modOptions?.lastUpdated.isNullOrEmpty()) return false
+            return installedMod!!.modOptions.lastUpdated != timestamp
+        }
+    }
 }

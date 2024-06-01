@@ -12,11 +12,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.utils.Align
 import com.badlogic.gdx.utils.SerializationException
 import com.unciv.UncivGame
-import com.unciv.json.fromJsonFile
-import com.unciv.json.json
 import com.unciv.logic.UncivShowableException
 import com.unciv.logic.github.Github
-import com.unciv.logic.github.Github.repoNameToFolderName
 import com.unciv.logic.github.GithubAPI
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
@@ -51,10 +48,11 @@ import com.unciv.ui.screens.pickerscreens.PickerScreen
 import com.unciv.utils.Concurrency
 import com.unciv.utils.Log
 import com.unciv.utils.launchOnGLThread
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.isActive
 import java.io.IOException
 import kotlin.math.max
+import kotlin.time.ExperimentalTime
+import kotlin.time.TimeMark
+import kotlin.time.TimeSource
 
 /**
  * The Mod Management Screen - constructor for internal use by [resize]
@@ -63,6 +61,7 @@ import kotlin.math.max
  */
 // All picker screens auto-wrap the top table in a ScrollPane.
 // Since we want the different parts to scroll separately, we disable the default ScrollPane, which would scroll everything at once.
+@OptIn(ExperimentalTime::class)
 class ModManagementScreen private constructor(
     previousInstalledMods: HashMap<String, ModUIData>?,
     previousOnlineMods: HashMap<String, ModUIData>?
@@ -77,6 +76,9 @@ class ModManagementScreen private constructor(
         /** Github queries use this limit */
         const val amountPerPage = 100
     }
+
+    private val queryAPI: ModManagementAPI
+    private var startTime: TimeMark? = null
 
     // Since we're `RecreateOnResize`, preserve the portrait/landscape mode for our lifetime
     private val isPortrait: Boolean
@@ -115,21 +117,18 @@ class ModManagementScreen private constructor(
     private val onlineModInfo = previousOnlineMods ?: HashMap(90) // HashMap<String, ModUIData> inferred
     private val modButtons: HashMap<ModUIData, ModDecoratedButton> = HashMap(100)
 
-    // cleanup - background processing needs to be stopped on exit and memory freed
-    private var runningSearchJob: Job? = null
-    // This is only set for cleanup, not when the user stops the query (by clicking the loading icon)
-    // Therefore, finding `runningSearchJob?.isActive == false && !stopBackgroundTasks` means stopped by user
-    private var stopBackgroundTasks = false
-
     override fun dispose() {
-        // make sure the worker threads will not continue trying their time-intensive job
-        runningSearchJob?.cancel()
-        stopBackgroundTasks = true
+        queryAPI.dispose()
         super.dispose()
     }
 
-
     init {
+        val githubToken = game.settings.githubAccessToken
+        queryAPI = if (githubToken == null)
+            ModManagementAPI.REST(this, ::onNextOnlineQueryMod, ::onNextOnlineQueryPage, ::replaceLoadingWithOptions, ::markOnlineQueryIncomplete)
+        else
+            ModManagementAPI.GraphQL(githubToken, this, ::onNextOnlineQueryMod, ::onNextOnlineQueryPage, ::replaceLoadingWithOptions, ::markOnlineQueryIncomplete)
+
         pickerPane.bottomTable.background = skinStrings.getUiBackground("ModManagementScreen/BottomTable", tintColor = skinStrings.skinConfig.clearColor)
         pickerPane.topTable.background = skinStrings.getUiBackground("ModManagementScreen/TopTable", tintColor = skinStrings.skinConfig.clearColor)
         topTable.top()  // So short lists won't vertically center everything including headers
@@ -171,7 +170,6 @@ class ModManagementScreen private constructor(
             reloadOnlineMods()
         else
             refreshOnlineModTable()
-
     }
 
     private fun initPortrait() {
@@ -244,14 +242,15 @@ class ModManagementScreen private constructor(
         loading.show()  // Now that it's on stage, start animation
         // Allow clicking the loading icon to stop the query
         loading.onClick {
-            if (runningSearchJob?.isActive != true) return@onClick
-            runningSearchJob?.cancel()
+            queryAPI.stop()
             markOnlineQueryIncomplete()
             replaceLoadingWithOptions()
         }
     }
 
     private fun replaceLoadingWithOptions() {
+        startTime?.run { Log.debug("Online mod query took %s on %s", elapsedNow(), queryAPI::class.java.simpleName) }
+
         val actorToRemove = loading ?: return
         loading = null
         actorToRemove.remove()  // This is able to remove from a Cell or (the floating version) from the parent's children
@@ -274,99 +273,49 @@ class ModManagementScreen private constructor(
         onlineModsTable.clear()
         onlineModInfo.clear()
         onlineModsTable.add(getDownloadFromUrlButton()).padBottom(15f).row()
-        tryDownloadPage(1)
+        Log.debug("Starting online mod query")
+        startTime = TimeSource.Monotonic.markNow()
+        queryAPI.start()
     }
 
-    /** background worker: querying GitHub for Mods (repos with 'unciv-mod' in its topics)
-     *
-     *  calls itself for the next page of search results
-     */
-    private fun tryDownloadPage(pageNum: Int) {
-        runningSearchJob = Concurrency.run("GitHubSearch") {
-            val repoSearch: GithubAPI.RepoSearch
-            try {
-                repoSearch = Github.tryGetGithubReposWithTopic(amountPerPage, pageNum)!!
-            } catch (ex: Exception) {
-                Log.error("Could not download mod list", ex)
-                launchOnGLThread {
-                    ToastPopup("Could not download mod list", this@ModManagementScreen)
-                    replaceLoadingWithOptions()
-                }
-                Gdx.app.clipboard.contents = ex.stackTraceToString()
-                runningSearchJob = null
-                return@run
-            }
+    private fun onNextOnlineQueryMod(modUIData: ModUIData) {
+        if (onlineModInfo.containsKey(modUIData.name)) return
 
-            if (!isActive) {
-                return@run
-            }
-
-            launchOnGLThread { addModInfoFromRepoSearch(repoSearch, pageNum) }
-            runningSearchJob = null
+        if (modUIData.hasUpdate) {
+            val modInfo = installedModInfo[modUIData.name]!!
+            modInfo.hasUpdate = true
+            modButtons[modInfo]?.updateIndicators()
         }
+        val installedMod = RulesetCache[modUIData.name]
+        if (installedMod != null) updateInstalledModOptions(installedMod, modUIData)
+
+        onlineModInfo[modUIData.name] = modUIData
+        onlineModsTable.add(getCachedModButton(modUIData)).row()
     }
 
-    private fun addModInfoFromRepoSearch(repoSearch: GithubAPI.RepoSearch, pageNum: Int) {
-        for (repo in repoSearch.items) {
-            if (stopBackgroundTasks) return
-            repo.name = repo.name.repoNameToFolderName()
-
-            if (onlineModInfo.containsKey(repo.name))
-                continue // we already got this mod in a previous download, since one has been added in between
-
-            val installedMod = RulesetCache.values.firstOrNull { it.name == repo.name }
-            val isUpdatedVersionOfInstalledMod = installedMod?.modOptions?.let {
-                it.lastUpdated != "" && it.lastUpdated != repo.pushed_at
-            } == true
-
-            if (installedMod != null) {
-
-                if (isUpdatedVersionOfInstalledMod) {
-                    val modInfo = installedModInfo[repo.name]!!
-                    modInfo.hasUpdate = true
-                    modButtons[modInfo]?.updateIndicators()
-                }
-
-                if (installedMod.modOptions.author.isEmpty()) {
-                    try {
-                        Github.rewriteModOptions(repo, installedMod.folderLocation!!)
-                    } catch (ex: SerializationException) {
-                        Log.error("Error while adding mod info from repo search:", ex)
-                        return
-                    } catch (ex: Exception) {
-                        Log.error("Error while adding mod info from repo search:", ex)
-                        return
-                    }
-                    installedMod.modOptions.author = repo.owner.login
-                    installedMod.modOptions.modSize = repo.size
-                    installedMod.modOptions.topics = repo.topics
-                }
-            }
-
-            val mod = ModUIData(repo, isUpdatedVersionOfInstalledMod)
-            onlineModInfo[repo.name] = mod
-            onlineModsTable.add(getCachedModButton(mod)).row()
+    private fun updateInstalledModOptions(installedMod: Ruleset, modUIData: ModUIData) {
+        if (installedMod.modOptions.author.isNotEmpty()) return
+        val repo = modUIData.repo ?: return
+        try {
+            Github.rewriteModOptions(repo, installedMod.folderLocation!!)
+        } catch (ex: SerializationException) {
+            Log.error("Error while adding mod info from repo search:", ex)
+            return
+        } catch (ex: Exception) {
+            Log.error("Error while adding mod info from repo search:", ex)
+            return
         }
+        installedMod.modOptions.author = modUIData.author()
+        installedMod.modOptions.modSize = repo.size
+        installedMod.modOptions.topics.clear()
+        installedMod.modOptions.topics.addAll(modUIData.topics())
+    }
 
-        // Now the tasks after the 'page' of search results has been fully processed
-        // The search has reached the last page!
-        if (repoSearch.items.size < amountPerPage) {
-            // Check: It is also not impossible we missed a mod - just inform user
-            if (repoSearch.incomplete_results) {
-                markOnlineQueryIncomplete()
-            }
-        }
-
+    private fun onNextOnlineQueryPage() {
         onlineModsTable.pack()
         // Shouldn't actor.parent.actor = actor be a no-op? No, it has side effects we need.
         // See [commit for #3317](https://github.com/yairm210/Unciv/commit/315a55f972b8defe22e76d4a2d811c6e6b607e57)
         scrollOnlineMods.actor = onlineModsTable
-
-        // continue search unless last page was reached
-        if (repoSearch.items.size >= amountPerPage && !stopBackgroundTasks)
-            tryDownloadPage(pageNum + 1)
-        else
-            replaceLoadingWithOptions()
     }
 
     private fun markOnlineQueryIncomplete() {
@@ -665,7 +614,7 @@ class ModManagementScreen private constructor(
     }
 
     internal fun refreshOnlineModTable() {
-        if (runningSearchJob != null) {
+        if (queryAPI.isRunning()) {
             ToastPopup("Sorting and filtering needs to wait until the online query finishes", this)
             return  // cowardice: prevent concurrent modification, avoid a manager layer
         }
