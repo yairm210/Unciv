@@ -538,17 +538,6 @@ object UniqueTriggerActivation {
                 }
             }
 
-            UniqueType.OneTimeRevealEntireMap -> {
-                return {
-                    if (notification != null) {
-                        civInfo.addNotification(notification, LocationAction(tile?.position), NotificationCategory.General, NotificationIcon.Scout)
-                    }
-                    civInfo.gameInfo.tileMap.values.asSequence()
-                        .forEach { it.setExplored(civInfo, true) }
-                    true
-                }
-            }
-
             UniqueType.UnitsGainPromotion -> {
                 val filter = unique.params[0]
                 val promotion = unique.params[1]
@@ -746,6 +735,16 @@ object UniqueTriggerActivation {
                 }
             }
 
+            UniqueType.OneTimeRevealEntireMap -> {
+                return {
+                    if (notification != null) {
+                        civInfo.addNotification(notification, LocationAction(tile?.position), NotificationCategory.General, NotificationIcon.Scout)
+                    }
+                    civInfo.gameInfo.tileMap.values.asSequence()
+                        .forEach { it.setExplored(civInfo, true) }
+                    true
+                }
+            }
             UniqueType.OneTimeRevealSpecificMapTiles -> {
                 if (tile == null) return null
 
@@ -763,10 +762,8 @@ object UniqueTriggerActivation {
                 if (explorableTiles.none())
                     return null
 
-                if (!isAll) {
-                    explorableTiles.shuffled(tileBasedRandom)
-                    explorableTiles = explorableTiles.take(amount.toInt())
-                }
+                if (!isAll)
+                    explorableTiles = explorableTiles.shuffled(tileBasedRandom).take(amount.toInt())
 
                 return {
                     for (explorableTile in explorableTiles) {
