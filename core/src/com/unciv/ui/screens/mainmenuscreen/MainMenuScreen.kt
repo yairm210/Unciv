@@ -42,7 +42,6 @@ import com.unciv.ui.popups.hasOpenPopups
 import com.unciv.ui.popups.popups
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.basescreen.RecreateOnResize
-import com.unciv.ui.screens.civilopediascreen.CivilopediaScreen
 import com.unciv.ui.screens.mainmenuscreen.EasterEggRulesets.modifyForEasterEgg
 import com.unciv.ui.screens.mapeditorscreen.EditorMapHolder
 import com.unciv.ui.screens.mapeditorscreen.MapEditorScreen
@@ -76,37 +75,6 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
         const val mapReplaceDelay = 20f
     }
 
-    /** Create one **Main Menu Button** including onClick/key binding
-     *  @param text      The text to display on the button
-     *  @param icon      The path of the icon to display on the button
-     *  @param binding   keyboard binding
-     *  @param function  Action to invoke when the button is activated
-     */
-    private fun getMenuButton(
-        text: String,
-        icon: String,
-        binding: KeyboardBinding,
-        function: () -> Unit
-    ): Table {
-        val table = Table().pad(15f, 30f, 15f, 30f)
-        table.background = skinStrings.getUiBackground(
-            "MainMenuScreen/MenuButton",
-            skinStrings.roundedEdgeRectangleShape,
-            skinStrings.skinConfig.baseColor
-        )
-        table.add(ImageGetter.getImage(icon)).size(50f).padRight(20f)
-        table.add(text.toLabel(fontSize = 30, alignment = Align.left)).expand().left().minWidth(200f)
-
-        table.touchable = Touchable.enabled
-        table.onActivation(binding = binding) {
-            stopBackgroundMapGeneration()
-            function()
-        }
-
-        table.pack()
-        return table
-    }
-
     init {
         SoundPlayer.initializeForMainMenu()
 
@@ -137,42 +105,42 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
         val column2 = if (singleColumn) column1 else Table().apply { defaults().pad(10f).fillX() }
 
         if (game.files.autosaves.autosaveExists()) {
-            val resumeTable = getMenuButton("Resume","OtherIcons/Resume", KeyboardBinding.Resume)
+            val resumeTable = MainMenuButton(this, "Resume","OtherIcons/Resume", KeyboardBinding.Resume)
                 { resumeGame() }
             column1.add(resumeTable).row()
         }
 
-        val quickstartTable = getMenuButton("Quickstart", "OtherIcons/Quickstart", KeyboardBinding.Quickstart)
+        val quickstartTable = MainMenuButton(this, "Quickstart", "OtherIcons/Quickstart", KeyboardBinding.Quickstart)
             { quickstartNewGame() }
         column1.add(quickstartTable).row()
 
-        val newGameButton = getMenuButton("Start new game", "OtherIcons/New", KeyboardBinding.StartNewGame)
+        val newGameButton = MainMenuButton(this, "Start new game", "OtherIcons/New", KeyboardBinding.StartNewGame)
             { game.pushScreen(NewGameScreen()) }
         column1.add(newGameButton).row()
 
-        val loadGameTable = getMenuButton("Load game", "OtherIcons/Load", KeyboardBinding.MainMenuLoad)
+        val loadGameTable = MainMenuButton(this, "Load game", "OtherIcons/Load", KeyboardBinding.MainMenuLoad)
             { game.pushScreen(LoadGameScreen()) }
         column1.add(loadGameTable).row()
 
-        val multiplayerTable = getMenuButton("Multiplayer", "OtherIcons/Multiplayer", KeyboardBinding.Multiplayer)
+        val multiplayerTable = MainMenuButton(this, "Multiplayer", "OtherIcons/Multiplayer", KeyboardBinding.Multiplayer)
             { game.pushScreen(MultiplayerScreen()) }
         column2.add(multiplayerTable).row()
 
-        val mapEditorScreenTable = getMenuButton("Map editor", "OtherIcons/MapEditor", KeyboardBinding.MapEditor)
+        val mapEditorScreenTable = MainMenuButton(this, "Map editor", "OtherIcons/MapEditor", KeyboardBinding.MapEditor)
             { game.pushScreen(MapEditorScreen()) }
         column2.add(mapEditorScreenTable).row()
 
-        val modsTable = getMenuButton("Mods", "OtherIcons/Mods", KeyboardBinding.ModManager)
+        val modsButton = MainMenuButton(this, "Mods", "OtherIcons/Mods", KeyboardBinding.ModManager)
             { game.pushScreen(ModManagementScreen()) }
-        column2.add(modsTable).row()
+        column2.add(modsButton).row()
 
         if (game.files.getScenarioFiles().any()){
-            val scenarioTable = getMenuButton("Scenarios", "OtherIcons/Scenarios", KeyboardBinding.Scenarios)
+            val scenarioTable = MainMenuButton(this, "Scenarios", "OtherIcons/Scenarios", KeyboardBinding.Scenarios)
             { game.pushScreen(ScenarioScreen()) }
             column2.add(scenarioTable).row()
         }
 
-        val optionsTable = getMenuButton("Options", "OtherIcons/Options", KeyboardBinding.MainMenuOptions)
+        val optionsTable = MainMenuButton(this, "Options", "OtherIcons/Options", KeyboardBinding.MainMenuOptions)
             { openOptionsPopup() }
         optionsTable.onLongPress { openOptionsPopup(withDebug = true) }
         column2.add(optionsTable).row()
@@ -265,13 +233,11 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
         }
     }
 
-    private fun stopBackgroundMapGeneration() {
+    internal fun stopBackgroundMapGeneration() {
         backgroundStack.clearActions()
         val currentJob = backgroundMapGenerationJob
-            ?: return
         backgroundMapGenerationJob = null
-        if (currentJob.isCancelled) return
-        currentJob.cancel()
+        currentJob?.run { if (!isCancelled) cancel() }
     }
 
     private fun resumeGame() {
@@ -334,6 +300,7 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
             }
         }
     }
+
 
     override fun getCivilopediaRuleset(): Ruleset {
         if (easterEggRuleset != null) return easterEggRuleset!!
