@@ -3,6 +3,8 @@ package com.unciv.ui.screens.devconsole
 import com.unciv.logic.GameInfo
 import com.unciv.logic.map.mapgenerator.RiverGenerator
 import com.unciv.models.ruleset.tile.TerrainType
+import com.unciv.models.ruleset.unique.UniqueTarget
+import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
 
 @Suppress("EnumEntryName", "unused")
@@ -31,6 +33,7 @@ internal enum class ConsoleParameterType(
     direction( { RiverGenerator.RiverDirections.names } ),
     policyName( { ruleset.policyBranches.keys + ruleset.policies.keys } ),
     cityName( { civilizations.flatMap { civ -> civ.cities.map { it.name } } } ),
+    triggeredUniqueTemplate( { UniqueType.values().filter { it.canAcceptUniqueTarget(UniqueTarget.Triggerable) }.map { it.text } }, preferquoted = true ),
     ;
 
     private fun getOptions(console: DevConsolePopup) = console.gameInfo.getOptions()

@@ -33,15 +33,7 @@ internal class ConsoleCivCommands : ConsoleCommandNode {
             DevConsoleResponse.OK
         },
 
-        "activatetrigger" to ConsoleAction("civ activatetrigger <civName> <\"trigger\">") { console, params ->
-            val civ = console.getCivByName(params[0])
-            val unique = Unique(params[1].toString())
-            if (unique.type == null) throw ConsoleErrorException("Unrecognized trigger")
-            val tile = console.screen.mapHolder.selectedTile
-            val city = tile?.getCity()
-            UniqueTriggerActivation.triggerUnique(unique, civ, city, tile = tile)
-            DevConsoleResponse.OK
-        },
+        "activatetrigger" to ConsoleTriggerAction("civ"),
 
         "addpolicy" to ConsoleAction("civ addpolicy <civName> <policyName>") { console, params ->
             val civ = console.getCivByName(params[0])

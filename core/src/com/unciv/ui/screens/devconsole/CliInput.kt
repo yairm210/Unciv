@@ -6,8 +6,6 @@ import com.unciv.models.stats.INamed
 import com.unciv.models.stats.Stat
 import com.unciv.ui.screens.devconsole.CliInput.Companion.equals
 
-//todo civ activatetrigger
-
 /**
  *  Represents the method used to convert/display ruleset object (or other) names in console input.
  *  - Goal is to make them comparable, and to make parameter-delimiting spaces unambiguous, both in a user-friendly way.
@@ -34,10 +32,10 @@ internal class CliInput(
      *  - [Dashed][Method.Dashed] means [content] is stored and presented lowercased and blanks converted to dashes
      *  - [Quoted][Method.Quoted] means [content] is stored titlecased and multiple consecutive blanks converted to one, and is parsed/presented with quotes
      */
-    private val method: Method = method ?: if (parameter.hasLeadingQuote()) Method.Quoted else Method.Dashed
+    val method: Method = method ?: if (parameter.hasLeadingQuote()) Method.Quoted else Method.Dashed
 
     /** 'massaged' parameter text */
-    private val content: String = when (this.method) {
+    val content: String = when (this.method) {
         Method.Dashed -> parameter.toDashedRepresentation()
         Method.Quoted -> parameter.toQuotedRepresentation()
     }

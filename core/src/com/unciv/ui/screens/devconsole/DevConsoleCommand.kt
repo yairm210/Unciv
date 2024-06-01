@@ -54,7 +54,7 @@ internal open class ConsoleAction(
     private fun validateFormat(format: String, params: List<CliInput>) {
         val allParams = format.split(' ')
         val requiredParamsAmount = allParams.count { it.startsWith('<') }
-        val optionalParamsAmount = allParams.count { it.startsWith('[') }
+        val optionalParamsAmount = if (format.endsWith("]...")) 999999 else allParams.count { it.startsWith('[') }
         // For this check, ignore an empty token caused by a trailing blank
         val paramsSize = if (params.isEmpty()) 0 else if (params.last().isEmpty()) params.size - 1 else params.size
         if (paramsSize < requiredParamsAmount || paramsSize > requiredParamsAmount + optionalParamsAmount)
