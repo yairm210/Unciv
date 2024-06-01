@@ -112,15 +112,17 @@ class Spy private constructor() : IsPartOfGameInfoSerialization {
                 if (!getCity().civ.isMajorCiv()) return
 
                 val stealableTechs = espionageManager.getTechsToSteal(getCity().civ)
-                if (stealableTechs.isEmpty()) return
+                if (stealableTechs.isEmpty() || getTurnsRemainingToStealTech() < 0) return
                 setAction(SpyAction.StealingTech) // There are new techs to steal!
             }
             SpyAction.StealingTech -> {
                 turnsRemainingForAction = getTurnsRemainingToStealTech()
 
-                if (turnsRemainingForAction == -1) {
+                if (turnsRemainingForAction < 0) {
+                    // Either we have no technologies to steam (-1) or the city produces no science (-1)
                     setAction(SpyAction.Surveillance)
-                    addNotification("Your spy [$name] cannot steal any more techs from [${getCity().civ}] as we've already researched all the technology they know!")
+                    if (turnsRemainingForAction == -1)
+                        addNotification("Your spy [$name] cannot steal any more techs from [${getCity().civ}] as we've already researched all the technology they know!")
                 } else if (turnsRemainingForAction == 0) {
                     stealTech()
                 }
@@ -151,15 +153,21 @@ class Spy private constructor() : IsPartOfGameInfoSerialization {
     }
 
     private fun startStealingTech() {
-        setAction(SpyAction.StealingTech)
         progressTowardsStealingTech = 0
         turnsRemainingForAction = getTurnsRemainingToStealTech()
+
+        if (turnsRemainingForAction < 0) {
+            setAction(SpyAction.Surveillance)
+        } else {
+            setAction(SpyAction.StealingTech)
+        }
     }
 
     /**
      * @return The number of turns left to steal the technology, note that this is a guess and may change.
      * A 0 means that we are ready to steal the technology. 
      * A -1 means we have no techonologies to steal.
+     * A -2 means we the city produces no science
      */
     private fun getTurnsRemainingToStealTech(): Int {
         val stealableTechs = espionageManager.getTechsToSteal(getCity().civ)
@@ -167,6 +175,8 @@ class Spy private constructor() : IsPartOfGameInfoSerialization {
 
         val techStealCost = stealableTechs.maxOfOrNull { civInfo.gameInfo.ruleset.technologies[it]!!.cost }!!
         var progressThisTurn = getCity().cityStats.currentCityStats.science
+        if (progressThisTurn <= 0f) return -2 // The city has no science
+
         // 33% spy bonus for each level
         progressThisTurn *= (rank + 2f) / 3f
         progressThisTurn *= getEfficiencyModifier().toFloat()
