@@ -12,6 +12,7 @@ import com.unciv.logic.GameInfo
 import com.unciv.logic.GameStarter
 import com.unciv.logic.UncivShowableException
 import com.unciv.logic.github.AutoUpdater
+import com.unciv.logic.github.GraphQLResult
 import com.unciv.logic.map.MapParameters
 import com.unciv.logic.map.MapShape
 import com.unciv.logic.map.MapSize
@@ -30,12 +31,14 @@ import com.unciv.ui.components.extensions.surroundWithCircle
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.input.KeyShortcutDispatcherVeto
 import com.unciv.ui.components.input.KeyboardBinding
+import com.unciv.ui.components.input.activate
 import com.unciv.ui.components.input.keyShortcuts
 import com.unciv.ui.components.input.onActivation
 import com.unciv.ui.components.input.onLongPress
 import com.unciv.ui.components.tilegroups.TileGroupMap
 import com.unciv.ui.components.widgets.AutoScrollPane
 import com.unciv.ui.images.ImageGetter
+import com.unciv.ui.popups.ConfirmPopup
 import com.unciv.ui.popups.Popup
 import com.unciv.ui.popups.ToastPopup
 import com.unciv.ui.popups.closeAllPopups
@@ -60,7 +63,12 @@ import kotlinx.coroutines.Job
 import kotlin.math.min
 
 
-class MainMenuScreen: BaseScreen(), RecreateOnResize {
+class MainMenuScreen private constructor(
+    noAutoUpdate: Boolean,
+    oldAutoUpdater: AutoUpdater?
+): BaseScreen(), RecreateOnResize {
+    constructor(noAutoUpdate: Boolean = false) : this(noAutoUpdate, null)
+
     private val backgroundStack = Stack()
     private val singleColumn = isCrampedPortrait()
 
@@ -88,7 +96,7 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
         backgroundStack.setFillParent(true)
 
         // Start update query early
-        autoUpdater = AutoUpdater.createAndStart(::onAutoUpdateResult)
+        autoUpdater = oldAutoUpdater ?: if (noAutoUpdate) null else AutoUpdater.createAndStart(::onAutoUpdateResult)
 
         // If we were in a mod, some of the resource images for the background map we're creating
         // will not exist unless we reset the ruleset and images
@@ -171,13 +179,7 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
             game.popScreen()
         }
 
-        if (autoUpdater != null) {
-            modsButton.disable()
-            modsButton.showLoading {
-                autoUpdater?.cancelCheck()
-                hideLoading(final = false)
-            }
-        }
+        showLoadingOnModButton()
 
         val helpButton = "?".toLabel(fontSize = 48)
             .apply { setAlignment(Align.center) }
@@ -336,11 +338,20 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
 
     override fun recreate(): BaseScreen {
         stopBackgroundMapGeneration()
-        return MainMenuScreen()
+        return MainMenuScreen(true, autoUpdater)
     }
 
     // We contain a map...
     override fun getShortcutDispatcherVetoer() = KeyShortcutDispatcherVeto.createTileGroupMapDispatcherVetoer()
+
+    private fun showLoadingOnModButton() {
+        if (autoUpdater == null) return
+        modsButton.disable()
+        modsButton.showLoading {
+            autoUpdater?.cancelCheck()
+            hideLoading(final = false)
+        }
+    }
 
     private fun onAutoUpdateResult(needsUpdate: Boolean) {
         if (needsUpdate) {
@@ -383,5 +394,11 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
         modsButton.revertActivationHandler()
         modsButton.setText("Mods")
         modsButton.enable()
+    }
+
+    fun restartAutoUpdate() {
+        autoUpdater?.cancel()
+        autoUpdater = AutoUpdater.createAndStart(::onAutoUpdateResult)
+        showLoadingOnModButton()
     }
 }
