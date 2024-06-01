@@ -11,6 +11,7 @@ import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
 import com.unciv.logic.GameStarter
 import com.unciv.logic.UncivShowableException
+import com.unciv.logic.github.AutoUpdater
 import com.unciv.logic.map.MapParameters
 import com.unciv.logic.map.MapShape
 import com.unciv.logic.map.MapSize
@@ -69,6 +70,9 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
     private var backgroundMapGenerationJob: Job? = null
     private var backgroundMapExists = false
 
+    private val modsButton: MainMenuButton
+    internal var autoUpdater: AutoUpdater?
+
     companion object {
         const val mapFadeTime = 1.3f
         const val mapFirstFadeTime = 0.3f
@@ -82,6 +86,9 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
         backgroundStack.add(BackgroundActor(background, Align.center))
         stage.addActor(backgroundStack)
         backgroundStack.setFillParent(true)
+
+        // Start update query early
+        autoUpdater = AutoUpdater.createAndStart(::onAutoUpdateResult)
 
         // If we were in a mod, some of the resource images for the background map we're creating
         // will not exist unless we reset the ruleset and images
@@ -130,7 +137,7 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
             { game.pushScreen(MapEditorScreen()) }
         column2.add(mapEditorScreenTable).row()
 
-        val modsButton = MainMenuButton(this, "Mods", "OtherIcons/Mods", KeyboardBinding.ModManager)
+        modsButton = MainMenuButton(this, "Mods", "OtherIcons/Mods", KeyboardBinding.ModManager)
             { game.pushScreen(ModManagementScreen()) }
         column2.add(modsButton).row()
 
@@ -162,6 +169,14 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
                 return@add
             }
             game.popScreen()
+        }
+
+        if (autoUpdater != null) {
+            modsButton.disable()
+            modsButton.showLoading {
+                autoUpdater?.cancelCheck()
+                hideLoading(final = false)
+            }
         }
 
         val helpButton = "?".toLabel(fontSize = 48)
@@ -326,4 +341,47 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
 
     // We contain a map...
     override fun getShortcutDispatcherVetoer() = KeyShortcutDispatcherVeto.createTileGroupMapDispatcherVetoer()
+
+    private fun onAutoUpdateResult(needsUpdate: Boolean) {
+        if (needsUpdate) {
+            modsButton.hideLoading(final = false)
+            modsButton.setActivationHandler { startAutoUpdate() }
+            modsButton.setText("Update Mods")
+        } else {
+            modsButton.hideLoading()
+            autoUpdater = null
+        }
+        modsButton.enable()
+    }
+
+    private fun startAutoUpdate() {
+        modsButton.disable()
+        modsButton.showLoading {
+            autoUpdater?.cancelUpdate()
+            hideLoading()
+        }
+        autoUpdater!!.doUpdate(::onAutoUpdateFinished, ::onAutoUpdateProgress, ::onAutoUpdateToast)
+    }
+
+    private fun onAutoUpdateToast(message: String) {
+        ToastPopup(message, this)
+    }
+
+    private fun onAutoUpdateProgress(percent: Int) {
+        // kludge: A ProgressBar would be prettier - but that Widget isn't PR'ed yet
+        modsButton.setText("$percent%")
+    }
+
+    private fun onAutoUpdateFinished(successes: Int, total: Int) {
+        modsButton.hideLoading()
+        val message = when (successes) {
+            total -> "[$successes] Mods successfully updated!"
+            0 -> "Sorry, updating Mods has failed!"
+            else -> "[$successes] out of [$total] outdated Mods updated."
+        }
+        ToastPopup(message, this)
+        modsButton.revertActivationHandler()
+        modsButton.setText("Mods")
+        modsButton.enable()
+    }
 }

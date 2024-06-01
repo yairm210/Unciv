@@ -8,8 +8,12 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.extensions.toLabel
+import com.unciv.ui.components.input.ActivationTypes
 import com.unciv.ui.components.input.KeyboardBinding
+import com.unciv.ui.components.input.clearActivationActions
 import com.unciv.ui.components.input.onActivation
+import com.unciv.ui.components.input.onClick
+import com.unciv.ui.components.widgets.LoadingImage
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.basescreen.BaseScreen
 
@@ -31,6 +35,23 @@ internal class MainMenuButton(
     private val icon: Image
     private val label: Label
 
+    private var loadingClickCallback: (MainMenuButton.() -> Unit)? = null
+
+    // Will hold a LoadingImage on demand, and when finished it is freed/nulled
+    private var loading: LoadingImage? = null
+        set(value) {
+            field?.remove()
+            if (value != null) {
+                value.onClick {
+                    loadingClickCallback?.invoke(this)
+                    hideLoading()
+                }
+                value.setPosition(5f, 5f)
+                addActor(value)
+            }
+            field = value
+        }
+
     private companion object {
         val disabledColor = Color(0x606060ff)
     }
@@ -50,6 +71,7 @@ internal class MainMenuButton(
 
         touchable = Touchable.enabled
         onActivation(binding = binding) {
+            screen.autoUpdater?.cancel()
             screen.stopBackgroundMapGeneration()
             function()
         }
@@ -71,5 +93,41 @@ internal class MainMenuButton(
         icon.color = disabledColor
         label.color = disabledColor
         touchable = Touchable.disabled
+    }
+
+    /** Proxy for [onActivation] that stops background jobs and leaves key binding and tooltip unchanged */
+    fun setActivationHandler(function: () -> Unit) {
+        clearActivationActions(ActivationTypes.Tap)
+        onActivation(ActivationTypes.Tap) {
+            screen.stopBackgroundMapGeneration()
+            function()
+        }
+    }
+
+    /** Reverts activation handler to the original one (from constructor) */
+    fun revertActivationHandler() = setActivationHandler(function)
+
+    private fun getNewLoadingImage() = run {
+        val loadingStyle = LoadingImage.Style(circleColor = Color.DARK_GRAY, loadingColor = Color.FIREBRICK, minShowTime = 250)
+        val loading = LoadingImage(36f, loadingStyle)
+        this.loading = loading
+        loading
+    }
+
+    /** @param onClick What to do when the loading indicator is clicked: default hides the indicator, but you can disable that by passing `null`.
+     *         To hide and do additional work, simply call [hideLoading] in your handler, `this` [MainMenuButton] is the callback's receiver. */
+    fun showLoading(onClick: (MainMenuButton.() -> Unit)? = { hideLoading() }) {
+        val loading = this.loading ?: getNewLoadingImage()
+        loading.actions.clear()
+        loadingClickCallback = onClick
+        loading.show()
+    }
+
+    fun hideLoading(final: Boolean = true) {
+        val actor = loading ?: return
+        actor.hide {
+            actor.remove()
+            if (final) loading = null
+        }
     }
 }
