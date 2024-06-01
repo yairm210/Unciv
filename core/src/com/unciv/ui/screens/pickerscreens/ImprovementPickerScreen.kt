@@ -39,22 +39,25 @@ class ImprovementPickerScreen(
 
     private var selectedImprovement: TileImprovement? = null
     private val gameInfo = tile.tileMap.gameInfo
-    private val ruleSet = gameInfo.ruleset
+    private val ruleset = gameInfo.ruleset
     private val currentPlayerCiv = gameInfo.getCurrentPlayerCivilization()
     // Support for UniqueType.CreatesOneImprovement
     private val tileMarkedForCreatesOneImprovement = tile.isMarkedForCreatesOneImprovement()
 
     private fun getRequiredTechColumn(improvement: TileImprovement) =
-        ruleSet.technologies[improvement.techRequired]?.column?.columnNumber ?: -1
+        ruleset.technologies[improvement.techRequired]?.column?.columnNumber ?: -1
 
-    fun accept(improvement: TileImprovement?) {
+    fun accept(improvement: TileImprovement?, secondImprovement: TileImprovement? = null) {
         if (improvement == null || tileMarkedForCreatesOneImprovement) return
         if (improvement.name == Constants.cancelImprovementOrder) {
             tile.stopWorkingOnImprovement()
             // no onAccept() - Worker can stay selected
         } else {
-            if (improvement.name != tile.improvementInProgress)
+            if (improvement.name != tile.improvementInProgress) {
                 tile.startWorkingOnImprovement(improvement, currentPlayerCiv, unit)
+                if (secondImprovement != null)
+                    tile.queueImprovement(secondImprovement, currentPlayerCiv, unit)
+            }
             unit.action = null // this is to "wake up" the worker if it's sleeping
             onAccept()
         }
@@ -76,13 +79,13 @@ class ImprovementPickerScreen(
         // Keep this copy around for speed
         val tileWithoutLastTerrain: Tile = tile.clone()
         tileWithoutLastTerrain.setTerrainTransients()
-        if (Constants.remove + tileWithoutLastTerrain.lastTerrain.name in ruleSet.tileImprovements) {
+        if (Constants.remove + tileWithoutLastTerrain.lastTerrain.name in ruleset.tileImprovements) {
             tileWithoutLastTerrain.removeTerrainFeature(tileWithoutLastTerrain.lastTerrain.name)
         }
 
         val cityUniqueCache = LocalUniqueCache()
 
-        for (improvement in ruleSet.tileImprovements.values) {
+        for (improvement in ruleset.tileImprovements.values) {
             var suggestRemoval = false
             // canBuildImprovement() would allow e.g. great improvements thus we need to exclude them - except cancel
             if (improvement.turnsToBuild == -1 && improvement.name != Constants.cancelImprovementOrder) continue
@@ -103,7 +106,7 @@ class ImprovementPickerScreen(
             var shortcutKey = improvement.shortcutKey
             if (shortcutKey != null) {
                 val techLevel = getRequiredTechColumn(improvement)
-                val isSuperseded = ruleSet.tileImprovements.values.asSequence()
+                val isSuperseded = ruleset.tileImprovements.values.asSequence()
                     // *other* improvements with same shortcutKey
                     .filter { it.shortcutKey == improvement.shortcutKey && it != improvement }
                     // civ can build it (checks tech researched)
@@ -129,8 +132,13 @@ class ImprovementPickerScreen(
 
             val proposedSolutions = mutableListOf<String>()
 
-            if (suggestRemoval)
-                proposedSolutions.add("${Constants.remove}[${tile.lastTerrain.name}] first")
+            val removalImprovement = if (suggestRemoval) {
+                val removalName = Constants.remove + tile.lastTerrain.name
+                val rmv = ruleset.tileImprovements[removalName]
+                if (rmv != null) proposedSolutions.add("${Constants.remove}[${tile.lastTerrain.name}] first")
+                rmv
+            } else null
+
             if (ImprovementBuildingProblem.MissingTech in unbuildableBecause)
                 proposedSolutions.add("Research [${improvement.techRequired}] first")
             if (ImprovementBuildingProblem.NotJustOutsideBorders in unbuildableBecause)
@@ -144,7 +152,14 @@ class ImprovementPickerScreen(
             }
 
             val explanationText = when {
-                proposedSolutions.any() -> proposedSolutions.joinToString("}\n{", "{", "}").toLabel()
+                proposedSolutions.any() -> {
+                    val text = proposedSolutions.joinToString("}\n{", "{", "}")
+                    if (removalImprovement != null && proposedSolutions.size == 1)
+                        "$text\n{Pick now!}".toLabel().onClick {
+                            accept(removalImprovement, improvement)
+                        }
+                    else text.toLabel()
+                }
                 tile.improvementInProgress == improvement.name -> "Current construction".toLabel()
                 tileMarkedForCreatesOneImprovement -> null
                 else -> "Pick now!".toLabel().onClick { accept(improvement) }
@@ -181,7 +196,7 @@ class ImprovementPickerScreen(
             improvementButton.onActivation(type = ActivationTypes.Tap, noEquivalence = true) {
                 selectedImprovement = improvement
                 pick(improvement.name.tr())
-                descriptionLabel.setText(improvement.getDescription(ruleSet))
+                descriptionLabel.setText(improvement.getDescription(ruleset))
             }
 
             improvementButton.onDoubleClick { accept(improvement) }
