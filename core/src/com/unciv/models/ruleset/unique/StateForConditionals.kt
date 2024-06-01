@@ -9,6 +9,7 @@ import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.mapgenerator.mapregions.Region
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
+import com.unciv.models.stats.Stat
 
 data class StateForConditionals(
     val civInfo: Civilization? = null,
@@ -39,6 +40,48 @@ data class StateForConditionals(
         combatAction
     )
 
+
+    val relevantUnit by lazy {
+        if (ourCombatant != null && ourCombatant is MapUnitCombatant) ourCombatant.unit
+        else unit
+    }
+
+    val relevantTile by lazy { attackedTile
+        ?: tile
+        // We need to protect against conditionals checking tiles for units pre-placement - see #10425, #10512
+        ?: relevantUnit?.run { if (hasTile()) getTile() else null }
+        ?: city?.getCenterTile()
+    }
+
+    val relevantCity by lazy {
+        city
+            ?: relevantTile?.getCity()
+    }
+
+    val relevantCiv by lazy {
+        civInfo ?:
+        relevantCity?.civ ?:
+        relevantUnit?.civ
+    }
+
+    val gameInfo by lazy { relevantCiv?.gameInfo }
+
+    fun getResourceAmount(resourceName: String): Int {
+        return when {
+            relevantCity != null -> relevantCity!!.getAvailableResourceAmount(resourceName)
+            relevantCiv != null -> relevantCiv!!.getResourceAmount(resourceName)
+            else -> 0
+        }
+    }
+
+    fun getStatAmount(stat: Stat) : Int {
+        return when {
+            relevantCity != null -> relevantCity!!.getStatReserve(stat)
+            relevantCiv != null && stat in Stat.statsWithCivWideField -> relevantCiv!!.getStatReserve(stat)
+            else -> 0
+        }
+    }
+
     companion object {
         val IgnoreConditionals = StateForConditionals(ignoreConditionals = true)
     }
@@ -67,4 +110,7 @@ data class StateForConditionals(
         result = 31 * result + ignoreConditionals.hashCode()
         return result
     }
+
+
 }
+

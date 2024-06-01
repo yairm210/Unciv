@@ -7,6 +7,7 @@ Flag Icons made by [Freepik](https://www.flaticon.com/authors/freepik) from [www
 -   [Catalan flag] by J0anJosep licensed under Public Domain
 -   [Rusyn flag] gimped from the wikipedia flag [Flag of Pannonian Rusyns](https://en.wikipedia.org/wiki/File:Flag_of_Rusyns_in_Serbia.svg) (CC-BY-SA 4.0)
 -   [Latin flag] made from [wikipedia entry for SPQR](https://en.wikipedia.org/wiki/SPQR#/media/File:Roman_SPQR_banner.svg), Creative Commons Attribution 3.0 Unported
+-   [Zulu flag] made from [wikipedia entry for the Z flag](https://en.wikipedia.org/wiki/Z_flag#/media/File:ICS_Zulu.svg): public domain
 
 New Unciv logo made by u-ndefined on Discord
 
@@ -714,8 +715,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 - WLTKD by [vegeta1k95](https://github.com/vegeta1k95) based on [favor](https://thenounproject.com/icon/favor-1029350/) by MICHAEL G BROWN for WLTKD status icon
 - [Party](https://thenounproject.com/icon/party-1784941/) by Adrien Coquet for WLTK header on City Overview
 - [Party](https://thenounproject.com/icon/party-2955155/) by Lars Meiertoberens as additional WLKT decoration
-- [spy](https://thenounproject.com/icon/spy-2905374/) by Vectorstall for Spy
-- [spy](https://thenounproject.com/icon/4660058/) by Adriano Vabeni - Espionage button
+- [spy](https://thenounproject.com/icon/spy-2905374/) by Vectorstall for Spy and the Espionage button
 - [secret agency](https://thenounproject.com/icon/2817176/) by Martina Hanžlová - Espionage tutorial
 - [turn right](https://thenounproject.com/icon/turn-right-1920867/) by Alice Design for Resource Overview
 - [Tyrannosaurus Rex](https://thenounproject.com/icon/tyrannosaurus-rex-4130976/) by Amethyst Studio for Civilopedia Eras header

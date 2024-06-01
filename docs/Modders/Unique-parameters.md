@@ -278,6 +278,21 @@ Used to indicate for what use the terrain should be viewed when dividing the wor
 Allowed values are:
 
 - improvement name (Note that "Road" and "Railroad" _do_ work as improvementFilters, but not as tileFilters at the moment.)
-- "All"
-- "Great Improvements", "Great"
-- "All Road" - for Roads & Railroads
+- `All`
+- `Great Improvements`, `Great`
+- `All Road` - for Roads & Railroads
+
+## countable
+
+Indicates *something that can be counted*, used both for comparisons and for multiplying uniques
+
+Allowed values:
+- `year`
+- Unit name (counts your existing units)
+- Building name (counts your existing buildings)
+- Stat name - gets the stat *reserve*, not the amount per turn (can be city stats or civilization stats, depending on where the unique is used)
+- Resource name (can be city stats or civilization stats, depending on where the unique is used)
+
+For example: If a unique is placed on a building, then the retrieved resources will be of the city. If placed on a policy, they will be of the civilization.
+
+This can make a difference for e.g. local resources, which are counted per city.

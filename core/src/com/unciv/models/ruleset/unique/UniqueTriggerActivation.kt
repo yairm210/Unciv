@@ -70,7 +70,10 @@ object UniqueTriggerActivation {
         return function.invoke()
     }
 
-        /** @return The action to be performed if possible, else null */
+    /** @return The action to be performed if possible, else null
+     * This is so the unit actions can be displayed as "disabled" if they won't actually do anything
+     * Even if the action itself is performable, there are still cases where it can fail -
+     *   for example unit placement - which is why the action itself needs to return Boolean to indicate success */
     fun getTriggerFunction(
         unique: Unique,
         civInfo: Civilization,
@@ -87,7 +90,12 @@ object UniqueTriggerActivation {
 
         val timingConditional = unique.conditionals.firstOrNull { it.type == UniqueType.ConditionalTimedUnique }
         if (timingConditional != null) {
-            return { civInfo.temporaryUniques.add(TemporaryUnique(unique, timingConditional.params[0].toInt())) }
+            return {
+                civInfo.temporaryUniques.add(TemporaryUnique(unique, timingConditional.params[0].toInt()))
+                if (unique.type in setOf(UniqueType.ProvidesResources, UniqueType.ConsumesResources))
+                    civInfo.cache.updateCivResources()
+                true
+            }
         }
 
         val stateForConditionals = StateForConditionals(civInfo, city, unit, tile)
@@ -375,7 +383,7 @@ object UniqueTriggerActivation {
 
             UniqueType.OneTimeGainPopulation -> {
                 val applicableCities =
-                    if (unique.params[1] == "in this city") sequenceOf(relevantCity!!)
+                    if (unique.params[1] == "in this city") sequenceOf(relevantCity).filterNotNull()
                     else civInfo.cities.asSequence().filter { it.matchesFilter(unique.params[1]) }
                 if (applicableCities.none()) return null
                 return {
@@ -881,7 +889,7 @@ object UniqueTriggerActivation {
                         applicableCity.cityConstructions.freeBuildingsProvidedFromThisCity.addToMapOfSets(applicableCity.id, freeBuilding.name)
 
                         if (applicableCity.cityConstructions.containsBuildingOrEquivalent(freeBuilding.name)) continue
-                        applicableCity.cityConstructions.constructionComplete(freeBuilding)
+                        applicableCity.cityConstructions.completeConstruction(freeBuilding)
                     }
                     true
                 }

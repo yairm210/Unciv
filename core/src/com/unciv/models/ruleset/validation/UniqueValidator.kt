@@ -110,6 +110,12 @@ class UniqueValidator(val ruleset: Ruleset) {
         return rulesetErrors
     }
 
+    val resourceUniques = setOf(UniqueType.ProvidesResources, UniqueType.ConsumesResources,
+        UniqueType.DoubleResourceProduced, UniqueType.StrategicResourcesIncrease)
+    val resourceConditionals = setOf(UniqueType.ConditionalWithResource, UniqueType.ConditionalWithoutResource,
+        UniqueType.ConditionalWhenBetweenStatResource, UniqueType.ConditionalWhenAboveAmountStatResource, UniqueType.ConditionalWhenBelowAmountStatResource,
+        UniqueType.ConditionalWhenAboveAmountStatResourceSpeed, UniqueType.ConditionalWhenBelowAmountStatResourceSpeed, UniqueType.ConditionalWhenBetweenStatResourceSpeed)
+
     private fun addConditionalErrors(
         conditional: Unique,
         rulesetErrors: RulesetErrorList,
@@ -161,6 +167,14 @@ class UniqueValidator(val ruleset: Ruleset) {
                     " which as a UnitActionModifier is only allowed on UnitAction uniques.",
                 RulesetErrorSeverity.Warning, uniqueContainer, unique
             )
+
+        if (unique.type in resourceUniques && conditional.type in resourceConditionals
+            && ruleset.tileResources[conditional.params.last()]?.let { it.hasUnique(UniqueType.CityResource) } == true)
+            rulesetErrors.add(
+                "$prefix contains the conditional \"${conditional.text}\"," +
+                    " which references a citywide resource. This is not a valid conditional for a resource uniques, " +
+                    "as it causes a recursive evaluation loop.",
+                RulesetErrorSeverity.Error, uniqueContainer, unique)
 
         val conditionalComplianceErrors =
             getComplianceErrors(conditional)

@@ -90,6 +90,11 @@ class TechPolicyDiplomacyButtons(val worldScreen: WorldScreen) : Table(BaseScree
         if (game.gameInfo!!.isEspionageEnabled()) {
             espionageButton.add(ImageGetter.getImage("OtherIcons/Espionage")).size(30f).pad(15f)
             espionageButtonHolder.onActivation(binding = KeyboardBinding.Espionage) {
+                // We want to make sure to deselect a spy in the case that the player wants to cancel moving
+                // the spy on the map screen by pressing this button
+                if (worldScreen.bottomUnitTable.selectedSpy != null) {
+                    worldScreen.bottomUnitTable.selectSpy(null)
+                }
                 game.pushScreen(EspionageOverviewScreen(worldScreen.selectedCiv, worldScreen))
             }
         }

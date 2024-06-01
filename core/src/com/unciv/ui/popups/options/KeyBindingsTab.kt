@@ -27,7 +27,7 @@ class KeyBindingsTab(
     private val groupedWidgets by lazy { createGroupedWidgets() }
 
     private val disclaimer = MarkupRenderer.render(listOf(
-        FormattedLine("This is a work in progress.", color = "#b22222", centered = true),  // FIREBRICK
+        FormattedLine("This is a work in progress.", color = "FIREBRICK", centered = true),
         FormattedLine(),
         // FormattedLine("Do not pester the developers for missing entries!"),  // little joke
         FormattedLine("Please see the Tutorial.", link = "Tutorial/Keyboard Bindings"),
