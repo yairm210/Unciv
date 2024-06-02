@@ -139,7 +139,7 @@ FlagIcons/Korean
   index: -1
 FlagIcons/Latin
   rotate: false
-  xy: 1636, 168
+  xy: 1772, 304
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
@@ -273,6 +273,13 @@ FlagIcons/Ukrainian
 FlagIcons/Vietnamese
   rotate: false
   xy: 1500, 4
+  size: 128, 128
+  orig: 128, 128
+  offset: 0, 0
+  index: -1
+FlagIcons/Zulu
+  rotate: false
+  xy: 1636, 140
   size: 128, 128
   orig: 128, 128
   offset: 0, 0

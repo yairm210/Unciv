@@ -40,6 +40,8 @@ class EmpireOverviewScreen(
         super.dispose()
     }
 
+    override fun getCivilopediaRuleset() = viewingPlayer.gameInfo.ruleset
+
     init {
         val selectCategory = defaultCategory ?: EmpireOverviewCategories.values().firstOrNull { it.name == game.settings.lastOverviewPage }
         val iconSize = Constants.defaultFontSize.toFloat()

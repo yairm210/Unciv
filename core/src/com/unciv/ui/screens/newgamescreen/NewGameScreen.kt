@@ -41,9 +41,9 @@ import com.unciv.ui.screens.pickerscreens.PickerScreen
 import com.unciv.utils.Concurrency
 import com.unciv.utils.Log
 import com.unciv.utils.launchOnGLThread
+import kotlinx.coroutines.coroutineScope
 import java.net.URL
 import java.util.UUID
-import kotlinx.coroutines.coroutineScope
 import kotlin.math.floor
 import com.unciv.ui.components.widgets.AutoScrollPane as ScrollPane
 
@@ -52,7 +52,7 @@ class NewGameScreen(
     isReset: Boolean = false
 ): IPreviousScreen, PickerScreen(), RecreateOnResize {
 
-    override var gameSetupInfo = defaultGameSetupInfo ?: GameSetupInfo.fromSettings()
+    override val gameSetupInfo = defaultGameSetupInfo ?: GameSetupInfo.fromSettings()
     override val ruleset = Ruleset()  // updateRuleset will clear and add
     private val newGameOptionsTable: GameOptionsTable
     internal val playerPickerTable: PlayerPickerTable
@@ -148,9 +148,8 @@ class NewGameScreen(
 
         if (gameSetupInfo.gameParameters.players.none {
                     it.playerType == PlayerType.Human &&
-                            // do not allow multiplayer with only remote spectator(s) and AI(s) - non-MP that works
-                            !(it.chosenCiv == Constants.spectator && gameSetupInfo.gameParameters.isOnlineMultiplayer &&
-                                    it.playerId != UncivGame.Current.settings.multiplayer.userId)
+                            // do not allow multiplayer with only spectator(s) and AI(s) - non-MP that works
+                            !(it.chosenCiv == Constants.spectator && gameSetupInfo.gameParameters.isOnlineMultiplayer)
                 }) {
             val noHumanPlayersPopup = Popup(this)
             noHumanPlayersPopup.addGoodSizedLabel("No human players selected!".tr()).row()
@@ -369,8 +368,9 @@ class NewGameScreen(
         var success = true
         fun handleFailure(message: String): Ruleset {
             success = false
-            gameSetupInfo = GameSetupInfo()
             ToastPopup(message, this, 5000)
+            gameSetupInfo.gameParameters.mods.clear()
+            gameSetupInfo.gameParameters.baseRuleset = BaseRuleset.Civ_V_GnK.fullName
             return RulesetCache[BaseRuleset.Civ_V_GnK.fullName]!!
         }
 

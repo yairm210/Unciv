@@ -259,8 +259,10 @@ class TurnManager(val civInfo: Civilization) {
         civInfo.policies.endTurn(nextTurnStats.culture.toInt())
         civInfo.totalCultureForContests += nextTurnStats.culture.toInt()
 
-        if (civInfo.isCityState())
+        if (civInfo.isCityState()) {
             civInfo.questManager.endTurn()
+            civInfo.cityStateFunctions.nextTurnElections()
+        }
 
         // disband units until there are none left OR the gold values are normal
         if (!civInfo.isBarbarian() && civInfo.gold <= -200 && nextTurnStats.gold.toInt() < 0) {

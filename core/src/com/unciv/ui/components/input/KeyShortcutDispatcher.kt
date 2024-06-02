@@ -61,6 +61,15 @@ open class KeyShortcutDispatcher {
         shortcuts.removeAll { it.shortcut.key.code == keyCode }
     }
 
+    operator fun contains(binding: KeyboardBinding) =
+        shortcuts.any { it.shortcut.binding == binding }
+    operator fun contains(key: KeyCharAndCode) =
+        shortcuts.any { it.shortcut.key == key || it.shortcut.binding.defaultKey == key }
+    operator fun contains(char: Char) =
+        shortcuts.any { it.shortcut.key.char == char }
+    operator fun contains(keyCode: Int) =
+        shortcuts.any { it.shortcut.key.code == keyCode }
+
     open fun isActive(): Boolean = true
 
 

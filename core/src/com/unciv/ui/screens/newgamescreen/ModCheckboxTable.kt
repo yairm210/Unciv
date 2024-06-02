@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener
+import com.unciv.models.metadata.BaseRuleset
 import com.unciv.models.metadata.GameParameters
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
@@ -79,12 +80,15 @@ class ModCheckboxTable(
         deselectIncompatibleMods(null)
     }
 
-    fun setBaseRuleset(newBaseRuleset: String) {
-        baseRulesetName = newBaseRuleset
+    fun setBaseRuleset(newBaseRulesetName: String) {
+        val newBaseRuleset = RulesetCache[newBaseRulesetName]
+            // We're calling this from init, baseRuleset is lateinit, and the mod may have been deleted: Must make sure baseRuleset is initialized
+            ?: return setBaseRuleset(BaseRuleset.Civ_V_GnK.fullName)
+        baseRulesetName = newBaseRulesetName
+        baseRuleset = newBaseRuleset
         savedModcheckResult = null
         clear()
         mods.clear()  // We'll regenerate this from checked widgets
-        baseRuleset = RulesetCache[newBaseRuleset] ?: return
 
         val compatibleMods = modWidgets
             .filter { ModCompatibility.meetsBaseRequirements(it.mod, baseRuleset) }
@@ -208,7 +212,7 @@ class ModCheckboxTable(
     private fun disableIncompatibleMods() {
         for (modWidget in modWidgets) {
             val enable = ModCompatibility.meetsAllRequirements(modWidget.mod, baseRuleset, getSelectedMods())
-            assert(enable || !modWidget.widget.isChecked) { "Mod compatibility conflict: Trying to disable ${modWidget.mod.name} while it is selected" }
+            if (!enable && modWidget.widget.isChecked) modWidget.widget.isChecked = false  // mod widgets can't, but selecting a map can cause this situation
             modWidget.widget.isDisabled = !enable  // isEnabled is only for TextButtons
         }
     }

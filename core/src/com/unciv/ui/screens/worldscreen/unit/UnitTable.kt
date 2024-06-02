@@ -10,6 +10,7 @@ import com.unciv.logic.battle.CityCombatant
 import com.unciv.logic.city.City
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
+import com.unciv.models.Spy
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.extensions.addSeparator
 import com.unciv.ui.components.extensions.center
@@ -22,8 +23,6 @@ import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.widgets.UnitGroup
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.basescreen.BaseScreen
-import com.unciv.ui.screens.civilopediascreen.CivilopediaCategories
-import com.unciv.ui.screens.civilopediascreen.CivilopediaScreen
 import com.unciv.ui.screens.pickerscreens.CityRenamePopup
 import com.unciv.ui.screens.pickerscreens.PromotionPickerScreen
 import com.unciv.ui.screens.pickerscreens.UnitRenamePopup
@@ -59,6 +58,7 @@ class UnitTable(val worldScreen: WorldScreen) : Table() {
         }
         selectedUnitIsSwapping = false
         selectedUnitIsConnectingRoad = false
+        selectedSpy = null
     }
 
     var selectedCity : City? = null
@@ -67,6 +67,16 @@ class UnitTable(val worldScreen: WorldScreen) : Table() {
     // Most of the time it's the same unit with the same stats so why waste precious time?
     private var selectedUnitHasChanged = false
     val separator: Actor
+
+    var selectedSpy: Spy? = null
+
+    fun selectSpy(spy: Spy?) {
+        selectedSpy = spy
+        selectedCity = null
+        selectedUnits.clear()
+        selectedUnitIsSwapping = false
+        selectedUnitIsConnectingRoad = false
+    }
 
     private var bg = Image(
         BaseScreen.skinStrings.getUiBackground("WorldScreen/UnitTable",
@@ -208,9 +218,7 @@ class UnitTable(val worldScreen: WorldScreen) : Table() {
                 unitNameLabel.setText("")
                 unitDescriptionTable.clear()
             }
-        }
-
-        else if (selectedCity != null) {
+        } else if (selectedCity != null) {
             isVisible = true
             separator.isVisible = true
             val city = selectedCity!!
@@ -220,15 +228,14 @@ class UnitTable(val worldScreen: WorldScreen) : Table() {
 
             unitNameLabel.clearListeners()
             unitNameLabel.onClick {
-            if (!worldScreen.canChangeState) return@onClick
+                if (!worldScreen.canChangeState) return@onClick
                 CityRenamePopup(
                     screen = worldScreen,
                     city = city,
                     actionOnClose = {
                         unitNameLabel.setText(city.name.tr())
                         worldScreen.shouldUpdate = true
-                    }
-                )
+                    })
             }
 
             unitDescriptionTable.clear()
@@ -239,6 +246,30 @@ class UnitTable(val worldScreen: WorldScreen) : Table() {
             unitDescriptionTable.add(CityCombatant(city).getAttackingStrength().toString()).row()
 
             selectedUnitHasChanged = true
+        } else if (selectedSpy != null) {
+            val spy = selectedSpy!!
+            isVisible = true
+            unitNameLabel.clearListeners()
+            unitNameLabel.setText(spy.name)
+            unitDescriptionTable.clear()
+
+            unitIconHolder.clear()
+            unitIconHolder.add (ImageGetter.getImage("OtherIcons/Spy_White").apply {
+                color = Color.WHITE
+            }).size(30f)
+
+            separator.isVisible = true
+            val color = when(spy.rank) {
+                1 -> Color.BROWN
+                2 -> Color.LIGHT_GRAY
+                3 -> Color.GOLD
+                else -> Color.BLACK
+            }
+            repeat(spy.rank) {
+                val star = ImageGetter.getImage("OtherIcons/Star")
+                star.color = color
+                unitDescriptionTable.add(star).size(20f).pad(1f)
+            }
         } else {
             isVisible = false
         }
@@ -264,7 +295,7 @@ class UnitTable(val worldScreen: WorldScreen) : Table() {
                 }
 
                 unitIconHolder.onClick {
-                    worldScreen.game.pushScreen(CivilopediaScreen(worldScreen.gameInfo.ruleset, CivilopediaCategories.Unit, selectedUnit!!.name))
+                    worldScreen.openCivilopedia(selectedUnit!!.baseUnit.makeLink())
                 }
             } else { // multiple selected units
                 for (unit in selectedUnits)

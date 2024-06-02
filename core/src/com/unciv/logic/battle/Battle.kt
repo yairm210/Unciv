@@ -22,6 +22,7 @@ import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
 import com.unciv.ui.components.UnitMovementMemoryType
+import com.unciv.ui.screens.worldscreen.WorldScreen
 import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionsPillage
 import com.unciv.utils.debug
 import kotlin.math.max
@@ -96,7 +97,7 @@ object Battle {
      * This is meant to be called only after all prerequisite checks have been done.
      */
     fun attackOrNuke(attacker: ICombatant, attackableTile: AttackableTile): DamageDealt {
-        return if (attacker is MapUnitCombatant && attacker.unit.baseUnit.isNuclearWeapon()) {
+        return if (attacker is MapUnitCombatant && attacker.unit.isNuclearWeapon()) {
             Nuke.NUKE(attacker, attackableTile.tileToAttack)
             DamageDealt.None
         } else {
@@ -244,7 +245,7 @@ object Battle {
 
         // CS friendship from killing barbarians
         if (defeatedUnit.getCivInfo().isBarbarian() && !defeatedUnit.isCivilian() && civUnit.getCivInfo().isMajorCiv()) {
-            for (cityState in UncivGame.Current.gameInfo!!.getAliveCityStates()) {
+            for (cityState in defeatedUnit.getCivInfo().gameInfo.getAliveCityStates()) {
                 if (civUnit.getCivInfo().knows(cityState) && defeatedUnit.unit.threatensCiv(cityState)) {
                     cityState.cityStateFunctions.threateningBarbarianKilledBy(civUnit.getCivInfo())
                 }
@@ -252,7 +253,7 @@ object Battle {
         }
 
         // CS war with major pseudo-quest
-        for (cityState in UncivGame.Current.gameInfo!!.getAliveCityStates()) {
+        for (cityState in defeatedUnit.getCivInfo().gameInfo.getAliveCityStates()) {
             cityState.questManager.militaryUnitKilledBy(civUnit.getCivInfo(), defeatedUnit.getCivInfo())
         }
     }
@@ -560,10 +561,10 @@ object Battle {
             city.puppetCity(attackerCiv)
             //Although in Civ5 Venice is unable to re-annex their capital, that seems a bit silly. No check for May not annex cities here.
             city.annexCity()
-        } else if (attackerCiv.isHuman() && !(UncivGame.Current.settings.autoPlay.isAutoPlayingAndFullAI())) {
+        } else if (attackerCiv.isHuman() && UncivGame.Current.worldScreen?.autoPlay?.isAutoPlayingAndFullAutoPlayAI() == false) {
             // we're not taking our former capital
             attackerCiv.popupAlerts.add(PopupAlert(AlertType.CityConquered, city.id))
-        } else  automateCityConquer(attackerCiv, city)
+        } else automateCityConquer(attackerCiv, city)
 
         if (attackerCiv.isCurrentPlayer())
             UncivGame.Current.settings.addCompletedTutorialTask("Conquer a city")

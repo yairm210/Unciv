@@ -438,7 +438,6 @@ class UnitMovement(val unit: MapUnit) {
         var previousTile = unit.getTile()
         var passingMovementSpent = 0f // Movement points spent since last tile we could end our turn on
 
-        unit.removeFromTile()
 
         for (tile in pathToLastReachableTile) {
             if (!unit.movement.canPassThrough(tile)) {
@@ -450,7 +449,6 @@ class UnitMovement(val unit: MapUnit) {
                 needToFindNewRoute = true
                 break // If you ever remove this break, remove the `assumeCanPassThrough` param below
             }
-            unit.moveThroughTile(tile)
 
             // This fixes a bug where tiles in the fog of war would always only cost 1 mp
             if (!unit.civ.gameInfo.gameParameters.godMode)
@@ -461,6 +459,14 @@ class UnitMovement(val unit: MapUnit) {
             if (unit.movement.canMoveTo(tile, assumeCanPassThrough = true)) {
                 lastReachedEnterableTile = tile
                 unit.useMovementPoints(passingMovementSpent)
+                unit.removeFromTile()
+                unit.putInTile(tile) // Required for ruins,
+
+                if (escortUnit != null) {
+                    escortUnit.movement.moveToTile(tile)
+                    unit.startEscorting() // Need to re-apply this
+                }
+
                 passingMovementSpent = 0f
             }
 
@@ -479,9 +485,6 @@ class UnitMovement(val unit: MapUnit) {
             unit.currentMovement = 0f
 
 
-        if (!unit.isDestroyed)
-            unit.putInTile(finalTileReached)
-
         // The .toList() here is because we have a sequence that's running on the units in the tile,
         // then if we move one of the units we'll get a ConcurrentModificationException, se we save them all to a list
         val payloadUnits = origin.getUnits().filter { it.isTransported && unit.canTransport(it) }.toList()
@@ -495,10 +498,6 @@ class UnitMovement(val unit: MapUnit) {
             payload.putInTile(finalTileReached)
             payload.isTransported = true // restore the flag to not leave the payload in the city
             payload.mostRecentMoveType = UnitMovementMemoryType.UnitMoved
-        }
-        if (escortUnit != null) {
-            escortUnit.movement.moveToTile(finalTileReached)
-            unit.startEscorting() // Need to re-apply this
         }
 
         // Unit maintenance changed

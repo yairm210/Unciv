@@ -20,6 +20,7 @@ import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.ruleset.nation.Nation
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.tr
+import com.unciv.ui.components.SmallButtonStyle
 import com.unciv.ui.components.extensions.disable
 import com.unciv.ui.components.extensions.enable
 import com.unciv.ui.components.extensions.pad
@@ -29,7 +30,6 @@ import com.unciv.ui.components.extensions.toTextButton
 import com.unciv.ui.components.input.onActivation
 import com.unciv.ui.components.input.onChange
 import com.unciv.ui.components.widgets.LoadingImage
-import com.unciv.ui.popups.AnimatedMenuPopup
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.victoryscreen.LoadMapPreview
 import com.unciv.utils.Concurrency
@@ -54,7 +54,7 @@ class MapFileSelectTable(
     private val mapCategorySelectBox = SelectBox<String>(BaseScreen.skin)
     private val mapFileSelectBox = SelectBox<MapWrapper>(BaseScreen.skin)
     private val loadingIcon = LoadingImage(30f, LoadingImage.Style(loadingColor = Color.SCARLET))
-    private val useNationsFromMapButton = "Select players from starting locations".toTextButton(AnimatedMenuPopup.SmallButtonStyle())
+    private val useNationsFromMapButton = "Select players from starting locations".toTextButton(SmallButtonStyle())
     private val useNationsButtonCell: Cell<Actor?>
     private var mapNations = emptyList<Nation>()
     private var mapHumanPick: String? = null
@@ -77,7 +77,10 @@ class MapFileSelectTable(
 
     private val collator = UncivGame.Current.settings.getCollatorFromLocale()
 
+    private var isActivated = false // Ensure we get activated only once
+
     init {
+        // Take care that this class can be instantiated cheaply and does not do heavy lifting right away - it may not be displayed at all.
         add(Table().apply {
             defaults().pad(5f, 10f)  // Must stay same as in MapParametersTable
             val mapCategoryLabel = "{Map Mod}:".toLabel()
@@ -104,11 +107,8 @@ class MapFileSelectTable(
             .maxWidth(columnWidth - 20f)
             .colspan(2).center().row()
 
-        mapCategorySelectBox.onChange { onCategorySelectBoxChange() }
-        mapFileSelectBox.onChange { onFileSelectBoxChange() }
         useNationsFromMapButton.onActivation { onUseNationsFromMap() }
 
-        addMapWrappersAsync()
     }
 
     private fun getMapFilesSequence() = sequence<FileHandle> {
@@ -187,12 +187,19 @@ class MapFileSelectTable(
 
     private fun FileHandle.isRecentlyModified() = lastModified() > System.currentTimeMillis() - 900000 // 900s = quarter hour
     fun isNotEmpty() = firstMap != null
-    fun recentlySavedMapExists() = firstMap != null && firstMap!!.isRecentlyModified()
 
     fun activateCustomMaps() {
-        if (loadingIcon.isShowing()) return // Default map selection will be handled when background loading finishes
+        if (isActivated) {
+            if (loadingIcon.isShowing()) return // Default map selection will be handled when background loading finishes
+            onCategorySelectBoxChange() // Coming back to this after fully loading make sure selections are OK
+        }
+        // Code to only run once per NewGameScreen lifetime, after user switches from
+        // generated map to custom map, no matter how many times they repeat that
+        isActivated = true
         preselectedName = mapParameters.name
-        onFileSelectBoxChange()
+        mapCategorySelectBox.onChange { onCategorySelectBoxChange() }
+        mapFileSelectBox.onChange { onFileSelectBoxChange() }
+        addMapWrappersAsync()
     }
 
     private fun onCategorySelectBoxChange() {

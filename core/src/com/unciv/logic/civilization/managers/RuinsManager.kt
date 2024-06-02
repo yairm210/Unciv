@@ -16,13 +16,13 @@ class RuinsManager(
     @Transient
     lateinit var civInfo: Civilization
     @Transient
-    lateinit var validRewards: List<RuinReward>
+    lateinit var validRewards: Collection<RuinReward>
 
     fun clone() = RuinsManager(ArrayList(lastChosenRewards))  // needs to deep-clone (the List, not the Strings) so undo works
 
     fun setTransients(civInfo: Civilization) {
         this.civInfo = civInfo
-        validRewards = civInfo.gameInfo.ruleset.ruinRewards.values.toList()
+        validRewards = civInfo.gameInfo.ruleset.ruinRewards.values
     }
 
     private fun rememberReward(reward: String) {
@@ -47,9 +47,8 @@ class RuinsManager(
 
     private fun isPossibleReward(ruinReward: RuinReward, unit: MapUnit): Boolean {
         if (ruinReward.name in lastChosenRewards) return false
-        if (civInfo.gameInfo.difficulty in ruinReward.excludedDifficulties) return false
+        if (ruinReward.isHiddenBySettings(civInfo.gameInfo)) return false
         val stateForConditionals = StateForConditionals(civInfo, unit = unit, tile = unit.getTile())
-        if (ruinReward.hasUnique(UniqueType.HiddenWithoutReligion, stateForConditionals) && !civInfo.gameInfo.isReligionEnabled()) return false
         if (ruinReward.hasUnique(UniqueType.Unavailable, stateForConditionals)) return false
         if (ruinReward.getMatchingUniques(UniqueType.OnlyAvailable, StateForConditionals.IgnoreConditionals)
                 .any { !it.conditionalsApply(stateForConditionals) }) return false
@@ -62,7 +61,7 @@ class RuinsManager(
             for (unique in possibleReward.uniqueObjects) {
                 atLeastOneUniqueHadEffect =
                     atLeastOneUniqueHadEffect
-                    || UniqueTriggerActivation.triggerUnique(unique, triggeringUnit, notification = possibleReward.notification)
+                    || UniqueTriggerActivation.triggerUnique(unique, triggeringUnit, notification = possibleReward.notification, triggerNotificationText = "from the ruins")
             }
             if (atLeastOneUniqueHadEffect) {
                 rememberReward(possibleReward.name)
