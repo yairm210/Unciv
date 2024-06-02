@@ -56,7 +56,7 @@ class TileImprovementConstructionTests {
             tile.setTransients()
 
             if (improvement.uniqueTo != null) {
-                civInfo.civName = improvement.uniqueTo!!
+                civInfo.setNameForUnitTests(improvement.uniqueTo!!)
             }
 
             val canBeBuilt = tile.improvementFunctions.canBuildImprovement(improvement, civInfo)
@@ -92,7 +92,7 @@ class TileImprovementConstructionTests {
 
         for (improvement in testGame.ruleset.tileImprovements.values) {
             if (!improvement.uniques.contains("Can only be built on [Coastal] tiles")) continue
-            civInfo.civName = improvement.uniqueTo ?: "OtherCiv"
+            civInfo.setNameForUnitTests(improvement.uniqueTo ?: "OtherCiv")
             val canBeBuilt = coastalTile.improvementFunctions.canBuildImprovement(improvement, civInfo)
             Assert.assertTrue(improvement.name, canBeBuilt)
         }
@@ -104,7 +104,7 @@ class TileImprovementConstructionTests {
 
         for (improvement in testGame.ruleset.tileImprovements.values) {
             if (!improvement.uniques.contains("Can only be built on [Coastal] tiles")) continue
-            civInfo.civName = improvement.uniqueTo ?: "OtherCiv"
+            civInfo.setNameForUnitTests(improvement.uniqueTo ?: "OtherCiv")
             val canBeBuilt = tile.improvementFunctions.canBuildImprovement(improvement, civInfo)
             Assert.assertFalse(improvement.name, canBeBuilt)
         }
@@ -114,7 +114,7 @@ class TileImprovementConstructionTests {
     fun uniqueToOtherImprovementsCanNOTBeBuilt() {
         for (improvement in testGame.ruleset.tileImprovements.values) {
             if (improvement.uniqueTo == null) continue
-            civInfo.civName = "OtherCiv"
+            civInfo.setNameForUnitTests("OtherCiv")
             val tile = tileMap[1,1]
             val canBeBuilt = tile.improvementFunctions.canBuildImprovement(improvement, civInfo)
             Assert.assertFalse(improvement.name, canBeBuilt)
@@ -165,7 +165,7 @@ class TileImprovementConstructionTests {
         tile.resource = "Sheep"
         tile.setTransients()
         tile.addTerrainFeature("Hill")
-        civInfo.civName = "Inca"
+        civInfo.setNameForUnitTests("Inca")
 
         for (improvement in testGame.ruleset.tileImprovements.values) {
             if (!improvement.uniques.contains("Cannot be built on [Bonus resource] tiles")) continue

@@ -1,3 +1,158 @@
+## 4.11.16
+
+AI no longer trusts you on resource trades if you cut deals short
+
+Added "per every X countables" modifier
+
+Add unit name and building name countables
+
+By SomeTroglodyte:
+- Allow mod sounds to be selected as multiplayer notification sound
+- Allow access to the Dev Console on mobile devices
+- Better "work has started" notifications
+- Console: create natural wonder and `tile find`
+
+By tuvus:
+- Removed espionage debug setting
+- Added spy steal tech timer
+
+## 4.11.15
+
+Modding: "for every [countable]" unique modifier 
+
+Added links to base ruleset template in docs
+
+Fixed "don't allow era select" if the game has no techs
+
+By SomeTroglodyte: 
+- Support for Zulu language 
+
+By tuvus:
+- Clicking the spy button no longer allows the spy to be moved when it isn't their turn 
+- Added the Espionage civilopedia entry 
+- Construction automation rework 
+- Espionage button cancels moving spy
+
+## 4.11.14
+
+Allow rulesets to forgo capital city indicators entirely!
+
+Default city for hexarealm does NOT have a question mark
+
+Added ruleset validation for preferred victory type
+
+By SomeTroglodyte:
+- Mod checker reports some problems with texture atlases or their source images
+- ImagePacker detects changed settings file
+- Make random conditionals depend on turn
+
+By tuvus:
+- Fixed gold ruin not displaying notification
+- AI worker build roads improvement
+
+## 4.11.13
+
+Barbarian water units no longer pillage
+
+By SomeTroglodyte:
+- Console: tile setowner, civ removepolicy
+- Fix crash when a starting unit has a random conditional
+- Espionage icons
+
+By tuvus:
+- Espionage: Spies can be moved on map
+- Espionage: City state coup
+- AI doesn't settle very unfavorable locations
+
+## 4.11.12
+
+By tuvus:
+- More espionage UI improvements
+- City state election rigging
+
+By SomeTroglodyte:
+- Fix "Move a unit" tutorial isn't completed by moving via right-click
+- Fix "Translating" wiki link
+
+Added the culture-refunding remove policy unique  - By PLynx01
+
+Corrected Coast yields to give 1 Food and 1 Gold  - By Skekdog
+
+## 4.11.11
+
+Nuclear weapon uniques accept conditionals
+
+By SomeTroglodyte:
+- Console: `civ addpolicy`
+- Resource Overview: Info on unavailable strategic and unimproved by allies
+- Spy UI improvements
+- Fix potential crash in console autocomplete
+
+## 4.11.10
+
+By tuvus:
+- Add missing espionage uniques
+- Next turn button shows move spies notification icon
+- Added diplomatic repercussions for spying on a civ
+- Spy rank UI and fixes
+- Fixed city-state alliance join war notification
+
+Better "hidden in civilopedia" logic - By SomeTroglodyte
+
+Added victoryType conditionals  - By PLynx01
+
+## 4.11.9
+
+Added "checkfilter" console commands for city, tile, and unit, for easy mod checking
+
+Unit movement changes - should solve some edge-case problems
+
+"Adjacent unit" conditional takes civilians into account
+
+Better UX for multiplayer game add & rename
+
+Fixed "Open terrain" filter
+
+Better "escort settler" logic
+
+Automation fixes - By tuvus
+
+## 4.11.8
+
+Performance: Memory and CPU optimizations
+
+Civilian AI wandering avoids enemy melee units correctly
+
+Color lands by owner on max zoom out, for better overview
+
+MP Spectator can scroll entire map
+
+Resolved  - Safeguard against uniques specifying non-existant promotions
+
+Fix: Android pause/resume cycle not working  - By SomeTroglodyte
+
+## 4.11.7
+
+By tuvus:
+- Declare War Reason
+- Autoplay can run on a different thread, to update game UI continuously
+
+By SomeTroglodyte:
+- Units with "no sight" should still see their own tile
+- Modding: Validation for civilopediaText
+- Fix: Potential crash on new game after deleting a base ruleset mod
+- UX: Auto rename new capital in rare cases to prevent confusing notifications later
+
+## 4.11.6
+
+Military unit capturing respects "Uncapturable" unique
+
+By SomeTroglodyte:
+- Do not preselect custom map option and defer map file loading
+- Prettier Events - that now respect 'hidden from users'
+
+Fix Puppets building wonders  - By SeventhM
+
 ## 4.11.5
 
 Better multiplayer game screen

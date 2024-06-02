@@ -760,8 +760,12 @@
 		"name": "[Zero] ability",
 		"uniques": ["[+33]% Strength <vs [Fighter] units>"]
 	},
-    {
-        "name": "[Chu-Ko-Nu] ability",
-        "uniques": ["[1] additional attacks per turn", "Can move after attacking"]
-    }
+	{
+		"name": "[Chu-Ko-Nu] ability",
+		"uniques": ["[1] additional attacks per turn", "Can move after attacking"]
+	},
+	{	// For barbarian water units
+		"name": "Unable to pillage tiles",
+		"uniques": ["Unable to pillage tiles"]
+	}
 ]

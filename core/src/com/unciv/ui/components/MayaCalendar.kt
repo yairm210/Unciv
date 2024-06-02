@@ -76,7 +76,7 @@ object MayaCalendar {
         val year = game.getYear()
         if (!isNewCycle(year, game.getYear(-1))) return
         civInfo.greatPeople.triggerMayanGreatPerson()
-        if (civInfo.isAI() || UncivGame.Current.settings.autoPlay.isAutoPlayingAndFullAI())
+        if (civInfo.isAI() || UncivGame.Current.worldScreen?.autoPlay?.isAutoPlayingAndFullAutoPlayAI() == true)
             NextTurnAutomation.chooseGreatPerson(civInfo)
     }
 

@@ -160,6 +160,8 @@ class CityScreen(
         globalShortcuts.add(KeyboardBinding.NextCity) { page(1) }
     }
 
+    override fun getCivilopediaRuleset() = selectedCiv.gameInfo.ruleset
+
     internal fun update() {
         // Recalculate Stats
         city.cityStats.update()

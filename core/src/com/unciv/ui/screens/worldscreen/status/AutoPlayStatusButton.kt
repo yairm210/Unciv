@@ -23,17 +23,16 @@ class AutoPlayStatusButton(
 
     init {
         add(Stack(autoPlayImage)).pad(5f)
-        val settings = GUI.getSettings()
         onActivation(binding = KeyboardBinding.AutoPlayMenu) {
-            if (settings.autoPlay.isAutoPlaying())
-                settings.autoPlay.stopAutoPlay()
-            else if (worldScreen.viewingCiv == worldScreen.gameInfo.currentPlayerCiv)
+            if (worldScreen.autoPlay.isAutoPlaying())
+                worldScreen.autoPlay.stopAutoPlay()
+            else if (worldScreen.isPlayersTurn)
                 AutoPlayMenu(stage,this, nextTurnButton, worldScreen)
         }
         val directAutoPlay = {
             if (!worldScreen.gameInfo.gameParameters.isOnlineMultiplayer
                 && worldScreen.viewingCiv == worldScreen.gameInfo.currentPlayerCiv) {
-                settings.autoPlay.startAutoPlay()
+                worldScreen.autoPlay.startMultiturnAutoPlay()
                 nextTurnButton.update()
             }
         }
@@ -48,9 +47,8 @@ class AutoPlayStatusButton(
     }
 
     override fun dispose() {
-        val settings = GUI.getSettings()
-        if (isPressed && settings.autoPlay.isAutoPlaying()) {
-            settings.autoPlay.stopAutoPlay()
+        if (isPressed && worldScreen.autoPlay.isAutoPlaying()) {
+            worldScreen.autoPlay.stopAutoPlay()
         }
     }
 }

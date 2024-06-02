@@ -8,15 +8,18 @@ import com.unciv.logic.multiplayer.OnlineMultiplayerGame
 import com.unciv.logic.multiplayer.storage.MultiplayerAuthException
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.UncivTextField
-import com.unciv.ui.screens.pickerscreens.PickerScreen
-import com.unciv.ui.popups.Popup
-import com.unciv.ui.popups.ToastPopup
 import com.unciv.ui.components.extensions.disable
 import com.unciv.ui.components.extensions.enable
-import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.extensions.toTextButton
+import com.unciv.ui.components.input.KeyCharAndCode
+import com.unciv.ui.components.input.keyShortcuts
+import com.unciv.ui.components.input.onActivation
+import com.unciv.ui.components.input.onClick
 import com.unciv.ui.popups.AuthPopup
 import com.unciv.ui.popups.ConfirmPopup
+import com.unciv.ui.popups.Popup
+import com.unciv.ui.popups.ToastPopup
+import com.unciv.ui.screens.pickerscreens.PickerScreen
 import com.unciv.ui.screens.savescreens.LoadGameScreen
 import com.unciv.utils.Concurrency
 import com.unciv.utils.Log
@@ -190,7 +193,8 @@ class MultiplayerScreen : PickerScreen() {
                 val textField = UncivTextField.create("Game name", selectedGame!!.name)
                 add(textField).width(stageToShowOn.width / 2).row()
                 val saveButton = "Save".toTextButton()
-                saveButton.onClick {
+
+                val saveNewNameFunction = {
                     val newName = textField.text.trim()
                     game.onlineMultiplayer.changeGameName(selectedGame!!, newName) {
                         if (it != null) reuseWith("Could not save game!", true)
@@ -199,6 +203,11 @@ class MultiplayerScreen : PickerScreen() {
                     selectGame(newName)
                     close()
                 }
+
+                saveButton.onActivation(saveNewNameFunction)
+                saveButton.keyShortcuts.add(KeyCharAndCode.RETURN)
+                textField.cursorPosition = textField.text.length
+                this@MultiplayerScreen.stage.keyboardFocus = textField
                 add(saveButton)
                 open()
             }

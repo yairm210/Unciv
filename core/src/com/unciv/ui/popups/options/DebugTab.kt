@@ -64,9 +64,6 @@ fun debugTab(
             curGameInfo.gameParameters.godMode = it
         }).colspan(2).row()
     }
-    add("Enable espionage option".toCheckBox(game.settings.enableEspionageOption) {
-        game.settings.enableEspionageOption = it
-    }).colspan(2).row()
 
     add("Save games compressed".toCheckBox(UncivFiles.saveZipped) {
         UncivFiles.saveZipped = it
@@ -74,13 +71,6 @@ fun debugTab(
     add("Save maps compressed".toCheckBox(MapSaver.saveZipped) {
         MapSaver.saveZipped = it
     }).colspan(2).row()
-
-    if (GUI.keyboardAvailable) {
-        add("Show keyboard bindings".toCheckBox(optionsPopup.enableKeyBindingsTab) {
-            optionsPopup.enableKeyBindingsTab = it
-            optionsPopup.showOrHideKeyBindings()
-        }).colspan(2).row()
-    }
 
     add("Gdx Scene2D debug".toCheckBox(BaseScreen.enableSceneDebug) {
         BaseScreen.enableSceneDebug = it
@@ -135,10 +125,10 @@ fun debugTab(
                 val clipboardContentsString = Gdx.app.clipboard.contents.trim()
                 val loadedGame = UncivFiles.gameInfoFromString(clipboardContentsString)
                 loadedGame.gameParameters.isOnlineMultiplayer = false
-                optionsPopup.game.loadGame(loadedGame, true)
+                optionsPopup.game.loadGame(loadedGame, callFromLoadScreen =  true)
                 optionsPopup.close()
             } catch (ex: Exception) {
-                ToastPopup(ex.message ?: ex::class.java.simpleName, optionsPopup.stageToShowOn).open(true)
+                ToastPopup(ex.message ?: ex::class.java.simpleName, optionsPopup.stageToShowOn)
             }
         }
     }).colspan(2).row()

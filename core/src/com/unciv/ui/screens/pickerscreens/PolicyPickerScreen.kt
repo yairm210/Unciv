@@ -35,10 +35,9 @@ import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popups.ConfirmPopup
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.basescreen.RecreateOnResize
-import com.unciv.ui.screens.civilopediascreen.CivilopediaScreen
-import java.lang.Integer.max
 import kotlin.math.abs
 import kotlin.math.ceil
+import kotlin.math.max
 import kotlin.math.min
 
 private enum class PolicyColors(
@@ -147,8 +146,7 @@ class PolicyPickerScreen(
     val viewingCiv: Civilization,
     val canChangeState: Boolean,
     select: String? = null
-)
-    : PickerScreen(), RecreateOnResize {
+) : PickerScreen(), RecreateOnResize {
 
     object Sizes {
         const val paddingVertical = 10f
@@ -201,10 +199,7 @@ class PolicyPickerScreen(
 
 
         // Actually create and distribute the policy branches
-        var wrapper = Table()
         val numberOfRows = ceil(branches.size / branchesPerRow.toFloat()).toInt()
-        val size = numberOfRows * branchesPerRow
-
 
         val positionToTable = HashMap<String,Table>()
         val allPoliciesTable = Table()
@@ -252,6 +247,8 @@ class PolicyPickerScreen(
         }
     }
 
+    override fun getCivilopediaRuleset() = viewingCiv.gameInfo.ruleset
+
     private fun pickPolicy(button: PolicyButton) {
 
         val policy = button.policy
@@ -270,7 +267,7 @@ class PolicyPickerScreen(
         descriptionLabel.setText(policy.getDescription())
         descriptionLabel.clearListeners()
         descriptionLabel.onActivation {
-            game.pushScreen(CivilopediaScreen(viewingCiv.gameInfo.ruleset, link = policy.makeLink()))
+            openCivilopedia(policy.makeLink())
         }
         descriptionLabel.keyShortcuts.add(KeyboardBinding.Civilopedia)
     }

@@ -5,6 +5,7 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextField
 import com.unciv.UncivGame
+import com.unciv.logic.files.IMediaFinder
 import com.unciv.logic.multiplayer.OnlineMultiplayer
 import com.unciv.logic.multiplayer.storage.FileStorageRateLimitReached
 import com.unciv.logic.multiplayer.storage.MultiplayerAuthException
@@ -76,19 +77,18 @@ fun multiplayerTab(
         turnCheckerSelect = null
     }
 
+    val sounds = IMediaFinder.LabeledSounds().getLabeledSounds()
     addSelectAsSeparateTable(tab, SettingsSelect("Sound notification for when it's your turn in your currently open game:",
-        createNotificationSoundOptions(),
+        sounds,
         GameSetting.MULTIPLAYER_CURRENT_GAME_TURN_NOTIFICATION_SOUND,
         settings
-    )
-    )
+    ))
 
     addSelectAsSeparateTable(tab, SettingsSelect("Sound notification for when it's your turn in any other game:",
-        createNotificationSoundOptions(),
+        sounds,
         GameSetting.MULTIPLAYER_OTHER_GAME_TURN_NOTIFICATION_SOUND,
         settings
-    )
-    )
+    ))
 
     addSeparator(tab)
 
@@ -97,35 +97,6 @@ fun multiplayerTab(
     )
 
     return tab
-}
-
-private fun createNotificationSoundOptions(): List<SelectItem<UncivSound>> = listOf(
-    SelectItem("None", UncivSound.Silent),
-    SelectItem("Notification [1]", UncivSound.Notification1),
-    SelectItem("Notification [2]", UncivSound.Notification2),
-    SelectItem("Chimes", UncivSound.Chimes),
-    SelectItem("Choir", UncivSound.Choir),
-    SelectItem("Buy", UncivSound.Coin),
-    SelectItem("Create", UncivSound.Construction),
-    SelectItem("Fortify", UncivSound.Fortify),
-    SelectItem("Pick a tech", UncivSound.Paper),
-    SelectItem("Adopt policy", UncivSound.Policy),
-    SelectItem("Promote", UncivSound.Promote),
-    SelectItem("Set up", UncivSound.Setup),
-    SelectItem("Swap units", UncivSound.Swap),
-    SelectItem("Upgrade", UncivSound.Upgrade),
-    SelectItem("Bombard", UncivSound.Bombard)
-) + buildUnitAttackSoundOptions()
-
-private fun buildUnitAttackSoundOptions(): List<SelectItem<UncivSound>> {
-    return RulesetCache.getSortedBaseRulesets()
-        .asSequence()
-        .mapNotNull(RulesetCache::get)
-        .flatMap { it.units.values }
-        .filter { it.attackSound != null && it.attackSound != "nuke" } // much too long for a notification
-        .distinctBy { it.attackSound }
-        .map { SelectItem("[${it.name}] Attack Sound", UncivSound(it.attackSound!!)) }
-        .toList()
 }
 
 private fun addMultiplayerServerOptions(

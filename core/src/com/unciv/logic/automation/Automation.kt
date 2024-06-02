@@ -239,7 +239,7 @@ object Automation {
 
         // If we have vision of our entire starting continent (ish) we are not afraid
         civInfo.gameInfo.tileMap.assignContinents(TileMap.AssignContinentsMode.Ensure)
-        val startingContinent = civInfo.getCapital(true)!!.getCenterTile().getContinent()
+        val startingContinent = civInfo.getCapital()!!.getCenterTile().getContinent()
         val startingContinentSize = civInfo.gameInfo.tileMap.continentSizes[startingContinent]
         if (startingContinentSize != null && startingContinentSize < civInfo.viewableTiles.size * multiplier)
             return false
@@ -256,9 +256,8 @@ object Automation {
         city: City,
         construction: INonPerpetualConstruction
     ): Boolean {
-        return  !(construction is Building && construction.isWonder && city.isPuppet)
-            && allowCreateImprovementBuildings(civInfo, city, construction)
-                && allowSpendingResource(civInfo, construction, city)
+        return allowCreateImprovementBuildings(civInfo, city, construction)
+            && allowSpendingResource(civInfo, construction, city)
     }
 
     @Suppress("MemberVisibilityCanBePrivate")

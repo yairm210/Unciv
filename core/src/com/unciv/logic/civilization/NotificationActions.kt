@@ -12,6 +12,7 @@ import com.unciv.ui.screens.civilopediascreen.CivilopediaScreen
 import com.unciv.ui.screens.diplomacyscreen.DiplomacyScreen
 import com.unciv.ui.screens.overviewscreen.EmpireOverviewCategories
 import com.unciv.ui.screens.overviewscreen.EmpireOverviewScreen
+import com.unciv.ui.screens.overviewscreen.EspionageOverviewScreen
 import com.unciv.ui.screens.pickerscreens.PolicyPickerScreen
 import com.unciv.ui.screens.pickerscreens.PromotionPickerScreen
 import com.unciv.ui.screens.pickerscreens.TechPickerScreen
@@ -132,7 +133,7 @@ class MapUnitAction(private val location: Vector2 = Vector2.Zero) : Notification
 /** A notification action that shows a Civilopedia entry, e.g. for a Wonder. */
 class CivilopediaAction(private val link: String = "") : NotificationAction {
     override fun execute(worldScreen: WorldScreen) {
-        worldScreen.game.pushScreen(CivilopediaScreen(worldScreen.gameInfo.ruleset, link = link))
+        worldScreen.openCivilopedia(link)
     }
 }
 
@@ -165,6 +166,18 @@ class PolicyAction(
     }
 }
 
+/** Open [EspionageOverviewScreen] */
+class EspionageAction : NotificationAction {
+    override fun execute(worldScreen: WorldScreen) {
+        worldScreen.game.pushScreen(EspionageOverviewScreen(worldScreen.selectedCiv, worldScreen))
+    }
+    companion object {
+        fun withLocation(location: Vector2?): Sequence<NotificationAction> =
+            LocationAction(location) + EspionageAction()
+    }
+}
+
+
 @Suppress("PrivatePropertyName")  // These names *must* match their class name, see below
 internal class NotificationActionsDeserializer {
     /* This exists as trick to leverage readFields for Json deserialization.
@@ -187,12 +200,14 @@ internal class NotificationActionsDeserializer {
     private val PromoteUnitAction: PromoteUnitAction? = null
     private val OverviewAction: OverviewAction? = null
     private val PolicyAction: PolicyAction? = null
+    private val EspionageAction: EspionageAction? = null
 
     fun read(json: Json, jsonData: JsonValue): List<NotificationAction> {
         json.readFields(this, jsonData)
         return listOfNotNull(
             LocationAction, TechAction, CityAction, DiplomacyAction, MayaLongCountAction,
-            MapUnitAction, CivilopediaAction, PromoteUnitAction, OverviewAction, PolicyAction
+            MapUnitAction, CivilopediaAction, PromoteUnitAction, OverviewAction, PolicyAction,
+            EspionageAction
         )
     }
 }

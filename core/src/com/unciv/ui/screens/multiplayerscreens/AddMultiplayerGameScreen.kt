@@ -5,15 +5,18 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.Constants
 import com.unciv.logic.IdChecker
 import com.unciv.models.translations.tr
-import com.unciv.ui.screens.pickerscreens.PickerScreen
-import com.unciv.ui.popups.Popup
-import com.unciv.ui.popups.ToastPopup
-import com.unciv.ui.screens.savescreens.LoadGameScreen
 import com.unciv.ui.components.UncivTextField
 import com.unciv.ui.components.extensions.enable
-import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
+import com.unciv.ui.components.input.KeyCharAndCode
+import com.unciv.ui.components.input.keyShortcuts
+import com.unciv.ui.components.input.onActivation
+import com.unciv.ui.components.input.onClick
+import com.unciv.ui.popups.Popup
+import com.unciv.ui.popups.ToastPopup
+import com.unciv.ui.screens.pickerscreens.PickerScreen
+import com.unciv.ui.screens.savescreens.LoadGameScreen
 import com.unciv.utils.Concurrency
 import com.unciv.utils.launchOnGLThread
 import java.util.UUID
@@ -38,19 +41,18 @@ class AddMultiplayerGameScreen(multiplayerScreen: MultiplayerScreen) : PickerScr
 
         //CloseButton Setup
         closeButton.setText("Back".tr())
-        closeButton.onClick {
-            game.popScreen()
-        }
+        setDefaultCloseAction()
 
         //RightSideButton Setup
         rightSideButton.setText("Save game".tr())
         rightSideButton.enable()
-        rightSideButton.onClick {
+        rightSideButton.keyShortcuts.add(KeyCharAndCode.RETURN)
+        rightSideButton.onActivation {
             try {
                 UUID.fromString(IdChecker.checkAndReturnGameUuid(gameIDTextField.text))
             } catch (_: Exception) {
                 ToastPopup("Invalid game ID!", this)
-                return@onClick
+                return@onActivation
             }
 
             val popup = Popup(this)

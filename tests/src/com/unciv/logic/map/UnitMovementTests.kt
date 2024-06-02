@@ -176,7 +176,7 @@ class UnitMovementTests {
     fun canNOTPassThroughTileWithEnemyUnits() {
         val barbCiv = Civilization()
         barbCiv.gameInfo = testGame.gameInfo
-        barbCiv.civName = Constants.barbarians // they are always enemies
+        barbCiv.setNameForUnitTests(Constants.barbarians) // they are always enemies
         barbCiv.nation = Nation().apply { name = Constants.barbarians }
 
         testGame.gameInfo.civilizations.add(barbCiv)

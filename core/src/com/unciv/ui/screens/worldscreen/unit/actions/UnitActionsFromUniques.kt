@@ -428,13 +428,12 @@ object UnitActionsFromUniques {
         val tile = unit.currentTile
         if (!tile.isPillaged()) return 0
         if (tile.improvementInProgress == Constants.repair) return tile.turnsToImprovement
-        var repairTurns = tile.ruleset.tileImprovements[Constants.repair]!!.getTurnsToBuild(unit.civ, unit)
+        val repairTurns = tile.ruleset.tileImprovements[Constants.repair]!!.getTurnsToBuild(unit.civ, unit)
 
         val pillagedImprovement = tile.getImprovementToRepair()!!
         val turnsToBuild = pillagedImprovement.getTurnsToBuild(unit.civ, unit)
         // cap repair to number of turns to build original improvement
-        if (turnsToBuild < repairTurns) repairTurns = turnsToBuild
-        return repairTurns
+        return repairTurns.coerceAtMost(turnsToBuild)
     }
 
     internal fun getRepairActions(unit: MapUnit, tile: Tile) = sequenceOf(getRepairAction(unit)).filterNotNull()

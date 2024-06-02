@@ -68,8 +68,8 @@ open class Popup(
      */
     enum class Scrollability { None, All, WithoutButtons }
 
-    private val maxPopupWidth = stageToShowOn.width * maxSizePercentage
-    private val maxPopupHeight = stageToShowOn.height * maxSizePercentage
+    protected val maxPopupWidth = stageToShowOn.width * maxSizePercentage
+    protected val maxPopupHeight = stageToShowOn.height * maxSizePercentage
 
     /** This exists to differentiate the actual popup (this table)
      *  from the 'screen blocking' part of the popup (which covers the entire screen).

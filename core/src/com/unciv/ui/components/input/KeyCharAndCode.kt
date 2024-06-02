@@ -102,6 +102,14 @@ data class KeyCharAndCode(val char: Char, val code: Int) {
             }
     }
 
+    /**
+     *  A Serializer that needs to be registered via [Json.setSerializer]
+     *  - Output syntax is just the string from toString() that will be parsed on deserialization,
+     *    e.g. "keyBindings":{"Diplomacy":"Ctrl-D","DeveloperConsole":"`"}
+     *  - Implementing [Json.Serializable] instead would be possible, but not allow the terse json syntax above, since that interface is restrictive:
+     *    1) It expects output to always use the object notation and writes the delimiters before you are asked to serialize.
+     *    2) it expects you to deserialize into a mutable default instance it has already instantiated for you.
+     */
     class Serializer : Json.Serializer<KeyCharAndCode> {
         override fun write(json: Json, key: KeyCharAndCode, knownType: Class<*>?) {
             // Gdx Json is.... No comment. This `Any` is needed to resolve the ambiguity between

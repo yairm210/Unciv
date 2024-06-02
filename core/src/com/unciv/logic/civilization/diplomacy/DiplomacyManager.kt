@@ -65,6 +65,7 @@ enum class DiplomacyFlags {
     WaryOf,
     Bullied,
     RecentlyAttacked,
+    ResourceTradesCutShort,
 }
 
 enum class DiplomaticModifiers(val text: String) {
@@ -87,6 +88,7 @@ enum class DiplomaticModifiers(val text: String) {
     AttackedProtectedMinor("You attacked City-States that were under our protection!"),
     BulliedProtectedMinor("You demanded tribute from City-States that were under our protection!"),
     SidedWithProtectedMinor("You sided with a City-State over us"),
+    SpiedOnUs("You spied on us!"),
 
     // Positive
     YearsOfPeace("Years of peace have strengthened our relations."),
@@ -322,6 +324,15 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
         setInfluence(influence + amount)
     }
 
+    /**
+     * Reduces the influence to zero, or if they have negative influence does nothing
+     * @param amount A positive value to subtract from the influecne
+     */
+    fun reduceInfluence(amount: Float) {
+        if (influence <= 0) return
+        influence = (influence - amount).coerceAtLeast(0f)
+    }
+
     fun setInfluence(amount: Float) {
         influence = max(amount, MINIMUM_INFLUENCE)
         civInfo.cityStateFunctions.updateAllyCivForCityState()
@@ -379,7 +390,7 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
 
     fun canDeclareWar() = turnsToPeaceTreaty() == 0 && diplomaticStatus != DiplomaticStatus.War
 
-    fun declareWar(indirectCityStateAttack: Boolean = false) = DeclareWar.declareWar(this, indirectCityStateAttack)
+    fun declareWar(declareWarReason: DeclareWarReason = DeclareWarReason(WarType.DirectWar)) = DeclareWar.declareWar(this, declareWarReason)
 
     //Used for nuke
     fun canAttack() = turnsToPeaceTreaty() == 0
@@ -415,9 +426,9 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
     }
 
     /** Returns the [civilizations][Civilization] that know about both sides ([civInfo] and [otherCiv]) */
-    fun getCommonKnownCivs(): Set<Civilization> = civInfo.getKnownCivs().toSet().intersect(otherCiv().getKnownCivs().toSet())
+    fun getCommonKnownCivs(): Set<Civilization> = civInfo.getKnownCivs().asIterable().intersect(otherCiv().getKnownCivs().toSet())
 
-    fun getCommonKnownCivsWithSpectators(): Set<Civilization> = civInfo.getKnownCivsWithSpectators().toSet().intersect(otherCiv().getKnownCivsWithSpectators().toSet())
+    fun getCommonKnownCivsWithSpectators(): Set<Civilization> = civInfo.getKnownCivsWithSpectators().asIterable().intersect(otherCiv().getKnownCivsWithSpectators().toSet())
     /** Returns true when the [civInfo]'s territory is considered allied for [otherCiv].
      *  This includes friendly and allied city-states and the open border treaties.
      */
@@ -563,7 +574,7 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
 
 
         for (thirdCiv in getCommonKnownCivsWithSpectators()) {
-            thirdCiv.addNotification("[${civInfo.civName}] and [$otherCivName] have signed the Defensive Pact!",
+            thirdCiv.addNotification("[${civInfo.civName}] and [$otherCivName] have signed a Defensive Pact!",
                 NotificationCategory.Diplomacy, civInfo.civName, NotificationIcon.Diplomacy, otherCivName)
             if (thirdCiv.isSpectator()) return
             thirdCiv.getDiplomacyManager(civInfo).setDefensivePactBasedModifier()

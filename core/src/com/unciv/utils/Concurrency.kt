@@ -1,3 +1,5 @@
+@file:Suppress("SpellCheckingInspection")  // shut up about "threadpool"!
+
 package com.unciv.utils
 
 import com.badlogic.gdx.Gdx
@@ -35,7 +37,7 @@ object Concurrency {
     /**
      * See [kotlinx.coroutines.runBlocking]. Runs on a non-daemon thread pool by default.
      *
-     * @return null if an uncaught exception occured
+     * @return null if an uncaught exception occurred
      */
     fun <T> runBlocking(
         name: String? = null,
@@ -72,7 +74,7 @@ object Concurrency {
     ), block)
 
     /** Must only be called in [com.unciv.UncivGame.dispose] to not have any threads running that prevent JVM shutdown. */
-    fun stopThreadPools() = EXECUTORS.forEach(ExecutorService::shutdown)
+    fun stopThreadPools() = Dispatcher.stopThreadPools()
 }
 
 /** See [launch] */
@@ -90,6 +92,8 @@ fun CoroutineScope.launchCrashHandling(
         }
     }
 }
+
+private fun addName(context: CoroutineContext, name: String?) = if (name != null) context + CoroutineName(name) else context
 
 /** See [launch]. Runs on a daemon thread pool. Use this for code that does not necessarily need to finish executing. */
 fun CoroutineScope.launchOnThreadPool(name: String? = null, block: suspend CoroutineScope.() -> Unit) = launchCrashHandling(
@@ -111,10 +115,40 @@ suspend fun <T> withNonDaemonThreadPoolContext(block: suspend CoroutineScope.() 
 suspend fun <T> withGLContext(block: suspend CoroutineScope.() -> T): T = withContext(Dispatcher.GL, block)
 
 
-/**
- * All dispatchers here bring the main game loop to a [com.unciv.CrashScreen] if an exception happens.
+/** Wraps one instance of [Dispatchers], ensuring they are alive when used.
+ *
+ *  [stopThreadPools] is the way to kill them for cleaner app shutdown/pause, but in the Android app lifecycle
+ *  we need to be able to recover from that without the actual OS process terminating.
  */
 object Dispatcher {
+    private var dispatchers = Dispatchers()
+    private fun ensureInitialized() {
+        if (dispatchers.isStopped()) dispatchers = Dispatchers()
+    }
+
+    val DAEMON: CoroutineDispatcher get() {
+        ensureInitialized()
+        return dispatchers.DAEMON
+    }
+    val NON_DAEMON: CoroutineDispatcher get() {
+        ensureInitialized()
+        return dispatchers.NON_DAEMON
+    }
+    val GL: CoroutineDispatcher get() {
+        ensureInitialized()
+        return dispatchers.GL
+    }
+
+    fun stopThreadPools() = dispatchers.stopThreadPools()
+}
+
+/**
+ * All dispatchers here bring the main game loop to a [com.unciv.ui.crashhandling.CrashScreen] if an exception happens.
+ */
+@Suppress("PrivatePropertyName", "PropertyName") // Inherited all-caps names from former dev
+private class Dispatchers {
+    private val EXECUTORS = mutableListOf<ExecutorService>()
+
     /** Runs coroutines on a daemon thread pool. */
     val DAEMON: CoroutineDispatcher = createThreadpoolDispatcher("threadpool-daemon-", isDaemon = true)
 
@@ -122,54 +156,61 @@ object Dispatcher {
     val NON_DAEMON: CoroutineDispatcher = createThreadpoolDispatcher("threadpool-nondaemon-", isDaemon = false)
 
     /** Runs coroutines on the GDX GL thread. */
-    val GL: CoroutineDispatcher = CrashHandlingDispatcher(GLDispatcher())
-}
+    val GL: CoroutineDispatcher = CrashHandlingDispatcher(GLDispatcher(DAEMON))
 
-private fun addName(context: CoroutineContext, name: String?) = if (name != null) context + CoroutineName(name) else context
-
-private val EXECUTORS = mutableListOf<ExecutorService>()
-
-private class GLDispatcher : CoroutineDispatcher(), LifecycleListener {
-    var isDisposed = false
-
-    init {
-        Gdx.app.addLifecycleListener(this)
-    }
-
-    override fun dispatch(context: CoroutineContext, block: Runnable) {
-        if (isDisposed) {
-            context.cancel(CancellationException("GDX GL thread is not handling runnables anymore"))
-            Dispatcher.DAEMON.dispatch(context, block) // dispatch contract states that block has to be invoked
-            return
+    fun stopThreadPools() {
+        val iterator = EXECUTORS.iterator()
+        while (iterator.hasNext()) {
+            val executor = iterator.next()
+            executor.shutdown()
+            iterator.remove()
         }
-        Gdx.app.postRunnable(block)
     }
 
-    override fun dispose() {
-        isDisposed = true
-    }
-    override fun pause() {}
-    override fun resume() {}
-}
+    fun isStopped() = EXECUTORS.isEmpty()
 
-private fun createThreadpoolDispatcher(threadPrefix: String, isDaemon: Boolean): CrashHandlingDispatcher {
-    val executor = Executors.newCachedThreadPool(object : ThreadFactory {
-        var n = 0
-        override fun newThread(r: Runnable): Thread {
-            val thread = Thread(r, "${threadPrefix}${n++}")
-            thread.isDaemon = isDaemon
-            return thread
+    private fun createThreadpoolDispatcher(threadPrefix: String, isDaemon: Boolean): CrashHandlingDispatcher {
+        val executor = Executors.newCachedThreadPool(object : ThreadFactory {
+            var n = 0
+            override fun newThread(r: Runnable): Thread {
+                val thread = Thread(r, "${threadPrefix}${n++}")
+                thread.isDaemon = isDaemon
+                return thread
+            }
+        })
+        EXECUTORS.add(executor)
+        return CrashHandlingDispatcher(executor.asCoroutineDispatcher())
+    }
+
+    private class CrashHandlingDispatcher(
+        private val decoratedDispatcher: CoroutineDispatcher
+    ) : CoroutineDispatcher() {
+
+        override fun dispatch(context: CoroutineContext, block: Runnable) {
+            decoratedDispatcher.dispatch(context, block::run.wrapCrashHandlingUnit())
         }
-    })
-    EXECUTORS.add(executor)
-    return CrashHandlingDispatcher(executor.asCoroutineDispatcher())
-}
+    }
 
-class CrashHandlingDispatcher(
-    private val decoratedDispatcher: CoroutineDispatcher
-) : CoroutineDispatcher() {
+    private class GLDispatcher(private val fallbackDispatcher: CoroutineDispatcher) : CoroutineDispatcher(), LifecycleListener {
+        var isDisposed = false
 
-    override fun dispatch(context: CoroutineContext, block: Runnable) {
-        decoratedDispatcher.dispatch(context, block::run.wrapCrashHandlingUnit())
+        init {
+            Gdx.app.addLifecycleListener(this)
+        }
+
+        override fun dispatch(context: CoroutineContext, block: Runnable) {
+            if (isDisposed) {
+                context.cancel(CancellationException("GDX GL thread is not handling runnables anymore"))
+                fallbackDispatcher.dispatch(context, block) // dispatch contract states that block has to be invoked
+                return
+            }
+            Gdx.app.postRunnable(block)
+        }
+
+        override fun dispose() {
+            isDisposed = true
+        }
+        override fun pause() {}
+        override fun resume() {}
     }
 }

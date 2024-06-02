@@ -292,6 +292,7 @@ class ModManagementScreen private constructor(
                     ToastPopup("Could not download mod list", this@ModManagementScreen)
                     replaceLoadingWithOptions()
                 }
+                Gdx.app.clipboard.contents = ex.stackTraceToString()
                 runningSearchJob = null
                 return@run
             }
@@ -422,7 +423,6 @@ class ModManagementScreen private constructor(
                 val repo = GithubAPI.Repo.parseUrl(textField.text)
                 if (repo == null) {
                     ToastPopup("«RED»{Invalid link!}«»", this@ModManagementScreen)
-                        .apply { isVisible = true }
                     actualDownloadButton.setText("Download".tr())
                     actualDownloadButton.enable()
                 } else
