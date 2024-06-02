@@ -4,14 +4,15 @@ import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
-import com.unciv.logic.trade.TradeLogic
-import com.unciv.logic.trade.TradeOffer
-import com.unciv.logic.trade.TradeRequest
-import com.unciv.logic.trade.TradeType
 import com.unciv.ui.screens.victoryscreen.RankingType
 
 object WarPlanEvaluator {
 
+    /**
+     * How much motivation [civInfo] has to do a team war with [teamCiv] against [target].
+     * 
+     * @return The movtivation of the plan. If it is > 0 then we can declare the war.
+     */
     fun evaluateTeamWarPlan(civInfo: Civilization, target: Civilization, teamCiv: Civilization, givenMotivation: Int?): Int {
         if (civInfo.getDiplomacyManager(teamCiv).isRelationshipLevelLT(RelationshipLevel.Favorable)) return -1000
 
@@ -44,6 +45,11 @@ object WarPlanEvaluator {
         return motivation
     }
 
+    /**
+     * How much motivation [civInfo] has to join [civToJoin] in their war against [target].
+     *
+     * @return The movtivation of the plan. If it is > 0 then we can declare the war.
+     */
     fun evaluateJoinWarPlan(civInfo: Civilization, target: Civilization, civToJoin: Civilization, givenMotivation: Int?): Int {
         if (civInfo.getDiplomacyManager(civToJoin).isRelationshipLevelLT(RelationshipLevel.Favorable)) return -1000
 
@@ -79,17 +85,12 @@ object WarPlanEvaluator {
         return motivation - 10
     }
 
-    fun evaluatePlannedWarPlan(civInfo: Civilization, target: Civilization, givenMotivation: Int?): Int {
-        val motivation = givenMotivation ?: MotivationToAttackAutomation.hasAtLeastMotivationToAttack(civInfo, target, 0)
-
-        // TODO: We use negative values in WaryOf for now so that we aren't adding any extra fields to the save file
-        // This will very likely change in the future and we will want to build upon it
-        val diploManager = civInfo.getDiplomacyManager(target)
-        if (diploManager.hasFlag(DiplomacyFlags.WaryOf)) return 0
-
-        return motivation - 20
-    }
-
+    /**
+     * How much motivaiton [civInfo] has to declare war against [target] this turn.
+     * This can be through a prepared war or a suprise war.
+     *
+     * @return The movtivation of the plan. If it is > 0 then we can declare the war.
+     */
     fun evaluateDeclareWarPlan(civInfo: Civilization, target: Civilization, givenMotivation: Int?): Int {
         val motivation = givenMotivation ?: MotivationToAttackAutomation.hasAtLeastMotivationToAttack(civInfo, target, 0)
 
@@ -102,6 +103,22 @@ object WarPlanEvaluator {
         }
 
         return motivation - 50
+    }
+
+    /**
+     * How much motivation [civInfo] has to start preparing for a war agaist [target].
+     * 
+     * @return The movtivation of the plan. If it is > 0 then we can start planning the war.
+     */
+    fun evaluateStartPreparingWarPlan(civInfo: Civilization, target: Civilization, givenMotivation: Int?): Int {
+        val motivation = givenMotivation ?: MotivationToAttackAutomation.hasAtLeastMotivationToAttack(civInfo, target, 0)
+
+        // TODO: We use negative values in WaryOf for now so that we aren't adding any extra fields to the save file
+        // This will very likely change in the future and we will want to build upon it
+        val diploManager = civInfo.getDiplomacyManager(target)
+        if (diploManager.hasFlag(DiplomacyFlags.WaryOf)) return 0
+
+        return motivation - 20
     }
 }
 

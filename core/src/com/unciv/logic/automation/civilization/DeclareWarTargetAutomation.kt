@@ -2,7 +2,6 @@ package com.unciv.logic.automation.civilization
 
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
-import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.logic.trade.TradeLogic
 import com.unciv.logic.trade.TradeOffer
@@ -38,7 +37,7 @@ object DeclareWarTargetAutomation {
 
         if (motivation >= 50 && declareWar(civInfo, target, motivation)) return true
 
-        if (motivation >= 20 && declarePlannedWar(civInfo, target, motivation)) return true
+        if (motivation >= 20 && prepareWar(civInfo, target, motivation)) return true
 
         return false
     }
@@ -48,8 +47,6 @@ object DeclareWarTargetAutomation {
      * Together we are stronger and are more likely to take down bigger threats.
      */
     private fun tryTeamWar(civInfo: Civilization, target: Civilization, motivation: Int): Boolean {
-
-
         val potentialAllies = civInfo.getDiplomacyManager(target).getCommonKnownCivs()
                 .filter { it.isMajorCiv() 
                         && !civInfo.getDiplomacyManager(it).hasFlag(DiplomacyFlags.DeclinedJoinWarOffer) 
@@ -100,20 +97,6 @@ object DeclareWarTargetAutomation {
     }
 
     /**
-     * Slightly safter is to silently plan an invasion and declare war later.
-     */
-    private fun declarePlannedWar(civInfo: Civilization, target: Civilization, motivation: Int): Boolean {
-        // TODO: We use negative values in WaryOf for now so that we aren't adding any extra fields to the save file
-        // This will very likely change in the future and we will want to build upon it
-        val diploManager = civInfo.getDiplomacyManager(target)
-        if (WarPlanEvaluator.evaluatePlannedWarPlan(civInfo, target, motivation) > 0) {
-            diploManager.setFlag(DiplomacyFlags.WaryOf, -1)
-            return true
-        }
-        return false
-    }
-
-    /**
      * Lastly, if our motivation is high enough and we don't have any better plans then lets just declare war.
      */
     private fun declareWar(civInfo: Civilization, target: Civilization, motivation: Int): Boolean {
@@ -123,5 +106,20 @@ object DeclareWarTargetAutomation {
         }
         return false
     }
+
+    /**
+     * Slightly safter is to silently plan an invasion and declare war later.
+     */
+    private fun prepareWar(civInfo: Civilization, target: Civilization, motivation: Int): Boolean {
+        // TODO: We use negative values in WaryOf for now so that we aren't adding any extra fields to the save file
+        // This will very likely change in the future and we will want to build upon it
+        val diploManager = civInfo.getDiplomacyManager(target)
+        if (WarPlanEvaluator.evaluateStartPreparingWarPlan(civInfo, target, motivation) > 0) {
+            diploManager.setFlag(DiplomacyFlags.WaryOf, -1)
+            return true
+        }
+        return false
+    }
+
 }
 
