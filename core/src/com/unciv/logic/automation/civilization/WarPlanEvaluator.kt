@@ -87,6 +87,31 @@ object WarPlanEvaluator {
     }
 
     /**
+     * How much motivation [civInfo] has for [civToJoin] to join them in their war against [target].
+     *
+     * @return The movtivation of the plan. If it is > 0 then we can declare the war.
+     */
+    fun evaluateJoinOurWarPlan(civInfo: Civilization, target: Civilization, civToJoin: Civilization, givenMotivation: Int?): Int {
+        if (civInfo.getDiplomacyManager(civToJoin).isRelationshipLevelLT(RelationshipLevel.Favorable)) return -1000
+        var motivation = givenMotivation ?: 0
+        if (!civToJoin.threatManager.getNeighboringCivilizations().contains(target)) {
+            motivation -= 50
+        }
+
+        val targetForce = target.getStatForRanking(RankingType.Force)
+        val civForce = civInfo.getStatForRanking(RankingType.Force)
+
+        // They need to be at least half the targets size, and we need to be stronger than the target together
+        val thirdCivForce = civToJoin.getStatForRanking(RankingType.Force) - 0.8f * civToJoin.getCivsAtWarWith().sumOf { it.getStatForRanking(RankingType.Force) }
+        motivation += (10 * thirdCivForce / targetForce.toFloat()).toInt().coerceAtMost(20)
+
+        // If we have less relative force then the target then we have more motivation to accept
+        motivation += (20 * (1 - (civForce / targetForce.toFloat()))).toInt().coerceIn(-30, 30)
+
+        return motivation - 30
+    }
+
+    /**
      * How much motivaiton [civInfo] has to declare war against [target] this turn.
      * This can be through a prepared war or a suprise war.
      *
