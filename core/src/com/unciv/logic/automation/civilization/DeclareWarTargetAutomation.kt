@@ -30,7 +30,7 @@ object DeclareWarTargetAutomation {
     private fun tryDeclareWarWithPlan(civInfo: Civilization, target: Civilization, motivation: Int): Boolean {
 
         if (!target.isCityState()) {
-            if (motivation > 0 && tryTeamWar(civInfo, target, motivation)) return true
+            if (motivation > 2 && tryTeamWar(civInfo, target, motivation)) return true
 
             if (motivation >= 10 && tryJoinWar(civInfo, target, motivation)) return true
         }

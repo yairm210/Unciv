@@ -37,7 +37,7 @@ object MotivationToAttackAutomation {
         if (theirCombatStrength > ourCombatStrength) return 0
 
         val modifierMap = HashMap<String, Int>()
-        modifierMap["Base motivation"] = -20
+        modifierMap["Base motivation"] = -15
 
         modifierMap["Relative combat strength"] = getCombatStrengthModifier(ourCombatStrength, theirCombatStrength + 0.8f * civInfo.threatManager.getCombinedForceOfWarringCivs())
         // TODO: For now this will be a very high value because the AI can't handle multiple fronts, this should be changed later though
@@ -48,18 +48,20 @@ object MotivationToAttackAutomation {
 
         if (civInfo.threatManager.getNeighboringCivilizations().none { it != otherCiv && it.isMajorCiv() 
                         && civInfo.getDiplomacyManager(it).isRelationshipLevelLT(RelationshipLevel.Friend) })
-            modifierMap["No other threats"] = 5
+            modifierMap["No other threats"] = 10
 
-        val scoreRatioModifier = getScoreRatioModifier(otherCiv, civInfo)
-        modifierMap["Relative score"] = scoreRatioModifier
+        if (otherCiv.isMajorCiv()) {
+            val scoreRatioModifier = getScoreRatioModifier(otherCiv, civInfo)
+            modifierMap["Relative score"] = scoreRatioModifier
 
-        if (civInfo.stats.getUnitSupplyDeficit() != 0) {
-            modifierMap["Over unit supply"] = (civInfo.stats.getUnitSupplyDeficit() * 2).coerceAtMost(20)
-        } else if (otherCiv.stats.getUnitSupplyDeficit() == 0 && !otherCiv.isCityState()) {
-            modifierMap["Relative production"] = getProductionRatioModifier(civInfo, otherCiv)
+            modifierMap["Relative technologies"] = getRelativeTechModifier(civInfo, otherCiv)
+
+            if (civInfo.stats.getUnitSupplyDeficit() != 0) {
+                modifierMap["Over unit supply"] = (civInfo.stats.getUnitSupplyDeficit() * 2).coerceAtMost(20)
+            } else if (otherCiv.stats.getUnitSupplyDeficit() == 0 && !otherCiv.isCityState()) {
+                modifierMap["Relative production"] = getProductionRatioModifier(civInfo, otherCiv)
+            }
         }
-
-        modifierMap["Relative technologies"] = getRelativeTechModifier(civInfo, otherCiv)
 
         val minTargetCityDistance = targetCitiesWithOurCity.minOf { it.second.getCenterTile().aerialDistanceTo(it.first.getCenterTile()) }
         modifierMap["Far away cities"] = when {
@@ -73,11 +75,13 @@ object MotivationToAttackAutomation {
         val diplomacyManager = civInfo.getDiplomacyManager(otherCiv)
         val relationshipLevel = diplomacyManager.relationshipLevel()
 
-        modifierMap["Friendship"] = when (relationshipLevel) {
-            RelationshipLevel.Favorable -> -5
-            RelationshipLevel.Friend -> -10
-            RelationshipLevel.Ally -> -15
-            else -> 0
+        if (otherCiv.isMajorCiv()) {
+            modifierMap["Relations"] = when (relationshipLevel) {
+                RelationshipLevel.Favorable -> -5
+                RelationshipLevel.Friend -> -10
+                RelationshipLevel.Ally -> -15
+                else -> 0
+            }
         }
 
         if (diplomacyManager.hasFlag(DiplomacyFlags.ResearchAgreement))
@@ -106,7 +110,6 @@ object MotivationToAttackAutomation {
         }
 
         if (otherCiv.isCityState()) {
-            modifierMap["City-state"] = -10
             modifierMap["Protectors"] = -otherCiv.cityStateFunctions.getProtectorCivs().size * 3
             if (otherCiv.cityStateFunctions.getProtectorCivs().contains(civInfo))
                 modifierMap["Under our protection"] = -15
@@ -122,7 +125,7 @@ object MotivationToAttackAutomation {
         modifierMap.filter { it.value == 0 }.toList().forEach { modifierMap.remove(it.first) }
         var motivationSoFar = modifierMap.values.sum()
 
-        // Short-circuit to avoid expensive BFS
+        // Short-circuit to avoid A-star
         if (motivationSoFar < atLeast) return motivationSoFar
 
         motivationSoFar += getAttackPathsModifier(civInfo, otherCiv, targetCitiesWithOurCity)
@@ -262,8 +265,8 @@ object MotivationToAttackAutomation {
     private fun getCombatStrengthModifier(ourCombatStrength: Float, theirCombatStrength: Float): Int {
         val combatStrengthRatio = ourCombatStrength / theirCombatStrength
         val combatStrengthModifier = when {
-            combatStrengthRatio > 10f -> 30
-            combatStrengthRatio > 5f -> 20
+            combatStrengthRatio > 5f -> 30
+            combatStrengthRatio > 4f -> 20
             combatStrengthRatio > 3f -> 15
             combatStrengthRatio > 2f -> 10
             combatStrengthRatio > 1.5f -> 5

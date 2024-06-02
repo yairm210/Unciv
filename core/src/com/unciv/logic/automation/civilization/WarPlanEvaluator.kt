@@ -43,7 +43,7 @@ object WarPlanEvaluator {
         if (thirdCivForce + civForce < targetForce * multiplier) {
             motivation -= (20 * (targetForce * multiplier) / (thirdCivForce + civForce)).toInt()
         }
-        return motivation
+        return motivation - 2
     }
 
     /**
