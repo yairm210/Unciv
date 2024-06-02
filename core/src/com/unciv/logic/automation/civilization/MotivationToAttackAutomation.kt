@@ -235,10 +235,11 @@ object MotivationToAttackAutomation {
         // Designed to mitigate AIs declaring war on weaker civs instead of their rivals
         val scoreRatio = otherCiv.getStatForRanking(RankingType.Score).toFloat() / civInfo.getStatForRanking(RankingType.Score).toFloat()
         val scoreRatioModifier = when {
-            scoreRatio > 2f -> 15
-            scoreRatio > 1.5f -> 10
-            scoreRatio > 1.25f -> 5
-            scoreRatio > 1f -> 0
+            scoreRatio > 2f -> 20
+            scoreRatio > 1.5f -> 15
+            scoreRatio > 1.25f -> 10
+            scoreRatio > 1f -> 2
+            scoreRatio > .8f -> 0
             scoreRatio > .5f -> -2
             scoreRatio > .25f -> -5
             else -> -10

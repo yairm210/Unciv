@@ -351,7 +351,7 @@ class TradeEvaluation {
             val totalAdvantage = (absoluteAdvantage * percentageAdvantage).toInt() * 10
             if(totalAdvantage < 0) //May be a negative number if strength disparity is such that it leads to integer overflow
                 return 10000    //in that rare case, the AI would accept peace against a defeated foe.
-            return totalAdvantage
+            return totalAdvantage / 5
         } else {
             // This results in huge values for large power imbalances. However, we should not give
             // up everything just because there is a big power imbalance. There's a better chance to
@@ -376,7 +376,7 @@ class TradeEvaluation {
             // (stats ~30 each)
             val absoluteAdvantage = theirCombatStrength - ourCombatStrength
             val percentageAdvantage = absoluteAdvantage / ourCombatStrength.toFloat()
-            return -min((absoluteAdvantage * percentageAdvantage).toInt() * 10, 100000)
+            return -min((absoluteAdvantage * percentageAdvantage).toInt() * 2, 10000)
         }
     }
 

@@ -17,6 +17,9 @@ import com.unciv.logic.trade.TradeRequest
 import com.unciv.logic.trade.TradeType
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.tr
+import com.unciv.ui.screens.victoryscreen.RankingType
+import kotlin.math.absoluteValue
+import kotlin.random.Random
 
 object DiplomacyAutomation {
 
@@ -286,21 +289,35 @@ object DiplomacyAutomation {
                 continue
             }
 
+            if (civInfo.getStatForRanking(RankingType.Force) - 0.8f * civInfo.threatManager.getCombinedForceOfWarringCivs() > 0) {
+                val randomSeed = civInfo.gameInfo.civilizations.indexOf(enemy) + civInfo.getCivsAtWarWith().count() + 123 * civInfo.gameInfo.turns
+                if (Random(randomSeed).nextInt(100) > 80) continue
+            }
+
             // pay for peace
             val tradeLogic = TradeLogic(civInfo, enemy)
 
             tradeLogic.currentTrade.ourOffers.add(TradeOffer(Constants.peaceTreaty, TradeType.Treaty))
             tradeLogic.currentTrade.theirOffers.add(TradeOffer(Constants.peaceTreaty, TradeType.Treaty))
 
-            var moneyWeNeedToPay = -TradeEvaluation().evaluatePeaceCostForThem(civInfo, enemy)
+            if (enemy.isMajorCiv()) {
+                var moneyWeNeedToPay = -TradeEvaluation().evaluatePeaceCostForThem(civInfo, enemy)
 
-            if (civInfo.gold > 0 && moneyWeNeedToPay > 0) {
-                if (moneyWeNeedToPay > civInfo.gold) {
-                    moneyWeNeedToPay = civInfo.gold  // As much as possible
+                if (civInfo.gold > 0 && moneyWeNeedToPay > 0) {
+                    if (moneyWeNeedToPay > civInfo.gold) {
+                        moneyWeNeedToPay = civInfo.gold  // As much as possible
+                    }
+                    tradeLogic.currentTrade.ourOffers.add(
+                            TradeOffer("Gold".tr(), TradeType.Gold, moneyWeNeedToPay)
+                    )
+                } else if (moneyWeNeedToPay < -100) {
+                    val moneyTheyNeedToPay = moneyWeNeedToPay.absoluteValue.coerceAtMost(enemy.gold)
+                    if (moneyTheyNeedToPay > 0) {
+                        tradeLogic.currentTrade.theirOffers.add(
+                                TradeOffer("Gold".tr(), TradeType.Gold, moneyWeNeedToPay.absoluteValue)
+                        )
+                    }
                 }
-                tradeLogic.currentTrade.ourOffers.add(
-                    TradeOffer("Gold".tr(), TradeType.Gold, moneyWeNeedToPay)
-                )
             }
 
             enemy.tradeRequests.add(TradeRequest(civInfo.civName, tradeLogic.currentTrade.reverse()))
