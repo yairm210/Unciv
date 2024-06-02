@@ -84,9 +84,10 @@ enum class UniqueParameterType(
         override fun isKnownValue(parameterText: String, ruleset: Ruleset): Boolean {
             if (parameterText in knownValues) return true
             if (parameterText.toIntOrNull() != null) return true
-            if (parameterText.toFloatOrNull() != null) return true
             if (Stat.isStat(parameterText)) return true
             if (parameterText in ruleset.tileResources) return true
+            if (parameterText in ruleset.units) return true
+            if (parameterText in ruleset.buildings) return true
             return false
         }
 

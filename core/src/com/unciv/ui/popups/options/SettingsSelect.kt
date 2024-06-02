@@ -24,10 +24,10 @@ import kotlin.reflect.KMutableProperty0
  *
  * This will also automatically send [SettingsPropertyChanged] events.
  */
-open class SettingsSelect<T : Any>(
+open class SettingsSelect<T>(
     labelText: String,
     items: Iterable<SelectItem<T>>,
-    private val setting: GameSetting,
+    setting: GameSetting,
     settings: GameSettings
 ) {
     class SelectItem<T>(val label: String, val value: T) {
@@ -54,7 +54,7 @@ open class SettingsSelect<T : Any>(
         val selectBox = SelectBox<SelectItem<T>>(BaseScreen.skin)
         selectBox.items = initialItems
 
-        selectBox.selected = initialItems.firstOrNull { it.value == settingsProperty.get() } ?: items.first()
+        selectBox.selected = initialItems.firstOrNull { it.value == settingsProperty.get() } ?: initialItems.first()
         selectBox.onChange {
             val newValue = selectBox.selected.value
             settingsProperty.set(newValue)

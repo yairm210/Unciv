@@ -1,9 +1,11 @@
 package com.unciv.models.ruleset.nation
 
 import com.unciv.Constants
+import com.unciv.logic.civilization.Civilization
 import com.unciv.models.ruleset.RulesetObject
 import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.stats.Stat
+import com.unciv.models.stats.Stats
 import kotlin.reflect.KMutableProperty0
 
 /**
@@ -92,6 +94,23 @@ class Personality: RulesetObject() {
      */
     fun scaledFocus(value: PersonalityValue): Float {
         return nameToVariable(value).get() / 5
+    }
+
+    /**
+     * @param weight a value between 0 and 1 that determines how much the modifier deviates from 1
+     * @return a modifier between 0 and 2 centered around 1 based off of the personality value and the weight given 
+     */
+    fun modifierFocus(value: PersonalityValue, weight: Float): Float {
+        return 1f + (scaledFocus(value) - 1) * weight
+    }
+
+    /**
+     * Scales the stats based on the personality and the weight given
+     * @param weight a positive value that determines how much the personality should impact the stats given 
+     */
+    fun scaleStats(stats: Stats, weight: Float): Stats {
+        Stat.values().forEach { stats[it] *= modifierFocus(PersonalityValue[it], weight) }
+        return stats
     }
 
     operator fun get(value: PersonalityValue): Float {

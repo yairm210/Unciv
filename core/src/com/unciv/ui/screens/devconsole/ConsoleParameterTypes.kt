@@ -22,7 +22,7 @@ internal enum class ConsoleParameterType(
     promotionName( { ruleset.unitPromotions.keys } ),
     improvementName( { ruleset.tileImprovements.keys } ),
     featureName( { ruleset.terrains.values.filter { it.type == TerrainType.TerrainFeature }.map { it.name } } ),
-    terrainName( { ruleset.terrains.values.filter { it.type.isBaseTerrain }.map { it.name } } ),
+    terrainName( { ruleset.terrains.values.filter { it.type.isBaseTerrain || it.type == TerrainType.NaturalWonder }.map { it.name } } ),
     resourceName( { ruleset.tileResources.keys } ),
     stat( { Stat.names() } ),
     religionName( { religions.keys } ),

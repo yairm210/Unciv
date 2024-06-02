@@ -85,7 +85,8 @@ class EspionageOverviewScreen(val civInfo: Civilization, val worldScreen: WorldS
             spySelectionTable.add(spy.name.toLabel())
             spySelectionTable.add(spy.rank.toLabel())
             spySelectionTable.add(spy.getLocationName().toLabel())
-            val actionString = if (spy.action.hasTurns) "[${spy.action.displayString}] ${spy.turnsRemainingForAction}${Fonts.turn}"
+            val actionString = if (spy.action.showTurns && spy.turnsRemainingForAction != -1) 
+                "[${spy.action.displayString}] ${spy.turnsRemainingForAction}${Fonts.turn}"
                 else spy.action.displayString
             spySelectionTable.add(actionString.toLabel())
 
@@ -180,11 +181,14 @@ class EspionageOverviewScreen(val civInfo: Civilization, val worldScreen: WorldS
         }
         add(starTable).center().padLeft(-4f)
 
-        onClick {
-            onSpyClicked(moveSpyButtons[spy]!!, spy)
-        }
-        onRightClick {
-            onSpyRightClicked(spy)
+        // Spectators aren't allowed to move the spies of the Civs they are viewing
+        if (worldScreen.canChangeState && spy.isAlive()) {
+            onClick {
+                onSpyClicked(moveSpyButtons[spy]!!, spy)
+            }
+            onRightClick {
+                onSpyRightClicked(spy)
+            }
         }
     }
 

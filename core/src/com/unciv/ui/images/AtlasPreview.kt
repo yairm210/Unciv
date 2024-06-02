@@ -12,6 +12,7 @@ import java.io.File
 
 /**
  *  This extracts all texture names from all atlases of a Ruleset.
+ *  - Weak point: For combined rulesets, this always loads the builtin assets.
  *  - Used by RulesetValidator to check texture names without relying on ImageGetter
  *  - Doubles as integrity checker and detects:
  *      - Atlases.json names an atlas that does not exist

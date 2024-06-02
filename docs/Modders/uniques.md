@@ -1537,6 +1537,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Unit
 
 ??? example  "Is part of Great Person group [comment]"
+	Great people in the same group increase teach other's costs when gained. Gaining one will make all others in the same group cost more GPP.
 	Example: "Is part of Great Person group [comment]"
 
 	Applicable to: Unit
@@ -2477,6 +2478,16 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
     Modifiers that can be added to other uniques changing user experience, not their behavior
 
 ??? example  "&lt;hidden from users&gt;"
+	Applicable to: MetaModifier
+
+??? example  "&lt;for every [countable]&gt;"
+	Example: "&lt;for every [1000]&gt;"
+
+	Applicable to: MetaModifier
+
+??? example  "&lt;for every [amount] [countable]&gt;"
+	Example: "&lt;for every [3] [1000]&gt;"
+
 	Applicable to: MetaModifier
 
 

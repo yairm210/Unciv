@@ -21,7 +21,6 @@ import com.unciv.logic.multiplayer.storage.MultiplayerAuthException
 import com.unciv.logic.trade.TradeEvaluation
 import com.unciv.models.TutorialTrigger
 import com.unciv.models.metadata.GameSetupInfo
-import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.components.extensions.centerX
@@ -38,7 +37,6 @@ import com.unciv.ui.popups.ToastPopup
 import com.unciv.ui.popups.hasOpenPopups
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.cityscreen.CityScreen
-import com.unciv.ui.screens.civilopediascreen.CivilopediaScreen
 import com.unciv.ui.screens.devconsole.DevConsolePopup
 import com.unciv.ui.screens.mainmenuscreen.MainMenuScreen
 import com.unciv.ui.screens.newgamescreen.NewGameScreen
@@ -285,11 +283,13 @@ class WorldScreen(
         globalShortcuts.add(KeyboardBinding.ToggleWorkedTilesDisplay) { minimapWrapper.populationImageButton.toggle() }
         globalShortcuts.add(KeyboardBinding.ToggleMovementDisplay) { minimapWrapper.movementsImageButton.toggle() }
 
-        globalShortcuts.add(KeyboardBinding.DeveloperConsole) {
-            // No cheating unless you're by yourself
-            if (gameInfo.civilizations.count { it.isHuman() } > 1) return@add
-            val consolePopup = DevConsolePopup(this)
-        }
+        globalShortcuts.add(KeyboardBinding.DeveloperConsole, action = ::openDeveloperConsole)
+    }
+
+    fun openDeveloperConsole() {
+        // No cheating unless you're by yourself
+        if (gameInfo.civilizations.count { it.isHuman() } > 1) return
+        val consolePopup = DevConsolePopup(this)
     }
 
     private fun toggleUI() {

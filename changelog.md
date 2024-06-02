@@ -1,3 +1,38 @@
+## 4.11.16
+
+AI no longer trusts you on resource trades if you cut deals short
+
+Added "per every X countables" modifier
+
+Add unit name and building name countables
+
+By SomeTroglodyte:
+- Allow mod sounds to be selected as multiplayer notification sound
+- Allow access to the Dev Console on mobile devices
+- Better "work has started" notifications
+- Console: create natural wonder and `tile find`
+
+By tuvus:
+- Removed espionage debug setting
+- Added spy steal tech timer
+
+## 4.11.15
+
+Modding: "for every [countable]" unique modifier 
+
+Added links to base ruleset template in docs
+
+Fixed "don't allow era select" if the game has no techs
+
+By SomeTroglodyte: 
+- Support for Zulu language 
+
+By tuvus:
+- Clicking the spy button no longer allows the spy to be moved when it isn't their turn 
+- Added the Espionage civilopedia entry 
+- Construction automation rework 
+- Espionage button cancels moving spy
+
 ## 4.11.14
 
 Allow rulesets to forgo capital city indicators entirely!

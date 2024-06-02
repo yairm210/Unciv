@@ -5,9 +5,7 @@ import com.badlogic.gdx.Game
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
 import com.badlogic.gdx.Screen
-import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
-import com.badlogic.gdx.utils.Align
 import com.unciv.logic.GameInfo
 import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.UncivShowableException
@@ -51,6 +49,7 @@ import kotlinx.coroutines.CancellationException
 import java.io.PrintWriter
 import java.util.EnumSet
 import java.util.UUID
+import kotlin.reflect.KClass
 
 /** Represents the Unciv app itself:
  *  - implements the [Game] interface Gdx requires.
@@ -84,7 +83,7 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
 
     val translations = Translations()
 
-    val screenStack = ArrayDeque<BaseScreen>()
+    private val screenStack = ArrayDeque<BaseScreen>()
 
     override fun create() {
         isInitialized = false // this could be on reload, therefore we need to keep setting this to false
@@ -340,6 +339,20 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
         return worldScreen
     }
 
+    /** Get all currently existing screens of type [clazz]
+     *  - Not a generic to allow screenStack to be private
+     */
+    fun getScreensOfType(clazz: KClass<out BaseScreen>): Sequence<BaseScreen> = screenStack.asSequence().filter { it::class == clazz }
+
+    /** Dispose and remove all currently existing screens of type [clazz]
+     *  - Not a generic to allow screenStack to be private
+     */
+    fun removeScreensOfType(clazz: KClass<out BaseScreen>) {
+        val toRemove = getScreensOfType(clazz).toList()
+        for (screen in toRemove) screen.dispose()
+        screenStack.removeAll(toRemove)
+    }
+
     private fun tryLoadDeepLinkedGame() = Concurrency.run("LoadDeepLinkedGame") {
         if (deepLinkedMultiplayerGame == null) return@run
 
@@ -471,7 +484,7 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
 
     companion object {
         //region AUTOMATICALLY GENERATED VERSION DATA - DO NOT CHANGE THIS REGION, INCLUDING THIS COMMENT
-        val VERSION = Version("4.11.14-patch1", 999)
+        val VERSION = Version("4.11.16", 1001)
         //endregion
 
         /** Global reference to the one Gdx.Game instance created by the platform launchers - do not use without checking [isCurrentInitialized] first. */
