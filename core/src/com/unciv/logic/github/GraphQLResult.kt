@@ -79,7 +79,12 @@ interface GraphQLResult : Json.Serializable {
 
         class Error private constructor(val type: String, val message: String) : UpdateInfo {
             constructor(node: JsonValue) : this(node.getString("type"), node.getString("message"))
-            override fun toString() = "Error($type: $message)"
+            override fun toString() = when {
+                type == "NOT_FOUND" && message.count { it == '\'' } == 2 -> "Mod repository not found: [${extractRepoName()}]"
+                else ->"$type: $message"
+            }
+            private fun extractRepoName() = message.substringAfter('\'').substringBefore('\'')
+            override fun hashCode() = type.hashCode() * 31 + message.hashCode()
         }
 
         companion object {

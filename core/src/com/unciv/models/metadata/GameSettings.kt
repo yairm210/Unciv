@@ -136,6 +136,9 @@ class GameSettings {
     /** Github personal access token. If set, the GraphQL API is used instead of REST. */
     var githubAccessToken: String? = null
 
+    /** Last hash of an autoupdater query error response that the user dimissed, the exact same message will be suppressed */
+    var autoupdateDismissedErrorHash = 0
+
     /** used to migrate from older versions of the settings */
     var version: Int? = null
 

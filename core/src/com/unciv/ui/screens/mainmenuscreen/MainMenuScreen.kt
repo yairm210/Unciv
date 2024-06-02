@@ -38,7 +38,7 @@ import com.unciv.ui.components.input.onLongPress
 import com.unciv.ui.components.tilegroups.TileGroupMap
 import com.unciv.ui.components.widgets.AutoScrollPane
 import com.unciv.ui.images.ImageGetter
-import com.unciv.ui.popups.ConfirmPopup
+import com.unciv.ui.popups.ConfirmPopupWithDetails
 import com.unciv.ui.popups.Popup
 import com.unciv.ui.popups.ToastPopup
 import com.unciv.ui.popups.closeAllPopups
@@ -354,9 +354,10 @@ class MainMenuScreen private constructor(
     }
 
     private fun onAutoUpdateResult(needsUpdate: Boolean) {
+        if (autoUpdater?.hasErrors() == true) showAutoUpdateAPIErrors()
         if (needsUpdate) {
             modsButton.hideLoading(final = false)
-            modsButton.setActivationHandler { startAutoUpdate() }
+            modsButton.setActivationHandler(::askToAutoUpdate)
             modsButton.setText("Update Mods")
         } else {
             modsButton.hideLoading()
@@ -365,13 +366,45 @@ class MainMenuScreen private constructor(
         modsButton.enable()
     }
 
-    private fun startAutoUpdate() {
+    private fun showAutoUpdateAPIErrors() {
+        val errors = autoUpdater!!.filterIsInstance<GraphQLResult.CheckForUpdatesResult.Error>()
+        val hash = errors.hashCode()
+        if (hash == game.settings.autoupdateDismissedErrorHash) return
+        ConfirmPopupWithDetails(stage,
+            "Error(s) fetching mod update information:",
+            errors.asSequence(),
+            "Ignore", false, Constants.close
+        ) {
+            game.settings.autoupdateDismissedErrorHash = hash
+            game.settings.save()
+        }
+    }
+
+    private fun askToAutoUpdate() {
         modsButton.disable()
+        modsButton.revertActivationHandler()
+        if (autoUpdater == null) return
+        // This is a simple approach. We could display much more info, and maybe do so a little more colourful...
+        ConfirmPopupWithDetails(stage,
+            "Do you want to update the following Mods:",
+            autoUpdater!!.getUpdatableRepositories().map { it.displayName },
+            Constants.yes, true, Constants.no,
+            cancelAction = ::skipAutoUpdate,
+            confirmAction = ::startAutoUpdate
+        )
+    }
+
+    private fun startAutoUpdate() {
         modsButton.showLoading {
             autoUpdater?.cancelUpdate()
             hideLoading()
         }
         autoUpdater!!.doUpdate(::onAutoUpdateFinished, ::onAutoUpdateProgress, ::onAutoUpdateToast)
+    }
+
+    private fun skipAutoUpdate() {
+        modsButton.enable()
+        modsButton.activate()
     }
 
     private fun onAutoUpdateToast(message: String) {
