@@ -36,6 +36,7 @@ class GameSettings {
     var checkForDueUnits: Boolean = true
     var autoUnitCycle: Boolean = true
     var singleTapMove: Boolean = false
+    var longTapMove: Boolean = true
     var language: String = Constants.english
     @Transient
     var locale: Locale? = null

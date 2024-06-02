@@ -230,6 +230,8 @@ class WorldMapHolder(
     }
 
     private fun onTileRightClicked(unit: MapUnit, tile: Tile) {
+        if (!UncivGame.Current.settings.singleTapMove) return
+
         removeUnitActionOverlay()
         selectedTile = tile
         unitMovementPaths.clear()
