@@ -50,7 +50,7 @@ object DeclareWarTargetAutomation {
         val potentialAllies = civInfo.getDiplomacyManager(target).getCommonKnownCivs()
                 .filter { it.isMajorCiv() 
                         && !civInfo.getDiplomacyManager(it).hasFlag(DiplomacyFlags.DeclinedJoinWarOffer) 
-                        && civInfo.getDiplomacyManager(it).isRelationshipLevelGE(RelationshipLevel.Favorable) 
+                        && civInfo.getDiplomacyManager(it).isRelationshipLevelGE(RelationshipLevel.Neutral) 
                         && !it.isAtWarWith(target) } 
                 .sortedByDescending { it.getStatForRanking(RankingType.Force) }
 

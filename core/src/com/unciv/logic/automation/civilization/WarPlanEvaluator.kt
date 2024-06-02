@@ -14,13 +14,14 @@ object WarPlanEvaluator {
      * @return The movtivation of the plan. If it is > 0 then we can declare the war.
      */
     fun evaluateTeamWarPlan(civInfo: Civilization, target: Civilization, teamCiv: Civilization, givenMotivation: Int?): Int {
-        if (civInfo.getDiplomacyManager(teamCiv).isRelationshipLevelLT(RelationshipLevel.Favorable)) return -1000
+        if (civInfo.getDiplomacyManager(teamCiv).isRelationshipLevelLT(RelationshipLevel.Neutral)) return -1000
 
         var motivation = givenMotivation ?: MotivationToAttackAutomation.hasAtLeastMotivationToAttack(civInfo, target, 0)
 
+        if (civInfo.getDiplomacyManager(teamCiv).isRelationshipLevelEQ(RelationshipLevel.Neutral)) motivation -= 5
         // Make sure that they can actually help us with the target
         if (!teamCiv.threatManager.getNeighboringCivilizations().contains(target)) {
-            motivation -= 50
+            motivation -= 40
         }
 
         val civForce = civInfo.getStatForRanking(RankingType.Force)
