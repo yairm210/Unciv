@@ -536,7 +536,7 @@ class WorldScreen(
             tutorialTaskTable.add(tutorialTask.toLabel()
                 .apply { setAlignment(Align.center) }).pad(10f)
         } else {
-            tutorialTaskTable.add(ImageGetter.getImage("CityStateIcons/Cultured").apply { setSize(30f,30f) }).pad(5f)
+            tutorialTaskTable.add(ImageGetter.getImage("OtherIcons/HiddenTutorialTask").apply { setSize(30f,30f) }).pad(5f)
         }
         tutorialTaskTable.pack()
         tutorialTaskTable.centerX(stage)
