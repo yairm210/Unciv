@@ -747,8 +747,8 @@ class Tile : IsPartOfGameInfoSerialization {
         val majorDepositFinal = majorDeposit ?: (rng.nextDouble() < approximateMajorDepositDistribution())
         val depositAmounts = if (majorDepositFinal) newResource.majorDepositAmount else newResource.minorDepositAmount
         resourceAmount = when (tileMap.mapParameters.mapResources) {
-            MapResources.sparse -> depositAmounts.sparse
-            MapResources.abundant -> depositAmounts.abundant
+            MapResources.sparse.label -> depositAmounts.sparse
+            MapResources.abundant.label -> depositAmounts.abundant
             else -> depositAmounts.default
         }
     }

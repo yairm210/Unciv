@@ -259,17 +259,7 @@ class MapParametersTable(
     }
 
     private fun addResourceSelectBox() {
-        val mapResources = if (forMapEditor) listOf(
-            MapResources.sparse,
-            MapResources.default,
-            MapResources.abundant,
-        ) else listOf(
-            MapResources.sparse,
-            MapResources.default,
-            MapResources.abundant,
-            MapResources.strategicBalance,
-            MapResources.legendaryStart
-        )
+        val mapResources = MapResources.activeLabels()
 
         if (mapGeneratedMainType == MapGeneratedMainType.randomGenerated) {
             mapResourcesOptionsValues = mapResources.toHashSet()

@@ -29,8 +29,7 @@ object StartNormalizer {
             }
         }
 
-        if (tileMap.mapParameters.mapResources == MapResources.strategicBalance ||
-            tileMap.mapParameters.strategicBalance)
+        if (tileMap.mapParameters.getStrategicBalance())
             placeStrategicBalanceResources(startTile, ruleset, tileData)
 
         normalizeProduction(startTile, isMinorCiv, ruleset, tileData)
@@ -217,8 +216,7 @@ object StartNormalizer {
                 else -> 0
             }
         }
-        if (tileMap.mapParameters.mapResources == MapResources.legendaryStart  ||
-            tileMap.mapParameters.legendaryStart)
+        if (tileMap.mapParameters.getLegendaryStart())
             bonusesNeeded += 2
 
         // Attempt to place one grassland at a plains-only spot (nor for minors)

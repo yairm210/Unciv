@@ -154,14 +154,26 @@ object MapType : IsPartOfGameInfoSerialization {
     const val empty = "Empty"
 }
 
-object MapResources {
-    const val sparse = "Sparse"
-    const val default = "Default"
-    const val abundant = "Abundant"
+enum class MapResources(
+    val label: String,
+    val randomLuxuriesPercent: Int = 100,
+    val regionalLuxuriesDelta: Int = 0,
+    val specialLuxuriesTargetFactor: Float = 0.75f,
+    val bonusFrequencyMultiplier: Float = 1f
+) {
+    sparse("Sparse", 80, -1, 0.5f, 1.5f),
+    default("Default"),
+    abundant("Abundant", 133, 1, 0.9f, 0.6667f),
     @Deprecated("Since 4.10.7, moved to mapParameters")
-    const val strategicBalance = "Strategic Balance"
+    strategicBalance("Strategic Balance"),
     @Deprecated("Since 4.10.7, moved to mapParameters")
-    const val legendaryStart = "Legendary Start"
+    legendaryStart("Legendary Start"),
+    ;
+    private fun active() = declaringJavaClass.getField(name).getAnnotation(Deprecated::class.java) == null
+    companion object {
+        fun activeLabels() = values().filter { it.active() }.map { it.label }
+        fun safeValueOf(label: String) = values().firstOrNull { it.label == label } ?: default
+    }
 }
 
 class MapParameters : IsPartOfGameInfoSerialization {
@@ -169,7 +181,7 @@ class MapParameters : IsPartOfGameInfoSerialization {
     var type = MapType.pangaea
     var shape = MapShape.hexagonal
     var mapSize = MapSizeNew(MapSize.Medium)
-    var mapResources = MapResources.default
+    var mapResources = MapResources.default.label
     var noRuins = false
     var noNaturalWonders = false
     var worldWrap = false
@@ -239,6 +251,14 @@ class MapParameters : IsPartOfGameInfoSerialization {
         waterThreshold = 0f
     }
 
+    fun getMapResources() = MapResources.safeValueOf(mapResources)
+    @Suppress("DEPRECATION") // This IS the legacy support
+    @JvmName("strategicBalanceGetter")
+    fun getStrategicBalance() = strategicBalance || mapResources == MapResources.strategicBalance.label
+    @Suppress("DEPRECATION") // This IS the legacy support
+    @JvmName("legendaryStartGetter")
+    fun getLegendaryStart() = legendaryStart || mapResources == MapResources.legendaryStart.label
+
     fun getArea() = when {
         shape == MapShape.hexagonal || shape == MapShape.flatEarth -> getNumberOfTilesInHexagon(mapSize.radius)
         worldWrap && mapSize.width % 2 != 0 -> (mapSize.width - 1) * mapSize.height
@@ -261,7 +281,7 @@ class MapParameters : IsPartOfGameInfoSerialization {
         if (worldWrap) yield("{World Wrap} ")
         yield("{$shape}")
         yield(" " + displayMapDimensions() + ")")
-        if(mapResources != MapResources.default) yield(" {Resource Setting}: {$mapResources}")
+        if (mapResources != MapResources.default.label) yield(" {Resource Setting}: {$mapResources}")
         if (strategicBalance) yield(" {Strategic Balance}")
         if (legendaryStart) yield(" {Legendary Start}")
         if (name.isEmpty()) return@sequence

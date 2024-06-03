@@ -698,11 +698,7 @@ class MapRegions (val ruleset: Ruleset) {
            We also save a list of all land tiles for minor deposit generation. */
 
         // Determines number tiles per resource
-        val bonusMultiplier = when (tileMap.mapParameters.mapResources) {
-            MapResources.sparse -> 1.5f
-            MapResources.abundant -> 0.6667f
-            else -> 1f
-        }
+        val bonusMultiplier = tileMap.mapParameters.getMapResources().bonusFrequencyMultiplier
         val landList = ArrayList<Tile>() // For minor deposits
         val ruleLists = HashMap<Unique, MutableList<Tile>>() // For rule-based generation
 
