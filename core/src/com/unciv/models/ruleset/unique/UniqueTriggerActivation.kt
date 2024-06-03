@@ -23,6 +23,7 @@ import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.UpgradeUnitAction
 import com.unciv.models.ruleset.BeliefType
+import com.unciv.models.ruleset.Event
 import com.unciv.models.ruleset.tile.TerrainType
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
@@ -115,11 +116,15 @@ object UniqueTriggerActivation {
                 val event = ruleset.events[unique.params[0]] ?: return null
                 val choices = event.getMatchingChoices(stateForConditionals)
                     ?: return null
-                return {
-                    if (civInfo.isAI()) choices.random().triggerChoice(civInfo)
-                    else civInfo.popupAlerts.add(PopupAlert(AlertType.Event, event.name))
+                if (civInfo.isAI() || event.presentation == Event.Presentation.None) return {
+                    choices.randomOrNull()?.triggerChoice(civInfo) ?: false
+                }
+                if (event.presentation == Event.Presentation.Alert) return {
+                    civInfo.popupAlerts.add(PopupAlert(AlertType.Event, event.name))
                     true
                 }
+                // if (event.presentation == Event.Presentation.Floating) return { //todo: Park them in a Queue in GameInfo???
+                throw NotImplementedError("Event ${event.name} has presentation type ${event.presentation} which is not implemented for use via TriggerEvent")
             }
 
             UniqueType.MarkTutorialComplete -> return {
