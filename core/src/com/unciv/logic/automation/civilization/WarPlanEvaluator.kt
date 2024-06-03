@@ -5,12 +5,14 @@ import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.ui.screens.victoryscreen.RankingType
+import kotlin.math.max
 
 object WarPlanEvaluator {
 
     /**
      * How much motivation [civInfo] has to do a team war with [teamCiv] against [target].
      * 
+     * Favors fighting stronger civilizations.
      * @return The movtivation of the plan. If it is > 0 then we can declare the war.
      */
     fun evaluateTeamWarPlan(civInfo: Civilization, target: Civilization, teamCiv: Civilization, givenMotivation: Int?): Int {
@@ -43,16 +45,22 @@ object WarPlanEvaluator {
         if (thirdCivForce + civForce < targetForce * multiplier) {
             motivation -= (20 * (targetForce * multiplier) / (thirdCivForce + civForce)).toInt()
         }
-        return motivation - 10
+        if (target.getStatForRanking(RankingType.Score) > max(civInfo.getStatForRanking(RankingType.Score), teamCiv.getStatForRanking(RankingType.Score))) {
+            motivation += 20
+        } else {
+            motivation -= 10
+        }
+        return motivation - 20
     }
 
     /**
      * How much motivation [civInfo] has to join [civToJoin] in their war against [target].
      *
+     * Favors protecting allies.
      * @return The movtivation of the plan. If it is > 0 then we can declare the war.
      */
     fun evaluateJoinWarPlan(civInfo: Civilization, target: Civilization, civToJoin: Civilization, givenMotivation: Int?): Int {
-        if (civInfo.getDiplomacyManager(civToJoin).isRelationshipLevelLT(RelationshipLevel.Favorable)) return -1000
+        if (civInfo.getDiplomacyManager(civToJoin).isRelationshipLevelLE(RelationshipLevel.Favorable)) return -1000
 
         var motivation = givenMotivation ?: MotivationToAttackAutomation.hasAtLeastMotivationToAttack(civInfo, target, 0)
         // We need to be able to trust the thirdCiv at least somewhat
