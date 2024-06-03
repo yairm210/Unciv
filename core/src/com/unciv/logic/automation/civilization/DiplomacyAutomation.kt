@@ -276,7 +276,9 @@ object DiplomacyAutomation {
 
         val enemiesCiv = civInfo.diplomacy.filter { it.value.diplomaticStatus == DiplomaticStatus.War }
             .map { it.value.otherCiv() }
-            .filterNot { it == civInfo || it.isBarbarian() || it.cities.isEmpty() }
+            .filterNot { it == civInfo || it.isBarbarian() || it.cities.isEmpty() 
+                    || it.getDiplomacyManager(civInfo).hasFlag(DiplomacyFlags.DeclaredWar) 
+                    || civInfo.getDiplomacyManager(it).hasFlag(DiplomacyFlags.DeclaredWar) }
             .filter { !civInfo.getDiplomacyManager(it).hasFlag(DiplomacyFlags.DeclinedPeace) }
             // Don't allow AIs to offer peace to city states allied with their enemies
             .filterNot { it.isCityState() && it.getAllyCiv() != null && civInfo.isAtWarWith(civInfo.gameInfo.getCivilization(it.getAllyCiv()!!)) }

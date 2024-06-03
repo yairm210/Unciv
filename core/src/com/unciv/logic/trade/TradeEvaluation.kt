@@ -2,6 +2,7 @@ package com.unciv.logic.trade
 
 import com.unciv.Constants
 import com.unciv.logic.automation.civilization.DiplomacyAutomation
+import com.unciv.logic.automation.civilization.MotivationToAttackAutomation
 import com.unciv.logic.automation.civilization.WarPlanEvaluator
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
@@ -324,7 +325,7 @@ class TradeEvaluation {
         // Goes from 1 at GPT = 0 to .834 at GPT = 100, .296 at GPT = 1000 and 0.116 at GPT = 10000
         // The current value of gold will never go below 10% or the .1f that it is set to
         // So this does not scale off to infinity
-        return (modifier / (goldPerTurn.pow(1.2).coerceAtLeast(0.0) + (1.11 * modifier)) + .1).coerceAtLeast(1.0)
+        return modifier / (goldPerTurn.coerceAtLeast(1.0) .pow(1.2)+ (1.11 * modifier)) + .1
     }
 
     /** This code returns a positive value if the city is significantly far away from the capital
@@ -338,20 +339,21 @@ class TradeEvaluation {
         return (distanceToCapital - 500) * civInfo.getEraNumber()
     }
 
-    fun evaluatePeaceCostForThem(ourCivilization: Civilization, otherCivilization: Civilization): Int {
-        val ourCombatStrength = ourCivilization.getStatForRanking(RankingType.Force)
-        val theirCombatStrength = otherCivilization.getStatForRanking(RankingType.Force)
+    fun evaluatePeaceCostForThem(civInfo: Civilization, otherCiv: Civilization): Int {
+        val ourCombatStrength = civInfo.getStatForRanking(RankingType.Force)
+        val theirCombatStrength = otherCiv.getStatForRanking(RankingType.Force)
         if (ourCombatStrength * 1.5f >= theirCombatStrength && theirCombatStrength * 1.5f >= ourCombatStrength)
             return 0 // we're roughly equal, there's no huge power imbalance
         if (ourCombatStrength > theirCombatStrength) {
+            if (MotivationToAttackAutomation.hasAtLeastMotivationToAttack(civInfo, otherCiv, 0) <= 0) return 0
             val absoluteAdvantage = ourCombatStrength - theirCombatStrength
             val percentageAdvantage = absoluteAdvantage / theirCombatStrength.toFloat()
             // We don't add the same constraint here. We should not make peace easily if we're
             // heavily advantaged.
-            val totalAdvantage = (absoluteAdvantage * percentageAdvantage).toInt() * 10
+            val totalAdvantage = (absoluteAdvantage * percentageAdvantage).toInt()
             if(totalAdvantage < 0) //May be a negative number if strength disparity is such that it leads to integer overflow
                 return 10000    //in that rare case, the AI would accept peace against a defeated foe.
-            return totalAdvantage / 5
+            return (totalAdvantage / (getGoldInflation(otherCiv) * 2)).toInt()
         } else {
             // This results in huge values for large power imbalances. However, we should not give
             // up everything just because there is a big power imbalance. There's a better chance to
@@ -376,7 +378,7 @@ class TradeEvaluation {
             // (stats ~30 each)
             val absoluteAdvantage = theirCombatStrength - ourCombatStrength
             val percentageAdvantage = absoluteAdvantage / ourCombatStrength.toFloat()
-            return -min((absoluteAdvantage * percentageAdvantage).toInt() * 2, 10000)
+            return -min((absoluteAdvantage * percentageAdvantage / (getGoldInflation(civInfo) * 2)).toInt(), 10000)
         }
     }
 
