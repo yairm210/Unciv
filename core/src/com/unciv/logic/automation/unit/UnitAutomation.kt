@@ -513,10 +513,12 @@ object UnitAutomation {
         }
 
         val hostileCivs = civInfo.getKnownCivs().filter { it.isAtWarWith(civInfo) || hasPreperationFlag(it)}
-        val citiesToDefend = hostileCivs.mapNotNull { NextTurnAutomation.getClosestCities(civInfo, it) }
-        val cityToMoveTo = citiesToDefend.sortedBy { unit.getTile().aerialDistanceTo(it.city1.getCenterTile()) }.firstOrNull { unit.movement.canReach(it.city1.getCenterTile()) }
-        if (cityToMoveTo != null) {
-            unit.movement.headTowards(cityToMoveTo.city1.getCenterTile());
+        val citiesToDefend = hostileCivs.mapNotNull { NextTurnAutomation.getClosestCities(civInfo, it) }.sortedBy { unit.getTile().aerialDistanceTo(it.city1.getCenterTile()) }
+
+        for (city in citiesToDefend.map { it.city1 }) {
+            if (unit.getTile().aerialDistanceTo(city.getCenterTile()) <= 2) return true
+            val tileToMoveTo = city.getCenterTile().getTilesInDistance(2).firstOrNull { unit.movement.canMoveTo(it) && unit.movement.canReach(it) } ?: continue
+            unit.movement.headTowards(tileToMoveTo)
             return true
         }
         return false
