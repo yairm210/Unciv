@@ -10,7 +10,7 @@ import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.map.HexMath
 import com.unciv.logic.map.MapParameters
-import com.unciv.logic.map.MapResources
+import com.unciv.logic.map.mapgenerator.MapResourceSetting
 import com.unciv.logic.map.TileMap
 import com.unciv.logic.map.mapgenerator.MapGenerator
 import com.unciv.logic.map.mapunit.MapUnit
@@ -747,8 +747,8 @@ class Tile : IsPartOfGameInfoSerialization {
         val majorDepositFinal = majorDeposit ?: (rng.nextDouble() < approximateMajorDepositDistribution())
         val depositAmounts = if (majorDepositFinal) newResource.majorDepositAmount else newResource.minorDepositAmount
         resourceAmount = when (tileMap.mapParameters.mapResources) {
-            MapResources.sparse.label -> depositAmounts.sparse
-            MapResources.abundant.label -> depositAmounts.abundant
+            MapResourceSetting.sparse.label -> depositAmounts.sparse
+            MapResourceSetting.abundant.label -> depositAmounts.abundant
             else -> depositAmounts.default
         }
     }

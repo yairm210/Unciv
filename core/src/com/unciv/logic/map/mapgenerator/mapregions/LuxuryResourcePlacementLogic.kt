@@ -1,6 +1,6 @@
 package com.unciv.logic.map.mapgenerator.mapregions
 
-import com.unciv.logic.map.MapResources
+import com.unciv.logic.map.mapgenerator.MapResourceSetting
 import com.unciv.logic.map.TileMap
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.Ruleset
@@ -229,7 +229,7 @@ object LuxuryResourcePlacementLogic {
         ruleset: Ruleset,
         placedSpecials: HashMap<String, Int>
     ) {
-        if (tileMap.mapParameters.mapResources == MapResources.sparse.label) return
+        if (tileMap.mapParameters.mapResources == MapResourceSetting.sparse.label) return
         for (region in regions) {
             val tilesToCheck = tileMap[region.startPosition!!].getTilesInDistanceRange(1..2)
             val candidateLuxuries = randomLuxuries.shuffled().toMutableList()

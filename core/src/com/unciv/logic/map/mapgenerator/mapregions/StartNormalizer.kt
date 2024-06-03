@@ -1,7 +1,6 @@
 package com.unciv.logic.map.mapgenerator.mapregions
 
 import com.unciv.Constants
-import com.unciv.logic.map.MapResources
 import com.unciv.logic.map.TileMap
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.Ruleset

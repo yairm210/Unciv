@@ -4,7 +4,6 @@ import com.badlogic.gdx.math.Rectangle
 import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
 import com.unciv.logic.civilization.Civilization
-import com.unciv.logic.map.MapResources
 import com.unciv.logic.map.MapShape
 import com.unciv.logic.map.TileMap
 import com.unciv.logic.map.mapgenerator.mapregions.MapRegions.BiasTypes.PositiveFallback
@@ -218,7 +217,7 @@ class MapRegions (val ruleset: Ruleset) {
         if (widerThanTall) {
             splitOffRegion.rect.width = bestSplitPoint.toFloat()
             regionToSplit.rect.x = splitOffRegion.rect.x + splitOffRegion.rect.width
-            regionToSplit.rect.width = regionToSplit.rect.width- bestSplitPoint
+            regionToSplit.rect.width = regionToSplit.rect.width - bestSplitPoint
         } else {
             splitOffRegion.rect.height = bestSplitPoint.toFloat()
             regionToSplit.rect.y = splitOffRegion.rect.y + splitOffRegion.rect.height

@@ -9,7 +9,7 @@ import com.badlogic.gdx.utils.Align
 import com.unciv.UncivGame
 import com.unciv.logic.map.MapGeneratedMainType
 import com.unciv.logic.map.MapParameters
-import com.unciv.logic.map.MapResources
+import com.unciv.logic.map.mapgenerator.MapResourceSetting
 import com.unciv.logic.map.MapShape
 import com.unciv.logic.map.MapSize
 import com.unciv.logic.map.MapSizeNew
@@ -259,7 +259,7 @@ class MapParametersTable(
     }
 
     private fun addResourceSelectBox() {
-        val mapResources = MapResources.activeLabels()
+        val mapResources = MapResourceSetting.activeLabels()
 
         if (mapGeneratedMainType == MapGeneratedMainType.randomGenerated) {
             mapResourcesOptionsValues = mapResources.toHashSet()

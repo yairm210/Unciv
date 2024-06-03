@@ -4,6 +4,7 @@ import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.map.HexMath.getEquivalentHexagonalRadius
 import com.unciv.logic.map.HexMath.getEquivalentRectangularSize
 import com.unciv.logic.map.HexMath.getNumberOfTilesInHexagon
+import com.unciv.logic.map.mapgenerator.MapResourceSetting
 import com.unciv.models.metadata.BaseRuleset
 
 
@@ -154,34 +155,13 @@ object MapType {
     const val empty = "Empty"
 }
 
-enum class MapResources(
-    val label: String,
-    val randomLuxuriesPercent: Int = 100,
-    val regionalLuxuriesDelta: Int = 0,
-    val specialLuxuriesTargetFactor: Float = 0.75f,
-    val bonusFrequencyMultiplier: Float = 1f
-) {
-    sparse("Sparse", 80, -1, 0.5f, 1.5f),
-    default("Default"),
-    abundant("Abundant", 133, 1, 0.9f, 0.6667f),
-    @Deprecated("Since 4.10.7, moved to mapParameters")
-    strategicBalance("Strategic Balance"),
-    @Deprecated("Since 4.10.7, moved to mapParameters")
-    legendaryStart("Legendary Start"),
-    ;
-    private fun active() = declaringJavaClass.getField(name).getAnnotation(Deprecated::class.java) == null
-    companion object {
-        fun activeLabels() = values().filter { it.active() }.map { it.label }
-        fun safeValueOf(label: String) = values().firstOrNull { it.label == label } ?: default
-    }
-}
-
 class MapParameters : IsPartOfGameInfoSerialization {
     var name = ""
     var type = MapType.pangaea
     var shape = MapShape.hexagonal
     var mapSize = MapSizeNew(MapSize.Medium)
     var mapResources = MapResources.default.label
+    var mapResources = MapResourceSetting.default.label
     var noRuins = false
     var noNaturalWonders = false
     var worldWrap = false
@@ -251,13 +231,13 @@ class MapParameters : IsPartOfGameInfoSerialization {
         waterThreshold = 0f
     }
 
-    fun getMapResources() = MapResources.safeValueOf(mapResources)
+    fun getMapResources() = MapResourceSetting.safeValueOf(mapResources)
     @Suppress("DEPRECATION") // This IS the legacy support
     @JvmName("strategicBalanceGetter")
-    fun getStrategicBalance() = strategicBalance || mapResources == MapResources.strategicBalance.label
+    fun getStrategicBalance() = strategicBalance || mapResources == MapResourceSetting.strategicBalance.label
     @Suppress("DEPRECATION") // This IS the legacy support
     @JvmName("legendaryStartGetter")
-    fun getLegendaryStart() = legendaryStart || mapResources == MapResources.legendaryStart.label
+    fun getLegendaryStart() = legendaryStart || mapResources == MapResourceSetting.legendaryStart.label
 
     fun getArea() = when {
         shape == MapShape.hexagonal || shape == MapShape.flatEarth -> getNumberOfTilesInHexagon(mapSize.radius)
@@ -281,7 +261,7 @@ class MapParameters : IsPartOfGameInfoSerialization {
         if (worldWrap) yield("{World Wrap} ")
         yield("{$shape}")
         yield(" " + displayMapDimensions() + ")")
-        if (mapResources != MapResources.default.label) yield(" {Resource Setting}: {$mapResources}")
+        if (mapResources != MapResourceSetting.default.label) yield(" {Resource Setting}: {$mapResources}")
         if (strategicBalance) yield(" {Strategic Balance}")
         if (legendaryStart) yield(" {Legendary Start}")
         if (name.isEmpty()) return@sequence
