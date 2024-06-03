@@ -55,7 +55,7 @@ object DeclareWarTargetAutomation {
                 .sortedByDescending { it.getStatForRanking(RankingType.Force) }
 
         for (thirdCiv in potentialAllies) {
-            if (WarPlanEvaluator.evaluateTeamWarPlan(civInfo, target, thirdCiv, motivation) <= 0) continue
+            if (DeclareWarPlanEvaluator.evaluateTeamWarPlan(civInfo, target, thirdCiv, motivation) <= 0) continue
 
             // Send them an offer
             val tradeLogic = TradeLogic(civInfo, thirdCiv)
@@ -82,7 +82,7 @@ object DeclareWarTargetAutomation {
                 .sortedByDescending { it.getStatForRanking(RankingType.Force) }
 
         for (thirdCiv in potentialAllies) {
-            if (WarPlanEvaluator.evaluateJoinWarPlan(civInfo, target, thirdCiv, motivation) <= 0) continue
+            if (DeclareWarPlanEvaluator.evaluateJoinWarPlan(civInfo, target, thirdCiv, motivation) <= 0) continue
 
             // Send them an offer
             val tradeLogic = TradeLogic(civInfo, thirdCiv)
@@ -100,7 +100,7 @@ object DeclareWarTargetAutomation {
      * Lastly, if our motivation is high enough and we don't have any better plans then lets just declare war.
      */
     private fun declareWar(civInfo: Civilization, target: Civilization, motivation: Int): Boolean {
-        if (WarPlanEvaluator.evaluateDeclareWarPlan(civInfo, target, motivation) > 0) {
+        if (DeclareWarPlanEvaluator.evaluateDeclareWarPlan(civInfo, target, motivation) > 0) {
             civInfo.getDiplomacyManager(target).declareWar()
             return true
         }
@@ -114,7 +114,7 @@ object DeclareWarTargetAutomation {
         // TODO: We use negative values in WaryOf for now so that we aren't adding any extra fields to the save file
         // This will very likely change in the future and we will want to build upon it
         val diploManager = civInfo.getDiplomacyManager(target)
-        if (WarPlanEvaluator.evaluateStartPreparingWarPlan(civInfo, target, motivation) > 0) {
+        if (DeclareWarPlanEvaluator.evaluateStartPreparingWarPlan(civInfo, target, motivation) > 0) {
             diploManager.setFlag(DiplomacyFlags.WaryOf, -1)
             return true
         }

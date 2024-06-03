@@ -3,7 +3,7 @@ package com.unciv.logic.trade
 import com.unciv.Constants
 import com.unciv.logic.automation.civilization.DiplomacyAutomation
 import com.unciv.logic.automation.civilization.MotivationToAttackAutomation
-import com.unciv.logic.automation.civilization.WarPlanEvaluator
+import com.unciv.logic.automation.civilization.DeclareWarPlanEvaluator
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
@@ -163,7 +163,7 @@ class TradeEvaluation {
                     return 0
                 } else if (civInfo.isAtWarWith(civToDeclareWarOn)) {
                     // We shouldn't require them to pay us to join our war
-                    return (20 * WarPlanEvaluator.evaluateJoinOurWarPlan(civInfo, civToDeclareWarOn, tradePartner, null)).coerceAtLeast(0)
+                    return (20 * DeclareWarPlanEvaluator.evaluateJoinOurWarPlan(civInfo, civToDeclareWarOn, tradePartner, null)).coerceAtLeast(0)
                 } else {
                     // Why should we pay you to go fight someone else?
                     return 0
@@ -281,11 +281,11 @@ class TradeEvaluation {
                         && trade.ourOffers.any {it.type == TradeType.WarDeclaration && it.name == offer.name}) {
                     // We shouldn't want to pay them for us to declare war
                     // Only accept if the war will benefit us, or if they pay us enough
-                    return (-100 * WarPlanEvaluator.evaluateTeamWarPlan(civInfo, civToDeclareWarOn, tradePartner, null)).coerceAtLeast(0)
+                    return (-100 * DeclareWarPlanEvaluator.evaluateTeamWarPlan(civInfo, civToDeclareWarOn, tradePartner, null)).coerceAtLeast(0)
                 } else if (tradePartner.isAtWarWith(civToDeclareWarOn)) {
-                    return (-100 * WarPlanEvaluator.evaluateJoinWarPlan(civInfo, civToDeclareWarOn, tradePartner, null)).coerceAtMost(0)
+                    return (-100 * DeclareWarPlanEvaluator.evaluateJoinWarPlan(civInfo, civToDeclareWarOn, tradePartner, null)).coerceAtMost(0)
                 } else {
-                    return (-100 * WarPlanEvaluator.evaluateDeclareWarPlan(civInfo, civToDeclareWarOn, null)).coerceAtMost(0)
+                    return (-100 * DeclareWarPlanEvaluator.evaluateDeclareWarPlan(civInfo, civToDeclareWarOn, null)).coerceAtMost(0)
                 }
             }
 

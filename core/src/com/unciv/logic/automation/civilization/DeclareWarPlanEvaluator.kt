@@ -7,7 +7,10 @@ import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.ui.screens.victoryscreen.RankingType
 import kotlin.math.max
 
-object WarPlanEvaluator {
+/**
+ * Contains the logic for evaluating how we want to declare war on another civ.
+ */
+object DeclareWarPlanEvaluator {
 
     /**
      * How much motivation [civInfo] has to do a team war with [teamCiv] against [target].

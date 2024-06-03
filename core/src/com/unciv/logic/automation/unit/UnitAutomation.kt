@@ -498,6 +498,9 @@ object UnitAutomation {
         return false
     }
 
+    /**
+     * Tries to move the unit to the closest city that is close to a target civilization
+     */
     private fun tryPrepare(unit: MapUnit): Boolean {
         val civInfo = unit.civ
 

@@ -282,6 +282,14 @@ object MotivationToAttackAutomation {
         damageReceivedWhenAttacking < 100
     }
 
+    /**
+     * Checks the routes of attack against [otherCiv] using [targetCitiesWithOurCity].
+     * 
+     * The more routes of attack and shorter the path the higher a motivation will be returned.
+     * Sea attack routes are less valuable
+     * 
+     * @return The motivation ranging from -30 to around +10
+     */
     private fun getAttackPathsModifier(civInfo: Civilization, otherCiv: Civilization, targetCitiesWithOurCity: List<Pair<City, City>>): Int {
 
         fun isTileCanMoveThrough(civInfo: Civilization, tile: Tile): Boolean {
@@ -303,6 +311,7 @@ object MotivationToAttackAutomation {
             var cityAttackValue = 0
 
             // We only want to calculate the best attack path and use it's value
+            // Land routes are clearly better than sea routes
             for (cityToAttack in attacksGroupedByCity.value.map { it.second }) {
                 val landAttackPath = MapPathing.getConnection(civInfo, cityToAttackFrom.getCenterTile(), cityToAttack.getCenterTile(), ::isLandTileCanMoveThrough)
                 if (landAttackPath != null && landAttackPath.size < 16) {
