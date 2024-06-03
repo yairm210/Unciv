@@ -73,7 +73,6 @@ object MotivationToAttackAutomation {
         if (minTargetCityDistance < 6) modifierMap["Close cities"] = 5
 
         val diplomacyManager = civInfo.getDiplomacyManager(otherCiv)
-        val relationshipLevel = diplomacyManager.relationshipLevel()
 
         if (diplomacyManager.hasFlag(DiplomacyFlags.ResearchAgreement))
             modifierMap["Research Agreement"] = -5
