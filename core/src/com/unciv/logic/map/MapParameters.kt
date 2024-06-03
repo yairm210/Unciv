@@ -122,13 +122,13 @@ class MapSizeNew : IsPartOfGameInfoSerialization {
     override fun toString() = if (name == MapSize.custom) "${width}x${height}" else name
 }
 
-object MapShape : IsPartOfGameInfoSerialization {
+object MapShape {
     const val hexagonal = "Hexagonal"
     const val flatEarth = "Flat Earth Hexagonal"
     const val rectangular = "Rectangular"
 }
 
-object MapGeneratedMainType : IsPartOfGameInfoSerialization {
+object MapGeneratedMainType {
     const val generated = "Generated"
     // Randomly choose a generated map type
     const val randomGenerated = "Random Generated"
@@ -137,7 +137,7 @@ object MapGeneratedMainType : IsPartOfGameInfoSerialization {
 
 }
 
-object MapType : IsPartOfGameInfoSerialization {
+object MapType {
     const val perlin = "Perlin"
     const val pangaea = "Pangaea"
     const val continentAndIslands = "Continent and Islands"
