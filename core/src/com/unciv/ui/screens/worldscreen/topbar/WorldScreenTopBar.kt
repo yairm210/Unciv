@@ -67,6 +67,7 @@ class WorldScreenTopBar(internal val worldScreen: WorldScreen) : Table() {
     private val overviewButton = OverviewAndSupplyTable(worldScreen)
     private val leftFiller: BackgroundActor
     private val rightFiller: BackgroundActor
+    private var baseHeight = 0f
 
     companion object {
         /** When the "fillers" are used, this is added to the required height, alleviating the "gap" problem a little. */
@@ -100,6 +101,8 @@ class WorldScreenTopBar(internal val worldScreen: WorldScreen) : Table() {
         setLayoutEnabled(true)
     }
 
+    internal fun getYForTutorialTask(): Float = y + height - baseHeight
+
     /** Performs the layout tricks mentioned in the class Kdoc */
     private fun updateLayout() {
         val targetWidth = stage.width
@@ -122,7 +125,7 @@ class WorldScreenTopBar(internal val worldScreen: WorldScreen) : Table() {
         add(resourceTable).colspan(3).growX().width(targetWidth).row()
         layout()  // force rowHeight calculation - validate is not enough - Table quirks
         val statsRowHeight = getRowHeight(0)
-        val baseHeight = statsRowHeight + getRowHeight(1)
+        baseHeight = statsRowHeight + getRowHeight(1)
 
         fun addFillers(fillerHeight: Float) {
             add(leftFiller).size(selectedCivWidth, fillerHeight + gapFillingExtraHeight)

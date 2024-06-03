@@ -149,10 +149,10 @@ class WorldScreen(
         stage.scrollFocus = mapHolder
         stage.addActor(notificationsScroll)  // very low in z-order, so we're free to let it extend _below_ tile info and minimap if we want
         stage.addActor(minimapWrapper)
+        stage.addActor(tutorialTaskTable)    // behind topBar!
         stage.addActor(topBar)
         stage.addActor(statusButtons)
         stage.addActor(techPolicyAndDiplomacy)
-        stage.addActor(tutorialTaskTable)
 
         stage.addActor(zoomController)
         zoomController.isVisible = UncivGame.Current.settings.showZoomButtons
@@ -401,6 +401,8 @@ class WorldScreen(
         else mapHolder.updateTiles(viewingCiv)
 
         topBar.update(selectedCiv)
+        if (tutorialTaskTable.isVisible)
+            tutorialTaskTable.y = topBar.getYForTutorialTask() - tutorialTaskTable.height
 
         if (techPolicyAndDiplomacy.update())
             displayTutorial(TutorialTrigger.OtherCivEncountered)
@@ -540,7 +542,7 @@ class WorldScreen(
         }
         tutorialTaskTable.pack()
         tutorialTaskTable.centerX(stage)
-        tutorialTaskTable.y = topBar.y - tutorialTaskTable.height
+        tutorialTaskTable.y = topBar.getYForTutorialTask() - tutorialTaskTable.height
         tutorialTaskTable.onClick {
             UncivGame.Current.isTutorialTaskCollapsed = !UncivGame.Current.isTutorialTaskCollapsed
             displayTutorialTaskOnUpdate()
@@ -794,7 +796,7 @@ class WorldScreen(
             shouldUpdate = true
             return
         }
-        
+
         if (bottomUnitTable.selectedSpy != null) {
             bottomUnitTable.selectSpy(null)
             shouldUpdate = true
