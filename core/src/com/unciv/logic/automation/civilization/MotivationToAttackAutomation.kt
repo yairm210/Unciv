@@ -41,7 +41,7 @@ object MotivationToAttackAutomation {
 
         modifierMap["Relative combat strength"] = getCombatStrengthModifier(ourCombatStrength, theirCombatStrength + 0.8f * civInfo.threatManager.getCombinedForceOfWarringCivs())
         // TODO: For now this will be a very high value because the AI can't handle multiple fronts, this should be changed later though
-        modifierMap["Concurrent wars"] = -civInfo.getCivsAtWarWith().count { it.isMajorCiv() } * 30
+        modifierMap["Concurrent wars"] = -civInfo.getCivsAtWarWith().count { it.isMajorCiv() && it != otherCiv } * 20
         modifierMap["Their concurrent wars"] = otherCiv.getCivsAtWarWith().count { it.isMajorCiv() } * 3
 
         modifierMap["Their allies"] = getDefensivePactAlliesScore(otherCiv, civInfo, baseForce, ourCombatStrength)
@@ -74,15 +74,6 @@ object MotivationToAttackAutomation {
 
         val diplomacyManager = civInfo.getDiplomacyManager(otherCiv)
         val relationshipLevel = diplomacyManager.relationshipLevel()
-
-        if (otherCiv.isMajorCiv()) {
-            modifierMap["Relations"] = when (relationshipLevel) {
-                RelationshipLevel.Favorable -> -5
-                RelationshipLevel.Friend -> -10
-                RelationshipLevel.Ally -> -15
-                else -> 0
-            }
-        }
 
         if (diplomacyManager.hasFlag(DiplomacyFlags.ResearchAgreement))
             modifierMap["Research Agreement"] = -5
@@ -187,9 +178,12 @@ object MotivationToAttackAutomation {
 
     private fun getRelationshipModifier(diplomacyManager: DiplomacyManager): Int {
         val relationshipModifier = when (diplomacyManager.relationshipIgnoreAfraid()) {
-            RelationshipLevel.Unforgivable -> 10
-            RelationshipLevel.Enemy -> 5
-            RelationshipLevel.Ally -> -5 // this is so that ally + DoF is not too unbalanced -
+            RelationshipLevel.Unforgivable -> 15
+            RelationshipLevel.Enemy -> 10
+            RelationshipLevel.Competitor -> 5
+            RelationshipLevel.Favorable -> -2
+            RelationshipLevel.Friend -> -5
+            RelationshipLevel.Ally -> -10 // this is so that ally + DoF is not too unbalanced -
             // still possible for AI to declare war for isolated city
             else -> 0
         }

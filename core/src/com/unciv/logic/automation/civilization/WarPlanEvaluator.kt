@@ -43,7 +43,7 @@ object WarPlanEvaluator {
         if (thirdCivForce + civForce < targetForce * multiplier) {
             motivation -= (20 * (targetForce * multiplier) / (thirdCivForce + civForce)).toInt()
         }
-        return motivation - 2
+        return motivation - 10
     }
 
     /**
@@ -83,7 +83,7 @@ object WarPlanEvaluator {
             motivation -= (20 * (targetForce * multiplier) / (thirdCivForce + civForce)).toInt()
         }
 
-        return motivation - 10
+        return motivation - 15
     }
 
     /**
@@ -144,7 +144,7 @@ object WarPlanEvaluator {
         val diploManager = civInfo.getDiplomacyManager(target)
         if (diploManager.hasFlag(DiplomacyFlags.WaryOf)) return 0
 
-        return motivation - 20
+        return motivation - 15
     }
 }
 
