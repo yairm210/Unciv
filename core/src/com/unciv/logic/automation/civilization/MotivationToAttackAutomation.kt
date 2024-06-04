@@ -36,84 +36,84 @@ object MotivationToAttackAutomation {
 
         if (theirCombatStrength > ourCombatStrength) return 0
 
-        val modifierMap = HashMap<String, Int>()
-        modifierMap["Base motivation"] = -15
+        val modifiers:MutableList<Pair<String, Int>> = mutableListOf()
+        modifiers.add(Pair("Base motivation", -15))
 
-        modifierMap["Relative combat strength"] = getCombatStrengthModifier(ourCombatStrength, theirCombatStrength + 0.8f * civInfo.threatManager.getCombinedForceOfWarringCivs())
+        modifiers.add(Pair("Relative combat strength", getCombatStrengthModifier(ourCombatStrength, theirCombatStrength + 0.8f * civInfo.threatManager.getCombinedForceOfWarringCivs())))
         // TODO: For now this will be a very high value because the AI can't handle multiple fronts, this should be changed later though
-        modifierMap["Concurrent wars"] = -civInfo.getCivsAtWarWith().count { it.isMajorCiv() && it != otherCiv } * 20
-        modifierMap["Their concurrent wars"] = otherCiv.getCivsAtWarWith().count { it.isMajorCiv() } * 3
+        modifiers.add(Pair("Concurrent wars", -civInfo.getCivsAtWarWith().count { it.isMajorCiv() && it != otherCiv } * 20))
+        modifiers.add(Pair("Their concurrent wars", otherCiv.getCivsAtWarWith().count { it.isMajorCiv() } * 3))
 
-        modifierMap["Their allies"] = getDefensivePactAlliesScore(otherCiv, civInfo, baseForce, ourCombatStrength)
+        modifiers.add(Pair("Their allies", getDefensivePactAlliesScore(otherCiv, civInfo, baseForce, ourCombatStrength)))
 
         if (civInfo.threatManager.getNeighboringCivilizations().none { it != otherCiv && it.isMajorCiv() 
                         && civInfo.getDiplomacyManager(it).isRelationshipLevelLT(RelationshipLevel.Friend) })
-            modifierMap["No other threats"] = 10
+            modifiers.add(Pair("No other threats", 10))
 
         if (otherCiv.isMajorCiv()) {
             val scoreRatioModifier = getScoreRatioModifier(otherCiv, civInfo)
-            modifierMap["Relative score"] = scoreRatioModifier
+            modifiers.add(Pair("Relative score", scoreRatioModifier))
 
-            modifierMap["Relative technologies"] = getRelativeTechModifier(civInfo, otherCiv)
+            modifiers.add(Pair("Relative technologies", getRelativeTechModifier(civInfo, otherCiv)))
 
             if (civInfo.stats.getUnitSupplyDeficit() != 0) {
-                modifierMap["Over unit supply"] = (civInfo.stats.getUnitSupplyDeficit() * 2).coerceAtMost(20)
+                modifiers.add(Pair("Over unit supply", (civInfo.stats.getUnitSupplyDeficit() * 2).coerceAtMost(20)))
             } else if (otherCiv.stats.getUnitSupplyDeficit() == 0 && !otherCiv.isCityState()) {
-                modifierMap["Relative production"] = getProductionRatioModifier(civInfo, otherCiv)
+                modifiers.add(Pair("Relative production", getProductionRatioModifier(civInfo, otherCiv)))
             }
         }
 
         val minTargetCityDistance = targetCitiesWithOurCity.minOf { it.second.getCenterTile().aerialDistanceTo(it.first.getCenterTile()) }
-        modifierMap["Far away cities"] = when {
+        modifiers.add(Pair("Far away cities", when {
             minTargetCityDistance > 20 -> -10
             minTargetCityDistance > 14 -> -8
             minTargetCityDistance > 10 -> -3
             else -> 0
-        }
-        if (minTargetCityDistance < 6) modifierMap["Close cities"] = 5
+        }))
+        if (minTargetCityDistance < 6) modifiers.add(Pair("Close cities", 5))
 
         val diplomacyManager = civInfo.getDiplomacyManager(otherCiv)
 
         if (diplomacyManager.hasFlag(DiplomacyFlags.ResearchAgreement))
-            modifierMap["Research Agreement"] = -5
+            modifiers.add(Pair("Research Agreement", -5))
 
         if (diplomacyManager.hasFlag(DiplomacyFlags.DeclarationOfFriendship))
-            modifierMap["Declaration of Friendship"] = -10
+            modifiers.add(Pair("Declaration of Friendship", -10))
 
         if (diplomacyManager.hasFlag(DiplomacyFlags.DefensivePact))
-            modifierMap["Defensive Pact"] = -15
+            modifiers.add(Pair("Defensive Pact", -15))
 
-        modifierMap["Relationship"] = getRelationshipModifier(diplomacyManager)
+        modifiers.add(Pair("Relationship", getRelationshipModifier(diplomacyManager)))
 
         if (diplomacyManager.hasFlag(DiplomacyFlags.Denunciation)) {
-            modifierMap["Denunciation"] = 5
+            modifiers.add(Pair("Denunciation", 5))
         }
 
         if (diplomacyManager.resourcesFromTrade().any { it.amount > 0 })
-            modifierMap["Receiving trade resources"] = -5
+            modifiers.add(Pair("Receiving trade resources", -5))
 
         // If their cities don't have any nearby cities that are also targets to us and it doesn't include their capital
         // Then there cities are likely isolated and a good target.
         if (otherCiv.getCapital(true) !in targetCities
                 && targetCities.all { theirCity -> !theirCity.neighboringCities.any { it !in targetCities } }) {
-            modifierMap["Isolated city"] = 15
+            modifiers.add(Pair("Isolated city", 15))
         }
 
         if (otherCiv.isCityState()) {
-            modifierMap["Protectors"] = -otherCiv.cityStateFunctions.getProtectorCivs().size * 3
+            modifiers.add(Pair("Protectors", -otherCiv.cityStateFunctions.getProtectorCivs().size * 3))
             if (otherCiv.cityStateFunctions.getProtectorCivs().contains(civInfo))
-                modifierMap["Under our protection"] = -15
+                modifiers.add(Pair("Under our protection", -15))
             if (otherCiv.getAllyCiv() == civInfo.civName)
-                modifierMap["Allied City-state"] = -20 // There had better be a DAMN good reason
+                modifiers.add(Pair("Allied City-state", -20)) // There had better be a DAMN good reason
         }
 
-        addWonderBasedMotivations(otherCiv, modifierMap)
+        addWonderBasedMotivations(otherCiv, modifiers)
 
-        modifierMap["War with allies"] = getAlliedWarMotivation(civInfo, otherCiv)
+        modifiers.add(Pair("War with allies", getAlliedWarMotivation(civInfo, otherCiv)))
 
         // Purely for debugging, remove modifiers that don't have an effect
-        modifierMap.entries.removeAll { it.value == 0 }
-        var motivationSoFar = modifierMap.values.sum()
+        modifiers.removeAll { it.second == 0 }
+        var motivationSoFar = modifiers.sumOf { it.second }
 
         // Short-circuit to avoid A-star
         if (motivationSoFar < atLeast) return motivationSoFar
@@ -140,21 +140,21 @@ object MotivationToAttackAutomation {
         return ourCombatStrength
     }
 
-    private fun addWonderBasedMotivations(otherCiv: Civilization, modifierMap: HashMap<String, Int>) {
+    private fun addWonderBasedMotivations(otherCiv: Civilization, modifiers: MutableList<Pair<String, Int>>) {
         var wonderCount = 0
         for (city in otherCiv.cities) {
             val construction = city.cityConstructions.getCurrentConstruction()
             if (construction is Building && construction.hasUnique(UniqueType.TriggersCulturalVictory))
-                modifierMap["About to win"] = 15
+                modifiers.add(Pair("About to win", 15))
             if (construction is BaseUnit && construction.hasUnique(UniqueType.AddInCapital))
-                modifierMap["About to win"] = 15
+                modifiers.add(Pair("About to win", 15))
             wonderCount += city.cityConstructions.getBuiltBuildings().count { it.isWonder }
         }
 
         // The more wonders they have, the more beneficial it is to conquer them
         // Civs need an army to protect thier wonders which give the most score
         if (wonderCount > 0)
-            modifierMap["Owned Wonders"] = wonderCount
+            modifiers.add(Pair("Owned Wonders", wonderCount))
     }
 
     /** If they are at war with our allies, then we should join in */
