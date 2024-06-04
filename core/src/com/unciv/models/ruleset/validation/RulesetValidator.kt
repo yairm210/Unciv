@@ -123,6 +123,23 @@ class RulesetValidator(val ruleset: Ruleset) {
         // modOptions is a valid sourceObject, but unnecessary
         if (ruleset.modOptions.uniqueObjects.count { it.type in audioVisualUniqueTypes } > 1)
             lines.add("A mod should only specify one of the 'can/should/cannot be used as permanent audiovisual mod' options.", sourceObject = null)
+
+        val mapSelectUniques = ruleset.modOptions.getMatchingUniques(UniqueType.ModMapPreselection).toList()
+        if (mapSelectUniques.size > 1)
+            lines.add("Specifying more than one map as preselection makes no sense", RulesetErrorSeverity.WarningOptionsOnly, sourceObject = null)
+        if (mapSelectUniques.isNotEmpty()) {
+            val mapsFolder = Gdx.files.local("mods").child(ruleset.name).child("maps")
+            if (mapsFolder.exists()) {
+                val maps = mapsFolder.list().map { it.name().lowercase() }
+                for (unique in mapSelectUniques) {
+                    if (unique.params[0].lowercase() in maps) continue
+                    lines.add("Mod names map '${unique.params[0]}' as preselection, which does not exist.", RulesetErrorSeverity.WarningOptionsOnly, sourceObject = null)
+                }
+            } else {
+                lines.add("Mod option for map preselection exists but Mod has no 'maps' folder.", RulesetErrorSeverity.WarningOptionsOnly, sourceObject = null)
+            }
+        }
+
         if (!ruleset.modOptions.isBaseRuleset) return
         for (unique in ruleset.modOptions.getMatchingUniques(UniqueType.ModRequires)) {
             lines.add("Mod option '${unique.text}' is invalid for a base ruleset.", sourceObject = null)

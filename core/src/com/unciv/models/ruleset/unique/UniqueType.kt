@@ -150,8 +150,6 @@ enum class UniqueType(
 
     /// Natural Wonders
     StatsFromNaturalWonders("[stats] for every known Natural Wonder", UniqueTarget.Global),
-    @Deprecated("as of 4.10.17", ReplaceWith("[+100 Gold] for discovering a Natural Wonder (bonus enhanced to [+500 Gold] if first to discover it)"))
-    GoldWhenDiscoveringNaturalWonder("100 Gold for discovering a Natural Wonder (bonus enhanced to 500 Gold if first to discover it)", UniqueTarget.Global),
     StatBonusWhenDiscoveringNaturalWonder("[stats] for discovering a Natural Wonder (bonus enhanced to [stats] if first to discover it)", UniqueTarget.Global),
 
     /// Great Persons
@@ -297,12 +295,6 @@ enum class UniqueType(
     CostIncreasesWhenBuilt("Cost increases by [amount] when built", UniqueTarget.Building, UniqueTarget.Unit),
     CostPercentageChange("[amount]% production cost", UniqueTarget.Building, UniqueTarget.Unit, docDescription = "Intended to be used with conditionals to dynamically alter construction costs"),
 
-    @Deprecated("as of 4.10.17", ReplaceWith("Only available <if [buildingFilter] is constructed in all [non-[Puppeted]] cities>"))
-    RequiresBuildingInAllCities("Requires a [buildingFilter] in all cities", UniqueTarget.Building),
-    @Deprecated("as of 4.10.17", ReplaceWith("Only available <if [buildingFilter] is constructed in at least [positiveAmount] of [All] cities>"))
-    RequiresBuildingInSomeCities("Requires a [buildingFilter] in at least [positiveAmount] cities", UniqueTarget.Building),
-    @Deprecated("as of 4.10.18", ReplaceWith("Can only be built <in [cityFilter] cities>"))
-    CanOnlyBeBuiltInCertainCities("Can only be built [cityFilter]", UniqueTarget.Building),
     /** Triggers [RejectionReasonType] when any conditional does NOT apply.
      * Doesn't restrict Upgrade/Transform pathways.
      * @see [OnlyAvailable]
@@ -539,8 +531,6 @@ enum class UniqueType(
     NaturalWonderConvertNeighbors("Neighboring tiles will convert to [baseTerrain]", UniqueTarget.Terrain, flags = UniqueFlag.setOfHiddenToUsers),
     // The "Except [terrainFilter]" could theoretically be implemented with a conditional
     NaturalWonderConvertNeighborsExcept("Neighboring tiles except [baseTerrain] will convert to [baseTerrain]", UniqueTarget.Terrain, flags = UniqueFlag.setOfHiddenToUsers),
-    @Deprecated("As of 4.10.17", ReplaceWith("Grants [+500 Gold] to the first civilization to discover it"))
-    GrantsGoldToFirstToDiscover("Grants 500 Gold to the first civilization to discover it", UniqueTarget.Terrain),
     GrantsStatsToFirstToDiscover("Grants [stats] to the first civilization to discover it", UniqueTarget.Terrain),
 
     // General terrain
@@ -793,11 +783,11 @@ enum class UniqueType(
     OneTimeGainProphet("Gain enough Faith for [amount]% of a Great Prophet", UniqueTarget.Triggerable),
     // todo: The "up to [All]" used in vanilla json is not nice to read. Split?
     // Or just reword it without the 'up to', so it reads "Reveal [amount/'all'] [tileFilter] tiles within [amount] tiles"
-    OneTimeRevealSpecificMapTiles("Reveal up to [positiveAmount/'all'] [tileFilter] within a [amount] tile radius", UniqueTarget.Triggerable),
+    OneTimeRevealSpecificMapTiles("Reveal up to [positiveAmount/'all'] [tileFilter] within a [positiveAmount] tile radius", UniqueTarget.Triggerable),
     OneTimeRevealCrudeMap("From a randomly chosen tile [positiveAmount] tiles away from the ruins, reveal tiles up to [positiveAmount] tiles away with [positiveAmount]% chance", UniqueTarget.Ruins),
     OneTimeGlobalAlert("Triggers the following global alert: [comment]", UniqueTarget.Triggerable), // used in Policy
     OneTimeGlobalSpiesWhenEnteringEra("Every major Civilization gains a spy once a civilization enters this era", UniqueTarget.Era),
-    OneTimeSpiesLevelUp("Promotes all spies", UniqueTarget.Triggerable),  // used in Policies, Buildings
+    OneTimeSpiesLevelUp("Promotes all spies [amount] time(s)", UniqueTarget.Triggerable),  // used in Policies, Buildings
     OneTimeGainSpy("Gain an extra spy", UniqueTarget.Triggerable),  // used in Wonders
 
     OneTimeUnitHeal("Heal this unit by [positiveAmount] HP", UniqueTarget.UnitTriggerable),
@@ -823,8 +813,6 @@ enum class UniqueType(
     ///////////////////////////////////////// region 10 TRIGGERS /////////////////////////////////////////
 
     TriggerUponResearch("upon discovering [techFilter] technology", UniqueTarget.TriggerCondition),
-    @Deprecated("as of 4.10.15", ReplaceWith("upon discovering [tech] technology"))
-    TriggerUponResearchOld("upon discovering [tech]", UniqueTarget.TriggerCondition),
     TriggerUponEnteringEra("upon entering the [era]", UniqueTarget.TriggerCondition),
     TriggerUponEnteringEraUnfiltered("upon entering a new era", UniqueTarget.TriggerCondition),
     TriggerUponAdoptingPolicyOrBelief("upon adopting [policy/belief]", UniqueTarget.TriggerCondition),
@@ -899,16 +887,30 @@ enum class UniqueType(
     ModIsAudioVisualOnly("Should only be used as permanent audiovisual mod", UniqueTarget.ModOptions, flags = UniqueFlag.setOfNoConditionals),
     ModIsAudioVisual("Can be used as permanent audiovisual mod", UniqueTarget.ModOptions, flags = UniqueFlag.setOfNoConditionals),
     ModIsNotAudioVisual("Cannot be used as permanent audiovisual mod", UniqueTarget.ModOptions, flags = UniqueFlag.setOfNoConditionals),
+    ModMapPreselection("Mod preselects map [comment]", UniqueTarget.ModOptions, flags = UniqueFlag.setOfNoConditionals,
+        docDescription = "Only meaningful for Mods containing several maps. When this mod is selected on the new game screen's custom maps mod dropdown, the named map will be selected on the map dropdown. Also disables selection by recently modified. Case insensitive."),
 
     // endregion
 
     ///////////////////////////////////////////// region 99 DEPRECATED AND REMOVED /////////////////////////////////////////////
 
-    @Deprecated("as of 4.10.3", ReplaceWith("[+30]% Strength <vs [City-States]>"))
+    @Deprecated("As of 4.10.17", ReplaceWith("Grants [+500 Gold] to the first civilization to discover it"), DeprecationLevel.ERROR)
+    GrantsGoldToFirstToDiscover("Grants 500 Gold to the first civilization to discover it", UniqueTarget.Terrain),
+    @Deprecated("as of 4.10.17", ReplaceWith("[+100 Gold] for discovering a Natural Wonder (bonus enhanced to [+500 Gold] if first to discover it)"), DeprecationLevel.ERROR)
+    GoldWhenDiscoveringNaturalWonder("100 Gold for discovering a Natural Wonder (bonus enhanced to 500 Gold if first to discover it)", UniqueTarget.Global),
+    @Deprecated("as of 4.10.17", ReplaceWith("Only available <if [buildingFilter] is constructed in all [non-[Puppeted]] cities>"), DeprecationLevel.ERROR)
+    RequiresBuildingInAllCities("Requires a [buildingFilter] in all cities", UniqueTarget.Building),
+    @Deprecated("as of 4.10.17", ReplaceWith("Only available <if [buildingFilter] is constructed in at least [positiveAmount] of [All] cities>"), DeprecationLevel.ERROR)
+    RequiresBuildingInSomeCities("Requires a [buildingFilter] in at least [positiveAmount] cities", UniqueTarget.Building),
+    @Deprecated("as of 4.10.18", ReplaceWith("Can only be built <in [cityFilter] cities>"), DeprecationLevel.ERROR)
+    CanOnlyBeBuiltInCertainCities("Can only be built [cityFilter]", UniqueTarget.Building),
+    @Deprecated("as of 4.10.15", ReplaceWith("upon discovering [tech] technology"), DeprecationLevel.ERROR)
+    TriggerUponResearchOld("upon discovering [tech]", UniqueTarget.TriggerCondition),
+    @Deprecated("as of 4.10.3", ReplaceWith("[+30]% Strength <vs [City-States]>"), DeprecationLevel.ERROR)
     StrengthBonusVsCityStates("+30% Strength when fighting City-State units and cities", UniqueTarget.Global),
-    @Deprecated("as of 4.10.3", ReplaceWith("with [amount] to [amount] neighboring [{tileFilter} {tileFilter}] tiles"))
+    @Deprecated("as of 4.10.3", ReplaceWith("with [amount] to [amount] neighboring [{tileFilter} {tileFilter}] tiles"), DeprecationLevel.ERROR)
     ConditionalNeighborTilesAnd("with [amount] to [amount] neighboring [tileFilter] [tileFilter] tiles", UniqueTarget.Conditional),
-    @Deprecated("as of 4.10.3", ReplaceWith("in [{tileFilter} {tileFilter}] tiles"))
+    @Deprecated("as of 4.10.3", ReplaceWith("in [{tileFilter} {tileFilter}] tiles"), DeprecationLevel.ERROR)
     ConditionalInTilesAnd("in [tileFilter] [tileFilter] tiles", UniqueTarget.Conditional),
     @Deprecated("as of 4.10.3", ReplaceWith("Unavailable <after generating a Great Prophet>"), DeprecationLevel.ERROR)
     HiddenAfterGreatProphet("Hidden after generating a Great Prophet", UniqueTarget.Ruins),

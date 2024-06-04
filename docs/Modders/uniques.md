@@ -139,7 +139,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Triggerable
 
-??? example  "Reveal up to [positiveAmount/'all'] [tileFilter] within a [amount] tile radius"
+??? example  "Reveal up to [positiveAmount/'all'] [tileFilter] within a [positiveAmount] tile radius"
 	Example: "Reveal up to [3] [Farm] within a [3] tile radius"
 
 	Applicable to: Triggerable
@@ -149,7 +149,9 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Triggerable
 
-??? example  "Promotes all spies"
+??? example  "Promotes all spies [amount] time(s)"
+	Example: "Promotes all spies [3] time(s)"
+
 	Applicable to: Triggerable
 
 ??? example  "Gain an extra spy"
@@ -1537,6 +1539,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Unit
 
 ??? example  "Is part of Great Person group [comment]"
+	Great people in the same group increase teach other's costs when gained. Gaining one will make all others in the same group cost more GPP.
 	Example: "Is part of Great Person group [comment]"
 
 	Applicable to: Unit
@@ -1918,6 +1921,12 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: ModOptions
 
 ??? example  "Cannot be used as permanent audiovisual mod"
+	Applicable to: ModOptions
+
+??? example  "Mod preselects map [comment]"
+	Only meaningful for Mods containing several maps. When this mod is selected on the new game screen's custom maps mod dropdown, the named map will be selected on the map dropdown. Also disables selection by recently modified. Case insensitive.
+	Example: "Mod preselects map [comment]"
+
 	Applicable to: ModOptions
 
 ## Conditional uniques

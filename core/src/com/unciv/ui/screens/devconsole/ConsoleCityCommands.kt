@@ -1,13 +1,14 @@
 package com.unciv.ui.screens.devconsole
 
 import com.unciv.models.ruleset.Building
+import com.unciv.ui.screens.devconsole.CliInput.Companion.findCliInput
 
-class ConsoleCityCommands : ConsoleCommandNode {
+internal class ConsoleCityCommands : ConsoleCommandNode {
     override val subcommands = hashMapOf<String, ConsoleCommand>(
 
         "checkfilter" to ConsoleAction("city checkfilter <cityFilter>") { console, params ->
             val city = console.getSelectedCity()
-            DevConsoleResponse.hint(city.matchesFilter(params[0]).toString())
+            DevConsoleResponse.hint(city.matchesFilter(params[0].toString()).toString())
         },
 
         "add" to ConsoleAction("city add <civName>") { console, params ->
@@ -27,7 +28,7 @@ class ConsoleCityCommands : ConsoleCommandNode {
 
         "setpop" to ConsoleAction("city setpop <amount>") { console, params ->
             val city = console.getSelectedCity()
-            val newPop = console.getInt(params[0])
+            val newPop = params[0].toInt()
             if (newPop < 1) throw ConsoleErrorException("Population must be at least 1")
             city.population.setPopulation(newPop)
             DevConsoleResponse.OK
@@ -35,7 +36,7 @@ class ConsoleCityCommands : ConsoleCommandNode {
 
         "setname" to ConsoleAction("city setname <\"name\">") { console, params ->
             val city = console.getSelectedCity()
-            city.name = params[0]
+            city.name = params[0].toString()
             DevConsoleResponse.OK
         },
 
@@ -44,7 +45,7 @@ class ConsoleCityCommands : ConsoleCommandNode {
             val city = console.getCity(params[0])
             if (selectedTile.neighbors.none { it.getCity() == city })
                 throw ConsoleErrorException("Tile is not adjacent to any tile already owned by the city")
-            if (selectedTile.isCityCenter()) throw ConsoleErrorException("Cannot tranfer city center")
+            if (selectedTile.isCityCenter()) throw ConsoleErrorException("Cannot transfer city center")
             city.expansion.takeOwnership(selectedTile)
             DevConsoleResponse.OK
         },
@@ -58,9 +59,9 @@ class ConsoleCityCommands : ConsoleCommandNode {
 
         "religion" to ConsoleAction("city religion <religionName> <±pressure>") { console, params ->
             val city = console.getSelectedCity()
-            val religion = city.civ.gameInfo.religions.keys.findCliInput(params[0])
+            val religion = params[0].findOrNull(console.gameInfo.religions.keys)
                 ?: throw ConsoleErrorException("'${params[0]}' is not a known religion")
-            val pressure = console.getInt(params[1])
+            val pressure = params[1].toInt()
             city.religion.addPressure(religion, pressure.coerceAtLeast(-city.religion.getPressures()[religion]))
             city.religion.updatePressureOnPopulationChange(0)
             DevConsoleResponse.OK
@@ -69,9 +70,7 @@ class ConsoleCityCommands : ConsoleCommandNode {
         "sethealth" to ConsoleAction("city sethealth [amount]") { console, params ->
             val city = console.getSelectedCity()
             val maxHealth = city.getMaxHealth()
-            val health = params.firstOrNull()?.run {
-                toIntOrNull() ?: throw ConsoleErrorException("Invalid number")
-            } ?: maxHealth
+            val health = params.firstOrNull()?.toInt() ?: maxHealth
             if (health !in 1..maxHealth) throw ConsoleErrorException("Number out of range")
             city.health = health
             DevConsoleResponse.OK

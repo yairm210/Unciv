@@ -149,6 +149,7 @@ class WorldMapHolder(
                     ActivationTypes.Longpress else ActivationTypes.RightClick,
                 noEquivalence = true
             ) {
+                if (!UncivGame.Current.settings.longTapMove) return@onActivation
                 val unit = worldScreen.bottomUnitTable.selectedUnit
                     ?: return@onActivation
                 Concurrency.run("WorldScreenClick") {
