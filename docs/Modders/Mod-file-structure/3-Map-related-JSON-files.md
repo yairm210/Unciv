@@ -13,7 +13,7 @@ Each terrain entry has the following structure:
 | name                       | String                                                              | Required | [^A]                                                                                          |
 | type                       | Enum                                                                | Required | Land, Water, TerrainFeature, NaturalWonder [^B]                                               |
 | occursOn                   | List of Strings                                                     | none     | Only for terrain features and Natural Wonders: The baseTerrain it can be placed on            |
-| turnsInto                  | String                                                              | none     | Only for NaturalWonder: the base terrain is changed to this after placing the Natural Wonder  |
+| turnsInto                  | String                                                              | none     | Only for NaturalWonder: optional mandatory base terrain [^C]                                  |
 | weight                     | Integer                                                             | 10       | Only for NaturalWonder: _relative_ weight of being picked by the map generator                |
 | [`<stats>`](#general-stat) | Float                                                               | 0        | Per-turn yield or bonus yield for the tile                                                    |
 | overrideStats              | Boolean                                                             | false    | If true, a feature's yields replace any yield from underlying terrain instead of adding to it |
@@ -29,6 +29,7 @@ Each terrain entry has the following structure:
       `River` is hardcoded to be used to look up a [Stats](../../uniques.md#global-uniques) unique to determine the bonuses an actual River provides (remember, rivers live on the edges not as terrain).
       River should always be a TerrainFeature and have the same uniques the one in the vanilla rulesets has - if you change that, expect surprises.
 [^B]: A base ruleset mod is always expected to provide at least one Land and at least one Water terrain. We do not support Land-only or Water-only mods, even if they might be possible to pull off.
+[^C]: If set, the base terrain is changed to this after placing the Natural Wonder, and terrain features cleared. Otherwise, terrain features are reduced to only those present in occursOn.
 
 ## TileImprovements.json
 

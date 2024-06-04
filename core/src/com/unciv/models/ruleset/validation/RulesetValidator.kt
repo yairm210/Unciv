@@ -479,9 +479,7 @@ class RulesetValidator(val ruleset: Ruleset) {
                 else if (baseTerrain.type == TerrainType.NaturalWonder)
                     lines.add("${terrain.name} occurs on natural wonder $baseTerrainName: Unsupported.", RulesetErrorSeverity.WarningOptionsOnly, terrain)
             }
-            if (terrain.type == TerrainType.NaturalWonder) {
-                if (terrain.turnsInto == null)
-                    lines.add("Natural Wonder ${terrain.name} is missing the turnsInto attribute!", sourceObject = terrain)
+            if (terrain.type == TerrainType.NaturalWonder && terrain.turnsInto != null) {
                 val baseTerrain = ruleset.terrains[terrain.turnsInto]
                 if (baseTerrain == null)
                     lines.add("${terrain.name} turns into terrain ${terrain.turnsInto} which does not exist!", sourceObject = terrain)
@@ -740,8 +738,8 @@ class RulesetValidator(val ruleset: Ruleset) {
             if (techColumn.columnNumber < 0)
                 lines.add("Tech Column number ${techColumn.columnNumber} is negative", sourceObject = null)
 
-            val buildingsWithoutAssignedCost = ruleset.buildings.values.filter {
-                it.cost == -1 && techColumn.techs.map { it.name }.contains(it.requiredTech) }.toList()
+            val buildingsWithoutAssignedCost = ruleset.buildings.values.filter { building ->
+                building.cost == -1 && techColumn.techs.map { it.name }.contains(building.requiredTech) }.toList()
 
 
             val nonWondersWithoutAssignedCost = buildingsWithoutAssignedCost.filter { !it.isAnyWonder() }

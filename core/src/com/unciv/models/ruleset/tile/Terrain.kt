@@ -25,7 +25,9 @@ class Terrain : RulesetStatsObject() {
     /** For terrain features */
     val occursOn = ArrayList<String>()
 
-    /** Used by Natural Wonders: it is the baseTerrain on top of which the Natural Wonder is placed */
+    /** Used by Natural Wonders: it is the baseTerrain on top of which the Natural Wonder is placed
+     *  Omitting it means the Natural Wonder is placed on whatever baseTerrain the Tile already had (limited by occursOn)
+     */
     var turnsInto: String? = null
 
     override fun getUniqueTarget() = UniqueTarget.Terrain

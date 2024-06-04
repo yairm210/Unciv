@@ -180,9 +180,9 @@ class NaturalWonderGenerator(val ruleset: Ruleset, val randomness: MapGeneration
 
     companion object {
         fun placeNaturalWonder(wonder: Terrain, location: Tile) {
-            clearTile(location)
             location.naturalWonder = wonder.name
-            if (wonder.turnsInto != null)
+            if (wonder.turnsInto != null) {
+                clearTile(location)
                 location.baseTerrain = wonder.turnsInto!!
 
             var convertNeighborsExcept: String? = null
@@ -192,6 +192,8 @@ class NaturalWonderGenerator(val ruleset: Ruleset, val randomness: MapGeneration
                 convertUnique = wonder.getMatchingUniques(UniqueType.NaturalWonderConvertNeighborsExcept).firstOrNull()
                 convertNeighborsExcept = convertUnique?.params?.get(0)
                 convertNeighborsTo = convertUnique?.params?.get(1)
+            } else {
+                clearTile(location, wonder.occursOn)
             }
 
             if (convertNeighborsTo != null) {
