@@ -230,9 +230,9 @@ class Spy private constructor() : IsPartOfGameInfoSerialization {
             otherCiv.getDiplomacyManager(civInfo).addModifier(DiplomaticModifiers.SpiedOnUs, -15f)
         }
     }
-    
+
     fun canDoCoup(): Boolean = getCityOrNull() != null && getCity().civ.isCityState() && isSetUp() && getCity().civ.getAllyCiv() != civInfo.civName
-    
+
     /**
      * Initiates a coup if this spies civ is not the ally of the city-state.
      * The coup will only happen at the end of the Civ's turn for save scum reasons, so a play may not reload in multiplayer.
@@ -353,11 +353,13 @@ class Spy private constructor() : IsPartOfGameInfoSerialization {
 
     fun getLocationName() = getCityOrNull()?.name ?: Constants.spyHideout
 
-    fun levelUpSpy() {
-        //TODO: Make the spy level cap dependent on some unique
-        if (rank >= 3) return
-        addNotification("Your spy [$name] has leveled up!")
-        rank++
+    fun levelUpSpy(amount: Int = 1) {
+        if (rank >= civInfo.gameInfo.ruleset.modOptions.constants.maxSpyLevel) return
+        val ranksToLevelUp = amount.coerceAtMost(civInfo.gameInfo.ruleset.modOptions.constants.maxSpyLevel - rank)
+
+        if (ranksToLevelUp == 1) addNotification("Your spy [$name] has leveled up!")
+        else addNotification("Your spy [$name] has leveled up [$ranksToLevelUp] times!")
+        rank += ranksToLevelUp
     }
 
     /** Zero-based modifier expressing shift of probabilities from Spy Rank

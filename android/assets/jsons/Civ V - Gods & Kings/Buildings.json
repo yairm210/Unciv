@@ -988,7 +988,7 @@
         "isNationalWonder": true,
         "uniques": ["Hidden when espionage is disabled",
             "New spies start with [1] level(s)",
-            "Promotes all spies",
+            "Promotes all spies [1] time(s)",
             "Gain an extra spy", // Order is significant here
 			"[-15]% enemy spy effectiveness [in this city]",
 			"Only available <if [Police Station] is constructed in all [non-[Puppeted]] cities>",
