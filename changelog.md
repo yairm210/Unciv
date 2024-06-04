@@ -1,27 +1,19 @@
 ## 4.11.17
 
-Deprecated old uniques
-
-Resolved  - Unavailable techs work well with tech picker screen
+Unavailable techs work well with tech picker screen
 
 Added ruleset check for resource uniques with resource conditionals
 
-minor docs and city resource conditional test
-
-Better location for resource tests
-
-Unify "get stat for conditional state" logic
-
 By tuvus:
-- Spy max rank can be modded 
-- Added an option to disable move by long press 
-- Fixed spy steal tech timer 
+- Added an option to disable move by long press
+- Fixed spy steal tech timer
+- Spy max rank can be modded
 
 By SomeTroglodyte:
-- Console: Improve `civ activatetrigger` command 
-- UI candy: WLTK fireworks 
-- A ModOptions unique allowing a mod to control which map gets preselected 
-- Sortable unit overview 
+- Sortable unit overview
+- Console: Improve `civ activatetrigger` command
+- UI candy: WLTK fireworks
+- ModOptions unique for mods to control which map gets preselected
 
 ## 4.11.16
 

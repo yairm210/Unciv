@@ -139,7 +139,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Triggerable
 
-??? example  "Reveal up to [positiveAmount/'all'] [tileFilter] within a [amount] tile radius"
+??? example  "Reveal up to [positiveAmount/'all'] [tileFilter] within a [positiveAmount] tile radius"
 	Example: "Reveal up to [3] [Farm] within a [3] tile radius"
 
 	Applicable to: Triggerable
@@ -149,7 +149,9 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Triggerable
 
-??? example  "Promotes all spies"
+??? example  "Promotes all spies [amount] time(s)"
+	Example: "Promotes all spies [3] time(s)"
+
 	Applicable to: Triggerable
 
 ??? example  "Gain an extra spy"
