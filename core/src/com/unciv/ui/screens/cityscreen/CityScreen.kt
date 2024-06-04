@@ -21,6 +21,7 @@ import com.unciv.models.stats.Stat
 import com.unciv.models.translations.tr
 import com.unciv.ui.audio.CityAmbiencePlayer
 import com.unciv.ui.audio.SoundPlayer
+import com.unciv.ui.components.ParticleEffectMapFireworks
 import com.unciv.ui.components.extensions.colorFromRGB
 import com.unciv.ui.components.extensions.disable
 import com.unciv.ui.components.extensions.packIfNeeded
@@ -137,16 +138,20 @@ class CityScreen(
 
     private var cityAmbiencePlayer: CityAmbiencePlayer?  = ambiencePlayer ?: CityAmbiencePlayer(city)
 
+    /** Particle effects for WLTK day decoration */
+    private val isWLTKday = city.isWeLoveTheKingDayActive()
+    private val fireworks: ParticleEffectMapFireworks?
+
     init {
-        if (city.isWeLoveTheKingDayActive() && UncivGame.Current.settings.citySoundsVolume > 0) {
+        if (isWLTKday && UncivGame.Current.settings.citySoundsVolume > 0) {
             SoundPlayer.play(UncivSound("WLTK"))
         }
+        fireworks = if (isWLTKday) ParticleEffectMapFireworks.create(game, mapScrollPane) else null
 
         UncivGame.Current.settings.addCompletedTutorialTask("Enter city screen")
 
         addTiles()
 
-        //stage.setDebugTableUnderMouse(true)
         stage.addActor(cityStatsTable)
         // If we are spying then we shoulden't be able to see their construction screen.
         constructionsTable.addActorsToStage()
@@ -251,6 +256,7 @@ class CityScreen(
                 else -> Color.GREEN to 0.5f
             }
         }
+
         for (tileGroup in tileGroups) {
             tileGroup.update()
             tileGroup.layerMisc.removeHexOutline()
@@ -268,6 +274,9 @@ class CityScreen(
                     getPickImprovementColor(tileGroup.tile).run {
                         tileGroup.layerMisc.addHexOutline(first.cpy().apply { this.a = second }) }
             }
+
+            if (fireworks == null || tileGroup.tile.position != city.location) continue
+            fireworks.setActorBounds(tileGroup)
         }
     }
 
@@ -277,7 +286,7 @@ class CityScreen(
         fun addWltkIcon(name: String, apply: Image.()->Unit = {}) =
             razeCityButtonHolder.add(ImageGetter.getImage(name).apply(apply)).size(wltkIconSize)
 
-        if (city.isWeLoveTheKingDayActive()) {
+        if (isWLTKday && fireworks == null) {
             addWltkIcon("OtherIcons/WLTK LR") { color = Color.GOLD }
             addWltkIcon("OtherIcons/WLTK 1") { color = Color.FIREBRICK }.padRight(10f)
         }
@@ -309,7 +318,7 @@ class CityScreen(
             razeCityButtonHolder.add(stopRazingCityButton) //.colspan(cityPickerTable.columns)
         }
 
-        if (city.isWeLoveTheKingDayActive()) {
+        if (isWLTKday && fireworks == null) {
             addWltkIcon("OtherIcons/WLTK 2") { color = Color.FIREBRICK }.padLeft(10f)
             addWltkIcon("OtherIcons/WLTK LR") {
                 color = Color.GOLD
@@ -329,7 +338,7 @@ class CityScreen(
         val tileSetStrings = TileSetStrings()
         val cityTileGroups = city.getCenterTile().getTilesInDistance(5)
                 .filter { selectedCiv.hasExplored(it) }
-                .map { CityTileGroup(city, it, tileSetStrings) }
+                .map { CityTileGroup(city, it, tileSetStrings, fireworks != null) }
 
         for (tileGroup in cityTileGroups) {
             tileGroup.onClick { tileGroupOnClick(tileGroup, city) }
@@ -531,6 +540,12 @@ class CityScreen(
 
     override fun dispose() {
         cityAmbiencePlayer?.dispose()
+        fireworks?.dispose()
         super.dispose()
+    }
+
+    override fun render(delta: Float) {
+        super.render(delta)
+        fireworks?.render(stage, delta)
     }
 }
