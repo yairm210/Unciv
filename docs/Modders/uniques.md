@@ -119,6 +119,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "Gain [amount] [stat]"
 	Example: "Gain [3] [Culture]"
 
+	This unique's effect can be modified with &lt;(modified by game speed)&gt;
 	Applicable to: Triggerable
 
 ??? example  "Gain [amount]-[amount] [stat]"
@@ -744,6 +745,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "[stats] when a city adopts this religion for the first time"
 	Example: "[+1 Gold, +2 Production] when a city adopts this religion for the first time"
 
+	This unique's effect can be modified with &lt;(modified by game speed)&gt;
 	Applicable to: Global
 
 ??? example  "[relativeAmount]% Natural religion spread [cityFilter]"
