@@ -2,20 +2,21 @@ package com.unciv.ui.screens.overviewscreen
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Actor
-import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.utils.Align
-import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
 import com.unciv.logic.city.City
 import com.unciv.logic.city.CityFlags
 import com.unciv.models.stats.Stat
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.ISortableGridContentProvider
+import com.unciv.ui.components.ISortableGridContentProvider.Companion.collator
+import com.unciv.ui.components.ISortableGridContentProvider.Companion.getCircledIcon
 import com.unciv.ui.components.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.components.extensions.surroundWithCircle
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
 import com.unciv.ui.components.input.onClick
+import com.unciv.ui.components.widgets.SortableGrid
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.cityscreen.CityScreen
 import kotlin.math.roundToInt
@@ -34,9 +35,9 @@ enum class CityOverviewTabColumn : ISortableGridContentProvider<City, EmpireOver
         override val headerTip = "Name"
         override val align = Align.left
         override val fillX = true
-        override val defaultDescending = false
+        override val defaultSort get() = SortableGrid.SortDirection.Ascending
         override fun getComparator() = compareBy<City, String>(collator) { it.name.tr(hideIcons = true) }
-        override fun getHeaderIcon(iconSize: Float) =
+        override fun getHeaderActor(iconSize: Float) =
                 ImageGetter.getUnitIcon("Settler")
                 .surroundWithCircle(iconSize)
         override fun getEntryValue(item: City) = 0  // make sure that `stat!!` in the super isn't used
@@ -51,7 +52,7 @@ enum class CityOverviewTabColumn : ISortableGridContentProvider<City, EmpireOver
 
     Status {
         override val headerTip = "Status\n(puppet, resistance or being razed)"
-        override fun getHeaderIcon(iconSize: Float) = ImageGetter.getImage("OtherIcons/CityStatus")
+        override fun getHeaderActor(iconSize: Float) = ImageGetter.getImage("OtherIcons/CityStatus")
         override fun getEntryValue(item: City) = when {
             item.isBeingRazed -> 3
             item.isInResistance() -> 2
@@ -72,7 +73,7 @@ enum class CityOverviewTabColumn : ISortableGridContentProvider<City, EmpireOver
     },
 
     ConstructionIcon {
-        override fun getHeaderIcon(iconSize: Float) = null
+        override fun getHeaderActor(iconSize: Float) = null
         override fun getEntryValue(item: City) =
                 item.cityConstructions.run { turnsToConstruction(currentConstructionFromQueue) }
         override fun getEntryActor(item: City, iconSize: Float, actionContext: EmpireOverviewScreen): Actor? {
@@ -88,10 +89,10 @@ enum class CityOverviewTabColumn : ISortableGridContentProvider<City, EmpireOver
         override val expandX = false
         override val equalizeHeight = true
         override val headerTip = "Current construction"
-        override val defaultDescending = false
+        override val defaultSort get() = SortableGrid.SortDirection.Ascending
         override fun getComparator() =
             compareBy<City, String>(collator) { it.cityConstructions.currentConstructionFromQueue.tr(hideIcons = true) }
-        override fun getHeaderIcon(iconSize: Float) =
+        override fun getHeaderActor(iconSize: Float) =
                 getCircledIcon("OtherIcons/Settings", iconSize)
         override fun getEntryValue(item: City) = 0
         override fun getEntryActor(item: City, iconSize: Float, actionContext: EmpireOverviewScreen) =
@@ -124,10 +125,10 @@ enum class CityOverviewTabColumn : ISortableGridContentProvider<City, EmpireOver
 
     WLTK {
         override val headerTip = "We Love The King Day"
-        override val defaultDescending = false
+        override val defaultSort get() = SortableGrid.SortDirection.Ascending
         override fun getComparator() =
             super.getComparator().thenBy { it.demandedResource.tr(hideIcons = true) }
-        override fun getHeaderIcon(iconSize: Float) =
+        override fun getHeaderActor(iconSize: Float) =
                 getCircledIcon("OtherIcons/WLTK 2", iconSize, Color.TAN)
         override fun getEntryValue(item: City) =
                 if (item.isWeLoveTheKingDayActive()) 1 else 0
@@ -153,10 +154,10 @@ enum class CityOverviewTabColumn : ISortableGridContentProvider<City, EmpireOver
 
     Garrison {
         override val headerTip = "Garrisoned by unit"
-        override val defaultDescending = false
+        override val defaultSort get() = SortableGrid.SortDirection.Ascending
         override fun getComparator() =
             compareBy<City, String>(collator) { it.getGarrison()?.name?.tr(hideIcons = true) ?: "" }
-        override fun getHeaderIcon(iconSize: Float) =
+        override fun getHeaderActor(iconSize: Float) =
                 getCircledIcon("OtherIcons/Shield", iconSize)
         override fun getEntryValue(item: City) =
                 if (item.getGarrison() != null) 1 else 0
@@ -166,7 +167,7 @@ enum class CityOverviewTabColumn : ISortableGridContentProvider<City, EmpireOver
             val unitIcon = ImageGetter.getConstructionPortrait(unit.baseUnit.getIconName(), iconSize * 0.7f)
             unitIcon.addTooltip(unitName, 18f, tipAlign = Align.topLeft)
             unitIcon.onClick {
-                actionContext.select(EmpireOverviewCategories.Units, UnitOverviewTab.getUnitIdentifier(unit) )
+                actionContext.select(EmpireOverviewCategories.Units, UnitOverviewTabColumn.getUnitIdentifier(unit) )
             }
             return unitIcon
         }
@@ -185,8 +186,7 @@ enum class CityOverviewTabColumn : ISortableGridContentProvider<City, EmpireOver
     override val fillX = false
     override val expandX = false
     override val equalizeHeight = false
-    override val defaultDescending = true
-
+    override val defaultSort get() = SortableGrid.SortDirection.Descending
     //endregion
     //region Overridable methods
 
@@ -194,7 +194,7 @@ enum class CityOverviewTabColumn : ISortableGridContentProvider<City, EmpireOver
      * - Must override unless a texture exists for "StatIcons/$name" - e.g. a [Stat] column or [Population].
      * - _Should_ be sized to [iconSize].
      */
-    override fun getHeaderIcon(iconSize: Float): Actor? =
+    override fun getHeaderActor(iconSize: Float): Actor? =
             ImageGetter.getStatIcon(name)
 
     /** A getter for the numeric value to display in a cell
@@ -206,34 +206,5 @@ enum class CityOverviewTabColumn : ISortableGridContentProvider<City, EmpireOver
     override fun getEntryValue(item: City): Int =
             item.cityStats.currentCityStats[stat!!].roundToInt()
 
-    /** Factory for entry cell [Actor]
-     * - By default displays the (numeric) result of [getEntryValue].
-     * - [actionContext] will be the parent screen used to define `onClick` actions.
-     */
-    override fun getEntryActor(item: City, iconSize: Float, actionContext: EmpireOverviewScreen): Actor? =
-            getEntryValue(item).toCenteredLabel()
-
     //endregion
-
-    /** Factory for totals cell [Actor]
-     * - By default displays the sum over [getEntryValue].
-     * - Note a count may be meaningful even if entry cells display something other than a number,
-     *   In that case _not_ overriding this and supply a meaningful [getEntryValue] may be easier.
-     * - On the other hand, a sum may not be meaningful even if the cells are numbers - to leave
-     *   the total empty override to return `null`.
-     */
-    override fun getTotalsActor(items: Iterable<City>): Actor? =
-            items.sumOf { getEntryValue(it) }.toCenteredLabel()
-
-    companion object {
-        private val collator = UncivGame.Current.settings.getCollatorFromLocale()
-
-        private fun getCircledIcon(path: String, iconSize: Float, circleColor: Color = Color.LIGHT_GRAY) =
-                ImageGetter.getImage(path)
-                    .apply { color = Color.BLACK }
-                    .surroundWithCircle(iconSize, color = circleColor)
-
-        private fun Int.toCenteredLabel(): Label =
-                this.toLabel().apply { setAlignment(Align.center) }
-    }
 }

@@ -56,6 +56,8 @@ object ImageGetter {
     private val textureRegionDrawables = HashMap<String, TextureRegionDrawable>()
     private val ninePatchDrawables = HashMap<String, NinePatchDrawable>()
 
+    fun getSpecificAtlas(name: String): TextureAtlas? = atlases[name]
+
     fun resetAtlases() {
         atlases.values.forEach { it.dispose() }
         atlases.clear()

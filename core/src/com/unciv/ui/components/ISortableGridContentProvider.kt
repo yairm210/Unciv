@@ -1,15 +1,23 @@
 package com.unciv.ui.components
 
+import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.ui.Cell
+import com.badlogic.gdx.scenes.scene2d.ui.Label
+import com.badlogic.gdx.utils.Align
+import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
+import com.unciv.ui.components.extensions.surroundWithCircle
+import com.unciv.ui.components.extensions.toLabel
+import com.unciv.ui.components.widgets.SortableGrid
+import com.unciv.ui.images.ImageGetter
 
 /**
  * This defines all behaviour of a sortable Grid per column through overridable parts:
  * - [isVisible] can hide a column
  * - [align], [fillX], [expandX], [equalizeHeight] control geometry
- * - [getComparator] or [getEntryValue] control sorting, [defaultDescending] the initial order
- * - [getHeaderIcon], [headerTip] and [headerTipHideIcons] define how the header row looks
+ * - [getComparator] or [getEntryValue] control sorting, [defaultSort] the initial order
+ * - [getHeaderActor], [headerTip] and [headerTipHideIcons] define how the header row looks
  * - [getEntryValue] or [getEntryActor] define what the cells display
  * - [getEntryValue] or [getTotalsActor] define what the totals row displays
  * @param IT The item type - what defines the row
@@ -34,9 +42,9 @@ interface ISortableGridContentProvider<IT, ACT> {
     /** When overridden `true`, the entry cells of this column will be equalized to their max height */
     val equalizeHeight: Boolean
 
-    /** When `true` the column will be sorted descending when the user switches sort to it. */
+    /** Default sort direction when a column is first sorted - can be None to disable sorting entirely for this column. */
     // Relevant for visuals (simply inverting the comparator would leave the displayed arrow not matching)
-    val defaultDescending: Boolean
+    val defaultSort: SortableGrid.SortDirection
 
     /** @return whether the column should be rendered */
     fun isVisible(gameInfo: GameInfo): Boolean = true
@@ -47,8 +55,10 @@ interface ISortableGridContentProvider<IT, ACT> {
      */
     fun getComparator(): Comparator<IT> = compareBy { item: IT -> getEntryValue(item) }
 
-    /** Factory for the header cell [Actor] */
-    fun getHeaderIcon(iconSize: Float): Actor?
+    /** Factory for the header cell [Actor]
+     *  @param iconSize Suggestion for icon size passed down from [SortableGrid] constructor, intended to scale the grid header. If the actor is not an icon, treat as height.
+     */
+    fun getHeaderActor(iconSize: Float): Actor?
 
     /** A getter for the numeric value to display in a cell */
     fun getEntryValue(item: IT): Int
@@ -57,7 +67,8 @@ interface ISortableGridContentProvider<IT, ACT> {
      * - By default displays the (numeric) result of [getEntryValue].
      * - [actionContext] can be used to define `onClick` actions.
      */
-    fun getEntryActor(item: IT, iconSize: Float, actionContext: ACT): Actor?
+    fun getEntryActor(item: IT, iconSize: Float, actionContext: ACT): Actor? =
+        getEntryValue(item).toCenteredLabel()
 
     /** Factory for totals cell [Actor]
      * - By default displays the sum over [getEntryValue].
@@ -66,6 +77,21 @@ interface ISortableGridContentProvider<IT, ACT> {
      * - On the other hand, a sum may not be meaningful even if the cells are numbers - to leave
      *   the total empty override to return `null`.
      */
-    fun getTotalsActor(items: Iterable<IT>): Actor?
+    fun getTotalsActor(items: Iterable<IT>): Actor? =
+        items.sumOf { getEntryValue(it) }.toCenteredLabel()
 
+    companion object {
+        @JvmStatic
+        val collator = UncivGame.Current.settings.getCollatorFromLocale()
+
+        @JvmStatic
+        fun getCircledIcon(path: String, iconSize: Float, circleColor: Color = Color.LIGHT_GRAY) =
+            ImageGetter.getImage(path)
+                .apply { color = Color.BLACK }
+                .surroundWithCircle(iconSize, color = circleColor)
+
+        @JvmStatic
+        fun Int.toCenteredLabel(): Label =
+            this.toLabel().apply { setAlignment(Align.center) }
+    }
 }

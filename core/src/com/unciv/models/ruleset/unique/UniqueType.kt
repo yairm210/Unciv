@@ -783,11 +783,11 @@ enum class UniqueType(
     OneTimeGainProphet("Gain enough Faith for [amount]% of a Great Prophet", UniqueTarget.Triggerable),
     // todo: The "up to [All]" used in vanilla json is not nice to read. Split?
     // Or just reword it without the 'up to', so it reads "Reveal [amount/'all'] [tileFilter] tiles within [amount] tiles"
-    OneTimeRevealSpecificMapTiles("Reveal up to [positiveAmount/'all'] [tileFilter] within a [amount] tile radius", UniqueTarget.Triggerable),
+    OneTimeRevealSpecificMapTiles("Reveal up to [positiveAmount/'all'] [tileFilter] within a [positiveAmount] tile radius", UniqueTarget.Triggerable),
     OneTimeRevealCrudeMap("From a randomly chosen tile [positiveAmount] tiles away from the ruins, reveal tiles up to [positiveAmount] tiles away with [positiveAmount]% chance", UniqueTarget.Ruins),
     OneTimeGlobalAlert("Triggers the following global alert: [comment]", UniqueTarget.Triggerable), // used in Policy
     OneTimeGlobalSpiesWhenEnteringEra("Every major Civilization gains a spy once a civilization enters this era", UniqueTarget.Era),
-    OneTimeSpiesLevelUp("Promotes all spies", UniqueTarget.Triggerable),  // used in Policies, Buildings
+    OneTimeSpiesLevelUp("Promotes all spies [amount] time(s)", UniqueTarget.Triggerable),  // used in Policies, Buildings
     OneTimeGainSpy("Gain an extra spy", UniqueTarget.Triggerable),  // used in Wonders
 
     OneTimeUnitHeal("Heal this unit by [positiveAmount] HP", UniqueTarget.UnitTriggerable),
@@ -887,6 +887,8 @@ enum class UniqueType(
     ModIsAudioVisualOnly("Should only be used as permanent audiovisual mod", UniqueTarget.ModOptions, flags = UniqueFlag.setOfNoConditionals),
     ModIsAudioVisual("Can be used as permanent audiovisual mod", UniqueTarget.ModOptions, flags = UniqueFlag.setOfNoConditionals),
     ModIsNotAudioVisual("Cannot be used as permanent audiovisual mod", UniqueTarget.ModOptions, flags = UniqueFlag.setOfNoConditionals),
+    ModMapPreselection("Mod preselects map [comment]", UniqueTarget.ModOptions, flags = UniqueFlag.setOfNoConditionals,
+        docDescription = "Only meaningful for Mods containing several maps. When this mod is selected on the new game screen's custom maps mod dropdown, the named map will be selected on the map dropdown. Also disables selection by recently modified. Case insensitive."),
 
     // endregion
 

@@ -87,6 +87,8 @@ class ModConstants {
 
     var workboatAutomationSearchMaxTiles = 20
 
+    var maxSpyLevel = 3
+
     fun merge(other: ModConstants) {
         for (field in this::class.java.declaredFields) {
             if (field.modifiers and Modifier.STATIC != 0) continue

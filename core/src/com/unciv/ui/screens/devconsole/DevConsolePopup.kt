@@ -4,6 +4,7 @@ import com.badlogic.gdx.Input
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.unciv.Constants
+import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.ui.components.UncivTextField
 import com.unciv.ui.components.extensions.toCheckBox
@@ -11,6 +12,7 @@ import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.input.KeyCharAndCode
 import com.unciv.ui.components.input.keyShortcuts
 import com.unciv.ui.popups.Popup
+import com.unciv.ui.screens.devconsole.CliInput.Companion.splitToCliInput
 import com.unciv.ui.screens.worldscreen.WorldScreen
 
 
@@ -48,8 +50,11 @@ class DevConsolePopup(val screen: WorldScreen) : Popup(screen) {
         clickBehindToClose = true
 
         textField.keyShortcuts.add(KeyCharAndCode.TAB) {
-            val textToAdd = getAutocomplete()
-            textField.appendText(textToAdd)
+            getAutocomplete()?.also {
+                fun String.removeFromEnd(n: Int) = substring(0, (length - n).coerceAtLeast(0))
+                textField.text = textField.text.removeFromEnd(it.first) + it.second
+                textField.cursorPosition = Int.MAX_VALUE // because the setText implementation actively resets it after the paste it uses (auto capped at length)
+            }
         }
 
         keyShortcuts.add(Input.Keys.UP) { navigateHistory(-1) }
@@ -96,30 +101,36 @@ class DevConsolePopup(val screen: WorldScreen) : Popup(screen) {
         responseLabel.style.fontColor = color
     }
 
-    private val splitStringRegex = Regex("\"([^\"]+)\"|\\S+") // Read: "(phrase)" OR non-whitespace
-    private fun getParams(text: String): List<String> {
-        return splitStringRegex.findAll(text).map { it.value.removeSurrounding("\"") }.filter { it.isNotEmpty() }.toList()
-    }
-
     private fun handleCommand(): DevConsoleResponse {
-        val params = getParams(textField.text)
+        val params = textField.text.splitToCliInput()
         return commandRoot.handle(this, params)
     }
 
-    private fun getAutocomplete(): String {
-        val params = getParams(textField.text)
-        return commandRoot.autocomplete(this, params)
+    private fun getAutocomplete(): Pair<Int,String>? {
+        val params = textField.text.splitToCliInput()
+        val autoCompleteString = commandRoot.autocomplete(this, params)
+            ?: return null
+        val replaceLength = params.lastOrNull()?.originalLength() ?: 0
+        return replaceLength to autoCompleteString
     }
 
-    internal fun getCivByName(name: String) = gameInfo.civilizations.firstOrNull { it.civName.toCliInput() == name.toCliInput() }
+    internal fun getCivByName(name: CliInput) =
+        getCivByNameOrNull(name)
         ?: throw ConsoleErrorException("Unknown civ: $name")
+    internal fun getCivByNameOrSelected(name: CliInput?) =
+        name?.let { getCivByName(it) }
+        ?: screen.selectedCiv
+    internal fun getCivByNameOrNull(name: CliInput): Civilization? =
+        gameInfo.civilizations.firstOrNull { name.equals(it.civName) }
 
-    internal fun getSelectedTile() = screen.mapHolder.selectedTile ?: throw ConsoleErrorException("Select tile")
+    internal fun getSelectedTile() = screen.mapHolder.selectedTile
+        ?: throw ConsoleErrorException("Select tile")
 
     /** Gets city by selected tile */
-    internal fun getSelectedCity() = getSelectedTile().getCity() ?: throw ConsoleErrorException("Select tile belonging to city")
+    internal fun getSelectedCity() = getSelectedTile().getCity()
+        ?: throw ConsoleErrorException("Select tile belonging to city")
 
-    internal fun getCity(cityName: String) = gameInfo.getCities().firstOrNull { it.name.toCliInput() == cityName.toCliInput() }
+    internal fun getCity(cityName: CliInput) = gameInfo.getCities().firstOrNull { cityName.equals(it.name) }
         ?: throw ConsoleErrorException("Unknown city: $cityName")
 
     internal fun getSelectedUnit(): MapUnit {
@@ -130,7 +141,4 @@ class DevConsolePopup(val screen: WorldScreen) : Popup(screen) {
         return if (selectedUnit != null && selectedUnit.getTile() == selectedTile) selectedUnit
         else units.first()
     }
-
-    internal fun getInt(param: String) = param.toIntOrNull() ?: throw ConsoleErrorException("$param is not a valid number")
-
 }

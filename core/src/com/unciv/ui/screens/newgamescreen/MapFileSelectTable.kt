@@ -18,6 +18,7 @@ import com.unciv.logic.map.TileMap
 import com.unciv.models.metadata.Player
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.ruleset.nation.Nation
+import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.SmallButtonStyle
 import com.unciv.ui.components.extensions.disable
@@ -209,13 +210,22 @@ class MapFileSelectTable(
             .toGdxArray()
         fun getPreselect(): MapWrapper? {
             if (mapFiles.isEmpty) return null
-            val recent = mapFiles.asSequence()
-                .filter { it.fileHandle.isRecentlyModified() }
-                .maxByOrNull { it.fileHandle.lastModified() }
-            val oldestTimestamp = mapFiles.minOfOrNull { it.fileHandle.lastModified() } ?: 0L
-            // Do not use most recent if all maps in the category have the same time within a tenth of a second (like a mod unzip does)
-            if (recent != null && (recent.fileHandle.lastModified() - oldestTimestamp) > 100 || mapFiles.size == 1)
-                return recent
+            val modOptionPreselect = RulesetCache[selectedRuleset]
+                ?.modOptions?.getMatchingUniques(UniqueType.ModMapPreselection)
+                ?.firstOrNull()?.params?.get(0)
+            if (modOptionPreselect != null) {
+                val preselectFile = mapFiles.firstOrNull { it.fileHandle.name() == modOptionPreselect }
+                if (preselectFile != null)
+                    return preselectFile
+            } else {
+                val recent = mapFiles.asSequence()
+                    .filter { it.fileHandle.isRecentlyModified() }
+                    .maxByOrNull { it.fileHandle.lastModified() }
+                val oldestTimestamp = mapFiles.minOfOrNull { it.fileHandle.lastModified() } ?: 0L
+                // Do not use most recent if all maps in the category have the same time within a tenth of a second (like a mod unzip does)
+                if (recent != null && (recent.fileHandle.lastModified() - oldestTimestamp) > 100 || mapFiles.size == 1)
+                    return recent
+            }
             val named = mapFiles.firstOrNull { it.fileHandle.name() == preselectedName }
             if (named != null)
                 return named

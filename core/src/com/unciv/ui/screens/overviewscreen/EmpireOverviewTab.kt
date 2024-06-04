@@ -16,6 +16,7 @@ abstract class EmpireOverviewTab (
     open val persistableData = persistedData ?: EmpireOverviewTabPersistableData()
 
     override fun activated(index: Int, caption: String, pager: TabbedPager) {
+        if (caption.isEmpty()) return
         overviewScreen.game.settings.lastOverviewPage = caption
     }
 
