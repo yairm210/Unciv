@@ -110,8 +110,8 @@ object MapPathing {
         val astar = AStar(
                 startTile,
                 { tile -> predicate(civ, tile) },
-                { from, to -> 1f},
-                { from, to -> 1f }
+                { from, to -> 1f },
+                { from, to -> from.aerialDistanceTo(to).toFloat() }
         )
         while (true) {
             if (astar.hasEnded()) {
