@@ -2,6 +2,8 @@ package com.unciv.ui.components
 
 import com.badlogic.gdx.Application
 import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.graphics.g2d.Batch
+import com.badlogic.gdx.graphics.g2d.BitmapFont
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.InputEvent
@@ -47,6 +49,24 @@ object UncivTextField {
             override fun next(up: Boolean) {
                 if (KeyCharAndCode.TAB in keyShortcuts) return
                 super.next(up)
+            }
+
+            // Note - this way to force TextField to display `[]` characters normally is an incomplete hack.
+            // The complete way would either require overriding `updateDisplayText` which is private, or all methods calling it,
+            // which are many including the keyboard listener, or keep a separate font without markup enabled around and put that
+            // into the default style, including its own NativeBitmapFontData instance and texture - involves quite some redesign.
+            // That said, observing the deficiency is hard - the internal `glyphPositions` could theoretically get out of sync, affecting selection and caret display.
+            override fun layout() {
+                val oldEnable = style.font.data.markupEnabled
+                style.font.data.markupEnabled = false
+                super.layout()
+                style.font.data.markupEnabled = oldEnable
+            }
+            override fun drawText(batch: Batch, font: BitmapFont, x: Float, y: Float) {
+                val oldEnable = font.data.markupEnabled
+                font.data.markupEnabled = false
+                super.drawText(batch, font, x, y)
+                font.data.markupEnabled = oldEnable
             }
         }
         val translatedHint = hint.tr()

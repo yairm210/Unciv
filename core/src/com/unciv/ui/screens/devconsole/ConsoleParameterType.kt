@@ -3,6 +3,8 @@ package com.unciv.ui.screens.devconsole
 import com.unciv.logic.GameInfo
 import com.unciv.logic.map.mapgenerator.RiverGenerator
 import com.unciv.models.ruleset.tile.TerrainType
+import com.unciv.models.ruleset.unique.UniqueTarget
+import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
 
 @Suppress("EnumEntryName", "unused")
@@ -14,7 +16,8 @@ import com.unciv.models.stats.Stat
  *  - Supports multi-type parameters via [Companion.multiOptions]
  */
 internal enum class ConsoleParameterType(
-    private val getOptions: GameInfo.() -> Iterable<String>
+    private val getOptions: GameInfo.() -> Iterable<String>,
+    val preferquoted: Boolean = false
 ) {
     none( { emptyList() } ),
     civName( { civilizations.map { it.civName } } ),
@@ -30,13 +33,17 @@ internal enum class ConsoleParameterType(
     direction( { RiverGenerator.RiverDirections.names } ),
     policyName( { ruleset.policyBranches.keys + ruleset.policies.keys } ),
     cityName( { civilizations.flatMap { civ -> civ.cities.map { it.name } } } ),
+    triggeredUniqueTemplate( { UniqueType.values().filter { it.canAcceptUniqueTarget(UniqueTarget.Triggerable) }.map { it.text } }, preferquoted = true ),
     ;
 
     private fun getOptions(console: DevConsolePopup) = console.gameInfo.getOptions()
 
     companion object {
         fun safeValueOf(name: String): ConsoleParameterType = values().firstOrNull { it.name == name } ?: none
-        fun getOptions(name: String, console: DevConsolePopup) = safeValueOf(name).getOptions(console)
+        fun getOptions(name: String, console: DevConsolePopup) = safeValueOf(name).let { type ->
+            if (type.preferquoted) type.getOptions(console).map { CliInput(it, CliInput.Method.Quoted) }
+            else type.getOptions(console).map { CliInput(it) }
+        }
         fun multiOptions(name: String, console: DevConsolePopup) = name.split('|').flatMap { getOptions(it, console) }
     }
 }
