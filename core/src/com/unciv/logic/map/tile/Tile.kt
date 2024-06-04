@@ -513,6 +513,15 @@ class Tile : IsPartOfGameInfoSerialization {
     fun getTilesInDistanceRange(range: IntRange): Sequence<Tile> = tileMap.getTilesInDistanceRange(position, range)
     fun getTilesAtDistance(distance: Int): Sequence<Tile> =tileMap.getTilesAtDistance(position, distance)
 
+    fun getAirUnitCapacity(): Int {
+        val airUnitCapacity = this.getCity()!!.civ.gameInfo.ruleset.modOptions.constants.airUnitCapacity
+        val airUnitCapacityFromUniques = this.getCity()!!.getMatchingUniques(UniqueType.AirUnitCapacity)
+            .filter { this.getCity()!!.matchesFilter(it.params[1]) }
+            .sumOf { it.params[0].toInt() }
+
+        return airUnitCapacity + airUnitCapacityFromUniques
+    }
+
     fun getDefensiveBonus(includeImprovementBonus: Boolean = true): Float {
         var bonus = baseTerrainObject.defenceBonus
         if (terrainFeatureObjects.isNotEmpty()) {

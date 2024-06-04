@@ -411,9 +411,10 @@ class City : IsPartOfGameInfoSerialization, INamed {
 
     fun canPlaceNewUnit(construction: BaseUnit): Boolean {
         val tile = getCenterTile()
+
         return when {
             construction.isCivilian() -> tile.civilianUnit == null
-            construction.movesLikeAirUnits() -> tile.airUnits.count { !it.isTransported } < 6
+            construction.movesLikeAirUnits() -> tile.airUnits.count { !it.isTransported } < tile.getAirUnitCapacity()
             else -> tile.militaryUnit == null
         }
     }
