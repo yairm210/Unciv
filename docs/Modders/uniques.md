@@ -121,11 +121,6 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Triggerable
 
-??? example  "Gain [amount] [stat] (modified by game speed)"
-	Example: "Gain [3] [Culture] (modified by game speed)"
-
-	Applicable to: Triggerable
-
 ??? example  "Gain [amount]-[amount] [stat]"
 	Example: "Gain [3]-[3] [Culture]"
 
@@ -743,11 +738,6 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 ??? example  "May choose [amount] additional belief(s) of any type when [foundingOrEnhancing] a religion"
 	Example: "May choose [3] additional belief(s) of any type when [founding] a religion"
-
-	Applicable to: Global
-
-??? example  "[stats] when a city adopts this religion for the first time (modified by game speed)"
-	Example: "[+1 Gold, +2 Production] when a city adopts this religion for the first time (modified by game speed)"
 
 	Applicable to: Global
 
@@ -2115,31 +2105,19 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "&lt;when above [amount] [stat/resource]&gt;"
 	Example: "&lt;when above [3] [Culture]&gt;"
 
+	This unique's effect can be modified with &lt;(modified by game speed)&gt;
 	Applicable to: Conditional
 
 ??? example  "&lt;when below [amount] [stat/resource]&gt;"
 	Example: "&lt;when below [3] [Culture]&gt;"
 
+	This unique's effect can be modified with &lt;(modified by game speed)&gt;
 	Applicable to: Conditional
 
 ??? example  "&lt;when between [amount] and [amount] [stat/resource]&gt;"
 	Example: "&lt;when between [3] and [3] [Culture]&gt;"
 
-	Applicable to: Conditional
-
-??? example  "&lt;when above [amount] [stat/resource] (modified by game speed)&gt;"
-	Example: "&lt;when above [3] [Culture] (modified by game speed)&gt;"
-
-	Applicable to: Conditional
-
-??? example  "&lt;when below [amount] [stat/resource] (modified by game speed)&gt;"
-	Example: "&lt;when below [3] [Culture] (modified by game speed)&gt;"
-
-	Applicable to: Conditional
-
-??? example  "&lt;when between [amount] and [amount] [stat/resource] (modified by game speed)&gt;"
-	Example: "&lt;when between [3] and [3] [Culture] (modified by game speed)&gt;"
-
+	This unique's effect can be modified with &lt;(modified by game speed)&gt;
 	Applicable to: Conditional
 
 ??? example  "&lt;in this city&gt;"
@@ -2496,6 +2474,10 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "&lt;for every [amount] [countable]&gt;"
 	Example: "&lt;for every [3] [1000]&gt;"
 
+	Applicable to: MetaModifier
+
+??? example  "&lt;(modified by game speed)&gt;"
+	Can only be applied to certain uniques, see details of each unique for specifics
 	Applicable to: MetaModifier
 
 

@@ -604,7 +604,9 @@ object UniqueTriggerActivation {
                 ) return null
 
                 return {
-                    val statAmount = unique.params[0].toInt()
+                    var statAmount = unique.params[0].toInt()
+                    if (unique.isModifiedByGameSpeed()) statAmount = (statAmount * civInfo.gameInfo.speed.statCostModifiers[stat]!!).roundToInt()
+
                     val stats = Stats().add(stat, statAmount.toFloat())
                     civInfo.addStats(stats)
 

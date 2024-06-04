@@ -43,7 +43,7 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
 
     fun hasFlag(flag: UniqueFlag) = type != null && type.flags.contains(flag)
     fun isHiddenToUsers() = hasFlag(UniqueFlag.HiddenToUsers) || conditionals.any { it.type == UniqueType.ModifierHiddenFromUsers }
-
+    fun isModifiedByGameSpeed() = conditionals.any { it.type == UniqueType.ModifiedByGameSpeed }
     fun hasTriggerConditional(): Boolean {
         if (conditionals.none()) return false
         return conditionals.any { conditional ->
