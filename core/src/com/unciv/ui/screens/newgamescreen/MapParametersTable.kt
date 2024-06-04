@@ -12,7 +12,6 @@ import com.unciv.logic.map.MapParameters
 import com.unciv.logic.map.mapgenerator.MapResourceSetting
 import com.unciv.logic.map.MapShape
 import com.unciv.logic.map.MapSize
-import com.unciv.logic.map.MapSizeNew
 import com.unciv.logic.map.MapType
 import com.unciv.ui.components.UncivTextField
 import com.unciv.ui.components.extensions.pad
@@ -178,18 +177,18 @@ class MapParametersTable(
 
     private fun addWorldSizeTable() {
         if (mapGeneratedMainType == MapGeneratedMainType.randomGenerated) {
-            val mapSizes = MapSize.values().map { it.name }
+            val mapSizes = MapSize.names()
             mapSizesOptionsValues = mapSizes.toHashSet()
             val optionsTable = MultiCheckboxTable("{Enabled World Sizes}", "NewGameWorldSizes", mapSizesOptionsValues) {
                 if (mapSizesOptionsValues.isEmpty()) {
-                    mapParameters.mapSize = MapSizeNew(mapSizes.random())
+                    mapParameters.mapSize = MapSize(mapSizes.random())
                 } else {
-                    mapParameters.mapSize = MapSizeNew(mapSizesOptionsValues.random())
+                    mapParameters.mapSize = MapSize(mapSizesOptionsValues.random())
                 }
             }
             add(optionsTable).colspan(2).grow().row()
         } else {
-            val mapSizes = MapSize.values().map { it.name } + listOf(MapSize.custom)
+            val mapSizes = MapSize.names() + listOf(MapSize.custom)
             worldSizeSelectBox = TranslatedSelectBox(mapSizes, mapParameters.mapSize.name, skin)
             worldSizeSelectBox.onChange { updateWorldSizeTable() }
 
@@ -210,7 +209,7 @@ class MapParametersTable(
             textFieldFilter = DigitsOnlyFilter()
         }
         customMapSizeRadius.onChange {
-            mapParameters.mapSize = MapSizeNew(customMapSizeRadius.text.toIntOrNull() ?: 0 )
+            mapParameters.mapSize = MapSize(customMapSizeRadius.text.toIntOrNull() ?: 0 )
         }
         hexagonalSizeTable.add("{Radius}:".toLabel()).grow().left()
         hexagonalSizeTable.add(customMapSizeRadius).right().row()
@@ -230,10 +229,10 @@ class MapParametersTable(
         }
 
         customMapWidth.onChange {
-            mapParameters.mapSize = MapSizeNew(customMapWidth.text.toIntOrNull() ?: 0, customMapHeight.text.toIntOrNull() ?: 0)
+            mapParameters.mapSize = MapSize(customMapWidth.text.toIntOrNull() ?: 0, customMapHeight.text.toIntOrNull() ?: 0)
         }
         customMapHeight.onChange {
-            mapParameters.mapSize = MapSizeNew(customMapWidth.text.toIntOrNull() ?: 0, customMapHeight.text.toIntOrNull() ?: 0)
+            mapParameters.mapSize = MapSize(customMapWidth.text.toIntOrNull() ?: 0, customMapHeight.text.toIntOrNull() ?: 0)
         }
 
         rectangularSizeTable.defaults().pad(5f)
@@ -253,7 +252,7 @@ class MapParametersTable(
         else if (mapParameters.shape == MapShape.rectangular && worldSizeSelectBox.selected.value == MapSize.custom)
             customWorldSizeTable.add(rectangularSizeTable).grow().row()
         else
-            mapParameters.mapSize = MapSizeNew(worldSizeSelectBox.selected.value)
+            mapParameters.mapSize = MapSize(worldSizeSelectBox.selected.value)
 
         sizeChangedCallback?.invoke()
     }
