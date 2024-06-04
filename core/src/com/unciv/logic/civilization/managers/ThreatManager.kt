@@ -171,9 +171,10 @@ class ThreatManager(val civInfo: Civilization) {
         return false
     }
 
-    /** @return a sqeuence of pairs of cities, the first city is our city and the seccond city is a nearby city that is not from our civ. */
+    /** @return a sequence of pairs of cities, the first city is our city and the second city is a nearby city that is not from our civ. */
     fun getNeighboringCitiesOfOtherCivs(): Sequence<Pair<City,City>> = civInfo.cities.flatMap {
-        ourCity -> ourCity.neighboringCities.filter { it.civ != civInfo }.map { Pair(ourCity, it) } }.asSequence()
+        ourCity -> ourCity.neighboringCities.filter { it.civ != civInfo }.map { Pair(ourCity, it) } 
+    }.asSequence()
 
     fun getNeighboringCivilizations(): Set<Civilization> = civInfo.cities.flatMap { it.neighboringCities }.filter { it.civ != civInfo && civInfo.knows(it.civ) }.map { it.civ }.toSet()
 

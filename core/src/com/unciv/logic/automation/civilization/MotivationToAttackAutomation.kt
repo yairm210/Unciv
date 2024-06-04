@@ -112,7 +112,7 @@ object MotivationToAttackAutomation {
         modifierMap["War with allies"] = getAlliedWarMotivation(civInfo, otherCiv)
 
         // Purely for debugging, remove modifiers that don't have an effect
-        modifierMap.filter { it.value == 0 }.toList().forEach { modifierMap.remove(it.first) }
+        modifierMap.entries.removeAll { it.value == 0 }
         var motivationSoFar = modifierMap.values.sum()
 
         // Short-circuit to avoid A-star
@@ -312,7 +312,7 @@ object MotivationToAttackAutomation {
 
             // We only want to calculate the best attack path and use it's value
             // Land routes are clearly better than sea routes
-            for (cityToAttack in attacksGroupedByCity.value.map { it.second }) {
+            for ((_, cityToAttack) in attacksGroupedByCity.value) {
                 val landAttackPath = MapPathing.getConnection(civInfo, cityToAttackFrom.getCenterTile(), cityToAttack.getCenterTile(), ::isLandTileCanMoveThrough)
                 if (landAttackPath != null && landAttackPath.size < 16) {
                     attackPaths.add(landAttackPath)
@@ -339,7 +339,7 @@ object MotivationToAttackAutomation {
             if (reachableEnemyCities.isEmpty()) return 0 // Can't even reach the enemy city, no point in war.
             val minAttackDistance = reachableEnemyCities.minOf { reachableEnemyCitiesBfs.getPathTo(it.getCenterTile()).count() }
 
-            // Longer attack paths are worse, but if the attack path is too far away we shouldn't completely discard the posibility 
+            // Longer attack paths are worse, but if the attack path is too far away we shouldn't completely discard the possibility 
             attackPathModifiers -= (minAttackDistance - 10).coerceIn(0, 30) 
         }
         return attackPathModifiers

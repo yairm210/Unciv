@@ -84,7 +84,7 @@ object MapPathing {
         while (true) {
             if (astar.hasEnded()) {
                 // We failed to find a path
-                Log.debug("getRoadPath failed at AStar search size ${astar.size()}")
+                Log.debug("getPath failed at AStar search size ${astar.size()}")
                 return null
             }
             if (!astar.hasReachedTile(endTile)) {
@@ -105,15 +105,18 @@ object MapPathing {
     fun getConnection(civ: Civilization, 
         startTile: Tile,
         endTile: Tile,
-        predicate: (Civilization, Tile) -> Boolean): List<Tile>? {
-        val astar = AStar(startTile,
+        predicate: (Civilization, Tile) -> Boolean
+    ): List<Tile>? {
+        val astar = AStar(
+                startTile,
                 { tile -> predicate(civ, tile) },
                 { from, to -> 1f},
-                { from, to -> 1f })
+                { from, to -> 1f }
+        )
         while (true) {
             if (astar.hasEnded()) {
                 // We failed to find a path
-                Log.debug("getRoadPath failed at AStar search size ${astar.size()}")
+                Log.debug("getConnection failed at AStar search size ${astar.size()}")
                 return null
             }
             if (!astar.hasReachedTile(endTile)) {

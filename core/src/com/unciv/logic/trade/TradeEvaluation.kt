@@ -283,8 +283,10 @@ class TradeEvaluation {
                     // Only accept if the war will benefit us, or if they pay us enough
                     return (-100 * DeclareWarPlanEvaluator.evaluateTeamWarPlan(civInfo, civToDeclareWarOn, tradePartner, null)).coerceAtLeast(0)
                 } else if (tradePartner.isAtWarWith(civToDeclareWarOn)) {
+                    // We might want them to pay us to join them in war
                     return (-100 * DeclareWarPlanEvaluator.evaluateJoinWarPlan(civInfo, civToDeclareWarOn, tradePartner, null)).coerceAtMost(0)
                 } else {
+                    // We might want them to pay us to declare war
                     return (-100 * DeclareWarPlanEvaluator.evaluateDeclareWarPlan(civInfo, civToDeclareWarOn, null)).coerceAtMost(0)
                 }
             }
@@ -325,7 +327,7 @@ class TradeEvaluation {
         // Goes from 1 at GPT = 0 to .834 at GPT = 100, .296 at GPT = 1000 and 0.116 at GPT = 10000
         // The current value of gold will never go below 10% or the .1f that it is set to
         // So this does not scale off to infinity
-        return modifier / (goldPerTurn.coerceAtLeast(1.0) .pow(1.2)+ (1.11 * modifier)) + .1
+        return modifier / (goldPerTurn.coerceAtLeast(1.0).pow(1.2) + (1.11 * modifier)) + .1
     }
 
     /** This code returns a positive value if the city is significantly far away from the capital
@@ -339,13 +341,13 @@ class TradeEvaluation {
         return (distanceToCapital - 500) * civInfo.getEraNumber()
     }
 
-    fun evaluatePeaceCostForThem(civInfo: Civilization, otherCiv: Civilization): Int {
-        val ourCombatStrength = civInfo.getStatForRanking(RankingType.Force)
+    fun evaluatePeaceCostForThem(ourCiv: Civilization, otherCiv: Civilization): Int {
+        val ourCombatStrength = ourCiv.getStatForRanking(RankingType.Force)
         val theirCombatStrength = otherCiv.getStatForRanking(RankingType.Force)
         if (ourCombatStrength * 1.5f >= theirCombatStrength && theirCombatStrength * 1.5f >= ourCombatStrength)
             return 0 // we're roughly equal, there's no huge power imbalance
         if (ourCombatStrength > theirCombatStrength) {
-            if (MotivationToAttackAutomation.hasAtLeastMotivationToAttack(civInfo, otherCiv, 0) <= 0) return 0
+            if (MotivationToAttackAutomation.hasAtLeastMotivationToAttack(ourCiv, otherCiv, 0) <= 0) return 0
             val absoluteAdvantage = ourCombatStrength - theirCombatStrength
             val percentageAdvantage = absoluteAdvantage / theirCombatStrength.toFloat()
             // We don't add the same constraint here. We should not make peace easily if we're
@@ -378,7 +380,7 @@ class TradeEvaluation {
             // (stats ~30 each)
             val absoluteAdvantage = theirCombatStrength - ourCombatStrength
             val percentageAdvantage = absoluteAdvantage / ourCombatStrength.toFloat()
-            return -min((absoluteAdvantage * percentageAdvantage / (getGoldInflation(civInfo) * 2)).toInt(), 10000)
+            return -(absoluteAdvantage * percentageAdvantage / (getGoldInflation(ourCiv) * 2)).coerceAtMost(10000.0).toInt()
         }
     }
 

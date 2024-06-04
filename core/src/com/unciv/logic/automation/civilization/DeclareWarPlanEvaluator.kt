@@ -123,7 +123,7 @@ object DeclareWarPlanEvaluator {
     }
 
     /**
-     * How much motivaiton [civInfo] has to declare war against [target] this turn.
+     * How much motivation [civInfo] has to declare war against [target] this turn.
      * This can be through a prepared war or a suprise war.
      *
      * @return The movtivation of the plan. If it is > 0 then we can declare the war.
@@ -145,7 +145,7 @@ object DeclareWarPlanEvaluator {
     /**
      * How much motivation [civInfo] has to start preparing for a war agaist [target].
      * 
-     * @return The movtivation of the plan. If it is > 0 then we can start planning the war.
+     * @return The motivation of the plan. If it is > 0 then we can start planning the war.
      */
     fun evaluateStartPreparingWarPlan(civInfo: Civilization, target: Civilization, givenMotivation: Int?): Int {
         val motivation = givenMotivation ?: MotivationToAttackAutomation.hasAtLeastMotivationToAttack(civInfo, target, 0)

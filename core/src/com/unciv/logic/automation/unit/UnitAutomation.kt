@@ -504,7 +504,7 @@ object UnitAutomation {
     private fun tryPrepare(unit: MapUnit): Boolean {
         val civInfo = unit.civ
 
-        fun hasPreperationFlag(targetCiv: Civilization): Boolean {
+        fun hasPreparationFlag(targetCiv: Civilization): Boolean {
             val diploManager = civInfo.getDiplomacyManager(targetCiv)
             if (diploManager.hasFlag(DiplomacyFlags.Denunciation) 
                     || diploManager.otherCivDiplomacy().hasFlag(DiplomacyFlags.Denunciation)) return true
@@ -512,10 +512,12 @@ object UnitAutomation {
             return false
         }
 
-        val hostileCivs = civInfo.getKnownCivs().filter { it.isAtWarWith(civInfo) || hasPreperationFlag(it)}
-        val citiesToDefend = hostileCivs.mapNotNull { NextTurnAutomation.getClosestCities(civInfo, it) }.sortedBy { unit.getTile().aerialDistanceTo(it.city1.getCenterTile()) }
+        val hostileCivs = civInfo.getKnownCivs().filter { it.isAtWarWith(civInfo) || hasPreparationFlag(it) }
+        val citiesToDefend = hostileCivs.mapNotNull { NextTurnAutomation.getClosestCities(civInfo, it) }
+                .sortedBy { unit.getTile().aerialDistanceTo(it.city1.getCenterTile()) }
 
-        for (city in citiesToDefend.map { it.city1 }) {
+        // Move to the closest city with a tile we can enter nearby
+        for ((city, enemyCity) in citiesToDefend) {
             if (unit.getTile().aerialDistanceTo(city.getCenterTile()) <= 2) return true
             val tileToMoveTo = city.getCenterTile().getTilesInDistance(2).firstOrNull { unit.movement.canMoveTo(it) && unit.movement.canReach(it) } ?: continue
             unit.movement.headTowards(tileToMoveTo)

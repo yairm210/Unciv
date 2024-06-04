@@ -13,7 +13,7 @@ object DeclareWarTargetAutomation {
 
     /**
      * Chooses a target civilization along with a plan of attack.
-     * Note that this doesn't guarantee that we will declare war on them immedietly, or that we will end up declaring war at all.
+     * Note that this doesn't guarantee that we will declare war on them immediatly, or that we will end up declaring war at all.
      */
     fun chooseDeclareWarTarget(civInfo: Civilization, civAttackMotivations: List<Pair<Civilization, Int>>) {
         val highestValueTargets = civAttackMotivations.sortedByDescending { it.first.getStatForRanking(RankingType.Score) }
@@ -51,8 +51,8 @@ object DeclareWarTargetAutomation {
                 .filter { it.isMajorCiv() 
                         && !civInfo.getDiplomacyManager(it).hasFlag(DiplomacyFlags.DeclinedJoinWarOffer) 
                         && civInfo.getDiplomacyManager(it).isRelationshipLevelGE(RelationshipLevel.Neutral) 
-                        && !it.isAtWarWith(target) } 
-                .sortedByDescending { it.getStatForRanking(RankingType.Force) }
+                        && !it.isAtWarWith(target) 
+                }.sortedByDescending { it.getStatForRanking(RankingType.Force) }
 
         for (thirdCiv in potentialAllies) {
             if (DeclareWarPlanEvaluator.evaluateTeamWarPlan(civInfo, target, thirdCiv, motivation) <= 0) continue

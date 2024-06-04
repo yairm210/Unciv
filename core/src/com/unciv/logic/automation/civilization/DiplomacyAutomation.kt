@@ -18,7 +18,7 @@ import com.unciv.logic.trade.TradeType
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.tr
 import com.unciv.ui.screens.victoryscreen.RankingType
-import kotlin.math.absoluteValue
+import kotlin.math.abs
 import kotlin.random.Random
 
 object DiplomacyAutomation {
@@ -131,7 +131,7 @@ object DiplomacyAutomation {
         // Don't accept if they are at war with our friends, they might use our land to attack them
         if (civInfo.diplomacy.values.any { it.isRelationshipLevelGE(RelationshipLevel.Friend) && it.otherCiv().isAtWarWith(otherCiv)})
             return false
-        // Being able to see their cities can give us an advantage later on, espesialy with espionage enabled
+        // Being able to see their cities can give us an advantage later on, especially with espionage enabled
         if (otherCiv.cities.count { !it.getCenterTile().isVisible(civInfo) } < otherCiv.cities.count() * .8f)
             return true
         if (hasAtLeastMotivationToAttack(civInfo, otherCiv, (diploManager.opinionOfOtherCiv()/ 2 - 10).toInt()) > 0)
@@ -313,10 +313,10 @@ object DiplomacyAutomation {
                             TradeOffer("Gold".tr(), TradeType.Gold, moneyWeNeedToPay)
                     )
                 } else if (moneyWeNeedToPay < -100) {
-                    val moneyTheyNeedToPay = moneyWeNeedToPay.absoluteValue.coerceAtMost(enemy.gold)
+                    val moneyTheyNeedToPay = abs(moneyWeNeedToPay).coerceAtMost(enemy.gold)
                     if (moneyTheyNeedToPay > 0) {
                         tradeLogic.currentTrade.theirOffers.add(
-                                TradeOffer("Gold".tr(), TradeType.Gold, moneyWeNeedToPay.absoluteValue)
+                                TradeOffer("Gold".tr(), TradeType.Gold, moneyTheyNeedToPay)
                         )
                     }
                 }
