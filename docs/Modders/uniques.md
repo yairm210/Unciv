@@ -163,7 +163,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Triggerable
 
 ??? example  "[mapUnitFilter] units gain the [promotion] promotion"
-	Works only with promotions that are valid for the unit's type.
+	Works only with promotions that are valid for the unit's type - or for promotions that do not specify any.
 	Example: "[Wounded] units gain the [Shock I] promotion"
 
 	Applicable to: Triggerable
