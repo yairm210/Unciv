@@ -87,6 +87,7 @@ class ModConstants {
 
     var workboatAutomationSearchMaxTiles = 20
 
+    var minWarDuration = 10
     var baseTurnsUntilRevolt = 4 
     var maxSpyLevel = 3
 

@@ -166,7 +166,7 @@ class TurnManager(val civInfo: Civilization) {
         }
 
         if (!civInfo.hasFlag(CivFlags.RevoltSpawning.name)) {
-            civInfo.addFlag(CivFlags.RevoltSpawning.name, max(getTurnsBeforeRevolt(),1))
+            civInfo.addFlag(CivFlags.RevoltSpawning.name, getTurnsBeforeRevolt().coerceAtLeast(1))
             return
         }
     }
@@ -223,7 +223,8 @@ class TurnManager(val civInfo: Civilization) {
     }
 
     private fun getTurnsBeforeRevolt() =
-            ((4 + Random.Default.nextInt(3)) * max(civInfo.gameInfo.speed.modifier, 1f)).toInt()
+        ((civInfo.gameInfo.ruleset.modOptions.constants.baseTurnsUntilRevolt + Random.Default.nextInt(3)) 
+            * civInfo.gameInfo.speed.modifier.coerceAtLeast(1f)).toInt()
 
 
     fun endTurn(progressBar: NextTurnProgress? = null) {
