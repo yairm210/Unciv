@@ -87,6 +87,7 @@ class ModConstants {
 
     var workboatAutomationSearchMaxTiles = 20
 
+    var baseTurnsUntilRevolt = 4 
     var maxSpyLevel = 3
 
     fun merge(other: ModConstants) {
