@@ -9,6 +9,12 @@ import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.utils.debug
 import kotlin.math.roundToInt
 
+/**
+ *  Handles River generation for [MapGenerator], [UniqueType.OneTimeChangeTerrain] and console.
+ *
+ *  Map generation follows the [vertices of map hexes][RiverCoordinate]: [spawnRivers].
+ *  In-game new rivers work on edges: [continueRiverOn]
+ */
 class RiverGenerator(
     private val tileMap: TileMap,
     private val randomness: MapGenerationRandomness,
@@ -189,6 +195,20 @@ class RiverGenerator(
                 yield(myBottomRight?.hasBottomLeftRiver == true)
             }
         }.count { it }
+    }
+
+    enum class RiverDirections(private val clockPosition: Int) {
+        North(12),
+        NorthEast(2),
+        SouthEast(4),
+        South(6),
+        SouthWest(8),
+        NorthWest(10);
+        fun getNeighborTile(selectedTile: Tile): Tile? =
+            selectedTile.tileMap.getClockPositionNeighborTile(selectedTile, clockPosition)
+        companion object {
+            val names get() = values().map { it.name }
+        }
     }
 
     companion object {

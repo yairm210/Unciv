@@ -134,7 +134,8 @@ class TileStatFunctions(val tile: Tile) {
         // Note: Not `for ((stat, value) in other)` - that would skip zero values
         val missingStats = Stats()
         for (stat in Stat.values()) {
-            if (current[stat] < minimumStats[stat]) missingStats[stat] = minimumStats[stat] - current[stat]
+            if (current[stat] < minimumStats[stat])
+                missingStats[stat] = minimumStats[stat] - current[stat]
         }
         return missingStats
     }

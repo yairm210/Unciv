@@ -95,9 +95,9 @@ class CityStats(val city: City) {
 
     private fun getStatsFromTradeRoute(): Stats {
         val stats = Stats()
-        if (!city.isCapital() && city.isConnectedToCapital()) {
-            val civInfo = city.civ
-            stats.gold = civInfo.getCapital()!!.population.population * 0.15f + city.population.population * 1.1f - 1 // Calculated by http://civilization.wikia.com/wiki/Trade_route_(Civ5)
+        val capitalForTradeRoutePurposes = city.civ.getCapital()!!
+        if (city != capitalForTradeRoutePurposes && city.isConnectedToCapital()) {
+            stats.gold = capitalForTradeRoutePurposes.population.population * 0.15f + city.population.population * 1.1f - 1 // Calculated by http://civilization.wikia.com/wiki/Trade_route_(Civ5)
             for (unique in city.getMatchingUniques(UniqueType.StatsFromTradeRoute))
                 stats.add(unique.stats)
             val percentageStats = Stats()
@@ -131,7 +131,7 @@ class CityStats(val city: City) {
 
     private fun getStatPercentBonusesFromRailroad(): Stats {
         val stats = Stats()
-        val railroadImprovement = RoadStatus.Railroad.improvement(city.getRuleset())
+        val railroadImprovement = city.getRuleset().railroadImprovement
             ?: return stats // for mods
         val techEnablingRailroad = railroadImprovement.techRequired
         // If we conquered enemy cities connected by railroad, but we don't yet have that tech,
@@ -285,9 +285,7 @@ class CityStats(val city: City) {
                 ))
 
         if (currentConstruction is Building
-            && city.civ.cities.isNotEmpty()
-            && city.civ.getCapital() != null
-            && city.civ.getCapital()!!.cityConstructions.isBuilt(currentConstruction.name)
+            && city.civ.getCapital()?.cityConstructions?.isBuilt(currentConstruction.name) == true
         ) {
             for (unique in city.getMatchingUniques(UniqueType.PercentProductionBuildingsInCapital))
                 addUniqueStats(unique, Stat.Production, unique.params[0].toFloat())
@@ -320,6 +318,12 @@ class CityStats(val city: City) {
                     roadTypes.any { it.contains(RoadStatus.Railroad.name) }
                 }
             else city.isConnectedToCapital()
+    }
+
+    fun getRoadTypeOfConnectionToCapital(): RoadStatus {
+        return if (isConnectedToCapital(RoadStatus.Railroad)) RoadStatus.Railroad
+        else if (isConnectedToCapital(RoadStatus.Road)) RoadStatus.Road
+        else RoadStatus.None
     }
 
     private fun getBuildingMaintenanceCosts(): Float {
@@ -633,4 +637,14 @@ class CityStats(val city: City) {
     }
 
     //endregion
+
+    fun getStatDifferenceFromBuilding(building: String): Stats {
+        val newCity = city.clone()
+        newCity.setTransients(city.civ) // Will break the owned tiles. Needs to be reverted before leaving this function
+        newCity.cityConstructions.builtBuildings.add(building)
+        newCity.cityConstructions.setTransients()
+        newCity.cityStats.update(updateCivStats = false)
+        city.expansion.setTransients() // Revert owned tiles to original city
+        return newCity.cityStats.currentCityStats - currentCityStats
+    }
 }

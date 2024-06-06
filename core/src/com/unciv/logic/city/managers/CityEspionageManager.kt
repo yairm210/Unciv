@@ -26,22 +26,21 @@ class CityEspionageManager : IsPartOfGameInfoSerialization {
     }
 
     fun hasSpyOf(civInfo: Civilization): Boolean {
-        return civInfo.espionageManager.spyList.any { it.getLocation() == city }
+        return civInfo.espionageManager.spyList.any { it.getCityOrNull() == city }
     }
 
-    private fun getAllStationedSpies(): List<Spy> {
+    fun getAllStationedSpies(): List<Spy> {
         return city.civ.gameInfo.civilizations.flatMap { it.espionageManager.getSpiesInCity(city) }
     }
 
     fun removeAllPresentSpies(reason: SpyFleeReason) {
         for (spy in getAllStationedSpies()) {
-            val owningCiv = spy.civInfo
             val notificationString = when (reason) {
                 SpyFleeReason.CityDestroyed -> "After the city of [${city.name}] was destroyed, your spy [${spy.name}] has fled back to our hideout."
                 SpyFleeReason.CityCaptured -> "After the city of [${city.name}] was conquered, your spy [${spy.name}] has fled back to our hideout."
                 else -> "Due to the chaos ensuing in [${city.name}], your spy [${spy.name}] has fled back to our hideout."
             }
-            owningCiv.addNotification(notificationString, city.location, NotificationCategory.Espionage, NotificationIcon.Spy)
+            spy.addNotification(notificationString)
             spy.moveTo(null)
         }
     }

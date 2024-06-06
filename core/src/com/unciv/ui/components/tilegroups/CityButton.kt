@@ -531,7 +531,8 @@ class CityButton(val city: City, private val tileGroup: TileGroup) : Table(BaseS
             // second tap on the button will go to the city screen
             // if this city belongs to you and you are not iterating though the air units
             if (DebugUtils.VISIBLE_MAP || viewingPlayer.isSpectator()
-                || (belongsToViewingCiv() && !tileGroup.tile.airUnits.contains(unitTable.selectedUnit))) {
+                || belongsToViewingCiv() && !tileGroup.tile.airUnits.contains(unitTable.selectedUnit)
+                || city.civ.gameInfo.isEspionageEnabled() && viewingPlayer.espionageManager.getSpyAssignedToCity(city)?.isSetUp() == true) {
                 GUI.pushScreen(CityScreen(city))
             } else if (viewingPlayer.knows(city.civ)) {
                 foreignCityInfoPopup()
@@ -553,7 +554,7 @@ class CityButton(val city: City, private val tileGroup: TileGroup) : Table(BaseS
 
         // when deselected, move city button to its original position
         if (unitTable.selectedCity != city
-                && unitTable.selectedUnit?.currentTile != city.getCenterTile()) {
+                && unitTable.selectedUnit?.currentTile != city.getCenterTile() && unitTable.selectedSpy == null) {
 
             moveButtonUp()
         }

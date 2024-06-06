@@ -72,6 +72,16 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Triggerable
 
+??? example  "Remove [policy]"
+	Example: "Remove [Oligarchy]"
+
+	Applicable to: Triggerable
+
+??? example  "Remove [policy] and refund [amount]% of its cost"
+	Example: "Remove [Oligarchy] and refund [3]% of its cost"
+
+	Applicable to: Triggerable
+
 ??? example  "Free Technology"
 	Applicable to: Triggerable
 
@@ -129,7 +139,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Triggerable
 
-??? example  "Reveal up to [positiveAmount/'all'] [tileFilter] within a [amount] tile radius"
+??? example  "Reveal up to [positiveAmount/'all'] [tileFilter] within a [positiveAmount] tile radius"
 	Example: "Reveal up to [3] [Farm] within a [3] tile radius"
 
 	Applicable to: Triggerable
@@ -137,6 +147,14 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "Triggers the following global alert: [comment]"
 	Example: "Triggers the following global alert: [comment]"
 
+	Applicable to: Triggerable
+
+??? example  "Promotes all spies [amount] time(s)"
+	Example: "Promotes all spies [3] time(s)"
+
+	Applicable to: Triggerable
+
+??? example  "Gain an extra spy"
 	Applicable to: Triggerable
 
 ??? example  "Turn this tile into a [terrainName] tile"
@@ -550,7 +568,9 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Global
 
-??? example  "100 Gold for discovering a Natural Wonder (bonus enhanced to 500 Gold if first to discover it)"
+??? example  "[stats] for discovering a Natural Wonder (bonus enhanced to [stats] if first to discover it)"
+	Example: "[+1 Gold, +2 Production] for discovering a Natural Wonder (bonus enhanced to [+1 Gold, +2 Production] if first to discover it)"
+
 	Applicable to: Global
 
 ??? example  "[relativeAmount]% Great Person generation [cityFilter]"
@@ -606,6 +626,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Global
 
 ??? example  "Enables embarkation for land units"
+	Due to performance considerations, this unique is cached, thus conditionals that may change within a turn may not work.
 	Applicable to: Global
 
 ??? example  "Enables [mapUnitFilter] units to enter ocean tiles"
@@ -616,11 +637,13 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "Land units may cross [terrainName] tiles after the first [baseUnitFilter] is earned"
 	Example: "Land units may cross [Forest] tiles after the first [Melee] is earned"
 
+	Due to performance considerations, this unique is cached, thus conditionals that may change within a turn may not work.
 	Applicable to: Global
 
 ??? example  "Enemy [mapUnitFilter] units must spend [amount] extra movement points when inside your territory"
 	Example: "Enemy [Wounded] units must spend [3] extra movement points when inside your territory"
 
+	Due to performance considerations, this unique is cached, thus conditionals that may change within a turn may not work.
 	Applicable to: Global
 
 ??? example  "New [baseUnitFilter] units start with [amount] Experience [cityFilter]"
@@ -748,6 +771,21 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 ??? example  "[relativeAmount]% Faith cost of generating Great Prophet equivalents"
 	Example: "[+20]% Faith cost of generating Great Prophet equivalents"
+
+	Applicable to: Global
+
+??? example  "[relativeAmount]% spy effectiveness [cityFilter]"
+	Example: "[+20]% spy effectiveness [in all cities]"
+
+	Applicable to: Global
+
+??? example  "[relativeAmount]% enemy spy effectiveness [cityFilter]"
+	Example: "[+20]% enemy spy effectiveness [in all cities]"
+
+	Applicable to: Global
+
+??? example  "New spies start with [amount] level(s)"
+	Example: "New spies start with [3] level(s)"
 
 	Applicable to: Global
 
@@ -919,13 +957,13 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "[amount] Movement point cost to disembark"
 	Example: "[3] Movement point cost to disembark"
 
-	Due to performance considerations, this unique is cached, thus conditionals may not work.
+	Due to performance considerations, this unique is cached, thus conditionals that may change within a turn may not work.
 	Applicable to: Global, Unit
 
 ??? example  "[amount] Movement point cost to embark"
 	Example: "[3] Movement point cost to embark"
 
-	Due to performance considerations, this unique is cached, thus conditionals may not work.
+	Due to performance considerations, this unique is cached, thus conditionals that may change within a turn may not work.
 	Applicable to: Global, Unit
 
 ## Nation uniques
@@ -943,11 +981,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Nation
 
 ??? example  "All units move through Forest and Jungle Tiles in friendly territory as if they have roads. These tiles can be used to establish City Connections upon researching the Wheel."
-	Due to performance considerations, this unique is cached, thus conditionals may not work.
+	Due to performance considerations, this unique is cached, thus conditionals that may change within a turn may not work.
 	Applicable to: Nation
 
 ??? example  "Units ignore terrain costs when moving into any tile with Hills"
-	Due to performance considerations, this unique is cached, thus conditionals may not work.
+	Due to performance considerations, this unique is cached, thus conditionals that may change within a turn may not work.
 	Applicable to: Nation
 
 ??? example  "Excluded from map editor"
@@ -1092,7 +1130,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Building, Unit
 
 ??? example  "Can only be built"
-	Meant to be used together with conditionals, like "Can only be built <after adopting [policy]> <while the empire is happy>". Only allows Building when ALL conditionals are met. Will also NOT block Upgrade and Transform actions. See also OnlyAvailable
+	Meant to be used together with conditionals, like "Can only be built <after adopting [policy]> <while the empire is happy>". Only allows Building when ALL conditionals are met. Will also NOT block Upgrade and Transform actions. See also OnlyAvailable.
 	Applicable to: Building, Unit
 
 ??? example  "Must have an owned [tileFilter] within [amount] tiles"
@@ -1169,6 +1207,9 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "Hidden when religion is disabled"
 	Applicable to: Building, Unit, Ruins, Tutorial
 
+??? example  "Hidden when espionage is disabled"
+	Applicable to: Building
+
 ??? example  "Hidden when [victoryType] Victory is disabled"
 	Example: "Hidden when [Domination] Victory is disabled"
 
@@ -1197,6 +1238,12 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: UnitAction
 
 ??? example  "May enhance a religion"
+	Applicable to: UnitAction
+
+??? example  "Can transform to [unit]"
+	By default consumes all movement
+	Example: "Can transform to [Musketman]"
+
 	Applicable to: UnitAction
 
 ## Unit uniques
@@ -1245,11 +1292,6 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 ??? example  "Can undertake a trade mission with City-State, giving a large sum of gold and [amount] Influence"
 	Example: "Can undertake a trade mission with City-State, giving a large sum of gold and [3] Influence"
-
-	Applicable to: Unit
-
-??? example  "Can transform to [unit]"
-	Example: "Can transform to [Musketman]"
 
 	Applicable to: Unit
 
@@ -1432,54 +1474,54 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Unit
 
 ??? example  "Cannot move"
-	Due to performance considerations, this unique is cached, thus conditionals may not work.
+	Due to performance considerations, this unique is cached, thus conditionals that may change within a turn may not work.
 	Applicable to: Unit
 
 ??? example  "Double movement in [terrainFilter]"
 	Example: "Double movement in [Fresh Water]"
 
-	Due to performance considerations, this unique is cached, thus conditionals may not work.
+	Due to performance considerations, this unique is cached, thus conditionals that may change within a turn may not work.
 	Applicable to: Unit
 
 ??? example  "All tiles cost 1 movement"
-	Due to performance considerations, this unique is cached, thus conditionals may not work.
+	Due to performance considerations, this unique is cached, thus conditionals that may change within a turn may not work.
 	Applicable to: Unit
 
 ??? example  "May travel on Water tiles without embarking"
-	Due to performance considerations, this unique is cached, thus conditionals may not work.
+	Due to performance considerations, this unique is cached, thus conditionals that may change within a turn may not work.
 	Applicable to: Unit
 
 ??? example  "Can pass through impassable tiles"
-	Due to performance considerations, this unique is cached, thus conditionals may not work.
+	Due to performance considerations, this unique is cached, thus conditionals that may change within a turn may not work.
 	Applicable to: Unit
 
 ??? example  "Ignores terrain cost"
-	Due to performance considerations, this unique is cached, thus conditionals may not work.
+	Due to performance considerations, this unique is cached, thus conditionals that may change within a turn may not work.
 	Applicable to: Unit
 
 ??? example  "Ignores Zone of Control"
-	Due to performance considerations, this unique is cached, thus conditionals may not work.
+	Due to performance considerations, this unique is cached, thus conditionals that may change within a turn may not work.
 	Applicable to: Unit
 
 ??? example  "Rough terrain penalty"
-	Due to performance considerations, this unique is cached, thus conditionals may not work.
+	Due to performance considerations, this unique is cached, thus conditionals that may change within a turn may not work.
 	Applicable to: Unit
 
 ??? example  "Can enter ice tiles"
-	Due to performance considerations, this unique is cached, thus conditionals may not work.
+	Due to performance considerations, this unique is cached, thus conditionals that may change within a turn may not work.
 	Applicable to: Unit
 
 ??? example  "Cannot enter ocean tiles"
 	Applicable to: Unit
 
 ??? example  "May enter foreign tiles without open borders"
-	Due to performance considerations, this unique is cached, thus conditionals may not work.
+	Due to performance considerations, this unique is cached, thus conditionals that may change within a turn may not work.
 	Applicable to: Unit
 
 ??? example  "May enter foreign tiles without open borders, but loses [amount] religious strength each turn it ends there"
 	Example: "May enter foreign tiles without open borders, but loses [3] religious strength each turn it ends there"
 
-	Due to performance considerations, this unique is cached, thus conditionals may not work.
+	Due to performance considerations, this unique is cached, thus conditionals that may change within a turn may not work.
 	Applicable to: Unit
 
 ??? example  "Never appears as a Barbarian unit"
@@ -1497,6 +1539,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Unit
 
 ??? example  "Is part of Great Person group [comment]"
+	Great people in the same group increase teach other's costs when gained. Gaining one will make all others in the same group cost more GPP.
 	Example: "Is part of Great Person group [comment]"
 
 	Applicable to: Unit
@@ -1549,13 +1592,15 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Terrain
 
-??? example  "Grants 500 Gold to the first civilization to discover it"
+??? example  "Grants [stats] to the first civilization to discover it"
+	Example: "Grants [+1 Gold, +2 Production] to the first civilization to discover it"
+
 	Applicable to: Terrain
 
 ??? example  "Units ending their turn on this terrain take [amount] damage"
 	Example: "Units ending their turn on this terrain take [3] damage"
 
-	Due to performance considerations, this unique is cached, thus conditionals may not work.
+	Due to performance considerations, this unique is cached, thus conditionals that may change within a turn may not work.
 	Applicable to: Terrain
 
 ??? example  "Grants [promotion] ([comment]) to adjacent [mapUnitFilter] units for the rest of the game"
@@ -1878,6 +1923,12 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "Cannot be used as permanent audiovisual mod"
 	Applicable to: ModOptions
 
+??? example  "Mod preselects map [comment]"
+	Only meaningful for Mods containing several maps. When this mod is selected on the new game screen's custom maps mod dropdown, the named map will be selected on the map dropdown. Also disables selection by recently modified. Case insensitive.
+	Example: "Mod preselects map [comment]"
+
+	Applicable to: ModOptions
+
 ## Conditional uniques
 !!! note ""
 
@@ -1965,6 +2016,16 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 ??? example  "&lt;on [speed] game speed&gt;"
 	Example: "&lt;on [Quick] game speed&gt;"
+
+	Applicable to: Conditional
+
+??? example  "&lt;when [victoryType] Victory is enabled&gt;"
+	Example: "&lt;when [Domination] Victory is enabled&gt;"
+
+	Applicable to: Conditional
+
+??? example  "&lt;when [victoryType] Victory is disabled&gt;"
+	Example: "&lt;when [Domination] Victory is disabled&gt;"
 
 	Applicable to: Conditional
 
@@ -2235,6 +2296,31 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Conditional
 
+??? example  "&lt;when number of [countable] is equal to [countable]&gt;"
+	Example: "&lt;when number of [1000] is equal to [1000]&gt;"
+
+	Applicable to: Conditional
+
+??? example  "&lt;when number of [countable] is different than [countable]&gt;"
+	Example: "&lt;when number of [1000] is different than [1000]&gt;"
+
+	Applicable to: Conditional
+
+??? example  "&lt;when number of [countable] is greater than [countable]&gt;"
+	Example: "&lt;when number of [1000] is greater than [1000]&gt;"
+
+	Applicable to: Conditional
+
+??? example  "&lt;when number of [countable] is less than [countable]&gt;"
+	Example: "&lt;when number of [1000] is less than [1000]&gt;"
+
+	Applicable to: Conditional
+
+??? example  "&lt;when number of [countable] is between [countable] and [countable]&gt;"
+	Example: "&lt;when number of [1000] is between [1000] and [1000]&gt;"
+
+	Applicable to: Conditional
+
 ## TriggerCondition uniques
 !!! note ""
 
@@ -2351,7 +2437,30 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: UnitActionModifier
 
 ??? example  "&lt;for [amount] movement&gt;"
+	Will consume up to [amount] of Movement to execute
 	Example: "&lt;for [3] movement&gt;"
+
+	Applicable to: UnitActionModifier
+
+??? example  "&lt;for all movement&gt;"
+	Will consume all Movement to execute
+	Applicable to: UnitActionModifier
+
+??? example  "&lt;requires [amount] movement&gt;"
+	Requires [amount] of Movement to execute. Unit's Movement is rounded up
+	Example: "&lt;requires [3] movement&gt;"
+
+	Applicable to: UnitActionModifier
+
+??? example  "&lt;costs [stats] stats&gt;"
+	A positive Integer value will be subtracted from your stock. Food and Production will be removed from Closest City's current stock
+	Example: "&lt;costs [+1 Gold, +2 Production] stats&gt;"
+
+	Applicable to: UnitActionModifier
+
+??? example  "&lt;costs [amount] [stockpiledResource]&gt;"
+	A positive Integer value will be subtracted from your stock.
+	Example: "&lt;costs [3] [StockpiledResource]&gt;"
 
 	Applicable to: UnitActionModifier
 
@@ -2379,6 +2488,16 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "&lt;hidden from users&gt;"
 	Applicable to: MetaModifier
 
+??? example  "&lt;for every [countable]&gt;"
+	Example: "&lt;for every [1000]&gt;"
+
+	Applicable to: MetaModifier
+
+??? example  "&lt;for every [amount] [countable]&gt;"
+	Example: "&lt;for every [3] [1000]&gt;"
+
+	Applicable to: MetaModifier
+
 
 *[amount]: This indicates a whole number, possibly with a + or - sign, such as `2`, `+13`, or `-3`.
 *[baseTerrain]: The name of any terrain that is a base terrain according to the json file.
@@ -2388,6 +2507,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 *[civWideStat]: All the following stats have civ-wide fields: `Gold`, `Science`, `Culture`, `Faith`.
 *[combatantFilter]: This indicates a combatant, which can either be a unit or a city (when bombarding). Must either be `City` or a `mapUnitFilter`.
 *[costOrStrength]: `Cost` or `Strength`.
+*[countable]: This indicate a number or a numeric variable.
 *[era]: The name of any era.
 *[event]: The name of any event.
 *[foundingOrEnhancing]: `founding` or `enhancing`.
@@ -2395,6 +2515,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 *[improvementName]: The name of any improvement.
 *[modFilter]: A Mod name, case-sensitive _or_ a simple wildcard filter beginning and ending in an Asterisk, case-insensitive.
 *[policy]: The name of any policy.
+*[policyFilter]: The name of any policy.
 *[positiveAmount]: This indicates a positive whole number, larger than zero, a '+' sign is optional.
 *[promotion]: The name of any promotion.
 *[relativeAmount]: This indicates a number, usually with a + or - sign, such as `+25` (this kind of parameter is often followed by '%' which is nevertheless not part of the value).

@@ -5,7 +5,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.SplitPane
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.utils.Align
-import com.unciv.Constants
 import com.unciv.GUI
 import com.unciv.UncivGame
 import com.unciv.logic.civilization.Civilization
@@ -99,6 +98,8 @@ class DiplomacyScreen(
                 updateRightSide(selectCiv)
         }
     }
+
+    override fun getCivilopediaRuleset() = viewingCiv.gameInfo.ruleset
 
     private inner class ScrollPaneWithMinSize : ScrollPane(leftSideTable) {
         // On cramped screens 20% default splitAmount can make the left side smaller than a nation icon.
@@ -211,9 +212,9 @@ class DiplomacyScreen(
 
     //region Major Civ Diplomacy
 
-    internal fun setTrade(civ: Civilization): TradeTable {
+    internal fun setTrade(otherCiv: Civilization): TradeTable {
         rightSideTable.clear()
-        val tradeTable = TradeTable(civ, this)
+        val tradeTable = TradeTable(viewingCiv, otherCiv, this)
         rightSideTable.add(tradeTable)
         return tradeTable
     }

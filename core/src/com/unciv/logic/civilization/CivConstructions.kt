@@ -119,7 +119,7 @@ class CivConstructions : IsPartOfGameInfoSerialization {
 
             freeStatBuildingsProvided.addToMapOfSets(stat.name, city.id)
             addFreeBuilding(city.id, building.name)
-            city.cityConstructions.constructionComplete(building)
+            city.cityConstructions.completeConstruction(building)
         }
     }
 
@@ -142,7 +142,7 @@ class CivConstructions : IsPartOfGameInfoSerialization {
 
             freeSpecificBuildingsProvided.addToMapOfSets(building.name, city.id)
             addFreeBuilding(city.id, building.name)
-            city.cityConstructions.constructionComplete(building)
+            city.cityConstructions.completeConstruction(building)
         }
     }
 
@@ -162,12 +162,12 @@ class CivConstructions : IsPartOfGameInfoSerialization {
                 city.cityConstructions.freeBuildingsProvidedFromThisCity.addToMapOfSets(city.id, freeBuilding.name)
 
                 if (city.cityConstructions.containsBuildingOrEquivalent(freeBuilding.name)) continue
-                city.cityConstructions.constructionComplete(freeBuilding)
+                city.cityConstructions.completeConstruction(freeBuilding)
             }
 
             for (building in autoGrantedBuildings)
                 if (building.isBuildable(city.cityConstructions))
-                    city.cityConstructions.constructionComplete(building)
+                    city.cityConstructions.completeConstruction(building)
         }
     }
 

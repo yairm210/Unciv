@@ -67,7 +67,7 @@ class ConstructionInfoTable(val cityScreen: CityScreen) : Table() {
                 if (link.isEmpty()) return@apply
                 touchable = Touchable.enabled
                 this.onClick {
-                    UncivGame.Current.pushScreen(CivilopediaScreen(city.getRuleset(), link = link))
+                    cityScreen.openCivilopedia(link)
                 }
             }).pad(5f)
 

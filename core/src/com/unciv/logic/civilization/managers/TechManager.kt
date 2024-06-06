@@ -160,28 +160,35 @@ class TechManager : IsPartOfGameInfoSerialization {
 
     fun isObsolete(unit: BaseUnit): Boolean = unit.techsThatObsoleteThis().any{ obsoleteTech -> isResearched(obsoleteTech) }
 
+    fun isUnresearchable(tech: Technology): Boolean {
+        if (tech.getMatchingUniques(UniqueType.OnlyAvailable, StateForConditionals.IgnoreConditionals).any { !it.conditionalsApply(civInfo) })
+            return true
+        if (tech.hasUnique(UniqueType.Unavailable, StateForConditionals(civInfo))) return true
+        return false
+    }
+
     fun canBeResearched(techName: String): Boolean {
         val tech = getRuleset().technologies[techName]!!
-        if (tech.getMatchingUniques(UniqueType.OnlyAvailable, StateForConditionals.IgnoreConditionals).any { !it.conditionalsApply(civInfo) })
-            return false
-        if (tech.hasUnique(UniqueType.Unavailable, StateForConditionals(civInfo))) return false
 
-        if (isResearched(tech.name) && !tech.isContinuallyResearchable())
-            return false
+        if (isUnresearchable(tech)) return false
+        if (isResearched(tech.name) && !tech.isContinuallyResearchable()) return false
 
         return tech.prerequisites.all { isResearched(it) }
     }
 
     //endregion
 
+    /** Returns empty list if no path exists */
     fun getRequiredTechsToDestination(destinationTech: Technology): List<Technology> {
         val prerequisites = mutableListOf<Technology>()
 
         val checkPrerequisites = ArrayDeque<Technology>()
+        if (isUnresearchable(destinationTech)) return listOf()
         checkPrerequisites.add(destinationTech)
 
         while (!checkPrerequisites.isEmpty()) {
             val techToCheck = checkPrerequisites.removeFirst()
+            if (isUnresearchable(techToCheck)) return listOf()
             // future tech can have been researched even when we're researching it,
             // so...if we skip it we'll end up with 0 techs in the "required techs", which will mean that we don't have anything to research. Yeah.
             if (!techToCheck.isContinuallyResearchable() &&
@@ -300,10 +307,6 @@ class TechManager : IsPartOfGameInfoSerialization {
         val triggerNotificationText = "due to researching [$techName]"
         for (unique in newTech.uniqueObjects)
             if (!unique.hasTriggerConditional() && unique.conditionalsApply(StateForConditionals(civInfo)))
-                UniqueTriggerActivation.triggerUnique(unique, civInfo, triggerNotificationText = triggerNotificationText)
-
-        for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponResearchOld))
-            if (unique.conditionals.any {it.type == UniqueType.TriggerUponResearchOld && it.params[0] == techName})
                 UniqueTriggerActivation.triggerUnique(unique, civInfo, triggerNotificationText = triggerNotificationText)
 
         for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponResearch))
@@ -525,12 +528,12 @@ class TechManager : IsPartOfGameInfoSerialization {
     }
 
     fun getBestRoadAvailable(): RoadStatus {
-        val railroadImprovement = RoadStatus.Railroad.improvement(getRuleset())  // May not exist in mods
-        if (railroadImprovement != null && (railroadImprovement.techRequired==null || isResearched(railroadImprovement.techRequired!!)))
+        val railroadImprovement = getRuleset().railroadImprovement  // May not exist in mods
+        if (railroadImprovement != null && (railroadImprovement.techRequired == null || isResearched(railroadImprovement.techRequired!!)))
             return RoadStatus.Railroad
 
-        val roadImprovement = RoadStatus.Road.improvement(getRuleset())
-        if (roadImprovement != null && (roadImprovement.techRequired==null || isResearched(roadImprovement.techRequired!!)))
+        val roadImprovement = getRuleset().roadImprovement
+        if (roadImprovement != null && (roadImprovement.techRequired == null || isResearched(roadImprovement.techRequired!!)))
             return RoadStatus.Road
 
         return RoadStatus.None

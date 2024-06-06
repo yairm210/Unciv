@@ -1,5 +1,7 @@
 package com.unciv.models
 
+import java.lang.reflect.Modifier
+
 /** Used as a member of [ModOptions][com.unciv.models.ruleset.ModOptions] for moddable "constants" - factors in formulae and such.
  *
  *  When combining mods, this is [merge]d _per constant/field_, not as entire object like other RulesetObjects.
@@ -8,8 +10,9 @@ package com.unciv.models
  *
  *  Supports equality contract to enable the Json serializer to recognize unchanged defaults.
  *
- *  Methods [merge], [equals] and [hashCode] are done through reflection so adding a field will not need to update these methods
- *  (overhead is not a factor, these routines run very rarely).
+ *  Methods [merge], [equals], [hashCode] and [toString] are done through reflection!
+ *  Therefore, adding a field will not need to update these methods, but all members ***must*** conform to the equality contract.
+ *  (overhead is not a factor, these routines run very rarely. The alternative would be to make the entire thing a data class.)
  */
 class ModConstants {
     // Max amount of experience that can be gained from combat with barbarians
@@ -78,12 +81,17 @@ class ModConstants {
     var religionLimitBase = 1
     var religionLimitMultiplier = 0.5f
 
-    //Factors in formula for pantheon cost
+    // Factors in formula for pantheon cost
     var pantheonBase = 10
     var pantheonGrowth = 5
 
+    var workboatAutomationSearchMaxTiles = 20
+
+    var maxSpyLevel = 3
+
     fun merge(other: ModConstants) {
         for (field in this::class.java.declaredFields) {
+            if (field.modifiers and Modifier.STATIC != 0) continue
             val value = field.get(other)
             if (field.get(defaults).equals(value)) continue
             field.set(this, value)
@@ -97,8 +105,14 @@ class ModConstants {
     }
 
     override fun hashCode(): Int {
+        // Note: This is of course heavily dependent on iteration order.
+        // Java reflection uses declaration order, but its doc claims "The elements in the returned array are not sorted and are not in any particular order."
+        // kotlin reflection is alphabetically sorted. Embarrassingly, the best documentation guarantee seems to be: https://youtrack.jetbrains.com/issue/KT-41042
+        // But - let's rely on at least the order being deterministic over instances of the same class in both reflection engines, so which we use is moot.
+        // A kotlin version of this (different result!): `this::class.declaredMemberProperties.fold(0) { a, b -> a * 31 + b.getter.call(this).hashCode() }`
         var result = 0
         for (field in this::class.java.declaredFields) {
+            if (field.modifiers and Modifier.STATIC != 0) continue
             result = result * 31 + field.get(this).hashCode()
         }
         return result
@@ -106,9 +120,27 @@ class ModConstants {
 
     private fun equalsReflected(other: ModConstants): Boolean {
         for (field in this::class.java.declaredFields) {
+            if (field.modifiers and Modifier.STATIC != 0) continue
             if (!field.get(this).equals(field.get(other))) return false
         }
         return true
+    }
+
+    /** Debug only so far */
+    override fun toString(): String {
+        val sb = StringBuilder()
+        sb.append('{')
+        for (field in this::class.java.declaredFields) {
+            if (field.modifiers and Modifier.STATIC != 0) continue
+            if (field.get(this).equals(field.get(defaults))) continue
+            sb.append(field.name)
+            sb.append(':')
+            sb.append(field.get(this))
+            sb.append(',')
+        }
+        sb.deleteCharAt(sb.length - 1) // remove extra ',' with StringBuilder method
+        sb.append('}')
+        return sb.toString().takeUnless { it == "}" } ?: "defaults"
     }
 
     companion object {

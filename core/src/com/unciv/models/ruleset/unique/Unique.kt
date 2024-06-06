@@ -68,6 +68,36 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
         return true
     }
 
+    private fun getUniqueMultiplier(stateForConditionals: StateForConditionals = StateForConditionals()): Int {
+        val forEveryConditionals = conditionals.filter { it.type == UniqueType.ForEveryCountable }
+        val forEveryAmountConditionals = conditionals.filter { it.type == UniqueType.ForEveryAmountCountable }
+        var amount = 1
+        for (conditional in forEveryConditionals) { // multiple multipliers DO multiply.
+            val multiplier = Countables.getCountableAmount(conditional.params[0], stateForConditionals)
+            if (multiplier != null) amount *= multiplier
+        }
+        for (conditional in forEveryAmountConditionals) { // multiple multipliers DO multiply.
+            val multiplier = Countables.getCountableAmount(conditional.params[1], stateForConditionals)
+            val perEvery = conditional.params[0].toInt()
+            if (multiplier != null) amount *= multiplier / perEvery
+        }
+
+        return amount.coerceAtLeast(0)
+    }
+
+    /** Multiplies the unique according to the multiplication conditionals */
+    fun getMultiplied(stateForConditionals: StateForConditionals = StateForConditionals()): Sequence<Unique> {
+        val multiplier = getUniqueMultiplier(stateForConditionals)
+        return EndlessSequenceOf(this).take(multiplier)
+    }
+
+    private class EndlessSequenceOf<T>(private val value: T) : Sequence<T> {
+        override fun iterator(): Iterator<T> = object : Iterator<T> {
+            override fun next() = value
+            override fun hasNext() = true
+        }
+    }
+
     fun getDeprecationAnnotation(): Deprecated? = type?.getDeprecationAnnotation()
 
     fun getSourceNameForUser(): String {
@@ -225,6 +255,11 @@ class UniqueMap() : HashMap<String, ArrayList<Unique>>() {
         for (unique in uniques) addUnique(unique)
     }
 
+    fun removeUnique(unique: Unique) {
+        val existingArrayList = get(unique.placeholderText)
+        existingArrayList?.remove(unique)
+    }
+
     fun getUniques(uniqueType: UniqueType) =
         this[uniqueType.placeholderText]?.asSequence() ?: emptySequence()
 
@@ -239,9 +274,6 @@ class UniqueMap() : HashMap<String, ArrayList<Unique>>() {
             && unique.conditionalsApply(stateForConditionals)
         }
     }
-
-    /** This is an alias for [containsKey] to clarify when a pure string-based check is legitimate. */
-    fun containsFilteringUnique(filter: String) = containsKey(filter)
 }
 
 

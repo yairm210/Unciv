@@ -80,7 +80,7 @@ class CivilopediaSearchPopup(
                 val regex = Regex(text, RegexOption.IGNORE_CASE)
                 checkLine = { regex.containsMatchIn(it) }
             } catch (ex: Exception) {
-                ToastPopup("Invalid regular expression", pediaScreen, 4000).open(true)
+                ToastPopup("Invalid regular expression", pediaScreen, 4000)
                 searchButton.enable()
                 return
             }
@@ -113,7 +113,6 @@ class CivilopediaSearchPopup(
     private fun CoroutineScope.searchLoop() {
         for (category in CivilopediaCategories.values()) {
             if (!isActive) break
-            if (category.hide) continue
             if (!ruleset.modOptions.isBaseRuleset && category == CivilopediaCategories.Tutorial)
                 continue  // Search tutorials only when the mod filter is a base ruleset
             for (entry in category.getCategoryIterator(ruleset, tutorialController)) {

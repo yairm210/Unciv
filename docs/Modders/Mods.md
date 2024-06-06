@@ -13,7 +13,7 @@ The game only knows how to recognize existing definitions, so you can't add *new
 There are three main kinds of mods:
 
 -   **Extension mods** - these add new nations/units/buildings/resources to a base ruleset - can be either to the default ruleset, or to a base ruleset mod. Easy to do and probably the better place to get started - for example, [creating a new Civilization](Making-a-new-Civilization.md)
--   **Base Ruleset mods** - these replace the entire existing ruleset - tech tree, units, policies, nations etc - to give an entirely different experience than the base game. These generally require quite a bit of work, but give a whole new experience, and so are the most popular.
+-   **Base Ruleset mods** - these replace the entire existing ruleset - tech tree, units, policies, nations etc - to give an entirely different experience than the base game. These generally require quite a bit of work, but give a whole new experience, and so are the most popular. [A minimal example can be found here](https://github.com/yairm210/Unciv-minimal-base-ruleset) as a template to build off of ("Use this template" green button in top right, "Create a new repository")
 -   **Ruleset-agnostic mods** - these do not contain any ruleset-related jsons, but instead contain other affects. Audiovisual mods (including tilesets, unitsets, and UI skins) and map mods are in this category.
 
 Creating and editing mods from your phone is NOT RECOMMENDED - it's *much easier* using a desktop device!
@@ -109,14 +109,16 @@ For mods which are primarily visual or audio, there is a second use - through th
 
 ## Mod location for manual loading of mods
 
-In general, you should never be manually-loading your mods - not only is this clunky, it's also more error-prone. Unless you have a very specific use-case, you probably shouldn't be doing this.
+In general, you should never be manually-loading your mods - not only is this clunky, it's also more error-prone. Unless you have a very specific use-case, you probably **shouldn't be doing this**
 
-In Android, they should go into the `Android/data/com.unciv.app/files/mods` directory.
+When loading a mod, it needs to be in its own folder in `/mods` - this is how you will work when you're editing your mod.
+
+In Android, you can copy them into the `Android/data/com.unciv.app/files/mods` directory.
+
+When the app starts, they will be auto-copied into the `/data/data/com.unciv.app/files/mods`, directory, that is inaccessible to users.
 
 In Chromebook, go to "Play files", should be on the sidebar on the left side of the window under "My files". Click the 3 vertical dots on the top right-hand corner of the window below the "X".
 If the option "Show all Play folders" does not have a check next to it click it. You should see some new files that appear on your screen. *Now* navigate to `Android/data/com.unciv.app/files/mods`
-
-When loading a mod, it needs to be in its own folder in `/mods` - this is how you will work when you're editing your mod.
 
 ## Other
 

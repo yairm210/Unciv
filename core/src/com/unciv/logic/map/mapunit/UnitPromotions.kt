@@ -64,7 +64,7 @@ class UnitPromotions : IsPartOfGameInfoSerialization {
 
     fun addPromotion(promotionName: String, isFree: Boolean = false) {
         val ruleset = unit.civ.gameInfo.ruleset
-        val promotion = ruleset.unitPromotions[promotionName]!!
+        val promotion = ruleset.unitPromotions[promotionName] ?: return
 
         if (!isFree) {
             if (!promotion.hasUnique(UniqueType.FreePromotion)) {

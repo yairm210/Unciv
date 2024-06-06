@@ -87,6 +87,7 @@ data class VictoryData(val winningCiv: String, val victoryType: String, val vict
     constructor(): this("","",0)
 }
 
+/** The virtual world the users play in */
 class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion {
     companion object {
         /** The current compatibility version of [GameInfo]. This number is incremented whenever changes are made to the save file structure that guarantee that
@@ -389,16 +390,17 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
             // Automation done here
             TurnManager(player).automateTurn()
 
+            val worldScreen = UncivGame.Current.worldScreen
             // Do we need to break if player won?
             if (simulateUntilWin && player.victoryManager.hasWon()) {
                 simulateUntilWin = false
-                UncivGame.Current.settings.autoPlay.stopAutoPlay()
+                worldScreen?.autoPlay?.stopAutoPlay()
                 break
             }
 
             // Do we need to stop AutoPlay?
-            if (UncivGame.Current.settings.autoPlay.isAutoPlaying() && player.victoryManager.hasWon() && !oneMoreTurnMode)
-                UncivGame.Current.settings.autoPlay.stopAutoPlay()
+            if (worldScreen != null && worldScreen.autoPlay.isAutoPlaying() && player.victoryManager.hasWon() && !oneMoreTurnMode)
+                worldScreen.autoPlay.stopAutoPlay()
 
             // Clean up
             TurnManager(player).endTurn(progressBar)
@@ -537,13 +539,20 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
      * @see notifyExploredResources
      */
     fun getExploredResourcesNotification(
-        civInfo: Civilization,
+        civ: Civilization,
         resourceName: String,
         maxDistance: Int = Int.MAX_VALUE,
         filter: (Tile) -> Boolean = { true }
     ): Notification? {
         data class CityTileAndDistance(val city: City, val tile: Tile, val distance: Int)
 
+        // Include your city-state allies' cities with your own for the purpose of showing the closest city
+        val relevantCities: Sequence<City> = civ.cities.asSequence() +
+            civ.getKnownCivs()
+                .filter { it.isCityState() && it.getAllyCiv() == civ.civName }
+                .flatMap { it.cities }
+
+        // All sources of the resource on the map, using a city-state's capital center tile for the CityStateOnlyResource types
         val exploredRevealTiles: Sequence<Tile> =
                 if (ruleset.tileResources[resourceName]!!.hasUnique(UniqueType.CityStateOnlyResource)) {
                     // Look for matching mercantile CS centers
@@ -557,15 +566,15 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
                         .filter { it.resource == resourceName }
                 }
 
+        // Apply all filters to the above collection and sort them by distance to closest city
         val exploredRevealInfo = exploredRevealTiles
-            .filter { civInfo.hasExplored(it) }
+            .filter { civ.hasExplored(it) }
             .flatMap { tile ->
-                civInfo.cities.asSequence()
-                    .map {
+                relevantCities
+                    .map { city ->
                         // build a full cross join all revealed tiles * civ's cities (should rarely surpass a few hundred)
                         // cache distance for each pair as sort will call it ~ 2n log n times
                         // should still be cheaper than looking up 'the' closest city per reveal tile before sorting
-                            city ->
                         CityTileAndDistance(city, tile, tile.aerialDistanceTo(city.getCenterTile()))
                     }
             }
@@ -620,6 +629,9 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
 
         for (baseUnit in ruleset.units.values)
             baseUnit.ruleset = ruleset
+
+        for (building in ruleset.buildings.values)
+            building.ruleset = ruleset
 
         // This needs to go before tileMap.setTransients, as units need to access
         // the nation of their civilization when setting transients

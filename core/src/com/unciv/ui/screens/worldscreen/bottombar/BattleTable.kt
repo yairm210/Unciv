@@ -60,7 +60,7 @@ class BattleTable(val worldScreen: WorldScreen) : Table() {
     fun update() {
         val attacker = tryGetAttacker() ?: return hide()
 
-        if (attacker is MapUnitCombatant && attacker.unit.baseUnit.isNuclearWeapon()) {
+        if (attacker is MapUnitCombatant && attacker.unit.isNuclearWeapon()) {
             val selectedTile = worldScreen.mapHolder.selectedTile
                 ?: return hide() // no selected tile
             if (selectedTile == attacker.getTile()) return hide() // mayUseNuke would test this again, but not actually seeing the nuke-yourself table just by selecting the nuke is nicer
@@ -306,6 +306,7 @@ class BattleTable(val worldScreen: WorldScreen) : Table() {
         val (damageToDefender, damageToAttacker) = Battle.attackOrNuke(attacker, attackableTile)
 
         worldScreen.battleAnimation(attacker, damageToAttacker, defender, damageToDefender)
+        if (!attacker.canAttack()) hide()
     }
 
 

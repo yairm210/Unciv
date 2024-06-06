@@ -21,7 +21,7 @@ interface IConstruction : INamed {
     /** Gets *per turn* resource requirements - does not include immediate costs for stockpiled resources.
      * Uses [stateForConditionals] to determine which civ or city this is built for*/
     fun getResourceRequirementsPerTurn(stateForConditionals: StateForConditionals? = null): Counter<String>
-    fun requiresResource(resource: String, stateForConditionals: StateForConditionals? = null): Boolean
+    fun requiredResources(stateForConditionals: StateForConditionals? = null): Set<String>
     /** We can't call this getMatchingUniques because then it would conflict with IHasUniques */
     fun getMatchingUniquesNotConflicting(uniqueType: UniqueType) = sequenceOf<Unique>()
 }
@@ -103,6 +103,11 @@ interface INonPerpetualConstruction : IConstruction, INamed, IHasUniques {
 
     override fun getMatchingUniquesNotConflicting(uniqueType: UniqueType): Sequence<Unique> =
             getMatchingUniques(uniqueType)
+
+    override fun requiredResources(stateForConditionals: StateForConditionals?): Set<String> {
+        return getResourceRequirementsPerTurn(stateForConditionals).keys +
+                getMatchingUniques(UniqueType.CostsResources, stateForConditionals).map { it.params[1] }
+    }
 }
 
 
@@ -143,7 +148,6 @@ class RejectionReason(val type: RejectionReasonType,
     private val orderedImportantRejectionTypes = listOf(
         RejectionReasonType.ShouldNotBeDisplayed,
         RejectionReasonType.WonderBeingBuiltElsewhere,
-        RejectionReasonType.NationalWonderBeingBuiltElsewhere,
         RejectionReasonType.RequiresBuildingInAllCities,
         RejectionReasonType.RequiresBuildingInThisCity,
         RejectionReasonType.RequiresBuildingInSomeCity,
@@ -206,9 +210,8 @@ enum class RejectionReasonType(val shouldShow: Boolean, val errorMessage: String
     WonderAlreadyBuilt(false, "Wonder already built"),
     NationalWonderAlreadyBuilt(false, "National Wonder already built"),
     WonderBeingBuiltElsewhere(true, "Wonder is being built elsewhere"),
-    NationalWonderBeingBuiltElsewhere(true, "National Wonder is being built elsewhere"),
     CityStateWonder(false, "No Wonders for city-states"),
-    CityStateNationalWonder(false, "No National Wonders for city-states"),
+    PuppetWonder(false, "No Wonders for Puppets"),
     WonderDisabledEra(false, "This Wonder is disabled when starting in this era"),
 
     ConsumesResources(true, "Consumes resources which you are lacking"),
@@ -251,8 +254,7 @@ open class PerpetualConstruction(override var name: String, val description: Str
 
     override fun getResourceRequirementsPerTurn(stateForConditionals: StateForConditionals?) = Counter.ZERO
 
-    override fun requiresResource(resource: String, stateForConditionals: StateForConditionals?) = false
-
+    override fun requiredResources(stateForConditionals: StateForConditionals?): Set<String> = emptySet()
 }
 
 open class PerpetualStatConversion(val stat: Stat) :

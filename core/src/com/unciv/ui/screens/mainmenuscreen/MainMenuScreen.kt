@@ -27,7 +27,6 @@ import com.unciv.ui.components.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.components.extensions.center
 import com.unciv.ui.components.extensions.surroundWithCircle
 import com.unciv.ui.components.extensions.toLabel
-import com.unciv.ui.components.input.KeyCharAndCode
 import com.unciv.ui.components.input.KeyShortcutDispatcherVeto
 import com.unciv.ui.components.input.KeyboardBinding
 import com.unciv.ui.components.input.keyShortcuts
@@ -168,7 +167,7 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
         column2.add(modsTable).row()
 
         if (game.files.getScenarioFiles().any()){
-            val scenarioTable = getMenuButton("Scenarios", "OtherIcons/Mods", KeyboardBinding.Scenarios)
+            val scenarioTable = getMenuButton("Scenarios", "OtherIcons/Scenarios", KeyboardBinding.Scenarios)
             { game.pushScreen(ScenarioScreen()) }
             column2.add(scenarioTable).row()
         }
@@ -189,7 +188,7 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
         stage.addActor(scrollPane)
         table.center(scrollPane)
 
-        globalShortcuts.add(KeyCharAndCode.BACK) {
+        globalShortcuts.add(KeyboardBinding.QuitMainMenu) {
             if (hasOpenPopups()) {
                 closeAllPopups()
                 return@add
@@ -281,8 +280,7 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
             val currentGameSetting = GUI.getSettings()
             if (currentTileSet.tileSetName != currentGameSetting.tileSet ||
                     currentTileSet.unitSetName != currentGameSetting.unitSet) {
-                for (screen in game.screenStack.filterIsInstance<WorldScreen>()) screen.dispose()
-                game.screenStack.removeAll { it is WorldScreen }
+                game.removeScreensOfType(WorldScreen::class)
                 QuickSave.autoLoadGame(this)
             } else {
                 GUI.resetToWorldScreen()
@@ -337,17 +335,21 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
         }
     }
 
-    private fun openCivilopedia() {
-        stopBackgroundMapGeneration()
+    override fun getCivilopediaRuleset(): Ruleset {
+        if (easterEggRuleset != null) return easterEggRuleset!!
         val rulesetParameters = game.settings.lastGameSetup?.gameParameters
-        val ruleset = easterEggRuleset ?:
-            if (rulesetParameters == null)
-                RulesetCache[BaseRuleset.Civ_V_GnK.fullName] ?: return
-            else RulesetCache.getComplexRuleset(rulesetParameters)
+        if (rulesetParameters != null) return RulesetCache.getComplexRuleset(rulesetParameters)
+        return RulesetCache[BaseRuleset.Civ_V_GnK.fullName]
+            ?: throw IllegalStateException("No ruleset found")
+    }
+
+    override fun openCivilopedia(link: String) {
+        stopBackgroundMapGeneration()
+        val ruleset = getCivilopediaRuleset()
         UncivGame.Current.translations.translationActiveMods = ruleset.mods
         ImageGetter.setNewRuleset(ruleset)
         setSkin()
-        game.pushScreen(CivilopediaScreen(ruleset))
+        openCivilopedia(ruleset, link = link)
     }
 
     override fun recreate(): BaseScreen {
@@ -358,5 +360,3 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
     // We contain a map...
     override fun getShortcutDispatcherVetoer() = KeyShortcutDispatcherVeto.createTileGroupMapDispatcherVetoer()
 }
-
-

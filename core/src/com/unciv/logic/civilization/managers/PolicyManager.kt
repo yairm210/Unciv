@@ -30,9 +30,9 @@ class PolicyManager : IsPartOfGameInfoSerialization {
     var freePolicies = 0
     var storedCulture = 0
     internal val adoptedPolicies = HashSet<String>()
-    var numberOfAdoptedPolicies = 0
+    private var numberOfAdoptedPolicies = 0
 
-    var cultureOfLast8Turns = IntArray(8) { 0 }
+    private var cultureOfLast8Turns = IntArray(8) { 0 }
 
     /** Indicates whether we should *check* if policy is adoptible, and if so open */
     var shouldOpenPolicyPicker = false
@@ -117,6 +117,12 @@ class PolicyManager : IsPartOfGameInfoSerialization {
         }
     }
 
+    private fun removePolicyFromTransients(policy: Policy) {
+        for (unique in policy.uniqueObjects) {
+            policyUniques.removeUnique(unique)
+        }
+    }
+
     fun addCulture(culture: Int) {
         val couldAdoptPolicyBefore = canAdoptPolicy()
         storedCulture += culture
@@ -133,6 +139,23 @@ class PolicyManager : IsPartOfGameInfoSerialization {
     // from https://forums.civfanatics.com/threads/the-number-crunching-thread.389702/
     // round down to nearest 5
     fun getCultureNeededForNextPolicy(): Int {
+        return getPolicyCultureCost(numberOfAdoptedPolicies)
+    }
+
+    fun getCultureRefundMap(policiesToRemove: List<Policy>, refundPercentage: Int): Map<Policy, Int> {
+        var policyCostInput = numberOfAdoptedPolicies
+
+        val policyMap = mutableMapOf<Policy, Int>()
+
+        for (policy in policiesToRemove) {
+            policyCostInput--
+            policyMap.put(policy, getPolicyCultureCost(policyCostInput))
+        }
+
+        return policyMap.toMap()
+    }
+
+    fun getPolicyCultureCost(numberOfAdoptedPolicies: Int): Int {
         var policyCultureCost = 25 + (numberOfAdoptedPolicies * 6).toDouble().pow(1.7)
         // https://civilization.fandom.com/wiki/Map_(Civ5)
         val worldSizeModifier = with(civInfo.gameInfo.tileMap.mapParameters.mapSize) {
@@ -230,6 +253,41 @@ class PolicyManager : IsPartOfGameInfoSerialization {
         }
 
         if (!canAdoptPolicy()) shouldOpenPolicyPicker = false
+    }
+
+    /**
+     * @param branchCompletion Internal! Do not use in normal calls (used to recursively remove the "complete" object too)
+     * @param assumeWasFree If set, removal does not touch culture progression (numberOfAdoptedPolicies not decremented)
+     * @throws IllegalStateException when the given Policy is not adopted or when the removal would leave numberOfAdoptedPolicies negative
+     */
+    // Note: A policy gained as a free one is not marked as such, therefore we need the parameter
+    // Note: a negative numberOfAdoptedPolicies would later throw in getCultureNeededForNextPolicy: -1.pow() gives NaN, which throws on toInt... Autosaved!
+    fun removePolicy(policy: Policy, branchCompletion: Boolean = false, assumeWasFree: Boolean = false) {
+        if (!adoptedPolicies.remove(policy.name))
+            throw IllegalStateException("Attempt to remove non-adopted Policy ${policy.name}")
+
+        if (!assumeWasFree) {
+            if (--numberOfAdoptedPolicies < 0)
+                throw IllegalStateException("Attempt to remove Policy ${policy.name} but civ only has free policies left")
+        }
+
+        removePolicyFromTransients(policy)
+
+        // if a branch is already marked as complete, revert it to incomplete
+        if (!branchCompletion) {
+            val branch = policy.branch
+            if (branch.policies.count { isAdopted(it.name) } == branch.policies.size - 1) {
+                removePolicy(branch.policies.last(), true)
+            }
+        }
+
+        civInfo.cache.updateCivResources()
+
+        // This ALSO has the side-effect of updating the CivInfo statForNextTurn so we don't need to call it explicitly
+        for (city in civInfo.cities) {
+            city.cityStats.update()
+            city.reassignPopulationDeferred()
+        }
     }
 
     /**

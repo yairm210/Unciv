@@ -61,7 +61,7 @@ class CityCombatant(val city: City) : ICombatant {
         if (cityTile.militaryUnit != null)
             strength += cityTile.militaryUnit!!.baseUnit.strength * (cityTile.militaryUnit!!.health / 100f) * modConstants.cityStrengthFromGarrison
 
-        var buildingsStrength = city.cityConstructions.getBuiltBuildings().sumOf { it.cityStrength }.toFloat()
+        var buildingsStrength = city.getStrength()
         val stateForConditionals = StateForConditionals(getCivInfo(), city, ourCombatant = this, combatAction = combatAction)
 
         for (unique in getCivInfo().getMatchingUniques(UniqueType.BetterDefensiveBuildings, stateForConditionals))

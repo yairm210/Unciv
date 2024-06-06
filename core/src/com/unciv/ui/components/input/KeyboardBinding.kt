@@ -25,6 +25,7 @@ enum class KeyboardBinding(
     None(Category.None, KeyCharAndCode.UNKNOWN),
 
     // MainMenu
+    QuitMainMenu(Category.MainMenu, "Quit", KeyCharAndCode.BACK),
     Resume(Category.MainMenu),
     Quickstart(Category.MainMenu),
     StartNewGame(Category.MainMenu, "Start new game", KeyCharAndCode('N')),  // Not to be confused with NewGame (from World menu, Ctrl-N)
@@ -36,6 +37,7 @@ enum class KeyboardBinding(
     MainMenuOptions(Category.MainMenu, "Options", KeyCharAndCode('O')),  // Separate binding from World where it's Ctrl-O default
 
     // Worldscreen
+    DeselectOrQuit(Category.WorldScreen, "Deselect then Quit", KeyCharAndCode.BACK),
     Menu(Category.WorldScreen, KeyCharAndCode.TAB),
     NextTurn(Category.WorldScreen),
     NextTurnAlternate(Category.WorldScreen, KeyCharAndCode.SPACE),

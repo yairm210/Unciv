@@ -53,6 +53,8 @@ object DiplomacyTurnManager {
                     otherCiv().addNotification("One of our trades with [${civInfo.civName}] has been cut short",
                         DiplomacyAction(civInfo.civName, true),
                         NotificationCategory.Trade, NotificationIcon.Trade, civInfo.civName)
+                    // If you cut a trade short, we're not going to trust you with per-turn trades for a while
+                    otherCivDiplomacy().setFlag(DiplomacyFlags.ResourceTradesCutShort, civInfo.gameInfo.speed.dealDuration * 2)
                     civInfo.cache.updateCivResources()
                 }
             }
@@ -282,6 +284,7 @@ object DiplomacyTurnManager {
         revertToZero(DiplomaticModifiers.DenouncedOurAllies, 1 / 4f)
         revertToZero(DiplomaticModifiers.DenouncedOurEnemies, 1 / 4f)
         revertToZero(DiplomaticModifiers.Denunciation, 1 / 8f) // That's personal, it'll take a long time to fade
+        revertToZero(DiplomaticModifiers.SpiedOnUs, 1 / 4f)
 
         // Positives
         revertToZero(DiplomaticModifiers.GaveUsUnits, 1 / 4f)
@@ -309,6 +312,8 @@ object DiplomacyTurnManager {
         setFriendshipBasedModifier()
 
         setDefensivePactBasedModifier()
+
+        setReligionBasedModifier()
 
         if (!hasFlag(DiplomacyFlags.DeclarationOfFriendship))
             revertToZero(DiplomaticModifiers.DeclarationOfFriendship, 1 / 2f) //decreases slowly and will revert to full if it is declared later

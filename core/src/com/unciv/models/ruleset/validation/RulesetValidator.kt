@@ -2,7 +2,6 @@ package com.unciv.models.ruleset.validation
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
-import com.badlogic.gdx.graphics.g2d.TextureAtlas.TextureAtlasData
 import com.unciv.Constants
 import com.unciv.json.fromJsonFile
 import com.unciv.json.json
@@ -10,6 +9,7 @@ import com.unciv.logic.map.tile.RoadStatus
 import com.unciv.models.metadata.BaseRuleset
 import com.unciv.models.ruleset.BeliefType
 import com.unciv.models.ruleset.Building
+import com.unciv.models.ruleset.IRulesetObject
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.ruleset.nation.Nation
@@ -20,13 +20,17 @@ import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.ruleset.unit.Promotion
+import com.unciv.models.stats.INamed
 import com.unciv.models.stats.Stats
 import com.unciv.models.tilesets.TileSetCache
 import com.unciv.models.tilesets.TileSetConfig
+import com.unciv.ui.images.AtlasPreview
 
 class RulesetValidator(val ruleset: Ruleset) {
 
     private val uniqueValidator = UniqueValidator(ruleset)
+
+    private lateinit var textureNamesCache: AtlasPreview
 
     fun getErrorList(tryFixUnknownUniques: Boolean = false): RulesetErrorList {
         // When no base ruleset is loaded - references cannot be checked
@@ -49,10 +53,13 @@ class RulesetValidator(val ruleset: Ruleset) {
         addPromotionErrorsRulesetInvariant(lines, tryFixUnknownUniques)
         addResourceErrorsRulesetInvariant(lines, tryFixUnknownUniques)
 
-        /**********************  **********************/
-        // e.g. json configs complete and parseable
-        // Check for mod or Civ_V_GnK to avoid running the same test twice (~200ms for the builtin assets)
-        if (ruleset.folderLocation != null) checkTilesetSanity(lines)
+        if (!::textureNamesCache.isInitialized)
+            textureNamesCache = AtlasPreview(ruleset, lines)  // This logs Atlas list errors, and if these exist, scans for invalid png's
+
+        // Tileset tests - e.g. json configs complete and parseable
+        checkTilesetSanity(lines)  // relies on textureNamesCache
+
+        checkCivilopediaText(lines)  // relies on textureNamesCache
 
         return lines
     }
@@ -87,10 +94,16 @@ class RulesetValidator(val ruleset: Ruleset) {
         addEventErrors(lines, tryFixUnknownUniques)
         addCityStateTypeErrors(tryFixUnknownUniques, lines)
 
+        if (!::textureNamesCache.isInitialized)
+            textureNamesCache = AtlasPreview(ruleset, lines)  // This logs Atlas list errors, and if these exist, scans for invalid png's
+
+        // Tileset tests - e.g. json configs complete and parseable
         // Check for mod or Civ_V_GnK to avoid running the same test twice (~200ms for the builtin assets)
         if (ruleset.folderLocation != null || ruleset.name == BaseRuleset.Civ_V_GnK.fullName) {
             checkTilesetSanity(lines)
         }
+
+        checkCivilopediaText(lines)
 
         return lines
     }
@@ -110,6 +123,23 @@ class RulesetValidator(val ruleset: Ruleset) {
         // modOptions is a valid sourceObject, but unnecessary
         if (ruleset.modOptions.uniqueObjects.count { it.type in audioVisualUniqueTypes } > 1)
             lines.add("A mod should only specify one of the 'can/should/cannot be used as permanent audiovisual mod' options.", sourceObject = null)
+
+        val mapSelectUniques = ruleset.modOptions.getMatchingUniques(UniqueType.ModMapPreselection).toList()
+        if (mapSelectUniques.size > 1)
+            lines.add("Specifying more than one map as preselection makes no sense", RulesetErrorSeverity.WarningOptionsOnly, sourceObject = null)
+        if (mapSelectUniques.isNotEmpty()) {
+            val mapsFolder = Gdx.files.local("mods").child(ruleset.name).child("maps")
+            if (mapsFolder.exists()) {
+                val maps = mapsFolder.list().map { it.name().lowercase() }
+                for (unique in mapSelectUniques) {
+                    if (unique.params[0].lowercase() in maps) continue
+                    lines.add("Mod names map '${unique.params[0]}' as preselection, which does not exist.", RulesetErrorSeverity.WarningOptionsOnly, sourceObject = null)
+                }
+            } else {
+                lines.add("Mod option for map preselection exists but Mod has no 'maps' folder.", RulesetErrorSeverity.WarningOptionsOnly, sourceObject = null)
+            }
+        }
+
         if (!ruleset.modOptions.isBaseRuleset) return
         for (unique in ruleset.modOptions.getMatchingUniques(UniqueType.ModRequires)) {
             lines.add("Mod option '${unique.text}' is invalid for a base ruleset.", sourceObject = null)
@@ -144,7 +174,7 @@ class RulesetValidator(val ruleset: Ruleset) {
 
     private fun addEventErrors(lines: RulesetErrorList,
                                tryFixUnknownUniques: Boolean) {
-        // A Difficulty is not a IHasUniques, so not suitable as sourceObject
+        // An Event is not a IHasUniques, so not suitable as sourceObject
         for (event in ruleset.events.values) {
             for (choice in event.choices) {
                 for (unique in choice.conditionObjects + choice.triggeredUniqueObjects)
@@ -257,6 +287,8 @@ class RulesetValidator(val ruleset: Ruleset) {
 
             uniqueValidator.checkUniques(nation, lines, true, tryFixUnknownUniques)
 
+            if (nation.preferredVictoryType != Constants.neutralVictoryType && nation.preferredVictoryType !in ruleset.victories)
+                lines.add("${nation.name}'s preferredVictoryType is ${nation.preferredVictoryType} which does not exist!", sourceObject = nation)
             if (nation.cityStateType != null && nation.cityStateType !in ruleset.cityStateTypes)
                 lines.add("${nation.name} is of city-state type ${nation.cityStateType} which does not exist!", sourceObject = nation)
             if (nation.favoredReligion != null && nation.favoredReligion !in ruleset.religions)
@@ -401,6 +433,8 @@ class RulesetValidator(val ruleset: Ruleset) {
         for (improvement in ruleset.tileImprovements.values) {
             if (improvement.techRequired != null && !ruleset.technologies.containsKey(improvement.techRequired!!))
                 lines.add("${improvement.name} requires tech ${improvement.techRequired} which does not exist!", sourceObject = improvement)
+            if (improvement.replaces != null && !ruleset.tileImprovements.containsKey(improvement.replaces))
+                lines.add("${improvement.name} replaces ${improvement.replaces} which does not exist!", sourceObject = improvement)
             for (terrain in improvement.terrainsCanBeBuiltOn)
                 if (!ruleset.terrains.containsKey(terrain) && terrain != "Land" && terrain != "Water")
                     lines.add("${improvement.name} can be built on terrain $terrain which does not exist!", sourceObject = improvement)
@@ -412,7 +446,7 @@ class RulesetValidator(val ruleset: Ruleset) {
                 && improvement.name != Constants.cancelImprovementOrder
             ) {
                 lines.add(
-                    "${improvement.name} has an empty `terrainsCanBeBuiltOn`, isn't allowed to only improve resources and isn't unbuildable! Support for this will soon end. Either give this the unique \"Unbuildable\", \"Can only be built to improve a resource\" or add \"Land\", \"Water\" or any other value to `terrainsCanBeBuiltOn`.",
+                    "${improvement.name} has an empty `terrainsCanBeBuiltOn`, isn't allowed to only improve resources. As such it isn't buildable! Either give this the unique \"Unbuildable\", \"Can only be built to improve a resource\", or add \"Land\", \"Water\" or any other value to `terrainsCanBeBuiltOn`.",
                     RulesetErrorSeverity.Warning, improvement
                 )
             }
@@ -768,11 +802,11 @@ class RulesetValidator(val ruleset: Ruleset) {
 
     private fun checkTilesetSanity(lines: RulesetErrorList) {
         // If running from a jar *and* checking a builtin ruleset, skip this check.
-        // - We can't list() the jsons, and the unit test before relase is sufficient, the tileset config can't have changed since then.
+        // - We can't list() the jsons, and the unit test before release is sufficient, the tileset config can't have changed since then.
         if (ruleset.folderLocation == null && this::class.java.`package`?.specificationVersion != null)
             return
 
-        val tilesetConfigFolder = (ruleset.folderLocation ?: Gdx.files.internal("")).child("jsons\\TileSets")
+        val tilesetConfigFolder = (ruleset.folderLocation ?: Gdx.files.internal("")).child("jsons/TileSets")
         if (!tilesetConfigFolder.exists()) return
 
         val configTilesets = mutableSetOf<String>()
@@ -817,21 +851,11 @@ class RulesetValidator(val ruleset: Ruleset) {
             lines.add("Fallback tileset invalid: ${unknownFallbacks.joinToString()}", RulesetErrorSeverity.Warning, sourceObject = null)
     }
 
-    private fun getTilesetNamesFromAtlases(): Set<String> {
-        // This partially duplicates code in ImageGetter.getAvailableTilesets, but we don't want to reload that singleton cache.
-
-        // Our builtin rulesets have no folderLocation, in that case cheat and apply knowledge about
-        // where the builtin Tileset textures are (correct would be to parse Atlases.json):
-        val files = ruleset.folderLocation?.list("atlas")?.asSequence()
-            ?: sequenceOf(Gdx.files.internal("Tilesets.atlas"))
-        // Next, we need to cope with this running without GL context (unit test) - no TextureAtlas(file)
-        return files
-            .flatMap { file ->
-                TextureAtlasData(file, file.parent(), false).regions.asSequence()
-                    .filter { it.name.startsWith("TileSets/") && !it.name.contains("/Units/") }
-            }.map { it.name.split("/")[1] }
+    private fun getTilesetNamesFromAtlases() =
+        textureNamesCache
+            .filter { it.startsWith("TileSets/") && !it.contains("/Units/") }
+            .map { it.split("/")[1] }
             .toSet()
-    }
 
     private fun checkPromotionCircularReferences(lines: RulesetErrorList) {
         fun recursiveCheck(history: HashSet<Promotion>, promotion: Promotion, level: Int) {
@@ -855,5 +879,22 @@ class RulesetValidator(val ruleset: Ruleset) {
             if (promotion.prerequisites.isEmpty()) continue
             recursiveCheck(hashSetOf(), promotion, 0)
         }
+    }
+
+    private fun checkCivilopediaText(lines: RulesetErrorList) {
+        for (sourceObject in ruleset.allICivilopediaText()) {
+            for ((index, line) in sourceObject.civilopediaText.withIndex()) {
+                for (error in line.unsupportedReasons(this)) {
+                    val nameText = (sourceObject as? INamed)?.name?.plus("'s ") ?: ""
+                    val text = "(${sourceObject::class.java.simpleName}) ${nameText}civilopediaText line ${index + 1}: $error"
+                    lines.add(text, RulesetErrorSeverity.WarningOptionsOnly, sourceObject as? IRulesetObject, null)
+                }
+            }
+        }
+    }
+
+    fun uncachedImageExists(name: String): Boolean {
+        if (ruleset.folderLocation == null) return false // Can't check in this case
+        return textureNamesCache.imageExists(name)
     }
 }

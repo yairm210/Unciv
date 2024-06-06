@@ -8,6 +8,7 @@ import com.unciv.GUI
 import com.unciv.UncivGame
 import com.unciv.logic.automation.Automation
 import com.unciv.logic.city.City
+import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.TutorialTrigger
 import com.unciv.models.UncivSound
@@ -20,6 +21,7 @@ import com.unciv.models.stats.Stat
 import com.unciv.models.translations.tr
 import com.unciv.ui.audio.CityAmbiencePlayer
 import com.unciv.ui.audio.SoundPlayer
+import com.unciv.ui.components.ParticleEffectMapFireworks
 import com.unciv.ui.components.extensions.colorFromRGB
 import com.unciv.ui.components.extensions.disable
 import com.unciv.ui.components.extensions.packIfNeeded
@@ -60,8 +62,19 @@ class CityScreen(
         const val wltkIconSize = 40f
     }
 
+    private val selectedCiv: Civilization = GUI.getWorldScreen().selectedCiv
+
+    private val isSpying = selectedCiv.gameInfo.isEspionageEnabled() && selectedCiv != city.civ
+
+    /**
+     * This is the regular civ city list if we are not spying, if we are spying then it is every foreign city that our spies are in
+     */
+    val viewableCities = if (isSpying) selectedCiv.espionageManager.getCitiesWithOurSpies()
+        .filter { it.civ !=  GUI.getWorldScreen().selectedCiv }
+    else city.civ.cities
+
     /** Toggles or adds/removes all state changing buttons */
-    val canChangeState = GUI.isAllowedChangeState()
+    val canChangeState = GUI.isAllowedChangeState() && !isSpying
 
     // Clockwise from the top-left
 
@@ -125,17 +138,22 @@ class CityScreen(
 
     private var cityAmbiencePlayer: CityAmbiencePlayer?  = ambiencePlayer ?: CityAmbiencePlayer(city)
 
+    /** Particle effects for WLTK day decoration */
+    private val isWLTKday = city.isWeLoveTheKingDayActive()
+    private val fireworks: ParticleEffectMapFireworks?
+
     init {
-        if (city.isWeLoveTheKingDayActive() && UncivGame.Current.settings.citySoundsVolume > 0) {
+        if (isWLTKday && UncivGame.Current.settings.citySoundsVolume > 0) {
             SoundPlayer.play(UncivSound("WLTK"))
         }
+        fireworks = if (isWLTKday) ParticleEffectMapFireworks.create(game, mapScrollPane) else null
 
         UncivGame.Current.settings.addCompletedTutorialTask("Enter city screen")
 
         addTiles()
 
-        //stage.setDebugTableUnderMouse(true)
         stage.addActor(cityStatsTable)
+        // If we are spying then we shoulden't be able to see their construction screen.
         constructionsTable.addActorsToStage()
         stage.addActor(selectedConstructionTable)
         stage.addActor(tileTable)
@@ -147,11 +165,13 @@ class CityScreen(
         globalShortcuts.add(KeyboardBinding.NextCity) { page(1) }
     }
 
+    override fun getCivilopediaRuleset() = selectedCiv.gameInfo.ruleset
+
     internal fun update() {
         // Recalculate Stats
         city.cityStats.update()
 
-        constructionsTable.isVisible = true
+        constructionsTable.isVisible = !isSpying
         constructionsTable.update(selectedConstruction)
 
         updateWithoutConstructionAndMap()
@@ -236,6 +256,7 @@ class CityScreen(
                 else -> Color.GREEN to 0.5f
             }
         }
+
         for (tileGroup in tileGroups) {
             tileGroup.update()
             tileGroup.layerMisc.removeHexOutline()
@@ -253,6 +274,9 @@ class CityScreen(
                     getPickImprovementColor(tileGroup.tile).run {
                         tileGroup.layerMisc.addHexOutline(first.cpy().apply { this.a = second }) }
             }
+
+            if (fireworks == null || tileGroup.tile.position != city.location) continue
+            fireworks.setActorBounds(tileGroup)
         }
     }
 
@@ -262,7 +286,7 @@ class CityScreen(
         fun addWltkIcon(name: String, apply: Image.()->Unit = {}) =
             razeCityButtonHolder.add(ImageGetter.getImage(name).apply(apply)).size(wltkIconSize)
 
-        if (city.isWeLoveTheKingDayActive()) {
+        if (isWLTKday && fireworks == null) {
             addWltkIcon("OtherIcons/WLTK LR") { color = Color.GOLD }
             addWltkIcon("OtherIcons/WLTK 1") { color = Color.FIREBRICK }.padRight(10f)
         }
@@ -294,7 +318,7 @@ class CityScreen(
             razeCityButtonHolder.add(stopRazingCityButton) //.colspan(cityPickerTable.columns)
         }
 
-        if (city.isWeLoveTheKingDayActive()) {
+        if (isWLTKday && fireworks == null) {
             addWltkIcon("OtherIcons/WLTK 2") { color = Color.FIREBRICK }.padLeft(10f)
             addWltkIcon("OtherIcons/WLTK LR") {
                 color = Color.GOLD
@@ -313,8 +337,8 @@ class CityScreen(
     private fun addTiles() {
         val tileSetStrings = TileSetStrings()
         val cityTileGroups = city.getCenterTile().getTilesInDistance(5)
-                .filter { city.civ.hasExplored(it) }
-                .map { CityTileGroup(city, it, tileSetStrings) }
+                .filter { selectedCiv.hasExplored(it) }
+                .map { CityTileGroup(city, it, tileSetStrings, fireworks != null) }
 
         for (tileGroup in cityTileGroups) {
             tileGroup.onClick { tileGroupOnClick(tileGroup, city) }
@@ -454,7 +478,7 @@ class CityScreen(
     fun selectConstruction(newConstruction: IConstruction) {
         selectedConstruction = newConstruction
         if (newConstruction is Building && newConstruction.hasCreateOneImprovementUnique()) {
-            val improvement = newConstruction.getImprovementToCreate(city.getRuleset())
+            val improvement = newConstruction.getImprovementToCreate(city.getRuleset(), city.civ)
             selectedQueueEntryTargetTile = if (improvement == null) null
                 else city.cityConstructions.getTileForImprovement(improvement.name)
         } else {
@@ -472,7 +496,7 @@ class CityScreen(
     fun clearSelection() = selectTile(null)
 
     fun startPickTileForCreatesOneImprovement(construction: Building, stat: Stat, isBuying: Boolean) {
-        val improvement = construction.getImprovementToCreate(city.getRuleset()) ?: return
+        val improvement = construction.getImprovementToCreate(city.getRuleset(), city.civ) ?: return
         pickTileData = PickTileForImprovementData(construction, improvement, isBuying, stat)
         updateTileGroups()
         ToastPopup("Please select a tile for this building's [${improvement.name}]", this)
@@ -501,12 +525,11 @@ class CityScreen(
         // Normal order is create new, then dispose old. But CityAmbiencePlayer delegates to a single instance of MusicController,
         // leading to one extra play followed by a stop for the city ambience sounds. To avoid that, we pass our player on and relinquish control.
 
-        val civInfo = city.civ
-        val numCities = civInfo.cities.size
+        val numCities = viewableCities.size
         if (numCities == 0) return
-        val indexOfCity = civInfo.cities.indexOf(city)
+        val indexOfCity = viewableCities.indexOf(city)
         val indexOfNextCity = (indexOfCity + delta + numCities) % numCities
-        val newCityScreen = CityScreen(civInfo.cities[indexOfNextCity], ambiencePlayer = passOnCityAmbiencePlayer())
+        val newCityScreen = CityScreen(viewableCities[indexOfNextCity], ambiencePlayer = passOnCityAmbiencePlayer())
         newCityScreen.update()
         game.replaceCurrentScreen(newCityScreen)
     }
@@ -517,6 +540,12 @@ class CityScreen(
 
     override fun dispose() {
         cityAmbiencePlayer?.dispose()
+        fireworks?.dispose()
         super.dispose()
+    }
+
+    override fun render(delta: Float) {
+        super.render(delta)
+        fireworks?.render(stage, delta)
     }
 }

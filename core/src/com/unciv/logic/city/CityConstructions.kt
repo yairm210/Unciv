@@ -337,7 +337,7 @@ class CityConstructions : IsPartOfGameInfoSerialization {
             if (inProgressConstructions.containsKey(currentConstructionFromQueue)
                     && inProgressConstructions[currentConstructionFromQueue]!! >= productionCost) {
                 val potentialOverflow = inProgressConstructions[currentConstructionFromQueue]!! - productionCost
-                if (constructionComplete(construction)) {
+                if (completeConstruction(construction)) {
                     // See the URL below for explanation for this cap
                     // https://forums.civfanatics.com/threads/hammer-overflow.419352/
                     val maxOverflow = maxOf(productionCost, city.cityStats.currentCityStats.production.roundToInt())
@@ -457,7 +457,7 @@ class CityConstructions : IsPartOfGameInfoSerialization {
     }
 
     /** Returns false if we tried to construct a unit but it has nowhere to go */
-    fun constructionComplete(construction: INonPerpetualConstruction): Boolean {
+    fun completeConstruction(construction: INonPerpetualConstruction): Boolean {
         val managedToConstruct = construction.postBuildEvent(this)
         if (!managedToConstruct) return false
 
@@ -655,7 +655,7 @@ class CityConstructions : IsPartOfGameInfoSerialization {
         tile: Tile? = null
     ): Boolean {
         // Support UniqueType.CreatesOneImprovement: it is active when getImprovementToCreate returns an improvement
-        val improvementToPlace = (construction as? Building)?.getImprovementToCreate(city.getRuleset())
+        val improvementToPlace = (construction as? Building)?.getImprovementToCreate(city.getRuleset(), city.civ)
         if (improvementToPlace != null) {
             // If active without a predetermined tile to place the improvement on, automate a tile
             val finalTile = tile
@@ -709,14 +709,14 @@ class CityConstructions : IsPartOfGameInfoSerialization {
         val isCurrentPlayersTurn = city.civ.gameInfo.isUsersTurn()
                 || !city.civ.gameInfo.gameParameters.isOnlineMultiplayer
         if ((isCurrentPlayersTurn && (UncivGame.Current.settings.autoAssignCityProduction
-                || UncivGame.Current.settings.autoPlay.isAutoPlayingAndFullAI())) // only automate if the active human player has the setting to automate production
-                || !city.civ.isHuman() || city.isPuppet) {
+                || UncivGame.Current.worldScreen?.autoPlay?.isAutoPlayingAndFullAutoPlayAI() == true)) // only automate if the active human player has the setting to automate production
+                || city.civ.isAI() || city.isPuppet) {
             ConstructionAutomation(this).chooseNextConstruction()
         }
 
         /** Support for [UniqueType.CreatesOneImprovement] - if an Improvement-creating Building was auto-queued, auto-choose a tile: */
         val building = getCurrentConstruction() as? Building ?: return
-        val improvement = building.getImprovementToCreate(city.getRuleset()) ?: return
+        val improvement = building.getImprovementToCreate(city.getRuleset(), city.civ) ?: return
         if (getTileForImprovement(improvement.name) != null) return
         val newTile = Automation.getTileForConstructionImprovement(city, improvement) ?: return
         newTile.improvementFunctions.markForCreatesOneImprovement(improvement.name)
@@ -778,7 +778,7 @@ class CityConstructions : IsPartOfGameInfoSerialization {
         // UniqueType.CreatesOneImprovement support
         val construction = getConstruction(constructionName)
         if (construction is Building) {
-            val improvement = construction.getImprovementToCreate(city.getRuleset())
+            val improvement = construction.getImprovementToCreate(city.getRuleset(), city.civ)
             if (improvement != null) {
                 getTileForImprovement(improvement.name)?.stopWorkingOnImprovement()
             }
@@ -846,7 +846,7 @@ class CityConstructions : IsPartOfGameInfoSerialization {
      *  (skip if none found), then un-mark the tile and place the improvement unless [removeOnly] is set.
      */
     private fun applyCreateOneImprovement(building: Building, removeOnly: Boolean = false) {
-        val improvement = building.getImprovementToCreate(city.getRuleset())
+        val improvement = building.getImprovementToCreate(city.getRuleset(), city.civ)
             ?: return
         val tileForImprovement = getTileForImprovement(improvement.name) ?: return
         tileForImprovement.stopWorkingOnImprovement()  // clears mark
@@ -866,7 +866,7 @@ class CityConstructions : IsPartOfGameInfoSerialization {
         val ruleset = city.getRuleset()
         val indexToRemove = constructionQueue.withIndex().firstNotNullOfOrNull {
             val construction = getConstruction(it.value)
-            val buildingImprovement = (construction as? Building)?.getImprovementToCreate(ruleset)?.name
+            val buildingImprovement = (construction as? Building)?.getImprovementToCreate(ruleset, city.civ)?.name
             it.index.takeIf { buildingImprovement == improvement }
         } ?: return
 

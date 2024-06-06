@@ -14,6 +14,7 @@ import com.unciv.ui.images.IconTextButton
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popups.hasOpenPopups
 import com.unciv.ui.screens.worldscreen.WorldScreen
+import com.unciv.utils.Concurrency
 
 class NextTurnButton(
     private val worldScreen: WorldScreen
@@ -33,19 +34,17 @@ class NextTurnButton(
     fun update() {
         nextTurnAction = getNextTurnAction(worldScreen)
         updateButton(nextTurnAction)
-        val settings = GUI.getSettings()
-        if (!settings.autoPlay.autoPlayTurnInProgress && settings.autoPlay.isAutoPlaying() 
-            && worldScreen.isPlayersTurn && !worldScreen.waitingForAutosave && !worldScreen.isNextTurnUpdateRunning()) {
-            settings.autoPlay.autoPlayTurnInProgress = true
-            if (!worldScreen.viewingCiv.isSpectator())
+        val autoPlay = worldScreen.autoPlay
+        if (autoPlay.shouldContinueAutoPlaying() && worldScreen.isPlayersTurn
+            && !worldScreen.waitingForAutosave && !worldScreen.isNextTurnUpdateRunning()) {
+            autoPlay.runAutoPlayJobInNewThread("MultiturnAutoPlay", worldScreen, false) {
                 TurnManager(worldScreen.viewingCiv).automateTurn()
-            worldScreen.nextTurn()
-            if (!settings.autoPlay.autoPlayUntilEnd)
-                settings.autoPlay.turnsToAutoPlay--
-            settings.autoPlay.autoPlayTurnInProgress = false
+                worldScreen.nextTurn()
+                autoPlay.endTurnMultiturnAutoPlay()
+            }
         }
-                
-        isEnabled = nextTurnAction.getText (worldScreen) == "AutoPlay" 
+
+        isEnabled = nextTurnAction.getText (worldScreen) == "AutoPlay"
             || (!worldScreen.hasOpenPopups() && worldScreen.isPlayersTurn
                 && !worldScreen.waitingForAutosave && !worldScreen.isNextTurnUpdateRunning())
         if (isEnabled) addTooltip(KeyboardBinding.NextTurn) else addTooltip("")

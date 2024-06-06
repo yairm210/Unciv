@@ -5,9 +5,7 @@ import com.badlogic.gdx.Game
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
 import com.badlogic.gdx.Screen
-import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
-import com.badlogic.gdx.utils.Align
 import com.unciv.logic.GameInfo
 import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.UncivShowableException
@@ -19,7 +17,6 @@ import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.skins.SkinCache
 import com.unciv.models.tilesets.TileSetCache
 import com.unciv.models.translations.Translations
-import com.unciv.ui.audio.GameSounds
 import com.unciv.ui.audio.MusicController
 import com.unciv.ui.audio.MusicMood
 import com.unciv.ui.audio.MusicTrackChooserFlags
@@ -38,6 +35,7 @@ import com.unciv.ui.screens.mainmenuscreen.MainMenuScreen
 import com.unciv.ui.screens.savescreens.LoadGameScreen
 import com.unciv.ui.screens.worldscreen.PlayerReadyScreen
 import com.unciv.ui.screens.worldscreen.WorldScreen
+import com.unciv.ui.screens.worldscreen.unit.AutoPlay
 import com.unciv.utils.Concurrency
 import com.unciv.utils.DebugUtils
 import com.unciv.utils.Display
@@ -51,10 +49,18 @@ import kotlinx.coroutines.CancellationException
 import java.io.PrintWriter
 import java.util.EnumSet
 import java.util.UUID
+import kotlin.reflect.KClass
 
+/** Represents the Unciv app itself:
+ *  - implements the [Game] interface Gdx requires.
+ *  - marshals [platform-specific stuff][PlatformSpecific].
+ *  - contains references to [the game being played][gameInfo], and high-level UI elements.
+ */
 open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpecific {
 
     var deepLinkedMultiplayerGame: String? = null
+
+    /** The game currently in progress */
     var gameInfo: GameInfo? = null
 
     lateinit var settings: GameSettings
@@ -77,7 +83,7 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
 
     val translations = Translations()
 
-    val screenStack = ArrayDeque<BaseScreen>()
+    private val screenStack = ArrayDeque<BaseScreen>()
 
     override fun create() {
         isInitialized = false // this could be on reload, therefore we need to keep setting this to false
@@ -103,7 +109,6 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
         settings = files.getGeneralSettings() // needed for the screen
         Display.setScreenMode(settings.screenMode, settings)
         setAsRootScreen(GameStartScreen())  // NOT dependent on any atlas or skin
-        GameSounds.init()
 
         musicController = MusicController()  // early, but at this point does only copy volume from settings
         installAudioHooks()
@@ -175,8 +180,9 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
      * Automatically runs on the appropriate thread.
      *
      * Sets the returned `WorldScreen` as the only active screen.
+     * @param autoPlay pass in the old WorldScreen AutoPlay to retain the state throughout turns. Otherwise leave it is the default.
      */
-    suspend fun loadGame(newGameInfo: GameInfo, callFromLoadScreen: Boolean = false): WorldScreen = withThreadPoolContext toplevel@{
+    suspend fun loadGame(newGameInfo: GameInfo, autoPlay: AutoPlay = AutoPlay(settings.autoPlay), callFromLoadScreen: Boolean = false): WorldScreen = withThreadPoolContext toplevel@{
         val prevGameInfo = gameInfo
         gameInfo = newGameInfo
 
@@ -206,7 +212,7 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
             screenStack.clear()
 
             worldScreen = null // This allows the GC to collect our old WorldScreen, otherwise we keep two WorldScreens in memory.
-            val newWorldScreen = WorldScreen(newGameInfo, newGameInfo.getPlayerToViewAs(), worldScreenRestoreState)
+            val newWorldScreen = WorldScreen(newGameInfo, autoPlay, newGameInfo.getPlayerToViewAs(), worldScreenRestoreState)
             worldScreen = newWorldScreen
 
             val moreThanOnePlayer = newGameInfo.civilizations.count { it.playerType == PlayerType.Human } > 1
@@ -292,7 +298,7 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
     fun popScreen(): BaseScreen? {
         if (screenStack.size == 1) {
             musicController.pause()
-            UncivGame.Current.settings.autoPlay.stopAutoPlay()
+            worldScreen?.autoPlay?.stopAutoPlay()
             ConfirmPopup(
                 screen = screenStack.last(),
                 question = "Do you want to exit the game?",
@@ -322,7 +328,7 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
     fun resetToWorldScreen(): WorldScreen {
         for (screen in screenStack.filter { it !is WorldScreen }) screen.dispose()
         screenStack.removeAll { it !is WorldScreen }
-        val worldScreen= screenStack.last() as WorldScreen
+        val worldScreen = screenStack.last() as WorldScreen
 
         // Re-initialize translations, images etc. that may have been 'lost' when we were playing around in NewGameScreen
         val ruleset = worldScreen.gameInfo.ruleset
@@ -331,6 +337,20 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
 
         setScreen(worldScreen)
         return worldScreen
+    }
+
+    /** Get all currently existing screens of type [clazz]
+     *  - Not a generic to allow screenStack to be private
+     */
+    fun getScreensOfType(clazz: KClass<out BaseScreen>): Sequence<BaseScreen> = screenStack.asSequence().filter { it::class == clazz }
+
+    /** Dispose and remove all currently existing screens of type [clazz]
+     *  - Not a generic to allow screenStack to be private
+     */
+    fun removeScreensOfType(clazz: KClass<out BaseScreen>) {
+        val toRemove = getScreensOfType(clazz).toList()
+        for (screen in toRemove) screen.dispose()
+        screenStack.removeAll(toRemove)
     }
 
     private fun tryLoadDeepLinkedGame() = Concurrency.run("LoadDeepLinkedGame") {
@@ -464,11 +484,16 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
 
     companion object {
         //region AUTOMATICALLY GENERATED VERSION DATA - DO NOT CHANGE THIS REGION, INCLUDING THIS COMMENT
-        val VERSION = Version("4.10.18", 978)
+        val VERSION = Version("4.11.17", 1002)
         //endregion
 
+        /** Global reference to the one Gdx.Game instance created by the platform launchers - do not use without checking [isCurrentInitialized] first. */
+        // Set by Gdx Game.create callback, or the special cases ConsoleLauncher and unit tests make do with out Gdx and set this themselves.
         lateinit var Current: UncivGame
+        /** @return `true` if [Current] has been set yet and can be accessed */
         fun isCurrentInitialized() = this::Current.isInitialized
+        /** Get the game currently in progress safely - null either if [Current] has not yet been set or if its gameInfo field has no game */
+        fun getGameInfoOrNull() = if (isCurrentInitialized()) Current.gameInfo else null
         fun isCurrentGame(gameId: String): Boolean = isCurrentInitialized() && Current.gameInfo != null && Current.gameInfo!!.gameId == gameId
         fun isDeepLinkedGameLoading() = isCurrentInitialized() && Current.deepLinkedMultiplayerGame != null
     }
@@ -487,8 +512,7 @@ private class GameStartScreen : BaseScreen() {
     init {
         val logoImage = ImageGetter.getExternalImage("banner.png")
         logoImage.center(stage)
-        logoImage.setOrigin(Align.center)
-        logoImage.color = Color.WHITE.cpy().apply { a = 0f }
+        logoImage.color.a = 0f
         logoImage.addAction(Actions.alpha(1f, 0.3f))
         stage.addActor(logoImage)
     }

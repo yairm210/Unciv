@@ -660,7 +660,8 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
             return cityScreen.startPickTileForCreatesOneImprovement(construction, stat, true)
         // Buying a UniqueType.CreatesOneImprovement building from queue must pass down
         // the already selected tile, otherwise a new one is chosen from Automation code.
-        val improvement = construction.getImprovementToCreate(cityScreen.city.getRuleset())!!
+        val improvement = construction.getImprovementToCreate(
+            cityScreen.city.getRuleset(), cityScreen.city.civ)!!
         val tileForImprovement = cityScreen.city.cityConstructions.getTileForImprovement(improvement.name)
         askToBuyConstruction(construction, stat, tileForImprovement)
     }

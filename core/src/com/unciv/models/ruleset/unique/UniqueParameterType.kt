@@ -75,6 +75,29 @@ enum class UniqueParameterType(
         }
     },
 
+    Countable("countable", "1000", "This indicate a number or a numeric variable") {
+        // todo add more countables
+        private val knownValues = setOf(
+            "year"
+        )
+
+        override fun isKnownValue(parameterText: String, ruleset: Ruleset): Boolean {
+            if (parameterText in knownValues) return true
+            if (parameterText.toIntOrNull() != null) return true
+            if (Stat.isStat(parameterText)) return true
+            if (parameterText in ruleset.tileResources) return true
+            if (parameterText in ruleset.units) return true
+            if (parameterText in ruleset.buildings) return true
+            return false
+        }
+
+        override fun getErrorSeverity(
+            parameterText: String, ruleset: Ruleset): UniqueType.UniqueParameterErrorSeverity? {
+            return if (isKnownValue(parameterText, ruleset)) null
+            else UniqueType.UniqueParameterErrorSeverity.RulesetSpecific
+        }
+    },
+
     // todo potentially remove if OneTimeRevealSpecificMapTiles changes
     KeywordAll("'all'", "All") {
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset) =
@@ -92,6 +115,7 @@ enum class UniqueParameterType(
             if (CityFilter.isKnownValue(parameterText, ruleset)) return true
             return false
         }
+        override fun getTranslationWriterStringsForOutput() = setOf("City")
     },
 
     /** Implemented by [MapUnit.matchesFilter][com.unciv.logic.map.mapunit.MapUnit.matchesFilter] */
@@ -128,6 +152,7 @@ enum class UniqueParameterType(
             if (UnitName.getErrorSeverity(parameterText, ruleset) == null) return true
             if (ruleset.units.values.any { it.uniques.contains(parameterText) }) return true
             if (UnitTypeFilter.isKnownValue(parameterText, ruleset)) return true
+            if (TechFilter.isKnownValue(parameterText, ruleset)) return true
             return false
         }
 
@@ -145,7 +170,6 @@ enum class UniqueParameterType(
         override fun isKnownValue(parameterText: String, ruleset: Ruleset): Boolean {
             if (parameterText in knownValues) return true
             if (ruleset.unitTypes.containsKey(parameterText)) return true
-            if (ruleset.eras.containsKey(parameterText)) return true
             if (ruleset.unitTypes.values.any { it.uniques.contains(parameterText) }) return true
             return false
         }
@@ -287,7 +311,7 @@ enum class UniqueParameterType(
 
     /** Implemented by [Building.matchesFilter][com.unciv.models.ruleset.Building.matchesFilter] */
     BuildingFilter("buildingFilter", "Culture") {
-        private val knownValues = mutableSetOf("Building", "Buildings", "Wonder", "Wonders", "National Wonder", "World Wonder")
+        private val knownValues = mutableSetOf("Building", "Buildings", "Wonder", "Wonders", "National Wonder", "National", "World Wonder", "World")
             .apply { addAll(Stat.names()); addAll(Constants.all) }
 
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
@@ -297,6 +321,7 @@ enum class UniqueParameterType(
             if (parameterText in knownValues) return true
             if (BuildingName.getErrorSeverity(parameterText, ruleset) == null) return true
             if (ruleset.buildings.values.any { it.hasUnique(parameterText) }) return true
+            if (TechFilter.isKnownValue(parameterText, ruleset)) return true
             return false
         }
 
@@ -583,7 +608,26 @@ enum class UniqueParameterType(
         }
     },
 
-    /** Used by [UniqueType.HiddenWithoutVictoryType], implementation in Civilopedia and OverviewScreen */
+    /** Implemtented by [com.unciv.models.ruleset.Policy.matchesFilter] */
+    PolicyFilter("policyFilter", "Oligarchy", "The name of any policy") {
+        private val knownValues = Constants.all
+
+        override fun isKnownValue(parameterText: String, ruleset: Ruleset): Boolean {
+            if (parameterText in knownValues) return true
+            if (parameterText in ruleset.policies) return true
+            if (ruleset.policies.values.any { it.hasUnique(parameterText) }) return true
+            return false
+        }
+
+        override fun getErrorSeverity(
+            parameterText: String,
+            ruleset: Ruleset
+        ): UniqueType.UniqueParameterErrorSeverity? {
+            return getErrorSeverityForFilter(parameterText, ruleset)
+        }
+    },
+
+    /** Used by [UniqueType.HiddenWithoutVictoryType], implementation in Civilopedia, OverviewScreen and to exclude e.g. from Quests */
     VictoryT("victoryType", "Domination", "The name of any victory type: 'Neutral', 'Cultural', 'Diplomatic', 'Domination', 'Scientific', 'Time'") {
         override fun getErrorSeverity(
             parameterText: String,
@@ -651,7 +695,7 @@ enum class UniqueParameterType(
     open fun isKnownValue(parameterText: String, ruleset: Ruleset): Boolean = false
 
     fun getErrorSeverityForFilter(parameterText: String, ruleset: Ruleset): UniqueType.UniqueParameterErrorSeverity? {
-        val isKnown = MultiFilter.multiFilter(parameterText, {isKnownValue(it, ruleset)}, true)
+        val isKnown = MultiFilter.multiFilter(parameterText, { isKnownValue(it, ruleset) }, true)
         if (isKnown) return null
         return UniqueType.UniqueParameterErrorSeverity.PossibleFilteringUnique
     }

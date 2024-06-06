@@ -3,7 +3,6 @@ package com.unciv.logic.map
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.RoadStatus
 import com.unciv.logic.map.tile.Tile
-import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.utils.Log
 
 //TODO: Eventually, all path generation in the game should be moved into here.
@@ -17,29 +16,23 @@ object MapPathing {
     private fun roadPreferredMovementCost(unit: MapUnit, from: Tile, to: Tile): Float{
         // hasRoadConnection accounts for civs that treat jungle/forest as roads
         // Ignore road over river penalties.
-        val areConnectedByRoad = from.hasRoadConnection(unit.civ, mustBeUnpillaged = false) && to.hasRoadConnection(unit.civ, mustBeUnpillaged = false)
-        if (areConnectedByRoad){
-            // If the civ has railroad technology, consider roads as railroads since they will be upgraded
-            if (unit.civ.tech.getBestRoadAvailable() == RoadStatus.Railroad){
-                return RoadStatus.Railroad.movement
-            } else {
-                return unit.civ.tech.movementSpeedOnRoads
-            }
-        }
-
-        val areConnectedByRailroad = from.hasRailroadConnection(mustBeUnpillaged = false) && to.hasRailroadConnection(mustBeUnpillaged = false)
-        if (areConnectedByRailroad)
-            return RoadStatus.Railroad.movement
+        if ((to.hasRoadConnection(unit.civ, false) || to.hasRailroadConnection(false)))
+            return .5f
 
         return 1f
     }
 
-    fun isValidRoadPathTile(unit: MapUnit, tile: Tile, roadImprovement: TileImprovement): Boolean {
+    fun isValidRoadPathTile(unit: MapUnit, tile: Tile): Boolean {
+        val roadImprovement = tile.ruleset.roadImprovement ?: return false
+        val railRoadImprovement = tile.ruleset.railroadImprovement ?: return false
         return tile.isLand
             && !tile.isImpassible()
             && unit.civ.hasExplored(tile)
             && tile.canCivPassThrough(unit.civ)
-            && tile.hasRoadConnection(unit.civ, true) || tile.improvementFunctions.canBuildImprovement(roadImprovement, unit.civ)
+            && (tile.hasRoadConnection(unit.civ, false) 
+                || tile.hasRailroadConnection(false) 
+                || tile.improvementFunctions.canBuildImprovement(roadImprovement, unit.civ))
+                || tile.improvementFunctions.canBuildImprovement(railRoadImprovement, unit.civ)
     }
 
     /**
@@ -53,11 +46,10 @@ object MapPathing {
      * @return A sequence of tiles representing the path from startTile to endTile, or null if no valid path is found.
      */
     fun getRoadPath(unit: MapUnit, startTile: Tile, endTile: Tile): List<Tile>?{
-        val roadImprovement = RoadStatus.Road.improvement(startTile.ruleset) ?: return null
         return getPath(unit,
             startTile,
             endTile,
-            { unit, tile -> isValidRoadPathTile(unit, tile, roadImprovement) },
+            ::isValidRoadPathTile,
             ::roadPreferredMovementCost,
             {_, _, _ -> 0f}
             )
@@ -106,5 +98,3 @@ object MapPathing {
     }
 
 }
-
-

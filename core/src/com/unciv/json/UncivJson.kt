@@ -27,10 +27,6 @@ fun json() = Json(JsonWriter.OutputType.json).apply {
     setSerializer(HashMapVector2.getSerializerClass(), HashMapVector2.createSerializer())
     setSerializer(Duration::class.java, DurationSerializer())
     setSerializer(KeyCharAndCode::class.java, KeyCharAndCode.Serializer())
-    setSerializer(KeyboardBindings::class.java, KeyboardBindings.Serializer())
-    setSerializer(TileHistory::class.java, TileHistory.Serializer())
-    setSerializer(CivRankingHistory::class.java, CivRankingHistory.Serializer())
-    setSerializer(Notification::class.java, Notification.Serializer())
 }
 
 /**
