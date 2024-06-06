@@ -4,6 +4,7 @@ import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
 import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.city.City
+import com.unciv.logic.civilization.CivFlags
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.EspionageAction
 import com.unciv.logic.civilization.NotificationCategory
@@ -102,7 +103,7 @@ class Spy private constructor() : IsPartOfGameInfoSerialization {
             SpyAction.EstablishNetwork -> {
                 val city = getCity() // This should never throw an exception, as going to the hideout sets your action to None.
                 if (city.civ.isCityState())
-                    setAction(SpyAction.RiggingElections, getCity().civ.cityStateTurnsUntilElection - 1)
+                    setAction(SpyAction.RiggingElections, (getCity().civ.flagsCountdown[CivFlags.TurnsTillCityStateElection.name] ?: 1) - 1)
                 else if (city.civ == civInfo)
                     setAction(SpyAction.CounterIntelligence, 10)
                 else
@@ -130,7 +131,9 @@ class Spy private constructor() : IsPartOfGameInfoSerialization {
             SpyAction.RiggingElections -> {
                 // No action done here
                 // Handled in CityStateFunctions.nextTurnElections()
-                turnsRemainingForAction = getCity().civ.cityStateTurnsUntilElection - 1
+                // TODO: Once we remove support for the old flag system we can remove the null check
+                // Our spies might update before the flag is created in the city-state
+                turnsRemainingForAction = (getCity().civ.flagsCountdown[CivFlags.TurnsTillCityStateElection.name] ?: 0) - 1
             }
             SpyAction.Coup -> {
                 initiateCoup()

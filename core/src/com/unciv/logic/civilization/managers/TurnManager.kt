@@ -23,7 +23,6 @@ import com.unciv.models.stats.Stats
 import com.unciv.ui.components.MayaCalendar
 import com.unciv.ui.screens.worldscreen.status.NextTurnProgress
 import com.unciv.utils.Log
-import kotlin.math.max
 import kotlin.math.min
 import kotlin.random.Random
 
@@ -126,6 +125,7 @@ class TurnManager(val civInfo: Civilization) {
 
             when (flag) {
                 CivFlags.RevoltSpawning.name -> doRevoltSpawn()
+                CivFlags.TurnsTillCityStateElection.name -> civInfo.cityStateFunctions.holdElections()
             }
         }
         handleDiplomaticVictoryFlags()
@@ -262,7 +262,11 @@ class TurnManager(val civInfo: Civilization) {
 
         if (civInfo.isCityState()) {
             civInfo.questManager.endTurn()
-            civInfo.cityStateFunctions.nextTurnElections()
+            // Todo: Remove this later
+            // The purpouse of this addition is to migrate the old election system to the new flag system
+            if (civInfo.gameInfo.isEspionageEnabled() && !civInfo.hasFlag(CivFlags.TurnsTillCityStateElection.name)) {
+                civInfo.addFlag(CivFlags.TurnsTillCityStateElection.name, Random.nextInt(civInfo.gameInfo.ruleset.modOptions.constants.cityStateElectionTurns + 1))
+            }
         }
 
         // disband units until there are none left OR the gold values are normal
