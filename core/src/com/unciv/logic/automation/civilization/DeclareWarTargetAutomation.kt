@@ -35,7 +35,7 @@ object DeclareWarTargetAutomation {
             if (motivation >= 15 && tryJoinWar(civInfo, target, motivation)) return true
         }
 
-        if (motivation >= 50 && declareWar(civInfo, target, motivation)) return true
+        if (motivation >= 20 && declareWar(civInfo, target, motivation)) return true
 
         if (motivation >= 15 && prepareWar(civInfo, target, motivation)) return true
 

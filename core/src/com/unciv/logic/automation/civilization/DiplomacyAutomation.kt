@@ -105,9 +105,8 @@ object DiplomacyAutomation {
                 && !civInfo.getDiplomacyManager(it).hasOpenBorders
                 && !civInfo.getDiplomacyManager(it).hasFlag(DiplomacyFlags.DeclinedOpenBorders)
                 && !isTradeBeingOffered(civInfo, it, Constants.openBorders)
-            }
+            }.sortedByDescending { it.getDiplomacyManager(civInfo).relationshipLevel() }.toList()
 
-            .sortedByDescending { it.getDiplomacyManager(civInfo).relationshipLevel() }.toList()
         for (otherCiv in civsThatWeCanOpenBordersWith) {
             // Default setting is 3, this will be changed according to different civ.
             if ((1..10).random() < 7) continue
@@ -134,7 +133,7 @@ object DiplomacyAutomation {
         // Being able to see their cities can give us an advantage later on, especially with espionage enabled
         if (otherCiv.cities.count { !it.getCenterTile().isVisible(civInfo) } < otherCiv.cities.count() * .8f)
             return true
-        if (hasAtLeastMotivationToAttack(civInfo, otherCiv, (diploManager.opinionOfOtherCiv()/ 2 - 10).toInt()) > 0)
+        if (hasAtLeastMotivationToAttack(civInfo, otherCiv, (diploManager.opinionOfOtherCiv() / 2 ).toInt()) > 0)
             return false
         return true
     }
@@ -325,6 +324,7 @@ object DiplomacyAutomation {
             enemy.tradeRequests.add(TradeRequest(civInfo.civName, tradeLogic.currentTrade.reverse()))
         }
     }
+
 
     private fun isTradeBeingOffered(civInfo: Civilization, otherCiv: Civilization, offerName:String): Boolean {
         return civInfo.tradeRequests.filter { request -> request.requestingCiv == otherCiv.civName }

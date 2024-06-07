@@ -5,7 +5,6 @@ import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.ui.screens.victoryscreen.RankingType
-import kotlin.math.max
 
 /**
  * Contains the logic for evaluating how we want to declare war on another civ.
@@ -15,7 +14,7 @@ object DeclareWarPlanEvaluator {
     /**
      * How much motivation [civInfo] has to do a team war with [teamCiv] against [target].
      * 
-     * Favors fighting stronger civilizations.
+     * This style of declaring war favors fighting stronger civilizations.
      * @return The movtivation of the plan. If it is > 0 then we can declare the war.
      */
     fun evaluateTeamWarPlan(civInfo: Civilization, target: Civilization, teamCiv: Civilization, givenMotivation: Int?): Int {
@@ -31,12 +30,7 @@ object DeclareWarPlanEvaluator {
 
         val civForce = civInfo.getStatForRanking(RankingType.Force)
         val targetForce = target.getStatForRanking(RankingType.Force)
-
-        // They need to be at least half the targets size, and we need to be stronger than the target together
-        val thirdCivForce = teamCiv.getStatForRanking(RankingType.Force) - 0.8f * teamCiv.threatManager.getCombinedForceOfWarringCivs()
-        if (thirdCivForce < targetForce / 2) {
-            motivation -= (10 * (targetForce / thirdCivForce)).toInt()
-        }
+        val teamCivForce = teamCiv.getStatForRanking(RankingType.Force) - 0.8f * teamCiv.threatManager.getCombinedForceOfWarringCivs()
 
         // A higher motivation means that we can be riskier
         val multiplier = when {
@@ -45,13 +39,23 @@ object DeclareWarPlanEvaluator {
             motivation < 20 -> 1f
             else -> 0.8f
         }
-        if (thirdCivForce + civForce < targetForce * multiplier) {
-            motivation -= (20 * (targetForce * multiplier) / (thirdCivForce + civForce)).toInt()
+        if (civForce + teamCivForce < targetForce * multiplier) {
+            // We are weaker then them even with our combined forces
+            // If they have twice our combined force we will have -30 motivation
+            motivation -= (30 * ((targetForce * multiplier) / (teamCivForce + civForce) - 1)).toInt()
+        } else if (civForce + teamCivForce > targetForce * 2) {
+            // Why gang up on such a weaker enemy when we can declare war ourselves?
+            // If our combined force is twice their force we will have -20 motivation
+            motivation -= (20 * ((civForce + teamCivForce) / targetForce * 2) - 1).toInt()
         }
-        if (target.getStatForRanking(RankingType.Score) > max(civInfo.getStatForRanking(RankingType.Score), teamCiv.getStatForRanking(RankingType.Score))) {
-            motivation += 20
-        } else {
-            motivation -= 10
+
+        val civScore = civInfo.getStatForRanking(RankingType.Score)
+        val teamCivScore = teamCiv.getStatForRanking(RankingType.Score)
+        val targetCivScore = target.getStatForRanking(RankingType.Score)
+
+        if (teamCivScore > civScore * 1.4f && teamCivScore >= targetCivScore) {
+            // If teamCiv has more score than us and the target they are likely in a good position already
+            motivation -= (20 * ((teamCivScore / (civScore * 1.4f)) - 1)).toInt()
         }
         return motivation - 20
     }
@@ -71,6 +75,9 @@ object DeclareWarPlanEvaluator {
         if (thirdCivDiplo.diplomaticStatus != DiplomaticStatus.DefensivePact &&
                 thirdCivDiplo.opinionOfOtherCiv() + motivation * 2 < 80) {
             motivation -= 80 - (thirdCivDiplo.opinionOfOtherCiv() + motivation * 2).toInt()
+        }
+        if (!civToJoin.threatManager.getNeighboringCivilizations().contains(target)) {
+            motivation -= 20
         }
 
         val targetForce = target.getStatForRanking(RankingType.Force)
@@ -136,10 +143,10 @@ object DeclareWarPlanEvaluator {
         if (diploManager.hasFlag(DiplomacyFlags.WaryOf) && diploManager.getFlag(DiplomacyFlags.WaryOf) < 0) {
             val turnsToPlan = (10 - (motivation / 10)).coerceAtLeast(3)
             val turnsToWait = turnsToPlan + diploManager.getFlag(DiplomacyFlags.WaryOf)
-            return motivation - turnsToWait * 6
+            return motivation - turnsToWait * 3
         }
 
-        return motivation - 50
+        return motivation - 40
     }
 
     /**
