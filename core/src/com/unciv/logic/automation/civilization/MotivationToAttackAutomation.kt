@@ -20,8 +20,8 @@ object MotivationToAttackAutomation {
 
     /** Will return the motivation to attack, but might short circuit if the value is guaranteed to
      * be lower than `atLeast`. So any values below `atLeast` should not be used for comparison. */
-    fun hasAtLeastMotivationToAttack(civInfo: Civilization, otherCiv: Civilization, atLeast: Int): Int {
-        val targetCitiesWithOurCity = civInfo.threatManager.getNeighboringCitiesOfOtherCivs().filter { it.second.civ == otherCiv }.toList()
+    fun hasAtLeastMotivationToAttack(civInfo: Civilization, targetCiv: Civilization, atLeast: Int): Int {
+        val targetCitiesWithOurCity = civInfo.threatManager.getNeighboringCitiesOfOtherCivs().filter { it.second.civ == targetCiv }.toList()
         val targetCities = targetCitiesWithOurCity.map { it.second }
 
         if (targetCitiesWithOurCity.isEmpty()) return 0
@@ -32,34 +32,32 @@ object MotivationToAttackAutomation {
         val baseForce = 100f
 
         val ourCombatStrength = calculateSelfCombatStrength(civInfo, baseForce)
-        val theirCombatStrength = calculateCombatStrengthWithProtectors(otherCiv, baseForce, civInfo)
-
-        if (theirCombatStrength > ourCombatStrength) return 0
+        val theirCombatStrength = calculateCombatStrengthWithProtectors(targetCiv, baseForce, civInfo)
 
         val modifiers:MutableList<Pair<String, Int>> = mutableListOf()
         modifiers.add(Pair("Base motivation", -15))
 
         modifiers.add(Pair("Relative combat strength", getCombatStrengthModifier(ourCombatStrength, theirCombatStrength + 0.8f * civInfo.threatManager.getCombinedForceOfWarringCivs())))
         // TODO: For now this will be a very high value because the AI can't handle multiple fronts, this should be changed later though
-        modifiers.add(Pair("Concurrent wars", -civInfo.getCivsAtWarWith().count { it.isMajorCiv() && it != otherCiv } * 20))
-        modifiers.add(Pair("Their concurrent wars", otherCiv.getCivsAtWarWith().count { it.isMajorCiv() } * 3))
+        modifiers.add(Pair("Concurrent wars", -civInfo.getCivsAtWarWith().count { it.isMajorCiv() && it != targetCiv } * 20))
+        modifiers.add(Pair("Their concurrent wars", targetCiv.getCivsAtWarWith().count { it.isMajorCiv() } * 3))
 
-        modifiers.add(Pair("Their allies", getDefensivePactAlliesScore(otherCiv, civInfo, baseForce, ourCombatStrength)))
+        modifiers.add(Pair("Their allies", getDefensivePactAlliesScore(targetCiv, civInfo, baseForce, ourCombatStrength)))
 
-        if (civInfo.threatManager.getNeighboringCivilizations().none { it != otherCiv && it.isMajorCiv() 
+        if (civInfo.threatManager.getNeighboringCivilizations().none { it != targetCiv && it.isMajorCiv() 
                         && civInfo.getDiplomacyManager(it).isRelationshipLevelLT(RelationshipLevel.Friend) })
             modifiers.add(Pair("No other threats", 10))
 
-        if (otherCiv.isMajorCiv()) {
-            val scoreRatioModifier = getScoreRatioModifier(otherCiv, civInfo)
+        if (targetCiv.isMajorCiv()) {
+            val scoreRatioModifier = getScoreRatioModifier(targetCiv, civInfo)
             modifiers.add(Pair("Relative score", scoreRatioModifier))
 
-            modifiers.add(Pair("Relative technologies", getRelativeTechModifier(civInfo, otherCiv)))
+            modifiers.add(Pair("Relative technologies", getRelativeTechModifier(civInfo, targetCiv)))
 
             if (civInfo.stats.getUnitSupplyDeficit() != 0) {
                 modifiers.add(Pair("Over unit supply", (civInfo.stats.getUnitSupplyDeficit() * 2).coerceAtMost(20)))
-            } else if (otherCiv.stats.getUnitSupplyDeficit() == 0 && !otherCiv.isCityState()) {
-                modifiers.add(Pair("Relative production", getProductionRatioModifier(civInfo, otherCiv)))
+            } else if (targetCiv.stats.getUnitSupplyDeficit() == 0 && !targetCiv.isCityState()) {
+                modifiers.add(Pair("Relative production", getProductionRatioModifier(civInfo, targetCiv)))
             }
         }
 
@@ -72,7 +70,7 @@ object MotivationToAttackAutomation {
         }))
         if (minTargetCityDistance < 6) modifiers.add(Pair("Close cities", 5))
 
-        val diplomacyManager = civInfo.getDiplomacyManager(otherCiv)
+        val diplomacyManager = civInfo.getDiplomacyManager(targetCiv)
 
         if (diplomacyManager.hasFlag(DiplomacyFlags.ResearchAgreement))
             modifiers.add(Pair("Research Agreement", -5))
@@ -89,27 +87,34 @@ object MotivationToAttackAutomation {
             modifiers.add(Pair("Denunciation", 5))
         }
 
+        if (diplomacyManager.hasFlag(DiplomacyFlags.WaryOf) && diplomacyManager.getFlag(DiplomacyFlags.WaryOf) < 0) {
+            modifiers.add(Pair("PlanningAttack", -diplomacyManager.getFlag(DiplomacyFlags.WaryOf)))
+        } else {
+            val attacksPlanned = civInfo.diplomacy.values.count { it.hasFlag(DiplomacyFlags.WaryOf) && it.getFlag(DiplomacyFlags.WaryOf) < 0 }
+            modifiers.add(Pair("PlanningAttackAgainstOtherCivs", -attacksPlanned * 5))
+        }
+
         if (diplomacyManager.resourcesFromTrade().any { it.amount > 0 })
             modifiers.add(Pair("Receiving trade resources", -5))
 
         // If their cities don't have any nearby cities that are also targets to us and it doesn't include their capital
         // Then there cities are likely isolated and a good target.
-        if (otherCiv.getCapital(true) !in targetCities
+        if (targetCiv.getCapital(true) !in targetCities
                 && targetCities.all { theirCity -> !theirCity.neighboringCities.any { it !in targetCities } }) {
             modifiers.add(Pair("Isolated city", 15))
         }
 
-        if (otherCiv.isCityState()) {
-            modifiers.add(Pair("Protectors", -otherCiv.cityStateFunctions.getProtectorCivs().size * 3))
-            if (otherCiv.cityStateFunctions.getProtectorCivs().contains(civInfo))
+        if (targetCiv.isCityState()) {
+            modifiers.add(Pair("Protectors", -targetCiv.cityStateFunctions.getProtectorCivs().size * 3))
+            if (targetCiv.cityStateFunctions.getProtectorCivs().contains(civInfo))
                 modifiers.add(Pair("Under our protection", -15))
-            if (otherCiv.getAllyCiv() == civInfo.civName)
+            if (targetCiv.getAllyCiv() == civInfo.civName)
                 modifiers.add(Pair("Allied City-state", -20)) // There had better be a DAMN good reason
         }
 
-        addWonderBasedMotivations(otherCiv, modifiers)
+        addWonderBasedMotivations(targetCiv, modifiers)
 
-        modifiers.add(Pair("War with allies", getAlliedWarMotivation(civInfo, otherCiv)))
+        modifiers.add(Pair("War with allies", getAlliedWarMotivation(civInfo, targetCiv)))
 
         // Purely for debugging, remove modifiers that don't have an effect
         modifiers.removeAll { it.second == 0 }
@@ -118,7 +123,7 @@ object MotivationToAttackAutomation {
         // Short-circuit to avoid A-star
         if (motivationSoFar < atLeast) return motivationSoFar
 
-        motivationSoFar += getAttackPathsModifier(civInfo, otherCiv, targetCitiesWithOurCity)
+        motivationSoFar += getAttackPathsModifier(civInfo, targetCiv, targetCitiesWithOurCity)
 
         return motivationSoFar
     }
@@ -336,7 +341,7 @@ object MotivationToAttackAutomation {
             val reachableEnemyCitiesBfs = BFS(civInfo.getCapital(true)!!.getCenterTile()) { isTileCanMoveThrough(civInfo, it) }
             reachableEnemyCitiesBfs.stepToEnd()
             val reachableEnemyCities = otherCiv.cities.filter { reachableEnemyCitiesBfs.hasReachedTile(it.getCenterTile()) }
-            if (reachableEnemyCities.isEmpty()) return 0 // Can't even reach the enemy city, no point in war.
+            if (reachableEnemyCities.isEmpty()) return -50 // Can't even reach the enemy city, no point in war.
             val minAttackDistance = reachableEnemyCities.minOf { reachableEnemyCitiesBfs.getPathTo(it.getCenterTile()).count() }
 
             // Longer attack paths are worse, but if the attack path is too far away we shouldn't completely discard the possibility 
