@@ -86,7 +86,7 @@ class MapEditorScreen(map: TileMap? = null) : BaseScreen(), RecreateOnResize {
     val tabs: MapEditorMainTabs
     var tileClickHandler: ((tile: Tile)->Unit)? = null
     private var zoomController: ZoomButtonPair? = null
-    val descriptionTextField = UncivTextField.create("Enter a description for the users of this map")
+    val descriptionTextField = UncivTextField("Enter a description for the users of this map")
 
     private val highlightedTileGroups = mutableListOf<TileGroup>()
 

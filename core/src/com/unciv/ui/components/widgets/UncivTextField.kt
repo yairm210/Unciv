@@ -189,12 +189,4 @@ class UncivTextField(
             }
         }
     }
-
-    companion object {
-        @Deprecated("This compatibility factory is unnecessary. Instantiate UncivTextField directly.",
-            ReplaceWith("UncivTextField(hint, preEnteredText, onFocusChange)", "com.unciv.ui.components.widgets.UncivTextField")
-        )
-        fun create(hint: String, preEnteredText: String = "", onFocusChange: (TextField.(Boolean) -> Unit)? = null): TextField =
-            UncivTextField(hint, preEnteredText, onFocusChange)
-    }
 }

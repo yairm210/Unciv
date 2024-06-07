@@ -40,7 +40,7 @@ class AskTextPopup(
         wrapper.add(label.toLabel())
         add(wrapper).colspan(2).row()
 
-        val nameField = UncivTextField.create(label, defaultText)
+        val nameField = UncivTextField(label, defaultText)
         nameField.textFieldFilter = TextField.TextFieldFilter { _, char -> char !in illegalChars}
         nameField.maxLength = maxLength
 

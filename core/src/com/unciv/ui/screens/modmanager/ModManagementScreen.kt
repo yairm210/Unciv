@@ -407,7 +407,7 @@ class ModManagementScreen private constructor(
         downloadButton.onClick {
             val popup = Popup(this)
             popup.addGoodSizedLabel("Please enter the mod repository -or- archive zip -or- branch -or- release url:").row()
-            val textField = UncivTextField.create("").apply { maxLength = 666 }
+            val textField = UncivTextField("").apply { maxLength = 666 }
             popup.add(textField).width(stage.width / 2).row()
             val pasteLinkButton = "Paste from clipboard".toTextButton()
             pasteLinkButton.onClick {

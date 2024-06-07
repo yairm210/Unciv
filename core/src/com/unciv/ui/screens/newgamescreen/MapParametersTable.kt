@@ -206,7 +206,7 @@ class MapParametersTable(
 
     private fun addHexagonalSizeTable() {
         val defaultRadius = mapParameters.mapSize.radius.toString()
-        customMapSizeRadius = UncivTextField.create("Radius", defaultRadius).apply {
+        customMapSizeRadius = UncivTextField("Radius", defaultRadius).apply {
             textFieldFilter = DigitsOnlyFilter()
         }
         customMapSizeRadius.onChange {
@@ -220,12 +220,12 @@ class MapParametersTable(
 
     private fun addRectangularSizeTable() {
         val defaultWidth = mapParameters.mapSize.width.toString()
-        customMapWidth = UncivTextField.create("Width", defaultWidth).apply {
+        customMapWidth = UncivTextField("Width", defaultWidth).apply {
             textFieldFilter = DigitsOnlyFilter()
         }
 
         val defaultHeight = mapParameters.mapSize.height.toString()
-        customMapHeight = UncivTextField.create("Height", defaultHeight).apply {
+        customMapHeight = UncivTextField("Height", defaultHeight).apply {
             textFieldFilter = DigitsOnlyFilter()
         }
 
@@ -371,7 +371,7 @@ class MapParametersTable(
     private fun addAdvancedControls(table: Table) {
         table.defaults().pad(5f)
 
-        seedTextField = UncivTextField.create("RNG Seed", mapParameters.seed.toString())
+        seedTextField = UncivTextField("RNG Seed", mapParameters.seed.toString())
         seedTextField.textFieldFilter = DigitsOnlyFilter()
 
         // If the field is empty, fallback seed value to 0

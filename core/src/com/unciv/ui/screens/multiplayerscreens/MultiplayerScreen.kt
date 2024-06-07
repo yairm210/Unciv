@@ -190,7 +190,7 @@ class MultiplayerScreen : PickerScreen() {
         val btn = "Rename".toTextButton().apply { disable() }
         btn.onClick {
             Popup(this).apply {
-                val textField = UncivTextField.create("Game name", selectedGame!!.name)
+                val textField = UncivTextField("Game name", selectedGame!!.name)
                 add(textField).width(stageToShowOn.width / 2).row()
                 val saveButton = "Save".toTextButton()
 

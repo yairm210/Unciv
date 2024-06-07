@@ -45,7 +45,7 @@ class MapEditorSaveTab(
     private val deleteButton = "Delete map".toTextButton()
     private val quitButton = "Exit map editor".toTextButton()
 
-    private val mapNameTextField = UncivTextField.create("Map Name")
+    private val mapNameTextField = UncivTextField("Map Name")
 
     private var chosenMap: FileHandle? = null
 

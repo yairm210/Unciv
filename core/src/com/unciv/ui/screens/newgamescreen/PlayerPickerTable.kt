@@ -229,7 +229,7 @@ class PlayerPickerTable(
     private fun Table.addPlayerTableMultiplayerControls(player: Player) {
         row()
 
-        val playerIdTextField = UncivTextField.create("Please input Player ID!", player.playerId)
+        val playerIdTextField = UncivTextField("Please input Player ID!", player.playerId)
         add(playerIdTextField).colspan(2).fillX().pad(5f)
         val errorLabel = "✘".toLabel(Color.RED)
         add(errorLabel).pad(5f).row()

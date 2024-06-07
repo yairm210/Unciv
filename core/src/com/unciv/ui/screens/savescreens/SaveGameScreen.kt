@@ -32,7 +32,7 @@ class SaveGameScreen(val gameInfo: GameInfo) : LoadOrSaveScreen("Current saves")
         const val saveToCustomText = "Save to custom location"
     }
 
-    private val gameNameTextField = UncivTextField.create(nameFieldLabelText)
+    private val gameNameTextField = UncivTextField(nameFieldLabelText)
 
     init {
         setDefaultCloseAction()

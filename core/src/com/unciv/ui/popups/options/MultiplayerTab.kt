@@ -111,7 +111,7 @@ private fun addMultiplayerServerOptions(
     } else {
         "https://"
     }
-    val multiplayerServerTextField = UncivTextField.create("Server address", textToShowForMultiplayerAddress)
+    val multiplayerServerTextField = UncivTextField("Server address", textToShowForMultiplayerAddress)
     multiplayerServerTextField.setTextFieldFilter { _, c -> c !in " \r\n\t\\" }
     multiplayerServerTextField.programmaticChangeEvents = true
     val serverIpTable = Table()
@@ -158,7 +158,7 @@ private fun addMultiplayerServerOptions(
     }).row()
 
     if (UncivGame.Current.onlineMultiplayer.multiplayerServer.featureSet.authVersion > 0) {
-        val passwordTextField = UncivTextField.create(
+        val passwordTextField = UncivTextField(
             settings.multiplayer.passwords[settings.multiplayer.server] ?: "Password"
         )
         val setPasswordButton = "Set password".toTextButton()

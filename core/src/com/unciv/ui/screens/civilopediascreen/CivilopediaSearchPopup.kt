@@ -34,7 +34,7 @@ class CivilopediaSearchPopup(
     private val linkAction: (String) -> Unit
 ) : Popup(pediaScreen) {
     private var ruleset = pediaScreen.ruleset
-    private val searchText = UncivTextField.create("")   // Always focused, "hint" never seen
+    private val searchText = UncivTextField("")   // Always focused, "hint" never seen
     private val modSelect = ModSelectBox()
     private lateinit var resultExpander: ExpanderTab
     private val resultCell: Cell<Actor?>

@@ -31,7 +31,7 @@ fun debugTab(
 
     if (GUI.isWorldLoaded()) {
         val simulateButton = "Simulate until turn:".toTextButton()
-        val simulateTextField = UncivTextField.create("Turn", DebugUtils.SIMULATE_UNTIL_TURN.toString())
+        val simulateTextField = UncivTextField("Turn", DebugUtils.SIMULATE_UNTIL_TURN.toString())
         val invalidInputLabel = "This is not a valid integer!".toLabel().also { it.isVisible = false }
         simulateButton.onClick {
             val simulateUntilTurns = simulateTextField.text.toIntOrNull()

@@ -23,8 +23,8 @@ import java.util.UUID
 
 class AddMultiplayerGameScreen(multiplayerScreen: MultiplayerScreen) : PickerScreen() {
     init {
-        val gameNameTextField = UncivTextField.create("Game name")
-        val gameIDTextField = UncivTextField.create("GameID")
+        val gameNameTextField = UncivTextField("Game name")
+        val gameIDTextField = UncivTextField("GameID")
         val pasteGameIDButton = "Paste gameID from clipboard".toTextButton()
         pasteGameIDButton.onClick {
             gameIDTextField.text = Gdx.app.clipboard.contents

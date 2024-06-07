@@ -592,7 +592,7 @@ open class TabbedPager(
      */
     fun askForPassword(secretHashCode: Int = 0) {
         class PassPopup(screen: BaseScreen, unlockAction: ()->Unit, lockAction: ()->Unit) : Popup(screen) {
-            val passEntry = UncivTextField.create("Password")
+            val passEntry = UncivTextField("Password")
             init {
                 passEntry.isPasswordMode = true
                 add(passEntry).row()

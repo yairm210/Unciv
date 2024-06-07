@@ -77,7 +77,7 @@ internal class ModManagementOptions(private val modManagementScreen: ModManageme
         return Filter(textField.text, category.topic)
     }
 
-    private val textField = UncivTextField.create("Enter search text")
+    private val textField = UncivTextField("Enter search text")
 
     var category = ModCategories.default()
 

@@ -65,7 +65,7 @@ open class FileChooser(
         }
 
     // components
-    private val fileNameInput = UncivTextField.create("Please enter a file name")
+    private val fileNameInput = UncivTextField("Please enter a file name")
     private val fileNameLabel = "File name:".toLabel()
     private val fileNameWrapper = Table().apply {
         defaults().space(10f)

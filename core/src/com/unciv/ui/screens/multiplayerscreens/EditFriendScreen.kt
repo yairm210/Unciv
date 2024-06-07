@@ -19,9 +19,9 @@ import java.util.UUID
 
 class EditFriendScreen(selectedFriend: FriendList.Friend) : PickerScreen() {
     init {
-        val friendNameTextField = UncivTextField.create("Please input a name for your friend!", selectedFriend.name)
+        val friendNameTextField = UncivTextField("Please input a name for your friend!", selectedFriend.name)
         val pastePlayerIDButton = "Player ID from clipboard".toTextButton()
-        val playerIDTextField = UncivTextField.create("Please input a player ID for your friend!", selectedFriend.playerID)
+        val playerIDTextField = UncivTextField("Please input a player ID for your friend!", selectedFriend.playerID)
         val deleteFriendButton = "Delete".toTextButton()
         val friendlist = FriendList()
 

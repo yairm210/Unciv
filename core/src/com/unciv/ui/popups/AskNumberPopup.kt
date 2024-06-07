@@ -62,7 +62,7 @@ class AskNumberPopup(
         wrapper.add(label.toLabel())
         add(wrapper).colspan(2).row()
 
-        val nameField = UncivTextField.create(label, defaultValue)
+        val nameField = UncivTextField(label, defaultValue)
         nameField.textFieldFilter = TextField.TextFieldFilter { _, char -> char.isDigit() || char == '-' }
 
         fun isValidInt(input: String): Boolean {
