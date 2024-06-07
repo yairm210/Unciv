@@ -93,7 +93,7 @@ class DevConsolePopup(val screen: WorldScreen) : Popup(screen) {
         group.add(getArrow(90f, -1)).size(36f, 16f).padBottom(4f).row()
         group.add(getArrow(-90f, 1)).size(36f, 16f)
         group.setSize(40f, 40f)
-        return group.surroundWithCircle(50f, false, Color.DARK_GRAY)
+        return group.surroundWithCircle(50f, false, Color.DARK_GRAY).onRightClick(action = ::showHistory)
     }
 
     private fun onAutocomplete() {
@@ -108,6 +108,29 @@ class DevConsolePopup(val screen: WorldScreen) : Popup(screen) {
         currentHistoryEntry = (currentHistoryEntry + delta).coerceIn(history.indices)
         textField.text = history[currentHistoryEntry]
         textField.cursorPosition = textField.text.length
+    }
+
+    internal fun showHistory() {
+        if (history.isEmpty()) return
+        val popup = object : Popup(stageToShowOn) {
+            init {
+                for ((index, entry) in history.withIndex()) {
+                    val label = Label(entry, skin)
+                    label.onClick {
+                        currentHistoryEntry = index
+                        navigateHistory(0)
+                        close()
+                    }
+                    add(label).row()
+                }
+                clickBehindToClose = true
+                if (screen.game.settings.forbidPopupClickBehindToClose) addCloseButton()
+                showListeners.add {
+                    getScrollPane()?.run { scrollY = maxY }
+                }
+            }
+        }
+        popup.open(true)
     }
 
     private fun onEnter() {
