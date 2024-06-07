@@ -88,7 +88,7 @@ class ModConstants {
     var workboatAutomationSearchMaxTiles = 20
 
     // Civilization
-    var minWarDuration = 10
+    var minimumWarDuration = 10
     var baseTurnsUntilRevolt = 4
     var cityStateElectionTurns = 15
 

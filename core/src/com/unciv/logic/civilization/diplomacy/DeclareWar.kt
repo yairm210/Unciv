@@ -135,8 +135,8 @@ object DeclareWar {
         diplomacyManager.updateHasOpenBorders()
 
         diplomacyManager.removeModifier(DiplomaticModifiers.YearsOfPeace)
-        diplomacyManager.setFlag(DiplomacyFlags.DeclinedPeace, diplomacyManager.civInfo.gameInfo.ruleset.modOptions.constants.minWarDuration)/// AI won't propose peace for 10 turns
-        diplomacyManager.setFlag(DiplomacyFlags.DeclaredWar, diplomacyManager.civInfo.gameInfo.ruleset.modOptions.constants.minWarDuration) // AI won't agree to trade for 10 turns
+        diplomacyManager.setFlag(DiplomacyFlags.DeclinedPeace, diplomacyManager.civInfo.gameInfo.ruleset.modOptions.constants.minimumWarDuration)/// AI won't propose peace for 10 turns
+        diplomacyManager.setFlag(DiplomacyFlags.DeclaredWar, diplomacyManager.civInfo.gameInfo.ruleset.modOptions.constants.minimumWarDuration) // AI won't agree to trade for 10 turns
         diplomacyManager.removeFlag(DiplomacyFlags.BorderConflict)
     }
 

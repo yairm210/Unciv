@@ -209,6 +209,11 @@ and city distance in another. In case of conflicts, there is no guarantee which 
 | pantheonBase                             | Int    | 10                            | [^L]  |
 | pantheonGrowth                           | Int    | 5                             | [^L]  |
 | workboatAutomationSearchMaxTiles         | Int    | 20                            | [^M]  |
+| maxSpyRank                               | Int    | 3                             | [^N]  |
+| spyRankSkillPercentBonus                 | Float  | 30                            | [^O]  |
+| minimumWarDuration                       | Int    | 10                            | [^P]  |
+| baseTurnsUntilRevolt                     | Int    | 4                             | [^Q]  |
+| cityStateElectionTurns                   | Int    | 15                            | [^R]  |
 
 Legend:
 
@@ -238,7 +243,12 @@ Legend:
 - [^J]: A [UnitUpgradeCost](#unitupgradecost) sub-structure.
 - [^K]: Maximum foundable Religions = religionLimitBase + floor(MajorCivCount * religionLimitMultiplier)
 - [^L]: Cost of pantheon = pantheonBase + CivsWithReligion * pantheonGrowth
-- [^M]: When the AI decidees whether to build a work boat, how many tiles to search from the city center for an improvable tile
+- [^M]: When the AI decides whether to build a work boat, how many tiles to search from the city center for an improvable tile
+- [^N]: The maximum rank any spy can reach
+- [^O]: How much skill bonus each rank gives
+- [^P]: The number of turns a civ has to wait before negotiating for peace
+- [^Q]: The number of turns before a revolt is spawned
+- [^R]: The number of turns between city-state elections
 
 #### UnitUpgradeCost
 
