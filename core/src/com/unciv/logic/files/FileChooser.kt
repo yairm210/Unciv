@@ -19,7 +19,7 @@ import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
 import com.unciv.models.UncivSound
 import com.unciv.models.translations.tr
-import com.unciv.ui.components.UncivTextField
+import com.unciv.ui.components.widgets.UncivTextField
 import com.unciv.ui.components.extensions.addSeparator
 import com.unciv.ui.components.extensions.isEnabled
 import com.unciv.ui.components.extensions.toLabel

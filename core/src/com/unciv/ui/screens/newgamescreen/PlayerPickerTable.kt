@@ -17,7 +17,7 @@ import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.nation.Nation
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.input.KeyCharAndCode
-import com.unciv.ui.components.UncivTextField
+import com.unciv.ui.components.widgets.UncivTextField
 import com.unciv.ui.components.widgets.WrappableLabel
 import com.unciv.ui.components.extensions.darken
 import com.unciv.ui.components.extensions.isEnabled

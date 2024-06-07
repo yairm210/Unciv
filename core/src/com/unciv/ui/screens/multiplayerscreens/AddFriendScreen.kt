@@ -8,7 +8,7 @@ import com.unciv.logic.multiplayer.FriendList
 import com.unciv.models.translations.tr
 import com.unciv.ui.screens.pickerscreens.PickerScreen
 import com.unciv.ui.popups.ToastPopup
-import com.unciv.ui.components.UncivTextField
+import com.unciv.ui.components.widgets.UncivTextField
 import com.unciv.ui.components.extensions.enable
 import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.extensions.toLabel
