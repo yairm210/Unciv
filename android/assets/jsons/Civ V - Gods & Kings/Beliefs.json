@@ -209,7 +209,7 @@
     {
         "name": "Initiation Rites",
         "type": "Founder",
-        "uniques": ["[+100 Gold] when a city adopts this religion for the first time (modified by game speed)"]
+        "uniques": ["[+100 Gold] when a city adopts this religion for the first time <(modified by game speed)>"]
     },
     {
         "name": "Interfaith Dialogue",
