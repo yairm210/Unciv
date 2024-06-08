@@ -245,7 +245,7 @@ class WonderInfo {
             if (status == WonderStatus.NotFound && !knownFromQuest(viewingPlayer, name)) continue
             val city = if (status == WonderStatus.NotFound) null
             else gameInfo.getCities()
-                .filter { it.getCenterTile().aerialDistanceTo(tile) <= gameInfo.ruleset.modOptions.constants.cityExpandRange 
+                .filter { it.getCenterTile().aerialDistanceTo(tile) <= 5
                     && viewingPlayer.knows(it.civ) 
                     && viewingPlayer.hasExplored(it.getCenterTile()) }
                 .sortedBy { it.getCenterTile().aerialDistanceTo(tile) }
