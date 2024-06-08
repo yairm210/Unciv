@@ -136,8 +136,8 @@ class Civilization : IsPartOfGameInfoSerialization {
     @Transient
     var neutralRoads = HashSet<Vector2>()
 
-    @Transient
-    val modConstants = gameInfo.ruleset.modOptions.constants
+    @delegate:Transient
+    val modConstants by lazy { gameInfo.ruleset.modOptions.constants }
 
     var playerType = PlayerType.AI
 
