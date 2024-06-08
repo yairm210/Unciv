@@ -147,7 +147,7 @@ class ThreatManager(val civInfo: Civilization) {
 
         val tilesWithinBombardmentRange = tilesWithEnemyUnits
             .filter { it.isCityCenter() && it.getCity()!!.civ.isAtWarWith(unit.civ) }
-            .flatMap { it.getTilesInDistance(it.getCity()!!.range) }
+            .flatMap { it.getTilesInDistance(it.getCity()!!.getBombardRange()) }
 
         val tilesWithTerrainDamage = unit.currentTile.getTilesInDistance(distance)
             .filter { unit.getDamageFromTerrain(it) > 0 }

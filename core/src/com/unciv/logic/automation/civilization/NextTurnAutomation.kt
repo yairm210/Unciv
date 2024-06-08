@@ -490,10 +490,9 @@ object NextTurnAutomation {
             // Otherwise, AI tries to produce settlers when it can hardly sustain itself
             .filter { city ->
                 !workersBuildableForThisCiv
-                    || city.getCenterTile().getTilesInDistance(2).count { it.improvement!=null } > 1
-                    || city.getCenterTile().getTilesInDistance(3).any { it.civilianUnit?.hasUnique(UniqueType.BuildImprovements)==true }
-            }
-            .maxByOrNull { it.cityStats.currentCityStats.production }
+                    || city.getCenterTile().getTilesInDistance(civInfo.modConstants.cityWorkRange - 1 ).count { it.improvement!=null } > 1
+                    || city.getCenterTile().getTilesInDistance(civInfo.modConstants.cityWorkRange).any { it.civilianUnit?.hasUnique(UniqueType.BuildImprovements)==true }
+            }.maxByOrNull { it.cityStats.currentCityStats.production }
             ?: return
         if (bestCity.cityConstructions.getBuiltBuildings().count() > 1) // 2 buildings or more, otherwise focus on self first
             bestCity.cityConstructions.currentConstructionFromQueue = settlerUnits.minByOrNull { it.cost }!!.name

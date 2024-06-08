@@ -136,6 +136,9 @@ class Civilization : IsPartOfGameInfoSerialization {
     @Transient
     var neutralRoads = HashSet<Vector2>()
 
+    @Transient
+    val modConstants = gameInfo.ruleset.modOptions.constants
+
     var playerType = PlayerType.AI
 
     /** Used in online multiplayer for human players */

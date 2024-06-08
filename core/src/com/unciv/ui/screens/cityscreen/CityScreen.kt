@@ -336,7 +336,7 @@ class CityScreen(
 
     private fun addTiles() {
         val tileSetStrings = TileSetStrings()
-        val cityTileGroups = city.getCenterTile().getTilesInDistance(5)
+        val cityTileGroups = city.getCenterTile().getTilesInDistance(city.getExpandRange())
                 .filter { selectedCiv.hasExplored(it) }
                 .map { CityTileGroup(city, it, tileSetStrings, fireworks != null) }
 

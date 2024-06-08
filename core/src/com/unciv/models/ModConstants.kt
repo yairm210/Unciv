@@ -50,7 +50,7 @@ class ModConstants {
 
     var baseCityBombardRange = 2
     var cityWorkRange = 3
-    var cityExpandRange = 6
+    var cityExpandRange = 5
 
     // Constants used to calculate Unit Upgrade gold Cost (can only be modded all-or-nothing)
     // This is a data class for one reason only: The equality implementation enables Gdx Json to omit it when default (otherwise only the individual fields are omitted)

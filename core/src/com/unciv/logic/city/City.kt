@@ -41,9 +41,6 @@ class City : IsPartOfGameInfoSerialization, INamed {
     private lateinit var centerTile: Tile  // cached for better performance
 
     @Transient
-    val range = 2
-
-    @Transient
     lateinit var tileMap: TileMap
 
     @Transient
@@ -266,7 +263,7 @@ class City : IsPartOfGameInfoSerialization, INamed {
         this.civ = civInfo
         tileMap = civInfo.gameInfo.tileMap
         centerTile = tileMap[location]
-        tilesInRange = getCenterTile().getTilesInDistance(3).toHashSet()
+        tilesInRange = getCenterTile().getTilesInDistance(getWorkRange()).toHashSet()
         population.city = this
         expansion.city = this
         expansion.setTransients()

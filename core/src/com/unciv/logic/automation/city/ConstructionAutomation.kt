@@ -179,7 +179,7 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
 
         val civilianUnit = city.getCenterTile().civilianUnit
         if (civilianUnit != null && civilianUnit.hasUnique(UniqueType.FoundCity)
-                && city.getCenterTile().getTilesInDistance(5).none { it.militaryUnit?.civ == civInfo })
+                && city.getCenterTile().getTilesInDistance(city.getExpandRange()).none { it.militaryUnit?.civ == civInfo })
             modifier = 5f // there's a settler just sitting here, doing nothing - BAD
 
         if (!civInfo.isAIOrAutoPlaying()) modifier /= 2 // Players prefer to make their own unit choices usually

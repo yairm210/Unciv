@@ -423,7 +423,7 @@ object UnitAutomation {
 
         val tilesWithinBombardmentRange = unit.currentTile.getTilesInDistance(3)
             .filter { it.isCityCenter() && it.getCity()!!.civ.isAtWarWith(unit.civ) }
-            .flatMap { it.getTilesInDistance(it.getCity()!!.range) }
+            .flatMap { it.getTilesInDistance(it.getCity()!!.getBombardRange()) }
 
         val tilesWithTerrainDamage = unit.currentTile.getTilesInDistance(3)
             .filter { unit.getDamageFromTerrain(it) > 0 }
