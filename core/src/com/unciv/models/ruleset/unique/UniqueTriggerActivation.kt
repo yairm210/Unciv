@@ -29,7 +29,7 @@ import com.unciv.models.stats.Stats
 import com.unciv.models.translations.fillPlaceholders
 import com.unciv.models.translations.hasPlaceholderParameters
 import com.unciv.ui.components.extensions.addToMapOfSets
-import com.unciv.ui.screens.mapeditorscreen.TileInfoNormalizer
+import com.unciv.logic.map.tile.TileNormalizer
 import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionsUpgrade
 import kotlin.math.roundToInt
 import kotlin.random.Random
@@ -768,11 +768,8 @@ object UniqueTriggerActivation {
                 return {
                     for (explorableTile in explorableTiles) {
                         explorableTile.setExplored(civInfo, true)
+                        civInfo.setLastSeenImprovement(explorableTile.position, explorableTile.improvement)
                         positions += explorableTile.position
-                        if (explorableTile.improvement == null)
-                            civInfo.lastSeenImprovement.remove(explorableTile.position)
-                        else
-                            civInfo.lastSeenImprovement[explorableTile.position] = explorableTile.improvement!!
                     }
 
                     if (notification != null) {
@@ -1032,7 +1029,7 @@ object UniqueTriggerActivation {
                         TerrainType.TerrainFeature -> tile.addTerrainFeature(terrain.name)
                         TerrainType.NaturalWonder -> NaturalWonderGenerator.placeNaturalWonder(terrain, tile)
                     }
-                    TileInfoNormalizer.normalizeToRuleset(tile, ruleset)
+                    TileNormalizer.normalizeToRuleset(tile, ruleset)
                     tile.getUnits().filter { !it.movement.canPassThrough(tile) }.toList()
                         .forEach { it.movement.teleportToClosestMoveableTile() }
                     true

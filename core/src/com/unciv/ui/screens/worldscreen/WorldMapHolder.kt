@@ -124,7 +124,7 @@ class WorldMapHolder(
 
     // Contains the data required to draw a "connect road" button
     class ConnectRoadButtonDto(val unit: MapUnit, val tile: Tile) : ButtonDto
-    
+
     // Contains the data required to draw a "move spy" button
     class MoveSpyButtonDto(val spy: Spy, val city: City?) : ButtonDto
 
@@ -475,13 +475,13 @@ class WorldMapHolder(
             }
         }
     }
-    
+
     private fun addMovingSpyOverlay(spy: Spy, tile: Tile) {
         val city: City? = if (tile.isCityCenter() && spy.canMoveTo(tile.getCity()!!)) tile.getCity() else null
         addTileOverlays(tile, MoveSpyButtonDto(spy, city))
         worldScreen.shouldUpdate = true
     }
-    
+
     private fun addTileOverlays(tile: Tile, buttonDto: ButtonDto? = null) {
         val table = Table().apply { defaults().pad(10f) }
         if (buttonDto != null && worldScreen.canChangeState)
@@ -606,7 +606,7 @@ class WorldMapHolder(
 
         return connectRoadButton
     }
-    
+
     private fun getMoveSpyButton(dto: MoveSpyButtonDto): Group {
         val spyActionButton = Group()
         spyActionButton.setSize(buttonSize, buttonSize)
@@ -769,7 +769,7 @@ class WorldMapHolder(
                 // Fade out population icons
                 group.layerMisc.dimPopulation(true)
 
-                val shownImprovement = unit.civ.lastSeenImprovement[group.tile.position]
+                val shownImprovement = group.tile.getShownImprovement(unit.civ)
 
                 // Fade out improvement icons (but not barb camps or ruins)
                 if (shownImprovement != null && shownImprovement != Constants.barbarianEncampment

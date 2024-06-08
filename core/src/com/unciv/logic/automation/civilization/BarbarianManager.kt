@@ -159,7 +159,7 @@ class BarbarianManager : IsPartOfGameInfoSerialization {
         }
             .forEach {
                 it.addNotification("A new barbarian encampment has spawned!", tile.position, NotificationCategory.War, NotificationIcon.War)
-                it.lastSeenImprovement[tile.position] = Constants.barbarianEncampment
+                it.setLastSeenImprovement(tile.position, Constants.barbarianEncampment)
             }
     }
 }

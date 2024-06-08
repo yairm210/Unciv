@@ -1,11 +1,10 @@
-package com.unciv.ui.screens.mapeditorscreen
+package com.unciv.logic.map.tile
 
-import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.tile.TerrainType
 import com.unciv.models.ruleset.unique.StateForConditionals
 
-object TileInfoNormalizer {
+object TileNormalizer {
 
     fun normalizeToRuleset(tile: Tile, ruleset: Ruleset) {
         if (tile.naturalWonder != null && !ruleset.terrains.containsKey(tile.naturalWonder))
@@ -15,7 +14,7 @@ object TileInfoNormalizer {
                 tile.baseTerrain = tile.getNaturalWonder().turnsInto!!
             tile.setTerrainFeatures(listOf())
             tile.resource = null
-            tile.removeImprovement()
+            tile.clearImprovement()
         }
 
         if (!ruleset.terrains.containsKey(tile.baseTerrain))
@@ -47,9 +46,16 @@ object TileInfoNormalizer {
 
     private fun normalizeTileImprovement(tile: Tile, ruleset: Ruleset) {
         val improvementObject = ruleset.tileImprovements[tile.improvement]
-        tile.removeImprovement() // Unset, and check if it can be reset. If so, do it, if not, invalid.
-        if (improvementObject == null) return
-        if (tile.improvementFunctions.canImprovementBeBuiltHere(improvementObject, stateForConditionals = StateForConditionals.IgnoreConditionals))
-            tile.changeImprovement(improvementObject.name)
+            ?: return tile.clearImprovement()
+        if (tile.improvementFunctions.canImprovementBeBuiltHere(improvementObject, stateForConditionals = StateForConditionals.IgnoreConditionals, isNormalizeCheck = true))
+            return
+        tile.clearImprovement()
+    }
+
+    private fun Tile.clearImprovement() {
+        // This runs from mapgen, so don't go through the side-effect-triggering TileImprovementFunctions
+        improvement = null
+        improvementInProgress = null
+        turnsToImprovement = 0
     }
 }

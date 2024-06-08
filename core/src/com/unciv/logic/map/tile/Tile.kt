@@ -27,7 +27,6 @@ import com.unciv.models.ruleset.unique.UniqueMap
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.components.extensions.withItem
 import com.unciv.ui.components.extensions.withoutItem
-import com.unciv.ui.screens.mapeditorscreen.TileInfoNormalizer
 import com.unciv.utils.DebugUtils
 import com.unciv.utils.Log
 import kotlin.math.abs
@@ -299,12 +298,7 @@ class Tile : IsPartOfGameInfoSerialization {
         else ruleset.tileImprovements[getUnpillagedRoad().name]
     }
 
-    fun getShownImprovement(viewingCiv: Civilization?): String? {
-        return if (viewingCiv == null || viewingCiv.playerType == PlayerType.AI || viewingCiv.isSpectator())
-            improvement
-        else
-            viewingCiv.lastSeenImprovement[position]
-    }
+    fun getShownImprovement(viewingCiv: Civilization?): String? = viewingCiv?.getLastSeenImprovement(position) ?: improvement
 
     /** Returns true if this tile has fallout or an equivalent terrain feature */
     fun hasFalloutEquivalent(): Boolean = terrainFeatures.any { ruleset.terrains[it]!!.hasUnique(UniqueType.NullifyYields)}
@@ -780,7 +774,7 @@ class Tile : IsPartOfGameInfoSerialization {
     fun setBaseTerrain(baseTerrainObject: Terrain){
         baseTerrain = baseTerrainObject.name
         this.baseTerrainObject = baseTerrainObject
-        TileInfoNormalizer.normalizeToRuleset(this, ruleset)
+        TileNormalizer.normalizeToRuleset(this, ruleset)
         setTerrainFeatures(terrainFeatures)
         setTerrainTransients()
     }
