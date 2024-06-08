@@ -1,5 +1,6 @@
 package com.unciv.logic.map
 
+import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.RoadStatus
 import com.unciv.logic.map.tile.Tile
@@ -83,7 +84,7 @@ object MapPathing {
         while (true) {
             if (astar.hasEnded()) {
                 // We failed to find a path
-                Log.debug("getRoadPath failed at AStar search size ${astar.size()}")
+                Log.debug("getPath failed at AStar search size ${astar.size()}")
                 return null
             }
             if (!astar.hasReachedTile(endTile)) {
@@ -97,4 +98,35 @@ object MapPathing {
         }
     }
 
+    /**
+     * Gets the connection to the end tile. This does not take into account tile movement costs.
+     * Takes in a civilization instead of a specific unit.
+     */
+    fun getConnection(civ: Civilization, 
+        startTile: Tile,
+        endTile: Tile,
+        predicate: (Civilization, Tile) -> Boolean
+    ): List<Tile>? {
+        val astar = AStar(
+                startTile,
+                { tile -> predicate(civ, tile) },
+                { from, to -> 1f },
+                { from, to -> from.aerialDistanceTo(to).toFloat() }
+        )
+        while (true) {
+            if (astar.hasEnded()) {
+                // We failed to find a path
+                Log.debug("getConnection failed at AStar search size ${astar.size()}")
+                return null
+            }
+            if (!astar.hasReachedTile(endTile)) {
+                astar.nextStep()
+                continue
+            }
+            // Found a path.
+            return astar.getPathTo(endTile)
+                    .toList()
+                    .reversed()
+        }
+    }
 }

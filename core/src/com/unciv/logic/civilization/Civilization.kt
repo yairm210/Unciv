@@ -626,6 +626,8 @@ class Civilization : IsPartOfGameInfoSerialization {
 
     fun isAtWar() = diplomacy.values.any { it.diplomaticStatus == DiplomaticStatus.War && !it.otherCiv().isDefeated() }
 
+    fun getCivsAtWarWith() = diplomacy.values.filter { it.diplomaticStatus == DiplomaticStatus.War && !it.otherCiv().isDefeated() }.map { it.otherCiv() }
+
 
     /**
      * Returns a civilization caption suitable for greetings including player type info:
