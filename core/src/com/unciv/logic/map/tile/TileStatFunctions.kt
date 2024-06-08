@@ -290,7 +290,7 @@ class TileStatFunctions(val tile: Tile) {
         if (tile.hasViewableResource(observingCiv) && tile.tileResource.isImprovedBy(improvement.name)
                 && tile.tileResource.improvementStats != null
         )
-            stats.add(tile.tileResource.improvementStats!!.clone()) // resource-specific improvement
+            stats.add(tile.tileResource.improvementStats!!) // resource-specific improvement
 
         val conditionalState = StateForConditionals(civInfo = observingCiv, city = city, tile = tile)
         for (unique in improvement.getMatchingUniques(UniqueType.Stats, conditionalState)) {
