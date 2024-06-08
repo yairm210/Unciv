@@ -1,3 +1,17 @@
+## 4.11.18
+
+"(modified by game speed)" modifier 
+
+Resolved  - "Promotes all spies [amount] time(s)" crash
+
+By SomeTroglodyte:
+- UX: Dev Console easier to use without installing keyboard apps 
+- UniqueParameterType getErrorSeverity/isKnownValue architecture simplification 
+- Remove 'Strategic Balance' and 'Legendary Start' from resource abundance select 
+- Improve update of "Last seen improvement" 
+
+Reworked AI war evaluation and plans  - By tuvus
+
 ## 4.11.17
 
 Unavailable techs work well with tech picker screen
