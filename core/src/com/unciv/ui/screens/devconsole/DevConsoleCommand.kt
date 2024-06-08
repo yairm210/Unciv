@@ -86,6 +86,10 @@ internal class ConsoleCommandRoot : ConsoleCommandNode {
         "unit" to ConsoleUnitCommands(),
         "city" to ConsoleCityCommands(),
         "tile" to ConsoleTileCommands(),
-        "civ" to ConsoleCivCommands()
+        "civ" to ConsoleCivCommands(),
+        "history" to ConsoleAction("history") { console, _ ->
+            console.showHistory()
+            DevConsoleResponse.hint("") // Trick console into staying open
+        }
     )
 }
