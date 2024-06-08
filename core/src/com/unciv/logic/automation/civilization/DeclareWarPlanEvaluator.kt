@@ -31,7 +31,7 @@ object DeclareWarPlanEvaluator {
 
         val civForce = civInfo.getStatForRanking(RankingType.Force)
         val targetForce = target.getStatForRanking(RankingType.Force)
-        val teamCivForce = teamCiv.getStatForRanking(RankingType.Force) - 0.8f * teamCiv.threatManager.getCombinedForceOfWarringCivs()
+        val teamCivForce = (teamCiv.getStatForRanking(RankingType.Force) - 0.8f * teamCiv.threatManager.getCombinedForceOfWarringCivs()).coerceAtLeast(100f)
 
         // A higher motivation means that we can be riskier
         val multiplier = when {
@@ -82,11 +82,11 @@ object DeclareWarPlanEvaluator {
             motivation -= 20
         }
 
-        val targetForce = target.getStatForRanking(RankingType.Force) - 0.8f * target.getCivsAtWarWith().sumOf { it.getStatForRanking(RankingType.Force) }.coerceAtLeast(1)
+        val targetForce = target.getStatForRanking(RankingType.Force) - 0.8f * target.getCivsAtWarWith().sumOf { it.getStatForRanking(RankingType.Force) }.coerceAtLeast(100)
         val civForce = civInfo.getStatForRanking(RankingType.Force)
 
         // They need to be at least half the targets size, and we need to be stronger than the target together
-        val civToJoinForce = (civToJoin.getStatForRanking(RankingType.Force) - 0.8f * civToJoin.getCivsAtWarWith().sumOf { it.getStatForRanking(RankingType.Force) }).coerceAtLeast(1f)
+        val civToJoinForce = (civToJoin.getStatForRanking(RankingType.Force) - 0.8f * civToJoin.getCivsAtWarWith().sumOf { it.getStatForRanking(RankingType.Force) }).coerceAtLeast(100f)
         if (civToJoinForce < targetForce / 2) {
             // Make sure that there is no wrap around
             motivation -= (10 * (targetForce / civToJoinForce)).toInt().coerceIn(-1000, 1000)
@@ -123,7 +123,7 @@ object DeclareWarPlanEvaluator {
         val civForce = civInfo.getStatForRanking(RankingType.Force)
 
         // They need to be at least half the targets size
-        val thirdCivForce = civToJoin.getStatForRanking(RankingType.Force) - 0.8f * civToJoin.getCivsAtWarWith().sumOf { it.getStatForRanking(RankingType.Force) }
+        val thirdCivForce = (civToJoin.getStatForRanking(RankingType.Force) - 0.8f * civToJoin.getCivsAtWarWith().sumOf { it.getStatForRanking(RankingType.Force) }).coerceAtLeast(100f)
         motivation += (20 * thirdCivForce / targetForce.toFloat()).toInt().coerceAtMost(40)
 
         // If we have less relative force then the target then we have more motivation to accept
