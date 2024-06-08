@@ -192,6 +192,9 @@ and city distance in another. In case of conflicts, there is no guarantee which 
 | cityStrengthFromTechsExponent            | Float  | 2.8                           | [^B]  |
 | cityStrengthFromTechsFullMultiplier      | Float  | 1.0                           | [^B]  |
 | cityStrengthFromGarrison                 | Float  | 0.2                           | [^B]  |
+| baseCityBombardRange                     | Int    | 2                             | [^S]  |
+| cityWorkRange                            | Int    | 3                             | [^T]  |
+| cityExpandRange                          | Int    | 5                             | [^U]  |
 | unitSupplyPerPopulation                  | Float  | 0.5                           | [^C]  |
 | minimalCityDistance                      | Int    | 3                             | [^D]  |
 | minimalCityDistanceOnDifferentContinents | Int    | 2                             | [^D]  |
@@ -220,6 +223,9 @@ Legend:
     defensiveBuildingStrength
     where %techs is the percentage of techs in the tech tree that are complete
     If no techs exist in this ruleset, %techs = 0.5 (=50%)
+- [^S]: The distance that cities can attack
+- [^T]: The tiles in distance that population in cities can work on. Note: Higher values may lead to performace issues and may cause bugs. cityWorkRange may be greater than cityExpandRange.
+- [^U]: The distance that cities can expand their borders to. Note: Higher values may lead to performace issues and may cause bugs.
 - [^C]: Formula for Unit Supply:
     Supply = unitSupplyBase (difficulties.json)
     unitSupplyPerCity \* amountOfCities + (difficulties.json)
