@@ -101,7 +101,8 @@ class TileImprovementFunctions(val tile: Tile) {
         improvement: TileImprovement,
         resourceIsVisible: Boolean = tile.resource != null,
         knownFeatureRemovals: List<TileImprovement>? = null,
-        stateForConditionals: StateForConditionals = StateForConditionals(tile=tile)
+        stateForConditionals: StateForConditionals = StateForConditionals(tile=tile),
+        isNormalizeCheck: Boolean = false
     ): Boolean {
 
         fun TileImprovement.canBeBuildOnThisUnbuildableTerrain(
@@ -125,8 +126,8 @@ class TileImprovementFunctions(val tile: Tile) {
         }
 
         return when {
-            improvement.name == tile.improvement -> false
-            tile.isCityCenter() -> false
+            improvement.name == tile.improvement && !isNormalizeCheck -> false
+            tile.isCityCenter() -> isNormalizeCheck && improvement.name == Constants.cityCenter
 
             // First we handle a few special improvements
 
@@ -199,6 +200,7 @@ class TileImprovementFunctions(val tile: Tile) {
                           civToActivateBroaderEffects: Civilization? = null, unit: MapUnit? = null) {
         val improvementObject = tile.ruleset.tileImprovements[improvementName]
 
+        var improvementFieldHasChanged = false
         when {
             improvementName?.startsWith(Constants.remove) == true -> {
                 activateRemovalImprovement(improvementName, civToActivateBroaderEffects)
@@ -209,8 +211,17 @@ class TileImprovementFunctions(val tile: Tile) {
             else -> {
                 tile.improvementIsPillaged = false
                 tile.improvement = improvementName
+                improvementFieldHasChanged = true
 
                 removeCreatesOneImprovementMarker()
+            }
+        }
+
+        if (improvementFieldHasChanged) {
+            for (civ in tile.tileMap.gameInfo.civilizations) {
+                if (civ.isDefeated() || !civ.isMajorCiv()) continue
+                if (civ == civToActivateBroaderEffects || tile.isVisible(civ))
+                    civ.setLastSeenImprovement(tile.position, improvementName)
             }
         }
 

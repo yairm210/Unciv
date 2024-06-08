@@ -37,7 +37,7 @@ object UseGoldAutomation {
     private fun useGoldForCityStates(civ: Civilization) {
         // RARE EDGE CASE: If you ally with a city-state, you may reveal more map that includes ANOTHER civ!
         // So if we don't lock this list, we may later discover that there are more known civs, concurrent modification exception!
-        val knownCityStates = civ.getKnownCivs().filter { it.isCityState() }.toList()
+        val knownCityStates = civ.getKnownCivs().filter { it.isCityState() && MotivationToAttackAutomation.hasAtLeastMotivationToAttack(civ, it, 0) <= 0 }.toList()
 
         // canBeMarriedBy checks actual cost, but it can't be below 500*speedmodifier, and the later check is expensive
         if (civ.gold >= 330 && civ.getHappiness() > 0 && civ.hasUnique(UniqueType.CityStateCanBeBoughtForGold)) {

@@ -29,7 +29,7 @@ import com.unciv.models.stats.Stats
 import com.unciv.models.translations.fillPlaceholders
 import com.unciv.models.translations.hasPlaceholderParameters
 import com.unciv.ui.components.extensions.addToMapOfSets
-import com.unciv.ui.screens.mapeditorscreen.TileInfoNormalizer
+import com.unciv.logic.map.tile.TileNormalizer
 import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionsUpgrade
 import kotlin.math.roundToInt
 import kotlin.random.Random
@@ -540,20 +540,19 @@ object UniqueTriggerActivation {
 
             UniqueType.UnitsGainPromotion -> {
                 val filter = unique.params[0]
-                val promotion = unique.params[1]
+                val promotionName = unique.params[1]
+                val promotion = ruleset.unitPromotions[promotionName] ?: return null
 
-                val unitsToPromote = civInfo.units.getCivUnits().filter { it.matchesFilter(filter) }
-                    .filter { unitToPromote ->
-                        ruleset.unitPromotions.values.any {
-                            it.name == promotion && unitToPromote.type.name in it.unitTypes
-                        }
+                val unitsToPromote = civInfo.units.getCivUnits()
+                    .filter {
+                        it.matchesFilter(filter) && (it.type.name in promotion.unitTypes || promotion.unitTypes.isEmpty())
                     }.toList()
                 if (unitsToPromote.isEmpty()) return null
 
                 return {
                     val promotedUnitLocations: MutableList<Vector2> = mutableListOf()
                     for (civUnit in unitsToPromote) {
-                        civUnit.promotions.addPromotion(promotion, isFree = true)
+                        civUnit.promotions.addPromotion(promotionName, isFree = true)
                         promotedUnitLocations.add(civUnit.getTile().position)
                     }
 
@@ -562,7 +561,7 @@ object UniqueTriggerActivation {
                             notification,
                             MapUnitAction(promotedUnitLocations),
                             NotificationCategory.Units,
-                            "unitPromotionIcons/${unique.params[1]}"
+                            "unitPromotionIcons/$promotionName"
                         )
                     }
                     true
@@ -604,7 +603,9 @@ object UniqueTriggerActivation {
                 ) return null
 
                 return {
-                    val statAmount = unique.params[0].toInt()
+                    var statAmount = unique.params[0].toInt()
+                    if (unique.isModifiedByGameSpeed()) statAmount = (statAmount * civInfo.gameInfo.speed.statCostModifiers[stat]!!).roundToInt()
+
                     val stats = Stats().add(stat, statAmount.toFloat())
                     civInfo.addStats(stats)
 
@@ -768,11 +769,8 @@ object UniqueTriggerActivation {
                 return {
                     for (explorableTile in explorableTiles) {
                         explorableTile.setExplored(civInfo, true)
+                        civInfo.setLastSeenImprovement(explorableTile.position, explorableTile.improvement)
                         positions += explorableTile.position
-                        if (explorableTile.improvement == null)
-                            civInfo.lastSeenImprovement.remove(explorableTile.position)
-                        else
-                            civInfo.lastSeenImprovement[explorableTile.position] = explorableTile.improvement!!
                     }
 
                     if (notification != null) {
@@ -1032,7 +1030,7 @@ object UniqueTriggerActivation {
                         TerrainType.TerrainFeature -> tile.addTerrainFeature(terrain.name)
                         TerrainType.NaturalWonder -> NaturalWonderGenerator.placeNaturalWonder(terrain, tile)
                     }
-                    TileInfoNormalizer.normalizeToRuleset(tile, ruleset)
+                    TileNormalizer.normalizeToRuleset(tile, ruleset)
                     tile.getUnits().filter { !it.movement.canPassThrough(tile) }.toList()
                         .forEach { it.movement.teleportToClosestMoveableTile() }
                     true
