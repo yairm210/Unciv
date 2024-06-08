@@ -1,7 +1,6 @@
 package com.unciv.logic.map.mapgenerator.mapregions
 
 import com.unciv.Constants
-import com.unciv.logic.map.MapResources
 import com.unciv.logic.map.TileMap
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.Ruleset
@@ -29,8 +28,7 @@ object StartNormalizer {
             }
         }
 
-        if (tileMap.mapParameters.mapResources == MapResources.strategicBalance ||
-            tileMap.mapParameters.strategicBalance)
+        if (tileMap.mapParameters.getStrategicBalance())
             placeStrategicBalanceResources(startTile, ruleset, tileData)
 
         normalizeProduction(startTile, isMinorCiv, ruleset, tileData)
@@ -217,8 +215,7 @@ object StartNormalizer {
                 else -> 0
             }
         }
-        if (tileMap.mapParameters.mapResources == MapResources.legendaryStart  ||
-            tileMap.mapParameters.legendaryStart)
+        if (tileMap.mapParameters.getLegendaryStart())
             bonusesNeeded += 2
 
         // Attempt to place one grassland at a plains-only spot (nor for minors)

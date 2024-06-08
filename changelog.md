@@ -1,3 +1,34 @@
+## 4.11.18
+
+"(modified by game speed)" modifier 
+
+Resolved  - "Promotes all spies [amount] time(s)" crash
+
+By SomeTroglodyte:
+- UX: Dev Console easier to use without installing keyboard apps 
+- UniqueParameterType getErrorSeverity/isKnownValue architecture simplification 
+- Remove 'Strategic Balance' and 'Legendary Start' from resource abundance select 
+- Improve update of "Last seen improvement" 
+
+Reworked AI war evaluation and plans  - By tuvus
+
+## 4.11.17
+
+Unavailable techs work well with tech picker screen
+
+Added ruleset check for resource uniques with resource conditionals
+
+By tuvus:
+- Added an option to disable move by long press
+- Fixed spy steal tech timer
+- Spy max rank can be modded
+
+By SomeTroglodyte:
+- Sortable unit overview
+- Console: Improve `civ activatetrigger` command
+- UI candy: WLTK fireworks
+- ModOptions unique for mods to control which map gets preselected
+
 ## 4.11.16
 
 AI no longer trusts you on resource trades if you cut deals short

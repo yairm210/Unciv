@@ -396,17 +396,19 @@ open class ZoomableScrollPane(
         return true
     }
 
-    /** @return the currently scrolled-to viewport of the whole scrollable area */
-    private fun getViewport(): Rectangle {
+    /** Overwrite [rect] with the currently scrolled-to viewport of the whole scrollable area */
+    fun getViewport(rect: Rectangle) {
         val viewportFromLeft = scrollX
         /** In the default coordinate system, the y origin is at the bottom, but scrollY is from the top, so we need to invert. */
         val viewportFromBottom = maxY - scrollY
-        return Rectangle(
-            viewportFromLeft - horizontalPadding,
-            viewportFromBottom - verticalPadding,
-            width,
-            height)
+        rect.x = viewportFromLeft - horizontalPadding
+        rect.y = viewportFromBottom - verticalPadding
+        rect.width = width
+        rect.height = height
     }
+
+    /** @return the currently scrolled-to viewport of the whole scrollable area */
+    private fun getViewport() = Rectangle().also { getViewport(it) }
 
     private fun onViewportChanged() {
         onViewportChangedListener?.invoke(maxX, maxY, getViewport())

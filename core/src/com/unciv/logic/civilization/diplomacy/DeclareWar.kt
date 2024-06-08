@@ -72,11 +72,11 @@ object DeclareWar {
                 otherCiv.popupAlerts.add(PopupAlert(AlertType.WarDeclaration, civInfo.civName))
 
                 otherCiv.addNotification("[${civInfo.civName}] has declared war on us!",
-                    NotificationCategory.Diplomacy, NotificationIcon.War, civInfo.civName)
+                    NotificationCategory.Diplomacy, otherCiv.civName, NotificationIcon.War, civInfo.civName)
 
                 diplomacyManager.getCommonKnownCivsWithSpectators().forEach {
-                    it.addNotification("[${civInfo.civName}] has declared war on [${diplomacyManager.otherCivName}]!",
-                        NotificationCategory.Diplomacy, civInfo.civName, NotificationIcon.War, otherCiv.civName)
+                    it.addNotification("[${civInfo.civName}] has declared war on [${otherCiv.civName}]!",
+                        NotificationCategory.Diplomacy, otherCiv.civName, NotificationIcon.War, civInfo.civName)
                 }
             }
             WarType.DefensivePactWar, WarType.CityStateAllianceWar, WarType.JoinWar -> {
@@ -86,18 +86,40 @@ object DeclareWar {
                 val defender = if (declareWarReason.warType == WarType.DefensivePactWar) civInfo else otherCiv
 
                 defender.addNotification("[${agressor.civName}] has joined [${allyCiv.civName}] in the war against us!",
-                    NotificationCategory.Diplomacy, NotificationIcon.War, agressor.civName)
+                    NotificationCategory.Diplomacy, defender.civName, NotificationIcon.War, allyCiv.civName, agressor.civName)
 
                 agressor.addNotification("We have joined [${allyCiv.civName}] in the war against [${defender.civName}]!",
-                    NotificationCategory.Diplomacy, NotificationIcon.War, defender.civName)
+                    NotificationCategory.Diplomacy, defender.civName, NotificationIcon.War, allyCiv.civName, agressor.civName)
 
                 diplomacyManager.getCommonKnownCivsWithSpectators().filterNot { it == allyCiv }.forEach {
                     it.addNotification("[${agressor.civName}] has joined [${allyCiv.civName}] in the war against [${defender.civName}]!",
-                        NotificationCategory.Diplomacy, agressor.civName, NotificationIcon.War, defender.civName)
+                        NotificationCategory.Diplomacy, defender.civName, NotificationIcon.War, allyCiv.civName, agressor.civName)
                 }
 
                 allyCiv.addNotification("[${agressor.civName}] has joined us in the war against [${defender.civName}]!",
-                        NotificationCategory.Diplomacy, agressor.civName, NotificationIcon.War, defender.civName)
+                        NotificationCategory.Diplomacy, defender.civName, NotificationIcon.War, allyCiv.civName, agressor.civName)
+            }
+            WarType.TeamWar -> {
+                val allyCiv = declareWarReason.allyCiv!!
+                // We only want to send these notifications once, it doesn't matter who sends it though
+                if (civInfo.gameInfo.civilizations.indexOf(civInfo) > civInfo.gameInfo.civilizations.indexOf(allyCiv)) return
+
+                otherCiv.popupAlerts.add(PopupAlert(AlertType.WarDeclaration, civInfo.civName))
+                otherCiv.popupAlerts.add(PopupAlert(AlertType.WarDeclaration, allyCiv.civName))
+
+                civInfo.addNotification("You and [${allyCiv.civName}] have declared war against [${otherCiv.civName}]!",
+                        NotificationCategory.Diplomacy, otherCiv.civName, NotificationIcon.War, allyCiv.civName, civInfo.civName)
+
+                allyCiv.addNotification("You and [${civInfo.civName}] have declared war against [${otherCiv.civName}]!",
+                        NotificationCategory.Diplomacy, otherCiv.civName, NotificationIcon.War, civInfo.civName, allyCiv.civName)
+
+                civInfo.addNotification("[${civInfo.civName}] and [${allyCiv.civName}] have declared war against us!",
+                        NotificationCategory.Diplomacy, otherCiv.civName, NotificationIcon.War, allyCiv.civName, civInfo.civName)
+
+                diplomacyManager.getCommonKnownCivsWithSpectators().filterNot { it == allyCiv }.forEach {
+                    it.addNotification("[${civInfo.civName}] and [${allyCiv.civName}] have declared war against [${otherCiv.civName}]!",
+                            NotificationCategory.Diplomacy, otherCiv.civName, NotificationIcon.War, allyCiv.civName, civInfo.civName)
+                }
             }
         }
     }
@@ -135,7 +157,7 @@ object DeclareWar {
         diplomacyManager.updateHasOpenBorders()
 
         diplomacyManager.removeModifier(DiplomaticModifiers.YearsOfPeace)
-        diplomacyManager.setFlag(DiplomacyFlags.DeclinedPeace, 10)/// AI won't propose peace for 10 turns
+        diplomacyManager.setFlag(DiplomacyFlags.DeclinedPeace, 3)/// AI won't propose peace for 3 turns
         diplomacyManager.setFlag(DiplomacyFlags.DeclaredWar, 10) // AI won't agree to trade for 10 turns
         diplomacyManager.removeFlag(DiplomacyFlags.BorderConflict)
     }
@@ -299,8 +321,10 @@ enum class WarType {
     CityStateAllianceWar,
     /** A civilization has joined a war through it's defensive pact. */
     DefensivePactWar,
-    /** A civilization has joined a war through a trade. Has the same diplomatic repercussions as direct war.*/
+    /** A civilization has joined a war through a trade.*/
     JoinWar,
+    /** Two civilizations are starting a war through a trade. */ 
+    TeamWar,
 }
 
 /**

@@ -21,6 +21,7 @@ import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
+import com.unciv.models.stats.INamed
 import com.unciv.models.stats.Stat
 import java.util.UUID
 import kotlin.math.roundToInt
@@ -32,7 +33,7 @@ enum class CityFlags {
 }
 
 
-class City : IsPartOfGameInfoSerialization {
+class City : IsPartOfGameInfoSerialization, INamed {
     @Transient
     lateinit var civ: Civilization
 
@@ -54,7 +55,7 @@ class City : IsPartOfGameInfoSerialization {
 
     var location: Vector2 = Vector2.Zero
     var id: String = UUID.randomUUID().toString()
-    var name: String = ""
+    override var name: String = ""
     var foundingCiv = ""
     // This is so that cities in resistance that are recaptured aren't in resistance anymore
     var previousOwner = ""
@@ -88,7 +89,7 @@ class City : IsPartOfGameInfoSerialization {
 
     @delegate:Transient
     val neighboringCities: List<City> by lazy { 
-        civ.gameInfo.getCities().filter { it != this && it.getCenterTile().aerialDistanceTo(getCenterTile()) <= 8 }.toList()
+        civ.gameInfo.getCities().filter { it != this && it.getCenterTile().isExplored(civ) && it.getCenterTile().aerialDistanceTo(getCenterTile()) <= 12 }.toList()
     }
 
     var cityAIFocus: String = CityFocus.NoFocus.name
@@ -234,7 +235,7 @@ class City : IsPartOfGameInfoSerialization {
     internal fun getMaxHealth() =
         200 + cityConstructions.getBuiltBuildings().sumOf { it.cityHealth }
 
-    fun getStrength() = cityConstructions.getBuiltBuildings().sumOf { it.cityStrength }.toFloat() 
+    fun getStrength() = cityConstructions.getBuiltBuildings().sumOf { it.cityStrength }.toFloat()
 
     override fun toString() = name // for debug
 

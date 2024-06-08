@@ -13,7 +13,6 @@ import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.civilization.PolicyAction
 import com.unciv.logic.civilization.PopupAlert
 import com.unciv.logic.civilization.TechAction
-import com.unciv.logic.map.MapSize
 import com.unciv.logic.map.tile.RoadStatus
 import com.unciv.models.ruleset.INonPerpetualConstruction
 import com.unciv.models.ruleset.tech.Era
@@ -114,17 +113,9 @@ class TechManager : IsPartOfGameInfoSerialization {
             techCost *= civInfo.getDifficulty().researchCostModifier
         techCost *= civInfo.gameInfo.speed.scienceCostModifier
         techCost /= getScienceModifier(techName)
-        // https://civilization.fandom.com/wiki/Map_(Civ5)
-        val worldSizeModifier = with (civInfo.gameInfo.tileMap.mapParameters.mapSize) {
-            when {
-                radius >= MapSize.Huge.radius -> floatArrayOf(1.3f, 0.025f)
-                radius >= MapSize.Large.radius -> floatArrayOf(1.2f, 0.0375f)
-                radius >= MapSize.Medium.radius -> floatArrayOf(1.1f, 0.05f)
-                else -> floatArrayOf(1f, 0.05f)
-            }
-        }
-        techCost *= worldSizeModifier[0]
-        techCost *= 1 + (civInfo.cities.size - 1) * worldSizeModifier[1]
+        val mapSizePredef = civInfo.gameInfo.tileMap.mapParameters.mapSize.getPredefinedOrNextSmaller()
+        techCost *= mapSizePredef.techCostMultiplier
+        techCost *= 1 + (civInfo.cities.size - 1) * mapSizePredef.techCostPerCityModifier
         return techCost.toInt()
     }
 

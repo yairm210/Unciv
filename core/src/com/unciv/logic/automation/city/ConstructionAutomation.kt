@@ -98,7 +98,8 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
             cityConstructions.getRemainingWork(choice), cityConstructions.productionForConstruction(choice)))
     }
 
-    private fun Sequence<INonPerpetualConstruction>.filterBuildable(): Sequence<INonPerpetualConstruction> {
+
+    private fun <T:INonPerpetualConstruction> Sequence<T>.filterBuildable(): Sequence<T> {
         return this.filter {
             val cache = if (it is Building) buildableBuildings else buildableUnits
             if (cache[it.name] == null) {
@@ -164,13 +165,13 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
 
     private fun addMilitaryUnitChoice() {
         if (!isAtWar && !cityIsOverAverageProduction) return // don't make any military units here. Infrastructure first!
-        if (!isAtWar && (civInfo.stats.statsForNextTurn.gold < 0 || militaryUnits > max(5, cities * 2))) return
+        if (!isAtWar && (civInfo.stats.statsForNextTurn.gold < 0 || militaryUnits > max(7, cities * 5))) return
         if (civInfo.gold < -50) return
 
         val militaryUnit = Automation.chooseMilitaryUnit(city, units) ?: return
         val unitsToCitiesRatio = cities.toFloat() / (militaryUnits + 1)
         // most buildings and civ units contribute the the civ's growth, military units are anti-growth
-        var modifier = sqrt(unitsToCitiesRatio) / 2
+        var modifier = 1 + sqrt(unitsToCitiesRatio) / 2
         if (civInfo.wantsToFocusOn(Victory.Focus.Military) || isAtWar) modifier *= 2
 
         if (Automation.afraidOfBarbarians(civInfo)) modifier = 2f // military units are pro-growth if pressured by barbs
@@ -198,7 +199,7 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
 
         // Is there already a Workboat nearby?
         // todo Still ignores whether that boat can reach the not-yet-found tile to improve
-        val twoTurnsMovement = buildableWorkboatUnits.maxOf { (it as BaseUnit).movement } * 2
+        val twoTurnsMovement = buildableWorkboatUnits.maxOf { it.movement } * 2
         fun MapUnit.isOurWorkBoat() = cache.hasUniqueToCreateWaterImprovements && this.civ == this@ConstructionAutomation.civInfo
         val alreadyHasWorkBoat = city.getCenterTile().getTilesInDistanceRange(1..twoTurnsMovement)
             .any { it.civilianUnit?.isOurWorkBoat() == true }
@@ -260,7 +261,7 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
     }
 
     private fun addBuildingChoices() {
-        for (building in buildings.filterBuildable() as Sequence<Building>) {
+        for (building in buildings.filterBuildable()) {
             if (building.isWonder && city.isPuppet) continue
             addChoice(relativeCostEffectiveness, building.name, getValueOfBuilding(building))
         }

@@ -7,7 +7,6 @@ import com.unciv.logic.GameStarter
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.map.MapParameters
 import com.unciv.logic.map.MapSize
-import com.unciv.logic.map.MapSizeNew
 import com.unciv.models.metadata.GameParameters
 import com.unciv.models.metadata.GameSettings
 import com.unciv.models.metadata.Player
@@ -53,7 +52,7 @@ internal object ConsoleLauncher {
 
     private fun getMapParameters(): MapParameters {
         return MapParameters().apply {
-            mapSize = MapSizeNew(MapSize.Tiny)
+            mapSize = MapSize.Tiny
             noRuins = true
             noNaturalWonders = true
         }

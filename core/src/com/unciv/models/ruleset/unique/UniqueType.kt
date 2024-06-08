@@ -189,7 +189,10 @@ enum class UniqueType(
     /// Resource production & consumption
     ConsumesResources("Consumes [amount] [resource]", UniqueTarget.Improvement, UniqueTarget.Building, UniqueTarget.Unit),
     ProvidesResources("Provides [amount] [resource]", UniqueTarget.Global, UniqueTarget.Improvement, UniqueTarget.FollowerBelief),
-    CostsResources("Costs [amount] [stockpiledResource]", UniqueTarget.Improvement, UniqueTarget.Building, UniqueTarget.Unit),
+    //todo should these two be merged to avoid the confusion?
+    /** @see UnitActionStockpileCost */
+    CostsResources("Costs [amount] [stockpiledResource]", UniqueTarget.Improvement, UniqueTarget.Building, UniqueTarget.Unit,
+        docDescription = "Do not confuse with \"costs [amount] [stockpiledResource]\" (lowercase 'c'), the Unit Action Modifier."),
     // Todo: Get rid of forced sign (+[relativeAmount]) and unify these two, e.g.: "[relativeAmount]% [resource/resourceType] production"
     // Note that the parameter type 'resourceType' (strategic, luxury, bonus) currently doesn't exist and should then be added as well
     StrategicResourcesIncrease("Quantity of strategic resources produced by the empire +[relativeAmount]%", UniqueTarget.Global),  // used by Policies
@@ -218,8 +221,9 @@ enum class UniqueType(
     DisablesReligion("Starting in this era disables religion", UniqueTarget.Era),
     FreeExtraBeliefs("May choose [amount] additional [beliefType] beliefs when [foundingOrEnhancing] a religion", UniqueTarget.Global),
     FreeExtraAnyBeliefs("May choose [amount] additional belief(s) of any type when [foundingOrEnhancing] a religion", UniqueTarget.Global),
+    StatsWhenAdoptingReligion("[stats] when a city adopts this religion for the first time", UniqueTarget.Global, flags = setOf(UniqueFlag.AcceptsSpeedModifier)),
+    @Deprecated("As of 4.11.18", ReplaceWith("[stats] when a city adopts this religion for the first time <(modified by game speed)>"))
     StatsWhenAdoptingReligionSpeed("[stats] when a city adopts this religion for the first time (modified by game speed)", UniqueTarget.Global),
-    StatsWhenAdoptingReligion("[stats] when a city adopts this religion for the first time", UniqueTarget.Global),
     NaturalReligionSpreadStrength("[relativeAmount]% Natural religion spread [cityFilter]", UniqueTarget.FollowerBelief, UniqueTarget.Global),
     ReligionSpreadDistance("Religion naturally spreads to cities [amount] tiles away", UniqueTarget.Global, UniqueTarget.FollowerBelief),
     MayNotGenerateGreatProphet("May not generate great prophet equivalents naturally", UniqueTarget.Global),
@@ -510,8 +514,9 @@ enum class UniqueType(
         docDescription = "Requires [amount] of Movement to execute. Unit's Movement is rounded up"),
     UnitActionStatsCost("costs [stats] stats", UniqueTarget.UnitActionModifier,
         docDescription = "A positive Integer value will be subtracted from your stock. Food and Production will be removed from Closest City's current stock"),
+    /** @see CostsResources */
     UnitActionStockpileCost("costs [amount] [stockpiledResource]", UniqueTarget.UnitActionModifier,
-        docDescription = "A positive Integer value will be subtracted from your stock."),
+        docDescription = "A positive Integer value will be subtracted from your stock. Do not confuse with \"Costs [amount] [stockpiledResource]\" (uppercase 'C') for Improvements, Buildings, and Units."),
     UnitActionOnce("once", UniqueTarget.UnitActionModifier),
     UnitActionLimitedTimes("[amount] times", UniqueTarget.UnitActionModifier),
     UnitActionExtraLimitedTimes("[amount] additional time(s)", UniqueTarget.UnitActionModifier),
@@ -687,13 +692,17 @@ enum class UniqueType(
     ConditionalWithoutResource("without [resource]", UniqueTarget.Conditional),
 
     // Supports also stockpileable resources (Gold, Faith, Culture, Science)
-    ConditionalWhenAboveAmountStatResource("when above [amount] [stat/resource]", UniqueTarget.Conditional),
-    ConditionalWhenBelowAmountStatResource("when below [amount] [stat/resource]", UniqueTarget.Conditional),
-    ConditionalWhenBetweenStatResource("when between [amount] and [amount] [stat/resource]", UniqueTarget.Conditional),
+    ConditionalWhenAboveAmountStatResource("when above [amount] [stat/resource]", UniqueTarget.Conditional, flags = setOf(UniqueFlag.AcceptsSpeedModifier)),
+    ConditionalWhenBelowAmountStatResource("when below [amount] [stat/resource]", UniqueTarget.Conditional, flags = setOf(UniqueFlag.AcceptsSpeedModifier)),
+    ConditionalWhenBetweenStatResource("when between [amount] and [amount] [stat/resource]", UniqueTarget.Conditional, flags = setOf(UniqueFlag.AcceptsSpeedModifier)),
 
     // The game speed-adjusted versions of above
+
+    @Deprecated("As of 4.11.18", ReplaceWith("when above [amount] [stat/resource] <(modified by game speed)>"))
     ConditionalWhenAboveAmountStatResourceSpeed("when above [amount] [stat/resource] (modified by game speed)", UniqueTarget.Conditional),
+    @Deprecated("As of 4.11.18", ReplaceWith("when below [amount] [stat/resource] <(modified by game speed)>"))
     ConditionalWhenBelowAmountStatResourceSpeed("when below [amount] [stat/resource] (modified by game speed)", UniqueTarget.Conditional),
+    @Deprecated("As of 4.11.18", ReplaceWith("when between [amount] and [amount] [stat/resource] <(modified by game speed)>"))
     ConditionalWhenBetweenStatResourceSpeed("when between [amount] and [amount] [stat/resource] (modified by game speed)", UniqueTarget.Conditional),
 
     /////// city conditionals
@@ -776,18 +785,19 @@ enum class UniqueType(
     OneTimeConsumeResources("Instantly consumes [positiveAmount] [stockpiledResource]", UniqueTarget.Triggerable),
     OneTimeProvideResources("Instantly provides [positiveAmount] [stockpiledResource]", UniqueTarget.Triggerable),
 
-    OneTimeGainStat("Gain [amount] [stat]", UniqueTarget.Triggerable),
+    OneTimeGainStat("Gain [amount] [stat]", UniqueTarget.Triggerable, flags = setOf(UniqueFlag.AcceptsSpeedModifier)),
+    @Deprecated("As of 4.11.18", ReplaceWith("Gain [amount] [stat] <(modified by game speed)>"))
     OneTimeGainStatSpeed("Gain [amount] [stat] (modified by game speed)", UniqueTarget.Triggerable),
     OneTimeGainStatRange("Gain [amount]-[amount] [stat]", UniqueTarget.Triggerable),
     OneTimeGainPantheon("Gain enough Faith for a Pantheon", UniqueTarget.Triggerable),
     OneTimeGainProphet("Gain enough Faith for [amount]% of a Great Prophet", UniqueTarget.Triggerable),
     // todo: The "up to [All]" used in vanilla json is not nice to read. Split?
     // Or just reword it without the 'up to', so it reads "Reveal [amount/'all'] [tileFilter] tiles within [amount] tiles"
-    OneTimeRevealSpecificMapTiles("Reveal up to [positiveAmount/'all'] [tileFilter] within a [amount] tile radius", UniqueTarget.Triggerable),
+    OneTimeRevealSpecificMapTiles("Reveal up to [positiveAmount/'all'] [tileFilter] within a [positiveAmount] tile radius", UniqueTarget.Triggerable),
     OneTimeRevealCrudeMap("From a randomly chosen tile [positiveAmount] tiles away from the ruins, reveal tiles up to [positiveAmount] tiles away with [positiveAmount]% chance", UniqueTarget.Ruins),
     OneTimeGlobalAlert("Triggers the following global alert: [comment]", UniqueTarget.Triggerable), // used in Policy
     OneTimeGlobalSpiesWhenEnteringEra("Every major Civilization gains a spy once a civilization enters this era", UniqueTarget.Era),
-    OneTimeSpiesLevelUp("Promotes all spies", UniqueTarget.Triggerable),  // used in Policies, Buildings
+    OneTimeSpiesLevelUp("Promotes all spies [amount] time(s)", UniqueTarget.Triggerable),  // used in Policies, Buildings
     OneTimeGainSpy("Gain an extra spy", UniqueTarget.Triggerable),  // used in Wonders
 
     OneTimeUnitHeal("Heal this unit by [positiveAmount] HP", UniqueTarget.UnitTriggerable),
@@ -802,7 +812,8 @@ enum class UniqueType(
 
     OneTimeChangeTerrain("Turn this tile into a [terrainName] tile", UniqueTarget.Triggerable),
 
-    UnitsGainPromotion("[mapUnitFilter] units gain the [promotion] promotion", UniqueTarget.Triggerable),  // Not used in Vanilla
+    UnitsGainPromotion("[mapUnitFilter] units gain the [promotion] promotion", UniqueTarget.Triggerable,
+        docDescription = "Works only with promotions that are valid for the unit's type - or for promotions that do not specify any."),  // Not used in Vanilla
     FreeStatBuildings("Provides the cheapest [stat] building in your first [positiveAmount] cities for free", UniqueTarget.Triggerable),  // used in Policy
     FreeSpecificBuildings("Provides a [buildingName] in your first [positiveAmount] cities for free", UniqueTarget.Triggerable),  // used in Policy
     TriggerEvent("Triggers a [event] event", UniqueTarget.Triggerable),
@@ -861,6 +872,8 @@ enum class UniqueType(
     ModifierHiddenFromUsers("hidden from users", UniqueTarget.MetaModifier),
     ForEveryCountable("for every [countable]", UniqueTarget.MetaModifier),
     ForEveryAmountCountable("for every [amount] [countable]", UniqueTarget.MetaModifier),
+    ModifiedByGameSpeed("(modified by game speed)", UniqueTarget.MetaModifier,
+        docDescription = "Can only be applied to certain uniques, see details of each unique for specifics"),
     Comment("Comment [comment]", *UniqueTarget.Displayable,
         docDescription = "Allows displaying arbitrary text in a Unique listing. Only the text within the '[]' brackets will be displayed, the rest serves to allow Ruleset validation to recognize the intent."),
 
@@ -887,6 +900,8 @@ enum class UniqueType(
     ModIsAudioVisualOnly("Should only be used as permanent audiovisual mod", UniqueTarget.ModOptions, flags = UniqueFlag.setOfNoConditionals),
     ModIsAudioVisual("Can be used as permanent audiovisual mod", UniqueTarget.ModOptions, flags = UniqueFlag.setOfNoConditionals),
     ModIsNotAudioVisual("Cannot be used as permanent audiovisual mod", UniqueTarget.ModOptions, flags = UniqueFlag.setOfNoConditionals),
+    ModMapPreselection("Mod preselects map [comment]", UniqueTarget.ModOptions, flags = UniqueFlag.setOfNoConditionals,
+        docDescription = "Only meaningful for Mods containing several maps. When this mod is selected on the new game screen's custom maps mod dropdown, the named map will be selected on the map dropdown. Also disables selection by recently modified. Case insensitive."),
 
     // endregion
 

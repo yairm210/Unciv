@@ -4,6 +4,7 @@ import com.badlogic.gdx.Game
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration
+import com.badlogic.gdx.files.FileHandle
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.Pixmap
 import com.badlogic.gdx.math.Vector2
@@ -13,7 +14,9 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener
 import com.badlogic.gdx.scenes.scene2d.utils.Layout
 import com.unciv.UncivGame
 import com.unciv.dev.FasterUIDevelopment.DevElement
+import com.unciv.json.json
 import com.unciv.logic.files.UncivFiles
+import com.unciv.models.metadata.GameSettings
 import com.unciv.ui.components.extensions.center
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.fonts.FontFamilyData
@@ -31,11 +34,13 @@ import java.awt.image.BufferedImage
 /** Creates a basic GDX application that mimics [UncivGame] as closely as possible,
  *  starts up fast and shows one UI element, to be returned by [DevElement.createDevElement].
  *
- *  * The parent will not size your Widget as the Gdx [Layout] contract promises,
+ *  - The parent will not size your Widget as the Gdx [Layout] contract promises,
  *    you'll need to do it yourself. E.g, if you're a [WidgetGroup], call [pack()][WidgetGroup.pack].
  *    If you forget, you'll see an orange dot in the window center.
- *  * Resizing the window is not supported. You might lose interactivity.
- *  * The middle mouse button toggles Scene2D debug mode, like the full game offers in the Debug Options.
+ *  - Resizing the window is not supported. You might lose interactivity.
+ *  - However, settings including window size are saved separately from main Unciv, so you **can** test with different sizes.
+ *  - Language is default English and there's no UI to change it - edit the settings file by hand, set once in the debugger, or hardcode in createDevElement if needed.
+ *  - The middle mouse button toggles Scene2D debug mode, like the full game offers in the Debug Options.
  */
 object FasterUIDevelopment {
 
@@ -60,7 +65,7 @@ object FasterUIDevelopment {
 
         val config = Lwjgl3ApplicationConfiguration()
 
-        val settings = UncivFiles.getSettingsForPlatformLaunchers()
+        val settings = Settings.load()
         if (!settings.isFreshlyCreated) {
             val (width, height) = settings.windowState.coerceIn()
             config.setWindowedMode(width, height)
@@ -77,7 +82,7 @@ object FasterUIDevelopment {
             Fonts.fontImplementation = FontDesktop()
             UncivGame.Current = game
             UncivGame.Current.files = UncivFiles(Gdx.files)
-            game.settings = UncivGame.Current.files.getGeneralSettings()
+            game.settings = Settings.load()
             ImageGetter.resetAtlases()
             ImageGetter.reloadImages()
             BaseScreen.setSkin()
@@ -87,6 +92,27 @@ object FasterUIDevelopment {
 
         override fun render() {
             game.render()
+        }
+
+        override fun pause() {
+            Settings.save(UncivGame.Current.settings)
+            super.pause()
+        }
+    }
+
+    /** Persist window size over invocations, but separately from main Unciv */
+    private object Settings {
+        const val SETTINGS_FILE_NAME = "FasterUIDevSettings.json"
+        val file: FileHandle = FileHandle(".").child(SETTINGS_FILE_NAME)
+        fun load(): GameSettings {
+            if (!file.exists()) return GameSettings().apply { isFreshlyCreated = true }
+            return json().fromJson(GameSettings::class.java, file)
+        }
+        fun save(settings: GameSettings) {
+            settings.isFreshlyCreated = false
+            // settings.refreshWindowSize() - No, we don't have the platform-dependent helpers initialized
+            settings.windowState = GameSettings.WindowState.current()
+            file.writeString(json().toJson(settings), false, Charsets.UTF_8.name())
         }
     }
 
