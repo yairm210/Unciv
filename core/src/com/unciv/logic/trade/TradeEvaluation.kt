@@ -162,7 +162,7 @@ class TradeEvaluation {
                     // Team war is handled in the selling method
                     return 0
                 } else if (civInfo.isAtWarWith(civToDeclareWarOn)) {
-                    // We shouldn't require them to pay us to join our war
+                    // We shouldn't require them to pay us to join our war (no negative values)
                     return (20 * DeclareWarPlanEvaluator.evaluateJoinOurWarPlan(civInfo, civToDeclareWarOn, tradePartner, null)).coerceAtLeast(0)
                 } else {
                     // Why should we pay you to go fight someone else?
@@ -279,15 +279,15 @@ class TradeEvaluation {
                 val civToDeclareWarOn = civInfo.gameInfo.getCivilization(offer.name)
                 if (trade.theirOffers.any { it.type == TradeType.WarDeclaration && it.name == offer.name }
                         && trade.ourOffers.any {it.type == TradeType.WarDeclaration && it.name == offer.name}) {
-                    // We shouldn't want to pay them for us to declare war
                     // Only accept if the war will benefit us, or if they pay us enough
-                    return (-100 * DeclareWarPlanEvaluator.evaluateTeamWarPlan(civInfo, civToDeclareWarOn, tradePartner, null)).coerceAtLeast(0)
+                    // We shouldn't want to pay them for us to declare war (no negative values)
+                    return (-20 * DeclareWarPlanEvaluator.evaluateTeamWarPlan(civInfo, civToDeclareWarOn, tradePartner, null)).coerceAtLeast(0)
                 } else if (tradePartner.isAtWarWith(civToDeclareWarOn)) {
-                    // We might want them to pay us to join them in war
-                    return (-100 * DeclareWarPlanEvaluator.evaluateJoinWarPlan(civInfo, civToDeclareWarOn, tradePartner, null)).coerceAtLeast(0)
+                    // We might want them to pay us to join them in war (no negative values)
+                    return (-20 * DeclareWarPlanEvaluator.evaluateJoinWarPlan(civInfo, civToDeclareWarOn, tradePartner, null)).coerceAtLeast(0)
                 } else {
-                    // We might want them to pay us to declare war
-                    return (-100 * DeclareWarPlanEvaluator.evaluateDeclareWarPlan(civInfo, civToDeclareWarOn, null)).coerceAtLeast(0)
+                    // We might want them to pay us to declare war (no negative values)
+                    return (-25 * DeclareWarPlanEvaluator.evaluateDeclareWarPlan(civInfo, civToDeclareWarOn, null)).coerceAtLeast(0)
                 }
             }
 
