@@ -44,6 +44,7 @@ import com.unciv.ui.popups.closeAllPopups
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.basescreen.RecreateOnResize
 import com.unciv.ui.screens.worldscreen.WorldScreen
+import kotlin.math.max
 
 class CityScreen(
     internal val city: City,
@@ -335,8 +336,9 @@ class CityScreen(
     }
 
     private fun addTiles() {
+        val viewRange = max(city.getExpandRange(), city.getWorkRange())
         val tileSetStrings = TileSetStrings()
-        val cityTileGroups = city.getCenterTile().getTilesInDistance(city.getExpandRange())
+        val cityTileGroups = city.getCenterTile().getTilesInDistance(viewRange)
                 .filter { selectedCiv.hasExplored(it) }
                 .map { CityTileGroup(city, it, tileSetStrings, fireworks != null) }
 
@@ -352,7 +354,7 @@ class CityScreen(
             val xDifference = city.getCenterTile().position.x - tileGroup.tile.position.x
             val yDifference = city.getCenterTile().position.y - tileGroup.tile.position.y
             //if difference is bigger than the expansion range the tileGroup we are looking for is on the other side of the map
-            if (xDifference > city.getExpandRange() || xDifference < -city.getExpandRange() || yDifference > city.getExpandRange() || yDifference < -city.getExpandRange()) {
+            if (xDifference > viewRange || xDifference < -viewRange || yDifference > viewRange || yDifference < -viewRange) {
                 //so we want to unwrap its position
                 tilesToUnwrap.add(tileGroup)
             }
