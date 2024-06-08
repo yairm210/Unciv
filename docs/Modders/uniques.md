@@ -107,12 +107,12 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Triggerable
 
 ??? example  "Instantly consumes [positiveAmount] [stockpiledResource]"
-	Example: "Instantly consumes [3] [StockpiledResource]"
+	Example: "Instantly consumes [3] [Mana]"
 
 	Applicable to: Triggerable
 
 ??? example  "Instantly provides [positiveAmount] [stockpiledResource]"
-	Example: "Instantly provides [3] [StockpiledResource]"
+	Example: "Instantly provides [3] [Mana]"
 
 	Applicable to: Triggerable
 
@@ -163,6 +163,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Triggerable
 
 ??? example  "[mapUnitFilter] units gain the [promotion] promotion"
+	Works only with promotions that are valid for the unit's type - or for promotions that do not specify any.
 	Example: "[Wounded] units gain the [Shock I] promotion"
 
 	Applicable to: Triggerable
@@ -1068,7 +1069,8 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Building, Unit, Improvement
 
 ??? example  "Costs [amount] [stockpiledResource]"
-	Example: "Costs [3] [StockpiledResource]"
+	Do not confuse with "costs [amount] [stockpiledResource]" (lowercase 'c'), the Unit Action Modifier.
+	Example: "Costs [3] [Mana]"
 
 	Applicable to: Building, Unit, Improvement
 
@@ -2459,8 +2461,8 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: UnitActionModifier
 
 ??? example  "&lt;costs [amount] [stockpiledResource]&gt;"
-	A positive Integer value will be subtracted from your stock.
-	Example: "&lt;costs [3] [StockpiledResource]&gt;"
+	A positive Integer value will be subtracted from your stock. Do not confuse with "Costs [amount] [stockpiledResource]" (uppercase 'C') for Improvements, Buildings, and Units.
+	Example: "&lt;costs [3] [Mana]&gt;"
 
 	Applicable to: UnitActionModifier
 
@@ -2507,12 +2509,12 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 *[civWideStat]: All the following stats have civ-wide fields: `Gold`, `Science`, `Culture`, `Faith`.
 *[combatantFilter]: This indicates a combatant, which can either be a unit or a city (when bombarding). Must either be `City` or a `mapUnitFilter`.
 *[costOrStrength]: `Cost` or `Strength`.
-*[countable]: This indicate a number or a numeric variable.
+*[countable]: This indicates a number or a numeric variable.
 *[era]: The name of any era.
 *[event]: The name of any event.
 *[foundingOrEnhancing]: `founding` or `enhancing`.
 *[fraction]: Indicates a fractional number, which can be negative.
-*[improvementName]: The name of any improvement.
+*[improvementName]: The name of any improvement excluding 'Cancel improvement order'
 *[modFilter]: A Mod name, case-sensitive _or_ a simple wildcard filter beginning and ending in an Asterisk, case-insensitive.
 *[policy]: The name of any policy.
 *[policyFilter]: The name of any policy.
@@ -2524,8 +2526,9 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 *[speed]: The name of any speed.
 *[stat]: This is one of the 7 major stats in the game - `Gold`, `Science`, `Production`, `Food`, `Happiness`, `Culture` and `Faith`. Note that the stat names need to be capitalized!
 *[stats]: For example: `+2 Production, +3 Food`. Note that the stat names need to be capitalized!
-*[stockpiledResource]: The name of any stockpiled.
+*[stockpiledResource]: The name of any stockpiled resource.
 *[tech]: The name of any tech.
 *[tileFilter]: Anything that can be used either in an improvementFilter or in a terrainFilter can be used here, plus 'unimproved'
+*[unitType]: Can be 'Land', 'Water', 'Air', any unit type, a filtering Unique on a unit type, or a multi-filter of these.
 *[validationWarning]: Suppresses one specific Ruleset validation warning. This can specify the full text verbatim including correct upper/lower case, or it can be a wildcard case-insensitive simple pattern starting and ending in an asterisk ('*'). If the suppression unique is used within an object or as modifier (not ModOptions), the wildcard symbols can be omitted, as selectivity is better due to the limited scope.
-*[victoryType]: The name of any victory type: 'Neutral', 'Cultural', 'Diplomatic', 'Domination', 'Scientific', 'Time'
+*[victoryType]: The name of any victory type: 'Cultural', 'Diplomatic', 'Domination', 'Scientific', 'Time' or one of your mod's VictoryTypes.json names.

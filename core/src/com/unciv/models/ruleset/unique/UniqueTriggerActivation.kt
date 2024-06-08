@@ -540,20 +540,19 @@ object UniqueTriggerActivation {
 
             UniqueType.UnitsGainPromotion -> {
                 val filter = unique.params[0]
-                val promotion = unique.params[1]
+                val promotionName = unique.params[1]
+                val promotion = ruleset.unitPromotions[promotionName] ?: return null
 
-                val unitsToPromote = civInfo.units.getCivUnits().filter { it.matchesFilter(filter) }
-                    .filter { unitToPromote ->
-                        ruleset.unitPromotions.values.any {
-                            it.name == promotion && unitToPromote.type.name in it.unitTypes
-                        }
+                val unitsToPromote = civInfo.units.getCivUnits()
+                    .filter {
+                        it.matchesFilter(filter) && (it.type.name in promotion.unitTypes || promotion.unitTypes.isEmpty())
                     }.toList()
                 if (unitsToPromote.isEmpty()) return null
 
                 return {
                     val promotedUnitLocations: MutableList<Vector2> = mutableListOf()
                     for (civUnit in unitsToPromote) {
-                        civUnit.promotions.addPromotion(promotion, isFree = true)
+                        civUnit.promotions.addPromotion(promotionName, isFree = true)
                         promotedUnitLocations.add(civUnit.getTile().position)
                     }
 
@@ -562,7 +561,7 @@ object UniqueTriggerActivation {
                             notification,
                             MapUnitAction(promotedUnitLocations),
                             NotificationCategory.Units,
-                            "unitPromotionIcons/${unique.params[1]}"
+                            "unitPromotionIcons/$promotionName"
                         )
                     }
                     true
