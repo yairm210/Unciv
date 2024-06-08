@@ -159,6 +159,10 @@ class City : IsPartOfGameInfoSerialization, INamed {
     fun isCapital(): Boolean = cityConstructions.getBuiltBuildings().any { it.hasUnique(UniqueType.IndicatesCapital) }
     fun isCoastal(): Boolean = centerTile.isCoastalTile()
 
+    fun getBombardRange(): Int = civ.gameInfo.ruleset.modOptions.constants.baseCityBombardRange
+    fun getWorkRange(): Int = civ.gameInfo.ruleset.modOptions.constants.cityWorkRange
+    fun getExpandRange(): Int = civ.gameInfo.ruleset.modOptions.constants.cityExpandRange
+
     fun capitalCityIndicator(): Building? {
         val indicatorBuildings = getRuleset().buildings.values.asSequence()
             .filter { it.hasUnique(UniqueType.IndicatesCapital) }
