@@ -24,13 +24,29 @@ class TileResource : RulesetStatsObject() {
     var majorDepositAmount: DepositAmount = DepositAmount()
     var minorDepositAmount: DepositAmount = DepositAmount()
 
-    private val _allImprovements by lazy {
-        if (improvement == null) improvedBy
-        else improvedBy + improvement!!
+    private var improvementsInitialized = false
+    private val allImprovements = mutableSetOf<String>()
+    private var ruleset: Ruleset? = null
+
+    fun getImprovements(): Set<String> {
+        if (improvementsInitialized) return allImprovements
+        val ruleset = this.ruleset
+            ?: throw IllegalStateException("TileResource initialization incomplete")
+        improvement?.also { allImprovements += it }
+        allImprovements.addAll(improvedBy)
+        for (improvement in ruleset.tileImprovements.values) {
+            if (improvement.getMatchingUniques(UniqueType.ImprovesResources).none { matchesFilter(it.params[0]) }) continue
+            allImprovements += improvement.name
+        }
+        improvementsInitialized = true
+        return allImprovements
     }
 
-    fun getImprovements(): List<String> {
-        return _allImprovements
+    fun setTransients(ruleset: Ruleset) {
+        allImprovements.clear()
+        improvementsInitialized = false
+        this.ruleset = ruleset
+        // Don't do the allImprovements evaluation now - breaks tests as it trips the uniqueObjects lazy and tests manipulate uniques after ruleset load
     }
 
     override fun getUniqueTarget() = UniqueTarget.Resource
@@ -139,6 +155,13 @@ class TileResource : RulesetStatsObject() {
         return getImprovements().firstOrNull {
             tile.improvementFunctions.canBuildImprovement(civInfo.gameInfo.ruleset.tileImprovements[it]!!, civInfo)
         }
+    }
+
+    fun matchesFilter(filter: String) = when (filter) {
+        name -> true
+        "any" -> true
+        resourceType.name -> true
+        else -> improvementStats?.any { filter == it.key.name } == true
     }
 
     fun generatesNaturallyOn(tile: Tile): Boolean {

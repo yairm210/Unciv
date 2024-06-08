@@ -450,6 +450,8 @@ class Ruleset {
                             ).isEmpty()
                         })
                     }
+
+            updateResourceTransients()
         }
     }
 
@@ -465,6 +467,12 @@ class Ruleset {
             val column = building.techColumn(this) ?: continue
             building.cost = if (building.isAnyWonder()) column.wonderCost else column.buildingCost
         }
+    }
+
+    /** Introduced to support UniqueType.ImprovesResources: gives a resource the chance to scan improvements */
+    internal fun updateResourceTransients() {
+        for (resource in tileResources.values)
+            resource.setTransients(this)
     }
 
     /** Used for displaying a RuleSet's name */

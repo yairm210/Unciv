@@ -626,6 +626,7 @@ enum class UniqueType(
     PillageYieldFixed("Pillaging this improvement yields [stats]", UniqueTarget.Improvement),
     Irremovable("Irremovable", UniqueTarget.Improvement),
     AutomatedWorkersWillReplace("Will be replaced by automated workers", UniqueTarget.Improvement),
+    ImprovesResources("Improves [resourceFilter] resource in this tile", UniqueTarget.Improvement, flags = UniqueFlag.setOfNoConditionals),
     //endregion
 
     /////////////////////////////////// region 07 PERSONALITY UNIQUES ////////////////////////////////////////

@@ -11,7 +11,7 @@ Note that all of these are case-sensitive!
 
 ## General Filter Rules
 
-All filters except for `populationFilter` accept multiple values in the format: `{A} {B} {C}` etc, meaning "the object must match ALL of these filters"
+All filters except for `populationFilter` and `resourceFilter` accept multiple values in the format: `{A} {B} {C}` etc, meaning "the object must match ALL of these filters"
 
 > Example: `[{Military} {Water}] units`, `[{Wounded} {Armor}] units`, etc.
 
@@ -205,6 +205,11 @@ where 'stat' is one of the seven major stats
 For example: `+1 Science`.
 
 These can be strung together with ", " between them, for example: `+2 Production, +3 Food`.
+
+## resourceFilter
+
+At the moment, only used for the `"Improves [resourceFilter] resource in this tile"` Unique on Improvements.
+Allows filtering resources by their name, their type, or by any Stat listed in their `improvementStats` property. The `all` keyword works too.
 
 ## stockpiledResource
 
