@@ -13,14 +13,15 @@ object DeclareWarPlanEvaluator {
 
     /**
      * How much motivation [civInfo] has to do a team war with [teamCiv] against [target].
-     * 
+     *
      * This style of declaring war favors fighting stronger civilizations.
      * @return The movtivation of the plan. If it is > 0 then we can declare the war.
      */
     fun evaluateTeamWarPlan(civInfo: Civilization, target: Civilization, teamCiv: Civilization, givenMotivation: Int?): Int {
         if (civInfo.getDiplomacyManager(teamCiv).isRelationshipLevelLT(RelationshipLevel.Neutral)) return -1000
 
-        var motivation = givenMotivation ?: MotivationToAttackAutomation.hasAtLeastMotivationToAttack(civInfo, target, 0)
+        var motivation = givenMotivation
+            ?: MotivationToAttackAutomation.hasAtLeastMotivationToAttack(civInfo, target, 0)
 
         if (civInfo.getDiplomacyManager(teamCiv).isRelationshipLevelEQ(RelationshipLevel.Neutral)) motivation -= 5
         // Make sure that they can actually help us with the target
@@ -69,24 +70,26 @@ object DeclareWarPlanEvaluator {
     fun evaluateJoinWarPlan(civInfo: Civilization, target: Civilization, civToJoin: Civilization, givenMotivation: Int?): Int {
         if (civInfo.getDiplomacyManager(civToJoin).isRelationshipLevelLE(RelationshipLevel.Favorable)) return -1000
 
-        var motivation = givenMotivation ?: MotivationToAttackAutomation.hasAtLeastMotivationToAttack(civInfo, target, 0)
+        var motivation = givenMotivation
+            ?: MotivationToAttackAutomation.hasAtLeastMotivationToAttack(civInfo, target, 0)
         // We need to be able to trust the thirdCiv at least somewhat
         val thirdCivDiplo = civInfo.getDiplomacyManager(civToJoin)
         if (thirdCivDiplo.diplomaticStatus != DiplomaticStatus.DefensivePact &&
-                thirdCivDiplo.opinionOfOtherCiv() + motivation * 2 < 80) {
+            thirdCivDiplo.opinionOfOtherCiv() + motivation * 2 < 80) {
             motivation -= 80 - (thirdCivDiplo.opinionOfOtherCiv() + motivation * 2).toInt()
         }
         if (!civToJoin.threatManager.getNeighboringCivilizations().contains(target)) {
             motivation -= 20
         }
 
-        val targetForce = target.getStatForRanking(RankingType.Force)
+        val targetForce = target.getStatForRanking(RankingType.Force) - 0.8f * target.getCivsAtWarWith().sumOf { it.getStatForRanking(RankingType.Force) }.coerceAtLeast(1)
         val civForce = civInfo.getStatForRanking(RankingType.Force)
 
         // They need to be at least half the targets size, and we need to be stronger than the target together
-        val thirdCivForce = civToJoin.getStatForRanking(RankingType.Force) - 0.8f * civToJoin.getCivsAtWarWith().sumOf { it.getStatForRanking(RankingType.Force) }
-        if (thirdCivForce < targetForce / 2) {
-            motivation -= (10 * (targetForce / thirdCivForce)).toInt()
+        val civToJoinForce = (civToJoin.getStatForRanking(RankingType.Force) - 0.8f * civToJoin.getCivsAtWarWith().sumOf { it.getStatForRanking(RankingType.Force) }).coerceAtLeast(1f)
+        if (civToJoinForce < targetForce / 2) {
+            // Make sure that there is no wrap around
+            motivation -= (10 * (targetForce / civToJoinForce)).toInt().coerceIn(-1000, 1000)
         }
 
         // A higher motivation means that we can be riskier
@@ -97,8 +100,8 @@ object DeclareWarPlanEvaluator {
             motivation < 25 -> 1f
             else -> 0.8f
         }
-        if (thirdCivForce + civForce < targetForce * multiplier) {
-            motivation -= (20 * (targetForce * multiplier) / (thirdCivForce + civForce)).toInt()
+        if (civToJoinForce + civForce < targetForce * multiplier) {
+            motivation -= (20 * (targetForce * multiplier) / (civToJoinForce + civForce)).toInt().coerceIn(-1000, 1000)
         }
 
         return motivation - 15
@@ -119,14 +122,14 @@ object DeclareWarPlanEvaluator {
         val targetForce = target.getStatForRanking(RankingType.Force)
         val civForce = civInfo.getStatForRanking(RankingType.Force)
 
-        // They need to be at least half the targets size, and we need to be stronger than the target together
+        // They need to be at least half the targets size
         val thirdCivForce = civToJoin.getStatForRanking(RankingType.Force) - 0.8f * civToJoin.getCivsAtWarWith().sumOf { it.getStatForRanking(RankingType.Force) }
-        motivation += (10 * thirdCivForce / targetForce.toFloat()).toInt().coerceAtMost(20)
+        motivation += (20 * thirdCivForce / targetForce.toFloat()).toInt().coerceAtMost(40)
 
         // If we have less relative force then the target then we have more motivation to accept
-        motivation += (20 * (1 - (civForce / targetForce.toFloat()))).toInt().coerceIn(-30, 30)
+        motivation += (30 * (1 - (civForce / targetForce.toFloat()))).toInt().coerceIn(-30, 30)
 
-        return motivation - 30
+        return motivation - 20
     }
 
     /**
@@ -136,7 +139,8 @@ object DeclareWarPlanEvaluator {
      * @return The movtivation of the plan. If it is > 0 then we can declare the war.
      */
     fun evaluateDeclareWarPlan(civInfo: Civilization, target: Civilization, givenMotivation: Int?): Int {
-        val motivation = givenMotivation ?: MotivationToAttackAutomation.hasAtLeastMotivationToAttack(civInfo, target, 0)
+        val motivation = givenMotivation
+            ?: MotivationToAttackAutomation.hasAtLeastMotivationToAttack(civInfo, target, 0)
 
         val diploManager = civInfo.getDiplomacyManager(target)
 
@@ -151,11 +155,12 @@ object DeclareWarPlanEvaluator {
 
     /**
      * How much motivation [civInfo] has to start preparing for a war agaist [target].
-     * 
+     *
      * @return The motivation of the plan. If it is > 0 then we can start planning the war.
      */
     fun evaluateStartPreparingWarPlan(civInfo: Civilization, target: Civilization, givenMotivation: Int?): Int {
-        val motivation = givenMotivation ?: MotivationToAttackAutomation.hasAtLeastMotivationToAttack(civInfo, target, 0)
+        val motivation = givenMotivation
+            ?: MotivationToAttackAutomation.hasAtLeastMotivationToAttack(civInfo, target, 0)
 
         // TODO: We use negative values in WaryOf for now so that we aren't adding any extra fields to the save file
         // This will very likely change in the future and we will want to build upon it

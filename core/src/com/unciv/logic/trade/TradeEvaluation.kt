@@ -284,10 +284,10 @@ class TradeEvaluation {
                     return (-100 * DeclareWarPlanEvaluator.evaluateTeamWarPlan(civInfo, civToDeclareWarOn, tradePartner, null)).coerceAtLeast(0)
                 } else if (tradePartner.isAtWarWith(civToDeclareWarOn)) {
                     // We might want them to pay us to join them in war
-                    return (-100 * DeclareWarPlanEvaluator.evaluateJoinWarPlan(civInfo, civToDeclareWarOn, tradePartner, null)).coerceAtMost(0)
+                    return (-100 * DeclareWarPlanEvaluator.evaluateJoinWarPlan(civInfo, civToDeclareWarOn, tradePartner, null)).coerceAtLeast(0)
                 } else {
                     // We might want them to pay us to declare war
-                    return (-100 * DeclareWarPlanEvaluator.evaluateDeclareWarPlan(civInfo, civToDeclareWarOn, null)).coerceAtMost(0)
+                    return (-100 * DeclareWarPlanEvaluator.evaluateDeclareWarPlan(civInfo, civToDeclareWarOn, null)).coerceAtLeast(0)
                 }
             }
 

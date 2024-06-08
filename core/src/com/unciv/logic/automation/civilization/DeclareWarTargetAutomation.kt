@@ -19,7 +19,7 @@ object DeclareWarTargetAutomation {
         val highestValueTargets = civAttackMotivations.sortedByDescending { it.first.getStatForRanking(RankingType.Score) }
 
         for (target in highestValueTargets) {
-            if (tryDeclareWarWithPlan(civInfo, target.first, target.second)) 
+            if (tryDeclareWarWithPlan(civInfo, target.first, target.second))
                 return // We have successfully found a plan and started executing it!
         }
     }
@@ -48,11 +48,12 @@ object DeclareWarTargetAutomation {
      */
     private fun tryTeamWar(civInfo: Civilization, target: Civilization, motivation: Int): Boolean {
         val potentialAllies = civInfo.getDiplomacyManager(target).getCommonKnownCivs()
-                .filter { it.isMajorCiv() 
-                        && !civInfo.getDiplomacyManager(it).hasFlag(DiplomacyFlags.DeclinedJoinWarOffer) 
-                        && civInfo.getDiplomacyManager(it).isRelationshipLevelGE(RelationshipLevel.Neutral) 
-                        && !it.isAtWarWith(target) 
-                }.sortedByDescending { it.getStatForRanking(RankingType.Force) }
+            .filter {
+                it.isMajorCiv()
+                    && !civInfo.getDiplomacyManager(it).hasFlag(DiplomacyFlags.DeclinedJoinWarOffer)
+                    && civInfo.getDiplomacyManager(it).isRelationshipLevelGE(RelationshipLevel.Neutral)
+                    && !it.isAtWarWith(target)
+            }.sortedByDescending { it.getStatForRanking(RankingType.Force) }
 
         for (thirdCiv in potentialAllies) {
             if (DeclareWarPlanEvaluator.evaluateTeamWarPlan(civInfo, target, thirdCiv, motivation) <= 0) continue
@@ -75,11 +76,13 @@ object DeclareWarTargetAutomation {
      */
     private fun tryJoinWar(civInfo: Civilization, target: Civilization, motivation: Int): Boolean {
         val potentialAllies = civInfo.getDiplomacyManager(target).getCommonKnownCivs()
-                .filter { it.isMajorCiv()  
-                        && !civInfo.getDiplomacyManager(it).hasFlag(DiplomacyFlags.DeclinedJoinWarOffer) 
-                        && civInfo.getDiplomacyManager(it).isRelationshipLevelGE(RelationshipLevel.Favorable) 
-                        && it.isAtWarWith(target) } // Must be a civ not already at war with them
-                .sortedByDescending { it.getStatForRanking(RankingType.Force) }
+            .filter {
+                it.isMajorCiv()
+                    && !civInfo.getDiplomacyManager(it).hasFlag(DiplomacyFlags.DeclinedJoinWarOffer)
+                    && civInfo.getDiplomacyManager(it).isRelationshipLevelGE(RelationshipLevel.Favorable)
+                    && it.isAtWarWith(target)
+            } // Must be a civ not already at war with them
+            .sortedByDescending { it.getStatForRanking(RankingType.Force) }
 
         for (thirdCiv in potentialAllies) {
             if (DeclareWarPlanEvaluator.evaluateJoinWarPlan(civInfo, target, thirdCiv, motivation) <= 0) continue
