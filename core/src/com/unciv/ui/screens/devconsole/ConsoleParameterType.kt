@@ -32,6 +32,7 @@ internal enum class ConsoleParameterType(
     buildingName( { ruleset.buildings.keys } ),
     direction( { RiverGenerator.RiverDirections.names } ),
     policyName( { ruleset.policyBranches.keys + ruleset.policies.keys } ),
+    techName( { ruleset.technologies.keys } ),
     cityName( { civilizations.flatMap { civ -> civ.cities.map { it.name } } } ),
     triggeredUniqueTemplate( { UniqueType.values().filter { it.canAcceptUniqueTarget(UniqueTarget.Triggerable) }.map { it.text } }, preferquoted = true ),
     ;

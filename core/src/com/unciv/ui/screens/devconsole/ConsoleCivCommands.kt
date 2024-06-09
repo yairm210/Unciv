@@ -2,6 +2,7 @@ package com.unciv.ui.screens.devconsole
 
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.models.ruleset.Policy
+import com.unciv.models.ruleset.tech.Technology
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.stats.Stat
@@ -56,6 +57,30 @@ internal class ConsoleCivCommands : ConsoleCommandNode {
                 DevConsoleResponse.hint("${civ.civName} does not have ${policy.name}")
             else {
                 civ.policies.removePolicy(policy, assumeWasFree = true) // See UniqueType.OneTimeRemovePolicy
+                DevConsoleResponse.OK
+            }
+        },
+
+        "addtech" to ConsoleAction("civ addtechnology <civName> <techName>") { console, params ->
+            val civ = console.getCivByName(params[0])
+            val tech = console.findCliInput<Technology>(params[1])
+                ?: throw ConsoleErrorException("Unrecognized technology")
+            if (civ.tech.isResearched(tech.name))
+                DevConsoleResponse.hint("${civ.civName} already has researched ${tech.name}")
+            else {
+                civ.tech.addTechnology(tech.name, false)
+                DevConsoleResponse.OK
+            }
+        },
+
+        "removetech" to ConsoleAction("civ removetechnology <civName> <techName>") { console, params ->
+            val civ = console.getCivByName(params[0])
+            val tech = console.findCliInput<Technology>(params[1])
+                ?: throw ConsoleErrorException("Unrecognized technology")
+            if (!civ.tech.isResearched(tech.name))
+                DevConsoleResponse.hint("${civ.civName} does not have ${tech.name}")
+            else {
+                civ.tech.techsResearched.removeAll { it == tech.name } // Can have multiple for researchable techs
                 DevConsoleResponse.OK
             }
         },
