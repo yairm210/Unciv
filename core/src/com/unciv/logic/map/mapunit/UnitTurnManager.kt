@@ -20,8 +20,8 @@ class UnitTurnManager(val unit: MapUnit) {
                 && unit.canBuildImprovement(unit.getTile().getTileImprovementInProgress()!!)
         ) {
             val tile = unit.getTile()
-            tile.endTurn(unit)
-            tile.getCity()?.updateCitizens = true
+            if (tile.doWorkerTurn(unit))
+                tile.getCity()?.updateCitizens = true
         }
 
         if (!unit.hasUnitMovedThisTurn() && unit.isFortified() && unit.turnsFortified < 2) {

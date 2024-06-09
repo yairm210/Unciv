@@ -13,10 +13,11 @@ import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.map.HexMath
 import com.unciv.logic.map.MapParameters
-import com.unciv.logic.map.mapgenerator.MapResourceSetting
 import com.unciv.logic.map.TileMap
 import com.unciv.logic.map.mapgenerator.MapGenerator
+import com.unciv.logic.map.mapgenerator.MapResourceSetting
 import com.unciv.logic.map.mapunit.MapUnit
+import com.unciv.logic.map.mapunit.UnitTurnManager
 import com.unciv.logic.map.mapunit.movement.UnitMovement
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.tile.ResourceType
@@ -270,11 +271,12 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
     fun isNaturalWonder(): Boolean = naturalWonder != null
     fun isImpassible() = lastTerrain.impassable
 
+    fun hasImprovementInProgress() = improvementQueue.isNotEmpty()
 
     fun getTileImprovement(): TileImprovement? = if (improvement == null) null else ruleset.tileImprovements[improvement!!]
     fun isPillaged(): Boolean = improvementIsPillaged || roadIsPillaged
     fun getUnpillagedTileImprovement(): TileImprovement? = if (getUnpillagedImprovement() == null) null else ruleset.tileImprovements[improvement!!]
-    fun getTileImprovementInProgress(): TileImprovement? = if (improvementInProgress == null) null else ruleset.tileImprovements[improvementInProgress!!]
+    fun getTileImprovementInProgress(): TileImprovement? = improvementQueue.firstOrNull()?.let { ruleset.tileImprovements[it.improvement] }
     fun containsGreatImprovement() = getTileImprovement()?.isGreatImprovement() == true
 
     fun getImprovementToPillage(): TileImprovement? {
@@ -514,8 +516,6 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
             }
         }
     }
-
-    fun hasImprovementInProgress() = improvementInProgress != null && turnsToImprovement > 0
 
     fun isCoastalTile() = _isCoastalTile
 
@@ -893,18 +893,20 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
         improvementQueue.add(ImprovementQueueEntry(improvementName, turnsToImprovement))
     }
 
-    /** Called from UnitTurnManager when a Worker "spends time" here */
-    fun endTurn(worker: MapUnit) {
-        if (isMarkedForCreatesOneImprovement()) return
-        if (improvementQueue.isEmpty()) return
+    /** Called from [UnitTurnManager.endTurn] when a Worker "spends time" here
+     *  @return `true` if any work got finished and upstream moght want to update things */
+    fun doWorkerTurn(worker: MapUnit): Boolean {
+        if (isMarkedForCreatesOneImprovement()) return false
+        if (improvementQueue.isEmpty()) return false
 
-        if (improvementQueue.first().countDown()) return
+        if (improvementQueue.first().countDown()) return false
         val queueEntry = improvementQueue.removeAt(0)
 
         if (worker.civ.isCurrentPlayer())
             UncivGame.Current.settings.addCompletedTutorialTask("Construct an improvement")
 
         changeImprovement(queueEntry.improvement, worker.civ, worker)
+        return true
     }
 
     /** Sets tile improvement to pillaged (without prior checks for validity)
