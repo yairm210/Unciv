@@ -4,7 +4,6 @@ import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
-import com.unciv.logic.map.MapSize
 import com.unciv.models.ruleset.Policy
 import com.unciv.models.ruleset.Policy.PolicyBranchType
 import com.unciv.models.ruleset.PolicyBranch
@@ -157,14 +156,7 @@ class PolicyManager : IsPartOfGameInfoSerialization {
 
     fun getPolicyCultureCost(numberOfAdoptedPolicies: Int): Int {
         var policyCultureCost = 25 + (numberOfAdoptedPolicies * 6).toDouble().pow(1.7)
-        // https://civilization.fandom.com/wiki/Map_(Civ5)
-        val worldSizeModifier = with(civInfo.gameInfo.tileMap.mapParameters.mapSize) {
-            when {
-                radius >= MapSize.Huge.radius -> 0.05f
-                radius >= MapSize.Large.radius -> 0.075f
-                else -> 0.1f
-            }
-        }
+        val worldSizeModifier = civInfo.gameInfo.tileMap.mapParameters.mapSize.getPredefinedOrNextSmaller().policyCostPerCityModifier
         var cityModifier = worldSizeModifier * (civInfo.cities.count { !it.isPuppet } - 1)
 
         for (unique in civInfo.getMatchingUniques(UniqueType.LessPolicyCostFromCities)) cityModifier *= 1 - unique.params[0].toFloat() / 100
