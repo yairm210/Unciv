@@ -11,6 +11,7 @@ import com.unciv.ui.components.extensions.disable
 import com.unciv.ui.components.extensions.enable
 import com.unciv.ui.popups.ConfirmPopup
 import com.unciv.ui.screens.cityscreen.CityScreen
+import com.unciv.ui.screens.overviewscreen.EspionageOverviewScreen
 import com.unciv.ui.screens.pickerscreens.DiplomaticVotePickerScreen
 import com.unciv.ui.screens.pickerscreens.PantheonPickerScreen
 import com.unciv.ui.screens.pickerscreens.PolicyPickerScreen
@@ -27,9 +28,9 @@ enum class NextTurnAction(protected val text: String, val color: Color) {
     },
     AutoPlay("AutoPlay", Color.WHITE) {
         override fun isChoice(worldScreen: WorldScreen) =
-            UncivGame.Current.settings.autoPlay.isAutoPlaying()
+            worldScreen.autoPlay.isAutoPlaying()
         override fun action(worldScreen: WorldScreen) =
-            UncivGame.Current.settings.autoPlay.stopAutoPlay()
+            worldScreen.autoPlay.stopAutoPlay()
     },
     Working(Constants.working, Color.GRAY) {
         override fun isChoice(worldScreen: WorldScreen) =
@@ -65,6 +66,14 @@ enum class NextTurnAction(protected val text: String, val color: Color) {
         override fun action(worldScreen: WorldScreen) {
             worldScreen.game.pushScreen(PolicyPickerScreen(worldScreen.selectedCiv, worldScreen.canChangeState))
             worldScreen.viewingCiv.policies.shouldOpenPolicyPicker = false
+        }
+    },
+    MoveSpies("Move Spies", Color.WHITE) {
+        override fun isChoice(worldScreen: WorldScreen) =
+                worldScreen.gameInfo.isEspionageEnabled() && worldScreen.viewingCiv.espionageManager.shouldShowMoveSpies()
+        override fun action(worldScreen: WorldScreen) {
+            worldScreen.game.pushScreen(EspionageOverviewScreen(worldScreen.selectedCiv, worldScreen))
+            worldScreen.viewingCiv.espionageManager.dismissedShouldMoveSpies = true
         }
     },
     FoundPantheon("Found Pantheon", Color.valueOf(BeliefType.Pantheon.color)) {

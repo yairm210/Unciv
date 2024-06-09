@@ -46,6 +46,7 @@ enum class DiplomacyFlags {
     DeclinedDeclarationOfFriendship,
     DefensivePact,
     DeclinedDefensivePact,
+    DeclinedJoinWarOffer,
     ResearchAgreement,
     BorderConflict,
     SettledCitiesNearUs,
@@ -65,6 +66,7 @@ enum class DiplomacyFlags {
     WaryOf,
     Bullied,
     RecentlyAttacked,
+    ResourceTradesCutShort,
 }
 
 enum class DiplomaticModifiers(val text: String) {
@@ -87,6 +89,7 @@ enum class DiplomaticModifiers(val text: String) {
     AttackedProtectedMinor("You attacked City-States that were under our protection!"),
     BulliedProtectedMinor("You demanded tribute from City-States that were under our protection!"),
     SidedWithProtectedMinor("You sided with a City-State over us"),
+    SpiedOnUs("You spied on us!"),
 
     // Positive
     YearsOfPeace("Years of peace have strengthened our relations."),
@@ -102,7 +105,12 @@ enum class DiplomaticModifiers(val text: String) {
     GaveUsUnits("You gave us units!"),
     GaveUsGifts("We appreciate your gifts"),
     ReturnedCapturedUnits("You returned captured units to us"),
+    BelieveSameReligion("We believe in the same religion");
 
+    companion object{
+        private val valuesAsMap = DiplomaticModifiers.values().associateBy { it.name }
+        fun safeValueOf(name: String) = valuesAsMap[name]
+    }
 }
 
 class DiplomacyManager() : IsPartOfGameInfoSerialization {
@@ -112,7 +120,6 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
         const val MINIMUM_INFLUENCE = -60f
     }
 
-    @Suppress("JoinDeclarationAndAssignment")  // incorrect warning - constructor would need to be higher in scope
     @Transient
     lateinit var civInfo: Civilization
 
@@ -276,6 +283,14 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
         }
     }
 
+    private fun believesSameReligion(): Boolean {
+        // what is the majorityReligion of civInfo? If it is null, we immediately return false
+        val civMajorityReligion = civInfo.religionManager.getMajorityReligion() ?: return false
+        // if not yet returned false from previous line, return the Boolean isMajorityReligionForCiv
+        // true if majorityReligion of civInfo is also majorityReligion of otherCiv, false otherwise
+        return otherCiv().religionManager.isMajorityReligionForCiv(civMajorityReligion)
+    }
+
     /** Returns the number of turns to degrade from Ally or from Friend */
     fun getTurnsToRelationshipChange(): Int {
         if (otherCiv().isCityState())
@@ -308,6 +323,15 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
 
     fun addInfluence(amount: Float) {
         setInfluence(influence + amount)
+    }
+
+    /**
+     * Reduces the influence to zero, or if they have negative influence does nothing
+     * @param amount A positive value to subtract from the influecne
+     */
+    fun reduceInfluence(amount: Float) {
+        if (influence <= 0) return
+        influence = (influence - amount).coerceAtLeast(0f)
     }
 
     fun setInfluence(amount: Float) {
@@ -367,7 +391,7 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
 
     fun canDeclareWar() = turnsToPeaceTreaty() == 0 && diplomaticStatus != DiplomaticStatus.War
 
-    fun declareWar(indirectCityStateAttack: Boolean = false) = DeclareWar.declareWar(this, indirectCityStateAttack)
+    fun declareWar(declareWarReason: DeclareWarReason = DeclareWarReason(WarType.DirectWar)) = DeclareWar.declareWar(this, declareWarReason)
 
     //Used for nuke
     fun canAttack() = turnsToPeaceTreaty() == 0
@@ -403,9 +427,9 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
     }
 
     /** Returns the [civilizations][Civilization] that know about both sides ([civInfo] and [otherCiv]) */
-    fun getCommonKnownCivs(): Set<Civilization> = civInfo.getKnownCivs().toSet().intersect(otherCiv().getKnownCivs().toSet())
+    fun getCommonKnownCivs(): Set<Civilization> = civInfo.getKnownCivs().asIterable().intersect(otherCiv().getKnownCivs().toSet())
 
-    fun getCommonKnownCivsWithSpectators(): Set<Civilization> = civInfo.getKnownCivsWithSpectators().toSet().intersect(otherCiv().getKnownCivsWithSpectators().toSet())
+    fun getCommonKnownCivsWithSpectators(): Set<Civilization> = civInfo.getKnownCivsWithSpectators().asIterable().intersect(otherCiv().getKnownCivsWithSpectators().toSet())
     /** Returns true when the [civInfo]'s territory is considered allied for [otherCiv].
      *  This includes friendly and allied city-states and the open border treaties.
      */
@@ -551,7 +575,7 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
 
 
         for (thirdCiv in getCommonKnownCivsWithSpectators()) {
-            thirdCiv.addNotification("[${civInfo.civName}] and [$otherCivName] have signed the Defensive Pact!",
+            thirdCiv.addNotification("[${civInfo.civName}] and [$otherCivName] have signed a Defensive Pact!",
                 NotificationCategory.Diplomacy, civInfo.civName, NotificationIcon.Diplomacy, otherCivName)
             if (thirdCiv.isSpectator()) return
             thirdCiv.getDiplomacyManager(civInfo).setDefensivePactBasedModifier()
@@ -587,6 +611,14 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
         }
     }
 
+    internal fun setReligionBasedModifier() {
+        if (civInfo.getDiplomacyManager(otherCiv()).believesSameReligion())
+            // they share same majority religion
+            setModifier(DiplomaticModifiers.BelieveSameReligion, 5f)
+        else
+            // their majority religions differ or one or both don't have a majority religion at all
+            removeModifier(DiplomaticModifiers.BelieveSameReligion)
+    }
 
     fun denounce() {
         setModifier(DiplomaticModifiers.Denunciation, -35f)

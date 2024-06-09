@@ -29,7 +29,7 @@ import com.unciv.models.stats.Stats
 import com.unciv.models.translations.fillPlaceholders
 import com.unciv.models.translations.hasPlaceholderParameters
 import com.unciv.ui.components.extensions.addToMapOfSets
-import com.unciv.ui.screens.mapeditorscreen.TileInfoNormalizer
+import com.unciv.logic.map.tile.TileNormalizer
 import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionsUpgrade
 import kotlin.math.roundToInt
 import kotlin.random.Random
@@ -70,7 +70,10 @@ object UniqueTriggerActivation {
         return function.invoke()
     }
 
-        /** @return The action to be performed if possible, else null */
+    /** @return The action to be performed if possible, else null
+     * This is so the unit actions can be displayed as "disabled" if they won't actually do anything
+     * Even if the action itself is performable, there are still cases where it can fail -
+     *   for example unit placement - which is why the action itself needs to return Boolean to indicate success */
     fun getTriggerFunction(
         unique: Unique,
         civInfo: Civilization,
@@ -87,7 +90,12 @@ object UniqueTriggerActivation {
 
         val timingConditional = unique.conditionals.firstOrNull { it.type == UniqueType.ConditionalTimedUnique }
         if (timingConditional != null) {
-            return { civInfo.temporaryUniques.add(TemporaryUnique(unique, timingConditional.params[0].toInt())) }
+            return {
+                civInfo.temporaryUniques.add(TemporaryUnique(unique, timingConditional.params[0].toInt()))
+                if (unique.type in setOf(UniqueType.ProvidesResources, UniqueType.ConsumesResources))
+                    civInfo.cache.updateCivResources()
+                true
+            }
         }
 
         val stateForConditionals = StateForConditionals(civInfo, city, unit, tile)
@@ -105,8 +113,8 @@ object UniqueTriggerActivation {
         when (unique.type) {
             UniqueType.TriggerEvent -> {
                 val event = ruleset.events[unique.params[0]] ?: return null
-                val choices = event.choices.filter { it.matchesConditions(stateForConditionals) }
-                if (choices.isEmpty()) return null
+                val choices = event.getMatchingChoices(stateForConditionals)
+                    ?: return null
                 return {
                     if (civInfo.isAI()) choices.random().triggerChoice(civInfo)
                     else civInfo.popupAlerts.add(PopupAlert(AlertType.Event, event.name))
@@ -295,6 +303,54 @@ object UniqueTriggerActivation {
                     true
                 }
             }
+            UniqueType.OneTimeRemovePolicy -> {
+                val policyFilter = unique.params[0]
+                val policiesToRemove = civInfo.policies.adoptedPolicies
+                    .mapNotNull { civInfo.gameInfo.ruleset.policies[it] }
+                    .filter { it.matchesFilter(policyFilter) }
+                if (policiesToRemove.isEmpty()) return null
+
+                return {
+                    for (policy in policiesToRemove) {
+                        civInfo.policies.removePolicy(policy)
+
+                        val notificationText = getNotificationText(
+                            notification, triggerNotificationText,
+                            "You lose the [${policy.name}] Policy"
+                        )
+                        if (notificationText != null)
+                            civInfo.addNotification(notificationText, PolicyAction(policy.name), NotificationCategory.General, NotificationIcon.Culture)
+                    }
+                    true
+                }
+            }
+
+            UniqueType.OneTimeRemovePolicyRefund -> {
+                val policyFilter = unique.params[0]
+                val refundPercentage = unique.params[1].toInt()
+                val policiesToRemove = civInfo.policies.adoptedPolicies
+                    .mapNotNull { civInfo.gameInfo.ruleset.policies[it] }
+                    .filter { it.matchesFilter(policyFilter) }
+                if (policiesToRemove.isEmpty()) return null
+
+                val policiesToRemoveMap = civInfo.policies.getCultureRefundMap(policiesToRemove, refundPercentage)
+
+                return {
+                    for (policy in policiesToRemoveMap){
+                        civInfo.policies.removePolicy(policy.key)
+                        civInfo.policies.addCulture(policy.value)
+
+                        val notificationText = getNotificationText(
+                            notification, triggerNotificationText,
+                            "You lose the [${policy.key.name}] Policy. [${policy.value}] Culture has been refunded"
+                        )
+                        if (notificationText != null)
+                            civInfo.addNotification(notificationText, PolicyAction(policy.key.name), NotificationCategory.General, NotificationIcon.Culture)
+                    }
+                    true
+                }
+            }
+
             UniqueType.OneTimeEnterGoldenAge, UniqueType.OneTimeEnterGoldenAgeTurns -> {
                 return {
                     if (unique.type == UniqueType.OneTimeEnterGoldenAgeTurns) civInfo.goldenAges.enterGoldenAge(unique.params[0].toInt())
@@ -318,7 +374,7 @@ object UniqueTriggerActivation {
                     if (notification != null)
                         civInfo.addNotification(notification, NotificationCategory.General)
 
-                    if (civInfo.isAI() || UncivGame.Current.settings.autoPlay.isAutoPlayingAndFullAI()) {
+                    if (civInfo.isAI() || UncivGame.Current.worldScreen?.autoPlay?.isAutoPlayingAndFullAutoPlayAI() == true) {
                         NextTurnAutomation.chooseGreatPerson(civInfo)
                     }
                     true
@@ -327,7 +383,7 @@ object UniqueTriggerActivation {
 
             UniqueType.OneTimeGainPopulation -> {
                 val applicableCities =
-                    if (unique.params[1] == "in this city") sequenceOf(relevantCity!!)
+                    if (unique.params[1] == "in this city") sequenceOf(relevantCity).filterNotNull()
                     else civInfo.cities.asSequence().filter { it.matchesFilter(unique.params[1]) }
                 if (applicableCities.none()) return null
                 return {
@@ -482,33 +538,21 @@ object UniqueTriggerActivation {
                 }
             }
 
-            UniqueType.OneTimeRevealEntireMap -> {
-                return {
-                    if (notification != null) {
-                        civInfo.addNotification(notification, LocationAction(tile?.position), NotificationCategory.General, NotificationIcon.Scout)
-                    }
-                    civInfo.gameInfo.tileMap.values.asSequence()
-                        .forEach { it.setExplored(civInfo, true) }
-                    true
-                }
-            }
-
             UniqueType.UnitsGainPromotion -> {
                 val filter = unique.params[0]
-                val promotion = unique.params[1]
+                val promotionName = unique.params[1]
+                val promotion = ruleset.unitPromotions[promotionName] ?: return null
 
-                val unitsToPromote = civInfo.units.getCivUnits().filter { it.matchesFilter(filter) }
-                    .filter { unitToPromote ->
-                        ruleset.unitPromotions.values.any {
-                            it.name == promotion && unitToPromote.type.name in it.unitTypes
-                        }
+                val unitsToPromote = civInfo.units.getCivUnits()
+                    .filter {
+                        it.matchesFilter(filter) && (it.type.name in promotion.unitTypes || promotion.unitTypes.isEmpty())
                     }.toList()
                 if (unitsToPromote.isEmpty()) return null
 
                 return {
                     val promotedUnitLocations: MutableList<Vector2> = mutableListOf()
                     for (civUnit in unitsToPromote) {
-                        civUnit.promotions.addPromotion(promotion, isFree = true)
+                        civUnit.promotions.addPromotion(promotionName, isFree = true)
                         promotedUnitLocations.add(civUnit.getTile().position)
                     }
 
@@ -517,7 +561,7 @@ object UniqueTriggerActivation {
                             notification,
                             MapUnitAction(promotedUnitLocations),
                             NotificationCategory.Units,
-                            "unitPromotionIcons/${unique.params[1]}"
+                            "unitPromotionIcons/$promotionName"
                         )
                     }
                     true
@@ -559,7 +603,9 @@ object UniqueTriggerActivation {
                 ) return null
 
                 return {
-                    val statAmount = unique.params[0].toInt()
+                    var statAmount = unique.params[0].toInt()
+                    if (unique.isModifiedByGameSpeed()) statAmount = (statAmount * civInfo.gameInfo.speed.statCostModifiers[stat]!!).roundToInt()
+
                     val stats = Stats().add(stat, statAmount.toFloat())
                     civInfo.addStats(stats)
 
@@ -690,6 +736,16 @@ object UniqueTriggerActivation {
                 }
             }
 
+            UniqueType.OneTimeRevealEntireMap -> {
+                return {
+                    if (notification != null) {
+                        civInfo.addNotification(notification, LocationAction(tile?.position), NotificationCategory.General, NotificationIcon.Scout)
+                    }
+                    civInfo.gameInfo.tileMap.values.asSequence()
+                        .forEach { it.setExplored(civInfo, true) }
+                    true
+                }
+            }
             UniqueType.OneTimeRevealSpecificMapTiles -> {
                 if (tile == null) return null
 
@@ -707,19 +763,14 @@ object UniqueTriggerActivation {
                 if (explorableTiles.none())
                     return null
 
-                if (!isAll) {
-                    explorableTiles.shuffled(tileBasedRandom)
-                    explorableTiles = explorableTiles.take(amount.toInt())
-                }
+                if (!isAll)
+                    explorableTiles = explorableTiles.shuffled(tileBasedRandom).take(amount.toInt())
 
                 return {
                     for (explorableTile in explorableTiles) {
                         explorableTile.setExplored(civInfo, true)
+                        civInfo.setLastSeenImprovement(explorableTile.position, explorableTile.improvement)
                         positions += explorableTile.position
-                        if (explorableTile.improvement == null)
-                            civInfo.lastSeenImprovement.remove(explorableTile.position)
-                        else
-                            civInfo.lastSeenImprovement[explorableTile.position] = explorableTile.improvement!!
                     }
 
                     if (notification != null) {
@@ -787,19 +838,36 @@ object UniqueTriggerActivation {
                     val currentEra = civInfo.getEra().name
                     for (otherCiv in civInfo.gameInfo.getAliveMajorCivs()) {
                         if (currentEra !in otherCiv.espionageManager.erasSpyEarnedFor) {
-                            val spyName = otherCiv.espionageManager.addSpy()
+                            val spy = otherCiv.espionageManager.addSpy()
                             otherCiv.espionageManager.erasSpyEarnedFor.add(currentEra)
                             if (otherCiv == civInfo || otherCiv.knows(civInfo))
                             // We don't tell which civilization entered the new era, as that is done in the notification directly above this one
-                                otherCiv.addNotification("We have recruited [${spyName}] as a spy!", NotificationCategory.Espionage, NotificationIcon.Spy)
+                                spy.addNotification("We have recruited [${spy.name}] as a spy!")
                             else
-                                otherCiv.addNotification(
-                                    "After an unknown civilization entered the [${currentEra}], we have recruited [${spyName}] as a spy!",
-                                    NotificationCategory.Espionage,
-                                    NotificationIcon.Spy
-                                )
+                                spy.addNotification("After an unknown civilization entered the [$currentEra], we have recruited [${spy.name}] as a spy!")
                         }
                     }
+                    true
+                }
+            }
+
+            UniqueType.OneTimeSpiesLevelUp -> {
+                if (!civInfo.isMajorCiv()) return null
+                if (!civInfo.gameInfo.isEspionageEnabled()) return null
+
+                return {
+                    civInfo.espionageManager.spyList.forEach { it.levelUpSpy(unique.params[0].toInt()) }
+                    true
+                }
+            }
+
+            UniqueType.OneTimeGainSpy -> {
+                if (!civInfo.isMajorCiv()) return null
+                if (!civInfo.gameInfo.isEspionageEnabled()) return null
+
+                return {
+                    val spy = civInfo.espionageManager.addSpy()
+                    spy.addNotification("We have recruited [${spy.name}] as a spy!")
                     true
                 }
             }
@@ -816,7 +884,7 @@ object UniqueTriggerActivation {
                         applicableCity.cityConstructions.freeBuildingsProvidedFromThisCity.addToMapOfSets(applicableCity.id, freeBuilding.name)
 
                         if (applicableCity.cityConstructions.containsBuildingOrEquivalent(freeBuilding.name)) continue
-                        applicableCity.cityConstructions.constructionComplete(freeBuilding)
+                        applicableCity.cityConstructions.completeConstruction(freeBuilding)
                     }
                     true
                 }
@@ -962,7 +1030,7 @@ object UniqueTriggerActivation {
                         TerrainType.TerrainFeature -> tile.addTerrainFeature(terrain.name)
                         TerrainType.NaturalWonder -> NaturalWonderGenerator.placeNaturalWonder(terrain, tile)
                     }
-                    TileInfoNormalizer.normalizeToRuleset(tile, ruleset)
+                    TileNormalizer.normalizeToRuleset(tile, ruleset)
                     tile.getUnits().filter { !it.movement.canPassThrough(tile) }.toList()
                         .forEach { it.movement.teleportToClosestMoveableTile() }
                     true

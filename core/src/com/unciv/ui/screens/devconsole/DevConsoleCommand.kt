@@ -1,50 +1,28 @@
 package com.unciv.ui.screens.devconsole
 
-import com.unciv.models.ruleset.IRulesetObject
-import com.unciv.models.ruleset.tile.TerrainType
-import com.unciv.models.stats.Stat
+import com.unciv.ui.screens.devconsole.CliInput.Companion.getAutocompleteString
+import com.unciv.ui.screens.devconsole.CliInput.Companion.orEmpty
 
-internal fun String.toCliInput() = this.lowercase().replace(" ","-")
+internal interface ConsoleCommand {
+    fun handle(console: DevConsolePopup, params: List<CliInput>): DevConsoleResponse
 
-internal fun Iterable<String>.findCliInput(param: String): String? {
-    val paramCli = param.toCliInput()
-    return firstOrNull { it.toCliInput() == paramCli }
-}
-internal fun <T: IRulesetObject> Iterable<T>.findCliInput(param: String): T? {
-    val paramCli = param.toCliInput()
-    return firstOrNull { it.name.toCliInput() == paramCli }
-}
-internal fun <T: IRulesetObject> Sequence<T>.findCliInput(param: String) = asIterable().findCliInput(param)
-
-/** Returns the string to *add* to the existing command */
-internal fun getAutocompleteString(lastWord: String, allOptions: Iterable<String>): String? {
-    val matchingOptions = allOptions.map { it.toCliInput() }.filter { it.startsWith(lastWord.toCliInput()) }
-    if (matchingOptions.isEmpty()) return null
-    if (matchingOptions.size == 1) return matchingOptions.first().drop(lastWord.length) + " "
-
-    val firstOption = matchingOptions.first()
-    for ((index, char) in firstOption.withIndex()) {
-        if (matchingOptions.any { it.lastIndex < index } ||
-            matchingOptions.any { it[index] != char })
-            return firstOption.substring(0, index).drop(lastWord.length)
-    }
-    return firstOption.drop(lastWord.length)  // don't add space, e.g. found drill-i and user might want drill-ii
-}
-
-interface ConsoleCommand {
-    fun handle(console: DevConsolePopup, params: List<String>): DevConsoleResponse
-    /** Returns the string to *add* to the existing command.
+    /** Returns the string to replace the last parameter of the existing command with. `null` means no change due to no options.
      *  The function should add a space at the end if and only if the "match" is an unambiguous choice!
-     *  Returning `null` means there was no match at all, while returning an empty string means the last word is a match as-is.
      */
-    fun autocomplete(console: DevConsolePopup, params: List<String>): String? = ""
+    fun autocomplete(console: DevConsolePopup, params: List<CliInput>): String? = null
 }
 
-class ConsoleHintException(val hint: String) : Exception()
-class ConsoleErrorException(val error: String) : Exception()
+/** An Exception representing a minor user error in [DevConsolePopup] input. [hint] is user-readable but never translated and should help understanding how to fix the mistake. */
+internal class ConsoleHintException(val hint: String) : Exception()
 
-open class ConsoleAction(val format: String, val action: (console: DevConsolePopup, params: List<String>) -> DevConsoleResponse) : ConsoleCommand {
-    override fun handle(console: DevConsolePopup, params: List<String>): DevConsoleResponse {
+/** An Exception representing a user error in [DevConsolePopup] input. [error] is user-readable but never translated. */
+internal class ConsoleErrorException(val error: String) : Exception()
+
+internal open class ConsoleAction(
+    val format: String,
+    val action: (console: DevConsolePopup, params: List<CliInput>) -> DevConsoleResponse
+) : ConsoleCommand {
+    override fun handle(console: DevConsolePopup, params: List<CliInput>): DevConsoleResponse {
         return try {
             validateFormat(format, params)
             action(console, params)
@@ -55,65 +33,63 @@ open class ConsoleAction(val format: String, val action: (console: DevConsolePop
         }
     }
 
-    override fun autocomplete(console: DevConsolePopup, params: List<String>): String? {
-        if (params.isEmpty()) return null
-
-        val formatParams = format.split(" ").drop(2).map {
+    override fun autocomplete(console: DevConsolePopup, params: List<CliInput>): String? {
+        val formatParams = format.split(' ').drop(2).map {
             it.removeSurrounding("<",">").removeSurrounding("[","]").removeSurrounding("\"")
         }
-        if (formatParams.size < params.size) return null
-        val formatParam = formatParams[params.lastIndex]
+        if (formatParams.size < params.size) return null // format has no definition, so there are no options to choose from
+        // It is possible we're here *with* another format parameter but an *empty* params (e.g. `tile addriver` and hit tab) -> see below
+        val (formatParam, lastParam) = if (params.lastIndex in formatParams.indices)
+                formatParams[params.lastIndex] to params.last()
+            else formatParams.first() to null
 
-        val lastParam = params.last()
-        val options = when (formatParam) {
-            "civName" -> console.gameInfo.civilizations.map { it.civName }
-            "unitName" -> console.gameInfo.ruleset.units.keys
-            "promotionName" -> console.gameInfo.ruleset.unitPromotions.keys
-            "improvementName" -> console.gameInfo.ruleset.tileImprovements.keys
-            "featureName" -> console.gameInfo.ruleset.terrains.values.filter { it.type == TerrainType.TerrainFeature }.map { it.name }
-            "terrainName" -> console.gameInfo.ruleset.terrains.values.filter { it.type.isBaseTerrain }.map { it.name }
-            "resourceName" -> console.gameInfo.ruleset.tileResources.keys
-            "stat" -> Stat.names()
-            "religionName" -> console.gameInfo.religions.keys
-            "buildingName" -> console.gameInfo.ruleset.buildings.keys
-            else -> listOf()
-        }
-        return getAutocompleteString(lastParam, options)
+        val options = ConsoleParameterType.multiOptions(formatParam, console)
+        val result = getAutocompleteString(lastParam.orEmpty(), options, console)
+        if (lastParam != null || result == null) return result
+        // we got the situation described above and something to add: The caller will ultimately replace the second subcommand, so add it back
+        // border case, only happens right after the second token, not after the third: Don't optimize the double split call
+        return format.split(' ')[1] + " " + result
     }
 
-    private fun validateFormat(format: String, params: List<String>) {
-        val allParams = format.split(" ")
+    private fun validateFormat(format: String, params: List<CliInput>) {
+        val allParams = format.split(' ')
         val requiredParamsAmount = allParams.count { it.startsWith('<') }
-        val optionalParamsAmount = allParams.count { it.startsWith('[') }
-        if (params.size < requiredParamsAmount || params.size > requiredParamsAmount + optionalParamsAmount)
+        val optionalParamsAmount = if (format.endsWith("]...")) 999999 else allParams.count { it.startsWith('[') }
+        // For this check, ignore an empty token caused by a trailing blank
+        val paramsSize = if (params.isEmpty()) 0 else if (params.last().isEmpty()) params.size - 1 else params.size
+        if (paramsSize < requiredParamsAmount || paramsSize > requiredParamsAmount + optionalParamsAmount)
             throw ConsoleHintException("Format: $format")
     }
 }
 
-interface ConsoleCommandNode : ConsoleCommand {
+internal interface ConsoleCommandNode : ConsoleCommand {
     val subcommands: HashMap<String, ConsoleCommand>
 
-    override fun handle(console: DevConsolePopup, params: List<String>): DevConsoleResponse {
+    override fun handle(console: DevConsolePopup, params: List<CliInput>): DevConsoleResponse {
         if (params.isEmpty())
             return DevConsoleResponse.hint("Available commands: " + subcommands.keys.joinToString())
-        val handler = subcommands[params[0]]
+        val handler = subcommands[params[0].toString()]
             ?: return DevConsoleResponse.error("Invalid command.\nAvailable commands:" + subcommands.keys.joinToString("") { "\n- $it" })
         return handler.handle(console, params.drop(1))
     }
 
-    override fun autocomplete(console: DevConsolePopup, params: List<String>): String? {
-        if (params.isEmpty()) return null
-        val firstParam = params[0]
-        if (firstParam in subcommands) return subcommands[firstParam]!!.autocomplete(console, params.drop(1))
-        return getAutocompleteString(firstParam, subcommands.keys)
+    override fun autocomplete(console: DevConsolePopup, params: List<CliInput>): String? {
+        val firstParam = params.firstOrNull().orEmpty()
+        val handler = subcommands[firstParam.toString()]
+            ?: return getAutocompleteString(firstParam, subcommands.keys, console)
+        return handler.autocomplete(console, params.drop(1))
     }
 }
 
-class ConsoleCommandRoot : ConsoleCommandNode {
+internal class ConsoleCommandRoot : ConsoleCommandNode {
     override val subcommands = hashMapOf<String, ConsoleCommand>(
         "unit" to ConsoleUnitCommands(),
         "city" to ConsoleCityCommands(),
         "tile" to ConsoleTileCommands(),
-        "civ" to ConsoleCivCommands()
+        "civ" to ConsoleCivCommands(),
+        "history" to ConsoleAction("history") { console, _ ->
+            console.showHistory()
+            DevConsoleResponse.hint("") // Trick console into staying open
+        }
     )
 }

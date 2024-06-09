@@ -3,6 +3,8 @@ package com.unciv.logic.city
 import com.badlogic.gdx.math.Vector2
 import com.unciv.logic.city.managers.CityConquestFunctions
 import com.unciv.logic.civilization.Civilization
+import com.unciv.models.ruleset.unique.UniqueType
+import com.unciv.models.translations.fillPlaceholders
 import com.unciv.testing.GdxTestRunner
 import com.unciv.testing.TestGame
 import org.junit.Assert.assertEquals
@@ -22,6 +24,8 @@ class CityConquestFunctionsTest {
     private lateinit var cityConquestFunctions: CityConquestFunctions
 
     private val testGame = TestGame()
+
+    private val gainFreeBuildingTestingUniqueText = UniqueType.GainFreeBuildings.text.fillPlaceholders("Monument", "in all cities")
 
     @Before
     fun setUp() {
@@ -51,18 +55,34 @@ class CityConquestFunctionsTest {
 
     @Test
     fun `should plunder gold upon capture`() {
-        // given
-        testGame.gameInfo.turns = 50
+        fun resetPlunderState() {
+            testGame.gameInfo.turns = 50
+            attackerCiv.addGold(-attackerCiv.gold)
+            if (defenderCity.civ == defenderCiv) return
+            cityConquestFunctions.puppetCity(defenderCiv)
+            defenderCity.population.setPopulation(10)
+            defenderCity.turnAcquired = 0
+        }
 
-        // when
-        cityConquestFunctions.puppetCity(attackerCiv)
+        // Do not assume because TileBasedRandom ensures deterministic results to hardcode those
+        // Ranges are from hardcoded function in getGoldForCapturingCity - all modifiers are == 1
+        // Repeat test without reinitializing the CityConquestFunctions.tileBasedRandom to get coverage
+        repeat(20) {
+            // given
+            resetPlunderState()
 
-        // then
-        assertEquals(159, attackerCiv.gold)
+            // when
+            cityConquestFunctions.puppetCity(attackerCiv)
+
+            // then
+            assertTrue(attackerCiv.gold in 120 until 160) // Range for city size 10 and all modifiers 1
+        }
     }
 
     @Test
     fun `should plunder more gold the more people live in the captured city`() {
+        // No repeat like `should plunder gold upon capture` - mor work and one range check might be enough
+
         // given
         val largeCity = testGame.addCity(defenderCiv, testGame.getTile(Vector2.X), initialPopulation = 20)
         val smallCity = testGame.addCity(defenderCiv, testGame.getTile(Vector2.Y), initialPopulation = 5)
@@ -75,14 +95,15 @@ class CityConquestFunctionsTest {
 
         // then
         assertTrue(attackerCiv.gold > secondAttackerCiv.gold)
-        assertEquals(230, attackerCiv.gold)
-        assertEquals(87, secondAttackerCiv.gold)
+
+        assertTrue(attackerCiv.gold in 220 until 260)  // population 20
+        assertTrue(secondAttackerCiv.gold in 70 until 110)  // population 5
     }
 
     @Test
-    fun `should plunder more gold with building uniques upone capture`() {
+    fun `should plunder more gold with building uniques upon capture`() {
         // given
-        val building = testGame.createBuilding("Doubles Gold given to enemy if city is captured")
+        val building = testGame.createBuilding(UniqueType.DoublesGoldFromCapturingCity.text)
         val city = testGame.addCity(defenderCiv, testGame.getTile(Vector2.X), initialPopulation = 10)
         city.cityConstructions.addBuilding(building.name)
 
@@ -95,9 +116,8 @@ class CityConquestFunctionsTest {
 
         // then
         assertTrue(attackerCiv.gold < secondAttackerCiv.gold)
-        // note: not exactly double because there is some randomness
-        assertEquals(159, attackerCiv.gold)
-        assertEquals(260, secondAttackerCiv.gold)
+        assertTrue(attackerCiv.gold in 120 until 160) // Range for city size 10 and all modifiers 1
+        assertTrue(secondAttackerCiv.gold in 240 until 320) // Doubled by Unique
     }
 
     @Test
@@ -106,7 +126,7 @@ class CityConquestFunctionsTest {
         val wonders = mutableListOf<String>()
         // remove randomness
         repeat(20) {
-            val wonder = testGame.createWonder("Science gained from research agreements [+${it}]%")
+            val wonder = testGame.createWonder(UniqueType.ScienceFromResearchAgreements.text.fillPlaceholders("$it"))
             defenderCity.cityConstructions.addBuilding(wonder.name)
             wonders.add(wonder.name)
         }
@@ -192,7 +212,7 @@ class CityConquestFunctionsTest {
     @Test
     fun `should remove free buildings upon city moving`() {
         // given
-        val freeBuildingCiv = testGame.addCiv("Gain a free [Monument] [in all cities]")
+        val freeBuildingCiv = testGame.addCiv(gainFreeBuildingTestingUniqueText)
         val city = testGame.addCity(freeBuildingCiv, testGame.getTile(Vector2.Y), initialPopulation = 10)
 
         // when
@@ -205,7 +225,7 @@ class CityConquestFunctionsTest {
     @Test
     fun `should give free buildings upon city moving`() {
         // given
-        val freeBuildingCiv = testGame.addCiv("Gain a free [Monument] [in all cities]")
+        val freeBuildingCiv = testGame.addCiv(gainFreeBuildingTestingUniqueText)
 
         // when
         cityConquestFunctions.moveToCiv(freeBuildingCiv)

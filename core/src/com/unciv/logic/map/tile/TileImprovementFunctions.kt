@@ -20,6 +20,7 @@ enum class ImprovementBuildingProblem(
     /** `true` if the ImprovementPicker should report this problem */
     val reportable: Boolean = false
 ) {
+    Replaced(permanent = true),
     WrongCiv(permanent = true),
     MissingTech(reportable = true),
     Unbuildable(permanent = true),
@@ -32,7 +33,7 @@ enum class ImprovementBuildingProblem(
     Other
 }
 
-class TileInfoImprovementFunctions(val tile: Tile) {
+class TileImprovementFunctions(val tile: Tile) {
 
     /** Returns true if the [improvement] can be built on this [Tile] */
     fun canBuildImprovement(improvement: TileImprovement, civInfo: Civilization): Boolean = getImprovementBuildingProblems(improvement, civInfo).none()
@@ -45,6 +46,8 @@ class TileInfoImprovementFunctions(val tile: Tile) {
 
         if (improvement.uniqueTo != null && improvement.uniqueTo != civInfo.civName)
             yield(ImprovementBuildingProblem.WrongCiv)
+        if (civInfo.cache.uniqueImprovements.any { it.replaces == improvement.name })
+            yield(ImprovementBuildingProblem.Replaced)
         if (improvement.techRequired != null && !civInfo.tech.isResearched(improvement.techRequired!!))
             yield(ImprovementBuildingProblem.MissingTech)
         if (improvement.getMatchingUniques(UniqueType.Unbuildable, StateForConditionals.IgnoreConditionals)
@@ -98,7 +101,8 @@ class TileInfoImprovementFunctions(val tile: Tile) {
         improvement: TileImprovement,
         resourceIsVisible: Boolean = tile.resource != null,
         knownFeatureRemovals: List<TileImprovement>? = null,
-        stateForConditionals: StateForConditionals = StateForConditionals(tile=tile)
+        stateForConditionals: StateForConditionals = StateForConditionals(tile=tile),
+        isNormalizeCheck: Boolean = false
     ): Boolean {
 
         fun TileImprovement.canBeBuildOnThisUnbuildableTerrain(
@@ -110,19 +114,20 @@ class TileInfoImprovementFunctions(val tile: Tile) {
 
             // Otherwise, we can if this improvement removes the top terrain
             if (!hasUnique(UniqueType.RemovesFeaturesIfBuilt, stateForConditionals)) return false
-            if (knownFeatureRemovals == null) return false
-            val featureRemovals = tile.terrainFeatures.map {
-                feature -> tile.ruleset.tileRemovals.firstOrNull{ it.name == Constants.remove + feature } }
-            if (featureRemovals.any { it != null && it !in knownFeatureRemovals }) return false
+            if (knownFeatureRemovals.isNullOrEmpty()) return false
+            val featureRemovals = tile.terrainFeatures.mapNotNull { feature ->
+                tile.ruleset.tileRemovals.firstOrNull { it.name == Constants.remove + feature } }
+            if (featureRemovals.isEmpty()) return false
+            if (featureRemovals.any { it !in knownFeatureRemovals }) return false
             val clonedTile = tile.clone()
             clonedTile.setTerrainFeatures(tile.terrainFeatures.filterNot {
-                feature -> featureRemovals.any{ it?.name?.removePrefix(Constants.remove) == feature } })
+                feature -> featureRemovals.any{ it.name.removePrefix(Constants.remove) == feature } })
             return clonedTile.improvementFunctions.canImprovementBeBuiltHere(improvement, resourceIsVisible, knownFeatureRemovals, stateForConditionals)
         }
 
         return when {
-            improvement.name == tile.improvement -> false
-            tile.isCityCenter() -> false
+            improvement.name == tile.improvement && !isNormalizeCheck -> false
+            tile.isCityCenter() -> isNormalizeCheck && improvement.name == Constants.cityCenter
 
             // First we handle a few special improvements
 
@@ -195,6 +200,7 @@ class TileInfoImprovementFunctions(val tile: Tile) {
                           civToActivateBroaderEffects: Civilization? = null, unit: MapUnit? = null) {
         val improvementObject = tile.ruleset.tileImprovements[improvementName]
 
+        var improvementFieldHasChanged = false
         when {
             improvementName?.startsWith(Constants.remove) == true -> {
                 activateRemovalImprovement(improvementName, civToActivateBroaderEffects)
@@ -205,8 +211,17 @@ class TileInfoImprovementFunctions(val tile: Tile) {
             else -> {
                 tile.improvementIsPillaged = false
                 tile.improvement = improvementName
+                improvementFieldHasChanged = true
 
                 removeCreatesOneImprovementMarker()
+            }
+        }
+
+        if (improvementFieldHasChanged) {
+            for (civ in tile.tileMap.gameInfo.civilizations) {
+                if (civ.isDefeated() || !civ.isMajorCiv()) continue
+                if (civ == civToActivateBroaderEffects || tile.isVisible(civ))
+                    civ.setLastSeenImprovement(tile.position, improvementName)
             }
         }
 

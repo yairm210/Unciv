@@ -22,7 +22,7 @@ class NonStringKeyMapSerializer<MT: MutableMap<KT, Any>, KT>(
     private val mapClass: Class<MT>,
     private val keyClass: Class<KT>,
     private val mutableMapFactory: () -> MT
-) : Serializer<MT>  {
+) : Serializer<MT> {
 
     override fun write(json: Json, toWrite: MT, knownType: Class<*>) {
         json.writeObjectStart()
@@ -40,33 +40,15 @@ class NonStringKeyMapSerializer<MT: MutableMap<KT, Any>, KT>(
 
     override fun read(json: Json, jsonData: JsonValue, type: Class<*>?): MT {
         val result = mutableMapFactory()
-        val entries = jsonData.get("entries")
-        readNewFormat(entries, json, result)
-        return result
-    }
-
-
-    private fun readNewFormat(entries: JsonValue, json: Json, result: MT) {
-        var entry = entries.child
+        var entry = jsonData.get("entries").child
         while (entry != null) {
             val key = json.readValue(keyClass, entry.child)
-
-            // 4.6.10 moved the Encampment class, but deserialization of old games which had the old
-            // full package name written out depended on the class loader finding it under the serialized name...
-            // This kludge steps in and allows both fully qualified class names until a better way is found
-            // See #9367
-            val isOldEncampment = entry.child.next.child.run {
-                    name == "class" && isString && asString() == "com.unciv.logic.Encampment"
-                }
-            val value = if (isOldEncampment) {
-                entry.child.next.remove("class")
-                json.readValue(Encampment::class.java, entry.child.next)
-            }
-            else json.readValue<Any>(null, entry.child.next)
+            val value = json.readValue<Any>(null, entry.child.next)
 
             result[key!!] = value!!
 
             entry = entry.next
         }
+        return result
     }
 }

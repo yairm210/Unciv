@@ -12,6 +12,7 @@
 		"name": "Coast",
 		"type": "Water",
 		"food": 1,
+        "gold": 1,
 		"movementCost": 1,
 		"RGB": [70, 138, 216],
 		"uniques": ["[+2] to Fertility for Map Generation",
@@ -376,7 +377,7 @@
 		"unbuildable": true,
 		"uniques": ["Must be adjacent to [0] [Coast] tiles",
 			"Must be adjacent to [1] to [6] [Jungle] tiles",
-			"Grants 500 Gold to the first civilization to discover it"],
+			"Grants [+500 Gold] to the first civilization to discover it"],
 		"weight": 2
 	},
 	{ // This will count as "Fresh water" in civ 6

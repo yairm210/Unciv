@@ -143,8 +143,12 @@ class CityPopulationManager : IsPartOfGameInfoSerialization {
         addPopulation(-population + count)
     }
 
+    /** Only assigns free population */
     internal fun autoAssignPopulation() {
         city.cityStats.update()  // calculate current stats with current assignments
+        val freePopulation = getFreePopulation()
+        if (freePopulation <= 0) return
+
         val cityStats = city.cityStats.currentCityStats
         city.currentGPPBonus = city.getGreatPersonPercentageBonus()  // pre-calculate for use in Automation.rankSpecialist
         var specialistFoodBonus = 2f  // See CityStats.calcFoodEaten()
@@ -157,11 +161,16 @@ class CityPopulationManager : IsPartOfGameInfoSerialization {
             .filter { !it.isBlockaded() }.toList().asSequence()
 
         val localUniqueCache = LocalUniqueCache()
-        repeat(getFreePopulation()) {
+        // Calculate stats once - but the *ranking of those stats* is dynamic and depends on what the city needs
+        val tileStats = tilesToEvaluate
+                .filterNot { it.providesYield() }
+                .associateWith { it.stats.getTileStats(city, city.civ, localUniqueCache)}
+
+        repeat(freePopulation) {
             //evaluate tiles
             val bestTileAndRank = tilesToEvaluate
-                .filterNot { it.providesYield() }
-                .associateWith { Automation.rankTileForCityWork(it, city, localUniqueCache) }
+                .filterNot { it.providesYield() } // Changes with every tile assigned
+                .associateWith { Automation.rankStatsForCityWork(tileStats[it]!!, city, false, localUniqueCache) }
                 // We need to make sure that we work the same tiles as last turn on a tile
                 // so that our workers know to prioritize this tile and don't move to the other tile
                 // This was just the easiest way I could think of.

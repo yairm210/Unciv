@@ -3,6 +3,7 @@ package com.unciv.logic.automation.unit
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.automation.Automation
+import com.unciv.logic.automation.civilization.NextTurnAutomation
 import com.unciv.logic.battle.Battle
 import com.unciv.logic.battle.BattleDamage
 import com.unciv.logic.battle.CityCombatant
@@ -10,7 +11,9 @@ import com.unciv.logic.battle.ICombatant
 import com.unciv.logic.battle.MapUnitCombatant
 import com.unciv.logic.battle.TargetHelper
 import com.unciv.logic.city.City
+import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.NotificationCategory
+import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
@@ -127,8 +130,8 @@ object UnitAutomation {
     }
 
     internal fun tryUpgradeUnit(unit: MapUnit): Boolean {
-        if (unit.civ.isHuman() && (!UncivGame.Current.settings.automatedUnitsCanUpgrade
-                || UncivGame.Current.settings.autoPlay.isAutoPlayingAndFullAI())) return false
+        if (unit.civ.isHuman() && !UncivGame.Current.settings.automatedUnitsCanUpgrade
+            && UncivGame.Current.worldScreen?.autoPlay?.isAutoPlayingAndFullAutoPlayAI() == false) return false
 
         val upgradeUnits = getUnitsToUpgradeTo(unit)
         if (upgradeUnits.none()) return false // for resource reasons, usually
@@ -195,7 +198,7 @@ object UnitAutomation {
         }
 
         // Note that not all nukes have to be air units
-        if (unit.baseUnit.isNuclearWeapon()) {
+        if (unit.isNuclearWeapon()) {
             return AirUnitAutomation.automateNukes(unit)
         }
 
@@ -209,6 +212,9 @@ object UnitAutomation {
             return AirUnitAutomation.automateBomber(unit)
         }
 
+        // Accompany settlers
+        if (tryAccompanySettlerOrGreatPerson(unit)) return
+
         if (tryGoToRuinAndEncampment(unit) && unit.currentMovement == 0f) return
 
         if (tryUpgradeUnit(unit)) return
@@ -217,9 +223,6 @@ object UnitAutomation {
 
         // If there are no enemies nearby and we can heal here, wait until we are at full health
         if (unit.health < 100 && canUnitHealInTurnsOnCurrentTile(unit,2, 4)) return
-
-        // Accompany settlers
-        if (tryAccompanySettlerOrGreatPerson(unit)) return
 
         if (tryHeadTowardsOurSiegedCity(unit)) return
 
@@ -246,6 +249,8 @@ object UnitAutomation {
         if (tryHeadTowardsEncampment(unit)) return
 
         if (unit.health < 100 && tryHealUnit(unit)) return
+
+        if (tryPrepare(unit)) return
 
         // else, try to go to unreached tiles
         if (tryExplore(unit)) return
@@ -407,7 +412,7 @@ object UnitAutomation {
     private fun canUnitHealInTurnsOnCurrentTile(unit: MapUnit, turns: Int, noEnemyDistance: Int = 3): Boolean {
         if (unit.hasUnique(UniqueType.HealsEvenAfterAction)) return false // We can keep on moving
         // Check if we are not in a safe city and there is an enemy nearby this isn't a good tile to heal on
-        if (!(unit.getTile().isCityCenter() && unit.getTile().getCity()!!.health > 50) 
+        if (!(unit.getTile().isCityCenter() && unit.getTile().getCity()!!.health > 50)
             && unit.civ.threatManager.getDistanceToClosestEnemyUnit(unit.getTile(), noEnemyDistance) <= noEnemyDistance) return false
 
         val healthRequiredPerTurn =  (100 - unit.health) / turns
@@ -415,11 +420,11 @@ object UnitAutomation {
     }
 
     private fun getDangerousTiles(unit: MapUnit): HashSet<Tile> {
-        val nearbyRangedEnemyUnits = unit.currentTile.getTilesInDistance(3)
+        val nearbyEnemyUnits = unit.currentTile.getTilesInDistance(3)
             .flatMap { tile -> tile.getUnits().filter { unit.civ.isAtWarWith(it.civ) } }
 
-        val tilesInRangeOfAttack = nearbyRangedEnemyUnits
-            .flatMap { it.getTile().getTilesInDistance(it.getRange()) }
+        val tilesInRangeOfAttack = nearbyEnemyUnits
+            .flatMap { it.getTile().getTilesInDistance((it.getMaxMovement() - 1) + it.getRange()) }
 
         val tilesWithinBombardmentRange = unit.currentTile.getTilesInDistance(3)
             .filter { it.isCityCenter() && it.getCity()!!.civ.isAtWarWith(unit.civ) }
@@ -447,6 +452,8 @@ object UnitAutomation {
         val tileToPillage = tilesThatCanWalkToAndThenPillage.maxByOrNull { it.getDefensiveBonus(false) }!!
         if (unit.getTile() != tileToPillage)
             unit.movement.moveToTile(tileToPillage)
+
+        if (unit.currentTile != tileToPillage) return false
 
         // We CANNOT use invokeUnitAction, since the default unit action contains a popup, which - when automated -
         //  runs a UI action on a side thread leading to crash!
@@ -491,14 +498,43 @@ object UnitAutomation {
         return false
     }
 
+    /**
+     * Tries to move the unit to the closest city that is close to a target civilization
+     */
+    private fun tryPrepare(unit: MapUnit): Boolean {
+        val civInfo = unit.civ
+
+        fun hasPreparationFlag(targetCiv: Civilization): Boolean {
+            val diploManager = civInfo.getDiplomacyManager(targetCiv)
+            if (diploManager.hasFlag(DiplomacyFlags.Denunciation) 
+                    || diploManager.otherCivDiplomacy().hasFlag(DiplomacyFlags.Denunciation)) return true
+            if (diploManager.hasFlag(DiplomacyFlags.WaryOf) && diploManager.getFlag(DiplomacyFlags.WaryOf) < 0) return true
+            return false
+        }
+
+        val hostileCivs = civInfo.getKnownCivs().filter { it.isAtWarWith(civInfo) || hasPreparationFlag(it) }
+        val citiesToDefend = hostileCivs.mapNotNull { NextTurnAutomation.getClosestCities(civInfo, it) }
+                .sortedBy { unit.getTile().aerialDistanceTo(it.city1.getCenterTile()) }
+
+        // Move to the closest city with a tile we can enter nearby
+        for ((city, enemyCity) in citiesToDefend) {
+            if (unit.getTile().aerialDistanceTo(city.getCenterTile()) <= 2) return true
+            val tileToMoveTo = city.getCenterTile().getTilesInDistance(2).firstOrNull { unit.movement.canMoveTo(it) && unit.movement.canReach(it) } ?: continue
+            unit.movement.headTowards(tileToMoveTo)
+            return true
+        }
+        return false
+    }
+
     private fun tryAccompanySettlerOrGreatPerson(unit: MapUnit): Boolean {
+        val distanceToTiles = unit.movement.getDistanceToTiles()
         val settlerOrGreatPersonToAccompany = unit.civ.units.getCivUnits()
             .firstOrNull {
                 val tile = it.currentTile
                 it.isCivilian() &&
                         (it.hasUnique(UniqueType.FoundCity) || unit.isGreatPerson())
-                        && tile.militaryUnit == null && unit.movement.canMoveTo(tile)
-                        && unit.movement.getDistanceToTiles().containsKey(tile)
+                        && (tile == unit.currentTile || tile.militaryUnit == null && unit.movement.canMoveTo(tile))
+                        && distanceToTiles.containsKey(tile)
             } ?: return false
         unit.movement.headTowards(settlerOrGreatPersonToAccompany.currentTile)
         return true

@@ -26,8 +26,6 @@ import com.unciv.ui.components.input.onRightClick
 import com.unciv.ui.components.input.onDoubleClick
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popups.ToastPopup
-import com.unciv.ui.screens.civilopediascreen.CivilopediaCategories
-import com.unciv.ui.screens.civilopediascreen.CivilopediaScreen
 import com.unciv.utils.Concurrency
 import kotlin.math.abs
 
@@ -38,6 +36,7 @@ class TechPickerScreen(
     private val freeTechPick: Boolean = false
 ) : PickerScreen() {
 
+    private val ruleset = civInfo.gameInfo.ruleset
     private var techNameToButton = HashMap<String, TechButton>()
     private var selectedTech: Technology? = null
     private var civTech: TechManager = civInfo.tech
@@ -56,7 +55,7 @@ class TechPickerScreen(
     private val techTable = Table()
 
     // All these are to counter performance problems when updating buttons for all techs.
-    private var researchableTechs = civInfo.gameInfo.ruleset.technologies.keys
+    private var researchableTechs = ruleset.technologies.keys
             .filter { civTech.canBeResearched(it) }.toHashSet()
 
     private val currentTechColor = skinStrings.getUIColor("TechPickerScreen/CurrentTechColor", colorFromRGB(72, 147, 175))
@@ -65,7 +64,7 @@ class TechPickerScreen(
     private val queuedTechColor = skinStrings.getUIColor("TechPickerScreen/QueuedTechColor", colorFromRGB(7*2, 46*2, 43*2))
     private val researchedFutureTechColor = skinStrings.getUIColor("TechPickerScreen/ResearchedFutureTechColor", colorFromRGB(127, 50, 0))
 
-    private val turnsToTech = civInfo.gameInfo.ruleset.technologies.values.associateBy({ it.name }, { civTech.turnsToTech(it.name) })
+    private val turnsToTech = ruleset.technologies.values.associateBy({ it.name }, { civTech.turnsToTech(it.name) })
 
     init {
         setDefaultCloseAction()
@@ -73,7 +72,7 @@ class TechPickerScreen(
 
         descriptionLabel.onClick {
             if (selectedTech != null)
-                game.pushScreen(CivilopediaScreen(civInfo.gameInfo.ruleset, CivilopediaCategories.Technology, selectedTech!!.name))
+                openCivilopedia(selectedTech!!.makeLink())
         }
 
         tempTechsToResearch = ArrayList(civTech.techsToResearch)
@@ -101,11 +100,14 @@ class TechPickerScreen(
         } else {
             // center on any possible technology which is ready for the research right now
             val firstAvailable = researchableTechs.firstOrNull()
-            val firstAvailableTech = civInfo.gameInfo.ruleset.technologies[firstAvailable]
+            val firstAvailableTech = ruleset.technologies[firstAvailable]
             if (firstAvailableTech != null)
                 centerOnTechnology(firstAvailableTech)
         }
     }
+
+    override fun getCivilopediaRuleset() = ruleset
+
 
     private fun tryExit() {
         if (freeTechPick) {
@@ -128,7 +130,7 @@ class TechPickerScreen(
         for (label in eraLabels) label.remove()
         eraLabels.clear()
 
-        val allTechs = civInfo.gameInfo.ruleset.technologies.values
+        val allTechs = ruleset.technologies.values
         if (allTechs.isEmpty()) return
         val columns = allTechs.maxOf { it.column!!.columnNumber } + 1
         val rows = allTechs.maxOf { it.row } + 1
@@ -149,7 +151,7 @@ class TechPickerScreen(
             val columnSpan = eraColumns.size
             val color = when {
                 civTech.era.name == era -> queuedTechColor
-                civInfo.gameInfo.ruleset.eras[era]!!.eraNumber < civTech.era.eraNumber -> colorFromRGB(255, 175, 0)
+                ruleset.eras[era]!!.eraNumber < civTech.era.eraNumber -> colorFromRGB(255, 175, 0)
                 else -> Color.BLACK.cpy()
             }
 
@@ -161,7 +163,7 @@ class TechPickerScreen(
 
             val label = era.toLabel().apply {
                 setAlignment(Align.center)
-                if (civInfo.gameInfo.ruleset.eras[era]!!.eraNumber < civTech.era.eraNumber)
+                if (ruleset.eras[era]!!.eraNumber < civTech.era.eraNumber)
                     this.color = colorFromRGB(120, 46, 16) }
 
             eraLabels.add(label)
@@ -246,7 +248,7 @@ class TechPickerScreen(
             lines.addActor(line)
         }
 
-        for (tech in civInfo.gameInfo.ruleset.technologies.values) {
+        for (tech in ruleset.technologies.values) {
             if (!techNameToButton.containsKey(tech.name)) {
                 ToastPopup("Tech ${tech.name} appears to be missing - perhaps two techs have the same row & column", this)
                 continue
@@ -414,7 +416,7 @@ class TechPickerScreen(
             }
         }
 
-        if(queue){
+        if (queue){
             for (pathTech in pathToTech) {
                 if (pathTech.name !in tempTechsToResearch) {
                     tempTechsToResearch.add(pathTech.name)
@@ -425,10 +427,14 @@ class TechPickerScreen(
             tempTechsToResearch.addAll(pathToTech.map { it.name })
         }
 
-        val label = "Research [${tempTechsToResearch[0]}]".tr()
-        val techProgression = getTechProgressLabel(tempTechsToResearch)
-
-        pick("${label}\n${techProgression}")
+        if (tempTechsToResearch.any()) {
+            val label = "Research [${tempTechsToResearch[0]}]".tr()
+            val techProgression = getTechProgressLabel(tempTechsToResearch)
+            pick("${label}\n${techProgression}")
+        } else {
+            rightSideButton.setText("Unavailable".tr())
+            rightSideButton.disable()
+        }
         setButtonsInfo()
     }
 

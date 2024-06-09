@@ -11,7 +11,6 @@ import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
-import com.unciv.logic.map.tile.TileStatFunctions
 import com.unciv.logic.map.tile.toStats
 import com.unciv.models.UnitActionType
 import com.unciv.models.ruleset.tile.ResourceType
@@ -83,6 +82,12 @@ class WorkerAutomation(
 
         if (tileToWork != currentTile) {
             debug("WorkerAutomation: %s -> head towards %s", unit.toString(), tileToWork)
+            if (unit.movement.canReachInCurrentTurn(tileToWork) && unit.movement.canMoveTo(tileToWork, canSwap = true)) {
+                if (!unit.movement.canMoveTo(tileToWork, canSwap = false) && unit.movement.canUnitSwapTo(tileToWork)) {
+                    // There must be a unit on the target tile! Lets swap with it.
+                    unit.movement.swapMoveToTile(tileToWork)
+                }
+            }
             val reachedTile = unit.movement.headTowards(tileToWork)
             if (reachedTile != currentTile) unit.doAction() // otherwise, we get a situation where the worker is automated, so it tries to move but doesn't, then tries to automate, then move, etc, forever. Stack overflow exception!
 
@@ -136,7 +141,7 @@ class WorkerAutomation(
         val citiesToNumberOfUnimprovedTiles = HashMap<String, Int>()
         for (city in unit.civ.cities) {
             citiesToNumberOfUnimprovedTiles[city.id] = city.getTiles()
-                .count { it.isLand && it.civilianUnit == null && (it.isPillaged() || tileHasWorkToDo(it, unit)) }
+                .count { tile -> tile.isLand && tile.getUnits().any { unit -> unit.cache.hasUniqueToBuildImprovements } && (tile.isPillaged() || tileHasWorkToDo(tile, unit)) }
         }
 
         val closestUndevelopedCity = unit.civ.cities.asSequence()
@@ -176,7 +181,8 @@ class WorkerAutomation(
         val workableTilesCenterFirst = currentTile.getTilesInDistance(4)
             .filter {
                 it !in tilesToAvoid
-                && (it.civilianUnit == null || it == currentTile)
+                && (it == currentTile || (unit.isCivilian() && (it.civilianUnit == null || !it.civilianUnit!!.cache.hasUniqueToBuildImprovements))
+                        || (unit.isMilitary() && (it.militaryUnit == null || !it.militaryUnit!!.cache.hasUniqueToBuildImprovements)))
                 && (it.owningCity == null || it.getOwner() == civInfo)
                 && !it.isCityCenter()
                 && getBasePriority(it, unit) > 1
@@ -194,7 +200,7 @@ class WorkerAutomation(
                 // These are the expensive calculations (tileCanBeImproved, canReach), so we only apply these filters after everything else it done.
                 if (!tileHasWorkToDo(tileInGroup, unit)) continue
                 if (unit.getTile() == tileInGroup) return unit.getTile()
-                if (!unit.movement.canReach(tileInGroup) || tileInGroup.civilianUnit != null) continue
+                if (!unit.movement.canReach(tileInGroup)) continue
                 if (bestTile == null || getFullPriority(tileInGroup, unit) > getFullPriority(bestTile, unit)) {
                     bestTile = tileInGroup
                 }
@@ -233,7 +239,7 @@ class WorkerAutomation(
                 && !civInfo.hasResource(tile.resource!!))
                 priority += 2
         }
-        if (tile in roadBetweenCitiesAutomation.tilesOfRoadsToConnectCities) priority += when {
+        if (tile in roadBetweenCitiesAutomation.tilesOfRoadsMap) priority += when {
                 civInfo.stats.statsForNextTurn.gold <= 5 -> 0
                 civInfo.stats.statsForNextTurn.gold <= 10 -> 1
                 civInfo.stats.statsForNextTurn.gold <= 30 -> 2
@@ -271,7 +277,7 @@ class WorkerAutomation(
                 var repairBonusPriority = tile.getImprovementToRepair()!!.getTurnsToBuild(unit.civ,unit) - UnitActionsFromUniques.getRepairTurns(unit)
                 if (tile.improvementInProgress == Constants.repair) repairBonusPriority += UnitActionsFromUniques.getRepairTurns(unit) - tile.turnsToImprovement
 
-                val repairPriority = repairBonusPriority + Automation.rankStatsValue(TileStatFunctions(tile).getStatDiffForImprovement(tile.getTileImprovement()!!, unit.civ, tile.owningCity), unit.civ)
+                val repairPriority = repairBonusPriority + Automation.rankStatsValue(tile.stats.getStatDiffForImprovement(tile.getTileImprovement()!!, unit.civ, tile.owningCity), unit.civ)
                 if (repairPriority > rank.improvementPriority!!) {
                     rank.improvementPriority = repairPriority
                     rank.bestImprovement = null
@@ -320,12 +326,12 @@ class WorkerAutomation(
         val localUniqueCache = LocalUniqueCache()
 
         var bestBuildableImprovement = potentialTileImprovements.values.asSequence()
-            .map { Pair(it, getImprovementRanking(tile, unit,it.name, localUniqueCache)) }
+            .map { Pair(it, getImprovementRanking(tile, unit, it.name, localUniqueCache)) }
             .filter { it.second > 0f }
             .maxByOrNull { it.second }?.first
 
-        if (tile.improvement != null && civInfo.isHuman() && (!UncivGame.Current.settings.automatedWorkersReplaceImprovements
-                || UncivGame.Current.settings.autoPlay.isAutoPlayingAndFullAI())) {
+        if (tile.improvement != null && civInfo.isHuman() && !UncivGame.Current.settings.automatedWorkersReplaceImprovements
+            && UncivGame.Current.worldScreen?.autoPlay?.isAutoPlayingAndFullAutoPlayAI() == false) {
             // Note that we might still want to build roads or remove fallout, so we can't exit the function immedietly
             bestBuildableImprovement = null
         }
@@ -341,8 +347,8 @@ class WorkerAutomation(
                 && isRemovable(lastTerrain)
                 && !tile.providesResources(civInfo)
                 && !isResourceImprovementAllowedOnFeature(tile, potentialTileImprovements) -> Constants.remove + lastTerrain.name
-            else -> tile.tileResource.getImprovements().filter { it in potentialTileImprovements || it==tile.improvement }
-                .maxByOrNull { getImprovementRanking(tile, unit,it, localUniqueCache) }
+            else -> tile.tileResource.getImprovements().filter { it in potentialTileImprovements || it == tile.improvement }
+                .maxByOrNull { getImprovementRanking(tile, unit, it, localUniqueCache) }
         }
 
         // After gathering all the data, we conduct the hierarchy in one place
@@ -354,7 +360,7 @@ class WorkerAutomation(
             bestBuildableImprovement == null -> null
 
             tile.improvement != null &&
-                    getImprovementRanking(tile, unit, tile.improvement!!, localUniqueCache) > getImprovementRanking(tile, unit,bestBuildableImprovement.name, localUniqueCache)
+                    getImprovementRanking(tile, unit, tile.improvement!!, localUniqueCache) > getImprovementRanking(tile, unit, bestBuildableImprovement.name, localUniqueCache)
                 -> null // What we have is better, even if it's pillaged we should repair it
 
             lastTerrain.let {
@@ -373,14 +379,12 @@ class WorkerAutomation(
 
         // Add the value of roads if we want to build it here
         if (improvement.isRoad() && roadBetweenCitiesAutomation.bestRoadAvailable.improvement(ruleSet) == improvement
-            && tile in roadBetweenCitiesAutomation.tilesOfRoadsToConnectCities) {
-            var value = 1f
-            val city = roadBetweenCitiesAutomation.tilesOfRoadsToConnectCities[tile]!!
+            && tile in roadBetweenCitiesAutomation.tilesOfRoadsMap) {
+            val roadPlan = roadBetweenCitiesAutomation.tilesOfRoadsMap[tile]!!
+            var value = roadPlan.priority
             if (civInfo.stats.statsForNextTurn.gold >= 20)
-            // Bigger cities have a higher priority to connect
-                value += (city.population.population - 3) * .3f
             // Higher priority if we are closer to connecting the city
-            value += (5 - roadBetweenCitiesAutomation.roadsToConnectCitiesCache[city]!!.size).coerceAtLeast(0)
+                value += (5 - roadPlan.numberOfRoadsToBuild).coerceAtLeast(0)
             return value
         }
 
@@ -394,15 +398,22 @@ class WorkerAutomation(
 
         val stats = tile.stats.getStatDiffForImprovement(improvement, civInfo, tile.getCity(), localUniqueCache)
 
-        if (improvementName.startsWith("Remove ")) {
+        if (improvementName.startsWith(Constants.remove)) {
             // We need to look beyond what we are doing right now and at the final improvement that will be on this tile
-            val terrainName = improvementName.replace("Remove ", "")
-            if (ruleSet.terrains.containsKey(terrainName)) { // Otherwise we get an infinite loop with remove roads
-                tile.removeTerrainFeature(terrainName)
-                val wantedFinalImprovement = chooseImprovement(unit, tile)
+            val removedObject = improvementName.replace(Constants.remove, "")
+            val removedFeature = tile.terrainFeatures.firstOrNull { it == removedObject }
+            val removedImprovement = if (removedObject == tile.improvement) removedObject else null
+
+            if (removedFeature != null || removedImprovement != null) {
+                val newTile = tile.clone()
+                newTile.setTerrainTransients()
+                if (removedFeature != null)
+                    newTile.removeTerrainFeature(removedFeature)
+                if (removedImprovement != null)
+                    newTile.removeImprovement()
+                val wantedFinalImprovement = chooseImprovement(unit, newTile)
                 if (wantedFinalImprovement != null)
-                    stats.add(tile.stats.getStatDiffForImprovement(wantedFinalImprovement, civInfo, tile.getCity(), localUniqueCache))
-                tile.addTerrainFeature(terrainName)
+                    stats.add(newTile.stats.getStatDiffForImprovement(wantedFinalImprovement, civInfo, newTile.getCity(), localUniqueCache))
             }
         }
 
@@ -563,37 +574,59 @@ class WorkerAutomation(
             && evaluateFortSurroundings(tile, isCitadel) > 0
     }
 
-    fun isImprovementProbablyAFort(improvementName:String): Boolean = isImprovementProbablyAFort(ruleSet.tileImprovements[improvementName]!!)
+    fun isImprovementProbablyAFort(improvementName: String): Boolean = isImprovementProbablyAFort(ruleSet.tileImprovements[improvementName]!!)
     fun isImprovementProbablyAFort(improvement: TileImprovement): Boolean = improvement.hasUnique(UniqueType.DefensiveBonus)
 
 
-    private fun hasWorkableSeaResource(tile: Tile, civInfo: Civilization): Boolean =
-        tile.isWater && tile.improvement == null && tile.hasViewableResource(civInfo)
-
     /** Try improving a Water Resource
      *
-     *  No logic to avoid capture by enemies yet!
+     *  todo: No logic to avoid capture by enemies yet!
      *
      *  @return Whether any progress was made (improved a tile or at least moved towards an opportunity)
      */
     fun automateWorkBoats(unit: MapUnit): Boolean {
         val closestReachableResource = unit.civ.cities.asSequence()
-            .flatMap { city -> city.getWorkableTiles() }
+            .flatMap { city -> city.getTiles() }
             .filter {
                 hasWorkableSeaResource(it, unit.civ)
                     && (unit.currentTile == it || unit.movement.canMoveTo(it))
             }
             .sortedBy { it.aerialDistanceTo(unit.currentTile) }
-            .firstOrNull { unit.movement.canReach(it) }
+            .firstOrNull { unit.movement.canReach(it) && isNotBonusResourceOrWorkable(it, unit.civ) }
             ?: return false
-
-        // could be either fishing boats or oil well
-        val isImprovable = closestReachableResource.tileResource.getImprovements().any()
-        if (!isImprovable) return false
 
         unit.movement.headTowards(closestReachableResource)
         if (unit.currentTile != closestReachableResource) return true // moving counts as progress
 
         return UnitActions.invokeUnitAction(unit, UnitActionType.CreateImprovement)
+    }
+
+    companion object {
+        // Static methods so they can be reused in ConstructionAutomation
+        /** Checks whether [tile] is water and has a resource [civInfo] can improve
+         *
+         *  Does check whether a matching improvement can currently be built (e.g. Oil before Refrigeration).
+         *  Can return `true` if there is an improvement that does not match the resource (for future modding abilities).
+         *  Does not check tile ownership - caller [automateWorkBoats] already did, other callers need to ensure this explicitly.
+         */
+        fun hasWorkableSeaResource(tile: Tile, civInfo: Civilization) = when {
+            !tile.isWater -> false
+            tile.resource == null -> false
+            tile.improvement != null && tile.tileResource.isImprovedBy(tile.improvement!!) -> false
+            !tile.hasViewableResource(civInfo) -> false
+            else -> tile.tileResource.getImprovements().any {
+                val improvement = civInfo.gameInfo.ruleset.tileImprovements[it]!!
+                tile.improvementFunctions.canBuildImprovement(improvement, civInfo)
+            }
+        }
+
+        /** Test whether improving the resource on [tile] benefits [civInfo] (yields or strategic or luxury)
+         *
+         *  Only tests resource type and city range, not any improvement requirements.
+         *  @throws NullPointerException on tiles without a resource
+         */
+        fun isNotBonusResourceOrWorkable(tile: Tile, civInfo: Civilization): Boolean =
+            tile.tileResource.resourceType != ResourceType.Bonus // Improve Oil even if no City reaps the yields
+                || civInfo.cities.any { it.tilesInRange.contains(tile) } // Improve Fish only if any of our Cities reaps the yields
     }
 }

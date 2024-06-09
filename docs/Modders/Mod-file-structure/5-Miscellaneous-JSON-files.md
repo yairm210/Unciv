@@ -118,20 +118,26 @@ The code below is an example of a valid "turns" definition and it specifies that
 
 Events allow users to choose between options of triggers to activate.
 
-| Attribute | Type                 | Default  | Notes                                                     |
-|-----------|----------------------|----------|-----------------------------------------------------------|
-| name      | String               | Required | Used for triggering via "Triggers a [event] event" unique |
-| text      | String               | None     | Flavor text displayed to user                             |
-| choices   | List of EventChoices |          | User can choose to trigger one of the viable choices      |
+| Attribute       | Type                 | Default  | Notes                                                                         |
+|-----------------|----------------------|----------|-------------------------------------------------------------------------------|
+| name            | String               | Required | Used for triggering via "Triggers a [event] event" unique                     |
+| text            | String               | None     | Flavor text displayed to user                                                 |
+| civilopediaText | List                 | Optional | See [civilopediaText chapter](5-Miscellaneous-JSON-files.md#civilopedia-text) |
+| choices         | List of EventChoices |          | User can choose to trigger one of the viable choices                          |
+
+You can use text and/or civilopediaText, if both are present both are shown (but why would you?)
 
 Event choices are comprised of:
 
-| Attribute        | Type                        | Default    | Notes                                                         |
-|------------------|-----------------------------|------------|---------------------------------------------------------------|
-| text             | String                      | Required   | Displayed to user. Should be an action name - "Do X"          |
-| triggeredUniques | List of trigger uniques     | Required   | The triggers that this choice activates upon being chosen     |
-| conditions       | List of conditional uniques | Empty list | If any conditional is not met, this option becomes unpickable |
+| Attribute        | Type                        | Default    | Notes                                                                                                                |
+|------------------|-----------------------------|------------|----------------------------------------------------------------------------------------------------------------------|
+| text             | String                      | Required   | Displayed to user as button. Should be an action name - "Do X"                                                       |
+| triggeredUniques | List of trigger uniques     | Required   | The triggers that this choice activates upon being chosen                                                            |
+| conditions       | List of conditional uniques | Empty list | If any conditional is not met, this option becomes unpickable (not shown)                                            |
+| keyShortcut      | key to select (name)        | none       | Key names see [Gdx.Input.Keys](https://github.com/libgdx/libgdx/blob/master/gdx/src/com/badlogic/gdx/Input.java#L69) |
+| civilopediaText  | List                        | Optional   | See [civilopediaText chapter](5-Miscellaneous-JSON-files.md#civilopedia-text)                                        |
 
+Here, civilopediaText is shown outside the active Button, before the triggeredUniques.
 
 ## ModOptions.json
 
@@ -202,6 +208,7 @@ and city distance in another. In case of conflicts, there is no guarantee which 
 | religionLimitMultiplier                  | Float  | 0.5                           | [^K]  |
 | pantheonBase                             | Int    | 10                            | [^L]  |
 | pantheonGrowth                           | Int    | 5                             | [^L]  |
+| workboatAutomationSearchMaxTiles         | Int    | 20                            | [^M]  |
 
 Legend:
 
@@ -231,6 +238,7 @@ Legend:
 - [^J]: A [UnitUpgradeCost](#unitupgradecost) sub-structure.
 - [^K]: Maximum foundable Religions = religionLimitBase + floor(MajorCivCount * religionLimitMultiplier)
 - [^L]: Cost of pantheon = pantheonBase + CivsWithReligion * pantheonGrowth
+- [^M]: When the AI decidees whether to build a work boat, how many tiles to search from the city center for an improvable tile
 
 #### UnitUpgradeCost
 
@@ -266,7 +274,6 @@ When extension rulesets define GlobalUniques, all uniques are merged. At the mom
 **Note a Base Ruleset mod can define a "welcome page" here by adding a "Tutorial" with a name equal to the name of the mod!**
 As an exception to the general rule, this file in a Base Ruleset mod will not _replace_ the default, but add to it like extension mods do.
 Also, place it under `<mod>/jsons/` normally even if the original is found one level above the vanilla jsons.
-Also, place it under `<mod>/jsons/` normally even if the original is found one level above the vanilla jsons.
 
 Each tutorial has the following structure:
 
@@ -277,6 +284,8 @@ Each tutorial has the following structure:
 | steps           | List of Strings | Optional | Plain text                                                                    |
 
 If an entry contains both `steps` and `civilopediaText` attributes, the `civilopediaText` is shown first.
+Tutorials shown as Popup can show an show an external image (not part of the texture atlases) if there is an image unter ExtraImages (directly under assets or the Mod folder) having the same name.
+This is searched for, meaning the mod defining the Tutorial is irrelevant, mods can override builtin ExtraImages, and case sensitivity depends on the OS.
 
 ## VictoryTypes.json
 
@@ -359,6 +368,8 @@ The lines from json will 'surround' the automatically generated lines such that 
 
 Note: `text` now also supports inline color markup. Insert `«color»` to start coloring text, `«»` to stop. `color` can be a name or 6/8-digit hex notation like `#ffa040` (different from the `color` attribute notation only by not allowing 3-digit codes, but allowing the alpha channel).
 Effectively, the `«»` markers are replaced with `[]` _after_ translation and then passed to [gdx markup language](https://libgdx.com/wiki/graphics/2d/fonts/color-markup-language).
+
+Note: Using an ExtraImages folder in a mod was not working until version 4.11.5
 
 ## RGB colors list
 

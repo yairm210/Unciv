@@ -21,6 +21,7 @@ import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
+import com.unciv.models.stats.INamed
 import com.unciv.models.stats.Stat
 import java.util.UUID
 import kotlin.math.roundToInt
@@ -32,7 +33,7 @@ enum class CityFlags {
 }
 
 
-class City : IsPartOfGameInfoSerialization {
+class City : IsPartOfGameInfoSerialization, INamed {
     @Transient
     lateinit var civ: Civilization
 
@@ -54,7 +55,7 @@ class City : IsPartOfGameInfoSerialization {
 
     var location: Vector2 = Vector2.Zero
     var id: String = UUID.randomUUID().toString()
-    var name: String = ""
+    override var name: String = ""
     var foundingCiv = ""
     // This is so that cities in resistance that are recaptured aren't in resistance anymore
     var previousOwner = ""
@@ -85,6 +86,11 @@ class City : IsPartOfGameInfoSerialization {
     var hasSoldBuildingThisTurn = false
     var isPuppet = false
     var updateCitizens = false  // flag so that on startTurn() the Governor reassigns Citizens
+
+    @delegate:Transient
+    val neighboringCities: List<City> by lazy { 
+        civ.gameInfo.getCities().filter { it != this && it.getCenterTile().isExplored(civ) && it.getCenterTile().aerialDistanceTo(getCenterTile()) <= 12 }.toList()
+    }
 
     var cityAIFocus: String = CityFocus.NoFocus.name
     fun getCityFocus() = CityFocus.values().firstOrNull { it.name == cityAIFocus } ?: CityFocus.NoFocus
@@ -153,12 +159,12 @@ class City : IsPartOfGameInfoSerialization {
     fun isCapital(): Boolean = cityConstructions.getBuiltBuildings().any { it.hasUnique(UniqueType.IndicatesCapital) }
     fun isCoastal(): Boolean = centerTile.isCoastalTile()
 
-    fun capitalCityIndicator(): Building {
+    fun capitalCityIndicator(): Building? {
         val indicatorBuildings = getRuleset().buildings.values.asSequence()
             .filter { it.hasUnique(UniqueType.IndicatesCapital) }
 
         val civSpecificBuilding = indicatorBuildings.firstOrNull { it.uniqueTo == civ.civName }
-        return civSpecificBuilding ?: indicatorBuildings.first()
+        return civSpecificBuilding ?: indicatorBuildings.firstOrNull()
     }
 
     fun isConnectedToCapital(connectionTypePredicate: (Set<String>) -> Boolean = { true }): Boolean {
@@ -228,6 +234,8 @@ class City : IsPartOfGameInfoSerialization {
 
     internal fun getMaxHealth() =
         200 + cityConstructions.getBuiltBuildings().sumOf { it.cityHealth }
+
+    fun getStrength() = cityConstructions.getBuiltBuildings().sumOf { it.cityStrength }.toFloat()
 
     override fun toString() = name // for debug
 
@@ -373,11 +381,11 @@ class City : IsPartOfGameInfoSerialization {
 
     internal fun tryUpdateRoadStatus() {
         if (getCenterTile().roadStatus == RoadStatus.None) {
-            val roadImprovement = RoadStatus.Road.improvement(getRuleset())
+            val roadImprovement = getRuleset().roadImprovement
             if (roadImprovement != null && roadImprovement.techRequired in civ.tech.techsResearched)
                 getCenterTile().roadStatus = RoadStatus.Road
         } else if (getCenterTile().roadStatus != RoadStatus.Railroad) {
-            val railroadImprovement = RoadStatus.Railroad.improvement(getRuleset())
+            val railroadImprovement = getRuleset().railroadImprovement
             if (railroadImprovement != null && railroadImprovement.techRequired in civ.tech.techsResearched)
                 getCenterTile().roadStatus = RoadStatus.Railroad
         }
@@ -476,7 +484,7 @@ class City : IsPartOfGameInfoSerialization {
                 + religion.getUniques().filter { it.type == uniqueType }
             ).filter {
                 !it.isTimedTriggerable && it.conditionalsApply(stateForConditionals)
-            }
+            }.flatMap { it.getMultiplied(stateForConditionals) }
     }
 
     // Uniques special to this city
@@ -484,6 +492,7 @@ class City : IsPartOfGameInfoSerialization {
         val uniques = cityConstructions.builtBuildingUniqueMap.getUniques(uniqueType).filter { it.isLocalEffect } +
             religion.getUniques().filter { it.type == uniqueType }
         return if (uniques.any()) uniques.filter { !it.isTimedTriggerable && it.conditionalsApply(stateForConditionals) }
+            .flatMap { it.getMultiplied(stateForConditionals) }
         else uniques
     }
 
@@ -492,7 +501,7 @@ class City : IsPartOfGameInfoSerialization {
         val uniques = cityConstructions.builtBuildingUniqueMap.getUniques(uniqueType)
         // Memory performance showed that this function was very memory intensive, thus we only create the filter if needed
         return if (uniques.any()) uniques.filter { !it.isLocalEffect && !it.isTimedTriggerable
-            && it.conditionalsApply(stateForConditionals) }
+            && it.conditionalsApply(stateForConditionals) }.flatMap { it.getMultiplied(stateForConditionals) }
         else uniques
     }
 

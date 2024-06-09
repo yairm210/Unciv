@@ -81,13 +81,14 @@ class VictoryManager : IsPartOfGameInfoSerialization {
         return (results.none { it != bestCiv && it.value == bestCiv.value })
     }
 
-    fun getDiplomaticVictoryVoteBreakdown(): String {
+    data class DiplomaticVictoryVoteBreakdown(val results: Counter<String>, val winnerText: String)
+    fun getDiplomaticVictoryVoteBreakdown(): DiplomaticVictoryVoteBreakdown {
         val results = calculateDiplomaticVotingResults(civInfo.gameInfo.diplomaticVictoryVotesCast)
         val (voteCount, winnerList) = results.asSequence()
             .groupBy({ it.value }, { it.key }).asSequence()
             .sortedByDescending { it.key }  // key is vote count here
             .firstOrNull()
-            ?: return "No valid votes were cast."
+            ?: return DiplomaticVictoryVoteBreakdown(results, "No valid votes were cast.")
 
         val lines = arrayListOf<String>()
         val minVotes = votesNeededForDiplomaticVictory()
@@ -99,9 +100,9 @@ class VictoryManager : IsPartOfGameInfoSerialization {
         lines += when {
             lines.isNotEmpty() -> "No world leader was elected."
             winnerCiv == civInfo -> "You have been elected world leader!"
-            else -> "${civInfo.nation.getLeaderDisplayName()} has been elected world leader!"
+            else -> "${winnerCiv.nation.getLeaderDisplayName()} has been elected world leader!"
         }
-        return lines.joinToString("\n") { "{$it}" }
+        return DiplomaticVictoryVoteBreakdown(results, lines.joinToString("\n") { "{$it}" })
     }
 
     fun getVictoryTypeAchieved(): String? {

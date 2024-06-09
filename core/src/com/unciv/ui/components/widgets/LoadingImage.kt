@@ -132,6 +132,8 @@ class LoadingImage(
         if (animated) hideAnimated(onComplete)
         else hideDelayed(onComplete)
 
+    fun isShowing() = loadingIcon.isVisible && actions.isEmpty
+
     //region Hiding helpers
     private fun hideAnimated(onComplete: (() -> Unit)?) {
         actions.clear()

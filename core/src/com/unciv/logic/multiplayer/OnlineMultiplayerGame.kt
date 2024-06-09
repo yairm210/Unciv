@@ -9,6 +9,7 @@ import com.unciv.logic.multiplayer.GameUpdateResult.Type.FAILURE
 import com.unciv.logic.multiplayer.GameUpdateResult.Type.UNCHANGED
 import com.unciv.logic.multiplayer.storage.FileStorageRateLimitReached
 import com.unciv.logic.multiplayer.storage.OnlineMultiplayerServer
+import com.unciv.ui.audio.SoundPlayer
 import com.unciv.ui.components.extensions.isLargerThan
 import com.unciv.utils.debug
 import com.unciv.utils.launchOnGLThread
@@ -30,17 +31,16 @@ class OnlineMultiplayerGame(
     lastOnlineUpdate: Instant? = null
 ) {
     private val lastOnlineUpdate: AtomicReference<Instant?> = AtomicReference(lastOnlineUpdate)
-    val lastUpdate: Instant
-        get() {
-            val lastFileUpdateTime = Instant.ofEpochMilli(fileHandle.lastModified())
-            val lastOnlineUpdateTime = lastOnlineUpdate.get()
-            return if (lastOnlineUpdateTime == null || lastFileUpdateTime.isLargerThan(lastOnlineUpdateTime)) {
-                lastFileUpdateTime
-            } else {
-                lastOnlineUpdateTime
-            }
+    fun getLastUpdate(): Instant {
+        val lastFileUpdateTime = Instant.ofEpochMilli(fileHandle.lastModified())
+        val lastOnlineUpdateTime = lastOnlineUpdate.get()
+        return if (lastOnlineUpdateTime == null || lastFileUpdateTime.isLargerThan(lastOnlineUpdateTime)) {
+            lastFileUpdateTime
+        } else {
+            lastOnlineUpdateTime
         }
-    val name get() = fileHandle.name()
+    }
+    val name = fileHandle.name()
     var error: Exception? = null
 
     init {
@@ -121,7 +121,21 @@ class OnlineMultiplayerGame(
         preview = gameInfo
         withGLContext {
             EventBus.send(MultiplayerGameUpdated(name, gameInfo))
+            playMultiplayerTurnNotification(gameInfo)
         }
+    }
+
+
+    private fun playMultiplayerTurnNotification(gameInfoPreview: GameInfoPreview) {
+        if (!gameInfoPreview.isUsersTurn()) return
+        if (UncivGame.isDeepLinkedGameLoading()) return // This means we already arrived here through a turn notification, no need to notify again
+
+        val sound = if (UncivGame.isCurrentGame(gameInfoPreview.gameId)) {
+            UncivGame.Current.settings.multiplayer.currentGameTurnNotificationSound
+        } else {
+            UncivGame.Current.settings.multiplayer.otherGameTurnNotificationSound
+        }
+        SoundPlayer.play(sound)
     }
 
     override fun equals(other: Any?): Boolean = other is OnlineMultiplayerGame && fileHandle == other.fileHandle

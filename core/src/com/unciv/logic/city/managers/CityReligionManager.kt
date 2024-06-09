@@ -117,7 +117,7 @@ class CityReligionManager : IsPartOfGameInfoSerialization {
                 (
                     religionOwningCiv.getMatchingUniques(UniqueType.StatsWhenAdoptingReligionSpeed)
                     + religionOwningCiv.getMatchingUniques(UniqueType.StatsWhenAdoptingReligion)
-                ).map { it.stats }
+                ).map { it.stats.times(if (!it.isModifiedByGameSpeed()) 1f else city.civ.gameInfo.speed.modifier) }
                 .reduce { acc, stats -> acc + stats }
 
             for ((key, value) in statsGranted)

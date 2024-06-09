@@ -309,20 +309,12 @@ object TechnologyDescriptions {
         civInfo: Civilization?,
         predicate: (Building) -> Boolean
     ): Sequence<Building> {
-        val (nuclearWeaponsEnabled, religionEnabled) = getNukeAndReligionSwitches(civInfo)
         return ruleset.buildings.values.asSequence()
             .filter {
                 predicate(it)   // expected to be the most selective, thus tested first
-                        && (it.uniqueTo == civInfo?.civName || it.uniqueTo == null && civInfo?.getEquivalentBuilding(it) == it)
-                        && (nuclearWeaponsEnabled || !it.hasUnique(UniqueType.EnablesNuclearWeapons))
-                        && (religionEnabled || !it.hasUnique(UniqueType.HiddenWithoutReligion))
-                        && !it.hasUnique(UniqueType.HiddenFromCivilopedia)
+                && (it.uniqueTo == civInfo?.civName || it.uniqueTo == null && civInfo?.getEquivalentBuilding(it) == it)
+                && !it.isHiddenFromCivilopedia(ruleset)
             }
-    }
-
-    private fun getNukeAndReligionSwitches(civInfo: Civilization?): Pair<Boolean, Boolean> {
-        if (civInfo == null) return true to true
-        return civInfo.gameInfo.run { gameParameters.nuclearWeaponsEnabled to isReligionEnabled() }
     }
 
     /**
@@ -331,14 +323,11 @@ object TechnologyDescriptions {
      */
     // Used for Civilopedia, Alert and Picker, so if any of these decide to ignore the "Will not be displayed in Civilopedia"/HiddenFromCivilopedia unique this needs refactoring
     private fun getEnabledUnits(techName: String, ruleset: Ruleset, civInfo: Civilization?): Sequence<BaseUnit> {
-        val (nuclearWeaponsEnabled, religionEnabled) = getNukeAndReligionSwitches(civInfo)
         return ruleset.units.values.asSequence()
             .filter {
                 it.requiredTechs().contains(techName)
-                        && (it.uniqueTo == civInfo?.civName || it.uniqueTo == null && civInfo?.getEquivalentUnit(it) == it)
-                        && (nuclearWeaponsEnabled || !it.isNuclearWeapon())
-                        && (religionEnabled || !it.hasUnique(UniqueType.HiddenWithoutReligion))
-                        && !it.hasUnique(UniqueType.HiddenFromCivilopedia)
+                && (it.uniqueTo == civInfo?.civName || it.uniqueTo == null && civInfo?.getEquivalentUnit(it) == it)
+                && !it.isHiddenFromCivilopedia(ruleset)
             }
     }
 

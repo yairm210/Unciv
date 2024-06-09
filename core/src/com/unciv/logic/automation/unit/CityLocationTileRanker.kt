@@ -4,6 +4,7 @@ import com.unciv.logic.automation.Automation
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
+import com.unciv.logic.map.HexMath
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.tile.ResourceType
@@ -21,7 +22,7 @@ object CityLocationTileRanker {
     /**
      * Returns a hashmap of tiles to their ranking plus the a the highest value tile and its value
      */
-    fun getBestTilesToFoundCity(unit: MapUnit, distanceToSearch: Int? = null): BestTilesToFoundCity {
+    fun getBestTilesToFoundCity(unit: MapUnit, distanceToSearch: Int? = null, minimumValue: Float): BestTilesToFoundCity {
         val range =  if (distanceToSearch != null) distanceToSearch else {
             val distanceFromHome = if (unit.civ.cities.isEmpty()) 0
             else unit.civ.cities.minOf { it.getCenterTile().aerialDistanceTo(unit.getTile()) }
@@ -39,10 +40,11 @@ object CityLocationTileRanker {
         val possibleTileLocationsWithRank = possibleCityLocations
             .map {
                 val tileValue = rankTileToSettle(it, unit.civ, nearbyCities, baseTileMap, uniqueCache)
-                bestTilesToFoundCity.tileRankMap[it] = tileValue
+                if (tileValue >= minimumValue)
+                    bestTilesToFoundCity.tileRankMap[it] = tileValue
 
                 Pair(it, tileValue)
-            }
+            }.filter { it.second >= minimumValue }
             .sortedByDescending { it.second }
 
         val bestReachableTile = possibleTileLocationsWithRank.firstOrNull { unit.movement.canReach(it.first) }
@@ -85,7 +87,7 @@ object CityLocationTileRanker {
         // Only count a luxary resource that we don't have yet as unique once
         val newUniqueLuxuryResources = HashSet<String>()
 
-        if (onCoast) tileValue += 15
+        if (onCoast) tileValue += 8
         if (newCityTile.isAdjacentToRiver()) tileValue += 10
         if (newCityTile.terrainHasUnique(UniqueType.FreshWater)) tileValue += 5
         // We want to found the city on an oasis because it can't be improved otherwise
@@ -93,11 +95,16 @@ object CityLocationTileRanker {
         // If we build the city on a resource tile, then we can't build any special improvements on it
         if (newCityTile.resource != null) tileValue -= 4
 
+        var tiles = 0
         for (i in 0..3) {
             for (nearbyTile in newCityTile.getTilesAtDistance(i)) {
+                tiles++
                 tileValue += rankTile(nearbyTile, civ, onCoast, newUniqueLuxuryResources, baseTileMap, uniqueCache)
             }
         }
+
+        // Placing cities on the edge of the map is bad, we can't even build improvements on them!
+        tileValue -= (HexMath.getNumberOfTilesInHexagon(3) - tiles) * 3
         return tileValue
     }
 
@@ -111,35 +118,37 @@ object CityLocationTileRanker {
                 // If it is not higher the settler may get stuck when it ranks the same tile differently
                 // as it moves away from the city and doesn't include it in the calculation
                 // and values it higher than when it moves closer to the city
-                distanceToCity == 6 -> 2f
-                distanceToCity == 5 -> 5f
-                distanceToCity == 4 -> 10f
-                distanceToCity == 3 -> 15f
-                distanceToCity < 3 -> 25f // Even if it is a mod that lets us settle closer, lets still not do it
+                distanceToCity == 7 -> 5f // Perfect location, there aren't any unused tiles in between
+                distanceToCity == 6 -> -4f
+                distanceToCity == 5 -> -8f
+                distanceToCity == 4 -> -20f
+                distanceToCity == 3 -> -25f
+                distanceToCity < 3 -> -30f // Even if it is a mod that lets us settle closer, lets still not do it
                 else -> 0f
             }
             // Bigger cities will expand more so we want to stay away from them
             // Reduces the chance that we don't settle at the begining
             distanceToCityModifier *= when {
-                city.population.population >= 12 -> 4f
-                city.population.population >= 8 -> 3f
-                city.population.population >= 3 -> 2f
+                city.population.population >= 12 -> 2f
+                city.population.population >= 8 -> 1.5f
+                city.population.population >= 3 -> 1.2f
                 else -> 1f
             }
             // It is worse to settle cities near our own compare to near another civ
             // Do not settle near our capital unless really necessary
             // Having a strong capital is esential to constructing wonders
-            if (city.civ == civ) distanceToCityModifier *= if (city.isCapital()) 5 else 2
-            modifier -= distanceToCityModifier
+            if (city.civ == civ) distanceToCityModifier *= if (city.isCapital()) 2 else 1
+            modifier += distanceToCityModifier
         }
         return modifier
     }
 
     private fun rankTile(rankTile: Tile, civ: Civilization, onCoast: Boolean, newUniqueLuxuryResources: HashSet<String>,
                          baseTileMap: HashMap<Tile, Float>, uniqueCache: LocalUniqueCache): Float {
+        if (rankTile.getCity() != null) return -1f
         var locationSpecificTileValue = 0f
         // Don't settle near but not on the coast
-        if (rankTile.isCoastalTile() && !onCoast) locationSpecificTileValue -= 10
+        if (rankTile.isCoastalTile() && !onCoast) locationSpecificTileValue -= 2
         // Apply the effect of having a lighthouse, since we can probably assume that we will build it
         if (onCoast && rankTile.isOcean) locationSpecificTileValue += 1
         // Check if there are any new unique luxury resources
@@ -154,6 +163,8 @@ object CityLocationTileRanker {
         if (rankTile.getOwner() != null && rankTile.getOwner() != civ) return 0f
 
         var rankTileValue = Automation.rankStatsValue(rankTile.stats.getTileStats(null, civ, uniqueCache), civ)
+        // We can't build improvements on water tiles without resources
+        if (!rankTile.isLand) rankTileValue -= 1
 
         if (rankTile.resource != null) {
             rankTileValue += when (rankTile.tileResource.resourceType) {

@@ -70,8 +70,14 @@ object GUI {
         UncivGame.Current.worldScreen?.clearUndoCheckpoints()
     }
 
+    /** Fallback in case you have no easy access to a BaseScreen that knows which Ruleset Civilopedia should display.
+     *  If at all possible, use [BaseScreen.openCivilopedia] instead. */
+    fun openCivilopedia(link: String = "") {
+        UncivGame.Current.screen?.openCivilopedia(link)
+    }
+
     private var keyboardAvailableCache: Boolean? = null
-    /** Tests availability of a physical keyboard */
+    /** Tests availability of a physical keyboard - cached (connecting a keyboard while the game is running won't be recognized until relaunch) */
     val keyboardAvailable: Boolean
         get() {
             // defer decision if Gdx.input not yet initialized

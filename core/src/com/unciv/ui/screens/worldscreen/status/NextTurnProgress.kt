@@ -98,7 +98,7 @@ class NextTurnProgress(
         // On first update the button text is not yet updated. To stabilize geometry, do it now
         if (progress == 0) nextTurnButton?.apply {
             disable()
-            if (UncivGame.Current.settings.autoPlay.isAutoPlaying())
+            if (GUI.getWorldScreenIfActive()?.autoPlay?.isAutoPlaying() == true)
                 updateButton(NextTurnAction.AutoPlay)
             else updateButton(NextTurnAction.Working)
             barWidth = width - removeHorizontalPad -

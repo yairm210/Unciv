@@ -26,8 +26,8 @@ import com.unciv.logic.map.MapPathing
 import com.unciv.logic.map.TileMap
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.mapunit.movement.UnitMovement
-import com.unciv.logic.map.tile.RoadStatus
 import com.unciv.logic.map.tile.Tile
+import com.unciv.models.Spy
 import com.unciv.models.UncivSound
 import com.unciv.models.UnitActionType
 import com.unciv.models.ruleset.unique.LocalUniqueCache
@@ -58,6 +58,7 @@ import com.unciv.ui.components.widgets.ZoomableScrollPane
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.basescreen.UncivStage
+import com.unciv.ui.screens.overviewscreen.EspionageOverviewScreen
 import com.unciv.ui.screens.worldscreen.UndoHandler.Companion.recordUndoCheckpoint
 import com.unciv.ui.screens.worldscreen.bottombar.BattleTableHelpers.battleAnimation
 import com.unciv.utils.Concurrency
@@ -124,6 +125,9 @@ class WorldMapHolder(
     // Contains the data required to draw a "connect road" button
     class ConnectRoadButtonDto(val unit: MapUnit, val tile: Tile) : ButtonDto
 
+    // Contains the data required to draw a "move spy" button
+    class MoveSpyButtonDto(val spy: Spy, val city: City?) : ButtonDto
+
 
     internal fun addTiles() {
         val tileSetStrings = TileSetStrings()
@@ -145,6 +149,7 @@ class WorldMapHolder(
                     ActivationTypes.Longpress else ActivationTypes.RightClick,
                 noEquivalence = true
             ) {
+                if (!UncivGame.Current.settings.longTapMove) return@onActivation
                 val unit = worldScreen.bottomUnitTable.selectedUnit
                     ?: return@onActivation
                 Concurrency.run("WorldScreenClick") {
@@ -173,10 +178,12 @@ class WorldMapHolder(
         val previousSelectedCity = unitTable.selectedCity
         val previousSelectedUnitIsSwapping = unitTable.selectedUnitIsSwapping
         val previousSelectedUnitIsConnectingRoad = unitTable.selectedUnitIsConnectingRoad
-        unitTable.tileSelected(tile)
+        val movingSpyOnMap = unitTable.selectedSpy != null
+        if (!movingSpyOnMap)
+            unitTable.tileSelected(tile)
         val newSelectedUnit = unitTable.selectedUnit
 
-        if (previousSelectedCity != null && tile != previousSelectedCity.getCenterTile())
+        if (previousSelectedCity != null && tile != previousSelectedCity.getCenterTile() && !movingSpyOnMap)
             tileGroups[previousSelectedCity.getCenterTile()]!!.layerCityButton.moveUp()
 
         if (previousSelectedUnits.isNotEmpty()) {
@@ -203,6 +210,8 @@ class WorldMapHolder(
                     else -> addTileOverlaysWithUnitMovement(previousSelectedUnits, tile) // Long-running task
                 }
             }
+        } else if (movingSpyOnMap) {
+            addMovingSpyOverlay(unitTable.selectedSpy!!, tile)
         } else {
             addTileOverlays(tile) // no unit movement but display the units in the tile etc.
         }
@@ -268,6 +277,11 @@ class WorldMapHolder(
         worldScreen.shouldUpdate = localShouldUpdate
     }
 
+    private fun markUnitMoveTutorialComplete(unit: MapUnit) {
+        val key = if (unit.baseUnit.movesLikeAirUnits()) "Move an air unit" else "Move unit"
+        UncivGame.Current.settings.addCompletedTutorialTask(key)
+    }
+
     private fun moveUnitToTargetTile(selectedUnits: List<MapUnit>, targetTile: Tile) {
         // this can take a long time, because of the unit-to-tile calculation needed, so we put it in a different thread
         // THIS PART IS REALLY ANNOYING
@@ -278,6 +292,7 @@ class WorldMapHolder(
         // and then calling the function again but without the unit that moved.
 
         val selectedUnit = selectedUnits.first()
+        markUnitMoveTutorialComplete(selectedUnit) // not too expensive to have it repeat too often
 
         Concurrency.run("TileToMoveTo") {
             // these are the heavy parts, finding where we want to go
@@ -335,6 +350,7 @@ class WorldMapHolder(
     }
 
     private fun swapMoveUnitToTargetTile(selectedUnit: MapUnit, targetTile: Tile) {
+        markUnitMoveTutorialComplete(selectedUnit)
         selectedUnit.movement.swapMoveToTile(targetTile)
 
         if (selectedUnit.isExploring() || selectedUnit.isMoving())
@@ -459,6 +475,13 @@ class WorldMapHolder(
             }
         }
     }
+
+    private fun addMovingSpyOverlay(spy: Spy, tile: Tile) {
+        val city: City? = if (tile.isCityCenter() && spy.canMoveTo(tile.getCity()!!)) tile.getCity() else null
+        addTileOverlays(tile, MoveSpyButtonDto(spy, city))
+        worldScreen.shouldUpdate = true
+    }
+
     private fun addTileOverlays(tile: Tile, buttonDto: ButtonDto? = null) {
         val table = Table().apply { defaults().pad(10f) }
         if (buttonDto != null && worldScreen.canChangeState)
@@ -467,6 +490,7 @@ class WorldMapHolder(
                     is MoveHereButtonDto -> getMoveHereButton(buttonDto)
                     is SwapWithButtonDto -> getSwapWithButton(buttonDto)
                     is ConnectRoadButtonDto -> getConnectRoadButton(buttonDto)
+                    is MoveSpyButtonDto -> getMoveSpyButton(buttonDto)
                     else -> null
                 }
             )
@@ -532,9 +556,6 @@ class WorldMapHolder(
         if (unitsThatCanMove.isEmpty()) moveHereButton.color.a = 0.5f
         else {
             moveHereButton.onActivation(UncivSound.Silent) {
-                UncivGame.Current.settings.addCompletedTutorialTask("Move unit")
-                if (unitsThatCanMove.any { it.baseUnit.movesLikeAirUnits() })
-                    UncivGame.Current.settings.addCompletedTutorialTask("Move an air unit")
                 moveUnitToTargetTile(unitsThatCanMove, dto.tile)
             }
             moveHereButton.keyShortcuts.add(KeyCharAndCode.TAB)
@@ -559,9 +580,6 @@ class WorldMapHolder(
         swapWithButton.addActor(unitIcon)
 
         swapWithButton.onActivation(UncivSound.Silent) {
-            UncivGame.Current.settings.addCompletedTutorialTask("Move unit")
-            if (dto.unit.baseUnit.movesLikeAirUnits())
-                UncivGame.Current.settings.addCompletedTutorialTask("Move an air unit")
             swapMoveUnitToTargetTile(dto.unit, dto.tile)
         }
         swapWithButton.keyShortcuts.add(KeyCharAndCode.TAB)
@@ -589,6 +607,48 @@ class WorldMapHolder(
         return connectRoadButton
     }
 
+    private fun getMoveSpyButton(dto: MoveSpyButtonDto): Group {
+        val spyActionButton = Group()
+        spyActionButton.setSize(buttonSize, buttonSize)
+        spyActionButton.addActor(ImageGetter.getCircle(size = buttonSize))
+        if (dto.city != null) {
+            spyActionButton.addActor(
+                    ImageGetter.getStatIcon("Movement").apply {
+                        name = "Button"
+                        color = Color.BLACK
+                        setSize(buttonSize / 2)
+                        center(spyActionButton)
+                    }
+            )
+        } else {
+            spyActionButton.addActor(
+                    ImageGetter.getImage("OtherIcons/Close").apply {
+                        name = "Button"
+                        color = Color.RED
+                        setSize(buttonSize / 2)
+                        center(spyActionButton)
+                    }
+            )
+        }
+
+        spyActionButton.onActivation(UncivSound.Silent) {
+            if (dto.city != null) {
+                dto.spy.moveTo(dto.city)
+                worldScreen.game.pushScreen(EspionageOverviewScreen(worldScreen.selectedCiv, worldScreen))
+            } else {
+                worldScreen.game.pushScreen(EspionageOverviewScreen(worldScreen.selectedCiv, worldScreen))
+                worldScreen.bottomUnitTable.selectedSpy = null
+            }
+            removeUnitActionOverlay()
+            selectedTile = null
+            worldScreen.shouldUpdate = true
+        }
+        spyActionButton.keyShortcuts.add(KeyCharAndCode.TAB)
+        spyActionButton.keyShortcuts.add(KeyCharAndCode.RETURN)
+        spyActionButton.keyShortcuts.add(KeyCharAndCode.NUMPAD_ENTER)
+
+        return spyActionButton
+    }
 
     fun addOverlayOnTileGroup(group: TileGroup, actor: Actor) {
 
@@ -666,6 +726,9 @@ class WorldMapHolder(
         // Update tiles according to selected unit/city
         val unitTable = worldScreen.bottomUnitTable
         when {
+            unitTable.selectedSpy != null -> {
+                updateTilesForSelectedSpy(unitTable.selectedSpy!!)
+            }
             unitTable.selectedCity != null -> {
                 val city = unitTable.selectedCity!!
                 updateBombardableTilesForSelectedCity(city)
@@ -706,7 +769,7 @@ class WorldMapHolder(
                 // Fade out population icons
                 group.layerMisc.dimPopulation(true)
 
-                val shownImprovement = unit.civ.lastSeenImprovement[group.tile.position]
+                val shownImprovement = group.tile.getShownImprovement(unit.civ)
 
                 // Fade out improvement icons (but not barb camps or ruins)
                 if (shownImprovement != null && shownImprovement != Constants.barbarianEncampment
@@ -731,10 +794,9 @@ class WorldMapHolder(
         // Z-Layer: 0
         // Highlight suitable tiles in road connecting mode
         if (worldScreen.bottomUnitTable.selectedUnitIsConnectingRoad) {
-            val roadImprovement = RoadStatus.Road.improvement(unit.currentTile.ruleset)
-            val validTiles = if (roadImprovement==null) listOf()
-            else unit.civ.gameInfo.tileMap.tileList.filter {
-                MapPathing.isValidRoadPathTile(unit, it, roadImprovement)
+            if (unit.currentTile.ruleset.roadImprovement == null) return
+            val validTiles = unit.civ.gameInfo.tileMap.tileList.filter {
+                MapPathing.isValidRoadPathTile(unit, it)
             }
             val connectRoadTileOverlayColor = Color.RED
             for (tile in validTiles)  {
@@ -755,7 +817,7 @@ class WorldMapHolder(
         val moveTileOverlayColor = if (unit.isPreparingParadrop()) Color.BLUE else Color.WHITE
         val tilesInMoveRange = unit.movement.getReachableTilesInCurrentTurn()
         // Prepare special Nuke blast radius display
-        val nukeBlastRadius = if (unit.baseUnit.isNuclearWeapon() && selectedTile != null && selectedTile != unit.getTile())
+        val nukeBlastRadius = if (unit.isNuclearWeapon() && selectedTile != null && selectedTile != unit.getTile())
             unit.getNukeBlastRadius() else -1
 
         // Z-Layer: 1
@@ -859,9 +921,24 @@ class WorldMapHolder(
         // Highlight best tiles for city founding
         if (unit.hasUnique(UniqueType.FoundCity)
                 && UncivGame.Current.settings.showSettlersSuggestedCityLocations) {
-            CityLocationTileRanker.getBestTilesToFoundCity(unit).tileRankMap.asSequence()
+            CityLocationTileRanker.getBestTilesToFoundCity(unit, minimumValue = 50f).tileRankMap.asSequence()
                 .filter { it.key.isExplored(unit.civ) }.sortedByDescending { it.value }.take(3).forEach {
                 tileGroups[it.key]!!.layerOverlay.showGoodCityLocationIndicator()
+            }
+        }
+    }
+
+    private fun updateTilesForSelectedSpy(spy: Spy) {
+        for (group in tileGroups.values) {
+            group.layerOverlay.reset()
+            if (!group.tile.isCityCenter())
+                group.layerMisc.dimImprovement(true)
+            group.layerCityButton.moveDown()
+        }
+        for (city in worldScreen.gameInfo.getCities()) {
+            if (spy.canMoveTo(city)) {
+                tileGroups[city.getCenterTile()]!!.layerOverlay.showHighlight(Color.CYAN, .7f)
+
             }
         }
     }
@@ -908,7 +985,6 @@ class WorldMapHolder(
 
     override fun zoom(zoomScale: Float) {
         super.zoom(zoomScale)
-
         clampCityButtonSize()
     }
 
@@ -961,11 +1037,11 @@ class WorldMapHolder(
     }
 
     override fun restrictX(deltaX: Float): Float {
-        val exploredRegion = worldScreen.viewingCiv.exploredRegion
         var result = scrollX - deltaX
+        if (worldScreen.viewingCiv.isSpectator()) return result
 
+        val exploredRegion = worldScreen.viewingCiv.exploredRegion
         if (exploredRegion.shouldRecalculateCoords()) exploredRegion.calculateStageCoords(maxX, maxY)
-
         if (!exploredRegion.shouldRestrictX()) return result
 
         val leftX = exploredRegion.getLeftX()
@@ -980,9 +1056,10 @@ class WorldMapHolder(
     }
 
     override fun restrictY(deltaY: Float): Float {
-        val exploredRegion = worldScreen.viewingCiv.exploredRegion
         var result = scrollY + deltaY
+        if (worldScreen.viewingCiv.isSpectator()) return result
 
+        val exploredRegion = worldScreen.viewingCiv.exploredRegion
         if (exploredRegion.shouldRecalculateCoords()) exploredRegion.calculateStageCoords(maxX, maxY)
 
         val topY = exploredRegion.getTopY()

@@ -76,11 +76,6 @@ class ModManagementScreen private constructor(
         const val maxAllowedPreviewImageSize = 200f
         /** Github queries use this limit */
         const val amountPerPage = 100
-
-        val modsToHideAsUrl by lazy {
-            val blockedModsFile = Gdx.files.internal("jsons/ManuallyBlockedMods.json")
-            json().fromJsonFile(Array<String>::class.java, blockedModsFile)
-        }
     }
 
     // Since we're `RecreateOnResize`, preserve the portrait/landscape mode for our lifetime
@@ -297,6 +292,7 @@ class ModManagementScreen private constructor(
                     ToastPopup("Could not download mod list", this@ModManagementScreen)
                     replaceLoadingWithOptions()
                 }
+                Gdx.app.clipboard.contents = ex.stackTraceToString()
                 runningSearchJob = null
                 return@run
             }
@@ -317,11 +313,6 @@ class ModManagementScreen private constructor(
 
             if (onlineModInfo.containsKey(repo.name))
                 continue // we already got this mod in a previous download, since one has been added in between
-
-            // Mods we have manually decided to remove for instability are removed here
-            // If at some later point these mods are updated, we should definitely remove
-            // this piece of code. This is a band-aid, not a full solution.
-            if (repo.html_url in modsToHideAsUrl) continue
 
             val installedMod = RulesetCache.values.firstOrNull { it.name == repo.name }
             val isUpdatedVersionOfInstalledMod = installedMod?.modOptions?.let {
@@ -432,7 +423,6 @@ class ModManagementScreen private constructor(
                 val repo = GithubAPI.Repo.parseUrl(textField.text)
                 if (repo == null) {
                     ToastPopup("«RED»{Invalid link!}«»", this@ModManagementScreen)
-                        .apply { isVisible = true }
                     actualDownloadButton.setText("Download".tr())
                     actualDownloadButton.enable()
                 } else

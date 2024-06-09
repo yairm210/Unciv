@@ -52,6 +52,8 @@ object DiplomacyTurnManager {
                     otherCiv().addNotification("One of our trades with [${civInfo.civName}] has been cut short",
                         DiplomacyAction(civInfo.civName, true),
                         NotificationCategory.Trade, NotificationIcon.Trade, civInfo.civName)
+                    // If you cut a trade short, we're not going to trust you with per-turn trades for a while
+                    otherCivDiplomacy().setFlag(DiplomacyFlags.ResourceTradesCutShort, civInfo.gameInfo.speed.dealDuration * 2)
                     civInfo.cache.updateCivResources()
                 }
             }
@@ -133,9 +135,8 @@ object DiplomacyTurnManager {
 
     private fun DiplomacyManager.nextTurnFlags() {
         loop@ for (flag in flagsCountdown.keys.toList()) {
-            // No need to decrement negative countdown flags: they do not expire
-            if (flagsCountdown[flag]!! > 0)
-                flagsCountdown[flag] = flagsCountdown[flag]!! - 1
+            // We want negative flags to keep on going negative to keep track of time
+            flagsCountdown[flag] = flagsCountdown[flag]!! - 1
 
             // If we have uniques that make city states grant military units faster when at war with a common enemy, add higher numbers to this flag
             if (flag == DiplomacyFlags.ProvideMilitaryUnit.name && civInfo.isMajorCiv() && otherCiv().isCityState() &&
@@ -205,6 +206,10 @@ object DiplomacyTurnManager {
                     }
                 }
 
+                flagsCountdown.remove(flag)
+            } else if (flag == DiplomacyFlags.WaryOf.name && flagsCountdown[flag]!! < -10) {
+                // Used in DeclareWarTargetAutomation.declarePlannedWar to count the number of turns preparing
+                // If we have been preparing for over 10 turns then cancel our attack plan
                 flagsCountdown.remove(flag)
             }
         }
@@ -281,6 +286,7 @@ object DiplomacyTurnManager {
         revertToZero(DiplomaticModifiers.DenouncedOurAllies, 1 / 4f)
         revertToZero(DiplomaticModifiers.DenouncedOurEnemies, 1 / 4f)
         revertToZero(DiplomaticModifiers.Denunciation, 1 / 8f) // That's personal, it'll take a long time to fade
+        revertToZero(DiplomaticModifiers.SpiedOnUs, 1 / 4f)
 
         // Positives
         revertToZero(DiplomaticModifiers.GaveUsUnits, 1 / 4f)
@@ -290,6 +296,8 @@ object DiplomacyTurnManager {
         setFriendshipBasedModifier()
 
         setDefensivePactBasedModifier()
+
+        setReligionBasedModifier()
 
         if (!hasFlag(DiplomacyFlags.DeclarationOfFriendship))
             revertToZero(DiplomaticModifiers.DeclarationOfFriendship, 1 / 2f) //decreases slowly and will revert to full if it is declared later

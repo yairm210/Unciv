@@ -15,19 +15,20 @@ All filters except for `populationFilter` accept multiple values in the format: 
 
 > Example: `[{Military} {Water}] units`, `[{Wounded} {Armor}] units`, etc.
 
-No space or other text is allowed between the `[` and the first `{`.
+No space or other text is allowed between the `[` and the first `{`, nor between the last `}` and the ending `]`. The space in `} {`, however, is mandatory.
 
 All filters accept `non-[filter]` as a possible value
 
 > Example: `[non-[Wounded]] units`
 
-These can be combined by having the values be negative filters
+These can be combined by nesting, with the exception that an "ALL" filter cannot contain another "ALL" filter, even with a NON-filter in between.
 
-> Example: `[{non-[Wounded]} {Armor}] units`
+> Example: `[{non-[Wounded]} {Armor}] units` means unit is type Armor and at full health.
+> Example: `[non-[{Wounded} {Armor}]] units` means unit is neither wounded nor an Armor one.
 
-These CANNOT be combined in the other way - e.g. `[non-[{Wounded} {Armor}]] units` is NOT valid and will fail to register any units.
+`[{non-[{Wounded} {Armor}]} {Embarked}] units` WILL FAIL because the game will treat both "} {" at the same time and see `non-[{Wounded` and `Armor}]`, both invalid.
 
-This is because to the player, the text will be `non-Wounded Armor units`, which parses like `[{non-[Wounded]} {Armor}] units`
+Display of complex filters in Civilopedia may become unreadable. If so, consider hiding that unique and provide a better wording using the `Comment []` unique separately.
 
 ## civFilter
 
@@ -87,6 +88,8 @@ This indicates a unit as placed on the map. Compare with `baseUnitFilter`.
 - `Barbarians`, `Barbarian`
 - Again, any combination of the above is also allowed, e.g. `[{Wounded} {Water}]` units.
 
+You can check this in-game using the console with the `unit checkfilter <filter>` command
+
 ## buildingFilter
 
 Allows to only activate a unique for certain buildings. Allowed options are:
@@ -125,6 +128,7 @@ cityFilters allow us to choose the range of cities affected by this unique:
 - `in foreign cities`, `Foreign`
 - `in annexed cities`, `Annexed`
 - `in puppeted cities`, `Puppeted`
+- `in cities being razed`, `Razing`
 - `in holy cities`, `Holy`
 - `in City-State cities`
 - `in cities following this religion` - Should only be used in pantheon/follower uniques for religions
@@ -132,6 +136,8 @@ cityFilters allow us to choose the range of cities affected by this unique:
 - `in all cities in which the majority religion is a major religion`
 - `in all cities in which the majority religion is an enhanced religion`
 - [civFilter]
+
+You can check this in-game using the console with the `city checkfilter <filter>` command
 
 ## improvementFilter
 
@@ -152,6 +158,15 @@ A filter determining a part of the population of a city. It can be any of the fo
 - `Specialists`
 - `Unemployed`
 - `Followers of the Majority Religion` or `Followers of this Religion`, both of which only apply when this religion is the majority religion in that city
+
+## policyFilter
+
+Can be any of:
+
+- `All` or `all`
+- `[policyBranchName] branch`
+- The name of the policy
+- A unique the Policy has (verbatim, no placeholders)
 
 ## combatantFilter
 
@@ -254,6 +269,8 @@ Any of:
 - `Improvement` or `improved` for tiles with any improvements
 - `unimproved` for tiles with no improvement
 
+You can check this in-game using the console with the `tile checkfilter <filter>` command
+
 ## terrainQuality
 
 Used to indicate for what use the terrain should be viewed when dividing the world into regions, in each of which a single player is placed at the start of the game.
@@ -261,6 +278,21 @@ Used to indicate for what use the terrain should be viewed when dividing the wor
 Allowed values are:
 
 - improvement name (Note that "Road" and "Railroad" _do_ work as improvementFilters, but not as tileFilters at the moment.)
-- "All"
-- "Great Improvements", "Great"
-- "All Road" - for Roads & Railroads
+- `All`
+- `Great Improvements`, `Great`
+- `All Road` - for Roads & Railroads
+
+## countable
+
+Indicates *something that can be counted*, used both for comparisons and for multiplying uniques
+
+Allowed values:
+- `year`
+- Unit name (counts your existing units)
+- Building name (counts your existing buildings)
+- Stat name - gets the stat *reserve*, not the amount per turn (can be city stats or civilization stats, depending on where the unique is used)
+- Resource name (can be city stats or civilization stats, depending on where the unique is used)
+
+For example: If a unique is placed on a building, then the retrieved resources will be of the city. If placed on a policy, they will be of the civilization.
+
+This can make a difference for e.g. local resources, which are counted per city.

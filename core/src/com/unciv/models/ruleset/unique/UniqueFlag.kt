@@ -5,6 +5,7 @@ import java.util.EnumSet
 enum class UniqueFlag {
     HiddenToUsers,
     NoConditionals,
+    AcceptsSpeedModifier
     ;
     companion object {
         val setOfHiddenToUsers: EnumSet<UniqueFlag> = EnumSet.of(HiddenToUsers)

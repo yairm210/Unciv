@@ -43,6 +43,7 @@ object NextTurnAutomation {
             if (!civInfo.gameInfo.ruleset.modOptions.hasUnique(UniqueType.DiplomaticRelationshipsCannotChange)) {
                 DiplomacyAutomation.declareWar(civInfo)
                 DiplomacyAutomation.offerPeaceTreaty(civInfo)
+                DiplomacyAutomation.askForHelp(civInfo)
                 DiplomacyAutomation.offerDeclarationOfFriendship(civInfo)
             }
             if (civInfo.gameInfo.isReligionEnabled()) {
@@ -387,7 +388,7 @@ object NextTurnAutomation {
                     continue
                 val buildingToSell = civInfo.gameInfo.ruleset.buildings.values.filter {
                         city.cityConstructions.isBuilt(it.name)
-                        && it.requiresResource(resource, StateForConditionals(civInfo, city))
+                        && it.requiredResources(StateForConditionals(civInfo, city)).contains(resource)
                         && it.isSellable()
                         && !civInfo.civConstructions.hasFreeBuilding(city, it) }
                     .randomOrNull()
@@ -411,7 +412,7 @@ object NextTurnAutomation {
         if (unit.isCivilian() && !unit.isGreatPersonOfType("War")) return 1 // Civilian
         if (unit.baseUnit.isAirUnit()) return when {
             unit.canIntercept() -> 2 // Fighers first
-            unit.baseUnit.isNuclearWeapon() -> 3 // Then Nukes (area damage)
+            unit.isNuclearWeapon() -> 3 // Then Nukes (area damage)
             !unit.hasUnique(UniqueType.SelfDestructs) -> 4 // Then Bombers (reusable)
             else -> 5 // Missiles
         }

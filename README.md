@@ -31,7 +31,6 @@ In this order:
 * Polish! As you may have noticed, Unciv is fully functional but rough around the edges. This means:
     * UI+UX improvements ([suggestions welcome!](https://github.com/yairm210/Unciv/issues/new?assignees=&labels=feature&template=feature_request.md&title=Feature+request%3A+))
     * Better automation, AI etc. in-game
-* Finishing off Vanilla mechanics - mostly done!
 * G&K mechanics - espionage, small other changes (see [#4697](https://www.github.com/yairm210/Unciv/issues/4697))
 * BNW mechanics - trade routes, world congress, etc.
 
@@ -100,18 +99,18 @@ Alternatively, you could [join us on Discord](https://discord.gg/bjrB4Xw) and as
 
 ### Aren't you basically making a Civ V clone? Is that even legal?
 
-This is a subject that I've heard a lot of hearsay on but no solid sources of law.
+According to the [US Copyright Office FL-108](https://upload.wikimedia.org/wikipedia/commons/9/96/U.S._Copyright_Office_fl108.pdf), intellectual property rights *do not* apply to mechanics - as I'm sure you know, there are a billion Flappy Bird knockoffs
 
-From what I gather, it is illegal:
- - To use the Civilization name
- - To impersonate the Civ games (so calling yourself civi|zation with a similar logo, for instance)
+It is definitely illegal:
  - To use any assets from the original game (images, sound etc) - they belong to Firaxis
 
-From what I understand, intellectual property rights apply to names, characters and settings. They do not apply to mechanics - as I'm sure you know, there are a billion Flappy Bird knockoffs
+It is probably illegal (no solid sources on this):
+ - To use the Civilization name
+ - To impersonate the Civ games (so calling yourself civi|zation with a similar logo, for instance)
 
-If anyone has any real legal sources, or can shed some light on the limits of what is and is not allowed, I'd be happy to hear!
+Interestingly, [Civilization is a registered trademark](https://tsdr.uspto.gov/#caseNumber=74166752&caseType=SERIAL_NO&searchType=statusSearch), but it looks like it's only *that particular logo* which is trademarked, so technically you could make another game called "Civilization" and it'll stick. In any case we're not going there :) 
 
-## Run with Docker [![Docker](https://github.com/haimlm/Unciv/actions/workflows/dockerPublish.yml/badge.svg)](https://github.com/haimlm/Unciv/actions/workflows/dockerPublish.yml)
+## Run with Docker [![Docker](https://github.com/yairm210/Unciv/actions/workflows/dockerPublish.yml/badge.svg)](https://github.com/yairm210/Unciv/actions/workflows/dockerPublish.yml)
 
 If you have docker compose installed:
 

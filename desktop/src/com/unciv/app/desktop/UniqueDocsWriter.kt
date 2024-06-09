@@ -1,6 +1,7 @@
 package com.unciv.app.desktop
 
 import com.unciv.logic.map.mapunit.MapUnitCache
+import com.unciv.models.ruleset.unique.UniqueFlag
 import com.unciv.models.ruleset.unique.UniqueParameterType
 import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueType
@@ -84,8 +85,10 @@ class UniqueDocsWriter {
                     val paramExamples = uniqueType.parameterTypeMap.map { it.first().docExample }.toTypedArray()
                     lines += "\tExample: \"${uniqueText.fillPlaceholders(*paramExamples)}\"\n"
                 }
+                if (uniqueType.flags.contains(UniqueFlag.AcceptsSpeedModifier))
+                    lines += "\tThis unique's effect can be modified with &lt;${UniqueType.ModifiedByGameSpeed.text}&gt;"
                 if (uniqueType in MapUnitCache.UnitMovementUniques) {
-                    lines += "\tDue to performance considerations, this unique is cached, thus conditionals may not work."
+                    lines += "\tDue to performance considerations, this unique is cached, thus conditionals that may change within a turn may not work."
                 }
                 lines += "\tApplicable to: " + uniqueType.allTargets().sorted().joinToString()
                 lines += ""

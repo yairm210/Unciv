@@ -82,7 +82,7 @@ class MajorCivDiplomacyTable(private val diplomacyScreen: DiplomacyScreen) {
         diplomacyTable.add(demandsButton).row()
         if (diplomacyScreen.isNotPlayersTurn()) demandsButton.disable()
 
-        if (otherCiv.cities.isNotEmpty() && otherCiv.getCapital() != null && viewingCiv.hasExplored(otherCiv.getCapital()!!.getCenterTile()))
+        if (otherCiv.getCapital() != null && viewingCiv.hasExplored(otherCiv.getCapital()!!.getCenterTile()))
             diplomacyTable.add(diplomacyScreen.getGoToOnMapButton(otherCiv)).row()
 
         if (!otherCiv.isHuman()) { // human players make their own choices
@@ -199,7 +199,9 @@ class MajorCivDiplomacyTable(private val diplomacyScreen: DiplomacyScreen) {
                 && otherCivDiplomacyManager.hasModifier(DiplomaticModifiers.DestroyedProtectedMinor))
                 continue
 
-            var text = DiplomaticModifiers.valueOf(modifier.key).text.tr() + " "
+            val diplomaticModifier = DiplomaticModifiers.safeValueOf(modifier.key)
+                ?: continue // This modifier is from the future, you cannot understand it yet
+            var text = diplomaticModifier.text.tr() + " "
             if (modifier.value > 0) text += "+"
             text += modifier.value.roundToInt()
             val color = if (modifier.value < 0) Color.RED else Color.GREEN

@@ -1,3 +1,5 @@
+@file:Suppress("UNUSED_VARIABLE")  // These are tests and the names serve readability
+
 package com.unciv.logic.map
 
 import com.badlogic.gdx.math.Vector2
@@ -22,15 +24,15 @@ internal class UnitFormationTests {
 
     val testGame = TestGame()
     fun setUp(size: Int, baseTerrain: String = Constants.desert) {
-        testGame.makeHexagonalMap(size)
+        testGame.makeHexagonalMap(size, baseTerrain)
         civInfo = testGame.addCiv()
     }
-    
+
     @After
     fun wrapUp() {
         DebugUtils.VISIBLE_MAP = false
     }
-    
+
     @Test
     fun `basic formation functionality civilian`() {
         setUp(1)
@@ -71,7 +73,7 @@ internal class UnitFormationTests {
     fun `basic formation not available functionality`() {
         setUp(1)
         val centerTile = testGame.getTile(Vector2(0f,0f))
-        val civilianUnit = testGame.addUnit("Worker", civInfo, centerTile) 
+        val civilianUnit = testGame.addUnit("Worker", civInfo, centerTile)
         assertFalse(civilianUnit.getOtherEscortUnit() != null)
         assertFalse(civilianUnit.isEscorting())
         civilianUnit.startEscorting()
