@@ -14,7 +14,6 @@ import com.unciv.UncivGame
 import com.unciv.logic.map.MapParameters
 import com.unciv.logic.map.MapShape
 import com.unciv.logic.map.MapSize
-import com.unciv.logic.map.MapSizeNew
 import com.unciv.logic.map.TileMap
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.metadata.BaseRuleset
@@ -97,7 +96,7 @@ class MapEditorScreen(map: TileMap? = null) : BaseScreen(), RecreateOnResize {
         if (map == null) {
             ruleset = RulesetCache[BaseRuleset.Civ_V_GnK.fullName]!!
             tileMap = TileMap(MapSize.Tiny.radius, ruleset, false).apply {
-                mapParameters.mapSize = MapSizeNew(MapSize.Tiny)
+                mapParameters.mapSize = MapSize.Tiny
             }
         } else {
             ruleset = map.ruleset ?: RulesetCache.getComplexRuleset(map.mapParameters)

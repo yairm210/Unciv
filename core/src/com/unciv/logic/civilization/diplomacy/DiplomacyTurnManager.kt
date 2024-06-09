@@ -136,9 +136,8 @@ object DiplomacyTurnManager {
 
     private fun DiplomacyManager.nextTurnFlags() {
         loop@ for (flag in flagsCountdown.keys.toList()) {
-            // No need to decrement negative countdown flags: they do not expire
-            if (flagsCountdown[flag]!! > 0)
-                flagsCountdown[flag] = flagsCountdown[flag]!! - 1
+            // We want negative flags to keep on going negative to keep track of time
+            flagsCountdown[flag] = flagsCountdown[flag]!! - 1
 
             // If we have uniques that make city states grant military units faster when at war with a common enemy, add higher numbers to this flag
             if (flag == DiplomacyFlags.ProvideMilitaryUnit.name && civInfo.isMajorCiv() && otherCiv().isCityState() &&
@@ -208,6 +207,10 @@ object DiplomacyTurnManager {
                     }
                 }
 
+                flagsCountdown.remove(flag)
+            } else if (flag == DiplomacyFlags.WaryOf.name && flagsCountdown[flag]!! < -10) {
+                // Used in DeclareWarTargetAutomation.declarePlannedWar to count the number of turns preparing
+                // If we have been preparing for over 10 turns then cancel our attack plan
                 flagsCountdown.remove(flag)
             }
         }

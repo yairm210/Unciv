@@ -14,7 +14,6 @@ import com.unciv.logic.UncivShowableException
 import com.unciv.logic.map.MapParameters
 import com.unciv.logic.map.MapShape
 import com.unciv.logic.map.MapSize
-import com.unciv.logic.map.MapSizeNew
 import com.unciv.logic.map.MapType
 import com.unciv.logic.map.mapgenerator.MapGenerator
 import com.unciv.models.metadata.BaseRuleset
@@ -42,7 +41,6 @@ import com.unciv.ui.popups.hasOpenPopups
 import com.unciv.ui.popups.popups
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.basescreen.RecreateOnResize
-import com.unciv.ui.screens.civilopediascreen.CivilopediaScreen
 import com.unciv.ui.screens.mainmenuscreen.EasterEggRulesets.modifyForEasterEgg
 import com.unciv.ui.screens.mapeditorscreen.EditorMapHolder
 import com.unciv.ui.screens.mapeditorscreen.MapEditorScreen
@@ -226,7 +224,7 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
             val newMap = MapGenerator(backgroundMapRuleset, this)
                 .generateMap(MapParameters().apply {
                     shape = MapShape.rectangular
-                    mapSize = MapSizeNew(MapSize.Small)
+                    mapSize = MapSize.Small
                     type = MapType.pangaea
                     temperatureExtremeness = .7f
                     waterThreshold = -0.1f // mainly land, gets about 30% water

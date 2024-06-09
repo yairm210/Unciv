@@ -14,7 +14,7 @@ import com.unciv.models.ruleset.tile.Terrain
 import com.unciv.models.ruleset.tile.TerrainType
 
 internal class ConsoleTileCommands: ConsoleCommandNode {
-    // Note: We *don't* call `TileInfoNormalizer.normalizeToRuleset(selectedTile, console.gameInfo.ruleset)`
+    // Note: We *don't* call `TileNormalizer.normalizeToRuleset(selectedTile, console.gameInfo.ruleset)`
     // - we want the console to allow invalid tile configurations.
 
     override val subcommands = hashMapOf<String, ConsoleCommand>(

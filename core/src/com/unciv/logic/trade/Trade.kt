@@ -56,7 +56,7 @@ class TradeRequest : IsPartOfGameInfoSerialization {
         val requestingCivDiploManager = requestingCivInfo.getDiplomacyManager(decliningCiv)
         // the numbers of the flags (20,5) are the amount of turns to wait until offering again
         if (trade.ourOffers.all { it.type == TradeType.Luxury_Resource }
-            && trade.theirOffers.all { it.type==TradeType.Luxury_Resource })
+            && trade.theirOffers.all { it.type == TradeType.Luxury_Resource })
             requestingCivDiploManager.setFlag(DiplomacyFlags.DeclinedLuxExchange,20)
         if (trade.ourOffers.any { it.name == Constants.researchAgreement })
             requestingCivDiploManager.setFlag(DiplomacyFlags.DeclinedResearchAgreement,20)
@@ -64,6 +64,10 @@ class TradeRequest : IsPartOfGameInfoSerialization {
             requestingCivDiploManager.setFlag(DiplomacyFlags.DeclinedDefensivePact,20)
         if (trade.ourOffers.any { it.name == Constants.openBorders })
             requestingCivDiploManager.setFlag(DiplomacyFlags.DeclinedOpenBorders, if (decliningCiv.isAI()) 10 else 20)
+        if (trade.theirOffers.any { it.type == TradeType.WarDeclaration })
+            requestingCivDiploManager.setFlag(DiplomacyFlags.DeclinedJoinWarOffer, if (decliningCiv.isAI()) 10 else 20)
+        if (trade.ourOffers.any { it.type == TradeType.WarDeclaration })
+            requestingCivDiploManager.otherCivDiplomacy().setFlag(DiplomacyFlags.DeclinedJoinWarOffer, if (decliningCiv.isAI()) 10 else 20)
 
         if (trade.isPeaceTreaty()) requestingCivDiploManager.setFlag(DiplomacyFlags.DeclinedPeace, 5)
 

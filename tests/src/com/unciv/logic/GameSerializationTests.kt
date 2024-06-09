@@ -8,7 +8,6 @@ import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.files.UncivFiles
 import com.unciv.logic.map.MapParameters
 import com.unciv.logic.map.MapSize
-import com.unciv.logic.map.MapSizeNew
 import com.unciv.models.metadata.GameParameters
 import com.unciv.models.metadata.GameSettings
 import com.unciv.models.metadata.GameSetupInfo
@@ -56,7 +55,7 @@ class GameSerializationTests {
             players.add(Player("Greece"))
         }
         val mapParameters = MapParameters().apply {
-            mapSize = MapSizeNew(MapSize.Tiny)
+            mapSize = MapSize.Tiny
             seed = 42L
         }
         val setup = GameSetupInfo(param, mapParameters)
