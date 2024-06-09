@@ -163,7 +163,7 @@ class DevConsolePopup(val screen: WorldScreen) : Popup(screen) {
     }
 
     private fun handleCommand(): DevConsoleResponse {
-        val params = textField.text.splitToCliInput()
+        val params = textField.text.trim().splitToCliInput()
         return commandRoot.handle(this, params)
     }
 
