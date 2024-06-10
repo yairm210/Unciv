@@ -1,27 +1,14 @@
+New unique trigger: "<upon expending a [mapUnitFilter] unit>"
 
-
-History command no longer breaks on autocomplete sometimes
-
-Fix broken console checkFilter due to capitalizing first letter
-
-Specific uniques to generic trigger: "upon expending a [mapUnitFilter] unit"
-
-Console: `city addtile <cityName>` takes an optional `[radius]` parameter
-
-Console: `civ addtech` / `civ removetech` commands
-
-Documentation for mobile console
-
-4.11.18-patch1
-
-Fix "ask for help" crash 
+Console:
+- `city addtile <cityName>` takes an optional `[radius]` parameter
+- `civ addtech` / `civ removetech` commands
 
 By SomeTroglodyte:
-- Reenable console `unit sethealth ` and `setmovement` with trailing blank 
-- Allow EmpireOverview persistence across game launches 
-- Use Events for the floating "Tutorials" 
-- Centralize and organize use of special unicode codepoints 
+- Use Events for moddable, floating "Tutorials"!
+- Allow EmpireOverview persistence across game launches
+- Moddable images for special characters
 
 By tuvus:
-- Moddable city ranges 
-- Extra Civ and Spy moddability 
+- Moddable city ranges
+- Extra Civ and Spy moddability
