@@ -463,7 +463,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
             thisPlayer,
             thisPlayer.cities.filter { city ->
                 city.canBombard() &&
-                        enemyUnitsCloseToTerritory.any { tile -> tile.aerialDistanceTo(city.getCenterTile()) <= city.range }
+                    enemyUnitsCloseToTerritory.any { tile -> tile.aerialDistanceTo(city.getCenterTile()) <= city.getBombardRange() }
             }
         )
     }

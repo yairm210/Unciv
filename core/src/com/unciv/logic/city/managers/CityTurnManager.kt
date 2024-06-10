@@ -95,7 +95,7 @@ class CityTurnManager(val city: City) {
                     it.name != city.demandedResource && // Not same as last time
                     !city.civ.hasResource(it.name) && // Not one we already have
                     it.name in city.tileMap.resources && // Must exist somewhere on the map
-                    city.getCenterTile().getTilesInDistance(3).none { nearTile -> nearTile.resource == it.name } // Not in this city's radius
+                    city.getCenterTile().getTilesInDistance(city.getWorkRange()).none { nearTile -> nearTile.resource == it.name } // Not in this city's radius
         }
 
         val chosenResource = candidates.randomOrNull()

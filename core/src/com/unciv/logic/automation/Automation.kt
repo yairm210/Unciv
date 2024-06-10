@@ -411,12 +411,12 @@ object Automation {
         // Resources are good: less points
         if (tile.hasViewableResource(city.civ)) {
             if (tile.tileResource.resourceType != ResourceType.Bonus) score -= 105
-            else if (distance <= 3) score -= 104
+            else if (distance <= city.getWorkRange()) score -= 104
         } else {
             // Water tiles without resources aren't great
             if (tile.isWater) score += 25
             // Can't work it anyways
-            if (distance > 3) score += 100
+            if (distance > city.getWorkRange()) score += 100
         }
 
         if (tile.naturalWonder != null) score -= 105
@@ -430,12 +430,12 @@ object Automation {
         for (adjacentTile in tile.neighbors.filter { it.getOwner() == null }) {
             val adjacentDistance = city.getCenterTile().aerialDistanceTo(adjacentTile)
             if (adjacentTile.hasViewableResource(city.civ) &&
-                (adjacentDistance < 3 ||
+                (adjacentDistance < city.getWorkRange() ||
                     adjacentTile.tileResource.resourceType != ResourceType.Bonus
                 )
             ) score -= 1
             if (adjacentTile.naturalWonder != null) {
-                if (adjacentDistance < 3) adjacentNaturalWonder = true
+                if (adjacentDistance < city.getWorkRange()) adjacentNaturalWonder = true
                 score -= 1
             }
         }
