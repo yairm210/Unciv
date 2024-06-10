@@ -799,6 +799,10 @@ class MapUnit : IsPartOfGameInfoSerialization {
     /** Destroys the unit and gives stats if its a great person */
     fun consume() {
         addStatsPerGreatPersonUsage()
+        for (unique in civ.getTriggeredUniques(UniqueType.TriggerUponExpendingUnit))
+            if (unique.conditionals.any { it.type == UniqueType.TriggerUponExpendingUnit && matchesFilter(it.params[0]) })
+                UniqueTriggerActivation.triggerUnique(unique, this,
+                    triggerNotificationText = "due to expending our [${this.name}]")
         destroy()
     }
 
