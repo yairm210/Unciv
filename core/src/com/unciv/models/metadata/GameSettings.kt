@@ -98,7 +98,10 @@ class GameSettings {
     var autoPlay = GameSettingsAutoPlay()
 
     // This is a string not an enum so if tabs change it won't screw up the json serialization
+    //TODO remove line in a future update
     var lastOverviewPage = EmpireOverviewCategories.Cities.name
+    /** Holds EmpireOverviewScreen per-page persistable states */
+    val overview = OverviewPersistableData()
 
     /** Orientation for mobile platforms */
     var displayOrientation = ScreenOrientation.Landscape

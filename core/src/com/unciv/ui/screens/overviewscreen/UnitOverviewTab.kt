@@ -20,10 +20,12 @@ class UnitOverviewTab(
     persistedData: EmpireOverviewTabPersistableData? = null
 ) : EmpireOverviewTab(viewingPlayer, overviewScreen) {
     class UnitTabPersistableData : EmpireOverviewTabPersistableData(), SortableGrid.ISortState<UnitOverviewTabColumn> {
+        @Transient
         var scrollY: Float? = null
+
         override var sortedBy: UnitOverviewTabColumn = UnitOverviewTabColumn.Name
         override var direction = SortableGrid.SortDirection.None
-        override fun isEmpty() = scrollY == null && sortedBy == UnitOverviewTabColumn.Name && direction != SortableGrid.SortDirection.Descending
+        override fun isEmpty() = sortedBy == UnitOverviewTabColumn.Name && direction != SortableGrid.SortDirection.Descending
     }
     override val persistableData = (persistedData as? UnitTabPersistableData) ?: UnitTabPersistableData()
 
