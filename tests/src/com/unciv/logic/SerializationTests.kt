@@ -1,14 +1,14 @@
 package com.unciv.logic
 
-import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.math.Vector2
-import com.unciv.json.HashMapVector2
 import com.unciv.logic.civilization.CivRankingHistory
 import com.unciv.logic.civilization.CivilopediaAction
 import com.unciv.logic.civilization.DiplomacyAction
+import com.unciv.json.LastSeenImprovement
 import com.unciv.logic.civilization.LocationAction
 import com.unciv.logic.civilization.Notification
 import com.unciv.logic.map.tile.TileHistory
+import com.unciv.models.Counter
 import com.unciv.testing.GdxTestRunner
 import com.unciv.ui.components.input.KeyCharAndCode
 import com.unciv.ui.components.input.KeyboardBinding
@@ -38,11 +38,12 @@ class SerializationTests {
     }
 
     @Test
-    fun `test HashMapVector2 serialization roundtrip`() {
-        val data = HashMapVector2<Color>()
-        data[Vector2.Zero] = Color.GRAY
-        data[Vector2.X] = Color.CORAL
-        data[Vector2.Y] = Color.CHARTREUSE
+    //@RedirectOutput(RedirectPolicy.Show)
+    fun `test LastSeenImprovement serialization roundtrip`() {
+        val data = LastSeenImprovement()
+        data[Vector2.Zero] = "Borehole"
+        data[Vector2.X] = "Smokestack"
+        data[Vector2.Y] = "Waffle stand"
         testRoundtrip(data)
     }
 
@@ -109,6 +110,13 @@ class SerializationTests {
                 notification.isEqual(new[index])
             })
         }
+    }
+
+    /** Note that no other Counter<X> will pass this test */
+    @Test
+    fun `test Counter(String) serialization roundtrip`() {
+        val data = Counter(mapOf("Foo" to 1, "Bar" to 3, "Towel" to 42))
+        testRoundtrip(data)
     }
 
     ///////////////////////////////// Helper

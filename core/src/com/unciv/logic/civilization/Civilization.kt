@@ -3,7 +3,7 @@ package com.unciv.logic.civilization
 import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
 import com.unciv.UncivGame
-import com.unciv.json.HashMapVector2
+import com.unciv.json.LastSeenImprovement
 import com.unciv.logic.GameInfo
 import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.MultiFilter
@@ -207,7 +207,7 @@ class Civilization : IsPartOfGameInfoSerialization {
 
     fun hasExplored(tile: Tile) = tile.isExplored(this)
 
-    private val lastSeenImprovement = HashMapVector2<String>()
+    private val lastSeenImprovement = LastSeenImprovement()
 
     // To correctly determine "game over" condition as clarified in #4707
     var hasEverOwnedOriginalCapital: Boolean = false
