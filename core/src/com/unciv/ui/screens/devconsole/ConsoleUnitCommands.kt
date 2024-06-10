@@ -59,14 +59,14 @@ internal class ConsoleUnitCommands : ConsoleCommandNode {
         "setmovement" to ConsoleAction("unit setmovement [amount]") { console, params ->
             // Note amount defaults to maxMovement, but is not limited by it - it's an arbitrary choice to allow that
             val unit = console.getSelectedUnit()
-            val movement = params.firstOrNull()?.toFloat() ?: unit.getMaxMovement().toFloat()
+            val movement = params.firstOrNull()?.takeUnless { it.isEmpty() }?.toFloat() ?: unit.getMaxMovement().toFloat()
             if (movement < 0f) throw ConsoleErrorException("Number out of range")
             unit.currentMovement = movement
             DevConsoleResponse.OK
         },
 
         "sethealth" to ConsoleAction("unit sethealth [amount]") { console, params ->
-            val health = params.firstOrNull()?.toInt() ?: 100
+            val health = params.firstOrNull()?.takeUnless { it.isEmpty() }?.toInt() ?: 100
             if (health !in 1..100) throw ConsoleErrorException("Number out of range")
             val unit = console.getSelectedUnit()
             unit.health = health
