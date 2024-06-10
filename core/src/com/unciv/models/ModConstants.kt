@@ -87,7 +87,18 @@ class ModConstants {
 
     var workboatAutomationSearchMaxTiles = 20
 
-    var maxSpyLevel = 3
+    // Civilization
+    var minimumWarDuration = 10
+    var baseTurnsUntilRevolt = 4
+    var cityStateElectionTurns = 15
+
+    // Espionage
+    var maxSpyRank = 3
+    // How much of a skill bonus each rank gives. 
+    // Rank 0 is 100%, rank 1 is 130%, and so on for stealing technology. 
+    // Half as much for a coup.
+    var spyRankSkillPercentBonus = 30
+
 
     fun merge(other: ModConstants) {
         for (field in this::class.java.declaredFields) {
