@@ -8,7 +8,7 @@ internal class ConsoleCityCommands : ConsoleCommandNode {
 
         "checkfilter" to ConsoleAction("city checkfilter <cityFilter>") { console, params ->
             val city = console.getSelectedCity()
-            DevConsoleResponse.hint(city.matchesFilter(params[0].toString()).toString())
+            DevConsoleResponse.hint(city.matchesFilter(params[0].originalUnquoted()).toString())
         },
 
         "add" to ConsoleAction("city add <civName>") { console, params ->

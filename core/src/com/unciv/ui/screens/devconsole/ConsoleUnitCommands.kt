@@ -8,7 +8,7 @@ internal class ConsoleUnitCommands : ConsoleCommandNode {
 
         "checkfilter" to ConsoleAction("unit checkfilter <unitFilter>") { console, params ->
             val unit = console.getSelectedUnit()
-            DevConsoleResponse.hint(unit.matchesFilter(params[0].toString()).toString())
+            DevConsoleResponse.hint(unit.matchesFilter(params[0].originalUnquoted()).toString())
         },
 
         "add" to ConsoleAction("unit add <civName> <unitName>") { console, params ->
