@@ -1,3 +1,31 @@
+## 4.11.19
+
+History command no longer breaks on autocomplete sometimes
+
+Fix broken console checkFilter due to capitalizing first letter
+
+Specific uniques to generic trigger: "upon expending a [mapUnitFilter] unit"
+
+Console: `city addtile <cityName>` takes an optional `[radius]` parameter
+
+Console: `civ addtech` / `civ removetech` commands
+
+Documentation for mobile console
+
+4.11.18-patch1
+
+Fix "ask for help" crash 
+
+By SomeTroglodyte:
+- Reenable console `unit sethealth ` and `setmovement` with trailing blank 
+- Allow EmpireOverview persistence across game launches 
+- Use Events for the floating "Tutorials" 
+- Centralize and organize use of special unicode codepoints 
+
+By tuvus:
+- Moddable city ranges 
+- Extra Civ and Spy moddability 
+
 ## 4.11.18
 
 We passed 1000 versions! :D
