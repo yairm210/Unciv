@@ -1007,11 +1007,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 ??? example  "Only available"
 	Meant to be used together with conditionals, like "Only available <after adopting [policy]> <while the empire is happy>". Only allows Building when ALL conditionals are met. Will also block Upgrade and Transform actions. See also CanOnlyBeBuiltWhen
-	Applicable to: Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, Promotion, Improvement, Ruins
+	Applicable to: Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, Promotion, Improvement, Ruins, Event
 
 ??? example  "Unavailable"
 	Meant to be used together with conditionals, like "Unavailable <after generating a Great Prophet>".
-	Applicable to: Tech, Policy, Building, Unit, Promotion, Improvement, Ruins
+	Applicable to: Tech, Policy, Building, Unit, Promotion, Improvement, Ruins, Event
 
 ??? example  "Cannot be hurried"
 	Applicable to: Tech, Building
@@ -1915,6 +1915,12 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: ModOptions
 
+## Event uniques
+??? example  "Mark tutorial [comment] complete"
+	Example: "Mark tutorial [comment] complete"
+
+	Applicable to: Event
+
 ## Conditional uniques
 !!! note ""
 
@@ -1942,6 +1948,14 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 ??? example  "&lt;after [amount] turns&gt;"
 	Example: "&lt;after [3] turns&gt;"
+
+	Applicable to: Conditional
+
+??? example  "&lt;if tutorials are enabled&gt;"
+	Applicable to: Conditional
+
+??? example  "&lt;if tutorial [comment] is completed&gt;"
+	Example: "&lt;if tutorial [comment] is completed&gt;"
 
 	Applicable to: Conditional
 

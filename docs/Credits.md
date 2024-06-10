@@ -745,6 +745,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 - [down](https://thenounproject.com/icon/down-39378/) by Cengiz SARI for Show unit destination
 - [Cat](https://thenounproject.com/icon/cat-158942/) by Josi for Politics overview diagram legend
 - [Bell](https://thenounproject.com/icon/bell-2054409) by Lyhn, transparency modified, for Notifications (overview, unhide button)
+- [Galileo Donatello](https://en.wikipedia.org/wiki/File:Galileo_Donato.jpg) for the "Meet another civilization" tutorial: Public domain
 
 ### Main menu
 

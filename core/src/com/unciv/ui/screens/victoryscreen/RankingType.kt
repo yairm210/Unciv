@@ -10,7 +10,7 @@ enum class RankingType(
     val idForSerialization: String
 ) {
     // production, gold, happiness, and culture already have icons added when the line is `tr()`anslated
-    Score({ ImageGetter.getImage("CityStateIcons/Cultured").apply { color = Color.FIREBRICK } }, "S"),
+    Score({ ImageGetter.getImage("OtherIcons/Score").apply { color = Color.FIREBRICK } }, "S"),
     Population({ ImageGetter.getStatIcon("Population") }, "N"),
     CropYield("Crop Yield", { ImageGetter.getStatIcon("Food") }, "C"),
     Production("P"),
