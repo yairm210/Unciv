@@ -11,7 +11,6 @@ import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.basescreen.RecreateOnResize
 import com.unciv.ui.screens.overviewscreen.EmpireOverviewCategories.EmpireOverviewTabState
-import com.unciv.ui.screens.overviewscreen.EmpireOverviewTab.EmpireOverviewTabPersistableData
 
 class EmpireOverviewScreen(
     private var viewingPlayer: Civilization,
@@ -25,25 +24,19 @@ class EmpireOverviewScreen(
     private val tabbedPager: TabbedPager
     private val pageObjects = HashMap<EmpireOverviewCategories, EmpireOverviewTab>()
 
-    companion object {
-        // This is what keeps per-tab states between overview invocations
-        var persistState: Map<EmpireOverviewCategories, EmpireOverviewTabPersistableData>? = null
-
-        private fun updatePersistState(pageObjects: HashMap<EmpireOverviewCategories, EmpireOverviewTab>) {
-            persistState = pageObjects.mapValues { it.value.persistableData }.filterNot { it.value.isEmpty() }
-        }
-    }
+    internal val persistState by game.settings::overview
 
     override fun dispose() {
         tabbedPager.selectPage(-1)
-        updatePersistState(pageObjects)
         super.dispose()
     }
 
     override fun getCivilopediaRuleset() = viewingPlayer.gameInfo.ruleset
 
     init {
-        val selectCategory = defaultCategory ?: EmpireOverviewCategories.values().firstOrNull { it.name == game.settings.lastOverviewPage }
+        val selectCategory = defaultCategory
+            //TODO replace with `?: persistState.last` in a future update
+            ?: EmpireOverviewCategories.values().firstOrNull { it.name == game.settings.lastOverviewPage }
         val iconSize = Constants.defaultFontSize.toFloat()
 
         tabbedPager = TabbedPager(
@@ -56,7 +49,7 @@ class EmpireOverviewScreen(
             val tabState = category.testState(viewingPlayer)
             if (tabState == EmpireOverviewTabState.Hidden) continue
             val icon = if (category.iconName.isEmpty()) null else ImageGetter.getImage(category.iconName)
-            val pageObject = category.createTab(viewingPlayer, this, persistState?.get(category))
+            val pageObject = category.createTab(viewingPlayer, this, persistState[category])
             pageObject.pad(10f, 0f, 10f, 0f)
             pageObjects[category] = pageObject
             val index = tabbedPager.addPage(
@@ -72,21 +65,19 @@ class EmpireOverviewScreen(
                 select(pageObject, selection)
             }
         }
+        persistState.update(pageObjects)
 
         val closeButton = getCloseButton { game.popScreen() }
         tabbedPager.decorateHeader(closeButton)
 
         tabbedPager.setFillParent(true)
         stage.addActor(tabbedPager)
-
-//         closeButton.setPosition(stage.width - 10f, stage.height - 10f, Align.topRight)
-//         stage.addActor(closeButton)
    }
 
     override fun recreate(): BaseScreen {
         tabbedPager.selectPage(-1)  // trigger deselect on _old_ instance so the tabs can persist their stuff
-        updatePersistState(pageObjects)
         return EmpireOverviewScreen(viewingPlayer,
+            //TODO replace with `persistState.last)` in a future update
             EmpireOverviewCategories.values().firstOrNull { it.name == game.settings.lastOverviewPage })
     }
 

@@ -16,12 +16,10 @@ class CityOverviewTab(
     overviewScreen: EmpireOverviewScreen,
     persistedData: EmpireOverviewTabPersistableData? = null
 ) : EmpireOverviewTab(viewingPlayer, overviewScreen) {
-    class CityTabPersistableData(
-        override var sortedBy: CityOverviewTabColumn = CityOverviewTabColumn.CityColumn,
-
-    ) : EmpireOverviewTabPersistableData(), SortableGrid.ISortState<CityOverviewTabColumn> {
-        override fun isEmpty() = sortedBy == CityOverviewTabColumn.CityColumn
-        override var direction = SortableGrid.SortDirection.None
+    class CityTabPersistableData : EmpireOverviewTabPersistableData(), SortableGrid.ISortState<CityOverviewTabColumn> {
+        override var sortedBy: CityOverviewTabColumn = CityOverviewTabColumn.CityColumn
+        override var direction: SortableGrid.SortDirection = SortableGrid.SortDirection.None
+        override fun isEmpty() = sortedBy == CityOverviewTabColumn.CityColumn && direction != SortableGrid.SortDirection.Descending
     }
 
     override val persistableData = (persistedData as? CityTabPersistableData) ?: CityTabPersistableData()

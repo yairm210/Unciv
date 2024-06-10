@@ -19,10 +19,8 @@ class NotificationsOverviewTable(
     persistedData: EmpireOverviewTabPersistableData? = null
 ) : EmpireOverviewTab(viewingPlayer, overviewScreen) {
     class NotificationsTabPersistableData(
-            var scrollY: Float? = null
-    ) : EmpireOverviewTabPersistableData() {
-        override fun isEmpty() = scrollY == null
-    }
+        var scrollY: Float? = null
+    ) : EmpireOverviewTabPersistableData()
     override val persistableData = (persistedData as? NotificationsTabPersistableData) ?: NotificationsTabPersistableData()
     override fun activated(index: Int, caption: String, pager: TabbedPager) {
         if (persistableData.scrollY != null)
