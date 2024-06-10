@@ -575,14 +575,6 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Global, FollowerBelief
 
-??? example  "Provides a sum of gold each time you spend a Great Person"
-	Applicable to: Global
-
-??? example  "[stats] whenever a Great Person is expended"
-	Example: "[+1 Gold, +2 Production] whenever a Great Person is expended"
-
-	Applicable to: Global
-
 ??? example  "[relativeAmount]% Gold from Great Merchant trade missions"
 	Example: "[+20]% Gold from Great Merchant trade missions"
 
@@ -2386,6 +2378,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 ??? example  "&lt;upon defeating a [mapUnitFilter] unit&gt;"
 	Example: "&lt;upon defeating a [Wounded] unit&gt;"
+
+	Applicable to: UnitTriggerCondition
+
+??? example  "&lt;upon expending a [mapUnitFilter] unit&gt;"
+	Example: "&lt;upon expending a [Wounded] unit&gt;"
 
 	Applicable to: UnitTriggerCondition
 
