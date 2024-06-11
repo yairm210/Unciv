@@ -33,8 +33,11 @@ import kotlin.random.Random
 /** Class containing city-state-specific functions */
 class CityStateFunctions(val civInfo: Civilization) {
 
-    /** Attempts to initialize the city state, returning true if successful. */
-    fun initCityState(ruleset: Ruleset, startingEra: String, unusedMajorCivs: Collection<String>): Boolean {
+    /** Attempts to initialize the city state, returning true if successful.
+     *
+     *  ***This runs early in game initialization, do not rely on transients to be set***
+     */
+    fun initCityState(ruleset: Ruleset, startingEra: String, unusedMajorCivs: Collection<String>, espionageEnabled: Boolean): Boolean {
         val allMercantileResources = ruleset.tileResources.values.filter { it.hasUnique(UniqueType.CityStateOnlyResource) }.map { it.name }
         val uniqueTypes = HashSet<UniqueType>()    // We look through these to determine what kinds of city states we have
 
@@ -64,7 +67,7 @@ class CityStateFunctions(val civInfo: Civilization) {
         }
 
         // Set turns to elections to a random number so not every city-state has the same election date
-        if (civInfo.gameInfo.isEspionageEnabled()) {
+        if (espionageEnabled) {
             civInfo.addFlag(CivFlags.TurnsTillCityStateElection.name, Random.nextInt(civInfo.gameInfo.ruleset.modOptions.constants.cityStateElectionTurns + 1))
         }
 

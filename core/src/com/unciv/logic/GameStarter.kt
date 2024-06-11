@@ -356,7 +356,7 @@ object GameStarter {
                     civ.playerId = player.playerId
                 }
                 else ->
-                    if (!civ.cityStateFunctions.initCityState(ruleset, newGameParameters.startingEra, unusedMajorCivs))
+                    if (!civ.cityStateFunctions.initCityState(ruleset, newGameParameters.startingEra, unusedMajorCivs, newGameParameters.espionageEnabled))
                         continue
             }
             gameInfo.civilizations.add(civ)
