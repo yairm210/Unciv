@@ -5,6 +5,7 @@
       Use the description at http://civdata.com/, and adjust the numbers accordingly.
       Even then, its up to personal interpretation.
       To generate lines with multiple parameters I used the funciton: (FirstParam + (SeccondParam - 5) / 2)
+      Note: BNW leaders are included for now.
   {
       "name": "Template",
       // Stats focused personalities
@@ -162,7 +163,7 @@
     ]
   },
   {
-    "name": "Atilla",
+    "name": "Attila the Hun",
     "production": 6,
     "food": 4,
     "gold": 7,
@@ -228,7 +229,7 @@
     ]
   },
   {
-    "name": "Bismarck",
+    "name": "Otto von Bismarck",
     "production": 8,
     "food": 5,
     "gold": 5,
@@ -714,7 +715,7 @@
     }
   },
   {
-    "name": "Kame­hameha",
+    "name": "Kamehameha I",
     "production": 5,
     "food": 3,
     "gold": 5,
@@ -798,7 +799,7 @@
     }
   },
   {
-    "name": "Montezuma",
+    "name": "Montezuma I",
     "production": 5,
     "food": 5,
     "gold": 5,
@@ -854,7 +855,7 @@
     }
   },
   {
-    "name": "Nebuchad­nezzar II",
+    "name": "Nebuchadnezzar II",
     "production": 5,
     "food": 6,
     "gold": 5,
@@ -1050,7 +1051,7 @@
     }
   },
   {
-    "name": "Ram­khamhaeng",
+    "name": "Ramkhamhaeng",
     "production": 5,
     "food": 6,
     "gold": 5,
@@ -1134,7 +1135,7 @@
     }
   },
   {
-    "name": "Suleiman",
+    "name": "Suleiman I",
     "production": 5,
     "food": 4,
     "gold": 5,
@@ -1190,7 +1191,7 @@
     }
   },
   {
-    "name": "Washington",
+    "name": "George Washington",
     "production": 5,
     "food": 3,
     "gold": 6,
@@ -1218,7 +1219,7 @@
     }
   },
   {
-    "name": "William",
+    "name": "William of Orange",
     "production": 5,
     "food": 3,
     "gold": 7,
