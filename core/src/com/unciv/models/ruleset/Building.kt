@@ -260,7 +260,6 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
     override fun getRejectionReasons(cityConstructions: CityConstructions): Sequence<RejectionReason> = sequence {
         val cityCenter = cityConstructions.city.getCenterTile()
         val civ = cityConstructions.city.civ
-        val ruleSet = civ.gameInfo.ruleset
 
         if (cityConstructions.isBuilt(name))
             yield(RejectionReasonType.AlreadyBuilt.toInstance())

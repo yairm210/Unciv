@@ -118,7 +118,7 @@ object BuildingDescriptions {
      * @param replacementBuilding The "uniqueTo" Building
      */
     fun getDifferences(
-        ruleset: Ruleset, originalBuilding: Building, replacementBuilding: Building
+        originalBuilding: Building, replacementBuilding: Building
     ): Sequence<FormattedLine> = sequence {
         for ((key, value) in replacementBuilding)
             if (value != originalBuilding[key])
