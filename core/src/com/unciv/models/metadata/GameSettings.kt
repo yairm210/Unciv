@@ -261,7 +261,7 @@ class GameSettings {
     /** Map Unciv language key to Java locale, for the purpose of getting a Collator for sorting.
      *  - Effect depends on the Java libraries and may not always conform to expectations.
      *    If in doubt, debug and see what Locale instance you get and compare its properties with `Locale.getDefault()`.
-     *    (`Collator.getInstance(LocaleCode.*.run { Locale(language, country) }) to Collator.getInstance())`, drill to both `rules`, compare hashes - if equal and other properties equal, then Java doesn't know your Language))
+     *    (`Collator.getInstance(LocaleCode.*.run { Locale(language, country) }) to Collator.getInstance()`, drill to both `rules`, compare hashes - if equal and other properties equal, then Java doesn't know your Language))
      *  @property name same as translation file name with ' ', '_', '-', '(', ')' removed
      *  @property language ISO 639-1 code for the language
      *  @property country ISO 3166 code for the nation this is predominantly spoken in
@@ -283,6 +283,7 @@ class GameSettings {
         Estonian("et", "EE"),
         Finnish("fi", "FI"),
         French("fr", "FR"),
+        Galician("gl", "ES"),
         German("de", "DE"),
         Greek("el", "GR"),
         Hindi("hi", "IN"),
