@@ -218,10 +218,13 @@ class TileImprovementFunctions(val tile: Tile) {
         }
 
         if (improvementFieldHasChanged) {
-            for (civ in tile.tileMap.gameInfo.civilizations) {
-                if (civ.isDefeated() || !civ.isMajorCiv()) continue
-                if (civ == civToActivateBroaderEffects || tile.isVisible(civ))
-                    civ.setLastSeenImprovement(tile.position, improvementName)
+            // Update the separately-kept "what a civ sees" - unless in map editor where there are no civs
+            tile.tileMap.getGameInfoOrNull()?.also {
+                for (civ in it.civilizations) {
+                    if (civ.isDefeated() || !civ.isMajorCiv()) continue
+                    if (civ == civToActivateBroaderEffects || tile.isVisible(civ))
+                        civ.setLastSeenImprovement(tile.position, improvementName)
+                }
             }
         }
 
