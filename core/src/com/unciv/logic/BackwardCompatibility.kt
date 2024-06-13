@@ -200,4 +200,11 @@ object BackwardCompatibility {
         }
         historyStartTurn = turns
     }
+
+    fun GameInfo.ensureUnitIds(){
+        if (lastUnitId == 0) lastUnitId = tileMap.values.maxOf { it.getUnits().maxOf { it.id } }
+        for (unit in tileMap.values.flatMap { it.getUnits() }) {
+            if (unit.id == 0) unit.id = ++lastUnitId
+        }
+    }
 }
