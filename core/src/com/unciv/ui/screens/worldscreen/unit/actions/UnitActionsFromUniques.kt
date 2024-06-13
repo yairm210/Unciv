@@ -254,7 +254,7 @@ object UnitActionsFromUniques {
 
         return UnitAction(UnitActionType.CreateImprovement, 82f, "Create [$improvementName]",
             action = {
-                tile.changeImprovement(improvementName, unit.civ, unit)
+                tile.setImprovement(improvementName, unit.civ, unit)
                 unit.destroy()  // Modders may wish for a nondestructive way, but that should be another Unique
             }.takeIf { unit.currentMovement > 0 })
     }
@@ -287,7 +287,7 @@ object UnitActionsFromUniques {
                     ),
                     action = {
                         val unitTile = unit.getTile()
-                        unitTile.changeImprovement(improvement.name, unit.civ, unit)
+                        unitTile.setImprovement(improvement.name, unit.civ, unit)
 
                         unit.civ.cache.updateViewableTiles() // to update 'last seen improvement'
 

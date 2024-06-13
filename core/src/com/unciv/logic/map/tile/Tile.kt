@@ -827,7 +827,7 @@ class Tile : IsPartOfGameInfoSerialization {
     fun removeImprovement() =
         improvementFunctions.changeImprovement(null)
 
-    fun changeImprovement(improvementStr: String, civToHandleCompletion: Civilization? = null, unit: MapUnit? = null) =
+    fun setImprovement(improvementStr: String, civToHandleCompletion: Civilization? = null, unit: MapUnit? = null) =
         improvementFunctions.changeImprovement(improvementStr, civToHandleCompletion, unit)
 
     // function handling when adding a road to the tile

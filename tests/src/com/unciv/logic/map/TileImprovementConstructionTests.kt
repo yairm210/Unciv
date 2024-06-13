@@ -147,7 +147,7 @@ class TileImprovementConstructionTests {
         tile.addTerrainFeature("Forest")
         Assert.assertEquals(tile.terrainFeatures, listOf("Hill", "Forest"))
 
-        tile.changeImprovement("Landmark")
+        tile.setImprovement("Landmark")
         Assert.assertEquals(tile.terrainFeatures, listOf("Hill"))
     }
 
@@ -155,7 +155,7 @@ class TileImprovementConstructionTests {
     fun citadelTakesOverAdjacentTiles() {
         val tile = tileMap[1,1]
         Assert.assertFalse(tile.neighbors.all { it.owningCity == city })
-        tile.changeImprovement("Citadel", civInfo)
+        tile.setImprovement("Citadel", civInfo)
         Assert.assertTrue(tile.neighbors.all { it.owningCity == city })
     }
 
@@ -228,7 +228,7 @@ class TileImprovementConstructionTests {
         allowedImprovement.terrainsCanBeBuiltOn += "Forest"
         Assert.assertTrue("Forest should allow building when allowed",
             tile.improvementFunctions.canBuildImprovement(allowedImprovement, civInfo))
-        tile.changeImprovement(allowedImprovement.name)
+        tile.setImprovement(allowedImprovement.name)
         Assert.assertTrue(tile.improvement == allowedImprovement.name)
         Assert.assertTrue("Forest should not be removed with this improvement", tile.terrainFeatures.contains("Forest"))
     }
@@ -241,7 +241,7 @@ class TileImprovementConstructionTests {
 
         val improvement = testGame.createTileImprovement("Does not need removal of [Forest]")
         Assert.assertTrue(tile.improvementFunctions.canBuildImprovement(improvement, civInfo))
-        tile.changeImprovement(improvement.name)
+        tile.setImprovement(improvement.name)
         Assert.assertTrue(tile.improvement == improvement.name)
         Assert.assertTrue("Forest should not be removed with this improvement", tile.terrainFeatures.contains("Forest"))
     }

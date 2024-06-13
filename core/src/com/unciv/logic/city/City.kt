@@ -343,7 +343,7 @@ class City : IsPartOfGameInfoSerialization, INamed {
         if (isCapital()) civ.moveCapitalToNextLargest(null)
 
         civ.cities = civ.cities.toMutableList().apply { remove(this@City) }
-        getCenterTile().changeImprovement("City ruins")
+        getCenterTile().setImprovement("City ruins")
 
         // Edge case! What if a water unit is in a city, and you raze the city?
         // Well, the water unit has to return to the water!

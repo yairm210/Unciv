@@ -75,7 +75,7 @@ class GameSerializationTests {
         val tile = unit.getTile()
         unit.civ.addCity(tile.position)
         if (tile.ruleset.tileImprovements.containsKey(Constants.cityCenter))
-            tile.changeImprovement(Constants.cityCenter)
+            tile.setImprovement(Constants.cityCenter)
         unit.destroy()
 
         // Ensure some diplomacy objects are instantiated

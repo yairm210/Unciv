@@ -310,7 +310,7 @@ class GlobalUniquesTests {
         city.cityConstructions.addBuilding(faithBuilding)
 
         val tile2 = game.setTileTerrain(Vector2(0f,1f), Constants.grassland)
-        tile2.changeImprovement("Farm")
+        tile2.setImprovement("Farm")
         Assert.assertTrue(tile2.stats.getTileStats(city, civInfo).faith == 9f)
 
         city.cityConstructions.addBuilding(emptyBuilding)
@@ -334,7 +334,7 @@ class GlobalUniquesTests {
         city.cityConstructions.addBuilding(faithBuilding)
 
         val tile2 = game.setTileTerrain(Vector2(0f,1f), Constants.grassland)
-        tile2.changeImprovement("Farm")
+        tile2.setImprovement("Farm")
         Assert.assertTrue(tile2.stats.getTileStats(city, civInfo).faith == 9f)
 
         city.cityConstructions.addBuilding(emptyBuilding)

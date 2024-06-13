@@ -173,7 +173,7 @@ class UnitTurnManager(val unit: MapUnit) {
             UncivGame.Current.settings.addCompletedTutorialTask("Construct an improvement")
 
         val improvementInProgress = tile.improvementInProgress ?: return
-        tile.changeImprovement(improvementInProgress, unit.civ, unit)
+        tile.setImprovement(improvementInProgress, unit.civ, unit)
 
         tile.improvementInProgress = null
         tile.getCity()?.updateCitizens = true

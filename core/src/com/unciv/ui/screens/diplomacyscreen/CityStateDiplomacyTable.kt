@@ -379,7 +379,7 @@ class CityStateDiplomacyTable(private val diplomacyScreen: DiplomacyScreen) {
                     improveTileButton.onClick {
                         viewingCiv.addGold(-200)
                         improvableTile.stopWorkingOnImprovement()
-                        improvableTile.changeImprovement(tileImprovement.name)
+                        improvableTile.setImprovement(tileImprovement.name)
                         otherCiv.cache.updateCivResources()
                         diplomacyScreen.rightSideTable.clear()
                         diplomacyScreen.rightSideTable.add(ScrollPane(getCityStateDiplomacyTable(otherCiv)))
