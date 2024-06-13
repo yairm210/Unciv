@@ -168,6 +168,8 @@ class UnitManager(val civInfo: Civilization) {
 
     fun shouldGoToDueUnit() = UncivGame.Current.settings.checkForDueUnits && getDueUnits().any()
 
+    fun getUnitById(id: Int) = getCivUnits().firstOrNull { it.id == id }
+
     // Return the next due unit, but preferably not 'unitToSkip': this is returned only if it is the only remaining due unit.
     fun cycleThroughDueUnits(unitToSkip: MapUnit? = null): MapUnit? {
         if (unitList.none()) return null
