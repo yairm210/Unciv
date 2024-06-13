@@ -98,6 +98,7 @@ class TestGame {
     }
 
     fun getTile(position: Vector2) = tileMap[position]
+    fun getTile(x: Int, y: Int) = tileMap[x, y]
 
     /** Sets the [terrain] and [features] of the tile at [position], and then returns it */
     fun setTileTerrainAndFeatures(position: Vector2, terrain: String, vararg features: String): Tile {
