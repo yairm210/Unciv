@@ -115,6 +115,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
     var currentTurnStartTime = 0L
     var gameId = UUID.randomUUID().toString() // random string
     var checksum = ""
+    var lastUnitId = 0
 
     var victoryData: VictoryData? = null
 

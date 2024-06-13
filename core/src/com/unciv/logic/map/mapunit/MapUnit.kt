@@ -56,6 +56,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
 
     var currentMovement: Float = 0f
     var health: Int = 100
+    var id: Int = Constants.NO_ID
 
     // work, automation, fortifying, ...
     // Connect roads implies automated is true. It is specified by the action type.
