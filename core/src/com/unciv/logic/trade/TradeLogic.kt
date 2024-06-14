@@ -4,10 +4,8 @@ import com.unciv.Constants
 import com.unciv.logic.civilization.AlertType
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.PopupAlert
-import com.unciv.logic.civilization.diplomacy.CityStateFunctions
 import com.unciv.logic.civilization.diplomacy.DeclareWarReason
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
-import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
 import com.unciv.logic.civilization.diplomacy.WarType
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.unique.UniqueType
@@ -81,12 +79,15 @@ class TradeLogic(val ourCivilization: Civilization, val otherCivilization: Civil
         return offers
     }
 
-    fun acceptTrade() {
-        ourCivilization.getDiplomacyManager(otherCivilization).apply {
+    fun acceptTrade(applyGifts: Boolean = true) {
+        val ourDiploManager = ourCivilization.getDiplomacyManager(otherCivilization)
+        val theirDiploManger = otherCivilization.getDiplomacyManager(ourCivilization)
+
+        ourDiploManager.apply {
             trades.add(currentTrade)
             updateHasOpenBorders()
         }
-        otherCivilization.getDiplomacyManager(ourCivilization).apply {
+        theirDiploManger.apply {
             trades.add(currentTrade.reverse())
             updateHasOpenBorders()
         }
@@ -150,10 +151,17 @@ class TradeLogic(val ourCivilization: Civilization, val otherCivilization: Civil
             }
         }
 
-        if (currentTrade.ourOffers.isEmpty()) { // Must evaluate before moving, or else cities have already moved and we get an exception
-            val goldValueOfTrade = TradeEvaluation().getTradeAcceptability(currentTrade, ourCivilization, otherCivilization)
-            val diplomaticValueOfTrade = CityStateFunctions(ourCivilization).influenceGainedByGift(otherCivilization, goldValueOfTrade) / 10
-            ourCivilization.getDiplomacyManager(otherCivilization).addModifier(DiplomaticModifiers.GaveUsGifts, diplomaticValueOfTrade.toFloat())
+        // We shouldn't evaluate trades if we are doing a peace treaty
+        // Their value can be so big it throws the gift system out of wack
+        if (applyGifts && !currentTrade.ourOffers.any { it.name == Constants.peaceTreaty }) {
+            // Must evaluate before moving, or else cities have already moved and we get an exception
+            val ourGoldValueOfTrade = TradeEvaluation().getTradeAcceptability(currentTrade, ourCivilization, otherCivilization, includeDiplomaticGifts = false)
+            val theirGoldValueOfTrade = TradeEvaluation().getTradeAcceptability(currentTrade.reverse(), otherCivilization, ourCivilization, includeDiplomaticGifts = false)
+            if (ourGoldValueOfTrade > theirGoldValueOfTrade) {
+                ourDiploManager.giftGold(ourGoldValueOfTrade - theirGoldValueOfTrade.coerceAtLeast(0))
+            } else if (theirGoldValueOfTrade > ourGoldValueOfTrade) {
+                theirDiploManger.giftGold(theirGoldValueOfTrade - ourGoldValueOfTrade.coerceAtLeast(0))
+            }
         }
 
         // Transfer of cities needs to happen before peace treaty, to avoid our units teleporting out of areas that soon will be ours

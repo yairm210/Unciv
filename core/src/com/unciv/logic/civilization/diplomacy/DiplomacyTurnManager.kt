@@ -9,6 +9,7 @@ import com.unciv.logic.trade.TradeOffer
 import com.unciv.logic.trade.TradeType
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.components.extensions.toPercent
+import kotlin.math.absoluteValue
 import kotlin.math.max
 import kotlin.math.min
 
@@ -291,7 +292,25 @@ object DiplomacyTurnManager {
         // Positives
         revertToZero(DiplomaticModifiers.GaveUsUnits, 1 / 4f)
         revertToZero(DiplomaticModifiers.LiberatedCity, 1 / 8f)
-        revertToZero(DiplomaticModifiers.GaveUsGifts, 1 / 4f)
+        if (hasModifier(DiplomaticModifiers.GaveUsGifts)) {
+            val giftLoss = when {
+                relationshipLevel() == RelationshipLevel.Ally -> .5f
+                relationshipLevel() == RelationshipLevel.Friend -> 1f
+                relationshipLevel() == RelationshipLevel.Favorable -> 1.5f
+                relationshipLevel() == RelationshipLevel.Competitor -> 5f
+                relationshipLevel() == RelationshipLevel.Enemy -> 7.5f
+                relationshipLevel() == RelationshipLevel.Unforgivable -> 10f
+                else -> 2f // Neutral
+            }
+            // We should subtract a certain amount from this balanced each turn
+            // Assuming neutral relations we will subtract the higher of either:
+            //  2% of the total amount or
+            //  roughly 40 gold per turn (a value of ~.4 without inflation)
+            // This ensures that the amount can be reduced to zero but scales with larger numbers
+            val amountLost = (getModifier(DiplomaticModifiers.GaveUsGifts).absoluteValue * giftLoss / 100)
+                .coerceAtLeast(giftLoss / 5)
+            revertToZero(DiplomaticModifiers.GaveUsGifts, amountLost) // Roughly worth 20 GPT without inflation
+        }
 
         setFriendshipBasedModifier()
 
@@ -331,7 +350,8 @@ object DiplomacyTurnManager {
     private fun DiplomacyManager.revertToZero(modifier: DiplomaticModifiers, amount: Float) {
         if (!hasModifier(modifier)) return
         val currentAmount = getModifier(modifier)
-        if (currentAmount > 0) addModifier(modifier, -amount)
+        if (amount >= currentAmount.absoluteValue) diplomaticModifiers.remove(modifier.name)
+        else if (currentAmount > 0) addModifier(modifier, -amount)
         else addModifier(modifier, amount)
     }
 

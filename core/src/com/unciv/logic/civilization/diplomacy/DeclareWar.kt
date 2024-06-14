@@ -237,6 +237,10 @@ object DeclareWar {
             otherCivDiplomacy.totalOfScienceDuringRA = 0
         }
         otherCivDiplomacy.removeFlag(DiplomacyFlags.ResearchAgreement)
+
+        // The other civ should keep any gifts we gave them
+        // But we should not nesessarily take away their gifts
+        otherCivDiplomacy.removeModifier(DiplomaticModifiers.GaveUsGifts)
     }
 
     /**
