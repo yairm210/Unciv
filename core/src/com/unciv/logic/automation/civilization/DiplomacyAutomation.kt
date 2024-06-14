@@ -173,7 +173,7 @@ object DiplomacyAutomation {
             .filter {
                 civInfo.diplomacyFunctions.canSignDefensivePactWith(it)
                     && !civInfo.getDiplomacyManager(it).hasFlag(DiplomacyFlags.DeclinedDefensivePact)
-                    && civInfo.getDiplomacyManager(it).relationshipIgnoreAfraid() == RelationshipLevel.Ally
+                    && civInfo.getDiplomacyManager(it).opinionOfOtherCiv() < 70f
                     && !isTradeBeingOffered(civInfo, it, Constants.defensivePact)
             }
 
@@ -197,17 +197,17 @@ object DiplomacyAutomation {
     fun wantsToSignDefensivePact(civInfo: Civilization, otherCiv: Civilization): Boolean {
         val diploManager = civInfo.getDiplomacyManager(otherCiv)
         if (diploManager.hasFlag(DiplomacyFlags.DeclinedDefensivePact)) return false
-        if (diploManager.isRelationshipLevelLT(RelationshipLevel.Ally)) return false
+        if (diploManager.opinionOfOtherCiv() < 60f) return false
         val commonknownCivs = diploManager.getCommonKnownCivs()
         // If they have bad relations with any of our friends, don't consider it
         for (thirdCiv in commonknownCivs) {
-            if (civInfo.getDiplomacyManager(thirdCiv).isRelationshipLevelGE(RelationshipLevel.Friend)
+            if (civInfo.getDiplomacyManager(thirdCiv).hasFlag(DiplomacyFlags.DeclarationOfFriendship)
                 && thirdCiv.getDiplomacyManager(otherCiv).isRelationshipLevelLT(RelationshipLevel.Favorable))
                 return false
         }
-        // If they have bad relations with any of thier friends, don't consider it
+        // If they have bad relations with any of our friends, don't consider it
         for (thirdCiv in commonknownCivs) {
-            if (otherCiv.getDiplomacyManager(thirdCiv).isRelationshipLevelGE(RelationshipLevel.Friend)
+            if (otherCiv.getDiplomacyManager(thirdCiv).hasFlag(DiplomacyFlags.DeclarationOfFriendship)
                 && thirdCiv.getDiplomacyManager(civInfo).isRelationshipLevelLT(RelationshipLevel.Neutral))
                 return false
         }
