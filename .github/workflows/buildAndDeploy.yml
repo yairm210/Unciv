@@ -203,10 +203,13 @@ jobs:
           mv Unciv.jar desktop/build/libs
 
           wget -q -O packr-all-4.0.0.jar https://github.com/libgdx/packr/releases/download/4.0.0/packr-all-4.0.0.jar
-          wget -q -O jre-linux-64.tar.gz https://github.com/adoptium/temurin11-binaries/releases/download/jdk-11.0.19%2B7/OpenJDK11U-jre_x64_linux_hotspot_11.0.19_7.tar.gz
+
+          LINUX_JRE_URL=$(curl -fsSL 'https://api.adoptium.net/v3/assets/latest/11/hotspot?os=linux&architecture=x64&image_type=jre' | jq -r '.[].binary.package.link')
+          wget -q -O jre-linux-64.tar.gz $LINUX_JRE_URL
           ./gradlew desktop:packrLinux64
 
-          wget -q -O jdk-windows-64.zip https://github.com/adoptium/temurin11-binaries/releases/download/jdk-11.0.20%2B8/OpenJDK11U-jre_x64_windows_hotspot_11.0.20_8.zip
+          WIN_JRE_URL=$(curl -fsSL 'https://api.adoptium.net/v3/assets/latest/11/hotspot?os=windows&architecture=x64&image_type=jre' | jq -r '.[].binary.package.link')
+          wget -q -O jdk-windows-64.zip $WIN_JRE_URL
           ./gradlew desktop:packrWindows64
 
       - name: Upload packed zips
