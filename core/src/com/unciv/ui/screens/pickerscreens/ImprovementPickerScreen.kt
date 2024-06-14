@@ -142,7 +142,8 @@ class ImprovementPickerScreen(
                 && !improvement.isRoad()
                     && stats.values.any { it > 0f }
                     && !improvement.name.startsWith(Constants.remove)
-                    && !tile.getTilesInDistance(3).any { it.isCityCenter() && it.getCity()!!.civ == currentPlayerCiv }
+                    && !tile.getTilesInDistance(currentPlayerCiv.modConstants.cityWorkRange)
+                        .any { it.isCityCenter() && it.getCity()!!.civ == currentPlayerCiv }
             )
                 labelText += "\n" + "Not in city work range".tr()
 

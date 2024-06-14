@@ -1,14 +1,31 @@
-## 4.11.18
+## 4.11.19
 
-"(modified by game speed)" modifier 
+New unique trigger: "<upon expending a [mapUnitFilter] unit>"
 
-Resolved  - "Promotes all spies [amount] time(s)" crash
+Console:
+- `city addtile <cityName>` takes an optional `[radius]` parameter
+- `civ addtech` / `civ removetech` commands
 
 By SomeTroglodyte:
-- UX: Dev Console easier to use without installing keyboard apps 
-- UniqueParameterType getErrorSeverity/isKnownValue architecture simplification 
-- Remove 'Strategic Balance' and 'Legendary Start' from resource abundance select 
-- Improve update of "Last seen improvement" 
+- Use Events for moddable, floating "Tutorials"!
+- Allow EmpireOverview persistence across game launches
+- Moddable images for special characters
+
+By tuvus:
+- Moddable city ranges
+- Extra Civ and Spy moddability
+
+## 4.11.18
+
+We passed 1000 versions! :D
+
+"(modified by game speed)" modifier
+
+Fixed "Promotes all spies [amount] time(s)" crash
+
+By SomeTroglodyte:
+- UX: Dev Console easier to use without installing keyboard apps
+- Improve update of "Last seen improvement"
 
 Reworked AI war evaluation and plans  - By tuvus
 
@@ -49,19 +66,19 @@ By tuvus:
 
 ## 4.11.15
 
-Modding: "for every [countable]" unique modifier 
+Modding: "for every [countable]" unique modifier
 
 Added links to base ruleset template in docs
 
 Fixed "don't allow era select" if the game has no techs
 
-By SomeTroglodyte: 
-- Support for Zulu language 
+By SomeTroglodyte:
+- Support for Zulu language
 
 By tuvus:
-- Clicking the spy button no longer allows the spy to be moved when it isn't their turn 
-- Added the Espionage civilopedia entry 
-- Construction automation rework 
+- Clicking the spy button no longer allows the spy to be moved when it isn't their turn
+- Added the Espionage civilopedia entry
+- Construction automation rework
 - Espionage button cancels moving spy
 
 ## 4.11.14

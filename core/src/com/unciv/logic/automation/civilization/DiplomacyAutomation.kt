@@ -337,7 +337,9 @@ object DiplomacyAutomation {
 
         for (enemyCiv in civInfo.getCivsAtWarWith().sortedByDescending { it.getStatForRanking(RankingType.Force) }) {
             val potentialAllies = enemyCiv.threatManager.getNeighboringCivilizations()
-                .filter { !it.isAtWarWith(enemyCiv) && civInfo.getDiplomacyManager(it).isRelationshipLevelGE(RelationshipLevel.Friend)
+                .filter {
+                    civInfo.knows(it) && !it.isAtWarWith(enemyCiv)
+                    && civInfo.getDiplomacyManager(it).isRelationshipLevelGE(RelationshipLevel.Friend)
                     && !it.getDiplomacyManager(civInfo).hasFlag(DiplomacyFlags.DeclinedJoinWarOffer) }
                 .sortedByDescending { it.getStatForRanking(RankingType.Force) }
             val civToAsk = potentialAllies.firstOrNull { 

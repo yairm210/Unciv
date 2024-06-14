@@ -209,7 +209,7 @@ class CityPopulationManager : IsPartOfGameInfoSerialization {
     fun unassignExtraPopulation() {
         for (tile in city.workedTiles.map { city.tileMap[it] }) {
             if (tile.getOwner() != city.civ || tile.getWorkingCity() != city
-                    || tile.aerialDistanceTo(city.getCenterTile()) > 3)
+                    || tile.aerialDistanceTo(city.getCenterTile()) > city.getWorkRange())
                 city.population.stopWorkingTile(tile.position)
         }
 

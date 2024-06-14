@@ -10,6 +10,8 @@
 
 熟悉Java或Kotlin？在https://github.com/yairm210/Unciv加入我们。
 
+看不懂英文但仍然希望为社区做贡献？加入中文社区QQ群675179266或点击网址http://qm.qq.com/cgi-bin/qm/qr?_wv=1027&k=UHIJomTUkhevKOkwu5vQtyDMHO6oqqB2&authKey=vLV%2FVDcmUU7uPA2ggTe8F6x%2FM4ySgZxQ50VjNLCYQL%2BI8lAgFUOVA90nHcVCZ78s&noverify=0&group_code=675179266
+
 世界正在等待！你能建立一个经得起时间考验的文明吗？
 
 用户发起的下载和多人游戏功能需要“完全网络访问”权限。用于实现多人游戏回合通知的API会自动包含所有其他列出的权限。网络权限用于列出模组、下载模组、下载音乐以及上传/下载多人游戏。Unciv不会发起其他互联网通信。

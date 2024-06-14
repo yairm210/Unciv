@@ -137,7 +137,7 @@ object TargetHelper {
 
     /** Get a list of visible tiles which have something attackable */
     fun getBombardableTiles(city: City): Sequence<Tile> =
-            city.getCenterTile().getTilesInDistance(city.range)
+            city.getCenterTile().getTilesInDistance(city.getBombardRange())
                     .filter { it.isVisible(city.civ) && containsAttackableEnemy(it, CityCombatant(city)) }
 
 }

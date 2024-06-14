@@ -4,6 +4,7 @@ import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
 import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.city.City
+import com.unciv.logic.civilization.CivFlags
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.EspionageAction
 import com.unciv.logic.civilization.NotificationCategory
@@ -102,7 +103,7 @@ class Spy private constructor() : IsPartOfGameInfoSerialization {
             SpyAction.EstablishNetwork -> {
                 val city = getCity() // This should never throw an exception, as going to the hideout sets your action to None.
                 if (city.civ.isCityState())
-                    setAction(SpyAction.RiggingElections, getCity().civ.cityStateTurnsUntilElection - 1)
+                    setAction(SpyAction.RiggingElections, (getCity().civ.flagsCountdown[CivFlags.TurnsTillCityStateElection.name] ?: 1) - 1)
                 else if (city.civ == civInfo)
                     setAction(SpyAction.CounterIntelligence, 10)
                 else
@@ -130,7 +131,9 @@ class Spy private constructor() : IsPartOfGameInfoSerialization {
             SpyAction.RiggingElections -> {
                 // No action done here
                 // Handled in CityStateFunctions.nextTurnElections()
-                turnsRemainingForAction = getCity().civ.cityStateTurnsUntilElection - 1
+                // TODO: Once we remove support for the old flag system we can remove the null check
+                // Our spies might update before the flag is created in the city-state
+                turnsRemainingForAction = (getCity().civ.flagsCountdown[CivFlags.TurnsTillCityStateElection.name] ?: 0) - 1
             }
             SpyAction.Coup -> {
                 initiateCoup()
@@ -184,6 +187,14 @@ class Spy private constructor() : IsPartOfGameInfoSerialization {
         }
     }
 
+    /**
+     * With the defult spy leveling:
+     * 100 units change one step in results, there are 4 such steps, and the default random spans 300 units and excludes the best result (undetected success).
+     * Thus the return value translates into (return / 3) percent chance to get the very best result, reducing the chance to get the worst result (kill) by the same amount.
+     * The same modifier from defending counter-intelligence spies goes linearly in the opposite direction.
+     * With the range of this function being hardcoded to 30..90 (and 0 for no defensive spy present), ranks cannot guarantee either best or worst outcome.
+     * Or - chance range of best result is 0% (rank 1 vs rank 3 defender) to 30% (rank 3 vs no defender), range of worst is 53% to 3%, respectively.
+     */
     private fun stealTech() {
         val city = getCity()
         val otherCiv = city.civ
@@ -195,10 +206,10 @@ class Spy private constructor() : IsPartOfGameInfoSerialization {
         // Lower is better
         var spyResult = Random(randomSeed).nextInt(300)
         // Add our spies experience
-        spyResult -= getSkillModifier()
+        spyResult -= getSkillModifierPercent()
         // Subtract the experience of the counter intelligence spies
         val defendingSpy = city.civ.espionageManager.getSpyAssignedToCity(city)
-        spyResult += defendingSpy?.getSkillModifier() ?: 0
+        spyResult += defendingSpy?.getSkillModifierPercent() ?: 0
 
         val detectionString = when {
             spyResult >= 200 -> { // The spy was killed in the attempt (should be able to happen even if there's nothing to steal?)
@@ -309,7 +320,7 @@ class Spy private constructor() : IsPartOfGameInfoSerialization {
             cityState.getAllyCiv()?.let { civInfo.gameInfo.getCivilization(it) }?.espionageManager?.getSpyAssignedToCity(getCity()) 
         else null
 
-        val spyRanks = getSkillModifier() - (defendingSpy?.getSkillModifier() ?: 0)
+        val spyRanks = getSkillModifierPercent() - (defendingSpy?.getSkillModifierPercent() ?: 0)
         successPercentage += spyRanks / 2f // Each rank counts for 15%
 
         successPercentage = successPercentage.coerceIn(0f, 85f)
@@ -354,24 +365,16 @@ class Spy private constructor() : IsPartOfGameInfoSerialization {
     fun getLocationName() = getCityOrNull()?.name ?: Constants.spyHideout
 
     fun levelUpSpy(amount: Int = 1) {
-        if (rank >= civInfo.gameInfo.ruleset.modOptions.constants.maxSpyLevel) return
-        val ranksToLevelUp = amount.coerceAtMost(civInfo.gameInfo.ruleset.modOptions.constants.maxSpyLevel - rank)
+        if (rank >= civInfo.gameInfo.ruleset.modOptions.constants.maxSpyRank) return
+        val ranksToLevelUp = amount.coerceAtMost(civInfo.gameInfo.ruleset.modOptions.constants.maxSpyRank - rank)
 
         if (ranksToLevelUp == 1) addNotification("Your spy [$name] has leveled up!")
         else addNotification("Your spy [$name] has leveled up [$ranksToLevelUp] times!")
         rank += ranksToLevelUp
     }
 
-    /** Zero-based modifier expressing shift of probabilities from Spy Rank
-     *
-     *  100 units change one step in results, there are 4 such steps, and the default random spans 300 units and excludes the best result (undetected success).
-     *  Thus the return value translates into (return / 3) percent chance to get the very best result, reducing the chance to get the worst result (kill) by the same amount.
-     *  The same modifier from defending counter-intelligence spies goes linearly in the opposite direction.
-     *  With the range of this function being hardcoded to 30..90 (and 0 for no defensive spy present), ranks cannot guarantee either best or worst outcome.
-     *  Or - chance range of best result is 0% (rank 1 vs rank 3 defender) to 30% (rank 3 vs no defender), range of worst is 53% to 3%, respectively.
-     */
-    // Todo Moddable as some global and/or in-game-gainable Uniques?
-    fun getSkillModifier() = rank * 30
+    /** Modifier of the skill bonus of the spy by percent */
+    fun getSkillModifierPercent() = rank * civInfo.gameInfo.ruleset.modOptions.constants.spyRankSkillPercentBonus
 
     /**
      * Gets a friendly and enemy efficiency uniques for the spy at the location

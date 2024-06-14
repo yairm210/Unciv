@@ -393,7 +393,7 @@ class WorkerAutomation(
             // Check if it is not an unowned neighboring tile that can be in city range
             && !(ruleSet.tileImprovements[improvementName]!!.hasUnique(UniqueType.CanBuildOutsideBorders)
             && tile.neighbors.any { it.getOwner() == unit.civ && it.owningCity != null
-            && tile.aerialDistanceTo(it.owningCity!!.getCenterTile()) <= 3 } ))
+            && tile.aerialDistanceTo(it.owningCity!!.getCenterTile()) <= civInfo.modConstants.cityWorkRange } ))
             return 0f
 
         val stats = tile.stats.getStatDiffForImprovement(improvement, civInfo, tile.getCity(), localUniqueCache)

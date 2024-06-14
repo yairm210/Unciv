@@ -129,6 +129,7 @@ class ResourcesOverviewTab(
 
     init {
         defaults().pad(defaultPad)
+        top()
         fixedContent.defaults().pad(defaultPad)
 
         turnImageH.onClick {

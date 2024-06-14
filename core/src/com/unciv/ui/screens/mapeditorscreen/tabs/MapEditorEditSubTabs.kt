@@ -232,7 +232,7 @@ class MapEditorEditImprovementsTab(
                 }
             else
                 editTab.setBrush(it, "Improvement/$it") { tile ->
-                    tile.changeImprovement(it)
+                    tile.setImprovement(it)
                 }
         }).padTop(0f).row()
     }
