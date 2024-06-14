@@ -195,7 +195,7 @@ class TileImprovementFunctions(val tile: Tile) {
     }
 
 
-    fun changeImprovement(improvementName: String?,
+    fun setImprovement(improvementName: String?,
                           /** For road assignment and taking over tiles - DO NOT pass when simulating improvement effects! */
                           civToActivateBroaderEffects: Civilization? = null, unit: MapUnit? = null) {
         val improvementObject = tile.ruleset.tileImprovements[improvementName]

@@ -845,10 +845,10 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
 
     /** Does not remove roads */
     fun removeImprovement() =
-        improvementFunctions.changeImprovement(null)
+        improvementFunctions.setImprovement(null)
 
     fun setImprovement(improvementStr: String, civToHandleCompletion: Civilization? = null, unit: MapUnit? = null) =
-        improvementFunctions.changeImprovement(improvementStr, civToHandleCompletion, unit)
+        improvementFunctions.setImprovement(improvementStr, civToHandleCompletion, unit)
 
     // function handling when adding a road to the tile
     fun addRoad(roadType: RoadStatus, creatingCivInfo: Civilization?) {
@@ -905,7 +905,7 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
         if (worker.civ.isCurrentPlayer())
             UncivGame.Current.settings.addCompletedTutorialTask("Construct an improvement")
 
-        changeImprovement(queueEntry.improvement, worker.civ, worker)
+        setImprovement(queueEntry.improvement, worker.civ, worker)
         return true
     }
 
