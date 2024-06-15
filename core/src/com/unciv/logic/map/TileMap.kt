@@ -214,6 +214,9 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
     //endregion
     //region Pure Functions
 
+    /** Can we access [gameInfo]? e.g. for MapEditor use where there is a map but no game */
+    fun hasGameInfo() = ::gameInfo.isInitialized
+
     /** @return All tiles in a hexagon of radius [distance], including the tile at [origin] and all up to [distance] steps away.
      *  Respects map edges and world wrap. */
     fun getTilesInDistance(origin: Vector2, distance: Int): Sequence<Tile> =
