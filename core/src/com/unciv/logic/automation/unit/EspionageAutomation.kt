@@ -81,13 +81,14 @@ class EspionageAutomation(val civInfo: Civilization) {
         spy.moveTo(civInfo.cities.filter { spy.canMoveTo(it) }.randomOrNull())
         return spy.action == SpyAction.CounterIntelligence
     }
-    
+
     private fun checkIfShouldStageCoup(spy: Spy) {
         if (!spy.canDoCoup()) return
         if (spy.getCoupChanceOfSuccess(false) < .7) return
         val allyCiv = spy.getCity().civ.getAllyCiv()?.let { civInfo.gameInfo.getCivilization(it) }
-        // Don't coup ally city-states
-        if (allyCiv != null && civInfo.getDiplomacyManager(allyCiv).isRelationshipLevelGE(RelationshipLevel.Friend)) return
+        // Don't coup city-states whose allies are out friends
+        if (allyCiv != null && civInfo.knows(allyCiv)
+            && civInfo.getDiplomacyManager(allyCiv).isRelationshipLevelGE(RelationshipLevel.Friend)) return
         val spies = civInfo.espionageManager.spyList
         val randomSeed = spies.size + spies.indexOf(spy) + civInfo.gameInfo.turns
         val randomAction = Random(randomSeed).nextInt(100)
