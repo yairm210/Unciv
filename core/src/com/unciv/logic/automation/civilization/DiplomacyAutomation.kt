@@ -15,6 +15,7 @@ import com.unciv.logic.trade.TradeLogic
 import com.unciv.logic.trade.TradeOffer
 import com.unciv.logic.trade.TradeRequest
 import com.unciv.logic.trade.TradeType
+import com.unciv.models.ruleset.nation.PersonalityValue
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.tr
 import com.unciv.ui.screens.victoryscreen.RankingType
@@ -250,6 +251,7 @@ object DiplomacyAutomation {
 
     internal fun declareWar(civInfo: Civilization) {
         if (civInfo.cities.isEmpty() || civInfo.diplomacy.isEmpty()) return
+        if (civInfo.getPersonality()[PersonalityValue.DeclareWar] == 0f) return
         if (civInfo.getHappiness() <= 0) return
 
         val ourMilitaryUnits = civInfo.units.getCivUnits().filter { !it.isCivilian() }.count()

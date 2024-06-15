@@ -4,6 +4,7 @@ import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
+import com.unciv.models.ruleset.nation.PersonalityValue
 import com.unciv.ui.screens.victoryscreen.RankingType
 
 /**
@@ -18,6 +19,7 @@ object DeclareWarPlanEvaluator {
      * @return The movtivation of the plan. If it is > 0 then we can declare the war.
      */
     fun evaluateTeamWarPlan(civInfo: Civilization, target: Civilization, teamCiv: Civilization, givenMotivation: Int?): Int {
+        if (civInfo.getPersonality()[PersonalityValue.DeclareWar] == 0f) return -1000
         if (civInfo.getDiplomacyManager(teamCiv).isRelationshipLevelLT(RelationshipLevel.Neutral)) return -1000
 
         var motivation = givenMotivation
@@ -68,6 +70,7 @@ object DeclareWarPlanEvaluator {
      * @return The movtivation of the plan. If it is > 0 then we can declare the war.
      */
     fun evaluateJoinWarPlan(civInfo: Civilization, target: Civilization, civToJoin: Civilization, givenMotivation: Int?): Int {
+        if (civInfo.getPersonality()[PersonalityValue.DeclareWar] == 0f) return -1000
         if (civInfo.getDiplomacyManager(civToJoin).isRelationshipLevelLE(RelationshipLevel.Favorable)) return -1000
 
         var motivation = givenMotivation
@@ -139,6 +142,7 @@ object DeclareWarPlanEvaluator {
      * @return The movtivation of the plan. If it is > 0 then we can declare the war.
      */
     fun evaluateDeclareWarPlan(civInfo: Civilization, target: Civilization, givenMotivation: Int?): Int {
+        if (civInfo.getPersonality()[PersonalityValue.DeclareWar] == 0f) return -1000
         val motivation = givenMotivation
             ?: MotivationToAttackAutomation.hasAtLeastMotivationToAttack(civInfo, target, 0)
 
