@@ -44,7 +44,7 @@
         "civilopediaText":[
 			{"text":"Pick a technology to research!", "centered":true},
             {"extraImage":"Tutorials/Pick technology", "imageSize":180},
-            {"text":"Click on the tech button → select technology → click 'Research' (bottom right)."},
+            {"text":"Click on the tech button → Select technology → Click 'Research' (bottom right)."},
 		],
         "uniques": [
             "Only available <if tutorials are enabled>",
@@ -57,7 +57,7 @@
         "civilopediaText":[
 			{"text":"Pick a construction!", "centered":true},
             {"extraImage":"Tutorials/Pick construction", "imageSize":120},
-            {"text":"Enter city screen → Click on a unit or building → click 'add to queue'."},
+            {"text":"Enter city screen → Click on a unit or building → Click 'add to queue'."},
 		],
         "uniques": [
             "Only available <if tutorials are enabled> <when number of [Cities] is greater than [0]>",
@@ -83,7 +83,7 @@
         "civilopediaText":[
 			{"text":"Reassign worked tiles!", "centered":true},
             {"extraImage":"Tutorials/Reassign worked tiles", "imageSize":140},
-            {"text":"Enter city screen → click the assigned tile to unassign → click an unassigned tile to assign population."},
+            {"text":"Enter city screen → Click the assigned tile to unassign → Click an unassigned tile to assign population."},
 		],
         "uniques": [
             "Only available <if tutorials are enabled> <when number of [Cities] is greater than [0]>",
@@ -115,7 +115,7 @@
         "civilopediaText":[
 			{"text":"Open the options dialog!", "centered":true},
             {"extraImage":"Tutorials/Open the options table", "imageSize":130},
-            {"text":"Click the menu button (top left) → click 'Options'."},
+            {"text":"Click the menu button (top left) → Click 'Options'."},
 		],
         "uniques": [
             "Only available <if tutorials are enabled>",
