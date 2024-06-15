@@ -201,7 +201,7 @@ object UniqueTriggerActivation {
                                 civInfo.units.addUnit(civUnit, chosenCity)
                             // Else set the unit at the given tile
                             tile != null -> civInfo.units.placeUnitNearTile(tile.position, civUnit)
-                            // Else set unit unit near other units if we have no cities
+                            // Else set new unit near other units if we have no cities
                             civInfo.units.getCivUnits().any() ->
                                 civInfo.units.placeUnitNearTile(civInfo.units.getCivUnits().first().currentTile.position, civUnit)
 

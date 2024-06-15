@@ -101,11 +101,12 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         }
     }
 
-    fun getMapUnit(civInfo: Civilization): MapUnit {
+    fun getMapUnit(civInfo: Civilization, unitId: Int? = null): MapUnit {
         val unit = MapUnit()
         unit.name = name
         unit.civ = civInfo
         unit.owner = civInfo.civName
+        unit.id = unitId ?: ++civInfo.gameInfo.lastUnitId
 
         // must be after setting name & civInfo because it sets the baseUnit according to the name
         // and the civInfo is required for using `hasUnique` when determining its movement options
@@ -174,10 +175,11 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         if (isWaterUnit() && !cityConstructions.city.isCoastal())
             yield(RejectionReasonType.WaterUnitsInCoastalCities.toInstance())
         if (isAirUnit()) {
-            val fakeUnit = getMapUnit(cityConstructions.city.civ)
+            val fakeUnit = getMapUnit(cityConstructions.city.civ, Constants.NO_ID)
             val canUnitEnterTile = fakeUnit.movement.canMoveTo(cityConstructions.city.getCenterTile())
             if (!canUnitEnterTile)
                 yield(RejectionReasonType.NoPlaceToPutUnit.toInstance())
+            fakeUnit.destroy()
         }
         val civInfo = cityConstructions.city.civ
 
