@@ -1,3 +1,27 @@
+## 4.11.20
+
+Adds unique IDs to units 
+
+Fix tests
+
+rename: changeImprovement -> setImprovement
+
+4.11.19-patch1
+
+By tuvus:
+- Personality implementation 
+- Renamed getDistanceToTilesWithinTurn to getDistanceToTilesAtLocation 
+- AI is more likely to sign Defensive pacts 
+- Giving the AI good trades is stored as credit 
+- Fix election crash 
+
+By SomeTroglodyte:
+- Fix map editor can't place improvements 
+- Streamline and thereby reduce size of the save game json 
+- Improvement queue 
+
+Use Temurin API to get latest temurin releases  - By touhidurrr
+
 ## 4.11.19
 
 New unique trigger: "<upon expending a [mapUnitFilter] unit>"
