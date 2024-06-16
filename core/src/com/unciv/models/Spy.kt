@@ -9,6 +9,7 @@ import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.EspionageAction
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
+import com.unciv.logic.civilization.diplomacy.DiplomacyFunctions
 import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
 import com.unciv.logic.civilization.managers.EspionageManager
 import com.unciv.models.ruleset.unique.StateForConditionals
@@ -269,6 +270,7 @@ class Spy private constructor() : IsPartOfGameInfoSerialization {
                     NotificationCategory.Espionage, NotificationIcon.Spy, cityState.civName)
             if (pastAlly != null) {
                 cityState.getDiplomacyManager(pastAlly).reduceInfluence(20f)
+                if (!pastAlly.knows(civInfo)) civInfo.diplomacyFunctions.makeCivilizationsMeet(pastAlly)
                 pastAlly.addNotification("A spy from [${civInfo.civName}] successfully staged a coup in our former ally [${cityState.civName}]!", getCity().location,
                         NotificationCategory.Espionage, civInfo.civName,  NotificationIcon.Spy, cityState.civName)
                 pastAlly.getDiplomacyManager(civInfo).addModifier(DiplomaticModifiers.SpiedOnUs, -15f)
