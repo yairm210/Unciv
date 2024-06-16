@@ -51,7 +51,7 @@ object UseGoldAutomation {
         if (civ.gold < 250) return  // skip checks if tryGainInfluence will bail anyway
         if (civ.wantsToFocusOn(Victory.Focus.Culture)) {
             for (cityState in knownCityStates.filter { it.cityStateFunctions.canProvideStat(Stat.Culture) }) {
-                val diploManager = cityState.getDiplomacyManager(civ)
+                val diploManager = cityState.getDiplomacyManager(civ)!!
                 if (diploManager.getInfluence() < 40) { // we want to gain influence with them
                     tryGainInfluence(civ, cityState)
                 }
@@ -165,7 +165,7 @@ object UseGoldAutomation {
 
     private fun tryGainInfluence(civInfo: Civilization, cityState: Civilization) {
         if (civInfo.gold < 250) return // Save up
-        if (cityState.getDiplomacyManager(civInfo).getInfluence() >= 20
+        if (cityState.getDiplomacyManager(civInfo)!!.getInfluence() >= 20
             && civInfo.gold < 500) {
             // Only make a small investment if we have a bit of influence already to build off of so we don't waste our money
             cityState.cityStateFunctions.receiveGoldGift(civInfo, 250)

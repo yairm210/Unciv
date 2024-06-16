@@ -178,10 +178,10 @@ object TradeAutomation {
 
         for (otherCiv in knownCivs.filter {
             it.isMajorCiv() && !it.isAtWarWith(civInfo)
-                && !civInfo.getDiplomacyManager(it).hasFlag(DiplomacyFlags.DeclinedLuxExchange)
+                && !civInfo.getDiplomacyManager(it)!!.hasFlag(DiplomacyFlags.DeclinedLuxExchange)
         }) {
 
-            val isEnemy = civInfo.getDiplomacyManager(otherCiv).isRelationshipLevelLE(RelationshipLevel.Enemy)
+            val isEnemy = civInfo.getDiplomacyManager(otherCiv)!!.isRelationshipLevelLE(RelationshipLevel.Enemy)
             if (isEnemy || otherCiv.tradeRequests.any { it.requestingCiv == civInfo.civName })
                 continue
 

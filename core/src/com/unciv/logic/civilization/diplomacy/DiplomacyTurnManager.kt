@@ -39,7 +39,7 @@ object DiplomacyTurnManager {
                 ) {
 
                     trades.remove(trade)
-                    val otherCivTrades = otherCiv().getDiplomacyManager(civInfo).trades
+                    val otherCivTrades = otherCiv().getDiplomacyManager(civInfo)!!.trades
                     otherCivTrades.removeAll { it.equalTrade(trade.reverse()) }
 
                     // Can't cut short peace treaties!
@@ -70,7 +70,7 @@ object DiplomacyTurnManager {
             TradeOffer(Constants.peaceTreaty, TradeType.Treaty, duration = durationLeft)
         )
         trades.add(treaty)
-        otherCiv().getDiplomacyManager(civInfo).trades.add(treaty)
+        otherCiv().getDiplomacyManager(civInfo)!!.trades.add(treaty)
     }
 
 

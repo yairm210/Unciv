@@ -356,8 +356,7 @@ class TileImprovementFunctions(val tile: Tile) {
             val otherCiv = tileToTakeOver.getOwner()
             if (otherCiv != null) {
                 // decrease relations for -10 pt/tile
-                if (!otherCiv.knows(civ)) otherCiv.diplomacyFunctions.makeCivilizationsMeet(civ)
-                otherCiv.getDiplomacyManager(civ).addModifier(DiplomaticModifiers.StealingTerritory, -10f)
+                otherCiv.getDiplomacyManagerOrMeet(civ).addModifier(DiplomaticModifiers.StealingTerritory, -10f)
                 civsToNotify.add(otherCiv)
             }
             nearestCity.expansion.takeOwnership(tileToTakeOver)

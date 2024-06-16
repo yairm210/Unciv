@@ -53,7 +53,7 @@ class Trade : IsPartOfGameInfoSerialization {
 class TradeRequest : IsPartOfGameInfoSerialization {
     fun decline(decliningCiv: Civilization) {
         val requestingCivInfo = decliningCiv.gameInfo.getCivilization(requestingCiv)
-        val requestingCivDiploManager = requestingCivInfo.getDiplomacyManager(decliningCiv)
+        val requestingCivDiploManager = requestingCivInfo.getDiplomacyManager(decliningCiv)!!
         // the numbers of the flags (20,5) are the amount of turns to wait until offering again
         if (trade.ourOffers.all { it.type == TradeType.Luxury_Resource }
             && trade.theirOffers.all { it.type == TradeType.Luxury_Resource })

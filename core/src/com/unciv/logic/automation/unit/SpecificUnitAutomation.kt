@@ -33,7 +33,7 @@ object SpecificUnitAutomation {
             return false
         // try to revenge and capture their tiles
         val enemyCities = unit.civ.getKnownCivs()
-                .filter { unit.civ.getDiplomacyManager(it).hasModifier(DiplomaticModifiers.StealingTerritory) }
+                .filter { unit.civ.getDiplomacyManager(it)!!.hasModifier(DiplomaticModifiers.StealingTerritory) }
                 .flatMap { it.cities }
         // find the suitable tiles (or their neighbours)
         val tileToSteal = enemyCities.flatMap { it.getTiles() } // City tiles
