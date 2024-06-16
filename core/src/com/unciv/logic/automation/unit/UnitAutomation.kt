@@ -505,7 +505,7 @@ object UnitAutomation {
         val civInfo = unit.civ
 
         fun hasPreparationFlag(targetCiv: Civilization): Boolean {
-            val diploManager = civInfo.getDiplomacyManager(targetCiv)
+            val diploManager = civInfo.getDiplomacyManager(targetCiv)!!
             if (diploManager.hasFlag(DiplomacyFlags.Denunciation) 
                     || diploManager.otherCivDiplomacy().hasFlag(DiplomacyFlags.Denunciation)) return true
             if (diploManager.hasFlag(DiplomacyFlags.WaryOf) && diploManager.getFlag(DiplomacyFlags.WaryOf) < 0) return true

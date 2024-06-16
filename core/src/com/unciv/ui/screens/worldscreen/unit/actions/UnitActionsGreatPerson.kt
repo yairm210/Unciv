@@ -114,7 +114,7 @@ object UnitActionsGreatPerson {
                     unit.civ.addGold(goldEarned.toInt())
                     val tileOwningCiv = tile.owningCity!!.civ
 
-                    tileOwningCiv.getDiplomacyManager(unit.civ).addInfluence(influenceEarned)
+                    tileOwningCiv.getDiplomacyManager(unit.civ)!!.addInfluence(influenceEarned)
                     unit.civ.addNotification("Your trade mission to [$tileOwningCiv] has earned you [$goldEarned] gold and [$influenceEarned] influence!",
                         NotificationCategory.General, tileOwningCiv.civName, NotificationIcon.Gold, NotificationIcon.Culture)
                     unit.consume()

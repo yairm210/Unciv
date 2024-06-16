@@ -375,7 +375,7 @@ class GlobalUniquesTests {
         @Suppress("UNUSED_VARIABLE")
         val cityStateCity = game.addCity(cityState, cityStateTile, true)
         civInfo.diplomacyFunctions.makeCivilizationsMeet(cityState)
-        cityState.getDiplomacyManager(civInfo).addInfluence(100f)
+        cityState.getDiplomacyManager(civInfo)!!.addInfluence(100f)
 
         city.cityStats.update()
         Assert.assertTrue(city.cityStats.finalStatList[Constants.cityStates]!!.food == 3f)

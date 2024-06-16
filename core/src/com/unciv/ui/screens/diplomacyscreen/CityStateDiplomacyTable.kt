@@ -37,7 +37,7 @@ class CityStateDiplomacyTable(private val diplomacyScreen: DiplomacyScreen) {
     val viewingCiv = diplomacyScreen.viewingCiv
 
     fun getCityStateDiplomacyTable(otherCiv: Civilization): Table {
-        val otherCivDiplomacyManager = otherCiv.getDiplomacyManager(viewingCiv)
+        val otherCivDiplomacyManager = otherCiv.getDiplomacyManager(viewingCiv)!!
 
         val diplomacyTable = getCityStateDiplomacyTableHeader(otherCiv)
 
@@ -67,7 +67,7 @@ class CityStateDiplomacyTable(private val diplomacyScreen: DiplomacyScreen) {
         diplomacyTable.add(demandTributeButton).row()
         if (diplomacyScreen.isNotPlayersTurn() || viewingCiv.isAtWarWith(otherCiv)) demandTributeButton.disable()
 
-        val diplomacyManager = viewingCiv.getDiplomacyManager(otherCiv)
+        val diplomacyManager = viewingCiv.getDiplomacyManager(otherCiv)!!
         if (!viewingCiv.gameInfo.ruleset.modOptions.hasUnique(UniqueType.DiplomaticRelationshipsCannotChange)) {
             if (viewingCiv.isAtWarWith(otherCiv))
                 diplomacyTable.add(getNegotiatePeaceCityStateButton(otherCiv, diplomacyManager)).row()
@@ -95,7 +95,7 @@ class CityStateDiplomacyTable(private val diplomacyScreen: DiplomacyScreen) {
 
 
     private fun getCityStateDiplomacyTableHeader(otherCiv: Civilization): Table {
-        val otherCivDiplomacyManager = otherCiv.getDiplomacyManager(viewingCiv)
+        val otherCivDiplomacyManager = otherCiv.getDiplomacyManager(viewingCiv)!!
 
         val diplomacyTable = Table()
         diplomacyTable.defaults().pad(2.5f)
@@ -130,7 +130,7 @@ class CityStateDiplomacyTable(private val diplomacyScreen: DiplomacyScreen) {
         otherCiv.cityStateFunctions.updateAllyCivForCityState()
         var ally = otherCiv.getAllyCiv()
         if (ally != null) {
-            val allyInfluence = otherCiv.getDiplomacyManager(ally).getInfluence().toInt()
+            val allyInfluence = otherCiv.getDiplomacyManager(ally)!!.getInfluence().toInt()
             if (!viewingCiv.knows(ally) && ally != viewingCiv.civName)
                 ally = "Unknown civilization"
             diplomacyTable

@@ -29,42 +29,42 @@ class DefensivePactTests {
     @Test
     fun `Civs with Defensive Pacts are called in`() {
         meetAll()
-        a.getDiplomacyManager(b).signDefensivePact(100)
-        Assert.assertTrue(a.getDiplomacyManager(b).diplomaticStatus == DiplomaticStatus.DefensivePact
-            && b.getDiplomacyManager(a).diplomaticStatus == DiplomaticStatus.DefensivePact)
-        c.getDiplomacyManager(a).declareWar()
+        a.getDiplomacyManager(b)!!.signDefensivePact(100)
+        Assert.assertTrue(a.getDiplomacyManager(b)!!.diplomaticStatus == DiplomaticStatus.DefensivePact
+            && b.getDiplomacyManager(a)!!.diplomaticStatus == DiplomaticStatus.DefensivePact)
+        c.getDiplomacyManager(a)!!.declareWar()
 
         Assert.assertTrue(c.isAtWarWith(b) && c.isAtWarWith(a))
         Assert.assertTrue(b.isAtWarWith(c) && a.isAtWarWith(c))
-        Assert.assertTrue(b.getDiplomacyManager(a).diplomaticStatus == DiplomaticStatus.DefensivePact
-            || b.getDiplomacyManager(a).diplomaticStatus == DiplomaticStatus.DefensivePact)
+        Assert.assertTrue(b.getDiplomacyManager(a)!!.diplomaticStatus == DiplomaticStatus.DefensivePact
+            || b.getDiplomacyManager(a)!!.diplomaticStatus == DiplomaticStatus.DefensivePact)
     }
 
     @Test
     fun `Defensive Pact cancel when attacking`() {
         meetAll()
-        a.getDiplomacyManager(b).signDefensivePact(100)
-        a.getDiplomacyManager(c).declareWar()
+        a.getDiplomacyManager(b)!!.signDefensivePact(100)
+        a.getDiplomacyManager(c)!!.declareWar()
 
-        Assert.assertFalse(a.getDiplomacyManager(b).diplomaticStatus == DiplomaticStatus.DefensivePact)
+        Assert.assertFalse(a.getDiplomacyManager(b)!!.diplomaticStatus == DiplomaticStatus.DefensivePact)
     }
 
     @Test
     fun `Defensive Pact timeout`() {
         meetAll()
-        a.getDiplomacyManager(b).signDefensivePact(1)
-        Assert.assertTrue(a.getDiplomacyManager(b).diplomaticStatus == DiplomaticStatus.DefensivePact)
-        a.getDiplomacyManager(b).nextTurn()
-        b.getDiplomacyManager(a).nextTurn()
+        a.getDiplomacyManager(b)!!.signDefensivePact(1)
+        Assert.assertTrue(a.getDiplomacyManager(b)!!.diplomaticStatus == DiplomaticStatus.DefensivePact)
+        a.getDiplomacyManager(b)!!.nextTurn()
+        b.getDiplomacyManager(a)!!.nextTurn()
 
-        Assert.assertFalse(a.getDiplomacyManager(b).diplomaticStatus == DiplomaticStatus.DefensivePact
-            || b.getDiplomacyManager(a).diplomaticStatus == DiplomaticStatus.DefensivePact)
+        Assert.assertFalse(a.getDiplomacyManager(b)!!.diplomaticStatus == DiplomaticStatus.DefensivePact
+            || b.getDiplomacyManager(a)!!.diplomaticStatus == DiplomaticStatus.DefensivePact)
     }
 
     @Test
     fun `Breaking Defensive Pact`() {
         meetAll()
-        val abDiploManager = a.getDiplomacyManager(b)
+        val abDiploManager = a.getDiplomacyManager(b)!!
         abDiploManager.signDefensivePact(100)
         abDiploManager.declareWar()
         Assert.assertTrue(abDiploManager.otherCivDiplomacy().hasModifier(DiplomaticModifiers.BetrayedDefensivePact)) // Defender should be extra mad
@@ -75,12 +75,12 @@ class DefensivePactTests {
     @Test
     fun `Breaking Defensive Pact with friends`() {
         meetAll()
-        val abDiploManager = a.getDiplomacyManager(b)
-        val bcDiploManager = b.getDiplomacyManager(c)
+        val abDiploManager = a.getDiplomacyManager(b)!!
+        val bcDiploManager = b.getDiplomacyManager(c)!!
         abDiploManager.signDefensivePact(100)
         bcDiploManager.signDeclarationOfFriendship()
 
         abDiploManager.declareWar()
-        Assert.assertTrue(c.getDiplomacyManager(a).hasModifier(DiplomaticModifiers.BetrayedDefensivePact))
+        Assert.assertTrue(c.getDiplomacyManager(a)!!.hasModifier(DiplomaticModifiers.BetrayedDefensivePact))
     }
 }

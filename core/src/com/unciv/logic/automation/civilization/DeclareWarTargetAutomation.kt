@@ -47,11 +47,11 @@ object DeclareWarTargetAutomation {
      * Together we are stronger and are more likely to take down bigger threats.
      */
     private fun tryTeamWar(civInfo: Civilization, target: Civilization, motivation: Int): Boolean {
-        val potentialAllies = civInfo.getDiplomacyManager(target).getCommonKnownCivs()
+        val potentialAllies = civInfo.getDiplomacyManager(target)!!.getCommonKnownCivs()
             .filter {
                 it.isMajorCiv()
-                    && !civInfo.getDiplomacyManager(it).hasFlag(DiplomacyFlags.DeclinedJoinWarOffer)
-                    && civInfo.getDiplomacyManager(it).isRelationshipLevelGE(RelationshipLevel.Neutral)
+                    && !civInfo.getDiplomacyManager(it)!!.hasFlag(DiplomacyFlags.DeclinedJoinWarOffer)
+                    && civInfo.getDiplomacyManager(it)!!.isRelationshipLevelGE(RelationshipLevel.Neutral)
                     && !it.isAtWarWith(target)
             }.sortedByDescending { it.getStatForRanking(RankingType.Force) }
 
@@ -75,11 +75,11 @@ object DeclareWarTargetAutomation {
      * The next safest aproach is to join an existing war on the side of an ally that is already at war with [target].
      */
     private fun tryJoinWar(civInfo: Civilization, target: Civilization, motivation: Int): Boolean {
-        val potentialAllies = civInfo.getDiplomacyManager(target).getCommonKnownCivs()
+        val potentialAllies = civInfo.getDiplomacyManager(target)!!.getCommonKnownCivs()
             .filter {
                 it.isMajorCiv()
-                    && !civInfo.getDiplomacyManager(it).hasFlag(DiplomacyFlags.DeclinedJoinWarOffer)
-                    && civInfo.getDiplomacyManager(it).isRelationshipLevelGE(RelationshipLevel.Favorable)
+                    && !civInfo.getDiplomacyManager(it)!!.hasFlag(DiplomacyFlags.DeclinedJoinWarOffer)
+                    && civInfo.getDiplomacyManager(it)!!.isRelationshipLevelGE(RelationshipLevel.Favorable)
                     && it.isAtWarWith(target)
             } // Must be a civ not already at war with them
             .sortedByDescending { it.getStatForRanking(RankingType.Force) }
@@ -104,7 +104,7 @@ object DeclareWarTargetAutomation {
      */
     private fun declareWar(civInfo: Civilization, target: Civilization, motivation: Int): Boolean {
         if (DeclareWarPlanEvaluator.evaluateDeclareWarPlan(civInfo, target, motivation) > 0) {
-            civInfo.getDiplomacyManager(target).declareWar()
+            civInfo.getDiplomacyManager(target)!!.declareWar()
             return true
         }
         return false
@@ -116,7 +116,7 @@ object DeclareWarTargetAutomation {
     private fun prepareWar(civInfo: Civilization, target: Civilization, motivation: Int): Boolean {
         // TODO: We use negative values in WaryOf for now so that we aren't adding any extra fields to the save file
         // This will very likely change in the future and we will want to build upon it
-        val diploManager = civInfo.getDiplomacyManager(target)
+        val diploManager = civInfo.getDiplomacyManager(target)!!
         if (DeclareWarPlanEvaluator.evaluateStartPreparingWarPlan(civInfo, target, motivation) > 0) {
             diploManager.setFlag(DiplomacyFlags.WaryOf, -1)
             return true

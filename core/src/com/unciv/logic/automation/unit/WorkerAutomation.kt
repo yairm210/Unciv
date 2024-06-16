@@ -8,7 +8,6 @@ import com.unciv.logic.automation.civilization.NextTurnAutomation
 import com.unciv.logic.automation.unit.UnitAutomation.wander
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.NotificationCategory
-import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
 import com.unciv.logic.map.tile.toStats
@@ -489,8 +488,8 @@ class WorkerAutomation(
             // except citadel which can be built near-by
             (!isCitadel || tile.neighbors.all { it.getOwner() != civInfo }) ||
             !isAcceptableTileForFort(tile)) return 0f
-        val enemyCivs = civInfo.getKnownCivs()
-            .filter { it != civInfo && it.cities.isNotEmpty() && (civInfo.isAtWarWith(it) || civInfo.getDiplomacyManager(it).isRelationshipLevelLE(RelationshipLevel.Enemy)) }
+        val enemyCivs = civInfo.getCivsAtWarWith()
+
         // no potential enemies
         if (enemyCivs.none()) return 0f
 

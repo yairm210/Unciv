@@ -58,7 +58,7 @@ object DeclareWar {
             otherCiv.cityStateFunctions.updateAllyCivForCityState()
             otherCivDiplomacy.setInfluence(-120f)
             for (knownCiv in civInfo.getKnownCivs()) {
-                knownCiv.getDiplomacyManager(civInfo).addModifier(DiplomaticModifiers.BetrayedDeclarationOfFriendship, -10f)
+                knownCiv.getDiplomacyManager(civInfo)!!.addModifier(DiplomaticModifiers.BetrayedDeclarationOfFriendship, -10f)
             }
         }
     }
@@ -175,7 +175,7 @@ object DeclareWar {
             for (thirdCiv in civInfo.getKnownCivs()) {
                 if (!thirdCiv.isAtWarWith(otherCiv))
                 // We don't want this modify to stack if there is a defensive pact
-                    thirdCiv.getDiplomacyManager(civInfo)
+                    thirdCiv.getDiplomacyManager(civInfo)!!
                         .addModifier(DiplomaticModifiers.WarMongerer, -5f)
             }
         }
@@ -184,12 +184,12 @@ object DeclareWar {
         for (thirdCiv in diplomacyManager.getCommonKnownCivs()) {
             if (thirdCiv.isAtWarWith(otherCiv) && !thirdCiv.isAtWarWith(civInfo)) {
                 // Improve our relations
-                if (thirdCiv.isCityState()) thirdCiv.getDiplomacyManager(civInfo).addInfluence(10f)
-                else thirdCiv.getDiplomacyManager(civInfo).addModifier(DiplomaticModifiers.SharedEnemy, 5f)
+                if (thirdCiv.isCityState()) thirdCiv.getDiplomacyManager(civInfo)!!.addInfluence(10f)
+                else thirdCiv.getDiplomacyManager(civInfo)!!.addModifier(DiplomaticModifiers.SharedEnemy, 5f)
             } else if (thirdCiv.isAtWarWith(civInfo)) {
                 // Improve their relations
-                if (thirdCiv.isCityState()) thirdCiv.getDiplomacyManager(otherCiv).addInfluence(10f)
-                else thirdCiv.getDiplomacyManager(otherCiv).addModifier(DiplomaticModifiers.SharedEnemy, 5f)
+                if (thirdCiv.isCityState()) thirdCiv.getDiplomacyManager(otherCiv)!!.addInfluence(10f)
+                else thirdCiv.getDiplomacyManager(otherCiv)!!.addModifier(DiplomaticModifiers.SharedEnemy, 5f)
             }
         }
     }
@@ -216,7 +216,7 @@ object DeclareWar {
 
         if (betrayedFriendship || betrayedDefensivePact) {
             for (knownCiv in diplomacyManager.civInfo.getKnownCivs()) {
-                val diploManager = knownCiv.getDiplomacyManager(diplomacyManager.civInfo)
+                val diploManager = knownCiv.getDiplomacyManager(diplomacyManager.civInfo)!!
                 if (betrayedFriendship) {
                     val amount = if (knownCiv == otherCiv) -40f else -20f
                     diploManager.addModifier(DiplomaticModifiers.BetrayedDeclarationOfFriendship, amount)
@@ -299,7 +299,7 @@ object DeclareWar {
             val ally = ourDefensivePact.otherCiv()
             if (!civAtWarWith.knows(ally)) civAtWarWith.diplomacyFunctions.makeCivilizationsMeet(ally, true)
             // Have the aggressor declare war on the ally.
-            civAtWarWith.getDiplomacyManager(ally).declareWar(DeclareWarReason(WarType.DefensivePactWar, diplomacyManager.civInfo))
+            civAtWarWith.getDiplomacyManager(ally)!!.declareWar(DeclareWarReason(WarType.DefensivePactWar, diplomacyManager.civInfo))
         }
     }
 
@@ -312,7 +312,7 @@ object DeclareWar {
                 if (!thirdCiv.knows(civAtWarWith))
                     // Our city state ally has not met them yet, so they have to meet first
                     thirdCiv.diplomacyFunctions.makeCivilizationsMeet(civAtWarWith, warOnContact = true)
-                thirdCiv.getDiplomacyManager(civAtWarWith).declareWar(DeclareWarReason(WarType.CityStateAllianceWar, diplomacyManager.civInfo))
+                thirdCiv.getDiplomacyManager(civAtWarWith)!!.declareWar(DeclareWarReason(WarType.CityStateAllianceWar, diplomacyManager.civInfo))
             }
         }
     }

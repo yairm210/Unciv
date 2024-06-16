@@ -27,8 +27,8 @@ class GoldGiftingTests {
     @Before
     fun setUp() {
         a.diplomacyFunctions.makeCivilizationsMeet(b)
-        aDiplomacy = a.getDiplomacyManager(b)
-        bDiplomacy = b.getDiplomacyManager(a)
+        aDiplomacy = a.getDiplomacyManager(b)!!
+        bDiplomacy = b.getDiplomacyManager(a)!!
     }
 
     @Test

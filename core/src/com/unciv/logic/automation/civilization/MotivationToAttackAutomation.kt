@@ -45,7 +45,7 @@ object MotivationToAttackAutomation {
         modifiers.add(Pair("Their allies", getDefensivePactAlliesScore(targetCiv, civInfo, baseForce, ourCombatStrength)))
 
         if (civInfo.threatManager.getNeighboringCivilizations().none { it != targetCiv && it.isMajorCiv() 
-                        && civInfo.getDiplomacyManager(it).isRelationshipLevelLT(RelationshipLevel.Friend) })
+                        && civInfo.getDiplomacyManager(it)!!.isRelationshipLevelLT(RelationshipLevel.Friend) })
             modifiers.add(Pair("No other threats", 10))
 
         if (targetCiv.isMajorCiv()) {
@@ -70,7 +70,7 @@ object MotivationToAttackAutomation {
         }))
         if (minTargetCityDistance < 6) modifiers.add(Pair("Close cities", 5))
 
-        val diplomacyManager = civInfo.getDiplomacyManager(targetCiv)
+        val diplomacyManager = civInfo.getDiplomacyManager(targetCiv)!!
 
         if (diplomacyManager.hasFlag(DiplomacyFlags.ResearchAgreement))
             modifiers.add(Pair("Research Agreement", -5))
@@ -165,12 +165,12 @@ object MotivationToAttackAutomation {
     /** If they are at war with our allies, then we should join in */
     private fun getAlliedWarMotivation(civInfo: Civilization, otherCiv: Civilization): Int {
         var alliedWarMotivation = 0
-        for (thirdCiv in civInfo.getDiplomacyManager(otherCiv).getCommonKnownCivs()) {
+        for (thirdCiv in civInfo.getDiplomacyManager(otherCiv)!!.getCommonKnownCivs()) {
             val thirdCivDiploManager = civInfo.getDiplomacyManager(thirdCiv)
-            if (thirdCivDiploManager.isRelationshipLevelGE(RelationshipLevel.Friend)
+            if (thirdCivDiploManager!!.isRelationshipLevelGE(RelationshipLevel.Friend)
                 && thirdCiv.isAtWarWith(otherCiv)
             ) {
-                if (thirdCiv.getDiplomacyManager(otherCiv).hasFlag(DiplomacyFlags.Denunciation))
+                if (thirdCiv.getDiplomacyManager(otherCiv)!!.hasFlag(DiplomacyFlags.Denunciation))
                     alliedWarMotivation += 2
                 alliedWarMotivation += if (thirdCivDiploManager.hasFlag(DiplomacyFlags.DefensivePact)) 15 
                 else if (thirdCivDiploManager.isRelationshipLevelGT(RelationshipLevel.Friend)) 5
