@@ -2,7 +2,9 @@ package com.unciv.ui.popups.options
 
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.GUI
+import com.unciv.logic.civilization.PlayerType
 import com.unciv.models.metadata.GameSettings
+import com.unciv.ui.components.extensions.addSeparator
 import com.unciv.ui.components.widgets.UncivSlider
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.screens.basescreen.BaseScreen
@@ -14,6 +16,48 @@ fun autoPlayTab(optionsPopup: OptionsPopup
     defaults().pad(5f)
 
     val settings = optionsPopup.settings
+    add("Unit Automation".toLabel(fontSize = 24)).colspan(2).row()
+
+    optionsPopup.addCheckbox(this, "Auto-assign city production", settings.autoAssignCityProduction, true) { shouldAutoAssignCityProduction ->
+        settings.autoAssignCityProduction = shouldAutoAssignCityProduction
+        val worldScreen = GUI.getWorldScreenIfActive()
+        if (shouldAutoAssignCityProduction && worldScreen != null &&
+            worldScreen.viewingCiv.isCurrentPlayer() && worldScreen.viewingCiv.playerType == PlayerType.Human
+        ) {
+            worldScreen.gameInfo.getCurrentPlayerCivilization().cities.forEach { city ->
+                city.cityConstructions.chooseNextConstruction()
+            }
+        }
+    }
+    optionsPopup.addCheckbox(this, "Auto-build roads", settings.autoBuildingRoads) { settings.autoBuildingRoads = it }
+    optionsPopup.addCheckbox(
+        this,
+        "Automated workers replace improvements",
+        settings.automatedWorkersReplaceImprovements
+    ) { settings.automatedWorkersReplaceImprovements = it }
+    optionsPopup.addCheckbox(
+        this,
+        "Automated units move on turn start",
+        settings.automatedUnitsMoveOnTurnStart, true
+    ) { settings.automatedUnitsMoveOnTurnStart = it }
+    optionsPopup.addCheckbox(
+        this,
+        "Automated units can upgrade",
+        settings.automatedUnitsCanUpgrade, false
+    ) { settings.automatedUnitsCanUpgrade = it }
+    optionsPopup.addCheckbox(
+        this,
+        "Automated units choose promotions",
+        settings.automatedUnitsChoosePromotions, false
+    ) { settings.automatedUnitsChoosePromotions = it }
+    optionsPopup.addCheckbox(
+        this,
+        "Cities auto-bombard at end of turn",
+        settings.citiesAutoBombardAtEndOfTurn, false
+    ) { settings.citiesAutoBombardAtEndOfTurn = it }
+
+    addSeparator()
+    add("AutoPlay".toLabel(fontSize = 24)).colspan(2).row()
 //    fun addAutoPlaySections() {
 //        optionsPopup.addCheckbox(
 //            this,
@@ -60,7 +104,7 @@ fun autoPlayTab(optionsPopup: OptionsPopup
         GUI.getWorldScreenIfActive()?.autoPlay?.stopAutoPlay() 
     }
 
-    
+
     optionsPopup.addCheckbox(
         this,
         "AutoPlay until victory",
@@ -72,7 +116,7 @@ fun autoPlayTab(optionsPopup: OptionsPopup
 
     if (!settings.autoPlay.autoPlayUntilEnd)
         addAutoPlayMaxTurnsSlider(this, settings, optionsPopup.selectBoxMinWidth)
-    
+
 //    optionsPopup.addCheckbox(
 //        this,
 //        "Full AutoPlay AI",
