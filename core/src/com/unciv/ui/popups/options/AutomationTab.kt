@@ -8,9 +8,8 @@ import com.unciv.ui.components.extensions.addSeparator
 import com.unciv.ui.components.widgets.UncivSlider
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.screens.basescreen.BaseScreen
-import com.unciv.ui.screens.worldscreen.WorldScreen
 
-fun autoPlayTab(optionsPopup: OptionsPopup
+fun automationTab(optionsPopup: OptionsPopup
 ): Table = Table(BaseScreen.skin).apply {
     pad(10f)
     defaults().pad(5f)
@@ -111,7 +110,7 @@ fun autoPlayTab(optionsPopup: OptionsPopup
         settings.autoPlay.autoPlayUntilEnd, false
     ) { settings.autoPlay.autoPlayUntilEnd = it
         if (!it) addAutoPlayMaxTurnsSlider(this, settings, optionsPopup.selectBoxMinWidth) 
-        else optionsPopup.tabs.replacePage(optionsPopup.tabs.activePage, autoPlayTab(optionsPopup))}
+        else optionsPopup.tabs.replacePage(optionsPopup.tabs.activePage, automationTab(optionsPopup))}
 
 
     if (!settings.autoPlay.autoPlayUntilEnd)
