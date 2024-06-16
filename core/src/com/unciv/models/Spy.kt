@@ -9,6 +9,7 @@ import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.EspionageAction
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
+import com.unciv.logic.civilization.diplomacy.DiplomacyFunctions
 import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
 import com.unciv.logic.civilization.managers.EspionageManager
 import com.unciv.models.ruleset.unique.StateForConditionals
@@ -256,25 +257,27 @@ class Spy private constructor() : IsPartOfGameInfoSerialization {
             setAction(SpyAction.RiggingElections, 10)
             return
         }
+        val cityState = getCity().civ
+        val allyCiv = cityState.getAllyCiv()?.let { civInfo.gameInfo.getCivilization(it) }
+        if (allyCiv?.knows(civInfo) == false) civInfo.diplomacyFunctions.makeCivilizationsMeet(allyCiv)
+
         val successChance = getCoupChanceOfSuccess(true)
         val randomValue = Random(randomSeed()).nextFloat()
         if (randomValue <= successChance) {
             // Success
-            val cityState = getCity().civ
-            val pastAlly = cityState.getAllyCiv()?.let { civInfo.gameInfo.getCivilization(it) }
-            val previousInfluence = if (pastAlly != null) cityState.getDiplomacyManager(pastAlly).getInfluence() else 80f
+            val previousInfluence = if (allyCiv != null) cityState.getDiplomacyManager(allyCiv).getInfluence() else 80f
             cityState.getDiplomacyManager(civInfo).setInfluence(previousInfluence)
 
             civInfo.addNotification("Your spy [$name] successfully staged a coup in [${cityState.civName}]!", getCity().location,
                     NotificationCategory.Espionage, NotificationIcon.Spy, cityState.civName)
-            if (pastAlly != null) {
-                cityState.getDiplomacyManager(pastAlly).reduceInfluence(20f)
-                pastAlly.addNotification("A spy from [${civInfo.civName}] successfully staged a coup in our former ally [${cityState.civName}]!", getCity().location,
+            if (allyCiv != null) {
+                cityState.getDiplomacyManager(allyCiv).reduceInfluence(20f)
+                allyCiv.addNotification("A spy from [${civInfo.civName}] successfully staged a coup in our former ally [${cityState.civName}]!", getCity().location,
                         NotificationCategory.Espionage, civInfo.civName,  NotificationIcon.Spy, cityState.civName)
-                pastAlly.getDiplomacyManager(civInfo).addModifier(DiplomaticModifiers.SpiedOnUs, -15f)
+                allyCiv.getDiplomacyManager(civInfo).addModifier(DiplomaticModifiers.SpiedOnUs, -15f)
             }
             for (civ in cityState.getKnownCivsWithSpectators()) {
-                if (civ == pastAlly || civ == civInfo) continue
+                if (civ == allyCiv || civ == civInfo) continue
                 civ.addNotification("A spy from [${civInfo.civName}] successfully staged a coup in [${cityState.civName}]!", getCity().location,
                         NotificationCategory.Espionage, civInfo.civName,  NotificationIcon.Spy, cityState.civName)
                 if (civ.isSpectator()) continue
@@ -285,8 +288,6 @@ class Spy private constructor() : IsPartOfGameInfoSerialization {
 
         } else {
             // Failure
-            val cityState = getCity().civ
-            val allyCiv = cityState.getAllyCiv()?.let { civInfo.gameInfo.getCivilization(it) }
             val spy = allyCiv?.espionageManager?.getSpyAssignedToCity(getCity())
             cityState.getDiplomacyManager(civInfo).addInfluence(-20f)
             allyCiv?.addNotification("A spy from [${civInfo.civName}] failed to stag a coup in our ally [${cityState.civName}] and was killed!", getCity().location,
