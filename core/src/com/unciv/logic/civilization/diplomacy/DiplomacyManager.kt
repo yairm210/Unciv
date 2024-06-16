@@ -8,6 +8,7 @@ import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.trade.Trade
 import com.unciv.logic.trade.TradeEvaluation
+import com.unciv.logic.trade.TradeLogic
 import com.unciv.logic.trade.TradeOffer
 import com.unciv.logic.trade.TradeType
 import com.unciv.models.ruleset.tile.ResourceSupplyList
@@ -471,8 +472,16 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
 
         for (thirdCiv in civInfo.getKnownCivs()) {
             // Our ally city states make peace with us
-            if (thirdCiv.getAllyCiv() == civInfo.civName && thirdCiv.isAtWarWith(otherCiv))
-                thirdCiv.getDiplomacyManager(otherCiv).makePeace()
+            if (thirdCiv.getAllyCiv() == civInfo.civName && thirdCiv.isAtWarWith(otherCiv)) {
+                val thirdCivDiplo = thirdCiv.getDiplomacyManager(otherCiv)
+                thirdCivDiplo.makePeace()
+                val tradeLogic = TradeLogic(thirdCiv, otherCiv)
+
+                tradeLogic.currentTrade.ourOffers.add(TradeOffer(Constants.peaceTreaty, TradeType.Treaty))
+                tradeLogic.currentTrade.theirOffers.add(TradeOffer(Constants.peaceTreaty, TradeType.Treaty))
+                thirdCivDiplo.trades.add(tradeLogic.currentTrade)
+                thirdCivDiplo.otherCivDiplomacy().trades.add(tradeLogic.currentTrade.reverse())
+            }
             // Other City-States that are not our ally don't like the fact that we made peace with their enemy
             if (thirdCiv.getAllyCiv() != civInfo.civName && thirdCiv.isAtWarWith(otherCiv))
                 thirdCiv.getDiplomacyManager(civInfo).addInfluence(-10f)
