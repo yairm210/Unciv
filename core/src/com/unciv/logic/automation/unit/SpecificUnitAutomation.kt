@@ -185,7 +185,7 @@ object SpecificUnitAutomation {
 
         val foundCityAction = UnitActionsFromUniques.getFoundCityAction(unit, bestCityLocation)
         if (foundCityAction?.action == null) { // this means either currentMove == 0 or city within 3 tiles
-            if (unit.currentMovement > 0) // therefore, city within 3 tiles
+            if (unit.currentMovement > 0 && !unit.civ.isOneCityChallenger()) // therefore, city within 3 tiles
                 throw Exception("City within distance")
             return
         }

@@ -460,6 +460,7 @@ object NextTurnAutomation {
     private fun trainSettler(civInfo: Civilization) {
         val personality = civInfo.getPersonality()
         if (civInfo.isCityState()) return
+        if (civInfo.isOneCityChallenger()) return
         if (civInfo.isAtWar()) return // don't train settlers when you could be training troops.
         if (civInfo.wantsToFocusOn(Victory.Focus.Culture) && civInfo.cities.size > 3 &&
             civInfo.getPersonality().isNeutralPersonality)
