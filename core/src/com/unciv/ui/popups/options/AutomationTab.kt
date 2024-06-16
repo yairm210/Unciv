@@ -15,7 +15,7 @@ fun automationTab(optionsPopup: OptionsPopup
     defaults().pad(5f)
 
     val settings = optionsPopup.settings
-    add("Unit Automation".toLabel(fontSize = 24)).colspan(2).row()
+    add("Automation".toLabel(fontSize = 24)).colspan(2).row()
 
     optionsPopup.addCheckbox(this, "Auto-assign city production", settings.autoAssignCityProduction, true) { shouldAutoAssignCityProduction ->
         settings.autoAssignCityProduction = shouldAutoAssignCityProduction
