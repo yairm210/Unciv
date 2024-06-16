@@ -475,8 +475,9 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
             if (thirdCiv.getAllyCiv() == civInfo.civName && thirdCiv.isAtWarWith(otherCiv)) {
                 val thirdCivDiplo = thirdCiv.getDiplomacyManager(otherCiv)
                 thirdCivDiplo.makePeace()
-                val tradeLogic = TradeLogic(thirdCiv, otherCiv)
 
+                // Make the peace treaty so that the civ can't declare war immedietly
+                val tradeLogic = TradeLogic(thirdCiv, otherCiv)
                 tradeLogic.currentTrade.ourOffers.add(TradeOffer(Constants.peaceTreaty, TradeType.Treaty))
                 tradeLogic.currentTrade.theirOffers.add(TradeOffer(Constants.peaceTreaty, TradeType.Treaty))
                 thirdCivDiplo.trades.add(tradeLogic.currentTrade)
