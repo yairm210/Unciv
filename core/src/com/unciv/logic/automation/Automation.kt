@@ -369,7 +369,9 @@ object Automation {
     fun getTileForConstructionImprovement(city: City, improvement: TileImprovement): Tile? {
         val localUniqueCache = LocalUniqueCache()
         return city.getTiles().filter {
-            it.improvementFunctions.canBuildImprovement(improvement, city.civ)
+            it.getTileImprovement()?.hasUnique(UniqueType.AutomatedUnitsWillNotReplace,
+                    StateForConditionals(city.civ, city, tile = it)) == false
+                && it.improvementFunctions.canBuildImprovement(improvement, city.civ)
         }.maxByOrNull {
             rankTileForCityWork(it, city, localUniqueCache)
         }

@@ -1797,6 +1797,9 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "Will be replaced by automated workers"
 	Applicable to: Improvement
 
+??? example  "Will not be replaced by automated workers"
+	Applicable to: Improvement
+
 ## Resource uniques
 ??? example  "Deposits in [tileFilter] tiles always provide [amount] resources"
 	Example: "Deposits in [Farm] tiles always provide [3] resources"

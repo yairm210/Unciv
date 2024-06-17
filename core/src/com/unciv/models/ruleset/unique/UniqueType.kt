@@ -628,7 +628,7 @@ enum class UniqueType(
     PillageYieldRandom("Pillaging this improvement yields approximately [stats]", UniqueTarget.Improvement),
     PillageYieldFixed("Pillaging this improvement yields [stats]", UniqueTarget.Improvement),
     Irremovable("Irremovable", UniqueTarget.Improvement),
-    AutomatedWorkersWillReplace("Will be replaced by automated workers", UniqueTarget.Improvement),
+    AutomatedUnitsWillNotReplace("Will not be replaced by automated units", UniqueTarget.Improvement),
     //endregion
 
     /////////////////////////////////// region 07 PERSONALITY UNIQUES ////////////////////////////////////////
