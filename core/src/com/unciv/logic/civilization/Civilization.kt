@@ -320,8 +320,13 @@ class Civilization : IsPartOfGameInfoSerialization {
         return gameInfo.ruleset.difficulties.values.first()
     }
 
-    fun getDiplomacyManager(civInfo: Civilization) = getDiplomacyManager(civInfo.civName)
-    fun getDiplomacyManager(civName: String) = diplomacy[civName]!!
+    /** Makes this civilization meet [civInfo] and returns the DiplomacyManager */
+    fun getDiplomacyManagerOrMeet(civInfo: Civilization): DiplomacyManager {
+        if (!knows(civInfo)) diplomacyFunctions.makeCivilizationsMeet(civInfo)
+        return getDiplomacyManager(civInfo.civName)!!
+    }
+    fun getDiplomacyManager(civInfo: Civilization): DiplomacyManager? = getDiplomacyManager(civInfo.civName)
+    fun getDiplomacyManager(civName: String): DiplomacyManager? = diplomacy[civName]
 
     fun getProximity(civInfo: Civilization) = getProximity(civInfo.civName)
     @Suppress("MemberVisibilityCanBePrivate")  // same visibility for overloads
@@ -900,7 +905,7 @@ class Civilization : IsPartOfGameInfoSerialization {
         tradeRequests.clear() // if we don't do this then there could be resources taken by "pending" trades forever
         for (diplomacyManager in diplomacy.values) {
             diplomacyManager.trades.clear()
-            diplomacyManager.otherCiv().getDiplomacyManager(this).trades.clear()
+            diplomacyManager.otherCivDiplomacy().trades.clear()
             for (tradeRequest in diplomacyManager.otherCiv().tradeRequests.filter { it.requestingCiv == civName })
                 diplomacyManager.otherCiv().tradeRequests.remove(tradeRequest) // it  would be really weird to get a trade request from a dead civ
         }

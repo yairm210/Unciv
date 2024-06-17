@@ -76,7 +76,7 @@ class TradeEvaluation {
 
         var sumOfOurOffers = trade.ourOffers.sumOf { evaluateSellCostWithInflation(it, evaluator, tradePartner, trade) }
 
-        val relationshipLevel = evaluator.getDiplomacyManager(tradePartner).relationshipIgnoreAfraid()
+        val relationshipLevel = evaluator.getDiplomacyManager(tradePartner)!!.relationshipIgnoreAfraid()
         // If we're making a peace treaty, don't try to up the bargain for people you don't like.
         // Leads to spartan behaviour where you demand more, the more you hate the enemy...unhelpful
         if (trade.ourOffers.none { it.name == Constants.peaceTreaty || it.name == Constants.researchAgreement}) {
@@ -90,7 +90,7 @@ class TradeEvaluation {
                 return Int.MIN_VALUE
             }
         }
-        val diplomaticGifts: Int = if (includeDiplomaticGifts) evaluator.getDiplomacyManager(tradePartner).getGoldGifts() else 0
+        val diplomaticGifts: Int = if (includeDiplomaticGifts) evaluator.getDiplomacyManager(tradePartner)!!.getGoldGifts() else 0
         return sumOfTheirOffers - sumOfOurOffers + diplomaticGifts
     }
 
@@ -119,7 +119,7 @@ class TradeEvaluation {
             }
 
             TradeType.Luxury_Resource -> {
-                if (civInfo.getDiplomacyManager(tradePartner).hasFlag(DiplomacyFlags.ResourceTradesCutShort))
+                if (civInfo.getDiplomacyManager(tradePartner)!!.hasFlag(DiplomacyFlags.ResourceTradesCutShort))
                     return 0 // We don't trust you for resources
 
                 val weLoveTheKingPotential = civInfo.cities.count { it.demandedResource == offer.name } * 50
@@ -133,7 +133,7 @@ class TradeEvaluation {
             }
 
             TradeType.Strategic_Resource -> {
-                if (civInfo.getDiplomacyManager(tradePartner).hasFlag(DiplomacyFlags.ResourceTradesCutShort))
+                if (civInfo.getDiplomacyManager(tradePartner)!!.hasFlag(DiplomacyFlags.ResourceTradesCutShort))
                     return 0 // We don't trust you for resources
 
                 val amountWillingToBuy = 2 - civInfo.getResourceAmount(offer.name)
@@ -303,7 +303,7 @@ class TradeEvaluation {
             }
             TradeType.Agreement -> {
                 if (offer.name == Constants.openBorders) {
-                    return when (civInfo.getDiplomacyManager(tradePartner).relationshipIgnoreAfraid()) {
+                    return when (civInfo.getDiplomacyManager(tradePartner)!!.relationshipIgnoreAfraid()) {
                         RelationshipLevel.Unforgivable -> 10000
                         RelationshipLevel.Enemy -> 2000
                         RelationshipLevel.Competitor -> 500

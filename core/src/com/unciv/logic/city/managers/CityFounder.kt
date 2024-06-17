@@ -244,6 +244,6 @@ class CityFounder {
                     .distinct()
                     .filter { it.knows(city.civ) && it.hasExplored(city.getCenterTile()) }
         for (otherCiv in civsWithCloseCities)
-            otherCiv.getDiplomacyManager(city.civ).setFlag(DiplomacyFlags.SettledCitiesNearUs, 30)
+            otherCiv.getDiplomacyManager(city.civ)!!.setFlag(DiplomacyFlags.SettledCitiesNearUs, 30)
     }
 }

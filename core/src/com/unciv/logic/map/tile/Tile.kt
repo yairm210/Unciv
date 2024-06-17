@@ -347,7 +347,7 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
             tileOwner == null -> false
             tileOwner == civInfo -> true
             !civInfo.knows(tileOwner) -> false
-            else -> tileOwner.getDiplomacyManager(civInfo).isConsideredFriendlyTerritory()
+            else -> tileOwner.getDiplomacyManager(civInfo)!!.isConsideredFriendlyTerritory()
         }
     }
 

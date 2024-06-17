@@ -381,8 +381,8 @@ class BattleTest {
         Battle.attackOrNuke(MapUnitCombatant(attackerUnit), AttackableTile(attackerUnit.getTile(), defaultDefenderUnit.currentTile, 0f, null))
 
         // then
-        assertEquals(-75f, defenderCiv.getDiplomacyManager(attackerCiv).opinionOfOtherCiv()) // 50 for nuke, 25 for war declaration
-        assertEquals(-55f, thirdCiv.getDiplomacyManager(attackerCiv).opinionOfOtherCiv()) // 50 for nuke, 5 for warmongering
+        assertEquals(-75f, defenderCiv.getDiplomacyManager(attackerCiv)!!.opinionOfOtherCiv()) // 50 for nuke, 25 for war declaration
+        assertEquals(-55f, thirdCiv.getDiplomacyManager(attackerCiv)!!.opinionOfOtherCiv()) // 50 for nuke, 5 for warmongering
     }
 
     @Test

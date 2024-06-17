@@ -125,7 +125,7 @@ class AlertPopup(
         val player = viewingCiv
         addLeaderName(bullyOrAttacker)
 
-        val isAtLeastNeutral = bullyOrAttacker.getDiplomacyManager(player).isRelationshipLevelGE(RelationshipLevel.Neutral)
+        val isAtLeastNeutral = bullyOrAttacker.getDiplomacyManager(player)!!.isRelationshipLevelGE(RelationshipLevel.Neutral)
         val text = when {
             popupAlert.type == AlertType.BulliedProtectedMinor && isAtLeastNeutral ->  // Nice message
                 "I've been informed that my armies have taken tribute from [${cityState.civName}], a city-state under your protection.\nI assure you, this was quite unintentional, and I hope that this does not serve to drive us apart."
@@ -139,7 +139,7 @@ class AlertPopup(
         addGoodSizedLabel(text).row()
 
         addCloseButton("You'll pay for this!", KeyboardBinding.Confirm) {
-            player.getDiplomacyManager(bullyOrAttacker).sideWithCityState()
+            player.getDiplomacyManager(bullyOrAttacker)!!.sideWithCityState()
         }.row()
         addCloseButton("Very well.", KeyboardBinding.Cancel) {
             player.addNotification("You have broken your Pledge to Protect [${cityState.civName}]!",
@@ -202,7 +202,7 @@ class AlertPopup(
 
     private fun addDeclarationOfFriendship() {
         val otherciv = getCiv(popupAlert.value)
-        val playerDiploManager = viewingCiv.getDiplomacyManager(otherciv)
+        val playerDiploManager = viewingCiv.getDiplomacyManager(otherciv)!!
         addLeaderName(otherciv)
         addGoodSizedLabel("My friend, shall we declare our friendship to the world?").row()
         addCloseButton("We are not interested.", KeyboardBinding.Cancel) {
@@ -224,7 +224,7 @@ class AlertPopup(
 
     private fun addDemandToStopSettlingCitiesNear() {
         val otherciv = getCiv(popupAlert.value)
-        val playerDiploManager = viewingCiv.getDiplomacyManager(otherciv)
+        val playerDiploManager = viewingCiv.getDiplomacyManager(otherciv)!!
         addLeaderName(otherciv)
         addGoodSizedLabel("Please don't settle new cities near us.").row()
         addCloseButton("Very well, we shall look for new lands to settle.", KeyboardBinding.Confirm) {
@@ -306,18 +306,18 @@ class AlertPopup(
             // Return it to original owner
             val unitName = capturedUnit.baseUnit.name
             capturedUnit.destroy()
-            val closestCity =
-                    originalOwner.cities.minByOrNull { it.getCenterTile().aerialDistanceTo(tile) }
+            val closestCity = originalOwner.cities.minByOrNull { it.getCenterTile().aerialDistanceTo(tile) }
+
             if (closestCity != null) {
                 // Attempt to place the unit near their nearest city
                 originalOwner.units.placeUnitNearTile(closestCity.location, unitName)
             }
 
             if (originalOwner.isCityState()) {
-                originalOwner.getDiplomacyManager(captor).addInfluence(45f)
+                originalOwner.getDiplomacyManagerOrMeet(captor).addInfluence(45f)
             } else if (originalOwner.isMajorCiv()) {
                 // No extra bonus from doing it several times
-                originalOwner.getDiplomacyManager(captor)
+                originalOwner.getDiplomacyManagerOrMeet(captor)
                     .setModifier(DiplomaticModifiers.ReturnedCapturedUnits, 20f)
             }
             val notificationSequence = sequence {

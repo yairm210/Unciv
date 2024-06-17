@@ -19,13 +19,14 @@ object DeclareWarPlanEvaluator {
      * @return The movtivation of the plan. If it is > 0 then we can declare the war.
      */
     fun evaluateTeamWarPlan(civInfo: Civilization, target: Civilization, teamCiv: Civilization, givenMotivation: Int?): Int {
+        val teamCivDiplo = civInfo.getDiplomacyManager(teamCiv)!!
         if (civInfo.getPersonality()[PersonalityValue.DeclareWar] == 0f) return -1000
-        if (civInfo.getDiplomacyManager(teamCiv).isRelationshipLevelLT(RelationshipLevel.Neutral)) return -1000
+        if (teamCivDiplo.isRelationshipLevelLT(RelationshipLevel.Neutral)) return -1000
 
         var motivation = givenMotivation
             ?: MotivationToAttackAutomation.hasAtLeastMotivationToAttack(civInfo, target, 0)
 
-        if (civInfo.getDiplomacyManager(teamCiv).isRelationshipLevelEQ(RelationshipLevel.Neutral)) motivation -= 5
+        if (teamCivDiplo.isRelationshipLevelEQ(RelationshipLevel.Neutral)) motivation -= 5
         // Make sure that they can actually help us with the target
         if (!teamCiv.threatManager.getNeighboringCivilizations().contains(target)) {
             motivation -= 40
@@ -70,13 +71,13 @@ object DeclareWarPlanEvaluator {
      * @return The movtivation of the plan. If it is > 0 then we can declare the war.
      */
     fun evaluateJoinWarPlan(civInfo: Civilization, target: Civilization, civToJoin: Civilization, givenMotivation: Int?): Int {
+        val thirdCivDiplo = civInfo.getDiplomacyManager(civToJoin)!!
         if (civInfo.getPersonality()[PersonalityValue.DeclareWar] == 0f) return -1000
-        if (civInfo.getDiplomacyManager(civToJoin).isRelationshipLevelLE(RelationshipLevel.Favorable)) return -1000
+        if (thirdCivDiplo.isRelationshipLevelLE(RelationshipLevel.Favorable)) return -1000
 
         var motivation = givenMotivation
             ?: MotivationToAttackAutomation.hasAtLeastMotivationToAttack(civInfo, target, 0)
         // We need to be able to trust the thirdCiv at least somewhat
-        val thirdCivDiplo = civInfo.getDiplomacyManager(civToJoin)
         if (thirdCivDiplo.diplomaticStatus != DiplomaticStatus.DefensivePact &&
             thirdCivDiplo.opinionOfOtherCiv() + motivation * 2 < 80) {
             motivation -= 80 - (thirdCivDiplo.opinionOfOtherCiv() + motivation * 2).toInt()
@@ -116,7 +117,7 @@ object DeclareWarPlanEvaluator {
      * @return The movtivation of the plan. If it is > 0 then we can declare the war.
      */
     fun evaluateJoinOurWarPlan(civInfo: Civilization, target: Civilization, civToJoin: Civilization, givenMotivation: Int?): Int {
-        if (civInfo.getDiplomacyManager(civToJoin).isRelationshipLevelLT(RelationshipLevel.Favorable)) return -1000
+        if (civInfo.getDiplomacyManager(civToJoin)!!.isRelationshipLevelLT(RelationshipLevel.Favorable)) return -1000
         var motivation = givenMotivation ?: 0
         if (!civToJoin.threatManager.getNeighboringCivilizations().contains(target)) {
             motivation -= 50
@@ -146,7 +147,7 @@ object DeclareWarPlanEvaluator {
         val motivation = givenMotivation
             ?: MotivationToAttackAutomation.hasAtLeastMotivationToAttack(civInfo, target, 0)
 
-        val diploManager = civInfo.getDiplomacyManager(target)
+        val diploManager = civInfo.getDiplomacyManager(target)!!
 
         if (diploManager.hasFlag(DiplomacyFlags.WaryOf) && diploManager.getFlag(DiplomacyFlags.WaryOf) < 0) {
             val turnsToPlan = (10 - (motivation / 10)).coerceAtLeast(3)
@@ -168,7 +169,7 @@ object DeclareWarPlanEvaluator {
 
         // TODO: We use negative values in WaryOf for now so that we aren't adding any extra fields to the save file
         // This will very likely change in the future and we will want to build upon it
-        val diploManager = civInfo.getDiplomacyManager(target)
+        val diploManager = civInfo.getDiplomacyManager(target)!!
         if (diploManager.hasFlag(DiplomacyFlags.WaryOf)) return 0
 
         return motivation - 15
