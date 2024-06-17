@@ -111,15 +111,6 @@ object CivilianUnitAutomation {
                 return
         }
 
-        // This has to come after the individual abilities for the great people that can also place
-        // instant improvements (e.g. great scientist).
-        if (unit.hasUnique(UniqueType.ConstructImprovementInstantly)) {
-            // catch great prophet for civs who can't found/enhance/spread religion
-            // includes great people plus moddable units
-            val improvementCanBePlacedEventually =
-                SpecificUnitAutomation.automateImprovementPlacer(unit)
-        }
-
         if (unit.hasUnique(UniqueType.GainFreeBuildings)) {
             val unique = unit.getMatchingUniques(UniqueType.GainFreeBuildings).first()
             val buildingName = unique.params[0]

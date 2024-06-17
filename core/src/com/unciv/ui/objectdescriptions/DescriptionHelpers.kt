@@ -48,7 +48,7 @@ fun IHasUniques.uniquesToCivilopediaTextLines(
         // (the other constructor guesses the first object by name in the Unique parameters).
         yield(
             if (colorConsumesResources && unique.type == UniqueType.ConsumesResources)
-                FormattedLine(unique.text, link = "Resources/${unique.params[1]}", color = "#F42")
+                FormattedLine(unique.getDisplayText(), link = "Resources/${unique.params[1]}", color = "#F42")
                 else FormattedLine(unique)
         )
     }
