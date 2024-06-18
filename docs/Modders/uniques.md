@@ -1794,10 +1794,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "Irremovable"
 	Applicable to: Improvement
 
-??? example  "Will be replaced by automated workers"
-	Applicable to: Improvement
-
-??? example  "Will not be replaced by automated workers"
+??? example  "Will not be replaced by automated units"
 	Applicable to: Improvement
 
 ## Resource uniques
