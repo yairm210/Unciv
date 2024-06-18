@@ -264,15 +264,14 @@ object MotivationToAttackAutomation {
     private fun getCombatStrengthModifier(ourCombatStrength: Float, theirCombatStrength: Float): Int {
         val combatStrengthRatio = ourCombatStrength / theirCombatStrength
         val combatStrengthModifier = when {
-            combatStrengthRatio > 5f -> 30
-            combatStrengthRatio > 4f -> 20
-            combatStrengthRatio > 3f -> 15
+            combatStrengthRatio > 5f -> 20
+            combatStrengthRatio > 4f -> 15
+            combatStrengthRatio > 3f -> 12
             combatStrengthRatio > 2f -> 10
             combatStrengthRatio > 1.5f -> 5
             combatStrengthRatio > .8f -> 0
             combatStrengthRatio > .6f -> -5
             combatStrengthRatio > .4f -> -15
-            combatStrengthRatio > .2f -> -20
             else -> -20
         }
         return combatStrengthModifier
