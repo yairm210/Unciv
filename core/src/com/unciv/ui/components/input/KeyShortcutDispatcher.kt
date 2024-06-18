@@ -6,9 +6,16 @@ open class KeyShortcutDispatcher {
      * @param binding   The abstract [KeyboardBinding] that will be bound to an action through the [add] methods
      * @param priority  Used by the [Resolver] - only the actions bound to the incoming key with the _highest priority_ will run
      */
-    data class KeyShortcut(val binding: KeyboardBinding, val key: KeyCharAndCode, val priority: Int = 0) {
+    data class KeyShortcut(private val binding: KeyboardBinding, private val key: KeyCharAndCode, val priority: Int = 0) {
         /** Debug helper */
         override fun toString() = if (binding.hidden) "$key@$priority" else "$binding@$priority"
+
+        fun getRealKey(): KeyCharAndCode = if (binding == KeyboardBinding.None) key else KeyboardBindings[binding]
+        fun getRealPriority(): Int {
+            // Bindings with the default key (user-untouched) are less prioritized than unique, user-set bindings
+            if (binding != KeyboardBinding.None && KeyboardBindings[binding] == binding.defaultKey) return priority - 1
+            return priority
+        }
     }
 
     private data class ShortcutAction(val shortcut: KeyShortcut, val action: ActivationAction)
@@ -42,7 +49,7 @@ open class KeyShortcutDispatcher {
     }
 
     operator fun contains(key: KeyCharAndCode) =
-        shortcuts.any { it.shortcut.key == key || it.shortcut.binding.defaultKey == key }
+        shortcuts.any { key == it.shortcut.getRealKey() }
 
     open fun isActive(): Boolean = true
 
@@ -57,16 +64,8 @@ open class KeyShortcutDispatcher {
             if (!dispatcher.isActive()) return
 
             for ((shortcut, action) in dispatcher.shortcuts) {
-                // shortcutKey in shortcut is used for non-user-configurable key shortcuts
-                var (binding, shortcutKey, shortcutPriority) = shortcut
-
-                // Bindings are used for user-configurable shortcuts
-                if (binding != KeyboardBinding.None) {
-                    shortcutKey = KeyboardBindings[binding]
-                    if (shortcutKey == binding.defaultKey) shortcutPriority--
-                }
-
-                if (shortcutKey != key) continue
+                if (shortcut.getRealKey() != key) continue
+                val shortcutPriority = shortcut.getRealPriority()
                 // We always want to take the highest priority action, but if there are several of the same priority we do them all
                 if (shortcutPriority < priority) continue
                 if (shortcutPriority > priority) {
