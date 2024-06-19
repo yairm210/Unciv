@@ -10,17 +10,20 @@ import com.unciv.ui.screens.civilopediascreen.FormattedLine
  *  Appends user-visible Uniques as translated text to a [line collection][lineList].
  *
  *  Follows json order.
+ *  @param lineList Target collection, will be mutated. Defaults to an empty List for easier use with consumer-only client code.
  *  @param exclude Predicate that can exclude Uniques by returning `true` (defaults to return `false`).
+ *  @return the [lineList] with added, translated info on [this.uniques] - for chaining
  */
 fun IHasUniques.uniquesToDescription(
-    lineList: MutableCollection<String>,
+    lineList: MutableCollection<String> = mutableListOf(),
     exclude: Unique.() -> Boolean = {false}
-): Unit {
+): MutableCollection<String> {
     for (unique in uniqueObjects) {
         if (unique.isHiddenToUsers()) continue
         if (unique.exclude()) continue
-        lineList += unique.text.tr()
+        lineList += unique.getDisplayText().tr()
     }
+    return lineList
 }
 
 /**
@@ -48,7 +51,7 @@ fun IHasUniques.uniquesToCivilopediaTextLines(
         // (the other constructor guesses the first object by name in the Unique parameters).
         yield(
             if (colorConsumesResources && unique.type == UniqueType.ConsumesResources)
-                FormattedLine(unique.text, link = "Resources/${unique.params[1]}", color = "#F42")
+                FormattedLine(unique.getDisplayText(), link = "Resources/${unique.params[1]}", color = "#F42")
                 else FormattedLine(unique)
         )
     }

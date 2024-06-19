@@ -188,7 +188,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
 
         for (unique in getMatchingUniques(UniqueType.RequiresPopulation))
             if (unique.params[0].toInt() > cityConstructions.city.population.population)
-                yield(RejectionReasonType.PopulationRequirement.toInstance(unique.text))
+                yield(RejectionReasonType.PopulationRequirement.toInstance(unique.getDisplayText()))
 
         yieldAll(getRejectionReasons(civInfo, cityConstructions.city))
 
@@ -252,7 +252,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
                     it.type == UniqueType.ConditionalBelowHappiness || it.type == UniqueType.ConditionalBetweenHappiness
                 }
                 if (hasHappinessCondition)
-                    yield(RejectionReasonType.CannotBeBuiltUnhappiness.toInstance(unique.text))
+                    yield(RejectionReasonType.CannotBeBuiltUnhappiness.toInstance(unique.getDisplayText()))
                 else yield(RejectionReasonType.CannotBeBuilt.toInstance())
             }
     }
@@ -295,7 +295,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
                 }
                 else -> {
                     if (built)
-                        yield(RejectionReasonType.CanOnlyBeBuiltInSpecificCities.toInstance(unique.text))
+                        yield(RejectionReasonType.CanOnlyBeBuiltInSpecificCities.toInstance(unique.getDisplayText()))
                     else
                         yield(RejectionReasonType.ShouldNotBeDisplayed.toInstance())
                 }
