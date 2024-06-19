@@ -933,6 +933,9 @@ class MapUnit : IsPartOfGameInfoSerialization {
     }
 
     fun disband() {
+        // Safeguard against running on already destroyed instances
+        if (isDestroyed) return
+
         // evacuation of transported units before disbanding, if possible. toListed because we're modifying the unit list.
         for (unit in currentTile.getUnits()
                 .filter { it.isTransported && isTransportTypeOf(it) }
