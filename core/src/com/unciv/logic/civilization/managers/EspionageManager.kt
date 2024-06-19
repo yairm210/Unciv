@@ -100,4 +100,12 @@ class EspionageManager : IsPartOfGameInfoSerialization {
     fun getIdleSpies(): List<Spy> {
         return spyList.filterTo(mutableListOf()) { it.isIdle() }
     }
+
+    /**
+     * Takes all spies away from their cities.
+     * Called when the civ is destroyed.
+     */
+    fun removeAllSpies() {
+        spyList.forEach { it.moveTo(null) }
+    }
 }

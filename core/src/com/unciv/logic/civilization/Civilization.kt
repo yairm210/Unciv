@@ -909,6 +909,8 @@ class Civilization : IsPartOfGameInfoSerialization {
             for (tradeRequest in diplomacyManager.otherCiv().tradeRequests.filter { it.requestingCiv == civName })
                 diplomacyManager.otherCiv().tradeRequests.remove(tradeRequest) // it  would be really weird to get a trade request from a dead civ
         }
+        if (gameInfo.isEspionageEnabled())
+            espionageManager.removeAllSpies()
     }
 
     fun updateProximity(otherCiv: Civilization, preCalculated: Proximity? = null): Proximity = cache.updateProximity(otherCiv, preCalculated)
