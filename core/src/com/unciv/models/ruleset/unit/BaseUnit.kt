@@ -174,13 +174,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
     override fun getRejectionReasons(cityConstructions: CityConstructions): Sequence<RejectionReason> = sequence {
         if (isWaterUnit() && !cityConstructions.city.isCoastal())
             yield(RejectionReasonType.WaterUnitsInCoastalCities.toInstance())
-        if (isAirUnit()) {
-            val fakeUnit = getMapUnit(cityConstructions.city.civ, Constants.NO_ID)
-            val canUnitEnterTile = fakeUnit.movement.canMoveTo(cityConstructions.city.getCenterTile())
-            if (!canUnitEnterTile)
-                yield(RejectionReasonType.NoPlaceToPutUnit.toInstance())
-            fakeUnit.destroy()
-        }
+
         val civInfo = cityConstructions.city.civ
 
         for (unique in getMatchingUniques(UniqueType.OnlyAvailable, StateForConditionals.IgnoreConditionals))
@@ -197,6 +191,15 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
                 yield(RejectionReasonType.PopulationRequirement.toInstance(unique.text))
 
         yieldAll(getRejectionReasons(civInfo, cityConstructions.city))
+
+        // Expensive, since adding and removing the fake unit causes side-effects
+        if (isAirUnit()) {
+            val fakeUnit = getMapUnit(cityConstructions.city.civ, Constants.NO_ID)
+            val canUnitEnterTile = fakeUnit.movement.canMoveTo(cityConstructions.city.getCenterTile())
+            if (!canUnitEnterTile)
+                yield(RejectionReasonType.NoPlaceToPutUnit.toInstance())
+            fakeUnit.destroy()
+        }
     }
 
     fun getRejectionReasons(
