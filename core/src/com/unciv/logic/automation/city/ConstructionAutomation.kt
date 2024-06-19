@@ -346,7 +346,7 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
             if (civInfo.wantsToFocusOn(stat))
                 buildingStats[stat] *= 2f
 
-            buildingStats[stat] *= personality.scaledFocus(PersonalityValue[stat])
+            buildingStats[stat] *= personality.modifierFocus(PersonalityValue[stat], .5f)
         }
 
         return Automation.rankStatsValue(civInfo.getPersonality().scaleStats(buildingStats.clone(), .3f), civInfo)

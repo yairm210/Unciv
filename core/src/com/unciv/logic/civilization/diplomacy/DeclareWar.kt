@@ -7,6 +7,7 @@ import com.unciv.logic.civilization.DiplomacyAction
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.civilization.PopupAlert
+import com.unciv.models.ruleset.nation.PersonalityValue
 import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unique.UniqueType
 
@@ -185,11 +186,11 @@ object DeclareWar {
             if (thirdCiv.isAtWarWith(otherCiv) && !thirdCiv.isAtWarWith(civInfo)) {
                 // Improve our relations
                 if (thirdCiv.isCityState()) thirdCiv.getDiplomacyManager(civInfo)!!.addInfluence(10f)
-                else thirdCiv.getDiplomacyManager(civInfo)!!.addModifier(DiplomaticModifiers.SharedEnemy, 5f)
+                else thirdCiv.getDiplomacyManager(civInfo)!!.addModifier(DiplomaticModifiers.SharedEnemy, 5f * civInfo.getPersonality().modifierFocus(PersonalityValue.Loyal, .3f))
             } else if (thirdCiv.isAtWarWith(civInfo)) {
                 // Improve their relations
                 if (thirdCiv.isCityState()) thirdCiv.getDiplomacyManager(otherCiv)!!.addInfluence(10f)
-                else thirdCiv.getDiplomacyManager(otherCiv)!!.addModifier(DiplomaticModifiers.SharedEnemy, 5f)
+                else thirdCiv.getDiplomacyManager(otherCiv)!!.addModifier(DiplomaticModifiers.SharedEnemy, 5f * civInfo.getPersonality().modifierFocus(PersonalityValue.Loyal, .3f))
             }
         }
     }
@@ -219,12 +220,12 @@ object DeclareWar {
                 val diploManager = knownCiv.getDiplomacyManager(diplomacyManager.civInfo)!!
                 if (betrayedFriendship) {
                     val amount = if (knownCiv == otherCiv) -40f else -20f
-                    diploManager.addModifier(DiplomaticModifiers.BetrayedDeclarationOfFriendship, amount)
+                    diploManager.addModifier(DiplomaticModifiers.BetrayedDeclarationOfFriendship, amount * knownCiv.getPersonality().modifierFocus(PersonalityValue.Loyal, .3f))
                 }
                 if (betrayedDefensivePact) {
                     //Note: this stacks with Declaration of Friendship
                     val amount = if (knownCiv == otherCiv) -20f else -10f
-                    diploManager.addModifier(DiplomaticModifiers.BetrayedDefensivePact, amount)
+                    diploManager.addModifier(DiplomaticModifiers.BetrayedDefensivePact, amount * knownCiv.getPersonality().modifierFocus(PersonalityValue.Loyal, .3f))
                 }
                 diploManager.removeModifier(DiplomaticModifiers.DeclaredFriendshipWithOurAllies) // obviously this guy's declarations of friendship aren't worth much.
                 diploManager.removeModifier(DiplomaticModifiers.SignedDefensivePactWithOurAllies)
