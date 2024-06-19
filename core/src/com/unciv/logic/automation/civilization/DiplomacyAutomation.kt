@@ -338,7 +338,8 @@ object DiplomacyAutomation {
     internal fun askForHelp(civInfo: Civilization) {
         if (!civInfo.isAtWar() || civInfo.cities.isEmpty() || civInfo.diplomacy.isEmpty()) return
 
-        for (enemyCiv in civInfo.getCivsAtWarWith().sortedByDescending { it.getStatForRanking(RankingType.Force) }) {
+        val enemyCivs = civInfo.getCivsAtWarWith().filter { it.isMajorCiv() }.sortedByDescending { it.getStatForRanking(RankingType.Force) }
+        for (enemyCiv in enemyCivs) {
             val potentialAllies = enemyCiv.threatManager.getNeighboringCivilizations()
                 .filter {
                     civInfo.knows(it) && !it.isAtWarWith(enemyCiv)
