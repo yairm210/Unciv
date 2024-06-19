@@ -890,8 +890,7 @@
 		"cost": 150,
 		"requiredTech": "Navigation",
 		"upgradesTo": "Destroyer",
-		"promotions": ["Coastal Raider I"],
-		"uniques": ["May capture killed [Water] units"],
+		"promotions": ["Coastal Raider I", "[Privateer] ability"],
 		"attackSound": "cannon"
 	},
 	{
@@ -904,8 +903,7 @@
 		"cost": 150,
 		"requiredTech": "Navigation",
 		"upgradesTo": "Destroyer",
-		"promotions": ["Coastal Raider I", "Coastal Raider II", "Supply"],
-		"uniques": ["May capture killed [Water] units"],
+		"promotions": ["Coastal Raider I", "Coastal Raider II", "Supply", "[Privateer] ability"],
 		"attackSound": "cannon"
 	},
 	{
