@@ -179,7 +179,7 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
 
     override fun toString() = if (type == null) "\"$text\"" else "$type (\"$text\")"
     fun getDisplayText(): String = if (conditionals.none { it.isHiddenToUsers() }) text
-        else text.removeConditionals() + " " + conditionals.filter { !it.isHiddenToUsers() }.joinToString(" ") { "<$it>" }
+        else text.removeConditionals() + " " + conditionals.filter { !it.isHiddenToUsers() }.joinToString(" ") { "<${it.text}>" }
 }
 
 /** Used to cache results of getMatchingUniques
