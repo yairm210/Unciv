@@ -1,3 +1,43 @@
+## 4.12.1
+
+Resolves  - Allow hidden conditionals 
+
+perf(minor): Don't check stat purchases for non-purchacable stats
+
+perf: Resolved 
+
+Resolved  - "join war" offers are only valid if you can actually declare war on them
+
+Simplified DispatcherVetoer, explained dispatcher
+
+Fix misaligned change
+
+minor corrections
+
+Resolved  - Added "Will not be replaced by automated units" unique
+
+Don't notify for "0 stat" plunders
+
+Resolved 
+
+By tuvus:
+- Defeated civilizations don't use spies 
+- Spies deselect when moved on map 
+- Civs can no longer declare war right after peace with a city-state 
+- Moved automation settings to AutoPlayTab and renamed it to AutomationTab 
+- TechDebt: Made getDiplomacyManger() nullable 
+- 4.12.0-patch1
+- Fixed a city-state coup crash 
+
+By SomeTroglodyte:
+- Add "release patch" section to the wiki 
+- Fix Civilopedia content clipped at the top 
+- Thwart the nathty dithband thpammer 
+- Fix coastal rivers near Rock of Gibraltar 
+- Add wiki section on how to begin a new language 
+
+- Turn Privateer's unique ability into a promotion  - By SpacedOutChicken
+
 ## 4.12.0
 
 Fixed spy automation crash
