@@ -41,7 +41,7 @@ object MotivationToAttackAutomation {
         val modifiers: MutableList<Pair<String, Float>> = mutableListOf()
 
         // If our personality is to declare war more then we should have a higher base motivation (a negative number closer to 0) 
-        modifiers.add(Pair("Base motivation", -(15f * civInfo.getPersonality().inverseModifierFocus(PersonalityValue.DeclareWar, 0.5f))))
+        modifiers.add(Pair("Base motivation", -(15f * personality.inverseModifierFocus(PersonalityValue.DeclareWar, 0.5f))))
 
         modifiers.add(Pair("Relative combat strength", getCombatStrengthModifier(civInfo, ourCombatStrength, theirCombatStrength + 0.8f * civInfo.threatManager.getCombinedForceOfWarringCivs())))
         // TODO: For now this will be a very high value because the AI can't handle multiple fronts, this should be changed later though
@@ -180,12 +180,12 @@ object MotivationToAttackAutomation {
             if (thirdCivDiploManager!!.isRelationshipLevelLT(RelationshipLevel.Friend)) continue
 
             if (thirdCiv.getDiplomacyManager(otherCiv)!!.hasFlag(DiplomacyFlags.Denunciation))
-                alliedWarMotivation += 2
+                alliedWarMotivation += 2f
 
             if (thirdCiv.isAtWarWith(otherCiv)) {
-                alliedWarMotivation += if (thirdCivDiploManager.hasFlag(DiplomacyFlags.DefensivePact)) 15 
-                else if (thirdCivDiploManager.hasFlag(DiplomacyFlags.DeclarationOfFriendship)) 5
-                else 2
+                alliedWarMotivation += if (thirdCivDiploManager.hasFlag(DiplomacyFlags.DefensivePact)) 15f 
+                else if (thirdCivDiploManager.hasFlag(DiplomacyFlags.DeclarationOfFriendship)) 5f
+                else 2f
             }
         }
         return alliedWarMotivation * civInfo.getPersonality().modifierFocus(PersonalityValue.Loyal, .5f)
