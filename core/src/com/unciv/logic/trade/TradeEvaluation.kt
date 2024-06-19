@@ -54,7 +54,7 @@ class TradeEvaluation {
             TradeType.Strategic_Resource -> hasResource(tradeOffer)
             TradeType.Technology -> true
             TradeType.Introduction -> !tradePartner.knows(tradeOffer.name) // You can't introduce them to someone they already know!
-            TradeType.WarDeclaration -> offerer.getDiplomacyManager(tradeOffer.name)?.canDeclareWar() == true
+            TradeType.WarDeclaration -> offerer.getDiplomacyManager(tradeOffer.name)!!.canDeclareWar()
             TradeType.City -> offerer.cities.any { it.id == tradeOffer.name }
         }
     }

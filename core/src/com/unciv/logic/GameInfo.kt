@@ -200,6 +200,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
         toReturn.customSaveLocation = customSaveLocation
         toReturn.victoryData = victoryData?.copy()
         toReturn.historyStartTurn = historyStartTurn
+        toReturn.lastUnitId = lastUnitId
 
         return toReturn
     }
