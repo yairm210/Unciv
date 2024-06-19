@@ -11,7 +11,7 @@ jobs:
     # This is the only place I could find an apparent list of valid author associations. Also, at least they're not case-sensitive: https://docs.github.com/en/graphql/reference/enums#commentauthorassociation https://docs.github.com/en/actions/learn-github-actions/expressions#contains
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: actions/setup-node@v2
       - name: Generate new buildConfig.kt and changelog.md files
         run: |
@@ -53,7 +53,7 @@ jobs:
               repo: repository.repo,
             })
 
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with: # Required for triggering the deploy on tags added by this automation
           # See https://github.com/stefanzweifel/git-auto-commit-action#commits-made-by-this-action-do-not-trigger-new-workflow-runs
           token: ${{ secrets.ACTIONS_ACCESS_TOKEN }}
@@ -76,7 +76,7 @@ jobs:
     # This is the only place I could find an apparent list of valid author associations. Also, at least they're not case-sensitive: https://docs.github.com/en/graphql/reference/enums#commentauthorassociation https://docs.github.com/en/actions/learn-github-actions/expressions#contains
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: actions/setup-node@v2
       - name: Add translation PRs to the new branch, and PR the new branch to master
 
