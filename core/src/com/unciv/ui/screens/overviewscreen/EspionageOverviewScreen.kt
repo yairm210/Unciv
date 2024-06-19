@@ -97,7 +97,7 @@ class EspionageOverviewScreen(val civInfo: Civilization, val worldScreen: WorldS
             moveSpyButton.onRightClick {
                 onSpyRightClicked(spy)
             }
-            if (!worldScreen.canChangeState || !spy.isAlive()) {
+            if (!worldScreen.canChangeState || !spy.isAlive() || civInfo.isDefeated()) {
                 // Spectators aren't allowed to move the spies of the Civs they are viewing
                 moveSpyButton.disable()
             }
@@ -193,7 +193,7 @@ class EspionageOverviewScreen(val civInfo: Civilization, val worldScreen: WorldS
         add(starTable).center().padLeft(-4f)
 
         // Spectators aren't allowed to move the spies of the Civs they are viewing
-        if (worldScreen.canChangeState && spy.isAlive()) {
+        if (worldScreen.canChangeState && spy.isAlive() && !civInfo.isDefeated()) {
             onClick {
                 onSpyClicked(moveSpyButtons[spy]!!, spy)
             }
