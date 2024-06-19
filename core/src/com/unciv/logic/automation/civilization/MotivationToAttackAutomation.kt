@@ -12,6 +12,7 @@ import com.unciv.logic.map.BFS
 import com.unciv.logic.map.MapPathing
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.Building
+import com.unciv.models.ruleset.nation.PersonalityValue
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.ui.screens.victoryscreen.RankingType
@@ -20,33 +21,35 @@ object MotivationToAttackAutomation {
 
     /** Will return the motivation to attack, but might short circuit if the value is guaranteed to
      * be lower than `atLeast`. So any values below `atLeast` should not be used for comparison. */
-    fun hasAtLeastMotivationToAttack(civInfo: Civilization, targetCiv: Civilization, atLeast: Int): Int {
+    fun hasAtLeastMotivationToAttack(civInfo: Civilization, targetCiv: Civilization, atLeast: Float): Float {
         val targetCitiesWithOurCity = civInfo.threatManager.getNeighboringCitiesOfOtherCivs().filter { it.second.civ == targetCiv }.toList()
         val targetCities = targetCitiesWithOurCity.map { it.second }
 
-        if (targetCitiesWithOurCity.isEmpty()) return 0
+        if (targetCitiesWithOurCity.isEmpty()) return 0f
 
         if (targetCities.all { hasNoUnitsThatCanAttackCityWithoutDying(civInfo, it) })
-            return 0
+            return 0f
 
         val baseForce = 100f
 
         val ourCombatStrength = calculateSelfCombatStrength(civInfo, baseForce)
         val theirCombatStrength = calculateCombatStrengthWithProtectors(targetCiv, baseForce, civInfo)
 
-        val modifiers:MutableList<Pair<String, Int>> = mutableListOf()
-        modifiers.add(Pair("Base motivation", -15))
+        val modifiers: MutableList<Pair<String, Float>> = mutableListOf()
+
+        // If our personality is to declare war more then we should have a higher base motivation (a negative number closer to 0) 
+        modifiers.add(Pair("Base motivation", -(15f * civInfo.getPersonality().inverseModifierFocus(PersonalityValue.DeclareWar, 0.5f))))
 
         modifiers.add(Pair("Relative combat strength", getCombatStrengthModifier(ourCombatStrength, theirCombatStrength + 0.8f * civInfo.threatManager.getCombinedForceOfWarringCivs())))
         // TODO: For now this will be a very high value because the AI can't handle multiple fronts, this should be changed later though
-        modifiers.add(Pair("Concurrent wars", -civInfo.getCivsAtWarWith().count { it.isMajorCiv() && it != targetCiv } * 20))
-        modifiers.add(Pair("Their concurrent wars", targetCiv.getCivsAtWarWith().count { it.isMajorCiv() } * 3))
+        modifiers.add(Pair("Concurrent wars", -civInfo.getCivsAtWarWith().count { it.isMajorCiv() && it != targetCiv } * 20f))
+        modifiers.add(Pair("Their concurrent wars", targetCiv.getCivsAtWarWith().count { it.isMajorCiv() } * 3f))
 
         modifiers.add(Pair("Their allies", getDefensivePactAlliesScore(targetCiv, civInfo, baseForce, ourCombatStrength)))
 
         if (civInfo.threatManager.getNeighboringCivilizations().none { it != targetCiv && it.isMajorCiv() 
                         && civInfo.getDiplomacyManager(it)!!.isRelationshipLevelLT(RelationshipLevel.Friend) })
-            modifiers.add(Pair("No other threats", 10))
+            modifiers.add(Pair("No other threats", 10f))
 
         if (targetCiv.isMajorCiv()) {
             val scoreRatioModifier = getScoreRatioModifier(targetCiv, civInfo)
@@ -55,7 +58,7 @@ object MotivationToAttackAutomation {
             modifiers.add(Pair("Relative technologies", getRelativeTechModifier(civInfo, targetCiv)))
 
             if (civInfo.stats.getUnitSupplyDeficit() != 0) {
-                modifiers.add(Pair("Over unit supply", (civInfo.stats.getUnitSupplyDeficit() * 2).coerceAtMost(20)))
+                modifiers.add(Pair("Over unit supply", (civInfo.stats.getUnitSupplyDeficit() * 2f).coerceAtMost(20f)))
             } else if (targetCiv.stats.getUnitSupplyDeficit() == 0 && !targetCiv.isCityState()) {
                 modifiers.add(Pair("Relative production", getProductionRatioModifier(civInfo, targetCiv)))
             }
@@ -63,53 +66,53 @@ object MotivationToAttackAutomation {
 
         val minTargetCityDistance = targetCitiesWithOurCity.minOf { it.second.getCenterTile().aerialDistanceTo(it.first.getCenterTile()) }
         modifiers.add(Pair("Far away cities", when {
-            minTargetCityDistance > 20 -> -10
-            minTargetCityDistance > 14 -> -8
-            minTargetCityDistance > 10 -> -3
-            else -> 0
+            minTargetCityDistance > 20 -> -10f
+            minTargetCityDistance > 14 -> -8f
+            minTargetCityDistance > 10 -> -3f
+            else -> 0f
         }))
-        if (minTargetCityDistance < 6) modifiers.add(Pair("Close cities", 5))
+        if (minTargetCityDistance < 6) modifiers.add(Pair("Close cities", 5f))
 
         val diplomacyManager = civInfo.getDiplomacyManager(targetCiv)!!
 
         if (diplomacyManager.hasFlag(DiplomacyFlags.ResearchAgreement))
-            modifiers.add(Pair("Research Agreement", -5))
+            modifiers.add(Pair("Research Agreement", -5f))
 
         if (diplomacyManager.hasFlag(DiplomacyFlags.DeclarationOfFriendship))
-            modifiers.add(Pair("Declaration of Friendship", -10))
+            modifiers.add(Pair("Declaration of Friendship", -10f))
 
         if (diplomacyManager.hasFlag(DiplomacyFlags.DefensivePact))
-            modifiers.add(Pair("Defensive Pact", -15))
+            modifiers.add(Pair("Defensive Pact", -15f))
 
         modifiers.add(Pair("Relationship", getRelationshipModifier(diplomacyManager)))
 
         if (diplomacyManager.hasFlag(DiplomacyFlags.Denunciation)) {
-            modifiers.add(Pair("Denunciation", 5))
+            modifiers.add(Pair("Denunciation", 5f))
         }
 
         if (diplomacyManager.hasFlag(DiplomacyFlags.WaryOf) && diplomacyManager.getFlag(DiplomacyFlags.WaryOf) < 0) {
-            modifiers.add(Pair("PlanningAttack", -diplomacyManager.getFlag(DiplomacyFlags.WaryOf)))
+            modifiers.add(Pair("PlanningAttack", -diplomacyManager.getFlag(DiplomacyFlags.WaryOf).toFloat()))
         } else {
             val attacksPlanned = civInfo.diplomacy.values.count { it.hasFlag(DiplomacyFlags.WaryOf) && it.getFlag(DiplomacyFlags.WaryOf) < 0 }
-            modifiers.add(Pair("PlanningAttackAgainstOtherCivs", -attacksPlanned * 5))
+            modifiers.add(Pair("PlanningAttackAgainstOtherCivs", -attacksPlanned * 5f))
         }
 
         if (diplomacyManager.resourcesFromTrade().any { it.amount > 0 })
-            modifiers.add(Pair("Receiving trade resources", -5))
+            modifiers.add(Pair("Receiving trade resources", -5f))
 
         // If their cities don't have any nearby cities that are also targets to us and it doesn't include their capital
         // Then there cities are likely isolated and a good target.
         if (targetCiv.getCapital(true) !in targetCities
                 && targetCities.all { theirCity -> !theirCity.neighboringCities.any { it !in targetCities } }) {
-            modifiers.add(Pair("Isolated city", 15))
+            modifiers.add(Pair("Isolated city", 15f))
         }
 
         if (targetCiv.isCityState()) {
-            modifiers.add(Pair("Protectors", -targetCiv.cityStateFunctions.getProtectorCivs().size * 3))
+            modifiers.add(Pair("Protectors", -targetCiv.cityStateFunctions.getProtectorCivs().size * 3f))
             if (targetCiv.cityStateFunctions.getProtectorCivs().contains(civInfo))
-                modifiers.add(Pair("Under our protection", -15))
+                modifiers.add(Pair("Under our protection", -15f))
             if (targetCiv.getAllyCiv() == civInfo.civName)
-                modifiers.add(Pair("Allied City-state", -20)) // There had better be a DAMN good reason
+                modifiers.add(Pair("Allied City-state", -20f)) // There had better be a DAMN good reason
         }
 
         addWonderBasedMotivations(targetCiv, modifiers)
@@ -117,8 +120,8 @@ object MotivationToAttackAutomation {
         modifiers.add(Pair("War with allies", getAlliedWarMotivation(civInfo, targetCiv)))
 
         // Purely for debugging, remove modifiers that don't have an effect
-        modifiers.removeAll { it.second == 0 }
-        var motivationSoFar = modifiers.sumOf { it.second }
+        modifiers.removeAll { it.second == 0f }
+        var motivationSoFar = modifiers.map { it.second }.sum()
 
         // Short-circuit to avoid A-star
         if (motivationSoFar < atLeast) return motivationSoFar
@@ -145,26 +148,26 @@ object MotivationToAttackAutomation {
         return ourCombatStrength
     }
 
-    private fun addWonderBasedMotivations(otherCiv: Civilization, modifiers: MutableList<Pair<String, Int>>) {
+    private fun addWonderBasedMotivations(otherCiv: Civilization, modifiers: MutableList<Pair<String, Float>>) {
         var wonderCount = 0
         for (city in otherCiv.cities) {
             val construction = city.cityConstructions.getCurrentConstruction()
             if (construction is Building && construction.hasUnique(UniqueType.TriggersCulturalVictory))
-                modifiers.add(Pair("About to win", 15))
+                modifiers.add(Pair("About to win", 15f))
             if (construction is BaseUnit && construction.hasUnique(UniqueType.AddInCapital))
-                modifiers.add(Pair("About to win", 15))
+                modifiers.add(Pair("About to win", 15f))
             wonderCount += city.cityConstructions.getBuiltBuildings().count { it.isWonder }
         }
 
         // The more wonders they have, the more beneficial it is to conquer them
         // Civs need an army to protect thier wonders which give the most score
         if (wonderCount > 0)
-            modifiers.add(Pair("Owned Wonders", wonderCount))
+            modifiers.add(Pair("Owned Wonders", wonderCount.toFloat()))
     }
 
     /** If they are at war with our allies, then we should join in */
-    private fun getAlliedWarMotivation(civInfo: Civilization, otherCiv: Civilization): Int {
-        var alliedWarMotivation = 0
+    private fun getAlliedWarMotivation(civInfo: Civilization, otherCiv: Civilization): Float {
+        var alliedWarMotivation = 0f
         for (thirdCiv in civInfo.getDiplomacyManager(otherCiv)!!.getCommonKnownCivs()) {
             val thirdCivDiploManager = civInfo.getDiplomacyManager(thirdCiv)
             if (thirdCivDiploManager!!.isRelationshipLevelGE(RelationshipLevel.Friend)
@@ -180,34 +183,34 @@ object MotivationToAttackAutomation {
         return alliedWarMotivation
     }
 
-    private fun getRelationshipModifier(diplomacyManager: DiplomacyManager): Int {
+    private fun getRelationshipModifier(diplomacyManager: DiplomacyManager): Float {
         val relationshipModifier = when (diplomacyManager.relationshipIgnoreAfraid()) {
-            RelationshipLevel.Unforgivable -> 15
-            RelationshipLevel.Enemy -> 10
-            RelationshipLevel.Competitor -> 5
-            RelationshipLevel.Favorable -> -2
-            RelationshipLevel.Friend -> -5
-            RelationshipLevel.Ally -> -10 // this is so that ally + DoF is not too unbalanced -
+            RelationshipLevel.Unforgivable -> 15f
+            RelationshipLevel.Enemy -> 10f
+            RelationshipLevel.Competitor -> 5f
+            RelationshipLevel.Favorable -> -2f
+            RelationshipLevel.Friend -> -5f
+            RelationshipLevel.Ally -> -10f // this is so that ally + DoF is not too unbalanced -
             // still possible for AI to declare war for isolated city
-            else -> 0
+            else -> 0f
         }
         return relationshipModifier
     }
 
-    private fun getRelativeTechModifier(civInfo: Civilization, otherCiv: Civilization): Int {
+    private fun getRelativeTechModifier(civInfo: Civilization, otherCiv: Civilization): Float {
         val relativeTech = civInfo.getStatForRanking(RankingType.Technologies) - otherCiv.getStatForRanking(RankingType.Technologies)
         val relativeTechModifier = when {
-            relativeTech > 6 -> 10
-            relativeTech > 3 -> 5
-            relativeTech > -3 -> 0
-            relativeTech > -6 -> -2
-            relativeTech > -9 -> -5
-            else -> -10
+            relativeTech > 6 -> 10f
+            relativeTech > 3 -> 5f
+            relativeTech > -3 -> 0f
+            relativeTech > -6 -> -2f
+            relativeTech > -9 -> -5f
+            else -> -10f
         }
         return relativeTechModifier
     }
 
-    private fun getProductionRatioModifier(civInfo: Civilization, otherCiv: Civilization): Int {
+    private fun getProductionRatioModifier(civInfo: Civilization, otherCiv: Civilization): Float {
         // If either of our Civs are suffering from a supply deficit, our army must be too large
         // There is no easy way to check the raw production if a civ has a supply deficit
         // We might try to divide the current production by the getUnitSupplyProductionPenalty()
@@ -215,64 +218,64 @@ object MotivationToAttackAutomation {
 
         val productionRatio = civInfo.getStatForRanking(RankingType.Production).toFloat() / otherCiv.getStatForRanking(RankingType.Production).toFloat()
         val productionRatioModifier = when {
-            productionRatio > 2f -> 15
-            productionRatio > 1.5f -> 7
-            productionRatio > 1.2 -> 3
-            productionRatio > .8f -> 0
-            productionRatio > .5f -> -5
-            productionRatio > .25f -> -10
-            else -> -10
+            productionRatio > 2f -> 15f
+            productionRatio > 1.5f -> 7f
+            productionRatio > 1.2 -> 3f
+            productionRatio > .8f -> 0f
+            productionRatio > .5f -> -5f
+            productionRatio > .25f -> -10f
+            else -> -10f
         }
         return productionRatioModifier
     }
 
-    private fun getScoreRatioModifier(otherCiv: Civilization, civInfo: Civilization): Int {
+    private fun getScoreRatioModifier(otherCiv: Civilization, civInfo: Civilization): Float {
         // Civs with more score are more threatening to our victory
         // Bias towards attacking civs with a high score and low military
         // Bias against attacking civs with a low score and a high military
         // Designed to mitigate AIs declaring war on weaker civs instead of their rivals
         val scoreRatio = otherCiv.getStatForRanking(RankingType.Score).toFloat() / civInfo.getStatForRanking(RankingType.Score).toFloat()
         val scoreRatioModifier = when {
-            scoreRatio > 2f -> 20
-            scoreRatio > 1.5f -> 15
-            scoreRatio > 1.25f -> 10
-            scoreRatio > 1f -> 2
-            scoreRatio > .8f -> 0
-            scoreRatio > .5f -> -2
-            scoreRatio > .25f -> -5
-            else -> -10
+            scoreRatio > 2f -> 15f
+            scoreRatio > 1.5f -> 10f
+            scoreRatio > 1.25f -> 5f
+            scoreRatio > 1f -> 2f
+            scoreRatio > .8f -> 0f
+            scoreRatio > .5f -> -2f
+            scoreRatio > .25f -> -5f
+            else -> -10f
         }
         return scoreRatioModifier
     }
 
-    private fun getDefensivePactAlliesScore(otherCiv: Civilization, civInfo: Civilization, baseForce: Float, ourCombatStrength: Float): Int {
-        var theirAlliesValue = 0
+    private fun getDefensivePactAlliesScore(otherCiv: Civilization, civInfo: Civilization, baseForce: Float, ourCombatStrength: Float): Float {
+        var theirAlliesValue = 0f
         for (thirdCiv in otherCiv.diplomacy.values.filter { it.hasFlag(DiplomacyFlags.DefensivePact) && it.otherCiv() != civInfo }) {
             val thirdCivCombatStrengthRatio = otherCiv.getStatForRanking(RankingType.Force).toFloat() + baseForce / ourCombatStrength
             theirAlliesValue += when {
-                thirdCivCombatStrengthRatio > 5 -> -15
-                thirdCivCombatStrengthRatio > 2.5 -> -10
-                thirdCivCombatStrengthRatio > 2 -> -8
-                thirdCivCombatStrengthRatio > 1.5 -> -5
-                thirdCivCombatStrengthRatio > .8 -> -2
-                else -> 0
+                thirdCivCombatStrengthRatio > 5 -> -15f
+                thirdCivCombatStrengthRatio > 2.5 -> -10f
+                thirdCivCombatStrengthRatio > 2 -> -8f
+                thirdCivCombatStrengthRatio > 1.5 -> -5f
+                thirdCivCombatStrengthRatio > .8 -> -2f
+                else -> 0f
             }
         }
         return theirAlliesValue
     }
 
-    private fun getCombatStrengthModifier(ourCombatStrength: Float, theirCombatStrength: Float): Int {
+    private fun getCombatStrengthModifier(ourCombatStrength: Float, theirCombatStrength: Float): Float {
         val combatStrengthRatio = ourCombatStrength / theirCombatStrength
         val combatStrengthModifier = when {
-            combatStrengthRatio > 5f -> 20
-            combatStrengthRatio > 4f -> 15
-            combatStrengthRatio > 3f -> 12
-            combatStrengthRatio > 2f -> 10
-            combatStrengthRatio > 1.5f -> 5
-            combatStrengthRatio > .8f -> 0
-            combatStrengthRatio > .6f -> -5
-            combatStrengthRatio > .4f -> -15
-            else -> -20
+            combatStrengthRatio > 5f -> 20f
+            combatStrengthRatio > 4f -> 15f
+            combatStrengthRatio > 3f -> 12f
+            combatStrengthRatio > 2f -> 10f
+            combatStrengthRatio > 1.5f -> 5f
+            combatStrengthRatio > .8f -> 0f
+            combatStrengthRatio > .6f -> -5f
+            combatStrengthRatio > .4f -> -15f
+            else -> -20f
         }
         return combatStrengthModifier
     }
@@ -294,7 +297,7 @@ object MotivationToAttackAutomation {
      * 
      * @return The motivation ranging from -30 to around +10
      */
-    private fun getAttackPathsModifier(civInfo: Civilization, otherCiv: Civilization, targetCitiesWithOurCity: List<Pair<City, City>>): Int {
+    private fun getAttackPathsModifier(civInfo: Civilization, otherCiv: Civilization, targetCitiesWithOurCity: List<Pair<City, City>>): Float {
 
         fun isTileCanMoveThrough(civInfo: Civilization, tile: Tile): Boolean {
             val owner = tile.getOwner()
@@ -307,12 +310,12 @@ object MotivationToAttackAutomation {
         }
 
         val attackPaths: MutableList<List<Tile>> = mutableListOf()
-        var attackPathModifiers: Int = -3
+        var attackPathModifiers: Float = -3f
 
         // For each city, we want to calculate if there is an attack path to the enemy
         for (attacksGroupedByCity in targetCitiesWithOurCity.groupBy { it.first }) {
             val cityToAttackFrom = attacksGroupedByCity.key
-            var cityAttackValue = 0
+            var cityAttackValue = 0f
 
             // We only want to calculate the best attack path and use it's value
             // Land routes are clearly better than sea routes
@@ -320,7 +323,7 @@ object MotivationToAttackAutomation {
                 val landAttackPath = MapPathing.getConnection(civInfo, cityToAttackFrom.getCenterTile(), cityToAttack.getCenterTile(), ::isLandTileCanMoveThrough)
                 if (landAttackPath != null && landAttackPath.size < 16) {
                     attackPaths.add(landAttackPath)
-                    cityAttackValue = 3
+                    cityAttackValue = 3f
                     break
                 }
 
@@ -340,7 +343,7 @@ object MotivationToAttackAutomation {
             val reachableEnemyCitiesBfs = BFS(civInfo.getCapital(true)!!.getCenterTile()) { isTileCanMoveThrough(civInfo, it) }
             reachableEnemyCitiesBfs.stepToEnd()
             val reachableEnemyCities = otherCiv.cities.filter { reachableEnemyCitiesBfs.hasReachedTile(it.getCenterTile()) }
-            if (reachableEnemyCities.isEmpty()) return -50 // Can't even reach the enemy city, no point in war.
+            if (reachableEnemyCities.isEmpty()) return -50f // Can't even reach the enemy city, no point in war.
             val minAttackDistance = reachableEnemyCities.minOf { reachableEnemyCitiesBfs.getPathTo(it.getCenterTile()).count() }
 
             // Longer attack paths are worse, but if the attack path is too far away we shouldn't completely discard the possibility 

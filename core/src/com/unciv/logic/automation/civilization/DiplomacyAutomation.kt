@@ -53,7 +53,7 @@ object DiplomacyAutomation {
         val allAliveCivs = allCivs - deadCivs
 
         // Motivation should be constant as the number of civs changes
-        var motivation = diploManager.opinionOfOtherCiv().toInt() - 40
+        var motivation = diploManager.opinionOfOtherCiv() - 40
 
         // If the other civ is stronger than we are compelled to be nice to them
         // If they are too weak, then thier friendship doesn't mean much to us
@@ -68,10 +68,10 @@ object DiplomacyAutomation {
         val civsToAllyWith = 0.25f * allAliveCivs
         if (numOfFriends < civsToAllyWith) {
             // Goes from 10 to 0 once the civ gets 1/4 of all alive civs as friends
-            motivation += (10 - 10 * (numOfFriends / civsToAllyWith)).toInt()
+            motivation += (10 - 10 * numOfFriends / civsToAllyWith)
         } else {
             // Goes from 0 to -120 as the civ gets more friends, offset by civsToAllyWith
-            motivation -= (120f * (numOfFriends - civsToAllyWith) / (knownCivs - civsToAllyWith)).toInt()
+            motivation -= (120f * (numOfFriends - civsToAllyWith) / (knownCivs - civsToAllyWith))
         }
 
         // The more friends they have the less we should want to sign friendship (To promote teams)
@@ -97,7 +97,7 @@ object DiplomacyAutomation {
             })
             motivation -= 20
 
-        motivation -= hasAtLeastMotivationToAttack(civInfo, otherCiv, motivation / 2) * 2
+        motivation -= hasAtLeastMotivationToAttack(civInfo, otherCiv, motivation / 2f) * 2
 
         return motivation > 0
     }
@@ -139,7 +139,7 @@ object DiplomacyAutomation {
         // Being able to see their cities can give us an advantage later on, especially with espionage enabled
         if (otherCiv.cities.count { !it.getCenterTile().isVisible(civInfo) } < otherCiv.cities.count() * .8f)
             return true
-        if (hasAtLeastMotivationToAttack(civInfo, otherCiv, (diploManager.opinionOfOtherCiv() / 2).toInt()) > 0)
+        if (hasAtLeastMotivationToAttack(civInfo, otherCiv, diploManager.opinionOfOtherCiv() / 2) > 0)
             return false
         return true
     }
@@ -270,8 +270,8 @@ object DiplomacyAutomation {
 
         if (targetCivs.none()) return
 
-        val targetCivsWithMotivation: List<Pair<Civilization, Int>> = targetCivs
-            .map { Pair(it, hasAtLeastMotivationToAttack(civInfo, it, 0)) }
+        val targetCivsWithMotivation: List<Pair<Civilization, Float>> = targetCivs
+            .map { Pair(it, hasAtLeastMotivationToAttack(civInfo, it, 0f)) }
             .filter { it.second > 0 }.toList()
 
         DeclareWarTargetAutomation.chooseDeclareWarTarget(civInfo, targetCivsWithMotivation)
@@ -293,7 +293,7 @@ object DiplomacyAutomation {
             .filter { it.tradeRequests.none { tradeRequest -> tradeRequest.requestingCiv == civInfo.civName && tradeRequest.trade.isPeaceTreaty() } }
 
         for (enemy in enemiesCiv) {
-            if (hasAtLeastMotivationToAttack(civInfo, enemy, 10) >= 10) {
+            if (hasAtLeastMotivationToAttack(civInfo, enemy, 10f) >= 10) {
                 // We can still fight. Refuse peace.
                 continue
             }
