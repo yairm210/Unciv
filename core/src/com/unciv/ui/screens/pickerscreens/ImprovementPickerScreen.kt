@@ -109,7 +109,7 @@ class ImprovementPickerScreen(
 
         val ownerTable = Table()
         if (tile.getOwner() == null) {
-            ownerTable.add("Unowned tile".toLabel())
+            ownerTable.add("Unowned tile".toLabel()).pad(10f)
         } else if (tile.getOwner()!!.isCurrentPlayer()) {
             val button = tile.getCity()!!.name.toTextButton(hideIcons = true)
             button.onClick {
@@ -117,12 +117,13 @@ class ImprovementPickerScreen(
             }
             val label = "Tile owned by [${tile.getOwner()!!.civName}] (You)".toLabel()
             label.onClick { openCivilopedia(tile.getOwner()!!.nation.makeLink()) }
-            ownerTable.add(label).padLeft(10f)
+            ownerTable.add(label)
             ownerTable.add(button).padLeft(20f)
+            ownerTable.padTop(2.5f) // The button causes the label to have ample padding, just unglue the button from the window border a little
         } else {
             val label = "Tile owned by [${tile.getOwner()!!.civName}] - [${tile.getCity()!!.name}]".toLabel()
             label.onClick { openCivilopedia(tile.getOwner()!!.nation.makeLink()) }
-            ownerTable.add(label).padLeft(10f)
+            ownerTable.add(label).pad(10f)
         }
 
         topTable.add(ownerTable)
