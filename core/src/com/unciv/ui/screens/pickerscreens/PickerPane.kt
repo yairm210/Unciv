@@ -72,7 +72,7 @@ class PickerPane(
         rightSideButton.isEnabled = enabled
     }
 
-    /** Sets the text of the [rightSideButton] and enables it if it's the player's turn */
+    /** Sets the text of the [rightSideButton] (does not auitotranslate) and enables it if it's the player's turn */
     fun pick(rightButtonText: String) {
         if (GUI.isMyTurn()) rightSideButton.enable()
         rightSideButton.setText(rightButtonText)

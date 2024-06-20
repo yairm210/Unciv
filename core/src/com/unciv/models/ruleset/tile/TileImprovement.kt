@@ -27,6 +27,7 @@ class TileImprovement : RulesetStatsObject() {
     // This is the base cost. A cost of 0 means created instead of buildable.
     var turnsToBuild: Int = -1
 
+    override fun legacyRequiredTechs() = if (techRequired == null) emptySequence() else sequenceOf(techRequired!!)
 
     fun getTurnsToBuild(civInfo: Civilization, unit: MapUnit): Int {
         val state = StateForConditionals(civInfo, unit = unit)

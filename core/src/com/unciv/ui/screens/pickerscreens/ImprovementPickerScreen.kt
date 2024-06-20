@@ -273,9 +273,10 @@ class ImprovementPickerScreen(
             if (ImprovementBuildingProblem.OutsideBorders in unbuildableBecause)
                 proposedSolutions.add("Have this tile inside your empire")
             if (ImprovementBuildingProblem.MissingResources in unbuildableBecause) {
-                proposedSolutions.addAll(improvement.getMatchingUniques(UniqueType.ConsumesResources).filter {
-                    currentPlayerCiv.getResourceAmount(it.params[1]) < it.params[0].toInt()
-                }.map { "Acquire more [$it]" })
+                val resources = improvement.getMatchingUniques(UniqueType.ConsumesResources)
+                    .filter { currentPlayerCiv.getResourceAmount(it.params[1]) < it.params[0].toInt() }
+                    .map { "Acquire more [${it.params[1]}]" }
+                proposedSolutions.addAll(resources)
             }
         }
         return report
