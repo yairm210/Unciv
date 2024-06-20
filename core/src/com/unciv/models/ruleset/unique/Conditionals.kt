@@ -1,5 +1,6 @@
 package com.unciv.models.ruleset.unique
 
+import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
 import com.unciv.logic.battle.CombatAction
 import com.unciv.logic.city.City
@@ -103,6 +104,8 @@ object Conditionals {
             UniqueType.ConditionalEveryTurns -> checkOnGameInfo { turns % condition.params[0].toInt() == 0 }
             UniqueType.ConditionalBeforeTurns -> checkOnGameInfo { turns < condition.params[0].toInt() }
             UniqueType.ConditionalAfterTurns -> checkOnGameInfo { turns >= condition.params[0].toInt() }
+            UniqueType.ConditionalTutorialsEnabled -> UncivGame.Current.settings.showTutorials
+            UniqueType.ConditionalTutorialCompleted -> condition.params[0] in UncivGame.Current.settings.tutorialTasksCompleted
 
             UniqueType.ConditionalCivFilter -> checkOnCiv { matchesFilter(condition.params[0]) }
             UniqueType.ConditionalWar -> checkOnCiv { isAtWar() }

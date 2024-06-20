@@ -41,38 +41,14 @@ open class KeyShortcutDispatcher {
             add(KeyCharAndCode(keyCode), action)
     }
 
-    fun remove(shortcut: KeyShortcut?) {
-        shortcuts.removeAll { it.shortcut == shortcut }
-    }
-
-    fun remove(binding: KeyboardBinding) {
-        shortcuts.removeAll { it.shortcut.binding == binding }
-    }
-
-    fun remove(key: KeyCharAndCode?) {
-        shortcuts.removeAll { it.shortcut.key == key }
-    }
-
-    fun remove(char: Char?) {
-        shortcuts.removeAll { it.shortcut.key.char == char }
-    }
-
-    fun remove(keyCode: Int?) {
-        shortcuts.removeAll { it.shortcut.key.code == keyCode }
-    }
-
-    operator fun contains(binding: KeyboardBinding) =
-        shortcuts.any { it.shortcut.binding == binding }
     operator fun contains(key: KeyCharAndCode) =
         shortcuts.any { it.shortcut.key == key || it.shortcut.binding.defaultKey == key }
-    operator fun contains(char: Char) =
-        shortcuts.any { it.shortcut.key.char == char }
-    operator fun contains(keyCode: Int) =
-        shortcuts.any { it.shortcut.key.code == keyCode }
 
     open fun isActive(): Boolean = true
 
 
+    /** Given that several different shortcuts could be mapped to the same key,
+     *   this class decides what will actually happen when the key is pressed */
     class Resolver(val key: KeyCharAndCode) {
         private var priority = Int.MIN_VALUE
         val triggeredActions: MutableList<ActivationAction> = mutableListOf()
@@ -81,12 +57,18 @@ open class KeyShortcutDispatcher {
             if (!dispatcher.isActive()) return
 
             for ((shortcut, action) in dispatcher.shortcuts) {
+                // shortcutKey in shortcut is used for non-user-configurable key shortcuts
                 var (binding, shortcutKey, shortcutPriority) = shortcut
+
+                // Bindings are used for user-configurable shortcuts
                 if (binding != KeyboardBinding.None) {
                     shortcutKey = KeyboardBindings[binding]
                     if (shortcutKey == binding.defaultKey) shortcutPriority--
                 }
-                if (shortcutKey != key || shortcutPriority < priority) continue
+
+                if (shortcutKey != key) continue
+                // We always want to take the highest priority action, but if there are several of the same priority we do them all
+                if (shortcutPriority < priority) continue
                 if (shortcutPriority > priority) {
                     priority = shortcutPriority
                     triggeredActions.clear()

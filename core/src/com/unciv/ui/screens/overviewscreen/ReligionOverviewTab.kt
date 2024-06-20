@@ -29,9 +29,7 @@ class ReligionOverviewTab(
 ) : EmpireOverviewTab(viewingPlayer, overviewScreen) {
     class ReligionTabPersistableData(
         var selectedReligion: String? = null
-    ) : EmpireOverviewTabPersistableData() {
-        override fun isEmpty() = selectedReligion == null
-    }
+    ) : EmpireOverviewTabPersistableData()
     override val persistableData = (persistedData as? ReligionTabPersistableData) ?: ReligionTabPersistableData()
 
     private val civStatsTable = Table()

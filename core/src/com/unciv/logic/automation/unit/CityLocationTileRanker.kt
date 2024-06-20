@@ -66,7 +66,7 @@ object CityLocationTileRanker {
             if (distance <= 6 && civ.knows(city.civ)
                 && !civ.isAtWarWith(city.civ)
                 // If the CITY OWNER knows that the UNIT OWNER agreed not to settle near them
-                && city.civ.getDiplomacyManager(civ)
+                && city.civ.getDiplomacyManager(civ)!!
                     .hasFlag(DiplomacyFlags.AgreedToNotSettleNearUs))
                 return false
             if (tile.getContinent() == city.getCenterTile().getContinent()) {

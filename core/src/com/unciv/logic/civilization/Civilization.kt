@@ -3,7 +3,7 @@ package com.unciv.logic.civilization
 import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
 import com.unciv.UncivGame
-import com.unciv.json.HashMapVector2
+import com.unciv.json.LastSeenImprovement
 import com.unciv.logic.GameInfo
 import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.MultiFilter
@@ -136,6 +136,8 @@ class Civilization : IsPartOfGameInfoSerialization {
     @Transient
     var neutralRoads = HashSet<Vector2>()
 
+    val modConstants get() = gameInfo.ruleset.modOptions.constants
+
     var playerType = PlayerType.AI
 
     /** Used in online multiplayer for human players */
@@ -207,7 +209,7 @@ class Civilization : IsPartOfGameInfoSerialization {
 
     fun hasExplored(tile: Tile) = tile.isExplored(this)
 
-    private val lastSeenImprovement = HashMapVector2<String>()
+    private val lastSeenImprovement = LastSeenImprovement()
 
     // To correctly determine "game over" condition as clarified in #4707
     var hasEverOwnedOriginalCapital: Boolean = false
@@ -304,7 +306,6 @@ class Civilization : IsPartOfGameInfoSerialization {
         toReturn.hasMovedAutomatedUnits = hasMovedAutomatedUnits
         toReturn.statsHistory = statsHistory.clone()
         toReturn.resourceStockpiles = resourceStockpiles.clone()
-        toReturn.cityStateTurnsUntilElection = cityStateTurnsUntilElection
         return toReturn
     }
 
@@ -319,8 +320,13 @@ class Civilization : IsPartOfGameInfoSerialization {
         return gameInfo.ruleset.difficulties.values.first()
     }
 
-    fun getDiplomacyManager(civInfo: Civilization) = getDiplomacyManager(civInfo.civName)
-    fun getDiplomacyManager(civName: String) = diplomacy[civName]!!
+    /** Makes this civilization meet [civInfo] and returns the DiplomacyManager */
+    fun getDiplomacyManagerOrMeet(civInfo: Civilization): DiplomacyManager {
+        if (!knows(civInfo)) diplomacyFunctions.makeCivilizationsMeet(civInfo)
+        return getDiplomacyManager(civInfo.civName)!!
+    }
+    fun getDiplomacyManager(civInfo: Civilization): DiplomacyManager? = getDiplomacyManager(civInfo.civName)
+    fun getDiplomacyManager(civName: String): DiplomacyManager? = diplomacy[civName]
 
     fun getProximity(civInfo: Civilization) = getProximity(civInfo.civName)
     @Suppress("MemberVisibilityCanBePrivate")  // same visibility for overloads
@@ -365,7 +371,6 @@ class Civilization : IsPartOfGameInfoSerialization {
     var cityStatePersonality: CityStatePersonality = CityStatePersonality.Neutral
     var cityStateResource: String? = null
     var cityStateUniqueUnit: String? = null // Unique unit for militaristic city state. Might still be null if there are no appropriate units
-    var cityStateTurnsUntilElection: Int = 0
 
     fun hasMetCivTerritory(otherCiv: Civilization): Boolean =
             otherCiv.getCivTerritory().any { gameInfo.tileMap[it].isExplored(this) }
@@ -900,10 +905,12 @@ class Civilization : IsPartOfGameInfoSerialization {
         tradeRequests.clear() // if we don't do this then there could be resources taken by "pending" trades forever
         for (diplomacyManager in diplomacy.values) {
             diplomacyManager.trades.clear()
-            diplomacyManager.otherCiv().getDiplomacyManager(this).trades.clear()
+            diplomacyManager.otherCivDiplomacy().trades.clear()
             for (tradeRequest in diplomacyManager.otherCiv().tradeRequests.filter { it.requestingCiv == civName })
                 diplomacyManager.otherCiv().tradeRequests.remove(tradeRequest) // it  would be really weird to get a trade request from a dead civ
         }
+        if (gameInfo.isEspionageEnabled())
+            espionageManager.removeAllSpies()
     }
 
     fun updateProximity(otherCiv: Civilization, preCalculated: Proximity? = null): Proximity = cache.updateProximity(otherCiv, preCalculated)
@@ -1014,6 +1021,7 @@ class CivilizationInfoPreview() {
 
 enum class CivFlags {
     CityStateGreatPersonGift,
+    TurnsTillCityStateElection,
     TurnsTillNextDiplomaticVote,
     ShowDiplomaticVotingResults,
     ShouldResetDiplomaticVotes,

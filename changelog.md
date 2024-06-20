@@ -1,3 +1,55 @@
+## 4.12.1
+
+Performance improvements 
+
+"join war" offers only valid if can declare war
+
+Added "Will not be replaced by automated units" unique
+
+By tuvus:
+- Defeated civilizations don't use spies
+- Spies deselect when moved on map 
+- Civs can no longer declare war right after peace with a city-state 
+- Moved automation settings to AutoPlayTab
+
+By SomeTroglodyte:
+- Fix disband spamming 
+- Fix coastal rivers near Rock of Gibraltar 
+
+Turn Privateer's ability into promotion - By SpacedOutChicken
+
+## 4.12.0
+
+Fixed spy automation crash
+
+By tuvus:
+- Personality implementation
+- AI is more likely to sign Defensive pacts
+- Giving the AI good trades is stored as credit
+- Fix election crash
+
+By SomeTroglodyte:
+- Map editor can place improvements again
+- Reduce size of the save game json
+- Improvement queue
+
+## 4.11.19
+
+New unique trigger: "<upon expending a [mapUnitFilter] unit>"
+
+Console:
+- `city addtile <cityName>` takes an optional `[radius]` parameter
+- `civ addtech` / `civ removetech` commands
+
+By SomeTroglodyte:
+- Use Events for moddable, floating "Tutorials"!
+- Allow EmpireOverview persistence across game launches
+- Moddable images for special characters
+
+By tuvus:
+- Moddable city ranges
+- Extra Civ and Spy moddability
+
 ## 4.11.18
 
 We passed 1000 versions! :D

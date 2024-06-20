@@ -29,7 +29,7 @@ class MajorCivDiplomacyTable(private val diplomacyScreen: DiplomacyScreen) {
     val viewingCiv = diplomacyScreen.viewingCiv
 
     fun getMajorCivDiplomacyTable(otherCiv: Civilization): Table {
-        val otherCivDiplomacyManager = otherCiv.getDiplomacyManager(viewingCiv)
+        val otherCivDiplomacyManager = otherCiv.getDiplomacyManager(viewingCiv)!!
 
         val diplomacyTable = Table()
         diplomacyTable.defaults().pad(10f)
@@ -50,7 +50,7 @@ class MajorCivDiplomacyTable(private val diplomacyScreen: DiplomacyScreen) {
         val diplomaticRelationshipsCanChange =
             !viewingCiv.gameInfo.ruleset.modOptions.hasUnique(UniqueType.DiplomaticRelationshipsCannotChange)
 
-        val diplomacyManager = viewingCiv.getDiplomacyManager(otherCiv)
+        val diplomacyManager = viewingCiv.getDiplomacyManager(otherCiv)!!
 
         if (!viewingCiv.isAtWarWith(otherCiv)) {
             diplomacyTable.add(getTradeButton(otherCiv)).row()

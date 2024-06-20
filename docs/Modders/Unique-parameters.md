@@ -292,8 +292,10 @@ Allowed values are:
 Indicates *something that can be counted*, used both for comparisons and for multiplying uniques
 
 Allowed values:
-- `year`
+- `year`, `turns`
+- `Cities`, `Units`, `Air units` - these count your total number
 - Unit name (counts your existing units)
+- `<unit type> units` (e.g. `Mounted units`) - counts your units by their type (this is not a filter, use the unitType verbatim)
 - Building name (counts your existing buildings)
 - Stat name - gets the stat *reserve*, not the amount per turn (can be city stats or civilization stats, depending on where the unique is used)
 - Resource name (can be city stats or civilization stats, depending on where the unique is used)

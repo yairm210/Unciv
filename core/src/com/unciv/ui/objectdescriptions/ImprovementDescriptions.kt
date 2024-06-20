@@ -37,12 +37,12 @@ object ImprovementDescriptions {
 
         val newAbilityPredicate: (Unique)->Boolean = { it.text in originalImprovement.uniques || it.isHiddenToUsers() }
         for (unique in replacementImprovement.uniqueObjects.filterNot(newAbilityPredicate))
-            yield(FormattedLine(unique.text, indent=1))  // FormattedLine(unique) would look worse - no indent and auto-linking could distract
+            yield(FormattedLine(unique.getDisplayText(), indent=1))  // FormattedLine(unique) would look worse - no indent and auto-linking could distract
 
         val lostAbilityPredicate: (Unique)->Boolean = { it.text in replacementImprovement.uniques || it.isHiddenToUsers() }
         for (unique in originalImprovement.uniqueObjects.filterNot(lostAbilityPredicate)) {
             // Need double translation of the "ability" here - unique texts may contain square brackets
-            yield(FormattedLine("Lost ability (vs [${originalImprovement.name}]): [${unique.text.tr()}]", indent=1))
+            yield(FormattedLine("Lost ability (vs [${originalImprovement.name}]): [${unique.getDisplayText().tr()}]", indent=1))
         }
     }
 

@@ -214,6 +214,9 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
     //endregion
     //region Pure Functions
 
+    /** Can we access [gameInfo]? e.g. for MapEditor use where there is a map but no game */
+    fun hasGameInfo() = ::gameInfo.isInitialized
+
     /** @return All tiles in a hexagon of radius [distance], including the tile at [origin] and all up to [distance] steps away.
      *  Respects map edges and world wrap. */
     fun getTilesInDistance(origin: Vector2, distance: Int): Sequence<Tile> =
@@ -527,10 +530,11 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
     fun placeUnitNearTile(
         position: Vector2,
         unitName: String,
-        civInfo: Civilization
+        civInfo: Civilization,
+        unitId: Int? = null
     ): MapUnit? {
         val unit = gameInfo.ruleset.units[unitName]!!
-        return placeUnitNearTile(position, unit, civInfo)
+        return placeUnitNearTile(position, unit, civInfo, unitId)
     }
 
     /** Tries to place the [baseUnit] into the [Tile] closest to the given [position]
@@ -542,9 +546,10 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
     fun placeUnitNearTile(
             position: Vector2,
             baseUnit: BaseUnit,
-            civInfo: Civilization
+            civInfo: Civilization,
+            unitId: Int? = null
     ): MapUnit? {
-        val unit = baseUnit.getMapUnit(civInfo)
+        val unit = baseUnit.getMapUnit(civInfo, unitId)
 
         fun getPassableNeighbours(tile: Tile): Set<Tile> =
                 tile.neighbors.filter { unit.movement.canPassThrough(it) }.toSet()

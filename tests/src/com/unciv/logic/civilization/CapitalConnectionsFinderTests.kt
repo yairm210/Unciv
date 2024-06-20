@@ -46,8 +46,8 @@ class CapitalConnectionsFinderTests {
     }
 
     private fun meetCivAndSetBorders(civ: Civilization, areBordersOpen: Boolean) {
-        ourCiv.getDiplomacyManager(civ).makePeace()
-        ourCiv.getDiplomacyManager(civ).hasOpenBorders = areBordersOpen
+        ourCiv.getDiplomacyManager(civ)!!.makePeace()
+        ourCiv.getDiplomacyManager(civ)!!.hasOpenBorders = areBordersOpen
     }
 
     @Test
@@ -167,12 +167,12 @@ class CapitalConnectionsFinderTests {
 
         val openCiv = testGame.addCiv(cityStateType = "Cultured")
         val openCivCapital = testGame.addCity(openCiv, testGame.tileMap[0, 2])
-        ourCiv.getDiplomacyManager(openCiv).makePeace()
+        ourCiv.getDiplomacyManager(openCiv)!!.makePeace()
 
         val closedCiv = testGame.addCiv(cityStateType = "Cultured")
         val closedCivCapital = testGame.addCity(closedCiv, testGame.tileMap[0, -2])
         ourCiv.diplomacyFunctions.makeCivilizationsMeet(closedCiv)
-        ourCiv.getDiplomacyManager(closedCiv).declareWar()
+        ourCiv.getDiplomacyManager(closedCiv)!!.declareWar()
 
 
         createMedium(-4,-2, RoadStatus.Railroad)

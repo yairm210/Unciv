@@ -65,7 +65,7 @@ enum class UniqueParameterType(
     Countable("countable", "1000", "This indicates a number or a numeric variable") {
         // todo add more countables
         private val knownValues = setOf(
-            "year"
+            "year", "turns", "Cities", "Units"
         )
 
         override fun isKnownValue(parameterText: String, ruleset: Ruleset) = when {
@@ -74,6 +74,7 @@ enum class UniqueParameterType(
             Stat.isStat(parameterText) -> true
             parameterText in ruleset.tileResources -> true
             parameterText in ruleset.units -> true
+            parameterText.removeSuffix(" units").removeSurrounding("[", "]") in ruleset.unitTypes -> true
             else -> parameterText in ruleset.buildings
         }
     },

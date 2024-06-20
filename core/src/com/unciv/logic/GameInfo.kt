@@ -6,6 +6,7 @@ import com.unciv.UncivGame
 import com.unciv.UncivGame.Version
 import com.unciv.json.json
 import com.unciv.logic.BackwardCompatibility.convertFortify
+import com.unciv.logic.BackwardCompatibility.ensureUnitIds
 import com.unciv.logic.BackwardCompatibility.guaranteeUnitPromotions
 import com.unciv.logic.BackwardCompatibility.migrateGreatGeneralPools
 import com.unciv.logic.BackwardCompatibility.migrateToTileHistory
@@ -92,7 +93,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
     companion object {
         /** The current compatibility version of [GameInfo]. This number is incremented whenever changes are made to the save file structure that guarantee that
          * previous versions of the game will not be able to load or play a game normally. */
-        const val CURRENT_COMPATIBILITY_NUMBER = 3
+        const val CURRENT_COMPATIBILITY_NUMBER = 4
 
         val CURRENT_COMPATIBILITY_VERSION = CompatibilityVersion(CURRENT_COMPATIBILITY_NUMBER, UncivGame.VERSION)
 
@@ -115,6 +116,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
     var currentTurnStartTime = 0L
     var gameId = UUID.randomUUID().toString() // random string
     var checksum = ""
+    var lastUnitId = 0
 
     var victoryData: VictoryData? = null
 
@@ -198,6 +200,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
         toReturn.customSaveLocation = customSaveLocation
         toReturn.victoryData = victoryData?.copy()
         toReturn.historyStartTurn = historyStartTurn
+        toReturn.lastUnitId = lastUnitId
 
         return toReturn
     }
@@ -463,7 +466,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
             thisPlayer,
             thisPlayer.cities.filter { city ->
                 city.canBombard() &&
-                        enemyUnitsCloseToTerritory.any { tile -> tile.aerialDistanceTo(city.getCenterTile()) <= city.range }
+                    enemyUnitsCloseToTerritory.any { tile -> tile.aerialDistanceTo(city.getCenterTile()) <= city.getBombardRange() }
             }
         )
     }
@@ -679,10 +682,9 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
         cityDistances.game = this
 
         guaranteeUnitPromotions()
-
         migrateToTileHistory()
-
         migrateGreatGeneralPools()
+        ensureUnitIds()
     }
 
     private fun updateCivilizationState() {

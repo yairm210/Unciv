@@ -53,23 +53,23 @@ class Trade : IsPartOfGameInfoSerialization {
 class TradeRequest : IsPartOfGameInfoSerialization {
     fun decline(decliningCiv: Civilization) {
         val requestingCivInfo = decliningCiv.gameInfo.getCivilization(requestingCiv)
-        val requestingCivDiploManager = requestingCivInfo.getDiplomacyManager(decliningCiv)
+        val requestingCivDiploManager = requestingCivInfo.getDiplomacyManager(decliningCiv)!!
         // the numbers of the flags (20,5) are the amount of turns to wait until offering again
         if (trade.ourOffers.all { it.type == TradeType.Luxury_Resource }
             && trade.theirOffers.all { it.type == TradeType.Luxury_Resource })
-            requestingCivDiploManager.setFlag(DiplomacyFlags.DeclinedLuxExchange,20)
+            requestingCivDiploManager.setFlag(DiplomacyFlags.DeclinedLuxExchange,5)
         if (trade.ourOffers.any { it.name == Constants.researchAgreement })
-            requestingCivDiploManager.setFlag(DiplomacyFlags.DeclinedResearchAgreement,20)
+            requestingCivDiploManager.setFlag(DiplomacyFlags.DeclinedResearchAgreement,10)
         if (trade.ourOffers.any { it.name == Constants.defensivePact })
-            requestingCivDiploManager.setFlag(DiplomacyFlags.DeclinedDefensivePact,20)
+            requestingCivDiploManager.setFlag(DiplomacyFlags.DeclinedDefensivePact,10)
         if (trade.ourOffers.any { it.name == Constants.openBorders })
-            requestingCivDiploManager.setFlag(DiplomacyFlags.DeclinedOpenBorders, if (decliningCiv.isAI()) 10 else 20)
+            requestingCivDiploManager.setFlag(DiplomacyFlags.DeclinedOpenBorders, if (decliningCiv.isAI()) 5 else 10)
         if (trade.theirOffers.any { it.type == TradeType.WarDeclaration })
-            requestingCivDiploManager.setFlag(DiplomacyFlags.DeclinedJoinWarOffer, if (decliningCiv.isAI()) 10 else 20)
+            requestingCivDiploManager.setFlag(DiplomacyFlags.DeclinedJoinWarOffer, if (decliningCiv.isAI()) 5 else 10)
         if (trade.ourOffers.any { it.type == TradeType.WarDeclaration })
-            requestingCivDiploManager.otherCivDiplomacy().setFlag(DiplomacyFlags.DeclinedJoinWarOffer, if (decliningCiv.isAI()) 10 else 20)
+            requestingCivDiploManager.otherCivDiplomacy().setFlag(DiplomacyFlags.DeclinedJoinWarOffer, if (decliningCiv.isAI()) 5 else 10)
 
-        if (trade.isPeaceTreaty()) requestingCivDiploManager.setFlag(DiplomacyFlags.DeclinedPeace, 5)
+        if (trade.isPeaceTreaty()) requestingCivDiploManager.setFlag(DiplomacyFlags.DeclinedPeace, 3)
 
         requestingCivInfo.addNotification("[${decliningCiv.civName}] has denied your trade request",
             NotificationCategory.Trade, decliningCiv.civName, NotificationIcon.Trade)

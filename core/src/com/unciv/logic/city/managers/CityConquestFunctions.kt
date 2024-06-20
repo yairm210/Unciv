@@ -148,15 +148,15 @@ class CityConquestFunctions(val city: City) {
         if (!conqueringCiv.knows(oldCiv))
             conqueringCiv.diplomacyFunctions.makeCivilizationsMeet(oldCiv)
 
-        oldCiv.getDiplomacyManager(conqueringCiv)
+        oldCiv.getDiplomacyManager(conqueringCiv)!!
                 .addModifier(DiplomaticModifiers.CapturedOurCities, -aggroGenerated)
 
         for (thirdPartyCiv in conqueringCiv.getKnownCivs().filter { it.isMajorCiv() }) {
             val aggroGeneratedForOtherCivs = (aggroGenerated / 10).roundToInt().toFloat()
-            if (thirdPartyCiv.isAtWarWith(oldCiv)) // You annoyed our enemy?
-                thirdPartyCiv.getDiplomacyManager(conqueringCiv)
-                        .addModifier(DiplomaticModifiers.SharedEnemy, aggroGeneratedForOtherCivs) // Cool, keep at at! =D
-            else thirdPartyCiv.getDiplomacyManager(conqueringCiv)
+            if (thirdPartyCiv.isAtWarWith(oldCiv)) // Shared Enemies should like us more
+                thirdPartyCiv.getDiplomacyManager(conqueringCiv)!!
+                        .addModifier(DiplomaticModifiers.SharedEnemy, aggroGeneratedForOtherCivs) // Cool, keep at it! =D
+            else thirdPartyCiv.getDiplomacyManager(conqueringCiv)!!
                     .addModifier(DiplomaticModifiers.WarMongerer, -aggroGeneratedForOtherCivs) // Uncool bro.
         }
     }
@@ -216,30 +216,27 @@ class CityConquestFunctions(val city: City) {
                 100f / (foundingCiv.cities.sumOf { it.population.population } + city.population.population)
         val respectForLiberatingOurCity = 10f + percentageOfCivPopulationInThatCity.roundToInt()
 
-        // In order to get "plus points" in Diplomacy, you have to establish diplomatic relations if you haven't yet
-        if (!conqueringCiv.knows(foundingCiv))
-            conqueringCiv.diplomacyFunctions.makeCivilizationsMeet(foundingCiv)
-
         if (foundingCiv.isMajorCiv()) {
-            foundingCiv.getDiplomacyManager(conqueringCiv)
+            // In order to get "plus points" in Diplomacy, you have to establish diplomatic relations if you haven't yet
+            foundingCiv.getDiplomacyManagerOrMeet(conqueringCiv)
                     .addModifier(DiplomaticModifiers.CapturedOurCities, respectForLiberatingOurCity)
             val openBordersTrade = TradeLogic(foundingCiv, conqueringCiv)
             openBordersTrade.currentTrade.ourOffers.add(TradeOffer(Constants.openBorders, TradeType.Agreement))
-            openBordersTrade.acceptTrade()
+            openBordersTrade.acceptTrade(false)
         } else {
             //Liberating a city state gives a large amount of influence, and peace
-            foundingCiv.getDiplomacyManager(conqueringCiv).setInfluence(90f)
+            foundingCiv.getDiplomacyManagerOrMeet(conqueringCiv).setInfluence(90f)
             if (foundingCiv.isAtWarWith(conqueringCiv)) {
                 val tradeLogic = TradeLogic(foundingCiv, conqueringCiv)
                 tradeLogic.currentTrade.ourOffers.add(TradeOffer(Constants.peaceTreaty, TradeType.Treaty))
                 tradeLogic.currentTrade.theirOffers.add(TradeOffer(Constants.peaceTreaty, TradeType.Treaty))
-                tradeLogic.acceptTrade()
+                tradeLogic.acceptTrade(false)
             }
         }
 
         val otherCivsRespectForLiberating = (respectForLiberatingOurCity / 10).roundToInt().toFloat()
         for (thirdPartyCiv in conqueringCiv.getKnownCivs().filter { it.isMajorCiv() && it != conqueredCiv }) {
-            thirdPartyCiv.getDiplomacyManager(conqueringCiv)
+            thirdPartyCiv.getDiplomacyManager(conqueringCiv)!!
                     .addModifier(DiplomaticModifiers.LiberatedCity, otherCivsRespectForLiberating) // Cool, keep at at! =D
         }
     }

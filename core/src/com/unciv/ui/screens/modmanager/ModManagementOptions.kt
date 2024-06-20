@@ -11,6 +11,7 @@ import com.unciv.ui.components.UncivTextField
 import com.unciv.ui.components.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.components.extensions.surroundWithCircle
 import com.unciv.ui.components.extensions.toLabel
+import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.components.input.KeyCharAndCode
 import com.unciv.ui.components.input.keyShortcuts
 import com.unciv.ui.components.input.onActivation
@@ -51,13 +52,13 @@ internal class ModManagementOptions(private val modManagementScreen: ModManageme
         val symbols: String,
         val comparator: Comparator<in ModUIData>
     ) {
-        Name("Name ￪", "￪", sortByName),
-        NameDesc("Name ￬", "￬", sortByNameDesc),
-        Date("Date ￪", "⌚￪", sortByDate),
-        DateDesc("Date ￬", "⌚￬", sortByDateDesc),
-        Stars("Stars ￬", "✯￬", sortByStars),
-        Status("Status ￬", "◉￬", sortByStatus);
-
+        Name("Name ${Fonts.sortUpArrow}", Fonts.sortUpArrow.toString(), sortByName),
+        NameDesc("Name ${Fonts.sortDownArrow}", Fonts.sortDownArrow.toString(), sortByNameDesc),
+        Date("Date ${Fonts.sortUpArrow}", "${Fonts.clock}${Fonts.sortUpArrow}", sortByDate),
+        DateDesc("Date ${Fonts.sortDownArrow}", "${Fonts.clock}${Fonts.sortDownArrow}", sortByDateDesc),
+        Stars("Stars ${Fonts.sortDownArrow}", "${Fonts.star}${Fonts.sortDownArrow}", sortByStars),
+        Status("Status ${Fonts.sortDownArrow}", "${Fonts.status}${Fonts.sortDownArrow}", sortByStatus)
+        ;
         fun next() = values()[(ordinal + 1) % values().size]
 
         companion object {

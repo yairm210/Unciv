@@ -37,6 +37,7 @@ internal open class ConsoleAction(
         val formatParams = format.split(' ').drop(2).map {
             it.removeSurrounding("<",">").removeSurrounding("[","]").removeSurrounding("\"")
         }
+        if (formatParams.none()) return null // nothing to autocomplete - for example "history " + tab
         if (formatParams.size < params.size) return null // format has no definition, so there are no options to choose from
         // It is possible we're here *with* another format parameter but an *empty* params (e.g. `tile addriver` and hit tab) -> see below
         val (formatParam, lastParam) = if (params.lastIndex in formatParams.indices)

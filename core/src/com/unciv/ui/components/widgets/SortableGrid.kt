@@ -17,6 +17,7 @@ import com.unciv.ui.components.extensions.addSeparator
 import com.unciv.ui.components.extensions.center
 import com.unciv.ui.components.extensions.pad
 import com.unciv.ui.components.extensions.toLabel
+import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.components.input.onClick
 import com.unciv.ui.images.IconCircleGroup
 import com.unciv.ui.screens.basescreen.BaseScreen
@@ -128,13 +129,10 @@ class SortableGrid<IT, ACT, CT: ISortableGridContentProvider<IT, ACT>> (
     }
 
     private fun initHeader() {
-        // These are possibly the highest codepoints in use in Unciv -
-        // Take into account when limiting Fonts.nextUnusedCharacterNumber
-        // Alternatives: "↑" U+2191, "↓" U+2193 - much wider and weird spacing in some fonts (e.g. Verdana)
         // Note: These will scale with GameSettings.fontSizeMultiplier - could be *partly* countered
         // with `toLabel(fontSize = (Constants.defaultFontSize / GUI.getSettings().fontSizeMultiplier).toInt())`
-        sortSymbols[false] = "￪".toLabel()  // U+FFEA
-        sortSymbols[true] = "￬".toLabel()   // U+FFEC
+        sortSymbols[false] = Fonts.sortUpArrow.toString().toLabel()
+        sortSymbols[true] = Fonts.sortDownArrow.toString().toLabel()
 
         for (column in columns) {
             val element = getHeaderElement(column)

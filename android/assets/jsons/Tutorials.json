@@ -431,7 +431,7 @@
       {"text":"Only one spy per civ is allowed in each city. Spies that are not in any city are on vacation in your spy hideout."},
       {},
       {"text":"Spies set up in cities of major civilizations will try to steal technology at a rate which is based off of the science production in the city. Succeeding to steal technology will level up your spy. Failing to succeed will level up the defending spy if it is present.","starred":true},
-      {"text":"Spies set in city-states will try to rigg the elections in order to gain influence and reduce the influence of other civilizations. Only one spy partaking in rigging the election can win.","starred":true},
+      {"text":"Spies set in city-states will try to rig the elections in order to gain influence and reduce the influence of other civilizations. Only one spy partaking in rigging the election can win.","starred":true},
       {"text":"A spy that is rigging an election in a city-state may also stage a coup. The likelihood of success for the coup depends on your relative influence to the current ally of the city-state, your spy level, and the level of the spy that the current ally has in the city-state if present. Succeeding a coup will make you their new ally and reduce the influence of all other civs. Failing a coup will kill your spy and level up the defending spy if present.","starred":true},
       {"text":"Spies that are set up in your own cities will be conducting counter-intelligence. They reduce the success chance of other spies trying to steal your technology.","starred":true},
       {},

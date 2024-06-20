@@ -642,6 +642,7 @@ class WorldMapHolder(
             removeUnitActionOverlay()
             selectedTile = null
             worldScreen.shouldUpdate = true
+            worldScreen.bottomUnitTable.selectSpy(null)
         }
         spyActionButton.keyShortcuts.add(KeyCharAndCode.TAB)
         spyActionButton.keyShortcuts.add(KeyCharAndCode.RETURN)
