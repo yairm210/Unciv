@@ -213,11 +213,13 @@ class ImprovementPickerScreen(
                     setDescription(improvement, Color.LIGHT_GRAY)
                 }
             })
-        } else if (shortcutKey != null) {
+        } else {
             improvementButton.onDoubleClick { accept(improvement) }
-            // Shortcut keys trigger what onDoubleClick does, not equivalent to single Click:
-            improvementButton.keyShortcuts.add(shortcutKey) { accept(improvement) }
-            improvementButton.addTooltip(shortcutKey)
+            if (shortcutKey != null) {
+                // Shortcut keys trigger what onDoubleClick does, not equivalent to single Click:
+                improvementButton.keyShortcuts.add(shortcutKey) { accept(improvement) }
+                improvementButton.addTooltip(shortcutKey)
+            }
         }
 
         add(improvementButton)
