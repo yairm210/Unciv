@@ -237,16 +237,17 @@ class ImprovementPickerScreen(
     private class ProblemReport {
         var suggestRemoval = false
         var removalImprovement: TileImprovement? = null
-        val proposedSolutions = mutableListOf<String>()
+        val proposedSolutions = mutableSetOf<String>()
         fun isEmpty() = proposedSolutions.isEmpty()
         fun isQueueable() = removalImprovement != null && proposedSolutions.size == 1
         fun toLabel() = proposedSolutions.joinToString("}\n{", "{", "}").toLabel()
     }
 
-    private fun getProblemReport(improvement: TileImprovement): ProblemReport? {
+    private fun getProblemReport(improvement: TileImprovement) = getProblemReport(tile, tileWithoutLastTerrain, improvement)
+    private fun getProblemReport(tile: Tile, tileWithoutLastTerrain: Tile?, improvement: TileImprovement): ProblemReport? {
         val report = ProblemReport()
         var unbuildableBecause = tile.improvementFunctions.getImprovementBuildingProblems(improvement, currentPlayerCiv).toSet()
-        if (!canReport(unbuildableBecause)) {
+        if (!canReport(unbuildableBecause) && tileWithoutLastTerrain != null) {
             // Try after pretending to have removed the top terrain layer.
             unbuildableBecause = tileWithoutLastTerrain.improvementFunctions.getImprovementBuildingProblems(improvement, currentPlayerCiv).toSet()
             if (!canReport(unbuildableBecause)) return null
@@ -257,8 +258,11 @@ class ImprovementPickerScreen(
             if (suggestRemoval) {
                 val removalName = Constants.remove + tile.lastTerrain.name
                 removalImprovement = ruleset.tileImprovements[removalName]
-                if (removalImprovement != null)
+                if (removalImprovement != null) {
+                    val cannotRemoveReport = getProblemReport(tileWithoutLastTerrain!!, null, removalImprovement!!)
+                    if (cannotRemoveReport != null) proposedSolutions.addAll(cannotRemoveReport.proposedSolutions)
                     proposedSolutions.add("${Constants.remove}[${tile.lastTerrain.name}] first")
+                }
             }
 
             if (ImprovementBuildingProblem.MissingTech in unbuildableBecause)
