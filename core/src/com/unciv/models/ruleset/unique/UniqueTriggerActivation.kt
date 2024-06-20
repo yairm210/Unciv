@@ -21,16 +21,17 @@ import com.unciv.logic.map.mapgenerator.NaturalWonderGenerator
 import com.unciv.logic.map.mapgenerator.RiverGenerator
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
+import com.unciv.logic.map.tile.TileNormalizer
 import com.unciv.models.UpgradeUnitAction
 import com.unciv.models.ruleset.BeliefType
 import com.unciv.models.ruleset.Event
+import com.unciv.models.ruleset.EventChoice
 import com.unciv.models.ruleset.tile.TerrainType
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
 import com.unciv.models.translations.fillPlaceholders
 import com.unciv.models.translations.hasPlaceholderParameters
 import com.unciv.ui.components.extensions.addToMapOfSets
-import com.unciv.logic.map.tile.TileNormalizer
 import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionsUpgrade
 import kotlin.math.roundToInt
 import kotlin.random.Random
@@ -116,8 +117,32 @@ object UniqueTriggerActivation {
                 val event = ruleset.events[unique.params[0]] ?: return null
                 val choices = event.getMatchingChoices(stateForConditionals)
                     ?: return null
+
+                fun calculateEventChoiceWeight(choice: EventChoice): Float {
+                    var weight = 1f
+                    for (modifier in choice.modifierObjects) {
+                        if (modifier.type == UniqueType.AIPriorityModifier && modifier.conditionalsApply(stateForConditionals)) {
+                            weight += unique.params[0].toFloat() / 100f
+                        }
+                    }
+                    return weight
+                }
+
                 if (civInfo.isAI() || event.presentation == Event.Presentation.None) return {
-                    choices.randomOrNull()?.triggerChoice(civInfo) ?: false
+                    val choiceWeights = choices.associateBy({ it }, { calculateEventChoiceWeight(it) })
+                    val totalWeight = choiceWeights.values.sum()
+                    var random = Random.nextFloat() * totalWeight
+                    var chosenChoice: EventChoice? = null
+
+                    for (choice in choiceWeights.keys) {
+                        if (random < choiceWeights[choice]!!) {
+                            chosenChoice = choice
+                            break
+                        }
+                        random -= choiceWeights[choice]!!
+                    }
+                    
+                    chosenChoice?.triggerChoice(civInfo) ?: false
                 }
                 if (event.presentation == Event.Presentation.Alert) return {
                     civInfo.popupAlerts.add(PopupAlert(AlertType.Event, event.name))

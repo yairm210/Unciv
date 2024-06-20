@@ -134,6 +134,7 @@ Event choices are comprised of:
 | text             | String                      | Required   | Displayed to user as button. Should be an action name - "Do X"                                                       |
 | triggeredUniques | List of trigger uniques     | Required   | The triggers that this choice activates upon being chosen                                                            |
 | conditions       | List of conditional uniques | Empty list | If any conditional is not met, this option becomes unpickable (not shown)                                            |
+| modifiers        | List of priority modifiers  | Empty list | List of AI priority modifiers, increasing or decresing the probability of choosing the EventChoice by AI             |
 | keyShortcut      | key to select (name)        | none       | Key names see [Gdx.Input.Keys](https://github.com/libgdx/libgdx/blob/master/gdx/src/com/badlogic/gdx/Input.java#L69) |
 | civilopediaText  | List                        | Optional   | See [civilopediaText chapter](5-Miscellaneous-JSON-files.md#civilopedia-text)                                        |
 
