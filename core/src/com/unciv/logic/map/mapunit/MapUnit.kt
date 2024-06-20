@@ -767,6 +767,9 @@ class MapUnit : IsPartOfGameInfoSerialization {
     }
 
     fun destroy(destroyTransportedUnit: Boolean = true) {
+        //todo Debug only???
+        if (id == Constants.FAKE_ID || id == Constants.NO_ID || isDestroyed)
+            throw IllegalStateException("A fake, uninitialized or destroyed unit shouldn't be destroyed")
         stopEscorting()
         currentMovement = 0f
         civ.units.removeUnit(this)

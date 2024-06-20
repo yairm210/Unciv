@@ -116,7 +116,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
     var currentTurnStartTime = 0L
     var gameId = UUID.randomUUID().toString() // random string
     var checksum = ""
-    var lastUnitId = 0
+    private var lastUnitId = Constants.NO_ID
 
     var victoryData: VictoryData? = null
 
@@ -740,6 +740,15 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
             gameParameters.baseRuleset = baseRulesetInMods
             gameParameters.mods = LinkedHashSet(gameParameters.mods.filter { it != baseRulesetInMods })
         }
+    }
+
+    /** Retrieve the next Unit ID for a `MapUnit`
+     *  - Trivial implementation but encapsulates, so the ID type and safety checks can be changed centrally right here */
+    fun getNewUnitID() = ++lastUnitId
+
+    /** Only for use in `BackwardCompatibility`: [default] is called if the provider isn't initialized yet, and should supply the maximum already used value, if any. */
+    fun initializeUnitID(default: () -> Int?) {
+        if (lastUnitId == Constants.NO_ID) lastUnitId = default()?.coerceAtLeast(0) ?: 0
     }
 
     //endregion

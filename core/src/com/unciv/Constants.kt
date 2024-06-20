@@ -4,7 +4,11 @@ object Constants {
     const val settler = "Settler"
     const val eraSpecificUnit = "Era Starting Unit"
     val all = setOf("All", "all")
+
+    /** Default `MapUnit.id` - should never be serialized, found when loading a save from before the introduction of unit ID's */
     const val NO_ID = -1
+    /** `MapUnit.id` marking a fake unit (one use for simulating checks or AI) - should never be serialized or found in saves */
+    const val FAKE_ID = -2
 
     const val english = "English"
 

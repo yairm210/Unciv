@@ -202,10 +202,14 @@ object BackwardCompatibility {
     }
 
     fun GameInfo.ensureUnitIds() {
-        if (lastUnitId == 0) lastUnitId = tileMap.values.asSequence()
-            .flatMap { it.getUnits() }.maxOfOrNull { it.id }?.coerceAtLeast(0) ?: 0
+        initializeUnitID { tileMap.values.asSequence()
+            .flatMap { it.getUnits() }
+            .filter { it.id != Constants.NO_ID }
+            .maxOfOrNull { it.id }
+        }
         for (unit in tileMap.values.flatMap { it.getUnits() }) {
-            if (unit.id == Constants.NO_ID) unit.id = ++lastUnitId
+            if (unit.id == Constants.NO_ID) unit.id = getNewUnitID()
+            else if (unit.id == Constants.FAKE_ID) throw IllegalStateException("Unit with a fake ID found in the save")
         }
     }
 }
