@@ -8,6 +8,7 @@ import com.unciv.logic.civilization.AlertType
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.PopupAlert
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
+import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.logic.trade.TradeEvaluation
@@ -54,7 +55,12 @@ object DiplomacyAutomation {
         val allAliveCivs = allCivs - deadCivs
 
         // Motivation should be constant as the number of civs changes
-        var motivation = diploManager.opinionOfOtherCiv() - 40
+        var motivation = diploManager.opinionOfOtherCiv() - 40f
+
+        // Warmongerers don't make good allies
+        if (diploManager.hasModifier(DiplomaticModifiers.WarMongerer)) {
+            motivation -= diploManager.getModifier(DiplomaticModifiers.WarMongerer) * civInfo.getPersonality().modifierFocus(PersonalityValue.Diplomacy, .5f)
+        }
 
         // If the other civ is stronger than we are compelled to be nice to them
         // If they are too weak, then thier friendship doesn't mean much to us
@@ -89,7 +95,7 @@ object DiplomacyAutomation {
         // Wait to declare frienships until more civs
         // Goes from -30 to 0 when we know 75% of allCivs
         val civsToKnow = 0.75f * allAliveCivs
-        motivation -= ((civsToKnow - knownCivs) / civsToKnow * 30f).toInt().coerceAtLeast(0)
+        motivation -= ((civsToKnow - knownCivs) / civsToKnow * 30f).coerceAtLeast(0f)
 
         // If they are the only non-friendly civ near us then they are the only civ to attack and expand into
         if (civInfo.threatManager.getNeighboringCivilizations().none {
@@ -224,7 +230,12 @@ object DiplomacyAutomation {
         val allAliveCivs = allCivs - deadCivs
 
         // We have to already be at RelationshipLevel.Ally, so we must have 80 oppinion of them
-        var motivation = diploManager.opinionOfOtherCiv().toInt() - 80
+        var motivation = diploManager.opinionOfOtherCiv() - 80
+
+        // Warmongerers don't make good allies
+        if (diploManager.hasModifier(DiplomaticModifiers.WarMongerer)) {
+            motivation -= diploManager.getModifier(DiplomaticModifiers.WarMongerer) * civInfo.getPersonality().modifierFocus(PersonalityValue.Diplomacy, .5f)
+        }
 
         // If they are stronger than us, then we value it a lot more
         // If they are weaker than us, then we don't value it
@@ -245,7 +256,7 @@ object DiplomacyAutomation {
         // Try to have a defensive pact with 1/5 of all civs
         val civsToAllyWith = 0.20f * allAliveCivs * civInfo.getPersonality().modifierFocus(PersonalityValue.Diplomacy, .5f)
         // Goes from 0 to -40 as the civ gets more allies, offset by civsToAllyWith
-        motivation -= (40f * (defensivePacts - civsToAllyWith) / (allAliveCivs - civsToAllyWith)).coerceAtMost(0f).toInt()
+        motivation -= (40f * (defensivePacts - civsToAllyWith) / (allAliveCivs - civsToAllyWith)).coerceAtMost(0f)
 
         return motivation > 0
     }
