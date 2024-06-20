@@ -2,6 +2,7 @@ package com.unciv.ui.screens.pickerscreens
 
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.ui.Button
+import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.SplitPane
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup
@@ -23,7 +24,9 @@ class PickerPane(
      *  Note if you don't use that helper, you'll need to do both click and keyboard support yourself. */
     val closeButton = Constants.close.toTextButton()
     /** A scrollable wrapped Label you can use to show descriptions in the [bottomTable], starts empty */
-    val descriptionLabel = "".toLabel()
+    val descriptionLabel = DescriptionLabel()
+    /** Wraps descriptionLabel - a subclass may replace the content, but beware: zero padding around this */
+    internal val descriptionScroll: AutoScrollPane
     /** A wrapper containing [rightSideButton]. You can add buttons, they will be arranged vertically */
     val rightSideGroup = VerticalGroup()
     /** A button on the lower right of [bottomTable] you can use for a "OK"-type action, starts disabled */
@@ -48,8 +51,10 @@ class PickerPane(
         bottomTable.add(closeButton).pad(10f)
 
         descriptionLabel.wrap = true
-        val labelScroll = AutoScrollPane(descriptionLabel, BaseScreen.skin)
-        bottomTable.add(labelScroll).pad(5f).fill().expand()
+        val descriptionWithPad = Table()
+        descriptionWithPad.add(descriptionLabel).pad(10f).grow()
+        descriptionScroll = AutoScrollPane(descriptionWithPad, BaseScreen.skin)
+        bottomTable.add(descriptionScroll).grow()
 
         rightSideButton.disable()
         rightSideGroup.addActor(rightSideButton)
@@ -72,10 +77,26 @@ class PickerPane(
         rightSideButton.isEnabled = enabled
     }
 
-    /** Sets the text of the [rightSideButton] (does not auitotranslate) and enables it if it's the player's turn */
+    /** Sets the text of the [rightSideButton] (does not autotranslate) and enables it if it's the player's turn */
     fun pick(rightButtonText: String) {
         if (GUI.isMyTurn()) rightSideButton.enable()
         rightSideButton.setText(rightButtonText)
+    }
+
+    /** This Label adjusts the Y scroll of its ascendant ScrollPane when its text is set:
+     *  - short texts stay top-aligned with [closeButton]
+     *  - taller texts scroll some of the wrapper top padding out
+     *  - still taller texts scroll most but not all of the top padding out
+     *
+     *  This also ensures vertical scroll is reset when changing description
+     */
+    inner class DescriptionLabel : Label("", BaseScreen.skin) {
+        override fun setText(newText: CharSequence?) {
+            super.setText(newText)
+            descriptionScroll.validate()
+            descriptionScroll.scrollY = (prefHeight + 10f - descriptionScroll.height).coerceIn(0f, 8f)
+            descriptionScroll.updateVisualScroll()
+        }
     }
 
     companion object {
