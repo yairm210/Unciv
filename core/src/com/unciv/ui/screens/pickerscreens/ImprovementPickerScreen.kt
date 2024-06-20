@@ -46,6 +46,7 @@ class ImprovementPickerScreen(
     // Support for UniqueType.CreatesOneImprovement
     private val tileMarkedForCreatesOneImprovement = tile.isMarkedForCreatesOneImprovement()
     private val tileWithoutLastTerrain: Tile
+    private val maxErasForward = ruleset.modOptions.constants.maxImprovementTechErasForward.takeUnless { it < 0 } ?: Int.MAX_VALUE
 
     private fun getRequiredTechColumn(improvement: TileImprovement) =
         ruleset.technologies[improvement.techRequired]?.column?.columnNumber ?: -1
@@ -266,8 +267,14 @@ class ImprovementPickerScreen(
                 }
             }
 
-            if (ImprovementBuildingProblem.MissingTech in unbuildableBecause)
-                proposedSolutions.add("Research [${improvement.techRequired}] first")
+            if (ImprovementBuildingProblem.MissingTech in unbuildableBecause) {
+                val maxEraNumber = currentPlayerCiv.getEraNumber() + maxErasForward
+                for (tech in improvement.requiredTechnologies(ruleset)) {
+                    val techEra = tech?.era(ruleset) ?: continue
+                    if (techEra.eraNumber > maxEraNumber) return null
+                    proposedSolutions.add("Research [${tech.name}] first")
+                }
+            }
             if (ImprovementBuildingProblem.NotJustOutsideBorders in unbuildableBecause)
                 proposedSolutions.add("Have this tile close to your borders")
             if (ImprovementBuildingProblem.OutsideBorders in unbuildableBecause)
