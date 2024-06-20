@@ -94,7 +94,7 @@ class TileImprovementFunctions(val tile: Tile) {
             yield(ImprovementBuildingProblem.Other)
     }
 
-    /** Without regards to what CivInfo it is, a lot of the checks are just for the improvement on the tile.
+    /** Without regards to what CivInfo it is (so no tech requirement check), a lot of the checks are just for the improvement on the tile.
      *  Doubles as a check for the map editor.
      */
     internal fun canImprovementBeBuiltHere(
@@ -105,7 +105,7 @@ class TileImprovementFunctions(val tile: Tile) {
         isNormalizeCheck: Boolean = false
     ): Boolean {
 
-        fun TileImprovement.canBeBuildOnThisUnbuildableTerrain(
+        fun TileImprovement.canBeBuiltOnThisUnbuildableTerrain(
             knownFeatureRemovals: List<TileImprovement>? = null,
         ): Boolean {
             val topTerrain = tile.lastTerrain
@@ -121,7 +121,7 @@ class TileImprovementFunctions(val tile: Tile) {
             if (featureRemovals.any { it !in knownFeatureRemovals }) return false
             val clonedTile = tile.clone()
             clonedTile.setTerrainFeatures(tile.terrainFeatures.filterNot {
-                feature -> featureRemovals.any{ it.name.removePrefix(Constants.remove) == feature } })
+                feature -> featureRemovals.any { it.name.removePrefix(Constants.remove) == feature } })
             return clonedTile.improvementFunctions.canImprovementBeBuiltHere(improvement, resourceIsVisible, knownFeatureRemovals, stateForConditionals)
         }
 
@@ -142,13 +142,13 @@ class TileImprovementFunctions(val tile: Tile) {
             RoadStatus.values().any { it.name == improvement.name } -> !tile.isWater
                     && RoadStatus.valueOf(improvement.name) > tile.roadStatus
 
-            // Then we check if there is any reason to not allow this improvement to be build
+            // Then we check if there is any reason to not allow this improvement to be built
 
             // Can't build if there is already an irremovable improvement here
             tile.improvement != null && tile.getTileImprovement()!!.hasUnique(UniqueType.Irremovable, stateForConditionals) -> false
 
             // Can't build if this terrain is unbuildable, except when we are specifically allowed to
-            tile.lastTerrain.unbuildable && !improvement.canBeBuildOnThisUnbuildableTerrain(knownFeatureRemovals) -> false
+            tile.lastTerrain.unbuildable && !improvement.canBeBuiltOnThisUnbuildableTerrain(knownFeatureRemovals) -> false
 
             // Can't build if any terrain specifically prevents building this improvement
             tile.getTerrainMatchingUniques(UniqueType.RestrictedBuildableImprovements, stateForConditionals).any {
