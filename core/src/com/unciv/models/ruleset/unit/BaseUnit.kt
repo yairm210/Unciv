@@ -101,18 +101,43 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         }
     }
 
-    fun getMapUnit(civInfo: Civilization, unitId: Int? = null): MapUnit {
+    /** Creates a new [MapUnit] instance and [initializes all its transients][MapUnit.setTransients].
+     *  Does not -and MUST NOT- link this unit into the map or the civ's unit manager.
+     *
+     *  *** Do not create fake units with this
+     *  @param civ Future owner and source for a ruleset reference for the transients.
+     *  @param unitId The ID to set, meaning this unit should replace a to-be-removed other unit. If provided, the caller must ensure one of the two ID owners is destroyed ASAP.
+     *                If not provided, a fresh ID from the "Pool" is assigned ([GameInfo.lastUnitId]).
+     */
+    fun getMapUnit(civ: Civilization, unitId: Int? = null): MapUnit {
         val unit = MapUnit()
         unit.name = name
-        unit.civ = civInfo
-        unit.owner = civInfo.civName
-        unit.id = unitId ?: ++civInfo.gameInfo.lastUnitId
+        unit.civ = civ
+        unit.owner = civ.civName
+        unit.id = unitId ?: civ.gameInfo.getNewUnitID()
 
         // must be after setting name & civInfo because it sets the baseUnit according to the name
         // and the civInfo is required for using `hasUnique` when determining its movement options
-        unit.setTransients(civInfo.gameInfo.ruleset)
+        unit.setTransients(civ.gameInfo.ruleset)
 
         return unit
+    }
+
+    /**
+     *  Instantiate a fake [MapUnit] and do some work with it.
+     *  - Unit is ***not*** part of the map ot the civ's unit manager!
+     *  - ***DANGEROUS*** Do not trigger side effects that may persist the fake unit reference in any way.
+     *  - Try to avoid triggering side effects changing civ state.
+     *  - Note: Upgrade/Transform also deal with non-final MapUnits in a sense - they resurrect the old unit in case the new unit can't be placed. That is not covered by using this helper.
+     */
+    fun <T> withFakeUnit(civ: Civilization, block: (MapUnit) -> T): T {
+        val unit = getMapUnit(civ, Constants.FAKE_ID)
+        val result = block(unit)
+        // NOT: unit.destroy() - so far none of the side effects in there should be applied to fake units except:
+        unit.isDestroyed = true
+        if (unit in civ.units.getCivUnits() || unit.hasTile() && unit in unit.currentTile.getUnits())
+            throw IllegalStateException("A fake unit was placed in its owner's UnitManager or on the map")
+        return result
     }
 
     /** Allows unique functions (getMatchingUniques, hasUnique) to "see" uniques from the UnitType */
@@ -192,13 +217,13 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
 
         yieldAll(getRejectionReasons(civInfo, cityConstructions.city))
 
-        // Expensive, since adding and removing the fake unit causes side-effects
+        // Expensive, since setTransients is relatively high overhead (hopefully adding and removing the fake unit causes no side-effects)
         if (isAirUnit()) {
-            val fakeUnit = getMapUnit(cityConstructions.city.civ, Constants.NO_ID)
-            val canUnitEnterTile = fakeUnit.movement.canMoveTo(cityConstructions.city.getCenterTile())
+            val canUnitEnterTile = withFakeUnit(cityConstructions.city.civ) {
+                it.movement.canMoveTo(cityConstructions.city.getCenterTile())
+            }
             if (!canUnitEnterTile)
                 yield(RejectionReasonType.NoPlaceToPutUnit.toInstance())
-            fakeUnit.destroy()
         }
     }
 
