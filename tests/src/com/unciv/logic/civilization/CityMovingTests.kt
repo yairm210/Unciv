@@ -31,7 +31,7 @@ class CityMovingTests {
             civInfo.tech.addTechnology(tech)
 
         civInfo.diplomacyFunctions.makeCivilizationsMeet(enemy)
-        civInfo.getDiplomacyManager(enemy).declareWar()
+        civInfo.getDiplomacyManager(enemy)!!.declareWar()
     }
 
     @Test
@@ -121,7 +121,7 @@ class CityMovingTests {
         val resourceTile = testGame.tileMap[0,1]
         resourceTile.resource = "Iron"
         resourceTile.resourceAmount = 3
-        resourceTile.changeImprovement("Mine")
+        resourceTile.setImprovement("Mine")
         theirCapital.expansion.takeOwnership(resourceTile)
 
         theirCapital.moveToCiv(civInfo)

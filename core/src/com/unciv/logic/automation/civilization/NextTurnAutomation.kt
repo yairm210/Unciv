@@ -104,14 +104,14 @@ object NextTurnAutomation {
         for (popupAlert in civInfo.popupAlerts.toList()) { // toList because this can trigger other things that give alerts, like Golden Age
             if (popupAlert.type == AlertType.DemandToStopSettlingCitiesNear) {  // we're called upon to make a decision
                 val demandingCiv = civInfo.gameInfo.getCivilization(popupAlert.value)
-                val diploManager = civInfo.getDiplomacyManager(demandingCiv)
+                val diploManager = civInfo.getDiplomacyManager(demandingCiv)!!
                 if (Automation.threatAssessment(civInfo, demandingCiv) >= ThreatLevel.High)
                     diploManager.agreeNotToSettleNear()
                 else diploManager.refuseDemandNotToSettleNear()
             }
             if (popupAlert.type == AlertType.DeclarationOfFriendship) {
                 val requestingCiv = civInfo.gameInfo.getCivilization(popupAlert.value)
-                val diploManager = civInfo.getDiplomacyManager(requestingCiv)
+                val diploManager = civInfo.getDiplomacyManager(requestingCiv)!!
                 if (civInfo.diplomacyFunctions.canSignDeclarationOfFriendshipWith(requestingCiv)
                     && DiplomacyAutomation.wantsToSignDeclarationOfFrienship(civInfo,requestingCiv)) {
                     diploManager.signDeclarationOfFriendship()
@@ -179,7 +179,7 @@ object NextTurnAutomation {
 
         // The more we have invested into the city-state the more the alliance is worth
         val ourInfluence = if (civInfo.knows(cityState))
-            cityState.getDiplomacyManager(civInfo).getInfluence().toInt()
+            cityState.getDiplomacyManager(civInfo)!!.getInfluence().toInt()
         else 0
         value += ourInfluence / 10
 
@@ -190,7 +190,7 @@ object NextTurnAutomation {
 
         if (cityState.getAllyCiv() != null && cityState.getAllyCiv() != civInfo.civName) {
             // easier not to compete if a third civ has this locked down
-            val thirdCivInfluence = cityState.getDiplomacyManager(cityState.getAllyCiv()!!).getInfluence().toInt()
+            val thirdCivInfluence = cityState.getDiplomacyManager(cityState.getAllyCiv()!!)!!.getInfluence().toInt()
             value -= (thirdCivInfluence - 30) / 10
         }
 
@@ -210,7 +210,7 @@ object NextTurnAutomation {
 
     private fun protectCityStates(civInfo: Civilization) {
         for (state in civInfo.getKnownCivs().filter { !it.isDefeated() && it.isCityState() }) {
-            val diplomacyManager = state.getDiplomacyManager(civInfo.civName)
+            val diplomacyManager = state.getDiplomacyManager(civInfo.civName)!!
             val isAtLeastFriend = diplomacyManager.isRelationshipLevelGE(RelationshipLevel.Friend)
             if (isAtLeastFriend && state.cityStateFunctions.otherCivCanPledgeProtection(civInfo)) {
                 state.cityStateFunctions.addProtectorCiv(civInfo)
@@ -222,7 +222,7 @@ object NextTurnAutomation {
 
     private fun bullyCityStates(civInfo: Civilization) {
         for (state in civInfo.getKnownCivs().filter { !it.isDefeated() && it.isCityState() }.toList()) {
-            val diplomacyManager = state.getDiplomacyManager(civInfo.civName)
+            val diplomacyManager = state.getDiplomacyManager(civInfo.civName)!!
             if (diplomacyManager.isRelationshipLevelLT(RelationshipLevel.Friend)
                     && diplomacyManager.diplomaticStatus == DiplomaticStatus.Peace
                     && valueCityStateAlliance(civInfo, state) <= 0
@@ -460,6 +460,7 @@ object NextTurnAutomation {
     private fun trainSettler(civInfo: Civilization) {
         val personality = civInfo.getPersonality()
         if (civInfo.isCityState()) return
+        if (civInfo.isOneCityChallenger()) return
         if (civInfo.isAtWar()) return // don't train settlers when you could be training troops.
         if (civInfo.wantsToFocusOn(Victory.Focus.Culture) && civInfo.cities.size > 3 &&
             civInfo.getPersonality().isNeutralPersonality)
@@ -491,10 +492,9 @@ object NextTurnAutomation {
             // Otherwise, AI tries to produce settlers when it can hardly sustain itself
             .filter { city ->
                 !workersBuildableForThisCiv
-                    || city.getCenterTile().getTilesInDistance(2).count { it.improvement!=null } > 1
-                    || city.getCenterTile().getTilesInDistance(3).any { it.civilianUnit?.hasUnique(UniqueType.BuildImprovements)==true }
-            }
-            .maxByOrNull { it.cityStats.currentCityStats.production }
+                    || city.getCenterTile().getTilesInDistance(civInfo.modConstants.cityWorkRange - 1 ).count { it.improvement != null } > 1
+                    || city.getCenterTile().getTilesInDistance(civInfo.modConstants.cityWorkRange).any { it.civilianUnit?.hasUnique(UniqueType.BuildImprovements) == true }
+            }.maxByOrNull { it.cityStats.currentCityStats.production }
             ?: return
         if (bestCity.cityConstructions.getBuiltBuildings().count() > 1) // 2 buildings or more, otherwise focus on self first
             bestCity.cityConstructions.currentConstructionFromQueue = settlerUnits.minByOrNull { it.cost }!!.name
@@ -510,14 +510,14 @@ object NextTurnAutomation {
             val knownMajorCivs = civ.getKnownCivs().filter { it.isMajorCiv() }
             val highestOpinion = knownMajorCivs
                 .maxOfOrNull {
-                    civ.getDiplomacyManager(it).opinionOfOtherCiv()
+                    civ.getDiplomacyManager(it)!!.opinionOfOtherCiv()
                 }
 
             if (highestOpinion == null) null  // Abstain if we know nobody
             else if (highestOpinion < -80 || highestOpinion < -40 && highestOpinion + Random.Default.nextInt(40) < -40)
                 null // Abstain if we hate everybody (proportional chance in the RelationshipLevel.Enemy range - lesser evil)
             else knownMajorCivs
-                .filter { civ.getDiplomacyManager(it).opinionOfOtherCiv() == highestOpinion }
+                .filter { civ.getDiplomacyManager(it)!!.opinionOfOtherCiv() == highestOpinion }
                 .toList().random().civName
 
         } else {
@@ -529,14 +529,14 @@ object NextTurnAutomation {
 
     private fun issueRequests(civInfo: Civilization) {
         for (otherCiv in civInfo.getKnownCivs().filter { it.isMajorCiv() && !civInfo.isAtWarWith(it) }) {
-            val diploManager = civInfo.getDiplomacyManager(otherCiv)
+            val diploManager = civInfo.getDiplomacyManager(otherCiv)!!
             if (diploManager.hasFlag(DiplomacyFlags.SettledCitiesNearUs))
                 onCitySettledNearBorders(civInfo, otherCiv)
         }
     }
 
     private fun onCitySettledNearBorders(civInfo: Civilization, otherCiv: Civilization) {
-        val diplomacyManager = civInfo.getDiplomacyManager(otherCiv)
+        val diplomacyManager = civInfo.getDiplomacyManager(otherCiv)!!
         when {
             diplomacyManager.hasFlag(DiplomacyFlags.IgnoreThemSettlingNearUs) -> {
             }

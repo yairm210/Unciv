@@ -4,7 +4,7 @@
 
 The translation files are at [/android/assets/jsons/translations](https://github.com/yairm210/Unciv/tree/master/android/assets/jsons/translations)
 
-If you're adding a new language, you'll need to create a new file ('Create a new file' to the right of the folder name in the UI), and copy into it the contents of template.properties
+If you're adding a new language, see [Adding a new language](#adding-a-new-language).
 
 If you're adding stuff to an existing language, simply start editing the file!
 
@@ -46,6 +46,18 @@ If you're making changes to your own repo, make sure that you make the branch yo
 Some entries have line breaks expressed as `\n`: Your translation can and in most cases should use them as well, but you do not need to distribute them exactly as in the original. Try to find a translation that reads nicely, then place the line break codes at roughly the same intervals as the original uses (less if your language's glyphs are wider than latin ones). Important: You cannot use normal line breaks, you must use the `\n` codes, normal line breaks are not part of a translation.
 
 Chinese tutorial: 如果你是中国人，那么恭喜你运气不错！这里有Unciv中文开发者们专门为中文翻译工作者准备的（十分详尽）教程视频。：[(Video On Bilibili)](https://www.bilibili.com/video/BV1pY4y1u7WH/)
+
+## Adding a new language
+
+If any of the following steps are beyond your skillset, ask for help. All but the first two steps can be postponed.
+
+- You'll need to create a new file ('Create a new file' to the right of the folder name in the UI), and copy into it the contents of template.properties
+- For automatic language processing for a release (e.g. adding new templates) there needs to exist a line in [completionPercentages.properties](https://github.com/yairm210/Unciv/tree/master/android/assets/jsons/translations/completionPercentages.properties). Location and number do not matter, what matters is that the language name left of the ` = ` corresponds exactly with your new language file name, case-sensitive, without extension.
+- For a nice display in language picker and options, we need a flag. It should be a circle surrounded by transparency within a 128x128px square. Add such a png to [FlagIcons](https://github.com/yairm210/Unciv/tree/master/android/Images.Flags/FlagIcons). For potential sources, look in the [credits](https://github.com/yairm210/Unciv/tree/master/docs/Credits.md), and when done, add your source unless it is already covered.
+- A new graphic needs to be converted into the texture atlases (see [Images and the texture atlas](../Modders/Images-and-Audio.md#images-and-the-texture-atlas)) - for a new flag, this usually means running the desktop version once from source, then uploading the updated atlas files via push or manually.
+- Lastly, your new language should be represented in the [LocaleCode](https://github.com/yairm210/Unciv/tree/master/core/src/com/unciv/models/metadata/GameSettings.kt#L261) enum - reasons see below. You can add this even if you cannot compile - just make sure you follow the existing pattern, and read the inline documentation.
+- The first function of this entry is alphabetical sorting. Unfortunately, it is not easy to tell whether a specific combination is supported by Java. The simplest way to deal with this is trial and error - once your language is established and playable, see if Civilopedia entries seem properly sorted, if not, open an issue and tell us what _other_, more common language may have better sorting rules.
+- This entry is also required to enable fastlane description upload to a correct folder - however, whether F-Droid supports your language is not guaranteed ([this page](https://f-droid.org/docs/Translation_and_Localization/) should help - but doesn't).
 
 ## Why not use a crowdsourcing translation website like <...>?
 

@@ -410,7 +410,7 @@ class TechPickerScreen(
         for (requiredTech in pathToTech) {
             for (unique in requiredTech.uniqueObjects
                 .filter { it.type == UniqueType.OnlyAvailable && !it.conditionalsApply(civInfo) }) {
-                rightSideButton.setText(unique.text.tr())
+                rightSideButton.setText(unique.getDisplayText().tr())
                 rightSideButton.disable()
                 return
             }

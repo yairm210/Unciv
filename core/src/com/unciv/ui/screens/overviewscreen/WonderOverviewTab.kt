@@ -244,12 +244,12 @@ class WonderInfo {
             }
             if (status == WonderStatus.NotFound && !knownFromQuest(viewingPlayer, name)) continue
             val city = if (status == WonderStatus.NotFound) null
-            else tile.getTilesInDistance(5)
-                .filter { it.isCityCenter() }
-                .filter { viewingPlayer.knows(it.getOwner()!!) }
-                .filter { viewingPlayer.hasExplored(it) }
-                .sortedBy { it.aerialDistanceTo(tile) }
-                .firstOrNull()?.getCity()
+            else gameInfo.getCities()
+                .filter { it.getCenterTile().aerialDistanceTo(tile) <= 5
+                    && viewingPlayer.knows(it.civ) 
+                    && viewingPlayer.hasExplored(it.getCenterTile()) }
+                .sortedBy { it.getCenterTile().aerialDistanceTo(tile) }
+                .firstOrNull()
             wonders[index + wonderCount] = WonderInfo(
                 name, CivilopediaCategories.Terrain,
                 "Natural Wonders", Color.FOREST, status, civ, city, tile

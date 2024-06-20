@@ -111,7 +111,7 @@ fun debugTab(
             tile.resourceAmount = 999
             // Debug option, so if it crashes on this that's relatively fine
             // If this becomes a problem, check if such an improvement exists and otherwise plop down a great improvement or so
-            tile.changeImprovement(resource.getImprovements().first())
+            tile.setImprovement(resource.getImprovements().first())
         }
         curGameInfo.getCurrentPlayerCivilization().cache.updateSightAndResources()
         GUI.setUpdateWorldOnNextRender()

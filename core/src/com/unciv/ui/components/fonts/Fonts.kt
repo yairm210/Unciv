@@ -98,6 +98,7 @@ object Fonts {
         return pixmap
     }
 
+    //region Symbols added to font from atlas textures
     const val turn = '⏳'               // U+23F3 'hourglass'
     const val strength = '†'            // U+2020 'dagger'
     const val rangedStrength = '‡'      // U+2021 'double dagger'
@@ -122,7 +123,21 @@ object Fonts {
     const val greatScientist = '⚛'      // U+269B 'atom'
     const val death = '☠'               // U+2620 'skull and crossbones'
     const val automate = '⛏'            // U+26CF 'pick'
-    const val infinity = '∞'            // U+221E - not in `allSymbols`, taken as-is from system font
+
+    //region Symbols that can be optionally added to the font from atlas textures
+    // (a mod can override these, otherwise the font supplies the glyph)
+    const val infinity = '∞'            // U+221E
+    const val clock = '⌚'               // U+231A 'watch'
+    const val star = '✯'                // U+272F 'pinwheel star'
+    const val status = '◉'              // U+25C9 'fisheye'
+    // The following two are used for sort visualization.
+    // They may disappear (show as placeholder box) on Linux if you clean out asian fonts.
+    // Alternatives: "↑" U+2191, "↓" U+2193 - much wider and weird spacing in some fonts (e.g. Verdana).
+    // These are possibly the highest codepoints in use in Unciv -
+    // Taken into account when limiting FontRulesetIcons codepoints (it respects the private area ending at U+F8FF)
+    const val sortUpArrow = '￪'         // U+FFEA 'half wide upward arrow'
+    const val sortDownArrow = '￬'       // U+FFEC 'half wide downward arrow'
+    //endregion
 
     val allSymbols = mapOf(
         turn to "EmojiIcons/Turn",
@@ -144,6 +159,14 @@ object Fonts {
         greatScientist to "EmojiIcons/Great Scientist",
         death to "EmojiIcons/Death",
         automate to "EmojiIcons/Automate",
+        infinity to "EmojiIcons/Infinity",
+        clock to "EmojiIcons/SortedByTime",
+        star to "EmojiIcons/Star",
+        status to "EmojiIcons/SortedByStatus",
+        sortUpArrow to "EmojiIcons/SortedAscending",
+        sortDownArrow to "EmojiIcons/SortedDescending",
         *MayaCalendar.allSymbols
     )
+    //endregion
+
 }

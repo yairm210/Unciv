@@ -1,6 +1,7 @@
 package com.unciv.ui.screens.pickerscreens
 
 import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
@@ -12,6 +13,7 @@ import com.unciv.models.ruleset.unique.LocalUniqueCache
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stats
 import com.unciv.models.translations.tr
+import com.unciv.ui.components.SmallButtonStyle
 import com.unciv.ui.components.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.components.extensions.disable
 import com.unciv.ui.components.extensions.toLabel
@@ -39,22 +41,26 @@ class ImprovementPickerScreen(
 
     private var selectedImprovement: TileImprovement? = null
     private val gameInfo = tile.tileMap.gameInfo
-    private val ruleSet = gameInfo.ruleset
+    private val ruleset = gameInfo.ruleset
     private val currentPlayerCiv = gameInfo.getCurrentPlayerCivilization()
     // Support for UniqueType.CreatesOneImprovement
     private val tileMarkedForCreatesOneImprovement = tile.isMarkedForCreatesOneImprovement()
+    private val tileWithoutLastTerrain: Tile
 
     private fun getRequiredTechColumn(improvement: TileImprovement) =
-        ruleSet.technologies[improvement.techRequired]?.column?.columnNumber ?: -1
+        ruleset.technologies[improvement.techRequired]?.column?.columnNumber ?: -1
 
-    fun accept(improvement: TileImprovement?) {
+    fun accept(improvement: TileImprovement?, secondImprovement: TileImprovement? = null) {
         if (improvement == null || tileMarkedForCreatesOneImprovement) return
         if (improvement.name == Constants.cancelImprovementOrder) {
             tile.stopWorkingOnImprovement()
             // no onAccept() - Worker can stay selected
         } else {
-            if (improvement.name != tile.improvementInProgress)
+            if (improvement.name != tile.improvementInProgress) {
                 tile.startWorkingOnImprovement(improvement, currentPlayerCiv, unit)
+                if (secondImprovement != null)
+                    tile.queueImprovement(secondImprovement, currentPlayerCiv, unit)
+            }
             unit.action = null // this is to "wake up" the worker if it's sleeping
             onAccept()
         }
@@ -74,28 +80,20 @@ class ImprovementPickerScreen(
 
         // clone tileInfo without "top" feature if it could be removed
         // Keep this copy around for speed
-        val tileWithoutLastTerrain: Tile = tile.clone()
+        tileWithoutLastTerrain = tile.clone()
         tileWithoutLastTerrain.setTerrainTransients()
-        if (Constants.remove + tileWithoutLastTerrain.lastTerrain.name in ruleSet.tileImprovements) {
+        if (Constants.remove + tileWithoutLastTerrain.lastTerrain.name in ruleset.tileImprovements) {
             tileWithoutLastTerrain.removeTerrainFeature(tileWithoutLastTerrain.lastTerrain.name)
         }
 
         val cityUniqueCache = LocalUniqueCache()
 
-        for (improvement in ruleSet.tileImprovements.values) {
-            var suggestRemoval = false
+        for (improvement in ruleset.tileImprovements.values) {
             // canBuildImprovement() would allow e.g. great improvements thus we need to exclude them - except cancel
             if (improvement.turnsToBuild == -1 && improvement.name != Constants.cancelImprovementOrder) continue
             if (improvement.name == tile.improvement) continue // also checked by canImprovementBeBuiltHere, but after more expensive tests
             if (!unit.canBuildImprovement(improvement)) continue
-
-            var unbuildableBecause = tile.improvementFunctions.getImprovementBuildingProblems(improvement, currentPlayerCiv).toSet()
-            if (!canReport(unbuildableBecause)) {
-                // Try after pretending to have removed the top terrain layer.
-                unbuildableBecause = tileWithoutLastTerrain.improvementFunctions.getImprovementBuildingProblems(improvement, currentPlayerCiv).toSet()
-                if (!canReport(unbuildableBecause)) continue
-                else suggestRemoval = true
-            }
+            val problemReport = getProblemReport(improvement) ?: continue
 
             val image = ImageGetter.getImprovementPortrait(improvement.name, 30f)
 
@@ -103,7 +101,7 @@ class ImprovementPickerScreen(
             var shortcutKey = improvement.shortcutKey
             if (shortcutKey != null) {
                 val techLevel = getRequiredTechColumn(improvement)
-                val isSuperseded = ruleSet.tileImprovements.values.asSequence()
+                val isSuperseded = ruleset.tileImprovements.values.asSequence()
                     // *other* improvements with same shortcutKey
                     .filter { it.shortcutKey == improvement.shortcutKey && it != improvement }
                     // civ can build it (checks tech researched)
@@ -127,29 +125,6 @@ class ImprovementPickerScreen(
                     && improvement.name != Constants.cancelImprovementOrder)
             if (tile.improvement != null && removeImprovement) labelText += "\n" + "Replaces [${tile.improvement}]".tr()
 
-            val proposedSolutions = mutableListOf<String>()
-
-            if (suggestRemoval)
-                proposedSolutions.add("${Constants.remove}[${tile.lastTerrain.name}] first")
-            if (ImprovementBuildingProblem.MissingTech in unbuildableBecause)
-                proposedSolutions.add("Research [${improvement.techRequired}] first")
-            if (ImprovementBuildingProblem.NotJustOutsideBorders in unbuildableBecause)
-                proposedSolutions.add("Have this tile close to your borders")
-            if (ImprovementBuildingProblem.OutsideBorders in unbuildableBecause)
-                proposedSolutions.add("Have this tile inside your empire")
-            if (ImprovementBuildingProblem.MissingResources in unbuildableBecause) {
-                proposedSolutions.addAll(improvement.getMatchingUniques(UniqueType.ConsumesResources).filter {
-                    currentPlayerCiv.getResourceAmount(it.params[1]) < it.params[0].toInt()
-                }.map { "Acquire more [$it]" })
-            }
-
-            val explanationText = when {
-                proposedSolutions.any() -> proposedSolutions.joinToString("}\n{", "{", "}").toLabel()
-                tile.improvementInProgress == improvement.name -> "Current construction".toLabel()
-                tileMarkedForCreatesOneImprovement -> null
-                else -> "Pick now!".toLabel().onClick { accept(improvement) }
-            }
-
             val statIcons = getStatIconsTable(provideResource, removeImprovement)
 
             // get benefits of the new improvement
@@ -167,7 +142,8 @@ class ImprovementPickerScreen(
                 && !improvement.isRoad()
                     && stats.values.any { it > 0f }
                     && !improvement.name.startsWith(Constants.remove)
-                    && !tile.getTilesInDistance(3).any { it.isCityCenter() && it.getCity()!!.civ == currentPlayerCiv }
+                    && !tile.getTilesInDistance(currentPlayerCiv.modConstants.cityWorkRange)
+                        .any { it.isCityCenter() && it.getCity()!!.civ == currentPlayerCiv }
             )
                 labelText += "\n" + "Not in city work range".tr()
 
@@ -181,13 +157,20 @@ class ImprovementPickerScreen(
             improvementButton.onActivation(type = ActivationTypes.Tap, noEquivalence = true) {
                 selectedImprovement = improvement
                 pick(improvement.name.tr())
-                descriptionLabel.setText(improvement.getDescription(ruleSet))
+                descriptionLabel.setText(improvement.getDescription(ruleset))
             }
 
             improvementButton.onDoubleClick { accept(improvement) }
 
-            if (improvement.name == tile.improvementInProgress) improvementButton.color = Color.GREEN
-            if (proposedSolutions.isNotEmpty() || tileMarkedForCreatesOneImprovement) {
+            when {
+                improvement.name == tile.improvementInProgress ->
+                    improvementButton.color = Color.GREEN
+                problemReport.isQueueable() ->
+                    // TODO should be a skin ButtonStyle, this mixes with the style override from disable() below - which is a very wrong approach anyway
+                    improvementButton.setColor(0.625f, 1f, 0.625f, 1f) // #a0ffa0 - brightened GREEN
+            }
+
+            if (!problemReport.isEmpty() || tileMarkedForCreatesOneImprovement) {
                 improvementButton.disable()
             } else if (shortcutKey != null) {
                 // Shortcut keys trigger what onDoubleClick does, not equivalent to single Click:
@@ -196,7 +179,7 @@ class ImprovementPickerScreen(
             }
 
             regularImprovements.add(improvementButton)
-            regularImprovements.add(explanationText).padLeft(10f).fillY()
+            regularImprovements.add(getExplanationActor(improvement, problemReport)).padLeft(10f)
             regularImprovements.row()
         }
 
@@ -249,5 +232,67 @@ class ImprovementPickerScreen(
             statsTable.add(valueLabel).padRight(13f)
         }
         return statsTable
+    }
+
+    private class ProblemReport {
+        var suggestRemoval = false
+        var removalImprovement: TileImprovement? = null
+        val proposedSolutions = mutableListOf<String>()
+        fun isEmpty() = proposedSolutions.isEmpty()
+        fun isQueueable() = removalImprovement != null && proposedSolutions.size == 1
+        fun toLabel() = proposedSolutions.joinToString("}\n{", "{", "}").toLabel()
+    }
+
+    private fun getProblemReport(improvement: TileImprovement): ProblemReport? {
+        val report = ProblemReport()
+        var unbuildableBecause = tile.improvementFunctions.getImprovementBuildingProblems(improvement, currentPlayerCiv).toSet()
+        if (!canReport(unbuildableBecause)) {
+            // Try after pretending to have removed the top terrain layer.
+            unbuildableBecause = tileWithoutLastTerrain.improvementFunctions.getImprovementBuildingProblems(improvement, currentPlayerCiv).toSet()
+            if (!canReport(unbuildableBecause)) return null
+            report.suggestRemoval = true
+        }
+
+        with(report) {
+            if (suggestRemoval) {
+                val removalName = Constants.remove + tile.lastTerrain.name
+                removalImprovement = ruleset.tileImprovements[removalName]
+                if (removalImprovement != null)
+                    proposedSolutions.add("${Constants.remove}[${tile.lastTerrain.name}] first")
+            }
+
+            if (ImprovementBuildingProblem.MissingTech in unbuildableBecause)
+                proposedSolutions.add("Research [${improvement.techRequired}] first")
+            if (ImprovementBuildingProblem.NotJustOutsideBorders in unbuildableBecause)
+                proposedSolutions.add("Have this tile close to your borders")
+            if (ImprovementBuildingProblem.OutsideBorders in unbuildableBecause)
+                proposedSolutions.add("Have this tile inside your empire")
+            if (ImprovementBuildingProblem.MissingResources in unbuildableBecause) {
+                proposedSolutions.addAll(improvement.getMatchingUniques(UniqueType.ConsumesResources).filter {
+                    currentPlayerCiv.getResourceAmount(it.params[1]) < it.params[0].toInt()
+                }.map { "Acquire more [$it]" })
+            }
+        }
+        return report
+    }
+
+    private fun getExplanationActor(improvement: TileImprovement, report: ProblemReport): Actor? {
+        fun getPickNowButton(action: ()->Unit) = "Pick now!".toTextButton(SmallButtonStyle()).onClick(action)
+            // Formerly: "Pick now!".toLabel().onClick(action), with later fillY() to make it easier to hit (#3989)
+
+        if (report.isEmpty()) return when {
+            tile.improvementInProgress == improvement.name -> "Current construction".toLabel()
+            tileMarkedForCreatesOneImprovement -> null
+            else -> getPickNowButton { accept(improvement) }
+        }
+
+        val label = report.toLabel()
+        if (!report.isQueueable()) return label
+
+        return Table().apply {
+            defaults().center()
+            add(label).padBottom(5f).row()
+            add(getPickNowButton { accept(report.removalImprovement, improvement) })
+        }
     }
 }

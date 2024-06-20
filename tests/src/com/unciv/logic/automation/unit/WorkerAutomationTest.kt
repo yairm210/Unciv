@@ -330,7 +330,7 @@ internal class WorkerAutomationTest {
 
         val currentTile = testGame.tileMap[1,1] // owned by city
         currentTile.resource = "Iron" // This tile also has a resource needs to be enabled by a building a Mine
-        currentTile.changeImprovement("Mine")
+        currentTile.setImprovement("Mine")
         currentTile.setPillaged()
 
         val mapUnit = testGame.addUnit("Worker", civInfo, currentTile)

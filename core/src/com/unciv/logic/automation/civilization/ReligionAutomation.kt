@@ -201,7 +201,7 @@ object ReligionAutomation {
         var score = 0f
 
         for (city in civInfo.cities) {
-            for (tile in city.getCenterTile().getTilesInDistance(3)) {
+            for (tile in city.getCenterTile().getTilesInDistance(city.getWorkRange())) {
                 val tileScore = beliefBonusForTile(belief, tile, city)
                 score += tileScore * when {
                     city.workedTiles.contains(tile.position) -> 8

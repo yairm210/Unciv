@@ -41,9 +41,6 @@ class City : IsPartOfGameInfoSerialization, INamed {
     private lateinit var centerTile: Tile  // cached for better performance
 
     @Transient
-    val range = 2
-
-    @Transient
     lateinit var tileMap: TileMap
 
     @Transient
@@ -159,6 +156,10 @@ class City : IsPartOfGameInfoSerialization, INamed {
     fun isCapital(): Boolean = cityConstructions.getBuiltBuildings().any { it.hasUnique(UniqueType.IndicatesCapital) }
     fun isCoastal(): Boolean = centerTile.isCoastalTile()
 
+    fun getBombardRange(): Int = civ.gameInfo.ruleset.modOptions.constants.baseCityBombardRange
+    fun getWorkRange(): Int = civ.gameInfo.ruleset.modOptions.constants.cityWorkRange
+    fun getExpandRange(): Int = civ.gameInfo.ruleset.modOptions.constants.cityExpandRange
+
     fun capitalCityIndicator(): Building? {
         val indicatorBuildings = getRuleset().buildings.values.asSequence()
             .filter { it.hasUnique(UniqueType.IndicatesCapital) }
@@ -262,7 +263,7 @@ class City : IsPartOfGameInfoSerialization, INamed {
         this.civ = civInfo
         tileMap = civInfo.gameInfo.tileMap
         centerTile = tileMap[location]
-        tilesInRange = getCenterTile().getTilesInDistance(3).toHashSet()
+        tilesInRange = getCenterTile().getTilesInDistance(getWorkRange()).toHashSet()
         population.city = this
         expansion.city = this
         expansion.setTransients()
@@ -342,7 +343,7 @@ class City : IsPartOfGameInfoSerialization, INamed {
         if (isCapital()) civ.moveCapitalToNextLargest(null)
 
         civ.cities = civ.cities.toMutableList().apply { remove(this@City) }
-        getCenterTile().changeImprovement("City ruins")
+        getCenterTile().setImprovement("City ruins")
 
         // Edge case! What if a water unit is in a city, and you raze the city?
         // Well, the water unit has to return to the water!

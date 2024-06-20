@@ -18,26 +18,20 @@ import com.unciv.logic.civilization.PopupAlert
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
-import com.unciv.models.ruleset.EventChoice
-import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.fillPlaceholders
 import com.unciv.models.translations.tr
 import com.unciv.ui.audio.MusicMood
 import com.unciv.ui.audio.MusicTrackChooserFlags
-import com.unciv.ui.components.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.components.extensions.disable
 import com.unciv.ui.components.extensions.pad
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
-import com.unciv.ui.components.input.KeyCharAndCode
 import com.unciv.ui.components.input.KeyboardBinding
 import com.unciv.ui.components.input.keyShortcuts
 import com.unciv.ui.components.input.onActivation
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popups.Popup
-import com.unciv.ui.screens.civilopediascreen.FormattedLine
-import com.unciv.ui.screens.civilopediascreen.MarkupRenderer
 import com.unciv.ui.screens.diplomacyscreen.LeaderIntroTable
 import com.unciv.ui.screens.victoryscreen.VictoryScreen
 import java.util.EnumSet
@@ -131,7 +125,7 @@ class AlertPopup(
         val player = viewingCiv
         addLeaderName(bullyOrAttacker)
 
-        val isAtLeastNeutral = bullyOrAttacker.getDiplomacyManager(player).isRelationshipLevelGE(RelationshipLevel.Neutral)
+        val isAtLeastNeutral = bullyOrAttacker.getDiplomacyManager(player)!!.isRelationshipLevelGE(RelationshipLevel.Neutral)
         val text = when {
             popupAlert.type == AlertType.BulliedProtectedMinor && isAtLeastNeutral ->  // Nice message
                 "I've been informed that my armies have taken tribute from [${cityState.civName}], a city-state under your protection.\nI assure you, this was quite unintentional, and I hope that this does not serve to drive us apart."
@@ -145,7 +139,7 @@ class AlertPopup(
         addGoodSizedLabel(text).row()
 
         addCloseButton("You'll pay for this!", KeyboardBinding.Confirm) {
-            player.getDiplomacyManager(bullyOrAttacker).sideWithCityState()
+            player.getDiplomacyManager(bullyOrAttacker)!!.sideWithCityState()
         }.row()
         addCloseButton("Very well.", KeyboardBinding.Cancel) {
             player.addNotification("You have broken your Pledge to Protect [${cityState.civName}]!",
@@ -208,7 +202,7 @@ class AlertPopup(
 
     private fun addDeclarationOfFriendship() {
         val otherciv = getCiv(popupAlert.value)
-        val playerDiploManager = viewingCiv.getDiplomacyManager(otherciv)
+        val playerDiploManager = viewingCiv.getDiplomacyManager(otherciv)!!
         addLeaderName(otherciv)
         addGoodSizedLabel("My friend, shall we declare our friendship to the world?").row()
         addCloseButton("We are not interested.", KeyboardBinding.Cancel) {
@@ -230,7 +224,7 @@ class AlertPopup(
 
     private fun addDemandToStopSettlingCitiesNear() {
         val otherciv = getCiv(popupAlert.value)
-        val playerDiploManager = viewingCiv.getDiplomacyManager(otherciv)
+        val playerDiploManager = viewingCiv.getDiplomacyManager(otherciv)!!
         addLeaderName(otherciv)
         addGoodSizedLabel("Please don't settle new cities near us.").row()
         addCloseButton("Very well, we shall look for new lands to settle.", KeyboardBinding.Confirm) {
@@ -312,18 +306,18 @@ class AlertPopup(
             // Return it to original owner
             val unitName = capturedUnit.baseUnit.name
             capturedUnit.destroy()
-            val closestCity =
-                    originalOwner.cities.minByOrNull { it.getCenterTile().aerialDistanceTo(tile) }
+            val closestCity = originalOwner.cities.minByOrNull { it.getCenterTile().aerialDistanceTo(tile) }
+
             if (closestCity != null) {
                 // Attempt to place the unit near their nearest city
                 originalOwner.units.placeUnitNearTile(closestCity.location, unitName)
             }
 
             if (originalOwner.isCityState()) {
-                originalOwner.getDiplomacyManager(captor).addInfluence(45f)
+                originalOwner.getDiplomacyManagerOrMeet(captor).addInfluence(45f)
             } else if (originalOwner.isMajorCiv()) {
                 // No extra bonus from doing it several times
-                originalOwner.getDiplomacyManager(captor)
+                originalOwner.getDiplomacyManagerOrMeet(captor)
                     .setModifier(DiplomaticModifiers.ReturnedCapturedUnits, 20f)
             }
             val notificationSequence = sequence {
@@ -507,18 +501,9 @@ class AlertPopup(
     /** Returns if event was triggered correctly */
     private fun addEvent(): Boolean {
         val event = gameInfo.ruleset.events[popupAlert.value] ?: return false
-
-        val stateForConditionals = StateForConditionals(gameInfo.currentPlayerCiv)
-        val choices = event.getMatchingChoices(stateForConditionals)
-            ?: return false
-
-        if (event.text.isNotEmpty())
-            addGoodSizedLabel(event.text)
-        if (event.civilopediaText.isNotEmpty()) {
-            add(event.renderCivilopediaText(stageWidth * 0.5f, ::openCivilopedia)).row()
-        }
-
-        for (choice in choices) addChoice(choice)
+        val render = RenderEvent(event, worldScreen) { close() }
+        if (!render.isValid) return false
+        add(render).pad(0f).row()
         return true
     }
 
@@ -529,30 +514,4 @@ class AlertPopup(
         worldScreen.shouldUpdate = true
         super.close()
     }
-
-    private fun addChoice(choice: EventChoice) {
-        addSeparator()
-
-        val button = choice.text.toTextButton()
-        button.onActivation {
-            close()
-            choice.triggerChoice(gameInfo.currentPlayerCiv)
-        }
-        val key = KeyCharAndCode.parse(choice.keyShortcut)
-        if (key != KeyCharAndCode.UNKNOWN) {
-            button.keyShortcuts.add(key)
-            button.addTooltip(key)
-        }
-        add(button).row()
-
-        val lines = (
-                choice.civilopediaText.asSequence()
-                + choice.triggeredUniqueObjects.asSequence()
-                    .filterNot { it.isHiddenToUsers() }
-                    .map { FormattedLine(it) }
-            ).asIterable()
-        add(MarkupRenderer.render(lines, stageWidth * 0.5f, linkAction = ::openCivilopedia)).row()
-    }
-
-    private fun openCivilopedia(link: String) = worldScreen.openCivilopedia(link)
 }

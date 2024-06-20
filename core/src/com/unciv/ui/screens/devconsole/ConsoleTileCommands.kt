@@ -21,21 +21,21 @@ internal class ConsoleTileCommands: ConsoleCommandNode {
 
         "checkfilter" to ConsoleAction("tile checkfilter <tileFilter>") { console, params ->
             val selectedTile = console.getSelectedTile()
-            DevConsoleResponse.hint(selectedTile.matchesFilter(params[0].toString()).toString())
+            DevConsoleResponse.hint(selectedTile.matchesFilter(params[0].originalUnquoted()).toString())
         },
 
         "setimprovement" to ConsoleAction("tile setimprovement <improvementName> [civName]") { console, params ->
             val selectedTile = console.getSelectedTile()
             val improvement = params[0].find(console.gameInfo.ruleset.tileImprovements.values)
             val civ = params.getOrNull(1)?.let { console.getCivByName(it) }
-            selectedTile.improvementFunctions.changeImprovement(improvement.name, civ)
+            selectedTile.improvementFunctions.setImprovement(improvement.name, civ)
             selectedTile.getCity()?.reassignPopulation()
             DevConsoleResponse.OK
         },
 
         "removeimprovement" to ConsoleAction("tile removeimprovement") { console, _ ->
             val selectedTile = console.getSelectedTile()
-            selectedTile.improvementFunctions.changeImprovement(null)
+            selectedTile.improvementFunctions.setImprovement(null)
             selectedTile.getCity()?.reassignPopulation()
             DevConsoleResponse.OK
         },

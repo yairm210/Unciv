@@ -4,6 +4,7 @@ import com.unciv.logic.github.GithubAPI
 import com.unciv.models.metadata.ModCategories
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.translations.tr
+import com.unciv.ui.components.fonts.Fonts
 
 /** Helper class holds combined mod info for ModManagementScreen, used for both installed and online lists.
  *
@@ -30,7 +31,7 @@ internal class ModUIData private constructor(
     constructor(repo: GithubAPI.Repo, isUpdated: Boolean): this (
         repo.name,
         (repo.description ?: "-{No description provided}-".tr()) +
-                "\n" + "[${repo.stargazers_count}]✯".tr(),
+                "\n" + "[${repo.stargazers_count}]${Fonts.star}".tr(),
         null, repo, hasUpdate = isUpdated
     )
 

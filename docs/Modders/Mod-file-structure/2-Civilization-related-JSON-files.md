@@ -105,15 +105,14 @@ This file contains all Personalities for computer players.
 
 Each personality has the following structure:
 
-| Attribute                                                                                                                  | Type   | Default  | Notes                                                                                                                                           |
-|----------------------------------------------------------------------------------------------------------------------------|--------|----------|-------------------------------------------------------------------------------------------------------------------------------------------------|
-| name                                                                                                                       | String | Required |                                                                                                                                                 |
-| preferredVictoryType                                                                                                       | String | Neutral  | The victory type major civilizations will pursue (need not be specified in [VictoryTypes.json](5-Miscellaneous-JSON-files.md#victorytypesjson)) |
-| [`<stats>`](3-Map-related-JSON-files.md#general-stat), [`<behaviors>`](3-Map-related-JSON-files.md#personality-behaviours) | Float  | 5        | Amount of focus on the stat the computer player will have. Typically ranges from 0 (no focus) to 10 (double focus)                              |
-| priorities                                                                                                                 | Object | none     | Priorities for each policy branch [^B]                                                                                                          |
-| uniques                                                                                                                    | List   | empty    | List of [unique abilities](../../uniques) this personality has                                                                                  |
-| civilopediaText                                                                                                            | List   | empty    | See [civilopediaText chapter](5-Miscellaneous-JSON-files.md#civilopedia-text)                                                                   |
-| warMongering                                                                                                               | Float  | 5        | Amount of focus on declaring war the computer player will have. Typically ranges from 0 (no focus) to 10 (double focus)                         |
+| Attribute                                                                                                                           | Type   | Default  | Notes                                                                                                                                           |
+|-------------------------------------------------------------------------------------------------------------------------------------|--------|----------|-------------------------------------------------------------------------------------------------------------------------------------------------|
+| name                                                                                                                                | String | Required |                                                                                                                                                 |
+| preferredVictoryType                                                                                                                | String | Neutral  | The victory type major civilizations will pursue (need not be specified in [VictoryTypes.json](5-Miscellaneous-JSON-files.md#victorytypesjson)) |
+| [`<stats>`](3-Map-related-JSON-files.md#general-stat), [`<behaviors>`](2-Civilization-related-JSON-files.md#personality-behaviours) | Float  | 5        | Amount of focus on the stat the computer player will have. Typically ranges from 0 (no focus) to 10 (double focus)                              |
+| priorities                                                                                                                          | Object | none     | Priorities for each policy branch [^B]                                                                                                          |
+| uniques                                                                                                                             | List   | empty    | List of [unique abilities](../../uniques) this personality has                                                                                  |
+| civilopediaText                                                                                                                     | List   | empty    | See [civilopediaText chapter](5-Miscellaneous-JSON-files.md#civilopedia-text)                                                                   |
 
 [^B]: Similar to [policy priorites](#branch-priorities) The "priorities" object defines the priority
 major civilizations' AI give to a policy branch. The AI chooses the policy branch with the highest
@@ -141,17 +140,19 @@ are ready might make the mod unplayable.
 value means they will behave more like the attribute.)
 
 
-[//]: # (- Military: Determines how much does the civilization prioritizes building a military, but not necessarily using it. A higher value means more focus on military, a lower value means it is likely more peaceful.)
+# (- Military: Determines how much does the civilization prioritizes building a military, but not necessarily using it. A higher value means more focus on military, a lower value means it is likely more peaceful.)
 
-[//]: # (- Agressive: Determines how likely the civilization is to declare war. A higher value means the civilization is more aggressive, a lower value means it is more defensive.)
+# (- Agressive: Determines how the civilization uses it's units while at war and which buildings they prioritise. A higher value means the civilization is more aggressive, a lower value means it is more defensive.)
 
-[//]: # (- Commerce: Determines how open the civilization is to trade, value open borders, and liberate city-states. A higher value means more trading frequency even with civilizations they don't like.)
+# (- War: Determines how likely the civilization is to declare war. A 0 means the civ won't declare war at all)
 
-[//]: # (- Diplomacy: Determines how likely the civilization is to declare friendship, a defensive pact, peace treaty, or other diplomatic actions.)
+# (- Commerce: Determines how open the civilization is to trade, value open borders, and liberate city-states. A higher value means more trading frequency even with civilizations they don't like.)
 
-[//]: # (- Loyal: Determines how much the civilization values a long-lasting alliance, how willing they are to join wars with them, and how much they despise other unreliable civilizations.)
+# (- Diplomacy: Determines how likely the civilization is to declare friendship, a defensive pact, peace treaty, or other diplomatic actions.)
 
-[//]: # (- Expansion: Determines how focused the civilization is on founding or capturing new cities. A lower value means they might focus on culture more.)
+# (- Loyal: Determines how much the civilization values a long-lasting alliance, how willing they are to join wars with them, and how much they despise other unreliable civilizations.)
+
+# (- Expansion: Determines how focused the civilization is on founding or capturing new cities. A lower value means they might focus on culture more.)
 
 ## CityStateTypes.json
 

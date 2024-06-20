@@ -22,7 +22,8 @@ enum class PersonalityValue {
     Faith,
     // Behaviour focused personalities
     Military, // Building a military but not nessesarily using it
-    Aggressive, // Declaring war determines expanding or defending
+    Aggressive, // How they use units agressively or defensively in wars, our their priority on war related buildings
+    DeclareWar, // Likelyhood of declaring war and acceptance of war mongering, a zero means they won't declare war at all
     Commerce, // Trading frequency, open borders and liberating city-states, less negative diplomacy impact
     Diplomacy, // Likelyhood of signing friendship, defensive pact, peace treaty and other diplomatic actions
     Loyal, // Likelyhood to make a long lasting aliance with another civ and join wars with them
@@ -54,6 +55,7 @@ class Personality: RulesetObject() {
 
     var military: Float = 5f
     var aggressive: Float = 5f
+    var declareWar: Float = 5f
     var commerce: Float = 5f
     var diplomacy: Float = 5f
     var loyal: Float = 5f
@@ -74,6 +76,7 @@ class Personality: RulesetObject() {
             PersonalityValue.Faith -> ::faith
             PersonalityValue.Military -> ::military
             PersonalityValue.Aggressive -> ::aggressive
+            PersonalityValue.DeclareWar -> ::declareWar
             PersonalityValue.Commerce -> ::commerce
             PersonalityValue.Diplomacy -> ::diplomacy
             PersonalityValue.Loyal -> ::loyal

@@ -139,7 +139,7 @@ class DiplomacyScreen(
 
             val civIndicator = ImageGetter.getNationPortrait(civ.nation, nationIconSize)
 
-            val relationLevel = civ.getDiplomacyManager(viewingCiv).relationshipLevel()
+            val relationLevel = civ.getDiplomacyManager(viewingCiv)!!.relationshipLevel()
             val relationshipIcon = if (civ.isCityState() && relationLevel == RelationshipLevel.Ally)
                 ImageGetter.getImage("OtherIcons/Star")
                     .surroundWithCircle(size = 30f, color = relationLevel.color).apply {

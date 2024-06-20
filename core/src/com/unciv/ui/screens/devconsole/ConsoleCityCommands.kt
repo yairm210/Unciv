@@ -8,7 +8,7 @@ internal class ConsoleCityCommands : ConsoleCommandNode {
 
         "checkfilter" to ConsoleAction("city checkfilter <cityFilter>") { console, params ->
             val city = console.getSelectedCity()
-            DevConsoleResponse.hint(city.matchesFilter(params[0].toString()).toString())
+            DevConsoleResponse.hint(city.matchesFilter(params[0].originalUnquoted()).toString())
         },
 
         "add" to ConsoleAction("city add <civName>") { console, params ->
@@ -40,13 +40,17 @@ internal class ConsoleCityCommands : ConsoleCommandNode {
             DevConsoleResponse.OK
         },
 
-        "addtile" to ConsoleAction("city addtile <cityName>") { console, params ->
+        "addtile" to ConsoleAction("city addtile <cityName> [radius]") { console, params ->
             val selectedTile = console.getSelectedTile()
             val city = console.getCity(params[0])
             if (selectedTile.neighbors.none { it.getCity() == city })
                 throw ConsoleErrorException("Tile is not adjacent to any tile already owned by the city")
             if (selectedTile.isCityCenter()) throw ConsoleErrorException("Cannot transfer city center")
-            city.expansion.takeOwnership(selectedTile)
+            val radius = params.getOrNull(1)?.toInt() ?: 0
+            for (tile in selectedTile.getTilesInDistance(radius)) {
+                if (tile.getCity() != city && !tile.isCityCenter())
+                    city.expansion.takeOwnership(tile)
+            }
             DevConsoleResponse.OK
         },
 

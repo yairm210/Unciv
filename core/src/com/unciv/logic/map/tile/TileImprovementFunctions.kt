@@ -195,7 +195,7 @@ class TileImprovementFunctions(val tile: Tile) {
     }
 
 
-    fun changeImprovement(improvementName: String?,
+    fun setImprovement(improvementName: String?,
                           /** For road assignment and taking over tiles - DO NOT pass when simulating improvement effects! */
                           civToActivateBroaderEffects: Civilization? = null, unit: MapUnit? = null) {
         val improvementObject = tile.ruleset.tileImprovements[improvementName]
@@ -217,7 +217,8 @@ class TileImprovementFunctions(val tile: Tile) {
             }
         }
 
-        if (improvementFieldHasChanged) {
+        if (improvementFieldHasChanged && tile.tileMap.hasGameInfo()) {
+            // Update the separately-kept "what a civ sees" - unless in map editor where there are no civs
             for (civ in tile.tileMap.gameInfo.civilizations) {
                 if (civ.isDefeated() || !civ.isMajorCiv()) continue
                 if (civ == civToActivateBroaderEffects || tile.isVisible(civ))
@@ -307,8 +308,7 @@ class TileImprovementFunctions(val tile: Tile) {
 
     private fun tryProvideProductionToClosestCity(removedTerrainFeature: String, civ: Civilization) {
         val closestCity = civ.cities.minByOrNull { it.getCenterTile().aerialDistanceTo(tile) }
-        @Suppress("FoldInitializerAndIfToElvis")
-        if (closestCity == null) return
+            ?: return
         val distance = closestCity.getCenterTile().aerialDistanceTo(tile)
         var productionPointsToAdd = if (distance == 1) 20 else 20 - (distance - 2) * 5
         if (tile.owningCity == null || tile.owningCity!!.civ != civ) productionPointsToAdd =
@@ -356,8 +356,7 @@ class TileImprovementFunctions(val tile: Tile) {
             val otherCiv = tileToTakeOver.getOwner()
             if (otherCiv != null) {
                 // decrease relations for -10 pt/tile
-                if (!otherCiv.knows(civ)) otherCiv.diplomacyFunctions.makeCivilizationsMeet(civ)
-                otherCiv.getDiplomacyManager(civ).addModifier(DiplomaticModifiers.StealingTerritory, -10f)
+                otherCiv.getDiplomacyManagerOrMeet(civ).addModifier(DiplomaticModifiers.StealingTerritory, -10f)
                 civsToNotify.add(otherCiv)
             }
             nearestCity.expansion.takeOwnership(tileToTakeOver)
@@ -372,8 +371,8 @@ class TileImprovementFunctions(val tile: Tile) {
 
     /** Marks tile as target tile for a building with a [UniqueType.CreatesOneImprovement] unique */
     fun markForCreatesOneImprovement(improvement: String) {
-        tile.improvementInProgress = improvement
-        tile.turnsToImprovement = -1
+        tile.stopWorkingOnImprovement()
+        tile.queueImprovement(improvement, -1)
     }
 
     /** Un-Marks a tile as target tile for a building with a [UniqueType.CreatesOneImprovement] unique,
@@ -383,6 +382,4 @@ class TileImprovementFunctions(val tile: Tile) {
         tile.owningCity?.cityConstructions?.removeCreateOneImprovementConstruction(tile.improvementInProgress!!)
         tile.stopWorkingOnImprovement()
     }
-
-
 }

@@ -56,6 +56,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
 
     var currentMovement: Float = 0f
     var health: Int = 100
+    var id: Int = Constants.NO_ID
 
     // work, automation, fortifying, ...
     // Connect roads implies automated is true. It is specified by the action type.
@@ -799,6 +800,10 @@ class MapUnit : IsPartOfGameInfoSerialization {
     /** Destroys the unit and gives stats if its a great person */
     fun consume() {
         addStatsPerGreatPersonUsage()
+        for (unique in civ.getTriggeredUniques(UniqueType.TriggerUponExpendingUnit))
+            if (unique.conditionals.any { it.type == UniqueType.TriggerUponExpendingUnit && matchesFilter(it.params[0]) })
+                UniqueTriggerActivation.triggerUnique(unique, this,
+                    triggerNotificationText = "due to expending our [${this.name}]")
         destroy()
     }
 
@@ -928,6 +933,9 @@ class MapUnit : IsPartOfGameInfoSerialization {
     }
 
     fun disband() {
+        // Safeguard against running on already destroyed instances
+        if (isDestroyed) return
+
         // evacuation of transported units before disbanding, if possible. toListed because we're modifying the unit list.
         for (unit in currentTile.getUnits()
                 .filter { it.isTransported && isTransportTypeOf(it) }

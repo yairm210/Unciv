@@ -55,7 +55,6 @@ object TileNormalizer {
     private fun Tile.clearImprovement() {
         // This runs from mapgen, so don't go through the side-effect-triggering TileImprovementFunctions
         improvement = null
-        improvementInProgress = null
-        turnsToImprovement = 0
+        stopWorkingOnImprovement()
     }
 }
