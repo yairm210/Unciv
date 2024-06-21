@@ -69,7 +69,10 @@ enum class CityFocus(
     fun applyWeightTo(stats: Stats) {
         for (stat in Stat.values()) {
             val currentStat = stats[stat]
-            if (currentStat != 0f) stats[stat] *= getStatMultiplier(stat)
+            if (currentStat == 0f) continue
+            val statMultiplier = getStatMultiplier(stat)
+            if (statMultiplier == 1f) continue
+            stats[stat] = currentStat * statMultiplier
         }
     }
 

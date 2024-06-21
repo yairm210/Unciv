@@ -67,10 +67,12 @@ class TileImprovement : RulesetStatsObject() {
     fun isAllowedOnFeature(terrain: Terrain) = canBeBuiltOn(terrain)
         || getMatchingUniques(UniqueType.NoFeatureRemovalNeeded).any { terrain.matchesFilter(it.params[0]) }
 
+
+    private val cachedMatchesFilterResult = HashMap<String, Boolean>()
+
     /** Implements [UniqueParameterType.ImprovementFilter][com.unciv.models.ruleset.unique.UniqueParameterType.ImprovementFilter] */
-    fun matchesFilter(filter: String): Boolean {
-        return MultiFilter.multiFilter(filter, ::matchesSingleFilter)
-    }
+    fun matchesFilter(filter: String): Boolean =
+        cachedMatchesFilterResult.getOrPut(filter) { MultiFilter.multiFilter(filter, ::matchesSingleFilter ) }
 
     private fun matchesSingleFilter(filter: String): Boolean {
         return when (filter) {
