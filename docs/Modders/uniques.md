@@ -1798,6 +1798,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Improvement
 
 ??? example  "Improves [resourceFilter] resource in this tile"
+	This is offered as an alternative to the improvedBy field of a resource. The result will be cached within the resource definition when loading a game, without knowledge about terrain, cities, civs, units or time. Therefore, most conditionals will not work, only those **not** dependent on game state.
 	Example: "Improves [Strategic] resource in this tile"
 
 	Applicable to: Improvement
