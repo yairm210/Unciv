@@ -7,6 +7,7 @@ import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
+import com.unciv.ui.components.fonts.DiacriticSupport
 import com.unciv.ui.components.fonts.FontRulesetIcons
 import com.unciv.utils.Log
 import com.unciv.utils.debug
@@ -40,7 +41,6 @@ class Translations : LinkedHashMap<String, TranslationEntry>() {
 
     // used by tr() whenever GameInfo not initialized (allowing new game screen to use mod translations)
     var translationActiveMods = LinkedHashSet<String>()
-
 
     /**
      * Searches for the translation entry of a given [text] for a given [language].
@@ -119,21 +119,28 @@ class Translations : LinkedHashMap<String, TranslationEntry>() {
     }
 
     private fun createTranslations(language: String, languageTranslations: HashMap<String,String>) {
-        for (translation in languageTranslations) {
-            val hashKey = if (translation.key.contains('[') && !translation.key.contains('<'))
-                translation.key.getPlaceholderText()
-            else translation.key
+        fun String?.sanitizeDiacriticEntry() = this?.replace(" ", "")?.removeSurrounding("\"") ?: ""
+        val leftDiacritics = languageTranslations[leftDiacritics].sanitizeDiacriticEntry()
+        val joinerDiacritics = languageTranslations[joinerDiacritics].sanitizeDiacriticEntry()
+        val noDiacritics = leftDiacritics.isEmpty() && joinerDiacritics.isEmpty()
+        for ((key, value) in languageTranslations) {
+            val hashKey = if (key.contains('[') && !key.contains('<'))
+                key.getPlaceholderText()
+            else key
             var entry = this[hashKey]
             if (entry == null) {
-                entry = TranslationEntry(translation.key)
+                entry = TranslationEntry(key)
                 this[hashKey] = entry
             }
-            entry[language] = translation.value
+            entry[language] = if (noDiacritics) value else DiacriticSupport.remapDiacritics(value, leftDiacritics, joinerDiacritics)
         }
     }
 
+
     fun tryReadTranslationForCurrentLanguage() {
+        DiacriticSupport.reset()
         tryReadTranslationForLanguage(UncivGame.Current.settings.language)
+        DiacriticSupport.freeInverseMap()
     }
 
     /** Get a list of supported languages for [readAllLanguagesTranslation] */
@@ -174,9 +181,11 @@ class Translations : LinkedHashMap<String, TranslationEntry>() {
 
         val translationStart = System.currentTimeMillis()
 
+        DiacriticSupport.reset()
         for (language in getLanguagesWithTranslationFile()) {
             tryReadTranslationForLanguage(language)
         }
+        DiacriticSupport.freeInverseMap()
 
         debug("Loading translation files - %sms", System.currentTimeMillis() - translationStart)
     }
@@ -223,6 +232,8 @@ class Translations : LinkedHashMap<String, TranslationEntry>() {
         const val conditionalUniqueOrderString = "ConditionalsPlacement"
         const val shouldCapitalizeString = "StartWithCapitalLetter"
         const val effectBeforeCause = "EffectBeforeCause"
+        const val leftDiacritics = "left_joining_diacritics"
+        const val joinerDiacritics = "left_and_right_joiners"
     }
 }
 
