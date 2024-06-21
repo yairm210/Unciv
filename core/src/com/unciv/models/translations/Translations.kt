@@ -118,11 +118,9 @@ class Translations : LinkedHashMap<String, TranslationEntry>() {
         debug("Loading translation file for %s - %sms", language, System.currentTimeMillis() - translationStart)
     }
 
-    private fun createTranslations(language: String, languageTranslations: HashMap<String,String>) {
-        fun String?.sanitizeDiacriticEntry() = this?.replace(" ", "")?.removeSurrounding("\"") ?: ""
-        val leftDiacritics = languageTranslations[leftDiacritics].sanitizeDiacriticEntry()
-        val joinerDiacritics = languageTranslations[joinerDiacritics].sanitizeDiacriticEntry()
-        val noDiacritics = leftDiacritics.isEmpty() && joinerDiacritics.isEmpty()
+    private fun createTranslations(language: String, languageTranslations: HashMap<String, String>) {
+        DiacriticSupport.prepareTranslationData(languageTranslations)
+        val noDiacritics = DiacriticSupport.noDiacritics()
         for ((key, value) in languageTranslations) {
             val hashKey = if (key.contains('[') && !key.contains('<'))
                 key.getPlaceholderText()
@@ -132,7 +130,7 @@ class Translations : LinkedHashMap<String, TranslationEntry>() {
                 entry = TranslationEntry(key)
                 this[hashKey] = entry
             }
-            entry[language] = if (noDiacritics) value else DiacriticSupport.remapDiacritics(value, leftDiacritics, joinerDiacritics)
+            entry[language] = if (noDiacritics) value else DiacriticSupport.remapDiacritics(value)
         }
     }
 
@@ -140,7 +138,7 @@ class Translations : LinkedHashMap<String, TranslationEntry>() {
     fun tryReadTranslationForCurrentLanguage() {
         DiacriticSupport.reset()
         tryReadTranslationForLanguage(UncivGame.Current.settings.language)
-        DiacriticSupport.freeInverseMap()
+        DiacriticSupport.freeTranslationData()
     }
 
     /** Get a list of supported languages for [readAllLanguagesTranslation] */
@@ -185,7 +183,7 @@ class Translations : LinkedHashMap<String, TranslationEntry>() {
         for (language in getLanguagesWithTranslationFile()) {
             tryReadTranslationForLanguage(language)
         }
-        DiacriticSupport.freeInverseMap()
+        DiacriticSupport.freeTranslationData()
 
         debug("Loading translation files - %sms", System.currentTimeMillis() - translationStart)
     }
@@ -232,8 +230,6 @@ class Translations : LinkedHashMap<String, TranslationEntry>() {
         const val conditionalUniqueOrderString = "ConditionalsPlacement"
         const val shouldCapitalizeString = "StartWithCapitalLetter"
         const val effectBeforeCause = "EffectBeforeCause"
-        const val leftDiacritics = "left_joining_diacritics"
-        const val joinerDiacritics = "left_and_right_joiners"
     }
 }
 
