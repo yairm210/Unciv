@@ -420,7 +420,9 @@ enum class UniqueParameterType(
     },
 
     /** Used by [UniqueType.ImprovesResources], implemented by [com.unciv.models.ruleset.tile.TileResource.matchesFilter] */
-    ResourceFilter("resourceFilter", "Strategic", "A resource name, type, 'all', or a Stat listed in the resource's improvementStats") {
+    ResourceFilter("resourceFilter", "Strategic", "A resource name, type, 'all', or a Stat listed in the resource's improvementStats",
+        severityDefault = UniqueType.UniqueParameterErrorSeverity.PossibleFilteringUnique
+    ) {
         private val knownValues = setOf("any") + Constants.all // "any" sounds nicer than "all" in that UniqueType
         override fun isKnownValue(parameterText: String, ruleset: Ruleset) = when {
             parameterText in knownValues -> true

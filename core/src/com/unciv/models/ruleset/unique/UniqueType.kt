@@ -629,7 +629,10 @@ enum class UniqueType(
     PillageYieldFixed("Pillaging this improvement yields [stats]", UniqueTarget.Improvement),
     Irremovable("Irremovable", UniqueTarget.Improvement),
     AutomatedUnitsWillNotReplace("Will not be replaced by automated units", UniqueTarget.Improvement),
-    ImprovesResources("Improves [resourceFilter] resource in this tile", UniqueTarget.Improvement, flags = UniqueFlag.setOfNoConditionals),
+    ImprovesResources("Improves [resourceFilter] resource in this tile", UniqueTarget.Improvement, flags = UniqueFlag.setOfNoConditionals,
+        docDescription = "This is offered as an alternative to the improvedBy field of a resource." +
+            " The result will be cached within the resource definition when loading a game, without knowledge about terrain, cities, civs, units or time." +
+            " Therefore, most conditionals will not work, only those **not** dependent on game state."),
     //endregion
 
     /////////////////////////////////// region 07 PERSONALITY UNIQUES ////////////////////////////////////////

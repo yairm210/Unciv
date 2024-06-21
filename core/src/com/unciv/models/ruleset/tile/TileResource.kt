@@ -16,23 +16,41 @@ class TileResource : RulesetStatsObject() {
 
     var resourceType: ResourceType = ResourceType.Bonus
     var terrainsCanBeFoundOn: List<String> = listOf()
-    var improvement: String? = null
+
     /** stats that this resource adds to a tile */
     var improvementStats: Stats? = null
     var revealedBy: String? = null
+
+    /** Legacy "which improvement will unlock this treausre"
+     *  @see improvedBy
+     *  @see getImprovements
+     */
+    var improvement: String? = null
+    /** Defines which improvement will "unlock" this resource
+     *  @see improvement
+     *  @see getImprovements
+     */
     var improvedBy: List<String> = listOf()
+
     var majorDepositAmount: DepositAmount = DepositAmount()
     var minorDepositAmount: DepositAmount = DepositAmount()
 
     private var improvementsInitialized = false
+    /** Cache collecting [improvement], [improvedBy] and [UniqueType.ImprovesResources] uniques on the improvements themselves. */
     private val allImprovements = mutableSetOf<String>()
     private var ruleset: Ruleset? = null
 
+    /** Collects which improvements "unlock" this resource, caches and returns the Set.
+     *  - The cache is cleared after ruleset load and combine, via [setTransients].
+     *  @see improvement
+     *  @see improvedBy
+     *  @see UniqueType.ImprovesResources
+     */
     fun getImprovements(): Set<String> {
         if (improvementsInitialized) return allImprovements
         val ruleset = this.ruleset
-            ?: throw IllegalStateException("TileResource initialization incomplete")
-        improvement?.also { allImprovements += it }
+            ?: throw IllegalStateException("No ruleset on TileResource when initializing improvements")
+        if (improvement != null) allImprovements += improvement!!
         allImprovements.addAll(improvedBy)
         for (improvement in ruleset.tileImprovements.values) {
             if (improvement.getMatchingUniques(UniqueType.ImprovesResources).none { matchesFilter(it.params[0]) }) continue
@@ -42,11 +60,14 @@ class TileResource : RulesetStatsObject() {
         return allImprovements
     }
 
+    /** Clears the cache for [getImprovements] and saves the Ruleset the cache update will need.
+     *  - Doesn't evaluate the cache immediately, that would break tests as it trips the uniqueObjects lazy and tests manipulate uniques after ruleset load.
+     *  - called from [Ruleset.updateResourceTransients]
+     */
     fun setTransients(ruleset: Ruleset) {
         allImprovements.clear()
         improvementsInitialized = false
         this.ruleset = ruleset
-        // Don't do the allImprovements evaluation now - breaks tests as it trips the uniqueObjects lazy and tests manipulate uniques after ruleset load
     }
 
     override fun getUniqueTarget() = UniqueTarget.Resource
@@ -151,9 +172,10 @@ class TileResource : RulesetStatsObject() {
         return getImprovements().contains(improvementName)
     }
 
-    fun getImprovingImprovement(tile: Tile, civInfo: Civilization): String? {
+    /** @return Of all the potential improvements in [getImprovements], the first this [civ] can actually build, if any. */
+    fun getImprovingImprovement(tile: Tile, civ: Civilization): String? {
         return getImprovements().firstOrNull {
-            tile.improvementFunctions.canBuildImprovement(civInfo.gameInfo.ruleset.tileImprovements[it]!!, civInfo)
+            tile.improvementFunctions.canBuildImprovement(civ.gameInfo.ruleset.tileImprovements[it]!!, civ)
         }
     }
 
@@ -161,6 +183,7 @@ class TileResource : RulesetStatsObject() {
         name -> true
         "any" -> true
         resourceType.name -> true
+        in uniques -> true
         else -> improvementStats?.any { filter == it.key.name } == true
     }
 
