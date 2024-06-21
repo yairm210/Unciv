@@ -68,7 +68,8 @@ enum class CityFocus(
 
     fun applyWeightTo(stats: Stats) {
         for (stat in Stat.values()) {
-            stats[stat] *= getStatMultiplier(stat)
+            val currentStat = stats[stat]
+            if (currentStat != 0f) stats[stat] *= getStatMultiplier(stat)
         }
     }
 
@@ -78,12 +79,10 @@ enum class CityFocus(
         }
 
         // set used in Automation. All non-Food Focuses, so targets 0 Surplus Food
-        fun zeroFoodFocuses(): Set<CityFocus> {
-            return setOf(
-                CultureFocus, FaithFocus, GoldFocus,
-                HappinessFocus, ProductionFocus, ScienceFocus
-            )
-        }
+        val zeroFoodFocuses = setOf(
+            CultureFocus, FaithFocus, GoldFocus,
+            HappinessFocus, ProductionFocus, ScienceFocus
+        )
     }
 }
 

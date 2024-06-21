@@ -72,7 +72,7 @@ object Automation {
 
         if (surplusFood > 0 && city.avoidGrowth) {
             yieldStats.food = 0f // don't need more food!
-        } else if (cityAIFocus in CityFocus.zeroFoodFocuses()) {
+        } else if (cityAIFocus in CityFocus.zeroFoodFocuses) {
             // Focus on non-food/growth
             if (surplusFood < 0)
                 yieldStats.food *= 8 // Starving, need Food, get to 0
