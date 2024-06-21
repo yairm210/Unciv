@@ -135,6 +135,9 @@ object DeclareWar {
         diplomacyManager.trades.clear()
         diplomacyManager.civInfo.tradeRequests.removeAll { it.requestingCiv == diplomacyManager.otherCivName }
 
+        // Must come *before* state is "at war" so units know they're not allowed in tiles without open borders anymore
+        diplomacyManager.updateHasOpenBorders()
+
         val civAtWarWith = diplomacyManager.otherCiv()
 
         // If we attacked, then we need to end all of our defensive pacts acording to Civ 5
@@ -153,8 +156,6 @@ object DeclareWar {
             diplomacyManager.civInfo.cityStateFunctions.getProtectorCivs().contains(civAtWarWith)) {
             diplomacyManager.civInfo.cityStateFunctions.removeProtectorCiv(civAtWarWith, forced = true)
         }
-
-        diplomacyManager.updateHasOpenBorders()
 
         diplomacyManager.removeModifier(DiplomaticModifiers.YearsOfPeace)
         diplomacyManager.setFlag(DiplomacyFlags.DeclinedPeace, diplomacyManager.civInfo.gameInfo.ruleset.modOptions.constants.minimumWarDuration) // AI won't propose peace for 10 turns
@@ -327,7 +328,7 @@ enum class WarType {
     DefensivePactWar,
     /** A civilization has joined a war through a trade.*/
     JoinWar,
-    /** Two civilizations are starting a war through a trade. */ 
+    /** Two civilizations are starting a war through a trade. */
     TeamWar,
 }
 
