@@ -1,5 +1,6 @@
 package com.unciv.logic
 
+import com.badlogic.gdx.Gdx
 import com.unciv.Constants
 import com.unciv.GUI
 import com.unciv.UncivGame
@@ -428,7 +429,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
             currentPlayerCiv.popupAlerts.clear()
 
         // Play some nice music TODO: measuring actual play time might be nicer
-        if (turns % 10 == 0)
+        if (turns % 10 == 0 && Gdx.app != null)
             UncivGame.Current.musicController.chooseTrack(
                 currentPlayerCiv.civName,
                 MusicMood.peaceOrWar(currentPlayerCiv.isAtWar()), MusicTrackChooserFlags.setNextTurn
