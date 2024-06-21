@@ -152,7 +152,7 @@ object MovementCost {
         // function is surprisingly less efficient than the current neighbor-intersection approach.
         // See #4085 for more details.
         val tilesExertingZoneOfControl = getTilesExertingZoneOfControl(unit, from)
-        if (tilesExertingZoneOfControl.none { it.aerialDistanceTo(it) == 1 })
+        if (tilesExertingZoneOfControl.none { to.aerialDistanceTo(it) == 1 })
             return false
 
         // Even though this is a very fast check, we perform it last. This is because very few units
