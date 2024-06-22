@@ -233,7 +233,7 @@ object Automation {
         if (civInfo.gameInfo.turns > 120 * speed.barbarianModifier * multiplier)
             multiplier /= 2
 
-        // If we have no cities or a lot of units we are not affraid
+        // If we have no cities or a lot of units we are not afraid
         if (civInfo.cities.isEmpty() || civInfo.units.getCivUnits().count() >= 4 * multiplier)
             return false
 
