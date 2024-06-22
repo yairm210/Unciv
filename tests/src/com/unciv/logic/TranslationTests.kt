@@ -361,6 +361,32 @@ class TranslationTests {
         Assert.assertEquals(expected, actual)
     }
 
+    /** This test requires an actual translation for "Overview" from Bangla.properties, it passes silently without one.
+     *  It's also dependent on the translation itself at the time of writing and will fail if a translator changes it.
+     */
+    @Test
+    // @RedirectOutput(RedirectPolicy.Show) // has good visualization - comment in and run to see how the fake alphabet actuall works
+    fun diacriticsTestBanglaRoundtrip() {
+        UncivGame.Current = UncivGame()
+        UncivGame.Current.settings = GameSettings()
+        UncivGame.Current.settings.language = "Bangla"
+        for ((key, value) in translations)
+            UncivGame.Current.translations[key] = value
+
+        val input = "সংক্ষিপ্ত বিবরণী"
+        val translated = "Overview".tr()
+        if (translated == "Overview") return // No translation present, can't test
+
+        val output = translated.asIterable().joinToString("") { DiacriticSupport.getStringFor(it) }
+
+        fun Char.hex() = "U+" + code.toString(16).padStart(4, '0')
+        fun String.hex() = asIterable().joinToString(" ") { it.hex() }
+        fun String.literalAndHex() = "\"$this\" = ${hex()}"
+        val translatedHex = translated.asIterable().joinToString("; ") { it.hex() + " -> " + DiacriticSupport.getStringFor(it).literalAndHex() }
+        println("Mapping 'Overview' to Bangla and back:\n\tinput: ${input.literalAndHex()}\n\ttranslated: $translatedHex\n\toutput: ${output.literalAndHex()}")
+        Assert.assertEquals(input, output)
+    }
+
 //    @Test
 //    fun allConditionalsAreContainedInConditionalOrderTranslation() {
 //        val orderedConditionals = Translations.englishConditionalOrderingString
