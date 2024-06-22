@@ -32,7 +32,6 @@ abstract class ReligionPickerScreenCommon(
     protected val ruleset = gameInfo.ruleset
 
     private val descriptionTable = Table(skin)
-    private val descriptionScroll = descriptionLabel.parent as ScrollPane
 
     protected class Selection {
         var button: Button? = null

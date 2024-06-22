@@ -404,7 +404,8 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
 
             This can all be summed up as "I can see c if a=>b || c>b"
             */
-                val bMinimumHighestSeenTerrainSoFar = viewableTiles.filter { it.tile in cTile.neighbors }
+                val bMinimumHighestSeenTerrainSoFar = viewableTiles
+                    .filter { it.tile.aerialDistanceTo(cTile) == 1 }
                     .minOf { it.maxHeightSeenToTile }
 
                 tilesToAddInDistanceI.add(ViewableTile(

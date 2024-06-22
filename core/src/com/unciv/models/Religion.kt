@@ -99,7 +99,7 @@ class Religion() : INamed, IsPartOfGameInfoSerialization {
 
     fun isEnhancedReligion() = getBeliefs(BeliefType.Enhancer).any()
 
-    fun getFounder() = gameInfo.civilizations.first { it.civName == foundingCivName }
+    fun getFounder() = gameInfo.getCivilization(foundingCivName)
 
     private fun unlockedBuildingsPurchasable(): List<String> {
         return getAllBeliefsOrdered().flatMap { belief ->

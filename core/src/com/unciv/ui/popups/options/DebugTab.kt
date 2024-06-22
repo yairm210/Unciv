@@ -10,7 +10,7 @@ import com.unciv.logic.files.MapSaver
 import com.unciv.logic.files.UncivFiles
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.ruleset.tile.ResourceType
-import com.unciv.ui.components.UncivTextField
+import com.unciv.ui.components.widgets.UncivTextField
 import com.unciv.ui.components.extensions.addSeparator
 import com.unciv.ui.components.extensions.toCheckBox
 import com.unciv.ui.components.extensions.toLabel
@@ -31,7 +31,7 @@ fun debugTab(
 
     if (GUI.isWorldLoaded()) {
         val simulateButton = "Simulate until turn:".toTextButton()
-        val simulateTextField = UncivTextField.create("Turn", DebugUtils.SIMULATE_UNTIL_TURN.toString())
+        val simulateTextField = UncivTextField("Turn", DebugUtils.SIMULATE_UNTIL_TURN.toString())
         val invalidInputLabel = "This is not a valid integer!".toLabel().also { it.isVisible = false }
         simulateButton.onClick {
             val simulateUntilTurns = simulateTextField.text.toIntOrNull()

@@ -477,11 +477,6 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
         return mainMenuScreen
     }
 
-    /** Sets a simulated [GameInfo] object this game should run on */
-    fun startSimulation(simulatedGameInfo: GameInfo) {
-        gameInfo = simulatedGameInfo
-    }
-
     companion object {
         //region AUTOMATICALLY GENERATED VERSION DATA - DO NOT CHANGE THIS REGION, INCLUDING THIS COMMENT
         val VERSION = Version("4.12.1", 1009)

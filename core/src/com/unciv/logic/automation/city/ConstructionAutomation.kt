@@ -183,7 +183,7 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
             modifier = 5f // there's a settler just sitting here, doing nothing - BAD
 
         if (!civInfo.isAIOrAutoPlaying()) modifier /= 2 // Players prefer to make their own unit choices usually
-        modifier *= personality.scaledFocus(PersonalityValue.Aggressive)
+        modifier *= personality.modifierFocus(PersonalityValue.Military, .3f)
         addChoice(relativeCostEffectiveness, militaryUnit, modifier)
     }
 
@@ -256,7 +256,7 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
         if (!civInfo.hasUnique(UniqueType.EnablesConstructionOfSpaceshipParts)) return
         val spaceshipPart = (nonWonders + units).filter { it.name in spaceshipParts }.filterBuildable().firstOrNull()
             ?: return
-        val modifier = 2f
+        val modifier = 3f * personality.modifierFocus(PersonalityValue.Science, .4f)
         addChoice(relativeCostEffectiveness, spaceshipPart.name, modifier)
     }
 
@@ -287,8 +287,8 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
         var value = 0f
         if (!cityIsOverAverageProduction) return value
         if (building.isWonder) value += 2f
-        if (building.hasUnique(UniqueType.TriggersCulturalVictory)) value += 10f
-        if (building.hasUnique(UniqueType.EnablesConstructionOfSpaceshipParts)) value += 10f
+        if (building.hasUnique(UniqueType.TriggersCulturalVictory)) value += 10f * personality.modifierFocus(PersonalityValue.Culture, .3f)
+        if (building.hasUnique(UniqueType.EnablesConstructionOfSpaceshipParts)) value += 10f * personality.modifierFocus(PersonalityValue.Science, .3f)
         return value
     }
 
@@ -300,8 +300,8 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
                     .mapNotNull { NextTurnAutomation.getClosestCities(civInfo, it) }
                     .any { it.city1 == city })
             warModifier *= 2f
-        value += warModifier * building.cityHealth.toFloat() / city.getMaxHealth()
-        value += warModifier * building.cityStrength.toFloat() / (city.getStrength() + 3) // The + 3 here is to reduce the priority of building walls immedietly
+        value += warModifier * building.cityHealth.toFloat() / city.getMaxHealth() * personality.inverseModifierFocus(PersonalityValue.Aggressive, .3f)
+        value += warModifier * building.cityStrength.toFloat() / (city.getStrength() + 3) * personality.inverseModifierFocus(PersonalityValue.Aggressive, .3f) // The + 3 here is to reduce the priority of building walls immedietly
 
         for (experienceUnique in building.getMatchingUniques(UniqueType.UnitStartingExperience, cityState)) {
             var modifier = experienceUnique.params[1].toFloat() / 5
@@ -346,7 +346,7 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
             if (civInfo.wantsToFocusOn(stat))
                 buildingStats[stat] *= 2f
 
-            buildingStats[stat] *= personality.scaledFocus(PersonalityValue[stat])
+            buildingStats[stat] *= personality.modifierFocus(PersonalityValue[stat], .5f)
         }
 
         return Automation.rankStatsValue(civInfo.getPersonality().scaleStats(buildingStats.clone(), .3f), civInfo)

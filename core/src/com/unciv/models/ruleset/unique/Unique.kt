@@ -268,6 +268,7 @@ class UniqueMap() : HashMap<String, ArrayList<Unique>>() {
 
     fun getMatchingUniques(uniqueType: UniqueType, state: StateForConditionals) = getUniques(uniqueType)
         .filter { it.conditionalsApply(state) && !it.isTimedTriggerable }
+        .flatMap { it.getMultiplied(state) }
 
     fun getAllUniques() = this.asSequence().flatMap { it.value.asSequence() }
 

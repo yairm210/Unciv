@@ -13,7 +13,7 @@ import com.unciv.ui.screens.worldscreen.unit.actions.UnitActions
 object CivilianUnitAutomation {
 
     fun shouldClearTileForAddInCapitalUnits(unit: MapUnit, tile: Tile) =
-        tile.getCity()?.isCapital() == true
+        tile.isCityCenter() && tile.getCity()!!.isCapital()
         && !unit.hasUnique(UniqueType.AddInCapital)
         && unit.civ.units.getCivUnits().any { unit.hasUnique(UniqueType.AddInCapital) }
 
