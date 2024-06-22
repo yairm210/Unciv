@@ -1,38 +1,16 @@
 ## 4.12.2
 
-Convert .js files to .mjs so that "import" - now required due to octokit ESM-izing - will work. *sigh*
-
-require -> import, var -> const in all js files
-
-Cache 'majority religion' and uniques, recalc when updating followers 
-
 Tech, policy, unit and terrain uniques provide multiplied uniques with "for every [countable]" / "for every [amount] [countable]" modifiers
 
-Fix tests
+Many performance improvements
 
-perf
-
-perf: Improvement filter cache, other small things
-
-perf: Cache civFilter results
-
-perf: Performance improvements for worker automation by caching uniques
-
-Re-enable ConsoleLauncher to run simulations
-
-Resolved  - units teleport out of open borders on war declaration
+Units teleport out of open borders on war declaration
 
 Inquisitors go out of city centers when spaceship parts need to be added in
 
-Moved key + priority calculations into KeyShortcut data class
-
-Upgrade actions checkout from v3 to v4 to avoid 'node 16 actions deprecated' warnings
-
 Add personality uses  - By tuvus
 
-By SomeTroglodyte:
-- Improvement picker fixes 
-- Refactor: UncivTextField 
+Improvement picker fixes - By SomeTroglodyte 
 
 ## 4.12.1
 
