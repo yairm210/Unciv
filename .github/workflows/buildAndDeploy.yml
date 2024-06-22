@@ -189,7 +189,7 @@ jobs:
         uses: gradle/actions/setup-gradle@v3
 
       - name: Download JAR
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         # See 'Upload JAR' step in 'build' job
         with:
           name: UncivJar
@@ -225,7 +225,7 @@ jobs:
     steps:
 
       - name: Download packed zips
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: UncivDeploymentZips
 
@@ -246,7 +246,7 @@ jobs:
     steps:
 
       - name: Download all artifacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
 
       - name: consolidate deploy folder
         run: |
