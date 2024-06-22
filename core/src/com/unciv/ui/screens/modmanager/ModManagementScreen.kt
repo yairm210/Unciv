@@ -150,11 +150,10 @@ class ModManagementScreen private constructor(
         // Replace the PickerScreen's descriptionLabel
         val labelWrapper = Table()
         labelWrapper.defaults().top().left().growX()
-        val labelScroll = descriptionLabel.parent as ScrollPane
         descriptionLabel.remove()
         labelWrapper.row()
         labelWrapper.add(modDescriptionLabel).row()
-        labelScroll.actor = labelWrapper
+        descriptionScroll.actor = labelWrapper
 
         isPortrait = isNarrowerThan4to3()
         if (isPortrait) initPortrait()
