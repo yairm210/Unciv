@@ -54,7 +54,7 @@ object DiacriticSupport {
 
     private class LineData(capacity: Int) {
         val output = StringBuilder(capacity)
-        val accumulator = StringBuilder(8)
+        val accumulator = StringBuilder(9) // touhidurrr said there can be nine
         fun expectsJoin() = accumulator.isNotEmpty() && getCharClass(accumulator.last()).expectsRightJoin
         fun flush() {
             if (accumulator.length <= 1) output.append(accumulator)
