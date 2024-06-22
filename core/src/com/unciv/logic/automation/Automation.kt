@@ -233,8 +233,8 @@ object Automation {
         if (civInfo.gameInfo.turns > 120 * speed.barbarianModifier * multiplier)
             multiplier /= 2
 
-        // If we have a lot of, or no cities we are not afraid
-        if (civInfo.cities.isEmpty() || civInfo.cities.size >= 4 * multiplier)
+        // If we have no cities or a lot of units we are not afraid
+        if (civInfo.cities.isEmpty() || civInfo.units.getCivUnits().count() >= 4 * multiplier)
             return false
 
         // If we have vision of our entire starting continent (ish) we are not afraid

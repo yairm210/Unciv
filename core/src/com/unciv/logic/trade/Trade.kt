@@ -6,6 +6,7 @@ import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
+import com.unciv.models.ruleset.nation.PersonalityValue
 
 class Trade : IsPartOfGameInfoSerialization {
 
@@ -57,9 +58,9 @@ class TradeRequest : IsPartOfGameInfoSerialization {
         // the numbers of the flags (20,5) are the amount of turns to wait until offering again
         if (trade.ourOffers.all { it.type == TradeType.Luxury_Resource }
             && trade.theirOffers.all { it.type == TradeType.Luxury_Resource })
-            requestingCivDiploManager.setFlag(DiplomacyFlags.DeclinedLuxExchange,5)
+            requestingCivDiploManager.setFlag(DiplomacyFlags.DeclinedLuxExchange,5 - (requestingCivInfo.getPersonality()[PersonalityValue.Commerce] / 2).toInt())
         if (trade.ourOffers.any { it.name == Constants.researchAgreement })
-            requestingCivDiploManager.setFlag(DiplomacyFlags.DeclinedResearchAgreement,10)
+            requestingCivDiploManager.setFlag(DiplomacyFlags.DeclinedResearchAgreement,15 - requestingCivInfo.getPersonality()[PersonalityValue.Science].toInt())
         if (trade.ourOffers.any { it.name == Constants.defensivePact })
             requestingCivDiploManager.setFlag(DiplomacyFlags.DeclinedDefensivePact,10)
         if (trade.ourOffers.any { it.name == Constants.openBorders })
