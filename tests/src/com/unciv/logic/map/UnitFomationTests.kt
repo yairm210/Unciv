@@ -278,4 +278,36 @@ internal class UnitFormationTests {
         assertTrue(civilianUnit.isEscorting())
         assertTrue(TargetHelper.getAttackableEnemies(scout, scout.movement.getDistanceToTiles()).isEmpty())
     }
+
+    @Test
+    fun `test escort path with hills one turn civilian`() {
+        setUp(3)
+        val centerTile = testGame.getTile(Vector2(0f,0f))
+        val hillTile = testGame.getTile(Vector2(1f,1f))
+        val destinationTile = testGame.getTile(Vector2(1f,2f))
+        val militaryUnit = testGame.addUnit("Mechanized Infantry", civInfo, centerTile)
+        val civilianUnit = testGame.addUnit("Worker", civInfo, centerTile)
+        hillTile.addTerrainFeature("Hill")
+        destinationTile.addTerrainFeature("Hill")
+        civilianUnit.startEscorting()
+        civilianUnit.movement.moveToTile(destinationTile)
+        assertEquals(civilianUnit.getTile(), destinationTile)
+        assertEquals(militaryUnit.getTile(), destinationTile)
+    }
+
+    @Test
+    fun `test escort path with hills one turn military`() {
+        setUp(3)
+        val centerTile = testGame.getTile(Vector2(0f,0f))
+        val hillTile = testGame.getTile(Vector2(1f,1f))
+        val destinationTile = testGame.getTile(Vector2(1f,2f))
+        val militaryUnit = testGame.addUnit("Mechanized Infantry", civInfo, centerTile)
+        val civilianUnit = testGame.addUnit("Worker", civInfo, centerTile)
+        hillTile.addTerrainFeature("Hill")
+        destinationTile.addTerrainFeature("Hill")
+        militaryUnit.startEscorting()
+        militaryUnit.movement.moveToTile(destinationTile)
+        assertEquals(civilianUnit.getTile(), destinationTile)
+        assertEquals(militaryUnit.getTile(), destinationTile)
+    }
 }
