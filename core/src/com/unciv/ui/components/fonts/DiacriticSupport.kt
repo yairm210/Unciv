@@ -1,6 +1,7 @@
 package com.unciv.ui.components.fonts
 
 import com.unciv.utils.Log
+import org.jetbrains.annotations.VisibleForTesting
 
 /**
  *  ## An engine to support languages with heavy diacritic usage through Gdx Scene2D
@@ -127,6 +128,9 @@ object DiacriticSupport {
     /** If this is true, no need to bother [remapping chars at render time][getStringFor] */
     fun isEmpty() = fakeAlphabet.isEmpty()
 
+    @VisibleForTesting
+    fun getKnownCombinations(): Set<String> = inverseMap.keys
+
     //region Methods used during translation file loading
 
     /** Set at [prepareTranslationData], if true the translation loader need not bother passing stuff through [remapDiacritics]. */
@@ -160,7 +164,8 @@ object DiacriticSupport {
             prepareTranslationData(range, leftDiacritics, rightDiacritics, joinerDiacritics)
     }
 
-    private fun prepareTranslationData(range: CharRange, leftDiacritics: String, rightDiacritics: String, joinerDiacritics: String) {
+    @VisibleForTesting
+    fun prepareTranslationData(range: CharRange, leftDiacritics: String, rightDiacritics: String, joinerDiacritics: String) {
         charClassMap.clear()
         if (range.isEmpty()) {
             defaultCharClass = CharClass.Base

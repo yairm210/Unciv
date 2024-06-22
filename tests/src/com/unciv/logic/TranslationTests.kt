@@ -16,13 +16,14 @@ import com.unciv.models.translations.getPlaceholderText
 import com.unciv.models.translations.squareBraceRegex
 import com.unciv.models.translations.tr
 import com.unciv.testing.GdxTestRunner
+import com.unciv.testing.RedirectOutput
+import com.unciv.testing.RedirectPolicy
+import com.unciv.ui.components.fonts.DiacriticSupport
 import com.unciv.utils.Log
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
-import java.io.OutputStream
-import java.io.PrintStream
 
 @RunWith(GdxTestRunner::class)
 class TranslationTests {
@@ -30,27 +31,23 @@ class TranslationTests {
     private var ruleset = Ruleset()
 
     @Before
+    // Since the ruleset and translation loader have their own output,
+    // We 'disable' the output stream for their outputs, and only enable it for the test itself.
+    @RedirectOutput(RedirectPolicy.Discard)
     fun loadTranslations() {
-        // Since the ruleset and translation loader have their own output,
-        // We 'disable' the output stream for their outputs, and only enable it for the test itself.
-        val outputChannel = System.out
-        System.setOut(PrintStream(object : OutputStream() {
-            override fun write(b: Int) {}
-        }))
         translations.readAllLanguagesTranslation()
         RulesetCache.loadRulesets(noMods = true)
         ruleset = RulesetCache.getVanillaRuleset()
-        System.setOut(outputChannel)
     }
 
     @Test
     fun translationsLoad() {
-        Assert.assertTrue("This test will only pass there are translations",
+        Assert.assertTrue("This test will only pass if there are translations",
                 translations.size > 0)
     }
 
 
-    // This test is incorrectly defined: it should read from the template.properties file and not fro the final translation files.
+    // This test is incorrectly defined: it should read from the template.properties file and not from the final translation files.
 //    @Test
 //    fun allUnitActionsHaveTranslation() {
 //        val actions: MutableSet<String> = HashSet()
@@ -325,6 +322,36 @@ class TranslationTests {
         Assert.assertTrue(Stats.isStats(Stats(1f,2f,3f).toStringForNotifications()))
     }
 
+    @Test
+    fun diacriticsSilentForEnglish() {
+        DiacriticSupport.reset()
+        val english = translations.values
+            .mapNotNull { entry ->
+                entry["English"]?.let { entry.entry to it }
+            }.toMap(HashMap())
+        DiacriticSupport.prepareTranslationData(english)
+        Assert.assertTrue(DiacriticSupport.noDiacritics())
+    }
+
+    @Test
+    fun diacriticsWorkForBangla() {
+        //todo This test was designed before the Bangla language was merged, and uses its own data.
+        //     With the actual Bangla, the @before will already have loaded that, so there could be an additional, or a different test on the live one...
+        DiacriticSupport.reset()
+        val leftJoiningDiacritics = "ঁ ং ঃ ় া ি ী ু ূ ৃ ৄ ে ৈ ো ৌ ্ ৗ ৢ ৣ ৾".replace(" ", "")
+        val leftAndRightJoiners = "্"
+        DiacriticSupport.prepareTranslationData(Char(0x0980U)..Char(0x09FDU), leftJoiningDiacritics, "", leftAndRightJoiners)
+
+        listOf(
+            "মানচিত্র সম্পাদক", "দেখুন", "উৎপন্ন করুন", "আংশিক"
+        ).forEach { DiacriticSupport.remapDiacritics(it) }
+        val actual = DiacriticSupport.getKnownCombinations()
+        val expected = setOf("ম, া", "চ, ি", "ত, ্, র", "ম, ্, প, া", "দ, ে", "খ, ু", "ন, ্, ন", "র, ু", "আ, ং", "শ, ি")
+            .map {
+                it.split(", ").joinToString("")
+            }.toSet()
+        Assert.assertEquals(expected, actual)
+    }
 
 //    @Test
 //    fun allConditionalsAreContainedInConditionalOrderTranslation() {
