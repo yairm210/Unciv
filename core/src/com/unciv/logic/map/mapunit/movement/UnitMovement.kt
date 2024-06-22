@@ -712,19 +712,12 @@ class UnitMovement(val unit: MapUnit) {
             considerZoneOfControl,
             null,
             passThroughCache,
-            movementCostCache
+            movementCostCache,
+            includeOtherEscortUnit
         )
 
-        if (includeOtherEscortUnit) {
-            // Only save to cache only if we are the original call and not the subsequent escort unit call
-            pathfindingCache.setDistanceToTiles(considerZoneOfControl, distanceToTiles)
-            if (unit.isEscorting()) {
-                // We should only be able to move to tiles that our escort can also move to
-                val escortDistanceToTiles = unit.getOtherEscortUnit()!!.movement
-                    .getDistanceToTiles(considerZoneOfControl, includeOtherEscortUnit = false)
-                distanceToTiles.keys.removeAll { !escortDistanceToTiles.containsKey(it) }
-            }
-        }
+        pathfindingCache.setDistanceToTiles(considerZoneOfControl, distanceToTiles)
+
         return distanceToTiles
     }
 
