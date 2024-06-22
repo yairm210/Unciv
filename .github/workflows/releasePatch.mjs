@@ -2,7 +2,7 @@ import fs from "fs";
 // To be run from the main Unciv repo directory
 // Increments the latest code version to include 'patch-X'
 // Meant to be run from a Github action as part of patch release
-// To test locally - `node .github/workflows/releasePatch.js`
+// To test locally - `node .github/workflows/releasePatch.mjs`
 
 //region Executed Code
 (async () => {
