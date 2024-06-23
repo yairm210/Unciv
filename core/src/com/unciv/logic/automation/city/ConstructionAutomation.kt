@@ -323,7 +323,7 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
         val surplusFood = city.cityStats.currentCityStats[Stat.Food]
         if (surplusFood < 0) {
             buildingStats.food *= 8 // Starving, need Food, get to 0
-        } else if (city.population.population < 5) {
+        } else if (city.population.population < 12) {
             buildingStats.food *= 3
         }
 
@@ -333,7 +333,6 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
 
         if (!cityIsOverAverageProduction) { // This city needs more primary yields
             buildingStats.production *= 2
-            buildingStats.food *= 2
         }
 
         if (city.population.population > 11) { // Large cities need to produce more secondary yields
