@@ -48,6 +48,9 @@ object Automation {
         val yieldStats = stats.clone()
         val civPersonality = city.civ.getPersonality()
         val cityStatsObj = city.cityStats
+        val civInfo = city.civ
+        val allTechsAreResearched = civInfo.gameInfo.ruleset.technologies.values
+            .all { civInfo.tech.isResearched(it.name) || !civInfo.tech.canBeResearched(it.name)}
 
         if (areWeRankingSpecialist) {
             // If you have the Food Bonus, count as 1 extra food production (base is 2food)
@@ -91,15 +94,28 @@ object Automation {
             // Food already handled above. Science/Culture have low weights in Stats already
             yieldStats.gold /= 2 // it's barely worth anything at this point
         } else {
-            if (city.civ.gold < 0 && city.civ.stats.statsForNextTurn.gold <= 0)
-                yieldStats.gold *= 2 // We have a global problem
-
-            if (city.tiles.size < 12)
-                yieldStats.culture *= 2
+            if (city.civ.stats.statsForNextTurn.gold <= 0 && city.civ.getHappiness() > -1)
+                yieldStats.food *= 2 // Try to increase our trade route gold
+                yieldStats.food *= 2
+            if (city.civ.stats.statsForNextTurn.gold <= 0 && city.civ.getHappiness() < 0)
+                yieldStats.gold *= 3 // We have a problem
 
             if (city.civ.getHappiness() < 0)
-                yieldStats.happiness *= 2
+                yieldStats.happiness *= 3
+            }
+
+        if (city.civ.getHappiness() < 0){
+            yieldStats.food /= 4 // 75% of excess food is wasted when in negative happiness
         }
+
+        if (allTechsAreResearched) {
+            yieldStats.science *= 0 // Science is useless at this point
+        } else {
+            if (city.population.population > 11)
+                // Big city should be working Scientists, not Merchants
+                yieldStats.science *= 3
+                yieldStats.gold /= 2
+            }
 
         for (stat in Stat.values()) {
             if (city.civ.wantsToFocusOn(stat))
