@@ -98,7 +98,7 @@ object Automation {
                 yieldStats.food *= 2 // Try to increase our trade route gold
             
             if (city.civ.stats.statsForNextTurn.gold <= 0 )
-                yieldStats.gold *= 3 // We have a problem
+                yieldStats.gold *= 2 // We need to work more gold
 
             if (city.civ.getHappiness() < 0)
                 yieldStats.happiness *= 3
