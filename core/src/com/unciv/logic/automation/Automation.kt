@@ -100,13 +100,12 @@ object Automation {
             if (city.civ.stats.statsForNextTurn.gold <= 0)
                 yieldStats.gold *= 2 // We need to work more gold
 
+            if (city.tiles.size < 12)
+                yieldStats.culture *= 2 // To prioritise culture pantheon tiles
+
             if (city.civ.getHappiness() < 0)
                 yieldStats.happiness *= 3
             }
-
-        if (city.tiles.size < 12) {
-            yieldStats.culture *= 2 // To prioritise culture pantheon tiles
-        }
 
         if (city.civ.getHappiness() < 0) {
             yieldStats.food /= 4 // 75% of excess food is wasted when in negative happiness
