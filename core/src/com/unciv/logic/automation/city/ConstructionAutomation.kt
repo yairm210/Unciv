@@ -174,7 +174,7 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
         var modifier = 1 + sqrt(unitsToCitiesRatio) / 2
         if (civInfo.wantsToFocusOn(Victory.Focus.Military) || isAtWar) modifier *= 2
 
-        if (Automation.afraidOfBarbarians(civInfo)) modifier = 2.5f // military units are pro-growth if pressured by barbs
+        if (Automation.afraidOfBarbarians(civInfo)) modifier = 2f // military units are pro-growth if pressured by barbs
         if (!cityIsOverAverageProduction) modifier /= 5 // higher production cities will deal with this
 
         val civilianUnit = city.getCenterTile().civilianUnit

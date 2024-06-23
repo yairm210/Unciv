@@ -104,7 +104,7 @@ object Automation {
                 yieldStats.culture *= 2 // To prioritise culture pantheon tiles
 
             if (city.civ.getHappiness() < 0)
-                yieldStats.happiness *= 3
+                yieldStats.happiness *= 2
             }
 
         if (city.civ.getHappiness() < 0) {
