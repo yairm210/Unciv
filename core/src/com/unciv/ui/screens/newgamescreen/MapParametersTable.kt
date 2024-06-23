@@ -13,7 +13,7 @@ import com.unciv.logic.map.mapgenerator.MapResourceSetting
 import com.unciv.logic.map.MapShape
 import com.unciv.logic.map.MapSize
 import com.unciv.logic.map.MapType
-import com.unciv.ui.components.UncivTextField
+import com.unciv.ui.components.widgets.UncivTextField
 import com.unciv.ui.components.extensions.pad
 import com.unciv.ui.components.extensions.toCheckBox
 import com.unciv.ui.components.extensions.toLabel
@@ -205,7 +205,7 @@ class MapParametersTable(
 
     private fun addHexagonalSizeTable() {
         val defaultRadius = mapParameters.mapSize.radius.toString()
-        customMapSizeRadius = UncivTextField.create("Radius", defaultRadius).apply {
+        customMapSizeRadius = UncivTextField("Radius", defaultRadius).apply {
             textFieldFilter = DigitsOnlyFilter()
         }
         customMapSizeRadius.onChange {
@@ -219,12 +219,12 @@ class MapParametersTable(
 
     private fun addRectangularSizeTable() {
         val defaultWidth = mapParameters.mapSize.width.toString()
-        customMapWidth = UncivTextField.create("Width", defaultWidth).apply {
+        customMapWidth = UncivTextField("Width", defaultWidth).apply {
             textFieldFilter = DigitsOnlyFilter()
         }
 
         val defaultHeight = mapParameters.mapSize.height.toString()
-        customMapHeight = UncivTextField.create("Height", defaultHeight).apply {
+        customMapHeight = UncivTextField("Height", defaultHeight).apply {
             textFieldFilter = DigitsOnlyFilter()
         }
 
@@ -360,7 +360,7 @@ class MapParametersTable(
     private fun addAdvancedControls(table: Table) {
         table.defaults().pad(5f)
 
-        seedTextField = UncivTextField.create("RNG Seed", mapParameters.seed.toString())
+        seedTextField = UncivTextField("RNG Seed", mapParameters.seed.toString())
         seedTextField.textFieldFilter = DigitsOnlyFilter()
 
         // If the field is empty, fallback seed value to 0
