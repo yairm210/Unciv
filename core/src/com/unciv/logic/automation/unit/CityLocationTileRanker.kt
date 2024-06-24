@@ -92,9 +92,9 @@ object CityLocationTileRanker {
         if (newCityTile.isAdjacentToRiver()) tileValue += 10
         if (newCityTile.terrainHasUnique(UniqueType.FreshWater)) tileValue += 5
         // We want to found the city on an oasis because it can't be improved otherwise
-        if (newCityTile.terrainHasUnique(UniqueType.Unbuildable)) tileValue += 5
+        if (newCityTile.terrainHasUnique(UniqueType.Unbuildable)) tileValue += 3
         // If we build the city on a resource tile, then we can't build any special improvements on it
-        if (newCityTile.resource != null) tileValue -= 5
+        if (newCityTile.resource != null) tileValue -= 4
 
         var tiles = 0
         for (i in 0..3) {
@@ -119,10 +119,10 @@ object CityLocationTileRanker {
                 // If it is not higher the settler may get stuck when it ranks the same tile differently
                 // as it moves away from the city and doesn't include it in the calculation
                 // and values it higher than when it moves closer to the city
-                distanceToCity == 7 -> 5f // Perfect location for growth, there aren't any unused tiles in between
+                distanceToCity == 7 -> 5f // Perfect location, there aren't any unused tiles in between
                 distanceToCity == 6 -> -4f
                 distanceToCity == 5 -> -8f
-                distanceToCity == 4 -> -20f // Settling further away sacrifices tempo
+                distanceToCity == 4 -> -20f
                 distanceToCity == 3 -> -25f
                 distanceToCity < 3 -> -30f // Even if it is a mod that lets us settle closer, lets still not do it
                 else -> 0f
