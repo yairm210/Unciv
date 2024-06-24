@@ -830,6 +830,8 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
             resource = null
         if (improvement != null && improvement !in ruleset.tileImprovements)
             improvement = null
+        if (improvementQueue.any { it.improvement !in ruleset.tileImprovements })
+            improvementQueue.clear() // Just get rid of everything, all bets are off
     }
 
     /** If the unit isn't in the ruleset we can't even know what type of unit this is! So check each place
