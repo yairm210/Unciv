@@ -640,7 +640,8 @@ enum class UniqueType(
 
 
     /////// general conditionals
-    ConditionalTimedUnique("for [amount] turns", UniqueTarget.Conditional),
+    ConditionalTimedUnique("for [amount] turns", UniqueTarget.Conditional,
+        docDescription = "Turns this unique into a trigger, activating this unique as a *global* unique for a number of turns"),
     ConditionalChance("with [amount]% chance", UniqueTarget.Conditional),
     ConditionalEveryTurns("every [positiveAmount] turns", UniqueTarget.Conditional),
     ConditionalBeforeTurns("before [amount] turns", UniqueTarget.Conditional),
@@ -696,9 +697,12 @@ enum class UniqueType(
     ConditionalWithoutResource("without [resource]", UniqueTarget.Conditional),
 
     // Supports also stockpileable resources (Gold, Faith, Culture, Science)
-    ConditionalWhenAboveAmountStatResource("when above [amount] [stat/resource]", UniqueTarget.Conditional, flags = setOf(UniqueFlag.AcceptsSpeedModifier)),
-    ConditionalWhenBelowAmountStatResource("when below [amount] [stat/resource]", UniqueTarget.Conditional, flags = setOf(UniqueFlag.AcceptsSpeedModifier)),
-    ConditionalWhenBetweenStatResource("when between [amount] and [amount] [stat/resource]", UniqueTarget.Conditional, flags = setOf(UniqueFlag.AcceptsSpeedModifier)),
+    ConditionalWhenAboveAmountStatResource("when above [amount] [stat/resource]", UniqueTarget.Conditional, flags = setOf(UniqueFlag.AcceptsSpeedModifier),
+        docDescription = "Stats refers to the accumulated stat, not stat-per-turn"),
+    ConditionalWhenBelowAmountStatResource("when below [amount] [stat/resource]", UniqueTarget.Conditional, flags = setOf(UniqueFlag.AcceptsSpeedModifier),
+        docDescription = "Stats refers to the accumulated stat, not stat-per-turn"),
+    ConditionalWhenBetweenStatResource("when between [amount] and [amount] [stat/resource]", UniqueTarget.Conditional, flags = setOf(UniqueFlag.AcceptsSpeedModifier),
+        docDescription = "Stats refers to the accumulated stat, not stat-per-turn"),
 
     // The game speed-adjusted versions of above
 
