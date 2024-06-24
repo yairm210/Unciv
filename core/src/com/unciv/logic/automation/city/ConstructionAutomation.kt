@@ -300,7 +300,6 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
                     .mapNotNull { NextTurnAutomation.getClosestCities(civInfo, it) }
                     .any { it.city1 == city })
             warModifier *= 2f
-
         value += warModifier * building.cityHealth.toFloat() / city.getMaxHealth() * personality.inverseModifierFocus(PersonalityValue.Aggressive, .3f)
         value += warModifier * building.cityStrength.toFloat() / (city.getStrength() + 3) * personality.inverseModifierFocus(PersonalityValue.Aggressive, .3f) // The + 3 here is to reduce the priority of building walls immedietly
 
@@ -327,10 +326,15 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
             buildingStats.food *= 3
         }
 
+        if (buildingStats.gold < 0 && civInfo.stats.statsForNextTurn.gold < 10) {
+            buildingStats.gold *= 2 // We have a gold problem and this isn't helping
+        }
+
         if (civInfo.getHappiness() < 5)
             buildingStats.happiness * 3
         else if (civInfo.getHappiness() < 10 || civInfo.getHappiness() < civInfo.cities.size)
             buildingStats.happiness * 2
+
         if (city.cityStats.currentCityStats.culture < 1) {
             buildingStats.culture *= 2 // We need to start growing borders
         }

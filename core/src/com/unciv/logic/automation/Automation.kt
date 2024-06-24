@@ -42,6 +42,7 @@ object Automation {
         return rank
     }
 
+    
     fun rankStatsForCityWork(stats: Stats, city: City, areWeRankingSpecialist: Boolean, localUniqueCache: LocalUniqueCache): Float {
         val cityAIFocus = city.getCityFocus()
         val yieldStats = stats.clone()
