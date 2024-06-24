@@ -84,7 +84,6 @@ object CityLocationTileRanker {
         tileValue += getDistanceToCityModifier(newCityTile, nearbyCities, civ)
 
         val onCoast = newCityTile.isCoastalTile()
-        val onHill = newCityTile.isHill()
         // Only count a luxary resource that we don't have yet as unique once
         val newUniqueLuxuryResources = HashSet<String>()
 
