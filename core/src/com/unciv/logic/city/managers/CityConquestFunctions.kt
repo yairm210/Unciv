@@ -47,8 +47,9 @@ class CityConquestFunctions(val city: City) {
         }
     }
 
-    private fun removeBuildingsOnMoveToCiv(oldCiv: Civilization) {
+    private fun removeBuildingsOnMoveToCiv() {
         // Remove all buildings provided for free to this city
+        // At this point, the city has *not* yet moved to the new civ
         for (building in city.civ.civConstructions.getFreeBuildingNames(city)) {
             city.cityConstructions.removeBuilding(building)
         }
@@ -266,7 +267,7 @@ class CityConquestFunctions(val city: City) {
         city.resetWLTKD()
 
         // Remove their free buildings from this city and remove free buildings provided by the city from their cities
-        removeBuildingsOnMoveToCiv(oldCiv)
+        removeBuildingsOnMoveToCiv()
 
         // Place palace for newCiv if this is the only city they have.
         if (newCiv.cities.size == 1) newCiv.moveCapitalTo(city, null)
