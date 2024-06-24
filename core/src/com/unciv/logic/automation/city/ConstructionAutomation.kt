@@ -321,7 +321,22 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
         getBuildingStatsFromUniques(building, buildingStats)
 
         val surplusFood = city.cityStats.currentCityStats[Stat.Food]
-        buildingStats.culture *= 2
+        if (surplusFood < 0) {
+            buildingStats.food *= 8 // Starving, need Food, get to 0
+        } else if (city.population.population < 5) {
+            buildingStats.food *= 3
+        }
+
+        if (civInfo.getHappiness() < 5)
+            buildingStats.happiness * 3
+        else if (civInfo.getHappiness() < 10 || civInfo.getHappiness() < civInfo.cities.size)
+            buildingStats.happiness * 2
+        if (city.cityStats.currentCityStats.culture < 1) {
+            buildingStats.culture *= 2 // We need to start growing borders
+        }
+        else if (city.tiles.size < 12 && city.population.population < 5) {
+            buildingStats.culture *= 2
+        }
 
         for (stat in Stat.values()) {
             if (civInfo.wantsToFocusOn(stat))

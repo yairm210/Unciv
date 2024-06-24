@@ -42,8 +42,6 @@ object Automation {
         return rank
     }
 
-
-    @Suppress("SuspiciousIndentation")
     fun rankStatsForCityWork(stats: Stats, city: City, areWeRankingSpecialist: Boolean, localUniqueCache: LocalUniqueCache): Float {
         val cityAIFocus = city.getCityFocus()
         val yieldStats = stats.clone()
@@ -177,8 +175,8 @@ object Automation {
             val numberOfOurNavalMeleeUnits = findWaterConnectedCitiesAndEnemies.getReachedTiles().asSequence()
                 .flatMap { it.getUnits() }
                 .count { isNavalMeleeUnit(it.baseUnit) }
-            // Melee units are sufficient against barbarian, against humans we need a ranged navy as well
             isMissingNavalUnitsForCityDefence = numberOfOurConnectedCities > numberOfOurNavalMeleeUnits
+
             removeShips = findWaterConnectedCitiesAndEnemies.getReachedTiles().none {
                         (it.isCityCenter() && it.getOwner() != city.civ)
                                 || (it.militaryUnit != null && it.militaryUnit!!.civ != city.civ)
@@ -207,13 +205,11 @@ object Automation {
                 .filter { it.isRanged() }
                 .maxByOrNull { it.cost }!!
         }
-
         else if (isMissingNavalUnitsForCityDefence && militaryUnits.any { isNavalMeleeUnit(it) }) {
             chosenUnit = militaryUnits
                 .filter { isNavalMeleeUnit(it) }
                 .maxBy { it.cost }
         }
-
         else { // randomize type of unit and take the most expensive of its kind
             val bestUnitsForType = hashMapOf<String, BaseUnit>()
             for (unit in militaryUnits) {
