@@ -302,11 +302,11 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
             warModifier *= 2f
 
         value += warModifier * building.cityHealth.toFloat() / city.getMaxHealth() * personality.inverseModifierFocus(PersonalityValue.Aggressive, .3f)
-        value += warModifier * building.cityStrength.toFloat() / (city.getStrength() + 10) * personality.inverseModifierFocus(PersonalityValue.Aggressive, .3f) // The + 10 here is to reduce the priority of building walls immedietly
+        value += warModifier * building.cityStrength.toFloat() / (city.getStrength() + 15) * personality.inverseModifierFocus(PersonalityValue.Aggressive, .3f) // The + 15 here is to reduce the priority of building walls immedietly
 
         for (experienceUnique in building.getMatchingUniques(UniqueType.UnitStartingExperience, cityState)) {
             var modifier = experienceUnique.params[1].toFloat() / 5
-            modifier *= if (cityIsOverAverageProduction) 1f else 0f // You shouldn't be cranking out units anytime soon
+            modifier *= if (cityIsOverAverageProduction) 0.8f else 0.1f // You shouldn't be cranking out units anytime soon
             modifier *= personality.modifierFocus(PersonalityValue.Military, 0.3f)
             modifier *= personality.modifierFocus(PersonalityValue.Aggressive, 0.2f).coerceAtLeast(1f) // Defensive civs can still want a good military
             value += modifier
@@ -323,15 +323,14 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
         val surplusFood = city.cityStats.currentCityStats[Stat.Food]
         if (surplusFood < 0) {
             buildingStats.food *= 8 // Starving, need Food, get to 0
-        } else if (city.population.population < 12) {
+        } else if (city.population.population < 14) {
             buildingStats.food *= 3
         }
-
         if (civInfo.stats.statsForNextTurn.gold < 20) {
             buildingStats.gold *= 3 // We're going to have a gold problem
         }
 
-        if (!cityIsOverAverageProduction) { // This city needs more primary yields
+        if (!cityIsOverAverageProduction) { // This city needs more production
             buildingStats.production *= 2
         }
 
@@ -339,10 +338,10 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
             buildingStats.science *= 2
         }
 
-        if (civInfo.getHappiness() < 10)
+        if (civInfo.getHappiness() < 5)
             buildingStats.happiness *= 10 // We need a lot more happiness soon
         else if (civInfo.getHappiness() < 15 || civInfo.getHappiness() < civInfo.cities.size)
-            buildingStats.happiness *= 2
+            buildingStats.happiness *= 3
 
         if ((city.cityStats.currentCityStats.culture < 2) || (((city.tiles.size) -
                 (city.population.population)) < 5)) {

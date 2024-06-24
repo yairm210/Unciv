@@ -90,12 +90,12 @@ object CityLocationTileRanker {
 
         if (onCoast) tileValue += 8
         if (onHill) tileValue += 5 // It's free production and defence
-        if (newCityTile.isAdjacentToRiver()) tileValue += 14
+        if (newCityTile.isAdjacentToRiver()) tileValue += 15
         if (newCityTile.terrainHasUnique(UniqueType.FreshWater)) tileValue += 3
         // We want to found the city on an oasis because it can't be improved otherwise
         if (newCityTile.terrainHasUnique(UniqueType.Unbuildable)) tileValue += 4
         // If we build the city on a resource tile, then we can't build any special improvements on it
-        if (newCityTile.resource != null) tileValue -= 2
+        if (newCityTile.resource != null) tileValue -= 3
 
         var tiles = 0
         for (i in 0..3) {

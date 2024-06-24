@@ -43,6 +43,7 @@ object Automation {
     }
 
 
+    @Suppress("SuspiciousIndentation")
     fun rankStatsForCityWork(stats: Stats, city: City, areWeRankingSpecialist: Boolean, localUniqueCache: LocalUniqueCache): Float {
         val cityAIFocus = city.getCityFocus()
         val yieldStats = stats.clone()
@@ -98,7 +99,10 @@ object Automation {
                 yieldStats.food *= 2 // Try to increase our trade route gold
 
             if (city.civ.stats.statsForNextTurn.gold <= 0)
-                yieldStats.gold *= 2 // We need to work more gold
+                yieldStats.gold *= 2
+
+            if (city.civ.gold < 0)
+                yieldStats.gold *= 2 // Things are very bad and we need to prevent unit disbandment
 
             if (city.tiles.size < 12)
                 yieldStats.culture *= 2 // To prioritise culture pantheon tiles
@@ -114,7 +118,7 @@ object Automation {
         if (allTechsAreResearched) {
             yieldStats.science *= 0 // Science is useless at this point
         } else {
-            if (city.population.population > 11)
+            if (city.population.population > 13)
                 // Big city should be working Scientists, not Merchants
                 yieldStats.science *= 3
                 yieldStats.gold /= 2
@@ -169,7 +173,8 @@ object Automation {
 
         // if not coastal, removeShips == true so don't even consider ships
         var removeShips = true
-        var isMissingNavalUnitsForCityDefence = false
+        var isMissingNavalMeleeUnitsForCityDefence = false
+        var isMissingNavalRangedUnitsForCityDefence = false
 
         fun isNavalMeleeUnit(unit: BaseUnit) = unit.isMelee() && unit.type.isWaterUnit()
         if (city.isCoastal()) {
@@ -184,12 +189,33 @@ object Automation {
             val numberOfOurNavalMeleeUnits = findWaterConnectedCitiesAndEnemies.getReachedTiles().asSequence()
                 .flatMap { it.getUnits() }
                 .count { isNavalMeleeUnit(it.baseUnit) }
-            isMissingNavalUnitsForCityDefence = numberOfOurConnectedCities > numberOfOurNavalMeleeUnits
-
+            // Melee units are sufficient against barbarian, against humans we need a ranged navy as well
+            isMissingNavalMeleeUnitsForCityDefence = numberOfOurConnectedCities > numberOfOurNavalMeleeUnits
             removeShips = findWaterConnectedCitiesAndEnemies.getReachedTiles().none {
                         (it.isCityCenter() && it.getOwner() != city.civ)
                                 || (it.militaryUnit != null && it.militaryUnit!!.civ != city.civ)
                     } // there is absolutely no reason for you to make water units on this body of water.
+        }
+
+        fun isNavalRangedUnit(unit: BaseUnit) = unit.isRanged() && unit.type.isWaterUnit()
+        if (city.isCoastal()) {
+            // in the future this could be simplified by assigning every distinct non-lake body of
+            // water their own ID like a continent ID
+            val findWaterConnectedCitiesAndEnemies =
+                BFS(city.getCenterTile()) { it.isWater || it.isCityCenter() }
+            findWaterConnectedCitiesAndEnemies.stepToEnd()
+
+            val numberOfOurConnectedCities = findWaterConnectedCitiesAndEnemies.getReachedTiles()
+                .count { it.isCityCenter() && it.getOwner() == city.civ }
+            val numberOfOurNavalRangedUnits = findWaterConnectedCitiesAndEnemies.getReachedTiles().asSequence()
+                .flatMap { it.getUnits() }
+                .count { isNavalRangedUnit(it.baseUnit) }
+            // Melee units are sufficient against barbarian, against humans we need a ranged navy as well
+            isMissingNavalRangedUnitsForCityDefence = numberOfOurConnectedCities > numberOfOurNavalRangedUnits
+            removeShips = findWaterConnectedCitiesAndEnemies.getReachedTiles().none {
+                (it.isCityCenter() && it.getOwner() != city.civ)
+                    || (it.militaryUnit != null && it.militaryUnit!!.civ != city.civ)
+            } // there is absolutely no reason for you to make water units on this body of water.
         }
 
         val militaryUnits = availableUnits
@@ -214,9 +240,14 @@ object Automation {
                 .filter { it.isRanged() }
                 .maxByOrNull { it.cost }!!
         }
-        else if (isMissingNavalUnitsForCityDefence && militaryUnits.any { isNavalMeleeUnit(it) }) {
+        else if (isMissingNavalMeleeUnitsForCityDefence && militaryUnits.any { isNavalMeleeUnit(it) }) {
             chosenUnit = militaryUnits
                 .filter { isNavalMeleeUnit(it) }
+                .maxBy { it.cost }
+        }
+        else if (isMissingNavalRangedUnitsForCityDefence && militaryUnits.any { isNavalRangedUnit(it) }) {
+            chosenUnit = militaryUnits
+                .filter { isNavalRangedUnit(it) }
                 .maxBy { it.cost }
         }
         else { // randomize type of unit and take the most expensive of its kind
@@ -315,7 +346,7 @@ object Automation {
 
         val civResources = civInfo.getCivResourcesByName()
 
-        // Rule of thumb: reserve 2-3 for spaceship, then reserve half each for buildings and units
+        // AI is dumb, so reserve 6 for spaceship parts, then reserve half each for buildings and units
         // Assume that no buildings provide any resources
         for ((resource, amount) in requiredResources) {
 
@@ -369,7 +400,7 @@ object Automation {
     }
 
     fun getReservedSpaceResourceAmount(civInfo: Civilization): Int {
-        return if (civInfo.wantsToFocusOn(Victory.Focus.Science)) 3 else 2
+        return if (civInfo.wantsToFocusOn(Victory.Focus.Science)) 6 else 6
     }
 
     fun threatAssessment(assessor: Civilization, assessed: Civilization): ThreatLevel {
