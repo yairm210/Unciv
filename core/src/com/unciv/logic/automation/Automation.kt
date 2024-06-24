@@ -9,6 +9,7 @@ import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.INonPerpetualConstruction
+import com.unciv.models.ruleset.PerpetualConstruction
 import com.unciv.models.ruleset.Victory
 import com.unciv.models.ruleset.nation.PersonalityValue
 import com.unciv.models.ruleset.tile.ResourceType
@@ -105,11 +106,18 @@ object Automation {
             }
 
         if (city.civ.getHappiness() < 0) {
-            yieldStats.food /= 4 // 75% of excess food is wasted when in negative happiness
+            // 75% of excess food is wasted when in negative happiness
+            yieldStats.food /= 4
         }
 
         if (allTechsAreResearched) {
-            yieldStats.science *= 0 // Science is useless at this point
+            // Science is useless at this point
+            yieldStats.science *= 0
+        }
+
+        if (city.cityConstructions.getCurrentConstruction() is PerpetualConstruction) {
+            // With 4:1 conversion of production to gold, production is overvalued by a factor (12*4)/8 = 6
+            yieldStats.production /= 6
         }
 
         for (stat in Stat.values()) {
