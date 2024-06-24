@@ -256,7 +256,7 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
         if (!civInfo.hasUnique(UniqueType.EnablesConstructionOfSpaceshipParts)) return
         val spaceshipPart = (nonWonders + units).filter { it.name in spaceshipParts }.filterBuildable().firstOrNull()
             ?: return
-        val modifier = 4f * personality.modifierFocus(PersonalityValue.Science, .4f)
+        val modifier = 3f * personality.modifierFocus(PersonalityValue.Science, .4f)
         addChoice(relativeCostEffectiveness, spaceshipPart.name, modifier)
     }
 
@@ -287,14 +287,14 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
         var value = 0f
         if (!cityIsOverAverageProduction) return value
         if (building.isWonder) value += 2f
-        if (building.hasUnique(UniqueType.TriggersCulturalVictory)) value += 20f * personality.modifierFocus(PersonalityValue.Culture, .3f)
-        if (building.hasUnique(UniqueType.EnablesConstructionOfSpaceshipParts)) value += 20f * personality.modifierFocus(PersonalityValue.Science, .3f)
+        if (building.hasUnique(UniqueType.TriggersCulturalVictory)) value += 10f * personality.modifierFocus(PersonalityValue.Culture, .3f)
+        if (building.hasUnique(UniqueType.EnablesConstructionOfSpaceshipParts)) value += 10f * personality.modifierFocus(PersonalityValue.Science, .3f)
         return value
     }
 
     private fun applyMilitaryBuildingValue(building: Building): Float {
         var value = 0f
-        var warModifier = if (isAtWar) .8f else .4f
+        var warModifier = if (isAtWar) 1f else .5f
         // If this city is the closest city to another civ, that makes it a likely candidate for attack
         if (civInfo.getKnownCivs()
                     .mapNotNull { NextTurnAutomation.getClosestCities(civInfo, it) }
@@ -302,17 +302,17 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
             warModifier *= 2f
 
         value += warModifier * building.cityHealth.toFloat() / city.getMaxHealth() * personality.inverseModifierFocus(PersonalityValue.Aggressive, .3f)
-        value += warModifier * building.cityStrength.toFloat() / (city.getStrength() + 15) * personality.inverseModifierFocus(PersonalityValue.Aggressive, .3f) // The + 15 here is to reduce the priority of building walls immedietly
+        value += warModifier * building.cityStrength.toFloat() / (city.getStrength() + 3) * personality.inverseModifierFocus(PersonalityValue.Aggressive, .3f) // The + 3 here is to reduce the priority of building walls immedietly
 
         for (experienceUnique in building.getMatchingUniques(UniqueType.UnitStartingExperience, cityState)) {
             var modifier = experienceUnique.params[1].toFloat() / 5
-            modifier *= if (cityIsOverAverageProduction) 0.8f else 0.1f // You shouldn't be cranking out units anytime soon
+            modifier *= if (cityIsOverAverageProduction) 1f else 0.2f // You shouldn't be cranking out units anytime soon
             modifier *= personality.modifierFocus(PersonalityValue.Military, 0.3f)
             modifier *= personality.modifierFocus(PersonalityValue.Aggressive, 0.2f).coerceAtLeast(1f) // Defensive civs can still want a good military
             value += modifier
         }
         if (building.hasUnique(UniqueType.EnablesNuclearWeapons) && !civInfo.hasUnique(UniqueType.EnablesNuclearWeapons))
-            value += 5f * personality.modifierFocus(PersonalityValue.Military, 0.3f)
+            value += 4f * personality.modifierFocus(PersonalityValue.Military, 0.3f)
         return value
     }
 
@@ -321,34 +321,7 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
         getBuildingStatsFromUniques(building, buildingStats)
 
         val surplusFood = city.cityStats.currentCityStats[Stat.Food]
-        if (surplusFood < 0) {
-            buildingStats.food *= 8 // Starving, need Food, get to 0
-        } else if (city.population.population < 14) {
-            buildingStats.food *= 3
-        }
-        if (civInfo.stats.statsForNextTurn.gold < 20) {
-            buildingStats.gold *= 3 // We're going to have a gold problem
-        }
-
-        if (!cityIsOverAverageProduction) { // This city needs more production
-            buildingStats.production *= 2
-        }
-
-        if (city.population.population > 11) { // Large cities need to produce more secondary yields
-            buildingStats.science *= 2
-        }
-
-        if (civInfo.getHappiness() < 5)
-            buildingStats.happiness *= 10 // We need a lot more happiness soon
-        else if (civInfo.getHappiness() < 15 || civInfo.getHappiness() < civInfo.cities.size)
-            buildingStats.happiness *= 3
-
-        if ((city.cityStats.currentCityStats.culture < 2) || (((city.tiles.size) -
-                (city.population.population)) < 5)) {
-            // We need to grow our borders in cities with low culture,
-            // and when # of pop close to # of workable tiles
-            buildingStats.culture *= 3
-        }
+        buildingStats.culture *= 2
 
         for (stat in Stat.values()) {
             if (civInfo.wantsToFocusOn(stat))
