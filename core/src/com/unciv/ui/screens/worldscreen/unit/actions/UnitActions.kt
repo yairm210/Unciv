@@ -13,6 +13,10 @@ import com.unciv.models.translations.tr
 import com.unciv.ui.popups.ConfirmPopup
 import com.unciv.ui.popups.hasOpenPopups
 import com.unciv.ui.screens.pickerscreens.PromotionPickerScreen
+import com.unciv.ui.screens.worldscreen.unit.actions.UnitActions.getActionDefaultPage
+import com.unciv.ui.screens.worldscreen.unit.actions.UnitActions.getPagingActions
+import com.unciv.ui.screens.worldscreen.unit.actions.UnitActions.getUnitActions
+import com.unciv.ui.screens.worldscreen.unit.actions.UnitActions.invokeUnitAction
 
 /**
  *  Manages creation of [UnitAction] instances.
@@ -170,7 +174,7 @@ object UnitActions {
         val worldScreen = GUI.getWorldScreen()
         val selectedUnits = worldScreen.bottomUnitTable.selectedUnits
         if (selectedUnits.size == 2) {
-            // We can still create a formation in the case that we have two units selected 
+            // We can still create a formation in the case that we have two units selected
             // and they are on the same tile. We still have to manualy confirm they are on the same tile here.
             val tile = selectedUnits.first().getTile()
             if (selectedUnits.last().getTile() != tile) return
@@ -195,7 +199,7 @@ object UnitActions {
                 }))
         }
     }
-    
+
     private suspend fun SequenceScope<UnitAction>.addSwapAction(unit: MapUnit) {
         // Air units cannot swap
         if (unit.baseUnit.movesLikeAirUnits()) return
@@ -366,8 +370,6 @@ object UnitActions {
             isCurrentAction = unit.isAutomated(),
             useFrequency = 25f,
             action = {
-                // Temporary, for compatibility - we want games serialized *moving through old versions* to come out the other end with units still automated
-                unit.action = UnitActionType.Automate.value
                 unit.automated = true
                 UnitAutomation.automateUnitMoves(unit)
             }.takeIf { unit.currentMovement > 0 }
