@@ -650,8 +650,12 @@ enum class UniqueType(
         docDescription = "Turns this unique into a trigger, activating this unique as a *global* unique for a number of turns"),
     ConditionalChance("with [amount]% chance", UniqueTarget.Conditional),
     ConditionalEveryTurns("every [positiveAmount] turns", UniqueTarget.Conditional),
-    ConditionalBeforeTurns("before [amount] turns", UniqueTarget.Conditional),
-    ConditionalAfterTurns("after [amount] turns", UniqueTarget.Conditional),
+    ConditionalBeforeTurns("before turn number [amount]", UniqueTarget.Conditional),
+    @Deprecated("As of 4.11.18", ReplaceWith("before turn number [amount]"))
+    ConditionalBeforeTurnsOld("before [amount] turns", UniqueTarget.Conditional),
+    ConditionalAfterTurns("after turn number [amount]", UniqueTarget.Conditional),
+    @Deprecated("As of 4.11.18", ReplaceWith("after turn number [amount]"))
+    ConditionalAfterTurnsOld("after [amount] turns", UniqueTarget.Conditional),
     ConditionalTutorialsEnabled("if tutorials are enabled", UniqueTarget.Conditional, flags = UniqueFlag.setOfHiddenToUsers), // Hidden as no translations needed for now
     ConditionalTutorialCompleted("if tutorial [comment] is completed", UniqueTarget.Conditional, flags = UniqueFlag.setOfHiddenToUsers), // Hidden as no translations needed for now
 

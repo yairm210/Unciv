@@ -1819,16 +1819,19 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Resource
 
 ??? example  "Generated with weight [amount]"
+	The probability for this resource to be chosen is (this resource weight) / (sum weight of all eligible resources). Resources without a unique are given weight `1`
 	Example: "Generated with weight [3]"
 
 	Applicable to: Resource
 
 ??? example  "Minor deposits generated with weight [amount]"
+	The probability for this resource to be chosen is (this resource weight) / (sum weight of all eligible resources). Resources without a unique are not generated as minor deposits.
 	Example: "Minor deposits generated with weight [3]"
 
 	Applicable to: Resource
 
 ??? example  "Generated near City States with weight [amount]"
+	The probability for this resource to be chosen is (this resource weight) / (sum weight of all eligible resources). Only assignable to luxuries, resources without a unique are given weight `1`
 	Example: "Generated near City States with weight [3]"
 
 	Applicable to: Resource
@@ -1942,13 +1945,13 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Conditional
 
-??? example  "&lt;before [amount] turns&gt;"
-	Example: "&lt;before [3] turns&gt;"
+??? example  "&lt;before turn number [amount]&gt;"
+	Example: "&lt;before turn number [3]&gt;"
 
 	Applicable to: Conditional
 
-??? example  "&lt;after [amount] turns&gt;"
-	Example: "&lt;after [3] turns&gt;"
+??? example  "&lt;after turn number [amount]&gt;"
+	Example: "&lt;after turn number [3]&gt;"
 
 	Applicable to: Conditional
 
