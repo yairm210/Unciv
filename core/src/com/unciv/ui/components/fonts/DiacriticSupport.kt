@@ -21,7 +21,7 @@ import org.jetbrains.annotations.VisibleForTesting
  *
  *  ### Usage
  *  - Call [reset] when translation loading starts over
- *  - Call [prepareTranslationData] once a translation file is read (their map of key (left of =) to translation (right of =) is in memory, pass that as argument)
+ *  - Instantiate [DiacriticSupport] through the constructor-like factory [invoke] once a translation file is read (their map of key (left of =) to translation (right of =) is in memory, pass that as argument)
  *  - Check [noDiacritics] - if true, the rest of that language load need not bother with diacritics
  *  - Call [remapDiacritics] on each translation and store the result instead of the original value
  *  - If you wish to save some memory, call [freeTranslationData] after all required languages are done
@@ -29,10 +29,73 @@ import org.jetbrains.annotations.VisibleForTesting
  *
  *  ### Notes
  *  - [FontRulesetIcons] initialize ***after*** Translation loading. If this ever changes, this might need some tweaking.
+ *  - The primary constructor is only used from the [Companion.invoke] factory and for testing.
  */
-object DiacriticSupport {
-    /** Start at end of Unicode Private Use Area and go down from there: UShort is the preferred Char() constructor parameter! */
-    private const val startingReplacementCodepoint: UShort = 63743u // 0xF8FF
+class DiacriticSupport(range: CharRange, leftDiacritics: String, rightDiacritics: String, joinerDiacritics: String) {
+    companion object {
+        /** Start at end of Unicode Private Use Area and go down from there: UShort is the preferred Char() constructor parameter! */
+        private const val startingReplacementCodepoint: UShort = 63743u // 0xF8FF
+
+        private var nextFreeDiacriticReplacementCodepoint = startingReplacementCodepoint
+        private val fakeAlphabet = mutableMapOf<Char, String>()
+        private val inverseMap = mutableMapOf<String, Char>()
+
+        /** Prepares this for a complete start-over, expecting a language load to instantiate a DiacriticSupport next */
+        fun reset() {
+            fakeAlphabet.clear()
+            freeTranslationData()
+            nextFreeDiacriticReplacementCodepoint = startingReplacementCodepoint
+        }
+
+        /** This is the main engine for rendering text glyphs after the translation loader has filled up this `object`
+         *  @param  char The real or "fake alphabet" char stored by [remapDiacritics] to render
+         *  @return The one to many (probably 8 max) codepoint string to be rendered into a single glyph by native font services
+         */
+        fun getStringFor(char: Char) = fakeAlphabet[char] ?: char.toString()
+
+        /** Call when use of [remapDiacritics] is finished to save some memory */
+        fun freeTranslationData() {
+            for ((length, examples) in inverseMap.keys.groupBy { it.length }.toSortedMap()) {
+                Log.debug("Length %d - example %s", length, examples.first())
+            }
+            inverseMap.clear()
+        }
+
+        /** Other "fake" alphabets can use Unicode Private Use Areas from U+E000 up to including... */
+        fun getCurrentFreeCode() = Char(nextFreeDiacriticReplacementCodepoint)
+
+        /** If this is true, no need to bother [remapping chars at render time][getStringFor] */
+        fun isEmpty() = fakeAlphabet.isEmpty()
+
+        /** Factory that gets the primary constructor parameters by extracting the translation entries for [TranslationKeys] */
+        operator fun invoke(translations: HashMap<String, String>): DiacriticSupport {
+            val stripCommentRegex = """^"?(.*?)"?(?:\s*#.*)?$""".toRegex()
+            fun String?.parseDiacriticEntry(): String {
+                if (isNullOrEmpty()) return ""
+                val tokens = stripCommentRegex.matchEntire(this)!!.groupValues[1].splitToSequence(' ').toMutableList()
+                for (index in tokens.indices) {
+                    val token = tokens[index]
+                    when {
+                        token.length == 1 -> continue
+                        token.startsWith("u+", true) -> tokens[index] = Char(token.drop(2).toInt(16)).toString()
+                        tokens.size == 1 -> continue
+                        else -> throw IllegalArgumentException("Invalid diacritic definition: \"$token\" is not a single character or unicode codepoint notation")
+                    }
+                }
+                return tokens.joinToString("")
+            }
+
+            val rangeStart = translations[TranslationKeys.rangeStart].parseDiacriticEntry()
+            val rangeEnd = translations[TranslationKeys.rangeEnd].parseDiacriticEntry()
+            val range = if (rangeStart.isEmpty() || rangeEnd.isEmpty()) CharRange.EMPTY
+            else rangeStart.first()..rangeEnd.first()
+            val leftDiacritics = translations[TranslationKeys.left].parseDiacriticEntry()
+            val rightDiacritics = translations[TranslationKeys.right].parseDiacriticEntry()
+            val joinerDiacritics = translations[TranslationKeys.joiner].parseDiacriticEntry()
+
+            return DiacriticSupport(range, leftDiacritics, rightDiacritics, joinerDiacritics)
+        }
+    }
 
     private object TranslationKeys {
         const val rangeStart = "language_start_code"
@@ -42,18 +105,11 @@ object DiacriticSupport {
         const val joiner = "left_and_right_joiners"
     }
 
-    //region The following fields can persist over loading multiple languages
-    private var nextFreeDiacriticReplacementCodepoint = startingReplacementCodepoint
-    private val fakeAlphabet = mutableMapOf<Char, String>()
-    private val inverseMap = mutableMapOf<String, Char>()
-    //endregion
-
-    //region These fields will only persist during one language load
-    private var noDiacritics = true
+    private val noDiacritics: Boolean
     private val charClassMap = mutableMapOf<Char, CharClass>()
     private var defaultCharClass = CharClass.None
 
-    private class LineData(capacity: Int) {
+    private inner class LineData(capacity: Int) {
         val output = StringBuilder(capacity)
         val accumulator = StringBuilder(9) // touhidurrr said there can be nine
         fun expectsJoin() = accumulator.isNotEmpty() && getCharClass(accumulator.last()).expectsRightJoin
@@ -97,44 +153,11 @@ object DiacriticSupport {
         };
         abstract fun process(data: LineData, char: Char)
     }
-    //endregion
-
-    /** Prepares this for a complete start-over, expecting a language load calling [prepareTranslationData] next */
-    fun reset() {
-        fakeAlphabet.clear()
-        freeTranslationData()
-        nextFreeDiacriticReplacementCodepoint = startingReplacementCodepoint
-        defaultCharClass = CharClass.None
-    }
-
-    /** This is the main engine for rendering text glyphs after the translation loader has filled up this `object`
-     *  @param  char The real or "fake alphabet" char stored by [remapDiacritics] to render
-     *  @return The one to many (probably 8 max) codepoint string to be rendered into a single glyph by native font services
-     */
-    fun getStringFor(char: Char) = fakeAlphabet[char] ?: char.toString()
-
-    /** Call when use of [remapDiacritics] is finished to save some memory */
-    fun freeTranslationData() {
-        for ((length, examples) in inverseMap.keys.groupBy { it.length }.toSortedMap()) {
-            Log.debug("Length %d - example %s", length, examples.first())
-        }
-        inverseMap.clear()
-        charClassMap.clear()
-        noDiacritics = true
-    }
-
-    /** Other "fake" alphabets can use Unicode Private Use Areas from U+E000 up to including... */
-    fun getCurrentFreeCode() = Char(nextFreeDiacriticReplacementCodepoint)
-
-    /** If this is true, no need to bother [remapping chars at render time][getStringFor] */
-    fun isEmpty() = fakeAlphabet.isEmpty()
 
     @VisibleForTesting
     fun getKnownCombinations(): Set<String> = inverseMap.keys
 
-    //region Methods used during translation file loading
-
-    /** Set at [prepareTranslationData], if true the translation loader need not bother passing stuff through [remapDiacritics]. */
+    /** Set at instatiation, if true the translation loader need not bother passing stuff through [remapDiacritics]. */
     fun noDiacritics() = noDiacritics
 
     private fun getCharClass(char: Char) = charClassMap[char] ?: defaultCharClass
@@ -149,40 +172,7 @@ object DiacriticSupport {
         return char
     }
 
-    /** Set up for a series of [remapDiacritics] calls for a specific language.
-     *  Extracts the translation entries for [TranslationKeys] and sets up [CharClass] [mappings][charClassMap] using them. */
-    fun prepareTranslationData(translations: HashMap<String, String>) {
-        val stripCommentRegex = """^"?(.*?)"?(?:\s*#.*)?$""".toRegex()
-        fun String?.parseDiacriticEntry(): String {
-            if (isNullOrEmpty()) return ""
-            val tokens = stripCommentRegex.matchEntire(this)!!.groupValues[1].splitToSequence(' ').toMutableList()
-            for (index in tokens.indices) {
-                val token = tokens[index]
-                when {
-                    token.length == 1 -> continue
-                    token.startsWith("u+", true) -> tokens[index] = Char(token.drop(2).toInt(16)).toString()
-                    tokens.size == 1 -> continue
-                    else -> throw IllegalArgumentException("Invalid diacritic definition: \"$token\" is not a single character or unicode codepoint notation")
-                }
-            }
-            return tokens.joinToString("")
-        }
-
-        noDiacritics = true
-        val rangeStart = translations[TranslationKeys.rangeStart].parseDiacriticEntry()
-        val rangeEnd = translations[TranslationKeys.rangeEnd].parseDiacriticEntry()
-        val range = if (rangeStart.isEmpty() || rangeEnd.isEmpty()) CharRange.EMPTY
-            else rangeStart.first()..rangeEnd.first()
-        val leftDiacritics = translations[TranslationKeys.left].parseDiacriticEntry()
-        val rightDiacritics = translations[TranslationKeys.right].parseDiacriticEntry()
-        val joinerDiacritics = translations[TranslationKeys.joiner].parseDiacriticEntry()
-        if (leftDiacritics.isNotEmpty() || rightDiacritics.isNotEmpty() || joinerDiacritics.isNotEmpty())
-            prepareTranslationData(range, leftDiacritics, rightDiacritics, joinerDiacritics)
-    }
-
-    @VisibleForTesting
-    fun prepareTranslationData(range: CharRange, leftDiacritics: String, rightDiacritics: String, joinerDiacritics: String) {
-        charClassMap.clear()
+    init {
         if (range.isEmpty()) {
             defaultCharClass = CharClass.Base
             charClassMap[' '] = CharClass.None
@@ -193,7 +183,7 @@ object DiacriticSupport {
         for (char in leftDiacritics) charClassMap[char] = CharClass.LeftJoiner
         for (char in rightDiacritics) charClassMap[char] = CharClass.RightJoiner
         for (char in joinerDiacritics) charClassMap[char] = CharClass.LeftRightJoiner
-        noDiacritics = false
+        noDiacritics = leftDiacritics.isEmpty() && rightDiacritics.isEmpty() && joinerDiacritics.isEmpty()
     }
 
     /** Replaces the combos of diacritics/joiners with their affected characters with a "fake" alphabet */
@@ -207,6 +197,4 @@ object DiacriticSupport {
         }
         return data.result()
     }
-
-    //endregion
 }

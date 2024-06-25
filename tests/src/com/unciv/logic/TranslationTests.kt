@@ -329,8 +329,8 @@ class TranslationTests {
             .mapNotNull { entry ->
                 entry["English"]?.let { entry.entry to it }
             }.toMap(HashMap())
-        DiacriticSupport.prepareTranslationData(english)
-        Assert.assertTrue(DiacriticSupport.noDiacritics())
+        val diacriticSupport = DiacriticSupport(english)
+        Assert.assertTrue(diacriticSupport.noDiacritics())
     }
 
     @Test
@@ -344,12 +344,12 @@ class TranslationTests {
         DiacriticSupport.reset()
         val leftJoiningDiacritics = "ঁ ং ঃ ় া ি ী ু ূ ৃ ৄ ে ৈ ো ৌ ্ ৗ ৢ ৣ ৾".replace(" ", "")
         val leftAndRightJoiners = "্"
-        DiacriticSupport.prepareTranslationData(Char(0x0980U)..Char(0x09FDU), leftJoiningDiacritics, "", leftAndRightJoiners)
+        val diacriticSupport = DiacriticSupport(Char(0x0980U)..Char(0x09FDU), leftJoiningDiacritics, "", leftAndRightJoiners)
 
         listOf(
             "মানচিত্র সম্পাদক", "দেখুন", "উৎপন্ন করুন", "আংশিক", "খ্রিষ্টপূর্ব", "সংক্ষিপ্ত", "শক্তি", "ষ্ঠ্যে"
-        ).forEach { DiacriticSupport.remapDiacritics(it) }
-        val actual = DiacriticSupport.getKnownCombinations()
+        ).forEach { diacriticSupport.remapDiacritics(it) }
+        val actual = diacriticSupport.getKnownCombinations()
         val expected = setOf(
                 "ম, া", "চ, ি", "ত, ্, র", "ম, ্, প, া", "দ, ে", "খ, ু", "ন, ্, ন", "র, ু", "আ, ং", "শ, ি",
                 "খ, ্, র, ি", "ষ, ্, ট", "প, ূ", "র, ্, ব", "স, ং", "ক, ্, ষ, ি", "প, ্, ত", "ক, ্, ত, ি",

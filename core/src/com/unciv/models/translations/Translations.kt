@@ -119,8 +119,7 @@ class Translations : LinkedHashMap<String, TranslationEntry>() {
     }
 
     private fun createTranslations(language: String, languageTranslations: HashMap<String, String>) {
-        DiacriticSupport.prepareTranslationData(languageTranslations)
-        val noDiacritics = DiacriticSupport.noDiacritics()
+        val diacriticSupport = DiacriticSupport(languageTranslations).takeUnless { it.noDiacritics() }
         for ((key, value) in languageTranslations) {
             val hashKey = if (key.contains('[') && !key.contains('<'))
                 key.getPlaceholderText()
@@ -130,7 +129,7 @@ class Translations : LinkedHashMap<String, TranslationEntry>() {
                 entry = TranslationEntry(key)
                 this[hashKey] = entry
             }
-            entry[language] = if (noDiacritics) value else DiacriticSupport.remapDiacritics(value)
+            entry[language] = diacriticSupport?.remapDiacritics(value) ?: value
         }
     }
 
