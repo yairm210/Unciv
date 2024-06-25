@@ -1,0 +1,17 @@
+AI tile evaluation considers Faith
+
+Civ-wide uniques for city-wide resources
+
+Added 'city addbuilding', 'city removebuilding' console commands
+
+Add unique to conditionally control construction costs
+
+Added conditional for exact amount of population in a city
+
+Mod checker:
+- Unique conditional corrections, and better correction
+- Limit tech column building/wonder costs warnings to when required
+
+Unit upgrade menu can scroll - By SomeTroglodyte
+
+Military unit healing improvement  - By tuvus

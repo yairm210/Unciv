@@ -1,1 +1,1 @@
-4X civilization-building game
+Open source 4X civilization-building game

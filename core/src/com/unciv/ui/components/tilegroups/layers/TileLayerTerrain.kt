@@ -19,9 +19,9 @@ class TileLayerTerrain(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup,
 
     private val tileBaseImages: ArrayList<Image> = ArrayList()
     private var tileImageIdentifiers = listOf<String>()
-    private var bottomRightRiverImage :Image?=null
-    private var bottomRiverImage :Image?=null
-    private var bottomLeftRiverImage :Image?=null
+    private var bottomRightRiverImage: Image? = null
+    private var bottomRiverImage: Image? = null
+    private var bottomLeftRiverImage: Image? = null
 
     private fun getTerrainImageLocations(terrainSequence: Sequence<String>): List<String> {
         val allTerrains = terrainSequence.joinToString("+")
@@ -160,13 +160,13 @@ class TileLayerTerrain(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup,
             image.color = if (index == 0) baseTerrainColor else color
     }
 
-    private fun updateRivers(displayBottomRight:Boolean, displayBottom:Boolean, displayBottomLeft:Boolean){
+    private fun updateRivers(displayBottomRight: Boolean, displayBottom: Boolean, displayBottomLeft: Boolean) {
         bottomRightRiverImage = updateRiver(bottomRightRiverImage,displayBottomRight, strings().bottomRightRiver)
         bottomRiverImage = updateRiver(bottomRiverImage, displayBottom, strings().bottomRiver)
         bottomLeftRiverImage = updateRiver(bottomLeftRiverImage, displayBottomLeft, strings().bottomLeftRiver)
     }
 
-    private fun updateRiver(currentImage:Image?, shouldDisplay:Boolean,imageName:String): Image? {
+    private fun updateRiver(currentImage: Image?, shouldDisplay: Boolean, imageName: String): Image? {
         if (!shouldDisplay) {
             currentImage?.remove()
             return null

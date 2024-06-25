@@ -1,11 +1,11 @@
 package com.unciv.ui.components.input
 
 import com.badlogic.gdx.Gdx
-import com.badlogic.gdx.Input
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.InputEvent
 import com.badlogic.gdx.scenes.scene2d.InputListener
+import com.unciv.ui.components.extensions.isControlKeyPressed
 import com.unciv.ui.components.input.KeyShortcutDispatcherVeto.DispatcherVetoResult
 
 
@@ -20,7 +20,7 @@ import com.unciv.ui.components.input.KeyShortcutDispatcherVeto.DispatcherVetoRes
         val key = when {
             event == null ->
                 KeyCharAndCode.UNKNOWN
-            Gdx.input.isKeyPressed(Input.Keys.CONTROL_LEFT) || Gdx.input.isKeyPressed(Input.Keys.CONTROL_RIGHT) ->
+            Gdx.input.isControlKeyPressed() ->
                 KeyCharAndCode.ctrlFromCode(event.keyCode)
             else ->
                 KeyCharAndCode(event.keyCode)
@@ -48,14 +48,14 @@ import com.unciv.ui.components.input.KeyShortcutDispatcherVeto.DispatcherVetoRes
         val shortcutResolver = KeyShortcutDispatcher.Resolver(key)
         val pendingActors = ArrayDeque(actors.toList())
 
-        if (additionalShortcuts != null && dispatcherVetoer(null, additionalShortcuts) == DispatcherVetoResult.Accept)
+        if (additionalShortcuts != null && dispatcherVetoer(null) == DispatcherVetoResult.Accept)
             shortcutResolver.updateFor(additionalShortcuts)
 
         while (true) {
             val actor = pendingActors.removeFirstOrNull()
                 ?: break
             val shortcuts = ActorAttachments.getOrNull(actor)?.keyShortcuts
-            val vetoResult = dispatcherVetoer(actor, shortcuts)
+            val vetoResult = dispatcherVetoer(actor)
 
             if (shortcuts != null && vetoResult == DispatcherVetoResult.Accept)
                 shortcutResolver.updateFor(shortcuts)

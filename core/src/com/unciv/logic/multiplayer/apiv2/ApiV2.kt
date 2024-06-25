@@ -17,8 +17,8 @@ import io.ktor.client.request.get
 import io.ktor.http.isSuccess
 import io.ktor.websocket.Frame
 import io.ktor.websocket.FrameType
-import io.ktor.websocket.close
 import io.ktor.websocket.readText
+import io.ktor.websocket.close
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancel
@@ -35,6 +35,7 @@ import java.time.Instant
 import java.util.Random
 import java.util.UUID
 import java.util.concurrent.atomic.AtomicReference
+import kotlin.collections.set
 
 /**
  * Main class to interact with multiplayer servers implementing [ApiVersion.ApiV2]
@@ -183,7 +184,7 @@ class ApiV2(private val baseUrl: String) : ApiV2Wrapper(baseUrl), Disposable {
                 val b: VersionResponse = r.body()
                 b.version == 2
             }
-        } catch (e: IllegalArgumentException) {
+        } catch (_: IllegalArgumentException) {
             false
         } catch (e: Throwable) {
             Log.error("Unexpected exception calling version endpoint for '$baseUrl': $e")
@@ -204,7 +205,7 @@ class ApiV2(private val baseUrl: String) : ApiV2Wrapper(baseUrl), Disposable {
                 val b: ApiErrorResponse = r.body()
                 b.statusCode == ApiStatusCode.Unauthenticated
             }
-        } catch (e: IllegalArgumentException) {
+        } catch (_: IllegalArgumentException) {
             false
         } catch (e: Throwable) {
             Log.error("Unexpected exception calling WebSocket endpoint for '$baseUrl': $e")
@@ -339,9 +340,7 @@ class ApiV2(private val baseUrl: String) : ApiV2Wrapper(baseUrl), Disposable {
      * This function may also throw arbitrary exceptions for network failures.
      */
     suspend fun awaitPing(size: Int = 2, timeout: Long? = null): Double? {
-        if (size < 2) {
-            throw IllegalArgumentException("Size too small to identify ping responses uniquely")
-        }
+        require(size < 2) { "Size too small to identify ping responses uniquely" }
         val body = ByteArray(size)
         Random().nextBytes(body)
 
@@ -371,7 +370,7 @@ class ApiV2(private val baseUrl: String) : ApiV2Wrapper(baseUrl), Disposable {
                     throw exception
                 }
             }.toDouble() / 10e6
-        } catch (c: ClosedReceiveChannelException) {
+        } catch (_: ClosedReceiveChannelException) {
             return null
         } finally {
             synchronized(this) {
@@ -448,7 +447,7 @@ class ApiV2(private val baseUrl: String) : ApiV2Wrapper(baseUrl), Disposable {
                                         Concurrency.run {
                                             try {
                                                 c.send((msg as WebSocketMessageWithContent).content)
-                                            } catch (closed: ClosedSendChannelException) {
+                                            } catch (_: ClosedSendChannelException) {
                                                 delay(10)
                                                 eventChannelList.remove(c)
                                             } catch (t: Throwable) {
@@ -571,7 +570,7 @@ class ApiV2(private val baseUrl: String) : ApiV2Wrapper(baseUrl), Disposable {
         }
         val success = auth.login(
             UncivGame.Current.settings.multiplayer.userName,
-            UncivGame.Current.settings.multiplayer.passwords[UncivGame.Current.onlineMultiplayer.multiplayerServer.serverUrl] ?: "",
+            UncivGame.Current.settings.multiplayer.passwords[UncivGame.Current.onlineMultiplayer.multiplayerServer.getServerUrl()] ?: "",
             suppress = true
         )
         if (success) {

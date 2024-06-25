@@ -1,0 +1,5 @@
+Allow unique parameters to contain square brackets
+
+Library updates for performance and stability
+
+Targetting refactor - By Framonti

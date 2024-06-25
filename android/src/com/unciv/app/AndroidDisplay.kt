@@ -1,43 +1,21 @@
 package com.unciv.app
 
-import android.app.Activity
 import android.content.pm.ActivityInfo
-import android.database.ContentObserver
 import android.os.Build
-import android.os.Handler
-import android.provider.Settings
 import android.view.Display
 import android.view.Display.Mode
+import android.view.View
 import android.view.WindowManager
 import androidx.annotation.RequiresApi
+import com.badlogic.gdx.backends.android.AndroidApplication
 import com.unciv.models.metadata.GameSettings
 import com.unciv.models.translations.tr
-import com.unciv.utils.Log
 import com.unciv.utils.PlatformDisplay
 import com.unciv.utils.ScreenMode
 import com.unciv.utils.ScreenOrientation
 
 
-class AndroidScreenMode(
-    private val modeId: Int) : ScreenMode {
-    private var name: String = "Default"
-
-    @RequiresApi(Build.VERSION_CODES.M)
-    constructor(mode: Mode) : this(mode.modeId) {
-        name = "${mode.physicalWidth}x${mode.physicalHeight} (${mode.refreshRate.toInt()}HZ)"
-    }
-
-    override fun getId(): Int {
-        return modeId
-    }
-
-    override fun toString(): String {
-        return name.tr()
-    }
-
-}
-
-class AndroidDisplay(private val activity: Activity) : PlatformDisplay {
+class AndroidDisplay(private val activity: AndroidApplication) : PlatformDisplay {
 
     private var display: Display? = null
     private var displayModes: HashMap<Int, ScreenMode> = hashMapOf()
@@ -45,6 +23,7 @@ class AndroidDisplay(private val activity: Activity) : PlatformDisplay {
     init {
 
         // Fetch current display
+        @Suppress("DEPRECATION") // M..P should use the deprecated API
         display = when {
             Build.VERSION.SDK_INT >= Build.VERSION_CODES.R -> activity.display
             Build.VERSION.SDK_INT >= Build.VERSION_CODES.M -> activity.windowManager.defaultDisplay
@@ -52,7 +31,7 @@ class AndroidDisplay(private val activity: Activity) : PlatformDisplay {
         }
 
         // Add default mode
-        displayModes[0] = AndroidScreenMode(0)
+        displayModes[AndroidScreenMode.defaultId] = AndroidScreenMode.default
 
         // Add other supported modes
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
@@ -71,14 +50,31 @@ class AndroidDisplay(private val activity: Activity) : PlatformDisplay {
     }
 
     override fun setScreenMode(id: Int, settings: GameSettings) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            activity.runOnUiThread {
-                val params = activity.window.attributes
-                params.preferredDisplayModeId = id
-                activity.window.attributes = params
-            }
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) return
+        activity.runOnUiThread {
+            val params = activity.window.attributes
+            params.preferredDisplayModeId = id
+            activity.window.attributes = params
         }
+    }
 
+    override fun hasSystemUiVisibility() = true
+
+    override fun setSystemUiVisibility(hide: Boolean) {
+        activity.runOnUiThread {
+            setSystemUiVisibilityFromUiThread(hide)
+        }
+    }
+    internal fun setSystemUiVisibilityFromUiThread(hide: Boolean) {
+        @Suppress("DEPRECATION") // Avoids @RequiresApi(Build.VERSION_CODES.R)
+        activity.window.decorView.systemUiVisibility =
+            if (hide)
+                View.SYSTEM_UI_FLAG_LAYOUT_STABLE or
+                    View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or
+                    View.SYSTEM_UI_FLAG_HIDE_NAVIGATION or View.SYSTEM_UI_FLAG_FULLSCREEN or
+                    View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+            else
+                View.SYSTEM_UI_FLAG_LAYOUT_STABLE
     }
 
     override fun hasCutout(): Boolean {
@@ -95,14 +91,18 @@ class AndroidDisplay(private val activity: Activity) : PlatformDisplay {
     }
 
     override fun setCutout(enabled: Boolean) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-            val params = activity.window.attributes
-            params.layoutInDisplayCutoutMode = when {
-                enabled -> WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES
-                else -> WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_NEVER
-            }
-            activity.window.attributes = params
+        activity.runOnUiThread {
+            setCutoutFromUiThread(enabled)
         }
+    }
+    internal fun setCutoutFromUiThread(enabled: Boolean) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) return
+        val params = activity.window.attributes
+        params.layoutInDisplayCutoutMode = when {
+            enabled -> WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES
+            else -> WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_NEVER
+        }
+        activity.window.attributes = params  // This is the only line to actually need to be running on the Ui Thread
     }
 
 
@@ -121,7 +121,6 @@ class AndroidDisplay(private val activity: Activity) : PlatformDisplay {
     }
 
     override fun setOrientation(orientation: ScreenOrientation) {
-
         val mode = when (orientation) {
             ScreenOrientation.Landscape -> ActivityInfo.SCREEN_ORIENTATION_USER_LANDSCAPE
             ScreenOrientation.Portrait -> ActivityInfo.SCREEN_ORIENTATION_USER_PORTRAIT
@@ -133,4 +132,25 @@ class AndroidDisplay(private val activity: Activity) : PlatformDisplay {
             activity.requestedOrientation = mode
     }
 
+    class AndroidScreenMode private constructor(
+        private val modeId: Int,
+        private val name: String
+    ) : ScreenMode {
+        @RequiresApi(Build.VERSION_CODES.M)
+        constructor(mode: Mode) : this(mode.modeId, "${mode.physicalWidth}x${mode.physicalHeight} (${mode.refreshRate.toInt()}Hz)")
+
+        override fun getId(): Int {
+            return modeId
+        }
+
+        override fun toString(): String {
+            return name.tr()
+        }
+
+        companion object {
+            const val defaultId = 0
+            val default: AndroidScreenMode
+                get() = AndroidScreenMode(defaultId, "Default")
+        }
+    }
 }

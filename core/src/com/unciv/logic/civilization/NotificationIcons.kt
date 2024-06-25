@@ -4,7 +4,6 @@ object NotificationIcon {
     // Remember: The typical white-on-transparency icon will not be visible on Notifications
 
     const val Barbarians = "ImprovementIcons/Barbarian encampment"
-    const val Citadel = "ImprovementIcons/Citadel"
     const val City = "ImprovementIcons/City center"
     const val CityState = "OtherIcons/CityState"
     const val Crosshair = "OtherIcons/CrosshairB"

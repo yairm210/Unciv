@@ -1,73 +1,72 @@
 package com.unciv.ui.screens.worldscreen.unit.actions
 
-import com.unciv.Constants
-import com.unciv.logic.city.City
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.UnitAction
 import com.unciv.models.UnitActionType
+import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
 import com.unciv.ui.components.extensions.toPercent
 
 object UnitActionsReligion {
 
+    internal fun getFoundReligionActions(unit: MapUnit, tile: Tile): Sequence<UnitAction> {
+        if (!unit.civ.religionManager.mayFoundReligionAtAll()) return emptySequence()
 
-    internal fun addFoundReligionAction(unit: MapUnit, actionList: ArrayList<UnitAction>) {
-        if (!unit.hasUnique(UniqueType.MayFoundReligion)) return
-        if (!unit.civ.religionManager.mayFoundReligionAtAll(unit)) return
-        actionList += UnitAction(
-            UnitActionType.FoundReligion,
-            action = getFoundReligionAction(unit).takeIf { unit.civ.religionManager.mayFoundReligionNow(unit) }
-        )
+        val unique = UnitActionModifiers.getUsableUnitActionUniques(unit, UniqueType.MayFoundReligion)
+            .firstOrNull() ?: return emptySequence()
+
+        val hasActionModifiers = unique.conditionals.any { it.type?.targetTypes?.contains(
+            UniqueTarget.UnitActionModifier
+        ) == true }
+
+        return sequenceOf(UnitAction(
+            UnitActionType.FoundReligion, 80f,
+
+            if (hasActionModifiers) UnitActionModifiers.actionTextWithSideEffects(
+                UnitActionType.FoundReligion.value,
+                unique,
+                unit
+            )
+            else UnitActionType.FoundReligion.value,
+            action = {
+                unit.civ.religionManager.foundReligion(unit)
+
+                if (hasActionModifiers) UnitActionModifiers.activateSideEffects(unit, unique)
+                else unit.consume()
+            }.takeIf { unit.civ.religionManager.mayFoundReligionHere(tile)
+                && UnitActionModifiers.canActivateSideEffects(unit, unique)}
+        ))
     }
 
-    fun getFoundReligionAction(unit: MapUnit): () -> Unit {
-        return {
-            unit.civ.religionManager.foundReligion(unit)
-            unit.consume()
-        }
-    }
+    internal fun getEnhanceReligionActions(unit: MapUnit, tile: Tile): Sequence<UnitAction> {
+        if (!unit.civ.religionManager.mayEnhanceReligionAtAll()) return emptySequence()
 
-    internal fun addEnhanceReligionAction(unit: MapUnit, actionList: ArrayList<UnitAction>) {
-        if (!unit.hasUnique(UniqueType.MayEnhanceReligion)) return
-        if (!unit.civ.religionManager.mayEnhanceReligionAtAll(unit)) return
-        actionList += UnitAction(
-            UnitActionType.EnhanceReligion,
-            title = "Enhance [${unit.civ.religionManager.religion!!.getReligionDisplayName()}]",
-            action = getEnhanceReligionAction(unit).takeIf { unit.civ.religionManager.mayEnhanceReligionNow(unit) }
-        )
-    }
+        val unique = UnitActionModifiers.getUsableUnitActionUniques(unit, UniqueType.MayEnhanceReligion)
+            .firstOrNull() ?: return emptySequence()
 
-    fun getEnhanceReligionAction(unit: MapUnit): () -> Unit {
-        return {
-            unit.civ.religionManager.useProphetForEnhancingReligion(unit)
-            unit.consume()
-        }
-    }
+        val hasActionModifiers = unique.conditionals.any { it.type?.targetTypes?.contains(
+            UniqueTarget.UnitActionModifier
+        ) == true }
 
-    fun addActionsWithLimitedUses(unit: MapUnit, actionList: ArrayList<UnitAction>, tile: Tile) {
-
-        val actionsToAdd = unit.limitedActionsUnitCanDo()
-        if (actionsToAdd.none()) return
-        if (unit.religion == null || unit.civ.gameInfo.religions[unit.religion]!!.isPantheon()) return
-        val city = tile.getCity() ?: return
-        for (action in actionsToAdd) {
-            if (!unit.abilityUsesLeft.containsKey(action)) continue
-            if (unit.abilityUsesLeft[action]!! <= 0) continue
-            when (action) {
-                Constants.spreadReligion -> addSpreadReligionActions(unit, actionList, city)
-                Constants.removeHeresy -> addRemoveHeresyActions(unit, actionList, city)
-            }
-        }
-    }
-
-    private fun useActionWithLimitedUses(unit: MapUnit, action: String) {
-        unit.abilityUsesLeft[action] = unit.abilityUsesLeft[action]!! - 1
-        if (unit.abilityUsesLeft[action]!! <= 0) {
-            unit.consume()
-        }
+        val baseTitle = "Enhance [${unit.civ.religionManager.religion!!.getReligionDisplayName()}]"
+        return sequenceOf(UnitAction(
+            UnitActionType.EnhanceReligion, 79f,
+            title = if (hasActionModifiers) UnitActionModifiers.actionTextWithSideEffects(
+                baseTitle,
+                unique,
+                unit
+            )
+            else baseTitle,
+            action = {
+                unit.civ.religionManager.useProphetForEnhancingReligion(unit)
+                if (hasActionModifiers) UnitActionModifiers.activateSideEffects(unit, unique)
+                else unit.consume()
+            }.takeIf { unit.civ.religionManager.mayEnhanceReligionHere(tile)
+                && UnitActionModifiers.canActivateSideEffects(unit, unique)}
+        ))
     }
 
     private fun getPressureAddedFromSpread(unit: MapUnit): Int {
@@ -79,11 +78,19 @@ object UnitActionsReligion {
         return pressureAdded.toInt()
     }
 
-    private fun addSpreadReligionActions(unit: MapUnit, actionList: ArrayList<UnitAction>, city: City) {
-        if (!unit.civ.religionManager.maySpreadReligionAtAll(unit)) return
-        actionList += UnitAction(
-            UnitActionType.SpreadReligion,
-            title = "Spread [${unit.getReligionDisplayName()!!}]",
+    internal fun getSpreadReligionActions(unit: MapUnit, tile: Tile): Sequence<UnitAction> {
+        if (!unit.civ.religionManager.maySpreadReligionAtAll(unit)) return emptySequence()
+        val city = tile.getCity() ?: return emptySequence()
+
+        val newStyleUnique = UnitActionModifiers.getUsableUnitActionUniques(unit, UniqueType.CanSpreadReligion)
+            .firstOrNull() ?: return emptySequence()
+
+        val title = UnitActionModifiers.actionTextWithSideEffects("Spread [${unit.getReligionDisplayName()!!}]",
+            newStyleUnique, unit)
+
+        return sequenceOf(UnitAction(
+            UnitActionType.SpreadReligion, 68f,
+            title = title,
             action = {
                 val followersOfOtherReligions = city.religion.getFollowersOfOtherReligionsThan(unit.religion!!)
                 for (unique in unit.getMatchingUniques(UniqueType.StatsWhenSpreading, checkCivInfoUniques = true)) {
@@ -92,36 +99,49 @@ object UnitActionsReligion {
                 city.religion.addPressure(unit.religion!!, getPressureAddedFromSpread(unit))
                 if (unit.hasUnique(UniqueType.RemoveOtherReligions))
                     city.religion.removeAllPressuresExceptFor(unit.religion!!)
-                unit.currentMovement = 0f
-                useActionWithLimitedUses(unit, Constants.spreadReligion)
-            }.takeIf { unit.currentMovement > 0 && unit.civ.religionManager.maySpreadReligionNow(unit) }
-        )
+
+                UnitActionModifiers.activateSideEffects(unit, newStyleUnique)
+            }.takeIf { unit.civ.religionManager.maySpreadReligionNow(unit)
+                && UnitActionModifiers.canActivateSideEffects(unit, newStyleUnique)}
+        ))
     }
 
-    private fun addRemoveHeresyActions(unit: MapUnit, actionList: ArrayList<UnitAction>, city: City) {
-        if (!unit.civ.gameInfo.isReligionEnabled()) return
-        if (city.civ != unit.civ) return
+    internal fun getRemoveHeresyActions(unit: MapUnit, tile: Tile): Sequence<UnitAction> {
+        if (!unit.civ.gameInfo.isReligionEnabled()) return emptySequence()
+        val religion = unit.civ.gameInfo.religions[unit.religion] ?: return emptySequence()
+        if (religion.isPantheon()) return emptySequence()
+
+        val city = tile.getCity() ?: return emptySequence()
+        if (city.civ != unit.civ) return emptySequence()
         // Only allow the action if the city actually has any foreign religion
         // This will almost be always due to pressure from cities close-by
-        if (city.religion.getPressures().none { it.key != unit.religion!! }) return
-        actionList += UnitAction(
-            UnitActionType.RemoveHeresy,
-            title = "Remove Heresy",
+        if (city.religion.getPressures().none { it.key != unit.religion!! }) return emptySequence()
+
+        val newStyleUnique = UnitActionModifiers.getUsableUnitActionUniques(unit, UniqueType.CanRemoveHeresy).firstOrNull()
+        val hasNewStyleAbility = newStyleUnique != null
+
+        if (!hasNewStyleAbility) return emptySequence()
+
+        val title =
+            UnitActionModifiers.actionTextWithSideEffects("Remove Heresy", newStyleUnique!!, unit)
+
+        return sequenceOf(UnitAction(
+            UnitActionType.RemoveHeresy, 69f,
+            title = title,
             action = {
                 city.religion.removeAllPressuresExceptFor(unit.religion!!)
                 if (city.religion.religionThisIsTheHolyCityOf != null) {
-                    val religion = unit.civ.gameInfo.religions[city.religion.religionThisIsTheHolyCityOf]!!
+                    val holyCityReligion = unit.civ.gameInfo.religions[city.religion.religionThisIsTheHolyCityOf]!!
                     if (city.religion.religionThisIsTheHolyCityOf != unit.religion && !city.religion.isBlockedHolyCity) {
-                        religion.getFounder().addNotification("An [${unit.baseUnit.name}] has removed your religion [${religion.getReligionDisplayName()}] from its Holy City [${city.name}]!", NotificationCategory.Religion)
+                        holyCityReligion.getFounder().addNotification("An [${unit.baseUnit.name}] has removed your religion [${holyCityReligion.getReligionDisplayName()}] from its Holy City [${city.name}]!", NotificationCategory.Religion)
                         city.religion.isBlockedHolyCity = true
                     } else if (city.religion.religionThisIsTheHolyCityOf == unit.religion && city.religion.isBlockedHolyCity) {
-                        religion.getFounder().addNotification("An [${unit.baseUnit.name}] has restored [${city.name}] as the Holy City of your religion [${religion.getReligionDisplayName()}]!", NotificationCategory.Religion)
+                        holyCityReligion.getFounder().addNotification("An [${unit.baseUnit.name}] has restored [${city.name}] as the Holy City of your religion [${holyCityReligion.getReligionDisplayName()}]!", NotificationCategory.Religion)
                         city.religion.isBlockedHolyCity = false
                     }
                 }
-                unit.currentMovement = 0f
-                useActionWithLimitedUses(unit, Constants.removeHeresy)
-            }.takeIf { unit.currentMovement > 0f }
-        )
+                UnitActionModifiers.activateSideEffects(unit, newStyleUnique)
+            }.takeIf { UnitActionModifiers.canActivateSideEffects(unit, newStyleUnique)}
+        ))
     }
 }

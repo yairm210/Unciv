@@ -1,0 +1,10 @@
+Can nuke barbarians - By tuvus
+
+By SomeTroglodyte:
+- Two extension features for custom maps
+- Images for Escort Formation
+- Can click behind OptionPopup to close
+
+By SeventhM:
+- Allow policy removal unique to remove multiple policies
+- Fix personality being ignored for tile rankings in small cities

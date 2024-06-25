@@ -6,9 +6,16 @@ open class KeyShortcutDispatcher {
      * @param binding   The abstract [KeyboardBinding] that will be bound to an action through the [add] methods
      * @param priority  Used by the [Resolver] - only the actions bound to the incoming key with the _highest priority_ will run
      */
-    data class KeyShortcut(val binding: KeyboardBinding, val key: KeyCharAndCode, val priority: Int = 0) {
+    data class KeyShortcut(private val binding: KeyboardBinding, private val key: KeyCharAndCode, val priority: Int = 0) {
         /** Debug helper */
         override fun toString() = if (binding.hidden) "$key@$priority" else "$binding@$priority"
+
+        fun getRealKey(): KeyCharAndCode = if (binding == KeyboardBinding.None) key else KeyboardBindings[binding]
+        fun getRealPriority(): Int {
+            // Bindings with the default key (user-untouched) are less prioritized than unique, user-set bindings
+            if (binding != KeyboardBinding.None && KeyboardBindings[binding] == binding.defaultKey) return priority - 1
+            return priority
+        }
     }
 
     private data class ShortcutAction(val shortcut: KeyShortcut, val action: ActivationAction)
@@ -18,7 +25,7 @@ open class KeyShortcutDispatcher {
 
     fun add(shortcut: KeyShortcut?, action: ActivationAction?) {
         if (action == null || shortcut == null) return
-        shortcuts.removeIf { it.shortcut == shortcut }
+        shortcuts.removeAll { it.shortcut == shortcut }
         shortcuts.add(ShortcutAction(shortcut, action))
     }
 
@@ -41,29 +48,14 @@ open class KeyShortcutDispatcher {
             add(KeyCharAndCode(keyCode), action)
     }
 
-    fun remove(shortcut: KeyShortcut?) {
-        shortcuts.removeIf { it.shortcut == shortcut }
-    }
-
-    fun remove(binding: KeyboardBinding) {
-        shortcuts.removeIf { it.shortcut.binding == binding }
-    }
-
-    fun remove(key: KeyCharAndCode?) {
-        shortcuts.removeIf { it.shortcut.key == key }
-    }
-
-    fun remove(char: Char?) {
-        shortcuts.removeIf { it.shortcut.key.char == char }
-    }
-
-    fun remove(keyCode: Int?) {
-        shortcuts.removeIf { it.shortcut.key.code == keyCode }
-    }
+    operator fun contains(key: KeyCharAndCode) =
+        shortcuts.any { key == it.shortcut.getRealKey() }
 
     open fun isActive(): Boolean = true
 
 
+    /** Given that several different shortcuts could be mapped to the same key,
+     *   this class decides what will actually happen when the key is pressed */
     class Resolver(val key: KeyCharAndCode) {
         private var priority = Int.MIN_VALUE
         val triggeredActions: MutableList<ActivationAction> = mutableListOf()
@@ -72,12 +64,10 @@ open class KeyShortcutDispatcher {
             if (!dispatcher.isActive()) return
 
             for ((shortcut, action) in dispatcher.shortcuts) {
-                var (binding, shortcutKey, shortcutPriority) = shortcut
-                if (binding != KeyboardBinding.None) {
-                    shortcutKey = KeyboardBindings[binding]
-                    if (shortcutKey == binding.defaultKey) shortcutPriority--
-                }
-                if (shortcutKey != key || shortcutPriority < priority) continue
+                if (shortcut.getRealKey() != key) continue
+                val shortcutPriority = shortcut.getRealPriority()
+                // We always want to take the highest priority action, but if there are several of the same priority we do them all
+                if (shortcutPriority < priority) continue
                 if (shortcutPriority > priority) {
                     priority = shortcutPriority
                     triggeredActions.clear()

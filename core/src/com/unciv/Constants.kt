@@ -3,8 +3,8 @@ package com.unciv
 object Constants {
     const val settler = "Settler"
     const val eraSpecificUnit = "Era Starting Unit"
-    const val spreadReligion = "Spread Religion"
-    const val removeHeresy = "Remove Foreign religions from your own cities"
+    val all = setOf("All", "all")
+    const val NO_ID = -1
 
     const val english = "English"
 
@@ -15,6 +15,9 @@ object Constants {
     const val coast = "Coast"
     /** The "Coastal" terrain _filter_ */
     const val coastal = "Coastal"
+
+    /** Used as filter and the name of the pseudo-TerrainFeature defining river Stats */
+    const val river = "River"
 
     const val mountain = "Mountain"
     const val hill = "Hill"
@@ -43,6 +46,7 @@ object Constants {
     const val peaceTreaty = "Peace Treaty"
     const val researchAgreement = "Research Agreement"
     const val openBorders = "Open Borders"
+    const val defensivePact = "Defensive Pact"
     /** Used as origin in StatMap or ResourceSupplyList, or the toggle button in DiplomacyOverviewTab */
     const val cityStates = "City-States"
     /** Used as origin in ResourceSupplyList */
@@ -67,6 +71,7 @@ object Constants {
 
     const val OK = "OK"
     const val close = "Close"
+    const val cancel = "Cancel"
     const val yes = "Yes"
     const val no = "No"
     const val loading = "Loading..."
@@ -78,9 +83,6 @@ object Constants {
     const val embarked = "Embarked"
     const val wounded = "Wounded"
 
-
-    const val rising = "Rising"
-    const val lowering = "Lowering"
     const val remove = "Remove "
     const val repair = "Repair"
 
@@ -90,6 +92,8 @@ object Constants {
     const val uncivXyzServer = "https://uncivserver.xyz"
 
     const val defaultTileset = "HexaRealm"
+    /** Default for TileSetConfig.fallbackTileSet - Don't change unless you've also moved the crosshatch, borders, and arrows as well */
+    const val defaultFallbackTileset = "FantasyHex"
     const val defaultUnitset = "AbsoluteUnits"
     const val defaultSkin = "Minimal"
 
@@ -103,4 +107,10 @@ object Constants {
 
     const val defaultFontSize = 18
     const val headingFontSize = 24
+
+    /** URL to the root of the Unciv repository, including trailing slash */
+    // Note: Should the project move, this covers external links, but not comments e.g. mentioning issues
+    const val uncivRepoURL = "https://github.com/yairm210/Unciv/"
+    /** URL to the wiki, including trailing slash */
+    const val wikiURL = "https://yairm210.github.io/Unciv/"
 }

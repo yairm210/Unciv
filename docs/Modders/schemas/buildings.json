@@ -1,0 +1,73 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "type": "array",
+  "items": {
+      "type": "object",
+      "properties": {
+          "name": { "type": "string" },
+
+          "production": { "type": "number" },
+          "food": { "type": "number" },
+          "gold": { "type": "number" },
+          "science": { "type": "number" },
+          "culture": { "type": "number" },
+          "happiness": { "type": "number" },
+          "faith": { "type": "number" },
+
+          "uniques": { "$ref": "https://raw.githubusercontent.com/yairm210/Unciv/master/docs/Modders/schemas/uniques.json" },
+          "civilopediaText": { "$ref": "https://raw.githubusercontent.com/yairm210/Unciv/master/docs/Modders/schemas/civilopediaText.json" },
+
+          "requiredTech": { "type": "string" },
+          "cost": { "type": "integer" },
+          "maintenance": {
+              "type": "integer",
+              "description": "Gold upkeep per turn for this building"
+          },
+          "percentStatBonus": { "$ref": "https://raw.githubusercontent.com/yairm210/Unciv/master/docs/Modders/schemas/stats.json" },
+          "specialistSlots": {
+              "type": "object",
+              "additionalProperties": { "type": "integer" },
+              "description": "How many specialists of each type does this building allow for. Key must be name of existing specialist."
+          },
+          "greatPersonPoints": {
+              "type": "object",
+              "additionalProperties": { "type": "integer" },
+              "description": "Which Great Person Points this building generates per turn. Key must be name of Great Person unit."
+          },
+          "hurryCostModifier": { "type": "number" },
+          "isWonder": { "type": "boolean" },
+          "isNationalWonder": { "type": "boolean" },
+          "requiredBuilding": { "type": "string" },
+          "requiredResource": { "type": "string" },
+          "requiredNearbyImprovedResources": {
+              "type": "array",
+              "items": { "type": "string" },
+              "uniqueItems": true
+          },
+          "cityStrength": { "type": "integer" },
+          "cityHealth": { "type": "integer" },
+
+          "uniqueTo": {
+              "type": "string",
+              "description": "Designates that only this nation can build this unit. Must be exact name of existing nation."
+          },
+          "replaces": {
+              "type": "string",
+              "description": "For unique units: the name of the original unit that this unit replaces for the uniqueTo nation."
+          },
+
+          "quote": {
+              "type": "string",
+              "description": "Quote that will be displayed for Wonders in the 'construction completed' popup"
+          },
+          "replacementTextForUniques": {
+              "type": "string",
+              "description": "Freeform text that will be shown to users, overriding the list of uniques."
+          }
+      },
+      "required": [
+          "name"
+      ],
+      "additionalProperties": false
+  }
+}

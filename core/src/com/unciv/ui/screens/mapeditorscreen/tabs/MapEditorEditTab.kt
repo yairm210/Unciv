@@ -3,26 +3,30 @@ package com.unciv.ui.screens.mapeditorscreen.tabs
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Group
+import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Cell
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.logic.map.BFS
 import com.unciv.logic.map.mapgenerator.MapGenerationRandomness
+import com.unciv.logic.map.mapgenerator.MapGenerator
 import com.unciv.logic.map.mapgenerator.RiverGenerator
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.translations.tr
-import com.unciv.ui.components.input.KeyCharAndCode
-import com.unciv.ui.components.TabbedPager
-import com.unciv.ui.components.UncivSlider
 import com.unciv.ui.components.extensions.addSeparator
-import com.unciv.ui.components.input.keyShortcuts
 import com.unciv.ui.components.extensions.toLabel
+import com.unciv.ui.components.input.KeyCharAndCode
+import com.unciv.ui.components.input.KeyboardBinding
+import com.unciv.ui.components.input.keyShortcuts
+import com.unciv.ui.components.input.onActivation
+import com.unciv.ui.components.widgets.TabbedPager
+import com.unciv.ui.components.widgets.UncivSlider
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popups.ToastPopup
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.civilopediascreen.FormattedLine
 import com.unciv.ui.screens.mapeditorscreen.MapEditorScreen
-import com.unciv.ui.screens.mapeditorscreen.TileInfoNormalizer
+import com.unciv.logic.map.tile.TileNormalizer
 import com.unciv.ui.screens.mapeditorscreen.tabs.MapEditorOptionsTab.TileMatchFuzziness
 import com.unciv.utils.Log
 
@@ -135,27 +139,43 @@ class MapEditorEditTab(
 
     private fun selectPage(index: Int) = subTabs.selectPage(index)
 
-    fun setBrush(name: String, icon: String, isRemove: Boolean = false, applyAction: (Tile)->Unit) {
+    private fun linkCivilopedia(brushActor: Actor, link: String) {
+        if (link.isEmpty()) return
+        brushActor.touchable = Touchable.enabled
+        // As so often, doing the binding separately to avoid the tooltip
+        brushActor.onActivation {
+            editorScreen.openCivilopedia(link)
+        }
+        brushActor.keyShortcuts.add(KeyboardBinding.Civilopedia)
+    }
+
+    // "Normal" setBrush overload, using named RulesetObject icon
+    fun setBrush(name: String, icon: String, pediaLink: String = icon, isRemove: Boolean = false, applyAction: (Tile)->Unit) {
         brushHandlerType = BrushHandlerType.Tile
-        brushCell.setActor(FormattedLine(name, icon = icon, iconCrossed = isRemove).render(0f))
+        val brushActor = FormattedLine(name, icon = icon, iconCrossed = isRemove).render(0f)
+        linkCivilopedia(brushActor, pediaLink)
+        brushCell.setActor(brushActor)
         brushAction = applyAction
     }
-    private fun setBrush(name: String, icon: Actor, applyAction: (Tile)->Unit) {
+    // Helper overload for brushes using icons not existing as RulesetObject
+    private fun setBrush(name: String, icon: Actor, pediaLink: String, applyAction: (Tile)->Unit) {
         brushHandlerType = BrushHandlerType.Tile
         val line = Table().apply {
             add(icon).padRight(10f)
             add(name.toLabel())
         }
+        linkCivilopedia(line, pediaLink)
         brushCell.setActor(line)
         brushAction = applyAction
     }
-    fun setBrush(handlerType: BrushHandlerType, name: String, icon: String,
-                 isRemove: Boolean = false, applyAction: (Tile)->Unit) {
-        setBrush(name, icon, isRemove, applyAction)
+    // This overload is used by Roads and Starting locations
+    fun setBrush(handlerType: BrushHandlerType, name: String, icon: String, pediaLink: String = icon, isRemove: Boolean = false, applyAction: (Tile)->Unit) {
+        setBrush(name, icon, pediaLink, isRemove, applyAction)
         brushHandlerType = handlerType
     }
-    fun setBrush(handlerType: BrushHandlerType, name: String, icon: Actor, applyAction: (Tile)->Unit) {
-        setBrush(name, icon, applyAction)
+    // This overload is used by Rivers
+    fun setBrush(handlerType: BrushHandlerType, name: String, icon: Actor, pediaLink: String, applyAction: (Tile)->Unit) {
+        setBrush(name, icon, pediaLink, applyAction)
         brushHandlerType = handlerType
     }
 
@@ -211,7 +231,7 @@ class MapEditorEditTab(
             riverEndTile = tile
             if (riverStartTile != null) return paintRiverFromTo()
         }
-        tilesToHighlight.forEach { editorScreen.highlightTile(it, Color.BLUE) }
+        for (tileToHighlight in tilesToHighlight) editorScreen.highlightTile(tileToHighlight, Color.BLUE)
     }
     private fun paintRiverFromTo() {
         val resultingTiles = mutableSetOf<Tile>()
@@ -219,6 +239,7 @@ class MapEditorEditTab(
         try {
             val riverGenerator = RiverGenerator(editorScreen.tileMap, randomness, ruleset)
             riverGenerator.spawnRiver(riverStartTile!!, riverEndTile!!, resultingTiles)
+            MapGenerator(ruleset).convertTerrains(resultingTiles)
         } catch (ex: Exception) {
             Log.error("Exception while generating rivers", ex)
             ToastPopup("River generation failed!", editorScreen)
@@ -226,7 +247,7 @@ class MapEditorEditTab(
         riverStartTile = null
         riverEndTile = null
         editorScreen.isDirty = true
-        resultingTiles.forEach { editorScreen.updateAndHighlight(it, Color.SKY) }
+        for (tile in resultingTiles) editorScreen.updateAndHighlight(tile, Color.SKY)
     }
 
     internal fun paintTilesWithBrush(tile: Tile) {
@@ -238,12 +259,12 @@ class MapEditorEditTab(
             } else {
                 tile.getTilesInDistance(brushSize - 1)
             }
-        tiles.forEach {
+        for (tileToPaint in tiles) {
             when (brushHandlerType) {
-                BrushHandlerType.Direct -> directPaintTile(it)
-                BrushHandlerType.Tile -> paintTile(it)
-                BrushHandlerType.Road -> roadPaintTile(it)
-                BrushHandlerType.River -> riverPaintTile(it)
+                BrushHandlerType.Direct -> directPaintTile(tileToPaint)
+                BrushHandlerType.Tile -> paintTile(tileToPaint)
+                BrushHandlerType.Road -> roadPaintTile(tileToPaint)
+                BrushHandlerType.River -> riverPaintTile(tileToPaint)
                 else -> {} // other cases can't reach here
             }
         }
@@ -256,19 +277,22 @@ class MapEditorEditTab(
         editorScreen.updateAndHighlight(tile)
     }
 
-    /** Used for rivers - same as directPaintTile but may need to update 10,12 and 2 o'clock neighbor tiles too */
+    /** Used for rivers - same as [directPaintTile] but may need to update 10,12 and 2 o'clock neighbor tiles too
+     *
+     *  Note: Unlike [paintRiverFromTo] this does **not** call [MapGenerator.convertTerrains] to allow more freedom.
+     */
     private fun riverPaintTile(tile: Tile) {
         directPaintTile(tile)
-        tile.neighbors.forEach {
-            if (it.position.x > tile.position.x || it.position.y > tile.position.y)
-                editorScreen.updateTile(it)
+        for (neighbor in tile.neighbors) {
+            if (neighbor.position.x > tile.position.x || neighbor.position.y > tile.position.y)
+                editorScreen.updateTile(neighbor)
         }
     }
 
     // Used for roads - same as paintTile but all neighbors need TileGroup.update too
     private fun roadPaintTile(tile: Tile) {
         if (!paintTile(tile)) return
-        tile.neighbors.forEach { editorScreen.updateTile(it) }
+        for (neighbor in tile.neighbors) editorScreen.updateTile(neighbor)
     }
 
     /** apply brush to a single tile */
@@ -288,7 +312,7 @@ class MapEditorEditTab(
 
         brushAction(tile)
         tile.setTerrainTransients()
-        TileInfoNormalizer.normalizeToRuleset(tile, ruleset)
+        TileNormalizer.normalizeToRuleset(tile, ruleset)
         if (!paintedTile.isSimilarEnough(tile)) {
             // revert tile to original state
             tile.applyFrom(savedTile)

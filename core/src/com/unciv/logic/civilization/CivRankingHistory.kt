@@ -6,8 +6,7 @@ import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.ui.screens.victoryscreen.RankingType
 
 /** Records for each turn (key of outer map) what the score (value of inner map) was for each RankingType. */
-open class CivRankingHistory : HashMap<Int, Map<RankingType, Int>>(),
-    IsPartOfGameInfoSerialization {
+class CivRankingHistory : HashMap<Int, Map<RankingType, Int>>(), IsPartOfGameInfoSerialization, Json.Serializable {
 
     /**
      * Returns a shallow copy of this [CivRankingHistory] instance.
@@ -24,34 +23,30 @@ open class CivRankingHistory : HashMap<Int, Map<RankingType, Int>>(),
                 RankingType.values().associateWith { civilization.getStatForRanking(it) }
     }
 
-    /** Custom Json formatter for a [CivRankingHistory].
-     *  Output looks like this: `statsHistory:{0:{S:50,G:120,...},1:{S:55,G:80,...}}`
+    /** Implement Json.Serializable
+     *  - Output looked like this: `statsHistory:{0:{S:50,G:120,...},1:{S:55,G:80,...}}`
+     *    (but now we have turned off simplifed json, so it's properly quoted)
      */
-    class Serializer : Json.Serializer<CivRankingHistory> {
-        override fun write(json: Json, `object`: CivRankingHistory, knownType: Class<*>?) {
-            json.writeObjectStart()
-            for ((turn, rankings) in `object`) {
-                json.writeObjectStart(turn.toString())
-                for ((rankingType, score) in rankings) {
-                    json.writeValue(rankingType.idForSerialization, score)
-                }
-                json.writeObjectEnd()
+    override fun write(json: Json) {
+        for ((turn, rankings) in this) {
+            json.writeObjectStart(turn.toString())
+            for ((rankingType, score) in rankings) {
+                json.writeValue(rankingType.idForSerialization, score)
             }
             json.writeObjectEnd()
         }
+    }
 
-        override fun read(json: Json, jsonData: JsonValue, type: Class<*>?) =
-                CivRankingHistory().apply {
-                    for (entry in jsonData) {
-                        val turn = entry.name.toInt()
-                        val rankings = mutableMapOf<RankingType, Int>()
-                        for (rankingEntry in entry) {
-                            val rankingType = RankingType.fromIdForSerialization(rankingEntry.name)
-                                ?: continue  // Silently drop unknown ranking types.
-                            rankings[rankingType] = rankingEntry.asInt()
-                        }
-                        this[turn] = rankings
-                    }
-                }
+    override fun read(json: Json, jsonData: JsonValue) {
+        for (entry in jsonData) {
+            val turn = entry.name.toInt()
+            val rankings = mutableMapOf<RankingType, Int>()
+            for (rankingEntry in entry) {
+                val rankingType = RankingType.fromIdForSerialization(rankingEntry.name)
+                    ?: continue  // Silently drop unknown ranking types.
+                rankings[rankingType] = rankingEntry.asInt()
+            }
+            this[turn] = rankings
+        }
     }
 }

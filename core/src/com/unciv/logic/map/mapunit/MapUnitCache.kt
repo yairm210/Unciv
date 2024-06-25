@@ -53,25 +53,20 @@ class MapUnitCache(private val mapUnit: MapUnit) {
     val doubleMovementInTerrain = HashMap<String, DoubleMovement>()
 
     var canEnterIceTiles = false
-
     var cannotEnterOceanTiles = false
-
     var canEnterForeignTerrain: Boolean = false
-
+    var canEnterCityStates: Boolean = false
     var costToDisembark: Float? = null
-
     var costToEmbark: Float? = null
-
     var paradropRange = 0
 
     var hasUniqueToBuildImprovements = false    // not canBuildImprovements to avoid confusion
     var hasUniqueToCreateWaterImprovements = false
 
     var hasStrengthBonusInRadiusUnique = false
-
     var hasCitadelPlacementUnique = false
 
-    fun updateUniques(){
+    fun updateUniques() {
 
         allTilesCosts1 = mapUnit.hasUnique(UniqueType.AllTilesCost1Move)
         canPassThroughImpassableTiles = mapUnit.hasUnique(UniqueType.CanPassImpassable)
@@ -119,9 +114,37 @@ class MapUnitCache(private val mapUnit: MapUnit) {
         canEnterForeignTerrain = mapUnit.hasUnique(UniqueType.CanEnterForeignTiles)
                 || mapUnit.hasUnique(UniqueType.CanEnterForeignTilesButLosesReligiousStrength)
 
+        canEnterCityStates = mapUnit.hasUnique(UniqueType.CanTradeWithCityStateForGoldAndInfluence)
+
         hasStrengthBonusInRadiusUnique = mapUnit.hasUnique(UniqueType.StrengthBonusInRadius)
         hasCitadelPlacementUnique = mapUnit.getMatchingUniques(UniqueType.ConstructImprovementInstantly)
             .mapNotNull { mapUnit.civ.gameInfo.ruleset.tileImprovements[it.params[0]] }
             .any { it.hasUnique(UniqueType.TakesOverAdjacentTiles) }
+    }
+
+    companion object {
+        val UnitMovementUniques = setOf(
+            UniqueType.AllTilesCost1Move,
+            UniqueType.CanPassImpassable,
+            UniqueType.IgnoresTerrainCost,
+            UniqueType.IgnoresZOC,
+            UniqueType.RoughTerrainPenalty,
+            UniqueType.CannotMove,
+            UniqueType.CanMoveOnWater,
+            UniqueType.DoubleMovementOnTerrain,
+            UniqueType.ReducedDisembarkCost,
+            UniqueType.ReducedEmbarkCost,
+            UniqueType.CanEnterIceTiles,
+            UniqueType.CanEnterForeignTiles,
+            UniqueType.CanEnterForeignTilesButLosesReligiousStrength,
+            // Special - applied in Nation and not here, wshould be moved to mapunitcache as well
+            UniqueType.ForestsAndJunglesAreRoads,
+            UniqueType.IgnoreHillMovementCost,
+            // Movement algorithm avoids damage on route, meaning terrain damage requires caching
+            UniqueType.DamagesContainingUnits,
+            UniqueType.LandUnitEmbarkation,
+            UniqueType.LandUnitsCrossTerrainAfterUnitGained,
+            UniqueType.EnemyUnitsSpendExtraMovement
+            )
     }
 }

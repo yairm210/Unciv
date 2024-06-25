@@ -4,8 +4,8 @@ import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.stats.Stat
 import com.unciv.models.translations.tr
+import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.screens.civilopediascreen.FormattedLine
-import com.unciv.ui.components.Fonts
 import kotlin.math.abs
 
 class Speed : RulesetObject(), IsPartOfGameInfoSerialization {
@@ -54,9 +54,10 @@ class Speed : RulesetObject(), IsPartOfGameInfoSerialization {
         const val DEFAULTFORSIMULATION: String = "Standard"
     }
 
+    // Note: Speed is IHasUniques, but no implementation reads them, thus no UniqueType accepts this target
     override fun getUniqueTarget(): UniqueTarget = UniqueTarget.Speed
 
-    override fun makeLink(): String = "GameSpeed/$name"
+    override fun makeLink(): String = "Speed/$name"
     override fun getCivilopediaTextHeader() = FormattedLine(name, header = 2)
     override fun getCivilopediaTextLines(ruleset: Ruleset) = sequence {
         yield(FormattedLine("General speed modifier: [${modifier * 100}]%${Fonts.turn}"))

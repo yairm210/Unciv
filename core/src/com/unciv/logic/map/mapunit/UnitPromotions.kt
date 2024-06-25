@@ -62,17 +62,19 @@ class UnitPromotions : IsPartOfGameInfoSerialization {
         return true
     }
 
-    fun addPromotion(promotionName: String, isFree: Boolean = false){
+    fun addPromotion(promotionName: String, isFree: Boolean = false) {
+        val ruleset = unit.civ.gameInfo.ruleset
+        val promotion = ruleset.unitPromotions[promotionName] ?: return
+
         if (!isFree) {
-            XP -= xpForNextPromotion()
-            numberOfPromotions++
+            if (!promotion.hasUnique(UniqueType.FreePromotion)) {
+                XP -= xpForNextPromotion()
+                numberOfPromotions++
+            }
 
             for (unique in unit.getTriggeredUniques(UniqueType.TriggerUponPromotion))
-                UniqueTriggerActivation.triggerUnitwideUnique(unique, unit)
+                UniqueTriggerActivation.triggerUnique(unique, unit)
         }
-
-        val ruleset = unit.civ.gameInfo.ruleset
-        val promotion = ruleset.unitPromotions[promotionName]!!
 
         if (!promotion.hasUnique(UniqueType.SkipPromotion))
             promotions.add(promotionName)
@@ -89,25 +91,40 @@ class UnitPromotions : IsPartOfGameInfoSerialization {
         unit.updateVisibleTiles()  // some promotions/uniques give the unit bonus sight
     }
 
+    fun removePromotion(promotionName: String) {
+        val ruleset = unit.civ.gameInfo.ruleset
+        val promotion = ruleset.unitPromotions[promotionName]!!
+
+        if (getPromotions().contains(promotion)) {
+            promotions.remove(promotionName)
+            unit.updateUniques()
+            unit.updateVisibleTiles()
+        }
+    }
+
     private fun doDirectPromotionEffects(promotion: Promotion) {
         for (unique in promotion.uniqueObjects)
             if (unique.conditionalsApply(StateForConditionals(civInfo = unit.civ, unit = unit))
                     && !unique.hasTriggerConditional())
-                UniqueTriggerActivation.triggerUnitwideUnique(unique, unit, triggerNotificationText = "due to our [${unit.name}] being promoted")
+                UniqueTriggerActivation.triggerUnique(unique, unit, triggerNotificationText = "due to our [${unit.name}] being promoted")
     }
 
     /** Gets all promotions this unit could currently "buy" with enough [XP]
      *  Checks unit type, already acquired promotions, prerequisites and incompatibility uniques.
      */
     fun getAvailablePromotions(): Sequence<Promotion> {
-        return unit.civ.gameInfo.ruleset.unitPromotions.values
-            .asSequence()
-            .filter { unit.type.name in it.unitTypes && it.name !in promotions }
-            .filter { it.prerequisites.isEmpty() || it.prerequisites.any { p->p in promotions } }
-            .filter { promotion -> promotion.uniqueObjects
-                .none { it.type == UniqueType.OnlyAvailableWhen
-                        && !it.conditionalsApply(StateForConditionals(unit.civ, unit = unit))  }
-            }
+        return unit.civ.gameInfo.ruleset.unitPromotions.values.asSequence().filter { isAvailable(it) }
+    }
+
+    private fun isAvailable(promotion: Promotion): Boolean {
+        if (promotion.name in promotions) return false
+        if (unit.type.name !in promotion.unitTypes) return false
+        if (promotion.prerequisites.isNotEmpty() && promotion.prerequisites.none { it in promotions }) return false
+        val stateForConditionals = StateForConditionals(unit.civ, unit = unit)
+        if (promotion.hasUnique(UniqueType.Unavailable, stateForConditionals)) return false
+        if (promotion.getMatchingUniques(UniqueType.OnlyAvailable, StateForConditionals.IgnoreConditionals)
+            .any { !it.conditionalsApply(stateForConditionals) }) return false
+        return true
     }
 
     fun clone(): UnitPromotions {

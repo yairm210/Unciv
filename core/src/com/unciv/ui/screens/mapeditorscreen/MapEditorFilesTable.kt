@@ -8,13 +8,13 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.unciv.logic.files.MapSaver
 import com.unciv.models.ruleset.RulesetCache
-import com.unciv.ui.images.ImageGetter
-import com.unciv.ui.screens.basescreen.BaseScreen
+import com.unciv.ui.components.extensions.pad
+import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.input.keyShortcuts
 import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.input.onDoubleClick
-import com.unciv.ui.components.extensions.pad
-import com.unciv.ui.components.extensions.toLabel
+import com.unciv.ui.images.ImageGetter
+import com.unciv.ui.screens.basescreen.BaseScreen
 
 class MapEditorFilesTable(
     initWidth: Float,

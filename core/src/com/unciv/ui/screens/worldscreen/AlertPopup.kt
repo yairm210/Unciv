@@ -5,13 +5,17 @@ import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.Constants
 import com.unciv.UncivGame
-import com.unciv.logic.battle.Battle
+import com.unciv.logic.battle.BattleUnitCapture
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.AlertType
 import com.unciv.logic.civilization.Civilization
+import com.unciv.logic.civilization.CivilopediaAction
+import com.unciv.logic.civilization.DiplomacyAction
 import com.unciv.logic.civilization.LocationAction
 import com.unciv.logic.civilization.NotificationCategory
+import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.civilization.PopupAlert
+import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.models.ruleset.unique.UniqueType
@@ -35,6 +39,10 @@ import java.util.EnumSet
 /**
  * [Popup] communicating events other than trade offers to the player.
  * (e.g. First Contact, Wonder built, Tech researched,...)
+ *
+ * **Opens itself at the end of instantiation!**
+ *
+ * (In rare cases, it chooses not to: Mods making a RecapturedCivilian not find the unit as it was illegal and removed after the actual capture)
  *
  * Called in [WorldScreen].update, which pulls them from viewingCiv.popupAlerts.
  *
@@ -64,7 +72,13 @@ class AlertPopup(
     private fun getCity(cityId: String) = gameInfo.getCities().first { it.id == cityId }
     //endregion
 
+    // This redirects all addCloseButton uses with only text and no action to accept the space key
+    private fun addCloseButton(text: String = Constants.close) =
+        addCloseButton(text, KeyboardBinding.NextTurnAlternate, null)
+
     init {
+        var skipThisAlert = false
+
         // This makes the buttons fill up available width. See comments in #9559.
         // To implement a middle ground, I would either simply replace growX() with minWidth(240f) or so,
         // or replace the Popup.equalizeLastTwoButtonWidths() function with something intelligent not
@@ -87,9 +101,11 @@ class AlertPopup(
             AlertType.StartIntro -> addStartIntro()
             AlertType.DiplomaticMarriage -> addDiplomaticMarriage()
             AlertType.BulliedProtectedMinor, AlertType.AttackedProtectedMinor -> addBulliedOrAttackedProtectedMinor()
-            AlertType.RecapturedCivilian -> addRecapturedCivilian()
+            AlertType.RecapturedCivilian -> skipThisAlert = addRecapturedCivilian()
             AlertType.GameHasBeenWon -> addGameHasBeenWon()
+            AlertType.Event -> skipThisAlert = !addEvent()
         }
+        if (!skipThisAlert) open()
     }
 
     //region AlertType handlers
@@ -109,7 +125,7 @@ class AlertPopup(
         val player = viewingCiv
         addLeaderName(bullyOrAttacker)
 
-        val isAtLeastNeutral = bullyOrAttacker.getDiplomacyManager(player).isRelationshipLevelGE(RelationshipLevel.Neutral)
+        val isAtLeastNeutral = bullyOrAttacker.getDiplomacyManager(player)!!.isRelationshipLevelGE(RelationshipLevel.Neutral)
         val text = when {
             popupAlert.type == AlertType.BulliedProtectedMinor && isAtLeastNeutral ->  // Nice message
                 "I've been informed that my armies have taken tribute from [${cityState.civName}], a city-state under your protection.\nI assure you, this was quite unintentional, and I hope that this does not serve to drive us apart."
@@ -123,11 +139,11 @@ class AlertPopup(
         addGoodSizedLabel(text).row()
 
         addCloseButton("You'll pay for this!", KeyboardBinding.Confirm) {
-            player.getDiplomacyManager(bullyOrAttacker).sideWithCityState()
+            player.getDiplomacyManager(bullyOrAttacker)!!.sideWithCityState()
         }.row()
         addCloseButton("Very well.", KeyboardBinding.Cancel) {
-            val capitalLocation = LocationAction(cityState.cities.asSequence().map { it.location }) // in practice 0 or 1 entries, that's OK
-            player.addNotification("You have broken your Pledge to Protect [${cityState.civName}]!", capitalLocation, NotificationCategory.Diplomacy, cityState.civName)
+            player.addNotification("You have broken your Pledge to Protect [${cityState.civName}]!",
+                cityState.cityStateFunctions.getNotificationActions(), NotificationCategory.Diplomacy, cityState.civName)
             cityState.cityStateFunctions.removeProtectorCiv(player, forced = true)
         }.row()
     }
@@ -186,10 +202,12 @@ class AlertPopup(
 
     private fun addDeclarationOfFriendship() {
         val otherciv = getCiv(popupAlert.value)
-        val playerDiploManager = viewingCiv.getDiplomacyManager(otherciv)
+        val playerDiploManager = viewingCiv.getDiplomacyManager(otherciv)!!
         addLeaderName(otherciv)
         addGoodSizedLabel("My friend, shall we declare our friendship to the world?").row()
-        addCloseButton("We are not interested.", KeyboardBinding.Cancel).row()
+        addCloseButton("We are not interested.", KeyboardBinding.Cancel) {
+            playerDiploManager.otherCivDiplomacy().setFlag(DiplomacyFlags.DeclinedDeclarationOfFriendship, 20)
+        }.row()
         addCloseButton("Declare Friendship ([30] turns)", KeyboardBinding.Confirm) {
             playerDiploManager.signDeclarationOfFriendship()
         }
@@ -201,11 +219,12 @@ class AlertPopup(
         addGoodSizedLabel(civInfo.nation.defeated).row()
         addCloseButton("Farewell.")
         music.chooseTrack(civInfo.civName, MusicMood.Defeat, EnumSet.of(MusicTrackChooserFlags.SuffixMustMatch))
+        music.playVoice("${civInfo.civName}.defeated")
     }
 
     private fun addDemandToStopSettlingCitiesNear() {
         val otherciv = getCiv(popupAlert.value)
-        val playerDiploManager = viewingCiv.getDiplomacyManager(otherciv)
+        val playerDiploManager = viewingCiv.getDiplomacyManager(otherciv)!!
         addLeaderName(otherciv)
         addGoodSizedLabel("Please don't settle new cities near us.").row()
         addCloseButton("Very well, we shall look for new lands to settle.", KeyboardBinding.Confirm) {
@@ -243,6 +262,7 @@ class AlertPopup(
         val nation = civInfo.nation
         addLeaderName(civInfo)
         music.chooseTrack(civInfo.civName, MusicMood.themeOrPeace, MusicTrackChooserFlags.setSpecific)
+        music.playVoice("${civInfo.civName}.introduction")
         if (civInfo.isCityState()) {
             addGoodSizedLabel("We have encountered the City-State of [${nation.name}]!").row()
             addCloseButton("Excellent!")
@@ -267,14 +287,12 @@ class AlertPopup(
         music.chooseTrack(viewingCiv.civName, MusicMood.Golden, MusicTrackChooserFlags.setSpecific)
     }
 
-    private fun addRecapturedCivilian() {
+    /** @return true to skip opening this Popup, as we're running in the initialization phase before the Popup is open */
+    private fun addRecapturedCivilian(): Boolean {
         val position = Vector2().fromString(popupAlert.value)
         val tile = gameInfo.tileMap[position]
-        val capturedUnit = tile.civilianUnit // This has got to be it
-        if (capturedUnit == null) { // the unit disappeared somehow? maybe a modded action?
-            close()
-            return
-        }
+        val capturedUnit = tile.civilianUnit  // This has got to be it
+            ?: return true // the unit disappeared somehow? maybe a modded action?
         val originalOwner = getCiv(capturedUnit.originalOwner!!)
         val captor = viewingCiv
 
@@ -288,25 +306,34 @@ class AlertPopup(
             // Return it to original owner
             val unitName = capturedUnit.baseUnit.name
             capturedUnit.destroy()
-            val closestCity =
-                    originalOwner.cities.minByOrNull { it.getCenterTile().aerialDistanceTo(tile) }
+            val closestCity = originalOwner.cities.minByOrNull { it.getCenterTile().aerialDistanceTo(tile) }
+
             if (closestCity != null) {
                 // Attempt to place the unit near their nearest city
                 originalOwner.units.placeUnitNearTile(closestCity.location, unitName)
             }
 
             if (originalOwner.isCityState()) {
-                originalOwner.getDiplomacyManager(captor).addInfluence(45f)
+                originalOwner.getDiplomacyManagerOrMeet(captor).addInfluence(45f)
             } else if (originalOwner.isMajorCiv()) {
                 // No extra bonus from doing it several times
-                originalOwner.getDiplomacyManager(captor)
+                originalOwner.getDiplomacyManagerOrMeet(captor)
                     .setModifier(DiplomaticModifiers.ReturnedCapturedUnits, 20f)
             }
+            val notificationSequence = sequence {
+                yield(LocationAction(tile.position))
+                if (closestCity != null)
+                    yield(LocationAction(closestCity.location))
+                yield(DiplomacyAction(captor.civName))
+                yield(CivilopediaAction("Tutorial/Barbarians"))
+            }
+            originalOwner.addNotification("Your captured [${unitName}] has been returned by [${captor.civName}]", notificationSequence, NotificationCategory.Diplomacy, NotificationIcon.Trade, unitName, captor.civName)
         }
         addCloseButton(Constants.no, KeyboardBinding.Cancel) {
             // Take it for ourselves
-            Battle.captureOrConvertToWorker(capturedUnit, captor)
+            BattleUnitCapture.captureOrConvertToWorker(capturedUnit, captor)
         }
+        return false
     }
 
     private fun addStartIntro() {
@@ -339,6 +366,7 @@ class AlertPopup(
         addCloseButton("You'll pay for this!")
         addCloseButton("Very well.")
         music.chooseTrack(civInfo.civName, MusicMood.War, MusicTrackChooserFlags.setSpecific)
+        music.playVoice("${civInfo.civName}.declaringWar")
     }
 
     private fun addWonderBuilt() {
@@ -468,6 +496,15 @@ class AlertPopup(
         } else {
             addGoodSizedLabel("Original capitals and holy cities cannot be razed.").row()
         }
+    }
+
+    /** Returns if event was triggered correctly */
+    private fun addEvent(): Boolean {
+        val event = gameInfo.ruleset.events[popupAlert.value] ?: return false
+        val render = RenderEvent(event, worldScreen) { close() }
+        if (!render.isValid) return false
+        add(render).pad(0f).row()
+        return true
     }
 
     //endregion

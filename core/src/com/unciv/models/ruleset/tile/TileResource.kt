@@ -5,9 +5,11 @@ import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.Belief
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetStatsObject
+import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stats
+import com.unciv.ui.objectdescriptions.uniquesToCivilopediaTextLines
 import com.unciv.ui.screens.civilopediascreen.FormattedLine
 
 class TileResource : RulesetStatsObject() {
@@ -41,14 +43,15 @@ class TileResource : RulesetStatsObject() {
         textList += FormattedLine("${resourceType.name} resource", header = 4, color = resourceType.color)
         textList += FormattedLine()
 
+        uniquesToCivilopediaTextLines(textList, sorted = true)
+
         textList += FormattedLine(cloneStats().toString())
 
         if (terrainsCanBeFoundOn.isNotEmpty()) {
             textList += FormattedLine()
             if (terrainsCanBeFoundOn.size == 1) {
-                with (terrainsCanBeFoundOn[0]) {
-                    textList += FormattedLine("{Can be found on} {$this}", link = "Terrain/$this")
-                }
+                val terrainName = terrainsCanBeFoundOn[0]
+                textList += FormattedLine("{Can be found on} {$terrainName}", link = "Terrain/$terrainName")
             } else {
                 textList += FormattedLine("{Can be found on}:")
                 terrainsCanBeFoundOn.forEach {
@@ -92,7 +95,8 @@ class TileResource : RulesetStatsObject() {
             }
         }
 
-        val buildingsThatConsumeThis = ruleset.buildings.values.filter { it.getResourceRequirementsPerTurn().containsKey(name) }
+        val buildingsThatConsumeThis = ruleset.buildings.values.filter { it.getResourceRequirementsPerTurn(
+            StateForConditionals.IgnoreConditionals).containsKey(name) }
         if (buildingsThatConsumeThis.isNotEmpty()) {
             textList += FormattedLine()
             textList += FormattedLine("{Buildings that consume this resource}:")
@@ -101,7 +105,8 @@ class TileResource : RulesetStatsObject() {
             }
         }
 
-        val unitsThatConsumeThis = ruleset.units.values.filter { it.getResourceRequirementsPerTurn().containsKey(name) }
+        val unitsThatConsumeThis = ruleset.units.values.filter { it.getResourceRequirementsPerTurn(
+            StateForConditionals.IgnoreConditionals).containsKey(name) }
         if (unitsThatConsumeThis.isNotEmpty()) {
             textList += FormattedLine()
             textList += FormattedLine("{Units that consume this resource}: ")
@@ -136,6 +141,21 @@ class TileResource : RulesetStatsObject() {
         }
     }
 
+    fun generatesNaturallyOn(tile: Tile): Boolean {
+        if (tile.lastTerrain.name !in terrainsCanBeFoundOn) return false
+        val stateForConditionals = StateForConditionals(tile = tile)
+        if (hasUnique(UniqueType.NoNaturalGeneration, stateForConditionals)) return false
+        if (tile.allTerrains.any { it.hasUnique(UniqueType.BlocksResources, stateForConditionals) }) return false
+
+        if (tile.temperature!=null && tile.humidity!=null) // Only works when in map generation
+            for (unique in getMatchingUniques(UniqueType.TileGenerationConditions, stateForConditionals)){
+                if (tile.temperature!! !in unique.params[0].toDouble() .. unique.params[1].toDouble()) return false
+                if (tile.humidity!! !in unique.params[2].toDouble() .. unique.params[3].toDouble()) return false
+            }
+
+        return true
+    }
+
     fun isStockpiled() = hasUnique(UniqueType.Stockpiled)
 
     class DepositAmount {
@@ -143,5 +163,4 @@ class TileResource : RulesetStatsObject() {
         var default: Int = 2
         var abundant: Int = 3
     }
-
 }

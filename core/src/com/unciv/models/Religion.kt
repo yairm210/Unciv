@@ -65,11 +65,9 @@ class Religion() : INamed, IsPartOfGameInfoSerialization {
             return mapToExistingBeliefs((founderBeliefs + followerBeliefs).toHashSet()).asSequence()
 
         val beliefs =
-            when (beliefType) {
-                BeliefType.Pantheon -> followerBeliefs
-                BeliefType.Follower -> followerBeliefs
-                BeliefType.Founder -> founderBeliefs
-                BeliefType.Enhancer -> founderBeliefs
+            when {
+                beliefType.isFollower -> followerBeliefs
+                beliefType.isFounder -> founderBeliefs
                 else -> null!! // This is fine...
             }
 
@@ -101,7 +99,7 @@ class Religion() : INamed, IsPartOfGameInfoSerialization {
 
     fun isEnhancedReligion() = getBeliefs(BeliefType.Enhancer).any()
 
-    fun getFounder() = gameInfo.civilizations.first { it.civName == foundingCivName }
+    fun getFounder() = gameInfo.getCivilization(foundingCivName)
 
     private fun unlockedBuildingsPurchasable(): List<String> {
         return getAllBeliefsOrdered().flatMap { belief ->

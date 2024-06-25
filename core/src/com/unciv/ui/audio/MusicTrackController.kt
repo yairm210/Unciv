@@ -7,7 +7,7 @@ import com.unciv.utils.Log
 import com.unciv.utils.debug
 
 /** Wraps one Gdx Music instance and manages loading, playback, fading and cleanup */
-internal class MusicTrackController(private var volume: Float) {
+internal class MusicTrackController(private var volume: Float, initialFadeVolume: Float = 1f) {
 
     /** Internal state of this Music track */
     enum class State(val canPlay: Boolean) {
@@ -25,7 +25,7 @@ internal class MusicTrackController(private var volume: Float) {
     var music: Music? = null
         private set
     private var fadeStep = MusicController.defaultFadingStep
-    private var fadeVolume: Float = 1f
+    private var fadeVolume: Float = initialFadeVolume
 
     //region Functions for MusicController
 
@@ -47,7 +47,9 @@ internal class MusicTrackController(private var volume: Float) {
         onError: ((MusicTrackController)->Unit)? = null,
         onSuccess: ((MusicTrackController)->Unit)? = null
     ) {
-        check(state == State.None && music == null) { "MusicTrackController.load should only be called once" }
+        check(state == State.None && music == null) {
+            "MusicTrackController.load should only be called once"
+        }
 
         state = State.Loading
         try {
@@ -75,12 +77,13 @@ internal class MusicTrackController(private var volume: Float) {
 
     /** Starts fadeIn or fadeOut.
      *
-     *  Note this does _not_ set the current fade "percentage" to allow smoothly changing direction mid-fade
+     *  Note this does _not_ set the current fade "percentage" to allow smoothly
+     *  changing direction mid-fade
      *  @param step Overrides current fade step only if >0
      */
     fun startFade(fade: State, step: Float = 0f) {
         if (!state.canPlay) return
-        if (fadeStep > 0f) fadeStep = step
+        if (step > 0f) fadeStep = step
         state = fade
     }
 
@@ -97,7 +100,8 @@ internal class MusicTrackController(private var volume: Float) {
         return timerTick() == State.Idle
     }
 
-    /** @return [Music.isPlaying] (Gdx music stream is playing) unless [state] says it won't make sense */
+    /** @return [Music.isPlaying] (Gdx music stream is playing)
+     *      unless [state] says it won't make sense */
     fun isPlaying() = state.canPlay && music?.isPlaying == true
 
     /** Calls play() on the wrapped Gdx Music, catching exceptions to console.
@@ -105,11 +109,14 @@ internal class MusicTrackController(private var volume: Float) {
      *  @throws IllegalStateException if called on uninitialized instance
      */
     fun play(): Boolean {
-        check(state.canPlay && music != null) { "MusicTrackController.play called on uninitialized instance" }
+        check(state.canPlay && music != null) {
+            "MusicTrackController.play called on uninitialized instance"
+        }
 
         // Unexplained observed exception: Gdx.Music.play fails with
         // "Unable to allocate audio buffers. AL Error: 40964" (AL_INVALID_OPERATION)
-        // Approach: This track dies, parent controller will enter state Silence thus retry after a while.
+        // Approach: This track dies, parent controller will enter state Silence thus
+        // retry after a while.
         if (tryPlay(music!!)) return true
         state = State.Error
         return false
@@ -136,7 +143,8 @@ internal class MusicTrackController(private var volume: Float) {
         state = State.Playing
     }
     private fun fadeOutStep() {
-        // fade-out: linearly ramp fadeVolume to 0.0, then act according to Status (Playing->Silence/Pause/Shutdown)
+        // fade-out: linearly ramp fadeVolume to 0.0, then act according to Status
+        //   (Playing->Silence/Pause/Shutdown)
         // This needs to guard against the music backend breaking mid-fade away during game shutdown
         fadeVolume -= fadeStep
         try {
@@ -153,9 +161,9 @@ internal class MusicTrackController(private var volume: Float) {
 
     private fun tryPlay(music: Music): Boolean {
         return try {
-            music.volume = volume
-            if (!music.isPlaying)  // for fade-over this could be called by the end of the previous track
-                music.play()
+            music.volume = volume * fadeVolume
+            // for fade-over this could be called by the end of the previous track:
+            if (!music.isPlaying) music.play()
             true
         } catch (ex: Throwable) {
             audioExceptionHandler(ex)

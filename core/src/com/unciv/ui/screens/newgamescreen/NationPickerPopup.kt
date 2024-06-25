@@ -17,8 +17,8 @@ import com.unciv.models.ruleset.nation.Nation
 import com.unciv.models.translations.tr
 import com.unciv.ui.audio.MusicMood
 import com.unciv.ui.audio.MusicTrackChooserFlags
-import com.unciv.ui.components.AutoScrollPane
 import com.unciv.ui.components.UncivTooltip.Companion.addTooltip
+import com.unciv.ui.components.extensions.getCloseButton
 import com.unciv.ui.components.extensions.isNarrowerThan4to3
 import com.unciv.ui.components.extensions.toImageButton
 import com.unciv.ui.components.input.KeyCharAndCode
@@ -26,6 +26,7 @@ import com.unciv.ui.components.input.keyShortcuts
 import com.unciv.ui.components.input.onActivation
 import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.input.onDoubleClick
+import com.unciv.ui.components.widgets.AutoScrollPane
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.images.Portrait
 import com.unciv.ui.popups.Popup
@@ -116,9 +117,7 @@ internal class NationPickerPopup(
 
     private fun addActionIcons() {
         // Despite being a Popup we use our own buttons - floating circular ones
-        val closeButton = "OtherIcons/Close".toImageButton(Color.FIREBRICK)
-        closeButton.onActivation { close() }
-        closeButton.keyShortcuts.add(KeyCharAndCode.BACK)
+        val closeButton = getCloseButton(buttonsCircleSize, buttonsIconSize, buttonsBackColor, Color.FIREBRICK) { close() }
         closeButton.setPosition(buttonsOffsetFromEdge, buttonsOffsetFromEdge, Align.bottomLeft)
         innerTable.addActor(closeButton)
 
@@ -308,7 +307,7 @@ internal class NationPickerPopup(
         private val tempColor = Color()
 
         override fun begin() {
-            widget.background = ImageGetter.getDrawable("OtherIcons/Circle")
+            widget.background = ImageGetter.getCircleDrawable()
                 .apply { setMinSize(iconViewCellSize, iconViewCellSize) }
         }
         override fun update(percent: Float) {

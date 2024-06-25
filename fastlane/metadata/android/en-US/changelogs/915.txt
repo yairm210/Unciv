@@ -1,0 +1,13 @@
+Reload images when downloading or removing a mod
+
+Better mod compatibility autochanges (remove removed units/improvements correctly)
+
+By tuvus:
+- Added 'return worker' notification
+- Liberating civ grants open borders
+
+By SomeTroglodyte:
+- Reorganized World Screen Top Bar in small screens
+- Allow Space Key to close 'Player Ready' screen (hotseat)
+
+Added tests for most nuke functionalities  - By Framonti

@@ -1,7 +1,7 @@
 package com.unciv.ui.screens.mapeditorscreen
 
+import com.unciv.ui.components.widgets.TabbedPager
 import com.unciv.ui.components.input.KeyCharAndCode
-import com.unciv.ui.components.TabbedPager
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.mapeditorscreen.tabs.MapEditorEditTab
 import com.unciv.ui.screens.mapeditorscreen.tabs.MapEditorGenerateTab

@@ -1,0 +1,11 @@
+Fixed AI attack targetting - By tuvus
+
+By SeventhM:
+- Add unique for a promotion to be free
+- Fix cities getting the resource list of other cities
+
+Fix ChangesTerrain unique for base terrains - By SomeTroglodyte
+
+Units teleport away from city center when liberating
+
+Icons are not added to  selection boxes

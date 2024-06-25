@@ -1,5 +1,7 @@
 package com.unciv.logic.battle
 
+import com.unciv.Constants
+import com.unciv.logic.MultiFilter
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.tile.Tile
@@ -23,7 +25,7 @@ class CityCombatant(val city: City) : ICombatant {
     override fun isDefeated(): Boolean = city.health == 1
     override fun isInvisible(to: Civilization): Boolean = false
     override fun canAttack(): Boolean = city.canBombard()
-    override fun matchesCategory(category: String) = category == "City" || category == "All"
+    override fun matchesFilter(filter: String) = MultiFilter.multiFilter(filter, {it == "City" || it in Constants.all || city.matchesFilter(it)})
     override fun getAttackSound() = UncivSound.Bombard
 
     override fun takeDamage(damage: Int) {
@@ -57,9 +59,9 @@ class CityCombatant(val city: City) : ICombatant {
 
         // Garrisoned unit gives up to 20% of strength to city, health-dependant
         if (cityTile.militaryUnit != null)
-            strength += cityTile.militaryUnit!!.baseUnit().strength * (cityTile.militaryUnit!!.health / 100f) * modConstants.cityStrengthFromGarrison
+            strength += cityTile.militaryUnit!!.baseUnit.strength * (cityTile.militaryUnit!!.health / 100f) * modConstants.cityStrengthFromGarrison
 
-        var buildingsStrength = city.cityConstructions.getBuiltBuildings().sumOf { it.cityStrength }.toFloat()
+        var buildingsStrength = city.getStrength()
         val stateForConditionals = StateForConditionals(getCivInfo(), city, ourCombatant = this, combatAction = combatAction)
 
         for (unique in getCivInfo().getMatchingUniques(UniqueType.BetterDefensiveBuildings, stateForConditionals))

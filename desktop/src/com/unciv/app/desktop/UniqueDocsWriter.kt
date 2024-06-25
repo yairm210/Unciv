@@ -1,5 +1,7 @@
 package com.unciv.app.desktop
 
+import com.unciv.logic.map.mapunit.MapUnitCache
+import com.unciv.models.ruleset.unique.UniqueFlag
 import com.unciv.models.ruleset.unique.UniqueParameterType
 import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueType
@@ -55,10 +57,9 @@ class UniqueDocsWriter {
         val capacity = 25 + targetTypesToUniques.size + UniqueType.values().size * (if (showUniqueOnOneTarget) 3 else 16)
         val lines = ArrayList<String>(capacity)
         lines += "# Uniques"
-        lines += "Simple unique parameters are explained by mouseover. Complex parameters are explained in [Unique parameter types](../Unique-parameters)"
-
-        val conditionalLikeUniqueTargets = setOf(UniqueTarget.Conditional, UniqueTarget.TriggerCondition,
-            UniqueTarget.UnitTriggerCondition, UniqueTarget.UnitActionModifier)
+        lines += "An overview of uniques can be found [here](../Developers/Uniques.md)"
+        lines += "\nSimple unique parameters are explained by mouseover. Complex parameters are explained in [Unique parameter types](../Unique-parameters)"
+        lines += ""
 
         for ((targetType, uniqueTypes) in targetTypesToUniques) {
             if (uniqueTypes.isEmpty()) continue
@@ -67,19 +68,27 @@ class UniqueDocsWriter {
             if (targetType.documentationString.isNotEmpty())
                 lines += "!!! note \"\"\n\n    ${targetType.documentationString}\n"
 
+
             for (uniqueType in uniqueTypes) {
                 if (uniqueType.getDeprecationAnnotation() != null) continue
 
-                val uniqueText = if (targetType in conditionalLikeUniqueTargets)
+                val uniqueText = if (targetType.modifierType != UniqueTarget.ModifierType.None)
                     "&lt;${uniqueType.text}&gt;"
                 else uniqueType.text
                 lines += "??? example  \"$uniqueText\"" // collapsable material mkdocs block, see https://squidfunk.github.io/mkdocs-material/reference/admonitions/?h=%3F%3F%3F#collapsible-blocks
+                if (uniqueType.docDescription != null)
+                    lines += "\t${uniqueType.docDescription}"
                 if (uniqueType.parameterTypeMap.isNotEmpty()) {
                     // This one will give examples for _each_ filter in a "tileFilter/specialist/buildingFilter" kind of parameter e.g. "Farm/Merchant/Library":
                     // `val paramExamples = uniqueType.parameterTypeMap.map { it.joinToString("/") { pt -> pt.docExample } }.toTypedArray()`
                     // Might confuse modders to think "/" can go into the _actual_ unique and mean "or", so better show just one ("Farm" in the example above):
                     val paramExamples = uniqueType.parameterTypeMap.map { it.first().docExample }.toTypedArray()
                     lines += "\tExample: \"${uniqueText.fillPlaceholders(*paramExamples)}\"\n"
+                }
+                if (uniqueType.flags.contains(UniqueFlag.AcceptsSpeedModifier))
+                    lines += "\tThis unique's effect can be modified with &lt;${UniqueType.ModifiedByGameSpeed.text}&gt;"
+                if (uniqueType in MapUnitCache.UnitMovementUniques) {
+                    lines += "\tDue to performance considerations, this unique is cached, thus conditionals that may change within a turn may not work."
                 }
                 lines += "\tApplicable to: " + uniqueType.allTargets().sorted().joinToString()
                 lines += ""

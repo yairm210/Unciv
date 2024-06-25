@@ -15,14 +15,13 @@ import com.unciv.models.UncivSound
 import com.unciv.models.ruleset.Belief
 import com.unciv.models.ruleset.BeliefType
 import com.unciv.models.translations.tr
-import com.unciv.ui.screens.civilopediascreen.CivilopediaScreen
-import com.unciv.ui.screens.civilopediascreen.MarkupRenderer
-import com.unciv.ui.components.WrappableLabel
 import com.unciv.ui.components.extensions.darken
 import com.unciv.ui.components.extensions.disable
 import com.unciv.ui.components.extensions.enable
-import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.extensions.toLabel
+import com.unciv.ui.components.input.onClick
+import com.unciv.ui.components.widgets.WrappableLabel
+import com.unciv.ui.screens.civilopediascreen.MarkupRenderer
 
 abstract class ReligionPickerScreenCommon(
     protected val choosingCiv: Civilization,
@@ -33,7 +32,6 @@ abstract class ReligionPickerScreenCommon(
     protected val ruleset = gameInfo.ruleset
 
     private val descriptionTable = Table(skin)
-    private val descriptionScroll = descriptionLabel.parent as ScrollPane
 
     protected class Selection {
         var button: Button? = null
@@ -62,6 +60,8 @@ abstract class ReligionPickerScreenCommon(
         setDefaultCloseAction()
     }
 
+    override fun getCivilopediaRuleset() = ruleset
+
     protected fun setOKAction(buttonText: String, action: ReligionManager.() -> Unit) {
         rightSideButton.setText(buttonText.tr())
         rightSideButton.onClick(UncivSound.Choir) {
@@ -83,7 +83,8 @@ abstract class ReligionPickerScreenCommon(
                         add(belief.type.name.toLabel(fontColor = Color.valueOf(belief.type.color))).row()
                     val nameLabel = WrappableLabel(belief.name, labelWidth, fontSize = Constants.headingFontSize)
                     add(nameLabel.apply { wrap = true }).row()
-                    val effectLabel = WrappableLabel(belief.uniques.joinToString("\n") { it.tr() }, labelWidth)
+                    val effectLabel = WrappableLabel(belief.uniqueObjects.filter { !it.isHiddenToUsers() }.map { it.getDisplayText() }
+                        .joinToString("\n") { it.tr() }, labelWidth)
                     add(effectLabel.apply { wrap = true })
                 }
                 beliefType == BeliefType.Any ->
@@ -108,7 +109,7 @@ abstract class ReligionPickerScreenCommon(
                     MarkupRenderer.render(
                     belief.getCivilopediaTextLines(withHeader = true), width - 20f
                 ) {
-                    UncivGame.Current.pushScreen(CivilopediaScreen(ruleset,  link = it))
+                    openCivilopedia(it)
                 }).growX()
                 // Icon should it be needed:  CivilopediaImageGetters.belief(belief.getIconName(), 50f)
             }

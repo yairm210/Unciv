@@ -5,24 +5,24 @@ import com.badlogic.gdx.files.FileHandle
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.logic.MissingModsException
-import com.unciv.logic.files.MapSaver
 import com.unciv.logic.UncivShowableException
+import com.unciv.logic.files.MapSaver
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.translations.tr
-import com.unciv.ui.screens.mapeditorscreen.MapEditorFilesTable
-import com.unciv.ui.screens.mapeditorscreen.MapEditorScreen
-import com.unciv.ui.popups.ConfirmPopup
-import com.unciv.ui.popups.Popup
-import com.unciv.ui.popups.ToastPopup
-import com.unciv.ui.components.AutoScrollPane
-import com.unciv.ui.screens.basescreen.BaseScreen
-import com.unciv.ui.components.input.KeyCharAndCode
-import com.unciv.ui.components.TabbedPager
 import com.unciv.ui.components.extensions.isEnabled
+import com.unciv.ui.components.extensions.toTextButton
+import com.unciv.ui.components.input.KeyCharAndCode
 import com.unciv.ui.components.input.keyShortcuts
 import com.unciv.ui.components.input.onActivation
-import com.unciv.ui.components.extensions.toTextButton
+import com.unciv.ui.components.widgets.AutoScrollPane
+import com.unciv.ui.components.widgets.TabbedPager
+import com.unciv.ui.popups.ConfirmPopup
 import com.unciv.ui.popups.LoadingPopup
+import com.unciv.ui.popups.Popup
+import com.unciv.ui.popups.ToastPopup
+import com.unciv.ui.screens.basescreen.BaseScreen
+import com.unciv.ui.screens.mapeditorscreen.MapEditorFilesTable
+import com.unciv.ui.screens.mapeditorscreen.MapEditorScreen
 import com.unciv.utils.Concurrency
 import com.unciv.utils.Log
 import kotlinx.coroutines.CoroutineScope
@@ -64,10 +64,7 @@ class MapEditorLoadTab(
 
     private fun loadHandler() {
         if (chosenMap == null) return
-        editorScreen.askIfDirty(
-            "Do you want to load another map without saving the recent changes?",
-            "Load map"
-        ) {
+        editorScreen.askIfDirtyForLoad {
             editorScreen.startBackgroundJob("MapLoader") { loaderThread() }
         }
     }

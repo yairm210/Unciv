@@ -250,4 +250,3 @@ class Minimap(val mapHolder: WorldMapHolder, minimapSize: Int, private val civIn
     // For debugging purposes
     override fun draw(batch: Batch?, parentAlpha: Float) = super.draw(batch, parentAlpha)
 }
-

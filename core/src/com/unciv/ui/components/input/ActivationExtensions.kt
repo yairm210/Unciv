@@ -98,14 +98,12 @@ fun Actor.onRightClick(sound: UncivSound = UncivSound.Click, action: ActivationA
  *  A [sound] will be played (concurrently) on activation unless you specify [UncivSound.Silent].
  *  @return `this` to allow chaining
  */
-@Suppress("unused")  // Just in case - for now, only onRightClick is used
 fun Actor.onLongPress(sound: UncivSound = UncivSound.Click, action: ActivationAction): Actor =
     onActivation(ActivationTypes.Longpress, sound, noEquivalence = true, action)
 
 /** Clears activation actions for a specific [type], and, if [noEquivalence] is `true`,
  *  its [equivalent][ActivationTypes.isEquivalent] types.
  */
-@Suppress("unused")  // Just in case - for now, it's automatic clear via clearListener
 fun Actor.clearActivationActions(type: ActivationTypes, noEquivalence: Boolean = true) {
     ActorAttachments.get(this).clearActivationActions(type, noEquivalence)
 }
@@ -128,7 +126,7 @@ fun Stage.installShortcutDispatcher(additionalShortcuts: KeyShortcutDispatcher? 
     addListener(KeyShortcutListener(actors.asSequence(), additionalShortcuts, dispatcherVetoerCreator))
 }
 
-private class OnChangeListener(val function: (event: ChangeEvent?) -> Unit): ChangeListener() {
+private class OnChangeListener(val function: (event: ChangeEvent?) -> Unit) : ChangeListener() {
     override fun changed(event: ChangeEvent?, actor: Actor?) {
         function(event)
     }

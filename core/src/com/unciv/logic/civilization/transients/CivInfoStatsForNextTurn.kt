@@ -169,7 +169,7 @@ class CivInfoStatsForNextTurn(val civInfo: Civilization) {
         //City-States bonuses
         for (otherCiv in civInfo.getKnownCivs()) {
             if (!otherCiv.isCityState()) continue
-            if (!otherCiv.getDiplomacyManager(civInfo.civName).isRelationshipLevelEQ(RelationshipLevel.Ally))
+            if (otherCiv.getDiplomacyManager(civInfo.civName)!!.relationshipIgnoreAfraid() != RelationshipLevel.Ally)
                 continue
             for (unique in civInfo.getMatchingUniques(UniqueType.CityStateStatPercent)) {
                 statMap.add(
@@ -217,7 +217,7 @@ class CivInfoStatsForNextTurn(val civInfo: Civilization) {
     fun getHappinessBreakdown(): HashMap<String, Float> {
         val statMap = HashMap<String, Float>()
 
-        fun HashMap<String, Float>.add(key:String, value: Float){
+        fun HashMap<String, Float>.add(key:String, value: Float) {
             if (!containsKey(key)) put(key, value)
             else put(key, value+get(key)!!)
         }
@@ -285,13 +285,13 @@ class CivInfoStatsForNextTurn(val civInfo: Civilization) {
         val statMap = StatMap()
         if (civInfo.religionManager.religion != null) {
             for (unique in civInfo.religionManager.religion!!.getFounderUniques()) {
-                if (unique.isOfType(UniqueType.StatsFromGlobalCitiesFollowingReligion)) {
+                if (unique.type == UniqueType.StatsFromGlobalCitiesFollowingReligion) {
                     statMap.add(
                         "Religion",
                         unique.stats * civInfo.religionManager.numberOfCitiesFollowingThisReligion()
                     )
                 }
-                if (unique.isOfType(UniqueType.StatsFromGlobalFollowers))
+                if (unique.type == UniqueType.StatsFromGlobalFollowers)
                     statMap.add(
                         "Religion",
                         unique.stats * civInfo.religionManager.numberOfFollowersFollowingThisReligion(
@@ -309,7 +309,12 @@ class CivInfoStatsForNextTurn(val civInfo: Civilization) {
 
         for (unique in civInfo.getMatchingUniques(UniqueType.Stats))
             if (unique.sourceObjectType != UniqueTarget.Building && unique.sourceObjectType != UniqueTarget.Wonder)
-                statMap.add(unique.sourceObjectType!!.name, unique.stats)
+                statMap.add(unique.getSourceNameForUser(), unique.stats)
+
+        for (unique in civInfo.getMatchingUniques(UniqueType.StatsPerStat)) {
+            val amount = civInfo.getStatReserve(Stat.valueOf(unique.params[2])) / unique.params[1].toInt()
+            statMap.add("Stats", unique.stats.times(amount))
+        }
 
         val statsPerNaturalWonder = Stats(happiness = 1f)
 

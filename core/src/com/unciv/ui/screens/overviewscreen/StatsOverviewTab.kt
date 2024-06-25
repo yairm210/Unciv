@@ -5,15 +5,14 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.Constants
 import com.unciv.GUI
 import com.unciv.logic.civilization.Civilization
-import com.unciv.models.ruleset.ModOptionsConstants
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.StatMap
-import com.unciv.ui.components.TabbedPager
-import com.unciv.ui.components.UncivSlider
 import com.unciv.ui.components.extensions.addSeparator
 import com.unciv.ui.components.extensions.toLabel
+import com.unciv.ui.components.widgets.TabbedPager
+import com.unciv.ui.components.widgets.UncivSlider
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.civilopediascreen.FormattedLine
 import com.unciv.ui.screens.civilopediascreen.MarkupRenderer
@@ -53,7 +52,7 @@ class StatsOverviewTab(
         unhappinessTable.update()
 
         goldAndSliderTable.add(goldTable).row()
-        if (gameInfo.ruleset.modOptions.uniques.contains(ModOptionsConstants.convertGoldToScience))
+        if (gameInfo.ruleset.modOptions.hasUnique(UniqueType.ConvertGoldToScience))
             goldAndSliderTable.addGoldSlider()
 
         update()
@@ -138,10 +137,11 @@ class StatsOverviewTab(
             uniques = sequenceOf(
                     UniqueType.ConditionalBetweenHappiness,
                     UniqueType.ConditionalBelowHappiness
-                ).flatMap { conditional ->
-                    viewingPlayer.getTriggeredUniques(conditional)
+                ).flatMap { conditionalType ->
+                    viewingPlayer.getTriggeredUniques(conditionalType)
                         .sortedBy { it.type } // otherwise order might change as a HashMap is involved
-                }.toSet()
+                }.filterNot { it.isHiddenToUsers() }
+                .toSet()
             show = uniques.isNotEmpty()
         }
 
@@ -211,17 +211,21 @@ class StatsOverviewTab(
             add(greatPersonPointsPerTurn[greatPerson].toLabel()).right().row()
         }
 
-        val pointsForGreatGeneral = viewingPlayer.greatPeople.greatGeneralPoints
-        val pointsForNextGreatGeneral = viewingPlayer.greatPeople.pointsForNextGreatGeneral
-        add("Great General".toLabel()).left()
-        add("$pointsForGreatGeneral/$pointsForNextGreatGeneral".toLabel())
+        val greatGeneralPoints = viewingPlayer.greatPeople.greatGeneralPointsCounter
+        val pointsForNextGreatGeneral = viewingPlayer.greatPeople.pointsForNextGreatGeneralCounter
+        for ((unit, points) in greatGeneralPoints) {
+            val pointsToGreatGeneral = pointsForNextGreatGeneral[unit]
+            add(unit.toLabel()).left()
+            add("$points/$pointsToGreatGeneral".toLabel())
+        }
+
         pack()
     }
 
     private fun updateScoreTable() = scoreTable.apply {
         clear()
         val scoreHeader = Table()
-        val scoreIcon = ImageGetter.getImage("CityStateIcons/Cultured")
+        val scoreIcon = ImageGetter.getImage("OtherIcons/Score")
         scoreIcon.color = Color.FIREBRICK
         scoreHeader.add(scoreIcon).padRight(1f).size(Constants.headingFontSize.toFloat())
         scoreHeader.add("Score".toLabel(fontSize = Constants.headingFontSize))

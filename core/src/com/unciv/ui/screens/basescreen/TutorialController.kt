@@ -1,19 +1,17 @@
 package com.unciv.ui.screens.basescreen
 
 import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.files.FileHandle
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.json.fromJsonFile
 import com.unciv.json.json
 import com.unciv.models.TutorialTrigger
 import com.unciv.models.ruleset.Tutorial
-import com.unciv.models.ruleset.unique.UniqueType
-import com.unciv.models.stats.INamed
 import com.unciv.ui.components.input.KeyCharAndCode
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popups.Popup
-import com.unciv.ui.screens.civilopediascreen.FormattedLine
-import com.unciv.ui.screens.civilopediascreen.SimpleCivilopediaText
+import com.unciv.ui.screens.civilopediascreen.ICivilopediaText
 
 
 class TutorialController(screen: BaseScreen) {
@@ -29,18 +27,21 @@ class TutorialController(screen: BaseScreen) {
         // static to allow use from TutorialTranslationTests
         fun loadTutorialsFromJson(includeMods: Boolean = true): LinkedHashMap<String, Tutorial> {
             val result = linkedMapOf<String, Tutorial>()
-            for (path in tutorialFiles(includeMods)) {
-                json().fromJsonFile(Array<Tutorial>::class.java, path)
+            for (file in tutorialFiles(includeMods)) {
+                json().fromJsonFile(Array<Tutorial>::class.java, file)
                     .associateByTo(result) { it.name }
             }
             return result
         }
-        private fun tutorialFiles(includeMods: Boolean) = sequence<String> {
-            yield("jsons/Tutorials.json")
+
+        private fun tutorialFiles(includeMods: Boolean) = sequence<FileHandle> {
+            yield(Gdx.files.internal("jsons/Tutorials.json"))
             if (!includeMods) return@sequence
-            val mods = UncivGame.Current.gameInfo?.ruleset?.mods ?: return@sequence
-            val names = mods.asSequence().map { "mods/$it/jsons/Tutorials.json" }
-            yieldAll(names.filter { Gdx.files.local(it).exists() })
+            val mods = UncivGame.Current.gameInfo?.ruleset?.mods
+                ?: return@sequence
+            val files = mods.asSequence()
+                .map { Gdx.files.local("mods/$it/jsons/Tutorials.json") }
+            yieldAll(files.filter { it.exists() })
         }
     }
 
@@ -80,30 +81,12 @@ class TutorialController(screen: BaseScreen) {
         return tutorials[name]?.steps ?: emptyList()
     }
 
-    /** Wrapper for a Tutorial, supports INamed and ICivilopediaText,
-     *  and already provisions for the display of an ExtraImage on top.
-     *  @param name from Tutorial.name, also used for ExtraImage (with spaces replaced by underscores)
-     *  @param tutorial provides [Tutorial.civilopediaText] and [Tutorial.steps] for display
-     */
-    //todo Replace - Civilopedia should display Tutorials directly as the RulesetObjects they are
-    class CivilopediaTutorial(
-        override var name: String,
-        tutorial: Tutorial
-    ) : INamed, SimpleCivilopediaText(
-        sequenceOf(FormattedLine(extraImage = name.replace(' ', '_'))) + tutorial.civilopediaText.asSequence(),
-        tutorial.steps?.asSequence() ?: emptySequence()
-    )
-
-    /** Get all Tutorials intended to be displayed in the Civilopedia
-     *  as a List of wrappers supporting INamed and ICivilopediaText
-     */
-    fun getCivilopediaTutorials(): List<CivilopediaTutorial> {
-        val civilopediaTutorials = tutorials.filter {
-            !it.value.hasUnique(UniqueType.HiddenFromCivilopedia)
-        }.map {
-            tutorial -> CivilopediaTutorial(tutorial.key, tutorial.value)
-        }
-        return civilopediaTutorials
+    /** Get all Tutorials to be displayed in the Civilopedia */
+    fun getCivilopediaTutorials(): Collection<ICivilopediaText> {
+        // Todo This is essentially an 'un-private' kludge and the accessor
+        //      in CivilopediaCategories desperately needs independence from TutorialController:
+        //      Move storage to RuleSet someday?
+        return tutorials.values
     }
 }
 
@@ -122,8 +105,9 @@ class TutorialRender(private val screen: BaseScreen) {
         val tutorialPopup = Popup(screen)
         tutorialPopup.name = Constants.tutorialPopupNamePrefix + tutorialName
 
-        if (Gdx.files.internal("ExtraImages/$tutorialName").exists()) {
-            tutorialPopup.add(ImageGetter.getExternalImage(tutorialName)).row()
+        val externalImage = ImageGetter.findExternalImage(tutorialName)
+        if (externalImage != null) {
+            tutorialPopup.add(ImageGetter.getExternalImage(externalImage)).row()
         }
 
         tutorialPopup.addGoodSizedLabel(texts[0]).row()

@@ -23,8 +23,8 @@ open class Stats(
 
     // This is what facilitates indexed access by [Stat] or add(Stat,Float)
     // without additional memory allocation or expensive conditionals
-    private fun statToProperty(stat: Stat):KMutableProperty0<Float>{
-        return when(stat){
+    private fun statToProperty(stat: Stat): KMutableProperty0<Float> {
+        return when(stat) {
             Stat.Production -> ::production
             Stat.Food -> ::food
             Stat.Gold -> ::gold
@@ -56,7 +56,8 @@ open class Stats(
                 && faith == otherStats.faith
     }
 
-    /** @return a new instance containing the same values as `this` */
+    /** **Non-Mutating function**
+     * @return a new instance containing the same values as `this` */
     fun clone() = Stats(production, food, gold, science, culture, happiness, faith)
 
     /** @return `true` if all values are zero */
@@ -80,7 +81,9 @@ open class Stats(
         faith = 0f
     }
 
-    /** Adds each value of another [Stats] instance to this one in place */
+    /** **Mutating function**
+     * Adds each value of another [Stats] instance to this one in place
+     * @return this for chaining */
     fun add(other: Stats): Stats {
         production += other.production
         food += other.food
@@ -92,19 +95,28 @@ open class Stats(
         return this
     }
 
-    /** @return a new [Stats] instance containing the sum of its operands value by value */
+    /** **Non-mutating function**
+     * @return a new [Stats] instance */
     operator fun plus(stats: Stats) = clone().apply { add(stats) }
 
-    /** Adds the [value] parameter to the instance value specified by [stat] in place
+    /** **Non-mutating function**
+     * @return a new [Stats] instance */
+    operator fun minus(stats: Stats) = clone().apply { add(stats.times(-1)) }
+
+    /** **Mutating function**
+     * Adds the [value] parameter to the instance value specified by [stat] in place
      * @return `this` to allow chaining */
     fun add(stat: Stat, value: Float): Stats {
         set(stat, value + get(stat))
         return this
     }
 
-    /** @return The result of multiplying each value of this instance by [number] as a new instance */
+    /** **Non-Mutating function**
+     * @return a new [Stats] instance with the result of multiplying each value of this instance by [number] as a new instance */
     operator fun times(number: Int) = times(number.toFloat())
-    /** @return The result of multiplying each value of this instance by [number] as a new instance */
+
+    /** **Non-Mutating function**
+     * @return a new [Stats] instance with the result of multiplying each value of this instance by [number] as a new instance */
     operator fun times(number: Float) = Stats(
         production * number,
         food * number,
@@ -115,7 +127,8 @@ open class Stats(
         faith * number
     )
 
-    /** Multiplies each value of this instance by [number] in place */
+    /** **Mutating function**
+     * Multiplies each value of this instance by [number] in place */
     fun timesInPlace(number: Float) {
         production *= number
         food *= number
@@ -126,10 +139,13 @@ open class Stats(
         faith *= number
     }
 
+    /** **Non-Mutating function**
+     * @return a new [Stats] instance */
     operator fun div(number: Float) = times(1/number)
 
-    /** Apply weighting for Production Ranking */
-    fun applyRankingWeights(){
+    /** **Mutating function**
+     * Apply weighting for Production Ranking */
+    fun applyRankingWeights() {
         food *= 14
         production *= 12
         gold *= 8 // 3 gold worth about 2 production
@@ -166,6 +182,13 @@ open class Stats(
     fun toStringWithoutIcons(): String {
         return this.joinToString {
             it.value.toInt().toString() + " " + it.key.name.tr().substring(startIndex = 1)
+        }
+    }
+
+    /** Return a string of just +/- value and Stat symbol*/
+    fun toStringOnlyIcons(addPlusSign: Boolean = true): String {
+        return this.joinToString {
+            (if (addPlusSign && it.value > 0) "+" else "") + it.value.toInt() + " " + it.key.character
         }
     }
 
@@ -246,7 +269,7 @@ open class Stats(
     }
 }
 
-class StatMap:LinkedHashMap<String,Stats>() {
+class StatMap : LinkedHashMap<String,Stats>() {
     fun add(source: String, stats: Stats) {
         // We always clone to avoid touching the mutable stats of uniques
         if (!containsKey(source)) put(source, stats.clone())

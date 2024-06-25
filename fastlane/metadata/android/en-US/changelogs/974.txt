@@ -1,0 +1,13 @@
+Changed tech trigger to accept tech filters
+
+By SomeTroglodyte:
+- Improve DiplomacyScreen UX (nation icons) on cramped screens
+- Move DiplomacyScreen close button to top right
+- Validation warning Suppression as Unique or modifier
+- UI: Fix options popup "spilling" in cramped screen conditions
+
+Allow city state uniques for nation descriptions  - By SeventhM
+
+Add MovedToNewCapital buiding unique  - By PLynx01
+
+Better military unit retreat  - By tuvus

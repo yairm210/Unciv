@@ -15,7 +15,7 @@ import com.unciv.ui.components.tilegroups.layers.TileLayerOverlay
 import com.unciv.ui.components.tilegroups.layers.TileLayerTerrain
 import com.unciv.ui.components.tilegroups.layers.TileLayerUnitArt
 import com.unciv.ui.components.tilegroups.layers.TileLayerUnitFlag
-import com.unciv.ui.components.ZoomableScrollPane
+import com.unciv.ui.components.widgets.ZoomableScrollPane
 import kotlin.math.max
 import kotlin.math.min
 

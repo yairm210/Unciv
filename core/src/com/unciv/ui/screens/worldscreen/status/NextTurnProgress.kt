@@ -4,13 +4,13 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.GUI
+import com.unciv.UncivGame
 import com.unciv.models.metadata.GameParameters
 import com.unciv.ui.components.extensions.disable
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.worldscreen.WorldScreen
 import com.unciv.utils.Concurrency
-import com.unciv.utils.Log
 
 class NextTurnProgress(
     // nullable so we can free the reference once the ProgressBar is shown
@@ -98,7 +98,9 @@ class NextTurnProgress(
         // On first update the button text is not yet updated. To stabilize geometry, do it now
         if (progress == 0) nextTurnButton?.apply {
             disable()
-            updateButton(NextTurnAction.Working)
+            if (GUI.getWorldScreenIfActive()?.autoPlay?.isAutoPlaying() == true)
+                updateButton(NextTurnAction.AutoPlay)
+            else updateButton(NextTurnAction.Working)
             barWidth = width - removeHorizontalPad -
                 (background.leftWidth + background.rightWidth)  // "cut off" the rounded parts of the button
             this@NextTurnProgress.setPosition((width - barWidth) / 2, barYPos)

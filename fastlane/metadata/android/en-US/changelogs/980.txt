@@ -1,0 +1,9 @@
+Modded units can construct improvements on impassible tiles
+
+By woo1127:
+- Added multi filter support for BuildingFilter
+- Fixed error message of ConditionalBuilding
+
+Better tundra color - By Caballero-Arepa
+
+Allow improvements that don't need feature removal to be built on features  - By SeventhM

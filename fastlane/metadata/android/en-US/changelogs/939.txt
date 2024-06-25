@@ -1,0 +1,17 @@
+Stats from followers unique fixed
+
+City-state units work with 'get era' function
+
+Ruleset validation for negative-weight ruin rewards
+
+By SomeTroglodyte:
+- Fix crash for trade notifications as Spectator / waiting for player
+- Fix Unit rename popup offering up the icon
+
+Solved worker automation crash  - By willjallen
+
+By SeventhM:
+- Add "Unable to pillage tiles" unique
+- Fix objects being purchable with a blocking conditional
+
+Stats per Stat unique - By PLynx01

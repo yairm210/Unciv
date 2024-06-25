@@ -1,0 +1,17 @@
+En çok tanınan uygarlık inşa etme oyununun açık kaynak kodlu sürümü. Hızlı, küçük, reklamsız, sonsuza kadar bedava!
+
+Uygarlığını inşa et, teknolojileri araştır, şehirlerini genişlet ve düşmanlarını yen!
+
+İstekler? Hatalar? Geliştirmeye yardım? Uygulama için yapılacaklar listesi burada: <a href="https://github.com/yairm210/Unciv/issues">GitHub Issues</a> NOT! Dil ingilizce
+
+Sorular? Yorumlar? Neden gelip discord sunucumuza katılmıyorsun? <a href="https://discord.gg/bjrB4Xw">Discord</a> ;)
+
+Oyunun kendi diline çevirilmesine yardım etmek mi istiyorsun? Dokümantasyonu okuyabilirsin: <a href="https://yairm210.github.io/Unciv/Other/Translating">Wiki</a>. NOT! Dokümantasyon ingilizce
+
+Kotlin veya java mı kullanıyorsun? Oyunun gelişmesine buradan katkıda bulunabilirsin: <a href="https://github.com/yairm210/Unciv">GitHub Repository</a>.
+
+Dünya seni bekliyor! Uygarlığını zamana meydan okuyan bir imparatorluğa dönüştürebilecek misin?
+
+Uygulama "Tam internet erişimi" iznini kullanıcı tarafından başlatılan indirmeler ve çok oyunculu oynamak için kullanır. Listelenen diğer izinler API tarafından çok oyunculu modda tur bildirimleri için otomatik olarak dahil edilir.
+
+Ağ izinleri modları listelemek,indirmek; müzik indirmek ve çok oyunculu oyunları yüklemek/indirmek için kullanılır. Unciv tarafından bu sebeplerden başka biçimde ağ kullanılmaz.

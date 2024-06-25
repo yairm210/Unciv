@@ -2,10 +2,11 @@ package com.unciv.models.ruleset.unit
 
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetObject
-import com.unciv.models.ruleset.unique.UniqueFlag
 import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.tr
+import com.unciv.ui.objectdescriptions.uniquesToCivilopediaTextLines
+import com.unciv.ui.objectdescriptions.uniquesToDescription
 import com.unciv.ui.screens.civilopediascreen.FormattedLine
 import com.unciv.ui.screens.pickerscreens.PromotionPickerScreen
 
@@ -42,12 +43,10 @@ class Promotion : RulesetObject() {
 
 
     /** Used to describe a Promotion on the PromotionPickerScreen - fully translated */
-    fun getDescription(promotionsForUnitType: Collection<Promotion>):String {
+    fun getDescription(promotionsForUnitType: Collection<Promotion>): String {
         val textList = ArrayList<String>()
 
-        for (unique in uniques) {
-            textList += unique.tr()
-        }
+        uniquesToDescription(textList)
 
         if (prerequisites.isNotEmpty()) {
             val prerequisitesString: ArrayList<String> = arrayListOf()
@@ -64,10 +63,7 @@ class Promotion : RulesetObject() {
     override fun getCivilopediaTextLines(ruleset: Ruleset): List<FormattedLine> {
         val textList = ArrayList<FormattedLine>()
 
-        uniqueObjects.forEach {
-            if (!it.hasFlag(UniqueFlag.HiddenToUsers))
-                textList += FormattedLine(it)
-        }
+        uniquesToCivilopediaTextLines(textList, leadingSeparator = null)
 
         val filteredPrerequisites = prerequisites.mapNotNull {
             ruleset.unitPromotions[it]

@@ -23,11 +23,18 @@ fun <T> List<T>.randomWeighted(weights: List<Float>, random: Random = Random): T
     return this.last()
 }
 
+/** Get one random element of a given List.
+ *
+ * The probability for each element is proportional to the result of [getWeight] (evaluated only once).
+ */
+fun <T> List<T>.randomWeighted(random: Random = Random, getWeight: (T) -> Float): T =
+    randomWeighted(map(getWeight), random)
+
 /** Gets a clone of an [ArrayList] with an additional item
  *
  * Solves concurrent modification problems - everyone who had a reference to the previous arrayList can keep using it because it hasn't changed
  */
-fun <T> ArrayList<T>.withItem(item:T): ArrayList<T> {
+fun <T> ArrayList<T>.withItem(item: T): ArrayList<T> {
     val newArrayList = ArrayList(this)
     newArrayList.add(item)
     return newArrayList
@@ -37,7 +44,7 @@ fun <T> ArrayList<T>.withItem(item:T): ArrayList<T> {
  *
  * Solves concurrent modification problems - everyone who had a reference to the previous hashSet can keep using it because it hasn't changed
  */
-fun <T> HashSet<T>.withItem(item:T): HashSet<T> {
+fun <T> HashSet<T>.withItem(item: T): HashSet<T> {
     val newHashSet = HashSet(this)
     newHashSet.add(item)
     return newHashSet
@@ -47,7 +54,7 @@ fun <T> HashSet<T>.withItem(item:T): HashSet<T> {
  *
  * Solves concurrent modification problems - everyone who had a reference to the previous arrayList can keep using it because it hasn't changed
  */
-fun <T> ArrayList<T>.withoutItem(item:T): ArrayList<T> {
+fun <T> ArrayList<T>.withoutItem(item: T): ArrayList<T> {
     val newArrayList = ArrayList(this)
     newArrayList.remove(item)
     return newArrayList
@@ -57,7 +64,7 @@ fun <T> ArrayList<T>.withoutItem(item:T): ArrayList<T> {
  *
  * Solves concurrent modification problems - everyone who had a reference to the previous hashSet can keep using it because it hasn't changed
  */
-fun <T> HashSet<T>.withoutItem(item:T): HashSet<T> {
+fun <T> HashSet<T>.withoutItem(item: T): HashSet<T> {
     val newHashSet = HashSet(this)
     newHashSet.remove(item)
     return newHashSet
@@ -68,3 +75,38 @@ fun <T> Iterable<T>.toGdxArray(): Array<T> {
     for (it in this) arr.add(it)
     return arr
 }
+fun <T> Sequence<T>.toGdxArray(): Array<T> {
+    val arr = Array<T>()
+    for (it in this) arr.add(it)
+    return arr
+}
+
+/** [yield][SequenceScope.yield]s [element] if it's not null */
+suspend fun <T> SequenceScope<T>.yieldIfNotNull(element: T?) {
+    if (element != null) yield(element)
+}
+/** [yield][SequenceScope.yield]s all elements of [elements] if it's not null */
+suspend fun <T> SequenceScope<T>.yieldAllNotNull(elements: Iterable<T>?) {
+    if (elements != null) yieldAll(elements)
+}
+@JvmName("yieldAllNotNullNotNull")
+/** [yield][SequenceScope.yield]s all non-null elements of [elements] if it's not null */
+suspend fun <T> SequenceScope<T>.yieldAllNotNull(elements: Iterable<T?>?) {
+    if (elements == null) return
+    for (element in elements) yieldIfNotNull(element)
+}
+
+/**
+ *  Simplifies adding to a map of sets where the map entry where the new element belongs is not
+ *  guaranteed to be already present in the map (sparse map).
+ *
+ *  @param key The key identifying the Set to add [element] to
+ *  @param element The new element to be added to the Set for [key]
+ *  @return `false` if the element was already present, `true` if it was new (same as `Set.add()`)
+ */
+fun <KT, ET> HashMap<KT, HashSet<ET>>.addToMapOfSets(key: KT, element: ET) =
+    getOrPut(key) { hashSetOf() }.add(element)
+
+/** Simplifies testing whether in a sparse map of sets the [element] exists for [key]. */
+fun <KT, ET> HashMap<KT, HashSet<ET>>.contains(key: KT, element: ET) =
+    get(key)?.contains(element) == true

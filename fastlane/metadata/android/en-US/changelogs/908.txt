@@ -1,0 +1,11 @@
+By SomeTroglodyte:
+- Civilopedia Search
+- City construction right-click menu
+
+Many performance improvements!
+
+Pillaged tile improvements  - By GeneralWadaling
+
+Fix: "Only available" not working properly for religions or transforming/upgrading units  - By SeventhM
+
+Make "Defensive Pact" button translatable - By Ouaz

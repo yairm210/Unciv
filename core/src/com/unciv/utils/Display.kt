@@ -19,31 +19,35 @@ interface ScreenMode {
 }
 
 interface PlatformDisplay {
-
     fun setScreenMode(id: Int, settings: GameSettings) {}
-    fun getScreenModes(): Map<Int, ScreenMode> { return hashMapOf() }
+    fun getScreenModes(): Map<Int, ScreenMode> = hashMapOf()
 
-    fun hasCutout(): Boolean { return false }
+    fun hasCutout(): Boolean = false
     fun setCutout(enabled: Boolean) {}
 
-    fun hasOrientation(): Boolean { return false }
+    fun hasOrientation(): Boolean = false
     fun setOrientation(orientation: ScreenOrientation) {}
 
     fun hasUserSelectableSize(id: Int): Boolean = false
+
+    fun hasSystemUiVisibility(): Boolean = false
+    fun setSystemUiVisibility(hide: Boolean) {}
 }
 
 object Display {
-
     lateinit var platform: PlatformDisplay
 
-    fun hasOrientation(): Boolean { return platform.hasOrientation() }
+    fun hasOrientation() = platform.hasOrientation()
     fun setOrientation(orientation: ScreenOrientation) { platform.setOrientation(orientation) }
 
-    fun hasCutout(): Boolean { return platform.hasCutout() }
+    fun hasCutout() = platform.hasCutout()
     fun setCutout(enabled: Boolean) { platform.setCutout(enabled) }
 
-    fun getScreenModes(): Map<Int, ScreenMode> { return platform.getScreenModes() }
+    fun getScreenModes() = platform.getScreenModes()
     fun setScreenMode(id: Int, settings: GameSettings) { platform.setScreenMode(id, settings) }
 
     fun hasUserSelectableSize(id: Int) = platform.hasUserSelectableSize(id)
+
+    fun hasSystemUiVisibility() = platform.hasSystemUiVisibility()
+    fun setSystemUiVisibility(hide: Boolean) = platform.setSystemUiVisibility(hide)
 }

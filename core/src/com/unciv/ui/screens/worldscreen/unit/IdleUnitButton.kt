@@ -13,7 +13,7 @@ import com.unciv.ui.components.extensions.pad
 class IdleUnitButton (
     internal val unitTable: UnitTable,
     private val tileMapHolder: WorldMapHolder,
-    val previous:Boolean
+    val previous: Boolean
 ) : Table() {
 
     val image = ImageGetter.getImage("OtherIcons/BackArrow")
@@ -50,12 +50,12 @@ class IdleUnitButton (
         }
     }
 
-    fun enable(){
+    fun enable() {
         image.color= Color.WHITE
         touchable=Touchable.enabled
     }
 
-    fun disable(){
+    fun disable() {
         image.color= Color.GRAY
         touchable=Touchable.disabled
     }

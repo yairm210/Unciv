@@ -4,9 +4,10 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.logic.map.MapGeneratedMainType
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.input.onChange
+import com.unciv.ui.components.widgets.TranslatedSelectBox
 import com.unciv.ui.screens.basescreen.BaseScreen
 
-class MapOptionsTable(private val newGameScreen: NewGameScreen, isReset: Boolean = true): Table() {
+class MapOptionsTable(private val newGameScreen: NewGameScreen) : Table() {
 
     private val mapParameters = newGameScreen.gameSetupInfo.mapParameters
     private var mapTypeSpecificTable = Table()
@@ -23,21 +24,15 @@ class MapOptionsTable(private val newGameScreen: NewGameScreen, isReset: Boolean
         val mapTypes = arrayListOf(MapGeneratedMainType.generated, MapGeneratedMainType.randomGenerated)
         if (savedMapOptionsTable.isNotEmpty()) mapTypes.add(MapGeneratedMainType.custom)
 
-        // Pre-select custom if any map saved within last 15 minutes
-        val chooseCustom = !isReset && (
-                savedMapOptionsTable.recentlySavedMapExists() ||
-                savedMapOptionsTable.isNotEmpty() && mapParameters.type == MapGeneratedMainType.custom && mapParameters.name.isNotEmpty()
-            )
-        val mapTypeDefault = if (chooseCustom) MapGeneratedMainType.custom else MapGeneratedMainType.generated
-        mapTypeSelectBox = TranslatedSelectBox(mapTypes, mapTypeDefault, BaseScreen.skin)
+        mapTypeSelectBox = TranslatedSelectBox(mapTypes, MapGeneratedMainType.generated, BaseScreen.skin)
 
         fun updateOnMapTypeChange() {
             mapTypeSpecificTable.clear()
             when (mapTypeSelectBox.selected.value) {
                 MapGeneratedMainType.custom -> {
-                    savedMapOptionsTable.fillMapFileSelectBox()
                     mapParameters.type = MapGeneratedMainType.custom
                     mapTypeSpecificTable.add(savedMapOptionsTable)
+                    savedMapOptionsTable.activateCustomMaps()
                     newGameScreen.unlockTables()
                 }
                 MapGeneratedMainType.generated -> {
@@ -45,7 +40,6 @@ class MapOptionsTable(private val newGameScreen: NewGameScreen, isReset: Boolean
                     mapParameters.type = generatedMapOptionsTable.mapTypeSelectBox.selected.value
                     mapTypeSpecificTable.add(generatedMapOptionsTable)
                     newGameScreen.unlockTables()
-
                 }
                 MapGeneratedMainType.randomGenerated -> {
                     mapParameters.name = ""
@@ -57,7 +51,7 @@ class MapOptionsTable(private val newGameScreen: NewGameScreen, isReset: Boolean
             newGameScreen.updateTables()
         }
 
-        // activate once, so when we had a file map before we'll have the right things set for another one
+        // activate once, so the MapGeneratedMainType.generated controls show
         updateOnMapTypeChange()
 
         mapTypeSelectBox.onChange { updateOnMapTypeChange() }

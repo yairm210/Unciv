@@ -3,9 +3,10 @@ package com.unciv.ui.popups
 import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle
 import com.badlogic.gdx.utils.Align
-import com.unciv.ui.screens.basescreen.BaseScreen
-import com.unciv.ui.components.input.KeyboardBinding
+import com.unciv.Constants
 import com.unciv.ui.components.extensions.toLabel
+import com.unciv.ui.components.input.KeyboardBinding
+import com.unciv.ui.screens.basescreen.BaseScreen
 
 /** Variant of [Popup] pre-populated with one label, plus confirm and cancel buttons
  * @param stageToShowOn Parent [Stage], see [Popup.stageToShowOn]
@@ -39,7 +40,7 @@ open class ConfirmPopup(
     init {
         promptLabel.setAlignment(Align.center)
         add(promptLabel).colspan(2).row()
-        addCloseButton("Cancel", KeyboardBinding.Cancel, action = restoreDefault)
+        addCloseButton(Constants.cancel, KeyboardBinding.Cancel, action = restoreDefault)
         val confirmStyleName = if (isConfirmPositive) "positive" else "negative"
         val confirmStyle = BaseScreen.skin.get(confirmStyleName, TextButtonStyle::class.java)
         addOKButton(confirmText, KeyboardBinding.Confirm, confirmStyle, action = action)

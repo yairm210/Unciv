@@ -51,19 +51,18 @@ object SimpleHttp {
             try {
                 if (content.isNotEmpty()) {
                     doOutput = true
-                    // StandardCharsets.UTF_8 requires API 19
-                    val postData: ByteArray = content.toByteArray(Charset.forName("UTF-8"))
+                    val postData: ByteArray = content.toByteArray(Charsets.UTF_8)
                     val outputStream = DataOutputStream(outputStream)
                     outputStream.write(postData)
                     outputStream.flush()
                 }
 
-                val text = BufferedReader(InputStreamReader(inputStream)).readText()
+                val text = BufferedReader(InputStreamReader(inputStream, Charsets.UTF_8)).readText()
                 action(true, text, responseCode)
             } catch (t: Throwable) {
                 debug("Error during HTTP request", t)
                 val errorMessageToReturn =
-                    if (errorStream != null) BufferedReader(InputStreamReader(errorStream)).readText()
+                    if (errorStream != null) BufferedReader(InputStreamReader(errorStream, Charsets.UTF_8)).readText()
                     else t.message!!
                 debug("Returning error message [%s]", errorMessageToReturn)
                 action(false, errorMessageToReturn, responseCode)

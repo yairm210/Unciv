@@ -199,6 +199,14 @@
     ]
   },
   {
+    "name": "Defensive Pacts",
+    "steps": [
+        "Defensive pacts allow you and another civ to protect one another from aggressors.\nOnce the defensive pact is signed, you will be drawn into their future defensive wars, just as they will be drawn into your future defensive wars. Declaring war on any Civ will remove all of your defensive pacts. You will have to re-sign them to use their effect.",
+        "Be cautious when signing defensive pacts because they can bring you into wars that you might not want to be in.",
+        "The AI is very careful and will not accept defensive pacts with less than 80 influence."
+    ]
+  },
+  {
     "name": "City-States",
     "steps": [
 	"Not all nations are contending with you for victory.\nCity-States are nations that can't win, can't be traded with, and instead confer certain bonuses to friendly civilizations.",
@@ -210,6 +218,7 @@
     "name": "Great People",
     "steps": [
 	"Certain buildings, and specialists in cities, generate Great Person points per turn.\nThere are several types of Great People, and their points accumulate separately.\nThe number of points per turn and accumulated points can be viewed in the Overview screen.",
+	"Alternatively, the Great Person points breakdown per city can be viewed in each city screen (see UI Tips article).",
 	"Once enough points have been accumulated, a Great Person of that type will be created!\nEach Great Person can construct a certain Great Improvement which gives large yields over time, or immediately consumed to provide a certain bonus now.",
 	"Great Improvements also provide any strategic resources that are under them, so you don't need to worry if resources are revealed underneath your improvements!"
     ]
@@ -228,15 +237,19 @@
   },
   {
     "name": "Keyboard",
-    "steps": [
-    "If you have a keyboard, some shortcut keys become available. Unit command or improvement picker keys, for example, are shown directly in their corresponding buttons.",
-    "On the world screen the hotkeys are as follows:", "Space or 'N' - Next unit or turn\n'E' - Empire overview (last viewed page)\n'+', '-' - Zoom in / out\nHome - center on capital or open its city screen if already centered",
-    "F1 - Open Civilopedia\nF2 - Empire overview Trades\nF3 - Empire overview Units\nF4 - Empire overview Diplomacy\nF5 - Social policies\nF6 - Technologies\nF7 - Empire overview Cities\nF8 - Victory Progress\nF9 - Empire overview Stats\nF10 - Empire overview Resources\nF11 - Quicksave\nF12 - Quickload",
-    "Ctrl-R - Toggle tile resource display\nCtrl-Y - Toggle tile yield display\nCtrl-O - Game options\nCtrl-S - Save game\nCtrl-L - Load game\nCtrl-U - Toggle UI (World Screen only)"
+      "civilopediaText": [
+          {"text": "If you have a keyboard, some shortcut keys become available. Unit command or improvement picker keys, for example, are shown directly in their corresponding buttons."},
+          {"text": "On the world screen the hotkeys are as follows:"},
+          {"text": "Space or 'N' - Next unit or turn\n'E' - Empire overview (last viewed page)\n'+', '-' - Zoom in / out\nHome - center on capital or open its city screen if already centered"},
+          {"text": "F1 - Open Civilopedia\nF2 - Empire overview Trades\nF3 - Empire overview Units\nF4 - Empire overview Diplomacy\nF5 - Social policies\nF6 - Technologies\nF7 - Empire overview Cities\nF8 - Victory Progress\nF9 - Empire overview Stats\nF10 - Empire overview Resources\nF11 - Quicksave\nF12 - Quickload"},
+          {"text": "Ctrl-R - Toggle tile resource display\nCtrl-Y - Toggle tile yield display\nCtrl-O - Game options\nCtrl-S - Save game\nCtrl-L - Load game\nCtrl-U - Toggle UI (World Screen only)"},
+          {},
+          {"text": "All of these can be reassigned.", "link": "Tutorial/Keyboard Bindings"}
     ]
   },
   {
     "name": "World Screen",
+    "civilopediaText": [{"extraImage":"World_Screen"}],
     "steps": [
     "",
     "This is where you spend most of your time playing Unciv. See the world, control your units, access other screens from here.",
@@ -277,6 +290,17 @@
     ]
   },
   {
+    "name": "AutoPlay",
+    "steps": ["When at later stages of the game, you might have a lot of units but only a little to do. To help you we have implemented an AutoPlay feature that lets you use the AI to play part or all of your turn.",
+      "To enable AutoPlay, go to options and open the AutoPlay tab and press \"Show AutoPlay button\".",
+      "Clicking on the AutoPlay button opens a popup menue for choosing to AutoPlay parts or all of your turn.",
+      "Clicking Start AutoPlay in the pop-up menue or long pressing the AutoPlay button begins the multi-turn AutoPlay. This will play your next turns as if you were an AI.",
+      "To cancel multi-turn AutoPlay you can press the AutoPlay button, next turn button or open the options menue.",
+      "Multi-turn AutoPlay is not advised on harder difficulty levels as your AI will not play better against an AI with modifiers.",
+      "Multi-turn AutoPlay for multiplayer is not yet supported."
+    ]
+  },
+  {
     "name": "Faith",
     "steps": [
         "After building a shrine, your civilization will start generating ☮Faith.",
@@ -284,7 +308,8 @@
         "A pantheon will provide a small bonus for your civilization that will apply to all cities that have it as a majority religion.",
         "Each civilization can only choose a single pantheon belief, and each pantheon can only be chosen once.",
         "Generating more ☮Faith will allow you to found a religion."
-      ]
+      ],
+    "uniques": ["Hidden when religion is disabled"]
   },
   {
     "name": "Religion",
@@ -297,14 +322,16 @@
         "One of these great prophets can then be used to enhance your religion.",
         "This will allow you to choose another follower belief, as well as an enhancer belief, that only applies to you.",
         "Do take care founding a religion soon, only about half the players in the game are able to found a religion!"
-      ]
+      ],
+    "uniques": ["Hidden when religion is disabled"]
   },
   {
     "name": "Beliefs",
     "steps": [
         "There are four types of beliefs: Pantheon, Founder, Follower and Enhancer beliefs.",
         "Pantheon and Follower beliefs apply to each city following your religion, while Founder and Enhancer beliefs only apply to the founder of a religion."
-      ]
+      ],
+    "uniques": ["Hidden when religion is disabled"]
   },
   {
     "name": "Religion inside cities",
@@ -316,7 +343,8 @@
         "In both places, a tap/click on the icon of a religion will show detailed information with its effects.",
         "Based on this, you can get a feel for which religions have a lot of pressure built up in the city, and which have almost none.",
         "The city follows a religion if a majority of its population follows that religion, and will only then receive the effects of Follower and Pantheon beliefs of that religion."
-      ]
+      ],
+    "uniques": ["Hidden when religion is disabled"]
   },
   {
     "name": "Spreading Religion",
@@ -337,7 +365,8 @@
         "Holy cities also provide +30 pressure of the religion founded there to themselves, making it very difficult to effectively convert a holy city.",
         "Lastly, before founding a religion, new cities you settle will start with 200 pressure for your pantheon.",
         "This way, all your cities will starting following your pantheon as long as you haven't founded a religion yet."
-      ]
+      ],
+    "uniques": ["Hidden when religion is disabled"]
   },
   {
     "name": "Inquisitors",
@@ -347,7 +376,8 @@
         "Great prophets also have this ability, and remove all other religions in the city when spreading their religion.",
         "Often this results in the city immediately converting to their religion",
         "Additionally, when an inquisitor is stationed in or directly next to a city center, units of other religions cannot spread their faith there, though natural spread is uneffected."
-      ]
+      ],
+    "uniques": ["Hidden when religion is disabled"]
   },
   {
     "name": "Maya Long Count calendar cycle",
@@ -391,13 +421,32 @@
         "One of your cities is under a naval blockade! When all adjacent water tiles of a coastal city are blocked - city loses harbor connection to all other cities, including capital. Make sure to de-blockade cities by deploying friendly military naval units to fight off invaders."
     ]
   },
+  {
+    "name": "Espionage",
+    "civilopediaText": [
+      {"text": "Spies!", "header": 2, "color": "red", "centered": true},
+      {"extraImage": "OtherIcons/EspionageTutorial", "imageSize": 200},
+      {"text":"The first time a civ reaches the Renaissance era each nation gets one spy. Every time a civ reaches an era afterwards they get one more spy."},
+      {"text":"Spies can be sent out to foreign cities to steal technology, rigging elections or stage coups. Place them in your own cities to do counter-intelligence work."},
+      {"text":"Only one spy per civ is allowed in each city. Spies that are not in any city are on vacation in your spy hideout."},
+      {},
+      {"text":"Spies set up in cities of major civilizations will try to steal technology at a rate which is based off of the science production in the city. Succeeding to steal technology will level up your spy. Failing to succeed will level up the defending spy if it is present.","starred":true},
+      {"text":"Spies set in city-states will try to rig the elections in order to gain influence and reduce the influence of other civilizations. Only one spy partaking in rigging the election can win.","starred":true},
+      {"text":"A spy that is rigging an election in a city-state may also stage a coup. The likelihood of success for the coup depends on your relative influence to the current ally of the city-state, your spy level, and the level of the spy that the current ally has in the city-state if present. Succeeding a coup will make you their new ally and reduce the influence of all other civs. Failing a coup will kill your spy and level up the defending spy if present.","starred":true},
+      {"text":"Spies that are set up in your own cities will be conducting counter-intelligence. They reduce the success chance of other spies trying to steal your technology.","starred":true},
+      {},
+      {"text":"Spies at a higher rank have a higher chance of success. The max rank a spy can reach is rank 3. After a spy is killed it will revive after a certain amount of turns back at rank 1."},
+      {"text":"Building buildings like the constabulary and police station will reduce the technology steal rate of spies in that city."},
+      {},
+      {"text":"Espionage is available using the Gods and Kings ruleset. To enable it in a new game click advanced settings, then click on the Enable Espionage option."},
+    ]
+  },
     {
         "name": "Keyboard Bindings",
         "civilopediaText": [
             {"text":"Limitations","header":3},
-            {"text":"This is a work in progress.","color":"#b22222","starred":true},
+            {"text":"This is a work in progress.","color":"FIREBRICK","starred":true},
             {"text":"For technical reasons, only direct keys or Ctrl-Letter combinations can be used.","starred":true},
-            {"text":"The Escape key is intentionally excluded from being reassigned.","starred":true},
             {},
             {"text":"Using the Keys page","header":3},
             {"text":"Each binding has a button with an image looking like this:"},
@@ -410,7 +459,6 @@
             {},
             {"text":"For discussion about missing entries, see the linked github issue.","link":"https://github.com/yairm210/Unciv/issues/8862"}
         ]
-        // "uniques": ["Will not be displayed in Civilopedia"] // would prevent use for help link
     },
     {
         "name": "Civilopedia",
@@ -432,6 +480,64 @@
             {"text":"Keyboard","header":4},
             {"text":"Letters can select categories, and when there are multiple categories matching the same letter, you can press that repeatedly to cycle between these.","starred":true,"color":"#666"},
             {"text":"The arrow keys allow navigation as well - left/right for categories, up/down for entries.","starred":true,"color":"#666"}
+        ]
+    },
+    {
+        "name": "UI Tips",
+        "civilopediaText": [
+            {},
+            {"text":"World screen","header":3},
+            {},
+            {"text":"Skip all units to end a turn quickly","header":5,"color":"#fa0"},
+            {"text":"Right-click or long press the \"Next unit\" button to open a popup menu which allows to end a turn without having to cycle through all units. If some units are automated, a dedicated button is available to move them before ending the turn."},
+            {},
+            {"text":"Toggle notification list display","header":5,"color":"#fa0"},
+            {"text":"On the World screen, swipe the notification list to the right to temporarily hide it. Click the \"Bell\" button to display them again."},
+            {"text":"The default state for the notification list can be set in Options > Display > UI - Notifications on world screen."},
+            {},
+            {"text":"Entering a city screen quickly","header":5,"color":"#fa0"},
+            {"text":"You can Right-click or long press a city button on the World screen. The result is the same as tapping it twice - once to select and move the button, again to trigger a reaction: show the city screen (if the city is yours to inspect), or offer the foreign city info popup."},
+            {},
+            {"text":"Upgrade multiple units of the same type","header":5,"color":"#fa0"},
+            {"text":"On the World screen, select an unit that can be upgraded, then right-click or long press the \"Upgrade\" button to open a popup menu allowing to upgrade all units of this type at once."},
+            {"text":"In the Units overview, the same upgrade menu is available by clicking the unit icon in the \"Upgrade\" column. When an unit is upgradeable, the icon is lit if conditions are met (enough gold and/or resources), otherwise it is dimmed."},
+            {},
+            {},
+            {"text":"City screen","header":3},
+            {},
+            {"text":"Additional controls for the construction queue","header":5,"color":"#fa0"},
+            {"text":"Right-click or long press a construction item to open a popup menu with additional controls, allowing to manage production of the same item in all cities, by issuing the commands from the same City screen."},
+            {"text":"The \"Disable\" option moves an item to a separated \"Disabled\" tab, preventing its automatic queueing by the \"Auto-assign city production\" option. To move a disabled item back to its initial place, enter again the popup menu, and choose \"Enable\"."},
+            {"text":"Disabled items are set globally and persistent: they are not reset in a new game, or by restarting Unciv."},
+            {},
+            {"text":"Show Great Person Points breakdown","header":5,"color":"#fa0"},
+            {"text":"In the right sidepanel, click a Great People row to display the details of Great Person Points (GPP) accumulated each turn by the current city, for this type of Great People."},
+            {"text":"Click any of the Great People icons to display all GPP accumulated each turn by the current city, for all types of Great People."},
+            {},
+            {},
+            {"text":"Tech screen","header":3},
+            {},
+            {"text":"Queue multiple technologies in different branches","header":5,"color":"#fa0"},
+            {"text":"On the Tech screen, right-click or long press a technology to automatically queue it, even if this tech is in another branch than the item currently researched. Prerequisite techs to research will also be automatically queued."},
+            {"text":"Right-click or long press multiple techs to append them to the research queue, whatever their branch is."},
+            {},
+            {},
+            {"text":"Overview screens","header":3},
+            {},
+            {"text":"Reveal known resources on world screen","header":5,"color":"#fa0"},
+            {"text":"In the Resources overview, click on a resource icon to center the world screen on tiles already discovered and providing this resource."},
+            {"text":"Alternatively, click on the \"Unimproved\" number to center the world screen only on owned (by you or your allied City-states) tiles where the resource is not improved."},
+            {"text":"If more than one tile is available, click repeatedly on the notification to cycle through all of them."},
+            {},
+            {"text":"Show diagram line colors","header":5,"color":"#fa0"},
+            {"text":"In Politics overview > Show diagram, you can click anywhere inside the diagram to display a table listing all relationship line colors and their meaning."},
+            {},
+            {},
+            {"text":"Miscellaneous","header":3},
+            {},
+            {"text":"External links","header":5,"color":"#fa0"},
+            {"text":"External links support right-click or long press to copy the link to the clipboard instead of launching the browser."},
+            {"text":"Example: The 'Open Github page' button on the Mod management screen."}
         ]
     }
 ]

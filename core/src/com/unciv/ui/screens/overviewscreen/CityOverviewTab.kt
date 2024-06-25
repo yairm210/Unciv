@@ -1,280 +1,64 @@
 package com.unciv.ui.screens.overviewscreen
 
-import com.badlogic.gdx.graphics.Color
-import com.badlogic.gdx.scenes.scene2d.Actor
-import com.badlogic.gdx.scenes.scene2d.Group
-import com.badlogic.gdx.scenes.scene2d.ui.Cell
-import com.badlogic.gdx.scenes.scene2d.ui.Label
-import com.badlogic.gdx.scenes.scene2d.ui.Table
-import com.badlogic.gdx.utils.Align
-import com.unciv.Constants
-import com.unciv.UncivGame
-import com.unciv.logic.city.City
-import com.unciv.logic.city.CityFlags
 import com.unciv.logic.civilization.Civilization
-import com.unciv.models.stats.Stat
-import com.unciv.models.translations.tr
-import com.unciv.ui.components.UncivTooltip.Companion.addTooltip
-import com.unciv.ui.components.extensions.addSeparator
-import com.unciv.ui.components.extensions.center
-import com.unciv.ui.components.extensions.pad
-import com.unciv.ui.components.extensions.surroundWithCircle
-import com.unciv.ui.components.extensions.toLabel
-import com.unciv.ui.components.extensions.toTextButton
-import com.unciv.ui.components.input.onClick
-import com.unciv.ui.images.ImageGetter
-import com.unciv.ui.screens.cityscreen.CityScreen
-import kotlin.math.roundToInt
+import com.unciv.ui.components.extensions.equalizeColumns
+import com.unciv.ui.components.widgets.SortableGrid
+import com.unciv.ui.components.widgets.TabbedPager
 
+
+/**
+ *  Provides the Cities tab for Empire Overview.
+ *
+ *  Uses [SortableGrid], so all actual content implementation is in the [CityOverviewTabColumn] enum.
+ */
 class CityOverviewTab(
     viewingPlayer: Civilization,
     overviewScreen: EmpireOverviewScreen,
     persistedData: EmpireOverviewTabPersistableData? = null
 ) : EmpireOverviewTab(viewingPlayer, overviewScreen) {
-    class CityTabPersistableData(
-        var sortedBy: String = CITY,
-        var descending: Boolean = false
-    ) : EmpireOverviewTabPersistableData() {
-        override fun isEmpty() = sortedBy == CITY
+    class CityTabPersistableData : EmpireOverviewTabPersistableData(), SortableGrid.ISortState<CityOverviewTabColumn> {
+        override var sortedBy: CityOverviewTabColumn = CityOverviewTabColumn.CityColumn
+        override var direction: SortableGrid.SortDirection = SortableGrid.SortDirection.None
+        override fun isEmpty() = sortedBy == CityOverviewTabColumn.CityColumn && direction != SortableGrid.SortDirection.Descending
     }
 
     override val persistableData = (persistedData as? CityTabPersistableData) ?: CityTabPersistableData()
 
-    companion object {
-        const val iconSize = 50f  //if you set this too low, there is a chance that the tables will be misaligned
-        const val paddingVert = 5f      // vertical padding
-        const val paddingHorz = 8f      // horizontal padding
+    private val grid = SortableGrid(
+        columns = CityOverviewTabColumn.values().asIterable(),
+        data = viewingPlayer.cities,
+        actionContext = overviewScreen,
+        sortState = persistableData,
+        iconSize = 50f,  //if you set this too low, there is a chance that the tables will be misaligned
+        paddingVert = 5f,
+        paddingHorz = 8f,
+        separateHeader = true
+    ) {
+        header, details, totals ->
+        // Notes: header.parent is the LinkedScrollPane of TabbedPager. Its linked twin is details.parent.parent.parent however!
+        // horizontal "slack" if available width > content width is taken up between SortableGrid and CityOverviewTab for the details,
+        // but not so for the header. We must force the LinkedScrollPane somehow (no? how?) to do so - or the header Table itself.
 
-        private const val CITY = "City"
-        private const val WLTK = "WLTK"
-        private const val CONSTRUCTION = "Construction"
-        private const val GARRISON = "Garrison"
-        private val alphabeticColumns = listOf(CITY, CONSTRUCTION, WLTK, GARRISON)
-
-        private val citySortIcon = ImageGetter.getUnitIcon("Settler")
-            .surroundWithCircle(iconSize)
-            .apply { addTooltip("Name", 18f, tipAlign = Align.center) }
-        private val wltkSortIcon = ImageGetter.getImage("OtherIcons/WLTK 2")
-            .apply { color = Color.BLACK }
-            .surroundWithCircle(iconSize, color = Color.TAN)
-            .apply { addTooltip("We Love The King Day", 18f, tipAlign = Align.center) }
-        private val constructionSortIcon = ImageGetter.getImage("OtherIcons/Settings")
-            .apply { color = Color.BLACK }
-            .surroundWithCircle(iconSize, color = Color.LIGHT_GRAY)
-            .apply { addTooltip("Current construction", 18f, tipAlign = Align.center) }
-        private val garrisonSortIcon = ImageGetter.getImage("OtherIcons/Shield")
-            .apply { color = Color.BLACK }
-            .surroundWithCircle(iconSize, color = Color.LIGHT_GRAY)
-            .apply { addTooltip("Garrisoned by unit", 18f, tipAlign = Align.center) }
-
-        // Readability helpers
-        private fun String.isStat() = Stat.isStat(this)
-
-        private fun City.getStat(stat: Stat) =
-            if (stat == Stat.Happiness)
-                cityStats.happinessList.values.sum().roundToInt()
-            else cityStats.currentCityStats[stat].roundToInt()
-
-        private fun Int.toCenteredLabel(): Label =
-            this.toLabel().apply { setAlignment(Align.center) }
+        equalizeColumns(details, header, totals)
+        // todo Kludge! Positioning and alignment of the header Table within its parent has quirks when content width < stage width
+        //      This code should likely be included in SortableGrid anyway?
+        if (header.width < this.width) header.width = this.width
+        this.validate()
     }
 
-    private val columnsNames = arrayListOf("Population", "Food", "Gold", "Science", "Production", "Culture", "Happiness")
-            .apply { if (gameInfo.isReligionEnabled()) add("Faith") }
-
-    private val headerTable = Table(skin)
-    private val detailsTable = Table(skin)
-    private val totalTable = Table(skin)
-
-    private val collator = UncivGame.Current.settings.getCollatorFromLocale()
-
-    override fun getFixedContent() = Table().apply {
-        add("Cities".toLabel(fontSize = Constants.headingFontSize)).padTop(10f).row()
-        add(headerTable).padBottom(paddingVert).row()
-        addSeparator(Color.GRAY)
-    }
+    override fun getFixedContent() = grid.getHeader()
 
     init {
-        headerTable.defaults().pad(paddingVert, paddingHorz).minWidth(iconSize)
-        detailsTable.defaults().pad(paddingVert, paddingHorz).minWidth(iconSize)
-        totalTable.defaults().pad(paddingVert, paddingHorz).minWidth(iconSize)
-
-        updateTotal()
-        update()
-
         top()
-        add(detailsTable).row()
-        addSeparator(Color.GRAY).pad(paddingVert, 0f)
-        add(totalTable)
+        add(grid)
     }
 
-    private fun toggleSort(sortBy: String) {
-        if (sortBy == persistableData.sortedBy) {
-            persistableData.descending = !persistableData.descending
-        } else {
-            persistableData.sortedBy = sortBy
-            persistableData.descending = sortBy !in alphabeticColumns  // Start numeric columns descending
-        }
-    }
-
-    private fun getComparator() = Comparator { city2: City, city1: City ->
-        when(persistableData.sortedBy) {
-            CITY -> collator.compare(city2.name.tr(hideIcons = true), city1.name.tr(hideIcons = true))
-            CONSTRUCTION -> collator.compare(
-                city2.cityConstructions.currentConstructionFromQueue.tr(hideIcons = true),
-                city1.cityConstructions.currentConstructionFromQueue.tr(hideIcons = true))
-            "Population" -> city2.population.population - city1.population.population
-            WLTK -> city2.isWeLoveTheKingDayActive().compareTo(city1.isWeLoveTheKingDayActive())
-            GARRISON -> collator.compare(
-                    city2.getGarrison()?.name?.tr(hideIcons = true) ?: "",
-                    city1.getGarrison()?.name?.tr(hideIcons = true) ?: "",
-                )
-            else -> {
-                val stat = Stat.safeValueOf(persistableData.sortedBy)!!
-                city2.getStat(stat) - city1.getStat(stat)
-            }
-        }
-    }
-
-    private fun getSortSymbol() = if(persistableData.descending) "￬" else "￪"
-
-    private fun update() {
-        updateHeader()
-        updateCities()
-        equalizeColumns(detailsTable, headerTable, totalTable)
-        layout()
-    }
-
-    private fun updateHeader() {
-        fun sortOnClick(sortBy: String) {
-            toggleSort(sortBy)
-            // sort the table: clear and fill with sorted data
-            update()
-        }
-
-        fun addSortIcon(iconName: String, iconParam: Actor? = null): Cell<Group> {
-            val image = iconParam ?: ImageGetter.getStatIcon(iconName)
-
-            val icon = Group().apply {
-                isTransform = false
-                setSize(iconSize, iconSize)
-                image.setSize(iconSize, iconSize)
-                image.center(this)
-                image.setOrigin(Align.center)
-                onClick { sortOnClick(iconName) }
-            }
-            if (iconName == persistableData.sortedBy) {
-                val label = getSortSymbol().toLabel()
-                label.setOrigin(Align.bottomRight)
-                label.setPosition(iconSize - 2f, 0f)
-                icon.addActor(label)
-            }
-            icon.addActor(image)
-            return headerTable.add(icon).size(iconSize)
-        }
-
-        headerTable.clear()
-        addSortIcon(CITY, citySortIcon).left()
-        headerTable.add()  // construction _icon_ column
-        addSortIcon(CONSTRUCTION, constructionSortIcon).left()
-        for (name in columnsNames) {
-            addSortIcon(name)
-        }
-        addSortIcon(WLTK, wltkSortIcon)
-        addSortIcon(GARRISON, garrisonSortIcon)
-        headerTable.pack()
-    }
-
-    private fun updateCities() {
-        detailsTable.clear()
-        if (viewingPlayer.cities.isEmpty()) return
-
-        val sorter = getComparator()
-        var cityList = viewingPlayer.cities.sortedWith(sorter)
-        if (persistableData.descending)
-            cityList = cityList.reversed()
-
-        val constructionCells: MutableList<Cell<Label>> = mutableListOf()
-        for (city in cityList) {
-            val button = city.name.toTextButton(hideIcons = true)
-            button.onClick {
-                overviewScreen.game.pushScreen(CityScreen(city))
-            }
-            detailsTable.add(button).left().fillX()
-
-            val construction = city.cityConstructions.currentConstructionFromQueue
-            if (construction.isNotEmpty()) {
-                detailsTable.add(ImageGetter.getConstructionPortrait(construction, iconSize *0.8f)).padRight(
-                    paddingHorz
-                )
-            } else {
-                detailsTable.add()
-            }
-
-            val cell = detailsTable.add(city.cityConstructions.getCityProductionTextForCityButton().toLabel()).left().expandX()
-            constructionCells.add(cell)
-
-            detailsTable.add(city.population.population.toCenteredLabel())
-
-            for (column in columnsNames) {
-                val stat = Stat.safeValueOf(column) ?: continue
-                detailsTable.add(city.getStat(stat).toCenteredLabel())
-            }
-
-            when {
-                city.isWeLoveTheKingDayActive() -> {
-                    val image = ImageGetter.getImage("OtherIcons/WLTK 1").surroundWithCircle(
-                        iconSize, color = Color.CLEAR)
-                    image.addTooltip("[${city.getFlag(CityFlags.WeLoveTheKing)}] turns", 18f, tipAlign = Align.topLeft)
-                    detailsTable.add(image)
-                }
-                city.demandedResource.isNotEmpty() -> {
-                    val image = ImageGetter.getResourcePortrait(city.demandedResource, iconSize *0.7f).apply {
-                        addTooltip("Demanding [${city.demandedResource}]", 18f, tipAlign = Align.topLeft)
-                        onClick { showOneTimeNotification(
-                            gameInfo.getExploredResourcesNotification(viewingPlayer, city.demandedResource)
-                        ) }
-                    }
-                    detailsTable.add(image)
-                }
-                else -> detailsTable.add()
-            }
-
-            val garrisonUnit = city.getGarrison()
-            if (garrisonUnit == null) {
-                detailsTable.add()
-            } else {
-                val garrisonUnitName = garrisonUnit.displayName()
-                val garrisonUnitIcon = ImageGetter.getConstructionPortrait(garrisonUnit.baseUnit.getIconName(), iconSize * 0.7f)
-                garrisonUnitIcon.addTooltip(garrisonUnitName, 18f, tipAlign = Align.topLeft)
-                garrisonUnitIcon.onClick {
-                    overviewScreen.select(EmpireOverviewCategories.Units, UnitOverviewTab.getUnitIdentifier(garrisonUnit) )
-                }
-                detailsTable.add(garrisonUnitIcon)
-            }
-            detailsTable.row()
-        }
-
-        // row heights may diverge - fix it by setting minHeight to
-        // largest actual height (of the construction cell) - !! guarded by isEmpty test above
-        val largestLabelHeight = constructionCells.maxByOrNull{ it.prefHeight }!!.prefHeight
-        for (cell in constructionCells) cell.minHeight(largestLabelHeight)
-
-        detailsTable.pack()
-    }
-
-    private fun updateTotal() {
-        totalTable.add("Total".toLabel()).left()
-        totalTable.add()  // construction icon column
-        totalTable.add().expandX()  // construction label column
-        totalTable.add(viewingPlayer.cities.sumOf { it.population.population }.toCenteredLabel())
-        for (column in columnsNames.filter { it.isStat() }) {
-            val stat = Stat.valueOf(column)
-            if (stat == Stat.Food || stat == Stat.Production) totalTable.add() // an intended empty space
-            else totalTable.add(viewingPlayer.cities.sumOf { it.getStat(stat) }.toCenteredLabel())
-        }
-        totalTable.add(viewingPlayer.cities.count { it.isWeLoveTheKingDayActive() }.toCenteredLabel())
-        totalTable.add(viewingPlayer.cities.count { it.isGarrisoned() }.toCenteredLabel())
-        totalTable.pack()
+    override fun activated(index: Int, caption: String, pager: TabbedPager) {
+        super.activated(index, caption, pager)
+        // Being here can mean the user closed a CityScreen we opened from the first column - or the overview was just opened.
+        // To differentiate, the EmpireOverviewScreen.resume code lies and passes an empty caption - a kludge, but a clean
+        // callback architecture would mean a lot more work
+        if (caption.isEmpty())
+            grid.updateDetails()
     }
 }

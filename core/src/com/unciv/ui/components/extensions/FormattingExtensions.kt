@@ -2,7 +2,7 @@ package com.unciv.ui.components.extensions
 
 import com.badlogic.gdx.math.Vector2
 import com.unciv.models.translations.tr
-import com.unciv.ui.components.Fonts
+import com.unciv.ui.components.fonts.Fonts
 import java.text.SimpleDateFormat
 import java.time.Duration
 import java.time.temporal.ChronoUnit
@@ -20,7 +20,7 @@ fun Int.toPercent() = toFloat().toPercent()
 fun Float.toPercent() = 1 + this/100
 
 /** Convert a [resource name][this] into "Consumes [amount] $resource" string (untranslated) */
-fun String.getConsumesAmountString(amount: Int, isStockpiled:Boolean): String {
+fun String.getConsumesAmountString(amount: Int, isStockpiled: Boolean): String {
     val uniqueString = "{Consumes [$amount] [$this]}"
     return if (isStockpiled) "$uniqueString /${Fonts.turn}" else uniqueString
 }
@@ -28,6 +28,7 @@ fun String.getConsumesAmountString(amount: Int, isStockpiled:Boolean): String {
 /** Convert a [resource name][this] into "Need [amount] more $resource" string (untranslated) */
 fun String.getNeedMoreAmountString(amount: Int) = "Need [$amount] more [$this]"
 
+// todo: There's a few other `if (>0) "+" else ""` around, and a DecimalFormat solution in DetailedStatsPopup: unify
 fun Int.toStringSigned() = if (this > 0) "+$this" else this.toString()
 
 /** Formats the [Duration] into a translated string */
@@ -90,19 +91,6 @@ object UncivDateFormat {
      */
     fun String.parseDate(): Date = utcFormat.parse(this)
 }
-
-/** For filters containing '{', apply the [predicate] to each part inside "{}" and aggregate using [operation];
- *  otherwise return `null` for Elvis chaining of the individual filter. */
-fun <T> String.filterCompositeLogic(predicate: (String) -> T?, operation: (T, T) -> T): T? {
-    val elements: List<T> = removePrefix("{").removeSuffix("}").split("} {")
-        .mapNotNull(predicate)
-    if (elements.isEmpty()) return null
-    return elements.reduce(operation)
-}
-/** If a filter string contains '{', apply the [predicate] to each part inside "{}" then 'and' (`&&`) them together;
- *  otherwise return `null` for Elvis chaining of the individual filter. */
-fun String.filterAndLogic(predicate: (String) -> Boolean): Boolean? =
-        if (contains('{')) filterCompositeLogic(predicate) { a, b -> a && b } else null
 
 /** Format a Vector2 like (0,0) instead of (0.0,0.0) like [toString][Vector2.toString] does */
 fun Vector2.toPrettyString(): String = "(${x.toInt()},${y.toInt()})"

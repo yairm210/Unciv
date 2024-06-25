@@ -10,11 +10,11 @@ import org.junit.runner.RunWith
 @RunWith(GdxTestRunner::class)
 class UniqueErrorTests {
     @Test
-    fun testMultipleUniqueTypesSameText(){
+    fun testMultipleUniqueTypesSameText() {
         val textToUniqueType = HashMap<String, UniqueType>()
         var errors = false
-        for (uniqueType in UniqueType.values()){
-            if (textToUniqueType.containsKey(uniqueType.placeholderText)){
+        for (uniqueType in UniqueType.values()) {
+            if (textToUniqueType.containsKey(uniqueType.placeholderText)) {
                 println("UniqueTypes ${uniqueType.name} and ${textToUniqueType[uniqueType.placeholderText]!!.name} have the same text!")
                 errors = true
             }

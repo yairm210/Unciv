@@ -6,18 +6,19 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
+import com.unciv.logic.files.PlatformSaverLoader
 import com.unciv.logic.files.UncivFiles
 import com.unciv.models.translations.tr
-import com.unciv.ui.components.input.KeyCharAndCode
-import com.unciv.ui.components.UncivTextField
+import com.unciv.ui.components.widgets.UncivTextField
 import com.unciv.ui.components.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.components.extensions.disable
 import com.unciv.ui.components.extensions.enable
+import com.unciv.ui.components.extensions.toLabel
+import com.unciv.ui.components.extensions.toTextButton
+import com.unciv.ui.components.input.KeyCharAndCode
 import com.unciv.ui.components.input.keyShortcuts
 import com.unciv.ui.components.input.onActivation
 import com.unciv.ui.components.input.onClick
-import com.unciv.ui.components.extensions.toLabel
-import com.unciv.ui.components.extensions.toTextButton
 import com.unciv.ui.popups.ConfirmPopup
 import com.unciv.ui.popups.ToastPopup
 import com.unciv.utils.Concurrency
@@ -25,7 +26,13 @@ import com.unciv.utils.launchOnGLThread
 
 
 class SaveGameScreen(val gameInfo: GameInfo) : LoadOrSaveScreen("Current saves") {
-    private val gameNameTextField = UncivTextField.create("Saved game name")
+    companion object {
+        const val nameFieldLabelText = "Saved game name"
+        const val savingText = "Saving..."
+        const val saveToCustomText = "Save to custom location"
+    }
+
+    private val gameNameTextField = UncivTextField(nameFieldLabelText)
 
     init {
         setDefaultCloseAction()
@@ -63,7 +70,7 @@ class SaveGameScreen(val gameInfo: GameInfo) : LoadOrSaveScreen("Current saves")
         gameNameTextField.text = defaultSaveName
         gameNameTextField.setSelection(0, defaultSaveName.length)
 
-        add("Saved game name".toLabel()).row()
+        add(nameFieldLabelText.toLabel()).row()
         add(gameNameTextField).width(300f).row()
     }
 
@@ -82,22 +89,24 @@ class SaveGameScreen(val gameInfo: GameInfo) : LoadOrSaveScreen("Current saves")
     }
 
     private fun Table.addSaveToCustomLocation() {
-        val saveToCustomLocation = "Save to custom location".toTextButton()
+        val saveToCustomLocation = saveToCustomText.toTextButton()
         val errorLabel = "".toLabel(Color.RED)
         saveToCustomLocation.onClick {
             errorLabel.setText("")
-            saveToCustomLocation.setText("Saving...".tr())
+            saveToCustomLocation.setText(savingText.tr())
             saveToCustomLocation.disable()
-            Concurrency.runOnNonDaemonThreadPool("Save to custom location") {
+            Concurrency.runOnNonDaemonThreadPool(saveToCustomText) {
 
                 game.files.saveGameToCustomLocation(gameInfo, gameNameTextField.text,
                     {
                         game.popScreen()
-                        saveToCustomLocation.enable()
                     },
                     {
-                        errorLabel.setText("Could not save game to custom location!".tr())
-                        it.printStackTrace()
+                        if (it !is PlatformSaverLoader.Cancelled) {
+                            errorLabel.setText("Could not save game to custom location!".tr())
+                            it.printStackTrace()
+                        }
+                        saveToCustomLocation.setText(saveToCustomText.tr())
                         saveToCustomLocation.enable()
                     }
                 )
@@ -108,7 +117,7 @@ class SaveGameScreen(val gameInfo: GameInfo) : LoadOrSaveScreen("Current saves")
     }
 
     private fun saveGame() {
-        rightSideButton.setText("Saving...".tr())
+        rightSideButton.setText(savingText.tr())
         Concurrency.runOnNonDaemonThreadPool("SaveGame") {
             game.files.saveGame(gameInfo, gameNameTextField.text) {
                 launchOnGLThread {

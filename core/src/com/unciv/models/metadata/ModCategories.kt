@@ -2,8 +2,9 @@ package com.unciv.models.metadata
 
 import com.badlogic.gdx.Gdx
 import com.unciv.json.json
-import com.unciv.ui.screens.newgamescreen.TranslatedSelectBox
-import com.unciv.ui.screens.pickerscreens.Github
+import com.unciv.logic.github.GithubAPI
+import com.unciv.ui.components.widgets.TranslatedSelectBox
+import com.unciv.logic.github.Github
 
 
 class ModCategories : ArrayList<ModCategories.Category>() {
@@ -21,12 +22,12 @@ class ModCategories : ArrayList<ModCategories.Category>() {
         constructor() :
             this("", "", false, "", "")
 
-        constructor(topic: Github.TopicSearchResponse.Topic) :
+        constructor(topic: GithubAPI.TopicSearchResponse.Topic) :
             this(labelSuggestion(topic), topic.name, true, topic.created_at, topic.updated_at)
 
         companion object {
             val All = Category("All mods", "unciv-mod", false, "", "")
-            fun labelSuggestion(topic: Github.TopicSearchResponse.Topic) =
+            fun labelSuggestion(topic: GithubAPI.TopicSearchResponse.Topic) =
                 topic.display_name?.takeUnless { it.isBlank() }
                     ?: topic.name.removePrefix("unciv-mod-").replaceFirstChar(Char::titlecase)
         }
@@ -59,7 +60,7 @@ class ModCategories : ArrayList<ModCategories.Category>() {
         val json = json()
         val compact = json.toJson(this, ModCategories::class.java, Category::class.java)
         val verbose = json.prettyPrint(compact)
-        Gdx.files.local(fileLocation).writeString(verbose, false, "UTF-8")
+        Gdx.files.local(fileLocation).writeString(verbose, false, Charsets.UTF_8.name())
     }
 
     fun fromSelectBox(selectBox: TranslatedSelectBox): Category {

@@ -1,18 +1,20 @@
 package com.unciv.logic.city.managers
 
 import com.badlogic.gdx.math.Vector2
+import com.unciv.Constants
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.Proximity
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.civilization.managers.ReligionState
+import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.models.ruleset.nation.Nation
 import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unique.UniqueType
 
 class CityFounder {
-    fun foundCity(civInfo: Civilization, cityLocation: Vector2) :City{
+    fun foundCity(civInfo: Civilization, cityLocation: Vector2, unit: MapUnit? = null): City {
         val city = City()
 
         city.foundingCiv = civInfo.civName
@@ -22,14 +24,13 @@ class CityFounder {
 
         city.name = generateNewCityName(
             civInfo,
-            civInfo.gameInfo.civilizations.asSequence().filter { civ -> civ.isAlive() }.toSet(),
-            arrayListOf("New ", "Neo ", "Nova ", "Altera ")
-        ) ?: "City Without A Name"
+            civInfo.gameInfo.civilizations.asSequence().filter { civ -> civ.isAlive() }.toSet()
+        ) ?: NamingConstants.fallback
 
         city.isOriginalCapital = civInfo.citiesCreated == 0
         if (city.isOriginalCapital) {
             civInfo.hasEverOwnedOriginalCapital = true
-            // if you have some culture before the 1st city is found, you may want to adopt the 1st policy
+            // if you have some culture before the 1st city is founded, you may want to adopt the 1st policy
             civInfo.policies.shouldOpenPolicyPicker = true
         }
         civInfo.citiesCreated++
@@ -53,8 +54,9 @@ class CityFounder {
         })
             tile.removeTerrainFeature(terrainFeature)
 
-        tile.changeImprovement(null)
-        tile.improvementInProgress = null
+        if (civInfo.gameInfo.ruleset.tileImprovements.containsKey(Constants.cityCenter))
+            tile.setImprovement(Constants.cityCenter, civInfo)
+        tile.stopWorkingOnImprovement()
 
         val ruleset = civInfo.gameInfo.ruleset
         city.workedTiles = hashSetOf() //reassign 1st working tile
@@ -85,16 +87,23 @@ class CityFounder {
         triggerCitiesSettledNearOtherCiv(city)
         civInfo.gameInfo.cityDistances.setDirty()
 
-
         for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponFoundingCity,
-            StateForConditionals(civInfo, city)
+            StateForConditionals(civInfo, city, unit)
         ))
-            UniqueTriggerActivation.triggerCivwideUnique(unique, civInfo, city, triggerNotificationText = "due to founding a city")
-
+            UniqueTriggerActivation.triggerUnique(unique, civInfo, city, unit, triggerNotificationText = "due to founding a city")
+        if (unit != null)
+            for (unique in unit.getTriggeredUniques(UniqueType.TriggerUponFoundingCity,
+                StateForConditionals(civInfo, city, unit)))
+                UniqueTriggerActivation.triggerUnique(unique, civInfo, city, unit, triggerNotificationText = "due to founding a city")
 
         return city
     }
 
+    private object NamingConstants {
+        /** Prefixes to add when every base name is taken, ordered. */
+        val prefixes = arrayListOf("New", "Neo", "Nova", "Altera")
+        const val fallback = "City Without A Name"
+    }
 
     /**
      * Generates and returns a new city name for the [foundingCiv].
@@ -102,18 +111,16 @@ class CityFounder {
      * This method attempts to return the first unused city name of the [foundingCiv], taking used
      * city names into consideration (including foreign cities). If that fails, it then checks
      * whether the civilization has [UniqueType.BorrowsCityNames] and, if true, returns a borrowed
-     * name. Else, it repeatedly attaches one of the given [prefixes] to the list of names up to ten
-     * times until an unused name is successfully generated. If all else fails, null is returned.
+     * name. Else, it repeatedly attaches one of the given [prefixes][NamingConstants.prefixes] to the list of names
+     * up to ten times until an unused name is successfully generated. If all else fails, null is returned.
      *
      * @param foundingCiv The civilization that founded this city.
      * @param aliveCivs Every civilization currently alive.
-     * @param prefixes Prefixes to add when every base name is taken, ordered.
      * @return A new city name in [String]. Null if failed to generate a name.
      */
     private fun generateNewCityName(
         foundingCiv: Civilization,
-        aliveCivs: Set<Civilization>,
-        prefixes: List<String>
+        aliveCivs: Set<Civilization>
     ): String? {
         val usedCityNames: Set<String> =
                 aliveCivs.asSequence().flatMap { civilization ->
@@ -134,14 +141,14 @@ class CityFounder {
         // If the nation doesn't have the unique above,
         // return the first missing name with an increasing number of prefixes attached
         // TODO: Make prefixes moddable per nation? Support suffixes?
-        var candidate: String?
         for (number in (1..10)) {
-            for (prefix in prefixes) {
-                val currentPrefix: String = prefix.repeat(number)
-                candidate = foundingCiv.nation.cities.firstOrNull { cityName ->
-                    (currentPrefix + cityName) !in usedCityNames
-                }
-                if (candidate != null) return currentPrefix + candidate
+            for (prefix in NamingConstants.prefixes) {
+                val repeatedPredix = "$prefix [".repeat(number)
+                val suffix = "]".repeat(number)
+                val candidate = foundingCiv.nation.cities.asSequence()
+                    .map { repeatedPredix + it + suffix }
+                    .firstOrNull { it !in usedCityNames }
+                if (candidate != null) return candidate
             }
         }
 
@@ -198,14 +205,18 @@ class CityFounder {
 
     private fun addStartingBuildings(city: City, civInfo: Civilization, startingEra: String) {
         val ruleset = civInfo.gameInfo.ruleset
-        if (civInfo.cities.size == 1) city.cityConstructions.addBuilding(city.capitalCityIndicator())
+        if (civInfo.cities.size == 1) {
+            val capitalCityIndicator = city.capitalCityIndicator()
+            if (capitalCityIndicator != null)
+                city.cityConstructions.addBuilding(capitalCityIndicator, tryAddFreeBuildings = false)
+        }
 
         // Add buildings and pop we get from starting in this era
         for (buildingName in ruleset.eras[startingEra]!!.settlerBuildings) {
             val building = ruleset.buildings[buildingName] ?: continue
             val uniqueBuilding = civInfo.getEquivalentBuilding(building)
             if (uniqueBuilding.isBuildable(city.cityConstructions))
-                city.cityConstructions.addBuilding(uniqueBuilding.name)
+                city.cityConstructions.addBuilding(uniqueBuilding, tryAddFreeBuildings = false)
         }
 
         civInfo.civConstructions.tryAddFreeBuildings()
@@ -233,6 +244,6 @@ class CityFounder {
                     .distinct()
                     .filter { it.knows(city.civ) && it.hasExplored(city.getCenterTile()) }
         for (otherCiv in civsWithCloseCities)
-            otherCiv.getDiplomacyManager(city.civ).setFlag(DiplomacyFlags.SettledCitiesNearUs, 30)
+            otherCiv.getDiplomacyManager(city.civ)!!.setFlag(DiplomacyFlags.SettledCitiesNearUs, 30)
     }
 }

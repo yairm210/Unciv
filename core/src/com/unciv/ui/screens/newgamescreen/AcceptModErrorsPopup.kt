@@ -2,7 +2,7 @@ package com.unciv.ui.screens.newgamescreen
 
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
-import com.unciv.ui.components.ColorMarkupLabel
+import com.unciv.ui.components.widgets.ColorMarkupLabel
 import com.unciv.ui.popups.ConfirmPopup
 import com.unciv.ui.popups.closeAllPopups
 import com.unciv.ui.screens.basescreen.BaseScreen

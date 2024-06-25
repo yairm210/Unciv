@@ -13,20 +13,21 @@ import com.unciv.logic.files.MapSaver
 import com.unciv.logic.map.MapShape
 import com.unciv.logic.map.MapSize
 import com.unciv.models.translations.tr
-import com.unciv.ui.components.input.KeyCharAndCode
-import com.unciv.ui.components.TabbedPager
-import com.unciv.ui.components.UncivSlider
 import com.unciv.ui.components.extensions.addSeparator
 import com.unciv.ui.components.extensions.isEnabled
-import com.unciv.ui.components.input.keyShortcuts
-import com.unciv.ui.components.input.onActivation
-import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.extensions.toCheckBox
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
+import com.unciv.ui.components.input.KeyCharAndCode
+import com.unciv.ui.components.input.keyShortcuts
+import com.unciv.ui.components.input.onActivation
+import com.unciv.ui.components.input.onClick
+import com.unciv.ui.components.widgets.TabbedPager
+import com.unciv.ui.components.widgets.UncivSlider
 import com.unciv.ui.popups.ToastPopup
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.mapeditorscreen.MapEditorScreen
+import com.unciv.ui.screens.mapeditorscreen.MapEditorWesnothImporter
 import com.unciv.utils.Log
 
 class MapEditorOptionsTab(
@@ -81,6 +82,10 @@ class MapEditorOptionsTab(
             add(copyMapButton).padRight(15f)
             add(pasteMapButton)
         }).row()
+
+        add("Import a Wesnoth map".toTextButton().onActivation {
+            MapEditorWesnothImporter(editorScreen).onImportButtonClicked()
+        })
         addSeparator(Color.GRAY)
 
         worldWrapCheckBox = "Current map: World Wrap".toCheckBox(editorScreen.tileMap.mapParameters.worldWrap) {

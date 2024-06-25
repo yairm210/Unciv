@@ -1,5 +1,7 @@
 package com.unciv.logic.event
 
+import com.unciv.logic.event.EventBus.EventReceiver
+import com.unciv.logic.event.EventBus.send
 import java.lang.ref.WeakReference
 import kotlin.reflect.KClass
 
@@ -85,7 +87,7 @@ object EventBus {
     private fun cleanUp(eventHandlers: Map<KClass<*>, MutableList<Any>>) {
         for ((kClass, toRemove) in eventHandlers) {
             val registeredListeners = listeners.get(kClass)
-            registeredListeners?.removeIf {
+            registeredListeners?.removeAll {
                 val eventHandler = it.eventHandler.get()
                 eventHandler == null || (eventHandler as Any) in toRemove
             }

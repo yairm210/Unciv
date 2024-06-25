@@ -1,0 +1,8 @@
+By SeventhM:
+- Fix auto assign production not working after a building is built
+- Fix consuming resources not being affected by conditionals
+
+By SomeTroglodyte:
+- Allow games with zero researched techs to be 'before' the Ancient Era
+- Minor Fix: VictoryScreenIllustrations
+- Fix font "symbols" not showing

@@ -1,0 +1,14 @@
+Experimental pathfinding - activate in Options>Gameplay
+
+Console: autocomplete ALL THE THINGS!
+
+By SeventhM:
+- Allow mapUnitFilter to use CivFilter
+- Add terrain filters for resources, any terrain, or "improved"
+- Fix 'infinite Great Generals' bug
+
+Spectator receives diplomatic notifications again - By tuvus
+
+Download mod releases or any mod zip  - By SomeTroglodyte
+
+Add <every [positiveAmount] turns> Conditional - By PLynx01

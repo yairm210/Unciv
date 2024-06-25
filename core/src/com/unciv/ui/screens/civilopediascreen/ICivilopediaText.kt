@@ -2,9 +2,11 @@ package com.unciv.ui.screens.civilopediascreen
 
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.UncivGame
+import com.unciv.models.ruleset.IRulesetObject
 import com.unciv.models.ruleset.Ruleset
+import com.unciv.models.ruleset.RulesetObject
 import com.unciv.models.stats.INamed
-
+import com.unciv.ui.objectdescriptions.uniquesToCivilopediaTextLines
 
 /** Addon common to most ruleset game objects managing civilopedia display
  *
@@ -38,6 +40,7 @@ interface ICivilopediaText {
      * (And the info displayed should be about the **ruleset**, not the player situation)
      *
      * Default implementation is empty - no need to call super in overrides.
+     * Note that for inclusion of Uniques, two helpers named [uniquesToCivilopediaTextLines] exist (for Sequence or MutableCollection context).
      *
      * @param ruleset The current ruleset for the Civilopedia viewer
      * @return A list of [FormattedLine]s that will be inserted before
@@ -82,11 +85,21 @@ interface ICivilopediaText {
                 if (outerNotEmpty) yield(FormattedLine())
                 yieldAll(getCivilopediaTextLines(ruleset))
             }
+            if (this@ICivilopediaText is IRulesetObject && ruleset.mods.size > 1 && originRuleset.isNotEmpty()) {
+                yield(FormattedLine())
+                yield(FormattedLine("Mod: [$originRuleset]", starred = true, color = "#daa520"))
+            }
         }
         return SimpleCivilopediaText(newLines.toList())
     }
 
-    /** Create the correct string for a Civilopedia link */
+    /** Create the correct string for a Civilopedia link.
+     *
+     *  To actually make it work both as link and as icon identifier, return a string in the form
+     *  category/entryname where `category` **must** correspond exactly to either name or label of
+     *  the correct [CivilopediaCategories] member. `entryname` must equal the
+     *  [ruleset object name][RulesetObject] as defined by the [INamed] interface.
+     */
     fun makeLink(): String
 
     /** Overrides alphabetical sorting in Civilopedia

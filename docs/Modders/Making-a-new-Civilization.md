@@ -92,3 +92,4 @@ You have a working mod, now it's time to go wild!
 - Expand the abilities of your civ by adding new [uniques](uniques.md)
 - Add new civs, buildings or units
 - Expand into other game objects by exploring the rest of the [mod file structure](Mod-file-structure/1-Overview.md)
+- Try creating a base ruleset [from this template](https://github.com/yairm210/Unciv-minimal-base-ruleset)

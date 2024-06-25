@@ -37,9 +37,17 @@ object BackwardCompatibility {
         removeTechAndPolicies()
     }
 
+    fun GameInfo.migrateGreatGeneralPools() {
+        for (civ in civilizations) civ.greatPeople.run {
+            if (pointsForNextGreatGeneral >= pointsForNextGreatGeneralCounter["Great General"]) {
+                pointsForNextGreatGeneralCounter["Great General"] = pointsForNextGreatGeneral
+            } else pointsForNextGreatGeneral = pointsForNextGreatGeneralCounter["Great General"]
+        }
+    }
+
     private fun GameInfo.removeUnitsAndPromotions() {
         for (tile in tileMap.values) {
-            for (unit in tile.getUnits()) {
+            for (unit in tile.getUnits().toList()) {
                 if (!ruleset.units.containsKey(unit.name)) tile.removeUnit(unit)
 
                 for (promotion in unit.promotions.promotions.toList())
@@ -56,7 +64,7 @@ object BackwardCompatibility {
                     tile.roadStatus = RoadStatus.None
                     tile.roadIsPillaged = false
                 }
-                if (tile.improvementIsPillaged){
+                if (tile.improvementIsPillaged) {
                     tile.improvement = null
                     tile.improvementIsPillaged = false
                 }
@@ -66,10 +74,7 @@ object BackwardCompatibility {
     private fun GameInfo.handleMissingReferencesForEachCity() {
         for (city in civilizations.asSequence().flatMap { it.cities.asSequence() }) {
 
-            changeBuildingNameIfNotInRuleset(ruleset, city.cityConstructions, "Hanse", "Bank")
-
-            for (building in city.cityConstructions.builtBuildings.toHashSet()) {
-
+            for (building in city.cityConstructions.builtBuildings.toList()) {
                 if (!ruleset.buildings.containsKey(building))
                     city.cityConstructions.builtBuildings.remove(building)
             }
@@ -115,12 +120,12 @@ object BackwardCompatibility {
         if (ruleSet.buildings.containsKey(oldBuildingName))
             return
         // Replace in built buildings
-        if (cityConstructions.builtBuildings.contains(oldBuildingName)) {
-            cityConstructions.builtBuildings.remove(oldBuildingName)
-            cityConstructions.builtBuildings.add(newBuildingName)
+        if (cityConstructions.isBuilt(oldBuildingName)) {
+            cityConstructions.removeBuilding(oldBuildingName)
+            cityConstructions.addBuilding(newBuildingName)
         }
         // Replace in construction queue
-        if (!cityConstructions.builtBuildings.contains(newBuildingName) && !cityConstructions.constructionQueue.contains(newBuildingName))
+        if (!cityConstructions.isBuilt(newBuildingName) && !cityConstructions.constructionQueue.contains(newBuildingName))
             cityConstructions.constructionQueue = cityConstructions.constructionQueue
                 .map { if (it == oldBuildingName) newBuildingName else it }
                 .toMutableList()
@@ -128,7 +133,7 @@ object BackwardCompatibility {
             cityConstructions.constructionQueue.remove(oldBuildingName)
         // Replace in in-progress constructions
         if (cityConstructions.inProgressConstructions.containsKey(oldBuildingName)) {
-            if (!cityConstructions.builtBuildings.contains(newBuildingName) && !cityConstructions.inProgressConstructions.containsKey(newBuildingName))
+            if (!cityConstructions.isBuilt(newBuildingName) && !cityConstructions.inProgressConstructions.containsKey(newBuildingName))
                 cityConstructions.inProgressConstructions[newBuildingName] = cityConstructions.inProgressConstructions[oldBuildingName]!!
             cityConstructions.inProgressConstructions.remove(oldBuildingName)
         }
@@ -188,13 +193,6 @@ object BackwardCompatibility {
         }
     }
 
-    fun GameInfo.convertEncampmentData(){
-        if (barbarians.camps.isNotEmpty()){
-            barbarians.encampments.addAll(barbarians.camps.values)
-            barbarians.camps.clear()
-        }
-    }
-
     fun GameInfo.migrateToTileHistory() {
         if (historyStartTurn >= 0) return
         for (tile in getCities().flatMap { it.getTiles() }) {
@@ -203,14 +201,11 @@ object BackwardCompatibility {
         historyStartTurn = turns
     }
 
-    fun GameInfo.migrateGreatPersonPools() {
-        for (civ in civilizations) civ.greatPeople.run {
-            if (pointsForNextGreatPerson >= pointsForNextGreatPersonCounter[""]) {
-                pointsForNextGreatPersonCounter[""] = pointsForNextGreatPerson
-            }
-             else {
-                 pointsForNextGreatPerson = pointsForNextGreatPersonCounter[""]
-             }
+    fun GameInfo.ensureUnitIds() {
+        if (lastUnitId == 0) lastUnitId = tileMap.values.asSequence()
+            .flatMap { it.getUnits() }.maxOfOrNull { it.id }?.coerceAtLeast(0) ?: 0
+        for (unit in tileMap.values.flatMap { it.getUnits() }) {
+            if (unit.id == Constants.NO_ID) unit.id = ++lastUnitId
         }
     }
 }

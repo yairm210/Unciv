@@ -1,4 +1,6 @@
-﻿//  Taken from https://github.com/TomGrill/gdx-testing
+﻿@file:Suppress("UNUSED_VARIABLE")  // These are tests and the names serve readability
+
+//  Taken from https://github.com/TomGrill/gdx-testing
 package com.unciv.logic.map
 
 import com.badlogic.gdx.math.Vector2
@@ -13,7 +15,7 @@ import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.ruleset.unit.UnitType
 import com.unciv.testing.GdxTestRunner
-import com.unciv.uniques.TestGame
+import com.unciv.testing.TestGame
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
@@ -22,8 +24,8 @@ import org.junit.runner.RunWith
 @RunWith(GdxTestRunner::class)
 class UnitMovementTests {
 
-    private lateinit var tile:Tile
-    private lateinit var civInfo:Civilization
+    private lateinit var tile: Tile
+    private lateinit var civInfo: Civilization
     private var testGame = TestGame()
 
     @Before
@@ -48,7 +50,7 @@ class UnitMovementTests {
         }
     }
 
-    fun addFakeUnit(unitType: UnitType, uniques:List<String> = listOf()): MapUnit {
+    fun addFakeUnit(unitType: UnitType, uniques: List<String> = listOf()): MapUnit {
         val baseUnit = BaseUnit()
         baseUnit.unitType = unitType.name
         baseUnit.ruleset = testGame.ruleset
@@ -174,7 +176,7 @@ class UnitMovementTests {
     fun canNOTPassThroughTileWithEnemyUnits() {
         val barbCiv = Civilization()
         barbCiv.gameInfo = testGame.gameInfo
-        barbCiv.civName = Constants.barbarians // they are always enemies
+        barbCiv.setNameForUnitTests(Constants.barbarians) // they are always enemies
         barbCiv.nation = Nation().apply { name = Constants.barbarians }
 
         testGame.gameInfo.civilizations.add(barbCiv)
@@ -199,7 +201,7 @@ class UnitMovementTests {
 
         city.hasJustBeenConquered = true
         civInfo.diplomacy[otherCiv.civName] = DiplomacyManager(otherCiv, otherCiv.civName)
-        civInfo.getDiplomacyManager(otherCiv).diplomaticStatus = DiplomaticStatus.War
+        civInfo.getDiplomacyManager(otherCiv)!!.diplomaticStatus = DiplomaticStatus.War
 
         Assert.assertTrue("Unit can capture other civ city", unit.movement.canPassThrough(tile))
     }
@@ -218,7 +220,7 @@ class UnitMovementTests {
     @Test
     fun canTeleportWaterUnit() {
         testGame.makeHexagonalMap(5)
-        for (i in 1..3){
+        for (i in 1..3) {
             val waterTile = testGame.tileMap[1,i]
             waterTile.baseTerrain = Constants.ocean
             waterTile.setTransients()
@@ -238,7 +240,7 @@ class UnitMovementTests {
     @Test
     fun `can NOT teleport water unit over the land`() {
         testGame.makeHexagonalMap(5)
-        for (i in listOf(1,3)){ // only water tiles are 1,1 and 1,3, which are non-contiguous
+        for (i in listOf(1,3)) { // only water tiles are 1,1 and 1,3, which are non-contiguous
             val waterTile = testGame.tileMap[1,i]
             waterTile.baseTerrain = Constants.ocean
             waterTile.setTransients()
@@ -269,7 +271,7 @@ class UnitMovementTests {
         // Place an enemy civilian unit on that tile
         val atWarCiv = testGame.addCiv()
         atWarCiv.diplomacyFunctions.makeCivilizationsMeet(civInfo)
-        atWarCiv.getDiplomacyManager(civInfo).declareWar()
+        atWarCiv.getDiplomacyManager(civInfo)!!.declareWar()
         val enemyWorkerUnit = testGame.addUnit("Worker", atWarCiv, testGame.tileMap[1,2])
 
         val otherCiv = testGame.addCiv()
@@ -283,7 +285,7 @@ class UnitMovementTests {
     @Test
     fun canTeleportTransportWithPayload() {
         testGame.makeHexagonalMap(5)
-        for (i in 1..3){
+        for (i in 1..3) {
             val waterTile = testGame.tileMap[1,i]
             waterTile.baseTerrain = Constants.ocean
             waterTile.setTransients()

@@ -1,11 +1,73 @@
 # Images and Audio
 
+## Images and the texture atlas
+
+Images need to be 'packed' before the game can use them. This preparation step needs to happen only once (as long as the original graphics are not changed).
+The result one ore more a pairs of files - a texture in [png format](https://en.wikipedia.org/wiki/PNG) and a corresponding [atlas](https://en.wikipedia.org/wiki/Texture_atlas) file.
+If you have a single `Images`folder, the default such pair is named `game.png`/`game.atlas`.
+For your players, the individual images aren't important - only the combined images actually register to the game, so you need to include them in your repository and keep them up to date.
+We still recommend including the originals in a mod, so other developers running from source can access them.
+With original images included, you can use a development environment using git, have it linked to your repository, while using a symlink to allow Unciv to see the mod - and pack your atlas for you on every launch.
+If you're developing your mod on an Android version of Unciv (not recommended!) you won't be able to generate these packed files directly.
+
+### Ways to pack texture atlases
+
+- Texture atlases *CANNOT BE PACKED* on Android (technical reason: TexturePacker uses `java.awt` to do heavy lifting, which is unavailable on Android 0_0)
+- Launch the desktop version with your mod (your mod's main folder is a subfolder of the game's "mods" folder, or symlinked there). This uses the packing methods [documented here](https://libgdx.com/wiki/tools/texture-packer).
+- You can ask someone in the Discord server to help you out.
+- You can use external tools, [e.g. gdx-texture-packer-gui](https://github.com/crashinvaders/gdx-texture-packer-gui). Utmost care needs to be taken that the files can be discovered by Unciv and internal relative paths are correct.
+- The Unciv repo itself has a feature that can pack images on github runners - documentation still needs to be done.
+
+### Multiple texture atlases
+
+If your mod has lots of images (or large ones), the textures might 'spill' into additional texture files - 2048x2048 is the limit for a single texture pack. You will see a `game2.png`, possibly a `game3.png` or more appear.
+This is not good for performance, which is why the base game controls which kinds of images go together into one texture(+atlas).
+This works for mods, too: Create not only one Images folder, but several, the additional ones named "Images.xyz", where xyz will become the filename of the additional texture file (So don't use both Images and Images.game - those will clash). Look at the Unciv base game to get a better idea how that works.
+To minimize texture swaps, try to group them by the situation where in the game they are needed. You can distibute by folder, but having the same subfolders under several "Images.xyz" and distributing the images between them will also work.
+
+A file `Atlases.json` (uppercase 'A') in the mod root (not in `Images` or in `jsons`) controls which atlases to load, which in turn control which texture (`.png`) files are read.
+This file is automatically created by the built-in packer. Only the `game.atlas` file is read by default for backward compatibility.
+If you use external tools and multiple atlases, you will need to maintain this file yourself - it is a simple json array of strings, each a file name without the `.atlas` extension (saved as UTF-8 without byte order mark).
+
+### Texture packer settings
+
+The texture packers built into Unciv will look for a `TexturePacker.settings` file in each `Images` directory (_not_ under `jsons`).
+With this file you can tune the packer - e.g. control pixel interpolation filters.
+It is a json of a [Gdx TexturePacker.Settings](https://libgdx.com/wiki/tools/texture-packer#settings) instance.
+The default settings are as shown in the Gdx documentation linked above if you do supply a settings file, but without such a file, some fields have different defaults.
+To get these changed defaults, start with the following as base for your custom `TexturePacker.settings` file:
+
+```json
+{
+	"fast": true,
+	"combineSubdirectories": true,
+	"maxWidth": 2048,
+	"maxHeight": 2048,
+	"paddingX": 8,
+	"paddingY": 8,
+	"duplicatePadding": true,
+	"filterMin": "MipMapLinearLinear",
+	"filterMag": "MipMapLinearLinear",
+}
+```
+(change "filterMag" to "Linear" if your atlas name will end in "Icons".)
+
+### Texture atlas encoding
+
+Due to certain circumstances, please make sure names and paths that will be mapped in an atlas use **only ascii**. Not all parts of the loader enforce strict UTF-8 usage, sorry.
+Symptoms if you fail to heed this: mod works on a Chinese Windows box but not on a western one or vice-versa, or mod works on a Chinese Windows box but not a Chinese Linux box or vice-versa, or mod works on a Chinese Windows box with default settings but not on the same box with "Use unicode UTF-8 for worldwide language support" turned on.
+This does not technically apply to the atlas name itself when multiple atlases are used (the xyz part in "Images.xyz"), but we nevertheless recommend the same rule for consistency.
+
 ## Permanent audiovisual mods
 
 The following chapters describe possibilities that will work while a mod is ***active***.
 It is either selected for the current game (during new game creation, cannot be changed after that for saved games), meaning all its rules and resources will be used.
 _Or_ it is marked as 'Permanent audiovisual mod' in the mod manager (you must select it in the 'installed' column to get the checkbox).
 In that case only graphics and audio will be active, the rule changes will be ignored (if it contains any) unless the first way is _also_ used.
+Note that this feature includes graphics or sounds from the selected mod in _all_ games, even those started before installing the mod.
+Repeat: In case of a mod bringing both changed rules and audiovisuals, the 'permanent' feature will include only the media on all games, to use the rules you will still need to select the mod for a new game.
+
+Note that the Mod author can (and often should) control whether the checkbox appears using [ModOptions](Mod-file-structure/5-Miscellaneous-JSON-files.md#modoptionsjson) [uniques](uniques.md#modoptions-uniques).
 
 ## Override built-in graphics
 
@@ -33,6 +95,63 @@ Additionally, there there are some kinds of images where the game has display ca
 You can add custom `.ttf` fonts into the game: place `.ttf` file inside of `/fonts/` directory of your mod. The font you have added will be visible and choosable in `Options-Advanced` tab at the top of font list as `<fontname> (<modname>)`.
 
 All fonts are rendered by default at 50 pixel size and rescaled later for the game's needs. Currently fonts are NOT mipmapped on minification.
+
+### Overriding special characters
+
+The textures in the EmojiIcons subfolder and some others are mapped into the font at specific codepoints. They are used by the game, can be used in any text of a mod, and can be overridden by mod textures.
+Additionally, some code points are normally provided by the chosen system font, but have EmojiIcons names that will override the font glyph if a mod supplies them (marked 'optional' in the table below).
+Note textures provided for such codepoints *do* respect aspect ratio, they do *not* need to be square like many built-in icons are!
+
+| Symbol | Codepoint | Unicode name                       | Texture path                | Optional |
+|:------:|:---------:|:-----------------------------------|:----------------------------|:--------:|
+|   ⛏    |  U+26CF   | pick                               | EmojiIcons/Automate         |          |
+|   ♪    |  U+266A   | eighth note                        | EmojiIcons/Culture          |          |
+|   ☠    |  U+2620   | skull and crossbones               | EmojiIcons/Death            |          |
+|   ☮    |  U+262E   | peace symbol                       | EmojiIcons/Faith            |          |
+|   ⁂    |  U+2042   | asterism                           | EmojiIcons/Food             |          |
+|   ¤    |  U+00A4   | currency sign                      | EmojiIcons/Gold             |          |
+|   ♬    |  U+266C   | sixteenth note                     | EmojiIcons/Great Artist     |          |
+|   ⚒    |  U+2692   | hammer                             | EmojiIcons/Great Engineer   |          |
+|   ⛤    |  U+26E4   | pentagram                          | EmojiIcons/Great General    |          |
+|   ⚖    |  U+2696   | scale                              | EmojiIcons/Great Merchant   |          |
+|   ⚛    |  U+269B   | atom                               | EmojiIcons/Great Scientist  |          |
+|   ⌣    |  U+2323   | smile                              | EmojiIcons/Happiness        |          |
+|   ∞    |  U+221E   | infinity                           | EmojiIcons/Infinity         |    *     |
+|   ⚙    |  U+2699   | gear                               | EmojiIcons/Production       |          |
+|   ⍾    |  U+237E   | bell symbol                        | EmojiIcons/Science          |          |
+|   ￪    |  U+FFEA   | halfwidth upwards arrow            | EmojiIcons/SortedAscending  |    *     |
+|   ◉    |  U+25C9   | fisheye                            | EmojiIcons/SortedByStatus   |    *     |
+|   ⌚    |  U+231A   | watch                              | EmojiIcons/SortedByTime     |    *     |
+|   ￬    |  U+FFEC   | halfwidth upwards arrow            | EmojiIcons/SortedDescending |    *     |
+|   ✯    |  U+272F   | pinwheel star                      | EmojiIcons/Star             |    *     |
+|   ⏳    |  U+23F3   | hourglass                          | EmojiIcons/Turn             |          |
+|   ⅰ    |  U+2170   | small roman numeral one            | MayaCalendar/0              |          |
+|   ⅱ    |  U+2171   | small roman numeral two            | MayaCalendar/1              |          |
+|   ⅲ    |  U+2172   | small roman numeral three          | MayaCalendar/2              |          |
+|   ⅳ    |  U+2173   | small roman numeral four           | MayaCalendar/3              |          |
+|   ⅴ    |  U+2174   | small roman numeral five           | MayaCalendar/4              |          |
+|   ⅵ    |  U+2175   | small roman numeral six            | MayaCalendar/5              |          |
+|   ⅶ    |  U+2176   | small roman numeral seven          | MayaCalendar/6              |          |
+|   ⅷ    |  U+2177   | small roman numeral eight          | MayaCalendar/7              |          |
+|   ⅸ    |  U+2178   | small roman numeral nine           | MayaCalendar/8              |          |
+|   ⅹ    |  U+2179   | small roman numeral ten            | MayaCalendar/9              |          |
+|   ⅺ    |  U+217A   | small roman numeral eleven         | MayaCalendar/10             |          |
+|   ⅻ    |  U+217B   | small roman numeral twelve         | MayaCalendar/11             |          |
+|   ⅼ    |  U+217C   | small roman numeral fifty          | MayaCalendar/12             |          |
+|   ⅽ    |  U+217D   | small roman numeral one hundred    | MayaCalendar/13             |          |
+|   ⅾ    |  U+217E   | small roman numeral five hundred   | MayaCalendar/14             |          |
+|   ⅿ    |  U+217F   | small roman numeral one thousand   | MayaCalendar/15             |          |
+|   ↀ    |  U+2180   | roman numeral one thousand cd      | MayaCalendar/16             |          |
+|   ↁ    |  U+2181   | roman numeral five thousand        | MayaCalendar/17             |          |
+|   ↂ    |  U+2182   | roman numeral ten thousand         | MayaCalendar/18             |          |
+|   Ↄ    |  U+2183   | roman numeral reversed one hundred | MayaCalendar/19             |          |
+|   ය    |  U+0DBA   | sinhala letter yayanna             | MayaCalendar/Baktun         |          |
+|   ඹ    |  U+0DB9   | sinhala letter amba bayanna        | MayaCalendar/Katun          |          |
+|   ම    |  U+0DB8   | sinhala letter mayanna             | MayaCalendar/Tun            |          |
+|   ➡    |  U+27A1   | black rightwards arrow             | StatIcons/Movement          |          |
+|   …    |  U+2026   | horizontal ellipsis                | StatIcons/Range             |          |
+|   ‡    |  U+2021   | double dagger                      | StatIcons/RangedStrength    |          |
+|   †    |  U+2020   | dagger                             | StatIcons/Strength          |          |
 
 ### Adding Wonder Splash Screens
 
@@ -69,6 +188,29 @@ The Unit Types as defined in [UnitTypes.json](Mod-file-structure/4-Unit-related-
 
 The individual Beliefs - as opposed to Belief types, as defined in [Beliefs.json](Mod-file-structure/2-Civilization-related-JSON-files.md#beliefsjson) have no icons in the base game, but Civilopedia can decorate their entries if you supply images named 'Images/ReligionIcons/<Belief>.png'.
 Civilopedia falls back to the icon for the Belief type - as you can see in the base game, but individual icons have precedence if they exist.
+
+### Adding Victory illustrations
+
+You can enable pictures for each of the Victories, illustrating their progress. That could be a Spaceship under construction, showing the parts you've added, or cultural progress as you complete Policy branches. They will be shown on a new tab of the Victory Screen.
+
+For this, you need to create a number of images. In the following, `<>` denote names as they appear in [VictoryTypes.json](../Other/Miscellaneous-JSON-files.md#victorytypes-json), untranslated, and these file names (like any other in Unciv) are case-sensitive. All files are optional, except Background as noted:
+
+* `VictoryIllustrations/<name>/Background.png` - this determines overall dimensions, the others must not exceed its size and should ideally have identical size. Mandatory, if this file is missing, no illustrations will be shown for this Victory Type.
+* `VictoryIllustrations/<name>/Won.png` - shown if _you_ (the viewing player) won this Victory.
+* `VictoryIllustrations/<name>/Lost.png` - shown if a competitor won this Victory - or you have completed this Victory, but have won a different one before.
+* `VictoryIllustrations/<name>/<milestone>.png` - One image for each entry in the `milestones` field without an `[amount]`, name taken verbatim but _without_ square brackets, spaces preserved.
+* `VictoryIllustrations/<name>/<milestone> <index>.png` - For entries in the `milestones` field with an `[amount]`, one image per step, starting at index 1.
+* `VictoryIllustrations/<name>/<component>.png` - One image for each unique entry in the `requiredSpaceshipParts` field, that is, for parts that can only be built once. Spaces in unit names must be preserved.
+* `VictoryIllustrations/<name>/<component> <index>.png` - For parts in the `requiredSpaceshipParts` field that must be built several times, one per instance. Spaces in unit names must be preserved, and there must be one space between the name and the index. Indexes start at 1.
+
+Remember - these are logical names as they are indexed in your atlas file, if you let Unciv pack for you, the `VictoryIllustrations` folder should be placed under `<mod>/Images` - or maybe `<mod>/Images.Victories` if you want these images to occupy a separate `Victories.atlas` (Do not omit the `Images` folder even if left empty, the texture packer needs it as marker to do its task).
+
+That's almost all there is - no json needed, and works as ['Permanent audiovisual mod'](#permanent-audiovisual-mods). The Background image is the trigger, and if it's present all part images must be present too, or your spaceship crashes before takeoff, taking Unciv along with it. That was a joke, all other images are optional, it could just look boring if you omit the wrong ones.
+
+As for "almost" - all images are overlaid one by one over the Background one, so they must all be the same size. Except for Won and Lost - those, if their condition is met, _replace_ the entire rest, so they can be different sizes than the background. The part images are overlaid over the background image in no guaranteed order, therefore they should use _transparency_ to avoid hiding parts of each other.
+
+One way to create a set is to take one final image, select all parts that should be the centerpiece itself not background (use lasso, magic wand or similar tools, use antialiasing and feathering as you see fit), copy and paste as new layer. Then apply desaturation and/or curves to the selection on the background layer to only leave a hint of how the completed victory will look like. Now take apart the centerpiece - do a selection fitting one part name, copy and paste as new layer (in place), then delete the selected part from the original centerpiece layer. Rinse and repeat, then export each layer separately as png with the appropriate filenames.
+There's no suggested size, but keep in mind textures are a maximum of 2048x2048 pixels, and if you want your images packed properly, several should fit into one texture. They will be scaled down if needed to no more than 80% screen size, preserving aspect ratio.
 
 ## Sounds
 
@@ -135,3 +277,11 @@ Legend:
 -   [^3]: According to your relation to the picked player.
 -   [^4]: Excluding City States.
 -   [^5]: Both in the alert when another player declares War on you and declaring War yourself in Diplomacy screen.
+
+## Supply Leader Voices
+
+Sound files named from a Nation name and the corresponding text message's [field name](Mod-file-structure/2-Civilization-related-JSON-files.md#nationsjson),
+placed in a mod's `voices` folder, will play whenever that message is displayed. Nation name and message name must be joined with a dot '.', for example `voices/Zulu.defeated.ogg`.
+
+Leader voice audio clips will be streamed, not cached, so they are allowed to be long - however, if another Leader voice or a city ambient sound needs to be played, they will be cut off without fade-out
+Also note that voices for City-State leaders work only for those messages a City-state can actually use: `attacked`, `defeated`, and `introduction`.

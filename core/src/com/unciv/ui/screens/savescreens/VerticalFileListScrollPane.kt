@@ -9,7 +9,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.utils.Align
 import com.unciv.logic.files.UncivFiles
 import com.unciv.ui.images.ImageGetter
-import com.unciv.ui.components.AutoScrollPane
+import com.unciv.ui.components.widgets.AutoScrollPane
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.components.input.keyShortcuts
 import com.unciv.ui.components.input.onClick
@@ -21,7 +21,6 @@ import com.unciv.utils.launchOnGLThread
 /** A widget holding TextButtons vertically in a Table contained in a ScrollPane, with methods to
  *  hold file names and FileHandle's in those buttons. Used to display existing saves in the Load and Save game dialogs.
  *
- *  @param shorcutScreen optionally pass in a [BaseScreen] where global keyboard shorcuts should be installed.
  *  @param existingSavesTable exists here for coder convenience. No need to touch.
  */
 class VerticalFileListScrollPane(

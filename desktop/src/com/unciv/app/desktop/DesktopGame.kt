@@ -1,16 +1,16 @@
 package com.unciv.app.desktop
 
+import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration
 import com.unciv.UncivGame
 
 class DesktopGame(config: Lwjgl3ApplicationConfiguration) : UncivGame() {
 
-    private val audio = HardenGdxAudio()
     private var discordUpdater = DiscordUpdater()
-    private val turnNotifier = MultiplayerTurnNotifierDesktop()
+    private val windowListener = UncivWindowListener()
 
     init {
-        config.setWindowListener(turnNotifier)
+        config.setWindowListener(windowListener)
 
         discordUpdater.setOnUpdate {
 
@@ -34,14 +34,14 @@ class DesktopGame(config: Lwjgl3ApplicationConfiguration) : UncivGame() {
     }
 
     override fun installAudioHooks() {
-        audio.installHooks(
+        (Gdx.app as HardenGdxAudio).installHooks(
             musicController.getAudioLoopCallback(),
             musicController.getAudioExceptionHandler()
         )
     }
 
     override fun notifyTurnStarted() {
-        turnNotifier.turnStarted()
+        windowListener.turnStarted()
     }
 
     override fun dispose() {

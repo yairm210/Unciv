@@ -165,28 +165,35 @@ UnitPromotionIcons/Operational Range
   orig: 50, 50
   offset: 0, 0
   index: -1
-UnitPromotionIcons/Flight Deck
+UnitPromotionIcons/Fallback
   rotate: false
   xy: 1156, 62
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
-UnitPromotionIcons/Formation
+UnitPromotionIcons/Great Generals
+  rotate: false
+  xy: 1156, 62
+  size: 50, 50
+  orig: 50, 50
+  offset: 0, 0
+  index: -1
+UnitPromotionIcons/Quick Study
+  rotate: false
+  xy: 1156, 62
+  size: 50, 50
+  orig: 50, 50
+  offset: 0, 0
+  index: -1
+UnitPromotionIcons/Flight Deck
   rotate: false
   xy: 1214, 62
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
-UnitPromotionIcons/Great Generals
-  rotate: false
-  xy: 1272, 62
-  size: 50, 50
-  orig: 50, 50
-  offset: 0, 0
-  index: -1
-UnitPromotionIcons/Quick Study
+UnitPromotionIcons/Formation
   rotate: false
   xy: 1272, 62
   size: 50, 50

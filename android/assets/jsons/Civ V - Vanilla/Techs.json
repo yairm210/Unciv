@@ -214,8 +214,9 @@
 				"name": "Chivalry",
 				"row": 5,
 				"prerequisites": ["Civil Service","Currency","Horseback Riding"],
+                "uniques": ["Enables Defensive Pacts"],
 				"quote": "'Whoso pulleth out this sword of this stone and anvil, is rightwise king born of all England.' - Malory"
-			}, // Allows for defensive pacts
+			},
 			{
 				"name": "Machinery",
 				"row": 8,
@@ -614,10 +615,11 @@
 		"techs": [
 			{
 				"name": "Future Tech",
-				"row": 5,
-				"prerequisites": ["Globalization","Nuclear Fusion", "Nanotechnology"],
-				"uniques": ["Who knows what the future holds?", "Can be continually researched"],
-				"quote": "'I think we agree, the past is over.' - George W. Bush"
+				"row": 7,
+				"prerequisites": ["Globalization","Nuclear Fusion","Nanotechnology"],
+                "uniques": ["Can be continually researched"],
+                "quote": "'I think we agree, the past is over.' - George W. Bush",
+                "civilopediaText": [{"text": "Who knows what the future holds?"}]
 			}
 		]
 	}

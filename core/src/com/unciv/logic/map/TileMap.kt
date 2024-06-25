@@ -12,8 +12,13 @@ import com.unciv.models.metadata.Player
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.nation.Nation
 import com.unciv.models.ruleset.tile.TerrainType
+import com.unciv.models.ruleset.unique.UniqueMap
 import com.unciv.models.ruleset.unique.UniqueType
+import com.unciv.models.ruleset.unit.BaseUnit
+import com.unciv.ui.components.extensions.addToMapOfSets
+import com.unciv.ui.components.extensions.contains
 import java.lang.Integer.max
+import java.util.concurrent.ConcurrentHashMap
 import kotlin.math.abs
 
 /** An Unciv map with all properties as produced by the [map editor][com.unciv.ui.screens.mapeditorscreen.MapEditorScreen]
@@ -24,18 +29,6 @@ import kotlin.math.abs
  * @param initialCapacity Passed to constructor of [tileList]
  */
 class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
-    companion object {
-        /** Legacy way to store starting locations - now this is used only in [translateStartingLocationsFromMap] */
-        const val startingLocationPrefix = "StartingLocation "
-
-        /**
-         * To be backwards compatible, a json without a startingLocations element will be recognized by an entry with this marker
-         * New saved maps will never have this marker and will always have a serialized startingLocations list even if empty.
-         * New saved maps will also never have "StartingLocation" improvements, these are converted on load in [setTransients].
-         */
-        private const val legacyMarker = " Legacy "
-    }
-
     //region Fields, Serialized
 
     var mapParameters = MapParameters()
@@ -46,8 +39,29 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
      * @param position [Vector2] of the location
      * @param nation Name of the nation
      */
-    private data class StartingLocation(val position: Vector2 = Vector2.Zero, val nation: String = "") : IsPartOfGameInfoSerialization
-    private val startingLocations = arrayListOf(StartingLocation(Vector2.Zero, legacyMarker))
+    data class StartingLocation(
+        val position: Vector2 = Vector2.Zero,
+        val nation: String = "",
+        val usage: Usage = Usage.default // default for maps saved pior to this feature
+    ) : IsPartOfGameInfoSerialization {
+        /** How a starting location may be used when the map is loaded for a new game */
+        enum class Usage(val label: String) {
+            /** Starting location only */
+            Normal("None"),
+            /** Use for "Select players from starting locations" */
+            Player("Player"),
+            /** Use as first Human player */
+            Human("Human")
+            ;
+            companion object {
+                val default get() = Player
+            }
+        }
+    }
+    val startingLocations = arrayListOf<StartingLocation>()
+
+    /** Optional freeform text a mod map creator can set for their "customers" */
+    var description = ""
 
     //endregion
     //region Fields, Transient
@@ -59,6 +73,9 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
     /** Keep a copy of the [Ruleset] object passed to setTransients, for now only to allow subsequent setTransients without. Copied on [clone]. */
     @Transient
     var ruleset: Ruleset? = null
+
+    @Transient
+    var tileUniqueMapCache = ConcurrentHashMap<List<String>, UniqueMap>()
 
     @Transient
     var tileMatrix = ArrayList<ArrayList<Tile?>>() // this works several times faster than a hashmap, the performance difference is really astounding
@@ -86,7 +103,7 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
         get() = tileList
 
     @Transient
-    val startingLocationsByNation = HashMap<String,HashSet<Tile>>()
+    val startingLocationsByNation = HashMap<String, HashSet<Tile>>()
 
     @Transient
     /** Continent ID to Continent size */
@@ -95,7 +112,38 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
     //endregion
     //region Constructors
 
-    /** creates a hexagonal map of given radius (filled with grassland) */
+    /**
+     * creates a hexagonal map of given radius (filled with grassland)
+     *
+     * To help you visualize how UnCiv hexagonal coordinate system works, here's a small example:
+     *
+     *          _____         _____         _____
+     *         /     \       /     \       /     \
+     *   _____/ 2, 0  \_____/  1, 1 \_____/  0,2  \_____
+     *  /     \       /     \       /     \       /     \
+     * / 2,-1  \_____/  1,0  \_____/  0, 1 \_____/  -1,2 \
+     * \       /     \       /     \       /     \       /
+     *  \_____/ 1,-1  \_____/  0,0  \_____/  -1,1 \_____/
+     *  /     \       /     \       /     \       /     \
+     * / 1 ,-2 \_____/ 0,-1  \_____/ -1,0  \_____/ -2,1  \
+     * \       /     \       /     \       /     \       /
+     *  \_____/ 0,-2  \_____/ -1,-1 \_____/ -2,0  \_____/
+     *  /     \       /     \       /     \       /     \
+     * / 0,-3  \_____/ -1,-2 \_____/ -2,-1 \_____/ -3,0  \
+     * \       /     \       /     \       /     \       /
+     *  \_____/       \_____/       \_____/       \_____/
+     *
+     *
+     * The rules are simple if you think about your X and Y axis as diagonal w.r.t. a standard carthesian plane. As such:
+     *
+     * moving "up": increase both X and Y by one
+     * moving "down": decrease both X and Y by one
+     * moving "up-right" and "down-left": moving along Y axis
+     * moving "up-left" and "down-right": moving along X axis
+     *
+     * Tip: you can always use the in-game map editor if you have any doubt,
+     * and the "secret" options can turn on coordinate display on the main map.
+     */
     constructor(radius: Int, ruleset: Ruleset, worldWrap: Boolean = false)
             : this (HexMath.getNumberOfTilesInHexagon(radius)) {
         startingLocations.clear()
@@ -141,6 +189,9 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
         toReturn.startingLocations.ensureCapacity(startingLocations.size)
         toReturn.startingLocations.addAll(startingLocations)
 
+        toReturn.description = description
+        toReturn.tileUniqueMapCache = tileUniqueMapCache
+
         return toReturn
     }
 
@@ -162,6 +213,9 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
 
     //endregion
     //region Pure Functions
+
+    /** Can we access [gameInfo]? e.g. for MapEditor use where there is a map but no game */
+    fun hasGameInfo() = ::gameInfo.isInitialized
 
     /** @return All tiles in a hexagon of radius [distance], including the tile at [origin] and all up to [distance] steps away.
      *  Respects map edges and world wrap. */
@@ -316,10 +370,10 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
             vectorUnwrappedLeft
     }
 
-    data class ViewableTile(val tile: Tile, val maxHeightSeenToTile:Int, val isVisible:Boolean, val isAttackable: Boolean)
+    data class ViewableTile(val tile: Tile, val maxHeightSeenToTile: Int, val isVisible: Boolean, val isAttackable: Boolean)
 
     /** @return List of tiles visible from location [position] for a unit with sight range [sightDistance] */
-    fun getViewableTiles(position: Vector2, sightDistance: Int, forAttack:Boolean = false): List<Tile> {
+    fun getViewableTiles(position: Vector2, sightDistance: Int, forAttack: Boolean = false): List<Tile> {
         val aUnitHeight = get(position).unitHeight
         val viewableTiles = mutableListOf(ViewableTile(
             get(position),
@@ -350,7 +404,8 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
 
             This can all be summed up as "I can see c if a=>b || c>b"
             */
-                val bMinimumHighestSeenTerrainSoFar = viewableTiles.filter { it.tile in cTile.neighbors }
+                val bMinimumHighestSeenTerrainSoFar = viewableTiles
+                    .filter { it.tile.aerialDistanceTo(cTile) == 1 }
                     .minOf { it.maxHeightSeenToTile }
 
                 tilesToAddInDistanceI.add(ViewableTile(
@@ -366,13 +421,6 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
         if (forAttack) return viewableTiles.filter { it.isAttackable }.map { it.tile }
 
         return viewableTiles.filter { it.isVisible }.map { it.tile }
-    }
-
-    /** Strips all units from [TileMap]
-     * @return stripped [clone] of [TileMap]
-     */
-    fun stripAllUnits(): TileMap {
-        return clone().apply { tileList.forEach { it.stripUnits() } }
     }
 
     /** Build a list of incompatibilities of a map with a ruleset for the new game loader
@@ -433,8 +481,8 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
             }
         } else {
             // Yes the map generator calls this repeatedly, and we don't want to end up with an oversized tileMatrix
-            // rightX is -leftX or -leftX + 1 or -leftX + 2
-            check(tileMatrix.size in (1 - 2 * leftX)..(3 - 2 * leftX)) {
+            // rightX is between -leftX - 1 (e.g. 105x90 map thanks @ravignir) and -leftX + 2
+            check(tileMatrix.size in (- 2 * leftX)..(3 - 2 * leftX)) {
                 "TileMap.setTransients called on existing tileMatrix of different size"
             }
         }
@@ -481,11 +529,28 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
      * @return created [MapUnit] or null if no suitable location was found
      * */
     fun placeUnitNearTile(
-            position: Vector2,
-            unitName: String,
-            civInfo: Civilization
+        position: Vector2,
+        unitName: String,
+        civInfo: Civilization,
+        unitId: Int? = null
     ): MapUnit? {
-        val unit = gameInfo.ruleset.units[unitName]!!.getMapUnit(civInfo)
+        val unit = gameInfo.ruleset.units[unitName]!!
+        return placeUnitNearTile(position, unit, civInfo, unitId)
+    }
+
+    /** Tries to place the [baseUnit] into the [Tile] closest to the given [position]
+     * @param position where to try to place the unit (or close - max 10 tiles distance)
+     * @param baseUnit [BaseUnit][com.unciv.models.ruleset.unit.BaseUnit] to create and place
+     * @param civInfo civilization to assign unit to
+     * @return created [MapUnit] or null if no suitable location was found
+     * */
+    fun placeUnitNearTile(
+            position: Vector2,
+            baseUnit: BaseUnit,
+            civInfo: Civilization,
+            unitId: Int? = null
+    ): MapUnit? {
+        val unit = baseUnit.getMapUnit(civInfo, unitId)
 
         fun getPassableNeighbours(tile: Tile): Set<Tile> =
                 tile.neighbors.filter { unit.movement.canPassThrough(it) }.toSet()
@@ -507,7 +572,7 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
             var potentialCandidates = getPassableNeighbours(currentTile)
             while (unitToPlaceTile == null && tryCount++ < 10) {
                 unitToPlaceTile = potentialCandidates
-                        .sortedByDescending { if (unit.baseUnit.isLandUnit()) it.isLand else true } // Land units should prefer to go into land tiles
+                        .sortedByDescending { if (unit.baseUnit.isLandUnit() && !unit.cache.canMoveOnWater) it.isLand else true } // Land units should prefer to go into land tiles
                         .firstOrNull { unit.movement.canMoveTo(it) }
                 if (unitToPlaceTile != null) continue
                 // if it's not found yet, let's check their neighbours
@@ -540,7 +605,7 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
         // And update civ stats, since the new unit changes both unit upkeep and resource consumption
         civInfo.updateStatsForNextTurn()
 
-        if (unit.baseUnit.getResourceRequirementsPerTurn().isNotEmpty())
+        if (unit.getResourceRequirementsPerTurn().isNotEmpty())
             civInfo.cache.updateCivResources()
 
         return unit
@@ -587,47 +652,33 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
     }
 
     /**
-     *  Initialize startingLocations transients, including legacy support (maps saved with placeholder improvements)
+     *  Initialize startingLocations transients
      */
     fun setStartingLocationsTransients() {
-        if (startingLocations.size == 1 && startingLocations[0].nation == legacyMarker)
-            return translateStartingLocationsFromMap()
         startingLocationsByNation.clear()
         for ((position, nationName) in startingLocations) {
-            val nationSet = startingLocationsByNation[nationName] ?: hashSetOf<Tile>().also { startingLocationsByNation[nationName] = it }
-            nationSet.add(get(position))
+            startingLocationsByNation.addToMapOfSets(nationName, get(position))
         }
     }
 
-    /**
-     *  Scan and remove placeholder improvements from map and build startingLocations from them
-     */
-    private fun translateStartingLocationsFromMap() {
-        startingLocations.clear()
-        tileList.asSequence()
-            .filter { it.improvement?.startsWith(startingLocationPrefix) == true }
-            .map { it to StartingLocation(it.position, it.improvement!!.removePrefix(startingLocationPrefix)) }
-            .sortedBy { it.second.nation }  // vanity, or to make diffs between un-gzipped map files easier
-            .forEach { (tile, startingLocation) ->
-                tile.changeImprovement(null)
-                startingLocations.add(startingLocation)
-            }
-        setStartingLocationsTransients()
-    }
-
     /** Adds a starting position, maintaining the transients
+     *
+     * Note: Will not replace an existing StartingLocation to update its [usage]
      * @return true if the starting position was not already stored as per [Collection]'s add */
-    fun addStartingLocation(nationName: String, tile: Tile): Boolean {
-        if (startingLocationsByNation[nationName]?.contains(tile) == true) return false
-        startingLocations.add(StartingLocation(tile.position, nationName))
-        val nationSet = startingLocationsByNation[nationName] ?: hashSetOf<Tile>().also { startingLocationsByNation[nationName] = it }
-        return nationSet.add(tile)
+    fun addStartingLocation(
+        nationName: String,
+        tile: Tile,
+        usage: StartingLocation.Usage = StartingLocation.Usage.Player
+    ): Boolean {
+        if (startingLocationsByNation.contains(nationName, tile)) return false
+        startingLocations.add(StartingLocation(tile.position, nationName, usage))
+        return startingLocationsByNation.addToMapOfSets(nationName, tile)
     }
 
     /** Removes a starting position, maintaining the transients
      * @return true if the starting position was removed as per [Collection]'s remove */
     fun removeStartingLocation(nationName: String, tile: Tile): Boolean {
-        if (startingLocationsByNation[nationName]?.contains(tile) != true) return false
+        if (!startingLocationsByNation.contains(nationName, tile)) return false
         startingLocations.remove(StartingLocation(tile.position, nationName))
         return startingLocationsByNation[nationName]!!.remove(tile)
         // we do not clean up an empty startingLocationsByNation[nationName] set - not worth it
@@ -704,4 +755,18 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
         }
     }
     //endregion
+
+    /** Class to parse only the parameters and starting locations out of a map file */
+    class Preview {
+        val mapParameters = MapParameters()
+        private val startingLocations = arrayListOf<StartingLocation>()
+        fun getDeclaredNations() = startingLocations.asSequence()
+            .filter { it.usage != StartingLocation.Usage.Normal }
+            .map { it.nation }
+            .distinct()
+        fun getNationsForHumanPlayer() = startingLocations.asSequence()
+            .filter { it.usage == StartingLocation.Usage.Human }
+            .map { it.nation }
+            .distinct()
+    }
 }

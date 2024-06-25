@@ -10,7 +10,7 @@ import com.unciv.GUI
  *  A primary instance lives in [UncivGame.Current.settings][com.unciv.models.metadata.GameSettings]
  *  and is read/write accessible through the `KeyboardBindings[]` syntax.
  **/
-class KeyboardBindings : HashMap<KeyboardBinding, KeyCharAndCode>() {
+class KeyboardBindings : HashMap<KeyboardBinding, KeyCharAndCode>(), Json.Serializable {
 
     /** this [put] overload helps the Json [Serializer] read method */
     private fun put(element: JsonValue) {
@@ -62,21 +62,17 @@ class KeyboardBindings : HashMap<KeyboardBinding, KeyCharAndCode>() {
     }
 
     /**
-     *  This class helps Gdx Json to read/write a readable, minimal serialization
+     *  Implementing Json.Serializable helps Gdx Json to read/write a readable, minimal serialization
      *  - without, KeyCharAndCode.Serializer.write will not be used properly
      */
-    class Serializer : Json.Serializer<KeyboardBindings> {
-        override fun write(json: Json, bindings: KeyboardBindings, knownType: Class<*>?) {
-            json.writeObjectStart()
-            for ((binding, key) in bindings) {
-                json.writeValue(binding.name, key, KeyCharAndCode::class.java)
-            }
-            json.writeObjectEnd()
+    override fun write(json: Json) {
+        for ((binding, key) in this) {
+            json.writeValue(binding.name, key, KeyCharAndCode::class.java)
         }
+    }
 
-        override fun read(json: Json, jsonData: JsonValue, type: Class<*>?) = KeyboardBindings().apply {
-            if (jsonData.isObject && jsonData.notEmpty())
-                for (element in jsonData) put(element)
-        }
+    override fun read(json: Json, jsonData: JsonValue) {
+        if (jsonData.isObject && jsonData.notEmpty())
+            for (element in jsonData) put(element)
     }
 }

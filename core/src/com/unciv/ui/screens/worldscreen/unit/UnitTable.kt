@@ -1,28 +1,28 @@
 package com.unciv.ui.screens.worldscreen.unit
 
 import com.badlogic.gdx.Gdx
-import com.badlogic.gdx.Input
+import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.Table
-import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup
-import com.unciv.Constants
 import com.unciv.logic.battle.CityCombatant
 import com.unciv.logic.city.City
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
+import com.unciv.models.Spy
 import com.unciv.models.translations.tr
-import com.unciv.ui.components.UnitGroup
 import com.unciv.ui.components.extensions.addSeparator
 import com.unciv.ui.components.extensions.center
 import com.unciv.ui.components.extensions.darken
+import com.unciv.ui.components.extensions.getCloseButton
+import com.unciv.ui.components.extensions.isShiftKeyPressed
 import com.unciv.ui.components.extensions.toLabel
+import com.unciv.ui.components.input.keyShortcuts
 import com.unciv.ui.components.input.onClick
+import com.unciv.ui.components.widgets.UnitGroup
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.basescreen.BaseScreen
-import com.unciv.ui.screens.civilopediascreen.CivilopediaCategories
-import com.unciv.ui.screens.civilopediascreen.CivilopediaScreen
 import com.unciv.ui.screens.pickerscreens.CityRenamePopup
 import com.unciv.ui.screens.pickerscreens.PromotionPickerScreen
 import com.unciv.ui.screens.pickerscreens.UnitRenamePopup
@@ -45,8 +45,11 @@ class UnitTable(val worldScreen: WorldScreen) : Table() {
     // Whether the (first) selected unit is in unit-swapping mode
     var selectedUnitIsSwapping = false
 
+    // Whether the (first) selected unit is in road-connecting mode
+    var selectedUnitIsConnectingRoad = false
+
     /** Sending no unit clears the selected units entirely */
-    fun selectUnit(unit: MapUnit?=null, append:Boolean=false) {
+    fun selectUnit(unit: MapUnit? = null, append: Boolean = false) {
         if (!append) selectedUnits.clear()
         selectedCity = null
         if (unit != null) {
@@ -54,15 +57,26 @@ class UnitTable(val worldScreen: WorldScreen) : Table() {
             unit.actionsOnDeselect()
         }
         selectedUnitIsSwapping = false
+        selectedUnitIsConnectingRoad = false
+        selectedSpy = null
     }
 
     var selectedCity : City? = null
-    private val deselectUnitButton = Table()
 
     // This is so that not on every update(), we will update the unit table.
     // Most of the time it's the same unit with the same stats so why waste precious time?
     private var selectedUnitHasChanged = false
     val separator: Actor
+
+    var selectedSpy: Spy? = null
+
+    fun selectSpy(spy: Spy?) {
+        selectedSpy = spy
+        selectedCity = null
+        selectedUnits.clear()
+        selectedUnitIsSwapping = false
+        selectedUnitIsConnectingRoad = false
+    }
 
     private var bg = Image(
         BaseScreen.skinStrings.getUiBackground("WorldScreen/UnitTable",
@@ -80,20 +94,13 @@ class UnitTable(val worldScreen: WorldScreen) : Table() {
 
         promotionsTable.touchable = Touchable.enabled
 
-        add(VerticalGroup().apply {
-            pad(5f)
-            touchable = Touchable.enabled
-            onClick {
-                selectUnit()
-                worldScreen.shouldUpdate = true
-                this@UnitTable.isVisible = false
-            }
-
-            deselectUnitButton.add(ImageGetter.getImage("OtherIcons/Close")).size(20f).pad(10f)
-            deselectUnitButton.pack()
-            deselectUnitButton.touchable = Touchable.enabled
-            addActor(deselectUnitButton)
-        }).left()
+        val deselectUnitButton = getCloseButton(50f, 20f, Color.CLEAR, Color.RED) {
+            selectUnit()
+            worldScreen.shouldUpdate = true
+            this@UnitTable.isVisible = false
+        }
+        deselectUnitButton.keyShortcuts.clear() // This is the only place we don't want the BACK keyshortcut getCloseButton assigns
+        add(deselectUnitButton).left()
 
         add(Table().apply {
             val moveBetweenUnitsTable = Table().apply {
@@ -171,12 +178,12 @@ class UnitTable(val worldScreen: WorldScreen) : Table() {
 
                 if (!unit.isCivilian()) {
                     unitDescriptionTable.add(ImageGetter.getStatIcon("Strength")).size(20f)
-                    unitDescriptionTable.add(unit.baseUnit().strength.toString()).padRight(10f)
+                    unitDescriptionTable.add(unit.baseUnit.strength.toString()).padRight(10f)
                 }
 
-                if (unit.baseUnit().rangedStrength != 0) {
+                if (unit.baseUnit.rangedStrength != 0) {
                     unitDescriptionTable.add(ImageGetter.getStatIcon("RangedStrength")).size(20f)
-                    unitDescriptionTable.add(unit.baseUnit().rangedStrength.toString()).padRight(10f)
+                    unitDescriptionTable.add(unit.baseUnit.rangedStrength.toString()).padRight(10f)
                 }
 
                 if (unit.baseUnit.isRanged()) {
@@ -184,10 +191,10 @@ class UnitTable(val worldScreen: WorldScreen) : Table() {
                     unitDescriptionTable.add(unit.getRange().toString()).padRight(10f)
                 }
 
-                if (unit.baseUnit.interceptRange > 0) {
+                val interceptionRange = unit.getInterceptionRange()
+                if (interceptionRange > 0) {
                     unitDescriptionTable.add(ImageGetter.getStatIcon("InterceptRange")).size(20f)
-                    val range = if (unit.baseUnit.isRanged()) unit.getRange() else unit.baseUnit.interceptRange
-                    unitDescriptionTable.add(range.toString()).padRight(10f)
+                    unitDescriptionTable.add(interceptionRange.toString()).padRight(10f)
                 }
 
                 if (!unit.isCivilian()) {
@@ -198,16 +205,6 @@ class UnitTable(val worldScreen: WorldScreen) : Table() {
                         }
                     })
                     unitDescriptionTable.add(unit.promotions.XP.toString() + "/" + unit.promotions.xpForNextPromotion())
-                }
-
-                if (unit.canDoLimitedAction(Constants.spreadReligion)) {
-                    unitDescriptionTable.add(ImageGetter.getStatIcon("Faith")).size(20f)
-                    unitDescriptionTable.add(unit.getActionString(Constants.spreadReligion))
-                }
-
-                if (unit.canDoLimitedAction(Constants.removeHeresy)) {
-                    unitDescriptionTable.add(ImageGetter.getImage("OtherIcons/Remove Heresy")).size(20f)
-                    unitDescriptionTable.add(unit.getActionString(Constants.removeHeresy))
                 }
 
                 if (unit.baseUnit.religiousStrength > 0) {
@@ -221,27 +218,24 @@ class UnitTable(val worldScreen: WorldScreen) : Table() {
                 unitNameLabel.setText("")
                 unitDescriptionTable.clear()
             }
-        }
-
-        else if (selectedCity != null) {
+        } else if (selectedCity != null) {
             isVisible = true
             separator.isVisible = true
             val city = selectedCity!!
             var nameLabelText = city.name.tr()
-            if(city.health<city.getMaxHealth()) nameLabelText+=" ("+city.health+")"
+            if (city.health < city.getMaxHealth()) nameLabelText += " ("+city.health+")"
             unitNameLabel.setText(nameLabelText)
 
             unitNameLabel.clearListeners()
             unitNameLabel.onClick {
-            if (!worldScreen.canChangeState) return@onClick
+                if (!worldScreen.canChangeState) return@onClick
                 CityRenamePopup(
                     screen = worldScreen,
                     city = city,
                     actionOnClose = {
                         unitNameLabel.setText(city.name.tr())
                         worldScreen.shouldUpdate = true
-                    }
-                )
+                    })
             }
 
             unitDescriptionTable.clear()
@@ -252,6 +246,30 @@ class UnitTable(val worldScreen: WorldScreen) : Table() {
             unitDescriptionTable.add(CityCombatant(city).getAttackingStrength().toString()).row()
 
             selectedUnitHasChanged = true
+        } else if (selectedSpy != null) {
+            val spy = selectedSpy!!
+            isVisible = true
+            unitNameLabel.clearListeners()
+            unitNameLabel.setText(spy.name)
+            unitDescriptionTable.clear()
+
+            unitIconHolder.clear()
+            unitIconHolder.add (ImageGetter.getImage("OtherIcons/Spy_White").apply {
+                color = Color.WHITE
+            }).size(30f)
+
+            separator.isVisible = true
+            val color = when(spy.rank) {
+                1 -> Color.BROWN
+                2 -> Color.LIGHT_GRAY
+                3 -> Color.GOLD
+                else -> Color.BLACK
+            }
+            repeat(spy.rank) {
+                val star = ImageGetter.getImage("OtherIcons/Star")
+                star.color = color
+                unitDescriptionTable.add(star).size(20f).pad(1f)
+            }
         } else {
             isVisible = false
         }
@@ -277,7 +295,7 @@ class UnitTable(val worldScreen: WorldScreen) : Table() {
                 }
 
                 unitIconHolder.onClick {
-                    worldScreen.game.pushScreen(CivilopediaScreen(worldScreen.gameInfo.ruleset, CivilopediaCategories.Unit, selectedUnit!!.name))
+                    worldScreen.openCivilopedia(selectedUnit!!.baseUnit.makeLink())
                 }
             } else { // multiple selected units
                 for (unit in selectedUnits)
@@ -299,7 +317,13 @@ class UnitTable(val worldScreen: WorldScreen) : Table() {
     }
 
     fun citySelected(city: City) : Boolean {
-        selectUnit()
+        // If the last selected unit connecting a road, keep it selected. Otherwise, clear.
+        if (selectedUnitIsConnectingRoad) {
+            selectUnit(selectedUnits[0])
+            selectedUnitIsConnectingRoad = true // selectUnit resets this
+        } else {
+            selectUnit()
+        }
         if (city == selectedCity) return false
         selectedCity = city
         selectedUnitHasChanged = true
@@ -359,7 +383,7 @@ class UnitTable(val worldScreen: WorldScreen) : Table() {
             selectedTile.isCityCenter() &&
                     (selectedTile.getOwner() == worldScreen.viewingCiv || worldScreen.viewingCiv.isSpectator()) ->
                 citySelected(selectedTile.getCity()!!)
-            nextUnit != null -> selectUnit(nextUnit, Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT))
+            nextUnit != null -> selectUnit(nextUnit, Gdx.input.isShiftKeyPressed())
             selectedTile == previouslySelectedUnit?.currentTile -> {
                 selectUnit()
                 isVisible = false

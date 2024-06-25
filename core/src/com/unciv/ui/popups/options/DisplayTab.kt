@@ -8,22 +8,22 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Array
 import com.unciv.GUI
 import com.unciv.models.metadata.GameSettings
-import com.unciv.models.metadata.ScreenSize
+import com.unciv.models.metadata.GameSettings.ScreenSize
 import com.unciv.models.skins.SkinCache
 import com.unciv.models.tilesets.TileSetCache
 import com.unciv.models.translations.tr
-import com.unciv.ui.components.UncivSlider
-import com.unciv.ui.components.WrappableLabel
 import com.unciv.ui.components.extensions.addSeparator
 import com.unciv.ui.components.extensions.brighten
-import com.unciv.ui.components.input.onChange
-import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
+import com.unciv.ui.components.input.onChange
+import com.unciv.ui.components.input.onClick
+import com.unciv.ui.components.widgets.TranslatedSelectBox
+import com.unciv.ui.components.widgets.UncivSlider
+import com.unciv.ui.components.widgets.WrappableLabel
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popups.ConfirmPopup
 import com.unciv.ui.screens.basescreen.BaseScreen
-import com.unciv.ui.screens.newgamescreen.TranslatedSelectBox
 import com.unciv.ui.screens.worldscreen.NotificationsScroll
 import com.unciv.utils.Display
 import com.unciv.utils.ScreenMode
@@ -71,6 +71,8 @@ fun displayTab(
     addResetTutorials(this, settings)
     optionsPopup.addCheckbox(this, "Show zoom buttons in world screen", settings.showZoomButtons, true) { settings.showZoomButtons = it }
     optionsPopup.addCheckbox(this, "Experimental Demographics scoreboard", settings.useDemographics, true) { settings.useDemographics = it }
+    optionsPopup.addCheckbox(this, "Never close popups by clicking outside", settings.forbidPopupClickBehindToClose, false) { settings.forbidPopupClickBehindToClose = it }
+    addPediaUnitArtSizeSlider(this, settings, optionsPopup.selectBoxMinWidth)
 
     addSeparator()
     add("Visual Hints".toLabel(fontSize = 24)).colspan(2).row()
@@ -157,6 +159,19 @@ private fun addUnitIconAlphaSlider(table: Table, settings: GameSettings, selectB
         GUI.setUpdateWorldOnNextRender()
     }
     table.add(unitIconAlphaSlider).minWidth(selectBoxMinWidth).pad(10f).row()
+}
+
+private fun addPediaUnitArtSizeSlider(table: Table, settings: GameSettings, selectBoxMinWidth: Float) {
+    table.add("Size of Unitset art in Civilopedia".toLabel()).left().fillX()
+
+    val unitArtSizeSlider = UncivSlider(
+        0f, 360f, 1f, initial = settings.pediaUnitArtSize
+    ) {
+        settings.pediaUnitArtSize = it
+        GUI.setUpdateWorldOnNextRender()
+    }
+    unitArtSizeSlider.setSnapToValues(threshold = 60f, 0f, 32f, 48f, 64f, 96f, 120f, 180f, 240f, 360f)
+    table.add(unitArtSizeSlider).minWidth(selectBoxMinWidth).pad(10f).row()
 }
 
 private fun addScreenModeSelectBox(table: Table, settings: GameSettings, selectBoxMinWidth: Float) {

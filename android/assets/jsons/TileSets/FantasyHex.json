@@ -2,6 +2,9 @@
     "useColorAsBaseTerrain": "false",
     "fallbackTileSet": null,
     "ruleVariants": {
+		// River pseudo-tile used in Civilopedia display only
+		"Grassland+River": ["Plains","River-BottomLeft","River-Bottom","River-BottomRight"],
+
         //Legacy hill support
         "Hill": ["Grassland","Hill"],
         "Hill+Forest+Uranium": ["Grassland","Hill","Uranium","Forest"],

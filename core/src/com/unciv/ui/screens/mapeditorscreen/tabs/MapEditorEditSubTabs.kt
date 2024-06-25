@@ -2,9 +2,12 @@ package com.unciv.ui.screens.mapeditorscreen.tabs
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Group
+import com.badlogic.gdx.scenes.scene2d.ui.ButtonGroup
+import com.badlogic.gdx.scenes.scene2d.ui.CheckBox
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.Constants
 import com.unciv.UncivGame
+import com.unciv.logic.map.TileMap
 import com.unciv.logic.map.tile.RoadStatus
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.Ruleset
@@ -14,16 +17,17 @@ import com.unciv.models.ruleset.tile.Terrain
 import com.unciv.models.ruleset.tile.TerrainType
 import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.ruleset.tile.TileResource
+import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.tr
 import com.unciv.ui.audio.MusicMood
 import com.unciv.ui.audio.MusicTrackChooserFlags
-import com.unciv.ui.components.TabbedPager
 import com.unciv.ui.components.extensions.center
-import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.extensions.toLabel
+import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.tilegroups.TileGroup
 import com.unciv.ui.components.tilegroups.TileSetStrings
+import com.unciv.ui.components.widgets.TabbedPager
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.civilopediascreen.FormattedLine
@@ -57,6 +61,7 @@ class MapEditorEditTerrainTab(
 
     private fun allTerrains() = ruleset.terrains.values.asSequence()
         .filter { it.type.isBaseTerrain }
+        .filterNot { it.hasUnique(UniqueType.ExcludedFromMapEditor, StateForConditionals.IgnoreConditionals) }
     private fun getTerrains() = allTerrains()
         .map { FormattedLine(it.name, it.name, "Terrain/${it.name}", size = 32) }
         .asIterable()
@@ -80,7 +85,7 @@ class MapEditorEditFeaturesTab(
         val eraserIcon = "Terrain/${firstFeature.name}"
         val eraser = FormattedLine("Remove features", icon = eraserIcon, size = 32, iconCrossed = true)
         add(eraser.render(0f).apply { onClick {
-            editTab.setBrush("Remove features", eraserIcon, true) { tile ->
+            editTab.setBrush("Remove features", eraserIcon, pediaLink = "", isRemove = true) { tile ->
                 tile.removeTerrainFeatures()
             }
         } }).padBottom(0f).row()
@@ -98,6 +103,7 @@ class MapEditorEditFeaturesTab(
 
     private fun allowedFeatures() = ruleset.terrains.values.asSequence()
         .filter { it.type == TerrainType.TerrainFeature }
+        .filterNot { it.hasUnique(UniqueType.ExcludedFromMapEditor, StateForConditionals.IgnoreConditionals) }
     private fun getFeatures() = allowedFeatures()
         .map { FormattedLine(it.name, it.name, "Terrain/${it.name}", size = 32) }
         .asIterable()
@@ -131,6 +137,7 @@ class MapEditorEditWondersTab(
 
     private fun allowedWonders() = ruleset.terrains.values.asSequence()
         .filter { it.type == TerrainType.NaturalWonder }
+        .filterNot { it.hasUnique(UniqueType.ExcludedFromMapEditor, StateForConditionals.IgnoreConditionals) }
     private fun getWonders() = allowedWonders()
         .map { FormattedLine(it.name, it.name, "Terrain/${it.name}", size = 32) }
         .asIterable()
@@ -154,7 +161,7 @@ class MapEditorEditResourcesTab(
         val eraserIcon = "Resource/${firstResource.name}"
         val eraser = FormattedLine("Remove resource", icon = eraserIcon, size = 32, iconCrossed = true)
         add(eraser.render(0f).apply { onClick {
-            editTab.setBrush("Remove resource", eraserIcon, true) { tile ->
+            editTab.setBrush("Remove resource", eraserIcon, pediaLink = "", isRemove = true) { tile ->
                 tile.resource = null
                 tile.resourceAmount = 0
             }
@@ -175,7 +182,8 @@ class MapEditorEditResourcesTab(
     }
 
     private fun allowedResources() = ruleset.tileResources.values.asSequence()
-        .filter { !it.hasUnique(UniqueType.CityStateOnlyResource) }
+        .filterNot { it.hasUnique(UniqueType.CityStateOnlyResource) }
+        .filterNot { it.hasUnique(UniqueType.ExcludedFromMapEditor, StateForConditionals.IgnoreConditionals) }
     private fun getResources(): Iterable<FormattedLine> = sequence {
         var lastGroup = ResourceType.Bonus
         for (resource in allowedResources()) {
@@ -207,8 +215,8 @@ class MapEditorEditImprovementsTab(
         val eraserIcon = "Improvement/${firstImprovement.name}"
         val eraser = FormattedLine("Remove improvement", icon = eraserIcon, size = 32, iconCrossed = true)
         add(eraser.render(0f).apply { onClick {
-            editTab.setBrush("Remove improvement", eraserIcon, true) { tile ->
-                tile.changeImprovement(null)
+            editTab.setBrush("Remove improvement", eraserIcon, pediaLink = "", isRemove = true) { tile ->
+                tile.removeImprovement()
                 tile.removeRoad()
             }
         } }).padBottom(0f).row()
@@ -224,15 +232,13 @@ class MapEditorEditImprovementsTab(
                 }
             else
                 editTab.setBrush(it, "Improvement/$it") { tile ->
-                    tile.changeImprovement(it)
+                    tile.setImprovement(it)
                 }
         }).padTop(0f).row()
     }
 
     private fun allowedImprovements() = ruleset.tileImprovements.values.asSequence()
-        .filter { improvement ->
-            disallowImprovements.none { improvement.name.startsWith(it) }
-        }
+        .filterNot { it.hasUnique(UniqueType.ExcludedFromMapEditor, StateForConditionals.IgnoreConditionals) }
     private fun getImprovements(): Iterable<FormattedLine> = sequence {
         var lastGroup = 0
         for (improvement in allowedImprovements()) {
@@ -249,10 +255,6 @@ class MapEditorEditImprovementsTab(
     override fun isDisabled() = allowedImprovements().none()
 
     companion object {
-        //todo This should really be easier, the attributes should allow such a test in one go
-        private val disallowImprovements = listOf(
-            Constants.cityCenter, Constants.repair, Constants.remove, Constants.cancelImprovementOrder
-        )
         private fun TileImprovement.group() = when {
             RoadStatus.values().any { it.name == name } -> 2
             "Great Improvement" in uniques -> 3
@@ -270,6 +272,7 @@ class MapEditorEditStartsTab(
     private val ruleset: Ruleset
 ): Table(BaseScreen.skin), IMapEditorEditSubTabs {
     private val collator = UncivGame.Current.settings.getCollatorFromLocale()
+    private val usageOptionGroup = ButtonGroup<CheckBox>()
 
     init {
         top()
@@ -277,42 +280,68 @@ class MapEditorEditStartsTab(
         allowedNations().firstOrNull()?.let { addNations(it) }
     }
 
+    private fun String.spectatorToAnyCiv() = if (this == Constants.spectator) "Any Civ" else this
+
     private fun addNations(firstNation: Nation) {
         val eraserIcon = "Nation/${firstNation.name}"
         val eraser = FormattedLine("Remove starting locations", icon = eraserIcon, size = 24, iconCrossed = true)
         add(eraser.render(0f).apply { onClick {
-            editTab.setBrush(BrushHandlerType.Direct, "Remove starting locations", eraserIcon, true) { tile ->
+            editTab.setBrush(BrushHandlerType.Direct, "Remove", eraserIcon, pediaLink = "", isRemove = true) { tile ->
                 tile.tileMap.removeStartingLocations(tile.position)
             }
         } }).padBottom(0f).row()
 
+        addUsage()
+
+        // Create the nation list with the spectator nation included, and shown/interpreted as "Any Civ" starting location.
+        // We use Nation/Spectator because it hasn't been used yet and we need an icon within the Nation.
         add(
             MarkupRenderer.render(
-            getNations(),
-            iconDisplay = FormattedLine.IconDisplay.NoLink
-        ) {
-            UncivGame.Current.musicController.chooseTrack(it, MusicMood.Theme, MusicTrackChooserFlags.setSpecific)
-            editTab.setBrush(BrushHandlerType.Direct, it, "Nation/$it") { tile ->
-                // toggle the starting location here, note this allows
-                // both multiple locations per nation and multiple nations per tile
-                if (!tile.tileMap.addStartingLocation(it, tile))
-                    tile.tileMap.removeStartingLocation(it, tile)
+                getNations(),
+                iconDisplay = FormattedLine.IconDisplay.NoLink
+            ) {
+                UncivGame.Current.musicController.chooseTrack(it, MusicMood.Theme, MusicTrackChooserFlags.setSpecific)
+                val icon = "Nation/$it"
+                val pediaLink = if (it == Constants.spectator) "" else icon
+                val isMajorCiv = ruleset.nations[it]?.isMajorCiv ?: false
+                val selectedUsage = if (isMajorCiv) TileMap.StartingLocation.Usage.values()[usageOptionGroup.checkedIndex]
+                    else TileMap.StartingLocation.Usage.Normal
+                editTab.setBrush(BrushHandlerType.Direct, it.spectatorToAnyCiv(), icon, pediaLink) { tile ->
+                    // toggle the starting location here, note this allows
+                    // both multiple locations per nation and multiple nations per tile
+                    if (!tile.tileMap.addStartingLocation(it, tile, selectedUsage))
+                        tile.tileMap.removeStartingLocation(it, tile)
+                }
             }
-        }).padTop(0f).row()
+        ).padTop(0f).row()
     }
 
     private fun allowedNations() = ruleset.nations.values.asSequence()
-        .filter { it.name !in disallowNations && !it.hasUnique(UniqueType.CityStateDeprecated) }
+        .filterNot { it.hasUnique(UniqueType.ExcludedFromMapEditor) }
     private fun getNations() = allowedNations()
-        .sortedWith(compareBy<Nation>{ it.isCityState }.thenBy(collator) { it.name.tr(hideIcons = true) })
-        .map { FormattedLine("[${it.name}] starting location", it.name, "Nation/${it.name}", size = 24) }
-        .asIterable()
+        .sortedWith(
+            compareBy<Nation> { !it.isSpectator }
+                .thenBy { it.isCityState }
+                .thenBy(collator) { it.name.tr(hideIcons = true) }
+        ).map {
+            FormattedLine("[${it.name.spectatorToAnyCiv()}] starting location", link = it.name, icon = "Nation/${it.name}", size = 24)
+        }.asIterable()
+
+    private fun addUsage() {
+        val table = Table()
+        table.defaults().pad(5f)
+        table.add("Use for new game \"Select players\" button:".toLabel()).colspan(3).row()
+        val defaultUsage = TileMap.StartingLocation.Usage.default
+        for (usage in TileMap.StartingLocation.Usage.values()) {
+            val checkBox = CheckBox(usage.label.tr(), skin)
+            table.add(checkBox)
+            usageOptionGroup.add(checkBox)
+            checkBox.isChecked = usage == defaultUsage
+        }
+        add(table).row()
+    }
 
     override fun isDisabled() = allowedNations().none()
-
-    companion object {
-        private val disallowNations = setOf(Constants.spectator, Constants.barbarians)
-    }
 }
 
 
@@ -330,13 +359,15 @@ class MapEditorEditRiversTab(
         ?: ruleset.terrains.values.first()
 
     init {
+        val pediaLink = "Terrain/River"
+
         top()
         defaults().pad(10f).left()
         val removeLine = Table().apply {
             add(getRemoveRiverIcon()).padRight(10f)
             add("Remove rivers".toLabel(fontSize = 32))
             onClick {
-                editTab.setBrush(BrushHandlerType.River,"Remove rivers", getRemoveRiverIcon()) { tile ->
+                editTab.setBrush(BrushHandlerType.River,"Remove rivers", getRemoveRiverIcon(), pediaLink) { tile ->
                     tile.hasBottomLeftRiver = false
                     tile.hasBottomRightRiver = false
                     tile.hasBottomRiver = false
@@ -357,7 +388,7 @@ class MapEditorEditRiversTab(
             onClick {
                 editTab.setBrush(BrushHandlerType.Direct,"Bottom left river", getTileGroupWithRivers(
                     RiverEdge.Left
-                )) { tile ->
+                ), pediaLink) { tile ->
                     tile.hasBottomLeftRiver = !tile.hasBottomLeftRiver
                 }
             }
@@ -370,7 +401,7 @@ class MapEditorEditRiversTab(
             onClick {
                 editTab.setBrush(BrushHandlerType.Direct,"Bottom river", getTileGroupWithRivers(
                     RiverEdge.Bottom
-                )) { tile ->
+                ), pediaLink) { tile ->
                     tile.hasBottomRiver = !tile.hasBottomRiver
                 }
             }
@@ -383,7 +414,7 @@ class MapEditorEditRiversTab(
             onClick {
                 editTab.setBrush(BrushHandlerType.Direct,"Bottom right river", getTileGroupWithRivers(
                     RiverEdge.Right
-                )) { tile ->
+                ), pediaLink) { tile ->
                     tile.hasBottomRightRiver = !tile.hasBottomRightRiver
                 }
             }
@@ -399,6 +430,7 @@ class MapEditorEditRiversTab(
                     BrushHandlerType.RiverFromTo,
                     name = "Spawn river from/to",
                     icon = getTileGroupWithRivers(RiverEdge.All),
+                    pediaLink = pediaLink,
                     applyAction = {}  // Actual effect done via BrushHandlerType
                 )
             }

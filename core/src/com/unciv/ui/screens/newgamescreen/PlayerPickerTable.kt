@@ -17,8 +17,8 @@ import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.nation.Nation
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.input.KeyCharAndCode
-import com.unciv.ui.components.UncivTextField
-import com.unciv.ui.components.WrappableLabel
+import com.unciv.ui.components.widgets.UncivTextField
+import com.unciv.ui.components.widgets.WrappableLabel
 import com.unciv.ui.components.extensions.darken
 import com.unciv.ui.components.extensions.isEnabled
 import com.unciv.ui.components.input.keyShortcuts
@@ -35,7 +35,7 @@ import com.unciv.ui.screens.multiplayerscreens.FriendPickerList
 import com.unciv.ui.screens.pickerscreens.PickerPane
 import com.unciv.ui.screens.pickerscreens.PickerScreen
 import java.util.UUID
-import com.unciv.ui.components.AutoScrollPane as ScrollPane
+import com.unciv.ui.components.widgets.AutoScrollPane as ScrollPane
 
 /**
  * This [Table] is used to pick or edit players information for new game creation.
@@ -229,7 +229,7 @@ class PlayerPickerTable(
     private fun Table.addPlayerTableMultiplayerControls(player: Player) {
         row()
 
-        val playerIdTextField = UncivTextField.create("Please input Player ID!", player.playerId)
+        val playerIdTextField = UncivTextField("Please input Player ID!", player.playerId)
         add(playerIdTextField).colspan(2).fillX().pad(5f)
         val errorLabel = "✘".toLabel(Color.RED)
         add(errorLabel).pad(5f).row()

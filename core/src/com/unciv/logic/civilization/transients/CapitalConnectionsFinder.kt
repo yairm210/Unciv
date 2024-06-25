@@ -44,7 +44,7 @@ class CapitalConnectionsFinder(private val civInfo: Civilization) {
                 if (cityToConnectFrom.containsHarbor()) {
                     checkHarbor(cityToConnectFrom)
                 }
-                if (railroadIsResearched){
+                if (railroadIsResearched) {
                     val mediumsReached= citiesReachedToMediums[cityToConnectFrom]!!
                     if(mediumsReached.contains("Start") || mediumsReached.contains(railroad) || mediumsReached.contains(harborFromRailroad))
                         checkRailroad(cityToConnectFrom) // This is only relevant for city connection if there is an unbreaking line from the capital
@@ -85,8 +85,8 @@ class CapitalConnectionsFinder(private val civInfo: Civilization) {
         )
     }
 
-    private fun City.containsHarbor() =
-            this.cityConstructions.builtBuildingUniqueMap.getUniques(UniqueType.ConnectTradeRoutes).any()
+    private fun City.containsHarbor() = 
+        this.containsBuildingUnique(UniqueType.ConnectTradeRoutes)
 
     private fun check(cityToConnectFrom: City,
                       transportType: String,

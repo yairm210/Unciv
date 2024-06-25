@@ -4,7 +4,7 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
-import com.unciv.ui.components.UnitGroup
+import com.unciv.ui.components.widgets.UnitGroup
 import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.images.ImageGetter
@@ -21,7 +21,7 @@ class CityScreenCityPickerTable(private val cityScreen: CityScreen) : Table() {
         background = BaseScreen.skinStrings.getUiBackground("CityScreen/CityPickerTable", BaseScreen.skinStrings.roundedEdgeRectangleShape, civInfo.nation.getOuterColor())
         clear()
 
-        if (civInfo.cities.size > 1) {
+        if (cityScreen.viewableCities.size > 1) {
             val prevCityButton = Table() // so we get a wider clickable area than just the image itself
             val image = ImageGetter.getImage("OtherIcons/BackArrow")
             image.color = civInfo.nation.getInnerColor()
@@ -74,7 +74,7 @@ class CityScreenCityPickerTable(private val cityScreen: CityScreen) : Table() {
 
         add(cityNameTable).width(stage.width / 4)
 
-        if (civInfo.cities.size > 1) {
+        if (cityScreen.viewableCities.size > 1) {
             val nextCityButton = Table() // so we gt a wider clickable area than just the image itself
             val image = ImageGetter.getImage("OtherIcons/BackArrow")
             image.setSize(25f, 25f)

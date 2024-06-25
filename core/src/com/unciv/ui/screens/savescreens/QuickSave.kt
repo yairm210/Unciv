@@ -1,21 +1,24 @@
 package com.unciv.ui.screens.savescreens
 
-import com.unciv.ui.screens.mainmenuscreen.MainMenuScreen
 import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
 import com.unciv.logic.UncivShowableException
 import com.unciv.ui.popups.LoadingPopup
 import com.unciv.ui.popups.ToastPopup
+import com.unciv.ui.screens.mainmenuscreen.MainMenuScreen
 import com.unciv.ui.screens.worldscreen.WorldScreen
 import com.unciv.utils.Concurrency
-import com.unciv.utils.launchOnGLThread
 import com.unciv.utils.Log
+import com.unciv.utils.launchOnGLThread
 
 
 //todo reduce code duplication
 
 object QuickSave {
     fun save(gameInfo: GameInfo, screen: WorldScreen) {
+        // See #10353 - we don't support locally saving an online multiplayer game
+        if (gameInfo.gameParameters.isOnlineMultiplayer) return
+
         val files = UncivGame.Current.files
         val toast = ToastPopup("Quicksaving...", screen)
         Concurrency.runOnNonDaemonThreadPool("QuickSaveGame") {
@@ -32,6 +35,7 @@ object QuickSave {
     }
 
     fun load(screen: WorldScreen) {
+        screen.autoPlay.stopAutoPlay()
         val files = UncivGame.Current.files
         val toast = ToastPopup("Quickloading...", screen)
         Concurrency.run("QuickLoadGame") {
@@ -66,7 +70,7 @@ object QuickSave {
 
             val savedGame: GameInfo
             try {
-                savedGame = screen.game.files.loadLatestAutosave()
+                savedGame = screen.game.files.autosaves.loadLatestAutosave()
             } catch (_: OutOfMemoryError) {
                 outOfMemory()
                 return@run

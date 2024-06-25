@@ -11,13 +11,12 @@ jobs:
     # This is the only place I could find an apparent list of valid author associations. Also, at least they're not case-sensitive: https://docs.github.com/en/graphql/reference/enums#commentauthorassociation https://docs.github.com/en/actions/learn-github-actions/expressions#contains
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: actions/setup-node@v2
       - name: Generate new buildConfig.kt and changelog.md files
         run: |
           npm i @octokit/rest
-
-          node .github/workflows/incrementVersionAndChangelog.js
+          node .github/workflows/incrementVersionAndChangelog.mjs
 
           rm -rf node_modules # Now we need to remove extraneous node.js parts before commit
           rm package-lock.json
@@ -32,15 +31,51 @@ jobs:
       - name: Add translation PRs to the new branch, and PR the new branch to master
         run: |
           npm i @octokit/rest
-          node .github/workflows/mergeTranslations.js ${{ secrets.ACTIONS_ACCESS_TOKEN }} ${{ github.event.issue.number }} version_rollout
+          node .github/workflows/mergeTranslations.mjs ${{ secrets.ACTIONS_ACCESS_TOKEN }} ${{ github.event.issue.number }} version_rollout
 
+  release_patch_version:
+    if: github.event_name == 'issue_comment' && (github.event.comment.body == 'release patch') && contains(fromJSON('["OWNER", "MEMBER", "COLLABORATOR"]'), github.event.comment.author_association)
+    # This is the only place I could find an apparent list of valid author associations. Also, at least they're not case-sensitive: https://docs.github.com/en/graphql/reference/enums#commentauthorassociation https://docs.github.com/en/actions/learn-github-actions/expressions#contains
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: Merge Pull Request
+        uses: "actions/github-script@v5"
+        with:
+          github-token: ${{ secrets.ACTIONS_ACCESS_TOKEN }} # Required because default workflow token can't merge PRs
+          script: |
+            const repository = context.repo
+            await github.rest.pulls.merge({
+              merge_method: "squash",
+              owner: repository.owner,
+              pull_number: ${{ github.event.issue.number }},
+              repo: repository.repo,
+            })
+
+      - uses: actions/checkout@v4
+        with: # Required for triggering the deploy on tags added by this automation
+          # See https://github.com/stefanzweifel/git-auto-commit-action#commits-made-by-this-action-do-not-trigger-new-workflow-runs
+          token: ${{ secrets.ACTIONS_ACCESS_TOKEN }}
+          ref: master # By default will checkout *the version at time of trigger* which does *not* contain the PR we just merged!
+
+      - uses: actions/setup-node@v2
+
+      - name: Increment version and release
+        run: |
+          export version=$(node .github/workflows/releasePatch.mjs)
+          echo "VERSION=$version" >> "$GITHUB_ENV"
+
+      - uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: ${{env.VERSION}}
+          tagging_message: ${{env.VERSION}}
 
   merge_translations:
     if: github.event_name == 'workflow_dispatch' || (github.event.comment.body == 'merge translations' && contains(fromJSON('["OWNER", "MEMBER", "COLLABORATOR"]'), github.event.comment.author_association))
     # This is the only place I could find an apparent list of valid author associations. Also, at least they're not case-sensitive: https://docs.github.com/en/graphql/reference/enums#commentauthorassociation https://docs.github.com/en/actions/learn-github-actions/expressions#contains
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: actions/setup-node@v2
       - name: Add translation PRs to the new branch, and PR the new branch to master
 

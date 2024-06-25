@@ -2,13 +2,12 @@ package com.unciv.models.translations
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.files.FileHandle
-import java.nio.charset.Charset
 import kotlin.collections.set
 
 object TranslationFileReader {
 
     const val percentagesFileLocation = "jsons/translations/completionPercentages.properties"
-    val charset: String = Charset.forName("UTF-8").name()
+    val charset: String = Charsets.UTF_8.name()
 
     fun read(file: FileHandle): LinkedHashMap<String, String> {
         val translations = LinkedHashMap<String, String>()
@@ -24,12 +23,12 @@ object TranslationFileReader {
         return translations
     }
 
-    fun readLanguagePercentages():HashMap<String,Int>{
+    fun readLanguagePercentages(): HashMap<String,Int> {
 
         val hashmap = HashMap<String,Int>()
         val percentageFile = Gdx.files.internal(percentagesFileLocation)
         if(!percentageFile.exists()) return hashmap
-        for(line in percentageFile.reader().readLines()){
+        for(line in percentageFile.reader().readLines()) {
             val splitLine = line.split(" = ")
             hashmap[splitLine[0]]=splitLine[1].toInt()
         }

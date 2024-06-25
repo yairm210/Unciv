@@ -12,19 +12,20 @@ import com.badlogic.gdx.utils.Align
 import com.unciv.GUI
 import com.unciv.logic.battle.CityCombatant
 import com.unciv.logic.city.City
-import com.unciv.models.ruleset.INonPerpetualConstruction
-import com.unciv.models.ruleset.PerpetualConstruction
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.models.TutorialTrigger
-import com.unciv.ui.components.BorderedTable
-import com.unciv.ui.components.Fonts
+import com.unciv.models.ruleset.INonPerpetualConstruction
+import com.unciv.models.ruleset.PerpetualConstruction
 import com.unciv.ui.components.extensions.center
 import com.unciv.ui.components.extensions.centerX
 import com.unciv.ui.components.extensions.colorFromRGB
 import com.unciv.ui.components.extensions.darken
-import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.extensions.toGroup
 import com.unciv.ui.components.extensions.toLabel
+import com.unciv.ui.components.fonts.Fonts
+import com.unciv.ui.components.input.onClick
+import com.unciv.ui.components.input.onRightClick
+import com.unciv.ui.components.widgets.BorderedTable
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popups.Popup
 import com.unciv.ui.screens.basescreen.BaseScreen
@@ -111,13 +112,12 @@ private class DefenceTable(city: City) : BorderedTable(
 
     init {
 
-        val viewingCiv = GUI.getViewingPlayer()
-
+        val selectedCiv = GUI.getSelectedPlayer()
         borderSize = 4f
         bgColor = Color.BLACK
         bgBorderColor = when {
-            city.civ == viewingCiv -> colorFromRGB(255, 237, 200)
-            city.civ.isAtWarWith(viewingCiv) -> Color.RED
+            city.civ == selectedCiv -> colorFromRGB(255, 237, 200)
+            city.civ.isAtWarWith(selectedCiv) -> Color.RED
             else -> Color.BLACK
         }
 
@@ -164,9 +164,9 @@ private class StatusTable(city: City, iconSize: Float = 18f) : Table() {
     init {
 
         val padBetween = 2f
-        val viewingCiv = GUI.getViewingPlayer()
+        val selectedCiv = GUI.getSelectedPlayer()
 
-        if (city.civ == viewingCiv) {
+        if (city.civ == selectedCiv) {
             if (city.isBlockaded()) {
                 val connectionImage = ImageGetter.getImage("OtherIcons/Blockade")
                 add(connectionImage).size(iconSize)
@@ -192,7 +192,7 @@ private class StatusTable(city: City, iconSize: Float = 18f) : Table() {
             add(fireImage).size(iconSize).padLeft(padBetween)
         }
 
-        if (city.civ == viewingCiv && city.isWeLoveTheKingDayActive()) {
+        if (city.civ == selectedCiv && city.isWeLoveTheKingDayActive()) {
             val wltkdImage = ImageGetter.getImage("OtherIcons/WLTKD")
             add(wltkdImage).size(iconSize).padLeft(padBetween)
         }
@@ -209,26 +209,27 @@ private class CityTable(city: City, forPopup: Boolean = false) : BorderedTable(
         isTransform = false
         touchable = Touchable.enabled
 
+        val selectedCiv = GUI.getSelectedPlayer()
         val viewingCiv = GUI.getViewingPlayer()
 
         bgBorderColor = when {
-            city.civ == viewingCiv -> colorFromRGB(233, 233, 172)
-            city.civ.isAtWarWith(viewingCiv) -> colorFromRGB(230, 51, 0)
+            city.civ == selectedCiv -> colorFromRGB(233, 233, 172)
+            city.civ.isAtWarWith(selectedCiv) -> colorFromRGB(230, 51, 0)
             else -> Color.BLACK
         }
         borderSize = when {
-            city.civ == viewingCiv -> 4f
-            city.civ.isAtWarWith(viewingCiv) -> 4f
+            city.civ == selectedCiv -> 4f
+            city.civ.isAtWarWith(selectedCiv) -> 4f
             else -> 2f
         }
         bgColor = city.civ.nation.getOuterColor().cpy().apply { a = 0.9f }
-        borderOnTop = city.civ == viewingCiv
+        borderOnTop = city.civ == selectedCiv
 
         pad(0f)
         defaults().pad(0f)
 
         val isShowDetailedInfo = DebugUtils.VISIBLE_MAP
-                || city.civ == viewingCiv
+                || city.civ == selectedCiv
                 || viewingCiv.isSpectator()
 
         addCityPopNumber(city)
@@ -273,11 +274,11 @@ private class CityTable(city: City, forPopup: Boolean = false) : BorderedTable(
         val turnLabelText = when {
             city.isGrowing() -> {
                 val turnsToGrowth = city.population.getNumTurnsToNewPopulation()
-                if (turnsToGrowth != null && turnsToGrowth < 100) turnsToGrowth.toString() else "∞"
+                if (turnsToGrowth != null && turnsToGrowth < 100) turnsToGrowth.toString() else Fonts.infinity.toString()
             }
             city.isStarving() -> {
                 val turnsToStarvation = city.population.getNumTurnsToStarvation()
-                if (turnsToStarvation != null && turnsToStarvation < 100) turnsToStarvation.toString() else "∞"
+                if (turnsToStarvation != null && turnsToStarvation < 100) turnsToStarvation.toString() else Fonts.infinity.toString()
             }
             else -> "-"
         }
@@ -352,14 +353,14 @@ private class CityTable(city: City, forPopup: Boolean = false) : BorderedTable(
                 if (turnsToConstruction < 100)
                     turns = turnsToConstruction.toString()
                 percentage = cityConstructions.getWorkDone(cityCurrentConstruction.name) /
-                        (cityCurrentConstruction as INonPerpetualConstruction).getProductionCost(cityConstructions.city.civ).toFloat()
+                        (cityCurrentConstruction as INonPerpetualConstruction).getProductionCost(cityConstructions.city.civ, cityConstructions.city).toFloat()
                 nextTurnPercentage = (cityConstructions.getWorkDone(cityCurrentConstruction.name) + city.cityStats.currentCityStats.production) /
-                        cityCurrentConstruction.getProductionCost(cityConstructions.city.civ).toFloat()
+                        cityCurrentConstruction.getProductionCost(cityConstructions.city.civ, cityConstructions.city).toFloat()
 
                 if (nextTurnPercentage > 1f) nextTurnPercentage = 1f
                 if (nextTurnPercentage < 0f) nextTurnPercentage = 0f
             } else {
-                turns = "∞"
+                turns = Fonts.infinity.toString()
             }
             icon = ImageGetter.getConstructionPortrait(cityCurrentConstruction.name, 24f)
         }
@@ -389,7 +390,7 @@ private class CityTable(city: City, forPopup: Boolean = false) : BorderedTable(
     }
 }
 
-class CityButton(val city: City, private val tileGroup: TileGroup): Table(BaseScreen.skin){
+class CityButton(val city: City, private val tileGroup: TileGroup) : Table(BaseScreen.skin) {
 
     init {
         touchable = Touchable.disabled
@@ -428,9 +429,10 @@ class CityButton(val city: City, private val tileGroup: TileGroup): Table(BaseSc
         cityTable = CityTable(city)
         add(cityTable).row()
 
+        val selectedPlayer = GUI.getSelectedPlayer()
         // If city state - add influence bar
-        if (city.civ.isCityState() && city.civ.knows(viewingPlayer)) {
-            val diplomacyManager = city.civ.getDiplomacyManager(viewingPlayer)
+        if (city.civ.isCityState() && city.civ.knows(selectedPlayer)) {
+            val diplomacyManager = city.civ.getDiplomacyManager(selectedPlayer)!!
             add(InfluenceTable(diplomacyManager.getInfluence(), diplomacyManager.relationshipLevel())).padTop(1f).row()
         }
 
@@ -525,28 +527,34 @@ class CityButton(val city: City, private val tileGroup: TileGroup): Table(BaseSc
         // So you can click anywhere on the button to go to the city
         touchable = Touchable.childrenOnly
 
+        fun enterCityOrInfoPopup() {
+            // second tap on the button will go to the city screen
+            // if this city belongs to you and you are not iterating though the air units
+            if (DebugUtils.VISIBLE_MAP || viewingPlayer.isSpectator()
+                || belongsToViewingCiv() && !tileGroup.tile.airUnits.contains(unitTable.selectedUnit)
+                || city.civ.gameInfo.isEspionageEnabled() && viewingPlayer.espionageManager.getSpyAssignedToCity(city)?.isSetUp() == true) {
+                GUI.pushScreen(CityScreen(city))
+            } else if (viewingPlayer.knows(city.civ)) {
+                foreignCityInfoPopup()
+            }
+        }
+
         onClick {
             // clicking swings the button a little down to allow selection of units there.
             // this also allows to target selected units to move to the city tile from elsewhere.
             if (isButtonMoved) {
-                // second tap on the button will go to the city screen
-                // if this city belongs to you and you are not iterating though the air units
-                if (DebugUtils.VISIBLE_MAP || viewingPlayer.isSpectator()
-                    || (belongsToViewingCiv() && !tileGroup.tile.airUnits.contains(unitTable.selectedUnit))) {
-                        GUI.pushScreen(CityScreen(city))
-                } else if (viewingPlayer.knows(city.civ)) {
-                    foreignCityInfoPopup()
-                }
+                enterCityOrInfoPopup()
             } else {
                 moveButtonDown()
                 if ((unitTable.selectedUnit == null || unitTable.selectedUnit!!.currentMovement == 0f) && belongsToViewingCiv())
                     unitTable.citySelected(city)
             }
         }
+        onRightClick(action = ::enterCityOrInfoPopup)
 
         // when deselected, move city button to its original position
         if (unitTable.selectedCity != city
-                && unitTable.selectedUnit?.currentTile != city.getCenterTile()) {
+                && unitTable.selectedUnit?.currentTile != city.getCenterTile() && unitTable.selectedSpy == null) {
 
             moveButtonUp()
         }
@@ -594,7 +602,7 @@ class CityButton(val city: City, private val tileGroup: TileGroup): Table(BaseSc
             addOKButton("Diplomacy") { openDiplomacy() }
             add().expandX()
             addCloseButton() {
-                GUI.getWorldScreen().run { nextTurnButton.update(this@run) }
+                GUI.getWorldScreen().run { nextTurnButton.update() }
             }
         }
         popup.open()

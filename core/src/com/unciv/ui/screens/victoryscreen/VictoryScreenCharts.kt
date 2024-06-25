@@ -4,17 +4,15 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
-import com.unciv.ui.components.AutoScrollPane
-import com.unciv.ui.components.DataPoint
-import com.unciv.ui.components.LineChart
-import com.unciv.ui.components.TabbedPager
+import com.unciv.ui.components.widgets.AutoScrollPane
+import com.unciv.ui.components.widgets.TabbedPager
 import com.unciv.ui.components.input.onChange
 import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.extensions.packIfNeeded
 import com.unciv.ui.components.input.OnClickListener
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.basescreen.BaseScreen
-import com.unciv.ui.screens.newgamescreen.TranslatedSelectBox
+import com.unciv.ui.components.widgets.TranslatedSelectBox
 import com.unciv.ui.screens.victoryscreen.VictoryScreenCivGroup.DefeatedPlayerStyle
 import com.unciv.ui.screens.worldscreen.WorldScreen
 

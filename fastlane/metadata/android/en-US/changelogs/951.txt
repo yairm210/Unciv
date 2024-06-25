@@ -1,0 +1,15 @@
+Added Tile Breakdown table, accessible by clicking on the stats in tile info table
+
+Solved rare pillage-related crash
+
+Added smoothing to vector images
+
+Console:
+- Add activatetrigger command for civ!
+- Allow "-delimited strings
+
+'capture all capitals' victory accepts defeat of civs that did not found capitals
+
+Map editor generation steps don't add multiple terrain features of the same type
+
+Worker remove feature far away from cities fix  - By tuvus

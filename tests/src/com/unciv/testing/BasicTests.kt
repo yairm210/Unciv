@@ -8,7 +8,6 @@ import com.unciv.models.metadata.BaseRuleset
 import com.unciv.models.metadata.GameSettings
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
-import com.unciv.models.ruleset.RulesetStatsObject
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueParameterType
 import com.unciv.models.ruleset.unique.UniqueType
@@ -41,7 +40,7 @@ class BasicTests {
     @Test
     fun gamePngExists() {
         Assert.assertTrue("This test will only pass when the game.png exists",
-                Gdx.files.local("game.png").exists())
+                Gdx.files.local("").list().any { it.name().endsWith(".png") })
     }
 
     @Test
@@ -63,12 +62,13 @@ class BasicTests {
 
     // If there's a unit that obsoletes with no upgrade then when it obsoletes
 // and we try to work on its upgrade, we'll get an exception - see techManager
+    // But...Scout obsoletes at Scientific Theory with no upgrade...?
     @Test
     fun allObsoletingUnitsHaveUpgrades() {
         val units: Collection<BaseUnit> = ruleset.units.values
         var allObsoletingUnitsHaveUpgrades = true
         for (unit in units) {
-            if (unit.obsoleteTech != null && unit.upgradesTo == null && unit.name !="Scout" ) {
+            if (unit.techsAtWhichAutoUpgradeInProduction().any() && unit.upgradesTo == null && unit.name !="Scout" ) {
                 debug("%s obsoletes but has no upgrade", unit.name)
                 allObsoletingUnitsHaveUpgrades = false
             }
@@ -77,7 +77,7 @@ class BasicTests {
     }
 
     @Test
-    fun statParserWorks(){
+    fun statParserWorks() {
         Assert.assertTrue(Stats.isStats("+1 Production"))
         Assert.assertTrue(Stats.isStats("+1 Gold, +2 Production"))
         Assert.assertFalse(Stats.isStats("+1 Gold from tree"))
@@ -109,7 +109,7 @@ class BasicTests {
                 for (paramType in entry.value) {
                     if (paramType == UniqueParameterType.Unknown) {
                         val badParam = uniqueType.text.getPlaceholderParameters()[entry.index]
-                        debug("%s param[%s] type \"%s\" is unknown", uniqueType.name, entry.index, badParam)
+                        println("${uniqueType.name} param[${entry.index}] type \"$badParam\" is unknown")
                         noUnknownParameters = false
                     }
                 }
@@ -173,24 +173,6 @@ class BasicTests {
             }
         }
         Assert.assertTrue("This test succeeds only if all uniques of promotions are presented in UniqueType.values()", allOK)
-    }
-
-    @Test
-    fun allTerrainRelatedUniquesHaveTheirUniqueTypes() {
-        val objects : MutableCollection<RulesetStatsObject> = mutableListOf()
-        objects.addAll(ruleset.tileImprovements.values)
-        objects.addAll(ruleset.tileResources.values)
-        objects.addAll(ruleset.terrains.values)
-        var allOK = true
-        for (obj in objects) {
-            for (unique in obj.uniques) {
-                if (!UniqueType.values().any { it.placeholderText == unique.getPlaceholderText() }) {
-                    debug("%s: %s", obj.name, unique)
-                    allOK = false
-                }
-            }
-        }
-        Assert.assertTrue("This test succeeds only if all uniques are presented in UniqueType.values()", allOK)
     }
 
     @Test

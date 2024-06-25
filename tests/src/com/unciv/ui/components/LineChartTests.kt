@@ -1,6 +1,8 @@
 package com.unciv.ui.components
 
 import com.unciv.logic.civilization.Civilization
+import com.unciv.ui.screens.victoryscreen.DataPoint
+import com.unciv.ui.screens.victoryscreen.LineChart
 import org.junit.Assert
 import org.junit.Test
 

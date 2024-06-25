@@ -1,6 +1,7 @@
 package com.unciv.ui.components.input
 
 import com.badlogic.gdx.Input
+import com.badlogic.gdx.scenes.scene2d.InputListener
 import com.badlogic.gdx.utils.Json
 import com.badlogic.gdx.utils.JsonValue
 import com.unciv.ui.components.extensions.GdxKeyCodeFixes
@@ -19,9 +20,11 @@ import com.unciv.ui.components.extensions.GdxKeyCodeFixes
  */
 
 /**
- * Represents a key for use in an InputListener keyTyped() handler
+ * Represents a key for use in an [InputListener.keyDown] handler
  *
  * Example: KeyCharAndCode('R'), KeyCharAndCode(Input.Keys.F1)
+ * @see KeyboardBinding
+ * @see KeyShortcutListener
  */
 data class KeyCharAndCode(val char: Char, val code: Int) {
     /** helper 'cloning constructor' to allow feeding both fields from a factory function */
@@ -44,9 +47,9 @@ data class KeyCharAndCode(val char: Char, val code: Int) {
 
     companion object {
         // Convenience shortcuts for frequently used constants
-        /** Android back, assigns ESC automatically as well */
+        /** Android back, assigns [ESC] automatically as well */
         val BACK = KeyCharAndCode(Input.Keys.BACK)
-        /** Automatically assigned for [BACK] */
+        /** Automatically assigned for [BACK] - please use that instead */
         val ESC = KeyCharAndCode(Input.Keys.ESCAPE)
         /** Assigns [NUMPAD_ENTER] automatically as well */
         val RETURN = KeyCharAndCode(Input.Keys.ENTER)
@@ -80,6 +83,13 @@ data class KeyCharAndCode(val char: Char, val code: Int) {
             return if (code == -1) KeyCharAndCode(char,0) else KeyCharAndCode(Char.MIN_VALUE, code)
         }
 
+        /** Parse a human-readable representation into a KeyCharAndCode, inverse of [KeyCharAndCode.toString], case-sensitive.
+         *
+         *  Understands
+         *  - Single characters or quoted single characters (double-quotes)
+         *  - Names as produced by the non-conforming String.toString(Int) function in [com.badlogic.gdx.Input.Keys], with fixes for DEL and BACKSPACE.
+         *  Not parseable input, including the empty string, results in [KeyCharAndCode.UNKNOWN].
+         */
         fun parse(text: String): KeyCharAndCode = when {
                 text.length == 1 && text[0].isDefined() -> KeyCharAndCode(text[0])
                 text.length == 3 && text[0] == '"' && text[2] == '"' -> KeyCharAndCode(text[1])
@@ -92,6 +102,14 @@ data class KeyCharAndCode(val char: Char, val code: Int) {
             }
     }
 
+    /**
+     *  A Serializer that needs to be registered via [Json.setSerializer]
+     *  - Output syntax is just the string from toString() that will be parsed on deserialization,
+     *    e.g. "keyBindings":{"Diplomacy":"Ctrl-D","DeveloperConsole":"`"}
+     *  - Implementing [Json.Serializable] instead would be possible, but not allow the terse json syntax above, since that interface is restrictive:
+     *    1) It expects output to always use the object notation and writes the delimiters before you are asked to serialize.
+     *    2) it expects you to deserialize into a mutable default instance it has already instantiated for you.
+     */
     class Serializer : Json.Serializer<KeyCharAndCode> {
         override fun write(json: Json, key: KeyCharAndCode, knownType: Class<*>?) {
             // Gdx Json is.... No comment. This `Any` is needed to resolve the ambiguity between

@@ -7,7 +7,7 @@ import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.utils.Align
 import com.unciv.ui.components.extensions.center
 
-class IconCircleGroup(
+open class IconCircleGroup(
     size: Float,
     val actor: Actor,
     resizeActor: Boolean = true,

@@ -1,13 +1,13 @@
 package com.unciv.ui.components.input
 
 import com.badlogic.gdx.Gdx
-import com.badlogic.gdx.Input
 import com.badlogic.gdx.scenes.scene2d.InputEvent
 import com.badlogic.gdx.scenes.scene2d.InputListener
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.badlogic.gdx.scenes.scene2d.actions.RepeatAction
 import com.badlogic.gdx.scenes.scene2d.ui.TextField
-import com.unciv.ui.components.ZoomableScrollPane
+import com.unciv.ui.components.extensions.isControlKeyPressed
+import com.unciv.ui.components.widgets.ZoomableScrollPane
 
 class KeyboardPanningListener(
     private val mapHolder: ZoomableScrollPane,
@@ -40,9 +40,8 @@ class KeyboardPanningListener(
         if (event.target is TextField) return false
         if (keycode !in allowedKeys) return false
         // Without the following Ctrl-S would leave WASD map scrolling stuck
-        // Might be obsolete with keyboard shortcut refactoring
-        if (Gdx.input.isKeyPressed(Input.Keys.CONTROL_LEFT)) return false
-        if (Gdx.input.isKeyPressed(Input.Keys.CONTROL_RIGHT)) return false
+        // _Not_ obsolete with keyboard shortcut refactoring
+        if (Gdx.input.isControlKeyPressed()) return false
         pressedKeys.add(keycode)
         startLoop()
         return true

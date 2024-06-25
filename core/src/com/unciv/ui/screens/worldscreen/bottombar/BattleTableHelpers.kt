@@ -5,15 +5,12 @@ import com.badlogic.gdx.math.Interpolation
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Group
-import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.badlogic.gdx.scenes.scene2d.actions.FloatAction
 import com.badlogic.gdx.scenes.scene2d.actions.RelativeTemporalAction
-import com.badlogic.gdx.scenes.scene2d.actions.RepeatAction
 import com.badlogic.gdx.scenes.scene2d.actions.SequenceAction
 import com.badlogic.gdx.scenes.scene2d.actions.TemporalAction
 import com.badlogic.gdx.scenes.scene2d.ui.Image
-import com.badlogic.gdx.scenes.scene2d.ui.Stack
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.WidgetGroup
 import com.badlogic.gdx.utils.Align
@@ -21,8 +18,8 @@ import com.unciv.UncivGame
 import com.unciv.logic.battle.ICombatant
 import com.unciv.logic.battle.MapUnitCombatant
 import com.unciv.logic.map.HexMath
-import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.tilegroups.TileSetStrings
+import com.unciv.ui.components.widgets.ShadowedLabel
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.worldscreen.WorldScreen
 
@@ -83,10 +80,12 @@ object BattleTableHelpers {
                 val attackAnimationLocation = getAttackAnimationLocation()
                 if (attackAnimationLocation != null) {
                     var i = 1
-                    while (ImageGetter.imageExists(attackAnimationLocation + i)){
+                    while (ImageGetter.imageExists(attackAnimationLocation + i)) {
                         val image = ImageGetter.getImage(attackAnimationLocation + i)
+
+                        val defenderParentGroup = defenderActors.first().parent
                         addAction(Actions.run {
-                            defenderActors.first().parent.addActor(image)
+                            defenderParentGroup.addActor(image)
                         })
                         addAction(Actions.delay(attackAnimationFrameDuration))
                         addAction(Actions.removeActor(image))
@@ -149,7 +148,7 @@ object BattleTableHelpers {
         attacker: ICombatant, damageToAttacker: Int,
         defender: ICombatant, damageToDefender: Int
     ) {
-        fun getMapActorsForCombatant(combatant: ICombatant):Sequence<Actor> =
+        fun getMapActorsForCombatant(combatant: ICombatant): Sequence<Actor> =
                 sequence {
                     val tileGroup = mapHolder.tileGroups[combatant.getTile()]!!
                     if (combatant.isCity()) {
@@ -209,17 +208,7 @@ object BattleTableHelpers {
     private fun createDamageLabel(damage: Int, target: Actor) {
         if (damage == 0) return
 
-        val label = (-damage).toString().toLabel(Color.RED, damageLabelFontSize, Align.topLeft, true)
-        label.touchable = Touchable.disabled
-        val shadow = (-damage).toString().toLabel(Color.BLACK, damageLabelFontSize, Align.bottomRight, true)
-        shadow.touchable = Touchable.disabled
-
-        val container = Stack(shadow, label)
-        container.touchable = Touchable.disabled
-
-        container.pack()
-        // The +1f is what displaces the shadow under the red label
-        container.setSize(container.width + 1f, container.height + 1f)
+        val container = ShadowedLabel((-damage).toString(), damageLabelFontSize, Color.RED)
         val targetRight = target.run { localToStageCoordinates(Vector2(width, height * 0.5f)) }
         container.setPosition(targetRight.x, targetRight.y, Align.center)
         target.stage.addActor(container)
@@ -230,7 +219,7 @@ object BattleTableHelpers {
     fun getHealthBar(maxHealth: Int, currentHealth: Int, maxRemainingHealth: Int, minRemainingHealth: Int): Table {
         val healthBar = Table()
         val totalWidth = 100f
-        fun addHealthToBar(image: Image, amount:Int) {
+        fun addHealthToBar(image: Image, amount: Int) {
             val width = totalWidth * amount / maxHealth
             healthBar.add(image).size(width.coerceIn(0f, totalWidth),3f)
         }

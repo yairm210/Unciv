@@ -3,44 +3,45 @@ package com.unciv.ui.screens.multiplayerscreens
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
-import com.unciv.logic.event.EventBus
-import com.unciv.logic.multiplayer.MultiplayerGameDeleted
+import com.unciv.Constants
 import com.unciv.logic.multiplayer.OnlineMultiplayerGame
+import com.unciv.logic.multiplayer.storage.MultiplayerAuthException
 import com.unciv.models.translations.tr
-import com.unciv.ui.screens.pickerscreens.PickerScreen
-import com.unciv.ui.popups.Popup
-import com.unciv.ui.popups.ToastPopup
+import com.unciv.ui.components.widgets.UncivTextField
 import com.unciv.ui.components.extensions.disable
 import com.unciv.ui.components.extensions.enable
-import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.extensions.toTextButton
-import com.unciv.ui.components.AutoScrollPane as ScrollPane
+import com.unciv.ui.components.input.KeyCharAndCode
+import com.unciv.ui.components.input.keyShortcuts
+import com.unciv.ui.components.input.onActivation
+import com.unciv.ui.components.input.onClick
+import com.unciv.ui.popups.AuthPopup
+import com.unciv.ui.popups.ConfirmPopup
+import com.unciv.ui.popups.Popup
+import com.unciv.ui.popups.ToastPopup
+import com.unciv.ui.screens.pickerscreens.PickerScreen
+import com.unciv.ui.screens.savescreens.LoadGameScreen
+import com.unciv.utils.Concurrency
+import com.unciv.utils.Log
+import com.unciv.utils.launchOnGLThread
+import com.unciv.ui.components.widgets.AutoScrollPane as ScrollPane
 
 class MultiplayerScreen : PickerScreen() {
     private var selectedGame: OnlineMultiplayerGame? = null
 
-    private val editButtonText = "Game settings"
-    private val editButton = createEditButton()
-
-    private val addGameText = "Add multiplayer game"
-    private val addGameButton = createAddGameButton()
-
-    private val copyGameIdText = "Copy game ID"
     private val copyGameIdButton = createCopyGameIdButton()
+    private val resignButton = createResignButton()
+    private val deleteButton = createDeleteButton()
+    private val renameButton = createRenameButton()
+    private val gameSpecificButtons = listOf(copyGameIdButton, resignButton, deleteButton, renameButton)
 
-    private val copyUserIdText = "Copy user ID"
+    private val addGameButton = createAddGameButton()
     private val copyUserIdButton = createCopyUserIdButton()
-
-    private val friendsListText = "Friends list"
     private val friendsListButton = createFriendsListButton()
-
-    private val refreshText = "Refresh list"
     private val refreshButton = createRefreshButton()
 
     private val rightSideTable = createRightSideTable()
-    private val leftSideTable = GameList(::selectGame)
-
-    private val events = EventBus.EventReceiver()
+    val gameList = GameList(::selectGame)
 
     init {
         setDefaultCloseAction()
@@ -53,14 +54,15 @@ class MultiplayerScreen : PickerScreen() {
 
         setupRightSideButton()
 
-        events.receive(MultiplayerGameDeleted::class, { it.name == selectedGame?.name }) {
-            unselectGame()
-        }
-
         game.onlineMultiplayer.requestUpdate()
 
         pickerPane.bottomTable.background = skinStrings.getUiBackground("MultiplayerScreen/BottomTable", tintColor = skinStrings.skinConfig.clearColor)
         pickerPane.topTable.background = skinStrings.getUiBackground("MultiplayerScreen/TopTable", tintColor = skinStrings.skinConfig.clearColor)
+    }
+
+    fun onGameDeleted(gameName:String){
+        if (selectedGame?.name == gameName) unselectGame()
+        gameList.update()
     }
 
     private fun setupRightSideButton() {
@@ -72,40 +74,149 @@ class MultiplayerScreen : PickerScreen() {
         val table = Table()
         table.defaults().uniformX()
         table.defaults().fillX()
-        table.defaults().pad(10.0f)
-        table.add(copyUserIdButton).padBottom(30f).row()
-        table.add(copyGameIdButton).row()
-        table.add(editButton).row()
-        table.add(addGameButton).padBottom(30f).row()
-        table.add(friendsListButton).padBottom(30f).row()
-        table.add(refreshButton).row()
+        table.defaults().pad(10f)
+
+        val gameSpecificActions = Table().apply { defaults().pad(10f) }
+        gameSpecificActions.add(copyGameIdButton).row()
+        gameSpecificActions.add(renameButton).row()
+        gameSpecificActions.add(resignButton).row()
+        gameSpecificActions.add(deleteButton).row()
+        table.add(gameSpecificActions)
+
+        val generalActions = Table().apply { defaults().pad(10f) }
+        generalActions.add(copyUserIdButton).row()
+        generalActions.add(addGameButton).row()
+        generalActions.add(friendsListButton).row()
+        generalActions.add(refreshButton).row()
+        table.add(generalActions)
+
         return table
     }
 
     fun createRefreshButton(): TextButton {
-        val btn = refreshText.toTextButton()
+        val btn = "Refresh list".toTextButton()
         btn.onClick { game.onlineMultiplayer.requestUpdate() }
         return btn
     }
 
     fun createAddGameButton(): TextButton {
-        val btn = addGameText.toTextButton()
+        val btn = "Add multiplayer game".toTextButton()
         btn.onClick {
-            game.pushScreen(AddMultiplayerGameScreen())
+            game.pushScreen(AddMultiplayerGameScreen(this))
         }
         return btn
     }
 
-    fun createEditButton(): TextButton {
-        val btn = editButtonText.toTextButton().apply { disable() }
+    fun createResignButton(): TextButton {
+        val negativeButtonStyle = skin.get("negative", TextButton.TextButtonStyle::class.java)
+        val resignButton = "Resign".toTextButton(negativeButtonStyle).apply { disable() }
+        resignButton.onClick {
+            val askPopup = ConfirmPopup(
+                    this,
+                    "Are you sure you want to resign?",
+                    "Resign",
+            ) {
+                resign(selectedGame!!)
+            }
+            askPopup.open()
+        }
+        return resignButton
+    }
+
+    /**
+     * Helper function to decrease indentation
+     * Turns the current playerCiv into an AI civ and uploads the game afterwards.
+     */
+    private fun resign(multiplayerGame: OnlineMultiplayerGame) {
+        //Create a popup
+        val popup = Popup(this)
+        popup.addGoodSizedLabel(Constants.working).row()
+        popup.open()
+
+        Concurrency.runOnNonDaemonThreadPool("Resign") {
+            try {
+                val resignSuccess = game.onlineMultiplayer.resign(multiplayerGame)
+
+                launchOnGLThread {
+                    if (resignSuccess) {
+                        popup.close()
+                        game.popScreen()
+                    } else {
+                        popup.reuseWith("You can only resign if it's your turn", true)
+                    }
+                }
+            } catch (ex: Exception) {
+                val (message) = LoadGameScreen.getLoadExceptionMessage(ex)
+
+                if (ex is MultiplayerAuthException) {
+                    launchOnGLThread {
+                        AuthPopup(this@MultiplayerScreen) { success ->
+                            if (success) resign(multiplayerGame)
+                        }.open(true)
+                    }
+                    return@runOnNonDaemonThreadPool
+                }
+
+                launchOnGLThread {
+                    popup.reuseWith(message, true)
+                }
+            }
+        }
+    }
+
+    fun createDeleteButton(): TextButton {
+        val negativeButtonStyle = skin.get("negative", TextButton.TextButtonStyle::class.java)
+        val deleteButton = "Delete save".toTextButton(negativeButtonStyle).apply { disable() }
+        deleteButton.onClick {
+            val askPopup = ConfirmPopup(
+                    this,
+                    "Are you sure you want to delete this save?",
+                    "Delete save",
+            ) {
+                try {
+                    game.onlineMultiplayer.deleteGame(selectedGame!!)
+                    onGameDeleted(selectedGame!!.name)
+                } catch (ex: Exception) {
+                    Log.error("Could not delete game!", ex)
+                    ToastPopup("Could not delete game!", this)
+                }
+            }
+            askPopup.open()
+        }
+        return deleteButton
+    }
+
+    fun createRenameButton(): TextButton {
+        val btn = "Rename".toTextButton().apply { disable() }
         btn.onClick {
-            game.pushScreen(EditMultiplayerGameInfoScreen(selectedGame!!))
+            Popup(this).apply {
+                val textField = UncivTextField("Game name", selectedGame!!.name)
+                add(textField).width(stageToShowOn.width / 2).row()
+                val saveButton = "Save".toTextButton()
+
+                val saveNewNameFunction = {
+                    val newName = textField.text.trim()
+                    game.onlineMultiplayer.changeGameName(selectedGame!!, newName) {
+                        if (it != null) reuseWith("Could not save game!", true)
+                    }
+                    gameList.update()
+                    selectGame(newName)
+                    close()
+                }
+
+                saveButton.onActivation(saveNewNameFunction)
+                saveButton.keyShortcuts.add(KeyCharAndCode.RETURN)
+                textField.cursorPosition = textField.text.length
+                this@MultiplayerScreen.stage.keyboardFocus = textField
+                add(saveButton)
+                open()
+            }
         }
         return btn
     }
 
     fun createCopyGameIdButton(): TextButton {
-        val btn = copyGameIdText.toTextButton().apply { disable() }
+        val btn = "Copy game ID".toTextButton().apply { disable() }
         btn.onClick {
             val gameInfo = selectedGame?.preview
             if (gameInfo != null) {
@@ -117,7 +228,7 @@ class MultiplayerScreen : PickerScreen() {
     }
 
     fun createFriendsListButton(): TextButton {
-        val btn = friendsListText.toTextButton()
+        val btn = "Friends list".toTextButton()
         btn.onClick {
             game.pushScreen(ViewFriendsListScreen())
         }
@@ -125,7 +236,7 @@ class MultiplayerScreen : PickerScreen() {
     }
 
     private fun createCopyUserIdButton(): TextButton {
-        val btn = copyUserIdText.toTextButton()
+        val btn = "Copy user ID".toTextButton()
         btn.onClick {
             Gdx.app.clipboard.contents = game.settings.multiplayer.userId
             ToastPopup("UserID copied to clipboard", this)
@@ -135,7 +246,7 @@ class MultiplayerScreen : PickerScreen() {
 
     private fun createMainContent(): Table {
         val mainTable = Table()
-        mainTable.add(ScrollPane(leftSideTable).apply { setScrollingDisabled(true, false) }).center()
+        mainTable.add(ScrollPane(gameList).apply { setScrollingDisabled(true, false) }).center()
         mainTable.add(rightSideTable)
         return mainTable
     }
@@ -149,13 +260,13 @@ class MultiplayerScreen : PickerScreen() {
                 .row()
             helpPopup.addGoodSizedLabel("You can assign your own user ID there easily, and other players can copy their user IDs here and send them to you for you to include them in the game.")
                 .row()
-            helpPopup.addGoodSizedLabel("").row()
+            helpPopup.row()
 
             helpPopup.addGoodSizedLabel("Once you've created your game, the Game ID gets automatically copied to your clipboard so you can send it to the other players.")
                 .row()
             helpPopup.addGoodSizedLabel("Players can enter your game by copying the game ID to the clipboard, and clicking on the 'Add multiplayer game' button")
                 .row()
-            helpPopup.addGoodSizedLabel("").row()
+            helpPopup.row()
 
             helpPopup.addGoodSizedLabel("The symbol of your nation will appear next to the game when it's your turn").row()
 
@@ -171,10 +282,9 @@ class MultiplayerScreen : PickerScreen() {
 
     private fun unselectGame() {
         selectedGame = null
-
-        editButton.disable()
-        copyGameIdButton.disable()
         rightSideButton.disable()
+        for (button in gameSpecificButtons)
+            button.disable()
         descriptionLabel.setText("")
     }
 
@@ -188,12 +298,14 @@ class MultiplayerScreen : PickerScreen() {
 
         selectedGame = multiplayerGame
 
+        for (button in gameSpecificButtons)
+            button.enable()
         if (multiplayerGame.preview != null) {
             copyGameIdButton.enable()
         } else {
             copyGameIdButton.disable()
         }
-        editButton.enable()
+
         rightSideButton.enable()
 
         descriptionLabel.setText(MultiplayerHelpers.buildDescriptionText(multiplayerGame))

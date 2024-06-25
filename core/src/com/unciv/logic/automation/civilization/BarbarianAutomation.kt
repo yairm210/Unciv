@@ -13,6 +13,8 @@ class BarbarianAutomation(val civInfo: Civilization) {
         civInfo.units.getCivUnits().filter { it.baseUnit.isRanged() }.forEach { automateUnit(it) }
         civInfo.units.getCivUnits().filter { it.baseUnit.isMelee() }.forEach { automateUnit(it) }
         civInfo.units.getCivUnits().filter { !it.baseUnit.isRanged() && !it.baseUnit.isMelee() }.forEach { automateUnit(it) }
+        // fix buildup of alerts - to shrink saves and ease debugging
+        civInfo.popupAlerts.clear()
     }
 
     private fun automateUnit(unit: MapUnit) {
@@ -47,7 +49,7 @@ class BarbarianAutomation(val civInfo: Civilization) {
 
     private fun automateCombatUnit(unit: MapUnit) {
         // 1 - Try pillaging to restore health (barbs don't auto-heal)
-        if (unit.health < 50 && UnitAutomation.tryPillageImprovement(unit)) return
+        if (unit.health < 50 && UnitAutomation.tryPillageImprovement(unit, true) && unit.currentMovement == 0f) return
 
         // 2 - trying to upgrade
         if (UnitAutomation.tryUpgradeUnit(unit)) return
@@ -58,7 +60,9 @@ class BarbarianAutomation(val civInfo: Civilization) {
         if (!unit.isCivilian() && BattleHelper.tryAttackNearbyEnemy(unit)) return
 
         // 4 - trying to pillage tile or route
-        if (UnitAutomation.tryPillageImprovement(unit)) return
+        while (UnitAutomation.tryPillageImprovement(unit)) {
+            if (unit.currentMovement == 0f) return
+        }
 
         // 6 - wander
         UnitAutomation.wander(unit)

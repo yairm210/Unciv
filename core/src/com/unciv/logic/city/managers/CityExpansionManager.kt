@@ -1,6 +1,7 @@
 package com.unciv.logic.city.managers
 
 import com.badlogic.gdx.math.Vector2
+import com.unciv.Constants
 import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.automation.Automation
 import com.unciv.logic.city.City
@@ -13,6 +14,7 @@ import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.components.extensions.toPercent
 import com.unciv.ui.components.extensions.withItem
 import com.unciv.ui.components.extensions.withoutItem
+import com.unciv.ui.screens.worldscreen.unit.actions.UnitActions
 import kotlin.math.max
 import kotlin.math.pow
 import kotlin.math.roundToInt
@@ -68,13 +70,14 @@ class CityExpansionManager : IsPartOfGameInfoSerialization {
     fun buyTile(tile: Tile) {
         val goldCost = getGoldCostOfTile(tile)
 
-        class TriedToBuyNonContiguousTileException:Exception()
+        class TriedToBuyNonContiguousTileException(msg: String) : Exception(msg)
         if (tile.neighbors.none { it.getCity() == city })
-            throw TriedToBuyNonContiguousTileException()
+            throw TriedToBuyNonContiguousTileException("$city tried to buy $tile, but it owns none of the neighbors")
 
-        class NotEnoughGoldToBuyTileException : Exception()
+        class NotEnoughGoldToBuyTileException(msg: String) : Exception(msg)
         if (city.civ.gold < goldCost && !city.civ.gameInfo.gameParameters.godMode)
-            throw NotEnoughGoldToBuyTileException()
+            throw NotEnoughGoldToBuyTileException("$city tried to buy $tile, but lacks gold (cost $goldCost, has ${city.civ.gold})")
+
         city.civ.addGold(-goldCost)
         takeOwnership(tile)
 
@@ -97,7 +100,7 @@ class CityExpansionManager : IsPartOfGameInfoSerialization {
         return cost.roundToInt()
     }
 
-    fun getChoosableTiles() = city.getCenterTile().getTilesInDistance(5)
+    fun getChoosableTiles() = city.getCenterTile().getTilesInDistance(city.getExpandRange())
         .filter { it.getOwner() == null }
 
     fun chooseNewTileToOwn(): Tile? {
@@ -170,7 +173,7 @@ class CityExpansionManager : IsPartOfGameInfoSerialization {
      * @param tile The tile to take over
      */
     fun takeOwnership(tile: Tile) {
-        if (tile.isCityCenter()) throw Exception("What?!")
+        check(!tile.isCityCenter()) { "Trying to found a city in a tile that already has one" }
         if (tile.getCity() != null)
             tile.getCity()!!.expansion.relinquishOwnership(tile)
 
@@ -183,7 +186,14 @@ class CityExpansionManager : IsPartOfGameInfoSerialization {
         for (unit in tile.getUnits().toList()) // toListed because we're modifying
             if (!unit.civ.diplomacyFunctions.canPassThroughTiles(city.civ))
                 unit.movement.teleportToClosestMoveableTile()
-
+            else if (unit.civ == city.civ && unit.isSleeping()) {
+                // If the unit is sleeping and is a worker, it might want to build on this tile
+                // So lets try to wake it up for the player to notice it
+                if (unit.cache.hasUniqueToBuildImprovements || unit.cache.hasUniqueToCreateWaterImprovements) {
+                    unit.due = true
+                    unit.action = null;
+                }
+            }
 
         tile.history.recordTakeOwnership(tile)
     }

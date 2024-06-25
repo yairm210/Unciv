@@ -14,12 +14,12 @@ import com.unciv.models.ruleset.Victory
 import com.unciv.models.translations.tr
 import com.unciv.ui.audio.MusicMood
 import com.unciv.ui.audio.MusicTrackChooserFlags
-import com.unciv.ui.components.input.KeyCharAndCode
-import com.unciv.ui.components.TabbedPager
+import com.unciv.ui.components.widgets.TabbedPager
 import com.unciv.ui.components.extensions.areSecretKeysPressed
 import com.unciv.ui.components.extensions.enable
-import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.extensions.toLabel
+import com.unciv.ui.components.input.KeyCharAndCode
+import com.unciv.ui.components.input.onClick
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.basescreen.RecreateOnResize
@@ -43,32 +43,35 @@ class VictoryScreen(
 
     private enum class VictoryTabs(
         val key: Char,
-        val iconName: String = "",
         val caption: String? = null,
         val allowAsSecret: Boolean = false
     ) {
-        OurStatus('O', "StatIcons/Specialist", caption = "Our status") {
-            override fun getContent(worldScreen: WorldScreen) = VictoryScreenOurVictory(worldScreen)
+        OurStatus('O', caption = "Our status") {
+            override fun getContent(parent: VictoryScreen) = VictoryScreenOurVictory(parent.worldScreen)
             override fun isHidden(playerCiv: Civilization) = playerCiv.isSpectator()
         },
-        Global('G', "OtherIcons/Nations", caption = "Global status") {
-            override fun getContent(worldScreen: WorldScreen) = VictoryScreenGlobalVictory(worldScreen)
+        Global('G', caption = "Global status") {
+            override fun getContent(parent: VictoryScreen) = VictoryScreenGlobalVictory(parent.worldScreen)
         },
-        Demographics('D', "CityStateIcons/Cultured", allowAsSecret = true) {
-            override fun getContent(worldScreen: WorldScreen) = VictoryScreenDemographics(worldScreen)
+        Illustration('I', allowAsSecret = true) {
+            override fun getContent(parent: VictoryScreen) = VictoryScreenIllustrations(parent, parent.worldScreen)
+            override fun isHidden(playerCiv: Civilization) = !VictoryScreenIllustrations.enablePage(playerCiv.gameInfo)
+        },
+        Demographics('D', allowAsSecret = true) {
+            override fun getContent(parent: VictoryScreen) = VictoryScreenDemographics(parent.worldScreen)
             override fun isHidden(playerCiv: Civilization) = !UncivGame.Current.settings.useDemographics
         },
-        Rankings('R', "CityStateIcons/Cultured", allowAsSecret = true) {
-            override fun getContent(worldScreen: WorldScreen) = VictoryScreenCivRankings(worldScreen)
+        Rankings('R', allowAsSecret = true) {
+            override fun getContent(parent: VictoryScreen) = VictoryScreenCivRankings(parent.worldScreen)
             override fun isHidden(playerCiv: Civilization) = UncivGame.Current.settings.useDemographics
         },
-        Charts('C', "OtherIcons/Charts") {
-            override fun getContent(worldScreen: WorldScreen) = VictoryScreenCharts(worldScreen)
+        Charts('C') {
+            override fun getContent(parent: VictoryScreen) = VictoryScreenCharts(parent.worldScreen)
             override fun isHidden(playerCiv: Civilization) =
                 !playerCiv.isSpectator() && playerCiv.statsHistory.size < 2
         },
-        Replay('P', "OtherIcons/Load", allowAsSecret = true) {
-            override fun getContent(worldScreen: WorldScreen) = VictoryScreenReplay(worldScreen)
+        Replay('P', allowAsSecret = true) {
+            override fun getContent(parent: VictoryScreen) = VictoryScreenReplay(parent.worldScreen)
             override fun isHidden(playerCiv: Civilization) =
                 !playerCiv.isSpectator()
                         && playerCiv.gameInfo.victoryData == null
@@ -77,11 +80,12 @@ class VictoryScreen(
                         // slider doesn't look weird.
                         && playerCiv.gameInfo.turns < 5
         };
-        abstract fun getContent(worldScreen: WorldScreen): Table
+        abstract fun getContent(parent: VictoryScreen): Table
         open fun isHidden(playerCiv: Civilization) = false
     }
 
     init {
+        worldScreen.autoPlay.stopAutoPlay()
         //**************** Set up the tabs ****************
         splitPane.setFirstWidget(tabs)
         val iconSize = Constants.headingFontSize.toFloat()
@@ -90,10 +94,10 @@ class VictoryScreen(
             val tabHidden = tab.isHidden(playerCiv)
             if (tabHidden && !(tab.allowAsSecret && Gdx.input.areSecretKeysPressed()))
                 continue
-            val icon = if (tab.iconName.isEmpty()) null else ImageGetter.getImage(tab.iconName)
+            val icon = ImageGetter.getImage("VictoryScreenIcons/${tab.name}")
             tabs.addPage(
                 tab.caption ?: tab.name,
-                tab.getContent(worldScreen),
+                tab.getContent(this),
                 icon, iconSize,
                 scrollAlign = Align.topLeft,
                 shortcutKey = KeyCharAndCode(tab.key),
@@ -131,10 +135,12 @@ class VictoryScreen(
         val difficultyLabel = "{Difficulty}: {${gameInfo.difficulty}}".toLabel()
         val neededSpace = topRightPanel.width.coerceAtLeast(difficultyLabel.width) * 2 + tabs.getHeaderPrefWidth()
         if (neededSpace > stage.width) {
-            tabs.decorateHeader(difficultyLabel, true)
-            tabs.decorateHeader(topRightPanel, false)
+            // Let additions take part in TabbedPager's header scrolling
+            tabs.decorateHeader(difficultyLabel, leftSide = true, fixed = false)
+            tabs.decorateHeader(topRightPanel, leftSide = false, fixed = false)
             tabs.headerScroll.fadeScrollBars = false
         } else {
+            // Let additions float in the corners
             val panelY = stage.height - tabs.getRowHeight(0) * 0.5f
             stage.addActor(topRightPanel)
             topRightPanel.setPosition(stage.width - 10f, panelY, Align.right)
@@ -155,6 +161,7 @@ class VictoryScreen(
             displayWonOrLost("[$winningCiv] has won a [$victoryType] Victory!", victory.defeatString)
             music.chooseTrack(playerCiv.civName, MusicMood.Defeat, EnumSet.of(MusicTrackChooserFlags.SuffixMustMatch))
         }
+        worldScreen.autoPlay.stopAutoPlay()
     }
 
     private fun displayWonOrLost(vararg descriptions: String) {

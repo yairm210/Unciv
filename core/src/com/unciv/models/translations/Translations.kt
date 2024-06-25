@@ -7,7 +7,7 @@ import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
-import com.unciv.ui.components.Fonts
+import com.unciv.ui.components.fonts.FontRulesetIcons
 import com.unciv.utils.Log
 import com.unciv.utils.debug
 import java.util.Locale
@@ -31,7 +31,7 @@ import java.util.Locale
  *
  *  @see    String.tr   for more explanations (below)
  */
-class Translations : LinkedHashMap<String, TranslationEntry>(){
+class Translations : LinkedHashMap<String, TranslationEntry>() {
 
     var percentCompleteOfLanguages = HashMap<String,Int>()
             .apply { put(Constants.english, 100) } // So even if we don't manage to load the percentages, we can still pass the language screen
@@ -132,7 +132,7 @@ class Translations : LinkedHashMap<String, TranslationEntry>(){
         }
     }
 
-    fun tryReadTranslationForCurrentLanguage(){
+    fun tryReadTranslationForCurrentLanguage() {
         tryReadTranslationForLanguage(UncivGame.Current.settings.language)
     }
 
@@ -147,7 +147,7 @@ class Translations : LinkedHashMap<String, TranslationEntry>(){
             for (file in Gdx.files.internal("jsons/translations").list())
                 languages.add(file.nameWithoutExtension())
         }
-        catch (ex:Exception) {
+        catch (ex: Exception) {
             Log.error("Failed to add languages", ex)
         } // Iterating on internal files will not work when running from a .jar
 
@@ -181,7 +181,7 @@ class Translations : LinkedHashMap<String, TranslationEntry>(){
         debug("Loading translation files - %sms", System.currentTimeMillis() - translationStart)
     }
 
-    fun loadPercentageCompleteOfLanguages(){
+    fun loadPercentageCompleteOfLanguages() {
         val startTime = System.currentTimeMillis()
 
         percentCompleteOfLanguages = TranslationFileReader.readLanguagePercentages()
@@ -283,7 +283,7 @@ object TranslationActiveModsCache {
     }
 }
 
-    /**
+/**
  *  This function does the actual translation work,
  *      using an instance of [Translations] stored in UncivGame.Current
  *
@@ -293,12 +293,13 @@ object TranslationActiveModsCache {
  *                  sentences - contains at least one '{'
  *                  - phrases between curly braces are translated individually
  *                  Additionally, they may contain conditionals between '<' and '>'
+ *  @param      hideIcons disables auto-inserting icons for ruleset objects (but not Stats)
  *  @return     The translated string
  *                  defaults to the input string if no translation is available,
  *                  but with placeholder or sentence brackets removed.
  */
-fun String.tr(hideIcons:Boolean = false): String {
-    val language:String = UncivGame.Current.settings.language
+fun String.tr(hideIcons: Boolean = false): String {
+    val language: String = UncivGame.Current.settings.language
 
     // '<' and '>' checks for quick 'no' answer, regex to ensure that no one accidentally put '><' and ruined things
     if (contains('<') && contains('>') && pointyBraceRegex.containsMatchIn(this)) { // Conditionals!
@@ -400,9 +401,9 @@ fun String.tr(hideIcons:Boolean = false): String {
         }
 
         // Take the terms in the message, WITHOUT square brackets
-        val termsInMessage = this.getPlaceholderParametersIgnoringLowerLevelBraces()
+        val termsInMessage = this.getPlaceholderParameters()
         // Take the terms from the placeholder
-        val termsInTranslationPlaceholder = originalEntry.getPlaceholderParametersIgnoringLowerLevelBraces()
+        val termsInTranslationPlaceholder = originalEntry.getPlaceholderParameters()
         if (termsInMessage.size != termsInTranslationPlaceholder.size)
             throw Exception("Message $this has a different number of terms than the placeholder $translationEntry!")
 
@@ -426,8 +427,8 @@ fun String.tr(hideIcons:Boolean = false): String {
     val stat = Stat.safeValueOf(this)
     if (stat != null) return stat.character + translation
 
-    if (!hideIcons && Fonts.rulesetObjectNameToChar.containsKey(this))
-        return Fonts.rulesetObjectNameToChar[this]!! + translation
+    if (!hideIcons && FontRulesetIcons.rulesetObjectNameToChar.containsKey(this))
+        return FontRulesetIcons.rulesetObjectNameToChar[this]!! + translation
 
     return translation
 }
@@ -438,17 +439,19 @@ fun String.tr(hideIcons:Boolean = false): String {
  * For example, a string like 'The city of [New [York]]' will return ['New [York]'],
  * allowing us to have nested translations!
  */
-fun String.getPlaceholderParametersIgnoringLowerLevelBraces(): List<String> {
+fun String.getPlaceholderParameters(): List<String> {
     if (!this.contains('[')) return emptyList()
+
+    val stringToParse = this.removeConditionals()
     val parameters = ArrayList<String>()
     var depthOfBraces = 0
     var startOfCurrentParameter = -1
-    for (i in this.indices) {
-        if (this[i] == '[') {
+    for (i in stringToParse.indices) {
+        if (stringToParse[i] == '[') {
             if (depthOfBraces == 0) startOfCurrentParameter = i+1
             depthOfBraces++
         }
-        if (this[i] == ']' && depthOfBraces > 0) {
+        if (stringToParse[i] == ']' && depthOfBraces > 0) {
             depthOfBraces--
             if (depthOfBraces == 0) parameters.add(substring(startOfCurrentParameter,i))
         }
@@ -458,13 +461,13 @@ fun String.getPlaceholderParametersIgnoringLowerLevelBraces(): List<String> {
 
 fun String.getPlaceholderText(): String {
     var stringToReturn = this.removeConditionals()
-    val placeholderParameters = stringToReturn.getPlaceholderParametersIgnoringLowerLevelBraces()
+    val placeholderParameters = stringToReturn.getPlaceholderParameters()
     for (placeholderParameter in placeholderParameters)
         stringToReturn = stringToReturn.replace("[$placeholderParameter]", "[]")
     return stringToReturn
 }
 
-fun String.equalsPlaceholderText(str:String): Boolean {
+fun String.equalsPlaceholderText(str: String): Boolean {
     if (first() != str.first()) return false // for quick negative return 95% of the time
     return this.getPlaceholderText() == str
 }
@@ -472,11 +475,6 @@ fun String.equalsPlaceholderText(str:String): Boolean {
 fun String.hasPlaceholderParameters(): Boolean {
     if (!this.contains('[')) return false
     return squareBraceRegex.containsMatchIn(this.removeConditionals())
-}
-
-fun String.getPlaceholderParameters(): List<String> {
-    if (!this.contains('[')) return emptyList()
-    return squareBraceRegex.findAll(this.removeConditionals()).map { it.groups[1]!!.value }.toList()
 }
 
 /** Substitutes placeholders with [strings], respecting order of appearance. */

@@ -10,15 +10,19 @@ import com.unciv.utils.Log
 import java.io.InputStream
 import java.io.OutputStream
 
-private class Request(
-    val onFileChosen: (Uri) -> Unit
-)
 
 class AndroidSaverLoader(private val activity: Activity) : PlatformSaverLoader {
 
     private val contentResolver = activity.contentResolver
     private val requests = HashMap<Int, Request>()
     private var requestCode = 100
+
+    private class Request(
+        val onFileChosen: (Uri) -> Unit,
+        onError: (ex: Exception) -> Unit
+    ) {
+        val onCancel: () -> Unit = { onError(PlatformSaverLoader.Cancelled()) }
+    }
 
     override fun saveGame(
         data: String,
@@ -31,7 +35,7 @@ class AndroidSaverLoader(private val activity: Activity) : PlatformSaverLoader {
         val suggestedUri = Uri.parse(suggestedLocation)
         val fileName = getFilename(suggestedUri, suggestedLocation)
 
-        val onFileChosen = {uri: Uri ->
+        val onFileChosen = { uri: Uri ->
             var stream: OutputStream? = null
             try {
                 stream = contentResolver.openOutputStream(uri, "rwt")
@@ -44,14 +48,15 @@ class AndroidSaverLoader(private val activity: Activity) : PlatformSaverLoader {
             }
         }
 
-        requests[requestCode] = Request(onFileChosen)
+        requests[requestCode] = Request(onFileChosen, onError)
         openSaveFileChooser(fileName, suggestedUri, requestCode)
         requestCode += 1
     }
 
     override fun loadGame(
         onLoaded: (data: String, location: String) -> Unit,
-        onError: (ex: Exception) -> Unit) {
+        onError: (ex: Exception) -> Unit
+    ) {
 
         val onFileChosen = {uri: Uri ->
             var stream: InputStream? = null
@@ -66,14 +71,16 @@ class AndroidSaverLoader(private val activity: Activity) : PlatformSaverLoader {
             }
         }
 
-        requests[requestCode] = Request(onFileChosen)
+        requests[requestCode] = Request(onFileChosen, onError)
         openLoadFileChooser(requestCode)
         requestCode += 1
     }
 
     fun onActivityResult(requestCode: Int, data: Intent?) {
-        val uri: Uri = data?.data ?: return
         val request = requests.remove(requestCode) ?: return
+        // data is null if the user back out of the activity without choosing a file
+        if (data == null) return request.onCancel()
+        val uri: Uri = data.data ?: return
         request.onFileChosen(uri)
     }
 

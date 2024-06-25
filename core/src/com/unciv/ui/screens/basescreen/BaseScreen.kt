@@ -17,9 +17,12 @@ import com.badlogic.gdx.scenes.scene2d.utils.Drawable
 import com.badlogic.gdx.utils.viewport.ExtendViewport
 import com.unciv.UncivGame
 import com.unciv.models.TutorialTrigger
+import com.unciv.models.metadata.BaseRuleset
+import com.unciv.models.ruleset.Ruleset
+import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.skins.SkinStrings
-import com.unciv.ui.components.Fonts
 import com.unciv.ui.components.extensions.isNarrowerThan4to3
+import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.components.input.DispatcherVetoer
 import com.unciv.ui.components.input.KeyShortcutDispatcher
 import com.unciv.ui.components.input.KeyShortcutDispatcherVeto
@@ -30,6 +33,8 @@ import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popups.Popup
 import com.unciv.ui.popups.activePopup
 import com.unciv.ui.popups.options.OptionsPopup
+import com.unciv.ui.screens.civilopediascreen.CivilopediaScreen
+import com.unciv.ui.screens.mainmenuscreen.MainMenuScreen
 
 // Both `this is CrashScreen` and `this::createPopupBasedDispatcherVetoer` are flagged.
 // First - not a leak; second - passes out a pure function
@@ -138,7 +143,7 @@ abstract class BaseScreen : Screen {
                 add("Nativefont", Fonts.font, BitmapFont::class.java)
                 add("RoundedEdgeRectangle", skinStrings.getUiBackground("", skinStrings.roundedEdgeRectangleShape), Drawable::class.java)
                 add("Rectangle", ImageGetter.getDrawable(""), Drawable::class.java)
-                add("Circle", ImageGetter.getDrawable("OtherIcons/Circle").apply { setMinSize(20f, 20f) }, Drawable::class.java)
+                add("Circle", ImageGetter.getCircleDrawable().apply { setMinSize(20f, 20f) }, Drawable::class.java)
                 add("Scrollbar", ImageGetter.getDrawable("").apply { setMinSize(10f, 10f) }, Drawable::class.java)
                 add("RectangleWithOutline",
                     skinStrings.getUiBackground("", skinStrings.rectangleWithOutlineShape), Drawable::class.java)
@@ -174,9 +179,35 @@ abstract class BaseScreen : Screen {
     /** @return `true` if the screen is narrower than 4:3 landscape */
     fun isNarrowerThan4to3() = stage.isNarrowerThan4to3()
 
-    open fun openOptionsPopup(startingPage: Int = OptionsPopup.defaultPage, onClose: () -> Unit = {}) {
-        OptionsPopup(this, startingPage, onClose).open(force = true)
+    open fun openOptionsPopup(startingPage: Int = OptionsPopup.defaultPage, withDebug: Boolean = false, onClose: () -> Unit = {}) {
+        OptionsPopup(this, startingPage, withDebug, onClose).open(force = true)
     }
+
+    /**
+     *  Determine a Ruleset for Civilopedia to use (remember: it is supposed to work without a running game loaded)
+     *
+     *  - `open` as some important screens are supposed to provide directly.
+     *  - The default implementation searches using the [screenStack][UncivGame.screenStack] for a source of a Ruleset and returns Civ_V_GnK when that fails.
+     *  - Care must be taken in [PickerScreen][com.unciv.ui.screens.pickerscreens.PickerScreen] derivates - they will default to the searching implementation, but often could do the task more efficiently.
+     */
+    open fun getCivilopediaRuleset(): Ruleset {
+        if (game.worldScreen != null) return game.worldScreen!!.gameInfo.ruleset
+        val mainMenuScreen = game.getScreensOfType(MainMenuScreen::class).firstOrNull()
+        if (mainMenuScreen != null) return mainMenuScreen.getCivilopediaRuleset()
+        return RulesetCache[BaseRuleset.Civ_V_GnK.fullName]!!
+    }
+
+    /** Opens Civilopedia
+     *
+     *  It's an open method of BaseScreen because especially MainMenuScreen has cleanup things to do first.
+     *  @see getCivilopediaRuleset
+     */
+    open fun openCivilopedia(link: String = "") = openCivilopedia(getCivilopediaRuleset(), link)
+
+    /** Helper for the [openCivilopedia] (link: String) overload to use
+     *  - Note: At the time of wrinting, this was the ***only*** CivilopediaScreen constructor call outside itself
+     */
+    fun openCivilopedia(ruleset: Ruleset, link: String = "") = game.pushScreen(CivilopediaScreen(ruleset, link = link))
 }
 
 interface RecreateOnResize {

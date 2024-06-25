@@ -8,12 +8,11 @@ import com.unciv.models.ruleset.tech.Technology
 import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.ruleset.tile.TileResource
 import com.unciv.models.ruleset.unique.Unique
-import com.unciv.models.ruleset.unique.UniqueFlag
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.translations.tr
-import com.unciv.ui.components.Fonts
 import com.unciv.ui.components.extensions.center
+import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.images.PortraitUnavailableWonderForTechTree
 import com.unciv.ui.screens.civilopediascreen.FormattedLine
@@ -30,7 +29,16 @@ object TechnologyDescriptions {
     fun getDescription(technology: Technology, viewingCiv: Civilization): String = technology.run {
         val ruleset = viewingCiv.gameInfo.ruleset
         val lineList = ArrayList<String>() // more readable than StringBuilder, with same performance for our use-case
-        for (unique in uniques) lineList += unique
+
+        for (pediaText in technology.civilopediaText) {
+            // This is explicitly to get the "Who knows what the future holds" of Future Tech back into
+            // the Tech Picker and Tech Researched Alert display, without making it an untyped Unique.
+            // May need tuning for mods, in vanilla there is just the one case.
+            if (pediaText.text.isEmpty() || pediaText.header != 0) continue
+            lineList += pediaText.text
+        }
+
+        uniquesToDescription(lineList)
 
         lineList.addAll(
             getAffectedImprovements(name, ruleset)
@@ -42,7 +50,7 @@ object TechnologyDescriptions {
         if (enabledUnits.any()) {
             lineList += "{Units enabled}: "
             for (unit in enabledUnits)
-                lineList += " • ${unit.name.tr()} (${unit.getShortDescription()})\n"
+                lineList += " • ${unit.name.tr()} (${unit.getShortDescription(uniqueExclusionFilter=technology::uniqueIsRequirementForThisTech)})\n"
         }
 
         val (wonders, regularBuildings) = getEnabledBuildings(name, ruleset, viewingCiv)
@@ -51,13 +59,13 @@ object TechnologyDescriptions {
         if (regularBuildings.isNotEmpty()) {
             lineList += "{Buildings enabled}: "
             for (building in regularBuildings)
-                lineList += " • ${building.name.tr()} (${building.getShortDescription()})\n"
+                lineList += " • ${building.name.tr()} (${building.getShortDescription(uniqueInclusionFilter=technology::uniqueIsNotRequirementForThisTech)})\n"
         }
 
         if (wonders.isNotEmpty()) {
             lineList += "{Wonders enabled}: "
             for (wonder in wonders)
-                lineList += " • ${wonder.name.tr()} (${wonder.getShortDescription()})\n"
+                lineList += " • ${wonder.name.tr()} (${wonder.getShortDescription(uniqueInclusionFilter=technology::uniqueIsNotRequirementForThisTech)})\n"
         }
 
         for (obj in getObsoletedObjects(name, ruleset, viewingCiv))
@@ -100,7 +108,7 @@ object TechnologyDescriptions {
                     // doesn't have the tech, so it can't have this built anyways. It should be a
                     // little more performant though to add this filter.
                     .filter{ it.civ != viewingCiv }
-                    .any { it.cityConstructions.builtBuildings.contains(building.name) }
+                    .any { it.cityConstructions.isBuilt(building.name)}
                 val wonderConstructionPortrait =
                         if (isAlreadyBuilt)
                             PortraitUnavailableWonderForTechTree(building.name, techIconSize)
@@ -138,7 +146,7 @@ object TechnologyDescriptions {
         for (unique in tech.uniqueObjects) {
             yield(
                 when {
-                    unique.isOfType(UniqueType.EnablesCivWideStatProduction) ->
+                    unique.type == UniqueType.EnablesCivWideStatProduction ->
                         ImageGetter.getConstructionPortrait(unique.params[0], techIconSize)
                     else ->
                         ImageGetter.getUniquePortrait(unique.text, techIconSize)
@@ -183,13 +191,7 @@ object TechnologyDescriptions {
             }
         }
 
-        if (uniques.isNotEmpty()) {
-            lineList += FormattedLine()
-            uniqueObjects.forEach {
-                if (!it.hasFlag(UniqueFlag.HiddenToUsers))
-                    lineList += FormattedLine(it)
-            }
-        }
+        uniquesToCivilopediaTextLines(lineList)
 
         val affectedImprovements = getAffectedImprovements(name, ruleset)
         if (affectedImprovements.any()) {
@@ -204,7 +206,7 @@ object TechnologyDescriptions {
             lineList += FormattedLine()
             lineList += FormattedLine("{Units enabled}:")
             for (unit in enabledUnits)
-                lineList += FormattedLine(unit.name.tr(true) + " (" + unit.getShortDescription() + ")", link = unit.makeLink())
+                lineList += FormattedLine(unit.name.tr(true) + " (" + unit.getShortDescription(uniqueExclusionFilter=technology::uniqueIsRequirementForThisTech) + ")", link = unit.makeLink())
         }
 
         val (wonders, regularBuildings) = getEnabledBuildings(name, ruleset, null)
@@ -214,14 +216,14 @@ object TechnologyDescriptions {
             lineList += FormattedLine()
             lineList += FormattedLine("{Wonders enabled}:")
             for (wonder in wonders)
-                lineList += FormattedLine(wonder.name.tr(true) + " (" + wonder.getShortDescription() + ")", link = wonder.makeLink())
+                lineList += FormattedLine(wonder.name.tr(true) + " (" + wonder.getShortDescription(uniqueInclusionFilter=technology::uniqueIsNotRequirementForThisTech) + ")", link = wonder.makeLink())
         }
 
         if (regularBuildings.isNotEmpty()) {
             lineList += FormattedLine()
             lineList += FormattedLine("{Buildings enabled}:")
             for (building in regularBuildings)
-                lineList += FormattedLine(building.name.tr(true) + " (" + building.getShortDescription() + ")", link = building.makeLink())
+                lineList += FormattedLine(building.name.tr(true) + " (" + building.getShortDescription(uniqueInclusionFilter=technology::uniqueIsNotRequirementForThisTech) + ")", link = building.makeLink())
         }
 
         val obsoletedObjects = getObsoletedObjects(name, ruleset, null).toList()
@@ -270,7 +272,7 @@ object TechnologyDescriptions {
      */
     // Used for Civilopedia, Alert and Picker, so if any of these decide to ignore the "Will not be displayed in Civilopedia" unique this needs refactoring
     private fun getEnabledBuildings(techName: String, ruleset: Ruleset, civInfo: Civilization?) =
-            getFilteredBuildings(ruleset, civInfo) { it.requiredTech == techName }
+            getFilteredBuildings(ruleset, civInfo) { it.requiredTechs().contains(techName) }
 
     /**
      * Returns a Sequence of [RulesetStatsObject]s obsoleted by this Technology, filtered for [civInfo]'s uniques,
@@ -307,20 +309,12 @@ object TechnologyDescriptions {
         civInfo: Civilization?,
         predicate: (Building) -> Boolean
     ): Sequence<Building> {
-        val (nuclearWeaponsEnabled, religionEnabled) = getNukeAndReligionSwitches(civInfo)
         return ruleset.buildings.values.asSequence()
             .filter {
                 predicate(it)   // expected to be the most selective, thus tested first
-                        && (it.uniqueTo == civInfo?.civName || it.uniqueTo == null && civInfo?.getEquivalentBuilding(it) == it)
-                        && (nuclearWeaponsEnabled || !it.hasUnique(UniqueType.EnablesNuclearWeapons))
-                        && (religionEnabled || !it.hasUnique(UniqueType.HiddenWithoutReligion))
-                        && !it.hasUnique(UniqueType.HiddenFromCivilopedia)
+                && (it.uniqueTo == civInfo?.civName || it.uniqueTo == null && civInfo?.getEquivalentBuilding(it) == it)
+                && !it.isHiddenFromCivilopedia(ruleset)
             }
-    }
-
-    private fun getNukeAndReligionSwitches(civInfo: Civilization?): Pair<Boolean, Boolean> {
-        if (civInfo == null) return true to true
-        return civInfo.gameInfo.run { gameParameters.nuclearWeaponsEnabled to isReligionEnabled() }
     }
 
     /**
@@ -329,28 +323,25 @@ object TechnologyDescriptions {
      */
     // Used for Civilopedia, Alert and Picker, so if any of these decide to ignore the "Will not be displayed in Civilopedia"/HiddenFromCivilopedia unique this needs refactoring
     private fun getEnabledUnits(techName: String, ruleset: Ruleset, civInfo: Civilization?): Sequence<BaseUnit> {
-        val (nuclearWeaponsEnabled, religionEnabled) = getNukeAndReligionSwitches(civInfo)
         return ruleset.units.values.asSequence()
             .filter {
-                it.requiredTech == techName
-                        && (it.uniqueTo == civInfo?.civName || it.uniqueTo == null && civInfo?.getEquivalentUnit(it) == it)
-                        && (nuclearWeaponsEnabled || !it.isNuclearWeapon())
-                        && (religionEnabled || !it.hasUnique(UniqueType.HiddenWithoutReligion))
-                        && !it.hasUnique(UniqueType.HiddenFromCivilopedia)
+                it.requiredTechs().contains(techName)
+                && (it.uniqueTo == civInfo?.civName || it.uniqueTo == null && civInfo?.getEquivalentUnit(it) == it)
+                && !it.isHiddenFromCivilopedia(ruleset)
             }
     }
 
     /** Tests whether a Unique means bonus Stats enabled by [techName] */
     private fun Unique.isImprovementStatsEnabledByTech(techName: String) =
-            (isOfType(UniqueType.Stats) || isOfType(UniqueType.ImprovementStatsOnTile)) &&
+            (type == UniqueType.Stats || type == UniqueType.ImprovementStatsOnTile) &&
                     conditionals.any {
-                        it.isOfType(UniqueType.ConditionalTech) && it.params[0] == techName
+                        it.type == UniqueType.ConditionalTech && it.params[0] == techName
                     }
 
     /** Tests whether a Unique Conditional is enabling or disabling its parent by a tech */
     private fun Unique.isTechConditional() =
-            isOfType(UniqueType.ConditionalTech) ||
-            isOfType(UniqueType.ConditionalNoTech)
+            type == UniqueType.ConditionalTech ||
+            type == UniqueType.ConditionalNoTech
 
     /** Tests whether a Unique is enabled or disabled by [techName] */
     private fun Unique.isRelatedToTech(techName: String) =
@@ -361,7 +352,7 @@ object TechnologyDescriptions {
     /** Used by [getAffectedImprovements] only */
     private data class ImprovementAndUnique(val improvement: TileImprovement, val unique: Unique) {
         fun getText() = "[${unique.params[0]}] from every [${improvement.name}]" +
-                (if (unique.isOfType(UniqueType.Stats)) "" else " on [${unique.params[1]}] tiles")
+                (if (unique.type == UniqueType.Stats) "" else " on [${unique.params[1]}] tiles")
     }
 
     /** Yields Improvements with bonus Stats enabled by [techName] including the Unique doing it */

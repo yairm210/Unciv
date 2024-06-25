@@ -733,7 +733,7 @@
 		"obsoleteTech": "Electronics",
 		"upgradesTo": "Battleship",
 		"hurryCostModifier": 20,
-		"attackSound": "cannon"
+		"attackSound": "shipCannonVolley"
 	},
 	{
 		"name": "Ship of the Line",
@@ -750,7 +750,7 @@
 		"obsoleteTech": "Electronics",
 		"upgradesTo": "Battleship",
 		"hurryCostModifier": 20,
-		"attackSound": "cannon"
+		"attackSound": "shipCannonVolley"
 	},
 	{
 		"name": "Lancer",
@@ -1290,27 +1290,13 @@
 		"movement": 2
 	},
 	{
-		"name": "Great Prophet",
-		"unitType": "Civilian",
-		"uniques": [
-            "Can instantly construct a [Holy site] improvement <by consuming this unit> <if it hasn't used other actions yet>",
-            "Can [Spread Religion] [4] times",
-			"Removes other religions when spreading religion",
-            "May found a religion",
-            "May enhance a religion",
-			"May enter foreign tiles without open borders", "[-1] Sight", "Great Person - [Faith]",
-			"Unbuildable", "Religious Unit", "Hidden when religion is disabled",
-			"Takes your religion over the one in their birth city"],
-		"movement": 2,
-		"religiousStrength": 1000
-	},
-	{
 		"name": "Great General",
 		"unitType": "Civilian",
 		"uniques": [
             "Empire enters a [8]-turn Golden Age <by consuming this unit>",
             "[+15]% Strength bonus for [Military] units within [2] tiles",
             "Can instantly construct a [Citadel] improvement <by consuming this unit>",
+			"Can be earned through combat",
 			"Great Person - [War]", "Unbuildable", "Uncapturable"],
 		"movement": 2
 	},
@@ -1324,31 +1310,10 @@
             "[+15]% Strength bonus for [Military] units within [2] tiles",
 			"All adjacent units heal [+15] HP when healing", "[+15] HP when healing",
             "Can instantly construct a [Citadel] improvement <by consuming this unit>",
+			"Can be earned through combat",
             "Great Person - [War]", "Unbuildable", "Uncapturable"],
 		"movement": 5
 	},
-
-	/* Religious units */
-
-	{
-		"name": "Missionary",
-		"unitType": "Civilian",
-		"uniques": ["Can [Spread Religion] [2] times", "May enter foreign tiles without open borders, but loses [250] religious strength each turn it ends there",
-			"Can be purchased with [Faith] [in all cities in which the majority religion is a major religion]",
-			"[-1] Sight", "Unbuildable", "Religious Unit", "Hidden when religion is disabled"],
-		"movement": 4,
-		"religiousStrength": 1000
-	},
-	{
-		"name": "Inquisitor",
-		"unitType": "Civilian",
-		"uniques": ["Prevents spreading of religion to the city it is next to",
-			"Can [Remove Foreign religions from your own cities] [1] times",
-			"Can be purchased with [Faith] [in all cities in which the majority religion is an enhanced religion]",
-			"[+1] Sight", "Hidden when religion is disabled", "Unbuildable", "Religious Unit"
-		],
-		"movement": 3
-	}
 
 	/* Spaceship Parts */
 	// Must be transported to the Capital for launch.

@@ -2,16 +2,15 @@ package com.unciv.ui.popups.options
 
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.GUI
-import com.unciv.UncivGame
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.models.metadata.GameSettings
-import com.unciv.ui.screens.basescreen.BaseScreen
-import com.unciv.ui.components.UncivSlider
 import com.unciv.ui.components.extensions.toLabel
+import com.unciv.ui.components.widgets.UncivSlider
+import com.unciv.ui.screens.basescreen.BaseScreen
 
 fun gameplayTab(
     optionsPopup: OptionsPopup
-) = Table(BaseScreen.skin).apply {
+): Table = Table(BaseScreen.skin).apply {
     pad(10f)
     defaults().pad(5f)
 
@@ -20,28 +19,7 @@ fun gameplayTab(
     optionsPopup.addCheckbox(this, "Check for idle units", settings.checkForDueUnits, true) { settings.checkForDueUnits = it }
     optionsPopup.addCheckbox(this, "Auto Unit Cycle", settings.autoUnitCycle, true) { settings.autoUnitCycle = it }
     optionsPopup.addCheckbox(this, "Move units with a single tap", settings.singleTapMove) { settings.singleTapMove = it }
-    optionsPopup.addCheckbox(this, "Auto-assign city production", settings.autoAssignCityProduction, true) { shouldAutoAssignCityProduction ->
-        settings.autoAssignCityProduction = shouldAutoAssignCityProduction
-        val worldScreen = GUI.getWorldScreenIfActive()
-        if (shouldAutoAssignCityProduction && worldScreen != null &&
-                worldScreen.viewingCiv.isCurrentPlayer() && worldScreen.viewingCiv.playerType == PlayerType.Human
-        ) {
-            worldScreen.gameInfo.getCurrentPlayerCivilization().cities.forEach { city ->
-                city.cityConstructions.chooseNextConstruction()
-            }
-        }
-    }
-    optionsPopup.addCheckbox(this, "Auto-build roads", settings.autoBuildingRoads) { settings.autoBuildingRoads = it }
-    optionsPopup.addCheckbox(
-        this,
-        "Automated workers replace improvements",
-        settings.automatedWorkersReplaceImprovements
-    ) { settings.automatedWorkersReplaceImprovements = it }
-    optionsPopup.addCheckbox(
-        this,
-        "Automated units move on turn start",
-        settings.automatedUnitsMoveOnTurnStart, true
-    ) { settings.automatedUnitsMoveOnTurnStart = it }
+    optionsPopup.addCheckbox(this, "Move units with a long tap", settings.longTapMove) { settings.longTapMove = it }
     optionsPopup.addCheckbox(this, "Order trade offers by amount", settings.orderTradeOffersByAmount) { settings.orderTradeOffersByAmount = it }
     optionsPopup.addCheckbox(this, "Ask for confirmation when pressing next turn", settings.confirmNextTurn) { settings.confirmNextTurn = it }
 

@@ -1,11 +1,12 @@
 package com.unciv.models.ruleset
 
+import com.unciv.Constants
+import com.unciv.logic.MultiFilter
 import com.unciv.models.ruleset.unique.StateForConditionals
-import com.unciv.models.ruleset.unique.UniqueFlag
 import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueType
-import com.unciv.models.translations.getPlaceholderText
 import com.unciv.models.translations.tr
+import com.unciv.ui.objectdescriptions.uniquesToCivilopediaTextLines
 import com.unciv.ui.screens.civilopediascreen.FormattedLine
 
 open class Policy : RulesetObject() {
@@ -18,12 +19,14 @@ open class Policy : RulesetObject() {
 
     /** Indicates whether a [Policy] is a [PolicyBranch] starting policy, a normal one, or the branch completion */
     enum class PolicyBranchType {BranchStart, Member, BranchComplete}
+
     /** Indicates whether this [Policy] is a [PolicyBranch] starting policy, a normal one, or the branch completion */
     val policyBranchType: PolicyBranchType by lazy { when {
         this is PolicyBranch -> PolicyBranchType.BranchStart
         isBranchCompleteByName(name) -> PolicyBranchType.BranchComplete
         else -> PolicyBranchType.Member
     } }
+
     companion object {
         const val branchCompleteSuffix = " Complete"
         /** Some tests to count policies by completion or not use only the String collection without instantiating them.
@@ -32,18 +35,28 @@ open class Policy : RulesetObject() {
         fun isBranchCompleteByName(name: String) = name.endsWith(branchCompleteSuffix)
     }
 
+    fun matchesFilter(filter: String): Boolean {
+        return MultiFilter.multiFilter(filter, ::matchesSingleFilter)
+    }
+    fun matchesSingleFilter(filter: String): Boolean {
+        return when(filter) {
+            in Constants.all -> true
+            name -> true
+            "[${branch.name}] branch" -> true
+            in uniques -> true
+            else -> false
+        }
+    }
+
     /** Used in PolicyPickerScreen to display Policy properties */
     fun getDescription(): String {
-        var text = uniques
-            .filter {
-                !it.getPlaceholderText().contains(UniqueType.OnlyAvailableWhen.placeholderText) &&
-                !it.getPlaceholderText().contains(UniqueType.OneTimeGlobalAlert.placeholderText)
+        return (if (policyBranchType == PolicyBranchType.Member) name.tr() + "\n" else "") +
+            uniqueObjects.filterNot {
+                it.isHiddenToUsers()
+                    || it.type == UniqueType.OnlyAvailable
+                    || it.type == UniqueType.OneTimeGlobalAlert
             }
-            .joinToString("\n", transform = { "• ${it.tr()}" })
-        if (policyBranchType != PolicyBranchType.BranchStart
-                && policyBranchType != PolicyBranchType.BranchComplete)
-            text = name.tr() + "\n" + text
-        return text
+            .joinToString("\n") { "• ${it.text.tr()}" }
     }
 
     override fun makeLink() = "Policy/$name"
@@ -93,14 +106,16 @@ open class Policy : RulesetObject() {
         }
 
         fun isEnabledByPolicy(rulesetObject: IRulesetObject) =
-                rulesetObject.getMatchingUniques(UniqueType.OnlyAvailableWhen, StateForConditionals.IgnoreConditionals).any { it.conditionals.any {
+                rulesetObject.getMatchingUniques(UniqueType.OnlyAvailable, StateForConditionals.IgnoreConditionals).any { it.conditionals.any {
                     it.type == UniqueType.ConditionalAfterPolicyOrBelief && it.params[0] == name
-                } }
+                } } || rulesetObject.getMatchingUniques(UniqueType.Unavailable).any { it.conditionals.any {
+                    it.type == UniqueType.ConditionalBeforePolicyOrBelief && it.params[0] == name
+                }}
 
         val enabledBuildings = ruleset.buildings.values.filter { isEnabledByPolicy(it) }
         val enabledUnits = ruleset.units.values.filter { isEnabledByPolicy(it) }
 
-        if (enabledBuildings.isNotEmpty() || enabledUnits.isNotEmpty()){
+        if (enabledBuildings.isNotEmpty() || enabledUnits.isNotEmpty()) {
             lineList += FormattedLine("Enables:")
             for (building in enabledBuildings)
                 lineList += FormattedLine(building.name, link = building.makeLink(), indent = 1)
@@ -110,15 +125,17 @@ open class Policy : RulesetObject() {
 
 
         fun isDisabledByPolicy(rulesetObject: IRulesetObject) =
-                rulesetObject.getMatchingUniques(UniqueType.OnlyAvailableWhen, StateForConditionals.IgnoreConditionals).any { it.conditionals.any {
+                rulesetObject.getMatchingUniques(UniqueType.OnlyAvailable, StateForConditionals.IgnoreConditionals).any { it.conditionals.any {
                     it.type == UniqueType.ConditionalBeforePolicyOrBelief && it.params[0] == name
+                } } || rulesetObject.getMatchingUniques(UniqueType.Unavailable).any { it.conditionals.any {
+                    it.type == UniqueType.ConditionalAfterPolicyOrBelief && it.params[0] == name
                 } }
 
 
         val disabledBuildings = ruleset.buildings.values.filter { isDisabledByPolicy(it) }
         val disabledUnits = ruleset.units.values.filter { isDisabledByPolicy(it) }
 
-        if (disabledBuildings.isNotEmpty() || disabledUnits.isNotEmpty()){
+        if (disabledBuildings.isNotEmpty() || disabledUnits.isNotEmpty()) {
             lineList += FormattedLine("Disables:")
             for (building in disabledBuildings)
                 lineList += FormattedLine(building.name, link = building.makeLink(), indent = 1)
@@ -126,17 +143,9 @@ open class Policy : RulesetObject() {
                 lineList += FormattedLine(unit.name, link = unit.makeLink(), indent = 1)
         }
 
-
-        if (uniques.isNotEmpty()) {
-            lineList += FormattedLine()
-            uniqueObjects.forEach {
-                if (!it.hasFlag(UniqueFlag.HiddenToUsers))
-                    lineList += FormattedLine(it)
-            }
-        }
+        uniquesToCivilopediaTextLines(lineList)
 
         return lineList
     }
 
 }
-

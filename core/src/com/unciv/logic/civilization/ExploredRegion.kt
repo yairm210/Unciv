@@ -62,9 +62,9 @@ class ExploredRegion : IsPartOfGameInfoSerialization {
     fun getRectangle(): Rectangle = exploredRectangle
     fun shouldRestrictX(): Boolean = shouldRestrictX
     fun getLeftX(): Float = topLeftStage.x
-    fun getRightX():Float = bottomRightStage.x
+    fun getRightX(): Float = bottomRightStage.x
     fun getTopY(): Float = topLeftStage.y
-    fun getBottomY():Float = bottomRightStage.y
+    fun getBottomY(): Float = bottomRightStage.y
 
     fun clone(): ExploredRegion {
         val toReturn = ExploredRegion()
@@ -160,7 +160,7 @@ class ExploredRegion : IsPartOfGameInfoSerialization {
             mapExplored = true
         }
 
-        if(mapExplored){
+        if(mapExplored) {
             shouldRecalculateCoords = true
             shouldUpdateMinimap = true
         }

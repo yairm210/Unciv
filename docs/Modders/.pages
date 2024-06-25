@@ -8,4 +8,5 @@ nav:
         - Creating-a-UI-skin.md
     - Unique-parameters.md
     - uniques.md
-
+    - Type-checking.md
+    - Scenarios.md

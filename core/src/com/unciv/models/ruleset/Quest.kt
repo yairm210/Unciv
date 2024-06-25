@@ -1,5 +1,6 @@
 package com.unciv.models.ruleset
 
+import com.unciv.logic.civilization.Civilization
 import com.unciv.models.stats.INamed
 
 enum class QuestName(val value: String) {
@@ -21,6 +22,10 @@ enum class QuestName(val value: String) {
     DenounceCiv("Denounce Civilization"),
     SpreadReligion("Spread Religion"),
     None("")
+    ;
+    companion object {
+        fun find(value: String) = values().firstOrNull { it.value == value } ?: None
+    }
 }
 
 enum class QuestType {
@@ -29,10 +34,16 @@ enum class QuestType {
 }
 
 /** [Quest] class holds all functionality relative to a quest */
+// Notes: This is **not** `IsPartOfGameInfoSerialization`, only Ruleset.
+// Saves contain [QuestManager]s instead, which contain lists of [AssignedQuest] instances.
+// These are matched to this Quest **by name**.
 class Quest : INamed {
 
-    /** Unique identifier name of the quest, it is also shown */
+    /** Unique identifier name of the quest, it is also shown.
+     *  Must match a [QuestName.value] for the Quest to have any functionality. */
     override var name: String = ""
+
+    val questNameInstance by lazy { QuestName.find(name) }  // lazy only ensures evaluation happens after deserialization, all will be 'triggered'
 
     /** Description of the quest shown to players */
     var description: String = ""
@@ -46,7 +57,7 @@ class Quest : INamed {
     /** Maximum number of turns to complete the quest, 0 if there's no turn limit */
     var duration: Int = 0
 
-    /** Minimum number of [CivInfo] needed to start the quest. It is meaningful only for [QuestType.Global]
+    /** Minimum number of [Civilization]s needed to start the quest. It is meaningful only for [QuestType.Global]
      *  quests [type]. */
     var minimumCivs: Int = 1
 
@@ -55,7 +66,7 @@ class Quest : INamed {
      * Both are mapped here as 'how much to multiply the weight of this quest for this kind of city-state' */
     var weightForCityStateType = HashMap<String, Float>()
 
-    /** Checks if [this] is a Global quest */
+    /** Checks if `this` is a Global quest */
     fun isGlobal(): Boolean = type == QuestType.Global
     fun isIndividual(): Boolean = !isGlobal()
 }

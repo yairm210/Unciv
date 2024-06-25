@@ -72,11 +72,11 @@
         "name": "Liberty",
         "era": "Ancient era",
         "priorities": {
-            "Neutral": 0,
-            "Cultural": 0,
-            "Diplomatic": 10,
-            "Domination": 10,
-            "Scientific": 10
+            "Neutral": 10,
+            "Cultural": 10,
+            "Diplomatic": 20,
+            "Domination": 20,
+            "Scientific": 20
         },
         "uniques": ["[+1 Culture] [in all cities]"],
         "policies": [
@@ -84,7 +84,7 @@
                 "name": "Republic",
                 "uniques": [
                     "[+1 Production] [in all cities]",
-                    "[+5]% Production when constructing [All] buildings [in all cities]"
+                    "[+5]% Production when constructing [All] buildings [in all cities]",
                 ],
                 "row": 1,
                 "column": 1
@@ -92,7 +92,7 @@
             {
                 "name": "Citizenship",
                 "uniques": [
-                    "[-25]% tile improvement construction time",
+                    "[-25]% construction time for [All] improvements",
                     "Free [Worker] appears"
                 ],
                 "row": 1,
@@ -577,9 +577,9 @@
                 "name": "Police State",
                 "uniques": [
                     "[+3 Happiness] from every [Courthouse]",
-                    "[+100]% Production when constructing [Courthouse] buildings [in all cities]"
+                    "[+100]% Production when constructing [Courthouse] buildings [in all cities]",
+                    "[-25]% enemy spy effectiveness [in all cities]"
                 ],
-                // There are also some uniques regarding espoinage, which as of this writing is not yet implemented
                 "requires": ["Militarism"],
                 "row": 2,
                 "column": 4

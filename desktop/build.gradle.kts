@@ -1,3 +1,4 @@
+
 import com.unciv.build.BuildConfig
 import com.unciv.build.BuildConfig.gdxVersion
 
@@ -5,14 +6,23 @@ plugins {
     id("kotlin")
 }
 
-java {
-    sourceCompatibility = JavaVersion.VERSION_1_8
-}
-
 sourceSets {
     main {
         java.srcDir("src/")
     }
+}
+
+kotlin {
+    jvmToolchain(17)
+
+    target {
+        compilations.all {
+            kotlinOptions.jvmTarget = JavaVersion.VERSION_1_8.toString()
+        }
+    }
+}
+java {
+    targetCompatibility = JavaVersion.VERSION_1_8
 }
 
 dependencies {
@@ -146,7 +156,7 @@ for (platform in Platform.values()) {
 
             val platformNameForPackrCmd =
                     if (platform == Platform.MacOS) "mac"
-                    else platform.name.toLowerCase()
+                    else platform.name.lowercase()
 
             val command = "java -jar $rootDir/packr-all-4.0.0.jar" +
                     " --platform $platformNameForPackrCmd" +

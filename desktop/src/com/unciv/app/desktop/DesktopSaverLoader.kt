@@ -2,7 +2,6 @@ package com.unciv.app.desktop
 
 import com.badlogic.gdx.Gdx
 import com.unciv.logic.files.PlatformSaverLoader
-import com.unciv.utils.Log
 import java.awt.Component
 import java.awt.EventQueue
 import java.awt.event.WindowEvent
@@ -76,7 +75,7 @@ class DesktopSaverLoader : PlatformSaverLoader {
                 frame.dispose()
 
                 if (result == JFileChooser.CANCEL_OPTION) {
-                    return@invokeLater
+                    onError(PlatformSaverLoader.Cancelled())
                 } else {
                     val value = createValue(fileChooser.selectedFile)
                     onSuccess(value, fileChooser.selectedFile.absolutePath)

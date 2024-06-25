@@ -7,7 +7,6 @@ import com.badlogic.gdx.utils.Align
 import com.unciv.GUI
 import com.unciv.UncivGame
 import com.unciv.logic.civilization.Civilization
-import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.worldscreen.WorldMapHolder
 
@@ -18,43 +17,40 @@ class MinimapHolder(val mapHolder: WorldMapHolder) : Table() {
 
     /** Button, next to the minimap, to toggle the unit movement map overlay. */
     val movementsImageButton = MapOverlayToggleButton(
-        ImageGetter.getImage("StatIcons/Movement").apply { setColor(0f, 0f, 0f, 1f) },
+        "TileIcons/MapOverlayToggleMovement",
         getter = { UncivGame.Current.settings.showUnitMovements },
-        setter = { UncivGame.Current.settings.showUnitMovements = it },
-        backgroundColor = Color.GREEN
+        setter = { UncivGame.Current.settings.showUnitMovements = it }
     )
     /** Button, next to the minimap, to toggle the tile yield map overlay. */
     val yieldImageButton = MapOverlayToggleButton(
-        ImageGetter.getImage("StatIcons/Food"),
+        "TileIcons/MapOverlayToggleYields",
         // This is a use in the UI that has little to do with the stat… These buttons have more in common with each other than they do with other uses of getStatIcon().
         getter = { UncivGame.Current.settings.showTileYields },
         setter = { UncivGame.Current.settings.showTileYields = it }
     )
     /** Button, next to the minimap, to toggle the worked tiles map overlay. */
     val populationImageButton = MapOverlayToggleButton(
-        ImageGetter.getImage("StatIcons/Population"),
+        "TileIcons/MapOverlayToggleWorkedTiles",
         getter = { UncivGame.Current.settings.showWorkedTiles },
         setter = { UncivGame.Current.settings.showWorkedTiles = it }
     )
     /** Button, next to the minimap, to toggle the resource icons map overlay. */
     val resourceImageButton = MapOverlayToggleButton(
-        ImageGetter.getImage("ResourceIcons/Cattle"),
+        "TileIcons/MapOverlayToggleResources",
         getter = { UncivGame.Current.settings.showResourcesAndImprovements },
-        setter = { UncivGame.Current.settings.showResourcesAndImprovements = it },
-        backgroundColor = Color.GREEN
+        setter = { UncivGame.Current.settings.showResourcesAndImprovements = it }
     )
 
     private fun rebuildIfSizeChanged(civInfo: Civilization) {
         // For Spectator should not restrict minimap
-        var civInfo: Civilization? = civInfo
-        if(GUI.getViewingPlayer().isSpectator()) civInfo = null
+        val civ: Civilization? = civInfo.takeUnless { GUI.getViewingPlayer().isSpectator() }
         val newMinimapSize = worldScreen.game.settings.minimapSize
-        if (newMinimapSize == minimapSize && civInfo?.exploredRegion?.shouldUpdateMinimap() != true) return
+        if (newMinimapSize == minimapSize && civ?.exploredRegion?.shouldUpdateMinimap() != true) return
         minimapSize = newMinimapSize
-        rebuild(civInfo)
+        rebuild(civ)
     }
 
-    private fun rebuild(civInfo: Civilization?){
+    private fun rebuild(civInfo: Civilization?) {
         this.clear()
         minimap = Minimap(mapHolder, minimapSize, civInfo)
         add(getToggleIcons()).align(Align.bottom)
@@ -88,10 +84,10 @@ class MinimapHolder(val mapHolder: WorldMapHolder) : Table() {
     private fun getToggleIcons(): Table {
         val toggleIconTable = Table()
 
-        toggleIconTable.add(movementsImageButton.actor).row()
-        toggleIconTable.add(yieldImageButton.actor).row()
-        toggleIconTable.add(populationImageButton.actor).row()
-        toggleIconTable.add(resourceImageButton.actor).row()
+        toggleIconTable.add(movementsImageButton).row()
+        toggleIconTable.add(yieldImageButton).row()
+        toggleIconTable.add(populationImageButton).row()
+        toggleIconTable.add(resourceImageButton).row()
 
         return toggleIconTable
     }

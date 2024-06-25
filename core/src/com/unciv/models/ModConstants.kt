@@ -1,5 +1,19 @@
 package com.unciv.models
 
+import java.lang.reflect.Modifier
+
+/** Used as a member of [ModOptions][com.unciv.models.ruleset.ModOptions] for moddable "constants" - factors in formulae and such.
+ *
+ *  When combining mods, this is [merge]d _per constant/field_, not as entire object like other RulesetObjects.
+ *  Merging happens on a very simple basis: If a Mod comes with a non-default value, it is copied, otherwise the parent value is left intact.
+ *  If several mods change the same field, the last one wins.
+ *
+ *  Supports equality contract to enable the Json serializer to recognize unchanged defaults.
+ *
+ *  Methods [merge], [equals], [hashCode] and [toString] are done through reflection!
+ *  Therefore, adding a field will not need to update these methods, but all members ***must*** conform to the equality contract.
+ *  (overhead is not a factor, these routines run very rarely. The alternative would be to make the entire thing a data class.)
+ */
 class ModConstants {
     // Max amount of experience that can be gained from combat with barbarians
     @Suppress("SpellCheckingInspection") // Pfrom is not a word ;)
@@ -34,14 +48,19 @@ class ModConstants {
     var minimalCityDistance = 3
     var minimalCityDistanceOnDifferentContinents = 2
 
+    var baseCityBombardRange = 2
+    var cityWorkRange = 3
+    var cityExpandRange = 5
+
     // Constants used to calculate Unit Upgrade gold Cost (can only be modded all-or-nothing)
-    class UnitUpgradeCost {
-        val base = 10f
-        val perProduction = 2f
-        val eraMultiplier = 0f  // 0.3 in Civ5 cpp sources but 0 in xml
-        val exponent = 1f
-        val roundTo = 5
-    }
+    // This is a data class for one reason only: The equality implementation enables Gdx Json to omit it when default (otherwise only the individual fields are omitted)
+    data class UnitUpgradeCost(
+        val base: Float = 10f,
+        val perProduction: Float = 2f,
+        val eraMultiplier: Float = 0f,  // 0.3 in Civ5 cpp sources but 0 in xml
+        val exponent: Float = 1f,
+        val roundTo: Int = 5
+    )
     var unitUpgradeCost = UnitUpgradeCost()
 
     // NaturalWonderGenerator uses these to determine the number of Natural Wonders to spawn for a given map size.
@@ -66,37 +85,84 @@ class ModConstants {
     var religionLimitBase = 1
     var religionLimitMultiplier = 0.5f
 
-    //Factors in formula for pantheon cost
+    // Factors in formula for pantheon cost
     var pantheonBase = 10
     var pantheonGrowth = 5
 
+    var workboatAutomationSearchMaxTiles = 20
+
+    // Civilization
+    var minimumWarDuration = 10
+    var baseTurnsUntilRevolt = 4
+    var cityStateElectionTurns = 15
+
+    // Espionage
+    var maxSpyRank = 3
+    // How much of a skill bonus each rank gives.
+    // Rank 0 is 100%, rank 1 is 130%, and so on for stealing technology.
+    // Half as much for a coup.
+    var spyRankSkillPercentBonus = 30
+
+    // UI: If set >= 0, ImprovementPicker will silently skip improvements whose tech requirement is more advanced than your current Era + this
+    var maxImprovementTechErasForward = -1
+
     fun merge(other: ModConstants) {
-        if (other.maxXPfromBarbarians != defaults.maxXPfromBarbarians) maxXPfromBarbarians = other.maxXPfromBarbarians
-        if (other.cityStrengthBase != defaults.cityStrengthBase) cityStrengthBase = other.cityStrengthBase
-        if (other.cityStrengthPerPop != defaults.cityStrengthPerPop) cityStrengthPerPop = other.cityStrengthPerPop
-        if (other.cityStrengthFromTechsMultiplier != defaults.cityStrengthFromTechsMultiplier) cityStrengthFromTechsMultiplier = other.cityStrengthFromTechsMultiplier
-        if (other.cityStrengthFromTechsExponent != defaults.cityStrengthFromTechsExponent) cityStrengthFromTechsExponent = other.cityStrengthFromTechsExponent
-        if (other.cityStrengthFromTechsFullMultiplier != defaults.cityStrengthFromTechsFullMultiplier) cityStrengthFromTechsFullMultiplier = other.cityStrengthFromTechsFullMultiplier
-        if (other.cityStrengthFromGarrison != defaults.cityStrengthFromGarrison) cityStrengthFromGarrison = other.cityStrengthFromGarrison
-        if (other.unitSupplyPerPopulation != defaults.unitSupplyPerPopulation) unitSupplyPerPopulation = other.unitSupplyPerPopulation
-        if (other.minimalCityDistance != defaults.minimalCityDistance) minimalCityDistance = other.minimalCityDistance
-        if (other.minimalCityDistanceOnDifferentContinents != defaults.minimalCityDistanceOnDifferentContinents) minimalCityDistanceOnDifferentContinents = other.minimalCityDistanceOnDifferentContinents
-        if (other.unitUpgradeCost != defaults.unitUpgradeCost) unitUpgradeCost = other.unitUpgradeCost
-        if (other.naturalWonderCountMultiplier != defaults.naturalWonderCountMultiplier) naturalWonderCountMultiplier = other.naturalWonderCountMultiplier
-        if (other.naturalWonderCountAddedConstant != defaults.naturalWonderCountAddedConstant) naturalWonderCountAddedConstant = other.naturalWonderCountAddedConstant
-        if (other.ancientRuinCountMultiplier != defaults.ancientRuinCountMultiplier) ancientRuinCountMultiplier = other.ancientRuinCountMultiplier
-        if (other.spawnIceBelowTemperature != defaults.spawnIceBelowTemperature) spawnIceBelowTemperature = other.spawnIceBelowTemperature
-        if (other.maxLakeSize != defaults.maxLakeSize) maxLakeSize = other.maxLakeSize
-        if (other.riverCountMultiplier != defaults.riverCountMultiplier) riverCountMultiplier = other.riverCountMultiplier
-        if (other.minRiverLength != defaults.minRiverLength) minRiverLength = other.minRiverLength
-        if (other.maxRiverLength != defaults.maxRiverLength) maxRiverLength = other.maxRiverLength
-        if (other.religionLimitBase != defaults.religionLimitBase) religionLimitBase = other.religionLimitBase
-        if (other.religionLimitMultiplier != defaults.religionLimitMultiplier) religionLimitMultiplier = other.religionLimitMultiplier
-        if (other.pantheonBase != defaults.pantheonBase) pantheonBase = other.pantheonBase
-        if (other.pantheonGrowth != defaults.pantheonGrowth) pantheonGrowth = other.pantheonGrowth
+        for (field in this::class.java.declaredFields) {
+            if (field.modifiers and Modifier.STATIC != 0) continue
+            val value = field.get(other)
+            if (field.get(defaults).equals(value)) continue
+            field.set(this, value)
+        }
+    }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is ModConstants) return false
+        return equalsReflected(other)
+    }
+
+    override fun hashCode(): Int {
+        // Note: This is of course heavily dependent on iteration order.
+        // Java reflection uses declaration order, but its doc claims "The elements in the returned array are not sorted and are not in any particular order."
+        // kotlin reflection is alphabetically sorted. Embarrassingly, the best documentation guarantee seems to be: https://youtrack.jetbrains.com/issue/KT-41042
+        // But - let's rely on at least the order being deterministic over instances of the same class in both reflection engines, so which we use is moot.
+        // A kotlin version of this (different result!): `this::class.declaredMemberProperties.fold(0) { a, b -> a * 31 + b.getter.call(this).hashCode() }`
+        var result = 0
+        for (field in this::class.java.declaredFields) {
+            if (field.modifiers and Modifier.STATIC != 0) continue
+            result = result * 31 + field.get(this).hashCode()
+        }
+        return result
+    }
+
+    private fun equalsReflected(other: ModConstants): Boolean {
+        for (field in this::class.java.declaredFields) {
+            if (field.modifiers and Modifier.STATIC != 0) continue
+            if (!field.get(this).equals(field.get(other))) return false
+        }
+        return true
+    }
+
+    /** Debug only so far */
+    override fun toString(): String {
+        val sb = StringBuilder()
+        sb.append('{')
+        for (field in this::class.java.declaredFields) {
+            if (field.modifiers and Modifier.STATIC != 0) continue
+            if (field.get(this).equals(field.get(defaults))) continue
+            sb.append(field.name)
+            sb.append(':')
+            sb.append(field.get(this))
+            sb.append(',')
+        }
+        sb.deleteCharAt(sb.length - 1) // remove extra ',' with StringBuilder method
+        sb.append('}')
+        return sb.toString().takeUnless { it == "}" } ?: "defaults"
     }
 
     companion object {
+        /** As merge will need a default instance repeatedly, store it as static */
+        // Note Json will not use this but get a fresh instance every time. A fix, if possible, could get messy.
         val defaults = ModConstants()
     }
 }

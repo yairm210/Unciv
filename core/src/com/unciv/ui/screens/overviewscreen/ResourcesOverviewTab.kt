@@ -5,6 +5,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.UncivGame
+import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.tile.Tile
 import com.unciv.logic.trade.TradeType
@@ -15,14 +16,13 @@ import com.unciv.models.translations.tr
 import com.unciv.ui.components.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.components.extensions.addSeparator
 import com.unciv.ui.components.extensions.addSeparatorVertical
+import com.unciv.ui.components.extensions.equalizeColumns
 import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.extensions.pad
 import com.unciv.ui.components.extensions.surroundWithCircle
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.basescreen.BaseScreen
-import com.unciv.ui.screens.civilopediascreen.CivilopediaCategories
-import com.unciv.ui.screens.civilopediascreen.CivilopediaScreen
 
 
 class ResourcesOverviewTab(
@@ -75,14 +75,17 @@ class ResourcesOverviewTab(
         .mapNotNull { ExtraInfoOrigin.safeValueOf(it.origin) }.distinct().toList()
 
     private fun ResourceSupplyList.getLabel(resource: TileResource, origin: String): Label? {
+        fun isAlliedAndUnimproved(tile: Tile): Boolean {
+            val owner = tile.getOwner() ?: return false
+            if (owner != viewingPlayer && !(owner.isCityState() && owner.getAllyCiv() == viewingPlayer.civName)) return false
+            return tile.countAsUnimproved()
+        }
         val amount = get(resource, origin)?.amount ?: return null
         val label = if (resource.isStockpiled() && amount > 0) "+$amount".toLabel()
             else amount.toLabel()
         if (origin == ExtraInfoOrigin.Unimproved.name)
-            label.onClick { showOneTimeNotification(
-                gameInfo.getExploredResourcesNotification(viewingPlayer, resource.name) {
-                    it.getOwner() == viewingPlayer && it.countAsUnimproved()
-                }
+            label.onClick { overviewScreen.showOneTimeNotification(
+                gameInfo.getExploredResourcesNotification(viewingPlayer, resource.name, filter = ::isAlliedAndUnimproved)
             ) }
         return label
     }
@@ -95,13 +98,13 @@ class ResourcesOverviewTab(
 
     private fun getResourceImage(name: String) =
         ImageGetter.getResourcePortrait(name, iconSize).apply {
-            onClick { showOneTimeNotification(
+            onClick { overviewScreen.showOneTimeNotification(
                 gameInfo.getExploredResourcesNotification(viewingPlayer, name)
             ) }
         }
-    private fun TileResource.getLabel() = name.toLabel().apply {
+    private fun TileResource.getLabel() = name.toLabel(hideIcons = true).apply {
         onClick {
-            overviewScreen.game.pushScreen(CivilopediaScreen(gameInfo.ruleset, CivilopediaCategories.Resource, this@getLabel.name))
+            overviewScreen.openCivilopedia(makeLink())
         }
     }
 
@@ -126,6 +129,7 @@ class ResourcesOverviewTab(
 
     init {
         defaults().pad(defaultPad)
+        top()
         fixedContent.defaults().pad(defaultPad)
 
         turnImageH.onClick {
@@ -243,7 +247,15 @@ class ResourcesOverviewTab(
             !providesResources(viewingPlayer)
 
     private fun getExtraDrilldown(): ResourceSupplyList {
-        val newResourceSupplyList = ResourceSupplyList()
+        val newResourceSupplyList = ResourceSupplyList(keepZeroAmounts = true)
+
+        fun City.addUnimproved() {
+            for (tile in getTiles())
+                if (tile.countAsUnimproved())
+                    newResourceSupplyList.add(tile.tileResource, ExtraInfoOrigin.Unimproved.name)
+        }
+
+        // Show resources relevant to WTLK day and/or needing improvement
         for (city in viewingPlayer.cities) {
             if (city.demandedResource.isNotEmpty()) {
                 val wltkResource = gameInfo.ruleset.tileResources[city.demandedResource]!!
@@ -253,15 +265,27 @@ class ResourcesOverviewTab(
                     newResourceSupplyList.add(wltkResource, ExtraInfoOrigin.DemandingWLTK.name)
                 }
             }
-            for (tile in city.getTiles())
-                if (tile.countAsUnimproved())
-                    newResourceSupplyList.add(tile.tileResource, ExtraInfoOrigin.Unimproved.name)
+            city.addUnimproved()
         }
 
-        for (otherCiv in viewingPlayer.getKnownCivs())
+        for (otherCiv in viewingPlayer.getKnownCivs()) {
+            // Show resources received through trade
             for (trade in otherCiv.tradeRequests.filter { it.requestingCiv == viewingPlayer.civName })
-                for (offer in trade.trade.theirOffers.filter{it.type == TradeType.Strategic_Resource || it.type == TradeType.Luxury_Resource})
+                for (offer in trade.trade.theirOffers.filter { it.type == TradeType.Strategic_Resource || it.type == TradeType.Luxury_Resource })
                     newResourceSupplyList.add(gameInfo.ruleset.tileResources[offer.name]!!, ExtraInfoOrigin.TradeOffer.name, offer.amount)
+
+            // Show resources your city-state allies have left unimproved
+            if (!otherCiv.isCityState() || otherCiv.getAllyCiv() != viewingPlayer.civName) continue
+            for (city in otherCiv.cities)
+                city.addUnimproved()
+        }
+
+        /** Show unlocked **strategic** resources even if you have no access at all */
+        for (resource in viewingPlayer.gameInfo.ruleset.tileResources.values) {
+            if (resource.resourceType != ResourceType.Strategic) continue
+            if (resource.revealedBy == null || viewingPlayer.tech.isResearched(resource.revealedBy!!))
+                newResourceSupplyList.add(resource, "No source", 0)
+        }
 
         return newResourceSupplyList
     }

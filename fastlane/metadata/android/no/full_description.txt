@@ -1,0 +1,8 @@
+Ei nyskaping av det største spelet innan sivilisasjonsbygging nokonsinne - snøgt, lite, ingen reklame, gratis for alltid!
+Bygg opp sivilisasjonen din, forska på ulike teknologiar, utvida bygrensene og slå fiendane dine!
+
+Har du ynske, eller vil du melde om feil? Vil du å medverka til spelutviklinga? Gjeremåla til programvara finn du på https://github.com/yairm210/Unciv/issues
+Har du spørsmål eller kommentarar? Fylg med oss på Discord-en vår på https://discord.gg/bjrB4Xw ;)
+Lyst til å hjelpa til å setja om spelet til språket ditt? Slik gjer du det: https://yairm210.github.io/Unciv/Other/Translating/
+Verda ventar på deg! Kjem du til å byggja opp sivilisasjonen din til eit rike som står i all æveleg tid?
+Løyvet "gjev full nettverkstilgjenge" krevst for nedlastingar starta av brukarar og at fleirspelarfunksjonen skal verka. Resten av løyva er inkluderte av seg sjølv gjennom API-en som styrer turvarsel i fleirspelarspel. Ein brukar nettverksløyve til å syna og lasta ned moddar, lasta ned musikk og å lasta opp/ned fleirspelarspel. Unciv tek ikkje i bruk andre former for internettskommunikasjon.

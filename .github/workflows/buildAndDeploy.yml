@@ -20,7 +20,7 @@ jobs:
       release_body: ${{ steps.read_release.outputs.release_body }}
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Read release.md and use it as a body of new release. This will fail for patch releases, since they have no readme.
         continue-on-error: true
@@ -29,7 +29,8 @@ jobs:
         run: |
           ## To test this in Windows PS:  cat .\changelog.md | wsl grep -Pzo --color '\\#{2}.3.15.7[^\\#]*?\\#{2}' | wsl head -n -2
           r=$(grep -Pzo '\#{2}.${{ github.ref_name }}[^\#]*\#' changelog.md)  # grep to get only our release
-          r=$(echo "$r" | head -n -2 | tail -n +3)
+          # We replace all quotes in the readme with single quotes, so the whatsnew directory echo doesn't crash us
+          r=$(echo "$r" | tr '"' "'" | head -n -2 | tail -n +3)
 
           ## See https://trstringer.com/github-actions-multiline-strings/
 
@@ -44,15 +45,18 @@ jobs:
     runs-on: ubuntu-latest
     needs: get-release-body
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
-      - uses: actions/setup-java@v3
+      - uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
-          java-version: '11'
+          java-version: 17
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
 
       - name: Setup Gradle
-        uses: gradle/gradle-build-action@v2.4.2
+        uses: gradle/actions/setup-gradle@v3
 
       - name: Compile kotlin and build classes
         run: ./gradlew classes
@@ -71,7 +75,7 @@ jobs:
 
       - name: Upload JAR
         continue-on-error: true
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: UncivJar
           path: |
@@ -79,7 +83,7 @@ jobs:
 
       - name: Upload linux files
         continue-on-error: true
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: UncivLinuxFiles
           path: |
@@ -92,7 +96,7 @@ jobs:
 
       - name: Upload Server
         continue-on-error: true
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: UncivServer
           path: server/build/libs/UncivServer.jar
@@ -103,15 +107,18 @@ jobs:
     runs-on: ubuntu-latest
     needs: get-release-body
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
-      - uses: actions/setup-java@v3
+      - uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
-          java-version: '11'
+          java-version: 17
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
 
       - name: Setup Gradle
-        uses: gradle/gradle-build-action@v2.4.2
+        uses: gradle/actions/setup-gradle@v3
 
       - name: Prepare .aab (for Google Play) and .apk (for Github) files
         shell: bash
@@ -131,7 +138,7 @@ jobs:
           keyPassword: ${{ secrets.BUNDLE_SIGNING_KEY_PASSWORD }}
 
       - name: Upload AAB to google play
-        uses: r0adkll/upload-google-play@v1.0.15
+        uses: r0adkll/upload-google-play@v1.1.3
         continue-on-error: true
         with:
           serviceAccountJsonPlainText: ${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT_JSON  }}
@@ -139,6 +146,7 @@ jobs:
           releaseFiles: android/build/outputs/bundle/release/Unciv-release.aab
           track: production
           userFraction: 0.1
+          status: inProgress
           whatsNewDirectory: whatsNewDirectory
 
 
@@ -150,6 +158,8 @@ jobs:
           alias: ${{ secrets.BUNDLE_SIGNING_KEY_ALIAS }}
           keyStorePassword: ${{ secrets.BUNDLE_SIGNING_KEYSTORE_PASSWORD }}
           keyPassword: ${{ secrets.BUNDLE_SIGNING_KEY_PASSWORD }}
+        env:
+          BUILD_TOOLS_VERSION: "34.0.0"
 
 
       - name: Move APK to deploy folder
@@ -158,7 +168,7 @@ jobs:
           mv android/build/outputs/apk/release/Unciv-release-unsigned-signed.apk Unciv-signed.apk
 
       - name: Upload APK
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: UncivAPK
           path: Unciv-signed.apk
@@ -168,18 +178,18 @@ jobs:
     runs-on: ubuntu-latest
     needs: build-jar
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
-      - uses: actions/setup-java@v3
+      - uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
-          java-version: '11'
+          java-version: 17
 
       - name: Setup Gradle
-        uses: gradle/gradle-build-action@v2.4.2
+        uses: gradle/actions/setup-gradle@v3
 
       - name: Download JAR
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         # See 'Upload JAR' step in 'build' job
         with:
           name: UncivJar
@@ -193,14 +203,15 @@ jobs:
           mv Unciv.jar desktop/build/libs
 
           wget -q -O packr-all-4.0.0.jar https://github.com/libgdx/packr/releases/download/4.0.0/packr-all-4.0.0.jar
-          wget -q -O jre-linux-64.tar.gz https://github.com/adoptium/temurin11-binaries/releases/download/jdk-11.0.19%2B7/OpenJDK11U-jre_x64_linux_hotspot_11.0.19_7.tar.gz
+
+          wget -q -O jre-linux-64.tar.gz https://api.adoptium.net/v3/binary/latest/11/ga/linux/x64/jre/hotspot/normal/eclipse
           ./gradlew desktop:packrLinux64
 
-          wget -q -O jdk-windows-64.zip https://github.com/ojdkbuild/ojdkbuild/releases/download/java-1.8.0-openjdk-1.8.0.232-1.b09/java-1.8.0-openjdk-1.8.0.232-1.b09.ojdkbuild.windows.x86_64.zip
+          wget -q -O jdk-windows-64.zip https://api.adoptium.net/v3/binary/latest/11/ga/windows/x64/jre/hotspot/normal/eclipse
           ./gradlew desktop:packrWindows64
 
       - name: Upload packed zips
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: UncivDeploymentZips
           path: |
@@ -214,7 +225,7 @@ jobs:
     steps:
 
       - name: Download packed zips
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: UncivDeploymentZips
 
@@ -229,46 +240,13 @@ jobs:
           ./butler push Unciv-Linux64.zip yairm210/unciv:Linux64     --userversion ${{ github.ref_name }}
           ./butler push Unciv-Windows64.zip yairm210/unciv:Windows64 --userversion ${{ github.ref_name }}
 
-  upload-to-steam:
-    runs-on: ubuntu-latest
-    needs: [packr-build]
-    continue-on-error: true
-    steps:
-
-      - name: Download packed zips
-        uses: actions/download-artifact@v3
-        with:
-          name: UncivDeploymentZips
-
-      - name: Unzip zips for steam deployment
-        shell: bash
-        run: |
-          mkdir steam
-          unzip Unciv-Windows64.zip -d steam/Unciv-Windows64
-          unzip Unciv-Linux64.zip -d steam/Unciv-Linux64
-
-      - name: Steam deploy
-        uses: game-ci/steam-deploy@v1
-        with:
-          username: ${{ secrets.STEAM_USERNAME }}
-          password: ${{ secrets.STEAM_PASSWORD }}
-          configVdf: ${{ secrets.STEAM_CONFIG_VDF}}
-          ssfnFileName: ${{ secrets.STEAM_SSFN_FILE_NAME }}
-          ssfnFileContents: ${{ secrets.STEAM_SSFN_FILE_CONTENTS }}
-          appId: 2118950
-          buildDescription: ${{ github.ref_name }}
-          rootPath: steam
-          depot1Path: Unciv-Windows64
-          depot2Path: Unciv-Linux64
-          releaseBranch: release
-
   upload-github-release-and-post-to-discord:
     needs: [get-release-body, android-build, packr-build]
     runs-on: ubuntu-latest
     steps:
 
       - name: Download all artifacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
 
       - name: consolidate deploy folder
         run: |

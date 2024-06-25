@@ -7,12 +7,12 @@ import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.Promotion
 import com.unciv.models.translations.tr
 
-internal class PromotionTree(val unit: MapUnit) {
+class PromotionTree(val unit: MapUnit) {
     /** Ordered set of Promotions to show - by Json column/row and translated name */
     // Not using SortedSet - that uses needlessly complex implementations that remember the comparator
-    val possiblePromotions: LinkedHashSet<Promotion>
+    lateinit var possiblePromotions: LinkedHashSet<Promotion>
     /** Ordered map, key is the Promotion name, same order as [possiblePromotions] */
-    private val nodes: LinkedHashMap<String, PromotionNode>
+    private lateinit var nodes: LinkedHashMap<String, PromotionNode>
 
     class PromotionNode(
         val promotion: Promotion,
@@ -34,7 +34,7 @@ internal class PromotionTree(val unit: MapUnit) {
         /** Off if there is only one "best" path of equal cost to adopt this node's promotion */
         var pathIsAmbiguous = false
         /** On for promotions having unavailable prerequisites (missing in ruleset, or not allowed for the unit's
-         *  UnitType, and not already adopted either); or currently disabled by a [UniqueType.OnlyAvailableWhen] unique.
+         *  UnitType, and not already adopted either); or currently disabled by a [UniqueType.OnlyAvailable] unique.
          *  (should never be on with a vanilla ruleset) */
         var unreachable = false
 
@@ -58,6 +58,10 @@ internal class PromotionTree(val unit: MapUnit) {
     }
 
     init {
+        update()
+    }
+
+    fun update() {
         val collator = GUI.getSettings().getCollatorFromLocale()
         val rulesetPromotions = unit.civ.gameInfo.ruleset.unitPromotions.values
         val unitType = unit.baseUnit.unitType
@@ -89,9 +93,9 @@ internal class PromotionTree(val unit: MapUnit) {
 
         // Fill parent/child relations, ignoring prerequisites not in possiblePromotions
         for (node in nodes.values) {
+            if (detectLoop(node)) continue
             for (prerequisite in node.promotion.prerequisites) {
                 val parent = nodes[prerequisite] ?: continue
-                if (detectLoop(node, parent)) continue
                 node.parents += parent
                 parent.children += node
                 if (node.level > 0 && node.baseName == parent.baseName)
@@ -105,7 +109,7 @@ internal class PromotionTree(val unit: MapUnit) {
             // defensive - I don't know how to provoke the situation, but if it ever occurs, disallow choosing that promotion
             if (node.promotion.prerequisites.isNotEmpty() && node.parents.isEmpty())
                 node.unreachable = true
-            if (node.promotion.getMatchingUniques(UniqueType.OnlyAvailableWhen, StateForConditionals.IgnoreConditionals)
+            if (node.promotion.getMatchingUniques(UniqueType.OnlyAvailable, StateForConditionals.IgnoreConditionals)
                     .any { !it.conditionalsApply(state) })
                 node.unreachable = true
         }
@@ -114,7 +118,8 @@ internal class PromotionTree(val unit: MapUnit) {
         // Also determine preferredParent / pathIsAmbiguous by weighing distanceToAdopted
         for (node in allRoots()) {
             node.depth = 0
-            node.distanceToAdopted = if (node.unreachable) Int.MAX_VALUE else if (node.isAdopted) 0 else 1
+            node.distanceToAdopted = if (node.isAdopted) 0
+                else if (node.unreachable) Int.MAX_VALUE else 1
         }
         for (depth in 0..99) {
             var complete = true
@@ -125,8 +130,9 @@ internal class PromotionTree(val unit: MapUnit) {
                 }
                 if (node.depth != depth) continue
                 for (child in node.children) {
-                    val distance = if (node.distanceToAdopted == Int.MAX_VALUE) Int.MAX_VALUE
-                        else if (child.isAdopted) 0 else node.distanceToAdopted + 1
+                    val distance = if (child.isAdopted) 0
+                        else if (node.distanceToAdopted == Int.MAX_VALUE) Int.MAX_VALUE else if (child.unreachable) Int.MAX_VALUE
+                        else node.distanceToAdopted + 1
                     when {
                         child.depth == Int.MIN_VALUE -> Unit // "New" node / first reached
                         child.distanceToAdopted < distance -> continue  // Already reached a better way
@@ -150,21 +156,21 @@ internal class PromotionTree(val unit: MapUnit) {
     fun allNodes() = nodes.values.asSequence()
     fun allRoots() = allNodes().filter { it.isRoot }
 
-    private fun detectLoop(node: PromotionNode, parent: PromotionNode): Boolean {
-        if (parent == node) return true
+    private fun detectLoop(node: PromotionNode): Boolean {
         val loopCheck = HashSet<PromotionNode>(nodes.size)
-        loopCheck.add(node)
-        fun detectRecursive(parent: PromotionNode, level: Int): Boolean {
+        fun detectRecursive(node: PromotionNode, level: Int, loopCheck: HashSet<PromotionNode>): Boolean {
             if (level > 99) return true
-            if (parent in loopCheck) return true
-            loopCheck.add(parent)
-            for (child in parent.children) {
-                if (detectRecursive(child, level + 1)) return true
+            if (node in loopCheck) return true
+            loopCheck.add(node)
+            for (parent in node.parents) {
+                if (detectRecursive(parent, level + 1, loopCheck)) return true
             }
             return false
         }
-        return detectRecursive(parent, 0)
+        return detectRecursive(node, 0, loopCheck)
     }
+
+    fun getNode(promotion: Promotion): PromotionNode? = nodes[promotion.name]
 
     private fun getReachableNode(promotion: Promotion): PromotionNode? =
         nodes[promotion.name]?.takeUnless { it.distanceToAdopted == Int.MAX_VALUE }

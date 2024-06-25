@@ -1,0 +1,14 @@
+Performance improvements
+
+By SomeTroglodyte:
+- Improve diplomatic vote result screen
+
+By tuvus:
+- Water units can enter lakes-near-cities
+- Workboats improve resources outside of city work range
+
+By SeventhM:
+- Allow AI to consider building stats more accurately
+- Allow for replacement improvements
+
+Add configurable natural wonder discovery stat bonuses  - By PLynx01

@@ -18,10 +18,12 @@ import com.unciv.ui.screens.basescreen.BaseScreen
 class OfferColumnsTable(
     private val tradeLogic: TradeLogic,
     private val screen: DiplomacyScreen,
+    private val ourCiv: Civilization,
+    private val theirCiv: Civilization,
     private val onChange: () -> Unit
 ): Table(BaseScreen.skin) {
 
-    private fun addOffer(offer: TradeOffer, offerList: TradeOffersList, correspondingOfferList: TradeOffersList) {
+    fun addOffer(offer: TradeOffer, offerList: TradeOffersList, correspondingOfferList: TradeOffersList) {
         offerList.add(offer.copy())
         if (offer.type == TradeType.Treaty) correspondingOfferList.add(offer.copy())
         onChange()
@@ -104,10 +106,10 @@ class OfferColumnsTable(
             .removeAll(Constants.tradable)
         val theirUntradables = tradeLogic.otherCivilization.getCivResourcesWithOriginsForTrade()
             .removeAll(Constants.tradable)
-        ourAvailableOffersTable.update(ourFilteredOffers, tradeLogic.theirAvailableOffers, ourUntradables)
-        ourOffersTable.update(tradeLogic.currentTrade.ourOffers, tradeLogic.theirAvailableOffers)
-        theirOffersTable.update(tradeLogic.currentTrade.theirOffers, tradeLogic.ourAvailableOffers)
-        theirAvailableOffersTable.update(theirFilteredOffers, tradeLogic.ourAvailableOffers, theirUntradables)
+        ourAvailableOffersTable.update(ourFilteredOffers, tradeLogic.theirAvailableOffers, ourUntradables, ourCiv, theirCiv)
+        ourOffersTable.update(tradeLogic.currentTrade.ourOffers, tradeLogic.theirAvailableOffers, ourCiv = ourCiv, theirCiv = theirCiv)
+        theirOffersTable.update(tradeLogic.currentTrade.theirOffers, tradeLogic.ourAvailableOffers, ourCiv = ourCiv, theirCiv = theirCiv)
+        theirAvailableOffersTable.update(theirFilteredOffers, tradeLogic.ourAvailableOffers, theirUntradables, ourCiv, theirCiv)
     }
 
     private fun openGoldSelectionPopup(offer: TradeOffer, ourOffers: TradeOffersList, maxGold: Int) {

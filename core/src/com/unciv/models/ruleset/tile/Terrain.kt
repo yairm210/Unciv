@@ -2,14 +2,15 @@ package com.unciv.models.ruleset.tile
 
 import com.badlogic.gdx.graphics.Color
 import com.unciv.Constants
+import com.unciv.logic.MultiFilter
 import com.unciv.models.ruleset.Belief
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetStatsObject
-import com.unciv.models.ruleset.unique.UniqueFlag
 import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueType
-import com.unciv.ui.screens.civilopediascreen.FormattedLine
 import com.unciv.ui.components.extensions.colorFromRGB
+import com.unciv.ui.objectdescriptions.uniquesToCivilopediaTextLines
+import com.unciv.ui.screens.civilopediascreen.FormattedLine
 
 class Terrain : RulesetStatsObject() {
 
@@ -35,7 +36,7 @@ class Terrain : RulesetStatsObject() {
     @Suppress("PropertyName")   // RGB is expected to be in caps
     var RGB: List<Int>? = null
     var movementCost = 1
-    var defenceBonus:Float = 0f
+    var defenceBonus: Float = 0f
     var impassable = false
 
     @Transient
@@ -118,14 +119,11 @@ class Terrain : RulesetStatsObject() {
         // For now, natural wonders show no "open terrain" - may change later
         if (turnsInto == null && displayAs(TerrainType.Land, ruleset) && !isRough())
             textList += FormattedLine("Open terrain")   // Rough is in uniques
-        uniqueObjects.forEach {
-            if (!it.hasFlag(UniqueFlag.HiddenToUsers))
-                textList += FormattedLine(it)
-        }
+        uniquesToCivilopediaTextLines(textList, leadingSeparator = null)
 
         textList += FormattedLine()
-        textList += if (impassable) FormattedLine(Constants.impassable, color="#A00")
-                    else FormattedLine("{Movement cost}: $movementCost")
+        if (impassable) textList += FormattedLine(Constants.impassable, color="#A00")
+        else if (movementCost > 0) textList += FormattedLine("{Movement cost}: $movementCost")
 
         if (defenceBonus != 0f)
             textList += FormattedLine("{Defence bonus}: ${(defenceBonus * 100).toInt()}%")
@@ -144,6 +142,29 @@ class Terrain : RulesetStatsObject() {
         }
 
         return textList
+    }
+
+    /** Terrain filter matching is "pure" - input always returns same output, and it's called a bajillion times */
+    val cachedMatchesFilterResult = HashMap<String, Boolean>()
+
+    fun matchesFilter(filter: String): Boolean =
+        cachedMatchesFilterResult.getOrPut(filter) { MultiFilter.multiFilter(filter, ::matchesSingleFilter ) }
+
+    /** Implements [UniqueParameterType.TerrainFilter][com.unciv.models.ruleset.unique.UniqueParameterType.TerrainFilter] */
+    fun matchesSingleFilter(filter: String): Boolean {
+        return when (filter) {
+            in Constants.all -> true
+            name -> true
+            "Terrain" -> true
+            in Constants.all -> true
+            "Open terrain" -> !isRough()
+            "Rough terrain" -> isRough()
+            type.name -> true
+            "Natural Wonder" -> type == TerrainType.NaturalWonder
+            "Terrain Feature" -> type == TerrainType.TerrainFeature
+
+            else -> uniques.contains(filter)
+        }
     }
 
     fun setTransients() {

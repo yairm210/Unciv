@@ -196,7 +196,7 @@
 		"rangedStrength": 10,
 		"cost": 56,
 		"requiredTech": "Sailing",
-		"uniques": ["Cannot enter ocean tiles", "[+50]% Strength <vs [Wounded] units>"],
+		"uniques": ["Cannot enter ocean tiles", "[+50]% Strength <vs [Water] units>"],
 		"upgradesTo": "Galleass",
 		"obsoleteTech": "Astronomy",
 		"attackSound": "arrow"
@@ -890,8 +890,7 @@
 		"cost": 150,
 		"requiredTech": "Navigation",
 		"upgradesTo": "Destroyer",
-		"promotions": ["Coastal Raider I"],
-		"uniques": ["May capture killed [Water] units"],
+		"promotions": ["Coastal Raider I", "[Privateer] ability"],
 		"attackSound": "cannon"
 	},
 	{
@@ -904,8 +903,7 @@
 		"cost": 150,
 		"requiredTech": "Navigation",
 		"upgradesTo": "Destroyer",
-		"promotions": ["Coastal Raider I", "Coastal Raider II", "Supply"],
-		"uniques": ["May capture killed [Water] units"],
+		"promotions": ["Coastal Raider I", "Coastal Raider II", "Supply", "[Privateer] ability"],
 		"attackSound": "cannon"
 	},
 	{
@@ -920,7 +918,7 @@
 		"obsoleteTech": "Electronics",
 		"upgradesTo": "Battleship",
 		"hurryCostModifier": 20,
-		"attackSound": "cannon"
+		"attackSound": "shipCannonVolley"
 	},
 	{
 		"name": "Ship of the Line",
@@ -937,7 +935,7 @@
 		"obsoleteTech": "Electronics",
 		"upgradesTo": "Battleship",
 		"hurryCostModifier": 20,
-		"attackSound": "cannon"
+		"attackSound": "shipCannonVolley"
 	},
 	{
 		"name": "Lancer",
@@ -1636,10 +1634,10 @@
 		"unitType": "Civilian",
 		"uniques": [
             "Can instantly construct a [Holy site] improvement <by consuming this unit> <if it hasn't used other actions yet>",
-            "Can [Spread Religion] [4] times",
+            "Can Spread Religion <for [2] movement> <[4] times> <after which this unit is consumed>",
 			"Removes other religions when spreading religion",
-            "May found a religion",
-            "May enhance a religion",
+            "May found a religion <by consuming this unit> <if it hasn't used other actions yet>",
+            "May enhance a religion <by consuming this unit>  <if it hasn't used other actions yet>",
 			"May enter foreign tiles without open borders", "[-1] Sight", "Great Person - [Faith]",
 			"Unbuildable", "Religious Unit", "Hidden when religion is disabled",
 			"Takes your religion over the one in their birth city"],
@@ -1653,6 +1651,7 @@
             "Empire enters a [8]-turn Golden Age <by consuming this unit>",
             "[+15]% Strength bonus for [Military] units within [2] tiles",
             "Can instantly construct a [Citadel] improvement <by consuming this unit>",
+			"Can be earned through combat",
 			"Great Person - [War]", "Unbuildable", "Uncapturable"],
 		"movement": 2
 	},
@@ -1666,6 +1665,7 @@
             "[+15]% Strength bonus for [Military] units within [2] tiles",
 			"All adjacent units heal [+15] HP when healing", "[+15] HP when healing",
             "Can instantly construct a [Citadel] improvement <by consuming this unit>",
+			"Can be earned through combat",
             "Great Person - [War]", "Unbuildable", "Uncapturable"],
 		"movement": 5
 	},
@@ -1675,7 +1675,9 @@
 	{
 		"name": "Missionary",
 		"unitType": "Civilian",
-		"uniques": ["Can [Spread Religion] [2] times", "May enter foreign tiles without open borders, but loses [250] religious strength each turn it ends there",
+		"uniques": [
+            "Can Spread Religion <for [4] movement> <[2] times> <after which this unit is consumed>",
+            "May enter foreign tiles without open borders, but loses [250] religious strength each turn it ends there",
 			"Can be purchased with [Faith] [in all cities in which the majority religion is a major religion]",
 			"[-1] Sight", "Unbuildable", "Religious Unit", "Hidden when religion is disabled"],
 		"movement": 4,
@@ -1685,8 +1687,8 @@
 		"name": "Inquisitor",
 		"unitType": "Civilian",
 		"uniques": ["Prevents spreading of religion to the city it is next to",
-			"Can [Remove Foreign religions from your own cities] [1] times",
-			"Can be purchased with [Faith] [in all cities in which the majority religion is an enhanced religion]",
+			"Can remove other religions from cities <in [Friendly] tiles> <once> <after which this unit is consumed>",
+            "Can be purchased with [Faith] [in all cities in which the majority religion is a major religion]",
 			"[+1] Sight", "Hidden when religion is disabled", "Unbuildable", "Religious Unit"
 		],
 		"movement": 3

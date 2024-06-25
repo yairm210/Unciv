@@ -1,0 +1,10 @@
+Added 'copy to clipboard' button on map errors so we can debug them
+
+Happiness building performance improvement
+
+By SeventhM:
+- Add additional cityFilters
+- Fix gain stat modifier by speed unique action text
+
+By SomeTroglodyte:
+- RulesetValidator: Raise severity for untyped uniques with parameters

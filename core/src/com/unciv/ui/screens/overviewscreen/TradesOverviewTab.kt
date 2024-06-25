@@ -5,14 +5,15 @@ import com.unciv.Constants
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.trade.Trade
 import com.unciv.logic.trade.TradeOffersList
-import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.components.extensions.addSeparator
 import com.unciv.ui.components.extensions.toLabel
+import com.unciv.ui.screens.basescreen.BaseScreen
 
 class TradesOverviewTab(
     viewingPlayer: Civilization,
     overviewScreen: EmpireOverviewScreen
 ) : EmpireOverviewTab(viewingPlayer, overviewScreen) {
+    val game = overviewScreen.game
 
     init {
         defaults().pad(10f)
@@ -44,11 +45,9 @@ class TradesOverviewTab(
         }
     }
 
-    private fun createTradeTable(trade: Trade, otherCiv: Civilization): Table {
-        val generalTable = Table()
-        generalTable.add(createOffersTable(viewingPlayer, trade.ourOffers, trade.theirOffers.size)).minWidth(overviewScreen.stage.width/4).fillY()
-        generalTable.add(createOffersTable(otherCiv, trade.theirOffers, trade.ourOffers.size)).minWidth(overviewScreen.stage.width/4).fillY()
-        return generalTable
+    private fun createTradeTable(trade: Trade, otherCiv: Civilization) = Table().apply {
+        add(createOffersTable(viewingPlayer, trade.ourOffers, trade.theirOffers.size)).minWidth(overviewScreen.stage.width/4).fillY()
+        add(createOffersTable(otherCiv, trade.theirOffers, trade.ourOffers.size)).minWidth(overviewScreen.stage.width/4).fillY()
     }
 
     private fun createOffersTable(civ: Civilization, offersList: TradeOffersList, numberOfOtherSidesOffers: Int): Table {

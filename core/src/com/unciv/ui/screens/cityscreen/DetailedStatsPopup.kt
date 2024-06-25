@@ -9,7 +9,7 @@ import com.unciv.logic.city.StatTreeNode
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
 import com.unciv.models.translations.tr
-import com.unciv.ui.components.AutoScrollPane
+import com.unciv.ui.components.widgets.AutoScrollPane
 import com.unciv.ui.components.input.KeyCharAndCode
 import com.unciv.ui.components.extensions.addSeparator
 import com.unciv.ui.components.extensions.brighten
@@ -21,6 +21,7 @@ import com.unciv.ui.components.extensions.packIfNeeded
 import com.unciv.ui.components.extensions.pad
 import com.unciv.ui.components.extensions.surroundWithCircle
 import com.unciv.ui.components.extensions.toLabel
+import com.unciv.ui.components.input.KeyboardBinding
 import com.unciv.ui.images.IconCircleGroup
 import com.unciv.ui.popups.Popup
 import com.unciv.ui.screens.basescreen.BaseScreen
@@ -176,14 +177,11 @@ class DetailedStatsPopup(
         val button = label
             .surroundWithCircle(25f, color = BaseScreen.skinStrings.skinConfig.baseColor)
             .surroundWithCircle(27f, false)
-        button.keyShortcuts.run {
-            add(Input.Keys.PLUS)
-            add(Input.Keys.NUMPAD_ADD)
-        }
-        button.onActivation {
+        button.onActivation(binding = KeyboardBinding.ShowStatDetails) {
             isDetailed = !isDetailed
             update()
         }
+        button.keyShortcuts.add(Input.Keys.PLUS)  //todo Choose alternative (alt binding, remove, auto-equivalence, multikey bindings)
         return button
     }
 

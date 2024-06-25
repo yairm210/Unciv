@@ -2,7 +2,7 @@ package com.unciv.ui.screens.cityscreen
 
 import com.unciv.ui.screens.basescreen.UncivStage
 import com.unciv.ui.components.tilegroups.TileGroupMap
-import com.unciv.ui.components.ZoomableScrollPane
+import com.unciv.ui.components.widgets.ZoomableScrollPane
 
 class CityMapHolder : ZoomableScrollPane(20f, 20f) {
 

@@ -8,6 +8,8 @@ Una reimplementación del juego de construcción de civilizaciones más famoso d
 
 ¿Quieres ayudar a traducir el juego a tu idioma? Envíame un email a yairm210@hotmail.com.
 
-¿Sabes escribir Java o Kotlin? Únetenos en https://github.com/yairm210/Unciv.¡El mundo espera!¿Convertirás tu civilización en un imperio que resistirá el paso del tiempo?
+¿Sabes escribir Java o Kotlin? Únetenos en https://github.com/yairm210/Unciv.
+
+¡El mundo espera!¿Convertirás tu civilización en un imperio que resistirá el paso del tiempo?
 
  Se requiere el permiso de "Tener acceso completo a la red" para descargas iniciadas por el usuario y el modo multijugador. Todos los demás permisos listados son incluidos automáticamente por el API usado para implementar las notificaciones de turnos en el modo multijugador. Los permisos de red son usados para contar mods, descargar mods, descargar música y para cargar/descargar partidas multijugador. Unciv no inicia ninguna otra comunicación por Internet.

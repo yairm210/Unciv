@@ -1,15 +1,17 @@
 package com.unciv.models.ruleset.tech
 
 import com.badlogic.gdx.graphics.Color
+import com.unciv.logic.UncivShowableException
 import com.unciv.models.ruleset.IRulesetObject
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetObject
 import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueType
-import com.unciv.ui.screens.civilopediascreen.FormattedLine
-import com.unciv.ui.components.Fonts
 import com.unciv.ui.components.extensions.colorFromRGB
+import com.unciv.ui.components.fonts.Fonts
+import com.unciv.ui.objectdescriptions.uniquesToCivilopediaTextLines
+import com.unciv.ui.screens.civilopediascreen.FormattedLine
 
 class Era : RulesetObject() {
     var eraNumber: Int = -1
@@ -52,8 +54,7 @@ class Era : RulesetObject() {
             .filter { it.era() == name }
             .map { FormattedLine(it.name, it.makeLink()) })
 
-        if (uniques.isNotEmpty()) yield(FormattedLine())
-        yieldAll(uniqueObjects.asSequence().map { FormattedLine(it) })
+        yieldAll(uniquesToCivilopediaTextLines())
 
         val eraGatedObjects = getEraGatedObjects(ruleset).toList()
         if (eraGatedObjects.isEmpty()) return@sequence
@@ -71,7 +72,7 @@ class Era : RulesetObject() {
             ruleset.allRulesetObjects()
             .flatMap { obj ->
                 obj.getMatchingUniques(
-                    UniqueType.OnlyAvailableWhen,
+                    UniqueType.OnlyAvailable,
                     StateForConditionals.IgnoreConditionals
                 )
                 .map { unique -> obj to unique }
@@ -82,10 +83,22 @@ class Era : RulesetObject() {
             }.map { it.first }.distinct()
     }
 
-    fun getStartingUnits(): List<String> {
+    fun getStartingUnits(ruleset: Ruleset): MutableList<String> {
         val startingUnits = mutableListOf<String>()
-        repeat(startingSettlerCount) { startingUnits.add(startingSettlerUnit) }
-        repeat(startingWorkerCount) { startingUnits.add(startingWorkerUnit) }
+        val startingSettlerName: String =
+            if (startingSettlerUnit in ruleset.units) startingSettlerUnit
+            else ruleset.units.values
+                .firstOrNull { it.isCityFounder() }
+                ?.name
+                ?: throw UncivShowableException("No Settler unit found for era $name")
+        val startingWorkerName: String =
+            if (startingWorkerCount == 0 || startingWorkerUnit in ruleset.units) startingWorkerUnit
+            else ruleset.units.values
+                .firstOrNull { it.hasUnique(UniqueType.BuildImprovements) }
+                ?.name
+                ?: throw UncivShowableException("No Worker unit found for era $name")
+        repeat(startingSettlerCount) { startingUnits.add(startingSettlerName) }
+        repeat(startingWorkerCount) { startingUnits.add(startingWorkerName) }
         repeat(startingMilitaryUnitCount) { startingUnits.add(startingMilitaryUnit) }
         return startingUnits
     }

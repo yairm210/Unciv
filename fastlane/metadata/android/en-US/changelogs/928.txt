@@ -1,0 +1,14 @@
+Modding: Added Human and AI filters, separated civFilter from nationFilter
+
+By SomeTroglodyte:
+- Patch for on-screen keyboard hiding pedia search results
+- Rivers... Moddable Stats and Civilopedia
+- World screen top bar scales down to available width
+- "Civ destroyed" Notification includes location
+- Lots of other issue fixes!
+
+By tuvus:
+- Fixed land/sea nukes trying to act like air units
+- Fixed promise not to settle
+
+Fix Multiplayer spectator ids not logging  - By SeventhM

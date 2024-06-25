@@ -9,11 +9,29 @@ import com.unciv.models.tilesets.TileSetConfig
 import com.unciv.ui.images.ImageAttempter
 import com.unciv.ui.images.ImageGetter
 
+@Suppress("MemberVisibilityCanBePrivate") // No advandage hiding them
+
 /**
+ * Resolver translating more abstract tile data to paint on a map into actual texture names.
+ *
+ * Deals with variants, e.g. there could be a "City center-asian-Ancient era.png" that would be chosen
+ * for a "City center"-containing Tile when it is to be drawn for a Nation defining it's style as "asian"
+ * and whose techs say it's still in the first vanilla Era.
+ *
+ * Instantiated once per [TileGroupMap] and per [TileSet][com.unciv.models.tilesets.TileSet] -
+ * typically once for HexaRealm and once for FantasyHex (fallback) at the start of a player turn,
+ * and the same two every time they enter a CityScreen.
+ *
  * @param tileSet Name of the tileset. Defaults to active at time of instantiation.
  * @param fallbackDepth Maximum number of fallback tilesets to try. Used to prevent infinite recursion.
  * */
-class TileSetStrings(tileSet: String = UncivGame.Current.settings.tileSet, unitSet: String? = UncivGame.Current.settings.unitSet, fallbackDepth: Int = 1) {
+class TileSetStrings(
+    tileSet: String = UncivGame.Current.settings.tileSet,
+    unitSet: String? = UncivGame.Current.settings.unitSet,
+    fallbackDepth: Int = 1
+) {
+    /** Separator used to mark variants, e.g. nation style or era specific */
+    val tag = "-"
 
     // this is so that when we have 100s of TileGroups, they won't all individually come up with all these strings themselves,
     // it gets pretty memory-intensive (10s of MBs which is a lot for lower-end phones)
@@ -24,7 +42,7 @@ class TileSetStrings(tileSet: String = UncivGame.Current.settings.tileSet, unitS
     val tileSetConfig = TileSetCache[tileSet]?.config ?: TileSetConfig()
 
     // These need to be by lazy since the orFallback expects a tileset, which it may not get.
-    val hexagon: String by lazy { orFallback {tileSetLocation + "Hexagon"} }
+    val hexagon: String by lazy { orFallback { tileSetLocation + "Hexagon"} }
     val hexagonList by lazy { listOf(hexagon) }
     val crosshatchHexagon by lazy { orFallback { tileSetLocation + "CrosshatchHexagon" } }
     val unexploredTile by lazy { orFallback { tileSetLocation + "UnexploredTile" } }
@@ -68,10 +86,9 @@ class TileSetStrings(tileSet: String = UncivGame.Current.settings.tileSet, unitS
         return currentString
     }
 
-    val tag = "-"
     fun getTile(baseTerrain: String) = getString(tilesLocation, baseTerrain)
 
-    fun getBorder(borderShapeString: String, innerOrOuter:String) = getString(bordersLocation, borderShapeString, innerOrOuter)
+    fun getBorder(borderShapeString: String, innerOrOuter: String) = getString(bordersLocation, borderShapeString, innerOrOuter)
 
     /** Fallback [TileSetStrings] to use when the currently chosen tileset is missing an image. */
     val fallback by lazy {
@@ -81,7 +98,6 @@ class TileSetStrings(tileSet: String = UncivGame.Current.settings.tileSet, unitS
             TileSetStrings(tileSetConfig.fallbackTileSet!!, tileSetConfig.fallbackTileSet!!, fallbackDepth-1)
     }
 
-    @Suppress("MemberVisibilityCanBePrivate")
     /**
      * @param image An image path string, such as returned from an instance of [TileSetStrings].
      * @param fallbackImage A lambda function that will be run with the [fallback] as its receiver if the original image does not exist according to [ImageGetter.imageExists].
@@ -90,18 +106,18 @@ class TileSetStrings(tileSet: String = UncivGame.Current.settings.tileSet, unitS
     fun orFallback(image: String, fallbackImage: TileSetStrings.() -> String): String {
         return if (fallback == null || ImageGetter.imageExists(image))
             image
-        else fallback!!.run(fallbackImage)
+        else fallbackImage.invoke(fallback!!)
     }
 
     /** @see orFallback */
     fun orFallback(image: TileSetStrings.() -> String)
-            = orFallback(this.run(image), image)
+            = orFallback(image.invoke(this), image)
 
 
 
     /** For caching image locations based on given parameters (era, style, etc)
      * Based on what the final image would look like if all parameters existed,
-     * like "pikeman-Medieval era-France": "pikeman" */
+     * like "pikeman-France-Medieval era": "pikeman" */
     val imageParamsToImageLocation = HashMap<String,String>()
 
 
@@ -110,6 +126,7 @@ class TileSetStrings(tileSet: String = UncivGame.Current.settings.tileSet, unitS
 
     val embarkedCivilianUnitLocation = getString(unitsLocation, "EmbarkedUnit-Civilian")
     val hasEmbarkedCivilianUnitImage = ImageGetter.imageExists(embarkedCivilianUnitLocation)
+
     /**
      * Image fallbacks work by precedence.
      * So currently, if you're france, it's the modern era, and you have a pikeman:
@@ -119,7 +136,6 @@ class TileSetStrings(tileSet: String = UncivGame.Current.settings.tileSet, unitS
      * This means that if there's a "pikeman-France" and a "pikeman-Medieval era",
      * The era-based image wins out, even though it's not the current era.
      */
-
     private fun tryGetUnitImageLocation(unit: MapUnit): String? {
 
         var baseUnitIconLocation = getString(this.unitsLocation, unit.name)
@@ -139,13 +155,13 @@ class TileSetStrings(tileSet: String = UncivGame.Current.settings.tileSet, unitS
         val style = civInfo.nation.getStyleOrCivName()
 
         var imageAttempter = ImageAttempter(baseUnitIconLocation)
-            // Era+style image: looks like  "pikeman-Medieval era-France"
+            // Era+style image: looks like  "pikeman-France-Medieval era"
             // More advanced eras default to older eras
             .tryEraImage(civInfo, baseUnitIconLocation, style, this)
             // Era-only image: looks like "pikeman-Medieval era"
             .tryEraImage(civInfo, baseUnitIconLocation, null, this)
             // Style era: looks like "pikeman-France" or "pikeman-European"
-            .tryImage { getString(baseUnitIconLocation, tag, civInfo.nation.getStyleOrCivName()) }
+            .tryImage { getString(baseUnitIconLocation, tag, style) }
             .tryImage { baseUnitIconLocation }
 
         if (unit.baseUnit.replaces != null)
@@ -154,7 +170,7 @@ class TileSetStrings(tileSet: String = UncivGame.Current.settings.tileSet, unitS
         return imageAttempter.getPathOrNull()
     }
 
-    fun getUnitImageLocation(unit: MapUnit):String {
+    fun getUnitImageLocation(unit: MapUnit): String {
         val imageKey = getString(
             unit.name, tag,
             unit.civ.getEra().name, tag,
@@ -163,7 +179,7 @@ class TileSetStrings(tileSet: String = UncivGame.Current.settings.tileSet, unitS
         )
         // if in cache return that
         val currentImageMapping = imageParamsToImageLocation[imageKey]
-        if (currentImageMapping!=null) return currentImageMapping
+        if (currentImageMapping != null) return currentImageMapping
 
         val imageLocation = tryGetUnitImageLocation(unit)
             ?: fallback?.tryGetUnitImageLocation(unit)
@@ -172,7 +188,7 @@ class TileSetStrings(tileSet: String = UncivGame.Current.settings.tileSet, unitS
         return imageLocation
     }
 
-    private fun tryGetOwnedTileImageLocation(baseLocation:String, owner:Civilization): String? {
+    private fun tryGetOwnedTileImageLocation(baseLocation: String, owner: Civilization): String? {
         val ownersStyle = owner.nation.getStyleOrCivName()
         return ImageAttempter(baseLocation)
             .tryEraImage(owner, baseLocation, ownersStyle, this)
@@ -181,12 +197,12 @@ class TileSetStrings(tileSet: String = UncivGame.Current.settings.tileSet, unitS
             .getPathOrNull()
     }
 
-    fun getOwnedTileImageLocation(baseLocation:String, owner:Civilization): String {
+    fun getOwnedTileImageLocation(baseLocation: String, owner: Civilization): String {
         val imageKey = getString(baseLocation, tag,
             owner.getEra().name, tag,
             owner.nation.getStyleOrCivName())
         val currentImageMapping = imageParamsToImageLocation[imageKey]
-        if (currentImageMapping!=null) return currentImageMapping
+        if (currentImageMapping != null) return currentImageMapping
 
         val imageLocation = tryGetOwnedTileImageLocation(baseLocation, owner)
             ?: baseLocation

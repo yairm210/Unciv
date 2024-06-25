@@ -5,13 +5,11 @@ import com.badlogic.gdx.scenes.scene2d.ui.SelectBox
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener
 import com.badlogic.gdx.utils.Array
-import com.unciv.logic.event.EventBus
 import com.unciv.models.UncivSound
-import com.unciv.models.metadata.GameSetting
 import com.unciv.models.metadata.GameSettings
-import com.unciv.models.metadata.SettingsPropertyChanged
-import com.unciv.models.metadata.SettingsPropertyUncivSoundChanged
+import com.unciv.models.metadata.GameSettings.GameSetting
 import com.unciv.models.translations.tr
+import com.unciv.ui.audio.SoundPlayer
 import com.unciv.ui.components.input.onChange
 import com.unciv.ui.components.extensions.toGdxArray
 import com.unciv.ui.components.extensions.toLabel
@@ -26,10 +24,10 @@ import kotlin.reflect.KMutableProperty0
  *
  * This will also automatically send [SettingsPropertyChanged] events.
  */
-open class SettingsSelect<T : Any>(
+open class SettingsSelect<T>(
     labelText: String,
     items: Iterable<SelectItem<T>>,
-    private val setting: GameSetting,
+    setting: GameSetting,
     settings: GameSettings
 ) {
     class SelectItem<T>(val label: String, val value: T) {
@@ -56,11 +54,11 @@ open class SettingsSelect<T : Any>(
         val selectBox = SelectBox<SelectItem<T>>(BaseScreen.skin)
         selectBox.items = initialItems
 
-        selectBox.selected = initialItems.firstOrNull { it.value == settingsProperty.get() } ?: items.first()
+        selectBox.selected = initialItems.firstOrNull { it.value == settingsProperty.get() } ?: initialItems.first()
         selectBox.onChange {
             val newValue = selectBox.selected.value
             settingsProperty.set(newValue)
-            sendChangeEvent(newValue)
+            if (newValue is UncivSound) SoundPlayer.play(newValue)
         }
 
         return selectBox
@@ -80,17 +78,5 @@ open class SettingsSelect<T : Any>(
         val prev = refreshSelectBox.selected
         refreshSelectBox.items = options
         refreshSelectBox.selected = prev
-    }
-
-    private fun sendChangeEvent(item: T) {
-        when (item) {
-            is UncivSound -> EventBus.send(object : SettingsPropertyUncivSoundChanged {
-                override val gameSetting = setting
-                override val value: UncivSound = settingsProperty.get() as UncivSound
-            })
-            else -> EventBus.send(object : SettingsPropertyChanged {
-                override val gameSetting = setting
-            })
-        }
     }
 }

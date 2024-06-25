@@ -1,14 +1,14 @@
 package com.unciv.logic.map.mapgenerator
 
 import com.unciv.Constants
-import com.unciv.utils.debug
-import com.unciv.logic.map.tile.Tile
 import com.unciv.logic.map.TileMap
+import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.tile.Terrain
 import com.unciv.models.ruleset.tile.TerrainType
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueType
+import com.unciv.utils.debug
 import kotlin.math.abs
 import kotlin.math.roundToInt
 
@@ -56,9 +56,11 @@ class NaturalWonderGenerator(val ruleset: Ruleset, val randomness: MapGeneration
             }
         }
 
+        val tilesTooCloseToSpawnLocations = tileMap.startingLocationsByNation.values.flatten().flatMap { it.getTilesInDistance(5) }.toSet()
+
         // First attempt to spawn the chosen wonders in order of least candidate tiles
         chosenWonders.forEach {
-            wonderCandidateTiles[it] = getCandidateTilesForWonder(tileMap, it)
+            wonderCandidateTiles[it] = getCandidateTilesForWonder(tileMap, it, tilesTooCloseToSpawnLocations)
         }
         chosenWonders.sortBy { wonderCandidateTiles[it]!!.size }
         for (wonder in chosenWonders) {
@@ -66,11 +68,12 @@ class NaturalWonderGenerator(val ruleset: Ruleset, val randomness: MapGeneration
                 spawned.add(wonder)
         }
 
+
         // If some wonders were not able to be spawned we will pull a wonder from the fallback list
         if (spawned.size < numberToSpawn) {
             // Now we have to do some more calculations. Unfortunately we have to calculate candidate tiles for everyone.
             allNaturalWonders.forEach {
-                wonderCandidateTiles[it] = getCandidateTilesForWonder(tileMap, it)
+                wonderCandidateTiles[it] = getCandidateTilesForWonder(tileMap, it, tilesTooCloseToSpawnLocations)
             }
             allNaturalWonders.sortBy { wonderCandidateTiles[it]!!.size }
             for (wonder in allNaturalWonders) {
@@ -87,7 +90,7 @@ class NaturalWonderGenerator(val ruleset: Ruleset, val randomness: MapGeneration
 
     private fun Unique.getIntParam(index: Int) = params[index].toInt()
 
-    private fun getCandidateTilesForWonder(tileMap: TileMap, naturalWonder: Terrain): Collection<Tile> {
+    private fun getCandidateTilesForWonder(tileMap: TileMap, naturalWonder: Terrain, tilesTooCloseToSpawnLocations: Set<Tile>): Collection<Tile> {
         val continentsRelevant = naturalWonder.hasUnique(UniqueType.NaturalWonderLargerLandmass) ||
                 naturalWonder.hasUnique(UniqueType.NaturalWonderSmallerLandmass)
         val sortedContinents = if (continentsRelevant)
@@ -99,6 +102,7 @@ class NaturalWonderGenerator(val ruleset: Ruleset, val randomness: MapGeneration
 
         val suitableLocations = tileMap.values.filter { tile->
             tile.resource == null &&
+            tile !in tilesTooCloseToSpawnLocations &&
             naturalWonder.occursOn.contains(tile.lastTerrain.name) &&
             naturalWonder.uniqueObjects.all { unique ->
                 when (unique.type) {
@@ -147,18 +151,10 @@ class NaturalWonderGenerator(val ruleset: Ruleset, val randomness: MapGeneration
         val targetGroupSize = if (minGroupSize == maxGroupSize) maxGroupSize
             else (minGroupSize..maxGroupSize).random(randomness.RNG)
 
-        var convertNeighborsExcept: String? = null
-        var convertUnique = wonder.getMatchingUniques(UniqueType.NaturalWonderConvertNeighbors).firstOrNull()
-        var convertNeighborsTo = convertUnique?.params?.get(0)
-        if (convertNeighborsTo == null) {
-            convertUnique = wonder.getMatchingUniques(UniqueType.NaturalWonderConvertNeighborsExcept).firstOrNull()
-            convertNeighborsExcept = convertUnique?.params?.get(0)
-            convertNeighborsTo = convertUnique?.params?.get(1)
-        }
-
         if (suitableLocations.size >= minGroupSize) {
             val location = suitableLocations.random(randomness.RNG)
             val list = mutableListOf(location)
+
             while (list.size < targetGroupSize) {
                 val allNeighbors = list.flatMap { it.neighbors }.minus(list).toHashSet()
                 val candidates = suitableLocations.filter { it in allNeighbors }
@@ -166,31 +162,12 @@ class NaturalWonderGenerator(val ruleset: Ruleset, val randomness: MapGeneration
                 list.add(candidates.random(randomness.RNG))
             }
             if (list.size >= minGroupSize) {
-                list.forEach {
-                    clearTile(it)
-                    it.naturalWonder = wonder.name
-                    if (wonder.turnsInto != null)
-                        it.baseTerrain = wonder.turnsInto!!
+                for (tileToConvert in list) {
+                    placeNaturalWonder(wonder, tileToConvert)
                     // Add all tiles within a certain distance to a blacklist so NW:s don't cluster
-                    blockedTiles.addAll(it.getTilesInDistance(it.tileMap.mapParameters.mapSize.height / 5))
+                    blockedTiles.addAll(tileToConvert.getTilesInDistance(tileToConvert.tileMap.mapParameters.mapSize.height / 5))
                 }
-                if (convertNeighborsTo != null) {
-                    for (tile in location.neighbors) {
-                        if (tile.baseTerrain == convertNeighborsTo) continue
-                        if (tile.baseTerrain == convertNeighborsExcept) continue
-                        if (convertNeighborsTo == Constants.coast)
-                            for (neighbor in tile.neighbors) {
-                                // This is so we don't have this tile turn into Coast, and then it's touching a Lake tile.
-                                // We just turn the lake tiles into this kind of tile.
-                                if (neighbor.baseTerrain == Constants.lakes) {
-                                    neighbor.baseTerrain = tile.baseTerrain
-                                    neighbor.setTerrainTransients()
-                                }
-                            }
-                        tile.baseTerrain = convertNeighborsTo
-                        clearTile(tile)
-                    }
-                }
+
                 debug("Natural Wonder %s @%s", wonder.name, location.position)
 
                 return true
@@ -201,11 +178,49 @@ class NaturalWonderGenerator(val ruleset: Ruleset, val randomness: MapGeneration
         return false
     }
 
-    private fun clearTile(tile: Tile){
-        tile.setTerrainFeatures(listOf())
-        tile.resource = null
-        tile.changeImprovement(null)
-        tile.setTerrainTransients()
+    companion object {
+        fun placeNaturalWonder(wonder: Terrain, location: Tile) {
+            clearTile(location)
+            location.naturalWonder = wonder.name
+            if (wonder.turnsInto != null)
+                location.baseTerrain = wonder.turnsInto!!
+
+            var convertNeighborsExcept: String? = null
+            var convertUnique = wonder.getMatchingUniques(UniqueType.NaturalWonderConvertNeighbors).firstOrNull()
+            var convertNeighborsTo = convertUnique?.params?.get(0)
+            if (convertNeighborsTo == null) {
+                convertUnique = wonder.getMatchingUniques(UniqueType.NaturalWonderConvertNeighborsExcept).firstOrNull()
+                convertNeighborsExcept = convertUnique?.params?.get(0)
+                convertNeighborsTo = convertUnique?.params?.get(1)
+            }
+
+            if (convertNeighborsTo != null) {
+                for (tile in location.neighbors) {
+                    if (tile.baseTerrain == convertNeighborsTo) continue
+                    if (tile.baseTerrain == convertNeighborsExcept) continue
+                    if (convertNeighborsTo == Constants.coast) {
+                        for (neighbor in tile.neighbors) {
+                            // This is so we don't have this tile turn into Coast, and then it's touching a Lake tile.
+                            // We just turn the lake tiles into this kind of tile.
+                            if (neighbor.baseTerrain == Constants.lakes) {
+                                neighbor.baseTerrain = tile.baseTerrain
+                                neighbor.setTerrainTransients()
+                            }
+                        }
+                        location.setConnectedByRiver(tile, false)
+                    }
+                    tile.baseTerrain = convertNeighborsTo
+                    clearTile(tile)
+                }
+            }
+        }
+
+        private fun clearTile(tile: Tile) {
+            tile.setTerrainFeatures(listOf())
+            tile.resource = null
+            tile.improvement = null
+            tile.setTerrainTransients()
+        }
     }
 
     /** Implements [UniqueParameterType.SimpleTerrain][com.unciv.models.ruleset.unique.UniqueParameterType.SimpleTerrain] */

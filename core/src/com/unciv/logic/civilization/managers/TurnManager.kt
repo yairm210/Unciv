@@ -11,17 +11,18 @@ import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.civilization.PopupAlert
+import com.unciv.logic.civilization.diplomacy.DiplomacyTurnManager.nextTurn
 import com.unciv.logic.map.mapunit.UnitTurnManager
 import com.unciv.logic.map.tile.Tile
 import com.unciv.logic.trade.TradeEvaluation
-import com.unciv.models.ruleset.ModOptionsConstants
+import com.unciv.models.ruleset.unique.StateForConditionals
+import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unique.endTurn
 import com.unciv.models.stats.Stats
 import com.unciv.ui.components.MayaCalendar
 import com.unciv.ui.screens.worldscreen.status.NextTurnProgress
 import com.unciv.utils.Log
-import kotlin.math.max
 import kotlin.math.min
 import kotlin.random.Random
 
@@ -31,13 +32,13 @@ class TurnManager(val civInfo: Civilization) {
     fun startTurn(progressBar: NextTurnProgress? = null) {
         if (civInfo.isSpectator()) return
 
+        civInfo.threatManager.clear()
         if (civInfo.isMajorCiv() && civInfo.isAlive()) {
             civInfo.statsHistory.recordRankingStats(civInfo)
         }
 
         if (civInfo.cities.isNotEmpty() && civInfo.gameInfo.ruleset.technologies.isNotEmpty())
             civInfo.tech.updateResearchProgress()
-
 
         civInfo.cache.updateCivResources() // If you offered a trade last turn, this turn it will have been accepted/declined
         for (stockpiledResource in civInfo.getCivResourceSupply().filter { it.resource.isStockpiled() })
@@ -48,16 +49,18 @@ class TurnManager(val civInfo: Civilization) {
         civInfo.updateStatsForNextTurn() // for things that change when turn passes e.g. golden age, city state influence
 
         // Do this after updateStatsForNextTurn but before cities.startTurn
-        if (civInfo.playerType == PlayerType.AI && civInfo.gameInfo.ruleset.modOptions.uniques.contains(
-                    ModOptionsConstants.convertGoldToScience))
+        if (civInfo.playerType == PlayerType.AI && civInfo.gameInfo.ruleset.modOptions.hasUnique(UniqueType.ConvertGoldToScience))
             NextTurnAutomation.automateGoldToSciencePercentage(civInfo)
 
         // Generate great people at the start of the turn,
         // so they won't be generated out in the open and vulnerable to enemy attacks before you can control them
         if (civInfo.cities.isNotEmpty()) { //if no city available, addGreatPerson will throw exception
-            val greatPerson = civInfo.greatPeople.getNewGreatPerson()
-            if (greatPerson != null && civInfo.gameInfo.ruleset.units.containsKey(greatPerson))
-                civInfo.units.addUnit(greatPerson)
+            var greatPerson = civInfo.greatPeople.getNewGreatPerson()
+            while (greatPerson != null) {
+                if (civInfo.gameInfo.ruleset.units.containsKey(greatPerson))
+                    civInfo.units.addUnit(greatPerson)
+                greatPerson = civInfo.greatPeople.getNewGreatPerson()
+            }
             civInfo.religionManager.startTurn()
             if (civInfo.isLongCountActive())
                 MayaCalendar.startTurnForMaya(civInfo)
@@ -122,6 +125,7 @@ class TurnManager(val civInfo: Civilization) {
 
             when (flag) {
                 CivFlags.RevoltSpawning.name -> doRevoltSpawn()
+                CivFlags.TurnsTillCityStateElection.name -> civInfo.cityStateFunctions.holdElections()
             }
         }
         handleDiplomaticVictoryFlags()
@@ -162,7 +166,7 @@ class TurnManager(val civInfo: Civilization) {
         }
 
         if (!civInfo.hasFlag(CivFlags.RevoltSpawning.name)) {
-            civInfo.addFlag(CivFlags.RevoltSpawning.name, max(getTurnsBeforeRevolt(),1))
+            civInfo.addFlag(CivFlags.RevoltSpawning.name, getTurnsBeforeRevolt().coerceAtLeast(1))
             return
         }
     }
@@ -191,7 +195,7 @@ class TurnManager(val civInfo: Civilization) {
         repeat(rebelCount) {
             civInfo.gameInfo.tileMap.placeUnitNearTile(
                 spawnTile.position,
-                unitToSpawn.name,
+                unitToSpawn,
                 barbarians
             )
         }
@@ -219,10 +223,17 @@ class TurnManager(val civInfo: Civilization) {
     }
 
     private fun getTurnsBeforeRevolt() =
-            ((4 + Random.Default.nextInt(3)) * max(civInfo.gameInfo.speed.modifier, 1f)).toInt()
+        ((civInfo.gameInfo.ruleset.modOptions.constants.baseTurnsUntilRevolt + Random.Default.nextInt(3)) 
+            * civInfo.gameInfo.speed.modifier.coerceAtLeast(1f)).toInt()
 
 
     fun endTurn(progressBar: NextTurnProgress? = null) {
+        if (UncivGame.Current.settings.citiesAutoBombardAtEndOfTurn)
+            NextTurnAutomation.automateCityBombardment(civInfo) // Bombard with all cities that haven't, maybe you missed one
+
+        for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponTurnEnd, StateForConditionals(civInfo)))
+            UniqueTriggerActivation.triggerUnique(unique, civInfo)
+
         val notificationsLog = civInfo.notificationsLog
         val notificationsThisTurn = Civilization.NotificationsLog(civInfo.gameInfo.turns)
         notificationsThisTurn.notifications.addAll(civInfo.notifications)
@@ -249,8 +260,15 @@ class TurnManager(val civInfo: Civilization) {
         civInfo.policies.endTurn(nextTurnStats.culture.toInt())
         civInfo.totalCultureForContests += nextTurnStats.culture.toInt()
 
-        if (civInfo.isCityState())
+        if (civInfo.isCityState()) {
             civInfo.questManager.endTurn()
+
+            // Set turns to elections to a random number so not every city-state has the same election date
+            // May be called at game start or when migrating a game from an older version
+            if (civInfo.gameInfo.isEspionageEnabled() && !civInfo.hasFlag(CivFlags.TurnsTillCityStateElection.name)) {
+                civInfo.addFlag(CivFlags.TurnsTillCityStateElection.name, Random.nextInt(civInfo.gameInfo.ruleset.modOptions.constants.cityStateElectionTurns + 1))
+            }
+        }
 
         // disband units until there are none left OR the gold values are normal
         if (!civInfo.isBarbarian() && civInfo.gold <= -200 && nextTurnStats.gold.toInt() < 0) {
@@ -299,7 +317,7 @@ class TurnManager(val civInfo: Civilization) {
         updateWinningCiv() // Maybe we did something this turn to win
     }
 
-    fun updateWinningCiv(){
+    fun updateWinningCiv() {
         if (civInfo.gameInfo.victoryData != null) return // Game already won
 
         val victoryType = civInfo.victoryManager.getVictoryTypeAchieved()
@@ -307,8 +325,13 @@ class TurnManager(val civInfo: Civilization) {
             civInfo.gameInfo.victoryData =
                     VictoryData(civInfo.civName, victoryType, civInfo.gameInfo.turns)
 
-            for (civInfo in civInfo.gameInfo.civilizations)
-                civInfo.popupAlerts.add(PopupAlert(AlertType.GameHasBeenWon, civInfo.civName))
+            // Notify other human players about this civInfo's victory
+            for (otherCiv in civInfo.gameInfo.civilizations) {
+                // Skip winner, displaying VictoryScreen is handled separately in WorldScreen.update
+                // by checking `viewingCiv.isDefeated() || gameInfo.checkForVictory()`
+                if (otherCiv.playerType != PlayerType.Human || otherCiv == civInfo) continue
+                otherCiv.popupAlerts.add(PopupAlert(AlertType.GameHasBeenWon, ""))
+            }
         }
     }
 
