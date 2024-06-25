@@ -1,34 +1,17 @@
 ## 4.12.3
 
-Resolved  - "after [amount] turns" -> "after turn number [amount]", "before [amount] turns" -> "before turn number [amount]"
+Modding: 
+- "after [amount] turns" -> "after turn number [amount]"
+- "before [amount] turns" -> "before turn number [amount]"
+- "when number of [countable] is greater than [countable]" -> "when number of [countable] is more than [countable]"
+- Clean improvement queue from improvements no longer in ruleset
+- Better unique documentation
 
-Resolved  - "after [amount] turns" -> "after turn number [amount]"
+Fix performance problem for displaying air units in cities
 
-docs: Resource unique documentation
+Fix "edit existing trade" exploit
 
-Clean improvement queue from improvements not in ruleset
-
-Resolve  - Automation control fully moved over to 'automate' field rather than 'action'
-
-Resolve  - fix performance problem for displaying air units in cities
-
-Resolves  - Fixed "edit existing trade" exploit
-
-Resolves  - fix typos in new tutorials
-
-Better unique documentation - resolves 
-
-Remove unused parameters
-
-Updating upload requires updating download
-
-By SomeTroglodyte:
-- Fix console city add/remove building format 
-- Unit test to catch game loading problems with religion enabled 
-
-By tuvus:
-- 4.12.2-patch1
-- Revert "Cache 'majority religion' and uniques, recalc when updating followers " ()
+Fix console city add/remove building format - By SomeTroglodyte
 
 ## 4.12.2
 
