@@ -13,11 +13,11 @@ import com.unciv.models.ruleset.RejectionReason
 import com.unciv.models.ruleset.RejectionReasonType
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetObject
+import com.unciv.models.ruleset.unique.Conditionals
 import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueType
-import com.unciv.models.ruleset.unique.Conditionals
 import com.unciv.models.stats.Stat
 import com.unciv.ui.components.extensions.getNeedMoreAmountString
 import com.unciv.ui.components.extensions.toPercent
@@ -194,11 +194,11 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
 
         // Expensive, since adding and removing the fake unit causes side-effects
         if (isAirUnit()) {
+            // Not actually added to civ so doesn't require destroy
             val fakeUnit = getMapUnit(cityConstructions.city.civ, Constants.NO_ID)
             val canUnitEnterTile = fakeUnit.movement.canMoveTo(cityConstructions.city.getCenterTile())
             if (!canUnitEnterTile)
                 yield(RejectionReasonType.NoPlaceToPutUnit.toInstance())
-            fakeUnit.destroy()
         }
     }
 

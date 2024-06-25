@@ -128,7 +128,7 @@
         "civilopediaText":[
 			{"text":"Construct an improvement!", "centered":true},
             {"extraImage":"Tutorials/Construct an improvement", "imageSize":150},
-            {"text":"Construct a Worker unit →> Move it to a Plains or Grassland tile → Click 'Construct improvement' → Choose the farm → Leave the worker there until it's finished."},
+            {"text":"Construct a Worker unit → Move it to a Plains or Grassland tile → Click 'Construct improvement' → Choose the farm → Leave the worker there until it's finished."},
 		],
         "uniques": [
             "Only available <if tutorials are enabled> <when number of [Cities] is greater than [0]>",
@@ -167,7 +167,7 @@
         "civilopediaText":[
 			{"text":"Move an air unit!", "centered":true},
             {"extraImage":"Tutorials/Move an air unit", "imageSize":140},
-            {"text":"Select an air unit →> select another city within range → Move the unit to the other city."},
+            {"text":"Select an air unit → Select another city within range → Move the unit to the other city."},
 		],
         "uniques": [
             "Only available <if tutorials are enabled> <when number of [Air units] is greater than [0]>",
