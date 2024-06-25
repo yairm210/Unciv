@@ -17,8 +17,8 @@ object Countables {
 
         val civInfo = stateForConditionals.relevantCiv ?: return null
 
-        if (countable == "cities") return civInfo.cities.size
-        if (countable == "units") return civInfo.units.getCivUnitsSize()
+        if (countable == "Cities") return civInfo.cities.size
+        if (countable == "Units") return civInfo.units.getCivUnitsSize()
         if (countable == "Air units") return civInfo.units.getCivUnits().count { it.baseUnit.movesLikeAirUnits() }
 
         if (gameInfo.ruleset.tileResources.containsKey(countable))

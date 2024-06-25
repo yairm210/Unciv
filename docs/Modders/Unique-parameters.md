@@ -287,10 +287,8 @@ Allowed values are:
 Indicates *something that can be counted*, used both for comparisons and for multiplying uniques
 
 Allowed values:
-
-- `year`
-- `turns`
-- `cities`, `units`, `Air units` - these count your total number
+- `year`, `turns`
+- `Cities`, `Units`, `Air units` - these count your total number
 - Unit name (counts your existing units)
 - `<unit type> units` (e.g. `Mounted units`) - counts your units by their type (this is not a filter, use the unitType verbatim)
 - Building name (counts your existing buildings)
