@@ -35,7 +35,8 @@ object DiacriticSupport {
     private const val startingReplacementCodepoint: UShort = 63743u // 0xF8FF
 
     private object TranslationKeys {
-        const val range = "diacritics_joinable_range"
+        const val rangeStart = "language_start_code"
+        const val rangeEnd = "language_end_code"
         const val left = "left_joining_diacritics"
         const val right = "right_joining_diacritics"
         const val joiner = "left_and_right_joiners"
@@ -141,7 +142,7 @@ object DiacriticSupport {
     private fun getReplacementChar(joined: String) = inverseMap[joined] ?: createReplacementChar(joined)
 
     private fun createReplacementChar(joined: String): Char {
-        val char = getNextFreeCode()
+        val char = getCurrentFreeCode()
         nextFreeDiacriticReplacementCodepoint--
         fakeAlphabet[char] = joined
         inverseMap[joined] = char
@@ -151,15 +152,30 @@ object DiacriticSupport {
     /** Set up for a series of [remapDiacritics] calls for a specific language.
      *  Extracts the translation entries for [TranslationKeys] and sets up [CharClass] [mappings][charClassMap] using them. */
     fun prepareTranslationData(translations: HashMap<String, String>) {
+        val stripCommentRegex = """^"?(.*?)"?(?:\s*#.*)?$""".toRegex()
+        fun String?.parseDiacriticEntry(): String {
+            if (isNullOrEmpty()) return ""
+            val tokens = stripCommentRegex.matchEntire(this)!!.groupValues[1].splitToSequence(' ').toMutableList()
+            for (index in tokens.indices) {
+                val token = tokens[index]
+                when {
+                    token.length == 1 -> continue
+                    token.startsWith("u+", true) -> tokens[index] = Char(token.drop(2).toInt(16)).toString()
+                    tokens.size == 1 -> continue
+                    else -> throw IllegalArgumentException("Invalid diacritic definition: \"$token\" is not a single character or unicode codepoint notation")
+                }
+            }
+            return tokens.joinToString("")
+        }
+
         noDiacritics = true
-        fun String?.sanitizeDiacriticEntry() = this?.replace(" ", "")?.removeSurrounding("\"") ?: ""
-        val range = translations[TranslationKeys.range].sanitizeDiacriticEntry()
-            .takeIf { it.length == 2 }
-            ?.let { it.first()..it.last() }
-            ?: CharRange.EMPTY
-        val leftDiacritics = translations[TranslationKeys.left].sanitizeDiacriticEntry()
-        val rightDiacritics = translations[TranslationKeys.right].sanitizeDiacriticEntry()
-        val joinerDiacritics = translations[TranslationKeys.joiner].sanitizeDiacriticEntry()
+        val rangeStart = translations[TranslationKeys.rangeStart].parseDiacriticEntry()
+        val rangeEnd = translations[TranslationKeys.rangeEnd].parseDiacriticEntry()
+        val range = if (rangeStart.isEmpty() || rangeEnd.isEmpty()) CharRange.EMPTY
+            else rangeStart.first()..rangeEnd.first()
+        val leftDiacritics = translations[TranslationKeys.left].parseDiacriticEntry()
+        val rightDiacritics = translations[TranslationKeys.right].parseDiacriticEntry()
+        val joinerDiacritics = translations[TranslationKeys.joiner].parseDiacriticEntry()
         if (leftDiacritics.isNotEmpty() || rightDiacritics.isNotEmpty() || joinerDiacritics.isNotEmpty())
             prepareTranslationData(range, leftDiacritics, rightDiacritics, joinerDiacritics)
     }
