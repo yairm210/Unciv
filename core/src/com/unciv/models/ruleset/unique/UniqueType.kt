@@ -594,9 +594,15 @@ enum class UniqueType(
     CannotBeTraded("Cannot be traded", UniqueTarget.Resource),
     NotShownOnWorldScreen("Not shown on world screen", UniqueTarget.Resource, flags = UniqueFlag.setOfHiddenToUsers),
 
-    ResourceWeighting("Generated with weight [amount]", UniqueTarget.Resource, flags = UniqueFlag.setOfHiddenToUsers),
-    MinorDepositWeighting("Minor deposits generated with weight [amount]", UniqueTarget.Resource, flags = UniqueFlag.setOfHiddenToUsers),
-    LuxuryWeightingForCityStates("Generated near City States with weight [amount]", UniqueTarget.Resource, flags = UniqueFlag.setOfHiddenToUsers),
+    ResourceWeighting("Generated with weight [amount]", UniqueTarget.Resource, flags = UniqueFlag.setOfHiddenToUsers,
+        docDescription = "The probability for this resource to be chosen is (this resource weight) / (sum weight of all eligible resources). " +
+                "Resources without a unique are given weight `1`"),
+    MinorDepositWeighting("Minor deposits generated with weight [amount]", UniqueTarget.Resource, flags = UniqueFlag.setOfHiddenToUsers,
+        docDescription = "The probability for this resource to be chosen is (this resource weight) / (sum weight of all eligible resources). " +
+                "Resources without a unique are not generated as minor deposits."),
+    LuxuryWeightingForCityStates("Generated near City States with weight [amount]", UniqueTarget.Resource, flags = UniqueFlag.setOfHiddenToUsers,
+        docDescription = "The probability for this resource to be chosen is (this resource weight) / (sum weight of all eligible resources). " +
+                "Only assignable to luxuries, resources without a unique are given weight `1`"),
     LuxurySpecialPlacement("Special placement during map generation", UniqueTarget.Resource, flags = UniqueFlag.setOfHiddenToUsers),
     ResourceFrequency("Generated on every [amount] tiles", UniqueTarget.Resource, flags = UniqueFlag.setOfHiddenToUsers),
     StrategicBalanceResource("Guaranteed with Strategic Balance resource option", UniqueTarget.Resource),
@@ -644,8 +650,12 @@ enum class UniqueType(
         docDescription = "Turns this unique into a trigger, activating this unique as a *global* unique for a number of turns"),
     ConditionalChance("with [amount]% chance", UniqueTarget.Conditional),
     ConditionalEveryTurns("every [positiveAmount] turns", UniqueTarget.Conditional),
-    ConditionalBeforeTurns("before [amount] turns", UniqueTarget.Conditional),
-    ConditionalAfterTurns("after [amount] turns", UniqueTarget.Conditional),
+    ConditionalBeforeTurns("before turn number [amount]", UniqueTarget.Conditional),
+    @Deprecated("As of 4.12.3", ReplaceWith("before turn number [amount]"))
+    ConditionalBeforeTurnsOld("before [amount] turns", UniqueTarget.Conditional),
+    ConditionalAfterTurns("after turn number [amount]", UniqueTarget.Conditional),
+    @Deprecated("As of 4.12.3", ReplaceWith("after turn number [amount]"))
+    ConditionalAfterTurnsOld("after [amount] turns", UniqueTarget.Conditional),
     ConditionalTutorialsEnabled("if tutorials are enabled", UniqueTarget.Conditional, flags = UniqueFlag.setOfHiddenToUsers), // Hidden as no translations needed for now
     ConditionalTutorialCompleted("if tutorial [comment] is completed", UniqueTarget.Conditional, flags = UniqueFlag.setOfHiddenToUsers), // Hidden as no translations needed for now
 
@@ -760,6 +770,8 @@ enum class UniqueType(
     /////// countables conditionals
     ConditionalCountableEqualTo("when number of [countable] is equal to [countable]", UniqueTarget.Conditional),
     ConditionalCountableDifferentThan("when number of [countable] is different than [countable]", UniqueTarget.Conditional),
+    ConditionalCountableMoreThan("when number of [countable] is more than [countable]", UniqueTarget.Conditional),
+    @Deprecated("As of 4.12.3", ReplaceWith("when number of [countable] is more than [countable]"))
     ConditionalCountableGreaterThan("when number of [countable] is greater than [countable]", UniqueTarget.Conditional),
     ConditionalCountableLessThan("when number of [countable] is less than [countable]", UniqueTarget.Conditional),
     ConditionalCountableBetween("when number of [countable] is between [countable] and [countable]", UniqueTarget.Conditional),

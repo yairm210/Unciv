@@ -1,3 +1,18 @@
+## 4.12.3
+
+Modding: 
+- "after [amount] turns" -> "after turn number [amount]"
+- "before [amount] turns" -> "before turn number [amount]"
+- "when number of [countable] is greater than [countable]" -> "when number of [countable] is more than [countable]"
+- Clean improvement queue from improvements no longer in ruleset
+- Better unique documentation
+
+Fix performance problem for displaying air units in cities
+
+Fix "edit existing trade" exploit
+
+Fix console city add/remove building format - By SomeTroglodyte
+
 ## 4.12.2
 
 Tech, policy, unit and terrain uniques provide multiplied uniques with "for every [countable]" / "for every [amount] [countable]" modifiers
