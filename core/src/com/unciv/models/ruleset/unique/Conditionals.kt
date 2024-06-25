@@ -289,7 +289,7 @@ object Conditionals {
                         first, second -> first != second
                 }
 
-            UniqueType.ConditionalCountableGreaterThan ->
+            UniqueType.ConditionalCountableMoreThan, UniqueType.ConditionalCountableGreaterThan ->
                 compareCountables(condition.params[0], condition.params[1]) {
                         first, second -> first > second
                 }

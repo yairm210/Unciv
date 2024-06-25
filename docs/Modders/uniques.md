@@ -2301,8 +2301,8 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Conditional
 
-??? example  "&lt;when number of [countable] is greater than [countable]&gt;"
-	Example: "&lt;when number of [1000] is greater than [1000]&gt;"
+??? example  "&lt;when number of [countable] is more than [countable]&gt;"
+	Example: "&lt;when number of [1000] is more than [1000]&gt;"
 
 	Applicable to: Conditional
 
