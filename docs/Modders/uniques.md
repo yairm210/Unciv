@@ -876,7 +876,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "No defensive terrain penalty"
 	Applicable to: Global, Unit
 
-??? example  "Damage is ignored when determining unit Strength"
+??? example  "No damage penalty for wounded units"
 	Applicable to: Global, Unit
 
 ??? example  "No movement cost to pillage"
@@ -1343,9 +1343,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "Uncapturable"
 	Applicable to: Unit
 
-??? example  "May withdraw before melee ([amount]%)"
-	Example: "May withdraw before melee ([3]%)"
-
+??? example  "Withdraws before melee combat"
 	Applicable to: Unit
 
 ??? example  "Unable to capture cities"
