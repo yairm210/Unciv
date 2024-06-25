@@ -12,6 +12,7 @@ import com.unciv.ui.components.fonts.FontRulesetIcons
 import com.unciv.utils.Log
 import com.unciv.utils.debug
 import java.util.Locale
+import org.jetbrains.annotations.VisibleForTesting
 
 /**
  *  This collection holds all translations for the game.
@@ -118,8 +119,9 @@ class Translations : LinkedHashMap<String, TranslationEntry>() {
         debug("Loading translation file for %s - %sms", language, System.currentTimeMillis() - translationStart)
     }
 
-    private fun createTranslations(language: String, languageTranslations: HashMap<String, String>) {
-        val diacriticSupport = DiacriticSupport(languageTranslations).takeUnless { it.noDiacritics() }
+    @VisibleForTesting
+    fun createTranslations(language: String, languageTranslations: HashMap<String, String>) {
+        val diacriticSupport = DiacriticSupport(languageTranslations).takeIf { it.isEnabled() }
         for ((key, value) in languageTranslations) {
             val hashKey = if (key.contains('[') && !key.contains('<'))
                 key.getPlaceholderText()

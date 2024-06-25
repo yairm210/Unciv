@@ -330,7 +330,7 @@ class TranslationTests {
                 entry["English"]?.let { entry.entry to it }
             }.toMap(HashMap())
         val diacriticSupport = DiacriticSupport(english)
-        Assert.assertTrue(diacriticSupport.noDiacritics())
+        Assert.assertFalse(diacriticSupport.isEnabled())
     }
 
     @Test
@@ -344,7 +344,7 @@ class TranslationTests {
         DiacriticSupport.reset()
         val leftJoiningDiacritics = "ঁ ং ঃ ় া ি ী ু ূ ৃ ৄ ে ৈ ো ৌ ্ ৗ ৢ ৣ ৾".replace(" ", "")
         val leftAndRightJoiners = "্"
-        val diacriticSupport = DiacriticSupport(Char(0x0980U)..Char(0x09FDU), leftJoiningDiacritics, "", leftAndRightJoiners)
+        val diacriticSupport = DiacriticSupport(true, Char(0x0980U)..Char(0x09FDU), leftJoiningDiacritics, "", leftAndRightJoiners)
 
         listOf(
             "মানচিত্র সম্পাদক", "দেখুন", "উৎপন্ন করুন", "আংশিক", "খ্রিষ্টপূর্ব", "সংক্ষিপ্ত", "শক্তি", "ষ্ঠ্যে"
@@ -365,17 +365,29 @@ class TranslationTests {
      *  It's also dependent on the translation itself at the time of writing and will fail if a translator changes it.
      */
     @Test
-    // @RedirectOutput(RedirectPolicy.Show) // has good visualization - comment in and run to see how the fake alphabet actuall works
+    // @RedirectOutput(RedirectPolicy.Show) // has good visualization - comment in and run to see how the fake alphabet actually works
     fun diacriticsTestBanglaRoundtrip() {
+        testRoundtrip("Bangla", "Overview", "সংক্ষিপ্ত বিবরণী")
+    }
+
+    @Test
+    fun testNonBasePlaneUnicode() {
+        translations.createTranslations("Test", hashMapOf("Test" to "Test\uD83D\uDC4D", "diacritics_support" to "true"))
+        testRoundtrip("Test", "Test", "Test\uD83D\uDC4D") { translated ->
+            val isOK = translated.startsWith("Test") && translated.length == 5 && translated.last() > DiacriticSupport.getCurrentFreeCode()
+            Assert.assertTrue("Translation with one emoji should have exactly one fake alphabet codepoint", isOK)
+        }
+    }
+
+    private fun testRoundtrip(language: String, term: String, input: String, additionalTest: ((String)->Unit)? = null) {
         UncivGame.Current = UncivGame()
         UncivGame.Current.settings = GameSettings()
-        UncivGame.Current.settings.language = "Bangla"
+        UncivGame.Current.settings.language = language
         for ((key, value) in translations)
             UncivGame.Current.translations[key] = value
 
-        val input = "সংক্ষিপ্ত বিবরণী"
-        val translated = "Overview".tr()
-        if (translated == "Overview") return // No translation present, can't test
+        val translated = term.tr()
+        if (translated == term) return // No translation present, can't test
 
         val output = translated.asIterable().joinToString("") { DiacriticSupport.getStringFor(it) }
 
@@ -383,8 +395,9 @@ class TranslationTests {
         fun String.hex() = asIterable().joinToString(" ") { it.hex() }
         fun String.literalAndHex() = "\"$this\" = ${hex()}"
         val translatedHex = translated.asIterable().joinToString("; ") { it.hex() + " -> " + DiacriticSupport.getStringFor(it).literalAndHex() }
-        println("Mapping 'Overview' to Bangla and back:\n\tinput: ${input.literalAndHex()}\n\ttranslated: $translatedHex\n\toutput: ${output.literalAndHex()}")
+        println("Mapping '$term' in $language to fake alphabet and back:\n\tinput: ${input.literalAndHex()}\n\ttranslated: $translatedHex\n\toutput: ${output.literalAndHex()}")
         Assert.assertEquals(input, output)
+        additionalTest?.invoke(translated)
     }
 
 //    @Test
