@@ -594,9 +594,15 @@ enum class UniqueType(
     CannotBeTraded("Cannot be traded", UniqueTarget.Resource),
     NotShownOnWorldScreen("Not shown on world screen", UniqueTarget.Resource, flags = UniqueFlag.setOfHiddenToUsers),
 
-    ResourceWeighting("Generated with weight [amount]", UniqueTarget.Resource, flags = UniqueFlag.setOfHiddenToUsers),
-    MinorDepositWeighting("Minor deposits generated with weight [amount]", UniqueTarget.Resource, flags = UniqueFlag.setOfHiddenToUsers),
-    LuxuryWeightingForCityStates("Generated near City States with weight [amount]", UniqueTarget.Resource, flags = UniqueFlag.setOfHiddenToUsers),
+    ResourceWeighting("Generated with weight [amount]", UniqueTarget.Resource, flags = UniqueFlag.setOfHiddenToUsers,
+        docDescription = "The probability for this resource to be chosen is (this resource weight) / (sum weight of all eligible resources). " +
+                "Resources without a unique are given weight `1`"),
+    MinorDepositWeighting("Minor deposits generated with weight [amount]", UniqueTarget.Resource, flags = UniqueFlag.setOfHiddenToUsers,
+        docDescription = "The probability for this resource to be chosen is (this resource weight) / (sum weight of all eligible resources). " +
+                "Resources without a unique are not generated as minor deposits."),
+    LuxuryWeightingForCityStates("Generated near City States with weight [amount]", UniqueTarget.Resource, flags = UniqueFlag.setOfHiddenToUsers,
+        docDescription = "The probability for this resource to be chosen is (this resource weight) / (sum weight of all eligible resources). " +
+                "Only assignable to luxuries, resources without a unique are given weight `1`"),
     LuxurySpecialPlacement("Special placement during map generation", UniqueTarget.Resource, flags = UniqueFlag.setOfHiddenToUsers),
     ResourceFrequency("Generated on every [amount] tiles", UniqueTarget.Resource, flags = UniqueFlag.setOfHiddenToUsers),
     StrategicBalanceResource("Guaranteed with Strategic Balance resource option", UniqueTarget.Resource),
