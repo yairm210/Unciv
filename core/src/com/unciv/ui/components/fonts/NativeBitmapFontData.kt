@@ -81,7 +81,7 @@ class NativeBitmapFontData(
 
         // Check alpha to guess whether this is a round icon
         // Needs to be done before disposing charPixmap, and we want to do that soon
-        val isFontRulesetIcon = ch.code >= FontRulesetIcons.UNUSED_CHARACTER_CODES_START && ch <= DiacriticSupport.getNextFreeCode()
+        val isFontRulesetIcon = ch.code >= FontRulesetIcons.UNUSED_CHARACTER_CODES_START && ch <= DiacriticSupport.getCurrentFreeCode()
         val assumeRoundIcon = isFontRulesetIcon && charPixmap.guessIsRoundSurroundedByTransparency()
 
         val rect = packer.pack(charPixmap)

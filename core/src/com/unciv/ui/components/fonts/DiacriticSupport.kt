@@ -123,7 +123,7 @@ object DiacriticSupport {
     }
 
     /** Other "fake" alphabets can use Unicode Private Use Areas from U+E000 up to including... */
-    fun getNextFreeCode() = Char(nextFreeDiacriticReplacementCodepoint)
+    fun getCurrentFreeCode() = Char(nextFreeDiacriticReplacementCodepoint)
 
     /** If this is true, no need to bother [remapping chars at render time][getStringFor] */
     fun isEmpty() = fakeAlphabet.isEmpty()
