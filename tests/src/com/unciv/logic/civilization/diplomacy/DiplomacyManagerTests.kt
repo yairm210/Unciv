@@ -299,7 +299,7 @@ class DiplomacyManagerTests {
 
         val religion = testGame.addReligion(a)
         val belief = testGame.createBelief(BeliefType.Founder, "[+1 Food] from every [Shrine]")
-        religion.founderBeliefs.add(belief.name)
+        religion.addBeliefs(listOf(belief))
         cityStateCapital.religion.addPressure(religion.name, 1000)
 
         cityState.getDiplomacyManager(a)!!.addInfluence(30f)
@@ -340,7 +340,7 @@ class DiplomacyManagerTests {
 
         val religion = testGame.addReligion(a)
         val belief = testGame.createBelief(BeliefType.Founder, "[+1 Food] from every [Shrine]")
-        religion.founderBeliefs.add(belief.name)
+        religion.addBeliefs(listOf(belief))
         cityStateCapital.religion.addPressure(religion.name, 1000)
 
         cityState.getDiplomacyManager(a)!!.addInfluence(-30f)
