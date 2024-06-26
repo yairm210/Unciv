@@ -196,14 +196,19 @@ class LoadGameScreen : LoadOrSaveScreen() {
     private fun getCopyExistingSaveToClipboardButton(): TextButton {
         val copyButton = copyExistingSaveToClipboard.toTextButton()
         copyButton.onActivation {
-            if (selectedSave == null) return@onActivation
+            val file = selectedSave ?: return@onActivation
             Concurrency.run(copyExistingSaveToClipboard) {
                 try {
-                    val gameText = selectedSave!!.readString()
+                    val gameText = file.readString()
                     Gdx.app.clipboard.contents = if (gameText[0] == '{') Gzip.zip(gameText) else gameText
+                    launchOnGLThread {
+                        ToastPopup("'[${file.name()}]' copied to clipboard!", this@LoadGameScreen)
+                    }
                 } catch (ex: Throwable) {
                     ex.printStackTrace()
-                    ToastPopup("Could not save game to clipboard!", this@LoadGameScreen)
+                    launchOnGLThread {
+                        ToastPopup("Could not save game to clipboard!", this@LoadGameScreen)
+                    }
                 }
             }
         }
