@@ -170,7 +170,7 @@
             {"text":"Select an air unit → Select another city within range → Move the unit to the other city."},
 		],
         "uniques": [
-            "Only available <if tutorials are enabled> <when number of [Air units] is greater than [0]>",
+            "Only available <if tutorials are enabled> <when number of [[Air] Units] is greater than [0]>",
             "Unavailable <if tutorial [Move an air unit] is completed>"
         ]
     },
