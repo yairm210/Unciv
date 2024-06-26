@@ -276,7 +276,7 @@ class UniqueMap() : HashMap<String, ArrayList<Unique>>() {
         return getAllUniques().filter { unique ->
             unique.conditionals.any { it.type == trigger }
             && unique.conditionalsApply(stateForConditionals)
-        }
+        }.flatMap { it.getMultiplied(stateForConditionals) }
     }
 }
 
