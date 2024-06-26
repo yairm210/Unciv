@@ -143,7 +143,7 @@ object BuildingDescriptions {
         } else {
             val newAbilityPredicate: (Unique)->Boolean = { it.text in originalBuilding.uniques || it.isHiddenToUsers() }
             for (unique in replacementBuilding.uniqueObjects.filterNot(newAbilityPredicate))
-                yield(FormattedLine(unique.text, indent=1))  // FormattedLine(unique) would look worse - no indent and autolinking could distract
+                yield(FormattedLine(unique.getDisplayText(), indent=1))  // FormattedLine(unique) would look worse - no indent and autolinking could distract
         }
 
         val lostAbilityPredicate: (Unique)->Boolean = { it.text in replacementBuilding.uniques || it.isHiddenToUsers() }

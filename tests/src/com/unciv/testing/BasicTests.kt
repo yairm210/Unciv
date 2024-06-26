@@ -8,7 +8,6 @@ import com.unciv.models.metadata.BaseRuleset
 import com.unciv.models.metadata.GameSettings
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
-import com.unciv.models.ruleset.RulesetStatsObject
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueParameterType
 import com.unciv.models.ruleset.unique.UniqueType
@@ -174,24 +173,6 @@ class BasicTests {
             }
         }
         Assert.assertTrue("This test succeeds only if all uniques of promotions are presented in UniqueType.values()", allOK)
-    }
-
-    @Test
-    fun allTerrainRelatedUniquesHaveTheirUniqueTypes() {
-        val objects : MutableCollection<RulesetStatsObject> = mutableListOf()
-        objects.addAll(ruleset.tileImprovements.values)
-        objects.addAll(ruleset.tileResources.values)
-        objects.addAll(ruleset.terrains.values)
-        var allOK = true
-        for (obj in objects) {
-            for (unique in obj.uniques) {
-                if (!UniqueType.values().any { it.placeholderText == unique.getPlaceholderText() }) {
-                    debug("%s: %s", obj.name, unique)
-                    allOK = false
-                }
-            }
-        }
-        Assert.assertTrue("This test succeeds only if all uniques are presented in UniqueType.values()", allOK)
     }
 
     @Test

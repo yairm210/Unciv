@@ -34,6 +34,13 @@ When I'm ready to release a new version I:
 -   The F-Droid bot checks periodically if we added a new tag. When it recognizes that we did, it will update the [yaml file here](https://gitlab.com/fdroid/fdroiddata/blob/master/metadata/com.unciv.app.yml)
     -   When the bot next runs and sees that there's a version it doesn't have a release for, it will attempt to build the new release. The log of the build will be added [here](https://monitor.f-droid.org/builds/build) (search for Unciv, there's a log link like this: `https://monitor.f-droid.org/builds/log/com.unciv.app/<appCodeNumber>`), and the new release will eventually be available [here](https://f-droid.org/en/packages/com.unciv.app/)
 
+## Deploying a release patch
+
+In case a fix is urgent because a bug in the last release severely affects a large number of players, any Collaborator (next step up from Contributor) is able to trigger a patch release.
+
+- In the PR that fixes the game-breaking bug, instead of merging, add a comment with "release patch" as body.
+- Wait for the workflow (UncivBot) to do its thing (should be less than a minute - or watch from the "Actions" tab of the repo) and check.
+
 ## About Google Play publishing
 
 We start at a 10% rollout, after a day with no major problems go to 30%, and after another day to 100%. If you were counting that means that most players will get the new version after 2+ days.

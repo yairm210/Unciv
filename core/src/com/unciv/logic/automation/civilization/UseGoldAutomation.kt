@@ -37,7 +37,7 @@ object UseGoldAutomation {
     private fun useGoldForCityStates(civ: Civilization) {
         // RARE EDGE CASE: If you ally with a city-state, you may reveal more map that includes ANOTHER civ!
         // So if we don't lock this list, we may later discover that there are more known civs, concurrent modification exception!
-        val knownCityStates = civ.getKnownCivs().filter { it.isCityState() && MotivationToAttackAutomation.hasAtLeastMotivationToAttack(civ, it, 0) <= 0 }.toList()
+        val knownCityStates = civ.getKnownCivs().filter { it.isCityState() && MotivationToAttackAutomation.hasAtLeastMotivationToAttack(civ, it, 0f) <= 0 }.toList()
 
         // canBeMarriedBy checks actual cost, but it can't be below 500*speedmodifier, and the later check is expensive
         if (civ.gold >= 330 && civ.getHappiness() > 0 && civ.hasUnique(UniqueType.CityStateCanBeBoughtForGold)) {
@@ -51,7 +51,7 @@ object UseGoldAutomation {
         if (civ.gold < 250) return  // skip checks if tryGainInfluence will bail anyway
         if (civ.wantsToFocusOn(Victory.Focus.Culture)) {
             for (cityState in knownCityStates.filter { it.cityStateFunctions.canProvideStat(Stat.Culture) }) {
-                val diploManager = cityState.getDiplomacyManager(civ)
+                val diploManager = cityState.getDiplomacyManager(civ)!!
                 if (diploManager.getInfluence() < 40) { // we want to gain influence with them
                     tryGainInfluence(civ, cityState)
                 }
@@ -165,7 +165,7 @@ object UseGoldAutomation {
 
     private fun tryGainInfluence(civInfo: Civilization, cityState: Civilization) {
         if (civInfo.gold < 250) return // Save up
-        if (cityState.getDiplomacyManager(civInfo).getInfluence() >= 20
+        if (cityState.getDiplomacyManager(civInfo)!!.getInfluence() >= 20
             && civInfo.gold < 500) {
             // Only make a small investment if we have a bit of influence already to build off of so we don't waste our money
             cityState.cityStateFunctions.receiveGoldGift(civInfo, 250)

@@ -106,7 +106,7 @@ object UnitActionsFromUniques {
     private fun getLeadersWePromisedNotToSettleNear(civInfo: Civilization, tile: Tile): String? {
         val leadersWePromisedNotToSettleNear = HashSet<String>()
         for (otherCiv in civInfo.getKnownCivs().filter { it.isMajorCiv() && !civInfo.isAtWarWith(it) }) {
-            val diplomacyManager = otherCiv.getDiplomacyManager(civInfo)
+            val diplomacyManager = otherCiv.getDiplomacyManager(civInfo)!!
             if (diplomacyManager.hasFlag(DiplomacyFlags.AgreedToNotSettleNearUs)) {
                 val citiesWithin6Tiles = otherCiv.cities
                     .filter { it.getCenterTile().aerialDistanceTo(tile) <= 6 }
@@ -254,7 +254,7 @@ object UnitActionsFromUniques {
 
         return UnitAction(UnitActionType.CreateImprovement, 82f, "Create [$improvementName]",
             action = {
-                tile.changeImprovement(improvementName, unit.civ, unit)
+                tile.setImprovement(improvementName, unit.civ, unit)
                 unit.destroy()  // Modders may wish for a nondestructive way, but that should be another Unique
             }.takeIf { unit.currentMovement > 0 })
     }
@@ -287,7 +287,7 @@ object UnitActionsFromUniques {
                     ),
                     action = {
                         val unitTile = unit.getTile()
-                        unitTile.changeImprovement(improvement.name, unit.civ, unit)
+                        unitTile.setImprovement(improvement.name, unit.civ, unit)
 
                         unit.civ.cache.updateViewableTiles() // to update 'last seen improvement'
 
@@ -370,14 +370,14 @@ object UnitActionsFromUniques {
                     val oldMovement = unit.currentMovement
                     unit.destroy()
                     val newUnit =
-                        civInfo.units.placeUnitNearTile(unitTile.position, unitToTransformTo)
+                        civInfo.units.placeUnitNearTile(unitTile.position, unitToTransformTo, unit.id)
 
                     /** We were UNABLE to place the new unit, which means that the unit failed to upgrade!
                      * The only known cause of this currently is "land units upgrading to water units" which fail to be placed.
                      */
                     if (newUnit == null) {
                         val resurrectedUnit =
-                            civInfo.units.placeUnitNearTile(unitTile.position, unit.baseUnit)!!
+                            civInfo.units.placeUnitNearTile(unitTile.position, unit.baseUnit, unit.id)!!
                         unit.copyStatisticsTo(resurrectedUnit)
                     } else { // Managed to upgrade
                         unit.copyStatisticsTo(newUnit)
@@ -456,8 +456,7 @@ object UnitActionsFromUniques {
         return UnitAction(UnitActionType.Repair, 90f,
             title = "${UnitActionType.Repair} [${unit.currentTile.getImprovementToRepair()!!.name}] - [${turnsToBuild}${Fonts.turn}]",
             action = {
-                tile.turnsToImprovement = getRepairTurns(unit)
-                tile.improvementInProgress = Constants.repair
+                tile.queueImprovement(Constants.repair, turnsToBuild)
             }.takeIf { couldConstruct }
         )
     }

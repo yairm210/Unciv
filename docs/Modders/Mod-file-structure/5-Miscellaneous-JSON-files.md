@@ -217,6 +217,7 @@ and city distance in another. In case of conflicts, there is no guarantee which 
 | minimumWarDuration                       | Int    | 10                            | [^P]  |
 | baseTurnsUntilRevolt                     | Int    | 4                             | [^Q]  |
 | cityStateElectionTurns                   | Int    | 15                            | [^R]  |
+| maxImprovementTechErasForward            | Int    | None                          | [^S]  |
 
 Legend:
 
@@ -255,6 +256,7 @@ Legend:
 - [^P]: The number of turns a civ has to wait before negotiating for peace
 - [^Q]: The number of turns before a revolt is spawned
 - [^R]: The number of turns between city-state elections
+- [^S]: If set, the Improvement picker will silently skip improvements whose tech requirement is more advanced than your current Era + this value. Example: With a 0, Trade posts will not show until the Medieval Era, with a 1 they will already show in the CLassical Era.
 
 #### UnitUpgradeCost
 

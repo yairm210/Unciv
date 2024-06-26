@@ -198,7 +198,7 @@ class NaturalWonderGenerator(val ruleset: Ruleset, val randomness: MapGeneration
                 for (tile in location.neighbors) {
                     if (tile.baseTerrain == convertNeighborsTo) continue
                     if (tile.baseTerrain == convertNeighborsExcept) continue
-                    if (convertNeighborsTo == Constants.coast)
+                    if (convertNeighborsTo == Constants.coast) {
                         for (neighbor in tile.neighbors) {
                             // This is so we don't have this tile turn into Coast, and then it's touching a Lake tile.
                             // We just turn the lake tiles into this kind of tile.
@@ -207,6 +207,8 @@ class NaturalWonderGenerator(val ruleset: Ruleset, val randomness: MapGeneration
                                 neighbor.setTerrainTransients()
                             }
                         }
+                        location.setConnectedByRiver(tile, false)
+                    }
                     tile.baseTerrain = convertNeighborsTo
                     clearTile(tile)
                 }

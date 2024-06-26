@@ -4,7 +4,7 @@ import com.unciv.logic.GameInfo
 import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.models.ruleset.Belief
 import com.unciv.models.ruleset.BeliefType
-import com.unciv.models.ruleset.unique.Unique
+import com.unciv.models.ruleset.unique.UniqueMap
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.INamed
 
@@ -15,8 +15,13 @@ class Religion() : INamed, IsPartOfGameInfoSerialization {
     var displayName: String? = null
     lateinit var foundingCivName: String
 
-    var founderBeliefs: HashSet<String> = hashSetOf()
-    var followerBeliefs: HashSet<String> = hashSetOf()
+    private var founderBeliefs: HashSet<String> = hashSetOf()
+    private var followerBeliefs: HashSet<String> = hashSetOf()
+
+    @Transient
+    var founderBeliefUniqueMap = UniqueMap()
+    @Transient
+    var followerBeliefUniqueMap = UniqueMap()
 
     @Transient
     lateinit var gameInfo: GameInfo
@@ -42,6 +47,23 @@ class Religion() : INamed, IsPartOfGameInfoSerialization {
 
     fun setTransients(gameInfo: GameInfo) {
         this.gameInfo = gameInfo
+        updateUniqueMaps()
+    }
+
+    private fun updateUniqueMaps(){
+        followerBeliefUniqueMap = UniqueMap(mapToExistingBeliefs(followerBeliefs).flatMap { it.uniqueObjects })
+        founderBeliefUniqueMap = UniqueMap(mapToExistingBeliefs(founderBeliefs).flatMap { it.uniqueObjects })
+    }
+
+    fun addBeliefs(beliefs: Iterable<Belief>){
+        for (belief in beliefs){
+            when (belief.type){
+                BeliefType.Founder, BeliefType.Enhancer -> founderBeliefs.add(belief.name)
+                BeliefType.Pantheon, BeliefType.Follower -> followerBeliefs.add(belief.name)
+                else -> continue // 'None' and 'Any' are not valid for beliefs, they're used for internal purposes
+            }
+        }
+        updateUniqueMaps()
     }
 
     fun getIconName() =
@@ -52,9 +74,9 @@ class Religion() : INamed, IsPartOfGameInfoSerialization {
         if (displayName != null) displayName!!
         else name
 
-    private fun mapToExistingBeliefs(beliefs: HashSet<String>): List<Belief> {
+    private fun mapToExistingBeliefs(beliefs: Set<String>): Sequence<Belief> {
         val rulesetBeliefs = gameInfo.ruleset.beliefs
-        return beliefs.mapNotNull {
+        return beliefs.asSequence().mapNotNull {
             if (it !in rulesetBeliefs) null
             else rulesetBeliefs[it]!!
         }
@@ -62,7 +84,7 @@ class Religion() : INamed, IsPartOfGameInfoSerialization {
 
     fun getBeliefs(beliefType: BeliefType): Sequence<Belief> {
         if (beliefType == BeliefType.Any)
-            return mapToExistingBeliefs((founderBeliefs + followerBeliefs).toHashSet()).asSequence()
+            return mapToExistingBeliefs((founderBeliefs + followerBeliefs).toHashSet())
 
         val beliefs =
             when {
@@ -72,24 +94,15 @@ class Religion() : INamed, IsPartOfGameInfoSerialization {
             }
 
         return mapToExistingBeliefs(beliefs)
-            .asSequence()
             .filter { it.type == beliefType }
     }
 
     fun getAllBeliefsOrdered(): Sequence<Belief> {
-        return mapToExistingBeliefs(followerBeliefs).asSequence().filter { it.type == BeliefType.Pantheon } +
-            mapToExistingBeliefs(founderBeliefs).asSequence().filter { it.type == BeliefType.Founder } +
-            mapToExistingBeliefs(followerBeliefs).asSequence().filter { it.type == BeliefType.Follower } +
-            mapToExistingBeliefs(founderBeliefs).asSequence().filter { it.type == BeliefType.Enhancer }
+        return mapToExistingBeliefs(followerBeliefs).filter { it.type == BeliefType.Pantheon } +
+            mapToExistingBeliefs(founderBeliefs).filter { it.type == BeliefType.Founder } +
+            mapToExistingBeliefs(followerBeliefs).filter { it.type == BeliefType.Follower } +
+            mapToExistingBeliefs(founderBeliefs).filter { it.type == BeliefType.Enhancer }
     }
-
-    private fun getUniquesOfBeliefs(beliefs: HashSet<String>): Sequence<Unique> {
-        return mapToExistingBeliefs(beliefs).asSequence().flatMap { it.uniqueObjects }
-    }
-
-    fun getFollowerUniques() = getUniquesOfBeliefs(followerBeliefs)
-
-    fun getFounderUniques() = getUniquesOfBeliefs(founderBeliefs)
 
     fun hasBelief(belief: String) = followerBeliefs.contains(belief) || founderBeliefs.contains(belief)
 
@@ -99,7 +112,7 @@ class Religion() : INamed, IsPartOfGameInfoSerialization {
 
     fun isEnhancedReligion() = getBeliefs(BeliefType.Enhancer).any()
 
-    fun getFounder() = gameInfo.civilizations.first { it.civName == foundingCivName }
+    fun getFounder() = gameInfo.getCivilization(foundingCivName)
 
     private fun unlockedBuildingsPurchasable(): List<String> {
         return getAllBeliefsOrdered().flatMap { belief ->

@@ -1,10 +1,8 @@
-const fs = require("fs");
-
-
+import fs from "fs";
 // To be run from the main Unciv repo directory
 // Increments the latest code version to include 'patch-X'
 // Meant to be run from a Github action as part of patch release
-// To test locally - `node .github/workflows/releasePatch.js`
+// To test locally - `node .github/workflows/releasePatch.mjs`
 
 //region Executed Code
 (async () => {
@@ -14,34 +12,33 @@ const fs = require("fs");
 })();
 //endregion
 
-
 //region Function Definitions
 
 function getNextPatchVersion(currentVersion){
     if (currentVersion.match(/^\d+\.\d+\.\d+$/)) return currentVersion + "-patch1"
-    var patchVersionRegexMatch = currentVersion.match(/^(\d+\.\d+\.\d+)-patch(\d+)$/)
+    const patchVersionRegexMatch = currentVersion.match(/^(\d+\.\d+\.\d+)-patch(\d+)$/);
     if (!patchVersionRegexMatch) throw "Unrecognizable version format!"
-    var patchVersion = parseInt(patchVersionRegexMatch[2]) + 1
+    const patchVersion = parseInt(patchVersionRegexMatch[2]) + 1;
     return patchVersionRegexMatch[1] + "-patch" + patchVersion
 }
 
 
 function updateBuildConfig() {
-    var buildConfigPath = "buildSrc/src/main/kotlin/BuildConfig.kt";
-    var buildConfigString = fs.readFileSync(buildConfigPath).toString();
+    const buildConfigPath = "buildSrc/src/main/kotlin/BuildConfig.kt";
+    let buildConfigString = fs.readFileSync(buildConfigPath).toString();
 
 //    console.log("Original: " + buildConfigString);
 
     // Javascript string.match returns a regex string array, where array[0] is the entirety of the captured string,
     //  and array[1] is the first group, array[2] is the second group etc.
 
-    var appVersionMatch = buildConfigString.match(/appVersion = "(.*)"/);
+    const appVersionMatch = buildConfigString.match(/appVersion = "(.*)"/);
     const curVersion = appVersionMatch[1];
     const newVersion = getNextPatchVersion(curVersion)
 //    console.log("New version: "+newVersion)
 
     buildConfigString = buildConfigString.replace(appVersionMatch[0], appVersionMatch[0].replace(curVersion, newVersion));
-    var appCodeNumberMatch = buildConfigString.match(/appCodeNumber = (\d*)/);
+    const appCodeNumberMatch = buildConfigString.match(/appCodeNumber = (\d*)/);
     let currentAppCodeNumber = appCodeNumberMatch[1];
 //    console.log("Current incremental version: " + currentAppCodeNumber);
     const nextAppCodeNumber = Number(currentAppCodeNumber) + 1;

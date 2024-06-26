@@ -1,6 +1,5 @@
 package com.unciv.ui.screens.overviewscreen
 
-import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.Constants
 import com.unciv.logic.civilization.Civilization
@@ -8,9 +7,7 @@ import com.unciv.logic.trade.Trade
 import com.unciv.logic.trade.TradeOffersList
 import com.unciv.ui.components.extensions.addSeparator
 import com.unciv.ui.components.extensions.toLabel
-import com.unciv.ui.components.input.onActivation
 import com.unciv.ui.screens.basescreen.BaseScreen
-import com.unciv.ui.screens.diplomacyscreen.DiplomacyScreen
 
 class TradesOverviewTab(
     viewingPlayer: Civilization,
@@ -51,8 +48,6 @@ class TradesOverviewTab(
     private fun createTradeTable(trade: Trade, otherCiv: Civilization) = Table().apply {
         add(createOffersTable(viewingPlayer, trade.ourOffers, trade.theirOffers.size)).minWidth(overviewScreen.stage.width/4).fillY()
         add(createOffersTable(otherCiv, trade.theirOffers, trade.ourOffers.size)).minWidth(overviewScreen.stage.width/4).fillY()
-        touchable = Touchable.enabled
-        onActivation { game.pushScreen(DiplomacyScreen(viewingPlayer, otherCiv, trade)) }
     }
 
     private fun createOffersTable(civ: Civilization, offersList: TradeOffersList, numberOfOtherSidesOffers: Int): Table {

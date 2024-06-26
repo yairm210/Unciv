@@ -21,11 +21,12 @@ class UnitMovement(val unit: MapUnit) {
     fun isUnknownTileWeShouldAssumeToBePassable(tile: Tile) = !unit.civ.hasExplored(tile)
 
     /**
+     * Gets the tiles the unit could move to at [position] with [unitMovement].
      * Does not consider if tiles can actually be entered, use canMoveTo for that.
      * If a tile can be reached within the turn, but it cannot be passed through, the total distance to it is set to unitMovement
      */
-    fun getDistanceToTilesWithinTurn(
-        origin: Vector2,
+    fun getDistanceToTilesAtPosition(
+        position: Vector2,
         unitMovement: Float,
         considerZoneOfControl: Boolean = true,
         tilesToIgnore: HashSet<Tile>? = null,
@@ -36,7 +37,7 @@ class UnitMovement(val unit: MapUnit) {
 
         val currentUnitTile = unit.currentTile
         // This is for performance, because this is called all the time
-        val unitTile = if (origin == currentUnitTile.position) currentUnitTile else currentUnitTile.tileMap[origin]
+        val unitTile = if (position == currentUnitTile.position) currentUnitTile else currentUnitTile.tileMap[position]
         distanceToTiles[unitTile] = ParentTileAndTotalDistance(unitTile, unitTile, 0f)
 
         // If I can't move my only option is to stay...
@@ -140,7 +141,7 @@ class UnitMovement(val unit: MapUnit) {
                     getDistanceToTiles(true, passThroughCache, movementCostCache) // check cache
                 }
                 else {
-                    getDistanceToTilesWithinTurn(
+                    getDistanceToTilesAtPosition(
                         tileToCheck.position,
                         unitMaxMovement,
                         false,
@@ -700,7 +701,7 @@ class UnitMovement(val unit: MapUnit) {
         if (cacheResults != null) {
             return cacheResults
         }
-        val distanceToTiles = getDistanceToTilesWithinTurn(
+        val distanceToTiles = getDistanceToTilesAtPosition(
             unit.currentTile.position,
             unit.currentMovement,
             considerZoneOfControl,

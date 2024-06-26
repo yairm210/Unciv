@@ -17,7 +17,8 @@ import kotlin.time.ExperimentalTime
 @ExperimentalTime
 class Simulation(
     private val newGameInfo: GameInfo,
-    val simulationsPerThread: Int = 5,
+    val simulationsPerThread: Int = 1
+    ,
     private val threadsNumber: Int = 1,
     private val maxTurns: Int = 1000
 ) {
@@ -48,6 +49,8 @@ class Simulation(
 
         startTime = System.currentTimeMillis()
         val jobs: ArrayList<Job> = ArrayList()
+        println("Starting new game with major civs: "+newGameInfo.civilizations.filter { it.isMajorCiv() }.joinToString { it.civName }
+        + " and minor civs: "+newGameInfo.civilizations.filter { it.isCityState() }.joinToString { it.civName })
         for (threadId in 1..threadsNumber) {
             jobs.add(launch(CoroutineName("simulation-${threadId}")) {
                 repeat(simulationsPerThread) {
@@ -60,10 +63,9 @@ class Simulation(
 
                     if (step.victoryType != null) {
                         step.winner = step.currentPlayer
-                        printWinner(step)
+                        println("${step.winner} won ${step.victoryType} victory on turn ${step.turns}")
                     }
-                    else
-                        printDraw(step)
+                    else println("Max simulation ${step.turns} turns reached: Draw")
 
                     updateCounter(threadId)
                     add(step)
@@ -86,20 +88,6 @@ class Simulation(
         stepCounter++
 //        println("Thread $threadId: Start simulation ($stepCounter/$maxSimulations)")
         println("Simulation step ($stepCounter/$maxSimulations)")
-    }
-
-    private fun printWinner(step: SimulationStep) {
-        println("%s won %s victory on %d turn".format(
-                step.winner,
-                step.victoryType,
-                step.turns
-        ))
-    }
-
-    private fun printDraw(step: SimulationStep) {
-        println("Max simulation %d turns reached : Draw".format(
-                step.turns
-        ))
     }
 
     fun getStats() {

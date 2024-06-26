@@ -85,9 +85,9 @@ class EspionageOverviewScreen(val civInfo: Civilization, val worldScreen: WorldS
             spySelectionTable.add(spy.name.toLabel())
             spySelectionTable.add(spy.rank.toLabel())
             spySelectionTable.add(spy.getLocationName().toLabel())
-            val actionString = if (spy.action.showTurns) 
+            val actionString = if (spy.action.showTurns)
                 "[${spy.action.displayString}] ${spy.turnsRemainingForAction}${Fonts.turn}"
-                else spy.action.displayString
+            else spy.action.displayString
             spySelectionTable.add(actionString.toLabel())
 
             val moveSpyButton = "Move".toTextButton()
@@ -97,7 +97,7 @@ class EspionageOverviewScreen(val civInfo: Civilization, val worldScreen: WorldS
             moveSpyButton.onRightClick {
                 onSpyRightClicked(spy)
             }
-            if (!worldScreen.canChangeState || !spy.isAlive()) {
+            if (!worldScreen.canChangeState || !spy.isAlive() || civInfo.isDefeated()) {
                 // Spectators aren't allowed to move the spies of the Civs they are viewing
                 moveSpyButton.disable()
             }
@@ -124,18 +124,18 @@ class EspionageOverviewScreen(val civInfo: Civilization, val worldScreen: WorldS
         // Then add all cities
 
         val sortedCities = civInfo.gameInfo.getCities()
-                .filter { civInfo.hasExplored(it.getCenterTile()) }
-                .sortedWith(
-                        compareBy<City> {
-                            it.civ != civInfo
-                        }.thenBy {
-                            it.civ.isCityState()
-                        }.thenBy(collator) {
-                            it.civ.civName.tr(hideIcons = true)
-                        }.thenBy(collator) {
-                            it.name.tr(hideIcons = true)
-                        }
-                )
+            .filter { civInfo.hasExplored(it.getCenterTile()) }
+            .sortedWith(
+                compareBy<City> {
+                    it.civ != civInfo
+                }.thenBy {
+                    it.civ.isCityState()
+                }.thenBy(collator) {
+                    it.civ.civName.tr(hideIcons = true)
+                }.thenBy(collator) {
+                    it.name.tr(hideIcons = true)
+                }
+            )
         for (city in sortedCities) {
             addCityToSelectionTable(city)
         }
@@ -143,7 +143,7 @@ class EspionageOverviewScreen(val civInfo: Civilization, val worldScreen: WorldS
 
     private fun addCityToSelectionTable(city: City) {
         citySelectionTable.add(ImageGetter.getNationPortrait(city.civ.nation, 30f))
-                .padLeft(20f)
+            .padLeft(20f)
         val label = city.name.toLabel(hideIcons = true)
         label.onClick {
             worldScreen.game.popScreen() // If a detour to this screen (i.e. not directly from worldScreen) is made possible, use resetToWorldScreen instead
@@ -193,7 +193,7 @@ class EspionageOverviewScreen(val civInfo: Civilization, val worldScreen: WorldS
         add(starTable).center().padLeft(-4f)
 
         // Spectators aren't allowed to move the spies of the Civs they are viewing
-        if (worldScreen.canChangeState && spy.isAlive()) {
+        if (worldScreen.canChangeState && spy.isAlive() && !civInfo.isDefeated()) {
             onClick {
                 onSpyClicked(moveSpyButtons[spy]!!, spy)
             }
@@ -252,7 +252,7 @@ class EspionageOverviewScreen(val civInfo: Civilization, val worldScreen: WorldS
                 button.setDirection(Align.right)
             } else {
                 button.isVisible = city == null // hideout
-                        || !city.espionage.hasSpyOf(civInfo)
+                    || !city.espionage.hasSpyOf(civInfo)
                 button.setDirection(Align.left)
             }
         }
@@ -285,9 +285,9 @@ class EspionageOverviewScreen(val civInfo: Civilization, val worldScreen: WorldS
                 val spy = selectedSpy!!
                 if (!isCurrentAction) {
                     ConfirmPopup(this@EspionageOverviewScreen,
-                            "Do you want to stage a coup in [${city.civ.civName}] with a " +
-                                    "[${(selectedSpy!!.getCoupChanceOfSuccess(false) * 100f).toInt()}]% " +
-                                    "chance of success?", "Stage Coup") {
+                        "Do you want to stage a coup in [${city.civ.civName}] with a " +
+                            "[${(selectedSpy!!.getCoupChanceOfSuccess(false) * 100f).toInt()}]% " +
+                            "chance of success?", "Stage Coup") {
                         spy.setAction(SpyAction.Coup, 1)
                         fist.color = Color.DARK_GRAY
                         update()

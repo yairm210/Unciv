@@ -77,7 +77,7 @@ class TileStatFunctions(val tile: Tile) {
             for (unique in statsFromTilesUniques + statsFromObjectsUniques + statsFromTilesWithoutUniques) {
                 val tileType = unique.params[1]
                 if (tile.matchesFilter(tileType, observingCiv, true))
-                    listOfStats.add("{${unique.sourceObjectName}} ({${unique.text}})" to unique.stats)
+                    listOfStats.add("{${unique.sourceObjectName}} ({${unique.getDisplayText()}})" to unique.stats)
                 else if (improvement != null && improvement.matchesFilter(tileType))
                     improvementStats.add(unique.stats)
                 else if (road != null && road.matchesFilter(tileType))
@@ -147,7 +147,7 @@ class TileStatFunctions(val tile: Tile) {
         val list = arrayListOf(terrain.name to (terrain as Stats))
 
         for (unique in terrain.getMatchingUniques(UniqueType.Stats, stateForConditionals)) {
-            list.add(terrain.name+": "+unique.text to unique.stats)
+            list.add(terrain.name+": "+unique.getDisplayText() to unique.stats)
         }
         return list
     }
@@ -273,7 +273,7 @@ class TileStatFunctions(val tile: Tile) {
         val tileClone = tile.clone()
         tileClone.setTerrainTransients()
 
-        tileClone.changeImprovement(improvement.name)
+        tileClone.setImprovement(improvement.name)
         val futureStats = tileClone.stats.getTileStats(city, observingCiv, cityUniqueCache)
 
         return futureStats.minus(currentStats)

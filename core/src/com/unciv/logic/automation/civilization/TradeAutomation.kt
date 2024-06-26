@@ -55,7 +55,7 @@ object TradeAutomation {
         if (otherCiv.playerType == PlayerType.AI)
             return null
         val evaluation = TradeEvaluation()
-        var deltaInOurFavor = evaluation.getTradeAcceptability(tradeRequest.trade, civInfo, otherCiv)
+        var deltaInOurFavor = evaluation.getTradeAcceptability(tradeRequest.trade, civInfo, otherCiv, true)
         if (deltaInOurFavor > 0) deltaInOurFavor = (deltaInOurFavor / 1.1f).toInt() // They seem very interested in this deal, let's push it a bit.
         val tradeLogic = TradeLogic(civInfo, otherCiv)
 
@@ -178,10 +178,10 @@ object TradeAutomation {
 
         for (otherCiv in knownCivs.filter {
             it.isMajorCiv() && !it.isAtWarWith(civInfo)
-                && !civInfo.getDiplomacyManager(it).hasFlag(DiplomacyFlags.DeclinedLuxExchange)
+                && !civInfo.getDiplomacyManager(it)!!.hasFlag(DiplomacyFlags.DeclinedLuxExchange)
         }) {
 
-            val isEnemy = civInfo.getDiplomacyManager(otherCiv).isRelationshipLevelLE(RelationshipLevel.Enemy)
+            val isEnemy = civInfo.getDiplomacyManager(otherCiv)!!.isRelationshipLevelLE(RelationshipLevel.Enemy)
             if (isEnemy || otherCiv.tradeRequests.any { it.requestingCiv == civInfo.civName })
                 continue
 

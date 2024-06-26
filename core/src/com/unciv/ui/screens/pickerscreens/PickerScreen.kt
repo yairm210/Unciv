@@ -13,6 +13,8 @@ open class PickerScreen(disableScroll: Boolean = false) : BaseScreen() {
     val closeButton by pickerPane::closeButton
     /** @see PickerPane.descriptionLabel */
     val descriptionLabel by pickerPane::descriptionLabel
+    /** @see PickerPane.descriptionScroll */
+    protected val descriptionScroll by pickerPane::descriptionScroll
     /** @see PickerPane.rightSideGroup */
     val rightSideGroup by pickerPane::rightSideGroup
     /** @see PickerPane.rightSideButton */
