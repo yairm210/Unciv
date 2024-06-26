@@ -28,14 +28,14 @@ internal class ConsoleTileCommands: ConsoleCommandNode {
             val selectedTile = console.getSelectedTile()
             val improvement = params[0].find(console.gameInfo.ruleset.tileImprovements.values)
             val civ = params.getOrNull(1)?.let { console.getCivByName(it) }
-            selectedTile.improvementFunctions.changeImprovement(improvement.name, civ)
+            selectedTile.improvementFunctions.setImprovement(improvement.name, civ)
             selectedTile.getCity()?.reassignPopulation()
             DevConsoleResponse.OK
         },
 
         "removeimprovement" to ConsoleAction("tile removeimprovement") { console, _ ->
             val selectedTile = console.getSelectedTile()
-            selectedTile.improvementFunctions.changeImprovement(null)
+            selectedTile.improvementFunctions.setImprovement(null)
             selectedTile.getCity()?.reassignPopulation()
             DevConsoleResponse.OK
         },

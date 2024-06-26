@@ -467,7 +467,7 @@ object UnitAutomation {
      *  Tiles attack from which would result in instant death of the [unit] are ignored. */
     private fun tryAdvanceTowardsCloseEnemy(unit: MapUnit): Boolean {
         // this can be sped up if we check each layer separately
-        val unitDistanceToTiles = unit.movement.getDistanceToTilesWithinTurn(
+        val unitDistanceToTiles = unit.movement.getDistanceToTilesAtPosition(
                 unit.getTile().position,
                 unit.getMaxMovement() * CLOSE_ENEMY_TURNS_AWAY_LIMIT
         )
@@ -505,7 +505,7 @@ object UnitAutomation {
         val civInfo = unit.civ
 
         fun hasPreparationFlag(targetCiv: Civilization): Boolean {
-            val diploManager = civInfo.getDiplomacyManager(targetCiv)
+            val diploManager = civInfo.getDiplomacyManager(targetCiv)!!
             if (diploManager.hasFlag(DiplomacyFlags.Denunciation) 
                     || diploManager.otherCivDiplomacy().hasFlag(DiplomacyFlags.Denunciation)) return true
             if (diploManager.hasFlag(DiplomacyFlags.WaryOf) && diploManager.getFlag(DiplomacyFlags.WaryOf) < 0) return true

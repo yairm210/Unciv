@@ -67,7 +67,7 @@ class GameSerializationTests {
 
         UncivGame.Current.settings = GameSettings()
         game = GameStarter.startNewGame(setup)
-        UncivGame.Current.startSimulation(game)
+        UncivGame.Current.gameInfo = game
 
         // Found a city otherwise too many classes have no instance and are not tested
         val civ = game.getCurrentPlayerCivilization()
@@ -75,7 +75,7 @@ class GameSerializationTests {
         val tile = unit.getTile()
         unit.civ.addCity(tile.position)
         if (tile.ruleset.tileImprovements.containsKey(Constants.cityCenter))
-            tile.changeImprovement(Constants.cityCenter)
+            tile.setImprovement(Constants.cityCenter)
         unit.destroy()
 
         // Ensure some diplomacy objects are instantiated

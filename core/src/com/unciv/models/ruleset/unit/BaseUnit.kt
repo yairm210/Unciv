@@ -13,11 +13,11 @@ import com.unciv.models.ruleset.RejectionReason
 import com.unciv.models.ruleset.RejectionReasonType
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetObject
+import com.unciv.models.ruleset.unique.Conditionals
 import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueType
-import com.unciv.models.ruleset.unique.Conditionals
 import com.unciv.models.stats.Stat
 import com.unciv.ui.components.extensions.getNeedMoreAmountString
 import com.unciv.ui.components.extensions.toPercent
@@ -101,11 +101,12 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         }
     }
 
-    fun getMapUnit(civInfo: Civilization): MapUnit {
+    fun getMapUnit(civInfo: Civilization, unitId: Int? = null): MapUnit {
         val unit = MapUnit()
         unit.name = name
         unit.civ = civInfo
         unit.owner = civInfo.civName
+        unit.id = unitId ?: ++civInfo.gameInfo.lastUnitId
 
         // must be after setting name & civInfo because it sets the baseUnit according to the name
         // and the civInfo is required for using `hasUnique` when determining its movement options
@@ -173,12 +174,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
     override fun getRejectionReasons(cityConstructions: CityConstructions): Sequence<RejectionReason> = sequence {
         if (isWaterUnit() && !cityConstructions.city.isCoastal())
             yield(RejectionReasonType.WaterUnitsInCoastalCities.toInstance())
-        if (isAirUnit()) {
-            val fakeUnit = getMapUnit(cityConstructions.city.civ)
-            val canUnitEnterTile = fakeUnit.movement.canMoveTo(cityConstructions.city.getCenterTile())
-            if (!canUnitEnterTile)
-                yield(RejectionReasonType.NoPlaceToPutUnit.toInstance())
-        }
+
         val civInfo = cityConstructions.city.civ
 
         for (unique in getMatchingUniques(UniqueType.OnlyAvailable, StateForConditionals.IgnoreConditionals))
@@ -192,9 +188,18 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
 
         for (unique in getMatchingUniques(UniqueType.RequiresPopulation))
             if (unique.params[0].toInt() > cityConstructions.city.population.population)
-                yield(RejectionReasonType.PopulationRequirement.toInstance(unique.text))
+                yield(RejectionReasonType.PopulationRequirement.toInstance(unique.getDisplayText()))
 
         yieldAll(getRejectionReasons(civInfo, cityConstructions.city))
+
+        // Expensive, since adding and removing the fake unit causes side-effects
+        if (isAirUnit()) {
+            // Not actually added to civ so doesn't require destroy
+            val fakeUnit = getMapUnit(cityConstructions.city.civ, Constants.NO_ID)
+            val canUnitEnterTile = fakeUnit.movement.canMoveTo(cityConstructions.city.getCenterTile())
+            if (!canUnitEnterTile)
+                yield(RejectionReasonType.NoPlaceToPutUnit.toInstance())
+        }
     }
 
     fun getRejectionReasons(
@@ -247,7 +252,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
                     it.type == UniqueType.ConditionalBelowHappiness || it.type == UniqueType.ConditionalBetweenHappiness
                 }
                 if (hasHappinessCondition)
-                    yield(RejectionReasonType.CannotBeBuiltUnhappiness.toInstance(unique.text))
+                    yield(RejectionReasonType.CannotBeBuiltUnhappiness.toInstance(unique.getDisplayText()))
                 else yield(RejectionReasonType.CannotBeBuilt.toInstance())
             }
     }
@@ -290,7 +295,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
                 }
                 else -> {
                     if (built)
-                        yield(RejectionReasonType.CanOnlyBeBuiltInSpecificCities.toInstance(unique.text))
+                        yield(RejectionReasonType.CanOnlyBeBuiltInSpecificCities.toInstance(unique.getDisplayText()))
                     else
                         yield(RejectionReasonType.ShouldNotBeDisplayed.toInstance())
                 }
@@ -370,13 +375,8 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
     private val cachedMatchesFilterResult = HashMap<String, Boolean>()
 
     /** Implements [UniqueParameterType.BaseUnitFilter][com.unciv.models.ruleset.unique.UniqueParameterType.BaseUnitFilter] */
-    fun matchesFilter(filter: String): Boolean {
-        val cachedAnswer = cachedMatchesFilterResult[filter]
-        if (cachedAnswer != null) return cachedAnswer
-        val newAnswer = MultiFilter.multiFilter(filter, { matchesSingleFilter(it) })
-        cachedMatchesFilterResult[filter] = newAnswer
-        return newAnswer
-    }
+    fun matchesFilter(filter: String): Boolean =
+        cachedMatchesFilterResult.getOrPut(filter) { MultiFilter.multiFilter(filter, ::matchesSingleFilter ) }
 
     fun matchesSingleFilter(filter: String): Boolean {
         return when (filter) {

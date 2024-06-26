@@ -293,11 +293,10 @@ object BaseUnitDescriptions {
             // Need double translation of the "ability" here - unique texts may contain nuts - pardon, square brackets
             yield("Lost ability (vs [${originalUnit.name}]): [${unique.text.tr()}]" to null)
         }
-        for (promotion in betterUnit.promotions.filter { it !in originalUnit.promotions }) {
-            // Needs tr for **individual** translations (no bracket nesting), default separator would have extra blank
-            val effects = ruleset.unitPromotions[promotion]!!.uniques
-                .joinToString() { it.tr() }
-            yield("{$promotion} ($effects)" to "Promotion/$promotion")
+        for (promotionName in betterUnit.promotions.filter { it !in originalUnit.promotions }) {
+            val promotion = ruleset.unitPromotions[promotionName]!!
+            val effects = promotion.uniquesToDescription().joinToString()
+            yield("{$promotionName} ($effects)" to promotion.makeLink())
         }
     }
 

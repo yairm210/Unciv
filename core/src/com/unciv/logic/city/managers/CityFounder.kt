@@ -55,7 +55,7 @@ class CityFounder {
             tile.removeTerrainFeature(terrainFeature)
 
         if (civInfo.gameInfo.ruleset.tileImprovements.containsKey(Constants.cityCenter))
-            tile.changeImprovement(Constants.cityCenter, civInfo)
+            tile.setImprovement(Constants.cityCenter, civInfo)
         tile.stopWorkingOnImprovement()
 
         val ruleset = civInfo.gameInfo.ruleset
@@ -244,6 +244,6 @@ class CityFounder {
                     .distinct()
                     .filter { it.knows(city.civ) && it.hasExplored(city.getCenterTile()) }
         for (otherCiv in civsWithCloseCities)
-            otherCiv.getDiplomacyManager(city.civ).setFlag(DiplomacyFlags.SettledCitiesNearUs, 30)
+            otherCiv.getDiplomacyManager(city.civ)!!.setFlag(DiplomacyFlags.SettledCitiesNearUs, 30)
     }
 }

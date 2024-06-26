@@ -13,7 +13,7 @@ import com.unciv.ui.screens.worldscreen.unit.actions.UnitActions
 object CivilianUnitAutomation {
 
     fun shouldClearTileForAddInCapitalUnits(unit: MapUnit, tile: Tile) =
-        tile.getCity()?.isCapital() == true
+        tile.isCityCenter() && tile.getCity()!!.isCapital()
         && !unit.hasUnique(UniqueType.AddInCapital)
         && unit.civ.units.getCivUnits().any { unit.hasUnique(UniqueType.AddInCapital) }
 
@@ -109,15 +109,6 @@ object CivilianUnitAutomation {
             val wonderCanBeSpedUpEventually = SpecificUnitAutomation.speedupWonderConstruction(unit)
             if (wonderCanBeSpedUpEventually)
                 return
-        }
-
-        // This has to come after the individual abilities for the great people that can also place
-        // instant improvements (e.g. great scientist).
-        if (unit.hasUnique(UniqueType.ConstructImprovementInstantly)) {
-            // catch great prophet for civs who can't found/enhance/spread religion
-            // includes great people plus moddable units
-            val improvementCanBePlacedEventually =
-                SpecificUnitAutomation.automateImprovementPlacer(unit)
         }
 
         if (unit.hasUnique(UniqueType.GainFreeBuildings)) {

@@ -3,7 +3,7 @@ package com.unciv.logic.civilization
 import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
 import com.unciv.UncivGame
-import com.unciv.json.HashMapVector2
+import com.unciv.json.LastSeenImprovement
 import com.unciv.logic.GameInfo
 import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.MultiFilter
@@ -209,7 +209,7 @@ class Civilization : IsPartOfGameInfoSerialization {
 
     fun hasExplored(tile: Tile) = tile.isExplored(this)
 
-    private val lastSeenImprovement = HashMapVector2<String>()
+    private val lastSeenImprovement = LastSeenImprovement()
 
     // To correctly determine "game over" condition as clarified in #4707
     var hasEverOwnedOriginalCapital: Boolean = false
@@ -320,8 +320,13 @@ class Civilization : IsPartOfGameInfoSerialization {
         return gameInfo.ruleset.difficulties.values.first()
     }
 
-    fun getDiplomacyManager(civInfo: Civilization) = getDiplomacyManager(civInfo.civName)
-    fun getDiplomacyManager(civName: String) = diplomacy[civName]!!
+    /** Makes this civilization meet [civInfo] and returns the DiplomacyManager */
+    fun getDiplomacyManagerOrMeet(civInfo: Civilization): DiplomacyManager {
+        if (!knows(civInfo)) diplomacyFunctions.makeCivilizationsMeet(civInfo)
+        return getDiplomacyManager(civInfo.civName)!!
+    }
+    fun getDiplomacyManager(civInfo: Civilization): DiplomacyManager? = getDiplomacyManager(civInfo.civName)
+    fun getDiplomacyManager(civName: String): DiplomacyManager? = diplomacy[civName]
 
     fun getProximity(civInfo: Civilization) = getProximity(civInfo.civName)
     @Suppress("MemberVisibilityCanBePrivate")  // same visibility for overloads
@@ -509,8 +514,7 @@ class Civilization : IsPartOfGameInfoSerialization {
         yieldAll(getEra().getMatchingUniques(uniqueType, stateForConditionals))
         yieldAll(cityStateFunctions.getUniquesProvidedByCityStates(uniqueType, stateForConditionals))
         if (religionManager.religion != null)
-            yieldAll(religionManager.religion!!.getFounderUniques()
-                .filter { !it.isTimedTriggerable && it.type == uniqueType && it.conditionalsApply(stateForConditionals) })
+            yieldAll(religionManager.religion!!.founderBeliefUniqueMap.getMatchingUniques(uniqueType, stateForConditionals))
 
         yieldAll(getCivResourceSupply().asSequence()
             .filter { it.amount > 0 }
@@ -529,18 +533,19 @@ class Civilization : IsPartOfGameInfoSerialization {
             .flatMap { city -> city.cityConstructions.builtBuildingUniqueMap.getTriggeredUniques(trigger, stateForConditionals) }
         )
         if (religionManager.religion != null)
-            yieldAll(religionManager.religion!!.getFounderUniques()
-                .filter { unique -> unique.conditionals.any { it.type == trigger }
-                    && unique.conditionalsApply(stateForConditionals) })
+            yieldAll(religionManager.religion!!.founderBeliefUniqueMap.getMatchingUniques(trigger, stateForConditionals))
         yieldAll(policies.policyUniques.getTriggeredUniques(trigger, stateForConditionals))
         yieldAll(tech.techUniques.getTriggeredUniques(trigger, stateForConditionals))
         yieldAll(getEra().uniqueMap.getTriggeredUniques (trigger, stateForConditionals))
         yieldAll(gameInfo.ruleset.globalUniques.uniqueMap.getTriggeredUniques(trigger, stateForConditionals))
     }.toList() // Triggers can e.g. add buildings which contain triggers, causing concurrent modification errors
 
-    fun matchesFilter(filter: String): Boolean {
-        return MultiFilter.multiFilter(filter, ::matchesSingleFilter)
-    }
+
+    private val cachedMatchesFilterResult = HashMap<String, Boolean>()
+
+    /** Implements [UniqueParameterType.CivFilter][com.unciv.models.ruleset.unique.UniqueParameterType.CivFilter] */
+    fun matchesFilter(filter: String): Boolean =
+        cachedMatchesFilterResult.getOrPut(filter) { MultiFilter.multiFilter(filter, ::matchesSingleFilter ) }
 
     fun matchesSingleFilter(filter: String): Boolean {
         return when (filter) {
@@ -900,10 +905,12 @@ class Civilization : IsPartOfGameInfoSerialization {
         tradeRequests.clear() // if we don't do this then there could be resources taken by "pending" trades forever
         for (diplomacyManager in diplomacy.values) {
             diplomacyManager.trades.clear()
-            diplomacyManager.otherCiv().getDiplomacyManager(this).trades.clear()
+            diplomacyManager.otherCivDiplomacy().trades.clear()
             for (tradeRequest in diplomacyManager.otherCiv().tradeRequests.filter { it.requestingCiv == civName })
                 diplomacyManager.otherCiv().tradeRequests.remove(tradeRequest) // it  would be really weird to get a trade request from a dead civ
         }
+        if (gameInfo.isEspionageEnabled())
+            espionageManager.removeAllSpies()
     }
 
     fun updateProximity(otherCiv: Civilization, preCalculated: Proximity? = null): Proximity = cache.updateProximity(otherCiv, preCalculated)

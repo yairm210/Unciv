@@ -18,7 +18,6 @@ import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
-import com.unciv.models.translations.fillPlaceholders
 import com.unciv.ui.components.extensions.getNeedMoreAmountString
 import com.unciv.ui.components.extensions.toPercent
 import com.unciv.ui.objectdescriptions.BuildingDescriptions
@@ -260,7 +259,6 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
     override fun getRejectionReasons(cityConstructions: CityConstructions): Sequence<RejectionReason> = sequence {
         val cityCenter = cityConstructions.city.getCenterTile()
         val civ = cityConstructions.city.civ
-        val ruleSet = civ.gameInfo.ruleset
 
         if (cityConstructions.isBuilt(name))
             yield(RejectionReasonType.AlreadyBuilt.toInstance())
@@ -470,13 +468,8 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
     private val cachedMatchesFilterResult = HashMap<String, Boolean>()
 
     /** Implements [UniqueParameterType.BuildingFilter] */
-    fun matchesFilter(filter: String): Boolean {
-        val cachedAnswer = cachedMatchesFilterResult[filter]
-        if (cachedAnswer != null) return cachedAnswer
-        val newAnswer = MultiFilter.multiFilter(filter, { matchesSingleFilter(it) })
-        cachedMatchesFilterResult[filter] = newAnswer
-        return newAnswer
-    }
+    fun matchesFilter(filter: String): Boolean =
+        cachedMatchesFilterResult.getOrPut(filter) { MultiFilter.multiFilter(filter, ::matchesSingleFilter ) }
 
     private fun matchesSingleFilter(filter: String): Boolean {
         return when (filter) {

@@ -20,9 +20,9 @@ jobs:
     runs-on: ubuntu-latest
     name: Build Android (Java ${{ matrix.java_version }})
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
-      - uses: actions/setup-java@v3
+      - uses: actions/setup-java@v4
         with:
           cache: 'gradle'
           distribution: 'temurin'
@@ -32,7 +32,7 @@ jobs:
         uses: android-actions/setup-android@v3
 
       - name: Setup Gradle
-        uses: gradle/gradle-build-action@v2.11.1
+        uses: gradle/actions/setup-gradle@v3
 
       - name: Build Android debug and release files
         run: |
@@ -45,7 +45,7 @@ jobs:
           ./gradlew :android:assembleRelease
 
       - name: Upload Android artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: Android (built with Java ${{ matrix.java_version }})
           path: |
@@ -72,16 +72,16 @@ jobs:
 
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
-      - uses: actions/setup-java@v3
+      - uses: actions/setup-java@v4
         with:
           cache: 'gradle'
           distribution: 'temurin'
           java-version: ${{ matrix.java_version }}
 
       - name: Setup Gradle
-        uses: gradle/gradle-build-action@v2.11.1
+        uses: gradle/actions/setup-gradle@v3
 
       - name: Build the Desktop app
         run: ./gradlew desktop:dist
@@ -90,7 +90,7 @@ jobs:
         run: ./gradlew server:dist
 
       - name: Upload Desktop artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: Desktop (built with Java ${{ matrix.java_version }})
           path: desktop/build/libs/*.jar
@@ -100,7 +100,7 @@ jobs:
         continue-on-error: true
 
       - name: Upload Java server artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: Server (built with Java ${{ matrix.java_version }})
           path: server/build/libs/*.jar

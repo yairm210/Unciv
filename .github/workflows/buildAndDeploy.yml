@@ -20,7 +20,7 @@ jobs:
       release_body: ${{ steps.read_release.outputs.release_body }}
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Read release.md and use it as a body of new release. This will fail for patch releases, since they have no readme.
         continue-on-error: true
@@ -45,9 +45,9 @@ jobs:
     runs-on: ubuntu-latest
     needs: get-release-body
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
-      - uses: actions/setup-java@v3
+      - uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: 17
@@ -56,7 +56,7 @@ jobs:
         uses: android-actions/setup-android@v3
 
       - name: Setup Gradle
-        uses: gradle/gradle-build-action@v2.11.1
+        uses: gradle/actions/setup-gradle@v3
 
       - name: Compile kotlin and build classes
         run: ./gradlew classes
@@ -75,7 +75,7 @@ jobs:
 
       - name: Upload JAR
         continue-on-error: true
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: UncivJar
           path: |
@@ -83,7 +83,7 @@ jobs:
 
       - name: Upload linux files
         continue-on-error: true
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: UncivLinuxFiles
           path: |
@@ -96,7 +96,7 @@ jobs:
 
       - name: Upload Server
         continue-on-error: true
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: UncivServer
           path: server/build/libs/UncivServer.jar
@@ -107,9 +107,9 @@ jobs:
     runs-on: ubuntu-latest
     needs: get-release-body
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
-      - uses: actions/setup-java@v3
+      - uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: 17
@@ -118,7 +118,7 @@ jobs:
         uses: android-actions/setup-android@v3
 
       - name: Setup Gradle
-        uses: gradle/gradle-build-action@v2.11.1
+        uses: gradle/actions/setup-gradle@v3
 
       - name: Prepare .aab (for Google Play) and .apk (for Github) files
         shell: bash
@@ -138,7 +138,7 @@ jobs:
           keyPassword: ${{ secrets.BUNDLE_SIGNING_KEY_PASSWORD }}
 
       - name: Upload AAB to google play
-        uses: r0adkll/upload-google-play@v1.1.2
+        uses: r0adkll/upload-google-play@v1.1.3
         continue-on-error: true
         with:
           serviceAccountJsonPlainText: ${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT_JSON  }}
@@ -168,7 +168,7 @@ jobs:
           mv android/build/outputs/apk/release/Unciv-release-unsigned-signed.apk Unciv-signed.apk
 
       - name: Upload APK
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: UncivAPK
           path: Unciv-signed.apk
@@ -178,18 +178,18 @@ jobs:
     runs-on: ubuntu-latest
     needs: build-jar
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
-      - uses: actions/setup-java@v3
+      - uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: 17
 
       - name: Setup Gradle
-        uses: gradle/gradle-build-action@v2.11.1
+        uses: gradle/actions/setup-gradle@v3
 
       - name: Download JAR
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         # See 'Upload JAR' step in 'build' job
         with:
           name: UncivJar
@@ -203,14 +203,15 @@ jobs:
           mv Unciv.jar desktop/build/libs
 
           wget -q -O packr-all-4.0.0.jar https://github.com/libgdx/packr/releases/download/4.0.0/packr-all-4.0.0.jar
-          wget -q -O jre-linux-64.tar.gz https://github.com/adoptium/temurin11-binaries/releases/download/jdk-11.0.19%2B7/OpenJDK11U-jre_x64_linux_hotspot_11.0.19_7.tar.gz
+
+          wget -q -O jre-linux-64.tar.gz https://api.adoptium.net/v3/binary/latest/11/ga/linux/x64/jre/hotspot/normal/eclipse
           ./gradlew desktop:packrLinux64
 
-          wget -q -O jdk-windows-64.zip https://github.com/adoptium/temurin11-binaries/releases/download/jdk-11.0.20%2B8/OpenJDK11U-jre_x64_windows_hotspot_11.0.20_8.zip
+          wget -q -O jdk-windows-64.zip https://api.adoptium.net/v3/binary/latest/11/ga/windows/x64/jre/hotspot/normal/eclipse
           ./gradlew desktop:packrWindows64
 
       - name: Upload packed zips
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: UncivDeploymentZips
           path: |
@@ -224,7 +225,7 @@ jobs:
     steps:
 
       - name: Download packed zips
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: UncivDeploymentZips
 
@@ -245,7 +246,7 @@ jobs:
     steps:
 
       - name: Download all artifacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
 
       - name: consolidate deploy folder
         run: |

@@ -48,14 +48,14 @@ import com.unciv.ui.components.input.KeyShortcutDispatcherVeto.DispatcherVetoRes
         val shortcutResolver = KeyShortcutDispatcher.Resolver(key)
         val pendingActors = ArrayDeque(actors.toList())
 
-        if (additionalShortcuts != null && dispatcherVetoer(null, additionalShortcuts) == DispatcherVetoResult.Accept)
+        if (additionalShortcuts != null && dispatcherVetoer(null) == DispatcherVetoResult.Accept)
             shortcutResolver.updateFor(additionalShortcuts)
 
         while (true) {
             val actor = pendingActors.removeFirstOrNull()
                 ?: break
             val shortcuts = ActorAttachments.getOrNull(actor)?.keyShortcuts
-            val vetoResult = dispatcherVetoer(actor, shortcuts)
+            val vetoResult = dispatcherVetoer(actor)
 
             if (shortcuts != null && vetoResult == DispatcherVetoResult.Accept)
                 shortcutResolver.updateFor(shortcuts)

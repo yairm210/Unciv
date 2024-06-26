@@ -11,6 +11,7 @@ import com.unciv.models.stats.Stats
 import com.unciv.models.translations.getConditionals
 import com.unciv.models.translations.getPlaceholderParameters
 import com.unciv.models.translations.getPlaceholderText
+import com.unciv.models.translations.removeConditionals
 
 
 class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val sourceObjectName: String? = null) {
@@ -177,6 +178,8 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
 
 
     override fun toString() = if (type == null) "\"$text\"" else "$type (\"$text\")"
+    fun getDisplayText(): String = if (conditionals.none { it.isHiddenToUsers() }) text
+        else text.removeConditionals() + " " + conditionals.filter { !it.isHiddenToUsers() }.joinToString(" ") { "<${it.text}>" }
 }
 
 /** Used to cache results of getMatchingUniques
@@ -265,6 +268,7 @@ class UniqueMap() : HashMap<String, ArrayList<Unique>>() {
 
     fun getMatchingUniques(uniqueType: UniqueType, state: StateForConditionals) = getUniques(uniqueType)
         .filter { it.conditionalsApply(state) && !it.isTimedTriggerable }
+        .flatMap { it.getMultiplied(state) }
 
     fun getAllUniques() = this.asSequence().flatMap { it.value.asSequence() }
 
@@ -272,7 +276,7 @@ class UniqueMap() : HashMap<String, ArrayList<Unique>>() {
         return getAllUniques().filter { unique ->
             unique.conditionals.any { it.type == trigger }
             && unique.conditionalsApply(stateForConditionals)
-        }
+        }.flatMap { it.getMultiplied(stateForConditionals) }
     }
 }
 

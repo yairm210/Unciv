@@ -1,3 +1,80 @@
+## 4.12.4
+
+Modding version!
+
+- Triggered uniques accept multiplying modifiers
+- Better "Withdraws before melee combat" unique
+- Clearer "no damage penalty for wounded units" unique
+- Countables for Cities, Units, Buildings allow filters
+
+Performance improvements for religion
+
+UI: Improve load game screen - better feedback, missing templates  - By SomeTroglodyte
+
+## 4.12.3
+
+Modding: 
+- "after [amount] turns" -> "after turn number [amount]"
+- "before [amount] turns" -> "before turn number [amount]"
+- "when number of [countable] is greater than [countable]" -> "when number of [countable] is more than [countable]"
+- Clean improvement queue from improvements no longer in ruleset
+- Better unique documentation
+
+Fix performance problem for displaying air units in cities
+
+Fix "edit existing trade" exploit
+
+Fix console city add/remove building format - By SomeTroglodyte
+
+## 4.12.2
+
+Tech, policy, unit and terrain uniques provide multiplied uniques with "for every [countable]" / "for every [amount] [countable]" modifiers
+
+Many performance improvements
+
+Units teleport out of open borders on war declaration
+
+Inquisitors go out of city centers when spaceship parts need to be added in
+
+Add personality uses  - By tuvus
+
+Improvement picker fixes - By SomeTroglodyte 
+
+## 4.12.1
+
+Performance improvements 
+
+"join war" offers only valid if can declare war
+
+Added "Will not be replaced by automated units" unique
+
+By tuvus:
+- Defeated civilizations don't use spies
+- Spies deselect when moved on map 
+- Civs can no longer declare war right after peace with a city-state 
+- Moved automation settings to AutoPlayTab
+
+By SomeTroglodyte:
+- Fix disband spamming 
+- Fix coastal rivers near Rock of Gibraltar 
+
+Turn Privateer's ability into promotion - By SpacedOutChicken
+
+## 4.12.0
+
+Fixed spy automation crash
+
+By tuvus:
+- Personality implementation
+- AI is more likely to sign Defensive pacts
+- Giving the AI good trades is stored as credit
+- Fix election crash
+
+By SomeTroglodyte:
+- Map editor can place improvements again
+- Reduce size of the save game json
+- Improvement queue
+
 ## 4.11.19
 
 New unique trigger: "<upon expending a [mapUnitFilter] unit>"

@@ -45,7 +45,8 @@ class EspionageManager : IsPartOfGameInfoSerialization {
     fun getSpyName(): String {
         val usedSpyNames = spyList.map { it.name }.toHashSet()
         val validSpyNames = civInfo.nation.spyNames.filter { it !in usedSpyNames }
-        return validSpyNames.randomOrNull() ?: "Spy ${spyList.size+1}" // +1 as non-programmers count from 1
+        return validSpyNames.randomOrNull()
+            ?: "Spy ${spyList.size + 1}" // +1 as non-programmers count from 1
     }
 
     fun addSpy(): Spy {
@@ -99,5 +100,13 @@ class EspionageManager : IsPartOfGameInfoSerialization {
 
     fun getIdleSpies(): List<Spy> {
         return spyList.filterTo(mutableListOf()) { it.isIdle() }
+    }
+
+    /**
+     * Takes all spies away from their cities.
+     * Called when the civ is destroyed.
+     */
+    fun removeAllSpies() {
+        spyList.forEach { it.moveTo(null) }
     }
 }

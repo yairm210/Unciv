@@ -262,8 +262,9 @@ class TurnManager(val civInfo: Civilization) {
 
         if (civInfo.isCityState()) {
             civInfo.questManager.endTurn()
-            // Todo: Remove this later
-            // The purpouse of this addition is to migrate the old election system to the new flag system
+
+            // Set turns to elections to a random number so not every city-state has the same election date
+            // May be called at game start or when migrating a game from an older version
             if (civInfo.gameInfo.isEspionageEnabled() && !civInfo.hasFlag(CivFlags.TurnsTillCityStateElection.name)) {
                 civInfo.addFlag(CivFlags.TurnsTillCityStateElection.name, Random.nextInt(civInfo.gameInfo.ruleset.modOptions.constants.cityStateElectionTurns + 1))
             }

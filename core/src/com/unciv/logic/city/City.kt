@@ -343,7 +343,7 @@ class City : IsPartOfGameInfoSerialization, INamed {
         if (isCapital()) civ.moveCapitalToNextLargest(null)
 
         civ.cities = civ.cities.toMutableList().apply { remove(this@City) }
-        getCenterTile().changeImprovement("City ruins")
+        getCenterTile().setImprovement("City ruins")
 
         // Edge case! What if a water unit is in a city, and you raze the city?
         // Well, the water unit has to return to the water!
@@ -482,7 +482,7 @@ class City : IsPartOfGameInfoSerialization, INamed {
                 getLocalMatchingUniques(uniqueType, stateForConditionals)
         else (
             cityConstructions.builtBuildingUniqueMap.getUniques(uniqueType)
-                + religion.getUniques().filter { it.type == uniqueType }
+                + religion.getUniques(uniqueType)
             ).filter {
                 !it.isTimedTriggerable && it.conditionalsApply(stateForConditionals)
             }.flatMap { it.getMultiplied(stateForConditionals) }
@@ -491,7 +491,7 @@ class City : IsPartOfGameInfoSerialization, INamed {
     // Uniques special to this city
     fun getLocalMatchingUniques(uniqueType: UniqueType, stateForConditionals: StateForConditionals = StateForConditionals(this)): Sequence<Unique> {
         val uniques = cityConstructions.builtBuildingUniqueMap.getUniques(uniqueType).filter { it.isLocalEffect } +
-            religion.getUniques().filter { it.type == uniqueType }
+            religion.getUniques(uniqueType)
         return if (uniques.any()) uniques.filter { !it.isTimedTriggerable && it.conditionalsApply(stateForConditionals) }
             .flatMap { it.getMultiplied(stateForConditionals) }
         else uniques

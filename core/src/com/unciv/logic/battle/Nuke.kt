@@ -26,7 +26,7 @@ object Nuke {
      *  - Not if we would need to declare war on someone we can't.
      *  - Disallow nuking the tile the nuke is in, as per Civ5 (but not nuking your own tiles/units otherwise)
      *
-     *  Both [BattleTable.simulateNuke] and [SpecificUnitAutomation.automateNukes] check range, so that check is omitted here.
+     *  Both [BattleTable.simulateNuke] and [AirUnitAutomation.automateNukes] check range, so that check is omitted here.
      */
     fun mayUseNuke(nuke: MapUnitCombatant, targetTile: Tile): Boolean {
         if (nuke.getTile() == targetTile) return false
@@ -43,8 +43,7 @@ object Nuke {
             // Gleaned from Civ5 source - this disallows nuking unknown civs even in invisible tiles
             // https://github.com/Gedemon/Civ5-DLL/blob/master/CvGameCoreDLL_Expansion1/CvUnit.cpp#L5056
             // https://github.com/Gedemon/Civ5-DLL/blob/master/CvGameCoreDLL_Expansion1/CvTeam.cpp#L986
-            if (attackerCiv.knows(defenderCiv) && attackerCiv.getDiplomacyManager(defenderCiv).canAttack())
-                return
+            if (attackerCiv.getDiplomacyManager(defenderCiv)?.canAttack() == true) return
             canNuke = false
         }
 
@@ -88,7 +87,7 @@ object Nuke {
         // It's unclear whether using nukes results in a penalty with all civs, or only affected civs.
         // For now I'll make it give a diplomatic penalty to all known civs, but some testing for this would be appreciated
         for (civ in attackingCiv.getKnownCivs()) {
-            civ.getDiplomacyManager(attackingCiv).setModifier(DiplomaticModifiers.UsedNuclearWeapons, -50f)
+            civ.getDiplomacyManager(attackingCiv)!!.setModifier(DiplomaticModifiers.UsedNuclearWeapons, -50f)
         }
 
         if (!attacker.isDefeated()) {
@@ -159,9 +158,9 @@ object Nuke {
         fun tryDeclareWar(civSuffered: Civilization) {
             if (civSuffered != attackingCiv
                 && civSuffered.knows(attackingCiv)
-                && civSuffered.getDiplomacyManager(attackingCiv).diplomaticStatus != DiplomaticStatus.War
+                && civSuffered.getDiplomacyManager(attackingCiv)!!.diplomaticStatus != DiplomaticStatus.War
             ) {
-                attackingCiv.getDiplomacyManager(civSuffered).declareWar()
+                attackingCiv.getDiplomacyManager(civSuffered)!!.declareWar()
                 if (!notifyDeclaredWarCivs.contains(civSuffered)) notifyDeclaredWarCivs.add(
                     civSuffered
                 )

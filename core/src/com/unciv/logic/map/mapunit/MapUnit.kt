@@ -56,6 +56,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
 
     var currentMovement: Float = 0f
     var health: Int = 100
+    var id: Int = Constants.NO_ID
 
     // work, automation, fortifying, ...
     // Connect roads implies automated is true. It is specified by the action type.
@@ -620,7 +621,10 @@ class MapUnit : IsPartOfGameInfoSerialization {
                 ?: throw java.lang.Exception("Unit $name is not found!")
 
         updateUniques()
-        if (action == UnitActionType.Automate.value) automated = true
+        if (action == UnitActionType.Automate.value){
+            automated = true
+            action = null
+        }
     }
 
     fun updateUniques() {
@@ -711,7 +715,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
     }
 
     fun doAction() {
-        if (action == null) return
+        if (action == null && !isAutomated()) return
         if (currentMovement == 0f) return  // We've already done stuff this turn, and can't do any more stuff
         if (isEscorting() && getOtherEscortUnit()!!.currentMovement == 0f) return
 
@@ -932,6 +936,9 @@ class MapUnit : IsPartOfGameInfoSerialization {
     }
 
     fun disband() {
+        // Safeguard against running on already destroyed instances
+        if (isDestroyed) return
+
         // evacuation of transported units before disbanding, if possible. toListed because we're modifying the unit list.
         for (unit in currentTile.getUnits()
                 .filter { it.isTransported && isTransportTypeOf(it) }
