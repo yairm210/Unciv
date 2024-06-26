@@ -11,7 +11,7 @@ import com.unciv.Constants
 import com.unciv.GUI
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.mapunit.MapUnit
-import com.unciv.ui.components.UncivTextField
+import com.unciv.ui.components.widgets.UncivTextField
 import com.unciv.ui.components.extensions.surroundWithCircle
 import com.unciv.ui.components.extensions.toCheckBox
 import com.unciv.ui.components.extensions.toLabel
@@ -34,7 +34,7 @@ class DevConsolePopup(val screen: WorldScreen) : Popup(screen) {
 
     private var currentHistoryEntry = history.size
 
-    private val textField = UncivTextField.create("", "") // always has focus, so a hint won't show
+    private val textField = UncivTextField("") // always has focus, so a hint won't show
     private val responseLabel = "".toLabel(Color.RED).apply { wrap = true }
     private val inputWrapper = Table()
 

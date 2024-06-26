@@ -1,6 +1,8 @@
 package com.unciv.models.ruleset.unique
 
 import com.unciv.models.stats.Stat
+import com.unciv.models.translations.equalsPlaceholderText
+import com.unciv.models.translations.getPlaceholderParameters
 
 object Countables {
 
@@ -18,21 +20,21 @@ object Countables {
         val civInfo = stateForConditionals.relevantCiv ?: return null
 
         if (countable == "Cities") return civInfo.cities.size
+
+        val placeholderParameters = countable.getPlaceholderParameters()
+        if (countable.equalsPlaceholderText("[] Cities"))
+            return civInfo.cities.count { it.matchesFilter(placeholderParameters[0]) }
+
         if (countable == "Units") return civInfo.units.getCivUnitsSize()
-        if (countable == "Air units") return civInfo.units.getCivUnits().count { it.baseUnit.movesLikeAirUnits() }
+        if (countable.equalsPlaceholderText("[] Units"))
+            return civInfo.units.getCivUnits().count { it.matchesFilter(placeholderParameters[0]) }
+
+        if (countable.equalsPlaceholderText("[] Buildings"))
+            return civInfo.cities.sumOf { it.cityConstructions.getBuiltBuildings()
+                .count { it.matchesFilter(placeholderParameters[0]) } }
 
         if (gameInfo.ruleset.tileResources.containsKey(countable))
             return stateForConditionals.getResourceAmount(countable)
-
-        val unitTypeName = countable.removeSuffix(" units").removeSurrounding("[", "]")
-        if (unitTypeName in gameInfo.ruleset.unitTypes)
-            return civInfo.units.getCivUnits().count { it.type.name == unitTypeName }
-
-        if (countable in gameInfo.ruleset.units)
-            return civInfo.units.getCivUnits().count { it.name == countable }
-
-        if (countable in gameInfo.ruleset.buildings)
-            return civInfo.cities.count { it.cityConstructions.containsBuildingOrEquivalent(countable) }
 
         return null
     }

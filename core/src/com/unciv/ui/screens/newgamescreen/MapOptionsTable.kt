@@ -7,7 +7,7 @@ import com.unciv.ui.components.input.onChange
 import com.unciv.ui.components.widgets.TranslatedSelectBox
 import com.unciv.ui.screens.basescreen.BaseScreen
 
-class MapOptionsTable(private val newGameScreen: NewGameScreen, isReset: Boolean = true) : Table() {
+class MapOptionsTable(private val newGameScreen: NewGameScreen) : Table() {
 
     private val mapParameters = newGameScreen.gameSetupInfo.mapParameters
     private var mapTypeSpecificTable = Table()

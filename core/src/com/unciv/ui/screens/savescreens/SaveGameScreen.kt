@@ -9,7 +9,7 @@ import com.unciv.logic.GameInfo
 import com.unciv.logic.files.PlatformSaverLoader
 import com.unciv.logic.files.UncivFiles
 import com.unciv.models.translations.tr
-import com.unciv.ui.components.UncivTextField
+import com.unciv.ui.components.widgets.UncivTextField
 import com.unciv.ui.components.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.components.extensions.disable
 import com.unciv.ui.components.extensions.enable
@@ -32,7 +32,7 @@ class SaveGameScreen(val gameInfo: GameInfo) : LoadOrSaveScreen("Current saves")
         const val saveToCustomText = "Save to custom location"
     }
 
-    private val gameNameTextField = UncivTextField.create(nameFieldLabelText)
+    private val gameNameTextField = UncivTextField(nameFieldLabelText)
 
     init {
         setDefaultCloseAction()

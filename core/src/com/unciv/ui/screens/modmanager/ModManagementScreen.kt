@@ -12,8 +12,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.utils.Align
 import com.badlogic.gdx.utils.SerializationException
 import com.unciv.UncivGame
-import com.unciv.json.fromJsonFile
-import com.unciv.json.json
 import com.unciv.logic.UncivShowableException
 import com.unciv.logic.github.Github
 import com.unciv.logic.github.Github.repoNameToFolderName
@@ -22,7 +20,7 @@ import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.tilesets.TileSetCache
 import com.unciv.models.translations.tr
-import com.unciv.ui.components.UncivTextField
+import com.unciv.ui.components.widgets.UncivTextField
 import com.unciv.ui.components.extensions.addSeparator
 import com.unciv.ui.components.extensions.disable
 import com.unciv.ui.components.extensions.enable
@@ -152,11 +150,10 @@ class ModManagementScreen private constructor(
         // Replace the PickerScreen's descriptionLabel
         val labelWrapper = Table()
         labelWrapper.defaults().top().left().growX()
-        val labelScroll = descriptionLabel.parent as ScrollPane
         descriptionLabel.remove()
         labelWrapper.row()
         labelWrapper.add(modDescriptionLabel).row()
-        labelScroll.actor = labelWrapper
+        descriptionScroll.actor = labelWrapper
 
         isPortrait = isNarrowerThan4to3()
         if (isPortrait) initPortrait()
@@ -409,7 +406,7 @@ class ModManagementScreen private constructor(
         downloadButton.onClick {
             val popup = Popup(this)
             popup.addGoodSizedLabel("Please enter the mod repository -or- archive zip -or- branch -or- release url:").row()
-            val textField = UncivTextField.create("").apply { maxLength = 666 }
+            val textField = UncivTextField("").apply { maxLength = 666 }
             popup.add(textField).width(stage.width / 2).row()
             val pasteLinkButton = "Paste from clipboard".toTextButton()
             pasteLinkButton.onClick {

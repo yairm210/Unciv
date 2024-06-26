@@ -1,14 +1,12 @@
-const {Octokit} = require("@octokit/rest");
-const fs = require("fs");
-
-
+import {Octokit} from "@octokit/rest";
+import fs from "fs";
 // To be run from the main Unciv repo directory
 // Summarizes and adds the summary to the changelog.md file
 // Meant to be run from a Github action as part of the preparation for version rollout
 
 //region Executed Code
 (async () => {
-    versionAndChangelog = await parseCommits();
+    const versionAndChangelog = await parseCommits();
     const newVersionString = versionAndChangelog[0]
     const changelogString = versionAndChangelog[1]
 
@@ -30,27 +28,27 @@ async function parseCommits() {
     // no need to add auth: token since we're only reading from the commit list, which is public anyway
     const octokit = new Octokit({});
 
-    var result = await octokit.repos.listCommits({
+    const result = await octokit.repos.listCommits({
         owner: "yairm210",
         repo: "Unciv",
         per_page: 50
     });
 
-    var commitSummary = "";
-    var ownerToCommits = {};
-    var reachedPreviousVersion = false;
-    var nextVersionString = "";
+    let commitSummary = "";
+    const ownerToCommits = {};
+    let reachedPreviousVersion = false;
+    let nextVersionString = "";
     result.data.forEach(commit => {
     // See https://github.com/yairm210/Unciv/actions/runs/4136712446/jobs/7151150557 for example of strange commit with null author
             if (reachedPreviousVersion || commit.author == null) return;
-            var author = commit.author.login;
+            const author = commit.author.login;
             if (author === "uncivbot[bot]") return;
-            var commitMessage = commit.commit.message.split("\n")[0];
+            let commitMessage = commit.commit.message.split("\n")[0];
 
-            var versionMatches = commitMessage.match(/^\d+\.\d+\.(\d+)$/);
+            const versionMatches = commitMessage.match(/^\d+\.\d+\.(\d+)$/);
             if (versionMatches) { // match EXACT version, like 3.4.55  ^ is for start-of-line, $ for end-of-line
                 reachedPreviousVersion = true;
-                var minorVersion = Number(versionMatches[1]);
+                const minorVersion = Number(versionMatches[1]);
                 console.log("Previous version: " + commitMessage);
                 nextVersionString = commitMessage.replace(RegExp(minorVersion + "$"), minorVersion + 1);
                 console.log("Next version: " + nextVersionString);
@@ -81,30 +79,30 @@ async function parseCommits() {
 }
 
 function writeChangelog(nextVersionString, changelogString){
-    var textToAddToChangelog = "## " + nextVersionString + changelogString + "\n\n";
+    const textToAddToChangelog = "## " + nextVersionString + changelogString + "\n\n";
 
-    var changelogPath = 'changelog.md';
-    var currentChangelog = fs.readFileSync(changelogPath).toString();
+    const changelogPath = 'changelog.md';
+    const currentChangelog = fs.readFileSync(changelogPath).toString();
     if (!currentChangelog.startsWith(textToAddToChangelog)) { // minor idempotency - don't add twice
-        var newChangelog = textToAddToChangelog + currentChangelog;
+        const newChangelog = textToAddToChangelog + currentChangelog;
         fs.writeFileSync(changelogPath, newChangelog);
     }
 }
 
 function updateBuildConfig(nextVersionString) {
-    var buildConfigPath = "buildSrc/src/main/kotlin/BuildConfig.kt";
-    var buildConfigString = fs.readFileSync(buildConfigPath).toString();
+    const buildConfigPath = "buildSrc/src/main/kotlin/BuildConfig.kt";
+    let buildConfigString = fs.readFileSync(buildConfigPath).toString();
 
     console.log("Original: " + buildConfigString);
 
     // Javascript string.match returns a regex string array, where array[0] is the entirety of the captured string,
     //  and array[1] is the first group, array[2] is the second group etc.
 
-    var appVersionMatch = buildConfigString.match(/appVersion = "(.*)"/);
+    const appVersionMatch = buildConfigString.match(/appVersion = "(.*)"/);
     const curVersion = appVersionMatch[1];
     if (curVersion !== nextVersionString) {
         buildConfigString = buildConfigString.replace(appVersionMatch[0], appVersionMatch[0].replace(curVersion, nextVersionString));
-        var appCodeNumberMatch = buildConfigString.match(/appCodeNumber = (\d*)/);
+        const appCodeNumberMatch = buildConfigString.match(/appCodeNumber = (\d*)/);
         let currentAppCodeNumber = appCodeNumberMatch[1];
         console.log("Current incremental version: " + currentAppCodeNumber);
         const nextAppCodeNumber = Number(currentAppCodeNumber) + 1;
@@ -121,7 +119,7 @@ function updateBuildConfig(nextVersionString) {
 
 function createFastlaneFile(newAppCodeNumber, changelogString){
     // A new, discrete changelog file for fastlane (F-Droid support):
-    var fastlaneChangelogPath = "fastlane/metadata/android/en-US/changelogs/" + newAppCodeNumber + ".txt";
+    const fastlaneChangelogPath = "fastlane/metadata/android/en-US/changelogs/" + newAppCodeNumber + ".txt";
     fs.writeFileSync(fastlaneChangelogPath, changelogString);
 }
 

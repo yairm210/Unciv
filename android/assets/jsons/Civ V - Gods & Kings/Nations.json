@@ -3,7 +3,7 @@
     //Not "Excluded from map editor" as it serves as placeholder for "Any Civ" starting locations
 	{
 		"name": "Spectator",
-		"outerColor": [255,255,255],
+		"outerColor": [255,255,255]
 //		"innerColor": [255,255,255]
 	},
 
@@ -340,7 +340,7 @@
 		"innerColor": [184, 0, 0],
 		"favoredReligion": "Shinto",
 		"uniqueName": "Bushido",
-		"uniques": ["Damage is ignored when determining unit Strength <for [non-[Air]] units>"],
+		"uniques": ["No damage penalty for wounded units <for [non-[Air]] units>"],
 		"cities": ["Kyoto","Osaka","Tokyo","Satsuma","Kagoshima","Nara","Nagoya","Izumo","Nagasaki","Yokohama",
 			"Shimonoseki","Matsuyama","Sapporo","Hakodate","Ise","Toyama","Fukushima","Suo","Bizen","Echizen",
 			"Izumi","Omi","Echigo","Kozuke","Sado","Kobe","Nagano","Hiroshima","Takayama","Akita","Fukuoka","Aomori",

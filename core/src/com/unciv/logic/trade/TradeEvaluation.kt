@@ -163,7 +163,7 @@ class TradeEvaluation {
                     return 0
                 } else if (civInfo.isAtWarWith(civToDeclareWarOn)) {
                     // We shouldn't require them to pay us to join our war (no negative values)
-                    return (20 * DeclareWarPlanEvaluator.evaluateJoinOurWarPlan(civInfo, civToDeclareWarOn, tradePartner, null)).coerceAtLeast(0)
+                    return (20 * DeclareWarPlanEvaluator.evaluateJoinOurWarPlan(civInfo, civToDeclareWarOn, tradePartner, null)).toInt().coerceAtLeast(0)
                 } else {
                     // Why should we pay you to go fight someone else?
                     return 0
@@ -281,13 +281,13 @@ class TradeEvaluation {
                         && trade.ourOffers.any {it.type == TradeType.WarDeclaration && it.name == offer.name}) {
                     // Only accept if the war will benefit us, or if they pay us enough
                     // We shouldn't want to pay them for us to declare war (no negative values)
-                    return (-20 * DeclareWarPlanEvaluator.evaluateTeamWarPlan(civInfo, civToDeclareWarOn, tradePartner, null)).coerceAtLeast(0)
+                    return (-20 * DeclareWarPlanEvaluator.evaluateTeamWarPlan(civInfo, civToDeclareWarOn, tradePartner, null)).toInt().coerceAtLeast(0)
                 } else if (tradePartner.isAtWarWith(civToDeclareWarOn)) {
                     // We might want them to pay us to join them in war (no negative values)
-                    return (-20 * DeclareWarPlanEvaluator.evaluateJoinWarPlan(civInfo, civToDeclareWarOn, tradePartner, null)).coerceAtLeast(0)
+                    return (-20 * DeclareWarPlanEvaluator.evaluateJoinWarPlan(civInfo, civToDeclareWarOn, tradePartner, null)).toInt().coerceAtLeast(0)
                 } else {
                     // We might want them to pay us to declare war (no negative values)
-                    return (-25 * DeclareWarPlanEvaluator.evaluateDeclareWarPlan(civInfo, civToDeclareWarOn, null)).coerceAtLeast(0)
+                    return (-25 * DeclareWarPlanEvaluator.evaluateDeclareWarPlan(civInfo, civToDeclareWarOn, null)).toInt().coerceAtLeast(0)
                 }
             }
 
@@ -347,7 +347,7 @@ class TradeEvaluation {
         if (ourCombatStrength * 1.5f >= theirCombatStrength && theirCombatStrength * 1.5f >= ourCombatStrength)
             return 0 // we're roughly equal, there's no huge power imbalance
         if (ourCombatStrength > theirCombatStrength) {
-            if (MotivationToAttackAutomation.hasAtLeastMotivationToAttack(ourCiv, otherCiv, 0) <= 0) return 0
+            if (MotivationToAttackAutomation.hasAtLeastMotivationToAttack(ourCiv, otherCiv, 0f) <= 0) return 0
             val absoluteAdvantage = ourCombatStrength - theirCombatStrength
             val percentageAdvantage = absoluteAdvantage / theirCombatStrength.toFloat()
             // We don't add the same constraint here. We should not make peace easily if we're

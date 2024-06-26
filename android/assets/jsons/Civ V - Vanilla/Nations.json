@@ -304,7 +304,7 @@
 		"outerColor": [255, 255, 255],
 		"innerColor": [184, 0, 0],
 		"uniqueName": "Bushido",
-		"uniques": ["Damage is ignored when determining unit Strength <for [non-[Air]] units>"],
+		"uniques": ["No damage penalty for wounded units <for [non-[Air]] units>"],
 		"cities": ["Kyoto","Osaka","Tokyo","Satsuma","Kagoshima","Nara","Nagoya","Izumo","Nagasaki","Yokohama",
 			"Shimonoseki","Matsuyama","Sapporo","Hakodate","Ise","Toyama","Fukushima","Suo","Bizen","Echizen",
 			"Izumi","Omi","Echigo","Kozuke","Sado","Kobe","Nagano","Hiroshima","Takayama","Akita","Fukuoka","Aomori",

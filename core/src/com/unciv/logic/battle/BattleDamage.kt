@@ -243,6 +243,7 @@ object BattleDamage {
     private fun getHealthDependantDamageRatio(combatant: ICombatant): Float {
         return if (combatant !is MapUnitCombatant
             || combatant.unit.hasUnique(UniqueType.NoDamagePenalty, checkCivInfoUniques = true)
+            || combatant.unit.hasUnique(UniqueType.NoDamagePenaltyWoundedUnits, checkCivInfoUniques = true)
         ) 1f
         // Each 3 points of health reduces damage dealt by 1%
         else 1 - (100 - combatant.getHealth()) / BattleConstants.DAMAGE_REDUCTION_WOUNDED_UNIT_RATIO_PERCENTAGE
