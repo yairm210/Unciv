@@ -1,3 +1,27 @@
+## 4.12.4
+
+Triggered uniques accept multiplying modifiers
+
+Religion beliefs are private, uniques are cached
+
+Fix base rulesets
+
+Better "Withdraws before melee combat" unique
+
+Clearer "no damage penalty for wounded units" unique
+
+Countables for Cities, Units, Buildings allow filters
+
+Revert "Better countables - phase 1"
+
+Better countables - phase 1
+
+UI: Improve load game screen - better feedback, missing templates  - By SomeTroglodyte
+
+Check 'Will not stale' labels for PRs  - By SeventhM
+
+add parser for pi-apps package_data.json  - By theofficialgman
+
 ## 4.12.3
 
 Modding: 
