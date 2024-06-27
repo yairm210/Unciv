@@ -139,10 +139,6 @@ object CityLocationTileRanker {
             if (city.civ == civ) {
                 modifier += distanceToCityModifier
             }
-        // Reduce likelyhood of AI settling a lot of crappy cities in late game, which is annoying to humans
-        // This should be scaled by Personality to allow flexibility for mod creators
-        modifier -= city.civ.cities.size
-
         }
         return modifier
     }
