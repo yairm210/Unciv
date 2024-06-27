@@ -121,10 +121,11 @@ object UniqueTriggerActivation {
                 fun calculateEventChoiceWeight(choice: EventChoice): Float {
                     var weight = 1f
                     for (modifier in choice.modifierObjects) {
-                        if (modifier.type == UniqueType.AIPriorityModifier && modifier.conditionalsApply(stateForConditionals)) {
-                            weight += unique.params[0].toFloat() / 100f
+                        if (modifier.type == UniqueType.AiDecisonWeight && modifier.conditionalsApply(stateForConditionals)) {
+                            weight += unique.params[0].toFloat()
                         }
                     }
+                    weight.coerceAtLeast(0f)
                     return weight
                 }
 
@@ -141,7 +142,7 @@ object UniqueTriggerActivation {
                         }
                         random -= choiceWeights[choice]!!
                     }
-                    
+
                     chosenChoice?.triggerChoice(civInfo) ?: false
                 }
                 if (event.presentation == Event.Presentation.Alert) return {

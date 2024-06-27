@@ -1916,6 +1916,12 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: ModOptions
 
 ## Event uniques
+??? example  "[Amount] weight for AI decisions"
+	Used for determining AI decisions, can be used in combination with conditionals.
+	Example: "[Unknown] weight for AI decisions"
+
+	Applicable to: Event
+
 ??? example  "Mark tutorial [comment] complete"
 	Example: "Mark tutorial [comment] complete"
 

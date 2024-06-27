@@ -879,8 +879,8 @@ enum class UniqueType(
     ForEveryAmountCountable("for every [amount] [countable]", UniqueTarget.MetaModifier),
     ModifiedByGameSpeed("(modified by game speed)", UniqueTarget.MetaModifier,
         docDescription = "Can only be applied to certain uniques, see details of each unique for specifics"),
-    AIPriorityModifier("[relativeAmount]% priority", UniqueTarget.MetaModifier,
-        docDescription = "Used for determining AI priority, mostly in combination with conditionals."),
+    AiDecisonWeight("[Amount] weight for AI decisions", UniqueTarget.Event,
+        docDescription = "Used for determining AI decisions, can be used in combination with conditionals."),
     Comment("Comment [comment]", *UniqueTarget.Displayable,
         docDescription = "Allows displaying arbitrary text in a Unique listing. Only the text within the '[]' brackets will be displayed, the rest serves to allow Ruleset validation to recognize the intent."),
 
