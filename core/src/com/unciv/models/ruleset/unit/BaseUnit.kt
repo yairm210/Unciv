@@ -499,6 +499,8 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
                         } // Bonus in terrain or feature - half the bonus
                     ) {
                         power *= (unique.params[0].toInt() / 2f).toPercent()
+                    } else {
+                        power *= (unique.params[0].toInt()).toPercent() // Static bonus
                     }
                 }
                 UniqueType.StrengthNearCapital ->
