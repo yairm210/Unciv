@@ -25,6 +25,7 @@ import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
 import com.unciv.ui.screens.cityscreen.CityScreen
+import com.unciv.ui.screens.overviewscreen.UnitSupplyTable
 import kotlin.math.max
 import kotlin.math.sqrt
 
@@ -165,6 +166,8 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
 
     private fun addMilitaryUnitChoice() {
         if (!isAtWar && !cityIsOverAverageProduction) return // don't make any military units here. Infrastructure first!
+        if (civInfo.stats.getUnitSupplyDeficit() > 0) return // we don't want more units if it's already hurting our empire
+        // todo: add worker disbandment and consumption of great persons if under attack & short on unit supply
         if (!isAtWar && (civInfo.stats.statsForNextTurn.gold < 0 || militaryUnits > max(7, cities * 5))) return
         if (civInfo.gold < -50) return
 

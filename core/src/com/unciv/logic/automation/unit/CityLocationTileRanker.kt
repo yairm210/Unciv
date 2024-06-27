@@ -89,15 +89,21 @@ object CityLocationTileRanker {
         // Only count a luxary resource that we don't have yet as unique once
         val newUniqueLuxuryResources = HashSet<String>()
 
-        if (onCoast) tileValue += 8
-        if (onHill) tileValue += 7 // Hills are free production and defence
-        if (isNextToMountain) tileValue += 5 // For Observatory, not relevant to all mods though
+        if (onCoast) tileValue += 10
+        // Hills are free production and defence
+        if (onHill) tileValue += 7
+        // Observatories are good, but current implementation no mod-friendly
+        if (isNextToMountain) tileValue += 5
         if (newCityTile.isAdjacentToRiver()) tileValue += 14
         if (newCityTile.terrainHasUnique(UniqueType.FreshWater)) tileValue += 5
         // We want to found the city on an oasis because it can't be improved otherwise
         if (newCityTile.terrainHasUnique(UniqueType.Unbuildable)) tileValue += 3
         // If we build the city on a resource tile, then we can't build any special improvements on it
         if (newCityTile.resource != null) tileValue -= 4
+        // We don't want to settle 1-tile islands and promontories with few good tiles
+        for (nearbyTile in newCityTile.getTilesAtDistance(1))
+            if (nearbyTile.isWater)
+                tileValue -= 2
 
         var tiles = 0
         for (i in 0..3) {
@@ -133,9 +139,9 @@ object CityLocationTileRanker {
             if (city.civ == civ) {
                 modifier += distanceToCityModifier
             }
-
+        // Reduce likelyhood of AI settling a lot of crappy cities in late game, which is annoying to humans
+        // This should be scaled by Personality to allow flexibility for mod creators
         modifier -= city.civ.cities.size
-        // Reduces likelyhood of AI settling a lot of crappy cities in late game, which is annoying to humans
 
         }
         return modifier
