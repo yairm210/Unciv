@@ -10,7 +10,7 @@ import com.unciv.logic.trade.Trade
 import com.unciv.logic.trade.TradeEvaluation
 import com.unciv.logic.trade.TradeLogic
 import com.unciv.logic.trade.TradeOffer
-import com.unciv.logic.trade.TradeType
+import com.unciv.logic.trade.TradeOfferType
 import com.unciv.models.ruleset.tile.ResourceSupplyList
 import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.UniqueTriggerActivation
@@ -401,9 +401,9 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
     fun goldPerTurn(): Int {
         var goldPerTurnForUs = 0
         for (trade in trades) {
-            for (offer in trade.ourOffers.filter { it.type == TradeType.Gold_Per_Turn })
+            for (offer in trade.ourOffers.filter { it.type == TradeOfferType.Gold_Per_Turn })
                 goldPerTurnForUs -= offer.amount
-            for (offer in trade.theirOffers.filter { it.type == TradeType.Gold_Per_Turn })
+            for (offer in trade.theirOffers.filter { it.type == TradeOfferType.Gold_Per_Turn })
                 goldPerTurnForUs += offer.amount
         }
         return goldPerTurnForUs
@@ -414,7 +414,7 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
         val newResourceSupplyList = ResourceSupplyList()
         val resourcesMap = civInfo.gameInfo.ruleset.tileResources
         val isResourceFilter: (TradeOffer) -> Boolean = {
-            (it.type == TradeType.Strategic_Resource || it.type == TradeType.Luxury_Resource)
+            (it.type == TradeOfferType.Strategic_Resource || it.type == TradeOfferType.Luxury_Resource)
                     && resourcesMap.containsKey(it.name)
                     && !resourcesMap[it.name]!!.isStockpiled()
         }
@@ -478,8 +478,8 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
 
                 // Make the peace treaty so that the civ can't declare war immedietly
                 val tradeLogic = TradeLogic(thirdCiv, otherCiv)
-                tradeLogic.currentTrade.ourOffers.add(TradeOffer(Constants.peaceTreaty, TradeType.Treaty))
-                tradeLogic.currentTrade.theirOffers.add(TradeOffer(Constants.peaceTreaty, TradeType.Treaty))
+                tradeLogic.currentTrade.ourOffers.add(TradeOffer(Constants.peaceTreaty, TradeOfferType.Treaty))
+                tradeLogic.currentTrade.theirOffers.add(TradeOffer(Constants.peaceTreaty, TradeOfferType.Treaty))
                 thirdCivDiplo.trades.add(tradeLogic.currentTrade)
                 thirdCivDiplo.otherCivDiplomacy().trades.add(tradeLogic.currentTrade.reverse())
             }

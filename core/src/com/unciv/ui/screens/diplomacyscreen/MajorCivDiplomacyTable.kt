@@ -13,7 +13,7 @@ import com.unciv.logic.civilization.diplomacy.DiplomacyManager
 import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.logic.trade.TradeOffer
-import com.unciv.logic.trade.TradeType
+import com.unciv.logic.trade.TradeOfferType
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.extensions.addSeparator
@@ -106,7 +106,7 @@ class MajorCivDiplomacyTable(private val diplomacyScreen: DiplomacyScreen) {
         val negotiatePeaceButton = "Negotiate Peace".toTextButton()
         negotiatePeaceButton.onClick {
             val tradeTable = diplomacyScreen.setTrade(otherCiv)
-            val peaceTreaty = TradeOffer(Constants.peaceTreaty, TradeType.Treaty)
+            val peaceTreaty = TradeOffer(Constants.peaceTreaty, TradeOfferType.Treaty)
             tradeTable.tradeLogic.currentTrade.theirOffers.add(peaceTreaty)
             tradeTable.tradeLogic.currentTrade.ourOffers.add(peaceTreaty)
             tradeTable.offerColumnsTable.update()
