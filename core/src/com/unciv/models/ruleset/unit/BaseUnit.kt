@@ -246,7 +246,6 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
                 else yield(RejectionReasonType.CannotBeBuilt.toInstance())
             }
 
-        // Expensive, since adding and removing the fake unit causes side-effects
         if (city != null && isAirUnit()) {
             // Not actually added to civ so doesn't require destroy
             val fakeUnit = getMapUnit(civ, Constants.NO_ID)

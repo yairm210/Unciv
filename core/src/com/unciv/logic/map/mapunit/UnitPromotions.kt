@@ -63,6 +63,7 @@ class UnitPromotions : IsPartOfGameInfoSerialization {
     }
 
     fun addPromotion(promotionName: String, isFree: Boolean = false) {
+        if (promotions.contains(promotionName)) return
         val ruleset = unit.civ.gameInfo.ruleset
         val promotion = ruleset.unitPromotions[promotionName] ?: return
 
