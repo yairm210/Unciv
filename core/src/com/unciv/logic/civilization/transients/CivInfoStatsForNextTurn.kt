@@ -284,21 +284,23 @@ class CivInfoStatsForNextTurn(val civInfo: Civilization) {
     private fun getGlobalStatsFromUniques():StatMap {
         val statMap = StatMap()
         if (civInfo.religionManager.religion != null) {
-            for (unique in civInfo.religionManager.religion!!.getFounderUniques()) {
-                if (unique.type == UniqueType.StatsFromGlobalCitiesFollowingReligion) {
-                    statMap.add(
-                        "Religion",
-                        unique.stats * civInfo.religionManager.numberOfCitiesFollowingThisReligion()
-                    )
-                }
-                if (unique.type == UniqueType.StatsFromGlobalFollowers)
-                    statMap.add(
-                        "Religion",
-                        unique.stats * civInfo.religionManager.numberOfFollowersFollowingThisReligion(
-                            unique.params[2]
-                        ).toFloat() / unique.params[1].toFloat()
-                    )
-            }
+            for (unique in civInfo.religionManager.religion!!.founderBeliefUniqueMap.getMatchingUniques(
+                UniqueType.StatsFromGlobalCitiesFollowingReligion, StateForConditionals(civInfo)
+            ))
+                statMap.add(
+                    "Religion",
+                    unique.stats * civInfo.religionManager.numberOfCitiesFollowingThisReligion()
+                )
+
+            for (unique in civInfo.religionManager.religion!!.founderBeliefUniqueMap.getMatchingUniques(
+                UniqueType.StatsFromGlobalFollowers, StateForConditionals(civInfo)
+            ))
+                statMap.add(
+                    "Religion",
+                    unique.stats * civInfo.religionManager.numberOfFollowersFollowingThisReligion(
+                        unique.params[2]
+                    ).toFloat() / unique.params[1].toFloat()
+                )
         }
 
         for (unique in civInfo.getMatchingUniques(UniqueType.StatsPerPolicies)) {

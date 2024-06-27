@@ -1,3 +1,16 @@
+## 4.12.4
+
+Modding version!
+
+- Triggered uniques accept multiplying modifiers
+- Better "Withdraws before melee combat" unique
+- Clearer "no damage penalty for wounded units" unique
+- Countables for Cities, Units, Buildings allow filters
+
+Performance improvements for religion
+
+UI: Improve load game screen - better feedback, missing templates  - By SomeTroglodyte
+
 ## 4.12.3
 
 Modding: 

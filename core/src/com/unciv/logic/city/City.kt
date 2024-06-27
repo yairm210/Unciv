@@ -482,7 +482,7 @@ class City : IsPartOfGameInfoSerialization, INamed {
                 getLocalMatchingUniques(uniqueType, stateForConditionals)
         else (
             cityConstructions.builtBuildingUniqueMap.getUniques(uniqueType)
-                + religion.getUniques().filter { it.type == uniqueType }
+                + religion.getUniques(uniqueType)
             ).filter {
                 !it.isTimedTriggerable && it.conditionalsApply(stateForConditionals)
             }.flatMap { it.getMultiplied(stateForConditionals) }
@@ -491,7 +491,7 @@ class City : IsPartOfGameInfoSerialization, INamed {
     // Uniques special to this city
     fun getLocalMatchingUniques(uniqueType: UniqueType, stateForConditionals: StateForConditionals = StateForConditionals(this)): Sequence<Unique> {
         val uniques = cityConstructions.builtBuildingUniqueMap.getUniques(uniqueType).filter { it.isLocalEffect } +
-            religion.getUniques().filter { it.type == uniqueType }
+            religion.getUniques(uniqueType)
         return if (uniques.any()) uniques.filter { !it.isTimedTriggerable && it.conditionalsApply(stateForConditionals) }
             .flatMap { it.getMultiplied(stateForConditionals) }
         else uniques
