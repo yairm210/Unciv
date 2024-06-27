@@ -1,22 +1,17 @@
 ## 4.12.5
 
-naming: TradeType -> TradeOfferType
-
-Upgrade Kotlin &co - 
-
 Re-add 'construct great improvement' automation for great units that can't do their main actions
 
-Resolved  - Promotion added to unit with that promotion does not retrigger trigger uniques
+Promotion added to unit already containing that promotion, does not retrigger trigger uniques
 
-Resolved  - unified unit availability checks to one function
+"Unavailable" units cannot be upgraded to
 
 By SeventhM:
 - Consider passive strength bonuses for force value 
 - Pass in civ for building on tiles 
 
 By SomeTroglodyte:
-- On desktop, replace Gdx clipboard with a proxy using AWT 
-- Treat compilation warnings 
+- Larger clipboard size on Desktop
 - Add a Unique allowing an Improvement to specify which Resource(s) it improves 
 
 ## 4.12.4
