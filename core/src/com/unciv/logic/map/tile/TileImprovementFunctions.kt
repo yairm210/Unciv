@@ -82,10 +82,9 @@ class TileImprovementFunctions(val tile: Tile) {
                     .any { civInfo.getResourceAmount(it.params[1]) < it.params[0].toInt() })
             yield(ImprovementBuildingProblem.MissingResources)
 
-        val knownFeatureRemovals = tile.ruleset.tileRemovals
+        val knownFeatureRemovals = tile.ruleset.nonRoadTileRemovals
             .filter { rulesetImprovement ->
-                        RoadStatus.values().none { it.removeAction == rulesetImprovement.name }
-                        && (rulesetImprovement.techRequired == null || civInfo.tech.isResearched(rulesetImprovement.techRequired!!))
+                        rulesetImprovement.techRequired == null || civInfo.tech.isResearched(rulesetImprovement.techRequired!!)
             }
 
         if (!canImprovementBeBuiltHere(improvement, tile.hasViewableResource(civInfo), knownFeatureRemovals, stateForConditionals))
