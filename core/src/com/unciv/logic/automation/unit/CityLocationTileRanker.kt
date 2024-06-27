@@ -103,7 +103,7 @@ object CityLocationTileRanker {
         // We don't want to settle 1-tile islands and promontories with few good tiles
         for (nearbyTile in newCityTile.getTilesAtDistance(1))
             if (nearbyTile.isWater)
-                tileValue -= 2
+                tileValue -= 1
 
         var tiles = 0
         for (i in 0..3) {
