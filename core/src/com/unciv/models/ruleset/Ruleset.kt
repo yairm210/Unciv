@@ -242,7 +242,7 @@ class Ruleset {
     fun allICivilopediaText(): Sequence<ICivilopediaText> =
             allRulesetObjects() + events.values + events.values.flatMap { it.choices }
 
-    fun load(folderHandle: FileHandle) {
+    internal fun load(folderHandle: FileHandle) {
         // Note: Most files are loaded using createHashmap, which sets originRuleset automatically.
         // For other files containing IRulesetObject's we'll have to remember to do so manually - e.g. Tech.
         val modOptionsFile = folderHandle.child("ModOptions.json")
@@ -450,6 +450,8 @@ class Ruleset {
                             ).isEmpty()
                         })
                     }
+
+            updateResourceTransients()
         }
     }
 
@@ -458,15 +460,19 @@ class Ruleset {
      *  Alternatively, if you edit a tech column's building costs, you want it to affect all buildings in that column.
      *  This deals with that
      *  */
-    fun updateBuildingCosts() {
+    internal fun updateBuildingCosts() {
         for (building in buildings.values) {
-            if (building.cost == -1 && building.getMatchingUniques(UniqueType.Unbuildable).none { it.conditionals.isEmpty() }) {
-                val column = building.techColumn(this)
-                if (column != null) {
-                    building.cost = if (building.isAnyWonder()) column.wonderCost else column.buildingCost
-                }
-            }
+            if (building.cost != -1) continue
+            if (building.getMatchingUniques(UniqueType.Unbuildable).any { it.conditionals.isEmpty() }) continue
+            val column = building.techColumn(this) ?: continue
+            building.cost = if (building.isAnyWonder()) column.wonderCost else column.buildingCost
         }
+    }
+
+    /** Introduced to support UniqueType.ImprovesResources: gives a resource the chance to scan improvements */
+    internal fun updateResourceTransients() {
+        for (resource in tileResources.values)
+            resource.setTransients(this)
     }
 
     /** Used for displaying a RuleSet's name */

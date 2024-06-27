@@ -1795,6 +1795,12 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "Will not be replaced by automated units"
 	Applicable to: Improvement
 
+??? example  "Improves [resourceFilter] resource in this tile"
+	This is offered as an alternative to the improvedBy field of a resource. The result will be cached within the resource definition when loading a game, without knowledge about terrain, cities, civs, units or time. Therefore, most conditionals will not work, only those **not** dependent on game state.
+	Example: "Improves [Strategic] resource in this tile"
+
+	Applicable to: Improvement
+
 ## Resource uniques
 ??? example  "Deposits in [tileFilter] tiles always provide [amount] resources"
 	Example: "Deposits in [Farm] tiles always provide [3] resources"
@@ -2522,6 +2528,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 *[promotion]: The name of any promotion.
 *[relativeAmount]: This indicates a number, usually with a + or - sign, such as `+25` (this kind of parameter is often followed by '%' which is nevertheless not part of the value).
 *[resource]: The name of any resource.
+*[resourceFilter]: A resource name, type, 'all', or a Stat listed in the resource's improvementStats.
 *[specialist]: The name of any specialist.
 *[speed]: The name of any speed.
 *[stat]: This is one of the 7 major stats in the game - `Gold`, `Science`, `Production`, `Food`, `Happiness`, `Culture` and `Faith`. Note that the stat names need to be capitalized!
