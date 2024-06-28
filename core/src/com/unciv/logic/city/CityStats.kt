@@ -145,7 +145,8 @@ class CityStats(val city: City) {
     private fun addStatPercentBonusesFromBuildings(statPercentBonusTree: StatTreeNode) {
         val localUniqueCache = LocalUniqueCache()
         for (building in city.cityConstructions.getBuiltBuildings())
-            statPercentBonusTree.addStats(building.getStatPercentageBonuses(city, localUniqueCache), "Buildings", building.name)
+            statPercentBonusTree.addStats(building.getStatPercentageBonuses(city, localUniqueCache),
+                "Buildings", building.name)
     }
 
     private fun getStatPercentBonusesFromPuppetCity(): Stats {

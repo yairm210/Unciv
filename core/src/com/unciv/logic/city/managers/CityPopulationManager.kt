@@ -166,6 +166,8 @@ class CityPopulationManager : IsPartOfGameInfoSerialization {
                 .filterNot { it.providesYield() }
                 .associateWith { it.stats.getTileStats(city, city.civ, localUniqueCache)}
 
+        val maxSpecialists = getMaxSpecialists().asSequence()
+
         repeat(freePopulation) {
             //evaluate tiles
             val bestTileAndRank = tilesToEvaluate
@@ -179,7 +181,7 @@ class CityPopulationManager : IsPartOfGameInfoSerialization {
             val valueBestTile = bestTileAndRank?.value ?: 0f
 
             val bestJobAndRank = if (city.manualSpecialists) null
-                else getMaxSpecialists().asSequence()
+                else maxSpecialists
                     .filter { specialistAllocations[it.key] < it.value }
                     .map { it.key }
                     .associateWith { Automation.rankSpecialist(it, city, localUniqueCache) }

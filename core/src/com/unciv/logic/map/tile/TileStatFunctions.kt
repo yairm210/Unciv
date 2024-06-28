@@ -12,7 +12,9 @@ import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
 import com.unciv.ui.components.extensions.toPercent
 
-fun Iterable<Pair<String, Stats>>.toStats(): Stats {
+fun List<Pair<String, Stats>>.toStats(): Stats {
+    if (size == 1) return get(0).second
+    
     val stats = Stats()
     for ((_, statsToAdd) in this)
         stats.add(statsToAdd)
