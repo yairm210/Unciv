@@ -118,7 +118,7 @@ object CityLocationTileRanker {
         var modifier = 0f
         for (city in nearbyCities) {
             val distanceToCity = newCityTile.aerialDistanceTo(city.getCenterTile())
-            val distanceToCityModifier = when {
+            var distanceToCityModifier = when {
                 // NOTE: the line it.getCenterTile().aerialDistanceTo(unit.getTile()) <= X + range
                 // above MUST have the constant X that is added to the range be higher or equal to the highest distance here + 1
                 // If it is not higher the settler may get stuck when it ranks the same tile differently
@@ -132,9 +132,10 @@ object CityLocationTileRanker {
                 distanceToCity < 3 -> -30f // Even if it is a mod that lets us settle closer, lets still not do it
                 else -> 0f
             }
-            if (city.civ == civ) {
-                modifier += distanceToCityModifier
-            }
+            // We want a defensive ring around our capital
+            if (city.civ == civ) distanceToCityModifier *= if (city.isCapital()) 2 else 1
+            modifier += distanceToCityModifier
+
         }
         return modifier
     }
