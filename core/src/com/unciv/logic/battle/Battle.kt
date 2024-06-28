@@ -154,14 +154,14 @@ object Battle {
         if (!captureMilitaryUnitSuccess) // capture creates a new unit, but `defender` still is the original, so this function would still show a kill message
             postBattleNotifications(attacker, defender, attackedTile, attacker.getTile(), damageDealt)
 
-        if (defender.getCivInfo().isBarbarian() && attackedTile.improvement == Constants.barbarianEncampment)
+        if (defender.getCivInfo().isBarbarian && attackedTile.improvement == Constants.barbarianEncampment)
             defender.getCivInfo().gameInfo.barbarians.campAttacked(attackedTile.position)
 
         // This needs to come BEFORE the move-to-tile, because if we haven't conquered it we can't move there =)
         if (defender.isDefeated() && defender is CityCombatant && attacker is MapUnitCombatant
                 && attacker.isMelee() && !attacker.unit.hasUnique(UniqueType.CannotCaptureCities)) {
             // Barbarians can't capture cities
-            if (attacker.unit.civ.isBarbarian()) {
+            if (attacker.unit.civ.isBarbarian) {
                 defender.takeDamage(-1) // Back to 2 HP
                 val ransom = min(200, defender.city.civ.gold)
                 defender.city.civ.addGold(-ransom)
@@ -253,7 +253,7 @@ object Battle {
         }
 
         // CS friendship from killing barbarians
-        if (defeatedUnit.getCivInfo().isBarbarian() && !defeatedUnit.isCivilian() && civUnit.getCivInfo().isMajorCiv()) {
+        if (defeatedUnit.getCivInfo().isBarbarian && !defeatedUnit.isCivilian() && civUnit.getCivInfo().isMajorCiv()) {
             for (cityState in defeatedUnit.getCivInfo().gameInfo.getAliveCityStates()) {
                 if (civUnit.getCivInfo().knows(cityState) && defeatedUnit.unit.threatensCiv(cityState)) {
                     cityState.cityStateFunctions.threateningBarbarianKilledBy(civUnit.getCivInfo())
@@ -391,7 +391,7 @@ object Battle {
                     NotificationIcon.War to " was destroyed while attacking"
                 !defender.isDefeated() ->
                     NotificationIcon.War to " has attacked"
-                defender.isCity() && attacker.isMelee() && attacker.getCivInfo().isBarbarian() ->
+                defender.isCity() && attacker.isMelee() && attacker.getCivInfo().isBarbarian ->
                     NotificationIcon.War to " has raided"
                 defender.isCity() && attacker.isMelee() ->
                     NotificationIcon.War to " has captured"
@@ -485,7 +485,7 @@ object Battle {
     internal fun addXp(thisCombatant: ICombatant, amount: Int, otherCombatant: ICombatant) {
         if (thisCombatant !is MapUnitCombatant) return
         val civ = thisCombatant.getCivInfo()
-        val otherIsBarbarian = otherCombatant.getCivInfo().isBarbarian()
+        val otherIsBarbarian = otherCombatant.getCivInfo().isBarbarian
         val promotions = thisCombatant.unit.promotions
         val modConstants = civ.gameInfo.ruleset.modOptions.constants
 
@@ -561,7 +561,7 @@ object Battle {
             )
         }
 
-        if (attackerCiv.isBarbarian() || attackerCiv.isOneCityChallenger()) {
+        if (attackerCiv.isBarbarian || attackerCiv.isOneCityChallenger()) {
             city.destroyCity(true)
             return
         }

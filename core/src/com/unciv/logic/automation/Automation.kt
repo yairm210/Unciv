@@ -217,7 +217,7 @@ object Automation {
 
     /** Determines whether [civInfo] should be allocating military to fending off barbarians */
     fun afraidOfBarbarians(civInfo: Civilization): Boolean {
-        if (civInfo.isCityState() || civInfo.isBarbarian())
+        if (civInfo.isCityState() || civInfo.isBarbarian)
             return false
 
         if (civInfo.gameInfo.gameParameters.noBarbarians)

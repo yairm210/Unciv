@@ -151,8 +151,8 @@ object MovementCost {
         // these two tiles can perhaps be optimized. Using a hex-math-based "commonAdjacentTiles"
         // function is surprisingly less efficient than the current neighbor-intersection approach.
         // See #4085 for more details.
-        val tilesExertingZoneOfControl = getTilesExertingZoneOfControl(unit, from)
-        if (tilesExertingZoneOfControl.none { to.aerialDistanceTo(it) == 1 })
+        val tilesExertingZoneOfControl = getTilesExertingZoneOfControl(unit, from, to)
+        if (tilesExertingZoneOfControl.none())
             return false
 
         // Even though this is a very fast check, we perform it last. This is because very few units
@@ -164,8 +164,9 @@ object MovementCost {
         return true
     }
 
-    private fun getTilesExertingZoneOfControl(unit: MapUnit, tile: Tile) = sequence {
-        for (neighbor in tile.neighbors) {
+    private fun getTilesExertingZoneOfControl(unit: MapUnit, from: Tile, to:Tile) = sequence {
+        for (neighbor in from.neighbors) {
+            if (neighbor !in to.neighbors) continue
             if (neighbor.isCityCenter() && unit.civ.isAtWarWith(neighbor.getOwner()!!)) {
                 yield(neighbor)
             }

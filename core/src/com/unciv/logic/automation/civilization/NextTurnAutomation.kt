@@ -33,7 +33,7 @@ object NextTurnAutomation {
 
     /** Top-level AI turn task list */
     fun automateCivMoves(civInfo: Civilization) {
-        if (civInfo.isBarbarian()) return BarbarianAutomation(civInfo).automate()
+        if (civInfo.isBarbarian) return BarbarianAutomation(civInfo).automate()
         if (civInfo.isSpectator()) return // When there's a spectator in multiplayer games, it's processed automatically, but shouldn't be able to actually do anything
 
         respondToPopupAlerts(civInfo)
@@ -434,7 +434,7 @@ object NextTurnAutomation {
         val ownMilitaryStrength = civInfo.getStatForRanking(RankingType.Force)
         val sumOfEnemiesMilitaryStrength =
                 civInfo.gameInfo.civilizations
-                    .filter { it != civInfo && !it.isBarbarian() && civInfo.isAtWarWith(it) }
+                    .filter { it != civInfo && !it.isBarbarian && civInfo.isAtWarWith(it) }
                     .sumOf { it.getStatForRanking(RankingType.Force) }
         val civHasSignificantlyWeakerMilitaryThanEnemies =
                 ownMilitaryStrength < sumOfEnemiesMilitaryStrength * 0.66f

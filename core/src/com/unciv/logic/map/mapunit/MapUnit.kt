@@ -546,7 +546,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
     private fun matchesSingleFilter(filter: String): Boolean {
         return when (filter) {
             Constants.wounded, "wounded units" -> health < 100
-            Constants.barbarians, "Barbarian" -> civ.isBarbarian()
+            Constants.barbarians, "Barbarian" -> civ.isBarbarian
             "City-State" -> civ.isCityState()
             Constants.embarked -> isEmbarked()
             "Non-City" -> true
@@ -858,7 +858,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
         if (civ.isMajorCiv() && tile.getTileImprovement()?.isAncientRuinsEquivalent() == true) {
             getAncientRuinBonus(tile)
         }
-        if (improvement == Constants.barbarianEncampment && !civ.isBarbarian())
+        if (improvement == Constants.barbarianEncampment && !civ.isBarbarian)
             clearEncampment(tile)
         // Check whether any civilians without military units are there.
         // Keep in mind that putInTile(), which calls this method,

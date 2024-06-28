@@ -155,7 +155,7 @@ class TurnManager(val civInfo: Civilization) {
 
 
     private fun updateRevolts() {
-        if (civInfo.gameInfo.civilizations.none { it.isBarbarian() }) {
+        if (civInfo.gameInfo.civilizations.none { it.isBarbarian }) {
             // Can't spawn revolts without barbarians ¯\_(ツ)_/¯
             return
         }
@@ -250,7 +250,7 @@ class TurnManager(val civInfo: Civilization) {
         if (civInfo.isDefeated() || civInfo.isSpectator()) return  // yes they do call this, best not update any further stuff
 
         var nextTurnStats =
-            if (civInfo.isBarbarian())
+            if (civInfo.isBarbarian)
                 Stats()
             else {
                 civInfo.updateStatsForNextTurn()
@@ -271,7 +271,7 @@ class TurnManager(val civInfo: Civilization) {
         }
 
         // disband units until there are none left OR the gold values are normal
-        if (!civInfo.isBarbarian() && civInfo.gold <= -200 && nextTurnStats.gold.toInt() < 0) {
+        if (!civInfo.isBarbarian && civInfo.gold <= -200 && nextTurnStats.gold.toInt() < 0) {
             do {
                 val militaryUnits = civInfo.units.getCivUnits().filter { it.isMilitary() }  // New sequence as disband replaces unitList
                 val unitToDisband = militaryUnits.minByOrNull { it.baseUnit.cost }
@@ -344,7 +344,7 @@ class TurnManager(val civInfo: Civilization) {
         NextTurnAutomation.automateCivMoves(civInfo)
 
         // Update barbarian camps
-        if (civInfo.isBarbarian() && !civInfo.gameInfo.gameParameters.noBarbarians)
+        if (civInfo.isBarbarian && !civInfo.gameInfo.gameParameters.noBarbarians)
             civInfo.gameInfo.barbarians.updateEncampments()
     }
 

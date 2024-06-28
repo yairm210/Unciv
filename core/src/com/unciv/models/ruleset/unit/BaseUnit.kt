@@ -225,7 +225,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
             })
             yield(RejectionReasonType.MaxNumberBuildable.toInstance())
 
-        if (!civ.isBarbarian()) { // Barbarians don't need resources
+        if (!civ.isBarbarian) { // Barbarians don't need resources
             val civResources = Counter(civ.getCivResourcesByName()) + additionalResources
             for ((resource, requiredAmount) in getResourceRequirementsPerTurn(StateForConditionals(civ))) {
                 val availableAmount = civResources[resource]

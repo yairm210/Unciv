@@ -173,7 +173,7 @@ object GameStarter {
         }
 
         for (civInfo in gameInfo.civilizations) {
-            if (civInfo.isBarbarian()) continue
+            if (civInfo.isBarbarian) continue
 
             for (tech in ruleset.technologies.values.filter { it.hasUnique(UniqueType.StartingTech) })
                 civInfo.addTechSilently(tech.name)
@@ -204,7 +204,7 @@ object GameStarter {
     }
 
     private fun addCivPolicies(gameInfo: GameInfo, ruleset: Ruleset) {
-        for (civInfo in gameInfo.civilizations.filter { !it.isBarbarian() }) {
+        for (civInfo in gameInfo.civilizations.filter { !it.isBarbarian }) {
 
             // generic start with policy unique
             for (unique in civInfo.getMatchingUniques(UniqueType.StartsWithPolicy)) {
@@ -228,7 +228,7 @@ object GameStarter {
         val ruleSet = gameInfo.ruleset
         val startingEra = gameInfo.gameParameters.startingEra
         val era = ruleSet.eras[startingEra]!!
-        for (civInfo in gameInfo.civilizations.filter { !it.isBarbarian() && !it.isSpectator() }) {
+        for (civInfo in gameInfo.civilizations.filter { !it.isBarbarian && !it.isSpectator() }) {
             civInfo.addGold((era.startingGold * gameInfo.speed.goldCostModifier).toInt())
             civInfo.policies.addCulture((era.startingCulture * gameInfo.speed.cultureCostModifier).toInt())
         }
@@ -378,7 +378,7 @@ object GameStarter {
         for (tile in tileMap.values) {
             startScores[tile] = tile.stats.getTileStartScore(cityCenterMinStats)
         }
-        val allCivs = gameInfo.civilizations.filter { !it.isBarbarian() }
+        val allCivs = gameInfo.civilizations.filter { !it.isBarbarian }
         val landTilesInBigEnoughGroup = getCandidateLand(allCivs.size, tileMap, startScores)
 
         // First we get start locations for the major civs, on the second pass the city states (without predetermined starts) can squeeze in wherever
@@ -417,7 +417,7 @@ object GameStarter {
         val startingEra = gameInfo.gameParameters.startingEra
         val settlerLikeUnits = ruleset.units.filter { it.value.isCityFounder() }
 
-        for (civ in gameInfo.civilizations.filter { !it.isBarbarian() && !it.isSpectator() }) {
+        for (civ in gameInfo.civilizations.filter { !it.isBarbarian && !it.isSpectator() }) {
             val startingLocation = startingLocations[civ]!!
 
             removeAncientRuinsNearStartingLocation(startingLocation)

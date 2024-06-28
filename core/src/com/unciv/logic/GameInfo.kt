@@ -257,7 +257,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
         val collator = GUI.getSettings().getCollatorFromLocale()
         return civilizations.asSequence()
             .filterNot {
-                it.isBarbarian() ||
+                it.isBarbarian ||
                 it.isSpectator() ||
                 !includeDefeated && it.isDefeated() ||
                 !includeCityStates && it.isCityState() ||
