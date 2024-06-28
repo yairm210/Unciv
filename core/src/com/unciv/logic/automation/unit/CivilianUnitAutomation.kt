@@ -138,6 +138,8 @@ object CivilianUnitAutomation {
         //  (depending on number of cities) and after that they should just be used to start golden
         //  ages?
 
+        if (SpecificUnitAutomation.automateImprovementPlacer(unit)) return
+
         return // The AI doesn't know how to handle unknown civilian units
     }
 

@@ -6,10 +6,18 @@ import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration
 import com.badlogic.gdx.backends.lwjgl3.audio.OpenALLwjgl3Audio
 import com.badlogic.gdx.backends.lwjgl3.audio.OpenALMusic
 import com.badlogic.gdx.utils.Array
+import com.badlogic.gdx.utils.Clipboard
 import com.unciv.ui.audio.MusicController
 
 /**
- *  Problem: Not all exceptions playing Music can be caught on the desktop platform using a try-catch around the play method.
+ *  ### Notes
+ *  - Since this is the one replacement wrapping Lwjgl3Application that will be running Unciv-desktop, and we want to replace Gdx.app.clipboard,
+ *    the hook for [AwtClipboard] is implemented here as [getClipboard] override.
+ *  - ***This class is never properly initialized before use!*** (because the super constructor runs until the game is quit.)
+ *    Therefore, fields must be initialized on-demand or from upstream UncivGame
+ *
+ *  ### Problem
+ *  Not all exceptions playing Music can be caught on the desktop platform using a try-catch around the play method.
  *  Unciv 3.17.13 to 4.0.5 all exacerbated the problem due to using Music from various threads - and Gdx documents it isn't threadsafe.
  *  But even with that fixed, music streams can have codec failures _after_ the first buffer's worth of data, so the problem is only mitigated.
  *
@@ -18,7 +26,7 @@ import com.unciv.ui.audio.MusicController
  *
  *  This catches those Exceptions and reports them through a callback mechanism, and also provides a callback from the app loop
  *  that allows MusicController to make its Music calls on a thread guaranteed to be safe for OpenALMusic.
- * #
+ *
  *  ### Approach:
  *  - Subclass [OpenALLwjgl3Audio] overriding [update][OpenALLwjgl3Audio.update] with equivalent code catching any Exceptions and Errors
  *  - Get the framework to use the subclassed Audio by overriding Lwjgl3ApplicationBase.createAudio
@@ -46,6 +54,7 @@ class HardenGdxAudio(
 ) : Lwjgl3Application(game, config) {
     private var updateCallback: (()->Unit)? = null
     private var exceptionHandler: ((Throwable, Music)->Unit)? = null
+    private lateinit var awtClipboard: AwtClipboard  // normal initialization won't run, including initializing lazy delegates!
 
     /** Hooks part 1
      *
@@ -67,6 +76,12 @@ class HardenGdxAudio(
     ) {
         this.updateCallback = updateCallback
         this.exceptionHandler = exceptionHandler
+    }
+
+    /** This redirects `Gdx.app.clipboard` on desktop to our [AwtClipboard] replacement */
+    override fun getClipboard(): Clipboard {
+        if (!::awtClipboard.isInitialized) awtClipboard = AwtClipboard()
+        return awtClipboard
     }
 
     /**

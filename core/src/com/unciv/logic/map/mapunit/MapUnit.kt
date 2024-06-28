@@ -875,7 +875,6 @@ class MapUnit : IsPartOfGameInfoSerialization {
         for (unique in promotionUniques) {
             if (!this.matchesFilter(unique.params[2])) continue
             val promotion = unique.params[0]
-            if (promotion in promotions.promotions) continue
             promotions.addPromotion(promotion, true)
         }
 

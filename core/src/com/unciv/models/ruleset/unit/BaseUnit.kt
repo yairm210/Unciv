@@ -51,7 +51,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
     var replacementTextForUniques = ""
     var promotions = HashSet<String>()
     var obsoleteTech: String? = null
-    fun techsThatObsoleteThis(): Sequence<String> = if (obsoleteTech == null) sequenceOf() else sequenceOf(obsoleteTech!!)
+    fun techsThatObsoleteThis(): Sequence<String> = if (obsoleteTech == null) emptySequence() else sequenceOf(obsoleteTech!!)
     fun techsAtWhichAutoUpgradeInProduction(): Sequence<String> = techsThatObsoleteThis()
     fun techsAtWhichNoLongerAvailable(): Sequence<String> = techsThatObsoleteThis()
     @Suppress("unused") // Keep the how-to around
@@ -171,42 +171,34 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         return false
     }
 
-    override fun getRejectionReasons(cityConstructions: CityConstructions): Sequence<RejectionReason> = sequence {
-        if (isWaterUnit() && !cityConstructions.city.isCoastal())
-            yield(RejectionReasonType.WaterUnitsInCoastalCities.toInstance())
-
-        val civInfo = cityConstructions.city.civ
-
-        for (unique in getMatchingUniques(UniqueType.OnlyAvailable, StateForConditionals.IgnoreConditionals))
-            yieldAll(notMetRejections(unique, cityConstructions))
-
-        for (unique in getMatchingUniques(UniqueType.CanOnlyBeBuiltWhen, StateForConditionals.IgnoreConditionals))
-            yieldAll(notMetRejections(unique, cityConstructions, true))
-
-        for (unique in getMatchingUniques(UniqueType.Unavailable, StateForConditionals(civInfo, cityConstructions.city)))
-            yield(RejectionReasonType.ShouldNotBeDisplayed.toInstance())
-
-        for (unique in getMatchingUniques(UniqueType.RequiresPopulation))
-            if (unique.params[0].toInt() > cityConstructions.city.population.population)
-                yield(RejectionReasonType.PopulationRequirement.toInstance(unique.getDisplayText()))
-
-        yieldAll(getRejectionReasons(civInfo, cityConstructions.city))
-
-        // Expensive, since adding and removing the fake unit causes side-effects
-        if (isAirUnit()) {
-            // Not actually added to civ so doesn't require destroy
-            val fakeUnit = getMapUnit(cityConstructions.city.civ, Constants.NO_ID)
-            val canUnitEnterTile = fakeUnit.movement.canMoveTo(cityConstructions.city.getCenterTile())
-            if (!canUnitEnterTile)
-                yield(RejectionReasonType.NoPlaceToPutUnit.toInstance())
-        }
-    }
+    override fun getRejectionReasons(cityConstructions: CityConstructions): Sequence<RejectionReason> =
+        getRejectionReasons(cityConstructions.city.civ, cityConstructions.city)
 
     fun getRejectionReasons(
         civ: Civilization,
         city: City? = null,
         additionalResources: Counter<String> = Counter.ZERO
     ): Sequence<RejectionReason> = sequence {
+
+        val stateForConditionals = StateForConditionals(civ, city)
+
+        if (city != null && isWaterUnit() && !city.isCoastal())
+            yield(RejectionReasonType.WaterUnitsInCoastalCities.toInstance())
+
+        for (unique in getMatchingUniques(UniqueType.OnlyAvailable, StateForConditionals.IgnoreConditionals))
+            yieldAll(notMetRejections(unique, civ, city))
+
+        for (unique in getMatchingUniques(UniqueType.CanOnlyBeBuiltWhen, StateForConditionals.IgnoreConditionals))
+            yieldAll(notMetRejections(unique, civ, city, true))
+
+        for (unique in getMatchingUniques(UniqueType.Unavailable, stateForConditionals))
+            yield(RejectionReasonType.ShouldNotBeDisplayed.toInstance())
+
+        if (city != null)
+            for (unique in getMatchingUniques(UniqueType.RequiresPopulation))
+                if (unique.params[0].toInt() > city.population.population)
+                    yield(RejectionReasonType.PopulationRequirement.toInstance(unique.getDisplayText()))
+
         for (requiredTech: String in requiredTechs())
             if (!civ.tech.isResearched(requiredTech))
                 yield(RejectionReasonType.RequiresTech.toInstance("$requiredTech not researched"))
@@ -221,8 +213,6 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
 
         if (isHiddenBySettings(civ.gameInfo))
             yield(RejectionReasonType.DisabledBySetting.toInstance())
-
-        val stateForConditionals = StateForConditionals(civ, city)
 
         if (hasUnique(UniqueType.Unbuildable, stateForConditionals))
             yield(RejectionReasonType.Unbuildable.toInstance())
@@ -255,6 +245,14 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
                     yield(RejectionReasonType.CannotBeBuiltUnhappiness.toInstance(unique.getDisplayText()))
                 else yield(RejectionReasonType.CannotBeBuilt.toInstance())
             }
+
+        if (city != null && isAirUnit()) {
+            // Not actually added to civ so doesn't require destroy
+            val fakeUnit = getMapUnit(civ, Constants.NO_ID)
+            val canUnitEnterTile = fakeUnit.movement.canMoveTo(city.getCenterTile())
+            if (!canUnitEnterTile)
+                yield(RejectionReasonType.NoPlaceToPutUnit.toInstance())
+        }
     }
 
     /**
@@ -262,11 +260,10 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
      * Also custom handles [UniqueType.ConditionalBuildingBuiltAmount], and
      * [UniqueType.ConditionalBuildingBuiltAll]
      */
-    private fun notMetRejections(unique: Unique, cityConstructions: CityConstructions, built: Boolean=false): Sequence<RejectionReason> = sequence {
-        val civ = cityConstructions.city.civ
+    private fun notMetRejections(unique: Unique, civ: Civilization, city: City?, built: Boolean=false): Sequence<RejectionReason> = sequence {
         for (conditional in unique.conditionals) {
             // We yield a rejection only when conditionals are NOT met
-            if (Conditionals.conditionalApplies(unique, conditional, StateForConditionals(civ, cityConstructions.city)))
+            if (Conditionals.conditionalApplies(unique, conditional, StateForConditionals(civ, city)))
                 continue
             when (conditional.type) {
                 UniqueType.ConditionalBuildingBuiltAmount -> {
@@ -502,6 +499,8 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
                         } // Bonus in terrain or feature - half the bonus
                     ) {
                         power *= (unique.params[0].toInt() / 2f).toPercent()
+                    } else {
+                        power *= (unique.params[0].toInt()).toPercent() // Static bonus
                     }
                 }
                 UniqueType.StrengthNearCapital ->

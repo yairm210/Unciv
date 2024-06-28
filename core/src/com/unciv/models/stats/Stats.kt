@@ -81,7 +81,7 @@ open class Stats(
         faith = 0f
     }
 
-    /** **Mutating function**
+    /** **Mutating function** (but does **not** mutate [other])
      * Adds each value of another [Stats] instance to this one in place
      * @return this for chaining */
     fun add(other: Stats): Stats {

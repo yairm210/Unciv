@@ -89,6 +89,7 @@ object GreatGeneralImplementation {
         // rank tiles and find best
         val unitBonusRadius = generalBonusData.maxOfOrNull { it.radius }
             ?: return null
+
         return militaryUnitTilesInDistance
             .maxByOrNull { unitTile ->
                 unitTile.getTilesInDistance(unitBonusRadius).sumOf { auraTile ->

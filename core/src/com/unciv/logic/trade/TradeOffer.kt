@@ -3,16 +3,16 @@ package com.unciv.logic.trade
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.IsPartOfGameInfoSerialization
-import com.unciv.logic.trade.TradeType.TradeTypeNumberType
+import com.unciv.logic.trade.TradeOfferType.TradeTypeNumberType
 import com.unciv.models.ruleset.Speed
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.fonts.Fonts
 
-data class TradeOffer(val name: String, val type: TradeType, var amount: Int = 1, var duration: Int) : IsPartOfGameInfoSerialization {
+data class TradeOffer(val name: String, val type: TradeOfferType, var amount: Int = 1, var duration: Int) : IsPartOfGameInfoSerialization {
 
     constructor(
         name: String,
-        type: TradeType,
+        type: TradeOfferType,
         amount: Int = 1,
         speed: Speed = UncivGame.Current.gameInfo!!.speed
     ) : this(name, type, amount, duration = -1) {
@@ -23,7 +23,7 @@ data class TradeOffer(val name: String, val type: TradeType, var amount: Int = 1
         }
     }
 
-    constructor() : this("", TradeType.Gold, duration = -1) // so that the json deserializer can work
+    constructor() : this("", TradeOfferType.Gold, duration = -1) // so that the json deserializer can work
 
     @Suppress("CovariantEquals", "WrongEqualsTypeParameter")    // This is an overload, not an override of the built-in equals(Any?)
     fun equals(offer: TradeOffer): Boolean {
@@ -36,9 +36,9 @@ data class TradeOffer(val name: String, val type: TradeType, var amount: Int = 1
 
     fun getOfferText(untradable: Int = 0): String {
         var offerText = when(type) {
-            TradeType.WarDeclaration -> "Declare war on [$name]"
-            TradeType.Introduction -> "Introduction to [$name]"
-            TradeType.City -> {
+            TradeOfferType.WarDeclaration -> "Declare war on [$name]"
+            TradeOfferType.Introduction -> "Introduction to [$name]"
+            TradeOfferType.City -> {
                 val city =
                         UncivGame.Current.gameInfo!!.getCities().firstOrNull { it.id == name }
                 city?.run { "{$name} (${population.population})" } ?: "Non-existent city"

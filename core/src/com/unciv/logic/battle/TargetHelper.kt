@@ -33,10 +33,13 @@ object TargetHelper {
                     || escortingUnit.currentMovement - escortingUnit.movement.getDistanceToTiles()[reachableTile]!!.totalDistance <= 0f) 
                     continue
             }
+
             val tilesInAttackRange =
-                if (unit.hasUnique(UniqueType.IndirectFire) || unit.baseUnit.movesLikeAirUnits())
+                if (unit.baseUnit.isMelee()) reachableTile.neighbors
+                else if (unit.hasUnique(UniqueType.IndirectFire) || unit.baseUnit.movesLikeAirUnits())
                     reachableTile.getTilesInDistance(rangeOfAttack)
                 else reachableTile.tileMap.getViewableTiles(reachableTile.position, rangeOfAttack, true).asSequence()
+
             for (tile in tilesInAttackRange) {
                 when {
                     // Since military units can technically enter tiles with enemy civilians,

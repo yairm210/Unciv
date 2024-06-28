@@ -105,7 +105,8 @@ object Automation {
             if (city.civ.wantsToFocusOn(stat))
                 yieldStats[stat] *= 2f
 
-            yieldStats[stat] *= civPersonality.scaledFocus(PersonalityValue[stat])
+            val scaledFocus = civPersonality.scaledFocus(PersonalityValue[stat])
+            if (scaledFocus != 1f) yieldStats[stat] *= scaledFocus
         }
 
         // Apply City focus
@@ -184,7 +185,7 @@ object Automation {
             }
             // Only now do we filter out the constructable units because that's a heavier check
             .filter { it.isBuildable(city.cityConstructions) }
-            .toList()
+            .toList().asSequence()
 
         val chosenUnit: BaseUnit
         if (!city.civ.isAtWar()

@@ -58,7 +58,7 @@ class CityReligionManager : IsPartOfGameInfoSerialization {
     }
 
     fun getUniques(uniqueType: UniqueType): Sequence<Unique> {
-        val majorityReligion = getMajorityReligion() ?: return sequenceOf()
+        val majorityReligion = getMajorityReligion() ?: return emptySequence()
         return majorityReligion.followerBeliefUniqueMap.getUniques(uniqueType)
     }
 

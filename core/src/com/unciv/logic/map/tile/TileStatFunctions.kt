@@ -12,7 +12,9 @@ import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
 import com.unciv.ui.components.extensions.toPercent
 
-fun Iterable<Pair<String, Stats>>.toStats(): Stats {
+fun List<Pair<String, Stats>>.toStats(): Stats {
+    if (size == 1) return get(0).second
+    
     val stats = Stats()
     for ((_, statsToAdd) in this)
         stats.add(statsToAdd)
@@ -290,7 +292,7 @@ class TileStatFunctions(val tile: Tile) {
         if (tile.hasViewableResource(observingCiv) && tile.tileResource.isImprovedBy(improvement.name)
                 && tile.tileResource.improvementStats != null
         )
-            stats.add(tile.tileResource.improvementStats!!.clone()) // resource-specific improvement
+            stats.add(tile.tileResource.improvementStats!!) // resource-specific improvement
 
         val conditionalState = StateForConditionals(civInfo = observingCiv, city = city, tile = tile)
         for (unique in improvement.getMatchingUniques(UniqueType.Stats, conditionalState)) {
