@@ -95,7 +95,7 @@ object AndroidImagePacker {
         fun File.listTree(): Sequence<File> = when {
             this.isFile -> sequenceOf(this)
             this.isDirectory -> this.listFiles()!!.asSequence().flatMap { it.listTree() }
-            else -> sequenceOf()
+            else -> emptySequence()
         }
 
         // Check if outdated

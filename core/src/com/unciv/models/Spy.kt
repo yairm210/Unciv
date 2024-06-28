@@ -387,12 +387,12 @@ class Spy private constructor() : IsPartOfGameInfoSerialization {
             city == null -> {
                 // Spy is in hideout - effectiveness won't matter
                 friendlyUniques = civInfo.getMatchingUniques(UniqueType.SpyEffectiveness)
-                enemyUniques = sequenceOf()
+                enemyUniques = emptySequence()
             }
             city.civ == civInfo -> {
                 // Spy is in our own city
                 friendlyUniques = city.getMatchingUniques(UniqueType.SpyEffectiveness, StateForConditionals(city), includeCivUniques = true)
-                enemyUniques = sequenceOf()
+                enemyUniques = emptySequence()
             }
             else -> {
                 // Spy is active in a foreign city

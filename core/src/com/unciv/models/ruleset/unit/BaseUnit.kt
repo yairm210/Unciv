@@ -51,7 +51,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
     var replacementTextForUniques = ""
     var promotions = HashSet<String>()
     var obsoleteTech: String? = null
-    fun techsThatObsoleteThis(): Sequence<String> = if (obsoleteTech == null) sequenceOf() else sequenceOf(obsoleteTech!!)
+    fun techsThatObsoleteThis(): Sequence<String> = if (obsoleteTech == null) emptySequence() else sequenceOf(obsoleteTech!!)
     fun techsAtWhichAutoUpgradeInProduction(): Sequence<String> = techsThatObsoleteThis()
     fun techsAtWhichNoLongerAvailable(): Sequence<String> = techsThatObsoleteThis()
     @Suppress("unused") // Keep the how-to around
