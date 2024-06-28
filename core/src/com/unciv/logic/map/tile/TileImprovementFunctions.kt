@@ -82,10 +82,9 @@ class TileImprovementFunctions(val tile: Tile) {
                     .any { civInfo.getResourceAmount(it.params[1]) < it.params[0].toInt() })
             yield(ImprovementBuildingProblem.MissingResources)
 
-        val knownFeatureRemovals = tile.ruleset.tileRemovals
+        val knownFeatureRemovals = tile.ruleset.nonRoadTileRemovals
             .filter { rulesetImprovement ->
-                        RoadStatus.values().none { it.removeAction == rulesetImprovement.name }
-                        && (rulesetImprovement.techRequired == null || civInfo.tech.isResearched(rulesetImprovement.techRequired!!))
+                        rulesetImprovement.techRequired == null || civInfo.tech.isResearched(rulesetImprovement.techRequired!!)
             }
 
         if (!canImprovementBeBuiltHere(improvement, tile.hasViewableResource(civInfo), knownFeatureRemovals, stateForConditionals))
@@ -157,14 +156,14 @@ class TileImprovementFunctions(val tile: Tile) {
 
             // Can't build if the improvement specifically prevents building on some present feature
             improvement.getMatchingUniques(UniqueType.CannotBuildOnTile, stateForConditionals).any {
-                    unique -> tile.matchesTerrainFilter(unique.params[0])
+                    unique -> tile.matchesFilter(unique.params[0], stateForConditionals.civInfo)
             } ->
                 false
 
             // Can't build if an improvement is only allowed to be built on specific tiles and this is not one of them
             // If multiple uniques of this type exists, we want all to match (e.g. Hill _and_ Forest would be meaningful)
             improvement.getMatchingUniques(UniqueType.CanOnlyBeBuiltOnTile, stateForConditionals).let {
-                it.any() && it.any { unique -> !tile.matchesTerrainFilter(unique.params[0]) }
+                it.any() && it.any { unique -> !tile.matchesFilter(unique.params[0], stateForConditionals.civInfo) }
             } -> false
 
             // Can't build if the improvement requires an adjacent terrain that is not present

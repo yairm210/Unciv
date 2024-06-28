@@ -1,3 +1,19 @@
+## 4.12.5
+
+Re-add 'construct great improvement' automation for great units that can't do their main actions
+
+Promotion added to unit already containing that promotion, does not retrigger trigger uniques
+
+"Unavailable" units cannot be upgraded to
+
+By SeventhM:
+- Consider passive strength bonuses for force value 
+- Pass in civ for building on tiles 
+
+By SomeTroglodyte:
+- Larger clipboard size on Desktop
+- Add a Unique allowing an Improvement to specify which Resource(s) it improves 
+
 ## 4.12.4
 
 Modding version!

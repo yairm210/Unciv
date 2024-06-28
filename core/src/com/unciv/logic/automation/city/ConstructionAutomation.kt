@@ -280,6 +280,7 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
     }
 
 
+    @Suppress("UNUSED_PARAMETER") // stub for future use
     private fun applyOnetimeUniqueBonuses(building: Building): Float {
         var value = 0f
         // TODO: Add specific Uniques here
