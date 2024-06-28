@@ -25,7 +25,6 @@ import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
 import com.unciv.ui.screens.cityscreen.CityScreen
-import com.unciv.ui.screens.overviewscreen.UnitSupplyTable
 import kotlin.math.max
 import kotlin.math.sqrt
 
