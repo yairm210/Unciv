@@ -412,9 +412,12 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
     }
 
     fun isWorked(): Boolean = getWorkingCity() != null
-    fun providesYield() = getCity() != null && (isCityCenter() || isWorked()
-            || getUnpillagedTileImprovement()?.hasUnique(UniqueType.TileProvidesYieldWithoutPopulation) == true
-            || terrainHasUnique(UniqueType.TileProvidesYieldWithoutPopulation))
+    fun providesYield(): Boolean {
+        if (getCity() == null) return false
+        return isCityCenter() || isWorked()
+                || getUnpillagedTileImprovement()?.hasUnique(UniqueType.TileProvidesYieldWithoutPopulation) == true
+                || terrainHasUnique(UniqueType.TileProvidesYieldWithoutPopulation)
+    }
 
     fun isLocked(): Boolean {
         val workingCity = getWorkingCity()
