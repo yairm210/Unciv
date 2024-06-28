@@ -89,7 +89,7 @@ object CityLocationTileRanker {
         // Only count a luxary resource that we don't have yet as unique once
         val newUniqueLuxuryResources = HashSet<String>()
 
-        if (onCoast) tileValue += 10
+        if (onCoast) tileValue += 3
         // Hills are free production and defence
         if (onHill) tileValue += 7
         // Observatories are good, but current implementation no mod-friendly
@@ -100,10 +100,6 @@ object CityLocationTileRanker {
         if (newCityTile.terrainHasUnique(UniqueType.Unbuildable)) tileValue += 3
         // If we build the city on a resource tile, then we can't build any special improvements on it
         if (newCityTile.resource != null) tileValue -= 4
-        // We don't want to settle 1-tile islands and promontories with few good tiles
-        for (nearbyTile in newCityTile.getTilesAtDistance(1))
-            if (nearbyTile.isWater)
-                tileValue -= 1
 
         var tiles = 0
         for (i in 0..3) {
