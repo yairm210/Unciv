@@ -469,9 +469,7 @@ object UnitAutomation {
         // this can be sped up if we check each layer separately
         val unitDistanceToTiles = unit.movement.getDistanceToTilesAtPosition(
                 unit.getTile().position,
-                unit.getMaxMovement() * CLOSE_ENEMY_TURNS_AWAY_LIMIT,
-                // Consider ZoC is expensive - we just want to find the closest, not the exact movement we'll need to get there
-                false,
+                unit.getMaxMovement() * CLOSE_ENEMY_TURNS_AWAY_LIMIT
         )
         var closeEnemies = TargetHelper.getAttackableEnemies(
             unit,
