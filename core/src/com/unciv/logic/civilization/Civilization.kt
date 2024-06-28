@@ -362,7 +362,7 @@ class Civilization : IsPartOfGameInfoSerialization {
     fun isMajorCiv() = nation.isMajorCiv
     fun isMinorCiv() = nation.isCityState || nation.isBarbarian
     fun isCityState(): Boolean = nation.isCityState
-    val isBarbarian by lazy { nation.isBarbarian }
+    fun isBarbarian() = nation.isBarbarian
     fun isSpectator() = nation.isSpectator
     fun isAlive(): Boolean = !isDefeated()
 
@@ -618,7 +618,7 @@ class Civilization : IsPartOfGameInfoSerialization {
      *  Otherwise, it stays 'alive' as long as it has cities (irrespective of settlers owned)
      */
     fun isDefeated() = when {
-        isBarbarian || isSpectator() -> false     // Barbarians and voyeurs can't lose
+        isBarbarian() || isSpectator() -> false     // Barbarians and voyeurs can't lose
         hasEverOwnedOriginalCapital -> cities.isEmpty()
         else -> units.getCivUnitsSize() == 0
     }

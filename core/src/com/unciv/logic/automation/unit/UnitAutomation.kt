@@ -167,7 +167,7 @@ object UnitAutomation {
     }
 
     fun automateUnitMoves(unit: MapUnit) {
-        check(!unit.civ.isBarbarian) { "Barbarians is not allowed here." }
+        check(!unit.civ.isBarbarian()) { "Barbarians is not allowed here." }
 
         // Might die next turn - move!
         if (unit.health <= unit.getDamageFromTerrain() && tryHealUnit(unit)) return

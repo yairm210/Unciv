@@ -79,7 +79,7 @@ class BarbarianManager : IsPartOfGameInfoSerialization {
             return
 
         // Barbarians will only spawn in places that no one can see
-        val allViewableTiles = gameInfo.civilizations.asSequence().filterNot { it.isBarbarian || it.isSpectator() }
+        val allViewableTiles = gameInfo.civilizations.asSequence().filterNot { it.isBarbarian() || it.isSpectator() }
             .flatMap { it.viewableTiles }.toHashSet()
         val fogTiles = tileMap.values.filter { it.isLand && it !in allViewableTiles }
 
@@ -98,7 +98,7 @@ class BarbarianManager : IsPartOfGameInfoSerialization {
         if (campsToAdd <= 0) return
 
         // Camps can't spawn within 7 tiles of each other or within 4 tiles of major civ capitals
-        val tooCloseToCapitals = gameInfo.civilizations.filterNot { it.isBarbarian || it.isSpectator() || it.cities.isEmpty() || it.isCityState() || it.getCapital() == null }
+        val tooCloseToCapitals = gameInfo.civilizations.filterNot { it.isBarbarian() || it.isSpectator() || it.cities.isEmpty() || it.isCityState() || it.getCapital() == null }
             .flatMap { it.getCapital()!!.getCenterTile().getTilesInDistance(4) }.toSet()
         val tooCloseToCamps = encampments
             .flatMap { tileMap[it.position].getTilesInDistance(
@@ -250,7 +250,7 @@ class Encampment() : IsPartOfGameInfoSerialization {
         // if we don't make this into a separate list then the retain() will happen on the Tech keys,
         // which effectively removes those techs from the game and causes all sorts of problems
         val allResearchedTechs = gameInfo.ruleset.technologies.keys.toMutableList()
-        for (civ in gameInfo.civilizations.filter { !it.isBarbarian && !it.isDefeated() }) {
+        for (civ in gameInfo.civilizations.filter { !it.isBarbarian() && !it.isDefeated() }) {
             allResearchedTechs.retainAll(civ.tech.techsResearched)
         }
         val barbarianCiv = gameInfo.getBarbarianCivilization()

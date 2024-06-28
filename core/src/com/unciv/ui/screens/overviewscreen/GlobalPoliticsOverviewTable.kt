@@ -286,7 +286,7 @@ class GlobalPoliticsOverviewTable(
             persistableData.includeCityStates && viewingPlayer.hideCityStateCount()
         relevantCivsCount = if (hideCivsCount) "?"
             else gameInfo.civilizations.count {
-                !it.isSpectator() && !it.isBarbarian && (persistableData.includeCityStates || !it.isCityState())
+                !it.isSpectator() && !it.isBarbarian() && (persistableData.includeCityStates || !it.isCityState())
             }.toString()
         undefeatedCivs = sequenceOf(viewingPlayer) +
                 viewingPlayer.diplomacyFunctions.getKnownCivsSorted(persistableData.includeCityStates)

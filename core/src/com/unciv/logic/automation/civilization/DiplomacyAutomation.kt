@@ -296,7 +296,7 @@ object DiplomacyAutomation {
         val enemiesCiv = civInfo.diplomacy.filter { it.value.diplomaticStatus == DiplomaticStatus.War }
             .map { it.value.otherCiv() }
             .filterNot {
-                it == civInfo || it.isBarbarian || it.cities.isEmpty()
+                it == civInfo || it.isBarbarian() || it.cities.isEmpty()
                     || it.getDiplomacyManager(civInfo)!!.hasFlag(DiplomacyFlags.DeclaredWar)
                     || civInfo.getDiplomacyManager(it)!!.hasFlag(DiplomacyFlags.DeclaredWar)
             }.filter { !civInfo.getDiplomacyManager(it)!!.hasFlag(DiplomacyFlags.DeclinedPeace) }

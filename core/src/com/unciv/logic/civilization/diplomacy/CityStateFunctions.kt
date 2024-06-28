@@ -540,7 +540,7 @@ class CityStateFunctions(val civInfo: Civilization) {
 
     fun getNumThreateningBarbarians(): Int {
         if (civInfo.gameInfo.gameParameters.noBarbarians) return 0
-        val barbarianCiv = civInfo.gameInfo.civilizations.firstOrNull { it.isBarbarian }
+        val barbarianCiv = civInfo.gameInfo.civilizations.firstOrNull { it.isBarbarian() }
             ?: return 0
         return barbarianCiv.units.getCivUnits().count { it.threatensCiv(civInfo) }
     }

@@ -829,7 +829,7 @@ object UniqueTriggerActivation {
             UniqueType.OneTimeTriggerVoting -> {
                 return {
                     for (civ in civInfo.gameInfo.civilizations)
-                        if (!civ.isBarbarian && !civ.isSpectator())
+                        if (!civ.isBarbarian() && !civ.isSpectator())
                             civ.addFlag(
                                 CivFlags.TurnsTillNextDiplomaticVote.name,
                                 civInfo.getTurnsBetweenDiplomaticVotes()

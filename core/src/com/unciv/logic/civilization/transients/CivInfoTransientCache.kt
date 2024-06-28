@@ -119,10 +119,10 @@ class CivInfoTransientCache(val civInfo: Civilization) {
             if (unitOwner != null) viewedCivs[unitOwner] = tile
         }
 
-        if (!civInfo.isBarbarian) {
+        if (!civInfo.isBarbarian()) {
             for (entry in viewedCivs) {
                 val metCiv = entry.key
-                if (metCiv == civInfo || metCiv.isBarbarian || civInfo.diplomacy.containsKey(metCiv.civName)) continue
+                if (metCiv == civInfo || metCiv.isBarbarian() || civInfo.diplomacy.containsKey(metCiv.civName)) continue
                 civInfo.diplomacyFunctions.makeCivilizationsMeet(metCiv)
                 if(!civInfo.isSpectator())
                     civInfo.addNotification("We have encountered [${metCiv.civName}]!",
