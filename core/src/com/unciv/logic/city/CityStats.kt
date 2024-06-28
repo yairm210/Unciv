@@ -266,7 +266,7 @@ class CityStats(val city: City) {
                     city.getMatchingUniques(UniqueType.PercentProductionWonders)
                 currentConstruction is Building && !currentConstruction.isAnyWonder() ->
                     city.getMatchingUniques(UniqueType.PercentProductionBuildings)
-                else -> sequenceOf() // Science/Gold production
+                else -> emptySequence() // Science/Gold production
             }
 
         for (unique in uniquesToCheck) {

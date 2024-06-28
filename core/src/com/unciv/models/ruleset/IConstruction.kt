@@ -34,7 +34,7 @@ interface INonPerpetualConstruction : IConstruction, INamed, IHasUniques {
     // https://yairm210.github.io/Unciv/Developers/Translations%2C-mods%2C-and-modding-freedom-in-Open-Source#filters
     var requiredTech: String?
 
-    override fun legacyRequiredTechs(): Sequence<String> = if (requiredTech == null) sequenceOf() else sequenceOf(requiredTech!!)
+    override fun legacyRequiredTechs(): Sequence<String> = if (requiredTech == null) emptySequence() else sequenceOf(requiredTech!!)
 
     fun getProductionCost(civInfo: Civilization, city: City?): Int
     fun getStatBuyCost(city: City, stat: Stat): Int?

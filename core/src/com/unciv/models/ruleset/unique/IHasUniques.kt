@@ -36,7 +36,7 @@ interface IHasUniques : INamed {
     fun getUniqueTarget(): UniqueTarget
 
     fun getMatchingUniques(uniqueTemplate: String, stateForConditionals: StateForConditionals? = null): Sequence<Unique> {
-        val matchingUniques = uniqueMap[uniqueTemplate] ?: return sequenceOf()
+        val matchingUniques = uniqueMap[uniqueTemplate] ?: return emptySequence()
 
         val actualStateForConditionals = stateForConditionals ?: StateForConditionals()
         val uniques = matchingUniques.asSequence().filter { it.conditionalsApply(actualStateForConditionals) }
@@ -63,7 +63,7 @@ interface IHasUniques : INamed {
                 .map { it.params[0] }
     }
 
-    fun legacyRequiredTechs(): Sequence<String> = sequenceOf()
+    fun legacyRequiredTechs(): Sequence<String> = emptySequence()
 
     fun requiredTechs(): Sequence<String> = legacyRequiredTechs() + techsRequiredByUniques()
 

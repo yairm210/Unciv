@@ -147,7 +147,7 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
 
     @Transient
     /** Saves a sequence of a list */
-    var allTerrains: Sequence<Terrain> = sequenceOf()
+    var allTerrains: Sequence<Terrain> = emptySequence()
         private set
 
     @Transient
@@ -473,7 +473,7 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
     private fun matchesSingleTerrainFilter(filter: String, observingCiv: Civilization? = null): Boolean {
         return when (filter) {
             "Terrain" -> true
-            in Constants.all -> true
+            "All", "all" -> true
             baseTerrain -> true
             "Water" -> isWater
             "Land" -> isLand
