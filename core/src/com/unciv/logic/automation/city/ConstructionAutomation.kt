@@ -265,6 +265,8 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
     private fun addBuildingChoices() {
         for (building in buildings.filterBuildable()) {
             if (building.isWonder && city.isPuppet) continue
+            // We shouldn't try to build wonders in undeveloped empires
+            if (building.isWonder && civInfo.cities.size < 3) continue
             addChoice(relativeCostEffectiveness, building.name, getValueOfBuilding(building))
         }
     }
