@@ -145,7 +145,7 @@ class CityPopulationManager : IsPartOfGameInfoSerialization {
 
     /** Only assigns free population */
     internal fun autoAssignPopulation() {
-        city.cityStats.update()  // calculate current stats with current assignments
+        city.cityStats.update(updateCivStats = false)  // calculate current stats with current assignments
         val freePopulation = getFreePopulation()
         if (freePopulation <= 0) return
 
