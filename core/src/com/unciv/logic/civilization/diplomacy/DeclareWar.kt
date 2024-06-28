@@ -36,7 +36,7 @@ object DeclareWar {
         onWarDeclared(diplomacyManager, true)
         onWarDeclared(otherCivDiplomacy, false)
 
-        changeOpinions(diplomacyManager, declareWarReason.warType)
+        changeOpinions(diplomacyManager, declareWarReason)
 
         breakTreaties(diplomacyManager)
 
@@ -164,21 +164,25 @@ object DeclareWar {
         diplomacyManager.removeFlag(DiplomacyFlags.BorderConflict)
     }
 
-    private fun changeOpinions(diplomacyManager: DiplomacyManager, warType: WarType) {
+    private fun changeOpinions(diplomacyManager: DiplomacyManager, declareWarReason: DeclareWarReason) {
         val civInfo = diplomacyManager.civInfo
         val otherCiv = diplomacyManager.otherCiv()
         val otherCivDiplomacy = diplomacyManager.otherCivDiplomacy()
+        val warType = declareWarReason.warType
 
         otherCivDiplomacy.setModifier(DiplomaticModifiers.DeclaredWarOnUs, -20f)
         otherCivDiplomacy.removeModifier(DiplomaticModifiers.ReturnedCapturedUnits)
 
         // Apply warmongering
-        if (warType == WarType.DirectWar || warType == WarType.JoinWar) {
-            for (thirdCiv in civInfo.getKnownCivs()) {
-                if (!thirdCiv.isAtWarWith(otherCiv))
-                // We don't want this modify to stack if there is a defensive pact
+        if (warType == WarType.DirectWar || warType == WarType.JoinWar || warType == WarType.TeamWar) {
+            for (thirdCiv in diplomacyManager.getCommonKnownCivs()) {
+                if (!thirdCiv.isAtWarWith(otherCiv) 
+                    && thirdCiv.getDiplomacyManager(otherCiv)!!.isRelationshipLevelGT(RelationshipLevel.Competitor) 
+                    && thirdCiv != declareWarReason.allyCiv) {
+                    // We don't want this modify to stack if there is a defensive pact
                     thirdCiv.getDiplomacyManager(civInfo)!!
                         .addModifier(DiplomaticModifiers.WarMongerer, -5f)
+                }
             }
         }
 
