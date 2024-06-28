@@ -223,6 +223,9 @@ enum class RejectionReasonType(val shouldShow: Boolean, val errorMessage: String
     NoSettlerForOneCityPlayers(false, "No settlers for city-states or one-city challengers"),
     NoPlaceToPutUnit(true, "No space to place this unit");
 
+    val defaultInstance by lazy { RejectionReason(this, errorMessage, shouldShow) }
+    fun toInstance() = defaultInstance
+
     fun toInstance(errorMessage: String = this.errorMessage,
         shouldShow: Boolean = this.shouldShow): RejectionReason {
         return RejectionReason(this, errorMessage, shouldShow)

@@ -153,7 +153,7 @@ class City : IsPartOfGameInfoSerialization, INamed {
     fun getWorkableTiles() = tilesInRange.asSequence().filter { it.getOwner() == civ }
     fun isWorked(tile: Tile) = workedTiles.contains(tile.position)
 
-    fun isCapital(): Boolean = cityConstructions.getBuiltBuildings().any { it.hasUnique(UniqueType.IndicatesCapital) }
+    fun isCapital(): Boolean = cityConstructions.builtBuildingUniqueMap.getUniques(UniqueType.IndicatesCapital).any()
     fun isCoastal(): Boolean = centerTile.isCoastalTile()
 
     fun getBombardRange(): Int = civ.gameInfo.ruleset.modOptions.constants.baseCityBombardRange
@@ -492,9 +492,8 @@ class City : IsPartOfGameInfoSerialization, INamed {
     fun getLocalMatchingUniques(uniqueType: UniqueType, stateForConditionals: StateForConditionals = StateForConditionals(this)): Sequence<Unique> {
         val uniques = cityConstructions.builtBuildingUniqueMap.getUniques(uniqueType).filter { it.isLocalEffect } +
             religion.getUniques(uniqueType)
-        return if (uniques.any()) uniques.filter { !it.isTimedTriggerable && it.conditionalsApply(stateForConditionals) }
-            .flatMap { it.getMultiplied(stateForConditionals) }
-        else uniques
+        return uniques.filter { !it.isTimedTriggerable && it.conditionalsApply(stateForConditionals) }
+                .flatMap { it.getMultiplied(stateForConditionals) }
     }
 
     // Uniques coming from this city, but that should be provided globally
