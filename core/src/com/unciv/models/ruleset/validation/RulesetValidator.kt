@@ -401,7 +401,7 @@ class RulesetValidator(val ruleset: Ruleset) {
         lines: RulesetErrorList,
         tryFixUnknownUniques: Boolean
     ) {
-        if (ruleset.terrains.values.none { it.type == TerrainType.Land && !it.impassable })
+        if (ruleset.terrains.values.none { it.type == TerrainType.Land && !it.impassable && !it.hasUnique(UniqueType.NoNaturalGeneration) })
             lines.add("No passable land terrains exist!", sourceObject = null)
 
         for (terrain in ruleset.terrains.values) {
