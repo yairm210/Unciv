@@ -2,7 +2,12 @@ package com.unciv.logic.battle
 
 import com.badlogic.gdx.math.Vector2
 import com.unciv.logic.city.City
-import com.unciv.logic.civilization.*
+import com.unciv.logic.civilization.Civilization
+import com.unciv.logic.civilization.CivilopediaAction
+import com.unciv.logic.civilization.LocationAction
+import com.unciv.logic.civilization.Notification
+import com.unciv.logic.civilization.NotificationCategory
+import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.map.tile.RoadStatus
@@ -106,7 +111,7 @@ object Nuke {
                 attackingCiv.addNotification(
                     "After an attempted attack by our [${attacker.getName()}], [${defendingCiv}] has declared war on us!",
                     nukeNotificationAction,
-                    NotificationCategory.Diplomacy,
+                    Notification.NotificationCategory.Diplomacy,
                     defendingCiv.civName,
                     NotificationIcon.War,
                     attacker.getName()
