@@ -23,7 +23,7 @@ object Gzip {
         return compressed
     }
 
-    private fun decompress(compressed: ByteArray): String {
+    fun decompress(compressed: ByteArray): String {
         val bis = ByteArrayInputStream(compressed)
         val gis = GZIPInputStream(bis)
         val br = BufferedReader(InputStreamReader(gis, Charsets.UTF_8))
