@@ -1,3 +1,39 @@
+## 4.12.6
+
+Fix detekt
+
+Many lazies for things that remain permanent, and profiling shows are frequently used
+
+Revert "perf: Civ.isBarbarian to lazy ("what could this possibly save", 100ms out of 30s)"
+
+revert some changes
+
+perf: Don't update civ stats on auto assign population
+
+perf: Civ.isBarbarian to lazy ("what could this possibly save", 100ms out of 30s)
+
+perf: Many performance improvements, large and small
+
+4.12.5-patch1
+
+Patch: Fix automation breaking on unknown units with no improvement placements 
+
+perf: sequenceOf() -> emptySequence()
+
+perf: small 1% cpu optimizations
+
+condition -> conditional
+
+By SomeTroglodyte:
+- Minor TranslationFileWriter maintenance 
+- Support for languages using Diacritics as multi-codepoint joiners 
+
+By tuvus:
+- Improved UnitAutomation tryPrepare() cityToDefend evaluation 
+- Warmongering doesn't apply to civs that are angry at the target civ 
+
+Optimize screen orientation  - By HChenX
+
 ## 4.12.5
 
 Re-add 'construct great improvement' automation for great units that can't do their main actions
