@@ -127,21 +127,16 @@ object TranslationFileWriter {
                 linesToTranslate += "$uniqueTarget = "
 
             linesToTranslate += "\n\n#################### Lines from spy actions #######################\n"
-            for (spyAction in SpyAction.values()) {
+            for (spyAction in SpyAction.values())
                 linesToTranslate += "${spyAction.displayString} = "
-            }
 
             linesToTranslate += "\n\n#################### Lines from diplomatic modifiers #######################\n"
             for (diplomaticModifier in DiplomaticModifiers.values())
                 linesToTranslate += "${diplomaticModifier.text} = "
 
             linesToTranslate += "\n\n#################### Lines from key bindings #######################\n"
-            for (category in KeyboardBinding.Category.values()) {
-                linesToTranslate += "${category.label} = "
-            }
-            for (binding in KeyboardBinding.values()) {
-                linesToTranslate += "${binding.label} = "
-            }
+            for (bindingLabel in KeyboardBinding.getTranslationEntries())
+                linesToTranslate += "$bindingLabel = "
 
             for (baseRuleset in BaseRuleset.values()) {
                 val generatedStringsFromBaseRuleset =
