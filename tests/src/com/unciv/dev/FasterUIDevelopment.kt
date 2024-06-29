@@ -180,8 +180,8 @@ class FontDesktop : FontImplementation {
 
     override fun getFontSize() = Fonts.ORIGINAL_FONT_SIZE.toInt()
 
-    override fun getCharPixmap(char: Char): Pixmap {
-        var width = metric.charWidth(char)
+    override fun getCharPixmap(symbolString: String): Pixmap {
+        var width = metric.stringWidth(symbolString)
         var height = metric.height
         if (width == 0) {
             height = Fonts.ORIGINAL_FONT_SIZE.toInt()
@@ -193,7 +193,7 @@ class FontDesktop : FontImplementation {
         g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON)
         g.font = font
         g.color = java.awt.Color.WHITE
-        g.drawString(char.toString(), 0, metric.leading + metric.ascent)
+        g.drawString(symbolString, 0, metric.leading + metric.ascent)
 
         val pixmap = Pixmap(bi.width, bi.height, Pixmap.Format.RGBA8888)
         val data = bi.getRGB(0, 0, bi.width, bi.height, null, 0, bi.width)

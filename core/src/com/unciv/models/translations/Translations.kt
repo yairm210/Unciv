@@ -7,10 +7,12 @@ import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
+import com.unciv.ui.components.fonts.DiacriticSupport
 import com.unciv.ui.components.fonts.FontRulesetIcons
 import com.unciv.utils.Log
 import com.unciv.utils.debug
 import java.util.Locale
+import org.jetbrains.annotations.VisibleForTesting
 
 /**
  *  This collection holds all translations for the game.
@@ -40,7 +42,6 @@ class Translations : LinkedHashMap<String, TranslationEntry>() {
 
     // used by tr() whenever GameInfo not initialized (allowing new game screen to use mod translations)
     var translationActiveMods = LinkedHashSet<String>()
-
 
     /**
      * Searches for the translation entry of a given [text] for a given [language].
@@ -118,22 +119,27 @@ class Translations : LinkedHashMap<String, TranslationEntry>() {
         debug("Loading translation file for %s - %sms", language, System.currentTimeMillis() - translationStart)
     }
 
-    private fun createTranslations(language: String, languageTranslations: HashMap<String,String>) {
-        for (translation in languageTranslations) {
-            val hashKey = if (translation.key.contains('[') && !translation.key.contains('<'))
-                translation.key.getPlaceholderText()
-            else translation.key
+    @VisibleForTesting
+    fun createTranslations(language: String, languageTranslations: HashMap<String, String>) {
+        val diacriticSupport = DiacriticSupport(languageTranslations).takeIf { it.isEnabled() }
+        for ((key, value) in languageTranslations) {
+            val hashKey = if (key.contains('[') && !key.contains('<'))
+                key.getPlaceholderText()
+            else key
             var entry = this[hashKey]
             if (entry == null) {
-                entry = TranslationEntry(translation.key)
+                entry = TranslationEntry(key)
                 this[hashKey] = entry
             }
-            entry[language] = translation.value
+            entry[language] = diacriticSupport?.remapDiacritics(value) ?: value
         }
     }
 
+
     fun tryReadTranslationForCurrentLanguage() {
+        DiacriticSupport.reset()
         tryReadTranslationForLanguage(UncivGame.Current.settings.language)
+        DiacriticSupport.freeTranslationData()
     }
 
     /** Get a list of supported languages for [readAllLanguagesTranslation] */
@@ -174,9 +180,11 @@ class Translations : LinkedHashMap<String, TranslationEntry>() {
 
         val translationStart = System.currentTimeMillis()
 
+        DiacriticSupport.reset()
         for (language in getLanguagesWithTranslationFile()) {
             tryReadTranslationForLanguage(language)
         }
+        DiacriticSupport.freeTranslationData()
 
         debug("Loading translation files - %sms", System.currentTimeMillis() - translationStart)
     }
