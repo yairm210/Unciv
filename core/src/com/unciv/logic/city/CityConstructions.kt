@@ -188,7 +188,7 @@ class CityConstructions : IsPartOfGameInfoSerialization {
 
     fun isAllBuilt(buildingList: List<String>): Boolean = buildingList.all { isBuilt(it) }
 
-    fun isBuilt(buildingName: String): Boolean = builtBuildingObjects.any { it.name == buildingName }
+    fun isBuilt(buildingName: String): Boolean = builtBuildings.contains(buildingName)
 
     // Note: There was a isEnqueued here functionally identical to isBeingConstructedOrEnqueued,
     // which was calling both isEnqueued and isBeingConstructed - BUT: currentConstructionFromQueue is just a

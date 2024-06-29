@@ -1,11 +1,11 @@
 package com.unciv.logic.battle
 
 import com.badlogic.gdx.math.Vector2
-import com.unciv.logic.automation.unit.SpecificUnitAutomation
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.CivilopediaAction
 import com.unciv.logic.civilization.LocationAction
+import com.unciv.logic.civilization.Notification
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
@@ -26,7 +26,7 @@ object Nuke {
      *  - Not if we would need to declare war on someone we can't.
      *  - Disallow nuking the tile the nuke is in, as per Civ5 (but not nuking your own tiles/units otherwise)
      *
-     *  Both [BattleTable.simulateNuke] and [SpecificUnitAutomation.automateNukes] check range, so that check is omitted here.
+     *  Both [BattleTable.simulateNuke] and [AirUnitAutomation.automateNukes] check range, so that check is omitted here.
      */
     fun mayUseNuke(nuke: MapUnitCombatant, targetTile: Tile): Boolean {
         if (nuke.getTile() == targetTile) return false
@@ -39,12 +39,11 @@ object Nuke {
             if (defenderCiv == null) return
             // Allow nuking yourself! (Civ5 source: CvUnit::isNukeVictim)
             if (defenderCiv == attackerCiv || defenderCiv.isDefeated()) return
-            if (defenderCiv.isBarbarian()) return
+            if (defenderCiv.isBarbarian) return
             // Gleaned from Civ5 source - this disallows nuking unknown civs even in invisible tiles
             // https://github.com/Gedemon/Civ5-DLL/blob/master/CvGameCoreDLL_Expansion1/CvUnit.cpp#L5056
             // https://github.com/Gedemon/Civ5-DLL/blob/master/CvGameCoreDLL_Expansion1/CvTeam.cpp#L986
-            if (attackerCiv.knows(defenderCiv) && attackerCiv.getDiplomacyManager(defenderCiv).canAttack())
-                return
+            if (attackerCiv.getDiplomacyManager(defenderCiv)?.canAttack() == true) return
             canNuke = false
         }
 
@@ -88,7 +87,7 @@ object Nuke {
         // It's unclear whether using nukes results in a penalty with all civs, or only affected civs.
         // For now I'll make it give a diplomatic penalty to all known civs, but some testing for this would be appreciated
         for (civ in attackingCiv.getKnownCivs()) {
-            civ.getDiplomacyManager(attackingCiv).setModifier(DiplomaticModifiers.UsedNuclearWeapons, -50f)
+            civ.getDiplomacyManager(attackingCiv)!!.setModifier(DiplomaticModifiers.UsedNuclearWeapons, -50f)
         }
 
         if (!attacker.isDefeated()) {
@@ -112,7 +111,7 @@ object Nuke {
                 attackingCiv.addNotification(
                     "After an attempted attack by our [${attacker.getName()}], [${defendingCiv}] has declared war on us!",
                     nukeNotificationAction,
-                    NotificationCategory.Diplomacy,
+                    Notification.NotificationCategory.Diplomacy,
                     defendingCiv.civName,
                     NotificationIcon.War,
                     attacker.getName()
@@ -159,9 +158,9 @@ object Nuke {
         fun tryDeclareWar(civSuffered: Civilization) {
             if (civSuffered != attackingCiv
                 && civSuffered.knows(attackingCiv)
-                && civSuffered.getDiplomacyManager(attackingCiv).diplomaticStatus != DiplomaticStatus.War
+                && civSuffered.getDiplomacyManager(attackingCiv)!!.diplomaticStatus != DiplomaticStatus.War
             ) {
-                attackingCiv.getDiplomacyManager(civSuffered).declareWar()
+                attackingCiv.getDiplomacyManager(civSuffered)!!.declareWar()
                 if (!notifyDeclaredWarCivs.contains(civSuffered)) notifyDeclaredWarCivs.add(
                     civSuffered
                 )
@@ -206,7 +205,7 @@ object Nuke {
         var damageModifierFromMissingResource = 1f
         val civResources = attacker.getCivInfo().getCivResourcesByName()
         for (resource in attacker.unit.getResourceRequirementsPerTurn().keys) {
-            if (civResources[resource]!! < 0 && !attacker.getCivInfo().isBarbarian())
+            if (civResources[resource]!! < 0 && !attacker.getCivInfo().isBarbarian)
                 damageModifierFromMissingResource *= 0.5f // I could not find a source for this number, but this felt about right
             // - Original Civ5 does *not* reduce damage from missing resource, from source inspection
         }

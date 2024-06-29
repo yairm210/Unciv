@@ -31,6 +31,7 @@ class RoadToAutomation(val civInfo: Civilization) {
      */
     // TODO: Caching
     // TODO: Hide the automate road button if road is not unlocked
+    @Suppress("UNUSED_PARAMETER")  // tilesWhereWeWillBeCaptured may be useful in the future
     fun automateConnectRoad(unit: MapUnit, tilesWhereWeWillBeCaptured: Set<Tile>){
         if (actualBestRoadAvailable == RoadStatus.None) return
 

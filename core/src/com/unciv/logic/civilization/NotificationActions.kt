@@ -8,7 +8,6 @@ import com.unciv.logic.city.City
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.ui.components.MayaCalendar
 import com.unciv.ui.screens.cityscreen.CityScreen
-import com.unciv.ui.screens.civilopediascreen.CivilopediaScreen
 import com.unciv.ui.screens.diplomacyscreen.DiplomacyScreen
 import com.unciv.ui.screens.overviewscreen.EmpireOverviewCategories
 import com.unciv.ui.screens.overviewscreen.EmpireOverviewScreen
@@ -92,7 +91,7 @@ class DiplomacyAction(
             // not the one we pass below, and two equal civs will crash - can't look up a DiplomacyManager.
             return
         // We should not be able to trade with city-states
-        if (showTrade && (otherCiv.isCityState() || currentCiv.isCityState()))
+        if (showTrade && (otherCiv.isCityState || currentCiv.isCityState))
             showTrade = false
 
         if (showTrade && currentCiv.isAtWarWith(otherCiv))

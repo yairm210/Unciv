@@ -56,7 +56,7 @@ object Automation {
                     yieldStats.food -= (unique.params[0].toFloat() / 100f) * 2f // base 2 food per Pop
             // Specialist Happiness Percentage Change 0f-1f
             for (unique in localUniqueCache.forCityGetMatchingUniques(city, UniqueType.UnhappinessFromPopulationTypePercentageChange))
-                if (city.matchesFilter(unique.params[2]) && unique.params[1] == "Specialists")
+                if (unique.params[1] == "Specialists" && city.matchesFilter(unique.params[2]))
                     yieldStats.happiness -= (unique.params[0].toFloat() / 100f)  // relative val is negative, make positive
         }
 
@@ -72,7 +72,7 @@ object Automation {
 
         if (surplusFood > 0 && city.avoidGrowth) {
             yieldStats.food = 0f // don't need more food!
-        } else if (cityAIFocus in CityFocus.zeroFoodFocuses()) {
+        } else if (cityAIFocus in CityFocus.zeroFoodFocuses) {
             // Focus on non-food/growth
             if (surplusFood < 0)
                 yieldStats.food *= 8 // Starving, need Food, get to 0
@@ -105,7 +105,8 @@ object Automation {
             if (city.civ.wantsToFocusOn(stat))
                 yieldStats[stat] *= 2f
 
-            yieldStats[stat] *= civPersonality.scaledFocus(PersonalityValue[stat])
+            val scaledFocus = civPersonality.scaledFocus(PersonalityValue[stat])
+            if (scaledFocus != 1f) yieldStats[stat] *= scaledFocus
         }
 
         // Apply City focus
@@ -116,7 +117,7 @@ object Automation {
 
     fun tryTrainMilitaryUnit(city: City) {
         if (city.isPuppet) return
-        if ((city.cityConstructions.getCurrentConstruction() as? BaseUnit)?.isMilitary() == true)
+        if ((city.cityConstructions.getCurrentConstruction() as? BaseUnit)?.isMilitary == true)
             return // already training a military unit
         val chosenUnitName = chooseMilitaryUnit(city, city.civ.gameInfo.ruleset.units.values.asSequence())
         if (chosenUnitName != null)
@@ -174,8 +175,8 @@ object Automation {
         }
 
         val militaryUnits = availableUnits
-            .filter { it.isMilitary() }
-            .filterNot { removeShips && it.isWaterUnit() }
+            .filter { it.isMilitary }
+            .filterNot { removeShips && it.isWaterUnit }
             .filter { allowSpendingResource(city.civ, it) }
             .filterNot {
                 // filter out carrier-type units that can't attack if we don't need them
@@ -184,7 +185,7 @@ object Automation {
             }
             // Only now do we filter out the constructable units because that's a heavier check
             .filter { it.isBuildable(city.cityConstructions) }
-            .toList()
+            .toList().asSequence()
 
         val chosenUnit: BaseUnit
         if (!city.civ.isAtWar()
@@ -216,7 +217,7 @@ object Automation {
 
     /** Determines whether [civInfo] should be allocating military to fending off barbarians */
     fun afraidOfBarbarians(civInfo: Civilization): Boolean {
-        if (civInfo.isCityState() || civInfo.isBarbarian())
+        if (civInfo.isCityState || civInfo.isBarbarian)
             return false
 
         if (civInfo.gameInfo.gameParameters.noBarbarians)
@@ -233,8 +234,8 @@ object Automation {
         if (civInfo.gameInfo.turns > 120 * speed.barbarianModifier * multiplier)
             multiplier /= 2
 
-        // If we have a lot of, or no cities we are not afraid
-        if (civInfo.cities.isEmpty() || civInfo.cities.size >= 4 * multiplier)
+        // If we have no cities or a lot of units we are not afraid
+        if (civInfo.cities.isEmpty() || civInfo.units.getCivUnits().count() >= 4 * multiplier)
             return false
 
         // If we have vision of our entire starting continent (ish) we are not afraid
@@ -280,7 +281,7 @@ object Automation {
      *  [construction] for [civInfo], assumes that we are actually able to do so. */
     fun allowSpendingResource(civInfo: Civilization, construction: INonPerpetualConstruction, cityInfo: City? = null): Boolean {
         // City states do whatever they want
-        if (civInfo.isCityState())
+        if (civInfo.isCityState)
             return true
 
         // Spaceships are always allowed
@@ -369,7 +370,9 @@ object Automation {
     fun getTileForConstructionImprovement(city: City, improvement: TileImprovement): Tile? {
         val localUniqueCache = LocalUniqueCache()
         return city.getTiles().filter {
-            it.improvementFunctions.canBuildImprovement(improvement, city.civ)
+            it.getTileImprovement()?.hasUnique(UniqueType.AutomatedUnitsWillNotReplace,
+                    StateForConditionals(city.civ, city, tile = it)) == false
+                && it.improvementFunctions.canBuildImprovement(improvement, city.civ)
         }.maxByOrNull {
             rankTileForCityWork(it, city, localUniqueCache)
         }

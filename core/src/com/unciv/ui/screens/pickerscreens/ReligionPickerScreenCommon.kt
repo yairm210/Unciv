@@ -32,7 +32,6 @@ abstract class ReligionPickerScreenCommon(
     protected val ruleset = gameInfo.ruleset
 
     private val descriptionTable = Table(skin)
-    private val descriptionScroll = descriptionLabel.parent as ScrollPane
 
     protected class Selection {
         var button: Button? = null
@@ -84,7 +83,7 @@ abstract class ReligionPickerScreenCommon(
                         add(belief.type.name.toLabel(fontColor = Color.valueOf(belief.type.color))).row()
                     val nameLabel = WrappableLabel(belief.name, labelWidth, fontSize = Constants.headingFontSize)
                     add(nameLabel.apply { wrap = true }).row()
-                    val effectLabel = WrappableLabel(belief.uniqueObjects.filter { !it.isHiddenToUsers() }.map { it.text }
+                    val effectLabel = WrappableLabel(belief.uniqueObjects.filter { !it.isHiddenToUsers() }.map { it.getDisplayText() }
                         .joinToString("\n") { it.tr() }, labelWidth)
                     add(effectLabel.apply { wrap = true })
                 }

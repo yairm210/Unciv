@@ -3,7 +3,6 @@ package com.unciv.logic.automation.unit
 import com.unciv.Constants
 import com.unciv.logic.city.City
 import com.unciv.logic.map.mapunit.MapUnit
-import com.unciv.logic.map.tile.Tile
 import com.unciv.models.UnitActionType
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.screens.worldscreen.unit.actions.UnitActions
@@ -60,41 +59,39 @@ object ReligiousUnitAutomation {
         // cities with most populations will be prioritized by the AI
         val cityToProtect = citiesToProtect.maxByOrNull { it.population.population }
 
-        var destination: Tile?
-
-        destination = when {
+        val destinationCity: City? = when {
             cityToConvert != null
                 && (cityToConvert == holyCity
                 || pressureDeficit > Constants.aiPreferInquisitorOverMissionaryPressureDifference
                 || cityToConvert.religion.isBlockedHolyCity && cityToConvert.religion.religionThisIsTheHolyCityOf == civReligion?.name
                 ) && unit.hasUnique(UniqueType.CanRemoveHeresy) -> {
-                cityToConvert.getCenterTile()
+                cityToConvert
             }
             cityToProtect != null && unit.hasUnique(UniqueType.PreventSpreadingReligion) -> {
                 if (holyCity != null && !holyCity.religion.isProtectedByInquisitor())
-                    holyCity.getCenterTile()
-                else cityToProtect.getCenterTile()
+                    holyCity
+                else cityToProtect
             }
-            cityToConvert != null -> cityToConvert.getCenterTile()
+            cityToConvert != null -> cityToConvert
             else -> null
         }
 
-        if (destination == null) return
+        if (destinationCity == null) return
+        var destinationTile = destinationCity.getCenterTile()
 
-        if (!unit.movement.canReach(destination)) {
-            destination = destination.neighbors
+        if (!unit.movement.canReach(destinationTile)
+            // Wait for the addInCapital units to go to the city!
+            || CivilianUnitAutomation.shouldClearTileForAddInCapitalUnits(unit, destinationTile)) {
+            destinationTile = destinationTile.neighbors
                 .filter { unit.movement.canMoveTo(it) || it == unit.getTile() }
                 .sortedBy { it.aerialDistanceTo(unit.currentTile) }
                 .firstOrNull { unit.movement.canReach(it) }
                 ?: return
         }
 
-        if (CivilianUnitAutomation.shouldClearTileForAddInCapitalUnits(unit, destination))
-            return // Wait for the addInCapital units to go to the city!
+        unit.movement.headTowards(destinationTile)
 
-        unit.movement.headTowards(destination)
-
-        if (cityToConvert != null && unit.getTile().getCity() == destination.getCity()) {
+        if (cityToConvert != null && unit.getTile().getCity() == destinationCity) {
             UnitActions.invokeUnitAction(unit, UnitActionType.RemoveHeresy)
         }
     }

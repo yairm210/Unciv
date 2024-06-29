@@ -48,7 +48,7 @@ object CityResources {
 
         removeCityResourcesRequiredByBuildings(city, cityResources)
 
-        if (city.civ.isCityState() && city.isCapital() && city.civ.cityStateResource != null) {
+        if (city.civ.isCityState && city.isCapital() && city.civ.cityStateResource != null) {
             cityResources.add(
                 city.getRuleset().tileResources[city.civ.cityStateResource]!!,
                 "Mercantile City-State"

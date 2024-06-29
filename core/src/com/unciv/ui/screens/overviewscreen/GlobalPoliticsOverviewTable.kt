@@ -286,7 +286,7 @@ class GlobalPoliticsOverviewTable(
             persistableData.includeCityStates && viewingPlayer.hideCityStateCount()
         relevantCivsCount = if (hideCivsCount) "?"
             else gameInfo.civilizations.count {
-                !it.isSpectator() && !it.isBarbarian() && (persistableData.includeCityStates || !it.isCityState())
+                !it.isSpectator() && !it.isBarbarian && (persistableData.includeCityStates || !it.isCityState)
             }.toString()
         undefeatedCivs = sequenceOf(viewingPlayer) +
                 viewingPlayer.diplomacyFunctions.getKnownCivsSorted(persistableData.includeCityStates)
@@ -332,7 +332,7 @@ class GlobalPoliticsOverviewTable(
     /** Same as [Civilization.hideCivCount] but for City-States instead of Major Civs */
     private fun Civilization.hideCityStateCount(): Boolean {
         if (!gameInfo.gameParameters.randomNumberOfCityStates) return false
-        val knownCivs = 1 + getKnownCivs().count { it.isCityState() }
+        val knownCivs = 1 + getKnownCivs().count { it.isCityState }
         if (knownCivs >= gameInfo.gameParameters.maxNumberOfCityStates) return false
         if (hasUnique(UniqueType.OneTimeRevealEntireMap)) return false
         return true
@@ -389,10 +389,10 @@ class GlobalPoliticsOverviewTable(
         }
 
         for (civ in civs) {
-            if (lastCivWasMajor && civ.isCityState())
+            if (lastCivWasMajor && civ.isCityState)
                 advanceCols(columns)
             add(getCivMiniTable(civ)).left()
-            if (civ.isCityState()) {
+            if (civ.isCityState) {
                 advanceCols(1)
             } else {
                 add(civ.calculateTotalScore().toInt().toLabel()).left()
@@ -493,8 +493,8 @@ class GlobalPoliticsOverviewTable(
 
                     statusLine.color = if (diplomacy.diplomaticStatus == DiplomaticStatus.War) Color.RED
                     else if (diplomacy.diplomaticStatus == DiplomaticStatus.DefensivePact
-                        || (diplomacy.civInfo.isCityState() && diplomacy.civInfo.getAllyCiv() == diplomacy.otherCivName)
-                        || (otherCiv.isCityState() && otherCiv.getAllyCiv() == diplomacy.civInfo.civName)
+                        || (diplomacy.civInfo.isCityState && diplomacy.civInfo.getAllyCiv() == diplomacy.otherCivName)
+                        || (otherCiv.isCityState && otherCiv.getAllyCiv() == diplomacy.civInfo.civName)
                     ) Color.CYAN
                     else diplomacy.relationshipLevel().color
 

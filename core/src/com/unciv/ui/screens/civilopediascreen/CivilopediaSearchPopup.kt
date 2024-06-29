@@ -10,7 +10,7 @@ import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.stats.INamed
 import com.unciv.models.translations.tr
-import com.unciv.ui.components.UncivTextField
+import com.unciv.ui.components.widgets.UncivTextField
 import com.unciv.ui.components.extensions.disable
 import com.unciv.ui.components.extensions.enable
 import com.unciv.ui.components.extensions.toLabel
@@ -34,7 +34,7 @@ class CivilopediaSearchPopup(
     private val linkAction: (String) -> Unit
 ) : Popup(pediaScreen) {
     private var ruleset = pediaScreen.ruleset
-    private val searchText = UncivTextField.create("")   // Always focused, "hint" never seen
+    private val searchText = UncivTextField("")   // Always focused, "hint" never seen
     private val modSelect = ModSelectBox()
     private lateinit var resultExpander: ExpanderTab
     private val resultCell: Cell<Actor?>

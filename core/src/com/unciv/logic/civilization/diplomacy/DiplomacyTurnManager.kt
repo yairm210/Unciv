@@ -6,7 +6,7 @@ import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.trade.Trade
 import com.unciv.logic.trade.TradeOffer
-import com.unciv.logic.trade.TradeType
+import com.unciv.logic.trade.TradeOfferType
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.components.extensions.toPercent
 import kotlin.math.absoluteValue
@@ -21,7 +21,7 @@ object DiplomacyTurnManager {
         updateHasOpenBorders()
         nextTurnDiplomaticModifiers()
         nextTurnFlags()
-        if (civInfo.isCityState() && otherCiv().isMajorCiv())
+        if (civInfo.isCityState && otherCiv().isMajorCiv())
             nextTurnCityStateInfluence()
     }
 
@@ -34,12 +34,12 @@ object DiplomacyTurnManager {
                 .filter { it.amount < 0 && !it.resource.isStockpiled() }.map { it.resource.name }
 
             for (offer in trade.ourOffers) {
-                if (offer.type in listOf(TradeType.Luxury_Resource, TradeType.Strategic_Resource)
+                if (offer.type in listOf(TradeOfferType.Luxury_Resource, TradeOfferType.Strategic_Resource)
                     && (offer.name in negativeCivResources || !civInfo.gameInfo.ruleset.tileResources.containsKey(offer.name))
                 ) {
 
                     trades.remove(trade)
-                    val otherCivTrades = otherCiv().getDiplomacyManager(civInfo).trades
+                    val otherCivTrades = otherCiv().getDiplomacyManager(civInfo)!!.trades
                     otherCivTrades.removeAll { it.equalTrade(trade.reverse()) }
 
                     // Can't cut short peace treaties!
@@ -64,13 +64,13 @@ object DiplomacyTurnManager {
     private fun DiplomacyManager.remakePeaceTreaty(durationLeft: Int) {
         val treaty = Trade()
         treaty.ourOffers.add(
-            TradeOffer(Constants.peaceTreaty, TradeType.Treaty, duration = durationLeft)
+            TradeOffer(Constants.peaceTreaty, TradeOfferType.Treaty, duration = durationLeft)
         )
         treaty.theirOffers.add(
-            TradeOffer(Constants.peaceTreaty, TradeType.Treaty, duration = durationLeft)
+            TradeOffer(Constants.peaceTreaty, TradeOfferType.Treaty, duration = durationLeft)
         )
         trades.add(treaty)
-        otherCiv().getDiplomacyManager(civInfo).trades.add(treaty)
+        otherCiv().getDiplomacyManager(civInfo)!!.trades.add(treaty)
     }
 
 
@@ -140,7 +140,7 @@ object DiplomacyTurnManager {
             flagsCountdown[flag] = flagsCountdown[flag]!! - 1
 
             // If we have uniques that make city states grant military units faster when at war with a common enemy, add higher numbers to this flag
-            if (flag == DiplomacyFlags.ProvideMilitaryUnit.name && civInfo.isMajorCiv() && otherCiv().isCityState() &&
+            if (flag == DiplomacyFlags.ProvideMilitaryUnit.name && civInfo.isMajorCiv() && otherCiv().isCityState &&
                 civInfo.gameInfo.civilizations.any { civInfo.isAtWarWith(it) && otherCiv().isAtWarWith(it) }) {
                 for (unique in civInfo.getMatchingUniques(UniqueType.CityStateMoreGiftedUnits)) {
                     flagsCountdown[DiplomacyFlags.ProvideMilitaryUnit.name] =
@@ -242,7 +242,7 @@ object DiplomacyTurnManager {
 
                     civInfo.updateStatsForNextTurn() // if they were bringing us gold per turn
                     if (trade.theirOffers.union(trade.ourOffers) // if resources were involved
-                            .any { it.type == TradeType.Luxury_Resource || it.type == TradeType.Strategic_Resource })
+                            .any { it.type == TradeOfferType.Luxury_Resource || it.type == TradeOfferType.Strategic_Resource })
                         civInfo.cache.updateCivResources()
                 }
             }
@@ -324,7 +324,7 @@ object DiplomacyTurnManager {
         if (!hasFlag(DiplomacyFlags.DefensivePact))
             revertToZero(DiplomaticModifiers.DefensivePact, 1f)
 
-        if (!otherCiv().isCityState()) return
+        if (!otherCiv().isCityState) return
 
         if (isRelationshipLevelLT(RelationshipLevel.Friend)) {
             if (hasFlag(DiplomacyFlags.ProvideMilitaryUnit))

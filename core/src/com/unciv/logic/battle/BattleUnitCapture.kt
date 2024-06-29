@@ -77,7 +77,7 @@ object BattleUnitCapture {
     }
 
     private fun unitCapturedFromEncampment(attacker: MapUnitCombatant, defender: MapUnitCombatant, attackedTile: Tile): Boolean {
-        if (!defender.getCivInfo().isBarbarian()) return false
+        if (!defender.getCivInfo().isBarbarian) return false
         if (attackedTile.improvement != Constants.barbarianEncampment) return false
 
         var unitCaptured = false
@@ -144,7 +144,7 @@ object BattleUnitCapture {
                 wasDestroyedInstead = true
             }
             // City states can never capture settlers at all
-            capturedUnit.hasUnique(UniqueType.FoundCity) && attacker.getCivInfo().isCityState() -> {
+            capturedUnit.hasUnique(UniqueType.FoundCity) && attacker.getCivInfo().isCityState -> {
                 capturedUnit.destroy()
                 wasDestroyedInstead = true
             }
@@ -154,9 +154,9 @@ object BattleUnitCapture {
                 capturedUnit.capturedBy(attacker.getCivInfo())
             }
             // Return captured civilian to its original owner?
-            defender.getCivInfo().isBarbarian()
+            defender.getCivInfo().isBarbarian
                 && originalOwner != null
-                && !originalOwner.isBarbarian()
+                && !originalOwner.isBarbarian
                 && attacker.getCivInfo() != originalOwner
                 && attacker.getCivInfo().knows(originalOwner)
                 && originalOwner.isAlive()
@@ -205,7 +205,7 @@ object BattleUnitCapture {
      */
     fun captureOrConvertToWorker(capturedUnit: MapUnit, capturingCiv: Civilization): Vector2? {
         // Captured settlers are converted to workers unless captured by barbarians (so they can be returned later).
-        if (!capturedUnit.hasUnique(UniqueType.FoundCity) || capturingCiv.isBarbarian()) {
+        if (!capturedUnit.hasUnique(UniqueType.FoundCity) || capturingCiv.isBarbarian) {
             capturedUnit.capturedBy(capturingCiv)
             return capturedUnit.currentTile.position // if capturedBy has moved the unit, this is updated
         }
@@ -219,7 +219,7 @@ object BattleUnitCapture {
             .firstOrNull { it.isCivilian() && it.getMatchingUniques(UniqueType.BuildImprovements)
                 .any { unique -> unique.params[0] == "Land" } }
             ?: return null
-        return capturingCiv.units.placeUnitNearTile(capturedUnit.currentTile.position, workerTypeUnit)
+        return capturingCiv.units.placeUnitNearTile(capturedUnit.currentTile.position, workerTypeUnit, capturedUnit.id)
             ?.currentTile?.position
     }
 

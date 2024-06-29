@@ -22,7 +22,7 @@ object MovementCost {
 
         if (unit.cache.cannotMove) return 100f
 
-        if (from.isLand != to.isLand && unit.baseUnit.isLandUnit() && !unit.cache.canMoveOnWater)
+        if (from.isLand != to.isLand && unit.baseUnit.isLandUnit && !unit.cache.canMoveOnWater)
             return if (from.isWater && to.isLand) unit.cache.costToDisembark ?: 100f
             else unit.cache.costToEmbark ?: 100f
 
@@ -152,7 +152,7 @@ object MovementCost {
         // function is surprisingly less efficient than the current neighbor-intersection approach.
         // See #4085 for more details.
         val tilesExertingZoneOfControl = getTilesExertingZoneOfControl(unit, from)
-        if (tilesExertingZoneOfControl.none { to.neighbors.contains(it)})
+        if (tilesExertingZoneOfControl.none { to.aerialDistanceTo(it) == 1 })
             return false
 
         // Even though this is a very fast check, we perform it last. This is because very few units

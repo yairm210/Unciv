@@ -1,6 +1,7 @@
 package com.unciv.logic.automation.unit
 
 import com.badlogic.gdx.math.Vector2
+import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
@@ -74,7 +75,7 @@ class RoadBetweenCitiesAutomation(val civInfo: Civilization, cachedForTurn: Int,
     /**
      * Tries to return a list of road plans to connect this city to the surrounding cities.
      * If there are no surrounding cities to connect to and this city is still unconnected to the capital it will try and build a special road to the capital.
-     * 
+     *
      * @return every road that we want to try and connect assosiated with this city.
      */
     fun getRoadsToBuildFromCity(city: City): List<RoadPlan> {
@@ -82,7 +83,9 @@ class RoadBetweenCitiesAutomation(val civInfo: Civilization, cachedForTurn: Int,
             return roadsToBuildByCitiesCache[city]!!
         }
         // TODO: some better worker representative needs to be used here
-        val workerUnit = civInfo.gameInfo.ruleset.units.map { it.value }.firstOrNull { it.hasUnique(UniqueType.BuildImprovements) }?.getMapUnit(civInfo) ?: return listOf()
+        val workerUnit = civInfo.gameInfo.ruleset.units.map { it.value }.firstOrNull { it.hasUnique(UniqueType.BuildImprovements) }
+            // This is a temporary unit only for AI purposes so it doesn't get a unique ID
+            ?.getMapUnit(civInfo, Constants.NO_ID) ?: return listOf()
         val roadToCapitalStatus = city.cityStats.getRoadTypeOfConnectionToCapital()
 
         fun rankRoadCapitalPriority(roadStatus: RoadStatus): Float {
@@ -141,7 +144,7 @@ class RoadBetweenCitiesAutomation(val civInfo: Civilization, cachedForTurn: Int,
             if (roadToCapital != null) {
                 val worstRoadStatus = getWorstRoadTypeInPath(roadToCapital.second)
                 var roadPriority = basePriority
-                roadPriority += if (worstRoadStatus == RoadStatus.None) 2f else 1f 
+                roadPriority += if (worstRoadStatus == RoadStatus.None) 2f else 1f
 
                 val newRoadPlan = RoadPlan(roadToCapital.second, roadPriority + (city.population.population) / 2f, city, roadToCapital.first)
                 roadsToBuild.add(newRoadPlan)
@@ -152,7 +155,6 @@ class RoadBetweenCitiesAutomation(val civInfo: Civilization, cachedForTurn: Int,
             }
         }
 
-        workerUnit.destroy()
         roadsToBuildByCitiesCache[city] = roadsToBuild
         return roadsToBuild
     }

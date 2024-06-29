@@ -7,7 +7,7 @@ import com.unciv.Constants
 import com.unciv.logic.multiplayer.OnlineMultiplayerGame
 import com.unciv.logic.multiplayer.storage.MultiplayerAuthException
 import com.unciv.models.translations.tr
-import com.unciv.ui.components.UncivTextField
+import com.unciv.ui.components.widgets.UncivTextField
 import com.unciv.ui.components.extensions.disable
 import com.unciv.ui.components.extensions.enable
 import com.unciv.ui.components.extensions.toTextButton
@@ -190,7 +190,7 @@ class MultiplayerScreen : PickerScreen() {
         val btn = "Rename".toTextButton().apply { disable() }
         btn.onClick {
             Popup(this).apply {
-                val textField = UncivTextField.create("Game name", selectedGame!!.name)
+                val textField = UncivTextField("Game name", selectedGame!!.name)
                 add(textField).width(stageToShowOn.width / 2).row()
                 val saveButton = "Save".toTextButton()
 

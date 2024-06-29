@@ -145,7 +145,8 @@ class CityStats(val city: City) {
     private fun addStatPercentBonusesFromBuildings(statPercentBonusTree: StatTreeNode) {
         val localUniqueCache = LocalUniqueCache()
         for (building in city.cityConstructions.getBuiltBuildings())
-            statPercentBonusTree.addStats(building.getStatPercentageBonuses(city, localUniqueCache), "Buildings", building.name)
+            statPercentBonusTree.addStats(building.getStatPercentageBonuses(city, localUniqueCache),
+                "Buildings", building.name)
     }
 
     private fun getStatPercentBonusesFromPuppetCity(): Stats {
@@ -266,7 +267,7 @@ class CityStats(val city: City) {
                     city.getMatchingUniques(UniqueType.PercentProductionWonders)
                 currentConstruction is Building && !currentConstruction.isAnyWonder() ->
                     city.getMatchingUniques(UniqueType.PercentProductionBuildings)
-                else -> sequenceOf() // Science/Gold production
+                else -> emptySequence() // Science/Gold production
             }
 
         for (unique in uniquesToCheck) {

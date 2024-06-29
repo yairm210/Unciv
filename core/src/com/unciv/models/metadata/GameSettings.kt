@@ -150,6 +150,7 @@ class GameSettings {
     //region <Methods>
 
     fun save() {
+        if (Gdx.app == null) return // Simulation mode from ConsoleLauncher
         refreshWindowSize()
         UncivGame.Current.files.setGeneralSettings(this)
     }
@@ -284,6 +285,7 @@ class GameSettings {
         Estonian("et", "EE"),
         Finnish("fi", "FI"),
         French("fr", "FR"),
+        Galician("gl", "ES"),
         German("de", "DE"),
         Greek("el", "GR"),
         Hindi("hi", "IN"),

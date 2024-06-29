@@ -168,8 +168,8 @@ class CivInfoStatsForNextTurn(val civInfo: Civilization) {
 
         //City-States bonuses
         for (otherCiv in civInfo.getKnownCivs()) {
-            if (!otherCiv.isCityState()) continue
-            if (!otherCiv.getDiplomacyManager(civInfo.civName).isRelationshipLevelEQ(RelationshipLevel.Ally))
+            if (!otherCiv.isCityState) continue
+            if (otherCiv.getDiplomacyManager(civInfo.civName)!!.relationshipIgnoreAfraid() != RelationshipLevel.Ally)
                 continue
             for (unique in civInfo.getMatchingUniques(UniqueType.CityStateStatPercent)) {
                 statMap.add(
@@ -242,7 +242,7 @@ class CivInfoStatsForNextTurn(val civInfo: Civilization) {
             civInfo.getMatchingUniques(UniqueType.CityStateLuxuryHappiness).sumOf { it.params[0].toInt() } / 100f
 
         val luxuriesProvidedByCityStates = civInfo.getKnownCivs().asSequence()
-            .filter { it.isCityState() && it.getAllyCiv() == civInfo.civName }
+            .filter { it.isCityState && it.getAllyCiv() == civInfo.civName }
             .flatMap { it.getCivResourceSupply().map { res -> res.resource } }
             .distinct()
             .count { it.resourceType === ResourceType.Luxury && ownedLuxuries.contains(it) }
@@ -284,21 +284,23 @@ class CivInfoStatsForNextTurn(val civInfo: Civilization) {
     private fun getGlobalStatsFromUniques():StatMap {
         val statMap = StatMap()
         if (civInfo.religionManager.religion != null) {
-            for (unique in civInfo.religionManager.religion!!.getFounderUniques()) {
-                if (unique.type == UniqueType.StatsFromGlobalCitiesFollowingReligion) {
-                    statMap.add(
-                        "Religion",
-                        unique.stats * civInfo.religionManager.numberOfCitiesFollowingThisReligion()
-                    )
-                }
-                if (unique.type == UniqueType.StatsFromGlobalFollowers)
-                    statMap.add(
-                        "Religion",
-                        unique.stats * civInfo.religionManager.numberOfFollowersFollowingThisReligion(
-                            unique.params[2]
-                        ).toFloat() / unique.params[1].toFloat()
-                    )
-            }
+            for (unique in civInfo.religionManager.religion!!.founderBeliefUniqueMap.getMatchingUniques(
+                UniqueType.StatsFromGlobalCitiesFollowingReligion, StateForConditionals(civInfo)
+            ))
+                statMap.add(
+                    "Religion",
+                    unique.stats * civInfo.religionManager.numberOfCitiesFollowingThisReligion()
+                )
+
+            for (unique in civInfo.religionManager.religion!!.founderBeliefUniqueMap.getMatchingUniques(
+                UniqueType.StatsFromGlobalFollowers, StateForConditionals(civInfo)
+            ))
+                statMap.add(
+                    "Religion",
+                    unique.stats * civInfo.religionManager.numberOfFollowersFollowingThisReligion(
+                        unique.params[2]
+                    ).toFloat() / unique.params[1].toFloat()
+                )
         }
 
         for (unique in civInfo.getMatchingUniques(UniqueType.StatsPerPolicies)) {

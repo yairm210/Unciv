@@ -4,7 +4,7 @@ import com.unciv.logic.civilization.diplomacy.DiplomacyTurnManager.nextTurn
 import com.unciv.logic.trade.TradeEvaluation
 import com.unciv.logic.trade.TradeLogic
 import com.unciv.logic.trade.TradeOffer
-import com.unciv.logic.trade.TradeType
+import com.unciv.logic.trade.TradeOfferType
 import com.unciv.testing.GdxTestRunner
 import com.unciv.testing.TestGame
 import org.junit.Assert.assertEquals
@@ -27,8 +27,8 @@ class GoldGiftingTests {
     @Before
     fun setUp() {
         a.diplomacyFunctions.makeCivilizationsMeet(b)
-        aDiplomacy = a.getDiplomacyManager(b)
-        bDiplomacy = b.getDiplomacyManager(a)
+        aDiplomacy = a.getDiplomacyManager(b)!!
+        bDiplomacy = b.getDiplomacyManager(a)!!
     }
 
     @Test
@@ -100,7 +100,7 @@ class GoldGiftingTests {
         a.addGold(1000)
         assertEquals(0, bDiplomacy.getGoldGifts())
         val tradeOffer = TradeLogic(a,b)
-        tradeOffer.currentTrade.ourOffers.add(tradeOffer.ourAvailableOffers.first { it.type == TradeType.Gold })
+        tradeOffer.currentTrade.ourOffers.add(tradeOffer.ourAvailableOffers.first { it.type == TradeOfferType.Gold })
         assertTrue(TradeEvaluation().getTradeAcceptability(tradeOffer.currentTrade.reverse(), b,a,false) > 0)
         tradeOffer.acceptTrade()
         assertEquals(0, aDiplomacy.getGoldGifts())
@@ -113,11 +113,11 @@ class GoldGiftingTests {
         // Therefore we only test for 90%
         a.addGold(1000)
         val tradeOffer = TradeLogic(a,b)
-        tradeOffer.currentTrade.ourOffers.add(tradeOffer.ourAvailableOffers.first { it.type == TradeType.Gold })
+        tradeOffer.currentTrade.ourOffers.add(tradeOffer.ourAvailableOffers.first { it.type == TradeOfferType.Gold })
         tradeOffer.acceptTrade()
         bDiplomacy.nextTurn()
         val tradeOffer2 = TradeLogic(a,b)
-        tradeOffer2.currentTrade.theirOffers.add(TradeOffer("Gold", TradeType.Gold, 900))
+        tradeOffer2.currentTrade.theirOffers.add(TradeOffer("Gold", TradeOfferType.Gold, 900))
         assertTrue(TradeEvaluation().getTradeAcceptability(tradeOffer.currentTrade.reverse(), b,a,false) > 0)
         tradeOffer2.acceptTrade()
         assertTrue(bDiplomacy.getGoldGifts() >= 0) // Must not be negative
@@ -127,7 +127,7 @@ class GoldGiftingTests {
     fun `Gold gifted impact trade acceptability`() {
         a.addGold(1000)
         val tradeOffer = TradeLogic(a,b)
-        tradeOffer.currentTrade.ourOffers.add(tradeOffer.ourAvailableOffers.first { it.type == TradeType.Gold })
+        tradeOffer.currentTrade.ourOffers.add(tradeOffer.ourAvailableOffers.first { it.type == TradeOfferType.Gold })
         assertTrue(TradeEvaluation().getTradeAcceptability(tradeOffer.currentTrade, b,a,true) < 0)
         tradeOffer.acceptTrade()
         val tradeOffer2 = TradeLogic(a,b)

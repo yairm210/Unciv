@@ -122,11 +122,12 @@ class AndroidDisplay(private val activity: AndroidApplication) : PlatformDisplay
 
     override fun setOrientation(orientation: ScreenOrientation) {
         val mode = when (orientation) {
-            ScreenOrientation.Landscape -> ActivityInfo.SCREEN_ORIENTATION_USER_LANDSCAPE
-            ScreenOrientation.Portrait -> ActivityInfo.SCREEN_ORIENTATION_USER_PORTRAIT
+            // Automatically adjust landscape based on sensors.
+            ScreenOrientation.Landscape -> ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE
+            // Automatically adjust the portrait based on the sensor.
+            ScreenOrientation.Portrait -> ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT
             ScreenOrientation.Auto -> ActivityInfo.SCREEN_ORIENTATION_SENSOR
         }
-
         // Ensure ActivityTaskManager.getService().setRequestedOrientation isn't called unless necessary!
         if (activity.requestedOrientation != mode)
             activity.requestedOrientation = mode

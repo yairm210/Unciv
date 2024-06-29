@@ -33,7 +33,7 @@ object SpecificUnitAutomation {
             return false
         // try to revenge and capture their tiles
         val enemyCities = unit.civ.getKnownCivs()
-                .filter { unit.civ.getDiplomacyManager(it).hasModifier(DiplomaticModifiers.StealingTerritory) }
+                .filter { unit.civ.getDiplomacyManager(it)!!.hasModifier(DiplomaticModifiers.StealingTerritory) }
                 .flatMap { it.cities }
         // find the suitable tiles (or their neighbours)
         val tileToSteal = enemyCities.flatMap { it.getTiles() } // City tiles
@@ -185,7 +185,7 @@ object SpecificUnitAutomation {
 
         val foundCityAction = UnitActionsFromUniques.getFoundCityAction(unit, bestCityLocation)
         if (foundCityAction?.action == null) { // this means either currentMove == 0 or city within 3 tiles
-            if (unit.currentMovement > 0) // therefore, city within 3 tiles
+            if (unit.currentMovement > 0 && !unit.civ.isOneCityChallenger()) // therefore, city within 3 tiles
                 throw Exception("City within distance")
             return
         }
@@ -198,9 +198,10 @@ object SpecificUnitAutomation {
     /** @return whether there was any progress in placing the improvement. A return value of `false`
      * can be interpreted as: the unit doesn't know where to place the improvement or is stuck. */
     fun automateImprovementPlacer(unit: MapUnit) : Boolean {
-        val improvementBuildingUniques = unit.getMatchingUniques(UniqueType.ConstructImprovementInstantly)
+        val improvementBuildingUnique = unit.getMatchingUniques(UniqueType.ConstructImprovementInstantly).firstOrNull()
+            ?: return false
 
-        val improvementName = improvementBuildingUniques.first().params[0]
+        val improvementName = improvementBuildingUnique.params[0]
         val improvement = unit.civ.gameInfo.ruleset.tileImprovements[improvementName]
             ?: return false
         val relatedStat = improvement.maxByOrNull { it.value }?.key ?: Stat.Culture
@@ -271,7 +272,7 @@ object SpecificUnitAutomation {
                     .filter {
                         it != unit.civ
                             && !unit.civ.isAtWarWith(it)
-                            && it.isCityState()
+                            && it.isCityState
                             && it.cities.isNotEmpty()
                     }
                     .flatMap { it.cities[0].getTiles() }

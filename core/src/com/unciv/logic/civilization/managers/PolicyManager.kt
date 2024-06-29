@@ -148,7 +148,7 @@ class PolicyManager : IsPartOfGameInfoSerialization {
 
         for (policy in policiesToRemove) {
             policyCostInput--
-            policyMap.put(policy, getPolicyCultureCost(policyCostInput))
+            policyMap[policy] = (getPolicyCultureCost(policyCostInput) * refundPercentage/100f).roundToInt()
         }
 
         return policyMap.toMap()

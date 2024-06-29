@@ -36,10 +36,6 @@ internal object DesktopLauncher {
         // Solves a rendering problem in specific GPUs and drivers.
         // For more info see https://github.com/yairm210/Unciv/pull/3202 and https://github.com/LWJGL/lwjgl/issues/119
         System.setProperty("org.lwjgl.opengl.Display.allowSoftwareOpenGL", "true")
-        // This setting (default 64) limits clipboard transfers. Value in kB!
-        // 386 is an almost-arbitrary choice from the saves I had at the moment and their GZipped size.
-        // There must be a reason for lwjgl3 being so stingy, which for me meant to stay conservative.
-        System.setProperty("org.lwjgl.system.stackSize", "384")
 
         val isRunFromJAR = DesktopLauncher.javaClass.`package`.specificationVersion != null
         ImagePacker.packImages(isRunFromJAR)

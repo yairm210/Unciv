@@ -27,6 +27,7 @@ class TileImprovement : RulesetStatsObject() {
     // This is the base cost. A cost of 0 means created instead of buildable.
     var turnsToBuild: Int = -1
 
+    override fun legacyRequiredTechs() = if (techRequired == null) emptySequence() else sequenceOf(techRequired!!)
 
     fun getTurnsToBuild(civInfo: Civilization, unit: MapUnit): Int {
         val state = StateForConditionals(civInfo, unit = unit)
@@ -67,10 +68,12 @@ class TileImprovement : RulesetStatsObject() {
     fun isAllowedOnFeature(terrain: Terrain) = canBeBuiltOn(terrain)
         || getMatchingUniques(UniqueType.NoFeatureRemovalNeeded).any { terrain.matchesFilter(it.params[0]) }
 
+
+    private val cachedMatchesFilterResult = HashMap<String, Boolean>()
+
     /** Implements [UniqueParameterType.ImprovementFilter][com.unciv.models.ruleset.unique.UniqueParameterType.ImprovementFilter] */
-    fun matchesFilter(filter: String): Boolean {
-        return MultiFilter.multiFilter(filter, ::matchesSingleFilter)
-    }
+    fun matchesFilter(filter: String): Boolean =
+        cachedMatchesFilterResult.getOrPut(filter) { MultiFilter.multiFilter(filter, ::matchesSingleFilter ) }
 
     private fun matchesSingleFilter(filter: String): Boolean {
         return when (filter) {

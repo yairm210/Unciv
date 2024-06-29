@@ -1,11 +1,13 @@
 package com.unciv.logic
 
+import com.badlogic.gdx.Gdx
 import com.unciv.Constants
 import com.unciv.GUI
 import com.unciv.UncivGame
 import com.unciv.UncivGame.Version
 import com.unciv.json.json
 import com.unciv.logic.BackwardCompatibility.convertFortify
+import com.unciv.logic.BackwardCompatibility.ensureUnitIds
 import com.unciv.logic.BackwardCompatibility.guaranteeUnitPromotions
 import com.unciv.logic.BackwardCompatibility.migrateGreatGeneralPools
 import com.unciv.logic.BackwardCompatibility.migrateToTileHistory
@@ -115,6 +117,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
     var currentTurnStartTime = 0L
     var gameId = UUID.randomUUID().toString() // random string
     var checksum = ""
+    var lastUnitId = 0
 
     var victoryData: VictoryData? = null
 
@@ -198,6 +201,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
         toReturn.customSaveLocation = customSaveLocation
         toReturn.victoryData = victoryData?.copy()
         toReturn.historyStartTurn = historyStartTurn
+        toReturn.lastUnitId = lastUnitId
 
         return toReturn
     }
@@ -234,7 +238,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
     fun getBarbarianCivilization() = getCivilization(Constants.barbarians)
     fun getDifficulty() = difficultyObject
     fun getCities() = civilizations.asSequence().flatMap { it.cities }
-    fun getAliveCityStates() = civilizations.filter { it.isAlive() && it.isCityState() }
+    fun getAliveCityStates() = civilizations.filter { it.isAlive() && it.isCityState }
     fun getAliveMajorCivs() = civilizations.filter { it.isAlive() && it.isMajorCiv() }
 
     /** Gets civilizations in their commonly used order - City-states last,
@@ -253,10 +257,10 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
         val collator = GUI.getSettings().getCollatorFromLocale()
         return civilizations.asSequence()
             .filterNot {
-                it.isBarbarian() ||
+                it.isBarbarian ||
                 it.isSpectator() ||
                 !includeDefeated && it.isDefeated() ||
-                !includeCityStates && it.isCityState() ||
+                !includeCityStates && it.isCityState ||
                 additionalFilter?.invoke(it) == false
             }
             .sortedWith(
@@ -425,7 +429,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
             currentPlayerCiv.popupAlerts.clear()
 
         // Play some nice music TODO: measuring actual play time might be nicer
-        if (turns % 10 == 0)
+        if (turns % 10 == 0 && Gdx.app != null)
             UncivGame.Current.musicController.chooseTrack(
                 currentPlayerCiv.civName,
                 MusicMood.peaceOrWar(currentPlayerCiv.isAtWar()), MusicTrackChooserFlags.setNextTurn
@@ -549,7 +553,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
         // Include your city-state allies' cities with your own for the purpose of showing the closest city
         val relevantCities: Sequence<City> = civ.cities.asSequence() +
             civ.getKnownCivs()
-                .filter { it.isCityState() && it.getAllyCiv() == civ.civName }
+                .filter { it.isCityState && it.getAllyCiv() == civ.civName }
                 .flatMap { it.cities }
 
         // All sources of the resource on the map, using a city-state's capital center tile for the CityStateOnlyResource types
@@ -679,17 +683,16 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
         cityDistances.game = this
 
         guaranteeUnitPromotions()
-
         migrateToTileHistory()
-
         migrateGreatGeneralPools()
+        ensureUnitIds()
     }
 
     private fun updateCivilizationState() {
         for (civInfo in civilizations.asSequence()
             // update city-state resource first since the happiness of major civ depends on it.
             // See issue: https://github.com/yairm210/Unciv/issues/7781
-            .sortedByDescending { it.isCityState() }
+            .sortedByDescending { it.isCityState }
         ) {
             for (unit in civInfo.units.getCivUnits())
                 unit.updateVisibleTiles(false) // this needs to be done after all the units are assigned to their civs and all other transients are set

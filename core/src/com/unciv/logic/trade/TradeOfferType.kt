@@ -5,7 +5,7 @@ package com.unciv.logic.trade
  * @param isImmediate  Trade is a one-time effect without duration
  */
 @Suppress("EnumEntryName")  // We do want the underscores in our names
-enum class TradeType(val numberType: TradeTypeNumberType, val isImmediate: Boolean) {
+enum class TradeOfferType(val numberType: TradeTypeNumberType, val isImmediate: Boolean) {
     Gold                (TradeTypeNumberType.Gold, true),
     Gold_Per_Turn       (TradeTypeNumberType.Gold, false),
     /** Treaties are shared by both sides - like peace treaty and defensive pact */

@@ -199,7 +199,7 @@ class Nation : RulesetObject() {
             if (building.replaces != null && ruleset.buildings.containsKey(building.replaces!!)) {
                 val originalBuilding = ruleset.buildings[building.replaces!!]!!
                 yield(FormattedLine("Replaces [${originalBuilding.name}]", link = originalBuilding.makeLink(), indent = 1))
-                yieldAll(BuildingDescriptions.getDifferences(ruleset, originalBuilding, building))
+                yieldAll(BuildingDescriptions.getDifferences(originalBuilding, building))
                 yield(FormattedLine())
             } else if (building.replaces != null) {
                 yield(FormattedLine("Replaces [${building.replaces}], which is not found in the ruleset!", indent = 1))

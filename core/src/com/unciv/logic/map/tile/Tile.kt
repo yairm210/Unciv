@@ -147,7 +147,7 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
 
     @Transient
     /** Saves a sequence of a list */
-    var allTerrains: Sequence<Terrain> = sequenceOf()
+    var allTerrains: Sequence<Terrain> = emptySequence()
         private set
 
     @Transient
@@ -347,7 +347,7 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
             tileOwner == null -> false
             tileOwner == civInfo -> true
             !civInfo.knows(tileOwner) -> false
-            else -> tileOwner.getDiplomacyManager(civInfo).isConsideredFriendlyTerritory()
+            else -> tileOwner.getDiplomacyManager(civInfo)!!.isConsideredFriendlyTerritory()
         }
     }
 
@@ -412,9 +412,12 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
     }
 
     fun isWorked(): Boolean = getWorkingCity() != null
-    fun providesYield() = getCity() != null && (isCityCenter() || isWorked()
-            || getUnpillagedTileImprovement()?.hasUnique(UniqueType.TileProvidesYieldWithoutPopulation) == true
-            || terrainHasUnique(UniqueType.TileProvidesYieldWithoutPopulation))
+    fun providesYield(): Boolean {
+        if (getCity() == null) return false
+        return isCityCenter() || isWorked()
+                || getUnpillagedTileImprovement()?.hasUnique(UniqueType.TileProvidesYieldWithoutPopulation) == true
+                || terrainHasUnique(UniqueType.TileProvidesYieldWithoutPopulation)
+    }
 
     fun isLocked(): Boolean {
         val workingCity = getWorkingCity()
@@ -473,7 +476,7 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
     private fun matchesSingleTerrainFilter(filter: String, observingCiv: Civilization? = null): Boolean {
         return when (filter) {
             "Terrain" -> true
-            in Constants.all -> true
+            "All", "all" -> true
             baseTerrain -> true
             "Water" -> isWater
             "Land" -> isLand
@@ -830,6 +833,8 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
             resource = null
         if (improvement != null && improvement !in ruleset.tileImprovements)
             improvement = null
+        if (improvementQueue.any { it.improvement !in ruleset.tileImprovements })
+            improvementQueue.clear() // Just get rid of everything, all bets are off
     }
 
     /** If the unit isn't in the ruleset we can't even know what type of unit this is! So check each place

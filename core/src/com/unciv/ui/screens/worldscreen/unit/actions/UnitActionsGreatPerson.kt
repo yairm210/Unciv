@@ -99,7 +99,7 @@ object UnitActionsGreatPerson {
 
     internal fun getConductTradeMissionActions(unit: MapUnit, tile: Tile) = sequence {
         for (unique in unit.getMatchingUniques(UniqueType.CanTradeWithCityStateForGoldAndInfluence)) {
-            val canConductTradeMission = tile.owningCity?.civ?.isCityState() == true
+            val canConductTradeMission = tile.owningCity?.civ?.isCityState == true
                 && tile.owningCity?.civ != unit.civ
                 && tile.owningCity?.civ?.isAtWarWith(unit.civ) == false
             val influenceEarned = unique.params[0].toFloat()
@@ -114,7 +114,7 @@ object UnitActionsGreatPerson {
                     unit.civ.addGold(goldEarned.toInt())
                     val tileOwningCiv = tile.owningCity!!.civ
 
-                    tileOwningCiv.getDiplomacyManager(unit.civ).addInfluence(influenceEarned)
+                    tileOwningCiv.getDiplomacyManager(unit.civ)!!.addInfluence(influenceEarned)
                     unit.civ.addNotification("Your trade mission to [$tileOwningCiv] has earned you [$goldEarned] gold and [$influenceEarned] influence!",
                         NotificationCategory.General, tileOwningCiv.civName, NotificationIcon.Gold, NotificationIcon.Culture)
                     unit.consume()

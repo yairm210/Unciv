@@ -103,7 +103,7 @@ class GreatPersonManager : IsPartOfGameInfoSerialization {
 
     /** Get Great People specific to this manager's Civilization, already filtered by `isHiddenBySettings` */
     fun getGreatPeople() = civInfo.gameInfo.ruleset.units.values.asSequence()
-        .filter { it.isGreatPerson() }
+        .filter { it.isGreatPerson }
         .map { civInfo.getEquivalentUnit(it.name) }
         .filterNot { it.isHiddenBySettings(civInfo.gameInfo) }
         .toHashSet()
