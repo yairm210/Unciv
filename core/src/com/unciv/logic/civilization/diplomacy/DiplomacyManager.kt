@@ -201,7 +201,7 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
      *  @return `true` if [relationshipLevel] ().compareTo([level]) == [comparesAs] - or: when [comparesAs] > 0 only if [relationshipLevel] > [level] and so on.
      */
     private fun compareRelationshipLevel(level: RelationshipLevel, comparesAs: Int): Boolean {
-        if (!civInfo.isCityState())
+        if (!civInfo.isCityState)
             return relationshipLevel().compareTo(level).sign == comparesAs
         return when(level) {
             RelationshipLevel.Afraid -> when {
@@ -247,7 +247,7 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
     fun relationshipLevel(): RelationshipLevel {
         val level = relationshipIgnoreAfraid()
         return when {
-            level != RelationshipLevel.Neutral || !civInfo.isCityState() -> level
+            level != RelationshipLevel.Neutral || !civInfo.isCityState -> level
             civInfo.cityStateFunctions.getTributeWillingness(otherCiv()) > 0 -> RelationshipLevel.Afraid
             else -> RelationshipLevel.Neutral
         }
@@ -261,7 +261,7 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
         if (civInfo.isHuman())
             return otherCivDiplomacy().relationshipLevel()
 
-        if (civInfo.isCityState()) return when {
+        if (civInfo.isCityState) return when {
             getInfluence() <= -30 -> RelationshipLevel.Unforgivable  // getInfluence tests isAtWarWith
             getInfluence() < 0 -> RelationshipLevel.Enemy
             getInfluence() >= 60 && civInfo.getAllyCiv() == otherCivName -> RelationshipLevel.Ally
@@ -295,10 +295,10 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
 
     /** Returns the number of turns to degrade from Ally or from Friend */
     fun getTurnsToRelationshipChange(): Int {
-        if (otherCiv().isCityState())
+        if (otherCiv().isCityState)
             return otherCivDiplomacy().getTurnsToRelationshipChange()
 
-        if (civInfo.isCityState() && !otherCiv().isCityState()) {
+        if (civInfo.isCityState && !otherCiv().isCityState) {
             val dropPerTurn = getCityStateInfluenceDegrade()
             return when {
                 dropPerTurn == 0f -> 0
@@ -436,7 +436,7 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
      *  This includes friendly and allied city-states and the open border treaties.
      */
     fun isConsideredFriendlyTerritory(): Boolean {
-        if (civInfo.isCityState() &&
+        if (civInfo.isCityState &&
             (isRelationshipLevelGE(RelationshipLevel.Friend) || otherCiv().hasUnique(UniqueType.CityStateTerritoryAlwaysFriendly)))
             return true
 

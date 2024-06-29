@@ -129,7 +129,7 @@ class EspionageOverviewScreen(val civInfo: Civilization, val worldScreen: WorldS
                 compareBy<City> {
                     it.civ != civInfo
                 }.thenBy {
-                    it.civ.isCityState()
+                    it.civ.isCityState
                 }.thenBy(collator) {
                     it.civ.civName.tr(hideIcons = true)
                 }.thenBy(collator) {
@@ -153,7 +153,7 @@ class EspionageOverviewScreen(val civInfo: Civilization, val worldScreen: WorldS
         citySelectionTable.add(getSpyIcons(manager.getSpiesInCity(city)))
 
         val spy = civInfo.espionageManager.getSpyAssignedToCity(city)
-        if (city.civ.isCityState() && spy != null && spy.canDoCoup()) {
+        if (city.civ.isCityState && spy != null && spy.canDoCoup()) {
             val coupButton = CoupButton(city, spy.action == SpyAction.Coup)
             citySelectionTable.add(coupButton)
         } else {

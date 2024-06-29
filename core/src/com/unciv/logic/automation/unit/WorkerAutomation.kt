@@ -165,7 +165,7 @@ class WorkerAutomation(
         unit.civ.addNotification("${unit.shortDisplayName()} has no work to do.", currentTile.position, NotificationCategory.Units, unit.name, "OtherIcons/Sleep")
 
         // Idle CS units should wander so they don't obstruct players so much
-        if (unit.civ.isCityState())
+        if (unit.civ.isCityState)
             wander(unit, stayInTerritory = true, tilesToAvoid = dangerousTiles)
     }
 
@@ -496,7 +496,7 @@ class WorkerAutomation(
 
         var valueOfFort = 2f
 
-        if (civInfo.isCityState() && civInfo.getAllyCiv() != null) valueOfFort -= 1f // Allied city states probably don't need to build forts
+        if (civInfo.isCityState && civInfo.getAllyCiv() != null) valueOfFort -= 1f // Allied city states probably don't need to build forts
 
         if (tile.hasViewableResource(civInfo)) valueOfFort -= 1
 

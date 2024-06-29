@@ -361,8 +361,13 @@ class Civilization : IsPartOfGameInfoSerialization {
     fun isCurrentPlayer() = gameInfo.currentPlayerCiv == this
     fun isMajorCiv() = nation.isMajorCiv
     fun isMinorCiv() = nation.isCityState || nation.isBarbarian
-    fun isCityState(): Boolean = nation.isCityState
-    fun isBarbarian() = nation.isBarbarian
+
+    @delegate:Transient
+    val isCityState by lazy { nation.isCityState }
+
+    @delegate:Transient
+    val isBarbarian by lazy { nation.isBarbarian }
+
     fun isSpectator() = nation.isSpectator
     fun isAlive(): Boolean = !isDefeated()
 
@@ -618,7 +623,7 @@ class Civilization : IsPartOfGameInfoSerialization {
      *  Otherwise, it stays 'alive' as long as it has cities (irrespective of settlers owned)
      */
     fun isDefeated() = when {
-        isBarbarian() || isSpectator() -> false     // Barbarians and voyeurs can't lose
+        isBarbarian || isSpectator() -> false     // Barbarians and voyeurs can't lose
         hasEverOwnedOriginalCapital -> cities.isEmpty()
         else -> units.getCivUnitsSize() == 0
     }
@@ -677,7 +682,7 @@ class Civilization : IsPartOfGameInfoSerialization {
     private fun calculateMilitaryMight(): Int {
         var sum = 1 // minimum value, so we never end up with 0
         for (unit in units.getCivUnits()) {
-            sum += if (unit.baseUnit.isWaterUnit())
+            sum += if (unit.baseUnit.isWaterUnit)
                 unit.getForceEvaluation() / 2   // Really don't value water units highly
             else
                 unit.getForceEvaluation()

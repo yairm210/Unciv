@@ -31,7 +31,7 @@ object AirInterception {
             // if it was a melee attack and we won, then the unit ALREADY got movement points deducted,
             // for the movement to the enemy's tile!
             // and if it's an air unit, it only has 1 movement anyway, so...
-            if (!attacker.unit.baseUnit.movesLikeAirUnits())
+            if (!attacker.unit.baseUnit.movesLikeAirUnits)
                 attacker.unit.useMovementPoints(1f)
         } else attacker.unit.currentMovement = 0f
         val attackerName = attacker.getName()

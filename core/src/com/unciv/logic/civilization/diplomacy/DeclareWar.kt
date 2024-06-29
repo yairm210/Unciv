@@ -28,7 +28,7 @@ object DeclareWar {
         val otherCiv = diplomacyManager.otherCiv()
         val otherCivDiplomacy = diplomacyManager.otherCivDiplomacy()
 
-        if (otherCiv.isCityState() && declareWarReason.warType == WarType.DirectWar)
+        if (otherCiv.isCityState && declareWarReason.warType == WarType.DirectWar)
             handleCityStateDirectAttack(diplomacyManager)
 
         notifyOfWar(diplomacyManager, declareWarReason)
@@ -148,12 +148,12 @@ object DeclareWar {
         diplomacyManager.diplomaticStatus = DiplomaticStatus.War
 
         if (diplomacyManager.civInfo.isMajorCiv()) {
-            if (!isOffensiveWar && !civAtWarWith.isCityState())
+            if (!isOffensiveWar && !civAtWarWith.isCityState)
                 callInDefensivePactAllies(diplomacyManager)
             callInCityStateAllies(diplomacyManager)
         }
 
-        if (diplomacyManager.civInfo.isCityState() &&
+        if (diplomacyManager.civInfo.isCityState &&
             diplomacyManager.civInfo.cityStateFunctions.getProtectorCivs().contains(civAtWarWith)) {
             diplomacyManager.civInfo.cityStateFunctions.removeProtectorCiv(civAtWarWith, forced = true)
         }
@@ -186,11 +186,11 @@ object DeclareWar {
         for (thirdCiv in diplomacyManager.getCommonKnownCivs()) {
             if (thirdCiv.isAtWarWith(otherCiv) && !thirdCiv.isAtWarWith(civInfo)) {
                 // Improve our relations
-                if (thirdCiv.isCityState()) thirdCiv.getDiplomacyManager(civInfo)!!.addInfluence(10f)
+                if (thirdCiv.isCityState) thirdCiv.getDiplomacyManager(civInfo)!!.addInfluence(10f)
                 else thirdCiv.getDiplomacyManager(civInfo)!!.addModifier(DiplomaticModifiers.SharedEnemy, 5f * civInfo.getPersonality().modifierFocus(PersonalityValue.Loyal, .3f))
             } else if (thirdCiv.isAtWarWith(civInfo)) {
                 // Improve their relations
-                if (thirdCiv.isCityState()) thirdCiv.getDiplomacyManager(otherCiv)!!.addInfluence(10f)
+                if (thirdCiv.isCityState) thirdCiv.getDiplomacyManager(otherCiv)!!.addInfluence(10f)
                 else thirdCiv.getDiplomacyManager(otherCiv)!!.addModifier(DiplomaticModifiers.SharedEnemy, 5f * civInfo.getPersonality().modifierFocus(PersonalityValue.Loyal, .3f))
             }
         }
@@ -308,7 +308,7 @@ object DeclareWar {
     private fun callInCityStateAllies(diplomacyManager: DiplomacyManager) {
         val civAtWarWith = diplomacyManager.otherCiv()
         for (thirdCiv in diplomacyManager.civInfo.getKnownCivs()
-            .filter { it.isCityState() && it.getAllyCiv() == diplomacyManager.civInfo.civName }) {
+            .filter { it.isCityState && it.getAllyCiv() == diplomacyManager.civInfo.civName }) {
 
             if (!thirdCiv.isAtWarWith(civAtWarWith)) {
                 if (!thirdCiv.knows(civAtWarWith))

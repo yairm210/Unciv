@@ -829,7 +829,7 @@ object UniqueTriggerActivation {
             UniqueType.OneTimeTriggerVoting -> {
                 return {
                     for (civ in civInfo.gameInfo.civilizations)
-                        if (!civ.isBarbarian() && !civ.isSpectator())
+                        if (!civ.isBarbarian && !civ.isSpectator())
                             civ.addFlag(
                                 CivFlags.TurnsTillNextDiplomaticVote.name,
                                 civInfo.getTurnsBetweenDiplomaticVotes()
@@ -970,7 +970,7 @@ object UniqueTriggerActivation {
             }
             UniqueType.OneTimeUnitGainXP -> {
                 if (unit == null) return null
-                if (!unit.baseUnit.isMilitary()) return null
+                if (!unit.baseUnit.isMilitary) return null
                 return {
                     unit.promotions.XP += unique.params[0].toInt()
                     if (notification != null)

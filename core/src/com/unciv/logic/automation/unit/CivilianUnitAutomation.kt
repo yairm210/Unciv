@@ -156,7 +156,7 @@ object CivilianUnitAutomation {
         val enemyUnitsInWalkingDistance = unit.movement.getDistanceToTiles().keys
             .filter { unit.civ.threatManager.doesTileHaveMilitaryEnemy(it) }
 
-        if (enemyUnitsInWalkingDistance.isNotEmpty() && !unit.baseUnit.isMilitary()
+        if (enemyUnitsInWalkingDistance.isNotEmpty() && !unit.baseUnit.isMilitary
             && unit.getTile().militaryUnit == null && !unit.getTile().isCityCenter()) {
             runAway(unit)
             return true

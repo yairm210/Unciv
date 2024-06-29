@@ -68,7 +68,7 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
             it.name in disabledAutoAssignConstructions || shouldAvoidConstruction(it) }
 
     private val civUnits = civInfo.units.getCivUnits()
-    private val militaryUnits = civUnits.count { it.baseUnit.isMilitary() }
+    private val militaryUnits = civUnits.count { it.baseUnit.isMilitary }
     private val workers = civUnits.count { it.cache.hasUniqueToBuildImprovements}.toFloat()
     private val cities = civInfo.cities.size
     private val allTechsAreResearched = civInfo.gameInfo.ruleset.technologies.values

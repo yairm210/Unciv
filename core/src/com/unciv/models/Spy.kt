@@ -102,7 +102,7 @@ class Spy private constructor() : IsPartOfGameInfoSerialization {
             }
             SpyAction.EstablishNetwork -> {
                 val city = getCity() // This should never throw an exception, as going to the hideout sets your action to None.
-                if (city.civ.isCityState())
+                if (city.civ.isCityState)
                     setAction(SpyAction.RiggingElections, (getCity().civ.flagsCountdown[CivFlags.TurnsTillCityStateElection.name] ?: 1) - 1)
                 else if (city.civ == civInfo)
                     setAction(SpyAction.CounterIntelligence, 10)
@@ -242,7 +242,7 @@ class Spy private constructor() : IsPartOfGameInfoSerialization {
         }
     }
 
-    fun canDoCoup(): Boolean = getCityOrNull() != null && getCity().civ.isCityState() && isSetUp() && getCity().civ.getAllyCiv() != civInfo.civName
+    fun canDoCoup(): Boolean = getCityOrNull() != null && getCity().civ.isCityState && isSetUp() && getCity().civ.getAllyCiv() != civInfo.civName
 
     /**
      * Initiates a coup if this spies civ is not the ally of the city-state.

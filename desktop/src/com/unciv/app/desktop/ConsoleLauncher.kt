@@ -53,7 +53,7 @@ internal object ConsoleLauncher {
 
     private fun getMapParameters(): MapParameters {
         return MapParameters().apply {
-            mapSize = MapSize.Tiny
+            mapSize = MapSize.Small
             noRuins = true
             noNaturalWonders = true
         }

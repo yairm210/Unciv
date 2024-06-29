@@ -30,9 +30,9 @@ object UnitAutomation {
     private const val CLOSE_ENEMY_TURNS_AWAY_LIMIT = 3f
 
     private fun isGoodTileToExplore(unit: MapUnit, tile: Tile): Boolean {
-        return (tile.getOwner() == null || !tile.getOwner()!!.isCityState())
+        return (tile.getOwner() == null || !tile.getOwner()!!.isCityState)
                 && tile.neighbors.any { !unit.civ.hasExplored(it) }
-                && (!unit.civ.isCityState() || tile.neighbors.any { it.getOwner() == unit.civ }) // Don't want city-states exploring far outside their borders
+                && (!unit.civ.isCityState || tile.neighbors.any { it.getOwner() == unit.civ }) // Don't want city-states exploring far outside their borders
                 && unit.getDamageFromTerrain(tile) <= 0    // Don't take unnecessary damage
                 && unit.civ.threatManager.getDistanceToClosestEnemyUnit(tile, 3) > 3 // don't walk in range of enemy units
                 && unit.movement.canMoveTo(tile) // expensive, evaluate last
@@ -167,7 +167,7 @@ object UnitAutomation {
     }
 
     fun automateUnitMoves(unit: MapUnit) {
-        check(!unit.civ.isBarbarian()) { "Barbarians is not allowed here." }
+        check(!unit.civ.isBarbarian) { "Barbarians is not allowed here." }
 
         // Might die next turn - move!
         if (unit.health <= unit.getDamageFromTerrain() && tryHealUnit(unit)) return
@@ -258,7 +258,7 @@ object UnitAutomation {
         if (tryFogBust(unit)) return
 
         // Idle CS units should wander so they don't obstruct players so much
-        if (unit.civ.isCityState())
+        if (unit.civ.isCityState)
             wander(unit, stayInTerritory = true)
     }
 
@@ -367,7 +367,7 @@ object UnitAutomation {
         val tilesByHealingRate = viableTilesForHealing.groupBy { unit.rankTileForHealing(it) }
 
         if (tilesByHealingRate.keys.all { it == 0 }) { // We can't heal here at all! We're probably embarked
-            if (!unit.baseUnit.movesLikeAirUnits()) {
+            if (!unit.baseUnit.movesLikeAirUnits) {
                 val reachableCityTile = unit.civ.cities.asSequence()
                     .map { it.getCenterTile() }
                     .sortedBy { it.aerialDistanceTo(unit.currentTile) }
@@ -639,7 +639,7 @@ object UnitAutomation {
     }
 
     private fun tryGarrisoningRangedLandUnit(unit: MapUnit): Boolean {
-        if (unit.baseUnit.isMelee() || unit.baseUnit.isWaterUnit()) return false // don't garrison melee units, they're not that good at it
+        if (unit.baseUnit.isMelee() || unit.baseUnit.isWaterUnit) return false // don't garrison melee units, they're not that good at it
         val citiesWithoutGarrison = unit.civ.cities.filter {
             val centerTile = it.getCenterTile()
             centerTile.militaryUnit == null

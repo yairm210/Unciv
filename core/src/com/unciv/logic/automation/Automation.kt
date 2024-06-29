@@ -117,7 +117,7 @@ object Automation {
 
     fun tryTrainMilitaryUnit(city: City) {
         if (city.isPuppet) return
-        if ((city.cityConstructions.getCurrentConstruction() as? BaseUnit)?.isMilitary() == true)
+        if ((city.cityConstructions.getCurrentConstruction() as? BaseUnit)?.isMilitary == true)
             return // already training a military unit
         val chosenUnitName = chooseMilitaryUnit(city, city.civ.gameInfo.ruleset.units.values.asSequence())
         if (chosenUnitName != null)
@@ -175,8 +175,8 @@ object Automation {
         }
 
         val militaryUnits = availableUnits
-            .filter { it.isMilitary() }
-            .filterNot { removeShips && it.isWaterUnit() }
+            .filter { it.isMilitary }
+            .filterNot { removeShips && it.isWaterUnit }
             .filter { allowSpendingResource(city.civ, it) }
             .filterNot {
                 // filter out carrier-type units that can't attack if we don't need them
@@ -217,7 +217,7 @@ object Automation {
 
     /** Determines whether [civInfo] should be allocating military to fending off barbarians */
     fun afraidOfBarbarians(civInfo: Civilization): Boolean {
-        if (civInfo.isCityState() || civInfo.isBarbarian())
+        if (civInfo.isCityState || civInfo.isBarbarian)
             return false
 
         if (civInfo.gameInfo.gameParameters.noBarbarians)
@@ -281,7 +281,7 @@ object Automation {
      *  [construction] for [civInfo], assumes that we are actually able to do so. */
     fun allowSpendingResource(civInfo: Civilization, construction: INonPerpetualConstruction, cityInfo: City? = null): Boolean {
         // City states do whatever they want
-        if (civInfo.isCityState())
+        if (civInfo.isCityState)
             return true
 
         // Spaceships are always allowed

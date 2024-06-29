@@ -62,7 +62,7 @@ object MotivationToAttackAutomation {
 
             if (civInfo.stats.getUnitSupplyDeficit() != 0) {
                 modifiers.add(Pair("Over unit supply", (civInfo.stats.getUnitSupplyDeficit() * 2f).coerceAtMost(20f)))
-            } else if (targetCiv.stats.getUnitSupplyDeficit() == 0 && !targetCiv.isCityState()) {
+            } else if (targetCiv.stats.getUnitSupplyDeficit() == 0 && !targetCiv.isCityState) {
                 modifiers.add(Pair("Relative production", getProductionRatioModifier(civInfo, targetCiv)))
             }
         }
@@ -114,7 +114,7 @@ object MotivationToAttackAutomation {
             modifiers.add(Pair("Isolated city", 10f * personality.modifierFocus(PersonalityValue.Aggressive, .8f)))
         }
 
-        if (targetCiv.isCityState()) {
+        if (targetCiv.isCityState) {
             modifiers.add(Pair("Protectors", -targetCiv.cityStateFunctions.getProtectorCivs().size * 3f))
             if (targetCiv.cityStateFunctions.getProtectorCivs().contains(civInfo))
                 modifiers.add(Pair("Under our protection", -15 * personality.modifierFocus(PersonalityValue.Loyal, .8f)))
@@ -142,7 +142,7 @@ object MotivationToAttackAutomation {
         var theirCombatStrength = calculateSelfCombatStrength(otherCiv, baseForce)
 
         //for city-states, also consider their protectors
-        if (otherCiv.isCityState() and otherCiv.cityStateFunctions.getProtectorCivs().isNotEmpty()) {
+        if (otherCiv.isCityState and otherCiv.cityStateFunctions.getProtectorCivs().isNotEmpty()) {
             theirCombatStrength += otherCiv.cityStateFunctions.getProtectorCivs().filterNot { it == civInfo }
                 .sumOf { it.getStatForRanking(RankingType.Force) }
         }

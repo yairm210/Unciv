@@ -21,7 +21,7 @@ object DiplomacyTurnManager {
         updateHasOpenBorders()
         nextTurnDiplomaticModifiers()
         nextTurnFlags()
-        if (civInfo.isCityState() && otherCiv().isMajorCiv())
+        if (civInfo.isCityState && otherCiv().isMajorCiv())
             nextTurnCityStateInfluence()
     }
 
@@ -140,7 +140,7 @@ object DiplomacyTurnManager {
             flagsCountdown[flag] = flagsCountdown[flag]!! - 1
 
             // If we have uniques that make city states grant military units faster when at war with a common enemy, add higher numbers to this flag
-            if (flag == DiplomacyFlags.ProvideMilitaryUnit.name && civInfo.isMajorCiv() && otherCiv().isCityState() &&
+            if (flag == DiplomacyFlags.ProvideMilitaryUnit.name && civInfo.isMajorCiv() && otherCiv().isCityState &&
                 civInfo.gameInfo.civilizations.any { civInfo.isAtWarWith(it) && otherCiv().isAtWarWith(it) }) {
                 for (unique in civInfo.getMatchingUniques(UniqueType.CityStateMoreGiftedUnits)) {
                     flagsCountdown[DiplomacyFlags.ProvideMilitaryUnit.name] =
@@ -324,7 +324,7 @@ object DiplomacyTurnManager {
         if (!hasFlag(DiplomacyFlags.DefensivePact))
             revertToZero(DiplomaticModifiers.DefensivePact, 1f)
 
-        if (!otherCiv().isCityState()) return
+        if (!otherCiv().isCityState) return
 
         if (isRelationshipLevelLT(RelationshipLevel.Friend)) {
             if (hasFlag(DiplomacyFlags.ProvideMilitaryUnit))
