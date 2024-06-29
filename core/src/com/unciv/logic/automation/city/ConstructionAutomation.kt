@@ -165,6 +165,8 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
 
     private fun addMilitaryUnitChoice() {
         if (!isAtWar && !cityIsOverAverageProduction) return // don't make any military units here. Infrastructure first!
+        if (civInfo.stats.getUnitSupplyDeficit() > 0) return // we don't want more units if it's already hurting our empire
+        // todo: add worker disbandment and consumption of great persons if under attack & short on unit supply
         if (!isAtWar && (civInfo.stats.statsForNextTurn.gold < 0 || militaryUnits > max(7, cities * 5))) return
         if (civInfo.gold < -50) return
 
@@ -263,6 +265,8 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
     private fun addBuildingChoices() {
         for (building in buildings.filterBuildable()) {
             if (building.isWonder && city.isPuppet) continue
+            // We shouldn't try to build wonders in undeveloped empires
+            if (building.isWonder && civInfo.cities.size < 3) continue
             addChoice(relativeCostEffectiveness, building.name, getValueOfBuilding(building))
         }
     }
