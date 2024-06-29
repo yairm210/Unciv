@@ -1,5 +1,7 @@
 package com.unciv.logic.automation.unit
 
+import com.badlogic.gdx.math.Vector2
+import com.unciv.Constants
 import com.unciv.logic.automation.Automation
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
@@ -10,6 +12,7 @@ import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.unique.LocalUniqueCache
 import com.unciv.models.ruleset.unique.UniqueType
+import com.unciv.models.stats.Stats
 
 object CityLocationTileRanker {
 
@@ -17,6 +20,19 @@ object CityLocationTileRanker {
         var tileRankMap: HashMap<Tile, Float> = HashMap()
         var bestTile: Tile? = null
         var bestTileRank: Float = 0f
+    }
+
+    fun getStatsForNewCity(civInfo: Civilization, cityLocation: Vector2): Stats {
+        val city = City()
+        city.location = cityLocation
+        city.civ = civInfo
+        city.tileMap = civInfo.gameInfo.tileMap
+        val tile = civInfo.gameInfo.tileMap[cityLocation].clone()
+
+        tile.setTerrainTransients()
+
+        tile.setImprovement(Constants.cityCenter)
+        return tile.stats.getTileStats(city, civInfo)
     }
 
     /**
