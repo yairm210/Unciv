@@ -512,12 +512,17 @@ object UnitAutomation {
             return false
         }
 
-        val hostileCivs = civInfo.getKnownCivs().filter { it.isAtWarWith(civInfo) || hasPreparationFlag(it) }
-        val citiesToDefend = hostileCivs.mapNotNull { NextTurnAutomation.getClosestCities(civInfo, it) }
-                .sortedBy { unit.getTile().aerialDistanceTo(it.city1.getCenterTile()) }
+        val hostileCivs = civInfo.getKnownCivs().filter { it.isAtWarWith(civInfo) || hasPreparationFlag(it) }.toSet()
+        val closeCities = civInfo.threatManager.getNeighboringCitiesOfOtherCivs().filter { it.second.civ in hostileCivs }
+        val closestDistance = closeCities.minOfOrNull { it.first.getCenterTile().aerialDistanceTo(it.second.getCenterTile()) } 
+            ?: return false
+        val citiesToDefend = closeCities.filter { it.first.getCenterTile().aerialDistanceTo(it.second.getCenterTile()) <= closestDistance + 2 }
+            .map { it.first }
+            .distinct() // Remove duplicate cities
+            .sortedBy { unit.getTile().aerialDistanceTo(it.getCenterTile()) }
 
         // Move to the closest city with a tile we can enter nearby
-        for ((city, _) in citiesToDefend) {
+        for (city in citiesToDefend) {
             if (unit.getTile().aerialDistanceTo(city.getCenterTile()) <= 2) return true
             val tileToMoveTo = city.getCenterTile().getTilesInDistance(2).firstOrNull { unit.movement.canMoveTo(it) && unit.movement.canReach(it) } ?: continue
             unit.movement.headTowards(tileToMoveTo)
