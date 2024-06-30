@@ -272,7 +272,7 @@ object SpecificUnitAutomation {
                     .filter {
                         it != unit.civ
                             && !unit.civ.isAtWarWith(it)
-                            && it.isCityState()
+                            && it.isCityState
                             && it.cities.isNotEmpty()
                     }
                     .flatMap { it.cities[0].getTiles() }

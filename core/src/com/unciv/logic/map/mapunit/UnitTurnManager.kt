@@ -43,7 +43,7 @@ class UnitTurnManager(val unit: MapUnit) {
 
         if (unit.hasUnique(UniqueType.ReligiousUnit)
                 && unit.getTile().getOwner() != null
-                && !unit.getTile().getOwner()!!.isCityState()
+                && !unit.getTile().getOwner()!!.isCityState
                 && !unit.civ.diplomacyFunctions.canPassThroughTiles(unit.getTile().getOwner()!!)
         ) {
             val lostReligiousStrength =
@@ -160,7 +160,8 @@ class UnitTurnManager(val unit: MapUnit) {
         if (tileOwner != null
                 && !unit.cache.canEnterForeignTerrain
                 && !unit.civ.diplomacyFunctions.canPassThroughTiles(tileOwner)
-                && !tileOwner.isCityState()) // if an enemy city expanded onto this tile while I was in it
+                && !tileOwner.isCityState
+        ) // if an enemy city expanded onto this tile while I was in it
             unit.movement.teleportToClosestMoveableTile()
 
         unit.addMovementMemory()

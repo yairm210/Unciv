@@ -305,7 +305,7 @@ private class CityTable(city: City, forPopup: Boolean = false) : BorderedTable(
 
         if (city.isCapital()) {
             val capitalIcon = when {
-                city.civ.isCityState() -> ImageGetter.getNationIcon("CityState")
+                city.civ.isCityState -> ImageGetter.getNationIcon("CityState")
                     .apply { color = textColor }
                 else -> ImageGetter.getImage("OtherIcons/Capital")
             }
@@ -404,10 +404,6 @@ class CityButton(val city: City, private val tileGroup: TileGroup) : Table(BaseS
 
     val viewingPlayer = GUI.getViewingPlayer()
 
-    fun isMoved(): Boolean {
-        return isButtonMoved
-    }
-
     fun update(isCityViewable: Boolean) {
 
         isViewable = isCityViewable
@@ -431,7 +427,7 @@ class CityButton(val city: City, private val tileGroup: TileGroup) : Table(BaseS
 
         val selectedPlayer = GUI.getSelectedPlayer()
         // If city state - add influence bar
-        if (city.civ.isCityState() && city.civ.knows(selectedPlayer)) {
+        if (city.civ.isCityState && city.civ.knows(selectedPlayer)) {
             val diplomacyManager = city.civ.getDiplomacyManager(selectedPlayer)!!
             add(InfluenceTable(diplomacyManager.getInfluence(), diplomacyManager.relationshipLevel())).padTop(1f).row()
         }

@@ -1,11 +1,11 @@
 package com.unciv.logic.battle
 
 import com.badlogic.gdx.math.Vector2
-import com.unciv.logic.automation.unit.SpecificUnitAutomation
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.CivilopediaAction
 import com.unciv.logic.civilization.LocationAction
+import com.unciv.logic.civilization.Notification
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
@@ -39,7 +39,7 @@ object Nuke {
             if (defenderCiv == null) return
             // Allow nuking yourself! (Civ5 source: CvUnit::isNukeVictim)
             if (defenderCiv == attackerCiv || defenderCiv.isDefeated()) return
-            if (defenderCiv.isBarbarian()) return
+            if (defenderCiv.isBarbarian) return
             // Gleaned from Civ5 source - this disallows nuking unknown civs even in invisible tiles
             // https://github.com/Gedemon/Civ5-DLL/blob/master/CvGameCoreDLL_Expansion1/CvUnit.cpp#L5056
             // https://github.com/Gedemon/Civ5-DLL/blob/master/CvGameCoreDLL_Expansion1/CvTeam.cpp#L986
@@ -111,7 +111,7 @@ object Nuke {
                 attackingCiv.addNotification(
                     "After an attempted attack by our [${attacker.getName()}], [${defendingCiv}] has declared war on us!",
                     nukeNotificationAction,
-                    NotificationCategory.Diplomacy,
+                    Notification.NotificationCategory.Diplomacy,
                     defendingCiv.civName,
                     NotificationIcon.War,
                     attacker.getName()
@@ -205,7 +205,7 @@ object Nuke {
         var damageModifierFromMissingResource = 1f
         val civResources = attacker.getCivInfo().getCivResourcesByName()
         for (resource in attacker.unit.getResourceRequirementsPerTurn().keys) {
-            if (civResources[resource]!! < 0 && !attacker.getCivInfo().isBarbarian())
+            if (civResources[resource]!! < 0 && !attacker.getCivInfo().isBarbarian)
                 damageModifierFromMissingResource *= 0.5f // I could not find a source for this number, but this felt about right
             // - Original Civ5 does *not* reduce damage from missing resource, from source inspection
         }

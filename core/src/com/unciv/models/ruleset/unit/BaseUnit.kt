@@ -182,7 +182,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
 
         val stateForConditionals = StateForConditionals(civ, city)
 
-        if (city != null && isWaterUnit() && !city.isCoastal())
+        if (city != null && isWaterUnit && !city.isCoastal())
             yield(RejectionReasonType.WaterUnitsInCoastalCities.toInstance())
 
         for (unique in getMatchingUniques(UniqueType.OnlyAvailable, StateForConditionals.IgnoreConditionals))
@@ -217,7 +217,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         if (hasUnique(UniqueType.Unbuildable, stateForConditionals))
             yield(RejectionReasonType.Unbuildable.toInstance())
 
-        if ((civ.isCityState() || civ.isOneCityChallenger()) && hasUnique(UniqueType.FoundCity, stateForConditionals))
+        if ((civ.isCityState || civ.isOneCityChallenger()) && hasUnique(UniqueType.FoundCity, stateForConditionals))
             yield(RejectionReasonType.NoSettlerForOneCityPlayers.toInstance())
 
         if (getMatchingUniques(UniqueType.MaxNumberBuildable, stateForConditionals).any {
@@ -225,9 +225,9 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
             })
             yield(RejectionReasonType.MaxNumberBuildable.toInstance())
 
-        if (!civ.isBarbarian()) { // Barbarians don't need resources
+        if (!civ.isBarbarian) { // Barbarians don't need resources
             val civResources = Counter(civ.getCivResourcesByName()) + additionalResources
-            for ((resource, requiredAmount) in getResourceRequirementsPerTurn(StateForConditionals(civ))) {
+            for ((resource, requiredAmount) in getResourceRequirementsPerTurn(stateForConditionals)) {
                 val availableAmount = civResources[resource]
                 if (availableAmount < requiredAmount) {
                     val message = resource.getNeedMoreAmountString(requiredAmount - availableAmount)
@@ -385,14 +385,14 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
             "Melee" -> isMelee()
             "Ranged" -> isRanged()
             "Civilian" -> isCivilian()
-            "Military" -> isMilitary()
-            "Land" -> isLandUnit()
-            "Water" -> isWaterUnit()
+            "Military" -> isMilitary
+            "Land" -> isLandUnit
+            "Water" -> isWaterUnit
             "Air" -> isAirUnit()
-            "non-air" -> !movesLikeAirUnits()
+            "non-air" -> !movesLikeAirUnits
 
             "Nuclear Weapon" -> isNuclearWeapon()
-            "Great Person" -> isGreatPerson()
+            "Great Person" -> isGreatPerson
             "Religious" -> hasUnique(UniqueType.ReligiousUnit)
 
             else -> {
@@ -414,13 +414,13 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
      *  Use other methods for MapUnits or when there is a better StateForConditionals available. */
     fun isCityFounder() = hasUnique(UniqueType.FoundCity, StateForConditionals.IgnoreConditionals)
 
-    fun isGreatPerson() = getMatchingUniques(UniqueType.GreatPerson).any()
+    val isGreatPerson by lazy { getMatchingUniques(UniqueType.GreatPerson).any() }
     fun isGreatPersonOfType(type: String) = getMatchingUniques(UniqueType.GreatPerson).any { it.params[0] == type }
 
     /** Has a MapUnit implementation that does not ignore conditionals, which should be usually used */
     private fun isNuclearWeapon() = hasUnique(UniqueType.NuclearWeapon, StateForConditionals.IgnoreConditionals)
 
-    fun movesLikeAirUnits() = type.getMovementType() == UnitMovementType.Air
+    val movesLikeAirUnits by lazy { type.getMovementType() == UnitMovementType.Air }
 
     /** Returns resource requirements from both uniques and requiredResource field */
     override fun getResourceRequirementsPerTurn(stateForConditionals: StateForConditionals?): Counter<String> {
@@ -434,12 +434,11 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
 
     fun isRanged() = rangedStrength > 0
     fun isMelee() = !isRanged() && strength > 0
-    fun isMilitary() = isRanged() || isMelee()
-    fun isCivilian() = !isMilitary()
+    val isMilitary by lazy { isRanged() || isMelee() }
+    fun isCivilian() = !isMilitary
 
-    private val isLandUnitInternal by lazy { type.isLandUnit() }
-    fun isLandUnit() = isLandUnitInternal
-    fun isWaterUnit() = type.isWaterUnit()
+    val isLandUnit by lazy { type.isLandUnit() }
+    val isWaterUnit by lazy { type.isWaterUnit() }
     fun isAirUnit() = type.isAirUnit()
 
     fun isProbablySiegeUnit() = isRanged()
@@ -463,7 +462,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         var rangedPower = rangedStrength.toFloat().pow(1.45f)
 
         // Value ranged naval units less
-        if (isWaterUnit()) {
+        if (isWaterUnit) {
             rangedPower /= 2
         }
         if (rangedPower > 0)

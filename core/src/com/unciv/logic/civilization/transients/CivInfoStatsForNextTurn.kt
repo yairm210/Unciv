@@ -168,7 +168,7 @@ class CivInfoStatsForNextTurn(val civInfo: Civilization) {
 
         //City-States bonuses
         for (otherCiv in civInfo.getKnownCivs()) {
-            if (!otherCiv.isCityState()) continue
+            if (!otherCiv.isCityState) continue
             if (otherCiv.getDiplomacyManager(civInfo.civName)!!.relationshipIgnoreAfraid() != RelationshipLevel.Ally)
                 continue
             for (unique in civInfo.getMatchingUniques(UniqueType.CityStateStatPercent)) {
@@ -242,7 +242,7 @@ class CivInfoStatsForNextTurn(val civInfo: Civilization) {
             civInfo.getMatchingUniques(UniqueType.CityStateLuxuryHappiness).sumOf { it.params[0].toInt() } / 100f
 
         val luxuriesProvidedByCityStates = civInfo.getKnownCivs().asSequence()
-            .filter { it.isCityState() && it.getAllyCiv() == civInfo.civName }
+            .filter { it.isCityState && it.getAllyCiv() == civInfo.civName }
             .flatMap { it.getCivResourceSupply().map { res -> res.resource } }
             .distinct()
             .count { it.resourceType === ResourceType.Luxury && ownedLuxuries.contains(it) }

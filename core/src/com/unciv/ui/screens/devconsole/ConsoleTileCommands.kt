@@ -143,7 +143,7 @@ internal class ConsoleTileCommands: ConsoleCommandNode {
         setBaseTerrain(tile, wonder.turnsInto ?: tile.baseTerrain)
         for (civ in tile.tileMap.gameInfo.civilizations) {
             if (wonder.name in civ.naturalWonders) continue
-            if (civ.isDefeated() || civ.isBarbarian() || civ.isSpectator()) continue
+            if (civ.isDefeated() || civ.isBarbarian || civ.isSpectator()) continue
             if (!civ.hasExplored(tile)) continue
             civ.cache.discoverNaturalWonders()
             civ.updateStatsForNextTurn()

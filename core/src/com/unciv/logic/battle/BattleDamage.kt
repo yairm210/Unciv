@@ -65,7 +65,7 @@ object BattleDamage {
             }
         }
 
-        if (enemy.getCivInfo().isBarbarian()) {
+        if (enemy.getCivInfo().isBarbarian) {
             modifiers["Difficulty"] =
                 (civInfo.gameInfo.getDifficulty().barbarianBonus * 100).toInt()
         }
@@ -115,7 +115,7 @@ object BattleDamage {
         val civInfo = combatant.getCivInfo()
         val civResources = civInfo.getCivResourcesByName()
         for (resource in combatant.unit.getResourceRequirementsPerTurn().keys)
-            if (civResources[resource]!! < 0 && !civInfo.isBarbarian())
+            if (civResources[resource]!! < 0 && !civInfo.isBarbarian)
                 modifiers["Missing resource"] = BattleConstants.MISSING_RESOURCES_MALUS
     }
 

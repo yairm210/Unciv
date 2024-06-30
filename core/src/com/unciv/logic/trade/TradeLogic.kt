@@ -19,12 +19,12 @@ class TradeLogic(val ourCivilization: Civilization, val otherCivilization: Civil
 
     private fun getAvailableOffers(civInfo: Civilization, otherCivilization: Civilization): TradeOffersList {
         val offers = TradeOffersList()
-        if (civInfo.isCityState() && otherCivilization.isCityState()) return offers
+        if (civInfo.isCityState && otherCivilization.isCityState) return offers
         if (civInfo.isAtWarWith(otherCivilization))
             offers.add(TradeOffer(Constants.peaceTreaty, TradeOfferType.Treaty))
 
         if (!otherCivilization.getDiplomacyManager(civInfo)!!.hasOpenBorders
-                && !otherCivilization.isCityState()
+                && !otherCivilization.isCityState
                 && civInfo.hasUnique(UniqueType.EnablesOpenBorders)
                 && otherCivilization.hasUnique(UniqueType.EnablesOpenBorders)) {
             offers.add(TradeOffer(Constants.openBorders, TradeOfferType.Agreement))
@@ -49,7 +49,8 @@ class TradeLogic(val ourCivilization: Civilization, val otherCivilization: Civil
         offers.add(TradeOffer("Gold per turn", TradeOfferType.Gold_Per_Turn, civInfo.stats.statsForNextTurn.gold.toInt()))
 
         if (!civInfo.isOneCityChallenger() && !otherCivilization.isOneCityChallenger()
-                && !civInfo.isCityState() && !otherCivilization.isCityState()) {
+                && !civInfo.isCityState && !otherCivilization.isCityState
+        ) {
             for (city in civInfo.cities.filterNot { it.isCapital() || it.isInResistance() })
                 offers.add(TradeOffer(city.id, TradeOfferType.City))
         }
@@ -65,7 +66,7 @@ class TradeLogic(val ourCivilization: Civilization, val otherCivilization: Civil
             }
         }
 
-        if (!civInfo.isCityState() && !otherCivilization.isCityState()
+        if (!civInfo.isCityState && !otherCivilization.isCityState
                 && !civInfo.gameInfo.ruleset.modOptions.hasUnique(UniqueType.DiplomaticRelationshipsCannotChange)) {
             val civsWeBothKnow = otherCivsWeKnow
                     .filter { otherCivilization.diplomacy.containsKey(it.civName) }

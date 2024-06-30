@@ -212,7 +212,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
         it.getCenterTile().aerialDistanceTo(currentTile)
     }
 
-    fun isMilitary() = baseUnit.isMilitary()
+    fun isMilitary() = baseUnit.isMilitary
     fun isCivilian() = baseUnit.isCivilian()
 
     fun isActionUntilHealed() = action?.endsWith("until healed") == true
@@ -377,7 +377,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
     }
 
     fun isEmbarked(): Boolean {
-        if (!baseUnit.isLandUnit()) return false
+        if (!baseUnit.isLandUnit) return false
         if (cache.canMoveOnWater) return false
         return currentTile.isWater
     }
@@ -394,9 +394,9 @@ class MapUnit : IsPartOfGameInfoSerialization {
 
 
     fun canFortify(ignoreAlreadyFortified: Boolean = false) = when {
-        baseUnit.isWaterUnit() -> false
+        baseUnit.isWaterUnit -> false
         isCivilian() -> false
-        baseUnit.movesLikeAirUnits() -> false
+        baseUnit.movesLikeAirUnits -> false
         isEmbarked() -> false
         hasUnique(UniqueType.NoDefensiveTerrainBonus) -> false
         ignoreAlreadyFortified -> true
@@ -423,7 +423,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
 
         var healing = when {
             tile.isCityCenter() -> 25
-            tile.isWater && isFriendlyTerritory && (baseUnit.isWaterUnit() || isTransported) -> 20 // Water unit on friendly water
+            tile.isWater && isFriendlyTerritory && (baseUnit.isWaterUnit || isTransported) -> 20 // Water unit on friendly water
             tile.isWater && isFriendlyTerritory && cache.canMoveOnWater -> 20 // Treated as a water unit on friendly water
             tile.isWater -> 0 // All other water cases
             isFriendlyTerritory -> 20 // Allied territory
@@ -458,9 +458,9 @@ class MapUnit : IsPartOfGameInfoSerialization {
     }
 
     // Only military land units can truly "garrison"
-    fun canGarrison() = isMilitary() && baseUnit.isLandUnit()
+    fun canGarrison() = isMilitary() && baseUnit.isLandUnit
 
-    fun isGreatPerson() = baseUnit.isGreatPerson()
+    fun isGreatPerson() = baseUnit.isGreatPerson
     fun isGreatPersonOfType(type: String) = baseUnit.isGreatPersonOfType(type)
 
     fun canIntercept(attackedTile: Tile): Boolean {
@@ -508,7 +508,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
 
     fun isTransportTypeOf(mapUnit: MapUnit): Boolean {
         // Currently, only missiles and airplanes can be carried
-        if (!mapUnit.baseUnit.movesLikeAirUnits()) return false
+        if (!mapUnit.baseUnit.movesLikeAirUnits) return false
         return getMatchingUniques(UniqueType.CarryAirUnits).any { mapUnit.matchesFilter(it.params[1]) }
     }
 
@@ -534,8 +534,8 @@ class MapUnit : IsPartOfGameInfoSerialization {
 
     private fun isAlly(otherCiv: Civilization): Boolean {
         return otherCiv == civ
-                || (otherCiv.isCityState() && otherCiv.getAllyCiv() == civ.civName)
-                || (civ.isCityState() && civ.getAllyCiv() == otherCiv.civName)
+                || (otherCiv.isCityState && otherCiv.getAllyCiv() == civ.civName)
+                || (civ.isCityState && civ.getAllyCiv() == otherCiv.civName)
     }
 
     /** Implements [UniqueParameterType.MapUnitFilter][com.unciv.models.ruleset.unique.UniqueParameterType.MapUnitFilter] */
@@ -546,8 +546,8 @@ class MapUnit : IsPartOfGameInfoSerialization {
     private fun matchesSingleFilter(filter: String): Boolean {
         return when (filter) {
             Constants.wounded, "wounded units" -> health < 100
-            Constants.barbarians, "Barbarian" -> civ.isBarbarian()
-            "City-State" -> civ.isCityState()
+            Constants.barbarians, "Barbarian" -> civ.isBarbarian
+            "City-State" -> civ.isCityState
             Constants.embarked -> isEmbarked()
             "Non-City" -> true
             else -> {
@@ -858,7 +858,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
         if (civ.isMajorCiv() && tile.getTileImprovement()?.isAncientRuinsEquivalent() == true) {
             getAncientRuinBonus(tile)
         }
-        if (improvement == Constants.barbarianEncampment && !civ.isBarbarian())
+        if (improvement == Constants.barbarianEncampment && !civ.isBarbarian)
             clearEncampment(tile)
         // Check whether any civilians without military units are there.
         // Keep in mind that putInTile(), which calls this method,
@@ -886,12 +886,12 @@ class MapUnit : IsPartOfGameInfoSerialization {
             !movement.canMoveTo(tile) ->
                 throw Exception("Unit $name of ${civ.civName} at $currentTile can't be put in tile $tile!")
 
-            baseUnit.movesLikeAirUnits() -> tile.airUnits.add(this)
+            baseUnit.movesLikeAirUnits -> tile.airUnits.add(this)
             isCivilian() -> tile.civilianUnit = this
             else -> tile.militaryUnit = this
         }
         // this check is here in order to not load the fresh built unit into carrier right after the build
-        isTransported = !tile.isCityCenter() && baseUnit.movesLikeAirUnits()  // not moving civilians
+        isTransported = !tile.isCityCenter() && baseUnit.movesLikeAirUnits  // not moving civilians
         moveThroughTile(tile)
         cache.updateUniques()
     }

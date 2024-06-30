@@ -50,7 +50,7 @@ class Simulation(
         startTime = System.currentTimeMillis()
         val jobs: ArrayList<Job> = ArrayList()
         println("Starting new game with major civs: "+newGameInfo.civilizations.filter { it.isMajorCiv() }.joinToString { it.civName }
-        + " and minor civs: "+newGameInfo.civilizations.filter { it.isCityState() }.joinToString { it.civName })
+        + " and minor civs: "+newGameInfo.civilizations.filter { it.isCityState }.joinToString { it.civName })
         for (threadId in 1..threadsNumber) {
             jobs.add(launch(CoroutineName("simulation-${threadId}")) {
                 repeat(simulationsPerThread) {
@@ -67,6 +67,7 @@ class Simulation(
                     }
                     else println("Max simulation ${step.turns} turns reached: Draw")
 
+                    print(gameInfo)
                     updateCounter(threadId)
                     add(step)
                 }
