@@ -20,7 +20,7 @@ class Simulation(
     val simulationsPerThread: Int = 1
     ,
     private val threadsNumber: Int = 1,
-    private val maxTurns: Int = 1000
+    private val maxTurns: Int = 500
 ) {
     private val maxSimulations = threadsNumber * simulationsPerThread
     val civilizations = newGameInfo.civilizations.filter { it.civName != Constants.spectator }.map { it.civName }
