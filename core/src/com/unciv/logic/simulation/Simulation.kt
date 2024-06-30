@@ -105,7 +105,7 @@ class Simulation(
         avgDuration = totalDuration / steps.size
     }
 
-    override fun toString(): String {
+    fun text(): String {
         var outString = ""
         for (civ in civilizations) {
             outString += "\n$civ:\n"
