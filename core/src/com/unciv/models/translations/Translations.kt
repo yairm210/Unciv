@@ -259,7 +259,7 @@ val pointyBraceRegex = Regex("""\<([^>]*)\>""")
 // Such as: 1, +1, -1, +.1, -.1, 1.1e2,  1.1e+2, 1.1e-2 etc.
 // For testing, test if these variants are matched and can be parsed with toDouble()
 @Suppress("RegExpRedundantEscape") // Some Android versions need ]}) escaped
-val numRegex = Regex("""(?<=(^|\s))[+-]?((\.\d+)|(\d+(\.\d+)?))([eE][+-]?\d+)?\b""")
+val numRegex = Regex("""[+-]?\b((\.\d+)|(\d+(\.\d+)?))([eE][+-]?\d+)?\b""")
 
 
 object TranslationActiveModsCache {
@@ -317,7 +317,7 @@ object TranslationActiveModsCache {
  */
 fun String.tr(hideIcons: Boolean = false): String {
     val language: String = UncivGame.Current.settings.language
-    val numberFormatter = NumberFormat.getInstance(UncivGame.Current.settings.locale)
+    val numberFormatter = UncivGame.Current.settings.getNumberFormatFromLocale()
 
     // '<' and '>' checks for quick 'no' answer, regex to ensure that no one accidentally put '><' and ruined things
     if (contains('<') && contains('>') && pointyBraceRegex.containsMatchIn(this)) { // Conditionals!

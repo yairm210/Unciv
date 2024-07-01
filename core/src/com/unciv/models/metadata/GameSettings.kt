@@ -15,6 +15,7 @@ import com.unciv.ui.screens.worldscreen.NotificationsScroll
 import com.unciv.utils.Display
 import com.unciv.utils.ScreenOrientation
 import java.text.Collator
+import java.text.NumberFormat
 import java.time.Duration
 import java.util.Locale
 import kotlin.reflect.KClass
@@ -191,6 +192,10 @@ class GameSettings {
 
     fun getCollatorFromLocale(): Collator {
         return Collator.getInstance(getCurrentLocale())
+    }
+
+    fun getNumberFormatFromLocale(): NumberFormat {
+        return NumberFormat.getInstance(getCurrentLocale())
     }
 
     //endregion
