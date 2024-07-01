@@ -13,7 +13,6 @@ import com.unciv.utils.Log
 import com.unciv.utils.debug
 import java.util.Locale
 import org.jetbrains.annotations.VisibleForTesting
-import java.text.NumberFormat
 
 /**
  *  This collection holds all translations for the game.
