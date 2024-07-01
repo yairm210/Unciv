@@ -255,10 +255,10 @@ val pointyBraceRegex = Regex("""\<([^>]*)\>""")
 // Matches numbers from a string, does not match numbers part of other words
 // For example, from the string "ab1 1ab 10" the only match will be "10"
 // This regex is long to handle a wide number of cases which can be parse with toDouble()
-// Such as: 1, +1, -1, +.1, -.1, 1.1e2,  1.1e+2, 1.1e-2 etc.
+// Such as: 1, +1, -1, 1.1e2,  1.1e+2, 1.1e-2 etc.
 // For testing, test if these variants are matched and can be parsed with toDouble()
 @Suppress("RegExpRedundantEscape") // Some Android versions need ]}) escaped
-val numRegex = Regex("""[+-]?\b((\.\d+)|(\d+(\.\d+)?))([eE][+-]?\d+)?\b""")
+val numRegex = Regex("""[+-]?\b\d+(\.\d+)?([eE][+-]?\d+)?\b""")
 
 
 object TranslationActiveModsCache {
