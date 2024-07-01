@@ -108,8 +108,10 @@ class Simulation(
     fun text(): String {
         var outString = ""
         for (civ in civilizations) {
+
             outString += "\n$civ:\n"
             val wins = winRate[civ]!!.value * 100 / max(steps.size, 1)
+            if (wins == 0) continue
             outString += "$wins% total win rate \n"
             for (victory in UncivGame.Current.gameInfo!!.ruleset.victories.keys) {
                 val winsVictory = winRateByVictory[civ]!![victory]!!.value * 100 / max(winRate[civ]!!.value, 1)
