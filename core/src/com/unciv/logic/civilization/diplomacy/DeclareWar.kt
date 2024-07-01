@@ -114,7 +114,7 @@ object DeclareWar {
                 allyCiv.addNotification("You and [${civInfo.civName}] have declared war against [${otherCiv.civName}]!",
                         NotificationCategory.Diplomacy, otherCiv.civName, NotificationIcon.War, civInfo.civName, allyCiv.civName)
 
-                civInfo.addNotification("[${civInfo.civName}] and [${allyCiv.civName}] have declared war against us!",
+                otherCiv.addNotification("[${civInfo.civName}] and [${allyCiv.civName}] have declared war against us!",
                         NotificationCategory.Diplomacy, otherCiv.civName, NotificationIcon.War, allyCiv.civName, civInfo.civName)
 
                 diplomacyManager.getCommonKnownCivsWithSpectators().filterNot { it == allyCiv }.forEach {
