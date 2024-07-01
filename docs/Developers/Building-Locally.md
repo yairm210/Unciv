@@ -110,8 +110,8 @@ To generate Detekt reports:
 
 - Download [detekt-cli](https://github.com/detekt/detekt/releases/latest) (the zip file) and unzip it
 - Open a terminal in the Unciv root directory and run one of the following commands to generate the report. NOTE: If you're using Windows, replace `detekt-cli` with `detekt-cli.bat`.
-    - For warnings: `PATH/TO/DETEKT/detekt-cli --parallel --report html:detekt/reports.html --config detekt/config/detekt-warnings.yml`
-    - For errors: `PATH/TO/DETEKT/detekt-cli --parallel --report html:detekt/reports.html --config detekt/config/detekt-errors.yml`
+    - For warnings: `PATH/TO/DETEKT/detekt-cli --parallel --report html:detekt/reports.html --config .github/workflows/detekt_config/detekt-warnings.yml`
+    - For errors: `PATH/TO/DETEKT/detekt-cli --parallel --report html:detekt/reports.html --config .github/workflows/detekt_config/detekt-errors.yml`
 - The report will be generated in `detekt/reports.html`
 
 ### UncivServer
