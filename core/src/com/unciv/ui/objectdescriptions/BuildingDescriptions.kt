@@ -60,7 +60,7 @@ object BuildingDescriptions {
 
         if (uniques.isNotEmpty()) {
             if (replacementTextForUniques.isNotEmpty()) translatedLines += replacementTextForUniques.tr()
-            else translatedLines += getUniquesStringsWithoutDisablers().map { it.tr() }
+            else translatedLines += getUniquesStringsWithoutDisablers{ it.type != UniqueType.ConsumesResources }.map { it.tr() }
         }
         if (!stats.isEmpty())
             translatedLines += stats.toString()
