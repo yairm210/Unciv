@@ -7,6 +7,7 @@ import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.multiplayer.FriendList
 import com.unciv.models.UncivSound
+import com.unciv.models.translations.Translations.Companion.getNumberFormatFromLanguage
 import com.unciv.ui.components.fonts.FontFamilyData
 import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.components.input.KeyboardBindings
@@ -141,9 +142,9 @@ class GameSettings {
     /** used to migrate from older versions of the settings */
     var version: Int? = null
 
-    /** NumberFormat cache. Key: Language, Value: NumberFormat **/
-    @Transient
-    val languageToNumberFormat = mutableMapOf<String, NumberFormat>()
+    /** to cache current NumberFormat **/
+    var numberFormat: NumberFormat? = null
+    var numberFormatLanguage: String? = null
 
     init {
         // 26 = Android Oreo. Versions below may display permanent icon in notification bar.
@@ -202,13 +203,13 @@ class GameSettings {
         return Collator.getInstance(getCurrentLocale())
     }
 
-    fun getNumberFormatFromLanguage(language: String): NumberFormat =
-        languageToNumberFormat.getOrPut(language) {
-            NumberFormat.getInstance(getLocaleFromLanguage(language))
-        }
-
     fun getCurrentNumberFormat(): NumberFormat {
-        return getNumberFormatFromLanguage(language)
+        if (numberFormat != null && language == numberFormatLanguage)
+            return numberFormat!!
+
+        numberFormatLanguage = language
+        numberFormat = getNumberFormatFromLanguage(language)
+        return numberFormat!!
     }
 
     //endregion

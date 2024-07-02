@@ -13,6 +13,7 @@ import com.unciv.utils.Log
 import com.unciv.utils.debug
 import java.util.Locale
 import org.jetbrains.annotations.VisibleForTesting
+import java.text.NumberFormat
 
 /**
  *  This collection holds all translations for the game.
@@ -231,6 +232,14 @@ class Translations : LinkedHashMap<String, TranslationEntry>() {
         const val conditionalUniqueOrderString = "ConditionalsPlacement"
         const val shouldCapitalizeString = "StartWithCapitalLetter"
         const val effectBeforeCause = "EffectBeforeCause"
+
+        // NumberFormat cache, key: language, value: NumberFormat
+        private val languageToNumberFormat = mutableMapOf<String, NumberFormat>()
+
+        fun getNumberFormatFromLanguage(language: String): NumberFormat =
+            languageToNumberFormat.getOrPut(language) {
+                NumberFormat.getInstance(UncivGame.Current.settings.getLocaleFromLanguage(language))
+            }
     }
 }
 
@@ -533,12 +542,10 @@ fun String.removeConditionals(): String {
 
 // formats number according to current language
 fun Number.tr(): String {
-    val numberFormat = UncivGame.Current.settings.getCurrentNumberFormat()
-    return numberFormat.format(this)
+    return UncivGame.Current.settings.getCurrentNumberFormat().format(this)
 }
 
 // formats number according to given language
 fun Number.tr(language: String): String {
-    val numberFormat = UncivGame.Current.settings.getNumberFormatFromLanguage(language)
-    return numberFormat.format(this)
+    return Translations.getNumberFormatFromLanguage(language).format(this)
 }
