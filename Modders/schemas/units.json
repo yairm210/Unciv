@@ -1,0 +1,56 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "type": "array",
+  "items": {
+      "type": "object",
+      "properties": {
+          "name": { "type": "string" },
+          "unitType": { "type": "string" },
+
+          "movement": { "type": "number" },
+
+          "strength": { "type": "number" },
+          "rangedStrength": { "type": "number" },
+          "religiousStrength": { "type": "number" },
+          "range": { "type": "number" },
+          "interceptRange": { "type": "number" },
+
+          "cost": { "type": "number" },
+          "hurryCostModifier": { "type": "number" },
+
+          "requiredResource": { "type": "string" },
+          "requiredTech": { "type": "string" },
+          "obsoleteTech": { "type": "string" },
+          "upgradesTo": { "type": "string" },
+
+          "uniqueTo": {
+              "type": "string",
+              "description": "Designates that only this nation can build this unit. Must be exact name of existing nation."
+          },
+          "replaces": {
+              "type": "string",
+              "description": "For unique units: the name of the original unit that this unit replaces for the uniqueTo nation."
+          },
+
+          "uniques": { "$ref": "https://raw.githubusercontent.com/yairm210/Unciv/master/docs/Modders/schemas/uniques.json" },
+
+          "promotions": {
+              "type": "array",
+              "items": { "type": "string" },
+              "uniqueItems": true,
+              "description": "Promotions that the unit gets on creation. Must be exact names of existing promotions."
+          },
+
+          "attackSound": { "type": "string" },
+          "replacementTextForUniques": {
+              "type": "string",
+              "description": "Freeform text that will be shown to users, overriding the list of uniques."
+          },
+          "civilopediaText": { "$ref": "https://raw.githubusercontent.com/yairm210/Unciv/master/docs/Modders/schemas/civilopediaText.json" }
+      },
+      "required": [
+          "name", "unitType"
+      ],
+      "additionalProperties": false
+  }
+}
