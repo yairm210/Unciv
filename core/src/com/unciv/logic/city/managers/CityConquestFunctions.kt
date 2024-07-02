@@ -5,6 +5,7 @@ import com.unciv.GUI
 import com.unciv.logic.battle.Battle
 import com.unciv.logic.city.City
 import com.unciv.logic.city.CityFlags
+import com.unciv.logic.city.CityFocus
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
@@ -134,6 +135,7 @@ class CityConquestFunctions(val city: City) {
         city.isPuppet = false
         city.cityConstructions.inProgressConstructions.clear() // undo all progress of the previous civ on units etc.
         if (!city.isInResistance()) city.updateCitizens = true
+        city.setCityFocus(CityFocus.NoFocus)
         city.cityStats.update()
         GUI.setUpdateWorldOnNextRender()
     }

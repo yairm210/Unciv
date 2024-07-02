@@ -9,6 +9,7 @@ import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.INonPerpetualConstruction
+import com.unciv.models.ruleset.PerpetualConstruction
 import com.unciv.models.ruleset.Victory
 import com.unciv.models.ruleset.nation.PersonalityValue
 import com.unciv.models.ruleset.tile.ResourceType
@@ -48,6 +49,9 @@ object Automation {
         val yieldStats = stats.clone()
         val civPersonality = city.civ.getPersonality()
         val cityStatsObj = city.cityStats
+        val civInfo = city.civ
+        val allTechsAreResearched = civInfo.gameInfo.ruleset.technologies.values
+            .all { civInfo.tech.isResearched(it.name) || !civInfo.tech.canBeResearched(it.name)}
 
         if (areWeRankingSpecialist) {
             // If you have the Food Bonus, count as 1 extra food production (base is 2food)
@@ -99,6 +103,21 @@ object Automation {
 
             if (city.civ.getHappiness() < 0)
                 yieldStats.happiness *= 2
+            }
+
+        if (city.civ.getHappiness() < 0) {
+            // 75% of excess food is wasted when in negative happiness
+            yieldStats.food /= 4
+        }
+
+        if (allTechsAreResearched) {
+            // Science is useless at this point
+            yieldStats.science *= 0
+        }
+
+        if (city.cityConstructions.getCurrentConstruction() is PerpetualConstruction) {
+            // With 4:1 conversion of production to gold, production is overvalued by a factor (12*4)/8 = 6
+            yieldStats.production /= 6
         }
 
         for (stat in Stat.values()) {

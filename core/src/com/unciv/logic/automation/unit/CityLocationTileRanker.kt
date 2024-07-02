@@ -84,11 +84,17 @@ object CityLocationTileRanker {
         tileValue += getDistanceToCityModifier(newCityTile, nearbyCities, civ)
 
         val onCoast = newCityTile.isCoastalTile()
+        val onHill = newCityTile.isHill()
+        val isNextToMountain = newCityTile.isAdjacentTo("Mountain")
         // Only count a luxary resource that we don't have yet as unique once
         val newUniqueLuxuryResources = HashSet<String>()
 
-        if (onCoast) tileValue += 8
-        if (newCityTile.isAdjacentToRiver()) tileValue += 10
+        if (onCoast) tileValue += 3
+        // Hills are free production and defence
+        if (onHill) tileValue += 7
+        // Observatories are good, but current implementation no mod-friendly
+        if (isNextToMountain) tileValue += 5
+        if (newCityTile.isAdjacentToRiver()) tileValue += 14
         if (newCityTile.terrainHasUnique(UniqueType.FreshWater)) tileValue += 5
         // We want to found the city on an oasis because it can't be improved otherwise
         if (newCityTile.terrainHasUnique(UniqueType.Unbuildable)) tileValue += 3
@@ -118,25 +124,15 @@ object CityLocationTileRanker {
                 // If it is not higher the settler may get stuck when it ranks the same tile differently
                 // as it moves away from the city and doesn't include it in the calculation
                 // and values it higher than when it moves closer to the city
-                distanceToCity == 7 -> 5f // Perfect location, there aren't any unused tiles in between
-                distanceToCity == 6 -> -4f
-                distanceToCity == 5 -> -8f
-                distanceToCity == 4 -> -20f
+                distanceToCity == 7 -> 2f
+                distanceToCity == 6 -> 4f
+                distanceToCity == 5 -> 8f // Settling further away sacrifices tempo
+                distanceToCity == 4 -> 6f
                 distanceToCity == 3 -> -25f
                 distanceToCity < 3 -> -30f // Even if it is a mod that lets us settle closer, lets still not do it
                 else -> 0f
             }
-            // Bigger cities will expand more so we want to stay away from them
-            // Reduces the chance that we don't settle at the begining
-            distanceToCityModifier *= when {
-                city.population.population >= 12 -> 2f
-                city.population.population >= 8 -> 1.5f
-                city.population.population >= 3 -> 1.2f
-                else -> 1f
-            }
-            // It is worse to settle cities near our own compare to near another civ
-            // Do not settle near our capital unless really necessary
-            // Having a strong capital is esential to constructing wonders
+            // We want a defensive ring around our capital
             if (city.civ == civ) distanceToCityModifier *= if (city.isCapital()) 2 else 1
             modifier += distanceToCityModifier
         }
