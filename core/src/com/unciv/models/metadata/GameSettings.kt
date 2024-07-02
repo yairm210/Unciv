@@ -202,13 +202,9 @@ class GameSettings {
         return Collator.getInstance(getCurrentLocale())
     }
 
-    fun getNumberFormatFromLanguage(language: String): NumberFormat {
-        languageToNumberFormat[language].also { if (it !== null) return it }
-
-        return NumberFormat.getInstance(getLocaleFromLanguage(language)).also {
-            languageToNumberFormat[language] = it
+    fun getNumberFormatFromLanguage(language: String): NumberFormat =
+        languageToNumberFormat.getOrPut(language) { NumberFormat.getInstance(getLocaleFromLanguage(language))
         }
-    }
 
     fun getCurrentNumberFormat(): NumberFormat {
         return getNumberFormatFromLanguage(language)
