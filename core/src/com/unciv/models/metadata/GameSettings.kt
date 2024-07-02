@@ -142,6 +142,7 @@ class GameSettings {
     var version: Int? = null
 
     /** NumberFormat cache. Key: Language, Value: NumberFormat **/
+    @Transient
     var languageToNumberFormat = mutableMapOf<String, NumberFormat>()
 
     init {
