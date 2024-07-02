@@ -554,6 +554,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
                 if (baseUnit.matchesFilter(filter)) return true
                 if (civ.matchesFilter(filter)) return true
                 if (tempUniquesMap.containsKey(filter)) return true
+                if (promotions.promotions.contains(filter)) return true
                 return false
             }
         }

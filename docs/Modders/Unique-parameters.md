@@ -34,6 +34,8 @@ Display of complex filters in Civilopedia may become unreadable. If so, consider
 
 Allows filtering for specific civs.
 
+Allowed values:
+
 - `Human player`
 - `AI player`
 - [nationFilter](#nationfilter)
@@ -41,6 +43,8 @@ Allows filtering for specific civs.
 ## nationFilter
 
 Allows filtering for specific nations. Used by [ModOptions.nationsToRemove](Mod-file-structure/5-Miscellaneous-JSON-files.md#modoptionsjson).
+
+Allowed values:
 
 - `All`
 - `City-states`
@@ -55,7 +59,7 @@ The former is tested against the unit as it appears in the json.
 This means it doesn't have an owning civ or tile it stands on, just its base properties.
 The latter is tested against the unit as it appears on the map, including its nation, tile, health and all other properties.
 
-The following are allowed to be used:
+Allowed values:
 
 - unit name
 - unit type - e.g. Melee, Ranged, WaterSubmarine, etc.
@@ -79,9 +83,12 @@ The following are allowed to be used:
 
 This indicates a unit as placed on the map. Compare with `baseUnitFilter`.
 
+Allowed values:
+
 - Any matching [baseUnitFilter](#baseunitfilter)
 - Any [civFilter](#civfilter) matching the owner
 - Any unique the unit has - also includes uniques not caught by the [baseUnitFilter](#baseunitfilter), for example promotions
+- Any promotion name
 - `Wounded`
 - `Embarked`
 - `City-State`
@@ -92,7 +99,9 @@ You can check this in-game using the console with the `unit checkfilter <filter>
 
 ## buildingFilter
 
-Allows to only activate a unique for certain buildings. Allowed options are:
+Allows to only activate a unique for certain buildings.
+
+Allowed values:
 
 - `All`
 - `Buildings`, `Building`
@@ -143,7 +152,7 @@ You can check this in-game using the console with the `city checkfilter <filter>
 
 For filtering a specific improvement.
 
-Allowed values are:
+Allowed values:
 
 - improvement name
 - `All`
@@ -152,7 +161,9 @@ Allowed values are:
 
 ## populationFilter
 
-A filter determining a part of the population of a city. It can be any of the following values:
+A filter determining a part of the population of a city.
+
+Allowed values:
 
 - `Population`
 - `Specialists`
@@ -161,7 +172,7 @@ A filter determining a part of the population of a city. It can be any of the fo
 
 ## policyFilter
 
-Can be any of:
+Allowed values:
 
 - `All` or `all`
 - `[policyBranchName] branch`
@@ -170,7 +181,8 @@ Can be any of:
 
 ## combatantFilter
 
-Can be any of:
+Allowed values:
+
 - [mapUnitFilter](#mapunitfilter), for unit combatants
 - `City`, `All`, or [civFilter](#civfilter), for city combatants
 
@@ -188,7 +200,7 @@ Allowed values are `Hybrid` and the name of any terrain that has one of the foll
 
 Used by NaturalWonderGenerator to place natural wonders
 
-Allowed values are:
+Allowed values:
 
 - `Land`
 - `Water`
@@ -226,7 +238,7 @@ them in other Uniques.
 
 At the moment only implemented for [ModOptions.techsToRemove](Mod-file-structure/5-Miscellaneous-JSON-files.md#modoptionsjson).
 
-Allowed values are:
+Allowed values:
 
 - `All`
 - The name of an Era
@@ -235,7 +247,9 @@ Allowed values are:
 
 ## terrainFilter
 
-This indicates the terrain on a single tile. The following values are allowed:
+This indicates the terrain on a single tile.
+
+Allowed values:
 
 - A filter names a specific json attribute (by name):
     - Base terrain
@@ -267,7 +281,7 @@ So for instance, the unique "[stats] from [tileFilter] tiles [cityFilter]" can m
 
 ## tileFilter
 
-Any of:
+Allowed values:
 
 - [terrainFilter](#terrainfilter) for this tile
 - [improvementFilter](#improvementfilter) for this tile
@@ -280,7 +294,7 @@ You can check this in-game using the console with the `tile checkfilter <filter>
 
 Used to indicate for what use the terrain should be viewed when dividing the world into regions, in each of which a single player is placed at the start of the game.
 
-Allowed values are:
+Allowed values:
 
 - improvement name (Note that "Road" and "Railroad" _do_ work as improvementFilters, but not as tileFilters at the moment.)
 - `All`

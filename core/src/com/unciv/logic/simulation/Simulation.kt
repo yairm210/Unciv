@@ -20,7 +20,7 @@ class Simulation(
     val simulationsPerThread: Int = 1
     ,
     private val threadsNumber: Int = 1,
-    private val maxTurns: Int = 1000
+    private val maxTurns: Int = 500
 ) {
     private val maxSimulations = threadsNumber * simulationsPerThread
     val civilizations = newGameInfo.civilizations.filter { it.civName != Constants.spectator }.map { it.civName }
@@ -105,11 +105,13 @@ class Simulation(
         avgDuration = totalDuration / steps.size
     }
 
-    override fun toString(): String {
+    fun text(): String {
         var outString = ""
         for (civ in civilizations) {
+
             outString += "\n$civ:\n"
             val wins = winRate[civ]!!.value * 100 / max(steps.size, 1)
+            if (wins == 0) continue
             outString += "$wins% total win rate \n"
             for (victory in UncivGame.Current.gameInfo!!.ruleset.victories.keys) {
                 val winsVictory = winRateByVictory[civ]!![victory]!!.value * 100 / max(winRate[civ]!!.value, 1)

@@ -145,7 +145,6 @@ jobs:
           packageName: com.unciv.app
           releaseFiles: android/build/outputs/bundle/release/Unciv-release.aab
           track: production
-          userFraction: 0.1
           status: inProgress
           whatsNewDirectory: whatsNewDirectory
 
