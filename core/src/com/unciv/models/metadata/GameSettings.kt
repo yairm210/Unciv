@@ -15,6 +15,7 @@ import com.unciv.ui.screens.worldscreen.NotificationsScroll
 import com.unciv.utils.Display
 import com.unciv.utils.ScreenOrientation
 import java.text.Collator
+import java.text.NumberFormat
 import java.time.Duration
 import java.util.Locale
 import kotlin.reflect.KClass
@@ -140,6 +141,10 @@ class GameSettings {
     /** used to migrate from older versions of the settings */
     var version: Int? = null
 
+    /** NumberFormat cache. Key: Language, Value: NumberFormat **/
+    @Transient
+    val languageToNumberFormat = mutableMapOf<String, NumberFormat>()
+
     init {
         // 26 = Android Oreo. Versions below may display permanent icon in notification bar.
         if (Gdx.app?.type == ApplicationType.Android && Gdx.app.version < 26) {
@@ -168,15 +173,19 @@ class GameSettings {
         return true
     }
 
-    fun updateLocaleFromLanguage() {
+    fun getLocaleFromLanguage(language: String): Locale {
         val bannedCharacters = listOf(' ', '_', '-', '(', ')') // Things not to have in enum names
         val languageName = language.filterNot { it in bannedCharacters }
-        locale = try {
+        return try {
             val code = LocaleCode.valueOf(languageName)
             Locale(code.language, code.country)
         } catch (_: Exception) {
             Locale.getDefault()
         }
+    }
+
+    fun updateLocaleFromLanguage() {
+        locale = getLocaleFromLanguage(language)
     }
 
     fun getFontSize(): Int {
@@ -191,6 +200,18 @@ class GameSettings {
 
     fun getCollatorFromLocale(): Collator {
         return Collator.getInstance(getCurrentLocale())
+    }
+
+    fun getNumberFormatFromLanguage(language: String): NumberFormat {
+        languageToNumberFormat[language].also { if (it !== null) return it }
+
+        return NumberFormat.getInstance(getLocaleFromLanguage(language)).also {
+            languageToNumberFormat[language] = it
+        }
+    }
+
+    fun getCurrentNumberFormat(): NumberFormat {
+        return getNumberFormatFromLanguage(language)
     }
 
     //endregion
