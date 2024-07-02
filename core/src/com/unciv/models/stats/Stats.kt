@@ -148,9 +148,9 @@ open class Stats(
     fun applyRankingWeights() {
         food *= 14
         production *= 12
-        gold *= 8 // 3 gold worth about 2 production
+        gold *= 6 // 2 gold worth about 1 production
         science *= 7
-        culture *= 6
+        culture *= 8
         happiness *= 10 // base
         faith *= 5
     }

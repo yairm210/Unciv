@@ -39,7 +39,7 @@ object Automation {
             gpp = specialistInfo.greatPersonPoints.sumValues().toFloat()
         }
         gpp = gpp * (100 + city.currentGPPBonus) / 100
-        rank += gpp * 3 // GPP weight
+        rank += gpp * 2 // GPP weight
         return rank
     }
 
