@@ -8,6 +8,7 @@ import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.UnitActionType
 import com.unciv.models.ruleset.Building
+import com.unciv.models.ruleset.tile.TerrainType
 import com.unciv.models.ruleset.unique.LocalUniqueCache
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
@@ -210,13 +211,21 @@ object SpecificUnitAutomation {
             it.cityStats.statPercentBonusTree.totalStats[relatedStat]
         }
 
+        val averageTerrainStatsValue = unit.civ.gameInfo.ruleset.terrains.values.asSequence()
+            .filter { it.type == TerrainType.Land }
+            .map { Automation.rankStatsValue(it, unit.civ) }
+            .average()
 
+        val localUniqueCache = LocalUniqueCache()
         for (city in citiesByStatBoost) {
             val applicableTiles = city.getWorkableTiles().filter {
                 it.isLand && it.resource == null && !it.isCityCenter()
                         && (unit.currentTile == it || unit.movement.canMoveTo(it))
-                        && !it.containsGreatImprovement() && it.improvementFunctions.canBuildImprovement(improvement, unit.civ)
+                        && it.improvement == null
+                        && it.improvementFunctions.canBuildImprovement(improvement, unit.civ)
+                        && Automation.rankTile(it, unit.civ, localUniqueCache) > averageTerrainStatsValue
             }
+
             if (applicableTiles.none()) continue
 
             val pathToCity = unit.movement.getShortestPath(city.getCenterTile())
