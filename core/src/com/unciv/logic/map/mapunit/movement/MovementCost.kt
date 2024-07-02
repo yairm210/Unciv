@@ -16,7 +16,8 @@ object MovementCost {
         unit: MapUnit,
         from: Tile,
         to: Tile,
-        considerZoneOfControl: Boolean = true
+        considerZoneOfControl: Boolean = true,
+        includeEscortUnit: Boolean = true
     ): Float {
         val civ = unit.civ
 
@@ -94,7 +95,12 @@ object MovementCost {
             })
             return terrainCost * 0.5f + extraCost
 
-        return terrainCost + extraCost // no road or other movement cost reduction
+        val totalCost = terrainCost + extraCost // no road or other movement cost reduction
+        return if (includeEscortUnit && unit.isEscorting()) {
+            minOf(totalCost, getMovementCostBetweenAdjacentTiles(unit.getOtherEscortUnit()!!, from, to, considerZoneOfControl, false))
+        } else {
+            totalCost
+        }
     }
 
 
