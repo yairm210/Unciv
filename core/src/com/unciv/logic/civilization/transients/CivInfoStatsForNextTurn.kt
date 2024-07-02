@@ -148,8 +148,8 @@ class CivInfoStatsForNextTurn(val civInfo: Civilization) {
 
         for (unique in civInfo.getMatchingUniques(UniqueType.UnitSupplyPerPop)) {
             val applicablePopulation = civInfo.cities
-                .filter { it.matchesFilter(unique.params[1]) }
-                .sumOf { it.population.population }
+                .filter { it.matchesFilter(unique.params[2]) }
+                .sumOf { it.population.population / unique.params[1].toInt() }
             totalSupply += unique.params[0].toDouble() * applicablePopulation
         }
         return totalSupply.toInt()
