@@ -285,3 +285,35 @@ placed in a mod's `voices` folder, will play whenever that message is displayed.
 
 Leader voice audio clips will be streamed, not cached, so they are allowed to be long - however, if another Leader voice or a city ambient sound needs to be played, they will be cut off without fade-out
 Also note that voices for City-State leaders work only for those messages a City-state can actually use: `attacked`, `defeated`, and `introduction`.
+
+## Modding Easter eggs
+
+Here's a list of special dates (or date ranges) Unciv will recognize:
+|-----|
+| AprilFoolsDay |
+| DiaDeLosMuertos |
+| Diwali |
+| Easter |
+| Friday13th |
+| LunarNewYear |
+| Passover |
+| PrideDay |
+| Qingming |
+| Samhain |
+| StarWarsDay |
+| TowelDay |
+| UncivBirthday |
+| Xmas |
+| YuleGoat |
+
+... When these are or what they mean - look it up, if in doubt in our sources (😈).
+
+An audiovisual Mod (which the user **must** then mark as permanent) can define textures named "EasterEggs/`name`<index>", where name must correspond exactly to one from the table above, and index starts at 1 counting up.
+Example: <mod>/Images/EasterEggs/Diwali1.png and so on.
+Then, Unciv will display them as "floating art" on the main menu screen, on the corresponding dates. They will from time to time appear from off-screen, slide through the window, and disappear out the other side, with varying angles and speeds.
+
+Notes:
+- You can test this by launching the jar and including `-DeasterEgg=name` on the command line.
+- In case of overlapping holidays, only one is chosen - and the "impact" of longer holidays is equalized by reducing the chance inversely proportional to the number of days. e.g. DiaDeLosMuertos is two days, so each Unciv launch on these days has 50% chance to show the egg.
+- Unciv's "map-based" easter eggs work independently!
+- No cultural prejudice is intended. If you know a nice custom we should include the date test for, just ask.
