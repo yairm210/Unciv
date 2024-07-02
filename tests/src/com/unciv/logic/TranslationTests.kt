@@ -5,6 +5,7 @@ import com.badlogic.gdx.Gdx
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.models.metadata.GameSettings
+import com.unciv.models.metadata.GameSettings.LocaleCode
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.stats.Stats
@@ -392,9 +393,56 @@ class TranslationTests {
         additionalTest?.invoke(translated)
     }
 
+    @Test
+    fun testNumberTr() {
+        UncivGame.Current = UncivGame()
+        UncivGame.Current.settings = GameSettings()
+
+        val testCases = arrayOf(1, -1, 0.123, -0.123)
+
+        val expectedEnglishOutputs = arrayOf("1", "-1", "0.123", "-0.123")
+        Assert.assertArrayEquals(
+            "Number.tr()", expectedEnglishOutputs, testCases.map { it.tr() }.toTypedArray()
+        )
+        Assert.assertArrayEquals(
+            "Number.tr(${LocaleCode.English.name})",
+            expectedEnglishOutputs,
+            testCases.map { it.tr(LocaleCode.English.name) }.toTypedArray()
+        )
+
+        val expectedBanglaOutputs = arrayOf("১", "-১", "০.১২৩", "-০.১২৩")
+        Assert.assertArrayEquals(
+            "Number.tr(${LocaleCode.Bangla.name})",
+            expectedBanglaOutputs,
+            testCases.map { it.tr(LocaleCode.Bangla.name) }.toTypedArray()
+        )
+    }
+
+    @Test
+    fun testStringsWithNumbers() {
+        UncivGame.Current = UncivGame()
+        UncivGame.Current.settings = GameSettings()
+
+        val tests = arrayOf("1", "1.0", "+1", "-1", "0.123", "-0.123")
+
+        UncivGame.Current.settings.language = LocaleCode.English.name
+        Assert.assertArrayEquals(
+            "English",
+            arrayOf("1", "1", "1", "-1", "0.123", "-0.123"),
+            tests.map { it.tr() }.toTypedArray()
+        )
+
+        UncivGame.Current.settings.language = LocaleCode.Bangla.name
+        Assert.assertArrayEquals(
+            "Bangla",
+            arrayOf("১", "১", "১", "-১", "০.১২৩", "-০.১২৩"),
+            tests.map { it.tr() }.toTypedArray()
+        )
+    }
+
 //    @Test
 //    fun allConditionalsAreContainedInConditionalOrderTranslation() {
-//        val orderedConditionals = Translations.englishConditionalOrderingString
+//        val orderedConditionals = Translations.oConditionalOrderingString
 //        val orderedConditionalsSet = orderedConditionals.getConditionals().map { it.placeholderText }
 //        val translationEntry = translations[orderedConditionals]!!
 //
