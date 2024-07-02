@@ -143,7 +143,7 @@ class GameSettings {
 
     /** NumberFormat cache. Key: Language, Value: NumberFormat **/
     @Transient
-    var languageToNumberFormat = mutableMapOf<String, NumberFormat>()
+    val languageToNumberFormat = mutableMapOf<String, NumberFormat>()
 
     init {
         // 26 = Android Oreo. Versions below may display permanent icon in notification bar.
@@ -208,6 +208,10 @@ class GameSettings {
         return NumberFormat.getInstance(getLocaleFromLanguage(language)).also {
             languageToNumberFormat[language] = it
         }
+    }
+
+    fun getCurrentNumberFormat(): NumberFormat {
+        return getNumberFormatFromLanguage(language)
     }
 
     //endregion

@@ -443,11 +443,7 @@ private fun String.translatePlaceholders(language: String, hideIcons: Boolean): 
 private fun String.translateIndividualWord(language: String, hideIcons: Boolean): String {
     if (Stats.isStats(this)) return Stats.parse(this).toString()
 
-    val number = toDoubleOrNull()
-    if (number != null) {
-        val numberFormat = UncivGame.Current.settings.getNumberFormatFromLanguage(language)
-        return numberFormat.format(number)
-    }
+    toDoubleOrNull().also { if (it != null) return it.tr(language) }
 
     val translation = UncivGame.Current.translations.getText(this, language, TranslationActiveModsCache.activeMods)
 
@@ -533,4 +529,16 @@ fun String.removeConditionals(): String {
         // If we ever start getting translations for these, we'll work something out then.
         .replace("  ", " ")
         .trim()
+}
+
+// formats number according to current language
+fun Number.tr(): String {
+    val numberFormat = UncivGame.Current.settings.getCurrentNumberFormat()
+    return numberFormat.format(this)
+}
+
+// formats number according to given language
+fun Number.tr(language: String): String {
+    val numberFormat = UncivGame.Current.settings.getNumberFormatFromLanguage(language)
+    return numberFormat.format(this)
 }
