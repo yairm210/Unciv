@@ -203,7 +203,8 @@ class GameSettings {
     }
 
     fun getNumberFormatFromLanguage(language: String): NumberFormat =
-        languageToNumberFormat.getOrPut(language) { NumberFormat.getInstance(getLocaleFromLanguage(language))
+        languageToNumberFormat.getOrPut(language) {
+            NumberFormat.getInstance(getLocaleFromLanguage(language))
         }
 
     fun getCurrentNumberFormat(): NumberFormat {
