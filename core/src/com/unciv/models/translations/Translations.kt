@@ -252,14 +252,6 @@ val curlyBraceRegex = Regex("""\{([^}]*)\}""")
 @Suppress("RegExpRedundantEscape") // Some Android versions need ]}) escaped
 val pointyBraceRegex = Regex("""\<([^>]*)\>""")
 
-// Matches numbers from a string, does not match numbers part of other words
-// For example, from the string "ab1 1ab 10" the only match will be "10"
-// This regex is long to handle a wide number of cases which can be parse with toDouble()
-// Such as: 1, +1, -1, 1.1e2,  1.1e+2, 1.1e-2 etc.
-// For testing, test if these variants are matched and can be parsed with toDouble()
-@Suppress("RegExpRedundantEscape") // Some Android versions need ]}) escaped
-val numRegex = Regex("""[+-]?\b\d+(\.\d+)?([eE][+-]?\d+)?\b""")
-
 
 object TranslationActiveModsCache {
     private var cachedHash = Int.MIN_VALUE
@@ -316,7 +308,6 @@ object TranslationActiveModsCache {
  */
 fun String.tr(hideIcons: Boolean = false): String {
     val language: String = UncivGame.Current.settings.language
-    val numberFormatter = UncivGame.Current.settings.getNumberFormatFromLocale()
 
     // '<' and '>' checks for quick 'no' answer, regex to ensure that no one accidentally put '><' and ruined things
     if (contains('<') && contains('>') && pointyBraceRegex.containsMatchIn(this)) {
@@ -452,9 +443,13 @@ private fun String.translatePlaceholders(language: String, hideIcons: Boolean): 
 private fun String.translateIndividualWord(language: String, hideIcons: Boolean): String {
     if (Stats.isStats(this)) return Stats.parse(this).toString()
 
-    val translation = UncivGame.Current.translations.getText(
-        this, language, TranslationActiveModsCache.activeMods
-    ).replace(numRegex) { numberFormatter.format(it.value.toDouble()) }
+    val number = toDoubleOrNull()
+    if (number != null) {
+        val numberFormat = UncivGame.Current.settings.getNumberFormatFromLanguage(language)
+        return numberFormat.format(number)
+    }
+
+    val translation = UncivGame.Current.translations.getText(this, language, TranslationActiveModsCache.activeMods)
 
     val stat = Stat.safeValueOf(this)
     if (stat != null) return stat.character + translation

@@ -141,6 +141,9 @@ class GameSettings {
     /** used to migrate from older versions of the settings */
     var version: Int? = null
 
+    /** NumberFormat cache. Key: Language, Value: NumberFormat **/
+    var languageToNumberFormat = mutableMapOf<String, NumberFormat>()
+
     init {
         // 26 = Android Oreo. Versions below may display permanent icon in notification bar.
         if (Gdx.app?.type == ApplicationType.Android && Gdx.app.version < 26) {
@@ -169,15 +172,19 @@ class GameSettings {
         return true
     }
 
-    fun updateLocaleFromLanguage() {
+    fun getLocaleFromLanguage(language: String): Locale {
         val bannedCharacters = listOf(' ', '_', '-', '(', ')') // Things not to have in enum names
         val languageName = language.filterNot { it in bannedCharacters }
-        locale = try {
+        return try {
             val code = LocaleCode.valueOf(languageName)
             Locale(code.language, code.country)
         } catch (_: Exception) {
             Locale.getDefault()
         }
+    }
+
+    fun updateLocaleFromLanguage() {
+        locale = getLocaleFromLanguage(language)
     }
 
     fun getFontSize(): Int {
@@ -194,8 +201,12 @@ class GameSettings {
         return Collator.getInstance(getCurrentLocale())
     }
 
-    fun getNumberFormatFromLocale(): NumberFormat {
-        return NumberFormat.getInstance(getCurrentLocale())
+    fun getNumberFormatFromLanguage(language: String): NumberFormat {
+        languageToNumberFormat[language].also { if (it !== null) return it }
+
+        return NumberFormat.getInstance(getLocaleFromLanguage(language)).also {
+            languageToNumberFormat[language] = it
+        }
     }
 
     //endregion
