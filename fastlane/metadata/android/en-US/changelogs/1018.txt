@@ -1,0 +1,45 @@
+
+
+AI: Better placement for Great Improvements
+
+City focus resets to default when annexed
+
+Allow multiplication for event triggers
+
+Regenerated altases from scratch so other contributors don't encounter problems
+
+Resolved  - oxipng lossless compression
+
+Move debug keystore to android folder
+
+Move detekt configs to workflow 
+
+"Consumes resources" unique not displayed twice for buildings in city screen
+
+"Consumes resources" unique not displayed twice for units
+
+Remove "wildcard imports" as a detekt warning
+
+Don't give simulation stats for civs that never won
+
+Split tr() into subfunctions, was getting very large for a single function
+
+Added "generic civ" comparisons to ConsoleLauncher, for testing AI changes
+
+Added promotionName as possible value for mapUnitFilter
+
+FINALLY got ConsoleLauncher returning actual simulation results!!
+
+Remove 10% rollout of Google Play - practically I don't have time to deal with that, 100% for everything
+
+DAMN you autoformat
+
+4.12.6-patch1
+
+Hotfix for endless stats 
+
+translation: Map types section clarity
+
+Fixed team war giving "they declared war on us" notification to a civ declaring war  - By tuvus
+
+IOS -> iOS  - By partev
