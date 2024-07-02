@@ -361,14 +361,6 @@ class TranslationTests {
         Assert.assertEquals(expected, actual)
     }
 
-    /** This test requires an actual translation for "Overview" from Bangla.properties, it passes silently without one.
-     *  It's also dependent on the translation itself at the time of writing and will fail if a translator changes it.
-     */
-    @Test
-    // @RedirectOutput(RedirectPolicy.Show) // has good visualization - comment in and run to see how the fake alphabet actually works
-    fun diacriticsTestBanglaRoundtrip() {
-        testRoundtrip("Bangla", "Overview", "সংক্ষিপ্ত বিবরণী")
-    }
 
     @Test
     fun testNonBasePlaneUnicode() {
