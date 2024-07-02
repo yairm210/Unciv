@@ -6,6 +6,7 @@ import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
+import com.unciv.models.ruleset.nation.PersonalityValue
 
 class Trade : IsPartOfGameInfoSerialization {
 
@@ -46,27 +47,27 @@ class Trade : IsPartOfGameInfoSerialization {
         theirOffers.addAll(trade.theirOffers)
     }
 
-    fun isPeaceTreaty() = ourOffers.any { it.type == TradeType.Treaty && it.name == Constants.peaceTreaty }
+    fun isPeaceTreaty() = ourOffers.any { it.type == TradeOfferType.Treaty && it.name == Constants.peaceTreaty }
 }
 
 
 class TradeRequest : IsPartOfGameInfoSerialization {
     fun decline(decliningCiv: Civilization) {
         val requestingCivInfo = decliningCiv.gameInfo.getCivilization(requestingCiv)
-        val requestingCivDiploManager = requestingCivInfo.getDiplomacyManager(decliningCiv)
+        val requestingCivDiploManager = requestingCivInfo.getDiplomacyManager(decliningCiv)!!
         // the numbers of the flags (20,5) are the amount of turns to wait until offering again
-        if (trade.ourOffers.all { it.type == TradeType.Luxury_Resource }
-            && trade.theirOffers.all { it.type == TradeType.Luxury_Resource })
-            requestingCivDiploManager.setFlag(DiplomacyFlags.DeclinedLuxExchange,5)
+        if (trade.ourOffers.all { it.type == TradeOfferType.Luxury_Resource }
+            && trade.theirOffers.all { it.type == TradeOfferType.Luxury_Resource })
+            requestingCivDiploManager.setFlag(DiplomacyFlags.DeclinedLuxExchange,5 - (requestingCivInfo.getPersonality()[PersonalityValue.Commerce] / 2).toInt())
         if (trade.ourOffers.any { it.name == Constants.researchAgreement })
-            requestingCivDiploManager.setFlag(DiplomacyFlags.DeclinedResearchAgreement,10)
+            requestingCivDiploManager.setFlag(DiplomacyFlags.DeclinedResearchAgreement,15 - requestingCivInfo.getPersonality()[PersonalityValue.Science].toInt())
         if (trade.ourOffers.any { it.name == Constants.defensivePact })
             requestingCivDiploManager.setFlag(DiplomacyFlags.DeclinedDefensivePact,10)
         if (trade.ourOffers.any { it.name == Constants.openBorders })
             requestingCivDiploManager.setFlag(DiplomacyFlags.DeclinedOpenBorders, if (decliningCiv.isAI()) 5 else 10)
-        if (trade.theirOffers.any { it.type == TradeType.WarDeclaration })
+        if (trade.theirOffers.any { it.type == TradeOfferType.WarDeclaration })
             requestingCivDiploManager.setFlag(DiplomacyFlags.DeclinedJoinWarOffer, if (decliningCiv.isAI()) 5 else 10)
-        if (trade.ourOffers.any { it.type == TradeType.WarDeclaration })
+        if (trade.ourOffers.any { it.type == TradeOfferType.WarDeclaration })
             requestingCivDiploManager.otherCivDiplomacy().setFlag(DiplomacyFlags.DeclinedJoinWarOffer, if (decliningCiv.isAI()) 5 else 10)
 
         if (trade.isPeaceTreaty()) requestingCivDiploManager.setFlag(DiplomacyFlags.DeclinedPeace, 3)

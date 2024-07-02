@@ -8,6 +8,7 @@ import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.UnitActionType
 import com.unciv.models.ruleset.Building
+import com.unciv.models.ruleset.tile.TerrainType
 import com.unciv.models.ruleset.unique.LocalUniqueCache
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
@@ -33,7 +34,7 @@ object SpecificUnitAutomation {
             return false
         // try to revenge and capture their tiles
         val enemyCities = unit.civ.getKnownCivs()
-                .filter { unit.civ.getDiplomacyManager(it).hasModifier(DiplomaticModifiers.StealingTerritory) }
+                .filter { unit.civ.getDiplomacyManager(it)!!.hasModifier(DiplomaticModifiers.StealingTerritory) }
                 .flatMap { it.cities }
         // find the suitable tiles (or their neighbours)
         val tileToSteal = enemyCities.flatMap { it.getTiles() } // City tiles
@@ -185,7 +186,7 @@ object SpecificUnitAutomation {
 
         val foundCityAction = UnitActionsFromUniques.getFoundCityAction(unit, bestCityLocation)
         if (foundCityAction?.action == null) { // this means either currentMove == 0 or city within 3 tiles
-            if (unit.currentMovement > 0) // therefore, city within 3 tiles
+            if (unit.currentMovement > 0 && !unit.civ.isOneCityChallenger()) // therefore, city within 3 tiles
                 throw Exception("City within distance")
             return
         }
@@ -198,9 +199,10 @@ object SpecificUnitAutomation {
     /** @return whether there was any progress in placing the improvement. A return value of `false`
      * can be interpreted as: the unit doesn't know where to place the improvement or is stuck. */
     fun automateImprovementPlacer(unit: MapUnit) : Boolean {
-        val improvementBuildingUniques = unit.getMatchingUniques(UniqueType.ConstructImprovementInstantly)
+        val improvementBuildingUnique = unit.getMatchingUniques(UniqueType.ConstructImprovementInstantly).firstOrNull()
+            ?: return false
 
-        val improvementName = improvementBuildingUniques.first().params[0]
+        val improvementName = improvementBuildingUnique.params[0]
         val improvement = unit.civ.gameInfo.ruleset.tileImprovements[improvementName]
             ?: return false
         val relatedStat = improvement.maxByOrNull { it.value }?.key ?: Stat.Culture
@@ -209,13 +211,21 @@ object SpecificUnitAutomation {
             it.cityStats.statPercentBonusTree.totalStats[relatedStat]
         }
 
+        val averageTerrainStatsValue = unit.civ.gameInfo.ruleset.terrains.values.asSequence()
+            .filter { it.type == TerrainType.Land }
+            .map { Automation.rankStatsValue(it, unit.civ) }
+            .average()
 
+        val localUniqueCache = LocalUniqueCache()
         for (city in citiesByStatBoost) {
             val applicableTiles = city.getWorkableTiles().filter {
                 it.isLand && it.resource == null && !it.isCityCenter()
                         && (unit.currentTile == it || unit.movement.canMoveTo(it))
-                        && !it.containsGreatImprovement() && it.improvementFunctions.canBuildImprovement(improvement, unit.civ)
+                        && it.improvement == null
+                        && it.improvementFunctions.canBuildImprovement(improvement, unit.civ)
+                        && Automation.rankTile(it, unit.civ, localUniqueCache) > averageTerrainStatsValue
             }
+
             if (applicableTiles.none()) continue
 
             val pathToCity = unit.movement.getShortestPath(city.getCenterTile())
@@ -271,7 +281,7 @@ object SpecificUnitAutomation {
                     .filter {
                         it != unit.civ
                             && !unit.civ.isAtWarWith(it)
-                            && it.isCityState()
+                            && it.isCityState
                             && it.cities.isNotEmpty()
                     }
                     .flatMap { it.cities[0].getTiles() }

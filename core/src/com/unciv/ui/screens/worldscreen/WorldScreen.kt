@@ -291,7 +291,7 @@ class WorldScreen(
     fun openDeveloperConsole() {
         // No cheating unless you're by yourself
         if (gameInfo.civilizations.count { it.isHuman() } > 1) return
-        val consolePopup = DevConsolePopup(this)
+        DevConsolePopup(this)
     }
 
     private fun toggleUI() {
@@ -737,7 +737,7 @@ class WorldScreen(
         if (!game.settings.showTutorials) return
         displayTutorial(TutorialTrigger.SlowStart)
         displayTutorial(TutorialTrigger.CityExpansion) { viewingCiv.cities.any { it.expansion.tilesClaimed() > 0 } }
-        displayTutorial(TutorialTrigger.BarbarianEncountered) { viewingCiv.viewableTiles.any { it.getUnits().any { unit -> unit.civ.isBarbarian() } } }
+        displayTutorial(TutorialTrigger.BarbarianEncountered) { viewingCiv.viewableTiles.any { it.getUnits().any { unit -> unit.civ.isBarbarian } } }
         displayTutorial(TutorialTrigger.RoadsAndRailroads) { viewingCiv.cities.size > 2 }
         displayTutorial(TutorialTrigger.Happiness) { viewingCiv.getHappiness() < 5 }
         displayTutorial(TutorialTrigger.Unhappiness) { viewingCiv.getHappiness() < 0 }

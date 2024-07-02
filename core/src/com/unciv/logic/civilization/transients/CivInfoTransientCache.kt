@@ -115,13 +115,14 @@ class CivInfoTransientCache(val civInfo: Civilization) {
         for (tile in civInfo.viewableTiles) {
             val tileOwner = tile.getOwner()
             if (tileOwner != null) viewedCivs[tileOwner] = tile
-            for (unit in tile.getUnits()) viewedCivs[unit.civ] = tile
+            val unitOwner = tile.getFirstUnit()?.civ
+            if (unitOwner != null) viewedCivs[unitOwner] = tile
         }
 
-        if (!civInfo.isBarbarian()) {
+        if (!civInfo.isBarbarian) {
             for (entry in viewedCivs) {
                 val metCiv = entry.key
-                if (metCiv == civInfo || metCiv.isBarbarian() || civInfo.diplomacy.containsKey(metCiv.civName)) continue
+                if (metCiv == civInfo || metCiv.isBarbarian || civInfo.diplomacy.containsKey(metCiv.civName)) continue
                 civInfo.diplomacyFunctions.makeCivilizationsMeet(metCiv)
                 if(!civInfo.isSpectator())
                     civInfo.addNotification("We have encountered [${metCiv.civName}]!",
@@ -317,7 +318,7 @@ class CivInfoTransientCache(val civInfo: Civilization) {
         val newDetailedCivResources = ResourceSupplyList()
         for (city in civInfo.cities) newDetailedCivResources.add(city.getResourcesGeneratedByCity())
 
-        if (!civInfo.isCityState()) {
+        if (!civInfo.isCityState) {
             // First we get all these resources of each city state separately
             val cityStateProvidedResources = ResourceSupplyList()
             var resourceBonusPercentage = 1f

@@ -150,6 +150,7 @@ class GameSettings {
     //region <Methods>
 
     fun save() {
+        if (Gdx.app == null) return // Simulation mode from ConsoleLauncher
         refreshWindowSize()
         UncivGame.Current.files.setGeneralSettings(this)
     }
@@ -270,6 +271,7 @@ class GameSettings {
     enum class LocaleCode(val language: String, val country: String, val trueLanguage: String? = null) {
         Afrikaans("af", "ZA"),
         Arabic("ar", "IQ"),
+        Bangla("bn", "BD"),
         Belarusian("be", "BY"),
         Bosnian("bs", "BA"),
         BrazilianPortuguese("pt", "BR"),
@@ -283,6 +285,7 @@ class GameSettings {
         Estonian("et", "EE"),
         Finnish("fi", "FI"),
         French("fr", "FR"),
+        Galician("gl", "ES"),
         German("de", "DE"),
         Greek("el", "GR"),
         Hindi("hi", "IN"),

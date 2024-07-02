@@ -153,7 +153,7 @@ class City : IsPartOfGameInfoSerialization, INamed {
     fun getWorkableTiles() = tilesInRange.asSequence().filter { it.getOwner() == civ }
     fun isWorked(tile: Tile) = workedTiles.contains(tile.position)
 
-    fun isCapital(): Boolean = cityConstructions.getBuiltBuildings().any { it.hasUnique(UniqueType.IndicatesCapital) }
+    fun isCapital(): Boolean = cityConstructions.builtBuildingUniqueMap.getUniques(UniqueType.IndicatesCapital).any()
     fun isCoastal(): Boolean = centerTile.isCoastalTile()
 
     fun getBombardRange(): Int = civ.gameInfo.ruleset.modOptions.constants.baseCityBombardRange
@@ -414,7 +414,7 @@ class City : IsPartOfGameInfoSerialization, INamed {
         val tile = getCenterTile()
         return when {
             construction.isCivilian() -> tile.civilianUnit == null
-            construction.movesLikeAirUnits() -> tile.airUnits.count { !it.isTransported } < 6
+            construction.movesLikeAirUnits -> tile.airUnits.count { !it.isTransported } < 6
             else -> tile.militaryUnit == null
         }
     }
@@ -453,7 +453,7 @@ class City : IsPartOfGameInfoSerialization, INamed {
             "in resisting cities", "Resisting" -> isInResistance()
             "in cities being razed", "Razing" -> isBeingRazed
             "in holy cities", "Holy" -> isHolyCity()
-            "in City-State cities" -> civ.isCityState()
+            "in City-State cities" -> civ.isCityState
             // This is only used in communication to the user indicating that only in cities with this
             // religion a unique is active. However, since religion uniques only come from the city itself,
             // this will always be true when checked.
@@ -482,7 +482,7 @@ class City : IsPartOfGameInfoSerialization, INamed {
                 getLocalMatchingUniques(uniqueType, stateForConditionals)
         else (
             cityConstructions.builtBuildingUniqueMap.getUniques(uniqueType)
-                + religion.getUniques().filter { it.type == uniqueType }
+                + religion.getUniques(uniqueType)
             ).filter {
                 !it.isTimedTriggerable && it.conditionalsApply(stateForConditionals)
             }.flatMap { it.getMultiplied(stateForConditionals) }
@@ -491,10 +491,9 @@ class City : IsPartOfGameInfoSerialization, INamed {
     // Uniques special to this city
     fun getLocalMatchingUniques(uniqueType: UniqueType, stateForConditionals: StateForConditionals = StateForConditionals(this)): Sequence<Unique> {
         val uniques = cityConstructions.builtBuildingUniqueMap.getUniques(uniqueType).filter { it.isLocalEffect } +
-            religion.getUniques().filter { it.type == uniqueType }
-        return if (uniques.any()) uniques.filter { !it.isTimedTriggerable && it.conditionalsApply(stateForConditionals) }
-            .flatMap { it.getMultiplied(stateForConditionals) }
-        else uniques
+            religion.getUniques(uniqueType)
+        return uniques.filter { !it.isTimedTriggerable && it.conditionalsApply(stateForConditionals) }
+                .flatMap { it.getMultiplied(stateForConditionals) }
     }
 
     // Uniques coming from this city, but that should be provided globally

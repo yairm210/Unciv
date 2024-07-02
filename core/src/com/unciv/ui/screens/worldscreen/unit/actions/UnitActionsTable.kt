@@ -60,6 +60,7 @@ class UnitActionsTable(val worldScreen: WorldScreen) : Table() {
         }
 
         clear()
+        keyShortcuts.clear()
         if (unit == null) return
         if (!worldScreen.canChangeState) return // No actions when it's not your turn or spectator!
 
@@ -127,7 +128,6 @@ class UnitActionsTable(val worldScreen: WorldScreen) : Table() {
         pack()
 
         // Bind all currently invisible actions to their keys
-        keyShortcuts.clear()
         for (page in pageActionBuckets.indices) {
             if (page == currentPage) continue // these are already done
             for (unitAction in pageActionBuckets[page]) {

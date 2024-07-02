@@ -17,9 +17,10 @@ import kotlin.time.ExperimentalTime
 @ExperimentalTime
 class Simulation(
     private val newGameInfo: GameInfo,
-    val simulationsPerThread: Int = 5,
+    val simulationsPerThread: Int = 1
+    ,
     private val threadsNumber: Int = 1,
-    private val maxTurns: Int = 1000
+    private val maxTurns: Int = 500
 ) {
     private val maxSimulations = threadsNumber * simulationsPerThread
     val civilizations = newGameInfo.civilizations.filter { it.civName != Constants.spectator }.map { it.civName }
@@ -48,6 +49,8 @@ class Simulation(
 
         startTime = System.currentTimeMillis()
         val jobs: ArrayList<Job> = ArrayList()
+        println("Starting new game with major civs: "+newGameInfo.civilizations.filter { it.isMajorCiv() }.joinToString { it.civName }
+        + " and minor civs: "+newGameInfo.civilizations.filter { it.isCityState }.joinToString { it.civName })
         for (threadId in 1..threadsNumber) {
             jobs.add(launch(CoroutineName("simulation-${threadId}")) {
                 repeat(simulationsPerThread) {
@@ -60,11 +63,11 @@ class Simulation(
 
                     if (step.victoryType != null) {
                         step.winner = step.currentPlayer
-                        printWinner(step)
+                        println("${step.winner} won ${step.victoryType} victory on turn ${step.turns}")
                     }
-                    else
-                        printDraw(step)
+                    else println("Max simulation ${step.turns} turns reached: Draw")
 
+                    print(gameInfo)
                     updateCounter(threadId)
                     add(step)
                 }
@@ -88,20 +91,6 @@ class Simulation(
         println("Simulation step ($stepCounter/$maxSimulations)")
     }
 
-    private fun printWinner(step: SimulationStep) {
-        println("%s won %s victory on %d turn".format(
-                step.winner,
-                step.victoryType,
-                step.turns
-        ))
-    }
-
-    private fun printDraw(step: SimulationStep) {
-        println("Max simulation %d turns reached : Draw".format(
-                step.turns
-        ))
-    }
-
     fun getStats() {
         // win Rate
         steps.forEach {
@@ -116,11 +105,13 @@ class Simulation(
         avgDuration = totalDuration / steps.size
     }
 
-    override fun toString(): String {
+    fun text(): String {
         var outString = ""
         for (civ in civilizations) {
+
             outString += "\n$civ:\n"
             val wins = winRate[civ]!!.value * 100 / max(steps.size, 1)
+            if (wins == 0) continue
             outString += "$wins% total win rate \n"
             for (victory in UncivGame.Current.gameInfo!!.ruleset.victories.keys) {
                 val winsVictory = winRateByVictory[civ]!![victory]!!.value * 100 / max(winRate[civ]!!.value, 1)

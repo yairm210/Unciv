@@ -13,11 +13,11 @@ import com.unciv.models.ruleset.RejectionReason
 import com.unciv.models.ruleset.RejectionReasonType
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetObject
+import com.unciv.models.ruleset.unique.Conditionals
 import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueType
-import com.unciv.models.ruleset.unique.Conditionals
 import com.unciv.models.stats.Stat
 import com.unciv.ui.components.extensions.getNeedMoreAmountString
 import com.unciv.ui.components.extensions.toPercent
@@ -51,7 +51,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
     var replacementTextForUniques = ""
     var promotions = HashSet<String>()
     var obsoleteTech: String? = null
-    fun techsThatObsoleteThis(): Sequence<String> = if (obsoleteTech == null) sequenceOf() else sequenceOf(obsoleteTech!!)
+    fun techsThatObsoleteThis(): Sequence<String> = if (obsoleteTech == null) emptySequence() else sequenceOf(obsoleteTech!!)
     fun techsAtWhichAutoUpgradeInProduction(): Sequence<String> = techsThatObsoleteThis()
     fun techsAtWhichNoLongerAvailable(): Sequence<String> = techsThatObsoleteThis()
     @Suppress("unused") // Keep the how-to around
@@ -171,39 +171,34 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         return false
     }
 
-    override fun getRejectionReasons(cityConstructions: CityConstructions): Sequence<RejectionReason> = sequence {
-        if (isWaterUnit() && !cityConstructions.city.isCoastal())
-            yield(RejectionReasonType.WaterUnitsInCoastalCities.toInstance())
-        if (isAirUnit()) {
-            val fakeUnit = getMapUnit(cityConstructions.city.civ, Constants.NO_ID)
-            val canUnitEnterTile = fakeUnit.movement.canMoveTo(cityConstructions.city.getCenterTile())
-            if (!canUnitEnterTile)
-                yield(RejectionReasonType.NoPlaceToPutUnit.toInstance())
-            fakeUnit.destroy()
-        }
-        val civInfo = cityConstructions.city.civ
-
-        for (unique in getMatchingUniques(UniqueType.OnlyAvailable, StateForConditionals.IgnoreConditionals))
-            yieldAll(notMetRejections(unique, cityConstructions))
-
-        for (unique in getMatchingUniques(UniqueType.CanOnlyBeBuiltWhen, StateForConditionals.IgnoreConditionals))
-            yieldAll(notMetRejections(unique, cityConstructions, true))
-
-        for (unique in getMatchingUniques(UniqueType.Unavailable, StateForConditionals(civInfo, cityConstructions.city)))
-            yield(RejectionReasonType.ShouldNotBeDisplayed.toInstance())
-
-        for (unique in getMatchingUniques(UniqueType.RequiresPopulation))
-            if (unique.params[0].toInt() > cityConstructions.city.population.population)
-                yield(RejectionReasonType.PopulationRequirement.toInstance(unique.text))
-
-        yieldAll(getRejectionReasons(civInfo, cityConstructions.city))
-    }
+    override fun getRejectionReasons(cityConstructions: CityConstructions): Sequence<RejectionReason> =
+        getRejectionReasons(cityConstructions.city.civ, cityConstructions.city)
 
     fun getRejectionReasons(
         civ: Civilization,
         city: City? = null,
         additionalResources: Counter<String> = Counter.ZERO
     ): Sequence<RejectionReason> = sequence {
+
+        val stateForConditionals = StateForConditionals(civ, city)
+
+        if (city != null && isWaterUnit && !city.isCoastal())
+            yield(RejectionReasonType.WaterUnitsInCoastalCities.toInstance())
+
+        for (unique in getMatchingUniques(UniqueType.OnlyAvailable, StateForConditionals.IgnoreConditionals))
+            yieldAll(notMetRejections(unique, civ, city))
+
+        for (unique in getMatchingUniques(UniqueType.CanOnlyBeBuiltWhen, StateForConditionals.IgnoreConditionals))
+            yieldAll(notMetRejections(unique, civ, city, true))
+
+        for (unique in getMatchingUniques(UniqueType.Unavailable, stateForConditionals))
+            yield(RejectionReasonType.ShouldNotBeDisplayed.toInstance())
+
+        if (city != null)
+            for (unique in getMatchingUniques(UniqueType.RequiresPopulation))
+                if (unique.params[0].toInt() > city.population.population)
+                    yield(RejectionReasonType.PopulationRequirement.toInstance(unique.getDisplayText()))
+
         for (requiredTech: String in requiredTechs())
             if (!civ.tech.isResearched(requiredTech))
                 yield(RejectionReasonType.RequiresTech.toInstance("$requiredTech not researched"))
@@ -219,12 +214,10 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         if (isHiddenBySettings(civ.gameInfo))
             yield(RejectionReasonType.DisabledBySetting.toInstance())
 
-        val stateForConditionals = StateForConditionals(civ, city)
-
         if (hasUnique(UniqueType.Unbuildable, stateForConditionals))
             yield(RejectionReasonType.Unbuildable.toInstance())
 
-        if ((civ.isCityState() || civ.isOneCityChallenger()) && hasUnique(UniqueType.FoundCity, stateForConditionals))
+        if ((civ.isCityState || civ.isOneCityChallenger()) && hasUnique(UniqueType.FoundCity, stateForConditionals))
             yield(RejectionReasonType.NoSettlerForOneCityPlayers.toInstance())
 
         if (getMatchingUniques(UniqueType.MaxNumberBuildable, stateForConditionals).any {
@@ -232,9 +225,9 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
             })
             yield(RejectionReasonType.MaxNumberBuildable.toInstance())
 
-        if (!civ.isBarbarian()) { // Barbarians don't need resources
+        if (!civ.isBarbarian) { // Barbarians don't need resources
             val civResources = Counter(civ.getCivResourcesByName()) + additionalResources
-            for ((resource, requiredAmount) in getResourceRequirementsPerTurn(StateForConditionals(civ))) {
+            for ((resource, requiredAmount) in getResourceRequirementsPerTurn(stateForConditionals)) {
                 val availableAmount = civResources[resource]
                 if (availableAmount < requiredAmount) {
                     val message = resource.getNeedMoreAmountString(requiredAmount - availableAmount)
@@ -249,9 +242,17 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
                     it.type == UniqueType.ConditionalBelowHappiness || it.type == UniqueType.ConditionalBetweenHappiness
                 }
                 if (hasHappinessCondition)
-                    yield(RejectionReasonType.CannotBeBuiltUnhappiness.toInstance(unique.text))
+                    yield(RejectionReasonType.CannotBeBuiltUnhappiness.toInstance(unique.getDisplayText()))
                 else yield(RejectionReasonType.CannotBeBuilt.toInstance())
             }
+
+        if (city != null && isAirUnit()) {
+            // Not actually added to civ so doesn't require destroy
+            val fakeUnit = getMapUnit(civ, Constants.NO_ID)
+            val canUnitEnterTile = fakeUnit.movement.canMoveTo(city.getCenterTile())
+            if (!canUnitEnterTile)
+                yield(RejectionReasonType.NoPlaceToPutUnit.toInstance())
+        }
     }
 
     /**
@@ -259,11 +260,10 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
      * Also custom handles [UniqueType.ConditionalBuildingBuiltAmount], and
      * [UniqueType.ConditionalBuildingBuiltAll]
      */
-    private fun notMetRejections(unique: Unique, cityConstructions: CityConstructions, built: Boolean=false): Sequence<RejectionReason> = sequence {
-        val civ = cityConstructions.city.civ
+    private fun notMetRejections(unique: Unique, civ: Civilization, city: City?, built: Boolean=false): Sequence<RejectionReason> = sequence {
         for (conditional in unique.conditionals) {
             // We yield a rejection only when conditionals are NOT met
-            if (Conditionals.conditionalApplies(unique, conditional, StateForConditionals(civ, cityConstructions.city)))
+            if (Conditionals.conditionalApplies(unique, conditional, StateForConditionals(civ, city)))
                 continue
             when (conditional.type) {
                 UniqueType.ConditionalBuildingBuiltAmount -> {
@@ -292,7 +292,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
                 }
                 else -> {
                     if (built)
-                        yield(RejectionReasonType.CanOnlyBeBuiltInSpecificCities.toInstance(unique.text))
+                        yield(RejectionReasonType.CanOnlyBeBuiltInSpecificCities.toInstance(unique.getDisplayText()))
                     else
                         yield(RejectionReasonType.ShouldNotBeDisplayed.toInstance())
                 }
@@ -372,13 +372,8 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
     private val cachedMatchesFilterResult = HashMap<String, Boolean>()
 
     /** Implements [UniqueParameterType.BaseUnitFilter][com.unciv.models.ruleset.unique.UniqueParameterType.BaseUnitFilter] */
-    fun matchesFilter(filter: String): Boolean {
-        val cachedAnswer = cachedMatchesFilterResult[filter]
-        if (cachedAnswer != null) return cachedAnswer
-        val newAnswer = MultiFilter.multiFilter(filter, { matchesSingleFilter(it) })
-        cachedMatchesFilterResult[filter] = newAnswer
-        return newAnswer
-    }
+    fun matchesFilter(filter: String): Boolean =
+        cachedMatchesFilterResult.getOrPut(filter) { MultiFilter.multiFilter(filter, ::matchesSingleFilter ) }
 
     fun matchesSingleFilter(filter: String): Boolean {
         return when (filter) {
@@ -390,14 +385,14 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
             "Melee" -> isMelee()
             "Ranged" -> isRanged()
             "Civilian" -> isCivilian()
-            "Military" -> isMilitary()
-            "Land" -> isLandUnit()
-            "Water" -> isWaterUnit()
+            "Military" -> isMilitary
+            "Land" -> isLandUnit
+            "Water" -> isWaterUnit
             "Air" -> isAirUnit()
-            "non-air" -> !movesLikeAirUnits()
+            "non-air" -> !movesLikeAirUnits
 
             "Nuclear Weapon" -> isNuclearWeapon()
-            "Great Person" -> isGreatPerson()
+            "Great Person" -> isGreatPerson
             "Religious" -> hasUnique(UniqueType.ReligiousUnit)
 
             else -> {
@@ -419,13 +414,13 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
      *  Use other methods for MapUnits or when there is a better StateForConditionals available. */
     fun isCityFounder() = hasUnique(UniqueType.FoundCity, StateForConditionals.IgnoreConditionals)
 
-    fun isGreatPerson() = getMatchingUniques(UniqueType.GreatPerson).any()
+    val isGreatPerson by lazy { getMatchingUniques(UniqueType.GreatPerson).any() }
     fun isGreatPersonOfType(type: String) = getMatchingUniques(UniqueType.GreatPerson).any { it.params[0] == type }
 
     /** Has a MapUnit implementation that does not ignore conditionals, which should be usually used */
     private fun isNuclearWeapon() = hasUnique(UniqueType.NuclearWeapon, StateForConditionals.IgnoreConditionals)
 
-    fun movesLikeAirUnits() = type.getMovementType() == UnitMovementType.Air
+    val movesLikeAirUnits by lazy { type.getMovementType() == UnitMovementType.Air }
 
     /** Returns resource requirements from both uniques and requiredResource field */
     override fun getResourceRequirementsPerTurn(stateForConditionals: StateForConditionals?): Counter<String> {
@@ -439,12 +434,11 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
 
     fun isRanged() = rangedStrength > 0
     fun isMelee() = !isRanged() && strength > 0
-    fun isMilitary() = isRanged() || isMelee()
-    fun isCivilian() = !isMilitary()
+    val isMilitary by lazy { isRanged() || isMelee() }
+    fun isCivilian() = !isMilitary
 
-    private val isLandUnitInternal by lazy { type.isLandUnit() }
-    fun isLandUnit() = isLandUnitInternal
-    fun isWaterUnit() = type.isWaterUnit()
+    val isLandUnit by lazy { type.isLandUnit() }
+    val isWaterUnit by lazy { type.isWaterUnit() }
     fun isAirUnit() = type.isAirUnit()
 
     fun isProbablySiegeUnit() = isRanged()
@@ -468,7 +462,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         var rangedPower = rangedStrength.toFloat().pow(1.45f)
 
         // Value ranged naval units less
-        if (isWaterUnit()) {
+        if (isWaterUnit) {
             rangedPower /= 2
         }
         if (rangedPower > 0)
@@ -504,6 +498,8 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
                         } // Bonus in terrain or feature - half the bonus
                     ) {
                         power *= (unique.params[0].toInt() / 2f).toPercent()
+                    } else {
+                        power *= (unique.params[0].toInt()).toPercent() // Static bonus
                     }
                 }
                 UniqueType.StrengthNearCapital ->

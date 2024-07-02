@@ -401,7 +401,7 @@ class RulesetValidator(val ruleset: Ruleset) {
         lines: RulesetErrorList,
         tryFixUnknownUniques: Boolean
     ) {
-        if (ruleset.terrains.values.none { it.type == TerrainType.Land && !it.impassable })
+        if (ruleset.terrains.values.none { it.type == TerrainType.Land && !it.impassable && !it.hasUnique(UniqueType.NoNaturalGeneration) })
             lines.add("No passable land terrains exist!", sourceObject = null)
 
         for (terrain in ruleset.terrains.values) {
@@ -731,7 +731,7 @@ class RulesetValidator(val ruleset: Ruleset) {
             if (upgradesTo == unit.name || (upgradesTo == unit.replaces))
                 lines.add("${unit.name} upgrades to itself!", sourceObject = unit)
         }
-        if (unit.isMilitary() && unit.strength == 0)  // Should only match ranged units with 0 strength
+        if (unit.isMilitary && unit.strength == 0)  // Should only match ranged units with 0 strength
             lines.add("${unit.name} is a military unit but has no assigned strength!", sourceObject = unit)
     }
 

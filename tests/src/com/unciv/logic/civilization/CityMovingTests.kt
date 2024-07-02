@@ -31,7 +31,7 @@ class CityMovingTests {
             civInfo.tech.addTechnology(tech)
 
         civInfo.diplomacyFunctions.makeCivilizationsMeet(enemy)
-        civInfo.getDiplomacyManager(enemy).declareWar()
+        civInfo.getDiplomacyManager(enemy)!!.declareWar()
     }
 
     @Test

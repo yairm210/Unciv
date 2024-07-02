@@ -139,8 +139,8 @@ class DiplomacyScreen(
 
             val civIndicator = ImageGetter.getNationPortrait(civ.nation, nationIconSize)
 
-            val relationLevel = civ.getDiplomacyManager(viewingCiv).relationshipLevel()
-            val relationshipIcon = if (civ.isCityState() && relationLevel == RelationshipLevel.Ally)
+            val relationLevel = civ.getDiplomacyManager(viewingCiv)!!.relationshipLevel()
+            val relationshipIcon = if (civ.isCityState && relationLevel == RelationshipLevel.Ally)
                 ImageGetter.getImage("OtherIcons/Star")
                     .surroundWithCircle(size = 30f, color = relationLevel.color).apply {
                         actor.color = Color.GOLD
@@ -152,7 +152,7 @@ class DiplomacyScreen(
                 )
             civIndicator.addActor(relationshipIcon)
 
-            if (civ.isCityState()) {
+            if (civ.isCityState) {
                 val innerColor = civ.gameInfo.ruleset.nations[civ.civName]!!.getInnerColor()
                 val typeIcon = ImageGetter.getImage("CityStateIcons/"+civ.cityStateType.name)
                     .surroundWithCircle(size = 35f, color = innerColor).apply {
@@ -163,7 +163,7 @@ class DiplomacyScreen(
                 typeIcon.x = floor(civIndicator.width - typeIcon.width)
             }
 
-            if (civ.isCityState() && civ.questManager.haveQuestsFor(viewingCiv)) {
+            if (civ.isCityState && civ.questManager.haveQuestsFor(viewingCiv)) {
                 val questIcon = ImageGetter.getImage("OtherIcons/Quest")
                     .surroundWithCircle(size = 30f, color = Color.GOLDENROD)
                 civIndicator.addActor(questIcon)
@@ -205,7 +205,7 @@ class DiplomacyScreen(
         UncivGame.Current.musicController.chooseTrack(otherCiv.civName,
             MusicMood.peaceOrWar(viewingCiv.isAtWarWith(otherCiv)),MusicTrackChooserFlags.setSelectNation)
         rightSideTable.add(ScrollPane(
-            if (otherCiv.isCityState()) CityStateDiplomacyTable(this).getCityStateDiplomacyTable(otherCiv)
+            if (otherCiv.isCityState) CityStateDiplomacyTable(this).getCityStateDiplomacyTable(otherCiv)
             else MajorCivDiplomacyTable(this).getMajorCivDiplomacyTable(otherCiv)
         )).height(stage.height)
     }
@@ -223,7 +223,7 @@ class DiplomacyScreen(
         val relationshipTable = Table()
 
         val opinionOfUs =
-            if (otherCivDiplomacyManager.civInfo.isCityState()) otherCivDiplomacyManager.getInfluence().toInt()
+            if (otherCivDiplomacyManager.civInfo.isCityState) otherCivDiplomacyManager.getInfluence().toInt()
             else otherCivDiplomacyManager.opinionOfOtherCiv().toInt()
 
         relationshipTable.add("{Our relationship}: ".toLabel())
@@ -238,7 +238,7 @@ class DiplomacyScreen(
         }
 
         relationshipTable.add(relationshipText.toLabel(relationshipColor)).row()
-        if (otherCivDiplomacyManager.civInfo.isCityState())
+        if (otherCivDiplomacyManager.civInfo.isCityState)
             relationshipTable.add(
                 InfluenceTable(
                     otherCivDiplomacyManager.getInfluence(),

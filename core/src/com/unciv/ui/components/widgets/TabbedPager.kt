@@ -17,7 +17,6 @@ import com.badlogic.gdx.scenes.scene2d.utils.Layout
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
 import com.unciv.UncivGame
-import com.unciv.ui.components.UncivTextField
 import com.unciv.ui.components.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.components.extensions.addSeparator
 import com.unciv.ui.components.extensions.darken
@@ -593,7 +592,7 @@ open class TabbedPager(
      */
     fun askForPassword(secretHashCode: Int = 0) {
         class PassPopup(screen: BaseScreen, unlockAction: ()->Unit, lockAction: ()->Unit) : Popup(screen) {
-            val passEntry = UncivTextField.create("Password")
+            val passEntry = UncivTextField("Password")
             init {
                 passEntry.isPasswordMode = true
                 add(passEntry).row()

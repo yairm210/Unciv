@@ -8,7 +8,7 @@ import com.unciv.UncivGame
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.tile.Tile
-import com.unciv.logic.trade.TradeType
+import com.unciv.logic.trade.TradeOfferType
 import com.unciv.models.ruleset.tile.ResourceSupplyList
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.tile.TileResource
@@ -77,7 +77,7 @@ class ResourcesOverviewTab(
     private fun ResourceSupplyList.getLabel(resource: TileResource, origin: String): Label? {
         fun isAlliedAndUnimproved(tile: Tile): Boolean {
             val owner = tile.getOwner() ?: return false
-            if (owner != viewingPlayer && !(owner.isCityState() && owner.getAllyCiv() == viewingPlayer.civName)) return false
+            if (owner != viewingPlayer && !(owner.isCityState && owner.getAllyCiv() == viewingPlayer.civName)) return false
             return tile.countAsUnimproved()
         }
         val amount = get(resource, origin)?.amount ?: return null
@@ -271,11 +271,11 @@ class ResourcesOverviewTab(
         for (otherCiv in viewingPlayer.getKnownCivs()) {
             // Show resources received through trade
             for (trade in otherCiv.tradeRequests.filter { it.requestingCiv == viewingPlayer.civName })
-                for (offer in trade.trade.theirOffers.filter { it.type == TradeType.Strategic_Resource || it.type == TradeType.Luxury_Resource })
+                for (offer in trade.trade.theirOffers.filter { it.type == TradeOfferType.Strategic_Resource || it.type == TradeOfferType.Luxury_Resource })
                     newResourceSupplyList.add(gameInfo.ruleset.tileResources[offer.name]!!, ExtraInfoOrigin.TradeOffer.name, offer.amount)
 
             // Show resources your city-state allies have left unimproved
-            if (!otherCiv.isCityState() || otherCiv.getAllyCiv() != viewingPlayer.civName) continue
+            if (!otherCiv.isCityState || otherCiv.getAllyCiv() != viewingPlayer.civName) continue
             for (city in otherCiv.cities)
                 city.addUnimproved()
         }

@@ -80,14 +80,14 @@ internal class ConsoleCityCommands : ConsoleCommandNode {
             DevConsoleResponse.OK
         },
 
-        "addbuilding" to ConsoleAction("city addbuilding [buildingName]") { console, params ->
+        "addbuilding" to ConsoleAction("city addbuilding <buildingName>") { console, params ->
             val city = console.getSelectedCity()
             val building = console.findCliInput<Building>(params[0])
                 ?: throw ConsoleErrorException("Unknown building")
             city.cityConstructions.addBuilding(building)
             DevConsoleResponse.OK
         },
-        "removebuilding" to ConsoleAction("city removebuilding [buildingName]") { console, params ->
+        "removebuilding" to ConsoleAction("city removebuilding <buildingName>") { console, params ->
             val city = console.getSelectedCity()
             val building = console.findCliInput<Building>(params[0])
                 ?: throw ConsoleErrorException("Unknown building")

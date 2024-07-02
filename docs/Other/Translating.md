@@ -4,7 +4,7 @@
 
 The translation files are at [/android/assets/jsons/translations](https://github.com/yairm210/Unciv/tree/master/android/assets/jsons/translations)
 
-If you're adding a new language, you'll need to create a new file ('Create a new file' to the right of the folder name in the UI), and copy into it the contents of template.properties
+If you're adding a new language, see [Adding a new language](#adding-a-new-language).
 
 If you're adding stuff to an existing language, simply start editing the file!
 
@@ -46,6 +46,58 @@ If you're making changes to your own repo, make sure that you make the branch yo
 Some entries have line breaks expressed as `\n`: Your translation can and in most cases should use them as well, but you do not need to distribute them exactly as in the original. Try to find a translation that reads nicely, then place the line break codes at roughly the same intervals as the original uses (less if your language's glyphs are wider than latin ones). Important: You cannot use normal line breaks, you must use the `\n` codes, normal line breaks are not part of a translation.
 
 Chinese tutorial: 如果你是中国人，那么恭喜你运气不错！这里有Unciv中文开发者们专门为中文翻译工作者准备的（十分详尽）教程视频。：[(Video On Bilibili)](https://www.bilibili.com/video/BV1pY4y1u7WH/)
+
+## Adding a new language
+
+If any of the following steps are beyond your skillset, ask for help. All but the first two steps can be postponed.
+
+- You'll need to create a new file ('Create a new file' to the right of the folder name in the UI), and copy into it the contents of template.properties
+- For automatic language processing for a release (e.g. adding new templates) there needs to exist a line in [completionPercentages.properties](https://github.com/yairm210/Unciv/tree/master/android/assets/jsons/translations/completionPercentages.properties). Location and number do not matter, what matters is that the language name left of the ` = ` corresponds exactly with your new language file name, case-sensitive, without extension.
+- For a nice display in language picker and options, we need a flag. It should be a circle surrounded by transparency within a 128x128px square. Add such a png to [FlagIcons](https://github.com/yairm210/Unciv/tree/master/android/Images.Flags/FlagIcons). For potential sources, look in the [credits](https://github.com/yairm210/Unciv/tree/master/docs/Credits.md), and when done, add your source unless it is already covered.
+- A new graphic needs to be converted into the texture atlases (see [Images and the texture atlas](../Modders/Images-and-Audio.md#images-and-the-texture-atlas)) - for a new flag, this usually means running the desktop version once from source, then uploading the updated atlas files via push or manually.
+- Lastly, your new language should be represented in the [LocaleCode](https://github.com/yairm210/Unciv/tree/master/core/src/com/unciv/models/metadata/GameSettings.kt#L261) enum - reasons see below. You can add this even if you cannot compile - just make sure you follow the existing pattern, and read the inline documentation.
+- The first function of this entry is alphabetical sorting. Unfortunately, it is not easy to tell whether a specific combination is supported by Java. The simplest way to deal with this is trial and error - once your language is established and playable, see if Civilopedia entries seem properly sorted, if not, open an issue and tell us what _other_, more common language may have better sorting rules.
+- This entry is also required to enable fastlane description upload to a correct folder - however, whether F-Droid supports your language is not guaranteed ([this page](https://f-droid.org/docs/Translation_and_Localization/) should help - but doesn't).
+
+## Diacritics support
+
+When displaying text, the underlying libraries (libGdx and possibly lwjgl3/GWT) that Unciv uses assume one codepoint in the [UTF-16](https://en.wikipedia.org/wiki/UTF-16) representation corresponds to one rendered glyph,
+which causes incorrect display of languages making heavy use of diacritics or of characters outside the [basic multilinguial plane](https://en.wikipedia.org/wiki/Plane_(Unicode)#Basic_Multilingual_Plane) like most emoji.
+A language file can activate a "trick", where combinations of codepoints that should render as one single glyph are mapped into a "fake alphabet",
+which is created on the fly in the [Private Use Area](https://en.wikipedia.org/wiki/Private_Use_Areas) defined by Unicode.
+
+To activate this feature, set `diacritics_support = true` in your translation. There are a few additional "settings" - translation lines where the "translation" is some control instruction instead.
+All of these are optional, though your language may show glitches unless you define some. For example, Bangla _needs_ a definition for U+09CD, where the Unicode category does not fully define the required behaviour.
+
+Each of the following definitions represents zero or more characters, and can simply list them as one string.
+For readability, they can also be quoted (" surrounding the entire definition), characters can be separated by spaces, or you can use standard "U+xxxx" representations (these need space separators).
+These entries, unlike the rest of a translation file, also support entry-specific comments: After the code(s), from a '#' to the end of the line.
+Search for the information about the Unicode support in your language, e.g. on https://www.unicode.org/charts/ for information on which codes you might need to specify.
+If your language does not need these, feel free to ignore, or use "" to avoid the "requires translation" mark.
+
+### Limitations
+- Consider this feature as being in an experimental stage.
+- Can only work if the language's script still consists of individual glyphs rendered left to right.
+- The underlying libraries (Java AWT or Android) must be able to render the combinations you need - sometimes you will need to select and possibly install a specific font to see the intended results.
+- Using diacritics support incurs a performance penalty, but mostly when loading languages starting Unciv.
+- The feature also has a "quantity" limitation from the size of the Unicode "Private Use Area" (only the one in the BMP can be used), and this must be shared by the feature whereby Unciv automatically displays ruleset object icons:
+  The total number of distinct diacritic "combinations" (or glyphs) your translation actually uses plus the number of objects in the loaded mods (or vanilla ruleset) must not exceed 6400.
+- When enabled and the range is the default (or spans the unicode range for surrogates), then the engine will treat Unicode surrogate pairs correctly, assigning a fake alphabet codepoint for them and allowing diacritics to include them in a combo.
+  However, the parser is strict and throws an Exception on violations of the UTF-16 standard. If your translation crashes Unciv, check your editor for incorrect Unicode handling
+  (translation files are UTF-8 not UTF-16, but unfortunately most encoding converters allow transferring mismatched surrogate pairs).
+  Also, this possibility could so far not be successfully tested for emoji - no supporting font found, see "experimental".
+
+### Settings (as translation entries in the language file)
+- `diacritics_support`: This entry must be set to "true" for the diacritics support to work at all. Any other value will cause text to be passed through unchanged.
+- `unicode_block_start_character` and `unicode_block_end_character`: These define the range of characters that should be considered. One character or code each. Defaults to the entire BMP range.
+  All characters in this range will be categorized, those undefined by Unicode, controls or punctuation, or those outside the range will pass through and reset the diacritics engine for the rest of the line, that is, pending potential combinations will be flushed.
+  Limiting this range - e.g. to the Unicode page dedicated to your language - is a performance optimization, but ultimately not required.
+- `left_joining_diacritics`: Optionally define additional codes meant to join with the character to the left of them, by default the unicode categories "Mn" and "Mc" within the range described above are used.
+- `right_joining_diacritics`: Optionally define additional codes meant to join with the character to the right of them, by default none.
+- `left_and_right_joiners`: Optionally define additional codes meant to join with the character to the left AND with the character to the right, by default none
+
+These are processed in listed order and can override previous categorizations per character codepoint.
+Thus a code specified in `left_and_right_joiners` can be in the "Mn" unicode category, which would put it into the `left_joining_diacritics`, but will still work, because the later definition overrides the earlier one.
 
 ## Why not use a crowdsourcing translation website like <...>?
 

@@ -339,16 +339,14 @@ object ReligionAutomation {
                         else 1f
                 UniqueType.BuyUnitsForAmountStat, UniqueType.BuyBuildingsForAmountStat ->
                     if (civInfo.religionManager.religion != null
-                        && civInfo.religionManager.religion!!.getFollowerUniques()
-                            .any { it.type == unique.type }
+                        && civInfo.religionManager.religion!!.followerBeliefUniqueMap.getUniques(unique.type).any()
                     ) 0f
                     // This is something completely different from the original, but I have no idea
                     // what happens over there
                     else civInfo.stats.statsForNextTurn[Stat.valueOf(unique.params[2])] * 5f / unique.params[1].toFloat()
                 UniqueType.BuyUnitsWithStat, UniqueType.BuyBuildingsWithStat ->
                     if (civInfo.religionManager.religion != null
-                        && civInfo.religionManager.religion!!.getFollowerUniques()
-                            .any { it.type == unique.type }
+                        && civInfo.religionManager.religion!!.followerBeliefUniqueMap.getUniques(unique.type).any()
                     ) 0f
                     // This is something completely different from the original, but I have no idea
                     // what happens over there
@@ -473,7 +471,7 @@ object ReligionAutomation {
                     && it.getMatchingUniques(UniqueType.OnlyAvailable, StateForConditionals.IgnoreConditionals)
                     .none { unique -> !unique.conditionalsApply(civInfo) }
             }
-            .maxByOrNull { ReligionAutomation.rateBelief(civInfo, it) }
+            .maxByOrNull { rateBelief(civInfo, it) }
     }
 
 

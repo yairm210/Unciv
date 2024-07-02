@@ -39,7 +39,7 @@ class DiplomacyManagerTests {
     @Test
     fun `getCommonKnownCivs does not include either DiplomacyManagers's civs`() {
         meet(a, b)
-        val commonKnownCivs = a.getDiplomacyManager(b).getCommonKnownCivs()
+        val commonKnownCivs = a.getDiplomacyManager(b)!!.getCommonKnownCivs()
 
         assertTrue(a !in commonKnownCivs)
         assertTrue(b !in commonKnownCivs)
@@ -50,7 +50,7 @@ class DiplomacyManagerTests {
         meet(a,b)
         meet(b,c)
         meet(c,a)
-        val commonKnownCivs = a.getDiplomacyManager(b).getCommonKnownCivs()
+        val commonKnownCivs = a.getDiplomacyManager(b)!!.getCommonKnownCivs()
 
         assertTrue(c in commonKnownCivs)
     }
@@ -59,7 +59,7 @@ class DiplomacyManagerTests {
     fun `getCommonKnownCivs does not include civs met by only one civ`() {
         meet(a,b)
         meet(a,c)
-        val commonKnownCivs = a.getDiplomacyManager(b).getCommonKnownCivs()
+        val commonKnownCivs = a.getDiplomacyManager(b)!!.getCommonKnownCivs()
 
         assertTrue(c !in commonKnownCivs)
     }
@@ -73,8 +73,8 @@ class DiplomacyManagerTests {
         meet(b,d)
 
         assertEquals(
-            a.getDiplomacyManager(b).getCommonKnownCivs(),
-            b.getDiplomacyManager(a).getCommonKnownCivs()
+            a.getDiplomacyManager(b)!!.getCommonKnownCivs(),
+            b.getDiplomacyManager(a)!!.getCommonKnownCivs()
         )
     }
 
@@ -84,7 +84,7 @@ class DiplomacyManagerTests {
         meet(a, b)
 
         // then
-        val opinionOfOtherCiv = a.getDiplomacyManager(b.civName).opinionOfOtherCiv()
+        val opinionOfOtherCiv = a.getDiplomacyManager(b.civName)!!.opinionOfOtherCiv()
         assertEquals(0f, opinionOfOtherCiv)
     }
 
@@ -94,11 +94,11 @@ class DiplomacyManagerTests {
         meet(a, b)
 
         // when
-        a.getDiplomacyManager(b).denounce()
+        a.getDiplomacyManager(b)!!.denounce()
 
         // then
-        val aOpinionOfB = a.getDiplomacyManager(b.civName).opinionOfOtherCiv()
-        val bOpinionOfA = b.getDiplomacyManager(a.civName).opinionOfOtherCiv()
+        val aOpinionOfB = a.getDiplomacyManager(b.civName)!!.opinionOfOtherCiv()
+        val bOpinionOfA = b.getDiplomacyManager(a.civName)!!.opinionOfOtherCiv()
 
         assertEquals(-35f, aOpinionOfB)
         assertEquals(-35f, bOpinionOfA)
@@ -125,10 +125,10 @@ class DiplomacyManagerTests {
         bCity.liberateCity(a)
 
         // then
-        val aOpinionOfB = a.getDiplomacyManager(b.civName).opinionOfOtherCiv()
-        val bOpinionOfA = b.getDiplomacyManager(a.civName).opinionOfOtherCiv()
-        val cOpinionOfA = c.getDiplomacyManager(a.civName).opinionOfOtherCiv()
-        val dOpinionOfA = d.getDiplomacyManager(a.civName).opinionOfOtherCiv()
+        val aOpinionOfB = a.getDiplomacyManager(b.civName)!!.opinionOfOtherCiv()
+        val bOpinionOfA = b.getDiplomacyManager(a.civName)!!.opinionOfOtherCiv()
+        val cOpinionOfA = c.getDiplomacyManager(a.civName)!!.opinionOfOtherCiv()
+        val dOpinionOfA = d.getDiplomacyManager(a.civName)!!.opinionOfOtherCiv()
 
         assertEquals(0f, aOpinionOfB) // A shouldn't change its opinion of others
         assertEquals(121f, bOpinionOfA) // massive boost, liberated their city
@@ -153,9 +153,9 @@ class DiplomacyManagerTests {
         bCity.puppetCity(a)
 
         // then
-        val aOpinionOfB = a.getDiplomacyManager(b.civName).opinionOfOtherCiv()
-        val bOpinionOfA = b.getDiplomacyManager(a.civName).opinionOfOtherCiv()
-        val cOpinionOfA = c.getDiplomacyManager(a.civName).opinionOfOtherCiv()
+        val aOpinionOfB = a.getDiplomacyManager(b.civName)!!.opinionOfOtherCiv()
+        val bOpinionOfA = b.getDiplomacyManager(a.civName)!!.opinionOfOtherCiv()
+        val cOpinionOfA = c.getDiplomacyManager(a.civName)!!.opinionOfOtherCiv()
 
         assertEquals(0f, aOpinionOfB) // A shouldn't change its opinion of others
         assertEquals(-121f, bOpinionOfA) // massive penality, conquered their city
@@ -169,10 +169,10 @@ class DiplomacyManagerTests {
         meet(a, cityState)
 
         // when
-        cityState.getDiplomacyManager(a).addInfluence(31f)
+        cityState.getDiplomacyManager(a)!!.addInfluence(31f)
 
         // then
-        assertTrue(cityState.getDiplomacyManager(a).isRelationshipLevelEQ(RelationshipLevel.Friend))
+        assertTrue(cityState.getDiplomacyManager(a)!!.isRelationshipLevelEQ(RelationshipLevel.Friend))
     }
 
     @Test
@@ -182,10 +182,10 @@ class DiplomacyManagerTests {
         meet(a, cityState)
 
         // when
-        cityState.getDiplomacyManager(a).addInfluence(61f)
+        cityState.getDiplomacyManager(a)!!.addInfluence(61f)
 
         // then
-        assertTrue(cityState.getDiplomacyManager(a).isRelationshipLevelEQ(RelationshipLevel.Ally))
+        assertTrue(cityState.getDiplomacyManager(a)!!.isRelationshipLevelEQ(RelationshipLevel.Ally))
     }
 
     @Test
@@ -194,14 +194,14 @@ class DiplomacyManagerTests {
         val cityState = addCiv(cityStateType = "Militaristic")
         meet(a, cityState)
         meet(b, cityState)
-        cityState.getDiplomacyManager(a).addInfluence(70f)
+        cityState.getDiplomacyManager(a)!!.addInfluence(70f)
 
         // when
-        cityState.getDiplomacyManager(b).addInfluence(61f)
+        cityState.getDiplomacyManager(b)!!.addInfluence(61f)
 
         // then
-        assertTrue(cityState.getDiplomacyManager(a).isRelationshipLevelEQ(RelationshipLevel.Ally))
-        assertTrue(cityState.getDiplomacyManager(b).isRelationshipLevelEQ(RelationshipLevel.Friend))
+        assertTrue(cityState.getDiplomacyManager(a)!!.isRelationshipLevelEQ(RelationshipLevel.Ally))
+        assertTrue(cityState.getDiplomacyManager(b)!!.isRelationshipLevelEQ(RelationshipLevel.Friend))
     }
 
     @Test
@@ -210,14 +210,14 @@ class DiplomacyManagerTests {
         val cityState = addCiv(cityStateType = "Militaristic")
         meet(a, cityState)
         meet(b, cityState)
-        cityState.getDiplomacyManager(a).addInfluence(61f)
+        cityState.getDiplomacyManager(a)!!.addInfluence(61f)
 
         // when
-        cityState.getDiplomacyManager(b).addInfluence(70f)
+        cityState.getDiplomacyManager(b)!!.addInfluence(70f)
 
         // then
-        assertTrue(cityState.getDiplomacyManager(a).isRelationshipLevelEQ(RelationshipLevel.Friend))
-        assertTrue(cityState.getDiplomacyManager(b).isRelationshipLevelEQ(RelationshipLevel.Ally))
+        assertTrue(cityState.getDiplomacyManager(a)!!.isRelationshipLevelEQ(RelationshipLevel.Friend))
+        assertTrue(cityState.getDiplomacyManager(b)!!.isRelationshipLevelEQ(RelationshipLevel.Ally))
     }
 
     @Test
@@ -225,14 +225,14 @@ class DiplomacyManagerTests {
         // given
         val cityState = addCiv(cityStateType = "Militaristic")
         meet(a, cityState)
-        cityState.getDiplomacyManager(a).addInfluence(61f)
+        cityState.getDiplomacyManager(a)!!.addInfluence(61f)
 
         // when
-        a.getDiplomacyManager(cityState).declareWar()
+        a.getDiplomacyManager(cityState)!!.declareWar()
 
         // then
-        assertTrue(cityState.getDiplomacyManager(a).isRelationshipLevelEQ(RelationshipLevel.Unforgivable))
-        assertEquals(-60f, cityState.getDiplomacyManager(a).getInfluence())
+        assertTrue(cityState.getDiplomacyManager(a)!!.isRelationshipLevelEQ(RelationshipLevel.Unforgivable))
+        assertEquals(-60f, cityState.getDiplomacyManager(a)!!.getInfluence())
     }
 
     @Test
@@ -242,15 +242,15 @@ class DiplomacyManagerTests {
         val e = addCiv(defaultUnitTile = testGame.getTile(Vector2.X))
         meet(e, cityState)
         // we cannot be allied and simoultaneously having a city state declare indirect war on us
-        cityState.getDiplomacyManager(e).addInfluence(31f)
-        cityState.getDiplomacyManager(e).declareWar(DeclareWarReason(WarType.DefensivePactWar, a))
+        cityState.getDiplomacyManager(e)!!.addInfluence(31f)
+        cityState.getDiplomacyManager(e)!!.declareWar(DeclareWarReason(WarType.DefensivePactWar, a))
 
         // when
-        e.getDiplomacyManager(cityState).makePeace()
+        e.getDiplomacyManager(cityState)!!.makePeace()
 
         // then
-        assertTrue(cityState.getDiplomacyManager(e).isRelationshipLevelEQ(RelationshipLevel.Friend))
-        assertEquals(31f, cityState.getDiplomacyManager(e).getInfluence())
+        assertTrue(cityState.getDiplomacyManager(e)!!.isRelationshipLevelEQ(RelationshipLevel.Friend))
+        assertEquals(31f, cityState.getDiplomacyManager(e)!!.getInfluence())
     }
 
     @Test
@@ -260,13 +260,13 @@ class DiplomacyManagerTests {
         cityState.cityStatePersonality = CityStatePersonality.Neutral
         meet(a, cityState)
 
-        cityState.getDiplomacyManager(a).addInfluence(30f)
+        cityState.getDiplomacyManager(a)!!.addInfluence(30f)
 
         // when
-        cityState.getDiplomacyManager(a).nextTurn()
+        cityState.getDiplomacyManager(a)!!.nextTurn()
 
         // then
-        assertEquals(29f, cityState.getDiplomacyManager(a).getInfluence())
+        assertEquals(29f, cityState.getDiplomacyManager(a)!!.getInfluence())
     }
 
     @Test
@@ -276,13 +276,13 @@ class DiplomacyManagerTests {
         cityState.cityStatePersonality = CityStatePersonality.Hostile
         meet(a, cityState)
 
-        cityState.getDiplomacyManager(a).addInfluence(30f)
+        cityState.getDiplomacyManager(a)!!.addInfluence(30f)
 
         // when
-        cityState.getDiplomacyManager(a).nextTurn()
+        cityState.getDiplomacyManager(a)!!.nextTurn()
 
         // then
-        assertEquals(28.5f, cityState.getDiplomacyManager(a).getInfluence())
+        assertEquals(28.5f, cityState.getDiplomacyManager(a)!!.getInfluence())
     }
 
     @Test
@@ -299,16 +299,16 @@ class DiplomacyManagerTests {
 
         val religion = testGame.addReligion(a)
         val belief = testGame.createBelief(BeliefType.Founder, "[+1 Food] from every [Shrine]")
-        religion.founderBeliefs.add(belief.name)
+        religion.addBeliefs(listOf(belief))
         cityStateCapital.religion.addPressure(religion.name, 1000)
 
-        cityState.getDiplomacyManager(a).addInfluence(30f)
+        cityState.getDiplomacyManager(a)!!.addInfluence(30f)
 
         // when
-        cityState.getDiplomacyManager(a).nextTurn()
+        cityState.getDiplomacyManager(a)!!.nextTurn()
 
         // then
-        assertEquals(29.25f, cityState.getDiplomacyManager(a).getInfluence())
+        assertEquals(29.25f, cityState.getDiplomacyManager(a)!!.getInfluence())
     }
 
     @Test
@@ -318,13 +318,13 @@ class DiplomacyManagerTests {
         cityState.cityStatePersonality = CityStatePersonality.Neutral
         meet(a, cityState)
 
-        cityState.getDiplomacyManager(a).addInfluence(-30f)
+        cityState.getDiplomacyManager(a)!!.addInfluence(-30f)
 
         // when
-        cityState.getDiplomacyManager(a).nextTurn()
+        cityState.getDiplomacyManager(a)!!.nextTurn()
 
         // then
-        assertEquals(-29f, cityState.getDiplomacyManager(a).getInfluence())
+        assertEquals(-29f, cityState.getDiplomacyManager(a)!!.getInfluence())
     }
 
     @Test
@@ -340,16 +340,16 @@ class DiplomacyManagerTests {
 
         val religion = testGame.addReligion(a)
         val belief = testGame.createBelief(BeliefType.Founder, "[+1 Food] from every [Shrine]")
-        religion.founderBeliefs.add(belief.name)
+        religion.addBeliefs(listOf(belief))
         cityStateCapital.religion.addPressure(religion.name, 1000)
 
-        cityState.getDiplomacyManager(a).addInfluence(-30f)
+        cityState.getDiplomacyManager(a)!!.addInfluence(-30f)
 
         // when
-        cityState.getDiplomacyManager(a).nextTurn()
+        cityState.getDiplomacyManager(a)!!.nextTurn()
 
         // then
-        assertEquals(-28.5f, cityState.getDiplomacyManager(a).getInfluence())
+        assertEquals(-28.5f, cityState.getDiplomacyManager(a)!!.getInfluence())
     }
 
     @Test
@@ -364,16 +364,16 @@ class DiplomacyManagerTests {
         val turns = 10
 
         // when
-        a.getDiplomacyManager(b).setFlag(DiplomacyFlags.ResearchAgreement, turns)
-        b.getDiplomacyManager(a).setFlag(DiplomacyFlags.ResearchAgreement, turns)
+        a.getDiplomacyManager(b)!!.setFlag(DiplomacyFlags.ResearchAgreement, turns)
+        b.getDiplomacyManager(a)!!.setFlag(DiplomacyFlags.ResearchAgreement, turns)
         repeat(turns) {
-            a.getDiplomacyManager(b).nextTurn()
-            b.getDiplomacyManager(a).nextTurn()
+            a.getDiplomacyManager(b)!!.nextTurn()
+            b.getDiplomacyManager(a)!!.nextTurn()
         }
 
         // then
-        assertFalse(a.getDiplomacyManager(b).hasFlag(DiplomacyFlags.ResearchAgreement))
-        assertFalse(b.getDiplomacyManager(a).hasFlag(DiplomacyFlags.ResearchAgreement))
+        assertFalse(a.getDiplomacyManager(b)!!.hasFlag(DiplomacyFlags.ResearchAgreement))
+        assertFalse(b.getDiplomacyManager(a)!!.hasFlag(DiplomacyFlags.ResearchAgreement))
         assertEquals(expectedSciencePerTurnCivA * turns, a.tech.scienceFromResearchAgreements)
         assertEquals(expectedSciencePerTurnCivA * turns, b.tech.scienceFromResearchAgreements)
     }

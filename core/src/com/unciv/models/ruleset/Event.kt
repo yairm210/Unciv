@@ -57,7 +57,8 @@ class EventChoice : ICivilopediaText {
 
     fun triggerChoice(civ: Civilization): Boolean {
         var success = false
-        for (unique in triggeredUniqueObjects)
+        val stateForConditionals = StateForConditionals(civ)
+        for (unique in triggeredUniqueObjects.flatMap { it.getMultiplied(stateForConditionals) })
             if (UniqueTriggerActivation.triggerUnique(unique, civ)) success = true
         return success
     }

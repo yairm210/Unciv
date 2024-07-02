@@ -404,7 +404,8 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
 
             This can all be summed up as "I can see c if a=>b || c>b"
             */
-                val bMinimumHighestSeenTerrainSoFar = viewableTiles.filter { it.tile in cTile.neighbors }
+                val bMinimumHighestSeenTerrainSoFar = viewableTiles
+                    .filter { it.tile.aerialDistanceTo(cTile) == 1 }
                     .minOf { it.maxHeightSeenToTile }
 
                 tilesToAddInDistanceI.add(ViewableTile(
@@ -571,7 +572,7 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
             var potentialCandidates = getPassableNeighbours(currentTile)
             while (unitToPlaceTile == null && tryCount++ < 10) {
                 unitToPlaceTile = potentialCandidates
-                        .sortedByDescending { if (unit.baseUnit.isLandUnit() && !unit.cache.canMoveOnWater) it.isLand else true } // Land units should prefer to go into land tiles
+                        .sortedByDescending { if (unit.baseUnit.isLandUnit && !unit.cache.canMoveOnWater) it.isLand else true } // Land units should prefer to go into land tiles
                         .firstOrNull { unit.movement.canMoveTo(it) }
                 if (unitToPlaceTile != null) continue
                 // if it's not found yet, let's check their neighbours

@@ -240,7 +240,7 @@ class ResourceTests {
         // given
         val religion = game.addReligion(civInfo)
         val belief = game.createBelief(BeliefType.Follower, "Provides [1] [Iron]")
-        religion.followerBeliefs.add(belief.name)
+        religion.addBeliefs(listOf(belief))
         city.population.setPopulation(1)
         city.religion.addPressure(religion.name, 1000)
         val otherCity = civInfo.addCity(Vector2(2f,2f)) // NOT religionized

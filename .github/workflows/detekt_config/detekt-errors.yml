@@ -767,5 +767,4 @@ style:
     active: true
     ignoreLateinitVar: false
   WildcardImport:
-    active: true
-    excludeImports: []
+    active: false
