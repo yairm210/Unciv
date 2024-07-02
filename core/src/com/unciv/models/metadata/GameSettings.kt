@@ -142,9 +142,6 @@ class GameSettings {
     /** used to migrate from older versions of the settings */
     var version: Int? = null
 
-    /** to cache current NumberFormat. Pair<language, NumberFormat> **/
-    private var numberFormat = Pair(language, getNumberFormatFromLanguage(language))
-
     init {
         // 26 = Android Oreo. Versions below may display permanent icon in notification bar.
         if (Gdx.app?.type == ApplicationType.Android && Gdx.app.version < 26) {
@@ -203,10 +200,7 @@ class GameSettings {
     }
 
     fun getCurrentNumberFormat(): NumberFormat {
-        if (numberFormat.first == language) return numberFormat.second
-
-        numberFormat = Pair(language, getNumberFormatFromLanguage(language))
-        return numberFormat.second
+        return getNumberFormatFromLanguage(language)
     }
 
     //endregion
