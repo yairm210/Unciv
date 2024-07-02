@@ -72,7 +72,7 @@ class CityScreenCityPickerTable(private val cityScreen: CityScreen) : Table() {
             cityNameTable.add(UnitGroup(garrison, 30f)).padLeft(5f)
         }
 
-        add(cityNameTable).width(stage.width / 4)
+        add(cityNameTable).width((stage.width / 4).coerceAtLeast(300f))
 
         if (cityScreen.viewableCities.size > 1) {
             val nextCityButton = Table() // so we gt a wider clickable area than just the image itself

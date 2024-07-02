@@ -24,6 +24,7 @@ import com.unciv.ui.audio.SoundPlayer
 import com.unciv.ui.components.ParticleEffectMapFireworks
 import com.unciv.ui.components.extensions.colorFromRGB
 import com.unciv.ui.components.extensions.disable
+import com.unciv.ui.components.extensions.enable
 import com.unciv.ui.components.extensions.packIfNeeded
 import com.unciv.ui.components.extensions.toTextButton
 import com.unciv.ui.components.input.KeyCharAndCode
@@ -100,6 +101,8 @@ class CityScreen(
     /** Displays city name, allows switching between cities - sits on BOTTOM CENTER */
     private var cityPickerTable = CityScreenCityPickerTable(this)
 
+    private var cityVerticalTabs = CityVerticalTabs(this)
+
     /** Button for exiting the city - sits on BOTTOM CENTER */
     private val exitCityButton = "Exit city".toTextButton().apply {
         labelCell.pad(10f)
@@ -160,6 +163,11 @@ class CityScreen(
         stage.addActor(tileTable)
         stage.addActor(cityPickerTable)  // add late so it's top in Z-order and doesn't get covered in cramped portrait
         stage.addActor(exitCityButton)
+        if (isPortrait()) {
+            stage.addActor(cityVerticalTabs)
+            selectCityPanel()
+        }
+
         update()
 
         globalShortcuts.add(KeyboardBinding.PreviousCity) { page(-1) }
@@ -172,19 +180,14 @@ class CityScreen(
         // Recalculate Stats
         city.cityStats.update()
 
-        constructionsTable.isVisible = !isSpying
+        if (!isPortrait())
+            constructionsTable.isVisible = !isSpying
         constructionsTable.update(selectedConstruction)
 
         updateWithoutConstructionAndMap()
 
         // Rest of screen: Map of surroundings
         updateTileGroups()
-        if (isPortrait()) mapScrollPane.apply {
-            // center scrolling so city center sits more to the bottom right
-            scrollX = (maxX - constructionsTable.getLowerWidth() - posFromEdge) / 2
-            scrollY = (maxY - cityStatsTable.packIfNeeded().height - posFromEdge + cityPickerTable.top) / 2
-            updateVisualScroll()
-        }
     }
 
     internal fun updateWithoutConstructionAndMap() {
@@ -205,12 +208,16 @@ class CityScreen(
             !isPortrait() -> 0f
             else -> constructionsTable.getLowerWidth()
         }
-
         // Bottom center: Name, paging, exit city button
         val centeredX = (stage.width - leftMargin - rightMargin) / 2 + leftMargin
-        exitCityButton.setPosition(centeredX, 10f, Align.bottom)
+        if (isPortrait()) {
+            cityVerticalTabs.setPosition(stage.width / 2, cityVerticalTabs.height / 2 + 10f, Align.bottom)
+        }
+        val exitCityButtonHeight = if (isPortrait()) 70f else 20f
+
+        exitCityButton.setPosition(stage.width / 2, exitCityButtonHeight, Align.bottom)
         cityPickerTable.update()
-        cityPickerTable.setPosition(centeredX, exitCityButton.top + 10f, Align.bottom)
+        cityPickerTable.setPosition(stage.width / 2, exitCityButton.top + 10f, Align.bottom)
 
         // Top right of screen: Stats / Specialists
         var statsHeight = stage.height - posFromEdge * 2
@@ -534,6 +541,42 @@ class CityScreen(
         val newCityScreen = CityScreen(viewableCities[indexOfNextCity], ambiencePlayer = passOnCityAmbiencePlayer())
         newCityScreen.update()
         game.replaceCurrentScreen(newCityScreen)
+    }
+
+    fun selectConstructionPanel() {
+        constructionsTable.isVisible = true
+        selectedConstructionTable.isVisible = true
+        cityStatsTable.isVisible = false
+        cityPickerTable.isVisible = false
+        exitCityButton.isVisible = false
+        razeCityButtonHolder.isVisible = false
+        cityVerticalTabs.constructionButton.disable()
+        cityVerticalTabs.viewCityButton.enable()
+        cityVerticalTabs.viewBuildingsButton.enable()
+    }
+
+    fun selectCityPanel() {
+        constructionsTable.isVisible = false
+        selectedConstructionTable.isVisible = false
+        cityStatsTable.isVisible = false
+        cityPickerTable.isVisible = true
+        exitCityButton.isVisible = true
+        razeCityButtonHolder.isVisible = true
+        cityVerticalTabs.constructionButton.enable()
+        cityVerticalTabs.viewCityButton.disable()
+        cityVerticalTabs.viewBuildingsButton.enable()
+    }
+
+    fun selectCityBuildingsPanel() {
+        constructionsTable.isVisible = false
+        selectedConstructionTable.isVisible = false
+        cityStatsTable.isVisible = true
+        cityPickerTable.isVisible = false
+        exitCityButton.isVisible = false
+        razeCityButtonHolder.isVisible = false
+        cityVerticalTabs.constructionButton.enable()
+        cityVerticalTabs.viewCityButton.enable()
+        cityVerticalTabs.viewBuildingsButton.disable()
     }
 
     // Don't use passOnCityAmbiencePlayer here - continuing play on the replacement screen would be nice,
