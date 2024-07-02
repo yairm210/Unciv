@@ -3,6 +3,7 @@ package com.unciv.models.translations
 import com.badlogic.gdx.Gdx
 import com.unciv.Constants
 import com.unciv.UncivGame
+import com.unciv.models.metadata.GameSettings.LocaleCode
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.stats.Stat
@@ -236,9 +237,21 @@ class Translations : LinkedHashMap<String, TranslationEntry>() {
         // NumberFormat cache, key: language, value: NumberFormat
         private val languageToNumberFormat = mutableMapOf<String, NumberFormat>()
 
+        fun getLocaleFromLanguage(language: String): Locale {
+            val bannedCharacters =
+                listOf(' ', '_', '-', '(', ')') // Things not to have in enum names
+            val languageName = language.filterNot { it in bannedCharacters }
+            return try {
+                val code = LocaleCode.valueOf(languageName)
+                Locale(code.language, code.country)
+            } catch (_: Exception) {
+                Locale.getDefault()
+            }
+        }
+
         fun getNumberFormatFromLanguage(language: String): NumberFormat =
             languageToNumberFormat.getOrPut(language) {
-                NumberFormat.getInstance(UncivGame.Current.settings.getLocaleFromLanguage(language))
+                NumberFormat.getInstance(getLocaleFromLanguage(language))
             }
     }
 }

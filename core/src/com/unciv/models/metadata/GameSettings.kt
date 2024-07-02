@@ -7,6 +7,7 @@ import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.multiplayer.FriendList
 import com.unciv.models.UncivSound
+import com.unciv.models.translations.Translations.Companion.getLocaleFromLanguage
 import com.unciv.models.translations.Translations.Companion.getNumberFormatFromLanguage
 import com.unciv.ui.components.fonts.FontFamilyData
 import com.unciv.ui.components.fonts.Fonts
@@ -168,17 +169,6 @@ class GameSettings {
         UncivGame.Current.isTutorialTaskCollapsed = false
         save()
         return true
-    }
-
-    fun getLocaleFromLanguage(language: String): Locale {
-        val bannedCharacters = listOf(' ', '_', '-', '(', ')') // Things not to have in enum names
-        val languageName = language.filterNot { it in bannedCharacters }
-        return try {
-            val code = LocaleCode.valueOf(languageName)
-            Locale(code.language, code.country)
-        } catch (_: Exception) {
-            Locale.getDefault()
-        }
     }
 
     fun updateLocaleFromLanguage() {
