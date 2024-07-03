@@ -24,7 +24,6 @@ class Simulation(
     private val maxSimulations = threadsNumber * simulationsPerThread
     val civilizations = newGameInfo.civilizations.filter { it.civName != Constants.spectator }.map { it.civName }
     private var startTime: Long = 0
-    private var endTime: Long = 0
     var steps = ArrayList<SimulationStep>()
     var winRate = mutableMapOf<String, MutableInt>()
     private var winRateByVictory = HashMap<String, MutableMap<String, MutableInt>>()
@@ -68,12 +67,12 @@ class Simulation(
 
                     updateCounter(threadId)
                     add(step)
+                    print()
                 }
             })
         }
         // wait for all to finish
         for (job in jobs) job.join()
-        endTime = System.currentTimeMillis()
     }
 
     @Suppress("UNUSED_PARAMETER")   // used when activating debug output
@@ -87,8 +86,16 @@ class Simulation(
         println("Simulation step ($stepCounter/$maxSimulations)")
     }
 
+    @Synchronized
+    fun print(){
+        getStats()
+        println(text())
+    }
+
     fun getStats() {
         // win Rate
+        winRate.values.forEach { it.value = 0 }
+        winRateByVictory.flatMap { it.value.values }.forEach { it.value = 0 }
         steps.forEach {
             if (it.winner != null) {
                 winRate[it.winner!!]!!.inc()
@@ -96,7 +103,7 @@ class Simulation(
             }
         }
         totalTurns = steps.sumOf { it.turns }
-        totalDuration = (endTime - startTime).milliseconds
+        totalDuration = (System.currentTimeMillis() - startTime).milliseconds
         avgSpeed = totalTurns.toFloat() / totalDuration.inWholeSeconds
         avgDuration = totalDuration / steps.size
     }
@@ -105,9 +112,10 @@ class Simulation(
         var outString = ""
         for (civ in civilizations) {
 
-            outString += "\n$civ:\n"
             val wins = winRate[civ]!!.value * 100 / max(steps.size, 1)
             if (wins == 0) continue
+
+            outString += "\n$civ:\n"
             outString += "$wins% total win rate \n"
             for (victory in UncivGame.Current.gameInfo!!.ruleset.victories.keys) {
                 val winsVictory = winRateByVictory[civ]!![victory]!!.value * 100 / max(winRate[civ]!!.value, 1)

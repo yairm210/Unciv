@@ -55,9 +55,6 @@ internal object ConsoleLauncher {
         val simulation = Simulation(newGame,10,4)
 
         simulation.start()
-
-        simulation.getStats()
-        println(simulation.text())
     }
 
     private fun getMapParameters(): MapParameters {
