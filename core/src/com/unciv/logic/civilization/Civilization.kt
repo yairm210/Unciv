@@ -353,6 +353,7 @@ class Civilization : IsPartOfGameInfoSerialization {
     fun isAI() = playerType == PlayerType.AI
     fun isAIOrAutoPlaying(): Boolean {
         if (playerType == PlayerType.AI) return true
+        if (gameInfo.isSimulation()) return true
         val worldScreen = UncivGame.Current.worldScreen ?: return false
         return worldScreen.viewingCiv == this && worldScreen.autoPlay.isAutoPlaying()
     }

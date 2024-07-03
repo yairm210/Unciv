@@ -17,8 +17,7 @@ import kotlin.time.ExperimentalTime
 @ExperimentalTime
 class Simulation(
     private val newGameInfo: GameInfo,
-    val simulationsPerThread: Int = 1
-    ,
+    val simulationsPerThread: Int = 1,
     private val threadsNumber: Int = 1,
     private val maxTurns: Int = 500
 ) {
@@ -67,7 +66,6 @@ class Simulation(
                     }
                     else println("Max simulation ${step.turns} turns reached: Draw")
 
-                    print(gameInfo)
                     updateCounter(threadId)
                     add(step)
                 }
@@ -80,14 +78,12 @@ class Simulation(
 
     @Suppress("UNUSED_PARAMETER")   // used when activating debug output
     @Synchronized fun add(step: SimulationStep, threadId: Int = 1) {
-//        println("Thread $threadId: End simulation ($stepCounter/$maxSimulations)")
         steps.add(step)
     }
 
     @Suppress("UNUSED_PARAMETER")   // used when activating debug output
     @Synchronized fun updateCounter(threadId: Int = 1) {
         stepCounter++
-//        println("Thread $threadId: Start simulation ($stepCounter/$maxSimulations)")
         println("Simulation step ($stepCounter/$maxSimulations)")
     }
 
