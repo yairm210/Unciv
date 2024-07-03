@@ -1,6 +1,8 @@
 package com.unciv.app.desktop
 
 import com.unciv.Constants
+import com.unciv.Constants.simulationCiv1
+import com.unciv.Constants.simulationCiv2
 import com.unciv.UncivGame
 import com.unciv.logic.GameStarter
 import com.unciv.logic.civilization.PlayerType
@@ -18,6 +20,7 @@ import java.util.LinkedHashSet
 import kotlin.time.ExperimentalTime
 
 internal object ConsoleLauncher {
+
     // To run,set working directory to android/assets in run configuration
     @ExperimentalTime
     @JvmStatic
@@ -38,10 +41,10 @@ internal object ConsoleLauncher {
 
          val ruleset = RulesetCache[BaseRuleset.Civ_V_GnK.fullName]!!
 
-        ruleset.nations["GenericCiv1"] = Nation().apply { name = "GenericCiv1" }
-        ruleset.nations["GenericCiv2"] = Nation().apply { name = "GenericCiv2" }
+        ruleset.nations[simulationCiv1] = Nation().apply { name = simulationCiv1 }
+        ruleset.nations[simulationCiv2] = Nation().apply { name = simulationCiv2 }
 
-        val gameParameters = getGameParameters("GenericCiv1", "GenericCiv2")
+        val gameParameters = getGameParameters(simulationCiv1, simulationCiv2)
         val mapParameters = getMapParameters()
         val gameSetupInfo = GameSetupInfo(gameParameters, mapParameters)
         val newGame = GameStarter.startNewGame(gameSetupInfo)
