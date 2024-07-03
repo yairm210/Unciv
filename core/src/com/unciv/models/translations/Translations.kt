@@ -470,7 +470,7 @@ private fun String.translateIndividualWord(language: String, hideIcons: Boolean)
 
     val translation = UncivGame.Current.translations.getText(
         this, language, TranslationActiveModsCache.activeMods
-    ).replace(digitsRegex) { it.value.toLong().tr() }
+    ).replace(digitsRegex) { it.value.toLong().tr(language) }
 
     val stat = Stat.safeValueOf(this)
     if (stat != null) return stat.character + translation
