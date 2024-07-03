@@ -548,7 +548,7 @@ class RulesetValidator(val ruleset: Ruleset) {
         for (unit in ruleset.units.values) {
             checkUnitRulesetInvariant(unit, lines)
             checkUnitRulesetSpecific(unit, lines)
-            uniqueValidator.checkUniques(unit, lines, false, tryFixUnknownUniques)
+            uniqueValidator.checkUniques(unit, lines, true, tryFixUnknownUniques)
         }
     }
 
