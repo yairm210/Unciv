@@ -465,7 +465,8 @@ private fun String.translatePlaceholders(language: String, hideIcons: Boolean): 
 private fun String.translateIndividualWord(language: String, hideIcons: Boolean): String {
     if (Stats.isStats(this)) return Stats.parse(this).toString()
 
-    toDoubleOrNull().also { if (it != null) return it.tr(language) }
+    val num = toDoubleOrNull()
+    if (num != null) return num.tr(language)
 
     val translation = UncivGame.Current.translations.getText(this, language, TranslationActiveModsCache.activeMods)
 
