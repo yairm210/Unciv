@@ -490,6 +490,14 @@ class Civilization : IsPartOfGameInfoSerialization {
         return getCivResourcesByName()[resourceName] ?: 0
     }
 
+    /** Gets modifiers for ALL resources */
+    fun getResourceModifiers(): HashMap<String, Float> {
+        val resourceModifers = HashMap<String, Float>()
+        for (resource in gameInfo.ruleset.tileResources.values)
+            resourceModifers[resource.name] = getResourceModifier(resource)
+        return resourceModifers
+    }
+
     fun getResourceModifier(resource: TileResource): Float {
         var resourceModifier = 1f
         for (unique in getMatchingUniques(UniqueType.DoubleResourceProduced))
