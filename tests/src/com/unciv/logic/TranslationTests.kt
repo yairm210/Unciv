@@ -423,19 +423,18 @@ class TranslationTests {
         UncivGame.Current = UncivGame()
         UncivGame.Current.settings = GameSettings()
 
-        val tests = arrayOf("1", "1.0", "+1", "-1", "0.123", "-0.123")
+        val tests = arrayOf("1", "+1", "-1", "1.0", "+1.0", "-1.0", "0%", "1/2", "(3/4)")
 
         UncivGame.Current.settings.language = LocaleCode.English.name
         Assert.assertArrayEquals(
-            "English",
-            arrayOf("1", "1", "1", "-1", "0.123", "-0.123"),
+            "English", tests, // assume unchanged
             tests.map { it.tr() }.toTypedArray()
         )
 
         UncivGame.Current.settings.language = LocaleCode.Bangla.name
         Assert.assertArrayEquals(
             "Bangla",
-            arrayOf("১", "১", "১", "-১", "০.১২৩", "-০.১২৩"),
+            arrayOf("১", "+১", "-১", "১.০", "+১.০", "-১.০", "০%", "১/২", "(৩/৪)"),
             tests.map { it.tr() }.toTypedArray()
         )
     }
