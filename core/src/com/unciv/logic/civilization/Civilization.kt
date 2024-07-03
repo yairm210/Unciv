@@ -433,7 +433,11 @@ class Civilization : IsPartOfGameInfoSerialization {
             stats.happiness < it != previousHappiness < it // If move from being below them to not, or vice versa
             })
             for (city in cities) city.cityStats.update(updateCivStats = false)
-        stats.statsForNextTurn = stats.getStatMapForNextTurn().values.reduce { a, b -> a + b }
+        val statMapForNextTurn = stats.getStatMapForNextTurn()
+
+        val newStats = Stats()
+        for (stats in statMapForNextTurn.values) newStats.add(stats)
+        stats.statsForNextTurn = newStats
     }
 
     fun getHappiness() = stats.happiness
