@@ -209,13 +209,38 @@ jobs:
           wget -q -O jdk-windows-64.zip https://api.adoptium.net/v3/binary/latest/11/ga/windows/x64/jre/hotspot/normal/eclipse
           ./gradlew desktop:packrWindows64
 
+      - name: Manually pack Unciv-WindowsARM64.zip 
+        run: |
+           # Set working directory to windows-arm64
+           mkdir windows-arm64 && cd windows-arm64
+
+           # copy Unciv.jar here
+           cp ../desktop/build/libs/Unciv.jar .
+
+           # Download JRE and save it to 'jre-windows-arm64.zip'
+           wget -q -O jre-windows-arm64.zip https://api.adoptium.net/v3/binary/latest/21/ea/windows/aarch64/jre/hotspot/normal/eclipse
+           
+           # Unzip JRE and rename JRE folder as 'jre'
+           unzip -q jre-windows-arm64.zip && mv *-jre jre
+
+           # Make Unciv.bat
+           echo "@echo off
+           start /B ./jre/bin/javaw.exe -jar Unciv.jar" > Unciv.bat
+           chmod a+x Unciv.bat
+
+           # Make .zip
+           zip -9 -r Unciv.zip jre Unciv.jar Unciv.bat
+
+           mv Unciv.zip ../deploy/Unciv-WindowsARM64.zip
+
       - name: Upload packed zips
         uses: actions/upload-artifact@v4
         with:
           name: UncivDeploymentZips
           path: |
-            deploy/Unciv-Windows64.zip
             deploy/Unciv-Linux64.zip
+            deploy/Unciv-Windows64.zip
+            deploy/Unciv-WindowsARM64.zip
 
   upload-to-itch:
     runs-on: ubuntu-latest
@@ -238,6 +263,7 @@ jobs:
 
           ./butler push Unciv-Linux64.zip yairm210/unciv:Linux64     --userversion ${{ github.ref_name }}
           ./butler push Unciv-Windows64.zip yairm210/unciv:Windows64 --userversion ${{ github.ref_name }}
+          ./butler push Unciv-WindowsARM64.zip yairm210/unciv:WindowsARM64 --userversion ${{ github.ref_name }}
 
   upload-github-release-and-post-to-discord:
     needs: [get-release-body, android-build, packr-build]
@@ -252,6 +278,7 @@ jobs:
           mkdir deploy
           mv UncivJar/Unciv.jar deploy
           mv UncivLinuxFiles/linuxFilesForJar.zip deploy
+          mv UncivDeploymentZips/Unciv-WindowsARM64.zip deploy
           mv UncivDeploymentZips/Unciv-Windows64.zip deploy
           mv UncivDeploymentZips/Unciv-Linux64.zip deploy
           mv UncivAPK/Unciv-signed.apk deploy
