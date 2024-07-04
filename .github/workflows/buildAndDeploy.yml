@@ -228,7 +228,7 @@ jobs:
            start /B ./jre/bin/javaw.exe -jar Unciv.jar" > Unciv.bat
            chmod a+x Unciv.bat
 
-           # Make .zip
+           # Make .zip, -9 is best compression, -r is recursive (needed for folders)
            zip -9 -r Unciv.zip jre Unciv.jar Unciv.bat
 
            mv Unciv.zip ../deploy/Unciv-WindowsARM64.zip
