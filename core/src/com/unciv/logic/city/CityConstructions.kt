@@ -288,7 +288,7 @@ class CityConstructions : IsPartOfGameInfoSerialization {
             val cityStats = CityStats(city)
             cityStats.statsFromTiles = city.cityStats.statsFromTiles // take as-is
             val construction = city.cityConstructions.getConstruction(constructionName)
-            cityStats.update(construction, false)
+            cityStats.update(construction, false, false)
             cityStatsForConstruction = cityStats.currentCityStats
         }
 
