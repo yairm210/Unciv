@@ -173,7 +173,15 @@ class Translations : LinkedHashMap<String, TranslationEntry>() {
         return languages.filter { Gdx.files.internal("jsons/translations/$it.properties").exists() }
     }
 
-    /** Ensure _all_ languages are loaded, used by [TranslationFileWriter] and `TranslationTests` */
+    /** Ensure _all_ languages are loaded, used by [TranslationFileWriter] and `TranslationTests` only.
+     *
+     *  #### Notes:
+     *  -  Expects to run on a newly created instance.
+     *  -  Loads the translations with no diacritic mapping, so what we read will be what we write
+     *     (otherwise we would write out the fake alphabet-conversions, a one-way destructive mistake).
+     *  -  Relies on usage by TFW and tests only, if the result is ever meant to support translations that are actually displayed, a refactor will be needed.
+     *  -  Does not clear the fake alphabet possibly present in DiacriticSupport, but will not use it either.
+     */
     fun readAllLanguagesTranslation() {
         // Apparently you can't iterate over the files in a directory when running out of a .jar...
         // https://www.badlogicgames.com/forum/viewtopic.php?f=11&t=27250
@@ -181,11 +189,9 @@ class Translations : LinkedHashMap<String, TranslationEntry>() {
 
         val translationStart = System.currentTimeMillis()
 
-        DiacriticSupport.reset()
         for (language in getLanguagesWithTranslationFile()) {
             tryReadTranslationForLanguage(language, noDiacritics = true)
         }
-        DiacriticSupport.freeTranslationData()
 
         debug("Loading translation files - %sms", System.currentTimeMillis() - translationStart)
     }
