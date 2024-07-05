@@ -353,6 +353,7 @@ class Civilization : IsPartOfGameInfoSerialization {
     fun isAI() = playerType == PlayerType.AI
     fun isAIOrAutoPlaying(): Boolean {
         if (playerType == PlayerType.AI) return true
+        if (gameInfo.isSimulation()) return true
         val worldScreen = UncivGame.Current.worldScreen ?: return false
         return worldScreen.viewingCiv == this && worldScreen.autoPlay.isAutoPlaying()
     }
@@ -361,8 +362,13 @@ class Civilization : IsPartOfGameInfoSerialization {
     fun isCurrentPlayer() = gameInfo.currentPlayerCiv == this
     fun isMajorCiv() = nation.isMajorCiv
     fun isMinorCiv() = nation.isCityState || nation.isBarbarian
-    fun isCityState(): Boolean = nation.isCityState
-    fun isBarbarian() = nation.isBarbarian
+
+    @delegate:Transient
+    val isCityState by lazy { nation.isCityState }
+
+    @delegate:Transient
+    val isBarbarian by lazy { nation.isBarbarian }
+
     fun isSpectator() = nation.isSpectator
     fun isAlive(): Boolean = !isDefeated()
 
@@ -427,7 +433,11 @@ class Civilization : IsPartOfGameInfoSerialization {
             stats.happiness < it != previousHappiness < it // If move from being below them to not, or vice versa
             })
             for (city in cities) city.cityStats.update(updateCivStats = false)
-        stats.statsForNextTurn = stats.getStatMapForNextTurn().values.reduce { a, b -> a + b }
+        val statMapForNextTurn = stats.getStatMapForNextTurn()
+
+        val newStats = Stats()
+        for (stats in statMapForNextTurn.values) newStats.add(stats)
+        stats.statsForNextTurn = newStats
     }
 
     fun getHappiness() = stats.happiness
@@ -478,6 +488,14 @@ class Civilization : IsPartOfGameInfoSerialization {
      * Returns 0 for undefined resources */
     fun getResourceAmount(resourceName: String): Int {
         return getCivResourcesByName()[resourceName] ?: 0
+    }
+
+    /** Gets modifiers for ALL resources */
+    fun getResourceModifiers(): HashMap<String, Float> {
+        val resourceModifers = HashMap<String, Float>()
+        for (resource in gameInfo.ruleset.tileResources.values)
+            resourceModifers[resource.name] = getResourceModifier(resource)
+        return resourceModifers
     }
 
     fun getResourceModifier(resource: TileResource): Float {
@@ -618,7 +636,7 @@ class Civilization : IsPartOfGameInfoSerialization {
      *  Otherwise, it stays 'alive' as long as it has cities (irrespective of settlers owned)
      */
     fun isDefeated() = when {
-        isBarbarian() || isSpectator() -> false     // Barbarians and voyeurs can't lose
+        isBarbarian || isSpectator() -> false     // Barbarians and voyeurs can't lose
         hasEverOwnedOriginalCapital -> cities.isEmpty()
         else -> units.getCivUnitsSize() == 0
     }
@@ -677,7 +695,7 @@ class Civilization : IsPartOfGameInfoSerialization {
     private fun calculateMilitaryMight(): Int {
         var sum = 1 // minimum value, so we never end up with 0
         for (unit in units.getCivUnits()) {
-            sum += if (unit.baseUnit.isWaterUnit())
+            sum += if (unit.baseUnit.isWaterUnit)
                 unit.getForceEvaluation() / 2   // Really don't value water units highly
             else
                 unit.getForceEvaluation()

@@ -9,6 +9,7 @@ import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.INonPerpetualConstruction
+import com.unciv.models.ruleset.PerpetualConstruction
 import com.unciv.models.ruleset.Victory
 import com.unciv.models.ruleset.nation.PersonalityValue
 import com.unciv.models.ruleset.tile.ResourceType
@@ -48,6 +49,8 @@ object Automation {
         val yieldStats = stats.clone()
         val civPersonality = city.civ.getPersonality()
         val cityStatsObj = city.cityStats
+        val civInfo = city.civ
+        val allTechsAreResearched = civInfo.tech.allTechsAreResearched()
 
         if (areWeRankingSpecialist) {
             // If you have the Food Bonus, count as 1 extra food production (base is 2food)
@@ -99,9 +102,24 @@ object Automation {
 
             if (city.civ.getHappiness() < 0)
                 yieldStats.happiness *= 2
+            }
+
+        if (city.civ.getHappiness() < 0) {
+            // 75% of excess food is wasted when in negative happiness
+            yieldStats.food /= 4
         }
 
-        for (stat in Stat.values()) {
+        if (allTechsAreResearched) {
+            // Science is useless at this point
+            yieldStats.science *= 0
+        }
+
+        if (city.cityConstructions.getCurrentConstruction() is PerpetualConstruction) {
+            // With 4:1 conversion of production to gold, production is overvalued by a factor (12*4)/8 = 6
+            yieldStats.production /= 6
+        }
+
+        for (stat in Stat.entries) {
             if (city.civ.wantsToFocusOn(stat))
                 yieldStats[stat] *= 2f
 
@@ -117,7 +135,7 @@ object Automation {
 
     fun tryTrainMilitaryUnit(city: City) {
         if (city.isPuppet) return
-        if ((city.cityConstructions.getCurrentConstruction() as? BaseUnit)?.isMilitary() == true)
+        if ((city.cityConstructions.getCurrentConstruction() as? BaseUnit)?.isMilitary == true)
             return // already training a military unit
         val chosenUnitName = chooseMilitaryUnit(city, city.civ.gameInfo.ruleset.units.values.asSequence())
         if (chosenUnitName != null)
@@ -175,8 +193,8 @@ object Automation {
         }
 
         val militaryUnits = availableUnits
-            .filter { it.isMilitary() }
-            .filterNot { removeShips && it.isWaterUnit() }
+            .filter { it.isMilitary }
+            .filterNot { removeShips && it.isWaterUnit }
             .filter { allowSpendingResource(city.civ, it) }
             .filterNot {
                 // filter out carrier-type units that can't attack if we don't need them
@@ -217,7 +235,7 @@ object Automation {
 
     /** Determines whether [civInfo] should be allocating military to fending off barbarians */
     fun afraidOfBarbarians(civInfo: Civilization): Boolean {
-        if (civInfo.isCityState() || civInfo.isBarbarian())
+        if (civInfo.isCityState || civInfo.isBarbarian)
             return false
 
         if (civInfo.gameInfo.gameParameters.noBarbarians)
@@ -281,7 +299,7 @@ object Automation {
      *  [construction] for [civInfo], assumes that we are actually able to do so. */
     fun allowSpendingResource(civInfo: Civilization, construction: INonPerpetualConstruction, cityInfo: City? = null): Boolean {
         // City states do whatever they want
-        if (civInfo.isCityState())
+        if (civInfo.isCityState)
             return true
 
         // Spaceships are always allowed

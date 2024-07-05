@@ -489,7 +489,7 @@ class ModManagementScreen private constructor(
                     val repoName = modFolder.name()  // repo.name still has the replaced "-"'s
                     ToastPopup("[$repoName] Downloaded!", this@ModManagementScreen)
                     reloadCachesAfterModChange()
-                    UncivGame.Current.translations.tryReadTranslationForCurrentLanguage()
+
                     updateInstalledModUIData(repoName)
                     refreshInstalledModTable()
                     lastSelectedButton?.let { syncOnlineSelected(repoName, it) }
@@ -657,15 +657,16 @@ class ModManagementScreen private constructor(
 
     private fun reloadCachesAfterModChange() {
         RulesetCache.loadRulesets()
-        ImageGetter.reloadImages()
         TileSetCache.loadTileSetConfigs()
+        ImageGetter.reloadImages()
+        UncivGame.Current.translations.tryReadTranslationForCurrentLanguage()
     }
 
     internal fun refreshOnlineModTable() {
-        if (runningSearchJob != null) {
-            ToastPopup("Sorting and filtering needs to wait until the online query finishes", this)
-            return  // cowardice: prevent concurrent modification, avoid a manager layer
-        }
+//        if (runningSearchJob != null) {
+//            ToastPopup("Sorting and filtering needs to wait until the online query finishes", this)
+//            return  // cowardice: prevent concurrent modification, avoid a manager layer
+//        }
 
         val newHeaderText = optionsManager.getOnlineHeader()
         onlineHeaderLabel?.setText(newHeaderText)

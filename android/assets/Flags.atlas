@@ -11,84 +11,84 @@ FlagIcons/Afrikaans
   orig: 128, 128
   offset: 0, 0
   index: -1
-FlagIcons/Belarusian
+FlagIcons/Bangla
   rotate: false
   xy: 4, 140
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: -1
-FlagIcons/Bosnian
+FlagIcons/Belarusian
   rotate: false
   xy: 140, 276
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: -1
-FlagIcons/Brazilian_Portuguese
+FlagIcons/Bosnian
   rotate: false
   xy: 4, 4
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: -1
-FlagIcons/Bulgarian
+FlagIcons/Brazilian_Portuguese
   rotate: false
   xy: 140, 140
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: -1
-FlagIcons/Catalan
+FlagIcons/Bulgarian
   rotate: false
   xy: 276, 276
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: -1
-FlagIcons/Czech
+FlagIcons/Catalan
   rotate: false
   xy: 140, 4
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: -1
-FlagIcons/Dutch
+FlagIcons/Czech
   rotate: false
   xy: 276, 140
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: -1
-FlagIcons/English
+FlagIcons/Dutch
   rotate: false
   xy: 412, 276
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: -1
-FlagIcons/Filipino
+FlagIcons/English
   rotate: false
   xy: 276, 4
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: -1
-FlagIcons/Finnish
+FlagIcons/Filipino
   rotate: false
   xy: 412, 140
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: -1
-FlagIcons/French
+FlagIcons/Finnish
   rotate: false
   xy: 548, 276
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: -1
-FlagIcons/Galician
+FlagIcons/French
   rotate: false
   xy: 412, 4
   size: 128, 128

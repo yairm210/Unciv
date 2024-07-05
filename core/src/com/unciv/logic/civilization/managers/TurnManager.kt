@@ -103,7 +103,7 @@ class TurnManager(val civInfo: Civilization) {
 
             if (flag == CivFlags.CityStateGreatPersonGift.name) {
                 val cityStateAllies: List<Civilization> =
-                        civInfo.getKnownCivs().filter { it.isCityState() && it.getAllyCiv() == civInfo.civName }.toList()
+                        civInfo.getKnownCivs().filter { it.isCityState && it.getAllyCiv() == civInfo.civName }.toList()
                 val givingCityState = cityStateAllies.filter { it.cities.isNotEmpty() }.randomOrNull()
 
                 if (cityStateAllies.isNotEmpty()) civInfo.flagsCountdown[flag] = civInfo.flagsCountdown[flag]!! - 1
@@ -155,7 +155,7 @@ class TurnManager(val civInfo: Civilization) {
 
 
     private fun updateRevolts() {
-        if (civInfo.gameInfo.civilizations.none { it.isBarbarian() }) {
+        if (civInfo.gameInfo.civilizations.none { it.isBarbarian }) {
             // Can't spawn revolts without barbarians ¯\_(ツ)_/¯
             return
         }
@@ -186,7 +186,7 @@ class TurnManager(val civInfo: Civilization) {
         val spawnCity = civInfo.cities.maxByOrNull { random.nextInt(it.population.population + 10) } ?: return
         val spawnTile = spawnCity.getTiles().maxByOrNull { rateTileForRevoltSpawn(it) } ?: return
         val unitToSpawn = civInfo.gameInfo.ruleset.units.values.asSequence().filter {
-            it.uniqueTo == null && it.isMelee() && it.isLandUnit()
+            it.uniqueTo == null && it.isMelee() && it.isLandUnit
                     && !it.hasUnique(UniqueType.CannotAttack) && it.isBuildable(civInfo)
         }.maxByOrNull {
             random.nextInt(1000)
@@ -250,7 +250,7 @@ class TurnManager(val civInfo: Civilization) {
         if (civInfo.isDefeated() || civInfo.isSpectator()) return  // yes they do call this, best not update any further stuff
 
         var nextTurnStats =
-            if (civInfo.isBarbarian())
+            if (civInfo.isBarbarian)
                 Stats()
             else {
                 civInfo.updateStatsForNextTurn()
@@ -260,7 +260,7 @@ class TurnManager(val civInfo: Civilization) {
         civInfo.policies.endTurn(nextTurnStats.culture.toInt())
         civInfo.totalCultureForContests += nextTurnStats.culture.toInt()
 
-        if (civInfo.isCityState()) {
+        if (civInfo.isCityState) {
             civInfo.questManager.endTurn()
 
             // Set turns to elections to a random number so not every city-state has the same election date
@@ -271,7 +271,7 @@ class TurnManager(val civInfo: Civilization) {
         }
 
         // disband units until there are none left OR the gold values are normal
-        if (!civInfo.isBarbarian() && civInfo.gold <= -200 && nextTurnStats.gold.toInt() < 0) {
+        if (!civInfo.isBarbarian && civInfo.gold <= -200 && nextTurnStats.gold.toInt() < 0) {
             do {
                 val militaryUnits = civInfo.units.getCivUnits().filter { it.isMilitary() }  // New sequence as disband replaces unitList
                 val unitToDisband = militaryUnits.minByOrNull { it.baseUnit.cost }
@@ -344,7 +344,7 @@ class TurnManager(val civInfo: Civilization) {
         NextTurnAutomation.automateCivMoves(civInfo)
 
         // Update barbarian camps
-        if (civInfo.isBarbarian() && !civInfo.gameInfo.gameParameters.noBarbarians)
+        if (civInfo.isBarbarian && !civInfo.gameInfo.gameParameters.noBarbarians)
             civInfo.gameInfo.barbarians.updateEncampments()
     }
 

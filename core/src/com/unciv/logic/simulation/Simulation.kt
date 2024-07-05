@@ -17,15 +17,13 @@ import kotlin.time.ExperimentalTime
 @ExperimentalTime
 class Simulation(
     private val newGameInfo: GameInfo,
-    val simulationsPerThread: Int = 1
-    ,
+    val simulationsPerThread: Int = 1,
     private val threadsNumber: Int = 1,
-    private val maxTurns: Int = 1000
+    private val maxTurns: Int = 500
 ) {
     private val maxSimulations = threadsNumber * simulationsPerThread
     val civilizations = newGameInfo.civilizations.filter { it.civName != Constants.spectator }.map { it.civName }
     private var startTime: Long = 0
-    private var endTime: Long = 0
     var steps = ArrayList<SimulationStep>()
     var winRate = mutableMapOf<String, MutableInt>()
     private var winRateByVictory = HashMap<String, MutableMap<String, MutableInt>>()
@@ -50,7 +48,7 @@ class Simulation(
         startTime = System.currentTimeMillis()
         val jobs: ArrayList<Job> = ArrayList()
         println("Starting new game with major civs: "+newGameInfo.civilizations.filter { it.isMajorCiv() }.joinToString { it.civName }
-        + " and minor civs: "+newGameInfo.civilizations.filter { it.isCityState() }.joinToString { it.civName })
+        + " and minor civs: "+newGameInfo.civilizations.filter { it.isCityState }.joinToString { it.civName })
         for (threadId in 1..threadsNumber) {
             jobs.add(launch(CoroutineName("simulation-${threadId}")) {
                 repeat(simulationsPerThread) {
@@ -69,29 +67,35 @@ class Simulation(
 
                     updateCounter(threadId)
                     add(step)
+                    print()
                 }
             })
         }
         // wait for all to finish
         for (job in jobs) job.join()
-        endTime = System.currentTimeMillis()
     }
 
     @Suppress("UNUSED_PARAMETER")   // used when activating debug output
     @Synchronized fun add(step: SimulationStep, threadId: Int = 1) {
-//        println("Thread $threadId: End simulation ($stepCounter/$maxSimulations)")
         steps.add(step)
     }
 
     @Suppress("UNUSED_PARAMETER")   // used when activating debug output
     @Synchronized fun updateCounter(threadId: Int = 1) {
         stepCounter++
-//        println("Thread $threadId: Start simulation ($stepCounter/$maxSimulations)")
         println("Simulation step ($stepCounter/$maxSimulations)")
+    }
+
+    @Synchronized
+    fun print(){
+        getStats()
+        println(text())
     }
 
     fun getStats() {
         // win Rate
+        winRate.values.forEach { it.value = 0 }
+        winRateByVictory.flatMap { it.value.values }.forEach { it.value = 0 }
         steps.forEach {
             if (it.winner != null) {
                 winRate[it.winner!!]!!.inc()
@@ -99,16 +103,19 @@ class Simulation(
             }
         }
         totalTurns = steps.sumOf { it.turns }
-        totalDuration = (endTime - startTime).milliseconds
+        totalDuration = (System.currentTimeMillis() - startTime).milliseconds
         avgSpeed = totalTurns.toFloat() / totalDuration.inWholeSeconds
         avgDuration = totalDuration / steps.size
     }
 
-    override fun toString(): String {
+    fun text(): String {
         var outString = ""
         for (civ in civilizations) {
-            outString += "\n$civ:\n"
+
             val wins = winRate[civ]!!.value * 100 / max(steps.size, 1)
+            if (wins == 0) continue
+
+            outString += "\n$civ:\n"
             outString += "$wins% total win rate \n"
             for (victory in UncivGame.Current.gameInfo!!.ruleset.victories.keys) {
                 val winsVictory = winRateByVictory[civ]!![victory]!!.value * 100 / max(winRate[civ]!!.value, 1)

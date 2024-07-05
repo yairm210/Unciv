@@ -87,7 +87,7 @@ class UnitMovementTests {
             for (type in testGame.ruleset.unitTypes.values) {
                 val unit = addFakeUnit(type)
                 Assert.assertTrue("%s cannot be at %s".format(type.name, terrain.name),
-                        (unit.baseUnit.isWaterUnit() && tile.isLand) != unit.movement.canPassThrough(tile))
+                        (unit.baseUnit.isWaterUnit && tile.isLand) != unit.movement.canPassThrough(tile))
             }
         }
     }
@@ -135,7 +135,7 @@ class UnitMovementTests {
             val unit = addFakeUnit(type)
 
             Assert.assertTrue("$type cannot be in Coast",
-                    unit.baseUnit.isLandUnit() != unit.movement.canPassThrough(tile))
+                    unit.baseUnit.isLandUnit != unit.movement.canPassThrough(tile))
         }
     }
 
@@ -150,7 +150,7 @@ class UnitMovementTests {
             val unit = addFakeUnit(type)
 
             Assert.assertTrue("$type cannot be in Ocean",
-                    unit.baseUnit.isLandUnit() != unit.movement.canPassThrough(tile))
+                    unit.baseUnit.isLandUnit != unit.movement.canPassThrough(tile))
         }
     }
 

@@ -167,6 +167,9 @@ class TechManager : IsPartOfGameInfoSerialization {
         return tech.prerequisites.all { isResearched(it) }
     }
 
+    fun allTechsAreResearched() = civInfo.gameInfo.ruleset.technologies.values
+        .all { isResearched(it.name) || !canBeResearched(it.name)}
+
     //endregion
 
     /** Returns empty list if no path exists */

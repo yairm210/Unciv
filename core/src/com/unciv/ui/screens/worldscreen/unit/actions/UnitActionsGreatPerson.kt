@@ -99,7 +99,7 @@ object UnitActionsGreatPerson {
 
     internal fun getConductTradeMissionActions(unit: MapUnit, tile: Tile) = sequence {
         for (unique in unit.getMatchingUniques(UniqueType.CanTradeWithCityStateForGoldAndInfluence)) {
-            val canConductTradeMission = tile.owningCity?.civ?.isCityState() == true
+            val canConductTradeMission = tile.owningCity?.civ?.isCityState == true
                 && tile.owningCity?.civ != unit.civ
                 && tile.owningCity?.civ?.isAtWarWith(unit.civ) == false
             val influenceEarned = unique.params[0].toFloat()

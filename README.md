@@ -58,11 +58,11 @@ If not, you can help by spreading the word - vote for Unciv where you can, menti
 - Jars, APKs and Windows/Linux builds also available in [Releases](https://github.com/yairm210/Unciv/releases) (run jar with `java -jar Unciv.jar`) - *not recommended* since we update frequently and you will quickly become out-of-date
 - [Build from scratch](https://yairm210.github.io/Unciv/Developers/Building-locally-without-Android-Studio/) if that's your thing
 
-### How about IOS?
+### How about iOS?
 
 I'm not planning on it. It means paying money to Apple, yet another release path,
- and since I don't have an IOS device it means I can't test it properly.
- 
+ and since I don't have an iOS device it means I can't test it properly.
+
 ### Steam release?
 
 Steam has decided that they don't want to host Unciv, they probably don't want to risk legal issues with Firaxis (although those should be non-existent, see below)

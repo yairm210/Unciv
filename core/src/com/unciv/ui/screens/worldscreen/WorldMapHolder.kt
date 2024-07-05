@@ -199,7 +199,7 @@ class WorldMapHolder(
             } else {
                 previousSelectedUnits.any {
                     it.movement.canMoveTo(tile) ||
-                        (it.movement.isUnknownTileWeShouldAssumeToBePassable(tile) && !it.baseUnit.movesLikeAirUnits())
+                        (it.movement.isUnknownTileWeShouldAssumeToBePassable(tile) && !it.baseUnit.movesLikeAirUnits)
                 }
             }
 
@@ -278,7 +278,7 @@ class WorldMapHolder(
     }
 
     private fun markUnitMoveTutorialComplete(unit: MapUnit) {
-        val key = if (unit.baseUnit.movesLikeAirUnits()) "Move an air unit" else "Move unit"
+        val key = if (unit.baseUnit.movesLikeAirUnits) "Move an air unit" else "Move unit"
         UncivGame.Current.settings.addCompletedTutorialTask(key)
     }
 
@@ -394,7 +394,7 @@ class WorldMapHolder(
             val unitToTurnsToTile = HashMap<MapUnit, Int>()
             for (unit in selectedUnits) {
                 val shortestPath = ArrayList<Tile>()
-                val turnsToGetThere = if (unit.baseUnit.movesLikeAirUnits()) {
+                val turnsToGetThere = if (unit.baseUnit.movesLikeAirUnits) {
                     if (unit.movement.canReach(tile)) 1
                     else 0
                 } else if (unit.isPreparingParadrop()) {
@@ -759,7 +759,7 @@ class WorldMapHolder(
         val tileGroup = tileGroups[unit.getTile()] ?: return
 
         // Update flags for units which have them
-        if (!unit.baseUnit.movesLikeAirUnits()) {
+        if (!unit.baseUnit.movesLikeAirUnits) {
             tileGroup.layerUnitFlag.selectFlag(unit)
         }
 
@@ -814,7 +814,7 @@ class WorldMapHolder(
             return
         }
 
-        val isAirUnit = unit.baseUnit.movesLikeAirUnits()
+        val isAirUnit = unit.baseUnit.movesLikeAirUnits
         val moveTileOverlayColor = if (unit.isPreparingParadrop()) Color.BLUE else Color.WHITE
         val tilesInMoveRange = unit.movement.getReachableTilesInCurrentTurn()
         // Prepare special Nuke blast radius display
@@ -842,7 +842,8 @@ class WorldMapHolder(
 
             // Highlight tile unit can move to
             if (unit.movement.canMoveTo(tile) ||
-                    unit.movement.isUnknownTileWeShouldAssumeToBePassable(tile) && !unit.baseUnit.movesLikeAirUnits()) {
+                    unit.movement.isUnknownTileWeShouldAssumeToBePassable(tile) && !unit.baseUnit.movesLikeAirUnits
+            ) {
                 val alpha = if (UncivGame.Current.settings.singleTapMove) 0.7f else 0.3f
                 group.layerOverlay.showHighlight(moveTileOverlayColor, alpha)
             }

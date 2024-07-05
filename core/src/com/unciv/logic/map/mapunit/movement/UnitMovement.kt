@@ -93,7 +93,7 @@ class UnitMovement(val unit: MapUnit) {
         if (unit.cache.cannotMove) return listOf()
 
         // First try and find a path without damaging terrain
-        if (!avoidDamagingTerrain && unit.civ.passThroughImpassableUnlocked && unit.baseUnit.isLandUnit()) {
+        if (!avoidDamagingTerrain && unit.civ.passThroughImpassableUnlocked && unit.baseUnit.isLandUnit) {
             val damageFreePath = getShortestPath(destination, true)
             if (damageFreePath.isNotEmpty()) return damageFreePath
         }
@@ -206,7 +206,7 @@ class UnitMovement(val unit: MapUnit) {
         if (currentTile == finalDestination) return currentTile
 
         // If we can fly, head there directly
-        if ((unit.baseUnit.movesLikeAirUnits() || unit.isPreparingParadrop()) && canMoveTo(finalDestination)) return finalDestination
+        if ((unit.baseUnit.movesLikeAirUnits || unit.isPreparingParadrop()) && canMoveTo(finalDestination)) return finalDestination
 
         val distanceToTiles = getDistanceToTiles()
 
@@ -264,7 +264,7 @@ class UnitMovement(val unit: MapUnit) {
     private inline fun canReachCommon(destination: Tile, specificFunction: (Tile) -> Boolean) = when {
         unit.cache.cannotMove ->
             destination == unit.getTile()
-        unit.baseUnit.movesLikeAirUnits() ->
+        unit.baseUnit.movesLikeAirUnits ->
             unit.currentTile.aerialDistanceTo(destination) <= unit.getMaxMovementForAirUnits()
         unit.isPreparingParadrop() ->
             unit.currentTile.aerialDistanceTo(destination) <= unit.cache.paradropRange && canParadropOn(destination)
@@ -279,7 +279,7 @@ class UnitMovement(val unit: MapUnit) {
     fun getReachableTilesInCurrentTurn(includeOtherEscortUnit: Boolean = true): Sequence<Tile> {
         return when {
             unit.cache.cannotMove -> sequenceOf(unit.getTile())
-            unit.baseUnit.movesLikeAirUnits() ->
+            unit.baseUnit.movesLikeAirUnits ->
                 unit.getTile().getTilesInDistanceRange(IntRange(1, unit.getMaxMovementForAirUnits()))
             unit.isPreparingParadrop() ->
                 unit.getTile().getTilesInDistance(unit.cache.paradropRange)
@@ -308,7 +308,7 @@ class UnitMovement(val unit: MapUnit) {
      */
     private fun canUnitSwapToReachableTile(reachableTile: Tile): Boolean {
         // Air units cannot swap
-        if (unit.baseUnit.movesLikeAirUnits()) return false
+        if (unit.baseUnit.movesLikeAirUnits) return false
         // We can't swap with ourself
         if (reachableTile == unit.getTile()) return false
         if (unit.cache.cannotMove) return false
@@ -391,7 +391,7 @@ class UnitMovement(val unit: MapUnit) {
         // Reset closestEnemy chache
         val escortUnit = if (unit.isEscorting()) unit.getOtherEscortUnit()!! else null
 
-        if (unit.baseUnit.movesLikeAirUnits()) { // air units move differently from all other units
+        if (unit.baseUnit.movesLikeAirUnits) { // air units move differently from all other units
             if (unit.action != UnitActionType.Automate.value) unit.action = null
             unit.removeFromTile()
             unit.isTransported = false // it has left the carrier by own means
@@ -576,7 +576,7 @@ class UnitMovement(val unit: MapUnit) {
      * Leave it as default unless you know what [canMoveTo] does.
      */
     fun canMoveTo(tile: Tile, assumeCanPassThrough: Boolean = false, canSwap: Boolean = false, includeOtherEscortUnit: Boolean = true): Boolean {
-        if (unit.baseUnit.movesLikeAirUnits())
+        if (unit.baseUnit.movesLikeAirUnits)
             return canAirUnitMoveTo(tile, unit)
 
         if (!assumeCanPassThrough && !canPassThrough(tile))
@@ -643,7 +643,7 @@ class UnitMovement(val unit: MapUnit) {
                 return false
         }
         if (tile.isLand
-            && unit.baseUnit.isWaterUnit()
+            && unit.baseUnit.isWaterUnit
             && !tile.isCityCenter())
             return false
 
@@ -652,7 +652,7 @@ class UnitMovement(val unit: MapUnit) {
                 unit.civ.getMatchingUniques(UniqueType.UnitsMayEnterOcean)
                     .any { unit.matchesFilter(it.params[0]) }
         }
-        if (tile.isWater && unit.baseUnit.isLandUnit() && !unit.cache.canMoveOnWater) {
+        if (tile.isWater && unit.baseUnit.isLandUnit && !unit.cache.canMoveOnWater) {
             if (!unit.civ.tech.unitsCanEmbark) return false
             if (tile.isOcean && !unit.civ.tech.embarkedUnitsCanEnterOcean && !unitSpecificAllowOcean)
                 return false
@@ -661,7 +661,7 @@ class UnitMovement(val unit: MapUnit) {
             if (!unitSpecificAllowOcean && unit.cache.cannotEnterOceanTiles) return false
         }
 
-        if (unit.cache.canEnterCityStates && tile.getOwner()?.isCityState() == true)
+        if (unit.cache.canEnterCityStates && tile.getOwner()?.isCityState == true)
             return true
         if (!unit.cache.canEnterForeignTerrain && !tile.canCivPassThrough(unit.civ)) return false
 
@@ -674,7 +674,7 @@ class UnitMovement(val unit: MapUnit) {
         if (firstUnit != null && unit.civ != firstUnit.civ) {
             // Allow movement through unguarded, at-war Civilian Unit. Capture on the way
             // But not for Embarked Units capturing on Water
-            if (!(unit.baseUnit.isLandUnit() && tile.isWater && !unit.cache.canMoveOnWater)
+            if (!(unit.baseUnit.isLandUnit && tile.isWater && !unit.cache.canMoveOnWater)
                 && firstUnit.isCivilian() && unit.civ.isAtWarWith(firstUnit.civ))
                 return true
             // Cannot enter hostile tile with any unit in there

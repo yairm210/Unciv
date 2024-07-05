@@ -33,7 +33,7 @@ object NextTurnAutomation {
 
     /** Top-level AI turn task list */
     fun automateCivMoves(civInfo: Civilization) {
-        if (civInfo.isBarbarian()) return BarbarianAutomation(civInfo).automate()
+        if (civInfo.isBarbarian) return BarbarianAutomation(civInfo).automate()
         if (civInfo.isSpectator()) return // When there's a spectator in multiplayer games, it's processed automatically, but shouldn't be able to actually do anything
 
         respondToPopupAlerts(civInfo)
@@ -64,7 +64,7 @@ object NextTurnAutomation {
         chooseTechToResearch(civInfo)
         automateCityBombardment(civInfo)
         UseGoldAutomation.useGold(civInfo)
-        if (!civInfo.isCityState()) {
+        if (!civInfo.isCityState) {
             protectCityStates(civInfo)
             bullyCityStates(civInfo)
         }
@@ -209,7 +209,7 @@ object NextTurnAutomation {
     }
 
     private fun protectCityStates(civInfo: Civilization) {
-        for (state in civInfo.getKnownCivs().filter { !it.isDefeated() && it.isCityState() }) {
+        for (state in civInfo.getKnownCivs().filter { !it.isDefeated() && it.isCityState }) {
             val diplomacyManager = state.getDiplomacyManager(civInfo.civName)!!
             val isAtLeastFriend = diplomacyManager.isRelationshipLevelGE(RelationshipLevel.Friend)
             if (isAtLeastFriend && state.cityStateFunctions.otherCivCanPledgeProtection(civInfo)) {
@@ -221,7 +221,7 @@ object NextTurnAutomation {
     }
 
     private fun bullyCityStates(civInfo: Civilization) {
-        for (state in civInfo.getKnownCivs().filter { !it.isDefeated() && it.isCityState() }.toList()) {
+        for (state in civInfo.getKnownCivs().filter { !it.isDefeated() && it.isCityState }.toList()) {
             val diplomacyManager = state.getDiplomacyManager(civInfo.civName)!!
             if (diplomacyManager.isRelationshipLevelLT(RelationshipLevel.Friend)
                     && diplomacyManager.diplomaticStatus == DiplomaticStatus.Peace
@@ -434,7 +434,7 @@ object NextTurnAutomation {
         val ownMilitaryStrength = civInfo.getStatForRanking(RankingType.Force)
         val sumOfEnemiesMilitaryStrength =
                 civInfo.gameInfo.civilizations
-                    .filter { it != civInfo && !it.isBarbarian() && civInfo.isAtWarWith(it) }
+                    .filter { it != civInfo && !it.isBarbarian && civInfo.isAtWarWith(it) }
                     .sumOf { it.getStatForRanking(RankingType.Force) }
         val civHasSignificantlyWeakerMilitaryThanEnemies =
                 ownMilitaryStrength < sumOfEnemiesMilitaryStrength * 0.66f
@@ -459,7 +459,7 @@ object NextTurnAutomation {
 
     private fun trainSettler(civInfo: Civilization) {
         val personality = civInfo.getPersonality()
-        if (civInfo.isCityState()) return
+        if (civInfo.isCityState) return
         if (civInfo.isOneCityChallenger()) return
         if (civInfo.isAtWar()) return // don't train settlers when you could be training troops.
         if (civInfo.wantsToFocusOn(Victory.Focus.Culture) && civInfo.cities.size > 3 &&

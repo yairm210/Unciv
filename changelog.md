@@ -1,3 +1,34 @@
+## 4.12.7
+
+AI: Better placement for Great Improvements
+
+City focus resets to default when annexed
+
+Allow multiplication for event triggers
+
+"Consumes resources" unique not displayed twice for constructions in city screen
+
+Added promotionName as possible value for mapUnitFilter
+
+Fixed team war giving "they declared war on us" notification to a civ declaring war - By tuvus
+
+New language translation - Bangla - by touhidurr
+
+## 4.12.6
+
+Many performance improvements!
+
+By SomeTroglodyte: 
+- Support for languages using Diacritics (e.g. Bangla)  
+
+By tuvus:
+- Improved unit automation for defending cities 
+- Warmongering doesn't apply to civs that are angry at the target civ 
+
+Optimize screen orientation  - By HChenX - *NEW CONTRIBUTOR!*
+
+AI behaviour changes  - By EmperorPinguin - *NEW CONTRIBUTOR!*
+
 ## 4.12.5
 
 Re-add 'construct great improvement' automation for great units that can't do their main actions

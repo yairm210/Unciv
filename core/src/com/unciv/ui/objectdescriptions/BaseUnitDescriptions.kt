@@ -56,7 +56,8 @@ object BaseUnitDescriptions {
         lines += "$strengthLine${baseUnit.movement}${Fonts.movement}"
 
         if (baseUnit.replacementTextForUniques != "") lines += baseUnit.replacementTextForUniques
-        else baseUnit.uniquesToDescription(lines) { type == UniqueType.Unbuildable }
+        else baseUnit.uniquesToDescription(lines) { type == UniqueType.Unbuildable
+                || type == UniqueType.ConsumesResources } // Already displayed in the resource requirements
 
         if (baseUnit.promotions.isNotEmpty()) {
             val prefix = "Free promotion${if (baseUnit.promotions.size == 1) "" else "s"}:".tr() + " "

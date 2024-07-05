@@ -263,7 +263,7 @@ class AlertPopup(
         addLeaderName(civInfo)
         music.chooseTrack(civInfo.civName, MusicMood.themeOrPeace, MusicTrackChooserFlags.setSpecific)
         music.playVoice("${civInfo.civName}.introduction")
-        if (civInfo.isCityState()) {
+        if (civInfo.isCityState) {
             addGoodSizedLabel("We have encountered the City-State of [${nation.name}]!").row()
             addCloseButton("Excellent!")
         } else {
@@ -313,7 +313,7 @@ class AlertPopup(
                 originalOwner.units.placeUnitNearTile(closestCity.location, unitName)
             }
 
-            if (originalOwner.isCityState()) {
+            if (originalOwner.isCityState) {
                 originalOwner.getDiplomacyManagerOrMeet(captor).addInfluence(45f)
             } else if (originalOwner.isMajorCiv()) {
                 // No extra bonus from doing it several times

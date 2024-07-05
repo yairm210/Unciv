@@ -90,7 +90,7 @@ class City : IsPartOfGameInfoSerialization, INamed {
     }
 
     var cityAIFocus: String = CityFocus.NoFocus.name
-    fun getCityFocus() = CityFocus.values().firstOrNull { it.name == cityAIFocus } ?: CityFocus.NoFocus
+    fun getCityFocus() = CityFocus.entries.firstOrNull { it.name == cityAIFocus } ?: CityFocus.NoFocus
     fun setCityFocus(cityFocus: CityFocus){ cityAIFocus = cityFocus.name }
 
 
@@ -194,7 +194,7 @@ class City : IsPartOfGameInfoSerialization, INamed {
 
     fun getRuleset() = civ.gameInfo.ruleset
 
-    fun getResourcesGeneratedByCity() = CityResources.getResourcesGeneratedByCity(this)
+    fun getResourcesGeneratedByCity(civResourceModifiers: HashMap<String, Float>) = CityResources.getResourcesGeneratedByCity(this, civResourceModifiers)
     fun getAvailableResourceAmount(resourceName: String) = CityResources.getAvailableResourceAmount(this, resourceName)
 
     fun isGrowing() = foodForNextTurn() > 0
@@ -414,7 +414,7 @@ class City : IsPartOfGameInfoSerialization, INamed {
         val tile = getCenterTile()
         return when {
             construction.isCivilian() -> tile.civilianUnit == null
-            construction.movesLikeAirUnits() -> tile.airUnits.count { !it.isTransported } < 6
+            construction.movesLikeAirUnits -> tile.airUnits.count { !it.isTransported } < 6
             else -> tile.militaryUnit == null
         }
     }
@@ -453,7 +453,7 @@ class City : IsPartOfGameInfoSerialization, INamed {
             "in resisting cities", "Resisting" -> isInResistance()
             "in cities being razed", "Razing" -> isBeingRazed
             "in holy cities", "Holy" -> isHolyCity()
-            "in City-State cities" -> civ.isCityState()
+            "in City-State cities" -> civ.isCityState
             // This is only used in communication to the user indicating that only in cities with this
             // religion a unique is active. However, since religion uniques only come from the city itself,
             // this will always be true when checked.

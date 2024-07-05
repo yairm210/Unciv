@@ -41,7 +41,7 @@ object BattleHelper {
     }
 
     fun tryDisembarkUnitToAttackPosition(unit: MapUnit): Boolean {
-        if (!unit.baseUnit.isMelee() || !unit.baseUnit.isLandUnit() || !unit.isEmbarked()) return false
+        if (!unit.baseUnit.isMelee() || !unit.baseUnit.isLandUnit || !unit.isEmbarked()) return false
         val unitDistanceToTiles = unit.movement.getDistanceToTiles()
 
         val attackableEnemiesNextTurn = TargetHelper.getAttackableEnemies(unit, unitDistanceToTiles)

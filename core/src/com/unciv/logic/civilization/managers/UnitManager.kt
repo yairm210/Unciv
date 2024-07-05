@@ -53,7 +53,7 @@ class UnitManager(val civInfo: Civilization) {
 
         val unit = civInfo.getEquivalentUnit(baseUnit)
         val cityToAddTo = when {
-            unit.isWaterUnit() && (city == null || !city.isCoastal()) ->
+            unit.isWaterUnit && (city == null || !city.isCoastal()) ->
                 civInfo.cities.filter { it.isCoastal() }.randomOrNull()
             city != null -> city
             else -> civInfo.cities.random()
@@ -61,7 +61,7 @@ class UnitManager(val civInfo: Civilization) {
         val placedUnit = placeUnitNearTile(cityToAddTo.location, unit.name)
         // silently bail if no tile to place the unit is found
             ?: return null
-        if (unit.isGreatPerson()) {
+        if (unit.isGreatPerson) {
             civInfo.addNotification("A [${unit.name}] has been born in [${cityToAddTo.name}]!", placedUnit.getTile().position, NotificationCategory.General, unit.name)
         }
 

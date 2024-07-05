@@ -195,7 +195,8 @@ class BattleTable(val worldScreen: WorldScreen) : Table() {
         // from Battle.addXp(), check for can't gain more XP from Barbarians
         val maxXPFromBarbarians = attacker.getCivInfo().gameInfo.ruleset.modOptions.constants.maxXPfromBarbarians
         if (attacker is MapUnitCombatant && attacker.unit.promotions.totalXpProduced() >= maxXPFromBarbarians
-                && defender.getCivInfo().isBarbarian()) {
+                && defender.getCivInfo().isBarbarian
+        ) {
             add("Cannot gain more XP from Barbarians".toLabel(fontSize = 16).apply { wrap = true }).width(quarterScreen)
             row()
         }
