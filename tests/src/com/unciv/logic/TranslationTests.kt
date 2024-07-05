@@ -28,6 +28,7 @@ import org.junit.runner.RunWith
 
 @RunWith(GdxTestRunner::class)
 class TranslationTests {
+    /** Translations to test with - all languages are loaded with diacritic support off */
     private var translations = Translations()
     private var ruleset = Ruleset()
 
@@ -365,6 +366,7 @@ class TranslationTests {
 
     @Test
     fun testNonBasePlaneUnicode() {
+        // This tries how a translation of "Test👍" with diacritic support comes out: Should be 5 codepoints not 6 as the original string representation
         translations.createTranslations("Test", hashMapOf("Test" to "Test\uD83D\uDC4D", "diacritics_support" to "true"))
         testRoundtrip("Test", "Test", "Test\uD83D\uDC4D") { translated ->
             val isOK = translated.startsWith("Test") && translated.length == 5 && translated.last() > DiacriticSupport.getCurrentFreeCode()

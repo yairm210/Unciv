@@ -84,7 +84,7 @@ class Translations : LinkedHashMap<String, TranslationEntry>() {
     /** This reads all translations for a specific language, including _all_ installed mods.
      *  Vanilla translations go into `this` instance, mod translations into [modsWithTranslations].
      */
-    private fun tryReadTranslationForLanguage(language: String) {
+    private fun tryReadTranslationForLanguage(language: String, noDiacritics: Boolean = false) {
         val translationStart = System.currentTimeMillis()
 
         val translationFileName = "jsons/translations/$language.properties"
@@ -109,21 +109,22 @@ class Translations : LinkedHashMap<String, TranslationEntry>() {
                     modsWithTranslations[modFolder.name()] = translationsForMod
                 }
                 try {
-                    translationsForMod.createTranslations(language, TranslationFileReader.read(modTranslationFile))
+                    translationsForMod.createTranslations(language, TranslationFileReader.read(modTranslationFile), noDiacritics)
                 } catch (ex: Exception) {
                     Log.error("Exception reading translations for ${modFolder.name()} $language", ex)
                 }
             }
         }
 
-        createTranslations(language, languageTranslations)
+        createTranslations(language, languageTranslations, noDiacritics)
 
         debug("Loading translation file for %s - %sms", language, System.currentTimeMillis() - translationStart)
     }
 
     @VisibleForTesting
-    fun createTranslations(language: String, languageTranslations: HashMap<String, String>) {
-        val diacriticSupport = DiacriticSupport(languageTranslations).takeIf { it.isEnabled() }
+    fun createTranslations(language: String, languageTranslations: HashMap<String, String>, noDiacritics: Boolean = false) {
+        val diacriticSupport = if (noDiacritics) null
+            else DiacriticSupport(languageTranslations).takeIf { it.isEnabled() }
         for ((key, value) in languageTranslations) {
             val hashKey = if (key.contains('[') && !key.contains('<'))
                 key.getPlaceholderText()
@@ -174,7 +175,15 @@ class Translations : LinkedHashMap<String, TranslationEntry>() {
         return languages.filter { Gdx.files.internal("jsons/translations/$it.properties").exists() }
     }
 
-    /** Ensure _all_ languages are loaded, used by [TranslationFileWriter] and `TranslationTests` */
+    /** Ensure _all_ languages are loaded, used by [TranslationFileWriter] and `TranslationTests` only.
+     *
+     *  #### Notes:
+     *  -  Expects to run on a newly created instance.
+     *  -  Loads the translations with no diacritic mapping, so what we read will be what we write
+     *     (otherwise we would write out the fake alphabet-conversions, a one-way destructive mistake).
+     *  -  Relies on usage by TFW and tests only, if the result is ever meant to support translations that are actually displayed, a refactor will be needed.
+     *  -  Does not clear the fake alphabet possibly present in DiacriticSupport, but will not use it either.
+     */
     fun readAllLanguagesTranslation() {
         // Apparently you can't iterate over the files in a directory when running out of a .jar...
         // https://www.badlogicgames.com/forum/viewtopic.php?f=11&t=27250
@@ -182,11 +191,9 @@ class Translations : LinkedHashMap<String, TranslationEntry>() {
 
         val translationStart = System.currentTimeMillis()
 
-        DiacriticSupport.reset()
         for (language in getLanguagesWithTranslationFile()) {
-            tryReadTranslationForLanguage(language)
+            tryReadTranslationForLanguage(language, noDiacritics = true)
         }
-        DiacriticSupport.freeTranslationData()
 
         debug("Loading translation files - %sms", System.currentTimeMillis() - translationStart)
     }
