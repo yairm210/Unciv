@@ -7,6 +7,8 @@ import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.multiplayer.FriendList
 import com.unciv.models.UncivSound
+import com.unciv.models.translations.Translations.Companion.getLocaleFromLanguage
+import com.unciv.models.translations.Translations.Companion.getNumberFormatFromLanguage
 import com.unciv.ui.components.fonts.FontFamilyData
 import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.components.input.KeyboardBindings
@@ -15,6 +17,7 @@ import com.unciv.ui.screens.worldscreen.NotificationsScroll
 import com.unciv.utils.Display
 import com.unciv.utils.ScreenOrientation
 import java.text.Collator
+import java.text.NumberFormat
 import java.time.Duration
 import java.util.Locale
 import kotlin.reflect.KClass
@@ -169,14 +172,7 @@ class GameSettings {
     }
 
     fun updateLocaleFromLanguage() {
-        val bannedCharacters = listOf(' ', '_', '-', '(', ')') // Things not to have in enum names
-        val languageName = language.filterNot { it in bannedCharacters }
-        locale = try {
-            val code = LocaleCode.valueOf(languageName)
-            Locale(code.language, code.country)
-        } catch (_: Exception) {
-            Locale.getDefault()
-        }
+        locale = getLocaleFromLanguage(language)
     }
 
     fun getFontSize(): Int {
@@ -191,6 +187,10 @@ class GameSettings {
 
     fun getCollatorFromLocale(): Collator {
         return Collator.getInstance(getCurrentLocale())
+    }
+
+    fun getCurrentNumberFormat(): NumberFormat {
+        return getNumberFormatFromLanguage(language)
     }
 
     //endregion

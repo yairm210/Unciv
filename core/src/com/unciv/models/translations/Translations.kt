@@ -3,6 +3,7 @@ package com.unciv.models.translations
 import com.badlogic.gdx.Gdx
 import com.unciv.Constants
 import com.unciv.UncivGame
+import com.unciv.models.metadata.GameSettings.LocaleCode
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.stats.Stat
@@ -13,6 +14,7 @@ import com.unciv.utils.Log
 import com.unciv.utils.debug
 import java.util.Locale
 import org.jetbrains.annotations.VisibleForTesting
+import java.text.NumberFormat
 
 /**
  *  This collection holds all translations for the game.
@@ -231,6 +233,26 @@ class Translations : LinkedHashMap<String, TranslationEntry>() {
         const val conditionalUniqueOrderString = "ConditionalsPlacement"
         const val shouldCapitalizeString = "StartWithCapitalLetter"
         const val effectBeforeCause = "EffectBeforeCause"
+
+        // NumberFormat cache, key: language, value: NumberFormat
+        private val languageToNumberFormat = mutableMapOf<String, NumberFormat>()
+
+        fun getLocaleFromLanguage(language: String): Locale {
+            val bannedCharacters =
+                listOf(' ', '_', '-', '(', ')') // Things not to have in enum names
+            val languageName = language.filterNot { it in bannedCharacters }
+            return try {
+                val code = LocaleCode.valueOf(languageName)
+                Locale(code.language, code.country)
+            } catch (_: Exception) {
+                Locale.getDefault()
+            }
+        }
+
+        fun getNumberFormatFromLanguage(language: String): NumberFormat =
+            languageToNumberFormat.getOrPut(language) {
+                NumberFormat.getInstance(getLocaleFromLanguage(language))
+            }
     }
 }
 
@@ -252,6 +274,9 @@ val curlyBraceRegex = Regex("""\{([^}]*)\}""")
 @Suppress("RegExpRedundantEscape") // Some Android versions need ]}) escaped
 val pointyBraceRegex = Regex("""\<([^>]*)\>""")
 
+// Used to match continous digits 0, 12, 1232 etc
+@Suppress("RegExpRedundantEscape") // Some Android versions need ]}) escaped
+val digitsRegex = Regex("""\d+""")
 
 object TranslationActiveModsCache {
     private var cachedHash = Int.MIN_VALUE
@@ -443,7 +468,9 @@ private fun String.translatePlaceholders(language: String, hideIcons: Boolean): 
 private fun String.translateIndividualWord(language: String, hideIcons: Boolean): String {
     if (Stats.isStats(this)) return Stats.parse(this).toString()
 
-    val translation = UncivGame.Current.translations.getText(this, language, TranslationActiveModsCache.activeMods)
+    val translation = UncivGame.Current.translations.getText(
+        this, language, TranslationActiveModsCache.activeMods
+    ).replace(digitsRegex) { it.value.toLong().tr(language) }
 
     val stat = Stat.safeValueOf(this)
     if (stat != null) return stat.character + translation
@@ -527,4 +554,14 @@ fun String.removeConditionals(): String {
         // If we ever start getting translations for these, we'll work something out then.
         .replace("  ", " ")
         .trim()
+}
+
+// formats number according to current language
+fun Number.tr(): String {
+    return UncivGame.Current.settings.getCurrentNumberFormat().format(this)
+}
+
+// formats number according to given language
+fun Number.tr(language: String): String {
+    return Translations.getNumberFormatFromLanguage(language).format(this)
 }
