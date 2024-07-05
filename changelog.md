@@ -1,3 +1,29 @@
+## 4.12.8
+
+perf: Don't update civ stats when calculating production for construction
+
+perf: Calculate resource modifiers *once* when calculating resources
+
+Unified "all techs are researched" check
+
+perf: Add unique cache to building choices
+
+perf: Send current tile stats when choosing improvement, ~6% CPU reduction
+
+Simulation - Print text on each simulation end, not just once at end of
+
+Simulation civ names are constants, so we can reference them from wherever inside the code for A/B testing
+
+Better simulation automation
+
+Added missing deprecation validation for unit uniques
+
+By SomeTroglodyte:
+- Fix TranslationFileWriter changing diacritic-using languages 
+- Galician support 
+
+Translate numbers to selected language  - By touhidurrr
+
 ## 4.12.7
 
 AI: Better placement for Great Improvements
