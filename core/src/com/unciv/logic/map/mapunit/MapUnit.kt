@@ -621,7 +621,10 @@ class MapUnit : IsPartOfGameInfoSerialization {
                 ?: throw java.lang.Exception("Unit $name is not found!")
 
         updateUniques()
-        if (action == UnitActionType.Automate.value) automated = true
+        if (action == UnitActionType.Automate.value){
+            automated = true
+            action = null
+        }
     }
 
     fun updateUniques() {
@@ -712,7 +715,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
     }
 
     fun doAction() {
-        if (action == null) return
+        if (action == null && !isAutomated()) return
         if (currentMovement == 0f) return  // We've already done stuff this turn, and can't do any more stuff
         if (isEscorting() && getOtherEscortUnit()!!.currentMovement == 0f) return
 
@@ -872,7 +875,6 @@ class MapUnit : IsPartOfGameInfoSerialization {
         for (unique in promotionUniques) {
             if (!this.matchesFilter(unique.params[2])) continue
             val promotion = unique.params[0]
-            if (promotion in promotions.promotions) continue
             promotions.addPromotion(promotion, true)
         }
 

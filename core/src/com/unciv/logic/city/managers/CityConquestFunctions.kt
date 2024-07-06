@@ -12,7 +12,7 @@ import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.trade.TradeLogic
 import com.unciv.logic.trade.TradeOffer
-import com.unciv.logic.trade.TradeType
+import com.unciv.logic.trade.TradeOfferType
 import com.unciv.models.ruleset.unique.UniqueType
 import kotlin.math.max
 import kotlin.math.min
@@ -47,8 +47,9 @@ class CityConquestFunctions(val city: City) {
         }
     }
 
-    private fun removeBuildingsOnMoveToCiv(oldCiv: Civilization) {
+    private fun removeBuildingsOnMoveToCiv() {
         // Remove all buildings provided for free to this city
+        // At this point, the city has *not* yet moved to the new civ
         for (building in city.civ.civConstructions.getFreeBuildingNames(city)) {
             city.cityConstructions.removeBuilding(building)
         }
@@ -221,15 +222,15 @@ class CityConquestFunctions(val city: City) {
             foundingCiv.getDiplomacyManagerOrMeet(conqueringCiv)
                     .addModifier(DiplomaticModifiers.CapturedOurCities, respectForLiberatingOurCity)
             val openBordersTrade = TradeLogic(foundingCiv, conqueringCiv)
-            openBordersTrade.currentTrade.ourOffers.add(TradeOffer(Constants.openBorders, TradeType.Agreement))
+            openBordersTrade.currentTrade.ourOffers.add(TradeOffer(Constants.openBorders, TradeOfferType.Agreement))
             openBordersTrade.acceptTrade(false)
         } else {
             //Liberating a city state gives a large amount of influence, and peace
             foundingCiv.getDiplomacyManagerOrMeet(conqueringCiv).setInfluence(90f)
             if (foundingCiv.isAtWarWith(conqueringCiv)) {
                 val tradeLogic = TradeLogic(foundingCiv, conqueringCiv)
-                tradeLogic.currentTrade.ourOffers.add(TradeOffer(Constants.peaceTreaty, TradeType.Treaty))
-                tradeLogic.currentTrade.theirOffers.add(TradeOffer(Constants.peaceTreaty, TradeType.Treaty))
+                tradeLogic.currentTrade.ourOffers.add(TradeOffer(Constants.peaceTreaty, TradeOfferType.Treaty))
+                tradeLogic.currentTrade.theirOffers.add(TradeOffer(Constants.peaceTreaty, TradeOfferType.Treaty))
                 tradeLogic.acceptTrade(false)
             }
         }
@@ -266,7 +267,7 @@ class CityConquestFunctions(val city: City) {
         city.resetWLTKD()
 
         // Remove their free buildings from this city and remove free buildings provided by the city from their cities
-        removeBuildingsOnMoveToCiv(oldCiv)
+        removeBuildingsOnMoveToCiv()
 
         // Place palace for newCiv if this is the only city they have.
         if (newCiv.cities.size == 1) newCiv.moveCapitalTo(city, null)

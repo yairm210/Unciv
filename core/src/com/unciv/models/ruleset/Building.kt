@@ -18,7 +18,6 @@ import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
-import com.unciv.models.translations.fillPlaceholders
 import com.unciv.ui.components.extensions.getNeedMoreAmountString
 import com.unciv.ui.components.extensions.toPercent
 import com.unciv.ui.objectdescriptions.BuildingDescriptions
@@ -260,7 +259,6 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
     override fun getRejectionReasons(cityConstructions: CityConstructions): Sequence<RejectionReason> = sequence {
         val cityCenter = cityConstructions.city.getCenterTile()
         val civ = cityConstructions.city.civ
-        val ruleSet = civ.gameInfo.ruleset
 
         if (cityConstructions.isBuilt(name))
             yield(RejectionReasonType.AlreadyBuilt.toInstance())

@@ -11,7 +11,7 @@ Note that all of these are case-sensitive!
 
 ## General Filter Rules
 
-All filters except for `populationFilter` accept multiple values in the format: `{A} {B} {C}` etc, meaning "the object must match ALL of these filters"
+All filters except for `populationFilter` and `resourceFilter` accept multiple values in the format: `{A} {B} {C}` etc, meaning "the object must match ALL of these filters"
 
 > Example: `[{Military} {Water}] units`, `[{Wounded} {Armor}] units`, etc.
 
@@ -206,6 +206,11 @@ For example: `+1 Science`.
 
 These can be strung together with ", " between them, for example: `+2 Production, +3 Food`.
 
+## resourceFilter
+
+At the moment, only used for the `"Improves [resourceFilter] resource in this tile"` Unique on Improvements.
+Allows filtering resources by their name, their type, or by any Stat listed in their `improvementStats` property. The `all` keyword works too.
+
 ## stockpiledResource
 
 This indicates a text that corresponds to a custom Stockpile Resource.
@@ -287,11 +292,11 @@ Allowed values are:
 Indicates *something that can be counted*, used both for comparisons and for multiplying uniques
 
 Allowed values:
+
 - `year`, `turns`
-- `Cities`, `Units`, `Air units` - these count your total number
-- Unit name (counts your existing units)
-- `<unit type> units` (e.g. `Mounted units`) - counts your units by their type (this is not a filter, use the unitType verbatim)
-- Building name (counts your existing buildings)
+- `Cities`, `[cityFilter] Cities`
+- `Units`, `[mapUnitFilter] Units`
+- `[buildingFilter] Buildings`
 - Stat name - gets the stat *reserve*, not the amount per turn (can be city stats or civilization stats, depending on where the unique is used)
 - Resource name (can be city stats or civilization stats, depending on where the unique is used)
 

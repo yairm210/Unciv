@@ -33,6 +33,8 @@ class Technology: RulesetObject() {
     override fun getCivilopediaTextLines(ruleset: Ruleset) =
             TechnologyDescriptions.getCivilopediaTextLines(this, ruleset)
 
+    override fun era(ruleset: Ruleset) = ruleset.eras[era()]
+
     fun matchesFilter(filter: String): Boolean {
         return when (filter) {
             in Constants.all -> true

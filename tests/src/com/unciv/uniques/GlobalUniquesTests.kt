@@ -220,7 +220,7 @@ class GlobalUniquesTests {
         val civ1 = game.addCiv()
         val religion = game.addReligion(civ1)
         val belief = game.createBelief(BeliefType.Founder, "[+30 Science] for each global city following this religion")
-        religion.founderBeliefs.add(belief.name)
+        religion.addBeliefs(listOf(belief))
         val civ2 = game.addCiv()
         val tile = game.getTile(Vector2.Zero)
         val cityOfCiv2 = game.addCity(civ2, tile, initialPopulation = 1) // Need someone to be converted
@@ -238,7 +238,7 @@ class GlobalUniquesTests {
         val civ1 = game.addCiv()
         val religion = game.addReligion(civ1)
         val belief = game.createBelief(BeliefType.Founder, "[+42 Happiness] for each global city following this religion")
-        religion.founderBeliefs.add(belief.name)
+        religion.addBeliefs(listOf(belief))
         val civ2 = game.addCiv()
         val tile = game.getTile(Vector2.Zero)
         val cityOfCiv2 = game.addCity(civ2, tile, initialPopulation = 1) // Need someone to be converted
@@ -256,7 +256,7 @@ class GlobalUniquesTests {
         val civ1 = game.addCiv()
         val religion = game.addReligion(civ1)
         val belief = game.createBelief(BeliefType.Founder, "[+30 Science] from every [3] global followers [in all cities]")
-        religion.founderBeliefs.add(belief.name)
+        religion.addBeliefs(listOf(belief))
         val civ2 = game.addCiv()
         val tile = game.getTile(Vector2.Zero)
         val cityOfCiv2 = game.addCity(civ2, tile, initialPopulation = 9) // Need people to be converted
@@ -350,7 +350,7 @@ class GlobalUniquesTests {
         val city = game.addCity(civInfo, game.getTile(Vector2.Zero), true, 1)
         val religion = game.addReligion(civInfo)
         val belief = game.createBelief(BeliefType.Follower, "[+10]% [Faith] from every follower, up to [42]%")
-        religion.followerBeliefs.add(belief.name)
+        religion.addBeliefs(listOf(belief))
 
         city.religion.addPressure(religion.name, 1000000000)
 

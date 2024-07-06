@@ -284,6 +284,7 @@ class GameSettings {
         Estonian("et", "EE"),
         Finnish("fi", "FI"),
         French("fr", "FR"),
+        Galician("gl", "ES"),
         German("de", "DE"),
         Greek("el", "GR"),
         Hindi("hi", "IN"),

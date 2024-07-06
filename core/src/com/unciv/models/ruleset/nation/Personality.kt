@@ -93,10 +93,17 @@ class Personality: RulesetObject() {
     }
 
     /**
-     * Scales the value to a more meaningful range, where 10 is 2, and 5 is 1
+     * Scales the value to a more meaningful range, where 10 is 2, and 5 is 1, and 0 is 0
      */
     fun scaledFocus(value: PersonalityValue): Float {
         return nameToVariable(value).get() / 5
+    }
+
+    /**
+     * Inverse scales the value to a more meaningful range, where 0 is 2, and 5 is 1 and 10 is 0
+     */
+    fun inverseScaledFocus(value: PersonalityValue): Float {
+        return  (10 - nameToVariable(value).get()) / 5
     }
 
     /**
@@ -105,6 +112,15 @@ class Personality: RulesetObject() {
      */
     fun modifierFocus(value: PersonalityValue, weight: Float): Float {
         return 1f + (scaledFocus(value) - 1) * weight
+    }
+
+    /**
+     * An inverted version of [modifierFocus], a personality value of 0 becomes a 10, 8 becomes a 2, etc.
+     * @param weight a value between 0 and 1 that determines how much the modifier deviates from 1
+     * @return a modifier between 0 and 2 centered around 1 based off of the personality value and the weight given
+     */
+    fun inverseModifierFocus(value: PersonalityValue, weight: Float): Float {
+        return 1f - (inverseScaledFocus(value) - 2) * weight
     }
 
     /**

@@ -1,3 +1,61 @@
+## 4.12.5
+
+Re-add 'construct great improvement' automation for great units that can't do their main actions
+
+Promotion added to unit already containing that promotion, does not retrigger trigger uniques
+
+"Unavailable" units cannot be upgraded to
+
+By SeventhM:
+- Consider passive strength bonuses for force value 
+- Pass in civ for building on tiles 
+
+By SomeTroglodyte:
+- Larger clipboard size on Desktop
+- Add a Unique allowing an Improvement to specify which Resource(s) it improves 
+
+## 4.12.4
+
+Modding version!
+
+- Triggered uniques accept multiplying modifiers
+- Better "Withdraws before melee combat" unique
+- Clearer "no damage penalty for wounded units" unique
+- Countables for Cities, Units, Buildings allow filters
+
+Performance improvements for religion
+
+UI: Improve load game screen - better feedback, missing templates  - By SomeTroglodyte
+
+## 4.12.3
+
+Modding: 
+- "after [amount] turns" -> "after turn number [amount]"
+- "before [amount] turns" -> "before turn number [amount]"
+- "when number of [countable] is greater than [countable]" -> "when number of [countable] is more than [countable]"
+- Clean improvement queue from improvements no longer in ruleset
+- Better unique documentation
+
+Fix performance problem for displaying air units in cities
+
+Fix "edit existing trade" exploit
+
+Fix console city add/remove building format - By SomeTroglodyte
+
+## 4.12.2
+
+Tech, policy, unit and terrain uniques provide multiplied uniques with "for every [countable]" / "for every [amount] [countable]" modifiers
+
+Many performance improvements
+
+Units teleport out of open borders on war declaration
+
+Inquisitors go out of city centers when spaceship parts need to be added in
+
+Add personality uses  - By tuvus
+
+Improvement picker fixes - By SomeTroglodyte 
+
 ## 4.12.1
 
 Performance improvements 

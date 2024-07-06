@@ -291,7 +291,7 @@ class WorldScreen(
     fun openDeveloperConsole() {
         // No cheating unless you're by yourself
         if (gameInfo.civilizations.count { it.isHuman() } > 1) return
-        val consolePopup = DevConsolePopup(this)
+        DevConsolePopup(this)
     }
 
     private fun toggleUI() {

@@ -153,6 +153,7 @@ object RulesetCache : HashMap<String, Ruleset>() {
             newRuleset.mods += mod.name
         }
         newRuleset.updateBuildingCosts() // only after we've added all the mods can we calculate the building costs
+        newRuleset.updateResourceTransients()
 
         return newRuleset
     }

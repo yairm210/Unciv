@@ -105,7 +105,8 @@ object Automation {
             if (city.civ.wantsToFocusOn(stat))
                 yieldStats[stat] *= 2f
 
-            yieldStats[stat] *= civPersonality.scaledFocus(PersonalityValue[stat])
+            val scaledFocus = civPersonality.scaledFocus(PersonalityValue[stat])
+            if (scaledFocus != 1f) yieldStats[stat] *= scaledFocus
         }
 
         // Apply City focus
@@ -184,7 +185,7 @@ object Automation {
             }
             // Only now do we filter out the constructable units because that's a heavier check
             .filter { it.isBuildable(city.cityConstructions) }
-            .toList()
+            .toList().asSequence()
 
         val chosenUnit: BaseUnit
         if (!city.civ.isAtWar()
@@ -233,8 +234,8 @@ object Automation {
         if (civInfo.gameInfo.turns > 120 * speed.barbarianModifier * multiplier)
             multiplier /= 2
 
-        // If we have a lot of, or no cities we are not afraid
-        if (civInfo.cities.isEmpty() || civInfo.cities.size >= 4 * multiplier)
+        // If we have no cities or a lot of units we are not afraid
+        if (civInfo.cities.isEmpty() || civInfo.units.getCivUnits().count() >= 4 * multiplier)
             return false
 
         // If we have vision of our entire starting continent (ish) we are not afraid

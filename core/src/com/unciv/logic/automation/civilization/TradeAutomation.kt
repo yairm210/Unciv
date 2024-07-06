@@ -11,7 +11,7 @@ import com.unciv.logic.trade.TradeEvaluation
 import com.unciv.logic.trade.TradeLogic
 import com.unciv.logic.trade.TradeOffer
 import com.unciv.logic.trade.TradeRequest
-import com.unciv.logic.trade.TradeType
+import com.unciv.logic.trade.TradeOfferType
 import kotlin.math.min
 
 object TradeAutomation {
@@ -67,17 +67,17 @@ object TradeAutomation {
         val counterofferGifts = ArrayList<TradeOffer>()
 
         for (offer in tradeLogic.theirAvailableOffers) {
-            if ((offer.type == TradeType.Gold || offer.type == TradeType.Gold_Per_Turn)
+            if ((offer.type == TradeOfferType.Gold || offer.type == TradeOfferType.Gold_Per_Turn)
                 && tradeRequest.trade.ourOffers.any { it.type == offer.type })
                 continue // Don't want to counteroffer straight gold for gold, that's silly
             if (!offer.isTradable())
                 continue // For example resources gained by trade or CS
-            if (offer.type == TradeType.City)
+            if (offer.type == TradeOfferType.City)
                 continue // Players generally don't want to give up their cities, and they might misclick
 
             if (tradeLogic.currentTrade.theirOffers.any { it.type == offer.type && it.name == offer.name })
                 continue // So you don't get double offers of open borders declarations of war etc.
-            if (offer.type == TradeType.Treaty)
+            if (offer.type == TradeOfferType.Treaty)
                 continue // Don't try to counter with a defensive pact or research pact
 
             val value = evaluation.evaluateBuyCostWithInflation(offer, civInfo, otherCiv, tradeRequest.trade)
@@ -105,7 +105,7 @@ object TradeAutomation {
         }
 
         // Only ask for enough of each resource to get maximum price
-        for (ask in counterofferAsks.keys.filter { it.type == TradeType.Luxury_Resource || it.type == TradeType.Strategic_Resource }) {
+        for (ask in counterofferAsks.keys.filter { it.type == TradeOfferType.Luxury_Resource || it.type == TradeOfferType.Strategic_Resource }) {
             // Remove 1 amount as long as doing so does not change the price
             val originalValue = counterofferAsks[ask]!!
             while (ask.amount > 1
@@ -119,7 +119,7 @@ object TradeAutomation {
         // Adjust any gold asked for
         val toRemove = ArrayList<TradeOffer>()
         for (goldAsk in counterofferAsks.keys
-            .filter { it.type == TradeType.Gold_Per_Turn || it.type == TradeType.Gold }
+            .filter { it.type == TradeOfferType.Gold_Per_Turn || it.type == TradeOfferType.Gold }
             .sortedByDescending { it.type.ordinal }) { // Do GPT first
             val valueOfOne = evaluation.evaluateBuyCostWithInflation(TradeOffer(goldAsk.name, goldAsk.type, 1, goldAsk.duration), civInfo, otherCiv, tradeRequest.trade)
             val amountCanBeRemoved = deltaInOurFavor / valueOfOne
@@ -137,7 +137,7 @@ object TradeAutomation {
             deltaInOurFavor = (deltaInOurFavor * 2) / 3 // Only compensate some of it though, they're the ones asking us
             // First give some GPT, then lump sum - but only if they're not already offering the same
             for (ourGold in tradeLogic.ourAvailableOffers
-                .filter { it.isTradable() && (it.type == TradeType.Gold || it.type == TradeType.Gold_Per_Turn) }
+                .filter { it.isTradable() && (it.type == TradeOfferType.Gold || it.type == TradeOfferType.Gold_Per_Turn) }
                 .sortedByDescending { it.type.ordinal }) {
                 if (tradeLogic.currentTrade.theirOffers.none { it.type == ourGold.type } &&
                     counterofferAsks.keys.none { it.type == ourGold.type } ) {
@@ -196,18 +196,18 @@ object TradeAutomation {
     private fun potentialLuxuryTrades(civInfo: Civilization, otherCivInfo: Civilization): ArrayList<Trade> {
         val tradeLogic = TradeLogic(civInfo, otherCivInfo)
         val ourTradableLuxuryResources = tradeLogic.ourAvailableOffers
-            .filter { it.type == TradeType.Luxury_Resource && it.amount > 1 }
+            .filter { it.type == TradeOfferType.Luxury_Resource && it.amount > 1 }
         val theirTradableLuxuryResources = tradeLogic.theirAvailableOffers
-            .filter { it.type == TradeType.Luxury_Resource && it.amount > 1 }
+            .filter { it.type == TradeOfferType.Luxury_Resource && it.amount > 1 }
         val weHaveTheyDont = ourTradableLuxuryResources
             .filter { resource ->
                 tradeLogic.theirAvailableOffers
-                    .none { it.name == resource.name && it.type == TradeType.Luxury_Resource }
+                    .none { it.name == resource.name && it.type == TradeOfferType.Luxury_Resource }
             }
         val theyHaveWeDont = theirTradableLuxuryResources
             .filter { resource ->
                 tradeLogic.ourAvailableOffers
-                    .none { it.name == resource.name && it.type == TradeType.Luxury_Resource }
+                    .none { it.name == resource.name && it.type == TradeOfferType.Luxury_Resource }
             }.sortedBy { civInfo.cities.count { city -> city.demandedResource == it.name } } // Prioritize resources that get WLTKD
         val trades = ArrayList<Trade>()
         for (i in 0..min(weHaveTheyDont.lastIndex, theyHaveWeDont.lastIndex)) {

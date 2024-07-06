@@ -17,7 +17,7 @@ import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.logic.civilization.managers.AssignedQuest
 import com.unciv.logic.trade.TradeLogic
 import com.unciv.logic.trade.TradeOffer
-import com.unciv.logic.trade.TradeType
+import com.unciv.logic.trade.TradeOfferType
 import com.unciv.models.ruleset.Quest
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.unique.UniqueType
@@ -251,13 +251,13 @@ class CityStateDiplomacyTable(private val diplomacyScreen: DiplomacyScreen) {
                 tradeLogic.currentTrade.ourOffers.add(
                     TradeOffer(
                         Constants.peaceTreaty,
-                        TradeType.Treaty
+                        TradeOfferType.Treaty
                     )
                 )
                 tradeLogic.currentTrade.theirOffers.add(
                     TradeOffer(
                         Constants.peaceTreaty,
-                        TradeType.Treaty
+                        TradeOfferType.Treaty
                     )
                 )
                 tradeLogic.acceptTrade()

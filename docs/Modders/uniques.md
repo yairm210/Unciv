@@ -876,7 +876,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "No defensive terrain penalty"
 	Applicable to: Global, Unit
 
-??? example  "Damage is ignored when determining unit Strength"
+??? example  "No damage penalty for wounded units"
 	Applicable to: Global, Unit
 
 ??? example  "No movement cost to pillage"
@@ -1343,9 +1343,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "Uncapturable"
 	Applicable to: Unit
 
-??? example  "May withdraw before melee ([amount]%)"
-	Example: "May withdraw before melee ([3]%)"
-
+??? example  "Withdraws before melee combat"
 	Applicable to: Unit
 
 ??? example  "Unable to capture cities"
@@ -1797,6 +1795,12 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "Will not be replaced by automated units"
 	Applicable to: Improvement
 
+??? example  "Improves [resourceFilter] resource in this tile"
+	This is offered as an alternative to the improvedBy field of a resource. The result will be cached within the resource definition when loading a game, without knowledge about terrain, cities, civs, units or time. Therefore, most conditionals will not work, only those **not** dependent on game state.
+	Example: "Improves [Strategic] resource in this tile"
+
+	Applicable to: Improvement
+
 ## Resource uniques
 ??? example  "Deposits in [tileFilter] tiles always provide [amount] resources"
 	Example: "Deposits in [Farm] tiles always provide [3] resources"
@@ -1819,16 +1823,19 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Resource
 
 ??? example  "Generated with weight [amount]"
+	The probability for this resource to be chosen is (this resource weight) / (sum weight of all eligible resources). Resources without a unique are given weight `1`
 	Example: "Generated with weight [3]"
 
 	Applicable to: Resource
 
 ??? example  "Minor deposits generated with weight [amount]"
+	The probability for this resource to be chosen is (this resource weight) / (sum weight of all eligible resources). Resources without a unique are not generated as minor deposits.
 	Example: "Minor deposits generated with weight [3]"
 
 	Applicable to: Resource
 
 ??? example  "Generated near City States with weight [amount]"
+	The probability for this resource to be chosen is (this resource weight) / (sum weight of all eligible resources). Only assignable to luxuries, resources without a unique are given weight `1`
 	Example: "Generated near City States with weight [3]"
 
 	Applicable to: Resource
@@ -1927,6 +1934,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
     Modifiers that can be added to other uniques to limit when they will be active
 
 ??? example  "&lt;for [amount] turns&gt;"
+	Turns this unique into a trigger, activating this unique as a *global* unique for a number of turns
 	Example: "&lt;for [3] turns&gt;"
 
 	Applicable to: Conditional
@@ -1941,13 +1949,13 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Conditional
 
-??? example  "&lt;before [amount] turns&gt;"
-	Example: "&lt;before [3] turns&gt;"
+??? example  "&lt;before turn number [amount]&gt;"
+	Example: "&lt;before turn number [3]&gt;"
 
 	Applicable to: Conditional
 
-??? example  "&lt;after [amount] turns&gt;"
-	Example: "&lt;after [3] turns&gt;"
+??? example  "&lt;after turn number [amount]&gt;"
+	Example: "&lt;after turn number [3]&gt;"
 
 	Applicable to: Conditional
 
@@ -2113,18 +2121,21 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Conditional
 
 ??? example  "&lt;when above [amount] [stat/resource]&gt;"
+	Stats refers to the accumulated stat, not stat-per-turn
 	Example: "&lt;when above [3] [Culture]&gt;"
 
 	This unique's effect can be modified with &lt;(modified by game speed)&gt;
 	Applicable to: Conditional
 
 ??? example  "&lt;when below [amount] [stat/resource]&gt;"
+	Stats refers to the accumulated stat, not stat-per-turn
 	Example: "&lt;when below [3] [Culture]&gt;"
 
 	This unique's effect can be modified with &lt;(modified by game speed)&gt;
 	Applicable to: Conditional
 
 ??? example  "&lt;when between [amount] and [amount] [stat/resource]&gt;"
+	Stats refers to the accumulated stat, not stat-per-turn
 	Example: "&lt;when between [3] and [3] [Culture]&gt;"
 
 	This unique's effect can be modified with &lt;(modified by game speed)&gt;
@@ -2294,8 +2305,8 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Conditional
 
-??? example  "&lt;when number of [countable] is greater than [countable]&gt;"
-	Example: "&lt;when number of [1000] is greater than [1000]&gt;"
+??? example  "&lt;when number of [countable] is more than [countable]&gt;"
+	Example: "&lt;when number of [1000] is more than [1000]&gt;"
 
 	Applicable to: Conditional
 
@@ -2517,6 +2528,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 *[promotion]: The name of any promotion.
 *[relativeAmount]: This indicates a number, usually with a + or - sign, such as `+25` (this kind of parameter is often followed by '%' which is nevertheless not part of the value).
 *[resource]: The name of any resource.
+*[resourceFilter]: A resource name, type, 'all', or a Stat listed in the resource's improvementStats.
 *[specialist]: The name of any specialist.
 *[speed]: The name of any speed.
 *[stat]: This is one of the 7 major stats in the game - `Gold`, `Science`, `Production`, `Food`, `Happiness`, `Culture` and `Faith`. Note that the stat names need to be capitalized!

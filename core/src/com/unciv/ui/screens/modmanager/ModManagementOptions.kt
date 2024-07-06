@@ -7,7 +7,7 @@ import com.unciv.Constants
 import com.unciv.models.metadata.ModCategories
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.widgets.ExpanderTab
-import com.unciv.ui.components.UncivTextField
+import com.unciv.ui.components.widgets.UncivTextField
 import com.unciv.ui.components.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.components.extensions.surroundWithCircle
 import com.unciv.ui.components.extensions.toLabel
@@ -78,7 +78,7 @@ internal class ModManagementOptions(private val modManagementScreen: ModManageme
         return Filter(textField.text, category.topic)
     }
 
-    private val textField = UncivTextField.create("Enter search text")
+    private val textField = UncivTextField("Enter search text")
 
     var category = ModCategories.default()
 

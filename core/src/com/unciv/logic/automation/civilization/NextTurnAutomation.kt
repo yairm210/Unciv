@@ -468,19 +468,18 @@ object NextTurnAutomation {
         if (civInfo.cities.none()) return
         if (civInfo.getHappiness() <= civInfo.cities.size) return
 
+        if (civInfo.units.getCivUnits().any { it.hasUnique(UniqueType.FoundCity) }) return
+        if (civInfo.cities.any {
+                val currentConstruction = it.cityConstructions.getCurrentConstruction()
+                currentConstruction is BaseUnit && currentConstruction.isCityFounder()
+            }) return
         val settlerUnits = civInfo.gameInfo.ruleset.units.values
                 .filter { it.isCityFounder() && it.isBuildable(civInfo) &&
                     personality.getMatchingUniques(UniqueType.WillNotBuild, StateForConditionals(civInfo))
                         .none { unique -> it.matchesFilter(unique.params[0]) } }
         if (settlerUnits.isEmpty()) return
-        if (!civInfo.units.getCivUnits().none { it.hasUnique(UniqueType.FoundCity) }) return
 
-        if (civInfo.cities.any {
-                val currentConstruction = it.cityConstructions.getCurrentConstruction()
-                currentConstruction is BaseUnit && currentConstruction.isCityFounder()
-            }) return
-
-        if (civInfo.units.getCivUnits().none { it.isMilitary() }) return // We need someone to defend him first
+        if (civInfo.units.getCivUnits().count { it.isMilitary() } < civInfo.cities.size) return // We need someone to defend them first
 
         val workersBuildableForThisCiv = civInfo.gameInfo.ruleset.units.values.any {
             it.hasUnique(UniqueType.BuildImprovements)
