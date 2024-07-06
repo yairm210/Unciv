@@ -955,7 +955,7 @@ object UniqueTriggerActivation {
                 return {
                     unit.healBy(unique.params[0].toInt())
                     if (notification != null)
-                        unit.civ.addNotification(notification, unit.getTile().position, NotificationCategory.Units) // Do we have a heal icon?
+                        unit.civ.addNotification(notification, MapUnitAction(unit), NotificationCategory.Units) // Do we have a heal icon?
                     true
                 }
             }
@@ -964,7 +964,7 @@ object UniqueTriggerActivation {
                 return {
                     unit.takeDamage(unique.params[0].toInt())
                     if (notification != null)
-                        unit.civ.addNotification(notification, unit.getTile().position, NotificationCategory.Units) // Do we have a heal icon?
+                        unit.civ.addNotification(notification, MapUnitAction(unit), NotificationCategory.Units) // Do we have a heal icon?
                     true
                 }
             }
@@ -974,7 +974,7 @@ object UniqueTriggerActivation {
                 return {
                     unit.promotions.XP += unique.params[0].toInt()
                     if (notification != null)
-                        unit.civ.addNotification(notification, unit.getTile().position, NotificationCategory.Units)
+                        unit.civ.addNotification(notification, MapUnitAction(unit), NotificationCategory.Units)
                     true
                 }
             }
@@ -985,7 +985,7 @@ object UniqueTriggerActivation {
                 return {
                     (upgradeAction.minBy { (it as UpgradeUnitAction).unitToUpgradeTo.cost }).action!!()
                     if (notification != null)
-                        unit.civ.addNotification(notification, unit.getTile().position, NotificationCategory.Units)
+                        unit.civ.addNotification(notification, MapUnitAction(unit), NotificationCategory.Units)
                     true
                 }
             }
@@ -996,7 +996,7 @@ object UniqueTriggerActivation {
                 return {
                     (upgradeAction.minBy { (it as UpgradeUnitAction).unitToUpgradeTo.cost }).action!!()
                     if (notification != null)
-                        unit.civ.addNotification(notification, unit.getTile().position, NotificationCategory.Units)
+                        unit.civ.addNotification(notification, MapUnitAction(unit), NotificationCategory.Units)
                     true
                 }
             }
@@ -1008,7 +1008,7 @@ object UniqueTriggerActivation {
                 return {
                     unit.promotions.addPromotion(promotion, true)
                     if (notification != null)
-                        unit.civ.addNotification(notification, unit.getTile().position, NotificationCategory.Units, unit.name)
+                        unit.civ.addNotification(notification, MapUnitAction(unit), NotificationCategory.Units, unit.name)
                     true
                 }
             }
