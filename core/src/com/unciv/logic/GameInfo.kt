@@ -513,8 +513,8 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
             for (city in cities)
                 thisPlayer.addNotification("Your city [${city.name}] can bombard the enemy!", MapUnitAction(city.location), NotificationCategory.War, NotificationIcon.City, NotificationIcon.Crosshair)
         } else {
-            val positions = cities.asSequence().map { it.location }
-            thisPlayer.addNotification("[${cities.size}] of your cities can bombard the enemy!", LocationAction(positions),  NotificationCategory.War, NotificationIcon.City, NotificationIcon.Crosshair)
+            val notificationActions = cities.asSequence().map { MapUnitAction(it.location) }
+            thisPlayer.addNotification("[${cities.size}] of your cities can bombard the enemy!", notificationActions,  NotificationCategory.War, NotificationIcon.City, NotificationIcon.Crosshair)
         }
     }
 
