@@ -247,7 +247,6 @@ object SpecificUnitAutomation {
             }
 
             // if we got here, we're pretty close, start looking!
-            val localUniqueCache = LocalUniqueCache()
             val chosenTile = applicableTiles.sortedByDescending {
                 Automation.rankTile(
                     it,
