@@ -266,9 +266,12 @@ class TileStatFunctions(val tile: Tile) {
         improvement: TileImprovement,
         observingCiv: Civilization,
         city: City?,
-        cityUniqueCache: LocalUniqueCache = LocalUniqueCache(false)): Stats {
+        cityUniqueCache: LocalUniqueCache = LocalUniqueCache(false),
+        /** Provide this for performance */
+        currentTileStats: Stats? = null): Stats {
 
-        val currentStats = getTileStats(city, observingCiv, cityUniqueCache)
+        val currentStats = currentTileStats
+            ?: getTileStats(city, observingCiv, cityUniqueCache)
 
         val tileClone = tile.clone()
         tileClone.setTerrainTransients()

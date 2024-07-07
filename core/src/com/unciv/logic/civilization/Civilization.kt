@@ -353,6 +353,7 @@ class Civilization : IsPartOfGameInfoSerialization {
     fun isAI() = playerType == PlayerType.AI
     fun isAIOrAutoPlaying(): Boolean {
         if (playerType == PlayerType.AI) return true
+        if (gameInfo.isSimulation()) return true
         val worldScreen = UncivGame.Current.worldScreen ?: return false
         return worldScreen.viewingCiv == this && worldScreen.autoPlay.isAutoPlaying()
     }
@@ -432,7 +433,11 @@ class Civilization : IsPartOfGameInfoSerialization {
             stats.happiness < it != previousHappiness < it // If move from being below them to not, or vice versa
             })
             for (city in cities) city.cityStats.update(updateCivStats = false)
-        stats.statsForNextTurn = stats.getStatMapForNextTurn().values.reduce { a, b -> a + b }
+        val statMapForNextTurn = stats.getStatMapForNextTurn()
+
+        val newStats = Stats()
+        for (stats in statMapForNextTurn.values) newStats.add(stats)
+        stats.statsForNextTurn = newStats
     }
 
     fun getHappiness() = stats.happiness
@@ -483,6 +488,14 @@ class Civilization : IsPartOfGameInfoSerialization {
      * Returns 0 for undefined resources */
     fun getResourceAmount(resourceName: String): Int {
         return getCivResourcesByName()[resourceName] ?: 0
+    }
+
+    /** Gets modifiers for ALL resources */
+    fun getResourceModifiers(): HashMap<String, Float> {
+        val resourceModifers = HashMap<String, Float>()
+        for (resource in gameInfo.ruleset.tileResources.values)
+            resourceModifers[resource.name] = getResourceModifier(resource)
+        return resourceModifers
     }
 
     fun getResourceModifier(resource: TileResource): Float {

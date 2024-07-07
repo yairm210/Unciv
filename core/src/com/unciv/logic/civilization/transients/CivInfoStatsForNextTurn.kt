@@ -141,7 +141,8 @@ class CivInfoStatsForNextTurn(val civInfo: Civilization) {
     }
     fun getUnitSupplyFromCities(): Int {
         return civInfo.cities.size *
-            (civInfo.getDifficulty().unitSupplyPerCity + civInfo.getMatchingUniques(UniqueType.UnitSupplyPerCity).sumOf { it.params[0].toInt() })
+            (civInfo.getDifficulty().unitSupplyPerCity
+                    + civInfo.getMatchingUniques(UniqueType.UnitSupplyPerCity).sumOf { it.params[0].toInt() })
     }
     fun getUnitSupplyFromPop(): Int {
         var totalSupply = civInfo.cities.sumOf { it.population.population } * civInfo.gameInfo.ruleset.modOptions.constants.unitSupplyPerPopulation

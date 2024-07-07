@@ -96,8 +96,7 @@ class DiplomacyFunctions(val civInfo: Civilization) {
     fun canSignResearchAgreement(): Boolean {
         if (!civInfo.isMajorCiv()) return false
         if (!civInfo.hasUnique(UniqueType.EnablesResearchAgreements)) return false
-        if (civInfo.gameInfo.ruleset.technologies.values
-                    .none { civInfo.tech.canBeResearched(it.name) && !civInfo.tech.isResearched(it.name) }) return false
+        if (civInfo.tech.allTechsAreResearched()) return false
         return true
     }
 

@@ -90,7 +90,7 @@ class City : IsPartOfGameInfoSerialization, INamed {
     }
 
     var cityAIFocus: String = CityFocus.NoFocus.name
-    fun getCityFocus() = CityFocus.values().firstOrNull { it.name == cityAIFocus } ?: CityFocus.NoFocus
+    fun getCityFocus() = CityFocus.entries.firstOrNull { it.name == cityAIFocus } ?: CityFocus.NoFocus
     fun setCityFocus(cityFocus: CityFocus){ cityAIFocus = cityFocus.name }
 
 
@@ -194,7 +194,7 @@ class City : IsPartOfGameInfoSerialization, INamed {
 
     fun getRuleset() = civ.gameInfo.ruleset
 
-    fun getResourcesGeneratedByCity() = CityResources.getResourcesGeneratedByCity(this)
+    fun getResourcesGeneratedByCity(civResourceModifiers: HashMap<String, Float>) = CityResources.getResourcesGeneratedByCity(this, civResourceModifiers)
     fun getAvailableResourceAmount(resourceName: String) = CityResources.getAvailableResourceAmount(this, resourceName)
 
     fun isGrowing() = foodForNextTurn() > 0

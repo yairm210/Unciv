@@ -1,3 +1,16 @@
+## 4.12.8
+
+Performance improvements
+
+Better simulation automation
+
+Added missing deprecation validation for unit uniques
+
+By SomeTroglodyte:
+- Translation updates work for diacritic-using languages 
+
+For languages with special number characters, translate numbers to selected language  - By touhidurrr
+
 ## 4.12.7
 
 AI: Better placement for Great Improvements

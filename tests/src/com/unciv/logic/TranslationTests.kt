@@ -5,6 +5,7 @@ import com.badlogic.gdx.Gdx
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.models.metadata.GameSettings
+import com.unciv.models.metadata.GameSettings.LocaleCode
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.stats.Stats
@@ -27,6 +28,7 @@ import org.junit.runner.RunWith
 
 @RunWith(GdxTestRunner::class)
 class TranslationTests {
+    /** Translations to test with - all languages are loaded with diacritic support off */
     private var translations = Translations()
     private var ruleset = Ruleset()
 
@@ -364,6 +366,7 @@ class TranslationTests {
 
     @Test
     fun testNonBasePlaneUnicode() {
+        // This tries how a translation of "Test👍" with diacritic support comes out: Should be 5 codepoints not 6 as the original string representation
         translations.createTranslations("Test", hashMapOf("Test" to "Test\uD83D\uDC4D", "diacritics_support" to "true"))
         testRoundtrip("Test", "Test", "Test\uD83D\uDC4D") { translated ->
             val isOK = translated.startsWith("Test") && translated.length == 5 && translated.last() > DiacriticSupport.getCurrentFreeCode()
@@ -390,6 +393,52 @@ class TranslationTests {
         println("Mapping '$term' in $language to fake alphabet and back:\n\tinput: ${input.literalAndHex()}\n\ttranslated: $translatedHex\n\toutput: ${output.literalAndHex()}")
         Assert.assertEquals(input, output)
         additionalTest?.invoke(translated)
+    }
+
+    @Test
+    fun testNumberTr() {
+        UncivGame.Current = UncivGame()
+        UncivGame.Current.settings = GameSettings()
+
+        val testCases = arrayOf(1, -1, 0.123, -0.123)
+
+        val expectedEnglishOutputs = arrayOf("1", "-1", "0.123", "-0.123")
+        Assert.assertArrayEquals(
+            "Number.tr()", expectedEnglishOutputs, testCases.map { it.tr() }.toTypedArray()
+        )
+        Assert.assertArrayEquals(
+            "Number.tr(${LocaleCode.English.name})",
+            expectedEnglishOutputs,
+            testCases.map { it.tr(LocaleCode.English.name) }.toTypedArray()
+        )
+
+        val expectedBanglaOutputs = arrayOf("১", "-১", "০.১২৩", "-০.১২৩")
+        Assert.assertArrayEquals(
+            "Number.tr(${LocaleCode.Bangla.name})",
+            expectedBanglaOutputs,
+            testCases.map { it.tr(LocaleCode.Bangla.name) }.toTypedArray()
+        )
+    }
+
+    @Test
+    fun testStringsWithNumbers() {
+        UncivGame.Current = UncivGame()
+        UncivGame.Current.settings = GameSettings()
+
+        val tests = arrayOf("1", "+1", "-1", "1.0", "+1.0", "-1.0", "0%", "1/2", "(3/4)")
+
+        UncivGame.Current.settings.language = LocaleCode.English.name
+        Assert.assertArrayEquals(
+            "English", tests, // assume unchanged
+            tests.map { it.tr() }.toTypedArray()
+        )
+
+        UncivGame.Current.settings.language = LocaleCode.Bangla.name
+        Assert.assertArrayEquals(
+            "Bangla",
+            arrayOf("১", "+১", "-১", "১.০", "+১.০", "-১.০", "০%", "১/২", "(৩/৪)"),
+            tests.map { it.tr() }.toTypedArray()
+        )
     }
 
 //    @Test

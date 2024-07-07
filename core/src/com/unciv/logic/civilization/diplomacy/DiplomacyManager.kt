@@ -556,15 +556,18 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
     internal fun setFriendshipBasedModifier() {
         removeModifier(DiplomaticModifiers.DeclaredFriendshipWithOurAllies)
         removeModifier(DiplomaticModifiers.DeclaredFriendshipWithOurEnemies)
-        for (thirdCiv in getCommonKnownCivs()
-                .filter { it.getDiplomacyManager(civInfo)!!.hasFlag(DiplomacyFlags.DeclarationOfFriendship) }) {
+        val civsOtherCivHasDeclaredFriendshipWith = getCommonKnownCivs()
+            .filter { it.getDiplomacyManager(otherCiv())!!.hasFlag(DiplomacyFlags.DeclarationOfFriendship) }
 
-            val relationshipLevel = otherCiv().getDiplomacyManager(thirdCiv)!!.relationshipIgnoreAfraid()
-            val modifierType = when (relationshipLevel) {
+        for (thirdCiv in civsOtherCivHasDeclaredFriendshipWith) {
+            // What do we (A) think about the otherCiv() (B) being friends with the third Civ (C)?
+            val ourRelationshipWithThirdCiv = civInfo.getDiplomacyManager(thirdCiv)!!.relationshipIgnoreAfraid()
+
+            val modifierType = when (ourRelationshipWithThirdCiv) {
                 RelationshipLevel.Unforgivable, RelationshipLevel.Enemy -> DiplomaticModifiers.DeclaredFriendshipWithOurEnemies
                 else -> DiplomaticModifiers.DeclaredFriendshipWithOurAllies
             }
-            val modifierValue = when (relationshipLevel) {
+            val modifierValue = when (ourRelationshipWithThirdCiv) {
                 RelationshipLevel.Unforgivable -> -15f
                 RelationshipLevel.Enemy -> -5f
                 RelationshipLevel.Friend -> 5f

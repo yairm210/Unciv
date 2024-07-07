@@ -3,6 +3,7 @@ package com.unciv.models.translations
 import com.badlogic.gdx.Gdx
 import com.unciv.Constants
 import com.unciv.UncivGame
+import com.unciv.models.metadata.GameSettings.LocaleCode
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.stats.Stat
@@ -13,6 +14,7 @@ import com.unciv.utils.Log
 import com.unciv.utils.debug
 import java.util.Locale
 import org.jetbrains.annotations.VisibleForTesting
+import java.text.NumberFormat
 
 /**
  *  This collection holds all translations for the game.
@@ -82,7 +84,7 @@ class Translations : LinkedHashMap<String, TranslationEntry>() {
     /** This reads all translations for a specific language, including _all_ installed mods.
      *  Vanilla translations go into `this` instance, mod translations into [modsWithTranslations].
      */
-    private fun tryReadTranslationForLanguage(language: String) {
+    private fun tryReadTranslationForLanguage(language: String, noDiacritics: Boolean = false) {
         val translationStart = System.currentTimeMillis()
 
         val translationFileName = "jsons/translations/$language.properties"
@@ -107,21 +109,22 @@ class Translations : LinkedHashMap<String, TranslationEntry>() {
                     modsWithTranslations[modFolder.name()] = translationsForMod
                 }
                 try {
-                    translationsForMod.createTranslations(language, TranslationFileReader.read(modTranslationFile))
+                    translationsForMod.createTranslations(language, TranslationFileReader.read(modTranslationFile), noDiacritics)
                 } catch (ex: Exception) {
                     Log.error("Exception reading translations for ${modFolder.name()} $language", ex)
                 }
             }
         }
 
-        createTranslations(language, languageTranslations)
+        createTranslations(language, languageTranslations, noDiacritics)
 
         debug("Loading translation file for %s - %sms", language, System.currentTimeMillis() - translationStart)
     }
 
     @VisibleForTesting
-    fun createTranslations(language: String, languageTranslations: HashMap<String, String>) {
-        val diacriticSupport = DiacriticSupport(languageTranslations).takeIf { it.isEnabled() }
+    fun createTranslations(language: String, languageTranslations: HashMap<String, String>, noDiacritics: Boolean = false) {
+        val diacriticSupport = if (noDiacritics) null
+            else DiacriticSupport(languageTranslations).takeIf { it.isEnabled() }
         for ((key, value) in languageTranslations) {
             val hashKey = if (key.contains('[') && !key.contains('<'))
                 key.getPlaceholderText()
@@ -172,7 +175,15 @@ class Translations : LinkedHashMap<String, TranslationEntry>() {
         return languages.filter { Gdx.files.internal("jsons/translations/$it.properties").exists() }
     }
 
-    /** Ensure _all_ languages are loaded, used by [TranslationFileWriter] and `TranslationTests` */
+    /** Ensure _all_ languages are loaded, used by [TranslationFileWriter] and `TranslationTests` only.
+     *
+     *  #### Notes:
+     *  -  Expects to run on a newly created instance.
+     *  -  Loads the translations with no diacritic mapping, so what we read will be what we write
+     *     (otherwise we would write out the fake alphabet-conversions, a one-way destructive mistake).
+     *  -  Relies on usage by TFW and tests only, if the result is ever meant to support translations that are actually displayed, a refactor will be needed.
+     *  -  Does not clear the fake alphabet possibly present in DiacriticSupport, but will not use it either.
+     */
     fun readAllLanguagesTranslation() {
         // Apparently you can't iterate over the files in a directory when running out of a .jar...
         // https://www.badlogicgames.com/forum/viewtopic.php?f=11&t=27250
@@ -180,11 +191,9 @@ class Translations : LinkedHashMap<String, TranslationEntry>() {
 
         val translationStart = System.currentTimeMillis()
 
-        DiacriticSupport.reset()
         for (language in getLanguagesWithTranslationFile()) {
-            tryReadTranslationForLanguage(language)
+            tryReadTranslationForLanguage(language, noDiacritics = true)
         }
-        DiacriticSupport.freeTranslationData()
 
         debug("Loading translation files - %sms", System.currentTimeMillis() - translationStart)
     }
@@ -231,6 +240,26 @@ class Translations : LinkedHashMap<String, TranslationEntry>() {
         const val conditionalUniqueOrderString = "ConditionalsPlacement"
         const val shouldCapitalizeString = "StartWithCapitalLetter"
         const val effectBeforeCause = "EffectBeforeCause"
+
+        // NumberFormat cache, key: language, value: NumberFormat
+        private val languageToNumberFormat = mutableMapOf<String, NumberFormat>()
+
+        fun getLocaleFromLanguage(language: String): Locale {
+            val bannedCharacters =
+                listOf(' ', '_', '-', '(', ')') // Things not to have in enum names
+            val languageName = language.filterNot { it in bannedCharacters }
+            return try {
+                val code = LocaleCode.valueOf(languageName)
+                Locale(code.language, code.country)
+            } catch (_: Exception) {
+                Locale.getDefault()
+            }
+        }
+
+        fun getNumberFormatFromLanguage(language: String): NumberFormat =
+            languageToNumberFormat.getOrPut(language) {
+                NumberFormat.getInstance(getLocaleFromLanguage(language))
+            }
     }
 }
 
@@ -252,6 +281,9 @@ val curlyBraceRegex = Regex("""\{([^}]*)\}""")
 @Suppress("RegExpRedundantEscape") // Some Android versions need ]}) escaped
 val pointyBraceRegex = Regex("""\<([^>]*)\>""")
 
+// Used to match continous digits 0, 12, 1232 etc
+@Suppress("RegExpRedundantEscape") // Some Android versions need ]}) escaped
+val digitsRegex = Regex("""\d+""")
 
 object TranslationActiveModsCache {
     private var cachedHash = Int.MIN_VALUE
@@ -443,7 +475,9 @@ private fun String.translatePlaceholders(language: String, hideIcons: Boolean): 
 private fun String.translateIndividualWord(language: String, hideIcons: Boolean): String {
     if (Stats.isStats(this)) return Stats.parse(this).toString()
 
-    val translation = UncivGame.Current.translations.getText(this, language, TranslationActiveModsCache.activeMods)
+    val translation = UncivGame.Current.translations.getText(
+        this, language, TranslationActiveModsCache.activeMods
+    ).replace(digitsRegex) { it.value.toLong().tr(language) }
 
     val stat = Stat.safeValueOf(this)
     if (stat != null) return stat.character + translation
@@ -527,4 +561,14 @@ fun String.removeConditionals(): String {
         // If we ever start getting translations for these, we'll work something out then.
         .replace("  ", " ")
         .trim()
+}
+
+// formats number according to current language
+fun Number.tr(): String {
+    return UncivGame.Current.settings.getCurrentNumberFormat().format(this)
+}
+
+// formats number according to given language
+fun Number.tr(language: String): String {
+    return Translations.getNumberFormatFromLanguage(language).format(this)
 }

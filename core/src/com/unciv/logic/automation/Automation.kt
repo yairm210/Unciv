@@ -50,8 +50,7 @@ object Automation {
         val civPersonality = city.civ.getPersonality()
         val cityStatsObj = city.cityStats
         val civInfo = city.civ
-        val allTechsAreResearched = civInfo.gameInfo.ruleset.technologies.values
-            .all { civInfo.tech.isResearched(it.name) || !civInfo.tech.canBeResearched(it.name)}
+        val allTechsAreResearched = civInfo.tech.allTechsAreResearched()
 
         if (areWeRankingSpecialist) {
             // If you have the Food Bonus, count as 1 extra food production (base is 2food)
@@ -120,7 +119,7 @@ object Automation {
             yieldStats.production /= 6
         }
 
-        for (stat in Stat.values()) {
+        for (stat in Stat.entries) {
             if (city.civ.wantsToFocusOn(stat))
                 yieldStats[stat] *= 2f
 

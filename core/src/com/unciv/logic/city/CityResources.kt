@@ -9,14 +9,9 @@ import com.unciv.models.ruleset.unique.UniqueType
 object CityResources {
 
     /** Returns ALL resources, city-wide and civ-wide */
-    fun getResourcesGeneratedByCity(city: City): ResourceSupplyList {
-        val resourceModifers = HashMap<String, Float>()
-        for (resource in city.civ.gameInfo.ruleset.tileResources.values)
-            resourceModifers[resource.name] = city.civ.getResourceModifier(resource)
-
-        val cityResources = getResourcesGeneratedByCityNotIncludingBuildings(city, resourceModifers)
-        addCityResourcesGeneratedFromUniqueBuildings(city, cityResources, resourceModifers)
-
+    fun getResourcesGeneratedByCity(city: City, resourceModifiers: HashMap<String, Float>): ResourceSupplyList {
+        val cityResources = getResourcesGeneratedByCityNotIncludingBuildings(city, resourceModifiers)
+        addCityResourcesGeneratedFromUniqueBuildings(city, cityResources, resourceModifiers)
         return cityResources
     }
 
