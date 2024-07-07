@@ -892,7 +892,14 @@ class MapUnit : IsPartOfGameInfoSerialization {
             else -> tile.militaryUnit = this
         }
         // this check is here in order to not load the fresh built unit into carrier right after the build
-        isTransported = !tile.isCityCenter() && baseUnit.movesLikeAirUnits  // not moving civilians
+        if (baseUnit.movesLikeAirUnits){
+            if (!tile.isCityCenter()) isTransported = true
+            else {
+                val currentUntransportedUnits = tile.getUnits().count { it.type.isAirUnit() && !it.isTransported }
+                // Tile units includes us, we were just added
+                isTransported = currentUntransportedUnits > tile.getCity()!!.getMaxAirUnits()
+            }
+        }
         moveThroughTile(tile)
         cache.updateUniques()
     }

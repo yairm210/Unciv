@@ -237,6 +237,8 @@ class City : IsPartOfGameInfoSerialization, INamed {
         200 + cityConstructions.getBuiltBuildings().sumOf { it.cityHealth }
 
     fun getStrength() = cityConstructions.getBuiltBuildings().sumOf { it.cityStrength }.toFloat()
+    /** Gets max air units that can remain in the city untransported */
+    fun getMaxAirUnits() = 6
 
     override fun toString() = name // for debug
 
