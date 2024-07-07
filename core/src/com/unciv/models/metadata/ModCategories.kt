@@ -5,6 +5,7 @@ import com.unciv.json.json
 import com.unciv.logic.github.GithubAPI
 import com.unciv.ui.components.widgets.TranslatedSelectBox
 import com.unciv.logic.github.Github
+import com.unciv.models.translations.tr
 
 
 class ModCategories : ArrayList<ModCategories.Category>() {
@@ -81,6 +82,6 @@ class ModCategories : ArrayList<ModCategories.Category>() {
             }
         }
         save()
-        return "$newCount new categories"
+        return "${newCount.tr()} new categories"
     }
 }

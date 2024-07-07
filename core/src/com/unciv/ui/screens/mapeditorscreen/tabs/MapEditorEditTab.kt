@@ -357,7 +357,7 @@ class MapEditorEditTab(
 
     companion object {
         private fun getBrushTip(value: Float, abbreviate: Boolean = false) = when {
-            value <= 5f -> value.toInt().toString()
+            value <= 5f -> value.toInt().tr()
             abbreviate -> "Floodfill_Abbreviation"
             else -> "Floodfill"
         }

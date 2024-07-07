@@ -22,6 +22,7 @@ import com.unciv.models.ruleset.unique.UniqueMap
 import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
+import com.unciv.models.translations.tr
 import com.unciv.ui.components.MayaCalendar
 import com.unciv.ui.components.extensions.withItem
 import com.unciv.ui.components.fonts.Fonts
@@ -139,9 +140,12 @@ class TechManager : IsPartOfGameInfoSerialization {
     fun turnsToTech(techName: String): String {
         val remainingCost = remainingScienceToTech(techName).toDouble()
         return when {
-            remainingCost <= 0f -> "0"
+            remainingCost <= 0f -> (0).tr()
             civInfo.stats.statsForNextTurn.science <= 0f -> Fonts.infinity.toString()
-            else -> max(1, ceil(remainingCost / civInfo.stats.statsForNextTurn.science).toInt()).toString()
+            else -> max(
+                1,
+                ceil(remainingCost / civInfo.stats.statsForNextTurn.science).toInt()
+            ).tr()
         }
     }
 

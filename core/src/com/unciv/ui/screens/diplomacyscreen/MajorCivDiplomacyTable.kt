@@ -118,7 +118,7 @@ class MajorCivDiplomacyTable(private val diplomacyScreen: DiplomacyScreen) {
         if (otherCivDiplomacyManager.hasFlag(DiplomacyFlags.DeclaredWar)) {
             negotiatePeaceButton.disable() // Can't trade for 10 turns after war was declared
             val turnsLeft = otherCivDiplomacyManager.getFlag(DiplomacyFlags.DeclaredWar)
-            negotiatePeaceButton.setText(negotiatePeaceButton.text.toString() + "\n$turnsLeft" + Fonts.turn)
+            negotiatePeaceButton.setText(negotiatePeaceButton.text.toString() + "\n${turnsLeft.tr()}" + Fonts.turn)
         }
         return negotiatePeaceButton
     }

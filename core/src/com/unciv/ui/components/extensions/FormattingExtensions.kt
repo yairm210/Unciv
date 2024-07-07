@@ -29,7 +29,7 @@ fun String.getConsumesAmountString(amount: Int, isStockpiled: Boolean): String {
 fun String.getNeedMoreAmountString(amount: Int) = "Need [$amount] more [$this]"
 
 // todo: There's a few other `if (>0) "+" else ""` around, and a DecimalFormat solution in DetailedStatsPopup: unify
-fun Int.toStringSigned() = if (this > 0) "+$this" else this.toString()
+fun Int.toStringSigned() = if (this > 0) "+${this.tr()}" else this.tr()
 
 /** Formats the [Duration] into a translated string */
 fun Duration.format(): String {

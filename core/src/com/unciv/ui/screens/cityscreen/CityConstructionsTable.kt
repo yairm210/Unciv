@@ -638,7 +638,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
             button.disable()
         } else {
             val constructionBuyCost = construction.getStatBuyCost(city, stat)!!
-            button.setText("Buy".tr() + " " + constructionBuyCost + stat.character)
+            button.setText("Buy".tr() + " " + constructionBuyCost.tr() + stat.character)
 
             button.onActivation(binding = KeyboardBinding.BuyConstruction) {
                 button.disable()
