@@ -237,8 +237,11 @@ class City : IsPartOfGameInfoSerialization, INamed {
         200 + cityConstructions.getBuiltBuildings().sumOf { it.cityHealth }
 
     fun getStrength() = cityConstructions.getBuiltBuildings().sumOf { it.cityStrength }.toFloat()
+
+    // This should probably be configurable
+    private val MAX_AIR_UNITS = 6
     /** Gets max air units that can remain in the city untransported */
-    fun getMaxAirUnits() = 6
+    fun getMaxAirUnits() = MAX_AIR_UNITS
 
     override fun toString() = name // for debug
 
