@@ -240,9 +240,9 @@ class City : IsPartOfGameInfoSerialization, INamed {
 
     // This should probably be configurable
     @Transient
-    private val MAX_AIR_UNITS = 6
+    private val maxAirUnits = 6
     /** Gets max air units that can remain in the city untransported */
-    fun getMaxAirUnits() = MAX_AIR_UNITS
+    fun getMaxAirUnits() = maxAirUnits
 
     override fun toString() = name // for debug
 
