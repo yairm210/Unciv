@@ -239,6 +239,7 @@ class City : IsPartOfGameInfoSerialization, INamed {
     fun getStrength() = cityConstructions.getBuiltBuildings().sumOf { it.cityStrength }.toFloat()
 
     // This should probably be configurable
+    @Transient
     private val MAX_AIR_UNITS = 6
     /** Gets max air units that can remain in the city untransported */
     fun getMaxAirUnits() = MAX_AIR_UNITS
