@@ -193,7 +193,7 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
             throw UncivShowableException("You are not allowed to spectate!")
         }
 
-        initializeResources(prevGameInfo, newGameInfo)
+        initializeResources(newGameInfo)
 
         val isLoadingSameGame = worldScreen != null && prevGameInfo != null && prevGameInfo.gameId == newGameInfo.gameId
         val worldScreenRestoreState = if (!callFromLoadScreen && isLoadingSameGame) worldScreen!!.getRestoreState() else null
@@ -232,16 +232,12 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
     }
 
     /** The new game info may have different mods or rulesets, which may use different resources that need to be loaded. */
-    private suspend fun initializeResources(prevGameInfo: GameInfo?, newGameInfo: GameInfo) {
-        if (prevGameInfo == null
-                || prevGameInfo.gameParameters.baseRuleset != newGameInfo.gameParameters.baseRuleset
-                || prevGameInfo.gameParameters.mods != newGameInfo.gameParameters.mods) {
-            withGLContext {
-                ImageGetter.setNewRuleset(newGameInfo.ruleset)
-            }
-            val fullModList = newGameInfo.gameParameters.getModsAndBaseRuleset()
-            musicController.setModList(fullModList)
+    private suspend fun initializeResources(newGameInfo: GameInfo) {
+        withGLContext {
+            ImageGetter.setNewRuleset(newGameInfo.ruleset)
         }
+        val fullModList = newGameInfo.gameParameters.getModsAndBaseRuleset()
+        musicController.setModList(fullModList)
     }
 
     /** Re-creates the current [worldScreen], if there is any. */
