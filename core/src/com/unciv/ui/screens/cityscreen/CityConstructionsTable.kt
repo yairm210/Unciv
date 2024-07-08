@@ -741,7 +741,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
             constructionBuyCost == 0 -> true
             else -> city.getStatReserve(stat) >= constructionBuyCost
         }
-}
+    }
 
     /** Called only by askToBuyConstruction's Yes answer - not to be confused with [CityConstructions.purchaseConstruction]
      * @param tile supports [UniqueType.CreatesOneImprovement]
