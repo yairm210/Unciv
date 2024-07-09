@@ -82,6 +82,6 @@ class ModCategories : ArrayList<ModCategories.Category>() {
             }
         }
         save()
-        return "${newCount.tr()} new categories"
+        return "$newCount new categories"
     }
 }
