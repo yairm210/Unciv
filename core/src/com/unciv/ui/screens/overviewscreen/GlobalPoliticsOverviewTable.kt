@@ -93,7 +93,7 @@ class GlobalPoliticsOverviewTable(
     /** Clears fixedContent and adds the header cells.
      *  Needs to stay matched to [createGlobalPoliticsTable].
      *
-     *  9 Columns: 5 info, 4 separators. First gets an empty header for contend below = civ image
+     *  9 Columns: 5 info, 4 separators. The first column gets an empty header, the content below is the civ image
      */
     private fun createGlobalPoliticsHeader() = fixedContent.run {
         val diagramButton = "Show diagram".toTextButton().onClick(::updateDiagram)
@@ -264,7 +264,10 @@ class GlobalPoliticsOverviewTable(
     // Refresh content and determine landscape/portrait layout
     private fun updateDiagram() {
         persistableData.showDiagram = true
-        val politicsButton = "Show global politics".toTextButton().onClick(::updatePoliticsTable)
+        val politicsButton = "Show global politics".toTextButton().onClick {
+            updatePoliticsTable()
+            overviewScreen.resizePage(this)  // Or else the header stays curernt size, which with any non-empty diagram is most of the client area
+        }
 
         val toggleCityStatesButton: TextButton = Constants.cityStates.toTextButton().apply {
             onClick {
