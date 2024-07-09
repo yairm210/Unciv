@@ -2,6 +2,7 @@ package com.unciv.logic.automation.unit
 
 import com.badlogic.gdx.math.Vector2
 import com.unciv.logic.civilization.Civilization
+import com.unciv.logic.civilization.MapUnitAction
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.map.MapPathing
@@ -54,7 +55,7 @@ class RoadToAutomation(val civInfo: Civilization) {
             if (foundPath == null) {
                 Log.debug("WorkerAutomation: $unit -> connect road failed")
                 stopAndCleanAutomation(unit)
-                unit.civ.addNotification("Connect road failed!", currentTile.position, NotificationCategory.Units, NotificationIcon.Construction)
+                unit.civ.addNotification("Connect road failed!", MapUnitAction(unit), NotificationCategory.Units, NotificationIcon.Construction)
                 return
             }
 
@@ -71,7 +72,7 @@ class RoadToAutomation(val civInfo: Civilization) {
         if (currTileIndex == -1) {
             Log.debug("$unit -> was moved off its connect road path. Operation cancelled.")
             stopAndCleanAutomation(unit)
-            unit.civ.addNotification("Connect road cancelled!", currentTile.position, NotificationCategory.Units, unit.name)
+            unit.civ.addNotification("Connect road cancelled!", MapUnitAction(unit), NotificationCategory.Units, unit.name)
             return
         }
 
@@ -83,7 +84,7 @@ class RoadToAutomation(val civInfo: Civilization) {
         if (unit.currentMovement > 0 && !shouldBuildRoadOnTile(currentTile)) {
             if (currTileIndex == pathToDest.size - 1) { // The last tile in the path is unbuildable or has a road.
                 stopAndCleanAutomation(unit)
-                unit.civ.addNotification("Connect road completed!", currentTile.position, NotificationCategory.Units, unit.name)
+                unit.civ.addNotification("Connect road completed!", MapUnitAction(unit), NotificationCategory.Units, unit.name)
                 return
             }
 

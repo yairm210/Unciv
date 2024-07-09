@@ -7,6 +7,7 @@ import com.unciv.logic.automation.ThreatLevel
 import com.unciv.logic.automation.civilization.NextTurnAutomation
 import com.unciv.logic.automation.unit.UnitAutomation.wander
 import com.unciv.logic.civilization.Civilization
+import com.unciv.logic.civilization.MapUnitAction
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
@@ -163,7 +164,7 @@ class WorkerAutomation(
 
 
         debug("WorkerAutomation: %s -> nothing to do", unit.toString())
-        unit.civ.addNotification("${unit.shortDisplayName()} has no work to do.", currentTile.position, NotificationCategory.Units, unit.name, "OtherIcons/Sleep")
+        unit.civ.addNotification("${unit.shortDisplayName()} has no work to do.", MapUnitAction(unit), NotificationCategory.Units, unit.name, "OtherIcons/Sleep")
 
         // Idle CS units should wander so they don't obstruct players so much
         if (unit.civ.isCityState)

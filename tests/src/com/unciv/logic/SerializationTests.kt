@@ -6,6 +6,7 @@ import com.unciv.logic.civilization.CivilopediaAction
 import com.unciv.logic.civilization.DiplomacyAction
 import com.unciv.json.LastSeenImprovement
 import com.unciv.logic.civilization.LocationAction
+import com.unciv.logic.civilization.MapUnitAction
 import com.unciv.logic.civilization.Notification
 import com.unciv.logic.map.tile.TileHistory
 import com.unciv.models.Counter
@@ -87,6 +88,7 @@ class SerializationTests {
             Notification("Oh my goddesses", arrayOf("ReligionIcons/Pray"), listOf(CivilopediaAction("Tutorial/Religion")), Notification.NotificationCategory.Religion),
             Notification("There's Horses", arrayOf("ResourceIcons/Horses"), LocationAction(Vector2.Zero, Vector2.X).asIterable(), Notification.NotificationCategory.General),
             Notification("An evil overlord has arisen", arrayOf("PersonalityIcons/Devil"), listOf(DiplomacyAction("Russia")), Notification.NotificationCategory.War),
+            Notification("Here's a Wizzard", arrayOf("EmojiIcons/Great Scientist"), listOf(MapUnitAction(Vector2.Y, 42)), Notification.NotificationCategory.Units),
         )
 
         // Neither Notification nor NotificationAction support equality contract
