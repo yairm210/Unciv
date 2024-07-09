@@ -93,6 +93,11 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
         }
         Current = this
         files = UncivFiles(Gdx.files)
+        Concurrency.run {
+            // Delete temporary files created when downloading mods
+            val tempFiles = Gdx.files.local("mods").list().filter { !it.isDirectory && it.name().startsWith("temp-") }
+            for (file in tempFiles) file.delete()
+        }
 
         // If this takes too long players, especially with older phones, get ANR problems.
         // Whatever needs graphics needs to be done on the main thread,
