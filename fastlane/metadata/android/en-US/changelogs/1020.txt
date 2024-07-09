@@ -1,0 +1,31 @@
+
+
+Delete temporary files created when downloading mods
+
+Allow purchasing air units whenever they can be built
+
+Resolved  - ALWAYS reload images when loading
+
+Resolved  - Hidden conditionals are hidden in more places
+
+URGH
+
+Don't store it dammit
+
+Resolve detekt error
+
+Resolved  - Duplicate notifications are all shown
+
+Resolved  - Can no longer build infinite air units in cities
+
+Resolved  - Countable parameter doesn't display error for "[buildingFilter] Buildings"
+
+Resolved  - Friendship-based modifiers calculated correctly
+
+By SomeTroglodyte:
+- UX: Notifications for map units select better when tapped 
+- Fix GlobalPoliticsOverviewTable listing layout after switching back from diagram 
+
+By SpacedOutChicken:
+- Remove old "will be replaced by automated units" unique 
+- Correct Unique parameters doc to display terrain quality 
