@@ -53,7 +53,7 @@ import com.unciv.ui.components.tilegroups.TileGroup
 import com.unciv.ui.components.tilegroups.TileGroupMap
 import com.unciv.ui.components.tilegroups.TileSetStrings
 import com.unciv.ui.components.tilegroups.WorldTileGroup
-import com.unciv.ui.components.widgets.UnitGroup
+import com.unciv.ui.components.widgets.UnitIconGroup
 import com.unciv.ui.components.widgets.ZoomableScrollPane
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.basescreen.BaseScreen
@@ -299,8 +299,10 @@ class WorldMapHolder(
             // Since this runs in a different thread, even if we check movement.canReach()
             // then it might change until we get to the getTileToMoveTo, so we just try/catch it
             val tileToMoveTo: Tile
+            val pathToTile: List<Tile>
             try {
                 tileToMoveTo = selectedUnit.movement.getTileToMoveToThisTurn(targetTile)
+                pathToTile = selectedUnit.movement.getDistanceToTiles().getPathToTile(targetTile)
             } catch (ex: Exception) {
                 when (ex) {
                     is UnitMovement.UnreachableDestinationException -> {
@@ -308,9 +310,7 @@ class WorldMapHolder(
                         // Or telling a ship to run onto a coastal land tile.
                         // Do nothing
                     }
-                    else -> {
-                        Log.error("Exception in getTileToMoveToThisTurn", ex)
-                    }
+                    else -> Log.error("Exception in getTileToMoveToThisTurn", ex)
                 }
                 return@run // can't move here
             }
@@ -325,6 +325,7 @@ class WorldMapHolder(
                     // but until it reaches the headTowards the board has changed and so the headTowards fails.
                     // I can't think of any way to avoid this,
                     // but it's so rare and edge-case-y that ignoring its failure is actually acceptable, hence the empty catch
+                    val previousTile = selectedUnit.currentTile
                     selectedUnit.movement.moveToTile(tileToMoveTo)
                     if (selectedUnit.isExploring() || selectedUnit.isMoving())
                         selectedUnit.action = null // remove explore on manual move
@@ -335,6 +336,9 @@ class WorldMapHolder(
                     if (selectedUnit.currentMovement > 0) worldScreen.bottomUnitTable.selectUnit(selectedUnit)
 
                     worldScreen.shouldUpdate = true
+
+                    animateMovement(previousTile, selectedUnit, targetTile, pathToTile)
+
                     if (selectedUnits.size > 1) { // We have more tiles to move
                         moveUnitToTargetTile(selectedUnits.subList(1, selectedUnits.size), targetTile)
                     } else removeUnitActionOverlay() //we're done here
@@ -347,6 +351,44 @@ class WorldMapHolder(
                 }
             }
         }
+    }
+
+    private fun animateMovement(
+        previousTile: Tile,
+        selectedUnit: MapUnit,
+        targetTile: Tile,
+        pathToTile: List<Tile>
+    ) {
+        val tileGroup = tileGroups[previousTile]!!
+
+        // Steal the current sprites to our new group
+        val unitSpriteAndIcon = Group().apply { setPosition(tileGroup.x, tileGroup.y) }
+        val unitSpriteSlot = tileGroup.layerUnitArt.getSpriteSlot(selectedUnit)
+        for (spriteImage in unitSpriteSlot.children) unitSpriteAndIcon.addActor(spriteImage)
+        tileGroup.parent.addActor(unitSpriteAndIcon)
+
+        // Disable the final tile, so we won't have one image "merging into" the other
+        val targetTileSpriteSlot = tileGroups[targetTile]!!.layerUnitArt.getSpriteSlot(selectedUnit)
+        targetTileSpriteSlot.isVisible = false
+
+
+        unitSpriteAndIcon.addAction(
+            Actions.sequence(
+                *pathToTile.map { tile ->
+                    Actions.moveTo(
+                        tileGroups[tile]!!.x,
+                        tileGroups[tile]!!.y,
+                        0.5f / pathToTile.size
+                    )
+                }.toTypedArray(),
+                Actions.run {
+                    // Re-enable the final tile
+                    targetTileSpriteSlot.isVisible = true
+                    worldScreen.shouldUpdate = true
+                },
+                Actions.removeActor(),
+            )
+        )
     }
 
     private fun swapMoveUnitToTargetTile(selectedUnit: MapUnit, targetTile: Tile) {
@@ -505,9 +547,9 @@ class WorldMapHolder(
         }
 
         for (unit in unitList) {
-            val unitGroup = UnitGroup(unit, 48f).surroundWithCircle(68f, resizeActor = false)
-            unitGroup.circle.color = Color.GRAY.cpy().apply { a = 0.5f }
-            if (unit.currentMovement == 0f) unitGroup.color.a = 0.66f
+            val unitIconGroup = UnitIconGroup(unit, 48f).surroundWithCircle(68f, resizeActor = false)
+            unitIconGroup.circle.color = Color.GRAY.cpy().apply { a = 0.5f }
+            if (unit.currentMovement == 0f) unitIconGroup.color.a = 0.66f
             val clickableCircle = ClickableCircle(68f)
             clickableCircle.touchable = Touchable.enabled
             clickableCircle.onClick {
@@ -515,8 +557,8 @@ class WorldMapHolder(
                 worldScreen.shouldUpdate = true
                 removeUnitActionOverlay()
             }
-            unitGroup.addActor(clickableCircle)
-            table.add(unitGroup)
+            unitIconGroup.addActor(clickableCircle)
+            table.add(unitIconGroup)
         }
 
         addOverlayOnTileGroup(tileGroups[tile]!!, table)
@@ -546,7 +588,7 @@ class WorldMapHolder(
         }
 
         val firstUnit = dto.unitToTurnsToDestination.keys.first()
-        val unitIcon = if (dto.unitToTurnsToDestination.size == 1) UnitGroup(firstUnit, smallerCircleSizes)
+        val unitIcon = if (dto.unitToTurnsToDestination.size == 1) UnitIconGroup(firstUnit, smallerCircleSizes)
         else dto.unitToTurnsToDestination.size.toString().toLabel(fontColor = firstUnit.civ.nation.getInnerColor()).apply { setAlignment(Align.center) }
                 .surroundWithCircle(smallerCircleSizes).apply { circle.color = firstUnit.civ.nation.getOuterColor() }
         unitIcon.y = buttonSize - unitIcon.height
@@ -575,7 +617,7 @@ class WorldMapHolder(
             }
         )
 
-        val unitIcon = UnitGroup(dto.unit, smallerCircleSizes)
+        val unitIcon = UnitIconGroup(dto.unit, smallerCircleSizes)
         unitIcon.y = buttonSize - unitIcon.height
         swapWithButton.addActor(unitIcon)
 
@@ -595,7 +637,7 @@ class WorldMapHolder(
             }
         )
 
-        val unitIcon = UnitGroup(dto.unit, smallerCircleSizes)
+        val unitIcon = UnitIconGroup(dto.unit, smallerCircleSizes)
         unitIcon.y = buttonSize - unitIcon.height
         connectRoadButton.addActor(unitIcon)
 

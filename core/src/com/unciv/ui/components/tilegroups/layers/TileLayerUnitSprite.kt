@@ -9,28 +9,30 @@ import com.unciv.models.ruleset.unique.LocalUniqueCache
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.components.tilegroups.TileGroup
 
-private class UnitArtSlot : Group() {
+class UnitSpriteSlot : Group() {
     var imageLocation = ""
 }
 
-class TileLayerUnitArt(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup, size) {
+class TileLayerUnitSprite(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup, size) {
 
     override fun act(delta: Float) {}
     override fun hit(x: Float, y: Float, touchable: Boolean): Actor? = null
 
-    private var civilianSlot: UnitArtSlot = UnitArtSlot()
-    private var militarySlot: UnitArtSlot = UnitArtSlot()
+    private var civilianSlot: UnitSpriteSlot = UnitSpriteSlot()
+    private var militarySlot: UnitSpriteSlot = UnitSpriteSlot()
 
     init {
         addActor(civilianSlot)
         addActor(militarySlot)
     }
 
+    fun getSpriteSlot(unit:MapUnit) = if (unit.isCivilian()) civilianSlot else militarySlot
+
     private fun showMilitaryUnit(viewingCiv: Civilization) = tileGroup.isForceVisible
             || viewingCiv.viewableInvisibleUnitsTiles.contains(tileGroup.tile)
             || !tileGroup.tile.hasEnemyInvisibleUnit(viewingCiv)
 
-    private fun updateSlot(slot: UnitArtSlot, unit: MapUnit?, isShown: Boolean) {
+    private fun updateSlot(slot: UnitSpriteSlot, unit: MapUnit?, isShown: Boolean) {
 
         var location = ""
         var nationName = ""
