@@ -20,7 +20,7 @@ import com.unciv.ui.components.extensions.isShiftKeyPressed
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.input.keyShortcuts
 import com.unciv.ui.components.input.onClick
-import com.unciv.ui.components.widgets.UnitGroup
+import com.unciv.ui.components.widgets.UnitIconGroup
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.pickerscreens.CityRenamePopup
@@ -283,7 +283,7 @@ class UnitTable(val worldScreen: WorldScreen) : Table() {
 
         if (selectedUnit != null) {
             if (selectedUnits.size == 1) { // single selected unit
-                unitIconHolder.add(UnitGroup(selectedUnit!!, 30f)).pad(5f)
+                unitIconHolder.add(UnitIconGroup(selectedUnit!!, 30f)).pad(5f)
 
                 for (promotion in selectedUnit!!.promotions.getPromotions(true))
                     promotionsTable.add(ImageGetter.getPromotionPortrait(promotion.name)).padBottom(2f)
@@ -299,7 +299,7 @@ class UnitTable(val worldScreen: WorldScreen) : Table() {
                 }
             } else { // multiple selected units
                 for (unit in selectedUnits)
-                    unitIconHolder.add(UnitGroup(unit, 30f)).pad(5f)
+                    unitIconHolder.add(UnitIconGroup(unit, 30f)).pad(5f)
             }
         }
 

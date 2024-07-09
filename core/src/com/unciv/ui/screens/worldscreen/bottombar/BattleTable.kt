@@ -25,7 +25,7 @@ import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
 import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.components.input.onClick
-import com.unciv.ui.components.widgets.UnitGroup
+import com.unciv.ui.components.widgets.UnitIconGroup
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.worldscreen.UndoHandler.Companion.clearUndoCheckpoints
@@ -123,7 +123,7 @@ class BattleTable(val worldScreen: WorldScreen) : Table() {
     }
 
     private fun getIcon(combatant: ICombatant) =
-        if (combatant is MapUnitCombatant) UnitGroup(combatant.unit,25f)
+        if (combatant is MapUnitCombatant) UnitIconGroup(combatant.unit,25f)
         else ImageGetter.getNationPortrait(combatant.getCivInfo().nation, 25f)
 
     private val quarterScreen = worldScreen.stage.width / 4
