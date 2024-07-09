@@ -1,31 +1,16 @@
+Solved edge-case missing images bug
 
+Hidden conditionals are hidden in more places
 
-Delete temporary files created when downloading mods
+Duplicate notifications are all shown
 
-Allow purchasing air units whenever they can be built
+Fixed infinite air units in cities
 
-Resolved  - ALWAYS reload images when loading
-
-Resolved  - Hidden conditionals are hidden in more places
-
-URGH
-
-Don't store it dammit
-
-Resolve detekt error
-
-Resolved  - Duplicate notifications are all shown
-
-Resolved  - Can no longer build infinite air units in cities
-
-Resolved  - Countable parameter doesn't display error for "[buildingFilter] Buildings"
-
-Resolved  - Friendship-based modifiers calculated correctly
+Friendship-based modifiers calculated correctly
 
 By SomeTroglodyte:
 - UX: Notifications for map units select better when tapped 
-- Fix GlobalPoliticsOverviewTable listing layout after switching back from diagram 
+- Fix GlobalPoliticsOverviewTable table layout after switching back from diagram 
 
 By SpacedOutChicken:
-- Remove old "will be replaced by automated units" unique 
-- Correct Unique parameters doc to display terrain quality 
+- Correct Unique parameters doc to display terrain quality
