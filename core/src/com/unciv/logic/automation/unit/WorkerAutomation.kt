@@ -188,6 +188,7 @@ class WorkerAutomation(
                         || (unit.isMilitary() && (it.militaryUnit == null || !it.militaryUnit!!.cache.hasUniqueToBuildImprovements)))
                 && (it.owningCity == null || it.getOwner() == civInfo)
                 && !it.isCityCenter()
+                && it.getTileImprovement()?.hasUnique(UniqueType.AutomatedUnitsWillNotReplace) != true
                 && getBasePriority(it, unit) > 1
             }
 
