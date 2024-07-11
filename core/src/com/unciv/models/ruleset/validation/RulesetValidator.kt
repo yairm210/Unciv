@@ -109,7 +109,7 @@ class RulesetValidator(val ruleset: Ruleset) {
     private fun checkFiles(lines: RulesetErrorList) {
         val folder = ruleset.folderLocation ?: return
         for (child in folder.list()){
-            if (child.name().endsWith("json"))
+            if (child.name().endsWith("json") && !child.name().startsWith("Atlas"))
                 lines.add("File ${child.name()} is located in the root folder - it should be moved to a 'jsons' folder")
         }
     }
