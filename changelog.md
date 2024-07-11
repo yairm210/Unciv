@@ -1,3 +1,33 @@
+## 4.12.10
+
+chore: TranslatedSelectBox doesn't need a skin parameter when it always uses the default anyway
+
+Added "Can only start games from the starting era" conditional, "if [buildingFilter] is not constructed" unique
+
+Resolved  - AI no longer declares war against defeated civs
+
+Unified AI and Human gold purchase logic
+
+Modding docs: Show uniques on all targets
+
+Ruleset validation: Catch "building required for victory milestone but does not exist" errors
+
+"Will not be replaced by automated units" unique fix
+
+EOF
+
+Separate tile update functions from the rest of WorldMapHolder, it's too big
+
+UNIT MOVEMENT ANIMATION
+
+chore: renames
+
+chore: renames
+
+Fix Google Play deploy
+
+Fix cases where Numbers Translations does not work properly  - By touhidurrr
+
 ## 4.12.9
 
 Solved edge-case missing images bug
