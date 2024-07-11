@@ -121,7 +121,8 @@ class UniqueTable(isMainUnique: Boolean, val ruleset: Ruleset, stage: Stage,
     ) {
         val selected = UniqueTarget.entries.first { it.name == uniqueTargetsSelectBox.selected.value }
         val uniquesForTarget = UniqueType.entries.filter { it.canAcceptUniqueTarget(selected) }
-        val uniqueSelectBox = TranslatedSelectBox(uniquesForTarget.map { it.name }, uniquesForTarget.first().name)
+        val uniqueSelectBox = TranslatedSelectBox(uniquesForTarget.filter { it.getDeprecationAnnotation() == null }
+            .map { it.name }, uniquesForTarget.first().name)
         uniqueSelectBox.onChange {
             onUniqueSelected(uniqueSelectBox, uniqueTextField, ruleset, parameterSelectBoxTable)
         }
