@@ -223,7 +223,7 @@ class UnitTable(val worldScreen: WorldScreen) : Table() {
             separator.isVisible = true
             val city = selectedCity!!
             var nameLabelText = city.name.tr()
-            if (city.health < city.getMaxHealth()) nameLabelText += " ("+city.health+")"
+            if (city.health < city.getMaxHealth()) nameLabelText += " (${city.health.tr()})"
             unitNameLabel.setText(nameLabelText)
 
             unitNameLabel.clearListeners()
@@ -311,7 +311,7 @@ class UnitTable(val worldScreen: WorldScreen) : Table() {
 
     private fun buildNameLabelText(unit: MapUnit) : String {
         var nameLabelText = unit.displayName().tr(true)
-        if (unit.health < 100) nameLabelText += " (" + unit.health + ")"
+        if (unit.health < 100) nameLabelText += " (${unit.health.tr()})"
 
         return nameLabelText
     }

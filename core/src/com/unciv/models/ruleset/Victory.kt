@@ -9,6 +9,7 @@ import com.unciv.models.Counter
 import com.unciv.models.stats.INamed
 import com.unciv.models.translations.getPlaceholderParameters
 import com.unciv.models.translations.getPlaceholderText
+import com.unciv.models.translations.tr
 import com.unciv.ui.components.extensions.toTextButton
 
 
@@ -139,11 +140,11 @@ class Milestone(val uniqueDescription: String, private val parentVictory: Victor
             MilestoneType.ScoreAfterTimeOut, MilestoneType.BuiltBuilding ->
                 uniqueDescription
             MilestoneType.CompletePolicyBranches -> {
-                val amountToDo = params[0]
+                val amountToDo = params[0].tr()
                 val amountDone =
                     if (completed) amountToDo
-                    else civInfo.getCompletedPolicyBranchesCount()
-                "{$uniqueDescription} ($amountDone/$amountToDo)"
+                    else civInfo.getCompletedPolicyBranchesCount().tr()
+                "{$uniqueDescription} (${amountDone}/${amountToDo})"
             }
             MilestoneType.CaptureAllCapitals -> {
                 val amountToDo = civsWithPotentialCapitalsToOwn(civInfo.gameInfo).size
@@ -151,9 +152,9 @@ class Milestone(val uniqueDescription: String, private val parentVictory: Victor
                     if (completed) amountToDo
                     else originalMajorCapitalsOwned(civInfo)
                 if (civInfo.hideCivCount())
-                    "{$uniqueDescription} ($amountDone/?)"
+                    "{$uniqueDescription} (${amountDone.tr()}/?)"
                 else
-                    "{$uniqueDescription} ($amountDone/$amountToDo)"
+                    "{$uniqueDescription} (${amountDone.tr()}/${amountToDo.tr()})"
             }
             MilestoneType.DestroyAllPlayers -> {
                 val amountToDo = civInfo.gameInfo.civilizations.count { it.isMajorCiv() } - 1  // Don't count yourself
@@ -161,9 +162,9 @@ class Milestone(val uniqueDescription: String, private val parentVictory: Victor
                     if (completed) amountToDo
                     else amountToDo - (civInfo.gameInfo.getAliveMajorCivs().count { it != civInfo })
                 if (civInfo.hideCivCount())
-                    "{$uniqueDescription} ($amountDone/?)"
+                    "{$uniqueDescription} (${amountDone.tr()}/?)"
                 else
-                    "{$uniqueDescription} ($amountDone/$amountToDo)"
+                    "{$uniqueDescription} (${amountDone.tr()}/${amountToDo.tr()})"
             }
             MilestoneType.AddedSSPartsInCapital -> {
                 val completeSpaceshipParts = civInfo.victoryManager.currentsSpaceshipParts
@@ -173,7 +174,7 @@ class Milestone(val uniqueDescription: String, private val parentVictory: Victor
 
                 val amountDone = amountToDo - incompleteSpaceshipParts.sumValues()
 
-                "{$uniqueDescription} ($amountDone/$amountToDo)"
+                "{$uniqueDescription} (${amountDone.tr()}/${amountToDo.tr()})"
             }
             MilestoneType.WorldReligion -> {
                 val amountToDo = civInfo.gameInfo.civilizations.count { it.isMajorCiv() && it.isAlive() } - 1  // Don't count yourself
@@ -187,7 +188,7 @@ class Milestone(val uniqueDescription: String, private val parentVictory: Victor
                             it.religionManager.isMajorityReligionForCiv(civInfo.religionManager.religion!!)
                         }
                     }
-                "{$uniqueDescription} ($amountDone/$amountToDo)"
+                "{$uniqueDescription} (${amountDone.tr()}/${amountToDo.tr()})"
             }
         }
     }
