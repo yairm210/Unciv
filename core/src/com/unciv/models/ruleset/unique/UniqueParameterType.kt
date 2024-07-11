@@ -74,7 +74,8 @@ enum class UniqueParameterType(
             Stat.isStat(parameterText) -> true
             parameterText in ruleset.tileResources -> true
             parameterText in ruleset.units -> true
-            parameterText.removeSuffix(" units").removeSurrounding("[", "]") in ruleset.unitTypes -> true
+            parameterText.removeSuffix(" Units").removeSurrounding("[", "]") in ruleset.unitTypes -> true
+            parameterText.removeSuffix(" Buildings").removeSurrounding("[", "]") in ruleset.buildings -> true
             else -> parameterText in ruleset.buildings
         }
     },

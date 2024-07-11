@@ -269,7 +269,7 @@ object BuildingDescriptions {
                 if (!tileBonusHashmap.containsKey(stats)) tileBonusHashmap[stats] = ArrayList()
                 tileBonusHashmap[stats]!!.add(unique.params[1])
             }
-            else -> yield(unique.text)
+            else -> yield(unique.getDisplayText())
         }
         for ((key, value) in tileBonusHashmap)
             yield( "[stats] from [tileFilter] tiles in this city"

@@ -9,28 +9,30 @@ import com.unciv.models.ruleset.unique.LocalUniqueCache
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.components.tilegroups.TileGroup
 
-private class UnitArtSlot : Group() {
+class UnitSpriteSlot : Group() {
     var imageLocation = ""
 }
 
-class TileLayerUnitArt(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup, size) {
+class TileLayerUnitSprite(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup, size) {
 
     override fun act(delta: Float) {}
     override fun hit(x: Float, y: Float, touchable: Boolean): Actor? = null
 
-    private var slot1: UnitArtSlot = UnitArtSlot()
-    private var slot2: UnitArtSlot = UnitArtSlot()
+    private var civilianSlot: UnitSpriteSlot = UnitSpriteSlot()
+    private var militarySlot: UnitSpriteSlot = UnitSpriteSlot()
 
     init {
-        addActor(slot1)
-        addActor(slot2)
+        addActor(civilianSlot)
+        addActor(militarySlot)
     }
+
+    fun getSpriteSlot(unit:MapUnit) = if (unit.isCivilian()) civilianSlot else militarySlot
 
     private fun showMilitaryUnit(viewingCiv: Civilization) = tileGroup.isForceVisible
             || viewingCiv.viewableInvisibleUnitsTiles.contains(tileGroup.tile)
             || !tileGroup.tile.hasEnemyInvisibleUnit(viewingCiv)
 
-    private fun updateSlot(slot: UnitArtSlot, unit: MapUnit?, isShown: Boolean) {
+    private fun updateSlot(slot: UnitSpriteSlot, unit: MapUnit?, isShown: Boolean) {
 
         var location = ""
         var nationName = ""
@@ -66,29 +68,26 @@ class TileLayerUnitArt(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup,
 
     override fun doUpdate(viewingCiv: Civilization?, localUniqueCache: LocalUniqueCache) {
 
-        val slot1Unit = tileGroup.tile.civilianUnit
-        val slot2Unit = tileGroup.tile.militaryUnit
-
         val isPixelUnitsEnabled = UncivGame.Current.settings.showPixelUnits
         val isViewable = viewingCiv == null || isViewable(viewingCiv)
         val isVisibleMilitary = viewingCiv == null || showMilitaryUnit(viewingCiv)
 
-        val isSlot1Shown = isPixelUnitsEnabled && isViewable
-        val isSlot2Shown = isPixelUnitsEnabled && isViewable && isVisibleMilitary
+        val isCivilianSlotShown = isPixelUnitsEnabled && isViewable
+        val isMilitarySlotShown = isPixelUnitsEnabled && isViewable && isVisibleMilitary
 
-        updateSlot(slot1, slot1Unit, isShown = isSlot1Shown)
-        updateSlot(slot2, slot2Unit, isShown = isSlot2Shown)
+        updateSlot(civilianSlot, tileGroup.tile.civilianUnit, isShown = isCivilianSlotShown)
+        updateSlot(militarySlot, tileGroup.tile.militaryUnit, isShown = isMilitarySlotShown)
     }
 
     override fun determineVisibility() {
-        isVisible = slot1.hasChildren() || slot2.hasChildren()
+        isVisible = civilianSlot.hasChildren() || militarySlot.hasChildren()
     }
 
     fun reset() {
-        slot1.clear()
-        slot2.clear()
+        civilianSlot.clear()
+        militarySlot.clear()
 
-        slot1.imageLocation = ""
-        slot2.imageLocation = ""
+        civilianSlot.imageLocation = ""
+        militarySlot.imageLocation = ""
     }
 }

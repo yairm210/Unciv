@@ -1,3 +1,22 @@
+## 4.12.9
+
+Solved edge-case missing images bug
+
+Hidden conditionals are hidden in more places
+
+Duplicate notifications are all shown
+
+Fixed infinite air units in cities
+
+Friendship-based modifiers calculated correctly
+
+By SomeTroglodyte:
+- UX: Notifications for map units select better when tapped 
+- Fix GlobalPoliticsOverviewTable table layout after switching back from diagram 
+
+By SpacedOutChicken:
+- Correct Unique parameters doc to display terrain quality 
+
 ## 4.12.8
 
 Performance improvements

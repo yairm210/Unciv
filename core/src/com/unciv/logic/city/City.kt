@@ -238,6 +238,12 @@ class City : IsPartOfGameInfoSerialization, INamed {
 
     fun getStrength() = cityConstructions.getBuiltBuildings().sumOf { it.cityStrength }.toFloat()
 
+    // This should probably be configurable
+    @Transient
+    private val maxAirUnits = 6
+    /** Gets max air units that can remain in the city untransported */
+    fun getMaxAirUnits() = maxAirUnits
+
     override fun toString() = name // for debug
 
     fun isHolyCity(): Boolean = religion.religionThisIsTheHolyCityOf != null && !religion.isBlockedHolyCity
@@ -414,7 +420,7 @@ class City : IsPartOfGameInfoSerialization, INamed {
         val tile = getCenterTile()
         return when {
             construction.isCivilian() -> tile.civilianUnit == null
-            construction.movesLikeAirUnits -> tile.airUnits.count { !it.isTransported } < 6
+            construction.movesLikeAirUnits -> return true // Dealt with in MapUnit.getRejectionReasons
             else -> tile.militaryUnit == null
         }
     }

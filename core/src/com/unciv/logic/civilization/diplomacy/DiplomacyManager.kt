@@ -33,8 +33,8 @@ enum class RelationshipLevel(val color: Color) {
     Ally(Color.CHARTREUSE)           // HSV(90,100,100)
     ;
     operator fun plus(delta: Int): RelationshipLevel {
-        val newOrdinal = (ordinal + delta).coerceIn(0, values().size - 1)
-        return values()[newOrdinal]
+        val newOrdinal = (ordinal + delta).coerceIn(0, entries.size - 1)
+        return entries[newOrdinal]
     }
 }
 
@@ -110,7 +110,7 @@ enum class DiplomaticModifiers(val text: String) {
     BelieveSameReligion("We believe in the same religion");
 
     companion object{
-        private val valuesAsMap = DiplomaticModifiers.values().associateBy { it.name }
+        private val valuesAsMap = entries.associateBy { it.name }
         fun safeValueOf(name: String) = valuesAsMap[name]
     }
 }
@@ -391,7 +391,8 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
     }
 
 
-    fun canDeclareWar() = turnsToPeaceTreaty() == 0 && diplomaticStatus != DiplomaticStatus.War
+    fun canDeclareWar() = !civInfo.isDefeated() && !otherCiv().isDefeated()
+            && turnsToPeaceTreaty() == 0 && diplomaticStatus != DiplomaticStatus.War
 
     fun declareWar(declareWarReason: DeclareWarReason = DeclareWarReason(WarType.DirectWar)) = DeclareWar.declareWar(this, declareWarReason)
 

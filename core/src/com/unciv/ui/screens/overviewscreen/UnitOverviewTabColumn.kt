@@ -13,7 +13,7 @@ import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.widgets.SortableGrid
-import com.unciv.ui.components.widgets.UnitGroup
+import com.unciv.ui.components.widgets.UnitIconGroup
 import com.unciv.ui.images.IconTextButton
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.pickerscreens.UnitRenamePopup
@@ -33,7 +33,7 @@ enum class UnitOverviewTabColumn(
             // Unit button column - name, health, fortified, sleeping, embarked are visible here
             val button = IconTextButton(
                 item.displayName(),
-                UnitGroup(item, 20f).apply { if (!unit.isIdle()) color.a = 0.5f },
+                UnitIconGroup(item, 20f).apply { if (!unit.isIdle()) color.a = 0.5f },
                 fontColor = if (item.isIdle()) Color.WHITE else Color.LIGHT_GRAY
             )
             button.name = getUnitIdentifier(item)  // Marker to find a unit in select()

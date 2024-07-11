@@ -4,6 +4,7 @@ import com.badlogic.gdx.math.Vector2
 import com.unciv.UncivGame
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
+import com.unciv.logic.civilization.MapUnitAction
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.transients.CivInfoTransientCache
 import com.unciv.logic.map.mapunit.MapUnit
@@ -62,7 +63,7 @@ class UnitManager(val civInfo: Civilization) {
         // silently bail if no tile to place the unit is found
             ?: return null
         if (unit.isGreatPerson) {
-            civInfo.addNotification("A [${unit.name}] has been born in [${cityToAddTo.name}]!", placedUnit.getTile().position, NotificationCategory.General, unit.name)
+            civInfo.addNotification("A [${unit.name}] has been born in [${cityToAddTo.name}]!", MapUnitAction(placedUnit), NotificationCategory.General, unit.name)
         }
 
         if (placedUnit.hasUnique(UniqueType.ReligiousUnit) && civInfo.gameInfo.isReligionEnabled()) {

@@ -51,7 +51,7 @@ class ModCheckTab(
         val labeledBaseSelect = Table().apply {
             add("Check extension mods based on:".toLabel()).padRight(10f)
             val baseMods = listOf(MOD_CHECK_WITHOUT_BASE) + RulesetCache.getSortedBaseRulesets()
-            modCheckBaseSelect = TranslatedSelectBox(baseMods, MOD_CHECK_WITHOUT_BASE, BaseScreen.skin).apply {
+            modCheckBaseSelect = TranslatedSelectBox(baseMods, MOD_CHECK_WITHOUT_BASE).apply {
                 selectedIndex = 0
                 onChange { runAction() }
             }

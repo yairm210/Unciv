@@ -292,7 +292,7 @@ object BaseUnitDescriptions {
         val lostAbilityPredicate: (Unique)->Boolean = { it.text in betterUnit.uniques || it.isHiddenToUsers() }
         for (unique in originalUnit.uniqueObjects.filterNot(lostAbilityPredicate)) {
             // Need double translation of the "ability" here - unique texts may contain nuts - pardon, square brackets
-            yield("Lost ability (vs [${originalUnit.name}]): [${unique.text.tr()}]" to null)
+            yield("Lost ability (vs [${originalUnit.name}]): [${unique.getDisplayText().tr()}]" to null)
         }
         for (promotionName in betterUnit.promotions.filter { it !in originalUnit.promotions }) {
             val promotion = ruleset.unitPromotions[promotionName]!!

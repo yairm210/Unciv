@@ -11,7 +11,7 @@ import com.unciv.ui.components.tilegroups.layers.TileLayerFeatures
 import com.unciv.ui.components.tilegroups.layers.TileLayerMisc
 import com.unciv.ui.components.tilegroups.layers.TileLayerOverlay
 import com.unciv.ui.components.tilegroups.layers.TileLayerTerrain
-import com.unciv.ui.components.tilegroups.layers.TileLayerUnitArt
+import com.unciv.ui.components.tilegroups.layers.TileLayerUnitSprite
 import com.unciv.ui.components.tilegroups.layers.TileLayerUnitFlag
 import com.unciv.utils.DebugUtils
 import kotlin.math.pow
@@ -49,7 +49,7 @@ open class TileGroup(
     @Suppress("LeakingThis") val layerBorders = TileLayerBorders(this, groupSize)
     @Suppress("LeakingThis") val layerMisc = TileLayerMisc(this, groupSize)
     @Suppress("LeakingThis") val layerOverlay = TileLayerOverlay(this, groupSize)
-    @Suppress("LeakingThis") val layerUnitArt = TileLayerUnitArt(this, groupSize)
+    @Suppress("LeakingThis") val layerUnitArt = TileLayerUnitSprite(this, groupSize)
     @Suppress("LeakingThis") val layerUnitFlag = TileLayerUnitFlag(this, groupSize)
     @Suppress("LeakingThis") val layerCityButton = TileLayerCityButton(this, groupSize)
 
