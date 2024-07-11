@@ -352,7 +352,7 @@ class GameOptionsTable(
 
     private fun Table.addSelectBox(text: String, values: Collection<String>, initialState: String, onChange: (newValue: String) -> String?): TranslatedSelectBox {
         add(text.toLabel(hideIcons = true)).left()
-        val selectBox = TranslatedSelectBox(values, initialState, BaseScreen.skin)
+        val selectBox = TranslatedSelectBox(values, initialState)
         selectBox.isDisabled = locked
         selectBox.onChange {
             val changedValue = onChange(selectBox.selected.value)

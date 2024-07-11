@@ -59,12 +59,12 @@ internal class ModManagementOptions(private val modManagementScreen: ModManageme
         Stars("Stars ${Fonts.sortDownArrow}", "${Fonts.star}${Fonts.sortDownArrow}", sortByStars),
         Status("Status ${Fonts.sortDownArrow}", "${Fonts.status}${Fonts.sortDownArrow}", sortByStatus)
         ;
-        fun next() = values()[(ordinal + 1) % values().size]
+        fun next() = entries[(ordinal + 1) % entries.size]
 
         companion object {
             fun fromSelectBox(selectBox: TranslatedSelectBox): SortType {
                 val selected = selectBox.selected.value
-                return values().firstOrNull { it.label == selected } ?: Name
+                return entries.firstOrNull { it.label == selected } ?: Name
             }
         }
     }
@@ -97,9 +97,8 @@ internal class ModManagementOptions(private val modManagementScreen: ModManageme
             .surroundWithCircle(50f, color = Color.CLEAR)
 
         sortInstalledSelect = TranslatedSelectBox(
-            SortType.values().filter { sort -> sort != SortType.Stars }.map { sort -> sort.label },
-            sortInstalled.label,
-            BaseScreen.skin
+            SortType.entries.filter { sort -> sort != SortType.Stars }.map { sort -> sort.label },
+            sortInstalled.label
         )
         sortInstalledSelect.onChange {
             sortInstalled = SortType.fromSelectBox(sortInstalledSelect)
@@ -107,9 +106,8 @@ internal class ModManagementOptions(private val modManagementScreen: ModManageme
         }
 
         sortOnlineSelect = TranslatedSelectBox(
-            SortType.values().map { sort -> sort.label },
-            sortOnline.label,
-            BaseScreen.skin
+            SortType.entries.map { sort -> sort.label },
+            sortOnline.label
         )
         sortOnlineSelect.onChange {
             sortOnline = SortType.fromSelectBox(sortOnlineSelect)
@@ -118,8 +116,7 @@ internal class ModManagementOptions(private val modManagementScreen: ModManageme
 
         categorySelect = TranslatedSelectBox(
             ModCategories.asSequence().map { it.label }.toList(),
-            category.label,
-            BaseScreen.skin
+            category.label
         )
         categorySelect.onChange {
             category = ModCategories.fromSelectBox(categorySelect)

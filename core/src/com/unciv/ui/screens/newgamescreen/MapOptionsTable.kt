@@ -24,7 +24,7 @@ class MapOptionsTable(private val newGameScreen: NewGameScreen) : Table() {
         val mapTypes = arrayListOf(MapGeneratedMainType.generated, MapGeneratedMainType.randomGenerated)
         if (savedMapOptionsTable.isNotEmpty()) mapTypes.add(MapGeneratedMainType.custom)
 
-        mapTypeSelectBox = TranslatedSelectBox(mapTypes, MapGeneratedMainType.generated, BaseScreen.skin)
+        mapTypeSelectBox = TranslatedSelectBox(mapTypes, MapGeneratedMainType.generated)
 
         fun updateOnMapTypeChange() {
             mapTypeSpecificTable.clear()

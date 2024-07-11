@@ -2622,7 +2622,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "Disable religion"
 	Applicable to: ModOptions
 
-??? example  "Can only start games from the default era"
+??? example  "Can only start games from the starting era"
 	Applicable to: ModOptions
 
 ??? example  "Allow raze capital"
