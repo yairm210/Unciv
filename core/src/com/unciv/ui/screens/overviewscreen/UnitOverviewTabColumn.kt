@@ -112,7 +112,7 @@ enum class UnitOverviewTabColumn(
 
     Health(isNumeric = true) {
         override fun getEntryValue(item: MapUnit) = item.health
-        override fun getEntryString(item: MapUnit) = if (item.health == 100) null else item.health.toString()
+        override fun getEntryString(item: MapUnit) = if (item.health == 100) null else item.health.tr()
         override fun getTotalsActor(items: Iterable<MapUnit>) = items.count { it.health < 100 }.toCenteredLabel()
     },
     ;
@@ -126,7 +126,7 @@ enum class UnitOverviewTabColumn(
     override val defaultSort get() = SortableGrid.SortDirection.Ascending
     //endregion
 
-    open fun getEntryString(item: MapUnit): String? = getEntryValue(item).takeIf { it > 0 }?.toString()
+    open fun getEntryString(item: MapUnit): String? = getEntryValue(item).takeIf { it > 0 }?.tr()
 
     //region Overridden superclass methods
     override fun getHeaderActor(iconSize: Float) = (headerLabel ?: name).toLabel()

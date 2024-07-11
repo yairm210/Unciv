@@ -357,7 +357,7 @@ class TechPickerScreen(
             techTable.stageToLocalCoordinates(techButtonCoords)
             if (tempTechsToResearch.contains(techName) && tempTechsToResearch.size > 1) {
                 val index = tempTechsToResearch.indexOf(techName) + 1
-                val orderIndicator = index.toString().toLabel(fontSize = 18)
+                val orderIndicator = index.tr().toLabel(fontSize = 18)
                     .apply { setAlignment(Align.center) }
                     .surroundWithCircle(28f, color = skinStrings.skinConfig.baseColor)
                     .surroundWithCircle(30f,false)

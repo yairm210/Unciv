@@ -179,14 +179,14 @@ object UnitActionsFromUniques {
                 UniqueType.OneTimeEnterGoldenAgeTurns -> {
                     unique.placeholderText.fillPlaceholders(
                         unit.civ.goldenAges.calculateGoldenAgeLength(
-                            unique.params[0].toInt()).toString())
+                            unique.params[0].toInt()).tr())
                     }
                 UniqueType.OneTimeGainStatSpeed -> {
                     val stat = unique.params[1]
                     val modifier = unit.civ.gameInfo.speed.statCostModifiers[Stat.safeValueOf(stat)]
                         ?: unit.civ.gameInfo.speed.modifier
                     UniqueType.OneTimeGainStat.placeholderText.fillPlaceholders(
-                        (unique.params[0].toInt() * modifier).toInt().toString(), stat
+                        (unique.params[0].toInt() * modifier).toInt().tr(), stat
                     )
                 }
                 UniqueType.OneTimeGainStatRange -> {
@@ -194,8 +194,8 @@ object UnitActionsFromUniques {
                     val modifier = unit.civ.gameInfo.speed.statCostModifiers[Stat.safeValueOf(stat)]
                         ?: unit.civ.gameInfo.speed.modifier
                     unique.placeholderText.fillPlaceholders(
-                        (unique.params[0].toInt() * modifier).toInt().toString(),
-                        (unique.params[1].toInt() * modifier).toInt().toString(),
+                        (unique.params[0].toInt() * modifier).toInt().tr(),
+                        (unique.params[1].toInt() * modifier).toInt().tr(),
                         stat
                     )
                 }

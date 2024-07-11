@@ -19,6 +19,7 @@ import com.unciv.logic.map.HexMath
 import com.unciv.models.ruleset.Policy.PolicyBranchType
 import com.unciv.models.ruleset.nation.getContrastRatio
 import com.unciv.models.ruleset.unique.UniqueType
+import com.unciv.models.translations.tr
 import com.unciv.ui.components.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.components.extensions.addBorder
 import com.unciv.ui.components.extensions.addSeparator
@@ -287,7 +288,7 @@ class GlobalPoliticsOverviewTable(
         relevantCivsCount = if (hideCivsCount) "?"
             else gameInfo.civilizations.count {
                 !it.isSpectator() && !it.isBarbarian && (persistableData.includeCityStates || !it.isCityState)
-            }.toString()
+            }.tr()
         undefeatedCivs = sequenceOf(viewingPlayer) +
                 viewingPlayer.diplomacyFunctions.getKnownCivsSorted(persistableData.includeCityStates)
         defeatedCivs = viewingPlayer.diplomacyFunctions.getKnownCivsSorted(persistableData.includeCityStates, true)
@@ -363,7 +364,7 @@ class GlobalPoliticsOverviewTable(
         add("Our Civilization:".toLabel()).colspan(columns).left().padLeft(10f).padTop(10f).row()
         add(getCivMiniTable(viewingPlayer)).left()
         val scoreText = if (viewingPlayer.isDefeated()) Fonts.death.toString()
-            else viewingPlayer.calculateTotalScore().toInt().toString()
+            else viewingPlayer.calculateTotalScore().toInt().tr()
         add(scoreText.toLabel()).left().row()
         val turnsTillNextDiplomaticVote = viewingPlayer.getTurnsTillNextDiplomaticVote() ?: return
         add("Turns until the next\ndiplomacy victory vote: [$turnsTillNextDiplomaticVote]".toLabel()).colspan(columns).row()

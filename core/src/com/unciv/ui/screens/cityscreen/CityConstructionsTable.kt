@@ -434,7 +434,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
             for ((resource, amount) in constructionButtonDTO.resourcesRequired) {
                 val color = if (constructionButtonDTO.rejectionReason?.type == RejectionReasonType.ConsumesResources)
                     Color.RED else Color.WHITE
-                resourceTable.add(amount.toString().toLabel(fontColor = color)).expandX().left().padLeft(5f)
+                resourceTable.add(amount.tr().toLabel(fontColor = color)).expandX().left().padLeft(5f)
                 resourceTable.add(ImageGetter.getResourcePortrait(resource, 15f)).padBottom(1f)
             }
         }
