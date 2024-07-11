@@ -282,10 +282,10 @@ class WorldMapHolder(
             // Since this runs in a different thread, even if we check movement.canReach()
             // then it might change until we get to the getTileToMoveTo, so we just try/catch it
             val tileToMoveTo: Tile
-            val pathToTile: List<Tile>
+            val pathToTile: List<Tile>?
             try {
                 tileToMoveTo = selectedUnit.movement.getTileToMoveToThisTurn(targetTile)
-                pathToTile = selectedUnit.movement.getDistanceToTiles().getPathToTile(targetTile)
+                pathToTile = selectedUnit.movement.getDistanceToTiles().getPathToTile(tileToMoveTo)
             } catch (ex: Exception) {
                 when (ex) {
                     is UnitMovement.UnreachableDestinationException -> {
@@ -320,7 +320,7 @@ class WorldMapHolder(
 
                     worldScreen.shouldUpdate = true
 
-                    animateMovement(previousTile, selectedUnit, targetTile, pathToTile)
+                    animateMovement(previousTile, selectedUnit, tileToMoveTo, pathToTile)
 
                     if (selectedUnits.size > 1) { // We have more tiles to move
                         moveUnitToTargetTile(selectedUnits.subList(1, selectedUnits.size), targetTile)
