@@ -27,8 +27,6 @@ import com.unciv.logic.map.tile.Tile
 import com.unciv.models.Spy
 import com.unciv.models.UncivSound
 import com.unciv.models.UnitActionType
-import com.unciv.models.ruleset.unique.LocalUniqueCache
-import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.tr
 import com.unciv.ui.audio.SoundPlayer
 import com.unciv.ui.components.MapArrowType
@@ -575,7 +573,7 @@ class WorldMapHolder(
 
         val firstUnit = dto.unitToTurnsToDestination.keys.first()
         val unitIcon = if (dto.unitToTurnsToDestination.size == 1) UnitIconGroup(firstUnit, smallerCircleSizes)
-        else dto.unitToTurnsToDestination.size.toString().toLabel(fontColor = firstUnit.civ.nation.getInnerColor()).apply { setAlignment(Align.center) }
+        else dto.unitToTurnsToDestination.size.tr().toLabel(fontColor = firstUnit.civ.nation.getInnerColor()).apply { setAlignment(Align.center) }
                 .surroundWithCircle(smallerCircleSizes).apply { circle.color = firstUnit.civ.nation.getOuterColor() }
         unitIcon.y = buttonSize - unitIcon.height
         moveHereButton.addActor(unitIcon)
