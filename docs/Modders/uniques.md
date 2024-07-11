@@ -2622,6 +2622,9 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "Disable religion"
 	Applicable to: ModOptions
 
+??? example  "Can only start games from the default era"
+	Applicable to: ModOptions
+
 ??? example  "Allow raze capital"
 	Applicable to: ModOptions
 
@@ -2839,6 +2842,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 ??? example  "&lt;if [buildingFilter] is constructed&gt;"
 	Example: "&lt;if [Culture] is constructed&gt;"
+
+	Applicable to: Conditional
+
+??? example  "&lt;if [buildingFilter] is not constructed&gt;"
+	Example: "&lt;if [Culture] is not constructed&gt;"
 
 	Applicable to: Conditional
 

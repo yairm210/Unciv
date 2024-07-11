@@ -26,7 +26,6 @@ object DeclareWar {
     internal fun declareWar(diplomacyManager: DiplomacyManager, declareWarReason: DeclareWarReason) {
         val civInfo = diplomacyManager.civInfo
         val otherCiv = diplomacyManager.otherCiv()
-        if (otherCiv.isDefeated()) throw Exception("Tried to declare war on a defeated civ!")
         val otherCivDiplomacy = diplomacyManager.otherCivDiplomacy()
 
         if (otherCiv.isCityState && declareWarReason.warType == WarType.DirectWar)
