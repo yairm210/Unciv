@@ -391,7 +391,7 @@ class MultiplayerTurnCheckWorker(appContext: Context, workerParams: WorkerParame
         val hour = cal.get(GregorianCalendar.HOUR_OF_DAY).tr()
         var minute = cal.get(GregorianCalendar.MINUTE).tr()
         if (minute.length == 1) {
-            minute = "0$minute"
+            minute = (0).tr() + minute
         }
         val displayTime = "$hour:$minute"
 
