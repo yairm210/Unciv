@@ -69,6 +69,7 @@ class UniqueTable(isMainUnique: Boolean, val ruleset: Ruleset, stage: Stage,
                   val onUniqueChange : () -> Unit) :Table() {
     private val parameterSelectBoxTable = Table().apply { defaults().pad(5f) }
     private val uniqueSelectBoxTable = Table()
+    private val uniqueSearchTextField = TextField("", BaseScreen.skin).apply { messageText = "Search" }
     private val uniqueErrorTable = Table().apply { defaults().pad(5f) }
 
     val uniqueTextField = TextField("Unique", BaseScreen.skin)
@@ -92,6 +93,9 @@ class UniqueTable(isMainUnique: Boolean, val ruleset: Ruleset, stage: Stage,
         uniqueTargetSelectBoxTable.add(uniqueTargetsSelectBox)
 
         uniqueTargetSelectBoxTable.add(uniqueSelectBoxTable).row()
+        // Row 2
+        uniqueTargetSelectBoxTable.add()
+        uniqueTargetSelectBoxTable.add(uniqueSearchTextField).row()
         add(uniqueTargetSelectBoxTable).row()
 
         uniqueTargetsSelectBox.onChange {
@@ -118,15 +122,29 @@ class UniqueTable(isMainUnique: Boolean, val ruleset: Ruleset, stage: Stage,
         ruleset: Ruleset,
     ) {
         val selected = uniqueTargetsSelectBox.selected
-        val uniquesForTarget = UniqueType.entries.filter { it.canAcceptUniqueTarget(selected) }
         val uniqueSelectBox = SelectBox<UniqueType>(BaseScreen.skin)
-        uniqueSelectBox.setItems(uniquesForTarget.filter { it.getDeprecationAnnotation() == null })
+
+        fun setUniqueSelectBoxItems(){
+            val uniquesForTarget = UniqueType.entries.filter { it.canAcceptUniqueTarget(selected) }
+            val uniquesFiltered = uniquesForTarget.filter { it.getDeprecationAnnotation() == null }
+                .filter { it.text.contains(uniqueSearchTextField.text, ignoreCase = true) }
+            uniqueSelectBox.setItems(uniquesFiltered)
+        }
+
+        setUniqueSelectBoxItems()
+
         uniqueSelectBox.onChange {
             onUniqueSelected(uniqueSelectBox, uniqueTextField, ruleset, parameterSelectBoxTable)
         }
         onUniqueSelected(uniqueSelectBox, uniqueTextField, ruleset, parameterSelectBoxTable)
+
+        // Unique search
+        uniqueSearchTextField.onChange {
+            setUniqueSelectBoxItems()
+        }
+
         uniqueSelectBoxTable.clear()
-        uniqueSelectBoxTable.add(uniqueSelectBox).width(stage.width * 0.5f)
+        uniqueSelectBoxTable.add(uniqueSelectBox).width(stage.width * 0.5f).row()
     }
 
     private fun onUniqueSelected(
@@ -135,7 +153,8 @@ class UniqueTable(isMainUnique: Boolean, val ruleset: Ruleset, stage: Stage,
         ruleset: Ruleset,
         parameterSelectBoxTable: Table
     ) {
-        val uniqueType = uniqueSelectBox.selected
+        val uniqueType = uniqueSelectBox.selected ?: return
+
         uniqueTextField.text = uniqueType.text
         updateUnique(ruleset, uniqueTextField)
 
@@ -152,12 +171,19 @@ class UniqueTable(isMainUnique: Boolean, val ruleset: Ruleset, stage: Stage,
                 paramSelectBox.setItems(knownParamValues)
                 paramSelectBox.onChange {
                     val currentParams = uniqueTextField.text.getPlaceholderParameters().toMutableList()
-                    currentParams[index] = paramSelectBox.selected
+                    currentParams[index] = paramSelectBox.selected ?: return@onChange
                     val newText = uniqueType.text.fillPlaceholders(*currentParams.toTypedArray())
                     uniqueTextField.text = newText
                     updateUnique(ruleset, uniqueTextField)
                 }
-                paramTable.add(paramSelectBox)
+                paramTable.add(paramSelectBox).row()
+
+                val paramSearchTable = TextField("", BaseScreen.skin).apply { messageText = "Search" }
+                paramSearchTable.onChange {
+                    val filteredValues = knownParamValues.filter { it.contains(paramSearchTable.text, ignoreCase = true) }
+                    paramSelectBox.setItems(filteredValues)
+                }
+                paramTable.add(paramSearchTable).row()
             } else paramTable.add("No known values".toLabel())
 
             parameterSelectBoxTable.add(paramTable).fillY()
