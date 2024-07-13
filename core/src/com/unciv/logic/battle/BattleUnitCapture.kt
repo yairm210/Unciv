@@ -4,6 +4,7 @@ import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
 import com.unciv.logic.civilization.AlertType
 import com.unciv.logic.civilization.Civilization
+import com.unciv.logic.civilization.MapUnitAction
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.civilization.PlayerType
@@ -77,7 +78,7 @@ object BattleUnitCapture {
     }
 
     private fun unitCapturedFromEncampment(attacker: MapUnitCombatant, defender: MapUnitCombatant, attackedTile: Tile): Boolean {
-        if (!defender.getCivInfo().isBarbarian()) return false
+        if (!defender.getCivInfo().isBarbarian) return false
         if (attackedTile.improvement != Constants.barbarianEncampment) return false
 
         var unitCaptured = false
@@ -98,7 +99,7 @@ object BattleUnitCapture {
         val addedUnit = attacker.getCivInfo().units.placeUnitNearTile(defenderTile.position, defender.getName()) ?: return false
         addedUnit.currentMovement = 0f
         addedUnit.health = 50
-        attacker.getCivInfo().addNotification("An enemy [${defender.getName()}] has joined us!", addedUnit.getTile().position, NotificationCategory.War, defender.getName())
+        attacker.getCivInfo().addNotification("An enemy [${defender.getName()}] has joined us!", MapUnitAction(addedUnit), NotificationCategory.War, defender.getName())
 
         defender.getCivInfo().addNotification(
             "An enemy [${attacker.getName()}] has captured our [${defender.getName()}]",
@@ -144,7 +145,7 @@ object BattleUnitCapture {
                 wasDestroyedInstead = true
             }
             // City states can never capture settlers at all
-            capturedUnit.hasUnique(UniqueType.FoundCity) && attacker.getCivInfo().isCityState() -> {
+            capturedUnit.hasUnique(UniqueType.FoundCity) && attacker.getCivInfo().isCityState -> {
                 capturedUnit.destroy()
                 wasDestroyedInstead = true
             }
@@ -154,9 +155,9 @@ object BattleUnitCapture {
                 capturedUnit.capturedBy(attacker.getCivInfo())
             }
             // Return captured civilian to its original owner?
-            defender.getCivInfo().isBarbarian()
+            defender.getCivInfo().isBarbarian
                 && originalOwner != null
-                && !originalOwner.isBarbarian()
+                && !originalOwner.isBarbarian
                 && attacker.getCivInfo() != originalOwner
                 && attacker.getCivInfo().knows(originalOwner)
                 && originalOwner.isAlive()
@@ -205,7 +206,7 @@ object BattleUnitCapture {
      */
     fun captureOrConvertToWorker(capturedUnit: MapUnit, capturingCiv: Civilization): Vector2? {
         // Captured settlers are converted to workers unless captured by barbarians (so they can be returned later).
-        if (!capturedUnit.hasUnique(UniqueType.FoundCity) || capturingCiv.isBarbarian()) {
+        if (!capturedUnit.hasUnique(UniqueType.FoundCity) || capturingCiv.isBarbarian) {
             capturedUnit.capturedBy(capturingCiv)
             return capturedUnit.currentTile.position // if capturedBy has moved the unit, this is updated
         }

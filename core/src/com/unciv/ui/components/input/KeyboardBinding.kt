@@ -13,6 +13,8 @@ private fun unCamelCase(name: String) = unCamelCaseRegex.replace(name, """$1$4 $
  *
  *  Note a label is automatically generated from the name by inserting spaces before each uppercase letter (except the initial one),
  *  and translation keys are automatically generated for all labels. This also works for [KeyboardBinding.Category].
+ *
+ *  [label] entries containing a placeholder need special treatment - see [getTranslationEntries] and update it when adding more.
  */
 enum class KeyboardBinding(
     val category: Category,
@@ -258,6 +260,14 @@ enum class KeyboardBinding(
     constructor(category: Category, key: Char) : this(category, KeyCharAndCode(key))
     constructor(category: Category, key: Int) : this(category, KeyCharAndCode(key))
     //endregion
+
+    companion object {
+        fun getTranslationEntries() = (
+                Category.values().asSequence().map { it.label }
+                + values().asSequence().map { it.label }.filterNot { it.contains('[') }
+                + sequenceOf("[stat] Focus")
+            )
+    }
 
     /** Debug helper */
     override fun toString() = "$category.$name($defaultKey)"

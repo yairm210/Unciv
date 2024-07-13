@@ -2,7 +2,7 @@
 NationIcons.png
 size: 2048, 512
 format: RGBA8888
-filter: MipMapLinearLinear, MipMapLinearLinear
+filter: MipMapLinearLinear, Linear
 repeat: none
 NationIcons/America
   rotate: false

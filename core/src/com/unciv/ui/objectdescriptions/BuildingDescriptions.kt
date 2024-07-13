@@ -60,7 +60,7 @@ object BuildingDescriptions {
 
         if (uniques.isNotEmpty()) {
             if (replacementTextForUniques.isNotEmpty()) translatedLines += replacementTextForUniques.tr()
-            else translatedLines += getUniquesStringsWithoutDisablers().map { it.tr() }
+            else translatedLines += getUniquesStringsWithoutDisablers{ it.type != UniqueType.ConsumesResources }.map { it.tr() }
         }
         if (!stats.isEmpty())
             translatedLines += stats.toString()
@@ -269,7 +269,7 @@ object BuildingDescriptions {
                 if (!tileBonusHashmap.containsKey(stats)) tileBonusHashmap[stats] = ArrayList()
                 tileBonusHashmap[stats]!!.add(unique.params[1])
             }
-            else -> yield(unique.text)
+            else -> yield(unique.getDisplayText())
         }
         for ((key, value) in tileBonusHashmap)
             yield( "[stats] from [tileFilter] tiles in this city"

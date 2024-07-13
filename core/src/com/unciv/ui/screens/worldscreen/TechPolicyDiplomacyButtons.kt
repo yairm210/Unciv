@@ -171,7 +171,7 @@ class TechPolicyDiplomacyButtons(val worldScreen: WorldScreen) : Table(BaseScree
 
     private fun updateDiplomacyButton(): Boolean {
         return if (viewingCiv.isDefeated() || viewingCiv.isSpectator()
-                || viewingCiv.getKnownCivs().filterNot { it == viewingCiv || it.isBarbarian() }.none()
+                || viewingCiv.getKnownCivs().filterNot { it == viewingCiv || it.isBarbarian }.none()
         ) {
             diplomacyButtonHolder.touchable = Touchable.disabled
             diplomacyButtonHolder.actor = null

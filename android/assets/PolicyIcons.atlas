@@ -2,7 +2,7 @@
 PolicyIcons.png
 size: 2048, 128
 format: RGBA8888
-filter: MipMapLinearLinear, MipMapLinearLinear
+filter: MipMapLinearLinear, Linear
 repeat: none
 PolicyBranchIcons/Autocracy
   rotate: false

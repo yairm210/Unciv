@@ -229,7 +229,8 @@ class LocalUniqueCache(val cache: Boolean = true) {
     /** Get cached results as a sequence */
     private fun get(key: String, sequence: Sequence<Unique>): Sequence<Unique> {
         if (!cache) return sequence
-        if (keyToUniques.containsKey(key)) return keyToUniques[key]!!
+        val valueInMap = keyToUniques[key]
+        if (valueInMap != null) return valueInMap
         // Iterate the sequence, save actual results as a list, as return a sequence to that
         val results = sequence.toList().asSequence()
         keyToUniques[key] = results

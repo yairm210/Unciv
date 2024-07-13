@@ -22,6 +22,7 @@ import com.unciv.models.ruleset.unique.UniqueMap
 import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
+import com.unciv.models.translations.tr
 import com.unciv.ui.components.MayaCalendar
 import com.unciv.ui.components.extensions.withItem
 import com.unciv.ui.components.fonts.Fonts
@@ -98,11 +99,11 @@ class TechManager : IsPartOfGameInfoSerialization {
     }
 
     private fun getScienceModifier(techName: String): Float { // https://forums.civfanatics.com/threads/the-mechanics-of-overflow-inflation.517970/
-        val techsResearchedKnownCivs = civInfo.getKnownCivs()
+        val numberOfCivsResearchedThisTech = civInfo.getKnownCivs()
             .count { it.isMajorCiv() && it.tech.isResearched(techName) }
-        val undefeatedCivs = civInfo.gameInfo.civilizations
+        val numberOfCivsRemaining = civInfo.gameInfo.civilizations
             .count { it.isMajorCiv() && !it.isDefeated() }
-        return 1 + techsResearchedKnownCivs / undefeatedCivs.toFloat() * 0.3f
+        return 1 + numberOfCivsResearchedThisTech / numberOfCivsRemaining.toFloat() * 0.3f
     }
 
     private fun getRuleset() = civInfo.gameInfo.ruleset
@@ -139,9 +140,12 @@ class TechManager : IsPartOfGameInfoSerialization {
     fun turnsToTech(techName: String): String {
         val remainingCost = remainingScienceToTech(techName).toDouble()
         return when {
-            remainingCost <= 0f -> "0"
+            remainingCost <= 0f -> (0).tr()
             civInfo.stats.statsForNextTurn.science <= 0f -> Fonts.infinity.toString()
-            else -> max(1, ceil(remainingCost / civInfo.stats.statsForNextTurn.science).toInt()).toString()
+            else -> max(
+                1,
+                ceil(remainingCost / civInfo.stats.statsForNextTurn.science).toInt()
+            ).tr()
         }
     }
 
@@ -166,6 +170,9 @@ class TechManager : IsPartOfGameInfoSerialization {
 
         return tech.prerequisites.all { isResearched(it) }
     }
+
+    fun allTechsAreResearched() = civInfo.gameInfo.ruleset.technologies.values
+        .all { isResearched(it.name) || !canBeResearched(it.name)}
 
     //endregion
 
@@ -264,7 +271,8 @@ class TechManager : IsPartOfGameInfoSerialization {
         val scienceSpent = researchOfTech(currentTechnology) + realOverflow
         if (scienceSpent >= costOfTech(currentTechnology)) {
             overflowScience = 0
-            addScience(realOverflow)
+            if (realOverflow != 0)
+                addScience(realOverflow)
         }
     }
 

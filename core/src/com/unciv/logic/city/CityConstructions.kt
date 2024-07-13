@@ -155,7 +155,7 @@ class CityConstructions : IsPartOfGameInfoSerialization {
         if (buildable)
             lines += (if (currentProgress == 0) "" else "$currentProgress/") +
                     "$cost${Fonts.production} $turnsToConstruction${Fonts.turn}"
-        val otherStats = Stat.values().filter {
+        val otherStats = Stat.entries.filter {
             (it != Stat.Gold || !buildable) &&  // Don't show rush cost for consistency
             construction.canBePurchasedWithStat(city, it)
         }.joinToString(" / ") { "${construction.getStatBuyCost(city, it)}${it.character}" }
@@ -188,7 +188,7 @@ class CityConstructions : IsPartOfGameInfoSerialization {
 
     fun isAllBuilt(buildingList: List<String>): Boolean = buildingList.all { isBuilt(it) }
 
-    fun isBuilt(buildingName: String): Boolean = builtBuildingObjects.any { it.name == buildingName }
+    fun isBuilt(buildingName: String): Boolean = builtBuildings.contains(buildingName)
 
     // Note: There was a isEnqueued here functionally identical to isBeingConstructedOrEnqueued,
     // which was calling both isEnqueued and isBeingConstructed - BUT: currentConstructionFromQueue is just a
@@ -288,7 +288,7 @@ class CityConstructions : IsPartOfGameInfoSerialization {
             val cityStats = CityStats(city)
             cityStats.statsFromTiles = city.cityStats.statsFromTiles // take as-is
             val construction = city.cityConstructions.getConstruction(constructionName)
-            cityStats.update(construction, false)
+            cityStats.update(construction, false, false)
             cityStatsForConstruction = cityStats.currentCityStats
         }
 
@@ -696,6 +696,20 @@ class CityConstructions : IsPartOfGameInfoSerialization {
         validateConstructionQueue()
 
         return true
+    }
+
+
+    /** This tests whether the buy button should be _enabled_ */
+    fun isConstructionPurchaseAllowed(construction: INonPerpetualConstruction, stat: Stat, constructionBuyCost: Int): Boolean {
+        return when {
+            city.isPuppet && !city.getMatchingUniques(UniqueType.MayBuyConstructionsInPuppets).any() -> false
+            city.isInResistance() -> false
+            !construction.isPurchasable(city.cityConstructions) -> false    // checks via 'rejection reason'
+            construction is BaseUnit && !city.canPlaceNewUnit(construction) -> false
+            city.civ.gameInfo.gameParameters.godMode -> true
+            constructionBuyCost == 0 -> true
+            else -> city.getStatReserve(stat) >= constructionBuyCost
+        }
     }
 
     private fun removeCurrentConstruction() = removeFromQueue(0, true)

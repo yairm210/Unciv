@@ -22,7 +22,7 @@ class BaseUnitCost(val baseUnit: BaseUnit) {
         for (unique in baseUnit.getMatchingUniques(UniqueType.CostPercentageChange, stateForConditionals))
             productionCost *= unique.params[0].toPercent()
 
-        productionCost *= if (civInfo.isCityState())
+        productionCost *= if (civInfo.isCityState)
             1.5f
         else if (civInfo.isHuman())
             civInfo.getDifficulty().unitCostModifier

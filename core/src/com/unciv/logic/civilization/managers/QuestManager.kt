@@ -853,7 +853,7 @@ class QuestManager : IsPartOfGameInfoSerialization {
         if (closestProximity == null || closestProximity == Proximity.Distant) // None close enough
             return null
 
-        val validTargets = civ.getKnownCivs().filter { it.isCityState() && challenger.knows(it)
+        val validTargets = civ.getKnownCivs().filter { it.isCityState && challenger.knows(it)
                 && civ.proximity[it.civName] == closestProximity }
 
         return validTargets.toList().randomOrNull()

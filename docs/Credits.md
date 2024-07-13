@@ -4,10 +4,12 @@
 
 Flag Icons made by [Freepik](https://www.flaticon.com/authors/freepik) from [www.flaticon.com](https://www.flaticon.com) and licensed by Creative Commons 3.0, except for:
 
+-   [Bangladeshi flag] InkScaped by touhidurrr licensed under CC-BY-SA 4.0. Original SVG, [here.](https://github.com/touhidurrr/artworks/blob/4cd5db12ac1a042ed82a515fed35d1a4971b5e9b/Bangladeshi%20Flag%20Circular.svg)
 -   [Catalan flag] by J0anJosep licensed under Public Domain
 -   [Rusyn flag] gimped from the wikipedia flag [Flag of Pannonian Rusyns](https://en.wikipedia.org/wiki/File:Flag_of_Rusyns_in_Serbia.svg) (CC-BY-SA 4.0)
 -   [Latin flag] made from [wikipedia entry for SPQR](https://en.wikipedia.org/wiki/SPQR#/media/File:Roman_SPQR_banner.svg), Creative Commons Attribution 3.0 Unported
 -   [Zulu flag] made from [wikipedia entry for the Z flag](https://en.wikipedia.org/wiki/Z_flag#/media/File:ICS_Zulu.svg): public domain
+-   [Galician flag] made from [wikipedia asset for the civil flag of Galicia](https://en.wikipedia.org/wiki/File:Flag_of_Galicia_(civil).svg): public domain
 
 New Unciv logo made by u-ndefined on Discord
 

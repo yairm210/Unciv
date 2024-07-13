@@ -1,3 +1,84 @@
+## 4.12.10
+
+UNIT MOVEMENT ANIMATION!
+
+New uniques:
+- "Can only start games from the starting era" mod option
+- "if [buildingFilter] is not constructed" unique
+
+AI no longer declares war against defeated civs
+
+Unified AI and Human gold purchase logic
+
+Ruleset validation: Catch "building required for victory milestone but does not exist" errors
+
+"Will not be replaced by automated units" unique fix
+
+Fix cases where Numbers Translations does not work properly  - By touhidurrr
+
+## 4.12.9
+
+Solved edge-case missing images bug
+
+Hidden conditionals are hidden in more places
+
+Duplicate notifications are all shown
+
+Fixed infinite air units in cities
+
+Friendship-based modifiers calculated correctly
+
+By SomeTroglodyte:
+- UX: Notifications for map units select better when tapped 
+- Fix GlobalPoliticsOverviewTable table layout after switching back from diagram 
+
+By SpacedOutChicken:
+- Correct Unique parameters doc to display terrain quality 
+
+## 4.12.8
+
+Performance improvements
+
+Better simulation automation
+
+Added missing deprecation validation for unit uniques
+
+By SomeTroglodyte:
+- Translation updates work for diacritic-using languages 
+
+For languages with special number characters, translate numbers to selected language  - By touhidurrr
+
+## 4.12.7
+
+AI: Better placement for Great Improvements
+
+City focus resets to default when annexed
+
+Allow multiplication for event triggers
+
+"Consumes resources" unique not displayed twice for constructions in city screen
+
+Added promotionName as possible value for mapUnitFilter
+
+Fixed team war giving "they declared war on us" notification to a civ declaring war - By tuvus
+
+New language translation - Bangla - by touhidurr
+
+## 4.12.6
+
+Many performance improvements!
+
+By SomeTroglodyte: 
+- Support for languages using Diacritics (e.g. Bangla)  
+
+By tuvus:
+- Improved unit automation for defending cities 
+- Warmongering doesn't apply to civs that are angry at the target civ 
+
+Optimize screen orientation  - By HChenX - *NEW CONTRIBUTOR!*
+
+AI behaviour changes  - By EmperorPinguin - *NEW CONTRIBUTOR!*
+
 ## 4.12.5
 
 Re-add 'construct great improvement' automation for great units that can't do their main actions

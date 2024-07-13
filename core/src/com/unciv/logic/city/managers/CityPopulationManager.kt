@@ -53,7 +53,7 @@ class CityPopulationManager : IsPartOfGameInfoSerialization {
 
         foodRequired *= city.civ.gameInfo.speed.modifier
 
-        if (city.civ.isCityState())
+        if (city.civ.isCityState)
             foodRequired *= 1.5f
         if (!city.civ.isHuman())
             foodRequired *= city.civ.gameInfo.getDifficulty().aiCityGrowthModifier
@@ -145,7 +145,7 @@ class CityPopulationManager : IsPartOfGameInfoSerialization {
 
     /** Only assigns free population */
     internal fun autoAssignPopulation() {
-        city.cityStats.update()  // calculate current stats with current assignments
+        city.cityStats.update(updateCivStats = false)  // calculate current stats with current assignments
         val freePopulation = getFreePopulation()
         if (freePopulation <= 0) return
 
@@ -166,6 +166,8 @@ class CityPopulationManager : IsPartOfGameInfoSerialization {
                 .filterNot { it.providesYield() }
                 .associateWith { it.stats.getTileStats(city, city.civ, localUniqueCache)}
 
+        val maxSpecialists = getMaxSpecialists().asSequence()
+
         repeat(freePopulation) {
             //evaluate tiles
             val bestTileAndRank = tilesToEvaluate
@@ -179,7 +181,7 @@ class CityPopulationManager : IsPartOfGameInfoSerialization {
             val valueBestTile = bestTileAndRank?.value ?: 0f
 
             val bestJobAndRank = if (city.manualSpecialists) null
-                else getMaxSpecialists().asSequence()
+                else maxSpecialists
                     .filter { specialistAllocations[it.key] < it.value }
                     .map { it.key }
                     .associateWith { Automation.rankSpecialist(it, city, localUniqueCache) }

@@ -7,6 +7,8 @@ import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.multiplayer.FriendList
 import com.unciv.models.UncivSound
+import com.unciv.models.translations.Translations.Companion.getLocaleFromLanguage
+import com.unciv.models.translations.Translations.Companion.getNumberFormatFromLanguage
 import com.unciv.ui.components.fonts.FontFamilyData
 import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.components.input.KeyboardBindings
@@ -15,6 +17,7 @@ import com.unciv.ui.screens.worldscreen.NotificationsScroll
 import com.unciv.utils.Display
 import com.unciv.utils.ScreenOrientation
 import java.text.Collator
+import java.text.NumberFormat
 import java.time.Duration
 import java.util.Locale
 import kotlin.reflect.KClass
@@ -169,14 +172,7 @@ class GameSettings {
     }
 
     fun updateLocaleFromLanguage() {
-        val bannedCharacters = listOf(' ', '_', '-', '(', ')') // Things not to have in enum names
-        val languageName = language.filterNot { it in bannedCharacters }
-        locale = try {
-            val code = LocaleCode.valueOf(languageName)
-            Locale(code.language, code.country)
-        } catch (_: Exception) {
-            Locale.getDefault()
-        }
+        locale = getLocaleFromLanguage(language)
     }
 
     fun getFontSize(): Int {
@@ -191,6 +187,10 @@ class GameSettings {
 
     fun getCollatorFromLocale(): Collator {
         return Collator.getInstance(getCurrentLocale())
+    }
+
+    fun getCurrentNumberFormat(): NumberFormat {
+        return getNumberFormatFromLanguage(language)
     }
 
     //endregion
@@ -262,7 +262,7 @@ class GameSettings {
     /** Map Unciv language key to Java locale, for the purpose of getting a Collator for sorting.
      *  - Effect depends on the Java libraries and may not always conform to expectations.
      *    If in doubt, debug and see what Locale instance you get and compare its properties with `Locale.getDefault()`.
-     *    (`Collator.getInstance(LocaleCode.*.run { Locale(language, country) }) to Collator.getInstance())`, drill to both `rules`, compare hashes - if equal and other properties equal, then Java doesn't know your Language))
+     *    (`Collator.getInstance(LocaleCode.*.run { Locale(language, country) }) to Collator.getInstance()`, drill to both `rules`, compare hashes - if equal and other properties equal, then Java doesn't know your Language))
      *  @property name same as translation file name with ' ', '_', '-', '(', ')' removed
      *  @property language ISO 639-1 code for the language
      *  @property country ISO 3166 code for the nation this is predominantly spoken in
@@ -271,6 +271,7 @@ class GameSettings {
     enum class LocaleCode(val language: String, val country: String, val trueLanguage: String? = null) {
         Afrikaans("af", "ZA"),
         Arabic("ar", "IQ"),
+        Bangla("bn", "BD"),
         Belarusian("be", "BY"),
         Bosnian("bs", "BA"),
         BrazilianPortuguese("pt", "BR"),

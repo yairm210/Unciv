@@ -25,9 +25,9 @@ object BaseUnitDescriptions {
     /** Generate short description as comma-separated string for Technology description "Units enabled" and GreatPersonPickerScreen */
     fun getShortDescription(baseUnit: BaseUnit, uniqueExclusionFilter: Unique.() -> Boolean = {false}): String {
         val infoList = mutableListOf<String>()
-        if (baseUnit.strength != 0) infoList += "${baseUnit.strength}${Fonts.strength}"
-        if (baseUnit.rangedStrength != 0) infoList += "${baseUnit.rangedStrength}${Fonts.rangedStrength}"
-        if (baseUnit.movement != 2) infoList += "${baseUnit.movement}${Fonts.movement}"
+        if (baseUnit.strength != 0) infoList += "${baseUnit.strength.tr()}${Fonts.strength}"
+        if (baseUnit.rangedStrength != 0) infoList += "${baseUnit.rangedStrength.tr()}${Fonts.rangedStrength}"
+        if (baseUnit.movement != 2) infoList += "${baseUnit.movement.tr()}${Fonts.movement}"
         for (promotion in baseUnit.promotions)
             infoList += promotion.tr()
         if (baseUnit.replacementTextForUniques != "") infoList += baseUnit.replacementTextForUniques
@@ -56,7 +56,8 @@ object BaseUnitDescriptions {
         lines += "$strengthLine${baseUnit.movement}${Fonts.movement}"
 
         if (baseUnit.replacementTextForUniques != "") lines += baseUnit.replacementTextForUniques
-        else baseUnit.uniquesToDescription(lines) { type == UniqueType.Unbuildable }
+        else baseUnit.uniquesToDescription(lines) { type == UniqueType.Unbuildable
+                || type == UniqueType.ConsumesResources } // Already displayed in the resource requirements
 
         if (baseUnit.promotions.isNotEmpty()) {
             val prefix = "Free promotion${if (baseUnit.promotions.size == 1) "" else "s"}:".tr() + " "
@@ -291,7 +292,7 @@ object BaseUnitDescriptions {
         val lostAbilityPredicate: (Unique)->Boolean = { it.text in betterUnit.uniques || it.isHiddenToUsers() }
         for (unique in originalUnit.uniqueObjects.filterNot(lostAbilityPredicate)) {
             // Need double translation of the "ability" here - unique texts may contain nuts - pardon, square brackets
-            yield("Lost ability (vs [${originalUnit.name}]): [${unique.text.tr()}]" to null)
+            yield("Lost ability (vs [${originalUnit.name}]): [${unique.getDisplayText().tr()}]" to null)
         }
         for (promotionName in betterUnit.promotions.filter { it !in originalUnit.promotions }) {
             val promotion = ruleset.unitPromotions[promotionName]!!

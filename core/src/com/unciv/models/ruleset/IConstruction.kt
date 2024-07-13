@@ -34,7 +34,7 @@ interface INonPerpetualConstruction : IConstruction, INamed, IHasUniques {
     // https://yairm210.github.io/Unciv/Developers/Translations%2C-mods%2C-and-modding-freedom-in-Open-Source#filters
     var requiredTech: String?
 
-    override fun legacyRequiredTechs(): Sequence<String> = if (requiredTech == null) sequenceOf() else sequenceOf(requiredTech!!)
+    override fun legacyRequiredTechs(): Sequence<String> = if (requiredTech == null) emptySequence() else sequenceOf(requiredTech!!)
 
     fun getProductionCost(civInfo: Civilization, city: City?): Int
     fun getStatBuyCost(city: City, stat: Stat): Int?
@@ -67,7 +67,6 @@ interface INonPerpetualConstruction : IConstruction, INamed, IHasUniques {
     }
 
     fun canBePurchasedWithAnyStat(city: City): Boolean {
-
         return statsUsableToBuy.any { canBePurchasedWithStat(city, it) }
     }
 
@@ -222,6 +221,9 @@ enum class RejectionReasonType(val shouldShow: Boolean, val errorMessage: String
 
     NoSettlerForOneCityPlayers(false, "No settlers for city-states or one-city challengers"),
     NoPlaceToPutUnit(true, "No space to place this unit");
+
+    val defaultInstance by lazy { RejectionReason(this, errorMessage, shouldShow) }
+    fun toInstance() = defaultInstance
 
     fun toInstance(errorMessage: String = this.errorMessage,
         shouldShow: Boolean = this.shouldShow): RejectionReason {

@@ -5,13 +5,11 @@ import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.BFS
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.INonPerpetualConstruction
-import com.unciv.models.ruleset.PerpetualConstruction
 import com.unciv.models.ruleset.Victory
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
-import java.util.SortedMap
-import java.util.TreeMap
+import java.util.*
 
 object UseGoldAutomation {
 
@@ -23,11 +21,11 @@ object UseGoldAutomation {
 
         for (city in civ.cities.sortedByDescending { it.population.population }) {
             val construction = city.cityConstructions.getCurrentConstruction()
-            if (construction is PerpetualConstruction) continue
-            if ((construction as INonPerpetualConstruction).canBePurchasedWithStat(city, Stat.Gold)
-                && city.civ.gold / 3 >= construction.getStatBuyCost(city, Stat.Gold)!!) {
-                city.cityConstructions.purchaseConstruction(construction, 0, true)
-            }
+            if (construction !is INonPerpetualConstruction) continue
+            val statBuyCost = construction.getStatBuyCost(city, Stat.Gold) ?: continue
+            if (!city.cityConstructions.isConstructionPurchaseAllowed(construction, Stat.Gold, statBuyCost)) continue
+            if (civ.gold < statBuyCost / 3) continue
+            city.cityConstructions.purchaseConstruction(construction, 0, true)
         }
 
         maybeBuyCityTiles(civ)
@@ -37,7 +35,7 @@ object UseGoldAutomation {
     private fun useGoldForCityStates(civ: Civilization) {
         // RARE EDGE CASE: If you ally with a city-state, you may reveal more map that includes ANOTHER civ!
         // So if we don't lock this list, we may later discover that there are more known civs, concurrent modification exception!
-        val knownCityStates = civ.getKnownCivs().filter { it.isCityState() && MotivationToAttackAutomation.hasAtLeastMotivationToAttack(civ, it, 0f) <= 0 }.toList()
+        val knownCityStates = civ.getKnownCivs().filter { it.isCityState && MotivationToAttackAutomation.hasAtLeastMotivationToAttack(civ, it, 0f) <= 0 }.toList()
 
         // canBeMarriedBy checks actual cost, but it can't be below 500*speedmodifier, and the later check is expensive
         if (civ.gold >= 330 && civ.getHappiness() > 0 && civ.hasUnique(UniqueType.CityStateCanBeBoughtForGold)) {

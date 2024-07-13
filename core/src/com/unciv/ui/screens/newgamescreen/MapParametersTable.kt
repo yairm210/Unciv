@@ -121,7 +121,7 @@ class MapParametersTable(
             add(optionsTable).colspan(2).grow().row()
         } else {
             val mapShapeSelectBox =
-                    TranslatedSelectBox(mapShapes, mapParameters.shape, skin)
+                    TranslatedSelectBox(mapShapes, mapParameters.shape)
             mapShapeSelectBox.onChange {
                 mapParameters.shape = mapShapeSelectBox.selected.value
                 updateWorldSizeTable()
@@ -160,7 +160,7 @@ class MapParametersTable(
             }
             add(optionsTable).colspan(2).grow().row()
         } else {
-            mapTypeSelectBox = TranslatedSelectBox(mapTypes, mapParameters.type, skin)
+            mapTypeSelectBox = TranslatedSelectBox(mapTypes, mapParameters.type)
 
             mapTypeSelectBox.onChange {
                 mapParameters.type = mapTypeSelectBox.selected.value
@@ -189,7 +189,7 @@ class MapParametersTable(
             add(optionsTable).colspan(2).grow().row()
         } else {
             val mapSizes = MapSize.names() + listOf(MapSize.custom)
-            worldSizeSelectBox = TranslatedSelectBox(mapSizes, mapParameters.mapSize.name, skin)
+            worldSizeSelectBox = TranslatedSelectBox(mapSizes, mapParameters.mapSize.name)
             worldSizeSelectBox.onChange { updateWorldSizeTable() }
 
             addHexagonalSizeTable()
@@ -271,7 +271,7 @@ class MapParametersTable(
             }
             add(optionsTable).colspan(2).grow().row()
         } else {
-            resourceSelectBox = TranslatedSelectBox(mapResources, mapParameters.mapResources, skin)
+            resourceSelectBox = TranslatedSelectBox(mapResources, mapParameters.mapResources)
 
             resourceSelectBox.onChange {
                 mapParameters.mapResources = resourceSelectBox.selected.value

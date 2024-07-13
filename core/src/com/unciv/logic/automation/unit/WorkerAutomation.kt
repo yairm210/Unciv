@@ -7,6 +7,7 @@ import com.unciv.logic.automation.ThreatLevel
 import com.unciv.logic.automation.civilization.NextTurnAutomation
 import com.unciv.logic.automation.unit.UnitAutomation.wander
 import com.unciv.logic.civilization.Civilization
+import com.unciv.logic.civilization.MapUnitAction
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
@@ -17,6 +18,7 @@ import com.unciv.models.ruleset.tile.Terrain
 import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.ruleset.unique.LocalUniqueCache
 import com.unciv.models.ruleset.unique.UniqueType
+import com.unciv.models.stats.Stats
 import com.unciv.ui.screens.worldscreen.unit.actions.UnitActions
 import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionsFromUniques
 import com.unciv.utils.debug
@@ -141,7 +143,7 @@ class WorkerAutomation(
         for (city in unit.civ.cities) {
             citiesToNumberOfUnimprovedTiles[city.id] = city.getTiles()
                 .count { tile -> tile.isLand
-                        && tile.getUnits().any { unit -> unit.cache.hasUniqueToBuildImprovements }
+                        && tile.getUnits().none { unit -> unit.cache.hasUniqueToBuildImprovements }
                         && (tile.isPillaged() || tileHasWorkToDo(tile, unit, localUniqueCache)) }
         }
 
@@ -162,10 +164,10 @@ class WorkerAutomation(
 
 
         debug("WorkerAutomation: %s -> nothing to do", unit.toString())
-        unit.civ.addNotification("${unit.shortDisplayName()} has no work to do.", currentTile.position, NotificationCategory.Units, unit.name, "OtherIcons/Sleep")
+        unit.civ.addNotification("${unit.shortDisplayName()} has no work to do.", MapUnitAction(unit), NotificationCategory.Units, unit.name, "OtherIcons/Sleep")
 
         // Idle CS units should wander so they don't obstruct players so much
-        if (unit.civ.isCityState())
+        if (unit.civ.isCityState)
             wander(unit, stayInTerritory = true, tilesToAvoid = dangerousTiles)
     }
 
@@ -186,6 +188,7 @@ class WorkerAutomation(
                         || (unit.isMilitary() && (it.militaryUnit == null || !it.militaryUnit!!.cache.hasUniqueToBuildImprovements)))
                 && (it.owningCity == null || it.getOwner() == civInfo)
                 && !it.isCityCenter()
+                && it.getTileImprovement()?.hasUnique(UniqueType.AutomatedUnitsWillNotReplace) != true
                 && getBasePriority(it, unit) > 1
             }
 
@@ -318,14 +321,15 @@ class WorkerAutomation(
         if (tile.improvementInProgress != null) return ruleSet.tileImprovements[tile.improvementInProgress!!]
 
         val potentialTileImprovements = ruleSet.tileImprovements.filter {
-            unit.canBuildImprovement(it.value, tile)
+            (it.value.uniqueTo == null || it.value.uniqueTo == unit.civ.civName)
+                    && unit.canBuildImprovement(it.value, tile)
                     && tile.improvementFunctions.canBuildImprovement(it.value, civInfo)
-                    && (it.value.uniqueTo == null || it.value.uniqueTo == unit.civ.civName)
         }
         if (potentialTileImprovements.isEmpty()) return null
 
+        val currentTileStats = tile.stats.getTileStats(tile.getCity(), civInfo, localUniqueCache)
         var bestBuildableImprovement = potentialTileImprovements.values.asSequence()
-            .map { Pair(it, getImprovementRanking(tile, unit, it.name, localUniqueCache)) }
+            .map { Pair(it, getImprovementRanking(tile, unit, it.name, localUniqueCache, currentTileStats)) }
             .filter { it.second > 0f }
             .maxByOrNull { it.second }?.first
 
@@ -373,7 +377,9 @@ class WorkerAutomation(
         return ruleSet.tileImprovements[improvementString] // For mods, the tile improvement may not exist, so don't assume.
     }
 
-    private fun getImprovementRanking(tile: Tile, unit: MapUnit, improvementName: String, localUniqueCache: LocalUniqueCache): Float {
+    private fun getImprovementRanking(tile: Tile, unit: MapUnit, improvementName: String,
+                                      localUniqueCache: LocalUniqueCache,
+                                      /** Provide for performance */ currentTileStats: Stats? = null): Float {
         val improvement = ruleSet.tileImprovements[improvementName]!!
 
         // Add the value of roads if we want to build it here
@@ -395,7 +401,7 @@ class WorkerAutomation(
             && tile.aerialDistanceTo(it.owningCity!!.getCenterTile()) <= civInfo.modConstants.cityWorkRange } ))
             return 0f
 
-        val stats = tile.stats.getStatDiffForImprovement(improvement, civInfo, tile.getCity(), localUniqueCache)
+        val stats = tile.stats.getStatDiffForImprovement(improvement, civInfo, tile.getCity(), localUniqueCache, currentTileStats)
 
         if (improvementName.startsWith(Constants.remove)) {
             // We need to look beyond what we are doing right now and at the final improvement that will be on this tile
@@ -495,7 +501,7 @@ class WorkerAutomation(
 
         var valueOfFort = 2f
 
-        if (civInfo.isCityState() && civInfo.getAllyCiv() != null) valueOfFort -= 1f // Allied city states probably don't need to build forts
+        if (civInfo.isCityState && civInfo.getAllyCiv() != null) valueOfFort -= 1f // Allied city states probably don't need to build forts
 
         if (tile.hasViewableResource(civInfo)) valueOfFort -= 1
 

@@ -131,7 +131,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
         for (unique in getMatchingUniques(UniqueType.CostPercentageChange, stateForConditionals))
             productionCost *= unique.params[0].toPercent()
 
-        if (civInfo.isCityState())
+        if (civInfo.isCityState)
             productionCost *= 1.5f
         else if (civInfo.isHuman()) {
             if (!isWonder)
@@ -357,7 +357,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
             if (civ.cities.any { it != cityConstructions.city && it.cityConstructions.isBeingConstructedOrEnqueued(name) })
                 yield(RejectionReasonType.WonderBeingBuiltElsewhere.toInstance())
 
-            if (civ.isCityState())
+            if (civ.isCityState)
                 yield(RejectionReasonType.CityStateWonder.toInstance())
 
             if (cityConstructions.city.isPuppet)

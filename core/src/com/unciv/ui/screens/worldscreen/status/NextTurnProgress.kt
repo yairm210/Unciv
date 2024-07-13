@@ -4,7 +4,6 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.GUI
-import com.unciv.UncivGame
 import com.unciv.models.metadata.GameParameters
 import com.unciv.ui.components.extensions.disable
 import com.unciv.ui.images.ImageGetter
@@ -67,7 +66,7 @@ class NextTurnProgress(
                 // If we shouldn't disclose how many civs there are to Mr. Eagle Eye counting steps:
                 game.gameParameters.isRandomNumberOfCivs() -> game.gameParameters.minNumberOfCivs()
                 // One step per expected city to be founded (they get an endTurn, no startTurn)
-                else -> game.civilizations.count { it.isMajorCiv() && it.isAI() || it.isCityState() }
+                else -> game.civilizations.count { it.isMajorCiv() && it.isAI() || it.isCityState }
             }
 
         startUpdateProgress()

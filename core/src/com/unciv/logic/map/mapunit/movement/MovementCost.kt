@@ -41,7 +41,7 @@ object MovementCost {
 
         if (unit.cache.cannotMove) return 100f
 
-        if (from.isLand != to.isLand && unit.baseUnit.isLandUnit() && !unit.cache.canMoveOnWater)
+        if (from.isLand != to.isLand && unit.baseUnit.isLandUnit && !unit.cache.canMoveOnWater)
             return if (from.isWater && to.isLand) unit.cache.costToDisembark ?: 100f
             else unit.cache.costToEmbark ?: 100f
 

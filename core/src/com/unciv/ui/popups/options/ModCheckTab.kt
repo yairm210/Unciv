@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
+import com.unciv.UncivGame
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.ruleset.unique.Unique
@@ -21,6 +22,7 @@ import com.unciv.ui.components.widgets.TabbedPager
 import com.unciv.ui.components.widgets.TranslatedSelectBox
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popups.ToastPopup
+import com.unciv.ui.screens.UniqueBuilderScreen
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.utils.Concurrency
 import com.unciv.utils.Log
@@ -51,7 +53,7 @@ class ModCheckTab(
         val labeledBaseSelect = Table().apply {
             add("Check extension mods based on:".toLabel()).padRight(10f)
             val baseMods = listOf(MOD_CHECK_WITHOUT_BASE) + RulesetCache.getSortedBaseRulesets()
-            modCheckBaseSelect = TranslatedSelectBox(baseMods, MOD_CHECK_WITHOUT_BASE, BaseScreen.skin).apply {
+            modCheckBaseSelect = TranslatedSelectBox(baseMods, MOD_CHECK_WITHOUT_BASE).apply {
                 selectedIndex = 0
                 onChange { runAction() }
             }
@@ -126,17 +128,25 @@ class ModCheckTab(
 
                     val expanderTab = ExpanderTab(mod.name, icon = icon, startsOutOpened = mod.name in openedExpanderTitles) {
                         it.defaults().align(Align.left)
+                        it.defaults().pad(10f)
+
+                        val openUniqueBuilderButton = "Open unique builder".toTextButton()
+                        val ruleset = if (base == MOD_CHECK_WITHOUT_BASE) mod
+                        else RulesetCache.getComplexRuleset(linkedSetOf(mod.name), base)
+                        openUniqueBuilderButton.onClick { UncivGame.Current.pushScreen(UniqueBuilderScreen(ruleset)) }
+                        it.add(openUniqueBuilderButton).row()
+
                         if (!noProblem && mod.folderLocation != null) {
                             val replaceableUniques = getDeprecatedReplaceableUniques(mod)
                             if (replaceableUniques.isNotEmpty())
                                 it.add("Autoupdate mod uniques".toTextButton()
-                                    .onClick { autoUpdateUniques(screen, mod, replaceableUniques) }).pad(10f).row()
+                                    .onClick { autoUpdateUniques(screen, mod, replaceableUniques) }).row()
                         }
                         for (line in modLinks) {
                             val label = Label(line.text, BaseScreen.skin)
                                 .apply { color = line.errorSeverityToReport.color }
                             label.wrap = true
-                            it.add(label).width(stage.width / 2).pad(10f).row()
+                            it.add(label).width(stage.width / 2).row()
                         }
                         if (!noProblem)
                             it.add("Copy to clipboard".toTextButton().onClick {

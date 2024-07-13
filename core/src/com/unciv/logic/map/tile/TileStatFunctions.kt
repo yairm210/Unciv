@@ -12,7 +12,7 @@ import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
 import com.unciv.ui.components.extensions.toPercent
 
-fun Iterable<Pair<String, Stats>>.toStats(): Stats {
+fun List<Pair<String, Stats>>.toStats(): Stats {
     val stats = Stats()
     for ((_, statsToAdd) in this)
         stats.add(statsToAdd)
@@ -266,9 +266,12 @@ class TileStatFunctions(val tile: Tile) {
         improvement: TileImprovement,
         observingCiv: Civilization,
         city: City?,
-        cityUniqueCache: LocalUniqueCache = LocalUniqueCache(false)): Stats {
+        cityUniqueCache: LocalUniqueCache = LocalUniqueCache(false),
+        /** Provide this for performance */
+        currentTileStats: Stats? = null): Stats {
 
-        val currentStats = getTileStats(city, observingCiv, cityUniqueCache)
+        val currentStats = currentTileStats
+            ?: getTileStats(city, observingCiv, cityUniqueCache)
 
         val tileClone = tile.clone()
         tileClone.setTerrainTransients()

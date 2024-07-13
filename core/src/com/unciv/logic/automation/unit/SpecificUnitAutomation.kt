@@ -8,6 +8,7 @@ import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.UnitActionType
 import com.unciv.models.ruleset.Building
+import com.unciv.models.ruleset.tile.TerrainType
 import com.unciv.models.ruleset.unique.LocalUniqueCache
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
@@ -198,9 +199,10 @@ object SpecificUnitAutomation {
     /** @return whether there was any progress in placing the improvement. A return value of `false`
      * can be interpreted as: the unit doesn't know where to place the improvement or is stuck. */
     fun automateImprovementPlacer(unit: MapUnit) : Boolean {
-        val improvementBuildingUniques = unit.getMatchingUniques(UniqueType.ConstructImprovementInstantly)
+        val improvementBuildingUnique = unit.getMatchingUniques(UniqueType.ConstructImprovementInstantly).firstOrNull()
+            ?: return false
 
-        val improvementName = improvementBuildingUniques.first().params[0]
+        val improvementName = improvementBuildingUnique.params[0]
         val improvement = unit.civ.gameInfo.ruleset.tileImprovements[improvementName]
             ?: return false
         val relatedStat = improvement.maxByOrNull { it.value }?.key ?: Stat.Culture
@@ -209,13 +211,21 @@ object SpecificUnitAutomation {
             it.cityStats.statPercentBonusTree.totalStats[relatedStat]
         }
 
+        val averageTerrainStatsValue = unit.civ.gameInfo.ruleset.terrains.values.asSequence()
+            .filter { it.type == TerrainType.Land }
+            .map { Automation.rankStatsValue(it, unit.civ) }
+            .average()
 
+        val localUniqueCache = LocalUniqueCache()
         for (city in citiesByStatBoost) {
             val applicableTiles = city.getWorkableTiles().filter {
                 it.isLand && it.resource == null && !it.isCityCenter()
                         && (unit.currentTile == it || unit.movement.canMoveTo(it))
-                        && !it.containsGreatImprovement() && it.improvementFunctions.canBuildImprovement(improvement, unit.civ)
+                        && it.improvement == null
+                        && it.improvementFunctions.canBuildImprovement(improvement, unit.civ)
+                        && Automation.rankTile(it, unit.civ, localUniqueCache) > averageTerrainStatsValue
             }
+
             if (applicableTiles.none()) continue
 
             val pathToCity = unit.movement.getShortestPath(city.getCenterTile())
@@ -237,7 +247,6 @@ object SpecificUnitAutomation {
             }
 
             // if we got here, we're pretty close, start looking!
-            val localUniqueCache = LocalUniqueCache()
             val chosenTile = applicableTiles.sortedByDescending {
                 Automation.rankTile(
                     it,
@@ -271,7 +280,7 @@ object SpecificUnitAutomation {
                     .filter {
                         it != unit.civ
                             && !unit.civ.isAtWarWith(it)
-                            && it.isCityState()
+                            && it.isCityState
                             && it.cities.isNotEmpty()
                     }
                     .flatMap { it.cities[0].getTiles() }
