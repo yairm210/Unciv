@@ -321,6 +321,9 @@ class WorldMapHolder(
                     worldScreen.shouldUpdate = true
 
                     animateMovement(previousTile, selectedUnit, tileToMoveTo, pathToTile)
+                    if (selectedUnit.isEscorting()) {
+                        animateMovement(previousTile, selectedUnit.getOtherEscortUnit()!!, tileToMoveTo, pathToTile)
+                    }
 
                     if (selectedUnits.size > 1) { // We have more tiles to move
                         moveUnitToTargetTile(selectedUnits.subList(1, selectedUnits.size), targetTile)
