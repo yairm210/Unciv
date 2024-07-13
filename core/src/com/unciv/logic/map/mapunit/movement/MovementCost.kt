@@ -11,13 +11,31 @@ import com.unciv.models.ruleset.unique.UniqueType
 
 object MovementCost {
 
+    fun getMovementCostBetweenAdjacentTilesEscort(
+        unit: MapUnit,
+        from: Tile,
+        to: Tile,
+        considerZoneOfControl: Boolean = true,
+        includeEscortUnit: Boolean = true,
+    ): Float {
+        if (includeEscortUnit && unit.isEscorting()) {
+            return maxOf(getMovementCostBetweenAdjacentTiles(unit, from, to, considerZoneOfControl),
+                getMovementCostBetweenAdjacentTiles(unit.getOtherEscortUnit()!!, from, to, considerZoneOfControl))
+        } else {
+            return getMovementCostBetweenAdjacentTiles(unit, from, to, considerZoneOfControl)
+        }
+    }
+
     // This function is called ALL THE TIME and should be as time-optimal as possible!
+    /**
+     * Does not include escort unit
+     * @return The cost of movment for the unit between two tiles
+     */
     fun getMovementCostBetweenAdjacentTiles(
         unit: MapUnit,
         from: Tile,
         to: Tile,
         considerZoneOfControl: Boolean = true,
-        includeEscortUnit: Boolean = true
     ): Float {
         val civ = unit.civ
 
@@ -95,12 +113,7 @@ object MovementCost {
             })
             return terrainCost * 0.5f + extraCost
 
-        val totalCost = terrainCost + extraCost // no road or other movement cost reduction
-        return if (includeEscortUnit && unit.isEscorting()) {
-            minOf(totalCost, getMovementCostBetweenAdjacentTiles(unit.getOtherEscortUnit()!!, from, to, considerZoneOfControl, false))
-        } else {
-            totalCost
-        }
+        return terrainCost + extraCost // no road or other movement cost reduction
     }
 
 

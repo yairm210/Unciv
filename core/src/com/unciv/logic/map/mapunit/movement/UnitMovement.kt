@@ -60,19 +60,18 @@ class UnitMovement(val unit: MapUnit) {
                         // cities and units goes kaput.
                         else -> {
                             val key = Pair(tileToCheck, neighbor)
-                            val movementCost =
-                                movementCostCache.getOrPut(key) {
-                                    MovementCost.getMovementCostBetweenAdjacentTiles(unit, tileToCheck, neighbor, considerZoneOfControl, includeOtherEscortUnit)
-                                }
+                            val movementCost = movementCostCache.getOrPut(key) {
+                                MovementCost.getMovementCostBetweenAdjacentTilesEscort(unit, tileToCheck, neighbor, considerZoneOfControl, includeOtherEscortUnit)
+                            }
                             distanceToTiles[tileToCheck]!!.totalDistance + movementCost
                         }
                     }
 
                     if (!distanceToTiles.containsKey(neighbor) || distanceToTiles[neighbor]!!.totalDistance > totalDistanceToTile) { // this is the new best path
-                        val usableMovement = if (includeOtherEscortUnit && unit.isEscorting()) 
+                        val usableMovement = if (includeOtherEscortUnit && unit.isEscorting())
                             minOf(unitMovement, unit.getOtherEscortUnit()!!.currentMovement)
                         else unitMovement
-                        
+
                         if (totalDistanceToTile < usableMovement - Constants.minimumMovementEpsilon)  // We can still keep moving from here!
                             updatedTiles += neighbor
                         else
