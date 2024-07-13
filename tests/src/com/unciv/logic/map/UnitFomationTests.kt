@@ -310,4 +310,26 @@ internal class UnitFormationTests {
         assertEquals(civilianUnit.getTile(), destinationTile)
         assertEquals(militaryUnit.getTile(), destinationTile)
     }
+
+    @Test
+    fun `test escort with ignore terrain cost unit`() {
+        setUp(5)
+        val centerTile = testGame.getTile(Vector2(0f,0f))
+        val marsh = testGame.getTile(Vector2(1f,1f))
+        marsh.addTerrainFeature("Marsh")
+        val jungle = testGame.getTile(Vector2(2f,2f))
+        jungle.addTerrainFeature("Jungle")
+        testGame.getTile(Vector2(3f,3f)).addTerrainFeature("Hill")
+        testGame.getTile(Vector2(3f,4f)).addTerrainFeature("Hill")
+        val destinationTile = testGame.getTile(Vector2(4f,5f))
+        val tileReached = testGame.getTile(Vector2(1f,2f));
+        val militaryUnit = testGame.addUnit("Scout", civInfo, centerTile)
+        val civilianUnit = testGame.addUnit("Worker", civInfo, centerTile)
+        militaryUnit.startEscorting()
+        val shortestPath = militaryUnit.movement.getShortestPath(destinationTile)
+        assertEquals(true, shortestPath.count() == 3)
+        assertEquals(false, shortestPath.contains(jungle))
+        assertEquals(false, shortestPath.contains(marsh))
+    }
+
 }
