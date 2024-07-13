@@ -1386,6 +1386,8 @@ enum class UniqueType(
     fun canAcceptUniqueTarget(uniqueTarget: UniqueTarget) =
         targetTypes.any { uniqueTarget.canAcceptUniqueTarget(it) }
 
+    override fun toString() = text
+
     companion object {
         val uniqueTypeMap: Map<String, UniqueType> = entries.associateBy { it.placeholderText }
     }

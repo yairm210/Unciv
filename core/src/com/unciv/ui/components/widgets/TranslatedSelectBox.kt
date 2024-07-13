@@ -1,8 +1,8 @@
 package com.unciv.ui.components.widgets
 
 import com.badlogic.gdx.scenes.scene2d.ui.SelectBox
-import com.badlogic.gdx.utils.Array
 import com.unciv.models.translations.tr
+import com.unciv.ui.components.extensions.setItems
 import com.unciv.ui.screens.basescreen.BaseScreen
 
 class TranslatedSelectBox(values: Collection<String>, default: String) : SelectBox<TranslatedSelectBox.TranslatedString>(BaseScreen.skin) {
@@ -15,10 +15,8 @@ class TranslatedSelectBox(values: Collection<String>, default: String) : SelectB
     }
 
     init {
-        val array = Array<TranslatedString>()
-        values.forEach { array.add(TranslatedString(it)) }
-        items = array
-        selected = array.firstOrNull { it.value == default } ?: array.first()
+        setItems(values.map { TranslatedString(it) })
+        selected = items.firstOrNull { it.value == default } ?: items.first()
     }
 
     fun setSelected(newValue: String) {

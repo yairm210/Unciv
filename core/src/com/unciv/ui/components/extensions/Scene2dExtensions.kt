@@ -20,11 +20,13 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
+import com.badlogic.gdx.scenes.scene2d.ui.SelectBox
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle
 import com.badlogic.gdx.scenes.scene2d.ui.WidgetGroup
 import com.badlogic.gdx.utils.Align
+import com.badlogic.gdx.utils.Array
 import com.unciv.Constants
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.extensions.GdxKeyCodeFixes.DEL
@@ -232,6 +234,12 @@ fun <T : Actor> Table.addCell(actor: T): Table {
 /** Shortcut for [Cell].[pad][com.badlogic.gdx.scenes.scene2d.ui.Cell.pad] with top=bottom and left=right */
 fun <T : Actor> Cell<T>.pad(vertical: Float, horizontal: Float): Cell<T> {
     return pad(vertical, horizontal, vertical, horizontal)
+}
+
+fun <T> SelectBox<T>.setItems(newItems: Collection<T>){
+    val array = Array<T>()
+    newItems.forEach { array.add(it) }
+    items = array
 }
 
 /** Sets both the width and height to [size] */

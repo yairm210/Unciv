@@ -3,6 +3,7 @@ package com.unciv.ui.screens
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Stage
+import com.badlogic.gdx.scenes.scene2d.ui.SelectBox
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextField
 import com.unciv.models.ruleset.Ruleset
@@ -12,14 +13,11 @@ import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.validation.UniqueValidator
 import com.unciv.models.translations.fillPlaceholders
 import com.unciv.models.translations.getPlaceholderParameters
-import com.unciv.ui.components.extensions.enable
-import com.unciv.ui.components.extensions.toLabel
-import com.unciv.ui.components.extensions.toTextButton
+import com.unciv.ui.components.extensions.*
 import com.unciv.ui.components.input.onChange
 import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.widgets.LanguageTable
 import com.unciv.ui.components.widgets.LanguageTable.Companion.addLanguageTables
-import com.unciv.ui.components.widgets.TranslatedSelectBox
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popups.options.OptionsPopup
 import com.unciv.ui.screens.basescreen.BaseScreen
@@ -74,23 +72,23 @@ class UniqueTable(isMainUnique: Boolean, val ruleset: Ruleset, stage: Stage,
     private val uniqueErrorTable = Table().apply { defaults().pad(5f) }
 
     val uniqueTextField = TextField("Unique", BaseScreen.skin)
-    private var uniqueTargetsSelectBox: TranslatedSelectBox
+    private var uniqueTargetsSelectBox: SelectBox<UniqueTarget>
 
     init {
         this.stage = stage // required for width
         // Main unique should be non-modifier
         val uniqueTargets = if (isMainUnique) UniqueTarget.entries
             .filter { it.modifierType == UniqueTarget.ModifierType.None }
-            .map { it.name }
         // Additional ones should be modifiers
         else UniqueTarget.entries
             .filter { it.modifierType != UniqueTarget.ModifierType.None }
-            .map { it.name }
 
         defaults().pad(10f)
         background = ImageGetter.getWhiteDotDrawable().tint(Color.BLACK.cpy().apply { a=0.3f })
         val uniqueTargetSelectBoxTable = Table().apply { defaults().pad(5f) }
-        uniqueTargetsSelectBox = TranslatedSelectBox(uniqueTargets, UniqueTarget.Global.name)
+        uniqueTargetsSelectBox = SelectBox<UniqueTarget>(BaseScreen.skin)
+        uniqueTargetsSelectBox.setItems(uniqueTargets)
+        uniqueTargetsSelectBox.selected = UniqueTarget.Global
         uniqueTargetSelectBoxTable.add(uniqueTargetsSelectBox)
 
         uniqueTargetSelectBoxTable.add(uniqueSelectBoxTable).row()
@@ -116,28 +114,28 @@ class UniqueTable(isMainUnique: Boolean, val ruleset: Ruleset, stage: Stage,
     }
 
     private fun onUniqueTargetChange(
-        uniqueTargetsSelectBox: TranslatedSelectBox,
+        uniqueTargetsSelectBox: SelectBox<UniqueTarget>,
         ruleset: Ruleset,
     ) {
-        val selected = UniqueTarget.entries.first { it.name == uniqueTargetsSelectBox.selected.value }
+        val selected = uniqueTargetsSelectBox.selected
         val uniquesForTarget = UniqueType.entries.filter { it.canAcceptUniqueTarget(selected) }
-        val uniqueSelectBox = TranslatedSelectBox(uniquesForTarget.filter { it.getDeprecationAnnotation() == null }
-            .map { it.name }, uniquesForTarget.first().name)
+        val uniqueSelectBox = SelectBox<UniqueType>(BaseScreen.skin)
+        uniqueSelectBox.setItems(uniquesForTarget.filter { it.getDeprecationAnnotation() == null })
         uniqueSelectBox.onChange {
             onUniqueSelected(uniqueSelectBox, uniqueTextField, ruleset, parameterSelectBoxTable)
         }
         onUniqueSelected(uniqueSelectBox, uniqueTextField, ruleset, parameterSelectBoxTable)
         uniqueSelectBoxTable.clear()
-        uniqueSelectBoxTable.add(uniqueSelectBox)
+        uniqueSelectBoxTable.add(uniqueSelectBox).width(stage.width * 0.5f)
     }
 
     private fun onUniqueSelected(
-        uniqueSelectBox: TranslatedSelectBox,
+        uniqueSelectBox: SelectBox<UniqueType>,
         uniqueTextField: TextField,
         ruleset: Ruleset,
         parameterSelectBoxTable: Table
     ) {
-        val uniqueType = UniqueType.entries.first { it.name == uniqueSelectBox.selected.value }
+        val uniqueType = uniqueSelectBox.selected
         uniqueTextField.text = uniqueType.text
         updateUnique(ruleset, uniqueTextField)
 
@@ -150,10 +148,11 @@ class UniqueTable(isMainUnique: Boolean, val ruleset: Ruleset, stage: Stage,
                 .flatMap { it.getKnownValuesForAutocomplete(ruleset) }.toSet()
 
             if (knownParamValues.isNotEmpty()) {
-                val paramSelectBox = TranslatedSelectBox(knownParamValues.toList(), knownParamValues.first())
+                val paramSelectBox = SelectBox<String>(BaseScreen.skin)
+                paramSelectBox.setItems(knownParamValues)
                 paramSelectBox.onChange {
                     val currentParams = uniqueTextField.text.getPlaceholderParameters().toMutableList()
-                    currentParams[index] = paramSelectBox.selected.value
+                    currentParams[index] = paramSelectBox.selected
                     val newText = uniqueType.text.fillPlaceholders(*currentParams.toTypedArray())
                     uniqueTextField.text = newText
                     updateUnique(ruleset, uniqueTextField)
