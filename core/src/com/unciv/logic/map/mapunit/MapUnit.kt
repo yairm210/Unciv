@@ -25,6 +25,7 @@ import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.ruleset.unit.UnitType
 import com.unciv.models.stats.Stats
+import com.unciv.models.translations.tr
 import com.unciv.ui.components.UnitMovementMemoryType
 import java.text.DecimalFormat
 import kotlin.math.pow
@@ -204,7 +205,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
         get() = baseUnit.type
 
     fun getMovementString(): String =
-            DecimalFormat("0.#").format(currentMovement.toDouble()) + "/" + getMaxMovement()
+        (DecimalFormat("0.#").format(currentMovement.toDouble()) + "/" + getMaxMovement()).tr()
 
     fun getTile(): Tile = currentTile
 

@@ -31,6 +31,7 @@ import com.unciv.logic.files.UncivFiles
 import com.unciv.logic.multiplayer.storage.FileStorageRateLimitReached
 import com.unciv.logic.multiplayer.storage.OnlineMultiplayerServer
 import com.unciv.models.metadata.GameSettings.GameSettingsMultiplayer
+import com.unciv.models.translations.tr
 import java.io.FileNotFoundException
 import java.io.PrintWriter
 import java.io.StringWriter
@@ -387,10 +388,10 @@ class MultiplayerTurnCheckWorker(appContext: Context, workerParams: WorkerParame
 
     private fun updatePersistentNotification(inputData: Data) {
         val cal = GregorianCalendar.getInstance()
-        val hour = cal.get(GregorianCalendar.HOUR_OF_DAY).toString()
-        var minute = cal.get(GregorianCalendar.MINUTE).toString()
+        val hour = cal.get(GregorianCalendar.HOUR_OF_DAY).tr()
+        var minute = cal.get(GregorianCalendar.MINUTE).tr()
         if (minute.length == 1) {
-            minute = "0$minute"
+            minute = (0).tr() + minute
         }
         val displayTime = "$hour:$minute"
 

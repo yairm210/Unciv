@@ -72,9 +72,9 @@ class MapEditorGenerateTab(
             Concurrency.runOnGLThread {
                 ToastPopup( message, editorScreen, 4000 )
                 newTab.mapParametersTable.run { mapParameters.mapSize.also {
-                    customMapSizeRadius.text = it.radius.toString()
-                    customMapWidth.text = it.width.toString()
-                    customMapHeight.text = it.height.toString()
+                    customMapSizeRadius.text = it.radius.tr()
+                    customMapWidth.text = it.width.tr()
+                    customMapHeight.text = it.height.tr()
                 } }
             }
             return

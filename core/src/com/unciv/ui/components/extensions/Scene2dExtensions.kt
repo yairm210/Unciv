@@ -290,7 +290,7 @@ fun getCloseButton(
 /** Translate a [String] and make a [Label] widget from it */
 fun String.toLabel() = Label(this.tr(), BaseScreen.skin)
 /** Make a [Label] widget containing this [Int] as text */
-fun Int.toLabel() = this.toString().toLabel()
+fun Int.toLabel() = this.tr().toLabel()
 
 /** Translate a [String] and make a [Label] widget from it with a specified font color and size */
 fun String.toLabel(fontColor: Color = Color.WHITE,

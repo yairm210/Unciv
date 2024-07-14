@@ -31,6 +31,7 @@ import com.unciv.models.translations.fillPlaceholders
 import com.unciv.models.translations.hasPlaceholderParameters
 import com.unciv.ui.components.extensions.addToMapOfSets
 import com.unciv.logic.map.tile.TileNormalizer
+import com.unciv.models.translations.tr
 import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionsUpgrade
 import kotlin.math.roundToInt
 import kotlin.random.Random
@@ -620,7 +621,7 @@ object UniqueTriggerActivation {
                     civInfo.addStats(stats)
 
                     val filledNotification = if (notification != null && notification.hasPlaceholderParameters())
-                        notification.fillPlaceholders(statAmount.toString())
+                        notification.fillPlaceholders(statAmount.tr())
                     else notification
 
                     val notificationText = getNotificationText(
@@ -646,7 +647,7 @@ object UniqueTriggerActivation {
                     civInfo.addStats(stats)
 
                     val filledNotification = if (notification != null && notification.hasPlaceholderParameters())
-                        notification.fillPlaceholders(statAmount.toString())
+                        notification.fillPlaceholders(statAmount.tr())
                     else notification
 
                     val notificationText = getNotificationText(
@@ -677,7 +678,7 @@ object UniqueTriggerActivation {
                     civInfo.addStats(stats)
 
                     val filledNotification = if (notification != null && notification.hasPlaceholderParameters())
-                        notification.fillPlaceholders(finalStatAmount.toString())
+                        notification.fillPlaceholders(finalStatAmount.tr())
                     else notification
 
                     val notificationText = getNotificationText(
@@ -701,7 +702,7 @@ object UniqueTriggerActivation {
                     if (notification != null) {
                         val notificationText =
                             if (notification.hasPlaceholderParameters())
-                                notification.fillPlaceholders(gainedFaith.toString())
+                                notification.fillPlaceholders(gainedFaith.tr())
                             else notification
                         civInfo.addNotification(notificationText, LocationAction(tile?.position), NotificationCategory.Religion, NotificationIcon.Faith)
                     }
@@ -720,7 +721,7 @@ object UniqueTriggerActivation {
                     if (notification != null) {
                         val notificationText =
                             if (notification.hasPlaceholderParameters())
-                                notification.fillPlaceholders(gainedFaith.toString())
+                                notification.fillPlaceholders(gainedFaith.tr())
                             else notification
                         civInfo.addNotification(notificationText, LocationAction(tile?.position), NotificationCategory.Religion, NotificationIcon.Faith)
                     }

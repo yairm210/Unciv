@@ -13,6 +13,7 @@ import com.unciv.logic.map.mapgenerator.MapResourceSetting
 import com.unciv.logic.map.MapShape
 import com.unciv.logic.map.MapSize
 import com.unciv.logic.map.MapType
+import com.unciv.models.translations.tr
 import com.unciv.ui.components.widgets.UncivTextField
 import com.unciv.ui.components.extensions.pad
 import com.unciv.ui.components.extensions.toCheckBox
@@ -99,7 +100,7 @@ class MapParametersTable(
 
     fun reseed() {
         mapParameters.reseed()
-        seedTextField.text = mapParameters.seed.toString()
+        seedTextField.text = mapParameters.seed.tr()
     }
 
     private fun addMapShapeSelectBox() {
@@ -204,7 +205,7 @@ class MapParametersTable(
     }
 
     private fun addHexagonalSizeTable() {
-        val defaultRadius = mapParameters.mapSize.radius.toString()
+        val defaultRadius = mapParameters.mapSize.radius.tr()
         customMapSizeRadius = UncivTextField("Radius", defaultRadius).apply {
             textFieldFilter = DigitsOnlyFilter()
         }
@@ -218,12 +219,12 @@ class MapParametersTable(
     }
 
     private fun addRectangularSizeTable() {
-        val defaultWidth = mapParameters.mapSize.width.toString()
+        val defaultWidth = mapParameters.mapSize.width.tr()
         customMapWidth = UncivTextField("Width", defaultWidth).apply {
             textFieldFilter = DigitsOnlyFilter()
         }
 
-        val defaultHeight = mapParameters.mapSize.height.toString()
+        val defaultHeight = mapParameters.mapSize.height.tr()
         customMapHeight = UncivTextField("Height", defaultHeight).apply {
             textFieldFilter = DigitsOnlyFilter()
         }
@@ -360,7 +361,7 @@ class MapParametersTable(
     private fun addAdvancedControls(table: Table) {
         table.defaults().pad(5f)
 
-        seedTextField = UncivTextField("RNG Seed", mapParameters.seed.toString())
+        seedTextField = UncivTextField("RNG Seed", mapParameters.seed.tr())
         seedTextField.textFieldFilter = DigitsOnlyFilter()
 
         // If the field is empty, fallback seed value to 0
@@ -440,7 +441,7 @@ class MapParametersTable(
 
         addTextButton("Reset to defaults", true) {
             mapParameters.resetAdvancedSettings()
-            seedTextField.text = mapParameters.seed.toString()
+            seedTextField.text = mapParameters.seed.tr()
             for (entry in advancedSliders)
                 entry.key.value = entry.value()
         }

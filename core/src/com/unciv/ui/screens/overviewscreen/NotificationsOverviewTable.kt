@@ -6,6 +6,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.Notification
 import com.unciv.logic.civilization.NotificationCategory
+import com.unciv.models.translations.tr
 import com.unciv.ui.components.widgets.ColorMarkupLabel
 import com.unciv.ui.components.widgets.TabbedPager
 import com.unciv.ui.components.input.onClick
@@ -53,7 +54,12 @@ class NotificationsOverviewTable(
             notificationTable.add(notificationsArrayTable("Current", viewingPlayer.notifications)).row()
 
         for (notification in notificationLog.asReversed()) {
-            notificationTable.add(notificationsArrayTable(notification.turn.toString(), notification.notifications))
+            notificationTable.add(
+                notificationsArrayTable(
+                    notification.turn.tr(),
+                    notification.notifications
+                )
+            )
             notificationTable.padTop(20f).row()
         }
     }

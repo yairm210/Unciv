@@ -17,6 +17,7 @@ import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.skins.SkinCache
 import com.unciv.models.tilesets.TileSetCache
 import com.unciv.models.translations.Translations
+import com.unciv.models.translations.tr
 import com.unciv.ui.audio.MusicController
 import com.unciv.ui.audio.MusicMood
 import com.unciv.ui.audio.MusicTrackChooserFlags
@@ -500,7 +501,7 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
     ) : IsPartOfGameInfoSerialization {
         @Suppress("unused") // used by json serialization
         constructor() : this("", -1)
-        fun toNiceString() = "$text (Build $number)"
+        fun toNiceString() = "$text (Build ${number.tr()})"
     }
 }
 

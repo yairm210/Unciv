@@ -154,7 +154,7 @@ object BuildingDescriptions {
     }
 
     fun getCivilopediaTextLines(building: Building, ruleset: Ruleset): List<FormattedLine> = building.run {
-        fun Float.formatSignedInt() = (if (this > 0f) "+" else "") + this.toInt().toString()
+        fun Float.formatSignedInt() = (if (this > 0f) "+" else "") + this.toInt().tr()
 
         val textList = ArrayList<FormattedLine>()
 

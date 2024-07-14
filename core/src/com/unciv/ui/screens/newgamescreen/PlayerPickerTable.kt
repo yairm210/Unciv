@@ -126,7 +126,7 @@ class PlayerPickerTable(
     fun updateRandomNumberLabel() {
         randomNumberLabel?.run {
             val playerRange = if (gameParameters.minNumberOfPlayers == gameParameters.maxNumberOfPlayers) {
-                gameParameters.minNumberOfPlayers.toString()
+                gameParameters.minNumberOfPlayers.tr()
             } else {
                 "${gameParameters.minNumberOfPlayers} - ${gameParameters.maxNumberOfPlayers}"
             }

@@ -7,6 +7,7 @@ import com.unciv.UncivGame
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.models.ruleset.unique.LocalUniqueCache
+import com.unciv.models.translations.tr
 import com.unciv.ui.components.widgets.UnitIconGroup
 import com.unciv.ui.components.extensions.center
 import com.unciv.ui.components.extensions.toLabel
@@ -97,7 +98,7 @@ class TileLayerUnitFlag(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup
         val aircraftImage = ImageGetter.getImage("OtherIcons/Aircraft")
         aircraftImage.color = iconColor
         table.add(aircraftImage).size(8f)
-        table.add(unit.getTile().airUnits.size.toString().toLabel(iconColor, 10, alignment = Align.center))
+        table.add(unit.getTile().airUnits.size.tr().toLabel(iconColor, 10, alignment = Align.center))
 
         airUnitTable.add(table).expand().center().right()
 

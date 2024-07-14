@@ -41,7 +41,7 @@ fun Duration.format(): String {
         if (firstPartAlreadyAdded) {
             sb.append(", ")
         }
-        sb.append("[$part] $unit")
+        sb.append("[${part.tr()}] $unit")
         firstPartAlreadyAdded = true
     }
     return sb.toString()
