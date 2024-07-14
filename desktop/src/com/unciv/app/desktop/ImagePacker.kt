@@ -104,7 +104,7 @@ internal object ImagePacker {
     }
 
     // Scan multiple image folders and generate an atlas for each - if outdated
-    private fun packImagesPerMod(input: String, output: String, defaultSettings: TexturePacker.Settings) {
+    fun packImagesPerMod(input: String, output: String, defaultSettings: TexturePacker.Settings = getDefaultSettings()) {
         val baseDir = File(input)
         if (!File(baseDir, imagesPathBase).exists() && !File(baseDir, existCheck2).exists()) return  // So we don't run this from within a fat JAR
         val atlasList = mutableListOf<String>()

@@ -10,3 +10,4 @@ nav:
     - uniques.md
     - Type-checking.md
     - Scenarios.md
+    - CI-automation.md

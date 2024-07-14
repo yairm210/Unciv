@@ -89,7 +89,7 @@ class Ruleset {
 
     val tileRemovals by lazy { tileImprovements.values.filter { it.name.startsWith(Constants.remove) } }
     val nonRoadTileRemovals by lazy { tileRemovals.filter { rulesetImprovement ->
-            RoadStatus.values().none { it.removeAction == rulesetImprovement.name } } }
+            RoadStatus.entries.toTypedArray().none { it.removeAction == rulesetImprovement.name } } }
 
     /** Contains all happiness levels that moving *from* them, to one *below* them, can change uniques that apply */
     val allHappinessLevelsThatAffectUniques by lazy {
@@ -244,7 +244,7 @@ class Ruleset {
     fun allICivilopediaText(): Sequence<ICivilopediaText> =
             allRulesetObjects() + events.values + events.values.flatMap { it.choices }
 
-    internal fun load(folderHandle: FileHandle) {
+    fun load(folderHandle: FileHandle) {
         // Note: Most files are loaded using createHashmap, which sets originRuleset automatically.
         // For other files containing IRulesetObject's we'll have to remember to do so manually - e.g. Tech.
         val modOptionsFile = folderHandle.child("ModOptions.json")

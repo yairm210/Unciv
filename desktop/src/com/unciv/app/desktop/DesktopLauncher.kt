@@ -37,7 +37,7 @@ internal object DesktopLauncher {
         // For more info see https://github.com/yairm210/Unciv/pull/3202 and https://github.com/LWJGL/lwjgl/issues/119
         System.setProperty("org.lwjgl.opengl.Display.allowSoftwareOpenGL", "true")
 
-        val isRunFromJAR = DesktopLauncher.javaClass.`package`.specificationVersion != null
+        val isRunFromJAR = true//DesktopLauncher.javaClass.`package`.specificationVersion != null
         ImagePacker.packImages(isRunFromJAR)
 
         val config = Lwjgl3ApplicationConfiguration()
@@ -68,8 +68,11 @@ internal object DesktopLauncher {
             UiElementDocsWriter().write()
         }
 
+        val desktopGame = DesktopGame(config)
+        if (arg.isNotEmpty() && arg[0] == "mod-ci") desktopGame.isModCi = true
+
         // HardenGdxAudio extends Lwjgl3Application, and the Lwjgl3Application constructor runs as long as the game runs
-        HardenGdxAudio(DesktopGame(config), config)
+        HardenGdxAudio(desktopGame, config)
         exitProcess(0)
     }
 }
