@@ -1,5 +1,6 @@
 package com.unciv.app.desktop
 
+import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration
 import com.badlogic.gdx.files.FileHandle
 import com.badlogic.gdx.graphics.glutils.HdpiMode
@@ -9,6 +10,9 @@ import com.unciv.logic.files.SETTINGS_FILE_NAME
 import com.unciv.logic.files.UncivFiles
 import com.unciv.models.metadata.GameSettings.ScreenSize
 import com.unciv.models.metadata.GameSettings.WindowState
+import com.unciv.models.ruleset.Ruleset
+import com.unciv.models.ruleset.validation.RulesetErrorSeverity
+import com.unciv.models.ruleset.validation.RulesetValidator
 import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.utils.Display
@@ -19,6 +23,21 @@ internal object DesktopLauncher {
 
     @JvmStatic
     fun main(arg: Array<String>) {
+
+        // The uniques checker requires the file system to be seet up, which happens after lwjgw initializes it
+        if (arg.isNotEmpty() && arg[0] == "mod-ci") {
+            ImagePacker.packImagesPerMod(".", ".")
+            val ruleset = Ruleset()
+            ruleset.folderLocation = FileHandle(".")
+            val jsonsFolder = FileHandle("jsons")
+            if (jsonsFolder.exists()) {
+                ruleset.load(jsonsFolder)
+            }
+            ruleset.load(FileHandle("jsons"))
+            val errors = RulesetValidator(ruleset).getErrorList(true)
+            println(errors.getErrorText(true))
+            exitProcess(if (errors.any { it.errorSeverityToReport == RulesetErrorSeverity.Error }) 1 else 0)
+        }
 
         // Setup Desktop logging
         Log.backend = DesktopLogBackend()
@@ -68,11 +87,8 @@ internal object DesktopLauncher {
             UiElementDocsWriter().write()
         }
 
-        val desktopGame = DesktopGame(config)
-        if (arg.isNotEmpty() && arg[0] == "mod-ci") desktopGame.isModCi = true
-
         // HardenGdxAudio extends Lwjgl3Application, and the Lwjgl3Application constructor runs as long as the game runs
-        HardenGdxAudio(desktopGame, config)
+        HardenGdxAudio(DesktopGame(config), config)
         exitProcess(0)
     }
 }
