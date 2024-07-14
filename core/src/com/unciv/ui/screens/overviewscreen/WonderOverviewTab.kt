@@ -76,7 +76,7 @@ class WonderOverviewTab(
             add(wonder.getStatusColumn().toLabel())
             val locationText = wonder.getLocationColumn()
             if (locationText.isNotEmpty()) {
-                val locationLabel = locationText.toLabel()
+                val locationLabel = locationText.toLabel(hideIcons = true)
                 if (wonder.location != null)
                     locationLabel.onClick{
                         val worldScreen = UncivGame.Current.resetToWorldScreen()
