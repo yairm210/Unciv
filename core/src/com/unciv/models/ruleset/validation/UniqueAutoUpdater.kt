@@ -1,30 +1,34 @@
 package com.unciv.models.ruleset.validation
 
+import com.unciv.models.ruleset.IRulesetObject
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.utils.Log
 import com.unciv.utils.debug
 
-object UniqueAutoUpdater{
+object UniqueAutoUpdater {
+
+    private val fileToObjects: Map<String, (Ruleset) -> LinkedHashMap<String, out IRulesetObject>> = mapOf(
+        "Beliefs.json" to { it.beliefs },
+        "Buildings.json" to { it.buildings },
+        "Nations.json" to { it.nations },
+        "Policies.json" to { it.policies },
+        "Techs.json" to { it.technologies },
+        "Terrains.json" to { it.terrains },
+        "TileImprovements.json" to { it.tileImprovements },
+        "UnitPromotions.json" to { it.unitPromotions },
+        "UnitTypes.json" to { it.unitTypes },
+        "Units.json" to { it.units },
+        "Ruins.json" to { it.ruinRewards },
+        // Note this does not currently
+        "Events.json" to { it.events }
+    )
 
     fun autoupdateUniques(
         mod: Ruleset,
         replaceableUniques: HashMap<String, String> = getDeprecatedReplaceableUniques(mod)
     ) {
-        val filesToReplace = listOf(
-            "Beliefs.json",
-            "Buildings.json",
-            "Nations.json",
-            "Policies.json",
-            "Techs.json",
-            "Terrains.json",
-            "TileImprovements.json",
-            "UnitPromotions.json",
-            "UnitTypes.json",
-            "Units.json",
-            "Ruins.json"
-        )
-
+        val filesToReplace = fileToObjects.keys
         val jsonFolder = mod.folderLocation!!.child("jsons")
         for (fileName in filesToReplace) {
             val file = jsonFolder.child(fileName)
@@ -32,6 +36,7 @@ object UniqueAutoUpdater{
             var newFileText = file.readString()
             for ((original, replacement) in replaceableUniques) {
                 newFileText = newFileText.replace("\"$original\"", "\"$replacement\"")
+                newFileText = newFileText.replace("<$original>", "<$replacement>") // For modifiers
             }
             file.writeString(newFileText, false)
         }
@@ -40,20 +45,7 @@ object UniqueAutoUpdater{
 
 
     fun getDeprecatedReplaceableUniques(mod: Ruleset): HashMap<String, String> {
-
-        val objectsToCheck = sequenceOf(
-            mod.beliefs,
-            mod.buildings,
-            mod.nations,
-            mod.policies,
-            mod.technologies,
-            mod.terrains,
-            mod.tileImprovements,
-            mod.unitPromotions,
-            mod.unitTypes,
-            mod.units,
-            mod.ruinRewards
-        )
+        val objectsToCheck = fileToObjects.values.map { it(mod) }
         val allDeprecatedUniques = HashSet<String>()
         val deprecatedUniquesToReplacementText = HashMap<String, String>()
 
@@ -62,12 +54,15 @@ object UniqueAutoUpdater{
             .flatMap { it.uniqueObjects }
             .filter { it.getDeprecationAnnotation() != null }
 
-        for (deprecatedUnique in deprecatedUniques) {
+        val deprecatedConditionals = objectsToCheck
+            .flatMap { it.values }
+            .flatMap { it.uniqueObjects }
+            .flatMap { it.conditionals }
+            .filter { it.getDeprecationAnnotation() != null }
+
+        for (deprecatedUnique in deprecatedUniques + deprecatedConditionals) {
             if (allDeprecatedUniques.contains(deprecatedUnique.text)) continue
             allDeprecatedUniques.add(deprecatedUnique.text)
-
-            // note that this replacement does not contain conditionals attached to the original!
-
 
             var uniqueReplacementText = deprecatedUnique.getReplacementText(mod)
             while (Unique(uniqueReplacementText).getDeprecationAnnotation() != null)
@@ -102,6 +97,7 @@ object UniqueAutoUpdater{
             deprecatedUniquesToReplacementText[deprecatedUnique.text] = uniqueReplacementText
             debug("Replace \"%s\" with \"%s\"", deprecatedUnique.text, uniqueReplacementText)
         }
+
         return deprecatedUniquesToReplacementText
     }
 }
