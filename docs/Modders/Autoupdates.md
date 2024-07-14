@@ -18,3 +18,11 @@ On every commit, and once per day, it will:
 If there are changes, this will create a PR to your repo - [here's an example](https://github.com/yairm210/Unciv-IV-mod/pull/31) - which you can choose to accept
 
 If you see that the autoupdate isn't 100% - in which case talk to me and we'll sort it out 🙂
+
+## Errors
+
+If you get a `remote: Permission to <...>.git denied to github-actions[bot].`
+You need to:
+
+- Open Settings > Actions > General
+- Under "Workflow permissions" select "Read and write permissions", "Allow GitHub Actions to create and approve pull requests"
