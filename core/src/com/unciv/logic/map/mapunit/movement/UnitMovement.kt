@@ -31,7 +31,8 @@ class UnitMovement(val unit: MapUnit) {
         considerZoneOfControl: Boolean = true,
         tilesToIgnore: HashSet<Tile>? = null,
         passThroughCache: HashMap<Tile, Boolean> = HashMap(),
-        movementCostCache: HashMap<Pair<Tile, Tile>, Float> = HashMap()
+        movementCostCache: HashMap<Pair<Tile, Tile>, Float> = HashMap(),
+        includeOtherEscortUnit: Boolean = true
     ): PathsToTilesWithinTurn {
         val distanceToTiles = PathsToTilesWithinTurn()
 
@@ -59,19 +60,22 @@ class UnitMovement(val unit: MapUnit) {
                         // cities and units goes kaput.
                         else -> {
                             val key = Pair(tileToCheck, neighbor)
-                            val movementCost =
-                                movementCostCache.getOrPut(key) {
-                                    MovementCost.getMovementCostBetweenAdjacentTiles(unit, tileToCheck, neighbor, considerZoneOfControl)
-                                }
+                            val movementCost = movementCostCache.getOrPut(key) {
+                                MovementCost.getMovementCostBetweenAdjacentTilesEscort(unit, tileToCheck, neighbor, considerZoneOfControl, includeOtherEscortUnit)
+                            }
                             distanceToTiles[tileToCheck]!!.totalDistance + movementCost
                         }
                     }
 
                     if (!distanceToTiles.containsKey(neighbor) || distanceToTiles[neighbor]!!.totalDistance > totalDistanceToTile) { // this is the new best path
-                        if (totalDistanceToTile < unitMovement - Constants.minimumMovementEpsilon)  // We can still keep moving from here!
+                        val usableMovement = if (includeOtherEscortUnit && unit.isEscorting())
+                            minOf(unitMovement, unit.getOtherEscortUnit()!!.currentMovement)
+                        else unitMovement
+
+                        if (totalDistanceToTile < usableMovement - Constants.minimumMovementEpsilon)  // We can still keep moving from here!
                             updatedTiles += neighbor
                         else
-                            totalDistanceToTile = unitMovement
+                            totalDistanceToTile = usableMovement
                         // In Civ V, you can always travel between adjacent tiles, even if you don't technically
                         // have enough movement points - it simply depletes what you have
 
@@ -707,19 +711,12 @@ class UnitMovement(val unit: MapUnit) {
             considerZoneOfControl,
             null,
             passThroughCache,
-            movementCostCache
+            movementCostCache,
+            includeOtherEscortUnit
         )
 
-        if (includeOtherEscortUnit) {
-            // Only save to cache only if we are the original call and not the subsequent escort unit call
-            pathfindingCache.setDistanceToTiles(considerZoneOfControl, distanceToTiles)
-            if (unit.isEscorting()) {
-                // We should only be able to move to tiles that our escort can also move to
-                val escortDistanceToTiles = unit.getOtherEscortUnit()!!.movement
-                    .getDistanceToTiles(considerZoneOfControl, includeOtherEscortUnit = false)
-                distanceToTiles.keys.removeAll { !escortDistanceToTiles.containsKey(it) }
-            }
-        }
+        pathfindingCache.setDistanceToTiles(considerZoneOfControl, distanceToTiles)
+
         return distanceToTiles
     }
 
