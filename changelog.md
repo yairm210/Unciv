@@ -1,30 +1,14 @@
 ## 4.12.11
 
-Resolved  - icons in Wonder location "near city" for cities with same name as nations
+Modding: Added unique builder screen, accessible from mod checker :D
 
-Resolved  - Rome/Babylon capital takeover no longer renames like city state
+Fixed Workboat construction automation ignoring existing workboat in city
 
-Resolved  - Fixed air unit movement on map
+Fixed air unit movement on map
 
-Resolved  - Fixed Workboat construction automation ignoring existing workboat in city
+Fixed icons in Wonder location "near city" for cities with nation names
 
-Resolved  - Ouaz's lower-case 'clicking'
-
-Added searches for uniques and parameters
-
-Move from translated select box to regular one for unique builder
-
-Don't show deprecated uniques
-
-NOW WITH MODIFIERS
-
-Added unique builder screen, accessible from mod checker
-
-4.12.10-patch1
-
-Fixed 'move to tile' when selecting tile outside of current movement range 
-
-Overhaul of unique parameter type known values -
+Rome/Babylon capital takeover no longer renames like city states
 
 By tuvus:
 - Animations now show escort units 
