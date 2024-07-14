@@ -13,6 +13,7 @@ import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.ruleset.validation.RulesetErrorSeverity
 import com.unciv.models.ruleset.validation.RulesetValidator
+import com.unciv.models.ruleset.validation.UniqueAutoUpdater
 import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.utils.Display
@@ -36,6 +37,7 @@ internal object DesktopLauncher {
                 // Load the actual ruleset here
                 ruleset.load(jsonsFolder)
             }
+            UniqueAutoUpdater.autoupdateUniques(ruleset)
             val errors = RulesetValidator(ruleset).getErrorList(true)
             println(errors.getErrorText(true))
             exitProcess(if (errors.any { it.errorSeverityToReport == RulesetErrorSeverity.Error }) 1 else 0)
