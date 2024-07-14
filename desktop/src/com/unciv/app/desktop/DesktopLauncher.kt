@@ -1,6 +1,5 @@
 package com.unciv.app.desktop
 
-import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration
 import com.badlogic.gdx.files.FileHandle
 import com.badlogic.gdx.graphics.glutils.HdpiMode
@@ -11,6 +10,7 @@ import com.unciv.logic.files.UncivFiles
 import com.unciv.models.metadata.GameSettings.ScreenSize
 import com.unciv.models.metadata.GameSettings.WindowState
 import com.unciv.models.ruleset.Ruleset
+import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.ruleset.validation.RulesetErrorSeverity
 import com.unciv.models.ruleset.validation.RulesetValidator
 import com.unciv.ui.components.fonts.Fonts
@@ -31,9 +31,11 @@ internal object DesktopLauncher {
             ruleset.folderLocation = FileHandle(".")
             val jsonsFolder = FileHandle("jsons")
             if (jsonsFolder.exists()) {
+                // Load vanilla ruleset from the JAR, in case the mod requires parts of it
+                RulesetCache.loadRulesets(consoleMode = true, noMods = true)
+                // Load the actual ruleset here
                 ruleset.load(jsonsFolder)
             }
-            ruleset.load(FileHandle("jsons"))
             val errors = RulesetValidator(ruleset).getErrorList(true)
             println(errors.getErrorText(true))
             exitProcess(if (errors.any { it.errorSeverityToReport == RulesetErrorSeverity.Error }) 1 else 0)
