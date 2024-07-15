@@ -17,7 +17,6 @@ import com.unciv.models.ruleset.tech.Technology
 import com.unciv.models.ruleset.tile.Terrain
 import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.ruleset.tile.TileResource
-import com.unciv.models.ruleset.unique.IHasUniques
 import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueType
@@ -31,6 +30,35 @@ import com.unciv.models.translations.tr
 import com.unciv.ui.screens.civilopediascreen.ICivilopediaText
 import com.unciv.utils.Log
 import kotlin.collections.set
+
+enum class RulesetFile(val filename: String,
+                       val getRulesetObjects:Ruleset.() -> Sequence<IRulesetObject> = { emptySequence() },
+                       val getUniques: Ruleset.() -> Sequence<Unique> = {getRulesetObjects().flatMap { it.uniqueObjects }}){
+    Beliefs("Beliefs.json", {beliefs.values.asSequence()}),
+    Buildings("Buildings.json", { buildings.values.asSequence()}),
+    Eras("Eras.json", { eras.values.asSequence() }),
+    Nations("Nations.json", { nations.values.asSequence() }),
+    Policies("Policies.json", { policies.values.asSequence() }),
+    Techs("Techs.json", { technologies.values.asSequence() }),
+    Terrains("Terrains.json", { terrains.values.asSequence() }),
+    TileImprovements("TileImprovements.json", { tileImprovements.values.asSequence() }),
+    Units("Units.json", { units.values.asSequence()}),
+    UnitPromotions("UnitPromotions.json", { unitPromotions.values.asSequence() }),
+    UnitTypes("UnitTypes.json", { unitTypes.values.asSequence() }),
+    VictoryTypes("VictoryTypes.json"),
+    CityStateTypes("CityStateTypes.json", getUniques =
+        { cityStateTypes.values.asSequence().flatMap { it.allyBonusUniqueMap.getAllUniques() + it.friendBonusUniqueMap.getAllUniques() } }),
+    Personalities("Personalities.json", { personalities.values.asSequence() }),
+    Events("Events.json", {events.values.asSequence()},
+        { events.values.asSequence().flatMap { it.uniqueObjects } +
+                events.values.asSequence().flatMap { it.choices.flatMap { it.triggeredUniqueObjects } }}),
+    GlobalUniques("GlobalUniques.json", { sequenceOf(globalUniques) }),
+    ModOptions("ModOptions.json", getUniques = { modOptions.uniqueObjects.asSequence() }),
+    Speeds("Speeds.json", { speeds.values.asSequence() }),
+    Difficulties("Difficulties.json"),
+    Quests("Quests.json"),
+    Ruins("Ruins.json", { ruinRewards.values.asSequence() });
+}
 
 class Ruleset {
 
@@ -94,17 +122,15 @@ class Ruleset {
     /** Contains all happiness levels that moving *from* them, to one *below* them, can change uniques that apply */
     val allHappinessLevelsThatAffectUniques by lazy {
         sequence {
-            for (rulesetObject in (units.values + terrains.values + buildings.values + technologies.values + eras.values
-                + beliefs.values + unitPromotions.values + tileResources.values + policies.values + tileImprovements.values + globalUniques))
-                for (unique in rulesetObject.uniqueObjects)
-                    for (conditional in unique.conditionals){
-                        if (conditional.type == UniqueType.ConditionalBelowHappiness) yield(conditional.params[0].toInt())
-                        if (conditional.type == UniqueType.ConditionalBetweenHappiness){
-                            yield(conditional.params[0].toInt())
-                            yield(conditional.params[1].toInt() + 1)
-                        }
-                        if (conditional.type == UniqueType.ConditionalHappy) yield(0)
+            for (unique in this@Ruleset.allUniques())
+                for (conditional in unique.conditionals){
+                    if (conditional.type == UniqueType.ConditionalBelowHappiness) yield(conditional.params[0].toInt())
+                    if (conditional.type == UniqueType.ConditionalBetweenHappiness){
+                        yield(conditional.params[0].toInt())
+                        yield(conditional.params[1].toInt() + 1)
                     }
+                    if (conditional.type == UniqueType.ConditionalHappy) yield(0)
+                }
         }.toSet()
     }
 
@@ -216,33 +242,9 @@ class Ruleset {
         events.clear()
     }
 
-    fun allRulesetObjects(): Sequence<IRulesetObject> =
-            beliefs.values.asSequence() +
-            buildings.values.asSequence() +
-            //difficulties is only INamed
-            eras.values.asSequence() +
-            speeds.values.asSequence() +
-            sequenceOf(globalUniques) +
-            nations.values.asSequence() +
-            policies.values.asSequence() +
-            policyBranches.values.asSequence() +
-            // quests is only INamed
-            // religions is just Strings
-            ruinRewards.values.asSequence() +
-            // specialists is only NamedStats
-            technologies.values.asSequence() +
-            terrains.values.asSequence() +
-            tileImprovements.values.asSequence() +
-            tileResources.values.asSequence() +
-            unitPromotions.values.asSequence() +
-            units.values.asSequence() +
-            unitTypes.values.asSequence() +
-            personalities.values.asSequence()
-            // Victories is only INamed
-    fun allIHasUniques(): Sequence<IHasUniques> =
-            allRulesetObjects() + sequenceOf(modOptions)
-    fun allICivilopediaText(): Sequence<ICivilopediaText> =
-            allRulesetObjects() + events.values + events.values.flatMap { it.choices }
+    fun allRulesetObjects(): Sequence<IRulesetObject> = RulesetFile.entries.asSequence().flatMap { it.getRulesetObjects(this) }
+    fun allUniques(): Sequence<Unique> = RulesetFile.entries.asSequence().flatMap { it.getUniques(this) }
+    fun allICivilopediaText(): Sequence<ICivilopediaText> = allRulesetObjects() + events.values.flatMap { it.choices }
 
     fun load(folderHandle: FileHandle) {
         // Note: Most files are loaded using createHashmap, which sets originRuleset automatically.

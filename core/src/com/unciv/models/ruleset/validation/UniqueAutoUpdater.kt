@@ -1,34 +1,18 @@
 package com.unciv.models.ruleset.validation
 
-import com.unciv.models.ruleset.IRulesetObject
 import com.unciv.models.ruleset.Ruleset
+import com.unciv.models.ruleset.RulesetFile
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.utils.Log
 import com.unciv.utils.debug
 
 object UniqueAutoUpdater {
 
-    private val fileToObjects: Map<String, (Ruleset) -> LinkedHashMap<String, out IRulesetObject>> = mapOf(
-        "Beliefs.json" to { it.beliefs },
-        "Buildings.json" to { it.buildings },
-        "Nations.json" to { it.nations },
-        "Policies.json" to { it.policies },
-        "Techs.json" to { it.technologies },
-        "Terrains.json" to { it.terrains },
-        "TileImprovements.json" to { it.tileImprovements },
-        "UnitPromotions.json" to { it.unitPromotions },
-        "UnitTypes.json" to { it.unitTypes },
-        "Units.json" to { it.units },
-        "Ruins.json" to { it.ruinRewards },
-        // Note this does not currently
-        "Events.json" to { it.events }
-    )
-
     fun autoupdateUniques(
         mod: Ruleset,
         replaceableUniques: HashMap<String, String> = getDeprecatedReplaceableUniques(mod)
     ) {
-        val filesToReplace = fileToObjects.keys
+        val filesToReplace = RulesetFile.entries.map { it.filename }
         val jsonFolder = mod.folderLocation!!.child("jsons")
         for (fileName in filesToReplace) {
             val file = jsonFolder.child(fileName)
@@ -45,18 +29,14 @@ object UniqueAutoUpdater {
 
 
     fun getDeprecatedReplaceableUniques(mod: Ruleset): HashMap<String, String> {
-        val objectsToCheck = fileToObjects.values.map { it(mod) }
+        val allUniques = mod.allUniques()
         val allDeprecatedUniques = HashSet<String>()
         val deprecatedUniquesToReplacementText = HashMap<String, String>()
 
-        val deprecatedUniques = objectsToCheck
-            .flatMap { it.values }
-            .flatMap { it.uniqueObjects }
+        val deprecatedUniques = allUniques
             .filter { it.getDeprecationAnnotation() != null }
 
-        val deprecatedConditionals = objectsToCheck
-            .flatMap { it.values }
-            .flatMap { it.uniqueObjects }
+        val deprecatedConditionals = allUniques
             .flatMap { it.conditionals }
             .filter { it.getDeprecationAnnotation() != null }
 

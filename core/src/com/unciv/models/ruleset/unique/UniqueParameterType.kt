@@ -644,13 +644,11 @@ enum class UniqueParameterType(
         }
         private fun scanExistingValues(type: UniqueParameterType, ruleset: Ruleset): Set<String> {
             val result = mutableSetOf<String>()
-            for (obj in ruleset.allIHasUniques()) {
-                for (unique in obj.uniqueObjects) {
-                    val parameterMap = unique.type?.parameterTypeMap ?: continue
-                    for ((index, param) in unique.params.withIndex()) {
-                        if (type !in parameterMap[index]) continue
-                        result += param
-                    }
+            for (unique in ruleset.allUniques()) {
+                val parameterMap = unique.type?.parameterTypeMap ?: continue
+                for ((index, param) in unique.params.withIndex()) {
+                    if (type !in parameterMap[index]) continue
+                    result += param
                 }
             }
             return result
