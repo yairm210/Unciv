@@ -16,6 +16,7 @@ class Terrain : RulesetStatsObject() {
 
     lateinit var type: TerrainType
 
+    /** For terrain features - indicates the stats of this terrain override those of all previous layers */
     var overrideStats = false
 
     /** If true, nothing can be built here - not even resource improvements */
