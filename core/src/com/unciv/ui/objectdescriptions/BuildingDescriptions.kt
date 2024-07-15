@@ -154,7 +154,7 @@ object BuildingDescriptions {
     }
 
     fun getCivilopediaTextLines(building: Building, ruleset: Ruleset): List<FormattedLine> = building.run {
-        fun Float.formatSignedInt() = (if (this > 0f) "+" else "") + this.toInt().toString()
+        fun Float.formatSignedInt() = (if (this > 0f) "+" else "") + this.toInt().tr()
 
         val textList = ArrayList<FormattedLine>()
 
@@ -269,7 +269,7 @@ object BuildingDescriptions {
                 if (!tileBonusHashmap.containsKey(stats)) tileBonusHashmap[stats] = ArrayList()
                 tileBonusHashmap[stats]!!.add(unique.params[1])
             }
-            else -> yield(unique.text)
+            else -> yield(unique.getDisplayText())
         }
         for ((key, value) in tileBonusHashmap)
             yield( "[stats] from [tileFilter] tiles in this city"

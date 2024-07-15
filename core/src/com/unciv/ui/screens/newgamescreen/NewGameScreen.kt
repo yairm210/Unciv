@@ -209,9 +209,9 @@ class NewGameScreen(
             if (message != null) {
                 ToastPopup( message, UncivGame.Current.screen!!, 4000 )
                 with (mapOptionsTable.generatedMapOptionsTable) {
-                    customMapSizeRadius.text = mapSize.radius.toString()
-                    customMapWidth.text = mapSize.width.toString()
-                    customMapHeight.text = mapSize.height.toString()
+                    customMapSizeRadius.text = mapSize.radius.tr()
+                    customMapWidth.text = mapSize.width.tr()
+                    customMapHeight.text = mapSize.height.tr()
                 }
                 Gdx.input.inputProcessor = stage
                 return

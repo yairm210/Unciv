@@ -31,6 +31,7 @@ import com.unciv.models.translations.fillPlaceholders
 import com.unciv.models.translations.hasPlaceholderParameters
 import com.unciv.ui.components.extensions.addToMapOfSets
 import com.unciv.logic.map.tile.TileNormalizer
+import com.unciv.models.translations.tr
 import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionsUpgrade
 import kotlin.math.roundToInt
 import kotlin.random.Random
@@ -193,7 +194,7 @@ object UniqueTriggerActivation {
                 if (actualAmount <= 0) return null
 
                 fun placeUnits(): Boolean {
-                    val tilesUnitsWerePlacedOn: MutableList<Vector2> = mutableListOf()
+                    val placedUnits: MutableList<MapUnit> = mutableListOf()
                     repeat(actualAmount) {
                         val placedUnit = when {
                             // Set unit at city if there's an explict city or if there's no tile to set at
@@ -207,20 +208,19 @@ object UniqueTriggerActivation {
 
                             else -> null
                         }
-                        if (placedUnit != null)
-                            tilesUnitsWerePlacedOn.add(placedUnit.getTile().position)
+                        if (placedUnit != null) placedUnits += placedUnit
                     }
-                    if (tilesUnitsWerePlacedOn.isEmpty()) return false
+                    if (placedUnits.isEmpty()) return false
 
                     val notificationText = getNotificationText(
                         notification, triggerNotificationText,
-                        "Gained [${tilesUnitsWerePlacedOn.size}] [${civUnit.name}] unit(s)"
+                        "Gained [${placedUnits.size}] [${civUnit.name}] unit(s)"
                     )
 
                     if (notificationText != null)
                         civInfo.addNotification(
                             notificationText,
-                            MapUnitAction(tilesUnitsWerePlacedOn),
+                            MapUnitAction(placedUnits),
                             NotificationCategory.Units,
                             civUnit.name
                         )
@@ -560,16 +560,17 @@ object UniqueTriggerActivation {
                 if (unitsToPromote.isEmpty()) return null
 
                 return {
-                    val promotedUnitLocations: MutableList<Vector2> = mutableListOf()
+                    val promotedUnits: MutableList<MapUnit> = mutableListOf()
                     for (civUnit in unitsToPromote) {
+                        if (promotionName in civUnit.promotions.promotions) continue
                         civUnit.promotions.addPromotion(promotionName, isFree = true)
-                        promotedUnitLocations.add(civUnit.getTile().position)
+                        promotedUnits += civUnit
                     }
 
                     if (notification != null) {
                         civInfo.addNotification(
                             notification,
-                            MapUnitAction(promotedUnitLocations),
+                            MapUnitAction(promotedUnits),
                             NotificationCategory.Units,
                             "unitPromotionIcons/$promotionName"
                         )
@@ -620,7 +621,7 @@ object UniqueTriggerActivation {
                     civInfo.addStats(stats)
 
                     val filledNotification = if (notification != null && notification.hasPlaceholderParameters())
-                        notification.fillPlaceholders(statAmount.toString())
+                        notification.fillPlaceholders(statAmount.tr())
                     else notification
 
                     val notificationText = getNotificationText(
@@ -646,7 +647,7 @@ object UniqueTriggerActivation {
                     civInfo.addStats(stats)
 
                     val filledNotification = if (notification != null && notification.hasPlaceholderParameters())
-                        notification.fillPlaceholders(statAmount.toString())
+                        notification.fillPlaceholders(statAmount.tr())
                     else notification
 
                     val notificationText = getNotificationText(
@@ -677,7 +678,7 @@ object UniqueTriggerActivation {
                     civInfo.addStats(stats)
 
                     val filledNotification = if (notification != null && notification.hasPlaceholderParameters())
-                        notification.fillPlaceholders(finalStatAmount.toString())
+                        notification.fillPlaceholders(finalStatAmount.tr())
                     else notification
 
                     val notificationText = getNotificationText(
@@ -701,7 +702,7 @@ object UniqueTriggerActivation {
                     if (notification != null) {
                         val notificationText =
                             if (notification.hasPlaceholderParameters())
-                                notification.fillPlaceholders(gainedFaith.toString())
+                                notification.fillPlaceholders(gainedFaith.tr())
                             else notification
                         civInfo.addNotification(notificationText, LocationAction(tile?.position), NotificationCategory.Religion, NotificationIcon.Faith)
                     }
@@ -720,7 +721,7 @@ object UniqueTriggerActivation {
                     if (notification != null) {
                         val notificationText =
                             if (notification.hasPlaceholderParameters())
-                                notification.fillPlaceholders(gainedFaith.toString())
+                                notification.fillPlaceholders(gainedFaith.tr())
                             else notification
                         civInfo.addNotification(notificationText, LocationAction(tile?.position), NotificationCategory.Religion, NotificationIcon.Faith)
                     }
@@ -955,7 +956,7 @@ object UniqueTriggerActivation {
                 return {
                     unit.healBy(unique.params[0].toInt())
                     if (notification != null)
-                        unit.civ.addNotification(notification, unit.getTile().position, NotificationCategory.Units) // Do we have a heal icon?
+                        unit.civ.addNotification(notification, MapUnitAction(unit), NotificationCategory.Units) // Do we have a heal icon?
                     true
                 }
             }
@@ -964,7 +965,7 @@ object UniqueTriggerActivation {
                 return {
                     unit.takeDamage(unique.params[0].toInt())
                     if (notification != null)
-                        unit.civ.addNotification(notification, unit.getTile().position, NotificationCategory.Units) // Do we have a heal icon?
+                        unit.civ.addNotification(notification, MapUnitAction(unit), NotificationCategory.Units) // Do we have a heal icon?
                     true
                 }
             }
@@ -974,7 +975,7 @@ object UniqueTriggerActivation {
                 return {
                     unit.promotions.XP += unique.params[0].toInt()
                     if (notification != null)
-                        unit.civ.addNotification(notification, unit.getTile().position, NotificationCategory.Units)
+                        unit.civ.addNotification(notification, MapUnitAction(unit), NotificationCategory.Units)
                     true
                 }
             }
@@ -985,7 +986,7 @@ object UniqueTriggerActivation {
                 return {
                     (upgradeAction.minBy { (it as UpgradeUnitAction).unitToUpgradeTo.cost }).action!!()
                     if (notification != null)
-                        unit.civ.addNotification(notification, unit.getTile().position, NotificationCategory.Units)
+                        unit.civ.addNotification(notification, MapUnitAction(unit), NotificationCategory.Units)
                     true
                 }
             }
@@ -996,7 +997,7 @@ object UniqueTriggerActivation {
                 return {
                     (upgradeAction.minBy { (it as UpgradeUnitAction).unitToUpgradeTo.cost }).action!!()
                     if (notification != null)
-                        unit.civ.addNotification(notification, unit.getTile().position, NotificationCategory.Units)
+                        unit.civ.addNotification(notification, MapUnitAction(unit), NotificationCategory.Units)
                     true
                 }
             }
@@ -1008,7 +1009,7 @@ object UniqueTriggerActivation {
                 return {
                     unit.promotions.addPromotion(promotion, true)
                     if (notification != null)
-                        unit.civ.addNotification(notification, unit.getTile().position, NotificationCategory.Units, unit.name)
+                        unit.civ.addNotification(notification, MapUnitAction(unit), NotificationCategory.Units, unit.name)
                     true
                 }
             }

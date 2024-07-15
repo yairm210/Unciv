@@ -32,6 +32,7 @@ import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.widgets.ColorMarkupLabel
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popups.ConfirmPopup
+import kotlin.reflect.typeOf
 
 class CityStateDiplomacyTable(private val diplomacyScreen: DiplomacyScreen) {
     val viewingCiv = diplomacyScreen.viewingCiv
@@ -273,7 +274,7 @@ class CityStateDiplomacyTable(private val diplomacyScreen: DiplomacyScreen) {
         if (otherCivDiplomacyManager.hasFlag(DiplomacyFlags.DeclaredWar)) {
             peaceButton.disable() // Can't trade for 10 turns after war was declared
             val turnsLeft = otherCivDiplomacyManager.getFlag(DiplomacyFlags.DeclaredWar)
-            peaceButton.setText(peaceButton.text.toString() + "\n$turnsLeft" + Fonts.turn)
+            peaceButton.setText(peaceButton.text.toString() + "\n${turnsLeft.tr()}" + Fonts.turn)
         }
 
         return peaceButton
@@ -410,7 +411,7 @@ class CityStateDiplomacyTable(private val diplomacyScreen: DiplomacyScreen) {
         for (item in tributeModifiers) {
             val color = if (item.value >= 0) Color.GREEN else Color.RED
             modifierTable.add(item.key.toLabel(color))
-            modifierTable.add(item.value.toString().toLabel(color)).row()
+            modifierTable.add(item.value.tr().toLabel(color)).row()
         }
         modifierTable.add("Sum:".toLabel())
         modifierTable.add(tributeModifiers.values.sum().toLabel()).row()

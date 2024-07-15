@@ -10,6 +10,7 @@ import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.unique.LocalUniqueCache
 import com.unciv.models.stats.Stat
+import com.unciv.models.translations.tr
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.components.extensions.addToCenter
 import com.unciv.ui.components.extensions.darken
@@ -61,7 +62,7 @@ class CityTileGroup(val city: City, tile: Tile, tileSetStrings: TileSetStrings, 
                 if (city.expansion.canBuyTile(tile)) {
 
                     val price = city.expansion.getGoldCostOfTile(tile)
-                    val label = price.toString().toLabel(fontSize = 9, alignment = Align.center)
+                    val label = price.tr().toLabel(fontSize = 9, alignment = Align.center)
                     val image = ImageGetter.getImage("TileIcons/Buy")
                     icon = image.toGroup(26f).apply { isTransform = false }
                     icon.addToCenter(label)

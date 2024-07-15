@@ -275,7 +275,7 @@ object DiplomacyAutomation {
         //evaluate war
         val targetCivs = civInfo.getKnownCivs()
             .filterNot {
-                it == civInfo || it.cities.isEmpty() || !civInfo.getDiplomacyManager(it)!!.canDeclareWar()
+                it.isDefeated() || it == civInfo || it.cities.isEmpty() || !civInfo.getDiplomacyManager(it)!!.canDeclareWar()
                     || it.cities.none { city -> civInfo.hasExplored(city.getCenterTile()) }
             }
         // If the AI declares war on a civ without knowing the location of any cities, 

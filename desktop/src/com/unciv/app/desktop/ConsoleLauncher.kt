@@ -16,7 +16,6 @@ import com.unciv.models.ruleset.nation.Nation
 import com.unciv.models.skins.SkinCache
 import com.unciv.models.tilesets.TileSetCache
 import com.unciv.utils.Log
-import java.util.LinkedHashSet
 import kotlin.time.ExperimentalTime
 
 internal object ConsoleLauncher {
@@ -39,7 +38,12 @@ internal object ConsoleLauncher {
         TileSetCache.loadTileSetConfigs(true)
         SkinCache.loadSkinConfigs(true)
 
-         val ruleset = RulesetCache[BaseRuleset.Civ_V_GnK.fullName]!!
+        runSimulation()
+    }
+
+    @ExperimentalTime
+    private fun runSimulation() {
+        val ruleset = RulesetCache[BaseRuleset.Civ_V_GnK.fullName]!!
 
         ruleset.nations[simulationCiv1] = Nation().apply { name = simulationCiv1 }
         ruleset.nations[simulationCiv2] = Nation().apply { name = simulationCiv2 }
@@ -52,7 +56,7 @@ internal object ConsoleLauncher {
         UncivGame.Current.gameInfo = newGame
 
 
-        val simulation = Simulation(newGame,10,4)
+        val simulation = Simulation(newGame, 10, 4)
 
         simulation.start()
     }

@@ -1,3 +1,60 @@
+## 4.12.11
+
+Modding: Added unique builder screen, accessible from mod checker :D
+
+Fixed Workboat construction automation ignoring existing workboat in city
+
+Fixed air unit movement on map
+
+Fixed icons in Wonder location "near city" for cities with nation names
+
+Rome/Babylon capital takeover no longer renames like city states
+
+By tuvus:
+- Animations now show escort units 
+- Escort movement fix 
+
+More Numbers Translations Coverage  - By touhidurrr
+
+Correct the colors of the flag of Ukraine  - By kostia1st
+
+## 4.12.10
+
+UNIT MOVEMENT ANIMATION!
+
+New uniques:
+- "Can only start games from the starting era" mod option
+- "if [buildingFilter] is not constructed" unique
+
+AI no longer declares war against defeated civs
+
+Unified AI and Human gold purchase logic
+
+Ruleset validation: Catch "building required for victory milestone but does not exist" errors
+
+"Will not be replaced by automated units" unique fix
+
+Fix cases where Numbers Translations does not work properly  - By touhidurrr
+
+## 4.12.9
+
+Solved edge-case missing images bug
+
+Hidden conditionals are hidden in more places
+
+Duplicate notifications are all shown
+
+Fixed infinite air units in cities
+
+Friendship-based modifiers calculated correctly
+
+By SomeTroglodyte:
+- UX: Notifications for map units select better when tapped 
+- Fix GlobalPoliticsOverviewTable table layout after switching back from diagram 
+
+By SpacedOutChicken:
+- Correct Unique parameters doc to display terrain quality 
+
 ## 4.12.8
 
 Performance improvements

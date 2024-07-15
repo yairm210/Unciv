@@ -67,7 +67,6 @@ interface INonPerpetualConstruction : IConstruction, INamed, IHasUniques {
     }
 
     fun canBePurchasedWithAnyStat(city: City): Boolean {
-
         return statsUsableToBuy.any { canBePurchasedWithStat(city, it) }
     }
 

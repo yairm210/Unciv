@@ -5,6 +5,7 @@ import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
+import com.unciv.models.translations.tr
 import com.unciv.ui.components.SmallButtonStyle
 import com.unciv.ui.components.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.components.extensions.addSeparatorVertical
@@ -122,7 +123,7 @@ class SpecialistAllocationTable(private val cityScreen: CityScreen) : Table(Base
         var itemsInRow = 0
 
         fun addWrapping(value: Int, labelColor: Color, icon: Actor) {
-            specialistStatTable.add(value.toString().toLabel(labelColor))
+            specialistStatTable.add(value.tr().toLabel(labelColor))
             specialistStatTable.add(icon).size(20f).padRight(10f)
 
             itemsInRow++

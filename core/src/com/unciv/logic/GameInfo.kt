@@ -19,6 +19,7 @@ import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.CivilizationInfoPreview
 import com.unciv.logic.civilization.LocationAction
+import com.unciv.logic.civilization.MapUnitAction
 import com.unciv.logic.civilization.Notification
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
@@ -510,10 +511,10 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
     private fun addBombardNotification(thisPlayer: Civilization, cities: List<City>) {
         if (cities.size < 3) {
             for (city in cities)
-                thisPlayer.addNotification("Your city [${city.name}] can bombard the enemy!", city.location, NotificationCategory.War, NotificationIcon.City, NotificationIcon.Crosshair)
+                thisPlayer.addNotification("Your city [${city.name}] can bombard the enemy!", MapUnitAction(city.location), NotificationCategory.War, NotificationIcon.City, NotificationIcon.Crosshair)
         } else {
-            val positions = cities.asSequence().map { it.location }
-            thisPlayer.addNotification("[${cities.size}] of your cities can bombard the enemy!", LocationAction(positions),  NotificationCategory.War, NotificationIcon.City, NotificationIcon.Crosshair)
+            val notificationActions = cities.asSequence().map { MapUnitAction(it.location) }
+            thisPlayer.addNotification("[${cities.size}] of your cities can bombard the enemy!", notificationActions,  NotificationCategory.War, NotificationIcon.City, NotificationIcon.Crosshair)
         }
     }
 

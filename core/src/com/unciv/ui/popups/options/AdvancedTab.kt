@@ -22,13 +22,7 @@ import com.unciv.models.metadata.ModCategories
 import com.unciv.models.translations.TranslationFileWriter
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.UncivTooltip.Companion.addTooltip
-import com.unciv.ui.components.extensions.addSeparator
-import com.unciv.ui.components.extensions.disable
-import com.unciv.ui.components.extensions.setFontColor
-import com.unciv.ui.components.extensions.toCheckBox
-import com.unciv.ui.components.extensions.toLabel
-import com.unciv.ui.components.extensions.toTextButton
-import com.unciv.ui.components.extensions.withoutItem
+import com.unciv.ui.components.extensions.*
 import com.unciv.ui.components.fonts.FontFamilyData
 import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.components.input.keyShortcuts
@@ -45,7 +39,7 @@ import com.unciv.utils.launchOnGLThread
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import java.util.UUID
+import java.util.*
 import java.util.zip.Deflater
 
 class AdvancedTab(
@@ -106,7 +100,7 @@ class AdvancedTab(
         add("Screen orientation".toLabel()).left().fillX()
 
         val selectBox = SelectBox<ScreenOrientation>(skin)
-        selectBox.items = Array(ScreenOrientation.values())
+        selectBox.items = Array(ScreenOrientation.entries.toTypedArray())
         selectBox.selected = settings.displayOrientation
         selectBox.onChange {
             val orientation = selectBox.selected

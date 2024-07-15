@@ -5,6 +5,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.badlogic.gdx.utils.Timer
 import com.unciv.models.UncivSound
+import com.unciv.models.translations.tr
 import com.unciv.ui.components.YearTextUtil
 import com.unciv.ui.components.extensions.setSize
 import com.unciv.ui.components.extensions.toLabel
@@ -114,7 +115,7 @@ class VictoryScreenReplay(
         yearLabel.setText(
             YearTextUtil.toYearText(
                 year, gameInfo.currentPlayerCiv.isLongCountDisplay()
-            ) + " / " + turn+ Fonts.turn
+            ) + " / " + turn.tr() + Fonts.turn
         )
         slider.value = turn.toFloat()
         replayMap.update(turn)

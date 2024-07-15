@@ -327,9 +327,9 @@ object DeclareWar {
 enum class WarType {
     /** One civ declared war on the other. */
     DirectWar,
-    /** A city state has joined a war through it's alliance. */
+    /** A city state has joined a war through its alliance. */
     CityStateAllianceWar,
-    /** A civilization has joined a war through it's defensive pact. */
+    /** A civilization has joined a war through its defensive pact. */
     DefensivePactWar,
     /** A civilization has joined a war through a trade.*/
     JoinWar,

@@ -183,8 +183,14 @@ object ImageGetter {
      *  @return `null` if no match found.
      */
     fun findExternalImage(name: String): FileHandle? {
-        val folders = ruleset.mods.asSequence().map { Gdx.files.local("mods/$it/ExtraImages") } +
-            sequenceOf(Gdx.files.internal("ExtraImages"))
+        val folders = try { // For CI mod checker, we can't access "local" files
+            // since Gdx files are not set up
+            ruleset.mods.asSequence().map { Gdx.files.local("mods/$it/ExtraImages") } +
+                    sequenceOf(Gdx.files.internal("ExtraImages"))
+        } catch (e: Exception) {
+            debug("Error loading mods: $e")
+            sequenceOf()
+        }
         val extensions = sequenceOf("", ".png", ".jpg")
         return folders.flatMap { folder ->
             extensions.map { folder.child(name + it) }

@@ -173,7 +173,11 @@ object UnitActionModifiers {
         if (actionUnique.conditionals.any { it.type == UniqueType.UnitActionConsumeUnit }
             || actionUnique.conditionals.any { it.type == UniqueType.UnitActionAfterWhichConsumed } && usagesLeft(unit, actionUnique) == 1
         ) effects += Fonts.death.toString()
-        else effects += getMovementPointsToUse(unit, actionUnique, defaultAllMovement).toString() + Fonts.movement
+        else effects += getMovementPointsToUse(
+            unit,
+            actionUnique,
+            defaultAllMovement
+        ).tr() + Fonts.movement
 
         return if (effects.isEmpty()) ""
         else "(${effects.joinToString { it.tr() }})"

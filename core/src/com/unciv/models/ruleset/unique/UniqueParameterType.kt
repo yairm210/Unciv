@@ -64,67 +64,80 @@ enum class UniqueParameterType(
 
     Countable("countable", "1000", "This indicates a number or a numeric variable") {
         // todo add more countables
-        private val knownValues = setOf(
+        override val staticKnownValues = setOf(
             "year", "turns", "Cities", "Units"
         )
 
         override fun isKnownValue(parameterText: String, ruleset: Ruleset) = when {
-            parameterText in knownValues -> true
             parameterText.toIntOrNull() != null -> true
-            Stat.isStat(parameterText) -> true
-            parameterText in ruleset.tileResources -> true
-            parameterText in ruleset.units -> true
-            parameterText.removeSuffix(" units").removeSurrounding("[", "]") in ruleset.unitTypes -> true
-            else -> parameterText in ruleset.buildings
+            else -> super.isKnownValue(parameterText, ruleset)
         }
+
+        override fun getKnownValuesForAutocomplete(ruleset: Ruleset): Set<String> =
+            staticKnownValues +
+                Stat.entries.map { it.name } +
+                ruleset.tileResources.keys +
+                ruleset.units.keys +
+                ruleset.unitTypes.keys.map { "[$it] Units" } +
+                ruleset.buildings.keys.map { "[$it] Buildings" } +
+                ruleset.buildings.keys
     },
 
     // todo potentially remove if OneTimeRevealSpecificMapTiles changes
     KeywordAll("'all'", "All", severityDefault = UniqueType.UniqueParameterErrorSeverity.RulesetInvariant) {
-        override fun isKnownValue(parameterText: String, ruleset: Ruleset) = parameterText in Constants.all
+        override val staticKnownValues = Constants.all
     },
 
     /** Implemented by [ICombatant.matchesCategory][com.unciv.logic.battle.ICombatant.matchesFilter] */
     CombatantFilter("combatantFilter", "City", "This indicates a combatant, which can either be a unit or a city (when bombarding). Must either be `City` or a `mapUnitFilter`") {
+        override val staticKnownValues = setOf("City")
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset) = getErrorSeverityForFilter(parameterText, ruleset)
 
         override fun isKnownValue(parameterText: String, ruleset: Ruleset) = when {
-            parameterText == "City" -> true
+            parameterText in staticKnownValues -> true
             MapUnitFilter.isKnownValue(parameterText, ruleset) -> true
             else -> CityFilter.isKnownValue(parameterText, ruleset)
         }
-        override fun getTranslationWriterStringsForOutput() = setOf("City")
+
+        override fun getKnownValuesForAutocomplete(ruleset: Ruleset): Set<String> =
+            staticKnownValues +
+                    MapUnitFilter.getKnownValuesForAutocomplete(ruleset) +
+                    CityFilter.getKnownValuesForAutocomplete(ruleset)
     },
 
     /** Implemented by [MapUnit.matchesFilter][com.unciv.logic.map.mapunit.MapUnit.matchesFilter] */
     MapUnitFilter("mapUnitFilter", Constants.wounded, null, "Map Unit Filters") {
-        private val knownValues = setOf(Constants.wounded, Constants.barbarians, "Barbarian",
+        override val staticKnownValues = setOf(Constants.wounded, Constants.barbarians, "Barbarian",
             "City-State", Constants.embarked, "Non-City")
 
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset) = getErrorSeverityForFilter(parameterText, ruleset)
 
         override fun isKnownValue(parameterText: String, ruleset: Ruleset) = when {
-            parameterText in knownValues -> true
-            parameterText in ruleset.unitPromotions -> true
+            super.isKnownValue(parameterText, ruleset) -> true
+            // We don't add the unit promotion uniques into the "known values" set because it's too much
             ruleset.unitPromotions.values.any { it.hasUnique(parameterText) } -> true
-            CivFilter.isKnownValue(parameterText, ruleset) -> true
-            else -> BaseUnitFilter.isKnownValue(parameterText, ruleset)
+            else -> false
         }
 
-        override fun getTranslationWriterStringsForOutput() = knownValues
+        override fun getKnownValuesForAutocomplete(ruleset: Ruleset): Set<String> =
+            staticKnownValues +
+                ruleset.unitPromotions.keys +
+                CivFilter.getKnownValuesForAutocomplete(ruleset) +
+                BaseUnitFilter.getKnownValuesForAutocomplete(ruleset)
     },
 
     /** Implemented by [BaseUnit.matchesFilter][com.unciv.models.ruleset.unit.BaseUnit.matchesFilter] */
     BaseUnitFilter("baseUnitFilter", "Melee") {
-        private val knownValues = setOf(
+        override val staticKnownValues = setOf(
             "Melee", "Ranged", "Civilian", "Military", "non-air",
             "Nuclear Weapon", "Great Person", "Religious",
             "relevant", // used for UniqueType.UnitStartingPromotions
         ) + Constants.all
+
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset) = getErrorSeverityForFilter(parameterText, ruleset)
 
         override fun isKnownValue(parameterText: String, ruleset: Ruleset) = when {
-            parameterText in knownValues -> true
+            parameterText in staticKnownValues -> true
             UnitName.getErrorSeverity(parameterText, ruleset) == null -> true
             parameterText.isFilteringUniqueIn(ruleset.units) -> true
             UnitTypeFilter.isKnownValue(parameterText, ruleset) -> true
@@ -132,38 +145,45 @@ enum class UniqueParameterType(
             else -> false
         }
 
-        override fun getTranslationWriterStringsForOutput() = knownValues
+        override fun getKnownValuesForAutocomplete(ruleset: Ruleset): Set<String> =
+            staticKnownValues +
+                    UnitName.getKnownValuesForAutocomplete(ruleset) +
+                    UnitTypeFilter.getKnownValuesForAutocomplete(ruleset) +
+                    TechFilter.getKnownValuesForAutocomplete(ruleset)
     },
 
     /** Implemented by [UnitType.matchesFilter][com.unciv.models.ruleset.unit.UnitType.matchesFilter] */
     UnitTypeFilter("unitType", "Water", "Can be 'Land', 'Water', 'Air', any unit type, a filtering Unique on a unit type, or a multi-filter of these", "Unit Type Filters") {
-        private val knownValues = setOf(
+        override val staticKnownValues = setOf(
             "Land", "Water", "Air",
         )
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
             UniqueType.UniqueParameterErrorSeverity? = getErrorSeverityForFilter(parameterText, ruleset)
 
-        override fun isKnownValue(parameterText: String, ruleset: Ruleset) = when {
-            parameterText in knownValues -> true
-            parameterText in ruleset.unitTypes -> true
+        override fun isKnownValue(parameterText: String, ruleset: Ruleset) = when (parameterText) {
+            in staticKnownValues -> true
+            in ruleset.unitTypes -> true
             else -> parameterText.isFilteringUniqueIn(ruleset.unitTypes)
         }
 
-        override fun isTranslationWriterGuess(parameterText: String, ruleset: Ruleset) =
-            parameterText in ruleset.unitTypes || parameterText in knownValues
+        override fun getKnownValuesForAutocomplete(ruleset: Ruleset): Set<String> {
+            return super.getKnownValuesForAutocomplete(ruleset) +
+                    ruleset.unitTypes.keys
+        }
 
-        override fun getTranslationWriterStringsForOutput() = knownValues
+        override fun isTranslationWriterGuess(parameterText: String, ruleset: Ruleset) =
+            parameterText in ruleset.unitTypes || parameterText in staticKnownValues
     },
 
     /** Used by [BaseUnitFilter] and e.g. [UniqueType.OneTimeFreeUnit] */
     UnitName("unit", "Musketman") {
-        override fun isKnownValue(parameterText: String, ruleset: Ruleset) = parameterText in ruleset.units
+        override fun getKnownValuesForAutocomplete(ruleset: Ruleset) = ruleset.units.keys
     },
 
     /** Used by [UniqueType.GreatPersonEarnedFaster] */
     GreatPerson("greatPerson", "Great General") {
-        override fun isKnownValue(parameterText: String, ruleset: Ruleset) =
-            ruleset.units[parameterText]?.hasUnique(UniqueType.GreatPerson) == true
+        override fun getKnownValuesForAutocomplete(ruleset: Ruleset) =
+            ruleset.units.filter { it.value.hasUnique(UniqueType.GreatPerson) }.keys
     },
 
     /** Implemented in [Unique.stats][com.unciv.models.ruleset.unique.Unique.stats] */
@@ -178,45 +198,50 @@ enum class UniqueParameterType(
     StatName("stat", "Culture", "This is one of the 7 major stats in the game - `Gold`, `Science`, `Production`, `Food`, `Happiness`, `Culture` and `Faith`. Note that the stat names need to be capitalized!",
         severityDefault = UniqueType.UniqueParameterErrorSeverity.RulesetInvariant
     ) {
-        override fun isKnownValue(parameterText: String, ruleset: Ruleset) = Stat.isStat(parameterText)
+        override fun getKnownValuesForAutocomplete(ruleset: Ruleset) = Stat.names()
     },
 
     /** [UniqueType.DamageUnitsPlunder] and others near that one */
     CivWideStatName("civWideStat", "Gold", "All the following stats have civ-wide fields: `Gold`, `Science`, `Culture`, `Faith`",
         severityDefault = UniqueType.UniqueParameterErrorSeverity.RulesetInvariant
     ) {
-        private val knownValues = Stat.statsWithCivWideField.map { it.name }.toSet()
-        override fun isKnownValue(parameterText: String, ruleset: Ruleset) = parameterText in knownValues
+        override val staticKnownValues = Stat.statsWithCivWideField.map { it.name }.toSet()
     },
 
     /** Implemented by [Civ.matchesFilter][com.unciv.logic.civilization.Civilization.matchesFilter] */
     CivFilter("civFilter", Constants.cityStates) {
-        private val knownValues = setOf("AI player", "Human player")
+        override val staticKnownValues = setOf("AI player", "Human player")
 
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset) = getErrorSeverityForFilter(parameterText, ruleset)
 
         override fun isKnownValue(parameterText: String, ruleset: Ruleset) = when {
-            parameterText in knownValues -> true
+            parameterText in staticKnownValues -> true
             else -> NationFilter.isKnownValue(parameterText, ruleset)
         }
+
+        override fun getKnownValuesForAutocomplete(ruleset: Ruleset): Set<String> =
+            staticKnownValues + NationFilter.getKnownValuesForAutocomplete(ruleset)
     },
 
     /** Implemented by [Nation.matchesFilter][com.unciv.models.ruleset.nation.Nation.matchesFilter] */
     NationFilter("nationFilter", Constants.cityStates) {
-        private val knownValues = setOf(Constants.cityStates, "Major") + Constants.all
+        override val staticKnownValues = setOf(Constants.cityStates, "Major") + Constants.all
 
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset) = getErrorSeverityForFilter(parameterText, ruleset)
 
-        override fun isKnownValue(parameterText: String, ruleset: Ruleset) = when {
-            parameterText in knownValues -> true
-            ruleset.nations.containsKey(parameterText) -> true
+        override fun isKnownValue(parameterText: String, ruleset: Ruleset) = when (parameterText) {
+            in staticKnownValues -> true
+            in ruleset.nations -> true
             else -> ruleset.nations.values.any { it.hasUnique(parameterText) }
         }
+
+        override fun getKnownValuesForAutocomplete(ruleset: Ruleset): Set<String> =
+            staticKnownValues + ruleset.nations.keys
     },
 
     /** Implemented by [City.matchesFilter][com.unciv.logic.city.City.matchesFilter] */
     CityFilter("cityFilter", "in all cities", null, "City filters") {
-        private val knownValues = setOf(
+        override val staticKnownValues = setOf(
             "in this city",
             "in all cities",
             "in your cities", "Your",
@@ -242,31 +267,32 @@ enum class UniqueParameterType(
         ) + Constants.all
 
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset) = getErrorSeverityForFilter(parameterText, ruleset)
-
-        override fun isKnownValue(parameterText: String, ruleset: Ruleset) = parameterText in knownValues
-
-        override fun getTranslationWriterStringsForOutput() = knownValues
     },
 
     /** Used by [BuildingFilter] and e.g. [UniqueType.ConditionalCityWithBuilding] */
     BuildingName("buildingName", "Library", "The name of any building") {
-        override fun isKnownValue(parameterText: String, ruleset: Ruleset) = parameterText in ruleset.buildings
+        override fun getKnownValuesForAutocomplete(ruleset: Ruleset): Set<String> = ruleset.buildings.keys
     },
 
     /** Implemented by [Building.matchesFilter][com.unciv.models.ruleset.Building.matchesFilter] */
     BuildingFilter("buildingFilter", "Culture") {
-        private val knownValues = setOf("Building", "Buildings", "Wonder", "Wonders", "National Wonder", "National", "World Wonder", "World") +
+        override val staticKnownValues = setOf("Building", "Buildings", "Wonder", "Wonders", "National Wonder", "National", "World Wonder", "World") +
             Stat.names() + Constants.all
 
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset) = getErrorSeverityForFilter(parameterText, ruleset)
 
         override fun isKnownValue(parameterText: String, ruleset: Ruleset) = when {
-            parameterText in knownValues -> true
+            parameterText in staticKnownValues -> true
             BuildingName.isKnownValue(parameterText, ruleset) -> true
             ruleset.buildings.values.any { it.hasUnique(parameterText) } -> true
             TechFilter.isKnownValue(parameterText, ruleset) -> true
             else -> false
         }
+
+        override fun getKnownValuesForAutocomplete(ruleset: Ruleset): Set<String> =
+            staticKnownValues +
+                BuildingName.getKnownValuesForAutocomplete(ruleset) +
+                TechFilter.getKnownValuesForAutocomplete(ruleset)
 
         override fun isTranslationWriterGuess(parameterText: String, ruleset: Ruleset) =
             parameterText !in Constants.all && getErrorSeverity(parameterText, ruleset) == null
@@ -276,25 +302,23 @@ enum class UniqueParameterType(
     PopulationFilter("populationFilter", "Followers of this Religion", null, "Population Filters",
         severityDefault = UniqueType.UniqueParameterErrorSeverity.RulesetInvariant
     ) {
-        private val knownValues = setOf("Population", "Specialists", "Unemployed", "Followers of the Majority Religion", "Followers of this Religion")
-        override fun isKnownValue(parameterText: String, ruleset: Ruleset) = parameterText in knownValues
-        override fun getTranslationWriterStringsForOutput() = knownValues
+        override val staticKnownValues = setOf("Population", "Specialists", "Unemployed", "Followers of the Majority Religion", "Followers of this Religion")
     },
 
     /** Implemented by [Tile.matchesTerrainFilter][com.unciv.logic.map.tile.Tile.matchesTerrainFilter] */
     TerrainFilter("terrainFilter", Constants.freshWaterFilter, null, "Terrain Filters") {
-        private val knownValues = setOf(
+        override val staticKnownValues = setOf(
             "Terrain",
             Constants.coastal, Constants.river, "Open terrain", "Rough terrain", "Water resource",
             "resource", "Foreign Land", "Foreign", "Friendly Land", "Friendly", "Enemy Land", "Enemy", "your",
             "Featureless", Constants.freshWaterFilter, "non-fresh water", "Natural Wonder",
             "Impassable", "Land", "Water"
-        ) + ResourceType.values().map { it.name + " resource" } + Constants.all
+        ) + ResourceType.entries.map { it.name + " resource" } + Constants.all
 
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset) = getErrorSeverityForFilter(parameterText, ruleset)
 
         override fun isKnownValue(parameterText: String, ruleset: Ruleset) = when {
-            parameterText in knownValues -> true
+            parameterText in staticKnownValues -> true
             parameterText in ruleset.terrains -> true
             parameterText in ruleset.tileResources -> true
             parameterText.isFilteringUniqueIn(ruleset.terrains) -> true
@@ -302,90 +326,91 @@ enum class UniqueParameterType(
             else -> false
         }
 
-        override fun isTranslationWriterGuess(parameterText: String, ruleset: Ruleset) =
-            parameterText in ruleset.terrains || parameterText !in Constants.all && parameterText in knownValues
+        override fun getKnownValuesForAutocomplete(ruleset: Ruleset): Set<String> =
+            staticKnownValues +
+                ruleset.terrains.keys +
+                ruleset.tileResources.keys
 
-        override fun getTranslationWriterStringsForOutput() = knownValues
+        override fun isTranslationWriterGuess(parameterText: String, ruleset: Ruleset) =
+            parameterText in ruleset.terrains
+                    || parameterText !in Constants.all && parameterText in staticKnownValues
     },
 
     /** Implemented by [Tile.matchesFilter][com.unciv.logic.map.tile.Tile.matchesFilter] */
     TileFilter("tileFilter", "Farm", "Anything that can be used either in an improvementFilter or in a terrainFilter can be used here, plus 'unimproved'", "Tile Filters") {
-        private val knownValues = setOf("unimproved", "improved", "All Road", "Great Improvement")
+        override val staticKnownValues = setOf("unimproved", "improved", "All Road", "Great Improvement")
 
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset) = getErrorSeverityForFilter(parameterText, ruleset)
 
         override fun isKnownValue(parameterText: String, ruleset: Ruleset) = when {
-            parameterText in knownValues -> true
+            parameterText in staticKnownValues -> true
             ImprovementFilter.isKnownValue(parameterText, ruleset) -> true
             TerrainFilter.isKnownValue(parameterText, ruleset) -> true
             else -> false
         }
 
-        override fun getTranslationWriterStringsForOutput() = knownValues
+        override fun getKnownValuesForAutocomplete(ruleset: Ruleset): Set<String> =
+            staticKnownValues +
+                ImprovementFilter.getKnownValuesForAutocomplete(ruleset) +
+                TerrainFilter.getKnownValuesForAutocomplete(ruleset)
     },
 
     /** Used by [NaturalWonderGenerator][com.unciv.logic.map.mapgenerator.NaturalWonderGenerator], only tests base terrain or a feature */
     SimpleTerrain("simpleTerrain", "Elevated") {
-        private val knownValues = setOf("Elevated", "Water", "Land")
-        override fun isKnownValue(parameterText: String, ruleset: Ruleset) =
-            parameterText in knownValues || parameterText in ruleset.terrains
+        override val staticKnownValues = setOf("Elevated", "Water", "Land")
+        override fun getKnownValuesForAutocomplete(ruleset: Ruleset) =
+            staticKnownValues + ruleset.terrains.keys
     },
 
     /** Used by [NaturalWonderGenerator.trySpawnOnSuitableLocation][com.unciv.logic.map.mapgenerator.NaturalWonderGenerator.trySpawnOnSuitableLocation], only tests base terrain */
     BaseTerrain("baseTerrain", Constants.grassland, "The name of any terrain that is a base terrain according to the json file") {
-        override fun isKnownValue(parameterText: String, ruleset: Ruleset) =
-            ruleset.terrains[parameterText]?.type?.isBaseTerrain == true
+        override fun getKnownValuesForAutocomplete(ruleset: Ruleset): Set<String> =
+            ruleset.terrains.filter { it.value.type.isBaseTerrain }.keys
     },
 
     /** Used by: [UniqueType.LandUnitsCrossTerrainAfterUnitGained] (CivilizationInfo.addUnit),
      *  [UniqueType.ChangesTerrain] (MapGenerator.convertTerrains) */
     TerrainName("terrainName", Constants.forest) {
-        override fun isKnownValue(parameterText: String, ruleset: Ruleset) = parameterText in ruleset.terrains
+        override fun getKnownValuesForAutocomplete(ruleset: Ruleset) = ruleset.terrains.keys
     },
 
     /** Used for region definitions, can be a terrain type with region unique, or "Hybrid"
      *
      *  See also: [UniqueType.ConditionalInRegionOfType], [UniqueType.ConditionalInRegionExceptOfType], [MapRegions][com.unciv.logic.map.mapgenerator.mapregions.MapRegions] */
     RegionType("regionType", "Hybrid", null, "Region Types") {
-        private val knownValues = setOf("Hybrid")
-        override fun isKnownValue(parameterText: String, ruleset: Ruleset) = when {
-            parameterText in knownValues -> true
-            else -> ruleset.terrains[parameterText]?.run {
-                hasUnique(UniqueType.RegionRequirePercentSingleType) || hasUnique(UniqueType.RegionRequirePercentTwoTypes)
-            } == true
-        }
-        // Doubtful any Unique using this is not hidden, but translation files have had this for a while anyway:
-        override fun getTranslationWriterStringsForOutput() = knownValues
+        override val staticKnownValues = setOf("Hybrid")
+
+        override fun getKnownValuesForAutocomplete(ruleset: Ruleset) =
+            staticKnownValues +
+                    ruleset.terrains.filter {
+                        it.value.hasUnique(UniqueType.RegionRequirePercentSingleType) ||
+                            it.value.hasUnique(UniqueType.RegionRequirePercentTwoTypes) }.keys
     },
 
     /** Used for start placements: [UniqueType.HasQuality], MapRegions.MapGenTileData.evaluate */
     TerrainQuality("terrainQuality", "Undesirable", null, "Terrain Quality",
         severityDefault = UniqueType.UniqueParameterErrorSeverity.RulesetInvariant
     ) {
-        private val knownValues = setOf("Undesirable", "Food", "Desirable", "Production")
-        override fun isKnownValue(parameterText: String, ruleset: Ruleset) = parameterText in knownValues
-        // Doubtful any Unique using this is not hidden, but translation files have had this for a while anyway:
-        override fun getTranslationWriterStringsForOutput() = knownValues
+        override val staticKnownValues = setOf("Undesirable", "Food", "Desirable", "Production")
     },
 
     /** [UniqueType.UnitStartingPromotions], [UniqueType.TerrainGrantsPromotion], [UniqueType.ConditionalUnitWithPromotion] and others */
     Promotion("promotion", "Shock I", "The name of any promotion") {
-        override fun isKnownValue(parameterText: String, ruleset: Ruleset) = parameterText in ruleset.unitPromotions
+        override fun getKnownValuesForAutocomplete(ruleset: Ruleset) = ruleset.unitPromotions.keys
     },
 
     /** [UniqueType.OneTimeFreeTechRuins], [UniqueType.ConditionalDuringEra] and similar */
     Era("era", "Ancient era", "The name of any era") {
-        override fun isKnownValue(parameterText: String, ruleset: Ruleset) = parameterText in ruleset.eras
+        override fun getKnownValuesForAutocomplete(ruleset: Ruleset) = ruleset.eras.keys
     },
 
     Speed("speed", "Quick", "The name of any speed") {
-        override fun isKnownValue(parameterText: String, ruleset: Ruleset) = parameterText in ruleset.speeds
+        override fun getKnownValuesForAutocomplete(ruleset: Ruleset) = ruleset.speeds.keys
     },
 
     /** For [UniqueType.CreatesOneImprovement] */
     ImprovementName("improvementName", "Trading Post", "The name of any improvement excluding 'Cancel improvement order'") {
-        override fun isKnownValue(parameterText: String, ruleset: Ruleset) =
-            parameterText in ruleset.tileImprovements && parameterText != Constants.cancelImprovementOrder
+        override fun getKnownValuesForAutocomplete(ruleset: Ruleset) = ruleset.tileImprovements.keys - Constants.cancelImprovementOrder
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset) =
             if (parameterText == Constants.cancelImprovementOrder) UniqueType.UniqueParameterErrorSeverity.RulesetInvariant
             else getErrorSeverityViaKnownValue(parameterText, ruleset)
@@ -393,111 +418,117 @@ enum class UniqueParameterType(
 
     /** Implemented by [TileImprovement.matchesFilter][com.unciv.models.ruleset.tile.TileImprovement.matchesFilter] */
     ImprovementFilter("improvementFilter", "All Road", null, "Improvement Filters") {
-        private val knownValues = setOf("Improvement", "All Road", "Great Improvement", "Great") + Constants.all
+        override val staticKnownValues = setOf("Improvement", "All Road", "Great Improvement", "Great") + Constants.all
 
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset) = getErrorSeverityForFilter(parameterText, ruleset)
 
         override fun isKnownValue(parameterText: String, ruleset: Ruleset) = when {
-            parameterText in knownValues -> true
+            parameterText in staticKnownValues -> true
             ImprovementName.isKnownValue(parameterText, ruleset) -> true
             ruleset.tileImprovements.values.any { it.hasUnique(parameterText) } -> true
             else -> false
         }
 
+        override fun getKnownValuesForAutocomplete(ruleset: Ruleset): Set<String> =
+            staticKnownValues +
+                ImprovementName.getKnownValuesForAutocomplete(ruleset)
+
         override fun isTranslationWriterGuess(parameterText: String, ruleset: Ruleset) =
             parameterText !in Constants.all && getErrorSeverityForFilter(parameterText, ruleset) == null
-
-        override fun getTranslationWriterStringsForOutput() = knownValues
     },
 
     /** Used by [UniqueType.ConsumesResources] and others, implementation not centralized */
     Resource("resource", "Iron", "The name of any resource") {
-        override fun isKnownValue(parameterText: String, ruleset: Ruleset) = parameterText in ruleset.tileResources
+        override fun getKnownValuesForAutocomplete(ruleset: Ruleset) = ruleset.tileResources.keys
     },
 
     /** Used by [UniqueType.OneTimeConsumeResources], [UniqueType.OneTimeProvideResources], [UniqueType.CostsResources], [UniqueType.UnitActionStockpileCost], implementation not centralized */
     StockpiledResource("stockpiledResource", "Mana", "The name of any stockpiled resource") {
-        override fun isKnownValue(parameterText: String, ruleset: Ruleset) = ruleset.tileResources[parameterText]?.isStockpiled() == true
+        override fun getKnownValuesForAutocomplete(ruleset: Ruleset) = ruleset.tileResources.filter { it.value.isStockpiled() }.keys
     },
 
     /** Used by [UniqueType.ImprovesResources], implemented by [com.unciv.models.ruleset.tile.TileResource.matchesFilter] */
     ResourceFilter("resourceFilter", "Strategic", "A resource name, type, 'all', or a Stat listed in the resource's improvementStats",
         severityDefault = UniqueType.UniqueParameterErrorSeverity.PossibleFilteringUnique
     ) {
-        private val knownValues = setOf("any") + Constants.all // "any" sounds nicer than "all" in that UniqueType
+        override val staticKnownValues = setOf("any") + Constants.all // "any" sounds nicer than "all" in that UniqueType
         override fun isKnownValue(parameterText: String, ruleset: Ruleset) = when {
-            parameterText in knownValues -> true
+            parameterText in staticKnownValues -> true
             parameterText in ruleset.tileResources -> true
-            ResourceType.values().any { it.name == parameterText } -> true
+            ResourceType.entries.any { it.name == parameterText } -> true
             Stat.isStat(parameterText) -> true
             else -> false
         }
-        override fun getTranslationWriterStringsForOutput() = knownValues
+
+        override fun getKnownValuesForAutocomplete(ruleset: Ruleset) =
+            staticKnownValues + ruleset.tileResources.keys + ResourceType.entries.map { it.name } + Stat.names()
     },
 
     /** Used by [UniqueType.FreeExtraBeliefs], see ReligionManager.getBeliefsToChooseAt* functions */
     BeliefTypeName("beliefType", "Follower", "'Pantheon', 'Follower', 'Founder' or 'Enhancer'",
         severityDefault = UniqueType.UniqueParameterErrorSeverity.RulesetInvariant
     ) {
-        override fun isKnownValue(parameterText: String, ruleset: Ruleset) = BeliefType.values().any { it.name == parameterText }
+        override val staticKnownValues = BeliefType.entries.map { it.name }.toSet()
     },
 
     /** unused at the moment with vanilla rulesets */
     Belief("belief", "God of War", "The name of any belief") {
-        override fun isKnownValue(parameterText: String, ruleset: Ruleset) = parameterText in ruleset.beliefs
+        override fun getKnownValuesForAutocomplete(ruleset: Ruleset) = ruleset.beliefs.keys
     },
 
     /** Used by [UniqueType.FreeExtraBeliefs] and its any variant, see ReligionManager.getBeliefsToChooseAt* functions */
     FoundingOrEnhancing("foundingOrEnhancing", "founding", "`founding` or `enhancing`", "Prophet Action Filters",
         severityDefault = UniqueType.UniqueParameterErrorSeverity.RulesetInvariant
     ) {
-        private val knownValues = setOf("founding", "enhancing")
-        override fun isKnownValue(parameterText: String, ruleset: Ruleset) = parameterText in knownValues
-        override fun getTranslationWriterStringsForOutput() = knownValues
+        override val staticKnownValues = setOf("founding", "enhancing")
     },
 
     /** [UniqueType.ConditionalTech] and others, no central implementation */
     Event("event", "Inspiration", "The name of any event") {
-        override fun isKnownValue(parameterText: String, ruleset: Ruleset) = parameterText in ruleset.events
+        override fun getKnownValuesForAutocomplete(ruleset: Ruleset) = ruleset.events.keys
     },
 
 
     /** [UniqueType.ConditionalTech] and others, no central implementation */
     Technology("tech", "Agriculture", "The name of any tech") {
-        override fun isKnownValue(parameterText: String, ruleset: Ruleset) = parameterText in ruleset.technologies
+        override fun getKnownValuesForAutocomplete(ruleset: Ruleset) = ruleset.technologies.keys
     },
 
     /** Implemented by [Technology.matchesFilter][com.unciv.models.ruleset.tech.Technology.matchesFilter] */
     TechFilter("techFilter", "Agriculture") {
+        override val staticKnownValues = Constants.all
         override fun isKnownValue(parameterText: String, ruleset: Ruleset) = when (parameterText) {
-            in Constants.all -> true
+            in staticKnownValues -> true
             in ruleset.technologies -> true
             in ruleset.eras -> true
-            else -> false
+            else -> ruleset.technologies.values.any { it.hasUnique(parameterText) }
         }
+        override fun getKnownValuesForAutocomplete(ruleset: Ruleset) = staticKnownValues + ruleset.technologies.keys + ruleset.eras.keys
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset) = getErrorSeverityForFilter(parameterText, ruleset)
-        override fun getTranslationWriterStringsForOutput() = Constants.all
     },
 
 
     /** unused at the moment with vanilla rulesets */
     Specialist("specialist", "Merchant", "The name of any specialist") {
-        override fun isKnownValue(parameterText: String, ruleset: Ruleset) = parameterText in ruleset.specialists
+        override fun getKnownValuesForAutocomplete(ruleset: Ruleset) = ruleset.specialists.keys
     },
 
     /** [UniqueType.ConditionalAfterPolicyOrBelief] and others, no central implementation */
     Policy("policy", "Oligarchy", "The name of any policy") {
-        override fun isKnownValue(parameterText: String, ruleset: Ruleset) = parameterText in ruleset.policies
+        override fun getKnownValuesForAutocomplete(ruleset: Ruleset) = ruleset.policies.keys
     },
 
     /** Implemented by [com.unciv.models.ruleset.Policy.matchesFilter] */
     PolicyFilter("policyFilter", "Oligarchy", "The name of any policy") {
+        override val staticKnownValues = Constants.all
         override fun isKnownValue(parameterText: String, ruleset: Ruleset) = when {
-            parameterText in Constants.all -> true
+            parameterText in staticKnownValues -> true
             parameterText in ruleset.policies -> true
             ruleset.policies.values.any { it.hasUnique(parameterText) } -> true
             else -> false
         }
+        override fun getKnownValuesForAutocomplete(ruleset: Ruleset) = staticKnownValues + ruleset.policies.keys
+
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset) = getErrorSeverityForFilter(parameterText, ruleset)
     },
 
@@ -505,15 +536,14 @@ enum class UniqueParameterType(
     VictoryT("victoryType",
         "Domination", "The name of any victory type: 'Cultural', 'Diplomatic', 'Domination', 'Scientific', 'Time' or one of your mod's VictoryTypes.json names"
     ) {
-        override fun isKnownValue(parameterText: String, ruleset: Ruleset) = parameterText in ruleset.victories
+        override fun getKnownValuesForAutocomplete(ruleset: Ruleset) = ruleset.victories.keys
     },
 
     /** Used by [UniqueType.KillUnitPlunder] and [UniqueType.KillUnitPlunderNearCity], implementation in [Battle.tryEarnFromKilling][com.unciv.logic.battle.Battle.tryEarnFromKilling] */
     CostOrStrength("costOrStrength", "Cost", "`Cost` or `Strength`",
         severityDefault = UniqueType.UniqueParameterErrorSeverity.RulesetInvariant
     ) {
-        private val knownValues = setOf("Cost", "Strength")
-        override fun isKnownValue(parameterText: String, ruleset: Ruleset) = parameterText in knownValues
+        override val staticKnownValues = setOf("Cost", "Strength")
     },
 
     /** Mod declarative compatibility: Define Mod relations by their name. */
@@ -522,7 +552,7 @@ enum class UniqueParameterType(
         severityDefault = UniqueType.UniqueParameterErrorSeverity.RulesetInvariant
     ) {
         override fun isKnownValue(parameterText: String, ruleset: Ruleset) = when {
-            BaseRuleset.values().any { it.fullName == parameterText } -> true  // Verbatim builtin
+            BaseRuleset.entries.any { it.fullName == parameterText } -> true  // Verbatim builtin
             parameterText == "*Civ V -*" || parameterText == "*Civ V - *" -> true  // Wildcard filter for builtin
             '-' in parameterText -> false  // Only Builtin ruleset names can contain '-'
             parameterText.matches(Regex("""^\*[^*]+\*$""")) -> true  // Wildcard on both ends and no wildcard in between
@@ -569,7 +599,15 @@ enum class UniqueParameterType(
      *  - [getErrorSeverity] takes precedence and chooses whether to call this or not.
      *  - This means [getErrorSeverity] or [isKnownValue] ***must*** be overridden or else the UniqueParameterType is never valid.
      */
-    open fun isKnownValue(parameterText: String, ruleset: Ruleset): Boolean = false
+    open fun isKnownValue(parameterText: String, ruleset: Ruleset): Boolean = knownValuesCache.getOrPut(ruleset) { getKnownValuesForAutocomplete(ruleset) }.contains(parameterText)
+    open val knownValuesCache: HashMap<Ruleset, Set<String>> = HashMap()
+
+    /** This returns the known values *for autocomplete* -
+     *  there may be 'known values' not in this set, for example uniques.
+     *  If there aren't, you don't need to override isKnownValue at all, since it will compare to this */
+    open fun getKnownValuesForAutocomplete(ruleset: Ruleset): Set<String> = staticKnownValues
+
+    open val staticKnownValues: Set<String> = emptySet()
 
     protected fun getErrorSeverityForFilter(parameterText: String, ruleset: Ruleset): UniqueType.UniqueParameterErrorSeverity? {
         val isKnown = MultiFilter.multiFilter(parameterText, { isKnownValue(it, ruleset) }, true)
@@ -594,25 +632,23 @@ enum class UniqueParameterType(
 
     /** Get a list of possible values [TranslationFileWriter] should include as translatable string
      *  that are not recognized from other json sources */
-    open fun getTranslationWriterStringsForOutput(): Set<String> = setOf()
+    open fun getTranslationWriterStringsForOutput(): Set<String> = staticKnownValues
 
 
     companion object {
         private fun scanExistingValues(type: UniqueParameterType): Set<String> {
-            return BaseRuleset.values()
+            return BaseRuleset.entries
                 .mapNotNull { RulesetCache[it.fullName] }
                 .map { scanExistingValues(type, it) }
                 .fold(setOf()) { a, b -> a + b }
         }
         private fun scanExistingValues(type: UniqueParameterType, ruleset: Ruleset): Set<String> {
             val result = mutableSetOf<String>()
-            for (obj in ruleset.allIHasUniques()) {
-                for (unique in obj.uniqueObjects) {
-                    val parameterMap = unique.type?.parameterTypeMap ?: continue
-                    for ((index, param) in unique.params.withIndex()) {
-                        if (type !in parameterMap[index]) continue
-                        result += param
-                    }
+            for (unique in ruleset.allUniques()) {
+                val parameterMap = unique.type?.parameterTypeMap ?: continue
+                for ((index, param) in unique.params.withIndex()) {
+                    if (type !in parameterMap[index]) continue
+                    result += param
                 }
             }
             return result
@@ -631,7 +667,7 @@ enum class UniqueParameterType(
             }!!
         }
 
-        fun safeValueOf(param: String) = values().firstOrNull { it.parameterName == param }
+        fun safeValueOf(param: String) = entries.firstOrNull { it.parameterName == param }
             ?: Unknown.apply { this.parameterName = param }  //TODO Danger: There is only one instance of Unknown!
     }
 

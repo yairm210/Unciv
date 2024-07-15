@@ -434,7 +434,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
             for ((resource, amount) in constructionButtonDTO.resourcesRequired) {
                 val color = if (constructionButtonDTO.rejectionReason?.type == RejectionReasonType.ConsumesResources)
                     Color.RED else Color.WHITE
-                resourceTable.add(amount.toString().toLabel(fontColor = color)).expandX().left().padLeft(5f)
+                resourceTable.add(amount.tr().toLabel(fontColor = color)).expandX().left().padLeft(5f)
                 resourceTable.add(ImageGetter.getResourcePortrait(resource, 15f)).padBottom(1f)
             }
         }
@@ -638,13 +638,14 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
             button.disable()
         } else {
             val constructionBuyCost = construction.getStatBuyCost(city, stat)!!
-            button.setText("Buy".tr() + " " + constructionBuyCost + stat.character)
+            button.setText("Buy".tr() + " " + constructionBuyCost.tr() + stat.character)
 
             button.onActivation(binding = KeyboardBinding.BuyConstruction) {
                 button.disable()
                 buyButtonOnClick(construction, stat)
             }
-            button.isEnabled = isConstructionPurchaseAllowed(construction, stat, constructionBuyCost)
+            button.isEnabled = cityScreen.canCityBeChanged() &&
+                    city.cityConstructions.isConstructionPurchaseAllowed(construction, stat, constructionBuyCost)
             preferredBuyStat = stat  // Not very intelligent, but the least common currency "wins"
         }
 
@@ -679,7 +680,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
         if (!isConstructionPurchaseShown(construction, stat)) return
         val city = cityScreen.city
         val constructionStatBuyCost = construction.getStatBuyCost(city, stat)!!
-        if (!isConstructionPurchaseAllowed(construction, stat, constructionStatBuyCost)) return
+        if (!city.cityConstructions.isConstructionPurchaseAllowed(construction, stat, constructionStatBuyCost)) return
 
         cityScreen.closeAllPopups()
         ConfirmBuyPopup(construction, stat,constructionStatBuyCost, tile)
@@ -727,21 +728,6 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
         val city = cityScreen.city
         return construction.canBePurchasedWithStat(city, stat)
     }
-
-    /** This tests whether the buy button should be _enabled_ */
-    private fun isConstructionPurchaseAllowed(construction: INonPerpetualConstruction, stat: Stat, constructionBuyCost: Int): Boolean {
-        val city = cityScreen.city
-        return when {
-            city.isPuppet && !city.getMatchingUniques(UniqueType.MayBuyConstructionsInPuppets).any() -> false
-            !cityScreen.canChangeState -> false
-            city.isInResistance() -> false
-            !construction.isPurchasable(city.cityConstructions) -> false    // checks via 'rejection reason'
-            construction is BaseUnit && !city.canPlaceNewUnit(construction) -> false
-            city.civ.gameInfo.gameParameters.godMode -> true
-            constructionBuyCost == 0 -> true
-            else -> city.getStatReserve(stat) >= constructionBuyCost
-        }
-}
 
     /** Called only by askToBuyConstruction's Yes answer - not to be confused with [CityConstructions.purchaseConstruction]
      * @param tile supports [UniqueType.CreatesOneImprovement]

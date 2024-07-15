@@ -14,7 +14,7 @@ class UniqueDocsWriter {
          * Switch from each Unique shown once under one UniqueTarget heading chosen from targetTypes (`true`)
          * to showing each Unique repeatedly under each UniqueTarget heading it applies to (`false`).
          */
-        private const val showUniqueOnOneTarget = true
+        private const val showUniqueOnOneTarget = false
 
         /** Switch **on** the display of _inherited_ UniqueTargets in "Applicable to:" */
         private const val showInheritedTargets = false
@@ -26,7 +26,7 @@ class UniqueDocsWriter {
         private fun UniqueType.allTargets(): Sequence<UniqueTarget> =
             targetTypes.asSequence().flatMap { it.allTargets() }.distinct()
         private fun UniqueTarget.allUniqueTypes(): Sequence<UniqueType> =
-            UniqueType.values().asSequence().filter {
+            UniqueType.entries.asSequence().filter {
                 this in it.targetTypes
             }
     }
@@ -42,19 +42,19 @@ class UniqueDocsWriter {
         // by their UniqueTarget.ordinal as well - source code order.
         val targetTypesToUniques: Map<UniqueTarget, List<UniqueType>> =
             if (showUniqueOnOneTarget)
-                UniqueType.values().asSequence()
+                UniqueType.entries.asSequence()
                     .groupBy { it.targetTypes.minOrNull()!! }
                     .toSortedMap()
             else
         // if, on the other hand, we wish to list every UniqueType with multiple targets under
         // _each_ of the groups it is applicable to, then this might do:
-                UniqueTarget.values().asSequence().associateWith { target ->
+                UniqueTarget.entries.asSequence().associateWith { target ->
                     target.allTargets().flatMap { inheritedTarget ->
                         inheritedTarget.allUniqueTypes()
                     }.distinct().toList()
                 }
 
-        val capacity = 25 + targetTypesToUniques.size + UniqueType.values().size * (if (showUniqueOnOneTarget) 3 else 16)
+        val capacity = 25 + targetTypesToUniques.size + UniqueType.entries.size * (if (showUniqueOnOneTarget) 3 else 16)
         val lines = ArrayList<String>(capacity)
         lines += "# Uniques"
         lines += "An overview of uniques can be found [here](../Developers/Uniques.md)"
@@ -98,7 +98,7 @@ class UniqueDocsWriter {
         // Abbreviations, for adding short unique parameter help - see https://squidfunk.github.io/mkdocs-material/reference/abbreviations/
         lines += ""
         // order irrelevant for rendered wiki, but could potentially reduce source control differences
-        for (paramType in UniqueParameterType.values().asSequence().sortedBy { it.parameterName }) {
+        for (paramType in UniqueParameterType.entries.asSequence().sortedBy { it.parameterName }) {
             if (paramType.docDescription == null) continue
             val punctuation = if (paramType.docDescription!!.last().category == '.'.category) "" else "."
             lines += "*[${paramType.parameterName}]: ${paramType.docDescription}$punctuation"

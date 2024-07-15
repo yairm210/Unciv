@@ -80,7 +80,7 @@ class ReligionOverviewTab(
             it.defaults().padTop(10f)
             for ((text, num) in manager.remainingFoundableReligionsBreakdown()) {
                 it.add(text.toLabel())
-                it.add(num.toString().toLabel(alignment = Align.right)).right().row()
+                it.add(num.tr().toLabel(alignment = Align.right)).right().row()
             }
         }
         add(religionCountExpander).colspan(2).growX().row()

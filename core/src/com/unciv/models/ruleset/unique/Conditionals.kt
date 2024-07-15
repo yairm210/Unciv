@@ -171,6 +171,8 @@ object Conditionals {
 
             UniqueType.ConditionalBuildingBuilt ->
                 checkOnCiv { cities.any { it.cityConstructions.containsBuildingOrEquivalent(conditional.params[0]) } }
+            UniqueType.ConditionalBuildingNotBuilt ->
+                checkOnCiv { cities.none { it.cityConstructions.containsBuildingOrEquivalent(conditional.params[0]) } }
             UniqueType.ConditionalBuildingBuiltAll ->
                 checkOnCiv { cities.filter { it.matchesFilter(conditional.params[1]) }.all {
                   it.cityConstructions.containsBuildingOrEquivalent(conditional.params[0]) } }

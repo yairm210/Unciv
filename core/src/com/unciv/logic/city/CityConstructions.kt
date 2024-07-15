@@ -155,7 +155,7 @@ class CityConstructions : IsPartOfGameInfoSerialization {
         if (buildable)
             lines += (if (currentProgress == 0) "" else "$currentProgress/") +
                     "$cost${Fonts.production} $turnsToConstruction${Fonts.turn}"
-        val otherStats = Stat.values().filter {
+        val otherStats = Stat.entries.filter {
             (it != Stat.Gold || !buildable) &&  // Don't show rush cost for consistency
             construction.canBePurchasedWithStat(city, it)
         }.joinToString(" / ") { "${construction.getStatBuyCost(city, it)}${it.character}" }
@@ -696,6 +696,22 @@ class CityConstructions : IsPartOfGameInfoSerialization {
         validateConstructionQueue()
 
         return true
+    }
+
+
+    /** This is the *one true test* of "can we butyb this construction"
+     * This tests whether the buy button should be _enabled_ */
+    fun isConstructionPurchaseAllowed(construction: INonPerpetualConstruction, stat: Stat, constructionBuyCost: Int): Boolean {
+        return when {
+            city.isPuppet && !city.getMatchingUniques(UniqueType.MayBuyConstructionsInPuppets).any() -> false
+            city.isInResistance() -> false
+            !construction.isPurchasable(city.cityConstructions) -> false    // checks via 'rejection reason'
+            construction is BaseUnit && !city.canPlaceNewUnit(construction) -> false
+            !construction.canBePurchasedWithStat(city, Stat.Gold) -> false
+            city.civ.gameInfo.gameParameters.godMode -> true
+            constructionBuyCost == 0 -> true
+            else -> city.getStatReserve(stat) >= constructionBuyCost
+        }
     }
 
     private fun removeCurrentConstruction() = removeFromQueue(0, true)

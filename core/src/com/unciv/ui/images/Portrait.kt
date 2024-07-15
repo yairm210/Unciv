@@ -9,6 +9,7 @@ import com.badlogic.gdx.utils.Align
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.unit.Promotion
 import com.unciv.models.stats.Stats
+import com.unciv.models.translations.tr
 import com.unciv.ui.components.extensions.center
 import com.unciv.ui.components.extensions.centerX
 import com.unciv.ui.components.extensions.colorFromRGB
@@ -144,7 +145,7 @@ class PortraitResource(name: String, size: Float, amount: Int = 0) : Portrait(Ty
 
     init {
         if (amount > 0) {
-            val label = amount.toString().toLabel(
+            val label = amount.tr().toLabel(
                 fontSize = 8,
                 fontColor = Color.WHITE,
                 alignment = Align.center)
