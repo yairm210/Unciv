@@ -112,6 +112,22 @@ class RulesetValidator(val ruleset: Ruleset) {
             if (child.name().endsWith("json") && !child.name().startsWith("Atlas"))
                 lines.add("File ${child.name()} is located in the root folder - it should be moved to a 'jsons' folder")
         }
+        val jsonFolder = folder.child("jsons")
+        if (jsonFolder.exists()) {
+            for (file in jsonFolder.list("json")) {
+                if (file.name() !in RulesetFile.entries.map { it.filename }) {
+                    var text = "File ${file.name()} is in the jsons folder but is not a recognized ruleset file"
+                    val similarFilenames = RulesetFile.entries.map { it.filename }.filter {
+                        getRelativeTextDistance(
+                            it,
+                            file.name()
+                        ) <= RulesetCache.uniqueMisspellingThreshold
+                    }
+                    if (similarFilenames.isNotEmpty()) text += "\nPossible misspelling of: "+similarFilenames.joinToString("/")
+                    lines.add(text, RulesetErrorSeverity.OK)
+                }
+            }
+        }
     }
 
 
