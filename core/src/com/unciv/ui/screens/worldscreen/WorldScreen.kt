@@ -49,7 +49,7 @@ import com.unciv.ui.screens.savescreens.LoadGameScreen
 import com.unciv.ui.screens.savescreens.QuickSave
 import com.unciv.ui.screens.savescreens.SaveGameScreen
 import com.unciv.ui.screens.victoryscreen.VictoryScreen
-import com.unciv.ui.screens.worldscreen.WorldMapTileUpdater.updateTiles
+import com.unciv.ui.screens.worldscreen.worldmap.WorldMapTileUpdater.updateTiles
 import com.unciv.ui.screens.worldscreen.bottombar.BattleTable
 import com.unciv.ui.screens.worldscreen.bottombar.TileInfoTable
 import com.unciv.ui.screens.worldscreen.mainmenu.WorldScreenMusicPopup
@@ -63,6 +63,7 @@ import com.unciv.ui.screens.worldscreen.topbar.WorldScreenTopBar
 import com.unciv.ui.screens.worldscreen.unit.AutoPlay
 import com.unciv.ui.screens.worldscreen.unit.UnitTable
 import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionsTable
+import com.unciv.ui.screens.worldscreen.worldmap.WorldMapHolder
 import com.unciv.utils.Concurrency
 import com.unciv.utils.debug
 import com.unciv.utils.launchOnGLThread
