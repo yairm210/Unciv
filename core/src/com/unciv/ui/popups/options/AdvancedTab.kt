@@ -23,7 +23,7 @@ import com.unciv.models.metadata.GameSettings.ScreenSize
 import com.unciv.models.metadata.ModCategories
 import com.unciv.models.translations.TranslationFileWriter
 import com.unciv.models.translations.tr
-import com.unciv.ui.components.UncivTextField
+import com.unciv.ui.components.widgets.UncivTextField
 import com.unciv.ui.components.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.components.extensions.*
 import com.unciv.ui.components.fonts.FontFamilyData
@@ -397,7 +397,7 @@ class AdvancedTab(
 
     private fun addGithubTokenField(): TextField {
         add("Github token".toLabel()).left()
-        val field = UncivTextField.create("", getToken()) {
+        val field = UncivTextField("", getToken()) {
             saveToken()
         }
         add(field).growX().row()
