@@ -109,6 +109,11 @@ object Automation {
                 yieldStats.happiness *= 2
             }
 
+        if (city.isPuppet) {
+            // Puppets need to produce gold, but no great merchants
+            yieldStats.gold *= 2
+        }
+
         if (allTechsAreResearched) {
             // Science is useless at this point
             yieldStats.science *= 0
