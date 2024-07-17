@@ -7,6 +7,7 @@ object MultiFilter {
     private const val notPrefix = "non-["
     private const val notSuffix = "]"
 
+    @Suppress("MemberNameEqualsClassName") // detekt flags this
     /**
      *  Implements `and` and `not` logic on top of a [filterFunction].
      *

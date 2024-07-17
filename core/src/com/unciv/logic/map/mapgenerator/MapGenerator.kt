@@ -241,7 +241,7 @@ class MapGenerator(val ruleset: Ruleset, private val coroutineScope: CoroutineSc
     }
 
     private fun spreadCoast(map: TileMap) {
-        for (i in 1..map.mapParameters.maxCoastExtension) {
+        repeat(map.mapParameters.maxCoastExtension) {
             val toCoast = mutableListOf<Tile>()
             for (tile in map.values.filter { it.baseTerrain == Constants.ocean }) {
                 val tilesInDistance = tile.getTilesInDistance(1)

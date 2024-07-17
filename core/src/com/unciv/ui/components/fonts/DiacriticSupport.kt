@@ -147,8 +147,7 @@ class DiacriticSupport(
             accumulator.clear()
         }
         fun forbidWaitingHighSurrogate() {
-            if (waitingHighSurrogate != Char.MIN_VALUE)
-                throw IllegalArgumentException("Invalid Unicode: High surrogate without low surrogate")
+            check(waitingHighSurrogate != Char.MIN_VALUE) { "Invalid Unicode: High surrogate without low surrogate" }
         }
         fun accumulate(char: Char) {
             forbidWaitingHighSurrogate()
@@ -169,7 +168,7 @@ class DiacriticSupport(
                 forbidWaitingHighSurrogate()
                 waitingHighSurrogate = char
             } else {
-                if (waitingHighSurrogate == Char.MIN_VALUE) throw IllegalArgumentException("Invalid Unicode: Low surrogate without high surrogate")
+                check(waitingHighSurrogate == Char.MIN_VALUE) { "Invalid Unicode: Low surrogate without high surrogate" }
                 if (!expectsJoin()) flush()
                 accumulator.append(waitingHighSurrogate)
                 accumulator.append(char)
@@ -218,8 +217,8 @@ class DiacriticSupport(
     private fun createReplacementChar(joined: String): Char {
         val char = getCurrentFreeCode()
         nextFreeDiacriticReplacementCodepoint--
-        if (nextFreeDiacriticReplacementCodepoint < FontRulesetIcons.UNUSED_CHARACTER_CODES_START.toUInt())
-            throw IllegalStateException("DiacriticsSupport has exhausted the Unicode private use area")
+        check(nextFreeDiacriticReplacementCodepoint < FontRulesetIcons.UNUSED_CHARACTER_CODES_START.toUInt())
+            { "DiacriticsSupport has exhausted the Unicode private use area" }
         fakeAlphabet[char] = joined
         inverseMap[joined] = char
         return char
@@ -239,8 +238,7 @@ class DiacriticSupport(
 
     /** Replaces the combos of diacritics/joiners with their affected characters with a "fake" alphabet */
     fun remapDiacritics(value: String): String {
-        if (!enabled)
-            throw IllegalStateException("DiacriticSupport not set up properly for translation processing")
+        check(!enabled) { "DiacriticSupport not set up properly for translation processing" }
 
         val data = LineData(value.length)
         for (char in value) {

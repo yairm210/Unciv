@@ -58,9 +58,12 @@ class WorkerAutomation(
      * The improvementPriority and bestImprovement are by default not set.
      * Once improvementPriority is set we have already checked for the best improvement, repairImprovement.
      */
-    data class TileImprovementRank(val tilePriority: Float, var improvementPriority: Float? = null,
-                                   var bestImprovement: TileImprovement? = null,
-                                   var repairImprovment: Boolean? = null)
+    private data class TileImprovementRank(
+        val tilePriority: Float,
+        var improvementPriority: Float? = null,
+        var bestImprovement: TileImprovement? = null,
+        var repairImprovement: Boolean? = null
+    )
 
     private val tileRankings = HashMap<Tile, TileImprovementRank>()
 
@@ -121,7 +124,7 @@ class WorkerAutomation(
 
         if (tileHasWorkToDo(currentTile, unit, localUniqueCache)) {
             val tileRankings = tileRankings[currentTile]!!
-            if (tileRankings.repairImprovment!!) {
+            if (tileRankings.repairImprovement!!) {
                 debug("WorkerAutomation: $unit -> repairs $currentTile")
                 UnitActionsFromUniques.getRepairAction(unit)?.action?.invoke()
                 return
@@ -130,7 +133,7 @@ class WorkerAutomation(
                 debug("WorkerAutomation: $unit} -> start improving $currentTile")
                 return currentTile.startWorkingOnImprovement(tileRankings.bestImprovement!!, civInfo, unit)
             } else {
-                throw IllegalStateException("We didn't find anything to improve on this tile even though there was supposed to be something to improve!")
+                error("We didn't find anything to improve on this tile even though there was supposed to be something to improve!")
             }
         }
 
@@ -264,7 +267,7 @@ class WorkerAutomation(
             // All values of rank have to be initialized
             rank.improvementPriority = -100f
             rank.bestImprovement = null
-            rank.repairImprovment = false
+            rank.repairImprovement = false
 
             val bestImprovement = chooseImprovement(unit, tile, localUniqueCache)
             if (bestImprovement != null) {
@@ -285,12 +288,12 @@ class WorkerAutomation(
                 if (repairPriority > rank.improvementPriority!!) {
                     rank.improvementPriority = repairPriority
                     rank.bestImprovement = null
-                    rank.repairImprovment = true
+                    rank.repairImprovement = true
                 }
             }
         }
         // A better tile than this unit can build might have been stored in the cache
-        if (!rank.repairImprovment!! && (rank.bestImprovement == null ||
+        if (!rank.repairImprovement!! && (rank.bestImprovement == null ||
                 !unit.canBuildImprovement(rank.bestImprovement!!, tile))) return -100f
         return rank.improvementPriority!!
     }
@@ -307,8 +310,8 @@ class WorkerAutomation(
      */
     private fun tileHasWorkToDo(tile: Tile, unit: MapUnit, localUniqueCache: LocalUniqueCache): Boolean {
         if (getImprovementPriority(tile, unit, localUniqueCache) <= 0) return false
-        if (!(tileRankings[tile]!!.bestImprovement != null || tileRankings[tile]!!.repairImprovment!!))
-            throw IllegalStateException("There was an improvementPriority > 0 and nothing to do")
+        check(!(tileRankings[tile]!!.bestImprovement != null || tileRankings[tile]!!.repairImprovement!!))
+            { "There was an improvementPriority > 0 and nothing to do" }
         return true
     }
 

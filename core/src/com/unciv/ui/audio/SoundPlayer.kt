@@ -273,6 +273,7 @@ object SoundPlayer {
 
     /** A wrapper for a HashMap<UncivSound, Sound?> with synchronized writes */
     private class Cache {
+        @Suppress("MemberNameEqualsClassName") // detekt flags this
         private val cache = HashMap<UncivSound, Sound?>(20)  // Enough for all standard sounds
 
         operator fun contains(key: UncivSound) = cache.containsKey(key)

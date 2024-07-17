@@ -85,7 +85,7 @@ class City : IsPartOfGameInfoSerialization, INamed {
     var updateCitizens = false  // flag so that on startTurn() the Governor reassigns Citizens
 
     @delegate:Transient
-    val neighboringCities: List<City> by lazy { 
+    val neighboringCities: List<City> by lazy {
         civ.gameInfo.getCities().filter { it != this && it.getCenterTile().isExplored(civ) && it.getCenterTile().aerialDistanceTo(getCenterTile()) <= 12 }.toList()
     }
 
@@ -111,7 +111,7 @@ class City : IsPartOfGameInfoSerialization, INamed {
     /** Persisted connected-to-capital (by any medium) to allow "disconnected" notifications after loading */
     // Unknown only exists to support older saves, so those do not generate spurious connected/disconnected messages.
     // The other names are chosen so serialization is compatible with a Boolean to allow easy replacement in the future.
-    @Suppress("EnumEntryName")
+    @Suppress("EnumEntryName", "EnumNaming") // Second one is for detekt
     enum class ConnectedToCapitalStatus { Unknown, `false`, `true` }
     var connectedToCapitalStatus = ConnectedToCapitalStatus.Unknown
 

@@ -69,7 +69,7 @@ class OnlineMultiplayer {
                 val multiplayerSettings: GameSettings.GameSettingsMultiplayer
                 try { // Fails in unknown cases - cannot debug :/ This is just so it doesn't appear in GP analytics
                     multiplayerSettings = UncivGame.Current.settings.multiplayer
-                } catch (ex:Exception){ continue }
+                } catch (_: Exception) { continue }
 
                 val currentGame = getCurrentGame()
                 val preview = currentGame?.preview

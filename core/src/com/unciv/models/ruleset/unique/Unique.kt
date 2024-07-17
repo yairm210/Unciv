@@ -93,6 +93,7 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
     }
 
     private class EndlessSequenceOf<T>(private val value: T) : Sequence<T> {
+        @Suppress("IteratorNotThrowingNoSuchElementException") // detekt doesn't like this trick
         override fun iterator(): Iterator<T> = object : Iterator<T> {
             override fun next() = value
             override fun hasNext() = true

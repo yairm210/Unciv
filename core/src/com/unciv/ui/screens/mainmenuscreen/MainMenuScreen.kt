@@ -338,7 +338,7 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
         val rulesetParameters = game.settings.lastGameSetup?.gameParameters
         if (rulesetParameters != null) return RulesetCache.getComplexRuleset(rulesetParameters)
         return RulesetCache[BaseRuleset.Civ_V_GnK.fullName]
-            ?: throw IllegalStateException("No ruleset found")
+            ?: error("No ruleset found")
     }
 
     override fun openCivilopedia(link: String) {

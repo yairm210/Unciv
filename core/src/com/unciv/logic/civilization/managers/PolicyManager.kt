@@ -256,11 +256,10 @@ class PolicyManager : IsPartOfGameInfoSerialization {
     // Note: a negative numberOfAdoptedPolicies would later throw in getCultureNeededForNextPolicy: -1.pow() gives NaN, which throws on toInt... Autosaved!
     fun removePolicy(policy: Policy, branchCompletion: Boolean = false, assumeWasFree: Boolean = false) {
         if (!adoptedPolicies.remove(policy.name))
-            throw IllegalStateException("Attempt to remove non-adopted Policy ${policy.name}")
+            error("Attempt to remove non-adopted Policy ${policy.name}")
 
         if (!assumeWasFree) {
-            if (--numberOfAdoptedPolicies < 0)
-                throw IllegalStateException("Attempt to remove Policy ${policy.name} but civ only has free policies left")
+            check(--numberOfAdoptedPolicies < 0) { "Attempt to remove Policy ${policy.name} but civ only has free policies left" }
         }
 
         removePolicyFromTransients(policy)

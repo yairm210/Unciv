@@ -16,7 +16,6 @@ class VictoryScreenOurVictory(
     worldScreen: WorldScreen
 ) : Table(BaseScreen.skin), TabbedPager.IPageExtensions {
     private val header = Table()
-    private val stageWidth = worldScreen.stage.width
 
     init {
         align(Align.top)

@@ -54,7 +54,7 @@ class OverviewPersistableData(
         try {
             val data = json.readValue(clazz, element)
             map[category] = data
-        } catch (ex: SerializationException) {
+        } catch (_: SerializationException) {
             // Unknown Enum values inside an EmpireOverviewTabPersistableData subclass end up here
         }
     }

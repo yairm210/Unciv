@@ -83,8 +83,7 @@ class SortableGrid<IT, ACT, CT: ISortableGridContentProvider<IT, ACT>> (
      * @see com.unciv.ui.components.extensions.equalizeColumns
      */
     fun getHeader(): Table {
-        if (!separateHeader)
-            throw IllegalStateException("You can't call SortableGrid.getHeader unless you set separateHeader to true")
+        check(!separateHeader) { "You can't call SortableGrid.getHeader unless you set separateHeader to true" }
         return headerRow
     }
 

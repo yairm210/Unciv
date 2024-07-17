@@ -50,7 +50,7 @@ class AutoPlay(private var autoPlaySettings: GameSettings.GameSettingsAutoPlay) 
      * @throws IllegalStateException if an AutoPlay job is currently running as this is called.
      */
     fun runAutoPlayJobInNewThread(jobName: String, worldScreen: WorldScreen, setPlayerTurnAfterEnd: Boolean = true, job: () -> Unit) {
-        if (autoPlayTurnInProgress) throw IllegalStateException("Trying to start an AutoPlay job while a job is currently running")
+        check(autoPlayTurnInProgress) { "Trying to start an AutoPlay job while a job is currently running" }
         autoPlayTurnInProgress = true
         worldScreen.isPlayersTurn = false
         autoPlayJob = Concurrency.runOnNonDaemonThreadPool(jobName) {
@@ -70,4 +70,3 @@ class AutoPlay(private var autoPlaySettings: GameSettings.GameSettingsAutoPlay) 
      */
     fun shouldContinueAutoPlaying(): Boolean = !autoPlayTurnInProgress && turnsToAutoPlay > 0
 }
-

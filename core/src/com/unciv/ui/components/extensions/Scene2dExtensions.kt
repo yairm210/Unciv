@@ -436,19 +436,22 @@ fun equalizeColumns(vararg tables: Table) {
         .mapTo(ArrayList(columns)) { column ->
             tables.maxOf { it.getColumnWidth(column) }
         }
+
+    fun Cell<Actor?>.adjustHeaderCell() {
+        // Empty cells ignore minWidth, so just doing Table.add() for an empty cell in the top row will break this. Fix!
+        if (actor == null)
+            setActor("".toLabel())
+        else if (Align.isCenterHorizontal(align)) (actor as? Label)?.run {
+            // minWidth acts like fillX, so Labels will fill and then left-align by default. Fix!
+            if (!Align.isCenterHorizontal(labelAlign))
+                setAlignment(Align.center)
+        }
+        minWidth(widths[column] - padLeft - padRight)
+    }
+
     for (table in tables) {
         for (column in 0 until columns)
-            table.cells[column].run {
-                if (actor == null)
-                // Empty cells ignore minWidth, so just doing Table.add() for an empty cell in the top row will break this. Fix!
-                    setActor<Label>("".toLabel())
-                else if (Align.isCenterHorizontal(align)) (actor as? Label)?.run {
-                    // minWidth acts like fillX, so Labels will fill and then left-align by default. Fix!
-                    if (!Align.isCenterHorizontal(labelAlign))
-                        setAlignment(Align.center)
-                }
-                minWidth(widths[column] - padLeft - padRight)
-            }
+            table.cells[column].adjustHeaderCell()
         table.invalidate()
     }
 }

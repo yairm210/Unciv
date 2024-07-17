@@ -145,18 +145,14 @@ class MultiplayerScreen : PickerScreen() {
                         popup.reuseWith("You can only resign if it's your turn", true)
                     }
                 }
+            } catch (_: MultiplayerAuthException) {
+                launchOnGLThread {
+                    AuthPopup(this@MultiplayerScreen) { success ->
+                        if (success) resign(multiplayerGame)
+                    }.open(true)
+                }
             } catch (ex: Exception) {
                 val (message) = LoadGameScreen.getLoadExceptionMessage(ex)
-
-                if (ex is MultiplayerAuthException) {
-                    launchOnGLThread {
-                        AuthPopup(this@MultiplayerScreen) { success ->
-                            if (success) resign(multiplayerGame)
-                        }.open(true)
-                    }
-                    return@runOnNonDaemonThreadPool
-                }
-
                 launchOnGLThread {
                     popup.reuseWith(message, true)
                 }

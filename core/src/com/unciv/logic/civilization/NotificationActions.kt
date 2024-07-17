@@ -183,7 +183,7 @@ class EspionageAction : NotificationAction {
 }
 
 
-@Suppress("PrivatePropertyName")  // These names *must* match their class name, see below
+@Suppress("PrivatePropertyName", "VariableNaming")  // These names *must* match their class name, see below. Second one is detekt
 internal class NotificationActionsDeserializer {
     /* This exists as trick to leverage readFields for Json deserialization.
     // The serializer writes each NotificationAction as json object (within the actions array),

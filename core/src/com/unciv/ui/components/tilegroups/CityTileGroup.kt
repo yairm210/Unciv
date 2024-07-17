@@ -46,6 +46,7 @@ class CityTileGroup(val city: City, tile: Tile, tileSetStrings: TileSetStrings, 
             } else fun(factor: Float) {
                 layerTerrain.dim(0.5f * factor)
             }
+        @Suppress("EmptyFunctionBlock") // Detekt false positive
         val setUndimmed = if (nightMode) fun() {
                 layerTerrain.dim(0.5f)
             } else fun() {}
