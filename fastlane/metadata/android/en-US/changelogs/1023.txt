@@ -1,0 +1,17 @@
+Modding: Added unique builder screen, accessible from mod checker :D
+
+Fixed Workboat construction automation ignoring existing workboat in city
+
+Fixed air unit movement on map
+
+Fixed icons in Wonder location "near city" for cities with nation names
+
+Rome/Babylon capital takeover no longer renames like city states
+
+By tuvus:
+- Animations now show escort units 
+- Escort movement fix 
+
+More Numbers Translations Coverage  - By touhidurrr
+
+Correct the colors of the flag of Ukraine  - By kostia1st

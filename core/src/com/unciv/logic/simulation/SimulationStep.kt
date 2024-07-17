@@ -7,7 +7,6 @@ class SimulationStep (gameInfo: GameInfo) {
     var victoryType = gameInfo.getCurrentPlayerCivilization().victoryManager.getVictoryTypeAchieved()
     var winner: String? = null
     val currentPlayer = gameInfo.currentPlayer
-//    val durationString: String = formatDuration(Duration.ofMillis(System.currentTimeMillis() - startTime))
 }
 
 

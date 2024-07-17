@@ -1,8 +1,10 @@
 package com.unciv.logic.civilization.managers
 
+import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
+import com.unciv.ui.screens.victoryscreen.RankingType
 
 /**
  * Handles optimised operations related to finding threats or allies in an area.
@@ -147,7 +149,7 @@ class ThreatManager(val civInfo: Civilization) {
 
         val tilesWithinBombardmentRange = tilesWithEnemyUnits
             .filter { it.isCityCenter() && it.getCity()!!.civ.isAtWarWith(unit.civ) }
-            .flatMap { it.getTilesInDistance(it.getCity()!!.range) }
+            .flatMap { it.getTilesInDistance(it.getCity()!!.getBombardRange()) }
 
         val tilesWithTerrainDamage = unit.currentTile.getTilesInDistance(distance)
             .filter { unit.getDamageFromTerrain(it) > 0 }
@@ -168,6 +170,15 @@ class ThreatManager(val civInfo: Civilization) {
             return true
         return false
     }
+
+    /** @return a sequence of pairs of cities, the first city is our city and the second city is a nearby city that is not from our civ. */
+    fun getNeighboringCitiesOfOtherCivs(): Sequence<Pair<City,City>> = civInfo.cities.flatMap {
+        ourCity -> ourCity.neighboringCities.filter { it.civ != civInfo }.map { Pair(ourCity, it) } 
+    }.asSequence()
+
+    fun getNeighboringCivilizations(): Set<Civilization> = civInfo.cities.flatMap { it.neighboringCities }.filter { it.civ != civInfo && civInfo.knows(it.civ) }.map { it.civ }.toSet()
+
+    fun getCombinedForceOfWarringCivs(): Int = civInfo.getCivsAtWarWith().sumOf { it.getStatForRanking(RankingType.Force) } 
 
     fun clear() {
         distanceToClosestEnemyTiles.clear()

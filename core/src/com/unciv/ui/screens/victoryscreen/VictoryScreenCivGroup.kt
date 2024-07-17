@@ -41,7 +41,7 @@ internal class VictoryScreenCivGroup(
         civEntry.civ,
         ": ",
         // Don't show a `0` for defeated civs.
-        if (civEntry.civ.isDefeated()) "" else civEntry.value.toString(),
+        if (civEntry.civ.isDefeated()) "" else civEntry.value.tr(),
         currentPlayer,
         defeatedPlayerStyle
     )

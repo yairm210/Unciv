@@ -1,0 +1,13 @@
+Unha reimplementación do xogo de construción de civilizacións máis famoso da historia - ¡Rápido», pequeno, sen anuncios, gratis por sempre!
+
+¡Construe a tua civilización, investiga tecnoloxías, expande tuas cidades e derrota aos teus inimigos!
+
+ ¿Peticions?¿Erros? A lista de cousas por facer da aplicación é https://github.com/yairm210/Unciv/issues, ¡toda pequena axuda é benvida!
+
+¿Preguntas?¿Erros?¿Aburrido? Únetenos en https://discord.gg/bjrB4Xw.
+
+¿Queres axudar a traducir o xogo a tu idioma? Envíame un email a yairm210@hotmail.com.
+
+¿Sabes escribir Java o Kotlin? Únetenos en https://github.com/yairm210/Unciv.¡O mundo agarda!¿Converterás a tu civilización nun imperio que resistirá o paso do tempo?
+
+ Se require o permiso de "Ter acceso completo á rede" para descargas iniciadas polo usuario e o modo multixugador. Todos os demais permisos listados son incluídos automaticamente polo API usado para implementar as notificacións de quendas no modo multixugador. Os permisos de rede son usados para contar mods, descargar mods, descargar música e para cargar/descargar partidas multixugador. Uncivil non inicia ningunha outra comunicación por Internet. 

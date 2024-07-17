@@ -17,7 +17,7 @@ import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.nation.Nation
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.input.KeyCharAndCode
-import com.unciv.ui.components.UncivTextField
+import com.unciv.ui.components.widgets.UncivTextField
 import com.unciv.ui.components.widgets.WrappableLabel
 import com.unciv.ui.components.extensions.darken
 import com.unciv.ui.components.extensions.isEnabled
@@ -126,7 +126,7 @@ class PlayerPickerTable(
     fun updateRandomNumberLabel() {
         randomNumberLabel?.run {
             val playerRange = if (gameParameters.minNumberOfPlayers == gameParameters.maxNumberOfPlayers) {
-                gameParameters.minNumberOfPlayers.toString()
+                gameParameters.minNumberOfPlayers.tr()
             } else {
                 "${gameParameters.minNumberOfPlayers} - ${gameParameters.maxNumberOfPlayers}"
             }
@@ -229,7 +229,7 @@ class PlayerPickerTable(
     private fun Table.addPlayerTableMultiplayerControls(player: Player) {
         row()
 
-        val playerIdTextField = UncivTextField.create("Please input Player ID!", player.playerId)
+        val playerIdTextField = UncivTextField("Please input Player ID!", player.playerId)
         add(playerIdTextField).colspan(2).fillX().pad(5f)
         val errorLabel = "✘".toLabel(Color.RED)
         add(errorLabel).pad(5f).row()

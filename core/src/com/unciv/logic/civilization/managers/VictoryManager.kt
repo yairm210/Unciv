@@ -38,7 +38,7 @@ class VictoryManager : IsPartOfGameInfoSerialization {
     }
 
     private fun getVotingCivs() = civInfo.gameInfo.civilizations.asSequence()
-        .filterNot { it.isBarbarian() || it.isSpectator() || it.isDefeated() }
+        .filterNot { it.isBarbarian || it.isSpectator() || it.isDefeated() }
 
     /** Finds the Building and Owner of the United Nations (or whatever the Mod called it)
      *  - if it's built at all and only if the owner is alive

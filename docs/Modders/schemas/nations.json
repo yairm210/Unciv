@@ -14,8 +14,8 @@
           },
           "style": { "type": "string" },
           "cityStateType": { "type": "string" },
-          "outerColor": { "$ref": "#/definitions/color" },
-          "innerColor": { "$ref": "#/definitions/color" },
+          "outerColor": { "$ref": "https://raw.githubusercontent.com/yairm210/Unciv/master/docs/Modders/schemas/color.json" },
+          "innerColor": { "$ref": "https://raw.githubusercontent.com/yairm210/Unciv/master/docs/Modders/schemas/color.json" },
 
           "preferredVictoryType": { "type": "string" },
           "startBias": {
@@ -59,20 +59,8 @@
           "civilopediaText": { "$ref": "https://raw.githubusercontent.com/yairm210/Unciv/master/docs/Modders/schemas/civilopediaText.json" }
       },
       "required": [
-          "name", "outerColor"
+          "name", "outerColor", "cities"
       ],
-      "additionalProperties": false,
-      "definitions": {
-          "color": {
-              "type": "array",
-              "minLength": 3,
-              "maxLength": 3,
-              "items": {
-                  "type": "integer",
-                  "minimum": 0,
-                  "maximum": 255
-              }
-          }
-      }
+      "additionalProperties": false
   }
 }

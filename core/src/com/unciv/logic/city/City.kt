@@ -21,6 +21,7 @@ import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
+import com.unciv.models.stats.INamed
 import com.unciv.models.stats.Stat
 import java.util.UUID
 import kotlin.math.roundToInt
@@ -32,15 +33,12 @@ enum class CityFlags {
 }
 
 
-class City : IsPartOfGameInfoSerialization {
+class City : IsPartOfGameInfoSerialization, INamed {
     @Transient
     lateinit var civ: Civilization
 
     @Transient
     private lateinit var centerTile: Tile  // cached for better performance
-
-    @Transient
-    val range = 2
 
     @Transient
     lateinit var tileMap: TileMap
@@ -54,7 +52,7 @@ class City : IsPartOfGameInfoSerialization {
 
     var location: Vector2 = Vector2.Zero
     var id: String = UUID.randomUUID().toString()
-    var name: String = ""
+    override var name: String = ""
     var foundingCiv = ""
     // This is so that cities in resistance that are recaptured aren't in resistance anymore
     var previousOwner = ""
@@ -88,11 +86,11 @@ class City : IsPartOfGameInfoSerialization {
 
     @delegate:Transient
     val neighboringCities: List<City> by lazy { 
-        civ.gameInfo.getCities().filter { it != this && it.getCenterTile().aerialDistanceTo(getCenterTile()) <= 8 }.toList()
+        civ.gameInfo.getCities().filter { it != this && it.getCenterTile().isExplored(civ) && it.getCenterTile().aerialDistanceTo(getCenterTile()) <= 12 }.toList()
     }
 
     var cityAIFocus: String = CityFocus.NoFocus.name
-    fun getCityFocus() = CityFocus.values().firstOrNull { it.name == cityAIFocus } ?: CityFocus.NoFocus
+    fun getCityFocus() = CityFocus.entries.firstOrNull { it.name == cityAIFocus } ?: CityFocus.NoFocus
     fun setCityFocus(cityFocus: CityFocus){ cityAIFocus = cityFocus.name }
 
 
@@ -155,8 +153,12 @@ class City : IsPartOfGameInfoSerialization {
     fun getWorkableTiles() = tilesInRange.asSequence().filter { it.getOwner() == civ }
     fun isWorked(tile: Tile) = workedTiles.contains(tile.position)
 
-    fun isCapital(): Boolean = cityConstructions.getBuiltBuildings().any { it.hasUnique(UniqueType.IndicatesCapital) }
+    fun isCapital(): Boolean = cityConstructions.builtBuildingUniqueMap.getUniques(UniqueType.IndicatesCapital).any()
     fun isCoastal(): Boolean = centerTile.isCoastalTile()
+
+    fun getBombardRange(): Int = civ.gameInfo.ruleset.modOptions.constants.baseCityBombardRange
+    fun getWorkRange(): Int = civ.gameInfo.ruleset.modOptions.constants.cityWorkRange
+    fun getExpandRange(): Int = civ.gameInfo.ruleset.modOptions.constants.cityExpandRange
 
     fun capitalCityIndicator(): Building? {
         val indicatorBuildings = getRuleset().buildings.values.asSequence()
@@ -192,7 +194,7 @@ class City : IsPartOfGameInfoSerialization {
 
     fun getRuleset() = civ.gameInfo.ruleset
 
-    fun getResourcesGeneratedByCity() = CityResources.getResourcesGeneratedByCity(this)
+    fun getResourcesGeneratedByCity(civResourceModifiers: HashMap<String, Float>) = CityResources.getResourcesGeneratedByCity(this, civResourceModifiers)
     fun getAvailableResourceAmount(resourceName: String) = CityResources.getAvailableResourceAmount(this, resourceName)
 
     fun isGrowing() = foodForNextTurn() > 0
@@ -234,7 +236,13 @@ class City : IsPartOfGameInfoSerialization {
     internal fun getMaxHealth() =
         200 + cityConstructions.getBuiltBuildings().sumOf { it.cityHealth }
 
-    fun getStrength() = cityConstructions.getBuiltBuildings().sumOf { it.cityStrength }.toFloat() 
+    fun getStrength() = cityConstructions.getBuiltBuildings().sumOf { it.cityStrength }.toFloat()
+
+    // This should probably be configurable
+    @Transient
+    private val maxAirUnits = 6
+    /** Gets max air units that can remain in the city untransported */
+    fun getMaxAirUnits() = maxAirUnits
 
     override fun toString() = name // for debug
 
@@ -261,7 +269,7 @@ class City : IsPartOfGameInfoSerialization {
         this.civ = civInfo
         tileMap = civInfo.gameInfo.tileMap
         centerTile = tileMap[location]
-        tilesInRange = getCenterTile().getTilesInDistance(3).toHashSet()
+        tilesInRange = getCenterTile().getTilesInDistance(getWorkRange()).toHashSet()
         population.city = this
         expansion.city = this
         expansion.setTransients()
@@ -341,7 +349,7 @@ class City : IsPartOfGameInfoSerialization {
         if (isCapital()) civ.moveCapitalToNextLargest(null)
 
         civ.cities = civ.cities.toMutableList().apply { remove(this@City) }
-        getCenterTile().changeImprovement("City ruins")
+        getCenterTile().setImprovement("City ruins")
 
         // Edge case! What if a water unit is in a city, and you raze the city?
         // Well, the water unit has to return to the water!
@@ -412,7 +420,7 @@ class City : IsPartOfGameInfoSerialization {
         val tile = getCenterTile()
         return when {
             construction.isCivilian() -> tile.civilianUnit == null
-            construction.movesLikeAirUnits() -> tile.airUnits.count { !it.isTransported } < 6
+            construction.movesLikeAirUnits -> return true // Dealt with in MapUnit.getRejectionReasons
             else -> tile.militaryUnit == null
         }
     }
@@ -451,7 +459,7 @@ class City : IsPartOfGameInfoSerialization {
             "in resisting cities", "Resisting" -> isInResistance()
             "in cities being razed", "Razing" -> isBeingRazed
             "in holy cities", "Holy" -> isHolyCity()
-            "in City-State cities" -> civ.isCityState()
+            "in City-State cities" -> civ.isCityState
             // This is only used in communication to the user indicating that only in cities with this
             // religion a unique is active. However, since religion uniques only come from the city itself,
             // this will always be true when checked.
@@ -480,7 +488,7 @@ class City : IsPartOfGameInfoSerialization {
                 getLocalMatchingUniques(uniqueType, stateForConditionals)
         else (
             cityConstructions.builtBuildingUniqueMap.getUniques(uniqueType)
-                + religion.getUniques().filter { it.type == uniqueType }
+                + religion.getUniques(uniqueType)
             ).filter {
                 !it.isTimedTriggerable && it.conditionalsApply(stateForConditionals)
             }.flatMap { it.getMultiplied(stateForConditionals) }
@@ -489,10 +497,9 @@ class City : IsPartOfGameInfoSerialization {
     // Uniques special to this city
     fun getLocalMatchingUniques(uniqueType: UniqueType, stateForConditionals: StateForConditionals = StateForConditionals(this)): Sequence<Unique> {
         val uniques = cityConstructions.builtBuildingUniqueMap.getUniques(uniqueType).filter { it.isLocalEffect } +
-            religion.getUniques().filter { it.type == uniqueType }
-        return if (uniques.any()) uniques.filter { !it.isTimedTriggerable && it.conditionalsApply(stateForConditionals) }
-            .flatMap { it.getMultiplied(stateForConditionals) }
-        else uniques
+            religion.getUniques(uniqueType)
+        return uniques.filter { !it.isTimedTriggerable && it.conditionalsApply(stateForConditionals) }
+                .flatMap { it.getMultiplied(stateForConditionals) }
     }
 
     // Uniques coming from this city, but that should be provided globally

@@ -17,7 +17,7 @@ import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.logic.civilization.managers.AssignedQuest
 import com.unciv.logic.trade.TradeLogic
 import com.unciv.logic.trade.TradeOffer
-import com.unciv.logic.trade.TradeType
+import com.unciv.logic.trade.TradeOfferType
 import com.unciv.models.ruleset.Quest
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.unique.UniqueType
@@ -32,12 +32,13 @@ import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.widgets.ColorMarkupLabel
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popups.ConfirmPopup
+import kotlin.reflect.typeOf
 
 class CityStateDiplomacyTable(private val diplomacyScreen: DiplomacyScreen) {
     val viewingCiv = diplomacyScreen.viewingCiv
 
     fun getCityStateDiplomacyTable(otherCiv: Civilization): Table {
-        val otherCivDiplomacyManager = otherCiv.getDiplomacyManager(viewingCiv)
+        val otherCivDiplomacyManager = otherCiv.getDiplomacyManager(viewingCiv)!!
 
         val diplomacyTable = getCityStateDiplomacyTableHeader(otherCiv)
 
@@ -67,7 +68,7 @@ class CityStateDiplomacyTable(private val diplomacyScreen: DiplomacyScreen) {
         diplomacyTable.add(demandTributeButton).row()
         if (diplomacyScreen.isNotPlayersTurn() || viewingCiv.isAtWarWith(otherCiv)) demandTributeButton.disable()
 
-        val diplomacyManager = viewingCiv.getDiplomacyManager(otherCiv)
+        val diplomacyManager = viewingCiv.getDiplomacyManager(otherCiv)!!
         if (!viewingCiv.gameInfo.ruleset.modOptions.hasUnique(UniqueType.DiplomaticRelationshipsCannotChange)) {
             if (viewingCiv.isAtWarWith(otherCiv))
                 diplomacyTable.add(getNegotiatePeaceCityStateButton(otherCiv, diplomacyManager)).row()
@@ -95,7 +96,7 @@ class CityStateDiplomacyTable(private val diplomacyScreen: DiplomacyScreen) {
 
 
     private fun getCityStateDiplomacyTableHeader(otherCiv: Civilization): Table {
-        val otherCivDiplomacyManager = otherCiv.getDiplomacyManager(viewingCiv)
+        val otherCivDiplomacyManager = otherCiv.getDiplomacyManager(viewingCiv)!!
 
         val diplomacyTable = Table()
         diplomacyTable.defaults().pad(2.5f)
@@ -130,7 +131,7 @@ class CityStateDiplomacyTable(private val diplomacyScreen: DiplomacyScreen) {
         otherCiv.cityStateFunctions.updateAllyCivForCityState()
         var ally = otherCiv.getAllyCiv()
         if (ally != null) {
-            val allyInfluence = otherCiv.getDiplomacyManager(ally).getInfluence().toInt()
+            val allyInfluence = otherCiv.getDiplomacyManager(ally)!!.getInfluence().toInt()
             if (!viewingCiv.knows(ally) && ally != viewingCiv.civName)
                 ally = "Unknown civilization"
             diplomacyTable
@@ -179,7 +180,7 @@ class CityStateDiplomacyTable(private val diplomacyScreen: DiplomacyScreen) {
                 .getCityStateBonuses(otherCiv.cityStateType, level)
                 .filterNot { it.isHiddenToUsers() }
             if (bonuses.none()) return ""
-            return (sequenceOf(header) + bonuses.map { it.text }).joinToString(separator = "\n") { it.tr() }
+            return (sequenceOf(header) + bonuses.map { it.getDisplayText() }).joinToString(separator = "\n") { it.tr() }
         }
         fun addBonusLabel(header: String, bonusLevel: RelationshipLevel, relationLevel: RelationshipLevel) {
             val bonusLabelColor = if (relationLevel == bonusLevel) Color.GREEN else Color.GRAY
@@ -251,13 +252,13 @@ class CityStateDiplomacyTable(private val diplomacyScreen: DiplomacyScreen) {
                 tradeLogic.currentTrade.ourOffers.add(
                     TradeOffer(
                         Constants.peaceTreaty,
-                        TradeType.Treaty
+                        TradeOfferType.Treaty
                     )
                 )
                 tradeLogic.currentTrade.theirOffers.add(
                     TradeOffer(
                         Constants.peaceTreaty,
-                        TradeType.Treaty
+                        TradeOfferType.Treaty
                     )
                 )
                 tradeLogic.acceptTrade()
@@ -273,7 +274,7 @@ class CityStateDiplomacyTable(private val diplomacyScreen: DiplomacyScreen) {
         if (otherCivDiplomacyManager.hasFlag(DiplomacyFlags.DeclaredWar)) {
             peaceButton.disable() // Can't trade for 10 turns after war was declared
             val turnsLeft = otherCivDiplomacyManager.getFlag(DiplomacyFlags.DeclaredWar)
-            peaceButton.setText(peaceButton.text.toString() + "\n$turnsLeft" + Fonts.turn)
+            peaceButton.setText(peaceButton.text.toString() + "\n${turnsLeft.tr()}" + Fonts.turn)
         }
 
         return peaceButton
@@ -379,7 +380,7 @@ class CityStateDiplomacyTable(private val diplomacyScreen: DiplomacyScreen) {
                     improveTileButton.onClick {
                         viewingCiv.addGold(-200)
                         improvableTile.stopWorkingOnImprovement()
-                        improvableTile.changeImprovement(tileImprovement.name)
+                        improvableTile.setImprovement(tileImprovement.name)
                         otherCiv.cache.updateCivResources()
                         diplomacyScreen.rightSideTable.clear()
                         diplomacyScreen.rightSideTable.add(ScrollPane(getCityStateDiplomacyTable(otherCiv)))
@@ -410,7 +411,7 @@ class CityStateDiplomacyTable(private val diplomacyScreen: DiplomacyScreen) {
         for (item in tributeModifiers) {
             val color = if (item.value >= 0) Color.GREEN else Color.RED
             modifierTable.add(item.key.toLabel(color))
-            modifierTable.add(item.value.toString().toLabel(color)).row()
+            modifierTable.add(item.value.tr().toLabel(color)).row()
         }
         modifierTable.add("Sum:".toLabel())
         modifierTable.add(tributeModifiers.values.sum().toLabel()).row()

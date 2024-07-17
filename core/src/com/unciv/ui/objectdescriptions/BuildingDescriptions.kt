@@ -60,7 +60,7 @@ object BuildingDescriptions {
 
         if (uniques.isNotEmpty()) {
             if (replacementTextForUniques.isNotEmpty()) translatedLines += replacementTextForUniques.tr()
-            else translatedLines += getUniquesStringsWithoutDisablers().map { it.tr() }
+            else translatedLines += getUniquesStringsWithoutDisablers{ it.type != UniqueType.ConsumesResources }.map { it.tr() }
         }
         if (!stats.isEmpty())
             translatedLines += stats.toString()
@@ -87,11 +87,7 @@ object BuildingDescriptions {
     fun additionalDescription (building: Building, city: City, lines: ArrayList<String>) {
         // Inefficient in theory. In practice, buildings seem to have only a small handful of uniques.
         for (unique in building.uniqueObjects) {
-            if (unique.type == UniqueType.RequiresBuildingInAllCities) {
-                missingCityText(unique.params[0], city, "non-[Puppeted]", lines)
-            }
-
-            else if (unique.type == UniqueType.OnlyAvailable || unique.type == UniqueType.CanOnlyBeBuiltWhen)
+            if (unique.type == UniqueType.OnlyAvailable || unique.type == UniqueType.CanOnlyBeBuiltWhen)
                 for (conditional in unique.conditionals) {
                     if (conditional.type == UniqueType.ConditionalBuildingBuiltAll) {
                         missingCityText(conditional.params[0], city, conditional.params[1], lines)
@@ -122,7 +118,7 @@ object BuildingDescriptions {
      * @param replacementBuilding The "uniqueTo" Building
      */
     fun getDifferences(
-        ruleset: Ruleset, originalBuilding: Building, replacementBuilding: Building
+        originalBuilding: Building, replacementBuilding: Building
     ): Sequence<FormattedLine> = sequence {
         for ((key, value) in replacementBuilding)
             if (value != originalBuilding[key])
@@ -147,7 +143,7 @@ object BuildingDescriptions {
         } else {
             val newAbilityPredicate: (Unique)->Boolean = { it.text in originalBuilding.uniques || it.isHiddenToUsers() }
             for (unique in replacementBuilding.uniqueObjects.filterNot(newAbilityPredicate))
-                yield(FormattedLine(unique.text, indent=1))  // FormattedLine(unique) would look worse - no indent and autolinking could distract
+                yield(FormattedLine(unique.getDisplayText(), indent=1))  // FormattedLine(unique) would look worse - no indent and autolinking could distract
         }
 
         val lostAbilityPredicate: (Unique)->Boolean = { it.text in replacementBuilding.uniques || it.isHiddenToUsers() }
@@ -158,7 +154,7 @@ object BuildingDescriptions {
     }
 
     fun getCivilopediaTextLines(building: Building, ruleset: Ruleset): List<FormattedLine> = building.run {
-        fun Float.formatSignedInt() = (if (this > 0f) "+" else "") + this.toInt().toString()
+        fun Float.formatSignedInt() = (if (this > 0f) "+" else "") + this.toInt().tr()
 
         val textList = ArrayList<FormattedLine>()
 
@@ -273,7 +269,7 @@ object BuildingDescriptions {
                 if (!tileBonusHashmap.containsKey(stats)) tileBonusHashmap[stats] = ArrayList()
                 tileBonusHashmap[stats]!!.add(unique.params[1])
             }
-            else -> yield(unique.text)
+            else -> yield(unique.getDisplayText())
         }
         for ((key, value) in tileBonusHashmap)
             yield( "[stats] from [tileFilter] tiles in this city"

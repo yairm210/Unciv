@@ -9,6 +9,7 @@ import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.mapgenerator.mapregions.Region
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
+import com.unciv.models.stats.Stat
 
 data class StateForConditionals(
     val civInfo: Civilization? = null,
@@ -53,8 +54,16 @@ data class StateForConditionals(
     }
 
     val relevantCity by lazy {
-        city
-            ?: relevantTile?.getCity()
+        if (city != null) return@lazy city
+        // Edge case: If we attack a city, the "relevant tile" becomes the attacked tile -
+        //  but we DO NOT want that city to become the relevant city because then *our* conditionals get checked against
+        //  the *other civ's* cities, leading to e.g. resource amounts being defined as the *other civ's* resource amounts
+        val relevantTileForCity = tile ?: relevantUnit?.run { if (hasTile()) getTile() else null }
+        val cityForRelevantTile = relevantTileForCity?.getCity()
+        if (cityForRelevantTile != null &&
+            // ...and we can't use the relevantCiv here either, because that'll cause a loop
+            (cityForRelevantTile.civ == civInfo || cityForRelevantTile.civ == relevantUnit?.civ)) return@lazy cityForRelevantTile
+        else return@lazy null
     }
 
     val relevantCiv by lazy {
@@ -66,9 +75,19 @@ data class StateForConditionals(
     val gameInfo by lazy { relevantCiv?.gameInfo }
 
     fun getResourceAmount(resourceName: String): Int {
-        if (relevantCity != null) return relevantCity!!.getAvailableResourceAmount(resourceName)
-        if (relevantCiv != null) return relevantCiv!!.getResourceAmount(resourceName)
-        return 0
+        return when {
+            relevantCity != null -> relevantCity!!.getAvailableResourceAmount(resourceName)
+            relevantCiv != null -> relevantCiv!!.getResourceAmount(resourceName)
+            else -> 0
+        }
+    }
+
+    fun getStatAmount(stat: Stat) : Int {
+        return when {
+            relevantCity != null -> relevantCity!!.getStatReserve(stat)
+            relevantCiv != null && stat in Stat.statsWithCivWideField -> relevantCiv!!.getStatReserve(stat)
+            else -> 0
+        }
     }
 
     companion object {

@@ -66,9 +66,16 @@ enum class CityFocus(
         else -> 1f
     }
 
+    private val statValuesForFocus: List<Stat> by lazy {
+        Stat.values().filter { getStatMultiplier(it) != 1f }
+    }
+
     fun applyWeightTo(stats: Stats) {
-        for (stat in Stat.values()) {
-            stats[stat] *= getStatMultiplier(stat)
+        for (stat in statValuesForFocus) {
+            val currentStat = stats[stat]
+            if (currentStat == 0f) continue
+            val statMultiplier = getStatMultiplier(stat)
+            stats[stat] = currentStat * statMultiplier
         }
     }
 
@@ -78,12 +85,10 @@ enum class CityFocus(
         }
 
         // set used in Automation. All non-Food Focuses, so targets 0 Surplus Food
-        fun zeroFoodFocuses(): Set<CityFocus> {
-            return setOf(
-                CultureFocus, FaithFocus, GoldFocus,
-                HappinessFocus, ProductionFocus, ScienceFocus
-            )
-        }
+        val zeroFoodFocuses = setOf(
+            CultureFocus, FaithFocus, GoldFocus,
+            HappinessFocus, ProductionFocus, ScienceFocus
+        )
     }
 }
 

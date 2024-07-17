@@ -115,13 +115,14 @@ class CivInfoTransientCache(val civInfo: Civilization) {
         for (tile in civInfo.viewableTiles) {
             val tileOwner = tile.getOwner()
             if (tileOwner != null) viewedCivs[tileOwner] = tile
-            for (unit in tile.getUnits()) viewedCivs[unit.civ] = tile
+            val unitOwner = tile.getFirstUnit()?.civ
+            if (unitOwner != null) viewedCivs[unitOwner] = tile
         }
 
-        if (!civInfo.isBarbarian()) {
+        if (!civInfo.isBarbarian) {
             for (entry in viewedCivs) {
                 val metCiv = entry.key
-                if (metCiv == civInfo || metCiv.isBarbarian() || civInfo.diplomacy.containsKey(metCiv.civName)) continue
+                if (metCiv == civInfo || metCiv.isBarbarian || civInfo.diplomacy.containsKey(metCiv.civName)) continue
                 civInfo.diplomacyFunctions.makeCivilizationsMeet(metCiv)
                 if(!civInfo.isSpectator())
                     civInfo.addNotification("We have encountered [${metCiv.civName}]!",
@@ -209,12 +210,8 @@ class CivInfoTransientCache(val civInfo: Civilization) {
     private fun updateLastSeenImprovements() {
         if (civInfo.playerType == PlayerType.AI) return // don't bother for AI, they don't really use the info anyway
 
-        for (tile in civInfo.viewableTiles) {
-            if (tile.improvement == null)
-                civInfo.lastSeenImprovement.remove(tile.position)
-            else
-                civInfo.lastSeenImprovement[tile.position] = tile.improvement!!
-        }
+        for (tile in civInfo.viewableTiles)
+            civInfo.setLastSeenImprovement(tile.position, tile.improvement)
     }
 
     /** Visible for DevConsole use only */
@@ -258,28 +255,6 @@ class CivInfoTransientCache(val civInfo: Civilization) {
                     statsGained.add(firstDiscoveredBonus)
             }
 
-            // Variable for support of twooo deprecated uniques
-            var goldGained = 0
-
-            // Support for depreciated GoldWhenDiscoveringNaturalWonder unique
-            for (unique in civInfo.getMatchingUniques(UniqueType.GoldWhenDiscoveringNaturalWonder)) {
-
-                goldGained += if (discoveredNaturalWonders.contains(tile.naturalWonder!!)) {
-                    100
-                } else {
-                    500
-                }
-            }
-
-            // Support for depreciated GrantsGoldToFirstToDiscover unique
-            if (tile.terrainHasUnique(UniqueType.GrantsGoldToFirstToDiscover)
-                && !discoveredNaturalWonders.contains(tile.naturalWonder!!)) {
-
-                for (unique in tile.getTerrainMatchingUniques(UniqueType.GoldWhenDiscoveringNaturalWonder)) {
-                    goldGained += 500
-                }
-            }
-
             var naturalWonder: String? = null
 
             if (!statsGained.isEmpty()) {
@@ -291,16 +266,6 @@ class CivInfoTransientCache(val civInfo: Civilization) {
                 civInfo.addNotification("We have received [${statsGained}] for discovering [${naturalWonder}]",
                     Notification.NotificationCategory.General, statsGained.toString()
                     )
-            }
-
-            if (goldGained > 0) {
-                naturalWonder = tile.naturalWonder
-            }
-
-            if (goldGained > 0 && naturalWonder != null) {
-                civInfo.addGold(goldGained)
-                civInfo.addNotification("We have received [$goldGained] Gold for discovering [${naturalWonder}]",
-                    Notification.NotificationCategory.General, NotificationIcon.Gold)
             }
 
             for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponDiscoveringNaturalWonder,
@@ -351,9 +316,10 @@ class CivInfoTransientCache(val civInfo: Civilization) {
 
     fun updateCivResources() {
         val newDetailedCivResources = ResourceSupplyList()
-        for (city in civInfo.cities) newDetailedCivResources.add(city.getResourcesGeneratedByCity())
+        val resourceModifers = civInfo.getResourceModifiers()
+        for (city in civInfo.cities) newDetailedCivResources.add(city.getResourcesGeneratedByCity(resourceModifers))
 
-        if (!civInfo.isCityState()) {
+        if (!civInfo.isCityState) {
             // First we get all these resources of each city state separately
             val cityStateProvidedResources = ResourceSupplyList()
             var resourceBonusPercentage = 1f

@@ -8,7 +8,6 @@ import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.files.UncivFiles
 import com.unciv.logic.map.MapParameters
 import com.unciv.logic.map.MapSize
-import com.unciv.logic.map.MapSizeNew
 import com.unciv.models.metadata.GameParameters
 import com.unciv.models.metadata.GameSettings
 import com.unciv.models.metadata.GameSetupInfo
@@ -56,7 +55,7 @@ class GameSerializationTests {
             players.add(Player("Greece"))
         }
         val mapParameters = MapParameters().apply {
-            mapSize = MapSizeNew(MapSize.Tiny)
+            mapSize = MapSize.Tiny
             seed = 42L
         }
         val setup = GameSetupInfo(param, mapParameters)
@@ -68,7 +67,7 @@ class GameSerializationTests {
 
         UncivGame.Current.settings = GameSettings()
         game = GameStarter.startNewGame(setup)
-        UncivGame.Current.startSimulation(game)
+        UncivGame.Current.gameInfo = game
 
         // Found a city otherwise too many classes have no instance and are not tested
         val civ = game.getCurrentPlayerCivilization()
@@ -76,7 +75,7 @@ class GameSerializationTests {
         val tile = unit.getTile()
         unit.civ.addCity(tile.position)
         if (tile.ruleset.tileImprovements.containsKey(Constants.cityCenter))
-            tile.changeImprovement(Constants.cityCenter)
+            tile.setImprovement(Constants.cityCenter)
         unit.destroy()
 
         // Ensure some diplomacy objects are instantiated

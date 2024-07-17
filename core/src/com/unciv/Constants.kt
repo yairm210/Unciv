@@ -4,6 +4,7 @@ object Constants {
     const val settler = "Settler"
     const val eraSpecificUnit = "Era Starting Unit"
     val all = setOf("All", "all")
+    const val NO_ID = -1
 
     const val english = "English"
 
@@ -86,6 +87,9 @@ object Constants {
     const val repair = "Repair"
 
     const val uniqueOrDelimiter = "\" OR \""
+
+    const val simulationCiv1 = "SimulationCiv1"
+    const val simulationCiv2 = "SimulationCiv2"
 
     const val dropboxMultiplayerServer = "Dropbox"
     const val uncivXyzServer = "https://uncivserver.xyz"

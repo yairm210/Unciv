@@ -6,7 +6,7 @@ import com.unciv.logic.civilization.Civilization
 import com.unciv.models.metadata.GameSettings
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.worldscreen.UndoHandler.Companion.clearUndoCheckpoints
-import com.unciv.ui.screens.worldscreen.WorldMapHolder
+import com.unciv.ui.screens.worldscreen.worldmap.WorldMapHolder
 import com.unciv.ui.screens.worldscreen.WorldScreen
 import com.unciv.ui.screens.worldscreen.unit.UnitTable
 
@@ -77,7 +77,7 @@ object GUI {
     }
 
     private var keyboardAvailableCache: Boolean? = null
-    /** Tests availability of a physical keyboard */
+    /** Tests availability of a physical keyboard - cached (connecting a keyboard while the game is running won't be recognized until relaunch) */
     val keyboardAvailable: Boolean
         get() {
             // defer decision if Gdx.input not yet initialized

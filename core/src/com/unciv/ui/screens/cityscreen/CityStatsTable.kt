@@ -143,7 +143,7 @@ class CityStatsTable(private val cityScreen: CityScreen) : Table() {
 
     private fun addText() {
         val unassignedPopString = "{Unassigned population}: ".tr() +
-                city.population.getFreePopulation().toString() + "/" + city.population.population
+                city.population.getFreePopulation().tr() + "/" + city.population.population.tr()
         val unassignedPopLabel = unassignedPopString.toLabel()
         if (cityScreen.canChangeState)
             unassignedPopLabel.onClick { city.reassignPopulation(); cityScreen.update() }

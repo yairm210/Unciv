@@ -87,7 +87,7 @@ class UnitMovementTests {
             for (type in testGame.ruleset.unitTypes.values) {
                 val unit = addFakeUnit(type)
                 Assert.assertTrue("%s cannot be at %s".format(type.name, terrain.name),
-                        (unit.baseUnit.isWaterUnit() && tile.isLand) != unit.movement.canPassThrough(tile))
+                        (unit.baseUnit.isWaterUnit && tile.isLand) != unit.movement.canPassThrough(tile))
             }
         }
     }
@@ -135,7 +135,7 @@ class UnitMovementTests {
             val unit = addFakeUnit(type)
 
             Assert.assertTrue("$type cannot be in Coast",
-                    unit.baseUnit.isLandUnit() != unit.movement.canPassThrough(tile))
+                    unit.baseUnit.isLandUnit != unit.movement.canPassThrough(tile))
         }
     }
 
@@ -150,7 +150,7 @@ class UnitMovementTests {
             val unit = addFakeUnit(type)
 
             Assert.assertTrue("$type cannot be in Ocean",
-                    unit.baseUnit.isLandUnit() != unit.movement.canPassThrough(tile))
+                    unit.baseUnit.isLandUnit != unit.movement.canPassThrough(tile))
         }
     }
 
@@ -201,7 +201,7 @@ class UnitMovementTests {
 
         city.hasJustBeenConquered = true
         civInfo.diplomacy[otherCiv.civName] = DiplomacyManager(otherCiv, otherCiv.civName)
-        civInfo.getDiplomacyManager(otherCiv).diplomaticStatus = DiplomaticStatus.War
+        civInfo.getDiplomacyManager(otherCiv)!!.diplomaticStatus = DiplomaticStatus.War
 
         Assert.assertTrue("Unit can capture other civ city", unit.movement.canPassThrough(tile))
     }
@@ -271,7 +271,7 @@ class UnitMovementTests {
         // Place an enemy civilian unit on that tile
         val atWarCiv = testGame.addCiv()
         atWarCiv.diplomacyFunctions.makeCivilizationsMeet(civInfo)
-        atWarCiv.getDiplomacyManager(civInfo).declareWar()
+        atWarCiv.getDiplomacyManager(civInfo)!!.declareWar()
         val enemyWorkerUnit = testGame.addUnit("Worker", atWarCiv, testGame.tileMap[1,2])
 
         val otherCiv = testGame.addCiv()

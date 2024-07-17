@@ -4,7 +4,6 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
-import com.unciv.UncivGame
 import com.unciv.models.UncivSound
 import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.IConstruction
@@ -23,7 +22,6 @@ import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popups.ConfirmPopup
 import com.unciv.ui.popups.closeAllPopups
 import com.unciv.ui.screens.basescreen.BaseScreen
-import com.unciv.ui.screens.civilopediascreen.CivilopediaScreen
 
 class ConstructionInfoTable(val cityScreen: CityScreen) : Table() {
     private val selectedConstructionTable = Table()
@@ -106,10 +104,11 @@ class ConstructionInfoTable(val cityScreen: CityScreen) : Table() {
                     cityScreen.canChangeState &&
                     (!cityScreen.city.hasSoldBuildingThisTurn || cityScreen.city.civ.gameInfo.gameParameters.godMode)
                 sellBuildingButton.isEnabled = enableSell
-                if (sellBuildingButton.isEnabled) sellBuildingButton.onClick(UncivSound.Coin) {
-                    sellBuildingButton.disable()
-                    sellBuildingClicked(construction, isFree, sellText)
-                }
+                if (enableSell)
+                    sellBuildingButton.onClick(UncivSound.Coin) {
+                        sellBuildingButton.disable()
+                        sellBuildingClicked(construction, sellText)
+                    }
 
                 if (cityScreen.city.hasSoldBuildingThisTurn && !cityScreen.city.civ.gameInfo.gameParameters.godMode
                         || cityScreen.city.isPuppet
@@ -119,7 +118,7 @@ class ConstructionInfoTable(val cityScreen: CityScreen) : Table() {
         }
     }
 
-    private fun sellBuildingClicked(construction: Building, isFree: Boolean, sellText: String) {
+    private fun sellBuildingClicked(construction: Building, sellText: String) {
         cityScreen.closeAllPopups()
 
         ConfirmPopup(

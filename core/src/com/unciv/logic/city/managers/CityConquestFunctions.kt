@@ -5,6 +5,7 @@ import com.unciv.GUI
 import com.unciv.logic.battle.Battle
 import com.unciv.logic.city.City
 import com.unciv.logic.city.CityFlags
+import com.unciv.logic.city.CityFocus
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
@@ -12,7 +13,7 @@ import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.trade.TradeLogic
 import com.unciv.logic.trade.TradeOffer
-import com.unciv.logic.trade.TradeType
+import com.unciv.logic.trade.TradeOfferType
 import com.unciv.models.ruleset.unique.UniqueType
 import kotlin.math.max
 import kotlin.math.min
@@ -47,8 +48,9 @@ class CityConquestFunctions(val city: City) {
         }
     }
 
-    private fun removeBuildingsOnMoveToCiv(oldCiv: Civilization) {
+    private fun removeBuildingsOnMoveToCiv() {
         // Remove all buildings provided for free to this city
+        // At this point, the city has *not* yet moved to the new civ
         for (building in city.civ.civConstructions.getFreeBuildingNames(city)) {
             city.cityConstructions.removeBuilding(building)
         }
@@ -133,6 +135,7 @@ class CityConquestFunctions(val city: City) {
         city.isPuppet = false
         city.cityConstructions.inProgressConstructions.clear() // undo all progress of the previous civ on units etc.
         if (!city.isInResistance()) city.updateCitizens = true
+        city.setCityFocus(CityFocus.NoFocus)
         city.cityStats.update()
         GUI.setUpdateWorldOnNextRender()
     }
@@ -148,15 +151,15 @@ class CityConquestFunctions(val city: City) {
         if (!conqueringCiv.knows(oldCiv))
             conqueringCiv.diplomacyFunctions.makeCivilizationsMeet(oldCiv)
 
-        oldCiv.getDiplomacyManager(conqueringCiv)
+        oldCiv.getDiplomacyManager(conqueringCiv)!!
                 .addModifier(DiplomaticModifiers.CapturedOurCities, -aggroGenerated)
 
         for (thirdPartyCiv in conqueringCiv.getKnownCivs().filter { it.isMajorCiv() }) {
             val aggroGeneratedForOtherCivs = (aggroGenerated / 10).roundToInt().toFloat()
-            if (thirdPartyCiv.isAtWarWith(oldCiv)) // You annoyed our enemy?
-                thirdPartyCiv.getDiplomacyManager(conqueringCiv)
-                        .addModifier(DiplomaticModifiers.SharedEnemy, aggroGeneratedForOtherCivs) // Cool, keep at at! =D
-            else thirdPartyCiv.getDiplomacyManager(conqueringCiv)
+            if (thirdPartyCiv.isAtWarWith(oldCiv)) // Shared Enemies should like us more
+                thirdPartyCiv.getDiplomacyManager(conqueringCiv)!!
+                        .addModifier(DiplomaticModifiers.SharedEnemy, aggroGeneratedForOtherCivs) // Cool, keep at it! =D
+            else thirdPartyCiv.getDiplomacyManager(conqueringCiv)!!
                     .addModifier(DiplomaticModifiers.WarMongerer, -aggroGeneratedForOtherCivs) // Uncool bro.
         }
     }
@@ -216,30 +219,27 @@ class CityConquestFunctions(val city: City) {
                 100f / (foundingCiv.cities.sumOf { it.population.population } + city.population.population)
         val respectForLiberatingOurCity = 10f + percentageOfCivPopulationInThatCity.roundToInt()
 
-        // In order to get "plus points" in Diplomacy, you have to establish diplomatic relations if you haven't yet
-        if (!conqueringCiv.knows(foundingCiv))
-            conqueringCiv.diplomacyFunctions.makeCivilizationsMeet(foundingCiv)
-
         if (foundingCiv.isMajorCiv()) {
-            foundingCiv.getDiplomacyManager(conqueringCiv)
+            // In order to get "plus points" in Diplomacy, you have to establish diplomatic relations if you haven't yet
+            foundingCiv.getDiplomacyManagerOrMeet(conqueringCiv)
                     .addModifier(DiplomaticModifiers.CapturedOurCities, respectForLiberatingOurCity)
             val openBordersTrade = TradeLogic(foundingCiv, conqueringCiv)
-            openBordersTrade.currentTrade.ourOffers.add(TradeOffer(Constants.openBorders, TradeType.Agreement))
-            openBordersTrade.acceptTrade()
+            openBordersTrade.currentTrade.ourOffers.add(TradeOffer(Constants.openBorders, TradeOfferType.Agreement))
+            openBordersTrade.acceptTrade(false)
         } else {
             //Liberating a city state gives a large amount of influence, and peace
-            foundingCiv.getDiplomacyManager(conqueringCiv).setInfluence(90f)
+            foundingCiv.getDiplomacyManagerOrMeet(conqueringCiv).setInfluence(90f)
             if (foundingCiv.isAtWarWith(conqueringCiv)) {
                 val tradeLogic = TradeLogic(foundingCiv, conqueringCiv)
-                tradeLogic.currentTrade.ourOffers.add(TradeOffer(Constants.peaceTreaty, TradeType.Treaty))
-                tradeLogic.currentTrade.theirOffers.add(TradeOffer(Constants.peaceTreaty, TradeType.Treaty))
-                tradeLogic.acceptTrade()
+                tradeLogic.currentTrade.ourOffers.add(TradeOffer(Constants.peaceTreaty, TradeOfferType.Treaty))
+                tradeLogic.currentTrade.theirOffers.add(TradeOffer(Constants.peaceTreaty, TradeOfferType.Treaty))
+                tradeLogic.acceptTrade(false)
             }
         }
 
         val otherCivsRespectForLiberating = (respectForLiberatingOurCity / 10).roundToInt().toFloat()
         for (thirdPartyCiv in conqueringCiv.getKnownCivs().filter { it.isMajorCiv() && it != conqueredCiv }) {
-            thirdPartyCiv.getDiplomacyManager(conqueringCiv)
+            thirdPartyCiv.getDiplomacyManager(conqueringCiv)!!
                     .addModifier(DiplomaticModifiers.LiberatedCity, otherCivsRespectForLiberating) // Cool, keep at at! =D
         }
     }
@@ -269,7 +269,7 @@ class CityConquestFunctions(val city: City) {
         city.resetWLTKD()
 
         // Remove their free buildings from this city and remove free buildings provided by the city from their cities
-        removeBuildingsOnMoveToCiv(oldCiv)
+        removeBuildingsOnMoveToCiv()
 
         // Place palace for newCiv if this is the only city they have.
         if (newCiv.cities.size == 1) newCiv.moveCapitalTo(city, null)

@@ -357,7 +357,7 @@ class TechPickerScreen(
             techTable.stageToLocalCoordinates(techButtonCoords)
             if (tempTechsToResearch.contains(techName) && tempTechsToResearch.size > 1) {
                 val index = tempTechsToResearch.indexOf(techName) + 1
-                val orderIndicator = index.toString().toLabel(fontSize = 18)
+                val orderIndicator = index.tr().toLabel(fontSize = 18)
                     .apply { setAlignment(Align.center) }
                     .surroundWithCircle(28f, color = skinStrings.skinConfig.baseColor)
                     .surroundWithCircle(30f,false)
@@ -410,13 +410,13 @@ class TechPickerScreen(
         for (requiredTech in pathToTech) {
             for (unique in requiredTech.uniqueObjects
                 .filter { it.type == UniqueType.OnlyAvailable && !it.conditionalsApply(civInfo) }) {
-                rightSideButton.setText(unique.text.tr())
+                rightSideButton.setText(unique.getDisplayText().tr())
                 rightSideButton.disable()
                 return
             }
         }
 
-        if(queue){
+        if (queue){
             for (pathTech in pathToTech) {
                 if (pathTech.name !in tempTechsToResearch) {
                     tempTechsToResearch.add(pathTech.name)
@@ -427,10 +427,14 @@ class TechPickerScreen(
             tempTechsToResearch.addAll(pathToTech.map { it.name })
         }
 
-        val label = "Research [${tempTechsToResearch[0]}]".tr()
-        val techProgression = getTechProgressLabel(tempTechsToResearch)
-
-        pick("${label}\n${techProgression}")
+        if (tempTechsToResearch.any()) {
+            val label = "Research [${tempTechsToResearch[0]}]".tr()
+            val techProgression = getTechProgressLabel(tempTechsToResearch)
+            pick("${label}\n${techProgression}")
+        } else {
+            rightSideButton.setText("Unavailable".tr())
+            rightSideButton.disable()
+        }
         setButtonsInfo()
     }
 

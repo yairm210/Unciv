@@ -352,7 +352,7 @@ class GameOptionsTable(
 
     private fun Table.addSelectBox(text: String, values: Collection<String>, initialState: String, onChange: (newValue: String) -> String?): TranslatedSelectBox {
         add(text.toLabel(hideIcons = true)).left()
-        val selectBox = TranslatedSelectBox(values, initialState, BaseScreen.skin)
+        val selectBox = TranslatedSelectBox(values, initialState)
         selectBox.isDisabled = locked
         selectBox.onChange {
             val changedValue = onChange(selectBox.selected.value)
@@ -408,6 +408,10 @@ class GameOptionsTable(
 
     private fun Table.addEraSelectBox() {
         if (ruleset.eras.isEmpty()) return // mod with no techs
+        if (ruleset.modOptions.hasUnique(UniqueType.CanOnlyStartFromStartingEra)){
+            gameParameters.startingEra = ruleset.eras.keys.first()
+            return
+        }
         val eras = ruleset.eras.keys
         addSelectBox("{Starting Era}:", eras, gameParameters.startingEra)
         { gameParameters.startingEra = it; null }

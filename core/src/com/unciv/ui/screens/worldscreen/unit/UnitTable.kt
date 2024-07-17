@@ -20,7 +20,7 @@ import com.unciv.ui.components.extensions.isShiftKeyPressed
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.input.keyShortcuts
 import com.unciv.ui.components.input.onClick
-import com.unciv.ui.components.widgets.UnitGroup
+import com.unciv.ui.components.widgets.UnitIconGroup
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.pickerscreens.CityRenamePopup
@@ -178,23 +178,23 @@ class UnitTable(val worldScreen: WorldScreen) : Table() {
 
                 if (!unit.isCivilian()) {
                     unitDescriptionTable.add(ImageGetter.getStatIcon("Strength")).size(20f)
-                    unitDescriptionTable.add(unit.baseUnit.strength.toString()).padRight(10f)
+                    unitDescriptionTable.add(unit.baseUnit.strength.tr()).padRight(10f)
                 }
 
                 if (unit.baseUnit.rangedStrength != 0) {
                     unitDescriptionTable.add(ImageGetter.getStatIcon("RangedStrength")).size(20f)
-                    unitDescriptionTable.add(unit.baseUnit.rangedStrength.toString()).padRight(10f)
+                    unitDescriptionTable.add(unit.baseUnit.rangedStrength.tr()).padRight(10f)
                 }
 
                 if (unit.baseUnit.isRanged()) {
                     unitDescriptionTable.add(ImageGetter.getStatIcon("Range")).size(20f)
-                    unitDescriptionTable.add(unit.getRange().toString()).padRight(10f)
+                    unitDescriptionTable.add(unit.getRange().tr()).padRight(10f)
                 }
 
                 val interceptionRange = unit.getInterceptionRange()
                 if (interceptionRange > 0) {
                     unitDescriptionTable.add(ImageGetter.getStatIcon("InterceptRange")).size(20f)
-                    unitDescriptionTable.add(interceptionRange.toString()).padRight(10f)
+                    unitDescriptionTable.add(interceptionRange.tr()).padRight(10f)
                 }
 
                 if (!unit.isCivilian()) {
@@ -204,12 +204,12 @@ class UnitTable(val worldScreen: WorldScreen) : Table() {
                             worldScreen.game.pushScreen(PromotionPickerScreen(unit))
                         }
                     })
-                    unitDescriptionTable.add(unit.promotions.XP.toString() + "/" + unit.promotions.xpForNextPromotion())
+                    unitDescriptionTable.add(unit.promotions.XP.tr() + "/" + unit.promotions.xpForNextPromotion().tr())
                 }
 
                 if (unit.baseUnit.religiousStrength > 0) {
                     unitDescriptionTable.add(ImageGetter.getStatIcon("ReligiousStrength")).size(20f)
-                    unitDescriptionTable.add((unit.baseUnit.religiousStrength - unit.religiousStrengthLost).toString())
+                    unitDescriptionTable.add((unit.baseUnit.religiousStrength - unit.religiousStrengthLost).tr())
                 }
 
                 if (unit.promotions.promotions.size != promotionsTable.children.size) // The unit has been promoted! Reload promotions!
@@ -223,7 +223,7 @@ class UnitTable(val worldScreen: WorldScreen) : Table() {
             separator.isVisible = true
             val city = selectedCity!!
             var nameLabelText = city.name.tr()
-            if (city.health < city.getMaxHealth()) nameLabelText += " ("+city.health+")"
+            if (city.health < city.getMaxHealth()) nameLabelText += " (${city.health.tr()})"
             unitNameLabel.setText(nameLabelText)
 
             unitNameLabel.clearListeners()
@@ -241,9 +241,9 @@ class UnitTable(val worldScreen: WorldScreen) : Table() {
             unitDescriptionTable.clear()
             unitDescriptionTable.defaults().pad(2f).padRight(5f)
             unitDescriptionTable.add("Strength".tr())
-            unitDescriptionTable.add(CityCombatant(city).getDefendingStrength().toString()).row()
+            unitDescriptionTable.add(CityCombatant(city).getDefendingStrength().tr()).row()
             unitDescriptionTable.add("Bombard strength".tr())
-            unitDescriptionTable.add(CityCombatant(city).getAttackingStrength().toString()).row()
+            unitDescriptionTable.add(CityCombatant(city).getAttackingStrength().tr()).row()
 
             selectedUnitHasChanged = true
         } else if (selectedSpy != null) {
@@ -283,7 +283,7 @@ class UnitTable(val worldScreen: WorldScreen) : Table() {
 
         if (selectedUnit != null) {
             if (selectedUnits.size == 1) { // single selected unit
-                unitIconHolder.add(UnitGroup(selectedUnit!!, 30f)).pad(5f)
+                unitIconHolder.add(UnitIconGroup(selectedUnit!!, 30f)).pad(5f)
 
                 for (promotion in selectedUnit!!.promotions.getPromotions(true))
                     promotionsTable.add(ImageGetter.getPromotionPortrait(promotion.name)).padBottom(2f)
@@ -299,7 +299,7 @@ class UnitTable(val worldScreen: WorldScreen) : Table() {
                 }
             } else { // multiple selected units
                 for (unit in selectedUnits)
-                    unitIconHolder.add(UnitGroup(unit, 30f)).pad(5f)
+                    unitIconHolder.add(UnitIconGroup(unit, 30f)).pad(5f)
             }
         }
 
@@ -311,7 +311,7 @@ class UnitTable(val worldScreen: WorldScreen) : Table() {
 
     private fun buildNameLabelText(unit: MapUnit) : String {
         var nameLabelText = unit.displayName().tr(true)
-        if (unit.health < 100) nameLabelText += " (" + unit.health + ")"
+        if (unit.health < 100) nameLabelText += " (${unit.health.tr()})"
 
         return nameLabelText
     }

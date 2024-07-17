@@ -8,7 +8,7 @@ import com.unciv.logic.city.City
 import com.unciv.logic.city.managers.CityFounder
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.PlayerType
-import com.unciv.logic.map.MapSizeNew
+import com.unciv.logic.map.MapSize
 import com.unciv.logic.map.TileMap
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
@@ -59,7 +59,7 @@ class TestGame {
 
         // Create a tilemap, needed for city centers
         gameInfo.tileMap = TileMap(0, ruleset, false)
-        tileMap.mapParameters.mapSize = MapSizeNew(0, 0)
+        tileMap.mapParameters.mapSize = MapSize(0)
         tileMap.ruleset = ruleset
         tileMap.gameInfo = gameInfo
 
@@ -70,7 +70,7 @@ class TestGame {
     /** Makes a new rectangular tileMap and sets it in gameInfo. Removes all existing tiles. All new tiles have terrain [baseTerrain] */
     fun makeRectangularMap(newHeight: Int, newWidth: Int, baseTerrain: String = Constants.desert) {
         val newTileMap = TileMap(newWidth, newHeight, ruleset, tileMap.mapParameters.worldWrap)
-        newTileMap.mapParameters.mapSize = MapSizeNew(newWidth, newHeight)
+        newTileMap.mapParameters.mapSize = MapSize(newWidth, newHeight)
 
         for (row in tileMap.tileMatrix)
             for (tile in row)
@@ -86,7 +86,7 @@ class TestGame {
      */
     fun makeHexagonalMap(newRadius: Int, baseTerrain: String = Constants.desert) {
         val newTileMap = TileMap(newRadius, ruleset, tileMap.mapParameters.worldWrap)
-        newTileMap.mapParameters.mapSize = MapSizeNew(newRadius)
+        newTileMap.mapParameters.mapSize = MapSize(newRadius)
 
         for (row in tileMap.tileMatrix)
             for (tile in row)
@@ -98,6 +98,7 @@ class TestGame {
     }
 
     fun getTile(position: Vector2) = tileMap[position]
+    fun getTile(x: Int, y: Int) = tileMap[x, y]
 
     /** Sets the [terrain] and [features] of the tile at [position], and then returns it */
     fun setTileTerrainAndFeatures(position: Vector2, terrain: String, vararg features: String): Tile {

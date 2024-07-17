@@ -11,7 +11,7 @@ import com.unciv.logic.map.MapShape
 import com.unciv.logic.map.MapSize
 import com.unciv.ui.images.ClippingImage
 import com.unciv.ui.images.ImageGetter
-import com.unciv.ui.screens.worldscreen.WorldMapHolder
+import com.unciv.ui.screens.worldscreen.worldmap.WorldMapHolder
 import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.sqrt
@@ -73,8 +73,8 @@ class Minimap(val mapHolder: WorldMapHolder, minimapSize: Int, private val civIn
         } else {
             if (mapParameters.shape != MapShape.rectangular) {
                 val diameter = mapParameters.mapSize.radius * 2f + 1f
-                height = diameter.toFloat()
-                width = diameter.toFloat()
+                height = diameter
+                width = diameter
             } else {
                 height = mapParameters.mapSize.height.toFloat()
                 width = mapParameters.mapSize.width.toFloat()
@@ -167,7 +167,7 @@ class Minimap(val mapHolder: WorldMapHolder, minimapSize: Int, private val civIn
 
     /**### Transform and set coordinates for the scrollPositionIndicator.
      *
-     *  Requires [scrollPositionIndicator] to be a [ClippingImage] to keep the displayed portion of the indicator within the bounds of the minimap.
+     *  Requires [scrollPositionIndicators] to be [ClippingImage]s to keep the displayed portion of the indicator within the bounds of the minimap.
      */
     private fun updateScrollPosition(
         worldWidth: Float,
@@ -178,9 +178,9 @@ class Minimap(val mapHolder: WorldMapHolder, minimapSize: Int, private val civIn
                 Rectangle(x * other.x, y * other.y, width * other.x, height * other.y)
 
         fun Actor.setViewport(rect: Rectangle) {
-            x = rect.x;
-            y = rect.y;
-            width = rect.width;
+            x = rect.x
+            y = rect.y
+            width = rect.width
             height = rect.height
         }
 
@@ -250,4 +250,3 @@ class Minimap(val mapHolder: WorldMapHolder, minimapSize: Int, private val civIn
     // For debugging purposes
     override fun draw(batch: Batch?, parentAlpha: Float) = super.draw(batch, parentAlpha)
 }
-

@@ -53,7 +53,7 @@ class CityPopulationManager : IsPartOfGameInfoSerialization {
 
         foodRequired *= city.civ.gameInfo.speed.modifier
 
-        if (city.civ.isCityState())
+        if (city.civ.isCityState)
             foodRequired *= 1.5f
         if (!city.civ.isHuman())
             foodRequired *= city.civ.gameInfo.getDifficulty().aiCityGrowthModifier
@@ -145,7 +145,7 @@ class CityPopulationManager : IsPartOfGameInfoSerialization {
 
     /** Only assigns free population */
     internal fun autoAssignPopulation() {
-        city.cityStats.update()  // calculate current stats with current assignments
+        city.cityStats.update(updateCivStats = false)  // calculate current stats with current assignments
         val freePopulation = getFreePopulation()
         if (freePopulation <= 0) return
 
@@ -166,6 +166,8 @@ class CityPopulationManager : IsPartOfGameInfoSerialization {
                 .filterNot { it.providesYield() }
                 .associateWith { it.stats.getTileStats(city, city.civ, localUniqueCache)}
 
+        val maxSpecialists = getMaxSpecialists().asSequence()
+
         repeat(freePopulation) {
             //evaluate tiles
             val bestTileAndRank = tilesToEvaluate
@@ -179,7 +181,7 @@ class CityPopulationManager : IsPartOfGameInfoSerialization {
             val valueBestTile = bestTileAndRank?.value ?: 0f
 
             val bestJobAndRank = if (city.manualSpecialists) null
-                else getMaxSpecialists().asSequence()
+                else maxSpecialists
                     .filter { specialistAllocations[it.key] < it.value }
                     .map { it.key }
                     .associateWith { Automation.rankSpecialist(it, city, localUniqueCache) }
@@ -191,7 +193,7 @@ class CityPopulationManager : IsPartOfGameInfoSerialization {
             if (valueBestTile > valueBestSpecialist) {
                 if (bestTile != null) {
                     city.workedTiles = city.workedTiles.withItem(bestTile.position)
-                    cityStats.food += bestTile.stats.getTileStats(city, city.civ, localUniqueCache).food
+                    cityStats.food += tileStats[bestTile]!!.food
                 }
             } else if (bestJob != null) {
                 specialistAllocations.add(bestJob, 1)
@@ -209,7 +211,7 @@ class CityPopulationManager : IsPartOfGameInfoSerialization {
     fun unassignExtraPopulation() {
         for (tile in city.workedTiles.map { city.tileMap[it] }) {
             if (tile.getOwner() != city.civ || tile.getWorkingCity() != city
-                    || tile.aerialDistanceTo(city.getCenterTile()) > 3)
+                    || tile.aerialDistanceTo(city.getCenterTile()) > city.getWorkRange())
                 city.population.stopWorkingTile(tile.position)
         }
 

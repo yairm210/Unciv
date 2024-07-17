@@ -4,6 +4,7 @@ import com.badlogic.gdx.math.Vector2
 import com.unciv.UncivGame
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
+import com.unciv.logic.civilization.MapUnitAction
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.transients.CivInfoTransientCache
 import com.unciv.logic.map.mapunit.MapUnit
@@ -53,7 +54,7 @@ class UnitManager(val civInfo: Civilization) {
 
         val unit = civInfo.getEquivalentUnit(baseUnit)
         val cityToAddTo = when {
-            unit.isWaterUnit() && (city == null || !city.isCoastal()) ->
+            unit.isWaterUnit && (city == null || !city.isCoastal()) ->
                 civInfo.cities.filter { it.isCoastal() }.randomOrNull()
             city != null -> city
             else -> civInfo.cities.random()
@@ -61,8 +62,8 @@ class UnitManager(val civInfo: Civilization) {
         val placedUnit = placeUnitNearTile(cityToAddTo.location, unit.name)
         // silently bail if no tile to place the unit is found
             ?: return null
-        if (unit.isGreatPerson()) {
-            civInfo.addNotification("A [${unit.name}] has been born in [${cityToAddTo.name}]!", placedUnit.getTile().position, NotificationCategory.General, unit.name)
+        if (unit.isGreatPerson) {
+            civInfo.addNotification("A [${unit.name}] has been born in [${cityToAddTo.name}]!", MapUnitAction(placedUnit), NotificationCategory.General, unit.name)
         }
 
         if (placedUnit.hasUnique(UniqueType.ReligiousUnit) && civInfo.gameInfo.isReligionEnabled()) {
@@ -90,8 +91,8 @@ class UnitManager(val civInfo: Civilization) {
      * @param baseUnit [BaseUnit] to create and place
      * @return created [MapUnit] or null if no suitable location was found
      * */
-    fun placeUnitNearTile(location: Vector2, baseUnit: BaseUnit): MapUnit? {
-        val unit = civInfo.gameInfo.tileMap.placeUnitNearTile(location, baseUnit, civInfo)
+    fun placeUnitNearTile(location: Vector2, baseUnit: BaseUnit, unitId: Int? = null): MapUnit? {
+        val unit = civInfo.gameInfo.tileMap.placeUnitNearTile(location, baseUnit, civInfo, unitId)
 
         if (unit != null) {
             val triggerNotificationText = "due to gaining a [${unit.name}]"
@@ -167,6 +168,8 @@ class UnitManager(val civInfo: Civilization) {
     fun getDueUnits(): Sequence<MapUnit> = getCivUnitsStartingAtNextDue().filter { it.due && it.isIdle() }
 
     fun shouldGoToDueUnit() = UncivGame.Current.settings.checkForDueUnits && getDueUnits().any()
+
+    fun getUnitById(id: Int) = getCivUnits().firstOrNull { it.id == id }
 
     // Return the next due unit, but preferably not 'unitToSkip': this is returned only if it is the only remaining due unit.
     fun cycleThroughDueUnits(unitToSkip: MapUnit? = null): MapUnit? {

@@ -6,7 +6,7 @@ import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.trade.TradeLogic
 import com.unciv.logic.trade.TradeOffer
 import com.unciv.logic.trade.TradeOffersList
-import com.unciv.logic.trade.TradeType
+import com.unciv.logic.trade.TradeOfferType
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.extensions.addSeparator
 import com.unciv.ui.components.extensions.surroundWithCircle
@@ -25,7 +25,7 @@ class OfferColumnsTable(
 
     fun addOffer(offer: TradeOffer, offerList: TradeOffersList, correspondingOfferList: TradeOffersList) {
         offerList.add(offer.copy())
-        if (offer.type == TradeType.Treaty) correspondingOfferList.add(offer.copy())
+        if (offer.type == TradeOfferType.Treaty) correspondingOfferList.add(offer.copy())
         onChange()
     }
 
@@ -37,8 +37,8 @@ class OfferColumnsTable(
         civ: Civilization
     ) {
         when (offer.type) {
-            TradeType.Gold -> openGoldSelectionPopup(offer, list, civ.gold)
-            TradeType.Gold_Per_Turn -> openGoldSelectionPopup(offer, list, civ.stats.statsForNextTurn.gold.toInt())
+            TradeOfferType.Gold -> openGoldSelectionPopup(offer, list, civ.gold)
+            TradeOfferType.Gold_Per_Turn -> openGoldSelectionPopup(offer, list, civ.stats.statsForNextTurn.gold.toInt())
             else -> addOffer(if (invert) offer.copy(amount = -offer.amount) else offer, list, counterList)
         }
     }
@@ -120,9 +120,9 @@ class OfferColumnsTable(
             screen,
             label = "Enter the amount of gold",
             icon = ImageGetter.getStatIcon("Gold").surroundWithCircle(80f),
-            defaultValue = offer.amount.toString(),
+            defaultValue = offer.amount.tr(),
             amountButtons =
-            if (offer.type == TradeType.Gold) listOf(50, 500)
+            if (offer.type == TradeOfferType.Gold) listOf(50, 500)
             else listOf(5, 15),
             bounds = IntRange(0, maxGold),
             actionOnOk = { userInput ->

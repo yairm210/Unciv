@@ -8,7 +8,7 @@ import com.unciv.GUI
 import com.unciv.UncivGame
 import com.unciv.logic.civilization.Civilization
 import com.unciv.ui.screens.basescreen.BaseScreen
-import com.unciv.ui.screens.worldscreen.WorldMapHolder
+import com.unciv.ui.screens.worldscreen.worldmap.WorldMapHolder
 
 class MinimapHolder(val mapHolder: WorldMapHolder) : Table() {
     private val worldScreen = mapHolder.worldScreen

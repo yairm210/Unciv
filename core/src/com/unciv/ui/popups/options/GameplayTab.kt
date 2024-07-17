@@ -19,43 +19,7 @@ fun gameplayTab(
     optionsPopup.addCheckbox(this, "Check for idle units", settings.checkForDueUnits, true) { settings.checkForDueUnits = it }
     optionsPopup.addCheckbox(this, "Auto Unit Cycle", settings.autoUnitCycle, true) { settings.autoUnitCycle = it }
     optionsPopup.addCheckbox(this, "Move units with a single tap", settings.singleTapMove) { settings.singleTapMove = it }
-    optionsPopup.addCheckbox(this, "Auto-assign city production", settings.autoAssignCityProduction, true) { shouldAutoAssignCityProduction ->
-        settings.autoAssignCityProduction = shouldAutoAssignCityProduction
-        val worldScreen = GUI.getWorldScreenIfActive()
-        if (shouldAutoAssignCityProduction && worldScreen != null &&
-                worldScreen.viewingCiv.isCurrentPlayer() && worldScreen.viewingCiv.playerType == PlayerType.Human
-        ) {
-            worldScreen.gameInfo.getCurrentPlayerCivilization().cities.forEach { city ->
-                city.cityConstructions.chooseNextConstruction()
-            }
-        }
-    }
-    optionsPopup.addCheckbox(this, "Auto-build roads", settings.autoBuildingRoads) { settings.autoBuildingRoads = it }
-    optionsPopup.addCheckbox(
-        this,
-        "Automated workers replace improvements",
-        settings.automatedWorkersReplaceImprovements
-    ) { settings.automatedWorkersReplaceImprovements = it }
-    optionsPopup.addCheckbox(
-        this,
-        "Automated units move on turn start",
-        settings.automatedUnitsMoveOnTurnStart, true
-    ) { settings.automatedUnitsMoveOnTurnStart = it }
-    optionsPopup.addCheckbox(
-        this,
-        "Automated units can upgrade",
-        settings.automatedUnitsCanUpgrade, false
-    ) { settings.automatedUnitsCanUpgrade = it }
-    optionsPopup.addCheckbox(
-        this,
-        "Automated units choose promotions",
-        settings.automatedUnitsChoosePromotions, false
-    ) { settings.automatedUnitsChoosePromotions = it }
-    optionsPopup.addCheckbox(
-        this,
-        "Cities auto-bombard at end of turn",
-        settings.citiesAutoBombardAtEndOfTurn, false
-    ) { settings.citiesAutoBombardAtEndOfTurn = it }
+    optionsPopup.addCheckbox(this, "Move units with a long tap", settings.longTapMove) { settings.longTapMove = it }
     optionsPopup.addCheckbox(this, "Order trade offers by amount", settings.orderTradeOffersByAmount) { settings.orderTradeOffersByAmount = it }
     optionsPopup.addCheckbox(this, "Ask for confirmation when pressing next turn", settings.confirmNextTurn) { settings.confirmNextTurn = it }
 

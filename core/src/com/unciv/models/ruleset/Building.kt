@@ -18,7 +18,6 @@ import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
-import com.unciv.models.translations.fillPlaceholders
 import com.unciv.ui.components.extensions.getNeedMoreAmountString
 import com.unciv.ui.components.extensions.toPercent
 import com.unciv.ui.objectdescriptions.BuildingDescriptions
@@ -132,7 +131,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
         for (unique in getMatchingUniques(UniqueType.CostPercentageChange, stateForConditionals))
             productionCost *= unique.params[0].toPercent()
 
-        if (civInfo.isCityState())
+        if (civInfo.isCityState)
             productionCost *= 1.5f
         else if (civInfo.isHuman()) {
             if (!isWonder)
@@ -260,7 +259,6 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
     override fun getRejectionReasons(cityConstructions: CityConstructions): Sequence<RejectionReason> = sequence {
         val cityCenter = cityConstructions.city.getCenterTile()
         val civ = cityConstructions.city.civ
-        val ruleSet = civ.gameInfo.ruleset
 
         if (cityConstructions.isBuilt(name))
             yield(RejectionReasonType.AlreadyBuilt.toInstance())
@@ -321,10 +319,6 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
                     )
                         yield(RejectionReasonType.MustOwnTile.toInstance(unique.text))
 
-                UniqueType.CanOnlyBeBuiltInCertainCities ->
-                    if (!cityConstructions.city.matchesFilter(unique.params[0]))
-                        yield(RejectionReasonType.CanOnlyBeBuiltInSpecificCities.toInstance(unique.text))
-
                 UniqueType.ObsoleteWith ->
                     if (civ.tech.isResearched(unique.params[0]))
                         yield(RejectionReasonType.Obsoleted.toInstance(unique.text))
@@ -337,41 +331,6 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
                 UniqueType.SpaceshipPart -> {
                     if (!civ.hasUnique(UniqueType.EnablesConstructionOfSpaceshipParts))
                         yield(RejectionReasonType.RequiresBuildingInSomeCity.toInstance("Apollo project not built!"))
-                }
-
-                UniqueType.RequiresBuildingInSomeCities -> {
-                    val buildingFilter = unique.params[0]
-                    val numberOfCitiesRequired = unique.params[1].toInt()
-                    val numberOfCitiesWithBuilding = civ.cities.count {
-                        it.cityConstructions.containsBuildingOrEquivalent(buildingFilter)
-                    }
-                    if (numberOfCitiesWithBuilding < numberOfCitiesRequired) {
-                        val equivalentBuildingFilter = if (ruleSet.buildings.containsKey(buildingFilter))
-                            civ.getEquivalentBuilding(buildingFilter).name
-                        else buildingFilter
-                        yield(
-                                // replace with civ-specific building for user
-                                RejectionReasonType.RequiresBuildingInSomeCities.toInstance(
-                                    unique.text.fillPlaceholders(equivalentBuildingFilter, numberOfCitiesRequired.toString()) +
-                                            " ($numberOfCitiesWithBuilding/$numberOfCitiesRequired)"
-                                ) )
-                    }
-                }
-
-                UniqueType.RequiresBuildingInAllCities -> {
-                    val filter = unique.params[0]
-                    if (civ.gameInfo.ruleset.buildings.containsKey(filter)
-                            && civ.cities.any {
-                                !it.isPuppet && !it.cityConstructions.containsBuildingOrEquivalent(unique.params[0])
-                            }
-                    ) {
-                        yield(
-                                // replace with civ-specific building for user
-                                RejectionReasonType.RequiresBuildingInAllCities.toInstance(
-                                    "Requires a [${civ.getEquivalentBuilding(unique.params[0])}] in all cities"
-                                )
-                        )
-                    }
                 }
 
                 UniqueType.HiddenBeforeAmountPolicies -> {
@@ -398,7 +357,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
             if (civ.cities.any { it != cityConstructions.city && it.cityConstructions.isBeingConstructedOrEnqueued(name) })
                 yield(RejectionReasonType.WonderBeingBuiltElsewhere.toInstance())
 
-            if (civ.isCityState())
+            if (civ.isCityState)
                 yield(RejectionReasonType.CityStateWonder.toInstance())
 
             if (cityConstructions.city.isPuppet)
@@ -509,13 +468,8 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
     private val cachedMatchesFilterResult = HashMap<String, Boolean>()
 
     /** Implements [UniqueParameterType.BuildingFilter] */
-    fun matchesFilter(filter: String): Boolean {
-        val cachedAnswer = cachedMatchesFilterResult[filter]
-        if (cachedAnswer != null) return cachedAnswer
-        val newAnswer = MultiFilter.multiFilter(filter, { matchesSingleFilter(it) })
-        cachedMatchesFilterResult[filter] = newAnswer
-        return newAnswer
-    }
+    fun matchesFilter(filter: String): Boolean =
+        cachedMatchesFilterResult.getOrPut(filter) { MultiFilter.multiFilter(filter, ::matchesSingleFilter ) }
 
     private fun matchesSingleFilter(filter: String): Boolean {
         return when (filter) {

@@ -7,7 +7,7 @@
 [![itch.io](https://img.shields.io/static/v1?label=itch.io&message=Unciv&color=607D8B&logo=itch.io)](https://yairm210.itch.io/unciv)
 [![Flathub](https://img.shields.io/flathub/v/io.github.yairm210.unciv?logo=flathub)](https://flathub.org/apps/details/io.github.yairm210.unciv)
 [![AUR](https://img.shields.io/aur/version/unciv-bin?logo=arch-linux)](https://aur.archlinux.org/packages/unciv-bin)
-[![pi-apps](https://img.shields.io/static/v1?label=pi-apps&message=Unciv&color=607D8B&logo=raspberry-pi)](https://github.com/Botspot/pi-apps)
+[![pi-apps](https://img.shields.io/badge/dynamic/json?color=c51a4a&label=Pi-Apps&logo=raspberry-pi&query=%24..%5B%3F%28%40.Name%3D%3D%22Unciv%22%29%5D.Version&url=https%3A%2F%2Fraw.githubusercontent.com%2FBotspot%2Fpi-apps-analytics%2Fmain%2Fpackage_data.json)](https://github.com/Botspot/pi-apps)
 [![macport](https://img.shields.io/badge/dynamic/json?logo=apple&label=MacPorts&prefix=v&query=version&url=https%3A%2F%2Fports.macports.org%2Fapi%2Fv1%2Fports%2Funciv%2F)](https://ports.macports.org/port/unciv/)
  
 [![Build status](https://github.com/yairm210/Unciv/actions/workflows/buildAndTest.yml/badge.svg)](https://github.com/yairm210/Unciv/actions/workflows/buildAndTest.yml)
@@ -58,11 +58,11 @@ If not, you can help by spreading the word - vote for Unciv where you can, menti
 - Jars, APKs and Windows/Linux builds also available in [Releases](https://github.com/yairm210/Unciv/releases) (run jar with `java -jar Unciv.jar`) - *not recommended* since we update frequently and you will quickly become out-of-date
 - [Build from scratch](https://yairm210.github.io/Unciv/Developers/Building-locally-without-Android-Studio/) if that's your thing
 
-### How about IOS?
+### How about iOS?
 
 I'm not planning on it. It means paying money to Apple, yet another release path,
- and since I don't have an IOS device it means I can't test it properly.
- 
+ and since I don't have an iOS device it means I can't test it properly.
+
 ### Steam release?
 
 Steam has decided that they don't want to host Unciv, they probably don't want to risk legal issues with Firaxis (although those should be non-existent, see below)

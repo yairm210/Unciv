@@ -6,6 +6,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.Notification
 import com.unciv.logic.civilization.NotificationCategory
+import com.unciv.models.translations.tr
 import com.unciv.ui.components.widgets.ColorMarkupLabel
 import com.unciv.ui.components.widgets.TabbedPager
 import com.unciv.ui.components.input.onClick
@@ -19,10 +20,8 @@ class NotificationsOverviewTable(
     persistedData: EmpireOverviewTabPersistableData? = null
 ) : EmpireOverviewTab(viewingPlayer, overviewScreen) {
     class NotificationsTabPersistableData(
-            var scrollY: Float? = null
-    ) : EmpireOverviewTabPersistableData() {
-        override fun isEmpty() = scrollY == null
-    }
+        var scrollY: Float? = null
+    ) : EmpireOverviewTabPersistableData()
     override val persistableData = (persistedData as? NotificationsTabPersistableData) ?: NotificationsTabPersistableData()
     override fun activated(index: Int, caption: String, pager: TabbedPager) {
         if (persistableData.scrollY != null)
@@ -55,7 +54,12 @@ class NotificationsOverviewTable(
             notificationTable.add(notificationsArrayTable("Current", viewingPlayer.notifications)).row()
 
         for (notification in notificationLog.asReversed()) {
-            notificationTable.add(notificationsArrayTable(notification.turn.toString(), notification.notifications))
+            notificationTable.add(
+                notificationsArrayTable(
+                    notification.turn.tr(),
+                    notification.notifications
+                )
+            )
             notificationTable.padTop(20f).row()
         }
     }

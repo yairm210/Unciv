@@ -18,7 +18,7 @@ object TargetHelper {
         val attackableTiles = ArrayList<AttackableTile>()
 
         val unitMustBeSetUp = unit.hasUnique(UniqueType.MustSetUp)
-        val tilesToAttackFrom = if (stayOnTile || unit.baseUnit.movesLikeAirUnits())
+        val tilesToAttackFrom = if (stayOnTile || unit.baseUnit.movesLikeAirUnits)
             sequenceOf(Pair(unit.currentTile, unit.currentMovement))
         else getTilesToAttackFromWhenUnitMoves(unitDistanceToTiles, unitMustBeSetUp, unit)
 
@@ -33,10 +33,13 @@ object TargetHelper {
                     || escortingUnit.currentMovement - escortingUnit.movement.getDistanceToTiles()[reachableTile]!!.totalDistance <= 0f) 
                     continue
             }
+
             val tilesInAttackRange =
-                if (unit.hasUnique(UniqueType.IndirectFire) || unit.baseUnit.movesLikeAirUnits())
+                if (unit.baseUnit.isMelee()) reachableTile.neighbors
+                else if (unit.hasUnique(UniqueType.IndirectFire) || unit.baseUnit.movesLikeAirUnits)
                     reachableTile.getTilesInDistance(rangeOfAttack)
                 else reachableTile.tileMap.getViewableTiles(reachableTile.position, rangeOfAttack, true).asSequence()
+
             for (tile in tilesInAttackRange) {
                 when {
                     // Since military units can technically enter tiles with enemy civilians,
@@ -137,7 +140,7 @@ object TargetHelper {
 
     /** Get a list of visible tiles which have something attackable */
     fun getBombardableTiles(city: City): Sequence<Tile> =
-            city.getCenterTile().getTilesInDistance(city.range)
+            city.getCenterTile().getTilesInDistance(city.getBombardRange())
                     .filter { it.isVisible(city.civ) && containsAttackableEnemy(it, CityCombatant(city)) }
 
 }

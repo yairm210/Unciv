@@ -14,7 +14,6 @@ import com.unciv.UncivGame
 import com.unciv.logic.map.MapParameters
 import com.unciv.logic.map.MapShape
 import com.unciv.logic.map.MapSize
-import com.unciv.logic.map.MapSizeNew
 import com.unciv.logic.map.TileMap
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.metadata.BaseRuleset
@@ -22,7 +21,7 @@ import com.unciv.models.metadata.GameParameters
 import com.unciv.models.metadata.GameSetupInfo
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
-import com.unciv.ui.components.UncivTextField
+import com.unciv.ui.components.widgets.UncivTextField
 import com.unciv.ui.components.input.KeyCharAndCode
 import com.unciv.ui.components.input.KeyShortcutDispatcherVeto
 import com.unciv.ui.components.input.KeyboardPanningListener
@@ -86,7 +85,7 @@ class MapEditorScreen(map: TileMap? = null) : BaseScreen(), RecreateOnResize {
     val tabs: MapEditorMainTabs
     var tileClickHandler: ((tile: Tile)->Unit)? = null
     private var zoomController: ZoomButtonPair? = null
-    val descriptionTextField = UncivTextField.create("Enter a description for the users of this map")
+    val descriptionTextField = UncivTextField("Enter a description for the users of this map")
 
     private val highlightedTileGroups = mutableListOf<TileGroup>()
 
@@ -97,7 +96,7 @@ class MapEditorScreen(map: TileMap? = null) : BaseScreen(), RecreateOnResize {
         if (map == null) {
             ruleset = RulesetCache[BaseRuleset.Civ_V_GnK.fullName]!!
             tileMap = TileMap(MapSize.Tiny.radius, ruleset, false).apply {
-                mapParameters.mapSize = MapSizeNew(MapSize.Tiny)
+                mapParameters.mapSize = MapSize.Tiny
             }
         } else {
             ruleset = map.ruleset ?: RulesetCache.getComplexRuleset(map.mapParameters)

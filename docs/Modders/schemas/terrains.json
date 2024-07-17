@@ -1,0 +1,41 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "type": "array",
+  "items": {
+      "type": "object",
+      "properties": {
+          "name": { "type": "string" },
+          "type": { "enum": ["Land", "Water", "TerrainFeature", "NaturalWonder"] },
+
+          "production": { "type": "number" },
+          "food": { "type": "number" },
+          "gold": { "type": "number" },
+          "science": { "type": "number" },
+          "culture": { "type": "number" },
+          "happiness": { "type": "number" },
+          "faith": { "type": "number" },
+
+          "movementCost": { "type": "number" },
+          "impassable": { "type": "boolean" },
+          "defenceBonus": { "type": "number", "description": "In percentages - so 0.1 is 10% bonus" },
+          "unbuildable": { "type": "boolean", "description": "If true, nothing can be built here - not even resource improvements" },
+
+          "RGB": { "$ref": "https://raw.githubusercontent.com/yairm210/Unciv/master/docs/Modders/schemas/color.json" },
+
+          "occursOn": { "type": "array", "items": { "type": "string" },
+              "description": "For terrain features - List of terrains that this feature can appear on" },
+          "overrideStats": { "type": "boolean", "description": "For terrain features - indicates the stats of this terrain override those of all previous layers" },
+
+          "turnsInto": { "type": "string", "description": "Used by Natural Wonders: it is the baseTerrain on top of which the Natural Wonder is placed" },
+          "weight": { "type": "number", "description": "For natural wonders - the chance this nat wonder will be picked" },
+
+          "uniques": { "$ref": "https://raw.githubusercontent.com/yairm210/Unciv/master/docs/Modders/schemas/uniques.json" },
+
+          "civilopediaText": { "$ref": "https://raw.githubusercontent.com/yairm210/Unciv/master/docs/Modders/schemas/civilopediaText.json" }
+      },
+      "required": [
+          "name", "type"
+      ],
+      "additionalProperties": false
+  }
+}

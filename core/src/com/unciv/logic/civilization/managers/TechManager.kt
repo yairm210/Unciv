@@ -13,7 +13,6 @@ import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.civilization.PolicyAction
 import com.unciv.logic.civilization.PopupAlert
 import com.unciv.logic.civilization.TechAction
-import com.unciv.logic.map.MapSize
 import com.unciv.logic.map.tile.RoadStatus
 import com.unciv.models.ruleset.INonPerpetualConstruction
 import com.unciv.models.ruleset.tech.Era
@@ -23,6 +22,7 @@ import com.unciv.models.ruleset.unique.UniqueMap
 import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
+import com.unciv.models.translations.tr
 import com.unciv.ui.components.MayaCalendar
 import com.unciv.ui.components.extensions.withItem
 import com.unciv.ui.components.fonts.Fonts
@@ -99,11 +99,11 @@ class TechManager : IsPartOfGameInfoSerialization {
     }
 
     private fun getScienceModifier(techName: String): Float { // https://forums.civfanatics.com/threads/the-mechanics-of-overflow-inflation.517970/
-        val techsResearchedKnownCivs = civInfo.getKnownCivs()
+        val numberOfCivsResearchedThisTech = civInfo.getKnownCivs()
             .count { it.isMajorCiv() && it.tech.isResearched(techName) }
-        val undefeatedCivs = civInfo.gameInfo.civilizations
+        val numberOfCivsRemaining = civInfo.gameInfo.civilizations
             .count { it.isMajorCiv() && !it.isDefeated() }
-        return 1 + techsResearchedKnownCivs / undefeatedCivs.toFloat() * 0.3f
+        return 1 + numberOfCivsResearchedThisTech / numberOfCivsRemaining.toFloat() * 0.3f
     }
 
     private fun getRuleset() = civInfo.gameInfo.ruleset
@@ -114,17 +114,9 @@ class TechManager : IsPartOfGameInfoSerialization {
             techCost *= civInfo.getDifficulty().researchCostModifier
         techCost *= civInfo.gameInfo.speed.scienceCostModifier
         techCost /= getScienceModifier(techName)
-        // https://civilization.fandom.com/wiki/Map_(Civ5)
-        val worldSizeModifier = with (civInfo.gameInfo.tileMap.mapParameters.mapSize) {
-            when {
-                radius >= MapSize.Huge.radius -> floatArrayOf(1.3f, 0.025f)
-                radius >= MapSize.Large.radius -> floatArrayOf(1.2f, 0.0375f)
-                radius >= MapSize.Medium.radius -> floatArrayOf(1.1f, 0.05f)
-                else -> floatArrayOf(1f, 0.05f)
-            }
-        }
-        techCost *= worldSizeModifier[0]
-        techCost *= 1 + (civInfo.cities.size - 1) * worldSizeModifier[1]
+        val mapSizePredef = civInfo.gameInfo.tileMap.mapParameters.mapSize.getPredefinedOrNextSmaller()
+        techCost *= mapSizePredef.techCostMultiplier
+        techCost *= 1 + (civInfo.cities.size - 1) * mapSizePredef.techCostPerCityModifier
         return techCost.toInt()
     }
 
@@ -148,9 +140,12 @@ class TechManager : IsPartOfGameInfoSerialization {
     fun turnsToTech(techName: String): String {
         val remainingCost = remainingScienceToTech(techName).toDouble()
         return when {
-            remainingCost <= 0f -> "0"
+            remainingCost <= 0f -> (0).tr()
             civInfo.stats.statsForNextTurn.science <= 0f -> Fonts.infinity.toString()
-            else -> max(1, ceil(remainingCost / civInfo.stats.statsForNextTurn.science).toInt()).toString()
+            else -> max(
+                1,
+                ceil(remainingCost / civInfo.stats.statsForNextTurn.science).toInt()
+            ).tr()
         }
     }
 
@@ -160,28 +155,38 @@ class TechManager : IsPartOfGameInfoSerialization {
 
     fun isObsolete(unit: BaseUnit): Boolean = unit.techsThatObsoleteThis().any{ obsoleteTech -> isResearched(obsoleteTech) }
 
+    fun isUnresearchable(tech: Technology): Boolean {
+        if (tech.getMatchingUniques(UniqueType.OnlyAvailable, StateForConditionals.IgnoreConditionals).any { !it.conditionalsApply(civInfo) })
+            return true
+        if (tech.hasUnique(UniqueType.Unavailable, StateForConditionals(civInfo))) return true
+        return false
+    }
+
     fun canBeResearched(techName: String): Boolean {
         val tech = getRuleset().technologies[techName]!!
-        if (tech.getMatchingUniques(UniqueType.OnlyAvailable, StateForConditionals.IgnoreConditionals).any { !it.conditionalsApply(civInfo) })
-            return false
-        if (tech.hasUnique(UniqueType.Unavailable, StateForConditionals(civInfo))) return false
 
-        if (isResearched(tech.name) && !tech.isContinuallyResearchable())
-            return false
+        if (isUnresearchable(tech)) return false
+        if (isResearched(tech.name) && !tech.isContinuallyResearchable()) return false
 
         return tech.prerequisites.all { isResearched(it) }
     }
 
+    fun allTechsAreResearched() = civInfo.gameInfo.ruleset.technologies.values
+        .all { isResearched(it.name) || !canBeResearched(it.name)}
+
     //endregion
 
+    /** Returns empty list if no path exists */
     fun getRequiredTechsToDestination(destinationTech: Technology): List<Technology> {
         val prerequisites = mutableListOf<Technology>()
 
         val checkPrerequisites = ArrayDeque<Technology>()
+        if (isUnresearchable(destinationTech)) return listOf()
         checkPrerequisites.add(destinationTech)
 
         while (!checkPrerequisites.isEmpty()) {
             val techToCheck = checkPrerequisites.removeFirst()
+            if (isUnresearchable(techToCheck)) return listOf()
             // future tech can have been researched even when we're researching it,
             // so...if we skip it we'll end up with 0 techs in the "required techs", which will mean that we don't have anything to research. Yeah.
             if (!techToCheck.isContinuallyResearchable() &&
@@ -266,7 +271,8 @@ class TechManager : IsPartOfGameInfoSerialization {
         val scienceSpent = researchOfTech(currentTechnology) + realOverflow
         if (scienceSpent >= costOfTech(currentTechnology)) {
             overflowScience = 0
-            addScience(realOverflow)
+            if (realOverflow != 0)
+                addScience(realOverflow)
         }
     }
 
@@ -300,10 +306,6 @@ class TechManager : IsPartOfGameInfoSerialization {
         val triggerNotificationText = "due to researching [$techName]"
         for (unique in newTech.uniqueObjects)
             if (!unique.hasTriggerConditional() && unique.conditionalsApply(StateForConditionals(civInfo)))
-                UniqueTriggerActivation.triggerUnique(unique, civInfo, triggerNotificationText = triggerNotificationText)
-
-        for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponResearchOld))
-            if (unique.conditionals.any {it.type == UniqueType.TriggerUponResearchOld && it.params[0] == techName})
                 UniqueTriggerActivation.triggerUnique(unique, civInfo, triggerNotificationText = triggerNotificationText)
 
         for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponResearch))

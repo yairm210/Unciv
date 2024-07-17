@@ -11,6 +11,7 @@ import com.unciv.models.stats.Stats
 import com.unciv.models.translations.getConditionals
 import com.unciv.models.translations.getPlaceholderParameters
 import com.unciv.models.translations.getPlaceholderText
+import com.unciv.models.translations.removeConditionals
 
 
 class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val sourceObjectName: String? = null) {
@@ -43,7 +44,7 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
 
     fun hasFlag(flag: UniqueFlag) = type != null && type.flags.contains(flag)
     fun isHiddenToUsers() = hasFlag(UniqueFlag.HiddenToUsers) || conditionals.any { it.type == UniqueType.ModifierHiddenFromUsers }
-
+    fun isModifiedByGameSpeed() = conditionals.any { it.type == UniqueType.ModifiedByGameSpeed }
     fun hasTriggerConditional(): Boolean {
         if (conditionals.none()) return false
         return conditionals.any { conditional ->
@@ -177,6 +178,8 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
 
 
     override fun toString() = if (type == null) "\"$text\"" else "$type (\"$text\")"
+    fun getDisplayText(): String = if (conditionals.none { it.isHiddenToUsers() }) text
+        else text.removeConditionals() + " " + conditionals.filter { !it.isHiddenToUsers() }.joinToString(" ") { "<${it.text}>" }
 }
 
 /** Used to cache results of getMatchingUniques
@@ -226,7 +229,8 @@ class LocalUniqueCache(val cache: Boolean = true) {
     /** Get cached results as a sequence */
     private fun get(key: String, sequence: Sequence<Unique>): Sequence<Unique> {
         if (!cache) return sequence
-        if (keyToUniques.containsKey(key)) return keyToUniques[key]!!
+        val valueInMap = keyToUniques[key]
+        if (valueInMap != null) return valueInMap
         // Iterate the sequence, save actual results as a list, as return a sequence to that
         val results = sequence.toList().asSequence()
         keyToUniques[key] = results
@@ -265,6 +269,7 @@ class UniqueMap() : HashMap<String, ArrayList<Unique>>() {
 
     fun getMatchingUniques(uniqueType: UniqueType, state: StateForConditionals) = getUniques(uniqueType)
         .filter { it.conditionalsApply(state) && !it.isTimedTriggerable }
+        .flatMap { it.getMultiplied(state) }
 
     fun getAllUniques() = this.asSequence().flatMap { it.value.asSequence() }
 
@@ -272,7 +277,7 @@ class UniqueMap() : HashMap<String, ArrayList<Unique>>() {
         return getAllUniques().filter { unique ->
             unique.conditionals.any { it.type == trigger }
             && unique.conditionalsApply(stateForConditionals)
-        }
+        }.flatMap { it.getMultiplied(stateForConditionals) }
     }
 }
 

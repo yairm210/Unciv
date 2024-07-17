@@ -13,7 +13,7 @@ import com.unciv.ui.screens.worldscreen.unit.actions.UnitActions
 object CivilianUnitAutomation {
 
     fun shouldClearTileForAddInCapitalUnits(unit: MapUnit, tile: Tile) =
-        tile.getCity()?.isCapital() == true
+        tile.isCityCenter() && tile.getCity()!!.isCapital()
         && !unit.hasUnique(UniqueType.AddInCapital)
         && unit.civ.units.getCivUnits().any { unit.hasUnique(UniqueType.AddInCapital) }
 
@@ -111,15 +111,6 @@ object CivilianUnitAutomation {
                 return
         }
 
-        // This has to come after the individual abilities for the great people that can also place
-        // instant improvements (e.g. great scientist).
-        if (unit.hasUnique(UniqueType.ConstructImprovementInstantly)) {
-            // catch great prophet for civs who can't found/enhance/spread religion
-            // includes great people plus moddable units
-            val improvementCanBePlacedEventually =
-                SpecificUnitAutomation.automateImprovementPlacer(unit)
-        }
-
         if (unit.hasUnique(UniqueType.GainFreeBuildings)) {
             val unique = unit.getMatchingUniques(UniqueType.GainFreeBuildings).first()
             val buildingName = unique.params[0]
@@ -147,6 +138,8 @@ object CivilianUnitAutomation {
         //  (depending on number of cities) and after that they should just be used to start golden
         //  ages?
 
+        if (SpecificUnitAutomation.automateImprovementPlacer(unit)) return
+
         return // The AI doesn't know how to handle unknown civilian units
     }
 
@@ -163,7 +156,7 @@ object CivilianUnitAutomation {
         val enemyUnitsInWalkingDistance = unit.movement.getDistanceToTiles().keys
             .filter { unit.civ.threatManager.doesTileHaveMilitaryEnemy(it) }
 
-        if (enemyUnitsInWalkingDistance.isNotEmpty() && !unit.baseUnit.isMilitary()
+        if (enemyUnitsInWalkingDistance.isNotEmpty() && !unit.baseUnit.isMilitary
             && unit.getTile().militaryUnit == null && !unit.getTile().isCityCenter()) {
             runAway(unit)
             return true

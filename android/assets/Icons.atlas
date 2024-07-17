@@ -11,6 +11,20 @@ CityStateIcons/Cultured
   orig: 100, 100
   offset: 0, 0
   index: -1
+OtherIcons/HiddenTutorialTask
+  rotate: false
+  xy: 127, 1001
+  size: 100, 100
+  orig: 100, 100
+  offset: 0, 0
+  index: -1
+OtherIcons/Score
+  rotate: false
+  xy: 127, 1001
+  size: 100, 100
+  orig: 100, 100
+  offset: 0, 0
+  index: -1
 CityStateIcons/Maritime
   rotate: false
   xy: 1819, 1821
@@ -431,27 +445,6 @@ StatIcons/Faith
   orig: 100, 100
   offset: 0, 0
   index: -1
-NotificationIcons/Loading
-  rotate: false
-  xy: 1063, 1820
-  size: 100, 100
-  orig: 100, 100
-  offset: 0, 0
-  index: -1
-NotificationIcons/Working
-  rotate: false
-  xy: 1063, 1820
-  size: 100, 100
-  orig: 100, 100
-  offset: 0, 0
-  index: -1
-OtherIcons/Loading
-  rotate: false
-  xy: 1063, 1820
-  size: 100, 100
-  orig: 100, 100
-  offset: 0, 0
-  index: -1
 NotificationIcons/PickConstruction
   rotate: false
   xy: 1555, 1497
@@ -735,6 +728,27 @@ OtherIcons/Link
 OtherIcons/Load
   rotate: false
   xy: 955, 1806
+  size: 100, 100
+  orig: 100, 100
+  offset: 0, 0
+  index: -1
+OtherIcons/Loading
+  rotate: false
+  xy: 1063, 1820
+  size: 100, 100
+  orig: 100, 100
+  offset: 0, 0
+  index: -1
+NotificationIcons/Loading
+  rotate: false
+  xy: 1063, 1820
+  size: 100, 100
+  orig: 100, 100
+  offset: 0, 0
+  index: -1
+NotificationIcons/Working
+  rotate: false
+  xy: 1063, 1820
   size: 100, 100
   orig: 100, 100
   offset: 0, 0

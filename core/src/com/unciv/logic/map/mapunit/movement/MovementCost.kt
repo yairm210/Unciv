@@ -11,18 +11,37 @@ import com.unciv.models.ruleset.unique.UniqueType
 
 object MovementCost {
 
+    fun getMovementCostBetweenAdjacentTilesEscort(
+        unit: MapUnit,
+        from: Tile,
+        to: Tile,
+        considerZoneOfControl: Boolean = true,
+        includeEscortUnit: Boolean = true,
+    ): Float {
+        if (includeEscortUnit && unit.isEscorting()) {
+            return maxOf(getMovementCostBetweenAdjacentTiles(unit, from, to, considerZoneOfControl),
+                getMovementCostBetweenAdjacentTiles(unit.getOtherEscortUnit()!!, from, to, considerZoneOfControl))
+        } else {
+            return getMovementCostBetweenAdjacentTiles(unit, from, to, considerZoneOfControl)
+        }
+    }
+
     // This function is called ALL THE TIME and should be as time-optimal as possible!
+    /**
+     * Does not include escort unit
+     * @return The cost of movment for the unit between two tiles
+     */
     fun getMovementCostBetweenAdjacentTiles(
         unit: MapUnit,
         from: Tile,
         to: Tile,
-        considerZoneOfControl: Boolean = true
+        considerZoneOfControl: Boolean = true,
     ): Float {
         val civ = unit.civ
 
         if (unit.cache.cannotMove) return 100f
 
-        if (from.isLand != to.isLand && unit.baseUnit.isLandUnit() && !unit.cache.canMoveOnWater)
+        if (from.isLand != to.isLand && unit.baseUnit.isLandUnit && !unit.cache.canMoveOnWater)
             return if (from.isWater && to.isLand) unit.cache.costToDisembark ?: 100f
             else unit.cache.costToEmbark ?: 100f
 
@@ -152,7 +171,7 @@ object MovementCost {
         // function is surprisingly less efficient than the current neighbor-intersection approach.
         // See #4085 for more details.
         val tilesExertingZoneOfControl = getTilesExertingZoneOfControl(unit, from)
-        if (tilesExertingZoneOfControl.none { to.neighbors.contains(it)})
+        if (tilesExertingZoneOfControl.none { to.aerialDistanceTo(it) == 1 })
             return false
 
         // Even though this is a very fast check, we perform it last. This is because very few units

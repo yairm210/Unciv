@@ -17,10 +17,10 @@ jobs:
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
 
     - name: Set up JDK
-      uses: actions/setup-java@v2
+      uses: actions/setup-java@v4
       with:
         java-version: 17
         distribution: 'adopt'
@@ -32,7 +32,7 @@ jobs:
         detekt_version: '1.23.4'
 
     - name: Detekt errors
-      run: detekt-cli --parallel --config detekt/config/detekt-errors.yml
+      run: detekt-cli --parallel --config .github/workflows/detekt_config/detekt-errors.yml
 
     - name: Detekt warnings
-      run: detekt-cli --parallel --config detekt/config/detekt-warnings.yml
+      run: detekt-cli --parallel --config .github/workflows/detekt_config/detekt-warnings.yml

@@ -1,6 +1,6 @@
 package com.unciv.logic.map.mapgenerator.mapregions
 
-import com.unciv.logic.map.MapResources
+import com.unciv.logic.map.mapgenerator.MapResourceSetting
 import com.unciv.logic.map.TileMap
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.Ruleset
@@ -210,11 +210,7 @@ object LuxuryResourcePlacementLogic {
         tileData: TileDataMap
     ) {
         for (special in specialLuxuries) {
-            val targetNumber = when (tileMap.mapParameters.mapResources) {
-                MapResources.sparse -> (regions.size * 0.5f).toInt()
-                MapResources.abundant -> (regions.size * 0.9f).toInt()
-                else -> (regions.size * 0.75f).toInt()
-            }
+            val targetNumber = (regions.size * tileMap.mapParameters.getMapResources().specialLuxuriesTargetFactor).toInt()
             val numberToPlace = max(2, targetNumber - placedSpecials[special.name]!!)
             MapRegionResources.tryAddingResourceToTiles(
                 tileData, special, numberToPlace, tileMap.values.asSequence().shuffled(), 1f,
@@ -233,12 +229,11 @@ object LuxuryResourcePlacementLogic {
         ruleset: Ruleset,
         placedSpecials: HashMap<String, Int>
     ) {
-        if (tileMap.mapParameters.mapResources == MapResources.sparse) return
+        if (tileMap.mapParameters.mapResources == MapResourceSetting.sparse.label) return
         for (region in regions) {
             val tilesToCheck = tileMap[region.startPosition!!].getTilesInDistanceRange(1..2)
             val candidateLuxuries = randomLuxuries.shuffled().toMutableList()
-            if (tileMap.mapParameters.mapResources != MapResources.strategicBalance &&
-                !tileMap.mapParameters.strategicBalance)
+            if (!tileMap.mapParameters.getStrategicBalance())
                 candidateLuxuries += specialLuxuries.shuffled()
                     .map { it.name } // Include marble!
             candidateLuxuries += cityStateLuxuries.shuffled()
@@ -268,11 +263,7 @@ object LuxuryResourcePlacementLogic {
     ) {
         if (randomLuxuries.isEmpty()) return
         var targetRandomLuxuries = tileData.size.toFloat().pow(0.45f).toInt() // Approximately
-        targetRandomLuxuries *= when (tileMap.mapParameters.mapResources) {
-            MapResources.sparse -> 80
-            MapResources.abundant -> 133
-            else -> 100
-        }
+        targetRandomLuxuries *= tileMap.mapParameters.getMapResources().randomLuxuriesPercent
         targetRandomLuxuries /= 100
         targetRandomLuxuries += Random.nextInt(regions.size) // Add random number based on number of civs
         val minimumRandomLuxuries = tileData.size.toFloat().pow(0.2f).toInt() // Approximately
@@ -308,11 +299,7 @@ object LuxuryResourcePlacementLogic {
         val idealCivsForMapSize = max(2, tileData.size / 500)
         var regionTargetNumber =
             (tileData.size / 600) - (0.3f * abs(regions.size - idealCivsForMapSize)).toInt()
-        regionTargetNumber += when (tileMap.mapParameters.mapResources) {
-            MapResources.abundant -> 1
-            MapResources.sparse -> -1
-            else -> 0
-        }
+        regionTargetNumber += tileMap.mapParameters.getMapResources().regionalLuxuriesDelta
         regionTargetNumber = max(1, regionTargetNumber)
         for (region in regions) {
             val resource = ruleset.tileResources[region.luxury] ?: continue
@@ -380,8 +367,7 @@ object LuxuryResourcePlacementLogic {
             regions.sumOf { it.totalFertility } / regions.sumOf { it.tiles.size }.toFloat()
         for (region in regions) {
             var targetLuxuries = 1
-            if (tileMap.mapParameters.mapResources == MapResources.legendaryStart ||
-                tileMap.mapParameters.legendaryStart)
+            if (tileMap.mapParameters.getLegendaryStart())
                 targetLuxuries++
             if (region.totalFertility / region.tiles.size.toFloat() < averageFertilityDensity) {
                 targetLuxuries++

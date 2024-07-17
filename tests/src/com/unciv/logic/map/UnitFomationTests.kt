@@ -214,7 +214,7 @@ internal class UnitFormationTests {
         setUp(3)
         val enemyCiv = testGame.addCiv()
         civInfo.diplomacyFunctions.makeCivilizationsMeet(enemyCiv)
-        civInfo.getDiplomacyManager(enemyCiv).declareWar()
+        civInfo.getDiplomacyManager(enemyCiv)!!.declareWar()
         val centerTile = testGame.getTile(Vector2(0f,0f))
         val enemyTile = testGame.getTile(Vector2(2f,2f))
         val scout = testGame.addUnit("Warrior", civInfo, centerTile)
@@ -240,7 +240,7 @@ internal class UnitFormationTests {
         val enemyCiv = testGame.addCiv()
         DebugUtils.VISIBLE_MAP = true
         civInfo.diplomacyFunctions.makeCivilizationsMeet(enemyCiv)
-        civInfo.getDiplomacyManager(enemyCiv).declareWar()
+        civInfo.getDiplomacyManager(enemyCiv)!!.declareWar()
         val centerTile = testGame.getTile(Vector2(0f,0f))
         val enemyTile = testGame.getTile(Vector2(3f,3f))
         val archer = testGame.addUnit("Archer", civInfo, centerTile)
@@ -264,7 +264,7 @@ internal class UnitFormationTests {
         setUp(3)
         val enemyCiv = testGame.addCiv()
         civInfo.diplomacyFunctions.makeCivilizationsMeet(enemyCiv)
-        civInfo.getDiplomacyManager(enemyCiv).declareWar()
+        civInfo.getDiplomacyManager(enemyCiv)!!.declareWar()
         val centerTile = testGame.getTile(Vector2(0f,0f))
         val forestTile = testGame.getTile(Vector2(1f,1f))
         val enemyTile = testGame.getTile(Vector2(2f,2f))
@@ -278,4 +278,58 @@ internal class UnitFormationTests {
         assertTrue(civilianUnit.isEscorting())
         assertTrue(TargetHelper.getAttackableEnemies(scout, scout.movement.getDistanceToTiles()).isEmpty())
     }
+
+    @Test
+    fun `test escort path with hills one turn civilian`() {
+        setUp(3)
+        val centerTile = testGame.getTile(Vector2(0f,0f))
+        val hillTile = testGame.getTile(Vector2(1f,1f))
+        val destinationTile = testGame.getTile(Vector2(1f,2f))
+        val militaryUnit = testGame.addUnit("Mechanized Infantry", civInfo, centerTile)
+        val civilianUnit = testGame.addUnit("Worker", civInfo, centerTile)
+        hillTile.addTerrainFeature("Hill")
+        destinationTile.addTerrainFeature("Hill")
+        civilianUnit.startEscorting()
+        civilianUnit.movement.moveToTile(destinationTile)
+        assertEquals(civilianUnit.getTile(), destinationTile)
+        assertEquals(militaryUnit.getTile(), destinationTile)
+    }
+
+    @Test
+    fun `test escort path with hills one turn military`() {
+        setUp(3)
+        val centerTile = testGame.getTile(Vector2(0f,0f))
+        val hillTile = testGame.getTile(Vector2(1f,1f))
+        val destinationTile = testGame.getTile(Vector2(1f,2f))
+        val militaryUnit = testGame.addUnit("Mechanized Infantry", civInfo, centerTile)
+        val civilianUnit = testGame.addUnit("Worker", civInfo, centerTile)
+        hillTile.addTerrainFeature("Hill")
+        destinationTile.addTerrainFeature("Hill")
+        militaryUnit.startEscorting()
+        militaryUnit.movement.moveToTile(destinationTile)
+        assertEquals(civilianUnit.getTile(), destinationTile)
+        assertEquals(militaryUnit.getTile(), destinationTile)
+    }
+
+    @Test
+    fun `test escort with ignore terrain cost unit`() {
+        setUp(5)
+        val centerTile = testGame.getTile(Vector2(0f,0f))
+        val marsh = testGame.getTile(Vector2(1f,1f))
+        marsh.addTerrainFeature("Marsh")
+        val jungle = testGame.getTile(Vector2(2f,2f))
+        jungle.addTerrainFeature("Jungle")
+        testGame.getTile(Vector2(3f,3f)).addTerrainFeature("Hill")
+        testGame.getTile(Vector2(3f,4f)).addTerrainFeature("Hill")
+        val destinationTile = testGame.getTile(Vector2(4f,5f))
+        val tileReached = testGame.getTile(Vector2(1f,2f));
+        val militaryUnit = testGame.addUnit("Scout", civInfo, centerTile)
+        val civilianUnit = testGame.addUnit("Worker", civInfo, centerTile)
+        militaryUnit.startEscorting()
+        val shortestPath = militaryUnit.movement.getShortestPath(destinationTile)
+        assertEquals(true, shortestPath.count() == 3)
+        assertEquals(false, shortestPath.contains(jungle))
+        assertEquals(false, shortestPath.contains(marsh))
+    }
+
 }

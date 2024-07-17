@@ -15,11 +15,17 @@ To create a scenario:
 
 ## Console
 
-To open the console, click the `` button on your keyboard.
+To open the console from the world screen, click the `` button on your keyboard.
+
+On mobile:
+
+- Long-click menu hamburger (3 lines)
+- Click "developer console" button
 
 To see available commands, click enter. This works for subcommands as well (e.g. when you entered `tile`).
 
 The console has autocompletion:
+
 * Enter a partial command, subcommand or argument and hit Tab...
 * When the entered part, compared from the start, matches exactly one of the possible options, that option is completed and a space added for the next subcommand or parameter.
 * When no option matches, nothing happens.

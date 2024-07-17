@@ -127,21 +127,16 @@ object TranslationFileWriter {
                 linesToTranslate += "$uniqueTarget = "
 
             linesToTranslate += "\n\n#################### Lines from spy actions #######################\n"
-            for (spyAction in SpyAction.values()) {
+            for (spyAction in SpyAction.values())
                 linesToTranslate += "${spyAction.displayString} = "
-            }
 
             linesToTranslate += "\n\n#################### Lines from diplomatic modifiers #######################\n"
             for (diplomaticModifier in DiplomaticModifiers.values())
                 linesToTranslate += "${diplomaticModifier.text} = "
 
             linesToTranslate += "\n\n#################### Lines from key bindings #######################\n"
-            for (category in KeyboardBinding.Category.values()) {
-                linesToTranslate += "${category.label} = "
-            }
-            for (binding in KeyboardBinding.values()) {
-                linesToTranslate += "${binding.label} = "
-            }
+            for (bindingLabel in KeyboardBinding.getTranslationEntries())
+                linesToTranslate += "$bindingLabel = "
 
             for (baseRuleset in BaseRuleset.values()) {
                 val generatedStringsFromBaseRuleset =
@@ -428,7 +423,7 @@ object TranslationFileWriter {
                     // Promotion names are not uniques but since we did the "[unitName] ability"
                     // they need the "parameters" treatment too
                     // Same for victory milestones
-                    (field.name == "uniques" || field.name == "promotions" || field.name == "milestones")
+                    (field.name in fieldsToProcessParameters)
                             && (fieldValue is java.util.AbstractCollection<*>) ->
                         for (item in fieldValue)
                             if (item is String) submitString(item, Unique(item)) else serializeElement(item!!)
@@ -464,6 +459,8 @@ object TranslationFileWriter {
                 "RuinReward.uniques", "TerrainType.name",
                 "CityStateType.friendBonusUniques", "CityStateType.allyBonusUniques",
                 "Era.citySound",
+                "keyShortcut",
+                "Event.name" // Presently not shown anywhere
             )
 
             /** Specifies Enums where the name property _is_ translatable, by Class name */
@@ -474,6 +471,11 @@ object TranslationFileWriter {
             private val translatableUniqueParameterTypes = setOf(
                 UniqueParameterType.Unknown,
                 UniqueParameterType.Comment
+            )
+
+            private val fieldsToProcessParameters = setOf(
+                "uniques", "promotions", "milestones",
+                "triggeredUniques", "conditions"
             )
 
             private fun isFieldTypeRelevant(type: Class<*>) =

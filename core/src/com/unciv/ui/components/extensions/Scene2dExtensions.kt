@@ -20,11 +20,13 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
+import com.badlogic.gdx.scenes.scene2d.ui.SelectBox
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle
 import com.badlogic.gdx.scenes.scene2d.ui.WidgetGroup
 import com.badlogic.gdx.utils.Align
+import com.badlogic.gdx.utils.Array
 import com.unciv.Constants
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.extensions.GdxKeyCodeFixes.DEL
@@ -48,6 +50,7 @@ private class RestorableTextButtonStyle(
     val restoreStyle: ButtonStyle
 ) : TextButtonStyle(baseStyle)
 
+//todo ButtonStyle *does* have a `disabled` Drawable, and Button ignores touches in disabled state anyway - all this is a wrong approach
 /** Disable a [Button] by setting its [touchable][Button.touchable] and [style][Button.style] properties. */
 fun Button.disable() {
     touchable = Touchable.disabled
@@ -233,6 +236,12 @@ fun <T : Actor> Cell<T>.pad(vertical: Float, horizontal: Float): Cell<T> {
     return pad(vertical, horizontal, vertical, horizontal)
 }
 
+fun <T> SelectBox<T>.setItems(newItems: Collection<T>){
+    val array = Array<T>()
+    newItems.forEach { array.add(it) }
+    items = array
+}
+
 /** Sets both the width and height to [size] */
 fun Image.setSize(size: Float) {
     setSize(size, size)
@@ -281,7 +290,7 @@ fun getCloseButton(
 /** Translate a [String] and make a [Label] widget from it */
 fun String.toLabel() = Label(this.tr(), BaseScreen.skin)
 /** Make a [Label] widget containing this [Int] as text */
-fun Int.toLabel() = this.toString().toLabel()
+fun Int.toLabel() = this.tr().toLabel()
 
 /** Translate a [String] and make a [Label] widget from it with a specified font color and size */
 fun String.toLabel(fontColor: Color = Color.WHITE,
