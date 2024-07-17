@@ -1,9 +1,12 @@
 
 import com.unciv.build.BuildConfig
 import com.unciv.build.BuildConfig.gdxVersion
+import com.unciv.build.BuildConfig.appVersion
+import io.github.fourlastor.construo.Target
 
 plugins {
     id("kotlin")
+    id("io.github.fourlastor.construo") version "1.2.0"
 }
 
 sourceSets {
@@ -54,7 +57,7 @@ tasks.register<JavaExec>("debug") {
     debug = true
 }
 
-tasks.register<Jar>("dist") { // Compiles the jar file
+tasks.jar { // Compiles the jar file
     dependsOn(tasks.getByName("classes"))
 
     // META-INF/INDEX.LIST and META-INF/io.netty.versions.properties are duplicated, but I don't know why
@@ -75,7 +78,7 @@ tasks.register<Jar>("dist") { // Compiles the jar file
     archiveFileName.set("${BuildConfig.appName}.jar")
 
     manifest {
-        attributes(mapOf("Main-Class" to mainClassName, "Specification-Version" to BuildConfig.appVersion))
+        attributes(mapOf("Main-Class" to mainClassName, "Specification-Version" to appVersion))
     }
 }
 
@@ -101,6 +104,41 @@ class PackrConfig(
     var bundleIdentifier: String? = null
 )
 
+val jarFile = "$rootDir/desktop/build/libs/${BuildConfig.appName}.jar"
+
+construo {
+    // Construo fields should have docs
+    // name of the executable
+    name.set(BuildConfig.appName.lowercase())
+    // human-readable name, used for example in the `.app` name for macOS
+    humanName.set(BuildConfig.appName)
+    // Optional, defaults to project version
+    version.set(appVersion)
+    // Optional, defaults to application.mainClass or jar task main class
+    mainClass.set(mainClassName)
+    // Optional, defaults to $buildDir/construo/dist
+    // where to put the packaged zips
+        outputDir.set(deployFolder)
+
+
+    jlink {
+        // add arbitrary modules to be included when running jlink
+        modules.addAll("jdk.crypto.ec")
+    }
+
+
+    targets{
+        create<Target.MacOs>("macM1") {
+            architecture.set(Target.Architecture.AARCH64)
+            jdkUrl.set("https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17.0.11%2B9/OpenJDK17U-jdk_aarch64_mac_hotspot_17.0.11_9.tar.gz")
+            // macOS needs an identifier
+            identifier.set(BuildConfig.identifier)
+            // Optional: icon for macOS
+//                macIcon.set(project.file("path/to/mac-icon.icns"))
+        }
+    }
+}
+
 for (platform in Platform.values()) {
     val platformName = platform.toString()
 
@@ -109,7 +147,6 @@ for (platform in Platform.values()) {
         // so we can run 'dist' from one job and then run the packr builds from a different job
 
         // Needs to be here and not in doLast because the zip task depends on the outDir
-        val jarFile = "$rootDir/desktop/build/libs/${BuildConfig.appName}.jar"
         val config = PackrConfig()
         config.platform = platform
 
